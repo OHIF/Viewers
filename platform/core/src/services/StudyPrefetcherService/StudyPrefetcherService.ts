@@ -1,4 +1,3 @@
-import { cache, imageLoadPoolManager, imageLoader, Enums, eventTarget, EVENTS as csEvents, utilities as csUtils } from '@cornerstonejs/core';
 import { PubSubService } from '../_shared/pubSubServiceInterface';
 import { ExtensionManager } from '../../extensions';
 import ServicesManager from '../ServicesManager';
@@ -46,7 +45,7 @@ type StudyPrefetcherConfig = {
   order: StudyPrefetchOrder;
 };
 
-type DisplaySetState = {
+type DisplaySetLoadingState = {
   displaySetInstanceUID: string;
   numInstances: number;
   pendingImageIds: Set<string>;
@@ -63,6 +62,35 @@ type ImageRequest = {
 
 type PubSubServiceSubscription = { unsubscribe: () => any };
 
+interface ICache {
+  isImageCached(imageId: string): boolean;
+}
+
+interface IImageLoadPoolManager {
+  addRequest (
+    requestFn: () => Promise<any>,
+    type: string,
+    additionalDetails: Record<string, unknown>,
+    priority?: number
+  );
+  clearRequestStack(type: string): void;
+}
+
+interface IImageLoader {
+  loadAndCacheImage(imageId: string, options: any): Promise<any>;
+}
+
+type EventSubscription = {
+  unsubscribe: () => void
+};
+
+interface IImageLoadEventsManager {
+  addEventListeners(
+    onImageLoaded: (evt: any) => void,
+    onImageLoadFailed: (evt: any) => void
+  ): EventSubscription[];
+}
+
 class StudyPrefetcherService extends PubSubService {
   private _extensionManager: ExtensionManager;
   private _servicesManager: ServicesManager;
@@ -71,7 +99,7 @@ class StudyPrefetcherService extends PubSubService {
   private _pendingRequests: ImageRequest[] = [];
   private _inflightRequests = new Map<string, ImageRequest>();
   private _isRunning = false;
-  private _displaySetLoadingStates = new Map<string, DisplaySetState>();
+  private _displaySetLoadingStates = new Map<string, DisplaySetLoadingState>();
   private _imageIdsToDisplaySetsMap = new Map<string, Set<string>>();
   private config: StudyPrefetcherConfig = {
     /* Enable/disable study prefetching service */
@@ -92,6 +120,13 @@ class StudyPrefetcherService extends PubSubService {
     /* Display sets prefetching order (closest, downward and upward) */
     order: StudyPrefetchOrder.downward,
   };
+
+  // Properties set by Cornerstone extension (initStudyPrefetcherService)
+  public requestType: string = IMAGE_REQUEST_TYPE;
+  public cache: ICache;
+  public imageLoadPoolManager: IImageLoadPoolManager;
+  public imageLoader: IImageLoader;
+  public imageLoadEventsManager: IImageLoadEventsManager;
 
   public static REGISTRATION = {
     name: 'studyPrefetcherService',
@@ -135,7 +170,7 @@ class StudyPrefetcherService extends PubSubService {
     this._stopPrefetching();
   }
 
-  private _addCornerstoneEventTargetListeners() {
+  private _addImageLoadingEventsListeners() {
     const fnOnImageLoadCompleted = (imageId: string) => {
       // `sendNextRequests` must be called after image loaded/failed events
       // to make sure prefetch requests shall be sent as soon as the active
@@ -163,13 +198,10 @@ class StudyPrefetcherService extends PubSubService {
       fnOnImageLoadCompleted(imageId);
     }
 
-    eventTarget.addEventListener(csEvents.IMAGE_LOADED, fnImageLoadedEventListener);
-    eventTarget.addEventListener(csEvents.IMAGE_LOAD_FAILED, fnImageLoadFailedEventListener);
-
-    return [
-      { unsubscribe: () => eventTarget.removeEventListener(csEvents.IMAGE_LOADED, fnImageLoadedEventListener) },
-      { unsubscribe: () => eventTarget.removeEventListener(csEvents.IMAGE_LOAD_FAILED, fnImageLoadFailedEventListener) },
-    ]
+    return this.imageLoadEventsManager.addEventListeners(
+      fnImageLoadedEventListener,
+      fnImageLoadFailedEventListener
+    );
   }
 
   private _addServicesListeners() {
@@ -219,15 +251,16 @@ class StudyPrefetcherService extends PubSubService {
   }
 
   private _addEventListeners() {
-    const cornerstoneEventTargetSubscriptions = this._addCornerstoneEventTargetListeners();
+    const imageLoadingEventsSubscriptions = this._addImageLoadingEventsListeners();
     const servicesSubscriptions = this._addServicesListeners();
 
-    this._subscriptions.push(...cornerstoneEventTargetSubscriptions);
+    this._subscriptions.push(...imageLoadingEventsSubscriptions);
     this._subscriptions.push(...servicesSubscriptions);
   }
 
   private _removeEventListeners() {
     this._subscriptions.forEach(subscription => subscription.unsubscribe());
+    this._subscriptions = [];
   }
 
   private _syncWithActiveViewport(
@@ -383,7 +416,7 @@ class StudyPrefetcherService extends PubSubService {
     return dataSource.getImageIdsForDisplaySet(displaySet);
   }
 
-  private _updateDisplaySetLoadingProgress(displaySetLoadingState: DisplaySetState) {
+  private _updateDisplaySetLoadingProgress(displaySetLoadingState: DisplaySetLoadingState) {
     const { numInstances, loadedImageIds, failedImageIds } = displaySetLoadingState;
     const loadingProgress = (loadedImageIds.size + failedImageIds.size) / numInstances;
 
@@ -405,7 +438,7 @@ class StudyPrefetcherService extends PubSubService {
     // Needs to check which image is already loaded to update the progress properly
     // because some images may already be loaded (thumbnails and viewports).
     for (const imageId of imageIds) {
-      if (cache.getImageLoadObject(imageId)) {
+      if (this.cache.isImageCached(imageId)) {
         loadedImageIds.add(imageId);
       } else {
         pendingImageIds.add(imageId);
@@ -558,20 +591,20 @@ class StudyPrefetcherService extends PubSubService {
       const { imageId } = imageRequest;
       const options = {
         priority: -5,
-        requestType: IMAGE_REQUEST_TYPE,
+        requestType: this.requestType,
         additionalDetails: { imageId },
         preScale: {
           enabled: true,
         },
       };
 
-      imageLoadPoolManager.addRequest(
+      this.imageLoadPoolManager.addRequest(
         async () =>
-          imageLoader.loadAndCacheImage(imageId, options).then(
+          this.imageLoader.loadAndCacheImage(imageId, options).then(
             _image => this._onImagePrefetchSuccess(imageRequest),
             error => this._onImagePrefetchFailed(imageRequest, error)
           ),
-        Enums.RequestType.Prefetch,
+        this.requestType,
         { imageId }
       );
 
@@ -584,7 +617,7 @@ class StudyPrefetcherService extends PubSubService {
     const imageIds = this._getImageIdsForDisplaySet(displaySet);
 
     imageIds.forEach(imageId => {
-      if (cache.getImageLoadObject(imageId)) {
+      if (this.cache.isImageCached(imageId)) {
         this._moveImageIdToLoadedSet(imageId);
         return;
       }
@@ -634,7 +667,7 @@ class StudyPrefetcherService extends PubSubService {
     this._displaySetLoadingStates.clear();
     this._imageIdsToDisplaySetsMap.clear();
     this._inflightRequests.clear();
-    imageLoadPoolManager.clearRequestStack(IMAGE_REQUEST_TYPE);
+    this.imageLoadPoolManager.clearRequestStack(IMAGE_REQUEST_TYPE);
 
     this._broadcastEvent(this.EVENTS.SERVICE_STOPPED, {});
   }

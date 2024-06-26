@@ -122,6 +122,12 @@ declare global {
       onConfiguration?: (dicomWebConfig: any, options: any) => any;
       dataSources?: any;
       oidc?: any;
+      studyPrefetcher: {
+        enabled: boolean;
+        displaySetsCount: number;
+        maxNumPrefetchRequests: number;
+        order: 'closest' | 'downward' | 'upward';
+      }
     }
 
     export interface Test {

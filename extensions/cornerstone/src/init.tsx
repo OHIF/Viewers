@@ -25,6 +25,7 @@ import initCornerstoneTools from './initCornerstoneTools';
 
 import { connectToolsToMeasurementService } from './initMeasurementService';
 import initCineService from './initCineService';
+import initStudyPrefetcherService from './initStudyPrefetcherService';
 import interleaveCenterLoader from './utils/interleaveCenterLoader';
 import nthLoader from './utils/nthLoader';
 import interleaveTopToBottom from './utils/interleaveTopToBottom';
@@ -98,6 +99,7 @@ export default async function init({
     hangingProtocolService,
     viewportGridService,
     stateSyncService,
+    studyPrefetcherService
   } = servicesManager.services;
 
   window.services = servicesManager.services;
@@ -190,6 +192,7 @@ export default async function init({
   this.measurementServiceSource = connectToolsToMeasurementService(servicesManager);
 
   initCineService(servicesManager);
+  initStudyPrefetcherService(servicesManager);
 
   // When a custom image load is performed, update the relevant viewports
   hangingProtocolService.subscribe(
