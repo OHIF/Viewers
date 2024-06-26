@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
-import { utils, ServicesManager } from '@ohif/core';
+import { utils } from '@ohif/core';
 import {
   MeasurementTable,
   Dialog,
@@ -24,14 +24,13 @@ export default function PanelMeasurementTable({
   servicesManager,
   commandsManager,
   extensionManager,
-}): React.FunctionComponent {
+}: withAppTypes): React.FunctionComponent {
   const { t } = useTranslation('MeasurementTable');
 
   const [viewportGrid, viewportGridService] = useViewportGrid();
   const { activeViewportId, viewports } = viewportGrid;
-  const { measurementService, uiDialogService, uiNotificationService, displaySetService } = (
-    servicesManager as ServicesManager
-  ).services;
+  const { measurementService, uiDialogService, uiNotificationService, displaySetService } =
+    servicesManager.services;
   const [displayMeasurements, setDisplayMeasurements] = useState([]);
 
   useEffect(() => {
@@ -245,7 +244,7 @@ export default function PanelMeasurementTable({
 }
 
 PanelMeasurementTable.propTypes = {
-  servicesManager: PropTypes.instanceOf(ServicesManager).isRequired,
+  servicesManager: PropTypes.object.isRequired,
 };
 
 function _getMappedMeasurements(measurementService) {

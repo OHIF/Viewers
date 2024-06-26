@@ -8,7 +8,7 @@ import _getStatusComponent from './_getStatusComponent';
 
 const SEG_TOOLGROUP_BASE_NAME = 'SEGToolGroup';
 
-function OHIFCornerstoneSEGViewport(props) {
+function OHIFCornerstoneSEGViewport(props: withAppTypes) {
   const {
     children,
     displaySets,
@@ -367,11 +367,6 @@ OHIFCornerstoneSEGViewport.propTypes = {
   viewportId: PropTypes.string.isRequired,
   dataSource: PropTypes.object,
   children: PropTypes.node,
-  customProps: PropTypes.object,
-};
-
-OHIFCornerstoneSEGViewport.defaultProps = {
-  customProps: {},
 };
 
 function _getReferencedDisplaySetMetadata(referencedDisplaySet, segDisplaySet) {

@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 const flex = 'flex flex-row justify-between items-center';
 const theme = 'bg-indigo-dark text-white';
 
-const ListMenu = ({ items = [], renderer, onClick }) => {
+const ListMenu = ({ items = [], renderer, onClick = () => {} }) => {
   const [selectedIndex, setSelectedIndex] = useState(null);
 
   const ListItem = ({ item, index, isSelected }) => {
@@ -30,7 +30,10 @@ const ListMenu = ({ items = [], renderer, onClick }) => {
   };
 
   return (
-    <div className="bg-secondary-dark flex flex-col gap-[4px] rounded-md p-1">
+    <div
+      className="bg-secondary-dark flex flex-col gap-[4px] overflow-auto rounded-md p-1"
+      style={{ maxHeight: 'calc(100vh - 5rem)' }}
+    >
       {items.map((item, index) => {
         return (
           <ListItem
@@ -45,16 +48,10 @@ const ListMenu = ({ items = [], renderer, onClick }) => {
   );
 };
 
-const noop = () => {};
-
 ListMenu.propTypes = {
   items: PropTypes.array.isRequired,
   renderer: PropTypes.func.isRequired,
   onClick: PropTypes.func,
-};
-
-ListMenu.defaultProps = {
-  onClick: noop,
 };
 
 export default ListMenu;

@@ -1,3 +1,5 @@
+/** @type {AppTypes.Config} */
+
 window.config = {
   routerBasename: '/',
   whiteLabeling: {
@@ -26,6 +28,7 @@ window.config = {
   showWarningMessageForCrossOrigin: true,
   showCPUFallbackMessage: true,
   showLoadingIndicator: true,
+  experimentalStudyBrowserSort: false,
   strictZSpacingForVolumeViewport: true,
   groupEnabledModesFirst: true,
   investigationalUseDialog: { option: 'never' },

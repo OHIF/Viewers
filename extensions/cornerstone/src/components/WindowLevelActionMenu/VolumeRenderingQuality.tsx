@@ -4,10 +4,10 @@ import { VolumeRenderingQualityProps } from '../../types/ViewportPresets';
 export function VolumeRenderingQuality({
   volumeRenderingQualityRange,
   commandsManager,
-  serviceManager,
+  servicesManager,
   viewportId,
 }: VolumeRenderingQualityProps): ReactElement {
-  const { cornerstoneViewportService } = serviceManager.services;
+  const { cornerstoneViewportService } = servicesManager.services;
   const { min, max, step } = volumeRenderingQualityRange;
   const [quality, setQuality] = useState(null);
 

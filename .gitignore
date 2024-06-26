@@ -10,6 +10,8 @@ junit.xml
 coverage/
 .docz/
 .yarn/
+.nx/
+addOns/yarn.lock
 
 # YALC (for Erik)
 .yalc
@@ -33,7 +35,7 @@ docker/dcm4che/dcm4che-arc
 
 # Cypress test results
 videos/
-screenshots/
+
 
 # Locize settings
 .locize
@@ -46,3 +48,11 @@ platform/app/.recipes/OpenResty-Orthanc/logs/*
 .vercel
 
 .vs
+
+# PlayWright
+
+node_modules/
+tests/test-results/
+tests/playwright-report/
+/blob-report/
+/playwright/.cache/

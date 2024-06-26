@@ -1,5 +1,5 @@
-export function getToolbarModule({ commandsManager, servicesManager }) {
-  const { segmentationService, toolGroupService } = servicesManager.services;
+export function getToolbarModule({ servicesManager }: withAppTypes) {
+  const { segmentationService, toolbarService, toolGroupService } = servicesManager.services;
   return [
     {
       name: 'evaluate.cornerstone.segmentation',
@@ -20,12 +20,16 @@ export function getToolbarModule({ commandsManager, servicesManager }) {
         const toolGroup = toolGroupService.getToolGroupForViewport(viewportId);
 
         if (!toolGroup) {
-          return;
+          return {
+            disabled: true,
+            className: '!text-common-bright ohif-disabled',
+            disabledText: disabledText ?? 'Not available on the current viewport',
+          };
         }
 
-        const toolName = getToolNameForButton(button);
+        const toolName = toolbarService.getToolNameForButton(button);
 
-        if (!toolGroup || !toolGroup.hasTool(toolName)) {
+        if (!toolGroup.hasTool(toolName) && !toolNames) {
           return {
             disabled: true,
             className: '!text-common-bright ohif-disabled',
@@ -50,20 +54,4 @@ export function getToolbarModule({ commandsManager, servicesManager }) {
       },
     },
   ];
-}
-
-// Todo: this is duplicate, we should move it to a shared location
-function getToolNameForButton(button) {
-  const { props } = button;
-
-  const commands = props?.commands || button.commands;
-  const commandsArray = Array.isArray(commands) ? commands : [commands];
-  const firstCommand = commandsArray[0];
-
-  if (firstCommand?.commandOptions) {
-    return firstCommand.commandOptions.toolName ?? props?.id ?? button.id;
-  }
-
-  // use id as a fallback for toolName
-  return props?.id ?? button.id;
 }

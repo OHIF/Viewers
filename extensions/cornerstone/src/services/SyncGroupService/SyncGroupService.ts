@@ -1,7 +1,7 @@
 import { synchronizers, SynchronizerManager, Synchronizer } from '@cornerstonejs/tools';
 import { getRenderingEngines, utilities } from '@cornerstonejs/core';
 
-import { pubSubServiceInterface, Types, ServicesManager } from '@ohif/core';
+import { pubSubServiceInterface, Types } from '@ohif/core';
 
 const EVENTS = {
   TOOL_GROUP_CREATED: 'event::cornerstone::syncgroupservice:toolgroupcreated',
@@ -40,7 +40,7 @@ export default class SyncGroupService {
     },
   };
 
-  servicesManager: ServicesManager;
+  servicesManager: AppTypes.ServicesManager;
   listeners: { [key: string]: (...args: any[]) => void } = {};
   EVENTS: { [key: string]: string };
   synchronizerCreators: Record<string, SyncCreator> = {
@@ -55,8 +55,8 @@ export default class SyncGroupService {
 
   synchronizersByType: { [key: string]: Synchronizer[] } = {};
 
-  constructor(serviceManager: ServicesManager) {
-    this.servicesManager = serviceManager;
+  constructor(servicesManager: AppTypes.ServicesManager) {
+    this.servicesManager = servicesManager;
     this.listeners = {};
     this.EVENTS = EVENTS;
     //
@@ -96,6 +96,15 @@ export default class SyncGroupService {
 
   public getSynchronizer(id: string): Synchronizer | void {
     return SynchronizerManager.getSynchronizer(id);
+  }
+
+  /**
+   * Registers a custom synchronizer.
+   * @param id - The id of the synchronizer.
+   * @param createFunction - The function that creates the synchronizer.
+   */
+  public registerCustomSynchronizer(id: string, createFunction: SyncCreator): void {
+    this.synchronizerCreators[id] = createFunction;
   }
 
   /**

@@ -4,6 +4,7 @@ import DicomUpload from './components/DicomUpload/DicomUpload';
 import defaultWindowLevelPresets from './components/WindowLevelActionMenu/defaultWindowLevelPresets';
 import { colormaps } from './utils/colormaps';
 import { CONSTANTS } from '@cornerstonejs/core';
+import { CornerstoneOverlay } from './Viewport/Overlays/CustomizableViewportOverlay';
 
 const DefaultColormap = 'Grayscale';
 const { VIEWPORT_PRESETS } = CONSTANTS;
@@ -24,7 +25,15 @@ const tools = {
     },
     { toolName: toolNames.StackScrollMouseWheel, bindings: [] },
   ],
-  enabled: [{ toolName: toolNames.SegmentationDisplay }],
+  enabled: [
+    { toolName: toolNames.SegmentationDisplay },
+    {
+      toolName: toolNames.PlanarFreehandContourSegmentation,
+      configuration: {
+        displayOnePointAsCrosshairs: true,
+      },
+    },
+  ],
 };
 
 function getCustomizationModule() {
@@ -39,6 +48,7 @@ function getCustomizationModule() {
     {
       name: 'default',
       value: [
+        CornerstoneOverlay,
         {
           id: 'cornerstone.overlayViewportTools',
           tools,

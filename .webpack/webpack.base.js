@@ -7,7 +7,7 @@ const fs = require('fs');
 const webpack = require('webpack');
 
 // ~~ PLUGINS
-const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+// const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 const TerserJSPlugin = require('terser-webpack-plugin');
 
 // ~~ PackageJSON
@@ -19,6 +19,8 @@ const loadWebWorkersRule = require('./rules/loadWebWorkers.js');
 const transpileJavaScriptRule = require('./rules/transpileJavaScript.js');
 const cssToJavaScript = require('./rules/cssToJavaScript.js');
 const stylusToJavaScript = require('./rules/stylusToJavaScript.js');
+const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
+
 
 // ~~ ENV VARS
 const NODE_ENV = process.env.NODE_ENV;
@@ -98,6 +100,46 @@ module.exports = (env, argv, { SRC_DIR, ENTRY }) => {
     module: {
       noParse: [/(codec)/, /(dicomicc)/],
       rules: [
+        ...(isProdBuild ? [] : [{
+          test: /\.[jt]sx?$/,
+          exclude: /node_modules/,
+          loader: 'babel-loader',
+          options: {
+            plugins: ['react-refresh/babel'],
+          },
+        }]),
+        {
+          test: /\.svg?$/,
+          oneOf: [
+            {
+              use: [
+                {
+                  loader: '@svgr/webpack',
+                  options: {
+                    svgoConfig: {
+                      plugins: [
+                        {
+                          name: 'preset-default',
+                          params: {
+                            overrides: {
+                              removeViewBox: false
+                            },
+                          },
+                        },
+                      ]
+                    },
+                    prettier: false,
+                    svgo: true,
+                    titleProp: true,
+                  },
+                },
+              ],
+              issuer: {
+                and: [/\.(ts|tsx|js|jsx|md|mdx)$/],
+              },
+            },
+          ],
+        },
         {
           test: /\.js$/,
           enforce: 'pre',
@@ -142,8 +184,6 @@ module.exports = (env, argv, { SRC_DIR, ENTRY }) => {
         '@hooks': path.resolve(__dirname, '../platform/app/src/hooks'),
         '@routes': path.resolve(__dirname, '../platform/app/src/routes'),
         '@state': path.resolve(__dirname, '../platform/app/src/state'),
-        'dicom-microscopy-viewer':
-          'dicom-microscopy-viewer/dist/dynamic-import/dicomMicroscopyViewer.min.js',
         '@cornerstonejs/dicom-image-loader':
           '@cornerstonejs/dicom-image-loader/dist/dynamic-import/cornerstoneDICOMImageLoader.min.js',
       },
@@ -173,6 +213,7 @@ module.exports = (env, argv, { SRC_DIR, ENTRY }) => {
       new webpack.ProvidePlugin({
         Buffer: ['buffer', 'Buffer'],
       }),
+      ...(isProdBuild ? [] : [new ReactRefreshWebpackPlugin()]),
       // Uncomment to generate bundle analyzer
       // new BundleAnalyzerPlugin(),
     ],

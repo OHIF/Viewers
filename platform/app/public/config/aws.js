@@ -1,3 +1,5 @@
+/** @type {AppTypes.Config} */
+
 window.config = {
   routerBasename: '/',
   extensions: [],

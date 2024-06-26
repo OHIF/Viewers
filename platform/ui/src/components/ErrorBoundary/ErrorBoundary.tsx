@@ -10,7 +10,7 @@ import IconButton from '../IconButton';
 
 const isProduction = process.env.NODE_ENV === 'production';
 
-const DefaultFallback = ({ error, context, resetErrorBoundary, fallbackRoute }) => {
+const DefaultFallback = ({ error, context, resetErrorBoundary = () => {}, fallbackRoute }) => {
   const { t } = useTranslation('ErrorBoundary');
   const [showDetails, setShowDetails] = useState(false);
   const title = `${t('Something went wrong')}${!isProduction && ` ${t('in')} ${context}`}.`;
@@ -57,25 +57,19 @@ const DefaultFallback = ({ error, context, resetErrorBoundary, fallbackRoute }) 
   );
 };
 
-const noop = () => {};
-
 DefaultFallback.propTypes = {
   error: PropTypes.object.isRequired,
   resetErrorBoundary: PropTypes.func,
   componentStack: PropTypes.string,
 };
 
-DefaultFallback.defaultProps = {
-  resetErrorBoundary: noop,
-};
-
 const ErrorBoundary = ({
-  context,
-  onReset,
-  onError,
-  fallbackComponent: FallbackComponent,
+  context = 'OHIF',
+  onReset = () => {},
+  onError = () => {},
+  fallbackComponent: FallbackComponent = DefaultFallback,
   children,
-  fallbackRoute,
+  fallbackRoute = null,
   isPage,
 }) => {
   const [isOpen, setIsOpen] = useState(true);
@@ -130,14 +124,6 @@ ErrorBoundary.propTypes = {
   fallbackComponent: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
   children: PropTypes.node.isRequired,
   fallbackRoute: PropTypes.string,
-};
-
-ErrorBoundary.defaultProps = {
-  context: 'OHIF',
-  onReset: noop,
-  onError: noop,
-  fallbackComponent: DefaultFallback,
-  fallbackRoute: null,
 };
 
 export default ErrorBoundary;

@@ -281,21 +281,22 @@ A list of criteria for the protocol along with the provided points for ranking.
     },
     ```
 
-### `from` attribute
-The from attribute allows getting the attribute to test from some other object
-such as the prior study, the list of studies overall or another module provided
-value.  Some of the possible attributes are:
+### `from` attribute (optional)
+The `from` attribute allows you to retrieve the attribute to test from another object, such as the previous study, the overall list of studies, or another provided value from a module.
 
-* `prior`: To get the value from the prior study.
-* `activeStudy`: To match the active study
-* `studies`: To match the list of studies to display
-* `displaySets`: The display sets for the current study
-* `allDisplaySets`: Alll available display sets
-* `instance`: An instance from the current display set being tested
-* `options`: Gets the options object itself, eg if you want a simple top level
-  value.
+The values provided by OHIF which you can use are:
 
-### displaySetSelectors
+-  `activeStudy`: to use the metadata of the active study to match
+-  `studies`: to use the metadata of the list of studies (all studies) to match
+-  `allDisplaySets`: all available display sets
+-  `displaySets`: if the selector has matched a study, these are the display sets for that study
+-  `prior`: the metadata of the first study in the list of studies that is not the active study
+-  `options`: during matching, we also provide an options object with the following information that you can use as the `from` value:
+  - `studyInstanceUIDsIndex`: the index of the study in the list of studies
+  - `instance`: the metadata of the instance being matched, which is exactly the displaySet.instance metadata.
+
+
+### displaySetSelectors (mandatory)
 Defines the display sets that the protocol will use for arrangement.
 
 ```js

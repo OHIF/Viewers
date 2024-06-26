@@ -30,11 +30,8 @@ import nthLoader from './utils/nthLoader';
 import interleaveTopToBottom from './utils/interleaveTopToBottom';
 import initContextMenu from './initContextMenu';
 import initDoubleClick from './initDoubleClick';
-import { CornerstoneServices } from './types';
 import initViewTiming from './utils/initViewTiming';
 import { colormaps } from './utils/colormaps';
-
-import { debounce } from 'lodash';
 
 const { registerColormap } = csUtilities.colormap;
 
@@ -101,7 +98,7 @@ export default async function init({
     hangingProtocolService,
     viewportGridService,
     stateSyncService,
-  } = servicesManager.services as CornerstoneServices;
+  } = servicesManager.services;
 
   window.services = servicesManager.services;
   window.extensionManager = extensionManager;
@@ -144,12 +141,17 @@ export default async function init({
   });
 
   const labelmapRepresentation = cornerstoneTools.Enums.SegmentationRepresentations.Labelmap;
+  const contourRepresentation = cornerstoneTools.Enums.SegmentationRepresentations.Contour;
 
   cornerstoneTools.segmentation.config.setGlobalRepresentationConfig(labelmapRepresentation, {
     fillAlpha: 0.5,
     fillAlphaInactive: 0.2,
     outlineOpacity: 1,
     outlineOpacityInactive: 0.65,
+  });
+
+  cornerstoneTools.segmentation.config.setGlobalRepresentationConfig(contourRepresentation, {
+    renderFill: false,
   });
 
   const metadataProvider = OHIF.classes.MetadataProvider;
@@ -253,7 +255,11 @@ export default async function init({
 
     element.addEventListener(EVENTS.CAMERA_RESET, evt => {
       const { element } = evt.detail;
-      const { viewportId } = getEnabledElement(element);
+      const enabledElement = getEnabledElement(element);
+      if (!enabledElement) {
+        return;
+      }
+      const { viewportId } = enabledElement;
       commandsManager.runCommand('resetCrosshairs', { viewportId });
     });
 

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { ToolbarButton } from '@ohif/ui';
 
-function NestedMenu({ children, label, icon, isActive }) {
+function NestedMenu({ children, label = 'More', icon = 'tool-more-menu', isActive }) {
   const [isOpen, setIsOpen] = useState(false);
 
   const toggleNestedMenu = () => setIsOpen(!isOpen);
@@ -37,11 +37,6 @@ NestedMenu.propTypes = {
   children: PropTypes.any.isRequired,
   icon: PropTypes.string,
   label: PropTypes.string,
-};
-
-NestedMenu.defaultProps = {
-  icon: 'tool-more-menu',
-  label: 'More',
 };
 
 export default NestedMenu;

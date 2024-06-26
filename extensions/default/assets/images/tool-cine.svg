@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="28px" height="28px" viewBox="0 0 28 28" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>tool-cine</title>
+    <g id="tool-cine" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <rect id="Rectangle" x="0" y="0" width="28" height="28"></rect>
+        <circle id="Oval" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" cx="14" cy="13.9990833" r="10.5416667"></circle>
+        <path d="M11.5416667,11.7236444 L17.3036401,14.0295711 L11.5416667,16.9105578 L11.5416667,11.7236444 Z" id="Path" stroke="currentColor" stroke-width="1.5" fill="currentColor"></path>
+    </g>
+</svg>

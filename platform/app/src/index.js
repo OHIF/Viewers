@@ -2,6 +2,7 @@
  * Entry point for development and production PWA builds.
  */
 import 'regenerator-runtime/runtime';
+import { createRoot } from 'react-dom/client';
 import App from './App';
 import React from 'react';
 import ReactDOM from 'react-dom';
@@ -35,10 +36,10 @@ loadDynamicConfig(window.config).then(config_json => {
     defaultModes,
   };
 
-  /** Create App */
-  const app = React.createElement(App, appProps, null);
-  /** Render */
-  ReactDOM.render(app, document.getElementById('root'));
+  const container = document.getElementById('root');
+
+  const root = createRoot(container);
+  root.render(React.createElement(App, appProps));
 });
 
 export { history };

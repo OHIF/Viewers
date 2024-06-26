@@ -6,36 +6,26 @@ import {
   initCommonElementsAliases,
   initRouteAliases,
   initStudyListAliasesOnDesktop,
-  initStudyListAliasesOnTablet,
   initPreferencesModalAliases,
   initPreferencesModalFooterBtnAliases,
 } from './aliases.js';
 
-// ***********************************************
-// This example commands.js shows you how to
-// create various custom commands and overwrite
-// existing commands.
-//
-// For more comprehensive examples of custom
-// commands please read more here:
-// https://on.cypress.io/custom-commands
-// ***********************************************
-//
-//
-// -- This is a parent command --
-// Cypress.Commands.add("login", (email, password) => { ... })
-//
-//
-// -- This is a child command --
-// Cypress.Commands.add("drag", { prevSubject: 'element'}, (subject, options) => { ... })
-//
-//
-// -- This is a dual command --
-// Cypress.Commands.add("dismiss", { prevSubject: 'optional'}, (subject, options) => { ... })
-//
-//
-// -- This is will overwrite an existing command --
-// Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
+/**
+ * Command to select a layout preset.
+ * The layout preset is selected by clicking on the Layout button and then clicking on the desired preset.
+ * The preset name is the text that is displayed on the button.
+ * @param {string} presetName - The name of the layout preset that we would like to select
+ * @param {boolean} screenshot - If true, a screenshot will be taken when the layout tool is opened
+ */
+Cypress.Commands.add('selectLayoutPreset', (presetName, screenshot) => {
+  cy.get('[data-cy="Layout"]').click();
+  if (screenshot) {
+    cy.percyCanvasSnapshot('Layout tool opened');
+  }
+  cy.get('div').contains(presetName).should('be.visible').click();
+  // fixed wait time for layout changes and rendering
+  cy.wait(3000);
+});
 
 /**
  * Command to search for a patient name and open his/her study.
@@ -116,10 +106,10 @@ Cypress.Commands.add('isPageLoaded', (url = '/basic-test') => {
 
 Cypress.Commands.add('openStudyList', () => {
   cy.initRouteAliases();
-  cy.visit('/');
+  cy.visit('/', { timeout: 15000 });
 
   // For some reason cypress 12.x does not like to stub the network request
-  // so we just wait herer for 1 second
+  // so we just wait here for 1 second
   // cy.wait('@getStudies');
   cy.waitQueryList();
 });
@@ -287,6 +277,56 @@ Cypress.Commands.add(
     });
   }
 );
+
+// Add brush stroke in the viewport
+Cypress.Commands.add('addBrush', (viewport, firstClick = [85, 100], secondClick = [85, 300]) => {
+  cy.get(viewport)
+    .first()
+    .then(viewportElement => {
+      const [x1, y1] = firstClick;
+      const [x2, y2] = secondClick;
+
+      const steps = 10;
+      const xStep = (x2 - x1) / steps;
+      const yStep = (y2 - y1) / steps;
+
+      cy.wrap(viewportElement)
+        .trigger('mousedown', x1, y1, { buttons: 1 })
+        .then(() => {
+          for (let i = 1; i <= steps; i++) {
+            let x = x1 + xStep * i;
+            let y = y1 + yStep * i;
+            cy.wrap(viewportElement).trigger('mousemove', x, y, { buttons: 1 });
+          }
+        })
+        .trigger('mouseup');
+    });
+});
+
+// Add erase stroke in the viewport
+Cypress.Commands.add('addEraser', (viewport, firstClick = [85, 100], secondClick = [85, 300]) => {
+  cy.get(viewport)
+    .first()
+    .then(viewportElement => {
+      const [x1, y1] = firstClick;
+      const [x2, y2] = secondClick;
+
+      const steps = 10;
+      const xStep = (x2 - x1) / steps;
+      const yStep = (y2 - y1) / steps;
+
+      cy.wrap(viewportElement)
+        .trigger('mousedown', x1, y1, { buttons: 1 })
+        .then(() => {
+          for (let i = 1; i <= steps; i++) {
+            let x = x1 + xStep * i;
+            let y = y1 + yStep * i;
+            cy.wrap(viewportElement).trigger('mousemove', x, y, { buttons: 1 });
+          }
+        })
+        .trigger('mouseup');
+    });
+});
 
 //Add measurements in the viewport
 Cypress.Commands.add(

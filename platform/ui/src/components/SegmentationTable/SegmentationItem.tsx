@@ -8,8 +8,8 @@ const SegmentationItem = ({
   id,
   index,
   label,
-  displayText,
-  isActive,
+  displayText = [],
+  isActive = false,
   isVisible,
   onClick,
   onEdit,
@@ -136,11 +136,6 @@ SegmentationItem.propTypes = {
   onEdit: PropTypes.func,
   onDelete: PropTypes.func,
   toggleVisibility: PropTypes.func,
-};
-
-SegmentationItem.defaultProps = {
-  isActive: false,
-  displayText: [],
 };
 
 export default SegmentationItem;
