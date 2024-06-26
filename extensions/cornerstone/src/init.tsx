@@ -32,7 +32,6 @@ import initContextMenu from './initContextMenu';
 import initDoubleClick from './initDoubleClick';
 import initViewTiming from './utils/initViewTiming';
 import { colormaps } from './utils/colormaps';
-import { getDicomMicroscopyViewer } from './utils/getDicomMicroscopyViewer';
 
 const { registerColormap } = csUtilities.colormap;
 
@@ -68,11 +67,6 @@ export default async function init({
       useNorm16Texture: Boolean(appConfig.useNorm16Texture),
     },
   });
-
-  // Webpack munges the imports of nested modules in a way that isn't clear
-  // how to work around, so recreate the loader in OHIF, which does seem to work.
-  // Note this is a lazy function, will only load the viewer if it gets called.
-  cornerstone.WSIViewport.setGetDicomMicroscopyViewer?.(getDicomMicroscopyViewer);
 
   // For debugging e2e tests that are failing on CI
   cornerstone.setUseCPURendering(Boolean(appConfig.useCPURendering));
