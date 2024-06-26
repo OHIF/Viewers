@@ -30,6 +30,7 @@ export interface ExtensionParams extends ExtensionConstructor {
   servicesManager: AppTypes.ServicesManager;
   serviceProvidersManager: ServiceProvidersManager;
   configuration?: ExtensionConfiguration;
+  peerImport: (moduleId: string) => Promise<any>;
 }
 
 /**
@@ -87,6 +88,7 @@ export default class ExtensionManager extends PubSubService {
   private dataSourceDefs: Record<string, any>;
   private defaultDataSourceName: string;
   private activeDataSource: string;
+  private peerImport: (moduleId) => Promise<any>;
 
   constructor({
     commandsManager,
@@ -115,6 +117,7 @@ export default class ExtensionManager extends PubSubService {
     this.dataSourceDefs = {};
     this.defaultDataSourceName = appConfig.defaultDataSourceName;
     this.activeDataSource = appConfig.defaultDataSourceName;
+    this.peerImport = appConfig.peerImport;
   }
 
   public setActiveDataSource(dataSource: string): void {

@@ -66,6 +66,18 @@ function getRuntimeLoadModesExtensions(modules) {
   );
   modules.forEach(module => {
     const packageName = extractName(module);
+    if (!packageName) {
+      return;
+    }
+    if (module.importPath) {
+      dynamicLoad.push(
+        `  if( module==="${packageName}") {`,
+        `    const imported = await window.browserImportFunction('${module.importPath}');`,
+        '    return ' + (module.globalName ? `window["${module.globalName}"];` : `imported["${module.importName || 'default'}"];`),
+        '  }'
+      );
+      return;
+    }
     dynamicLoad.push(
       `  if( module==="${packageName}") {`,
       `    const imported = await import("${packageName}");`,
@@ -145,6 +157,7 @@ function writePluginImportsFile(SRC_DIR, DIST_DIR) {
   pluginImportsJsContent += getRuntimeLoadModesExtensions([
     ...pluginConfig.extensions,
     ...pluginConfig.modes,
+    ...pluginConfig.public,
   ]);
 
   fs.writeFileSync(`${SRC_DIR}/pluginImports.js`, pluginImportsJsContent, { flag: 'w+' }, err => {

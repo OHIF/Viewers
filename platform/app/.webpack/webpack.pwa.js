@@ -102,16 +102,17 @@ module.exports = (env, argv) => {
             to: `${DIST_DIR}/app-config.js`,
           },
           // Copy Dicom Microscopy Viewer build files
-          {
-            from: '../../../node_modules/dicom-microscopy-viewer/dist/dynamic-import',
-            to: DIST_DIR,
-            globOptions: {
-              ignore: ['**/*.min.js.map'],
-            },
-            // The dicom-microscopy-viewer is optional, so if it doeesn't get
-            // installed, it shouldn't cause issues.
-            noErrorOnMissing: true,
-          },
+          // This is in pluginCOnfig.json now
+          // {
+          //   from: '../../../node_modules/dicom-microscopy-viewer/dist/dynamic-import',
+          //   to: DIST_DIR,
+          //   globOptions: {
+          //     ignore: ['**/*.min.js.map'],
+          //   },
+          //   // The dicom-microscopy-viewer is optional, so if it doeesn't get
+          //   // installed, it shouldn't cause issues.
+          //   noErrorOnMissing: true,
+          // },
           // Copy dicom-image-loader build files
           {
             from: '../../../node_modules/@cornerstonejs/dicom-image-loader/dist/dynamic-import',
