@@ -11,7 +11,7 @@ import {
 } from '@cornerstonejs/core';
 import { MeasurementService } from '@ohif/core';
 import { Notification, useViewportDialog, AllInOneMenu } from '@ohif/ui';
-import { IStackViewport, IVolumeViewport } from '@cornerstonejs/core/dist/esm/types';
+import type { Types as CSTypes } from '@cornerstonejs/core';
 
 import { setEnabledElement } from '../state';
 
@@ -581,7 +581,7 @@ function _jumpToMeasurement(
 
   if (enabledElement) {
     // See how the jumpToSlice() of Cornerstone3D deals with imageIdx param.
-    const viewport = enabledElement.viewport as IStackViewport | IVolumeViewport;
+    const viewport = enabledElement.viewport as CSTypes.IStackViewport | CSTypes.IVolumeViewport;
 
     let imageIdIndex = 0;
     let viewportCameraDirectionMatch = true;

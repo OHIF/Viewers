@@ -53,13 +53,17 @@ function CornerstoneImageScrollbar({
   }, [viewportId, viewportData]);
 
   useEffect(() => {
-    if (viewportData?.viewportType !== Enums.ViewportType.STACK) {
+    if (!viewportData) {
       return;
     }
+    const { viewportType } = viewportData;
+    const eventId = viewportType === Enums.ViewportType.STACK && Enums.Events.STACK_VIEWPORT_SCROLL ||
+      viewportType === Enums.ViewportType.ORTHOGRAPHIC && Enums.Events.VOLUME_NEW_IMAGE ||
+      Enums.Events.IMAGE_RENDERED;
 
-    const updateStackIndex = event => {
+    const updateIndex = event => {
       const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
-      const { newImageIdIndex } = event.detail;
+      const { imageIndex, newImageIdIndex = imageIndex } = event.detail;
       const numberOfSlices = viewport.getNumberOfSlices();
       // find the index of imageId in the imageIds
       setImageSliceData({
@@ -68,28 +72,10 @@ function CornerstoneImageScrollbar({
       });
     };
 
-    element.addEventListener(Enums.Events.STACK_VIEWPORT_SCROLL, updateStackIndex);
+    element.addEventListener(eventId, updateIndex);
 
     return () => {
-      element.removeEventListener(Enums.Events.STACK_VIEWPORT_SCROLL, updateStackIndex);
-    };
-  }, [viewportData, element]);
-
-  useEffect(() => {
-    if (viewportData?.viewportType !== Enums.ViewportType.ORTHOGRAPHIC) {
-      return;
-    }
-
-    const updateVolumeIndex = event => {
-      const { imageIndex, numberOfSlices } = event.detail;
-      // find the index of imageId in the imageIds
-      setImageSliceData({ imageIndex, numberOfSlices });
-    };
-
-    element.addEventListener(Enums.Events.VOLUME_NEW_IMAGE, updateVolumeIndex);
-
-    return () => {
-      element.removeEventListener(Enums.Events.VOLUME_NEW_IMAGE, updateVolumeIndex);
+      element.removeEventListener(eventId, updateIndex);
     };
   }, [viewportData, element]);
 
