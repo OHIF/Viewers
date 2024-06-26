@@ -65,6 +65,21 @@ const screenShotPaths = {
   reset: {
     resetDisplayedCorrectly: 'resetDisplayedCorrectly.png',
   },
+  srHydration: {
+    srPostHydration: 'srPostHydration.png',
+    srPreHydration: 'srPreHydration.png',
+    srJumpToMeasurement: 'srJumpToMeasurement.png',
+  },
+  segHydration: {
+    segPostHydration: 'segPostHydration.png',
+    segPreHydration: 'segPreHydration.png',
+    segJumpToSegment: 'segJumpToSegment.png',
+  },
+  rtHydration: {
+    rtPostHydration: 'rtPostHydration.png',
+    rtPreHydration: 'rtPreHydration.png',
+    rtJumpToStructure: 'rtJumpToStructure.png',
+  }
 };
 
 export { screenShotPaths };

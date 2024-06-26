@@ -120,6 +120,13 @@ declare global {
       dataSources?: any;
       oidc?: any;
     }
+
+    export interface Test {
+      services?: Services;
+      commandsManager?: CommandsManager;
+      extensionManager?: ExtensionManager;
+      config?: Config;
+    }
   }
 
   export type withAppTypes<T = object> = T &
