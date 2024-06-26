@@ -7,6 +7,7 @@ const frameView: Types.HangingProtocol.Protocol = {
   icon: 'tool-stack-scroll',
   isPreset: true,
   toolGroupIds: ['default'],
+  protocolMatchingRules: [],
   displaySetSelectors: {
     defaultDisplaySetId: {
       seriesMatchingRules: [

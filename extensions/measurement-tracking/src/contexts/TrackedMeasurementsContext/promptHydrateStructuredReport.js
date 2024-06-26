@@ -50,11 +50,13 @@ function _askTrackMeasurements(uiViewportDialogService, viewportId) {
     const message = 'Do you want to continue tracking measurements for this study?';
     const actions = [
       {
+        id: 'no-hydrate',
         type: ButtonEnums.type.secondary,
         text: 'No',
         value: RESPONSE.CANCEL,
       },
       {
+        id: 'yes-hydrate',
         type: ButtonEnums.type.primary,
         text: 'Yes',
         value: RESPONSE.HYDRATE_REPORT,
