@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { LoadingIndicatorProgress } from '@ohif/ui';
-import { WSIViewport } from '@cornerstonejs/core';
 
 import './DicomMicroscopyViewport.css';
 import ViewportOverlay from './components/ViewportOverlay';
@@ -88,7 +87,7 @@ class DicomMicroscopyViewport extends Component {
   // you should only do this once.
   async installOpenLayersRenderer(container, displaySet) {
     const loadViewer = async metadata => {
-      const dicomMicroscopyModule = await WSIViewport.getDicomMicroscopyViewer();
+      const dicomMicroscopyModule = await this.microscopyService.importDicomMicroscopyViewer();
       const { viewer: DicomMicroscopyViewer, metadata: metadataUtils } = dicomMicroscopyModule;
 
       const microscopyViewer = DicomMicroscopyViewer.VolumeImageViewer;

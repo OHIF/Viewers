@@ -602,6 +602,10 @@ export default class ExtensionManager extends PubSubService {
       );
     });
   };
+
+  public get appConfig() {
+    return this._appConfig;
+  }
 }
 
 /**

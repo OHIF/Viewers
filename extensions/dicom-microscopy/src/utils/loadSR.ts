@@ -1,5 +1,4 @@
 import dcmjs from 'dcmjs';
-import { WSIViewport } from '@cornerstonejs/core';
 
 import DCM_CODE_VALUES from './dcmCodeValues';
 import toArray from './toArray';
@@ -24,7 +23,7 @@ export default async function loadSR(
 
   microscopySRDisplaySet.isLoaded = true;
 
-  const { rois, labels } = await _getROIsFromToolState(naturalizedDataset, FrameOfReferenceUID);
+  const { rois, labels } = await _getROIsFromToolState(microscopyService, naturalizedDataset, FrameOfReferenceUID);
 
   const managedViewer = managedViewers[0];
 
@@ -45,11 +44,11 @@ export default async function loadSR(
   }
 }
 
-async function _getROIsFromToolState(naturalizedDataset, FrameOfReferenceUID) {
+async function _getROIsFromToolState(microscopyService, naturalizedDataset, FrameOfReferenceUID) {
   const toolState = MeasurementReport.generateToolState(naturalizedDataset);
   const tools = Object.getOwnPropertyNames(toolState);
   // Does a dynamic import to prevent webpack from rebuilding the library
-  const DICOMMicroscopyViewer = await WSIViewport.getDicomMicroscopyViewer();
+  const DICOMMicroscopyViewer = await microscopyService.importDicomMicroscopyViewer();
 
   const measurementGroupContentItems = _getMeasurementGroups(naturalizedDataset);
 
