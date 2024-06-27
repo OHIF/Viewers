@@ -86,7 +86,7 @@ const OHIF = {
   PanelService,
   useToolbar,
   WorkflowStepsService,
-  StudyPrefetchService: StudyPrefetcherService,
+  StudyPrefetcherService,
 };
 
 export {
@@ -132,7 +132,7 @@ export {
   Types,
   PanelService,
   WorkflowStepsService,
-  StudyPrefetcherService as StudyPrefetchService,
+  StudyPrefetcherService,
   useToolbar,
 };
 
