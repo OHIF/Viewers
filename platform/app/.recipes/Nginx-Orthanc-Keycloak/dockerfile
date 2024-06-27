@@ -27,4 +27,5 @@ COPY ./platform/app/.recipes/Nginx-Orthanc-Keycloak/config/oauth2-proxy.cfg /etc
 COPY ./platform/app/.recipes/Nginx-Orthanc-Keycloak/config/entrypoint.sh /entrypoint.sh
 
 # Set the entrypoint script as the entrypoint
+RUN chmod +x entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh"]
