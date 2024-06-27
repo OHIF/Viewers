@@ -8,7 +8,6 @@ services:
     ports:
       - '443:443' # SSL
       - '80:80' # Web
-      - '4180:4180' # oauth2-proxy
     depends_on:
       keycloak:
         condition: service_healthy
