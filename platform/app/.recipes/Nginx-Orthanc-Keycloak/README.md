@@ -1,27 +1,28 @@
 
 
-## Build
-
-
-
-
-
-### Host name mapping
-
-For this setup to work as expected, please add the following entries to your `/etc/hosts` file:
-
-```
-127.0.0.1 keycloak
-```
-
-### Steps that need to be done before running the compose
+## Steps before building the compose
 
 rename docker_nginx-orthanc-keycloak.js to default.js then do yarn build
 
-### Steps after the compose is built
+### Build the compose
 
-Visit keycloak dashboard: http://keycloak:8080/
-Go to OHIF realm, then OHIF client, then regenerate the client secret and copy it.
-Add the client secret to oauth2-proxy.cfg to replace the existing one.
+```bash
+docker-compose build
+```
 
-If you need users to test this out, please create users in the realm accordingly.
+### Start the compose
+
+```bash
+docker-compose up
+```
+
+OHIF viewer is available at the root path: http://127.0.0.1 or http://127.0.0.1/ohif-viewer
+
+Predefined users:
+
+- Viewer: `viewer / viewer`
+- Pacs Admin: `pacsadmin / pacsadmin`
+
+If you need to add additional users, visit the keycloak dashboard at http://127.0.0.1/keycloak and login with:
+
+- Admin: `admin / admin`

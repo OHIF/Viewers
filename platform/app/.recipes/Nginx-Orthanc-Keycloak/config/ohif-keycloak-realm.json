@@ -686,7 +686,7 @@
       "enabled": true,
       "alwaysDisplayInConsole": false,
       "clientAuthenticatorType": "client-secret",
-      "secret": "**********",
+      "secret": "2Xtlde7aozdkzzYHdIxQNfPDr0wNPTgg",
       "redirectUris": [
         "http://127.0.0.1/oauth2/callback"
       ],
@@ -2280,5 +2280,36 @@
   },
   "clientPolicies": {
     "policies": []
-  }
+  },
+  "users": [
+    {
+      "username": "viewer",
+      "enabled": true,
+      "emailVerified": true,
+      "firstName": "viewer",
+      "lastName": "viewer",
+      "email": "viewer@mail.com",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "viewer"
+        }
+      ]
+    },
+    {
+      "username": "pacsadmin",
+      "enabled": true,
+      "emailVerified": true,
+      "firstName": "pacsadmin",
+      "lastName": "pacsadmin",
+      "email": "pacsadmin@mail.com",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "pacsadmin"
+        }
+      ],
+      "groups": ["pacsadmin"]
+    }
+  ]
 }

@@ -1,44 +1,30 @@
-# Stage 1: Build the application
-FROM node:18.16.1-slim as builder
-
-# Setup the working directory
-RUN mkdir /usr/src/app
-WORKDIR /usr/src/app
-
-# Install dependencies
-# apt-get update is combined with apt-get install to avoid using outdated packages
-RUN apt-get update && apt-get install -y build-essential python3
-
-# Copy package.json and other dependency-related files first
-# Assuming your package.json and yarn.lock or similar are located in the project root
-
-# COPY . .
-
-# Install node dependencies
-# RUN yarn config set workspaces-experimental true
-# RUN yarn install
-
-# Copy the rest of the application code
-
-# set QUICK_BUILD to true to make the build faster for dev
-
-# ENV APP_CONFIG=config/docker_nginx-orthanc.js
-
-# Build the application
-# RUN yarn run build
-
-# # Stage 2: Bundle the built application into a Docker container which runs NGINX using Alpine Linux
+# Use nginx as the base image
 FROM nginx:alpine
 
-# # Create directories for logs and html content if they don't already exist
-RUN mkdir -p /var/log/nginx /var/www/html
+# Install dependencies for oauth2-proxy
+RUN apk add --no-cache curl
 
+# Download and install oauth2-proxy
+RUN curl -L https://github.com/oauth2-proxy/oauth2-proxy/releases/download/v7.4.0/oauth2-proxy-v7.4.0.linux-amd64.tar.gz -o oauth2-proxy.tar.gz && \
+  tar -xvzf oauth2-proxy.tar.gz && \
+  mv oauth2-proxy-v7.4.0.linux-amd64/oauth2-proxy /usr/local/bin/ && \
+  rm -rf oauth2-proxy-v7.4.0.linux-amd64 oauth2-proxy.tar.gz
 
-# # Copy build output to serve static files
-# COPY --from=builder /usr/src/app/platform/app/dist /var/www/html
+# Create necessary directories
+RUN mkdir -p /var/logs/nginx /var/www/html /etc/oauth2-proxy
 
-# # Expose HTTP and HTTPS ports
-EXPOSE 80 443
+# Expose necessary ports
+EXPOSE 80 443 4180
 
-# # Start NGINX
-CMD ["nginx", "-g", "daemon off;"]
+# Copy OHIF build to the nginx directory
+COPY ./platform/app/dist /var/www/html
+
+# Copy the configuration files
+COPY ./platform/app/.recipes/Nginx-Orthanc-Keycloak/config/nginx.conf /etc/nginx/nginx.conf
+COPY ./platform/app/.recipes/Nginx-Orthanc-Keycloak/config/oauth2-proxy.cfg /etc/oauth2-proxy/oauth2-proxy.cfg
+
+# Copy the entrypoint script
+COPY ./platform/app/.recipes/Nginx-Orthanc-Keycloak/config/entrypoint.sh /entrypoint.sh
+
+# Set the entrypoint script as the entrypoint
+ENTRYPOINT ["/entrypoint.sh"]
