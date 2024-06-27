@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.9.0-beta.51](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.50...v3.9.0-beta.51) (2024-06-27)
+
+
+### Bug Fixes
+
+* **cli:** Fix the cli utilities which require full paths ([d09f8b5](https://github.com/OHIF/Viewers/commit/d09f8b5ba2dcc0c02beb405b8cfa79fbae5bdde8)), closes [#4267](https://github.com/OHIF/Viewers/issues/4267)
+
+
+
+
+
+# [3.9.0-beta.50](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.49...v3.9.0-beta.50) (2024-06-26)
+
+**Note:** Version bump only for package ohif-docs
+
+
+
+
+
 # [3.9.0-beta.49](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.48...v3.9.0-beta.49) (2024-06-26)
 
 **Note:** Version bump only for package ohif-docs
