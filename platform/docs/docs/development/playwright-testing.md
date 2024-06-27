@@ -15,7 +15,7 @@ If you would like to use a specific study, you can use the `studyInstanceUID` pr
 
 ```ts
 import { test } from '@playwright/test';
-import { visitStudy, checkForScreenshot, screenShotPaths } from './utils/index';
+import { visitStudy, checkForScreenshot, screenShotPaths } from './utils/index.js';
 
 test.beforeEach(async ({ page }) => {
   const studyInstanceUID = '2.16.840.1.114362.1.11972228.22789312658.616067305.306.2';
@@ -52,7 +52,7 @@ import {
   visitStudy,
   checkForScreenshot,
   screenshotPath,
-} from './utils/index';
+} from './utils/index.js';
 
 test.beforeEach(async ({ page }) => {
   const studyInstanceUID = '2.16.840.1.114362.1.11972228.22789312658.616067305.306.2';
@@ -84,7 +84,7 @@ import {
   checkForScreenshot,
   screenShotPaths,
   simulateDrag,
-} from './utils/index';
+} from './utils/index.js';
 
 test.beforeEach(async ({ page }) => {
   const studyInstanceUID = '2.16.840.1.114362.1.11972228.22789312658.616067305.306.2';
