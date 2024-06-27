@@ -8,9 +8,6 @@ services:
     ports:
       - '443:443' # SSL
       - '80:80' # Web
-    depends_on:
-      keycloak:
-        condition: service_healthy
     restart: on-failure
     networks:
       - default
