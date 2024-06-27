@@ -8,6 +8,7 @@ services:
     ports:
       - '443:443' # SSL
       - '80:80' # Web
+
     restart: on-failure
     networks:
       - default
