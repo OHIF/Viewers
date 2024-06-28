@@ -3,7 +3,8 @@ import { useEffect } from 'react';
 import { Route, Routes, useLocation, useNavigate } from 'react-router';
 import CallbackPage from '../routes/CallbackPage';
 import SignoutCallbackComponent from '../routes/SignoutCallbackComponent';
-import getUserManagerForOpenIdConnectClient from './getUserManagerForOpenIdConnectClient.js';
+import LegacyClient from './legacyOIDCClient';
+import NextClient from './nextOIDCClient';
 
 function _isAbsoluteUrl(url) {
   return url.includes('http://') || url.includes('https://');
@@ -43,7 +44,9 @@ const initUserManager = (oidc, routerBasename) => {
     post_logout_redirect_uri: _makeAbsoluteIfNecessary(post_logout_redirect_uri, baseUri),
   });
 
-  return getUserManagerForOpenIdConnectClient(openIdConnectConfiguration);
+  const client = firstOpenIdClient.useAuthorizationCodeFlow ? NextClient: LegacyClient
+
+  return client(openIdConnectConfiguration);
 };
 
 function LogoutComponent(props) {
@@ -147,12 +150,18 @@ function OpenIdConnectRoutes({ oidc, routerBasename, userAuthenticationService }
   const location = useLocation();
   const { pathname, search } = location;
 
-  const redirect_uri = new URL(userManager.settings._redirect_uri).pathname.replace(
+  const redirectURI = userManager.settings._redirect_uri ?? userManager.settings.redirect_uri;
+  const silentRedirectURI =
+    userManager.settings._silent_redirect_uri ?? userManager.settings.silent_redirect_uri;
+  const postLogoutRedirectURI =
+    userManager.settings._post_logout_redirect_uri ?? userManager.settings.post_logout_redirect_uri;
+
+  const redirect_uri = new URL(redirectURI).pathname.replace(
     routerBasename !== '/' ? routerBasename : '',
     ''
   );
-  const silent_refresh_uri = new URL(userManager.settings._silent_redirect_uri).pathname; //.replace(routerBasename,'')
-  const post_logout_redirect_uri = new URL(userManager.settings._post_logout_redirect_uri).pathname; //.replace(routerBasename,'');
+  const silent_refresh_uri = new URL(silentRedirectURI).pathname; //.replace(routerBasename,'')
+  const post_logout_redirect_uri = new URL(postLogoutRedirectURI).pathname; //.replace(routerBasename,'');
 
   // const pathnameRelative = pathname.replace(routerBasename,'');
 

@@ -138,18 +138,20 @@ const createRoutes = ({
 
   const { userAuthenticationService } = servicesManager.services;
 
-  // Note: PrivateRoutes in react-router-dom 6.x should be defined within
-  // a Route element
+  // All routes are private by default and then we let the user auth service
+  // to check if it is enabled or not
+  // Todo: I think we can remove the second public return below
   return (
     <Routes>
       {allRoutes.map((route, i) => {
         return route.private === true ? (
           <Route
             key={i}
-            exact
             path={route.path}
             element={
-              <PrivateRoute handleUnauthenticated={() => userAuthenticationService.handleUnauthenticated()}>
+              <PrivateRoute
+                handleUnauthenticated={() => userAuthenticationService.handleUnauthenticated()}
+              >
                 <RouteWithErrorBoundary route={route} />
               </PrivateRoute>
             }
