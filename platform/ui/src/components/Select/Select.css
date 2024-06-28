@@ -6,6 +6,21 @@
   @apply border-gray-500;
 }
 
+.customSelect__control {
+  height: 32px;
+}
+
+.customSelect__value-container {
+  padding-top: 0px !important;
+  padding-bottom: 0px !important;
+}
+
+.customSelect__input {
+  @apply text-white !important;
+  font-size: 0.75rem !important;
+  line-height: 1.25 !important;
+}
+
 .customSelect__wrapper .customSelect__control:focus,
 .customSelect__wrapper .customSelect__control--menu-is-open {
   @apply border-gray-500 outline-none;

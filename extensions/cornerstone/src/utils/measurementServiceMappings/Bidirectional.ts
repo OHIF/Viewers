@@ -31,8 +31,8 @@ const Bidirectional = {
 
     const { SOPInstanceUID, SeriesInstanceUID, StudyInstanceUID } = getSOPInstanceAttributes(
       referencedImageId,
-      cornerstoneViewportService,
-      viewportId
+      displaySetService,
+      annotation
     );
 
     let displaySet;
@@ -43,7 +43,7 @@ const Bidirectional = {
         SeriesInstanceUID
       );
     } else {
-      displaySet = displaySetService.getDisplaySetsForSeries(SeriesInstanceUID);
+      displaySet = displaySetService.getDisplaySetsForSeries(SeriesInstanceUID)[0];
     }
 
     const { points, textBox } = data.handles;
@@ -63,6 +63,7 @@ const Bidirectional = {
       metadata,
       referenceSeriesUID: SeriesInstanceUID,
       referenceStudyUID: StudyInstanceUID,
+      referencedImageId,
       frameNumber: mappedAnnotations[0]?.frameNumber || 1,
       toolName: metadata.toolName,
       displaySetInstanceUID: displaySet.displaySetInstanceUID,
@@ -89,18 +90,13 @@ function getMappedAnnotations(annotation, displaySetService) {
   Object.keys(cachedStats).forEach(targetId => {
     const targetStats = cachedStats[targetId];
 
-    if (!referencedImageId) {
-      throw new Error('Non-acquisition plane measurement mapping not supported');
-    }
-
-    const { SOPInstanceUID, SeriesInstanceUID, frameNumber } =
-      getSOPInstanceAttributes(referencedImageId);
-
-    const displaySet = displaySetService.getDisplaySetForSOPInstanceUID(
-      SOPInstanceUID,
-      SeriesInstanceUID,
-      frameNumber
+    const { SOPInstanceUID, SeriesInstanceUID, frameNumber } = getSOPInstanceAttributes(
+      referencedImageId,
+      displaySetService,
+      annotation
     );
+
+    const displaySet = displaySetService.getDisplaySetsForSeries(SeriesInstanceUID)[0];
 
     const { SeriesNumber } = displaySet;
     const { length, width, unit } = targetStats;

@@ -160,6 +160,14 @@ export function ViewportGridProvider({ children, service }) {
 
           const previousViewport = viewports.get(viewportId);
 
+          // remove options that were meant for one time usage
+          if (previousViewport?.viewportOptions?.initialImageOptions) {
+            const { useOnce } = previousViewport.viewportOptions.initialImageOptions;
+            if (useOnce) {
+              previousViewport.viewportOptions.initialImageOptions = null;
+            }
+          }
+
           // Use the newly provide viewportOptions and display set options
           // when provided, and otherwise fall back to the previous ones.
           // That allows for easy updates of just the display set.

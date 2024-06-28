@@ -62,6 +62,12 @@ export function formatPN(name) {
   if (!name) {
     return '';
   }
+  if (typeof name === 'object') {
+    name = name.Alphabetic;
+    if (!name) {
+      return '';
+    }
+  }
 
   const cleaned = name
     .split('^')

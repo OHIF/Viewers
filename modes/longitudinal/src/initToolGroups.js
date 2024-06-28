@@ -87,6 +87,7 @@ function initDefaultToolGroup(
       { toolName: toolNames.PlanarFreehandROI },
       { toolName: toolNames.SplineROI },
       { toolName: toolNames.LivewireContour },
+      { toolName: toolNames.WindowLevelRegion },
     ],
     enabled: [{ toolName: toolNames.ImageOverlayViewer }, { toolName: toolNames.ReferenceLines }],
     disabled: [
@@ -153,6 +154,7 @@ function initSRToolGroup(extensionManager, toolGroupService) {
       { toolName: SRToolNames.SRCircleROI },
       { toolName: SRToolNames.SRPlanarFreehandROI },
       { toolName: SRToolNames.SRRectangleROI },
+      { toolName: toolNames.WindowLevelRegion },
       {
         toolName: SRToolNames.SRPlanarFreehandContourSegmentation,
         configuration: {
@@ -236,6 +238,7 @@ function initMPRToolGroup(extensionManager, toolGroupService, commandsManager, m
       { toolName: toolNames.CobbAngle },
       { toolName: toolNames.PlanarFreehandROI },
       { toolName: toolNames.SegmentationDisplay },
+      { toolName: toolNames.WindowLevelRegion },
       {
         toolName: toolNames.PlanarFreehandContourSegmentation,
         configuration: {

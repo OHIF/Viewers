@@ -1,5 +1,5 @@
 import { PubSubService } from '@ohif/core';
-import * as OhifTypes from '@ohif/core/types';
+import { Types as OhifTypes } from '@ohif/core';
 import {
   RenderingEngine,
   StackViewport,
@@ -557,9 +557,14 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
   ): Promise<void> {
     const displaySetOptions = viewportInfo.getDisplaySetOptions();
 
-    const { imageIds, initialImageIndex, displaySetInstanceUID } = viewportData.data;
+    const displaySetInstanceUIDs = viewportData.data.map(data => data.displaySetInstanceUID);
 
-    this.viewportsDisplaySets.set(viewport.id, [displaySetInstanceUID]);
+    // based on the cache service construct always the first one is the non-overlay
+    // and the rest are overlays
+
+    this.viewportsDisplaySets.set(viewport.id, [...displaySetInstanceUIDs]);
+
+    const { initialImageIndex, imageIds } = viewportData.data[0];
 
     let initialImageIndexToUse =
       presentations?.positionPresentation?.initialImageIndex ?? initialImageIndex;
@@ -567,6 +572,8 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     if (initialImageIndexToUse === undefined || initialImageIndexToUse === null) {
       initialImageIndexToUse = this._getInitialImageIndexForViewport(viewportInfo, imageIds) || 0;
     }
+
+    const { rotation, flipHorizontal, displayArea } = viewportInfo.getViewportOptions();
 
     const properties = { ...presentations.lutPresentation?.properties };
     if (!presentations.lutPresentation?.properties) {
@@ -588,9 +595,20 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
       }
     }
 
+    this._handleOverlays(viewport);
+
     return viewport.setStack(imageIds, initialImageIndexToUse).then(() => {
       viewport.setProperties({ ...properties });
       this.setPresentations(viewport.id, presentations);
+      if (displayArea) {
+        viewport.setDisplayArea(displayArea);
+      }
+      if (rotation) {
+        viewport.setProperties({ rotation });
+      }
+      if (flipHorizontal) {
+        viewport.setCamera({ flipHorizontal: true });
+      }
     });
   }
 
@@ -599,11 +617,9 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     imageIds?: string[]
   ): number {
     const initialImageOptions = viewportInfo.getInitialImageOptions();
-
     if (!initialImageOptions) {
       return;
     }
-
     const { index, preset } = initialImageOptions;
     const viewportType = viewportInfo.getViewportType();
 
@@ -772,24 +788,7 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
 
     this.setPresentations(viewport.id, presentations);
 
-    // load any secondary displaySets
-    const displaySetInstanceUIDs = this.viewportsDisplaySets.get(viewport.id);
-
-    // can be SEG or RTSTRUCT for now
-    const overlayDisplaySet = displaySetInstanceUIDs
-      .map(displaySetService.getDisplaySetByUID)
-      .find(displaySet => displaySet?.isOverlayDisplaySet);
-
-    if (overlayDisplaySet) {
-      this.addOverlayRepresentationForDisplaySet(overlayDisplaySet, viewport);
-    } else {
-      // If the displaySet is not a SEG displaySet we assume it is a primary displaySet
-      // and we can look into hydrated segmentations to check if any of them are
-      // associated with the primary displaySet
-
-      // get segmentations only returns the hydrated segmentations
-      this._addSegmentationRepresentationToToolGroupIfNecessary(displaySetInstanceUIDs, viewport);
-    }
+    this._handleOverlays(viewport);
 
     const toolGroup = toolGroupService.getToolGroupForViewport(viewport.id);
     csToolsUtils.segmentation.triggerSegmentationRender(toolGroup.id);
@@ -807,6 +806,28 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     this._broadcastEvent(this.EVENTS.VIEWPORT_VOLUMES_CHANGED, {
       viewportInfo,
     });
+  }
+
+  private _handleOverlays(viewport: Types.IStackViewport | Types.IVolumeViewport) {
+    const { displaySetService } = this.servicesManager.services;
+
+    // load any secondary displaySets
+    const displaySetInstanceUIDs = this.viewportsDisplaySets.get(viewport.id);
+
+    // can be SEG or RTSTRUCT for now
+    const overlayDisplaySet = displaySetInstanceUIDs
+      .map(displaySetService.getDisplaySetByUID)
+      .find(displaySet => displaySet?.isOverlayDisplaySet);
+    if (overlayDisplaySet) {
+      this.addOverlayRepresentationForDisplaySet(overlayDisplaySet, viewport);
+    } else {
+      // If the displaySet is not a SEG displaySet we assume it is a primary displaySet
+      // and we can look into hydrated segmentations to check if any of them are
+      // associated with the primary displaySet
+
+      // get segmentations only returns the hydrated segmentations
+      this._addSegmentationRepresentationToToolGroupIfNecessary(displaySetInstanceUIDs, viewport);
+    }
   }
 
   private _addSegmentationRepresentationToToolGroupIfNecessary(

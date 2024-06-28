@@ -25,6 +25,7 @@ const ThumbnailList = ({
           dragData,
           seriesNumber,
           numInstances,
+          loadingProgress,
           modality,
           componentType,
           seriesDate,
@@ -66,6 +67,7 @@ const ThumbnailList = ({
                   description={description}
                   seriesNumber={seriesNumber}
                   numInstances={numInstances}
+                  loadingProgress={loadingProgress}
                   countIcon={countIcon}
                   imageSrc={imageSrc}
                   imageAltText={imageAltText}

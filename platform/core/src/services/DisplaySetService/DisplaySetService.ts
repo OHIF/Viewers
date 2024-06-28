@@ -424,4 +424,24 @@ export default class DisplaySetService extends PubSubService {
 
     return result;
   }
+
+  /**
+   *
+   * @param sortFn function to sort the display sets
+   * @param direction direction to sort the display sets
+   * @returns void
+   */
+  public sortDisplaySets(
+    sortFn: (a: DisplaySet, b: DisplaySet) => number,
+    direction: string,
+    suppressEvent = false
+  ): void {
+    this.activeDisplaySets.sort(sortFn);
+    if (direction === 'descending') {
+      this.activeDisplaySets.reverse();
+    }
+    if (!suppressEvent) {
+      this._broadcastEvent(EVENTS.DISPLAY_SETS_CHANGED, this.activeDisplaySets);
+    }
+  }
 }

@@ -2,13 +2,24 @@
 window.config = {
   routerBasename: '/',
   showStudyList: true,
+  customizationService: {
+    dicomUploadComponent:
+      '@ohif/extension-cornerstone.customizationModule.cornerstoneDicomUploadComponent',
+  },
   extensions: [],
   modes: [],
   // below flag is for performance reasons, but it might not work for all servers
   showWarningMessageForCrossOrigin: true,
   showCPUFallbackMessage: true,
   showLoadingIndicator: true,
+  experimentalStudyBrowserSort: false,
   strictZSpacingForVolumeViewport: true,
+  studyPrefetcher: {
+    enabled: true,
+    displaySetsCount: 2,
+    maxNumPrefetchRequests: 10,
+    order: 'closest',
+  },
   defaultDataSourceName: 'dicomweb',
   dataSources: [
     {
@@ -23,6 +34,7 @@ window.config = {
         qidoSupportsIncludeField: false,
         imageRendering: 'wadors',
         thumbnailRendering: 'wadors',
+        dicomUploadEnabled: true,
         omitQuotationForMultipartRequest: true,
       },
     },
@@ -42,4 +54,7 @@ window.config = {
       },
     },
   ],
+  httpErrorHandler: error => {
+    console.warn(`HTTP Error Handler (status: ${error.status})`, error);
+  },
 };

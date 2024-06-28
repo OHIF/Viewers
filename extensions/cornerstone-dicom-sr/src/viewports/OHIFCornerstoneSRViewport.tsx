@@ -284,10 +284,16 @@ function OHIFCornerstoneSRViewport(props: withAppTypes) {
    * the element changes
    */
   useEffect(() => {
+    const updateSR = async () => {
+    if (!srDisplaySet.isLoaded) {
+      await srDisplaySet.load();
+    }
     if (!element || !srDisplaySet.isLoaded) {
       return;
     }
     setTrackingIdentifiers(measurementSelected);
+    }
+    updateSR();
   }, [measurementSelected, element, setTrackingIdentifiers, srDisplaySet]);
 
   /**

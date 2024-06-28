@@ -3,6 +3,338 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.9.0-beta.53](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.52...v3.9.0-beta.53) (2024-06-28)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.9.0-beta.52](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.51...v3.9.0-beta.52) (2024-06-27)
+
+
+### Bug Fixes
+
+* **cli:** missing js ([#4268](https://github.com/OHIF/Viewers/issues/4268)) ([f660f8e](https://github.com/OHIF/Viewers/commit/f660f8e970c0226b34a9de10e2c57429dcce6763))
+
+
+
+
+
+# [3.9.0-beta.51](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.50...v3.9.0-beta.51) (2024-06-27)
+
+
+### Bug Fixes
+
+* **cli:** Fix the cli utilities which require full paths ([d09f8b5](https://github.com/OHIF/Viewers/commit/d09f8b5ba2dcc0c02beb405b8cfa79fbae5bdde8)), closes [#4267](https://github.com/OHIF/Viewers/issues/4267)
+
+
+
+
+
+# [3.9.0-beta.50](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.49...v3.9.0-beta.50) (2024-06-26)
+
+
+### Bug Fixes
+
+* **orthanc:** Correct bulkdata URL handling and add configuration example PDF ([#4262](https://github.com/OHIF/Viewers/issues/4262)) ([fdf883a](https://github.com/OHIF/Viewers/commit/fdf883ada880c0979acba8fdff9b542dc05b7706))
+
+
+
+
+
+# [3.9.0-beta.49](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.48...v3.9.0-beta.49) (2024-06-26)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.9.0-beta.48](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.47...v3.9.0-beta.48) (2024-06-25)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.9.0-beta.47](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.46...v3.9.0-beta.47) (2024-06-21)
+
+
+### Bug Fixes
+
+* Allow the mode setup/creation to be async, and provide a few more values to extension/app config/mode setup. ([#4016](https://github.com/OHIF/Viewers/issues/4016)) ([88575c6](https://github.com/OHIF/Viewers/commit/88575c6c09fd778a31b2f91524163ce65d1639dd))
+* **code:** remove console log ([#4248](https://github.com/OHIF/Viewers/issues/4248)) ([f3bbfff](https://github.com/OHIF/Viewers/commit/f3bbfff09b66ee020daf503656a2b58e763634a3))
+* **CustomViewportOverlay:** pass accurate data to Custom Viewport Functions ([#4224](https://github.com/OHIF/Viewers/issues/4224)) ([aef00e9](https://github.com/OHIF/Viewers/commit/aef00e91d63e9bc2de289cc6f35975e36547fb20))
+* **studybrowser:** Differentiate recent and all in study panel based on a provided time period ([#4242](https://github.com/OHIF/Viewers/issues/4242)) ([6f93449](https://github.com/OHIF/Viewers/commit/6f9344914951c204feaff48aaeb43cd7d727623d))
+
+
+### Features
+
+* customization service append and customize functionality should run once ([#4238](https://github.com/OHIF/Viewers/issues/4238)) ([e462fd3](https://github.com/OHIF/Viewers/commit/e462fd31f7944acfee34f08cfbc28cfd9de16169))
+* **HP:** Frame View HP ([#4235](https://github.com/OHIF/Viewers/issues/4235)) ([d5d8214](https://github.com/OHIF/Viewers/commit/d5d821464acb0f89fc9b189bd245a06c209d77b4))
+* **sort:** custom series sort in study panel ([#4214](https://github.com/OHIF/Viewers/issues/4214)) ([a433d40](https://github.com/OHIF/Viewers/commit/a433d406e2cac13f644203996c682260b54e8865))
+
+
+
+
+
+# [3.9.0-beta.46](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.45...v3.9.0-beta.46) (2024-06-18)
+
+
+### Bug Fixes
+
+* Use correct external URL for rendered responses with relative URI ([#4236](https://github.com/OHIF/Viewers/issues/4236)) ([d8f6991](https://github.com/OHIF/Viewers/commit/d8f6991dbe72465080cfc5de39c7ea225702f2e0))
+
+
+
+
+
+# [3.9.0-beta.45](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.44...v3.9.0-beta.45) (2024-06-18)
+
+
+### Bug Fixes
+
+* Re-enable hpScale module ([#4237](https://github.com/OHIF/Viewers/issues/4237)) ([2eab049](https://github.com/OHIF/Viewers/commit/2eab049d7993bb834f7736093941c175f16d61fc))
+
+
+
+
+
+# [3.9.0-beta.44](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.43...v3.9.0-beta.44) (2024-06-17)
+
+
+### Bug Fixes
+
+* **cli:** version txt had a new line which it should not ([#4233](https://github.com/OHIF/Viewers/issues/4233)) ([097ef76](https://github.com/OHIF/Viewers/commit/097ef7665559a672d73e1babfc42afccc3cdd41d))
+* **pdf-viewport:** Allow Drag and Drop on PDF Viewport ([#4225](https://github.com/OHIF/Viewers/issues/4225)) ([729efb6](https://github.com/OHIF/Viewers/commit/729efb6d766e0f72f1fd8adefbca6fb46b355b2b))
+
+
+
+
+
+# [3.9.0-beta.43](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.42...v3.9.0-beta.43) (2024-06-12)
+
+
+### Bug Fixes
+
+* **sr:** rendering issue by running loadSR before updateSR ([#4226](https://github.com/OHIF/Viewers/issues/4226)) ([6971287](https://github.com/OHIF/Viewers/commit/69712874603109aa4f655d47daf15d72167a49ff))
+
+
+
+
+
+# [3.9.0-beta.42](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.41...v3.9.0-beta.42) (2024-06-12)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.9.0-beta.41](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.40...v3.9.0-beta.41) (2024-06-12)
+
+
+### Features
+
+* Add customization merge, append or replace functionality ([#3871](https://github.com/OHIF/Viewers/issues/3871)) ([55dcfa1](https://github.com/OHIF/Viewers/commit/55dcfa1f6994a7036e7e594efb23673382a41915))
+
+
+
+
+
+# [3.9.0-beta.40](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.39...v3.9.0-beta.40) (2024-06-12)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.9.0-beta.39](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.38...v3.9.0-beta.39) (2024-06-08)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.9.0-beta.38](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.37...v3.9.0-beta.38) (2024-06-07)
+
+
+### Bug Fixes
+
+* **window-level:** move window level region to more tools menu ([#4215](https://github.com/OHIF/Viewers/issues/4215)) ([33f4c18](https://github.com/OHIF/Viewers/commit/33f4c18f2687d30a250fe7183df3daae8394a984))
+
+
+
+
+
+# [3.9.0-beta.37](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.36...v3.9.0-beta.37) (2024-06-05)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.9.0-beta.36](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.35...v3.9.0-beta.36) (2024-06-05)
+
+
+### Bug Fixes
+
+* get direct url pixel data should be optional for video ([#4152](https://github.com/OHIF/Viewers/issues/4152)) ([649ffab](https://github.com/OHIF/Viewers/commit/649ffab4d97be875d42e1a3473a4354aac14e87d))
+
+
+
+
+
+# [3.9.0-beta.35](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.34...v3.9.0-beta.35) (2024-06-05)
+
+
+### Bug Fixes
+
+* **seg:** maintain algorithm name and algorithm type when DICOM seg is exported or downloaded ([#4203](https://github.com/OHIF/Viewers/issues/4203)) ([a29e94d](https://github.com/OHIF/Viewers/commit/a29e94de803f79bbb3372d00ad8eb14b4224edc2))
+
+
+
+
+
+# [3.9.0-beta.34](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.33...v3.9.0-beta.34) (2024-06-05)
+
+
+### Bug Fixes
+
+* **hydration:** Maintain the same slice that the user was on pre hydration in post hydration for SR and SEG. ([#4200](https://github.com/OHIF/Viewers/issues/4200)) ([430330f](https://github.com/OHIF/Viewers/commit/430330f7e384d503cb6fc695a7a9642ddfaac313))
+
+
+
+
+
+# [3.9.0-beta.33](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.32...v3.9.0-beta.33) (2024-06-05)
+
+
+### Features
+
+* **window-level-region:** add window level region tool ([#4127](https://github.com/OHIF/Viewers/issues/4127)) ([ab1a18a](https://github.com/OHIF/Viewers/commit/ab1a18af5a5b0f9086c080ed81c8fda9bfaa975b))
+
+
+
+
+
+# [3.9.0-beta.32](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.31...v3.9.0-beta.32) (2024-05-31)
+
+
+### Bug Fixes
+
+* **tmtv:** crosshairs should not have viewport indicators ([#4197](https://github.com/OHIF/Viewers/issues/4197)) ([f85da32](https://github.com/OHIF/Viewers/commit/f85da32f34389ef7cecae03c07e0af26468b52a6))
+
+
+
+
+
+# [3.9.0-beta.31](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.30...v3.9.0-beta.31) (2024-05-30)
+
+
+### Bug Fixes
+
+* **seg:** should be able to navigate outside toolbox and come back later ([#4196](https://github.com/OHIF/Viewers/issues/4196)) ([93e7609](https://github.com/OHIF/Viewers/commit/93e760937f6587ba7481fcf3484ba9004ba49a62))
+
+
+
+
+
+# [3.9.0-beta.30](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.29...v3.9.0-beta.30) (2024-05-30)
+
+
+### Bug Fixes
+
+* **docker:** docker build was broken because of imports ([#4192](https://github.com/OHIF/Viewers/issues/4192)) ([d7aa386](https://github.com/OHIF/Viewers/commit/d7aa386800153e0bb9eea6bbf36c696c57750ad8))
+* segmentation creation and segmentation mode viewport rendering ([#4193](https://github.com/OHIF/Viewers/issues/4193)) ([2174026](https://github.com/OHIF/Viewers/commit/217402678981f74293dff615f6b6812e54216d37))
+
+
+
+
+
+# [3.9.0-beta.29](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.28...v3.9.0-beta.29) (2024-05-30)
+
+
+### Bug Fixes
+
+* **tmtv:** side panel crashing when activeToolOptions is not an array ([#4189](https://github.com/OHIF/Viewers/issues/4189)) ([19b5b1c](https://github.com/OHIF/Viewers/commit/19b5b1c15cb29ddf1cfd9b608815199bc838f8b2))
+
+
+
+
+
+# [3.9.0-beta.28](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.27...v3.9.0-beta.28) (2024-05-30)
+
+
+### Bug Fixes
+
+* **queryparam:** set all query params to lowercase by default ([#4190](https://github.com/OHIF/Viewers/issues/4190)) ([e073d19](https://github.com/OHIF/Viewers/commit/e073d195fdec7f8bdb67e5e3dae522a0fd121ad2))
+
+
+
+
+
+# [3.9.0-beta.27](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.26...v3.9.0-beta.27) (2024-05-29)
+
+
+### Bug Fixes
+
+* **contour:** set renderFill to false for contour ([#4186](https://github.com/OHIF/Viewers/issues/4186)) ([731340d](https://github.com/OHIF/Viewers/commit/731340d70ab23e116dd23e80b880bd8a28526f19))
+
+
+
+
+
+# [3.9.0-beta.26](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.25...v3.9.0-beta.26) (2024-05-29)
+
+
+### Features
+
+* **hp:** Add displayArea option for Hanging protocols and example with Mamo([#3808](https://github.com/OHIF/Viewers/issues/3808)) ([18ac08e](https://github.com/OHIF/Viewers/commit/18ac08ed860d119721c52e4ffc270332259100b6))
+
+
+
+
+
+# [3.9.0-beta.25](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.24...v3.9.0-beta.25) (2024-05-29)
+
+
+### Bug Fixes
+
+* **ultrasound:** Upgrade cornerstone3D version to resolve coloring issues ([#4181](https://github.com/OHIF/Viewers/issues/4181)) ([75a71db](https://github.com/OHIF/Viewers/commit/75a71db7f89840250ad1c2b35df5a35aceb8be7d))
+
+
+
+
+
+# [3.9.0-beta.24](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.23...v3.9.0-beta.24) (2024-05-29)
+
+
+### Features
+
+* **measurements:** show untracked measurements in measurement panel under additional findings ([#4160](https://github.com/OHIF/Viewers/issues/4160)) ([18686c2](https://github.com/OHIF/Viewers/commit/18686c2caf13ede3e881303100bd4cc34b8b135f))
+
+
+
+
+
+# [3.9.0-beta.23](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.22...v3.9.0-beta.23) (2024-05-28)
+
+
+### Bug Fixes
+
+* **rt:** dont convert to volume for RTSTRUCT ([#4157](https://github.com/OHIF/Viewers/issues/4157)) ([7745c09](https://github.com/OHIF/Viewers/commit/7745c092bb3edf0090f32fbbbae2f0776128d5a2))
+
+
+
+
+
 # [3.9.0-beta.22](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.21...v3.9.0-beta.22) (2024-05-27)
 
 
