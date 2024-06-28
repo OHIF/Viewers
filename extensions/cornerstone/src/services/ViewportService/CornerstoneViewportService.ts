@@ -531,25 +531,39 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
    */
   public getViewportIdToJump(
     activeViewportId: string,
-    displaySetInstanceUID: string,
-    cameraProps: unknown
+    metadata
   ): string {
-    const viewportInfo = this.getViewportInfo(activeViewportId);
-
-    if (viewportInfo.getViewportType() === csEnums.ViewportType.VOLUME_3D) {
-      return null;
-    }
-
-    const { referencedImageId } = cameraProps;
-    if (viewportInfo?.contains(displaySetInstanceUID, referencedImageId)) {
+    // First check if the active viewport can just be navigated to show the given item
+    const activeViewport = this.getCornerstoneViewport(activeViewportId);
+    if (activeViewport.isReferenceViewable(metadata, { withNavigation: true })) {
       return activeViewportId;
     }
 
-    return (
-      [...this.viewportsById.values()].find(viewportInfo =>
-        viewportInfo.contains(displaySetInstanceUID, referencedImageId)
-      )?.viewportId ?? null
-    );
+    // Next, see if any viewport could be navigated to show the given item,
+    // without considering orientation changes.
+    for (const id of this.viewportsById.keys()) {
+      const viewport = this.getCornerstoneViewport(id);
+      if (viewport?.isReferenceViewable(metadata, { withNavigation: true })) {
+        return id;
+      }
+    }
+
+    // No viewport is in the right display set/orientation to show this, so see if
+    // the active viewport could change orientations to show this
+    if (activeViewport.isReferenceViewable(metadata, { withNavigation: true, withOrientation: true })) {
+      return activeViewportId;
+    }
+
+    // See if any viewport could show this with an orientation change
+    for (const id of this.viewportsById.keys()) {
+      const viewport = this.getCornerstoneViewport(id);
+      if (viewport?.isReferenceViewable(metadata, { withNavigation: true, withOrientation: true })) {
+        return id;
+      }
+    }
+
+    // No luck, need to update the viewport itself
+    return null;
   }
 
   /**

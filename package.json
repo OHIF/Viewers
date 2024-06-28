@@ -64,7 +64,7 @@
     "link-list": "npm ls --depth=0 --link=true"
   },
   "dependencies": {
-    "execa" :"^8.0.1"
+    "execa": "^8.0.1"
   },
   "optionalDependencies": {
     "@percy/cypress": "^3.1.1",
@@ -99,6 +99,7 @@
     ]
   },
   "resolutions": {
+    "@cornerstonejs/core": "1.80.3",
     "**/@babel/runtime": "^7.20.13",
     "commander": "8.3.0",
     "dcmjs": ">=0.33.0",
