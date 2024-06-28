@@ -1,85 +1,110 @@
+## Temporary SSL using DuckDNS
+
+1. Go to [DuckDNS](https://www.duckdns.org/domains) and create a subdomain, e.g., `hospital.duckdns.org`.
+
+2. Run certbot in the `Nginx-Orthanc-Keycloak` directory. Replace the domain and email placeholders with your actual subdomain and email:
+
+    ```bash
+    docker run -it --rm --name certbot \
+        -v ./config/letsencrypt:/etc/letsencrypt \
+        -v ./config/certbot:/var/www/certbot \
+        -p 80:80 \
+        certbot/certbot certonly \
+        --standalone \
+        --preferred-challenges http \
+        --email your_email@example.com \
+        --agree-tos \
+        --no-eff-email \
+        -d hospital.duckdns.org
+    ```
+
+3. Your certificates are now generated in `/config/letsencrypt` and `/config/certbot`.
+
+## Updating the OHIF config and building the viewer
+
+1. Rename `docker_nginx-orthanc-keycloak.js` to `default.js`.
+
+2. Update the following configuration in `default.js`:
+
+    ```javascript
+    wadoUriRoot: 'https://hospital.duckdns.org/pacs',
+    qidoRoot: 'https://hospital.duckdns.org/pacs',
+    wadoRoot: 'https://hospital.duckdns.org/pacs',
+    ```
+
+3. Run the build command from the root directory:
+
+    ```bash
+    yarn build
+    ```
 
 
-## Updating the OHIF config
+## Update oauth-2proxy config
 
-rename docker_nginx-orthanc-keycloak.js to default.js then change:
+1. Change the `redirect_url` and `oidc_issuer_url` to your domain:
 
-```
-wadoUriRoot: 'http://YOUR_DOMAIN_OR_IP/pacs',
-qidoRoot: 'http://YOUR_DOMAIN_OR_IP/pacs',
-wadoRoot: 'http://YOUR_DOMAIN_OR_IP/pacs',
-```
+    ```ini
+    redirect_url=https://hospital.duckdns.org/oauth2/callback
+    oidc_issuer_url=https://hospital.duckdns.org/keycloak/realms/ohif
+    ```
 
-### Build the compose
+## Update nginx config
 
-```bash
-docker compose build
-```
+1. Replace all `server_name` properties with your domain:
 
+    ```nginx
+    server_name hospital.duckdns.org;
+    ```
 
-### Start the compose
+## Build the Docker Compose
 
-```bash
-docker compose up
-```
+1. Navigate to the `Nginx-Orthanc-Keycloak` directory.
 
-### Disabling HTTPs for Keycloak (not recommended)
+2. Build the Docker Compose:
 
-To disable HTTPs if needed, run the following commands in order on the host machine
+    ```bash
+    docker compose build
+    ```
 
-```
-docker exec -it {keycloak_container} /bin/bash
-```
-```
-cd /opt/keycloak/bin
-```
-```
-./kcadm.sh config credentials --server http://YOUR_DOMAIN_OR_IP/keycloak/ --realm master --user admin
-```
-Enter the admin password when prompted above, then execute the following command to disable SSL
-```
-./kcadm.sh update realms/master -s sslRequired=NONE
-```
+## Start the Docker Compose
 
-### Adjusting the callback URLs to your actual IP/Domain
+1. Start the Docker Compose:
 
-visit the keycloak dashboard at http://YOUR_DOMAIN_OR_IP/keycloak and login with:
+    ```bash
+    docker compose up
+    ```
 
-- Admin: `admin / admin`
+## Adjusting the callback URLs to your actual IP/Domain
 
-From the realms menu, choose OHIF, then clients, then ohif-viewer, update the following fields:
+1. Visit the Keycloak dashboard at `https://hospital.duckdns.org/keycloak` and log in with:
 
-```
-Root URL: http://YOUR_DOMAIN_OR_IP
-Home URL: http://YOUR_DOMAIN_OR_IP
-Valid redirect URIs: http://YOUR_DOMAIN_OR_IP/oauth2/callback
-Web origins: http://YOUR_DOMAIN_OR_IP
-Admin URL: http://YOUR_DOMAIN_OR_IP
-```
+    - Admin: `admin`
+    - Password: `admin`
 
+2. From the realms menu, choose **OHIF**, then **Clients**, then **ohif-viewer**.
 
+3. Update the following fields:
 
-### Visiting the viewer
+    - **Root URL**: `http://hospital.duckdns.org`
+    - **Home URL**: `http://hospital.duckdns.org`
+    - **Valid Redirect URIs**: `http://hospital.duckdns.org/oauth2/callback`
+    - **Web Origins**: `http://hospital.duckdns.org`
+    - **Admin URL**: `http://hospital.duckdns.org`
 
-OHIF viewer is available at the root path: http://YOUR_DOMAIN_OR_IP or http://YOUR_DOMAIN_OR_IP/ohif-viewer
+## Visiting the viewer
 
-Predefined users:
+1. The OHIF viewer is available at: `http://hospital.duckdns.org` or `http://hospital.duckdns.org/ohif-viewer`.
 
-- Viewer: `viewer / viewer`
-- Pacs Admin: `pacsadmin / pacsadmin`
+2. Predefined users:
 
-
-### Temporiary volume rendering without HTTPS
-
-In your chrome browser, enter the following url chrome://flags/#unsafely-treat-insecure-origin-as-secure
-
-Set the value to enabled, and in the text box add:
-
-http://YOUR_DOMAIN_OR_IP
-
-press save and restart the browser.
-
+    - Viewer: `viewer`
+    - Password: `viewer`
+    - PACS Admin: `pacsadmin`
+    - Password: `pacsadmin`
 
 ### Local Domain
 
-If you are running this on your machine for testing purposes, the default domain to replace the values with is 127.0.0.1
+- If running this on your machine for testing purposes, replace all instances of the domain with `127.0.0.1` and use the `http` protocol.
+- Adjust the nginx config accordingly to remove `https`.
+
+---
