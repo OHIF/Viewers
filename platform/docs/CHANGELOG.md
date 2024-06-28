@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.9.0-beta.54](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.53...v3.9.0-beta.54) (2024-06-28)
+
+
+### Features
+
+* **studyPrefetcher:** Study Prefetcher ([#4206](https://github.com/OHIF/Viewers/issues/4206)) ([2048b19](https://github.com/OHIF/Viewers/commit/2048b19484c0b1fae73f993cfaa814f861bbd230))
+
+
+
+
+
 # [3.9.0-beta.53](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.52...v3.9.0-beta.53) (2024-06-28)
 
 **Note:** Version bump only for package ohif-docs
