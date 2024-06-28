@@ -214,6 +214,12 @@
       rel="preload"
       as="style"
     />
+    <script>
+      function browserImportFunction(moduleId) {
+        return import(moduleId);
+      }
+    </script>
+
 
     <!-- EXTENSIONS -->
     <!-- <script type="text/javascript" src="path/to/some-extension.js"></script>
