@@ -258,6 +258,35 @@ This will result in two panels, one with `dicomSeg.panel` and `tracked.measureme
 
 :::
 
+### Study Prefetcher
+
+You can enable the study prefetcher so that OHIF loads the next/previous series/display sets
+based on the proximity to the current series/display set. This can be useful to improve the user experience
+
+
+```js
+  studyPrefetcher: {
+    /* Enable/disable study prefetching service (default: false) */
+    enabled: true,
+    /* Number of displaysets to be prefetched  (default: 2)*/
+    displaySetCount: 2,
+    /**
+     * Max number of concurrent prefetch requests (default: 10)
+     * High numbers may impact on the time to load a new dropped series because
+     * the browser will be busy with all prefetching requests. As soon as the
+     * prefetch requests get fulfilled the new ones from the new dropped series
+     * are sent to the server.
+     *
+     * TODO: abort all prefetch requests when a new series is loaded on a viewport.
+     * (need to add support for `AbortController` on Cornerstone)
+     * */
+    maxNumPrefetchRequests: 10,
+    /* Display sets loading order (closest (deafult), downward or upward) */
+    order: 'closest',
+  },
+
+```
+
 ### More on Accept Header Configuration
 In the previous section we showed that you can modify the `acceptHeader`
 configuration to request specific dicom transfer syntax. By default
