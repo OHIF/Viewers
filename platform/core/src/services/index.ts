@@ -17,6 +17,7 @@ import CustomizationService from './CustomizationService';
 import StateSyncService from './StateSyncService';
 import PanelService from './PanelService';
 import WorkflowStepsService from './WorkflowStepsService';
+import StudyPrefetcherService from './StudyPrefetcherService';
 
 import type Services from '../types/Services';
 
@@ -42,4 +43,5 @@ export {
   UserAuthenticationService,
   PanelService,
   WorkflowStepsService,
+  StudyPrefetcherService,
 };
