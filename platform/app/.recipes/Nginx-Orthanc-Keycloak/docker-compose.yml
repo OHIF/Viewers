@@ -8,7 +8,9 @@ services:
     ports:
       - '443:443' # SSL
       - '80:80' # Web
-
+    depends_on:
+      keycloak:
+        condition: service_healthy
     restart: on-failure
     networks:
       - default
@@ -18,15 +20,15 @@ services:
       - OAUTH2_PROXY_SKIP_PROVIDER_BUTTON=true
 
   orthanc:
-     image: jodogne/orthanc-plugins
-     hostname: orthanc
-     container_name: orthanc
-     volumes:
-       - ./config/orthanc.json:/etc/orthanc/orthanc.json:ro
-       - ./volumes/orthanc-db/:/var/lib/orthanc/db/
-     restart: unless-stopped
-     networks:
-       - default
+    image: jodogne/orthanc-plugins
+    hostname: orthanc
+    container_name: orthanc
+    volumes:
+      - ./config/orthanc.json:/etc/orthanc/orthanc.json:ro
+      - ./volumes/orthanc-db/:/var/lib/orthanc/db/
+    restart: unless-stopped
+    networks:
+      - default
 
   keycloak:
     image: quay.io/keycloak/keycloak:24.0.5
@@ -43,8 +45,8 @@ services:
       KC_DB_SCHEMA: public
       KC_DB_USERNAME: keycloak
       KC_DB_PASSWORD: password
-      KC_HOSTNAME_ADMIN_URL: http://127.0.0.1/keycloak/
-      KC_HOSTNAME_URL: http://127.0.0.1/keycloak/
+      KC_HOSTNAME_ADMIN_URL: http://YOUR_DOMAIN_OR_IP/keycloak/
+      KC_HOSTNAME_URL: http://YOUR_DOMAIN_OR_IP/keycloak/
       KC_HOSTNAME_STRICT_BACKCHANNEL: true
       KC_HOSTNAME_STRICT_HTTPS: false
       KC_HTTP_ENABLED: true
@@ -69,11 +71,23 @@ services:
     extra_hosts:
       - 'host.docker.internal:host-gateway'
     healthcheck:
-      test: ["CMD-SHELL", "exec 3<>/dev/tcp/127.0.0.1/8080;echo -e \"GET /health/ready HTTP/1.1\r\nhost: http://localhost\r\nConnection: close\r\n\r\n\" >&3;grep \"HTTP/1.1 200 OK\" <&3"]
+      test:
+        [
+          "CMD-SHELL",
+          "exec 3<>/dev/tcp/YOUR_DOMAIN_OR_IP/8080;echo -e \"GET /health/ready HTTP/1.1\r
+
+            host: http://localhost\r
+
+            Connection: close\r
+
+            \r
+
+            \" >&3;grep \"HTTP/1.1 200 OK\" <&3"
+        ]
       interval: 1s
       timeout: 5s
-      retries: 5
-      start_period: 10s
+      retries: 10
+      start_period: 60s
 
   postgres:
     image: postgres:15
