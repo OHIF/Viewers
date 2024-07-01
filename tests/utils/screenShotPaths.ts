@@ -83,7 +83,6 @@ const screenShotPaths = {
   crosshairs: {
     crosshairsRendered: 'crosshairsRendered.png',
     crosshairsRotated: 'crosshairsRotated.png',
-    crosshairsMoved: 'crosshairsMoved.png',
     crosshairsSlabThickness: 'crosshairsSlabThickness.png',
     crosshairsResetToolbar: 'crosshairsResetToolbar.png',
     crosshairsNewDisplayset: 'crosshairsNewDisplayset.png',
