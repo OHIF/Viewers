@@ -255,12 +255,7 @@ export default class CustomizationService extends PubSubService {
    */
   public get = this.getModeCustomization;
 
-  /**
-   * Applies any inheritance due to UI Type customization.
-   * This will look for customizationType in the customization object
-   * and if that is found, will assign all iterable values from that
-   * type into the new type, allowing default behaviour to be configured.
-   */
+  /** Applies any inheritance due to UI Type customization */
   public transform(customization: Customization): Customization {
     if (!customization) {
       return customization;
@@ -269,7 +264,7 @@ export default class CustomizationService extends PubSubService {
     if (!customizationType) {
       return customization;
     }
-    const parent = this.getCustomization(customizationType);
+    const parent = this.getModeCustomization(customizationType);
     const result = parent ? Object.assign(Object.create(parent), customization) : customization;
     // Execute an nested type information
     return result.transform?.(this) || result;

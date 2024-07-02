@@ -4,25 +4,33 @@ import getNextSRSeriesNumber from './getNextSRSeriesNumber';
 
 /**
  * Find an SR having the same series description.
- * This is used by the store service in order to store DICOM SR's having the
- * same Series Description into a single series under consecutive instance numbers
- * That way, they are all organized as a set and could have tools to view
- * "prior" SR instances.
  *
- * @param SeriesDescription - is the description to look for
+ * @param description - is the description to look for
  * @param displaySetService - the display sets to search for DICOM SR in
  * @returns SeriesMetadata from a DICOM SR having the same series description
  */
 export default function findSRWithSameSeriesDescription(
-  SeriesDescription: string,
+  studyUid: string,
+  seriesUid: string,
+  description: string,
   displaySetService: DisplaySetService
 ): Types.SeriesMetadata {
   const activeDisplaySets = displaySetService.getActiveDisplaySets();
-  const srDisplaySets = activeDisplaySets.filter(ds => ds.Modality === 'SR');
-  const sameSeries = srDisplaySets.find(ds => ds.SeriesDescription === SeriesDescription);
+  const srDisplaySets = activeDisplaySets.filter(
+    ds => ds.StudyInstanceUID === studyUid && ds.Modality === 'SR'
+  );
+  const sameSeries =
+    srDisplaySets.find(
+      ds =>
+        ds.SeriesInstanceUID === seriesUid &&
+        description === ds.SeriesDescription
+    ) || srDisplaySets.find(ds => ds.SeriesDescription === description);
   if (sameSeries) {
-    console.log('Storing to same series', sameSeries);
-    const { instance } = sameSeries;
+    const { instances, instance } = sameSeries;
+    const maxInstance = Math.max(
+      instances.length,
+      ...sameSeries.instances.map(it => it.InstanceNumber)
+    );
     const { SeriesInstanceUID, SeriesDescription, SeriesDate, SeriesTime, SeriesNumber, Modality } =
       instance;
     return {
@@ -37,5 +45,5 @@ export default function findSRWithSameSeriesDescription(
   }
 
   const SeriesNumber = getNextSRSeriesNumber(displaySetService);
-  return { SeriesDescription, SeriesNumber };
+  return { SeriesDescription: description, SeriesNumber };
 }

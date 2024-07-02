@@ -33,14 +33,13 @@ const convertSites = (codingValues, sites) => {
     const site = convertCode(codingValues, sites[i][0] || sites[i]);
     if (site) {
       ret.push(site);
-    }
+  }
   }
   return (ret.length && ret) || undefined;
 };
 
 /**
  * Hydrates a structured report, for default viewports.
- *
  */
 export default function hydrateStructuredReport(
   { servicesManager, extensionManager, appConfig }: withAppTypes,
@@ -282,7 +281,7 @@ function _mapLegacyDataSet(dataset) {
   return dataset;
 }
 
-const toArray = function (x) {
+const toArray = function(x) {
   return Array.isArray(x) ? x : [x];
 };
 

@@ -173,17 +173,17 @@ const OHIFCornerstoneViewport = React.memo((props: withAppTypes) => {
 
   const cleanUpServices = useCallback(
     viewportInfo => {
-      const renderingEngineId = viewportInfo.getRenderingEngineId();
-      const syncGroups = viewportInfo.getSyncGroups();
+    const renderingEngineId = viewportInfo.getRenderingEngineId();
+    const syncGroups = viewportInfo.getSyncGroups();
 
-      toolGroupService.removeViewportFromToolGroup(viewportId, renderingEngineId);
+    toolGroupService.removeViewportFromToolGroup(viewportId, renderingEngineId);
 
       syncGroupService.removeViewportFromSyncGroup(viewportId, renderingEngineId, syncGroups);
 
       viewportActionCornersService.clear(viewportId);
     },
     [viewportId]
-  );
+    );
 
   const elementEnabledHandler = useCallback(
     evt => {
@@ -422,30 +422,30 @@ const OHIFCornerstoneViewport = React.memo((props: withAppTypes) => {
   });
   return (
     <React.Fragment>
-      <div className="viewport-wrapper">
-        <div
-          className="cornerstone-viewport-element"
-          style={{ height: '100%', width: '100%' }}
-          onContextMenu={e => e.preventDefault()}
-          onMouseDown={e => e.preventDefault()}
+    <div className="viewport-wrapper">
+      <div
+        className="cornerstone-viewport-element"
+        style={{ height: '100%', width: '100%' }}
+        onContextMenu={e => e.preventDefault()}
+        onMouseDown={e => e.preventDefault()}
           ref={el => {
             resizeRef.current = el;
             elementRef.current = el;
           }}
-        ></div>
-        <CornerstoneOverlays
+      ></div>
+      <CornerstoneOverlays
           viewportId={viewportId}
           toolBarService={toolbarService}
-          element={elementRef.current}
-          scrollbarHeight={scrollbarHeight}
-          servicesManager={servicesManager}
-        />
+        element={elementRef.current}
+        scrollbarHeight={scrollbarHeight}
+        servicesManager={servicesManager}
+      />
         <CinePlayer
           enabledVPElement={enabledVPElement}
           viewportId={viewportId}
           servicesManager={servicesManager}
         />
-      </div>
+    </div>
       {/* top offset of 24px to account for ViewportActionCorners. */}
       <div className="absolute top-[24px] w-full">
         {viewportDialogState.viewportId === viewportId && (
@@ -488,26 +488,26 @@ function _subscribeToJumpToMeasurementEvents(
         cacheJumpToMeasurementEvent.cornerstoneViewport =
           cornerstoneViewportService.getViewportIdToJump(
             jumpId,
-            measurement.displaySetInstanceUID,
+          measurement.displaySetInstanceUID,
             {
               referencedImageId:
                 measurement.referencedImageId || measurement.metadata?.referencedImageId,
             }
-          );
+        );
       }
       if (cacheJumpToMeasurementEvent.cornerstoneViewport !== viewportId) {
         return;
       }
-      _jumpToMeasurement(
-        measurement,
-        elementRef,
+        _jumpToMeasurement(
+          measurement,
+          elementRef,
         viewportId,
-        measurementService,
-        displaySetService,
-        viewportGridService,
-        cornerstoneViewportService
-      );
-    }
+          measurementService,
+          displaySetService,
+          viewportGridService,
+          cornerstoneViewportService
+        );
+      }
   );
 
   return unsubscribe;

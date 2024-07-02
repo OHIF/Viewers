@@ -79,8 +79,9 @@ export default function PanelMeasurementTable({
     const displaySet = displaySetService.getDisplaySetByUID(
       activeViewport.displaySetInstanceUIDs[0]
     );
+    const { StudyInstanceUID: studyUID } = displaySet;
     const trackedMeasurements = measurements.filter(
-      m => displaySet.StudyInstanceUID === m.referenceStudyUID
+      m => studyUID === m.referenceStudyUID
     );
 
     if (trackedMeasurements.length <= 0) {
@@ -95,33 +96,41 @@ export default function PanelMeasurementTable({
 
     const promptResult = await createReportDialogPrompt(uiDialogService, {
       extensionManager,
+      seriesDescription: measurementService.getSeriesInformation(studyUID)
+        ?.SeriesDescription,
     });
 
     if (promptResult.action === CREATE_REPORT_DIALOG_RESPONSE.CREATE_REPORT) {
       const dataSources = extensionManager.getDataSources(promptResult.dataSourceName);
       const dataSource = dataSources[0];
 
+      const seriesInfo = measurementService.getSeriesInformation(studyUID);
+
       const SeriesDescription =
-        // isUndefinedOrEmpty
-        promptResult.value === undefined || promptResult.value === ''
-          ? 'Research Derived Series' // default
-          : promptResult.value; // provided value
+        promptResult.value ||
+        seriesInfo?.SeriesDescription ||
+        measurementService.getDefaultSeriesDescription();
 
       // Reuse an existing series having the same series description to avoid
       // creating too many series instances.
-      const options = findSRWithSameSeriesDescription(SeriesDescription, displaySetService);
+      const options = findSRWithSameSeriesDescription(
+        studyUID,
+        seriesInfo?.SeriesInstanceUID,
+        SeriesDescription,
+        displaySetService
+      );
 
       const getReport = async () => {
         return commandsManager.runCommand(
           'storeMeasurements',
           {
             measurementData: trackedMeasurements,
-            dataSource,
+        dataSource,
             additionalFindingTypes: ['ArrowAnnotate'],
             options,
           },
           'CORNERSTONE_STRUCTURED_REPORT'
-        );
+      );
       };
 
       return createReportAsync({ servicesManager, getReport });

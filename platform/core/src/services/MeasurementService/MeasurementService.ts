@@ -1,3 +1,4 @@
+import { SeriesMetadata } from '../../Types';
 import log from '../../log';
 import guid from '../../utils/guid';
 import { PubSubService } from '../_shared/pubSubServiceInterface';
@@ -59,8 +60,12 @@ const MEASUREMENT_SCHEMA_KEYS = [
   'longestDiameter',
   'cachedStats',
   'selected',
-  'textBox',
+  'site',
+  'findingSites',
+  'finding',
+'textBox',
   'referencedImageId',
+
 ];
 
 const EVENTS = {
@@ -74,6 +79,7 @@ const EVENTS = {
   JUMP_TO_MEASUREMENT_VIEWPORT: 'event:jump_to_measurement_viewport',
   // Give the layout a chance to jump to the measurement
   JUMP_TO_MEASUREMENT_LAYOUT: 'event:jump_to_measurement_layout',
+  MEASUREMENTS_SAVED: 'event::measurements_saved',
 };
 
 const VALUE_TYPES = {
@@ -87,6 +93,14 @@ const VALUE_TYPES = {
   CIRCLE: 'value_type::circle',
   ROI_THRESHOLD: 'value_type::roiThreshold',
   ROI_THRESHOLD_MANUAL: 'value_type::roiThresholdManual',
+};
+
+export type SeriesInformation = {
+  StudyInstanceUID: string;
+  SeriesInstanceUID?: string;
+  SeriesDescription?: string;
+  modified: boolean;
+  [key: string]: unknown;
 };
 
 /**
@@ -121,6 +135,54 @@ class MeasurementService extends PubSubService {
     super(EVENTS);
     this.sources = {};
     this.mappings = {};
+  }
+
+  public setDefaultSeriesDescription(seriesDescription: string) {
+    this.defaultSeriesDescription = seriesDescription;
+  }
+
+  /**
+   * The series description is remembered here from the last load so that
+   * it can be re-used for saving to the same series if desired.
+   * Calling this should be done after loading measurements, and will cause
+   * the measurements data to be considered up to date.
+   */
+  public setSeriesInformation(
+    StudyInstanceUID: string,
+    seriesInformation: SeriesMetadata
+  ): void {
+    this.seriesInformation[StudyInstanceUID] = {
+      ...seriesInformation,
+      modified: false,
+    };
+    this._broadcastEvent(EVENTS.MEASUREMENTS_SAVED, {
+      StudyInstanceUID,
+      SeriesInstanceUID: seriesInformation.SeriesInstanceUID,
+      SeriesDescription: seriesInformation.SeriesDescription,
+    });
+  }
+
+  public getDefaultSeriesDescription(): string {
+    return this.defaultSeriesDescription;
+  }
+
+  public getSeriesInformation(studyUID: string): SeriesInformation {
+    if (!this.seriesInformation[studyUID]) {
+      this.seriesInformation[studyUID] = {
+        StudyInstanceUID: studyUID,
+        modified: false,
+      };
+  }
+    return this.seriesInformation[studyUID];
+  }
+
+  /** Indicate if the measurement are stored/up to date with the source data */
+  public isMeasurementsStored(studyUID: string): boolean {
+    return !this.seriesInformation[studyUID]?.modified;
+  }
+
+  public setMeasurementsModified(studyUID: string): void {
+    this.getSeriesInformation(studyUID).modified = true;
   }
 
   /**
@@ -355,6 +417,7 @@ class MeasurementService extends PubSubService {
     log.info(`Updating internal measurement representation...`, updatedMeasurement);
 
     this.measurements.set(measurementUID, updatedMeasurement);
+    this.setMeasurementsModified(measurement.referenceStudyUID);
 
     this._broadcastEvent(this.EVENTS.MEASUREMENT_UPDATED, {
       source: measurement.source,
@@ -397,6 +460,7 @@ class MeasurementService extends PubSubService {
       measurement = toMeasurementSchema(data);
       measurement.source = source;
     } catch (error) {
+      console.log(error);
       log.warn(
         `Failed to map '${sourceInfo}' measurement for annotationType ${annotationType}:`,
         error.message
@@ -532,13 +596,15 @@ class MeasurementService extends PubSubService {
       // For now, it is just added in OHIF here and in setMeasurementSelected.
       this.measurements.set(internalUID, newMeasurement);
       if (isUpdate) {
-        this._broadcastEvent(this.EVENTS.MEASUREMENT_UPDATED, {
+       this._broadcastEvent(this.EVENTS.MEASUREMENT_UPDATED, {
           source,
           measurement: newMeasurement,
           notYetUpdatedAtSource: false,
         });
       } else {
         log.info('Measurement added.', newMeasurement);
+        this.setMeasurementsModified(newMeasurement.referenceStudyUID);
+
         this._broadcastEvent(this.EVENTS.MEASUREMENT_ADDED, {
           source,
           measurement: newMeasurement,
@@ -576,12 +642,38 @@ class MeasurementService extends PubSubService {
     });
   }
 
-  clearMeasurements() {
+  public clearMeasurements(): void {
     // Make a copy of the measurements
     const measurements = [...this.measurements.values(), ...this.unmappedMeasurements.values()];
     this.unmappedMeasurements.clear();
     this.measurements.clear();
-    this._broadcastEvent(this.EVENTS.MEASUREMENTS_CLEARED, { measurements });
+    this.seriesInformation = {};
+  }
+
+  /** Clear the measurements for a specific study */
+  public clearStudyMeasurements(studyUID: string): void {
+    // Make a copy of the measurements
+    const allMeasurements = { ...this.measurements };
+    const clearedMeasurements = {};
+    this.measurements = {};
+    this._jumpToMeasurementCache = {};
+
+    Object.entries(allMeasurements).forEach(([key, value]) => {
+      console.log('measurement', value);
+      const { referenceStudyUID } = value;
+      if (!referenceStudyUID) {
+        throw new Error(`No referenceStudyUID ${value}`);
+      }
+      if (referenceStudyUID === studyUID) {
+        clearedMeasurements[key] = value;
+      } else {
+        this.measurements[key] = value;
+      }
+    });
+    delete this.seriesInformation[studyUID];
+    this._broadcastEvent(this.EVENTS.MEASUREMENTS_CLEARED, {
+      measurements: clearedMeasurements,
+    });
   }
 
   /**
@@ -707,7 +799,7 @@ class MeasurementService extends PubSubService {
         return false;
       }
 
-      return true;
+    return true;
     });
   }
 

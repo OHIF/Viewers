@@ -37,6 +37,8 @@ const _generateReport = (measurementData, additionalFindingTypes, options = {}) 
   if (typeof dataset.SpecificCharacterSet === 'undefined') {
     dataset.SpecificCharacterSet = 'ISO_IR 192';
   }
+  dataset.InstanceNumber = 1 + (options.InstanceNumber || 0);
+
   return dataset;
 };
 

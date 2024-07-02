@@ -209,17 +209,17 @@ async function _load(displaySet, servicesManager: AppTypes.ServicesManager, exte
 
   // Subscribe to new displaySets as the source may come in after.
   displaySetService.subscribe(displaySetService.EVENTS.DISPLAY_SETS_ADDED, data => {
-    const { displaySetsAdded } = data;
-    // If there are still some measurements that have not yet been loaded into cornerstone,
-    // See if we can load them onto any of the new displaySets.
-    displaySetsAdded.forEach(newDisplaySet => {
-      _checkIfCanAddMeasurementsToDisplaySet(
-        displaySet,
-        newDisplaySet,
+      const { displaySetsAdded } = data;
+      // If there are still some measurements that have not yet been loaded into cornerstone,
+      // See if we can load them onto any of the new displaySets.
+      displaySetsAdded.forEach(newDisplaySet => {
+        _checkIfCanAddMeasurementsToDisplaySet(
+          displaySet,
+          newDisplaySet,
         dataSource,
         servicesManager
-      );
-    });
+        );
+      });
   });
 }
 

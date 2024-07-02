@@ -54,11 +54,6 @@ export type PublicViewportOptions = {
   allowUnmatchedView?: boolean;
 };
 
-export type DisplaySetSelector = {
-  id?: string;
-  options?: PublicDisplaySetOptions;
-};
-
 export type PublicDisplaySetOptions = {
   /** The display set options can have an id in order to distinguish
    * it from other similar items.
@@ -105,7 +100,7 @@ const dataContains = ({ data, displaySetUID, imageId, viewport }): boolean => {
     const isAcquisition = !!viewport.getCurrentImageId();
 
     if (!isAcquisition) {
-      return false;
+  return false;
     }
 
     const imageURI = utilities.imageIdToURI(imageId);
@@ -202,7 +197,7 @@ class ViewportInfo {
   }
 
   public setPublicDisplaySetOptions(
-    publicDisplaySetOptions: PublicDisplaySetOptions[] | DisplaySetSelector[]
+    publicDisplaySetOptions: Array<PublicDisplaySetOptions>
   ): Array<DisplaySetOptions> {
     // map the displaySetOptions and check if they are undefined then set them to default values
     const displaySetOptions = this.mapDisplaySetOptions(publicDisplaySetOptions);
@@ -220,7 +215,7 @@ class ViewportInfo {
 
     if (
       viewportData.viewportType === Enums.ViewportType.ORTHOGRAPHIC ||
-      viewportData.viewportType === Enums.ViewportType.VOLUME_3D
+        viewportData.viewportType === Enums.ViewportType.VOLUME_3D
     ) {
       viewportData = viewportData as VolumeViewportData;
       return viewportData.data.some(
@@ -314,15 +309,12 @@ class ViewportInfo {
     return this.viewportOptions.initialImageOptions;
   }
 
-  // Handle incoming public display set options or a display set select
-  // with a contained options.
   private mapDisplaySetOptions(
-    options: PublicDisplaySetOptions[] | DisplaySetSelector[] = [{}]
+    publicDisplaySetOptions: Array<PublicDisplaySetOptions> = [{}]
   ): Array<DisplaySetOptions> {
     const displaySetOptions: Array<DisplaySetOptions> = [];
 
-    options.forEach(item => {
-      let option = item?.options || item;
+    publicDisplaySetOptions.forEach(option => {
       if (!option) {
         option = {
           blendMode: undefined,

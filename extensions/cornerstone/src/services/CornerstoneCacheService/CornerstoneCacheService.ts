@@ -8,12 +8,12 @@ const VOLUME_LOADER_SCHEME = 'cornerstoneStreamingImageVolume';
 
 class CornerstoneCacheService {
   static REGISTRATION = {
-    name: 'cornerstoneCacheService',
-    altName: 'CornerstoneCacheService',
+      name: 'cornerstoneCacheService',
+      altName: 'CornerstoneCacheService',
     create: ({ servicesManager }: Types.Extensions.ExtensionParams): CornerstoneCacheService => {
       return new CornerstoneCacheService(servicesManager);
-    },
-  };
+      },
+    };
 
   stackImageIds: Map<string, string[]> = new Map();
   volumeImageIds: Map<string, string[]> = new Map();
@@ -79,6 +79,14 @@ class CornerstoneCacheService {
     return viewportData;
   }
 
+  /** This is called to compare the data source values */
+  public async invalidateStackViewport(
+    invalidatedDisplaySetInstanceUID: string
+  ): void {
+    // TODO - check the version before/after to see if they are identical
+    this.stackImageIds.delete(invalidatedDisplaySetInstanceUID);
+  }
+
   public async invalidateViewportData(
     viewportData: VolumeViewportData,
     invalidatedDisplaySetInstanceUID: string,
@@ -93,7 +101,7 @@ class CornerstoneCacheService {
       imageIds.forEach(imageId => {
         if (cs3DCache.getImageLoadObject(imageId)) {
           cs3DCache.removeImageLoadObject(imageId);
-        }
+    }
       });
 
       return {
@@ -180,14 +188,14 @@ class CornerstoneCacheService {
         isCompositeStack,
         imageIds: stackImageIds,
         initialImageIndex,
-      };
+    };
     });
 
     return {
       viewportType,
       data: StackViewportData,
     };
-  }
+    }
 
   private async _getVolumeViewportData(
     dataSource,
