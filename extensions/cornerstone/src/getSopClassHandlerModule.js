@@ -1,13 +1,18 @@
 import OHIF from '@ohif/core';
+import { utilities as csUtils } from '@cornerstonejs/core';
+import dcmjs from 'dcmjs';
+import { dicomWebUtils } from '@ohif/extension-default';
 
 const { utils } = OHIF;
+const { denaturalizeDataset } = dcmjs.data.DicomMetaDictionary;
+const { transferDenaturalizedDataset } = dicomWebUtils;
 
 const SOP_CLASS_UIDS = {
   VL_WHOLE_SLIDE_MICROSCOPY_IMAGE_STORAGE: '1.2.840.10008.5.1.4.1.1.77.1.6',
 };
 
 const SOPClassHandlerId =
-  '@ohif/extension-dicom-microscopy.sopClassHandlerModule.DicomMicroscopySopClassHandler';
+  '@ohif/extension-cornerstone.sopClassHandlerModule.DicomMicroscopySopClassHandler';
 
 function _getDisplaySetsFromSeries(instances, servicesManager, extensionManager) {
   // If the series has no instances, stop here
@@ -27,6 +32,7 @@ function _getDisplaySetsFromSeries(instances, servicesManager, extensionManager)
     }
   }
   let imageIdForThumbnail = null;
+  const dataSource = extensionManager.getActiveDataSource()[0];
   if (singleFrameInstance) {
     if (currentFrames == 1) {
       // Not all DICOM server implementations support thumbnail service,
@@ -35,7 +41,6 @@ function _getDisplaySetsFromSeries(instances, servicesManager, extensionManager)
     }
     if (!imageIdForThumbnail) {
       // use the thumbnail service provided by DICOM server
-      const dataSource = extensionManager.getActiveDataSource()[0];
       imageIdForThumbnail = dataSource.getImageIdsForInstance({
         instance: singleFrameInstance,
         thumbnail: true,
@@ -83,6 +88,7 @@ function _getDisplaySetsFromSeries(instances, servicesManager, extensionManager)
   const displaySet = {
     plugin: 'microscopy',
     Modality: 'SM',
+    viewportType: 'WholeSlide',
     altImageText: 'Microscopy',
     displaySetInstanceUID: utils.guid(),
     SOPInstanceUID,
@@ -102,13 +108,43 @@ function _getDisplaySetsFromSeries(instances, servicesManager, extensionManager)
     numInstances: 1,
     imageIdForThumbnail, // thumbnail image
     others: instances, // all other level instances in the image Pyramid
+    instances,
     othersFrameOfReferenceUID,
+    imageIds: instances.map(instance => instance.imageId),
   };
+  // The microscopy viewer directly accesses the metadata already loaded, and
+  // uses the DICOMweb client library directly for loading, so it has to be
+  // provided here.
+  const dicomWebClient = dataSource.retrieve.getWadoDicomWebClient?.();
+  const instanceMap = new Map();
+  instances.forEach(instance => instanceMap.set(instance.imageId, instance));
+  if (dicomWebClient) {
+    // This is really ugly - maybe this should be stored unmodified.
+    dicomWebClient.getDICOMwebMetadata = imageId => transferDenaturalizedDataset(denaturalizeDataset(fixMultivalueKeys(instanceMap.get(imageId))));
+
+    csUtils.genericMetadataProvider.add(displaySet.imageIds[0], {
+      type: 'webClient',
+      rawMetadata: dicomWebClient,
+    });
+  } else {
+    // TODO - handle other viewer types by simulating the viewer
+    console.warn("Unable to provide a DICOMWeb client library, microscopy will fail to view");
+  }
 
   return [displaySet];
 }
 
-export default function getDicomMicroscopySopClassHandler({ servicesManager, extensionManager }) {
+/** Fix multi-valued keys before denaturalizing */
+export function fixMultivalueKeys(naturalData, keys = ['ImageType']) {
+  for (const key of keys) {
+    if (typeof naturalData[key] === 'string') {
+      naturalData[key] = naturalData[key].split('\\');
+    }
+  }
+  return naturalData;
+}
+
+export function getDicomMicroscopySopClassHandler({ servicesManager, extensionManager }) {
   const getDisplaySetsFromSeries = instances => {
     return _getDisplaySetsFromSeries(instances, servicesManager, extensionManager);
   };
@@ -118,4 +154,8 @@ export default function getDicomMicroscopySopClassHandler({ servicesManager, ext
     sopClassUids: [SOP_CLASS_UIDS.VL_WHOLE_SLIDE_MICROSCOPY_IMAGE_STORAGE],
     getDisplaySetsFromSeries,
   };
+}
+
+export function getSopClassHandlerModule(params) {
+  return [getDicomMicroscopySopClassHandler(params)];
 }

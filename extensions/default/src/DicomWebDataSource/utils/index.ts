@@ -1,3 +1,4 @@
 import { fixBulkDataURI } from './fixBulkDataURI';
+import { cleanDenaturalizedDataset, transferDenaturalizedDataset } from './cleanDenaturalizedDataset';
 
-export { fixBulkDataURI };
+export { fixBulkDataURI, cleanDenaturalizedDataset, transferDenaturalizedDataset };

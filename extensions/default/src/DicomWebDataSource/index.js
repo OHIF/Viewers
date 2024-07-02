@@ -190,6 +190,13 @@ function createDicomWebApi(dicomWebConfig, servicesManager) {
           params
         );
       },
+      /**
+       * Provide direct access to the dicom web client for certain use cases
+       * where the dicom web client is used by an external library such as the
+       * microscopy viewer.
+       */
+      getWadoDicomWebClient: () => wadoDicomWebClient,
+
       bulkDataURI: async ({ StudyInstanceUID, BulkDataURI }) => {
         qidoDicomWebClient.headers = getAuthrorizationHeader();
         const options = {
