@@ -365,3 +365,42 @@ ptDisplaySet: {
         },
         ...
 ```
+
+## Non-Viewport Metadata
+There are a few methods available to allow getting at non-viewport metadata.
+This allows specifying behaviour of parts of the screen other than the display
+areas.  It also allows specification of specific values for views for things like
+viewport type specific settings across the viewports.
+
+The type of values for the viewports should be simple values as much as possible,
+referencing customization configurations rather than defining an entire complex
+value.  For example, to specify showing a specific menu for the top menu bar,
+using a configuration like:
+
+```javascript
+  otherDisplayConfiguration: {
+    '@ohif/extension-default.panelModule.top-toolbar': {
+      toolbarSection: 'primary',
+    },
+  },
+```
+
+rather than defining a full toolbar within the hanging protocol allows specifying
+which toolbar would be used, without having to repeat the contents of the toolbar
+in a way that is prone to having different copies of the data.
+
+### Naming of Other Display Configuration
+The recommended naming of the other display configuration is to use a panel or
+viewport path, matching the same type of path that the mode uses, or to use one
+that would be exposed by `panelModule` if it isn't otherwise exposed.  For example,
+`@ohif/extension-default.panelModule.top-toolbar` is the recommended name for the
+top toolbar module showing the menu, and a context menu equivalent would be
+`@ohif/extension-default.panelModule.context-menu`.
+
+### Inheritance of `otherDisplayConfiguration` values
+The values for the other display configuration can be specified at both the
+hanging protocol level and the stage level.  The stage level adds values for each
+configuration, overwriting the entire value.
+
+### Accessing Other Configuration
+The `getOtherDisplayConfiguration` method can be used to

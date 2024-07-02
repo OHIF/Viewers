@@ -213,6 +213,12 @@ export type StageActivation = {
 };
 
 /**
+ * Other display configuration allows specifying custom attribute values for
+ * panel modules and viewport which change based on the specified configuration.
+ */
+export type OtherDisplayConfiguration = Record<string, any>;
+
+/**
  * Protocol stages are a set of different views which can be applied, for
  * example, a 2x1 and a 1x1 view might be both applied (see default extension
  * for this example).
@@ -228,6 +234,12 @@ export type ProtocolStage = {
   name: string;
   /** Indicate if the stage can be applied or not */
   status?: StageStatus;
+
+  /**
+   * Add configuration for display values other than viewport instance such as
+   * default context menu type.
+   */
+  otherDisplayConfiguration?: OtherDisplayConfiguration;
 
   viewportStructure: ViewportStructure;
   stageActivation?: {
@@ -294,7 +306,14 @@ export type Protocol = {
   availableTo?: Record<string, unknown>;
   editableBy?: Record<string, unknown>;
   toolGroupIds?: string[];
+  /**
+   * Add configuration for display values other than viewport instance such as
+   * default context menu type.
+   */
+  otherDisplayConfiguration?: OtherDisplayConfiguration;
+
   // A set of callbacks relevant to entering and exiting the protocol
+  // TODO - move this into otherDisplayConfiguration
   callbacks?: ProtocolNotifications;
   imageLoadStrategy?: string; // Todo: this should be types specifically
   protocolMatchingRules?: MatchingRule[];

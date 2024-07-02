@@ -11,6 +11,10 @@ const testProtocol = {
       },
     },
   ],
+  otherDisplayConfiguration: {
+    panel1: { name: 'Panel1' },
+    panel2: { name: 'Panel2' },
+  },
   displaySetSelectors: {
     displaySetSelector: {
       seriesMatchingRules: [
@@ -42,6 +46,9 @@ const testProtocol = {
           rows: 1,
           columns: 1,
         },
+      },
+      otherDisplayConfiguration: {
+        panel2: { name: 'Panel2 Stage' },
       },
       viewports: [
         {
@@ -171,6 +178,13 @@ describe('HangingProtocolService', () => {
       it('matches best image match', () => {
         checkHpsBestMatch(hangingProtocolService);
       });
+    });
+    it('gets other display configuration', () => {
+      checkHpsBestMatch(hangingProtocolService);
+      const namePanel1 = hangingProtocolService.getOtherDisplayConfiguration('panel1', 'name');
+      expect(namePanel1).toBe('Panel1');
+      const namePanel2 = hangingProtocolService.getOtherDisplayConfiguration('panel2', 'name');
+      expect(namePanel2).toBe('Panel2 Stage');
     });
   });
 
