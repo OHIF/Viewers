@@ -19,6 +19,10 @@ services:
     environment:
       - OAUTH2_PROXY_SKIP_PROVIDER_BUTTON=true
     volumes:
+      # - ../../app/dist /var/www/html
+      - ./config/nginx.conf:/etc/nginx/nginx.conf
+      - ./config/oauth2-proxy.cfg:/etc/oauth2-proxy/oauth2-proxy.cfg
+
       - ./config/letsencrypt:/etc/letsencrypt
       - ./config/certbot:/var/www/certbot
 

@@ -1,3 +1,17 @@
+##
+
+Linode 8 GB
+
+
+Install Docker linux
+
+Install Node
+wget -qO- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
+
+Installing Yarn
+
+
+
 ## Temporary SSL using DuckDNS
 
 1. Go to [DuckDNS](https://www.duckdns.org/domains) and create a subdomain, e.g., `hospital.duckdns.org`.
@@ -56,9 +70,9 @@
     server_name hospital.duckdns.org;
     ```
 
-## Replace 'YOUR_DOMAIN' placeholders
+## Replace '127.0.0.1' placeholders
 
-Crtl + F for all YOUR_DOMAIN place holders and replace the with the correct values
+Crtl + F for all 127.0.0.1 place holders and replace the with the correct values
 
 ## Build the Docker Compose
 
@@ -112,3 +126,10 @@ Crtl + F for all YOUR_DOMAIN place holders and replace the with the correct valu
 - Adjust the nginx config accordingly to remove `https`.
 
 ---
+
+
+If build crashes at 92% terser plugin it means that the build is running out of memory. You can increase the memory limit by running the following
+
+    ```bash
+    export NODE_OPTIONS=--max_old_space_size=4096
+    ```
