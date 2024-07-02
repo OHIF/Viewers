@@ -39,7 +39,7 @@ const SidePanelWithServices = ({
             }
           } else {
             if (hasBeenOpened || activatePanelEvent.forceActive) {
-              // setActiveTabIndex(0);
+              setActiveTabIndex(0);
               setActiveTabIndex(null);
               setForceUpdate(f => !f);
             }

@@ -61,17 +61,23 @@ const Thumbnail = ({
           }}
         >
           {imageSrc ? (
-            <div
-              style={{
-                minHeight: '8rem',
-                background: `url(${imageSrc})`,
-                width: '100%',
-                backgroundSize: 'cover',
-                backgroundPosition: 'center',
-                backgroundRepeat: 'no-repeat',
-              }}
+            <img
+              src={imageSrc}
+              alt={imageAltText}
+              className="h-full w-full object-cover"
+              crossOrigin="anonymous"
             />
           ) : (
+            // <div
+            //   style={{
+            //     minHeight: '8rem',
+            //     background: `url(${imageSrc})`,
+            //     width: '100%',
+            //     backgroundSize: 'cover',
+            //     backgroundPosition: 'center',
+            //     backgroundRepeat: 'no-repeat',
+            //   }}
+            // />
             <div>{imageAltText}</div>
           )}
         </div>
