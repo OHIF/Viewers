@@ -7,6 +7,16 @@ type Panel = {
   iconLabel: string;
   label: string;
   component: React.FC;
+  viewPresets?: {
+    id: string;
+    iconName: string;
+  }[];
+  viewPreset?: string;
+  actionIcons?: {
+    id: string;
+    iconName: string;
+    value: boolean;
+  }[];
 };
 
 type ActivatePanelTriggers = {

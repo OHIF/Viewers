@@ -78,6 +78,8 @@ const StudyBrowser = ({
         data-cy={'studyBrowser-panel'}
       >
         {/* TODO Revisit design of LegacyButtonGroup later - for now use LegacyButton for its children.*/}
+
+
         <LegacyButtonGroup
           variant="outlined"
           color="secondary"
@@ -116,7 +118,7 @@ const StudyBrowser = ({
           <StudyBrowserSort servicesManager={servicesManager} />
         )}
       </div>
-      <div className="ohif-scrollbar invisible-scrollbar flex flex-1 flex-col overflow-auto">
+      <div className=" ohif-scrollbar invisible-scrollbar flex flex-1 flex-col overflow-auto bg-bkg-low">
         {getTabContent()}
       </div>
     </React.Fragment>
