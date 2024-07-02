@@ -6,11 +6,14 @@ import {
   utilities,
   Types as cs3DToolsTypes,
 } from '@cornerstonejs/tools';
+
+import { CodeNameCodeSequenceValues } from '../enums';
+import toolNames from './toolNames';
 import { getTrackingUniqueIdentifiersForElement } from './modules/dicomSRModule';
 import SCOORD_TYPES from '../constants/scoordTypes';
 
 export default class DICOMSRDisplayTool extends AnnotationTool {
-  static toolName = 'DICOMSRDisplay';
+  static toolName = toolNames.DICOMSRDisplay;
 
   constructor(
     toolProps = {},
@@ -29,7 +32,7 @@ export default class DICOMSRDisplayTool extends AnnotationTool {
 
     for (let i = 0; i < labelLength; i++) {
       const labelEntry = labels[i];
-      lines.push(`${_labelToShorthand(labelEntry.label)}: ${labelEntry.value}`);
+      lines.push(`${_labelToShorthand(labelEntry.label)} ${labelEntry.value}`);
     }
 
     return lines;
@@ -64,8 +67,10 @@ export default class DICOMSRDisplayTool extends AnnotationTool {
     const activeTrackingUniqueIdentifier = trackingUniqueIdentifiers[activeIndex];
 
     // Filter toolData to only render the data for the active SR.
-    const filteredAnnotations = annotations.filter(annotation =>
-      trackingUniqueIdentifiers.includes(annotation.data?.TrackingUniqueIdentifier)
+    const filteredAnnotations = annotations.filter(
+      annotation =>
+        !trackingUniqueIdentifiers.length ||
+        trackingUniqueIdentifiers.includes(annotation.data?.TrackingUniqueIdentifier)
     );
 
     if (!viewport._actors?.size) {
@@ -150,6 +155,8 @@ export default class DICOMSRDisplayTool extends AnnotationTool {
           styleSpecifier,
           options
         );
+
+        return true;
       });
     }
   };
@@ -211,6 +218,7 @@ export default class DICOMSRDisplayTool extends AnnotationTool {
       const handleGroupUID = '0';
       drawing.drawHandles(svgDrawingHelper, annotationUID, handleGroupUID, canvasCoordinates, {
         color: options.color,
+        lineDash: options.lineDash,
       });
     });
   }
@@ -261,6 +269,7 @@ export default class DICOMSRDisplayTool extends AnnotationTool {
         {
           color: options.color,
           width: options.lineWidth,
+          lineDash: options.lineDash,
         }
       );
     });
@@ -386,6 +395,7 @@ const SHORT_HAND_MAP = {
   AREA: 'Area: ',
   Length: '',
   CORNERSTONEFREETEXT: '',
+  [CodeNameCodeSequenceValues.FindingSiteSCT]: '',
 };
 
 function _labelToShorthand(label) {

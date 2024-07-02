@@ -168,6 +168,7 @@ function ViewerViewportGrid(props: withAppTypes) {
         const { displaySetInstanceUID: referencedDisplaySetInstanceUID } = measurement;
 
         const updatedViewports = _getUpdatedViewports(viewportId, referencedDisplaySetInstanceUID);
+
         // Arbitrarily assign the viewport to element 0
         const viewport = updatedViewports?.[0];
 

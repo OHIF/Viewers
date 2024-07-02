@@ -40,6 +40,9 @@ import getSOPInstanceAttributes from './utils/measurementServiceMappings/utils/g
 import { findNearbyToolData } from './utils/findNearbyToolData';
 import { createFrameViewSynchronizer } from './synchronizers/frameViewSynchronizer';
 
+import getSOPInstanceAttributes from './utils/measurementServiceMappings/utils/getSOPInstanceAttributes';
+export { getSOPInstanceAttributes };
+
 const { helpers: volumeLoaderHelpers } = csStreamingImageVolumeLoader;
 const { getDynamicVolumeInfo } = volumeLoaderHelpers ?? {};
 

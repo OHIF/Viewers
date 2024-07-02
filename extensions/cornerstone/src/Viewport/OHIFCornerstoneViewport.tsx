@@ -20,6 +20,7 @@ import CornerstoneOverlays from './Overlays/CornerstoneOverlays';
 import getSOPInstanceAttributes from '../utils/measurementServiceMappings/utils/getSOPInstanceAttributes';
 import CinePlayer from '../components/CinePlayer';
 import { Types } from '@ohif/core';
+import findImageIdIndexFromMeasurementByFOR from '../utils/findImageIdIndexFromMeasurementByFOR';
 
 import OHIFViewportActionCorners from '../components/OHIFViewportActionCorners';
 import { getWindowLevelActionMenu } from '../components/WindowLevelActionMenu/getWindowLevelActionMenu';
@@ -480,9 +481,11 @@ function _subscribeToJumpToMeasurementEvents(
     props => {
       cacheJumpToMeasurementEvent = props;
       const { viewportId: jumpId, measurement, isConsumed } = props;
+
       if (!measurement || isConsumed) {
         return;
       }
+
       if (cacheJumpToMeasurementEvent.cornerstoneViewport === undefined) {
         // Decide on which viewport should handle this
         cacheJumpToMeasurementEvent.cornerstoneViewport =
@@ -495,17 +498,28 @@ function _subscribeToJumpToMeasurementEvents(
             }
           );
       }
-      if (cacheJumpToMeasurementEvent.cornerstoneViewport !== viewportId) {
+
+      const targetElement = elementRef.current;
+      const enabledElement = getEnabledElement(targetElement);
+      const viewport = enabledElement.viewport;
+      const { SOPInstanceUID, frameNumber } = measurement;
+      const imageIdIndex = findImageIdIndex(viewport, SOPInstanceUID, frameNumber);
+
+      /**
+       * Only check for cached viewport if image id exists in that viewport.
+       * Otherwise the jump to measurement will try to load a different viewport
+       * by frame of reference.
+       */
+      if (imageIdIndex >= 0 && cacheJumpToMeasurementEvent.cornerstoneViewport !== viewportId) {
         return;
       }
+
       _jumpToMeasurement(
         measurement,
         elementRef,
         viewportId,
-        measurementService,
         displaySetService,
-        viewportGridService,
-        cornerstoneViewportService
+        viewportGridService
       );
     }
   );
@@ -543,23 +557,35 @@ function _checkForCachedJumpToMeasurementEvents(
         measurement,
         elementRef,
         viewportId,
-        measurementService,
         displaySetService,
-        viewportGridService,
-        cornerstoneViewportService
+        viewportGridService
       );
     }
   }
+}
+
+/**
+ * Finds the index of the image ID in the viewport that matches the given SOPInstanceUID and frameNumber.
+ * @param viewport - The viewport object.
+ * @param SOPInstanceUID - The SOPInstanceUID to match.
+ * @param frameNumber - The frame number to match (optional).
+ * @returns The index of the matching image ID, or -1 if not found.
+ */
+function findImageIdIndex(viewport, SOPInstanceUID, frameNumber) {
+  const imageIds = viewport.getImageIds();
+  return imageIds.findIndex(imageId => {
+    const { SOPInstanceUID: aSOPInstanceUID, frameNumber: aFrameNumber } =
+      getSOPInstanceAttributes(imageId);
+    return aSOPInstanceUID === SOPInstanceUID && (!frameNumber || frameNumber === aFrameNumber);
+  });
 }
 
 function _jumpToMeasurement(
   measurement,
   targetElementRef,
   viewportId,
-  measurementService,
   displaySetService,
-  viewportGridService,
-  cornerstoneViewportService
+  viewportGridService
 ) {
   const targetElement = targetElementRef.current;
   const { displaySetInstanceUID, SOPInstanceUID, frameNumber } = measurement;
@@ -570,10 +596,6 @@ function _jumpToMeasurement(
   }
 
   const referencedDisplaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
-
-  // Todo: setCornerstoneMeasurementActive should be handled by the toolGroupManager
-  //  to set it properly
-  // setCornerstoneMeasurementActive(measurement);
 
   viewportGridService.setActiveViewportId(viewportId);
 
@@ -587,12 +609,16 @@ function _jumpToMeasurement(
     let viewportCameraDirectionMatch = true;
 
     if (viewport instanceof StackViewport) {
-      const imageIds = viewport.getImageIds();
-      imageIdIndex = imageIds.findIndex(imageId => {
-        const { SOPInstanceUID: aSOPInstanceUID, frameNumber: aFrameNumber } =
-          getSOPInstanceAttributes(imageId);
-        return aSOPInstanceUID === SOPInstanceUID && (!frameNumber || frameNumber === aFrameNumber);
-      });
+      imageIdIndex = findImageIdIndex(viewport, SOPInstanceUID, frameNumber);
+
+      /** If could not find image id index using sop instance try frame of reference */
+      if (imageIdIndex < 0) {
+        const imageIds = viewport.getImageIds();
+        const imageIdIndexFound = findImageIdIndexFromMeasurementByFOR(imageIds, measurement);
+        if (imageIdIndexFound > -1) {
+          imageIdIndex = imageIdIndexFound;
+        }
+      }
     } else {
       // for volume viewport we can't rely on the imageIdIndex since it can be
       // a reconstructed view that doesn't match the original slice numbers etc.
