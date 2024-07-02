@@ -21,6 +21,8 @@ async function createReportAsync({
   try {
     const naturalizedReport = await getReport();
 
+    if (!naturalizedReport) return;
+
     // The "Mode" route listens for DicomMetadataStore changes
     // When a new instance is added, it listens and
     // automatically calls makeDisplaySets
