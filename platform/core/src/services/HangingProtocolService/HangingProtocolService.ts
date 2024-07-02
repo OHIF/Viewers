@@ -11,6 +11,7 @@ import { isDisplaySetFromUrl, sopInstanceLocation } from './custom-attribute/isD
 import numberOfDisplaySetsWithImages from './custom-attribute/numberOfDisplaySetsWithImages';
 import seriesDescriptionsFromDisplaySets from './custom-attribute/seriesDescriptionsFromDisplaySets';
 import uuidv4 from '../../utils/uuidv4';
+import type { OtherDisplayConfiguration } from '../../types/HangingProtocol';
 
 type Protocol = HangingProtocol.Protocol | HangingProtocol.ProtocolGenerator;
 
@@ -65,6 +66,9 @@ export default class HangingProtocolService extends PubSubService {
   displaySets: IDisplaySet[] = [];
   activeStudy: StudyMetadata;
   debugLogging: false;
+
+  otherDisplayConfiguration: OtherDisplayConfiguration;
+  stageDisplayConfiguration: OtherDisplayConfiguration;
 
   customAttributeRetrievalCallbacks = {
     NumberOfStudyRelatedSeries: {
@@ -1013,6 +1017,8 @@ export default class HangingProtocolService extends PubSubService {
         this._commandsManager.run(this.protocol?.callbacks?.onProtocolExit);
 
         this.protocol = protocol;
+        this.otherDisplayConfiguration = protocol?.otherDisplayConfiguration;
+        this.stageDisplayConfiguration = null;
 
         const { imageLoadStrategy } = protocol;
         if (imageLoadStrategy) {
@@ -1032,6 +1038,7 @@ export default class HangingProtocolService extends PubSubService {
         throw new Error(`Can't find applicable stage ${protocol.id} ${options?.stageIndex}`);
       }
       this.stageIndex = stage as number;
+      this.setStageDisplayConfiguration();
       this._updateViewports(options);
     } catch (error) {
       console.log(error);
@@ -1056,6 +1063,27 @@ export default class HangingProtocolService extends PubSubService {
         activeStudyUID: this.activeStudy?.StudyInstanceUID,
       });
     }
+  }
+
+  /** Setup the stage display configuration */
+  protected setStageDisplayConfiguration() {
+    const { otherDisplayConfiguration: configuration } =
+      this.protocol.stages?.[this.stageIndex] || {};
+    this.stageDisplayConfiguration = configuration || this.otherDisplayConfiguration;
+    if (configuration && this.otherDisplayConfiguration) {
+      // Could do a more complex variant, but for now just inherit values
+      this.stageDisplayConfiguration = Object.assign(
+        Object.create(this.otherDisplayConfiguration),
+        configuration
+      );
+    }
+  }
+
+  /** Gets other display configuration */
+  public getOtherDisplayConfiguration(pluginName: string, keyName?: string) {
+    return keyName
+      ? this.stageDisplayConfiguration?.[pluginName]?.[keyName]
+      : this.stageDisplayConfiguration?.[pluginName];
   }
 
   public getStageIndex(protocolId: string, options): number {
@@ -1638,6 +1666,8 @@ export default class HangingProtocolService extends PubSubService {
 
     // Sets the new stage
     this.stageIndex = i;
+
+    this.setStageDisplayConfiguration();
 
     // Log the new stage
     this.debug(`ProtocolEngine::setCurrentProtocolStage stage = ${this.stageIndex}`);
