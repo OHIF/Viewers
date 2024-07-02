@@ -74,10 +74,12 @@ const StudyBrowser = ({
   return (
     <React.Fragment>
       <div
-        className="hidden w-100 border-secondary-light bg-primary-dark flex h-20 flex-col items-center justify-center gap-2 border-b p-4"
+        className="w-100 border-secondary-light bg-primary-dark flex h-20 flex-col items-center justify-center gap-2 border-b p-4"
         data-cy={'studyBrowser-panel'}
       >
         {/* TODO Revisit design of LegacyButtonGroup later - for now use LegacyButton for its children.*/}
+
+
         <LegacyButtonGroup
           variant="outlined"
           color="secondary"
@@ -117,7 +119,7 @@ const StudyBrowser = ({
         )}
       </div>
       <div className=" ohif-scrollbar invisible-scrollbar flex flex-1 flex-col overflow-auto bg-bkg-low">
-        {/*getTabContent() */}
+        {getTabContent()}
       </div>
     </React.Fragment>
   );

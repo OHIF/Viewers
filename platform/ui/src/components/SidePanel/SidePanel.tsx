@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 
 import Icon from '../Icon';
 import Tooltip from '../Tooltip';
-import { Separator } from '@ohif/ui-next';
+import { Separator, ToggleGroup, ToggleGroupItem} from '@ohif/ui-next';
 
 type StyleMap = {
   open: {
@@ -165,7 +165,7 @@ const SidePanel = ({
   activeTabIndex: activeTabIndexProp = null,
   tabs,
   onOpen,
-  expandedWidth = 280,
+  expandedWidth = 275,
   onActiveTabIndexChange,
 }) => {
   const { t } = useTranslation('SidePanel');
@@ -366,6 +366,20 @@ const SidePanel = ({
         onClick={() => updatePanelOpen(!panelOpen)}
       >
         <span>{tabs[0].label}</span>
+        {tabs[0].viewPresets && (
+          <ToggleGroup type="single">
+            {tabs[0].viewPresets.map((viewPreset, index) => (
+              <ToggleGroupItem
+                key={index}
+                aria-label={viewPreset.view}
+                value={viewPreset.view}
+              >
+                <Icon name={viewPreset.iconName} />
+                </ToggleGroupItem>
+            ))}
+            </ToggleGroup>
+
+        )}
       </div>
     );
   };

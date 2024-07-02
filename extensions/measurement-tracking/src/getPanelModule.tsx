@@ -18,6 +18,19 @@ function getPanelModule({ commandsManager, extensionManager, servicesManager }):
         extensionManager,
         servicesManager,
       }),
+      viewPresets: [{
+        id: 'thumbnails',
+        iconName: 'icon-thumbnail-view',
+      }, {
+        id: 'list',
+        iconName: 'icon-list-view',
+      }],
+      viewPreset: 'thumbnails',
+      actionIcons: [{
+        id: 'settings',
+        iconName: 'settings-bar',
+        value: false
+      }]
     },
 
     {
