@@ -42,6 +42,7 @@ import { createFrameViewSynchronizer } from './synchronizers/frameViewSynchroniz
 
 const { helpers: volumeLoaderHelpers } = csStreamingImageVolumeLoader;
 const { getDynamicVolumeInfo } = volumeLoaderHelpers ?? {};
+const { imageRetrieveMetadataProvider } = cornerstone.utilities;
 
 const Component = React.lazy(() => {
   return import(/* webpackPrefetch: true */ './Viewport/OHIFCornerstoneViewport');
@@ -53,6 +54,15 @@ const OHIFCornerstoneViewport = props => {
       <Component {...props} />
     </React.Suspense>
   );
+};
+
+const stackRetrieveOptions = {
+  retrieveOptions: {
+    single: {
+      streaming: true,
+      decodeLevel: 1,
+    },
+  },
 };
 
 /**
@@ -80,6 +90,21 @@ const cornerstoneExtension: Types.Extensions.Extension = {
     toolbarService.registerEventForToolbarUpdate(cornerstone.eventTarget, [
       cornerstoneTools.Enums.Events.TOOL_ACTIVATED,
     ]);
+
+    // Configure the interleaved/HTJ2K loader
+    // Uses the active datasource for the configuration - this may not
+    // be 100% accurate if the actual display gets chosen from a list of
+    // datasources, however, at this point the datasource to use isn't
+    // known.
+    imageRetrieveMetadataProvider.clear();
+    // The default volume interleaved options are to interleave the
+    // image retrieve, but don't perform progressive loading.
+    imageRetrieveMetadataProvider.add(
+      'volume',
+      cornerstone.ProgressiveRetrieveImages.interleavedRetrieveStages
+    );
+    // The default stack loading option is to progressive load HTJ2K images
+    imageRetrieveMetadataProvider.add('stack', stackRetrieveOptions);
   },
 
   onModeExit: ({ servicesManager }: withAppTypes): void => {
