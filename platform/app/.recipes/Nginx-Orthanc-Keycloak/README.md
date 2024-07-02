@@ -56,6 +56,10 @@
     server_name hospital.duckdns.org;
     ```
 
+## Replace 'YOUR_DOMAIN' placeholders
+
+Crtl + F for all YOUR_DOMAIN place holders and replace the with the correct values
+
 ## Build the Docker Compose
 
 1. Navigate to the `Nginx-Orthanc-Keycloak` directory.
