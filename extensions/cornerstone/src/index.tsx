@@ -92,18 +92,18 @@ const cornerstoneExtension: Types.Extensions.Extension = {
     ]);
 
     // Configure the interleaved/HTJ2K loader
-    // Uses the active datasource for the configuration - this may not
-    // be 100% accurate if the actual display gets chosen from a list of
-    // datasources, however, at this point the datasource to use isn't
-    // known.
     imageRetrieveMetadataProvider.clear();
     // The default volume interleaved options are to interleave the
-    // image retrieve, but don't perform progressive loading.
+    // image retrieve, but don't perform progressive loading per image
+    // This interleaves images and replicates them for low-resolution depth volume
+    // reconstruction, which progressively improves
     imageRetrieveMetadataProvider.add(
       'volume',
       cornerstone.ProgressiveRetrieveImages.interleavedRetrieveStages
     );
     // The default stack loading option is to progressive load HTJ2K images
+    // There are other possible options, but these need more thought about
+    // how to define them.
     imageRetrieveMetadataProvider.add('stack', stackRetrieveOptions);
   },
 
