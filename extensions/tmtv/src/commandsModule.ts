@@ -370,15 +370,16 @@ const commandsModule = ({ servicesManager, commandsManager, extensionManager }: 
           voxelCount++;
         }
       }
+      const mean = segmentationValues.reduce((a, b) => a + b, 0) / voxelCount;
 
       const stats = {
         minValue: segmentationMin,
         maxValue: segmentationMax,
-        meanValue: segmentationValues.reduce((a, b) => a + b, 0) / voxelCount,
+        meanValue: mean,
         stdValue: Math.sqrt(
-          segmentationValues.reduce((a, b) => a + b * b, 0) / voxelCount -
-            segmentationValues.reduce((a, b) => a + b, 0) / voxelCount ** 2
-        ),
+          segmentationValues
+            .map((k) => (k - mean) ** 2)
+            .reduce((acc, curr) => acc + curr, 0) / voxelCount),
         volume: voxelCount * spacing[0] * spacing[1] * spacing[2] * 1e-3,
       };
 
