@@ -33,6 +33,7 @@ import {
   StateSyncService,
   PanelService,
   WorkflowStepsService,
+  StudyPrefetcherService,
 } from './services';
 
 import { DisplaySetMessage, DisplaySetMessageList } from './services/DisplaySetService';
@@ -85,6 +86,7 @@ const OHIF = {
   PanelService,
   useToolbar,
   WorkflowStepsService,
+  StudyPrefetcherService,
 };
 
 export {
@@ -130,6 +132,7 @@ export {
   Types,
   PanelService,
   WorkflowStepsService,
+  StudyPrefetcherService,
   useToolbar,
 };
 

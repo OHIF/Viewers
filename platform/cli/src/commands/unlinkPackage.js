@@ -1,7 +1,7 @@
 import { execa } from 'execa';
 import fs from 'fs';
 import path from 'path';
-import { validateYarn, removeExtensionFromConfig, removeModeFromConfig } from './utils/index';
+import { validateYarn, removeExtensionFromConfig, removeModeFromConfig } from './utils/index.js';
 
 const linkPackage = async (packageName, options, removeFromConfig) => {
   const { viewerDirectory } = options;

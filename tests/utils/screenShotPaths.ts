@@ -65,6 +65,28 @@ const screenShotPaths = {
   reset: {
     resetDisplayedCorrectly: 'resetDisplayedCorrectly.png',
   },
+  srHydration: {
+    srPostHydration: 'srPostHydration.png',
+    srPreHydration: 'srPreHydration.png',
+    srJumpToMeasurement: 'srJumpToMeasurement.png',
+  },
+  segHydration: {
+    segPostHydration: 'segPostHydration.png',
+    segPreHydration: 'segPreHydration.png',
+    segJumpToSegment: 'segJumpToSegment.png',
+  },
+  rtHydration: {
+    rtPostHydration: 'rtPostHydration.png',
+    rtPreHydration: 'rtPreHydration.png',
+    rtJumpToStructure: 'rtJumpToStructure.png',
+  },
+  crosshairs: {
+    crosshairsRendered: 'crosshairsRendered.png',
+    crosshairsRotated: 'crosshairsRotated.png',
+    crosshairsSlabThickness: 'crosshairsSlabThickness.png',
+    crosshairsResetToolbar: 'crosshairsResetToolbar.png',
+    crosshairsNewDisplayset: 'crosshairsNewDisplayset.png',
+  }
 };
 
 export { screenShotPaths };

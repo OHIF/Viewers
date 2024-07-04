@@ -17,6 +17,7 @@ const Thumbnail = ({
   description,
   seriesNumber,
   numInstances,
+  loadingProgress,
   countIcon,
   messages,
   dragData = {},
@@ -94,6 +95,17 @@ const Thumbnail = ({
             />
             {` ${numInstances}`}
           </div>
+          <div className="flex mr-2 last:mr-0">
+            {loadingProgress && loadingProgress < 1 && (
+              <>{Math.round(loadingProgress * 100)}%</>
+            )}
+            {loadingProgress && loadingProgress === 1 && (
+              <Icon
+                name={'database'}
+                className="w-3"
+              />
+            )}
+          </div>
           <DisplaySetMessageListTooltip
             messages={messages}
             id={`display-set-tooltip-${displaySetInstanceUID}`}
@@ -124,6 +136,7 @@ Thumbnail.propTypes = {
   description: PropTypes.string.isRequired,
   seriesNumber: StringNumber.isRequired,
   numInstances: PropTypes.number.isRequired,
+  loadingProgress: PropTypes.number,
   messages: PropTypes.object,
   isActive: PropTypes.bool.isRequired,
   onClick: PropTypes.func.isRequired,

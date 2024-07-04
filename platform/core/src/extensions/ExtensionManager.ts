@@ -137,6 +137,12 @@ export default class ExtensionManager extends PubSubService {
     return [...this.registeredExtensionIds];
   }
 
+  private getUniqueServicesList(servicesManager: AppTypes.ServicesManager) {
+    // Make sure only one service instance is returned because almost all services are
+    // registered with different keys (eg: StudyPrefetcherService and studyPrefetcherService)
+    return Array.from(new Set(Object.values(servicesManager.services)));
+  }
+
   /**
    * Calls all the services and extension on mode enters.
    * The service onModeEnter is called first
@@ -151,11 +157,12 @@ export default class ExtensionManager extends PubSubService {
       _hotkeysManager,
       _extensionLifeCycleHooks,
     } = this;
+    const services = this.getUniqueServicesList(_servicesManager);
 
     // The onModeEnter of the service must occur BEFORE the extension
     // onModeEnter in order to reset the state to a standard state
     // before the extension restores and cached data.
-    for (const service of Object.values(_servicesManager.services)) {
+    for (const service of services) {
       service?.onModeEnter?.();
     }
 
@@ -175,6 +182,7 @@ export default class ExtensionManager extends PubSubService {
   public onModeExit(): void {
     const { registeredExtensionIds, _servicesManager, _commandsManager, _extensionLifeCycleHooks } =
       this;
+    const services = this.getUniqueServicesList(_servicesManager);
 
     registeredExtensionIds.forEach(extensionId => {
       const onModeExit = _extensionLifeCycleHooks.onModeExit[extensionId];
@@ -189,7 +197,7 @@ export default class ExtensionManager extends PubSubService {
 
     // The service onModeExit calls must occur after the extension ones
     // so that extension ones can store/restore data.
-    for (const service of Object.values(_servicesManager.services)) {
+    for (const service of services) {
       try {
         service?.onModeExit?.();
       } catch (e) {

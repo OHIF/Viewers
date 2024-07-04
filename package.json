@@ -49,6 +49,7 @@
     "test:unit:ci": "lerna run test:unit:ci --parallel --stream",
     "test:e2e": "lerna run test:e2e --stream",
     "test:e2e:ci": "npx playwright test",
+    "test:e2e:ui": "npx playwright test --ui",
     "test:e2e:headed": "npx playwright test --headed",
     "test:e2e:dist": "lerna run test:e2e:dist --stream",
     "test:e2e:serve": "yarn test:data && lerna run test:e2e:serve --stream",
@@ -63,7 +64,7 @@
     "link-list": "npm ls --depth=0 --link=true"
   },
   "dependencies": {
-    "execa" :"^8.0.1"
+    "execa": "^8.0.1"
   },
   "optionalDependencies": {
     "@percy/cypress": "^3.1.1",
@@ -84,7 +85,9 @@
     "@babel/plugin-transform-typescript": "^7.13.0",
     "@babel/preset-env": "7.24.7",
     "@babel/preset-react": "^7.16.7",
-    "@babel/preset-typescript": "^7.13.0"
+    "@babel/preset-typescript": "^7.13.0",
+    "prettier": "^3.3.2",
+    "prettier-plugin-tailwindcss": "^0.6.5"
   },
   "husky": {
     "hooks": {

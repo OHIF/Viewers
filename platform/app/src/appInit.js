@@ -20,6 +20,7 @@ import {
   CustomizationService,
   PanelService,
   WorkflowStepsService,
+  StudyPrefetcherService,
   // utils,
 } from '@ohif/core';
 
@@ -73,6 +74,7 @@ async function appInit(appConfigOrFunc, defaultExtensions, defaultModes) {
     PanelService.REGISTRATION,
     WorkflowStepsService.REGISTRATION,
     StateSyncService.REGISTRATION,
+    [StudyPrefetcherService.REGISTRATION, appConfig.studyPrefetcher],
   ]);
 
   errorHandler.getHTTPErrorHandler = () => {
