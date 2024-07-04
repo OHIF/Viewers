@@ -2846,28 +2846,6 @@
   resolved "https://registry.yarnpkg.com/@juggle/resize-observer/-/resize-observer-3.4.0.tgz#08d6c5e20cf7e4cc02fd181c4b0c225cd31dbb60"
   integrity sha512-dfLbk+PwWvFzSxwk3n5ySL0hfBog779o8h68wK/7/APo/7cgyWp5jcXockbxdk5kFRkbeXWm4Fbi9FrdN381sA==
 
-"@kitware/vtk.js@*":
-  version "30.10.0"
-  resolved "https://registry.yarnpkg.com/@kitware/vtk.js/-/vtk.js-30.10.0.tgz#04bcaa1a23905ccf9d0da89cd0ce39b75ea2bbc6"
-  integrity sha512-lkJ0S+2UssyrAkr1gx9aJgvJZIGgtVl4OnHTGrA6WnVb2Iep54Nyoa4D5bpmEZjU2019uu/45BOUh43mWV4dbQ==
-  dependencies:
-    "@babel/runtime" "7.22.11"
-    "@types/webxr" "^0.5.5"
-    commander "9.2.0"
-    d3-scale "4.0.2"
-    fast-deep-equal "^3.1.3"
-    fflate "0.7.3"
-    gl-matrix "3.4.3"
-    globalthis "1.0.3"
-    seedrandom "3.0.5"
-    shader-loader "1.3.1"
-    shelljs "0.8.5"
-    spark-md5 "3.0.2"
-    stream-browserify "3.0.0"
-    webworker-promise "0.5.0"
-    worker-loader "3.0.8"
-    xmlbuilder2 "3.0.2"
-
 "@kitware/vtk.js@30.4.1":
   version "30.4.1"
   resolved "https://registry.yarnpkg.com/@kitware/vtk.js/-/vtk.js-30.4.1.tgz#ce8a50012e56341d2d01708a32a2ac3afa675b67"
