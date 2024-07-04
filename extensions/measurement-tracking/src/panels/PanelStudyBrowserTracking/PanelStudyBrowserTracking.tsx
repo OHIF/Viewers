@@ -148,9 +148,6 @@ function PanelStudyBrowserTracking({
     }
 
     currentDisplaySets.forEach(async dSet => {
-      if (!hasLoadedViewports) {
-        return;
-      }
       const newImageSrcEntry = {};
       const displaySet = displaySetService.getDisplaySetByUID(dSet.displaySetInstanceUID);
       const imageIds = dataSource.getImageIdsForDisplaySet(displaySet);
@@ -447,7 +444,7 @@ function PanelStudyBrowserTracking({
       onClickUntrack={displaySetInstanceUID => {
         onClickUntrack(displaySetInstanceUID);
       }}
-      onClickThumbnail={() => {}}
+      onClickThumbnail={() => { }}
       onDoubleClickThumbnail={onDoubleClickThumbnailHandler}
       activeDisplaySetInstanceUIDs={activeViewportDisplaySetInstanceUIDs}
     />
