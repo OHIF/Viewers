@@ -1,6 +1,6 @@
 {
   "name": "@ohif/ui-next",
-  "version": "3.9.0-beta.55",
+  "version": "3.9.0-beta.58",
   "description": "Next version of OHIF Viewers UI, more customizable using shadcn/ui",
   "main": "index.ts",
   "scripts": {
