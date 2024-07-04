@@ -1492,7 +1492,7 @@
   resolved "https://registry.yarnpkg.com/@colors/colors/-/colors-1.5.0.tgz#bb504579c1cae923e6576a4f5da43d25f97bdbd9"
   integrity sha512-ooWCrlZP11i8GImSjTHYHLkvFDP48nS4+204nGb1RiX/WXYHmJA2III9/e2DWVabCESdW7hBAEzHRqUn9OUVvQ==
 
-"@cornerstonejs/adapters@^1.78.1":
+"@cornerstonejs/adapters@^1.81.3":
   version "1.81.3"
   resolved "https://registry.yarnpkg.com/@cornerstonejs/adapters/-/adapters-1.81.3.tgz#b5e8ecbaf5036ee270f265911097f857f4e4439b"
   integrity sha512-kUR2cppCrXVXMaCsEEMgV2t88atGSv4WPqzxTiqz2GwH8aHQWfYcpOokGmUrKcsJvZHvtlbs1rj4rK4Lzcl1ww==
@@ -1530,7 +1530,7 @@
   resolved "https://registry.yarnpkg.com/@cornerstonejs/codec-openjph/-/codec-openjph-2.4.5.tgz#8690b61a86fa53ef38a70eee9d665a79229517c0"
   integrity sha512-MZCUy8VG0VG5Nl1l58+g+kH3LujAzLYTfJqkwpWI2gjSrGXnP6lgwyy4GmPRZWVoS40/B1LDNALK905cNWm+sg==
 
-"@cornerstonejs/core@^1.78.1", "@cornerstonejs/core@^1.81.3":
+"@cornerstonejs/core@^1.81.3":
   version "1.81.3"
   resolved "https://registry.yarnpkg.com/@cornerstonejs/core/-/core-1.81.3.tgz#76deaee4a2cce24db5695cb87857accea5645263"
   integrity sha512-Uievs/wBpw20Xj4B+8UEjb/qe+cmSfz2oWfQzBANcWoqI5pXD77evXE0s6hORCMr4yFUmTIMbGnWwXT2fF2bYw==
@@ -1555,7 +1555,7 @@
     pako "^2.0.4"
     uuid "^9.0.0"
 
-"@cornerstonejs/streaming-image-volume-loader@^1.78.1":
+"@cornerstonejs/streaming-image-volume-loader@^1.81.3":
   version "1.81.3"
   resolved "https://registry.yarnpkg.com/@cornerstonejs/streaming-image-volume-loader/-/streaming-image-volume-loader-1.81.3.tgz#01e464e42dd99abb456dab522acdbf15af2894eb"
   integrity sha512-gv+a+MQ5//qUE8Zfcy3CihJu0dm5csg7iXuS0IAdtrdZ7C7eNhzFMn1FlDABLV5lGN4cbAv+BZgBxIRThVWcBA==
@@ -1563,7 +1563,7 @@
     "@cornerstonejs/core" "^1.81.3"
     comlink "^4.4.1"
 
-"@cornerstonejs/tools@^1.78.1", "@cornerstonejs/tools@^1.81.3":
+"@cornerstonejs/tools@^1.81.3":
   version "1.81.3"
   resolved "https://registry.yarnpkg.com/@cornerstonejs/tools/-/tools-1.81.3.tgz#79dd3fe6fa695a5b84a62188c5b166d7e0d5be70"
   integrity sha512-GWRAXCANk8lr5iyP2h/9YGX6nb6uRmO26tsFQ/Zv0x6hAxlzFLVczD+xDdP8Xrx/wLsPmq2c/qPbT5T6lYic3g==
