@@ -59,7 +59,7 @@
     "@cornerstonejs/core": "^1.81.3",
     "@cornerstonejs/streaming-image-volume-loader": "^1.81.3",
     "@cornerstonejs/tools": "^1.81.3",
-    "@kitware/vtk.js": "*",
+    "@kitware/vtk.js": "30.4.1",
     "html2canvas": "^1.4.1",
     "lodash.debounce": "^4.0.8",
     "lodash.merge": "^4.6.2",
