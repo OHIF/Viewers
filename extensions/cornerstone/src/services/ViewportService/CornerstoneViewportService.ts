@@ -1044,11 +1044,11 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
         dimensions[2] * dimensions[2]
       );
 
-      retur  n slabThickness;
+      return slabThickness;
     }
   }
 
-  _g  etFrameOfReferenceUID(displaySetInstanceUID) {
+  _getFrameOfReferenceUID(displaySetInstanceUID) {
     const { displaySetService } = this.servicesManager.services;
     const displaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
 
