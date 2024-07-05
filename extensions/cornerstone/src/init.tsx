@@ -100,7 +100,7 @@ export default async function init({
     hangingProtocolService,
     viewportGridService,
     stateSyncService,
-    studyPrefetcherService
+    studyPrefetcherService,
   } = servicesManager.services;
 
   window.services = servicesManager.services;
@@ -181,10 +181,12 @@ export default async function init({
   ); // this provider is required for Calibration tool
   metaData.addProvider(metadataProvider.get.bind(metadataProvider), 9999);
 
+  // These are set reasonably low to allow for interleaved retrieves and slower
+  // connections.
   imageLoadPoolManager.maxNumRequests = {
-    interaction: appConfig?.maxNumRequests?.interaction || 100,
-    thumbnail: appConfig?.maxNumRequests?.thumbnail || 75,
-    prefetch: appConfig?.maxNumRequests?.prefetch || 10,
+    interaction: appConfig?.maxNumRequests?.interaction || 10,
+    thumbnail: appConfig?.maxNumRequests?.thumbnail || 5,
+    prefetch: appConfig?.maxNumRequests?.prefetch || 5,
   };
 
   initWADOImageLoader(userAuthenticationService, appConfig, extensionManager);

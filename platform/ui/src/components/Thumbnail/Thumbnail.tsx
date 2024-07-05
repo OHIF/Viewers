@@ -57,6 +57,7 @@ const Thumbnail = ({
       )}
       id={`thumbnail-${displaySetInstanceUID}`}
       data-cy={`study-browser-thumbnail`}
+      data-series={seriesNumber}
       onClick={onClick}
       onDoubleClick={onDoubleClick}
       onTouchEnd={handleTouchEnd}
@@ -95,10 +96,8 @@ const Thumbnail = ({
             />
             {` ${numInstances}`}
           </div>
-          <div className="flex mr-2 last:mr-0">
-            {loadingProgress && loadingProgress < 1 && (
-              <>{Math.round(loadingProgress * 100)}%</>
-            )}
+          <div className="mr-2 flex last:mr-0">
+            {loadingProgress && loadingProgress < 1 && <>{Math.round(loadingProgress * 100)}%</>}
             {loadingProgress && loadingProgress === 1 && (
               <Icon
                 name={'database'}
