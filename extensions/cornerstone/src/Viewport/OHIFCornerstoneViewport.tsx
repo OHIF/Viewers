@@ -525,6 +525,11 @@ function _jumpToMeasurement(measurement, targetElementRef, viewportId, servicesM
     const viewport = enabledElement.viewport as CSTypes.IStackViewport | CSTypes.IVolumeViewport;
 
     const { metadata } = measurement;
+    if (!viewport.isReferenceViewable(metadata, { withNavigation: true, withOrientation: true })) {
+      console.log("Reference isn't viewable, postponing until updated");
+      return;
+    }
+
     viewport.setViewReference(metadata);
 
     cs3DTools.annotation.selection.setAnnotationSelected(measurement.uid);
