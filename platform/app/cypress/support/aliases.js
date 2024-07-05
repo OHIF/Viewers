@@ -34,8 +34,8 @@ export function initCommonElementsAliases(skipMarkers = false) {
   cy.get('[data-cy="viewport-overlay-bottom-left"]').as('viewportInfoBottomLeft');
 
   if (skipMarkers) {
-    cy.get('.left-mid.orientation-marker').as('viewportInfoMidLeft');
-    cy.get('.top-mid.orientation-marker').as('viewportInfoMidTop');
+    cy.get('.left-mid.orientation-marker')?.as('viewportInfoMidLeft');
+    cy.get('.top-mid.orientation-marker')?.as('viewportInfoMidTop');
   }
 }
 
