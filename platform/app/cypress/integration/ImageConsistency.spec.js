@@ -45,7 +45,9 @@ describe('CS3D Image Consistency and Quality', () => {
       `&seriesInstanceUID=${seriesUID}&hangingProtocolId=@ohif/hpScale`
     );
     cy.initCornerstoneToolsAliases();
-    cy.initCommonElementsAliases();
+
+    const skipMarkers = true;
+    cy.initCommonElementsAliases(skipMarkers);
   };
 
   it('TG18 Resolution Test Displayed 1:1', () => {
