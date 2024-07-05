@@ -2,11 +2,7 @@ import React, { useEffect, useRef, useCallback, useState } from 'react';
 import { useResizeDetector } from 'react-resize-detector';
 import PropTypes from 'prop-types';
 import * as cs3DTools from '@cornerstonejs/tools';
-import {
-  Enums,
-  eventTarget,
-  getEnabledElement,
-} from '@cornerstonejs/core';
+import { Enums, eventTarget, getEnabledElement } from '@cornerstonejs/core';
 import { MeasurementService } from '@ohif/core';
 import { Notification, useViewportDialog, AllInOneMenu } from '@ohif/ui';
 import type { Types as CSTypes } from '@cornerstonejs/core';
@@ -368,12 +364,7 @@ const OHIFCornerstoneViewport = React.memo((props: withAppTypes) => {
       servicesManager
     );
 
-    _checkForCachedJumpToMeasurementEvents(
-      elementRef,
-      viewportId,
-      displaySets,
-      servicesManager
-    );
+    _checkForCachedJumpToMeasurementEvents(elementRef, viewportId, displaySets, servicesManager);
 
     return () => {
       unsubscribeFromJumpToMeasurementEvents();
@@ -457,11 +448,7 @@ const OHIFCornerstoneViewport = React.memo((props: withAppTypes) => {
   );
 }, areEqual);
 
-function _subscribeToJumpToMeasurementEvents(
-  elementRef,
-  viewportId,
-  servicesManager,
-) {
+function _subscribeToJumpToMeasurementEvents(elementRef, viewportId, servicesManager) {
   const { measurementService, cornerstoneViewportService } = servicesManager.services;
 
   const { unsubscribe } = measurementService.subscribe(
@@ -475,25 +462,17 @@ function _subscribeToJumpToMeasurementEvents(
       if (cacheJumpToMeasurementEvent.cornerstoneViewport === undefined) {
         // Decide on which viewport should handle this
         cacheJumpToMeasurementEvent.cornerstoneViewport =
-          cornerstoneViewportService.getViewportIdToJump(
-            jumpId,
-            {
-              displaySetInstanceUID: measurement.displaySetInstanceUID,
-              ...measurement.metadata,
-              referencedImageId:
-                measurement.referencedImageId || measurement.metadata?.referencedImageId,
-            }
-          );
+          cornerstoneViewportService.getViewportIdToJump(jumpId, {
+            displaySetInstanceUID: measurement.displaySetInstanceUID,
+            ...measurement.metadata,
+            referencedImageId:
+              measurement.referencedImageId || measurement.metadata?.referencedImageId,
+          });
       }
       if (cacheJumpToMeasurementEvent.cornerstoneViewport !== viewportId) {
         return;
       }
-      _jumpToMeasurement(
-        measurement,
-        elementRef,
-        viewportId,
-        servicesManager
-      );
+      _jumpToMeasurement(measurement, elementRef, viewportId, servicesManager);
     }
   );
 
@@ -523,22 +502,12 @@ function _checkForCachedJumpToMeasurementEvents(
   const { measurement } = cacheJumpToMeasurementEvent;
   if (measurement && elementRef) {
     if (displaysUIDs.includes(measurement?.displaySetInstanceUID)) {
-      _jumpToMeasurement(
-        measurement,
-        elementRef,
-        viewportId,
-        servicesManager
-      );
+      _jumpToMeasurement(measurement, elementRef, viewportId, servicesManager);
     }
   }
 }
 
-function _jumpToMeasurement(
-  measurement,
-  targetElementRef,
-  viewportId,
-  servicesManager
-) {
+function _jumpToMeasurement(measurement, targetElementRef, viewportId, servicesManager) {
   const { viewportGridService } = servicesManager.services;
 
   const targetElement = targetElementRef.current;
@@ -556,8 +525,7 @@ function _jumpToMeasurement(
     const viewport = enabledElement.viewport as CSTypes.IStackViewport | CSTypes.IVolumeViewport;
 
     const { metadata } = measurement;
-    viewport.setViewReference(metadata)
-
+    viewport.setViewReference(metadata);
 
     cs3DTools.annotation.selection.setAnnotationSelected(measurement.uid);
     // Jump to measurement consumed, remove.

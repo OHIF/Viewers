@@ -529,13 +529,11 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
    *          was initiated.
    * @return the viewportId that the measurement should be displayed in.
    */
-  public getViewportIdToJump(
-    activeViewportId: string,
-    metadata
-  ): string {
+  public getViewportIdToJump(activeViewportId: string, metadata): string {
     // First check if the active viewport can just be navigated to show the given item
     const activeViewport = this.getCornerstoneViewport(activeViewportId);
     if (activeViewport.isReferenceViewable(metadata, { withNavigation: true })) {
+      console.log('**** Active viewport is jumpable');
       return activeViewportId;
     }
 
@@ -550,18 +548,23 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
 
     // No viewport is in the right display set/orientation to show this, so see if
     // the active viewport could change orientations to show this
-    if (activeViewport.isReferenceViewable(metadata, { withNavigation: true, withOrientation: true })) {
+    if (
+      activeViewport.isReferenceViewable(metadata, { withNavigation: true, withOrientation: true })
+    ) {
       return activeViewportId;
     }
 
     // See if any viewport could show this with an orientation change
     for (const id of this.viewportsById.keys()) {
       const viewport = this.getCornerstoneViewport(id);
-      if (viewport?.isReferenceViewable(metadata, { withNavigation: true, withOrientation: true })) {
+      if (
+        viewport?.isReferenceViewable(metadata, { withNavigation: true, withOrientation: true })
+      ) {
         return id;
       }
     }
 
+    console.log('Nothing to jump');
     // No luck, need to update the viewport itself
     return null;
   }
