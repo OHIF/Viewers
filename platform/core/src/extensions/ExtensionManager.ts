@@ -2,7 +2,8 @@ import MODULE_TYPES from './MODULE_TYPES';
 import log from '../log';
 import { PubSubService, ServiceProvidersManager } from '../services';
 import { HotkeysManager, CommandsManager } from '../classes';
-import { DataSourceDefinition } from '../types';
+import type { DataSourceDefinition } from '../types';
+import type AppTypes from '../types/AppTypes';
 
 /**
  * This is the arguments given to create the extension.
@@ -48,7 +49,7 @@ export interface Extension {
   getSopClassHandlerModule?: (p: ExtensionParams) => unknown;
   getToolbarModule?: (p: ExtensionParams) => unknown;
   getPanelModule?: (p: ExtensionParams) => unknown;
-  onModeEnter?: () => void;
+  onModeEnter?: (p: AppTypes) => void;
   onModeExit?: () => void;
 }
 
