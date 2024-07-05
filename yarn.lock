@@ -1492,13 +1492,13 @@
   resolved "https://registry.yarnpkg.com/@colors/colors/-/colors-1.5.0.tgz#bb504579c1cae923e6576a4f5da43d25f97bdbd9"
   integrity sha512-ooWCrlZP11i8GImSjTHYHLkvFDP48nS4+204nGb1RiX/WXYHmJA2III9/e2DWVabCESdW7hBAEzHRqUn9OUVvQ==
 
-"@cornerstonejs/adapters@^1.78.1":
-  version "1.78.1"
-  resolved "https://registry.yarnpkg.com/@cornerstonejs/adapters/-/adapters-1.78.1.tgz#aad40ff55763811a4a12228c8a7ef554f0b7906a"
-  integrity sha512-y0cQRMK/b9CIYxkUq/d8yEqkkykAkZfu/a4gPzGI1vynoEqTefmRiLwSRutM8Uud4EVvNCw5KpJqV4ihjUzqcg==
+"@cornerstonejs/adapters@^1.82.0":
+  version "1.82.0"
+  resolved "https://registry.yarnpkg.com/@cornerstonejs/adapters/-/adapters-1.82.0.tgz#4c7ae6341ad7bcf5cf0213e5252fbac009da23b6"
+  integrity sha512-hcLmba3b7jC1wEorCzaS4OSFBuHz5V5I3IJW1PHbwIAWNHiuKMcC4j6ndMeQhVXHtmy56HUQP+yKAPez59k8Yw==
   dependencies:
     "@babel/runtime-corejs2" "^7.17.8"
-    "@cornerstonejs/tools" "^1.78.1"
+    "@cornerstonejs/tools" "^1.82.0"
     buffer "^6.0.3"
     dcmjs "^0.29.8"
     gl-matrix "^3.4.3"
@@ -1541,6 +1541,17 @@
     gl-matrix "^3.4.3"
     lodash.clonedeep "4.5.0"
 
+"@cornerstonejs/core@^1.82.0":
+  version "1.82.0"
+  resolved "https://registry.yarnpkg.com/@cornerstonejs/core/-/core-1.82.0.tgz#ad9169e912370a2f0c984923edd9782d9d9402ec"
+  integrity sha512-Pnqug+ZMPADd59CAISK7L+I2RiXlJFvdodV5CCgLkwLfqPXZv2nVyr9/BphE7gFAPhwBwKQwIr568Tuxlwim4Q==
+  dependencies:
+    "@kitware/vtk.js" "30.4.1"
+    comlink "^4.4.1"
+    detect-gpu "^5.0.22"
+    gl-matrix "^3.4.3"
+    lodash.clonedeep "4.5.0"
+
 "@cornerstonejs/dicom-image-loader@^1.77.6":
   version "1.78.1"
   resolved "https://registry.yarnpkg.com/@cornerstonejs/dicom-image-loader/-/dicom-image-loader-1.78.1.tgz#d8eef8f65e7069bef26a0f569a2d89bf7c48c9de"
@@ -1555,20 +1566,20 @@
     pako "^2.0.4"
     uuid "^9.0.0"
 
-"@cornerstonejs/streaming-image-volume-loader@^1.78.1":
-  version "1.78.1"
-  resolved "https://registry.yarnpkg.com/@cornerstonejs/streaming-image-volume-loader/-/streaming-image-volume-loader-1.78.1.tgz#6139d0b6825391f0418d69081a6340fda01e2a15"
-  integrity sha512-YC/iyQ9/BWOVF0uF0ZFxJzJmHSrar+25x05X7TIRDCGWf52MpPQvFjqZfArCwwGIHZHajRG+WEh4TgYoqN4mWA==
+"@cornerstonejs/streaming-image-volume-loader@^1.82.0":
+  version "1.82.0"
+  resolved "https://registry.yarnpkg.com/@cornerstonejs/streaming-image-volume-loader/-/streaming-image-volume-loader-1.82.0.tgz#a513ca57236f13af0045f2118352e1919120db1c"
+  integrity sha512-BW/ncOf0ouP82o8jQkj2hhWdjqlA23mNls1gYrpsWBUnyYQOBeto2XZ2LgIOfIgvCrtbhXlE03/nkwxdvTgp3w==
   dependencies:
-    "@cornerstonejs/core" "^1.78.1"
+    "@cornerstonejs/core" "^1.82.0"
     comlink "^4.4.1"
 
-"@cornerstonejs/tools@^1.78.1":
-  version "1.78.1"
-  resolved "https://registry.yarnpkg.com/@cornerstonejs/tools/-/tools-1.78.1.tgz#d5b12f6526a5656af7fb76335fab1231603e509e"
-  integrity sha512-idkYlCNL4xhaWBkw9bqPBSJW5AuK4M5SyRVzp5GEVsBjsBAzRdoa7W+Ls7wmgMJqjv/4neI3E35FfxaXUXLOdA==
+"@cornerstonejs/tools@^1.82.0":
+  version "1.82.0"
+  resolved "https://registry.yarnpkg.com/@cornerstonejs/tools/-/tools-1.82.0.tgz#c7c9a24cc80755121c2209489e348b8c9d252d0d"
+  integrity sha512-1nnlloa6g5zfirAbVnZ+lfuM6DdtcN8kHkZ29xkedzpP24Le4fRHNeuNf6jTSGcgDXPhoZ+WA+q8NnH6wj1h1Q==
   dependencies:
-    "@cornerstonejs/core" "^1.78.1"
+    "@cornerstonejs/core" "^1.82.0"
     "@icr/polyseg-wasm" "0.4.0"
     "@types/offscreencanvas" "2019.7.3"
     comlink "^4.4.1"
