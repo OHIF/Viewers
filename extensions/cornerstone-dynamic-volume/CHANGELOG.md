@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.9.0-beta.59](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.58...v3.9.0-beta.59) (2024-07-05)
+
+
+### Bug Fixes
+
+* Cobb angle not working in basic-test mode and open contour ([#4280](https://github.com/OHIF/Viewers/issues/4280)) ([6fd3c7e](https://github.com/OHIF/Viewers/commit/6fd3c7e293fec851dd30e650c1347cc0bc7a99ee))
+* webpack import bugs showing warnings on import ([#4265](https://github.com/OHIF/Viewers/issues/4265)) ([24c511f](https://github.com/OHIF/Viewers/commit/24c511f4bc04c4143bbd3d0d48029f41f7f36014))
+
+
+
+
+
 # [3.9.0-beta.58](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.57...v3.9.0-beta.58) (2024-07-04)
 
 **Note:** Version bump only for package @ohif/extension-cornerstone-dynamic-volume
