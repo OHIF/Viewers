@@ -26,7 +26,7 @@ function seriesInfoSortingCriteria(firstSeries, secondSeries) {
   const bLowPriority = isLowPriorityModality(secondSeries.Modality ?? secondSeries.modality);
 
   if (aLowPriority) {
-    return bLowPriority ? defaultSeriesSort(secondSeries, firstSeries) : 1;
+    return bLowPriority ? -defaultSeriesSort(secondSeries, firstSeries) : 1;
   } else if (bLowPriority) {
     return -1;
   }

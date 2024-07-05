@@ -57,8 +57,9 @@ function CornerstoneImageScrollbar({
       return;
     }
     const { viewportType } = viewportData;
-    const eventId = viewportType === Enums.ViewportType.STACK && Enums.Events.STACK_VIEWPORT_SCROLL ||
-      viewportType === Enums.ViewportType.ORTHOGRAPHIC && Enums.Events.VOLUME_NEW_IMAGE ||
+    const eventId =
+      (viewportType === Enums.ViewportType.STACK && Enums.Events.STACK_VIEWPORT_SCROLL) ||
+      (viewportType === Enums.ViewportType.ORTHOGRAPHIC && Enums.Events.VOLUME_NEW_IMAGE) ||
       Enums.Events.IMAGE_RENDERED;
 
     const updateIndex = event => {
