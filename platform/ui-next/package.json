@@ -3,8 +3,18 @@
   "version": "3.9.0-beta.58",
   "description": "Next version of OHIF Viewers UI, more customizable using shadcn/ui",
   "main": "index.ts",
+  "module": "src/index.js",
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "cross-env NODE_ENV=production webpack --config .webpack/webpack.prod.js",
+    "build:package": "yarn run build"
   },
   "exports": {
     "./tailwind.config": "./tailwind.config.ts",
