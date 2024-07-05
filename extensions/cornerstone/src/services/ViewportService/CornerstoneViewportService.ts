@@ -533,7 +533,6 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     // First check if the active viewport can just be navigated to show the given item
     const activeViewport = this.getCornerstoneViewport(activeViewportId);
     if (activeViewport.isReferenceViewable(metadata, { withNavigation: true })) {
-      console.log('**** Active viewport is jumpable');
       return activeViewportId;
     }
 
@@ -564,7 +563,6 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
       }
     }
 
-    console.log('Nothing to jump');
     // No luck, need to update the viewport itself
     return null;
   }
@@ -1046,11 +1044,11 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
         dimensions[2] * dimensions[2]
       );
 
-      return slabThickness;
+      retur  n slabThickness;
     }
   }
 
-  _getFrameOfReferenceUID(displaySetInstanceUID) {
+  _g  etFrameOfReferenceUID(displaySetInstanceUID) {
     const { displaySetService } = this.servicesManager.services;
     const displaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
 
