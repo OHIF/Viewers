@@ -44,6 +44,7 @@ const extension: Types.Extensions.Extension = {
    * that is provided by the Cornerstone extension in OHIF.
    */
   getViewportModule({ servicesManager, extensionManager, commandsManager }) {
+
     /**
      *
      * @param props {*}

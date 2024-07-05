@@ -35,6 +35,9 @@ What's Changing?
 </Tabs>
 
 
+### Run newer yarn version
+You must be running a newer yarn version for react 18.
+It isn't clear the exact yarn required.
 
 ### Update React version:
 In your custom extensions and modes, change the version of react and react-dom to ^18.3.1.
@@ -159,6 +162,57 @@ To disable it, remove the configuration from the `initToolGroups` in your mode.
 ---
 
 <br/>
+
+## External Libraries
+Some libraries are loaded via dynamic import.  You can provide a global function
+`browserImport` the allows loading of dynamic imports without affecting the
+webpack build.  This import looks like:
+
+```
+<script>
+      function browserImportFunction(moduleId) {
+        return import(moduleId);
+      }
+    </script>
+```
+
+and belongs in the root html file for your application.
+You then need to remove `dependencies` on the external import, and add a reference
+to the external import in your `pluginConfig.json` file.
+
+### Example plugin config for `dicom-microscopy-viewer`
+The example below imports the `dicom-microscopy-viewer` for use as an external
+dependency.  The example is part of the default `pluginConfig.json` file.
+
+```
+  "public": [
+    {
+      "directory": "./platform/public"
+    },
+    {
+      "packageName": "dicom-microscopy-viewer",
+      "importPath": "/dicom-microscopy-viewer/dicomMicroscopyViewer.min.js",
+      "globalName": "dicomMicroscopyViewer",
+      "directory": "./node_modules/dicom-microscopy-viewer/dist/dynamic-import"
+    }
+  ]
+```
+
+This defines two directory modules, whose contents are copied unchanged to the
+output build directory.  It then defines the `dicom-microscopy-viewer` using
+the `packageName` element as being a module which is imported dynamically.
+Then, the import path passed into the browserImportFunction above is
+specified, and then how to access the import itself, via the `window.dicomMicroscopyViewer`
+global name reference.
+
+### Referencing External Imports
+The appConfig either defines or has a default peerImport function which can be
+used to load references to the modules defined in the pluginConfig file.  See
+the example in `init.tsx` for the cornerstone extension for how this is passed
+into CS3D for loading the whole slide imaging library.
+
+### Usage of Dynamic Imports
+
 
 ## BulkDataURI Configuration
 

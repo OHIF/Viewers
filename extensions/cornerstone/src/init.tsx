@@ -37,8 +37,8 @@ import { colormaps } from './utils/colormaps';
 const { registerColormap } = csUtilities.colormap;
 
 // TODO: Cypress tests are currently grabbing this from the window?
-window.cornerstone = cornerstone;
-window.cornerstoneTools = cornerstoneTools;
+(window as any).cornerstone = cornerstone;
+(window as any).cornerstoneTools = cornerstoneTools;
 /**
  *
  */
@@ -46,7 +46,7 @@ export default async function init({
   servicesManager,
   commandsManager,
   extensionManager,
-  appConfig,
+  appConfig
 }: Types.Extensions.ExtensionParams): Promise<void> {
   // Note: this should run first before initializing the cornerstone
   // DO NOT CHANGE THE ORDER
@@ -67,6 +67,7 @@ export default async function init({
       preferSizeOverAccuracy: Boolean(appConfig.preferSizeOverAccuracy),
       useNorm16Texture: Boolean(appConfig.useNorm16Texture),
     },
+    peerImport: appConfig.peerImport,
   });
 
   // For debugging e2e tests that are failing on CI
