@@ -31,7 +31,7 @@ function getPanelModule({ commandsManager, extensionManager, servicesManager }) 
       }),
     },
     {
-      name: 'measure',
+      name: 'measurements',
       iconName: 'tab-linear',
       iconLabel: 'Measure',
       label: i18n.t('SidePanel:Measurements'),

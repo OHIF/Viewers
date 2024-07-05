@@ -146,6 +146,13 @@ function getCustomizationModule() {
             ],
           },
           PlanarFreehandROI: {
+            displayTextOpen: [
+              {
+                displayName: 'Length',
+                value: 'length',
+                type: 'value',
+              },
+            ],
             displayText: [
               {
                 displayName: 'Mean',

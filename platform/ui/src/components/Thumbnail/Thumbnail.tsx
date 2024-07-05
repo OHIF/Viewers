@@ -96,10 +96,8 @@ const Thumbnail = ({
             />
             {` ${numInstances}`}
           </div>
-          <div className="flex mr-2 last:mr-0">
-            {loadingProgress && loadingProgress < 1 && (
-              <>{Math.round(loadingProgress * 100)}%</>
-            )}
+          <div className="mr-2 flex last:mr-0">
+            {loadingProgress && loadingProgress < 1 && <>{Math.round(loadingProgress * 100)}%</>}
             {loadingProgress && loadingProgress === 1 && (
               <Icon
                 name={'database'}

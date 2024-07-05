@@ -1,15 +1,13 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { LoadingIndicatorProgress } from '@ohif/ui';
-import { dicomWebUtils } from '@ohif/extension-default';
 
 import './DicomMicroscopyViewport.css';
 import ViewportOverlay from './components/ViewportOverlay';
 import getDicomWebClient from './utils/dicomWebClient';
 import dcmjs from 'dcmjs';
+import cleanDenaturalizedDataset from './utils/cleanDenaturalizedDataset';
 import MicroscopyService from './services/MicroscopyService';
-
-const { cleanDenaturalizedDataset } = dicomWebUtils;
 
 class DicomMicroscopyViewport extends Component {
   state = {
@@ -51,13 +49,6 @@ class DicomMicroscopyViewport extends Component {
     resizeRef: PropTypes.oneOfType([PropTypes.func, PropTypes.shape({ current: PropTypes.any })]),
   };
 
-  /**
-   * Need to return this as a function to prevent webpack from munging it.
-   */
-  public static getImportPath() {
-    return '/dicom-microscopy-viewer/dicomMicroscopyViewer.min.js';
-  }
-
 
   /**
    * Get the nearest ROI from the mouse click point
@@ -95,14 +86,11 @@ class DicomMicroscopyViewport extends Component {
   // install the microscopy renderer into the web page.
   // you should only do this once.
   async installOpenLayersRenderer(container, displaySet) {
-    const loadViewer = async displaySet => {
-      await import(
-        /* webpackIgnore: true */ DicomMicroscopyViewport.getImportPath());
-      const { viewer: DicomMicroscopyViewer, metadata: metadataUtils } = (window as any).dicomMicroscopyViewer;
+    const loadViewer = async metadata => {
+      const dicomMicroscopyModule = await this.microscopyService.importDicomMicroscopyViewer();
+      const { viewer: DicomMicroscopyViewer, metadata: metadataUtils } = dicomMicroscopyModule;
 
       const microscopyViewer = DicomMicroscopyViewer.VolumeImageViewer;
-
-      const { instances: metadata } = displaySet;
 
       const client = getDicomWebClient({
         extensionManager: this.props.extensionManager,
@@ -158,7 +146,7 @@ class DicomMicroscopyViewport extends Component {
         //    is a string, not a string array.
         m.ImageType = typeof m.ImageType === 'string' ? m.ImageType.split('\\') : m.ImageType;
 
-        const inst = dicomWebUtils.cleanDenaturalizedDataset(
+        const inst = cleanDenaturalizedDataset(
           dcmjs.data.DicomMetaDictionary.denaturalizeDataset(m),
           {
             StudyInstanceUID: m.StudyInstanceUID,
@@ -235,8 +223,9 @@ class DicomMicroscopyViewport extends Component {
       // for SR displaySet, let's load the actual image displaySet
       smDisplaySet = displaySet.getSourceDisplaySet();
     }
+    console.log('Loading viewer metadata', smDisplaySet);
 
-    await loadViewer(smDisplaySet);
+    await loadViewer(smDisplaySet.others);
 
     if (displaySet.Modality === 'SR') {
       displaySet.load(smDisplaySet);

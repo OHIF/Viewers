@@ -15,6 +15,7 @@ const ohif = {
   wsiSopClassHandler:
     '@ohif/extension-cornerstone.sopClassHandlerModule.DicomMicroscopySopClassHandler',
   thumbnailList: '@ohif/extension-default.panelModule.seriesList',
+  measurements: '@ohif/extension-default.panelModule.measurements',
 };
 
 const tracked = {
@@ -136,6 +137,9 @@ function modeFactory() {
           return {
             id: ohif.layout,
             props: {
+              // Use the first two for an untracked view
+              // leftPanels: [ohif.thumbnailList],
+              // rightPanels: [dicomSeg.panel, ohif.measurements],
               leftPanels: [tracked.thumbnailList],
               rightPanels: [dicomSeg.panel, tracked.measurements],
               // rightPanelClosed: true, // optional prop to start with collapse panels

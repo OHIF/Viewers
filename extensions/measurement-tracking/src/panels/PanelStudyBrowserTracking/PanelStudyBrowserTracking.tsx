@@ -43,6 +43,7 @@ function PanelStudyBrowserTracking({
     ...StudyInstanceUIDs,
   ]);
   const [studyDisplayList, setStudyDisplayList] = useState([]);
+  const [hasLoadedViewports, setHasLoadedViewports] = useState(false);
   const [displaySets, setDisplaySets] = useState([]);
   const [displaySetsLoadingState, setDisplaySetsLoadingState] = useState({});
   const [thumbnailImageSrcMap, setThumbnailImageSrcMap] = useState({});
@@ -128,6 +129,18 @@ function PanelStudyBrowserTracking({
 
   // ~~ Initial Thumbnails
   useEffect(() => {
+    if (!hasLoadedViewports) {
+      if (activeViewportId) {
+        // Once there is an active viewport id, it means the layout is ready
+        // so wait a bit of time to allow the viewports preferential loading
+        // which improves user experience of responsiveness significantly on slower
+        // systems.
+        window.setTimeout(() => setHasLoadedViewports(true), 250);
+      }
+
+      return;
+    }
+
     const currentDisplaySets = displaySetService.activeDisplaySets;
 
     if (!currentDisplaySets.length) {
@@ -152,7 +165,7 @@ function PanelStudyBrowserTracking({
         return { ...prevState, ...newImageSrcEntry };
       });
     });
-  }, [displaySetService, dataSource, getImageSrc]);
+  }, [displaySetService, dataSource, getImageSrc, activeViewportId, hasLoadedViewports]);
 
   // ~~ displaySets
   useEffect(() => {
@@ -209,6 +222,9 @@ function PanelStudyBrowserTracking({
     const SubscriptionDisplaySetsAdded = displaySetService.subscribe(
       displaySetService.EVENTS.DISPLAY_SETS_ADDED,
       data => {
+        if (!hasLoadedViewports) {
+          return;
+        }
         const { displaySetsAdded, options } = data;
         displaySetsAdded.forEach(async dSet => {
           const displaySetInstanceUID = dSet.displaySetInstanceUID;
@@ -428,7 +444,7 @@ function PanelStudyBrowserTracking({
       onClickUntrack={displaySetInstanceUID => {
         onClickUntrack(displaySetInstanceUID);
       }}
-      onClickThumbnail={() => {}}
+      onClickThumbnail={() => { }}
       onDoubleClickThumbnail={onDoubleClickThumbnailHandler}
       activeDisplaySetInstanceUIDs={activeViewportDisplaySetInstanceUIDs}
     />
