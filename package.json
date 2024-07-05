@@ -1,7 +1,6 @@
 {
   "name": "ohif-monorepo-root",
   "private": true,
-  "packageManager": "yarn@1.22.22",
   "workspaces": {
     "packages": [
       "platform/*",
@@ -101,7 +100,7 @@
     ]
   },
   "resolutions": {
-    "**/@babel/runtime": "^7.20.13",
+    "@babel/runtime": "^7.20.13",
     "commander": "8.3.0",
     "dcmjs": ">=0.33.0",
     "dicomweb-client": ">=0.10.4",
