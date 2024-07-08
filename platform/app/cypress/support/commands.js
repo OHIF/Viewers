@@ -232,8 +232,8 @@ Cypress.Commands.add('initCornerstoneToolsAliases', () => {
 });
 
 //Initialize aliases for Common page elements
-Cypress.Commands.add('initCommonElementsAliases', () => {
-  initCommonElementsAliases();
+Cypress.Commands.add('initCommonElementsAliases', skipMarkers => {
+  initCommonElementsAliases(skipMarkers);
 });
 
 //Initialize aliases for Routes

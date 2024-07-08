@@ -2,7 +2,8 @@ import MODULE_TYPES from './MODULE_TYPES';
 import log from '../log';
 import { PubSubService, ServiceProvidersManager } from '../services';
 import { HotkeysManager, CommandsManager } from '../classes';
-import { DataSourceDefinition } from '../types';
+import type { DataSourceDefinition } from '../types';
+import type AppTypes from '../types/AppTypes';
 
 /**
  * This is the arguments given to create the extension.
@@ -30,6 +31,7 @@ export interface ExtensionParams extends ExtensionConstructor {
   servicesManager: AppTypes.ServicesManager;
   serviceProvidersManager: ServiceProvidersManager;
   configuration?: ExtensionConfiguration;
+  peerImport: (moduleId: string) => Promise<any>;
 }
 
 /**
@@ -48,7 +50,7 @@ export interface Extension {
   getSopClassHandlerModule?: (p: ExtensionParams) => unknown;
   getToolbarModule?: (p: ExtensionParams) => unknown;
   getPanelModule?: (p: ExtensionParams) => unknown;
-  onModeEnter?: () => void;
+  onModeEnter?: (p: AppTypes) => void;
   onModeExit?: () => void;
 }
 
@@ -87,6 +89,7 @@ export default class ExtensionManager extends PubSubService {
   private dataSourceDefs: Record<string, any>;
   private defaultDataSourceName: string;
   private activeDataSource: string;
+  private peerImport: (moduleId) => Promise<any>;
 
   constructor({
     commandsManager,
@@ -115,6 +118,7 @@ export default class ExtensionManager extends PubSubService {
     this.dataSourceDefs = {};
     this.defaultDataSourceName = appConfig.defaultDataSourceName;
     this.activeDataSource = appConfig.defaultDataSourceName;
+    this.peerImport = appConfig.peerImport;
   }
 
   public setActiveDataSource(dataSource: string): void {
@@ -607,6 +611,10 @@ export default class ExtensionManager extends PubSubService {
       );
     });
   };
+
+  public get appConfig() {
+    return this._appConfig;
+  }
 }
 
 /**
