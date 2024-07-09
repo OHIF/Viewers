@@ -465,7 +465,7 @@ window.config = {
 ...
 ```
 
-<img src="../../../assets/img/customizable-overlay.png" />
+<img src="../../../assets/img/customizable-overlay.jpeg" />
 
 ## Context Menus
 

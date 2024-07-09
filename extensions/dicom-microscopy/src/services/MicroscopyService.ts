@@ -22,8 +22,8 @@ export default class MicroscopyService extends PubSubService {
     return {
       name: 'microscopyService',
       altName: 'MicroscopyService',
-      create: ({ configuration = {} }) => {
-        return new MicroscopyService(servicesManager);
+      create: (props) => {
+        return new MicroscopyService(props);
       },
     };
   };
@@ -36,9 +36,10 @@ export default class MicroscopyService extends PubSubService {
   selectedAnnotation = null;
   pendingFocus = false;
 
-  constructor(servicesManager) {
+  constructor({ servicesManager, extensionManager }) {
     super(EVENTS);
     this.servicesManager = servicesManager;
+    this.peerImport = extensionManager.appConfig.peerImport;
     this._onRoiAdded = this._onRoiAdded.bind(this);
     this._onRoiModified = this._onRoiModified.bind(this);
     this._onRoiRemoved = this._onRoiRemoved.bind(this);
@@ -67,6 +68,10 @@ export default class MicroscopyService extends PubSubService {
     Object.keys(this.annotations).forEach(uid => {
       this.removeAnnotation(this.annotations[uid]);
     });
+  }
+
+  public importDicomMicroscopyViewer(): Promise<any> {
+    return this.peerImport("dicom-microscopy-viewer");
   }
 
   /**

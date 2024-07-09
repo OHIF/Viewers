@@ -88,6 +88,12 @@
   "public": [
     {
       "directory": "./platform/public"
+    },
+    {
+      "packageName": "dicom-microscopy-viewer",
+      "importPath": "/dicom-microscopy-viewer/dicomMicroscopyViewer.min.js",
+      "globalName": "dicomMicroscopyViewer",
+      "directory": "./node_modules/dicom-microscopy-viewer/dist/dynamic-import"
     }
   ]
 }

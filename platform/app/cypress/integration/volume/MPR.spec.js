@@ -12,7 +12,7 @@ describe('OHIF MPR', () => {
 
   it('should go MPR for reconstructible displaySets and come back', () => {
     cy.wait(250);
-    cy.get(':nth-child(3) > [data-cy="study-browser-thumbnail"]').dblclick();
+    cy.get('[data-cy="study-browser-thumbnail"][data-series="4"]').dblclick();
     cy.wait(250);
 
     cy.get('[data-cy="MPR"]').click();
@@ -27,7 +27,7 @@ describe('OHIF MPR', () => {
   it('should render correctly the MPR', () => {
     cy.wait(250);
 
-    cy.get(':nth-child(3) > [data-cy="study-browser-thumbnail"]').dblclick();
+    cy.get('[data-cy="study-browser-thumbnail"][data-series="4"]').dblclick();
     cy.wait(250);
     cy.get('[data-cy="MPR"]').click();
 
@@ -61,7 +61,7 @@ describe('OHIF MPR', () => {
   });
 
   it('should correctly render Crosshairs for MPR', () => {
-    cy.get(':nth-child(3) > [data-cy="study-browser-thumbnail"]').dblclick();
+    cy.get('[data-cy="study-browser-thumbnail"][data-series="4"]').dblclick();
     cy.get('[data-cy="MPR"]').click();
     cy.get('[data-cy="Crosshairs"]').click();
 
@@ -93,7 +93,7 @@ describe('OHIF MPR', () => {
   });
 
   it('should activate window level when the active Crosshairs tool for MPR is clicked', () => {
-    cy.get(':nth-child(3) > [data-cy="study-browser-thumbnail"]').dblclick();
+    cy.get('[data-cy="study-browser-thumbnail"][data-series="4"]').dblclick();
     cy.get('[data-cy="MPR"]').click();
     cy.get('[data-cy="Crosshairs"]').click();
 

@@ -12,9 +12,10 @@ import dicomRTAnnotationExport from './utils/dicomRTAnnotationExport/RTStructure
 import { getWebWorkerManager } from '@cornerstonejs/core';
 
 const metadataProvider = classes.MetadataProvider;
-const RECTANGLE_ROI_THRESHOLD_MANUAL_TOOL_IDS = [
+const ROI_THRESHOLD_MANUAL_TOOL_IDS = [
   'RectangleROIStartEndThreshold',
   'RectangleROIThreshold',
+  'CircleROIStartEndThreshold'
 ];
 const LABELMAP = csTools.Enums.SegmentationRepresentations.Labelmap;
 
@@ -204,7 +205,7 @@ const commandsModule = ({ servicesManager, commandsManager, extensionManager }: 
       const { referencedVolumeId } = cs.cache.getVolume(segVolumeId);
 
       const annotationUIDs = _getAnnotationsSelectedByToolNames(
-        RECTANGLE_ROI_THRESHOLD_MANUAL_TOOL_IDS
+        ROI_THRESHOLD_MANUAL_TOOL_IDS
       );
 
       if (annotationUIDs.length === 0) {
@@ -291,7 +292,7 @@ const commandsModule = ({ servicesManager, commandsManager, extensionManager }: 
       const referencedVolume = cs.cache.getVolume(referencedVolumeId);
 
       const annotationUIDs = _getAnnotationsSelectedByToolNames(
-        RECTANGLE_ROI_THRESHOLD_MANUAL_TOOL_IDS
+        ROI_THRESHOLD_MANUAL_TOOL_IDS
       );
 
       const annotations = annotationUIDs.map(annotationUID =>
@@ -370,15 +371,16 @@ const commandsModule = ({ servicesManager, commandsManager, extensionManager }: 
           voxelCount++;
         }
       }
+      const mean = segmentationValues.reduce((a, b) => a + b, 0) / voxelCount;
 
       const stats = {
         minValue: segmentationMin,
         maxValue: segmentationMax,
-        meanValue: segmentationValues.reduce((a, b) => a + b, 0) / voxelCount,
+        meanValue: mean,
         stdValue: Math.sqrt(
-          segmentationValues.reduce((a, b) => a + b * b, 0) / voxelCount -
-            segmentationValues.reduce((a, b) => a + b, 0) / voxelCount ** 2
-        ),
+          segmentationValues
+            .map((k) => (k - mean) ** 2)
+            .reduce((acc, curr) => acc + curr, 0) / voxelCount),
         volume: voxelCount * spacing[0] * spacing[1] * spacing[2] * 1e-3,
       };
 
@@ -468,38 +470,18 @@ const commandsModule = ({ servicesManager, commandsManager, extensionManager }: 
     },
     setStartSliceForROIThresholdTool: () => {
       const { viewport } = _getActiveViewportsEnabledElement();
-      const { focalPoint, viewPlaneNormal } = viewport.getCamera();
+      const { focalPoint } = viewport.getCamera();
 
       const selectedAnnotationUIDs = _getAnnotationsSelectedByToolNames(
-        RECTANGLE_ROI_THRESHOLD_MANUAL_TOOL_IDS
+        ROI_THRESHOLD_MANUAL_TOOL_IDS
       );
 
       const annotationUID = selectedAnnotationUIDs[0];
 
       const annotation = csTools.annotation.state.getAnnotation(annotationUID);
 
-      const { handles } = annotation.data;
-      const { points } = handles;
-
-      // get the current slice Index
-      const sliceIndex = viewport.getCurrentImageIdIndex();
-      annotation.data.startSlice = sliceIndex;
-
-      // distance between camera focal point and each point on the rectangle
-      const newPoints = points.map(point => {
-        const distance = vec3.create();
-        vec3.subtract(distance, focalPoint, point);
-        // distance in the direction of the viewPlaneNormal
-        const distanceInViewPlane = vec3.dot(distance, viewPlaneNormal);
-        // new point is current point minus distanceInViewPlane
-        const newPoint = vec3.create();
-        vec3.scaleAndAdd(newPoint, point, viewPlaneNormal, distanceInViewPlane);
-
-        return newPoint;
-        //
-      });
-
-      handles.points = newPoints;
+      // set the current focalpoint
+      annotation.data.startCoordinate = focalPoint;
       // IMPORTANT: invalidate the toolData for the cached stat to get updated
       // and re-calculate the projection points
       annotation.invalidated = true;
@@ -509,16 +491,16 @@ const commandsModule = ({ servicesManager, commandsManager, extensionManager }: 
       const { viewport } = _getActiveViewportsEnabledElement();
 
       const selectedAnnotationUIDs = _getAnnotationsSelectedByToolNames(
-        RECTANGLE_ROI_THRESHOLD_MANUAL_TOOL_IDS
+        ROI_THRESHOLD_MANUAL_TOOL_IDS
       );
 
       const annotationUID = selectedAnnotationUIDs[0];
 
       const annotation = csTools.annotation.state.getAnnotation(annotationUID);
 
-      // get the current slice Index
-      const sliceIndex = viewport.getCurrentImageIdIndex();
-      annotation.data.endSlice = sliceIndex;
+      // get the current focalpoint
+      const focalPointToEnd = viewport.getCamera().focalPoint;
+      annotation.data.endCoordinate = focalPointToEnd;
 
       // IMPORTANT: invalidate the toolData for the cached stat to get updated
       // and re-calculate the projection points
@@ -534,7 +516,7 @@ const commandsModule = ({ servicesManager, commandsManager, extensionManager }: 
 
       Object.keys(stateManager.annotations).forEach(frameOfReferenceUID => {
         const forAnnotations = stateManager.annotations[frameOfReferenceUID];
-        const ROIAnnotations = RECTANGLE_ROI_THRESHOLD_MANUAL_TOOL_IDS.reduce(
+        const ROIAnnotations = ROI_THRESHOLD_MANUAL_TOOL_IDS.reduce(
           (annotations, toolName) => [...annotations, ...(forAnnotations[toolName] ?? [])],
           []
         );
