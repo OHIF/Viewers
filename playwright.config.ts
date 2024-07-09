@@ -39,6 +39,6 @@ export default defineConfig({
     command: 'yarn test:e2e:serve',
     url: 'http://localhost:3000',
     reuseExistingServer: !process.env.CI,
-    timeout: 120 * 1000,
+    timeout: 240 * 1000,
   },
 });

@@ -16,7 +16,6 @@ export async function visitStudy(
   datasources = 'ohif'
 ) {
   await page.goto(`/?resultsPerPage=100&datasources=${datasources}`);
-  // await page.getByTestId('confirm-and-hide-button').click();
   await page.getByTestId(studyInstanceUID).click();
   await page.getByRole('button', { name: mode }).click();
   await page.waitForLoadState('domcontentloaded');

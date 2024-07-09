@@ -24,7 +24,7 @@ window.config = {
     prefetch: 25,
   },
   // filterQueryParam: false,
-  defaultDataSourceName: 'ohif',
+  defaultDataSourceName: 'dicomweb',
   /* Dynamic config allows user to pass "configUrl" query string this allows to load config without recompiling application. The regex will ensure valid configuration source */
   // dangerouslyUseDynamicConfig: {
   //   enabled: true,
@@ -38,10 +38,10 @@ window.config = {
   dataSources: [
     {
       namespace: '@ohif/extension-default.dataSourcesModule.dicomweb',
-      sourceName: 'ohif',
+      sourceName: 'dicomweb',
       configuration: {
-        friendlyName: 'OHIF Test Dataset',
-        name: 'ohif',
+        friendlyName: 'AWS S3 Static wado server',
+        name: 'aws',
         wadoUriRoot: 'https://d33do7qe4w26qo.cloudfront.net/dicomweb',
         qidoRoot: 'https://d33do7qe4w26qo.cloudfront.net/dicomweb',
         wadoRoot: 'https://d33do7qe4w26qo.cloudfront.net/dicomweb',
@@ -125,8 +125,8 @@ window.config = {
       namespace: '@ohif/extension-default.dataSourcesModule.dicomweb',
       sourceName: 'local5000',
       configuration: {
-        friendlyName: 'localhost port 5000',
-        name: 'local5000',
+        friendlyName: 'Static WADO Local Data',
+        name: 'DCM4CHEE',
         qidoRoot: 'http://localhost:5000/dicomweb',
         wadoRoot: 'http://localhost:5000/dicomweb',
         qidoSupportsIncludeField: false,
