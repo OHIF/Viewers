@@ -162,6 +162,17 @@ You can follow the similar steps above to run OHIF Viewer with Dcm4chee PACS.
 The recipe for this setup can be found at `platform/app/.recipes/Nginx-Dcm4chee`.
 
 
+The routes are as follows:
+- `127.0.0.1` for the OHIF viewer
+- `127.0.0.1/pacs` for the Dcm4chee UI
+
+:::info
+For uploading studies, you can see the following gif for the steps:
+
+![alt text](../assets/img/dcm4chee-upload.gif)
+
+:::
+
 ### Deploying to Production
 
 While you can deploy this solution to production, there is one main caveat: every user can access the app and the patient portal without any authentication. In the next step, we will add authentication with Keycloak to secure the app.

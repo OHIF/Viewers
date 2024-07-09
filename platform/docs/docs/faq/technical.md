@@ -148,7 +148,7 @@ This is a flag that you can set in your [configuration file](../configuration/co
 
 For instance for a large pt/ct study
 
-![](../assets/img/large-pt-ct.png)
+![](../assets/img/large-pt-ct.jpeg)
 
 Before (without the flag) the app shows 399 MB of memory usage
 

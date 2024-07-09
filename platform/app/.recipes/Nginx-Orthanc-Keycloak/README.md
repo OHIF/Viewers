@@ -36,7 +36,7 @@ Installing Yarn
 
 ## Updating the OHIF config and building the viewer
 
-1. Rename `docker_nginx-orthanc-keycloak.js` to `default.js`.
+1. Rename `docker-nginx-orthanc-keycloak.js` to `default.js`.
 
 2. Update the following configuration in `default.js`:
 
