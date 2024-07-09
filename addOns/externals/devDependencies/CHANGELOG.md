@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.9.0-beta.62](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.61...v3.9.0-beta.62) (2024-07-09)
+
+**Note:** Version bump only for package @externals/devDependencies
+
+
+
+
+
 # [3.9.0-beta.61](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.60...v3.9.0-beta.61) (2024-07-09)
 
 **Note:** Version bump only for package @externals/devDependencies
