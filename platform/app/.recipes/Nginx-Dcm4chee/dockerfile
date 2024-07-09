@@ -21,7 +21,7 @@ RUN yarn install
 # Copy the rest of the application code
 
 # set QUICK_BUILD to true to make the build faster for dev
-ENV APP_CONFIG=config/docker-nginx-orthanc.js
+ENV APP_CONFIG=config/docker-nginx-dcm4chee.js
 
 # Build the application
 RUN yarn run build

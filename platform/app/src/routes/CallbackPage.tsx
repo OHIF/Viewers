@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 
 function CallbackPage({ userManager, onRedirectSuccess }) {
@@ -6,10 +6,12 @@ function CallbackPage({ userManager, onRedirectSuccess }) {
     throw new Error(error);
   };
 
-  userManager
-    .signinRedirectCallback()
-    .then(user => onRedirectSuccess(user))
-    .catch(error => onRedirectError(error));
+  useEffect(() => {
+    userManager
+      .signinRedirectCallback()
+      .then(user => onRedirectSuccess(user))
+      .catch(error => onRedirectError(error));
+  }, [userManager, onRedirectSuccess]);
 
   return null;
 }
