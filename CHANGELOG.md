@@ -3,6 +3,39 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.9.0-beta.62](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.61...v3.9.0-beta.62) (2024-07-09)
+
+
+### Bug Fixes
+
+* the start/end command in TMTV for the ROIStartEndThreshold tools ([#4281](https://github.com/OHIF/Viewers/issues/4281)) ([38c19fa](https://github.com/OHIF/Viewers/commit/38c19fab77cdb21d14bdae35813d73f43012cbd7))
+
+
+
+
+
+# [3.9.0-beta.61](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.60...v3.9.0-beta.61) (2024-07-09)
+
+
+### Features
+
+* **auth:** Add Authorization Code Flow and new Keycloak recipes with new video tutorials ([#4234](https://github.com/OHIF/Viewers/issues/4234)) ([aefa6d9](https://github.com/OHIF/Viewers/commit/aefa6d94dff82d34fa8358933fb1d5dec3f8246d))
+
+
+
+
+
+# [3.9.0-beta.60](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.59...v3.9.0-beta.60) (2024-07-09)
+
+
+### Bug Fixes
+
+* Tests run against e2e config for both playwright and older tests ([#4283](https://github.com/OHIF/Viewers/issues/4283)) ([31271ae](https://github.com/OHIF/Viewers/commit/31271aeef727ec9cfa44fdf91f571a33b10cb3ab))
+
+
+
+
+
 # [3.9.0-beta.59](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.58...v3.9.0-beta.59) (2024-07-05)
 
 

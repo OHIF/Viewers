@@ -1,6 +1,6 @@
 /** @type {AppTypes.Config} */
 window.config = {
-  routerBasename: '/',
+  routerBasename: '/ohif-viewer/',
   showStudyList: true,
   customizationService: {
     dicomUploadComponent:
@@ -12,25 +12,18 @@ window.config = {
   showWarningMessageForCrossOrigin: true,
   showCPUFallbackMessage: true,
   showLoadingIndicator: true,
-  experimentalStudyBrowserSort: false,
   strictZSpacingForVolumeViewport: true,
-  studyPrefetcher: {
-    enabled: true,
-    displaySetsCount: 2,
-    maxNumPrefetchRequests: 10,
-    order: 'closest',
-  },
   defaultDataSourceName: 'dicomweb',
   dataSources: [
     {
       namespace: '@ohif/extension-default.dataSourcesModule.dicomweb',
       sourceName: 'dicomweb',
       configuration: {
-        friendlyName: 'Orthanc Server',
-        name: 'Orthanc',
-        wadoUriRoot: '/wado',
-        qidoRoot: '/dicom-web',
-        wadoRoot: '/dicom-web',
+        friendlyName: 'Dcm4chee Server',
+        name: 'Dcm4chee',
+        wadoUriRoot: 'http://127.0.0.1/pacs',
+        qidoRoot: 'http://127.0.0.1/pacs',
+        wadoRoot: 'http://127.0.0.1/pacs',
         qidoSupportsIncludeField: false,
         imageRendering: 'wadors',
         thumbnailRendering: 'wadors',
@@ -38,23 +31,5 @@ window.config = {
         omitQuotationForMultipartRequest: true,
       },
     },
-    {
-      namespace: '@ohif/extension-default.dataSourcesModule.dicomjson',
-      sourceName: 'dicomjson',
-      configuration: {
-        friendlyName: 'dicom json',
-        name: 'json',
-      },
-    },
-    {
-      namespace: '@ohif/extension-default.dataSourcesModule.dicomlocal',
-      sourceName: 'dicomlocal',
-      configuration: {
-        friendlyName: 'dicom local',
-      },
-    },
   ],
-  httpErrorHandler: error => {
-    console.warn(`HTTP Error Handler (status: ${error.status})`, error);
-  },
 };

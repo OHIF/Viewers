@@ -1,4 +1,3 @@
-import React from 'react';
 import { useUserAuthentication } from '@ohif/ui';
 
 export const PrivateRoute = ({ children, handleUnauthenticated }) => {
