@@ -44,11 +44,13 @@ function _askHydrate(uiViewportDialogService, viewportId) {
     const message = 'Do you want to open this Segmentation?';
     const actions = [
       {
+        id: 'no-hydrate',
         type: ButtonEnums.type.secondary,
         text: 'No',
         value: RESPONSE.CANCEL,
       },
       {
+        id: 'yes-hydrate',
         type: ButtonEnums.type.primary,
         text: 'Yes',
         value: RESPONSE.HYDRATE_SEG,

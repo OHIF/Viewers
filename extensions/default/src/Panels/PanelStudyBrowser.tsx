@@ -31,6 +31,7 @@ function PanelStudyBrowser({
   const [expandedStudyInstanceUIDs, setExpandedStudyInstanceUIDs] = useState([
     ...StudyInstanceUIDs,
   ]);
+  const [hasLoadedViewports, setHasLoadedViewports] = useState(false);
   const [studyDisplayList, setStudyDisplayList] = useState([]);
   const [displaySets, setDisplaySets] = useState([]);
   const [thumbnailImageSrcMap, setThumbnailImageSrcMap] = useState({});
@@ -108,6 +109,18 @@ function PanelStudyBrowser({
 
   // // ~~ Initial Thumbnails
   useEffect(() => {
+    if (!hasLoadedViewports) {
+      if (activeViewportId) {
+        // Once there is an active viewport id, it means the layout is ready
+        // so wait a bit of time to allow the viewports preferential loading
+        // which improves user experience of responsiveness significantly on slower
+        // systems.
+        window.setTimeout(() => setHasLoadedViewports(true), 250);
+      }
+
+      return;
+    }
+
     const currentDisplaySets = displaySetService.activeDisplaySets;
     currentDisplaySets.forEach(async dSet => {
       const newImageSrcEntry = {};
@@ -126,7 +139,14 @@ function PanelStudyBrowser({
         return { ...prevState, ...newImageSrcEntry };
       });
     });
-  }, [StudyInstanceUIDs, dataSource, displaySetService, getImageSrc]);
+  }, [
+    StudyInstanceUIDs,
+    dataSource,
+    displaySetService,
+    getImageSrc,
+    hasLoadedViewports,
+    activeViewportId,
+  ]);
 
   // ~~ displaySets
   useEffect(() => {
@@ -144,6 +164,9 @@ function PanelStudyBrowser({
     const SubscriptionDisplaySetsAdded = displaySetService.subscribe(
       displaySetService.EVENTS.DISPLAY_SETS_ADDED,
       data => {
+        if (!hasLoadedViewports) {
+          return;
+        }
         const { displaySetsAdded, options } = data;
         displaySetsAdded.forEach(async dSet => {
           const newImageSrcEntry = {};
@@ -213,7 +236,7 @@ function PanelStudyBrowser({
     const shouldCollapseStudy = expandedStudyInstanceUIDs.includes(StudyInstanceUID);
     const updatedExpandedStudyInstanceUIDs = shouldCollapseStudy
       ? // eslint-disable-next-line prettier/prettier
-        [...expandedStudyInstanceUIDs.filter(stdyUid => stdyUid !== StudyInstanceUID)]
+      [...expandedStudyInstanceUIDs.filter(stdyUid => stdyUid !== StudyInstanceUID)]
       : [...expandedStudyInstanceUIDs, StudyInstanceUID];
 
     setExpandedStudyInstanceUIDs(updatedExpandedStudyInstanceUIDs);

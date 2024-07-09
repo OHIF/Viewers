@@ -183,10 +183,6 @@
       href="<%= PUBLIC_URL %>assets/yandex-browser-manifest.json"
     />
 
-    <!-- Built with: https://polyfill.io/v3/url-builder/ -->
-    <!-- Targets IE11 -->
-    <!-- <script
-    src="https://polyfill.io/v3/polyfill.min.js?flags=gated&features=default%2CObject.values%2CArray.prototype.flat%2CObject.entries%2CSymbol%2CArray.prototype.includes%2CString.prototype.repeat%2CArray.prototype.find"></script>!-->
     <script
       rel="preload"
       as="script"
@@ -214,6 +210,12 @@
       rel="preload"
       as="style"
     />
+    <script>
+      function browserImportFunction(moduleId) {
+        return import(moduleId);
+      }
+    </script>
+
 
     <!-- EXTENSIONS -->
     <!-- <script type="text/javascript" src="path/to/some-extension.js"></script>

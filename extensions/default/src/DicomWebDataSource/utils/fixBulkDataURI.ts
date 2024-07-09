@@ -20,25 +20,35 @@ function fixBulkDataURI(value, instance, dicomWebConfig) {
   // in case of the relative path, make it absolute. The current DICOM standard says
   // the bulkdataURI is relative to the series. However, there are situations where
   // it can be relative to the study too
-  const { BulkDataURI } = value;
+  let { BulkDataURI } = value;
+  const { bulkDataURI: uriConfig = {} } = dicomWebConfig;
+
+  // Handle incorrectly prefixed origins
+  const { startsWith, prefixWith = '' } = uriConfig;
+  if (startsWith && BulkDataURI.startsWith(startsWith)) {
+    BulkDataURI = prefixWith + BulkDataURI.substring(startsWith.length);
+    value.BulkDataURI = BulkDataURI;
+  }
+
   if (!BulkDataURI.startsWith('http') && !value.BulkDataURI.startsWith('/')) {
     const { StudyInstanceUID, SeriesInstanceUID } = instance;
     const isInstanceStart = BulkDataURI.startsWith('instances/') || BulkDataURI.startsWith('../');
     if (
       BulkDataURI.startsWith('series/') ||
       BulkDataURI.startsWith('bulkdata/') ||
-      (dicomWebConfig.bulkDataURI?.relativeResolution === 'studies' && isInstanceStart)
+      (uriConfig.relativeResolution === 'studies' && isInstanceStart)
     ) {
       value.BulkDataURI = `${dicomWebConfig.wadoRoot}/studies/${StudyInstanceUID}/${BulkDataURI}`;
     } else if (
       isInstanceStart ||
-      dicomWebConfig.bulkDataURI?.relativeResolution === 'series' ||
-      !dicomWebConfig.bulkDataURI?.relativeResolution
+      uriConfig.relativeResolution === 'series' ||
+      !uriConfig.relativeResolution
     ) {
       value.BulkDataURI = `${dicomWebConfig.wadoRoot}/studies/${StudyInstanceUID}/series/${SeriesInstanceUID}/${BulkDataURI}`;
     }
     return;
   }
+
 
   // in case it is relative path but starts at the server (e.g., /bulk/1e, note the missing http
   // in the beginning and the first character is /) There are two scenarios, whether the wado root

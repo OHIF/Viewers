@@ -25,6 +25,7 @@ import initCornerstoneTools from './initCornerstoneTools';
 
 import { connectToolsToMeasurementService } from './initMeasurementService';
 import initCineService from './initCineService';
+import initStudyPrefetcherService from './initStudyPrefetcherService';
 import interleaveCenterLoader from './utils/interleaveCenterLoader';
 import nthLoader from './utils/nthLoader';
 import interleaveTopToBottom from './utils/interleaveTopToBottom';
@@ -36,8 +37,8 @@ import { colormaps } from './utils/colormaps';
 const { registerColormap } = csUtilities.colormap;
 
 // TODO: Cypress tests are currently grabbing this from the window?
-window.cornerstone = cornerstone;
-window.cornerstoneTools = cornerstoneTools;
+(window as any).cornerstone = cornerstone;
+(window as any).cornerstoneTools = cornerstoneTools;
 /**
  *
  */
@@ -45,7 +46,7 @@ export default async function init({
   servicesManager,
   commandsManager,
   extensionManager,
-  appConfig,
+  appConfig
 }: Types.Extensions.ExtensionParams): Promise<void> {
   // Note: this should run first before initializing the cornerstone
   // DO NOT CHANGE THE ORDER
@@ -66,6 +67,7 @@ export default async function init({
       preferSizeOverAccuracy: Boolean(appConfig.preferSizeOverAccuracy),
       useNorm16Texture: Boolean(appConfig.useNorm16Texture),
     },
+    peerImport: appConfig.peerImport,
   });
 
   // For debugging e2e tests that are failing on CI
@@ -98,6 +100,7 @@ export default async function init({
     hangingProtocolService,
     viewportGridService,
     stateSyncService,
+    studyPrefetcherService,
   } = servicesManager.services;
 
   window.services = servicesManager.services;
@@ -178,10 +181,12 @@ export default async function init({
   ); // this provider is required for Calibration tool
   metaData.addProvider(metadataProvider.get.bind(metadataProvider), 9999);
 
+  // These are set reasonably low to allow for interleaved retrieves and slower
+  // connections.
   imageLoadPoolManager.maxNumRequests = {
-    interaction: appConfig?.maxNumRequests?.interaction || 100,
-    thumbnail: appConfig?.maxNumRequests?.thumbnail || 75,
-    prefetch: appConfig?.maxNumRequests?.prefetch || 10,
+    interaction: appConfig?.maxNumRequests?.interaction || 10,
+    thumbnail: appConfig?.maxNumRequests?.thumbnail || 5,
+    prefetch: appConfig?.maxNumRequests?.prefetch || 5,
   };
 
   initWADOImageLoader(userAuthenticationService, appConfig, extensionManager);
@@ -190,6 +195,7 @@ export default async function init({
   this.measurementServiceSource = connectToolsToMeasurementService(servicesManager);
 
   initCineService(servicesManager);
+  initStudyPrefetcherService(servicesManager);
 
   // When a custom image load is performed, update the relevant viewports
   hangingProtocolService.subscribe(
