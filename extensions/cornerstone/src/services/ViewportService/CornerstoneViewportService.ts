@@ -790,10 +790,15 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     }
 
     // This returns the async continuation only
-    return this.setVolumesForViewport(viewport, volumeInputArray, presentations);
+    return this.setVolumesForViewport(
+      viewport,
+      volumeInputArray,
+      presentations,
+      viewportInfo.getViewReference()
+    );
   }
 
-  public async setVolumesForViewport(viewport, volumeInputArray, presentations) {
+  public async setVolumesForViewport(viewport, volumeInputArray, presentations, viewRef?) {
     const { displaySetService, toolGroupService, viewportGridService } =
       this.servicesManager.services;
 
@@ -852,6 +857,7 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
         imageIndex,
       });
     }
+    viewport.setViewReference(viewRef);
 
     viewport.render();
 
