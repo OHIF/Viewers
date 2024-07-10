@@ -1,0 +1,54 @@
+{
+  "name": "@ohif/extension-cornerstone-dicom-pmap",
+  "version": "3.9.0-beta.64",
+  "description": "DICOM Parametric Map read workflow",
+  "author": "OHIF",
+  "license": "MIT",
+  "main": "dist/ohif-extension-cornerstone-dicom-pmap.umd.js",
+  "module": "src/index.tsx",
+  "files": [
+    "dist/**",
+    "public/**",
+    "README.md"
+  ],
+  "repository": "OHIF/Viewers",
+  "keywords": [
+    "ohif-extension"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "engines": {
+    "node": ">=14",
+    "npm": ">=6",
+    "yarn": ">=1.18.0"
+  },
+  "scripts": {
+    "clean": "shx rm -rf dist",
+    "clean:deep": "yarn run clean && shx rm -rf node_modules",
+    "dev": "cross-env NODE_ENV=development webpack --config .webpack/webpack.dev.js --watch --output-pathinfo",
+    "dev:dicom-pmap": "yarn run dev",
+    "build": "cross-env NODE_ENV=production webpack --config .webpack/webpack.prod.js",
+    "build:package-1": "yarn run build",
+    "start": "yarn run dev"
+  },
+  "peerDependencies": {
+    "@ohif/core": "3.9.0-beta.64",
+    "@ohif/extension-cornerstone": "3.9.0-beta.64",
+    "@ohif/extension-default": "3.9.0-beta.64",
+    "@ohif/i18n": "3.9.0-beta.64",
+    "prop-types": "^15.6.2",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-i18next": "^12.2.2",
+    "react-router": "^6.8.1",
+    "react-router-dom": "^6.8.1"
+  },
+  "dependencies": {
+    "@babel/runtime": "^7.20.13",
+    "@cornerstonejs/adapters": "^1.77.6",
+    "@cornerstonejs/core": "^1.77.6",
+    "@kitware/vtk.js": "30.4.1",
+    "react-color": "^2.19.3"
+  }
+}

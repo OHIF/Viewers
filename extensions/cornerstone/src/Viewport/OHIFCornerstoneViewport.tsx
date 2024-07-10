@@ -304,6 +304,11 @@ const OHIFCornerstoneViewport = React.memo((props: withAppTypes) => {
         initialImageIndex
       );
 
+      // Make sure displaySetOptions has one object per displaySet
+      while (displaySetOptions.length < displaySets.length) {
+        displaySetOptions.push({});
+      }
+
       // The presentation state will have been stored previously by closing
       // a viewport.  Otherwise, this viewport will be unchanged and the
       // presentation information will be directly carried over.
