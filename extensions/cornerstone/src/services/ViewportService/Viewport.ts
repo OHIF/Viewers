@@ -31,6 +31,8 @@ export type ViewportOptions = {
   displayArea?: Types.DisplayArea;
   syncGroups?: SyncGroup[];
   initialImageOptions?: InitialImageOptions;
+  // A view reference for jumping to an initial view for measurements, or as a computed view
+  viewReference;
   customViewportProps?: Record<string, unknown>;
   /*
    * Allows drag and drop of display sets not matching viewport options, but
@@ -308,6 +310,10 @@ class ViewportInfo {
 
   public getInitialImageOptions(): InitialImageOptions {
     return this.viewportOptions.initialImageOptions;
+  }
+
+  public getViewReference() {
+    return this.viewportOptions.viewReference;
   }
 
   // Handle incoming public display set options or a display set select

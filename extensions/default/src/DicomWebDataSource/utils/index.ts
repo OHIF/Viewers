@@ -4,4 +4,6 @@ import {
   transferDenaturalizedDataset,
 } from './cleanDenaturalizedDataset';
 
+export { fixMultiValueKeys } from './fixMultiValueKeys';
+
 export { fixBulkDataURI, cleanDenaturalizedDataset, transferDenaturalizedDataset };

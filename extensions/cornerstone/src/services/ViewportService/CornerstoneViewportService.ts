@@ -428,6 +428,10 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     // override the viewportOptions and displaySetOptions with the public ones
     // since those are the newly set ones, we set them here so that it handles defaults
     const displaySetOptions = viewportInfo.setPublicDisplaySetOptions(publicDisplaySetOptions);
+    // Specify an over-ride for the viewport type, even though it is in the public
+    // viewport options, because the one in the public viewport options is a suggestion
+    // for initial view, whereas the one in viewportData is a requirement based on the
+    // type of data being displayed.
     const viewportOptions = viewportInfo.setPublicViewportOptions(
       publicViewportOptions,
       viewportData.viewportType
@@ -521,10 +525,24 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
 
   /**
    * Looks through the viewports to see if the specified measurement can be
-   * displayed in one of the viewports.
+   * displayed in one of the viewports. This function tries to get a "best fit"
+   * viewport to display the image in where it matches, in order:
+   *   * Active viewport that can be navigated to the given image without orientation change
+   *   * Other viewport that can be navigated to the given image without orientation change
+   *   * Active viewport that can change orientation to display the image
+   *   * Other viewport that can change orientation to display the image
    *
-   * @param measurement
-   *          The measurement that is desired to view.
+   * It returns `null` otherwise, indicating that a viewport needs display set/type
+   * changes in order to display the image.
+   *
+   * Notes:
+   *   * If the display set is displayed in multiple viewports all needing orientation change,
+   *     then the active one or first one listed will be modified.  This can create unexpected
+   *     behaviour for MPR views.
+   *   * If the image is contained in multiple display sets, then the first one
+   *     found will be navigated (active first, followed by first found)
+   *
+   * @param measurement - The measurement that is desired to view.
    * @param activeViewportId - the index that was active at the time the jump
    *          was initiated.
    * @return the viewportId that the measurement should be displayed in.
@@ -573,13 +591,14 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
   private async _setOtherViewport(
     viewport: Types.IStackViewport,
     viewportData: StackViewportData,
-    _viewportInfo: ViewportInfo,
+    viewportInfo: ViewportInfo,
     _presentations: Presentations = {}
   ): Promise<void> {
-    // TODO - create a client for this web api
-    const client = null;
     const [displaySet] = viewportData.data;
-    return viewport.setDataIds(displaySet.imageIds, { groupId: displaySet.displaySetInstanceUID });
+    return viewport.setDataIds(displaySet.imageIds, {
+      groupId: displaySet.displaySetInstanceUID,
+      viewReference: viewportInfo.getViewReference(),
+    });
   }
 
   private async _setStackViewport(
@@ -1040,8 +1059,8 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
       const { dimensions } = imageVolume;
       const slabThickness = Math.sqrt(
         dimensions[0] * dimensions[0] +
-        dimensions[1] * dimensions[1] +
-        dimensions[2] * dimensions[2]
+          dimensions[1] * dimensions[1] +
+          dimensions[2] * dimensions[2]
       );
 
       return slabThickness;

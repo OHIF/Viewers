@@ -87,7 +87,6 @@ const _getDisplaySetsFromSeries = (instances, servicesManager, extensionManager)
         imageIds: [imageId],
         isDerivedDisplaySet: true,
         isLoaded: false,
-        isClip: true,
         sopClassUids,
         numImageFrames: NumberOfFrames,
         instance,

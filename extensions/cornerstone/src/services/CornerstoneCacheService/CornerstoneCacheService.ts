@@ -32,7 +32,7 @@ class CornerstoneCacheService {
   }
 
   public async createViewportData(
-    displaySets: Types.IDisplaySet[],
+    displaySets: Types.DisplaySet[],
     viewportOptions: Record<string, unknown>,
     dataSource: unknown,
     initialImageIndex?: number

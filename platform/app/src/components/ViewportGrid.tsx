@@ -183,7 +183,9 @@ function ViewerViewportGrid(props: withAppTypes) {
         viewport.viewportOptions.orientation = 'acquisition';
 
         const displaySet = displaySetService.getDisplaySetByUID(referencedDisplaySetInstanceUID);
+        viewport.viewportOptions.viewReference = measurement.metadata;
         // jump straight to the initial image index if we can
+        //TODO - delete this code in favour of direct application of viewReference
         if (displaySet.images && measurement.SOPInstanceUID) {
           for (let index = 0; index < displaySet.images.length; index++) {
             const image = displaySet.images[index];
@@ -193,6 +195,10 @@ function ViewerViewportGrid(props: withAppTypes) {
               };
               break;
             }
+          }
+        } else {
+          if (measurement.metadata.volumeId) {
+            viewport.viewportOptions.viewportType = 'volume';
           }
         }
         viewportGridService.setDisplaySetsForViewports(updatedViewports);

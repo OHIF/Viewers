@@ -178,7 +178,6 @@ function getDisplaySetsFromSeries(instances) {
 
       displaySet.setAttributes({
         sopClassUids,
-        isClip: true,
         numImageFrames: instance.NumberOfFrames,
         instanceNumber: instance.InstanceNumber,
         acquisitionDatetime: instance.AcquisitionDateTime,

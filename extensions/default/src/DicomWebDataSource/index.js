@@ -194,6 +194,8 @@ function createDicomWebApi(dicomWebConfig, servicesManager) {
        * Provide direct access to the dicom web client for certain use cases
        * where the dicom web client is used by an external library such as the
        * microscopy viewer.
+       * Note this instance only needs to support the wado queries, and may not
+       * support any QIDO or STOW operations.
        */
       getWadoDicomWebClient: () => wadoDicomWebClient,
 
@@ -404,7 +406,6 @@ function createDicomWebApi(dicomWebConfig, servicesManager) {
             fixBulkDataURI(value, naturalized, dicomWebConfig);
             // Provide a method to fetch bulkdata
             value.retrieveBulkData = (options = {}) => {
-
               const { mediaType } = options;
               const useOptions = {
                 // The bulkdata fetches work with either multipart or

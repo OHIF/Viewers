@@ -138,14 +138,12 @@ const OHIFCornerstoneViewport = React.memo((props: withAppTypes) => {
   const [appConfig] = useAppConfig();
 
   const {
-    measurementService,
     displaySetService,
     toolbarService,
     toolGroupService,
     syncGroupService,
     cornerstoneViewportService,
     cornerstoneCacheService,
-    viewportGridService,
     stateSyncService,
     viewportActionCornersService,
   } = servicesManager.services;

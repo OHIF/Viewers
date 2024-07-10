@@ -1492,7 +1492,6 @@
   resolved "https://registry.yarnpkg.com/@colors/colors/-/colors-1.5.0.tgz#bb504579c1cae923e6576a4f5da43d25f97bdbd9"
   integrity sha512-ooWCrlZP11i8GImSjTHYHLkvFDP48nS4+204nGb1RiX/WXYHmJA2III9/e2DWVabCESdW7hBAEzHRqUn9OUVvQ==
 
-
 "@cornerstonejs/adapters@^1.81.6", "@cornerstonejs/adapters@^1.82.0":
   version "1.82.0"
   resolved "https://registry.yarnpkg.com/@cornerstonejs/adapters/-/adapters-1.82.0.tgz#4c7ae6341ad7bcf5cf0213e5252fbac009da23b6"
@@ -1531,7 +1530,7 @@
   resolved "https://registry.yarnpkg.com/@cornerstonejs/codec-openjph/-/codec-openjph-2.4.5.tgz#8690b61a86fa53ef38a70eee9d665a79229517c0"
   integrity sha512-MZCUy8VG0VG5Nl1l58+g+kH3LujAzLYTfJqkwpWI2gjSrGXnP6lgwyy4GmPRZWVoS40/B1LDNALK905cNWm+sg==
 
-"@cornerstonejs/core@^1.78.1", "@cornerstonejs/core@^1.81.3":
+"@cornerstonejs/core@^1.81.3":
   version "1.81.3"
   resolved "https://registry.yarnpkg.com/@cornerstonejs/core/-/core-1.81.3.tgz#76deaee4a2cce24db5695cb87857accea5645263"
   integrity sha512-Uievs/wBpw20Xj4B+8UEjb/qe+cmSfz2oWfQzBANcWoqI5pXD77evXE0s6hORCMr4yFUmTIMbGnWwXT2fF2bYw==

@@ -1,4 +1,4 @@
-type IDisplaySet {
+type DisplaySet {
   displaySetInstanceUID: string;
   StudyInstanceUID: string;
   SeriesInstanceUID?: string;
@@ -9,4 +9,4 @@ type IDisplaySet {
   instance?: any;
 }
 
-export default IDisplaySet;
+export default DisplaySet;

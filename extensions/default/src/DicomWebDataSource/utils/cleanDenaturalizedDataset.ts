@@ -1,10 +1,10 @@
-import { fixBulkDataURI } from "./fixBulkDataURI";
+import { fixBulkDataURI } from './fixBulkDataURI';
 
 function isPrimitive(v: any) {
   return !(typeof v == 'object' || Array.isArray(v));
 }
 
-const vrNumerics = [
+const vrNumerics = new Set([
   'DS',
   'FL',
   'FD',
@@ -19,7 +19,7 @@ const vrNumerics = [
   'UL',
   'US',
   'UV',
-];
+]);
 
 /**
  * Specialized for DICOM JSON format dataset cleaning.
@@ -37,35 +37,35 @@ export function cleanDenaturalizedDataset(
   if (Array.isArray(obj)) {
     const newAry = obj.map(o => (isPrimitive(o) ? o : cleanDenaturalizedDataset(o, options)));
     return newAry;
-  } else if (isPrimitive(obj)) {
-    return obj;
-  } else {
-    Object.keys(obj).forEach(key => {
-      if (obj[key].Value === null && obj[key].vr) {
-        delete obj[key].Value;
-      } else if (Array.isArray(obj[key].Value) && obj[key].vr) {
-        if (obj[key].Value.length === 1 && obj[key].Value[0].BulkDataURI) {
-          if (options?.dataSourceConfig) {
-            // Not needed unless data source is directly used for loading data.
-            fixBulkDataURI(obj[key].Value[0], options, options.dataSourceConfig);
-          }
-
-          obj[key].BulkDataURI = obj[key].Value[0].BulkDataURI;
-
-          // prevent mixed-content blockage
-          if (window.location.protocol === 'https:' && obj[key].BulkDataURI.startsWith('http:')) {
-            obj[key].BulkDataURI = obj[key].BulkDataURI.replace('http:', 'https:');
-          }
-          delete obj[key].Value;
-        } else if (vrNumerics.includes(obj[key].vr)) {
-          obj[key].Value = obj[key].Value.map(v => +v);
-        } else {
-          obj[key].Value = obj[key].Value.map(entry => cleanDenaturalizedDataset(entry, options));
-        }
-      }
-    });
+  }
+  if (isPrimitive(obj)) {
     return obj;
   }
+  Object.keys(obj).forEach(key => {
+    if (obj[key].Value === null && obj[key].vr) {
+      delete obj[key].Value;
+    } else if (Array.isArray(obj[key].Value) && obj[key].vr) {
+      if (obj[key].Value.length === 1 && obj[key].Value[0].BulkDataURI) {
+        if (options?.dataSourceConfig) {
+          // Not needed unless data source is directly used for loading data.
+          fixBulkDataURI(obj[key].Value[0], options, options.dataSourceConfig);
+        }
+
+        obj[key].BulkDataURI = obj[key].Value[0].BulkDataURI;
+
+        // prevent mixed-content blockage
+        if (window.location.protocol === 'https:' && obj[key].BulkDataURI.startsWith('http:')) {
+          obj[key].BulkDataURI = obj[key].BulkDataURI.replace('http:', 'https:');
+        }
+        delete obj[key].Value;
+      } else if (vrNumerics.has(obj[key].vr)) {
+        obj[key].Value = obj[key].Value.map(v => +v);
+      } else {
+        obj[key].Value = obj[key].Value.map(entry => cleanDenaturalizedDataset(entry, options));
+      }
+    }
+  });
+  return obj;
 }
 
 /**
@@ -73,7 +73,6 @@ export function cleanDenaturalizedDataset(
  * added proxy values.
  */
 export function transferDenaturalizedDataset(dataset) {
-  const nonull = cleanDenaturalizedDataset(dataset);
-  const json = JSON.stringify(nonull);
-  return JSON.parse(json);
+  const noNull = cleanDenaturalizedDataset(dataset);
+  return JSON.parse(JSON.stringify(noNull));
 }

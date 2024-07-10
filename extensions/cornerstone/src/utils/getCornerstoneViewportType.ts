@@ -1,3 +1,4 @@
+import type { Types } from '@ohif/core';
 import { Enums } from '@cornerstonejs/core';
 
 const STACK = 'stack';
@@ -5,11 +6,11 @@ const VOLUME = 'volume';
 const ORTHOGRAPHIC = 'orthographic';
 const VOLUME_3D = 'volume3d';
 const VIDEO = 'video';
-const WholeSlide = 'wholeslide';
+const WHOLESLIDE = 'wholeslide';
 
 export default function getCornerstoneViewportType(
   viewportType: string,
-  displaySets?: Types.IDisplaySet[]
+  displaySets?: Types.DisplaySet[]
 ): Enums.ViewportType {
   const lowerViewportType =
     displaySets?.[0]?.viewportType?.toLowerCase() || viewportType.toLowerCase();
@@ -20,7 +21,7 @@ export default function getCornerstoneViewportType(
   if (lowerViewportType === VIDEO) {
     return Enums.ViewportType.VIDEO;
   }
-  if (lowerViewportType === WholeSlide) {
+  if (lowerViewportType === WHOLESLIDE) {
     return Enums.ViewportType.WholeSlide;
   }
 
@@ -32,5 +33,7 @@ export default function getCornerstoneViewportType(
     return Enums.ViewportType.VOLUME_3D;
   }
 
-  throw new Error(`Invalid viewport type: ${viewportType}. Valid types are: stack, volume, video, wholeslide`);
+  throw new Error(
+    `Invalid viewport type: ${viewportType}. Valid types are: stack, volume, video, wholeslide`
+  );
 }

@@ -85,7 +85,7 @@ function CornerstoneImageScrollbar({
       onChange={evt => onImageScrollbarChange(evt, viewportId)}
       max={imageSliceData.numberOfSlices ? imageSliceData.numberOfSlices - 1 : 0}
       height={scrollbarHeight}
-      value={imageSliceData.imageIndex}
+      value={imageSliceData.imageIndex || 0}
     />
   );
 }
