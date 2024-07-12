@@ -10,7 +10,7 @@ import hydrateStructuredReport from './utils/hydrateStructuredReport';
 import createReferencedImageDisplaySet from './utils/createReferencedImageDisplaySet';
 
 const Component = React.lazy(() => {
-  return import(/* webpackPrefetch: true */ './viewports/OHIFCornerstoneSRViewport');
+  return import(/* webpackPrefetch: true */ './components/OHIFCornerstoneSRViewport');
 });
 
 const OHIFCornerstoneSRViewport = props => {
