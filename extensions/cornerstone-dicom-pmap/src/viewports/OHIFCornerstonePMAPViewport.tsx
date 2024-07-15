@@ -57,6 +57,7 @@ function OHIFCornerstonePMAPViewport(props: withAppTypes) {
     return (
       <Component
         {...props}
+        // Referenced + PMAP displaySets must be passed as parameter in this order
         displaySets={[referencedDisplaySet, pmapDisplaySet]}
         viewportOptions={{
           viewportType: 'volume',

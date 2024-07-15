@@ -1,1 +1,0 @@
-export { ParametricMapService } from './ParametricMapService'

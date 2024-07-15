@@ -444,7 +444,7 @@ function PanelStudyBrowserTracking({
       onClickUntrack={displaySetInstanceUID => {
         onClickUntrack(displaySetInstanceUID);
       }}
-      onClickThumbnail={() => { }}
+      onClickThumbnail={() => {}}
       onDoubleClickThumbnail={onDoubleClickThumbnailHandler}
       activeDisplaySetInstanceUIDs={activeViewportDisplaySetInstanceUIDs}
     />
@@ -624,7 +624,17 @@ function _mapDisplaySets(
   return [...thumbnailDisplaySets, ...thumbnailNoImageDisplaySets];
 }
 
-const thumbnailNoImageModalities = ['SR', 'SEG', 'SM', 'RTSTRUCT', 'RTPLAN', 'RTDOSE', 'DOC', 'OT'];
+const thumbnailNoImageModalities = [
+  'SR',
+  'SEG',
+  'SM',
+  'RTSTRUCT',
+  'RTPLAN',
+  'RTDOSE',
+  'DOC',
+  'OT',
+  'PMAP',
+];
 
 function _getComponentType(ds) {
   if (thumbnailNoImageModalities.includes(ds.Modality) || ds?.unsupported) {

@@ -2,6 +2,7 @@ import { utils } from '@ohif/core';
 import { metaData, cache, utilities as csUtils, volumeLoader } from '@cornerstonejs/core';
 import { adaptersPMAP } from '@cornerstonejs/adapters';
 import { SOPClassHandlerId } from './id';
+import { dicomLoaderService } from '@ohif/extension-cornerstone';
 
 const VOLUME_LOADER_SCHEME = 'cornerstoneStreamingImageVolume';
 const sopClassUids = ['1.2.840.10008.5.1.4.1.1.30'];
@@ -27,11 +28,9 @@ function _getDisplaySetsFromSeries(
   } = instance;
 
   const displaySet = {
-    // Parametric map use to have the same modality as its referenced volume
-    // but "other" is used here just to remove its thumbnail on the Study Browser
-    // without making any extra change to the viewer. It also makes more sense
-    // to do not see a thumbnail for an OT series other than CT or MR ones.
-    Modality: 'OT',
+    // Parametric map use to have the same modality as its referenced volume but
+    // "PMAP" is used in the viewer even though this is not a valid DICOM modality
+    Modality: 'PMAP',
     isReconstructable: true, // by default for now
     displaySetInstanceUID: `pmap.${utils.guid()}`,
     SeriesDescription,
@@ -58,7 +57,7 @@ function _getDisplaySetsFromSeries(
     wadoRoot,
     wadoUriRoot,
     wadoUri,
-    hasVolumeData: true,
+    isOverlayDisplaySet: true,
   };
 
   const referencedSeriesSequence = instance.ReferencedSeriesSequence;
@@ -73,6 +72,8 @@ function _getDisplaySetsFromSeries(
   displaySet.referencedImages = instance.ReferencedSeriesSequence.ReferencedInstanceSequence;
   displaySet.referencedSeriesInstanceUID = referencedSeries.SeriesInstanceUID;
 
+  // Does not get the referenced displaySet during parametric displaySet creation
+  // because it is still not available (getDisplaySetByUID returns `undefined`).
   displaySet.getReferenceDisplaySet = () => {
     const { displaySetService } = servicesManager.services;
 
@@ -95,6 +96,8 @@ function _getDisplaySetsFromSeries(
     return referencedDisplaySet;
   };
 
+  // Does not get the referenced volumeId during parametric displaySet creation because the
+  // referenced displaySet is still not avaialble  (getDisplaySetByUID returns `undefined`).
   displaySet.getReferencedVolumeId = () => {
     if (displaySet.referencedVolumeId) {
       return displaySet.referencedVolumeId;
@@ -136,7 +139,6 @@ async function _load(
   // loadPromises[SOPInstanceUID] = new Promise(async (resolve, reject) => {
   const promise = _loadParametricMap({
     extensionManager,
-    servicesManager,
     displaySet,
     headers,
   });
@@ -158,24 +160,15 @@ async function _load(
   return promise;
 }
 
-async function _loadParametricMap({
-  extensionManager,
-  servicesManager,
-  displaySet,
-  headers,
-}: withAppTypes) {
-  const utilityModule = extensionManager.getModuleEntry(
-    '@ohif/extension-cornerstone.utilityModule.common'
-  );
-
-  const { dicomLoaderService } = utilityModule.exports;
+async function _loadParametricMap({ extensionManager, displaySet, headers }: withAppTypes) {
   const arrayBuffer = await dicomLoaderService.findDicomDataPromise(displaySet, null, headers);
   const referencedVolumeId = displaySet.getReferencedVolumeId();
   const cachedReferencedVolume = cache.getVolume(referencedVolumeId);
 
+  // Parametric map can be loaded only if its referenced volume exists otherwise it will fail
   if (!cachedReferencedVolume) {
     throw new Error(
-      'Referenced Volume is missing for the SEG, and stack viewport SEG is not supported yet'
+      'Referenced Volume is missing for the PMAP, and stack viewport PMAP is not supported yet'
     );
   }
 
@@ -192,7 +185,7 @@ async function _loadParametricMap({
   const derivedVolume = await volumeLoader.createAndCacheDerivedVolume(referencedVolumeId, {
     volumeId: paramMapId,
     targetBuffer: {
-      type: TypedArrayConstructor.name, // 'Int16Array'
+      type: TypedArrayConstructor.name,
     },
   });
 

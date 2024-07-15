@@ -200,7 +200,8 @@ class CornerstoneCacheService {
     const volumeData = [];
 
     for (const displaySet of displaySets) {
-      const { hasVolumeData = false } = displaySet;
+      const { Modality } = displaySet;
+      const isParametricMap = Modality === 'PMAP';
 
       // Don't create volumes for the displaySets that have custom load
       // function (e.g., SEG, RT, since they rely on the reference volumes
@@ -212,10 +213,9 @@ class CornerstoneCacheService {
         const headers = userAuthenticationService.getAuthorizationHeader();
         await displaySet.load({ headers });
 
-        // Parametric map is one of the displaySet with `hasVolumeData` set to
-        // `true` because it has a `load` method but it needs to be loaded on the
-        // viewport as a normal volume.
-        if (!hasVolumeData) {
+        // Parametric maps have a `load` method but it should not be loaded in the
+        // same way as SEG and RTSTRUCT but like a normal volume
+        if (!isParametricMap) {
           volumeData.push({
             studyInstanceUID: displaySet.StudyInstanceUID,
             displaySetInstanceUID: displaySet.displaySetInstanceUID,
@@ -231,9 +231,9 @@ class CornerstoneCacheService {
       let volumeImageIds = this.volumeImageIds.get(displaySet.displaySetInstanceUID);
       let volume = cs3DCache.getVolume(volumeId);
 
-      // Parametric maps do not have image ids but they already have volume data.
-      // Therefore `hasVolumeData` shall be `true` and a new volume should not be created.
-      if (!hasVolumeData && (!volumeImageIds || !volume)) {
+      // Parametric maps do not have image ids but they already have volume data
+      // therefore a new volume should not be created.
+      if (!isParametricMap && (!volumeImageIds || !volume)) {
         volumeImageIds = this._getCornerstoneVolumeImageIds(displaySet, dataSource);
 
         volume = await volumeLoader.createAndCacheVolume(volumeId, {
