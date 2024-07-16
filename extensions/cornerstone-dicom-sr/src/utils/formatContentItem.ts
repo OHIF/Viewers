@@ -1,5 +1,13 @@
 import { utils } from '@ohif/core';
 
+/**
+ * Formatters used to format each of the content items (SR "nodes") which can be
+ * text, code, UID ref, number, person name, date, time and date time. Each
+ * formatter must be a function with the following signature:
+ *
+ *    [VALUE_TYPE]: (contentItem) => string
+ *
+ */
 const contentItemFormatters = {
   TEXT: contentItem => contentItem.TextValue,
   CODE: contentItem => contentItem.ConceptCodeSequence?.[0]?.CodeMeaning,
