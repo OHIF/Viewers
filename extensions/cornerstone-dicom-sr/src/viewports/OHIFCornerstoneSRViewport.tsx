@@ -2,14 +2,16 @@ import PropTypes from 'prop-types';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ExtensionManager } from '@ohif/core';
-import { Icon, Tooltip, useViewportGrid, ViewportActionArrows } from '@ohif/ui';
-import { useAppConfig } from '@state';
 
 import { setTrackingUniqueIdentifiersForElement } from '../tools/modules/dicomSRModule';
+
+import { Icon, Tooltip, useViewportGrid, ViewportActionArrows } from '@ohif/ui';
 import hydrateStructuredReport from '../utils/hydrateStructuredReport';
+import { useAppConfig } from '@state';
 import createReferencedImageDisplaySet from '../utils/createReferencedImageDisplaySet';
 
 const MEASUREMENT_TRACKING_EXTENSION_ID = '@ohif/extension-measurement-tracking';
+
 const SR_TOOLGROUP_BASE_NAME = 'SRToolGroup';
 
 function OHIFCornerstoneSRViewport(props: withAppTypes) {
@@ -97,7 +99,7 @@ function OHIFCornerstoneSRViewport(props: withAppTypes) {
         measurementSelected
       );
     },
-    [element, srDisplaySet]
+    [element, measurementSelected, srDisplaySet]
   );
 
   /**
@@ -123,6 +125,10 @@ function OHIFCornerstoneSRViewport(props: withAppTypes) {
         // not throwing an error?
         console.warn('More than one SOPClassUID in the same series is not yet supported.');
       }
+
+      // if (!srDisplaySet.measurements || !srDisplaySet.measurements.length) {
+      //   return;
+      // }
 
       _getViewportReferencedDisplaySetData(
         srDisplaySet,
@@ -155,13 +161,7 @@ function OHIFCornerstoneSRViewport(props: withAppTypes) {
         }
       });
     },
-    [
-      srDisplaySet,
-      cornerstoneViewportService,
-      displaySetService,
-      activeImageDisplaySetData,
-      viewportId,
-    ]
+    [dataSource, srDisplaySet, activeImageDisplaySetData, viewportId]
   );
 
   const getCornerstoneViewport = useCallback(() => {
@@ -209,17 +209,10 @@ function OHIFCornerstoneSRViewport(props: withAppTypes) {
           onElementEnabled(evt);
         }}
         initialImageIndex={initialImageIndex}
-        isJumpToMeasurementDisabled={false}
+        isJumpToMeasurementDisabled={true}
       ></Component>
     );
-  }, [
-    activeImageDisplaySetData,
-    extensionManager,
-    props,
-    srDisplaySet,
-    viewportOptions,
-    measurementSelected,
-  ]);
+  }, [activeImageDisplaySetData, viewportId, measurementSelected]);
 
   const onMeasurementChange = useCallback(
     direction => {
@@ -277,7 +270,7 @@ function OHIFCornerstoneSRViewport(props: withAppTypes) {
       updateViewport(measurementSelected);
     };
     loadSR();
-  }, [dataSource, measurementSelected, updateViewport, srDisplaySet]);
+  }, [srDisplaySet]);
 
   /**
    * Hook to update the tracking identifiers when the selected measurement changes or
@@ -394,7 +387,6 @@ async function _getViewportReferencedDisplaySetData(
   const measurement = measurements[measurementSelected];
 
   const { displaySetInstanceUID } = measurement;
-  // TODO: Remove this if not being used anymore
   if (!displaySet.keyImageDisplaySet) {
     // Create a new display set, and preserve a reference to it here,
     // so that it can be re-displayed and shown inside the SR viewport.

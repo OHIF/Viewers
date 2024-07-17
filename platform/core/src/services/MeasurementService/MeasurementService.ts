@@ -170,15 +170,6 @@ class MeasurementService extends PubSubService {
   }
 
   /**
-   * Get all unmapped measurements.
-   *
-   * @return {Measurement[]} Array of measurements
-   */
-  getUnmappedMeasurements() {
-    return [...this.unmappedMeasurements.values()];
-  }
-
-  /**
    * Get specific measurement by its uid.
    *
    * @param {string} uid measurement uid

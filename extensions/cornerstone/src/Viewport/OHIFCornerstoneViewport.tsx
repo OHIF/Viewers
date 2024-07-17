@@ -454,11 +454,9 @@ function _subscribeToJumpToMeasurementEvents(elementRef, viewportId, servicesMan
     props => {
       cacheJumpToMeasurementEvent = props;
       const { viewportId: jumpId, measurement, isConsumed } = props;
-
       if (!measurement || isConsumed) {
         return;
       }
-
       if (cacheJumpToMeasurementEvent.cornerstoneViewport === undefined) {
         // Decide on which viewport should handle this
         cacheJumpToMeasurementEvent.cornerstoneViewport =
@@ -469,19 +467,7 @@ function _subscribeToJumpToMeasurementEvents(elementRef, viewportId, servicesMan
               measurement.referencedImageId || measurement.metadata?.referencedImageId,
           });
       }
-
-      const targetElement = elementRef.current;
-      const enabledElement = getEnabledElement(targetElement);
-      const viewport = enabledElement.viewport;
-      const { SOPInstanceUID, frameNumber } = measurement;
-      const imageIdIndex = findImageIdIndex(viewport, SOPInstanceUID, frameNumber);
-
-      /**
-       * Only check for cached viewport if image id exists in that viewport.
-       * Otherwise the jump to measurement will try to load a different viewport
-       * by frame of reference.
-       */
-      if (imageIdIndex >= 0 && cacheJumpToMeasurementEvent.cornerstoneViewport !== viewportId) {
+      if (cacheJumpToMeasurementEvent.cornerstoneViewport !== viewportId) {
         return;
       }
       _jumpToMeasurement(measurement, elementRef, viewportId, servicesManager);
@@ -523,6 +509,10 @@ function _jumpToMeasurement(measurement, targetElementRef, viewportId, servicesM
   const { viewportGridService } = servicesManager.services;
 
   const targetElement = targetElementRef.current;
+
+  // Todo: setCornerstoneMeasurementActive should be handled by the toolGroupManager
+  //  to set it properly
+  // setCornerstoneMeasurementActive(measurement);
 
   viewportGridService.setActiveViewportId(viewportId);
 
