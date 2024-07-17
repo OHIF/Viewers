@@ -5,7 +5,7 @@ import getRenderableData from './getRenderableData';
 import toolNames from '../tools/toolNames';
 
 export default function addDICOMSRDisplayAnnotation(measurement, imageId, frameNumber) {
-  const toolName = toolNames.DICOMSRDisplay;
+  let toolName = toolNames.DICOMSRDisplay;
 
   const measurementData = {
     TrackingUniqueIdentifier: measurement.TrackingUniqueIdentifier,
@@ -26,6 +26,10 @@ export default function addDICOMSRDisplayAnnotation(measurement, imageId, frameN
     );
   });
 
+  if (measurement.coords[0].ValueType === 'SCOORD3D') {
+    toolName = 'Probe';
+  }
+
   const imagePlaneModule = metaData.get('imagePlaneModule', imageId);
 
   /**
@@ -39,6 +43,7 @@ export default function addDICOMSRDisplayAnnotation(measurement, imageId, frameN
     isLocked: false,
     invalidated: false,
     metadata: {
+      viewPlaneNormal: measurementData.renderableData[measurement.coords[0].GraphicType],
       toolName: toolName,
       valueType: measurement.coords[0].ValueType,
       graphicType: measurement.coords[0].GraphicType,
@@ -67,4 +72,5 @@ export default function addDICOMSRDisplayAnnotation(measurement, imageId, frameN
    * was not triggering annotation_added events.
    */
   annotation.state.addAnnotation(SRAnnotation);
+  console.debug('Adding annotation:', SRAnnotation);
 }

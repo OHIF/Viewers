@@ -242,7 +242,6 @@ const addReferencedSOPSequenceByFOR = (measurements, displaySet) => {
               ReferencedSOPInstanceUID: imageMetadata.SOPInstanceUID,
             };
           }
-          console.debug('1');
 
           const { frameNumber } = metadataProvider.getUIDsFromImageID(imageMetadata.imageId);
           addDICOMSRDisplayAnnotation(measurement, imageMetadata.imageId, frameNumber);
