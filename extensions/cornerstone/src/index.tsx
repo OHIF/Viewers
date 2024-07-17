@@ -6,7 +6,6 @@ import {
   imageLoadPoolManager,
   imageRetrievalPoolManager,
 } from '@cornerstonejs/core';
-import * as csStreamingImageVolumeLoader from '@cornerstonejs/streaming-image-volume-loader';
 import { Enums as cs3DToolsEnums } from '@cornerstonejs/tools';
 import { Types } from '@ohif/core';
 
@@ -39,9 +38,8 @@ import ActiveViewportWindowLevel from './components/ActiveViewportWindowLevel';
 import getSOPInstanceAttributes from './utils/measurementServiceMappings/utils/getSOPInstanceAttributes';
 import { findNearbyToolData } from './utils/findNearbyToolData';
 import { createFrameViewSynchronizer } from './synchronizers/frameViewSynchronizer';
+import volumeLoaderUtil from './utils/volumeLoaderUtil';
 
-const { helpers: volumeLoaderHelpers } = csStreamingImageVolumeLoader;
-const { getDynamicVolumeInfo } = volumeLoaderHelpers ?? {};
 const { imageRetrieveMetadataProvider } = cornerstone.utilities;
 
 const Component = React.lazy(() => {
@@ -212,9 +210,7 @@ const cornerstoneExtension: Types.Extensions.Extension = {
       },
       {
         name: 'volumeLoader',
-        exports: {
-          getDynamicVolumeInfo,
-        },
+        exports: volumeLoaderUtil,
       },
     ];
   },
