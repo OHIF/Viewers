@@ -32,8 +32,8 @@
     "start": "yarn run dev"
   },
   "peerDependencies": {
-    "@cornerstonejs/core": "^1.82.0",
-    "@cornerstonejs/tools": "^1.82.0",
+    "@cornerstonejs/core": "^1.82.4",
+    "@cornerstonejs/tools": "^1.82.4",
     "@ohif/core": "3.9.0-beta.63",
     "@ohif/extension-cornerstone-dicom-sr": "3.9.0-beta.63",
     "@ohif/ui": "3.9.0-beta.63",

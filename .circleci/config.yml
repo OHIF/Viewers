@@ -385,7 +385,7 @@ jobs:
           - yarn-berry
         type: enum
       parallelism:
-        default: 1
+        default: 4
         description: |
           Number of Circle machines to use for load balancing, min 1
           (requires `parallel` and `record` flags in your `cypress-command`)

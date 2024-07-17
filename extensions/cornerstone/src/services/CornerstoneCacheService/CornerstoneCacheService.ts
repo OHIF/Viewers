@@ -32,7 +32,7 @@ class CornerstoneCacheService {
   }
 
   public async createViewportData(
-    displaySets: unknown[],
+    displaySets: Types.DisplaySet[],
     viewportOptions: Record<string, unknown>,
     dataSource: unknown,
     initialImageIndex?: number
@@ -55,23 +55,29 @@ class CornerstoneCacheService {
       viewportOptions.viewportType = viewportType;
     }
 
-    const cs3DViewportType = getCornerstoneViewportType(viewportType);
+    const cs3DViewportType = getCornerstoneViewportType(viewportType, displaySets);
     let viewportData: StackViewportData | VolumeViewportData;
-
-    if (cs3DViewportType === Enums.ViewportType.STACK) {
-      viewportData = await this._getStackViewportData(
-        dataSource,
-        displaySets,
-        initialImageIndex,
-        cs3DViewportType
-      );
-    }
 
     if (
       cs3DViewportType === Enums.ViewportType.ORTHOGRAPHIC ||
       cs3DViewportType === Enums.ViewportType.VOLUME_3D
     ) {
       viewportData = await this._getVolumeViewportData(dataSource, displaySets, cs3DViewportType);
+    } else if (cs3DViewportType === Enums.ViewportType.STACK) {
+      // Everything else looks like a stack
+      viewportData = await this._getStackViewportData(
+        dataSource,
+        displaySets,
+        initialImageIndex,
+        cs3DViewportType
+      );
+    } else {
+      viewportData = await this._getOtherViewportData(
+        dataSource,
+        displaySets,
+        initialImageIndex,
+        cs3DViewportType
+      );
     }
 
     viewportData.viewportType = cs3DViewportType;
@@ -141,6 +147,25 @@ class CornerstoneCacheService {
     );
 
     return newViewportData;
+  }
+
+  private async _getOtherViewportData(
+    dataSource,
+    displaySets,
+    _initialImageIndex,
+    viewportType: Enums.ViewportType
+  ): Promise<StackViewportData> {
+    // TODO - handle overlays and secondary display sets, but for now assume
+    // the 1st display set is the one of interest
+    const [displaySet] = displaySets;
+    if (!displaySet.imageIds) {
+      displaySet.imagesIds = this._getCornerstoneStackImageIds(displaySet, dataSource);
+    }
+    const { imageIds: data, viewportType: dsViewportType } = displaySet;
+    return {
+      viewportType: dsViewportType || viewportType,
+      data: displaySets,
+    };
   }
 
   private async _getStackViewportData(

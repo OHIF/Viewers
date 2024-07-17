@@ -7,12 +7,15 @@ import moreTools from './moreTools';
 
 // Allow this mode by excluding non-imaging modalities such as SR, SEG
 // Also, SM is not a simple imaging modalities, so exclude it.
-const NON_IMAGE_MODALITIES = ['SM', 'ECG', 'SR', 'SEG', 'RTSTRUCT'];
+const NON_IMAGE_MODALITIES = ['ECG', 'SR', 'SEG', 'RTSTRUCT', 'RTPLAN', 'PR'];
 
 const ohif = {
   layout: '@ohif/extension-default.layoutTemplateModule.viewerLayout',
   sopClassHandler: '@ohif/extension-default.sopClassHandlerModule.stack',
   thumbnailList: '@ohif/extension-default.panelModule.seriesList',
+  wsiSopClassHandler:
+    '@ohif/extension-cornerstone.sopClassHandlerModule.DicomMicroscopySopClassHandler',
+  measurements: '@ohif/extension-default.panelModule.measurements',
 };
 
 const tracked = {
@@ -89,7 +92,6 @@ function modeFactory({ modeConfiguration }) {
       //     ],
       //   },
       // ]);
-
 
       // Init Default and SR ToolGroups
       initToolGroups(extensionManager, toolGroupService, commandsManager, this.labelConfig);
@@ -188,15 +190,15 @@ function modeFactory({ modeConfiguration }) {
               viewports: [
                 {
                   namespace: tracked.viewport,
-                  displaySetsToDisplay: [ohif.sopClassHandler],
+                  displaySetsToDisplay: [
+                    ohif.sopClassHandler,
+                    dicomvideo.sopClassHandler,
+                    ohif.wsiSopClassHandler,
+                  ],
                 },
                 {
                   namespace: dicomsr.viewport,
                   displaySetsToDisplay: [dicomsr.sopClassHandler],
-                },
-                {
-                  namespace: dicomvideo.viewport,
-                  displaySetsToDisplay: [dicomvideo.sopClassHandler],
                 },
                 {
                   namespace: dicompdf.viewport,
@@ -227,6 +229,7 @@ function modeFactory({ modeConfiguration }) {
       dicomvideo.sopClassHandler,
       dicomSeg.sopClassHandler,
       ohif.sopClassHandler,
+      ohif.wsiSopClassHandler,
       dicompdf.sopClassHandler,
       dicomsr.sopClassHandler,
       dicomRT.sopClassHandler,

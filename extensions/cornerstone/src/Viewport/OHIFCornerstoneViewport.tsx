@@ -2,25 +2,17 @@ import React, { useEffect, useRef, useCallback, useState } from 'react';
 import { useResizeDetector } from 'react-resize-detector';
 import PropTypes from 'prop-types';
 import * as cs3DTools from '@cornerstonejs/tools';
-import {
-  Enums,
-  eventTarget,
-  getEnabledElement,
-  StackViewport,
-  utilities as csUtils,
-} from '@cornerstonejs/core';
+import { Enums, eventTarget, getEnabledElement } from '@cornerstonejs/core';
 import { MeasurementService } from '@ohif/core';
 import { Notification, useViewportDialog, AllInOneMenu } from '@ohif/ui';
-import { IStackViewport, IVolumeViewport } from '@cornerstonejs/core/dist/esm/types';
+import type { Types as CSTypes } from '@cornerstonejs/core';
 
 import { setEnabledElement } from '../state';
 
 import './OHIFCornerstoneViewport.css';
 import CornerstoneOverlays from './Overlays/CornerstoneOverlays';
-import getSOPInstanceAttributes from '../utils/measurementServiceMappings/utils/getSOPInstanceAttributes';
 import CinePlayer from '../components/CinePlayer';
-import { Types } from '@ohif/core';
-import findImageIdIndexFromMeasurementByFOR from '../utils/findImageIdIndexFromMeasurementByFOR';
+import type { Types } from '@ohif/core';
 
 import OHIFViewportActionCorners from '../components/OHIFViewportActionCorners';
 import { getWindowLevelActionMenu } from '../components/WindowLevelActionMenu/getWindowLevelActionMenu';
@@ -107,6 +99,7 @@ const OHIFCornerstoneViewport = React.memo((props: withAppTypes) => {
     viewportOptions,
     displaySetOptions,
     servicesManager,
+    commandsManager,
     onElementEnabled,
     // eslint-disable-next-line react/prop-types
     onElementDisabled,
@@ -145,14 +138,12 @@ const OHIFCornerstoneViewport = React.memo((props: withAppTypes) => {
   const [appConfig] = useAppConfig();
 
   const {
-    measurementService,
     displaySetService,
     toolbarService,
     toolGroupService,
     syncGroupService,
     cornerstoneViewportService,
     cornerstoneCacheService,
-    viewportGridService,
     stateSyncService,
     viewportActionCornersService,
   } = servicesManager.services;
@@ -366,24 +357,12 @@ const OHIFCornerstoneViewport = React.memo((props: withAppTypes) => {
     }
 
     const unsubscribeFromJumpToMeasurementEvents = _subscribeToJumpToMeasurementEvents(
-      measurementService,
-      displaySetService,
       elementRef,
       viewportId,
-      displaySets,
-      viewportGridService,
-      cornerstoneViewportService
+      servicesManager
     );
 
-    _checkForCachedJumpToMeasurementEvents(
-      measurementService,
-      displaySetService,
-      elementRef,
-      viewportId,
-      displaySets,
-      viewportGridService,
-      cornerstoneViewportService
-    );
+    _checkForCachedJumpToMeasurementEvents(elementRef, viewportId, displaySets, servicesManager);
 
     return () => {
       unsubscribeFromJumpToMeasurementEvents();
@@ -467,15 +446,9 @@ const OHIFCornerstoneViewport = React.memo((props: withAppTypes) => {
   );
 }, areEqual);
 
-function _subscribeToJumpToMeasurementEvents(
-  measurementService,
-  displaySetService,
-  elementRef,
-  viewportId,
-  displaySets,
-  viewportGridService,
-  cornerstoneViewportService
-) {
+function _subscribeToJumpToMeasurementEvents(elementRef, viewportId, servicesManager) {
+  const { measurementService, cornerstoneViewportService } = servicesManager.services;
+
   const { unsubscribe } = measurementService.subscribe(
     MeasurementService.EVENTS.JUMP_TO_MEASUREMENT_VIEWPORT,
     props => {
@@ -489,14 +462,12 @@ function _subscribeToJumpToMeasurementEvents(
       if (cacheJumpToMeasurementEvent.cornerstoneViewport === undefined) {
         // Decide on which viewport should handle this
         cacheJumpToMeasurementEvent.cornerstoneViewport =
-          cornerstoneViewportService.getViewportIdToJump(
-            jumpId,
-            measurement.displaySetInstanceUID,
-            {
-              referencedImageId:
-                measurement.referencedImageId || measurement.metadata?.referencedImageId,
-            }
-          );
+          cornerstoneViewportService.getViewportIdToJump(jumpId, {
+            displaySetInstanceUID: measurement.displaySetInstanceUID,
+            ...measurement.metadata,
+            referencedImageId:
+              measurement.referencedImageId || measurement.metadata?.referencedImageId,
+          });
       }
 
       const targetElement = elementRef.current;
@@ -513,14 +484,7 @@ function _subscribeToJumpToMeasurementEvents(
       if (imageIdIndex >= 0 && cacheJumpToMeasurementEvent.cornerstoneViewport !== viewportId) {
         return;
       }
-
-      _jumpToMeasurement(
-        measurement,
-        elementRef,
-        viewportId,
-        displaySetService,
-        viewportGridService
-      );
+      _jumpToMeasurement(measurement, elementRef, viewportId, servicesManager);
     }
   );
 
@@ -529,13 +493,10 @@ function _subscribeToJumpToMeasurementEvents(
 
 // Check if there is a queued jumpToMeasurement event
 function _checkForCachedJumpToMeasurementEvents(
-  measurementService,
-  displaySetService,
   elementRef,
   viewportId,
   displaySets,
-  viewportGridService,
-  cornerstoneViewportService
+  servicesManager
 ) {
   if (!cacheJumpToMeasurementEvent) {
     return;
@@ -553,49 +514,15 @@ function _checkForCachedJumpToMeasurementEvents(
   const { measurement } = cacheJumpToMeasurementEvent;
   if (measurement && elementRef) {
     if (displaysUIDs.includes(measurement?.displaySetInstanceUID)) {
-      _jumpToMeasurement(
-        measurement,
-        elementRef,
-        viewportId,
-        displaySetService,
-        viewportGridService
-      );
+      _jumpToMeasurement(measurement, elementRef, viewportId, servicesManager);
     }
   }
 }
 
-/**
- * Finds the index of the image ID in the viewport that matches the given SOPInstanceUID and frameNumber.
- * @param viewport - The viewport object.
- * @param SOPInstanceUID - The SOPInstanceUID to match.
- * @param frameNumber - The frame number to match (optional).
- * @returns The index of the matching image ID, or -1 if not found.
- */
-function findImageIdIndex(viewport, SOPInstanceUID, frameNumber) {
-  const imageIds = viewport.getImageIds();
-  return imageIds.findIndex(imageId => {
-    const { SOPInstanceUID: aSOPInstanceUID, frameNumber: aFrameNumber } =
-      getSOPInstanceAttributes(imageId);
-    return aSOPInstanceUID === SOPInstanceUID && (!frameNumber || frameNumber === aFrameNumber);
-  });
-}
+function _jumpToMeasurement(measurement, targetElementRef, viewportId, servicesManager) {
+  const { viewportGridService } = servicesManager.services;
 
-function _jumpToMeasurement(
-  measurement,
-  targetElementRef,
-  viewportId,
-  displaySetService,
-  viewportGridService
-) {
   const targetElement = targetElementRef.current;
-  const { displaySetInstanceUID, SOPInstanceUID, frameNumber } = measurement;
-
-  if (!SOPInstanceUID) {
-    console.warn('cannot jump in a non-acquisition plane measurements yet');
-    return;
-  }
-
-  const referencedDisplaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
 
   viewportGridService.setActiveViewportId(viewportId);
 
@@ -603,51 +530,15 @@ function _jumpToMeasurement(
 
   if (enabledElement) {
     // See how the jumpToSlice() of Cornerstone3D deals with imageIdx param.
-    const viewport = enabledElement.viewport as IStackViewport | IVolumeViewport;
+    const viewport = enabledElement.viewport as CSTypes.IStackViewport | CSTypes.IVolumeViewport;
 
-    let imageIdIndex = 0;
-    let viewportCameraDirectionMatch = true;
-
-    if (viewport instanceof StackViewport) {
-      imageIdIndex = findImageIdIndex(viewport, SOPInstanceUID, frameNumber);
-
-      /** If could not find image id index using sop instance try frame of reference */
-      if (imageIdIndex < 0) {
-        const imageIds = viewport.getImageIds();
-        const imageIdIndexFound = findImageIdIndexFromMeasurementByFOR(imageIds, measurement);
-        if (imageIdIndexFound > -1) {
-          imageIdIndex = imageIdIndexFound;
-        }
-      }
-    } else {
-      // for volume viewport we can't rely on the imageIdIndex since it can be
-      // a reconstructed view that doesn't match the original slice numbers etc.
-      const { viewPlaneNormal: measurementViewPlane } = measurement.metadata;
-      imageIdIndex = referencedDisplaySet.images.findIndex(
-        i => i.SOPInstanceUID === SOPInstanceUID
-      );
-
-      // the index is reversed in the volume viewport
-      // imageIdIndex = referencedDisplaySet.images.length - 1 - imageIdIndex;
-
-      const { viewPlaneNormal: viewportViewPlane } = viewport.getCamera();
-
-      // should compare abs for both planes since the direction can be flipped
-      if (
-        measurementViewPlane &&
-        !csUtils.isEqual(measurementViewPlane.map(Math.abs), viewportViewPlane.map(Math.abs))
-      ) {
-        viewportCameraDirectionMatch = false;
-      }
-    }
-
-    if (!viewportCameraDirectionMatch || imageIdIndex === -1) {
+    const { metadata } = measurement;
+    if (!viewport.isReferenceViewable(metadata, { withNavigation: true, withOrientation: true })) {
+      console.log("Reference isn't viewable, postponing until updated");
       return;
     }
 
-    cs3DTools.utilities.jumpToSlice(targetElement, {
-      imageIndex: imageIdIndex,
-    });
+    viewport.setViewReference(metadata);
 
     cs3DTools.annotation.selection.setAnnotationSelected(measurement.uid);
     // Jump to measurement consumed, remove.
