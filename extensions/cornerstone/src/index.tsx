@@ -21,6 +21,7 @@ import CornerstoneCacheService from './services/CornerstoneCacheService';
 import CornerstoneViewportService from './services/ViewportService/CornerstoneViewportService';
 import ColorbarService from './services/ColorbarService';
 import * as CornerstoneExtensionTypes from './types';
+import * as utils from './utils';
 
 import { toolNames } from './initCornerstoneTools';
 import { getEnabledElement, reset as enabledElementReset, setEnabledElement } from './state';
@@ -227,5 +228,6 @@ export {
   getEnabledElement,
   ImageOverlayViewerTool,
   getSOPInstanceAttributes,
+  utils,
 };
 export default cornerstoneExtension;
