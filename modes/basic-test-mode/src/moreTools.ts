@@ -80,13 +80,7 @@ const moreTools = [
           icon: 'tool-referenceLines',
           label: 'Reference Lines',
           tooltip: 'Show Reference Lines',
-          commands: {
-            commandName: 'setToolEnabled',
-            commandOptions: {
-              toolName: 'ReferenceLines',
-              toggle: true,
-            },
-          },
+          commands: 'toggleEnabledDisabledToolbar',
           listeners: {
             [ViewportGridService.EVENTS.ACTIVE_VIEWPORT_ID_CHANGED]: ReferenceLinesListeners,
             [ViewportGridService.EVENTS.VIEWPORTS_READY]: ReferenceLinesListeners,
@@ -94,17 +88,11 @@ const moreTools = [
           evaluate: 'evaluate.cornerstoneTool.toggle',
         }),
         createButton({
-          id: 'ImageOverlay',
+          id: 'ImageOverlayViewer',
           icon: 'toggle-dicom-overlay',
           label: 'Image Overlay',
           tooltip: 'Toggle Image Overlay',
-          commands: {
-            commandName: 'setToolEnabled',
-            commandOptions: {
-              toolName: 'ImageOverlayViewer',
-              toggle: true,
-            },
-          },
+          commands: 'toggleEnabledDisabledToolbar',
           evaluate: 'evaluate.cornerstoneTool.toggle',
         }),
         createButton({
@@ -173,10 +161,26 @@ const moreTools = [
         }),
         createButton({
           id: 'TagBrowser',
-          icon: 'list-bullets',
+          icon: 'dicom-tag-browser',
           label: 'Dicom Tag Browser',
           tooltip: 'Dicom Tag Browser',
           commands: 'openDICOMTagViewer',
+        }),
+        createButton({
+          id: 'AdvancedMagnify',
+          icon: 'icon-tool-loupe',
+          label: 'Loupe',
+          tooltip: 'Loupe',
+          commands: 'toggleActiveDisabledToolbar',
+          evaluate: 'evaluate.cornerstoneTool.toggle.ifStrictlyDisabled',
+        }),
+        createButton({
+          id: 'UltrasoundDirectionalTool',
+          icon: 'icon-tool-ultrasound-bidirectional',
+          label: 'Ultrasound Directional',
+          tooltip: 'Ultrasound Directional',
+          commands: setToolActiveToolbar,
+          evaluate: ['evaluate.cornerstoneTool', 'evaluate.isUS'],
         }),
       ],
     },

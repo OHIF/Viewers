@@ -59,6 +59,9 @@ export const mprAnd3DVolumeViewport = {
                 id: 'mpr',
                 source: true,
                 target: true,
+                options: {
+                  syncColormap: true,
+                },
               },
             ],
           },
@@ -81,7 +84,11 @@ export const mprAnd3DVolumeViewport = {
             {
               id: 'mprDisplaySet',
               options: {
-                displayPreset: 'CT-Bone',
+                displayPreset: {
+                  CT: 'CT-Bone',
+                  MR: 'MR-Default',
+                  default: 'CT-Bone',
+                },
               },
             },
           ],
@@ -100,6 +107,9 @@ export const mprAnd3DVolumeViewport = {
                 id: 'mpr',
                 source: true,
                 target: true,
+                options: {
+                  syncColormap: true,
+                },
               },
             ],
           },
@@ -123,6 +133,9 @@ export const mprAnd3DVolumeViewport = {
                 id: 'mpr',
                 source: true,
                 target: true,
+                options: {
+                  syncColormap: true,
+                },
               },
             ],
           },

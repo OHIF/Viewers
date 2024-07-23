@@ -1314,18 +1314,19 @@ export default class HangingProtocolService extends PubSubService {
       );
 
       // Use the display set provided instead
-      if (reuseDisplaySetUID) {
-        if (viewportOptions.allowUnmatchedView !== true) {
-          this.validateDisplaySetSelectMatch(viewportDisplaySet, id, reuseDisplaySetUID);
-        }
-        const displaySetInfo: HangingProtocol.DisplaySetInfo = {
-          displaySetInstanceUID: reuseDisplaySetUID,
-          displaySetOptions,
-        };
+      // Todo: find out what is wrong here
+      // if (reuseDisplaySetUID) {
+      //   if (viewportOptions.allowUnmatchedView !== true) {
+      //     this.validateDisplaySetSelectMatch(viewportDisplaySet, id, reuseDisplaySetUID);
+      //   }
+      //   const displaySetInfo: HangingProtocol.DisplaySetInfo = {
+      //     displaySetInstanceUID: reuseDisplaySetUID,
+      //     displaySetOptions,
+      //   };
 
-        displaySetsInfo.push(displaySetInfo);
-        return;
-      }
+      //   displaySetsInfo.push(displaySetInfo);
+      //   return;
+      // }
 
       // Use the display set index to allow getting the "next" match, eg
       // matching all display sets, and get the matchedDisplaySetsIndex'th item
@@ -1385,6 +1386,22 @@ export default class HangingProtocolService extends PubSubService {
         this._validateRequiredSelectors(displaySetSelector, displaySet);
       }
     });
+  }
+
+  public areRequiredSelectorsValid(
+    displaySetSelectors: HangingProtocol.DisplaySetSelector,
+    displaySet: any
+  ): boolean {
+    let pass = true;
+    for (const displaySetSelector of displaySetSelectors) {
+      try {
+        this._validateRequiredSelectors(displaySetSelector, displaySet);
+      } catch (error) {
+        pass = false;
+        break;
+      }
+    }
+    return pass;
   }
 
   private _validateRequiredSelectors(

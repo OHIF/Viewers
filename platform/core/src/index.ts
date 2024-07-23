@@ -1,5 +1,5 @@
 import { ExtensionManager, MODULE_TYPES } from './extensions';
-import { ServicesManager } from './services';
+import { ServiceProvidersManager, ServicesManager } from './services';
 import classes, { CommandsManager, HotkeysManager } from './classes';
 
 import DICOMWeb from './DICOMWeb';
@@ -33,6 +33,7 @@ import {
   CustomizationService,
   StateSyncService,
   PanelService,
+  WorkflowStepsService,
 } from './services';
 
 import { DisplaySetMessage, DisplaySetMessageList } from './services/DisplaySetService';
@@ -51,6 +52,7 @@ const OHIF = {
   ExtensionManager,
   HotkeysManager,
   ServicesManager,
+  ServiceProvidersManager,
   //
   defaults,
   utils,
@@ -83,6 +85,7 @@ const OHIF = {
   PubSubService,
   PanelService,
   useToolbar,
+  WorkflowStepsService,
 };
 
 export {
@@ -92,6 +95,7 @@ export {
   ExtensionManager,
   HotkeysManager,
   ServicesManager,
+  ServiceProvidersManager,
   //
   defaults,
   utils,
@@ -126,6 +130,7 @@ export {
   Enums,
   Types,
   PanelService,
+  WorkflowStepsService,
   useToolbar,
 };
 

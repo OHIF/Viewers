@@ -206,6 +206,9 @@ const commandsModule = ({
     loadSegmentationDisplaySetsForViewport: async ({ viewportId, displaySets }) => {
       // Todo: handle adding more than one segmentation
       const displaySet = displaySets[0];
+      const referencedDisplaySet = displaySetService.getDisplaySetByUID(
+        displaySet.referencedDisplaySetInstanceUID
+      );
 
       updateViewportsForSegmentationRendering({
         viewportId,
@@ -221,7 +224,8 @@ const commandsModule = ({
 
           const boundFn = segmentationService[serviceFunction].bind(segmentationService);
           const segmentationId = await boundFn(segDisplaySet, null, suppressEvents);
-
+          const segmentation = segmentationService.getSegmentation(segmentationId);
+          segmentation.description = `S${referencedDisplaySet.SeriesNumber}: ${referencedDisplaySet.SeriesDescription}`;
           return segmentationId;
         },
       });
@@ -430,30 +434,6 @@ const commandsModule = ({
         });
       });
     },
-    toggleThresholdRangeAndDynamic() {
-      const toolGroupIds = toolGroupService.getToolGroupIds();
-
-      if (!toolGroupIds) {
-        return;
-      }
-
-      toolGroupIds.forEach(toolGroupId => {
-        const toolGroup = toolGroupService.getToolGroup(toolGroupId);
-        const brushInstances = segmentationUtils.getBrushToolInstances(toolGroup.id);
-
-        brushInstances.forEach(({ configuration }) => {
-          const { activeStrategy, strategySpecificConfiguration } = configuration;
-
-          if (activeStrategy.startsWith('THRESHOLD')) {
-            const thresholdConfig = strategySpecificConfiguration.THRESHOLD;
-
-            if (thresholdConfig) {
-              thresholdConfig.isDynamic = !thresholdConfig.isDynamic;
-            }
-          }
-        });
-      });
-    },
   };
 
   const definitions = {
@@ -486,9 +466,6 @@ const commandsModule = ({
     },
     setThresholdRange: {
       commandFn: actions.setThresholdRange,
-    },
-    toggleThresholdRangeAndDynamic: {
-      commandFn: actions.toggleThresholdRangeAndDynamic,
     },
   };
 

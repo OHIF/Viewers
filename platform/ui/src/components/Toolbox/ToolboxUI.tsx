@@ -46,25 +46,11 @@ function ToolboxUI(props) {
                   key={id}
                   className={classnames({
                     [toolClasses]: true,
-                    'flex flex-col items-center justify-center': true,
+                    'border-secondary-light flex flex-col items-center justify-center rounded-md border':
+                      true,
                   })}
                 >
-                  {componentProps.disabled ? (
-                    <Tooltip
-                      position="bottom"
-                      content={componentProps.label}
-                      secondaryContent={'Not available on the current viewport'}
-                    >
-                      <Component
-                        {...componentProps}
-                        {...props}
-                        id={id}
-                        servicesManager={servicesManager}
-                        onInteraction={onInteraction}
-                        size="toolbox"
-                      />
-                    </Tooltip>
-                  ) : (
+                  <div className="flex rounded-md bg-black">
                     <Component
                       {...componentProps}
                       {...props}
@@ -73,7 +59,7 @@ function ToolboxUI(props) {
                       onInteraction={onInteraction}
                       size="toolbox"
                     />
-                  )}
+                  </div>
                 </div>
               );
             })}
@@ -86,7 +72,16 @@ function ToolboxUI(props) {
     );
   };
 
-  return useCollapsedPanel ? <PanelSection title={title}>{render()}</PanelSection> : render();
+  return useCollapsedPanel ? (
+    <PanelSection
+      childrenClassName="flex-shrink-0"
+      title={title}
+    >
+      {render()}
+    </PanelSection>
+  ) : (
+    render()
+  );
 }
 
 export { ToolboxUI };

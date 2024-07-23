@@ -3,10 +3,10 @@ import { Tooltip } from '@ohif/ui';
 import classnames from 'classnames';
 import { useToolbar } from '@ohif/core';
 
-export function Toolbar({ servicesManager }) {
+export function Toolbar({ servicesManager, buttonSection = 'primary' }) {
   const { toolbarButtons, onInteraction } = useToolbar({
     servicesManager,
-    buttonSection: 'primary',
+    buttonSection,
   });
 
   if (!toolbarButtons.length) {
@@ -21,8 +21,6 @@ export function Toolbar({ servicesManager }) {
         }
 
         const { id, Component, componentProps } = toolDef;
-        const { disabled } = componentProps;
-
         const tool = (
           <Component
             key={id}
@@ -33,23 +31,7 @@ export function Toolbar({ servicesManager }) {
           />
         );
 
-        return disabled ? (
-          <Tooltip
-            key={id}
-            position="bottom"
-            content={componentProps.label}
-            secondaryContent={'Not available on the current viewport'}
-          >
-            <div className={classnames('mr-1')}>{tool}</div>
-          </Tooltip>
-        ) : (
-          <div
-            key={id}
-            className="mr-1"
-          >
-            {tool}
-          </div>
-        );
+        return <div key={id}>{tool}</div>;
       })}
     </>
   );

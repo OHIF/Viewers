@@ -37,6 +37,31 @@ export default function interleaveTopToBottom({
     }
   }
 
+  const filteredMatchDetails = [];
+  const displaySetsToLoad = new Set();
+
+  // Check all viewports that have a displaySet to be loaded. In some cases
+  // (eg: line chart viewports which is not a Cornerstone viewport) the
+  // displaySet is created on the client and there are no instances to be
+  // downloaded. For those viewports the displaySet may have the `skipLoading`
+  // option set to true otherwise it may block the download of all other
+  // instances resulting in blank viewports.
+  Array.from(matchDetails.values()).forEach(curMatchDetails => {
+    const { displaySetsInfo } = curMatchDetails;
+    let numDisplaySetsToLoad = 0;
+
+    displaySetsInfo.forEach(({ displaySetInstanceUID, displaySetOptions }) => {
+      if (!displaySetOptions?.options?.skipLoading) {
+        numDisplaySetsToLoad++;
+        displaySetsToLoad.add(displaySetInstanceUID);
+      }
+    });
+
+    if (numDisplaySetsToLoad) {
+      filteredMatchDetails.push(curMatchDetails);
+    }
+  });
+
   /**
    * The following is checking if all the viewports that were matched in the HP has been
    * successfully created their cornerstone viewport or not. Todo: This can be
@@ -50,18 +75,25 @@ export default function interleaveTopToBottom({
    * listen to it and as the other viewports are created we can set the volumes for them
    * since volumes are already started loading.
    */
-  if (matchDetails.size !== viewportIdVolumeInputArrayMap.size) {
+  const uniqueViewportVolumeDisplaySetUIDs = new Set();
+  viewportIdVolumeInputArrayMap.forEach((volumeInputArray, viewportId) => {
+    volumeInputArray.forEach(volumeInput => {
+      const { volumeId } = volumeInput;
+      uniqueViewportVolumeDisplaySetUIDs.add(volumeId);
+    });
+  });
+
+  const uniqueMatchedDisplaySetUIDs = new Set();
+
+  matchDetails.forEach(matchDetail => {
+    const { displaySetsInfo } = matchDetail;
+    displaySetsInfo.forEach(({ displaySetInstanceUID }) => {
+      uniqueMatchedDisplaySetUIDs.add(displaySetInstanceUID);
+    });
+  });
+
+  if (uniqueViewportVolumeDisplaySetUIDs.size !== uniqueMatchedDisplaySetUIDs.size) {
     return;
-  }
-
-  // Check if all the matched volumes are loaded
-  for (const [_, details] of displaySetsMatchDetails.entries()) {
-    const { SeriesInstanceUID } = details;
-
-    // HangingProtocol has matched, but don't have all the volumes created yet, so return
-    if (!Array.from(volumeIdMapsToLoad.values()).includes(SeriesInstanceUID)) {
-      return;
-    }
   }
 
   const volumeIds = Array.from(volumeIdMapsToLoad.keys()).slice();

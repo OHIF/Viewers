@@ -1,5 +1,6 @@
 import MeasurementService from './MeasurementService';
 import ServicesManager from './ServicesManager';
+import ServiceProvidersManager from './ServiceProvidersManager';
 import UIDialogService from './UIDialogService';
 import UIModalService from './UIModalService';
 import UINotificationService from './UINotificationService';
@@ -15,6 +16,7 @@ import UserAuthenticationService from './UserAuthenticationService';
 import CustomizationService from './CustomizationService';
 import StateSyncService from './StateSyncService';
 import PanelService from './PanelService';
+import WorkflowStepsService from './WorkflowStepsService';
 
 import type Services from '../types/Services';
 
@@ -22,6 +24,7 @@ export {
   Services,
   MeasurementService,
   ServicesManager,
+  ServiceProvidersManager,
   CustomizationService,
   StateSyncService,
   UIDialogService,
@@ -38,4 +41,5 @@ export {
   PubSubService,
   UserAuthenticationService,
   PanelService,
+  WorkflowStepsService,
 };

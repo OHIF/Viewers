@@ -24,6 +24,7 @@ import JumpPresets from '../../utils/JumpPresets';
 
 const EVENTS = {
   VIEWPORT_DATA_CHANGED: 'event::cornerstoneViewportService:viewportDataChanged',
+  VIEWPORT_VOLUMES_CHANGED: 'event::cornerstoneViewportService:viewportVolumesChanged',
 };
 
 /**
@@ -182,13 +183,14 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     const { lutPresentation, positionPresentation } = presentations;
     if (lutPresentation) {
       const { presentation } = lutPresentation;
-
       if (viewport instanceof BaseVolumeViewport) {
-        Object.entries(presentation).forEach(
-          ([volumeId, properties]: [string, Types.ViewportProperties]) => {
+        if (presentation instanceof Map) {
+          presentation.forEach((properties, volumeId) => {
             viewport.setProperties(properties, volumeId);
-          }
-        );
+          });
+        } else {
+          viewport.setProperties(presentation);
+        }
       } else {
         viewport.setProperties(presentation);
       }
@@ -696,29 +698,37 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
 
     this.viewportsDisplaySets.set(viewport.id, displaySetInstanceUIDs);
 
-    if (hangingProtocolService.getShouldPerformCustomImageLoad()) {
-      // delegate the volume loading to the hanging protocol service if it has a custom image load strategy
-      return hangingProtocolService.runImageLoadStrategy({
-        viewportId: viewport.id,
-        volumeInputArray,
+    const volumesNotLoaded = volumeToLoad.filter(volume => !volume.loadStatus.loaded);
+
+    if (volumesNotLoaded.length) {
+      if (hangingProtocolService.getShouldPerformCustomImageLoad()) {
+        // delegate the volume loading to the hanging protocol service if it has a custom image load strategy
+        return hangingProtocolService.runImageLoadStrategy({
+          viewportId: viewport.id,
+          volumeInputArray,
+        });
+      }
+
+      volumesNotLoaded.forEach(volume => {
+        if (!volume.loadStatus.loading) {
+          volume.load();
+        }
       });
     }
-
-    volumeToLoad.forEach(volume => {
-      if (!volume.loadStatus.loaded && !volume.loadStatus.loading) {
-        volume.load();
-      }
-    });
 
     // This returns the async continuation only
     return this.setVolumesForViewport(viewport, volumeInputArray, presentations);
   }
 
   public async setVolumesForViewport(viewport, volumeInputArray, presentations) {
-    const { displaySetService, toolGroupService } = this.servicesManager.services;
+    const { displaySetService, toolGroupService, viewportGridService } =
+      this.servicesManager.services;
 
     const viewportInfo = this.getViewportInfo(viewport.id);
     const displaySetOptions = viewportInfo.getDisplaySetOptions();
+    const displaySetUIDs = viewportGridService.getDisplaySetsUIDsForViewport(viewport.id);
+    const displaySet = displaySetService.getDisplaySetByUID(displaySetUIDs[0]);
+    const displaySetModality = displaySet?.Modality;
 
     // Todo: use presentations states
     const volumesProperties = volumeInputArray.map((volumeInput, index) => {
@@ -744,7 +754,7 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
       }
 
       if (displayPreset !== undefined) {
-        properties.preset = displayPreset;
+        properties.preset = displayPreset[displaySetModality] || displayPreset.default;
       }
 
       return { properties, volumeId };
@@ -788,6 +798,10 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     }
 
     viewport.render();
+
+    this._broadcastEvent(this.EVENTS.VIEWPORT_VOLUMES_CHANGED, {
+      viewportInfo,
+    });
   }
 
   private _addSegmentationRepresentationToToolGroupIfNecessary(

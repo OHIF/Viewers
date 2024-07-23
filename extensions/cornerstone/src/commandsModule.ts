@@ -16,7 +16,7 @@ import { Types as OhifTypes } from '@ohif/core';
 import { vec3, mat4 } from 'gl-matrix';
 
 import CornerstoneViewportDownloadForm from './utils/CornerstoneViewportDownloadForm';
-import callInputDialog from './utils/callInputDialog';
+import { callLabelAutocompleteDialog, showLabelAnnotationPopup } from './utils/callInputDialog';
 import toggleImageSliceSync from './utils/imageSliceSync/toggleImageSliceSync';
 import { getFirstAnnotationSelected } from './utils/measurementServiceMappings/utils/selection';
 import getActiveViewportEnabledElement from './utils/getActiveViewportEnabledElement';
@@ -40,6 +40,9 @@ function commandsModule({
     cornerstoneViewportService,
     uiNotificationService,
     measurementService,
+    customizationService,
+    colorbarService,
+    hangingProtocolService,
     syncGroupService,
   } = servicesManager.services as CornerstoneServices;
 
@@ -48,6 +51,12 @@ function commandsModule({
   function _getActiveViewportEnabledElement() {
     return getActiveViewportEnabledElement(viewportGridService);
   }
+
+  function _getActiveViewportToolGroupId() {
+    const viewport = _getActiveViewportEnabledElement();
+    return toolGroupService.getToolGroupForViewport(viewport.id);
+  }
+
   const actions = {
     /**
      * Generates the selector props for the context menu, specific to
@@ -123,38 +132,29 @@ function commandsModule({
         ? nearbyToolData
         : null;
     },
-
-    // Measurement tool commands:
-
     /** Delete the given measurement */
     deleteMeasurement: ({ uid }) => {
       if (uid) {
         measurementServiceSource.remove(uid);
       }
     },
-
     /**
      * Show the measurement labelling input dialog and update the label
      * on the measurement with a response if not cancelled.
      */
     setMeasurementLabel: ({ uid }) => {
+      const labelConfig = customizationService.get('measurementLabels');
       const measurement = measurementService.getMeasurement(uid);
-
-      callInputDialog(
-        uiDialogService,
-        measurement,
-        (label, actionId) => {
-          if (actionId === 'cancel') {
-            return;
-          }
-
-          const updatedMeasurement = Object.assign({}, measurement, {
-            label,
-          });
-
-          measurementService.update(updatedMeasurement.uid, updatedMeasurement, true);
-        },
-        false
+      showLabelAnnotationPopup(measurement, uiDialogService, labelConfig).then(
+        (val: Map<any, any>) => {
+          measurementService.update(
+            uid,
+            {
+              ...val,
+            },
+            true
+          );
+        }
       );
     },
 
@@ -230,8 +230,9 @@ function commandsModule({
 
       viewportGridService.setActiveViewportId(viewportId);
     },
-    arrowTextCallback: ({ callback, data }) => {
-      callInputDialog(uiDialogService, data, callback);
+    arrowTextCallback: ({ callback, data, uid }) => {
+      const labelConfig = customizationService.get('measurementLabels');
+      callLabelAutocompleteDialog(uiDialogService, callback, {}, labelConfig);
     },
     toggleCine: () => {
       const { viewports } = viewportGridService.getState();
@@ -239,17 +240,11 @@ function commandsModule({
       cineService.setIsCineEnabled(!isCineEnabled);
       viewports.forEach((_, index) => cineService.setCine({ id: index, isPlaying: false }));
     },
-    setWindowLevel({ window, level, toolGroupId }) {
+
+    setViewportWindowLevel({ viewportId, window, level }) {
       // convert to numbers
       const windowWidthNum = Number(window);
       const windowCenterNum = Number(level);
-
-      const { viewportId } = _getActiveViewportEnabledElement();
-      const viewportToolGroupId = toolGroupService.getToolGroupForViewport(viewportId);
-
-      if (toolGroupId && toolGroupId !== viewportToolGroupId) {
-        return;
-      }
 
       // get actor from the viewport
       const renderingEngine = cornerstoneViewportService.getRenderingEngine();
@@ -265,16 +260,37 @@ function commandsModule({
       });
       viewport.render();
     },
-    setToolEnabled: ({ toolName, toggle }) => {
+
+    toggleViewportColorbar: ({ viewportId, displaySetInstanceUIDs, options = {} }) => {
+      const hasColorbar = colorbarService.hasColorbar(viewportId);
+      if (hasColorbar) {
+        colorbarService.removeColorbar(viewportId);
+        return;
+      }
+      colorbarService.addColorbar(viewportId, displaySetInstanceUIDs, options);
+    },
+
+    setWindowLevel(props) {
+      const { toolGroupId } = props;
+      const { viewportId } = _getActiveViewportEnabledElement();
+      const viewportToolGroupId = toolGroupService.getToolGroupForViewport(viewportId);
+
+      if (toolGroupId && toolGroupId !== viewportToolGroupId) {
+        return;
+      }
+
+      actions.setViewportWindowLevel({ ...props, viewportId });
+    },
+    setToolEnabled: ({ toolName, toggle, toolGroupId }) => {
       const { viewports } = viewportGridService.getState();
 
       if (!viewports.size) {
         return;
       }
 
-      const toolGroup = toolGroupService.getToolGroup(null);
+      const toolGroup = toolGroupService.getToolGroup(toolGroupId ?? null);
 
-      if (!toolGroup) {
+      if (!toolGroup || !toolGroup.hasTool(toolName)) {
         return;
       }
 
@@ -283,10 +299,52 @@ function commandsModule({
       // Toggle the tool's state only if the toggle is true
       if (toggle) {
         toolIsEnabled ? toolGroup.setToolDisabled(toolName) : toolGroup.setToolEnabled(toolName);
+      } else {
+        toolGroup.setToolEnabled(toolName);
       }
 
       const renderingEngine = cornerstoneViewportService.getRenderingEngine();
       renderingEngine.render();
+    },
+    toggleEnabledDisabledToolbar({ value, itemId, toolGroupId }) {
+      const toolName = itemId || value;
+      toolGroupId = toolGroupId ?? _getActiveViewportToolGroupId();
+
+      const toolGroup = toolGroupService.getToolGroup(toolGroupId);
+      if (!toolGroup || !toolGroup.hasTool(toolName)) {
+        return;
+      }
+
+      const toolIsEnabled = toolGroup.getToolOptions(toolName).mode === Enums.ToolModes.Enabled;
+
+      toolIsEnabled ? toolGroup.setToolDisabled(toolName) : toolGroup.setToolEnabled(toolName);
+    },
+    toggleActiveDisabledToolbar({ value, itemId, toolGroupId }) {
+      const toolName = itemId || value;
+      toolGroupId = toolGroupId ?? _getActiveViewportToolGroupId();
+      const toolGroup = toolGroupService.getToolGroup(toolGroupId);
+      if (!toolGroup || !toolGroup.hasTool(toolName)) {
+        return;
+      }
+
+      const toolIsActive = [
+        Enums.ToolModes.Active,
+        Enums.ToolModes.Enabled,
+        Enums.ToolModes.Passive,
+      ].includes(toolGroup.getToolOptions(toolName).mode);
+
+      toolIsActive
+        ? toolGroup.setToolDisabled(toolName)
+        : actions.setToolActive({ toolName, toolGroupId });
+
+      // we should set the previously active tool to active after we set the
+      // current tool disabled
+      if (toolIsActive) {
+        const prevToolName = toolGroup.getPrevActivePrimaryToolName();
+        if (prevToolName !== toolName) {
+          actions.setToolActive({ toolName: prevToolName, toolGroupId });
+        }
+      }
     },
     setToolActiveToolbar: ({ value, itemId, toolGroupIds = [] }) => {
       // Sometimes it is passed as value (tools with options), sometimes as itemId (toolbar buttons)
@@ -308,6 +366,10 @@ function commandsModule({
       const toolGroup = toolGroupService.getToolGroup(toolGroupId);
 
       if (!toolGroup) {
+        return;
+      }
+
+      if (!toolGroup.hasTool(toolName)) {
         return;
       }
 
@@ -353,6 +415,7 @@ function commandsModule({
             onClose: uiModalService.hide,
             cornerstoneViewportService,
           },
+          containerDimensions: 'w-[70%] max-w-[900px]',
         });
       }
     },
@@ -388,11 +451,9 @@ function commandsModule({
 
       const { viewport } = enabledElement;
 
-      if (viewport instanceof StackViewport) {
-        const { flipHorizontal } = viewport.getCamera();
-        viewport.setCamera({ flipHorizontal: !flipHorizontal });
-        viewport.render();
-      }
+      const { flipHorizontal } = viewport.getCamera();
+      viewport.setCamera({ flipHorizontal: !flipHorizontal });
+      viewport.render();
     },
     flipViewportVertical: () => {
       const enabledElement = _getActiveViewportEnabledElement();
@@ -403,11 +464,9 @@ function commandsModule({
 
       const { viewport } = enabledElement;
 
-      if (viewport instanceof StackViewport) {
-        const { flipVertical } = viewport.getCamera();
-        viewport.setCamera({ flipVertical: !flipVertical });
-        viewport.render();
-      }
+      const { flipVertical } = viewport.getCamera();
+      viewport.setCamera({ flipVertical: !flipVertical });
+      viewport.render();
     },
     invertViewport: ({ element }) => {
       let enabledElement;
@@ -510,18 +569,51 @@ function commandsModule({
 
       cstUtils.scroll(viewport, options);
     },
-    setViewportColormap: ({ viewportId, displaySetInstanceUID, colormap, immediate = false }) => {
+    setViewportColormap: ({
+      viewportId,
+      displaySetInstanceUID,
+      colormap,
+      opacity = 1,
+      immediate = false,
+    }) => {
       const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
 
       const actorEntries = viewport.getActors();
+      let hpOpacity;
+      // Retrieve active protocol's viewport match details
+      const { viewportMatchDetails } = hangingProtocolService.getActiveProtocol();
+      // Get display set options for the specified viewport ID
+      const displaySetsInfo = viewportMatchDetails.get(viewportId)?.displaySetsInfo;
 
-      const actorEntry = actorEntries.find(actorEntry => {
-        return actorEntry.uid.includes(displaySetInstanceUID);
-      });
+      if (displaySetsInfo) {
+        // Find the display set that matches the given UID
+        const matchingDisplaySet = displaySetsInfo.find(
+          displaySet => displaySet.displaySetInstanceUID === displaySetInstanceUID
+        );
+        // If a matching display set is found, update the opacity with its value
+        hpOpacity = matchingDisplaySet?.displaySetOptions?.options?.colormap?.opacity;
+      }
 
-      const { actor: volumeActor, uid: volumeId } = actorEntry;
+      // HP takes priority over the default opacity
+      colormap = { ...colormap, opacity: hpOpacity || opacity };
 
-      viewport.setProperties({ colormap, volumeActor }, volumeId);
+      const setViewportProperties = (viewport, uid) => {
+        const actorEntry = actorEntries.find(entry => entry.uid.includes(uid));
+        const { actor: volumeActor, uid: volumeId } = actorEntry;
+        viewport.setProperties({ colormap, volumeActor }, volumeId);
+      };
+
+      if (viewport instanceof StackViewport) {
+        setViewportProperties(viewport, viewportId);
+      }
+
+      if (viewport instanceof VolumeViewport) {
+        if (!displaySetInstanceUID) {
+          const { viewports } = viewportGridService.getState();
+          displaySetInstanceUID = viewports.get(viewportId)?.displaySetInstanceUIDs[0];
+        }
+        setViewportProperties(viewport, displaySetInstanceUID);
+      }
 
       if (immediate) {
         viewport.render();
@@ -588,6 +680,17 @@ function commandsModule({
     storePresentation: ({ viewportId }) => {
       cornerstoneViewportService.storePresentation({ viewportId });
     },
+    updateVolumeData: ({ volume }) => {
+      // update vtkOpenGLTexture and imageData of computed volume
+      const { imageData, vtkOpenGLTexture } = volume;
+      const numSlices = imageData.getDimensions()[2];
+      const slicesToUpdate = [...Array(numSlices).keys()];
+      slicesToUpdate.forEach(i => {
+        vtkOpenGLTexture.setUpdatedFrame(i);
+      });
+      imageData.modified();
+    },
+
     attachProtocolViewportDataListener: ({ protocol, stageIndex }) => {
       const EVENT = cornerstoneViewportService.EVENTS.VIEWPORT_DATA_CHANGED;
       const command = protocol.callbacks.onViewportDataInitialized;
@@ -603,6 +706,107 @@ function commandsModule({
           unsubscribe(EVENT);
         }
       });
+    },
+
+    setViewportPreset: ({ viewportId, preset }) => {
+      const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
+      if (!viewport) {
+        return;
+      }
+      viewport.setProperties({
+        preset,
+      });
+      viewport.render();
+    },
+
+    /**
+     * Sets the volume quality for a given viewport.
+     * @param {string} viewportId - The ID of the viewport to set the volume quality.
+     * @param {number} volumeQuality - The desired quality level of the volume rendering.
+     */
+
+    setVolumeRenderingQulaity: ({ viewportId, volumeQuality }) => {
+      const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
+      const { actor } = viewport.getActors()[0];
+      const mapper = actor.getMapper();
+      const image = mapper.getInputData();
+      const dims = image.getDimensions();
+      const spacing = image.getSpacing();
+      const spatialDiagonal = vec3.length(
+        vec3.fromValues(dims[0] * spacing[0], dims[1] * spacing[1], dims[2] * spacing[2])
+      );
+
+      let sampleDistance = spacing.reduce((a, b) => a + b) / 3.0;
+      sampleDistance /= volumeQuality > 1 ? 0.5 * volumeQuality ** 2 : 1.0;
+      const samplesPerRay = spatialDiagonal / sampleDistance + 1;
+      mapper.setMaximumSamplesPerRay(samplesPerRay);
+      mapper.setSampleDistance(sampleDistance);
+      viewport.render();
+    },
+
+    /**
+     * Shifts opacity points for a given viewport id.
+     * @param {string} viewportId - The ID of the viewport to set the mapping range.
+     * @param {number} shift - The shift value to shift the points by.
+     */
+    shiftVolumeOpacityPoints: ({ viewportId, shift }) => {
+      const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
+      const { actor } = viewport.getActors()[0];
+      const ofun = actor.getProperty().getScalarOpacity(0);
+
+      const opacityPointValues = []; // Array to hold values
+      // Gather Existing Values
+      const size = ofun.getSize();
+      for (let pointIdx = 0; pointIdx < size; pointIdx++) {
+        const opacityPointValue = [0, 0, 0, 0];
+        ofun.getNodeValue(pointIdx, opacityPointValue);
+        // opacityPointValue now holds [xLocation, opacity, midpoint, sharpness]
+        opacityPointValues.push(opacityPointValue);
+      }
+      // Add offset
+      opacityPointValues.forEach(opacityPointValue => {
+        opacityPointValue[0] += shift; // Change the location value
+      });
+      // Set new values
+      ofun.removeAllPoints();
+      opacityPointValues.forEach(opacityPointValue => {
+        ofun.addPoint(...opacityPointValue);
+      });
+      viewport.render();
+    },
+
+    /**
+     * Sets the volume lighting settings for a given viewport.
+     * @param {string} viewportId - The ID of the viewport to set the lighting settings.
+     * @param {Object} options - The lighting settings to be set.
+     * @param {boolean} options.shade - The shade setting for the lighting.
+     * @param {number} options.ambient - The ambient setting for the lighting.
+     * @param {number} options.diffuse - The diffuse setting for the lighting.
+     * @param {number} options.specular - The specular setting for the lighting.
+     **/
+
+    setVolumeLighting: ({ viewportId, options }) => {
+      const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
+      const { actor } = viewport.getActors()[0];
+      const property = actor.getProperty();
+
+      if (options.shade !== undefined) {
+        property.setShade(options.shade);
+      }
+
+      if (options.ambient !== undefined) {
+        property.setAmbient(options.ambient);
+      }
+
+      if (options.diffuse !== undefined) {
+        property.setDiffuse(options.diffuse);
+      }
+
+      if (options.specular !== undefined) {
+        property.setSpecular(options.specular);
+      }
+
+      viewport.render();
     },
     resetCrosshairs: ({ viewportId }) => {
       const crosshairInstances = [];
@@ -621,7 +825,7 @@ function commandsModule({
       }
 
       crosshairInstances.forEach(ins => {
-        ins.resetCrosshairs();
+        ins?.resetCrosshairs();
       });
     },
   };
@@ -646,6 +850,11 @@ function commandsModule({
     },
     getNearbyAnnotation: {
       commandFn: actions.getNearbyAnnotation,
+      storeContexts: [],
+      options: {},
+    },
+    toggleViewportColorbar: {
+      commandFn: actions.toggleViewportColorbar,
     },
     deleteMeasurement: {
       commandFn: actions.deleteMeasurement,
@@ -655,6 +864,9 @@ function commandsModule({
     },
     updateMeasurement: {
       commandFn: actions.updateMeasurement,
+    },
+    setViewportWindowLevel: {
+      commandFn: actions.setViewportWindowLevel,
     },
     setWindowLevel: {
       commandFn: actions.setWindowLevel,
@@ -741,9 +953,6 @@ function commandsModule({
     setViewportColormap: {
       commandFn: actions.setViewportColormap,
     },
-    toggleImageSliceSync: {
-      commandFn: actions.toggleImageSliceSync,
-    },
     setSourceViewportForReferenceLinesTool: {
       commandFn: actions.setSourceViewportForReferenceLinesTool,
     },
@@ -753,11 +962,32 @@ function commandsModule({
     attachProtocolViewportDataListener: {
       commandFn: actions.attachProtocolViewportDataListener,
     },
+    setViewportPreset: {
+      commandFn: actions.setViewportPreset,
+    },
+    setVolumeRenderingQulaity: {
+      commandFn: actions.setVolumeRenderingQulaity,
+    },
+    shiftVolumeOpacityPoints: {
+      commandFn: actions.shiftVolumeOpacityPoints,
+    },
+    setVolumeLighting: {
+      commandFn: actions.setVolumeLighting,
+    },
     resetCrosshairs: {
       commandFn: actions.resetCrosshairs,
     },
     toggleSynchronizer: {
       commandFn: actions.toggleSynchronizer,
+    },
+    updateVolumeData: {
+      commandFn: actions.updateVolumeData,
+    },
+    toggleEnabledDisabledToolbar: {
+      commandFn: actions.toggleEnabledDisabledToolbar,
+    },
+    toggleActiveDisabledToolbar: {
+      commandFn: actions.toggleActiveDisabledToolbar,
     },
   };
 

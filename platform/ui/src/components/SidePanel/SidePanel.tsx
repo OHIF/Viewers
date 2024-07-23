@@ -165,6 +165,7 @@ const SidePanel = ({
   tabs,
   onOpen,
   expandedWidth = 248,
+  onActiveTabIndexChange,
 }) => {
   const { t } = useTranslation('SidePanel');
 
@@ -178,14 +179,15 @@ const SidePanel = ({
   const openStatus = panelOpen ? 'open' : 'closed';
   const style = Object.assign({}, styleMap[openStatus][side], baseStyle);
 
-  const ActiveComponent = tabs[activeTabIndex]?.content;
-
-  const updatePanelOpen = useCallback((panelOpen: boolean) => {
-    setPanelOpen(panelOpen);
-    if (panelOpen) {
-      onOpen?.();
-    }
-  }, []);
+  const updatePanelOpen = useCallback(
+    (panelOpen: boolean) => {
+      setPanelOpen(panelOpen);
+      if (panelOpen && onOpen) {
+        onOpen();
+      }
+    },
+    [onOpen]
+  );
 
   const updateActiveTabIndex = useCallback(
     (activeTabIndex: number) => {
@@ -196,8 +198,12 @@ const SidePanel = ({
 
       setActiveTabIndex(activeTabIndex);
       updatePanelOpen(true);
+
+      if (onActiveTabIndexChange) {
+        onActiveTabIndexChange({ activeTabIndex });
+      }
     },
-    [updatePanelOpen]
+    [onActiveTabIndexChange, updatePanelOpen]
   );
 
   useEffect(() => {
@@ -214,7 +220,7 @@ const SidePanel = ({
             side === 'left' ? 'justify-end pr-2' : 'justify-start pl-2'
           )}
           onClick={() => {
-            updatePanelOpen(prev => !prev);
+            updatePanelOpen(!panelOpen);
           }}
           data-cy={`side-panel-header-${side}`}
         >
@@ -270,7 +276,7 @@ const SidePanel = ({
         )}
         style={{ width: `${closeIconWidth}px` }}
         onClick={() => {
-          updatePanelOpen(prev => !prev);
+          updatePanelOpen(!panelOpen);
         }}
         data-cy={`side-panel-header-${side}`}
       >
@@ -348,7 +354,7 @@ const SidePanel = ({
     return (
       <div
         className={classnames(
-          'text-primary-active flex grow cursor-pointer justify-center self-center text-[13px]'
+          'text-primary-active flex	 grow cursor-pointer select-none justify-center self-center text-[13px]'
         )}
         style={{
           ...(side === 'left'
@@ -356,7 +362,7 @@ const SidePanel = ({
             : { marginRight: `${closeIconWidth}px` }),
         }}
         data-cy={`${tabs[0].name}-btn`}
-        onClick={() => updatePanelOpen(prev => !prev)}
+        onClick={() => updatePanelOpen(!panelOpen)}
       >
         <span>{tabs[0].label}</span>
       </div>
@@ -365,7 +371,7 @@ const SidePanel = ({
 
   const getOpenStateComponent = () => {
     return (
-      <div className="bg-primary-dark flex rounded-t pt-1.5 pb-[2px]">
+      <div className="bg-primary-dark flex select-none rounded-t pt-1.5 pb-[2px]	">
         {getCloseIcon()}
         {tabs.length === 1 ? getOneTabComponent() : getTabGridComponent()}
       </div>
@@ -380,7 +386,12 @@ const SidePanel = ({
       {panelOpen ? (
         <>
           {getOpenStateComponent()}
-          <ActiveComponent />
+          {tabs.map((tab, tabIndex) => {
+            if (tabIndex === activeTabIndex) {
+              return <tab.content key={tabIndex} />;
+            }
+            return null;
+          })}
         </>
       ) : (
         <React.Fragment>{getCloseStateComponent()}</React.Fragment>
@@ -410,6 +421,7 @@ SidePanel.propTypes = {
     ),
   ]),
   onOpen: PropTypes.func,
+  onActiveTabIndexChange: PropTypes.func,
   expandedWidth: PropTypes.number,
 };
 

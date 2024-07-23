@@ -1,41 +1,7 @@
 import { defaults, ToolbarService } from '@ohif/core';
-import { WindowLevelMenuItem } from '@ohif/ui';
 import { toolGroupIds } from './initToolGroups';
 
 const { windowLevelPresets } = defaults;
-
-function _createColormap(label, colormap) {
-  return {
-    id: label,
-    label,
-    type: 'action',
-    commands: [
-      {
-        commandName: 'setFusionPTColormap',
-        commandOptions: {
-          toolGroupId: toolGroupIds.Fusion,
-          colormap,
-        },
-      },
-    ],
-  };
-}
-function _createWwwcPreset(preset, title, subtitle) {
-  return {
-    id: preset.toString(),
-    title,
-    subtitle,
-    commands: [
-      {
-        commandName: 'setWindowLevel',
-        commandOptions: {
-          ...windowLevelPresets[preset],
-        },
-        context: 'CORNERSTONE',
-      },
-    ],
-  };
-}
 
 const setToolActiveToolbar = {
   commandName: 'setToolActiveToolbar',
@@ -100,48 +66,15 @@ const toolbarButtons = [
       evaluate: 'evaluate.cornerstoneTool',
     },
   },
-  {
-    id: 'MPR',
-    uiType: 'ohif.radioGroup',
-    props: {
-      icon: 'icon-mpr',
-      label: 'MPR',
-      commands: [
-        {
-          commandName: 'toggleHangingProtocol',
-          commandOptions: { protocolId: 'mpr' },
-          context: 'DEFAULT',
-        },
-      ],
-      evaluate: 'evaluate.mpr',
-    },
-  },
   // Window Level + Presets
   {
     id: 'WindowLevel',
-    uiType: 'ohif.splitButton',
+    uiType: 'ohif.radioGroup',
     props: {
-      groupId: 'WindowLevel',
-      primary: ToolbarService.createButton({
-        id: 'WindowLevel',
-        icon: 'tool-window-level',
-        label: 'Window Level',
-        tooltip: 'Window Level',
-        commands: setToolActiveToolbar,
-        evaluate: 'evaluate.cornerstoneTool',
-      }),
-      secondary: {
-        icon: 'chevron-down',
-        tooltip: 'W/L Presets',
-      },
-      renderer: WindowLevelMenuItem,
-      items: [
-        _createWwwcPreset(1, 'Soft tissue', '400 / 40'),
-        _createWwwcPreset(2, 'Lung', '1500 / -600'),
-        _createWwwcPreset(3, 'Liver', '150 / 90'),
-        _createWwwcPreset(4, 'Bone', '2500 / 480'),
-        _createWwwcPreset(5, 'Brain', '80 / 40'),
-      ],
+      icon: 'tool-window-level',
+      label: 'Window Level',
+      commands: setToolActiveToolbar,
+      evaluate: 'evaluate.cornerstoneTool',
     },
   },
   // Crosshairs Button
@@ -174,39 +107,11 @@ const toolbarButtons = [
       icon: 'tool-create-threshold',
       label: 'Rectangle ROI Threshold',
       commands: setToolActiveToolbar,
-      evaluate: 'evaluate.cornerstoneTool',
-    },
-  },
-  // Fusion PT Colormap Button
-  {
-    id: 'fusionPTColormap',
-    uiType: 'ohif.splitButton',
-    props: {
-      groupId: 'fusionPTColormap',
-      primary: ToolbarService.createButton({
-        id: 'fusionPTColormap',
-        icon: 'tool-fusion-color',
-        label: 'Fusion PT Colormap',
-        tooltip: 'Fusion PT Colormap',
-        commands: [],
-        evaluate: 'evaluate.action',
-      }),
-      secondary: {
-        icon: 'chevron-down',
-        tooltip: 'PET Image Colormap',
+      evaluate: {
+        name: 'evaluate.cornerstoneTool',
+        disabledText: 'Select the PT Axial to enable this tool',
       },
-      items: [
-        _createColormap('HSV', 'hsv'),
-        _createColormap('Hot Iron', 'hot_iron'),
-        _createColormap('S PET', 's_pet'),
-        _createColormap('Red Hot', 'red_hot'),
-        _createColormap('Perfusion', 'perfusion'),
-        _createColormap('Rainbow', 'rainbow_2'),
-        _createColormap('SUV', 'suv'),
-        _createColormap('GE 256', 'ge_256'),
-        _createColormap('GE', 'ge'),
-        _createColormap('Siemens', 'siemens'),
-      ],
+      options: 'tmtv.RectangleROIThresholdOptions',
     },
   },
 ];

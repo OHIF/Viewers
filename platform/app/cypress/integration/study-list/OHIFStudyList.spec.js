@@ -122,6 +122,8 @@ describe('OHIF Study List', function () {
         '[data-cy="mode-basic-test-1.3.6.1.4.1.25403.345050719074.3824.20170125113417.1"]'
       ).click();
       cy.get('[data-cy="return-to-work-list"]').click();
+
+      cy.wait(1000);
       cy.get('@searchResult2').should($list => {
         expect($list.length).to.be.eq(1);
         expect($list).to.contain('PETCT');

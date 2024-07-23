@@ -97,6 +97,7 @@ Let's look at one of the evaluators (for `evaluate.cornerstoneTool`)
       return {
         disabled: true,
         className: '!text-common-bright ohif-disabled',
+        disabledText: 'Tool not available',
       };
     }
 
@@ -124,7 +125,7 @@ The following evaluators are provided by us:
 
 
 Sometime you want to use the same `evaluator` for different purposes, in that case you can use an object
-with `name` and `options` properties. For example, in `'evaluate.cornerstone.segmentation'` we use
+with `name` and other properties. For example, in `'evaluate.cornerstone.segmentation'` we use
 this pattern, where multiple toolbar buttons are using the same evaluator but with different options (
   in this case `toolNames`
 )
@@ -132,9 +133,7 @@ this pattern, where multiple toolbar buttons are using the same evaluator but wi
 ```js
 {
   name: 'evaluate.cornerstone.segmentation',
-  options: {
-    toolNames: ['CircleBrush' , 'SphereBrush']
-  },
+  toolNames: ['CircleBrush' , 'SphereBrush']
 },
 ```
 
@@ -184,7 +183,6 @@ function modeFactory({ modeConfiguration }) {
         'Pan',
         'Capture',
         'Layout',
-        'MPR',
         'Crosshairs',
         'MoreTools',
       ]);
@@ -371,6 +369,104 @@ state will get synchronized with the toolbar service automatically.
 
 
 ![alt text](../../../assets/img/toolbox-modal.png)
+
+## Toolbox With Options
+
+Your toolbox toolbar buttons can have options, this is really useful
+for advanced tools that require to change some parameters. For example, the brush tool that requires the brush size to change or the mode (2D or 3D).
+
+currently we support three types of options
+
+### Radio option
+
+We use this in segmentation shapes to let the user choose between
+three different modes
+
+```js
+{
+  id: 'Shapes',
+  uiType: 'ohif.radioGroup',
+  props: {
+    label: 'Shapes',
+    evaluate: {
+      name: 'evaluate.cornerstone.segmentation',
+      toolNames: ['CircleScissor', 'SphereScissor', 'RectangleScissor'],
+    },
+    icon: 'icon-tool-shape',
+    commands: _createSetToolActiveCommands('CircleScissor'),
+    options: [
+      {
+        name: 'Shape',
+        type: 'radio',
+        value: 'CircleScissor',
+        id: 'shape-mode',
+        values: [
+          { value: 'CircleScissor', label: 'Circle' },
+          { value: 'SphereScissor', label: 'Sphere' },
+          { value: 'RectangleScissor', label: 'Rectangle' },
+        ],
+        commands: 'setToolActiveToolbar',
+      },
+    ],
+  },
+},
+```
+
+### Range option
+
+We use this for brush radius change
+
+```js
+{
+  id: 'Brush',
+  icon: 'icon-tool-brush',
+  label: 'Brush',
+  evaluate: {
+    name: 'evaluate.cornerstone.segmentation',
+    toolNames: ['CircularBrush', 'SphereBrush'],
+    disabledText: 'Create new segmentation to enable this tool.',
+  },
+  commands: _createSetToolActiveCommands('CircularBrush'),
+  options: [
+    {
+      name: 'Radius (mm)',
+      id: 'brush-radius',
+      type: 'range',
+      min: 0.5,
+      max: 99.5,
+      step: 0.5,
+      value: 25,
+      commands: {
+        commandName: 'setBrushSize',
+        commandOptions: { toolNames: ['CircularBrush', 'SphereBrush'] },
+      },
+    },
+  ],
+},
+```
+
+### Custom option
+
+We use this pattern inside `tmtv` mode for `RectangleROIThreshold`
+
+```js
+{
+  id: 'RectangleROIStartEndThreshold',
+  uiType: 'ohif.radioGroup',
+  props: {
+    icon: 'tool-create-threshold',
+    label: 'Rectangle ROI Threshold',
+    commands: setToolActiveToolbar,
+    evaluate: {
+      name: 'evaluate.cornerstoneTool',
+      disabledText: 'Select the PT Axial to enable this tool',
+    },
+    options: 'tmtv.RectangleROIThresholdOptions',
+  },
+},
+```
+
+Note that it is your job to provide the `tmvt.RectangleROIThresholdOptions` in the getToolbarModule of your extension
 
 
 

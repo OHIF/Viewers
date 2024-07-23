@@ -3,7 +3,7 @@ export function getToolbarModule({ commandsManager, servicesManager }) {
   return [
     {
       name: 'evaluate.cornerstone.segmentation',
-      evaluate: ({ viewportId, button, toolNames }) => {
+      evaluate: ({ viewportId, button, toolNames, disabledText }) => {
         // Todo: we need to pass in the button section Id since we are kind of
         // forcing the button to have black background since initially
         // it is designed for the toolbox not the toolbar on top
@@ -13,6 +13,7 @@ export function getToolbarModule({ commandsManager, servicesManager }) {
           return {
             disabled: true,
             className: '!text-common-bright !bg-black opacity-50',
+            disabledText: disabledText ?? 'No segmentations available',
           };
         }
 
@@ -28,6 +29,7 @@ export function getToolbarModule({ commandsManager, servicesManager }) {
           return {
             disabled: true,
             className: '!text-common-bright ohif-disabled',
+            disabledText: disabledText ?? 'Not available on the current viewport',
           };
         }
 
@@ -50,16 +52,18 @@ export function getToolbarModule({ commandsManager, servicesManager }) {
   ];
 }
 
+// Todo: this is duplicate, we should move it to a shared location
 function getToolNameForButton(button) {
   const { props } = button;
 
   const commands = props?.commands || button.commands;
+  const commandsArray = Array.isArray(commands) ? commands : [commands];
+  const firstCommand = commandsArray[0];
 
-  if (commands && commands.length) {
-    const command = commands[0];
-    const { commandOptions } = command;
-    const { toolName } = commandOptions || { toolName: props?.id ?? button.id };
-    return toolName;
+  if (firstCommand?.commandOptions) {
+    return firstCommand.commandOptions.toolName ?? props?.id ?? button.id;
   }
-  return null;
+
+  // use id as a fallback for toolName
+  return props?.id ?? button.id;
 }

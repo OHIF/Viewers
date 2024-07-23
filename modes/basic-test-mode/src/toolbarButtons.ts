@@ -101,6 +101,30 @@ const toolbarButtons: Button[] = [
           commands: setToolActiveToolbar,
           evaluate: 'evaluate.cornerstoneTool',
         }),
+        createButton({
+          id: 'PlanarFreehandROI',
+          icon: 'icon-tool-freehand-roi',
+          label: 'Freehand ROI',
+          tooltip: 'Freehand ROI',
+          commands: setToolActiveToolbar,
+          evaluate: 'evaluate.cornerstoneTool',
+        }),
+        createButton({
+          id: 'SplineROI',
+          icon: 'icon-tool-spline-roi',
+          label: 'Spline ROI',
+          tooltip: 'Spline ROI',
+          commands: setToolActiveToolbar,
+          evaluate: 'evaluate.cornerstoneTool',
+        }),
+        createButton({
+          id: 'LivewireContour',
+          icon: 'icon-tool-livewire',
+          label: 'Livewire tool',
+          tooltip: 'Livewire tool',
+          commands: setToolActiveToolbar,
+          evaluate: 'evaluate.cornerstoneTool',
+        }),
       ],
     },
   },
@@ -114,7 +138,7 @@ const toolbarButtons: Button[] = [
       evaluate: 'evaluate.cornerstoneTool',
     },
   },
-  // Window Level + Presets...
+  // Window Level
   {
     id: 'WindowLevel',
     uiType: 'ohif.splitButton',
@@ -156,34 +180,6 @@ const toolbarButtons: Button[] = [
     },
   },
   {
-    id: 'Capture',
-    uiType: 'ohif.radioGroup',
-    props: {
-      icon: 'tool-capture',
-      label: 'Capture',
-      commands: [
-        {
-          commandName: 'showDownloadViewportModal',
-        },
-      ],
-      evaluate: 'evaluate.action',
-    },
-  },
-  {
-    id: 'Layout',
-    uiType: 'ohif.layoutSelector',
-    props: {
-      rows: 3,
-      columns: 3,
-      evaluate: 'evaluate.action',
-      commands: [
-        {
-          commandName: 'setViewportGridLayout',
-        },
-      ],
-    },
-  },
-  {
     id: 'MPR',
     uiType: 'ohif.radioGroup',
     props: {
@@ -198,6 +194,36 @@ const toolbarButtons: Button[] = [
         },
       ],
       evaluate: 'evaluate.mpr',
+    },
+  },
+  {
+    id: 'TrackBallRotate',
+    type: 'ohif.radioGroup',
+    props: {
+      type: 'tool',
+      icon: 'tool-3d-rotate',
+      label: '3D Rotate',
+      commands: setToolActiveToolbar,
+    },
+  },
+  {
+    id: 'Capture',
+    uiType: 'ohif.radioGroup',
+    props: {
+      icon: 'tool-capture',
+      label: 'Capture',
+      commands: 'showDownloadViewportModal',
+      evaluate: 'evaluate.action',
+    },
+  },
+  {
+    id: 'Layout',
+    uiType: 'ohif.layoutSelector',
+    props: {
+      rows: 3,
+      columns: 4,
+      evaluate: 'evaluate.action',
+      commands: 'setViewportGridLayout',
     },
   },
   {

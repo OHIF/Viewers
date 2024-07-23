@@ -32,7 +32,11 @@ import {
   ButtonEnums,
 } from '@ohif/ui';
 
+import { Types } from '@ohif/ui';
+
 import i18n from '@ohif/i18n';
+
+const PatientInfoVisibility = Types.PatientInfoVisibility;
 
 const { sortBySeriesDate } = utils;
 
@@ -324,7 +328,7 @@ function WorkList({
             </>
           ),
           title: (instances || 0).toString(),
-          gridCol: 4,
+          gridCol: 2,
         },
       ],
       // Todo: This is actually running for all rows, even if they are
@@ -450,6 +454,7 @@ function WorkList({
           content: AboutModal,
           title: t('AboutModal:About OHIF Viewer'),
           contentProps: { versionNumber, commitHash },
+          containerDimensions: 'max-w-4xl max-h-4xl',
         }),
     },
     {
@@ -527,9 +532,10 @@ function WorkList({
         menuOptions={menuOptions}
         isReturnEnabled={false}
         WhiteLabeling={appConfig.whiteLabeling}
+        showPatientInfo={PatientInfoVisibility.DISABLED}
       />
       <InvestigationalUseDialog dialogConfiguration={appConfig?.investigationalUseDialog} />
-      <div className="ohif-scrollbar flex grow flex-col overflow-y-auto">
+      <div className="ohif-scrollbar ohif-scrollbar-stable-gutter flex grow flex-col overflow-y-auto">
         <StudyListFilter
           numOfStudies={pageNumber * resultsPerPage > 100 ? 101 : numOfStudies}
           filtersMeta={filtersMeta}
