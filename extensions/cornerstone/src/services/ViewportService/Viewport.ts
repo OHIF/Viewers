@@ -31,8 +31,9 @@ export type ViewportOptions = {
   displayArea?: Types.DisplayArea;
   syncGroups?: SyncGroup[];
   initialImageOptions?: InitialImageOptions;
-  // A view reference for jumping to an initial view for measurements, or as a computed view
-  viewReference;
+  rotation?: number;
+  flipHorizontal?: boolean;
+  viewReference?: Types.ViewReference;
   customViewportProps?: Record<string, unknown>;
   /*
    * Allows drag and drop of display sets not matching viewport options, but
@@ -51,6 +52,8 @@ export type PublicViewportOptions = {
   background?: Types.Point3;
   displayArea?: Types.DisplayArea;
   syncGroups?: SyncGroup[];
+  rotation?: number;
+  flipHorizontal?: boolean;
   initialImageOptions?: InitialImageOptions;
   customViewportProps?: Record<string, unknown>;
   allowUnmatchedView?: boolean;
@@ -132,6 +135,7 @@ class ViewportInfo {
   private displaySetOptions: Array<DisplaySetOptions>;
   private viewportData: StackViewportData | VolumeViewportData;
   private renderingEngineId: string;
+  private viewReference: Types.ViewReference;
 
   constructor(viewportId: string) {
     this.viewportId = viewportId;
@@ -203,6 +207,10 @@ class ViewportInfo {
     return this.viewportId;
   }
 
+  public getViewReference(): Types.ViewReference {
+    return this.viewportOptions?.viewReference;
+  }
+
   public setPublicDisplaySetOptions(
     publicDisplaySetOptions: PublicDisplaySetOptions[] | DisplaySetSelector[]
   ): Array<DisplaySetOptions> {
@@ -234,9 +242,14 @@ class ViewportInfo {
     return viewportData.data.displaySetInstanceUID === displaySetInstanceUID;
   }
 
+  /**
+   *
+   * @param viewportOptionsEntry - the base values for the options
+   * @param viewportTypeDisplaySet  - allows overriding the viewport type
+   */
   public setPublicViewportOptions(
     viewportOptionsEntry: PublicViewportOptions,
-    viewportTypeDisplaySet: string
+    viewportTypeDisplaySet?: string
   ): ViewportOptions {
     const ohifViewportType = viewportTypeDisplaySet || viewportOptionsEntry.viewportType || STACK;
     const { presentationIds } = viewportOptionsEntry;
@@ -310,10 +323,6 @@ class ViewportInfo {
 
   public getInitialImageOptions(): InitialImageOptions {
     return this.viewportOptions.initialImageOptions;
-  }
-
-  public getViewReference() {
-    return this.viewportOptions.viewReference;
   }
 
   // Handle incoming public display set options or a display set select

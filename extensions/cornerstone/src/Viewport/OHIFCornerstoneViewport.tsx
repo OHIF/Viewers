@@ -5,7 +5,7 @@ import * as cs3DTools from '@cornerstonejs/tools';
 import { Enums, eventTarget, getEnabledElement } from '@cornerstonejs/core';
 import { MeasurementService } from '@ohif/core';
 import { Notification, useViewportDialog, AllInOneMenu } from '@ohif/ui';
-import type { Types as CSTypes } from '@cornerstonejs/core';
+import type { Types as csTypes } from '@cornerstonejs/core';
 
 import { setEnabledElement } from '../state';
 
@@ -520,7 +520,7 @@ function _jumpToMeasurement(measurement, targetElementRef, viewportId, servicesM
 
   if (enabledElement) {
     // See how the jumpToSlice() of Cornerstone3D deals with imageIdx param.
-    const viewport = enabledElement.viewport as CSTypes.IStackViewport | CSTypes.IVolumeViewport;
+    const viewport = enabledElement.viewport as csTypes.IStackViewport | csTypes.IVolumeViewport;
 
     const { metadata } = measurement;
     if (!viewport.isReferenceViewable(metadata, { withNavigation: true, withOrientation: true })) {

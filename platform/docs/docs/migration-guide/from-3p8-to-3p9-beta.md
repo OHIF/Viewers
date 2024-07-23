@@ -267,3 +267,43 @@ We have removed the Polyfill.io script from the Viewer. If you require polyfills
 ## Dynamic Modules
 
 TBD
+
+## Renaming some interfaces
+A few interfaces are being renamed to simple types to reflect the fact that
+they don't contain methods and are thus more properly simple types.
+
+* IDisplaySet renamed to DisplaySet
+  * Adding some field declarations to agree with actual usage
+
+
+## Use of ViewReference for navigation
+When navigating to measurements and storing/remembering navigation positions,
+the `viewport.getViewReference` is used to get a position, and `viewport.isReferenceViewable`
+used to check if a reference can be applied, and finally `viewport.setViewReference` to
+navigate to a view.  Note that this changes the behaviour of navigation between
+MPR and Stack viewports, and also enables navigation of video and microscopy
+viewports in CS3D.  This can cause some unexpected behaviour depending on how the
+frame of reference values are configured to allow for navigation.
+
+The isReferenceViewable is used to determine when a view or measurement can be
+shown on a given view.  For stack versus volume viewports, this can cause unexpected
+behaviour to be seen depending on how the view reference was fetched.
+
+### `getViewReference` with `forFrameOfReference`
+When a view reference is fetched with the for frame of reference flag set to true,
+a reference will be returned which can be displayed on any viewport containing
+the same frame of reference and encompassing the given FOR and able to display the required
+orientation.  Without this flag, a view reference is returned which will be
+displayed on a stack with the given image id, or a volume containing said image id
+or the specified volume.
+
+### `isReferenceViewable` with navigation and/or orientation
+The is reference viewable will return false unless the given reference is directly
+viewable in the viewport as is.  However, it can be passed various flags to determine
+whether the reference could be displayed if the viewport was modified in various ways,
+for example, by changing the position or orientation of the viewport.  This allows
+checking for degrees of closeness so that the correct viewport can be chosen.
+
+Note that this may result in displaying a measurement from one viewport on a completely
+different viewport, for example, showing a Probe tool from the stack viewport on
+an MPR view.

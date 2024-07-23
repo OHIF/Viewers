@@ -9,7 +9,7 @@ Throughout the development of the OHIF Viewer, we have participated in various
 conferences and "hackathons". In this page, we will provide the presentations
 and other resources that we have provided to the community in the past:
 
-## 2023
+## 2024
 
 ### IMNO 2024 - March 19-20, 2024
 
@@ -20,6 +20,7 @@ We participated in the Imaging Network Ontario (ImNO) 2024 symposium, presenting
 - Advancing Medical Imaging on the Web: Optimizing the Dicomweb Server Architecture with Static Dicomweb [Poster](https://www.dropbox.com/scl/fi/ep0lxjp90kbxhjoffe4kh/P7-10-Bill-Wallace-Final.pdf?rlkey=xl2u6tdnh9j9hgvkajxv3b02o&dl=0)
 - (**🏆🏆 BEST PRESENTATION AWARD in the Session 7 Pitches: Devices, HW, SW Development 🏆🏆**) Advancing Medical Imaging on the Web: Integrating High Throughput JPEG 2000 (HTJ2K) in Cornerstone3D for Streamlined Progressive Loading and Visualization [Poster](https://www.dropbox.com/scl/fi/srs2rxgtv2r69ver9ub1j/P7-8-Bill-Wallace-Final.pdf?rlkey=k9mmraw76r9q2s3b9w9s0793w&dl=0)
 
+## 2023
 
 ### ITCR 2023 Conference | September 11-13, 2023
 

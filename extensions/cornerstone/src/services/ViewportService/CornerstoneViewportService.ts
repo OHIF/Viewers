@@ -65,6 +65,14 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     this.viewportGridResizeObserver = null;
     this.servicesManager = servicesManager;
   }
+  hangingProtocolService: unknown;
+  viewportsInfo: unknown;
+  sceneVolumeInputs: unknown;
+  viewportDivElements: unknown;
+  ViewportPropertiesMap: unknown;
+  volumeUIDs: unknown;
+  displaySetsNeedRerendering: unknown;
+  viewportDisplaySets: unknown;
 
   /**
    * Adds the HTML element to the viewportService
@@ -166,17 +174,18 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
    *
    * @param viewportId - The ID of the viewport.
    * @param presentations - The presentations to apply to the viewport.
+   * @param viewportInfo - Contains a view reference for immediate application
    */
-  public setPresentations(viewportId: string, presentations?: Presentations): void {
+  public setPresentations(
+    viewportId: string,
+    presentations?: Presentations,
+    viewportInfo?: ViewportInfo
+  ): void {
     const viewport = this.getCornerstoneViewport(viewportId) as
       | Types.IStackViewport
       | Types.IVolumeViewport;
 
-    if (!viewport) {
-      return;
-    }
-
-    if (!presentations) {
+    if (!viewport || !presentations) {
       return;
     }
 
@@ -196,17 +205,12 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
       }
     }
 
-    if (positionPresentation) {
-      const { viewPlaneNormal, viewUp, zoom, pan } = positionPresentation.presentation;
-      viewport.setCamera({ viewPlaneNormal, viewUp });
-
-      if (zoom !== undefined) {
-        viewport.setZoom(zoom);
-      }
-
-      if (pan !== undefined) {
-        viewport.setPan(pan);
-      }
+    const viewRef = viewportInfo?.getViewReference() || positionPresentation?.viewReference;
+    if (viewRef) {
+      viewport.setViewReference(viewRef);
+    }
+    if (positionPresentation?.position) {
+      viewport.setViewPresentation(positionPresentation.position);
     }
   }
 
@@ -235,21 +239,11 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
       return;
     }
 
-    const { viewPlaneNormal, viewUp } = csViewport.getCamera();
-    const initialImageIndex = csViewport.getCurrentImageIdIndex() || 0;
-    const zoom = csViewport.getZoom();
-    const pan = csViewport.getPan();
-
     return {
       id: positionPresentationId,
       viewportType: viewportInfo.getViewportType(),
-      presentation: {
-        initialImageIndex,
-        viewUp,
-        viewPlaneNormal,
-        zoom,
-        pan,
-      },
+      viewReference: csViewport.getViewReference(),
+      position: csViewport.getViewPresentation({ pan: true, zoom: true }),
     };
   }
 
@@ -618,6 +612,9 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
 
     const { initialImageIndex, imageIds } = viewportData.data[0];
 
+    // Use the slice index from any provided view reference, as the view reference
+    // is being used to navigate to the initial view position for measurement
+    // navigation and other navigation forcing specific views.
     let initialImageIndexToUse =
       presentations?.positionPresentation?.initialImageIndex ?? initialImageIndex;
 
@@ -638,20 +635,15 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
         properties.voiRange = { lower, upper };
       }
 
-      if (voiInverted !== undefined) {
-        properties.invert = voiInverted;
-      }
-
-      if (colormap !== undefined) {
-        properties.colormap = colormap;
-      }
+      properties.invert = voiInverted ?? properties.invert;
+      properties.colormap = colormap ?? properties.colormap;
     }
 
     this._handleOverlays(viewport);
 
     return viewport.setStack(imageIds, initialImageIndexToUse).then(() => {
       viewport.setProperties({ ...properties });
-      this.setPresentations(viewport.id, presentations);
+      this.setPresentations(viewport.id, presentations, viewportInfo);
       if (displayArea) {
         viewport.setDisplayArea(displayArea);
       }
@@ -790,15 +782,10 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     }
 
     // This returns the async continuation only
-    return this.setVolumesForViewport(
-      viewport,
-      volumeInputArray,
-      presentations,
-      viewportInfo.getViewReference()
-    );
+    return this.setVolumesForViewport(viewport, volumeInputArray, presentations);
   }
 
-  public async setVolumesForViewport(viewport, volumeInputArray, presentations, viewRef?) {
+  public async setVolumesForViewport(viewport, volumeInputArray, presentations) {
     const { displaySetService, toolGroupService, viewportGridService } =
       this.servicesManager.services;
 
@@ -807,7 +794,6 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     const displaySetUIDs = viewportGridService.getDisplaySetsUIDsForViewport(viewport.id);
     const displaySet = displaySetService.getDisplaySetByUID(displaySetUIDs[0]);
     const displaySetModality = displaySet?.Modality;
-
     // Todo: use presentations states
     const volumesProperties = volumeInputArray.map((volumeInput, index) => {
       const { volumeId } = volumeInput;
@@ -843,7 +829,7 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
       viewport.setProperties(properties, volumeId);
     });
 
-    this.setPresentations(viewport.id, presentations);
+    this.setPresentations(viewport.id, presentations, viewportInfo);
 
     this._handleOverlays(viewport);
 
@@ -857,7 +843,6 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
         imageIndex,
       });
     }
-    viewport.setViewReference(viewRef);
 
     viewport.render();
 
