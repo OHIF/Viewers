@@ -25,6 +25,7 @@ describe('Top level exports', () => {
       'sopClassDictionary',
       'createStudyBrowserTabs',
       'formatDate',
+      'formatTime',
       'formatPN',
       'generateAcceptHeader',
       'isEqualWithin',
