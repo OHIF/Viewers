@@ -24,6 +24,7 @@ describe('Top level exports', () => {
       'b64toBlob',
       'createStudyBrowserTabs',
       'formatDate',
+      'formatTime',
       'formatPN',
       'generateAcceptHeader',
       'isEqualWithin',

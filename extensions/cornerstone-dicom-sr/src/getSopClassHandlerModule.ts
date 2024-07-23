@@ -3,6 +3,7 @@ import { utils, classes, DisplaySetService, Types } from '@ohif/core';
 import addDICOMSRDisplayAnnotation from './utils/addDICOMSRDisplayAnnotation';
 import isRehydratable from './utils/isRehydratable';
 import { adaptersSR } from '@cornerstonejs/adapters';
+import CodeNameCodeSequenceValues from './constants/CodeNameCodeSequenceValues';
 
 type InstanceMetadata = Types.InstanceMetadata;
 
@@ -16,10 +17,11 @@ const { ImageSet, MetadataProvider: metadataProvider } = classes;
 // Get stacks from referenced displayInstanceUID and load into wrapped CornerStone viewport.
 
 const sopClassUids = [
-  '1.2.840.10008.5.1.4.1.1.88.11', //BASIC_TEXT_SR:
-  '1.2.840.10008.5.1.4.1.1.88.22', //ENHANCED_SR:
-  '1.2.840.10008.5.1.4.1.1.88.33', //COMPREHENSIVE_SR:
-  '1.2.840.10008.5.1.4.1.1.88.34', //COMPREHENSIVE_3D_SR:
+  '1.2.840.10008.5.1.4.1.1.88.11', // BASIC TEXT SR
+  '1.2.840.10008.5.1.4.1.1.88.22', // ENHANCED SR
+  '1.2.840.10008.5.1.4.1.1.88.33', // COMPREHENSIVE SR
+  '1.2.840.10008.5.1.4.1.1.88.34', // Comprehensive 3D SR
+  // '1.2.840.10008.5.1.4.1.1.88.50', // Mammography CAD SR
 ];
 
 const CORNERSTONE_3D_TOOLS_SOURCE_NAME = 'Cornerstone3DTools';
@@ -32,19 +34,6 @@ const validateSameStudyUID = (uid: string, instances): void => {
       throw new Error(`Instances ${it.SOPInstanceUID} does not belong to ${uid}`);
     }
   });
-};
-
-const CodeNameCodeSequenceValues = {
-  ImagingMeasurementReport: '126000',
-  ImageLibrary: '111028',
-  ImagingMeasurements: '126010',
-  MeasurementGroup: '125007',
-  ImageLibraryGroup: '126200',
-  TrackingUniqueIdentifier: '112040',
-  TrackingIdentifier: '112039',
-  Finding: '121071',
-  FindingSite: 'G-C0E3', // SRT
-  CornerstoneFreeText: Cornerstone3DCodeScheme.codeValues.CORNERSTONEFREETEXT, //
 };
 
 const CodingSchemeDesignators = {
@@ -113,22 +102,10 @@ function _getDisplaySetsFromSeries(
   } = instance;
   validateSameStudyUID(instance.StudyInstanceUID, instances);
 
-  if (
-    !ConceptNameCodeSequence ||
-    ConceptNameCodeSequence.CodeValue !== CodeNameCodeSequenceValues.ImagingMeasurementReport
-  ) {
-    servicesManager.services.uiNotificationService.show({
-      title: 'DICOM SR',
-      message:
-        'OHIF only supports TID1500 Imaging Measurement Report Structured Reports. The SR you’re trying to view is not supported.',
-      type: 'warning',
-      duration: 6000,
-    });
-    return [];
-  }
+  const isImagingMeasurementReport =
+    ConceptNameCodeSequence?.CodeValue === CodeNameCodeSequenceValues.ImagingMeasurementReport;
 
   const displaySet = {
-    //plugin: id,
     Modality: 'SR',
     displaySetInstanceUID: utils.guid(),
     SeriesDescription,
@@ -144,6 +121,7 @@ function _getDisplaySetsFromSeries(
     measurements: null,
     isDerivedDisplaySet: true,
     isLoaded: false,
+    isImagingMeasurementReport,
     sopClassUids,
     instance,
     addInstances,
@@ -158,7 +136,6 @@ async function _load(displaySet, servicesManager: AppTypes.ServicesManager, exte
   const { displaySetService, measurementService } = servicesManager.services;
   const dataSources = extensionManager.getDataSources();
   const dataSource = dataSources[0];
-
   const { ContentSequence } = displaySet.instance;
 
   async function retrieveBulkData(obj, parentObj = null, key = null) {
@@ -185,8 +162,13 @@ async function _load(displaySet, servicesManager: AppTypes.ServicesManager, exte
     await retrieveBulkData(ContentSequence);
   }
 
-  displaySet.referencedImages = _getReferencedImagesList(ContentSequence);
-  displaySet.measurements = _getMeasurements(ContentSequence);
+  if (displaySet.isImagingMeasurementReport) {
+    displaySet.referencedImages = _getReferencedImagesList(ContentSequence);
+    displaySet.measurements = _getMeasurements(ContentSequence);
+  } else {
+    displaySet.referencedImages = [];
+    displaySet.measurements = [];
+  }
 
   const mappings = measurementService.getSourceMappings(
     CORNERSTONE_3D_TOOLS_SOURCE_NAME,
@@ -370,6 +352,10 @@ function _getMeasurements(ImagingMeasurementReportContentSequence) {
     item =>
       item.ConceptNameCodeSequence.CodeValue === CodeNameCodeSequenceValues.ImagingMeasurements
   );
+
+  if (!ImagingMeasurements) {
+    return [];
+  }
 
   const MeasurementGroups = _getSequenceAsArray(ImagingMeasurements.ContentSequence).filter(
     item => item.ConceptNameCodeSequence.CodeValue === CodeNameCodeSequenceValues.MeasurementGroup
@@ -624,6 +610,10 @@ function _getReferencedImagesList(ImagingMeasurementReportContentSequence) {
   const ImageLibrary = ImagingMeasurementReportContentSequence.find(
     item => item.ConceptNameCodeSequence.CodeValue === CodeNameCodeSequenceValues.ImageLibrary
   );
+
+  if (!ImageLibrary) {
+    return [];
+  }
 
   const ImageLibraryGroup = _getSequenceAsArray(ImageLibrary.ContentSequence).find(
     item => item.ConceptNameCodeSequence.CodeValue === CodeNameCodeSequenceValues.ImageLibraryGroup
