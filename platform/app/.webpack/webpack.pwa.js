@@ -108,11 +108,6 @@ module.exports = (env, argv) => {
               ignore: ['**/*.min.js.map'],
             },
           },
-          // Copy dicom-image-loader build files
-          {
-            from: '../../../node_modules/@cornerstonejs/dicom-image-loader/dist/dynamic-import',
-            to: DIST_DIR,
-          },
         ],
       }),
       // Generate "index.html" w/ correct includes/imports

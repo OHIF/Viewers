@@ -86,6 +86,7 @@ declare global {
         interaction?: number;
         prefetch?: number;
         thumbnail?: number;
+        compute?: number;
       };
       disableEditing?: boolean;
       maxNumberOfWebWorkers?: number;

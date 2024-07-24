@@ -139,7 +139,7 @@ function OHIFCornerstoneSEGViewport(props: withAppTypes) {
         newSelectedSegmentIndex = numberOfSegments - 1;
       }
 
-      segmentationService.jumpToSegmentCenter(segmentationId, newSelectedSegmentIndex, toolGroupId);
+      segmentationService.jumpToSegmentCenter(segmentationId, newSelectedSegmentIndex, viewportId);
       setSelectedSegment(newSelectedSegmentIndex);
     },
     [selectedSegment]
@@ -229,7 +229,7 @@ function OHIFCornerstoneSEGViewport(props: withAppTypes) {
 
     return () => {
       // remove the segmentation representations if seg displayset changed
-      segmentationService.removeSegmentationRepresentationFromToolGroup(toolGroupId);
+      segmentationService.removeSegmentationRepresentationFromViewport(viewportId);
 
       // Only destroy the viewport specific implementation
       toolGroupService.destroyToolGroup(toolGroupId);
@@ -241,7 +241,7 @@ function OHIFCornerstoneSEGViewport(props: withAppTypes) {
 
     return () => {
       // remove the segmentation representations if seg displayset changed
-      segmentationService.removeSegmentationRepresentationFromToolGroup(toolGroupId);
+      segmentationService.removeSegmentationRepresentationFromViewport(viewportId);
       referencedDisplaySetRef.current = null;
     };
   }, [segDisplaySet]);

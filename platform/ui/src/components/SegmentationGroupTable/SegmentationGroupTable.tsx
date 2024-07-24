@@ -40,7 +40,7 @@ const SegmentationGroupTable = ({
   setOutlineWidthActive,
   setOutlineOpacityActive,
   setRenderFill,
-  setRenderInactiveSegmentations,
+  setrenderInactiveRepresentations,
   setRenderOutline,
   addSegmentationClassName,
 }) => {
@@ -94,7 +94,7 @@ const SegmentationGroupTable = ({
             setOutlineWidthActive={setOutlineWidthActive}
             setOutlineOpacityActive={setOutlineOpacityActive}
             setRenderFill={setRenderFill}
-            setRenderInactiveSegmentations={setRenderInactiveSegmentations}
+            setrenderInactiveRepresentations={setrenderInactiveRepresentations}
             setRenderOutline={setRenderOutline}
             segmentationConfig={segmentationConfig}
           />
@@ -212,7 +212,7 @@ SegmentationGroupTable.propTypes = {
   setOutlineWidthActive: PropTypes.func.isRequired,
   setOutlineOpacityActive: PropTypes.func.isRequired,
   setRenderFill: PropTypes.func.isRequired,
-  setRenderInactiveSegmentations: PropTypes.func.isRequired,
+  setrenderInactiveRepresentations: PropTypes.func.isRequired,
   setRenderOutline: PropTypes.func.isRequired,
 };
 
@@ -242,7 +242,7 @@ SegmentationGroupTable.defaultProps = {
   setOutlineWidthActive: () => {},
   setOutlineOpacityActive: () => {},
   setRenderFill: () => {},
-  setRenderInactiveSegmentations: () => {},
+  setrenderInactiveRepresentations: () => {},
   setRenderOutline: () => {},
 };
 export default SegmentationGroupTable;

@@ -82,7 +82,7 @@ const ActiveSegmentationConfig = ({
 
 const InactiveSegmentationConfig = ({
   config,
-  setRenderInactiveSegmentations,
+  setrenderInactiveRepresentations,
   setFillAlphaInactive,
 }) => {
   const { t } = useTranslation('SegmentationTable');
@@ -90,10 +90,10 @@ const InactiveSegmentationConfig = ({
     <div className="px-3">
       <CheckBox
         label={t('Display inactive segmentations')}
-        checked={config.renderInactiveSegmentations}
+        checked={config.renderInactiveRepresentations}
         labelClassName="text-[12px]"
         className="mb-[9px]"
-        onChange={setRenderInactiveSegmentations}
+        onChange={setrenderInactiveRepresentations}
       />
 
       <div className="flex items-center space-x-2 pl-4">
@@ -121,7 +121,7 @@ const SegmentationConfig = ({
   setOutlineWidthActive,
   setOutlineOpacityActive,
   setRenderFill,
-  setRenderInactiveSegmentations,
+  setrenderInactiveRepresentations,
   setRenderOutline,
 }) => {
   const { t } = useTranslation('SegmentationTable');
@@ -156,7 +156,7 @@ const SegmentationConfig = ({
         {!isMinimized && (
           <InactiveSegmentationConfig
             config={initialConfig}
-            setRenderInactiveSegmentations={setRenderInactiveSegmentations}
+            setrenderInactiveRepresentations={setrenderInactiveRepresentations}
             setFillAlphaInactive={setFillAlphaInactive}
           />
         )}

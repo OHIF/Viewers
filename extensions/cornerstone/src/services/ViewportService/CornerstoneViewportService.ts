@@ -594,6 +594,15 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     }
 
     this._handleOverlays(viewport);
+    viewport.element.addEventListener(csEnums.Events.STACK_VIEWPORT_NEW_STACK, evt => {
+      const { element } = evt.detail;
+
+      if (element !== viewport.element) {
+        return;
+      }
+
+      csToolsUtils.stackContextPrefetch.enable(element);
+    });
 
     return viewport.setStack(imageIds, initialImageIndexToUse).then(() => {
       viewport.setProperties({ ...properties });
@@ -781,8 +790,7 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
 
     this._handleOverlays(viewport);
 
-    const toolGroup = toolGroupService.getToolGroupForViewport(viewport.id);
-    csToolsUtils.segmentation.triggerSegmentationRender(toolGroup.id);
+    csToolsUtils.segmentation.triggerSegmentationRender(viewport.id);
 
     const imageIndex = this._getInitialImageIndexForViewport(viewportInfo);
 
@@ -817,32 +825,30 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
       // associated with the primary displaySet
 
       // get segmentations only returns the hydrated segmentations
-      this._addSegmentationRepresentationToToolGroupIfNecessary(displaySetInstanceUIDs, viewport);
+      this._addSegmentationRepresentationToViewportIfNecessary(displaySetInstanceUIDs, viewport);
     }
   }
 
-  private _addSegmentationRepresentationToToolGroupIfNecessary(
+  private _addSegmentationRepresentationToViewportIfNecessary(
     displaySetInstanceUIDs: string[],
     viewport: any
   ) {
-    const { segmentationService, toolGroupService } = this.servicesManager.services;
-
-    const toolGroup = toolGroupService.getToolGroupForViewport(viewport.id);
+    const { segmentationService } = this.servicesManager.services;
 
     // this only returns hydrated segmentations
     const segmentations = segmentationService.getSegmentations();
 
     for (const segmentation of segmentations) {
-      const toolGroupSegmentationRepresentations =
-        segmentationService.getSegmentationRepresentationsForToolGroup(toolGroup.id) || [];
+      const viewportRepresentations =
+        segmentationService.getSegmentationRepresentationsForViewport(viewport.id) || [];
 
       // if there is already a segmentation representation for this segmentation
       // for this toolGroup, don't bother at all
-      const isSegmentationInToolGroup = toolGroupSegmentationRepresentations.find(
+      const isSegmentationInViewport = viewportRepresentations.find(
         representation => representation.segmentationId === segmentation.id
       );
 
-      if (isSegmentationInToolGroup) {
+      if (isSegmentationInViewport) {
         continue;
       }
 
@@ -879,8 +885,8 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
         return;
       }
 
-      segmentationService.addSegmentationRepresentationToToolGroup(
-        toolGroup.id,
+      segmentationService.addSegmentationRepresentationToViewport(
+        viewport.id,
         segmentation.id,
         false, // already hydrated,
         segmentation.type
@@ -889,20 +895,18 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
   }
 
   private addOverlayRepresentationForDisplaySet(displaySet: any, viewport: any) {
-    const { segmentationService, toolGroupService } = this.servicesManager.services;
+    const { segmentationService } = this.servicesManager.services;
 
     const { referencedVolumeId } = displaySet;
     const segmentationId = displaySet.displaySetInstanceUID;
-
-    const toolGroup = toolGroupService.getToolGroupForViewport(viewport.id);
 
     const representationType =
       referencedVolumeId && cache.getVolume(referencedVolumeId) !== undefined
         ? csToolsEnums.SegmentationRepresentations.Labelmap
         : csToolsEnums.SegmentationRepresentations.Contour;
 
-    segmentationService.addSegmentationRepresentationToToolGroup(
-      toolGroup.id,
+    segmentationService.addSegmentationRepresentationToViewport(
+      viewport.id,
       segmentationId,
       false,
       representationType

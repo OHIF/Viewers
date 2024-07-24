@@ -1,7 +1,7 @@
 import { segmentation } from '@cornerstonejs/tools';
 
-function removeToolGroupSegmentationRepresentations(toolGroupId) {
-  const representations = segmentation.state.getSegmentationRepresentations(toolGroupId);
+function removeViewportSegmentationRepresentations(viewportId) {
+  const representations = segmentation.state.getSegmentationRepresentations(viewportId);
 
   if (!representations || !representations.length) {
     return;
@@ -9,10 +9,9 @@ function removeToolGroupSegmentationRepresentations(toolGroupId) {
 
   representations.forEach(representation => {
     segmentation.state.removeSegmentationRepresentation(
-      toolGroupId,
       representation.segmentationRepresentationUID
     );
   });
 }
 
-export default removeToolGroupSegmentationRepresentations;
+export default removeViewportSegmentationRepresentations;

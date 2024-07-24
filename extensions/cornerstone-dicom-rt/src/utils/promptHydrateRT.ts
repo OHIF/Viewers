@@ -10,7 +10,6 @@ function promptHydrateRT({
   servicesManager,
   rtDisplaySet,
   viewportId,
-  toolGroupId = 'default',
   preHydrateCallbacks,
   hydrateRTDisplaySet,
 }: withAppTypes) {
@@ -27,7 +26,6 @@ function promptHydrateRT({
       const isHydrated = await hydrateRTDisplaySet({
         rtDisplaySet,
         viewportId,
-        toolGroupId,
         servicesManager,
       });
 

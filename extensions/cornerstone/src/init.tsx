@@ -182,6 +182,7 @@ export default async function init({
     interaction: appConfig?.maxNumRequests?.interaction || 100,
     thumbnail: appConfig?.maxNumRequests?.thumbnail || 75,
     prefetch: appConfig?.maxNumRequests?.prefetch || 10,
+    compute: appConfig?.maxNumRequests?.compute || 10,
   };
 
   initWADOImageLoader(userAuthenticationService, appConfig, extensionManager);
@@ -243,10 +244,6 @@ export default async function init({
     handler(detail.error);
   };
 
-  eventTarget.addEventListener(EVENTS.STACK_VIEWPORT_NEW_STACK, evt => {
-    const { element } = evt.detail;
-    cornerstoneTools.utilities.stackContextPrefetch.enable(element);
-  });
   eventTarget.addEventListener(EVENTS.IMAGE_LOAD_FAILED, imageLoadFailedHandler);
   eventTarget.addEventListener(EVENTS.IMAGE_LOAD_ERROR, imageLoadFailedHandler);
 
@@ -259,26 +256,11 @@ export default async function init({
       commandsManager.runCommand('resetCrosshairs', { viewportId });
     });
 
-    // eventTarget.addEventListener(EVENTS.STACK_VIEWPORT_NEW_STACK, toolbarEventListener);
-
     initViewTiming({ element });
-  }
-
-  function elementDisabledHandler(evt) {
-    const { element } = evt.detail;
-
-    // element.removeEventListener(EVENTS.CAMERA_RESET, resetCrosshairs);
-
-    // TODO - consider removing the callback when all elements are gone
-    // eventTarget.removeEventListener(
-    //   EVENTS.STACK_VIEWPORT_NEW_STACK,
-    //   newStackCallback
-    // );
   }
 
   eventTarget.addEventListener(EVENTS.ELEMENT_ENABLED, elementEnabledHandler.bind(null));
 
-  eventTarget.addEventListener(EVENTS.ELEMENT_DISABLED, elementDisabledHandler.bind(null));
   colormaps.forEach(registerColormap);
 
   // Event listener

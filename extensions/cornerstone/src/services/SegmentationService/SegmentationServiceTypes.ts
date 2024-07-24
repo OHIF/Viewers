@@ -2,7 +2,7 @@ import { Enums as csToolsEnums, Types as cstTypes } from '@cornerstonejs/tools';
 import { Types } from '@cornerstonejs/core';
 
 type SegmentationConfig = cstTypes.LabelmapTypes.LabelmapConfig & {
-  renderInactiveSegmentations: boolean;
+  renderInactiveRepresentations: boolean;
   brushSize: number;
   brushThresholdGate: number;
 };

@@ -435,9 +435,10 @@ function commandsModule({
         viewport.setCamera({ viewUp: rotatedViewUp as CoreTypes.Point3 });
         viewport.render();
       } else if (viewport.getRotation !== undefined) {
-        const currentRotation = viewport.getRotation();
+        const presentation = viewport.getViewPresentation();
+        const { rotation: currentRotation } = presentation;
         const newRotation = (currentRotation + rotation) % 360;
-        viewport.setProperties({ rotation: newRotation });
+        viewport.setViewPresentation({ rotation: newRotation });
         viewport.render();
       }
     },

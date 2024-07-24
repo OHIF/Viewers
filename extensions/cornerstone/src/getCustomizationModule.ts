@@ -110,7 +110,7 @@ function getCustomizationModule() {
                 type: 'value',
               },
               {
-                value: 'areaUnit',
+                value: 'areaUnits',
                 for: ['area'],
                 type: 'unit',
               },
@@ -130,7 +130,7 @@ function getCustomizationModule() {
               },
               {
                 displayName: 'Unit',
-                value: 'areaUnit',
+                value: 'areaUnits',
                 type: 'value',
               },
             ],
@@ -153,12 +153,12 @@ function getCustomizationModule() {
                 type: 'value',
               },
               {
-                value: 'modalityUnit',
+                value: 'pixelValueUnits',
                 for: ['mean', 'max' /** 'stdDev **/],
                 type: 'unit',
               },
               {
-                value: 'areaUnit',
+                value: 'areaUnits',
                 for: ['area'],
                 type: 'unit',
               },

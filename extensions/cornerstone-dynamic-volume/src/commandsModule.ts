@@ -345,24 +345,18 @@ const commandsModule = ({ commandsManager, servicesManager }: withAppTypes) => {
         { label }
       );
 
-      // Add Segmentation to all toolGroupIds in the viewer
-      const toolGroupIds = Array.from(
-        viewports.values(),
-        viewport => viewport.viewportOptions.toolGroupId
-      );
-
       const representationType = LABELMAP;
-
-      for (const toolGroupId of toolGroupIds) {
+      for (const viewport of viewports.values()) {
+        const viewportId = viewport.viewportId;
         const hydrateSegmentation = true;
-        await segmentationService.addSegmentationRepresentationToToolGroup(
-          toolGroupId,
+        await segmentationService.addSegmentationRepresentationToViewport(
+          viewportId,
           segmentationId,
           hydrateSegmentation,
           representationType
         );
 
-        segmentationService.setActiveSegmentationForToolGroup(segmentationId, toolGroupId);
+        segmentationService.setActiveSegmentationForViewport(segmentationId, viewportId);
       }
 
       return segmentationId;
