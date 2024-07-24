@@ -150,6 +150,7 @@ function _getModalityTooltip(modality) {
 const _modalityTooltips = {
   SR: 'Structured Report',
   SEG: 'Segmentation',
+  OT: 'Other',
   RTSTRUCT: 'RT Structure Set',
 };
 
