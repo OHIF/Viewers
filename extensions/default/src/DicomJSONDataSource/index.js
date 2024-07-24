@@ -59,8 +59,6 @@ const findStudies = (key, value) => {
 };
 
 function createDicomJSONApi(dicomJsonConfig) {
-  const { wadoRoot } = dicomJsonConfig;
-
   const implementation = {
     initialize: async ({ query, url }) => {
       if (!url) {
@@ -89,7 +87,8 @@ function createDicomJSONApi(dicomJsonConfig) {
           SeriesInstanceUID = series.SeriesInstanceUID;
 
           series.instances.forEach(instance => {
-            const { url: imageId, metadata: naturalizedDicom } = instance;
+            const { metadata: naturalizedDicom } = instance;
+            const imageId = getImageId({ instance, config: dicomJsonConfig });
 
             // Add imageId specific mapping to this data as the URL isn't necessarliy WADO-URI.
             metadataProvider.addImageIdToUIDs(imageId, {
@@ -228,7 +227,7 @@ function createDicomJSONApi(dicomJsonConfig) {
               const obj = {
                 ...modifiedMetadata,
                 url: instance.url,
-                imageId: instance.url,
+                imageId: getImageId({ instance, config: dicomJsonConfig }),
                 ...series,
                 ...study,
               };
@@ -257,7 +256,15 @@ function createDicomJSONApi(dicomJsonConfig) {
         return imageIds;
       }
 
-      displaySet.images.forEach(instance => {
+      const { StudyInstanceUID, SeriesInstanceUID } = displaySet;
+      const study = findStudies('StudyInstanceUID', StudyInstanceUID)[0];
+      const series = study.series.find(s => s.SeriesInstanceUID === SeriesInstanceUID);
+      let instances = displaySet.images;
+      if (series.instances.length > displaySet.images.length) {
+        instances = series.instances;
+      }
+
+      instances.forEach(instance => {
         const NumberOfFrames = instance.NumberOfFrames;
 
         if (NumberOfFrames > 1) {
