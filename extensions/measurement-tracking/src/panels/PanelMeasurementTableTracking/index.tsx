@@ -36,11 +36,7 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }: wi
 
   useEffect(() => {
     const measurements = measurementService.getMeasurements();
-    const filteredMeasurements = measurements.filter(
-      m => trackedStudy === m.referenceStudyUID && trackedSeries.includes(m.referenceSeriesUID)
-    );
-
-    const mappedMeasurements = filteredMeasurements.map(m =>
+    const mappedMeasurements = measurements.map(m =>
       _mapMeasurementToDisplay(m, measurementService.VALUE_TYPES, displaySetService)
     );
     setDisplayMeasurements(mappedMeasurements);
@@ -161,13 +157,26 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }: wi
   };
 
   const displayMeasurementsWithoutFindings = displayMeasurements.filter(
-    dm => dm.measurementType !== measurementService.VALUE_TYPES.POINT && dm.referencedImageId
+    dm =>
+      dm.measurementType !== measurementService.VALUE_TYPES.POINT &&
+      dm.referencedImageId &&
+      trackedStudy === dm.referenceStudyUID &&
+      trackedSeries.includes(dm.referenceSeriesUID)
   );
   const additionalFindings = displayMeasurements.filter(
-    dm => dm.measurementType === measurementService.VALUE_TYPES.POINT && dm.referencedImageId
+    dm =>
+      dm.measurementType === measurementService.VALUE_TYPES.POINT &&
+      dm.referencedImageId &&
+      trackedStudy === dm.referenceStudyUID &&
+      trackedSeries.includes(dm.referenceSeriesUID)
   );
 
-  const nonAcquisitionMeasurements = displayMeasurements.filter(dm => dm.referencedImageId == null);
+  const nonAcquisitionMeasurements = displayMeasurements.filter(
+    dm =>
+      dm.referencedImageId == null ||
+      trackedStudy !== dm.referenceStudyUID ||
+      trackedSeries.includes(dm.referenceSeriesUID)
+  );
 
   const disabled =
     additionalFindings.length === 0 &&

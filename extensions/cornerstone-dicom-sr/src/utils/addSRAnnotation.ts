@@ -53,10 +53,10 @@ export default function addDICOMSRDisplayAnnotation(measurement, imageId, frameN
       referencedImageId: imageId,
     },
     data: {
-      label: measurement.labels,
+      label: measurement.labels[0].value,
       handles: {
         textBox: measurement.textBox ?? {},
-        points: measurementData.renderableData[GraphicType],
+        points: measurementData.renderableData[GraphicType][0],
       },
       cachedStats: {},
       TrackingUniqueIdentifier: measurementData.TrackingUniqueIdentifier,
@@ -71,5 +71,5 @@ export default function addDICOMSRDisplayAnnotation(measurement, imageId, frameN
    * was not triggering annotation_added events.
    */
   annotation.state.addAnnotation(SRAnnotation);
-  console.debug('Adding annotation:', SRAnnotation);
+  console.debug('Adding SR annotation:', SRAnnotation);
 }

@@ -1,5 +1,5 @@
 import { utils, classes, DisplaySetService, Types } from '@ohif/core';
-import addDICOMSRDisplayAnnotation from './utils/addDICOMSRDisplayAnnotation';
+import addSRAnnotation from './utils/addSRAnnotation';
 import isRehydratable from './utils/isRehydratable';
 import { SOPClassHandlerName, SOPClassHandlerId } from './id';
 import {
@@ -242,11 +242,42 @@ function _checkIfCanAddMeasurementsToDisplaySet(
     return;
   }
 
-  const { sopClassUids } = newDisplaySet;
+  const { sopClassUids, images } = newDisplaySet;
 
   /** Check correct SOPClassUID */
   unloadedMeasurements = unloadedMeasurements.filter(measurement =>
     measurement.coords.some(coord => {
+      for (let i = 0; i < images.length; ++i) {
+        const imageMetadata = images[i];
+        if (imageMetadata.FrameOfReferenceUID !== coord.ReferencedFrameOfReferenceSequence) {
+          continue;
+        }
+
+        const sliceNormal = [0, 0, 0];
+        const orientation = imageMetadata.ImageOrientationPatient;
+        sliceNormal[0] = orientation[1] * orientation[5] - orientation[2] * orientation[4];
+        sliceNormal[1] = orientation[2] * orientation[3] - orientation[0] * orientation[5];
+        sliceNormal[2] = orientation[0] * orientation[4] - orientation[1] * orientation[3];
+
+        let distanceAlongNormal = 0;
+        for (let j = 0; j < 3; ++j) {
+          distanceAlongNormal += sliceNormal[j] * imageMetadata.ImagePositionPatient[j];
+        }
+
+        /** Assuming 2 mm tolerance */
+        if (Math.abs(distanceAlongNormal - coord.GraphicData[2]) > 2) {
+          continue;
+        }
+
+        if (coord.ReferencedSOPSequence === undefined) {
+          coord.ReferencedSOPSequence = {
+            ReferencedSOPClassUID: imageMetadata.SOPClassUID,
+            ReferencedSOPInstanceUID: imageMetadata.SOPInstanceUID,
+          };
+        }
+        break;
+      }
+
       return (
         coord.ReferencedSOPSequence &&
         sopClassUids.includes(coord.ReferencedSOPSequence.ReferencedSOPClassUID)
@@ -294,8 +325,7 @@ function _checkIfCanAddMeasurementsToDisplaySet(
               measurement.coords[0].ReferencedSOPSequence?.ReferencedFrameNumber) ||
             1;
 
-          /** Add DICOMSRDisplay annotation for the SR viewport (only) */
-          addDICOMSRDisplayAnnotation(measurement, imageId, frame);
+          addSRAnnotation(measurement, imageId, frame);
 
           /** Update measurement properties */
           measurement.loaded = true;
