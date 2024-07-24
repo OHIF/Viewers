@@ -42,20 +42,15 @@ export default function addDICOMSRDisplayAnnotation(measurement, imageId, frameN
    */
   const SRAnnotation: Types.Annotation = {
     annotationUID: measurement.TrackingUniqueIdentifier,
-    // highlighted: false,
-    // isLocked: false,
-    // invalidated: false,
+    highlighted: false,
+    isLocked: false,
+    invalidated: false,
     metadata: {
       toolName: toolName,
       valueType: ValueType,
       graphicType: GraphicType,
       FrameOfReferenceUID: imagePlaneModule.frameOfReferenceUID,
       referencedImageId: imageId,
-      /**
-       * Used to jump to measurement using currently
-       * selected viewport if it shares frame of reference
-       */
-      coords: measurement.coords,
     },
     data: {
       label: measurement.labels,
