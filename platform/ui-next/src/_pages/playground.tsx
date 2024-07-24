@@ -1,7 +1,10 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
+import '../tailwind.css';
 
 import { Button } from '../components/Button';
+import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from '../components/Tooltip';
+
 // import type { Metadata } from 'next';
 // import Script from 'next/script';
 // import BackgroundColorSelector from '@/components/backgroundcolor';
@@ -27,8 +30,6 @@ import { Button } from '../components/Button';
 // import { Label } from '@/components/ui/label';
 // import icons from '../../components/icons';
 // import SegRow from '@/components/segrow';
-
-import '../tailwind.css';
 
 export default function Playground() {
   return (
@@ -151,6 +152,20 @@ export default function Playground() {
           >
             Link
           </Button>
+        </div>
+      </div>
+
+      <h2>Tooltip</h2>
+      <div className="row">
+        <div className="example">
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger>Hover</TooltipTrigger>
+              <TooltipContent side="bottom">
+                <p>Add to library</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         </div>
       </div>
     </main>

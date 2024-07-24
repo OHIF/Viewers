@@ -13,6 +13,12 @@ const App: React.FC = () => (
       >
         Playground
       </a>
+      <a
+        href="viewer.html"
+        className="text-blue-500 hover:text-blue-700"
+      >
+        Viewer
+      </a>
     </nav>
   </div>
 );

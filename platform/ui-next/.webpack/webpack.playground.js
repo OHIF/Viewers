@@ -38,6 +38,7 @@ module.exports = {
   entry: {
     home: './src/_pages/index.tsx',
     playground: './src/_pages/playground.tsx',
+    viewer: './src/_pages/viewer.tsx',
     // add other pages here
   },
   output: {
@@ -79,6 +80,11 @@ module.exports = {
       template: './.webpack/template.html',
       chunks: ['playground'],
       filename: 'playground.html',
+    }),
+    new HtmlWebpackPlugin({
+      template: './.webpack/template.html',
+      chunks: ['viewer'],
+      filename: 'viewer.html',
     }),
     new MiniCssExtractPlugin({
       filename: '[name].css',
