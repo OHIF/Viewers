@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.9.0-beta.65](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.64...v3.9.0-beta.65) (2024-07-23)
+
+
+### Features
+
+* **SR:** text structured report (TEXT, CODE, NUM, PNAME, DATE, TIME and DATETIME) ([#4287](https://github.com/OHIF/Viewers/issues/4287)) ([246ebab](https://github.com/OHIF/Viewers/commit/246ebab6ebf5431a704a1861a5804045b9644ba4))
+
+
+
+
+
 # [3.9.0-beta.64](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.63...v3.9.0-beta.64) (2024-07-19)
 
 **Note:** Version bump only for package @ohif/core
