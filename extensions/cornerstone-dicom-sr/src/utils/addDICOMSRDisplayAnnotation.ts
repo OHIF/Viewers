@@ -26,7 +26,10 @@ export default function addDICOMSRDisplayAnnotation(measurement, imageId, frameN
     );
   });
 
-  if (measurement.coords[0].ValueType === 'SCOORD3D') {
+  const { ValueType, GraphicType } = measurement.coords[0];
+
+  /** TODO: Add support for other SCOORD3D graphic types */
+  if (ValueType === 'SCOORD3D') {
     toolName = 'Probe';
   }
 
@@ -43,11 +46,9 @@ export default function addDICOMSRDisplayAnnotation(measurement, imageId, frameN
     // isLocked: false,
     // invalidated: false,
     metadata: {
-      viewPlaneNormal: measurementData.renderableData[measurement.coords[0].GraphicType],
-      /** */
       toolName: toolName,
-      valueType: measurement.coords[0].ValueType,
-      graphicType: measurement.coords[0].GraphicType,
+      valueType: ValueType,
+      graphicType: GraphicType,
       FrameOfReferenceUID: imagePlaneModule.frameOfReferenceUID,
       referencedImageId: imageId,
       /**
@@ -60,11 +61,13 @@ export default function addDICOMSRDisplayAnnotation(measurement, imageId, frameN
       label: measurement.labels,
       handles: {
         textBox: measurement.textBox ?? {},
+        points: measurementData.renderableData[GraphicType],
       },
       cachedStats: {},
       TrackingUniqueIdentifier: measurementData.TrackingUniqueIdentifier,
-      renderableData: measurementData.renderableData,
       frameNumber,
+      /** Used by DICOMSRDisplayTool */
+      renderableData: measurementData.renderableData,
     },
   };
 

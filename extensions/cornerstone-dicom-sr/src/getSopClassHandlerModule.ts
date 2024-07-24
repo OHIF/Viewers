@@ -209,50 +209,6 @@ async function _load(displaySet, servicesManager: AppTypes.ServicesManager, exte
   });
 }
 
-const addReferencedSOPSequenceByFOR = (measurements, displaySet) => {
-  if (displaySet instanceof ImageSet) {
-    measurements.forEach(measurement => {
-      measurement.coords.forEach(coord => {
-        for (let i = 0; i < displaySet.images.length; ++i) {
-          const imageMetadata = displaySet.images[i];
-
-          if (imageMetadata.FrameOfReferenceUID !== coord.ReferencedFrameOfReferenceSequence) {
-            continue;
-          }
-
-          const sliceNormal = [0, 0, 0];
-          const orientation = imageMetadata.ImageOrientationPatient;
-          sliceNormal[0] = orientation[1] * orientation[5] - orientation[2] * orientation[4];
-          sliceNormal[1] = orientation[2] * orientation[3] - orientation[0] * orientation[5];
-          sliceNormal[2] = orientation[0] * orientation[4] - orientation[1] * orientation[3];
-
-          let distanceAlongNormal = 0;
-          for (let j = 0; j < 3; ++j) {
-            distanceAlongNormal += sliceNormal[j] * imageMetadata.ImagePositionPatient[j];
-          }
-
-          /** Assuming 2 mm tolerance */
-          if (Math.abs(distanceAlongNormal - coord.GraphicData[2]) > 2) {
-            continue;
-          }
-
-          if (coord.ReferencedSOPSequence === undefined) {
-            coord.ReferencedSOPSequence = {
-              ReferencedSOPClassUID: imageMetadata.SOPClassUID,
-              ReferencedSOPInstanceUID: imageMetadata.SOPInstanceUID,
-            };
-          }
-
-          const { frameNumber } = metadataProvider.getUIDsFromImageID(imageMetadata.imageId);
-          addDICOMSRDisplayAnnotation(measurement, imageMetadata.imageId, frameNumber);
-
-          break;
-        }
-      });
-    });
-  }
-};
-
 /**
  * Checks if measurements can be added to a display set.
  *
@@ -267,8 +223,6 @@ function _checkIfCanAddMeasurementsToDisplaySet(
   dataSource,
   servicesManager: AppTypes.ServicesManager
 ) {
-  addReferencedSOPSequenceByFOR(srDisplaySet.measurements, newDisplaySet);
-
   const { customizationService } = servicesManager.services;
 
   let unloadedMeasurements = srDisplaySet.measurements.filter(
