@@ -6,7 +6,7 @@ const initialState = {
   outlineWidth: 3,
   fillOpacity: 0.9,
   fillOpacityInactive: 0.8,
-  renderInactiveSegmentations: true,
+  renderInactiveRepresentations: true,
 };
 
 const reducer = (state, action) => {
@@ -24,7 +24,7 @@ const reducer = (state, action) => {
     case 'SET_FILL_OPACITY_INACTIVE':
       return { ...state, fillOpacityInactive: action.payload.value };
     case 'RENDER_INACTIVE_SEGMENTATIONS':
-      return { ...state, renderInactiveSegmentations: action.payload.value };
+      return { ...state, renderInactiveRepresentations: action.payload.value };
     default:
       return state;
   }

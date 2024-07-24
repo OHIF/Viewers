@@ -11,32 +11,36 @@ import { useTranslation } from 'react-i18next';
 const SegmentationGroupTable = ({
   segmentations = [],
   segmentationConfig,
-  disableEditing = false,
-  showAddSegmentation = true,
-  showAddSegment = true,
-  showDeleteSegment = true,
-  onSegmentationAdd = () => {},
-  onSegmentationEdit = () => {},
-  onSegmentationClick = () => {},
-  onSegmentationDelete = () => {},
-  onSegmentationDownload = () => {},
-  onSegmentationDownloadRTSS = () => {},
-  storeSegmentation = () => {},
-  onSegmentClick = () => {},
-  onSegmentAdd = () => {},
-  onSegmentDelete = () => {},
-  onSegmentEdit = () => {},
-  onToggleSegmentationVisibility = () => {},
-  onToggleSegmentVisibility = () => {},
-  onToggleSegmentLock = () => {},
-  onSegmentColorClick = () => {},
-  setFillAlpha = () => {},
-  setFillAlphaInactive = () => {},
-  setOutlineWidthActive = () => {},
-  setOutlineOpacityActive = () => {},
-  setRenderFill = () => {},
-  setRenderInactiveSegmentations = () => {},
-  setRenderOutline = () => {},
+  // UI show/hide
+  disableEditing,
+  showAddSegmentation,
+  showAddSegment,
+  showDeleteSegment,
+  // segmentation/segment handlers
+  onSegmentationAdd,
+  onSegmentationEdit,
+  onSegmentationClick,
+  onSegmentationDelete,
+  onSegmentationDownload,
+  onSegmentationDownloadRTSS,
+  storeSegmentation,
+  // segment handlers
+  onSegmentClick,
+  onSegmentAdd,
+  onSegmentDelete,
+  onSegmentEdit,
+  onToggleSegmentationVisibility,
+  onToggleSegmentVisibility,
+  onToggleSegmentLock,
+  onSegmentColorClick,
+  // segmentation config handlers
+  setFillAlpha,
+  setFillAlphaInactive,
+  setOutlineWidthActive,
+  setOutlineOpacityActive,
+  setRenderFill,
+  setrenderInactiveRepresentations,
+  setRenderOutline,
   addSegmentationClassName,
 }) => {
   const [isConfigOpen, setIsConfigOpen] = useState(false);
@@ -89,12 +93,12 @@ const SegmentationGroupTable = ({
             setOutlineWidthActive={setOutlineWidthActive}
             setOutlineOpacityActive={setOutlineOpacityActive}
             setRenderFill={setRenderFill}
-            setRenderInactiveSegmentations={setRenderInactiveSegmentations}
+            setrenderInactiveRepresentations={setrenderInactiveRepresentations}
             setRenderOutline={setRenderOutline}
             segmentationConfig={segmentationConfig}
           />
         )}
-        <div className="bg-primary-dark ">
+        <div className="bg-primary-dark">
           {segmentations?.length === 0 ? (
             <div className="select-none bg-black py-[3px]">
               {showAddSegmentation && !disableEditing && (
@@ -207,8 +211,37 @@ SegmentationGroupTable.propTypes = {
   setOutlineWidthActive: PropTypes.func.isRequired,
   setOutlineOpacityActive: PropTypes.func.isRequired,
   setRenderFill: PropTypes.func.isRequired,
-  setRenderInactiveSegmentations: PropTypes.func.isRequired,
+  setrenderInactiveRepresentations: PropTypes.func.isRequired,
   setRenderOutline: PropTypes.func.isRequired,
 };
 
+SegmentationGroupTable.defaultProps = {
+  segmentations: [],
+  disableEditing: false,
+  showAddSegmentation: true,
+  showAddSegment: true,
+  showDeleteSegment: true,
+  onSegmentationAdd: () => {},
+  onSegmentationEdit: () => {},
+  onSegmentationClick: () => {},
+  onSegmentationDelete: () => {},
+  onSegmentationDownload: () => {},
+  onSemgnetationDownloadRTSS: () => {},
+  storeSegmentation: () => {},
+  onSegmentClick: () => {},
+  onSegmentAdd: () => {},
+  onSegmentDelete: () => {},
+  onSegmentEdit: () => {},
+  onToggleSegmentationVisibility: () => {},
+  onToggleSegmentVisibility: () => {},
+  onToggleSegmentLock: () => {},
+  onSegmentColorClick: () => {},
+  setFillAlpha: () => {},
+  setFillAlphaInactive: () => {},
+  setOutlineWidthActive: () => {},
+  setOutlineOpacityActive: () => {},
+  setRenderFill: () => {},
+  setrenderInactiveRepresentations: () => {},
+  setRenderOutline: () => {},
+};
 export default SegmentationGroupTable;

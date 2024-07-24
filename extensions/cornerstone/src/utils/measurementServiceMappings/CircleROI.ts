@@ -98,7 +98,7 @@ function getMappedAnnotations(annotation, displaySetService) {
     const displaySet = displaySetService.getDisplaySetsForSeries(SeriesInstanceUID)[0];
 
     const { SeriesNumber } = displaySet;
-    const { mean, stdDev, max, area, Modality, areaUnit, modalityUnit } = targetStats;
+    const { mean, stdDev, max, area, Modality, areaUnits, pixelValueUnits } = targetStats;
 
     annotations.push({
       SeriesInstanceUID,
@@ -106,12 +106,12 @@ function getMappedAnnotations(annotation, displaySetService) {
       SeriesNumber,
       frameNumber,
       Modality,
-      unit: modalityUnit,
+      unit: pixelValueUnits,
       mean,
       stdDev,
       max,
       area,
-      areaUnit,
+      areaUnits,
     });
   });
 
@@ -132,14 +132,14 @@ function _getReport(mappedAnnotations, points, FrameOfReferenceUID, customizatio
   values.push('Cornerstone:CircleROI');
 
   mappedAnnotations.forEach(annotation => {
-    const { mean, stdDev, max, area, unit, areaUnit } = annotation;
+    const { mean, stdDev, max, area, unit, areaUnits } = annotation;
 
     if (!mean || !unit || !max || !area) {
       return;
     }
 
     columns.push(`max (${unit})`, `mean (${unit})`, `std (${unit})`, 'Area', 'Unit');
-    values.push(max, mean, stdDev, area, areaUnit);
+    values.push(max, mean, stdDev, area, areaUnits);
   });
 
   if (FrameOfReferenceUID) {
@@ -169,7 +169,7 @@ function getDisplayText(mappedAnnotations, displaySet, customizationService) {
   const displayText = [];
 
   // Area is the same for all series
-  const { area, SOPInstanceUID, frameNumber, areaUnit } = mappedAnnotations[0];
+  const { area, SOPInstanceUID, frameNumber, areaUnits } = mappedAnnotations[0];
 
   const instance = displaySet.instances.find(image => image.SOPInstanceUID === SOPInstanceUID);
 
@@ -183,7 +183,7 @@ function getDisplayText(mappedAnnotations, displaySet, customizationService) {
 
   // Area sometimes becomes undefined if `preventHandleOutsideImage` is off.
   const roundedArea = utils.roundNumber(area || 0, 2);
-  displayText.push(`${roundedArea} ${getDisplayUnit(areaUnit)}`);
+  displayText.push(`${roundedArea} ${getDisplayUnit(areaUnits)}`);
 
   // Todo: we need a better UI for displaying all these information
   mappedAnnotations.forEach(mappedAnnotation => {

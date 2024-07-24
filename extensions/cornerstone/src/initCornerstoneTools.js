@@ -19,7 +19,6 @@ import {
   CobbAngleTool,
   MagnifyTool,
   CrosshairsTool,
-  SegmentationDisplayTool,
   RectangleScissorsTool,
   SphereScissorsTool,
   CircleScissorsTool,
@@ -69,7 +68,6 @@ export default function initCornerstoneTools(configuration = {}) {
   addTool(CobbAngleTool);
   addTool(MagnifyTool);
   addTool(CrosshairsTool);
-  addTool(SegmentationDisplayTool);
   addTool(RectangleScissorsTool);
   addTool(SphereScissorsTool);
   addTool(CircleScissorsTool);
@@ -124,7 +122,6 @@ const toolNames = {
   CobbAngle: CobbAngleTool.toolName,
   Magnify: MagnifyTool.toolName,
   Crosshairs: CrosshairsTool.toolName,
-  SegmentationDisplay: SegmentationDisplayTool.toolName,
   Brush: BrushTool.toolName,
   PaintFill: PaintFillTool.toolName,
   ReferenceLines: ReferenceLinesTool.toolName,

@@ -4,9 +4,10 @@ import {
   Enums as csEnums,
   geometryLoader,
   eventTarget,
-  getEnabledElementByIds,
   utilities as csUtils,
   volumeLoader,
+  Types as csTypes,
+  getEnabledElementByViewportId,
   StackViewport,
 } from '@cornerstonejs/core';
 import {
@@ -97,9 +98,10 @@ class SegmentationService extends PubSubService {
   /**
    * Adds a new segment to the specified segmentation.
    * @param segmentationId - The ID of the segmentation to add the segment to.
+   * @param viewportId: The ID of the viewport to add the segment to, it is used to get the representation, if it is not
+   * provided, the first available representation for the segmentationId will be used.
    * @param config - An object containing the configuration options for the new segment.
    *   - segmentIndex: (optional) The index of the segment to add. If not provided, the next available index will be used.
-   *   - toolGroupId: (optional) The ID of the tool group to associate the new segment with. If not provided, the first available tool group will be used.
    *   - properties: (optional) An object containing the properties of the new segment.
    *     - label: (optional) The label of the new segment. If not provided, a default label will be used.
    *     - color: (optional) The color of the new segment in RGB format. If not provided, a default color will be used.
@@ -112,7 +114,7 @@ class SegmentationService extends PubSubService {
     segmentationId: string,
     config: {
       segmentIndex?: number;
-      toolGroupId?: string;
+      viewportId?: string;
       properties?: {
         label?: string;
         color?: ohifTypes.RGB;
@@ -127,12 +129,8 @@ class SegmentationService extends PubSubService {
       throw new Error('Segment index 0 is reserved for "no label"');
     }
 
-    const toolGroupId = config.toolGroupId ?? this._getApplicableToolGroupId();
-
-    const { segmentationRepresentationUID, segmentation } = this._getSegmentationInfo(
-      segmentationId,
-      toolGroupId
-    );
+    const { segmentationRepresentationUID, segmentation } =
+      this._getSegmentationInfo(segmentationId);
 
     let segmentIndex = config.segmentIndex;
     if (!segmentIndex) {
@@ -144,8 +142,7 @@ class SegmentationService extends PubSubService {
       throw new Error(`Segment ${segmentIndex} already exists`);
     }
 
-    const rgbaColor = cstSegmentation.config.color.getColorForSegmentIndex(
-      toolGroupId,
+    const rgbaColor = cstSegmentation.config.color.getSegmentIndexColor(
       segmentationRepresentationUID,
       segmentIndex
     );
@@ -169,11 +166,23 @@ class SegmentationService extends PubSubService {
       const { color: newColor, opacity, isLocked, visibility, active } = config.properties;
 
       if (newColor !== undefined) {
-        this._setSegmentColor(segmentationId, segmentIndex, newColor, toolGroupId, suppressEvents);
+        this._setSegmentColor(
+          segmentationId,
+          segmentIndex,
+          newColor,
+          config.viewportId,
+          suppressEvents
+        );
       }
 
       if (opacity !== undefined) {
-        this._setSegmentOpacity(segmentationId, segmentIndex, opacity, toolGroupId, suppressEvents);
+        this._setSegmentOpacity(
+          segmentationId,
+          segmentIndex,
+          opacity,
+          config.viewportId,
+          suppressEvents
+        );
       }
 
       if (visibility !== undefined) {
@@ -181,7 +190,7 @@ class SegmentationService extends PubSubService {
           segmentationId,
           segmentIndex,
           visibility,
-          toolGroupId,
+          config.viewportId,
           suppressEvents
         );
       }
@@ -276,16 +285,10 @@ class SegmentationService extends PubSubService {
     segmentationId: string,
     segmentIndex: number,
     isVisible: boolean,
-    toolGroupId?: string,
+    viewportId?: string,
     suppressEvents = false
   ): void {
-    this._setSegmentVisibility(
-      segmentationId,
-      segmentIndex,
-      isVisible,
-      toolGroupId,
-      suppressEvents
-    );
+    this._setSegmentVisibility(segmentationId, segmentIndex, isVisible, viewportId, suppressEvents);
   }
 
   public setSegmentLocked(segmentationId: string, segmentIndex: number, isLocked: boolean): void {
@@ -309,16 +312,16 @@ class SegmentationService extends PubSubService {
     segmentationId: string,
     segmentIndex: number,
     color: ohifTypes.RGB,
-    toolGroupId?: string
+    viewportId?: string
   ): void {
-    this._setSegmentColor(segmentationId, segmentIndex, color, toolGroupId);
+    this._setSegmentColor(segmentationId, segmentIndex, color, viewportId);
   }
 
   public setSegmentRGBA = (
     segmentationId: string,
     segmentIndex: number,
-    rgbaColor: cstTypes.Color,
-    toolGroupId?: string
+    rgbaColor: csTypes.Color,
+    viewportId?: string
   ): void => {
     const segmentation = this.getSegmentation(segmentationId);
 
@@ -327,19 +330,13 @@ class SegmentationService extends PubSubService {
     }
 
     const suppressEvents = true;
-    this._setSegmentOpacity(
-      segmentationId,
-      segmentIndex,
-      rgbaColor[3],
-      toolGroupId,
-      suppressEvents
-    );
+    this._setSegmentOpacity(segmentationId, segmentIndex, rgbaColor[3], viewportId, suppressEvents);
 
     this._setSegmentColor(
       segmentationId,
       segmentIndex,
       [rgbaColor[0], rgbaColor[1], rgbaColor[2]],
-      toolGroupId,
+      viewportId,
       suppressEvents
     );
 
@@ -352,16 +349,14 @@ class SegmentationService extends PubSubService {
     segmentationId: string,
     segmentIndex: number,
     opacity: number,
-    toolGroupId?: string
+    viewportId?: string
   ): void {
-    this._setSegmentOpacity(segmentationId, segmentIndex, opacity, toolGroupId);
+    this._setSegmentOpacity(segmentationId, segmentIndex, opacity, viewportId);
   }
 
-  public setActiveSegmentationForToolGroup(segmentationId: string, toolGroupId?: string): void {
-    toolGroupId = toolGroupId ?? this._getApplicableToolGroupId();
-
+  public setActiveSegmentationForViewport(segmentationId: string, viewportId?: string): void {
     const suppressEvents = false;
-    this._setActiveSegmentationForToolGroup(segmentationId, toolGroupId, suppressEvents);
+    this._setActiveSegmentationForViewport(segmentationId, viewportId, null, suppressEvents);
   }
 
   public setActiveSegment(segmentationId: string, segmentIndex: number): void {
@@ -506,6 +501,8 @@ class SegmentationService extends PubSubService {
       displaySetInstanceUID: segDisplaySet.displaySetInstanceUID,
       type: representationType,
       label: segDisplaySet.SeriesDescription,
+      colorLUTIndex: 1,
+      FrameOfReferenceUID: segDisplaySet.FrameOfReferenceUID,
       representationData: {
         [LABELMAP]: {
           volumeId: segmentationId,
@@ -546,7 +543,6 @@ class SegmentationService extends PubSubService {
       volumeId: segmentationId,
       targetBuffer: {
         type: 'Uint8Array',
-        sharedArrayBuffer: window.SharedArrayBuffer,
       },
     });
     const derivedVolumeScalarData = derivedVolume.getScalarData();
@@ -650,7 +646,7 @@ class SegmentationService extends PubSubService {
       type: representationType,
       label: rtDisplaySet.SeriesDescription,
       representationData: {
-        [CONTOUR]: {
+        CONTOUR: {
           geometryIds,
         },
       },
@@ -691,7 +687,7 @@ class SegmentationService extends PubSubService {
         });
 
         const contourSet = geometry.data;
-        const centroid = contourSet.getCentroid();
+        const centroid = (contourSet as csTypes.IContourSet).getCentroid();
 
         segmentsCachedStats[segmentIndex] = {
           center: { world: centroid },
@@ -771,8 +767,8 @@ class SegmentationService extends PubSubService {
     const segmentIndices = segmentIndex
       ? [segmentIndex]
       : segmentation.segments
-        .filter(segment => segment?.segmentIndex)
-        .map(segment => segment.segmentIndex);
+          .filter(segment => segment?.segmentIndex)
+          .map(segment => segment.segmentIndex);
 
     const segmentIndicesSet = new Set(segmentIndices);
 
@@ -802,6 +798,7 @@ class SegmentationService extends PubSubService {
         x: centroid.x / count,
         y: centroid.y / count,
         z: centroid.z / count,
+        world: null,
       };
       normalizedCentroid.world = imageData.indexToWorld([
         normalizedCentroid.x,
@@ -833,7 +830,7 @@ class SegmentationService extends PubSubService {
 
       // If world coordinates are not provided, calculate them
       if (!world || world.length === 0) {
-        world = imageData.indexToWorld(centroid.image);
+        world = imageData.indexToWorld(centroid.image) as number[];
       }
 
       segmentation.cachedStats.segmentCenter[segmentIndex] = {
@@ -850,14 +847,13 @@ class SegmentationService extends PubSubService {
   public jumpToSegmentCenter(
     segmentationId: string,
     segmentIndex: number,
-    toolGroupId?: string,
+    viewportId: string,
     highlightAlpha = 0.9,
     highlightSegment = true,
     animationLength = 750,
     highlightHideOthers = false,
     highlightFunctionType = 'ease-in-out' // todo: make animation functions configurable from outside
   ): void {
-    const { toolGroupService } = this.servicesManager.services;
     const center = this._getSegmentCenter(segmentationId, segmentIndex);
 
     if (!center?.world) {
@@ -866,39 +862,18 @@ class SegmentationService extends PubSubService {
 
     const { world } = center;
 
-    // todo: generalize
-    toolGroupId = toolGroupId || this._getToolGroupIdsWithSegmentation(segmentationId);
+    // need to find which viewports are displaying the segmentation
+    const viewportIds = this.getViewportIdsWithSegmentation(segmentationId);
 
-    const toolGroups = [];
-
-    if (Array.isArray(toolGroupId)) {
-      toolGroupId.forEach(toolGroup => {
-        toolGroups.push(toolGroupService.getToolGroup(toolGroup));
-      });
-    } else {
-      toolGroups.push(toolGroupService.getToolGroup(toolGroupId));
-    }
-
-    toolGroups.forEach(toolGroup => {
-      const viewportsInfo = toolGroup.getViewportsInfo();
-
-      // @ts-ignore
-      for (const { viewportId, renderingEngineId } of viewportsInfo) {
-        const { viewport } = getEnabledElementByIds(viewportId, renderingEngineId);
-        if (viewport instanceof StackViewport) {
-          const { element } = viewport;
-          const index = csUtils.getClosestStackImageIndexForPoint(world, viewport)
-          cstUtils.viewport.jumpToSlice(element, { imageIndex: index })
-        } else {
-          cstUtils.viewport.jumpToWorld(viewport, world);
-        }
-      }
+    viewportIds.forEach(viewportId => {
+      const { viewport } = getEnabledElementByViewportId(viewportId);
+      cstUtils.viewport.jumpToWorld(viewport as csTypes.IVolumeViewport, world);
 
       if (highlightSegment) {
         this.highlightSegment(
           segmentationId,
           segmentIndex,
-          toolGroup.id,
+          viewportId,
           highlightAlpha,
           animationLength,
           highlightHideOthers,
@@ -911,7 +886,7 @@ class SegmentationService extends PubSubService {
   public highlightSegment(
     segmentationId: string,
     segmentIndex: number,
-    toolGroupId?: string,
+    viewportId?: string,
     alpha = 0.9,
     animationLength = 750,
     hideOthers = true,
@@ -922,11 +897,10 @@ class SegmentationService extends PubSubService {
     }
 
     const segmentation = this.getSegmentation(segmentationId);
-    toolGroupId = toolGroupId ?? this._getApplicableToolGroupId();
 
     const segmentationRepresentation = this._getSegmentationRepresentation(
       segmentationId,
-      toolGroupId
+      viewportId
     );
 
     const { type } = segmentationRepresentation;
@@ -942,7 +916,7 @@ class SegmentationService extends PubSubService {
       adjustedAlpha,
       hideOthers,
       segments,
-      toolGroupId,
+      viewportId,
       animationLength,
       segmentationRepresentation
     );
@@ -951,8 +925,8 @@ class SegmentationService extends PubSubService {
   public createSegmentationForDisplaySet = async (
     displaySetInstanceUID: string,
     options?: {
-      segmentationId: string;
-      FrameOfReferenceUID: string;
+      segmentationId?: string;
+      FrameOfReferenceUID?: string;
       label: string;
     }
   ): Promise<string> => {
@@ -973,7 +947,6 @@ class SegmentationService extends PubSubService {
       volumeId: segmentationId,
       targetBuffer: {
         type: 'Uint8Array',
-        sharedArrayBuffer: window.SharedArrayBuffer,
       },
     });
 
@@ -987,8 +960,8 @@ class SegmentationService extends PubSubService {
       // We should set it as active by default, as it created for display
       isActive: true,
       type: representationType,
-      FrameOfReferenceUID:
-        options?.FrameOfReferenceUID || displaySet.instances?.[0]?.FrameOfReferenceUID,
+      FrameOfReferenceUID: (options?.FrameOfReferenceUID ||
+        displaySet.instances?.[0]?.FrameOfReferenceUID) as string,
       representationData: {
         LABELMAP: {
           volumeId: segmentationId,
@@ -1013,16 +986,14 @@ class SegmentationService extends PubSubService {
     this._toggleSegmentationVisibility(segmentationId, false);
   };
 
-  public addSegmentationRepresentationToToolGroup = async (
-    toolGroupId: string,
+  public addSegmentationRepresentationToViewport = async (
+    viewportId: string,
     segmentationId: string,
     hydrateSegmentation = false,
     representationType = csToolsEnums.SegmentationRepresentations.Labelmap,
     suppressEvents = false
   ): Promise<void> => {
     const segmentation = this.getSegmentation(segmentationId);
-
-    toolGroupId = toolGroupId || this._getApplicableToolGroupId();
 
     if (!segmentation) {
       throw new Error(`Segmentation with segmentationId ${segmentationId} not found.`);
@@ -1035,7 +1006,7 @@ class SegmentationService extends PubSubService {
 
     // Based on the segmentationId, set the colorLUTIndex.
     const segmentationRepresentationUIDs = await cstSegmentation.addSegmentationRepresentations(
-      toolGroupId,
+      viewportId,
       [
         {
           segmentationId,
@@ -1045,9 +1016,9 @@ class SegmentationService extends PubSubService {
     );
 
     // set the latest segmentation representation as active one
-    this._setActiveSegmentationForToolGroup(
+    this._setActiveSegmentationForViewport(
       segmentationId,
-      toolGroupId,
+      viewportId,
       segmentationRepresentationUIDs[0]
     );
 
@@ -1062,11 +1033,11 @@ class SegmentationService extends PubSubService {
       const suppressEvents = true;
 
       if (color !== undefined) {
-        this._setSegmentColor(segmentationId, segmentIndex, color, toolGroupId, suppressEvents);
+        this._setSegmentColor(segmentationId, segmentIndex, color, viewportId, suppressEvents);
       }
 
       if (opacity !== undefined) {
-        this._setSegmentOpacity(segmentationId, segmentIndex, opacity, toolGroupId, suppressEvents);
+        this._setSegmentOpacity(segmentationId, segmentIndex, opacity, viewportId, suppressEvents);
       }
 
       if (visibility !== undefined) {
@@ -1074,7 +1045,7 @@ class SegmentationService extends PubSubService {
           segmentationId,
           segmentIndex,
           visibility,
-          toolGroupId,
+          viewportId,
           suppressEvents
         );
       }
@@ -1095,7 +1066,7 @@ class SegmentationService extends PubSubService {
     segmentationId: string,
     segmentIndex: number,
     rgbaColor,
-    toolGroupId?: string
+    viewportId?: string
   ) => {
     const segmentation = this.getSegmentation(segmentationId);
 
@@ -1107,14 +1078,14 @@ class SegmentationService extends PubSubService {
       segmentationId,
       segmentIndex,
       rgbaColor[3],
-      toolGroupId, // toolGroupId
+      viewportId, // viewportId
       true
     );
     this._setSegmentColor(
       segmentationId,
       segmentIndex,
       [rgbaColor[0], rgbaColor[1], rgbaColor[2]],
-      toolGroupId, // toolGroupId
+      viewportId, // viewportId
       true
     );
 
@@ -1123,9 +1094,9 @@ class SegmentationService extends PubSubService {
     });
   };
 
-  public getToolGroupIdsWithSegmentation = (segmentationId: string): string[] => {
-    const toolGroupIds = cstSegmentation.state.getToolGroupIdsWithSegmentation(segmentationId);
-    return toolGroupIds;
+  public getViewportIdsWithSegmentation = (segmentationId: string): string[] => {
+    const viewportIds = cstSegmentation.state.getViewportIdsWithSegmentation(segmentationId);
+    return viewportIds;
   };
 
   public hydrateSegmentation = (segmentationId: string, suppressEvents = false): void => {
@@ -1136,7 +1107,7 @@ class SegmentationService extends PubSubService {
     }
     segmentation.hydrated = true;
 
-    // Not all segmentations have dipslaysets, some of them are derived in the client
+    // Not all segmentations have dipslaySets, some of them are derived in the client
     this._setDisplaySetIsHydrated(segmentationId, true);
 
     if (!suppressEvents) {
@@ -1167,9 +1138,9 @@ class SegmentationService extends PubSubService {
     alpha: number,
     hideOthers: boolean,
     segments: Segment[],
-    toolGroupId: string,
+    viewportId: string,
     animationLength: number,
-    segmentationRepresentation: cstTypes.ToolGroupSpecificRepresentation
+    segmentationRepresentation: cstTypes.SegmentationRepresentation
   ) {
     const newSegmentSpecificConfig = {
       [segmentIndex]: {
@@ -1191,7 +1162,7 @@ class SegmentationService extends PubSubService {
       }
     }
 
-    const { fillAlpha } = this.getConfiguration(toolGroupId);
+    const { fillAlpha } = this.getConfiguration(viewportId);
 
     let startTime: number = null;
     const animation = (timestamp: number) => {
@@ -1202,8 +1173,8 @@ class SegmentationService extends PubSubService {
       const elapsed = timestamp - startTime;
       const progress = Math.min(elapsed / animationLength, 1);
 
-      cstSegmentation.config.setSegmentSpecificConfig(
-        toolGroupId,
+      cstSegmentation.config.setSegmentIndexConfig(
+        viewportId,
         segmentationRepresentation.segmentationRepresentationUID,
         {
           [segmentIndex]: {
@@ -1217,8 +1188,8 @@ class SegmentationService extends PubSubService {
       if (progress < 1) {
         requestAnimationFrame(animation);
       } else {
-        cstSegmentation.config.setSegmentSpecificConfig(
-          toolGroupId,
+        cstSegmentation.config.setSegmentIndexConfig(
+          viewportId,
           segmentationRepresentation.segmentationRepresentationUID,
           {}
         );
@@ -1233,17 +1204,17 @@ class SegmentationService extends PubSubService {
     alpha: number,
     hideOthers: boolean,
     segments: Segment[],
-    toolGroupId: string,
+    viewportId: string,
     animationLength: number,
-    segmentationRepresentation: cstTypes.ToolGroupSpecificRepresentation
+    segmentationRepresentation: cstTypes.SegmentationRepresentation
   ) {
     const startTime = performance.now();
 
     const animate = (currentTime: number) => {
       const progress = (currentTime - startTime) / animationLength;
       if (progress >= 1) {
-        cstSegmentation.config.setSegmentSpecificConfig(
-          toolGroupId,
+        cstSegmentation.config.setSegmentIndexConfig(
+          viewportId,
           segmentationRepresentation.segmentationRepresentationUID,
           {}
         );
@@ -1251,8 +1222,8 @@ class SegmentationService extends PubSubService {
       }
 
       const reversedProgress = reverseEaseInOutBell(progress, 0.1);
-      cstSegmentation.config.setSegmentSpecificConfig(
-        toolGroupId,
+      cstSegmentation.config.setSegmentIndexConfig(
+        viewportId,
         segmentationRepresentation.segmentationRepresentationUID,
         {
           [segmentIndex]: {
@@ -1270,13 +1241,13 @@ class SegmentationService extends PubSubService {
     requestAnimationFrame(animate);
   }
 
-  public removeSegmentationRepresentationFromToolGroup(
-    toolGroupId: string,
+  public removeSegmentationRepresentationFromViewport(
+    viewportId: string,
     segmentationRepresentationUIDsIds?: string[]
   ): void {
     const uids = segmentationRepresentationUIDsIds || [];
     if (!uids.length) {
-      const representations = cstSegmentation.state.getSegmentationRepresentations(toolGroupId);
+      const representations = cstSegmentation.state.getSegmentationRepresentations(viewportId);
 
       if (!representations || !representations.length) {
         return;
@@ -1285,7 +1256,7 @@ class SegmentationService extends PubSubService {
       uids.push(...representations.map(rep => rep.segmentationRepresentationUID));
     }
 
-    cstSegmentation.removeSegmentationsFromToolGroup(toolGroupId, uids);
+    cstSegmentation.removeSegmentationRepresentations(viewportId, uids);
   }
 
   /**
@@ -1303,7 +1274,7 @@ class SegmentationService extends PubSubService {
     }
 
     const { colorLUTIndex } = segmentation;
-    const { updatedToolGroupIds } = this._removeSegmentationFromCornerstone(segmentationId);
+    const { updatedViewportIds } = this._removeSegmentationFromCornerstone(segmentationId);
 
     // Delete associated colormap
     // Todo: bring this back
@@ -1323,8 +1294,8 @@ class SegmentationService extends PubSubService {
       if (remainingHydratedSegmentations.length) {
         const { id } = remainingHydratedSegmentations[0];
 
-        updatedToolGroupIds.forEach(toolGroupId => {
-          this._setActiveSegmentationForToolGroup(id, toolGroupId, false);
+        updatedViewportIds.forEach(viewportId => {
+          this._setActiveSegmentationForViewport(id, viewportId, null);
         });
       }
     }
@@ -1336,26 +1307,23 @@ class SegmentationService extends PubSubService {
     });
   }
 
-  public getConfiguration = (toolGroupId?: string): SegmentationConfig => {
-    toolGroupId = toolGroupId ?? this._getApplicableToolGroupId();
+  public getSegmentationRepresentationsForViewport(
+    viewportId: string
+  ): cstTypes.SegmentationRepresentation[] {
+    return cstSegmentation.state.getSegmentationRepresentations(viewportId);
+  }
 
+  public getConfiguration = (viewportId?: string): SegmentationConfig => {
     const brushSize = 1;
-    // const brushSize = cstUtils.segmentation.getBrushSizeForToolGroup(
-    //   toolGroupId
-    // );
 
     const brushThresholdGate = 1;
-    // const brushThresholdGate = cstUtils.segmentation.getBrushThresholdForToolGroup(
-    //   toolGroupId
-    // );
 
-    const segmentationRepresentations =
-      this.getSegmentationRepresentationsForToolGroup(toolGroupId);
+    const segmentationRepresentations = this.getSegmentationRepresentationsForViewport(viewportId);
 
     const typeToUse = segmentationRepresentations?.[0]?.type || LABELMAP;
 
     const config = cstSegmentation.config.getGlobalConfig();
-    const { renderInactiveSegmentations } = config;
+    const { renderInactiveRepresentations } = config;
 
     const representation = config.representations[typeToUse];
 
@@ -1376,7 +1344,7 @@ class SegmentationService extends PubSubService {
       fillAlphaInactive,
       outlineWidthActive,
       renderFill,
-      renderInactiveSegmentations,
+      renderInactiveRepresentations,
       renderOutline,
       outlineOpacity,
       outlineOpacityInactive,
@@ -1390,7 +1358,7 @@ class SegmentationService extends PubSubService {
       outlineWidthActive,
       outlineOpacity,
       renderFill,
-      renderInactiveSegmentations,
+      renderInactiveRepresentations,
       renderOutline,
     } = configuration;
 
@@ -1411,34 +1379,11 @@ class SegmentationService extends PubSubService {
       Math.max(0.75, v / 100)
     );
 
-    if (renderInactiveSegmentations !== undefined) {
+    if (renderInactiveRepresentations !== undefined) {
       const config = cstSegmentation.config.getGlobalConfig();
-      config.renderInactiveSegmentations = renderInactiveSegmentations;
+      config.renderInactiveRepresentations = renderInactiveRepresentations;
       cstSegmentation.config.setGlobalConfig(config);
     }
-
-    // if (brushSize !== undefined) {
-    //   const { toolGroupService } = this.servicesManager.services;
-
-    //   const toolGroupIds = toolGroupService.getToolGroupIds();
-
-    //   toolGroupIds.forEach(toolGroupId => {
-    //     cstUtils.segmentation.setBrushSizeForToolGroup(toolGroupId, brushSize);
-    //   });
-    // }
-
-    // if (brushThresholdGate !== undefined) {
-    //   const { toolGroupService } = this.servicesManager.services;
-
-    //   const toolGroupIds = toolGroupService.getFirstToolGroupIds();
-
-    //   toolGroupIds.forEach(toolGroupId => {
-    //     cstUtils.segmentation.setBrushThresholdForToolGroup(
-    //       toolGroupId,
-    //       brushThresholdGate
-    //     );
-    //   });
-    // }
 
     this._broadcastEvent(this.EVENTS.SEGMENTATION_CONFIGURATION_CHANGED, this.getConfiguration());
   };
@@ -1447,39 +1392,8 @@ class SegmentationService extends PubSubService {
     return cache.getVolume(segmentationId);
   };
 
-  public getSegmentationRepresentationsForToolGroup = toolGroupId => {
-    return cstSegmentation.state.getSegmentationRepresentations(toolGroupId);
-  };
-
   public setSegmentLabel(segmentationId: string, segmentIndex: number, label: string) {
     this._setSegmentLabel(segmentationId, segmentIndex, label);
-  }
-
-  private _setSegmentLabel(
-    segmentationId: string,
-    segmentIndex: number,
-    label: string,
-    suppressEvents = false
-  ) {
-    const segmentation = this.getSegmentation(segmentationId);
-
-    if (segmentation === undefined) {
-      throw new Error(`no segmentation for segmentationId: ${segmentationId}`);
-    }
-
-    const segmentInfo = segmentation.segments[segmentIndex];
-
-    if (segmentInfo === undefined) {
-      throw new Error(`Segment ${segmentIndex} not yet added to segmentation: ${segmentationId}`);
-    }
-
-    segmentInfo.label = label;
-
-    if (suppressEvents === false) {
-      this._broadcastEvent(this.EVENTS.SEGMENTATION_UPDATED, {
-        segmentation,
-      });
-    }
   }
 
   public shouldRenderSegmentation(viewportDisplaySetInstanceUIDs, segmentationFrameOfReferenceUID) {
@@ -1525,27 +1439,38 @@ class SegmentationService extends PubSubService {
     };
   }
 
-  private _setActiveSegmentationForToolGroup(
+  private _setActiveSegmentationForViewport(
     segmentationId: string,
-    toolGroupId: string,
+    viewportId: string,
+    segmentationRepresentationUID?: string,
     suppressEvents = false
   ) {
-    const segmentations = this._getSegmentations();
+    let representationUIDToUse = segmentationRepresentationUID;
     const targetSegmentation = this.getSegmentation(segmentationId);
 
-    if (targetSegmentation === undefined) {
-      throw new Error(`no segmentation for segmentationId: ${segmentationId}`);
+    if (!segmentationRepresentationUID) {
+      const segmentations = this._getSegmentations();
+
+      if (targetSegmentation === undefined) {
+        throw new Error(`no segmentation for segmentationId: ${segmentationId}`);
+      }
+
+      segmentations.forEach(segmentation => {
+        segmentation.isActive = segmentation.id === segmentationId;
+      });
+
+      const representation = this._getSegmentationRepresentation(segmentationId, viewportId);
+
+      if (!representation) {
+        throw new Error('Must add representation to toolgroup before setting segments');
+      }
+
+      representationUIDToUse = representation.segmentationRepresentationUID;
     }
 
-    segmentations.forEach(segmentation => {
-      segmentation.isActive = segmentation.id === segmentationId;
-    });
-
-    const representation = this._getSegmentationRepresentation(segmentationId, toolGroupId);
-
     cstSegmentation.activeSegmentation.setActiveSegmentationRepresentation(
-      toolGroupId,
-      representation.segmentationRepresentationUID
+      viewportId,
+      representationUIDToUse
     );
 
     if (suppressEvents === false) {
@@ -1613,7 +1538,7 @@ class SegmentationService extends PubSubService {
     segmentationId: string,
     segmentIndex: number,
     color: ohifTypes.RGB,
-    toolGroupId?: string,
+    viewportId?: string,
     suppressEvents = false
   ) => {
     const segmentation = this.getSegmentation(segmentationId);
@@ -1628,11 +1553,9 @@ class SegmentationService extends PubSubService {
       throw new Error(`Segment ${segmentIndex} not yet added to segmentation: ${segmentationId}`);
     }
 
-    toolGroupId = toolGroupId ?? this._getApplicableToolGroupId();
-
     const segmentationRepresentation = this._getSegmentationRepresentation(
       segmentationId,
-      toolGroupId
+      viewportId
     );
 
     if (!segmentationRepresentation) {
@@ -1640,18 +1563,15 @@ class SegmentationService extends PubSubService {
     }
     const { segmentationRepresentationUID } = segmentationRepresentation;
 
-    const rgbaColor = cstSegmentation.config.color.getColorForSegmentIndex(
-      toolGroupId,
+    const rgbaColor = cstSegmentation.config.color.getSegmentIndexColor(
       segmentationRepresentationUID,
       segmentIndex
     );
 
-    cstSegmentation.config.color.setColorForSegmentIndex(
-      toolGroupId,
-      segmentationRepresentationUID,
-      segmentIndex,
-      [...color, rgbaColor[3]]
-    );
+    cstSegmentation.config.color.setSegmentIndexColor(segmentationRepresentationUID, segmentIndex, [
+      ...color,
+      rgbaColor[3],
+    ]);
 
     segmentInfo.color = color;
 
@@ -1719,14 +1639,12 @@ class SegmentationService extends PubSubService {
     segmentationId: string,
     segmentIndex: number,
     isVisible: boolean,
-    toolGroupId?: string,
+    viewportId?: string,
     suppressEvents = false
   ) {
-    toolGroupId = toolGroupId ?? this._getApplicableToolGroupId();
-
     const { segmentationRepresentationUID, segmentation } = this._getSegmentationInfo(
       segmentationId,
-      toolGroupId
+      viewportId
     );
 
     if (segmentation === undefined) {
@@ -1741,8 +1659,8 @@ class SegmentationService extends PubSubService {
 
     segmentInfo.isVisible = isVisible;
 
-    cstSegmentation.config.visibility.setSegmentVisibility(
-      toolGroupId,
+    cstSegmentation.config.visibility.setSegmentIndexVisibility(
+      viewportId,
       segmentationRepresentationUID,
       segmentIndex,
       isVisible
@@ -1766,7 +1684,7 @@ class SegmentationService extends PubSubService {
     segmentationId: string,
     segmentIndex: number,
     opacity: number,
-    toolGroupId?: string,
+    viewportId?: string,
     suppressEvents = false
   ) => {
     const segmentation = this.getSegmentation(segmentationId);
@@ -1781,11 +1699,9 @@ class SegmentationService extends PubSubService {
       throw new Error(`Segment ${segmentIndex} not yet added to segmentation: ${segmentationId}`);
     }
 
-    toolGroupId = toolGroupId ?? this._getApplicableToolGroupId();
-
     const segmentationRepresentation = this._getSegmentationRepresentation(
       segmentationId,
-      toolGroupId
+      viewportId
     );
 
     if (!segmentationRepresentation) {
@@ -1793,18 +1709,17 @@ class SegmentationService extends PubSubService {
     }
     const { segmentationRepresentationUID } = segmentationRepresentation;
 
-    const rgbaColor = cstSegmentation.config.color.getColorForSegmentIndex(
-      toolGroupId,
+    const rgbaColor = cstSegmentation.config.color.getSegmentIndexColor(
       segmentationRepresentationUID,
       segmentIndex
     );
 
-    cstSegmentation.config.color.setColorForSegmentIndex(
-      toolGroupId,
-      segmentationRepresentationUID,
-      segmentIndex,
-      [rgbaColor[0], rgbaColor[1], rgbaColor[2], opacity]
-    );
+    cstSegmentation.config.color.setSegmentIndexColor(segmentationRepresentationUID, segmentIndex, [
+      rgbaColor[0],
+      rgbaColor[1],
+      rgbaColor[2],
+      opacity,
+    ]);
 
     segmentInfo.opacity = opacity;
 
@@ -1842,19 +1757,29 @@ class SegmentationService extends PubSubService {
     }
   }
 
-  private _getSegmentationRepresentation(segmentationId, toolGroupId) {
-    const segmentationRepresentations =
-      this.getSegmentationRepresentationsForToolGroup(toolGroupId);
+  /**
+   * Retrieves the segmentation representation for a given segmentation ID and viewport ID.
+   * If the viewport ID is not provided, it retrieves the first representation for the segmentation ID.
+   *
+   * @param segmentationId - The ID of the segmentation.
+   * @param viewportId - The ID of the viewport. Optional.
+   * @returns segmentation representation, or undefined if not found.
+   */
+  private _getSegmentationRepresentation(segmentationId, viewportId) {
+    if (!viewportId) {
+      const reps =
+        cstSegmentation.state.getSegmentationRepresentationsForSegmentation(segmentationId);
 
-    if (!segmentationRepresentations?.length) {
-      return;
+      if (reps.length === 0) {
+        return;
+      }
+
+      return reps[0];
     }
 
-    // Todo: this finds the first segmentation representation that matches the segmentationId
-    // If there are two labelmap representations from the same segmentation, this will not work
-    const representation = segmentationRepresentations.find(
-      representation => representation.segmentationId === segmentationId
-    );
+    const representation = cstSegmentation.state
+      .getSegmentationRepresentations(viewportId)
+      ?.find(representation => representation.segmentationId === segmentationId);
 
     return representation;
   }
@@ -1957,7 +1882,14 @@ class SegmentationService extends PubSubService {
     }
   };
 
-  private _getSegmentationInfo(segmentationId: string, toolGroupId: string) {
+  /**
+   * Retrieves the segmentation information for a given segmentation ID and viewport ID.
+   * @param segmentationId - The ID of the segmentation.
+   * @param viewportId - The ID of the viewport (optional).
+   * @returns An object containing the segmentation representation UID and the segmentation itself.
+   * @throws An error if no segmentation is found for the given segmentation ID, or if the representation is not added to the viewport.
+   */
+  private _getSegmentationInfo(segmentationId: string, viewportId?: string) {
     const segmentation = this.getSegmentation(segmentationId);
 
     if (segmentation === undefined) {
@@ -1965,7 +1897,7 @@ class SegmentationService extends PubSubService {
     }
     const segmentationRepresentation = this._getSegmentationRepresentation(
       segmentationId,
-      toolGroupId
+      viewportId
     );
 
     if (!segmentationRepresentation) {
@@ -1982,29 +1914,29 @@ class SegmentationService extends PubSubService {
     const removeFromCache = true;
     const segmentationState = cstSegmentation.state;
     const sourceSegState = segmentationState.getSegmentation(segmentationId);
-    const updatedToolGroupIds: Set<string> = new Set();
+    const updatedViewportIds: Set<string> = new Set();
 
     if (!sourceSegState) {
       return;
     }
 
-    const toolGroupIds = segmentationState.getToolGroupIdsWithSegmentation(segmentationId);
+    const viewportIds = segmentationState.getViewportIdsWithSegmentation(segmentationId);
 
-    toolGroupIds.forEach(toolGroupId => {
+    viewportIds.forEach(viewportId => {
       const segmentationRepresentations =
-        segmentationState.getSegmentationRepresentations(toolGroupId);
+        segmentationState.getSegmentationRepresentations(viewportId);
 
       const UIDsToRemove = [];
       segmentationRepresentations.forEach(representation => {
         if (representation.segmentationId === segmentationId) {
           UIDsToRemove.push(representation.segmentationRepresentationUID);
-          updatedToolGroupIds.add(toolGroupId);
+          updatedViewportIds.add(viewportId);
         }
       });
 
       // remove segmentation representations
-      cstSegmentation.removeSegmentationsFromToolGroup(
-        toolGroupId,
+      cstSegmentation.removeSegmentationRepresentations(
+        viewportId,
         UIDsToRemove,
         true // immediate
       );
@@ -2017,7 +1949,7 @@ class SegmentationService extends PubSubService {
       cache.removeVolumeLoadObject(segmentationId);
     }
 
-    return { updatedToolGroupIds: Array.from(updatedToolGroupIds) };
+    return { updatedViewportIds: [...updatedViewportIds] };
   }
 
   private _updateCornerstoneSegmentations({ segmentationId, notYetUpdatedAtSource }) {
@@ -2041,11 +1973,11 @@ class SegmentationService extends PubSubService {
 
   private _updateCornerstoneSegmentationVisibility = segmentationId => {
     const segmentationState = cstSegmentation.state;
-    const toolGroupIds = segmentationState.getToolGroupIdsWithSegmentation(segmentationId);
+    const viewportIds = segmentationState.getViewportIdsWithSegmentation(segmentationId);
 
-    toolGroupIds.forEach(toolGroupId => {
+    viewportIds.forEach(viewportId => {
       const segmentationRepresentations =
-        cstSegmentation.state.getSegmentationRepresentations(toolGroupId);
+        cstSegmentation.state.getSegmentationRepresentations(viewportId);
 
       if (segmentationRepresentations.length === 0) {
         return;
@@ -2057,19 +1989,21 @@ class SegmentationService extends PubSubService {
         representation => representation.segmentationId === segmentationId
       );
 
-      const { segmentsHidden } = representation;
-
+      const segmentsHidden = cstSegmentation.config.visibility.getHiddenSegmentIndices(
+        viewportId,
+        representation.segmentationRepresentationUID
+      );
       const currentVisibility = segmentsHidden.size === 0 ? true : false;
       const newVisibility = !currentVisibility;
 
-      cstSegmentation.config.visibility.setSegmentationVisibility(
-        toolGroupId,
+      cstSegmentation.config.visibility.setSegmentationRepresentationVisibility(
+        viewportId,
         representation.segmentationRepresentationUID,
         newVisibility
       );
 
       // update segments visibility
-      const { segmentation } = this._getSegmentationInfo(segmentationId, toolGroupId);
+      const { segmentation } = this._getSegmentationInfo(segmentationId, viewportId);
 
       const segments = segmentation.segments.filter(Boolean);
 
@@ -2079,45 +2013,12 @@ class SegmentationService extends PubSubService {
     });
   };
 
-  private _getToolGroupIdsWithSegmentation(segmentationId: string) {
+  private _getViewportIdsWithSegmentation(segmentationId: string) {
     const segmentationState = cstSegmentation.state;
-    const toolGroupIds = segmentationState.getToolGroupIdsWithSegmentation(segmentationId);
+    const viewportIds = segmentationState.getViewportIdsWithSegmentation(segmentationId);
 
-    return toolGroupIds;
+    return viewportIds;
   }
-
-  private _getFrameOfReferenceUIDForSeg(displaySet) {
-    const frameOfReferenceUID = displaySet.instance?.FrameOfReferenceUID;
-
-    if (frameOfReferenceUID) {
-      return frameOfReferenceUID;
-    }
-
-    // if not found we should try the ReferencedFrameOfReferenceSequence
-    const referencedFrameOfReferenceSequence =
-      displaySet.instance?.ReferencedFrameOfReferenceSequence;
-
-    if (referencedFrameOfReferenceSequence) {
-      return referencedFrameOfReferenceSequence.FrameOfReferenceUID;
-    }
-  }
-
-  private _getApplicableToolGroupId = () => {
-    const { toolGroupService, viewportGridService, cornerstoneViewportService } =
-      this.servicesManager.services;
-
-    const viewportInfo = cornerstoneViewportService.getViewportInfo(
-      viewportGridService.getActiveViewportId()
-    );
-
-    if (!viewportInfo) {
-      const toolGroupIds = toolGroupService.getToolGroupIds();
-
-      return toolGroupIds[0];
-    }
-
-    return viewportInfo.getToolGroupId();
-  };
 
   /**
    * Converts object of objects to array.

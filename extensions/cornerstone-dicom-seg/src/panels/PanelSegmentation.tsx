@@ -117,10 +117,10 @@ export default function PanelSegmentation({
     };
   }, []);
 
-  const getToolGroupIds = segmentationId => {
-    const toolGroupIds = segmentationService.getToolGroupIdsWithSegmentation(segmentationId);
+  const getViewportIds = segmentationId => {
+    const viewportIds = segmentationService.getViewportIdsWithSegmentation(segmentationId);
 
-    return toolGroupIds;
+    return viewportIds;
   };
 
   const onSegmentationAdd = async () => {
@@ -130,7 +130,7 @@ export default function PanelSegmentation({
   };
 
   const onSegmentationClick = (segmentationId: string) => {
-    segmentationService.setActiveSegmentationForToolGroup(segmentationId);
+    segmentationService.setActiveSegmentationForViewport(segmentationId);
   };
 
   const onSegmentationDelete = (segmentationId: string) => {
@@ -144,12 +144,11 @@ export default function PanelSegmentation({
   const onSegmentClick = (segmentationId, segmentIndex) => {
     segmentationService.setActiveSegment(segmentationId, segmentIndex);
 
-    const toolGroupIds = getToolGroupIds(segmentationId);
+    const viewportIds = getViewportIds(segmentationId);
 
-    toolGroupIds.forEach(toolGroupId => {
-      // const toolGroupId =
-      segmentationService.setActiveSegmentationForToolGroup(segmentationId, toolGroupId);
-      segmentationService.jumpToSegmentCenter(segmentationId, segmentIndex, toolGroupId);
+    viewportIds.forEach(viewportId => {
+      segmentationService.setActiveSegmentationForViewport(segmentationId, viewportId);
+      segmentationService.jumpToSegmentCenter(segmentationId, segmentIndex, viewportId);
     });
   };
 
@@ -224,16 +223,11 @@ export default function PanelSegmentation({
     const segmentation = segmentationService.getSegmentation(segmentationId);
     const segmentInfo = segmentation.segments[segmentIndex];
     const isVisible = !segmentInfo.isVisible;
-    const toolGroupIds = getToolGroupIds(segmentationId);
+    const viewportIds = getViewportIds(segmentationId);
 
     // Todo: right now we apply the visibility to all tool groups
-    toolGroupIds.forEach(toolGroupId => {
-      segmentationService.setSegmentVisibility(
-        segmentationId,
-        segmentIndex,
-        isVisible,
-        toolGroupId
-      );
+    viewportIds.forEach(viewportId => {
+      segmentationService.setSegmentVisibility(segmentationId, segmentIndex, isVisible, viewportId);
     });
   };
 
@@ -247,15 +241,15 @@ export default function PanelSegmentation({
     const isVisible = segmentation.isVisible;
     const segments = segmentation.segments;
 
-    const toolGroupIds = getToolGroupIds(segmentationId);
+    const viewportIds = getViewportIds(segmentationId);
 
-    toolGroupIds.forEach(toolGroupId => {
+    viewportIds.forEach(viewportId => {
       segments.forEach((segment, segmentIndex) => {
         segmentationService.setSegmentVisibility(
           segmentationId,
           segmentIndex,
           isVisible,
-          toolGroupId
+          viewportId
         );
       });
     });
@@ -352,8 +346,12 @@ export default function PanelSegmentation({
       setRenderFill={value =>
         _setSegmentationConfiguration(selectedSegmentationId, 'renderFill', value)
       }
-      setRenderInactiveSegmentations={value =>
-        _setSegmentationConfiguration(selectedSegmentationId, 'renderInactiveSegmentations', value)
+      setrenderInactiveRepresentations={value =>
+        _setSegmentationConfiguration(
+          selectedSegmentationId,
+          'renderInactiveRepresentations',
+          value
+        )
       }
       setOutlineWidthActive={value =>
         _setSegmentationConfiguration(selectedSegmentationId, 'outlineWidthActive', value)

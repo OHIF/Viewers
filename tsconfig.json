@@ -11,6 +11,7 @@
     "sourceMap": true,
     "declaration": true,
     "moduleResolution": "node",
+    "target": "ES2022",
     "outDir": "./dist",
     "paths": {
       "@ohif/core": ["platform/core/src"],
@@ -25,7 +26,7 @@
     "platform/**/public/**/*",
     "extensions/**/src/**/*",
     "modes/**/src/**/*",
-    "tests/**/*",
+    "tests/**/*"
   ],
   "exclude": ["node_modules", "dist"]
 }

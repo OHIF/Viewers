@@ -4,35 +4,11 @@ import {
   cornerstoneStreamingImageVolumeLoader,
   cornerstoneStreamingDynamicImageVolumeLoader,
 } from '@cornerstonejs/streaming-image-volume-loader';
-import dicomImageLoader, { webWorkerManager } from '@cornerstonejs/dicom-image-loader';
+import dicomImageLoader from '@cornerstonejs/dicom-image-loader';
 import dicomParser from 'dicom-parser';
 import { errorHandler, utils } from '@ohif/core';
 
 const { registerVolumeLoader } = volumeLoader;
-
-let initialized = false;
-
-function initWebWorkers(appConfig) {
-  const config = {
-    maxWebWorkers: Math.min(
-      Math.max(navigator.hardwareConcurrency - 1, 1),
-      appConfig.maxNumberOfWebWorkers
-    ),
-    startWebWorkersOnDemand: true,
-    taskConfiguration: {
-      decodeTask: {
-        initializeCodecsOnStartup: false,
-        usePDFJS: false,
-        strict: false,
-      },
-    },
-  };
-
-  if (!initialized) {
-    dicomImageLoader.webWorkerManager.initialize(config);
-    initialized = true;
-  }
-}
 
 export default function initWADOImageLoader(
   userAuthenticationService,
@@ -50,6 +26,12 @@ export default function initWADOImageLoader(
   );
 
   dicomImageLoader.configure({
+    cornerstone,
+    dicomParser,
+    maxWebWorkers: Math.min(
+      Math.max(navigator.hardwareConcurrency - 1, 1),
+      appConfig.maxNumberOfWebWorkers
+    ),
     decodeConfig: {
       // !! IMPORTANT !!
       // We should set this flag to false, since, by default @cornerstonejs/dicom-image-loader
@@ -84,16 +66,8 @@ export default function initWADOImageLoader(
       errorHandler.getHTTPErrorHandler(error);
     },
   });
-
-  initWebWorkers(appConfig);
 }
 
 export function destroy() {
-  // Note: we don't want to call .terminate on the webWorkerManager since
-  // that resets the config
-  const webWorkers = webWorkerManager.webWorkers;
-  for (let i = 0; i < webWorkers.length; i++) {
-    webWorkers[i].worker.terminate();
-  }
-  webWorkers.length = 0;
+  console.debug('Destroying WADO Image Loader');
 }

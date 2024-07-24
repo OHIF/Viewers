@@ -483,6 +483,21 @@ class MeasurementService extends PubSubService {
       }
       const { toMeasurementSchema } = sourceMapping;
 
+      /**
+       * Compatibility issue for the unit, areaUnit and modalityUnit which have changed to
+       * lengthUnits, areaUnits and pixelValueUnits respectively.
+       * Todo: probably this should be inside the cornerstone as utils
+       */
+      if (sourceAnnotationDetail.unit) {
+        sourceAnnotationDetail.lengthUnits = sourceAnnotationDetail.unit;
+      }
+      if (sourceAnnotationDetail.areaUnit) {
+        sourceAnnotationDetail.areaUnits = sourceAnnotationDetail.areaUnit;
+      }
+      if (sourceAnnotationDetail.modalityUnit) {
+        sourceAnnotationDetail.pixelValueUnits = sourceAnnotationDetail.modalityUnit;
+      }
+
       /* Convert measurement */
       measurement = toMeasurementSchema(sourceAnnotationDetail);
       measurement.source = source;
