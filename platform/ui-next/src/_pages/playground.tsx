@@ -155,26 +155,25 @@ export default function Playground() {
         </div>
       </div>
 
-      <h2>Tooltip</h2>
-      <div className="row">
-        <div className="example"></div>
-      </div>
-
       <h2>Color swatches</h2>
       <div className="row">
-        <div className="example">
-          <div className="example2">
-            <div className="bg-actions h-16 w-16 rounded"></div>
-          </div>
-          <div className="example2">
-            <div className="bg-infosecondary h-16 w-16 rounded"></div>
-          </div>
-          <div className="example2">
-            <div className="bg-highlight h-16 w-16 rounded"></div>
-          </div>
-          <div className="example2">
-            <div className="h-16 w-16 rounded bg-white"></div>
-          </div>
+        <div className="example2">
+          <div className="bg-actions h-16 w-16 rounded"></div>
+        </div>
+        <div className="example2">
+          <div className="bg-infosecondary h-16 w-16 rounded"></div>
+        </div>
+        <div className="example2">
+          <div className="bg-highlight h-16 w-16 rounded"></div>
+        </div>
+        <div className="example2">
+          <div className="h-16 w-16 rounded bg-white"></div>
+        </div>
+        <div className="example2">
+          <div className="h-16 w-16 rounded bg-white"></div>
+        </div>
+        <div className="example2">
+          <div className="h-16 w-16 rounded bg-white"></div>
         </div>
       </div>
     </main>

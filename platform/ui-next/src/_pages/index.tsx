@@ -19,6 +19,12 @@ const App: React.FC = () => (
       >
         Viewer
       </a>
+      <a
+        href="colors.html"
+        className="text-blue-500 hover:text-blue-700"
+      >
+        Colors
+      </a>
     </nav>
   </div>
 );

@@ -7,7 +7,7 @@ import '../tailwind.css';
 function Viewer() {
   return (
     <div className="h-full w-full">
-      <div className="text-3xl"> Dan </div>
+      <div className="text-3xl"> Viewer </div>
     </div>
   );
 }
