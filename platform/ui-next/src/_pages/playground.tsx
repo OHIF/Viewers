@@ -3,7 +3,7 @@ import { createRoot } from 'react-dom/client';
 import '../tailwind.css';
 
 import { Button } from '../components/Button';
-import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from '../components/Tooltip';
+// import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from '../components/Tooltip';
 
 // import type { Metadata } from 'next';
 // import Script from 'next/script';
@@ -157,15 +157,24 @@ export default function Playground() {
 
       <h2>Tooltip</h2>
       <div className="row">
+        <div className="example"></div>
+      </div>
+
+      <h2>Color swatches</h2>
+      <div className="row">
         <div className="example">
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger>Hover</TooltipTrigger>
-              <TooltipContent side="bottom">
-                <p>Add to library</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+          <div className="example2">
+            <div className="bg-actions h-16 w-16 rounded"></div>
+          </div>
+          <div className="example2">
+            <div className="bg-infosecondary h-16 w-16 rounded"></div>
+          </div>
+          <div className="example2">
+            <div className="bg-highlight h-16 w-16 rounded"></div>
+          </div>
+          <div className="example2">
+            <div className="h-16 w-16 rounded bg-white"></div>
+          </div>
         </div>
       </div>
     </main>
