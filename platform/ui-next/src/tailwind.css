@@ -7,13 +7,6 @@
 @layer base {
   :root {
     --highlight: 191 74% 63%;
-    --actions: 214 98% 60%;
-    --actions-foreground: 214 98% 60%;
-    --bkg-low: 236 62% 5%;
-    --bkg-med: 234 64% 10%;
-    --bkg-full: 219 90% 15%;
-    --infosecondary: 200 46% 65%;
-    --infosecondary-foreground: 200 46% 65%;
     --background: 236 62% 5%;
     --foreground: 0 0% 98%;
     --card: 236 62% 5%;

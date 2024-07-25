@@ -12,17 +12,6 @@ module.exports = {
     extend: {
       colors: {
         highlight: 'hsl(var(--highlight))',
-        'bkg-low': 'hsl(var(--bkg-low))',
-        'bkg-med': 'hsl(var(--bkg-med))',
-        'bkg-full': 'hsl(var(--bkg-full))',
-        actions: {
-          DEFAULT: 'hsl(var(--actions))',
-          foreground: 'hsl(var(--actions-foreground))',
-        },
-        infosecondary: {
-          DEFAULT: 'hsl(var(--infosecondary))',
-          foreground: 'hsl(var(--infosecondary-foreground))',
-        },
         border: 'hsl(var(--border))',
         input: 'hsl(var(--input))',
         ring: 'hsl(var(--ring))',
