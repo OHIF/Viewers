@@ -25,7 +25,7 @@ function Calendar({ className, classNames, showOutsideDays = true, ...props }: C
         month: 'space-y-4',
         caption: 'flex justify-between items-center px-2',
 
-        caption_dropdowns: 'flex space-x-2',
+        caption_dropdowns: 'flex space-x-2 text-black',
         caption_label: 'hidden',
         nav: 'space-x-1 flex items-center',
         table: 'w-full border-collapse space-y-1',
@@ -39,7 +39,7 @@ function Calendar({ className, classNames, showOutsideDays = true, ...props }: C
         ),
         day_range_end: 'day-range-end',
         day_selected:
-          'bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground',
+          'bg-primary/60 text-primary-foreground hover:bg-primary/80 hover:text-primary-foreground focus:bg-primary/80 focus:text-primary-foreground',
         day_today: 'bg-accent text-accent-foreground',
         day_outside:
           'day-outside text-muted-foreground opacity-50 aria-selected:bg-accent/50 aria-selected:text-muted-foreground aria-selected:opacity-30',
