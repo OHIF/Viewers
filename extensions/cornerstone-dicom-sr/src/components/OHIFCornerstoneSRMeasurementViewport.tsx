@@ -14,7 +14,7 @@ const MEASUREMENT_TRACKING_EXTENSION_ID = '@ohif/extension-measurement-tracking'
 
 const SR_TOOLGROUP_BASE_NAME = 'SRToolGroup';
 
-function OHIFCornerstoneSRViewport(props: withAppTypes) {
+function OHIFCornerstoneSRMeasurementViewport(props: withAppTypes) {
   const { children, dataSource, displaySets, viewportOptions, servicesManager, extensionManager } =
     props;
 
@@ -278,14 +278,14 @@ function OHIFCornerstoneSRViewport(props: withAppTypes) {
    */
   useEffect(() => {
     const updateSR = async () => {
-    if (!srDisplaySet.isLoaded) {
-      await srDisplaySet.load();
-    }
-    if (!element || !srDisplaySet.isLoaded) {
-      return;
-    }
-    setTrackingIdentifiers(measurementSelected);
-    }
+      if (!srDisplaySet.isLoaded) {
+        await srDisplaySet.load();
+      }
+      if (!element || !srDisplaySet.isLoaded) {
+        return;
+      }
+      setTrackingIdentifiers(measurementSelected);
+    };
     updateSR();
   }, [measurementSelected, element, setTrackingIdentifiers, srDisplaySet]);
 
@@ -367,7 +367,7 @@ function OHIFCornerstoneSRViewport(props: withAppTypes) {
   );
 }
 
-OHIFCornerstoneSRViewport.propTypes = {
+OHIFCornerstoneSRMeasurementViewport.propTypes = {
   displaySets: PropTypes.arrayOf(PropTypes.object),
   viewportId: PropTypes.string.isRequired,
   dataSource: PropTypes.object,
@@ -387,13 +387,13 @@ async function _getViewportReferencedDisplaySetData(
   const measurement = measurements[measurementSelected];
 
   const { displaySetInstanceUID } = measurement;
-  if (!displaySet.keyImageDisplaySet) {
-    // Create a new display set, and preserve a reference to it here,
-    // so that it can be re-displayed and shown inside the SR viewport.
-    // This is only for ease of redisplay - the display set is stored in the
-    // usual manner in the display set service.
-    displaySet.keyImageDisplaySet = createReferencedImageDisplaySet(displaySetService, displaySet);
-  }
+  // if (!displaySet.keyImageDisplaySet) {
+  //   // Create a new display set, and preserve a reference to it here,
+  //   // so that it can be re-displayed and shown inside the SR viewport.
+  //   // This is only for ease of redisplay - the display set is stored in the
+  //   // usual manner in the display set service.
+  //   displaySet.keyImageDisplaySet = createReferencedImageDisplaySet(displaySetService, displaySet);
+  // }
 
   const referencedDisplaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
 
@@ -508,4 +508,4 @@ function _getStatusComponent({
   );
 }
 
-export default OHIFCornerstoneSRViewport;
+export default OHIFCornerstoneSRMeasurementViewport;

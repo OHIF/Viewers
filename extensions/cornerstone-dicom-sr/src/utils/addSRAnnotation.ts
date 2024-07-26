@@ -4,7 +4,7 @@ import { metaData } from '@cornerstonejs/core';
 import getRenderableData from './getRenderableData';
 import toolNames from '../tools/toolNames';
 
-export default function addDICOMSRDisplayAnnotation(measurement, imageId, frameNumber) {
+export default function addSRAnnotation(measurement, imageId, frameNumber) {
   let toolName = toolNames.DICOMSRDisplay;
 
   const measurementData = {
