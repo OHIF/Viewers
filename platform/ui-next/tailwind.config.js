@@ -11,6 +11,7 @@ module.exports = {
   theme: {
     extend: {
       colors: {
+        highlight: 'hsl(var(--highlight))',
         border: 'hsl(var(--border))',
         input: 'hsl(var(--input))',
         ring: 'hsl(var(--ring))',
