@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.9.0-beta.68](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.67...v3.9.0-beta.68) (2024-07-26)
+
+
+### Bug Fixes
+
+* **dicom:** Update multiframe DICOM JSON parsing for correct image ID generation ([#4307](https://github.com/OHIF/Viewers/issues/4307)) ([16b7aa4](https://github.com/OHIF/Viewers/commit/16b7aa4f6538b81e5915e47b9209d74575895dfe))
+
+
+
+
+
 # [3.9.0-beta.67](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.66...v3.9.0-beta.67) (2024-07-26)
 
 **Note:** Version bump only for package ohif-monorepo-root
