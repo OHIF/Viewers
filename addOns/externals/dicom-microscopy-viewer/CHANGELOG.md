@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.9.0-beta.69](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.68...v3.9.0-beta.69) (2024-07-27)
+
+**Note:** Version bump only for package @externals/dicom-microscopy-viewer
+
+
+
+
+
 # [3.9.0-beta.68](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.67...v3.9.0-beta.68) (2024-07-26)
 
 **Note:** Version bump only for package @externals/dicom-microscopy-viewer
