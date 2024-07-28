@@ -189,7 +189,7 @@
 
 @layer base {
   body {
-    @apply text-foreground text-base;
+    @apply text-base;
   }
   main {
     @apply my-4 mx-auto max-w-6xl py-6;
