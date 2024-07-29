@@ -233,5 +233,6 @@ export {
   getEnabledElement,
   ImageOverlayViewerTool,
   getSOPInstanceAttributes,
+  dicomLoaderService,
 };
 export default cornerstoneExtension;

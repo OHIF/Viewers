@@ -45,6 +45,11 @@ const dicomSeg = {
   panel: '@ohif/extension-cornerstone-dicom-seg.panelModule.panelSegmentation',
 };
 
+const dicomPmap = {
+  sopClassHandler: '@ohif/extension-cornerstone-dicom-pmap.sopClassHandlerModule.dicom-pmap',
+  viewport: '@ohif/extension-cornerstone-dicom-pmap.viewportModule.dicom-pmap',
+};
+
 const extensionDependencies = {
   // Can derive the versions at least process.env.from npm_package_version
   '@ohif/extension-default': '^3.0.0',
@@ -52,6 +57,7 @@ const extensionDependencies = {
   '@ohif/extension-measurement-tracking': '^3.0.0',
   '@ohif/extension-cornerstone-dicom-sr': '^3.0.0',
   '@ohif/extension-cornerstone-dicom-seg': '^3.0.0',
+  '@ohif/extension-cornerstone-dicom-pmap': '^3.0.0',
   '@ohif/extension-dicom-pdf': '^3.0.1',
   '@ohif/extension-dicom-video': '^3.0.1',
   '@ohif/extension-test': '^0.0.1',
@@ -167,6 +173,10 @@ function modeFactory() {
                 {
                   namespace: dicomSeg.viewport,
                   displaySetsToDisplay: [dicomSeg.sopClassHandler],
+                },
+                {
+                  namespace: dicomPmap.viewport,
+                  displaySetsToDisplay: [dicomPmap.sopClassHandler],
                 },
               ],
             },
