@@ -5,7 +5,6 @@ import 'regenerator-runtime/runtime';
 import { createRoot } from 'react-dom/client';
 import App from './App';
 import React from 'react';
-import ReactDOM from 'react-dom';
 import { history } from './utils/history';
 
 /**

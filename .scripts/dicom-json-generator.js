@@ -4,26 +4,34 @@
  * The JSON file can be used to load the study into the OHIF Viewer. You can get more detail
  * in the DICOM JSON Data source on docs.ohif.org
  *
- * Usage: node dicomStudyToJSONLaunch.js <studyFolder> <urlPrefix> <outputJSONPath>
+ * Usage: node dicomStudyToJSONLaunch.js <studyFolder> <urlPrefix> <outputJSONPath> <optional scheme>
  *
  * params:
- * - studyFolder: path to the study folder
+ * - studyFolder: path to the study folder which contains the DICOM files
  * - urlPrefix: prefix to the url that will be used to load the study into the viewer. For instance
  *   we use https://ohif-assets.s3.us-east-2.amazonaws.com/dicom-json/data as the urlPrefix for the
  *   example since the data is hosted on S3 and each study is in a folder. So the url in the generated
  *   json file for the first instance of the first series of the first study will be
  *   dicomweb:https://ohif-assets.s3.us-east-2.amazonaws.com/dicom-json/data/Series1/Instance1
+ *
+ *   as you see the dicomweb is a prefix that is used to load the data into the viewer, which is suited when
+ *   the .dcm file is hosted statically and can be accessed via a URL (like our example above)
+ *   However, you can specify a new scheme bellow.
+ *
  * - outputJSONPath: path to the output JSON file
+ * - scheme: default dicomweb if not provided
  */
 const dcmjs = require('dcmjs');
 const path = require('path');
 const fs = require('fs').promises;
 
 const args = process.argv.slice(2);
-const [studyDirectory, urlPrefix, outputPath] = args;
+const [studyDirectory, urlPrefix, outputPath, scheme = 'dicomweb'] = args;
 
-if (args.length !== 3) {
-  console.error('Usage: node dicomStudyToJSONLaunch.js <studyFolder> <urlPrefix> <outputJSONPath>');
+if (args.length < 3 || args.length > 4) {
+  console.error(
+    'Usage: node dicomStudyToJSONLaunch.js <studyFolder> <urlPrefix> <outputJSONPath> [scheme]'
+  );
   process.exit(1);
 }
 
@@ -31,7 +39,7 @@ const model = {
   studies: [],
 };
 
-async function convertDICOMToJSON(studyDirectory, urlPrefix, outputPath) {
+async function convertDICOMToJSON(studyDirectory, urlPrefix, outputPath, scheme) {
   try {
     const files = await recursiveReadDir(studyDirectory);
     console.debug('Processing...');
@@ -42,7 +50,7 @@ async function convertDICOMToJSON(studyDirectory, urlPrefix, outputPath) {
         const dicomDict = dcmjs.data.DicomMessage.readFile(arrayBuffer.buffer);
         const instance = dcmjs.data.DicomMetaDictionary.naturalizeDataset(dicomDict.dict);
 
-        instance.fileLocation = createImageId(file, urlPrefix, studyDirectory);
+        instance.fileLocation = createImageId(file, urlPrefix, studyDirectory, scheme);
         processInstance(instance);
       }
     }
@@ -77,10 +85,10 @@ async function recursiveReadDir(dir) {
   return results;
 }
 
-function createImageId(fileLocation, urlPrefix, studyDirectory) {
+function createImageId(fileLocation, urlPrefix, studyDirectory, scheme) {
   const relativePath = path.relative(studyDirectory, fileLocation);
   const normalizedPath = path.normalize(relativePath).replace(/\\/g, '/');
-  return `dicomweb:${urlPrefix}${normalizedPath}`;
+  return `${scheme}:${urlPrefix}${normalizedPath}`;
 }
 
 function processInstance(instance) {
@@ -262,4 +270,4 @@ function createInstanceMetaDataMultiFrame(instance) {
   return instances;
 }
 
-convertDICOMToJSON(studyDirectory, urlPrefix, outputPath);
+convertDICOMToJSON(studyDirectory, urlPrefix, outputPath, scheme);
