@@ -9,6 +9,17 @@ module.exports = {
   ],
   prefix: '',
   theme: {
+    fontSize: {
+      xs: '11px',
+      sm: '12px',
+      base: '13px',
+      lg: '14px',
+      xl: '16px',
+      '2xl': '1.125rem',
+      '3xl': '1.25rem',
+      '4xl': '1.5rem',
+      '5xl': '1.875rem',
+    },
     extend: {
       colors: {
         highlight: 'hsl(var(--highlight))',

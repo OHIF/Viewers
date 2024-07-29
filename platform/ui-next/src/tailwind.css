@@ -187,38 +187,19 @@
 
 */
 
-@layer base {
-  * {
-    @apply border-border;
-  }
-  body {
-    @apply bg-background text-foreground text-base;
-  }
-  main {
-    @apply my-4 mx-auto max-w-6xl py-6;
-  }
-  h1 {
-    @apply py-4 text-5xl font-semibold;
-  }
-  h2 {
-    @apply py-4 text-4xl font-semibold;
-  }
-  h3 {
-    @apply py-3 text-xl font-normal;
-  }
+
+/* Updated Playground page styles */
+
+.row {
+  @apply mb-6 flex flex-row flex-wrap rounded-md border py-10;
 }
 
-@layer utilities {
-  .row {
-    @apply mb-6 flex flex-row flex-wrap rounded-md border py-10;
-  }
-  .example {
-    @apply flex-initial px-6;
-  }
+.example {
+  @apply flex-initial px-6;
+}
 
-  .example2 {
-    @apply flex-initial px-4;
-  }
+.example2 {
+  @apply flex-initial px-4;
 }
 
 /* Additional CSS edits to components */
