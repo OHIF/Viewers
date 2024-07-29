@@ -10,15 +10,15 @@ module.exports = {
   prefix: '',
   theme: {
     fontSize: {
-      xs: '11px',
-      sm: '12px',
-      base: '13px',
-      lg: '14px',
-      xl: '16px',
-      '2xl': '1.125rem',
-      '3xl': '1.25rem',
-      '4xl': '1.5rem',
-      '5xl': '1.875rem',
+      xs: '0.75rem', // 12px
+      sm: '0.8125rem', // 13px
+      base: '0.875rem', // 14px
+      lg: '1rem', // 16px
+      xl: '1.125rem', // 18px
+      '2xl': '1.25rem', // 20px
+      '3xl': '1.375rem', // 22px
+      '4xl': '1.5rem', // 24px
+      '5xl': '1.875rem', // 30px
     },
     extend: {
       colors: {

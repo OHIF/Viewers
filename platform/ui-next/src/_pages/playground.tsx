@@ -33,10 +33,10 @@ import { Button } from '../components/Button';
 
 export default function Playground() {
   return (
-    <main>
+    <main className="my-4 mx-auto max-w-6xl py-6">
       {/* <BackgroundColorSelector /> */}
 
-      <h2>Button default</h2>
+      <h2 className="section-header">Button default</h2>
       <div className="row">
         <div className="example">
           <Button
@@ -65,7 +65,7 @@ export default function Playground() {
         </div>
       </div>
 
-      <h2>Button small</h2>
+      <h2 className="section-header">Button small</h2>
       <div className="row">
         <div className="example">
           <Button
@@ -110,7 +110,7 @@ export default function Playground() {
         </div>
       </div>
 
-      <h2>Button large</h2>
+      <h2 className="section-header">Button large</h2>
       <div className="row">
         <div className="example">
           <Button
@@ -155,7 +155,7 @@ export default function Playground() {
         </div>
       </div>
 
-      <h2>Color swatches</h2>
+      <h2 className="section-header">Color swatches</h2>
       <div className="row">
         <div className="example2">
           <div className="bg-actions h-16 w-16 rounded"></div>
@@ -175,6 +175,13 @@ export default function Playground() {
         <div className="example2">
           <div className="h-16 w-16 rounded bg-white"></div>
         </div>
+      </div>
+
+      <h2 className="section-header">Typography</h2>
+      <div className="row">
+        <div className="example text-base text-white">Standard text size (text-base) 14px</div>
+        <div className="example text-sm text-white">Small text size (text-sm) 13px</div>
+        <div className="example text-xs text-white">Extra small text size (text-xs) 12px</div>
       </div>
     </main>
   );

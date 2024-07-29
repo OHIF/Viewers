@@ -190,8 +190,22 @@
 
 /* Updated Playground page styles */
 
+@layer base {
+  body {
+    @apply bg-black;
+  }
+}
+
+h2.section-header {
+  @apply py-4 text-5xl font-semibold;
+}
+
+h3.section-header {
+  @apply py-3 text-xl font-normal;
+}
+
 .row {
-  @apply mb-6 flex flex-row flex-wrap rounded-md border py-10;
+  @apply mb-6 flex flex-row flex-wrap rounded-md border border-border py-10;
 }
 
 .example {
