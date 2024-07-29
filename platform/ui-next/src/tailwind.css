@@ -191,17 +191,21 @@
 /* Updated Playground page styles */
 
 @layer base {
+  html {
+    font-family: 'Inter', sans-serif;
+  }
+
   body {
     @apply bg-black;
   }
 }
 
 h2.section-header {
-  @apply py-4 text-5xl font-semibold;
+  @apply py-4 text-2xl font-normal text-white;
 }
 
 h3.section-header {
-  @apply py-3 text-xl font-normal;
+  @apply py-3 text-xl text-white;
 }
 
 .row {
