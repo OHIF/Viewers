@@ -3,6 +3,21 @@ import { createRoot } from 'react-dom/client';
 import '../tailwind.css';
 
 import { Button } from '../components/Button';
+import { Input } from '../components/Input';
+import { Label } from '../components/Label';
+import {
+  Select,
+  SelectGroup,
+  SelectValue,
+  SelectTrigger,
+  SelectContent,
+  SelectLabel,
+  SelectItem,
+  SelectSeparator,
+  SelectScrollUpButton,
+  SelectScrollDownButton,
+} from '../components/Select';
+import { BackgroundColorSelect } from '../components/BackgroundColorSelect';
 // import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from '../components/Tooltip';
 
 // import type { Metadata } from 'next';
@@ -34,7 +49,7 @@ import { Button } from '../components/Button';
 export default function Playground() {
   return (
     <main className="my-4 mx-auto max-w-6xl py-6">
-      {/* <BackgroundColorSelector /> */}
+      <BackgroundColorSelect />
 
       <h2 className="section-header">Button default</h2>
       <div className="row">
@@ -155,6 +170,20 @@ export default function Playground() {
         </div>
       </div>
 
+      <h2 className="section-header">Input</h2>
+      <div className="row">
+        <div className="example">
+          <div className="inline-block">
+            <div className="mr-4 inline-block">
+              <Label>Patient Weight</Label>
+            </div>
+            <div className="inline-block">
+              <Input placeholder="(kg)" />
+            </div>
+          </div>
+        </div>
+      </div>
+
       <h2 className="section-header">Color swatches</h2>
       <div className="row">
         <div className="example2">
@@ -182,6 +211,13 @@ export default function Playground() {
         <div className="example text-base text-white">Standard text size (text-base) 14px</div>
         <div className="example text-sm text-white">Small text size (text-sm) 13px</div>
         <div className="example text-xs text-white">Extra small text size (text-xs) 12px</div>
+      </div>
+
+      <h2 className="section-header">Typography large</h2>
+      <div className="row">
+        <div className="example text-lg text-white">Large text size (text-lg) 16px</div>
+        <div className="example text-xl text-white">Small text size (text-xl) 18px</div>
+        <div className="example text-2xl text-white">Extra small text size (text-2xl) 20px</div>
       </div>
     </main>
   );
