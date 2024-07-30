@@ -1,0 +1,11 @@
+#
+# !! Delete these comments before using !!
+# This is a template for the configuration file used during deployment.
+# Replace with your values, and place in your deployment bucket/folder as viewer_deployment_config.txt
+# that is pointed to by DEPLOYMENT_BUCKET_IDC_XXX CircleCI env var.
+#
+WBUCKET=bucket-name-where-viewer-will-be-deployed
+QUOTA_PAGE=https://url-of-a-page-where-viewer-redirects-when-429-is-caught.html
+STORE_ROOT=https://name-of-throttle-proxy.example.com/v1/projects/gcp-project-name/locations/project-location/datasets/dataset-name/dicomStores/dicom-store-name/dicomWeb
+CONFIG_ONLY=False
+LOGO_LINK=https://url-of-a-destination-page-for-logo-click.html

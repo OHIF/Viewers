@@ -16139,6 +16139,17 @@ oidc-client-ts@^3.0.1:
   integrity sha512-xX8unZNtmtw3sOz4FPSqDhkLFnxCDsdo2qhFEH2opgWnF/iXMFoYdBQzkwCxAZVgt3FT3DnuBY3k80EZHT0RYg==
   dependencies:
     jwt-decode "^4.0.0"
+"ohif-gcp-extension@https://github.com/ImagingDataCommons/ohif-gcp-extension#main":
+  version "0.0.1"
+  resolved "https://github.com/ImagingDataCommons/ohif-gcp-extension#ba65e3a3ff59ce9295d92f8eb80d750eb32a2515"
+  dependencies:
+    "@babel/runtime" "^7.20.13"
+
+"ohif-gcp-mode@https://github.com/ImagingDataCommons/ohif-gcp-mode#main-1.0.3":
+  version "0.0.2"
+  resolved "https://github.com/ImagingDataCommons/ohif-gcp-mode#c6d97ea9f26cc2cbb474f9cd555fed67e50f0595"
+  dependencies:
+    "@babel/runtime" "^7.20.13"
 
 oidc-client@1.11.5:
   version "1.11.5"
