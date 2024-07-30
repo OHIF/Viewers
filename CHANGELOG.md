@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.9.0-beta.70](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.69...v3.9.0-beta.70) (2024-07-30)
+
+
+### Bug Fixes
+
+* **ui:** remove border-border class ([#4317](https://github.com/OHIF/Viewers/issues/4317)) ([d402ded](https://github.com/OHIF/Viewers/commit/d402ded8c36631f8009b7b15b2f1c7a02cd09f6c))
+
+
+
+
+
 # [3.9.0-beta.69](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.68...v3.9.0-beta.69) (2024-07-27)
 
 **Note:** Version bump only for package ohif-monorepo-root
