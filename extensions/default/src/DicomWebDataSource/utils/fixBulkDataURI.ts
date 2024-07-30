@@ -36,7 +36,7 @@ function fixBulkDataURI(value, instance, dicomWebConfig) {
     if (
       BulkDataURI.startsWith('series/') ||
       BulkDataURI.startsWith('bulkdata/') ||
-      (uriConfig.relativeResolution === 'studies' && isInstanceStart)
+      (uriConfig.relativeResolution === 'studies' && !isInstanceStart)
     ) {
       value.BulkDataURI = `${dicomWebConfig.wadoRoot}/studies/${StudyInstanceUID}/${BulkDataURI}`;
     } else if (
@@ -48,7 +48,6 @@ function fixBulkDataURI(value, instance, dicomWebConfig) {
     }
     return;
   }
-
 
   // in case it is relative path but starts at the server (e.g., /bulk/1e, note the missing http
   // in the beginning and the first character is /) There are two scenarios, whether the wado root
