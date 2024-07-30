@@ -8,7 +8,7 @@ import {
 } from '@cornerstonejs/core';
 import * as csStreamingImageVolumeLoader from '@cornerstonejs/streaming-image-volume-loader';
 import { Enums as cs3DToolsEnums } from '@cornerstonejs/tools';
-import { ServicesManager, Types } from '@ohif/core';
+import { Types } from '@ohif/core';
 
 import init from './init';
 import getCustomizationModule from './getCustomizationModule';
@@ -24,7 +24,7 @@ import ColorbarService from './services/ColorbarService';
 import * as CornerstoneExtensionTypes from './types';
 
 import { toolNames } from './initCornerstoneTools';
-import { getEnabledElement, reset as enabledElementReset } from './state';
+import { getEnabledElement, reset as enabledElementReset, setEnabledElement } from './state';
 import dicomLoaderService from './utils/dicomLoaderService';
 import getActiveViewportEnabledElement from './utils/getActiveViewportEnabledElement';
 
@@ -36,9 +36,13 @@ import { showLabelAnnotationPopup } from './utils/callInputDialog';
 import ViewportActionCornersService from './services/ViewportActionCornersService/ViewportActionCornersService';
 import { ViewportActionCornersProvider } from './contextProviders/ViewportActionCornersProvider';
 import ActiveViewportWindowLevel from './components/ActiveViewportWindowLevel';
+import getSOPInstanceAttributes from './utils/measurementServiceMappings/utils/getSOPInstanceAttributes';
+import { findNearbyToolData } from './utils/findNearbyToolData';
+import { createFrameViewSynchronizer } from './synchronizers/frameViewSynchronizer';
 
 const { helpers: volumeLoaderHelpers } = csStreamingImageVolumeLoader;
 const { getDynamicVolumeInfo } = volumeLoaderHelpers ?? {};
+const { imageRetrieveMetadataProvider } = cornerstone.utilities;
 
 const Component = React.lazy(() => {
   return import(/* webpackPrefetch: true */ './Viewport/OHIFCornerstoneViewport');
@@ -52,6 +56,15 @@ const OHIFCornerstoneViewport = props => {
   );
 };
 
+const stackRetrieveOptions = {
+  retrieveOptions: {
+    single: {
+      streaming: true,
+      decodeLevel: 1,
+    },
+  },
+};
+
 /**
  *
  */
@@ -61,7 +74,40 @@ const cornerstoneExtension: Types.Extensions.Extension = {
    */
   id,
 
-  onModeExit: ({ servicesManager }): void => {
+  onModeEnter: ({ servicesManager }: withAppTypes): void => {
+    const { cornerstoneViewportService, toolbarService, segmentationService } =
+      servicesManager.services;
+    toolbarService.registerEventForToolbarUpdate(cornerstoneViewportService, [
+      cornerstoneViewportService.EVENTS.VIEWPORT_DATA_CHANGED,
+    ]);
+
+    toolbarService.registerEventForToolbarUpdate(segmentationService, [
+      segmentationService.EVENTS.SEGMENTATION_ADDED,
+      segmentationService.EVENTS.SEGMENTATION_REMOVED,
+      segmentationService.EVENTS.SEGMENTATION_UPDATED,
+    ]);
+
+    toolbarService.registerEventForToolbarUpdate(cornerstone.eventTarget, [
+      cornerstoneTools.Enums.Events.TOOL_ACTIVATED,
+    ]);
+
+    // Configure the interleaved/HTJ2K loader
+    imageRetrieveMetadataProvider.clear();
+    // The default volume interleaved options are to interleave the
+    // image retrieve, but don't perform progressive loading per image
+    // This interleaves images and replicates them for low-resolution depth volume
+    // reconstruction, which progressively improves
+    imageRetrieveMetadataProvider.add(
+      'volume',
+      cornerstone.ProgressiveRetrieveImages.interleavedRetrieveStages
+    );
+    // The default stack loading option is to progressive load HTJ2K images
+    // There are other possible options, but these need more thought about
+    // how to define them.
+    imageRetrieveMetadataProvider.add('stack', stackRetrieveOptions);
+  },
+
+  onModeExit: ({ servicesManager }: withAppTypes): void => {
     const { cineService } = servicesManager.services;
     // Empty out the image load and retrieval pools to prevent memory leaks
     // on the mode exits
@@ -94,6 +140,9 @@ const cornerstoneExtension: Types.Extensions.Extension = {
       ViewportActionCornersService.REGISTRATION.name,
       ViewportActionCornersProvider
     );
+
+    const { syncGroupService } = servicesManager.services;
+    syncGroupService.registerCustomSynchronizer('frameview', createFrameViewSynchronizer);
     return init.call(this, props);
   },
 
@@ -114,7 +163,7 @@ const cornerstoneExtension: Types.Extensions.Extension = {
       // const onNewImageHandler = jumpData => {
       //   commandsManager.runCommand('jumpToImage', jumpData);
       // };
-      const { toolbarService } = (servicesManager as ServicesManager).services;
+      const { toolbarService } = servicesManager.services;
 
       return (
         <OHIFCornerstoneViewport
@@ -177,6 +226,11 @@ export {
   CornerstoneExtensionTypes as Types,
   toolNames,
   getActiveViewportEnabledElement,
+  setEnabledElement,
+  findNearbyToolData,
+  getEnabledElement,
   ImageOverlayViewerTool,
+  getSOPInstanceAttributes,
+  dicomLoaderService,
 };
 export default cornerstoneExtension;

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import classnames from 'classnames';
-import PropTypes from 'prop-types';
+import PropTypes, { object } from 'prop-types';
 import { Link, useNavigate } from 'react-router-dom';
 import moment from 'moment';
 import qs from 'query-string';
@@ -10,12 +10,11 @@ import { useTranslation } from 'react-i18next';
 import filtersMeta from './filtersMeta.js';
 import { useAppConfig } from '@state';
 import { useDebounce, useSearchParams } from '@hooks';
-import { utils, hotkeys, ServicesManager } from '@ohif/core';
+import { utils, hotkeys } from '@ohif/core';
 
 import {
   Icon,
   StudyListExpandedRow,
-  LegacyButton,
   EmptyStudies,
   StudyListTable,
   StudyListPagination,
@@ -57,7 +56,7 @@ function WorkList({
   dataPath,
   onRefresh,
   servicesManager,
-}) {
+}: withAppTypes) {
   const { hotkeyDefinitions, hotkeyDefaults } = hotkeysManager;
   const { show, hide } = useModal();
   const { t } = useTranslation();
@@ -271,6 +270,7 @@ function WorkList({
 
     return {
       dataCY: `studyRow-${studyInstanceUid}`,
+      clickableCY: studyInstanceUid,
       row: [
         {
           key: 'patientName',
@@ -526,7 +526,7 @@ function WorkList({
     customizationService.get('ohif.dataSourceConfigurationComponent') ?? {};
 
   return (
-    <div className="flex h-screen flex-col bg-black ">
+    <div className="flex h-screen flex-col bg-black">
       <Header
         isSticky
         menuOptions={menuOptions}
@@ -535,7 +535,7 @@ function WorkList({
         showPatientInfo={PatientInfoVisibility.DISABLED}
       />
       <InvestigationalUseDialog dialogConfiguration={appConfig?.investigationalUseDialog} />
-      <div className="ohif-scrollbar ohif-scrollbar-stable-gutter flex grow flex-col overflow-y-auto">
+      <div className="ohif-scrollbar ohif-scrollbar-stable-gutter flex grow flex-col overflow-y-auto sm:px-5">
         <StudyListFilter
           numOfStudies={pageNumber * resultsPerPage > 100 ? 101 : numOfStudies}
           filtersMeta={filtersMeta}
@@ -586,7 +586,7 @@ WorkList.propTypes = {
     getConfig: PropTypes.func,
   }).isRequired,
   isLoadingData: PropTypes.bool.isRequired,
-  servicesManager: PropTypes.instanceOf(ServicesManager),
+  servicesManager: PropTypes.object.isRequired,
 };
 
 const defaultFilterValues = {
@@ -618,6 +618,12 @@ function _tryParseInt(str, defaultValue) {
 }
 
 function _getQueryFilterValues(params) {
+  const newParams = new URLSearchParams();
+  for (const [key, value] of params) {
+    newParams.set(key.toLowerCase(), value);
+  }
+  params = newParams;
+
   const queryFilterValues = {
     patientName: params.get('patientname'),
     mrn: params.get('mrn'),

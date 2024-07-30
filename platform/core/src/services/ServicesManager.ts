@@ -1,10 +1,9 @@
 import log from './../log.js';
-import Services from '../types/Services';
 import CommandsManager from '../classes/CommandsManager';
 import ExtensionManager from '../extensions/ExtensionManager';
 
 export default class ServicesManager {
-  public services: Services = {};
+  public services: AppTypes.Services = {};
   public registeredServiceNames: string[] = [];
   private _commandsManager: CommandsManager;
   private _extensionManager: ExtensionManager;
@@ -53,7 +52,7 @@ export default class ServicesManager {
         extensionManager: this._extensionManager,
       });
       if (service.altName) {
-        console.log('Registering old name', service.altName);
+        // TODO - remove this registration
         this.services[service.altName] = this.services[service.name];
       }
     } else {

@@ -1,22 +1,54 @@
-import React from 'react';
-import { PanelSection, ToolSettings, Tooltip } from '../../components';
+import React, { useEffect, useRef } from 'react';
+import { PanelSection, ToolSettings } from '../../components';
 import classnames from 'classnames';
 
 const ItemsPerRow = 4;
 
+function usePrevious(value) {
+  const ref = useRef();
+  useEffect(() => {
+    ref.current = value;
+  });
+  return ref.current;
+}
+
 /**
  * Just refactoring from the toolbox component to make it more readable
  */
-function ToolboxUI(props) {
+function ToolboxUI(props: withAppTypes) {
   const {
     toolbarButtons,
     handleToolSelect,
-    activeToolOptions,
+    toolboxState,
     numRows,
     servicesManager,
     title,
     useCollapsedPanel = true,
   } = props;
+
+  const { activeTool, toolOptions, selectedEvent } = toolboxState;
+  const activeToolOptions = toolOptions?.[activeTool];
+
+  const prevToolOptions = usePrevious(activeToolOptions);
+
+  useEffect(() => {
+    if (!activeToolOptions || Array.isArray(activeToolOptions) === false) {
+      return;
+    }
+
+    activeToolOptions.forEach((option, index) => {
+      const prevOption = prevToolOptions ? prevToolOptions[index] : undefined;
+      if (!prevOption || option.value !== prevOption.value || selectedEvent) {
+        const isOptionValid = option.condition
+          ? option.condition({ options: activeToolOptions })
+          : true;
+        if (isOptionValid) {
+          const { commands } = option;
+          commands(option.value);
+        }
+      }
+    });
+  }, [activeToolOptions, selectedEvent]);
 
   const render = () => {
     return (
@@ -34,7 +66,8 @@ function ToolboxUI(props) {
               const toolClasses = `ml-1 ${isLastRow ? '' : 'mb-2'}`;
 
               const onInteraction = ({ itemId, id, commands }) => {
-                handleToolSelect(itemId || id);
+                const idToUse = itemId || id;
+                handleToolSelect(idToUse);
                 props.onInteraction({
                   itemId,
                   commands,

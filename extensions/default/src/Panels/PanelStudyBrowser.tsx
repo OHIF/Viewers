@@ -4,7 +4,7 @@ import { StudyBrowser, useImageViewer, useViewportGrid } from '@ohif/ui';
 import { utils } from '@ohif/core';
 import { useNavigate } from 'react-router-dom';
 
-const { sortStudyInstances, formatDate } = utils;
+const { sortStudyInstances, formatDate, createStudyBrowserTabs } = utils;
 
 /**
  *
@@ -16,7 +16,7 @@ function PanelStudyBrowser({
   getStudiesForPatientByMRN,
   requestDisplaySetCreationForStudy,
   dataSource,
-}) {
+}: withAppTypes) {
   const { hangingProtocolService, displaySetService, uiNotificationService } =
     servicesManager.services;
   const navigate = useNavigate();
@@ -25,11 +25,13 @@ function PanelStudyBrowser({
   // doesn't have to have such an intense shape. This works well enough for now.
   // Tabs --> Studies --> DisplaySets --> Thumbnails
   const { StudyInstanceUIDs } = useImageViewer();
-  const [{ activeViewportId, viewports }, viewportGridService] = useViewportGrid();
+  const [{ activeViewportId, viewports, isHangingProtocolLayout }, viewportGridService] =
+    useViewportGrid();
   const [activeTabName, setActiveTabName] = useState('primary');
   const [expandedStudyInstanceUIDs, setExpandedStudyInstanceUIDs] = useState([
     ...StudyInstanceUIDs,
   ]);
+  const [hasLoadedViewports, setHasLoadedViewports] = useState(false);
   const [studyDisplayList, setStudyDisplayList] = useState([]);
   const [displaySets, setDisplaySets] = useState([]);
   const [thumbnailImageSrcMap, setThumbnailImageSrcMap] = useState({});
@@ -40,7 +42,8 @@ function PanelStudyBrowser({
     try {
       updatedViewports = hangingProtocolService.getViewportsRequireUpdate(
         viewportId,
-        displaySetInstanceUID
+        displaySetInstanceUID,
+        isHangingProtocolLayout
       );
     } catch (error) {
       console.warn(error);
@@ -106,6 +109,18 @@ function PanelStudyBrowser({
 
   // // ~~ Initial Thumbnails
   useEffect(() => {
+    if (!hasLoadedViewports) {
+      if (activeViewportId) {
+        // Once there is an active viewport id, it means the layout is ready
+        // so wait a bit of time to allow the viewports preferential loading
+        // which improves user experience of responsiveness significantly on slower
+        // systems.
+        window.setTimeout(() => setHasLoadedViewports(true), 250);
+      }
+
+      return;
+    }
+
     const currentDisplaySets = displaySetService.activeDisplaySets;
     currentDisplaySets.forEach(async dSet => {
       const newImageSrcEntry = {};
@@ -124,7 +139,14 @@ function PanelStudyBrowser({
         return { ...prevState, ...newImageSrcEntry };
       });
     });
-  }, [StudyInstanceUIDs, dataSource, displaySetService, getImageSrc]);
+  }, [
+    StudyInstanceUIDs,
+    dataSource,
+    displaySetService,
+    getImageSrc,
+    hasLoadedViewports,
+    activeViewportId,
+  ]);
 
   // ~~ displaySets
   useEffect(() => {
@@ -142,6 +164,9 @@ function PanelStudyBrowser({
     const SubscriptionDisplaySetsAdded = displaySetService.subscribe(
       displaySetService.EVENTS.DISPLAY_SETS_ADDED,
       data => {
+        if (!hasLoadedViewports) {
+          return;
+        }
         const { displaySetsAdded, options } = data;
         displaySetsAdded.forEach(async dSet => {
           const newImageSrcEntry = {};
@@ -204,14 +229,14 @@ function PanelStudyBrowser({
     };
   }, [StudyInstanceUIDs, thumbnailImageSrcMap, displaySetService]);
 
-  const tabs = _createStudyBrowserTabs(StudyInstanceUIDs, studyDisplayList, displaySets);
+  const tabs = createStudyBrowserTabs(StudyInstanceUIDs, studyDisplayList, displaySets);
 
   // TODO: Should not fire this on "close"
   function _handleStudyClick(StudyInstanceUID) {
     const shouldCollapseStudy = expandedStudyInstanceUIDs.includes(StudyInstanceUID);
     const updatedExpandedStudyInstanceUIDs = shouldCollapseStudy
       ? // eslint-disable-next-line prettier/prettier
-        [...expandedStudyInstanceUIDs.filter(stdyUid => stdyUid !== StudyInstanceUID)]
+      [...expandedStudyInstanceUIDs.filter(stdyUid => stdyUid !== StudyInstanceUID)]
       : [...expandedStudyInstanceUIDs, StudyInstanceUID];
 
     setExpandedStudyInstanceUIDs(updatedExpandedStudyInstanceUIDs);
@@ -321,59 +346,4 @@ function _getComponentType(ds) {
   }
 
   return 'thumbnail';
-}
-
-/**
- *
- * @param {string[]} primaryStudyInstanceUIDs
- * @param {object[]} studyDisplayList
- * @param {string} studyDisplayList.studyInstanceUid
- * @param {string} studyDisplayList.date
- * @param {string} studyDisplayList.description
- * @param {string} studyDisplayList.modalities
- * @param {number} studyDisplayList.numInstances
- * @param {object[]} displaySets
- * @returns tabs - The prop object expected by the StudyBrowser component
- */
-function _createStudyBrowserTabs(primaryStudyInstanceUIDs, studyDisplayList, displaySets) {
-  const primaryStudies = [];
-  const recentStudies = [];
-  const allStudies = [];
-
-  studyDisplayList.forEach(study => {
-    const displaySetsForStudy = displaySets.filter(
-      ds => ds.StudyInstanceUID === study.studyInstanceUid
-    );
-    const tabStudy = Object.assign({}, study, {
-      displaySets: displaySetsForStudy,
-    });
-
-    if (primaryStudyInstanceUIDs.includes(study.studyInstanceUid)) {
-      primaryStudies.push(tabStudy);
-    } else {
-      // TODO: Filter allStudies to dates within one year of current date
-      recentStudies.push(tabStudy);
-      allStudies.push(tabStudy);
-    }
-  });
-
-  const tabs = [
-    {
-      name: 'primary',
-      label: 'Primary',
-      studies: primaryStudies,
-    },
-    {
-      name: 'recent',
-      label: 'Recent',
-      studies: recentStudies,
-    },
-    {
-      name: 'all',
-      label: 'All',
-      studies: allStudies,
-    },
-  ];
-
-  return tabs;
 }

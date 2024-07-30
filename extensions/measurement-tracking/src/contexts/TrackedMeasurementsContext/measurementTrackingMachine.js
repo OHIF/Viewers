@@ -250,7 +250,7 @@ const machineConfiguration = {
             target: 'tracking',
             actions: [
               'setTrackedStudyAndMultipleSeries',
-              'jumpToFirstMeasurementInActiveViewport',
+              'jumpToSameImageInActiveViewport',
               'setIsDirtyToClean',
             ],
             cond: 'shouldHydrateStructuredReport',
@@ -274,7 +274,7 @@ const machineConfiguration = {
             target: 'tracking',
             actions: [
               'setTrackedStudyAndMultipleSeries',
-              'jumpToFirstMeasurementInActiveViewport',
+              'jumpToSameImageInActiveViewport',
               'setIsDirtyToClean',
             ],
           },

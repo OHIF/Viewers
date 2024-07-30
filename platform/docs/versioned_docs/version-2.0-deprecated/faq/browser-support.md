@@ -37,9 +37,6 @@ language feature yet. Our earlier transpilation will rectify _syntax_
 discrepancies, but unimplemented features require a "temporary" implementation.
 That's where polyfills step in.
 
-You can utilize a service like [polyfill.io](https://polyfill.io/v3/) to
-auto-detect and apply polyfills as needed, or you can update the PWA build to
-include polyfill's in your bundle by incorporating [core-js][core-js]
 
 <!--
   Links

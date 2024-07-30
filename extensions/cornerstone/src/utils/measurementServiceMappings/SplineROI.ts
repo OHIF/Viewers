@@ -1,6 +1,5 @@
 import SUPPORTED_TOOLS from './constants/supportedTools';
 import getSOPInstanceAttributes from './utils/getSOPInstanceAttributes';
-import { getDisplayUnit } from './utils';
 import { utils } from '@ohif/core';
 
 /**

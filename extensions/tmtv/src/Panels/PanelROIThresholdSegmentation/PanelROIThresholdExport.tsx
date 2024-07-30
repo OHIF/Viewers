@@ -2,11 +2,19 @@ import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { Icon, ActionButtons } from '@ohif/ui';
 import { useTranslation } from 'react-i18next';
-export default function PanelRoiThresholdSegmentation({ servicesManager, commandsManager }) {
+import { eventTarget } from '@cornerstonejs/core';
+import { Enums } from '@cornerstonejs/tools';
+import { handleROIThresholding } from '../../utils/handleROIThresholding';
+
+export default function PanelRoiThresholdSegmentation({
+  servicesManager,
+  commandsManager,
+}: withAppTypes) {
   const { segmentationService, uiNotificationService } = servicesManager.services;
   const { t } = useTranslation('PanelSUVExport');
 
   const [segmentations, setSegmentations] = useState(() => segmentationService.getSegmentations());
+  const [activeSegmentation, setActiveSegmentation] = useState(null);
 
   /**
    * Update UI based on segmentation changes (added, removed, updated)
@@ -22,7 +30,11 @@ export default function PanelRoiThresholdSegmentation({ servicesManager, command
       const { unsubscribe } = segmentationService.subscribe(evt, () => {
         const segmentations = segmentationService.getSegmentations();
         setSegmentations(segmentations);
+
+        const activeSegmentation = segmentations.filter(seg => seg.isActive);
+        setActiveSegmentation(activeSegmentation[0]);
       });
+
       subscriptions.push(unsubscribe);
     });
 
@@ -33,26 +45,53 @@ export default function PanelRoiThresholdSegmentation({ servicesManager, command
     };
   }, []);
 
-  const tmtvValue = segmentations?.[0]?.cachedStats?.tmtv?.value || null;
-  const config = segmentations?.[0]?.cachedStats?.tmtv?.config || {};
+  useEffect(() => {
+    const callback = async evt => {
+      const { detail } = evt;
+      const { segmentationId } = detail;
 
-  segmentations.forEach(segmentation => {
-    const { cachedStats } = segmentation;
-    if (!cachedStats) {
-      return;
-    }
+      if (!segmentationId) {
+        return;
+      }
 
-    // segment 1
-    const suvPeak = cachedStats?.['1']?.suvPeak?.suvPeak;
-
-    if (Number.isNaN(suvPeak)) {
-      uiNotificationService.show({
-        title: 'SUV Peak',
-        message: 'Segmented volume does not allow SUV Peak calculation',
-        type: 'warning',
+      await handleROIThresholding({
+        segmentationId,
+        commandsManager,
+        segmentationService,
       });
-    }
-  });
+
+      const segmentation = segmentationService.getSegmentation(segmentationId);
+
+      const { cachedStats } = segmentation;
+      if (!cachedStats) {
+        return;
+      }
+
+      // segment 1
+      const suvPeak = cachedStats?.['1']?.suvPeak?.suvPeak;
+
+      if (Number.isNaN(suvPeak)) {
+        uiNotificationService.show({
+          title: 'SUV Peak',
+          message: 'Segmented volume does not allow SUV Peak calculation',
+          type: 'warning',
+        });
+      }
+    };
+
+    eventTarget.addEventListenerDebounced(Enums.Events.SEGMENTATION_DATA_MODIFIED, callback, 250);
+
+    return () => {
+      eventTarget.removeEventListenerDebounced(Enums.Events.SEGMENTATION_DATA_MODIFIED, callback);
+    };
+  }, []);
+
+  if (!activeSegmentation) {
+    return null;
+  }
+
+  const tmtvValue = activeSegmentation.cachedStats?.tmtv?.value || null;
+  const config = activeSegmentation.cachedStats?.tmtv?.config || {};
 
   const actions = [
     {
@@ -67,7 +106,7 @@ export default function PanelRoiThresholdSegmentation({ servicesManager, command
       disabled: tmtvValue === null,
     },
     {
-      label: 'Create RT Report',
+      label: 'Export RT Report',
       onClick: () => {
         commandsManager.runCommand('createTMTVRTReport');
       },
@@ -80,7 +119,7 @@ export default function PanelRoiThresholdSegmentation({ servicesManager, command
       <div className="mt-2 mb-10 flex flex-col">
         <div className="invisible-scrollbar overflow-y-auto overflow-x-hidden">
           {tmtvValue !== null ? (
-            <div className="bg-secondary-dark mt-1 flex items-baseline justify-between px-2 py-1">
+            <div className="bg-secondary-dark flex items-baseline justify-between px-2 py-1">
               <span className="text-base font-bold uppercase tracking-widest text-white">
                 {'TMTV:'}
               </span>

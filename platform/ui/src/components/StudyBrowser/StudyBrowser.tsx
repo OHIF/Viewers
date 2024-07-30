@@ -7,6 +7,7 @@ import LegacyButtonGroup from '../LegacyButtonGroup';
 import LegacyButton from '../LegacyButton';
 import ThumbnailList from '../ThumbnailList';
 import { StringNumber } from '../../types';
+import StudyBrowserSort from '../StudyBrowserSort';
 
 const getTrackedSeries = displaySets => {
   let trackedSeries = 0;
@@ -19,18 +20,20 @@ const getTrackedSeries = displaySets => {
   return trackedSeries;
 };
 
+const noop = () => {};
+
 const StudyBrowser = ({
   tabs,
   activeTabName,
   expandedStudyInstanceUIDs,
-  onClickTab,
-  onClickStudy,
-  onClickThumbnail,
-  onDoubleClickThumbnail,
-  onClickUntrack,
+  onClickTab = noop,
+  onClickStudy = noop,
+  onClickThumbnail = noop,
+  onDoubleClickThumbnail = noop,
+  onClickUntrack = noop,
   activeDisplaySetInstanceUIDs,
   servicesManager,
-}) => {
+}: withAppTypes) => {
   const { t } = useTranslation('StudyBrowser');
   const { customizationService } = servicesManager?.services || {};
 
@@ -71,7 +74,7 @@ const StudyBrowser = ({
   return (
     <React.Fragment>
       <div
-        className="w-100 border-secondary-light bg-primary-dark flex h-16 flex-row items-center justify-center border-b p-4"
+        className="w-100 border-secondary-light bg-primary-dark flex h-20 flex-col items-center justify-center gap-2 border-b p-4"
         data-cy={'studyBrowser-panel'}
       >
         {/* TODO Revisit design of LegacyButtonGroup later - for now use LegacyButton for its children.*/}
@@ -109,6 +112,9 @@ const StudyBrowser = ({
             );
           })}
         </LegacyButtonGroup>
+        {window.config.experimentalStudyBrowserSort && (
+          <StudyBrowserSort servicesManager={servicesManager} />
+        )}
       </div>
       <div className="ohif-scrollbar invisible-scrollbar flex flex-1 flex-col overflow-auto">
         {getTabContent()}
@@ -166,16 +172,6 @@ StudyBrowser.propTypes = {
       ).isRequired,
     })
   ),
-};
-
-const noop = () => {};
-
-StudyBrowser.defaultProps = {
-  onClickTab: noop,
-  onClickStudy: noop,
-  onClickThumbnail: noop,
-  onDoubleClickThumbnail: noop,
-  onClickUntrack: noop,
 };
 
 export default StudyBrowser;

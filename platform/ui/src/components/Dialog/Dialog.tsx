@@ -15,10 +15,10 @@ const Dialog = ({
   actions,
   onShow,
   onSubmit,
-  header: HeaderComponent,
-  body: BodyComponent,
-  footer: FooterComponent,
-  value: defaultValue,
+  header: HeaderComponent = Header,
+  body: BodyComponent = Body,
+  footer: FooterComponent = Footer,
+  value: defaultValue = {},
 }) => {
   const [value, setValue] = useState(defaultValue);
 
@@ -78,13 +78,7 @@ Dialog.propTypes = {
       type: PropTypes.oneOf(['primary', 'secondary', 'cancel']).isRequired,
     })
   ).isRequired,
-};
-
-Dialog.defaultProps = {
-  header: Header,
-  footer: Footer,
-  body: Body,
-  value: {},
+  onShow: PropTypes.func,
 };
 
 export default Dialog;

@@ -15,10 +15,17 @@
     "paths": {
       "@ohif/core": ["platform/core/src"],
       "@ohif/ui": ["platform/ui/src"],
+      "@ohif/ui-next": ["platform/ui-next/src"],
       "@ohif/i18n": ["platform/i18n/src"],
       "@ohif/app": ["platform/app/src"]
     }
   },
-  "include": ["platform/**/src/**/*", "extensions/**/src/**/*", "modes/**/src/**/*"],
+  "include": [
+    "platform/**/src/**/*",
+    "platform/**/public/**/*",
+    "extensions/**/src/**/*",
+    "modes/**/src/**/*",
+    "tests/**/*",
+  ],
   "exclude": ["node_modules", "dist"]
 }

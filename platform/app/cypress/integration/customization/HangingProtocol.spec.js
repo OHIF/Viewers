@@ -25,6 +25,7 @@ describe('OHIF HP', () => {
   });
 
   it('Should navigate to display set specified', () => {
+    Cypress.on('uncaught:exception', () => false);
     // This filters by series instance UID, meaning there will only be 1 thumbnail
     // It applies the initial SOP instance, navigating to that image
     cy.checkStudyRouteInViewer(

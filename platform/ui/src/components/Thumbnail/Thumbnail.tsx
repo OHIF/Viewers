@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import { useDrag } from 'react-dnd';
@@ -17,9 +17,10 @@ const Thumbnail = ({
   description,
   seriesNumber,
   numInstances,
+  loadingProgress,
   countIcon,
   messages,
-  dragData,
+  dragData = {},
   isActive,
   onClick,
   onDoubleClick,
@@ -35,6 +36,19 @@ const Thumbnail = ({
     },
   });
 
+  const [lastTap, setLastTap] = useState(0);
+
+  const handleTouchEnd = e => {
+    const currentTime = new Date().getTime();
+    const tapLength = currentTime - lastTap;
+    if (tapLength < 300 && tapLength > 0) {
+      onDoubleClick(e);
+    } else {
+      onClick(e);
+    }
+    setLastTap(currentTime);
+  };
+
   return (
     <div
       className={classnames(
@@ -43,8 +57,10 @@ const Thumbnail = ({
       )}
       id={`thumbnail-${displaySetInstanceUID}`}
       data-cy={`study-browser-thumbnail`}
+      data-series={seriesNumber}
       onClick={onClick}
       onDoubleClick={onDoubleClick}
+      onTouchEnd={handleTouchEnd}
       role="button"
       tabIndex="0"
     >
@@ -56,9 +72,6 @@ const Thumbnail = ({
               ? 'border-primary-light border-2'
               : 'border-secondary-light border hover:border-blue-300'
           )}
-          style={{
-            margin: isActive ? '0' : '1px',
-          }}
         >
           {imageSrc ? (
             <img
@@ -82,6 +95,15 @@ const Thumbnail = ({
               className="mr-2 w-3"
             />
             {` ${numInstances}`}
+          </div>
+          <div className="mr-2 flex last:mr-0">
+            {loadingProgress && loadingProgress < 1 && <>{Math.round(loadingProgress * 100)}%</>}
+            {loadingProgress && loadingProgress === 1 && (
+              <Icon
+                name={'database'}
+                className="w-3"
+              />
+            )}
           </div>
           <DisplaySetMessageListTooltip
             messages={messages}
@@ -113,14 +135,11 @@ Thumbnail.propTypes = {
   description: PropTypes.string.isRequired,
   seriesNumber: StringNumber.isRequired,
   numInstances: PropTypes.number.isRequired,
+  loadingProgress: PropTypes.number,
   messages: PropTypes.object,
   isActive: PropTypes.bool.isRequired,
   onClick: PropTypes.func.isRequired,
   onDoubleClick: PropTypes.func.isRequired,
-};
-
-Thumbnail.defaultProps = {
-  dragData: {},
 };
 
 export default Thumbnail;

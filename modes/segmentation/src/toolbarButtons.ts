@@ -1,5 +1,5 @@
 import type { Button } from '@ohif/core/types';
-import { defaults, ToolbarService, ViewportGridService } from '@ohif/core';
+import { ToolbarService, ViewportGridService } from '@ohif/core';
 
 const { createButton } = ToolbarService;
 
@@ -207,8 +207,8 @@ const toolbarButtons: Button[] = [
         createButton({
           id: 'Magnify',
           icon: 'tool-magnify',
-          label: 'Magnify',
-          tooltip: 'Magnify',
+          label: 'Zoom-in',
+          tooltip: 'Zoom-in',
           commands: setToolActiveToolbar,
           evaluate: 'evaluate.cornerstoneTool',
         }),
@@ -238,8 +238,8 @@ const toolbarButtons: Button[] = [
         createButton({
           id: 'AdvancedMagnify',
           icon: 'icon-tool-loupe',
-          label: 'Loupe',
-          tooltip: 'Loupe',
+          label: 'Magnify Probe',
+          tooltip: 'Magnify Probe',
           commands: 'toggleActiveDisabledToolbar',
           evaluate: 'evaluate.cornerstoneTool.toggle.ifStrictlyDisabled',
         }),
@@ -250,6 +250,14 @@ const toolbarButtons: Button[] = [
           tooltip: 'Ultrasound Directional',
           commands: setToolActiveToolbar,
           evaluate: ['evaluate.cornerstoneTool', 'evaluate.isUS'],
+        }),
+        createButton({
+          id: 'WindowLevelRegion',
+          icon: 'icon-tool-window-region',
+          label: 'Window Level Region',
+          tooltip: 'Window Level Region',
+          commands: setToolActiveToolbar,
+          evaluate: 'evaluate.cornerstoneTool',
         }),
       ],
     },

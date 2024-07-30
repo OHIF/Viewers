@@ -1,5 +1,5 @@
 ---
-sidebar_position: 2
+sidebar_position: 3
 sidebar_label: 2.x -> 3.5
 ---
 
@@ -102,7 +102,7 @@ There are various configurations available to customize the viewer. Each configu
 OHIF v3 has a new configuration structure. The main difference is that the `servers` is renamed to `dataSources` and the configuration is now asynchronous. Datasources are more abstract and
 far more capable than servers. Read more about dataSources [here](../platform/extensions/modules/data-source.md).
 
-- `StudyPrefetcher` is not currently supported in OHIF v3.
+- `StudyPrefetcher` is only available in OHIF v3.9 beta and will be available in the next stable 3.9 release.
 - The `servers` object has been replaced with a `dataSources` array containing objects representing different data sources.
 - The cornerstoneExtensionConfig property has been removed, you should use `customizationService` instead (you can read more [here](../platform/services/ui/customization-service.md))
 - The maxConcurrentMetadataRequests property has been removed in favor of `maxNumRequests`

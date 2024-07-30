@@ -6,9 +6,10 @@ const getToggledClassName = (isToggled: boolean) => {
     : '!text-common-bright hover:!bg-primary-dark hover:text-primary-light';
 };
 
-export default function getToolbarModule({ commandsManager, servicesManager }) {
+export default function getToolbarModule({ commandsManager, servicesManager }: withAppTypes) {
   const {
     toolGroupService,
+    toolbarService,
     syncGroupService,
     cornerstoneViewportService,
     hangingProtocolService,
@@ -21,16 +22,16 @@ export default function getToolbarModule({ commandsManager, servicesManager }) {
     // enabled or not
     {
       name: 'evaluate.cornerstoneTool',
-      evaluate: ({ viewportId, button, disabledText }) => {
+      evaluate: ({ viewportId, button, toolNames, disabledText }) => {
         const toolGroup = toolGroupService.getToolGroupForViewport(viewportId);
 
         if (!toolGroup) {
           return;
         }
 
-        const toolName = getToolNameForButton(button);
+        const toolName = toolbarService.getToolNameForButton(button);
 
-        if (!toolGroup || !toolGroup.hasTool(toolName)) {
+        if (!toolGroup || (!toolGroup.hasTool(toolName) && !toolNames)) {
           return {
             disabled: true,
             className: '!text-common-bright ohif-disabled',
@@ -38,7 +39,9 @@ export default function getToolbarModule({ commandsManager, servicesManager }) {
           };
         }
 
-        const isPrimaryActive = toolGroup.getActivePrimaryMouseButtonTool() === toolName;
+        const isPrimaryActive = toolNames
+          ? toolNames.includes(toolGroup.getActivePrimaryMouseButtonTool())
+          : toolGroup.getActivePrimaryMouseButtonTool() === toolName;
 
         return {
           disabled: false,
@@ -71,7 +74,7 @@ export default function getToolbarModule({ commandsManager, servicesManager }) {
         // check if the active toolName is part of the items then we need
         // to move it to the primary button
         const activeToolIndex = items.findIndex(item => {
-          const toolName = getToolNameForButton(item);
+          const toolName = toolbarService.getToolNameForButton(item);
           return toolName === activeToolName;
         });
 
@@ -114,6 +117,7 @@ export default function getToolbarModule({ commandsManager, servicesManager }) {
         _evaluateToggle({
           viewportId,
           button,
+          toolbarService,
           disabledText,
           offModes: [Enums.ToolModes.Disabled],
           toolGroupService,
@@ -125,6 +129,7 @@ export default function getToolbarModule({ commandsManager, servicesManager }) {
         _evaluateToggle({
           viewportId,
           button,
+          toolbarService,
           disabledText,
           offModes: [Enums.ToolModes.Disabled, Enums.ToolModes.Passive],
           toolGroupService,
@@ -245,7 +250,7 @@ export default function getToolbarModule({ commandsManager, servicesManager }) {
         const displaySets = displaySetUIDs.map(displaySetService.getDisplaySetByUID);
 
         const areReconstructable = displaySets.every(displaySet => {
-          return displaySet.isReconstructable;
+          return displaySet?.isReconstructable;
         });
 
         if (!areReconstructable) {
@@ -267,13 +272,20 @@ export default function getToolbarModule({ commandsManager, servicesManager }) {
   ];
 }
 
-function _evaluateToggle({ viewportId, button, disabledText, offModes, toolGroupService }) {
+function _evaluateToggle({
+  viewportId,
+  toolbarService,
+  button,
+  disabledText,
+  offModes,
+  toolGroupService,
+}) {
   const toolGroup = toolGroupService.getToolGroupForViewport(viewportId);
 
   if (!toolGroup) {
     return;
   }
-  const toolName = getToolNameForButton(button);
+  const toolName = toolbarService.getToolNameForButton(button);
 
   if (!toolGroup.hasTool(toolName)) {
     return {
@@ -288,20 +300,4 @@ function _evaluateToggle({ viewportId, button, disabledText, offModes, toolGroup
   return {
     className: getToggledClassName(!isOff),
   };
-}
-
-// Todo: this is duplicate, we should move it to a shared location
-function getToolNameForButton(button) {
-  const { props } = button;
-
-  const commands = props?.commands || button.commands;
-  const commandsArray = Array.isArray(commands) ? commands : [commands];
-  const firstCommand = commandsArray[0];
-
-  if (firstCommand?.commandOptions) {
-    return firstCommand.commandOptions.toolName ?? props?.id ?? button.id;
-  }
-
-  // use id as a fallback for toolName
-  return props?.id ?? button.id;
 }

@@ -20,7 +20,6 @@ import { callLabelAutocompleteDialog, showLabelAnnotationPopup } from './utils/c
 import toggleImageSliceSync from './utils/imageSliceSync/toggleImageSliceSync';
 import { getFirstAnnotationSelected } from './utils/measurementServiceMappings/utils/selection';
 import getActiveViewportEnabledElement from './utils/getActiveViewportEnabledElement';
-import { CornerstoneServices } from './types';
 import toggleVOISliceSync from './utils/toggleVOISliceSync';
 
 const toggleSyncFunctions = {
@@ -44,7 +43,7 @@ function commandsModule({
     colorbarService,
     hangingProtocolService,
     syncGroupService,
-  } = servicesManager.services as CornerstoneServices;
+  } = servicesManager.services;
 
   const { measurementServiceSource } = this;
 
@@ -346,9 +345,9 @@ function commandsModule({
         }
       }
     },
-    setToolActiveToolbar: ({ value, itemId, toolGroupIds = [] }) => {
+    setToolActiveToolbar: ({ value, itemId, toolName, toolGroupIds = [] }) => {
       // Sometimes it is passed as value (tools with options), sometimes as itemId (toolbar buttons)
-      const toolName = itemId || value;
+      toolName = toolName || itemId || value;
 
       toolGroupIds = toolGroupIds.length ? toolGroupIds : toolGroupService.getToolGroupIds();
 

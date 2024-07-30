@@ -14,16 +14,16 @@ import { PatientInfoVisibility } from '../../types/PatientInfoVisibility';
 function Header({
   children,
   menuOptions,
-  isReturnEnabled,
+  isReturnEnabled = true,
   onClickReturnButton,
-  isSticky,
+  isSticky = false,
   WhiteLabeling,
   showPatientInfo = PatientInfoVisibility.VISIBLE_COLLAPSED,
   servicesManager,
   Secondary,
   appConfig,
   ...props
-}): ReactNode {
+}: withAppTypes): ReactNode {
   const { t } = useTranslation('Header');
 
   // TODO: this should be passed in as a prop instead and the react-router-dom
@@ -111,11 +111,6 @@ Header.propTypes = {
   WhiteLabeling: PropTypes.object,
   showPatientInfo: PropTypes.string,
   servicesManager: PropTypes.object,
-};
-
-Header.defaultProps = {
-  isReturnEnabled: true,
-  isSticky: false,
 };
 
 export default Header;

@@ -11,15 +11,15 @@ const borderStyle = 'border-b last:border-b-0 border-secondary-main';
 const Dropdown = ({
   id,
   children,
-  showDropdownIcon,
+  showDropdownIcon = true,
   list,
   itemsClassName,
   titleClassName,
-  showBorders,
+  showBorders = true,
   alignment,
   // By default the max characters per line is the longest title
   // if you wish to override this, you can pass in a number
-  maxCharactersPerLine,
+  maxCharactersPerLine = 20,
 }) => {
   const [open, setOpen] = useState(false);
   const elementRef = useRef(null);
@@ -198,11 +198,6 @@ const Dropdown = ({
       {renderList()}
     </div>
   );
-};
-Dropdown.defaultProps = {
-  showDropdownIcon: true,
-  maxCharactersPerLine: 20,
-  showBorders: true,
 };
 
 Dropdown.propTypes = {

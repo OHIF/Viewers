@@ -8,7 +8,7 @@ const SegmentItem = ({
   segmentIndex,
   segmentationId,
   label,
-  isActive,
+  isActive = false,
   isVisible,
   color,
   showDelete,
@@ -28,9 +28,12 @@ const SegmentItem = ({
 
   return (
     <div
-      className={classnames('text-aqua-pale group/row bg-primary-dark flex min-h-[28px] flex-col', {
-        'bg-primary-light border-primary-light rounded-l-[6px] border text-black': isActive,
-      })}
+      className={classnames(
+        'text-aqua-pale group/row bg-primary-dark flex min-h-[28px] flex-col overflow-hidden',
+        {
+          'bg-primary-light border-primary-light rounded-l-[6px] border text-black': isActive,
+        }
+      )}
       onClick={e => {
         e.stopPropagation();
         onClick(segmentationId, segmentIndex);
@@ -151,11 +154,11 @@ const SegmentItem = ({
         </div>
       </div>
       {Array.isArray(displayText) ? (
-        <div className="flex flex-col py-[5px] pl-[43px]">
+        <div className="flex flex-col bg-black py-[5px] pl-[43px]">
           {displayText.map(text => (
             <div
               key={text}
-              className="text-aqua-pale flex h-full items-center bg-black text-[11px]"
+              className="text-aqua-pale flex h-full items-center text-[11px]"
             >
               {text}
             </div>
@@ -163,7 +166,7 @@ const SegmentItem = ({
         </div>
       ) : (
         displayText && (
-          <div className="text-aqua-pale flex h-full items-center bg-black px-2 py-[5px] pl-[45px] text-[11px]">
+          <div className="text-aqua-pale flex h-full items-center px-2 py-[5px] pl-[45px] text-[11px]">
             {displayText}
           </div>
         )
@@ -231,10 +234,6 @@ SegmentItem.propTypes = {
   onToggleVisibility: PropTypes.func.isRequired,
   onToggleLocked: PropTypes.func,
   displayText: PropTypes.string,
-};
-
-SegmentItem.defaultProps = {
-  isActive: false,
 };
 
 export default SegmentItem;

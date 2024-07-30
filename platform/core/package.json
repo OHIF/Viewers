@@ -1,6 +1,6 @@
 {
   "name": "@ohif/core",
-  "version": "3.8.0-beta.82",
+  "version": "3.9.0-beta.71",
   "description": "Generic business logic for web-based medical imaging applications",
   "author": "OHIF Core Team",
   "license": "MIT",
@@ -35,27 +35,28 @@
   "peerDependencies": {
     "@cornerstonejs/codec-charls": "^1.2.3",
     "@cornerstonejs/codec-libjpeg-turbo-8bit": "^1.2.2",
-    "@cornerstonejs/codec-openjpeg": "^1.2.2",
-    "@cornerstonejs/codec-openjph": "^2.4.2",
-    "@cornerstonejs/dicom-image-loader": "^1.70.6",
-    "@ohif/ui": "3.8.0-beta.82",
+    "@cornerstonejs/codec-openjpeg": "^1.2.3",
+    "@cornerstonejs/codec-openjph": "^2.4.5",
+    "@cornerstonejs/dicom-image-loader": "^1.82.0",
+    "@ohif/ui": "3.9.0-beta.71",
     "cornerstone-math": "0.1.9",
     "dicom-parser": "^1.8.21"
   },
   "dependencies": {
     "@babel/runtime": "^7.20.13",
-    "dcmjs": "^0.29.12",
+    "dcmjs": "*",
     "dicomweb-client": "^0.10.4",
     "gl-matrix": "^3.4.3",
     "isomorphic-base64": "^1.0.2",
     "lodash.clonedeep": "^4.5.0",
-    "lodash.merge": "^4.6.1",
-    "moment": "^2.24.0",
+    "lodash.merge": "^4.6.2",
+    "lodash.mergewith": "^4.6.2",
+    "moment": "*",
     "object-hash": "2.1.1",
     "query-string": "^6.14.0",
     "validate.js": "^0.12.0"
   },
   "devDependencies": {
-    "webpack-merge": "5.7.3"
+    "webpack-merge": "*"
   }
 }

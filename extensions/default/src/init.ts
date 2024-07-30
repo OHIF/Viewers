@@ -2,6 +2,7 @@ import { DicomMetadataStore, classes } from '@ohif/core';
 import { calculateSUVScalingFactors } from '@cornerstonejs/calculate-suv';
 
 import getPTImageIdInstanceMetadata from './getPTImageIdInstanceMetadata';
+import { registerHangingProtocolAttributes } from './hangingprotocols';
 
 const metadataProvider = classes.MetadataProvider;
 
@@ -10,7 +11,11 @@ const metadataProvider = classes.MetadataProvider;
  * @param {Object} servicesManager
  * @param {Object} configuration
  */
-export default function init({ servicesManager, configuration = {}, commandsManager }): void {
+export default function init({
+  servicesManager,
+  configuration = {},
+  commandsManager,
+}: withAppTypes): void {
   const { stateSyncService, toolbarService, cineService, viewportGridService } =
     servicesManager.services;
 
@@ -55,6 +60,9 @@ export default function init({ servicesManager, configuration = {}, commandsMana
   // changes numRows and numCols, the viewports can be remembers and then replaced
   // afterwards.
   stateSyncService.register('viewportsByPosition', { clearOnModeExit: true });
+
+  // Adds extra custom attributes for use by hanging protocols
+  registerHangingProtocolAttributes({ servicesManager });
 
   // Function to process and subscribe to events for a given set of commands and listeners
   const subscribeToEvents = listeners => {

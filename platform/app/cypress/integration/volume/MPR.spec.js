@@ -12,7 +12,7 @@ describe('OHIF MPR', () => {
 
   it('should go MPR for reconstructible displaySets and come back', () => {
     cy.wait(250);
-    cy.get(':nth-child(3) > [data-cy="study-browser-thumbnail"]').dblclick();
+    cy.get('[data-cy="study-browser-thumbnail"][data-series="4"]').dblclick();
     cy.wait(250);
 
     cy.get('[data-cy="MPR"]').click();
@@ -27,7 +27,7 @@ describe('OHIF MPR', () => {
   it('should render correctly the MPR', () => {
     cy.wait(250);
 
-    cy.get(':nth-child(3) > [data-cy="study-browser-thumbnail"]').dblclick();
+    cy.get('[data-cy="study-browser-thumbnail"][data-series="4"]').dblclick();
     cy.wait(250);
     cy.get('[data-cy="MPR"]').click();
 
@@ -61,7 +61,7 @@ describe('OHIF MPR', () => {
   });
 
   it('should correctly render Crosshairs for MPR', () => {
-    cy.get(':nth-child(3) > [data-cy="study-browser-thumbnail"]').dblclick();
+    cy.get('[data-cy="study-browser-thumbnail"][data-series="4"]').dblclick();
     cy.get('[data-cy="MPR"]').click();
     cy.get('[data-cy="Crosshairs"]').click();
 
@@ -78,8 +78,8 @@ describe('OHIF MPR', () => {
         const fOR = Object.keys(fORMap)[0];
         const fORAnnotation = fORMap[fOR];
 
-        // it should have crosshairs as the only key
-        expect(Object.keys(fORAnnotation)).to.have.length(1);
+        // it should have crosshairs as the only key (references lines make this 2)
+        expect(Object.keys(fORAnnotation)).to.have.length(2);
 
         const crosshairs = fORAnnotation.Crosshairs;
 
@@ -93,7 +93,7 @@ describe('OHIF MPR', () => {
   });
 
   it('should activate window level when the active Crosshairs tool for MPR is clicked', () => {
-    cy.get(':nth-child(3) > [data-cy="study-browser-thumbnail"]').dblclick();
+    cy.get('[data-cy="study-browser-thumbnail"][data-series="4"]').dblclick();
     cy.get('[data-cy="MPR"]').click();
     cy.get('[data-cy="Crosshairs"]').click();
 

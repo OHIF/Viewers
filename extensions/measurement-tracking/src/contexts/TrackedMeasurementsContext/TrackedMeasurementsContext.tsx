@@ -24,14 +24,19 @@ const SR_SOPCLASSHANDLERID = '@ohif/extension-cornerstone-dicom-sr.sopClassHandl
  * @param {*} param0
  */
 function TrackedMeasurementsContextProvider(
-  { servicesManager, commandsManager, extensionManager }, // Bound by consumer
+  { servicesManager, commandsManager, extensionManager }: withAppTypes, // Bound by consumer
   { children } // Component props
 ) {
   const [appConfig] = useAppConfig();
 
   const [viewportGrid, viewportGridService] = useViewportGrid();
   const { activeViewportId, viewports } = viewportGrid;
-  const { measurementService, displaySetService, customizationService } = servicesManager.services;
+  const {
+    measurementService,
+    displaySetService,
+    customizationService,
+    cornerstoneViewportService,
+  } = servicesManager.services;
 
   const machineOptions = Object.assign({}, defaultOptions);
   machineOptions.actions = Object.assign({}, machineOptions.actions, {
@@ -70,6 +75,29 @@ function TrackedMeasurementsContextProvider(
           imageIndex = 0;
         }
       }
+
+      viewportGridService.setDisplaySetsForViewport({
+        viewportId: activeViewportId,
+        displaySetInstanceUIDs: [referencedDisplaySetUID],
+        viewportOptions: {
+          initialImageOptions: {
+            index: imageIndex,
+          },
+        },
+      });
+    },
+
+    jumpToSameImageInActiveViewport: (ctx, evt) => {
+      const { trackedStudy, trackedSeries, activeViewportId } = ctx;
+      const measurements = measurementService.getMeasurements();
+      const trackedMeasurements = measurements.filter(
+        m => trackedStudy === m.referenceStudyUID && trackedSeries.includes(m.referenceSeriesUID)
+      );
+
+      const trackedMeasurement = trackedMeasurements[0];
+      const referencedDisplaySetUID = trackedMeasurement.displaySetInstanceUID;
+      const viewport = cornerstoneViewportService.getCornerstoneViewport(activeViewportId);
+      const imageIndex = viewport.getCurrentImageIdIndex();
 
       viewportGridService.setDisplaySetsForViewport({
         viewportId: activeViewportId,

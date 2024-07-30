@@ -17,9 +17,14 @@ export default function PanelSegmentation({
   commandsManager,
   extensionManager,
   configuration,
-}) {
-  const { segmentationService, viewportGridService, uiDialogService, displaySetService } =
-    servicesManager.services;
+}: withAppTypes) {
+  const {
+    segmentationService,
+    viewportGridService,
+    uiDialogService,
+    displaySetService,
+    cornerstoneViewportService,
+  } = servicesManager.services;
 
   const { t } = useTranslation('PanelSegmentation');
 
@@ -82,21 +87,33 @@ export default function PanelSegmentation({
     // Handle initial state
     handleActiveViewportChange();
 
-    const changed = viewportGridService.EVENTS.ACTIVE_VIEWPORT_ID_CHANGED;
+    const changedGrid = viewportGridService.EVENTS.ACTIVE_VIEWPORT_ID_CHANGED;
     const ready = viewportGridService.EVENTS.VIEWPORTS_READY;
 
-    const subs = [];
-    [ready, changed].forEach(evt => {
+    const subsGrid = [];
+    [ready, changedGrid].forEach(evt => {
       const { unsubscribe } = viewportGridService.subscribe(evt, ({ viewportId }) => {
         handleActiveViewportChange(viewportId);
       });
 
-      subs.push(unsubscribe);
+      subsGrid.push(unsubscribe);
+    });
+
+    const changedData = cornerstoneViewportService.EVENTS.VIEWPORT_DATA_CHANGED;
+
+    const subsData = [];
+    [changedData].forEach(evt => {
+      const { unsubscribe } = cornerstoneViewportService.subscribe(evt, () => {
+        handleActiveViewportChange();
+      });
+
+      subsData.push(unsubscribe);
     });
 
     // Clean up
     return () => {
-      subs.forEach(unsub => unsub());
+      subsGrid.forEach(unsub => unsub());
+      subsData.forEach(unsub => unsub());
     };
   }, []);
 
@@ -107,7 +124,9 @@ export default function PanelSegmentation({
   };
 
   const onSegmentationAdd = async () => {
-    commandsManager.runCommand('createEmptySegmentationForViewport');
+    commandsManager.runCommand('createEmptySegmentationForViewport', {
+      viewportId: viewportGridService.getActiveViewportId(),
+    });
   };
 
   const onSegmentationClick = (segmentationId: string) => {

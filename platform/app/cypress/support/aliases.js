@@ -15,7 +15,7 @@ export function initCornerstoneToolsAliases() {
 }
 
 //Creating aliases for Common page elements
-export function initCommonElementsAliases() {
+export function initCommonElementsAliases(skipMarkers) {
   cy.get('[data-cy="trackedMeasurements-btn"]').as('measurementsBtn');
   cy.get('.cornerstone-viewport-element').as('viewport');
   cy.get('[data-cy="seriesList-btn"]').as('seriesBtn');
@@ -33,8 +33,17 @@ export function initCommonElementsAliases() {
   cy.get('[data-cy="viewport-overlay-bottom-right"]').as('viewportInfoBottomRight');
   cy.get('[data-cy="viewport-overlay-bottom-left"]').as('viewportInfoBottomLeft');
 
-  cy.get('.left-mid.orientation-marker').as('viewportInfoMidLeft');
-  cy.get('.top-mid.orientation-marker').as('viewportInfoMidTop');
+  console.debug('🚀 ~ skipMarkers:', skipMarkers);
+  if (skipMarkers) {
+    return;
+  }
+
+  try {
+    cy.get('.left-mid.orientation-marker')?.as('viewportInfoMidLeft');
+    cy.get('.top-mid.orientation-marker')?.as('viewportInfoMidTop');
+  } catch (error) {
+    console.log('Error: ', error);
+  }
 }
 
 //Creating aliases for Routes
@@ -61,8 +70,8 @@ export function initStudyListAliasesOnDesktop() {
 
   // We can't use data attributes (e.g. data--cy) for these since
   // they are using third party libraries (i.e. react-dates, react-select)
-  cy.get('#date-range-studyDate-start-date').as('studyListStartDate');
-  cy.get('#date-range-studyDate-end-date').as('studyListEndDate');
+  cy.get('[data-cy="input-date-range-start"').as('studyListStartDate');
+  cy.get('[data-cy="input-date-range-end"').as('studyListEndDate');
   cy.get('#input-modalities').as('modalities');
 }
 
