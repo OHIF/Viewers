@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.9.0-beta.71](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.70...v3.9.0-beta.71) (2024-07-30)
+
+
+### Bug Fixes
+
+* ip SSRF improper categorization ([#4319](https://github.com/OHIF/Viewers/issues/4319)) ([aa0e5a5](https://github.com/OHIF/Viewers/commit/aa0e5a59379453bb8e6a4f286447576744ea6bf5))
+
+
+
+
+
 # [3.9.0-beta.70](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.69...v3.9.0-beta.70) (2024-07-30)
 
 
