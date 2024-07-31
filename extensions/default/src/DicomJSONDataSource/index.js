@@ -1,5 +1,6 @@
 import { DicomMetadataStore, IWebApiDataSource } from '@ohif/core';
 import OHIF from '@ohif/core';
+import qs from 'query-string';
 
 import getImageId from '../DicomWebDataSource/utils/getImageId';
 import getDirectURL from '../utils/getDirectURL';
@@ -90,11 +91,14 @@ function createDicomJSONApi(dicomJsonConfig) {
             const { metadata: naturalizedDicom } = instance;
             const imageId = getImageId({ instance, config: dicomJsonConfig });
 
+            const { query } = qs.parseUrl(instance.url);
+
             // Add imageId specific mapping to this data as the URL isn't necessarliy WADO-URI.
             metadataProvider.addImageIdToUIDs(imageId, {
               StudyInstanceUID,
               SeriesInstanceUID,
               SOPInstanceUID: naturalizedDicom.SOPInstanceUID,
+              frameNumber: query.frame ? parseInt(query.frame) : undefined,
             });
           });
         });

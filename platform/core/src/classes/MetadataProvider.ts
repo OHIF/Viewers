@@ -22,6 +22,12 @@ class MetadataProvider {
       writable: false,
       value: new Map(),
     });
+    Object.defineProperty(this, 'imageUIDsByImageId', {
+      configurable: false,
+      enumerable: false,
+      writable: false,
+      value: new Map(),
+    });
     // Can be used to store custom metadata for a specific type.
     // For instance, the scaling metadata for PET can be stored here
     // as type "scalingModule"
@@ -40,6 +46,7 @@ class MetadataProvider {
     // An example would be dicom hosted at some random site.
     const imageURI = imageIdToURI(imageId);
     this.imageURIToUIDs.set(imageURI, uids);
+    this.imageUIDsByImageId.set(imageId, uids);
   }
 
   addCustomMetadata(imageId, type, metadata) {
@@ -481,6 +488,12 @@ class MetadataProvider {
     //   SOPInstanceUID,
     // })
     // somewhere else
+
+    const cachedUIDs = this.imageUIDsByImageId.get(imageId);
+    if (cachedUIDs) {
+      return cachedUIDs;
+    }
+
     if (imageId.startsWith('wadors:')) {
       const strippedImageId = imageId.split('/studies/')[1];
       const splitImageId = strippedImageId.split('/');
