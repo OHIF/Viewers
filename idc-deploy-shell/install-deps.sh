@@ -34,7 +34,7 @@ apt-get install -y g++ # needed by yarn install...
 # https://github.com/nodesource/distributions/blob/master/README.md#deb
 #
 
-curl -sL https://deb.nodesource.com/setup_16.x | bash -
+curl -sL https://deb.nodesource.com/setup_18.x | bash -
 apt-get install -y nodejs
 
 curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
