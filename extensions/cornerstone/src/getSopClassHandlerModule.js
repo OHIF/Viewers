@@ -120,21 +120,37 @@ function _getDisplaySetsFromSeries(instances, servicesManager, extensionManager)
   const instanceMap = new Map();
   instances.forEach(instance => instanceMap.set(instance.imageId, instance));
   if (dicomWebClient) {
-    // This is really ugly - maybe this should be stored unmodified.
-    dicomWebClient.getDICOMwebMetadata = imageId =>
-      transferDenaturalizedDataset(
-        denaturalizeDataset(fixMultiValueKeys(instanceMap.get(imageId)))
-      );
+    const webClient = Object.create(dicomWebClient);
+    // This replaces just the dicom web metadata call with one which retrieves
+    // internally.
+    webClient.getDICOMwebMetadata = getDICOMwebMetadata.bind(webClient, instanceMap);
 
     csUtils.genericMetadataProvider.addRaw(displaySet.imageIds[0], {
       type: MetadataModules.WADO_WEB_CLIENT,
-      metadata: dicomWebClient,
+      metadata: webClient,
     });
   } else {
-    // 'Unable to provide a DICOMWeb client library, microscopy will fail to view'"Unable to provide a DICOMWeb client library, microscopy will fail to view");
+    // Might have some other way of getting the data in the future or internally?
+    // throw new Error('Unable to provide a DICOMWeb client library, microscopy will fail to view');
   }
 
   return [displaySet];
+}
+
+/**
+ * This method provides access to the internal DICOMweb metadata, used to avoid
+ * refetching the DICOMweb data.  It gets assigned as a member function to the
+ * dicom web client.
+ */
+function getDICOMwebMetadata(instanceMap, imageId) {
+  const instance = instanceMap.get(imageId);
+  if (!instance) {
+    console.warn('Metadata not already found for', imageId, 'in', instanceMap);
+    return this.super.getDICOMwebMetadata(imageId);
+  }
+  return transferDenaturalizedDataset(
+    denaturalizeDataset(fixMultiValueKeys(instanceMap.get(imageId)))
+  );
 }
 
 export function getDicomMicroscopySopClassHandler({ servicesManager, extensionManager }) {
