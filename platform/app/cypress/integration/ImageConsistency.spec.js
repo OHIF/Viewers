@@ -22,7 +22,7 @@ const testPixel = (dx, dy, expectedPixel) => {
         const { viewport } = cornerstone.getEnabledElements()[0];
         const imageData = viewport.getImageData();
         // cy.log("imageData", imageData);
-        const origin = viewport.worldToCanvas(imageData.origin);
+        const origin = viewport.worldToCanvas(imageData?.origin);
         const orX = origin[0] * devicePixelRatio;
         const orY = origin[1] * devicePixelRatio;
         const x = Math.round(orX + dx);
