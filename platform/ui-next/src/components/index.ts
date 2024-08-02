@@ -10,5 +10,39 @@ import Separator from './Separator';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './Tabs';
 import { Toggle, toggleVariants } from './Toggle';
 import { ToggleGroup, ToggleGroupItem } from './ToggleGroup';
+import { Input } from './Input';
+import { Label } from './Label';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from './Tabs';
+import { Separator } from './Separator';
+import { Switch } from './Switch';
+import { Checkbox } from './Checkbox';
+import { Toggle, toggleVariants } from './Toggle';
+import { Slider } from './Slider';
+import { ScrollArea, ScrollBar } from './ScrollArea';
 
-export { Button, buttonVariants, ThemeWrapper, Command, Dialog, Combobox, Popover, Calendar, DatePickerWithRange, Separator, Tabs, TabsContent, TabsList, TabsTrigger, Toggle, toggleVariants, ToggleGroup, ToggleGroupItem };
+export {
+  Button,
+  buttonVariants,
+  ThemeWrapper,
+  Command,
+  Dialog,
+  Combobox,
+  Popover,
+  Calendar,
+  DatePickerWithRange,
+  Input,
+  Label,
+  Tabs,
+  TabsList,
+  TabsTrigger,
+  TabsContent,
+  Separator,
+  Switch,
+  Checkbox,
+  Toggle,
+  toggleVariants,
+  Slider,
+  ScrollArea,
+  ToggleGroup,
+  ToggleGroupItem
+};
