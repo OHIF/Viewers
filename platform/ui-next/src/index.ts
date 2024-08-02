@@ -18,8 +18,8 @@ import {
   ToggleGroup,
   ToggleGroupItem
 } from './components';
+
 import { useNotification, NotificationProvider } from './contextProviders';
-import { Toggle, toggleVariants } from './Toggle';
 
 export {
   // components
