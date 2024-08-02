@@ -167,7 +167,6 @@ export default function getCustomizationModule({ servicesManager, extensionManag
         },
         {
           id: 'studyBrowser.sortFunctions',
-          merge: 'Append',
           values: [
             {
               label: 'Series Number',

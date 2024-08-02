@@ -1,6 +1,5 @@
 import SUPPORTED_TOOLS from './constants/supportedTools';
 import getSOPInstanceAttributes from './utils/getSOPInstanceAttributes';
-import { getDisplayUnit } from './utils';
 import { utils } from '@ohif/core';
 
 /**
@@ -125,9 +124,12 @@ function getColumnValueReport(annotation, customizationService) {
  */
 function getDisplayText(annotation, displaySet, customizationService, displaySetService) {
   const { PlanarFreehandROI } = customizationService.get('cornerstone.measurements');
-  const { displayText } = PlanarFreehandROI;
+  const { displayText: displayTextClosed, displayTextOpen } = PlanarFreehandROI;
 
   const { metadata, data } = annotation;
+
+  const isClosed = data.contour?.closed;
+  const displayText = isClosed ? displayTextClosed : displayTextOpen;
 
   const { SOPInstanceUID, frameNumber } = getSOPInstanceAttributes(
     metadata.referencedImageId,
@@ -168,7 +170,7 @@ function getDisplayText(annotation, displaySet, customizationService, displaySet
         return utils.roundNumber(value, 2);
       });
     }
-    return isNaN(values) ? values : utils.roundNumber(values, 2);
+    return isNaN(values) ? [values] : [utils.roundNumber(values, 2)];
   };
 
   const findUnitForValue = (displayTextItems, value) =>
@@ -176,7 +178,7 @@ function getDisplayText(annotation, displaySet, customizationService, displaySet
       ?.value;
 
   const formatDisplayText = (displayName, result, unit) =>
-    `${displayName}: ${Array.isArray(result) ? roundValues(result).join(', ') : roundValues(result)} ${unit}`;
+    `${displayName}: ${roundValues(result).join(', ')} ${unit}`;
 
   displayText.forEach(({ displayName, value, type }) => {
     if (type === 'value') {

@@ -7,6 +7,7 @@ import {
   getEnabledElementByIds,
   utilities as csUtils,
   volumeLoader,
+  StackViewport,
 } from '@cornerstonejs/core';
 import {
   Enums as csToolsEnums,
@@ -770,8 +771,8 @@ class SegmentationService extends PubSubService {
     const segmentIndices = segmentIndex
       ? [segmentIndex]
       : segmentation.segments
-          .filter(segment => segment?.segmentIndex)
-          .map(segment => segment.segmentIndex);
+        .filter(segment => segment?.segmentIndex)
+        .map(segment => segment.segmentIndex);
 
     const segmentIndicesSet = new Set(segmentIndices);
 
@@ -884,7 +885,13 @@ class SegmentationService extends PubSubService {
       // @ts-ignore
       for (const { viewportId, renderingEngineId } of viewportsInfo) {
         const { viewport } = getEnabledElementByIds(viewportId, renderingEngineId);
-        cstUtils.viewport.jumpToWorld(viewport, world);
+        if (viewport instanceof StackViewport) {
+          const { element } = viewport;
+          const index = csUtils.getClosestStackImageIndexForPoint(world, viewport)
+          cstUtils.viewport.jumpToSlice(element, { imageIndex: index })
+        } else {
+          cstUtils.viewport.jumpToWorld(viewport, world);
+        }
       }
 
       if (highlightSegment) {
@@ -1250,6 +1257,7 @@ class SegmentationService extends PubSubService {
         {
           [segmentIndex]: {
             CONTOUR: {
+              outlineOpacity: reversedProgress,
               fillAlpha: reversedProgress,
             },
           },

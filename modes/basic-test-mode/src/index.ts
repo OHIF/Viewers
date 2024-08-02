@@ -13,6 +13,7 @@ const ohif = {
   layout: '@ohif/extension-default.layoutTemplateModule.viewerLayout',
   sopClassHandler: '@ohif/extension-default.sopClassHandlerModule.stack',
   thumbnailList: '@ohif/extension-default.panelModule.seriesList',
+  measurements: '@ohif/extension-default.panelModule.measurements',
 };
 
 const tracked = {
@@ -42,6 +43,11 @@ const dicomSeg = {
   panel: '@ohif/extension-cornerstone-dicom-seg.panelModule.panelSegmentation',
 };
 
+const dicomPmap = {
+  sopClassHandler: '@ohif/extension-cornerstone-dicom-pmap.sopClassHandlerModule.dicom-pmap',
+  viewport: '@ohif/extension-cornerstone-dicom-pmap.viewportModule.dicom-pmap',
+};
+
 const extensionDependencies = {
   // Can derive the versions at least process.env.from npm_package_version
   '@ohif/extension-default': '^3.0.0',
@@ -49,6 +55,7 @@ const extensionDependencies = {
   '@ohif/extension-measurement-tracking': '^3.0.0',
   '@ohif/extension-cornerstone-dicom-sr': '^3.0.0',
   '@ohif/extension-cornerstone-dicom-seg': '^3.0.0',
+  '@ohif/extension-cornerstone-dicom-pmap': '^3.0.0',
   '@ohif/extension-dicom-pdf': '^3.0.1',
   '@ohif/extension-dicom-video': '^3.0.1',
   '@ohif/extension-test': '^0.0.1',
@@ -134,6 +141,9 @@ function modeFactory() {
           return {
             id: ohif.layout,
             props: {
+              // Use the first two for an untracked view
+              // leftPanels: [ohif.thumbnailList],
+              // rightPanels: [dicomSeg.panel, ohif.measurements],
               leftPanels: [tracked.thumbnailList],
               rightPanels: [dicomSeg.panel, tracked.measurements],
               // rightPanelClosed: true, // optional prop to start with collapse panels
@@ -157,6 +167,10 @@ function modeFactory() {
                 {
                   namespace: dicomSeg.viewport,
                   displaySetsToDisplay: [dicomSeg.sopClassHandler],
+                },
+                {
+                  namespace: dicomPmap.viewport,
+                  displaySetsToDisplay: [dicomPmap.sopClassHandler],
                 },
               ],
             },

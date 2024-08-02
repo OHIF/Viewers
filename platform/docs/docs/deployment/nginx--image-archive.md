@@ -1,11 +1,9 @@
 ---
-sidebar_position: 9
+sidebar_position: 10
 ---
 
 # Nginx + Image Archive
 
-> DISCLAIMER! We make no claims or guarantees of this approach's security. If in
-> doubt, enlist the help of an expert and conduct proper audits.
 
 At a certain point, you may want others to have access to your instance of the
 OHIF Viewer and its medical imaging data. This post covers one of many potential
@@ -16,19 +14,14 @@ Do not use this recipe to host sensitive medical data on the open web. Depending
 on your company's policies, this may be an appropriate setup on an internal
 network when protected with a server's basic authentication.
 
-## Overview
 
-Our two biggest hurdles when hosting our image archive and web client are:
-
-- Risks related to exposing our PACS to the network
-- Cross-Origin Resource Sharing (CORS) requests
 
 ### Handling Web Requests
 
 We mitigate our first issue by allowing [Nginx][nginx] to handle incoming web
 requests. Nginx is open source software for web serving, reverse proxying,
 caching, and more. It's designed for maximum performance and stability --
-allowing us to more reliably serve content than Orthanc's built-in server can.
+allowing us to more reliably serve content.
 
 More specifically, we accomplish this by using a
 [`reverse proxy`](https://en.wikipedia.org/wiki/Reverse_proxy) to retrieve
@@ -38,35 +31,16 @@ resources from our image archive (Orthanc), and when accessing its web admin.
 > of a client from one or more servers. These resources are then returned to the
 > client, appearing as if they originated from the proxy server itself.
 
-### CORS Issues
 
-Cross-Origin Resource Sharing (CORS) is a mechanism that uses HTTP headers to
-tell a browser which web applications have permission to access selected
-resources from a server at a different origin (domain, protocol, port). IE. By
-default, a Web App located at `http://my-website.com` can't access resources
-hosted at `http://not-my-website.com`
-
-We can solve this one of two ways:
-
-1. Have our Image Archive located at the same domain as our Web App
-2. Add appropriate `Access-Control-Allow-*` HTTP headers
-
-**This solution uses the first approach.**
-
-You can read more about CORS in this Medium article: [Understanding
-CORS][understanding-cors]
-
-### Diagram
 
 This setup allows us to create a setup similar to the one pictured below:
 
 
 ![nginX](../assets/img/nginx-image-archive.png)
 
-
-- All web requests are routed through `nginx` on our `OpenResty` image
-- `/pacs` is a reverse proxy for `orthanc`'s `DICOM Web` endpoints
-- `/pacs-admin` is a reverse proxy for `orthanc`'s Web Admin
+- All web requests are routed through `nginx` image
+- `/pacs/dicom-web` is a reverse proxy for `orthanc`'s `DICOM Web` endpoints, which handles DICOM requests
+- `/pacs` is a reverse proxy for `orthanc`'s Web Admin, which is the UI for managing studies
 - All static resources for OHIF Viewer are served up by `nginx` when a matching
   route for that resource is requested
 
@@ -83,15 +57,33 @@ in command prompt or terminal_
 
 ### Setup
 
-- Navigate to `app` folder inside `platform`
-- then: `cd .recipes/OpenResty-Orthanc`
+- `cd platform/app/.recipes/Nginx-Orthanc`
 - run: `docker-compose up --build`
-- Navigate to `127.0.0.1` for the viewer
-- Navigate to `127.0.0.1/pacs-admin` for uploading studies via the UI, or send studies via DIMSE C-STORE to `ORTHANC@127.0.0.1:4242` (hint: you can use utilites like dcm4che's `storescu` to send studies in bulk via the command line)
+- Navigate to `127.0.0.1` for the viewer (at first there is no study)
+- Navigate to `127.0.0.1/pacs` for uploading studies via the UI, or send studies via DIMSE C-STORE to `ORTHANC@127.0.0.1:4242` (hint: you can use utilizes like dcm4che's `storescu` to send studies in bulk via the command line)
 
+:::note
+For subsequent runs, use `docker-compose up -d` to start the services without rebuilding the images. However, ensure you rebuild the images if you make changes to the Dockerfile. If you modify the configurations in the `nginx.conf` or `orthanc.json` files, you can restart the services by running `docker-compose up`, as these files are mounted as volumes.
+
+```
+Inside docker compose file you see the following volumes mounted:
+
+volumes:
+  # Nginx config
+  - ./config/nginx.conf:/etc/nginx/nginx.conf
+  # Logs
+  - ./logs/nginx:/var/logs/nginx
+```
+:::
 
 
 You can see the overview of the mentioned steps:
+
+
+:::info
+The following video demonstrates an outdated capture using the deprecated `OpenResty-Orthanc` recipe. However, it still provides insight into the steps for running the viewer with Orthanc. Use the new `Nginx-Orthanc` recipe for the most up-to-date instructions.
+:::
+
 
 
 
@@ -99,20 +91,6 @@ You can see the overview of the mentioned steps:
     <iframe src="https://player.vimeo.com/video/843233827?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479"  frameBorder="0" allow="autoplay; fullscreen; picture-in-picture" allowFullScreen style= {{ position:"absolute",top:0,left:0,width:"100%",height:"100%"}} title="measurement-report"></iframe>
 </div>
 
-<!-- ### Setup
-
-_Spin Things Up_
-
-- Navigate to `<project-root>/docker/OpenResty-Orthanc` in your shell
-- Run `docker-compose up`
-
-_Upload Your First Study_
-
-- Navigate to `http://127.0.0.1/pacs-admin`
-- From the top right, select "Upload"
-- Click "Select files to upload..." (DICOM)
-- Click "Start the upload"
-- Navigate back to `http://127.0.0.1/` to view your studies in the Study List -->
 
 ### Troubleshooting
 
@@ -154,10 +132,10 @@ configuration we use is set to a specific file when we build the viewer, and
 determined by the env variable: `APP_CONFIG`. You can see where we set its value
 in the `dockerfile` for this solution:
 
-`ENV APP_CONFIG=config/docker_openresty-orthanc.js`
+`ENV APP_CONFIG=config/docker-nginx-orthanc.js`
 
 You can find the configuration we're using here:
-`/public/config/docker_openresty-orthanc.js`
+`/public/config/docker-nginx-orthanc.js`
 
 To rebuild the `webapp` image created by our `dockerfile` after updating the
 Viewer's configuration, you can run:
@@ -167,78 +145,49 @@ Viewer's configuration, you can run:
 
 #### Other
 
-All other files are found in: `/docker/OpenResty-Orthanc/`
+All other files are found in: `/docker/Nginx-Orthanc/`
 
 | Service           | Configuration                     | Docs                                        |
 | ----------------- | --------------------------------- | ------------------------------------------- |
 | OHIF Viewer       | [dockerfile][dockerfile]          | You're reading them now!                    |
-| OpenResty (Nginx) | [`/nginx.conf`][config-nginx]     | [lua-resty-openidc][lua-resty-openidc-docs] |
+| Nginx | [`/nginx.conf`][config-nginx]     |  |
 | Orthanc           | [`/orthanc.json`][config-orthanc] | [Here][orthanc-docs]                        |
 
 ## Next Steps
 
+### OHIF + Dcm4chee
+
+You can follow the similar steps above to run OHIF Viewer with Dcm4chee PACS.
+
+The recipe for this setup can be found at `platform/app/.recipes/Nginx-Dcm4chee`.
+
+
+The routes are as follows:
+- `127.0.0.1` for the OHIF viewer
+- `127.0.0.1/pacs` for the Dcm4chee UI
+
+:::info
+For uploading studies, you can see the following gif for the steps:
+
+![alt text](../assets/img/dcm4chee-upload.gif)
+
+:::
+
 ### Deploying to Production
 
-While these configuration and docker-compose files model an environment suitable
-for production, they are not easy to deploy "as is". You can either:
+While you can deploy this solution to production, there is one main caveat: every user can access the app and the patient portal without any authentication. In the next step, we will add authentication with Keycloak to secure the app.
 
-- Manually recreate this environment and deploy built application files **OR**
-- Deploy to a cloud kubernetes provider like
-  [Digital Ocean](https://www.digitalocean.com/products/kubernetes/) **OR**
-  - [See a full list of cloud providers here](https://landscape.cncf.io/category=cloud&format=card-mode&grouping=category)
-- Find and follow your preferred provider's guide on setting up
-  [swarms and stacks](https://docs.docker.com/get-started/)
 
-### Adding SSL
 
-Adding SSL registration and renewal for your domain with Let's Encrypt that
-terminates at Nginx is an incredibly important step toward securing your data.
-Here are some resources, specific to this setup, that may be helpful:
-
-- [lua-resty-auto-ssl](https://github.com/GUI/lua-resty-auto-ssl)
-- [Let's Encrypt + Nginx](https://www.nginx.com/blog/using-free-ssltls-certificates-from-lets-encrypt-with-nginx/)
-
-While we terminate SSL at Nginx, it may be worth using self-signed certificates
-for communication between services.
-
-- [SSL Termination for TCP Upstream Servers](https://docs.nginx.com/nginx/admin-guide/security-controls/terminating-ssl-tcp/)
-
-### Use PostgresSQL w/ Orthanc
-
-Orthanc can handle a large amount of data and requests, but if you find that
-requests start to slow as you add more and more studies, you may want to
-configure your Orthanc instance to use PostgresSQL. Instructions on how to do
-that can be found in the
-[`Orthanc Server Book`](http://book.orthanc-server.com/users/docker.html), under
-"PostgreSQL and Orthanc inside Docker"
 
 ### Improving This Guide
 
 Here are some improvements this guide would benefit from, and that we would be
 more than happy to accept Pull Requests for:
 
-- SSL Support
-- Complete configuration with `.env` file (or something similar)
-- Any security issues
-- One-click deploy to a cloud provider
+- Add Docker caching for faster builds
 
-## Resources
 
-### Misc. Helpful Commands
-
-_Check if `nginx.conf` is valid:_
-
-```bash
-docker run --rm -t -a stdout --name my-openresty -v $PWD/config/:/usr/local/openresty/nginx/conf/:ro openresty/openresty:alpine-fat openresty -c /usr/local/openresty/nginx/conf/nginx.conf -t
-```
-
-_Interact w/ running container:_
-
-`docker exec -it CONTAINER_NAME bash`
-
-_List running containers:_
-
-`docker ps`
 
 ### Referenced Articles
 
@@ -246,8 +195,6 @@ For more documentation on the software we've chosen to use, you may find the
 following resources helpful:
 
 - [Orthanc for Docker](http://book.orthanc-server.com/users/docker.html)
-- [OpenResty Guide](http://www.staticshin.com/programming/definitely-an-open-resty-guide/)
-- [Lua Ngx API](https://openresty-reference.readthedocs.io/en/latest/Lua_Nginx_API/)
 
 For a different take on this setup, check out the repositories our community
 members put together:

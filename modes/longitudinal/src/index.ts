@@ -7,7 +7,7 @@ import moreTools from './moreTools';
 
 // Allow this mode by excluding non-imaging modalities such as SR, SEG
 // Also, SM is not a simple imaging modalities, so exclude it.
-const NON_IMAGE_MODALITIES = ['SM', 'ECG', 'SR', 'SEG', 'RTSTRUCT'];
+const NON_IMAGE_MODALITIES = ['SM', 'ECG', 'SEG', 'RTSTRUCT'];
 
 const ohif = {
   layout: '@ohif/extension-default.layoutTemplateModule.viewerLayout',
@@ -42,6 +42,11 @@ const dicomSeg = {
   panel: '@ohif/extension-cornerstone-dicom-seg.panelModule.panelSegmentation',
 };
 
+const dicomPmap = {
+  sopClassHandler: '@ohif/extension-cornerstone-dicom-pmap.sopClassHandlerModule.dicom-pmap',
+  viewport: '@ohif/extension-cornerstone-dicom-pmap.viewportModule.dicom-pmap',
+};
+
 const dicomRT = {
   viewport: '@ohif/extension-cornerstone-dicom-rt.viewportModule.dicom-rt',
   sopClassHandler: '@ohif/extension-cornerstone-dicom-rt.sopClassHandlerModule.dicom-rt',
@@ -54,6 +59,7 @@ const extensionDependencies = {
   '@ohif/extension-measurement-tracking': '^3.0.0',
   '@ohif/extension-cornerstone-dicom-sr': '^3.0.0',
   '@ohif/extension-cornerstone-dicom-seg': '^3.0.0',
+  '@ohif/extension-cornerstone-dicom-pmap': '^3.0.0',
   '@ohif/extension-cornerstone-dicom-rt': '^3.0.0',
   '@ohif/extension-dicom-pdf': '^3.0.1',
   '@ohif/extension-dicom-video': '^3.0.1',
@@ -169,7 +175,7 @@ function modeFactory({ modeConfiguration }) {
         valid: !!modalities_list.filter(modality => NON_IMAGE_MODALITIES.indexOf(modality) === -1)
           .length,
         description:
-          'The mode does not support studies that ONLY include the following modalities: SM, ECG, SR, SEG, RTSTRUCT',
+          'The mode does not support studies that ONLY include the following modalities: SM, ECG, SEG, RTSTRUCT',
       };
     },
     routes: [
@@ -207,6 +213,10 @@ function modeFactory({ modeConfiguration }) {
                   displaySetsToDisplay: [dicomSeg.sopClassHandler],
                 },
                 {
+                  namespace: dicomPmap.viewport,
+                  displaySetsToDisplay: [dicomPmap.sopClassHandler],
+                },
+                {
                   namespace: dicomRT.viewport,
                   displaySetsToDisplay: [dicomRT.sopClassHandler],
                 },
@@ -226,6 +236,7 @@ function modeFactory({ modeConfiguration }) {
     sopClassHandlers: [
       dicomvideo.sopClassHandler,
       dicomSeg.sopClassHandler,
+      dicomPmap.sopClassHandler,
       ohif.sopClassHandler,
       dicompdf.sopClassHandler,
       dicomsr.sopClassHandler,
