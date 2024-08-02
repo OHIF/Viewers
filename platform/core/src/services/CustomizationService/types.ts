@@ -9,6 +9,7 @@ export interface BaseCustomization extends Obj {
   description?: string;
   label?: string;
   commands?: Command[];
+  content?: (...props: any) => React.JSX.Element;
 }
 
 export interface LabelCustomization extends BaseCustomization {
@@ -23,11 +24,16 @@ export interface CommandCustomization extends BaseCustomization {
   commands: Command[];
 }
 
+export interface ComponentCustomization extends BaseCustomization {
+  content: (...props: any) => React.JSX.Element;
+}
+
 export type Customization =
   | BaseCustomization
   | LabelCustomization
   | CommandCustomization
-  | CodeCustomization;
+  | CodeCustomization
+  | ComponentCustomization;
 
 export default Customization;
 

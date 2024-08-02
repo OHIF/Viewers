@@ -189,7 +189,6 @@
 
 */
 
-
 /* Updated Playground page styles */
 
 @layer base {
@@ -211,7 +210,7 @@ h3.section-header {
 }
 
 .row {
-  @apply mb-6 flex flex-row flex-wrap rounded-md border border-border py-10;
+  @apply border-border mb-6 flex flex-row flex-wrap rounded-md border py-10;
 }
 
 .example {
