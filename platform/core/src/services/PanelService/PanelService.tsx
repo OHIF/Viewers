@@ -229,4 +229,14 @@ export default class PanelService extends PubSubService {
       )
       .flat();
   }
+
+
+
+  public setViewPreset(position: PanelPosition, panelId: string, viewPreset: string): void {
+
+  }
+
+  public updateAction(iconId: string, value: boolean): void {
+
+  }
 }

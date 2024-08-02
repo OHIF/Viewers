@@ -294,6 +294,7 @@ const SidePanel = ({
 
     return (
       <div className={classnames('flex grow ', side === 'right' ? 'justify-start' : 'justify-end')}>
+                {getCloseIcon()}
         <div
           className={classnames('bg-primary-dark text-primary-active flex flex-wrap')}
           style={getGridStyle(side, tabs.length, gridWidth, expandedWidth)}
@@ -355,39 +356,61 @@ const SidePanel = ({
     return (
       <div
         className={classnames(
-          'flex text-info-secondary grow cursor-pointer select-none justify-center self-center text-[14px]'
+          'flex w-full cursor-pointer select-none justify-center self-center text-[14px] h-[24px]'
         )}
-        style={{
-          ...(side === 'left'
-            ? { marginLeft: `${closeIconWidth}px` }
-            : { marginRight: `${closeIconWidth}px` }),
-        }}
         data-cy={`${tabs[0].name}-btn`}
         onClick={() => updatePanelOpen(!panelOpen)}
       >
-        <span>{tabs[0].label}</span>
-        {tabs[0].viewPresets && (
-          <ToggleGroup type="single">
-            {tabs[0].viewPresets.map((viewPreset, index) => (
-              <ToggleGroupItem
-                key={index}
-                aria-label={viewPreset.view}
-                value={viewPreset.view}
-              >
-                <Icon name={viewPreset.iconName} />
-                </ToggleGroupItem>
-            ))}
-            </ToggleGroup>
+        <div className='flex justify-between items-center w-full'>
+        <div className='flex justify-center items-center h-full'>
+            {tabs[0].viewPresets && (
+              <ToggleGroup type="single" value={tabs[0].viewPreset}>
+                {tabs[0].viewPresets.map((viewPreset, index) => (
+                  <ToggleGroupItem
+                    key={index}
+                    aria-label={viewPreset.id}
+                    value={viewPreset.id}
+                  >
+                    <Icon name={viewPreset.iconName} />
+                  </ToggleGroupItem>
+                ))}
+              </ToggleGroup>
 
-        )}
+            )}
+          </div>
+
+          <div className='flex justify-center items-center text-info-secondary'>      <span>{tabs[0].label}</span> </div>
+
+
+
+          <div className='flex justify-center items-center'>
+            {getCloseIcon()}
+
+
+            {tabs[0].actionIcons && (
+              <div className="flex items-center space-x-1">
+                {tabs[0].actionIcons.map((icon, index) => (
+                  <Icon
+                    key={index}
+                    name={icon.iconName}
+                    onClick={e => {
+                      icon.value = !icon.value;
+                    }}
+                  />
+                ))}
+              </div>
+            )
+            }
+          </div>
+
+        </div>
       </div>
     );
   };
 
   const getOpenStateComponent = () => {
     return (
-      <div className="bg-bkg-med flex select-none rounded-t h-[40px]	">
-        {getCloseIcon()}
+      <div className="bg-bkg-med flex select-none rounded-t h-[40px] p-2">
         {tabs.length === 1 ? getOneTabComponent() : getTabGridComponent()}
       </div>
     );
