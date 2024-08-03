@@ -12,11 +12,8 @@ import { Toggle, toggleVariants } from './Toggle';
 import { ToggleGroup, ToggleGroupItem } from './ToggleGroup';
 import { Input } from './Input';
 import { Label } from './Label';
-import { Tabs, TabsList, TabsTrigger, TabsContent } from './Tabs';
-import { Separator } from './Separator';
 import { Switch } from './Switch';
 import { Checkbox } from './Checkbox';
-import { Toggle, toggleVariants } from './Toggle';
 import { Slider } from './Slider';
 import { ScrollArea, ScrollBar } from './ScrollArea';
 
