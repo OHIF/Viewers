@@ -8,16 +8,18 @@ import { Toolbox } from '@ohif/ui';
 // - show errors in UI for thumbnails if promise fails
 
 function getPanelModule({ commandsManager, extensionManager, servicesManager }) {
-  const wrappedPanelPetSuv = () => {
+  const wrappedPanelPetSuv = ({ getOpenStateComponent }) => {
     return (
       <PanelPetSUV
         commandsManager={commandsManager}
         servicesManager={servicesManager}
+        extensionManager={extensionManager}
+        getOpenStateComponent={getOpenStateComponent}
       />
     );
   };
 
-  const wrappedROIThresholdToolbox = () => {
+  const wrappedROIThresholdToolbox = ({ getOpenStateComponent }: withAppTypes) => {
     return (
       <>
         <Toolbox
@@ -26,6 +28,7 @@ function getPanelModule({ commandsManager, extensionManager, servicesManager }) 
           extensionManager={extensionManager}
           buttonSectionId="ROIThresholdToolbox"
           title="Threshold Tools"
+          getOpenStateComponent={getOpenStateComponent}
         />
       </>
     );

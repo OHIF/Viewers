@@ -18,7 +18,11 @@ const DISPLAY_STUDY_SUMMARY_INITIAL_VALUE = {
   description: '', // 'CHEST/ABD/PELVIS W CONTRAST',
 };
 
-function PanelMeasurementTableTracking({ servicesManager, extensionManager }: withAppTypes) {
+function PanelMeasurementTableTracking({
+  servicesManager,
+  extensionManager,
+  getOpenStateComponent,
+}: withAppTypes) {
   const [viewportGrid] = useViewportGrid();
   const { t } = useTranslation('MeasurementTable');
   const [measurementChangeTimestamp, setMeasurementsUpdated] = useState(Date.now().toString());
@@ -176,6 +180,8 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }: wi
 
   return (
     <>
+      {getOpenStateComponent && getOpenStateComponent()}
+
       <div
         className="invisible-scrollbar overflow-y-auto overflow-x-hidden"
         ref={measurementsPanelRef}

@@ -105,15 +105,20 @@ function ToolboxUI(props: withAppTypes) {
     );
   };
 
-  return useCollapsedPanel ? (
-    <PanelSection
-      childrenClassName="flex-shrink-0"
-      title={title}
-    >
-      {render()}
-    </PanelSection>
-  ) : (
-    render()
+  return (
+    <>
+      {props.getOpenStateComponent && props.getOpenStateComponent()}
+      {useCollapsedPanel ? (
+        <PanelSection
+          childrenClassName="flex-shrink-0"
+          title={title}
+        >
+          {render()}
+        </PanelSection>
+      ) : (
+        render()
+      )}
+    </>
   );
 }
 

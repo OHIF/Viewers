@@ -18,6 +18,7 @@ function PanelStudyBrowserTracking({
   getStudiesForPatientByMRN,
   requestDisplaySetCreationForStudy,
   dataSource,
+  getOpenStateComponent,
 }: withAppTypes) {
   const {
     displaySetService,
@@ -432,22 +433,26 @@ function PanelStudyBrowserTracking({
   };
 
   return (
-    <StudyBrowser
-      tabs={tabs}
-      servicesManager={servicesManager}
-      activeTabName={activeTabName}
-      expandedStudyInstanceUIDs={expandedStudyInstanceUIDs}
-      onClickStudy={_handleStudyClick}
-      onClickTab={clickedTabName => {
-        setActiveTabName(clickedTabName);
-      }}
-      onClickUntrack={displaySetInstanceUID => {
-        onClickUntrack(displaySetInstanceUID);
-      }}
-      onClickThumbnail={() => {}}
-      onDoubleClickThumbnail={onDoubleClickThumbnailHandler}
-      activeDisplaySetInstanceUIDs={activeViewportDisplaySetInstanceUIDs}
-    />
+    <div>
+      {getOpenStateComponent && getOpenStateComponent()}
+
+      <StudyBrowser
+        tabs={tabs}
+        servicesManager={servicesManager}
+        activeTabName={activeTabName}
+        expandedStudyInstanceUIDs={expandedStudyInstanceUIDs}
+        onClickStudy={_handleStudyClick}
+        onClickTab={clickedTabName => {
+          setActiveTabName(clickedTabName);
+        }}
+        onClickUntrack={displaySetInstanceUID => {
+          onClickUntrack(displaySetInstanceUID);
+        }}
+        onClickThumbnail={() => {}}
+        onDoubleClickThumbnail={onDoubleClickThumbnailHandler}
+        activeDisplaySetInstanceUIDs={activeViewportDisplaySetInstanceUIDs}
+      />
+    </div>
   );
 }
 
@@ -459,6 +464,7 @@ PanelStudyBrowserTracking.propTypes = {
   getImageSrc: PropTypes.func.isRequired,
   getStudiesForPatientByMRN: PropTypes.func.isRequired,
   requestDisplaySetCreationForStudy: PropTypes.func.isRequired,
+  getOpenStateComponent: PropTypes.elementType,
 };
 
 export default PanelStudyBrowserTracking;

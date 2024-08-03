@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 
 import Icon from '../Icon';
 import Tooltip from '../Tooltip';
-import { Separator, ToggleGroup, ToggleGroupItem} from '@ohif/ui-next';
+import { Separator, ToggleGroup, ToggleGroupItem } from '@ohif/ui-next';
 
 type StyleMap = {
   open: {
@@ -238,7 +238,7 @@ const SidePanel = ({
               content={getToolTipContent(childComponent.label, childComponent.disabled)}
               className={classnames(
                 'flex items-center',
-                side === 'left' ? 'justify-end ' : 'justify-start '
+                side === 'left' ? 'justify-end' : 'justify-start'
               )}
             >
               <div
@@ -293,8 +293,8 @@ const SidePanel = ({
     const numCols = getNumGridColumns(tabs.length, gridWidth);
 
     return (
-      <div className={classnames('flex grow ', side === 'right' ? 'justify-start' : 'justify-end')}>
-                {getCloseIcon()}
+      <div className={classnames('flex grow', side === 'right' ? 'justify-start' : 'justify-end')}>
+        {getCloseIcon()}
         <div
           className={classnames('bg-primary-dark text-primary-active flex flex-wrap')}
           style={getGridStyle(side, tabs.length, gridWidth, expandedWidth)}
@@ -356,15 +356,18 @@ const SidePanel = ({
     return (
       <div
         className={classnames(
-          'flex w-full cursor-pointer select-none justify-center self-center text-[14px] h-[24px]'
+          'flex h-[24px] w-full cursor-pointer select-none justify-center self-center text-[14px]'
         )}
         data-cy={`${tabs[0].name}-btn`}
         onClick={() => updatePanelOpen(!panelOpen)}
       >
-        <div className='flex justify-between items-center w-full'>
-        <div className='flex justify-center items-center h-full'>
+        <div className="flex w-full items-center justify-between">
+          <div className="flex h-full items-center justify-center">
             {tabs[0].viewPresets && (
-              <ToggleGroup type="single" value={tabs[0].viewPreset}>
+              <ToggleGroup
+                type="single"
+                value={tabs[0].viewPreset}
+              >
                 {tabs[0].viewPresets.map((viewPreset, index) => (
                   <ToggleGroupItem
                     key={index}
@@ -375,17 +378,16 @@ const SidePanel = ({
                   </ToggleGroupItem>
                 ))}
               </ToggleGroup>
-
             )}
           </div>
 
-          <div className='flex justify-center items-center text-info-secondary'>      <span>{tabs[0].label}</span> </div>
+          <div className="text-info-secondary flex items-center justify-center">
+            {' '}
+            <span>{tabs[0].label}</span>{' '}
+          </div>
 
-
-
-          <div className='flex justify-center items-center'>
+          <div className="flex items-center justify-center">
             {getCloseIcon()}
-
 
             {tabs[0].actionIcons && (
               <div className="flex items-center space-x-1">
@@ -399,10 +401,8 @@ const SidePanel = ({
                   />
                 ))}
               </div>
-            )
-            }
+            )}
           </div>
-
         </div>
       </div>
     );
@@ -410,7 +410,7 @@ const SidePanel = ({
 
   const getOpenStateComponent = () => {
     return (
-      <div className="bg-bkg-med flex select-none rounded-t h-[40px] p-2">
+      <div className="bg-bkg-med flex h-[40px] select-none rounded-t p-2">
         {tabs.length === 1 ? getOneTabComponent() : getTabGridComponent()}
       </div>
     );
@@ -423,11 +423,19 @@ const SidePanel = ({
     >
       {panelOpen ? (
         <>
-          {getOpenStateComponent()}
-          <Separator orientation="horizontal" className='bg-black' thickness='2px'/>
+          <Separator
+            orientation="horizontal"
+            className="bg-black"
+            thickness="2px"
+          />
           {tabs.map((tab, tabIndex) => {
             if (tabIndex === activeTabIndex) {
-              return <tab.content key={tabIndex} />;
+              return (
+                <tab.content
+                  key={tabIndex}
+                  getOpenStateComponent={getOpenStateComponent}
+                />
+              );
             }
             return null;
           })}

@@ -13,7 +13,25 @@ const getPanelModule = ({
 }: withAppTypes) => {
   const { customizationService } = servicesManager.services;
 
-  const wrappedPanelSegmentation = configuration => {
+  const wrappedPanelSegmentation = ({ configuration, getOpenStateComponent }) => {
+    const [appConfig] = useAppConfig();
+
+    return (
+      <PanelSegmentation
+        commandsManager={commandsManager}
+        servicesManager={servicesManager}
+        extensionManager={extensionManager}
+        configuration={{
+          ...configuration,
+          disableEditing: appConfig.disableEditing,
+          ...customizationService.get('segmentation.panel'),
+        }}
+        getOpenStateComponent={getOpenStateComponent}
+      />
+    );
+  };
+
+  const wrappedPanelSegmentationNoHeader = ({ configuration }) => {
     const [appConfig] = useAppConfig();
 
     return (
@@ -30,7 +48,7 @@ const getPanelModule = ({
     );
   };
 
-  const wrappedPanelSegmentationWithTools = configuration => {
+  const wrappedPanelSegmentationWithTools = ({ configuration, getOpenStateComponent }) => {
     const [appConfig] = useAppConfig();
 
     return (
@@ -44,6 +62,7 @@ const getPanelModule = ({
           configuration={{
             ...configuration,
           }}
+          getOpenStateComponent={getOpenStateComponent}
         />
         <PanelSegmentation
           commandsManager={commandsManager}
@@ -73,6 +92,13 @@ const getPanelModule = ({
       iconLabel: 'Segmentation',
       label: 'Segmentation',
       component: wrappedPanelSegmentationWithTools,
+    },
+    {
+      name: 'panelSegmentationNoHeader',
+      iconName: 'tab-segmentation',
+      iconLabel: 'Segmentation',
+      label: 'Segmentation',
+      component: wrappedPanelSegmentationNoHeader,
     },
   ];
 };

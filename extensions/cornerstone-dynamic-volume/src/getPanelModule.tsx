@@ -4,23 +4,25 @@ import { Toolbox } from '@ohif/ui';
 import DynamicExport from './panels/DynamicExport';
 
 function getPanelModule({ commandsManager, extensionManager, servicesManager }) {
-  const wrappedDynamicDataPanel = () => {
+  const wrappedDynamicDataPanel = ({ getOpenStateComponent }) => {
     return (
       <DynamicDataPanel
         commandsManager={commandsManager}
         servicesManager={servicesManager}
         extensionManager={extensionManager}
+        getOpenStateComponent={getOpenStateComponent}
       />
     );
   };
 
-  const wrappedDynamicToolbox = () => {
+  const wrappedDynamicToolbox = ({ getOpenStateComponent }) => {
     return (
       <>
         <Toolbox
           commandsManager={commandsManager}
           servicesManager={servicesManager}
           extensionManager={extensionManager}
+          getOpenStateComponent={getOpenStateComponent}
           buttonSectionId="dynamic-toolbox"
           title="Threshold Tools"
         />

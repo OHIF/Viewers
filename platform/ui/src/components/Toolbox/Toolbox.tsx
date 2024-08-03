@@ -18,6 +18,7 @@ function Toolbox({
   buttonSectionId,
   commandsManager,
   title,
+  getOpenStateComponent,
   ...props
 }: withAppTypes) {
   const { state: toolboxState, api } = useToolbox(buttonSectionId);
@@ -143,15 +144,18 @@ function Toolbox({
   }, []);
 
   return (
-    <ToolboxUI
-      {...props}
-      title={title}
-      toolbarButtons={toolbarButtons}
-      toolboxState={toolboxState}
-      handleToolSelect={id => api.handleToolSelect(id)}
-      handleToolOptionChange={handleToolOptionChange}
-      onInteraction={onInteraction}
-    />
+    <>
+      <ToolboxUI
+        {...props}
+        title={title}
+        toolbarButtons={toolbarButtons}
+        toolboxState={toolboxState}
+        handleToolSelect={id => api.handleToolSelect(id)}
+        handleToolOptionChange={handleToolOptionChange}
+        onInteraction={onInteraction}
+        getOpenStateComponent={getOpenStateComponent}
+      />
+    </>
   );
 }
 

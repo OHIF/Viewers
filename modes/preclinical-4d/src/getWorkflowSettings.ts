@@ -7,7 +7,7 @@ const dynamicVolume = {
 };
 
 const cornerstone = {
-  segmentation: '@ohif/extension-cornerstone-dicom-seg.panelModule.panelSegmentation',
+  segmentation: '@ohif/extension-cornerstone-dicom-seg.panelModule.panelSegmentationNoHeader',
   activeViewportWindowLevel: '@ohif/extension-cornerstone.panelModule.activeViewportWindowLevel',
 };
 

@@ -56,6 +56,7 @@ interface IMicroscopyPanelProps extends WithTranslation {
   servicesManager: AppTypes.ServicesManager;
   extensionManager: ExtensionManager;
   commandsManager: CommandsManager;
+  getOpenStateComponent: PropTypes.func;
 }
 
 /**
@@ -328,6 +329,7 @@ function MicroscopyPanel(props: IMicroscopyPanelProps) {
 
   return (
     <>
+      {props.getOpenStateComponent && props.getOpenStateComponent()}
       <div
         className="ohif-scrollbar overflow-y-auto overflow-x-hidden"
         data-cy={'measurements-panel'}

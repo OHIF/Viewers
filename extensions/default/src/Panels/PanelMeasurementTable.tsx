@@ -24,6 +24,7 @@ export default function PanelMeasurementTable({
   servicesManager,
   commandsManager,
   extensionManager,
+  getOpenStateComponent,
 }: withAppTypes): React.FunctionComponent {
   const { t } = useTranslation('MeasurementTable');
 
@@ -212,6 +213,7 @@ export default function PanelMeasurementTable({
 
   return (
     <>
+      {getOpenStateComponent && getOpenStateComponent()}
       <div
         className="ohif-scrollbar overflow-y-auto overflow-x-hidden"
         data-cy={'measurements-panel'}

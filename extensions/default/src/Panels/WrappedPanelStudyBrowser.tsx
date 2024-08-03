@@ -13,7 +13,12 @@ import requestDisplaySetCreationForStudy from './requestDisplaySetCreationForStu
  * @param {object} commandsManager
  * @param {object} extensionManager
  */
-function WrappedPanelStudyBrowser({ commandsManager, extensionManager, servicesManager }) {
+function WrappedPanelStudyBrowser({
+  commandsManager,
+  extensionManager,
+  servicesManager,
+  getOpenStateComponent,
+}) {
   // TODO: This should be made available a different way; route should have
   // already determined our datasource
   const dataSource = extensionManager.getDataSources()[0];
@@ -34,6 +39,7 @@ function WrappedPanelStudyBrowser({ commandsManager, extensionManager, servicesM
       getImageSrc={_getImageSrcFromImageId}
       getStudiesForPatientByMRN={_getStudiesForPatientByMRN}
       requestDisplaySetCreationForStudy={_requestDisplaySetCreationForStudy}
+      getOpenStateComponent={getOpenStateComponent}
     />
   );
 }

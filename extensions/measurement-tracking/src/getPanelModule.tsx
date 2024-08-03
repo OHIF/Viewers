@@ -1,11 +1,13 @@
 import { Types } from '@ohif/core';
 import { PanelMeasurementTableTracking, PanelStudyBrowserTracking } from './panels';
 import i18n from 'i18next';
+import React from 'react';
 
 // TODO:
 // - No loading UI exists yet
 // - cancel promises when component is destroyed
 // - show errors in UI for thumbnails if promise fails
+
 function getPanelModule({ commandsManager, extensionManager, servicesManager }): Types.Panel[] {
   return [
     {
@@ -13,25 +15,32 @@ function getPanelModule({ commandsManager, extensionManager, servicesManager }):
       iconName: 'tab-studies',
       iconLabel: 'Studies',
       label: i18n.t('SidePanel:Studies'),
-      component: PanelStudyBrowserTracking.bind(null, {
-        commandsManager,
-        extensionManager,
-        servicesManager,
-      }),
-      viewPresets: [{
-        id: 'list',
-        iconName: 'icon-list-view',
-      },
-      {
-        id: 'thumbnails',
-        iconName: 'icon-thumbnail-view',
-      } ],
+      component: props => (
+        <PanelStudyBrowserTracking
+          {...props}
+          commandsManager={commandsManager}
+          extensionManager={extensionManager}
+          servicesManager={servicesManager}
+        />
+      ),
+      viewPresets: [
+        {
+          id: 'list',
+          iconName: 'icon-list-view',
+        },
+        {
+          id: 'thumbnails',
+          iconName: 'icon-thumbnail-view',
+        },
+      ],
       viewPreset: 'thumbnails',
-      actionIcons: [{
-        id: 'settings',
-        iconName: 'settings-bars',
-        value: false
-      }]
+      actionIcons: [
+        {
+          id: 'settings',
+          iconName: 'settings-bars',
+          value: false,
+        },
+      ],
     },
 
     {
@@ -39,11 +48,14 @@ function getPanelModule({ commandsManager, extensionManager, servicesManager }):
       iconName: 'tab-linear',
       iconLabel: 'Measure',
       label: i18n.t('SidePanel:Measurements'),
-      component: PanelMeasurementTableTracking.bind(null, {
-        commandsManager,
-        extensionManager,
-        servicesManager,
-      }),
+      component: props => (
+        <PanelMeasurementTableTracking
+          {...props}
+          commandsManager={commandsManager}
+          extensionManager={extensionManager}
+          servicesManager={servicesManager}
+        />
+      ),
     },
   ];
 }
