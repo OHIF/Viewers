@@ -1,7 +1,7 @@
 import * as OHIF from './index';
 
 describe('Top level exports', () => {
-  test.only('have not changed', () => {
+  test('have not changed', () => {
     const expectedExports = [
       'MODULE_TYPES',
       //
@@ -48,6 +48,7 @@ describe('Top level exports', () => {
       'PubSubService',
       'PanelService',
       'WorkflowStepsService',
+      'StudyPrefetcherService',
       'useToolbar',
     ].sort();
 

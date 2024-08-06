@@ -16,6 +16,7 @@ import { SyncGroup } from '../SyncGroupService/SyncGroupService';
 export type InitialImageOptions = {
   index?: number;
   preset?: JumpPresets;
+  useOnce?: boolean;
 };
 
 export type ViewportOptions = {

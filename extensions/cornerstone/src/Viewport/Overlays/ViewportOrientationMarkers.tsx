@@ -64,17 +64,17 @@ function ViewportOrientationMarkers({
       return '';
     }
 
-    let rowCosines, columnCosines;
+    let rowCosines, columnCosines, isDefaultValueSetForRowCosine, isDefaultValueSetForColumnCosine;
     if (viewportData.viewportType === 'stack') {
       const imageIndex = imageSliceData.imageIndex;
-      const imageId = viewportData.data.imageIds?.[imageIndex];
+      const imageId = viewportData.data[0].imageIds?.[imageIndex];
 
       // Workaround for below TODO stub
       if (!imageId) {
         return false;
       }
 
-      ({ rowCosines, columnCosines } = metaData.get('imagePlaneModule', imageId) || {});
+      ({ rowCosines, columnCosines, isDefaultValueSetForColumnCosine, isDefaultValueSetForColumnCosine } = metaData.get('imagePlaneModule', imageId) || {});
     } else {
       if (!element || !getEnabledElement(element)) {
         return '';
@@ -90,7 +90,7 @@ function ViewportOrientationMarkers({
       rowCosines = viewRight;
     }
 
-    if (!rowCosines || !columnCosines || rotation === undefined) {
+    if (!rowCosines || !columnCosines || rotation === undefined || isDefaultValueSetForRowCosine || isDefaultValueSetForColumnCosine) {
       return '';
     }
 

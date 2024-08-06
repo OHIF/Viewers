@@ -27,7 +27,8 @@ const areLocationsTheSame = (location0, location1) => {
  * @param {object} props
  * @param {function} props.children - Layout Template React Component
  */
-function DataSourceWrapper(props) {
+function DataSourceWrapper(props: withAppTypes) {
+  const { servicesManager } = props;
   const navigate = useNavigate();
   const { children: LayoutTemplate, ...rest } = props;
   const params = useParams();
@@ -188,14 +189,29 @@ function DataSourceWrapper(props) {
       if (isDataInvalid) {
         getData().catch(e => {
           console.error(e);
+
+          const { configurationAPI, friendlyName } = dataSource.getConfig();
           // If there is a data source configuration API, then the Worklist will popup the dialog to attempt to configure it
           // and attempt to resolve this issue.
-          if (dataSource.getConfig().configurationAPI) {
+          if (configurationAPI) {
             return;
           }
 
-          // No data source configuration API, so navigate to the not found server page.
-          navigate('/notfoundserver', '_self');
+          servicesManager.services.uiModalService.show({
+            title: 'Data Source Connection Error',
+            containerDimensions: 'w-1/2',
+            content: () => {
+              return (
+                <div>
+                  <p className="text-red-600">Error: {e.message}</p>
+                  <p>
+                    Please ensure the following data source is configured correctly or is running:
+                  </p>
+                  <div className="mt-2 font-bold">{friendlyName}</div>
+                </div>
+              );
+            },
+          });
         });
       }
     } catch (ex) {
@@ -234,29 +250,34 @@ export default DataSourceWrapper;
  */
 function _getQueryFilterValues(query, queryLimit) {
   query = new URLSearchParams(query);
+  const newParams = new URLSearchParams();
+  for (const [key, value] of query) {
+    newParams.set(key.toLowerCase(), value);
+  }
+  query = newParams;
 
-  const pageNumber = _tryParseInt(query.get('pageNumber'), 1);
-  const resultsPerPage = _tryParseInt(query.get('resultsPerPage'), 25);
+  const pageNumber = _tryParseInt(query.get('pagenumber'), 1);
+  const resultsPerPage = _tryParseInt(query.get('resultsperpage'), 25);
 
   const queryFilterValues = {
     // DCM
     patientId: query.get('mrn'),
-    patientName: query.get('patientName'),
+    patientName: query.get('patientname'),
     studyDescription: query.get('description'),
     modalitiesInStudy: query.get('modalities') && query.get('modalities').split(','),
     accessionNumber: query.get('accession'),
     //
-    startDate: query.get('startDate'),
-    endDate: query.get('endDate'),
+    startDate: query.get('startdate'),
+    endDate: query.get('enddate'),
     page: _tryParseInt(query.get('page'), undefined),
     pageNumber,
     resultsPerPage,
     // Rarely supported server-side
-    sortBy: query.get('sortBy'),
-    sortDirection: query.get('sortDirection'),
+    sortBy: query.get('sortby'),
+    sortDirection: query.get('sortdirection'),
     // Offset...
     offset: Math.floor((pageNumber * resultsPerPage) / queryLimit) * (queryLimit - 1),
-    config: query.get('configUrl'),
+    config: query.get('configurl'),
   };
 
   // patientName: good

@@ -9,8 +9,34 @@ module.exports = {
   ],
   prefix: '',
   theme: {
+    fontFamily: {
+      inter: ['Inter', 'sans-serif'],
+    },
+    fontSize: {
+      xs: '0.75rem', // 12px
+      sm: '0.8125rem', // 13px
+      base: '0.875rem', // 14px
+      lg: '1rem', // 16px
+      xl: '1.125rem', // 18px
+      '2xl': '1.25rem', // 20px
+      '3xl': '1.375rem', // 22px
+      '4xl': '1.5rem', // 24px
+      '5xl': '1.875rem', // 30px
+    },
+    fontWeight: {
+      hairline: '100',
+      thin: '200',
+      light: '300',
+      normal: '400',
+      medium: '500',
+      semibold: '600',
+      bold: '700',
+      extrabold: '800',
+      black: '900',
+    },
     extend: {
       colors: {
+        highlight: 'hsl(var(--highlight))',
         border: 'hsl(var(--border))',
         input: 'hsl(var(--input))',
         ring: 'hsl(var(--ring))',

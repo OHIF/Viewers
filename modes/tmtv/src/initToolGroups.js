@@ -132,12 +132,6 @@ function _initToolGroups(
       {
         toolName: toolNames.Crosshairs,
         configuration: {
-          viewportIndicators: true,
-          viewportIndicatorsConfig: {
-            circleRadius: 5,
-            xOffset: 0.95,
-            yOffset: 0.05,
-          },
           disableOnPassive: true,
           autoPan: {
             enabled: false,

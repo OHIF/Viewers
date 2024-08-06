@@ -30,7 +30,7 @@ const InputMultiSelect = ({
         value={value}
         isMulti={true}
         isClearable={false}
-        isSearchable={false}
+        isSearchable={true}
         closeMenuOnSelect={false}
         hideSelectedOptions={false}
         onChange={(selectedOptions, action) => {

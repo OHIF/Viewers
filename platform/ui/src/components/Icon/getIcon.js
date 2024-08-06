@@ -9,6 +9,7 @@ import { ReactComponent as calendar } from './../../assets/icons/calendar.svg';
 import { ReactComponent as cancel } from './../../assets/icons/cancel.svg';
 import { ReactComponent as clipboard } from './../../assets/icons/clipboard.svg';
 import { ReactComponent as close } from './../../assets/icons/closeIcon.svg';
+import { ReactComponent as database } from './../../assets/icons/database.svg';
 import { ReactComponent as dottedCircle } from './../../assets/icons/dotted-circle.svg';
 import { ReactComponent as circledCheckmark } from './../../assets/icons/circled-checkmark.svg';
 import { ReactComponent as chevronDown } from './../../assets/icons/chevron-down.svg';
@@ -173,6 +174,8 @@ import { ReactComponent as iconToolRotate } from './../../assets/icons/tool-3d-r
 import { ReactComponent as tab4D } from './../../assets/icons/tab-4d.svg';
 import { ReactComponent as investigationalUse } from './../../assets/icons/illustration-investigational-use.svg';
 import { ReactComponent as actionNewDialog } from './../../assets/icons/action-new-dialog.svg';
+import { ReactComponent as iconToolCobbAngle } from './../../assets/icons/tool-cobb-angle.svg';
+import { ReactComponent as iconToolWindowRegion } from './../../assets/icons/tool-window-region.svg';
 
 import CTAAA from './../../assets/icons/CT-AAA.png';
 import CTAAA2 from './../../assets/icons/CT-AAA2.png';
@@ -212,6 +215,7 @@ const ICONS = {
   cancel: cancel,
   clipboard: clipboard,
   close: close,
+  database: database,
   'dotted-circle': dottedCircle,
   'circled-checkmark': circledCheckmark,
   'chevron-down': chevronDown,
@@ -358,6 +362,8 @@ const ICONS = {
   'icon-tool-spline-roi': iconToolSplineRoi,
   'icon-tool-ultrasound-bidirectional': iconToolUltrasoundBidirectional,
   'icon-tool-loupe': iconToolLoupe,
+  'icon-tool-cobb-angle': iconToolCobbAngle,
+  'icon-tool-window-region': iconToolWindowRegion,
   /** Old OHIF */
   'old-trash': oldTrash,
   'old-play': oldPlay,

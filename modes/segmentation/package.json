@@ -1,6 +1,6 @@
 {
   "name": "@ohif/mode-segmentation",
-  "version": "3.9.0-beta.22",
+  "version": "3.9.0-beta.74",
   "description": "OHIF segmentation mode which enables labelmap segmentation read/edit/export",
   "author": "@ohif",
   "license": "MIT",
@@ -35,28 +35,28 @@
     "test:unit:ci": "jest --ci --runInBand --collectCoverage --passWithNoTests"
   },
   "peerDependencies": {
-    "@ohif/core": "3.9.0-beta.22",
-    "@ohif/extension-cornerstone": "3.9.0-beta.22",
-    "@ohif/extension-cornerstone-dicom-rt": "3.9.0-beta.22",
-    "@ohif/extension-cornerstone-dicom-seg": "3.9.0-beta.22",
-    "@ohif/extension-cornerstone-dicom-sr": "3.9.0-beta.22",
-    "@ohif/extension-default": "3.9.0-beta.22",
-    "@ohif/extension-dicom-pdf": "3.9.0-beta.22",
-    "@ohif/extension-dicom-video": "3.9.0-beta.22"
+    "@ohif/core": "3.9.0-beta.74",
+    "@ohif/extension-cornerstone": "3.9.0-beta.74",
+    "@ohif/extension-cornerstone-dicom-rt": "3.9.0-beta.74",
+    "@ohif/extension-cornerstone-dicom-seg": "3.9.0-beta.74",
+    "@ohif/extension-cornerstone-dicom-sr": "3.9.0-beta.74",
+    "@ohif/extension-default": "3.9.0-beta.74",
+    "@ohif/extension-dicom-pdf": "3.9.0-beta.74",
+    "@ohif/extension-dicom-video": "3.9.0-beta.74"
   },
   "dependencies": {
     "@babel/runtime": "^7.20.13",
     "i18next": "^17.0.3"
   },
   "devDependencies": {
-    "@babel/core": "^7.23.2",
+    "@babel/core": "7.24.7",
     "@babel/plugin-proposal-class-properties": "^7.16.7",
     "@babel/plugin-proposal-object-rest-spread": "^7.17.3",
     "@babel/plugin-proposal-private-methods": "^7.18.6",
     "@babel/plugin-syntax-dynamic-import": "^7.8.3",
     "@babel/plugin-transform-arrow-functions": "^7.16.7",
     "@babel/plugin-transform-regenerator": "^7.16.7",
-    "@babel/plugin-transform-runtime": "^7.23.2",
+    "@babel/plugin-transform-runtime": "7.24.7",
     "@babel/plugin-transform-typescript": "^7.13.0",
     "@babel/preset-env": "7.23.2",
     "@babel/preset-react": "^7.16.7",
@@ -68,9 +68,9 @@
     "copy-webpack-plugin": "^10.2.0",
     "cross-env": "^7.0.3",
     "dotenv": "^14.1.0",
-    "eslint": "^5.0.1",
+    "eslint": "^8.39.0",
     "eslint-loader": "^2.0.0",
-    "webpack": "^5.50.0",
+    "webpack": "5.89.0",
     "webpack-cli": "^4.7.2",
     "webpack-merge": "^5.7.3"
   }

@@ -1,15 +1,11 @@
-import React, { useMemo } from 'react';
+import React from 'react';
+import type { ServicesManager } from '@ohif/core';
 
-function WorkflowPanel({ servicesManager, extensionManager }) {
-  const ProgressDropdownWithService = useMemo(() => {
-    const defaultComponents = extensionManager.getModuleEntry(
-      '@ohif/extension-default.customizationModule.default'
-    ).value;
-
-    return defaultComponents.find(
-      component => component.id === 'progressDropdownWithServiceComponent'
+function WorkflowPanel({ servicesManager }: { servicesManager: ServicesManager }) {
+  const ProgressDropdownWithService =
+    servicesManager.services.customizationService.getCustomization(
+      'progressDropdownWithServiceComponent'
     ).component;
-  }, [extensionManager]);
 
   return (
     <div

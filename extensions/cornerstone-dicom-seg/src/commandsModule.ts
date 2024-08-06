@@ -48,6 +48,7 @@ const commandsModule = ({
     displaySetService,
     viewportGridService,
     toolGroupService,
+    cornerstoneViewportService,
   } = servicesManager.services;
 
   const actions = {
@@ -94,6 +95,7 @@ const commandsModule = ({
       updateViewportsForSegmentationRendering({
         viewportId,
         servicesManager,
+        displaySet,
         loadFn: async () => {
           const currentSegmentations = segmentationService.getSegmentations();
           const segmentationId = await segmentationService.createSegmentationForDisplaySet(
@@ -209,11 +211,13 @@ const commandsModule = ({
       const referencedDisplaySet = displaySetService.getDisplaySetByUID(
         displaySet.referencedDisplaySetInstanceUID
       );
+      const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
+      const initialSliceIndex = viewport.getSliceIndex();
 
       updateViewportsForSegmentationRendering({
         viewportId,
         servicesManager,
-        referencedDisplaySetInstanceUID: displaySet.referencedDisplaySetInstanceUID,
+        displaySet,
         loadFn: async () => {
           const segDisplaySet = displaySet;
           const suppressEvents = false;
@@ -228,6 +232,7 @@ const commandsModule = ({
           segmentation.description = `S${referencedDisplaySet.SeriesNumber}: ${referencedDisplaySet.SeriesDescription}`;
           return segmentationId;
         },
+        initialSliceIndex,
       });
     },
     /**
@@ -273,8 +278,8 @@ const commandsModule = ({
         const segmentMetadata = {
           SegmentNumber: segmentIndex.toString(),
           SegmentLabel: label,
-          SegmentAlgorithmType: 'MANUAL',
-          SegmentAlgorithmName: 'OHIF Brush',
+          SegmentAlgorithmType: segment?.algorithmType || 'MANUAL',
+          SegmentAlgorithmName: segment?.algorithmName || 'OHIF Brush',
           RecommendedDisplayCIELabValue,
           SegmentedPropertyCategoryCodeSequence: {
             CodeValue: 'T-D0050',

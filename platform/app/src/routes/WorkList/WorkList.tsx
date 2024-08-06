@@ -620,6 +620,12 @@ function _tryParseInt(str, defaultValue) {
 }
 
 function _getQueryFilterValues(params) {
+  const newParams = new URLSearchParams();
+  for (const [key, value] of params) {
+    newParams.set(key.toLowerCase(), value);
+  }
+  params = newParams;
+
   const queryFilterValues = {
     patientName: params.get('patientname'),
     mrn: params.get('mrn'),
@@ -633,7 +639,7 @@ function _getQueryFilterValues(params) {
     sortBy: params.get('sortby'),
     sortDirection: params.get('sortdirection'),
     pageNumber: _tryParseInt(params.get('pagenumber'), undefined),
-    resultsPerPage: _tryParseInt(params.get('resultsPerPage'), undefined),
+    resultsPerPage: _tryParseInt(params.get('resultsperpage'), undefined),
     datasources: params.get('datasources'),
     configUrl: params.get('configurl'),
     multimonitor: params.get('multimonitor'),

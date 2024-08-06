@@ -33,6 +33,7 @@ import {
   StateSyncService,
   PanelService,
   WorkflowStepsService,
+  StudyPrefetcherService,
   MultiMonitorService,
 } from './services';
 
@@ -87,6 +88,7 @@ const OHIF = {
   PanelService,
   useToolbar,
   WorkflowStepsService,
+  StudyPrefetcherService,
 };
 
 export {
@@ -133,6 +135,7 @@ export {
   Types,
   PanelService,
   WorkflowStepsService,
+  StudyPrefetcherService,
   useToolbar,
 };
 

@@ -32,6 +32,7 @@ module.exports = {
         '@babel/transform-destructuring',
         '@babel/plugin-transform-runtime',
         '@babel/plugin-transform-typescript',
+        '@babel/plugin-transform-class-static-block',
       ],
     },
     production: {
@@ -50,7 +51,7 @@ module.exports = {
         '@babel/preset-react',
         '@babel/preset-typescript',
       ],
-      plugins: ['react-hot-loader/babel'],
+      plugins: ['react-refresh/babel'],
       ignore: ['**/*.test.jsx', '**/*.test.js', '__snapshots__', '__tests__'],
     },
   },

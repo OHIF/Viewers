@@ -25,7 +25,7 @@
     "platform/**/public/**/*",
     "extensions/**/src/**/*",
     "modes/**/src/**/*",
-    "custom.d.ts"
+    "tests/**/*",
   ],
   "exclude": ["node_modules", "dist"]
 }

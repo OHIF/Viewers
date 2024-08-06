@@ -27,7 +27,7 @@ function ToolbarSplitButtonWithServices({
           });
         },
       })),
-    []
+    [groupId, onInteraction]
   );
 
   const PrimaryButtonComponent =
