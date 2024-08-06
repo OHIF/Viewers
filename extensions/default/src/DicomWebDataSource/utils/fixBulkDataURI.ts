@@ -23,6 +23,8 @@ function fixBulkDataURI(value, instance, dicomWebConfig) {
   let { BulkDataURI } = value;
   const { bulkDataURI: uriConfig = {} } = dicomWebConfig;
 
+  BulkDataURI = uriConfig.transform?.(BulkDataURI) || BulkDataURI;
+
   // Handle incorrectly prefixed origins
   const { startsWith, prefixWith = '' } = uriConfig;
   if (startsWith && BulkDataURI.startsWith(startsWith)) {

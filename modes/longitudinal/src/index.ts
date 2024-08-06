@@ -198,13 +198,17 @@ function modeFactory({ modeConfiguration }) {
                   namespace: tracked.viewport,
                   displaySetsToDisplay: [
                     ohif.sopClassHandler,
-                    dicomvideo.sopClassHandler,
+                    // dicomvideo.sopClassHandler,
                     ohif.wsiSopClassHandler,
                   ],
                 },
                 {
                   namespace: dicomsr.viewport,
                   displaySetsToDisplay: [dicomsr.sopClassHandler],
+                },
+                {
+                  namespace: dicomvideo.viewport,
+                  displaySetsToDisplay: [dicomvideo.sopClassHandler],
                 },
                 {
                   namespace: dicompdf.viewport,
