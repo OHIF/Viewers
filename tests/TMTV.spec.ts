@@ -7,8 +7,9 @@ import {
 } from './utils/index.js';
 
 // Extend AppTypes.Test to allow helper variables
-interface AppTypesTestExtended extends Partial<AppTypes.Test> {
-  index?: number;
+interface TestHandle {
+  window: AppTypes.Test;
+  index: number;
 }
 
 // Helper function to wait for image to finish updating
@@ -44,32 +45,29 @@ const waitForRender = async page => {
 const getSUV = async (page, index: number) => {
   const windowHandle = await page.evaluateHandle('window');
 
-  // Update index in window handle
-  await page.evaluate(
-    ({ window, index }) => {
-      window.index = index;
+  // Get SUV data
+  const SUV = await page.evaluate(
+    ({ window, index }: TestHandle) => {
+      const { services } = window;
+      console.log(`index: ${index}`);
+      // > Evaluate via Display Test
+      const { measurementService } = services;
+      const measurements = measurementService.getMeasurements();
+      // index 9 then 0 for subsequents, there may be measurements that get cleared
+      const displayText = measurements[index].displayText;
+      return displayText[2];
+
+      // > Evaluate via cached stats
+      //const stateManager = cornerstoneTools.annotation.state.getAnnotationManager();
+      //const annotations = stateManager.getAllAnnotations();
+      //const stats = annotations[index].data.cachedStats; // index always 9
+
+      //const targetIds = Object.keys(stats);
+      //const targetStats = stats[targetIds[1]];
+      //return targetStats.mean;
     },
     { window: windowHandle, index }
   );
-
-  // Get SUV data
-  const SUV = await page.evaluate(({ services, index }: AppTypesTestExtended) => {
-    // > Evaluate via Display Test
-    const { measurementService } = services;
-    const measurements = measurementService.getMeasurements();
-    // index 9 then 0 for subsequents, there may be measurements that get cleared
-    const displayText = measurements[index].displayText;
-    return displayText[2];
-
-    // > Evaluate via cached stats
-    //const stateManager = cornerstoneTools.annotation.state.getAnnotationManager();
-    //const annotations = stateManager.getAllAnnotations();
-    //const stats = annotations[index].data.cachedStats; // index always 9
-
-    //const targetIds = Object.keys(stats);
-    //const targetStats = stats[targetIds[1]];
-    //return targetStats.mean;
-  }, windowHandle);
 
   return SUV;
 };
