@@ -30,16 +30,11 @@ export default function addSRAnnotation(measurement, imageId, frameNumber) {
 
   /** TODO: Add support for other SCOORD3D graphic types */
   if (ValueType === 'SCOORD3D') {
-    toolName = 'Probe';
+    toolName = 'SCOORD3DPoint';
   }
 
   const imagePlaneModule = metaData.get('imagePlaneModule', imageId);
 
-  /**
-   * This annotation (DICOMSRDisplay) is only used by the SR viewport.
-   * This is used before the annotation is hydrated. If hydrated the measurement will be added
-   * to the measurement service and will be available for the other viewports.
-   */
   const SRAnnotation: Types.Annotation = {
     annotationUID: measurement.TrackingUniqueIdentifier,
     highlighted: false,
@@ -51,6 +46,8 @@ export default function addSRAnnotation(measurement, imageId, frameNumber) {
       graphicType: GraphicType,
       FrameOfReferenceUID: imagePlaneModule.frameOfReferenceUID,
       referencedImageId: imageId,
+      /** Used by ProbeTool */
+      cameraFocalPoint: measurementData.renderableData[GraphicType][0][0],
     },
     data: {
       label: measurement.labels[0].value,
