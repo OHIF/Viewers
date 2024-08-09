@@ -263,18 +263,13 @@ function createDicomJSONApi(dicomJsonConfig) {
       const { StudyInstanceUID, SeriesInstanceUID } = displaySet;
       const study = findStudies('StudyInstanceUID', StudyInstanceUID)[0];
       const series = study.series.find(s => s.SeriesInstanceUID === SeriesInstanceUID);
-      let instances = displaySet.images;
-      if (series.instances.length > displaySet.images.length) {
-        instances = series.instances;
-      }
 
-      instances.forEach(instance => {
+      displaySet.images.forEach(instance => {
         const NumberOfFrames = instance.NumberOfFrames;
-
         if (NumberOfFrames > 1) {
           for (let i = 0; i < NumberOfFrames; i++) {
             const imageId = getImageId({
-              instance,
+              instance: series.instances[i],
               frame: i,
               config: dicomJsonConfig,
             });
