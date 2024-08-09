@@ -268,8 +268,12 @@ function createDicomJSONApi(dicomJsonConfig) {
         const NumberOfFrames = instance.NumberOfFrames;
         if (NumberOfFrames > 1) {
           for (let i = 0; i < NumberOfFrames; i++) {
+            /** In case there are multiple sop class we filter sop instances */
+            const images = series.instances.filter(
+              i => i.SOPInstanceUID === instance.SOPInstanceUID
+            );
             const imageId = getImageId({
-              instance: series.instances[i],
+              instance: images.length > 0 ? images[i] : instance,
               frame: i,
               config: dicomJsonConfig,
             });
