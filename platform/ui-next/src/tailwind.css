@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -11,15 +13,15 @@
     --foreground: 0 0% 98%;
     --card: 236 62% 5%;
     --card-foreground: 0 0% 98%;
-    --popover: 236 62% 5%;
+    --popover: 219 90% 15%;
     --popover-foreground: 0 0% 98%;
     --primary: 214 98% 60%;
     --primary-foreground: 0 0% 98%;
     --secondary: 214 66% 48%;
     --secondary-foreground: 0 0% 98%;
     --muted: 234 64% 10%;
-    --muted-foreground: 200 46 65%;
-    --accent: 214 67% 12%;
+    --muted-foreground: 200 46% 65%;
+    --accent: 217 79% 24%;
     --accent-foreground: 0 0% 98%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
@@ -187,6 +189,37 @@
 
 */
 
+/* Updated Playground page styles */
+
+@layer base {
+  html {
+    font-family: 'Inter', sans-serif;
+  }
+
+  body {
+    @apply bg-black;
+  }
+}
+
+h2.section-header {
+  @apply py-4 text-2xl font-normal text-white;
+}
+
+h3.section-header {
+  @apply py-3 text-xl text-white;
+}
+
+.row {
+  @apply mb-6 flex flex-row flex-wrap rounded-md border py-10;
+}
+
+.example {
+  @apply flex-initial px-6;
+}
+
+.example2 {
+  @apply flex-initial px-4;
+}
 
 /* Additional CSS edits to components */
 

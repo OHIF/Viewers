@@ -61,11 +61,9 @@ const initMeasurementService = (
     Length.matchingCriteria,
     () => {
       console.warn('Crosshairs mapping not implemented.');
-      return {};
     },
     () => {
       console.warn('Crosshairs mapping not implemented.');
-      return {};
     }
   );
 
