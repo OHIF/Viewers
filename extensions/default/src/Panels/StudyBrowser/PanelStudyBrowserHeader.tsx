@@ -7,18 +7,16 @@ function PanelStudyBrowserHeader({
   tab,
   getCloseIcon,
   viewPresets,
-  selectedViewPreset,
-  setSelectedViewPreset,
+  updateViewPresetValue,
   actionIcons,
-  setActionIconValue,
+  updateActionIconValue,
 }: {
   tab: any;
   getCloseIcon: () => JSX.Element;
-  selectedViewPreset: viewPreset;
   viewPresets: viewPreset[];
-  setSelectedViewPreset: (viewPreset: viewPreset) => void;
+  updateViewPresetValue: (viewPreset: viewPreset) => void;
   actionIcons: actionIcon[];
-  setActionIconValue: (actionIcon: actionIcon) => void;
+  updateActionIconValue: (actionIcon: actionIcon) => void;
 }) {
   return (
     <>
@@ -28,10 +26,10 @@ function PanelStudyBrowserHeader({
             <div className="flex h-full items-center justify-center">
               <ToggleGroup
                 type="single"
-                value={selectedViewPreset.id}
+                value={viewPresets.filter(preset => preset.selected)[0].id}
                 onValueChange={value => {
                   const selectedViewPreset = viewPresets.find(preset => preset.id === value);
-                  setSelectedViewPreset(selectedViewPreset);
+                  updateViewPresetValue(selectedViewPreset);
                 }}
               >
                 {viewPresets.map((viewPreset: viewPreset, index) => (
@@ -58,7 +56,7 @@ function PanelStudyBrowserHeader({
                   <Icon
                     key={index}
                     name={icon.iconName}
-                    onClick={() => setActionIconValue(icon)}
+                    onClick={() => updateActionIconValue(icon)}
                     className={`cursor-pointer`}
                   />
                 ))}

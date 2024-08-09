@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
-import { Icon, StudyBrowser, useImageViewer, useViewportGrid } from '@ohif/ui';
+import { StudyBrowser, useImageViewer, useViewportGrid } from '@ohif/ui';
 import { utils } from '@ohif/core';
 import { useNavigate } from 'react-router-dom';
 import { Separator } from '@ohif/ui-next';
@@ -42,23 +42,26 @@ function PanelStudyBrowser({
   const [displaySets, setDisplaySets] = useState([]);
   const [thumbnailImageSrcMap, setThumbnailImageSrcMap] = useState({});
 
-  const defaultViewPresetCustomization = customizationService.get(
-    'studyBrowser.defaultViewPreset'
-  )?.value;
-
-  const defaultViewPreset = defaultViewPresetCustomization
-    ? defaultViewPresets.find(vp => vp.id === defaultViewPresetCustomization)
-    : defaultViewPresets[0];
-
-  const [viewPresets, setViewPresets] = useState(defaultViewPresets);
-  const [selectedViewPreset, setSelectedViewPreset] = useState(defaultViewPreset);
+  const [viewPresets, setViewPresets] = useState(
+    customizationService.getCustomization('studyBrowser.viewPresets')?.value || defaultViewPresets
+  );
 
   const [actionIcons, setActionIcons] = useState(defaultActionIcons);
 
+  // multiple can be true or false
   const updateActionIconValue = actionIcon => {
     actionIcon.value = !actionIcon.value;
     const newActionIcons = [...actionIcons];
     setActionIcons(newActionIcons);
+  };
+
+  // only one is true at a time
+  const updateViewPresetValue = viewPreset => {
+    const newViewPresets = viewPresets.map(preset => {
+      preset.selected = preset.id === viewPreset.id;
+      return preset;
+    });
+    setViewPresets(newViewPresets);
   };
 
   const onDoubleClickThumbnailHandler = displaySetInstanceUID => {
@@ -282,10 +285,9 @@ function PanelStudyBrowser({
             tab={tab}
             getCloseIcon={getCloseIcon}
             viewPresets={viewPresets}
-            selectedViewPreset={selectedViewPreset}
-            setSelectedViewPreset={setSelectedViewPreset}
+            updateViewPresetValue={updateViewPresetValue}
             actionIcons={actionIcons}
-            setActionIconValue={updateActionIconValue}
+            updateActionIconValue={updateActionIconValue}
           />
           <Separator
             orientation="horizontal"
@@ -305,6 +307,7 @@ function PanelStudyBrowser({
         onClickTab={clickedTabName => {
           setActiveTabName(clickedTabName);
         }}
+        showSettings={actionIcons.find(icon => icon.id === 'settings').value}
       />
     </>
   );

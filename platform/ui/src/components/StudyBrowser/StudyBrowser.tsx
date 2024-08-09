@@ -33,6 +33,7 @@ const StudyBrowser = ({
   onClickUntrack = noop,
   activeDisplaySetInstanceUIDs,
   servicesManager,
+  showSettings,
 }: withAppTypes) => {
   const { t } = useTranslation('StudyBrowser');
   const { customizationService } = servicesManager?.services || {};
@@ -73,13 +74,12 @@ const StudyBrowser = ({
 
   return (
     <React.Fragment>
-     { /** <div
-        className="w-100 border-secondary-light bg-primary-dark flex h-20 flex-col items-center justify-center gap-2 border-b p-4"
-        data-cy={'studyBrowser-panel'}
-      >
-
-
-
+      {showSettings && (
+        <div
+          className="w-100 border-secondary-light bg-primary-dark flex h-20 flex-col items-center justify-center gap-2 border-b p-4"
+          data-cy={'studyBrowser-panel'}
+        >
+          {/**
         <LegacyButtonGroup
           variant="outlined"
           color="secondary"
@@ -114,15 +114,12 @@ const StudyBrowser = ({
             );
           })}
         </LegacyButtonGroup>
-
-
-        {window.config.experimentalStudyBrowserSort && (
+        */}
           <StudyBrowserSort servicesManager={servicesManager} />
-        )}
-      </div>
-*/}
-      <div className=" ohif-scrollbar invisible-scrollbar flex flex-1 flex-col overflow-auto bg-bkg-low">
-        {/**getTabContent()*/}
+        </div>
+      )}
+      <div className="ohif-scrollbar invisible-scrollbar bg-bkg-low flex flex-1 flex-col overflow-auto">
+        {getTabContent()}
       </div>
     </React.Fragment>
   );
