@@ -1,4 +1,4 @@
-import { actionIcons } from './actionIcons';
-import { viewPresets } from './viewPresets';
+import { defaultActionIcons } from './actionIcons';
+import { defaultViewPresets } from './viewPresets';
 
-export { actionIcons, viewPresets };
+export { defaultActionIcons, defaultViewPresets };

@@ -1,5 +1,4 @@
 import React from 'react';
-import { viewPresets, actionIcons } from './constants';
 import { ToggleGroup, ToggleGroupItem } from '@ohif/ui-next';
 import { Icon } from '@ohif/ui';
 import { actionIcon, viewPreset } from './types';
@@ -7,13 +6,19 @@ import { actionIcon, viewPreset } from './types';
 function PanelStudyBrowserHeader({
   tab,
   getCloseIcon,
-  viewPreset,
-  setViewPreset,
+  viewPresets,
+  selectedViewPreset,
+  setSelectedViewPreset,
+  actionIcons,
+  setActionIconValue,
 }: {
   tab: any;
   getCloseIcon: () => JSX.Element;
-  viewPreset: viewPreset;
-  setViewPreset: (viewPreset: viewPreset) => void;
+  selectedViewPreset: viewPreset;
+  viewPresets: viewPreset[];
+  setSelectedViewPreset: (viewPreset: viewPreset) => void;
+  actionIcons: actionIcon[];
+  setActionIconValue: (actionIcon: actionIcon) => void;
 }) {
   return (
     <>
@@ -23,10 +28,10 @@ function PanelStudyBrowserHeader({
             <div className="flex h-full items-center justify-center">
               <ToggleGroup
                 type="single"
-                value={viewPreset.id}
+                value={selectedViewPreset.id}
                 onValueChange={value => {
                   const selectedViewPreset = viewPresets.find(preset => preset.id === value);
-                  setViewPreset(selectedViewPreset);
+                  setSelectedViewPreset(selectedViewPreset);
                 }}
               >
                 {viewPresets.map((viewPreset: viewPreset, index) => (
@@ -53,9 +58,7 @@ function PanelStudyBrowserHeader({
                   <Icon
                     key={index}
                     name={icon.iconName}
-                    onClick={e => {
-                      icon.value = !icon.value;
-                    }}
+                    onClick={() => setActionIconValue(icon)}
                     className={`cursor-pointer`}
                   />
                 ))}

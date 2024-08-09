@@ -1,6 +1,6 @@
 import type { actionIcon } from '../types/actionsIcon';
 
-const actionIcons = [
+const defaultActionIcons = [
   {
     id: 'settings',
     iconName: 'settings-bars',
@@ -8,4 +8,4 @@ const actionIcons = [
   },
 ] as actionIcon[];
 
-export { actionIcons };
+export { defaultActionIcons };

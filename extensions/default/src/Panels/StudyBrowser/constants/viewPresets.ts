@@ -1,6 +1,6 @@
 import type { viewPreset } from '../types/viewPreset';
 
-const viewPresets = [
+const defaultViewPresets = [
   {
     id: 'list',
     iconName: 'icon-list-view',
@@ -11,4 +11,4 @@ const viewPresets = [
   },
 ] as viewPreset[];
 
-export { viewPresets };
+export { defaultViewPresets };

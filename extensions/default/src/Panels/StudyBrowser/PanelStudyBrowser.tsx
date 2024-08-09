@@ -5,7 +5,7 @@ import { utils } from '@ohif/core';
 import { useNavigate } from 'react-router-dom';
 import { Separator } from '@ohif/ui-next';
 import { PanelStudyBrowserHeader } from './PanelStudyBrowserHeader';
-import { viewPresets } from './constants';
+import { defaultActionIcons, defaultViewPresets } from './constants';
 
 const { sortStudyInstances, formatDate, createStudyBrowserTabs } = utils;
 
@@ -45,11 +45,21 @@ function PanelStudyBrowser({
   const defaultViewPresetCustomization = customizationService.get(
     'studyBrowser.defaultViewPreset'
   )?.value;
-  const defaultViewPreset = defaultViewPresetCustomization
-    ? viewPresets.find(vp => vp.id === defaultViewPresetCustomization)
-    : viewPresets[0];
 
-  const [viewPreset, setViewPreset] = useState(defaultViewPreset);
+  const defaultViewPreset = defaultViewPresetCustomization
+    ? defaultViewPresets.find(vp => vp.id === defaultViewPresetCustomization)
+    : defaultViewPresets[0];
+
+  const [viewPresets, setViewPresets] = useState(defaultViewPresets);
+  const [selectedViewPreset, setSelectedViewPreset] = useState(defaultViewPreset);
+
+  const [actionIcons, setActionIcons] = useState(defaultActionIcons);
+
+  const updateActionIconValue = actionIcon => {
+    actionIcon.value = !actionIcon.value;
+    const newActionIcons = [...actionIcons];
+    setActionIcons(newActionIcons);
+  };
 
   const onDoubleClickThumbnailHandler = displaySetInstanceUID => {
     let updatedViewports = [];
@@ -271,8 +281,11 @@ function PanelStudyBrowser({
           <PanelStudyBrowserHeader
             tab={tab}
             getCloseIcon={getCloseIcon}
-            viewPreset={viewPreset}
-            setViewPreset={setViewPreset}
+            viewPresets={viewPresets}
+            selectedViewPreset={selectedViewPreset}
+            setSelectedViewPreset={setSelectedViewPreset}
+            actionIcons={actionIcons}
+            setActionIconValue={updateActionIconValue}
           />
           <Separator
             orientation="horizontal"

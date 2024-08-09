@@ -16,9 +16,6 @@ type PanelData = {
   label: string;
   name: string;
   content: unknown;
-  viewPresets?: { view: string; iconName: string }[];
-  viewPreset?: string;
-  actionIcons?: { id: string; iconName: string; value: boolean }[];
 };
 
 export enum PanelPosition {
@@ -128,9 +125,6 @@ export default class PanelService extends PubSubService {
       iconLabel: entry.iconLabel,
       label: entry.label,
       name: entry.name,
-      viewPresets: entry.viewPresets,
-      viewPreset: entry.viewPreset,
-      actionIcons: entry.actionIcons,
       content,
     };
   }
