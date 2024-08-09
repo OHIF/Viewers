@@ -23,24 +23,6 @@ function getPanelModule({ commandsManager, extensionManager, servicesManager }):
           servicesManager={servicesManager}
         />
       ),
-      viewPresets: [
-        {
-          id: 'list',
-          iconName: 'icon-list-view',
-        },
-        {
-          id: 'thumbnails',
-          iconName: 'icon-thumbnail-view',
-        },
-      ],
-      viewPreset: 'thumbnails',
-      actionIcons: [
-        {
-          id: 'settings',
-          iconName: 'settings-bars',
-          value: false,
-        },
-      ],
     },
 
     {
