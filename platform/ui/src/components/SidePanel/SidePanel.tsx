@@ -81,20 +81,6 @@ const getNumGridColumns = (numTabs: number, gridWidth: number) => {
   return numTabsWithOneSpacerEach;
 };
 
-const getGridStyle = (
-  side: string,
-  numTabs: number = 0,
-  gridWidth: number,
-  expandedWidth: number
-): CSSProperties => {
-  const relativePosition = Math.max(0, Math.floor(expandedWidth - gridWidth) / 2 - closeIconWidth);
-  return {
-    position: 'relative',
-    ...(side === 'left' ? { right: `${relativePosition}px` } : { left: `${relativePosition}px` }),
-    width: `${gridWidth}px`,
-  };
-};
-
 const getTabClassNames = (
   numColumns: number,
   numTabs: number,
@@ -297,62 +283,64 @@ const SidePanel = ({
     const numCols = getNumGridColumns(tabs.length, gridWidth);
 
     return (
-      <div className={classnames('flex grow', side === 'right' ? 'justify-start' : 'justify-end')}>
+      <>
         {getCloseIcon()}
-        <div
-          className={classnames('bg-primary-dark text-primary-active flex flex-wrap')}
-          style={getGridStyle(side, tabs.length, gridWidth, expandedWidth)}
-        >
-          {tabs.map((tab, tabIndex) => {
-            const { disabled } = tab;
-            return (
-              <React.Fragment key={tabIndex}>
-                {tabIndex % numCols !== 0 && (
-                  <div
-                    className={classnames(
-                      'flex h-[28px] w-[2px] items-center bg-black',
-                      tabSpacerWidth
-                    )}
-                  >
-                    <div className="bg-primary-dark h-[20px] w-full"></div>
-                  </div>
-                )}
-                <Tooltip
-                  position={'bottom'}
-                  key={tabIndex}
-                  content={getToolTipContent(tab.label, disabled)}
-                >
-                  <div
-                    className={getTabClassNames(
-                      numCols,
-                      tabs.length,
-                      tabIndex,
-                      tabIndex === activeTabIndex,
-                      disabled
-                    )}
-                    style={getTabStyle(tabs.length)}
-                    onClick={() => {
-                      return disabled ? null : updateActiveTabIndex(tabIndex);
-                    }}
-                    data-cy={`${tab.name}-btn`}
-                  >
-                    <div className={getTabIconClassNames(tabs.length, tabIndex === activeTabIndex)}>
-                      <Icon
-                        name={tab.iconName}
-                        className={`${tab.disabled && 'ohif-disabled'}`}
-                        style={{
-                          width: '22px',
-                          height: '22px',
-                        }}
-                      ></Icon>
+
+        <div className={classnames('flex grow justify-center')}>
+          <div className={classnames('bg-primary-dark text-primary-active flex flex-wrap')}>
+            {tabs.map((tab, tabIndex) => {
+              const { disabled } = tab;
+              return (
+                <React.Fragment key={tabIndex}>
+                  {tabIndex % numCols !== 0 && (
+                    <div
+                      className={classnames(
+                        'flex h-[28px] w-[2px] items-center bg-black',
+                        tabSpacerWidth
+                      )}
+                    >
+                      <div className="bg-primary-dark h-[20px] w-full"></div>
                     </div>
-                  </div>
-                </Tooltip>
-              </React.Fragment>
-            );
-          })}
+                  )}
+                  <Tooltip
+                    position={'bottom'}
+                    key={tabIndex}
+                    content={getToolTipContent(tab.label, disabled)}
+                  >
+                    <div
+                      className={getTabClassNames(
+                        numCols,
+                        tabs.length,
+                        tabIndex,
+                        tabIndex === activeTabIndex,
+                        disabled
+                      )}
+                      style={getTabStyle(tabs.length)}
+                      onClick={() => {
+                        return disabled ? null : updateActiveTabIndex(tabIndex);
+                      }}
+                      data-cy={`${tab.name}-btn`}
+                    >
+                      <div
+                        className={getTabIconClassNames(tabs.length, tabIndex === activeTabIndex)}
+                      >
+                        <Icon
+                          name={tab.iconName}
+                          className={`${tab.disabled && 'ohif-disabled'}`}
+                          style={{
+                            width: '22px',
+                            height: '22px',
+                          }}
+                        ></Icon>
+                      </div>
+                    </div>
+                  </Tooltip>
+                </React.Fragment>
+              );
+            })}
+          </div>
         </div>
-      </div>
+      </>
     );
   };
 
@@ -363,14 +351,14 @@ const SidePanel = ({
 
     return (
       <>
+        <div className="bg-bkg-med flex h-[40px] select-none rounded-t p-2">
+          {getTabGridComponent()}
+        </div>
         <Separator
           orientation="horizontal"
           className="bg-black"
           thickness="2px"
         />
-        <div className="bg-bkg-med flex h-[40px] select-none rounded-t p-2">
-          {getTabGridComponent()}
-        </div>
       </>
     );
   };
