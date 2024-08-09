@@ -5,6 +5,7 @@ import PropTypes from 'prop-types';
 import { utils } from '@ohif/core';
 import { StudyBrowser, useImageViewer, useViewportGrid, Dialog, ButtonEnums } from '@ohif/ui';
 import { useTrackedMeasurements } from '../../getContextModule';
+import { Separator } from '@ohif/ui-next';
 
 const { formatDate, createStudyBrowserTabs } = utils;
 
@@ -18,7 +19,9 @@ function PanelStudyBrowserTracking({
   getStudiesForPatientByMRN,
   requestDisplaySetCreationForStudy,
   dataSource,
-  getOpenStateComponent,
+  renderHeader,
+  getCloseIcon,
+  tab,
 }: withAppTypes) {
   const {
     displaySetService,
@@ -434,8 +437,24 @@ function PanelStudyBrowserTracking({
 
   return (
     <div>
-      {getOpenStateComponent && getOpenStateComponent()}
+      {renderHeader && (
+        <>
+          <div className="bg-primary-dark flex select-none rounded-t pt-1.5 pb-[2px]">
+            <div className="flex h-[24px] w-full cursor-pointer select-none justify-center self-center text-[14px]">
+              <div className="text-primary-active flex grow cursor-pointer select-none justify-center self-center text-[13px]">
+                <span>{tab.label}</span>
+              </div>
+            </div>
 
+            {getCloseIcon()}
+          </div>
+          <Separator
+            orientation="horizontal"
+            className="bg-black"
+            thickness="2px"
+          />
+        </>
+      )}
       <StudyBrowser
         tabs={tabs}
         servicesManager={servicesManager}
@@ -464,7 +483,6 @@ PanelStudyBrowserTracking.propTypes = {
   getImageSrc: PropTypes.func.isRequired,
   getStudiesForPatientByMRN: PropTypes.func.isRequired,
   requestDisplaySetCreationForStudy: PropTypes.func.isRequired,
-  getOpenStateComponent: PropTypes.elementType,
 };
 
 export default PanelStudyBrowserTracking;

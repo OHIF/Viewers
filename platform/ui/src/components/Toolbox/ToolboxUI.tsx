@@ -107,7 +107,6 @@ function ToolboxUI(props: withAppTypes) {
 
   return (
     <>
-      {props.getOpenStateComponent && props.getOpenStateComponent()}
       {useCollapsedPanel ? (
         <PanelSection
           childrenClassName="flex-shrink-0"

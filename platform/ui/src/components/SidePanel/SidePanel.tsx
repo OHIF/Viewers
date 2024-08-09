@@ -171,6 +171,7 @@ const SidePanel = ({
   const { t } = useTranslation('SidePanel');
 
   const [panelOpen, setPanelOpen] = useState(activeTabIndexProp !== null);
+  const [renderHeader, setRenderHeader] = useState(false);
   const [activeTabIndex, setActiveTabIndex] = useState(0);
 
   const styleMap = createStyleMap(expandedWidth, borderSize, collapsedWidth);
@@ -207,6 +208,9 @@ const SidePanel = ({
     [onActiveTabIndexChange, updatePanelOpen]
   );
 
+  useEffect(() => {
+    setRenderHeader(tabs.length === 1);
+  }, [tabs]);
   useEffect(() => {
     updateActiveTabIndex(activeTabIndexProp);
   }, [activeTabIndexProp, updateActiveTabIndex]);
@@ -272,8 +276,8 @@ const SidePanel = ({
     return (
       <div
         className={classnames(
-          'flex h-[28px] cursor-pointer items-center justify-center',
-          side === 'left' ? 'order-last' : 'order-first'
+          'absolute flex h-[24px] cursor-pointer items-center justify-center',
+          side === 'left' ? 'right-0' : 'left-0'
         )}
         style={{ width: `${closeIconWidth}px` }}
         onClick={() => {
@@ -352,67 +356,22 @@ const SidePanel = ({
     );
   };
 
-  const getOneTabComponent = () => {
-    return (
-      <div
-        className={classnames(
-          'flex h-[24px] w-full cursor-pointer select-none justify-center self-center text-[14px]'
-        )}
-        data-cy={`${tabs[0].name}-btn`}
-        onClick={() => updatePanelOpen(!panelOpen)}
-      >
-        <div className="flex w-full items-center justify-between">
-          <div className="flex h-full items-center justify-center">
-            {tabs[0].viewPresets && (
-              <ToggleGroup
-                type="single"
-                value={tabs[0].viewPreset}
-              >
-                {tabs[0].viewPresets.map((viewPreset, index) => (
-                  <ToggleGroupItem
-                    key={index}
-                    aria-label={viewPreset.id}
-                    value={viewPreset.id}
-                  >
-                    <Icon name={viewPreset.iconName} />
-                  </ToggleGroupItem>
-                ))}
-              </ToggleGroup>
-            )}
-          </div>
-
-          <div className="text-info-secondary flex items-center justify-center">
-            {' '}
-            <span>{tabs[0].label}</span>{' '}
-          </div>
-
-          <div className="flex items-center justify-center">
-            {getCloseIcon()}
-
-            {tabs[0].actionIcons && (
-              <div className="flex items-center space-x-1">
-                {tabs[0].actionIcons.map((icon, index) => (
-                  <Icon
-                    key={index}
-                    name={icon.iconName}
-                    onClick={e => {
-                      icon.value = !icon.value;
-                    }}
-                  />
-                ))}
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-    );
-  };
-
   const getOpenStateComponent = () => {
+    if (tabs.length === 1) {
+      return null;
+    }
+
     return (
-      <div className="bg-bkg-med flex h-[40px] select-none rounded-t p-2">
-        {tabs.length === 1 ? getOneTabComponent() : getTabGridComponent()}
-      </div>
+      <>
+        <Separator
+          orientation="horizontal"
+          className="bg-black"
+          thickness="2px"
+        />
+        <div className="bg-bkg-med flex h-[40px] select-none rounded-t p-2">
+          {getTabGridComponent()}
+        </div>
+      </>
     );
   };
 
@@ -423,17 +382,15 @@ const SidePanel = ({
     >
       {panelOpen ? (
         <>
-          <Separator
-            orientation="horizontal"
-            className="bg-black"
-            thickness="2px"
-          />
+          {getOpenStateComponent()}
           {tabs.map((tab, tabIndex) => {
             if (tabIndex === activeTabIndex) {
               return (
                 <tab.content
                   key={tabIndex}
-                  getOpenStateComponent={getOpenStateComponent}
+                  getCloseIcon={getCloseIcon}
+                  tab={tab}
+                  renderHeader={renderHeader}
                 />
               );
             }

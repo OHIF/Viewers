@@ -25,7 +25,9 @@ function WrappedPanelStudyBrowserTracking({
   commandsManager,
   extensionManager,
   servicesManager,
-  getOpenStateComponent,
+  renderHeader,
+  getCloseIcon,
+  tab,
 }: withAppTypes) {
   const dataSource = extensionManager.getActiveDataSource()[0];
 
@@ -47,7 +49,9 @@ function WrappedPanelStudyBrowserTracking({
       getImageSrc={_getImageSrcFromImageId}
       getStudiesForPatientByMRN={_getStudiesForPatientByMRN}
       requestDisplaySetCreationForStudy={_requestDisplaySetCreationForStudy}
-      getOpenStateComponent={getOpenStateComponent}
+      renderHeader={renderHeader}
+      getCloseIcon={getCloseIcon}
+      tab={tab}
     />
   );
 }

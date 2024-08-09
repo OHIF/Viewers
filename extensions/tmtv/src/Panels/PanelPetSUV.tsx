@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { PanelSection, Input, Button } from '@ohif/ui';
 import { DicomMetadataStore } from '@ohif/core';
 import { useTranslation } from 'react-i18next';
+import { Separator } from '@ohif/ui-next';
 
 const DEFAULT_MEATADATA = {
   PatientWeight: null,
@@ -25,7 +26,9 @@ const DEFAULT_MEATADATA = {
 export default function PanelPetSUV({
   servicesManager,
   commandsManager,
-  getOpenStateComponent,
+  renderHeader,
+  getCloseIcon,
+  tab,
 }: withAppTypes) {
   const { t } = useTranslation('PanelSUV');
   const { displaySetService, toolGroupService, toolbarService, hangingProtocolService } =
@@ -130,7 +133,24 @@ export default function PanelPetSUV({
   }
   return (
     <>
-      {getOpenStateComponent && getOpenStateComponent()}
+      {renderHeader && (
+        <>
+          <div className="bg-primary-dark flex select-none rounded-t pt-1.5 pb-[2px]">
+            <div className="flex h-[24px] w-full cursor-pointer select-none justify-center self-center text-[14px]">
+              <div className="text-primary-active flex grow cursor-pointer select-none justify-center self-center text-[13px]">
+                <span>{tab.label}</span>
+              </div>
+            </div>
+
+            {getCloseIcon()}
+          </div>
+          <Separator
+            orientation="horizontal"
+            className="bg-black"
+            thickness="2px"
+          />
+        </>
+      )}
       <div className="ohif-scrollbar flex min-h-0 flex-auto select-none flex-col justify-between overflow-auto">
         <div className="flex min-h-0 flex-1 flex-col bg-black text-[13px] font-[300]">
           <PanelSection title={t('Patient Information')}>

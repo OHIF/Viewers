@@ -13,7 +13,7 @@ const getPanelModule = ({
 }: withAppTypes) => {
   const { customizationService } = servicesManager.services;
 
-  const wrappedPanelSegmentation = ({ configuration, getOpenStateComponent }) => {
+  const wrappedPanelSegmentation = ({ configuration, renderHeader, getCloseIcon, tab }) => {
     const [appConfig] = useAppConfig();
 
     return (
@@ -26,7 +26,9 @@ const getPanelModule = ({
           disableEditing: appConfig.disableEditing,
           ...customizationService.get('segmentation.panel'),
         }}
-        getOpenStateComponent={getOpenStateComponent}
+        renderHeader={renderHeader}
+        getCloseIcon={getCloseIcon}
+        tab={tab}
       />
     );
   };
@@ -48,7 +50,12 @@ const getPanelModule = ({
     );
   };
 
-  const wrappedPanelSegmentationWithTools = ({ configuration, getOpenStateComponent }) => {
+  const wrappedPanelSegmentationWithTools = ({
+    configuration,
+    renderHeader,
+    getCloseIcon,
+    tab,
+  }) => {
     const [appConfig] = useAppConfig();
 
     return (
@@ -62,7 +69,9 @@ const getPanelModule = ({
           configuration={{
             ...configuration,
           }}
-          getOpenStateComponent={getOpenStateComponent}
+          renderHeader={renderHeader}
+          getCloseIcon={getCloseIcon}
+          tab={tab}
         />
         <PanelSegmentation
           commandsManager={commandsManager}

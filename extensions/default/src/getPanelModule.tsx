@@ -8,13 +8,15 @@ import i18n from 'i18next';
 // - show errors in UI for thumbnails if promise fails
 
 function getPanelModule({ commandsManager, extensionManager, servicesManager }) {
-  const wrappedMeasurementPanel = ({ getOpenStateComponent }) => {
+  const wrappedMeasurementPanel = ({ renderHeader, getCloseIcon, tab }) => {
     return (
       <PanelMeasurementTable
         commandsManager={commandsManager}
         servicesManager={servicesManager}
         extensionManager={extensionManager}
-        getOpenStateComponent={getOpenStateComponent}
+        renderHeader={renderHeader}
+        getCloseIcon={getCloseIcon}
+        tab={tab}
       />
     );
   };

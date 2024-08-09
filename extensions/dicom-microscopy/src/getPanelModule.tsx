@@ -13,7 +13,7 @@ export default function getPanelModule({
   extensionManager,
   servicesManager,
 }: Types.Extensions.ExtensionParams) {
-  const wrappedMeasurementPanel = ({ getOpenStateComponent }) => {
+  const wrappedMeasurementPanel = ({ renderHeader, getCloseIcon, tab }) => {
     const [{ activeViewportId, viewports }] = useViewportGrid();
 
     return (
@@ -25,7 +25,9 @@ export default function getPanelModule({
         commandsManager={commandsManager}
         servicesManager={servicesManager}
         extensionManager={extensionManager}
-        getOpenStateComponent={getOpenStateComponent}
+        renderHeader={renderHeader}
+        getCloseIcon={getCloseIcon}
+        tab={tab}
       />
     );
   };

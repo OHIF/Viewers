@@ -17,7 +17,9 @@ function WrappedPanelStudyBrowser({
   commandsManager,
   extensionManager,
   servicesManager,
-  getOpenStateComponent,
+  renderHeader,
+  getCloseIcon,
+  tab,
 }) {
   // TODO: This should be made available a different way; route should have
   // already determined our datasource
@@ -39,7 +41,9 @@ function WrappedPanelStudyBrowser({
       getImageSrc={_getImageSrcFromImageId}
       getStudiesForPatientByMRN={_getStudiesForPatientByMRN}
       requestDisplaySetCreationForStudy={_requestDisplaySetCreationForStudy}
-      getOpenStateComponent={getOpenStateComponent}
+      renderHeader={renderHeader}
+      getCloseIcon={getCloseIcon}
+      tab={tab}
     />
   );
 }
