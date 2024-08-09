@@ -184,6 +184,10 @@ export default function getCustomizationModule({ servicesManager, extensionManag
             },
           ],
         },
+        {
+          id: 'studyBrowser.defaultViewPreset',
+          value: 'thumbnails',
+        },
       ],
     },
   ];

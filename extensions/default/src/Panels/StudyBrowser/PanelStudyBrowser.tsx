@@ -1,9 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
-import { StudyBrowser, useImageViewer, useViewportGrid } from '@ohif/ui';
+import { Icon, StudyBrowser, useImageViewer, useViewportGrid } from '@ohif/ui';
 import { utils } from '@ohif/core';
 import { useNavigate } from 'react-router-dom';
 import { Separator } from '@ohif/ui-next';
+import { PanelStudyBrowserHeader } from './PanelStudyBrowserHeader';
+import { viewPresets } from './constants';
 
 const { sortStudyInstances, formatDate, createStudyBrowserTabs } = utils;
 
@@ -21,7 +23,7 @@ function PanelStudyBrowser({
   getCloseIcon,
   tab,
 }: withAppTypes) {
-  const { hangingProtocolService, displaySetService, uiNotificationService } =
+  const { hangingProtocolService, displaySetService, uiNotificationService, customizationService } =
     servicesManager.services;
   const navigate = useNavigate();
 
@@ -39,6 +41,15 @@ function PanelStudyBrowser({
   const [studyDisplayList, setStudyDisplayList] = useState([]);
   const [displaySets, setDisplaySets] = useState([]);
   const [thumbnailImageSrcMap, setThumbnailImageSrcMap] = useState({});
+
+  const defaultViewPresetCustomization = customizationService.get(
+    'studyBrowser.defaultViewPreset'
+  )?.value;
+  const defaultViewPreset = defaultViewPresetCustomization
+    ? viewPresets.find(vp => vp.id === defaultViewPresetCustomization)
+    : viewPresets[0];
+
+  const [viewPreset, setViewPreset] = useState(defaultViewPreset);
 
   const onDoubleClickThumbnailHandler = displaySetInstanceUID => {
     let updatedViewports = [];
@@ -257,15 +268,12 @@ function PanelStudyBrowser({
     <>
       {renderHeader && (
         <>
-          <div className="bg-primary-dark flex select-none rounded-t pt-1.5 pb-[2px]">
-            <div className="flex h-[24px] w-full cursor-pointer select-none justify-center self-center text-[14px]">
-              <div className="text-primary-active flex grow cursor-pointer select-none justify-center self-center text-[13px]">
-                <span>{tab.label}</span>
-              </div>
-            </div>
-
-            {getCloseIcon()}
-          </div>
+          <PanelStudyBrowserHeader
+            tab={tab}
+            getCloseIcon={getCloseIcon}
+            viewPreset={viewPreset}
+            setViewPreset={setViewPreset}
+          />
           <Separator
             orientation="horizontal"
             className="bg-black"
