@@ -16,6 +16,7 @@ import { Switch } from './Switch';
 import { Checkbox } from './Checkbox';
 import { Slider } from './Slider';
 import { ScrollArea, ScrollBar } from './ScrollArea';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from './Accordion';
 
 export {
   Button,
@@ -41,5 +42,10 @@ export {
   Slider,
   ScrollArea,
   ToggleGroup,
-  ToggleGroupItem
+  ToggleGroupItem,
+  ScrollBar,
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
 };

@@ -16,7 +16,11 @@ import {
   Toggle,
   toggleVariants,
   ToggleGroup,
-  ToggleGroupItem
+  ToggleGroupItem,
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
 } from './components';
 
 import { useNotification, NotificationProvider } from './contextProviders';
@@ -43,5 +47,9 @@ export {
   Toggle,
   toggleVariants,
   ToggleGroup,
-  ToggleGroupItem
+  ToggleGroupItem,
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
 };

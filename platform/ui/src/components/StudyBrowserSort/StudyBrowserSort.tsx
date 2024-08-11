@@ -43,15 +43,16 @@ export default function StudyBrowserSort({ servicesManager }: withAppTypes) {
   }, [displaySetService, selectedSort, sortDirection]);
 
   return (
-    <div className="flex gap-2">
+    <div className="border-inputfield-main focus:border-inputfield-main flex h-[26px] w-[125px] items-center justify-center rounded border bg-black p-2">
       <select
         onChange={handleSortChange}
         value={selectedSort.label}
         onClick={e => e.stopPropagation()}
-        className="border-inputfield-main focus:border-inputfield-main w-full appearance-none rounded border bg-black py-2 px-3 text-sm leading-tight text-white shadow transition duration-300 focus:outline-none"
+        className="w-full appearance-none bg-transparent text-sm leading-tight text-white shadow transition duration-300 focus:outline-none"
       >
         {sortFunctions.map(sort => (
           <option
+            className="appearance-none bg-black text-white"
             value={sort.label}
             key={sort.label}
           >
@@ -61,11 +62,11 @@ export default function StudyBrowserSort({ servicesManager }: withAppTypes) {
       </select>
       <button
         onClick={toggleSortDirection}
-        className="border-inputfield-main flex items-center justify-center rounded border bg-black"
+        className="flex items-center justify-center"
       >
         <Icon
           name={sortDirection === 'ascending' ? 'sorting-active-up' : 'sorting-active-down'}
-          className="text-primary-main mx-2 w-2"
+          className="text-primary-main w-2"
         />
       </button>
     </div>
