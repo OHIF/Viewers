@@ -28,14 +28,14 @@ const StudyItem = ({
     <Accordion
       type="single"
       collapsible
-      className={classnames('hover:bg-accent bg-popover border-bkg-low rounded border')}
       onClick={onClick}
       onKeyDown={onClick}
       role="button"
       tabIndex={0}
+      defaultValue={isActive ? 'study-item' : undefined}
     >
       <AccordionItem value="study-item">
-        <AccordionTrigger>
+        <AccordionTrigger className={classnames('hover:bg-accent bg-popover rounded')}>
           <div className="flex h-[40px] flex-1 flex-row">
             <div className="flex w-full flex-row items-center justify-between">
               <div className="flex flex-col items-start text-[13px]">
