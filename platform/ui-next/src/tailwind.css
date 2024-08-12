@@ -210,7 +210,7 @@ h3.section-header {
 }
 
 .row {
-  @apply border-border mb-6 flex flex-row flex-wrap rounded-md border py-10;
+  @apply mb-6 flex flex-row flex-wrap rounded-md border py-10;
 }
 
 .example {
