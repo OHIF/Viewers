@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.9.0-beta.76](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.75...v3.9.0-beta.76) (2024-08-08)
+
+
+### Bug Fixes
+
+* unexpected mpr measurements ([#4332](https://github.com/OHIF/Viewers/issues/4332)) ([ab6e341](https://github.com/OHIF/Viewers/commit/ab6e341731652a4fa894fcb576eb23dc95aefa11))
+
+
+
+
+
+# [3.9.0-beta.75](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.74...v3.9.0-beta.75) (2024-08-07)
+
+
+### Bug Fixes
+
+* **ui:** Tailwind build errors ([#4329](https://github.com/OHIF/Viewers/issues/4329)) ([8e7cc11](https://github.com/OHIF/Viewers/commit/8e7cc1152917f562ea7e6a5f3f7e492b300dc564))
+
+
+
+
+
 # [3.9.0-beta.74](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.73...v3.9.0-beta.74) (2024-08-06)
 
 
