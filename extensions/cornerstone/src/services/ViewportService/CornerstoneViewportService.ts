@@ -65,6 +65,14 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     this.viewportGridResizeObserver = null;
     this.servicesManager = servicesManager;
   }
+  hangingProtocolService: unknown;
+  viewportsInfo: unknown;
+  sceneVolumeInputs: unknown;
+  viewportDivElements: unknown;
+  ViewportPropertiesMap: unknown;
+  volumeUIDs: unknown;
+  displaySetsNeedRerendering: unknown;
+  viewportDisplaySets: unknown;
 
   /**
    * Adds the HTML element to the viewportService
@@ -166,17 +174,18 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
    *
    * @param viewportId - The ID of the viewport.
    * @param presentations - The presentations to apply to the viewport.
+   * @param viewportInfo - Contains a view reference for immediate application
    */
-  public setPresentations(viewportId: string, presentations?: Presentations): void {
+  public setPresentations(
+    viewportId: string,
+    presentations?: Presentations,
+    viewportInfo?: ViewportInfo
+  ): void {
     const viewport = this.getCornerstoneViewport(viewportId) as
       | Types.IStackViewport
       | Types.IVolumeViewport;
 
-    if (!viewport) {
-      return;
-    }
-
-    if (!presentations) {
+    if (!viewport || !presentations) {
       return;
     }
 
@@ -196,17 +205,12 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
       }
     }
 
-    if (positionPresentation) {
-      const { viewPlaneNormal, viewUp, zoom, pan } = positionPresentation.presentation;
-      viewport.setCamera({ viewPlaneNormal, viewUp });
-
-      if (zoom !== undefined) {
-        viewport.setZoom(zoom);
-      }
-
-      if (pan !== undefined) {
-        viewport.setPan(pan);
-      }
+    const viewRef = viewportInfo?.getViewReference() || positionPresentation?.viewReference;
+    if (viewRef) {
+      viewport.setViewReference(viewRef);
+    }
+    if (positionPresentation?.position) {
+      viewport.setViewPresentation(positionPresentation.position);
     }
   }
 
@@ -235,21 +239,11 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
       return;
     }
 
-    const { viewPlaneNormal, viewUp } = csViewport.getCamera();
-    const initialImageIndex = csViewport.getCurrentImageIdIndex() || 0;
-    const zoom = csViewport.getZoom();
-    const pan = csViewport.getPan();
-
     return {
       id: positionPresentationId,
       viewportType: viewportInfo.getViewportType(),
-      presentation: {
-        initialImageIndex,
-        viewUp,
-        viewPlaneNormal,
-        zoom,
-        pan,
-      },
+      viewReference: csViewport.getViewReference(),
+      position: csViewport.getViewPresentation({ pan: true, zoom: true }),
     };
   }
 
@@ -428,7 +422,14 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     // override the viewportOptions and displaySetOptions with the public ones
     // since those are the newly set ones, we set them here so that it handles defaults
     const displaySetOptions = viewportInfo.setPublicDisplaySetOptions(publicDisplaySetOptions);
-    const viewportOptions = viewportInfo.setPublicViewportOptions(publicViewportOptions);
+    // Specify an over-ride for the viewport type, even though it is in the public
+    // viewport options, because the one in the public viewport options is a suggestion
+    // for initial view, whereas the one in viewportData is a requirement based on the
+    // type of data being displayed.
+    const viewportOptions = viewportInfo.setPublicViewportOptions(
+      publicViewportOptions,
+      viewportData.viewportType
+    );
 
     const element = viewportInfo.getElement();
     const type = viewportInfo.getViewportType();
@@ -518,35 +519,80 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
 
   /**
    * Looks through the viewports to see if the specified measurement can be
-   * displayed in one of the viewports.
+   * displayed in one of the viewports. This function tries to get a "best fit"
+   * viewport to display the image in where it matches, in order:
+   *   * Active viewport that can be navigated to the given image without orientation change
+   *   * Other viewport that can be navigated to the given image without orientation change
+   *   * Active viewport that can change orientation to display the image
+   *   * Other viewport that can change orientation to display the image
    *
-   * @param measurement
-   *          The measurement that is desired to view.
+   * It returns `null` otherwise, indicating that a viewport needs display set/type
+   * changes in order to display the image.
+   *
+   * Notes:
+   *   * If the display set is displayed in multiple viewports all needing orientation change,
+   *     then the active one or first one listed will be modified.  This can create unexpected
+   *     behaviour for MPR views.
+   *   * If the image is contained in multiple display sets, then the first one
+   *     found will be navigated (active first, followed by first found)
+   *
+   * @param measurement - The measurement that is desired to view.
    * @param activeViewportId - the index that was active at the time the jump
    *          was initiated.
    * @return the viewportId that the measurement should be displayed in.
    */
-  public getViewportIdToJump(
-    activeViewportId: string,
-    displaySetInstanceUID: string,
-    cameraProps: unknown
-  ): string {
-    const viewportInfo = this.getViewportInfo(activeViewportId);
-
-    if (viewportInfo.getViewportType() === csEnums.ViewportType.VOLUME_3D) {
-      return null;
-    }
-
-    const { referencedImageId } = cameraProps;
-    if (viewportInfo?.contains(displaySetInstanceUID, referencedImageId)) {
+  public getViewportIdToJump(activeViewportId: string, metadata): string {
+    // First check if the active viewport can just be navigated to show the given item
+    const activeViewport = this.getCornerstoneViewport(activeViewportId);
+    if (activeViewport.isReferenceViewable(metadata, { withNavigation: true })) {
       return activeViewportId;
     }
 
-    return (
-      [...this.viewportsById.values()].find(viewportInfo =>
-        viewportInfo.contains(displaySetInstanceUID, referencedImageId)
-      )?.viewportId ?? null
-    );
+    // Next, see if any viewport could be navigated to show the given item,
+    // without considering orientation changes.
+    for (const id of this.viewportsById.keys()) {
+      const viewport = this.getCornerstoneViewport(id);
+      if (viewport?.isReferenceViewable(metadata, { withNavigation: true })) {
+        return id;
+      }
+    }
+
+    // No viewport is in the right display set/orientation to show this, so see if
+    // the active viewport could change orientations to show this
+    if (
+      activeViewport.isReferenceViewable(metadata, { withNavigation: true, withOrientation: true })
+    ) {
+      return activeViewportId;
+    }
+
+    // See if any viewport could show this with an orientation change
+    for (const id of this.viewportsById.keys()) {
+      const viewport = this.getCornerstoneViewport(id);
+      if (
+        viewport?.isReferenceViewable(metadata, { withNavigation: true, withOrientation: true })
+      ) {
+        return id;
+      }
+    }
+
+    // No luck, need to update the viewport itself
+    return null;
+  }
+
+  /**
+   * Sets the image data for the given viewport.
+   */
+  private async _setOtherViewport(
+    viewport: Types.IStackViewport,
+    viewportData: StackViewportData,
+    viewportInfo: ViewportInfo,
+    _presentations: Presentations = {}
+  ): Promise<void> {
+    const [displaySet] = viewportData.data;
+    return viewport.setDataIds(displaySet.imageIds, {
+      groupId: displaySet.displaySetInstanceUID,
+      viewReference: viewportInfo.getViewReference(),
+    });
   }
 
   private async _setStackViewport(
@@ -566,6 +612,9 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
 
     const { initialImageIndex, imageIds } = viewportData.data[0];
 
+    // Use the slice index from any provided view reference, as the view reference
+    // is being used to navigate to the initial view position for measurement
+    // navigation and other navigation forcing specific views.
     let initialImageIndexToUse =
       presentations?.positionPresentation?.initialImageIndex ?? initialImageIndex;
 
@@ -586,20 +635,15 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
         properties.voiRange = { lower, upper };
       }
 
-      if (voiInverted !== undefined) {
-        properties.invert = voiInverted;
-      }
-
-      if (colormap !== undefined) {
-        properties.colormap = colormap;
-      }
+      properties.invert = voiInverted ?? properties.invert;
+      properties.colormap = colormap ?? properties.colormap;
     }
 
     this._handleOverlays(viewport);
 
     return viewport.setStack(imageIds, initialImageIndexToUse).then(() => {
       viewport.setProperties({ ...properties });
-      this.setPresentations(viewport.id, presentations);
+      this.setPresentations(viewport.id, presentations, viewportInfo);
       if (displayArea) {
         viewport.setDisplayArea(displayArea);
       }
@@ -750,7 +794,6 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     const displaySetUIDs = viewportGridService.getDisplaySetsUIDsForViewport(viewport.id);
     const displaySet = displaySetService.getDisplaySetByUID(displaySetUIDs[0]);
     const displaySetModality = displaySet?.Modality;
-
     // Todo: use presentations states
     const volumesProperties = volumeInputArray.map((volumeInput, index) => {
       const { volumeId } = volumeInput;
@@ -786,7 +829,7 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
       viewport.setProperties(properties, volumeId);
     });
 
-    this.setPresentations(viewport.id, presentations);
+    this.setPresentations(viewport.id, presentations, viewportInfo);
 
     this._handleOverlays(viewport);
 
@@ -976,7 +1019,12 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
       );
     }
 
-    throw new Error('Unknown viewport type');
+    return this._setOtherViewport(
+      viewport as Types.IViewport,
+      viewportData as StackViewportData,
+      viewportInfo,
+      presentations
+    );
   }
 
   /**

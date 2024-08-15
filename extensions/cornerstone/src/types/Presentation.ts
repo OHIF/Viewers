@@ -7,13 +7,10 @@ import type { Types } from '@cornerstonejs/core';
 export type PositionPresentation = {
   id: string;
   viewportType: string;
-  presentation: {
-    initialImageIndex: number;
-    viewUp: Types.Point3;
-    viewPlaneNormal: Types.Point3;
-    zoom?: number;
-    pan?: Types.Point2;
-  };
+  // The view reference has the basic information as to what image orientation/slice is shown
+  viewReference: Types.ViewReference;
+  // The position information has the zoom/pan and possibly other related information, but not LUT
+  position: Types.ViewPresentation;
 };
 
 /**

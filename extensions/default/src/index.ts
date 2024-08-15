@@ -17,6 +17,7 @@ import * as dicomWebUtils from './DicomWebDataSource/utils';
 import { createReportDialogPrompt } from './Panels';
 import createReportAsync from './Actions/createReportAsync';
 import StaticWadoClient from './DicomWebDataSource/utils/StaticWadoClient';
+import { cleanDenaturalizedDataset } from './DicomWebDataSource/utils';
 
 const defaultExtension: Types.Extensions.Extension = {
   /**
@@ -56,4 +57,5 @@ export {
   createReportDialogPrompt,
   createReportAsync,
   StaticWadoClient,
+  cleanDenaturalizedDataset,
 };
