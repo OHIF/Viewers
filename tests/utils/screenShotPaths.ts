@@ -87,7 +87,7 @@ const screenShotPaths = {
     crosshairsResetToolbar: 'crosshairsResetToolbar.png',
     crosshairsNewDisplayset: 'crosshairsNewDisplayset.png',
   },
-  tmtv: {
+  tmtvRendering: {
     tmtvDisplayedCorrectly: 'tmtvDisplayedCorrectly.png',
   },
 };
