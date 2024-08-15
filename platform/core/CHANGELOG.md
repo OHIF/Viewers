@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.9.0-beta.77](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.76...v3.9.0-beta.77) (2024-08-15)
+
+
+### Bug Fixes
+
+* **roundNumber:** handle negative numbers properly ([#4336](https://github.com/OHIF/Viewers/issues/4336)) ([7377db8](https://github.com/OHIF/Viewers/commit/7377db8d280a90515fe099cb580607450cb146a5))
+
+
+
+
+
 # [3.9.0-beta.76](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.75...v3.9.0-beta.76) (2024-08-08)
 
 **Note:** Version bump only for package @ohif/core
