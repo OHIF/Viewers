@@ -168,7 +168,7 @@ function getDisplayText(mappedAnnotations, displaySet, customizationService) {
   // Area is the same for all series
   const { length, SeriesNumber, SOPInstanceUID, frameNumber, unit } = mappedAnnotations[0];
 
-  const instance = displaySet.images.find(image => image.SOPInstanceUID === SOPInstanceUID);
+  const instance = displaySet.instances.find(image => image.SOPInstanceUID === SOPInstanceUID);
 
   let InstanceNumber;
   if (instance) {
