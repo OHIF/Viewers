@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { LoadingIndicatorProgress } from '@ohif/ui';
+import { cleanDenaturalizedDataset } from '@ohif/extension-default';
 
 import './DicomMicroscopyViewport.css';
 import ViewportOverlay from './components/ViewportOverlay';
 import getDicomWebClient from './utils/dicomWebClient';
 import dcmjs from 'dcmjs';
-import cleanDenaturalizedDataset from './utils/cleanDenaturalizedDataset';
 import MicroscopyService from './services/MicroscopyService';
 
 class DicomMicroscopyViewport extends Component {

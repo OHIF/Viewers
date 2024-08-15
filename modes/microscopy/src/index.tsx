@@ -94,7 +94,8 @@ function modeFactory({ modeConfiguration }) {
                 {
                   namespace: '@ohif/extension-dicom-microscopy.viewportModule.microscopy-dicom',
                   displaySetsToDisplay: [
-                    '@ohif/extension-dicom-microscopy.sopClassHandlerModule.DicomMicroscopySopClassHandler',
+                    // Share the sop class handler with cornerstone version of it
+                    '@ohif/extension-cornerstone.sopClassHandlerModule.DicomMicroscopySopClassHandler',
                     '@ohif/extension-dicom-microscopy.sopClassHandlerModule.DicomMicroscopySRSopClassHandler',
                   ],
                 },
@@ -115,12 +116,8 @@ function modeFactory({ modeConfiguration }) {
     extensions: extensionDependencies,
     hangingProtocol: ['default'],
 
-    // Order is important in sop class handlers when two handlers both use
-    // the same sop class under different situations.  In that case, the more
-    // general handler needs to come last.  For this case, the dicomvideo must
-    // come first to remove video transfer syntax before ohif uses images
     sopClassHandlers: [
-      '@ohif/extension-dicom-microscopy.sopClassHandlerModule.DicomMicroscopySopClassHandler',
+      '@ohif/extension-cornerstone.sopClassHandlerModule.DicomMicroscopySopClassHandler',
       '@ohif/extension-dicom-microscopy.sopClassHandlerModule.DicomMicroscopySRSopClassHandler',
       dicomvideo.sopClassHandler,
       dicompdf.sopClassHandler,

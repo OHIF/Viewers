@@ -138,7 +138,7 @@ function getDisplayText(annotation, displaySet, customizationService) {
 
   const displayTextArray = [];
 
-  const instance = displaySet.images.find(image => image.SOPInstanceUID === SOPInstanceUID);
+  const instance = displaySet.instances.find(image => image.SOPInstanceUID === SOPInstanceUID);
   let InstanceNumber;
   if (instance) {
     InstanceNumber = instance.InstanceNumber;
