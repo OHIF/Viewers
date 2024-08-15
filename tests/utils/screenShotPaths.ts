@@ -89,7 +89,6 @@ const screenShotPaths = {
   },
   tmtv: {
     tmtvDisplayedCorrectly: 'tmtvDisplayedCorrectly.png',
-    tmtvEllipseSUVDefault: 'tmtvEllipseSUVDefault.png',
   },
 };
 
