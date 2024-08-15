@@ -24,6 +24,7 @@ const Thumbnail = ({
   isActive,
   onClick,
   onDoubleClick,
+  viewPreset = 'thumbnails',
 }): React.ReactNode => {
   // TODO: We should wrap our thumbnail to create a "DraggableThumbnail", as
   // this will still allow for "drag", even if there is no drop target for the
@@ -49,25 +50,9 @@ const Thumbnail = ({
     setLastTap(currentTime);
   };
 
-  return (
-    <div
-      className={classnames(
-        className,
-        'bg-muted hover:bg-primary/30 flex h-[176px] w-[132px] cursor-pointer select-none flex-col outline-none'
-      )}
-      id={`thumbnail-${displaySetInstanceUID}`}
-      data-cy={`study-browser-thumbnail`}
-      data-series={seriesNumber}
-      onClick={onClick}
-      onDoubleClick={onDoubleClick}
-      onTouchEnd={handleTouchEnd}
-      role="button"
-      tabIndex="0"
-    >
-      <div
-        ref={drag}
-        className="h-full w-full"
-      >
+  const renderThumbnailPreset = () => {
+    return (
+      <>
         <div className="h-[132px] w-[132px]">
           <div className="relative">
             {imageSrc ? (
@@ -96,6 +81,52 @@ const Thumbnail = ({
           ></div>
           <div className="text-[12px] text-white">{description}</div>
         </div>
+      </>
+    );
+  };
+
+  const renderListPreset = () => {
+    return (
+      <div className="relative flex h-full w-full items-center gap-[8px] p-[8px]">
+        <div
+          className={classnames(
+            'h-[24px] w-[4px] rounded-[2px]',
+            isActive ? 'bg-highlight' : 'bg-primary'
+          )}
+        ></div>
+        <div className="text-[12px] text-white">{description}</div>
+
+        <div className="text-muted-foreground absolute top-[5px] right-2 text-[12px]">
+          {' '}
+          {` ${numInstances}`}
+        </div>
+      </div>
+    );
+  };
+
+  return (
+    <div
+      className={classnames(
+        className,
+        'bg-muted hover:bg-primary/30 flex cursor-pointer select-none flex-col outline-none',
+        viewPreset === 'thumbnails' && 'h-[176px] w-[132px]',
+        viewPreset === 'list' && 'h-[32px] w-[275px]'
+      )}
+      id={`thumbnail-${displaySetInstanceUID}`}
+      data-cy={`study-browser-thumbnail`}
+      data-series={seriesNumber}
+      onClick={onClick}
+      onDoubleClick={onDoubleClick}
+      onTouchEnd={handleTouchEnd}
+      role="button"
+      tabIndex="0"
+    >
+      <div
+        ref={drag}
+        className="h-full w-full"
+      >
+        {viewPreset === 'thumbnails' && renderThumbnailPreset()}
+        {viewPreset === 'list' && renderListPreset()}
       </div>
     </div>
   );
@@ -125,6 +156,7 @@ Thumbnail.propTypes = {
   isActive: PropTypes.bool.isRequired,
   onClick: PropTypes.func.isRequired,
   onDoubleClick: PropTypes.func.isRequired,
+  viewPreset: PropTypes.string,
 };
 
 export default Thumbnail;

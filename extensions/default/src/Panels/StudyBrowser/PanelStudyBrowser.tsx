@@ -192,9 +192,10 @@ function PanelStudyBrowser({
     const SubscriptionDisplaySetsAdded = displaySetService.subscribe(
       displaySetService.EVENTS.DISPLAY_SETS_ADDED,
       data => {
-        if (!hasLoadedViewports) {
-          return;
-        }
+        // for some reason this breaks thumbnail loading
+        // if (!hasLoadedViewports) {
+        //   return;
+        // }
         const { displaySetsAdded, options } = data;
         displaySetsAdded.forEach(async dSet => {
           const newImageSrcEntry = {};
@@ -215,6 +216,8 @@ function PanelStudyBrowser({
             imageId,
             dSet.initialViewport
           );
+
+          console.debug('newImageSrcEntry', newImageSrcEntry);
 
           setThumbnailImageSrcMap(prevState => {
             return { ...prevState, ...newImageSrcEntry };
@@ -308,6 +311,7 @@ function PanelStudyBrowser({
           setActiveTabName(clickedTabName);
         }}
         showSettings={actionIcons.find(icon => icon.id === 'settings').value}
+        viewPresets={viewPresets}
       />
     </>
   );

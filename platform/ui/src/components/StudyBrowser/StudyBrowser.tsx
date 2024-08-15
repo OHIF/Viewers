@@ -31,9 +31,13 @@ const StudyBrowser = ({
   activeDisplaySetInstanceUIDs,
   servicesManager,
   showSettings,
+  viewPresets,
 }: withAppTypes) => {
   const getTabContent = () => {
     const tabData = tabs.find(tab => tab.name === activeTabName);
+    const viewPreset = viewPresets
+      ? viewPresets.filter(preset => preset.selected)[0]?.id
+      : 'thumbnails';
     return tabData.studies.map(
       ({ studyInstanceUid, date, description, numInstances, modalities, displaySets }) => {
         const isExpanded = expandedStudyInstanceUIDs.includes(studyInstanceUid);
@@ -56,6 +60,7 @@ const StudyBrowser = ({
               onClickUntrack={onClickUntrack}
               activeDisplaySetInstanceUIDs={activeDisplaySetInstanceUIDs}
               data-cy="thumbnail-list"
+              viewPreset={viewPreset}
             />
           </React.Fragment>
         );

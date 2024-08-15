@@ -12,11 +12,12 @@ const ThumbnailList = ({
   onThumbnailDoubleClick,
   onClickUntrack,
   activeDisplaySetInstanceUIDs = [],
+  viewPreset,
 }) => {
   return (
     <div
       id="ohif-thumbnail-list"
-      className="ohif-scrollbar study-min-height bg-bkg-low grid grid-cols-2 gap-[4px] overflow-y-hidden pr-[5px] pl-[5px] pb-[12px] pt-[4px]"
+      className={`ohif-scrollbar bg-bkg-low grid overflow-y-hidden pt-[4px] ${viewPreset === 'thumbnails' ? 'grid-cols-2 gap-[4px] pr-[5px] pl-[5px] pb-[12px]' : 'grid-cols-1 gap-[2px] pr-[2.5px] pl-[2.5px]'}`}
     >
       {thumbnails.map(
         ({
@@ -56,6 +57,7 @@ const ThumbnailList = ({
                   isActive={isActive}
                   onClick={() => onThumbnailClick(displaySetInstanceUID)}
                   onDoubleClick={() => onThumbnailDoubleClick(displaySetInstanceUID)}
+                  viewPreset={viewPreset}
                 />
               );
             case 'thumbnailTracked':
@@ -136,6 +138,7 @@ ThumbnailList.propTypes = {
   onThumbnailClick: PropTypes.func.isRequired,
   onThumbnailDoubleClick: PropTypes.func.isRequired,
   onClickUntrack: PropTypes.func.isRequired,
+  viewPreset: PropTypes.string,
 };
 
 // TODO: Support "Viewport Identificator"?

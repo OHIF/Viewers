@@ -22,6 +22,7 @@ const StudyItem = ({
   onClickThumbnail,
   onDoubleClickThumbnail,
   onClickUntrack,
+  viewPreset = 'thumbnails',
 }) => {
   const { t } = useTranslation('StudyItem');
   return (
@@ -77,6 +78,7 @@ const StudyItem = ({
               onThumbnailClick={onClickThumbnail}
               onThumbnailDoubleClick={onDoubleClickThumbnail}
               onClickUntrack={onClickUntrack}
+              viewPreset={viewPreset}
             />
           )}
         </AccordionContent>
@@ -99,6 +101,7 @@ StudyItem.propTypes = {
   onClickThumbnail: PropTypes.func,
   onDoubleClickThumbnail: PropTypes.func,
   onClickUntrack: PropTypes.func,
+  viewPreset: PropTypes.string,
 };
 
 export default StudyItem;
