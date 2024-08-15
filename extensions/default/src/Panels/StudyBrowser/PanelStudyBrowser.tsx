@@ -217,8 +217,6 @@ function PanelStudyBrowser({
             dSet.initialViewport
           );
 
-          console.debug('newImageSrcEntry', newImageSrcEntry);
-
           setThumbnailImageSrcMap(prevState => {
             return { ...prevState, ...newImageSrcEntry };
           });
