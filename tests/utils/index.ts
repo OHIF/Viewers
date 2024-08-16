@@ -7,6 +7,7 @@ import { getMousePosition, initilizeMousePositionTracker } from './mouseUtils';
 import { getSUV } from './getSUV';
 import { getTMTVModalityUnit } from './getTMTVModalityUnit';
 import { clearAllAnnotations } from './clearAllAnnotations';
+import { scrollVolumeViewport } from './scrollVolumeViewport';
 
 export {
   visitStudy,
@@ -19,4 +20,5 @@ export {
   getSUV,
   getTMTVModalityUnit,
   clearAllAnnotations,
+  scrollVolumeViewport,
 };

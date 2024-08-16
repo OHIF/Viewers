@@ -128,8 +128,8 @@ declare global {
         displaySetsCount: number;
         maxNumPrefetchRequests: number;
         order: 'closest' | 'downward' | 'upward';
-      }
-  }
+      };
+    }
 
     export interface Test {
       services?: Services;
@@ -144,4 +144,6 @@ declare global {
     AppTypes.Managers & {
       [key: string]: any;
     };
+
+  export type withTestTypes<T = object> = T & AppTypes.Test;
 }
