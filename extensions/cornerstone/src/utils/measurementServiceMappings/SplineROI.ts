@@ -6,7 +6,7 @@ import { utils } from '@ohif/core';
  * Represents a mapping utility for Spline ROI measurements.
  */
 const SplineROI = {
-  toAnnotation: measurement => {},
+  toAnnotation: measurement => { },
 
   /**
    * Maps cornerstone annotation event data to measurement service format.
@@ -148,6 +148,7 @@ function getDisplayText(annotation, displaySet, customizationService) {
   const frameText = displaySet.isMultiFrame ? ` F: ${frameNumber}` : '';
 
   const { SeriesNumber } = displaySet;
+
   displayText.push(`S: ${SeriesNumber ?? ''}${instanceText}${frameText}`);
 
   const stats = data.cachedStats[`imageId:${metadata.referencedImageId}`];
