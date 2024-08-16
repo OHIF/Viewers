@@ -6,7 +6,7 @@ import { utils } from '@ohif/core';
  * Represents a mapping utility for Planar Freehand ROI measurements.
  */
 const PlanarFreehandROI = {
-  toAnnotation: measurement => { },
+  toAnnotation: measurement => {},
 
   /**
    * Maps cornerstone annotation event data to measurement service format.
@@ -149,7 +149,6 @@ function getDisplayText(annotation, displaySet, customizationService, displaySet
   const frameText = displaySet.isMultiFrame ? ` F: ${frameNumber}` : '';
 
   const { SeriesNumber } = displaySet;
-
   displayText.push(`S: ${SeriesNumber ?? ''}${instanceText}${frameText}`);
 
   const stats =
