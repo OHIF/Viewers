@@ -165,7 +165,7 @@ const toolbarButtons: Button[] = [
           evaluate: 'evaluate.cornerstoneTool.toggle',
         }),
         createButton({
-          id: 'StackScroll',
+          id: 'SmartStackScroll',
           icon: 'tool-stack-scroll',
           label: 'Stack Scroll',
           tooltip: 'Stack Scroll',

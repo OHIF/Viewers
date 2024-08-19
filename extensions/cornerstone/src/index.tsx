@@ -40,6 +40,7 @@ import getSOPInstanceAttributes from './utils/measurementServiceMappings/utils/g
 import { findNearbyToolData } from './utils/findNearbyToolData';
 import { createFrameViewSynchronizer } from './synchronizers/frameViewSynchronizer';
 import { getSopClassHandlerModule } from './getSopClassHandlerModule';
+import shouldPreventScroll from './utils/shouldPreventScroll';
 
 const { helpers: volumeLoaderHelpers } = csStreamingImageVolumeLoader;
 const { getDynamicVolumeInfo } = volumeLoaderHelpers ?? {};
@@ -209,6 +210,8 @@ const cornerstoneExtension: Types.Extensions.Extension = {
         exports: {
           toolNames,
           Enums: cs3DToolsEnums,
+          shouldPreventScroll: (keyPressed, imageIdIndex) =>
+            shouldPreventScroll(keyPressed, imageIdIndex, servicesManager),
         },
       },
       {

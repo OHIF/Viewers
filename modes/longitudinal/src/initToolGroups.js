@@ -21,7 +21,7 @@ function initDefaultToolGroup(
     '@ohif/extension-cornerstone.utilityModule.tools'
   );
 
-  const { toolNames, Enums } = utilityModule.exports;
+  const { toolNames, Enums, shouldPreventScroll } = utilityModule.exports;
 
   const tools = {
     active: [
@@ -37,7 +37,11 @@ function initDefaultToolGroup(
         toolName: toolNames.Zoom,
         bindings: [{ mouseButton: Enums.MouseBindings.Secondary }],
       },
-      { toolName: toolNames.StackScrollMouseWheel, bindings: [] },
+      {
+        toolName: toolNames.SmartStackScrollMouseWheel,
+        bindings: [],
+        configuration: { shouldPreventScroll },
+      },
     ],
     passive: [
       { toolName: toolNames.Length },
@@ -71,7 +75,13 @@ function initDefaultToolGroup(
       { toolName: toolNames.EllipticalROI },
       { toolName: toolNames.CircleROI },
       { toolName: toolNames.RectangleROI },
-      { toolName: toolNames.StackScroll },
+      {
+        toolName: toolNames.SmartStackScroll,
+        bindings: [
+          { mouseButton: Enums.MouseBindings.Primary, modifierKey: Enums.KeyboardBindings.Ctrl },
+        ],
+        configuration: { shouldPreventScroll },
+      },
       { toolName: toolNames.Angle },
       { toolName: toolNames.CobbAngle },
       { toolName: toolNames.Magnify },

@@ -1,6 +1,7 @@
 .scroll {
   height: calc(100% - 30px);
   padding: 5px;
+  padding-left: 0;
   position: absolute;
   right: 0;
   top: 30px;
