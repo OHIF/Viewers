@@ -170,6 +170,14 @@ window.config = {
         friendlyName: 'dicom local',
       },
     },
+    {
+      namespace: '@ohif/extension-default.dataSourcesModule.dicomurl',
+      sourceName: 'dicomurl',
+      configuration: {
+        friendlyName: 'dicom url',
+        name: 'json',
+      },
+    },
   ],
   httpErrorHandler: error => {
     // This is 429 when rejected from the public idc sandbox too often.

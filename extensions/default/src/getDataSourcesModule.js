@@ -7,6 +7,7 @@ import { createDicomJSONApi } from './DicomJSONDataSource/index.js';
 import { createDicomLocalApi } from './DicomLocalDataSource/index.js';
 import { createDicomWebProxyApi } from './DicomWebProxyDataSource/index';
 import { createMergeDataSourceApi } from './MergeDataSource/index';
+import { createDicomUrlApi } from './DicomUrlDataSource/index.js';
 
 /**
  *
@@ -37,6 +38,11 @@ function getDataSourcesModule() {
       name: 'merge',
       type: 'mergeApi',
       createDataSource: createMergeDataSourceApi,
+    },
+    {
+      name: 'dicomurl',
+      type: 'dicomjson',
+      createDataSource: createDicomUrlApi,
     },
   ];
 }
