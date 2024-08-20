@@ -8,6 +8,15 @@ export const primary3D = {
   modifiedDate: '2023-03-15T10:29:44.894Z',
   availableTo: {},
   editableBy: {},
+  callbacks: {
+    onLayoutChange: [
+      {
+        commandName: 'toggleHangingProtocol',
+        commandOptions: { protocolId: 'primary3D' },
+        context: 'DEFAULT',
+      },
+    ],
+  },
   protocolMatchingRules: [],
   imageLoadStrategy: 'interleaveCenter',
   displaySetSelectors: {

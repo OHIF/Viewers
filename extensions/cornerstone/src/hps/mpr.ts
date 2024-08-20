@@ -10,11 +10,19 @@ export const mpr: Types.HangingProtocol.Protocol = {
   modifiedDate: '2023-08-15',
   availableTo: {},
   editableBy: {},
+  callbacks: {
+    onLayoutChange: [
+      {
+        commandName: 'toggleHangingProtocol',
+        commandOptions: { protocolId: 'mpr' },
+        context: 'DEFAULT',
+      },
+    ],
+  },
   // Unknown number of priors referenced - so just match any study
   numberOfPriorsReferenced: 0,
   protocolMatchingRules: [],
   imageLoadStrategy: 'nth',
-  callbacks: {},
   displaySetSelectors: {
     activeDisplaySet: {
       seriesMatchingRules: [
