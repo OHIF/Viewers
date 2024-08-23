@@ -15,7 +15,7 @@ const ThumbnailList = ({
   return (
     <div
       id="ohif-thumbnail-list"
-      className={`ohif-scrollbar bg-bkg-low grid overflow-y-hidden pt-[4px] ${viewPreset === 'thumbnails' ? 'grid-cols-2 gap-[4px] pr-[5px] pl-[5px] pb-[12px]' : 'grid-cols-1 gap-[2px] pr-[2.5px] pl-[2.5px]'}`}
+      className={`ohif-scrollbar bg-bkg-low grid place-items-center overflow-y-hidden pt-[4px] pr-[2.5px] pl-[2.5px] ${viewPreset === 'thumbnails' ? 'grid-cols-2 gap-[4px] pb-[12px]' : 'grid-cols-1 gap-[2px]'}`}
     >
       {thumbnails.map(
         ({

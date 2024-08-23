@@ -59,36 +59,45 @@ const Thumbnail = ({
 
   const renderThumbnailPreset = () => {
     return (
-      <>
-        <div className="h-[132px] w-[132px]">
+      <div className="flex h-full w-full flex-col items-center justify-center gap-[2px] p-[4px]">
+        <div className="h-[114px] w-[128px]">
           <div className="relative">
             {imageSrc ? (
               <img
                 src={imageSrc}
                 alt={imageAltText}
-                className="h-full w-full object-contain"
+                className="h-[114px] w-[128px] rounded"
                 crossOrigin="anonymous"
               />
             ) : (
-              <div>{imageAltText}</div>
+              <div className="bg-background h-[114px] w-[128px] rounded"></div>
             )}
-
-            <div className="text-muted-foreground absolute top-1 right-1 text-[12px]">
-              {' '}
-              {` ${numInstances}`}
+          </div>
+        </div>
+        <div className="flex h-[52px] w-[128px] flex-col">
+          <div className="text-[12px] text-white">{description}</div>
+          <div className="flex h-[12px] items-center gap-[7px] overflow-hidden">
+            <div className="text-muted-foreground text-[12px]"> S:{seriesNumber}</div>
+            <div className="text-muted-foreground text-[12px]">
+              <div className="flex items-center gap-[4px]">
+                {' '}
+                {countIcon ? (
+                  <Icon
+                    name={countIcon}
+                    className="w-3"
+                  />
+                ) : (
+                  <Icon
+                    name={'info-series'}
+                    className="w-3"
+                  />
+                )}
+                <div>{numInstances}</div>
+              </div>
             </div>
           </div>
         </div>
-        <div className="flex h-[44px] w-[132px] items-center gap-[8px] pr-[4px] pl-[4px]">
-          <div
-            className={classnames(
-              'h-[28px] w-[4px] rounded-[2px]',
-              isActive ? 'bg-highlight' : 'bg-primary'
-            )}
-          ></div>
-          <div className="text-[12px] text-white">{description}</div>
-        </div>
-      </>
+      </div>
     );
   };
 
@@ -190,7 +199,7 @@ const Thumbnail = ({
       className={classnames(
         className,
         'bg-muted hover:bg-primary/30 flex cursor-pointer select-none flex-col outline-none',
-        viewPreset === 'thumbnails' && 'h-[176px] w-[132px]',
+        viewPreset === 'thumbnails' && 'h-[170px] w-[135px]',
         viewPreset === 'list' && 'h-[40px] w-[275px]'
       )}
       id={`thumbnail-${displaySetInstanceUID}`}
