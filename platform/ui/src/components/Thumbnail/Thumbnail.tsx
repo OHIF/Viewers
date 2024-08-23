@@ -72,6 +72,67 @@ const Thumbnail = ({
             ) : (
               <div className="bg-background h-[114px] w-[128px] rounded"></div>
             )}
+
+            {/* bottom left */}
+            <div className="bg-muted absolute bottom-0 left-0 flex h-[14px] items-center gap-[4px] p-[4px]">
+              <div
+                className={classnames(
+                  'h-[10px] w-[10px] rounded-[2px]',
+                  isActive || isHydratedForDerivedDisplaySet ? 'bg-highlight' : 'bg-primary/65',
+                  loadingProgress && loadingProgress < 1 && 'bg-primary/25'
+                )}
+              ></div>
+              <div className="text-[11px] text-white">{modality}</div>
+            </div>
+
+            {/* top right */}
+            <div className="absolute top-0 right-0 flex items-center gap-[4px]">
+              <DisplaySetMessageListTooltip
+                messages={messages}
+                id={`display-set-tooltip-${displaySetInstanceUID}`}
+              />
+              {canReject && (
+                <Icon
+                  name="old-trash"
+                  className="h-[20px] w-[20px] text-red-500"
+                  onClick={onReject}
+                />
+              )}
+              {isTracked && (
+                <Tooltip
+                  position="right"
+                  content={
+                    <div className="flex flex-1 flex-row">
+                      <div className="flex-2 flex items-center justify-center pr-4">
+                        <Icon
+                          name="info-link"
+                          className="text-primary-active"
+                        />
+                      </div>
+                      <div className="flex flex-1 flex-col">
+                        <span>
+                          <span className="text-white">
+                            {isTracked ? 'Series is tracked' : 'Series is untracked'}
+                          </span>
+                        </span>
+                      </div>
+                    </div>
+                  }
+                >
+                  <div className="group">
+                    <Icon
+                      name="icon-status-tracking"
+                      className="text-primary-light h-[20px] w-[20px] group-hover:hidden"
+                    />
+                    <Icon
+                      name="cancel"
+                      className="text-primary-light hidden h-[15px] w-[15px] group-hover:block"
+                      onClick={onClickUntrack}
+                    />
+                  </div>
+                </Tooltip>
+              )}
+            </div>
           </div>
         </div>
         <div className="flex h-[52px] w-[128px] flex-col">
