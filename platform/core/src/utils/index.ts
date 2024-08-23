@@ -40,6 +40,7 @@ import { subscribeToNextViewportGridChange } from './subscribeToNextViewportGrid
 import { splitComma, getSplitParam } from './splitComma';
 import { createStudyBrowserTabs } from './createStudyBrowserTabs';
 import { sopClassDictionary } from './sopClassDictionary';
+import getDirectionsFromPatientOrientation from './getDirectionsFromPatientOrientation';
 
 // Commented out unused functionality.
 // Need to implement new mechanism for derived displaySets using the displaySetManager.
@@ -86,6 +87,7 @@ const utils = {
   getSplitParam,
   generateAcceptHeader,
   createStudyBrowserTabs,
+  getDirectionsFromPatientOrientation,
 };
 
 export {
@@ -119,6 +121,7 @@ export {
   getSplitParam,
   generateAcceptHeader,
   createStudyBrowserTabs,
+  getDirectionsFromPatientOrientation,
 };
 
 export default utils;
