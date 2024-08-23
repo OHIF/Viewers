@@ -48,8 +48,6 @@ import TableHead from './TableHead';
 import TableRow from './TableRow';
 import ThemeWrapper from './ThemeWrapper/';
 import Thumbnail from './Thumbnail';
-import ThumbnailNoImage from './ThumbnailNoImage';
-import ThumbnailTracked from './ThumbnailTracked';
 import ThumbnailList from './ThumbnailList';
 import ToolbarButton from './ToolbarButton';
 import ExpandableToolbarButton from './ExpandableToolbarButton';
@@ -173,8 +171,6 @@ export {
   TableRow,
   ThemeWrapper,
   Thumbnail,
-  ThumbnailNoImage,
-  ThumbnailTracked,
   ThumbnailList,
   ToolbarButton,
   Tooltip,

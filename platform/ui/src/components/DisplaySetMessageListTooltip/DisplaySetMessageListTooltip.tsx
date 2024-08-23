@@ -21,7 +21,8 @@ const DisplaySetMessageListTooltip = ({ messages, id }): React.ReactNode => {
           onFocus={() => setIsOpen(true)}
           onMouseOut={() => setIsOpen(false)}
           onBlur={() => setIsOpen(false)}
-          name="status-alert-warning"
+          name="icon-status-warning"
+          className="h-[20px] w-[20px]"
         />
         <PortalTooltip
           active={isOpen}

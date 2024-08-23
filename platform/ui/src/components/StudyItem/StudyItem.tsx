@@ -51,26 +51,12 @@ const StudyItem = ({
               </div>
             </div>
           </div>
-          {!!trackedSeries && (
-            <div className="flex-2 flex">
-              <div
-                className={classnames(
-                  'bg-secondary-main mt-2 flex flex-row py-1 pl-2 pr-4 text-base text-white',
-                  isActive
-                    ? 'border-secondary-light flex-1 justify-center border-t'
-                    : 'mx-4 mb-4 rounded-sm'
-                )}
-              >
-                <Icon
-                  name="tracked"
-                  className="text-primary-light mr-2 w-4"
-                />
-                {t('Tracked series', { trackedSeries: trackedSeries })}
-              </div>
-            </div>
-          )}
         </AccordionTrigger>
-        <AccordionContent>
+        <AccordionContent
+          onClick={event => {
+            event.stopPropagation();
+          }}
+        >
           {isExpanded && displaySets && (
             <ThumbnailList
               thumbnails={displaySets}

@@ -183,7 +183,10 @@ import { ReactComponent as iconMore } from './../../assets/icons/icon-more.svg';
 import { ReactComponent as iconPinFill } from './../../assets/icons/icon-pin-fill.svg';
 import { ReactComponent as iconPin } from './../../assets/icons/icon-pin.svg';
 import { ReactComponent as iconThumbnailView } from './../../assets/icons/icon-thumbnail-view.svg';
-
+import { ReactComponent as iconStatusTracking } from './../../assets/icons/status-tracking.svg';
+import { ReactComponent as iconStatusWarning } from './../../assets/icons/status-warning.svg';
+import { ReactComponent as infoSeries } from './../../assets/icons/info-series.svg';
+import { ReactComponent as infoMPR } from './../../assets/icons/info-mpr.svg';
 
 import CTAAA from './../../assets/icons/CT-AAA.png';
 import CTAAA2 from './../../assets/icons/CT-AAA2.png';
@@ -438,6 +441,10 @@ const ICONS = {
   'icon-pin-fill': iconPinFill,
   'icon-pin': iconPin,
   'icon-thumbnail-view': iconThumbnailView,
+  'icon-status-tracking': iconStatusTracking,
+  'icon-status-warning': iconStatusWarning,
+  'info-series': infoSeries,
+  'info-mpr': infoMPR,
 };
 
 function addIcon(iconName, iconSVG) {

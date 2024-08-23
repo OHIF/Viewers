@@ -2,8 +2,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import Thumbnail from '../Thumbnail';
-import ThumbnailNoImage from '../ThumbnailNoImage';
-import ThumbnailTracked from '../ThumbnailTracked';
 import * as Types from '../../types';
 
 const ThumbnailList = ({
@@ -49,7 +47,7 @@ const ThumbnailList = ({
                   dragData={dragData}
                   description={description}
                   seriesNumber={seriesNumber}
-                  numInstances={numInstances}
+                  numInstances={numInstances || 1}
                   countIcon={countIcon}
                   imageSrc={imageSrc}
                   imageAltText={imageAltText}
@@ -63,7 +61,7 @@ const ThumbnailList = ({
               );
             case 'thumbnailTracked':
               return (
-                <ThumbnailTracked
+                <Thumbnail
                   key={displaySetInstanceUID}
                   displaySetInstanceUID={displaySetInstanceUID}
                   dragData={dragData}
@@ -86,21 +84,23 @@ const ThumbnailList = ({
               );
             case 'thumbnailNoImage':
               return (
-                <ThumbnailNoImage
+                <Thumbnail
                   isActive={isActive}
                   key={displaySetInstanceUID}
                   displaySetInstanceUID={displaySetInstanceUID}
                   dragData={dragData}
                   modality={modality}
-                  modalityTooltip={_getModalityTooltip(modality)}
                   messages={messages}
-                  seriesDate={seriesDate}
                   description={description}
-                  canReject={canReject}
-                  onReject={onReject}
                   onClick={() => onThumbnailClick(displaySetInstanceUID)}
                   onDoubleClick={() => onThumbnailDoubleClick(displaySetInstanceUID)}
+                  viewPreset={viewPreset}
+                  countIcon={countIcon}
+                  seriesNumber={seriesNumber}
+                  numInstances={numInstances || 1}
                   isHydratedForDerivedDisplaySet={isHydratedForDerivedDisplaySet}
+                  canReject={canReject}
+                  onReject={onReject}
                 />
               );
             default:
