@@ -495,6 +495,8 @@ function PanelStudyBrowserTracking({
         onClickThumbnail={() => {}}
         onDoubleClickThumbnail={onDoubleClickThumbnailHandler}
         activeDisplaySetInstanceUIDs={activeViewportDisplaySetInstanceUIDs}
+        showSettings={actionIcons.find(icon => icon.id === 'settings').value}
+        viewPresets={viewPresets}
       />
     </div>
   );
