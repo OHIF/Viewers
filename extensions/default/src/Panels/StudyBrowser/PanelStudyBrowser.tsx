@@ -57,6 +57,9 @@ function PanelStudyBrowser({
 
   // only one is true at a time
   const updateViewPresetValue = viewPreset => {
+    if (!viewPreset) {
+      return;
+    }
     const newViewPresets = viewPresets.map(preset => {
       preset.selected = preset.id === viewPreset.id;
       return preset;

@@ -27,6 +27,8 @@ function ThumbnailTracked({
   onClickUntrack,
   isTracked,
   isActive,
+  viewPreset,
+  modality,
 }) {
   const { t } = useTranslation('ThumbnailTracked');
   const trackedIcon = isTracked ? 'circled-checkmark' : 'dotted-circle';
@@ -92,6 +94,8 @@ function ThumbnailTracked({
         isActive={isActive}
         onClick={onClick}
         onDoubleClick={onDoubleClick}
+        viewPreset={viewPreset}
+        modality={modality}
       />
     </div>
   );

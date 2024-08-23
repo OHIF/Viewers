@@ -6,6 +6,8 @@ import { utils } from '@ohif/core';
 import { StudyBrowser, useImageViewer, useViewportGrid, Dialog, ButtonEnums } from '@ohif/ui';
 import { useTrackedMeasurements } from '../../getContextModule';
 import { Separator } from '@ohif/ui-next';
+import { PanelStudyBrowserTrackingHeader } from './PanelStudyBrowserTrackingHeader';
+import { defaultActionIcons, defaultViewPresets } from './constants';
 
 const { formatDate, createStudyBrowserTabs } = utils;
 
@@ -30,6 +32,7 @@ function PanelStudyBrowserTracking({
     uiNotificationService,
     measurementService,
     studyPrefetcherService,
+    customizationService,
   } = servicesManager.services;
   const navigate = useNavigate();
 
@@ -52,6 +55,29 @@ function PanelStudyBrowserTracking({
   const [displaySetsLoadingState, setDisplaySetsLoadingState] = useState({});
   const [thumbnailImageSrcMap, setThumbnailImageSrcMap] = useState({});
   const [jumpToDisplaySet, setJumpToDisplaySet] = useState(null);
+
+  const [viewPresets, setViewPresets] = useState(
+    customizationService.getCustomization('studyBrowser.viewPresets')?.value || defaultViewPresets
+  );
+
+  const [actionIcons, setActionIcons] = useState(defaultActionIcons);
+
+  const updateActionIconValue = actionIcon => {
+    actionIcon.value = !actionIcon.value;
+    const newActionIcons = [...actionIcons];
+    setActionIcons(newActionIcons);
+  };
+
+  const updateViewPresetValue = viewPreset => {
+    if (!viewPreset) {
+      return;
+    }
+    const newViewPresets = viewPresets.map(preset => {
+      preset.selected = preset.id === viewPreset.id;
+      return preset;
+    });
+    setViewPresets(newViewPresets);
+  };
 
   const onDoubleClickThumbnailHandler = displaySetInstanceUID => {
     let updatedViewports = [];
@@ -439,15 +465,14 @@ function PanelStudyBrowserTracking({
     <div>
       {renderHeader && (
         <>
-          <div className="bg-primary-dark flex select-none rounded-t pt-1.5 pb-[2px]">
-            <div className="flex h-[24px] w-full cursor-pointer select-none justify-center self-center text-[14px]">
-              <div className="text-primary-active flex grow cursor-pointer select-none justify-center self-center text-[13px]">
-                <span>{tab.label}</span>
-              </div>
-            </div>
-
-            {getCloseIcon()}
-          </div>
+          <PanelStudyBrowserTrackingHeader
+            tab={tab}
+            getCloseIcon={getCloseIcon}
+            viewPresets={viewPresets}
+            updateViewPresetValue={updateViewPresetValue}
+            actionIcons={actionIcons}
+            updateActionIconValue={updateActionIconValue}
+          />
           <Separator
             orientation="horizontal"
             className="bg-black"

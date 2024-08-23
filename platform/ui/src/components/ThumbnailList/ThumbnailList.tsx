@@ -58,6 +58,7 @@ const ThumbnailList = ({
                   onClick={() => onThumbnailClick(displaySetInstanceUID)}
                   onDoubleClick={() => onThumbnailDoubleClick(displaySetInstanceUID)}
                   viewPreset={viewPreset}
+                  modality={modality}
                 />
               );
             case 'thumbnailTracked':
@@ -79,6 +80,8 @@ const ThumbnailList = ({
                   onClick={() => onThumbnailClick(displaySetInstanceUID)}
                   onDoubleClick={() => onThumbnailDoubleClick(displaySetInstanceUID)}
                   onClickUntrack={() => onClickUntrack(displaySetInstanceUID)}
+                  viewPreset={viewPreset}
+                  modality={modality}
                 />
               );
             case 'thumbnailNoImage':

@@ -25,6 +25,7 @@ const Thumbnail = ({
   onClick,
   onDoubleClick,
   viewPreset = 'thumbnails',
+  modality,
 }): React.ReactNode => {
   // TODO: We should wrap our thumbnail to create a "DraggableThumbnail", as
   // this will still allow for "drag", even if there is no drop target for the
@@ -90,15 +91,34 @@ const Thumbnail = ({
       <div className="relative flex h-full w-full items-center gap-[8px] p-[8px]">
         <div
           className={classnames(
-            'h-[24px] w-[4px] rounded-[2px]',
+            'h-[32px] w-[4px] rounded-[2px]',
             isActive ? 'bg-highlight' : 'bg-primary'
           )}
         ></div>
-        <div className="text-[12px] text-white">{description}</div>
+        <div className="flex flex-col">
+          <div className="flex gap-[7px]">
+            <div className="text-[13px] text-white">{modality}</div>
 
-        <div className="text-muted-foreground absolute top-[5px] right-2 text-[12px]">
-          {' '}
-          {` ${numInstances}`}
+            <div className="text-[13px] text-white">{description}</div>
+          </div>
+
+          <div className="flex gap-[7px]">
+            <div className="text-muted-foreground text-[12px]"> S:{seriesNumber}</div>
+            <div className="text-muted-foreground text-[12px]">
+              <div className="flex gap-[4px]">
+                {' '}
+                {countIcon ? (
+                  <Icon
+                    name={countIcon}
+                    className="w-3"
+                  />
+                ) : (
+                  <div className="w-3"></div>
+                )}
+                <div>{numInstances}</div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     );
@@ -110,7 +130,7 @@ const Thumbnail = ({
         className,
         'bg-muted hover:bg-primary/30 flex cursor-pointer select-none flex-col outline-none',
         viewPreset === 'thumbnails' && 'h-[176px] w-[132px]',
-        viewPreset === 'list' && 'h-[32px] w-[275px]'
+        viewPreset === 'list' && 'h-[40px] w-[275px]'
       )}
       id={`thumbnail-${displaySetInstanceUID}`}
       data-cy={`study-browser-thumbnail`}
