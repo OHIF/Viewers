@@ -462,7 +462,7 @@ function PanelStudyBrowserTracking({
   };
 
   return (
-    <div>
+    <>
       {renderHeader && (
         <>
           <PanelStudyBrowserTrackingHeader
@@ -498,7 +498,7 @@ function PanelStudyBrowserTracking({
         showSettings={actionIcons.find(icon => icon.id === 'settings').value}
         viewPresets={viewPresets}
       />
-    </div>
+    </>
   );
 }
 
