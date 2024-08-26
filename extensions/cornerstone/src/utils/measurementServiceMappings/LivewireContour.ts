@@ -126,7 +126,7 @@ function getDisplayText(annotation, displaySet, customizationService) {
     return [];
   }
 
-  const { area, areaUnits } = data.cachedStats[`imageId:${metadata.referencedImageId}`];
+  const { area, areaUnit } = data.cachedStats[`imageId:${metadata.referencedImageId}`];
 
   const { SOPInstanceUID, frameNumber } = getSOPInstanceAttributes(metadata.referencedImageId);
 
@@ -152,7 +152,7 @@ function getDisplayText(annotation, displaySet, customizationService) {
      * Area sometimes becomes undefined if `preventHandleOutsideImage` is off
      */
     const roundedArea = utils.roundNumber(area || 0, 2);
-    displayText.push(`${roundedArea} ${getDisplayUnit(areaUnits)}`);
+    displayText.push(`${roundedArea} ${getDisplayUnit(areaUnit)}`);
   }
 
   return displayText;

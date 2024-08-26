@@ -13,7 +13,7 @@ const RectangleROI = {
     getValueTypeFromToolType,
     customizationService
   ) => {
-    const { annotation } = csToolsEventDetail;
+    const { annotation, viewportId } = csToolsEventDetail;
     const { metadata, data, annotationUID } = annotation;
 
     if (!metadata || !data) {
@@ -28,8 +28,11 @@ const RectangleROI = {
       throw new Error('Tool not supported');
     }
 
-    const { SOPInstanceUID, SeriesInstanceUID, StudyInstanceUID } =
-      getSOPInstanceAttributes(referencedImageId);
+    const { SOPInstanceUID, SeriesInstanceUID, StudyInstanceUID } = getSOPInstanceAttributes(
+      referencedImageId,
+      displaySetService,
+      annotation
+    );
 
     let displaySet;
 
@@ -95,7 +98,7 @@ function getMappedAnnotations(annotation, displaySetService) {
     const displaySet = displaySetService.getDisplaySetsForSeries(SeriesInstanceUID)[0];
 
     const { SeriesNumber } = displaySet;
-    const { mean, stdDev, max, area, Modality, pixelValueUnits, areaUnits } = targetStats;
+    const { mean, stdDev, max, area, Modality, modalityUnit, areaUnit } = targetStats;
 
     annotations.push({
       SeriesInstanceUID,
@@ -103,13 +106,13 @@ function getMappedAnnotations(annotation, displaySetService) {
       SeriesNumber,
       frameNumber,
       Modality,
-      unit: pixelValueUnits,
+      unit: modalityUnit,
       mean,
       stdDev,
       metadata,
       max,
       area,
-      areaUnits,
+      areaUnit,
     });
   });
 
@@ -130,14 +133,14 @@ function _getReport(mappedAnnotations, points, FrameOfReferenceUID, customizatio
   values.push('Cornerstone:RectangleROI');
 
   mappedAnnotations.forEach(annotation => {
-    const { mean, stdDev, max, area, unit, areaUnits } = annotation;
+    const { mean, stdDev, max, area, unit, areaUnit } = annotation;
 
     if (!mean || !unit || !max || !area) {
       return;
     }
 
     columns.push(`Maximum`, `Mean`, `Std Dev`, 'Pixel Unit', `Area`, 'Unit');
-    values.push(max, mean, stdDev, unit, area, areaUnits);
+    values.push(max, mean, stdDev, unit, area, areaUnit);
   });
 
   if (FrameOfReferenceUID) {
@@ -167,7 +170,7 @@ function getDisplayText(mappedAnnotations, displaySet, customizationService) {
   const displayText = [];
 
   // Area is the same for all series
-  const { area, SOPInstanceUID, frameNumber, areaUnits } = mappedAnnotations[0];
+  const { area, SOPInstanceUID, frameNumber, areaUnit } = mappedAnnotations[0];
 
   const instance = displaySet.instances.find(image => image.SOPInstanceUID === SOPInstanceUID);
 
@@ -181,7 +184,7 @@ function getDisplayText(mappedAnnotations, displaySet, customizationService) {
 
   // Area sometimes becomes undefined if `preventHandleOutsideImage` is off.
   const roundedArea = utils.roundNumber(area || 0, 2);
-  displayText.push(`${roundedArea} ${getDisplayUnit(areaUnits)}`);
+  displayText.push(`${roundedArea} ${getDisplayUnit(areaUnit)}`);
 
   // Todo: we need a better UI for displaying all these information
   mappedAnnotations.forEach(mappedAnnotation => {

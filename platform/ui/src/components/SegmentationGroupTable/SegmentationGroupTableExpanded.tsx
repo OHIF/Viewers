@@ -9,36 +9,32 @@ import SegmentationItem from './SegmentationItem';
 const SegmentationGroupTableExpanded = ({
   segmentations = [],
   segmentationConfig,
-  // UI show/hide
-  disableEditing,
-  showAddSegmentation,
-  showAddSegment,
-  showDeleteSegment,
-  // segmentation/segment handlers
-  onSegmentationAdd,
-  onSegmentationEdit,
-  onSegmentationClick,
-  onSegmentationDelete,
-  onSegmentationDownload,
-  onSegmentationDownloadRTSS,
-  storeSegmentation,
-  // segment handlers
-  onSegmentClick,
-  onSegmentAdd,
-  onSegmentDelete,
-  onSegmentEdit,
-  onToggleSegmentationVisibility,
-  onToggleSegmentVisibility,
-  onToggleSegmentLock,
-  onSegmentColorClick,
-  // segmentation config handlers
-  setFillAlpha,
-  setFillAlphaInactive,
-  setOutlineWidthActive,
-  setOutlineOpacityActive,
-  setRenderFill,
-  setrenderInactiveRepresentations,
-  setRenderOutline,
+  disableEditing = false,
+  showAddSegmentation = true,
+  showAddSegment = true,
+  showDeleteSegment = true,
+  onSegmentationAdd = () => {},
+  onSegmentationEdit = () => {},
+  onSegmentationClick = () => {},
+  onSegmentationDelete = () => {},
+  onSegmentationDownload = () => {},
+  onSegmentationDownloadRTSS = () => {},
+  storeSegmentation = () => {},
+  onSegmentClick = () => {},
+  onSegmentAdd = () => {},
+  onSegmentDelete = () => {},
+  onSegmentEdit = () => {},
+  onToggleSegmentationVisibility = () => {},
+  onToggleSegmentVisibility = () => {},
+  onToggleSegmentLock = () => {},
+  onSegmentColorClick = () => {},
+  setFillAlpha = () => {},
+  setFillAlphaInactive = () => {},
+  setOutlineWidthActive = () => {},
+  setOutlineOpacityActive = () => {},
+  setRenderFill = () => {},
+  setRenderInactiveRepresentations = () => {},
+  setRenderOutline = () => {},
 }) => {
   const [isConfigOpen, setIsConfigOpen] = useState(false);
   const [activeSegmentationId, setActiveSegmentationId] = useState(null);
@@ -85,7 +81,7 @@ const SegmentationGroupTableExpanded = ({
             setOutlineWidthActive={setOutlineWidthActive}
             setOutlineOpacityActive={setOutlineOpacityActive}
             setRenderFill={setRenderFill}
-            setrenderInactiveRepresentations={setrenderInactiveRepresentations}
+            setRenderInactiveRepresentations={setRenderInactiveRepresentations}
             setRenderOutline={setRenderOutline}
             segmentationConfig={segmentationConfig}
           />
@@ -174,37 +170,8 @@ SegmentationGroupTableExpanded.propTypes = {
   setOutlineWidthActive: PropTypes.func.isRequired,
   setOutlineOpacityActive: PropTypes.func.isRequired,
   setRenderFill: PropTypes.func.isRequired,
-  setrenderInactiveRepresentations: PropTypes.func.isRequired,
+  setRenderInactiveRepresentations: PropTypes.func.isRequired,
   setRenderOutline: PropTypes.func.isRequired,
 };
 
-SegmentationGroupTableExpanded.defaultProps = {
-  segmentations: [],
-  disableEditing: false,
-  showAddSegmentation: true,
-  showAddSegment: true,
-  showDeleteSegment: true,
-  onSegmentationAdd: () => {},
-  onSegmentationEdit: () => {},
-  onSegmentationClick: () => {},
-  onSegmentationDelete: () => {},
-  onSegmentationDownload: () => {},
-  onSemgnetationDownloadRTSS: () => {},
-  storeSegmentation: () => {},
-  onSegmentClick: () => {},
-  onSegmentAdd: () => {},
-  onSegmentDelete: () => {},
-  onSegmentEdit: () => {},
-  onToggleSegmentationVisibility: () => {},
-  onToggleSegmentVisibility: () => {},
-  onToggleSegmentLock: () => {},
-  onSegmentColorClick: () => {},
-  setFillAlpha: () => {},
-  setFillAlphaInactive: () => {},
-  setOutlineWidthActive: () => {},
-  setOutlineOpacityActive: () => {},
-  setRenderFill: () => {},
-  setrenderInactiveRepresentations: () => {},
-  setRenderOutline: () => {},
-};
 export default SegmentationGroupTableExpanded;

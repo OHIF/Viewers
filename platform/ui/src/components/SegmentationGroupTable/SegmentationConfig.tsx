@@ -82,7 +82,7 @@ const ActiveSegmentationConfig = ({
 
 const InactiveSegmentationConfig = ({
   config,
-  setrenderInactiveRepresentations,
+  setRenderInactiveRepresentations,
   setFillAlphaInactive,
 }) => {
   const { t } = useTranslation('SegmentationTable');
@@ -93,7 +93,7 @@ const InactiveSegmentationConfig = ({
         checked={config.renderInactiveRepresentations}
         labelClassName="text-[12px]"
         className="mb-[9px]"
-        onChange={setrenderInactiveRepresentations}
+        onChange={setRenderInactiveRepresentations}
       />
 
       <div className="flex items-center space-x-2 pl-4">
@@ -121,7 +121,7 @@ const SegmentationConfig = ({
   setOutlineWidthActive,
   setOutlineOpacityActive,
   setRenderFill,
-  setrenderInactiveRepresentations,
+  setRenderInactiveRepresentations,
   setRenderOutline,
 }) => {
   const { t } = useTranslation('SegmentationTable');
@@ -156,12 +156,12 @@ const SegmentationConfig = ({
         {!isMinimized && (
           <InactiveSegmentationConfig
             config={initialConfig}
-            setrenderInactiveRepresentations={setrenderInactiveRepresentations}
+            setRenderInactiveRepresentations={setRenderInactiveRepresentations}
             setFillAlphaInactive={setFillAlphaInactive}
           />
         )}
       </div>
-      <div className="h-[6px] bg-black "></div>
+      <div className="h-[6px] bg-black"></div>
     </div>
   );
 };

@@ -346,7 +346,7 @@ export default function PanelSegmentation({
       setRenderFill={value =>
         _setSegmentationConfiguration(selectedSegmentationId, 'renderFill', value)
       }
-      setrenderInactiveRepresentations={value =>
+      setRenderInactiveRepresentations={value =>
         _setSegmentationConfiguration(
           selectedSegmentationId,
           'renderInactiveRepresentations',
