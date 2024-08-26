@@ -37,7 +37,10 @@ function initDefaultToolGroup(
         toolName: toolNames.Zoom,
         bindings: [{ mouseButton: Enums.MouseBindings.Secondary }],
       },
-      { toolName: toolNames.StackScrollMouseWheel, bindings: [] },
+      {
+        toolName: toolNames.StackScroll,
+        bindings: [{ mouseButton: Enums.MouseBindings.Wheel }],
+      },
     ],
     passive: [
       { toolName: toolNames.Length },
@@ -142,8 +145,8 @@ function initSRToolGroup(extensionManager, toolGroupService) {
         ],
       },
       {
-        toolName: toolNames.StackScrollMouseWheel,
-        bindings: [],
+        toolName: toolNames.StackScroll,
+        bindings: [{ mouseButton: Enums.MouseBindings.Wheel }],
       },
     ],
     passive: [
@@ -199,7 +202,10 @@ function initMPRToolGroup(extensionManager, toolGroupService, commandsManager, m
         toolName: toolNames.Zoom,
         bindings: [{ mouseButton: Enums.MouseBindings.Secondary }],
       },
-      { toolName: toolNames.StackScrollMouseWheel, bindings: [] },
+      {
+        toolName: toolNames.StackScroll,
+        bindings: [{ mouseButton: Enums.MouseBindings.Wheel }],
+      },
     ],
     passive: [
       { toolName: toolNames.Length },

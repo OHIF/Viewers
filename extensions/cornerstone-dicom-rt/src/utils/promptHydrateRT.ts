@@ -32,8 +32,7 @@ function promptHydrateRT({
         servicesManager,
       });
 
-        resolve(isHydrated);
-      }, 0);
+      resolve(isHydrated);
     }
   });
 }

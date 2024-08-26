@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.20.13",
-    "@kitware/vtk.js": "30.4.1",
+    "@kitware/vtk.js": "32.1.0",
     "clsx": "^2.1.1",
     "core-js": "^3.2.1",
     "moment": "^2.9.4"

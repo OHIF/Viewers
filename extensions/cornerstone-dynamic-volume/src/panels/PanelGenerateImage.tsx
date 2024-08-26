@@ -1,8 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { useCine, useViewportGrid } from '@ohif/ui';
-import { cache, utilities as csUtils, volumeLoader, eventTarget } from '@cornerstonejs/core';
-import { Enums } from '@cornerstonejs/streaming-image-volume-loader';
+import { cache, utilities as csUtils, volumeLoader, eventTarget, Enums } from '@cornerstonejs/core';
 import { utilities as cstUtils } from '@cornerstonejs/tools';
 import DynamicVolumeControls from './DynamicVolumeControls';
 

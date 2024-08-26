@@ -144,11 +144,6 @@ module.exports = (env, argv, { SRC_DIR, ENTRY }) => {
             },
           ],
         },
-        {
-          test: /\.js$/,
-          enforce: 'pre',
-          use: 'source-map-loader',
-        },
         transpileJavaScriptRule(mode),
         loadWebWorkersRule,
         // loadShadersRule,

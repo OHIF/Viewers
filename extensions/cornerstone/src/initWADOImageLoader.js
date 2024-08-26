@@ -3,7 +3,7 @@ import { volumeLoader } from '@cornerstonejs/core';
 import {
   cornerstoneStreamingImageVolumeLoader,
   cornerstoneStreamingDynamicImageVolumeLoader,
-} from '@cornerstonejs/streaming-image-volume-loader';
+} from '@cornerstonejs/core/loaders';
 import dicomImageLoader from '@cornerstonejs/dicom-image-loader';
 import dicomParser from 'dicom-parser';
 import { errorHandler, utils } from '@ohif/core';

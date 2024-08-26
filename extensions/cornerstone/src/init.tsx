@@ -13,12 +13,11 @@ import {
   getEnabledElement,
   Settings,
   utilities as csUtilities,
-  Enums as csEnums,
 } from '@cornerstonejs/core';
 import {
   cornerstoneStreamingImageVolumeLoader,
   cornerstoneStreamingDynamicImageVolumeLoader,
-} from '@cornerstonejs/streaming-image-volume-loader';
+} from '@cornerstonejs/core/loaders';
 
 import initWADOImageLoader from './initWADOImageLoader';
 import initCornerstoneTools from './initCornerstoneTools';
@@ -50,17 +49,6 @@ export default async function init({
 }: Types.Extensions.ExtensionParams): Promise<void> {
   // Note: this should run first before initializing the cornerstone
   // DO NOT CHANGE THE ORDER
-  const value = appConfig.useSharedArrayBuffer;
-  let sharedArrayBufferDisabled = false;
-
-  if (value === 'AUTO') {
-    cornerstone.setUseSharedArrayBuffer(csEnums.SharedArrayBufferModes.AUTO);
-  } else if (value === 'FALSE' || value === false) {
-    cornerstone.setUseSharedArrayBuffer(csEnums.SharedArrayBufferModes.FALSE);
-    sharedArrayBufferDisabled = true;
-  } else {
-    cornerstone.setUseSharedArrayBuffer(csEnums.SharedArrayBufferModes.TRUE);
-  }
 
   await cs3DInit({
     rendering: {
@@ -100,7 +88,6 @@ export default async function init({
     hangingProtocolService,
     viewportGridService,
     stateSyncService,
-    studyPrefetcherService,
   } = servicesManager.services;
 
   window.services = servicesManager.services;

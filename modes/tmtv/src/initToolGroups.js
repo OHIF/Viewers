@@ -28,7 +28,10 @@ function _initToolGroups(
         toolName: toolNames.Zoom,
         bindings: [{ mouseButton: Enums.MouseBindings.Secondary }],
       },
-      { toolName: toolNames.StackScrollMouseWheel, bindings: [] },
+      {
+        toolName: toolNames.StackScroll,
+        bindings: [{ mouseButton: Enums.MouseBindings.Wheel }],
+      },
     ],
     passive: [
       { toolName: toolNames.Length },

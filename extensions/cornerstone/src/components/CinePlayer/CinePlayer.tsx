@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect, useState, useRef } from 'react';
 import { CinePlayer, useCine } from '@ohif/ui';
 import { Enums, eventTarget, cache } from '@cornerstonejs/core';
-import { Enums as StreamingEnums } from '@cornerstonejs/streaming-image-volume-loader';
 import { useAppConfig } from '@state';
 
 function WrappedCinePlayer({
