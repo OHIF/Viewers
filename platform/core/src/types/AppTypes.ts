@@ -76,7 +76,6 @@ declare global {
       experimentalStudyBrowserSort?: boolean;
       defaultDataSourceName?: string;
       hotkeys?: Record<string, Hotkey> | Hotkey[];
-      useSharedArrayBuffer?: 'AUTO' | 'FALSE' | 'TRUE';
       preferSizeOverAccuracy?: boolean;
       useNorm16Texture?: boolean;
       useCPURendering?: boolean;

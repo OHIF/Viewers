@@ -537,8 +537,6 @@ class SegmentationService extends PubSubService {
       throw new Error(`No volume found for referencedVolumeId: ${referencedVolumeId}`);
     }
 
-    // Force use of a Uint8Array SharedArrayBuffer for the segmentation to save space and so
-    // it is easily compressible in worker thread.
     const derivedVolume = await volumeLoader.createAndCacheDerivedVolume(referencedVolumeId, {
       volumeId: segmentationId,
       targetBuffer: {
@@ -941,8 +939,6 @@ class SegmentationService extends PubSubService {
 
     const segmentationId = options?.segmentationId ?? `${csUtils.uuidv4()}`;
 
-    // Force use of a Uint8Array SharedArrayBuffer for the segmentation to save space and so
-    // it is easily compressible in worker thread.
     await volumeLoader.createAndCacheDerivedSegmentationVolume(volumeId, {
       volumeId: segmentationId,
       targetBuffer: {

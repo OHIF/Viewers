@@ -640,7 +640,7 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     }
 
     this._handleOverlays(viewport);
-    viewport.element.addEventListener(csEnums.Events.STACK_VIEWPORT_NEW_STACK, evt => {
+    viewport.element.addEventListener(csEnums.Events.VIEWPORT_NEW_IMAGE_SET, evt => {
       const { element } = evt.detail;
 
       if (element !== viewport.element) {
