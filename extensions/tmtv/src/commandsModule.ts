@@ -1,4 +1,3 @@
-import { vec3 } from 'gl-matrix';
 import OHIF from '@ohif/core';
 import * as cs from '@cornerstonejs/core';
 import * as csTools from '@cornerstonejs/tools';
@@ -10,14 +9,16 @@ import createAndDownloadTMTVReport from './utils/createAndDownloadTMTVReport';
 import dicomRTAnnotationExport from './utils/dicomRTAnnotationExport/RTStructureSet';
 
 import { getWebWorkerManager } from '@cornerstonejs/core';
+import { Enums } from '@cornerstonejs/tools';
+
+const { SegmentationRepresentations } = Enums;
 
 const metadataProvider = classes.MetadataProvider;
 const ROI_THRESHOLD_MANUAL_TOOL_IDS = [
   'RectangleROIStartEndThreshold',
   'RectangleROIThreshold',
-  'CircleROIStartEndThreshold'
+  'CircleROIStartEndThreshold',
 ];
-const LABELMAP = csTools.Enums.SegmentationRepresentations.Labelmap;
 
 const workerManager = getWebWorkerManager();
 
@@ -205,13 +206,11 @@ const commandsModule = ({ servicesManager, commandsManager, extensionManager }: 
       const ctVolumeId = `${volumeLoaderScheme}:${ctDisplaySet.displaySetInstanceUID}`; // VolumeId with loader id + volume id
 
       const { volumeId: segVolumeId } = representationData[
-        LABELMAP
+        SegmentationRepresentations.Labelmap
       ] as csTools.Types.LabelmapToolOperationDataVolume;
       const { referencedVolumeId } = cs.cache.getVolume(segVolumeId);
 
-      const annotationUIDs = _getAnnotationsSelectedByToolNames(
-        ROI_THRESHOLD_MANUAL_TOOL_IDS
-      );
+      const annotationUIDs = _getAnnotationsSelectedByToolNames(ROI_THRESHOLD_MANUAL_TOOL_IDS);
 
       if (annotationUIDs.length === 0) {
         uiNotificationService.show({
@@ -296,9 +295,7 @@ const commandsModule = ({ servicesManager, commandsManager, extensionManager }: 
       const { referencedVolumeId } = labelmap;
       const referencedVolume = cs.cache.getVolume(referencedVolumeId);
 
-      const annotationUIDs = _getAnnotationsSelectedByToolNames(
-        ROI_THRESHOLD_MANUAL_TOOL_IDS
-      );
+      const annotationUIDs = _getAnnotationsSelectedByToolNames(ROI_THRESHOLD_MANUAL_TOOL_IDS);
 
       const annotations = annotationUIDs.map(annotationUID =>
         csTools.annotation.state.getAnnotation(annotationUID)
@@ -383,9 +380,9 @@ const commandsModule = ({ servicesManager, commandsManager, extensionManager }: 
         maxValue: segmentationMax,
         meanValue: mean,
         stdValue: Math.sqrt(
-          segmentationValues
-            .map((k) => (k - mean) ** 2)
-            .reduce((acc, curr) => acc + curr, 0) / voxelCount),
+          segmentationValues.map(k => (k - mean) ** 2).reduce((acc, curr) => acc + curr, 0) /
+            voxelCount
+        ),
         volume: voxelCount * spacing[0] * spacing[1] * spacing[2] * 1e-3,
       };
 

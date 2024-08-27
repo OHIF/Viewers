@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useContext, useEffect, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { Machine } from 'xstate';
 import { useMachine } from '@xstate/react';
@@ -196,7 +196,9 @@ function TrackedMeasurementsContextProvider(
   // - Fix viewport border resize
   // - created/destroyed hooks for extensions (cornerstone measurement subscriptions in it's `init`)
 
-  const measurementTrackingMachine = Machine(machineConfiguration, machineOptions);
+  const measurementTrackingMachine = useMemo(() => {
+    return Machine(machineConfiguration, machineOptions);
+  }, []); // Empty dependency array ensures this is only created once
 
   const [trackedMeasurements, sendTrackedMeasurementsEvent] = useMachine(
     measurementTrackingMachine

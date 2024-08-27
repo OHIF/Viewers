@@ -8,7 +8,6 @@ import {
   volumeLoader,
   Types as csTypes,
   getEnabledElementByViewportId,
-  StackViewport,
 } from '@cornerstonejs/core';
 import {
   Enums as csToolsEnums,
@@ -21,8 +20,10 @@ import { Types as ohifTypes } from '@ohif/core';
 import { easeInOutBell, reverseEaseInOutBell } from '../../utils/transitions';
 import { Segment, Segmentation, SegmentationConfig } from './SegmentationServiceTypes';
 import { mapROIContoursToRTStructData } from './RTSTRUCT/mapROIContoursToRTStructData';
+import { LabelmapConfig } from '@cornerstonejs/tools/dist/esm/types/LabelmapTypes';
 
 const LABELMAP = csToolsEnums.SegmentationRepresentations.Labelmap;
+2;
 const CONTOUR = csToolsEnums.SegmentationRepresentations.Contour;
 
 const EVENTS = {
@@ -239,7 +240,7 @@ class SegmentationService extends PubSubService {
     const labelmapVolume = this.getLabelmapVolume(segmentationId);
 
     const { dimensions } = labelmapVolume;
-    const scalarData = labelmapVolume.getScalarData();
+    const voxelManager = labelmapVolume.voxelManager;
 
     // Set all values of this segment to zero and get which frames have been edited.
     const frameLength = dimensions[0] * dimensions[1];
@@ -251,8 +252,8 @@ class SegmentationService extends PubSubService {
 
     for (let frame = 0; frame < numFrames; frame++) {
       for (let p = 0; p < frameLength; p++) {
-        if (scalarData[voxelIndex] === segmentIndex) {
-          scalarData[voxelIndex] = 0;
+        if (voxelManager.getAtIndex(voxelIndex) === segmentIndex) {
+          voxelManager.setAtIndex(voxelIndex, 0);
           modifiedFrames.add(frame);
         }
 
@@ -644,7 +645,7 @@ class SegmentationService extends PubSubService {
       type: representationType,
       label: rtDisplaySet.SeriesDescription,
       representationData: {
-        CONTOUR: {
+        [CONTOUR]: {
           geometryIds,
         },
       },
@@ -681,7 +682,7 @@ class SegmentationService extends PubSubService {
             frameOfReferenceUID: structureSet.frameOfReferenceUID,
             segmentIndex,
           },
-          type: csEnums.GeometryType.CONTOUR,
+          type: csEnums.GeometryType.Contour,
         });
 
         const contourSet = geometry.data;
@@ -758,7 +759,7 @@ class SegmentationService extends PubSubService {
     const segmentation = this.getSegmentation(segmentationId);
     const volume = this.getLabelmapVolume(segmentationId);
     const { dimensions, imageData } = volume;
-    const scalarData = volume.getScalarData();
+    const volumeVoxelManager = volume.voxelManager;
     const [dimX, dimY, numFrames] = dimensions;
     const frameLength = dimX * dimY;
 
@@ -778,7 +779,7 @@ class SegmentationService extends PubSubService {
     let voxelIndex = 0;
     for (let frame = 0; frame < numFrames; frame++) {
       for (let p = 0; p < frameLength; p++) {
-        const segmentIndex = scalarData[voxelIndex++];
+        const segmentIndex = volumeVoxelManager.getAtIndex(voxelIndex++) as number;
         if (segmentIndicesSet.has(segmentIndex)) {
           const centroid = centroids.get(segmentIndex);
           centroid.x += p % dimX;
@@ -959,7 +960,7 @@ class SegmentationService extends PubSubService {
       FrameOfReferenceUID: (options?.FrameOfReferenceUID ||
         displaySet.instances?.[0]?.FrameOfReferenceUID) as string,
       representationData: {
-        LABELMAP: {
+        [LABELMAP]: {
           volumeId: segmentationId,
           referencedVolumeId: volumeId, // Todo: this is so ugly
         },
@@ -1140,7 +1141,7 @@ class SegmentationService extends PubSubService {
   ) {
     const newSegmentSpecificConfig = {
       [segmentIndex]: {
-        LABELMAP: {
+        [LABELMAP]: {
           fillAlpha: alpha,
         },
       },
@@ -1150,7 +1151,7 @@ class SegmentationService extends PubSubService {
       for (let i = 0; i < segments.length; i++) {
         if (i !== segmentIndex) {
           newSegmentSpecificConfig[i] = {
-            LABELMAP: {
+            [LABELMAP]: {
               fillAlpha: 0,
             },
           };
@@ -1170,11 +1171,11 @@ class SegmentationService extends PubSubService {
       const progress = Math.min(elapsed / animationLength, 1);
 
       cstSegmentation.config.setSegmentIndexConfig(
-        viewportId,
         segmentationRepresentation.segmentationRepresentationUID,
+        segmentIndex,
         {
           [segmentIndex]: {
-            LABELMAP: {
+            [LABELMAP]: {
               fillAlpha: easeInOutBell(progress, fillAlpha),
             },
           },
@@ -1185,8 +1186,8 @@ class SegmentationService extends PubSubService {
         requestAnimationFrame(animation);
       } else {
         cstSegmentation.config.setSegmentIndexConfig(
-          viewportId,
           segmentationRepresentation.segmentationRepresentationUID,
+          segmentIndex,
           {}
         );
       }
@@ -1210,8 +1211,8 @@ class SegmentationService extends PubSubService {
       const progress = (currentTime - startTime) / animationLength;
       if (progress >= 1) {
         cstSegmentation.config.setSegmentIndexConfig(
-          viewportId,
           segmentationRepresentation.segmentationRepresentationUID,
+          segmentIndex,
           {}
         );
         return;
@@ -1219,11 +1220,11 @@ class SegmentationService extends PubSubService {
 
       const reversedProgress = reverseEaseInOutBell(progress, 0.1);
       cstSegmentation.config.setSegmentIndexConfig(
-        viewportId,
         segmentationRepresentation.segmentationRepresentationUID,
+        segmentIndex,
         {
           [segmentIndex]: {
-            CONTOUR: {
+            [CONTOUR]: {
               outlineOpacity: reversedProgress,
               fillAlpha: reversedProgress,
             },
@@ -1331,7 +1332,7 @@ class SegmentationService extends PubSubService {
       fillAlphaInactive,
       outlineOpacity,
       outlineOpacityInactive,
-    } = representation;
+    } = representation as LabelmapConfig;
 
     return {
       brushSize,
@@ -1458,7 +1459,7 @@ class SegmentationService extends PubSubService {
       const representation = this._getSegmentationRepresentation(segmentationId, viewportId);
 
       if (!representation) {
-        throw new Error('Must add representation to toolgroup before setting segments');
+        throw new Error('Must add representation to viewport before setting segments');
       }
 
       representationUIDToUse = representation.segmentationRepresentationUID;
@@ -1555,7 +1556,7 @@ class SegmentationService extends PubSubService {
     );
 
     if (!segmentationRepresentation) {
-      throw new Error('Must add representation to toolgroup before setting segments');
+      throw new Error('Must add representation to viewport before setting segments');
     }
     const { segmentationRepresentationUID } = segmentationRepresentation;
 
@@ -1701,7 +1702,7 @@ class SegmentationService extends PubSubService {
     );
 
     if (!segmentationRepresentation) {
-      throw new Error('Must add representation to toolgroup before setting segments');
+      throw new Error('Must add representation to viewport before setting segments');
     }
     const { segmentationRepresentationUID } = segmentationRepresentation;
 
@@ -1897,7 +1898,7 @@ class SegmentationService extends PubSubService {
     );
 
     if (!segmentationRepresentation) {
-      throw new Error('Must add representation to toolgroup before setting segments');
+      throw new Error('Must add representation to viewport before setting segments');
     }
 
     const { segmentationRepresentationUID } = segmentationRepresentation;

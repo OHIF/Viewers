@@ -130,7 +130,7 @@ function _initToolGroups(
         },
       },
     ],
-    enabled: [{ toolName: toolNames.SegmentationDisplay }],
+    enabled: [],
     disabled: [
       {
         toolName: toolNames.Crosshairs,
@@ -172,7 +172,6 @@ function _initToolGroups(
       },
     ],
     enabled: [
-      { toolName: toolNames.SegmentationDisplay },
       {
         toolName: toolNames.OrientationMarker,
         configuration: {

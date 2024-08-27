@@ -86,7 +86,6 @@ function createTools(utilityModule) {
       { toolName: toolNames.SphereScissors },
       { toolName: toolNames.StackScroll },
       { toolName: toolNames.Magnify },
-      { toolName: toolNames.SegmentationDisplay },
       { toolName: toolNames.WindowLevelRegion },
 
       { toolName: toolNames.UltrasoundDirectional },

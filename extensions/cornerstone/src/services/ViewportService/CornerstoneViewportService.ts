@@ -795,8 +795,7 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
   }
 
   public async setVolumesForViewport(viewport, volumeInputArray, presentations) {
-    const { displaySetService, toolGroupService, viewportGridService } =
-      this.servicesManager.services;
+    const { displaySetService, viewportGridService } = this.servicesManager.services;
 
     const viewportInfo = this.getViewportInfo(viewport.id);
     const displaySetOptions = viewportInfo.getDisplaySetOptions();

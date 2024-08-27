@@ -78,8 +78,6 @@ export default function init({
 
           commandsManager.run(commands, { viewportId });
         });
-      } else {
-        console.warn(`Event ${event} is not supported`);
       }
     });
   };

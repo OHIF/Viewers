@@ -103,9 +103,8 @@ function _initToolGroups(toolNames, Enums, toolGroupService, commandsManager, se
       { toolName: toolNames.SphereScissors },
       { toolName: toolNames.StackScroll },
       { toolName: toolNames.Magnify },
-      { toolName: toolNames.SegmentationDisplay },
     ],
-    enabled: [{ toolName: toolNames.SegmentationDisplay }],
+    enabled: [],
     disabled: [
       {
         toolName: toolNames.Crosshairs,

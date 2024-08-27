@@ -1,5 +1,6 @@
 import { Enums as csToolsEnums, Types as cstTypes } from '@cornerstonejs/tools';
 import { Types } from '@cornerstonejs/core';
+import { RepresentationsData } from '@cornerstonejs/tools/dist/esm/types';
 
 type SegmentationConfig = cstTypes.LabelmapTypes.LabelmapConfig & {
   renderInactiveRepresentations: boolean;
@@ -61,16 +62,7 @@ type Segmentation = {
   // the type of the segmentation (e.g., Labelmap etc.)
   type: csToolsEnums.SegmentationRepresentations;
   // the segmentation representation data
-  representationData: SegmentationRepresentationData;
-};
-
-type LabelmapSegmentationData = {
-  volumeId: string;
-  referencedVolumeId?: string;
-};
-
-type SegmentationRepresentationData = {
-  LABELMAP?: LabelmapSegmentationData;
+  representationData: RepresentationsData;
 };
 
 export type { SegmentationConfig, Segment, Segmentation };

@@ -183,13 +183,13 @@ function RenderCinePlayer({
     };
 
     eventTarget.addEventListener(
-      StreamingEnums.Events.DYNAMIC_VOLUME_TIME_POINT_INDEX_CHANGED,
+      Enums.Events.DYNAMIC_VOLUME_TIME_POINT_INDEX_CHANGED,
       handleTimePointIndexChange
     );
 
     return () => {
       eventTarget.removeEventListener(
-        StreamingEnums.Events.DYNAMIC_VOLUME_TIME_POINT_INDEX_CHANGED,
+        Enums.Events.DYNAMIC_VOLUME_TIME_POINT_INDEX_CHANGED,
         handleTimePointIndexChange
       );
     };
@@ -201,7 +201,7 @@ function RenderCinePlayer({
     }
 
     const { volumeId, timePointIndex, numTimePoints, splittingTag } = dynamicInfo || {};
-    const volume = cache.getVolume(volumeId);
+    const volume = cache.getVolume(volumeId, true);
     volume.timePointIndex = timePointIndex;
 
     setDynamicInfo({ volumeId, timePointIndex, numTimePoints, label: splittingTag });
@@ -209,7 +209,7 @@ function RenderCinePlayer({
 
   const updateDynamicInfo = useCallback(props => {
     const { volumeId, timePointIndex } = props;
-    const volume = cache.getVolume(volumeId);
+    const volume = cache.getVolume(volumeId, true);
     volume.timePointIndex = timePointIndex;
   }, []);
 

@@ -29,7 +29,6 @@ const tools = {
     },
   ],
   enabled: [
-    { toolName: toolNames.SegmentationDisplay },
     {
       toolName: toolNames.PlanarFreehandContourSegmentation,
       configuration: {
