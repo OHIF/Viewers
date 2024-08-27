@@ -20,7 +20,7 @@ import { Types as ohifTypes } from '@ohif/core';
 import { easeInOutBell, reverseEaseInOutBell } from '../../utils/transitions';
 import { Segment, Segmentation, SegmentationConfig } from './SegmentationServiceTypes';
 import { mapROIContoursToRTStructData } from './RTSTRUCT/mapROIContoursToRTStructData';
-import { LabelmapConfig } from '@cornerstonejs/tools/dist/esm/types/LabelmapTypes';
+import { LabelmapConfig } from '@cornerstonejs/tools/types/LabelmapTypes';
 
 const LABELMAP = csToolsEnums.SegmentationRepresentations.Labelmap;
 2;

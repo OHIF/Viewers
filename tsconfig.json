@@ -2,7 +2,6 @@
   "compilerOptions": {
     "baseUrl": "./",
     "checkJs": true,
-    // Ensure that Babel can safely transpile files in the TypeScript project
     "isolatedModules": true,
     "emitDeclarationOnly": true,
     "jsx": "react",
@@ -10,7 +9,8 @@
     "esModuleInterop": true,
     "sourceMap": true,
     "declaration": true,
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
+    "module": "esnext",
     "target": "ES2022",
     "outDir": "./dist",
     "paths": {

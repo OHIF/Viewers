@@ -31,6 +31,7 @@ export default function addDICOMSRDisplayAnnotation(measurement, imageId, frameN
 
   const imagePlaneModule = metaData.get('imagePlaneModule', imageId);
 
+  const FrameOfReferenceUID = imagePlaneModule.frameOfReferenceUID;
   /**
    * This annotation (DICOMSRDisplay) is only used by the SR viewport.
    * This is used before the annotation is hydrated. If hydrated the measurement will be added
@@ -43,7 +44,7 @@ export default function addDICOMSRDisplayAnnotation(measurement, imageId, frameN
     invalidated: false,
     metadata: {
       toolName: toolName,
-      FrameOfReferenceUID: imagePlaneModule.frameOfReferenceUID,
+      FrameOfReferenceUID,
       referencedImageId: imageId,
     },
     data: {
@@ -57,8 +58,7 @@ export default function addDICOMSRDisplayAnnotation(measurement, imageId, frameN
       frameNumber,
     },
   };
-  const annotationManager = annotation.state.getAnnotationManager();
-  annotationManager.addAnnotation(SRAnnotation);
+  annotation.state.addAnnotation(SRAnnotation, FrameOfReferenceUID);
 }
 
 function _getRenderableData(GraphicType, GraphicData, imageId) {

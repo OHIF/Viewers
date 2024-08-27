@@ -214,6 +214,22 @@ const stage4 = {
   ],
 };
 
+/**
+ * This layout displays three fusion viewports: axial, sagittal, and coronal.
+ * It follows a simple grid pattern with 1 row and 3 columns.
+ */
+const stage0 = {
+  name: 'Fusion 1x3',
+  viewportStructure: {
+    layoutType: 'grid',
+    properties: {
+      rows: 1,
+      columns: 3,
+    },
+  },
+  viewports: [fusionAXIAL, fusionSAGITTAL, fusionCORONAL],
+};
+
 const ptCT = {
   id: '@ohif/extension-tmtv.hangingProtocolModule.ptCT',
   locked: true,

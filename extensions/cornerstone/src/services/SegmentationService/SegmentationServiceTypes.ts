@@ -1,6 +1,6 @@
 import { Enums as csToolsEnums, Types as cstTypes } from '@cornerstonejs/tools';
 import { Types } from '@cornerstonejs/core';
-import { RepresentationsData } from '@cornerstonejs/tools/dist/esm/types';
+import { RepresentationsData } from '@cornerstonejs/tools/types';
 
 type SegmentationConfig = cstTypes.LabelmapTypes.LabelmapConfig & {
   renderInactiveRepresentations: boolean;
