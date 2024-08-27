@@ -39,16 +39,22 @@ function retrieveMetadataFiltered(
       );
     });
 
-    Promise.all(promises).then(results => {
-      const aggregatedResult = { preLoadData: [], promises: [] };
+    if (enableStudyLazyLoad === true) {
+      Promise.all(promises).then(results => {
+        const aggregatedResult = { preLoadData: [], promises: [] };
 
-      results.forEach(({ preLoadData, promises }) => {
-        aggregatedResult.preLoadData = aggregatedResult.preLoadData.concat(preLoadData);
-        aggregatedResult.promises = aggregatedResult.promises.concat(promises);
-      });
+        results.forEach(({ preLoadData, promises }) => {
+          aggregatedResult.preLoadData = aggregatedResult.preLoadData.concat(preLoadData);
+          aggregatedResult.promises = aggregatedResult.promises.concat(promises);
+        });
 
-      resolve(aggregatedResult);
-    }, reject);
+        resolve(aggregatedResult);
+      }, reject);
+    } else {
+      Promise.all(promises).then(results => {
+        resolve(results.flat());
+      }, reject);
+    }
   });
 }
 
