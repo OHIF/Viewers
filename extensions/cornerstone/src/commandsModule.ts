@@ -578,7 +578,6 @@ function commandsModule({
     }) => {
       const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
 
-      const actorEntries = viewport.getActors();
       let hpOpacity;
       // Retrieve active protocol's viewport match details
       const { viewportMatchDetails } = hangingProtocolService.getActiveProtocol();
@@ -597,14 +596,8 @@ function commandsModule({
       // HP takes priority over the default opacity
       colormap = { ...colormap, opacity: hpOpacity || opacity };
 
-      const setViewportProperties = (viewport, uid) => {
-        const actorEntry = actorEntries.find(entry => entry.uid.includes(uid));
-        const { actor: volumeActor, uid: volumeId } = actorEntry;
-        viewport.setProperties({ colormap, volumeActor }, volumeId);
-      };
-
       if (viewport instanceof StackViewport) {
-        setViewportProperties(viewport, viewportId);
+        viewport.setProperties({ colormap });
       }
 
       if (viewport instanceof VolumeViewport) {
@@ -612,7 +605,11 @@ function commandsModule({
           const { viewports } = viewportGridService.getState();
           displaySetInstanceUID = viewports.get(viewportId)?.displaySetInstanceUIDs[0];
         }
-        setViewportProperties(viewport, displaySetInstanceUID);
+
+        const volumeId = viewport
+          .getActors()
+          .find(entry => entry.referencedId.includes(displaySetInstanceUID))?.referencedId;
+        viewport.setProperties({ colormap }, volumeId);
       }
 
       if (immediate) {

@@ -74,8 +74,10 @@ export default class ColorbarService extends PubSubService {
     );
 
     displaySetInstanceUIDs.forEach((displaySetInstanceUID, index) => {
-      const actorEntry = actorEntries.find(entry => entry.uid.includes(displaySetInstanceUID));
-      const volumeId = actorEntry?.uid;
+      const actorEntry = actorEntries.find(entry =>
+        entry.referencedId.includes(displaySetInstanceUID)
+      );
+      const volumeId = actorEntry?.referencedId;
       const properties = viewport?.getProperties(volumeId);
       const colormap = properties?.colormap;
       // if there's an initial colormap set, and no colormap on the viewport, set it
@@ -196,8 +198,8 @@ export default class ColorbarService extends PubSubService {
       return;
     }
     const setViewportProperties = (viewport, uid) => {
-      const actorEntry = actorEntries.find(entry => entry.uid.includes(uid));
-      const { actor: volumeActor, uid: volumeId } = actorEntry;
+      const actorEntry = actorEntries.find(entry => entry.referencedId.includes(uid));
+      const { actor: volumeActor, referencedId: volumeId } = actorEntry;
       viewport.setProperties({ colormap, volumeActor }, volumeId);
     };
 
