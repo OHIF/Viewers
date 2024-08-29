@@ -601,6 +601,7 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     viewportInfo: ViewportInfo,
     presentations: Presentations = {}
   ): Promise<void> {
+    console.debug('setStackViewport');
     const displaySetOptions = viewportInfo.getDisplaySetOptions();
 
     const displaySetInstanceUIDs = viewportData.data.map(data => data.displaySetInstanceUID);
@@ -639,7 +640,6 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
       properties.colormap = colormap ?? properties.colormap;
     }
 
-    this._handleOverlays(viewport);
     viewport.element.addEventListener(csEnums.Events.VIEWPORT_NEW_IMAGE_SET, evt => {
       const { element } = evt.detail;
 
@@ -650,7 +650,11 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
       csToolsUtils.stackContextPrefetch.enable(element);
     });
 
-    return viewport.setStack(imageIds, initialImageIndexToUse).then(() => {
+    let imageIdsToSet = imageIds;
+    const res = this._processOverlaysForViewport(viewport);
+    imageIdsToSet = res?.imageIds ?? imageIdsToSet;
+
+    return viewport.setStack(imageIdsToSet, initialImageIndexToUse).then(() => {
       viewport.setProperties({ ...properties });
       this.setPresentations(viewport.id, presentations, viewportInfo);
       if (displayArea) {
@@ -839,7 +843,7 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
 
     this.setPresentations(viewport.id, presentations, viewportInfo);
 
-    this._handleOverlays(viewport);
+    this._processOverlaysForViewport(viewport);
 
     csToolsUtils.segmentation.triggerSegmentationRender(viewport.id);
 
@@ -858,7 +862,7 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     });
   }
 
-  private _handleOverlays(viewport: Types.IStackViewport | Types.IVolumeViewport) {
+  private _processOverlaysForViewport(viewport: Types.IStackViewport | Types.IVolumeViewport) {
     const { displaySetService } = this.servicesManager.services;
 
     // load any secondary displaySets
@@ -872,91 +876,29 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
           displaySet?.isOverlayDisplaySet && ['SEG', 'RTSTRUCT'].includes(displaySet.Modality)
       );
 
+    // if it is only the overlay displaySet, then we need to get the reference
+    // displaySet imageIds and set them as the imageIds for the viewport,
+    // here we can do some logic if the reference is missing
+    // then find the most similar match of displaySet instead
     if (segOrRTSOverlayDisplaySet) {
+      const referenceDisplaySet = displaySetService.getDisplaySetByUID(
+        segOrRTSOverlayDisplaySet.referencedDisplaySetInstanceUID
+      );
+      const imageIds = referenceDisplaySet.images.map(image => image.imageId);
       this.addOverlayRepresentationForDisplaySet(segOrRTSOverlayDisplaySet, viewport);
-    } else {
-      // If the displaySet is not a SEG displaySet we assume it is a primary displaySet
-      // and we can look into hydrated segmentations to check if any of them are
-      // associated with the primary displaySet
-
-      // get segmentations only returns the hydrated segmentations
-      this._addSegmentationRepresentationToViewportIfNecessary(displaySetInstanceUIDs, viewport);
+      return { imageIds };
     }
   }
 
-  private _addSegmentationRepresentationToViewportIfNecessary(
-    displaySetInstanceUIDs: string[],
-    viewport: any
+  private addOverlayRepresentationForDisplaySet(
+    displaySet: OhifTypes.DisplaySet,
+    viewport: Types.IViewport
   ) {
     const { segmentationService } = this.servicesManager.services;
-
-    // this only returns hydrated segmentations
-    const segmentations = segmentationService.getSegmentations();
-
-    for (const segmentation of segmentations) {
-      const viewportRepresentations =
-        segmentationService.getSegmentationRepresentationsForViewport(viewport.id) || [];
-
-      // if there is already a segmentation representation for this segmentation
-      // for this toolGroup, don't bother at all
-      const isSegmentationInViewport = viewportRepresentations.find(
-        representation => representation.segmentationId === segmentation.id
-      );
-
-      if (isSegmentationInViewport) {
-        continue;
-      }
-
-      // otherwise, check if the hydrated segmentations are in the same FrameOfReferenceUID
-      // as the primary displaySet, if so add the representation (since it was not there)
-      const { id: segDisplaySetInstanceUID } = segmentation;
-      let segFrameOfReferenceUID = this._getFrameOfReferenceUID(segDisplaySetInstanceUID);
-
-      if (!segFrameOfReferenceUID) {
-        // if the segmentation displaySet does not have a FrameOfReferenceUID, we might check the
-        // segmentation itself maybe it has a FrameOfReferenceUID
-        const { FrameOfReferenceUID } = segmentation;
-        if (FrameOfReferenceUID) {
-          segFrameOfReferenceUID = FrameOfReferenceUID;
-        }
-      }
-
-      if (!segFrameOfReferenceUID) {
-        return;
-      }
-
-      let shouldDisplaySeg = false;
-
-      for (const displaySetInstanceUID of displaySetInstanceUIDs) {
-        const primaryFrameOfReferenceUID = this._getFrameOfReferenceUID(displaySetInstanceUID);
-
-        if (segFrameOfReferenceUID === primaryFrameOfReferenceUID) {
-          shouldDisplaySeg = true;
-          break;
-        }
-      }
-
-      if (!shouldDisplaySeg) {
-        return;
-      }
-
-      segmentationService.addSegmentationRepresentationToViewport(
-        viewport.id,
-        segmentation.id,
-        false, // already hydrated,
-        segmentation.type
-      );
-    }
-  }
-
-  private addOverlayRepresentationForDisplaySet(displaySet: any, viewport: any) {
-    const { segmentationService } = this.servicesManager.services;
-
-    const { referencedVolumeId } = displaySet;
     const segmentationId = displaySet.displaySetInstanceUID;
 
     const representationType =
-      referencedVolumeId && cache.getVolume(referencedVolumeId) !== undefined
+      displaySet.Modality === 'SEG'
         ? csToolsEnums.SegmentationRepresentations.Labelmap
         : csToolsEnums.SegmentationRepresentations.Contour;
 

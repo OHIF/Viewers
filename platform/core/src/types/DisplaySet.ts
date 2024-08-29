@@ -7,6 +7,7 @@ export type DisplaySet = {
   SeriesInstanceUID?: string;
   numImages?: number;
   unsupported?: boolean;
+  Modality?: string;
 };
 
 export type DisplaySetSeriesMetadataInvalidatedEvent = {

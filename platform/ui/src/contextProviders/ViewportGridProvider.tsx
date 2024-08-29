@@ -1,4 +1,11 @@
-import React, { createContext, useCallback, useContext, useEffect, useReducer } from 'react';
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useReducer,
+  ReactNode,
+} from 'react';
 import merge from 'lodash.merge';
 
 import PropTypes from 'prop-types';
@@ -132,9 +139,36 @@ const determineActiveViewportId = (state: DefaultState, newViewports: Map) => {
   return sortedViewports[0].viewportId;
 };
 
-export const ViewportGridContext = createContext(DEFAULT_STATE);
+// Define the API interface
+interface ViewportGridApi {
+  getState: () => DefaultState;
+  setActiveViewportId: (index: string) => void;
+  setDisplaySetsForViewport: (props: any) => void;
+  setDisplaySetsForViewports: (props: any[]) => void;
+  setLayout: (layout: any) => void;
+  reset: () => void;
+  set: (gridLayoutState: Partial<DefaultState>) => void;
+  getNumViewportPanes: () => number;
+  setViewportIsReady: (viewportId: string, isReady: boolean) => void;
+  getGridViewportsReady: () => boolean;
+  getActiveViewportOptionByKey: (key: string) => any;
+  setViewportGridSizeChanged: (props: any) => void;
+  publishViewportsReady: () => void;
+}
 
-export function ViewportGridProvider({ children, service }) {
+// Update the context type
+export const ViewportGridContext = createContext<[DefaultState, ViewportGridApi]>([
+  DEFAULT_STATE,
+  {} as ViewportGridApi,
+]);
+
+// Update the provider props type
+interface ViewportGridProviderProps {
+  children: ReactNode;
+  service: ViewportGridService;
+}
+
+export function ViewportGridProvider({ children, service }: ViewportGridProviderProps) {
   const viewportGridReducer = (state: DefaultState, action) => {
     switch (action.type) {
       case 'SET_ACTIVE_VIEWPORT_ID': {
@@ -513,4 +547,6 @@ ViewportGridProvider.propTypes = {
   service: PropTypes.instanceOf(ViewportGridService).isRequired,
 };
 
-export const useViewportGrid = () => useContext(ViewportGridContext);
+// Update the useViewportGrid hook
+export const useViewportGrid = (): [DefaultState, ViewportGridApi] =>
+  useContext(ViewportGridContext);

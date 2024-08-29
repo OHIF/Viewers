@@ -133,9 +133,9 @@ const OHIFCornerstoneViewport = React.memo((props: withAppTypes) => {
   // Since we only have support for dynamic data in volume viewports, we should
   // handle this case here and set the viewportType to volume if any of the
   // displaySets are dynamic volumes
-  viewportOptions.viewportType = displaySets.some(ds => ds.isDynamicVolume && ds.isReconstructable)
-    ? 'volume'
-    : viewportOptions.viewportType;
+  // viewportOptions.viewportType = displaySets.some(ds => ds.isDynamicVolume && ds.isReconstructable)
+  //   ? 'volume'
+  //   : viewportOptions.viewportType;
 
   const [scrollbarHeight, setScrollbarHeight] = useState('100px');
   const [enabledVPElement, setEnabledVPElement] = useState(null);

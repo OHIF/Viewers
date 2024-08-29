@@ -248,7 +248,7 @@ const commandsModule = ({
     generateSegmentation: ({ segmentationId, options = {} }) => {
       const segmentation = cornerstoneToolsSegmentation.state.getSegmentation(segmentationId);
 
-      const { referencedVolumeId } = segmentation.representationData.Labelmap;
+      const { referencedVolumeId } = segmentation.representationData.LABELMAP;
 
       const segmentationVolume = cache.getVolume(segmentationId);
       const referencedVolume = cache.getVolume(referencedVolumeId);

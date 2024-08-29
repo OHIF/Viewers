@@ -45,7 +45,9 @@ export default function PanelSegmentation({
 
     [added, updated, removed].forEach(evt => {
       const { unsubscribe } = segmentationService.subscribe(evt, () => {
-        const segmentations = segmentationService.getSegmentations();
+        // get the current viewport
+        const viewportId = viewportGridService.getActiveViewportId();
+        const segmentations = segmentationService.getSegmentations(viewportId);
         setSegmentations(segmentations);
         setSegmentationConfiguration(segmentationService.getConfiguration());
       });
@@ -56,6 +58,27 @@ export default function PanelSegmentation({
       subscriptions.forEach(unsub => {
         unsub();
       });
+    };
+  }, []);
+
+  // active viewportId change
+
+  useEffect(() => {
+    const changedEvent = viewportGridService.EVENTS.ACTIVE_VIEWPORT_ID_CHANGED;
+    const stateEvent = viewportGridService.EVENTS.GRID_STATE_CHANGED;
+
+    const subs = [];
+    [changedEvent, stateEvent].forEach(evt => {
+      const { unsubscribe } = viewportGridService.subscribe(evt, () => {
+        const viewportId = viewportGridService.getActiveViewportId();
+        const segmentations = segmentationService.getSegmentations(viewportId);
+        setSegmentations(segmentations);
+        setSegmentationConfiguration(segmentationService.getConfiguration());
+      });
+      subs.push(unsubscribe);
+    });
+    return () => {
+      subs.forEach(unsub => unsub());
     };
   }, []);
 

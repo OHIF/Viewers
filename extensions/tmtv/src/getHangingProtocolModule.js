@@ -259,6 +259,10 @@ const ptCT = {
       },
     },
   ],
+  viewportCustomizations: {
+    'border-color': '#000000',
+    segmentationMatchingRules: {},
+  },
   displaySetSelectors: {
     ctDisplaySet: {
       seriesMatchingRules: [

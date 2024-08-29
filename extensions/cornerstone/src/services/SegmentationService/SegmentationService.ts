@@ -8,6 +8,8 @@ import {
   volumeLoader,
   Types as csTypes,
   getEnabledElementByViewportId,
+  imageLoader,
+  Types,
 } from '@cornerstonejs/core';
 import {
   Enums as csToolsEnums,
@@ -23,7 +25,6 @@ import { mapROIContoursToRTStructData } from './RTSTRUCT/mapROIContoursToRTStruc
 import { LabelmapConfig } from '@cornerstonejs/tools/types/LabelmapTypes';
 
 const LABELMAP = csToolsEnums.SegmentationRepresentations.Labelmap;
-2;
 const CONTOUR = csToolsEnums.SegmentationRepresentations.Contour;
 
 const EVENTS = {
@@ -376,15 +377,17 @@ class SegmentationService extends PubSubService {
 
    * @return Array of segmentations
    */
-  public getSegmentations(filterNonHydratedSegmentations = true): Segmentation[] {
+  public getSegmentations(viewportId?: string): Segmentation[] {
     const segmentations = this._getSegmentations();
 
-    return (
-      segmentations &&
-      segmentations.filter(segmentation => {
-        return !filterNonHydratedSegmentations || segmentation.hydrated;
-      })
-    );
+    if (!viewportId) {
+      return segmentations;
+    }
+
+    const representations = cstSegmentation.state.getSegmentationRepresentations(viewportId);
+    console.debug('🚀 ~ representations:', representations);
+
+    return representations.map(representation => this.segmentations[representation.segmentationId]);
   }
 
   private _getSegmentations(): Segmentation[] {
@@ -496,6 +499,26 @@ class SegmentationService extends PubSubService {
 
     const defaultScheme = this._getDefaultSegmentationScheme();
 
+    const referencedDisplaySetInstanceUID = segDisplaySet.referencedDisplaySetInstanceUID;
+    const referencedDisplaySet = this.servicesManager.services.displaySetService.getDisplaySetByUID(
+      referencedDisplaySetInstanceUID
+    );
+
+    const images = referencedDisplaySet.instances;
+
+    if (!images.length) {
+      throw new Error('No instances were provided for the referenced display set of the SEG');
+    }
+
+    const imageIds = images.map(image => image.imageId);
+
+    const derivedSegmentationImages =
+      await imageLoader.createAndCacheDerivedSegmentationImages(imageIds);
+
+    const segmentationImageIds = derivedSegmentationImages.map(image => image.imageId);
+    segDisplaySet.images = derivedSegmentationImages;
+    segDisplaySet.instances = derivedSegmentationImages;
+
     const segmentation: Segmentation = {
       ...defaultScheme,
       id: segmentationId,
@@ -506,8 +529,7 @@ class SegmentationService extends PubSubService {
       FrameOfReferenceUID: segDisplaySet.FrameOfReferenceUID,
       representationData: {
         [LABELMAP]: {
-          volumeId: segmentationId,
-          referencedVolumeId: segDisplaySet.referencedVolumeId,
+          imageIds: segmentationImageIds,
         },
       },
     };
@@ -524,31 +546,26 @@ class SegmentationService extends PubSubService {
       );
     }
 
-    const { labelmapBufferArray, referencedVolumeId } = segDisplaySet;
+    const { labelmapBufferArray } = segDisplaySet;
 
-    if (!labelmapBufferArray || !referencedVolumeId) {
-      throw new Error('No labelmapBufferArray or referencedVolumeId found for the SEG displaySet');
+    if (!labelmapBufferArray) {
+      throw new Error('SEG reading failed');
     }
 
-    // if the labelmap doesn't exist, we need to create it first from the
-    // DICOM SEG displaySet data
-    const referencedVolume = cache.getVolume(referencedVolumeId);
+    // now we need to chop the volume array into chunks and set the scalar data for each derived segmentation image
+    const volumeScalarData = new Uint8Array(labelmapBufferArray[0]);
 
-    if (!referencedVolume) {
-      throw new Error(`No volume found for referencedVolumeId: ${referencedVolumeId}`);
+    // We should parse the segmentation as separate slices to support overlapping segments.
+    // This parsing should occur in the CornerstoneJS library adapters.
+    // For now, we use the volume returned from the library and chop it here.
+    for (let i = 0; i < derivedSegmentationImages.length; i++) {
+      const voxelManager = derivedSegmentationImages[i].voxelManager as Types.IVoxelManager<number>;
+      const scalarData = voxelManager.getScalarData();
+      scalarData.set(volumeScalarData.slice(i * scalarData.length, (i + 1) * scalarData.length));
+      voxelManager.setScalarData(scalarData);
     }
-
-    const derivedVolume = await volumeLoader.createAndCacheDerivedVolume(referencedVolumeId, {
-      volumeId: segmentationId,
-      targetBuffer: {
-        type: 'Uint8Array',
-      },
-    });
-    const derivedVolumeScalarData = derivedVolume.getScalarData();
 
     const segmentsInfo = segDisplaySet.segMetadata.data;
-    derivedVolumeScalarData.set(new Uint8Array(labelmapBufferArray[0]));
-
     segmentation.segments = segmentsInfo.map((segmentInfo, segmentIndex) => {
       if (segmentIndex === 0) {
         return;
@@ -565,7 +582,7 @@ class SegmentationService extends PubSubService {
       } = segmentInfo;
 
       const { x, y, z } = segDisplaySet.centroids.get(segmentIndex) || { x: 0, y: 0, z: 0 };
-      const centerWorld = derivedVolume.imageData.indexToWorld([x, y, z]);
+      // const centerWorld = derivedVolume.imageData.indexToWorld([x, y, z]);
 
       segmentation.cachedStats = {
         ...segmentation.cachedStats,
@@ -574,7 +591,7 @@ class SegmentationService extends PubSubService {
           [segmentIndex]: {
             center: {
               image: [x, y, z],
-              world: centerWorld,
+              // world: centerWorld,
             },
             modifiedTime: segDisplaySet.SeriesDate,
           },
@@ -704,7 +721,6 @@ class SegmentationService extends PubSubService {
 
         // Calculate percentage completed
         const percentComplete = Math.round((numInitialized / allRTStructData.length) * 100);
-
         this._broadcastEvent(EVENTS.SEGMENT_LOADING_COMPLETE, {
           percentComplete,
           // Note: this is not the geometryIds length since there might be

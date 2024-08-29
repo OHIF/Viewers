@@ -58,8 +58,6 @@ const defaultProtocol = {
           },
         },
       ],
-      // Can be used to select matching studies
-      // studyMatchingRules: [],
     },
   },
   stages: [

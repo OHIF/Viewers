@@ -62,7 +62,10 @@ function OHIFCornerstoneRTViewport(props: withAppTypes) {
 
   const { viewports, activeViewportId } = viewportGrid;
 
-  const referencedDisplaySet = rtDisplaySet.getReferenceDisplaySet();
+  const referencedDisplaySetInstanceUID = rtDisplaySet.referencedDisplaySetInstanceUID;
+  const referencedDisplaySet = displaySetService.getDisplaySetByUID(
+    referencedDisplaySetInstanceUID
+  );
   const referencedDisplaySetMetadata = _getReferencedDisplaySetMetadata(referencedDisplaySet);
 
   referencedDisplaySetRef.current = {

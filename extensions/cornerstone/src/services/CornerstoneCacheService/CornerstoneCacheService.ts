@@ -37,23 +37,7 @@ class CornerstoneCacheService {
     dataSource: unknown,
     initialImageIndex?: number
   ): Promise<StackViewportData | VolumeViewportData> {
-    let viewportType = viewportOptions.viewportType as string;
-
-    // Todo: Since Cornerstone 3D currently doesn't support segmentation
-    // on stack viewport, we should check if whether the the displaySets
-    // that are about to be displayed are referenced in a segmentation
-    // as a reference volume, if so, we should hang a volume viewport
-    // instead of a stack viewport
-    if (this._shouldRenderSegmentation(displaySets)) {
-      // if the viewport type is volume 3D, we should let it be as it is
-      // Todo: in future here we should kick start the conversion of the
-      // segmentation to closed surface
-      viewportType =
-        viewportType === Enums.ViewportType.VOLUME_3D ? Enums.ViewportType.VOLUME_3D : 'volume';
-
-      // update viewportOptions to reflect the new viewport type
-      viewportOptions.viewportType = viewportType;
-    }
+    const viewportType = viewportOptions.viewportType as string;
 
     const cs3DViewportType = getCornerstoneViewportType(viewportType, displaySets);
     let viewportData: StackViewportData | VolumeViewportData;
@@ -175,9 +159,7 @@ class CornerstoneCacheService {
     viewportType: Enums.ViewportType
   ): Promise<StackViewportData> {
     const overlayDisplaySets = displaySets.filter(ds => ds.isOverlayDisplaySet);
-    const nonOverlayDisplaySets = displaySets.filter(ds => !ds.isOverlayDisplaySet);
 
-    // load overlays if they are not loaded
     for (const overlayDisplaySet of overlayDisplaySets) {
       if (overlayDisplaySet.load && overlayDisplaySet.load instanceof Function) {
         const { userAuthenticationService } = this.servicesManager.services;
@@ -186,24 +168,15 @@ class CornerstoneCacheService {
       }
     }
 
-    const displaySet = nonOverlayDisplaySets[0];
-
-    let stackImageIds = this.stackImageIds.get(displaySet.displaySetInstanceUID);
-
-    if (!stackImageIds) {
-      stackImageIds = this._getCornerstoneStackImageIds(displaySet, dataSource);
-      this.stackImageIds.set(displaySet.displaySetInstanceUID, stackImageIds);
-    }
-
     // Ensuring the first non-overlay `displaySet` is always the primary one
-    const StackViewportData = [displaySet, ...overlayDisplaySets].map(ds => {
+    const StackViewportData = displaySets.map(ds => {
       const { displaySetInstanceUID, StudyInstanceUID, isCompositeStack } = ds;
 
       return {
         StudyInstanceUID,
         displaySetInstanceUID,
         isCompositeStack,
-        imageIds: stackImageIds,
+        imageIds: ds.images.map(image => image.imageId),
         initialImageIndex,
       };
     });
@@ -282,34 +255,6 @@ class CornerstoneCacheService {
       viewportType,
       data: volumeData,
     };
-  }
-
-  private _shouldRenderSegmentation(displaySets) {
-    const { segmentationService, displaySetService } = this.servicesManager.services;
-
-    const viewportDisplaySetInstanceUIDs = displaySets.map(
-      ({ displaySetInstanceUID }) => displaySetInstanceUID
-    );
-
-    // check inside segmentations if any of them are referencing the displaySets
-    // that are about to be displayed
-    const segmentations = segmentationService.getSegmentations();
-
-    for (const segmentation of segmentations) {
-      const segDisplaySetInstanceUID = segmentation.displaySetInstanceUID;
-      const segDisplaySet = displaySetService.getDisplaySetByUID(segDisplaySetInstanceUID);
-
-      const instance = segDisplaySet.instances?.[0] || segDisplaySet.instance;
-
-      const shouldDisplaySeg = segmentationService.shouldRenderSegmentation(
-        viewportDisplaySetInstanceUIDs,
-        instance?.FrameOfReferenceUID || segDisplaySet.FrameOfReferenceUID
-      );
-
-      if (shouldDisplaySeg) {
-        return true;
-      }
-    }
   }
 
   private _getCornerstoneStackImageIds(displaySet, dataSource): string[] {
