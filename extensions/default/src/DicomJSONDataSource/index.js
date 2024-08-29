@@ -59,8 +59,6 @@ const findStudies = (key, value) => {
 };
 
 function createDicomJSONApi(dicomJsonConfig) {
-  const { wadoRoot } = dicomJsonConfig;
-
   const implementation = {
     initialize: async ({ query, url }) => {
       if (!url) {
@@ -169,7 +167,7 @@ function createDicomJSONApi(dicomJsonConfig) {
        *    or is already retrieved, or a promise to a URL for such use if a BulkDataURI
        */
       directURL: params => {
-        return getDirectURL(wadoRoot, params);
+        return getDirectURL(dicomJsonConfig, params);
       },
       series: {
         metadata: async ({ StudyInstanceUID, madeInClient = false, customSort } = {}) => {
