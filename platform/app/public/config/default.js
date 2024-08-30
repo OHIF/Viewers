@@ -341,4 +341,18 @@ window.config = {
       keys: ['9'],
     },
   ],
+  idcDownloadCommandsDialog: {
+    description: 'Follow the instructions below to download the study or series:',
+    instructions: [
+      { command: 'pip install idc-index --upgrade', label: 'First, install the idc cli:' },
+      {
+        command: `idc download {{StudyInstanceUID}}`,
+        label: 'Then, to download the whole study, run:',
+      },
+      {
+        command: `idc download {{SeriesInstanceUID}}`,
+        label: "Or, to download just the active viewport's series, run:",
+      },
+    ],
+  },
 };
