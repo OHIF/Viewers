@@ -285,7 +285,7 @@ export default async function init({
         type: 'error',
       });
     },
-    1000
+    100
   );
 }
 

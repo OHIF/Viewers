@@ -112,8 +112,12 @@ class ViewportGridService extends PubSubService {
 
   public setActiveViewportId(id: string) {
     this.serviceImplementation._setActiveViewport(id);
-    this._broadcastEvent(this.EVENTS.ACTIVE_VIEWPORT_ID_CHANGED, {
-      viewportId: id,
+
+    // Use queueMicrotask to delay the event broadcast
+    queueMicrotask(() => {
+      this._broadcastEvent(this.EVENTS.ACTIVE_VIEWPORT_ID_CHANGED, {
+        viewportId: id,
+      });
     });
   }
 
@@ -155,9 +159,13 @@ class ViewportGridService extends PubSubService {
         console.warn("ViewportGridService::Didn't find updated viewport", viewport);
       }
     }
-    this._broadcastEvent(ViewportGridService.EVENTS.GRID_STATE_CHANGED, {
-      state,
-      viewports,
+
+    // Use queueMicrotask to delay the event broadcast
+    queueMicrotask(() => {
+      this._broadcastEvent(ViewportGridService.EVENTS.GRID_STATE_CHANGED, {
+        state,
+        viewports,
+      });
     });
   }
 
@@ -220,8 +228,12 @@ class ViewportGridService extends PubSubService {
 
   public set(state) {
     this.serviceImplementation._set(state);
-    this._broadcastEvent(this.EVENTS.GRID_STATE_CHANGED, {
-      state,
+
+    // Use queueMicrotask to delay the event broadcast
+    queueMicrotask(() => {
+      this._broadcastEvent(this.EVENTS.GRID_STATE_CHANGED, {
+        state,
+      });
     });
   }
 

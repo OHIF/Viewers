@@ -65,7 +65,6 @@ export default function PanelSegmentation({
     [changedEvent, stateEvent].forEach(evt => {
       const { unsubscribe } = viewportGridService.subscribe(evt, () => {
         const viewportId = viewportGridService.getActiveViewportId();
-        console.debug('🚀 ~ viewportId:', viewportId);
         const segmentations = segmentationService.getSegmentations(viewportId);
         setSegmentations(segmentations);
         setSegmentationConfiguration(segmentationService.getConfiguration());
