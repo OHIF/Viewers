@@ -133,9 +133,9 @@ const OHIFCornerstoneViewport = React.memo((props: withAppTypes) => {
   // Since we only have support for dynamic data in volume viewports, we should
   // handle this case here and set the viewportType to volume if any of the
   // displaySets are dynamic volumes
-  // viewportOptions.viewportType = displaySets.some(ds => ds.isDynamicVolume && ds.isReconstructable)
-  //   ? 'volume'
-  //   : viewportOptions.viewportType;
+  viewportOptions.viewportType = displaySets.some(ds => ds.isDynamicVolume && ds.isReconstructable)
+    ? 'volume'
+    : viewportOptions.viewportType;
 
   const [scrollbarHeight, setScrollbarHeight] = useState('100px');
   const [enabledVPElement, setEnabledVPElement] = useState(null);
@@ -148,6 +148,7 @@ const OHIFCornerstoneViewport = React.memo((props: withAppTypes) => {
     toolGroupService,
     syncGroupService,
     cornerstoneViewportService,
+    segmentationService,
     cornerstoneCacheService,
     stateSyncService,
     viewportActionCornersService,
@@ -176,7 +177,9 @@ const OHIFCornerstoneViewport = React.memo((props: withAppTypes) => {
       toolGroupService.removeViewportFromToolGroup(viewportId, renderingEngineId);
 
       syncGroupService.removeViewportFromSyncGroup(viewportId, renderingEngineId, syncGroups);
-
+      // make sure always to remove the segmentation representation from the viewport
+      // we can rehydrate later since it is easy
+      segmentationService.removeSegmentationRepresentationFromViewport(viewportId);
       viewportActionCornersService.clear(viewportId);
     },
     [viewportId]
@@ -305,8 +308,11 @@ const OHIFCornerstoneViewport = React.memo((props: withAppTypes) => {
       // a viewport.  Otherwise, this viewport will be unchanged and the
       // presentation information will be directly carried over.
       const state = stateSyncService.getState();
-      const lutPresentationStore = state.lutPresentationStore as LutPresentation;
-      const positionPresentationStore = state.positionPresentationStore as PositionPresentation;
+      const segmentationPresentationStore =
+        state.segmentationPresentationStore as unknown as SegmentationPresentation;
+      const lutPresentationStore = state.lutPresentationStore as unknown as LutPresentation;
+      const positionPresentationStore =
+        state.positionPresentationStore as unknown as PositionPresentation;
 
       const { presentationIds } = viewportOptions;
       const presentations = {

@@ -1,5 +1,4 @@
 import { PubSubService } from '../_shared/pubSubServiceInterface';
-import { getPresentationIds, PresentationIds } from './getPresentationIds';
 
 class ViewportGridService extends PubSubService {
   public static readonly EVENTS = {
@@ -18,13 +17,51 @@ class ViewportGridService extends PubSubService {
     },
   };
 
-  public static getPresentationIds = getPresentationIds;
-
   serviceImplementation = {};
+  presentationIdProviders: Map<
+    string,
+    (id: string, { viewport, viewports, isUpdatingSameViewport }) => unknown
+  >;
 
   constructor() {
     super(ViewportGridService.EVENTS);
     this.serviceImplementation = {};
+    this.presentationIdProviders = new Map();
+  }
+
+  public addPresentationIdProvider(
+    id: string,
+    provider: (id: string, { viewport, viewports, isUpdatingSameViewport }) => unknown
+  ): void {
+    this.presentationIdProviders.set(id, provider);
+  }
+
+  public getPresentationId(id, { viewport, viewports }) {
+    const isUpdatingSameViewport = [...viewports.values()].some(
+      v =>
+        v.displaySetInstanceUIDs?.toString() === viewport.displaySetInstanceUIDs?.toString() &&
+        v.viewportId === viewport.viewportId
+    );
+
+    const provider = this.presentationIdProviders.get(id);
+    if (provider) {
+      const result = provider(id, { viewport, viewports, isUpdatingSameViewport });
+      return result;
+    }
+    return null;
+  }
+
+  public getPresentationIds({ viewport, viewports }) {
+    // Use the keys of the Map to get all registered provider IDs
+    const registeredPresentationProviders = Array.from(this.presentationIdProviders.keys());
+
+    return registeredPresentationProviders.reduce((acc, id) => {
+      const value = this.getPresentationId(id, { viewport, viewports });
+      if (value !== null) {
+        acc[id] = value;
+      }
+      return acc;
+    }, {});
   }
 
   public setServiceImplementation({
@@ -207,5 +244,3 @@ class ViewportGridService extends PubSubService {
 }
 
 export default ViewportGridService;
-
-export type { PresentationIds };

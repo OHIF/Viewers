@@ -1,6 +1,5 @@
 import React, { useEffect, useCallback, useRef, useState } from 'react';
 import { useResizeDetector } from 'react-resize-detector';
-import PropTypes from 'prop-types';
 import { Types, MeasurementService } from '@ohif/core';
 import { ViewportGrid, ViewportPane, useViewportGrid } from '@ohif/ui';
 import EmptyViewport from './EmptyViewport';

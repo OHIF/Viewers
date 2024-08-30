@@ -23,6 +23,7 @@ import { easeInOutBell, reverseEaseInOutBell } from '../../utils/transitions';
 import { Segment, Segmentation, SegmentationConfig } from './SegmentationServiceTypes';
 import { mapROIContoursToRTStructData } from './RTSTRUCT/mapROIContoursToRTStructData';
 import { LabelmapConfig } from '@cornerstonejs/tools/types/LabelmapTypes';
+import { ColorLUT } from '@cornerstonejs/core/types';
 
 const LABELMAP = csToolsEnums.SegmentationRepresentations.Labelmap;
 const CONTOUR = csToolsEnums.SegmentationRepresentations.Contour;
@@ -385,7 +386,6 @@ class SegmentationService extends PubSubService {
     }
 
     const representations = cstSegmentation.state.getSegmentationRepresentations(viewportId);
-    console.debug('🚀 ~ representations:', representations);
 
     return representations.map(representation => this.segmentations[representation.segmentationId]);
   }
@@ -519,13 +519,15 @@ class SegmentationService extends PubSubService {
     segDisplaySet.images = derivedSegmentationImages;
     segDisplaySet.instances = derivedSegmentationImages;
 
+    const segmentsInfo = segDisplaySet.segMetadata.data;
+
     const segmentation: Segmentation = {
       ...defaultScheme,
       id: segmentationId,
       displaySetInstanceUID: segDisplaySet.displaySetInstanceUID,
       type: representationType,
       label: segDisplaySet.SeriesDescription,
-      colorLUTIndex: 1,
+      colorLUTIndex: null,
       FrameOfReferenceUID: segDisplaySet.FrameOfReferenceUID,
       representationData: {
         [LABELMAP]: {
@@ -565,7 +567,6 @@ class SegmentationService extends PubSubService {
       voxelManager.setScalarData(scalarData);
     }
 
-    const segmentsInfo = segDisplaySet.segMetadata.data;
     segmentation.segments = segmentsInfo.map((segmentInfo, segmentIndex) => {
       if (segmentIndex === 0) {
         return;
@@ -943,6 +944,7 @@ class SegmentationService extends PubSubService {
       segmentationId?: string;
       FrameOfReferenceUID?: string;
       label: string;
+      representationType?: csToolsEnums.SegmentationRepresentations;
     }
   ): Promise<string> => {
     const { displaySetService } = this.servicesManager.services;
@@ -950,18 +952,16 @@ class SegmentationService extends PubSubService {
     const displaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
 
     // Todo: we currently only support labelmap for segmentation for a displaySet
-    const representationType = LABELMAP;
+    const representationType = options?.representationType ?? LABELMAP;
 
     const volumeId = this._getVolumeIdForDisplaySet(displaySet);
 
     const segmentationId = options?.segmentationId ?? `${csUtils.uuidv4()}`;
+    const referenceImageIds = displaySet.images.map(image => image.imageId);
+    const derivedImages =
+      await imageLoader.createAndCacheDerivedSegmentationImages(referenceImageIds);
 
-    await volumeLoader.createAndCacheDerivedSegmentationVolume(volumeId, {
-      volumeId: segmentationId,
-      targetBuffer: {
-        type: 'Uint8Array',
-      },
-    });
+    const segImgaeIds = derivedImages.map(image => image.imageId);
 
     const defaultScheme = this._getDefaultSegmentationScheme();
 
@@ -977,8 +977,9 @@ class SegmentationService extends PubSubService {
         displaySet.instances?.[0]?.FrameOfReferenceUID) as string,
       representationData: {
         [LABELMAP]: {
-          volumeId: segmentationId,
-          referencedVolumeId: volumeId, // Todo: this is so ugly
+          imageIds: segImgaeIds,
+          referencedVolumeId: volumeId,
+          referencedImageIds: referenceImageIds,
         },
       },
       description: `S${displaySet.SeriesNumber}: ${displaySet.SeriesDescription}`,
@@ -1017,6 +1018,19 @@ class SegmentationService extends PubSubService {
       segmentation.hydrated = true;
     }
 
+    // before creating the segmentation, make sure we add the custom colorLUT
+    // for this segmentation
+    const colorLUT = segmentation.segments.map((segment, index) => {
+      if (index === 0) {
+        return [0, 0, 0, 0];
+      }
+
+      return [...segment.color, 255];
+    }) as ColorLUT;
+
+    // add the colorLUT to the segmentation
+    const colorLUTIndex = cstSegmentation.config.color.addColorLUT(colorLUT);
+
     // Based on the segmentationId, set the colorLUTIndex.
     const segmentationRepresentationUIDs = await cstSegmentation.addSegmentationRepresentations(
       viewportId,
@@ -1024,6 +1038,9 @@ class SegmentationService extends PubSubService {
         {
           segmentationId,
           type: representationType,
+          options: {
+            colorLUTOrIndex: colorLUTIndex,
+          },
         },
       ]
     );
@@ -1041,13 +1058,9 @@ class SegmentationService extends PubSubService {
         continue;
       }
 
-      const { segmentIndex, color, isLocked, isVisible: visibility, opacity } = segment;
+      const { segmentIndex, isLocked, isVisible: visibility, opacity } = segment;
 
       const suppressEvents = true;
-
-      if (color !== undefined) {
-        this._setSegmentColor(segmentationId, segmentIndex, color, viewportId, suppressEvents);
-      }
 
       if (opacity !== undefined) {
         this._setSegmentOpacity(segmentationId, segmentIndex, opacity, viewportId, suppressEvents);
@@ -1286,12 +1299,7 @@ class SegmentationService extends PubSubService {
       return;
     }
 
-    const { colorLUTIndex } = segmentation;
     const { updatedViewportIds } = this._removeSegmentationFromCornerstone(segmentationId);
-
-    // Delete associated colormap
-    // Todo: bring this back
-    cstSegmentation.state.removeColorLUT(colorLUTIndex);
 
     delete this.segmentations[segmentationId];
 
@@ -1437,7 +1445,7 @@ class SegmentationService extends PubSubService {
     return shouldDisplaySeg;
   }
 
-  private _getDefaultSegmentationScheme() {
+  private _getDefaultSegmentationScheme(): Partial<Segmentation> {
     return {
       activeSegmentIndex: 1,
       cachedStats: {},

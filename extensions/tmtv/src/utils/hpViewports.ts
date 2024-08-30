@@ -1,4 +1,4 @@
-const ctAXIAL = {
+const ctAXIAL: AppTypes.HangingProtocol.Viewport = {
   viewportOptions: {
     viewportId: 'ctAXIAL',
     viewportType: 'volume',
@@ -31,9 +31,14 @@ const ctAXIAL = {
       id: 'ctDisplaySet',
     },
   ],
+  overlays: [
+    {
+      id: 'segmentationInSameFrameOfReference',
+    },
+  ],
 };
 
-const ctSAGITTAL = {
+const ctSAGITTAL: AppTypes.HangingProtocol.Viewport = {
   viewportOptions: {
     viewportId: 'ctSAGITTAL',
     viewportType: 'volume',
@@ -62,8 +67,13 @@ const ctSAGITTAL = {
       id: 'ctDisplaySet',
     },
   ],
+  overlays: [
+    {
+      id: 'segmentationInSameFrameOfReference',
+    },
+  ],
 };
-const ctCORONAL = {
+const ctCORONAL: AppTypes.HangingProtocol.Viewport = {
   viewportOptions: {
     viewportId: 'ctCORONAL',
     viewportType: 'volume',
@@ -92,9 +102,14 @@ const ctCORONAL = {
       id: 'ctDisplaySet',
     },
   ],
+  overlays: [
+    {
+      id: 'segmentationInSameFrameOfReference',
+    },
+  ],
 };
 
-const ptAXIAL = {
+const ptAXIAL: AppTypes.HangingProtocol.Viewport = {
   viewportOptions: {
     viewportId: 'ptAXIAL',
     viewportType: 'volume',
@@ -143,9 +158,14 @@ const ptAXIAL = {
       id: 'ptDisplaySet',
     },
   ],
+  overlays: [
+    {
+      id: 'segmentationInSameFrameOfReference',
+    },
+  ],
 };
 
-const ptSAGITTAL = {
+const ptSAGITTAL: AppTypes.HangingProtocol.Viewport = {
   viewportOptions: {
     viewportId: 'ptSAGITTAL',
     viewportType: 'volume',
@@ -190,9 +210,14 @@ const ptSAGITTAL = {
       id: 'ptDisplaySet',
     },
   ],
+  overlays: [
+    {
+      id: 'segmentationInSameFrameOfReference',
+    },
+  ],
 };
 
-const ptCORONAL = {
+const ptCORONAL: AppTypes.HangingProtocol.Viewport = {
   viewportOptions: {
     viewportId: 'ptCORONAL',
     viewportType: 'volume',
@@ -237,9 +262,14 @@ const ptCORONAL = {
       id: 'ptDisplaySet',
     },
   ],
+  overlays: [
+    {
+      id: 'segmentationInSameFrameOfReference',
+    },
+  ],
 };
 
-const fusionAXIAL = {
+const fusionAXIAL: AppTypes.HangingProtocol.Viewport = {
   viewportOptions: {
     viewportId: 'fusionAXIAL',
     viewportType: 'volume',
@@ -301,6 +331,11 @@ const fusionAXIAL = {
           custom: 'getPTVOIRange',
         },
       },
+    },
+  ],
+  overlays: [
+    {
+      id: 'segmentationInSameFrameOfReference',
     },
   ],
 };
@@ -369,6 +404,11 @@ const fusionSAGITTAL = {
       },
     },
   ],
+  overlays: [
+    {
+      id: 'segmentationInSameFrameOfReference',
+    },
+  ],
 };
 
 const fusionCORONAL = {
@@ -435,9 +475,14 @@ const fusionCORONAL = {
       },
     },
   ],
+  overlays: [
+    {
+      id: 'segmentationInSameFrameOfReference',
+    },
+  ],
 };
 
-const mipSAGITTAL = {
+const mipSAGITTAL: AppTypes.HangingProtocol.Viewport = {
   viewportOptions: {
     viewportId: 'mipSagittal',
     viewportType: 'volume',

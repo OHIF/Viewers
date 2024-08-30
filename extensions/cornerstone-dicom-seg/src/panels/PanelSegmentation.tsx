@@ -18,13 +18,7 @@ export default function PanelSegmentation({
   extensionManager,
   configuration,
 }: withAppTypes) {
-  const {
-    segmentationService,
-    viewportGridService,
-    uiDialogService,
-    displaySetService,
-    cornerstoneViewportService,
-  } = servicesManager.services;
+  const { segmentationService, viewportGridService, uiDialogService } = servicesManager.services;
 
   const { t } = useTranslation('PanelSegmentation');
 
@@ -71,6 +65,7 @@ export default function PanelSegmentation({
     [changedEvent, stateEvent].forEach(evt => {
       const { unsubscribe } = viewportGridService.subscribe(evt, () => {
         const viewportId = viewportGridService.getActiveViewportId();
+        console.debug('🚀 ~ viewportId:', viewportId);
         const segmentations = segmentationService.getSegmentations(viewportId);
         setSegmentations(segmentations);
         setSegmentationConfiguration(segmentationService.getConfiguration());
@@ -80,67 +75,9 @@ export default function PanelSegmentation({
     return () => {
       subs.forEach(unsub => unsub());
     };
-  }, []);
+  }, [viewportGridService]);
 
-  // temporary measure to not allow add segmentation when the selected viewport
-  // is stack viewport
-  useEffect(() => {
-    const handleActiveViewportChange = viewportId => {
-      const displaySetUIDs = viewportGridService.getDisplaySetsUIDsForViewport(
-        viewportId || viewportGridService.getActiveViewportId()
-      );
-
-      if (!displaySetUIDs) {
-        return;
-      }
-
-      const isReconstructable =
-        displaySetUIDs?.some(displaySetUID => {
-          const displaySet = displaySetService.getDisplaySetByUID(displaySetUID);
-          return displaySet?.isReconstructable;
-        }) || false;
-
-      if (isReconstructable) {
-        setAddSegmentationClassName('');
-      } else {
-        setAddSegmentationClassName('ohif-disabled');
-      }
-    };
-
-    // Handle initial state
-    handleActiveViewportChange();
-
-    const changedGrid = viewportGridService.EVENTS.ACTIVE_VIEWPORT_ID_CHANGED;
-    const ready = viewportGridService.EVENTS.VIEWPORTS_READY;
-
-    const subsGrid = [];
-    [ready, changedGrid].forEach(evt => {
-      const { unsubscribe } = viewportGridService.subscribe(evt, ({ viewportId }) => {
-        handleActiveViewportChange(viewportId);
-      });
-
-      subsGrid.push(unsubscribe);
-    });
-
-    const changedData = cornerstoneViewportService.EVENTS.VIEWPORT_DATA_CHANGED;
-
-    const subsData = [];
-    [changedData].forEach(evt => {
-      const { unsubscribe } = cornerstoneViewportService.subscribe(evt, () => {
-        handleActiveViewportChange();
-      });
-
-      subsData.push(unsubscribe);
-    });
-
-    // Clean up
-    return () => {
-      subsGrid.forEach(unsub => unsub());
-      subsData.forEach(unsub => unsub());
-    };
-  }, []);
-
-  const getViewportIds = segmentationId => {
+  const getViewportIds = (segmentationId: string) => {
     const viewportIds = segmentationService.getViewportIdsWithSegmentation(segmentationId);
 
     return viewportIds;

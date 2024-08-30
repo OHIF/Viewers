@@ -267,7 +267,6 @@ export default class HangingProtocolService extends PubSubService {
     // and the protocol or a function that returns a protocol as the value
     const protocols = [];
     const keys = this.activeProtocolIds || this.protocols.keys();
-    // @ts-ignore
     for (const protocolId of keys) {
       const protocol = this.getProtocolById(protocolId);
       if (protocol) {
@@ -1407,8 +1406,8 @@ export default class HangingProtocolService extends PubSubService {
   }
 
   public areRequiredSelectorsValid(
-    displaySetSelectors: HangingProtocol.DisplaySetSelector,
-    displaySet: any
+    displaySetSelectors: HangingProtocol.DisplaySetSelector[],
+    displaySet: DisplaySet
   ): boolean {
     let pass = true;
     for (const displaySetSelector of displaySetSelectors) {
@@ -1424,7 +1423,7 @@ export default class HangingProtocolService extends PubSubService {
 
   private _validateRequiredSelectors(
     displaySetSelector: HangingProtocol.DisplaySetSelector,
-    displaySet: any
+    displaySet: DisplaySet
   ) {
     const { seriesMatchingRules } = displaySetSelector;
 

@@ -18,7 +18,7 @@ import {
  * image, covering all three rows. It has synchronizers for windowLevel for all CT and PT images, and
  * also camera synchronizer for each orientation
  */
-const stage1 = {
+const stage1: AppTypes.HangingProtocol.ProtocolStage = {
   name: 'default',
   viewportStructure: {
     layoutType: 'grid',
@@ -129,7 +129,7 @@ const stage2 = {
  * The layout follows a simple grid pattern with 2 rows and 3 columns.
  * It includes synchronizers as well.
  */
-const stage3 = {
+const stage3: AppTypes.HangingProtocol.ProtocolStage = {
   name: '2x3-layout',
   viewportStructure: {
     layoutType: 'grid',
@@ -150,7 +150,7 @@ const stage3 = {
  * from the top row spans the full height of both rows.
  * It includes synchronizers as well.
  */
-const stage4 = {
+const stage4: AppTypes.HangingProtocol.ProtocolStage = {
   name: '2x4-layout',
   viewportStructure: {
     layoutType: 'grid',
@@ -218,19 +218,19 @@ const stage4 = {
  * This layout displays three fusion viewports: axial, sagittal, and coronal.
  * It follows a simple grid pattern with 1 row and 3 columns.
  */
-const stage0 = {
-  name: 'Fusion 1x3',
-  viewportStructure: {
-    layoutType: 'grid',
-    properties: {
-      rows: 1,
-      columns: 3,
-    },
-  },
-  viewports: [fusionAXIAL, fusionSAGITTAL, fusionCORONAL],
-};
+// const stage0: AppTypes.HangingProtocol.ProtocolStage = {
+//   name: 'Fusion 1x3',
+//   viewportStructure: {
+//     layoutType: 'grid',
+//     properties: {
+//       rows: 1,
+//       columns: 3,
+//     },
+//   },
+//   viewports: [fusionAXIAL, fusionSAGITTAL, fusionCORONAL],
+// };
 
-const ptCT = {
+const ptCT: AppTypes.HangingProtocol.Protocol = {
   id: '@ohif/extension-tmtv.hangingProtocolModule.ptCT',
   locked: true,
   name: 'Default',
@@ -259,10 +259,6 @@ const ptCT = {
       },
     },
   ],
-  viewportCustomizations: {
-    'border-color': '#000000',
-    segmentationMatchingRules: {},
-  },
   displaySetSelectors: {
     ctDisplaySet: {
       seriesMatchingRules: [
@@ -334,8 +330,17 @@ const ptCT = {
       ],
     },
   },
-
-  stages: [stage1, stage2, stage3, stage4],
+  overlaySelectors: {
+    segmentationInSameFrameOfReference: {
+      matchingRules: [
+        {
+          attribute: 'SameFrameOfReferenceUIDAsViewport',
+          weight: 10,
+        },
+      ],
+    },
+  },
+  stages: [stage2, stage3, stage4],
   numberOfPriorsReferenced: -1,
 };
 

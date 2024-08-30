@@ -21,6 +21,7 @@ import { StackViewportData, VolumeViewportData } from '../../types/CornerstoneCa
 import { LutPresentation, PositionPresentation, Presentations } from '../../types/Presentation';
 
 import JumpPresets from '../../utils/JumpPresets';
+import { ViewportProperties } from '@cornerstonejs/core/types';
 
 const EVENTS = {
   VIEWPORT_DATA_CHANGED: 'event::cornerstoneViewportService:viewportDataChanged',
@@ -189,19 +190,19 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
       return;
     }
 
-    const { lutPresentation, positionPresentation } = presentations;
+    const { lutPresentation, positionPresentation, segmentationPresentation } = presentations;
     if (lutPresentation) {
-      const { presentation } = lutPresentation;
+      const { properties } = lutPresentation;
       if (viewport instanceof BaseVolumeViewport) {
-        if (presentation instanceof Map) {
-          presentation.forEach((properties, volumeId) => {
-            viewport.setProperties(properties, volumeId);
+        if (properties instanceof Map) {
+          properties.forEach((propertiesEntry, volumeId) => {
+            viewport.setProperties(propertiesEntry, volumeId);
           });
         } else {
-          viewport.setProperties(presentation);
+          viewport.setProperties(properties);
         }
       } else {
-        viewport.setProperties(presentation);
+        viewport.setProperties(properties);
       }
     }
 
@@ -211,6 +212,9 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     }
     if (positionPresentation?.position) {
       viewport.setViewPresentation(positionPresentation.position);
+    }
+    if (segmentationPresentation) {
+      viewport.setSegmentation(segmentationPresentation.segmentation);
     }
   }
 
@@ -282,22 +286,22 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
       return properties;
     };
 
-    const presentation =
+    const properties =
       csViewport instanceof BaseVolumeViewport
         ? new Map()
         : cleanProperties(csViewport.getProperties());
 
-    if (presentation instanceof Map) {
+    if (properties instanceof Map) {
       csViewport.getActors().forEach(({ uid: volumeId }) => {
         const properties = cleanProperties(csViewport.getProperties(volumeId));
-        presentation.set(volumeId, properties);
+        properties.set(volumeId, properties);
       });
     }
 
     return {
       id: lutPresentationId,
       viewportType: viewportInfo.getViewportType(),
-      presentation,
+      properties,
     };
   }
 
@@ -601,7 +605,6 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     viewportInfo: ViewportInfo,
     presentations: Presentations = {}
   ): Promise<void> {
-    console.debug('setStackViewport');
     const displaySetOptions = viewportInfo.getDisplaySetOptions();
 
     const displaySetInstanceUIDs = viewportData.data.map(data => data.displaySetInstanceUID);
@@ -811,7 +814,7 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
       const { volumeId } = volumeInput;
       const displaySetOption = displaySetOptions[index];
       const { voi, voiInverted, colormap, displayPreset } = displaySetOption;
-      const properties = {};
+      const properties = {} as ViewportProperties;
 
       if (voi && (voi.windowWidth || voi.windowCenter)) {
         const { lower, upper } = csUtils.windowLevel.toLowHighRange(

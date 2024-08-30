@@ -11,6 +11,8 @@ export type PositionPresentation = {
   viewReference: Types.ViewReference;
   // The position information has the zoom/pan and possibly other related information, but not LUT
   position: Types.ViewPresentation;
+
+  initialImageIndex: number;
 };
 
 /**
@@ -22,13 +24,26 @@ export type PositionPresentation = {
 export interface LutPresentation {
   id: string;
   viewportType: string;
+  // either a single object with the properties itself or a map of properties with volumeId keys
+  properties: Record<string, Types.ViewportProperties> | Types.ViewportProperties;
+}
+
+/**
+ * Represents a LUT presentation in a viewport, and is really related
+ * to displaySets and not the viewport itself. So that is why it can
+ * be an object with volumeId keys, or a single object with the properties
+ * itself
+ */
+export interface SegmentationPresentation {
+  id: string;
+  viewportType: string;
   presentation: Record<string, Types.ViewportProperties> | Types.ViewportProperties;
 }
 
 /**
  * Presentation can be a PositionPresentation or a LutPresentation.
  */
-type Presentation = PositionPresentation | LutPresentation;
+type Presentation = PositionPresentation | LutPresentation | SegmentationPresentation;
 
 /**
  * Viewport presentations object that can contain a positionPresentation
@@ -37,6 +52,7 @@ type Presentation = PositionPresentation | LutPresentation;
 export type Presentations = {
   positionPresentation?: PositionPresentation;
   lutPresentation?: LutPresentation;
+  segmentationPresentation?: SegmentationPresentation;
 };
 
 export default Presentation;

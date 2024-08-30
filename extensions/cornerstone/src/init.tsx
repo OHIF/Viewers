@@ -32,6 +32,9 @@ import initContextMenu from './initContextMenu';
 import initDoubleClick from './initDoubleClick';
 import initViewTiming from './utils/initViewTiming';
 import { colormaps } from './utils/colormaps';
+import getPositionPresentationId from './utils/presentations/getPositionPresentationId';
+import getLutPresentationId from './utils/presentations/getLutPresentationId';
+import getSegmentationPresentationId from './utils/presentations/getSegmentationPresentationId';
 
 const { registerColormap } = csUtilities.colormap;
 
@@ -98,6 +101,17 @@ export default async function init({
     _showCPURenderingModal(uiModalService, hangingProtocolService);
   }
 
+  // register presentation id providers
+  viewportGridService.addPresentationIdProvider(
+    'positionPresentationId',
+    getPositionPresentationId
+  );
+  viewportGridService.addPresentationIdProvider('lutPresentationId', getLutPresentationId);
+  viewportGridService.addPresentationIdProvider(
+    'segmentationPresentationId',
+    getSegmentationPresentationId
+  );
+
   // Stores a map from `lutPresentationId` to a Presentation object so that
   // an OHIFCornerstoneViewport can be redisplayed with the same LUT
   stateSyncService.register('lutPresentationStore', { clearOnModeExit: true });
@@ -114,6 +128,16 @@ export default async function init({
   // Stores the entire ViewportGridService getState when toggling to one up
   // (e.g. via a double click) so that it can be restored when toggling back.
   stateSyncService.register('toggleOneUpViewportGridStore', {
+    clearOnModeExit: true,
+  });
+
+  // Register a map for segmentationPresentationId. This ID is used to
+  // store the segmentation representation for a viewport. When elements
+  // move around, the stateSyncService ensures the segmentation representation
+  // is rendered correctly. This applies to scenarios like stack-to-volume
+  // viewport transitions or new viewport creation that previously had
+  // the segmentation representation.
+  stateSyncService.register('segmentationPresentationStore', {
     clearOnModeExit: true,
   });
 
@@ -182,11 +206,15 @@ export default async function init({
 
         const ohifViewport = cornerstoneViewportService.getViewportInfo(viewportId);
 
-        const { lutPresentationStore, positionPresentationStore } = stateSyncService.getState();
+        const { lutPresentationStore, positionPresentationStore, segmentationPresentationStore } =
+          stateSyncService.getState();
         const { presentationIds } = ohifViewport.getViewportOptions();
+
         const presentations = {
           positionPresentation: positionPresentationStore[presentationIds?.positionPresentationId],
           lutPresentation: lutPresentationStore[presentationIds?.lutPresentationId],
+          segmentationPresentation:
+            segmentationPresentationStore[presentationIds?.segmentationPresentationId],
         };
 
         cornerstoneViewportService.setVolumesForViewport(viewport, volumeInputArray, presentations);

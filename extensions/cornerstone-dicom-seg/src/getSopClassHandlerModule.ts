@@ -1,6 +1,6 @@
 import { utils } from '@ohif/core';
 import { metaData, triggerEvent, eventTarget } from '@cornerstonejs/core';
-import { segmentation as cstSegmentation } from '@cornerstonejs/tools';
+import { CONSTANTS, segmentation as cstSegmentation } from '@cornerstonejs/tools';
 import { adaptersSEG, Enums } from '@cornerstonejs/adapters';
 
 import { SOPClassHandlerId } from './id';

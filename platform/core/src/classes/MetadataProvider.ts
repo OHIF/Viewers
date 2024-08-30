@@ -560,7 +560,7 @@ const WADO_IMAGE_LOADER = {
       frameOfReferenceUID: instance.FrameOfReferenceUID,
       rows: toNumber(instance.Rows),
       columns: toNumber(instance.Columns),
-      imageOrientationPatient: toNumber(ImageOrientationPatient),
+      imageOrientationPatient: toNumber(ImageOrientationPatient) || [0, 1, 0, 0, 0, -1],
       rowCosines: toNumber(rowCosines || [0, 1, 0]),
       isDefaultValueSetForRowCosine: toNumber(rowCosines) ? false : true,
       columnCosines: toNumber(columnCosines || [0, 0, -1]),

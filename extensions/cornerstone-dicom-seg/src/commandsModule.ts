@@ -81,45 +81,24 @@ const commandsModule = ({
       // Todo: add support for multiple display sets
       const displaySetInstanceUID = viewport.displaySetInstanceUIDs[0];
 
-      const displaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
+      const currentSegmentations = segmentationService.getSegmentations();
+      const segmentationId = await segmentationService.createSegmentationForDisplaySet(
+        displaySetInstanceUID,
+        { label: `Segmentation ${currentSegmentations.length + 1}` }
+      );
 
-      if (!displaySet.isReconstructable) {
-        uiNotificationService.show({
-          title: 'Segmentation',
-          message: 'Segmentation is not supported for non-reconstructible displaysets yet',
-          type: 'error',
-        });
-        return;
-      }
+      await segmentationService.addSegmentationRepresentationToViewport(viewportId, segmentationId);
 
-      updateViewportsForSegmentationRendering({
+      // Add only one segment for now
+      segmentationService.addSegment(segmentationId, {
         viewportId,
-        servicesManager,
-        displaySet,
-        loadFn: async () => {
-          const currentSegmentations = segmentationService.getSegmentations();
-          const segmentationId = await segmentationService.createSegmentationForDisplaySet(
-            displaySetInstanceUID,
-            { label: `Segmentation ${currentSegmentations.length + 1}` }
-          );
-
-          await segmentationService.addSegmentationRepresentationToViewport(
-            viewportId,
-            segmentationId
-          );
-
-          // Add only one segment for now
-          segmentationService.addSegment(segmentationId, {
-            viewportId,
-            segmentIndex: 1,
-            properties: {
-              label: 'Segment 1',
-            },
-          });
-
-          return segmentationId;
+        segmentIndex: 1,
+        properties: {
+          label: 'Segment 1',
         },
       });
+
+      return segmentationId;
     },
     /**
      * Loads segmentations for a specified viewport.

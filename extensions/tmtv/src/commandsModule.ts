@@ -10,6 +10,7 @@ import dicomRTAnnotationExport from './utils/dicomRTAnnotationExport/RTStructure
 
 import { getWebWorkerManager } from '@cornerstonejs/core';
 import { Enums } from '@cornerstonejs/tools';
+import { IVolume } from '@cornerstonejs/core/types';
 
 const { SegmentationRepresentations } = Enums;
 
@@ -117,7 +118,6 @@ const commandsModule = ({ servicesManager, commandsManager, extensionManager }: 
         }
 
         ptDisplaySet = displaySets.find(displaySet => displaySet.Modality === 'PT');
-
         if (ptDisplaySet) {
           break;
         }
@@ -306,7 +306,6 @@ const commandsModule = ({ servicesManager, commandsManager, extensionManager }: 
         origin: labelmap.origin,
         direction: labelmap.direction,
         spacing: labelmap.spacing,
-        scalarData: labelmap.scalarData,
         metadata: labelmap.metadata,
       };
 
@@ -315,7 +314,6 @@ const commandsModule = ({ servicesManager, commandsManager, extensionManager }: 
         origin: referencedVolume.origin,
         direction: referencedVolume.direction,
         spacing: referencedVolume.spacing,
-        scalarData: referencedVolume.scalarData,
         metadata: referencedVolume.metadata,
       };
 
@@ -352,29 +350,32 @@ const commandsModule = ({ servicesManager, commandsManager, extensionManager }: 
       };
     },
     getLesionStats: ({ labelmap, segmentIndex = 1 }) => {
-      const { scalarData, spacing } = labelmap;
-      const referencedScalarData = cs.cache.getVolume(labelmap.referencedVolumeId).getScalarData();
+      const {
+        voxelManager: segVoxelManager,
+        imageData,
+        referencedVolumeId,
+        spacing,
+      } = labelmap as IVolume;
+      const { voxelManager: refVoxelManager } = cs.cache.getVolume(referencedVolumeId);
 
       let segmentationMax = -Infinity;
-      let segmentationMin = Infinity;
+      const segmentationMin = Infinity;
       const segmentationValues = [];
 
-      let voxelCount = 0;
-      for (let i = 0; i < scalarData.length; i++) {
-        if (scalarData[i] === segmentIndex) {
-          const value = referencedScalarData[i];
-          segmentationValues.push(value);
-          if (value > segmentationMax) {
-            segmentationMax = value;
-          }
-          if (value < segmentationMin) {
-            segmentationMin = value;
-          }
-          voxelCount++;
-        }
-      }
-      const mean = segmentationValues.reduce((a, b) => a + b, 0) / voxelCount;
+      const voxelCount = 0;
 
+      const callback = ({ value, index }) => {
+        if (value === segmentIndex) {
+          const refValue = refVoxelManager.getAtIndex(index) as number;
+          segmentationValues.push(refValue);
+          if (refValue > segmentationMax) {
+            segmentationMax = refValue;
+          }
+        }
+      };
+
+      segVoxelManager.forEach(callback, { imageData });
+      const mean = segmentationValues.reduce((a, b) => a + b, 0) / voxelCount;
       const stats = {
         minValue: segmentationMin,
         maxValue: segmentationMax,

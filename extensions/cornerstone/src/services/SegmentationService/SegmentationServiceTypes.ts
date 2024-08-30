@@ -63,6 +63,7 @@ type Segmentation = {
   type: csToolsEnums.SegmentationRepresentations;
   // the segmentation representation data
   representationData: RepresentationsData;
+  description?: string;
 };
 
 export type { SegmentationConfig, Segment, Segmentation };

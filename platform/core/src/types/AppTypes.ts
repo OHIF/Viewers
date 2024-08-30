@@ -22,6 +22,18 @@ import ExtensionManagerType from '../extensions/ExtensionManager';
 
 import Hotkey from '../classes/Hotkey';
 
+import * as CommandTypes from './Command';
+import * as ColorTypes from './Color';
+import * as ConsumerTypes from './Consumer';
+import * as DataSourceTypes from './DataSource';
+import * as DataSourceConfigurationAPITypes from './DataSourceConfigurationAPI';
+import * as DisplaySetTypes from './DisplaySet';
+import * as HangingProtocolTypes from './HangingProtocol';
+import * as IPubSubTypes from './IPubSub';
+import * as PanelModuleTypes from './PanelModule';
+import * as StudyMetadataTypes from './StudyMetadata';
+import * as ViewportGridTypes from './ViewportGridType';
+
 declare global {
   namespace AppTypes {
     export type ServicesManager = ServicesManagerType;
@@ -68,9 +80,10 @@ declare global {
       panelService?: PanelServiceType;
       studyPrefetcherService?: StudyPrefetcherServiceType;
     }
+
     export interface Config {
       routerBasename?: string;
-      customizationService?: any;
+      customizationService?: CustomizationServiceType;
       extensions?: string[];
       modes?: string[];
       experimentalStudyBrowserSort?: boolean;
@@ -112,17 +125,20 @@ declare global {
       activateViewportBeforeInteraction?: boolean;
       autoPlayCine?: boolean;
       showStudyList?: boolean;
-      whiteLabeling?: any;
-      httpErrorHandler?: any;
+      whiteLabeling?: Record<string, unknown>;
+      httpErrorHandler?: (error: Error) => void;
       addWindowLevelActionMenu?: boolean;
       dangerouslyUseDynamicConfig?: {
         enabled: boolean;
         regex: RegExp;
       };
-      onConfiguration?: (dicomWebConfig: any, options: any) => any;
-      dataSources?: any;
-      oidc?: any;
-      peerImport?: (moduleId: string) => Promise<any>;
+      onConfiguration?: (
+        dicomWebConfig: Record<string, unknown>,
+        options: Record<string, unknown>
+      ) => Record<string, unknown>;
+      dataSources?: Record<string, unknown>;
+      oidc?: Record<string, unknown>;
+      peerImport?: (moduleId: string) => Promise<Record<string, unknown>>;
       studyPrefetcher: {
         enabled: boolean;
         displaySetsCount: number;
@@ -137,12 +153,104 @@ declare global {
       extensionManager?: ExtensionManager;
       config?: Config;
     }
+
+    // Add Command namespace to AppTypes
+    export namespace Commands {
+      export type SimpleCommand = CommandTypes.SimpleCommand;
+      export type ComplexCommand = CommandTypes.ComplexCommand;
+      export type Command = CommandTypes.Command;
+      export type RunCommand = CommandTypes.RunCommand;
+      export interface Commands extends CommandTypes.Commands {}
+    }
+
+    // Color types
+    export type RGB = ColorTypes.RGB;
+
+    // Consumer types
+    export type Consumer = ConsumerTypes.Consumer;
+
+    // DataSource types
+    export type DataSourceDefinition = DataSourceTypes.DataSourceDefinition;
+
+    // DataSourceConfigurationAPI types
+    export namespace DataSourceConfiguration {
+      export type BaseDataSourceConfigurationAPIItem =
+        DataSourceConfigurationAPITypes.BaseDataSourceConfigurationAPIItem;
+      export type BaseDataSourceConfigurationAPI =
+        DataSourceConfigurationAPITypes.BaseDataSourceConfigurationAPI;
+    }
+
+    // DisplaySet types
+    export type DisplaySet = DisplaySetTypes.DisplaySet;
+    export type DisplaySetSeriesMetadataInvalidatedEvent =
+      DisplaySetTypes.DisplaySetSeriesMetadataInvalidatedEvent;
+
+    // HangingProtocol types
+    export namespace HangingProtocol {
+      export type DisplaySetInfo = HangingProtocolTypes.DisplaySetInfo;
+      export type ViewportMatchDetails = HangingProtocolTypes.ViewportMatchDetails;
+      export type DisplaySetMatchDetails = HangingProtocolTypes.DisplaySetMatchDetails;
+      export type DisplaySetAndViewportOptions = HangingProtocolTypes.DisplaySetAndViewportOptions;
+      export type DisplayArea = HangingProtocolTypes.DisplayArea;
+      export type SetProtocolOptions = HangingProtocolTypes.SetProtocolOptions;
+      export type HangingProtocolMatchDetails = HangingProtocolTypes.HangingProtocolMatchDetails;
+      export type ConstraintValue = HangingProtocolTypes.ConstraintValue;
+      export type Constraint = HangingProtocolTypes.Constraint;
+      export type MatchingRule = HangingProtocolTypes.MatchingRule;
+      export type ViewportLayoutOptions = HangingProtocolTypes.ViewportLayoutOptions;
+      export type ViewportStructure = HangingProtocolTypes.ViewportStructure;
+      export type DisplaySetSelector = HangingProtocolTypes.DisplaySetSelector;
+      export type SyncGroup = HangingProtocolTypes.SyncGroup;
+      export type CustomOptionAttribute<T> = HangingProtocolTypes.CustomOptionAttribute<T>;
+      export type CustomOption<T> = HangingProtocolTypes.CustomOption<T>;
+      export type initialImageOptions = HangingProtocolTypes.initialImageOptions;
+      export type ViewportOptions = HangingProtocolTypes.ViewportOptions;
+      export type DisplaySetOptions = HangingProtocolTypes.DisplaySetOptions;
+      export type Viewport = HangingProtocolTypes.Viewport;
+      export type StageStatus = HangingProtocolTypes.StageStatus;
+      export type StageActivation = HangingProtocolTypes.StageActivation;
+      export type ProtocolStage = HangingProtocolTypes.ProtocolStage;
+      export type ProtocolNotifications = HangingProtocolTypes.ProtocolNotifications;
+      export type Protocol = HangingProtocolTypes.Protocol;
+      export type ProtocolGenerator = HangingProtocolTypes.ProtocolGenerator;
+      export type HPInfo = HangingProtocolTypes.HPInfo;
+    }
+
+    // IPubSub types
+    export namespace PubSub {
+      export type IPubSub = IPubSubTypes.default;
+      export type Subscription = IPubSubTypes.Subscription;
+    }
+
+    // PanelModule types
+    export namespace PanelModule {
+      export type Panel = PanelModuleTypes.Panel;
+      export type ActivatePanelTriggers = PanelModuleTypes.ActivatePanelTriggers;
+      export type PanelEvent = PanelModuleTypes.PanelEvent;
+      export type ActivatePanelEvent = PanelModuleTypes.ActivatePanelEvent;
+    }
+
+    // StudyMetadata types
+    export namespace StudyMetadata {
+      export type PatientMetadata = StudyMetadataTypes.PatientMetadata;
+      export type StudyMetadata = StudyMetadataTypes.StudyMetadata;
+      export type SeriesMetadata = StudyMetadataTypes.SeriesMetadata;
+      export type InstanceMetadata = StudyMetadataTypes.InstanceMetadata;
+    }
+
+    // ViewportGrid types
+    export namespace ViewportGrid {
+      export type Viewport = ViewportGridTypes.GridViewport;
+      export type Layout = ViewportGridTypes.Layout;
+      export type State = ViewportGridTypes.ViewportGridState;
+      export type Viewports = ViewportGridTypes.GridViewports;
+    }
   }
 
   export type withAppTypes<T = object> = T &
     AppTypes.Services &
     AppTypes.Managers & {
-      [key: string]: any;
+      [key: string]: unknown;
     };
 
   export type withTestTypes<T = object> = T & AppTypes.Test;
