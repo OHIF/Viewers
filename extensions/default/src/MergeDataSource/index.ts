@@ -24,6 +24,10 @@ export const mergeMap: MergeMap = {
       return series;
     },
   },
+  'getStudyInstanceUIDs': {
+    mergeKey: 'studyInstanceUid',
+    tagFunc: x => x,
+  },
 };
 
 /**
@@ -92,12 +96,15 @@ export const callForAllDataSourcesAsync = async ({
  * @returns The merged data from all the matching data sources.
  */
 export const callForAllDataSources = ({
+  mergeMap,
   path,
   args,
   extensionManager,
   dataSourceNames,
   defaultDataSourceName,
 }: CallForAllDataSourcesOptions) => {
+  const { mergeKey, tagFunc } = mergeMap[path] || { tagFunc: x => x };
+
   /** Sort by default data source */
   const defs = Object.values(extensionManager.dataSourceDefs);
   const defaultDataSourceDef = defs.find(def => def.sourceName === defaultDataSourceName);
@@ -106,18 +113,30 @@ export const callForAllDataSources = ({
     dataSourceDefs.unshift(defaultDataSourceDef);
   }
 
-  const mergedData = [];
+  const dataArray = [];
+  const sourceNames = [];
+
   for (const dataSourceDef of dataSourceDefs) {
     const { configuration, sourceName } = dataSourceDef;
     if (!!configuration && dataSourceNames.includes(sourceName)) {
       const [dataSource] = extensionManager.getDataSources(sourceName);
       const func = get(dataSource, path);
       const data = func.apply(dataSource, args);
-      mergedData.push(data);
+      dataArray.push(data);
+      sourceNames.push(sourceName);
     }
   }
 
-  return mergedData.flat();
+  const mergedData = dataArray.map((data, i) => tagFunc(data, sourceNames[i]));
+
+  let results = [];
+  if (mergeKey) {
+    results = uniqBy(mergedData.flat(), obj => get(obj, mergeKey, obj));
+  } else {
+    results = mergedData.flat();
+  }
+
+  return results;
 };
 
 /**
@@ -176,6 +195,7 @@ function createMergeDataSourceApi(
   const implementation = {
     initialize: (...args: unknown[]) =>
       callForAllDataSources({
+        mergeMap,
         path: 'initialize',
         args,
         extensionManager,
@@ -257,6 +277,7 @@ function createMergeDataSourceApi(
     },
     deleteStudyMetadataPromise: (...args: unknown[]) =>
       callForAllDataSources({
+        mergeMap,
         path: 'deleteStudyMetadataPromise',
         args,
         extensionManager,
@@ -279,6 +300,7 @@ function createMergeDataSourceApi(
       }),
     getStudyInstanceUIDs: (...args: unknown[]) =>
       callForAllDataSources({
+        mergeMap,
         path: 'getStudyInstanceUIDs',
         args,
         extensionManager,
