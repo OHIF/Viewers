@@ -12,10 +12,9 @@ const getPanelModule = ({
   title,
 }: withAppTypes) => {
   const { customizationService } = servicesManager.services;
-  const modeCustomization = customizationService.getModeCustomization('segmentation.panel');
-
   const wrappedPanelSegmentation = configuration => {
     const [appConfig] = useAppConfig();
+    const modeCustomization = customizationService.getModeCustomization('segmentation.panel');
 
     return (
       <PanelSegmentation
@@ -33,6 +32,7 @@ const getPanelModule = ({
 
   const wrappedPanelSegmentationWithTools = configuration => {
     const [appConfig] = useAppConfig();
+    const modeCustomization = customizationService.getModeCustomization('segmentation.panel');
 
     return (
       <>

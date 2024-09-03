@@ -513,7 +513,7 @@ class SegmentationService extends PubSubService {
     const imageIds = images.map(image => image.imageId);
 
     const derivedSegmentationImages =
-      await imageLoader.createAndCacheDerivedSegmentationImages(imageIds);
+      await imageLoader.createAndCacheDerivedLabelmapImages(imageIds);
 
     const segmentationImageIds = derivedSegmentationImages.map(image => image.imageId);
     segDisplaySet.images = derivedSegmentationImages;
@@ -958,10 +958,9 @@ class SegmentationService extends PubSubService {
 
     const segmentationId = options?.segmentationId ?? `${csUtils.uuidv4()}`;
     const referenceImageIds = displaySet.images.map(image => image.imageId);
-    const derivedImages =
-      await imageLoader.createAndCacheDerivedSegmentationImages(referenceImageIds);
+    const derivedImages = await imageLoader.createAndCacheDerivedLabelmapImages(referenceImageIds);
 
-    const segImgaeIds = derivedImages.map(image => image.imageId);
+    const segImageIds = derivedImages.map(image => image.imageId);
 
     const defaultScheme = this._getDefaultSegmentationScheme();
 
@@ -977,7 +976,7 @@ class SegmentationService extends PubSubService {
         displaySet.instances?.[0]?.FrameOfReferenceUID) as string,
       representationData: {
         [LABELMAP]: {
-          imageIds: segImgaeIds,
+          imageIds: segImageIds,
           referencedVolumeId: volumeId,
           referencedImageIds: referenceImageIds,
         },

@@ -42,7 +42,6 @@ const commandsModule = ({
   extensionManager,
 }: Types.Extensions.ExtensionParams): Types.Extensions.CommandsModule => {
   const {
-    uiNotificationService,
     segmentationService,
     uiDialogService,
     displaySetService,

@@ -6,14 +6,7 @@ export const toolGroupIds = {
   default: 'default',
 };
 
-function _initToolGroups(
-  toolNames,
-  Enums,
-  toolGroupService,
-  commandsManager,
-  modeLabelConfig,
-  servicesManager
-) {
+function _initToolGroups(toolNames, Enums, toolGroupService, commandsManager, modeLabelConfig) {
   const tools = {
     active: [
       {
@@ -158,9 +151,13 @@ function _initToolGroups(
   const mipTools = {
     active: [
       {
-        toolName: toolNames.VolumeRotateMouseWheel,
+        toolName: toolNames.StackScroll,
+        bindings: [{ mouseButton: Enums.MouseBindings.Wheel }],
         configuration: {
-          rotateIncrementDegrees: 5,
+          rotate: {
+            enabled: true,
+            incrementDegrees: 5,
+          },
         },
       },
       {
