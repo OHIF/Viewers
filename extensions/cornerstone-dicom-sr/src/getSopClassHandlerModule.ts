@@ -5,8 +5,10 @@ import { SOPClassHandlerName, SOPClassHandlerId } from './id';
 import {
   CodeNameCodeSequenceValues,
   CodingSchemeDesignators,
-  CORNERSTONE_FREETEXT_CODE_VALUE,
+  CornerstoneFreeTextCodeValue,
 } from './enums';
+
+const { sopClassDictionary } = utils;
 
 type InstanceMetadata = Types.InstanceMetadata;
 
@@ -20,11 +22,11 @@ const { ImageSet, MetadataProvider: metadataProvider } = classes;
  */
 
 const sopClassUids = [
-  '1.2.840.10008.5.1.4.1.1.88.11' /** BASIC_TEXT_SR */,
-  '1.2.840.10008.5.1.4.1.1.88.22' /** ENHANCED_SR */,
-  '1.2.840.10008.5.1.4.1.1.88.33' /** COMPREHENSIVE_SR */,
-  '1.2.840.10008.5.1.4.1.1.88.34' /** COMPREHENSIVE_3D_SR */,
-  // '1.2.840.10008.5.1.4.1.1.88.50', /** MAMMOGRAPHY_CAD_SR */
+  sopClassDictionary.BasicTextSR,
+  sopClassDictionary.EnhancedSR,
+  sopClassDictionary.ComprehensiveSR,
+  sopClassDictionary.Comprehensive3DSR,
+  // sopClassDictionary.MammographyCADSR,
 ];
 
 const CORNERSTONE_3D_TOOLS_SOURCE_NAME = 'Cornerstone3DTools';
@@ -125,11 +127,15 @@ function _getDisplaySetsFromSeries(
 
 /**
  * Loads the display set with the given services and extension manager.
- * @param {Object} displaySet - The display set to load.
- * @param {Object} servicesManager - The services manager containing displaySetService and measurementService.
- * @param {Object} extensionManager - The extension manager containing data sources.
+ * @param displaySet - The display set to load.
+ * @param servicesManager - The services manager containing displaySetService and measurementService.
+ * @param extensionManager - The extension manager containing data sources.
  */
-async function _load(displaySet, servicesManager: AppTypes.ServicesManager, extensionManager) {
+async function _load(
+  displaySet: Types.DisplaySet,
+  servicesManager: AppTypes.ServicesManager,
+  extensionManager: AppTypes.ExtensionManager
+) {
   const { displaySetService, measurementService } = servicesManager.services;
   const dataSources = extensionManager.getDataSources();
   const dataSource = dataSources[0];
@@ -601,7 +607,7 @@ function _processNonGeometricallyDefinedMeasurement(mergedContentSequence) {
     finding.ConceptCodeSequence.CodeValue === CodeNameCodeSequenceValues.CornerstoneFreeText
   ) {
     measurement.labels.push({
-      label: CORNERSTONE_FREETEXT_CODE_VALUE,
+      label: CornerstoneFreeTextCodeValue,
       value: finding.ConceptCodeSequence.CodeMeaning,
     });
   }
@@ -618,7 +624,7 @@ function _processNonGeometricallyDefinedMeasurement(mergedContentSequence) {
 
     if (cornerstoneFreeTextFindingSite) {
       measurement.labels.push({
-        label: CORNERSTONE_FREETEXT_CODE_VALUE,
+        label: CornerstoneFreeTextCodeValue,
         value: cornerstoneFreeTextFindingSite.ConceptCodeSequence.CodeMeaning,
       });
     }
@@ -656,19 +662,10 @@ function _processNonGeometricallyDefinedMeasurement(mergedContentSequence) {
 const _getCoordsFromSCOORDOrSCOORD3D = graphicItem => {
   const { ValueType, GraphicType, GraphicData } = graphicItem;
   const coords = { ValueType, GraphicType, GraphicData };
-
-  if (ValueType === 'SCOORD') {
-    const { ReferencedSOPSequence } = graphicItem.ContentSequence;
-    coords.ReferencedSOPSequence = ReferencedSOPSequence;
-  } else if (ValueType === 'SCOORD3D') {
-    if (graphicItem.ReferencedFrameOfReferenceUID) {
-      coords.ReferencedFrameOfReferenceSequence = graphicItem.ReferencedFrameOfReferenceUID;
-    } else if (graphicItem.ContentSequence) {
-      const { ReferencedFrameOfReferenceSequence } = graphicItem.ContentSequence;
-      coords.ReferencedFrameOfReferenceSequence = ReferencedFrameOfReferenceSequence;
-    }
-  }
-
+  coords.ReferencedSOPSequence = graphicItem.ContentSequence?.ReferencedSOPSequence;
+  coords.ReferencedFrameOfReferenceSequence =
+    graphicItem.ReferencedFrameOfReferenceUID ||
+    graphicItem.ContentSequence?.ReferencedFrameOfReferenceSequence;
   return coords;
 };
 

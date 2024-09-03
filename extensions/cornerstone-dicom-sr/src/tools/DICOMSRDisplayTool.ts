@@ -7,10 +7,11 @@ import {
   Types as cs3DToolsTypes,
 } from '@cornerstonejs/tools';
 import { getTrackingUniqueIdentifiersForElement } from './modules/dicomSRModule';
-import SCOORD_TYPES from '../constants/scoordTypes';
+import { SCOORDTypes } from '../enums';
+import toolNames from './toolNames';
 
 export default class DICOMSRDisplayTool extends AnnotationTool {
-  static toolName = 'DICOMSRDisplay';
+  static toolName = toolNames.DICOMSRDisplay;
 
   constructor(
     toolProps = {},
@@ -112,19 +113,19 @@ export default class DICOMSRDisplayTool extends AnnotationTool {
         let canvasCoordinatesAdapter;
 
         switch (GraphicType) {
-          case SCOORD_TYPES.POINT:
+          case SCOORDTypes.POINT:
             renderMethod = this.renderPoint;
             break;
-          case SCOORD_TYPES.MULTIPOINT:
+          case SCOORDTypes.MULTIPOINT:
             renderMethod = this.renderMultipoint;
             break;
-          case SCOORD_TYPES.POLYLINE:
+          case SCOORDTypes.POLYLINE:
             renderMethod = this.renderPolyLine;
             break;
-          case SCOORD_TYPES.CIRCLE:
+          case SCOORDTypes.CIRCLE:
             renderMethod = this.renderEllipse;
             break;
-          case SCOORD_TYPES.ELLIPSE:
+          case SCOORDTypes.ELLIPSE:
             renderMethod = this.renderEllipse;
             canvasCoordinatesAdapter = utilities.math.ellipse.getCanvasEllipseCorners;
             break;

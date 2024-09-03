@@ -2,6 +2,14 @@ import { adaptersSR } from '@cornerstonejs/adapters';
 
 const { CodeScheme: Cornerstone3DCodeScheme } = adaptersSR.Cornerstone3D;
 
+export const SCOORDTypes = {
+  POINT: 'POINT',
+  MULTIPOINT: 'MULTIPOINT',
+  POLYLINE: 'POLYLINE',
+  CIRCLE: 'CIRCLE',
+  ELLIPSE: 'ELLIPSE',
+};
+
 export const CodeNameCodeSequenceValues = {
   ImagingMeasurementReport: '126000',
   ImageLibrary: '111028',
@@ -22,18 +30,19 @@ export const CodingSchemeDesignators = {
   CornerstoneCodeSchemes: [Cornerstone3DCodeScheme.CodingSchemeDesignator, 'CST4'],
 };
 
-export const RELATIONSHIP_TYPE = {
+export const RelationshipType = {
   INFERRED_FROM: 'INFERRED FROM',
   CONTAINS: 'CONTAINS',
 };
 
-export const CORNERSTONE_FREETEXT_CODE_VALUE = 'CORNERSTONEFREETEXT';
+export const CornerstoneFreeTextCodeValue = 'CORNERSTONEFREETEXT';
 
 const enums = {
   CodeNameCodeSequenceValues,
   CodingSchemeDesignators,
-  RELATIONSHIP_TYPE,
-  CORNERSTONE_FREETEXT_CODE_VALUE,
+  RelationshipType,
+  CornerstoneFreeTextCodeValue,
+  SCOORDTypes,
 };
 
 export default enums;

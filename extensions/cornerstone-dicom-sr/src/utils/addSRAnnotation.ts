@@ -28,9 +28,9 @@ export default function addSRAnnotation(measurement, imageId, frameNumber) {
 
   const { ValueType, GraphicType } = measurement.coords[0];
 
-  /** TODO: Add support for other SCOORD3D graphic types */
+  /** TODO: Read the tool name from the DICOM SR identification type in the future. */
   if (ValueType === 'SCOORD3D') {
-    toolName = 'SCOORD3DPoint';
+    toolName = toolNames.SCOORD3DPoint;
   }
 
   const imagePlaneModule = metaData.get('imagePlaneModule', imageId);

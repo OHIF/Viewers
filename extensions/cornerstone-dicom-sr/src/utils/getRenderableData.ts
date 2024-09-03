@@ -1,6 +1,6 @@
 import { vec3 } from 'gl-matrix';
 import { metaData, utilities, Types as csTypes } from '@cornerstonejs/core';
-import SCOORD_TYPES from '../constants/scoordTypes';
+import { SCOORDTypes } from '../enums';
 
 const EPSILON = 1e-4;
 
@@ -8,9 +8,9 @@ function getRenderableData(GraphicType, GraphicData, ValueType, imageId) {
   let renderableData = [];
 
   switch (GraphicType) {
-    case SCOORD_TYPES.POINT:
-    case SCOORD_TYPES.MULTIPOINT:
-    case SCOORD_TYPES.POLYLINE: {
+    case SCOORDTypes.POINT:
+    case SCOORDTypes.MULTIPOINT:
+    case SCOORDTypes.POLYLINE: {
       renderableData = [];
 
       if (ValueType === 'SCOORD3D') {
@@ -29,7 +29,7 @@ function getRenderableData(GraphicType, GraphicData, ValueType, imageId) {
 
       break;
     }
-    case SCOORD_TYPES.CIRCLE: {
+    case SCOORDTypes.CIRCLE: {
       const pointsWorld = [];
 
       if (ValueType === 'SCOORD3D') {
@@ -93,7 +93,7 @@ function getRenderableData(GraphicType, GraphicData, ValueType, imageId) {
 
       break;
     }
-    case SCOORD_TYPES.ELLIPSE: {
+    case SCOORDTypes.ELLIPSE: {
       // GraphicData is ordered as [majorAxisStartX, majorAxisStartY, majorAxisEndX, majorAxisEndY, minorAxisStartX, minorAxisStartY, minorAxisEndX, minorAxisEndY]
       // But Cornerstone3D points are ordered as top, bottom, left, right for the
       // ellipse so we need to identify if the majorAxis is horizontal or vertical

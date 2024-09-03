@@ -32,7 +32,7 @@ export default function init({
   addToolInstance(toolNames.SRAngle, AngleTool);
   addToolInstance(toolNames.SRPlanarFreehandROI, PlanarFreehandROITool);
   addToolInstance(toolNames.SRRectangleROI, RectangleROITool);
-  addToolInstance('SCOORD3DPoint', ProbeTool, { useViewReference: true });
+  addToolInstance(toolNames.SCOORD3DPoint, ProbeTool, { useViewReference: true });
 
   // TODO - fix the SR display of Cobb Angle, as it joins the two lines
   addToolInstance(toolNames.SRCobbAngle, CobbAngleTool);
