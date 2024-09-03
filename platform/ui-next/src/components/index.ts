@@ -15,7 +15,8 @@ import { Checkbox } from './Checkbox';
 import { Toggle, toggleVariants } from './Toggle';
 import { Slider } from './Slider';
 import { ScrollArea, ScrollBar } from './ScrollArea';
-
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './Tooltip';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './Select';
 export {
   Button,
   buttonVariants,
@@ -39,4 +40,13 @@ export {
   toggleVariants,
   Slider,
   ScrollArea,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
 };
