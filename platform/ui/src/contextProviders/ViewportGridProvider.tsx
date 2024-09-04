@@ -309,10 +309,11 @@ export function ViewportGridProvider({ children, service }: ViewportGridProvider
             viewport.isReady = false;
 
             if (!viewport.viewportOptions.presentationIds) {
-              viewport.viewportOptions.presentationIds = service.getPresentationIds({
+              const presentationIds = service.getPresentationIds({
                 viewport,
                 viewports,
               });
+              viewport.viewportOptions.presentationIds = presentationIds;
             }
           }
         }

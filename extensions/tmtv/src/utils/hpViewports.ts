@@ -33,7 +33,7 @@ const ctAXIAL: AppTypes.HangingProtocol.Viewport = {
   ],
   overlays: [
     {
-      id: 'segmentationInSameFrameOfReference',
+      id: 'appLabelmap',
     },
   ],
 };
@@ -69,7 +69,7 @@ const ctSAGITTAL: AppTypes.HangingProtocol.Viewport = {
   ],
   overlays: [
     {
-      id: 'segmentationInSameFrameOfReference',
+      id: 'appLabelmap',
     },
   ],
 };
@@ -104,7 +104,7 @@ const ctCORONAL: AppTypes.HangingProtocol.Viewport = {
   ],
   overlays: [
     {
-      id: 'segmentationInSameFrameOfReference',
+      id: 'appLabelmap',
     },
   ],
 };
@@ -160,7 +160,7 @@ const ptAXIAL: AppTypes.HangingProtocol.Viewport = {
   ],
   overlays: [
     {
-      id: 'segmentationInSameFrameOfReference',
+      id: 'appLabelmap',
     },
   ],
 };
@@ -212,7 +212,7 @@ const ptSAGITTAL: AppTypes.HangingProtocol.Viewport = {
   ],
   overlays: [
     {
-      id: 'segmentationInSameFrameOfReference',
+      id: 'appLabelmap',
     },
   ],
 };
@@ -264,7 +264,7 @@ const ptCORONAL: AppTypes.HangingProtocol.Viewport = {
   ],
   overlays: [
     {
-      id: 'segmentationInSameFrameOfReference',
+      id: 'appLabelmap',
     },
   ],
 };
@@ -335,7 +335,7 @@ const fusionAXIAL: AppTypes.HangingProtocol.Viewport = {
   ],
   overlays: [
     {
-      id: 'segmentationInSameFrameOfReference',
+      id: 'appLabelmap',
     },
   ],
 };
@@ -406,7 +406,7 @@ const fusionSAGITTAL = {
   ],
   overlays: [
     {
-      id: 'segmentationInSameFrameOfReference',
+      id: 'appLabelmap',
     },
   ],
 };
@@ -477,7 +477,7 @@ const fusionCORONAL = {
   ],
   overlays: [
     {
-      id: 'segmentationInSameFrameOfReference',
+      id: 'appLabelmap',
     },
   ],
 };
@@ -532,6 +532,11 @@ const mipSAGITTAL: AppTypes.HangingProtocol.Viewport = {
       id: 'ptDisplaySet',
     },
   ],
+  // overlays: [
+  //   {
+  //     id: 'appLabelmap',
+  //   },
+  // ],
 };
 
 export {

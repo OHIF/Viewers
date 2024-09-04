@@ -1,4 +1,5 @@
 import { cache } from '@cornerstonejs/core';
+import { segmentation as csToolsSegmentation, type Types } from '@cornerstonejs/tools';
 
 export const handleROIThresholding = async ({
   segmentationId,
@@ -7,6 +8,11 @@ export const handleROIThresholding = async ({
   config = {},
 }) => {
   const segmentation = segmentationService.getSegmentation(segmentationId);
+  const csSegmentation = csToolsSegmentation.state.getSegmentation(segmentationId);
+
+  const labelmapData = csSegmentation.representationData
+    .Labelmap as Types.LabelmapToolOperationDataVolume;
+  const volumeId = labelmapData.volumeId;
 
   // re-calculating the cached stats for the active segmentation
   const updatedPerSegmentCachedStats = {};
@@ -16,12 +22,20 @@ export const handleROIThresholding = async ({
         return segment;
       }
 
-      const labelmap = cache.getVolume(segmentationId);
+      const labelmap = cache.getVolume(volumeId);
 
       const segmentIndex = segment.segmentIndex;
 
-      const lesionStats = commandsManager.run('getLesionStats', { labelmap, segmentIndex });
-      const suvPeak = await commandsManager.run('calculateSuvPeak', { labelmap, segmentIndex });
+      const lesionStats = commandsManager.run('getLesionStats', {
+        segmentation,
+        labelmap,
+        segmentIndex,
+      });
+      const suvPeak = await commandsManager.run('calculateSuvPeak', {
+        labelmap,
+        segmentation,
+        segmentIndex,
+      });
       const lesionGlyoclysisStats = lesionStats.volume * lesionStats.meanValue;
 
       // update segDetails with the suv peak for the active segmentation

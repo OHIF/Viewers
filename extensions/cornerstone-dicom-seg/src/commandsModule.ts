@@ -86,7 +86,10 @@ const commandsModule = ({
         { label: `Segmentation ${currentSegmentations.length + 1}` }
       );
 
-      await segmentationService.addSegmentationRepresentationToViewport(viewportId, segmentationId);
+      await segmentationService.addSegmentationRepresentationToViewport({
+        viewportId,
+        segmentationId,
+      });
 
       // Add only one segment for now
       segmentationService.addSegment(segmentationId, {
@@ -137,10 +140,10 @@ const commandsModule = ({
 
           segmentationService.addOrUpdateSegmentation(segmentation);
 
-          await segmentationService.addSegmentationRepresentationToViewport(
+          await segmentationService.addSegmentationRepresentationToViewport({
             viewportId,
-            segmentationId
-          );
+            segmentationId,
+          });
 
           segments.forEach(segment => {
             if (segment === null) {

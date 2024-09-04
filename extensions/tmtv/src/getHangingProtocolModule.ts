@@ -331,11 +331,18 @@ const ptCT: AppTypes.HangingProtocol.Protocol = {
     },
   },
   overlaySelectors: {
-    segmentationInSameFrameOfReference: {
+    appLabelmap: {
       matchingRules: [
         {
-          attribute: 'SameFrameOfReferenceUIDAsViewport',
-          weight: 10,
+          weight: 1,
+          attribute: 'FrameOfReferenceUID',
+          from: 'segmentation',
+          constraint: {
+            equals: {
+              attribute: 'FrameOfReferenceUID',
+              from: 'viewport',
+            },
+          },
         },
       ],
     },

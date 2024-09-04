@@ -60,6 +60,23 @@ const defaultProtocol = {
       ],
     },
   },
+  overlaySelectors: {
+    appLabelmap: {
+      matchingRules: [
+        {
+          weight: 1,
+          attribute: 'FrameOfReferenceUID',
+          from: 'segmentation',
+          constraint: {
+            equals: {
+              attribute: 'FrameOfReferenceUID',
+              from: 'viewport',
+            },
+          },
+        },
+      ],
+    },
+  },
   stages: [
     {
       name: 'default',
@@ -90,6 +107,11 @@ const defaultProtocol = {
           displaySets: [
             {
               id: 'defaultDisplaySetId',
+            },
+          ],
+          overlays: [
+            {
+              id: 'appLabelmap',
             },
           ],
         },

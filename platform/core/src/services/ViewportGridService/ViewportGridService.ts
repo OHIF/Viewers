@@ -188,7 +188,7 @@ class ViewportGridService extends PubSubService {
    *    options that is initially provided as {} (eg to store intermediate state)
    *    The function returns a viewport object to use at the given position.
    */
-  public setLayout({
+  public async setLayout({
     numCols,
     numRows,
     layoutOptions,
@@ -197,7 +197,7 @@ class ViewportGridService extends PubSubService {
     findOrCreateViewport = undefined,
     isHangingProtocolLayout = false,
   }) {
-    this.serviceImplementation._setLayout({
+    await this.serviceImplementation._setLayout({
       numCols,
       numRows,
       layoutOptions,
@@ -206,9 +206,20 @@ class ViewportGridService extends PubSubService {
       findOrCreateViewport,
       isHangingProtocolLayout,
     });
-    this._broadcastEvent(this.EVENTS.LAYOUT_CHANGED, {
-      numCols,
-      numRows,
+
+    const state = this.getState();
+
+    // publish both the layout changed and the grid state changed
+    // with microtask to ensure the layout changed is published first
+    queueMicrotask(() => {
+      this._broadcastEvent(this.EVENTS.LAYOUT_CHANGED, {
+        numCols,
+        numRows,
+      });
+    });
+
+    this._broadcastEvent(this.EVENTS.GRID_STATE_CHANGED, {
+      state,
     });
   }
 

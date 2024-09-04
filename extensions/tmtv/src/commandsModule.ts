@@ -62,20 +62,6 @@ const commandsModule = ({ servicesManager, commandsManager, extensionManager }: 
     return enabledElement;
   }
 
-  function _getMatchedViewportsToolGroupIds() {
-    const { viewportMatchDetails } = hangingProtocolService.getMatchDetails();
-    const toolGroupIds = [];
-    viewportMatchDetails.forEach(viewport => {
-      const { viewportOptions } = viewport;
-      const { toolGroupId } = viewportOptions;
-      if (toolGroupIds.indexOf(toolGroupId) === -1) {
-        toolGroupIds.push(toolGroupId);
-      }
-    });
-
-    return toolGroupIds;
-  }
-
   function _getMatchedViewportIds() {
     const { viewportMatchDetails } = hangingProtocolService.getMatchDetails();
     const viewportIds = [];
@@ -157,11 +143,26 @@ const commandsModule = ({ servicesManager, commandsManager, extensionManager }: 
     createNewLabelmapFromPT: async ({ label }) => {
       // Create a segmentation of the same resolution as the source data
       // using volumeLoader.createAndCacheDerivedVolume.
+
       const { viewportMatchDetails } = hangingProtocolService.getMatchDetails();
 
       const ptDisplaySet = actions.getMatchingPTDisplaySet({
         viewportMatchDetails,
       });
+
+      let withPTViewportId = null;
+
+      for (const [viewportId, { displaySetsInfo }] of viewportMatchDetails.entries()) {
+        const isPT = displaySetsInfo.some(
+          ({ displaySetInstanceUID }) =>
+            displaySetInstanceUID === ptDisplaySet.displaySetInstanceUID
+        );
+
+        if (isPT) {
+          withPTViewportId = viewportId;
+          break;
+        }
+      }
 
       if (!ptDisplaySet) {
         uiNotificationService.error('No matching PT display set found');
@@ -175,17 +176,11 @@ const commandsModule = ({ servicesManager, commandsManager, extensionManager }: 
         { label: `Segmentation ${currentSegmentations.length + 1}` }
       );
 
-      const viewportIds = _getMatchedViewportIds();
-
-      for (const viewportId of viewportIds) {
-        const hydrateSegmentation = true;
-        await segmentationService.addSegmentationRepresentationToViewport(
-          viewportId,
-          segmentationId,
-          hydrateSegmentation
-        );
-        segmentationService.setActiveSegmentationForViewport(segmentationId, viewportId);
-      }
+      segmentationService.addSegmentationRepresentationToViewport({
+        viewportId: withPTViewportId,
+        segmentationId,
+        hydrateSegmentation: true,
+      });
 
       segmentationService.addSegment(segmentationId, {
         segmentIndex: 1,
@@ -193,6 +188,7 @@ const commandsModule = ({ servicesManager, commandsManager, extensionManager }: 
           label: 'Segment 1',
         },
       });
+
       return segmentationId;
     },
     thresholdSegmentationByRectangleROITool: ({ segmentationId, config, segmentIndex }) => {
@@ -288,12 +284,11 @@ const commandsModule = ({ servicesManager, commandsManager, extensionManager }: 
         { overwrite: true, segmentIndex }
       );
     },
-    calculateSuvPeak: async ({ labelmap, segmentIndex }) => {
+    calculateSuvPeak: async ({ segmentation, labelmap, segmentIndex }) => {
       // if we put it in the top, it will appear in other modes
       workerManager.registerWorker('suv-peak-worker', workerFn, options);
 
-      const { referencedVolumeId } = labelmap;
-      const referencedVolume = cs.cache.getVolume(referencedVolumeId);
+      const referencedVolume = segmentationService.getLabelmapReferencedVolume(segmentation.id);
 
       const annotationUIDs = _getAnnotationsSelectedByToolNames(ROI_THRESHOLD_MANUAL_TOOL_IDS);
 
@@ -307,6 +302,7 @@ const commandsModule = ({ servicesManager, commandsManager, extensionManager }: 
         direction: labelmap.direction,
         spacing: labelmap.spacing,
         metadata: labelmap.metadata,
+        scalarData: labelmap.voxelManager.getCompleteScalarDataArray(),
       };
 
       const referenceVolumeProps = {
@@ -315,6 +311,7 @@ const commandsModule = ({ servicesManager, commandsManager, extensionManager }: 
         direction: referencedVolume.direction,
         spacing: referencedVolume.spacing,
         metadata: referencedVolume.metadata,
+        scalarData: referencedVolume.voxelManager.getCompleteScalarDataArray(),
       };
 
       // metadata in annotations has enabledElement which is not serializable
@@ -349,20 +346,15 @@ const commandsModule = ({ servicesManager, commandsManager, extensionManager }: 
         suvMaxLPS: suvPeak.maxLPS,
       };
     },
-    getLesionStats: ({ labelmap, segmentIndex = 1 }) => {
-      const {
-        voxelManager: segVoxelManager,
-        imageData,
-        referencedVolumeId,
-        spacing,
-      } = labelmap as IVolume;
-      const { voxelManager: refVoxelManager } = cs.cache.getVolume(referencedVolumeId);
+    getLesionStats: ({ segmentation, labelmap, segmentIndex = 1 }) => {
+      const { voxelManager: segVoxelManager, imageData, spacing } = labelmap as IVolume;
+      const referencedVolume = segmentationService.getLabelmapReferencedVolume(segmentation.id);
+      const { voxelManager: refVoxelManager } = referencedVolume;
 
       let segmentationMax = -Infinity;
-      const segmentationMin = Infinity;
+      let segmentationMin = Infinity;
       const segmentationValues = [];
-
-      const voxelCount = 0;
+      let voxelCount = 0;
 
       const callback = ({ value, index }) => {
         if (value === segmentIndex) {
@@ -371,6 +363,10 @@ const commandsModule = ({ servicesManager, commandsManager, extensionManager }: 
           if (refValue > segmentationMax) {
             segmentationMax = refValue;
           }
+          if (refValue < segmentationMin) {
+            segmentationMin = refValue;
+          }
+          voxelCount++;
         }
       };
 
@@ -569,7 +565,8 @@ const commandsModule = ({ servicesManager, commandsManager, extensionManager }: 
         const referencedVolumeId = labelmapVolume.referencedVolumeId;
         segReport.referencedVolumeId = referencedVolumeId;
 
-        const referencedVolume = segmentationService.getLabelmapVolume(referencedVolumeId);
+        const referencedVolume =
+          segmentationService.getLabelmapReferencedVolume(referencedVolumeId);
 
         if (!referencedVolume) {
           report[id] = segReport;

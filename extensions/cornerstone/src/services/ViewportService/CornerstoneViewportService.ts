@@ -190,7 +190,7 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
       return;
     }
 
-    const { lutPresentation, positionPresentation, segmentationPresentation } = presentations;
+    const { lutPresentation, positionPresentation } = presentations;
     if (lutPresentation) {
       const { properties } = lutPresentation;
       if (viewport instanceof BaseVolumeViewport) {
@@ -212,9 +212,6 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     }
     if (positionPresentation?.position) {
       viewport.setViewPresentation(positionPresentation.position);
-    }
-    if (segmentationPresentation) {
-      viewport.setSegmentation(segmentationPresentation.segmentation);
     }
   }
 
@@ -905,12 +902,11 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
         ? csToolsEnums.SegmentationRepresentations.Labelmap
         : csToolsEnums.SegmentationRepresentations.Contour;
 
-    segmentationService.addSegmentationRepresentationToViewport(
-      viewport.id,
+    segmentationService.addSegmentationRepresentationToViewport({
+      viewportId: viewport.id,
       segmentationId,
-      false,
-      representationType
-    );
+      representationType,
+    });
   }
 
   // Todo: keepCamera is an interim solution until we have a better solution for

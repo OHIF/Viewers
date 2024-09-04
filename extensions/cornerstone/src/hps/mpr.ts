@@ -10,7 +10,6 @@ export const mpr: Types.HangingProtocol.Protocol = {
   modifiedDate: '2023-08-15',
   availableTo: {},
   editableBy: {},
-  // Unknown number of priors referenced - so just match any study
   numberOfPriorsReferenced: 0,
   protocolMatchingRules: [],
   imageLoadStrategy: 'nth',
@@ -27,6 +26,23 @@ export const mpr: Types.HangingProtocol.Protocol = {
             },
           },
           required: true,
+        },
+      ],
+    },
+  },
+  overlaySelectors: {
+    appLabelmap: {
+      matchingRules: [
+        {
+          weight: 1,
+          attribute: 'FrameOfReferenceUID',
+          from: 'segmentation',
+          constraint: {
+            equals: {
+              attribute: 'FrameOfReferenceUID',
+              from: 'viewport',
+            },
+          },
         },
       ],
     },
@@ -88,6 +104,12 @@ export const mpr: Types.HangingProtocol.Protocol = {
               id: 'activeDisplaySet',
             },
           ],
+          overlays: [
+            {
+              id: 'appLabelmap',
+              options: {},
+            },
+          ],
         },
         {
           viewportOptions: {
@@ -115,6 +137,12 @@ export const mpr: Types.HangingProtocol.Protocol = {
               id: 'activeDisplaySet',
             },
           ],
+          overlays: [
+            {
+              id: 'appLabelmap',
+              options: {},
+            },
+          ],
         },
         {
           viewportOptions: {
@@ -140,6 +168,12 @@ export const mpr: Types.HangingProtocol.Protocol = {
           displaySets: [
             {
               id: 'activeDisplaySet',
+            },
+          ],
+          overlays: [
+            {
+              id: 'appLabelmap',
+              options: {},
             },
           ],
         },

@@ -49,7 +49,7 @@ export default async function init({
   commandsManager,
   extensionManager,
   appConfig,
-}: Types.Extensions.ExtensionParams): Promise<void> {
+}: withAppTypes): Promise<void> {
   // Note: this should run first before initializing the cornerstone
   // DO NOT CHANGE THE ORDER
 
@@ -90,6 +90,7 @@ export default async function init({
     cornerstoneViewportService,
     hangingProtocolService,
     viewportGridService,
+    segmentationService,
     stateSyncService,
   } = servicesManager.services;
 
@@ -287,6 +288,79 @@ export default async function init({
     },
     100
   );
+
+  const segRepAdded = segmentationService.EVENTS.SEGMENTATION_REPRESENTATION_ADDED;
+  const segRepRemoved = segmentationService.EVENTS.SEGMENTATION_REPRESENTATION_REMOVED;
+  const gridStateChange = viewportGridService.EVENTS.GRID_STATE_CHANGED;
+
+  const consolidateSegmentationRepresentations = () => {
+    const gridState = viewportGridService.getState();
+    const viewports = gridState.viewports as AppTypes.ViewportGrid.Viewports;
+    if (!viewports || viewports.size === 0) {
+      return;
+    }
+
+    const segmentations = segmentationService.getSegmentations();
+    for (const [viewportId, gridViewport] of viewports.entries()) {
+      const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
+
+      if (!viewport) {
+        continue;
+      }
+
+      // get the overlay rule for this viewport from the hanging protocol
+      const overlayRule = hangingProtocolService.getOverlayRuleForViewport(viewportId);
+      if (!overlayRule?.length || !segmentations?.length) {
+        continue;
+      }
+
+      for (const segmentation of segmentations) {
+        const matched = hangingProtocolService.runMatchingRules(segmentation, overlayRule, {
+          viewport: {
+            FrameOfReferenceUID: viewport.getFrameOfReferenceUID(),
+          },
+          segmentation: {
+            FrameOfReferenceUID: segmentation.FrameOfReferenceUID,
+          },
+        });
+
+        if (!matched || matched.score === 0 || matched.requiredFailed) {
+          continue;
+        }
+
+        const matchSuccess = matched.details.passed.length > 0;
+        const representations =
+          segmentationService.getSegmentationRepresentationsForViewport(viewportId);
+        const alreadyHasRepresentation = representations.some(
+          representation => representation.segmentationId === segmentation.id
+        );
+
+        if (matchSuccess && !alreadyHasRepresentation) {
+          segmentationService.addSegmentationRepresentationToViewport({
+            viewportId,
+            segmentationId: segmentation.id,
+            useExistingRepresentationIfExist: true,
+          });
+        }
+      }
+    }
+
+    // here we need to go over all the viewports and check if the overlay rules
+    // actually match the segmentation representation that was added or removed
+    // if so the viewport should be updated with that segmentation representation
+    // so that the overlay is visible or hidden accordingly
+  };
+
+  cornerstoneViewportService.subscribe(
+    cornerstoneViewportService.EVENTS.VIEWPORT_DATA_CHANGED,
+    consolidateSegmentationRepresentations
+  );
+
+  viewportGridService.subscribe(gridStateChange, consolidateSegmentationRepresentations);
+
+  [segRepAdded].forEach(event => {
+    segmentationService.subscribe(event, consolidateSegmentationRepresentations);
+  });
 }
 
 function CPUModal() {

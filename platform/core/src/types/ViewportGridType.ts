@@ -18,9 +18,7 @@ export interface Layout {
   layoutType: string;
 }
 
-export interface GridViewports {
-  [key: string]: GridViewport;
-}
+export type GridViewports = Map<string, GridViewport>;
 
 export interface ViewportGridState {
   activeViewportId: string | null;

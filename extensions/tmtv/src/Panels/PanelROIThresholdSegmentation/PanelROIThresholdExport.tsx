@@ -31,8 +31,7 @@ export default function PanelRoiThresholdSegmentation({
         const segmentations = segmentationService.getSegmentations();
         setSegmentations(segmentations);
 
-        const activeSegmentation = segmentations.filter(seg => seg.isActive);
-        setActiveSegmentation(activeSegmentation[0]);
+        setActiveSegmentation(segmentations[0]);
       });
 
       subscriptions.push(unsubscribe);
@@ -91,6 +90,7 @@ export default function PanelRoiThresholdSegmentation({
   }
 
   const tmtvValue = activeSegmentation.cachedStats?.tmtv?.value || null;
+  console.debug('🚀 ~ tmtvValue:', tmtvValue);
   const config = activeSegmentation.cachedStats?.tmtv?.config || {};
 
   const actions = [

@@ -345,16 +345,13 @@ const commandsModule = ({ commandsManager, servicesManager }: withAppTypes) => {
         { label }
       );
 
-      const representationType = LABELMAP;
       for (const viewport of viewports.values()) {
         const viewportId = viewport.viewportId;
-        const hydrateSegmentation = true;
-        await segmentationService.addSegmentationRepresentationToViewport(
+        await segmentationService.addSegmentationRepresentationToViewport({
           viewportId,
           segmentationId,
-          hydrateSegmentation,
-          representationType
-        );
+          hydrateSegmentation: true,
+        });
 
         segmentationService.setActiveSegmentationForViewport(segmentationId, viewportId);
       }

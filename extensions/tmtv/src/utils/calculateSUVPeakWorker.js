@@ -1,10 +1,11 @@
-import { utilities } from '@cornerstonejs/tools';
+import { utilities } from '@cornerstonejs/core';
+import { utilities as cstUtils } from '@cornerstonejs/tools';
 import { vec3 } from 'gl-matrix';
 import vtkImageData from '@kitware/vtk.js/Common/DataModel/ImageData';
 import vtkDataArray from '@kitware/vtk.js/Common/Core/DataArray';
 import { expose } from 'comlink';
 
-const createVolume = ({ dimensions, origin, direction, spacing, scalarData, metadata }) => {
+const createVolume = ({ dimensions, origin, direction, spacing, metadata, scalarData }) => {
   const imageData = vtkImageData.newInstance();
   imageData.setDimensions(dimensions);
   imageData.setOrigin(origin);
@@ -21,10 +22,15 @@ const createVolume = ({ dimensions, origin, direction, spacing, scalarData, meta
 
   imageData.modified();
 
+  const voxelManager = utilities.VoxelManager.createScalarVolumeVoxelManager({
+    scalarData,
+    dimensions,
+    numberOfComponents: 1,
+  });
   return {
     imageData,
     metadata,
-    getScalarData: () => scalarData,
+    voxelManager,
   };
 };
 /**
@@ -40,22 +46,15 @@ const createVolume = ({ dimensions, origin, direction, spacing, scalarData, meta
  * @returns
  */
 function calculateSuvPeak({ labelmapProps, referenceVolumeProps, annotations, segmentIndex = 1 }) {
-  const labelmap = createVolume(labelmapProps);
-  const referenceVolume = createVolume(referenceVolumeProps);
+  const labelmapInfo = createVolume(labelmapProps);
+  const referenceInfo = createVolume(referenceVolumeProps);
 
-  if (referenceVolume.metadata.Modality !== 'PT') {
+  if (referenceInfo.metadata.Modality !== 'PT') {
     return;
   }
 
-  const labelmapData = labelmap.getScalarData();
-  const referenceVolumeData = referenceVolume.getScalarData();
-
-  if (labelmapData.length !== referenceVolumeData.length) {
-    throw new Error('labelmap and referenceVolume must have the same number of pixels');
-  }
-
-  const { dimensions, imageData: labelmapImageData } = labelmap;
-  const { imageData: referenceVolumeImageData } = referenceVolume;
+  const { dimensions, imageData: labelmapImageData } = labelmapInfo;
+  const { imageData: referenceVolumeImageData } = referenceInfo;
 
   let boundsIJK;
   // Todo: using the first annotation for now
@@ -77,14 +76,13 @@ function calculateSuvPeak({ labelmapProps, referenceVolumeProps, annotations, se
   let maxLPS = [0, 0, 0];
 
   const callback = ({ pointIJK, pointLPS }) => {
-    const offset = referenceVolumeImageData.computeOffsetIndex(pointIJK);
-    const value = labelmapData[offset];
+    const value = labelmapInfo.voxelManager.getAtIJKPoint(pointIJK);
 
     if (value !== segmentIndex) {
       return;
     }
 
-    const referenceValue = referenceVolumeData[offset];
+    const referenceValue = referenceInfo.voxelManager.getAtIJKPoint(pointIJK);
 
     if (referenceValue > max) {
       max = referenceValue;
@@ -93,7 +91,12 @@ function calculateSuvPeak({ labelmapProps, referenceVolumeProps, annotations, se
     }
   };
 
-  utilities.pointInShapeCallback(labelmapImageData, () => true, callback, boundsIJK);
+  labelmapInfo.voxelManager.forEach(callback, {
+    boundsIJK,
+    imageData: labelmapImageData,
+    isInObject: () => true,
+    returnPoints: true,
+  });
 
   const direction = labelmapImageData.getDirection().slice(0, 3);
 
@@ -123,7 +126,7 @@ function calculateSuvPeak({ labelmapProps, referenceVolumeProps, annotations, se
     count += 1;
   };
 
-  utilities.pointInSurroundingSphereCallback(
+  cstUtils.pointInSurroundingSphereCallback(
     referenceVolumeImageData,
     suvPeakCirclePoints,
     suvPeakMeanCallback
