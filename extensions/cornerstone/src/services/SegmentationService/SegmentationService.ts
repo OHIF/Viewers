@@ -542,9 +542,8 @@ class SegmentationService extends PubSubService {
       },
     };
 
-    const labelmap = this.getLabelmapVolume(segmentationId);
     const cachedSegmentation = this.getSegmentation(segmentationId);
-    if (labelmap && cachedSegmentation) {
+    if (cachedSegmentation) {
       // if the labelmap with the same segmentationId already exists, we can
       // just assume that the segmentation is already created and move on with
       // updating the state

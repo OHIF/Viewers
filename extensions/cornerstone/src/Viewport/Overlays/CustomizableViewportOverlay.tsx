@@ -403,6 +403,11 @@ function _getInstanceNumberFromVolume(
 
   // Todo: support fusion of acquisition plane which has instanceNumber
   const { volume } = volumes[0];
+
+  if (!volume) {
+    return;
+  }
+
   const { direction, imageIds } = volume;
 
   const cornerstoneViewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);

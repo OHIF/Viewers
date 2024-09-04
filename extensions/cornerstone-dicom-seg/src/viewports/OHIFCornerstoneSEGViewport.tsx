@@ -107,7 +107,7 @@ function OHIFCornerstoneSEGViewport(props: withAppTypes) {
         {...props}
         displaySets={[segDisplaySet]}
         viewportOptions={{
-          viewportType: 'stack',
+          viewportType: viewportOptions.viewportType,
           toolGroupId: toolGroupId,
           orientation: viewportOptions.orientation,
           viewportId: viewportOptions.viewportId,

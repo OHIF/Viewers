@@ -11,6 +11,7 @@ import {
   cache,
   Enums as csEnums,
   BaseVolumeViewport,
+  volumeLoader,
 } from '@cornerstonejs/core';
 
 import { utilities as csToolsUtils, Enums as csToolsEnums } from '@cornerstonejs/tools';
@@ -27,6 +28,8 @@ const EVENTS = {
   VIEWPORT_DATA_CHANGED: 'event::cornerstoneViewportService:viewportDataChanged',
   VIEWPORT_VOLUMES_CHANGED: 'event::cornerstoneViewportService:viewportVolumesChanged',
 };
+
+const VOLUME_LOADER_SCHEME = 'cornerstoneStreamingImageVolume';
 
 /**
  * Handles cornerstone viewport logic including enabling, disabling, and
@@ -776,7 +779,7 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
 
     this.viewportsDisplaySets.set(viewport.id, displaySetInstanceUIDs);
 
-    const volumesNotLoaded = volumeToLoad.filter(volume => !volume.loadStatus.loaded);
+    const volumesNotLoaded = volumeToLoad.filter(volume => !volume.loadStatus?.loaded);
 
     if (volumesNotLoaded.length) {
       if (hangingProtocolService.getShouldPerformCustomImageLoad()) {
@@ -836,16 +839,47 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
       return { properties, volumeId };
     });
 
+    const { imageIds: overlayReferenceVolumeImageIds } =
+      this._processOverlaysForViewport(viewport) || {};
+
+    // Always load the reference volume if the displaySet is an overlay
+    // This occurs in the preview SEG since we handle SEG via segmentation state directly
+    // for hydrated segs
+    if (overlayReferenceVolumeImageIds) {
+      // we should check if the overlay reference volume image ids are already in the volumeInputArray
+      // if they are not, then we need to add them
+      const refStr = overlayReferenceVolumeImageIds.join(',');
+      const refVolumeInput = volumeInputArray.find(
+        volumeInput => volumeInput.imageIds.join(',') === refStr
+      );
+      if (!refVolumeInput) {
+        // create and load the volume
+        const displaySet = displaySetService.getDisplaySetByUID(displaySetUIDs[0]);
+        const volumeId = `${VOLUME_LOADER_SCHEME}:${displaySet.referencedDisplaySetInstanceUID}`;
+
+        const volume = cache.getVolume(volumeId);
+
+        if (!volume) {
+          await volumeLoader.createAndCacheVolume(volumeId, {
+            imageIds: overlayReferenceVolumeImageIds,
+          });
+        }
+
+        volumeInputArray.push({
+          volumeId,
+          imageIds: overlayReferenceVolumeImageIds,
+          blendMode: displaySetOptions[0].blendMode,
+        });
+      }
+    }
+
     await viewport.setVolumes(volumeInputArray);
+
     volumesProperties.forEach(({ properties, volumeId }) => {
       viewport.setProperties(properties, volumeId);
     });
 
     this.setPresentations(viewport.id, presentations, viewportInfo);
-
-    this._processOverlaysForViewport(viewport);
-
-    csToolsUtils.segmentation.triggerSegmentationRender(viewport.id);
 
     const imageIndex = this._getInitialImageIndexForViewport(viewportInfo);
 
@@ -906,6 +940,7 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
       viewportId: viewport.id,
       segmentationId,
       representationType,
+      useExistingRepresentationIfExist: true,
     });
   }
 

@@ -45,7 +45,10 @@ function areEqual(prevProps, nextProps) {
     return false;
   }
 
-  if (prevProps.viewportOptions.viewportType !== nextProps.viewportOptions.viewportType) {
+  if (
+    nextProps.viewportOptions.viewportType &&
+    prevProps.viewportOptions.viewportType !== nextProps.viewportOptions.viewportType
+  ) {
     return false;
   }
 
