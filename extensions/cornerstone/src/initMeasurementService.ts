@@ -197,11 +197,7 @@ const connectToolsToMeasurementService = (servicesManager: AppTypes.ServicesMana
     cornerstoneViewportService,
     customizationService
   );
-  connectMeasurementServiceToTools(
-    measurementService,
-    cornerstoneViewportService,
-    csTools3DVer1MeasurementSource
-  );
+  connectMeasurementServiceToTools(measurementService, cornerstoneViewportService);
   const { annotationToMeasurement, remove } = csTools3DVer1MeasurementSource;
 
   //
@@ -218,7 +214,7 @@ const connectToolsToMeasurementService = (servicesManager: AppTypes.ServicesMana
         onCompletedCalibrationLine(servicesManager, csToolsEvent)
           .then(
             () => {
-              console.log('calibration applied');
+              console.log('Calibration applied.');
             },
             () => true
           )
@@ -238,7 +234,7 @@ const connectToolsToMeasurementService = (servicesManager: AppTypes.ServicesMana
         annotationToMeasurement(toolName, annotationAddedEventDetail);
       }
     } catch (error) {
-      console.error('Failed to update measurement:', error);
+      console.warn('Failed to add measurement:', error);
     }
   }
 
@@ -262,9 +258,10 @@ const connectToolsToMeasurementService = (servicesManager: AppTypes.ServicesMana
       // Passing true to indicate this is an update and NOT a annotation (start) completion.
       annotationToMeasurement(toolName, annotationModifiedEventDetail, true);
     } catch (error) {
-      console.error('Failed to update measurement:', error);
+      console.warn('Failed to update measurement:', error);
     }
   }
+
   function selectMeasurement(csToolsEvent) {
     try {
       const annotationSelectionEventDetail = csToolsEvent.detail;
@@ -284,7 +281,7 @@ const connectToolsToMeasurementService = (servicesManager: AppTypes.ServicesMana
         );
       }
     } catch (error) {
-      console.error('Failed to select and unselect measurements:', error);
+      console.warn('Failed to select/unselect measurements:', error);
     }
   }
 
@@ -296,23 +293,16 @@ const connectToolsToMeasurementService = (servicesManager: AppTypes.ServicesMana
    */
   function removeMeasurement(csToolsEvent) {
     try {
-      try {
-        const annotationRemovedEventDetail = csToolsEvent.detail;
-        const {
-          annotation: { annotationUID },
-        } = annotationRemovedEventDetail;
-
-        const measurement = measurementService.getMeasurement(annotationUID);
-
-        if (measurement) {
-          console.log('~~ removeEvt', csToolsEvent);
-          remove(annotationUID, annotationRemovedEventDetail);
-        }
-      } catch (error) {
-        console.error('Failed to update measurement:', error);
+      const annotationRemovedEventDetail = csToolsEvent.detail;
+      const {
+        annotation: { annotationUID },
+      } = annotationRemovedEventDetail;
+      const measurement = measurementService.getMeasurement(annotationUID);
+      if (measurement) {
+        remove(annotationUID, annotationRemovedEventDetail);
       }
     } catch (error) {
-      console.error('Failed to remove measurement:', error);
+      console.warn('Failed to remove measurement:', error);
     }
   }
 
@@ -333,18 +323,9 @@ const connectToolsToMeasurementService = (servicesManager: AppTypes.ServicesMana
   return csTools3DVer1MeasurementSource;
 };
 
-const connectMeasurementServiceToTools = (
-  measurementService,
-  cornerstoneViewportService,
-  measurementSource
-) => {
+const connectMeasurementServiceToTools = (measurementService, cornerstoneViewportService) => {
   const { MEASUREMENT_REMOVED, MEASUREMENTS_CLEARED, MEASUREMENT_UPDATED, RAW_MEASUREMENT_ADDED } =
     measurementService.EVENTS;
-
-  const csTools3DVer1MeasurementSource = measurementService.getSource(
-    CORNERSTONE_3D_TOOLS_SOURCE_NAME,
-    CORNERSTONE_3D_TOOLS_SOURCE_VERSION
-  );
 
   measurementService.subscribe(MEASUREMENTS_CLEARED, ({ measurements }) => {
     if (!Object.keys(measurements).length) {
@@ -356,7 +337,6 @@ const connectMeasurementServiceToTools = (
       if (source.name !== CORNERSTONE_3D_TOOLS_SOURCE_NAME) {
         continue;
       }
-
       removeAnnotation(uid);
     }
   });
