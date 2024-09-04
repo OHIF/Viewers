@@ -1,8 +1,24 @@
 import { vec3 } from 'gl-matrix';
 import { metaData, utilities, Types as csTypes } from '@cornerstonejs/core';
+
 import { SCOORDTypes } from '../enums';
 
 const EPSILON = 1e-4;
+
+const getRenderableCoords = ({ GraphicData, ValueType, imageId }) => {
+  const renderableData = [];
+  if (ValueType === 'SCOORD3D') {
+    for (let i = 0; i < GraphicData.length; i += 3) {
+      renderableData.push([GraphicData[i], GraphicData[i + 1], GraphicData[i + 2]]);
+    }
+  } else {
+    for (let i = 0; i < GraphicData.length; i += 2) {
+      const worldPos = utilities.imageToWorldCoords(imageId, [GraphicData[i], GraphicData[i + 1]]);
+      renderableData.push(worldPos);
+    }
+  }
+  return renderableData;
+};
 
 function getRenderableData(GraphicType, GraphicData, ValueType, imageId) {
   let renderableData = [];
@@ -11,51 +27,23 @@ function getRenderableData(GraphicType, GraphicData, ValueType, imageId) {
     case SCOORDTypes.POINT:
     case SCOORDTypes.MULTIPOINT:
     case SCOORDTypes.POLYLINE: {
-      renderableData = [];
-
-      if (ValueType === 'SCOORD3D') {
-        for (let i = 0; i < GraphicData.length; i += 3) {
-          renderableData.push([GraphicData[i], GraphicData[i + 1], GraphicData[i + 2]]);
-        }
-      } else {
-        for (let i = 0; i < GraphicData.length; i += 2) {
-          const worldPos = utilities.imageToWorldCoords(imageId, [
-            GraphicData[i],
-            GraphicData[i + 1],
-          ]);
-          renderableData.push(worldPos);
-        }
-      }
-
+      renderableData = getRenderableCoords({ GraphicData, ValueType, imageId });
       break;
     }
     case SCOORDTypes.CIRCLE: {
-      const pointsWorld = [];
-
-      if (ValueType === 'SCOORD3D') {
-        for (let i = 0; i < GraphicData.length; i += 3) {
-          pointsWorld.push([GraphicData[i], GraphicData[i + 1], GraphicData[i + 2]]);
-        }
-      } else {
-        for (let i = 0; i < GraphicData.length; i += 2) {
-          const worldPos = utilities.imageToWorldCoords(imageId, [
-            GraphicData[i],
-            GraphicData[i + 1],
-          ]);
-          pointsWorld.push(worldPos);
-        }
-      }
-
+      const pointsWorld: csTypes.Point3[] = getRenderableCoords({
+        GraphicData,
+        ValueType,
+        imageId,
+      });
       // We do not have an explicit draw circle svg helper in Cornerstone3D at
       // this time, but we can use the ellipse svg helper to draw a circle, so
       // here we reshape the data for that purpose.
       const center = pointsWorld[0];
       const onPerimeter = pointsWorld[1];
-
       const radius = vec3.distance(center, onPerimeter);
 
       const imagePlaneModule = metaData.get('imagePlaneModule', imageId);
-
       if (!imagePlaneModule) {
         throw new Error('No imagePlaneModule found');
       }
@@ -70,14 +58,12 @@ function getRenderableData(GraphicType, GraphicData, ValueType, imageId) {
 
       // we need to get major/minor axis (which are both the same size major = minor)
 
-      // first axisStart
       const firstAxisStart = vec3.create();
       vec3.scaleAndAdd(firstAxisStart, center, columnCosines, radius);
 
       const firstAxisEnd = vec3.create();
       vec3.scaleAndAdd(firstAxisEnd, center, columnCosines, -radius);
 
-      // second axisStart
       const secondAxisStart = vec3.create();
       vec3.scaleAndAdd(secondAxisStart, center, rowCosines, radius);
 
@@ -98,22 +84,11 @@ function getRenderableData(GraphicType, GraphicData, ValueType, imageId) {
       // But Cornerstone3D points are ordered as top, bottom, left, right for the
       // ellipse so we need to identify if the majorAxis is horizontal or vertical
       // and then choose the correct points to use for the ellipse.
-
-      const pointsWorld: csTypes.Point3[] = [];
-
-      if (ValueType === 'SCOORD3D') {
-        for (let i = 0; i < GraphicData.length; i += 3) {
-          pointsWorld.push([GraphicData[i], GraphicData[i + 1], GraphicData[i + 2]]);
-        }
-      } else {
-        for (let i = 0; i < GraphicData.length; i += 2) {
-          const worldPos = utilities.imageToWorldCoords(imageId, [
-            GraphicData[i],
-            GraphicData[i + 1],
-          ]);
-          pointsWorld.push(worldPos);
-        }
-      }
+      const pointsWorld: csTypes.Point3[] = getRenderableCoords({
+        GraphicData,
+        ValueType,
+        imageId,
+      });
 
       const majorAxisStart = vec3.fromValues(...pointsWorld[0]);
       const majorAxisEnd = vec3.fromValues(...pointsWorld[1]);
