@@ -503,7 +503,6 @@ class SegmentationService extends PubSubService {
     const representationType = LABELMAP;
 
     segmentationId = segmentationId ?? segDisplaySet.displaySetInstanceUID;
-
     const defaultScheme = this._getDefaultSegmentationScheme();
 
     const referencedDisplaySetInstanceUID = segDisplaySet.referencedDisplaySetInstanceUID;
@@ -524,7 +523,6 @@ class SegmentationService extends PubSubService {
 
     const segmentationImageIds = derivedSegmentationImages.map(image => image.imageId);
     segDisplaySet.images = derivedSegmentationImages;
-    segDisplaySet.instances = derivedSegmentationImages;
 
     const segmentsInfo = segDisplaySet.segMetadata.data;
 
@@ -535,7 +533,8 @@ class SegmentationService extends PubSubService {
       type: representationType,
       label: segDisplaySet.SeriesDescription,
       colorLUTIndex: null,
-      FrameOfReferenceUID: segDisplaySet.FrameOfReferenceUID,
+      FrameOfReferenceUID:
+        segDisplaySet.FrameOfReferenceUID ?? segDisplaySet.instance.FrameOfReferenceUID,
       representationData: {
         [LABELMAP]: {
           imageIds: segmentationImageIds,
@@ -1119,9 +1118,6 @@ class SegmentationService extends PubSubService {
       return segment ? [...segment.color, 255] : [0, 0, 0, 0];
     }) as ColorLUT;
 
-    // Remove the debugger statement unless you specifically need it for debugging
-    // debugger;
-
     return colorLUT;
   };
 
@@ -1360,7 +1356,6 @@ class SegmentationService extends PubSubService {
             .getSegmentationRepresentations(viewportId)
             .map(rep => rep.segmentationRepresentationUID);
 
-    debugger;
     cstSegmentation.removeSegmentationRepresentationsFromViewport(viewportId, uids);
 
     this._broadcastEvent(this.EVENTS.SEGMENTATION_REPRESENTATION_REMOVED, {
@@ -1493,6 +1488,10 @@ class SegmentationService extends PubSubService {
   };
 
   public getLabelmapVolume = (segmentationId: string) => {
+    if (!this.segmentations?.[segmentationId]) {
+      return;
+    }
+
     const labelmapVolumeData = this.segmentations[segmentationId].representationData
       .Labelmap as LabelmapSegmentationDataVolume;
 

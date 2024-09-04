@@ -159,7 +159,6 @@ class CornerstoneCacheService {
     viewportType: Enums.ViewportType
   ): Promise<StackViewportData> {
     const overlayDisplaySets = displaySets.filter(ds => ds.isOverlayDisplaySet);
-
     for (const overlayDisplaySet of overlayDisplaySets) {
       if (overlayDisplaySet.load && overlayDisplaySet.load instanceof Function) {
         const { userAuthenticationService } = this.servicesManager.services;
@@ -169,14 +168,21 @@ class CornerstoneCacheService {
     }
 
     // Ensuring the first non-overlay `displaySet` is always the primary one
-    const StackViewportData = displaySets.map(ds => {
-      const { displaySetInstanceUID, StudyInstanceUID, isCompositeStack } = ds;
+    const StackViewportData = displaySets.map(displaySet => {
+      const { displaySetInstanceUID, StudyInstanceUID, isCompositeStack } = displaySet;
+
+      let stackImageIds = this.stackImageIds.get(displaySet.displaySetInstanceUID);
+
+      if (!stackImageIds) {
+        stackImageIds = this._getCornerstoneStackImageIds(displaySet, dataSource);
+        this.stackImageIds.set(displaySet.displaySetInstanceUID, stackImageIds);
+      }
 
       return {
         StudyInstanceUID,
         displaySetInstanceUID,
         isCompositeStack,
-        imageIds: ds.images.map(image => image.imageId),
+        imageIds: stackImageIds,
         initialImageIndex,
       };
     });

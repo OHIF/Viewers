@@ -6,6 +6,17 @@ import { useNavigate } from 'react-router-dom';
 
 const { sortStudyInstances, formatDate, createStudyBrowserTabs } = utils;
 
+const thumbnailNoImageModalities = [
+  'SR',
+  'SEG',
+  'SM',
+  'RTSTRUCT',
+  'RTPLAN',
+  'RTDOSE',
+  'DOC',
+  'OT',
+  'PMAP',
+];
 /**
  *
  * @param {*} param0
@@ -121,7 +132,12 @@ function PanelStudyBrowser({
       return;
     }
 
-    const currentDisplaySets = displaySetService.activeDisplaySets;
+    let currentDisplaySets = displaySetService.activeDisplaySets;
+    // filter non based on the list of modalities that are supported by cornerstone
+    currentDisplaySets = currentDisplaySets.filter(
+      ds => !thumbnailNoImageModalities.includes(ds.Modality)
+    );
+
     currentDisplaySets.forEach(async dSet => {
       const newImageSrcEntry = {};
       const displaySet = displaySetService.getDisplaySetByUID(dSet.displaySetInstanceUID);
@@ -336,8 +352,6 @@ function _mapDisplaySets(displaySets, thumbnailImageSrcMap) {
 
   return [...thumbnailDisplaySets, ...thumbnailNoImageDisplaySets];
 }
-
-const thumbnailNoImageModalities = ['SR', 'SEG', 'SM', 'RTSTRUCT', 'RTPLAN', 'RTDOSE'];
 
 function _getComponentType(ds) {
   if (thumbnailNoImageModalities.includes(ds.Modality) || ds?.unsupported) {
