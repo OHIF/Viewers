@@ -246,7 +246,7 @@ function OHIFCornerstoneRTViewport(props: withAppTypes) {
 
     return () => {
       // remove the segmentation representations if seg displayset changed
-      segmentationService.removeSegmentationRepresentationFromViewport(viewportId);
+      segmentationService.removeSegmentationRepresentationFromViewport({ viewportId });
 
       toolGroupService.destroyToolGroup(toolGroupId);
     };
@@ -257,7 +257,7 @@ function OHIFCornerstoneRTViewport(props: withAppTypes) {
 
     return () => {
       // remove the segmentation representations if seg displayset changed
-      segmentationService.removeSegmentationRepresentationFromViewport(viewportId);
+      segmentationService.removeSegmentationRepresentationFromViewport({ viewportId });
       referencedDisplaySetRef.current = null;
     };
   }, [rtDisplaySet]);

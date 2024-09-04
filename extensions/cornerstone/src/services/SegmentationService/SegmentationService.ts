@@ -1052,10 +1052,15 @@ class SegmentationService extends PubSubService {
 
     if (useExistingRepresentationIfExist && alreadyHasRepresentation) {
       const representation = representations[0];
-      cstSegmentation.state.addSegmentationRepresentationUIDToViewport(
-        viewportId,
-        representation.segmentationRepresentationUID
-      );
+      cstSegmentation.addSegmentationRepresentations(viewportId, [
+        {
+          type: representationType,
+          segmentationId,
+          options: {
+            segmentationRepresentationUID: representation.segmentationRepresentationUID,
+          },
+        },
+      ]);
 
       addedSegmentationRepresentationUID = representation.segmentationRepresentationUID;
     } else {
@@ -1337,23 +1342,26 @@ class SegmentationService extends PubSubService {
 
     requestAnimationFrame(animate);
   }
+  public removeSegmentationRepresentationFromViewport({
+    viewportId,
+    segmentationRepresentationUIDsIds,
+    segmentationId,
+  }: {
+    viewportId: string;
+    segmentationRepresentationUIDsIds?: string[];
+    segmentationId?: string;
+  }): void {
+    const uids =
+      segmentationRepresentationUIDsIds || segmentationId
+        ? cstSegmentation.state
+            .getSegmentationRepresentationsForSegmentation(segmentationId)
+            .map(rep => rep.segmentationRepresentationUID)
+        : cstSegmentation.state
+            .getSegmentationRepresentations(viewportId)
+            .map(rep => rep.segmentationRepresentationUID);
 
-  public removeSegmentationRepresentationFromViewport(
-    viewportId: string,
-    segmentationRepresentationUIDsIds?: string[]
-  ): void {
-    const uids = segmentationRepresentationUIDsIds || [];
-    if (!uids.length) {
-      const representations = cstSegmentation.state.getSegmentationRepresentations(viewportId);
-
-      if (!representations || !representations.length) {
-        return;
-      }
-
-      uids.push(...representations.map(rep => rep.segmentationRepresentationUID));
-    }
-
-    cstSegmentation.removeSegmentationRepresentations(viewportId, uids);
+    debugger;
+    cstSegmentation.removeSegmentationRepresentationsFromViewport(viewportId, uids);
 
     this._broadcastEvent(this.EVENTS.SEGMENTATION_REPRESENTATION_REMOVED, {
       segmentationRepresentationUIDs: uids,

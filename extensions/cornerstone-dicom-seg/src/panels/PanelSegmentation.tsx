@@ -93,7 +93,10 @@ export default function PanelSegmentation({
   };
 
   const onSegmentationDelete = (segmentationId: string) => {
-    segmentationService.remove(segmentationId);
+    segmentationService.removeSegmentationRepresentationFromViewport({
+      segmentationId,
+      viewportId: viewportGridService.getActiveViewportId(),
+    });
   };
 
   const onSegmentAdd = segmentationId => {

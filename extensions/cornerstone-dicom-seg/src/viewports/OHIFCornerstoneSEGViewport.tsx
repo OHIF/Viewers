@@ -177,7 +177,7 @@ function OHIFCornerstoneSEGViewport(props: withAppTypes) {
 
   useEffect(() => {
     // on new seg display set, remove all segmentations from all viewports
-    segmentationService.removeSegmentationRepresentationFromViewport(viewportId);
+    segmentationService.removeSegmentationRepresentationFromViewport({ viewportId });
 
     const { unsubscribe } = segmentationService.subscribe(
       segmentationService.EVENTS.SEGMENTATION_LOADING_COMPLETE,
@@ -239,7 +239,7 @@ function OHIFCornerstoneSEGViewport(props: withAppTypes) {
     }
     // always start fresh for this viewport since it is special type of viewport
     // that should only show one segmentation at a time.
-    segmentationService.removeSegmentationRepresentationFromViewport(viewportId);
+    segmentationService.removeSegmentationRepresentationFromViewport({ viewportId });
 
     // This creates a custom tool group which has the lifetime of this view
     // only, and does NOT interfere with currently displayed segmentations.
@@ -248,7 +248,7 @@ function OHIFCornerstoneSEGViewport(props: withAppTypes) {
     return () => {
       // remove the segmentation representations if seg displayset changed
       // e.g., another seg displayset is dragged into the viewport
-      segmentationService.removeSegmentationRepresentationFromViewport(viewportId);
+      segmentationService.removeSegmentationRepresentationFromViewport({ viewportId });
 
       // Only destroy the viewport specific implementation
       toolGroupService.destroyToolGroup(toolGroupId);
