@@ -336,7 +336,7 @@ export default class DICOMSRDisplayTool extends AnnotationTool {
     }
 
     const { annotationUID, data = {} } = annotation;
-    const { label } = data;
+    const { labels } = data;
     const { color } = options;
 
     let adaptedCanvasCoordinates = canvasCoordinates;
@@ -344,7 +344,7 @@ export default class DICOMSRDisplayTool extends AnnotationTool {
     if (typeof canvasCoordinatesAdapter === 'function') {
       adaptedCanvasCoordinates = canvasCoordinatesAdapter(canvasCoordinates);
     }
-    const textLines = this._getTextBoxLinesFromLabels(label);
+    const textLines = this._getTextBoxLinesFromLabels(labels);
     const canvasTextBoxCoords = utilities.drawing.getTextBoxCoordsCanvas(adaptedCanvasCoordinates);
 
     if (!annotation.data?.handles?.textBox?.worldPosition) {

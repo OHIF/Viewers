@@ -21,7 +21,6 @@ export const CodeNameCodeSequenceValues = {
   Finding: '121071',
   FindingSite: 'G-C0E3', // SRT
   FindingSiteSCT: '363698007', // SCT
-  CornerstoneFreeText: Cornerstone3DCodeScheme.codeValues.CORNERSTONEFREETEXT,
 };
 
 export const CodingSchemeDesignators = {
@@ -35,13 +34,10 @@ export const RelationshipType = {
   CONTAINS: 'CONTAINS',
 };
 
-export const CornerstoneFreeTextCodeValue = 'CORNERSTONEFREETEXT';
-
 const enums = {
   CodeNameCodeSequenceValues,
   CodingSchemeDesignators,
   RelationshipType,
-  CornerstoneFreeTextCodeValue,
   SCOORDTypes,
 };
 

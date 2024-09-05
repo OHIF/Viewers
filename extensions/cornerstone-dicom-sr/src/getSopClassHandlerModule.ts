@@ -1,18 +1,18 @@
 import { utils, classes, DisplaySetService, Types } from '@ohif/core';
+import { Enums as CSExtensionEnums } from '@ohif/extension-cornerstone';
+import { adaptersSR } from '@cornerstonejs/adapters';
+
 import addSRAnnotation from './utils/addSRAnnotation';
 import isRehydratable from './utils/isRehydratable';
 import { SOPClassHandlerName, SOPClassHandlerId } from './id';
-import {
-  CodeNameCodeSequenceValues,
-  CodingSchemeDesignators,
-  CornerstoneFreeTextCodeValue,
-} from './enums';
+import { CodeNameCodeSequenceValues, CodingSchemeDesignators } from './enums';
 
 const { sopClassDictionary } = utils;
+const { CORNERSTONE_3D_TOOLS_SOURCE_NAME, CORNERSTONE_3D_TOOLS_SOURCE_VERSION } = CSExtensionEnums;
+const { ImageSet, MetadataProvider: metadataProvider } = classes;
+const { CodeScheme: Cornerstone3DCodeScheme } = adaptersSR.Cornerstone3D;
 
 type InstanceMetadata = Types.InstanceMetadata;
-
-const { ImageSet, MetadataProvider: metadataProvider } = classes;
 
 /**
  * TODO
@@ -28,9 +28,6 @@ const sopClassUids = [
   sopClassDictionary.Comprehensive3DSR,
   // sopClassDictionary.MammographyCADSR,
 ];
-
-const CORNERSTONE_3D_TOOLS_SOURCE_NAME = 'Cornerstone3DTools';
-const CORNERSTONE_3D_TOOLS_SOURCE_VERSION = '0.1';
 
 const validateSameStudyUID = (uid: string, instances): void => {
   instances.forEach(it => {
@@ -230,27 +227,34 @@ function _checkIfCanAddMeasurementsToDisplaySet(
     measurement => measurement.loaded === false
   );
 
-  /** All measurements were loaded */
-  if (unloadedMeasurements.length === 0) {
+  if (
+    unloadedMeasurements.length === 0 ||
+    !(newDisplaySet instanceof ImageSet) ||
+    newDisplaySet.unsupported
+  ) {
     return;
   }
 
-  if (!(newDisplaySet instanceof ImageSet)) {
-    return;
+  const { sopClassUids } = newDisplaySet;
+  // Create a Set for faster lookups
+  const sopClassUidSet = new Set(sopClassUids);
+
+  // Create a Map to efficiently look up ImageIds by SOPInstanceUID and frame number
+  const imageIdMap = new Map<string, string>();
+  const imageIds = dataSource.getImageIdsForDisplaySet(newDisplaySet);
+
+  for (const imageId of imageIds) {
+    const { SOPInstanceUID, frameNumber } = metadataProvider.getUIDsFromImageID(imageId);
+    const key = `${SOPInstanceUID}:${frameNumber || 1}`;
+    imageIdMap.set(key, imageId);
   }
 
-  if (newDisplaySet.unsupported) {
-    return;
-  }
-
-  const { sopClassUids, images } = newDisplaySet;
-
-  /** Check correct SOPClassUID */
+  // Filter unloaded measurements based on SOPClassUID
   unloadedMeasurements = unloadedMeasurements.filter(measurement =>
     measurement.coords.some(coord => {
       if (coord.ReferencedSOPSequence === undefined && coord.ReferencedFrameOfReferenceSequence) {
-        for (let i = 0; i < images.length; ++i) {
-          const imageMetadata = images[i];
+        for (const [key, imageId] of imageIdMap) {
+          const imageMetadata = metadataProvider.get('instance', imageId);
           if (imageMetadata.FrameOfReferenceUID !== coord.ReferencedFrameOfReferenceSequence) {
             continue;
           }
@@ -271,9 +275,11 @@ function _checkIfCanAddMeasurementsToDisplaySet(
             continue;
           }
 
+          const [SOPInstanceUID, frameNumber] = key.split(':');
           coord.ReferencedSOPSequence = {
             ReferencedSOPClassUID: imageMetadata.SOPClassUID,
-            ReferencedSOPInstanceUID: imageMetadata.SOPInstanceUID,
+            ReferencedSOPInstanceUID: SOPInstanceUID,
+            ReferencedFrameNumber: frameNumber !== '1' ? parseInt(frameNumber, 10) : undefined,
           };
 
           break;
@@ -282,64 +288,54 @@ function _checkIfCanAddMeasurementsToDisplaySet(
 
       return (
         coord.ReferencedSOPSequence &&
-        sopClassUids.includes(coord.ReferencedSOPSequence.ReferencedSOPClassUID)
+        sopClassUidSet.has(coord.ReferencedSOPSequence.ReferencedSOPClassUID)
       );
     })
   );
 
   if (unloadedMeasurements.length === 0) {
-    /** New displaySet isn't the correct SOPClassso can't contain the referenced images */
     return;
   }
 
-  const SOPInstanceUIDs = [];
-  unloadedMeasurements.forEach(measurement => {
-    measurement.coords.forEach(({ ReferencedSOPSequence }) => {
-      const SOPInstanceUID = ReferencedSOPSequence.ReferencedSOPInstanceUID;
-      if (!SOPInstanceUIDs.includes(SOPInstanceUID)) {
-        SOPInstanceUIDs.push(SOPInstanceUID);
-      }
-    });
-  });
+  for (let j = unloadedMeasurements.length - 1; j >= 0; j--) {
+    let measurement = unloadedMeasurements[j];
 
-  const imageIds = dataSource.getImageIdsForDisplaySet(newDisplaySet);
-  for (const imageId of imageIds) {
-    const { SOPInstanceUID, frameNumber } = metadataProvider.getUIDsFromImageID(imageId);
-    if (SOPInstanceUIDs.includes(SOPInstanceUID)) {
-      for (let j = unloadedMeasurements.length - 1; j >= 0; j--) {
-        let measurement = unloadedMeasurements[j];
+    const onBeforeSRAddMeasurement = customizationService.getModeCustomization(
+      'onBeforeSRAddMeasurement'
+    )?.value;
 
-        const onBeforeSRAddMeasurement = customizationService.getModeCustomization(
-          'onBeforeSRAddMeasurement'
-        )?.value;
+    if (typeof onBeforeSRAddMeasurement === 'function') {
+      measurement = onBeforeSRAddMeasurement({
+        measurement,
+        StudyInstanceUID: srDisplaySet.StudyInstanceUID,
+        SeriesInstanceUID: srDisplaySet.SeriesInstanceUID,
+      });
+    }
 
-        if (typeof onBeforeSRAddMeasurement === 'function') {
-          measurement = onBeforeSRAddMeasurement({
-            measurement,
-            StudyInstanceUID: srDisplaySet.StudyInstanceUID,
-            SeriesInstanceUID: srDisplaySet.SeriesInstanceUID,
-          });
-        }
+    const referencedSOPSequence = measurement.coords[0].ReferencedSOPSequence;
+    if (!referencedSOPSequence) {
+      continue;
+    }
 
-        if (_measurementReferencesSOPInstanceUID(measurement, SOPInstanceUID, frameNumber)) {
-          const frame =
-            (measurement.coords[0].ReferencedSOPSequence &&
-              measurement.coords[0].ReferencedSOPSequence?.ReferencedFrameNumber) ||
-            1;
+    const { ReferencedSOPInstanceUID } = referencedSOPSequence;
+    const frame = referencedSOPSequence.ReferencedFrameNumber || 1;
+    const key = `${ReferencedSOPInstanceUID}:${frame}`;
+    const imageId = imageIdMap.get(key);
 
-          addSRAnnotation(measurement, imageId, frame);
+    if (
+      imageId &&
+      _measurementReferencesSOPInstanceUID(measurement, ReferencedSOPInstanceUID, frame)
+    ) {
+      addSRAnnotation(measurement, imageId, frame);
 
-          /** Update measurement properties */
-          measurement.loaded = true;
-          measurement.imageId = imageId;
-          measurement.displaySetInstanceUID = newDisplaySet.displaySetInstanceUID;
-          measurement.ReferencedSOPInstanceUID =
-            measurement.coords[0].ReferencedSOPSequence.ReferencedSOPInstanceUID;
-          measurement.frameNumber = frame;
+      // Update measurement properties
+      measurement.loaded = true;
+      measurement.imageId = imageId;
+      measurement.displaySetInstanceUID = newDisplaySet.displaySetInstanceUID;
+      measurement.ReferencedSOPInstanceUID = ReferencedSOPInstanceUID;
+      measurement.frameNumber = frame;
 
-          unloadedMeasurements.splice(j, 1);
-        }
-      }
+      unloadedMeasurements.splice(j, 1);
     }
   }
 }
@@ -605,10 +601,10 @@ function _processNonGeometricallyDefinedMeasurement(mergedContentSequence) {
     CodingSchemeDesignators.CornerstoneCodeSchemes.includes(
       finding.ConceptCodeSequence.CodingSchemeDesignator
     ) &&
-    finding.ConceptCodeSequence.CodeValue === CodeNameCodeSequenceValues.CornerstoneFreeText
+    finding.ConceptCodeSequence.CodeValue === Cornerstone3DCodeScheme.codeValues.CORNERSTONEFREETEXT
   ) {
     measurement.labels.push({
-      label: CornerstoneFreeTextCodeValue,
+      label: Cornerstone3DCodeScheme.codeValues.CORNERSTONEFREETEXT,
       value: finding.ConceptCodeSequence.CodeMeaning,
     });
   }
@@ -620,12 +616,13 @@ function _processNonGeometricallyDefinedMeasurement(mergedContentSequence) {
         CodingSchemeDesignators.CornerstoneCodeSchemes.includes(
           FindingSite.ConceptCodeSequence.CodingSchemeDesignator
         ) &&
-        FindingSite.ConceptCodeSequence.CodeValue === CodeNameCodeSequenceValues.CornerstoneFreeText
+        FindingSite.ConceptCodeSequence.CodeValue ===
+          Cornerstone3DCodeScheme.codeValues.CORNERSTONEFREETEXT
     );
 
     if (cornerstoneFreeTextFindingSite) {
       measurement.labels.push({
-        label: CornerstoneFreeTextCodeValue,
+        label: Cornerstone3DCodeScheme.codeValues.CORNERSTONEFREETEXT,
         value: cornerstoneFreeTextFindingSite.ConceptCodeSequence.CodeMeaning,
       });
     }

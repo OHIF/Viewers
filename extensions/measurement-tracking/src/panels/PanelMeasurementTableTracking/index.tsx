@@ -4,9 +4,10 @@ import { StudySummary, MeasurementTable, useViewportGrid, ActionButtons } from '
 import { DicomMetadataStore, utils } from '@ohif/core';
 import { useDebounce } from '@hooks';
 import { useAppConfig } from '@state';
-import { useTrackedMeasurements } from '../../getContextModule';
 import debounce from 'lodash.debounce';
 import { useTranslation } from 'react-i18next';
+
+import { useTrackedMeasurements } from '../../getContextModule';
 
 const { downloadCSVReport } = utils;
 const { formatDate } = utils;
@@ -37,44 +38,49 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }: wi
   useEffect(() => {
     const measurements = measurementService.getMeasurements();
     const mappedMeasurements = measurements.map(m =>
-      _mapMeasurementToDisplay(m, measurementService.VALUE_TYPES, displaySetService)
+      _mapMeasurementToDisplay(m, displaySetService)
     );
     setDisplayMeasurements(mappedMeasurements);
     // eslint-ignore-next-line
-  }, [measurementService, trackedStudy, trackedSeries, debouncedMeasurementChangeTimestamp]);
-
-  const updateDisplayStudySummary = async () => {
-    if (trackedMeasurements.matches('tracking')) {
-      const StudyInstanceUID = trackedStudy;
-      const studyMeta = DicomMetadataStore.getStudy(StudyInstanceUID);
-      const instanceMeta = studyMeta.series[0].instances[0];
-      const { StudyDate, StudyDescription } = instanceMeta;
-
-      const modalities = new Set();
-      studyMeta.series.forEach(series => {
-        if (trackedSeries.includes(series.SeriesInstanceUID)) {
-          modalities.add(series.instances[0].Modality);
-        }
-      });
-      const modality = Array.from(modalities).join('/');
-
-      if (displayStudySummary.key !== StudyInstanceUID) {
-        setDisplayStudySummary({
-          key: StudyInstanceUID,
-          date: StudyDate, // TODO: Format: '07-Sep-2010'
-          modality,
-          description: StudyDescription,
-        });
-      }
-    } else if (trackedStudy === '' || trackedStudy === undefined) {
-      setDisplayStudySummary(DISPLAY_STUDY_SUMMARY_INITIAL_VALUE);
-    }
-  };
+  }, [
+    measurementService,
+    displaySetService,
+    trackedStudy,
+    trackedSeries,
+    debouncedMeasurementChangeTimestamp,
+  ]);
 
   // ~~ DisplayStudySummary
   useEffect(() => {
+    const updateDisplayStudySummary = async () => {
+      if (trackedMeasurements.matches('tracking')) {
+        const StudyInstanceUID = trackedStudy;
+        const studyMeta = DicomMetadataStore.getStudy(StudyInstanceUID);
+        const instanceMeta = studyMeta.series[0].instances[0];
+        const { StudyDate, StudyDescription } = instanceMeta;
+
+        const modalities = new Set();
+        studyMeta.series.forEach(series => {
+          if (trackedSeries.includes(series.SeriesInstanceUID)) {
+            modalities.add(series.instances[0].Modality);
+          }
+        });
+        const modality = Array.from(modalities).join('/');
+
+        if (displayStudySummary.key !== StudyInstanceUID) {
+          setDisplayStudySummary({
+            key: StudyInstanceUID,
+            date: StudyDate, // TODO: Format: '07-Sep-2010'
+            modality,
+            description: StudyDescription,
+          });
+        }
+      } else if (trackedStudy === '' || trackedStudy === undefined) {
+        setDisplayStudySummary(DISPLAY_STUDY_SUMMARY_INITIAL_VALUE);
+      }
+    };
     updateDisplayStudySummary();
-  }, [displayStudySummary.key, trackedMeasurements, trackedStudy, updateDisplayStudySummary]);
+  }, [displayStudySummary.key, trackedSeries, trackedMeasurements, trackedStudy]);
 
   // TODO: Better way to consolidated, debounce, check on change?
   // Are we exposing the right API for measurementService?
@@ -114,13 +120,11 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }: wi
     const trackedMeasurements = measurements.filter(
       m => trackedStudy === m.referenceStudyUID && trackedSeries.includes(m.referenceSeriesUID)
     );
-
-    downloadCSVReport(trackedMeasurements, measurementService);
+    downloadCSVReport(trackedMeasurements);
   }
 
   const jumpToImage = ({ uid, isActive }) => {
     measurementService.jumpToMeasurement(viewportGrid.activeViewportId, uid);
-
     onMeasurementItemClickHandler({ uid, isActive });
   };
 
@@ -149,7 +153,6 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }: wi
     if (!isActive) {
       const measurements = [...displayMeasurements];
       const measurement = measurements.find(m => m.uid === uid);
-
       measurements.forEach(m => (m.isActive = m.uid !== uid ? false : true));
       measurement.isActive = true;
       setDisplayMeasurements(measurements);
@@ -170,14 +173,12 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }: wi
       trackedStudy === dm.referenceStudyUID &&
       trackedSeries.includes(dm.referenceSeriesUID)
   );
-
   const nonAcquisitionMeasurements = displayMeasurements.filter(
     dm =>
       dm.referencedImageId == null ||
       trackedStudy !== dm.referenceStudyUID ||
       trackedSeries.includes(dm.referenceSeriesUID)
   );
-
   const disabled =
     additionalFindings.length === 0 &&
     displayMeasurementsWithoutFindings.length === 0 &&
@@ -262,20 +263,12 @@ PanelMeasurementTableTracking.propTypes = {
 };
 
 // TODO: This could be a measurementService mapper
-function _mapMeasurementToDisplay(measurement, types, displaySetService) {
-  const { referenceStudyUID, referenceSeriesUID, SOPInstanceUID } = measurement;
+function _mapMeasurementToDisplay(measurement, displaySetService) {
+  const { referenceSeriesUID } = measurement;
 
   // TODO: We don't deal with multiframe well yet, would need to update
-  // This in OHIF-312 when we add FrameIndex to measurements.
-
-  const instance = DicomMetadataStore.getInstance(
-    referenceStudyUID,
-    referenceSeriesUID,
-    SOPInstanceUID
-  );
-
+  // This in OHIF-312 when we add FrameIndex to measurements
   const displaySets = displaySetService.getDisplaySetsForSeries(referenceSeriesUID);
-
   if (!displaySets[0]?.instances) {
     throw new Error('The tracked measurements panel should only be tracking "stack" displaySets.');
   }

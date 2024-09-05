@@ -3,14 +3,12 @@ import OHIF, { DicomMetadataStore } from '@ohif/core';
 import getLabelFromDCMJSImportedToolData from './getLabelFromDCMJSImportedToolData';
 import { adaptersSR } from '@cornerstonejs/adapters';
 import { annotation as CsAnnotation } from '@cornerstonejs/tools';
-const { locking } = CsAnnotation;
+import { Enums as CSExtensionEnums } from '@ohif/extension-cornerstone';
 
+const { locking } = CsAnnotation;
 const { guid } = OHIF.utils;
 const { MeasurementReport, CORNERSTONE_3D_TAG } = adaptersSR.Cornerstone3D;
-
-const CORNERSTONE_3D_TOOLS_SOURCE_NAME = 'Cornerstone3DTools';
-const CORNERSTONE_3D_TOOLS_SOURCE_VERSION = '0.1';
-
+const { CORNERSTONE_3D_TOOLS_SOURCE_NAME, CORNERSTONE_3D_TOOLS_SOURCE_VERSION } = CSExtensionEnums;
 const supportedLegacyCornerstoneTags = ['cornerstoneTools@^4.0.0'];
 
 const convertCode = (codingValues, code) => {

@@ -20,7 +20,7 @@ const getRenderableCoords = ({ GraphicData, ValueType, imageId }) => {
   return renderableData;
 };
 
-function getRenderableData(GraphicType, GraphicData, ValueType, imageId) {
+function getRenderableData({ GraphicType, GraphicData, ValueType, imageId }) {
   let renderableData = [];
 
   switch (GraphicType) {

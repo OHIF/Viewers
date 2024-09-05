@@ -7,59 +7,49 @@ import toolNames from '../tools/toolNames';
 export default function addSRAnnotation(measurement, imageId, frameNumber) {
   let toolName = toolNames.DICOMSRDisplay;
 
-  const measurementData = {
-    TrackingUniqueIdentifier: measurement.TrackingUniqueIdentifier,
-    renderableData: {},
-    labels: measurement.labels,
-    imageId,
-  };
+  const renderableData = measurement.coords.reduce((acc, coordProps) => {
+    acc[coordProps.GraphicType] = acc[coordProps.GraphicType] || [];
+    acc[coordProps.GraphicType].push(getRenderableData({ ...coordProps, imageId }));
+    return acc;
+  }, {});
 
-  measurement.coords.forEach(coord => {
-    const { GraphicType, GraphicData, ValueType } = coord;
-
-    if (measurementData.renderableData[GraphicType] === undefined) {
-      measurementData.renderableData[GraphicType] = [];
-    }
-
-    measurementData.renderableData[GraphicType].push(
-      getRenderableData(GraphicType, GraphicData, ValueType, imageId)
-    );
-  });
-
-  const { ValueType, GraphicType } = measurement.coords[0];
+  const { TrackingUniqueIdentifier } = measurement;
+  const { ValueType: valueType, GraphicType: graphicType } = measurement.coords[0];
+  const graphicTypePoints = renderableData[graphicType];
 
   /** TODO: Read the tool name from the DICOM SR identification type in the future. */
-  if (ValueType === 'SCOORD3D') {
+  if (valueType === 'SCOORD3D') {
     toolName = toolNames.SCOORD3DPoint;
   }
 
   const imagePlaneModule = metaData.get('imagePlaneModule', imageId);
 
   const SRAnnotation: Types.Annotation = {
-    annotationUID: measurement.TrackingUniqueIdentifier,
+    annotationUID: TrackingUniqueIdentifier,
     highlighted: false,
     isLocked: false,
     invalidated: false,
     metadata: {
-      toolName: toolName,
-      valueType: ValueType,
-      graphicType: GraphicType,
+      toolName,
+      valueType,
+      graphicType,
       FrameOfReferenceUID: imagePlaneModule.frameOfReferenceUID,
       referencedImageId: imageId,
-      /** Used by ProbeTool */
-      cameraFocalPoint: measurementData.renderableData[GraphicType][0][0],
+      /** Used by SCOORD3DPoint */
+      cameraFocalPoint: toolName === toolNames.SCOORD3DPoint ? graphicTypePoints[0][0] : undefined,
     },
     data: {
-      label: measurement.labels[0].value,
+      label: measurement.labels?.[0]?.value || undefined,
       handles: {
         textBox: measurement.textBox ?? {},
-        points: measurementData.renderableData[GraphicType][0],
+        points: graphicTypePoints[0],
       },
       cachedStats: {},
-      TrackingUniqueIdentifier: measurementData.TrackingUniqueIdentifier,
       frameNumber,
       /** Used by DICOMSRDisplayTool */
-      renderableData: measurementData.renderableData,
+      renderableData,
+      TrackingUniqueIdentifier,
+      labels: measurement.labels,
     },
   };
 

@@ -1,18 +1,16 @@
 import { eventTarget } from '@cornerstonejs/core';
 import { Enums, annotation } from '@cornerstonejs/tools';
 import { DicomMetadataStore } from '@ohif/core';
+
+import * as CSExtensionEnums from './enums';
 import { toolNames } from './initCornerstoneTools';
 import { onCompletedCalibrationLine } from './tools/CalibrationLineTool';
-
 import measurementServiceMappingsFactory from './utils/measurementServiceMappings/measurementServiceMappingsFactory';
 import getSOPInstanceAttributes from './utils/measurementServiceMappings/utils/getSOPInstanceAttributes';
 
+const { CORNERSTONE_3D_TOOLS_SOURCE_NAME, CORNERSTONE_3D_TOOLS_SOURCE_VERSION } = CSExtensionEnums;
 const { removeAnnotation } = annotation.state;
-
 const csToolsEvents = Enums.Events;
-
-const CORNERSTONE_3D_TOOLS_SOURCE_NAME = 'Cornerstone3DTools';
-const CORNERSTONE_3D_TOOLS_SOURCE_VERSION = '0.1';
 
 const initMeasurementService = (
   measurementService,
