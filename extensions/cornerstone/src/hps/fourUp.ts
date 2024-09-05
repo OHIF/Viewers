@@ -26,6 +26,23 @@ export const fourUp = {
       ],
     },
   },
+  overlaySelectors: {
+    appLabelmap: {
+      matchingRules: [
+        {
+          weight: 1,
+          attribute: 'FrameOfReferenceUID',
+          from: 'segmentation',
+          constraint: {
+            equals: {
+              attribute: 'FrameOfReferenceUID',
+              from: 'viewport',
+            },
+          },
+        },
+      ],
+    },
+  },
   stages: [
     {
       id: 'fourUpStage',
@@ -63,6 +80,12 @@ export const fourUp = {
               id: 'mprDisplaySet',
             },
           ],
+          overlays: [
+            {
+              id: 'appLabelmap',
+              options: {},
+            },
+          ],
         },
         {
           viewportOptions: {
@@ -82,6 +105,14 @@ export const fourUp = {
                   MR: 'MR-Default',
                   default: 'CT-Bone',
                 },
+              },
+            },
+          ],
+          overlays: [
+            {
+              id: 'appLabelmap',
+              options: {
+                type: 'surface',
               },
             },
           ],
@@ -109,6 +140,12 @@ export const fourUp = {
           displaySets: [
             {
               id: 'mprDisplaySet',
+            },
+          ],
+          overlays: [
+            {
+              id: 'appLabelmap',
+              options: {},
             },
           ],
         },
@@ -135,6 +172,12 @@ export const fourUp = {
           displaySets: [
             {
               id: 'mprDisplaySet',
+            },
+          ],
+          overlays: [
+            {
+              id: 'appLabelmap',
+              options: {},
             },
           ],
         },

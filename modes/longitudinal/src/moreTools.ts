@@ -46,7 +46,7 @@ const moreTools = [
           label: 'Rotate Right',
           tooltip: 'Rotate +90',
           commands: 'rotateViewportCW',
-          evaluate: 'evaluate.action',
+          evaluate: ['evaluate.action', 'evaluate.action.not.video'],
         }),
         createButton({
           id: 'flipHorizontal',
@@ -54,7 +54,11 @@ const moreTools = [
           label: 'Flip Horizontal',
           tooltip: 'Flip Horizontally',
           commands: 'flipViewportHorizontal',
-          evaluate: ['evaluate.viewportProperties.toggle', 'evaluate.not3D'],
+          evaluate: [
+            'evaluate.viewportProperties.toggle',
+            'evaluate.not3D',
+            'evaluate.action.not.video',
+          ],
         }),
         createButton({
           id: 'ImageSliceSync',
@@ -73,7 +77,11 @@ const moreTools = [
               commandOptions: { toggledState: true },
             },
           },
-          evaluate: ['evaluate.cornerstone.synchronizer', 'evaluate.not3D'],
+          evaluate: [
+            'evaluate.cornerstone.synchronizer',
+            'evaluate.not3D',
+            'evaluate.action.not.video',
+          ],
         }),
         createButton({
           id: 'ReferenceLines',
@@ -85,7 +93,7 @@ const moreTools = [
             [ViewportGridService.EVENTS.ACTIVE_VIEWPORT_ID_CHANGED]: ReferenceLinesListeners,
             [ViewportGridService.EVENTS.VIEWPORTS_READY]: ReferenceLinesListeners,
           },
-          evaluate: 'evaluate.cornerstoneTool.toggle',
+          evaluate: ['evaluate.cornerstoneTool.toggle', 'evaluate.action.not.video'],
         }),
         createButton({
           id: 'ImageOverlayViewer',
@@ -93,7 +101,7 @@ const moreTools = [
           label: 'Image Overlay',
           tooltip: 'Toggle Image Overlay',
           commands: 'toggleEnabledDisabledToolbar',
-          evaluate: 'evaluate.cornerstoneTool.toggle',
+          evaluate: ['evaluate.cornerstoneTool.toggle', 'evaluate.action.not.video'],
         }),
         createButton({
           id: 'StackScroll',
@@ -109,7 +117,7 @@ const moreTools = [
           label: 'Invert',
           tooltip: 'Invert Colors',
           commands: 'invertViewport',
-          evaluate: 'evaluate.viewportProperties.toggle',
+          evaluate: ['evaluate.viewportProperties.toggle', 'evaluate.action.not.video'],
         }),
         createButton({
           id: 'Probe',
@@ -125,7 +133,7 @@ const moreTools = [
           label: 'Cine',
           tooltip: 'Cine',
           commands: 'toggleCine',
-          evaluate: ['evaluate.cine', 'evaluate.not3D'],
+          evaluate: ['evaluate.cine', 'evaluate.not3D', 'evaluate.action.not.video'],
         }),
         createButton({
           id: 'Angle',
@@ -149,7 +157,7 @@ const moreTools = [
           label: 'Zoom-in',
           tooltip: 'Zoom-in',
           commands: setToolActiveToolbar,
-          evaluate: 'evaluate.cornerstoneTool',
+          evaluate: ['evaluate.cornerstoneTool', 'evaluate.action.not.video'],
         }),
         createButton({
           id: 'CalibrationLine',
@@ -157,7 +165,7 @@ const moreTools = [
           label: 'Calibration',
           tooltip: 'Calibration Line',
           commands: setToolActiveToolbar,
-          evaluate: 'evaluate.cornerstoneTool',
+          evaluate: ['evaluate.cornerstoneTool', 'evaluate.action.not.video'],
         }),
         createButton({
           id: 'TagBrowser',
@@ -172,7 +180,10 @@ const moreTools = [
           label: 'Magnify Probe',
           tooltip: 'Magnify Probe',
           commands: 'toggleActiveDisabledToolbar',
-          evaluate: 'evaluate.cornerstoneTool.toggle.ifStrictlyDisabled',
+          evaluate: [
+            'evaluate.cornerstoneTool.toggle.ifStrictlyDisabled',
+            'evaluate.action.not.video',
+          ],
         }),
         createButton({
           id: 'UltrasoundDirectionalTool',
@@ -188,7 +199,7 @@ const moreTools = [
           label: 'Window Level Region',
           tooltip: 'Window Level Region',
           commands: setToolActiveToolbar,
-          evaluate: 'evaluate.cornerstoneTool',
+          evaluate: ['evaluate.cornerstoneTool', 'evaluate.action.not.video'],
         }),
       ],
     },

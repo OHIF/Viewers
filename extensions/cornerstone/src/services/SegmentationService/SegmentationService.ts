@@ -1770,7 +1770,7 @@ class SegmentationService extends PubSubService {
     const segmentInfo = this._getSegmentInfo(segmentation, segmentIndex);
 
     if (segmentInfo === undefined) {
-      throw new Error(`Segment ${segmentIndex} not yet added to segmentation: ${segmentationId}`);
+      return;
     }
 
     segmentInfo.isVisible = isVisible;

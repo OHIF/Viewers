@@ -6,6 +6,26 @@ const getToggledClassName = (isToggled: boolean) => {
     : '!text-common-bright hover:!bg-primary-dark hover:text-primary-light';
 };
 
+const toolsNotSupportedByVideoViewport = ['LivewireContour'];
+// Todo: this is really ugly but we don't have a standard way for id of actions
+const actionsNotSupportedByVideoViewport = [
+  'rotate-right',
+  'flipHorizontal',
+  'ImageSliceSync',
+  'ReferenceLines',
+  'ImageOverlayViewer',
+  'StackScroll',
+  'invert',
+  'Probe',
+  'Cine',
+  'Angle',
+  'CobbAngle',
+  'Magnify',
+  'CalibrationLine',
+  'AdvancedMagnify',
+  'WindowLevelRegion',
+];
+
 export default function getToolbarModule({ commandsManager, servicesManager }: withAppTypes) {
   const {
     toolGroupService,
@@ -21,8 +41,28 @@ export default function getToolbarModule({ commandsManager, servicesManager }: w
     // functions/helpers to be used by the toolbar buttons to decide if they should
     // enabled or not
     {
+      name: 'evaluate.action.not.video',
+      evaluate: ({ viewportId, button }) => {
+        if (actionsNotSupportedByVideoViewport.includes(button.id)) {
+          return {
+            disabled: true,
+            className: '!text-common-bright ohif-disabled',
+            disabledText: 'Not available on the current viewport',
+          };
+        }
+      },
+    },
+    {
       name: 'evaluate.cornerstoneTool',
       evaluate: ({ viewportId, button, toolNames, disabledText }) => {
+        if (toolsNotSupportedByVideoViewport.includes(button.id)) {
+          return {
+            disabled: true,
+            className: '!text-common-bright ohif-disabled',
+            disabledText: disabledText ?? 'Not available on the current viewport',
+          };
+        }
+
         const toolGroup = toolGroupService.getToolGroupForViewport(viewportId);
 
         if (!toolGroup) {

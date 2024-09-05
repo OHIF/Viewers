@@ -309,7 +309,8 @@ export default async function init({
       }
 
       // get the overlay rule for this viewport from the hanging protocol
-      const overlayRule = hangingProtocolService.getOverlayRuleForViewport(viewportId);
+      const { matchingRules: overlayRule, overlay } =
+        hangingProtocolService.getOverlayRuleForViewport(viewportId) || {};
       if (!overlayRule?.length || !segmentations?.length) {
         continue;
       }
@@ -351,12 +352,11 @@ export default async function init({
     // so that the overlay is visible or hidden accordingly
   };
 
+  viewportGridService.subscribe(gridStateChange, consolidateSegmentationRepresentations);
   cornerstoneViewportService.subscribe(
     cornerstoneViewportService.EVENTS.VIEWPORT_DATA_CHANGED,
     consolidateSegmentationRepresentations
   );
-
-  viewportGridService.subscribe(gridStateChange, consolidateSegmentationRepresentations);
 
   [segRepAdded].forEach(event => {
     segmentationService.subscribe(event, consolidateSegmentationRepresentations);

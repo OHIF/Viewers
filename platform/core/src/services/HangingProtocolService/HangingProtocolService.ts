@@ -794,7 +794,7 @@ export default class HangingProtocolService extends PubSubService {
 
     const { matchingRules } = overlaySelector;
 
-    return matchingRules;
+    return { matchingRules, overlay };
   }
 
   public runMatchingRules(metadataArray, matchingRules, options) {

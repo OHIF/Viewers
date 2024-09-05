@@ -68,7 +68,7 @@ function calculateSuvPeak({ labelmapProps, referenceVolumeProps, annotations, se
       return ijk;
     });
 
-    boundsIJK = utilities.boundingBox.getBoundingBoxAroundShape(rectangleCornersIJK, dimensions);
+    boundsIJK = cstUtils.boundingBox.getBoundingBoxAroundShape(rectangleCornersIJK, dimensions);
   }
 
   let max = 0;
