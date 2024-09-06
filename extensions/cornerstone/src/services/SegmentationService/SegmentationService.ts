@@ -9,6 +9,7 @@ import {
   getEnabledElementByViewportId,
   imageLoader,
   Types,
+  VolumeViewport,
 } from '@cornerstonejs/core';
 import {
   Enums as csToolsEnums,
@@ -244,39 +245,7 @@ class SegmentationService extends PubSubService {
 
     segmentation.segments[segmentIndex] = null;
 
-    // Get volume and delete the labels
-    // Todo: handle other segmentations other than labelmap
-    const labelmapVolume = this.getLabelmapVolume(segmentationId);
-
-    const { dimensions } = labelmapVolume;
-    const voxelManager = labelmapVolume.voxelManager;
-
-    // Set all values of this segment to zero and get which frames have been edited.
-    const frameLength = dimensions[0] * dimensions[1];
-    const numFrames = dimensions[2];
-
-    let voxelIndex = 0;
-
-    const modifiedFrames = new Set() as Set<number>;
-
-    for (let frame = 0; frame < numFrames; frame++) {
-      for (let p = 0; p < frameLength; p++) {
-        if (voxelManager.getAtIndex(voxelIndex) === segmentIndex) {
-          voxelManager.setAtIndex(voxelIndex, 0);
-          modifiedFrames.add(frame);
-        }
-
-        voxelIndex++;
-      }
-    }
-
-    const modifiedFramesArray: number[] = Array.from(modifiedFrames);
-
-    // Trigger texture update of modified segmentation frames.
-    cstSegmentation.triggerSegmentationEvents.triggerSegmentationDataModified(
-      segmentationId,
-      modifiedFramesArray
-    );
+    cstSegmentation.helpers.clearSegmentValue(segmentationId, segmentIndex);
 
     if (segmentation.activeSegmentIndex === segmentIndex) {
       const segmentIndices = Object.keys(segmentation.segments);
@@ -877,20 +846,32 @@ class SegmentationService extends PubSubService {
   ): void {
     const center = this._getSegmentCenter(segmentationId, segmentIndex);
 
-    if (!center?.world) {
+    if (!center) {
       return;
     }
 
-    const { world } = center;
+    const { world, image } = center;
 
     // need to find which viewports are displaying the segmentation
     const viewportIds = this.getViewportIdsWithSegmentation(segmentationId);
 
     viewportIds.forEach(viewportId => {
       const { viewport } = getEnabledElementByViewportId(viewportId);
-      cstUtils.viewport.jumpToWorld(viewport as csTypes.IVolumeViewport, world);
 
-      if (highlightSegment) {
+      if (viewport instanceof VolumeViewport) {
+        world && cstUtils.viewport.jumpToWorld(viewport, world);
+      } else {
+        image && viewport.setImageIdIndex(image[2]);
+      }
+
+      if (!world && viewport instanceof VolumeViewport) {
+        return;
+      }
+      if (!image && !(viewport instanceof VolumeViewport)) {
+        return;
+      }
+
+      highlightSegment &&
         this.highlightSegment(
           segmentationId,
           segmentIndex,
@@ -900,7 +881,6 @@ class SegmentationService extends PubSubService {
           highlightHideOthers,
           highlightFunctionType
         );
-      }
     });
   }
 
@@ -1240,20 +1220,15 @@ class SegmentationService extends PubSubService {
     segmentationRepresentation: cstTypes.SegmentationRepresentation
   ) {
     const newSegmentSpecificConfig = {
-      [segmentIndex]: {
-        [LABELMAP]: {
-          fillAlpha: alpha,
-        },
-      },
+      fillAlpha: alpha,
     };
 
     if (hideOthers) {
+      throw new Error('hideOthers is not working right now');
       for (let i = 0; i < segments.length; i++) {
         if (i !== segmentIndex) {
           newSegmentSpecificConfig[i] = {
-            [LABELMAP]: {
-              fillAlpha: 0,
-            },
+            fillAlpha: 0,
           };
         }
       }
@@ -1274,11 +1249,7 @@ class SegmentationService extends PubSubService {
         segmentationRepresentation.segmentationRepresentationUID,
         segmentIndex,
         {
-          [segmentIndex]: {
-            [LABELMAP]: {
-              fillAlpha: easeInOutBell(progress, fillAlpha),
-            },
-          },
+          fillAlpha: easeInOutBell(progress, fillAlpha),
         }
       );
 
