@@ -264,29 +264,28 @@ function createDicomJSONApi(dicomJsonConfig) {
       const study = findStudies('StudyInstanceUID', StudyInstanceUID)[0];
       const series = study.series.find(s => s.SeriesInstanceUID === SeriesInstanceUID) || [];
 
-      displaySet.images.forEach(instance => {
-        const NumberOfFrames = instance.NumberOfFrames;
-        if (NumberOfFrames > 1) {
-          for (let i = 0; i < NumberOfFrames; i++) {
-            /** In case there are multiple sop class we filter sop instances */
-            const images = series.instances
-              .filter(i => i && i.metadata && i.metadata.SOPInstanceUID === instance.SOPInstanceUID)
-              .map(i => ({ ...(i.metadata || {}), url: i.url }));
-
-            const imageId = getImageId({
-              instance: images.length > 0 ? images[i] : instance,
-              frame: i,
-              config: dicomJsonConfig,
-            });
-            imageIds.push(imageId);
-          }
-        } else {
-          const imageId = getImageId({ instance, config: dicomJsonConfig });
-          imageIds.push(imageId);
+      const instanceMap = new Map();
+      series.instances.forEach(instance => {
+        if (instance?.metadata?.SOPInstanceUID) {
+          const { metadata, url } = instance;
+          const existingInstances = instanceMap.get(metadata.SOPInstanceUID) || [];
+          existingInstances.push({ ...metadata, url });
+          instanceMap.set(metadata.SOPInstanceUID, existingInstances);
         }
       });
 
-      console.debug('imageIds:', imageIds);
+      displaySet.images.forEach(instance => {
+        const NumberOfFrames = instance.NumberOfFrames || 1;
+        const instances = instanceMap.get(instance.SOPInstanceUID) || [instance];
+        for (let i = 0; i < NumberOfFrames; i++) {
+          const imageId = getImageId({
+            instance: instances[Math.min(i, instances.length - 1)],
+            frame: NumberOfFrames > 1 ? i : undefined,
+            config: dicomJsonConfig,
+          });
+          imageIds.push(imageId);
+        }
+      });
 
       return imageIds;
     },
