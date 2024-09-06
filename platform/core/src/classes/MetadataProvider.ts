@@ -8,37 +8,13 @@ import toNumber from '../utils/toNumber';
 import combineFrameInstance from '../utils/combineFrameInstance';
 
 class MetadataProvider {
-  constructor() {
-    // Define the main "metadataLookup" private property as an immutable property.
-    Object.defineProperty(this, 'studies', {
-      configurable: false,
-      enumerable: false,
-      writable: false,
-      value: new Map(),
-    });
-    Object.defineProperty(this, 'imageURIToUIDs', {
-      configurable: false,
-      enumerable: false,
-      writable: false,
-      value: new Map(),
-    });
-    Object.defineProperty(this, 'imageUIDsByImageId', {
-      configurable: false,
-      enumerable: false,
-      writable: false,
-      value: new Map(),
-    });
-    // Can be used to store custom metadata for a specific type.
-    // For instance, the scaling metadata for PET can be stored here
-    // as type "scalingModule"
-    //
-    Object.defineProperty(this, 'customMetadata', {
-      configurable: false,
-      enumerable: false,
-      writable: false,
-      value: new Map(),
-    });
-  }
+  private readonly studies: Map<string, any> = new Map();
+  private readonly imageURIToUIDs: Map<string, any> = new Map();
+  private readonly imageUIDsByImageId: Map<string, any> = new Map();
+  // Can be used to store custom metadata for a specific type.
+  // For instance, the scaling metadata for PET can be stored here
+  // as type "scalingModule"
+  private readonly customMetadata: Map<string, any> = new Map();
 
   addImageIdToUIDs(imageId, uids) {
     // This method is a fallback for when you don't have WADO-URI or WADO-RS.
