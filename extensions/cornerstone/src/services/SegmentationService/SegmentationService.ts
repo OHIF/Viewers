@@ -248,9 +248,9 @@ class SegmentationService extends PubSubService {
     cstSegmentation.helpers.clearSegmentValue(segmentationId, segmentIndex);
 
     if (segmentation.activeSegmentIndex === segmentIndex) {
-      const segmentIndices = Object.keys(segmentation.segments);
+      const nextSegmentIndex = segmentation.segments.findIndex(segment => segment !== null);
 
-      const newActiveSegmentIndex = segmentIndices.length ? Number(segmentIndices[0]) : 1;
+      const newActiveSegmentIndex = nextSegmentIndex !== -1 ? nextSegmentIndex : null;
 
       this._setActiveSegment(segmentationId, newActiveSegmentIndex, true);
     }
