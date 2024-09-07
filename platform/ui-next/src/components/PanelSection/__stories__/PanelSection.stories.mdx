@@ -1,0 +1,71 @@
+import { PanelSection, SidePanel } from '../../../components';
+
+import { ArgsTable, Story, Canvas, Meta } from '@storybook/addon-docs';
+import { createComponentTemplate } from '../../../storybook/functions/create-component-story';
+
+export const argTypes = {
+  component: PanelSection,
+  title: 'Components/PanelSection',
+};
+
+<Meta
+  title="Components/PanelSection"
+  component={PanelSection}
+/>
+
+export const PanelSectionTemplate = args => (
+  <div className="w-96">
+    <SidePanel
+      side="left"
+      defaultComponentOpen="Example"
+      tabs={[
+        {
+          id: 'tab1',
+          name: 'tab1',
+          label: 'Tab 1',
+          iconName: 'group-layers',
+          iconLabel: 'group-layers',
+          content: () => (
+            <PanelSection {...args}>
+              <div className="text-white">{'this is children'}</div>
+            </PanelSection>
+          ),
+        },
+      ]}
+    />
+  </div>
+);
+
+<Heading
+  title="PanelSection"
+  componentRelativePath="PanelSection/PanelSection.tsx"
+/>
+
+- [Overview](#overview)
+- [Props](#props)
+- [Contribute](#contribute)
+
+## Overview
+
+PanelSection is a component that renders the PanelSections.
+
+<Canvas>
+  <Story
+    name="Overview"
+    args={{
+      title: 'Segmentation Tools',
+    }}
+  >
+    {PanelSectionTemplate.bind({})}
+  </Story>
+</Canvas>
+
+## Props
+
+<ArgsTable of={PanelSection} />
+
+## Usage
+
+## Contribute
+
+<Footer componentRelativePath="PanelSection/__stories__/PanelSection.stories.mdx" />

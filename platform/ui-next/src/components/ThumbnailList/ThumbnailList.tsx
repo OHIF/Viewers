@@ -2,8 +2,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import Thumbnail from '../Thumbnail';
-import ThumbnailNoImage from '../ThumbnailNoImage';
-import ThumbnailTracked from '../ThumbnailTracked';
 import * as Types from '../../types';
 
 const ThumbnailList = ({
@@ -12,11 +10,12 @@ const ThumbnailList = ({
   onThumbnailDoubleClick,
   onClickUntrack,
   activeDisplaySetInstanceUIDs = [],
+  viewPreset,
 }) => {
   return (
     <div
       id="ohif-thumbnail-list"
-      className="ohif-scrollbar study-min-height overflow-y-hidden bg-black py-5"
+      className={`ohif-scrollbar bg-bkg-low grid place-items-center overflow-y-hidden pt-[4px] pr-[2.5px] pl-[2.5px] ${viewPreset === 'thumbnails' ? 'grid-cols-2 gap-[4px] pb-[12px]' : 'grid-cols-1 gap-[2px]'}`}
     >
       {thumbnails.map(
         ({
@@ -48,7 +47,7 @@ const ThumbnailList = ({
                   dragData={dragData}
                   description={description}
                   seriesNumber={seriesNumber}
-                  numInstances={numInstances}
+                  numInstances={numInstances || 1}
                   countIcon={countIcon}
                   imageSrc={imageSrc}
                   imageAltText={imageAltText}
@@ -56,11 +55,13 @@ const ThumbnailList = ({
                   isActive={isActive}
                   onClick={() => onThumbnailClick(displaySetInstanceUID)}
                   onDoubleClick={() => onThumbnailDoubleClick(displaySetInstanceUID)}
+                  viewPreset={viewPreset}
+                  modality={modality}
                 />
               );
             case 'thumbnailTracked':
               return (
-                <ThumbnailTracked
+                <Thumbnail
                   key={displaySetInstanceUID}
                   displaySetInstanceUID={displaySetInstanceUID}
                   dragData={dragData}
@@ -77,25 +78,29 @@ const ThumbnailList = ({
                   onClick={() => onThumbnailClick(displaySetInstanceUID)}
                   onDoubleClick={() => onThumbnailDoubleClick(displaySetInstanceUID)}
                   onClickUntrack={() => onClickUntrack(displaySetInstanceUID)}
+                  viewPreset={viewPreset}
+                  modality={modality}
                 />
               );
             case 'thumbnailNoImage':
               return (
-                <ThumbnailNoImage
+                <Thumbnail
                   isActive={isActive}
                   key={displaySetInstanceUID}
                   displaySetInstanceUID={displaySetInstanceUID}
                   dragData={dragData}
                   modality={modality}
-                  modalityTooltip={_getModalityTooltip(modality)}
                   messages={messages}
-                  seriesDate={seriesDate}
                   description={description}
-                  canReject={canReject}
-                  onReject={onReject}
                   onClick={() => onThumbnailClick(displaySetInstanceUID)}
                   onDoubleClick={() => onThumbnailDoubleClick(displaySetInstanceUID)}
+                  viewPreset={viewPreset}
+                  countIcon={countIcon}
+                  seriesNumber={seriesNumber}
+                  numInstances={numInstances || 1}
                   isHydratedForDerivedDisplaySet={isHydratedForDerivedDisplaySet}
+                  canReject={canReject}
+                  onReject={onReject}
                 />
               );
             default:
@@ -136,6 +141,7 @@ ThumbnailList.propTypes = {
   onThumbnailClick: PropTypes.func.isRequired,
   onThumbnailDoubleClick: PropTypes.func.isRequired,
   onClickUntrack: PropTypes.func.isRequired,
+  viewPreset: PropTypes.string,
 };
 
 // TODO: Support "Viewport Identificator"?

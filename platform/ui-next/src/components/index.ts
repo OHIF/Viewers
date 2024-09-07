@@ -17,6 +17,7 @@ import { Checkbox } from './Checkbox';
 import { Slider } from './Slider';
 import { ScrollArea, ScrollBar } from './ScrollArea';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from './Accordion';
+import { Icons } from './Icons';
 
 export {
   Button,
@@ -48,4 +49,5 @@ export {
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
+  Icons,
 };

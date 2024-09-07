@@ -1,0 +1,58 @@
+import StudyItem from '../StudyItem';
+
+import { ArgsTable, Story, Canvas, Meta } from '@storybook/addon-docs';
+import { createComponentTemplate } from '../../../storybook/functions/create-component-story';
+
+export const argTypes = {
+  component: StudyItem,
+  title: 'Components/StudyItem',
+};
+
+<Meta
+  title="Components/StudyItem"
+  component={StudyItem}
+/>
+
+export const StudyItemTemplate = args => (
+  <div className="w-96">
+    <StudyItem {...args} />
+  </div>
+);
+
+<Heading
+  title="StudyItem"
+  componentRelativePath="StudyItem/StudyItem.tsx"
+/>
+
+- [Overview](#overview)
+- [Props](#props)
+- [Contribute](#contribute)
+
+## Overview
+
+StudyItem is a component that renders the StudyItems.
+
+<Canvas>
+  <Story
+    name="Overview"
+    args={{
+      date: '16-Jan-1960',
+      description: 'WB PET/CT',
+      numInstances: 934,
+      modalities: 'CTPT',
+      isActive: false,
+    }}
+  >
+    {StudyItemTemplate.bind({})}
+  </Story>
+</Canvas>
+
+## Props
+
+<ArgsTable of={StudyItem} />
+
+## Usage
+
+## Contribute
+
+<Footer componentRelativePath="StudyItem/__stories__/studyItem.stories.mdx" />

@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 
 import Icon from '../Icon';
 import Tooltip from '../Tooltip';
-import { Separator } from '@ohif/ui-next';
+import { Separator, ToggleGroup, ToggleGroupItem } from '@ohif/ui-next';
 
 type StyleMap = {
   open: {
@@ -79,20 +79,6 @@ const getNumGridColumns = (numTabs: number, gridWidth: number) => {
   }
 
   return numTabsWithOneSpacerEach;
-};
-
-const getGridStyle = (
-  side: string,
-  numTabs: number = 0,
-  gridWidth: number,
-  expandedWidth: number
-): CSSProperties => {
-  const relativePosition = Math.max(0, Math.floor(expandedWidth - gridWidth) / 2 - closeIconWidth);
-  return {
-    position: 'relative',
-    ...(side === 'left' ? { right: `${relativePosition}px` } : { left: `${relativePosition}px` }),
-    width: `${gridWidth}px`,
-  };
 };
 
 const getTabClassNames = (
@@ -171,6 +157,7 @@ const SidePanel = ({
   const { t } = useTranslation('SidePanel');
 
   const [panelOpen, setPanelOpen] = useState(activeTabIndexProp !== null);
+  const [renderHeader, setRenderHeader] = useState(false);
   const [activeTabIndex, setActiveTabIndex] = useState(0);
 
   const styleMap = createStyleMap(expandedWidth, borderSize, collapsedWidth);
@@ -207,6 +194,9 @@ const SidePanel = ({
     [onActiveTabIndexChange, updatePanelOpen]
   );
 
+  useEffect(() => {
+    setRenderHeader(tabs.length === 1);
+  }, [tabs]);
   useEffect(() => {
     updateActiveTabIndex(activeTabIndexProp);
   }, [activeTabIndexProp, updateActiveTabIndex]);
@@ -272,8 +262,8 @@ const SidePanel = ({
     return (
       <div
         className={classnames(
-          'flex h-[28px] cursor-pointer items-center justify-center',
-          side === 'left' ? 'order-last' : 'order-first'
+          'absolute flex h-[24px] cursor-pointer items-center justify-center',
+          side === 'left' ? 'right-0' : 'left-0'
         )}
         style={{ width: `${closeIconWidth}px` }}
         onClick={() => {
@@ -293,89 +283,83 @@ const SidePanel = ({
     const numCols = getNumGridColumns(tabs.length, gridWidth);
 
     return (
-      <div className={classnames('flex grow', side === 'right' ? 'justify-start' : 'justify-end')}>
-        <div
-          className={classnames('bg-primary-dark text-primary-active flex flex-wrap')}
-          style={getGridStyle(side, tabs.length, gridWidth, expandedWidth)}
-        >
-          {tabs.map((tab, tabIndex) => {
-            const { disabled } = tab;
-            return (
-              <React.Fragment key={tabIndex}>
-                {tabIndex % numCols !== 0 && (
-                  <div
-                    className={classnames(
-                      'flex h-[28px] w-[2px] items-center bg-black',
-                      tabSpacerWidth
-                    )}
-                  >
-                    <div className="bg-primary-dark h-[20px] w-full"></div>
-                  </div>
-                )}
-                <Tooltip
-                  position={'bottom'}
-                  key={tabIndex}
-                  content={getToolTipContent(tab.label, disabled)}
-                >
-                  <div
-                    className={getTabClassNames(
-                      numCols,
-                      tabs.length,
-                      tabIndex,
-                      tabIndex === activeTabIndex,
-                      disabled
-                    )}
-                    style={getTabStyle(tabs.length)}
-                    onClick={() => {
-                      return disabled ? null : updateActiveTabIndex(tabIndex);
-                    }}
-                    data-cy={`${tab.name}-btn`}
-                  >
-                    <div className={getTabIconClassNames(tabs.length, tabIndex === activeTabIndex)}>
-                      <Icon
-                        name={tab.iconName}
-                        className={`${tab.disabled && 'ohif-disabled'}`}
-                        style={{
-                          width: '22px',
-                          height: '22px',
-                        }}
-                      ></Icon>
-                    </div>
-                  </div>
-                </Tooltip>
-              </React.Fragment>
-            );
-          })}
-        </div>
-      </div>
-    );
-  };
+      <>
+        {getCloseIcon()}
 
-  const getOneTabComponent = () => {
-    return (
-      <div
-        className={classnames(
-          'text-info-secondary flex grow cursor-pointer select-none justify-center self-center text-[14px]'
-        )}
-        style={{
-          ...(side === 'left'
-            ? { marginLeft: `${closeIconWidth}px` }
-            : { marginRight: `${closeIconWidth}px` }),
-        }}
-        data-cy={`${tabs[0].name}-btn`}
-        onClick={() => updatePanelOpen(!panelOpen)}
-      >
-        <span>{tabs[0].label}</span>
-      </div>
+        <div className={classnames('flex grow justify-center')}>
+          <div className={classnames('bg-primary-dark text-primary-active flex flex-wrap')}>
+            {tabs.map((tab, tabIndex) => {
+              const { disabled } = tab;
+              return (
+                <React.Fragment key={tabIndex}>
+                  {tabIndex % numCols !== 0 && (
+                    <div
+                      className={classnames(
+                        'flex h-[28px] w-[2px] items-center bg-black',
+                        tabSpacerWidth
+                      )}
+                    >
+                      <div className="bg-primary-dark h-[20px] w-full"></div>
+                    </div>
+                  )}
+                  <Tooltip
+                    position={'bottom'}
+                    key={tabIndex}
+                    content={getToolTipContent(tab.label, disabled)}
+                  >
+                    <div
+                      className={getTabClassNames(
+                        numCols,
+                        tabs.length,
+                        tabIndex,
+                        tabIndex === activeTabIndex,
+                        disabled
+                      )}
+                      style={getTabStyle(tabs.length)}
+                      onClick={() => {
+                        return disabled ? null : updateActiveTabIndex(tabIndex);
+                      }}
+                      data-cy={`${tab.name}-btn`}
+                    >
+                      <div
+                        className={getTabIconClassNames(tabs.length, tabIndex === activeTabIndex)}
+                      >
+                        <Icon
+                          name={tab.iconName}
+                          className={`${tab.disabled && 'ohif-disabled'}`}
+                          style={{
+                            width: '22px',
+                            height: '22px',
+                          }}
+                        ></Icon>
+                      </div>
+                    </div>
+                  </Tooltip>
+                </React.Fragment>
+              );
+            })}
+          </div>
+        </div>
+      </>
     );
   };
 
   const getOpenStateComponent = () => {
+    if (tabs.length === 1) {
+      return null;
+    }
+
     return (
-      <div className="bg-bkg-med flex h-[40px] select-none rounded-t">
-        {getCloseIcon()}
-        {tabs.length === 1 ? getOneTabComponent() : getTabGridComponent()}
-      </div>
+      <>
+        <div className="bg-bkg-med flex h-[40px] select-none rounded-t p-2">
+          {getTabGridComponent()}
+        </div>
+        <Separator
+          orientation="horizontal"
+          className="bg-black"
+          thickness="2px"
+        />
+      </>
     );
   };
 
@@ -387,14 +371,16 @@ const SidePanel = ({
       {panelOpen ? (
         <>
           {getOpenStateComponent()}
-          <Separator
-            orientation="horizontal"
-            className="bg-black"
-            thickness="2px"
-          />
           {tabs.map((tab, tabIndex) => {
             if (tabIndex === activeTabIndex) {
-              return <tab.content key={tabIndex} />;
+              return (
+                <tab.content
+                  key={tabIndex}
+                  getCloseIcon={getCloseIcon}
+                  tab={tab}
+                  renderHeader={renderHeader}
+                />
+              );
             }
             return null;
           })}

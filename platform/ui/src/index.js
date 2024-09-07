@@ -106,6 +106,8 @@ export {
   TableRow,
   ThemeWrapper,
   Thumbnail,
+  ThumbnailNoImage,
+  ThumbnailTracked,
   ThumbnailList,
   ToolbarButton,
   Tooltip,
@@ -131,7 +133,6 @@ export {
   InvestigationalUseDialog,
   LayoutPreset,
   StudyBrowserSort,
-  StudyBrowserViewOptions,
 } from './components';
 
 export { useSessionStorage } from './hooks';

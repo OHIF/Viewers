@@ -1,0 +1,75 @@
+import SidePanel from '../SidePanel';
+
+import { ArgsTable, Story, Canvas, Meta } from '@storybook/addon-docs';
+import { createComponentTemplate } from '../../../storybook/functions/create-component-story';
+
+export const argTypes = {
+  component: SidePanel,
+  title: 'Components/SidePanel',
+};
+
+<Meta
+  title="Components/SidePanel"
+  component={SidePanel}
+/>
+
+export const SidePanelTemplate = args => (
+  <div className="w-96">
+    <SidePanel {...args} />
+  </div>
+);
+
+<Heading
+  title="SidePanel"
+  componentRelativePath="SidePanel/SidePanel.tsx"
+/>
+
+- [Overview](#overview)
+- [Props](#props)
+- [Contribute](#contribute)
+
+## Overview
+
+SidePanel is a component that renders the SidePanels.
+
+<Canvas>
+  <Story
+    name="Overview"
+    args={{
+      side: 'left',
+      defaultComponentOpen: 'Example',
+      activeTabIndex: 0,
+      tabs: [
+        {
+          id: 'tab1',
+          name: 'tab1',
+          label: 'Tab 1',
+          iconName: 'group-layers',
+          iconLabel: 'group-layers',
+          content: () => <div class="text-primary-light p-3">Hello</div>,
+        },
+      ],
+      childComponents: [
+        {
+          iconName: 'home',
+          iconLabel: 'launch-info',
+          name: 'Example',
+          label: 'home',
+          content: () => <div>Hello</div>,
+        },
+      ],
+    }}
+  >
+    {SidePanelTemplate.bind({})}
+  </Story>
+</Canvas>
+
+## Props
+
+<ArgsTable of={SidePanel} />
+
+## Usage
+
+## Contribute
+
+<Footer componentRelativePath="SidePanel/__stories__/sidePanel.stories.mdx" />

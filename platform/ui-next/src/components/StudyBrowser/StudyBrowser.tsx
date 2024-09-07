@@ -1,13 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { useTranslation } from 'react-i18next';
 
 import StudyItem from '../StudyItem';
-import LegacyButtonGroup from '../LegacyButtonGroup';
-import LegacyButton from '../LegacyButton';
-import ThumbnailList from '../ThumbnailList';
 import { StringNumber } from '../../types';
 import StudyBrowserSort from '../StudyBrowserSort';
+import StudyBrowserViewOptions from '../StudyBrowserViewOptions';
 
 const getTrackedSeries = displaySets => {
   let trackedSeries = 0;
@@ -33,12 +30,14 @@ const StudyBrowser = ({
   onClickUntrack = noop,
   activeDisplaySetInstanceUIDs,
   servicesManager,
+  showSettings,
+  viewPresets,
 }: withAppTypes) => {
-  const { t } = useTranslation('StudyBrowser');
-  const { customizationService } = servicesManager?.services || {};
-
   const getTabContent = () => {
     const tabData = tabs.find(tab => tab.name === activeTabName);
+    const viewPreset = viewPresets
+      ? viewPresets.filter(preset => preset.selected)[0]?.id
+      : 'thumbnails';
     return tabData.studies.map(
       ({ studyInstanceUid, date, description, numInstances, modalities, displaySets }) => {
         const isExpanded = expandedStudyInstanceUIDs.includes(studyInstanceUid);
@@ -48,23 +47,21 @@ const StudyBrowser = ({
               date={date}
               description={description}
               numInstances={numInstances}
+              isExpanded={isExpanded}
+              displaySets={displaySets}
               modalities={modalities}
               trackedSeries={getTrackedSeries(displaySets)}
               isActive={isExpanded}
               onClick={() => {
                 onClickStudy(studyInstanceUid);
               }}
+              onClickThumbnail={onClickThumbnail}
+              onDoubleClickThumbnail={onDoubleClickThumbnail}
+              onClickUntrack={onClickUntrack}
+              activeDisplaySetInstanceUIDs={activeDisplaySetInstanceUIDs}
               data-cy="thumbnail-list"
+              viewPreset={viewPreset}
             />
-            {isExpanded && displaySets && (
-              <ThumbnailList
-                thumbnails={displaySets}
-                activeDisplaySetInstanceUIDs={activeDisplaySetInstanceUIDs}
-                onThumbnailClick={onClickThumbnail}
-                onThumbnailDoubleClick={onDoubleClickThumbnail}
-                onClickUntrack={onClickUntrack}
-              />
-            )}
           </React.Fragment>
         );
       }
@@ -73,51 +70,21 @@ const StudyBrowser = ({
 
   return (
     <React.Fragment>
-      <div
-        className="w-100 border-secondary-light bg-primary-dark flex hidden h-20 flex-col items-center justify-center gap-2 border-b p-4"
-        data-cy={'studyBrowser-panel'}
-      >
-        {/* TODO Revisit design of LegacyButtonGroup later - for now use LegacyButton for its children.*/}
-        <LegacyButtonGroup
-          variant="outlined"
-          color="secondary"
-          splitBorder={false}
+      {showSettings && (
+        <div
+          className="w-100 bg-bkg-low flex h-[48px] items-center justify-center gap-[10px] px-[8px] py-[10px]"
+          data-cy={'studyBrowser-panel'}
         >
-          {tabs.map(tab => {
-            const { name, label, studies } = tab;
-            const isActive = activeTabName === name;
-            const isDisabled = !studies.length;
-            // Apply the contrasting color for brighter button color visibility
-            const classStudyBrowser = customizationService?.getModeCustomization(
-              'class:StudyBrowser'
-            ) || {
-              true: 'default',
-              false: 'default',
-            };
-            const color = classStudyBrowser[`${isActive}`];
-            return (
-              <LegacyButton
-                key={name}
-                className={'min-w-18 p-2 text-base text-white'}
-                size="initial"
-                color={color}
-                bgColor={isActive ? 'bg-primary-main' : 'bg-black'}
-                onClick={() => {
-                  onClickTab(name);
-                }}
-                disabled={isDisabled}
-              >
-                {t(label)}
-              </LegacyButton>
-            );
-          })}
-        </LegacyButtonGroup>
-        {window.config.experimentalStudyBrowserSort && (
+          <StudyBrowserViewOptions
+            tabs={tabs}
+            onSelectTab={onClickTab}
+            activeTabName={activeTabName}
+          />
           <StudyBrowserSort servicesManager={servicesManager} />
-        )}
-      </div>
-      <div className="ohif-scrollbar invisible-scrollbar bg-bkg-low flex flex-1 flex-col overflow-auto">
-        {/*getTabContent() */}
+        </div>
+      )}
+      <div className="ohif-scrollbar invisible-scrollbar bg-bkg-low flex flex-1 flex-col gap-[4px] overflow-auto">
+        {getTabContent()}
       </div>
     </React.Fragment>
   );

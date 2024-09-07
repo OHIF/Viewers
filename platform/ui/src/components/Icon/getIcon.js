@@ -175,18 +175,6 @@ import { ReactComponent as investigationalUse } from './../../assets/icons/illus
 import { ReactComponent as actionNewDialog } from './../../assets/icons/action-new-dialog.svg';
 import { ReactComponent as iconToolCobbAngle } from './../../assets/icons/tool-cobb-angle.svg';
 import { ReactComponent as iconToolWindowRegion } from './../../assets/icons/tool-window-region.svg';
-import { ReactComponent as iconChevronClosed } from './../../assets/icons/icon-chevron-closed.svg';
-import { ReactComponent as iconChevronOpen } from './../../assets/icons/icon-chevron-open.svg';
-import { ReactComponent as iconDownload } from './../../assets/icons/icon-download.svg';
-import { ReactComponent as iconListView } from './../../assets/icons/icon-list-view.svg';
-import { ReactComponent as iconMore } from './../../assets/icons/icon-more.svg';
-import { ReactComponent as iconPinFill } from './../../assets/icons/icon-pin-fill.svg';
-import { ReactComponent as iconPin } from './../../assets/icons/icon-pin.svg';
-import { ReactComponent as iconThumbnailView } from './../../assets/icons/icon-thumbnail-view.svg';
-import { ReactComponent as iconStatusTracking } from './../../assets/icons/status-tracking.svg';
-import { ReactComponent as iconStatusWarning } from './../../assets/icons/status-warning.svg';
-import { ReactComponent as infoSeries } from './../../assets/icons/info-series.svg';
-import { ReactComponent as infoMPR } from './../../assets/icons/info-mpr.svg';
 
 import CTAAA from './../../assets/icons/CT-AAA.png';
 import CTAAA2 from './../../assets/icons/CT-AAA2.png';
@@ -431,20 +419,6 @@ const ICONS = {
 
   /** New investigational use */
   'illustration-investigational-use': investigationalUse,
-
-  /** Study Panel */
-  'icon-chevron-closed': iconChevronClosed,
-  'icon-chevron-open': iconChevronOpen,
-  'icon-download': iconDownload,
-  'icon-list-view': iconListView,
-  'icon-more': iconMore,
-  'icon-pin-fill': iconPinFill,
-  'icon-pin': iconPin,
-  'icon-thumbnail-view': iconThumbnailView,
-  'icon-status-tracking': iconStatusTracking,
-  'icon-status-warning': iconStatusWarning,
-  'info-series': infoSeries,
-  'info-mpr': infoMPR,
 };
 
 function addIcon(iconName, iconSVG) {

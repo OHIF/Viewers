@@ -1,0 +1,128 @@
+import StudyBrowser from '../StudyBrowser';
+
+import { ArgsTable, Story, Canvas, Meta } from '@storybook/addon-docs';
+import { createComponentTemplate } from '../../../storybook/functions/create-component-story';
+
+export const argTypes = {
+  component: StudyBrowser,
+  title: 'Components/StudyBrowser',
+};
+
+<Meta
+  title="Components/StudyBrowser"
+  component={StudyBrowser}
+/>
+
+export const StudyBrowserTemplate = args => (
+  <div className="w-96">
+    <StudyBrowser {...args} />
+  </div>
+);
+
+<Heading
+  title="StudyBrowser"
+  componentRelativePath="StudyBrowser/StudyBrowser.tsx"
+/>
+
+- [Overview](#overview)
+- [Props](#props)
+- [Contribute](#contribute)
+
+## Overview
+
+StudyBrowser is a component that renders the StudyBrowsers.
+
+<Canvas>
+  <Story
+    name="Overview"
+    args={{
+      tabs: [
+        {
+          name: 'primary',
+          label: 'Primary',
+          studies: [],
+        },
+        {
+          name: 'recent',
+          label: 'Recent',
+          studies: [],
+        },
+        {
+          name: 'all',
+          label: 'All',
+          studies: [],
+        },
+      ],
+      expandedStudyInstanceUIDs: ['1.3.6.1.4'],
+      activeTabName: 'primary',
+    }}
+  >
+    {StudyBrowserTemplate.bind({})}
+  </Story>
+</Canvas>
+
+## Props
+
+<ArgsTable of={StudyBrowser} />
+
+## Usage
+
+With Studies
+
+<Canvas>
+  <Story
+    name="With Studies"
+    args={{
+      tabs: [
+        {
+          name: 'primary',
+          label: 'Primary',
+          studies: [
+            {
+              studyInstanceUid: '1.3.6.1.4.1.25403.345050719074.3824.20170126085406.1',
+              date: '26-Oct-2015',
+              description: 'CT CHEST W CONTRAST',
+              modalities: 'CT',
+              numInstances: 1,
+              displaySets: [
+                {
+                  displaySetInstanceUID: '0b66675a-a4e3-a718-21f4-035d2d178d62',
+                  description: 'Topogram  0.6',
+                  seriesNumber: '1',
+                  modality: 'CT',
+                  seriesDate: '26-Oct-2015',
+                  numInstances: 1,
+                  StudyInstanceUID: '1.3.6.1.4.1.25403.345050719074.3824.20170126085406.1',
+                  componentType: 'thumbnailTracked',
+                  dragData: {
+                    type: 'displayset',
+                    displaySetInstanceUID: '0b66675a-a4e3-a718-21f4-035d2d178d62',
+                  },
+                  isTracked: false,
+                },
+              ],
+            },
+          ],
+        },
+        {
+          name: 'recent',
+          label: 'Recent',
+          studies: [],
+        },
+        {
+          name: 'all',
+          label: 'All',
+          studies: [],
+        },
+      ],
+      expandedStudyInstanceUIDs: ['1.3.6.1.4'],
+      activeTabName: 'primary',
+    }}
+  >
+    {StudyBrowserTemplate.bind({})}
+  </Story>
+</Canvas>
+
+## Contribute
+
+<Footer componentRelativePath="StudyBrowser/__stories__/studyBrowser.stories.mdx" />
