@@ -4,7 +4,10 @@ import { useTranslation } from 'react-i18next';
 import PropTypes from 'prop-types';
 import { utils } from '@ohif/core';
 import { useImageViewer, useViewportGrid, Dialog, ButtonEnums } from '@ohif/ui';
-import { StudyBrowser } from '@ohif/ui-next';
+import { StudyBrowser as NewStudyBrowser } from '@ohif/ui-next';
+import { StudyBrowser as OldStudyBrowser } from '@ohif/ui';
+import { useAppConfig } from '@state';
+
 import { useTrackedMeasurements } from '../../getContextModule';
 import { Separator } from '@ohif/ui-next';
 import { PanelStudyBrowserTrackingHeader } from './PanelStudyBrowserTrackingHeader';
@@ -38,6 +41,7 @@ function PanelStudyBrowserTracking({
   const navigate = useNavigate();
 
   const { t } = useTranslation('Common');
+  const [appConfig] = useAppConfig();
 
   // Normally you nest the components so the tree isn't so deep, and the data
   // doesn't have to have such an intense shape. This works well enough for now.
@@ -461,6 +465,8 @@ function PanelStudyBrowserTracking({
       },
     });
   };
+
+  const StudyBrowser = appConfig.useExperimentalUI ? NewStudyBrowser : OldStudyBrowser;
 
   return (
     <>
