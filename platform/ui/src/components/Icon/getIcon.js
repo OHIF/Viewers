@@ -1,4 +1,5 @@
 import React from 'react';
+
 import { ReactComponent as arrowDown } from './../../assets/icons/arrow-down.svg';
 import { ReactComponent as arrowLeft } from './../../assets/icons/arrow-left.svg';
 import { ReactComponent as arrowRight } from './../../assets/icons/arrow-right.svg';

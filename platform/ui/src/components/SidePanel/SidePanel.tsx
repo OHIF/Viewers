@@ -5,7 +5,6 @@ import { useTranslation } from 'react-i18next';
 
 import Icon from '../Icon';
 import Tooltip from '../Tooltip';
-import { Separator } from '@ohif/ui-next';
 
 type StyleMap = {
   open: {
@@ -165,7 +164,7 @@ const SidePanel = ({
   activeTabIndex: activeTabIndexProp = null,
   tabs,
   onOpen,
-  expandedWidth = 280,
+  expandedWidth = 248,
   onActiveTabIndexChange,
 }) => {
   const { t } = useTranslation('SidePanel');
@@ -355,7 +354,7 @@ const SidePanel = ({
     return (
       <div
         className={classnames(
-          'text-info-secondary flex grow cursor-pointer select-none justify-center self-center text-[14px]'
+          'text-primary-active flex grow cursor-pointer select-none justify-center self-center text-[13px]'
         )}
         style={{
           ...(side === 'left'
@@ -372,7 +371,7 @@ const SidePanel = ({
 
   const getOpenStateComponent = () => {
     return (
-      <div className="bg-bkg-med flex h-[40px] select-none rounded-t">
+      <div className="bg-primary-dark flex select-none rounded-t pt-1.5 pb-[2px]">
         {getCloseIcon()}
         {tabs.length === 1 ? getOneTabComponent() : getTabGridComponent()}
       </div>
@@ -387,11 +386,6 @@ const SidePanel = ({
       {panelOpen ? (
         <>
           {getOpenStateComponent()}
-          <Separator
-            orientation="horizontal"
-            className="bg-black"
-            thickness="2px"
-          />
           {tabs.map((tab, tabIndex) => {
             if (tabIndex === activeTabIndex) {
               return <tab.content key={tabIndex} />;
