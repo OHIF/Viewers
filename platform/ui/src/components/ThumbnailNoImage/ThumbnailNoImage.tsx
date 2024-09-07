@@ -76,7 +76,7 @@ const ThumbnailNoImage = ({
             >
               <div
                 className={classnames(
-                  'rounded-sm px-3 text-lg',
+                  'rounded-sm px-3  text-lg',
                   isHydratedForDerivedDisplaySet
                     ? 'bg-primary-light text-black'
                     : 'bg-primary-main text-white'
