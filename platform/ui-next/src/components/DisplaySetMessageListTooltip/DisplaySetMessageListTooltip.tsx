@@ -20,7 +20,7 @@ const DisplaySetMessageListTooltip = ({ messages, id }): React.ReactNode => {
               <Icons.StatusWarning className="h-[20px] w-[20px]" />
             </TooltipTrigger>
             <TooltipContent side="right">
-              <div className="bg-primary-dark border-secondary-light max-w-64 rounded border text-left text-base text-white">
+              <div className="max-w-64 text-left text-base text-white">
                 <div
                   className="break-normal text-base font-bold text-blue-300"
                   style={{
