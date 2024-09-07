@@ -1,5 +1,7 @@
 import React, { useEffect, useRef } from 'react';
-import { PanelSection, ToolSettings } from '../../components';
+import { PanelSection } from '../../components';
+// Migrate this file to the new UI eventually
+import { ToolSettings } from '@ohif/ui';
 import classnames from 'classnames';
 
 const ItemsPerRow = 4;

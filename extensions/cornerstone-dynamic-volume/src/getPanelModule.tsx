@@ -1,6 +1,6 @@
 import React from 'react';
 import { DynamicDataPanel } from './panels';
-import { Toolbox } from '@ohif/ui';
+import { Toolbox } from '@ohif/ui-next';
 import DynamicExport from './panels/DynamicExport';
 
 function getPanelModule({ commandsManager, extensionManager, servicesManager }) {

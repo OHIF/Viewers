@@ -1012,4 +1012,251 @@ export const Icons = {
       </g>
     </svg>
   ),
+  TabSegmentation: (props: IconProps) => (
+    <svg
+      width="22"
+      height="22"
+      viewBox="0 0 22 22"
+      xmlns="http://www.w3.org/2000/svg"
+      {...props}
+    >
+      <g
+        fill="none"
+        fillRule="evenodd"
+      >
+        <circle
+          stroke="currentColor"
+          cx="11.037"
+          cy="10.912"
+          r="8"
+        />
+        <g stroke="currentColor">
+          <path
+            strokeLinecap="square"
+            d="m11.354 3.575-7.779 7.779M17.364 6.757 6.757 17.364"
+          />
+          <path d="m18.955 9.763-9.192 9.192" />
+          <path
+            strokeLinecap="square"
+            d="M15.066 4.46 4.459 15.065"
+          />
+        </g>
+        <path d="M0 0h22v22H0z" />
+      </g>
+    </svg>
+  ),
+  TabLinear: (props: IconProps) => (
+    <svg
+      width="22"
+      height="22"
+      viewBox="0 0 22 22"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <g
+        fill="none"
+        fillRule="evenodd"
+      >
+        <rect
+          stroke="currentColor"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          x="1.5"
+          y="16.37"
+          width="4.13"
+          height="4.13"
+          rx="1"
+        />
+        <rect
+          stroke="currentColor"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          x="16.37"
+          y="1.5"
+          width="4.13"
+          height="4.13"
+          rx="1"
+        />
+        <path
+          stroke="currentColor"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          d="M5.388 16.612 16.612 5.388"
+        />
+        <path d="M0 0h22v22H0z" />
+      </g>
+    </svg>
+  ),
+  TabStudies: (props: IconProps) => (
+    <svg
+      width="22px"
+      height="23px"
+      viewBox="0 0 22 23"
+      version="1.1"
+      xmlns="http://www.w3.org/2000/svg"
+      {...props}
+    >
+      <title>tab-studies</title>
+      <g
+        id="Artboards-Updated"
+        stroke="none"
+        strokeWidth="1"
+        fill="none"
+        fillRule="evenodd"
+      >
+        <g
+          id="Segmentation---assets"
+          transform="translate(-61, -242)"
+        >
+          <g
+            id="tab-studies"
+            transform="translate(61, 242.5)"
+          >
+            <rect
+              id="Rectangle"
+              x="0"
+              y="0"
+              width="22"
+              height="22"
+            ></rect>
+            <path
+              d="M6.93478261,15.0652174 L3.23913043,15.0652174 C2.83091997,15.0652174 2.5,14.7342974 2.5,14.326087 L2.5,3.23913043 C2.5,2.83091997 2.83091997,2.5 3.23913043,2.5 L14.326087,2.5 C14.7342974,2.5 15.0652174,2.83091997 15.0652174,3.23913043 L15.0652174,6.93478261"
+              id="Path"
+              stroke="currentColor"
+              strokeWidth="1.25"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            ></path>
+            <rect
+              id="Rectangle"
+              stroke="currentColor"
+              strokeWidth="1.25"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              x="6.93478261"
+              y="6.93478261"
+              width="12.5652174"
+              height="12.5652174"
+              rx="1"
+            ></rect>
+          </g>
+        </g>
+      </g>
+    </svg>
+  ),
+  Tab4D: (props: IconProps) => (
+    <svg
+      width="22px"
+      height="22px"
+      viewBox="0 0 22 22"
+      version="1.1"
+      xmlns="http://www.w3.org/2000/svg"
+      {...props}
+    >
+      <title>tab-4d</title>
+      <g
+        id="tab-4d"
+        stroke="none"
+        strokeWidth="1"
+        fill="none"
+        fillRule="evenodd"
+      >
+        <g
+          id="Group"
+          transform="translate(1, 1)"
+          stroke="currentColor"
+        >
+          <rect
+            id="Rectangle"
+            x="0"
+            y="0"
+            width="20"
+            height="20"
+            rx="2"
+          ></rect>
+          <g
+            id="Group-3"
+            transform="translate(4, 5)"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path
+              d="M6.9072464,0.398231009 C9.3565092,0.398231009 11.342029,2.38375081 11.342029,4.83301362 C11.342029,7.28227642 9.3565092,9.26779623 6.9072464,9.26779623 L6.9072464,0.398231009 Z"
+              id="Path"
+            ></path>
+            <polyline
+              id="Path-2"
+              points="3.27497101 4.83301362 0 4.83301362 3.62401581 0 3.62401581 4.87475204 3.62401581 9.26779623"
+            ></polyline>
+          </g>
+        </g>
+      </g>
+    </svg>
+  ),
+  TabPatientInfo: (props: IconProps) => (
+    <svg
+      width="22"
+      height="22"
+      viewBox="0 0 22 22"
+      xmlns="http://www.w3.org/2000/svg"
+      {...props}
+    >
+      <g
+        fill="none"
+        fillRule="evenodd"
+      >
+        <path
+          d="M3.638 13.16a17.265 17.265 0 0 1 3.652-1.586c.565-.21.626-1.504.221-1.95-.584-.642-1.08-1.396-1.08-3.215a2.572 2.572 0 0 1 2.632-2.811 2.572 2.572 0 0 1 2.631 2.811c0 1.822-.495 2.573-1.08 3.215-.404.446-.343 1.74.222 1.95 1.275.386 2.5.919 3.652 1.587"
+          stroke="currentColor"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+        <path
+          d="M17.15 11.064V2.369a.87.87 0 0 0-.87-.869H2.37a.87.87 0 0 0-.87.87v13.91c0 .48.39.87.87.87h8.694M15.846 20.628l-3.043.87.87-3.044 5.2-5.2a1.537 1.537 0 0 1 2.174 2.173l-5.201 5.2zM18.221 13.905l2.174 2.174M13.672 18.454l2.174 2.174"
+          stroke="currentColor"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+        <path d="M0 0h22v22H0z" />
+      </g>
+    </svg>
+  ),
+  TabRoiThreshold: (props: IconProps) => (
+    <svg
+      width="23"
+      height="22"
+      viewBox="0 0 23 22"
+      xmlns="http://www.w3.org/2000/svg"
+      {...props}
+    >
+      <g
+        fill="none"
+        fillRule="evenodd"
+      >
+        <path
+          d="m13.34 11.74-2.971.425.425-2.971 7.64-7.64A1.8 1.8 0 1 1 20.98 4.1l-7.64 7.64zM8.644 19.034h7.383c.865 0 1.566-.701 1.566-1.566V10.03M12.504 4.94H5.066C4.2 4.94 3.5 5.643 3.5 6.508v1.972"
+          stroke="currentColor"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+        <path
+          stroke="currentColor"
+          d="m11.5 8.5 2.333 2.333"
+        />
+        <g
+          stroke="currentColor"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <path d="m1 14 2.5-2.5L6 14M1 17.5 3.5 20 6 17.5" />
+        </g>
+        <path d="M0 0h22v22H0z" />
+      </g>
+    </svg>
+  ),
+  'tab-segmentation': (props: IconProps) => Icons.TabSegmentation(props),
+  'tab-studies': (props: IconProps) => Icons.TabStudies(props),
+  'tab-linear': (props: IconProps) => Icons.TabLinear(props),
+  'tab-4d': (props: IconProps) => Icons.Tab4D(props),
+  'tab-patient-info': (props: IconProps) => Icons.TabPatientInfo(props),
+  'tab-roi-threshold': (props: IconProps) => Icons.TabRoiThreshold(props),
 };

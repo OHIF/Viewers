@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { useAppConfig } from '@state';
-import { Toolbox } from '@ohif/ui';
+import { Toolbox } from '@ohif/ui-next';
 import PanelSegmentation from './panels/PanelSegmentation';
 
 const getPanelModule = ({

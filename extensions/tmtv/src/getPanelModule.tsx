@@ -1,6 +1,6 @@
 import React from 'react';
 import { PanelPetSUV, PanelROIThresholdExport } from './Panels';
-import { Toolbox } from '@ohif/ui';
+import { Toolbox } from '@ohif/ui-next';
 
 // TODO:
 // - No loading UI exists yet

@@ -31,6 +31,8 @@ import {
   ThumbnailList,
   PanelSection,
   DisplaySetMessageListTooltip,
+  Toolbox,
+  ToolboxUI,
 } from './components';
 
 import { useNotification, NotificationProvider } from './contextProviders';
@@ -72,4 +74,6 @@ export {
   ThumbnailList,
   PanelSection,
   DisplaySetMessageListTooltip,
+  Toolbox,
+  ToolboxUI,
 };
