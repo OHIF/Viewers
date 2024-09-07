@@ -663,4 +663,112 @@ export const Icons = {
       </g>
     </svg>
   ),
+  Trash: (props: IconProps) => (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 448 512"
+      aria-labelledby="title"
+      fill="currentColor"
+      {...props}
+    >
+      <title id="title">Trash</title>
+      <path d="M32 464a48 48 0 0 0 48 48h288a48 48 0 0 0 48-48V128H32zm272-256a16 16 0 0 1 32 0v224a16 16 0 0 1-32 0zm-96 0a16 16 0 0 1 32 0v224a16 16 0 0 1-32 0zm-96 0a16 16 0 0 1 32 0v224a16 16 0 0 1-32 0zM432 32H312l-9.4-18.7A24 24 0 0 0 281.1 0H166.8a23.72 23.72 0 0 0-21.4 13.3L136 32H16A16 16 0 0 0 0 48v32a16 16 0 0 0 16 16h416a16 16 0 0 0 16-16V48a16 16 0 0 0-16-16z" />
+    </svg>
+  ),
+  Cancel: (props: IconProps) => (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="19"
+      height="19"
+      viewBox="0 0 19 19"
+      {...props}
+    >
+      <g
+        fill="currentColor"
+        fillRule="evenodd"
+      >
+        <circle
+          cx="9.5"
+          cy="9.5"
+          r="9.5"
+          fill="currentColor"
+        />
+        <g
+          stroke="#000"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth="1.5"
+        >
+          <path
+            d="M.188.187L8.813 8.812M8.813.187L.188 8.812"
+            transform="translate(5 5)"
+          />
+        </g>
+      </g>
+    </svg>
+  ),
+  InfoLink: (props: IconProps) => (
+    <svg
+      width="14"
+      height="14"
+      viewBox="0 0 14 14"
+      xmlns="http://www.w3.org/2000/svg"
+      {...props}
+    >
+      <g
+        fill="#348CFD"
+        fillRule="evenodd"
+      >
+        <path d="M7 .102A6.899 6.899 0 1 0 7 13.9 6.899 6.899 0 0 0 7 .102zm0 .875a6.024 6.024 0 1 1 0 12.048A6.024 6.024 0 0 1 7 .977z" />
+        <path d="M6.462 5.486c.503 0 .917.38.97.87l.006.106v3.769a.438.438 0 0 1-.868.078l-.007-.078V6.46a.101.101 0 0 0-.07-.095l-.031-.005H5.385a.437.437 0 0 1-.079-.868l.079-.007h1.077zM6.192 2.793l.089.006a.707.707 0 1 1-.177 0l.088-.006z" />
+        <path d="M8.615 9.794c.242 0 .438.224.438.5 0 .246-.155.45-.359.492l-.079.008h-3.23c-.242 0-.438-.224-.438-.5 0-.245.155-.45.359-.492l.079-.008h3.23z" />
+      </g>
+    </svg>
+  ),
+  NavigationPanelReveal: (props: IconProps) => (
+    <svg
+      width="17"
+      height="10"
+      viewBox="0 0 17 10"
+      xmlns="http://www.w3.org/2000/svg"
+      {...props}
+    >
+      <g
+        stroke="#348CFD"
+        strokeWidth="1.5"
+        fill="none"
+        fillRule="evenodd"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <path d="M10.856 5.078H1M5.078 1 1 5.078l4.078 4.078M15.582 9.156V1" />
+      </g>
+    </svg>
+  ),
+  MissingIcon: (props: IconProps) => (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      {...props}
+    >
+      <g
+        fill="none"
+        fillRule="evenodd"
+      >
+        <path
+          fill="currentColor"
+          d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm0 22.5c-5.799 0-10.5-4.701-10.5-10.5S6.201 1.5 12 1.5 22.5 6.201 22.5 12 17.799 22.5 12 22.5z"
+        />
+        <path
+          stroke="currentColor"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth="1.5"
+          d="M12 6v6M12 15"
+        />
+      </g>
+    </svg>
+  ),
 };

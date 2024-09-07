@@ -2,7 +2,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import Thumbnail from '../Thumbnail';
-import * as Types from '../../types';
 
 const ThumbnailList = ({
   thumbnails,
@@ -119,10 +118,10 @@ ThumbnailList.propTypes = {
       imageSrc: PropTypes.string,
       imageAltText: PropTypes.string,
       seriesDate: PropTypes.string,
-      seriesNumber: Types.StringNumber,
+      seriesNumber: PropTypes.string,
       numInstances: PropTypes.number,
       description: PropTypes.string,
-      componentType: Types.ThumbnailType.isRequired,
+      componentType: PropTypes.any,
       isTracked: PropTypes.bool,
       /**
        * Data the thumbnail should expose to a receiving drop target. Use a matching

@@ -1,7 +1,6 @@
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
 import { Icons } from '../Icons';
 import { TooltipTrigger, TooltipContent, TooltipProvider, Tooltip } from '../Tooltip';
 import Separator from '../Separator';
@@ -212,44 +211,48 @@ const SidePanel = ({
           }}
           data-cy={`side-panel-header-${side}`}
         >
-          <Icon
-            name={'navigation-panel-right-reveal'}
+          <Icons.NavigationPanelReveal
             className={classnames('text-primary-active', side === 'left' && 'rotate-180 transform')}
           />
         </div>
         <div className={classnames('mt-3 flex flex-col space-y-3')}>
-          {_childComponents.map((childComponent, index) => (
-            <Tooltip
-              position={side === 'left' ? 'right' : 'left'}
-              key={index}
-              content={getToolTipContent(childComponent.label, childComponent.disabled)}
-              className={classnames(
-                'flex items-center',
-                side === 'left' ? 'justify-end' : 'justify-start'
-              )}
-            >
-              <div
-                id={`${childComponent.name}-btn`}
-                data-cy={`${childComponent.name}-btn`}
-                className="text-primary-active hover:cursor-pointer"
-                onClick={() => {
-                  return childComponent.disabled ? null : updateActiveTabIndex(index);
-                }}
-              >
-                <Icon
-                  name={childComponent.iconName}
-                  className={classnames({
-                    'text-primary-active': true,
-                    'ohif-disabled': childComponent.disabled,
-                  })}
-                  style={{
-                    width: '22px',
-                    height: '22px',
-                  }}
-                />
-              </div>
-            </Tooltip>
-          ))}
+          <TooltipProvider>
+            {_childComponents.map((childComponent, index) => (
+              <Tooltip key={index}>
+                <TooltipTrigger>
+                  <div
+                    id={`${childComponent.name}-btn`}
+                    data-cy={`${childComponent.name}-btn`}
+                    className="text-primary-active hover:cursor-pointer"
+                    onClick={() => {
+                      return childComponent.disabled ? null : updateActiveTabIndex(index);
+                    }}
+                  >
+                    {React.createElement(Icons[childComponent.iconName] || Icons.MissingIcon, {
+                      className: classnames({
+                        'text-primary-active': true,
+                        'ohif-disabled': childComponent.disabled,
+                      }),
+                      style: {
+                        width: '22px',
+                        height: '22px',
+                      },
+                    })}
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent side={side === 'left' ? 'right' : 'left'}>
+                  <div
+                    className={classnames(
+                      'flex items-center',
+                      side === 'left' ? 'justify-end' : 'justify-start'
+                    )}
+                  >
+                    {getToolTipContent(childComponent.label, childComponent.disabled)}
+                  </div>
+                </TooltipContent>
+              </Tooltip>
+            ))}
+          </TooltipProvider>
         </div>
       </>
     );
@@ -268,10 +271,9 @@ const SidePanel = ({
         }}
         data-cy={`side-panel-header-${side}`}
       >
-        <Icon
-          name={openStateIconName[side]}
-          className="text-primary-active"
-        />
+        {React.createElement(Icons[openStateIconName[side]] || Icons.MissingIcon, {
+          className: 'text-primary-active',
+        })}
       </div>
     );
   };
@@ -299,39 +301,47 @@ const SidePanel = ({
                       <div className="bg-primary-dark h-[20px] w-full"></div>
                     </div>
                   )}
-                  <Tooltip
-                    position={'bottom'}
-                    key={tabIndex}
-                    content={getToolTipContent(tab.label, disabled)}
-                  >
-                    <div
-                      className={getTabClassNames(
-                        numCols,
-                        tabs.length,
-                        tabIndex,
-                        tabIndex === activeTabIndex,
-                        disabled
-                      )}
-                      style={getTabStyle(tabs.length)}
-                      onClick={() => {
-                        return disabled ? null : updateActiveTabIndex(tabIndex);
-                      }}
-                      data-cy={`${tab.name}-btn`}
-                    >
-                      <div
-                        className={getTabIconClassNames(tabs.length, tabIndex === activeTabIndex)}
-                      >
-                        <Icon
-                          name={tab.iconName}
-                          className={`${tab.disabled && 'ohif-disabled'}`}
-                          style={{
-                            width: '22px',
-                            height: '22px',
+                  <TooltipProvider>
+                    <Tooltip key={tabIndex}>
+                      <TooltipTrigger>
+                        <div
+                          className={getTabClassNames(
+                            numCols,
+                            tabs.length,
+                            tabIndex,
+                            tabIndex === activeTabIndex,
+                            disabled
+                          )}
+                          style={getTabStyle(tabs.length)}
+                          onClick={() => {
+                            return disabled ? null : updateActiveTabIndex(tabIndex);
                           }}
-                        ></Icon>
-                      </div>
-                    </div>
-                  </Tooltip>
+                          data-cy={`${tab.name}-btn`}
+                        >
+                          <div
+                            className={getTabIconClassNames(
+                              tabs.length,
+                              tabIndex === activeTabIndex
+                            )}
+                          >
+                            {React.createElement(Icons[tab.iconName] || Icons.MissingIcon, {
+                              className: classnames({
+                                'text-primary-active': true,
+                                'ohif-disabled': disabled,
+                              }),
+                              style: {
+                                width: '22px',
+                                height: '22px',
+                              },
+                            })}
+                          </div>
+                        </div>
+                      </TooltipTrigger>
+                      <TooltipContent side="bottom">
+                        {getToolTipContent(tab.label, disabled)}
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
                 </React.Fragment>
               );
             })}

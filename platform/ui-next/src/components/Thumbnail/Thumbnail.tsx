@@ -2,10 +2,9 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import { useDrag } from 'react-dnd';
-import Icon from '../Icon';
-import { StringNumber } from '../../types';
+import { Icons } from '../Icons';
 import DisplaySetMessageListTooltip from '../DisplaySetMessageListTooltip';
-import Tooltip from '../Tooltip';
+import { TooltipTrigger, TooltipContent, TooltipProvider, Tooltip } from '../Tooltip';
 
 /**
  * Display a thumbnail for a display set.
@@ -92,45 +91,39 @@ const Thumbnail = ({
                 id={`display-set-tooltip-${displaySetInstanceUID}`}
               />
               {canReject && (
-                <Icon
-                  name="old-trash"
+                <Icons.Trash
                   className="h-[20px] w-[20px] text-red-500"
                   onClick={onReject}
                 />
               )}
               {isTracked && (
-                <Tooltip
-                  position="right"
-                  content={
-                    <div className="flex flex-1 flex-row">
-                      <div className="flex-2 flex items-center justify-center pr-4">
-                        <Icon
-                          name="info-link"
-                          className="text-primary-active"
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger>
+                      <div className="group">
+                        <Icons.StatusTracking className="text-primary-light h-[20px] w-[20px] group-hover:hidden" />
+                        <Icons.Cancel
+                          className="text-primary-light hidden h-[15px] w-[15px] group-hover:block"
+                          onClick={onClickUntrack}
                         />
                       </div>
-                      <div className="flex flex-1 flex-col">
-                        <span>
-                          <span className="text-white">
-                            {isTracked ? 'Series is tracked' : 'Series is untracked'}
+                    </TooltipTrigger>
+                    <TooltipContent side="right">
+                      <div className="flex flex-1 flex-row">
+                        <div className="flex-2 flex items-center justify-center pr-4">
+                          <Icons.InfoLink className="text-primary-active" />
+                        </div>
+                        <div className="flex flex-1 flex-col">
+                          <span>
+                            <span className="text-white">
+                              {isTracked ? 'Series is tracked' : 'Series is untracked'}
+                            </span>
                           </span>
-                        </span>
+                        </div>
                       </div>
-                    </div>
-                  }
-                >
-                  <div className="group">
-                    <Icon
-                      name="icon-status-tracking"
-                      className="text-primary-light h-[20px] w-[20px] group-hover:hidden"
-                    />
-                    <Icon
-                      name="cancel"
-                      className="text-primary-light hidden h-[15px] w-[15px] group-hover:block"
-                      onClick={onClickUntrack}
-                    />
-                  </div>
-                </Tooltip>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
               )}
             </div>
           </div>
@@ -143,15 +136,9 @@ const Thumbnail = ({
               <div className="flex items-center gap-[4px]">
                 {' '}
                 {countIcon ? (
-                  <Icon
-                    name={countIcon}
-                    className="w-3"
-                  />
+                  React.createElement(Icons[countIcon] || Icons.MissingIcon, { className: 'w-3' })
                 ) : (
-                  <Icon
-                    name={'info-series'}
-                    className="w-3"
-                  />
+                  <Icons.InfoSeries className="w-3" />
                 )}
                 <div>{numInstances}</div>
               </div>
@@ -188,15 +175,9 @@ const Thumbnail = ({
                 <div className="flex items-center gap-[4px]">
                   {' '}
                   {countIcon ? (
-                    <Icon
-                      name={countIcon}
-                      className="w-3"
-                    />
+                    React.createElement(Icons[countIcon] || Icons.MissingIcon, { className: 'w-3' })
                   ) : (
-                    <Icon
-                      name={'info-series'}
-                      className="w-3"
-                    />
+                    <Icons.InfoSeries className="w-3" />
                   )}
                   <div>{numInstances}</div>
                 </div>
@@ -210,45 +191,39 @@ const Thumbnail = ({
             id={`display-set-tooltip-${displaySetInstanceUID}`}
           />
           {canReject && (
-            <Icon
-              name="old-trash"
+            <Icons.Trash
               className="h-[20px] w-[20px] text-red-500"
               onClick={onReject}
             />
           )}
           {isTracked && (
-            <Tooltip
-              position="right"
-              content={
-                <div className="flex flex-1 flex-row">
-                  <div className="flex-2 flex items-center justify-center pr-4">
-                    <Icon
-                      name="info-link"
-                      className="text-primary-active"
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger>
+                  <div className="group">
+                    <Icons.StatusTracking className="text-primary-light h-[20px] w-[20px] group-hover:hidden" />
+                    <Icons.Cancel
+                      className="text-primary-light hidden h-[15px] w-[15px] group-hover:block"
+                      onClick={onClickUntrack}
                     />
                   </div>
-                  <div className="flex flex-1 flex-col">
-                    <span>
-                      <span className="text-white">
-                        {isTracked ? 'Series is tracked' : 'Series is untracked'}
+                </TooltipTrigger>
+                <TooltipContent side="right">
+                  <div className="flex flex-1 flex-row">
+                    <div className="flex-2 flex items-center justify-center pr-4">
+                      <Icons.InfoLink className="text-primary-active" />
+                    </div>
+                    <div className="flex flex-1 flex-col">
+                      <span>
+                        <span className="text-white">
+                          {isTracked ? 'Series is tracked' : 'Series is untracked'}
+                        </span>
                       </span>
-                    </span>
+                    </div>
                   </div>
-                </div>
-              }
-            >
-              <div className="group">
-                <Icon
-                  name="icon-status-tracking"
-                  className="text-primary-light h-[20px] w-[20px] group-hover:hidden"
-                />
-                <Icon
-                  name="cancel"
-                  className="text-primary-light hidden h-[15px] w-[15px] group-hover:block"
-                  onClick={onClickUntrack}
-                />
-              </div>
-            </Tooltip>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           )}
         </div>
       </div>
@@ -270,7 +245,6 @@ const Thumbnail = ({
       onDoubleClick={onDoubleClick}
       onTouchEnd={handleTouchEnd}
       role="button"
-      tabIndex="0"
     >
       <div
         ref={drag}
@@ -300,7 +274,7 @@ Thumbnail.propTypes = {
   }),
   imageAltText: PropTypes.string,
   description: PropTypes.string.isRequired,
-  seriesNumber: StringNumber.isRequired,
+  seriesNumber: PropTypes.string.isRequired,
   numInstances: PropTypes.number.isRequired,
   loadingProgress: PropTypes.number,
   messages: PropTypes.object,

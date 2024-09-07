@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
-import { StudyBrowser, useImageViewer, useViewportGrid } from '@ohif/ui';
+import { useImageViewer, useViewportGrid } from '@ohif/ui';
+import { StudyBrowser } from '@ohif/ui-next';
 import { utils } from '@ohif/core';
 import { useNavigate } from 'react-router-dom';
 import { Separator } from '@ohif/ui-next';

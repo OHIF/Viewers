@@ -9,14 +9,14 @@ import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from '../Too
  * @param param0
  * @returns
  */
-const DisplaySetMessageListTooltip = ({ messages }): React.ReactNode => {
+const DisplaySetMessageListTooltip = ({ messages, id }): React.ReactNode => {
   const { t } = useTranslation('Messages');
   if (messages?.size()) {
     return (
       <>
         <TooltipProvider>
           <Tooltip>
-            <TooltipTrigger>
+            <TooltipTrigger id={id}>
               <Icons.StatusWarning className="h-[20px] w-[20px]" />
             </TooltipTrigger>
             <TooltipContent side="right">
@@ -60,6 +60,7 @@ const DisplaySetMessageListTooltip = ({ messages }): React.ReactNode => {
 
 DisplaySetMessageListTooltip.propTypes = {
   messages: PropTypes.object,
+  id: PropTypes.string,
 };
 
 export default DisplaySetMessageListTooltip;
