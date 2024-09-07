@@ -1,7 +1,8 @@
 import React from 'react';
 
 import { useAppConfig } from '@state';
-import { Toolbox } from '@ohif/ui-next';
+import { Toolbox as NewToolbox } from '@ohif/ui-next';
+import { Toolbox as OldToolbox } from '@ohif/ui';
 import PanelSegmentation from './panels/PanelSegmentation';
 
 const getPanelModule = ({
@@ -57,6 +58,8 @@ const getPanelModule = ({
     tab,
   }) => {
     const [appConfig] = useAppConfig();
+
+    const Toolbox = appConfig.useExperimentalUI ? NewToolbox : OldToolbox;
 
     return (
       <>

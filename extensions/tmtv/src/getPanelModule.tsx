@@ -1,6 +1,8 @@
 import React from 'react';
 import { PanelPetSUV, PanelROIThresholdExport } from './Panels';
-import { Toolbox } from '@ohif/ui-next';
+import { Toolbox as NewToolbox } from '@ohif/ui-next';
+import { Toolbox as OldToolbox } from '@ohif/ui';
+import { useAppConfig } from '@state';
 
 // TODO:
 // - No loading UI exists yet
@@ -22,6 +24,10 @@ function getPanelModule({ commandsManager, extensionManager, servicesManager }) 
   };
 
   const wrappedROIThresholdToolbox = ({ renderHeader, getCloseIcon, tab }: withAppTypes) => {
+    const [appConfig] = useAppConfig();
+
+    const Toolbox = appConfig.useExperimentalUI ? NewToolbox : OldToolbox;
+
     return (
       <>
         <Toolbox

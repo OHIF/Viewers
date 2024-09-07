@@ -1,6 +1,8 @@
 import React from 'react';
 import { DynamicDataPanel } from './panels';
-import { Toolbox } from '@ohif/ui-next';
+import { Toolbox as NewToolbox } from '@ohif/ui-next';
+import { Toolbox as OldToolbox } from '@ohif/ui';
+import { useAppConfig } from '@state';
 import DynamicExport from './panels/DynamicExport';
 
 function getPanelModule({ commandsManager, extensionManager, servicesManager }) {
@@ -18,6 +20,9 @@ function getPanelModule({ commandsManager, extensionManager, servicesManager }) 
   };
 
   const wrappedDynamicToolbox = ({ renderHeader, getCloseIcon, tab }) => {
+    const [appConfig] = useAppConfig();
+
+    const Toolbox = appConfig.useExperimentalUI ? NewToolbox : OldToolbox;
     return (
       <>
         <Toolbox
