@@ -31,6 +31,9 @@ export type ViewportOptions = {
   displayArea?: Types.DisplayArea;
   syncGroups?: SyncGroup[];
   initialImageOptions?: InitialImageOptions;
+  rotation?: number;
+  flipHorizontal?: boolean;
+  viewReference?: Types.ViewReference;
   customViewportProps?: Record<string, unknown>;
   /*
    * Allows drag and drop of display sets not matching viewport options, but
@@ -49,6 +52,8 @@ export type PublicViewportOptions = {
   background?: Types.Point3;
   displayArea?: Types.DisplayArea;
   syncGroups?: SyncGroup[];
+  rotation?: number;
+  flipHorizontal?: boolean;
   initialImageOptions?: InitialImageOptions;
   customViewportProps?: Record<string, unknown>;
   allowUnmatchedView?: boolean;
@@ -130,6 +135,7 @@ class ViewportInfo {
   private displaySetOptions: Array<DisplaySetOptions>;
   private viewportData: StackViewportData | VolumeViewportData;
   private renderingEngineId: string;
+  private viewReference: Types.ViewReference;
 
   constructor(viewportId: string) {
     this.viewportId = viewportId;
@@ -201,6 +207,10 @@ class ViewportInfo {
     return this.viewportId;
   }
 
+  public getViewReference(): Types.ViewReference {
+    return this.viewportOptions?.viewReference;
+  }
+
   public setPublicDisplaySetOptions(
     publicDisplaySetOptions: PublicDisplaySetOptions[] | DisplaySetSelector[]
   ): Array<DisplaySetOptions> {
@@ -232,21 +242,22 @@ class ViewportInfo {
     return viewportData.data.displaySetInstanceUID === displaySetInstanceUID;
   }
 
-  public setPublicViewportOptions(viewportOptionsEntry: PublicViewportOptions): ViewportOptions {
-    let viewportType = viewportOptionsEntry.viewportType;
-    const { toolGroupId = DEFAULT_TOOLGROUP_ID, presentationIds } = viewportOptionsEntry;
-    let orientation;
+  /**
+   *
+   * @param viewportOptionsEntry - the base values for the options
+   * @param viewportTypeDisplaySet  - allows overriding the viewport type
+   */
+  public setPublicViewportOptions(
+    viewportOptionsEntry: PublicViewportOptions,
+    viewportTypeDisplaySet?: string
+  ): ViewportOptions {
+    const ohifViewportType = viewportTypeDisplaySet || viewportOptionsEntry.viewportType || STACK;
+    const { presentationIds } = viewportOptionsEntry;
+    let { toolGroupId = DEFAULT_TOOLGROUP_ID } = viewportOptionsEntry;
+    // Just assign the orientation for any viewport type and let the viewport deal with it
+    const orientation = getCornerstoneOrientation(viewportOptionsEntry.orientation);
 
-    if (!viewportType) {
-      viewportType = getCornerstoneViewportType(STACK);
-    } else {
-      viewportType = getCornerstoneViewportType(viewportOptionsEntry.viewportType);
-    }
-
-    // map SAGITTAL, AXIAL, CORONAL orientation to be used by cornerstone
-    if (viewportOptionsEntry.viewportType?.toLowerCase() !== STACK) {
-      orientation = getCornerstoneOrientation(viewportOptionsEntry.orientation);
-    }
+    const viewportType = getCornerstoneViewportType(ohifViewportType);
 
     if (!toolGroupId) {
       toolGroupId = DEFAULT_TOOLGROUP_ID;

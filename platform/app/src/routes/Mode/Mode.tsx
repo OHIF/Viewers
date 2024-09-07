@@ -240,7 +240,7 @@ export default function ModeRoute({
         Array.from(query.keys()).reduce((acc: Record<string, string>, val: string) => {
           const lowerVal = val.toLowerCase();
           // Not sure why the case matters here - it doesn't in the URL
-          if (lowerVal === 'seriesinstanceuids') {
+          if (lowerVal === 'seriesinstanceuids' || lowerVal === 'seriesinstanceuid') {
             const seriesUIDs = getSplitParam(lowerVal, query);
             return {
               ...acc,

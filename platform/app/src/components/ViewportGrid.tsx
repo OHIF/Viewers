@@ -168,33 +168,31 @@ function ViewerViewportGrid(props: withAppTypes) {
         const { displaySetInstanceUID: referencedDisplaySetInstanceUID } = measurement;
 
         const updatedViewports = _getUpdatedViewports(viewportId, referencedDisplaySetInstanceUID);
-        // Arbitrarily assign the viewport to element 0
-        const viewport = updatedViewports?.[0];
-
-        if (!viewport) {
+        if (!updatedViewports[0]) {
           console.warn(
             'ViewportGrid::Unable to navigate to viewport containing',
             referencedDisplaySetInstanceUID
           );
           return;
         }
+        // Arbitrarily assign the viewport to element 0
+        // TODO - this should perform a search to find the most suitable viewport.
+        updatedViewports[0] = { ...updatedViewports[0] };
+        const [viewport] = updatedViewports;
 
-        viewport.viewportOptions ||= {};
-        viewport.viewportOptions.orientation = 'acquisition';
+        // Copy the viewport options to prevent modifying the internal data
+        viewport.viewportOptions = {
+          ...viewport.viewportOptions,
+          orientation: 'acquisition',
+          // The preferred way to jump to the measurement view is to set the
+          // view reference, as this can hold information such as the orientation
+          // or zoom level required to display an annotation.  The metadata attribute
+          // of the measurement is a viewReference, so use it to show the measurement.
+          // Longer term this should clear the view reference data
+          viewReference: measurement.metadata,
+          viewportType: measurement.metadata.volumeId ? 'volume' : null,
+        };
 
-        const displaySet = displaySetService.getDisplaySetByUID(referencedDisplaySetInstanceUID);
-        // jump straight to the initial image index if we can
-        if (displaySet.images && measurement.SOPInstanceUID) {
-          for (let index = 0; index < displaySet.images.length; index++) {
-            const image = displaySet.images[index];
-            if (image.SOPInstanceUID === measurement.SOPInstanceUID) {
-              viewport.viewportOptions.initialImageOptions = {
-                index,
-              };
-              break;
-            }
-          }
-        }
         viewportGridService.setDisplaySetsForViewports(updatedViewports);
       }
     );
@@ -337,11 +335,6 @@ function ViewerViewportGrid(props: withAppTypes) {
     </div>
   );
 }
-
-ViewerViewportGrid.propTypes = {
-  viewportComponents: PropTypes.array.isRequired,
-  servicesManager: PropTypes.instanceOf(Object).isRequired,
-};
 
 function _getViewportComponent(displaySets, viewportComponents, uiNotificationService) {
   if (!displaySets || !displaySets.length) {

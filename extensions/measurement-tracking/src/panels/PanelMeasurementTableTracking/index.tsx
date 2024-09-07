@@ -292,7 +292,7 @@ function _mapMeasurementToDisplay(measurement, types, displaySetService) {
 
   const displaySets = displaySetService.getDisplaySetsForSeries(referenceSeriesUID);
 
-  if (!displaySets[0] || !displaySets[0].images) {
+  if (!displaySets[0]?.instances) {
     throw new Error('The tracked measurements panel should only be tracking "stack" displaySets.');
   }
 

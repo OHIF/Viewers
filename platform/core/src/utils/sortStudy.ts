@@ -26,6 +26,8 @@ function seriesInfoSortingCriteria(firstSeries, secondSeries) {
   const bLowPriority = isLowPriorityModality(secondSeries.Modality ?? secondSeries.modality);
 
   if (aLowPriority) {
+    // Use the reverse sort order for low priority modalities so that the
+    // most recent one comes up first as usually that is the one of interest.
     return bLowPriority ? defaultSeriesSort(secondSeries, firstSeries) : 1;
   } else if (bLowPriority) {
     return -1;
