@@ -21,6 +21,16 @@ import {
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
+  Icons,
+  SidePanel,
+  StudyItem,
+  StudyBrowser,
+  StudyBrowserSort,
+  StudyBrowserViewOptions,
+  Thumbnail,
+  ThumbnailList,
+  PanelSection,
+  DisplaySetMessageListTooltip,
 } from './components';
 
 import { useNotification, NotificationProvider } from './contextProviders';
@@ -52,4 +62,14 @@ export {
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
+  Icons,
+  SidePanel,
+  StudyItem,
+  StudyBrowser,
+  StudyBrowserSort,
+  StudyBrowserViewOptions,
+  Thumbnail,
+  ThumbnailList,
+  PanelSection,
+  DisplaySetMessageListTooltip,
 };

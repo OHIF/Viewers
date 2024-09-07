@@ -1,19 +1,15 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
-import { useTranslation } from 'react-i18next';
 import ThumbnailList from '../ThumbnailList';
 
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@ohif/ui-next';
-
-import Icon from '../Icon';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../Accordion';
 
 const StudyItem = ({
   date,
   description,
   numInstances,
   modalities,
-  trackedSeries,
   isActive,
   onClick,
   isExpanded,
@@ -24,7 +20,6 @@ const StudyItem = ({
   onClickUntrack,
   viewPreset = 'thumbnails',
 }) => {
-  const { t } = useTranslation('StudyItem');
   return (
     <Accordion
       type="single"

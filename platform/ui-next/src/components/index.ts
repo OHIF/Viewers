@@ -18,6 +18,15 @@ import { Slider } from './Slider';
 import { ScrollArea, ScrollBar } from './ScrollArea';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from './Accordion';
 import { Icons } from './Icons';
+import SidePanel from './SidePanel';
+import StudyItem from './StudyItem';
+import StudyBrowser from './StudyBrowser';
+import StudyBrowserSort from './StudyBrowserSort';
+import StudyBrowserViewOptions from './StudyBrowserViewOptions';
+import Thumbnail from './Thumbnail';
+import ThumbnailList from './ThumbnailList';
+import PanelSection from './PanelSection';
+import DisplaySetMessageListTooltip from './DisplaySetMessageListTooltip';
 
 export {
   Button,
@@ -50,4 +59,13 @@ export {
   AccordionItem,
   AccordionTrigger,
   Icons,
+  SidePanel,
+  StudyItem,
+  StudyBrowser,
+  StudyBrowserSort,
+  StudyBrowserViewOptions,
+  Thumbnail,
+  ThumbnailList,
+  PanelSection,
+  DisplaySetMessageListTooltip,
 };

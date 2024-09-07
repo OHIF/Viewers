@@ -2,7 +2,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import StudyItem from '../StudyItem';
-import { StringNumber } from '../../types';
 import StudyBrowserSort from '../StudyBrowserSort';
 import StudyBrowserViewOptions from '../StudyBrowserViewOptions';
 
@@ -116,7 +115,7 @@ StudyBrowser.propTypes = {
               imageSrc: PropTypes.string,
               imageAltText: PropTypes.string,
               seriesDate: PropTypes.string,
-              seriesNumber: StringNumber,
+              seriesNumber: PropTypes.string,
               numInstances: PropTypes.number,
               description: PropTypes.string,
               componentType: PropTypes.oneOf(['thumbnail', 'thumbnailTracked', 'thumbnailNoImage'])

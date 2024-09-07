@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Icon } from '@ohif/ui';
+import { Icons } from '../Icons';
 import PropTypes from 'prop-types';
 
 const PanelSection = ({ title, children, actionIcons = [], childrenClassName }) => {
@@ -17,21 +17,23 @@ const PanelSection = ({ title, children, actionIcons = [], childrenClassName }) 
       >
         <div className="text-aqua-pale">{title}</div>
         <div className="flex items-center space-x-1">
-          {actionIcons.map((icon, index) => (
-            <Icon
-              key={index}
-              name={icon.name}
-              onClick={e => {
-                e.stopPropagation();
-                if (!areChildrenVisible) {
-                  setChildrenVisible(true);
-                }
-                icon.onClick();
-              }}
-            />
-          ))}
+          {actionIcons.map((icon, index) => {
+            const Icon = Icons[icon.name];
+            return (
+              <Icon
+                key={index}
+                onClick={e => {
+                  e.stopPropagation();
+                  if (!areChildrenVisible) {
+                    setChildrenVisible(true);
+                  }
+                  icon.onClick();
+                }}
+              />
+            );
+          })}
           <div className="grid h-[28px] w-[28px] place-items-center">
-            <Icon name={areChildrenVisible ? 'chevron-down-new' : 'chevron-left-new'} />
+            {areChildrenVisible ? <Icons.ChevronOpen /> : <Icons.ChevronClosed />}
           </div>
         </div>
       </div>
