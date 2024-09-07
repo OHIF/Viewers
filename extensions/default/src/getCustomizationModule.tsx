@@ -190,12 +190,12 @@ export default function getCustomizationModule({ servicesManager, extensionManag
           value: [
             {
               id: 'list',
-              iconName: 'icon-list-view',
+              iconName: 'ListView',
               selected: false,
             },
             {
               id: 'thumbnails',
-              iconName: 'icon-thumbnail-view',
+              iconName: 'ThumbnailView',
               selected: true,
             },
           ],

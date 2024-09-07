@@ -36,8 +36,8 @@ const classesMap = {
 };
 
 const openStateIconName = {
-  left: 'side-panel-close-left',
-  right: 'side-panel-close-right',
+  left: 'SidePanelCloseLeft',
+  right: 'SidePanelCloseRight',
 };
 
 const getTabWidth = (numTabs: number) => {

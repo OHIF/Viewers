@@ -274,7 +274,7 @@ Thumbnail.propTypes = {
   }),
   imageAltText: PropTypes.string,
   description: PropTypes.string.isRequired,
-  seriesNumber: PropTypes.string.isRequired,
+  seriesNumber: PropTypes.any,
   numInstances: PropTypes.number.isRequired,
   loadingProgress: PropTypes.number,
   messages: PropTypes.object,

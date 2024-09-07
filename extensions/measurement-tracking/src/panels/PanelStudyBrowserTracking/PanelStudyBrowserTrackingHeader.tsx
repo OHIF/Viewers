@@ -1,6 +1,6 @@
 import React from 'react';
 import { ToggleGroup, ToggleGroupItem } from '@ohif/ui-next';
-import { Icon } from '@ohif/ui';
+import { Icons } from '@ohif/ui-next';
 import { actionIcon, viewPreset } from './types';
 
 function PanelStudyBrowserTrackingHeader({
@@ -39,7 +39,7 @@ function PanelStudyBrowserTrackingHeader({
                     value={viewPreset.id}
                     className="text-actions-primary"
                   >
-                    <Icon name={viewPreset.iconName} />
+                    {React.createElement(Icons[viewPreset.iconName] || Icons.MissingIcon)}
                   </ToggleGroupItem>
                 ))}
               </ToggleGroup>
@@ -52,14 +52,13 @@ function PanelStudyBrowserTrackingHeader({
 
             <div className="mr-[30px] flex items-center justify-center">
               <div className="flex items-center space-x-1">
-                {actionIcons.map((icon: actionIcon, index) => (
-                  <Icon
-                    key={index}
-                    name={icon.iconName}
-                    onClick={() => updateActionIconValue(icon)}
-                    className={`cursor-pointer`}
-                  />
-                ))}
+                {actionIcons.map((icon: actionIcon, index) =>
+                  React.createElement(Icons[icon.iconName] || Icons.MissingIcon, {
+                    key: index,
+                    onClick: () => updateActionIconValue(icon),
+                    className: `cursor-pointer`,
+                  })
+                )}
               </div>
             </div>
           </div>
