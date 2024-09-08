@@ -3,6 +3,8 @@ import React from 'react';
 type IconProps = React.HTMLAttributes<SVGElement>;
 
 export const Icons = {
+  // Usage example: <Icons.ArrowLeft />
+
   ChevronClosed: (props: IconProps) => (
     <svg
       width="24px"
@@ -422,7 +424,7 @@ export const Icons = {
       </g>
     </svg>
   ),
-  InfoMPR: (props: IconProps) => (
+  IconMPR: (props: IconProps) => (
     <svg
       width="12px"
       height="12px"
@@ -745,32 +747,7 @@ export const Icons = {
       </g>
     </svg>
   ),
-  MissingIcon: (props: IconProps) => (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      {...props}
-    >
-      <g
-        fill="none"
-        fillRule="evenodd"
-      >
-        <path
-          fill="currentColor"
-          d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm0 22.5c-5.799 0-10.5-4.701-10.5-10.5S6.201 1.5 12 1.5 22.5 6.201 22.5 12 17.799 22.5 12 22.5z"
-        />
-        <path
-          stroke="currentColor"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth="1.5"
-          d="M12 6v6M12 15"
-        />
-      </g>
-    </svg>
-  ),
+  MissingIcon: (props: IconProps) => <div>Missing icon</div>,
   Settings: (props: IconProps) => (
     <svg
       width="15.7826087px"
@@ -1253,10 +1230,13 @@ export const Icons = {
       </g>
     </svg>
   ),
+
+  // Aliases
   'tab-segmentation': (props: IconProps) => Icons.TabSegmentation(props),
   'tab-studies': (props: IconProps) => Icons.TabStudies(props),
   'tab-linear': (props: IconProps) => Icons.TabLinear(props),
   'tab-4d': (props: IconProps) => Icons.Tab4D(props),
   'tab-patient-info': (props: IconProps) => Icons.TabPatientInfo(props),
   'tab-roi-threshold': (props: IconProps) => Icons.TabRoiThreshold(props),
+  'icon-mpr': (props: IconProps) => Icons.IconMPR(props),
 };

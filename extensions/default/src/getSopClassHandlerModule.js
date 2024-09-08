@@ -91,7 +91,7 @@ const makeDisplaySet = instances => {
     SeriesDescription: instance.SeriesDescription || '',
     Modality: instance.Modality,
     isMultiFrame: isMultiFrame(instance),
-    countIcon: isReconstructable ? 'InfoMPR' : undefined,
+    countIcon: isReconstructable ? 'icon-mpr' : undefined,
     numImageFrames: instances.length,
     SOPClassHandlerId: `${id}.sopClassHandlerModule.${sopClassHandlerName}`,
     isReconstructable,
