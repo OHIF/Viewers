@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.9.0-beta.82](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.81...v3.9.0-beta.82) (2024-09-05)
+
+
+### Bug Fixes
+
+* Add kheops integration into OHIF v3 again ([#4345](https://github.com/OHIF/Viewers/issues/4345)) ([e1feffa](https://github.com/OHIF/Viewers/commit/e1feffa42553d6c8650a4aceb09f72c637126660))
+
+
+
+
+
 # [3.9.0-beta.81](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.80...v3.9.0-beta.81) (2024-08-27)
 
 
