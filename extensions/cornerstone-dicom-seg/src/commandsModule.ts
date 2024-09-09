@@ -229,16 +229,45 @@ const commandsModule = ({
     generateSegmentation: ({ segmentationId, options = {} }) => {
       const segmentation = cornerstoneToolsSegmentation.state.getSegmentation(segmentationId);
 
-      const { referencedVolumeId } = segmentation.representationData.LABELMAP;
+      const { imageIds } = segmentation.representationData.Labelmap;
 
-      const segmentationVolume = cache.getVolume(segmentationId);
-      const referencedVolume = cache.getVolume(referencedVolumeId);
-      const referencedImages = referencedVolume.getCornerstoneImages();
+      const segImages = imageIds.map(imageId => cache.getImage(imageId));
+      const referencedImages = segImages.map(image => cache.getImage(image.referencedImageId));
 
-      const labelmapObj = generateLabelMaps2DFrom3D(segmentationVolume);
+      const labelmaps2D = [];
 
-      // Generate fake metadata as an example
-      labelmapObj.metadata = [];
+      let z = 0;
+
+      for (const segImage of segImages) {
+        const segmentsOnLabelmap = [];
+
+        const pixelData = segImage.getPixelData();
+        const { rows, columns } = segImage;
+        for (let i = 0; i < pixelData.length; i++) {
+          const segment = pixelData[i];
+          if (!segmentsOnLabelmap.includes(segment) && segment !== 0) {
+            segmentsOnLabelmap.push(segment);
+          }
+        }
+
+        const labelmap2D = {
+          segmentsOnLabelmap,
+          pixelData,
+          rows,
+          columns,
+        };
+
+        labelmaps2D[z] = labelmap2D;
+        z++;
+      }
+
+      const allSegmentsOnLabelmap = labelmaps2D.map(labelmap => labelmap.segmentsOnLabelmap);
+
+      const labelmap3D = {
+        segmentsOnLabelmap: Array.from(new Set(allSegmentsOnLabelmap.flat())),
+        metadata: [],
+        labelmaps2D,
+      };
 
       const segmentationInOHIF = segmentationService.getSegmentation(segmentationId);
       segmentationInOHIF.segments.forEach(segment => {
@@ -270,12 +299,12 @@ const commandsModule = ({
             CodeMeaning: 'Tissue',
           },
         };
-        labelmapObj.metadata[segmentIndex] = segmentMetadata;
+        labelmap3D.metadata[segmentIndex] = segmentMetadata;
       });
 
       const generatedSegmentation = generateSegmentation(
         referencedImages,
-        labelmapObj,
+        labelmap3D,
         metaData,
         options
       );
