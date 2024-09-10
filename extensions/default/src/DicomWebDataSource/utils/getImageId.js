@@ -29,7 +29,7 @@ export default function getImageId({ instance, frame, config, thumbnail = false 
     return;
   }
 
-  if (instance.imageId) {
+  if (instance.imageId && frame === undefined) {
     return instance.imageId;
   }
 

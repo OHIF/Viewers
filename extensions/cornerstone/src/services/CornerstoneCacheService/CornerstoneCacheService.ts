@@ -175,6 +175,8 @@ class CornerstoneCacheService {
 
       if (!stackImageIds) {
         stackImageIds = this._getCornerstoneStackImageIds(displaySet, dataSource);
+        // assign imageIds to the displaySet
+        displaySet.imageIds = stackImageIds;
         this.stackImageIds.set(displaySet.displaySetInstanceUID, stackImageIds);
       }
 
