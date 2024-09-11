@@ -48,8 +48,10 @@ function modeFactory({ modeConfiguration }) {
       // Init Default and SR ToolGroups
       initToolGroups(extensionManager, toolGroupService, commandsManager);
 
+      const buttonSectionId = 'primary';
+      const extensionsToolbarSection = toolbarService.getButtonSection(buttonSectionId) ?? [];
       toolbarService.addButtons(toolbarButtons);
-      toolbarService.createButtonSection('primary', [
+      toolbarService.createButtonSection(buttonSectionId, [
         'MeasurementTools',
         'Zoom',
         'WindowLevel',
@@ -58,6 +60,7 @@ function modeFactory({ modeConfiguration }) {
         'Layout',
         'Crosshairs',
         'MoreTools',
+        ...extensionsToolbarSection.map(button => button.id),
       ]);
     },
     onModeExit: ({ servicesManager }: withAppTypes) => {
