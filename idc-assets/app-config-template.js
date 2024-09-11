@@ -17,6 +17,9 @@ window.config = {
       );
     },
   },
+  investigationalUseDialog: {
+    option: 'never',
+  },
   extensions: [],
   modes: [],
   customizationService: {},
