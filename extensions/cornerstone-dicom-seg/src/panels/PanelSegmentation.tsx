@@ -6,6 +6,7 @@ import { SegmentationPanelMode } from '../types/segmentation';
 import callInputDialog from './callInputDialog';
 import callColorPickerDialog from './colorPickerDialog';
 import { useTranslation } from 'react-i18next';
+import { Separator } from '@ohif/ui-next';
 
 const components = {
   [SegmentationPanelMode.Expanded]: SegmentationGroupTableExpanded,
@@ -17,6 +18,9 @@ export default function PanelSegmentation({
   commandsManager,
   extensionManager,
   configuration,
+  renderHeader,
+  getCloseIcon,
+  tab,
 }: withAppTypes) {
   const {
     segmentationService,
@@ -319,52 +323,76 @@ export default function PanelSegmentation({
       : onSegmentationAdd;
 
   return (
-    <SegmentationGroupTableComponent
-      title={t('Segmentations')}
-      segmentations={segmentations}
-      disableEditing={configuration.disableEditing}
-      activeSegmentationId={selectedSegmentationId || ''}
-      onSegmentationAdd={onSegmentationAddWrapper}
-      addSegmentationClassName={addSegmentationClassName}
-      showAddSegment={allowAddSegment}
-      onSegmentationClick={onSegmentationClick}
-      onSegmentationDelete={onSegmentationDelete}
-      onSegmentationDownload={onSegmentationDownload}
-      onSegmentationDownloadRTSS={onSegmentationDownloadRTSS}
-      storeSegmentation={storeSegmentation}
-      onSegmentationEdit={onSegmentationEdit}
-      onSegmentClick={onSegmentClick}
-      onSegmentEdit={onSegmentEdit}
-      onSegmentAdd={onSegmentAdd}
-      onSegmentColorClick={onSegmentColorClick}
-      onSegmentDelete={onSegmentDelete}
-      onToggleSegmentVisibility={onToggleSegmentVisibility}
-      onToggleSegmentLock={onToggleSegmentLock}
-      onToggleSegmentationVisibility={onToggleSegmentationVisibility}
-      showDeleteSegment={true}
-      segmentationConfig={{ initialConfig: segmentationConfiguration }}
-      setRenderOutline={value =>
-        _setSegmentationConfiguration(selectedSegmentationId, 'renderOutline', value)
-      }
-      setOutlineOpacityActive={value =>
-        _setSegmentationConfiguration(selectedSegmentationId, 'outlineOpacity', value)
-      }
-      setRenderFill={value =>
-        _setSegmentationConfiguration(selectedSegmentationId, 'renderFill', value)
-      }
-      setRenderInactiveSegmentations={value =>
-        _setSegmentationConfiguration(selectedSegmentationId, 'renderInactiveSegmentations', value)
-      }
-      setOutlineWidthActive={value =>
-        _setSegmentationConfiguration(selectedSegmentationId, 'outlineWidthActive', value)
-      }
-      setFillAlpha={value =>
-        _setSegmentationConfiguration(selectedSegmentationId, 'fillAlpha', value)
-      }
-      setFillAlphaInactive={value =>
-        _setSegmentationConfiguration(selectedSegmentationId, 'fillAlphaInactive', value)
-      }
-    />
+    <>
+      {renderHeader && (
+        <>
+          <div className="bg-primary-dark flex select-none rounded-t pt-1.5 pb-[2px]">
+            <div className="flex h-[24px] w-full cursor-pointer select-none justify-center self-center text-[14px]">
+              <div className="text-primary-active flex grow cursor-pointer select-none justify-center self-center text-[13px]">
+                <span>{tab.label}</span>
+              </div>
+            </div>
+
+            {getCloseIcon()}
+          </div>
+          <Separator
+            orientation="horizontal"
+            className="bg-black"
+            thickness="2px"
+          />
+        </>
+      )}
+      <SegmentationGroupTableComponent
+        title={t('Segmentations')}
+        segmentations={segmentations}
+        disableEditing={configuration.disableEditing}
+        activeSegmentationId={selectedSegmentationId || ''}
+        onSegmentationAdd={onSegmentationAddWrapper}
+        addSegmentationClassName={addSegmentationClassName}
+        showAddSegment={allowAddSegment}
+        onSegmentationClick={onSegmentationClick}
+        onSegmentationDelete={onSegmentationDelete}
+        onSegmentationDownload={onSegmentationDownload}
+        onSegmentationDownloadRTSS={onSegmentationDownloadRTSS}
+        storeSegmentation={storeSegmentation}
+        onSegmentationEdit={onSegmentationEdit}
+        onSegmentClick={onSegmentClick}
+        onSegmentEdit={onSegmentEdit}
+        onSegmentAdd={onSegmentAdd}
+        onSegmentColorClick={onSegmentColorClick}
+        onSegmentDelete={onSegmentDelete}
+        onToggleSegmentVisibility={onToggleSegmentVisibility}
+        onToggleSegmentLock={onToggleSegmentLock}
+        onToggleSegmentationVisibility={onToggleSegmentationVisibility}
+        showDeleteSegment={true}
+        segmentationConfig={{ initialConfig: segmentationConfiguration }}
+        setRenderOutline={value =>
+          _setSegmentationConfiguration(selectedSegmentationId, 'renderOutline', value)
+        }
+        setOutlineOpacityActive={value =>
+          _setSegmentationConfiguration(selectedSegmentationId, 'outlineOpacity', value)
+        }
+        setRenderFill={value =>
+          _setSegmentationConfiguration(selectedSegmentationId, 'renderFill', value)
+        }
+        setRenderInactiveSegmentations={value =>
+          _setSegmentationConfiguration(
+            selectedSegmentationId,
+            'renderInactiveSegmentations',
+            value
+          )
+        }
+        setOutlineWidthActive={value =>
+          _setSegmentationConfiguration(selectedSegmentationId, 'outlineWidthActive', value)
+        }
+        setFillAlpha={value =>
+          _setSegmentationConfiguration(selectedSegmentationId, 'fillAlpha', value)
+        }
+        setFillAlphaInactive={value =>
+          _setSegmentationConfiguration(selectedSegmentationId, 'fillAlphaInactive', value)
+        }
+      />
+    </>
   );
 }
 
