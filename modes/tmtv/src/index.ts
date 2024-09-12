@@ -89,17 +89,13 @@ function modeFactory({ modeConfiguration }) {
       );
 
       unsubscriptions.push(unsubscribe);
-
-      const buttonSectionId = 'primary';
-      const extensionsToolbarSection = toolbarService.getButtonSection(buttonSectionId) ?? [];
       toolbarService.addButtons(toolbarButtons);
-      toolbarService.createButtonSection(buttonSectionId, [
+      toolbarService.createButtonSection('primary', [
         'MeasurementTools',
         'Zoom',
         'WindowLevel',
         'Crosshairs',
         'Pan',
-        ...extensionsToolbarSection.map(button => button.id),
       ]);
       toolbarService.createButtonSection('ROIThresholdToolbox', [
         'RectangleROIStartEndThreshold',

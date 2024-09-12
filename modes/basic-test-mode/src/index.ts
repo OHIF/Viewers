@@ -87,10 +87,8 @@ function modeFactory() {
         '@ohif/extension-test.customizationModule.custom-context-menu',
       ]);
 
-      const buttonSectionId = 'primary';
-      const extensionsToolbarSection = toolbarService.getButtonSection(buttonSectionId) ?? [];
       toolbarService.addButtons([...toolbarButtons, ...moreTools]);
-      toolbarService.createButtonSection(buttonSectionId, [
+      toolbarService.createButtonSection('primary', [
         'MeasurementTools',
         'Zoom',
         'WindowLevel',
@@ -100,7 +98,6 @@ function modeFactory() {
         'MPR',
         'Crosshairs',
         'MoreTools',
-        ...extensionsToolbarSection.map(button => button.id),
       ]);
     },
     onModeExit: ({ servicesManager }: withAppTypes) => {

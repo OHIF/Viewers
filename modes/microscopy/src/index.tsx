@@ -50,15 +50,8 @@ function modeFactory({ modeConfiguration }) {
     onModeEnter: ({ servicesManager, extensionManager, commandsManager }: withAppTypes) => {
       const { toolbarService } = servicesManager.services;
 
-      const buttonSectionId = 'primary';
-      const extensionsToolbarSection = toolbarService.getButtonSection(buttonSectionId) ?? [];
       toolbarService.addButtons(toolbarButtons);
-      toolbarService.createButtonSection(buttonSectionId, [
-        'MeasurementTools',
-        'dragPan',
-        'TagBrowser',
-        ...extensionsToolbarSection.map(button => button.id),
-      ]);
+      toolbarService.createButtonSection('primary', ['MeasurementTools', 'dragPan', 'TagBrowser']);
     },
 
     onModeExit: ({ servicesManager }: withAppTypes) => {

@@ -57,13 +57,8 @@ function modeFactory({ modeConfiguration }) {
       measurementService.clearMeasurements();
       initToolGroups({ toolNames, Enums, toolGroupService, commandsManager, servicesManager });
 
-      const buttonSectionId = 'secondary';
-      const extensionsToolbarSection = toolbarService.getButtonSection(buttonSectionId) ?? [];
       toolbarService.addButtons([...toolbarButtons, ...segmentationButtons]);
-      toolbarService.createButtonSection(buttonSectionId, [
-        'ProgressDropdown',
-        ...extensionsToolbarSection.map(button => button.id),
-      ]);
+      toolbarService.createButtonSection('secondary', ['ProgressDropdown']);
 
       // the primary button section is created in the workflow steps
       // specific to the step
