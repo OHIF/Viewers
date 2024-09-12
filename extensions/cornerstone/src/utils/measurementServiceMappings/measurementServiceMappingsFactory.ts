@@ -12,6 +12,7 @@ import SplineROI from './SplineROI';
 import LivewireContour from './LivewireContour';
 import Probe from './Probe';
 import UltrasoundDirectional from './UltrasoundDirectional';
+import PlanarFreehandROIWithAxis from './PlanarFreehandROIWithAxis';
 
 const measurementServiceMappingsFactory = (
   measurementService: MeasurementService,
@@ -48,6 +49,7 @@ const measurementServiceMappingsFactory = (
       LivewireContour: POLYLINE,
       Probe: POINT,
       UltrasoundDirectional: POLYLINE,
+      PlanarFreehandROIWithAxis: POLYLINE,
     };
 
     return TOOL_TYPE_TO_VALUE_TYPE[toolType];
@@ -280,6 +282,22 @@ const measurementServiceMappingsFactory = (
         {
           valueType: MeasurementService.VALUE_TYPES.POLYLINE,
           points: 2,
+        },
+      ],
+    },
+    PlanarFreehandROIWithAxis: {
+      toAnnotation: PlanarFreehandROIWithAxis.toAnnotation,
+      toMeasurement: csToolsAnnotation =>
+        PlanarFreehandROIWithAxis.toMeasurement(
+          csToolsAnnotation,
+          displaySetService,
+          cornerstoneViewportService,
+          _getValueTypeFromToolType,
+          customizationService
+        ),
+      matchingCriteria: [
+        {
+          valueType: MeasurementService.VALUE_TYPES.POLYLINE,
         },
       ],
     },

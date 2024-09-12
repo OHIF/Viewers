@@ -85,6 +85,7 @@ function initDefaultToolGroup(
       },
       { toolName: toolNames.UltrasoundDirectional },
       { toolName: toolNames.PlanarFreehandROI },
+      { toolName: toolNames.PlanarFreehandROIWithAxis },
       { toolName: toolNames.SplineROI },
       { toolName: toolNames.LivewireContour },
       { toolName: toolNames.WindowLevelRegion },
@@ -237,6 +238,7 @@ function initMPRToolGroup(extensionManager, toolGroupService, commandsManager, m
       { toolName: toolNames.Angle },
       { toolName: toolNames.CobbAngle },
       { toolName: toolNames.PlanarFreehandROI },
+      { toolName: toolNames.PlanarFreehandROIWithAxis },
       { toolName: toolNames.SegmentationDisplay },
       { toolName: toolNames.WindowLevelRegion },
       {
