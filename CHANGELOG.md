@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.9.0-beta.84](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.83...v3.9.0-beta.84) (2024-09-12)
+
+
+### Features
+
+* **toolbar:** enable extensions to change toolbar button sections ([#4367](https://github.com/OHIF/Viewers/issues/4367)) ([1bfce0a](https://github.com/OHIF/Viewers/commit/1bfce0a03cbbb4cc1f69e8b5d1d72244b30d6b46))
+
+
+
+
+
 # [3.9.0-beta.83](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.82...v3.9.0-beta.83) (2024-09-11)
 
 
