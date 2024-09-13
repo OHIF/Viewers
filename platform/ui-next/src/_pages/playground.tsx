@@ -18,7 +18,7 @@ import {
   SelectScrollDownButton,
 } from '../components/Select';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '../components/Tabs';
-import { Separator } from '../components/Separator';
+import Separator from '../components/Separator';
 import { Switch } from '../components/Switch';
 import { Checkbox } from '../components/Checkbox';
 import { Toggle, toggleVariants } from '../components/Toggle';
