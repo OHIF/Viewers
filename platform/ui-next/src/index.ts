@@ -35,7 +35,12 @@ import {
   ToolboxUI,
 } from './components';
 
-import { useNotification, NotificationProvider } from './contextProviders';
+import {
+  useNotification,
+  NotificationProvider,
+  OnboardingProvider,
+  useOnboardingProvider,
+} from './contextProviders';
 
 export {
   // components
@@ -76,4 +81,6 @@ export {
   DisplaySetMessageListTooltip,
   Toolbox,
   ToolboxUI,
+  OnboardingProvider,
+  useOnboardingProvider,
 };

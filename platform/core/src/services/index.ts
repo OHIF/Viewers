@@ -18,6 +18,7 @@ import StateSyncService from './StateSyncService';
 import PanelService from './PanelService';
 import WorkflowStepsService from './WorkflowStepsService';
 import StudyPrefetcherService from './StudyPrefetcherService';
+import OnboardingService from './OnboardingService';
 
 import type Services from '../types/Services';
 
@@ -44,4 +45,5 @@ export {
   PanelService,
   WorkflowStepsService,
   StudyPrefetcherService,
+  OnboardingService,
 };
