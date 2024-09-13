@@ -8,12 +8,15 @@ import i18n from 'i18next';
 // - show errors in UI for thumbnails if promise fails
 
 function getPanelModule({ commandsManager, extensionManager, servicesManager }) {
-  const wrappedMeasurementPanel = () => {
+  const wrappedMeasurementPanel = ({ renderHeader, getCloseIcon, tab }) => {
     return (
       <PanelMeasurementTable
         commandsManager={commandsManager}
         servicesManager={servicesManager}
         extensionManager={extensionManager}
+        renderHeader={renderHeader}
+        getCloseIcon={getCloseIcon}
+        tab={tab}
       />
     );
   };
@@ -24,11 +27,14 @@ function getPanelModule({ commandsManager, extensionManager, servicesManager }) 
       iconName: 'tab-studies',
       iconLabel: 'Studies',
       label: i18n.t('SidePanel:Studies'),
-      component: WrappedPanelStudyBrowser.bind(null, {
-        commandsManager,
-        extensionManager,
-        servicesManager,
-      }),
+      component: props => (
+        <WrappedPanelStudyBrowser
+          {...props}
+          commandsManager={commandsManager}
+          extensionManager={extensionManager}
+          servicesManager={servicesManager}
+        />
+      ),
     },
     {
       name: 'measurements',

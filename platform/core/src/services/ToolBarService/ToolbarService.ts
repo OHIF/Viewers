@@ -374,8 +374,11 @@ export default class ToolbarService extends PubSubService {
    * @param {Array} buttons - The buttons to be added to the section.
    */
   createButtonSection(key, buttons) {
-    // make sure all buttons have at least an empty props
-    this.state.buttonSections[key] = buttons;
+    if (this.state.buttonSections[key]) {
+      this.state.buttonSections[key].push(...buttons);
+    } else {
+      this.state.buttonSections[key] = buttons;
+    }
     this._broadcastEvent(this.EVENTS.TOOL_BAR_MODIFIED, { ...this.state });
   }
 
