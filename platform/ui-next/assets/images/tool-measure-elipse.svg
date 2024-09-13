@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="28px" height="28px" viewBox="0 0 28 28" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>tool-measure-elipse</title>
+    <g id="tool-measure-elipse" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <rect id="Rectangle" x="0" y="0" width="28" height="28"></rect>
+        <g id="Group" transform="translate(1.6119, 2.6735)" stroke="currentColor" stroke-width="1.5">
+            <line x1="19.8333333" y1="14.625" x2="19.8333333" y2="22.9583333" id="Path" stroke-linecap="round" stroke-linejoin="round"></line>
+            <line x1="24" y1="18.7916667" x2="15.6666667" y2="18.7916667" id="Path" stroke-linecap="round" stroke-linejoin="round"></line>
+            <ellipse id="Oval" transform="translate(10.5, 7) rotate(89) translate(-10.5, -7)" cx="10.5" cy="7" rx="6.5" ry="10"></ellipse>
+        </g>
+    </g>
+</svg>
