@@ -28,6 +28,7 @@ import ThumbnailList from './ThumbnailList';
 import PanelSection from './PanelSection';
 import DisplaySetMessageListTooltip from './DisplaySetMessageListTooltip';
 import { Toolbox, ToolboxUI } from './Toolbox';
+import PanelSplit from './PanelSplit';
 
 export {
   Button,
@@ -71,4 +72,5 @@ export {
   DisplaySetMessageListTooltip,
   Toolbox,
   ToolboxUI,
+  PanelSplit,
 };

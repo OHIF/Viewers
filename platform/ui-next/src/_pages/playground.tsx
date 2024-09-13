@@ -26,6 +26,8 @@ import { Slider } from '../components/Slider';
 import { ScrollArea, ScrollBar } from '../components/ScrollArea';
 
 import { BackgroundColorSelect } from '../components/BackgroundColorSelect';
+import { PanelSplit } from '../components/PanelSplit';
+
 // import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from '../components/Tooltip';
 
 // import type { Metadata } from 'next';
@@ -298,6 +300,8 @@ export default function Playground() {
           </div>
         </div>
       </div>
+
+      <PanelSplit />
 
       <h2 className="section-header">Scroll Area</h2>
       <div className="row">
