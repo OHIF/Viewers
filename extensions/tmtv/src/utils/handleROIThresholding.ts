@@ -34,7 +34,7 @@ export const handleROIThresholding = async ({
       segment.cachedStats = cachedStats;
       segment.displayText = [
         `SUV Peak: ${suvPeak.suvPeak.toFixed(2)}`,
-        `Volume: ${lesionStats.volume.toFixed(2)} mm3`,
+        `Volume: ${lesionStats.volume.toFixed(2)} cm3`,
       ];
       updatedPerSegmentCachedStats[segmentIndex] = cachedStats;
 
