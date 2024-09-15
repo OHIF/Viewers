@@ -53,7 +53,6 @@ This guide covers how to debug the OHIF viewer on Android and iOS emulators usin
 ### Prerequisites:
 - Install [Xcode](https://developer.apple.com/xcode/) from the Mac App Store.
 - Ensure you have the latest iOS SDK.
-- Google Chrome installed on your machine.
 
 ### Steps to Run iOS Emulator:
 
