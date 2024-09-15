@@ -31,7 +31,7 @@ This guide covers how to debug the OHIF viewer on Android and iOS emulators usin
 
 4. **Open a Browser on the Emulator:**
    - Once the emulator is running, open the **Chrome** app on the virtual device.
-   - If Chrome is not installed, you can use the built-in browser or download Chrome from the Play Store within the emulator.
+   - Navigate to the OHIF Viewer URL to view the application. The URL will be 10.0.2.2:3000, you can read more about it [here](https://developer.android.com/studio/run/emulator-networking).
 
 5. **Debug Using Chrome DevTools:**
    - On your development machine, open Google Chrome.
@@ -39,8 +39,12 @@ This guide covers how to debug the OHIF viewer on Android and iOS emulators usin
    - You will see your Android device listed under **Remote Target**.
    - Click **Inspect** to open DevTools for the browser on the Android emulator.
 
-6. **Start Debugging:**
+6. **Happy Debugging!:**
    - You can now use Chrome DevTools to inspect elements, debug JavaScript, and view console logs directly from the emulator’s browser.
+
+### Video Tutorial
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/wYa10-djAfI" title="OHIF Debugging Guide for Android" frameborder="0" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 ---
 
@@ -62,30 +66,16 @@ This guide covers how to debug the OHIF viewer on Android and iOS emulators usin
    - Select your device from the list of available simulators and click on it.
 
 3. **Open a Browser on the Simulator:**
-   - Once the simulator is running, the default **Safari** browser will be available.
-   - To install **Chrome**, open Safari and search for "Chrome for iOS" in the App Store, then download and install it.
+   - Run the **Safari** browser
 
-4. **Enable Web Inspector in Safari on the Simulator:**
-   - Go to **Settings > Safari > Advanced** and toggle **Web Inspector** on.
-
-5. **Connect Chrome DevTools to the iOS Simulator:**
+4. **Connect Safari DevTools to the iOS Simulator:**
    - On your development machine, open **Safari** on your Mac.
    - Click **Develop** in the menu bar and select your simulator under **Devices**.
    - You will see the web pages open on the iOS simulator. Select the page to open the inspector.
 
-6. **Start Debugging:**
-   - You can now use the Safari Web Inspector to inspect elements, debug JavaScript, and view logs for the web content on the iOS simulator.
+5. **Happy Debugging!:**
+   - You can now use the Safari Web Inspector to inspect elements, debug JavaScript, and view logs for the OHIF Viewer on the iOS simulator.
 
+### Video Tutorial
 
----
-
-## Video Tutorial
-
-### Android Emulator Debugging
-
-<iframe width="560" height="315" src="https://www.youtube.com/embed/1Q1J9Y1X1ZM" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-
-### iOS Emulator Debugging
-
-<iframe width="560" height="315" src="https://www.youtube.com/embed/1Q1J9Y1X1ZM" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-```
+<iframe width="560" height="315" src="https://www.youtube.com/embed/_M5e6RFl36E" title="OHIF Debugging Guide for iOS" frameborder="0" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
