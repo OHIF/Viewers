@@ -17,8 +17,8 @@ This guide covers how to debug the OHIF viewer on Android and iOS emulators usin
 ### Steps to Run Android Emulator:
 
 1. **Launch Android Studio:**
-   - Open Android Studio and navigate to the **AVD Manager** (Android Virtual Device Manager).
-   - You can access this by clicking on the **Device Manager** icon in the toolbar.
+   - Open Android Studio and create a new project if you don't already have one.
+   - Once your IDE opens up, click on the **Device Manager** icon in the right-side toolbar.
 
 2. **Create a Virtual Device (if necessary):**
    - If you don’t have an existing virtual device, click **Create Virtual Device**.
