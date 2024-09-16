@@ -24,9 +24,9 @@ import { Checkbox } from '../components/Checkbox';
 import { Toggle, toggleVariants } from '../components/Toggle';
 import { Slider } from '../components/Slider';
 import { ScrollArea, ScrollBar } from '../components/ScrollArea';
+import { PanelSplit } from '../components/PanelSplit';
 
 import { BackgroundColorSelect } from '../components/BackgroundColorSelect';
-import { PanelSplit } from '../components/PanelSplit';
 
 // import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from '../components/Tooltip';
 
