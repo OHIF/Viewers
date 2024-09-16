@@ -1,5 +1,5 @@
 {
-  "name": "ohif-idc-extension",
+  "name": "@ohif/extension-idc",
   "version": "0.0.1",
   "description": "OHIF Extension for IDC",
   "author": "Pedro Kohler",

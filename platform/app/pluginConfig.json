@@ -67,7 +67,7 @@
       "version": "0.0.1"
     },
     {
-      "packageName": "ohif-idc-extension",
+      "packageName": "@ohif/extension-idc",
       "version": "0.0.1"
     }
   ],
