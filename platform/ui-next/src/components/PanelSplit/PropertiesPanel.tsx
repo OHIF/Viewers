@@ -39,9 +39,11 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({ selectedItem, onUpdat
   };
 
   return (
-    <div>
-      <h3 className="mb-4 text-lg font-semibold">
-        Properties for <span className="text-blue-600">{selectedItem.name}</span>
+    <div className="">
+      <h3 className="text-foreground mb-4 text-sm font-semibold">
+        Properties
+        <br />
+        <span className="text-muted-foreground text-xs">{selectedItem.name}</span>
       </h3>
       <div className="space-y-4">
         {selectedItem.properties.map(prop => (

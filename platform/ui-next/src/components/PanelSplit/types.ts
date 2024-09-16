@@ -1,9 +1,11 @@
-export interface ItemProperties {
-  [key: string]: string | number | boolean | null | undefined;
-}
+export type PropertyType = 'text' | 'number' | 'boolean' | 'slider';
 
-export interface Item {
-  id: number;
-  name: string;
-  properties: ItemProperties;
+export interface Property {
+  key: string;
+  label: string;
+  type: PropertyType;
+  value: string | number | boolean;
+  min?: number; // Applicable for 'number' and 'slider' types
+  max?: number; // Applicable for 'number' and 'slider' types
+  step?: number; // Applicable for 'number' and 'slider' types
 }

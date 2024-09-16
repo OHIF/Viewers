@@ -88,7 +88,7 @@ const PanelSplit: React.FC = () => {
       </div>
 
       {/* Bottom Half: Properties of Selected Item */}
-      <div className="h-[150px] overflow-y-auto bg-gray-100 p-4">
+      <div className="bg-popover h-[150px] overflow-y-auto">
         <PropertiesPanel
           selectedItem={selectedItem}
           onUpdateProperty={handleUpdateProperty}

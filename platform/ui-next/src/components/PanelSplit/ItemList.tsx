@@ -27,7 +27,7 @@ const ItemList: React.FC<ItemListProps> = ({ items, onSelectItem, selectedItem }
         <li key={item.id}>
           <button
             onClick={() => onSelectItem(item)}
-            className={`flex w-full cursor-pointer items-center justify-between rounded-md border p-3 ${
+            className={`flex w-full cursor-pointer items-center justify-between rounded-md border p-1 ${
               item.id === selectedItem?.id
                 ? 'border-blue-300 bg-blue-100'
                 : 'border-gray-200 bg-white hover:bg-gray-50'
