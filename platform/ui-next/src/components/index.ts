@@ -28,7 +28,9 @@ import ThumbnailList from './ThumbnailList';
 import PanelSection from './PanelSection';
 import DisplaySetMessageListTooltip from './DisplaySetMessageListTooltip';
 import { Toolbox, ToolboxUI } from './Toolbox';
-import { PanelSplit, ItemListWithProperties, ItemList, PropertiesPanel } from './PanelSplit';
+import PanelSplit from './PanelSplit';
+import ItemList from './PanelSplit/ItemList';
+import PropertiesPanel from './PanelSplit/PropertiesPanel';
 
 export {
   Button,
@@ -73,7 +75,6 @@ export {
   Toolbox,
   ToolboxUI,
   PanelSplit,
-  ItemListWithProperties,
   ItemList,
   PropertiesPanel,
 };

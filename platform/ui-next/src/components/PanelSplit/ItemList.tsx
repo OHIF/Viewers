@@ -1,7 +1,6 @@
-// src/components/PanelSplit/ItemList.tsx
-
 import React from 'react';
 import { Item } from './types';
+import { Label } from '../Label';
 
 interface ItemListProps {
   items: Item[];
@@ -9,37 +8,30 @@ interface ItemListProps {
   selectedItem: Item | null;
 }
 
+/**
+ * ItemList Component
+ *
+ * Displays a list of items that can be selected.
+ *
+ * @param items - Array of items to display.
+ * @param onSelectItem - Callback when an item is selected.
+ * @param selectedItem - The currently selected item.
+ */
 const ItemList: React.FC<ItemListProps> = ({ items, onSelectItem, selectedItem }) => {
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLLIElement>, item: Item) => {
-    if (e.key === 'Enter' || e.key === ' ') {
-      onSelectItem(item);
-    }
-  };
-
   return (
-    <div>
-      <h2
-        id="item-list-heading"
-        className="mb-2 text-lg font-bold"
-      >
-        Available Items
-      </h2>
-      <ul
-        aria-labelledby="item-list-heading"
-        className="space-y-2"
-      >
-        {items.map(item => (
-          <li
-            key={item.id}
+    <ul
+      aria-label="Item List"
+      className="space-y-2"
+    >
+      {items.map(item => (
+        <li key={item.id}>
+          <button
             onClick={() => onSelectItem(item)}
-            className={`flex cursor-pointer items-center justify-between rounded-md border p-3 ${
+            className={`flex w-full cursor-pointer items-center justify-between rounded-md border p-3 ${
               item.id === selectedItem?.id
                 ? 'border-blue-300 bg-blue-100'
                 : 'border-gray-200 bg-white hover:bg-gray-50'
-            }`}
-            role="button"
-            tabIndex={0}
-            onKeyDown={e => handleKeyDown(e, item)}
+            } focus:outline-none focus:ring-2 focus:ring-blue-500`}
             aria-pressed={item.id === selectedItem?.id}
           >
             <span>{item.name}</span>
@@ -53,10 +45,10 @@ const ItemList: React.FC<ItemListProps> = ({ items, onSelectItem, selectedItem }
               <path d="M10 3a1 1 0 01.993.883L11 4v12a1 1 0 01-1.993.117L9 16V4a1 1 0 011-1z" />
               <path d="M4 9a1 1 0 011-1h10a1 1 0 110 2H5a1 1 0 01-1-1z" />
             </svg>
-          </li>
-        ))}
-      </ul>
-    </div>
+          </button>
+        </li>
+      ))}
+    </ul>
   );
 };
 
