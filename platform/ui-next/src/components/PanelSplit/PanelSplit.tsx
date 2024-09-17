@@ -173,7 +173,7 @@ const PanelSplit: React.FC = () => {
   return (
     <div className="flex h-full w-[262px] flex-col">
       {/* Top Half: List of Selectable Items */}
-      <ScrollArea className="bg-background h-[130px] border-b border-gray-300 p-1">
+      <ScrollArea className="bg-muted h-[130px] border-gray-300 p-1">
         <ItemList
           items={items}
           onSelectItem={handleSelectItem}
@@ -182,7 +182,7 @@ const PanelSplit: React.FC = () => {
       </ScrollArea>
 
       {/* Bottom Half: Properties of Selected Item */}
-      <ScrollArea className="bg-muted max-h-[400px] flex-grow overflow-auto p-1">
+      <ScrollArea className="bg-popover max-h-[400px] flex-grow overflow-auto p-1">
         <PropertiesPanel
           selectedItem={selectedItem}
           onUpdateProperty={handleUpdateProperty}

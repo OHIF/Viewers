@@ -6,6 +6,7 @@ import { Label } from '../Label';
 import { Slider } from '../Slider';
 import { Input } from '../Input';
 import { Switch } from '../Switch';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '../Tabs';
 
 interface PropertiesPanelProps {
   selectedItem: Item | null;
@@ -45,20 +46,44 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({ selectedItem, onUpdat
   const isMaster = selectedItem.controlsAll;
 
   return (
-    <div>
-      <h3 className="mb-4 text-lg font-semibold">
-        Properties for <span className="text-blue-600">{selectedItem.name}</span>
-      </h3>
+    <div className="p-1.5 text-sm">
+      <div className="mb-4 flex items-center justify-between">
+        <div className="text-foreground text-sm font-semibold">
+          Properties <br />
+          <span className="text-muted-foreground font-normal">{selectedItem.name}</span>
+        </div>
+
+        {/* Tabs component placed to the right of the "Properties" text */}
+        <Tabs
+          defaultValue="tab1"
+          className="ml-auto"
+        >
+          <TabsList>
+            <TabsTrigger value="tab1">1{/* Your custom SVG for the first tab */}</TabsTrigger>
+            <TabsTrigger value="tab2">2 {/* Your custom SVG for the second tab */}</TabsTrigger>
+            <TabsTrigger value="tab3">3{/* Your custom SVG for the third tab */}</TabsTrigger>
+          </TabsList>
+        </Tabs>
+      </div>
 
       {/* Properties List */}
       <div className="space-y-4">
         {selectedItem.properties.map(prop => (
           <div
             key={prop.key}
-            className="flex items-center space-x-4"
+            className="flex items-center justify-between space-x-4"
           >
-            <Label htmlFor={prop.key}>{prop.label}</Label>
-            {renderPropertyInput(prop, handleChange)}
+            {/* Label takes up space and doesn't wrap */}
+            <Label
+              htmlFor={prop.key}
+              className="flex-grow whitespace-nowrap"
+            >
+              {prop.label}
+            </Label>
+            {/* Flex container for input elements, with spacing */}
+            <div className="flex items-center space-x-3">
+              {renderPropertyInput(prop, handleChange)}
+            </div>
           </div>
         ))}
       </div>
@@ -101,7 +126,7 @@ const renderPropertyInput = (
               console.log(`Slider '${prop.key}' changed to`, values[0]); // Debug log
               handleChange(prop, values[0]);
             }}
-            className="w-32"
+            className="w-28"
           />
           <Input
             type="number"
@@ -115,7 +140,7 @@ const renderPropertyInput = (
               console.log(`Input '${prop.key}' changed to`, newVal); // Debug log
               handleChange(prop, newVal);
             }}
-            className="w-16"
+            className="w-14"
           />
         </>
       );

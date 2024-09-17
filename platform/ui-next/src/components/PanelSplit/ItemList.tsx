@@ -23,17 +23,15 @@ const ItemList: React.FC<ItemListProps> = ({ items, onSelectItem, selectedItem }
   return (
     <ul
       aria-label="Item List"
-      className="space-y-2"
+      className="space-y-1"
     >
       {items.map(item => (
         <li key={item.id}>
           <button
             onClick={() => onSelectItem(item)}
-            className={`flex w-full cursor-pointer items-center justify-between rounded-md border p-3 ${
-              item.id === selectedItem?.id
-                ? 'border-blue-300 bg-blue-100'
-                : 'border-gray-200 bg-white hover:bg-gray-50'
-            } focus:outline-none focus:ring-2 focus:ring-blue-500`}
+            className={`text-foreground flex h-7 w-full cursor-pointer items-center justify-between rounded p-3 text-sm ${
+              item.id === selectedItem?.id ? 'bg-primary/20' : 'bg-muted hover:bg-primary/30'
+            } focus-visible:ring-ring focus-visible:outline-none focus-visible:ring-1`}
             aria-pressed={item.id === selectedItem?.id}
           >
             <span>{item.name}</span>
