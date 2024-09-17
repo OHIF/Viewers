@@ -1,6 +1,7 @@
 import { ToolbarService } from '@ohif/core';
+import type { Button } from '@ohif/core/types';
 
-const toolbarButtons = [
+const toolbarButtons:Button[] = [
   {
     id: 'MeasurementTools',
     uiType: 'ohif.splitButton',

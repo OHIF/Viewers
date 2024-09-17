@@ -89,18 +89,21 @@ function modeFactory({ modeConfiguration }) {
       );
 
       unsubscriptions.push(unsubscribe);
-      toolbarService.addButtons(toolbarButtons);
-      toolbarService.createButtonSection('primary', [
-        'MeasurementTools',
-        'Zoom',
-        'WindowLevel',
-        'Crosshairs',
-        'Pan',
-      ]);
-      toolbarService.createButtonSection('ROIThresholdToolbox', [
-        'RectangleROIStartEndThreshold',
-        'BrushTools',
-      ]);
+      toolbarService.addButtons(
+        toolbarButtons.filter(button => servicesManager.services.rbacService.hasAccess(button.id))
+      );
+      toolbarService.createButtonSection(
+        'primary',
+        ['MeasurementTools', 'Zoom', 'WindowLevel', 'Crosshairs', 'Pan'].filter(button =>
+          servicesManager.services.rbacService.hasAccess(button)
+        )
+      );
+      toolbarService.createButtonSection(
+        'ROIThresholdToolbox',
+        ['RectangleROIStartEndThreshold', 'BrushTools'].filter(button =>
+          servicesManager.services.rbacService.hasAccess(button)
+        )
+      );
 
       customizationService.addModeCustomizations([
         {
@@ -166,7 +169,14 @@ function modeFactory({ modeConfiguration }) {
       study: [],
       series: [],
     },
-    isValidMode: ({ modalities, study }) => {
+    isValidMode: ({ modalities, study, servicesManager }: withAppTypes) => {
+      const { rbacService } = servicesManager.services;
+      if (!rbacService.canAccessMode(id)) {
+        return {
+          valid: false,
+          description: 'You do not have permission to access this mode.',
+        };
+      }
       const modalities_list = modalities.split('\\');
       const invalidModalities = ['SM'];
 

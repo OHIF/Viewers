@@ -87,18 +87,25 @@ function modeFactory() {
         '@ohif/extension-test.customizationModule.custom-context-menu',
       ]);
 
-      toolbarService.addButtons([...toolbarButtons, ...moreTools]);
-      toolbarService.createButtonSection('primary', [
-        'MeasurementTools',
-        'Zoom',
-        'WindowLevel',
-        'Pan',
-        'Capture',
-        'Layout',
-        'MPR',
-        'Crosshairs',
-        'MoreTools',
-      ]);
+      toolbarService.addButtons(
+        [...toolbarButtons, ...moreTools].filter(button =>
+          servicesManager.services.rbacService.hasAccess(button.id)
+        )
+      );
+      toolbarService.createButtonSection(
+        'primary',
+        [
+          'MeasurementTools',
+          'Zoom',
+          'WindowLevel',
+          'Pan',
+          'Capture',
+          'Layout',
+          'MPR',
+          'Crosshairs',
+          'MoreTools',
+        ].filter(button => servicesManager.services.rbacService.hasAccess(button))
+      );
     },
     onModeExit: ({ servicesManager }: withAppTypes) => {
       const {
@@ -122,7 +129,14 @@ function modeFactory() {
       series: [],
     },
 
-    isValidMode: function ({ modalities }) {
+    isValidMode: function ({ modalities, servicesManager }: withAppTypes) {
+      const { rbacService } = servicesManager.services;
+      if (!rbacService.canAccessMode(id)) {
+        return {
+          valid: false,
+          description: 'You do not have permission to access this mode.',
+        };
+      }
       const modalities_list = modalities.split('\\');
 
       // Exclude non-image modalities

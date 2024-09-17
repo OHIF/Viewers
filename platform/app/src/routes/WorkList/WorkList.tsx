@@ -124,6 +124,16 @@ function WorkList({
   // ~ Rows & Studies
   const [expandedRows, setExpandedRows] = useState([]);
   const [studiesWithSeriesData, setStudiesWithSeriesData] = useState([]);
+
+  //Force refresh was required because currently react components
+  //doesn't react to service state changes, we can find a more elegant way later on
+
+  const [refreshKey, setRefreshKey] = useState(0);
+
+  // Function to force refresh
+  const forceRefresh = () => {
+    setRefreshKey(prevKey => prevKey + 1);
+  };
   const numOfStudies = studiesTotal;
   const querying = useMemo(() => {
     return isLoadingData || expandedRows.length > 0;
@@ -360,10 +370,12 @@ function WorkList({
                   const isValidA = a.isValidMode({
                     modalities: modalities.replaceAll('/', '\\'),
                     study,
+                    servicesManager,
                   }).valid;
                   const isValidB = b.isValidMode({
                     modalities: modalities.replaceAll('/', '\\'),
                     study,
+                    servicesManager,
                   }).valid;
 
                   return isValidB - isValidA;
@@ -372,10 +384,16 @@ function WorkList({
             ).map((mode, i) => {
               const modalitiesToCheck = modalities.replaceAll('/', '\\');
 
-              const { valid: isValidMode, description: invalidModeDescription } = mode.isValidMode({
+              const {
+                valid: isValidMode,
+                description: invalidModeDescription,
+                id,
+              } = mode.isValidMode({
                 modalities: modalitiesToCheck,
                 study,
+                servicesManager,
               });
+              console.log(id);
               // TODO: Modes need a default/target route? We mostly support a single one for now.
               // We should also be using the route path, but currently are not
               // mode.routeName
@@ -411,7 +429,7 @@ function WorkList({
                       disabled={!isValidMode}
                       startIconTooltip={
                         !isValidMode ? (
-                          <div className="font-inter flex w-[206px] whitespace-normal text-left text-xs font-normal text-white	">
+                          <div className="font-inter flex w-[206px] whitespace-normal text-left text-xs font-normal text-white">
                             {invalidModeDescription}
                           </div>
                         ) : null
@@ -535,6 +553,26 @@ function WorkList({
         showPatientInfo={PatientInfoVisibility.DISABLED}
       />
       <InvestigationalUseDialog dialogConfiguration={appConfig?.investigationalUseDialog} />
+      <div className="mb-4 flex justify-center space-x-4">
+        {servicesManager.services.rbacService.getRoles().map(role => (
+          <button
+            key={role}
+            className={`rounded-md px-4 py-2 text-white ${
+              servicesManager.services.rbacService.getActiveRole() === role
+                ? 'border-2 border-blue-700 bg-blue-500'
+                : 'bg-gray-700 hover:bg-gray-600'
+            }`}
+            onClick={() => {
+              const token = servicesManager.services.rbacService.getJWTForRole(role);
+
+              servicesManager.services.rbacService.setToken(token);
+              forceRefresh();
+            }}
+          >
+            {role}
+          </button>
+        ))}
+      </div>
       <div className="ohif-scrollbar ohif-scrollbar-stable-gutter flex grow flex-col overflow-y-auto sm:px-5">
         <StudyListFilter
           numOfStudies={pageNumber * resultsPerPage > 100 ? 101 : numOfStudies}

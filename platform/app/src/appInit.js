@@ -21,6 +21,7 @@ import {
   PanelService,
   WorkflowStepsService,
   StudyPrefetcherService,
+  RBACService,
   // utils,
 } from '@ohif/core';
 
@@ -74,6 +75,7 @@ async function appInit(appConfigOrFunc, defaultExtensions, defaultModes) {
     PanelService.REGISTRATION,
     WorkflowStepsService.REGISTRATION,
     StateSyncService.REGISTRATION,
+    RBACService.REGISTRATION,
     [StudyPrefetcherService.REGISTRATION, appConfig.studyPrefetcher],
   ]);
 

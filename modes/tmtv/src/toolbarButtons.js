@@ -1,5 +1,6 @@
 import { ToolbarService } from '@ohif/core';
 import { toolGroupIds } from './initToolGroups';
+import type { Button } from '@ohif/core/types';
 
 const setToolActiveToolbar = {
   commandName: 'setToolActiveToolbar',
@@ -8,7 +9,7 @@ const setToolActiveToolbar = {
   },
 };
 
-const toolbarButtons = [
+const toolbarButtons: Button[] = [
   {
     id: 'MeasurementTools',
     uiType: 'ohif.splitButton',

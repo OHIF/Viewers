@@ -57,8 +57,17 @@ function modeFactory({ modeConfiguration }) {
       measurementService.clearMeasurements();
       initToolGroups({ toolNames, Enums, toolGroupService, commandsManager, servicesManager });
 
-      toolbarService.addButtons([...toolbarButtons, ...segmentationButtons]);
-      toolbarService.createButtonSection('secondary', ['ProgressDropdown']);
+      toolbarService.addButtons(
+        [...toolbarButtons, ...segmentationButtons].filter(button =>
+          servicesManager.services.rbacService.hasAccess(button.id)
+        )
+      );
+      toolbarService.createButtonSection(
+        'secondary',
+        ['ProgressDropdown'].filter(button =>
+          servicesManager.services.rbacService.hasAccess(button)
+        )
+      );
 
       // the primary button section is created in the workflow steps
       // specific to the step
@@ -110,7 +119,14 @@ function modeFactory({ modeConfiguration }) {
         series: [],
       };
     },
-    isValidMode: ({ modalities, study }) => {
+    isValidMode: ({ modalities, study, servicesManager }: withAppTypes) => {
+      const { rbacService } = servicesManager.services;
+      if (!rbacService.canAccessMode(id)) {
+        return {
+          valid: false,
+          description: 'You do not have permission to access this mode.',
+        };
+      }
       // Todo: we need to find a better way to validate the mode
       return {
         valid: study.mrn === 'M1',

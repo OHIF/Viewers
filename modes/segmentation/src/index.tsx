@@ -61,26 +61,36 @@ function modeFactory({ modeConfiguration }) {
       // Init Default and SR ToolGroups
       initToolGroups(extensionManager, toolGroupService, commandsManager);
 
-      toolbarService.addButtons(toolbarButtons);
-      toolbarService.addButtons(segmentationButtons);
+      toolbarService.addButtons(
+        [...toolbarButtons, ...segmentationButtons].filter(button =>
+          servicesManager.services.rbacService.hasAccess(button.id)
+        )
+      );
 
-      toolbarService.createButtonSection('primary', [
-        'WindowLevel',
-        'Pan',
-        'Zoom',
-        'TrackballRotate',
-        'Capture',
-        'Layout',
-        'Crosshairs',
-        'MoreTools',
-      ]);
-      toolbarService.createButtonSection('segmentationToolbox', ['BrushTools', 'Shapes']);
+      toolbarService.createButtonSection(
+        'primary',
+        [
+          'WindowLevel',
+          'Pan',
+          'Zoom',
+          'TrackballRotate',
+          'Capture',
+          'Layout',
+          'Crosshairs',
+          'MoreTools',
+        ].filter(button => servicesManager.services.rbacService.hasAccess(button))
+      );
+      toolbarService.createButtonSection(
+        'segmentationToolbox',
+        ['BrushTools', 'Shapes'].filter(button =>
+          servicesManager.services.rbacService.hasAccess(button)
+        )
+      );
     },
     onModeExit: ({ servicesManager }: withAppTypes) => {
       const {
         toolGroupService,
         syncGroupService,
-        toolbarService,
         segmentationService,
         cornerstoneViewportService,
         uiDialogService,
@@ -104,7 +114,14 @@ function modeFactory({ modeConfiguration }) {
      * modalities of the selected studies. Currently we don't have stack viewport
      * segmentations and we should exclude them
      */
-    isValidMode: ({ modalities }) => {
+    isValidMode: ({ modalities, servicesManager }: withAppTypes) => {
+      const { rbacService } = servicesManager.services;
+      if (!rbacService.canAccessMode(id)) {
+        return {
+          valid: false,
+          description: 'You do not have permission to access this mode.',
+        };
+      }
       // Don't show the mode if the selected studies have only one modality
       // that is not supported by the mode
       const modalitiesArray = modalities.split('\\');
