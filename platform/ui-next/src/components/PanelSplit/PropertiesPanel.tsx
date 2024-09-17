@@ -1,7 +1,7 @@
 // src/components/PanelSplit/PropertiesPanel.tsx
 
 import React from 'react';
-import { Item, Property } from './types';
+import { Item, Property, DisplayMode } from './types';
 import { Label } from '../Label';
 import { Slider } from '../Slider';
 import { Input } from '../Input';
@@ -45,6 +45,16 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({ selectedItem, onUpdat
   // Determine if the selected item is the master
   const isMaster = selectedItem.controlsAll;
 
+  /**
+   * Handles changes to the display mode via Tabs.
+   *
+   * @param newDisplayMode - The new display mode selected.
+   */
+  const handleDisplayModeChange = (newDisplayMode: DisplayMode) => {
+    console.log(`Display mode changed to`, newDisplayMode); // Debug log
+    onUpdateProperty(selectedItem.id, 'displayMode', newDisplayMode);
+  };
+
   return (
     <div className="p-1.5 text-sm">
       <div className="mb-4 flex items-center justify-between">
@@ -55,11 +65,13 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({ selectedItem, onUpdat
 
         {/* Tabs component for Outline and Fill control */}
         <Tabs
-          defaultValue="tab1"
+          value={selectedItem.displayMode}
+          onValueChange={handleDisplayModeChange}
           className="ml-auto"
         >
           <TabsList>
-            <TabsTrigger value="tab1">
+            <TabsTrigger value="Fill & Outline">
+              {/* SVG Icon for Fill & Outline */}
               <svg
                 width="20px"
                 height="20px"
@@ -102,7 +114,9 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({ selectedItem, onUpdat
                 </g>
               </svg>
             </TabsTrigger>
-            <TabsTrigger value="tab2">
+
+            <TabsTrigger value="Outline Only">
+              {/* SVG Icon for Outline Only */}
               <svg
                 width="20px"
                 height="20px"
@@ -136,7 +150,9 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({ selectedItem, onUpdat
                 </g>
               </svg>
             </TabsTrigger>
-            <TabsTrigger value="tab3">
+
+            <TabsTrigger value="Fill Only">
+              {/* SVG Icon for Fill Only */}
               <svg
                 width="20px"
                 height="20px"
@@ -175,24 +191,21 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({ selectedItem, onUpdat
 
           {/* Display dynamic text under the tabs */}
           <div className="mt-2">
-            <TabsContent value="tab1">
-              <p className="text-muted-foreground text-xxs text-center">Outline & Fill</p>{' '}
-              {/* Text for tab 1 */}
+            <TabsContent value="Fill & Outline">
+              <p className="text-muted-foreground text-xxs text-center">Fill & Outline</p>
             </TabsContent>
-            <TabsContent value="tab2">
-              <p className="text-muted-foreground text-xxs text-center">Outline Only</p>{' '}
-              {/* Text for tab 2 */}
+            <TabsContent value="Outline Only">
+              <p className="text-muted-foreground text-xxs text-center">Outline Only</p>
             </TabsContent>
-            <TabsContent value="tab3">
-              <p className="text-muted-foreground text-xxs text-center">Fill Only</p>{' '}
-              {/* Text for tab 3 */}
+            <TabsContent value="Fill Only">
+              <p className="text-muted-foreground text-xxs text-center">Fill Only</p>
             </TabsContent>
           </div>
         </Tabs>
       </div>
 
       {/* Properties List */}
-      <div className="space-y-4">
+      <div className="mb-3 space-y-3">
         {selectedItem.properties.map(prop => (
           <div
             key={prop.key}
@@ -205,6 +218,7 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({ selectedItem, onUpdat
             >
               {prop.label}
             </Label>
+
             {/* Flex container for input elements, with spacing */}
             <div className="flex items-center space-x-3">
               {renderPropertyInput(prop, handleChange)}
@@ -215,7 +229,7 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({ selectedItem, onUpdat
 
       {/* Conditionally render the details section for non-master items */}
       {!isMaster && (
-        <div className="text-foreground mt-3">
+        <div className="text-foreground mb-3">
           <div className="border-primary/30 mb-2 w-full border-b"></div>
           Series: <span className="text-muted-foreground">{selectedItem.series}</span>
         </div>

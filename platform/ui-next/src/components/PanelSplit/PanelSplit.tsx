@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import ItemList from './ItemList';
 import PropertiesPanel from './PropertiesPanel';
-import { Item } from './types';
+import { Item, DisplayMode } from './types';
 import { ScrollArea } from '../ScrollArea'; // Importing ScrollArea
 
 const PanelSplit: React.FC = () => {
@@ -12,7 +12,8 @@ const PanelSplit: React.FC = () => {
     {
       id: 1,
       name: 'All Items',
-      controlsAll: true, // This item controls all others
+      controlsAll: true, // Master item
+      displayMode: 'Fill & Outline', // Default display mode
       properties: [
         {
           key: 'opacity',
@@ -44,6 +45,7 @@ const PanelSplit: React.FC = () => {
       id: 2,
       name: 'List item 1',
       series: 'Series A',
+      displayMode: 'Fill & Outline', // Default display mode
       properties: [
         {
           key: 'opacity',
@@ -69,6 +71,7 @@ const PanelSplit: React.FC = () => {
       id: 3,
       name: 'List item 2',
       series: 'Series B',
+      displayMode: 'Fill & Outline', // Default display mode
       properties: [
         {
           key: 'opacity',
@@ -111,53 +114,91 @@ const PanelSplit: React.FC = () => {
     const masterItem = items.find(item => item.controlsAll);
 
     if (masterItem && itemId === masterItem.id) {
-      // Update the property for all items
-      setItems(prevItems =>
-        prevItems.map(item => ({
-          ...item,
-          properties: item.properties.map(prop =>
-            prop.key === propertyKey ? { ...prop, value: newValue } : prop
-          ),
-        }))
-      );
+      if (propertyKey === 'displayMode') {
+        // Update displayMode for all items
+        setItems(prevItems =>
+          prevItems.map(item => ({
+            ...item,
+            displayMode: newValue, // Set to the new displayMode
+            properties: item.properties.map(prop =>
+              prop.key === propertyKey ? { ...prop, value: newValue } : prop
+            ),
+          }))
+        );
 
-      // Also update the selectedItem if it's the master
-      setSelectedItem(prevSelected =>
-        prevSelected
-          ? {
-              ...prevSelected,
-              properties: prevSelected.properties.map(prop =>
-                prop.key === propertyKey ? { ...prop, value: newValue } : prop
-              ),
-            }
-          : prevSelected
-      );
-    } else {
-      // Update only the selected item
-      setItems(prevItems =>
-        prevItems.map(item =>
-          item.id === itemId
+        // Also update the selectedItem if it's the master
+        setSelectedItem(prevSelected =>
+          prevSelected
             ? {
-                ...item,
-                properties: item.properties.map(prop =>
+                ...prevSelected,
+                displayMode: newValue,
+                properties: prevSelected.properties.map(prop =>
                   prop.key === propertyKey ? { ...prop, value: newValue } : prop
                 ),
               }
-            : item
-        )
-      );
+            : prevSelected
+        );
+      } else {
+        // Update the property for all items
+        setItems(prevItems =>
+          prevItems.map(item => ({
+            ...item,
+            properties: item.properties.map(prop =>
+              prop.key === propertyKey ? { ...prop, value: newValue } : prop
+            ),
+          }))
+        );
 
-      // Update selectedItem
-      setSelectedItem(prevSelected =>
-        prevSelected
-          ? {
-              ...prevSelected,
-              properties: prevSelected.properties.map(prop =>
-                prop.key === propertyKey ? { ...prop, value: newValue } : prop
-              ),
-            }
-          : prevSelected
-      );
+        // Also update the selectedItem if it's the master
+        setSelectedItem(prevSelected =>
+          prevSelected
+            ? {
+                ...prevSelected,
+                properties: prevSelected.properties.map(prop =>
+                  prop.key === propertyKey ? { ...prop, value: newValue } : prop
+                ),
+              }
+            : prevSelected
+        );
+      }
+    } else {
+      if (propertyKey === 'displayMode') {
+        // Update displayMode only for the selected item
+        setItems(prevItems =>
+          prevItems.map(item => (item.id === itemId ? { ...item, displayMode: newValue } : item))
+        );
+
+        // Update selectedItem
+        setSelectedItem(prevSelected =>
+          prevSelected ? { ...prevSelected, displayMode: newValue } : prevSelected
+        );
+      } else {
+        // Update only the selected item's properties
+        setItems(prevItems =>
+          prevItems.map(item =>
+            item.id === itemId
+              ? {
+                  ...item,
+                  properties: item.properties.map(prop =>
+                    prop.key === propertyKey ? { ...prop, value: newValue } : prop
+                  ),
+                }
+              : item
+          )
+        );
+
+        // Update selectedItem
+        setSelectedItem(prevSelected =>
+          prevSelected
+            ? {
+                ...prevSelected,
+                properties: prevSelected.properties.map(prop =>
+                  prop.key === propertyKey ? { ...prop, value: newValue } : prop
+                ),
+              }
+            : prevSelected
+        );
+      }
     }
   };
 

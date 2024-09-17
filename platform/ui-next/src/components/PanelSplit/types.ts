@@ -13,6 +13,7 @@ export interface Property {
 export interface Item {
   id: number;
   name: string;
-  controlsAll?: boolean; // Renamed from isMaster
+  controlsAll?: boolean; // Indicates if the item is the master
+  series?: string; // Optional, only for non-master items
   properties: Property[];
 }
