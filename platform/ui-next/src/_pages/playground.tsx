@@ -24,7 +24,6 @@ import { Checkbox } from '../components/Checkbox';
 import { Toggle, toggleVariants } from '../components/Toggle';
 import { Slider } from '../components/Slider';
 import { ScrollArea, ScrollBar } from '../components/ScrollArea';
-import { PanelSplit } from '../components/PanelSplit';
 
 import { BackgroundColorSelect } from '../components/BackgroundColorSelect';
 
@@ -300,8 +299,6 @@ export default function Playground() {
           </div>
         </div>
       </div>
-
-      <PanelSplit />
 
       <h2 className="section-header">Scroll Area</h2>
       <div className="row">
