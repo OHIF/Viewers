@@ -53,7 +53,7 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({ selectedItem, onUpdat
           <span className="text-muted-foreground font-normal">{selectedItem.name}</span>
         </div>
 
-        {/* Tabs component placed to the right of the "Properties" text */}
+        {/* Tabs component for Outline and Fill control */}
         <Tabs
           defaultValue="tab1"
           className="ml-auto"
@@ -63,6 +63,22 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({ selectedItem, onUpdat
             <TabsTrigger value="tab2">2 {/* Your custom SVG for the second tab */}</TabsTrigger>
             <TabsTrigger value="tab3">3{/* Your custom SVG for the third tab */}</TabsTrigger>
           </TabsList>
+
+          {/* Display dynamic text under the tabs */}
+          <div className="mt-2">
+            <TabsContent value="tab1">
+              <p className="text-muted-foreground text-xxs text-center">Outline & Fill</p>{' '}
+              {/* Text for tab 1 */}
+            </TabsContent>
+            <TabsContent value="tab2">
+              <p className="text-muted-foreground text-xxs text-center">Outline Only</p>{' '}
+              {/* Text for tab 2 */}
+            </TabsContent>
+            <TabsContent value="tab3">
+              <p className="text-muted-foreground text-xxs text-center">Fill Only</p>{' '}
+              {/* Text for tab 3 */}
+            </TabsContent>
+          </div>
         </Tabs>
       </div>
 
