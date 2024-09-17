@@ -59,9 +59,118 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({ selectedItem, onUpdat
           className="ml-auto"
         >
           <TabsList>
-            <TabsTrigger value="tab1">1{/* Your custom SVG for the first tab */}</TabsTrigger>
-            <TabsTrigger value="tab2">2 {/* Your custom SVG for the second tab */}</TabsTrigger>
-            <TabsTrigger value="tab3">3{/* Your custom SVG for the third tab */}</TabsTrigger>
+            <TabsTrigger value="tab1">
+              <svg
+                width="20px"
+                height="20px"
+                viewBox="0 0 20 20"
+              >
+                <g
+                  id="view-outline-fill"
+                  stroke="none"
+                  strokeWidth="1"
+                  fill="none"
+                  fillRule="evenodd"
+                >
+                  <g id="Group-13">
+                    <rect
+                      id="Rectangle"
+                      x="0"
+                      y="0"
+                      width="20"
+                      height="20"
+                    ></rect>
+                    <rect
+                      id="Rectangle"
+                      stroke="#348CFD"
+                      x="2.5"
+                      y="2.5"
+                      width="15"
+                      height="15"
+                      rx="1"
+                    ></rect>
+                    <rect
+                      id="Rectangle"
+                      fill="#348CFD"
+                      x="4.5"
+                      y="4.5"
+                      width="11"
+                      height="11"
+                      rx="1"
+                    ></rect>
+                  </g>
+                </g>
+              </svg>
+            </TabsTrigger>
+            <TabsTrigger value="tab2">
+              <svg
+                width="20px"
+                height="20px"
+                viewBox="0 0 20 20"
+              >
+                <g
+                  id="view-outline"
+                  stroke="none"
+                  strokeWidth="1"
+                  fill="none"
+                  fillRule="evenodd"
+                >
+                  <g id="Group-13">
+                    <rect
+                      id="Rectangle"
+                      x="0"
+                      y="0"
+                      width="20"
+                      height="20"
+                    ></rect>
+                    <rect
+                      id="Rectangle"
+                      stroke="#348CFD"
+                      x="2.5"
+                      y="2.5"
+                      width="15"
+                      height="15"
+                      rx="1"
+                    ></rect>
+                  </g>
+                </g>
+              </svg>
+            </TabsTrigger>
+            <TabsTrigger value="tab3">
+              <svg
+                width="20px"
+                height="20px"
+                viewBox="0 0 20 20"
+                version="1.1"
+              >
+                <g
+                  id="view-fill"
+                  stroke="none"
+                  strokeWidth="1"
+                  fill="none"
+                  fillRule="evenodd"
+                >
+                  <g id="Group-13">
+                    <rect
+                      id="Rectangle"
+                      x="0"
+                      y="0"
+                      width="20"
+                      height="20"
+                    ></rect>
+                    <rect
+                      id="Rectangle"
+                      fill="#348CFD"
+                      x="3"
+                      y="3"
+                      width="14"
+                      height="14"
+                      rx="1"
+                    ></rect>
+                  </g>
+                </g>
+              </svg>
+            </TabsTrigger>
           </TabsList>
 
           {/* Display dynamic text under the tabs */}
@@ -106,11 +215,9 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({ selectedItem, onUpdat
 
       {/* Conditionally render the details section for non-master items */}
       {!isMaster && (
-        <div className="mt-4">
-          <p className="font-medium">Name: {selectedItem.name}</p>
-          <p className="font-medium">
-            Series: <span className="text-gray-700">{selectedItem.series}</span>
-          </p>
+        <div className="text-foreground mt-3">
+          <div className="border-primary/30 mb-2 w-full border-b"></div>
+          Series: <span className="text-muted-foreground">{selectedItem.series}</span>
         </div>
       )}
     </div>
