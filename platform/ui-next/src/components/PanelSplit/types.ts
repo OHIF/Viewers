@@ -1,11 +1,18 @@
-export type PropertyType = 'text' | 'number' | 'boolean' | 'slider';
+// src/components/PanelSplit/types.ts
 
 export interface Property {
   key: string;
   label: string;
-  type: PropertyType;
-  value: string | number | boolean;
-  min?: number; // Applicable for 'number' and 'slider' types
-  max?: number; // Applicable for 'number' and 'slider' types
-  step?: number; // Applicable for 'number' and 'slider' types
+  type: 'slider' | 'boolean' | string; // Extend types as needed
+  value: any;
+  min?: number;
+  max?: number;
+  step?: number;
+}
+
+export interface Item {
+  id: number;
+  name: string;
+  controlsAll?: boolean; // Renamed from isMaster
+  properties: Property[];
 }

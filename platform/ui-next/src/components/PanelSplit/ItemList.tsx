@@ -1,3 +1,5 @@
+// src/components/PanelSplit/ItemList.tsx
+
 import React from 'react';
 import { Item } from './types';
 import { Label } from '../Label';
@@ -27,7 +29,7 @@ const ItemList: React.FC<ItemListProps> = ({ items, onSelectItem, selectedItem }
         <li key={item.id}>
           <button
             onClick={() => onSelectItem(item)}
-            className={`flex w-full cursor-pointer items-center justify-between rounded-md border p-1 ${
+            className={`flex w-full cursor-pointer items-center justify-between rounded-md border p-3 ${
               item.id === selectedItem?.id
                 ? 'border-blue-300 bg-blue-100'
                 : 'border-gray-200 bg-white hover:bg-gray-50'
@@ -35,16 +37,8 @@ const ItemList: React.FC<ItemListProps> = ({ items, onSelectItem, selectedItem }
             aria-pressed={item.id === selectedItem?.id}
           >
             <span>{item.name}</span>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-5 w-5 text-gray-500"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-              aria-hidden="true"
-            >
-              <path d="M10 3a1 1 0 01.993.883L11 4v12a1 1 0 01-1.993.117L9 16V4a1 1 0 011-1z" />
-              <path d="M4 9a1 1 0 011-1h10a1 1 0 110 2H5a1 1 0 01-1-1z" />
-            </svg>
+            {/* Optional: Indicate if the item controls all */}
+            {item.controlsAll && <span className="text-xs text-gray-600">All Items</span>}
           </button>
         </li>
       ))}

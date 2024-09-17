@@ -1,15 +1,18 @@
-import React, { useState } from 'react';
+// src/components/PanelSplit/PanelSplit.tsx
+
+import React, { useState, useEffect } from 'react';
 import ItemList from './ItemList';
 import PropertiesPanel from './PropertiesPanel';
 import { Item } from './types';
+import { ScrollArea } from '../ScrollArea'; // Importing ScrollArea
 
 const PanelSplit: React.FC = () => {
   const [selectedItem, setSelectedItem] = useState<Item | null>(null);
-
-  const items: Item[] = [
+  const [items, setItems] = useState<Item[]>([
     {
       id: 1,
-      name: 'List item 1',
+      name: 'All Items',
+      controlsAll: true, // This item controls all others
       properties: [
         {
           key: 'opacity',
@@ -37,8 +40,65 @@ const PanelSplit: React.FC = () => {
         },
       ],
     },
+    {
+      id: 2,
+      name: 'List item 1',
+      series: 'Series A',
+      properties: [
+        {
+          key: 'opacity',
+          label: 'Opacity',
+          type: 'slider',
+          value: 70,
+          min: 1,
+          max: 100,
+          step: 1,
+        },
+        {
+          key: 'outline',
+          label: 'Outline',
+          type: 'slider',
+          value: 7,
+          min: 1,
+          max: 10,
+          step: 1,
+        },
+      ],
+    },
+    {
+      id: 3,
+      name: 'List item 2',
+      series: 'Series B',
+      properties: [
+        {
+          key: 'opacity',
+          label: 'Opacity',
+          type: 'slider',
+          value: 70,
+          min: 1,
+          max: 100,
+          step: 1,
+        },
+        {
+          key: 'outline',
+          label: 'Outline',
+          type: 'slider',
+          value: 7,
+          min: 1,
+          max: 10,
+          step: 1,
+        },
+      ],
+    },
     // Add more items as needed
-  ];
+  ]);
+
+  // Set the master item as selected by default on mount
+  useEffect(() => {
+    if (items.length > 0 && !selectedItem) {
+      setSelectedItem(items.find(item => item.controlsAll) || items[0]);
+    }
+  }, [items, selectedItem]);
 
   /**
    * Handles updating a property's value.
@@ -48,23 +108,57 @@ const PanelSplit: React.FC = () => {
    * @param newValue - The new value for the property.
    */
   const handleUpdateProperty = (itemId: number, propertyKey: string, newValue: any) => {
-    // Update logic here (e.g., update state or make API calls)
-    setSelectedItem(prevItem => {
-      if (!prevItem || prevItem.id !== itemId) {
-        return prevItem;
-      }
+    const masterItem = items.find(item => item.controlsAll);
 
-      const updatedProperties = prevItem.properties.map(prop => {
-        if (prop.key === propertyKey) {
-          return { ...prop, value: newValue };
-        }
-        return prop;
-      });
+    if (masterItem && itemId === masterItem.id) {
+      // Update the property for all items
+      setItems(prevItems =>
+        prevItems.map(item => ({
+          ...item,
+          properties: item.properties.map(prop =>
+            prop.key === propertyKey ? { ...prop, value: newValue } : prop
+          ),
+        }))
+      );
 
-      return { ...prevItem, properties: updatedProperties };
-    });
+      // Also update the selectedItem if it's the master
+      setSelectedItem(prevSelected =>
+        prevSelected
+          ? {
+              ...prevSelected,
+              properties: prevSelected.properties.map(prop =>
+                prop.key === propertyKey ? { ...prop, value: newValue } : prop
+              ),
+            }
+          : prevSelected
+      );
+    } else {
+      // Update only the selected item
+      setItems(prevItems =>
+        prevItems.map(item =>
+          item.id === itemId
+            ? {
+                ...item,
+                properties: item.properties.map(prop =>
+                  prop.key === propertyKey ? { ...prop, value: newValue } : prop
+                ),
+              }
+            : item
+        )
+      );
 
-    // Optionally, update the items array or perform other side effects
+      // Update selectedItem
+      setSelectedItem(prevSelected =>
+        prevSelected
+          ? {
+              ...prevSelected,
+              properties: prevSelected.properties.map(prop =>
+                prop.key === propertyKey ? { ...prop, value: newValue } : prop
+              ),
+            }
+          : prevSelected
+      );
+    }
   };
 
   /**
@@ -77,23 +171,23 @@ const PanelSplit: React.FC = () => {
   };
 
   return (
-    <div className="flex w-[252px] flex-col">
+    <div className="flex h-full w-[262px] flex-col">
       {/* Top Half: List of Selectable Items */}
-      <div className="h-[130px] overflow-y-auto border-b border-gray-300 p-4">
+      <ScrollArea className="bg-background h-[130px] border-b border-gray-300 p-1">
         <ItemList
           items={items}
           onSelectItem={handleSelectItem}
           selectedItem={selectedItem}
         />
-      </div>
+      </ScrollArea>
 
       {/* Bottom Half: Properties of Selected Item */}
-      <div className="bg-popover h-[150px] overflow-y-auto">
+      <ScrollArea className="bg-muted max-h-[400px] flex-grow overflow-auto p-1">
         <PropertiesPanel
           selectedItem={selectedItem}
           onUpdateProperty={handleUpdateProperty}
         />
-      </div>
+      </ScrollArea>
     </div>
   );
 };

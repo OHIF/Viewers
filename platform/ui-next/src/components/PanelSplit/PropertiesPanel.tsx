@@ -1,3 +1,5 @@
+// src/components/PanelSplit/PropertiesPanel.tsx
+
 import React from 'react';
 import { Item, Property } from './types';
 import { Label } from '../Label';
@@ -35,30 +37,41 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({ selectedItem, onUpdat
    * @param newValue - The new value for the property.
    */
   const handleChange = (property: Property, newValue: any) => {
+    console.log(`Updating property '${property.key}' to`, newValue); // Debug log
     onUpdateProperty(selectedItem.id, property.key, newValue);
   };
 
+  // Determine if the selected item is the master
+  const isMaster = selectedItem.controlsAll;
+
   return (
-    <div className="">
-      <h3 className="text-foreground mb-4 text-sm font-semibold">
-        Properties
-        <br />
-        <span className="text-muted-foreground text-xs">{selectedItem.name}</span>
+    <div>
+      <h3 className="mb-4 text-lg font-semibold">
+        Properties for <span className="text-blue-600">{selectedItem.name}</span>
       </h3>
+
+      {/* Properties List */}
       <div className="space-y-4">
         {selectedItem.properties.map(prop => (
           <div
             key={prop.key}
             className="flex items-center space-x-4"
           >
-            {/* Label for the property */}
             <Label htmlFor={prop.key}>{prop.label}</Label>
-
-            {/* Render input components based on property type */}
             {renderPropertyInput(prop, handleChange)}
           </div>
         ))}
       </div>
+
+      {/* Conditionally render the details section for non-master items */}
+      {!isMaster && (
+        <div className="mt-4">
+          <p className="font-medium">Name: {selectedItem.name}</p>
+          <p className="font-medium">
+            Series: <span className="text-gray-700">{selectedItem.series}</span>
+          </p>
+        </div>
+      )}
     </div>
   );
 };
@@ -80,11 +93,14 @@ const renderPropertyInput = (
         <>
           <Slider
             id={prop.key}
-            value={[prop.value as number]} // Pass as an array
+            value={[prop.value as number]} // Pass as an array for Radix UI Slider
             min={prop.min}
             max={prop.max}
             step={prop.step}
-            onValueChange={values => handleChange(prop, values[0])} // Handle array input
+            onValueChange={values => {
+              console.log(`Slider '${prop.key}' changed to`, values[0]); // Debug log
+              handleChange(prop, values[0]);
+            }}
             className="w-32"
           />
           <Input
@@ -94,7 +110,11 @@ const renderPropertyInput = (
             min={prop.min}
             max={prop.max}
             step={prop.step}
-            onChange={e => handleChange(prop, Number(e.target.value))}
+            onChange={e => {
+              const newVal = Number(e.target.value);
+              console.log(`Input '${prop.key}' changed to`, newVal); // Debug log
+              handleChange(prop, newVal);
+            }}
             className="w-16"
           />
         </>
@@ -105,7 +125,10 @@ const renderPropertyInput = (
         <Switch
           id={prop.key}
           checked={prop.value as boolean}
-          onCheckedChange={checked => handleChange(prop, checked)} // Correct prop name
+          onCheckedChange={checked => {
+            console.log(`Switch '${prop.key}' toggled to`, checked); // Debug log
+            handleChange(prop, checked);
+          }}
         />
       );
 
