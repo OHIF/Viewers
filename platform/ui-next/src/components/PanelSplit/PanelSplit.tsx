@@ -1,9 +1,7 @@
-// src/components/PanelSplit/PanelSplit.tsx
-
 import React, { useState, useEffect } from 'react';
 import ItemList from './ItemList';
 import PropertiesPanel from './PropertiesPanel';
-import { Item, DisplayMode } from './types';
+import { Item, DisplayMode, VisibilityState } from './types';
 import { ScrollArea } from '../ScrollArea'; // Importing ScrollArea
 
 const PanelSplit: React.FC = () => {
@@ -14,6 +12,7 @@ const PanelSplit: React.FC = () => {
       name: 'All Items',
       controlsAll: true, // Master item
       displayMode: 'Fill & Outline', // Default display mode
+      visibility: 'Visible', // Default visibility
       properties: [
         {
           key: 'opacity',
@@ -46,6 +45,7 @@ const PanelSplit: React.FC = () => {
       name: 'List item 1',
       series: 'Series A',
       displayMode: 'Fill & Outline', // Default display mode
+      visibility: 'Visible', // Default visibility
       properties: [
         {
           key: 'opacity',
@@ -72,6 +72,7 @@ const PanelSplit: React.FC = () => {
       name: 'List item 2',
       series: 'Series B',
       displayMode: 'Fill & Outline', // Default display mode
+      visibility: 'Visible', // Default visibility
       properties: [
         {
           key: 'opacity',
@@ -138,8 +139,26 @@ const PanelSplit: React.FC = () => {
               }
             : prevSelected
         );
+      } else if (propertyKey === 'visibility') {
+        // Update visibility for all items
+        setItems(prevItems =>
+          prevItems.map(item => ({
+            ...item,
+            visibility: newValue, // Set to the new visibility
+          }))
+        );
+
+        // Also update the selectedItem if it's the master
+        setSelectedItem(prevSelected =>
+          prevSelected
+            ? {
+                ...prevSelected,
+                visibility: newValue,
+              }
+            : prevSelected
+        );
       } else {
-        // Update the property for all items
+        // Update other properties for all items
         setItems(prevItems =>
           prevItems.map(item => ({
             ...item,
@@ -171,6 +190,16 @@ const PanelSplit: React.FC = () => {
         // Update selectedItem
         setSelectedItem(prevSelected =>
           prevSelected ? { ...prevSelected, displayMode: newValue } : prevSelected
+        );
+      } else if (propertyKey === 'visibility') {
+        // Toggle visibility only for the selected item
+        setItems(prevItems =>
+          prevItems.map(item => (item.id === itemId ? { ...item, visibility: newValue } : item))
+        );
+
+        // Update selectedItem
+        setSelectedItem(prevSelected =>
+          prevSelected ? { ...prevSelected, visibility: newValue } : prevSelected
         );
       } else {
         // Update only the selected item's properties
@@ -211,6 +240,19 @@ const PanelSplit: React.FC = () => {
     setSelectedItem(item);
   };
 
+  /**
+   * Handles toggling the visibility of an item.
+   *
+   * @param itemId - The ID of the item being toggled.
+   */
+  const handleToggleVisibility = (itemId: number) => {
+    const item = items.find(item => item.id === itemId);
+    if (item) {
+      const newVisibility: VisibilityState = item.visibility === 'Visible' ? 'Hidden' : 'Visible';
+      handleUpdateProperty(itemId, 'visibility', newVisibility);
+    }
+  };
+
   return (
     <div className="flex h-full w-[262px] flex-col">
       {/* Top: List of Selectable Items */}
@@ -219,6 +261,7 @@ const PanelSplit: React.FC = () => {
           items={items}
           onSelectItem={handleSelectItem}
           selectedItem={selectedItem}
+          onToggleVisibility={handleToggleVisibility} // Pass the toggle handler
         />
       </ScrollArea>
 

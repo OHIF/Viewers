@@ -1,25 +1,30 @@
-// src/components/PanelSplit/ItemList.tsx
-
 import React from 'react';
-import { Item } from './types';
-import { Label } from '../Label';
+import { Item, VisibilityState } from './types';
+import { Button } from '../Button';
 
 interface ItemListProps {
   items: Item[];
   onSelectItem: (item: Item) => void;
   selectedItem: Item | null;
+  onToggleVisibility: (itemId: number) => void; // Prop for visibility toggle
 }
 
 /**
  * ItemList Component
  *
- * Displays a list of items that can be selected.
+ * Displays a list of items that can be selected and toggled for visibility.
  *
  * @param items - Array of items to display.
  * @param onSelectItem - Callback when an item is selected.
  * @param selectedItem - The currently selected item.
+ * @param onToggleVisibility - Callback when an item's visibility is toggled.
  */
-const ItemList: React.FC<ItemListProps> = ({ items, onSelectItem, selectedItem }) => {
+const ItemList: React.FC<ItemListProps> = ({
+  items,
+  onSelectItem,
+  selectedItem,
+  onToggleVisibility,
+}) => {
   return (
     <ul
       aria-label="Item List"
@@ -35,43 +40,113 @@ const ItemList: React.FC<ItemListProps> = ({ items, onSelectItem, selectedItem }
             aria-pressed={item.id === selectedItem?.id}
           >
             <span>{item.name}</span>
-            <svg
-              width="24px"
-              height="24px"
-              viewBox="0 0 24 24"
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={e => {
+                e.stopPropagation(); // Prevent parent onClick
+                onToggleVisibility(item.id);
+              }}
+              aria-label={item.visibility === 'Visible' ? `Hide ${item.name}` : `Show ${item.name}`}
             >
-              <g
-                id="hide"
-                stroke="none"
-                strokeWidth="1"
-                fill="none"
-                fillRule="evenodd"
-              >
-                <rect
-                  id="Rectangle"
-                  x="0"
-                  y="0"
-                  width="24"
-                  height="24"
-                ></rect>
-                <circle
-                  id="Oval"
-                  stroke="#348CFD"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  cx="12.4986195"
-                  cy="11.8041442"
-                  r="2.58684689"
-                ></circle>
-                <path
-                  d="M20.906611,11.5617197 C20.0470387,10.5861089 16.6094888,7 12.4986195,7 C8.38775024,7 4.95020027,10.5861089 4.090628,11.5617197 C3.96979067,11.7007491 3.96979067,11.9075393 4.090628,12.0465687 C4.95020027,13.0221796 8.38775024,16.6082885 12.4986195,16.6082885 C16.6094888,16.6082885 20.0470387,13.0221796 20.906611,12.0465687 C21.0274483,11.9075393 21.0274483,11.7007491 20.906611,11.5617197 Z"
-                  id="Path"
-                  stroke="#348CFD"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                ></path>
-              </g>
-            </svg>
+              {item.visibility === 'Visible' ? (
+                // SVG Icon for "Visible"
+                <svg
+                  width="24px"
+                  height="24px"
+                  viewBox="0 0 24 24"
+                >
+                  <g
+                    stroke="none"
+                    strokeWidth="1"
+                    fill="none"
+                    fillRule="evenodd"
+                  >
+                    <rect
+                      x="0"
+                      y="0"
+                      width="24"
+                      height="24"
+                    ></rect>
+                    <circle
+                      stroke="#348CFD"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      cx="12.4986195"
+                      cy="11.8041442"
+                      r="2.58684689"
+                    ></circle>
+                    <path
+                      d="M20.906611,11.5617197 C20.0470387,10.5861089 16.6094888,7 12.4986195,7
+                         C8.38775024,7 4.95020027,10.5861089 4.090628,11.5617197
+                         C3.96979067,11.7007491 3.96979067,11.9075393 4.090628,12.0465687
+                         C4.95020027,13.0221796 8.38775024,16.6082885 12.4986195,16.6082885
+                         C16.6094888,16.6082885 20.0470387,13.0221796 20.906611,12.0465687
+                         C21.0274483,11.9075393 21.0274483,11.7007491 20.906611,11.5617197 Z"
+                      stroke="#348CFD"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    ></path>
+                  </g>
+                </svg>
+              ) : (
+                // SVG Icon for "Hidden"
+                <svg
+                  width="24px"
+                  height="24px"
+                  viewBox="0 0 24 24"
+                >
+                  <g
+                    stroke="none"
+                    strokeWidth="1"
+                    fill="none"
+                    fillRule="evenodd"
+                  >
+                    <path
+                      d="M18.0567826,8.96286957
+                         C19.1471229,9.75269568 20.1356859,10.674229 21,11.7065217
+                         C21,11.7065217 17.1949565,16.5108696 12.5,16.5108696
+                         C11.7479876,16.5066962 11.0007435,16.3911225 10.2826087,16.167913"
+                      stroke="#348CFD"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    ></path>
+                    <path
+                      d="M6.93286957,14.4413043
+                         C5.84666081,13.6535964 4.86162018,12.7350857 4,11.7065217
+                         C4,11.7065217 7.80504348,6.90217391 12.5,6.90217391
+                         C13.1235541,6.90480509 13.7443251,6.98550531 14.3478261,7.1423913"
+                      stroke="#348CFD"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    ></path>
+                    <path
+                      d="M9.54347826,11.7065217
+                         C9.54347826,10.0736799 10.8671581,8.75 12.5,8.75"
+                      stroke="#348CFD"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    ></path>
+                    <path
+                      d="M15.4565217,11.7065217
+                         C15.4565217,13.3393636 14.1328419,14.6630435 12.5,14.6630435"
+                      stroke="#348CFD"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    ></path>
+                    <line
+                      x1="19.7065217"
+                      y1="4.5"
+                      x2="5.29347826"
+                      y2="18.9130435"
+                      stroke="#348CFD"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    ></line>
+                  </g>
+                </svg>
+              )}
+            </Button>
           </button>
         </li>
       ))}
