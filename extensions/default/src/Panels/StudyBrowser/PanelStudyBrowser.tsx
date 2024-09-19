@@ -1,8 +1,14 @@
 import React, { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
-import { StudyBrowser, useImageViewer, useViewportGrid } from '@ohif/ui';
+import { useImageViewer, useViewportGrid } from '@ohif/ui';
+import { StudyBrowser as NewStudyBrowser } from '@ohif/ui-next';
+import { StudyBrowser as OldStudyBrowser } from '@ohif/ui';
 import { utils } from '@ohif/core';
+import { useAppConfig } from '@state';
 import { useNavigate } from 'react-router-dom';
+import { Separator } from '@ohif/ui-next';
+import { PanelStudyBrowserHeader } from './PanelStudyBrowserHeader';
+import { defaultActionIcons, defaultViewPresets } from './constants';
 
 const { sortStudyInstances, formatDate, createStudyBrowserTabs } = utils;
 
@@ -16,10 +22,14 @@ function PanelStudyBrowser({
   getStudiesForPatientByMRN,
   requestDisplaySetCreationForStudy,
   dataSource,
+  renderHeader,
+  getCloseIcon,
+  tab,
 }: withAppTypes) {
-  const { hangingProtocolService, displaySetService, uiNotificationService } =
+  const { hangingProtocolService, displaySetService, uiNotificationService, customizationService } =
     servicesManager.services;
   const navigate = useNavigate();
+  const [appConfig] = useAppConfig();
 
   // Normally you nest the components so the tree isn't so deep, and the data
   // doesn't have to have such an intense shape. This works well enough for now.
@@ -35,6 +45,31 @@ function PanelStudyBrowser({
   const [studyDisplayList, setStudyDisplayList] = useState([]);
   const [displaySets, setDisplaySets] = useState([]);
   const [thumbnailImageSrcMap, setThumbnailImageSrcMap] = useState({});
+
+  const [viewPresets, setViewPresets] = useState(
+    customizationService.getCustomization('studyBrowser.viewPresets')?.value || defaultViewPresets
+  );
+
+  const [actionIcons, setActionIcons] = useState(defaultActionIcons);
+
+  // multiple can be true or false
+  const updateActionIconValue = actionIcon => {
+    actionIcon.value = !actionIcon.value;
+    const newActionIcons = [...actionIcons];
+    setActionIcons(newActionIcons);
+  };
+
+  // only one is true at a time
+  const updateViewPresetValue = viewPreset => {
+    if (!viewPreset) {
+      return;
+    }
+    const newViewPresets = viewPresets.map(preset => {
+      preset.selected = preset.id === viewPreset.id;
+      return preset;
+    });
+    setViewPresets(newViewPresets);
+  };
 
   const onDoubleClickThumbnailHandler = displaySetInstanceUID => {
     let updatedViewports = [];
@@ -164,9 +199,10 @@ function PanelStudyBrowser({
     const SubscriptionDisplaySetsAdded = displaySetService.subscribe(
       displaySetService.EVENTS.DISPLAY_SETS_ADDED,
       data => {
-        if (!hasLoadedViewports) {
-          return;
-        }
+        // for some reason this breaks thumbnail loading
+        // if (!hasLoadedViewports) {
+        //   return;
+        // }
         const { displaySetsAdded, options } = data;
         displaySetsAdded.forEach(async dSet => {
           const newImageSrcEntry = {};
@@ -236,7 +272,7 @@ function PanelStudyBrowser({
     const shouldCollapseStudy = expandedStudyInstanceUIDs.includes(StudyInstanceUID);
     const updatedExpandedStudyInstanceUIDs = shouldCollapseStudy
       ? // eslint-disable-next-line prettier/prettier
-      [...expandedStudyInstanceUIDs.filter(stdyUid => stdyUid !== StudyInstanceUID)]
+        [...expandedStudyInstanceUIDs.filter(stdyUid => stdyUid !== StudyInstanceUID)]
       : [...expandedStudyInstanceUIDs, StudyInstanceUID];
 
     setExpandedStudyInstanceUIDs(updatedExpandedStudyInstanceUIDs);
@@ -249,19 +285,42 @@ function PanelStudyBrowser({
 
   const activeDisplaySetInstanceUIDs = viewports.get(activeViewportId)?.displaySetInstanceUIDs;
 
+  const StudyBrowser = appConfig?.useExperimentalUI ? NewStudyBrowser : OldStudyBrowser;
+
   return (
-    <StudyBrowser
-      tabs={tabs}
-      servicesManager={servicesManager}
-      activeTabName={activeTabName}
-      onDoubleClickThumbnail={onDoubleClickThumbnailHandler}
-      activeDisplaySetInstanceUIDs={activeDisplaySetInstanceUIDs}
-      expandedStudyInstanceUIDs={expandedStudyInstanceUIDs}
-      onClickStudy={_handleStudyClick}
-      onClickTab={clickedTabName => {
-        setActiveTabName(clickedTabName);
-      }}
-    />
+    <>
+      {renderHeader && (
+        <>
+          <PanelStudyBrowserHeader
+            tab={tab}
+            getCloseIcon={getCloseIcon}
+            viewPresets={viewPresets}
+            updateViewPresetValue={updateViewPresetValue}
+            actionIcons={actionIcons}
+            updateActionIconValue={updateActionIconValue}
+          />
+          <Separator
+            orientation="horizontal"
+            className="bg-black"
+            thickness="2px"
+          />
+        </>
+      )}
+      <StudyBrowser
+        tabs={tabs}
+        servicesManager={servicesManager}
+        activeTabName={activeTabName}
+        onDoubleClickThumbnail={onDoubleClickThumbnailHandler}
+        activeDisplaySetInstanceUIDs={activeDisplaySetInstanceUIDs}
+        expandedStudyInstanceUIDs={expandedStudyInstanceUIDs}
+        onClickStudy={_handleStudyClick}
+        onClickTab={clickedTabName => {
+          setActiveTabName(clickedTabName);
+        }}
+        showSettings={actionIcons.find(icon => icon.id === 'settings').value}
+        viewPresets={viewPresets}
+      />
+    </>
   );
 }
 

@@ -7,6 +7,7 @@ import { useAppConfig } from '@state';
 import { useTrackedMeasurements } from '../../getContextModule';
 import debounce from 'lodash.debounce';
 import { useTranslation } from 'react-i18next';
+import { Separator } from '@ohif/ui-next';
 
 const { downloadCSVReport } = utils;
 const { formatDate } = utils;
@@ -18,7 +19,13 @@ const DISPLAY_STUDY_SUMMARY_INITIAL_VALUE = {
   description: '', // 'CHEST/ABD/PELVIS W CONTRAST',
 };
 
-function PanelMeasurementTableTracking({ servicesManager, extensionManager }: withAppTypes) {
+function PanelMeasurementTableTracking({
+  servicesManager,
+  extensionManager,
+  renderHeader,
+  getCloseIcon,
+  tab,
+}: withAppTypes) {
   const [viewportGrid] = useViewportGrid();
   const { t } = useTranslation('MeasurementTable');
   const [measurementChangeTimestamp, setMeasurementsUpdated] = useState(Date.now().toString());
@@ -176,6 +183,24 @@ function PanelMeasurementTableTracking({ servicesManager, extensionManager }: wi
 
   return (
     <>
+      {renderHeader && (
+        <>
+          <div className="bg-primary-dark flex select-none rounded-t pt-1.5 pb-[2px]">
+            <div className="flex h-[24px] w-full cursor-pointer select-none justify-center self-center text-[14px]">
+              <div className="text-primary-active flex grow cursor-pointer select-none justify-center self-center text-[13px]">
+                <span>{tab.label}</span>
+              </div>
+            </div>
+
+            {getCloseIcon()}
+          </div>
+          <Separator
+            orientation="horizontal"
+            className="bg-black"
+            thickness="2px"
+          />
+        </>
+      )}
       <div
         className="invisible-scrollbar overflow-y-auto overflow-x-hidden"
         ref={measurementsPanelRef}
