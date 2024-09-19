@@ -262,7 +262,6 @@ Hugo, G. D., Weiss, E., Sleeman, W. C., Balik, S., Keall, P. J., Lu, J., & Willi
 
 https://www.cancerimagingarchive.net/collection/rider-lung-pet-ct/
 
-
 Muzi P, Wanner M, & Kinahan P. (2015). Data From RIDER Lung PET-CT. The Cancer Imaging Archive. https://doi.org/10.7937/k9/tcia.2015.ofip7tvm
 
 ### 1.3.6.1.4.1.14519.5.2.1.9823.1001.134394060407147891170882809392
