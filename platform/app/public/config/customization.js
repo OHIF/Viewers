@@ -48,19 +48,15 @@ window.config = {
         items: {
           // Note the -10000 means -10000 + length of existing list, which is
           // much before the start of hte list, so put the new value at the start.
-          '-10000':
-          {
+          '-10000': {
             id: 'Species',
             customizationType: 'ohif.overlayItem',
             label: 'Species:',
             color: 'red',
             background: 'green',
-            condition: ({ instance }) =>
-              instance?.PatientSpeciesDescription,
+            condition: ({ instance }) => instance?.PatientSpeciesDescription,
             contentF: ({ instance }) =>
-              instance.PatientSpeciesDescription +
-              '/' +
-              instance.PatientBreedDescription,
+              instance.PatientSpeciesDescription + '/' + instance.PatientBreedDescription,
           },
         },
       },
@@ -151,9 +147,9 @@ window.config = {
       configuration: {
         friendlyName: 'AWS S3 Static wado server',
         name: 'aws',
-        wadoUriRoot: 'https://d33do7qe4w26qo.cloudfront.net/dicomweb',
-        qidoRoot: 'https://d33do7qe4w26qo.cloudfront.net/dicomweb',
-        wadoRoot: 'https://d33do7qe4w26qo.cloudfront.net/dicomweb',
+        wadoUriRoot: 'https://d14fa38qiwhyfd.cloudfront.net/dicomweb',
+        qidoRoot: 'https://d14fa38qiwhyfd.cloudfront.net/dicomweb',
+        wadoRoot: 'https://d14fa38qiwhyfd.cloudfront.net/dicomweb',
         qidoSupportsIncludeField: false,
         imageRendering: 'wadors',
         thumbnailRendering: 'wadors',
@@ -175,9 +171,9 @@ window.config = {
       configuration: {
         friendlyName: 'AWS S3 Static wado secondary server',
         name: 'aws',
-        wadoUriRoot: 'https://d28o5kq0jsoob5.cloudfront.net/dicomweb',
-        qidoRoot: 'https://d28o5kq0jsoob5.cloudfront.net/dicomweb',
-        wadoRoot: 'https://d28o5kq0jsoob5.cloudfront.net/dicomweb',
+        wadoUriRoot: 'https://dd14fa38qiwhyfd.cloudfront.net/dicomweb',
+        qidoRoot: 'https://dd14fa38qiwhyfd.cloudfront.net/dicomweb',
+        wadoRoot: 'https://dd14fa38qiwhyfd.cloudfront.net/dicomweb',
         qidoSupportsIncludeField: false,
         supportsReject: false,
         imageRendering: 'wadors',

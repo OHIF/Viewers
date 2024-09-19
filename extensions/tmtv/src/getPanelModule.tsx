@@ -1,6 +1,8 @@
 import React from 'react';
 import { PanelPetSUV, PanelROIThresholdExport } from './Panels';
-import { Toolbox } from '@ohif/ui';
+import { Toolbox as NewToolbox } from '@ohif/ui-next';
+import { Toolbox as OldToolbox } from '@ohif/ui';
+import { useAppConfig } from '@state';
 
 // TODO:
 // - No loading UI exists yet
@@ -8,16 +10,24 @@ import { Toolbox } from '@ohif/ui';
 // - show errors in UI for thumbnails if promise fails
 
 function getPanelModule({ commandsManager, extensionManager, servicesManager }) {
-  const wrappedPanelPetSuv = () => {
+  const wrappedPanelPetSuv = ({ renderHeader, getCloseIcon, tab }) => {
     return (
       <PanelPetSUV
         commandsManager={commandsManager}
         servicesManager={servicesManager}
+        extensionManager={extensionManager}
+        renderHeader={renderHeader}
+        getCloseIcon={getCloseIcon}
+        tab={tab}
       />
     );
   };
 
-  const wrappedROIThresholdToolbox = () => {
+  const wrappedROIThresholdToolbox = ({ renderHeader, getCloseIcon, tab }: withAppTypes) => {
+    const [appConfig] = useAppConfig();
+
+    const Toolbox = appConfig.useExperimentalUI ? NewToolbox : OldToolbox;
+
     return (
       <>
         <Toolbox
@@ -26,6 +36,9 @@ function getPanelModule({ commandsManager, extensionManager, servicesManager }) 
           extensionManager={extensionManager}
           buttonSectionId="ROIThresholdToolbox"
           title="Threshold Tools"
+          renderHeader={renderHeader}
+          getCloseIcon={getCloseIcon}
+          tab={tab}
         />
       </>
     );

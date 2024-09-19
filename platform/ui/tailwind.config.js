@@ -59,7 +59,20 @@ module.exports = {
         dark: '#726f7e',
         active: '#2c3074',
       },
-
+      bkg: {
+        low: '#050615',
+        med: '#090C29',
+        full: '#041C4A',
+      },
+      info: {
+        primary: '#FFFFFF',
+        secondary: '#7BB2CE',
+      },
+      actions: {
+        primary: '#348CFD',
+        highlight: '#5ACCE6',
+        hover: 'rgba(52, 140, 253, 0.2)',
+      },
       customgreen: {
         100: '#05D97C',
         200: '#0FD97C',
