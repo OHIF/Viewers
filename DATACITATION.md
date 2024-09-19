@@ -10,6 +10,7 @@ Please find below the list of datasets used on the demo page, along with their r
 
 
 ## Platforms
+
 ### NIH NCI IDC
 
 - Fedorov, A., Longabaugh, W.J., Pot, D., Clunie, D.A., Pieper, S., Aerts, H.J., Homeyer, A., Lewis, R., Akbarzadeh, A., Bontempi, D. and Clifford, W., 2021. NCI imaging data commons. Cancer research, 81(16), p.4188.
@@ -147,3 +148,143 @@ Stony Brook University COVID-19 Positive Cases (COVID-19-NY-SBU)
 ### 2.16.840.1.114362.1.11972228.22789312658.616067305.306.2
 
 https://data.kitware.com/
+
+
+### 1.2.276.0.7230010.3.1.2.296485376.1.1665793212.499772
+### 2.25.269859997690759739055099378767846712697
+### 1.3.6.1.4.1.14519.5.2.1.5099.8010.217836670708542506360829799868
+### 1.3.6.1.4.1.14519.5.2.1.4792.2001.232252967813565730694525674696
+### 1.3.6.1.4.1.14519.5.2.1.4792.2001.105216574054253895819671475627
+### 1.3.6.1.4.1.5962.99.1.1117.5035.1620319789811.1.2.1
+### 1.3.6.1.4.1.5962.99.1.1123.9231.1620326176300.1.2.1
+### 1.3.6.1.4.1.5962.99.1.1126.3483.1620329455972.1.2.1
+
+https://github.com/ImagingInformatics/hackathon-images
+
+### 2.16.124.113543.6004.101.103.20021117.162333.1
+### 2.16.124.113543.6004.101.103.20021117.190619.1
+### 2.16.124.113543.6004.101.103.20021117.123455.1
+### 2.16.124.113543.6004.101.103.20021117.061159.1
+
+https://www.aapm.org/
+
+
+### 1.2.840.113619.2.30.1.1762295590.1623.978668949.886
+
+
+### 1.2.276.0.7230010.3.1.2.447481088.1.1669202398.851612
+
+Custom data SPECT, specifically I123-FP-CIT (DaTSCAN) SPECT, evaluates the dopaminergic system to diagnose Parkinson's disease, especially when tremor symptoms are unclear. It helps distinguish Parkinson's disease from treatment-related tremor.
+
+
+
+### 1.3.6.1.4.1.9328.50.1.54652
+
+https://www.cancerimagingarchive.net/collection/rider-pilot/
+
+Lung Image Database Consortium (LIDC). (2023) RIDER Pilot [Data set]. The Cancer Imaging Archive (TCIA). https://doi.org/10.7937/m87f-mz83
+
+### 1.3.6.1.4.1.14519.5.2.1.331759366792756327296606233801322964986
+
+Mayr, N., Yuh, W. T. C., Bowen, S., Harkenrider, M., Knopp, M. V., Lee, E. Y.-P., Leung, E., Lo, S. S., Small Jr., W., & Wolfson, A. H. (2023). Cervical Cancer – Tumor Heterogeneity: Serial Functional and Molecular Imaging Across the Radiation Therapy Course in Advanced Cervical Cancer (Version 1) [Data set]. The Cancer Imaging Archive. https://doi.org/10.7937/ERZ5-QZ59
+
+https://www.cancerimagingarchive.net/collection/cc-tumor-heterogeneity/
+
+### 1.3.6.1.4.1.14519.5.2.1.297577087050970310787702792940607009472
+
+Eslick, E. M., Kipritidis, J., Gradinscak, D., Stevens, M. J., Bailey, D. L., Harris, B., Booth, J. T., & Keall, P. J. (2022). CT Ventilation as a functional imaging modality for lung cancer radiotherapy (CT-vs-PET-Ventilation-Imaging) (Version 1) [Data set]. The Cancer Imaging Archive. https://doi.org/10.7937/3ppx-7s22
+
+https://www.cancerimagingarchive.net/collection/ct-vs-pet-ventilation-imaging/
+
+
+### 1.3.6.1.4.1.14519.5.2.1.2103.7010.634114621738943599785009586807
+### 1.3.6.1.4.1.14519.5.2.1.2103.7010.135953723682765205394176991681
+
+Huang, W., Tudorica, A., Chui, S., Kemmer, K., Naik, A., Troxell, M., Oh, K., Roy, N., Afzal, A., & Holtorf, M. (2014). Variations of dynamic contrast-enhanced magnetic resonance imaging in evaluation of breast cancer therapy response: a multicenter data analysis challenge (QIN Breast DCE-MRI) (Version 2) [Data set]. The Cancer Imaging Archive. https://doi.org/10.7937/k9/tcia.2014.a2n1ixox
+
+https://www.cancerimagingarchive.net/collection/qin-breast-dce-mri/
+
+
+### 1.3.6.1.4.1.14519.5.2.1.1.24766180081901755714059656629507905556
+
+
+Cancer Moonshot Biobank. (2023). Cancer Moonshoot Biobank – Acute Myeloid Leukemia (CMB-AML) (Version 4) [Dataset]. The Cancer Imaging Archive. https://doi.org/10.7937/PCTE-6M66
+
+https://www.cancerimagingarchive.net/collection/cmb-aml/
+
+### 1.3.6.1.4.1.14519.5.2.1.3098.5025.285242291560760827564488897577
+
+https://www.cancerimagingarchive.net/collection/anti-pd-1_lung/
+
+Madhavi, P., Patel, S., & Tsao, A. S. (2019). Data from Anti-PD-1 Immunotherapy Lung [Data set]. The Cancer Imaging Archive. DOI:  10.7937/tcia.2019.zjjwb9ip
+
+### 1.3.6.1.4.1.14519.5.2.1.1.84416332615988066829602832830236187384
+
+https://www.cancerimagingarchive.net/collection/cmb-pca/
+
+Cancer Moonshot Biobank. (2022). Cancer Moonshot Biobank – Prostate Cancer Collection (CMB-PCA) (Version 7) [Dataset]. The Cancer Imaging Archive. https://doi.org/10.7937/25T7-6Y12
+
+### 1.3.6.1.4.1.32722.99.99.239341353911714368772597187099978969331
+
+Aerts, H. J. W. L., Wee, L., Rios Velazquez, E., Leijenaar, R. T. H., Parmar, C., Grossmann, P., Carvalho, S., Bussink, J., Monshouwer, R., Haibe-Kains, B., Rietveld, D., Hoebers, F., Rietbergen, M. M., Leemans, C. R., Dekker, A., Quackenbush, J., Gillies, R. J., Lambin, P. (2014). Data From NSCLC-Radiomics (version 4) [Data set]. The Cancer Imaging Archive. https://doi.org/10.7937/K9/TCIA.2015.PF0M9REI
+
+https://www.cancerimagingarchive.net/collection/nsclc-radiomics/
+
+### 1.3.6.1.4.1.14519.5.2.1.7085.2626.494695569589117268722281491772
+
+https://www.cancerimagingarchive.net/collection/cptac-ucec/
+
+
+National Cancer Institute Clinical Proteomic Tumor Analysis Consortium (CPTAC). (2019). The Clinical Proteomic Tumor Analysis Consortium Uterine Corpus Endometrial Carcinoma Collection (CPTAC-UCEC) (Version 12) [Data set]. The Cancer Imaging Archive. https://doi.org/10.7937/K9/TCIA.2018.3R3JUISW
+
+### 1.3.6.1.4.1.14519.5.2.1.207544490797667703011829289839681390478
+
+https://www.cancerimagingarchive.net/collection/remind/
+
+Juvekar, P., Dorent, R., Kögl, F., Torio, E., Barr, C., Rigolo, L., Galvin, C., Jowkar, N., Kazi, A., Haouchine, N., Cheema, H., Navab, N., Pieper, S., Wells, W. M., Bi, W. L., Golby, A., Frisken, S., & Kapur, T. (2023). The Brain Resection Multimodal Imaging Database (ReMIND) (Version 1) [dataset]. The Cancer Imaging Archive. https://doi.org/10.7937/3RAG-D070
+
+### 1.3.12.2.1107.5.1.4.60175.30000008042114404745300000010
+
+Gavrielides, M. A., Kinnard, L. M., Myers, K. J., Peregoy, J., Pritchard, W. F., Zeng, R., Esparza, J., Karanian, J., & Petrick, N. (2015). Data From Phantom FDA [Data set]. The Cancer Imaging Archive. https://doi.org/10.7937/k9/TCIA.2015.orbjkmux
+
+https://www.cancerimagingarchive.net/collection/phantom-fda/
+
+
+### 1.3.6.1.4.1.14519.5.2.1.6834.5010.992793141464713669479982159310
+
+https://www.cancerimagingarchive.net/collection/4d-lung/
+
+
+Hugo, G. D., Weiss, E., Sleeman, W. C., Balik, S., Keall, P. J., Lu, J., & Williamson, J. F. (2016). Data from 4D Lung Imaging of NSCLC Patients (Version 2) [Data set]. The Cancer Imaging Archive. https://doi.org/10.7937/K9/TCIA.2016.ELN8YGLE
+
+
+### 1.3.6.1.4.1.9328.50.17.15423521354819720574322014551955370036
+
+https://www.cancerimagingarchive.net/collection/rider-lung-pet-ct/
+
+Muzi P, Wanner M, & Kinahan P. (2015). Data From RIDER Lung PET-CT. The Cancer Imaging Archive. https://doi.org/10.7937/k9/tcia.2015.ofip7tvm
+
+### 1.3.6.1.4.1.14519.5.2.1.9823.1001.134394060407147891170882809392
+
+https://www.cancerimagingarchive.net/collection/prostate-mri/
+
+Choyke P, Turkbey B, Pinto P, Merino M, Wood B. (2016). Data From PROSTATE-MRI. The Cancer Imaging Archive. http://doi.org/10.7937/K9/TCIA.2016.6046GUDv
+
+### 1.3.6.1.4.1.14519.5.2.1.191696062987463500085282581898315738844
+
+https://www.cancerimagingarchive.net/collection/upenn-gbm/
+
+Bakas, S., Sako, C., Akbari, H., Bilello, M., Sotiras, A., Shukla, G., Rudie, J. D., Flores Santamaria, N., Fathi Kazerooni, A., Pati, S., Rathore, S., Mamourian, E., Ha, S. M., Parker, W., Doshi, J., Baid, U., Bergman, M., Binder, Z. A., Verma, R., … Davatzikos, C. (2021). Multi-parametric magnetic resonance imaging (mpMRI) scans for de novo Glioblastoma (GBM) patients from the University of Pennsylvania Health System (UPENN-GBM) (Version 2) [Data set]. The Cancer Imaging Archive. https://doi.org/10.7937/TCIA.709X-DN49
+
+### 1.3.6.1.4.1.14519.5.2.1.4792.2001.921758700577562664959693695481
+
+https://www.cancerimagingarchive.net/collection/breast-diagnosis/
+
+Bloch, B. Nicolas, Jain, Ashali, & Jaffe, C. Carl. (2015). BREAST-DIAGNOSIS [Data set]. The Cancer Imaging Archive. http://doi.org/10.7937/K9/TCIA.2015.SDNRQXXR
+
+
+### 1.3.6.1.4.1.14519.5.2.1.1620.1225.189514895974227080410265976065
+
+Comstock, C. E., Gatsonis, C., Newstead, G. M., Snyder, B. S., Gareen, I. F., Bergin, J. T., Rahbar, H., Sung, J. S., Jacobs, C., Harvey, J. A., Nicholson, M. H., Ward, R. C., Holt, J., Prather, A., Miller, K. D., Schnall, M. D., & Kuhl, C. K. (2023). Abbreviated Breast MRI and Digital Tomosynthesis Mammography in Screening Women With Dense Breasts (EA1141) (Version 1) [dataset]. The Cancer Imaging Archive. https://doi.org/10.7937/2BAS-HR33
+
+https://www.cancerimagingarchive.net/collection/ea1141/
