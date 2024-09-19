@@ -289,6 +289,7 @@ class SegmentationService extends PubSubService {
           ? {
               1: {
                 label: 'Segment 1',
+                active: true,
               },
             }
           : {},

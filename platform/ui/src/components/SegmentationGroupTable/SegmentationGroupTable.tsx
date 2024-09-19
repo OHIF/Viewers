@@ -98,15 +98,8 @@ const SegmentationGroupTable: React.FC<SegmentationGroupTableProps> = ({
     return null;
   }
 
-  const { segmentation: activeSegmentation, representation: activeRepresentation } =
-    segmentationsInfo.find(info => {
-      const representation = info.representation;
-      return representation.active;
-    });
-
-  const activeSegmentationId = activeSegmentation.segmentationId;
-
-  debugger;
+  const activeSegmentationInfo = segmentationsInfo.find(info => info.representation.active);
+  const activeSegmentationId = activeSegmentationInfo?.segmentation.segmentationId;
 
   return (
     <div className="flex min-h-0 flex-col bg-black text-[13px] font-[300]">
@@ -134,9 +127,13 @@ const SegmentationGroupTable: React.FC<SegmentationGroupTableProps> = ({
         <div className="bg-primary-dark">
           <div className="mt-1 select-none">
             <SegmentationDropDownRow
-              segmentationsInfo={segmentationsInfo}
+              segmentations={segmentationsInfo.map(info => ({
+                id: info.segmentation.segmentationId,
+                label: info.segmentation.label,
+                isActive: info.representation.active,
+                isVisible: info.representation.visible,
+              }))}
               disableEditing={disableEditing}
-              activeSegmentation={activeSegmentation}
               onActiveSegmentationChange={onSegmentationClick}
               onSegmentationDelete={onSegmentationDelete}
               onSegmentationEdit={onSegmentationEdit}
@@ -147,20 +144,21 @@ const SegmentationGroupTable: React.FC<SegmentationGroupTableProps> = ({
               addSegmentationClassName={addSegmentationClassName}
               onToggleSegmentationVisibility={onToggleSegmentationVisibility}
             />
-            {!disableEditing && showAddSegment && (
+            {!disableEditing && showAddSegment && activeSegmentationId && (
               <AddSegmentRow onClick={() => onSegmentAdd(activeSegmentationId)} />
             )}
           </div>
         </div>
         <div className="ohif-scrollbar flex h-fit min-h-0 flex-1 flex-col overflow-auto bg-black">
-          {Object.values(activeRepresentation?.segments).map(segment => {
+          {Object.values(activeSegmentationInfo?.representation?.segments).map(segment => {
             if (!segment) {
               return null;
             }
 
             const { segmentIndex, color, visible } = segment;
-            const segmentFromSegmentation = activeSegmentation.segments[segmentIndex];
-            const { locked, active, cachedStats, label } = segmentFromSegmentation;
+            const segmentFromSegmentation =
+              activeSegmentationInfo?.segmentation.segments[segmentIndex];
+            const { locked, active, label } = segmentFromSegmentation;
 
             return (
               <div
@@ -168,7 +166,6 @@ const SegmentationGroupTable: React.FC<SegmentationGroupTableProps> = ({
                 key={segmentIndex}
               >
                 <SegmentationGroupSegment
-                  segmentationId={activeSegmentationId}
                   segmentIndex={segmentIndex}
                   label={label}
                   color={color}
@@ -176,13 +173,17 @@ const SegmentationGroupTable: React.FC<SegmentationGroupTableProps> = ({
                   disableEditing={disableEditing}
                   isLocked={locked}
                   isVisible={visible}
-                  onClick={onSegmentClick}
-                  onEdit={onSegmentEdit}
-                  onDelete={onSegmentDelete}
+                  onClick={segmentIndex => onSegmentClick(activeSegmentationId, segmentIndex)}
+                  onEdit={segmentIndex => onSegmentEdit(activeSegmentationId, segmentIndex)}
+                  onDelete={segmentIndex => onSegmentDelete(activeSegmentationId, segmentIndex)}
                   showDelete={disableEditing ? false : showDeleteSegment}
-                  onColor={onSegmentColorClick}
-                  onToggleVisibility={onToggleSegmentVisibility}
-                  onToggleLocked={onToggleSegmentLock}
+                  onColor={segmentIndex => onSegmentColorClick(activeSegmentationId, segmentIndex)}
+                  onToggleVisibility={segmentIndex =>
+                    onToggleSegmentVisibility(activeSegmentationId, segmentIndex)
+                  }
+                  onToggleLocked={segmentIndex =>
+                    onToggleSegmentLock(activeSegmentationId, segmentIndex)
+                  }
                 />
               </div>
             );

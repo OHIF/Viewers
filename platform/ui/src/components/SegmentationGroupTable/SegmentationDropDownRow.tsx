@@ -2,9 +2,15 @@ import React from 'react';
 import { Select, Icon, Dropdown, Tooltip } from '../../components';
 import { useTranslation } from 'react-i18next';
 
-type SegmentationDropDownRowProps = {
-  segmentationsInfo: AppTypes.Segmentation.SegmentationInfo[];
-  activeSegmentation: Segmentation | null;
+type Segmentation = {
+  id: string;
+  label: string;
+  isActive: boolean;
+  isVisible: boolean;
+};
+
+interface SegmentationDropDownRowProps {
+  segmentations: Segmentation[];
   onActiveSegmentationChange: (segmentationId: string) => void;
   disableEditing?: boolean;
   onToggleSegmentationVisibility: (segmentationId: string) => void;
@@ -15,11 +21,10 @@ type SegmentationDropDownRowProps = {
   onSegmentationDelete: (segmentationId: string) => void;
   onSegmentationAdd: () => void;
   addSegmentationClassName?: string;
-};
+}
 
-function SegmentationDropDownRow({
-  segmentationsInfo = [],
-  activeSegmentation,
+const SegmentationDropDownRow: React.FC<SegmentationDropDownRowProps> = ({
+  segmentations,
   onActiveSegmentationChange,
   disableEditing = false,
   onToggleSegmentationVisibility,
@@ -29,29 +34,51 @@ function SegmentationDropDownRow({
   storeSegmentation,
   onSegmentationDelete,
   onSegmentationAdd,
-  addSegmentationClassName,
-}: SegmentationDropDownRowProps) {
-  const handleChange = (option: { value: string; label: string }) => {
-    onActiveSegmentationChange(option.value); // Notify the parent
-  };
-
-  const selectOptions = segmentationsInfo.map(s => ({
-    value: s.id,
-    label: s.label,
-  }));
+  addSegmentationClassName = '',
+}) => {
   const { t } = useTranslation('SegmentationTable');
 
+  const activeSegmentation = segmentations.find(seg => seg.isActive);
   if (!activeSegmentation) {
     return null;
   }
 
+  const handleSelectChange = (option: { value: string; label: string }) => {
+    onActiveSegmentationChange(option.value);
+  };
+
+  const selectOptions = segmentations.map(seg => ({
+    value: seg.id,
+    label: seg.label,
+  }));
+
+  const dropdownItems = [
+    ...(!disableEditing ? [{ title: t('Add new segmentation'), onClick: onSegmentationAdd }] : []),
+    ...(!disableEditing
+      ? [{ title: t('Rename'), onClick: () => onSegmentationEdit(activeSegmentation.id) }]
+      : []),
+    { title: t('Delete'), onClick: () => onSegmentationDelete(activeSegmentation.id) },
+    ...(!disableEditing
+      ? [
+          {
+            title: t('Export DICOM SEG'),
+            onClick: () => storeSegmentation(activeSegmentation.id),
+          },
+        ]
+      : []),
+    {
+      title: t('Download DICOM SEG'),
+      onClick: () => onSegmentationDownload(activeSegmentation.id),
+    },
+    {
+      title: t('Download DICOM RTSTRUCT'),
+      onClick: () => onSegmentationDownloadRTSS(activeSegmentation.id),
+    },
+  ];
+
   return (
-    <div className="group mx-0.5 mt-[8px] flex items-center pb-[10px]">
-      <div
-        onClick={e => {
-          e.stopPropagation();
-        }}
-      >
+    <div className="mt-2.5 flex items-center space-x-2 pb-2.5">
+      <div onClick={e => e.stopPropagation()}>
         <Dropdown
           id="segmentation-dropdown"
           showDropdownIcon={false}
@@ -59,117 +86,72 @@ function SegmentationDropDownRow({
           itemsClassName={`text-primary-active ${addSegmentationClassName}`}
           showBorders={false}
           maxCharactersPerLine={30}
-          list={[
-            ...(!disableEditing
-              ? [
-                  {
-                    title: t('Add new segmentation'),
-                    onClick: () => {
-                      onSegmentationAdd();
-                    },
-                  },
-                ]
-              : []),
-            ...(!disableEditing
-              ? [
-                  {
-                    title: t('Rename'),
-                    onClick: () => {
-                      onSegmentationEdit(activeSegmentation.id);
-                    },
-                  },
-                ]
-              : []),
-            {
-              title: t('Delete'),
-              onClick: () => {
-                onSegmentationDelete(activeSegmentation.id);
-              },
-            },
-            ...(!disableEditing
-              ? [
-                  {
-                    title: t('Export DICOM SEG'),
-                    onClick: () => {
-                      storeSegmentation(activeSegmentation.id);
-                    },
-                  },
-                ]
-              : []),
-            ...[
-              {
-                title: t('Download DICOM SEG'),
-                onClick: () => {
-                  onSegmentationDownload(activeSegmentation.id);
-                },
-              },
-              {
-                title: t('Download DICOM RTSTRUCT'),
-                onClick: () => {
-                  onSegmentationDownloadRTSS(activeSegmentation.id);
-                },
-              },
-            ],
-          ]}
+          list={dropdownItems}
         >
-          <div className="hover:bg-secondary-dark grid h-[28px] w-[28px] cursor-pointer place-items-center rounded-[4px]">
-            <Icon name="icon-more-menu"></Icon>
+          <div className="hover:bg-secondary-dark grid h-7 w-7 cursor-pointer place-items-center rounded-md">
+            <Icon name="icon-more-menu" />
           </div>
         </Dropdown>
       </div>
-      {selectOptions?.length && (
+
+      {selectOptions.length > 0 && (
         <Select
           id="segmentation-select"
           isClearable={false}
-          onChange={handleChange}
+          onChange={handleSelectChange}
           components={{
             DropdownIndicator: () => (
               <Icon
-                name={'chevron-down-new'}
+                name="chevron-down-new"
                 className="mr-2"
               />
             ),
           }}
           isSearchable={false}
           options={selectOptions}
-          value={selectOptions?.find(o => o.value === activeSegmentation.id)}
-          className="text-aqua-pale h-[26px] w-1/2 text-[13px]"
+          value={selectOptions.find(o => o.value === activeSegmentation.id)}
+          className="text-aqua-pale h-6.5 w-1/2 text-sm"
         />
       )}
-      <div className="flex items-center">
+
+      <div className="flex items-center space-x-2">
         <Tooltip
           position="bottom-right"
           content={
             <div className="flex flex-col">
-              <div className="text-[13px] text-white">Series:</div>
-              <div className="text-aqua-pale text-[13px]">{activeSegmentation.description}</div>
+              <span className="text-sm text-white">{t('Series')}:</span>
+              <span className="text-aqua-pale text-sm">{activeSegmentation.label}</span>
             </div>
           }
         >
           <Icon
             name="info-action"
-            className="text-primary-active"
+            className="text-primary-active cursor-pointer"
           />
         </Tooltip>
+
         <div
-          className="hover:bg-secondary-dark mr-1 grid h-[28px] w-[28px] cursor-pointer place-items-center rounded-[4px]"
+          className="hover:bg-secondary-dark grid h-7 w-7 cursor-pointer place-items-center rounded-md"
           onClick={() => onToggleSegmentationVisibility(activeSegmentation.id)}
+          aria-label={
+            activeSegmentation.isVisible ? t('Hide Segmentation') : t('Show Segmentation')
+          }
+          role="button"
+          tabIndex={0}
+          onKeyPress={e => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              onToggleSegmentationVisibility(activeSegmentation.id);
+            }
+          }}
         >
-          {activeSegmentation.isVisible ? (
-            <Icon
-              name="row-shown"
-              className="text-primary-active"
-            />
-          ) : (
-            <Icon
-              name="row-hidden"
-              className="text-primary-active"
-            />
-          )}
+          <Icon
+            name={activeSegmentation.isVisible ? 'row-shown' : 'row-hidden'}
+            className="text-primary-active"
+          />
         </div>
       </div>
     </div>
   );
-}
+};
 
 export default SegmentationDropDownRow;
