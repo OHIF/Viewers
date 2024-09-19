@@ -1,14 +1,13 @@
-import { Types as OhifTypes, PubSubService } from '@ohif/core';
+import isEqual from 'lodash.isequal';
 import {
   cache,
   Enums as csEnums,
-  geometryLoader,
   eventTarget,
-  utilities as csUtils,
-  Types as csTypes,
+  geometryLoader,
   getEnabledElementByViewportId,
   imageLoader,
-  Types,
+  Types as csTypes,
+  utilities as csUtils,
   VolumeViewport,
 } from '@cornerstonejs/core';
 import {
@@ -17,36 +16,50 @@ import {
   Types as cstTypes,
   utilities as cstUtils,
 } from '@cornerstonejs/tools';
-import isEqual from 'lodash.isequal';
-import { Types as ohifTypes } from '@ohif/core';
+import { PubSubService, Types as OHIFTypes } from '@ohif/core';
 import { easeInOutBell, reverseEaseInOutBell } from '../../utils/transitions';
-import { Segment, Segmentation, SegmentationConfig } from './SegmentationServiceTypes';
 import { mapROIContoursToRTStructData } from './RTSTRUCT/mapROIContoursToRTStructData';
-import {
-  LabelmapConfig,
-  LabelmapSegmentationData,
-  LabelmapSegmentationDataVolume,
-} from '@cornerstonejs/tools/types/LabelmapTypes';
-import { ColorLUT } from '@cornerstonejs/core/types';
+import { SegmentationRepresentations } from '@cornerstonejs/tools/enums';
 
 const LABELMAP = csToolsEnums.SegmentationRepresentations.Labelmap;
 const CONTOUR = csToolsEnums.SegmentationRepresentations.Contour;
 
+export type SegmentRepresentation = {
+  segmentIndex: number;
+  color: csTypes.Color;
+  opacity: number;
+  visible: boolean;
+};
+
+export type SegmentationData = cstTypes.Segmentation;
+
+export type SegmentationRepresentation = cstTypes.SegmentationRepresentation & {
+  viewportId: string;
+  styles: cstTypes.RepresentationStyle;
+  segments: {
+    [key: number]: SegmentRepresentation;
+  };
+};
+
+export type SegmentationInfo = {
+  segmentation: SegmentationData;
+  representation?: SegmentationRepresentation;
+};
+
 const EVENTS = {
-  // fired when the segmentation is updated (e.g. when a segment is added, removed, or modified, locked, visibility changed etc.)
-  SEGMENTATION_UPDATED: 'event::segmentation_updated',
-  // fired when the segmentation data (e.g., labelmap pixels) is modified
+  SEGMENTATION_MODIFIED: 'event::segmentation_modified',
+  //
   SEGMENTATION_DATA_MODIFIED: 'event::segmentation_data_modified',
-  // fired when the segmentation is added to the cornerstone
-  SEGMENTATION_ADDED: 'event::segmentation_added',
-  // fired when segmentation representation is added
-  SEGMENTATION_REPRESENTATION_ADDED: 'event::segmentation_representation_added',
   // fired when the segmentation is removed
   SEGMENTATION_REMOVED: 'event::segmentation_removed',
+  //
+  //
+  // fired when segmentation representation is added
+  SEGMENTATION_REPRESENTATION_MODIFIED: 'event::segmentation_representation_modified',
   // fired when segmentation representation is removed
   SEGMENTATION_REPRESENTATION_REMOVED: 'event::segmentation_representation_removed',
-  // fired when the configuration for the segmentation is changed (e.g., brush size, render fill, outline thickness, etc.)
-  SEGMENTATION_CONFIGURATION_CHANGED: 'event::segmentation_configuration_changed',
+  //
+  // LOADING EVENTS
   // fired when the active segment is loaded in SEG or RTSTRUCT
   SEGMENT_LOADING_COMPLETE: 'event::segment_loading_complete',
   // loading completed for all segments
@@ -55,35 +68,160 @@ const EVENTS = {
 
 const VALUE_TYPES = {};
 
-const SEGMENT_CONSTANT = {
-  opacity: 255,
-  isVisible: true,
-  isLocked: false,
-};
-
 const VOLUME_LOADER_SCHEME = 'cornerstoneStreamingImageVolume';
 
 class SegmentationService extends PubSubService {
   static REGISTRATION = {
     name: 'segmentationService',
     altName: 'SegmentationService',
-    create: ({ servicesManager }: OhifTypes.Extensions.ExtensionParams): SegmentationService => {
+    create: ({ servicesManager }: OHIFTypes.Extensions.ExtensionParams): SegmentationService => {
       return new SegmentationService({ servicesManager });
     },
   };
 
-  segmentations: Record<string, Segmentation>;
   readonly servicesManager: AppTypes.ServicesManager;
   highlightIntervalId = null;
   readonly EVENTS = EVENTS;
 
   constructor({ servicesManager }) {
     super(EVENTS);
-    this.segmentations = {};
 
     this.servicesManager = servicesManager;
 
     this._initSegmentationService();
+  }
+
+  private getRepresentationId(specifier: {
+    viewportId: string;
+    segmentationId: string;
+    type: SegmentationRepresentations;
+  }) {
+    const { viewportId, segmentationId, type } = specifier;
+    return `${viewportId}-${segmentationId}-${type}`;
+  }
+
+  /**
+   * Retrieves information about specific segmentations and their representations based on the provided criteria.
+   *
+   * @param specifier - An object containing optional parameters to specify the segmentation representation.
+   * @param specifier.segmentationId - Optional. The ID of the segmentation.
+   * @param specifier.viewportId - Optional. The ID of the viewport containing the segmentation representation.
+   * @param specifier.type - Optional. The type of segmentation representation.
+   * @returns An array of `Segmentation` objects containing the segmentation data and its representation.
+   *
+   * @remarks
+   * This method filters segmentations and their representations according to the provided `specifier`:
+   * - **No parameters provided**: Returns all segmentations with their data and no specific representations.
+   * - **Only `segmentationId` provided**: Returns the specified segmentation regardless of viewport or type.
+   * - **Only `viewportId` provided**: Returns all segmentations represented in the specified viewport.
+   * - **Only `type` provided**: Returns all segmentations of the specified type.
+   * - **Combination of parameters**: Returns segmentations matching all specified criteria.
+   */
+  public getSegmentationsInfo(
+    specifier: {
+      segmentationId?: string;
+      viewportId?: string;
+      type?: SegmentationRepresentations;
+    } = {}
+  ): SegmentationInfo[] {
+    const { segmentationId, viewportId, type } = specifier;
+    const segmentationsInfo: SegmentationInfo[] = [];
+
+    const segmentations = cstSegmentation.state.getSegmentations();
+    // Case 1: No specifier provided - return all segmentations without representations
+    if (!segmentationId && !viewportId && !type) {
+      return segmentations.map(segmentation => ({
+        segmentation,
+        representation: null,
+      }));
+    }
+
+    const segmentationIds = new Set<string>();
+
+    if (viewportId) {
+      // Fetch representations based on viewportId and other specifiers
+      const representations = this.getSegmentationRepresentations(viewportId, {
+        segmentationId,
+        type,
+      });
+
+      representations.forEach(rep => {
+        const segmentation = cstSegmentation.state.getSegmentation(rep.segmentationId);
+        if (segmentation && !segmentationIds.has(segmentation.segmentationId)) {
+          segmentationsInfo.push({
+            segmentation,
+            representation: rep,
+          });
+          segmentationIds.add(segmentation.segmentationId);
+        }
+      });
+    }
+
+    // if (segmentationId && !viewportId) {
+    //   const segmentation = cstSegmentation.state.getSegmentation(segmentationId);
+    //   if (segmentation && !segmentationIds.has(segmentation.segmentationId)) {
+    //     // If type is specified, ensure the segmentation matches the type
+    //     if (!type || segmentation.type === type) {
+    //       segmentationsInfo.push({
+    //         segmentation,
+    //         representation: null,
+    //       });
+    //       segmentationIds.add(segmentation.segmentationId);
+    //     }
+    //   }
+    // }
+
+    // if (type && !viewportId && !segmentationId) {
+    //   // Fetch all segmentations of the specified type
+    //   const filteredSegmentations = this.getSegmentationRepresentations()
+
+    //   filteredSegmentations.forEach(segmentation => {
+    //     if (!segmentationIds.has(segmentation.segmentationId)) {
+    //       segmentationsInfo.push({
+    //         segmentation,
+    //         representation: null,
+    //       });
+    //       segmentationIds.add(segmentation.segmentationId);
+    //     }
+    //   });
+    // }
+
+    return segmentationsInfo;
+  }
+
+  /**
+   * Retrieves segmentation representations (labelmap, contour, surface) based on specified criteria.
+   *
+   * @param viewportId - The ID of the viewport.
+   * @param specifier - An object containing optional `segmentationId` and `type` to filter the representations.
+   * @returns An array of `SegmentationRepresentation` matching the criteria, or an empty array if none are found.
+   *
+   * @remarks
+   * This method filters the segmentation representations according to the provided `specifier`:
+   * - **No `segmentationId` or `type` provided**: Returns all representations associated with the given `viewportId`.
+   * - **Only `segmentationId` provided**: Returns all representations with that `segmentationId`, regardless of `viewportId`.
+   * - **Only `type` provided**: Returns all representations of that `type` associated with the given `viewportId`.
+   * - **Both `segmentationId` and `type` provided**: Returns representations matching both criteria, regardless of `viewportId`.
+   */
+  public getSegmentationRepresentations(
+    viewportId: string,
+    specifier: {
+      segmentationId?: string;
+      type?: SegmentationRepresentations;
+    } = {}
+  ): SegmentationRepresentation[] {
+    // Get all representations for the viewportId
+    const representations = cstSegmentation.state.getSegmentationRepresentations(
+      viewportId,
+      specifier
+    );
+
+    // Map to our SegmentationRepresentation type
+    const ohifRepresentations = representations.map(repr =>
+      this._toOHIFSegmentationRepresentation(viewportId, repr)
+    );
+
+    return ohifRepresentations;
   }
 
   public destroy = () => {
@@ -94,386 +232,172 @@ class SegmentationService extends PubSubService {
 
     eventTarget.removeEventListener(
       csToolsEnums.Events.SEGMENTATION_DATA_MODIFIED,
-      this._onSegmentationDataModified
+      this._onSegmentationDataModifiedFromSource
     );
 
     // remove the segmentations from the cornerstone
-    Object.keys(this.segmentations).forEach(segmentationId => {
-      this._removeSegmentationFromCornerstone(segmentationId);
-    });
+    // this.segmentationRepresentations.forEach(segmentation => {
+    //   this._removeSegmentationFromCornerstone(segmentation.segmentationId);
+    // });
 
-    this.segmentations = {};
+    // this.segmentationRepresentations = [];
     this.listeners = {};
   };
 
   /**
-   * Adds a new segment to the specified segmentation.
-   * @param segmentationId - The ID of the segmentation to add the segment to.
-   * @param viewportId: The ID of the viewport to add the segment to, it is used to get the representation, if it is not
-   * provided, the first available representation for the segmentationId will be used.
-   * @param config - An object containing the configuration options for the new segment.
-   *   - segmentIndex: (optional) The index of the segment to add. If not provided, the next available index will be used.
-   *   - properties: (optional) An object containing the properties of the new segment.
-   *     - label: (optional) The label of the new segment. If not provided, a default label will be used.
-   *     - color: (optional) The color of the new segment in RGB format. If not provided, a default color will be used.
-   *     - opacity: (optional) The opacity of the new segment. If not provided, a default opacity will be used.
-   *     - visibility: (optional) Whether the new segment should be visible. If not provided, the segment will be visible by default.
-   *     - isLocked: (optional) Whether the new segment should be locked for editing. If not provided, the segment will not be locked by default.
-   *     - active: (optional) Whether the new segment should be the active segment to be edited. If not provided, the segment will not be active by default.
-   */
-  public addSegment(
-    segmentationId: string,
-    config: {
-      segmentIndex?: number;
-      viewportId?: string;
-      properties?: {
-        label?: string;
-        color?: ohifTypes.RGB;
-        opacity?: number;
-        visibility?: boolean;
-        isLocked?: boolean;
-        active?: boolean;
-      };
-    } = {}
-  ): void {
-    if (config?.segmentIndex === 0) {
-      throw new Error('Segment index 0 is reserved for "no label"');
-    }
-
-    const { segmentationRepresentationUID, segmentation } =
-      this._getSegmentationInfo(segmentationId);
-
-    let segmentIndex = config.segmentIndex;
-    if (!segmentIndex) {
-      // grab the next available segment index
-      segmentIndex = segmentation.segments.length === 0 ? 1 : segmentation.segments.length;
-    }
-
-    if (this._getSegmentInfo(segmentation, segmentIndex)) {
-      throw new Error(`Segment ${segmentIndex} already exists`);
-    }
-
-    const rgbaColor = cstSegmentation.config.color.getSegmentIndexColor(
-      segmentationRepresentationUID,
-      segmentIndex
-    );
-
-    segmentation.segments[segmentIndex] = {
-      label: config.properties?.label ?? `Segment ${segmentIndex}`,
-      segmentIndex: segmentIndex,
-      color: [rgbaColor[0], rgbaColor[1], rgbaColor[2]],
-      opacity: rgbaColor[3],
-      isVisible: true,
-      isLocked: false,
-    };
-
-    segmentation.segmentCount++;
-
-    // make the newly added segment the active segment
-    this._setActiveSegment(segmentationId, segmentIndex);
-
-    const suppressEvents = true;
-    if (config.properties !== undefined) {
-      const { color: newColor, opacity, isLocked, visibility, active } = config.properties;
-
-      if (newColor !== undefined) {
-        this._setSegmentColor(
-          segmentationId,
-          segmentIndex,
-          newColor,
-          config.viewportId,
-          suppressEvents
-        );
-      }
-
-      if (opacity !== undefined) {
-        this._setSegmentOpacity(
-          segmentationId,
-          segmentIndex,
-          opacity,
-          config.viewportId,
-          suppressEvents
-        );
-      }
-
-      if (visibility !== undefined) {
-        this._setSegmentVisibility(
-          segmentationId,
-          segmentIndex,
-          visibility,
-          config.viewportId,
-          suppressEvents
-        );
-      }
-
-      if (active === true) {
-        this._setActiveSegment(segmentationId, segmentIndex, suppressEvents);
-      }
-
-      if (isLocked !== undefined) {
-        this._setSegmentLocked(segmentationId, segmentIndex, isLocked, suppressEvents);
-      }
-    }
-
-    if (segmentation.activeSegmentIndex === null) {
-      this._setActiveSegment(segmentationId, segmentIndex, suppressEvents);
-    }
-
-    // Todo: this includes non-hydrated segmentations which might not be
-    // persisted in the store
-    this._broadcastEvent(this.EVENTS.SEGMENTATION_UPDATED, {
-      segmentation,
-    });
-  }
-
-  public removeSegment(segmentationId: string, segmentIndex: number): void {
-    const segmentation = this.getSegmentation(segmentationId);
-
-    if (segmentation === undefined) {
-      throw new Error(`no segmentation for segmentationId: ${segmentationId}`);
-    }
-
-    if (segmentIndex === 0) {
-      throw new Error('Segment index 0 is reserved for "no label"');
-    }
-
-    if (!this._getSegmentInfo(segmentation, segmentIndex)) {
-      return;
-    }
-
-    segmentation.segmentCount--;
-
-    segmentation.segments[segmentIndex] = null;
-
-    cstSegmentation.helpers.clearSegmentValue(segmentationId, segmentIndex);
-
-    if (segmentation.activeSegmentIndex === segmentIndex) {
-      const nextSegmentIndex = segmentation.segments.findIndex(segment => segment !== null);
-
-      const newActiveSegmentIndex = nextSegmentIndex !== -1 ? nextSegmentIndex : null;
-
-      this._setActiveSegment(segmentationId, newActiveSegmentIndex, true);
-    }
-
-    this._broadcastEvent(this.EVENTS.SEGMENTATION_UPDATED, {
-      segmentation,
-    });
-  }
-
-  public setSegmentVisibility(
-    segmentationId: string,
-    segmentIndex: number,
-    isVisible: boolean,
-    viewportId?: string,
-    suppressEvents = false
-  ): void {
-    this._setSegmentVisibility(segmentationId, segmentIndex, isVisible, viewportId, suppressEvents);
-  }
-
-  public setSegmentLocked(segmentationId: string, segmentIndex: number, isLocked: boolean): void {
-    const suppressEvents = false;
-    this._setSegmentLocked(segmentationId, segmentIndex, isLocked, suppressEvents);
-  }
-
-  /**
-   * Toggles the locked state of a segment in a segmentation.
-   * @param segmentationId - The ID of the segmentation.
-   * @param segmentIndex - The index of the segment to toggle.
-   */
-  public toggleSegmentLocked(segmentationId: string, segmentIndex: number): void {
-    const segmentation = this.getSegmentation(segmentationId);
-    const segment = this._getSegmentInfo(segmentation, segmentIndex);
-    const isLocked = !segment.isLocked;
-    this._setSegmentLocked(segmentationId, segmentIndex, isLocked);
-  }
-
-  public setSegmentColor(
-    segmentationId: string,
-    segmentIndex: number,
-    color: ohifTypes.RGB,
-    viewportId?: string
-  ): void {
-    this._setSegmentColor(segmentationId, segmentIndex, color, viewportId);
-  }
-
-  public setSegmentRGBA = (
-    segmentationId: string,
-    segmentIndex: number,
-    rgbaColor: csTypes.Color,
-    viewportId?: string
-  ): void => {
-    const segmentation = this.getSegmentation(segmentationId);
-
-    if (segmentation === undefined) {
-      throw new Error(`no segmentation for segmentationId: ${segmentationId}`);
-    }
-
-    const suppressEvents = true;
-    this._setSegmentOpacity(segmentationId, segmentIndex, rgbaColor[3], viewportId, suppressEvents);
-
-    this._setSegmentColor(
-      segmentationId,
-      segmentIndex,
-      [rgbaColor[0], rgbaColor[1], rgbaColor[2]],
-      viewportId,
-      suppressEvents
-    );
-
-    this._broadcastEvent(this.EVENTS.SEGMENTATION_UPDATED, {
-      segmentation,
-    });
-  };
-
-  public setSegmentOpacity(
-    segmentationId: string,
-    segmentIndex: number,
-    opacity: number,
-    viewportId?: string
-  ): void {
-    this._setSegmentOpacity(segmentationId, segmentIndex, opacity, viewportId);
-  }
-
-  public setActiveSegmentationForViewport(segmentationId: string, viewportId?: string): void {
-    const suppressEvents = false;
-    this._setActiveSegmentationForViewport(segmentationId, viewportId, null, suppressEvents);
-  }
-
-  public setActiveSegment(segmentationId: string, segmentIndex: number): void {
-    this._setActiveSegment(segmentationId, segmentIndex, false);
-  }
-
-  /**
-   * Get all segmentations.
+   * Creates an empty labelmap segmentation for a specified viewport.
    *
-   * * @param filterNonHydratedSegmentations - If true, only return hydrated segmentations
-   * hydrated segmentations are those that have been loaded and persisted
-   * in the state, but non hydrated segmentations are those that are
-   * only created for the SEG displayset (SEG viewport) and the user might not
-   * have loaded them yet fully.
-   *
-
-   * @return Array of segmentations
+   * @param viewportId - The ID of the viewport to create the segmentation for.
+   * @param options - Optional parameters for creating the segmentation.
+   * @param options.displaySetInstanceUID - The UID of the display set to use. If not provided, it will use the first display set of the viewport.
+   * @param options.label - The label for the segmentation. If not provided, a default label will be generated.
+   * @param options.segmentationId - The ID for the segmentation. If not provided, a UUID will be generated.
+   * @returns A promise that resolves to the generated segmentation ID.
    */
-  public getSegmentations(viewportId?: string): Segmentation[] {
-    const segmentations = this._getSegmentations();
-
-    if (!viewportId) {
-      return segmentations;
+  public async createEmptyLabelmapForViewport(
+    viewportId: string,
+    options: {
+      displaySetInstanceUID?: string;
+      label?: string;
+      segmentationId?: string;
+      createInitialSegment?: boolean;
+    } = {
+      createInitialSegment: true,
     }
+  ): Promise<string> {
+    const { viewportGridService } = this.servicesManager.services;
+    const { viewports, activeViewportId } = viewportGridService.getState();
+    const targetViewportId = viewportId || activeViewportId;
 
-    const representations = cstSegmentation.state.getSegmentationRepresentations(viewportId);
+    const viewport = viewports.get(targetViewportId);
 
-    return representations.map(representation => this.segmentations[representation.segmentationId]);
-  }
+    // Todo: add support for multiple display sets
+    const displaySetInstanceUID =
+      options.displaySetInstanceUID || viewport.displaySetInstanceUIDs[0];
 
-  private _getSegmentations(): Segmentation[] {
-    const segmentations = this.arrayOfObjects(this.segmentations);
-    return segmentations && segmentations.map(m => this.segmentations[Object.keys(m)[0]]);
-  }
+    const currentRepresentations = this.getSegmentationRepresentations(targetViewportId);
 
-  public getActiveSegmentation(): Segmentation {
-    const segmentations = this.getSegmentations();
+    const label = options.label || `Segmentation ${currentRepresentations.length + 1}`;
+    const segmentationId = options.segmentationId || `${csUtils.uuidv4()}`;
 
-    return segmentations.find(segmentation => segmentation.isActive);
-  }
-
-  public getActiveSegment() {
-    const activeSegmentation = this.getActiveSegmentation();
-    const { activeSegmentIndex, segments } = activeSegmentation;
-
-    if (activeSegmentIndex === null) {
-      return;
-    }
-
-    return segments[activeSegmentIndex];
-  }
-
-  /**
-   * Get specific segmentation by its id.
-   *
-   * @param segmentationId If of the segmentation
-   * @return segmentation instance
-   */
-  public getSegmentation(segmentationId: string): Segmentation {
-    return this.segmentations[segmentationId];
-  }
-
-  public addOrUpdateSegmentation(
-    segmentation: Segmentation,
-    suppressEvents = false,
-    notYetUpdatedAtSource = false
-  ): string {
-    const { id: segmentationId } = segmentation;
-    let cachedSegmentation = this.segmentations[segmentationId];
-    if (cachedSegmentation) {
-      // Update the segmentation (mostly for assigning metadata/labels)
-      Object.assign(cachedSegmentation, segmentation);
-
-      this._updateCornerstoneSegmentations({
-        segmentationId,
-        notYetUpdatedAtSource,
-      });
-
-      if (!suppressEvents) {
-        this._broadcastEvent(this.EVENTS.SEGMENTATION_UPDATED, {
-          segmentation: cachedSegmentation,
-        });
-      }
-
-      return segmentationId;
-    }
-
-    const representationType = segmentation.type;
-    const representationData = segmentation.representationData[representationType];
-    cstSegmentation.addSegmentations([
+    const generatedSegmentationId = await this.createEmptyLabelmapForDisplaySetUID(
+      displaySetInstanceUID,
       {
+        label,
         segmentationId,
-        representation: {
-          type: representationType,
-          data: {
-            ...representationData,
-          },
-        },
+        segments: options.createInitialSegment
+          ? {
+              1: {
+                label: 'Segment 1',
+              },
+            }
+          : {},
+      }
+    );
+
+    await this.addSegmentationRepresentationToViewport({
+      viewportId,
+      segmentationId,
+      representationType: LABELMAP,
+    });
+
+    return generatedSegmentationId;
+  }
+
+  public addSegmentationRepresentationToViewport = async ({
+    viewportId,
+    segmentationId,
+    representationType = csToolsEnums.SegmentationRepresentations.Labelmap,
+    suppressEvents = false,
+  }: {
+    viewportId: string;
+    segmentationId: string;
+    representationType?: csToolsEnums.SegmentationRepresentations;
+    suppressEvents?: boolean;
+  }): Promise<void> => {
+    const segmentation = this.getSegmentationsInfo({ segmentationId });
+
+    if (!segmentation) {
+      throw new Error(`Segmentation with segmentationId ${segmentationId} not found.`);
+    }
+
+    cstSegmentation.addSegmentationRepresentations(viewportId, [
+      {
+        type: representationType,
+        segmentationId,
       },
     ]);
 
-    this.segmentations[segmentationId] = {
-      ...segmentation,
-      label: segmentation.label || '',
-      segments: segmentation.segments || [null],
-      activeSegmentIndex: segmentation.activeSegmentIndex ?? null,
-      segmentCount: segmentation.segmentCount ?? 0,
-      isActive: false,
-      isVisible: true,
-    };
-
-    cachedSegmentation = this.segmentations[segmentationId];
-
-    this._updateCornerstoneSegmentations({
-      segmentationId,
-      notYetUpdatedAtSource: true,
-    });
-
     if (!suppressEvents) {
-      this._broadcastEvent(this.EVENTS.SEGMENTATION_ADDED, {
-        segmentation: cachedSegmentation,
+      this._broadcastEvent(this.EVENTS.SEGMENTATION_REPRESENTATION_MODIFIED, {
+        segmentationId,
       });
     }
+  };
 
-    return cachedSegmentation.id;
+  /**
+   * Creates an empty labelmap segmentation for a given display set.
+   *
+   * @param displaySetInstanceUID - The UID of the display set to create the segmentation for.
+   * @param options - Optional parameters for creating the segmentation.
+   * @param options.segmentationId - Custom segmentation ID. If not provided, a UUID will be generated.
+   * @param options.FrameOfReferenceUID - Frame of reference UID for the segmentation.
+   * @param options.label - Label for the segmentation.
+   * @returns A promise that resolves to the created segmentation ID.
+   */
+  public async createEmptyLabelmapForDisplaySetUID(
+    displaySetInstanceUID: string,
+    options?: {
+      segmentationId?: string;
+      segments?: { [segmentIndex: number]: Partial<cstTypes.Segment> };
+      FrameOfReferenceUID?: string;
+      label: string;
+    }
+  ): Promise<string> {
+    const { displaySetService } = this.servicesManager.services;
+
+    const displaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
+
+    // Todo: random does not makes sense, make this better, like
+    // labelmap 1, 2, 3 etc
+    const segmentationId = options?.segmentationId ?? `${csUtils.uuidv4()}`;
+    const referenceImageIds = displaySet.imageIds;
+    const derivedImages = await imageLoader.createAndCacheDerivedLabelmapImages(referenceImageIds);
+
+    const segImageIds = derivedImages.map(image => image.imageId);
+
+    const segmentationPublicInput: cstTypes.SegmentationPublicInput = {
+      segmentationId,
+      representation: {
+        type: LABELMAP,
+        data: {
+          imageIds: segImageIds,
+          referencedVolumeId: this._getVolumeIdForDisplaySet(displaySet),
+          referencedImageIds: referenceImageIds,
+        },
+      },
+      config: {
+        label: options.label,
+        segments: options.segments ?? {},
+      },
+    };
+
+    this.addOrUpdateSegmentation(segmentationId, segmentationPublicInput);
+    return segmentationId;
   }
 
-  public async createSegmentationForSEGDisplaySet(
+  public async createLabelmapFromSEGDisplaySet(
     segDisplaySet,
     segmentationId?: string,
     suppressEvents = false
   ): Promise<string> {
-    // Todo: we only support creating labelmap for SEG displaySets for now
-    const representationType = LABELMAP;
+    const { labelmapBufferArray } = segDisplaySet;
+
+    if (!labelmapBufferArray) {
+      throw new Error('SEG reading failed');
+    }
 
     segmentationId = segmentationId ?? segDisplaySet.displaySetInstanceUID;
-    const defaultScheme = this._getDefaultSegmentationScheme();
-
     const referencedDisplaySetInstanceUID = segDisplaySet.referencedDisplaySetInstanceUID;
     const referencedDisplaySet = this.servicesManager.services.displaySetService.getDisplaySetByUID(
       referencedDisplaySetInstanceUID
@@ -490,43 +414,54 @@ class SegmentationService extends PubSubService {
     const derivedSegmentationImages =
       await imageLoader.createAndCacheDerivedLabelmapImages(imageIds);
 
-    const segmentationImageIds = derivedSegmentationImages.map(image => image.imageId);
     segDisplaySet.images = derivedSegmentationImages;
 
     const segmentsInfo = segDisplaySet.segMetadata.data;
 
-    const segmentation: Segmentation = {
-      ...defaultScheme,
-      id: segmentationId,
-      displaySetInstanceUID: segDisplaySet.displaySetInstanceUID,
-      type: representationType,
-      label: segDisplaySet.SeriesDescription,
-      colorLUTIndex: null,
-      FrameOfReferenceUID:
-        segDisplaySet.FrameOfReferenceUID ?? segDisplaySet.instance.FrameOfReferenceUID,
-      representationData: {
-        [LABELMAP]: {
-          imageIds: segmentationImageIds,
+    const segments: { [segmentIndex: string]: cstTypes.Segment } = {};
+
+    segmentsInfo.forEach((segmentInfo, index) => {
+      if (index === 0) {
+        return;
+      }
+
+      const {
+        SegmentedPropertyCategoryCodeSequence,
+        SegmentNumber,
+        SegmentLabel,
+        SegmentAlgorithmType,
+        SegmentAlgorithmName,
+        SegmentedPropertyTypeCodeSequence,
+        rgba,
+      } = segmentInfo;
+
+      const { x, y, z } = segDisplaySet.centroids.get(index) || { x: 0, y: 0, z: 0 };
+      const segmentIndex = Number(SegmentNumber);
+
+      segments[segmentIndex] = {
+        segmentIndex,
+        label: SegmentLabel || `Segment ${SegmentNumber}`,
+        locked: false,
+        active: false,
+        cachedStats: {
+          center: {
+            image: [x, y, z],
+          },
+          modifiedTime: segDisplaySet.SeriesDate,
+          category: SegmentedPropertyCategoryCodeSequence
+            ? SegmentedPropertyCategoryCodeSequence.CodeMeaning
+            : '',
+          type: SegmentedPropertyTypeCodeSequence
+            ? SegmentedPropertyTypeCodeSequence.CodeMeaning
+            : '',
+          algorithmType: SegmentAlgorithmType,
+          algorithmName: SegmentAlgorithmName,
+          color: rgba,
+          opacity: 255,
+          isVisible: true,
         },
-      },
-    };
-
-    const cachedSegmentation = this.getSegmentation(segmentationId);
-    if (cachedSegmentation) {
-      // if the labelmap with the same segmentationId already exists, we can
-      // just assume that the segmentation is already created and move on with
-      // updating the state
-      return this.addOrUpdateSegmentation(
-        Object.assign(segmentation, cachedSegmentation),
-        suppressEvents
-      );
-    }
-
-    const { labelmapBufferArray } = segDisplaySet;
-
-    if (!labelmapBufferArray) {
-      throw new Error('SEG reading failed');
-    }
+      };
+    });
 
     // now we need to chop the volume array into chunks and set the scalar data for each derived segmentation image
     const volumeScalarData = new Uint8Array(labelmapBufferArray[0]);
@@ -541,69 +476,35 @@ class SegmentationService extends PubSubService {
       voxelManager.setScalarData(scalarData);
     }
 
-    segmentation.segments = segmentsInfo.map((segmentInfo, segmentIndex) => {
-      if (segmentIndex === 0) {
-        return;
-      }
-
-      const {
-        SegmentedPropertyCategoryCodeSequence,
-        SegmentNumber,
-        SegmentLabel,
-        SegmentAlgorithmType,
-        SegmentAlgorithmName,
-        SegmentedPropertyTypeCodeSequence,
-        rgba,
-      } = segmentInfo;
-
-      const { x, y, z } = segDisplaySet.centroids.get(segmentIndex) || { x: 0, y: 0, z: 0 };
-      // const centerWorld = derivedVolume.imageData.indexToWorld([x, y, z]);
-
-      segmentation.cachedStats = {
-        ...segmentation.cachedStats,
-        segmentCenter: {
-          ...segmentation.cachedStats.segmentCenter,
-          [segmentIndex]: {
-            center: {
-              image: [x, y, z],
-              // world: centerWorld,
-            },
-            modifiedTime: segDisplaySet.SeriesDate,
-          },
-        },
-      };
-
-      return {
-        label: SegmentLabel || `Segment ${SegmentNumber}`,
-        segmentIndex: Number(SegmentNumber),
-        category: SegmentedPropertyCategoryCodeSequence
-          ? SegmentedPropertyCategoryCodeSequence.CodeMeaning
-          : '',
-        type: SegmentedPropertyTypeCodeSequence
-          ? SegmentedPropertyTypeCodeSequence.CodeMeaning
-          : '',
-        algorithmType: SegmentAlgorithmType,
-        algorithmName: SegmentAlgorithmName,
-        color: rgba,
-        opacity: 255,
-        isVisible: true,
-        isLocked: false,
-      };
-    });
-
-    segmentation.segmentCount = segmentsInfo.length - 1;
-
-    segDisplaySet.isLoaded = true;
-
     this._broadcastEvent(EVENTS.SEGMENTATION_LOADING_COMPLETE, {
       segmentationId,
       segDisplaySet,
     });
 
-    return this.addOrUpdateSegmentation(segmentation, suppressEvents);
+    const seg: cstTypes.SegmentationPublicInput = {
+      segmentationId,
+      representation: {
+        type: LABELMAP,
+        data: {
+          imageIds: derivedSegmentationImages.map(image => image.imageId),
+          referencedVolumeId: this._getVolumeIdForDisplaySet(referencedDisplaySet),
+          referencedImageIds: imageIds,
+        },
+      },
+      config: {
+        label: segDisplaySet.SeriesDescription,
+        segments,
+      },
+    };
+
+    segDisplaySet.isLoaded = true;
+
+    this.addOrUpdateSegmentation(segmentationId, seg);
+
+    return segmentationId;
   }
 
-  public async createSegmentationForRTDisplaySet(
+  public async createContoursFromRTStructDisplaySet(
     rtDisplaySet,
     segmentationId?: string,
     suppressEvents = false
@@ -620,7 +521,6 @@ class SegmentationService extends PubSubService {
       );
     }
 
-    const defaultScheme = this._getDefaultSegmentationScheme();
     const rtDisplaySetUID = rtDisplaySet.displaySetInstanceUID;
 
     const allRTStructData = mapROIContoursToRTStructData(structureSet, rtDisplaySetUID);
@@ -630,8 +530,7 @@ class SegmentationService extends PubSubService {
 
     const geometryIds = allRTStructData.map(({ geometryId }) => geometryId);
 
-    const segmentation: Segmentation = {
-      ...defaultScheme,
+    const segmentation: SegmentationData = {
       id: segmentationId,
       displaySetInstanceUID: rtDisplaySetUID,
       type: representationType,
@@ -642,18 +541,6 @@ class SegmentationService extends PubSubService {
         },
       },
     };
-
-    const cachedSegmentation = this.getSegmentation(segmentationId);
-
-    if (cachedSegmentation) {
-      // if the labelmap with the same segmentationId already exists, we can
-      // just assume that the segmentation is already created and move on with
-      // updating the state
-      return this.addOrUpdateSegmentation(
-        Object.assign(segmentation, cachedSegmentation),
-        suppressEvents
-      );
-    }
 
     if (!structureSet.ROIContours?.length) {
       throw new Error(
@@ -741,6 +628,639 @@ class SegmentationService extends PubSubService {
 
     return this.addOrUpdateSegmentation(segmentation, suppressEvents);
   }
+
+  public addOrUpdateSegmentation(
+    segmentationId: string,
+    data: cstTypes.SegmentationPublicInput | Partial<cstTypes.Segmentation>
+  ) {
+    const existingSegmentation = cstSegmentation.state.getSegmentation(segmentationId);
+
+    if (existingSegmentation) {
+      // Update the existing segmentation
+      this.updateSegmentationInSource(segmentationId, data as Partial<cstTypes.Segmentation>);
+    } else {
+      // Add a new segmentation
+      this.addSegmentationToSource(segmentationId, data as cstTypes.SegmentationPublicInput);
+    }
+  }
+
+  private addSegmentationToSource(
+    segmentationId: string,
+    segmentationPublicInput: cstTypes.SegmentationPublicInput
+  ) {
+    cstSegmentation.addSegmentations([segmentationPublicInput]);
+  }
+
+  private updateSegmentationInSource(
+    segmentationId: string,
+    payload: Partial<cstTypes.Segmentation>
+  ) {
+    cstSegmentation.updateSegmentations([{ segmentationId, payload }]);
+  }
+
+  // public addOrUpdateSegmentation(
+  //   segmentationId: string,
+  //   segmentationData: SegmentationInfo | cstTypes.SegmentationPublicInput,
+  //   options: {
+  //     suppressEvents?: boolean;
+  //     hasSourceInitiatedUpdate?: boolean;
+  //   } = {
+  //     suppressEvents: false,
+  //     hasSourceInitiatedUpdate: true,
+  //   }
+  // ): string {
+  //   const { suppressEvents, hasSourceInitiatedUpdate } = options;
+  //   const cachedSegmentation = cstSegmentation.state.getSegmentation(segmentationId);
+
+  //   if (cachedSegmentation) {
+  //     this._updateCornerstoneSegmentations({
+  //       segmentationId,
+  //       hasSourceInitiatedUpdate,
+  //     });
+
+  //     return segmentationId;
+  //   }
+
+  //   const representations = Object.keys(segmentation.representationData);
+  //   const values = Object.values(segmentation.representationData);
+
+  //   cstSegmentation.addSegmentations([
+  //     {
+  //       segmentationId,
+  //       representation: {
+  //         type: Object.keys(),
+  //       },
+  //     },
+  //   ]);
+
+  //   this.segmentationRepresentations[segmentationId] = {
+  //     ...segmentation,
+  //     label: segmentation.label || '',
+  //     segments: segmentation.segments || [null],
+  //     activeSegmentIndex: segmentation.activeSegmentIndex ?? null,
+  //     segmentCount: segmentation.segmentCount ?? 0,
+  //     isActive: false,
+  //     isVisible: true,
+  //   };
+
+  //   cachedSegmentation = this.segmentationRepresentations[segmentationId];
+
+  //   this._updateCornerstoneSegmentations({
+  //     segmentationId,
+  //     hasSourceInitiatedUpdate: false,
+  //   });
+
+  //   if (!suppressEvents) {
+  //     this._broadcastEvent(this.EVENTS.SEGMENTATION_ADDED, {
+  //       segmentation: cachedSegmentation,
+  //     });
+  //   }
+
+  //   return cachedSegmentation.id;
+  // }
+
+  public setActiveSegmentation(viewportId: string, segmentationId: string): void {
+    cstSegmentation.activeSegmentation.setActiveSegmentation(viewportId, segmentationId);
+  }
+
+  public getConfiguration = (viewportId?: string): SegmentationConfig => {
+    return {};
+    const brushSize = 1;
+
+    const brushThresholdGate = 1;
+
+    const segmentationRepresentations = this.getSegmentationRepresentationsForViewport(viewportId);
+
+    const typeToUse = segmentationRepresentations?.[0]?.type || LABELMAP;
+    return {};
+
+    const config = cstSegmentation.config.getGlobalConfig();
+    const { renderInactiveRepresentations } = config;
+
+    const representation = config.representations[typeToUse];
+
+    const {
+      renderOutline,
+      outlineWidthActive,
+      renderFill,
+      fillAlpha,
+      fillAlphaInactive,
+      outlineOpacity,
+      outlineOpacityInactive,
+    } = representation as LabelmapConfig;
+
+    return {
+      brushSize,
+      brushThresholdGate,
+      fillAlpha,
+      fillAlphaInactive,
+      outlineWidthActive,
+      renderFill,
+      renderInactiveRepresentations,
+      renderOutline,
+      outlineOpacity,
+      outlineOpacityInactive,
+    };
+  };
+
+  public setConfiguration = (configuration: SegmentationConfig): void => {
+    const {
+      fillAlpha,
+      fillAlphaInactive,
+      outlineWidthActive,
+      outlineOpacity,
+      renderFill,
+      renderInactiveRepresentations,
+      renderOutline,
+    } = configuration;
+
+    const setConfigValueIfDefined = (key, value, transformFn = null) => {
+      if (value !== undefined) {
+        const transformedValue = transformFn ? transformFn(value) : value;
+        this._setSegmentationConfig(key, transformedValue);
+      }
+    };
+
+    setConfigValueIfDefined('renderOutline', renderOutline);
+    setConfigValueIfDefined('outlineWidthActive', outlineWidthActive);
+    setConfigValueIfDefined('outlineOpacity', outlineOpacity, v => v / 100);
+    setConfigValueIfDefined('fillAlpha', fillAlpha, v => v / 100);
+    setConfigValueIfDefined('renderFill', renderFill);
+    setConfigValueIfDefined('fillAlphaInactive', fillAlphaInactive, v => v / 100);
+    setConfigValueIfDefined('outlineOpacityInactive', fillAlphaInactive, v =>
+      Math.max(0.75, v / 100)
+    );
+
+    if (renderInactiveRepresentations !== undefined) {
+      const config = cstSegmentation.config.getGlobalConfig();
+      config.renderInactiveRepresentations = renderInactiveRepresentations;
+      cstSegmentation.config.setGlobalConfig(config);
+    }
+
+    this._broadcastEvent(this.EVENTS.SEGMENTATION_REPRESENTATION_MODIFIED, this.getConfiguration());
+  };
+
+  /**
+   * Adds a new segment to the specified segmentation.
+   * @param segmentationId - The ID of the segmentation to add the segment to.
+   * @param viewportId: The ID of the viewport to add the segment to, it is used to get the representation, if it is not
+   * provided, the first available representation for the segmentationId will be used.
+   * @param config - An object containing the configuration options for the new segment.
+   *   - segmentIndex: (optional) The index of the segment to add. If not provided, the next available index will be used.
+   *   - properties: (optional) An object containing the properties of the new segment.
+   *     - label: (optional) The label of the new segment. If not provided, a default label will be used.
+   *     - color: (optional) The color of the new segment in RGB format. If not provided, a default color will be used.
+   *     - opacity: (optional) The opacity of the new segment. If not provided, a default opacity will be used.
+   *     - visibility: (optional) Whether the new segment should be visible. If not provided, the segment will be visible by default.
+   *     - isLocked: (optional) Whether the new segment should be locked for editing. If not provided, the segment will not be locked by default.
+   *     - active: (optional) Whether the new segment should be the active segment to be edited. If not provided, the segment will not be active by default.
+   */
+  public addSegment(
+    segmentationId: string,
+    config: {
+      segmentIndex?: number;
+      viewportId?: string;
+      properties?: {
+        label?: string;
+        color?: OHIFTypes.RGB;
+        opacity?: number;
+        visibility?: boolean;
+        isLocked?: boolean;
+        active?: boolean;
+      };
+    } = {}
+  ): void {
+    if (config?.segmentIndex === 0) {
+      throw new Error('Segment index 0 is reserved for "no label"');
+    }
+
+    const { segmentationRepresentationUID, segmentation } =
+      this._getSegmentationInfo(segmentationId);
+
+    let segmentIndex = config.segmentIndex;
+    if (!segmentIndex) {
+      // grab the next available segment index
+      segmentIndex = segmentation.segments.length === 0 ? 1 : segmentation.segments.length;
+    }
+
+    if (this._getSegmentInfo(segmentation, segmentIndex)) {
+      throw new Error(`Segment ${segmentIndex} already exists`);
+    }
+
+    const rgbaColor = cstSegmentation.config.color.getSegmentIndexColor(
+      segmentationRepresentationUID,
+      segmentIndex
+    );
+
+    segmentation.segments[segmentIndex] = {
+      label: config.properties?.label ?? `Segment ${segmentIndex}`,
+      segmentIndex: segmentIndex,
+      color: [rgbaColor[0], rgbaColor[1], rgbaColor[2]],
+      opacity: rgbaColor[3],
+      isVisible: true,
+      isLocked: false,
+    };
+
+    segmentation.segmentCount++;
+
+    // make the newly added segment the active segment
+    this._setActiveSegment(segmentationId, segmentIndex);
+
+    const suppressEvents = true;
+    if (config.properties !== undefined) {
+      const { color: newColor, opacity, isLocked, visibility, active } = config.properties;
+
+      if (newColor !== undefined) {
+        this._setSegmentColor(
+          segmentationId,
+          segmentIndex,
+          newColor,
+          config.viewportId,
+          suppressEvents
+        );
+      }
+
+      if (opacity !== undefined) {
+        this._setSegmentOpacity(
+          segmentationId,
+          segmentIndex,
+          opacity,
+          config.viewportId,
+          suppressEvents
+        );
+      }
+
+      if (visibility !== undefined) {
+        this._setSegmentVisibility(
+          segmentationId,
+          segmentIndex,
+          visibility,
+          config.viewportId,
+          suppressEvents
+        );
+      }
+
+      if (active === true) {
+        this._setActiveSegment(segmentationId, segmentIndex);
+      }
+
+      if (isLocked !== undefined) {
+        this._setSegmentLocked(segmentationId, segmentIndex, isLocked, suppressEvents);
+      }
+    }
+
+    if (segmentation.activeSegmentIndex === null) {
+      this._setActiveSegment(segmentationId, segmentIndex);
+    }
+
+    // Todo: this includes non-hydrated segmentations which might not be
+    // persisted in the store
+    this._broadcastEvent(this.EVENTS.SEGMENTATION_MODIFIED, {
+      segmentation,
+    });
+  }
+
+  /**
+   * Removes a segment from a segmentation and updates the active segment index if necessary.
+   *
+   * @param segmentationId - The ID of the segmentation containing the segment to remove.
+   * @param segmentIndex - The index of the segment to remove.
+   *
+   * @remarks
+   * This method performs the following actions:
+   * 1. Clears the segment value in the Cornerstone segmentation.
+   * 2. Updates all related segmentation representations to remove the segment.
+   * 3. If the removed segment was the active segment, it updates the active segment index.
+   *
+   */
+  public removeSegment(segmentationId: string, segmentIndex: number): void {
+    cstSegmentation.helpers.clearSegmentValue(segmentationId, segmentIndex);
+
+    const csActiveSegmentation = cstSegmentation.segmentIndex.getActiveSegmentIndex(segmentationId);
+    const shouldUpdateActiveSegmentIndex = csActiveSegmentation === segmentIndex;
+
+    // update the segment on each of the representations
+    this.segmentationRepresentations.forEach(representation => {
+      if (representation.segmentationId === segmentationId) {
+        representation.segments[segmentIndex] = null;
+      }
+    });
+
+    const aRepresentation = this.segmentationRepresentations.find(
+      representation => representation.segmentationId === segmentationId
+    );
+
+    if (shouldUpdateActiveSegmentIndex) {
+      const nextSegmentIndex = aRepresentation.segments.findIndex(segment => segment !== null);
+      const newActiveSegmentIndex = nextSegmentIndex !== -1 ? nextSegmentIndex : null;
+
+      this._setActiveSegment(segmentationId, newActiveSegmentIndex);
+    }
+  }
+
+  public setSegmentVisibility(
+    segmentationId: string,
+    segmentIndex: number,
+    isVisible: boolean,
+    viewportId?: string,
+    suppressEvents = false
+  ): void {
+    this._setSegmentVisibility(segmentationId, segmentIndex, isVisible, viewportId, suppressEvents);
+  }
+
+  public setSegmentLocked(segmentationId: string, segmentIndex: number, isLocked: boolean): void {
+    const suppressEvents = false;
+    this._setSegmentLocked(segmentationId, segmentIndex, isLocked, suppressEvents);
+  }
+
+  /**
+   * Toggles the locked state of a segment in a segmentation.
+   * @param segmentationId - The ID of the segmentation.
+   * @param segmentIndex - The index of the segment to toggle.
+   */
+  public toggleSegmentLocked(segmentationId: string, segmentIndex: number): void {
+    const segmentation = this.getSegmentation(segmentationId);
+    const segment = this._getSegmentInfo(segmentation, segmentIndex);
+    const isLocked = !segment.isLocked;
+    this._setSegmentLocked(segmentationId, segmentIndex, isLocked);
+  }
+
+  public setSegmentColor(
+    segmentationId: string,
+    segmentIndex: number,
+    color: OHIFTypes.RGB,
+    viewportId?: string
+  ): void {
+    this._setSegmentColor(segmentationId, segmentIndex, color, viewportId);
+  }
+
+  public setSegmentRGBA = (
+    segmentationId: string,
+    segmentIndex: number,
+    rgbaColor: csTypes.Color,
+    viewportId?: string
+  ): void => {
+    const segmentation = this.getSegmentation(segmentationId);
+
+    if (segmentation === undefined) {
+      throw new Error(`no segmentation for segmentationId: ${segmentationId}`);
+    }
+
+    const suppressEvents = true;
+    this._setSegmentOpacity(segmentationId, segmentIndex, rgbaColor[3], viewportId, suppressEvents);
+
+    this._setSegmentColor(
+      segmentationId,
+      segmentIndex,
+      [rgbaColor[0], rgbaColor[1], rgbaColor[2]],
+      viewportId,
+      suppressEvents
+    );
+
+    this._broadcastEvent(this.EVENTS.SEGMENTATION_MODIFIED, {
+      segmentation,
+    });
+  };
+
+  public setSegmentOpacity(
+    segmentationId: string,
+    segmentIndex: number,
+    opacity: number,
+    viewportId?: string
+  ): void {
+    this._setSegmentOpacity(segmentationId, segmentIndex, opacity, viewportId);
+  }
+
+  public setSegmentLabel(segmentationId: string, segmentIndex: number, label: string) {
+    this._setSegmentLabel(segmentationId, segmentIndex, label);
+  }
+
+  public setActiveSegment(segmentationId: string, segmentIndex: number): void {
+    this._setActiveSegment(segmentationId, segmentIndex, false);
+  }
+
+  private _toOHIFSegmentationRepresentation(
+    viewportId: string,
+    csRepresentation: cstTypes.SegmentationRepresentation
+  ): SegmentationRepresentation {
+    const { segmentationId, type, active, visible } = csRepresentation;
+    const { colorLUTIndex } = csRepresentation.config;
+
+    const segmentsRepresentations: { [segmentIndex: number]: SegmentRepresentation } = {};
+
+    const segmentation = cstSegmentation.state.getSegmentation(segmentationId);
+
+    if (!segmentation) {
+      throw new Error(`Segmentation with ID ${segmentationId} not found.`);
+    }
+
+    const segmentIds = Object.keys(segmentation.segments);
+
+    for (const segmentId of segmentIds) {
+      const segmentIndex = parseInt(segmentId, 10);
+
+      const color = cstSegmentation.config.color.getSegmentIndexColor(
+        viewportId,
+        segmentationId,
+        segmentIndex
+      );
+
+      const isVisible = cstSegmentation.config.visibility.getSegmentIndexVisibility(
+        viewportId,
+        {
+          segmentationId,
+          type,
+        },
+        segmentIndex
+      );
+
+      segmentsRepresentations[segmentIndex] = {
+        color,
+        segmentIndex,
+        opacity: color[3],
+        visible: isVisible,
+      };
+    }
+
+    const styles = cstSegmentation.config.style.getStyle({
+      viewportId,
+      segmentationId,
+      type,
+    });
+
+    const segmentsHidden = cstSegmentation.config.visibility.getHiddenSegmentIndices(viewportId, {
+      segmentationId,
+      type,
+    });
+
+    return {
+      segmentationId,
+      active,
+      type,
+      visible,
+      segments: segmentsRepresentations,
+      styles,
+      viewportId,
+      segmentsHidden: new Set(segmentsHidden),
+      config: {
+        colorLUTIndex,
+      },
+    };
+  }
+
+  /**
+   * Toggles the visibility of a segmentation in the state, and broadcasts the event.
+   * Note: this method does not update the segmentation state in the source. It only
+   * updates the state, and there should be separate listeners for that.
+   * @param ids segmentation ids
+   */
+  public toggleSegmentationVisibility = (segmentationId: string): void => {
+    this._toggleSegmentationVisibility(segmentationId, false);
+  };
+
+  // private createNewRepresentation = async (
+  //   viewportId: string,
+  //   segmentationId: string,
+  //   segmentation: Segmentation,
+  //   representationType: csToolsEnums.SegmentationRepresentations
+  // ): Promise<string> => {
+  //   const colorLUT = this.createColorLUT(segmentation);
+  //   const colorLUTIndex = cstSegmentation.config.color.addColorLUT(colorLUT);
+
+  //   const [uid] = await cstSegmentation.addSegmentationRepresentations(viewportId, [
+  //     {
+  //       segmentationId,
+  //       type: representationType,
+  //       options: { colorLUTOrIndex: colorLUTIndex },
+  //     },
+  //   ]);
+
+  //   return uid;
+  // };
+
+  // private createColorLUT = (segmentation: Segmentation): ColorLUT => {
+  //   const colorLUT = Array.from({ length: segmentation.segments.length }, (_, index) => {
+  //     if (index === 0) {
+  //       return [0, 0, 0, 0];
+  //     }
+  //     const segment = segmentation.segments[index];
+  //     return segment ? [...segment.color, 255] : [0, 0, 0, 0];
+  //   }) as ColorLUT;
+
+  //   return colorLUT;
+  // };
+
+  public setSegmentRGBAColor = (
+    segmentationId: string,
+    segmentIndex: number,
+    rgbaColor,
+    viewportId?: string
+  ) => {
+    const segmentation = this.getSegmentation(segmentationId);
+
+    if (segmentation === undefined) {
+      throw new Error(`no segmentation for segmentationId: ${segmentationId}`);
+    }
+
+    this._setSegmentOpacity(
+      segmentationId,
+      segmentIndex,
+      rgbaColor[3],
+      viewportId, // viewportId
+      true
+    );
+    this._setSegmentColor(
+      segmentationId,
+      segmentIndex,
+      [rgbaColor[0], rgbaColor[1], rgbaColor[2]],
+      viewportId, // viewportId
+      true
+    );
+
+    this._broadcastEvent(this.EVENTS.SEGMENTATION_MODIFIED, {
+      segmentation,
+    });
+  };
+
+  public getViewportIdsWithSegmentation = (segmentationId: string): string[] => {
+    const viewportIds = cstSegmentation.state.getViewportIdsWithSegmentation(segmentationId);
+    return viewportIds;
+  };
+
+  public removeSegmentationRepresentations(
+    viewportId: string,
+    specifier: {
+      segmentationId?: string;
+      type?: SegmentationRepresentations;
+    } = {}
+  ): void {
+    cstSegmentation.removeSegmentationRepresentations(viewportId, specifier);
+  }
+
+  /**
+   * Removes a segmentation and broadcasts the removed event.
+   *
+   * @param {string} segmentationId The segmentation id
+   */
+  public remove(segmentationId: string): void {
+    const segmentation = this.segmentationRepresentations[segmentationId];
+    const wasActive = segmentation.isActive;
+
+    if (!segmentationId || !segmentation) {
+      console.warn(`No segmentationId provided, or unable to find segmentation by id.`);
+      return;
+    }
+
+    const { updatedViewportIds } = this._removeSegmentationFromCornerstone(segmentationId);
+
+    delete this.segmentationRepresentations[segmentationId];
+
+    // If this segmentation was active, and there is another segmentation, set another one active.
+
+    if (wasActive) {
+      const remainingSegmentations = this._getSegmentationRepresentations();
+
+      const remainingHydratedSegmentations = remainingSegmentations.filter(
+        segmentation => segmentation.hydrated
+      );
+
+      if (remainingHydratedSegmentations.length) {
+        const { id } = remainingHydratedSegmentations[0];
+
+        updatedViewportIds.forEach(viewportId => {
+          this._setActiveSegmentationForViewport(id, viewportId, null);
+        });
+      }
+    }
+
+    this._setDisplaySetIsHydrated(segmentationId, false);
+
+    this._broadcastEvent(this.EVENTS.SEGMENTATION_REMOVED, {
+      segmentationId,
+    });
+  }
+
+  public getLabelmapVolume = (segmentationId: string) => {
+    if (!this.segmentationRepresentations?.[segmentationId]) {
+      return;
+    }
+
+    const labelmapVolumeData = this.segmentationRepresentations[segmentationId].representationData
+      .Labelmap as LabelmapSegmentationDataVolume;
+
+    const volumeId = labelmapVolumeData.volumeId;
+
+    return cache.getVolume(volumeId);
+  };
+
+  public getLabelmapReferencedVolume = (segmentationId: string) => {
+    const labelmapVolumeData = this.segmentationRepresentations[segmentationId].representationData
+      .Labelmap as LabelmapSegmentationDataVolume;
+
+    const volumeId = labelmapVolumeData.referencedVolumeId;
+
+    return cache.getVolume(volumeId);
+  };
 
   // Todo: this should not run on the main thread
   public calculateCentroids = (
@@ -923,185 +1443,25 @@ class SegmentationService extends PubSubService {
     );
   }
 
-  public createSegmentationForDisplaySet = async (
-    displaySetInstanceUID: string,
-    options?: {
-      segmentationId?: string;
-      FrameOfReferenceUID?: string;
-      label: string;
-      representationType?: csToolsEnums.SegmentationRepresentations;
-    }
-  ): Promise<string> => {
-    const { displaySetService } = this.servicesManager.services;
-
-    const displaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
-
-    // Todo: we currently only support labelmap for segmentation for a displaySet
-    const representationType = options?.representationType ?? LABELMAP;
-
-    const volumeId = this._getVolumeIdForDisplaySet(displaySet);
-    const segmentationId = options?.segmentationId ?? `${csUtils.uuidv4()}`;
-    const referenceImageIds = displaySet.images.map(image => image.imageId);
-    const derivedImages = await imageLoader.createAndCacheDerivedLabelmapImages(referenceImageIds);
-
-    const segImageIds = derivedImages.map(image => image.imageId);
-
-    const defaultScheme = this._getDefaultSegmentationScheme();
-
-    const segmentation: Segmentation = {
-      ...defaultScheme,
-      id: segmentationId,
-      displaySetInstanceUID,
-      label: options?.label,
-      // We should set it as active by default, as it created for display
-      isActive: true,
-      type: representationType,
-      FrameOfReferenceUID: (options?.FrameOfReferenceUID ||
-        displaySet.instances?.[0]?.FrameOfReferenceUID) as string,
-      representationData: {
-        [LABELMAP]: {
-          imageIds: segImageIds,
-          referencedVolumeId: volumeId,
-          referencedImageIds: referenceImageIds,
-        },
-      },
-      description: `S${displaySet.SeriesNumber}: ${displaySet.SeriesDescription}`,
-    };
-
-    this.addOrUpdateSegmentation(segmentation);
-
-    return segmentationId;
-  };
-
-  /**
-   * Toggles the visibility of a segmentation in the state, and broadcasts the event.
-   * Note: this method does not update the segmentation state in the source. It only
-   * updates the state, and there should be separate listeners for that.
-   * @param ids segmentation ids
-   */
-  public toggleSegmentationVisibility = (segmentationId: string): void => {
-    this._toggleSegmentationVisibility(segmentationId, false);
-  };
-
-  /**
-   * Adds a segmentation representation to a specified viewport.
-   *
-   * @param params - The parameters for adding the segmentation representation.
-   * @param params.viewportId - The ID of the viewport to add the representation to.
-   * @param params.segmentationId - The ID of the segmentation to represent.
-   * @param [params.segmentationRepresentationUID=null] - The UID of an existing segmentation representation. If provided and valid, this representation will be used; otherwise, a new one will be created.
-   * @param [params.hydrateSegmentation=false] - Whether to hydrate the segmentation if it's not already hydrated.
-   * @param [params.representationType=csToolsEnums.SegmentationRepresentations.Labelmap] - The type of representation to create if a new one is needed.
-   * @param [params.suppressEvents=false] - Whether to suppress broadcasting of events related to this operation.
-   * @returns A promise that resolves when the operation is complete.
-   * @throws Error if the specified segmentation is not found.
-   */
-
-  public addSegmentationRepresentationToViewport = async ({
-    viewportId,
-    segmentationId,
-    useExistingRepresentationIfExist = false,
-    hydrateSegmentation = false,
-    representationType = csToolsEnums.SegmentationRepresentations.Labelmap,
-    suppressEvents = false,
-  }: {
-    viewportId: string;
-    segmentationId: string;
-    hydrateSegmentation?: boolean;
-    useExistingRepresentationIfExist?: boolean;
-    representationType?: csToolsEnums.SegmentationRepresentations;
-    suppressEvents?: boolean;
-  }): Promise<void> => {
-    const segmentation = this.getSegmentation(segmentationId);
-
-    if (!segmentation) {
-      throw new Error(`Segmentation with segmentationId ${segmentationId} not found.`);
-    }
-
-    if (hydrateSegmentation) {
-      segmentation.hydrated = true;
-    }
-
-    let addedSegmentationRepresentationUID = null;
-
-    const representations =
-      cstSegmentation.state.getSegmentationRepresentationsForSegmentation(segmentationId);
-    const alreadyHasRepresentation = representations?.length > 0;
-
-    if (useExistingRepresentationIfExist && alreadyHasRepresentation) {
-      const representation = representations[0];
-      cstSegmentation.addSegmentationRepresentations(viewportId, [
-        {
-          type: representationType,
-          segmentationId,
-          options: {
-            segmentationRepresentationUID: representation.segmentationRepresentationUID,
-          },
-        },
-      ]);
-
-      addedSegmentationRepresentationUID = representation.segmentationRepresentationUID;
-    } else {
-      addedSegmentationRepresentationUID = await this.createNewRepresentation(
-        viewportId,
-        segmentationId,
-        segmentation,
-        representationType
-      );
-    }
-
-    this._setActiveSegmentationForViewport(
-      segmentationId,
-      viewportId,
-      addedSegmentationRepresentationUID
+  private _initSegmentationService() {
+    eventTarget.addEventListener(
+      csToolsEnums.Events.SEGMENTATION_MODIFIED,
+      this._onSegmentationModifiedFromSource
     );
 
-    await this.updateSegmentProperties(segmentation, segmentationId, viewportId);
+    eventTarget.addEventListener(
+      csToolsEnums.Events.SEGMENTATION_DATA_MODIFIED,
+      this._onSegmentationDataModifiedFromSource
+    );
 
-    if (!suppressEvents) {
-      this._broadcastEvent(this.EVENTS.SEGMENTATION_UPDATED, { segmentation });
-      this._broadcastEvent(this.EVENTS.SEGMENTATION_REPRESENTATION_ADDED, {
-        segmentationRepresentationUID: addedSegmentationRepresentationUID,
-        segmentationId,
-        viewportId,
-      });
-    }
-  };
-
-  private createNewRepresentation = async (
-    viewportId: string,
-    segmentationId: string,
-    segmentation: Segmentation,
-    representationType: csToolsEnums.SegmentationRepresentations
-  ): Promise<string> => {
-    const colorLUT = this.createColorLUT(segmentation);
-    const colorLUTIndex = cstSegmentation.config.color.addColorLUT(colorLUT);
-
-    const [uid] = await cstSegmentation.addSegmentationRepresentations(viewportId, [
-      {
-        segmentationId,
-        type: representationType,
-        options: { colorLUTOrIndex: colorLUTIndex },
-      },
-    ]);
-
-    return uid;
-  };
-
-  private createColorLUT = (segmentation: Segmentation): ColorLUT => {
-    const colorLUT = Array.from({ length: segmentation.segments.length }, (_, index) => {
-      if (index === 0) {
-        return [0, 0, 0, 0];
-      }
-      const segment = segmentation.segments[index];
-      return segment ? [...segment.color, 255] : [0, 0, 0, 0];
-    }) as ColorLUT;
-
-    return colorLUT;
-  };
+    eventTarget.addEventListener(
+      csToolsEnums.Events.SEGMENTATION_REPRESENTATION_MODIFIED,
+      this._onSegmentationDataModifiedFromSource
+    );
+  }
 
   private updateSegmentProperties = async (
-    segmentation: Segmentation,
+    segmentation: SegmentationData,
     segmentationId: string,
     viewportId: string
   ): Promise<void> => {
@@ -1139,60 +1499,9 @@ class SegmentationService extends PubSubService {
     }
   };
 
-  public setSegmentRGBAColor = (
-    segmentationId: string,
-    segmentIndex: number,
-    rgbaColor,
-    viewportId?: string
-  ) => {
-    const segmentation = this.getSegmentation(segmentationId);
-
-    if (segmentation === undefined) {
-      throw new Error(`no segmentation for segmentationId: ${segmentationId}`);
-    }
-
-    this._setSegmentOpacity(
-      segmentationId,
-      segmentIndex,
-      rgbaColor[3],
-      viewportId, // viewportId
-      true
-    );
-    this._setSegmentColor(
-      segmentationId,
-      segmentIndex,
-      [rgbaColor[0], rgbaColor[1], rgbaColor[2]],
-      viewportId, // viewportId
-      true
-    );
-
-    this._broadcastEvent(this.EVENTS.SEGMENTATION_UPDATED, {
-      segmentation,
-    });
-  };
-
-  public getViewportIdsWithSegmentation = (segmentationId: string): string[] => {
-    const viewportIds = cstSegmentation.state.getViewportIdsWithSegmentation(segmentationId);
-    return viewportIds;
-  };
-
-  public hydrateSegmentation = (segmentationId: string, suppressEvents = false): void => {
-    const segmentation = this.getSegmentation(segmentationId);
-
-    if (!segmentation) {
-      throw new Error(`Segmentation with segmentationId ${segmentationId} not found.`);
-    }
-    segmentation.hydrated = true;
-
-    // Not all segmentations have dipslaySets, some of them are derived in the client
-    this._setDisplaySetIsHydrated(segmentationId, true);
-
-    if (!suppressEvents) {
-      this._broadcastEvent(this.EVENTS.SEGMENTATION_UPDATED, {
-        segmentation,
-      });
-    }
-  };
+  private getCornerstoneSegmentation(segmentationId: string) {
+    return cstSegmentation.state.getSegmentation(segmentationId);
+  }
 
   private _setDisplaySetIsHydrated(displaySetUID: string, isHydrated: boolean): void {
     const { displaySetService } = this.servicesManager.services;
@@ -1205,7 +1514,7 @@ class SegmentationService extends PubSubService {
     displaySet.isHydrated = isHydrated;
     displaySetService.setDisplaySetMetadataInvalidated(displaySetUID, false);
 
-    this._broadcastEvent(this.EVENTS.SEGMENTATION_UPDATED, {
+    this._broadcastEvent(this.EVENTS.SEGMENTATION_MODIFIED, {
       segmentation: this.getSegmentation(displaySetUID),
     });
   }
@@ -1234,7 +1543,7 @@ class SegmentationService extends PubSubService {
       }
     }
 
-    const { fillAlpha } = this.getConfiguration(viewportId);
+    const { fillAlpha } = this.getConfiguration(viewportId) || {};
 
     let startTime: number = null;
     const animation = (timestamp: number) => {
@@ -1308,267 +1617,9 @@ class SegmentationService extends PubSubService {
 
     requestAnimationFrame(animate);
   }
-  public removeSegmentationRepresentationFromViewport({
-    viewportId,
-    segmentationRepresentationUIDsIds,
-    segmentationId,
-  }: {
-    viewportId: string;
-    segmentationRepresentationUIDsIds?: string[];
-    segmentationId?: string;
-  }): void {
-    const uids =
-      segmentationRepresentationUIDsIds || segmentationId
-        ? cstSegmentation.state
-            .getSegmentationRepresentationsForSegmentation(segmentationId)
-            .map(rep => rep.segmentationRepresentationUID)
-        : cstSegmentation.state
-            .getSegmentationRepresentations(viewportId)
-            .map(rep => rep.segmentationRepresentationUID);
-
-    cstSegmentation.removeSegmentationRepresentationsFromViewport(viewportId, uids);
-
-    this._broadcastEvent(this.EVENTS.SEGMENTATION_REPRESENTATION_REMOVED, {
-      segmentationRepresentationUIDs: uids,
-    });
-  }
-
-  /**
-   * Removes a segmentation and broadcasts the removed event.
-   *
-   * @param {string} segmentationId The segmentation id
-   */
-  public remove(segmentationId: string): void {
-    const segmentation = this.segmentations[segmentationId];
-    const wasActive = segmentation.isActive;
-
-    if (!segmentationId || !segmentation) {
-      console.warn(`No segmentationId provided, or unable to find segmentation by id.`);
-      return;
-    }
-
-    const { updatedViewportIds } = this._removeSegmentationFromCornerstone(segmentationId);
-
-    delete this.segmentations[segmentationId];
-
-    // If this segmentation was active, and there is another segmentation, set another one active.
-
-    if (wasActive) {
-      const remainingSegmentations = this._getSegmentations();
-
-      const remainingHydratedSegmentations = remainingSegmentations.filter(
-        segmentation => segmentation.hydrated
-      );
-
-      if (remainingHydratedSegmentations.length) {
-        const { id } = remainingHydratedSegmentations[0];
-
-        updatedViewportIds.forEach(viewportId => {
-          this._setActiveSegmentationForViewport(id, viewportId, null);
-        });
-      }
-    }
-
-    this._setDisplaySetIsHydrated(segmentationId, false);
-
-    this._broadcastEvent(this.EVENTS.SEGMENTATION_REMOVED, {
-      segmentationId,
-    });
-  }
-
-  public getSegmentationRepresentationsForViewport(
-    viewportId: string
-  ): cstTypes.SegmentationRepresentation[] {
-    return cstSegmentation.state.getSegmentationRepresentations(viewportId);
-  }
-
-  public getConfiguration = (viewportId?: string): SegmentationConfig => {
-    const brushSize = 1;
-
-    const brushThresholdGate = 1;
-
-    const segmentationRepresentations = this.getSegmentationRepresentationsForViewport(viewportId);
-
-    const typeToUse = segmentationRepresentations?.[0]?.type || LABELMAP;
-
-    const config = cstSegmentation.config.getGlobalConfig();
-    const { renderInactiveRepresentations } = config;
-
-    const representation = config.representations[typeToUse];
-
-    const {
-      renderOutline,
-      outlineWidthActive,
-      renderFill,
-      fillAlpha,
-      fillAlphaInactive,
-      outlineOpacity,
-      outlineOpacityInactive,
-    } = representation as LabelmapConfig;
-
-    return {
-      brushSize,
-      brushThresholdGate,
-      fillAlpha,
-      fillAlphaInactive,
-      outlineWidthActive,
-      renderFill,
-      renderInactiveRepresentations,
-      renderOutline,
-      outlineOpacity,
-      outlineOpacityInactive,
-    };
-  };
-
-  public setConfiguration = (configuration: SegmentationConfig): void => {
-    const {
-      fillAlpha,
-      fillAlphaInactive,
-      outlineWidthActive,
-      outlineOpacity,
-      renderFill,
-      renderInactiveRepresentations,
-      renderOutline,
-    } = configuration;
-
-    const setConfigValueIfDefined = (key, value, transformFn = null) => {
-      if (value !== undefined) {
-        const transformedValue = transformFn ? transformFn(value) : value;
-        this._setSegmentationConfig(key, transformedValue);
-      }
-    };
-
-    setConfigValueIfDefined('renderOutline', renderOutline);
-    setConfigValueIfDefined('outlineWidthActive', outlineWidthActive);
-    setConfigValueIfDefined('outlineOpacity', outlineOpacity, v => v / 100);
-    setConfigValueIfDefined('fillAlpha', fillAlpha, v => v / 100);
-    setConfigValueIfDefined('renderFill', renderFill);
-    setConfigValueIfDefined('fillAlphaInactive', fillAlphaInactive, v => v / 100);
-    setConfigValueIfDefined('outlineOpacityInactive', fillAlphaInactive, v =>
-      Math.max(0.75, v / 100)
-    );
-
-    if (renderInactiveRepresentations !== undefined) {
-      const config = cstSegmentation.config.getGlobalConfig();
-      config.renderInactiveRepresentations = renderInactiveRepresentations;
-      cstSegmentation.config.setGlobalConfig(config);
-    }
-
-    this._broadcastEvent(this.EVENTS.SEGMENTATION_CONFIGURATION_CHANGED, this.getConfiguration());
-  };
-
-  public getLabelmapVolume = (segmentationId: string) => {
-    if (!this.segmentations?.[segmentationId]) {
-      return;
-    }
-
-    const labelmapVolumeData = this.segmentations[segmentationId].representationData
-      .Labelmap as LabelmapSegmentationDataVolume;
-
-    const volumeId = labelmapVolumeData.volumeId;
-
-    return cache.getVolume(volumeId);
-  };
-
-  public getLabelmapReferencedVolume = (segmentationId: string) => {
-    const labelmapVolumeData = this.segmentations[segmentationId].representationData
-      .Labelmap as LabelmapSegmentationDataVolume;
-
-    const volumeId = labelmapVolumeData.referencedVolumeId;
-
-    return cache.getVolume(volumeId);
-  };
-
-  public setSegmentLabel(segmentationId: string, segmentIndex: number, label: string) {
-    this._setSegmentLabel(segmentationId, segmentIndex, label);
-  }
-
-  public shouldRenderSegmentation(viewportDisplaySetInstanceUIDs, segmentationFrameOfReferenceUID) {
-    if (!viewportDisplaySetInstanceUIDs?.length) {
-      return false;
-    }
-
-    const { displaySetService } = this.servicesManager.services;
-
-    let shouldDisplaySeg = false;
-
-    // check if the displaySet is sharing the same frameOfReferenceUID
-    // with the new segmentation
-    for (const displaySetInstanceUID of viewportDisplaySetInstanceUIDs) {
-      const displaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
-
-      // Todo: this might not be ideal for use cases such as 4D, since we
-      // don't want to show the segmentation for all the frames
-      if (
-        displaySet.isReconstructable &&
-        displaySet?.images?.[0]?.FrameOfReferenceUID === segmentationFrameOfReferenceUID
-      ) {
-        shouldDisplaySeg = true;
-        break;
-      }
-    }
-
-    return shouldDisplaySeg;
-  }
-
-  private _getDefaultSegmentationScheme(): Partial<Segmentation> {
-    return {
-      activeSegmentIndex: 1,
-      cachedStats: {},
-      label: '',
-      segmentsLocked: [],
-      displayText: [],
-      hydrated: false, // by default we don't hydrate the segmentation for SEG displaySets
-      segmentCount: 0,
-      segments: [],
-      isVisible: true,
-      isActive: false,
-    };
-  }
-
-  private _setActiveSegmentationForViewport(
-    segmentationId: string,
-    viewportId: string,
-    segmentationRepresentationUID?: string,
-    suppressEvents = false
-  ) {
-    let representationUIDToUse = segmentationRepresentationUID;
-    const targetSegmentation = this.getSegmentation(segmentationId);
-
-    if (!segmentationRepresentationUID) {
-      const segmentations = this._getSegmentations();
-
-      if (targetSegmentation === undefined) {
-        throw new Error(`no segmentation for segmentationId: ${segmentationId}`);
-      }
-
-      segmentations.forEach(segmentation => {
-        segmentation.isActive = segmentation.id === segmentationId;
-      });
-
-      const representation = this._getSegmentationRepresentation(segmentationId, viewportId);
-
-      if (!representation) {
-        throw new Error('Must add representation to viewport before setting segments');
-      }
-
-      representationUIDToUse = representation.segmentationRepresentationUID;
-    }
-
-    cstSegmentation.activeSegmentation.setActiveSegmentationRepresentation(
-      viewportId,
-      representationUIDToUse
-    );
-
-    if (suppressEvents === false) {
-      this._broadcastEvent(this.EVENTS.SEGMENTATION_UPDATED, {
-        segmentation: targetSegmentation,
-      });
-    }
-  }
 
   private _toggleSegmentationVisibility = (segmentationId: string, suppressEvents = false) => {
-    const segmentation = this.segmentations[segmentationId];
+    const segmentation = this.segmentationRepresentations[segmentationId];
 
     if (!segmentation) {
       throw new Error(`Segmentation with segmentationId ${segmentationId} not found.`);
@@ -1579,31 +1630,17 @@ class SegmentationService extends PubSubService {
     this._updateCornerstoneSegmentationVisibility(segmentationId);
 
     if (suppressEvents === false) {
-      this._broadcastEvent(this.EVENTS.SEGMENTATION_UPDATED, {
+      this._broadcastEvent(this.EVENTS.SEGMENTATION_MODIFIED, {
         segmentation,
       });
     }
   };
 
-  private _setActiveSegment(segmentationId: string, segmentIndex: number, suppressEvents = false) {
-    const segmentation = this.getSegmentation(segmentationId);
-
-    if (segmentation === undefined) {
-      throw new Error(`no segmentation for segmentationId: ${segmentationId}`);
-    }
-
+  private _setActiveSegment(segmentationId: string, segmentIndex: number) {
     cstSegmentation.segmentIndex.setActiveSegmentIndex(segmentationId, segmentIndex);
-
-    segmentation.activeSegmentIndex = segmentIndex;
-
-    if (suppressEvents === false) {
-      this._broadcastEvent(this.EVENTS.SEGMENTATION_UPDATED, {
-        segmentation,
-      });
-    }
   }
 
-  private _getSegmentInfo(segmentation: Segmentation, segmentIndex: number) {
+  private _getSegmentInfo(segmentation: SegmentationData, segmentIndex: number) {
     const segments = segmentation.segments;
 
     if (!segments) {
@@ -1624,7 +1661,7 @@ class SegmentationService extends PubSubService {
   private _setSegmentColor = (
     segmentationId: string,
     segmentIndex: number,
-    color: ohifTypes.RGB,
+    color: OHIFTypes.RGB,
     viewportId?: string,
     suppressEvents = false
   ) => {
@@ -1663,7 +1700,7 @@ class SegmentationService extends PubSubService {
     segmentInfo.color = color;
 
     if (suppressEvents === false) {
-      this._broadcastEvent(this.EVENTS.SEGMENTATION_UPDATED, {
+      this._broadcastEvent(this.EVENTS.SEGMENTATION_MODIFIED, {
         segmentation,
       });
     }
@@ -1716,7 +1753,7 @@ class SegmentationService extends PubSubService {
     cstSegmentation.segmentLocking.setSegmentIndexLocked(segmentationId, segmentIndex, isLocked);
 
     if (suppressEvents === false) {
-      this._broadcastEvent(this.EVENTS.SEGMENTATION_UPDATED, {
+      this._broadcastEvent(this.EVENTS.SEGMENTATION_MODIFIED, {
         segmentation,
       });
     }
@@ -1761,7 +1798,7 @@ class SegmentationService extends PubSubService {
       .every(segment => segment.isVisible);
 
     if (suppressEvents === false) {
-      this._broadcastEvent(this.EVENTS.SEGMENTATION_UPDATED, {
+      this._broadcastEvent(this.EVENTS.SEGMENTATION_MODIFIED, {
         segmentation,
       });
     }
@@ -1811,7 +1848,7 @@ class SegmentationService extends PubSubService {
     segmentInfo.opacity = opacity;
 
     if (suppressEvents === false) {
-      this._broadcastEvent(this.EVENTS.SEGMENTATION_UPDATED, {
+      this._broadcastEvent(this.EVENTS.SEGMENTATION_MODIFIED, {
         segmentation,
       });
     }
@@ -1838,7 +1875,7 @@ class SegmentationService extends PubSubService {
     segmentInfo.label = segmentLabel;
 
     if (suppressEvents === false) {
-      this._broadcastEvent(this.EVENTS.SEGMENTATION_UPDATED, {
+      this._broadcastEvent(this.EVENTS.SEGMENTATION_MODIFIED, {
         segmentation,
       });
     }
@@ -1874,7 +1911,7 @@ class SegmentationService extends PubSubService {
   private _setSegmentationConfig = (property, value) => {
     // Todo: currently we only support global config, and we get the type
     // from the first segmentation
-    const typeToUse = this.getSegmentations()[0].type;
+    const typeToUse = this.getSegmentationRepresentations()[0].type;
 
     const { cornerstoneViewportService } = this.servicesManager.services;
 
@@ -1891,82 +1928,22 @@ class SegmentationService extends PubSubService {
     renderingEngine.renderViewports(viewportIds);
   };
 
-  private _initSegmentationService() {
-    // Connect Segmentation Service to Cornerstone3D.
-    eventTarget.addEventListener(
-      csToolsEnums.Events.SEGMENTATION_MODIFIED,
-      this._onSegmentationModifiedFromSource
-    );
-
-    eventTarget.addEventListener(
-      csToolsEnums.Events.SEGMENTATION_DATA_MODIFIED,
-      this._onSegmentationDataModified
-    );
-  }
-
-  private _onSegmentationDataModified = evt => {
+  private _onSegmentationDataModifiedFromSource = evt => {
     const { segmentationId } = evt.detail;
 
-    const segmentation = this.getSegmentation(segmentationId);
-
-    if (segmentation === undefined) {
-      // Part of add operation, not update operation, exit early.
-      return;
-    }
-
     this._broadcastEvent(this.EVENTS.SEGMENTATION_DATA_MODIFIED, {
-      segmentation,
+      segmentationId,
     });
   };
 
-  private _onSegmentationModifiedFromSource = evt => {
+  private _onSegmentationModifiedFromSource = (
+    evt: cstTypes.EventTypes.SegmentationModifiedEventType
+  ) => {
     const { segmentationId } = evt.detail;
 
-    const segmentation = this.segmentations[segmentationId];
-
-    if (segmentation === undefined) {
-      // Part of add operation, not update operation, exit early.
-      return;
-    }
-
-    const segmentationState = cstSegmentation.state.getSegmentation(segmentationId);
-
-    if (!segmentationState) {
-      return;
-    }
-
-    const { activeSegmentIndex, cachedStats, segmentsLocked, label, type } = segmentationState;
-
-    if (![LABELMAP, CONTOUR].includes(type)) {
-      throw new Error(
-        `Unsupported segmentation type: ${type}. Only ${LABELMAP} and ${CONTOUR} are supported.`
-      );
-    }
-
-    const representationData = segmentationState.representationData[type];
-
-    // TODO: handle other representations when available in cornerstone3D
-    const segmentationSchema = {
-      ...segmentation,
-      activeSegmentIndex,
-      cachedStats,
-      displayText: [],
-      id: segmentationId,
-      label,
-      segmentsLocked,
-      type,
-      representationData: {
-        [type]: {
-          ...representationData,
-        },
-      },
-    };
-
-    try {
-      this.addOrUpdateSegmentation(segmentationSchema);
-    } catch (error) {
-      console.warn(`Failed to add/update segmentation ${segmentationId}`, error);
-    }
+    this._broadcastEvent(this.EVENTS.SEGMENTATION_MODIFIED, {
+      segmentationId,
+    });
   };
 
   /**
@@ -2039,13 +2016,13 @@ class SegmentationService extends PubSubService {
     return { updatedViewportIds: [...updatedViewportIds] };
   }
 
-  private _updateCornerstoneSegmentations({ segmentationId, notYetUpdatedAtSource }) {
-    if (notYetUpdatedAtSource === false) {
+  private _updateCornerstoneSegmentations({ segmentationId, hasSourceInitiatedUpdate }) {
+    if (hasSourceInitiatedUpdate === true) {
       return;
     }
     const segmentationState = cstSegmentation.state;
     const sourceSegmentation = segmentationState.getSegmentation(segmentationId);
-    const segmentation = this.segmentations[segmentationId];
+    const segmentation = this.segmentationRepresentations[segmentationId];
     const { label, cachedStats } = segmentation;
 
     // Update the label in the source if necessary
@@ -2099,13 +2076,6 @@ class SegmentationService extends PubSubService {
       });
     });
   };
-
-  private _getViewportIdsWithSegmentation(segmentationId: string) {
-    const segmentationState = cstSegmentation.state;
-    const viewportIds = segmentationState.getViewportIdsWithSegmentation(segmentationId);
-
-    return viewportIds;
-  }
 
   /**
    * Converts object of objects to array.

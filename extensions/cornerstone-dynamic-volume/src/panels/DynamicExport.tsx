@@ -6,7 +6,9 @@ function DynamicExport({ commandsManager, servicesManager, extensionManager }: w
   const { segmentationService } = servicesManager.services;
   const { t } = useTranslation('dynamicExport');
 
-  const [segmentations, setSegmentations] = useState(() => segmentationService.getSegmentations());
+  const [segmentations, setSegmentations] = useState(() =>
+    segmentationService.getSegmentationRepresentations()
+  );
 
   const actions = [
     {
@@ -42,13 +44,13 @@ function DynamicExport({ commandsManager, servicesManager, extensionManager }: w
   useEffect(() => {
     // ~~ Subscription
     const added = segmentationService.EVENTS.SEGMENTATION_ADDED;
-    const updated = segmentationService.EVENTS.SEGMENTATION_UPDATED;
+    const updated = segmentationService.EVENTS.SEGMENTATION_MODIFIED;
     const removed = segmentationService.EVENTS.SEGMENTATION_REMOVED;
     const subscriptions = [];
 
     [added, updated, removed].forEach(evt => {
       const { unsubscribe } = segmentationService.subscribe(evt, () => {
-        const segmentations = segmentationService.getSegmentations();
+        const segmentations = segmentationService.getSegmentationRepresentations();
         setSegmentations(segmentations);
       });
       subscriptions.push(unsubscribe);

@@ -65,44 +65,6 @@ const commandsModule = ({
      */
     getUpdatedViewportsForSegmentation,
     /**
-     * Creates an empty segmentation for a specified viewport.
-     * It first checks if the display set associated with the viewport is reconstructable.
-     * If not, it raises a notification error. Otherwise, it creates a new segmentation
-     * for the display set after handling the necessary steps for making the viewport
-     * a volume viewport first
-     *
-     * @param {Object} params - Parameters for the function.
-     * @param params.viewportId - the target viewport ID.
-     *
-     */
-    createEmptySegmentationForViewport: async ({ viewportId }) => {
-      const viewport = getTargetViewport({ viewportId, viewportGridService });
-      // Todo: add support for multiple display sets
-      const displaySetInstanceUID = viewport.displaySetInstanceUIDs[0];
-
-      const currentSegmentations = segmentationService.getSegmentations();
-      const segmentationId = await segmentationService.createSegmentationForDisplaySet(
-        displaySetInstanceUID,
-        { label: `Segmentation ${currentSegmentations.length + 1}` }
-      );
-
-      await segmentationService.addSegmentationRepresentationToViewport({
-        viewportId,
-        segmentationId,
-      });
-
-      // Add only one segment for now
-      segmentationService.addSegment(segmentationId, {
-        viewportId,
-        segmentIndex: 1,
-        properties: {
-          label: 'Segment 1',
-        },
-      });
-
-      return segmentationId;
-    },
-    /**
      * Loads segmentations for a specified viewport.
      * The function prepares the viewport for rendering, then loads the segmentation details.
      * Additionally, if the segmentation has scalar data, it is set for the corresponding label map volume.
@@ -128,7 +90,7 @@ const commandsModule = ({
 
           delete segmentation.segments;
 
-          await segmentationService.createSegmentationForDisplaySet(displaySetInstanceUID, {
+          await segmentationService.createEmptyLabelmapForDisplaySetUID(displaySetInstanceUID, {
             segmentationId,
             label,
           });
@@ -202,7 +164,7 @@ const commandsModule = ({
           const serviceFunction =
             segDisplaySet.Modality === 'SEG'
               ? 'createSegmentationForSEGDisplaySet'
-              : 'createSegmentationForRTDisplaySet';
+              : 'createContoursFromRTStructDisplaySet';
 
           const boundFn = segmentationService[serviceFunction].bind(segmentationService);
           const segmentationId = await boundFn(segDisplaySet, null, suppressEvents);
@@ -460,9 +422,6 @@ const commandsModule = ({
     },
     loadSegmentationsForViewport: {
       commandFn: actions.loadSegmentationsForViewport,
-    },
-    createEmptySegmentationForViewport: {
-      commandFn: actions.createEmptySegmentationForViewport,
     },
     generateSegmentation: {
       commandFn: actions.generateSegmentation,

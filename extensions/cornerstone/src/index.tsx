@@ -81,9 +81,8 @@ const cornerstoneExtension: Types.Extensions.Extension = {
     ]);
 
     toolbarService.registerEventForToolbarUpdate(segmentationService, [
-      segmentationService.EVENTS.SEGMENTATION_ADDED,
       segmentationService.EVENTS.SEGMENTATION_REMOVED,
-      segmentationService.EVENTS.SEGMENTATION_UPDATED,
+      segmentationService.EVENTS.SEGMENTATION_MODIFIED,
     ]);
 
     toolbarService.registerEventForToolbarUpdate(cornerstone.eventTarget, [

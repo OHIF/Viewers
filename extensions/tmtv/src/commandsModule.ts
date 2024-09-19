@@ -169,9 +169,9 @@ const commandsModule = ({ servicesManager, commandsManager, extensionManager }: 
         return;
       }
 
-      const currentSegmentations = segmentationService.getSegmentations();
+      const currentSegmentations = segmentationService.getSegmentationRepresentations();
 
-      const segmentationId = await segmentationService.createSegmentationForDisplaySet(
+      const segmentationId = await segmentationService.createEmptyLabelmapForDisplaySetUID(
         ptDisplaySet.displaySetInstanceUID,
         { label: `Segmentation ${currentSegmentations.length + 1}` }
       );
@@ -179,7 +179,6 @@ const commandsModule = ({ servicesManager, commandsManager, extensionManager }: 
       segmentationService.addSegmentationRepresentationToViewport({
         viewportId: withPTViewportId,
         segmentationId,
-        hydrateSegmentation: true,
       });
 
       segmentationService.addSegment(segmentationId, {
@@ -529,7 +528,7 @@ const commandsModule = ({ servicesManager, commandsManager, extensionManager }: 
     },
     getSegmentationCSVReport: ({ segmentations }) => {
       if (!segmentations || !segmentations.length) {
-        segmentations = segmentationService.getSegmentations();
+        segmentations = segmentationService.getSegmentationRepresentations();
       }
 
       const report = {};

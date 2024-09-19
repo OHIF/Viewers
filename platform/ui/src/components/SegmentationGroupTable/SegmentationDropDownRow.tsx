@@ -1,10 +1,24 @@
 import React from 'react';
 import { Select, Icon, Dropdown, Tooltip } from '../../components';
-import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
 
+type SegmentationDropDownRowProps = {
+  segmentationsInfo: AppTypes.Segmentation.SegmentationInfo[];
+  activeSegmentation: Segmentation | null;
+  onActiveSegmentationChange: (segmentationId: string) => void;
+  disableEditing?: boolean;
+  onToggleSegmentationVisibility: (segmentationId: string) => void;
+  onSegmentationEdit: (segmentationId: string) => void;
+  onSegmentationDownload: (segmentationId: string) => void;
+  onSegmentationDownloadRTSS: (segmentationId: string) => void;
+  storeSegmentation: (segmentationId: string) => void;
+  onSegmentationDelete: (segmentationId: string) => void;
+  onSegmentationAdd: () => void;
+  addSegmentationClassName?: string;
+};
+
 function SegmentationDropDownRow({
-  segmentations = [],
+  segmentationsInfo = [],
   activeSegmentation,
   onActiveSegmentationChange,
   disableEditing = false,
@@ -16,12 +30,12 @@ function SegmentationDropDownRow({
   onSegmentationDelete,
   onSegmentationAdd,
   addSegmentationClassName,
-}) {
-  const handleChange = option => {
+}: SegmentationDropDownRowProps) {
+  const handleChange = (option: { value: string; label: string }) => {
     onActiveSegmentationChange(option.value); // Notify the parent
   };
 
-  const selectOptions = segmentations.map(s => ({
+  const selectOptions = segmentationsInfo.map(s => ({
     value: s.id,
     label: s.label,
   }));
@@ -98,7 +112,7 @@ function SegmentationDropDownRow({
             ],
           ]}
         >
-          <div className="hover:bg-secondary-dark  grid h-[28px] w-[28px]  cursor-pointer place-items-center rounded-[4px]">
+          <div className="hover:bg-secondary-dark grid h-[28px] w-[28px] cursor-pointer place-items-center rounded-[4px]">
             <Icon name="icon-more-menu"></Icon>
           </div>
         </Dropdown>
@@ -138,7 +152,7 @@ function SegmentationDropDownRow({
           />
         </Tooltip>
         <div
-          className="hover:bg-secondary-dark  mr-1 grid h-[28px]  w-[28px] cursor-pointer place-items-center rounded-[4px]"
+          className="hover:bg-secondary-dark mr-1 grid h-[28px] w-[28px] cursor-pointer place-items-center rounded-[4px]"
           onClick={() => onToggleSegmentationVisibility(activeSegmentation.id)}
         >
           {activeSegmentation.isVisible ? (
@@ -157,27 +171,5 @@ function SegmentationDropDownRow({
     </div>
   );
 }
-
-SegmentationDropDownRow.propTypes = {
-  segmentations: PropTypes.arrayOf(
-    PropTypes.shape({
-      id: PropTypes.string.isRequired,
-      label: PropTypes.string.isRequired,
-    })
-  ).isRequired,
-  activeSegmentation: PropTypes.shape({
-    id: PropTypes.string.isRequired,
-    isVisible: PropTypes.bool.isRequired,
-  }),
-  onActiveSegmentationChange: PropTypes.func.isRequired,
-  disableEditing: PropTypes.bool,
-  onToggleSegmentationVisibility: PropTypes.func,
-  onSegmentationEdit: PropTypes.func,
-  onSegmentationDownload: PropTypes.func,
-  onSegmentationDownloadRTSS: PropTypes.func,
-  storeSegmentation: PropTypes.func,
-  onSegmentationDelete: PropTypes.func,
-  onSegmentationAdd: PropTypes.func,
-};
 
 export default SegmentationDropDownRow;

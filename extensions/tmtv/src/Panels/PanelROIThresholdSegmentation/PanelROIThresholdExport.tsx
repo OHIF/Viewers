@@ -13,7 +13,9 @@ export default function PanelRoiThresholdSegmentation({
   const { segmentationService, uiNotificationService } = servicesManager.services;
   const { t } = useTranslation('PanelSUVExport');
 
-  const [segmentations, setSegmentations] = useState(() => segmentationService.getSegmentations());
+  const [segmentations, setSegmentations] = useState(() =>
+    segmentationService.getSegmentationRepresentations()
+  );
   const [activeSegmentation, setActiveSegmentation] = useState(null);
 
   /**
@@ -22,13 +24,13 @@ export default function PanelRoiThresholdSegmentation({
   useEffect(() => {
     // ~~ Subscription
     const added = segmentationService.EVENTS.SEGMENTATION_ADDED;
-    const updated = segmentationService.EVENTS.SEGMENTATION_UPDATED;
+    const updated = segmentationService.EVENTS.SEGMENTATION_MODIFIED;
     const removed = segmentationService.EVENTS.SEGMENTATION_REMOVED;
     const subscriptions = [];
 
     [added, updated, removed].forEach(evt => {
       const { unsubscribe } = segmentationService.subscribe(evt, () => {
-        const segmentations = segmentationService.getSegmentations();
+        const segmentations = segmentationService.getSegmentationRepresentations();
         setSegmentations(segmentations);
 
         setActiveSegmentation(segmentations[0]);

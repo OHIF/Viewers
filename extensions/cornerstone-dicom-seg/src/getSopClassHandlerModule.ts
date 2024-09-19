@@ -136,7 +136,7 @@ function _load(
 
     const suppressEvents = true;
     segmentationService
-      .createSegmentationForSEGDisplaySet(segDisplaySet, null, suppressEvents)
+      .createLabelmapFromSEGDisplaySet(segDisplaySet, null, suppressEvents)
       .then(() => {
         segDisplaySet.loading = false;
         resolve();

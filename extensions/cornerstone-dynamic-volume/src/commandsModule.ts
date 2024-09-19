@@ -340,7 +340,7 @@ const commandsModule = ({ commandsManager, servicesManager }: withAppTypes) => {
         throw new Error('No reference display set found based on the dynamic data');
       }
 
-      const segmentationId = await segmentationService.createSegmentationForDisplaySet(
+      const segmentationId = await segmentationService.createEmptyLabelmapForDisplaySetUID(
         referenceDisplaySet.displaySetInstanceUID,
         { label }
       );
@@ -350,7 +350,6 @@ const commandsModule = ({ commandsManager, servicesManager }: withAppTypes) => {
         await segmentationService.addSegmentationRepresentationToViewport({
           viewportId,
           segmentationId,
-          hydrateSegmentation: true,
         });
 
         segmentationService.setActiveSegmentationForViewport(segmentationId, viewportId);

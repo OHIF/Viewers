@@ -58,7 +58,7 @@ export const handleROIThresholding = async ({
 
   const notYetUpdatedAtSource = true;
 
-  const segmentations = segmentationService.getSegmentations();
+  const segmentations = segmentationService.getSegmentationRepresentations();
   const tmtv = commandsManager.run('calculateTMTV', { segmentations });
 
   segmentation.cachedStats = Object.assign(segmentation.cachedStats, updatedPerSegmentCachedStats, {

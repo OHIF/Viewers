@@ -142,17 +142,14 @@ export default async function init({
     clearOnModeExit: true,
   });
 
-  const labelmapRepresentation = cornerstoneTools.Enums.SegmentationRepresentations.Labelmap;
-  const contourRepresentation = cornerstoneTools.Enums.SegmentationRepresentations.Contour;
-
-  cornerstoneTools.segmentation.config.setGlobalRepresentationConfig(labelmapRepresentation, {
+  cornerstoneTools.segmentation.config.style.setGlobalLabelmapStyle({
     fillAlpha: 0.5,
     fillAlphaInactive: 0.2,
     outlineOpacity: 1,
     outlineOpacityInactive: 0.65,
   });
 
-  cornerstoneTools.segmentation.config.setGlobalRepresentationConfig(contourRepresentation, {
+  cornerstoneTools.segmentation.config.style.setGlobalContourStyle({
     renderFill: false,
   });
 
@@ -289,7 +286,7 @@ export default async function init({
     100
   );
 
-  const segRepAdded = segmentationService.EVENTS.SEGMENTATION_REPRESENTATION_ADDED;
+  const segRepAdded = segmentationService.EVENTS.SEGMENTATION_REPRESENTATION_MODIFIED;
   const segRepRemoved = segmentationService.EVENTS.SEGMENTATION_REPRESENTATION_REMOVED;
   const gridStateChange = viewportGridService.EVENTS.GRID_STATE_CHANGED;
 
@@ -300,7 +297,7 @@ export default async function init({
       return;
     }
 
-    const segmentations = segmentationService.getSegmentations();
+    const segmentations = segmentationService.getSegmentationRepresentations();
     for (const [viewportId, gridViewport] of viewports.entries()) {
       const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
 
@@ -352,15 +349,15 @@ export default async function init({
     // so that the overlay is visible or hidden accordingly
   };
 
-  viewportGridService.subscribe(gridStateChange, consolidateSegmentationRepresentations);
-  cornerstoneViewportService.subscribe(
-    cornerstoneViewportService.EVENTS.VIEWPORT_DATA_CHANGED,
-    consolidateSegmentationRepresentations
-  );
+  // viewportGridService.subscribe(gridStateChange, consolidateSegmentationRepresentations);
+  // cornerstoneViewportService.subscribe(
+  //   cornerstoneViewportService.EVENTS.VIEWPORT_DATA_CHANGED,
+  //   consolidateSegmentationRepresentations
+  // );
 
-  [segRepAdded].forEach(event => {
-    segmentationService.subscribe(event, consolidateSegmentationRepresentations);
-  });
+  // [segRepAdded].forEach(event => {
+  //   segmentationService.subscribe(event, consolidateSegmentationRepresentations);
+  // });
 }
 
 function CPUModal() {
