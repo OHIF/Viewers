@@ -98,6 +98,7 @@
     "react-resize-detector": "^10.0.1",
     "react-router": "^6.23.1",
     "react-router-dom": "^6.8.1",
+    "react-shepherd": "^6.1.1",
     "url-loader": "^4.1.1"
   },
   "devDependencies": {

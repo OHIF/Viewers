@@ -1,14 +1,11 @@
 const name = 'onboardingService';
 
 const serviceImplementation = {
-  _showHints: () => console.warn('showHints() NOT IMPLEMENTED'),
-  _hideHints: () => console.warn('hideHints() NOT IMPLEMENTED'),
-  _startSteps: () => console.warn('startSteps() NOT IMPLEMENTED'),
-  _exitSteps: () => console.warn('exitSteps() NOT IMPLEMENTED'),
+  _startTour: () => console.warn('startTour() NOT IMPLEMENTED'),
+  _exitTour: () => console.warn('exitTour() NOT IMPLEMENTED'),
   _nextStep: () => console.warn('nextStep() NOT IMPLEMENTED'),
   _previousStep: () => console.warn('previousStep() NOT IMPLEMENTED'),
-  _setHints: hints => console.warn('setHints() NOT IMPLEMENTED'),
-  _setSteps: steps => console.warn('setSteps() NOT IMPLEMENTED'),
+  _initializeTour: (steps, tourOptions) => console.warn('initializeTour() NOT IMPLEMENTED'),
 };
 
 class OnboardingService {
@@ -23,31 +20,24 @@ class OnboardingService {
   readonly name = name;
 
   /**
-   * Show hints dynamically
+   * Initialize the step tour
    */
-  showHints() {
-    return serviceImplementation._showHints();
+  initializeTour(steps, tourOptions = {}) {
+    return serviceImplementation._initializeTour(steps, tourOptions);
   }
 
   /**
-   * Hide hints
+   * Start the step tour
    */
-  hideHints() {
-    return serviceImplementation._hideHints();
-  }
-
-  /**
-   * Start the step tour dynamically
-   */
-  startSteps() {
-    return serviceImplementation._startSteps();
+  startTour() {
+    return serviceImplementation._startTour();
   }
 
   /**
    * Exit the step tour
    */
-  exitSteps() {
-    return serviceImplementation._exitSteps();
+  exitTour() {
+    return serviceImplementation._exitTour();
   }
 
   /**
@@ -64,56 +54,27 @@ class OnboardingService {
     return serviceImplementation._previousStep();
   }
 
-  /**
-   * Dynamically set the hints
-   */
-  setHints(hints) {
-    return serviceImplementation._setHints(hints);
-  }
-
-  /**
-   * Dynamically set the steps
-   */
-  setSteps(steps) {
-    return serviceImplementation._setSteps(steps);
-  }
-
-  /**
-   * Sets the service implementation for hints and steps
-   */
   setServiceImplementation({
-    showHints: showHintsImplementation,
-    hideHints: hideHintsImplementation,
-    startSteps: startStepsImplementation,
-    exitSteps: exitStepsImplementation,
+    initializeTour: initializeTourImplementation,
+    startTour: startStepsImplementation,
+    exitTour: exitStepsImplementation,
     nextStep: nextStepImplementation,
     previousStep: previousStepImplementation,
-    setHints: setHintsImplementation,
-    setSteps: setStepsImplementation,
   }) {
-    if (showHintsImplementation) {
-      serviceImplementation._showHints = showHintsImplementation;
-    }
-    if (hideHintsImplementation) {
-      serviceImplementation._hideHints = hideHintsImplementation;
+    if (initializeTourImplementation) {
+      serviceImplementation._initializeTour = initializeTourImplementation;
     }
     if (startStepsImplementation) {
-      serviceImplementation._startSteps = startStepsImplementation;
+      serviceImplementation._startTour = startStepsImplementation;
     }
     if (exitStepsImplementation) {
-      serviceImplementation._exitSteps = exitStepsImplementation;
+      serviceImplementation._exitTour = exitStepsImplementation;
     }
     if (nextStepImplementation) {
       serviceImplementation._nextStep = nextStepImplementation;
     }
     if (previousStepImplementation) {
       serviceImplementation._previousStep = previousStepImplementation;
-    }
-    if (setHintsImplementation) {
-      serviceImplementation._setHints = setHintsImplementation;
-    }
-    if (setStepsImplementation) {
-      serviceImplementation._setSteps = setStepsImplementation;
     }
   }
 }
