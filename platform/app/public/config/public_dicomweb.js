@@ -10,9 +10,9 @@ window.config = {
     dicomWeb: [
       {
         name: 'aws',
-        wadoUriRoot: 'https://d33do7qe4w26qo.cloudfront.net/dicomweb',
-        qidoRoot: 'https://d33do7qe4w26qo.cloudfront.net/dicomweb',
-        wadoRoot: 'https://d33do7qe4w26qo.cloudfront.net/dicomweb',
+        wadoUriRoot: 'https://d14fa38qiwhyfd.cloudfront.net/dicomweb',
+        qidoRoot: 'https://d14fa38qiwhyfd.cloudfront.net/dicomweb',
+        wadoRoot: 'https://d14fa38qiwhyfd.cloudfront.net/dicomweb',
         qidoSupportsIncludeField: true,
         imageRendering: 'wadors',
         thumbnailRendering: 'wadors',
