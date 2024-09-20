@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.9.0-beta.87](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.86...v3.9.0-beta.87) (2024-09-19)
+
+
+### Bug Fixes
+
+* **ui:** Fixed study component open and closed feedback in Studies panel ([#4384](https://github.com/OHIF/Viewers/issues/4384)) ([365d824](https://github.com/OHIF/Viewers/commit/365d824b98e03b87db294878abde6823abdcf409))
+
+
+
+
+
 # [3.9.0-beta.86](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.85...v3.9.0-beta.86) (2024-09-19)
 
 **Note:** Version bump only for package @ohif/ui-next
