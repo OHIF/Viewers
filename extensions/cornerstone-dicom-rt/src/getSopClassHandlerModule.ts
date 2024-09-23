@@ -112,9 +112,8 @@ function _load(rtDisplaySet, servicesManager: AppTypes.ServicesManager, extensio
       rtDisplaySet.structureSet = structureSet;
     }
 
-    const suppressEvents = true;
     segmentationService
-      .createContoursFromRTStructDisplaySet(rtDisplaySet, null, suppressEvents)
+      .createSegmentationForRTDisplaySet(rtDisplaySet)
       .then(() => {
         rtDisplaySet.loading = false;
         resolve();

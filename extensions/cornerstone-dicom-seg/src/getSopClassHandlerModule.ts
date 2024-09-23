@@ -134,9 +134,8 @@ function _load(
       });
     }
 
-    const suppressEvents = true;
     segmentationService
-      .createLabelmapFromSEGDisplaySet(segDisplaySet, null, suppressEvents)
+      .createSegmentationForSEGDisplaySet(segDisplaySet)
       .then(() => {
         segDisplaySet.loading = false;
         resolve();

@@ -160,14 +160,13 @@ const commandsModule = ({
         displaySet,
         loadFn: async () => {
           const segDisplaySet = displaySet;
-          const suppressEvents = false;
           const serviceFunction =
             segDisplaySet.Modality === 'SEG'
               ? 'createSegmentationForSEGDisplaySet'
-              : 'createContoursFromRTStructDisplaySet';
+              : 'createSegmentationForRTDisplaySet';
 
           const boundFn = segmentationService[serviceFunction].bind(segmentationService);
-          const segmentationId = await boundFn(segDisplaySet, null, suppressEvents);
+          const segmentationId = await boundFn(segDisplaySet, { segmentationId: null });
           const segmentation = segmentationService.getSegmentation(segmentationId);
           segmentation.description = `S${referencedDisplaySet.SeriesNumber}: ${referencedDisplaySet.SeriesDescription}`;
           return segmentationId;

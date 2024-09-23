@@ -38,6 +38,7 @@ export default function PanelSegmentation({
         events: [
           segmentationService.EVENTS.SEGMENTATION_MODIFIED,
           segmentationService.EVENTS.SEGMENTATION_REMOVED,
+          segmentationService.EVENTS.SEGMENTATION_REPRESENTATION_MODIFIED,
         ],
       },
       {
@@ -95,13 +96,7 @@ export default function PanelSegmentation({
 
   const onSegmentClick = (segmentationId, segmentIndex) => {
     segmentationService.setActiveSegment(segmentationId, segmentIndex);
-
-    const viewportIds = getViewportIds(segmentationId);
-
-    viewportIds.forEach(viewportId => {
-      segmentationService.setActiveSegmentationForViewport(segmentationId, viewportId);
-      segmentationService.jumpToSegmentCenter(segmentationId, segmentIndex, viewportId);
-    });
+    segmentationService.jumpToSegmentCenter(segmentationId, segmentIndex);
   };
 
   const onSegmentEdit = (segmentationId, segmentIndex) => {
@@ -145,29 +140,22 @@ export default function PanelSegmentation({
   };
 
   const onSegmentColorClick = (segmentationId, segmentIndex) => {
-    const segmentation = segmentationService.getSegmentationsInfo({ segmentationId });
-
-    const segment = segmentation.segments[segmentIndex];
-    const { color, opacity } = segment;
+    const viewportId = viewportGridService.getActiveViewportId();
+    const color = segmentationService.getSegmentColor(viewportId, segmentationId, segmentIndex);
 
     const rgbaColor = {
       r: color[0],
       g: color[1],
       b: color[2],
-      a: opacity / 255.0,
+      a: color[3] / 255.0,
     };
-
     callColorPickerDialog(uiDialogService, rgbaColor, (newRgbaColor, actionId) => {
       if (actionId === 'cancel') {
         return;
       }
 
-      segmentationService.setSegmentRGBAColor(segmentationId, segmentIndex, [
-        newRgbaColor.r,
-        newRgbaColor.g,
-        newRgbaColor.b,
-        newRgbaColor.a * 255.0,
-      ]);
+      const color = [newRgbaColor.r, newRgbaColor.g, newRgbaColor.b, newRgbaColor.a * 255.0];
+      segmentationService.setSegmentColor(viewportId, segmentationId, segmentIndex, color);
     });
   };
 

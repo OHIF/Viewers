@@ -13,6 +13,7 @@ const getPanelModule = ({
   title,
 }: withAppTypes) => {
   const { customizationService } = servicesManager.services;
+  const modeCustomization = customizationService.getModeCustomization('segmentation.panel');
 
   const wrappedPanelSegmentation = ({ configuration, renderHeader, getCloseIcon, tab }) => {
     const [appConfig] = useAppConfig();
@@ -36,7 +37,6 @@ const getPanelModule = ({
 
   const wrappedPanelSegmentationNoHeader = ({ configuration }) => {
     const [appConfig] = useAppConfig();
-    const modeCustomization = customizationService.getModeCustomization('segmentation.panel');
 
     return (
       <PanelSegmentation

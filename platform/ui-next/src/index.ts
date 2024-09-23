@@ -33,12 +33,14 @@ import {
   DisplaySetMessageListTooltip,
   Toolbox,
   ToolboxUI,
+  Select,
 } from './components';
 
 import { useNotification, NotificationProvider } from './contextProviders';
 
 export {
   // components
+  Select,
   Button,
   Dialog,
   Command,

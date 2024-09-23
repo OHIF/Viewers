@@ -1,6 +1,7 @@
 import React from 'react';
-import { Select, Icon, Dropdown, Tooltip } from '../../components';
+import { Icon, Dropdown, Tooltip } from '../../components';
 import { useTranslation } from 'react-i18next';
+import { Select } from '@ohif/ui-next';
 
 type Segmentation = {
   id: string;
@@ -95,23 +96,24 @@ const SegmentationDropDownRow: React.FC<SegmentationDropDownRowProps> = ({
       </div>
 
       {selectOptions.length > 0 && (
-        <Select
-          id="segmentation-select"
-          isClearable={false}
-          onChange={handleSelectChange}
-          components={{
-            DropdownIndicator: () => (
-              <Icon
-                name="chevron-down-new"
-                className="mr-2"
-              />
-            ),
-          }}
-          isSearchable={false}
-          options={selectOptions}
-          value={selectOptions.find(o => o.value === activeSegmentation.id)}
-          className="text-aqua-pale h-6.5 w-1/2 text-sm"
-        />
+        <Select.Select
+          onValueChange={value => onActiveSegmentationChange(value)}
+          value={activeSegmentation.id}
+        >
+          <Select.SelectTrigger>
+            <Select.SelectValue placeholder={t('Select a segmentation')} />
+          </Select.SelectTrigger>
+          <Select.SelectContent>
+            {selectOptions.map(option => (
+              <Select.SelectItem
+                key={option.value}
+                value={option.value}
+              >
+                {option.label}
+              </Select.SelectItem>
+            ))}
+          </Select.SelectContent>
+        </Select.Select>
       )}
 
       <div className="flex items-center space-x-2">

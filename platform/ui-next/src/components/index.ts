@@ -28,8 +28,10 @@ import ThumbnailList from './ThumbnailList';
 import PanelSection from './PanelSection';
 import DisplaySetMessageListTooltip from './DisplaySetMessageListTooltip';
 import { Toolbox, ToolboxUI } from './Toolbox';
+import Select from './Select';
 
 export {
+  Select,
   Button,
   buttonVariants,
   ThemeWrapper,
