@@ -2,7 +2,7 @@ import { cache } from '@cornerstonejs/core';
 import { utilities } from '@cornerstonejs/tools';
 
 function _getVolumesFromViewport(viewport) {
-  return viewport ? viewport.getActors().map(actor => cache.getVolume(actor.uid)) : [];
+  return viewport ? viewport.getActors().map(actor => cache.getVolume(actor.referencedId)) : [];
 }
 
 function _getVolumeFromViewport(viewport) {

@@ -20,10 +20,6 @@ const workerFn = () => {
 const getViewportVolumeHistogram = async (viewport, volume, options?) => {
   workerManager.registerWorker('histogram-worker', workerFn, WorkerOptions);
 
-  if (!volume?.loadStatus.loaded) {
-    return undefined;
-  }
-
   const volumeImageData = viewport.getImageData(volume.volumeId);
 
   if (!volumeImageData) {
@@ -37,7 +33,7 @@ const getViewportVolumeHistogram = async (viewport, volume, options?) => {
     prevTimePoint = volume.timePointIndex;
     const middleTimePoint = Math.round(volume.numTimePoints / 2);
     volume.timePointIndex = middleTimePoint;
-    scalarData = volume.getScalarData(middleTimePoint);
+    scalarData = volume.voxelManager.getTimePointScalarData(middleTimePoint);
   }
 
   const { dimensions, origin, direction, spacing } = volume;

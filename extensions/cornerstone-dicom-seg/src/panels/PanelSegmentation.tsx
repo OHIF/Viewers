@@ -165,15 +165,11 @@ export default function PanelSegmentation({
 
   // segment hide
   const onToggleSegmentVisibility = (segmentationId, segmentIndex) => {
-    const segmentation = segmentationService.getSegmentationsInfo({ segmentationId });
-    const segmentInfo = segmentation.segments[segmentIndex];
-    const isVisible = !segmentInfo.isVisible;
-    const viewportIds = getViewportIds(segmentationId);
-
-    // Todo: right now we apply the visibility to all tool groups
-    viewportIds.forEach(viewportId => {
-      segmentationService.setSegmentVisibility(segmentationId, segmentIndex, isVisible, viewportId);
-    });
+    segmentationService.toggleSegmentVisibility(
+      viewportGridService.getActiveViewportId(),
+      segmentationId,
+      segmentIndex
+    );
   };
 
   const onToggleSegmentLock = (segmentationId, segmentIndex) => {
@@ -181,15 +177,10 @@ export default function PanelSegmentation({
   };
 
   const onToggleSegmentationVisibility = segmentationId => {
-    segmentationService.toggleSegmentationVisibility(segmentationId);
-    const segmentation = segmentationService.getSegmentationsInfo({ segmentationId });
-    const isVisible = segmentation.isVisible;
-    const segments = segmentation.segments;
-
-    const viewportId = viewportGridService.getActiveViewportId();
-    segments.forEach((segment, segmentIndex) => {
-      segmentationService.setSegmentVisibility(segmentationId, segmentIndex, isVisible, viewportId);
-    });
+    segmentationService.toggleSegmentationVisibility(
+      viewportGridService.getActiveViewportId(),
+      segmentationId
+    );
   };
 
   const _setSegmentationConfiguration = useCallback(
@@ -243,7 +234,7 @@ export default function PanelSegmentation({
 
   const {
     segmentationPanelMode,
-    addSegment: allowAddSegment = false,
+    addSegment: allowAddSegment = true,
     onSegmentationAdd: configOnSegmentationAdd,
     disableEditing,
   } = configuration ?? {};

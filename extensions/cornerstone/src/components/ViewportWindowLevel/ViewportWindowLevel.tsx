@@ -17,8 +17,9 @@ const ViewportWindowLevel = ({
   const { cornerstoneViewportService } = servicesManager.services;
   const [windowLevels, setWindowLevels] = useState([]);
   const [cachedHistograms, setCachedHistograms] = useState({});
+  const [isLoading, setIsLoading] = useState(true);
 
-  /**
+  /**c
    * Looks for all viewports that has exactly all volumeIds passed as parameter.
    */
   const getViewportsWithVolumeIds = useCallback(
@@ -27,7 +28,7 @@ const ViewportWindowLevel = ({
       const viewports = renderingEngine.getVolumeViewports();
 
       return viewports.filter(vp => {
-        const viewportVolumeIds = vp.getActors().map(actor => actor.uid);
+        const viewportVolumeIds = vp.getActors().map(actor => actor.referencedId);
 
         return (
           volumeIds.length === viewportVolumeIds.length &&
@@ -125,7 +126,7 @@ const ViewportWindowLevel = ({
   };
 
   const getVolumeOpacity = useCallback((viewport, volumeId) => {
-    const volumeActor = viewport.getActor(volumeId).actor;
+    const volumeActor = viewport.getActors().find(actor => actor.referencedId === volumeId)?.actor;
 
     if (isPetVolumeWithDefaultOpacity(volumeId, volumeActor)) {
       // Get the opacity from the second node at 0.1
@@ -138,7 +139,7 @@ const ViewportWindowLevel = ({
   }, []);
 
   const getWindowLevelsData = useCallback(
-    async (viewportId: number) => {
+    async (viewportId: string) => {
       const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
 
       if (!viewport) {
@@ -147,7 +148,7 @@ const ViewportWindowLevel = ({
 
       const viewportInfo = cornerstoneViewportService.getViewportInfo(viewportId);
 
-      const volumeIds = viewport.getActors().map(actor => actor.uid);
+      const volumeIds = viewport.getActors().map(actor => actor.referencedId);
       const viewportProperties = viewport.getProperties();
       const { voiRange } = viewportProperties;
       const viewportVoi = voiRange
@@ -175,11 +176,11 @@ const ViewportWindowLevel = ({
             max: modality === 'PT' ? 5 : 10000,
           };
 
-          const histogram =
-            cachedHistograms[volumeId] ??
-            (await getViewportVolumeHistogram(viewport, volume, options));
+          const histogram = await getViewportVolumeHistogram(viewport, volume, options);
+          console.debug('Histogram', histogram);
           const { voi: displaySetVOI, colormap: displaySetColormap } =
             viewportInfo.displaySetOptions[volumeIndex];
+
           let colormap;
           if (displaySetColormap) {
             colormap =
@@ -187,7 +188,7 @@ const ViewportWindowLevel = ({
               vtkColorMaps.getPresetByName(displaySetColormap.name);
           }
 
-          const voi = !volumeIndex ? viewportVoi ?? displaySetVOI : displaySetVOI;
+          const voi = !volumeIndex ? (viewportVoi ?? displaySetVOI) : displaySetVOI;
 
           return {
             viewportId,
@@ -280,7 +281,7 @@ const ViewportWindowLevel = ({
         return;
       }
 
-      const viewportVolumeIds = viewport.getActors().map(actor => actor.uid);
+      const viewportVolumeIds = viewport.getActors().map(actor => actor.referencedId);
       const viewports = getViewportsWithVolumeIds(viewportVolumeIds);
 
       viewports.forEach(vp => {
@@ -291,45 +292,45 @@ const ViewportWindowLevel = ({
     [getViewportsWithVolumeIds, cornerstoneViewportService]
   );
 
-  // Listen to windowLevels changes and caches all the new ones
+  // New function to handle image volume loading completion
+  const handleImageVolumeLoadingCompleted = useCallback(() => {
+    setIsLoading(false);
+    updateViewportHistograms();
+  }, [updateViewportHistograms]);
+
+  // Listen to cornerstone events and set up interval for histogram updates
   useEffect(() => {
-    const newVolumeHistograms = windowLevels
-      .filter(windowLevel => !cachedHistograms[windowLevel.volumeId] && windowLevel.histogram)
-      .reduce((volumeHistograms, windowLevel) => {
-        // If the histogram exists, add it to the volumeHistograms object
-        if (windowLevel?.histogram) {
-          volumeHistograms[windowLevel.volumeId] = windowLevel.histogram;
-        }
-        return volumeHistograms;
-      }, {});
-
-    if (Object.keys(newVolumeHistograms).length) {
-      setCachedHistograms(prev => ({ ...prev, ...newVolumeHistograms }));
-    }
-  }, [windowLevels, cachedHistograms]);
-
-  // Updates the histogram when the viewport index prop has changed
-  useEffect(() => updateViewportHistograms(), [viewportId, updateViewportHistograms]);
-
-  // Listen to cornerstone events on "eventTarget" and at the document level
-  useEffect(() => {
-    eventTarget.addEventListener(Events.IMAGE_VOLUME_LOADING_COMPLETED, updateViewportHistograms);
-
     document.addEventListener(Events.VOI_MODIFIED, debouncedHandleCornerstoneVOIModified, true);
+    eventTarget.addEventListener(
+      Events.IMAGE_VOLUME_LOADING_COMPLETED,
+      handleImageVolumeLoadingCompleted
+    );
+
+    const intervalId = setInterval(() => {
+      if (isLoading) {
+        console.debug('Updating histogram while loading...');
+        updateViewportHistograms();
+      }
+    }, 1000);
 
     return () => {
-      eventTarget.removeEventListener(
-        Events.IMAGE_VOLUME_LOADING_COMPLETED,
-        updateViewportHistograms
-      );
-
       document.removeEventListener(
         Events.VOI_MODIFIED,
         debouncedHandleCornerstoneVOIModified,
         true
       );
+      eventTarget.removeEventListener(
+        Events.IMAGE_VOLUME_LOADING_COMPLETED,
+        handleImageVolumeLoadingCompleted
+      );
+      clearInterval(intervalId);
     };
-  }, [updateViewportHistograms, debouncedHandleCornerstoneVOIModified]);
+  }, [
+    updateViewportHistograms,
+    debouncedHandleCornerstoneVOIModified,
+    handleImageVolumeLoadingCompleted,
+    isLoading,
+  ]);
 
   // Updates the viewport when the context of the viewport has changed. This is
   // necessary when moving across different stages because the viewport index

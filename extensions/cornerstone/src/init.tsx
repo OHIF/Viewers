@@ -142,13 +142,6 @@ export default async function init({
     clearOnModeExit: true,
   });
 
-  cornerstoneTools.segmentation.config.style.setGlobalLabelmapStyle({
-    fillAlpha: 0.5,
-    fillAlphaInactive: 0.2,
-    outlineOpacity: 1,
-    outlineOpacityInactive: 0.65,
-  });
-
   cornerstoneTools.segmentation.config.style.setGlobalContourStyle({
     renderFill: false,
   });
