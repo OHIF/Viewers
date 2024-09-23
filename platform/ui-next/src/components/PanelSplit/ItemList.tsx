@@ -49,7 +49,7 @@ const ItemList: React.FC<ItemListProps> = ({
                   onAddItem(item.id);
                 }}
                 aria-label={`Add ${item.name}`}
-                className="mr-1"
+                className="ml-1 mr-1"
               >
                 {/* Plus Icon */}
                 <svg
@@ -81,12 +81,12 @@ const ItemList: React.FC<ItemListProps> = ({
             {item.availability === 'available' ? (
               // Non-clickable row for 'available' items
               <div
-                className={`text-foreground flex h-7 w-full flex-grow items-center justify-between rounded p-3 text-sm ${
+                className={`text-foreground flex h-7 w-full flex-grow items-center justify-between rounded p-1 text-sm ${
                   item.id === selectedItem?.id ? 'bg-primary/20' : 'bg-muted'
                 } focus-visible:ring-ring focus-visible:outline-none focus-visible:ring-1`}
               >
                 <span>{item.name}</span>
-                <span className="text-muted-foreground ml-2 text-xs">Available</span>
+                <span className="text-muted-foreground ml-2 mr-2 text-xs">Available</span>
               </div>
             ) : (
               // Clickable button for 'loaded' and 'not available' items
