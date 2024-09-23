@@ -7,7 +7,7 @@ const { Provider } = OnboardingProviderContext;
 
 export const useOnboardingProvider = () => useContext(OnboardingProviderContext);
 
-const ShepherdController = ({ service }: { service: any }) => {
+const ShepherdController = () => {
   const Shepherd = useShepherd();
   const [tour, setTour] = useState(null);
 
@@ -46,32 +46,14 @@ const ShepherdController = ({ service }: { service: any }) => {
     }
   }, [tour]);
 
-  useEffect(() => {
-    if (service) {
-      service.setServiceImplementation({
-        startTour,
-        exitTour,
-        nextStep,
-        previousStep,
-        initializeTour,
-      });
-    }
-  }, [service, startTour, exitTour, nextStep, previousStep, initializeTour]);
-
   return null;
 };
 
-const OnboardingProvider = ({
-  children,
-  service = null,
-}: {
-  children: React.ReactNode;
-  service: any;
-}) => {
+const OnboardingProvider = ({ children }: { children: React.ReactNode }) => {
   return (
     <ShepherdJourneyProvider>
       <Provider value={{}}>
-        <ShepherdController service={service} />
+        <ShepherdController />
         {children}
       </Provider>
     </ShepherdJourneyProvider>
