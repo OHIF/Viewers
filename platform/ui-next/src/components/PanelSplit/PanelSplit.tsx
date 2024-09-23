@@ -323,6 +323,7 @@ const PanelSplit: React.FC = () => {
         <PropertiesPanel
           selectedItem={selectedItem}
           onUpdateProperty={handleUpdateProperty}
+          onAddItem={handleAddItem} // Pass the add handler
         />
       </ScrollArea>
     </div>

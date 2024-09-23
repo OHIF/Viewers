@@ -7,22 +7,29 @@ import { Slider } from '../Slider';
 import { Input } from '../Input';
 import { Switch } from '../Switch';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '../Tabs';
+import { Button } from '../Button'; // Importing Button
 
 interface PropertiesPanelProps {
   selectedItem: Item | null;
   onUpdateProperty: (itemId: number, propertyKey: string, newValue: any) => void;
+  onAddItem: (itemId: number) => void; // New prop for adding item
 }
 
 /**
  * PropertiesPanel Component
  *
  * Displays and manages the properties of the selected item.
- * Renders different input components based on the property's type.
+ * Renders different content based on the item's availability state.
  *
  * @param selectedItem - The currently selected item.
  * @param onUpdateProperty - Callback to handle property updates.
+ * @param onAddItem - Callback to handle adding the item.
  */
-const PropertiesPanel: React.FC<PropertiesPanelProps> = ({ selectedItem, onUpdateProperty }) => {
+const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
+  selectedItem,
+  onUpdateProperty,
+  onAddItem,
+}) => {
   if (!selectedItem) {
     return (
       <div className="text-gray-500">
@@ -31,218 +38,241 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({ selectedItem, onUpdat
     );
   }
 
-  // If the item's availability is not 'loaded', disable property editing
-  if (selectedItem.availability !== 'loaded') {
+  if (selectedItem.availability === 'available') {
     return (
-      <div className="text-gray-500">
-        <p>Properties are only editable for loaded items.</p>
+      <div className="flex flex-col items-center p-1.5 text-sm">
+        {/* "Add this item" Button */}
+        <Button
+          onClick={() => onAddItem(selectedItem.id)}
+          className="mb-4 mt-2"
+          variant="default"
+        >
+          Add this item
+        </Button>
+
+        {/* Divider */}
+        <div className="border-primary/30 mb-2 w-full border-b"></div>
+
+        {/* Series Name */}
+        <div className="text-foreground w-full text-left">
+          Series: <span className="text-muted-foreground">{selectedItem.series}</span>
+        </div>
       </div>
     );
   }
 
-  /**
-   * Handles changes to a property's value.
-   *
-   * @param property - The property being updated.
-   * @param newValue - The new value for the property.
-   */
-  const handleChange = (property: Property, newValue: any) => {
-    console.log(`Updating property '${property.key}' to`, newValue); // Debug log
-    onUpdateProperty(selectedItem.id, property.key, newValue);
-  };
+  if (selectedItem.availability === 'loaded') {
+    /**
+     * Handles changes to a property's value.
+     *
+     * @param property - The property being updated.
+     * @param newValue - The new value for the property.
+     */
+    const handleChange = (property: Property, newValue: any) => {
+      console.log(`Updating property '${property.key}' to`, newValue); // Debug log
+      onUpdateProperty(selectedItem.id, property.key, newValue);
+    };
 
-  // Determine if the selected item is the master
-  const isMaster = selectedItem.controlsAll;
+    // Determine if the selected item is the master
+    const isMaster = selectedItem.controlsAll;
 
-  /**
-   * Handles changes to the display mode via Tabs.
-   *
-   * @param newDisplayMode - The new display mode selected.
-   */
-  const handleDisplayModeChange = (newDisplayMode: DisplayMode) => {
-    console.log(`Display mode changed to`, newDisplayMode); // Debug log
-    onUpdateProperty(selectedItem.id, 'displayMode', newDisplayMode);
-  };
+    /**
+     * Handles changes to the display mode via Tabs.
+     *
+     * @param newDisplayMode - The new display mode selected.
+     */
+    const handleDisplayModeChange = (newDisplayMode: DisplayMode) => {
+      console.log(`Display mode changed to`, newDisplayMode); // Debug log
+      onUpdateProperty(selectedItem.id, 'displayMode', newDisplayMode);
+    };
 
-  return (
-    <div className="p-1.5 text-sm">
-      <div className="mb-4 flex items-center justify-between">
-        <div className="text-foreground text-sm font-semibold">
-          Properties <br />
-          <span className="text-muted-foreground font-normal">{selectedItem.name}</span>
-        </div>
-
-        {/* Tabs component for Outline and Fill control */}
-        <Tabs
-          value={selectedItem.displayMode}
-          onValueChange={handleDisplayModeChange}
-          className="ml-auto"
-        >
-          <TabsList>
-            <TabsTrigger value="Fill & Outline">
-              {/* SVG Icon for Fill & Outline */}
-              <svg
-                width="20px"
-                height="20px"
-                viewBox="0 0 20 20"
-              >
-                <g
-                  id="view-outline-fill"
-                  stroke="none"
-                  strokeWidth="1"
-                  fill="none"
-                  fillRule="evenodd"
-                >
-                  <g id="Group-13">
-                    <rect
-                      id="Rectangle"
-                      x="0"
-                      y="0"
-                      width="20"
-                      height="20"
-                    ></rect>
-                    <rect
-                      id="Rectangle"
-                      stroke="#348CFD"
-                      x="2.5"
-                      y="2.5"
-                      width="15"
-                      height="15"
-                      rx="1"
-                    ></rect>
-                    <rect
-                      id="Rectangle"
-                      fill="#348CFD"
-                      x="4.5"
-                      y="4.5"
-                      width="11"
-                      height="11"
-                      rx="1"
-                    ></rect>
-                  </g>
-                </g>
-              </svg>
-            </TabsTrigger>
-
-            <TabsTrigger value="Outline Only">
-              {/* SVG Icon for Outline Only */}
-              <svg
-                width="20px"
-                height="20px"
-                viewBox="0 0 20 20"
-              >
-                <g
-                  id="view-outline"
-                  stroke="none"
-                  strokeWidth="1"
-                  fill="none"
-                  fillRule="evenodd"
-                >
-                  <g id="Group-13">
-                    <rect
-                      id="Rectangle"
-                      x="0"
-                      y="0"
-                      width="20"
-                      height="20"
-                    ></rect>
-                    <rect
-                      id="Rectangle"
-                      stroke="#348CFD"
-                      x="2.5"
-                      y="2.5"
-                      width="15"
-                      height="15"
-                      rx="1"
-                    ></rect>
-                  </g>
-                </g>
-              </svg>
-            </TabsTrigger>
-
-            <TabsTrigger value="Fill Only">
-              {/* SVG Icon for Fill Only */}
-              <svg
-                width="20px"
-                height="20px"
-                viewBox="0 0 20 20"
-                version="1.1"
-              >
-                <g
-                  id="view-fill"
-                  stroke="none"
-                  strokeWidth="1"
-                  fill="none"
-                  fillRule="evenodd"
-                >
-                  <g id="Group-13">
-                    <rect
-                      id="Rectangle"
-                      x="0"
-                      y="0"
-                      width="20"
-                      height="20"
-                    ></rect>
-                    <rect
-                      id="Rectangle"
-                      fill="#348CFD"
-                      x="3"
-                      y="3"
-                      width="14"
-                      height="14"
-                      rx="1"
-                    ></rect>
-                  </g>
-                </g>
-              </svg>
-            </TabsTrigger>
-          </TabsList>
-
-          {/* Display dynamic text under the tabs */}
-          <div className="mt-2">
-            <TabsContent value="Fill & Outline">
-              <p className="text-muted-foreground text-xxs text-center">Fill & Outline</p>
-            </TabsContent>
-            <TabsContent value="Outline Only">
-              <p className="text-muted-foreground text-xxs text-center">Outline Only</p>
-            </TabsContent>
-            <TabsContent value="Fill Only">
-              <p className="text-muted-foreground text-xxs text-center">Fill Only</p>
-            </TabsContent>
+    return (
+      <div className="p-1.5 text-sm">
+        <div className="mb-4 flex items-center justify-between">
+          <div className="text-foreground text-sm font-semibold">
+            Properties <br />
+            <span className="text-muted-foreground font-normal">{selectedItem.name}</span>
           </div>
-        </Tabs>
-      </div>
 
-      {/* Properties List */}
-      <div className="mb-3 space-y-3">
-        {selectedItem.properties.map(prop => (
-          <div
-            key={prop.key}
-            className="flex items-center justify-between space-x-4"
+          {/* Tabs component for Outline and Fill control */}
+          <Tabs
+            value={selectedItem.displayMode}
+            onValueChange={handleDisplayModeChange}
+            className="ml-auto"
           >
-            {/* Label takes up space and doesn't wrap */}
-            <Label
-              htmlFor={prop.key}
-              className="flex-grow whitespace-nowrap"
-            >
-              {prop.label}
-            </Label>
+            <TabsList>
+              <TabsTrigger value="Fill & Outline">
+                {/* SVG Icon for Fill & Outline */}
+                <svg
+                  width="20px"
+                  height="20px"
+                  viewBox="0 0 20 20"
+                >
+                  <g
+                    id="view-outline-fill"
+                    stroke="none"
+                    strokeWidth="1"
+                    fill="none"
+                    fillRule="evenodd"
+                  >
+                    <g id="Group-13">
+                      <rect
+                        id="Rectangle"
+                        x="0"
+                        y="0"
+                        width="20"
+                        height="20"
+                      ></rect>
+                      <rect
+                        id="Rectangle"
+                        stroke="#348CFD"
+                        x="2.5"
+                        y="2.5"
+                        width="15"
+                        height="15"
+                        rx="1"
+                      ></rect>
+                      <rect
+                        id="Rectangle"
+                        fill="#348CFD"
+                        x="4.5"
+                        y="4.5"
+                        width="11"
+                        height="11"
+                        rx="1"
+                      ></rect>
+                    </g>
+                  </g>
+                </svg>
+              </TabsTrigger>
 
-            {/* Flex container for input elements, with spacing */}
-            <div className="flex items-center space-x-3">
-              {renderPropertyInput(prop, handleChange)}
+              <TabsTrigger value="Outline Only">
+                {/* SVG Icon for Outline Only */}
+                <svg
+                  width="20px"
+                  height="20px"
+                  viewBox="0 0 20 20"
+                >
+                  <g
+                    id="view-outline"
+                    stroke="none"
+                    strokeWidth="1"
+                    fill="none"
+                    fillRule="evenodd"
+                  >
+                    <g id="Group-13">
+                      <rect
+                        id="Rectangle"
+                        x="0"
+                        y="0"
+                        width="20"
+                        height="20"
+                      ></rect>
+                      <rect
+                        id="Rectangle"
+                        stroke="#348CFD"
+                        x="2.5"
+                        y="2.5"
+                        width="15"
+                        height="15"
+                        rx="1"
+                      ></rect>
+                    </g>
+                  </g>
+                </svg>
+              </TabsTrigger>
+
+              <TabsTrigger value="Fill Only">
+                {/* SVG Icon for Fill Only */}
+                <svg
+                  width="20px"
+                  height="20px"
+                  viewBox="0 0 20 20"
+                  version="1.1"
+                >
+                  <g
+                    id="view-fill"
+                    stroke="none"
+                    strokeWidth="1"
+                    fill="none"
+                    fillRule="evenodd"
+                  >
+                    <g id="Group-13">
+                      <rect
+                        id="Rectangle"
+                        x="0"
+                        y="0"
+                        width="20"
+                        height="20"
+                      ></rect>
+                      <rect
+                        id="Rectangle"
+                        fill="#348CFD"
+                        x="3"
+                        y="3"
+                        width="14"
+                        height="14"
+                        rx="1"
+                      ></rect>
+                    </g>
+                  </g>
+                </svg>
+              </TabsTrigger>
+            </TabsList>
+
+            {/* Display dynamic text under the tabs */}
+            <div className="mt-2">
+              <TabsContent value="Fill & Outline">
+                <p className="text-muted-foreground text-xxs text-center">Fill & Outline</p>
+              </TabsContent>
+              <TabsContent value="Outline Only">
+                <p className="text-muted-foreground text-xxs text-center">Outline Only</p>
+              </TabsContent>
+              <TabsContent value="Fill Only">
+                <p className="text-muted-foreground text-xxs text-center">Fill Only</p>
+              </TabsContent>
             </div>
-          </div>
-        ))}
-      </div>
-
-      {/* Conditionally render the details section for non-master items */}
-      {!isMaster && (
-        <div className="text-foreground mb-3">
-          <div className="border-primary/30 mb-2 w-full border-b"></div>
-          Series: <span className="text-muted-foreground">{selectedItem.series}</span>
+          </Tabs>
         </div>
-      )}
+
+        {/* Properties List */}
+        <div className="mb-3 space-y-3">
+          {selectedItem.properties.map(prop => (
+            <div
+              key={prop.key}
+              className="flex items-center justify-between space-x-4"
+            >
+              {/* Label takes up space and doesn't wrap */}
+              <Label
+                htmlFor={prop.key}
+                className="flex-grow whitespace-nowrap"
+              >
+                {prop.label}
+              </Label>
+
+              {/* Flex container for input elements, with spacing */}
+              <div className="flex items-center space-x-3">
+                {renderPropertyInput(prop, handleChange)}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Conditionally render the details section for non-master items */}
+        {!isMaster && (
+          <div className="text-foreground mb-3">
+            <div className="border-primary/30 mb-2 w-full border-b"></div>
+            Series: <span className="text-muted-foreground">{selectedItem.series}</span>
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  // For other availability states, you can add additional conditions if needed
+  return (
+    <div className="text-gray-500">
+      <p>No properties available for the selected item.</p>
     </div>
   );
 };

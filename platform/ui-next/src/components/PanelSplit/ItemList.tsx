@@ -77,142 +77,134 @@ const ItemList: React.FC<ItemListProps> = ({
               </Button>
             )}
 
-            {/* Conditional Rendering Based on Availability */}
-            {item.availability === 'available' ? (
-              // Non-clickable row for 'available' items
-              <div
-                className={`text-foreground flex h-7 w-full flex-grow items-center justify-between rounded p-1 text-sm ${
-                  item.id === selectedItem?.id ? 'bg-primary/20' : 'bg-muted'
-                } focus-visible:ring-ring focus-visible:outline-none focus-visible:ring-1`}
-              >
-                <span>{item.name}</span>
-                <span className="text-muted-foreground ml-2 mr-2 text-xs">Available</span>
-              </div>
-            ) : (
-              // Clickable button for 'loaded' and 'not available' items
-              <button
-                onClick={() => onSelectItem(item)}
-                className={`text-foreground flex h-7 w-full flex-grow cursor-pointer items-center justify-between rounded p-3 text-sm ${
-                  item.id === selectedItem?.id ? 'bg-primary/20' : 'bg-muted hover:bg-primary/30'
-                } focus-visible:ring-ring focus-visible:outline-none focus-visible:ring-1`}
-                aria-pressed={item.id === selectedItem?.id}
-              >
-                <span>{item.name}</span>
+            {/* All items are now rendered as clickable rows */}
+            <button
+              onClick={() => onSelectItem(item)}
+              className={`text-foreground flex h-7 w-full flex-grow cursor-pointer items-center justify-between rounded p-1 text-sm ${
+                item.id === selectedItem?.id ? 'bg-primary/20' : 'bg-muted hover:bg-primary/30'
+              } focus-visible:ring-ring focus-visible:outline-none focus-visible:ring-1`}
+              aria-pressed={item.id === selectedItem?.id}
+            >
+              <span className="ml-1">{item.name}</span>
 
-                {/* Conditionally render the visibility icon for 'loaded' items */}
-                {item.availability === 'loaded' && (
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={e => {
-                      e.stopPropagation(); // Prevent parent onClick
-                      onToggleVisibility(item.id);
-                    }}
-                    aria-label={
-                      item.visibility === 'Visible' ? `Hide ${item.name}` : `Show ${item.name}`
-                    }
-                  >
-                    {item.visibility === 'Visible' ? (
-                      // SVG Icon for "Visible"
-                      <svg
-                        width="24px"
-                        height="24px"
-                        viewBox="0 0 24 24"
+              {/* Conditionally render the "Available" label for 'available' items */}
+              {item.availability === 'available' && (
+                <span className="text-muted-foreground text-xs">Available</span>
+              )}
+
+              {/* Conditionally render the visibility icon for 'loaded' items */}
+              {item.availability === 'loaded' && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={e => {
+                    e.stopPropagation(); // Prevent parent onClick
+                    onToggleVisibility(item.id);
+                  }}
+                  aria-label={
+                    item.visibility === 'Visible' ? `Hide ${item.name}` : `Show ${item.name}`
+                  }
+                >
+                  {item.visibility === 'Visible' ? (
+                    // SVG Icon for "Visible"
+                    <svg
+                      width="24px"
+                      height="24px"
+                      viewBox="0 0 24 24"
+                    >
+                      <g
+                        stroke="none"
+                        strokeWidth="1"
+                        fill="none"
+                        fillRule="evenodd"
                       >
-                        <g
-                          stroke="none"
-                          strokeWidth="1"
-                          fill="none"
-                          fillRule="evenodd"
-                        >
-                          <rect
-                            x="0"
-                            y="0"
-                            width="24"
-                            height="24"
-                          ></rect>
-                          <circle
-                            stroke="#348CFD"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            cx="12.4986195"
-                            cy="11.8041442"
-                            r="2.58684689"
-                          ></circle>
-                          <path
-                            d="M20.906611,11.5617197 C20.0470387,10.5861089 16.6094888,7 12.4986195,7
-                               C8.38775024,7 4.95020027,10.5861089 4.090628,11.5617197
-                               C3.96979067,11.7007491 3.96979067,11.9075393 4.090628,12.0465687
-                               C4.95020027,13.0221796 8.38775024,16.6082885 12.4986195,16.6082885
-                               C16.6094888,16.6082885 20.0470387,13.0221796 20.906611,12.0465687
-                               C21.0274483,11.9075393 21.0274483,11.7007491 20.906611,11.5617197 Z"
-                            stroke="#348CFD"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          ></path>
-                        </g>
-                      </svg>
-                    ) : (
-                      // SVG Icon for "Hidden"
-                      <svg
-                        width="24px"
-                        height="24px"
-                        viewBox="0 0 24 24"
+                        <rect
+                          x="0"
+                          y="0"
+                          width="24"
+                          height="24"
+                        ></rect>
+                        <circle
+                          stroke="#348CFD"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          cx="12.4986195"
+                          cy="11.8041442"
+                          r="2.58684689"
+                        ></circle>
+                        <path
+                          d="M20.906611,11.5617197 C20.0470387,10.5861089 16.6094888,7 12.4986195,7
+                             C8.38775024,7 4.95020027,10.5861089 4.090628,11.5617197
+                             C3.96979067,11.7007491 3.96979067,11.9075393 4.090628,12.0465687
+                             C4.95020027,13.0221796 8.38775024,16.6082885 12.4986195,16.6082885
+                             C16.6094888,16.6082885 20.0470387,13.0221796 20.906611,12.0465687
+                             C21.0274483,11.9075393 21.0274483,11.7007491 20.906611,11.5617197 Z"
+                          stroke="#348CFD"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        ></path>
+                      </g>
+                    </svg>
+                  ) : (
+                    // SVG Icon for "Hidden"
+                    <svg
+                      width="24px"
+                      height="24px"
+                      viewBox="0 0 24 24"
+                    >
+                      <g
+                        stroke="none"
+                        strokeWidth="1"
+                        fill="none"
+                        fillRule="evenodd"
                       >
-                        <g
-                          stroke="none"
-                          strokeWidth="1"
-                          fill="none"
-                          fillRule="evenodd"
-                        >
-                          <path
-                            d="M18.0567826,8.96286957
-                               C19.1471229,9.75269568 20.1356859,10.674229 21,11.7065217
-                               C21,11.7065217 17.1949565,16.5108696 12.5,16.5108696
-                               C11.7479876,16.5066962 11.0007435,16.3911225 10.2826087,16.167913"
-                            stroke="#348CFD"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          ></path>
-                          <path
-                            d="M6.93286957,14.4413043
-                               C5.84666081,13.6535964 4.86162018,12.7350857 4,11.7065217
-                               C4,11.7065217 7.80504348,6.90217391 12.5,6.90217391
-                               C13.1235541,6.90480509 13.7443251,6.98550531 14.3478261,7.1423913"
-                            stroke="#348CFD"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          ></path>
-                          <path
-                            d="M9.54347826,11.7065217
-                               C9.54347826,10.0736799 10.8671581,8.75 12.5,8.75"
-                            stroke="#348CFD"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          ></path>
-                          <path
-                            d="M15.4565217,11.7065217
-                               C15.4565217,13.3393636 14.1328419,14.6630435 12.5,14.6630435"
-                            stroke="#348CFD"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          ></path>
-                          <line
-                            x1="19.7065217"
-                            y1="4.5"
-                            x2="5.29347826"
-                            y2="18.9130435"
-                            stroke="#348CFD"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          ></line>
-                        </g>
-                      </svg>
-                    )}
-                  </Button>
-                )}
-              </button>
-            )}
+                        <path
+                          d="M18.0567826,8.96286957
+                             C19.1471229,9.75269568 20.1356859,10.674229 21,11.7065217
+                             C21,11.7065217 17.1949565,16.5108696 12.5,16.5108696
+                             C11.7479876,16.5066962 11.0007435,16.3911225 10.2826087,16.167913"
+                          stroke="#348CFD"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        ></path>
+                        <path
+                          d="M6.93286957,14.4413043
+                             C5.84666081,13.6535964 4.86162018,12.7350857 4,11.7065217
+                             C4,11.7065217 7.80504348,6.90217391 12.5,6.90217391
+                             C13.1235541,6.90480509 13.7443251,6.98550531 14.3478261,7.1423913"
+                          stroke="#348CFD"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        ></path>
+                        <path
+                          d="M9.54347826,11.7065217
+                             C9.54347826,10.0736799 10.8671581,8.75 12.5,8.75"
+                          stroke="#348CFD"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        ></path>
+                        <path
+                          d="M15.4565217,11.7065217
+                             C15.4565217,13.3393636 14.1328419,14.6630435 12.5,14.6630435"
+                          stroke="#348CFD"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        ></path>
+                        <line
+                          x1="19.7065217"
+                          y1="4.5"
+                          x2="5.29347826"
+                          y2="18.9130435"
+                          stroke="#348CFD"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        ></line>
+                      </g>
+                    </svg>
+                  )}
+                </Button>
+              )}
+            </button>
           </div>
         </li>
       ))}
