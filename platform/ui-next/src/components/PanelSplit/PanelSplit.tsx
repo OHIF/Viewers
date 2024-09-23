@@ -1,5 +1,3 @@
-// src/components/PanelSplit/PanelSplit.tsx
-
 import React, { useState, useEffect } from 'react';
 import ItemList from './ItemList';
 import PropertiesPanel from './PropertiesPanel';
@@ -308,7 +306,7 @@ const PanelSplit: React.FC = () => {
   return (
     <div className="flex h-full w-[262px] flex-col">
       {/* Top: List of Selectable Items */}
-      <ScrollArea className="bg-muted h-[132px] border-gray-300 p-1">
+      <ScrollArea className="bg-muted h-[132px] rounded-t border-gray-300 p-1">
         <ItemList
           items={items}
           onSelectItem={handleSelectItem}
@@ -319,7 +317,7 @@ const PanelSplit: React.FC = () => {
       </ScrollArea>
 
       {/* Bottom: Properties of Selected Item */}
-      <ScrollArea className="bg-popover max-h-[400px] flex-grow overflow-auto p-1">
+      <ScrollArea className="bg-popover max-h-[400px] flex-grow overflow-auto rounded p-1">
         <PropertiesPanel
           selectedItem={selectedItem}
           onUpdateProperty={handleUpdateProperty}
