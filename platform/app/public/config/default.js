@@ -1,3 +1,5 @@
+import { tours } from './tours/tours';
+
 /** @type {AppTypes.Config} */
 
 window.config = {
@@ -292,22 +294,5 @@ window.config = {
     },
   ],
 
-  tours: [
-    {
-      route: '/viewer',
-      steps: [
-        {
-          id: 'example-step',
-          text: 'This step is attached to the bottom of the <code>.example-css-selector</code> element.',
-          attachTo: {
-            element: '[data-cy="WindowLevel"]',
-            on: 'bottom',
-          },
-          classes: 'example-step-extra-class',
-          buttons: [],
-        },
-      ],
-      tourOptions: {},
-    },
-  ],
+  tours,
 };

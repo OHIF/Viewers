@@ -14,7 +14,6 @@ import {
   PanelService,
   UIDialogService,
   UIViewportDialogService,
-  OnboardingService,
 } from '../services';
 
 /**
@@ -37,7 +36,6 @@ interface Services {
   uiDialogService?: UIDialogService;
   uiViewportDialogService?: UIViewportDialogService;
   panelService?: PanelService;
-  onboardingService?: OnboardingService;
 }
 
 export default Services;

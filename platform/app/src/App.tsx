@@ -116,7 +116,7 @@ function App({
     [SnackbarProvider, { service: uiNotificationService }],
     [DialogProvider, { service: uiDialogService }],
     [ModalProvider, { service: uiModalService, modal: Modal }],
-    [OnboardingProvider, { service: onboardingService }],
+    [OnboardingProvider],
   ];
 
   // Loop through and register each of the service providers registered with the ServiceProvidersManager.
