@@ -10,6 +10,7 @@ export interface Property {
 
 export type DisplayMode = 'Fill & Outline' | 'Outline Only' | 'Fill Only';
 export type VisibilityState = 'Visible' | 'Hidden';
+export type AvailabilityState = 'loaded' | 'available' | 'not available';
 
 export interface Item {
   id: number;
@@ -17,6 +18,7 @@ export interface Item {
   controlsAll?: boolean; // Indicates if the item is the master
   series?: string; // Optional, only for non-master items
   displayMode: DisplayMode; // Existing property for display mode
-  visibility: VisibilityState; // New property for visibility
+  visibility: VisibilityState; // Existing property for visibility
+  availability: AvailabilityState; // New property for availability
   properties: Property[];
 }

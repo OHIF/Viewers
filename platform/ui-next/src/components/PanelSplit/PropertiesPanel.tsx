@@ -1,7 +1,7 @@
 // src/components/PanelSplit/PropertiesPanel.tsx
 
 import React from 'react';
-import { Item, Property, DisplayMode } from './types';
+import { Item, Property, DisplayMode, AvailabilityState } from './types';
 import { Label } from '../Label';
 import { Slider } from '../Slider';
 import { Input } from '../Input';
@@ -27,6 +27,15 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({ selectedItem, onUpdat
     return (
       <div className="text-gray-500">
         <p>No item selected.</p>
+      </div>
+    );
+  }
+
+  // If the item's availability is not 'loaded', disable property editing
+  if (selectedItem.availability !== 'loaded') {
+    return (
+      <div className="text-gray-500">
+        <p>Properties are only editable for loaded items.</p>
       </div>
     );
   }

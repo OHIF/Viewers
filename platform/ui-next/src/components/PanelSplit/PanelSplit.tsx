@@ -1,7 +1,9 @@
+// src/components/PanelSplit/PanelSplit.tsx
+
 import React, { useState, useEffect } from 'react';
 import ItemList from './ItemList';
 import PropertiesPanel from './PropertiesPanel';
-import { Item, DisplayMode, VisibilityState } from './types';
+import { Item, DisplayMode, VisibilityState, AvailabilityState } from './types';
 import { ScrollArea } from '../ScrollArea'; // Importing ScrollArea
 
 const PanelSplit: React.FC = () => {
@@ -13,6 +15,7 @@ const PanelSplit: React.FC = () => {
       controlsAll: true, // Master item
       displayMode: 'Fill & Outline', // Default display mode
       visibility: 'Visible', // Default visibility
+      availability: 'loaded', // Set to 'loaded'
       properties: [
         {
           key: 'opacity',
@@ -46,6 +49,7 @@ const PanelSplit: React.FC = () => {
       series: 'Series A',
       displayMode: 'Fill & Outline', // Default display mode
       visibility: 'Visible', // Default visibility
+      availability: 'loaded', // Set to 'loaded'
       properties: [
         {
           key: 'opacity',
@@ -73,6 +77,7 @@ const PanelSplit: React.FC = () => {
       series: 'Series B',
       displayMode: 'Fill & Outline', // Default display mode
       visibility: 'Visible', // Default visibility
+      availability: 'loaded', // Set to 'loaded'
       properties: [
         {
           key: 'opacity',
@@ -88,6 +93,34 @@ const PanelSplit: React.FC = () => {
           label: 'Outline',
           type: 'slider',
           value: 7,
+          min: 1,
+          max: 10,
+          step: 1,
+        },
+      ],
+    },
+    {
+      id: 4,
+      name: 'List item 3',
+      series: 'Series C',
+      displayMode: 'Fill & Outline', // Default display mode
+      visibility: 'Visible', // Visibility will not be shown initially
+      availability: 'available', // Set to 'available'
+      properties: [
+        {
+          key: 'opacity',
+          label: 'Opacity',
+          type: 'slider',
+          value: 80,
+          min: 1,
+          max: 100,
+          step: 1,
+        },
+        {
+          key: 'outline',
+          label: 'Outline',
+          type: 'slider',
+          value: 8,
           min: 1,
           max: 10,
           step: 1,
@@ -201,6 +234,16 @@ const PanelSplit: React.FC = () => {
         setSelectedItem(prevSelected =>
           prevSelected ? { ...prevSelected, visibility: newValue } : prevSelected
         );
+      } else if (propertyKey === 'availability') {
+        // Update availability only for the selected item
+        setItems(prevItems =>
+          prevItems.map(item => (item.id === itemId ? { ...item, availability: newValue } : item))
+        );
+
+        // Update selectedItem
+        setSelectedItem(prevSelected =>
+          prevSelected ? { ...prevSelected, availability: newValue } : prevSelected
+        );
       } else {
         // Update only the selected item's properties
         setItems(prevItems =>
@@ -253,6 +296,15 @@ const PanelSplit: React.FC = () => {
     }
   };
 
+  /**
+   * Handles adding an item (changing availability from 'available' to 'loaded').
+   *
+   * @param itemId - The ID of the item being added.
+   */
+  const handleAddItem = (itemId: number) => {
+    handleUpdateProperty(itemId, 'availability', 'loaded');
+  };
+
   return (
     <div className="flex h-full w-[262px] flex-col">
       {/* Top: List of Selectable Items */}
@@ -262,6 +314,7 @@ const PanelSplit: React.FC = () => {
           onSelectItem={handleSelectItem}
           selectedItem={selectedItem}
           onToggleVisibility={handleToggleVisibility} // Pass the toggle handler
+          onAddItem={handleAddItem} // Pass the add handler
         />
       </ScrollArea>
 
