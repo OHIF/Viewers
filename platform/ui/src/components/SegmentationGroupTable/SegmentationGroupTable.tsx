@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { PanelSection } from '../../components';
-import SegmentationConfig from './SegmentationConfig';
 import SegmentationDropDownRow from './SegmentationDropDownRow';
 import NoSegmentationRow from './NoSegmentationRow';
 import AddSegmentRow from './AddSegmentRow';
@@ -9,7 +8,6 @@ import { useTranslation } from 'react-i18next';
 
 type SegmentationGroupTableProps = {
   segmentationsInfo: AppTypes.Segmentation.SegmentationInfo[];
-  segmentationConfig?: SegmentationConfig;
   disableEditing?: boolean;
   showAddSegmentation?: boolean;
   showAddSegment?: boolean;
@@ -41,7 +39,6 @@ type SegmentationGroupTableProps = {
 
 const SegmentationGroupTable: React.FC<SegmentationGroupTableProps> = ({
   segmentationsInfo = [],
-  segmentationConfig,
   disableEditing = false,
   showAddSegmentation = true,
   showAddSegment = true,
@@ -61,17 +58,9 @@ const SegmentationGroupTable: React.FC<SegmentationGroupTableProps> = ({
   onToggleSegmentVisibility = () => {},
   onToggleSegmentLock = () => {},
   onSegmentColorClick = () => {},
-  setFillAlpha = () => {},
-  setFillAlphaInactive = () => {},
-  setOutlineWidthActive = () => {},
-  setOutlineOpacityActive = () => {},
-  setRenderFill = () => {},
-  setRenderInactiveRepresentations = () => {},
-  setRenderOutline = () => {},
   addSegmentationClassName,
 }) => {
   const { t } = useTranslation('SegmentationTable');
-  const [isConfigOpen, setIsConfigOpen] = useState(false);
 
   if (!segmentationsInfo?.length) {
     return (
@@ -112,18 +101,6 @@ const SegmentationGroupTable: React.FC<SegmentationGroupTableProps> = ({
           },
         ]}
       >
-        {/* {isConfigOpen && (
-          <SegmentationConfig
-            setFillAlpha={setFillAlpha}
-            setFillAlphaInactive={setFillAlphaInactive}
-            setOutlineWidthActive={setOutlineWidthActive}
-            setOutlineOpacityActive={setOutlineOpacityActive}
-            setRenderFill={setRenderFill}
-            setRenderInactiveRepresentations={setRenderInactiveRepresentations}
-            setRenderOutline={setRenderOutline}
-            segmentationConfig={segmentationConfig}
-          />
-        )} */}
         <div className="bg-primary-dark">
           <div className="mt-1 select-none">
             <SegmentationDropDownRow

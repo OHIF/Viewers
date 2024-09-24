@@ -8,7 +8,7 @@ interface SegmentItemProps {
   label: string;
   isActive?: boolean;
   isVisible: boolean;
-  color: string;
+  color: number[];
   showDelete: boolean;
   disableEditing: boolean;
   isLocked?: boolean;

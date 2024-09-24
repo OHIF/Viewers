@@ -56,8 +56,12 @@ export default function getToolbarModule({ commandsManager, servicesManager }: w
     {
       name: 'evaluate.action.not.video',
       evaluate: ({ viewportId, button }) => {
-        if (actionsNotSupportedByVideoViewport.includes(button.id)) {
-          return getDisabledState();
+        const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
+
+        if (viewport?.type === 'video') {
+          if (actionsNotSupportedByVideoViewport.includes(button.id)) {
+            return getDisabledState();
+          }
         }
       },
     },

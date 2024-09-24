@@ -183,16 +183,6 @@ export default function PanelSegmentation({
     );
   };
 
-  const _setSegmentationConfiguration = useCallback(
-    (segmentationId, key, value) => {
-      segmentationService.setConfiguration({
-        segmentationId,
-        [key]: value,
-      });
-    },
-    [segmentationService]
-  );
-
   const onSegmentationDownload = segmentationId => {
     commandsManager.runCommand('downloadSegmentation', {
       segmentationId,
@@ -272,7 +262,6 @@ export default function PanelSegmentation({
         segmentationsInfo={segmentationsInfo}
         disableEditing={disableEditing}
         onSegmentationAdd={onSegmentationAddWrapper}
-        // addSegmentationClassName={addSegmentationClassName}
         showAddSegment={allowAddSegment}
         onSegmentationClick={onSegmentationClick}
         onSegmentationDelete={onSegmentationDelete}
@@ -289,36 +278,6 @@ export default function PanelSegmentation({
         onToggleSegmentLock={onToggleSegmentLock}
         onToggleSegmentationVisibility={onToggleSegmentationVisibility}
         showDeleteSegment={true}
-        // segmentationConfig={{ initialConfig: segmentationConfiguration }}
-        // setRenderOutline={value =>
-        //   _setSegmentationConfiguration(selectedSegmentationId, 'renderOutline', value)
-        // }
-        // setOutlineOpacityActive={value =>
-        //   _setSegmentationConfiguration(selectedSegmentationId, 'outlineOpacity', value)
-        // }
-        // setRenderFill={value =>
-        //   _setSegmentationConfiguration(selectedSegmentationId, 'renderFill', value)
-        // }
-        // setRenderInactiveRepresentations={value =>
-        //   _setSegmentationConfiguration(
-
-        //     selectedSegmentationId,
-
-        //     'renderInactiveRepresentations',
-
-        //     value
-
-        //   )
-        // }
-        // setOutlineWidthActive={value =>
-        //   _setSegmentationConfiguration(selectedSegmentationId, 'outlineWidthActive', value)
-        // }
-        // setFillAlpha={value =>
-        //   _setSegmentationConfiguration(selectedSegmentationId, 'fillAlpha', value)
-        // }
-        // setFillAlphaInactive={value =>
-        //   _setSegmentationConfiguration(selectedSegmentationId, 'fillAlphaInactive', value)
-        // }
       />
     </>
   );
