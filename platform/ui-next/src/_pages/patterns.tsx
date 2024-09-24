@@ -1,3 +1,5 @@
+// src/_pages/patterns.tsx
+
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 import '../tailwind.css';
@@ -25,12 +27,12 @@ import { Checkbox } from '../components/Checkbox';
 import { Toggle, toggleVariants } from '../components/Toggle';
 import { Slider } from '../components/Slider';
 import { ScrollArea, ScrollBar } from '../components/ScrollArea';
-import { PanelSplit } from '../components/PanelSplit';
+import { PanelSplit } from '../_prototypes/PanelSplit'; // Updated import path
 
 function Patterns() {
   return (
     <div className="my-4 mx-auto max-w-6xl py-6">
-      <div className="text-3xl"> Patterns </div>
+      <div className="text-3xl"> Patterns 1 </div>
       <PanelSplit />;
     </div>
   );

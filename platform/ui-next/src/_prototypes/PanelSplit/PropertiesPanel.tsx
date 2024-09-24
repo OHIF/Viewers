@@ -1,11 +1,11 @@
 import React from 'react';
 import { Item, Property, DisplayMode, AvailabilityState } from './types';
-import { Label } from '../Label';
-import { Slider } from '../Slider';
-import { Input } from '../Input';
-import { Switch } from '../Switch';
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '../Tabs';
-import { Button } from '../Button';
+import { Label } from '../../components/Label';
+import { Slider } from '../../components/Slider';
+import { Input } from '../../components/Input';
+import { Switch } from '../../components/Switch';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '../../components/Tabs';
+import { Button } from '../../components/Button';
 
 interface PropertiesPanelProps {
   selectedItem: Item | null;

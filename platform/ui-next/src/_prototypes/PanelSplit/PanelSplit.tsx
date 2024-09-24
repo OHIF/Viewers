@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import ItemList from './ItemList';
 import PropertiesPanel from './PropertiesPanel';
 import { Item, DisplayMode, VisibilityState, AvailabilityState } from './types';
-import { ScrollArea } from '../ScrollArea'; // Importing ScrollArea
+import { ScrollArea } from '../../components/ScrollArea';
 
 const PanelSplit: React.FC = () => {
   const [selectedItem, setSelectedItem] = useState<Item | null>(null);

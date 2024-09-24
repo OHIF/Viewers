@@ -1,8 +1,6 @@
-// src/components/PanelSplit/ItemList.tsx
-
 import React from 'react';
 import { Item, VisibilityState, AvailabilityState } from './types';
-import { Button } from '../Button';
+import { Button } from '../../components/Button'; // Updated import path
 
 interface ItemListProps {
   items: Item[];
