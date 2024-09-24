@@ -1,6 +1,6 @@
 {
   "name": "@ohif/extension-measurement-tracking",
-  "version": "3.9.0-beta.87",
+  "version": "3.9.0-beta.88",
   "description": "Tracking features and functionality for basic image viewing",
   "author": "OHIF Core Team",
   "license": "MIT",
@@ -48,7 +48,7 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.20.13",
-    "@ohif/ui": "3.9.0-beta.87",
+    "@ohif/ui": "3.9.0-beta.88",
     "@xstate/react": "^3.2.2",
     "xstate": "^4.10.0"
   }
