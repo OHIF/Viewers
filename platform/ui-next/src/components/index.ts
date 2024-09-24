@@ -29,6 +29,11 @@ import PanelSection from './PanelSection';
 import DisplaySetMessageListTooltip from './DisplaySetMessageListTooltip';
 import { Toolbox, ToolboxUI } from './Toolbox';
 
+// Prototypes
+import { PanelSplit } from '../_prototypes/PanelSplit';
+import { ItemList } from '../_prototypes/PanelSplit/ItemList';
+import { PropertiesPanel } from '../_prototypes/PanelSplit/PropertiesPanel';
+
 export {
   Button,
   buttonVariants,
@@ -71,4 +76,7 @@ export {
   DisplaySetMessageListTooltip,
   Toolbox,
   ToolboxUI,
+  PanelSplit,
+  ItemList,
+  PropertiesPanel,
 };
