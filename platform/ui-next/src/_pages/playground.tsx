@@ -18,7 +18,7 @@ import {
   SelectScrollDownButton,
 } from '../components/Select';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '../components/Tabs';
-import { Separator } from '../components/Separator';
+import Separator from '../components/Separator';
 import { Switch } from '../components/Switch';
 import { Checkbox } from '../components/Checkbox';
 import { Toggle, toggleVariants } from '../components/Toggle';
@@ -26,6 +26,7 @@ import { Slider } from '../components/Slider';
 import { ScrollArea, ScrollBar } from '../components/ScrollArea';
 
 import { BackgroundColorSelect } from '../components/BackgroundColorSelect';
+
 // import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from '../components/Tooltip';
 
 // import type { Metadata } from 'next';
