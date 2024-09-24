@@ -180,7 +180,7 @@ function CustomizableViewportOverlay({
     return {
       displaySets,
       displaySet,
-      instance: instances[imageIndex],
+      instance: instances?.[imageIndex],
       instances,
       referenceInstance,
     };

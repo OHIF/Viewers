@@ -29,6 +29,7 @@ import PanelSection from './PanelSection';
 import DisplaySetMessageListTooltip from './DisplaySetMessageListTooltip';
 import { Toolbox, ToolboxUI } from './Toolbox';
 import Select from './Select';
+import { DoubleSlider } from './DoubleSlider';
 
 export {
   Select,
@@ -73,4 +74,5 @@ export {
   DisplaySetMessageListTooltip,
   Toolbox,
   ToolboxUI,
+  DoubleSlider,
 };

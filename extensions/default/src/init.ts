@@ -119,7 +119,6 @@ const handlePETImageMetadata = ({ SeriesInstanceUID, StudyInstanceUID }) => {
 
   const imageIds = instances.map(instance => instance.imageId);
   const instanceMetadataArray = [];
-
   // try except block to prevent errors when the metadata is not correct
   try {
     imageIds.forEach(imageId => {

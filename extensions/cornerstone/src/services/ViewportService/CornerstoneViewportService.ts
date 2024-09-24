@@ -790,7 +790,7 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
       }
 
       volumesNotLoaded.forEach(volume => {
-        if (!volume.loadStatus.loading) {
+        if (!volume.loadStatus?.loading && volume.load instanceof Function) {
           volume.load();
         }
       });

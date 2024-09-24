@@ -34,6 +34,7 @@ import {
   Toolbox,
   ToolboxUI,
   Select,
+  DoubleSlider,
 } from './components';
 
 import { useNotification, NotificationProvider } from './contextProviders';
@@ -46,6 +47,7 @@ export {
   Command,
   Popover,
   Combobox,
+  DoubleSlider,
   buttonVariants,
   ThemeWrapper,
   Calendar,

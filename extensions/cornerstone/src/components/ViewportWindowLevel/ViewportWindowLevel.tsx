@@ -177,7 +177,6 @@ const ViewportWindowLevel = ({
           };
 
           const histogram = await getViewportVolumeHistogram(viewport, volume, options);
-          console.debug('Histogram', histogram);
           const { voi: displaySetVOI, colormap: displaySetColormap } =
             viewportInfo.displaySetOptions[volumeIndex];
 
