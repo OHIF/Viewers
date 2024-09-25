@@ -1,18 +1,6 @@
 import React from 'react';
-import { Item, Property, DisplayMode } from './types';
-import { Label } from '../../components/Label';
-import { Slider } from '../../components/Slider';
-import { Input } from '../../components/Input';
-import { Switch } from '../../components/Switch';
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '../../components/Tabs';
-import { Button } from '../../components/Button';
-import { Icons } from '../../components/Icons';
+import { Button, Icons, Label, Slider, Input, Switch, Tabs, TabsList, TabsTrigger, TabsContent } from '@ohif/ui-next';
 
-interface PropertiesPanelProps {
-  selectedItem: Item | null;
-  onUpdateProperty: (itemId: number, propertyKey: string, newValue: any) => void;
-  onAddItem: (itemId: number) => void; // Prop for adding item
-}
 
 /**
  * PropertiesPanel Component
@@ -24,7 +12,7 @@ interface PropertiesPanelProps {
  * @param onUpdateProperty - Callback to handle property updates.
  * @param onAddItem - Callback to handle adding the item.
  */
-const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
+const PropertiesPanel: React.FC = ({
   selectedItem,
   onUpdateProperty,
   onAddItem,
@@ -67,7 +55,7 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
      * @param property - The property being updated.
      * @param newValue - The new value for the property.
      */
-    const handleChange = (property: Property, newValue: any) => {
+    const handleChange = (property, newValue: any) => {
       console.log(`Updating property '${property.key}' to`, newValue); // Debug log
       onUpdateProperty(selectedItem.id, property.key, newValue);
     };
@@ -80,7 +68,7 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
      *
      * @param newDisplayMode - The new display mode selected.
      */
-    const handleDisplayModeChange = (newDisplayMode: DisplayMode) => {
+    const handleDisplayModeChange = (newDisplayMode) => {
       console.log(`Display mode changed to`, newDisplayMode); // Debug log
       onUpdateProperty(selectedItem.id, 'displayMode', newDisplayMode);
     };
@@ -178,8 +166,8 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
  * @returns JSX Element corresponding to the property type.
  */
 const renderPropertyInput = (
-  prop: Property,
-  handleChange: (prop: Property, value: any) => void
+  prop,
+  handleChange: (prop, value: any) => void
 ) => {
   switch (prop.type) {
     case 'slider':

@@ -1230,7 +1230,189 @@ export const Icons = {
       </g>
     </svg>
   ),
+  Plus: (props: IconProps) => (
+    <svg
+      width="21"
+      height="21"
+      viewBox="0 0 21 21"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <g
+        fill="none"
+        fill-rule="evenodd"
+      >
+        <path d="M0 0h21v21H0z" />
+        <g
+          stroke="#348CFD"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="1.25"
+        >
+          <path d="M10.5 5.5v10M15.5 10.5h-10" />
+        </g>
+      </g>
+    </svg>
+  ),
 
+  FillAndOutline: (props: IconProps) => (
+    <svg
+      width="18px"
+      height="18px"
+      viewBox="0 0 18 18"
+    >
+      <g
+        id="view-outline-fill"
+        stroke="none"
+        strokeWidth="1"
+        fill="none"
+        fillRule="evenodd"
+      >
+        <g id="Group-13">
+          <rect
+            id="Rectangle"
+            x="0"
+            y="0"
+            width="18"
+            height="18"
+          ></rect>
+          <rect
+            id="Rectangle"
+            stroke="#348CFD"
+            x="1.5"
+            y="1.5"
+            width="15"
+            height="15"
+            rx="1"
+          ></rect>
+          <rect
+            id="Rectangle"
+            fill="#348CFD"
+            x="3.5"
+            y="3.5"
+            width="11"
+            height="11"
+            rx="1"
+          ></rect>
+        </g>
+      </g>
+    </svg>
+  ),
+  OutlineOnly: (props: IconProps) => (
+    <svg
+      width="18px"
+      height="18px"
+      viewBox="0 0 18 18"
+    >
+      <g
+        id="view-outline"
+        stroke="none"
+        strokeWidth="1"
+        fill="none"
+        fillRule="evenodd"
+      >
+        <g id="Group-13">
+          <rect
+            id="Rectangle"
+            x="0"
+            y="0"
+            width="18"
+            height="18"
+          ></rect>
+          <rect
+            id="Rectangle"
+            stroke="#348CFD"
+            x="1.5"
+            y="1.5"
+            width="15"
+            height="15"
+            rx="1"
+          ></rect>
+        </g>
+      </g>
+    </svg>
+  ),
+  FillOnly: (props: IconProps) => (
+    <svg
+      width="18px"
+      height="18px"
+      viewBox="0 0 18 18"
+    >
+      <g
+        id="view-fill"
+        stroke="none"
+        strokeWidth="1"
+        fill="none"
+        fillRule="evenodd"
+      >
+        <g id="Group-13">
+          <rect
+            id="Rectangle"
+            x="0"
+            y="0"
+            width="18"
+            height="18"
+          ></rect>
+          <rect
+            id="Rectangle"
+            fill="#348CFD"
+            x="2"
+            y="2"
+            width="14"
+            height="14"
+            rx="1"
+          ></rect>
+        </g>
+      </g>
+    </svg>
+  ),
+  EyeVisible: (props: IconProps) => (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 20 13"
+    >
+      <g
+        fill="none"
+        fill-rule="evenodd"
+        stroke="currentColor"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        transform="translate(0 1)"
+      >
+        <circle
+          cx="10"
+          cy="5.833"
+          r="2.917"
+        />
+        <path d="M19.48 5.56C18.51 4.46 14.635.417 10 .417 5.365.417 1.49 4.46.52 5.56c-.136.157-.136.39 0 .547.97 1.1 4.845 5.143 9.48 5.143 4.635 0 8.51-4.043 9.48-5.143.136-.157.136-.39 0-.547z" />
+      </g>
+    </svg>
+  ),
+  EyeHidden: (props: IconProps) => (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 20"
+    >
+      <g
+        fill="none"
+        fill-rule="evenodd"
+        stroke="currentColor"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="1.5"
+      >
+        <g opacity=".5">
+          <path
+            d="M17.433 2.556c1.352.98 2.578 2.122 3.65 3.402 0 0-4.719 5.959-10.541 5.959-.933-.006-1.86-.149-2.75-.426M3.637 9.35C2.29 8.373 1.07 7.234 0 5.958 0 5.958 4.719 0 10.542 0c.773.003 1.543.103 2.291.298M6.875 5.958c0-2.025 1.642-3.666 3.667-3.666M14.208 5.958c0 2.025-1.641 3.667-3.666 3.667"
+            transform="translate(1 1) translate(.458 3.208)"
+          />
+        </g>
+        <path
+          d="M19.938 0.229L2.063 18.104"
+          transform="translate(1 1)"
+        />
+      </g>
+    </svg>
+  ),
   // Aliases
   'tab-segmentation': (props: IconProps) => Icons.TabSegmentation(props),
   'tab-studies': (props: IconProps) => Icons.TabStudies(props),

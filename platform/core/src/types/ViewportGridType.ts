@@ -1,9 +1,33 @@
+export interface GridViewportOptions {
+  id?: string;
+  viewportId?: string;
+  viewportType?: string;
+  toolGroupId?: string;
+  presentationIds?: {
+    positionPresentationId?: string;
+    lutPresentationId?: string;
+  };
+  flipHorizontal?: boolean;
+  //
+  orientation?: string;
+  allowUnmatchedView?: boolean;
+  needsRerendering?: boolean;
+  background?: [number, number, number];
+  syncGroups?: unknown[];
+  rotation?: number;
+  initialImageOptions?: unknown;
+  customViewportProps?: Record<string, unknown>;
+  //
+  displayArea?: unknown;
+  viewReference?: unknown;
+}
+
 export interface GridViewport {
   viewportId: string;
   displaySetInstanceUIDs: string[];
-  viewportOptions: any;
-  displaySetSelectors: any[];
-  displaySetOptions: any[];
+  viewportOptions: GridViewportOptions;
+  displaySetSelectors: unknown[];
+  displaySetOptions: unknown[];
   x: number;
   y: number;
   width: number;

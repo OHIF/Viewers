@@ -19,8 +19,6 @@ export type WindowLevelActionMenuProps = {
   viewportId: string;
   element: HTMLElement;
   presets: Array<Record<string, Array<WindowLevelPreset>>>;
-  verticalDirection: AllInOneMenu.VerticalDirection;
-  horizontalDirection: AllInOneMenu.HorizontalDirection;
   colorbarProperties: ColorbarProperties;
   displaySets: Array<any>;
   volumeRenderingPresets: Array<ViewportPreset>;

@@ -267,7 +267,7 @@ function OHIFCornerstoneSEGViewport(props: withAppTypes) {
   }, [storePresentationState, setDisplaySetsForViewport]);
 
   useEffect(() => {
-    viewportActionCornersService.setComponents([
+    viewportActionCornersService.addComponents([
       {
         viewportId,
         id: 'viewportStatusComponent',

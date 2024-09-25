@@ -9,7 +9,11 @@ export function getWindowLevelActionMenu({
   commandsManager,
   verticalDirection,
   horizontalDirection,
-}: withAppTypes): ReactNode {
+}: withAppTypes<{
+  viewportId: string;
+  element: HTMLElement;
+  displaySets: AppTypes.DisplaySet[];
+}>): ReactNode {
   const { customizationService } = servicesManager.services;
 
   const { presets } = customizationService.get('cornerstone.windowLevelPresets');

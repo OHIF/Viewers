@@ -30,9 +30,6 @@ import DisplaySetMessageListTooltip from './DisplaySetMessageListTooltip';
 import { Toolbox, ToolboxUI } from './Toolbox';
 
 // Prototypes
-import { PanelSplit } from '../_prototypes/PanelSplit';
-import { ItemList } from '../_prototypes/PanelSplit/ItemList';
-import { PropertiesPanel } from '../_prototypes/PanelSplit/PropertiesPanel';
 import Select from './Select';
 import { DoubleSlider } from './DoubleSlider';
 
@@ -79,8 +76,5 @@ export {
   DisplaySetMessageListTooltip,
   Toolbox,
   ToolboxUI,
-  PanelSplit,
-  ItemList,
-  PropertiesPanel,
   DoubleSlider,
 };

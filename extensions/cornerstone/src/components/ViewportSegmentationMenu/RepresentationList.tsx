@@ -1,19 +1,10 @@
 import React from 'react';
-import { Item, VisibilityState, AvailabilityState } from './types';
-import { Button } from '../../components/Button'; // Updated import path
-import { Icons } from '../../components/Icons';
+import { Button, Icons} from '@ohif/ui-next';
 
-interface ItemListProps {
-  items: Item[];
-  onSelectItem: (item: Item) => void;
-  selectedItem: Item | null;
-  onToggleVisibility: (itemId: number) => void; // Prop for visibility toggle
-  onAddItem: (itemId: number) => void; // Prop for add button
-}
 
 /**
- * ItemList Component
- *
+ * RepresentationList Component
+s*
  * Displays a list of items that can be selected, toggled for visibility,
  * and added (changing availability).
  *
@@ -23,13 +14,12 @@ interface ItemListProps {
  * @param onToggleVisibility - Callback when an item's visibility is toggled.
  * @param onAddItem - Callback when an item's availability is changed to 'loaded'.
  */
-const ItemList: React.FC<ItemListProps> = ({
-  items,
-  onSelectItem,
-  selectedItem,
-  onToggleVisibility,
-  onAddItem,
+const RepresentationList: React.FC = ({
+  representations,
+
 }) => {
+
+
   return (
     <ul
       aria-label="Item List"
@@ -98,4 +88,4 @@ const ItemList: React.FC<ItemListProps> = ({
   );
 };
 
-export default ItemList;
+export {RepresentationList};

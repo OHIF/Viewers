@@ -35,6 +35,11 @@ import {
   ToolboxUI,
   Select,
   DoubleSlider,
+  ScrollArea,
+  Label,
+  Slider,
+  Input,
+  Switch,
 } from './components';
 
 import { useNotification, NotificationProvider } from './contextProviders';
@@ -80,4 +85,9 @@ export {
   DisplaySetMessageListTooltip,
   Toolbox,
   ToolboxUI,
+  ScrollArea,
+  Label,
+  Slider,
+  Input,
+  Switch,
 };

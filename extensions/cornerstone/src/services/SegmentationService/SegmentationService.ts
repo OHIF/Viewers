@@ -37,6 +37,8 @@ export type SegmentationData = cstTypes.Segmentation;
 
 export type SegmentationRepresentation = cstTypes.SegmentationRepresentation & {
   viewportId: string;
+  id: string;
+  label: string;
   styles: cstTypes.RepresentationStyle;
   segments: {
     [key: number]: SegmentRepresentation;
@@ -514,7 +516,7 @@ class SegmentationService extends PubSubService {
         data: {
           imageIds: derivedSegmentationImages.map(image => image.imageId),
           referencedVolumeId: this._getVolumeIdForDisplaySet(referencedDisplaySet),
-          referencedImageIds: imageIds,
+          referencedImageIds: imageIds as string[],
         },
       },
       config: {
@@ -975,8 +977,12 @@ class SegmentationService extends PubSubService {
       type,
     });
 
+    const id = `${segmentationId}-${type}-${viewportId}`
+
     return {
+      id: id,
       segmentationId,
+      label: segmentation.label,
       active,
       type,
       visible,
@@ -1345,7 +1351,56 @@ class SegmentationService extends PubSubService {
     requestAnimationFrame(animate);
   }
 
-  private _toggleSegmentationVisibility = (viewportId: string, segmentationId: string) => {
+  /**
+   * Sets the visibility of a segmentation representation.
+   *
+   * @param viewportId - The ID of the viewport.
+   * @param segmentationId - The ID of the segmentation.
+   * @param isVisible - The new visibility state.
+   */
+  public setSegmentationVisibility(viewportId: string, segmentationId: string, isVisible: boolean): void {
+    const representations = this.getSegmentationRepresentations(viewportId, { segmentationId });
+    const representation = representations[0];
+
+    if (!representation) {
+      console.debug('No segmentation representation found for the given viewportId and segmentationId');
+      return;
+    }
+
+    cstSegmentation.config.visibility.setSegmentationRepresentationVisibility(
+      viewportId,
+      {
+        segmentationId,
+      },
+      isVisible
+    );
+  }
+
+  /**
+   * Gets the visibility of a segmentation representation.
+   *
+   * @param viewportId - The ID of the viewport.
+   * @param segmentationId - The ID of the segmentation.
+   * @returns The visibility state of the segmentation, or undefined if not found.
+   */
+  public getSegmentationVisibility(viewportId: string, segmentationId: string): boolean | undefined {
+    const representations = this.getSegmentationRepresentations(viewportId, { segmentationId });
+    const representation = representations[0];
+
+    if (!representation) {
+      console.debug('No segmentation representation found for the given viewportId and segmentationId');
+      return undefined;
+    }
+
+    const segmentsHidden = cstSegmentation.config.visibility.getHiddenSegmentIndices(viewportId, {
+      segmentationId,
+      type: representation.type,
+    });
+
+    return segmentsHidden.size === 0;
+  }
+
+  private _toggleSegmentationVisibility = (viewportId: string, segmentationId: string): void => {
     const representations = this.getSegmentationRepresentations(viewportId, { segmentationId });
     const representation = representations[0];
 
@@ -1354,16 +1409,8 @@ class SegmentationService extends PubSubService {
       type: representation.type,
     });
 
-    const currentVisibility = segmentsHidden.size === 0 ? true : false;
-    const newVisibility = !currentVisibility;
-
-    cstSegmentation.config.visibility.setSegmentationRepresentationVisibility(
-      viewportId,
-      {
-        segmentationId,
-      },
-      newVisibility
-    );
+    const currentVisibility = segmentsHidden.size === 0;
+    this.setSegmentationVisibility(viewportId, segmentationId, !currentVisibility);
   };
 
   private _setActiveSegment(segmentationId: string, segmentIndex: number) {

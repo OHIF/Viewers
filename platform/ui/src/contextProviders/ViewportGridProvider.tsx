@@ -4,7 +4,6 @@ import React, {
   useContext,
   useEffect,
   useReducer,
-  useRef,
   ReactNode,
 } from 'react';
 import merge from 'lodash.merge';

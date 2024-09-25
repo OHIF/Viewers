@@ -244,6 +244,7 @@ declare global {
       export type Layout = ViewportGridTypes.Layout;
       export type State = ViewportGridTypes.ViewportGridState;
       export type Viewports = ViewportGridTypes.GridViewports;
+      export type GridViewportOptions = ViewportGridTypes.GridViewportOptions;
     }
   }
 

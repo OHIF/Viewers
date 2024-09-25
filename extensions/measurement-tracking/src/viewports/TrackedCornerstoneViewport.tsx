@@ -8,7 +8,9 @@ import { useTrackedMeasurements } from './../getContextModule';
 import { BaseVolumeViewport, Enums } from '@cornerstonejs/core';
 import { useTranslation } from 'react-i18next';
 
-function TrackedCornerstoneViewport(props: withAppTypes) {
+function TrackedCornerstoneViewport(
+  props: withAppTypes<{ viewportId: string; displaySets: AppTypes.DisplaySet[] }>
+) {
   const { displaySets, viewportId, servicesManager, extensionManager } = props;
 
   const {
@@ -193,7 +195,7 @@ function TrackedCornerstoneViewport(props: withAppTypes) {
       viewportId === activeViewportId
     );
 
-    viewportActionCornersService.setComponents([
+    viewportActionCornersService.addComponents([
       {
         viewportId,
         id: 'viewportStatusComponent',
