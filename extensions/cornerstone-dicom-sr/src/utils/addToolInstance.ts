@@ -4,11 +4,9 @@ export default function addToolInstance(name: string, toolClass, configuration =
   class InstanceClass extends toolClass {
     static toolName = name;
     constructor(toolProps, defaultToolProps) {
-      if (toolProps.configuration) {
-        toolProps.configuration = { ...toolProps.configuration, ...configuration };
-      } else {
-        toolProps.configuration = configuration;
-      }
+      toolProps.configuration = toolProps.configuration
+        ? { ...toolProps.configuration, ...configuration }
+        : configuration;
       super(toolProps, defaultToolProps);
     }
   }
