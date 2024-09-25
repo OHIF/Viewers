@@ -197,7 +197,7 @@
   }
 
   body {
-    @apply bg-black;
+    @apply !bg-black;
   }
 }
 
@@ -227,4 +227,14 @@ h3.section-header {
 
 .TooltipContent[data-side='bottom'] {
   animation-name: slideDown;
+}
+
+/* Custom CSS to hide default number input arrows */
+input[type='number']::-webkit-inner-spin-button,
+input[type='number']::-webkit-outer-spin-button {
+  @apply appearance-none;
+}
+
+input[type='number'] {
+  -moz-appearance: textfield; /* For Firefox */
 }

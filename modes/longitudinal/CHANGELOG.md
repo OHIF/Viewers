@@ -3,6 +3,38 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.9.0-beta.88](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.87...v3.9.0-beta.88) (2024-09-24)
+
+**Note:** Version bump only for package @ohif/mode-longitudinal
+
+
+
+
+
+# [3.9.0-beta.87](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.86...v3.9.0-beta.87) (2024-09-19)
+
+**Note:** Version bump only for package @ohif/mode-longitudinal
+
+
+
+
+
+# [3.9.0-beta.86](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.85...v3.9.0-beta.86) (2024-09-19)
+
+**Note:** Version bump only for package @ohif/mode-longitudinal
+
+
+
+
+
+# [3.9.0-beta.85](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.84...v3.9.0-beta.85) (2024-09-17)
+
+**Note:** Version bump only for package @ohif/mode-longitudinal
+
+
+
+
+
 # [3.9.0-beta.84](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.83...v3.9.0-beta.84) (2024-09-12)
 
 **Note:** Version bump only for package @ohif/mode-longitudinal
