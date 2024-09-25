@@ -344,7 +344,10 @@ window.config = {
   idcDownloadCommandsDialog: {
     description: 'Follow the instructions below to download the study or series:',
     instructions: [
-      { command: 'pip install idc-index --upgrade', label: 'First, install the idc cli:' },
+      {
+        command: 'pip install idc-index --upgrade',
+        label: 'First, install the idc-index python package:',
+      },
       {
         command: `idc download {{StudyInstanceUID}}`,
         label: 'Then, to download the whole study, run:',
