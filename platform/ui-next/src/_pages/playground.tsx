@@ -282,13 +282,53 @@ export default function Playground() {
         <div className="example">
           <DropdownMenu>
             <DropdownMenuTrigger>
-              <Button>Open</Button>
+              <Button>Open Basic</Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent>
-              <DropdownMenuItem>Profile</DropdownMenuItem>
-              <DropdownMenuItem>Billing</DropdownMenuItem>
-              <DropdownMenuItem>Team</DropdownMenuItem>
-              <DropdownMenuItem>Subscription</DropdownMenuItem>
+              <DropdownMenuItem>Item 1</DropdownMenuItem>
+              <DropdownMenuItem>Item 2</DropdownMenuItem>
+              <DropdownMenuItem>Long name Item 3</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+        <div className="example">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button>Open Align Start</Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start">
+              <DropdownMenuItem>Item 1</DropdownMenuItem>
+              <DropdownMenuItem>Item 2</DropdownMenuItem>
+              <DropdownMenuItem>Long name Item 3</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+        <div className="example">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button>Open Align End</Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem>Item 1</DropdownMenuItem>
+              <DropdownMenuItem>Item 2</DropdownMenuItem>
+              <DropdownMenuItem>Long name Item 3</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+        <div className="example">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button>Open Align Top</Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent
+              side="top"
+              align="start"
+            >
+              <DropdownMenuItem onSelect={() => console.log('Item 1')}>Item 1</DropdownMenuItem>
+              <DropdownMenuItem onSelect={() => console.log('Item 2')}>Item 2</DropdownMenuItem>
+              <DropdownMenuItem onSelect={() => console.log('Item 3')}>
+                Long name Item 3
+              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
