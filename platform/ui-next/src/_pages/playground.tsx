@@ -24,6 +24,23 @@ import { Checkbox } from '../components/Checkbox';
 import { Toggle, toggleVariants } from '../components/Toggle';
 import { Slider } from '../components/Slider';
 import { ScrollArea, ScrollBar } from '../components/ScrollArea';
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuCheckboxItem,
+  DropdownMenuRadioItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuShortcut,
+  DropdownMenuGroup,
+  DropdownMenuPortal,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
+  DropdownMenuRadioGroup,
+} from '../components/DropdownMenu';
 
 import { BackgroundColorSelect } from '../components/BackgroundColorSelect';
 
@@ -244,7 +261,7 @@ export default function Playground() {
         </div>
       </div>
 
-      <h2 className="section-header">Tabs</h2>
+      <h2 className="section-header">Select</h2>
       <div className="row">
         <div className="example">
           <Select>
@@ -257,6 +274,23 @@ export default function Playground() {
               <SelectItem value="system">System</SelectItem>
             </SelectContent>
           </Select>
+        </div>
+      </div>
+
+      <h2 className="section-header">Dropdown Menu</h2>
+      <div className="row">
+        <div className="example">
+          <DropdownMenu>
+            <DropdownMenuTrigger>
+              <Button>Open</Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuItem>Profile</DropdownMenuItem>
+              <DropdownMenuItem>Billing</DropdownMenuItem>
+              <DropdownMenuItem>Team</DropdownMenuItem>
+              <DropdownMenuItem>Subscription</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
 
