@@ -14,6 +14,12 @@ const App: React.FC = () => (
         Playground
       </a>
       <a
+        href="patterns.html"
+        className="text-blue-500 hover:text-blue-700"
+      >
+        Patterns
+      </a>
+      <a
         href="viewer.html"
         className="text-blue-500 hover:text-blue-700"
       >
