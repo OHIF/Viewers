@@ -1,3 +1,2 @@
-import PanelSection from './PanelSection';
-
-export default PanelSection;
+import { PanelSection } from './PanelSection';
+export { PanelSection };

@@ -1,2 +1,2 @@
-import Thumbnail from './Thumbnail';
-export default Thumbnail;
+import { Thumbnail } from './Thumbnail';
+export { Thumbnail };
