@@ -305,7 +305,7 @@ window.config = {
           },
           advanceOn: {
             selector: '.cornerstone-viewport-element',
-            event: 'CORNERSTONE_STACK_VIEWPORT_SCROLL',
+            event: 'CORNERSTONE_TOOLS_MOUSE_WHEEL',
           },
           /**
           buttons: [
