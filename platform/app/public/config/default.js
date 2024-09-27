@@ -402,7 +402,7 @@ window.config = {
             selector: '[data-cy="prompt-begin-tracking-yes-btn"]',
             event: 'click',
           },
-          beforeShowPromise: () => new Promise(resolve => setTimeout(resolve, 100)),
+          beforeShowPromise: () => waitForElement('[data-cy="prompt-begin-tracking-yes-btn"]'),
         },
         {
           id: 'openMeasurementPanel',
