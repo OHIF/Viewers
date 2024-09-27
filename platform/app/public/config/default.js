@@ -298,27 +298,97 @@ window.config = {
       steps: [
         {
           id: 'scroll',
-          text: 'You can scroll through the images using the mouse wheel.',
+          text: 'You can scroll through the images using the mouse wheel or scrollbar.',
           attachTo: {
-            element: '.viewport-element',
+            element: '.scroll',
             on: 'left-start',
           },
+          advanceOn: {
+            selector: '.cornerstone-viewport-element',
+            event: 'CORNERSTONE_STACK_VIEWPORT_SCROLL',
+          },
+          /**
+          buttons: [
+            {
+              text: 'Next',
+              action() {
+                this.next();
+              },
+            },
+            {
+              text: 'Skip',
+              action() {
+                this.cancel();
+              },
+            },
+          ],
+          */
         },
         {
           id: 'zoom',
           text: 'You can zoom the images using the right click.',
           attachTo: {
             element: '.viewport-element',
-            on: 'left-start',
           },
+          advanceOn: {
+            selector: '.cornerstone-viewport-element',
+            event: 'CORNERSTONE_CAMERA_MODIFIED',
+          },
+          /**
+          buttons: [
+            {
+              text: 'Next',
+              action() {
+                this.next();
+              },
+            },
+            {
+              text: 'Skip',
+              action() {
+                this.cancel();
+              },
+            },
+            {
+              text: 'Back',
+              action() {
+                this.back();
+              },
+            },
+          ],
+          */
         },
         {
           id: 'pan',
           text: 'You can pan the images using the middle click.',
           attachTo: {
             element: '.viewport-element',
-            on: 'left-start',
           },
+          advanceOn: {
+            selector: '.cornerstone-viewport-element',
+            event: 'CORNERSTONE_TOOLS_MOUSE_DRAG',
+          },
+          /**
+          buttons: [
+            {
+              text: 'Next',
+              action() {
+                this.next();
+              },
+            },
+            {
+              text: 'Skip',
+              action() {
+                this.cancel();
+              },
+            },
+            {
+              text: 'Back',
+              action() {
+                this.back();
+              },
+            },
+          ],
+          */
         },
         {
           id: 'windowing',
@@ -327,14 +397,58 @@ window.config = {
             element: '.viewport-element',
             on: 'left-start',
           },
+          /**
+          buttons: [
+            {
+              text: 'Next',
+              action() {
+                this.next();
+              },
+            },
+            {
+              text: 'Skip',
+              action() {
+                this.cancel();
+              },
+            },
+            {
+              text: 'Back',
+              action() {
+                this.back();
+              },
+            },
+          ],
+          */
         },
         {
           id: 'length',
           text: 'You can measure the length of a region using the Length tool.',
           attachTo: {
-            element: '.MeasurementTools-split-button-primary',
+            element: '[data-cy="MeasurementTools-split-button-primary"]',
             on: 'bottom',
           },
+          /**
+          buttons: [
+            {
+              text: 'Next',
+              action() {
+                this.next();
+              },
+            },
+            {
+              text: 'Skip',
+              action() {
+                this.cancel();
+              },
+            },
+            {
+              text: 'Back',
+              action() {
+                this.back();
+              },
+            },
+          ],
+          */
         },
         {
           id: 'drawAnnotation',
@@ -343,6 +457,28 @@ window.config = {
             element: '.viewport-element',
             on: 'left-start',
           },
+          /**
+          buttons: [
+            {
+              text: 'Next',
+              action() {
+                this.next();
+              },
+            },
+            {
+              text: 'Skip',
+              action() {
+                this.cancel();
+              },
+            },
+            {
+              text: 'Back',
+              action() {
+                this.back();
+              },
+            },
+          ],
+          */
         },
         {
           id: 'trackMeasurement',
@@ -351,6 +487,28 @@ window.config = {
             element: '[data-cy="prompt-begin-tracking-yes-btn"]',
             on: 'bottom',
           },
+          /**
+          buttons: [
+            {
+              text: 'Next',
+              action() {
+                this.next();
+              },
+            },
+            {
+              text: 'Skip',
+              action() {
+                this.cancel();
+              },
+            },
+            {
+              text: 'Back',
+              action() {
+                this.back();
+              },
+            },
+          ],
+          */
         },
         {
           id: 'openMeasurementPanel',
@@ -359,6 +517,28 @@ window.config = {
             element: '#trackedMeasurements-btn',
             on: 'left-start',
           },
+          /**
+          buttons: [
+            {
+              text: 'Next',
+              action() {
+                this.next();
+              },
+            },
+            {
+              text: 'Skip',
+              action() {
+                this.cancel();
+              },
+            },
+            {
+              text: 'Back',
+              action() {
+                this.back();
+              },
+            },
+          ],
+          */
         },
         {
           id: 'scrollAwayFromMeasurement',
@@ -367,6 +547,28 @@ window.config = {
             element: '.viewport-element',
             on: 'left-start',
           },
+          /**
+          buttons: [
+            {
+              text: 'Next',
+              action() {
+                this.next();
+              },
+            },
+            {
+              text: 'Skip',
+              action() {
+                this.cancel();
+              },
+            },
+            {
+              text: 'Back',
+              action() {
+                this.back();
+              },
+            },
+          ],
+          */
         },
         {
           id: 'jumpToMeasurement',
@@ -375,6 +577,28 @@ window.config = {
             element: '[data-cy="measurement-item"]',
             on: 'left-start',
           },
+          /**
+          buttons: [
+            {
+              text: 'Next',
+              action() {
+                this.next();
+              },
+            },
+            {
+              text: 'Skip',
+              action() {
+                this.cancel();
+              },
+            },
+            {
+              text: 'Back',
+              action() {
+                this.back();
+              },
+            },
+          ],
+          */
         },
         {
           id: 'changeLayout',
@@ -383,6 +607,28 @@ window.config = {
             element: '[data-cy="Layout"]',
             on: 'bottom',
           },
+          /**
+          buttons: [
+            {
+              text: 'Next',
+              action() {
+                this.next();
+              },
+            },
+            {
+              text: 'Skip',
+              action() {
+                this.cancel();
+              },
+            },
+            {
+              text: 'Back',
+              action() {
+                this.back();
+              },
+            },
+          ],
+          */
         },
         {
           id: 'selectLayout',
@@ -391,6 +637,28 @@ window.config = {
             element: '[data-cy="MPR"]',
             on: 'left-start',
           },
+          /**
+          buttons: [
+            {
+              text: 'Complete',
+              action() {
+                this.complete();
+              },
+            },
+            {
+              text: 'Skip',
+              action() {
+                this.cancel();
+              },
+            },
+            {
+              text: 'Back',
+              action() {
+                this.back();
+              },
+            },
+          ],
+          */
         },
       ],
       tourOptions: {},

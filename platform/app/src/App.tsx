@@ -24,13 +24,14 @@ import {
   UserAuthenticationProvider,
   ToolboxProvider,
 } from '@ohif/ui';
-import { ThemeWrapper as ThemeWrapperNext, OnboardingProvider } from '@ohif/ui-next';
+import { ThemeWrapper as ThemeWrapperNext } from '@ohif/ui-next';
 // Viewer Project
 // TODO: Should this influence study list?
 import { AppConfigProvider } from '@state';
 import createRoutes from './routes';
 import appInit from './appInit.js';
 import OpenIdConnectRoutes from './utils/OpenIdConnectRoutes';
+import { ShepherdJourneyProvider } from 'react-shepherd';
 
 let commandsManager: CommandsManager,
   extensionManager: ExtensionManager,
@@ -99,7 +100,6 @@ function App({
     cineService,
     userAuthenticationService,
     customizationService,
-    onboardingService,
   } = servicesManager.services;
 
   const providers = [
@@ -116,7 +116,7 @@ function App({
     [SnackbarProvider, { service: uiNotificationService }],
     [DialogProvider, { service: uiDialogService }],
     [ModalProvider, { service: uiModalService, modal: Modal }],
-    [OnboardingProvider],
+    [ShepherdJourneyProvider],
   ];
 
   // Loop through and register each of the service providers registered with the ServiceProvidersManager.
