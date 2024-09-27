@@ -156,7 +156,7 @@ function ViewerLayout({
           ) : null}
         </React.Fragment>
       </div>
-      <Onboarding servicesManager={servicesManager} />
+      <Onboarding />
       <InvestigationalUseDialog dialogConfiguration={appConfig?.investigationalUseDialog} />
     </div>
   );

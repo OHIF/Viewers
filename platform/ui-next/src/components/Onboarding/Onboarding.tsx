@@ -17,7 +17,7 @@ const markTourAsShown = (tourId: string) => {
   }
 };
 
-const Onboarding = ({ servicesManager }: withAppTypes) => {
+const Onboarding = () => {
   const Shepherd = useShepherd();
   const location = useLocation();
   const tours = window.config.tours as Array<{
@@ -59,7 +59,6 @@ const Onboarding = ({ servicesManager }: withAppTypes) => {
       startTour();
     }
   }, [Shepherd, tours, location.pathname]);
-
   return null;
 };
 

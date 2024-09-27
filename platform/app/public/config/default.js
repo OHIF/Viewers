@@ -300,8 +300,8 @@ window.config = {
           id: 'scroll',
           text: 'You can scroll through the images using the mouse wheel or scrollbar.',
           attachTo: {
-            element: '.scroll',
-            on: 'left-start',
+            element: '.viewport-element',
+            on: 'top',
           },
           advanceOn: {
             selector: '.cornerstone-viewport-element',
@@ -329,6 +329,7 @@ window.config = {
           text: 'You can zoom the images using the right click.',
           attachTo: {
             element: '.viewport-element',
+            on: 'top',
           },
           advanceOn: {
             selector: '.cornerstone-viewport-element',
@@ -340,6 +341,7 @@ window.config = {
           text: 'You can pan the images using the middle click.',
           attachTo: {
             element: '.viewport-element',
+            on: 'top',
           },
           advanceOn: {
             selector: '.cornerstone-viewport-element',
@@ -351,7 +353,7 @@ window.config = {
           text: 'You can modify the window level using the left click.',
           attachTo: {
             element: '.viewport-element',
-            on: 'left-start',
+            on: 'top',
           },
           advanceOn: {
             selector: '.cornerstone-viewport-element',
@@ -375,7 +377,7 @@ window.config = {
           text: 'Use the length tool on the viewport to measure the length of a region.',
           attachTo: {
             element: '.viewport-element',
-            on: 'left-start',
+            on: 'top',
           },
           advanceOn: {
             selector: 'body',
@@ -410,7 +412,7 @@ window.config = {
           id: 'scrollAwayFromMeasurement',
           text: 'Scroll the images using the mouse wheel away from the measurement.',
           attachTo: {
-            element: '.scroll',
+            element: '.viewport-element',
             on: 'left-start',
           },
           advanceOn: {
@@ -455,7 +457,9 @@ window.config = {
           },
         },
       ],
-      tourOptions: {},
+      tourOptions: {
+        useModalOverlay: true,
+      },
     },
   ],
 };
