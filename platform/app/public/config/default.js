@@ -307,6 +307,7 @@ window.config = {
             selector: '.cornerstone-viewport-element',
             event: 'CORNERSTONE_TOOLS_MOUSE_WHEEL',
           },
+          beforeShowPromise: () => waitForElement('.viewport-element'),
           /**
           buttons: [
             {
@@ -335,6 +336,7 @@ window.config = {
             selector: '.cornerstone-viewport-element',
             event: 'CORNERSTONE_TOOLS_MOUSE_UP',
           },
+          beforeShowPromise: () => waitForElement('.viewport-element'),
         },
         {
           id: 'pan',
@@ -347,6 +349,7 @@ window.config = {
             selector: '.cornerstone-viewport-element',
             event: 'CORNERSTONE_TOOLS_MOUSE_UP',
           },
+          beforeShowPromise: () => waitForElement('.viewport-element'),
         },
         {
           id: 'windowing',
@@ -359,6 +362,7 @@ window.config = {
             selector: '.cornerstone-viewport-element',
             event: 'CORNERSTONE_TOOLS_MOUSE_UP',
           },
+          beforeShowPromise: () => waitForElement('.viewport-element'),
         },
         {
           id: 'length',
@@ -371,6 +375,8 @@ window.config = {
             selector: '[data-cy="MeasurementTools-split-button-primary"]',
             event: 'click',
           },
+          beforeShowPromise: () =>
+            waitForElement('[data-cy="MeasurementTools-split-button-primary]'),
         },
         {
           id: 'drawAnnotation',
@@ -383,6 +389,7 @@ window.config = {
             selector: 'body',
             event: 'event::measurement_added',
           },
+          beforeShowPromise: () => waitForElement('.viewport-element'),
         },
         {
           id: 'trackMeasurement',
@@ -395,6 +402,7 @@ window.config = {
             selector: '[data-cy="prompt-begin-tracking-yes-btn"]',
             event: 'click',
           },
+          beforeShowPromise: () => new Promise(resolve => setTimeout(resolve, 100)),
         },
         {
           id: 'openMeasurementPanel',
@@ -407,18 +415,20 @@ window.config = {
             selector: '#trackedMeasurements-btn',
             event: 'click',
           },
+          beforeShowPromise: () => waitForElement('#trackedMeasurements-btn'),
         },
         {
           id: 'scrollAwayFromMeasurement',
           text: 'Scroll the images using the mouse wheel away from the measurement.',
           attachTo: {
             element: '.viewport-element',
-            on: 'left-start',
+            on: 'top',
           },
           advanceOn: {
             selector: '.cornerstone-viewport-element',
             event: 'CORNERSTONE_TOOLS_MOUSE_WHEEL',
           },
+          beforeShowPromise: () => waitForElement('.viewport-element'),
         },
         {
           id: 'jumpToMeasurement',
@@ -431,6 +441,7 @@ window.config = {
             selector: '[data-cy="measurement-item"]',
             event: 'click',
           },
+          beforeShowPromise: () => waitForElement('[data-cy="measurement-item"]'),
         },
         {
           id: 'changeLayout',
@@ -443,6 +454,7 @@ window.config = {
             selector: '[data-cy="Layout"]',
             event: 'click',
           },
+          beforeShowPromise: () => waitForElement('[data-cy="Layout"]'),
         },
         {
           id: 'selectLayout',
@@ -455,6 +467,7 @@ window.config = {
             selector: '[data-cy="MPR"]',
             event: 'click',
           },
+          beforeShowPromise: () => waitForElement('[data-cy="MPR"]'),
         },
       ],
       tourOptions: {
@@ -463,3 +476,20 @@ window.config = {
     },
   ],
 };
+
+function waitForElement(selector, maxAttempts = 20, interval = 25) {
+  return new Promise(resolve => {
+    let attempts = 0;
+
+    const checkForElement = setInterval(() => {
+      const element = document.querySelector(selector);
+
+      if (element || attempts >= maxAttempts) {
+        clearInterval(checkForElement);
+        resolve();
+      }
+
+      attempts++;
+    }, interval);
+  });
+}

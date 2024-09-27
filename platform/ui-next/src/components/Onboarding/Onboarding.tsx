@@ -30,35 +30,16 @@ const Onboarding = () => {
     if (!tours) {
       return null;
     }
-
     const pathname = location.pathname;
     const matchingTour = tours.find(tour => tour.route === pathname);
-
-    if (matchingTour) {
-      const startTour = () => {
-        const tourInstance = new Shepherd.Tour(matchingTour.tourOptions);
-        matchingTour.steps.forEach(step => tourInstance.addStep(step));
-
-        const observer = new MutationObserver(() => {
-          const firstStepElement = document.querySelector(
-            matchingTour.steps[0].attachTo.element as string
-          );
-          if (firstStepElement) {
-            observer.disconnect();
-            tourInstance.start();
-            markTourAsShown(matchingTour.id);
-          }
-        });
-
-        if (true) {
-          observer.observe(document.body, { childList: true, subtree: true });
-          setTimeout(() => observer.disconnect(), 5000);
-        }
-      };
-
-      startTour();
+    if (matchingTour && !hasTourBeenShown(matchingTour.id)) {
+      const tourInstance = new Shepherd.Tour(matchingTour.tourOptions);
+      matchingTour.steps.forEach(step => tourInstance.addStep(step));
+      tourInstance.start();
+      markTourAsShown(matchingTour.id);
     }
   }, [Shepherd, tours, location.pathname]);
+
   return null;
 };
 

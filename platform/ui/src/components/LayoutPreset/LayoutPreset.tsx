@@ -17,19 +17,13 @@ function LayoutPreset({
       onClick={() => {
         onSelection(commandOptions);
       }}
+      data-cy={title}
     >
       <Icon
         name={icon}
         className="group-hover:text-primary-light"
       />
-      {title && (
-        <div
-          className="font-inter text-sm text-white"
-          data-cy={title}
-        >
-          {title}
-        </div>
-      )}
+      {title && <div className="font-inter text-sm text-white">{title}</div>}
     </div>
   );
 }
