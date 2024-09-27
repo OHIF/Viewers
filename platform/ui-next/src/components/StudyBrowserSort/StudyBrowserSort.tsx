@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Icons } from '../Icons';
 
-export default function StudyBrowserSort({ servicesManager }: withAppTypes) {
+export function StudyBrowserSort({ servicesManager }: withAppTypes) {
   const { customizationService, displaySetService } = servicesManager.services;
   const { values: sortFunctions } = customizationService.get('studyBrowser.sortFunctions');
 
