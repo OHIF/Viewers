@@ -332,30 +332,8 @@ window.config = {
           },
           advanceOn: {
             selector: '.cornerstone-viewport-element',
-            event: 'CORNERSTONE_CAMERA_MODIFIED',
+            event: 'CORNERSTONE_TOOLS_MOUSE_UP',
           },
-          /**
-          buttons: [
-            {
-              text: 'Next',
-              action() {
-                this.next();
-              },
-            },
-            {
-              text: 'Skip',
-              action() {
-                this.cancel();
-              },
-            },
-            {
-              text: 'Back',
-              action() {
-                this.back();
-              },
-            },
-          ],
-          */
         },
         {
           id: 'pan',
@@ -365,30 +343,8 @@ window.config = {
           },
           advanceOn: {
             selector: '.cornerstone-viewport-element',
-            event: 'CORNERSTONE_TOOLS_MOUSE_DRAG',
+            event: 'CORNERSTONE_TOOLS_MOUSE_UP',
           },
-          /**
-          buttons: [
-            {
-              text: 'Next',
-              action() {
-                this.next();
-              },
-            },
-            {
-              text: 'Skip',
-              action() {
-                this.cancel();
-              },
-            },
-            {
-              text: 'Back',
-              action() {
-                this.back();
-              },
-            },
-          ],
-          */
         },
         {
           id: 'windowing',
@@ -397,28 +353,10 @@ window.config = {
             element: '.viewport-element',
             on: 'left-start',
           },
-          /**
-          buttons: [
-            {
-              text: 'Next',
-              action() {
-                this.next();
-              },
-            },
-            {
-              text: 'Skip',
-              action() {
-                this.cancel();
-              },
-            },
-            {
-              text: 'Back',
-              action() {
-                this.back();
-              },
-            },
-          ],
-          */
+          advanceOn: {
+            selector: '.cornerstone-viewport-element',
+            event: 'CORNERSTONE_TOOLS_MOUSE_UP',
+          },
         },
         {
           id: 'length',
@@ -427,28 +365,10 @@ window.config = {
             element: '[data-cy="MeasurementTools-split-button-primary"]',
             on: 'bottom',
           },
-          /**
-          buttons: [
-            {
-              text: 'Next',
-              action() {
-                this.next();
-              },
-            },
-            {
-              text: 'Skip',
-              action() {
-                this.cancel();
-              },
-            },
-            {
-              text: 'Back',
-              action() {
-                this.back();
-              },
-            },
-          ],
-          */
+          advanceOn: {
+            selector: '[data-cy="MeasurementTools-split-button-primary"]',
+            event: 'click',
+          },
         },
         {
           id: 'drawAnnotation',
@@ -457,28 +377,10 @@ window.config = {
             element: '.viewport-element',
             on: 'left-start',
           },
-          /**
-          buttons: [
-            {
-              text: 'Next',
-              action() {
-                this.next();
-              },
-            },
-            {
-              text: 'Skip',
-              action() {
-                this.cancel();
-              },
-            },
-            {
-              text: 'Back',
-              action() {
-                this.back();
-              },
-            },
-          ],
-          */
+          advanceOn: {
+            selector: 'body',
+            event: 'event::measurement_added',
+          },
         },
         {
           id: 'trackMeasurement',
@@ -487,28 +389,10 @@ window.config = {
             element: '[data-cy="prompt-begin-tracking-yes-btn"]',
             on: 'bottom',
           },
-          /**
-          buttons: [
-            {
-              text: 'Next',
-              action() {
-                this.next();
-              },
-            },
-            {
-              text: 'Skip',
-              action() {
-                this.cancel();
-              },
-            },
-            {
-              text: 'Back',
-              action() {
-                this.back();
-              },
-            },
-          ],
-          */
+          advanceOn: {
+            selector: '[data-cy="prompt-begin-tracking-yes-btn"]',
+            event: 'click',
+          },
         },
         {
           id: 'openMeasurementPanel',
@@ -517,58 +401,22 @@ window.config = {
             element: '#trackedMeasurements-btn',
             on: 'left-start',
           },
-          /**
-          buttons: [
-            {
-              text: 'Next',
-              action() {
-                this.next();
-              },
-            },
-            {
-              text: 'Skip',
-              action() {
-                this.cancel();
-              },
-            },
-            {
-              text: 'Back',
-              action() {
-                this.back();
-              },
-            },
-          ],
-          */
+          advanceOn: {
+            selector: '#trackedMeasurements-btn',
+            event: 'click',
+          },
         },
         {
           id: 'scrollAwayFromMeasurement',
           text: 'Scroll the images using the mouse wheel away from the measurement.',
           attachTo: {
-            element: '.viewport-element',
+            element: '.scroll',
             on: 'left-start',
           },
-          /**
-          buttons: [
-            {
-              text: 'Next',
-              action() {
-                this.next();
-              },
-            },
-            {
-              text: 'Skip',
-              action() {
-                this.cancel();
-              },
-            },
-            {
-              text: 'Back',
-              action() {
-                this.back();
-              },
-            },
-          ],
-          */
+          advanceOn: {
+            selector: '.cornerstone-viewport-element',
+            event: 'CORNERSTONE_TOOLS_MOUSE_WHEEL',
+          },
         },
         {
           id: 'jumpToMeasurement',
@@ -577,28 +425,10 @@ window.config = {
             element: '[data-cy="measurement-item"]',
             on: 'left-start',
           },
-          /**
-          buttons: [
-            {
-              text: 'Next',
-              action() {
-                this.next();
-              },
-            },
-            {
-              text: 'Skip',
-              action() {
-                this.cancel();
-              },
-            },
-            {
-              text: 'Back',
-              action() {
-                this.back();
-              },
-            },
-          ],
-          */
+          advanceOn: {
+            selector: '[data-cy="measurement-item"]',
+            event: 'click',
+          },
         },
         {
           id: 'changeLayout',
@@ -607,28 +437,10 @@ window.config = {
             element: '[data-cy="Layout"]',
             on: 'bottom',
           },
-          /**
-          buttons: [
-            {
-              text: 'Next',
-              action() {
-                this.next();
-              },
-            },
-            {
-              text: 'Skip',
-              action() {
-                this.cancel();
-              },
-            },
-            {
-              text: 'Back',
-              action() {
-                this.back();
-              },
-            },
-          ],
-          */
+          advanceOn: {
+            selector: '[data-cy="Layout"]',
+            event: 'click',
+          },
         },
         {
           id: 'selectLayout',
@@ -637,28 +449,10 @@ window.config = {
             element: '[data-cy="MPR"]',
             on: 'left-start',
           },
-          /**
-          buttons: [
-            {
-              text: 'Complete',
-              action() {
-                this.complete();
-              },
-            },
-            {
-              text: 'Skip',
-              action() {
-                this.cancel();
-              },
-            },
-            {
-              text: 'Back',
-              action() {
-                this.back();
-              },
-            },
-          ],
-          */
+          advanceOn: {
+            selector: '[data-cy="MPR"]',
+            event: 'click',
+          },
         },
       ],
       tourOptions: {},

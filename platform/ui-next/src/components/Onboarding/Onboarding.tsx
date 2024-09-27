@@ -17,7 +17,7 @@ const markTourAsShown = (tourId: string) => {
   }
 };
 
-const Onboarding = () => {
+const Onboarding = ({ servicesManager }: withAppTypes) => {
   const Shepherd = useShepherd();
   const location = useLocation();
   const tours = window.config.tours as Array<{
@@ -50,7 +50,7 @@ const Onboarding = () => {
           }
         });
 
-        if (!hasTourBeenShown(matchingTour.id)) {
+        if (true) {
           observer.observe(document.body, { childList: true, subtree: true });
           setTimeout(() => observer.disconnect(), 5000);
         }
@@ -59,6 +59,7 @@ const Onboarding = () => {
       startTour();
     }
   }, [Shepherd, tours, location.pathname]);
+
   return null;
 };
 
