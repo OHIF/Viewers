@@ -63,4 +63,4 @@ PanelSection.propTypes = {
   ),
 };
 
-export default PanelSection;
+export { PanelSection };

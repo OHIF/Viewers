@@ -1,10 +1,6 @@
 import React from 'react';
 
-export default function StudyBrowserViewOptions({
-  tabs,
-  onSelectTab,
-  activeTabName,
-}: withAppTypes) {
+export function StudyBrowserViewOptions({ tabs, onSelectTab, activeTabName }: withAppTypes) {
   const handleTabChange = (tabName: string) => {
     onSelectTab(tabName);
   };

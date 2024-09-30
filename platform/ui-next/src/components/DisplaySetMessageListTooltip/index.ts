@@ -1,3 +1,3 @@
-import DisplaySetMessageListTooltip from './DisplaySetMessageListTooltip';
+import { DisplaySetMessageListTooltip } from './DisplaySetMessageListTooltip';
 
-export default DisplaySetMessageListTooltip;
+export { DisplaySetMessageListTooltip };
