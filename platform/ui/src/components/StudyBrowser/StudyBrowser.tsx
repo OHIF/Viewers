@@ -23,7 +23,7 @@ const getTrackedSeries = displaySets => {
   return trackedSeries;
 };
 
-const noop = () => { };
+const noop = () => {};
 
 const StudyBrowser = ({
   tabs,
