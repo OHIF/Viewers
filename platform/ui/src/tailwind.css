@@ -29,6 +29,10 @@
   opacity: 0.5;
 }
 
+.mar-top {
+  margin-top: 100px;
+}
+
 @layer base {
   :root {
     --highlight: 191 74% 63%;

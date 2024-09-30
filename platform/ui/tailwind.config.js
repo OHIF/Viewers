@@ -19,45 +19,41 @@ module.exports = {
     colors: {
       overlay: 'rgba(0, 0, 0, 0.8)',
       transparent: 'transparent',
-      black: '#000',
-      white: '#fff',
+      black: '#0C0C23',
+      white: '#FAFAFA',
       initial: 'initial',
       inherit: 'inherit',
 
       aqua: {
-        pale: '#7bb2ce',
+        pale: '#FAFAFA',
       },
 
       primary: {
-        light: '#5acce6',
-        main: '#0944b3',
-        dark: '#090c29',
-        active: '#348cfd',
+        light: '#8BCAEB',
+        main: '#54D414',
+        dark: '#0C0C23',
+        active: '#FAFAFA',
       },
       inputfield: {
-        main: '#3a3f99',
-        disabled: '#2b166b',
-        focus: '#5acce6',
-        placeholder: '#39383f',
+        main: '#3f993a',
+        disabled: '#166b2b',
+        focus: '#cce65a',
+        placeholder: '#383f39',
       },
 
       secondary: {
-        light: '#3a3f99',
-        main: '#2b166b',
-        dark: '#041c4a',
-        active: '#1f1f27',
-      },
-
-      indigo: {
-        dark: '#0b1a42',
+        light: '#3f993a',
+        main: '#166b2b',
+        dark: '#54D414',
+        active: '#1f271f',
       },
 
       common: {
         bright: '#e1e1e1',
         light: '#a19fad',
         main: '#fff',
-        dark: '#726f7e',
-        active: '#2c3074',
+        dark: '#6f7e72',
+        active: '#30742c',
       },
       bkg: {
         low: '#050615',
@@ -79,16 +75,16 @@ module.exports = {
       },
 
       customblue: {
-        10: '#0A163F',
-        20: '#0B1F54',
-        30: '#09286e',
-        40: '#0E307F',
-        50: '#0F3A94',
-        80: '#1454D4',
-        100: '#c4fdff',
-        200: '#38daff',
-        300: '#1D204D',
-        400: '#90A0C1',
+        10: '#163F0A',
+        20: '#1F540B',
+        30: '#286e09',
+        40: '#307F0E',
+        50: '#3A940F',
+        80: '#34B404',
+        100: '#fdffc4',
+        200: '#daff38',
+        300: '#204D1D',
+        400: '#A0C190',
       },
 
       customgray: {
@@ -164,7 +160,7 @@ module.exports = {
       blue: {
         100: '#ebf8ff',
         200: '#bee3f8',
-        300: '#90cdf4',
+        300: '#0C0C23',
         400: '#63b3ed',
         500: '#4299e1',
         600: '#3182ce',
