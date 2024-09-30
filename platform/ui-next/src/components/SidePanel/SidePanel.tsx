@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useState } from 'react';
 import { Icons } from '../Icons';
 import { TooltipTrigger, TooltipContent, TooltipProvider, Tooltip } from '../Tooltip';
-import Separator from '../Separator';
+import { Separator } from '../Separator';
 
 type StyleMap = {
   open: {
