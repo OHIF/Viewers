@@ -63,4 +63,4 @@ DisplaySetMessageListTooltip.propTypes = {
   id: PropTypes.string,
 };
 
-export default DisplaySetMessageListTooltip;
+export { DisplaySetMessageListTooltip };

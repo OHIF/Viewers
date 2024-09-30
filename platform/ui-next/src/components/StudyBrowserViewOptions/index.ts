@@ -1,3 +1,3 @@
-import StudyBrowserViewOptions from './StudyBrowserViewOptions';
+import { StudyBrowserViewOptions } from './StudyBrowserViewOptions';
 
-export default StudyBrowserViewOptions;
+export { StudyBrowserViewOptions };
