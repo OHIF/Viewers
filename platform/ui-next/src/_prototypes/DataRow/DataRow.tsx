@@ -48,7 +48,7 @@ const DataRow: React.FC<DataRowProps> = ({
 
         {/* Number Box */}
         <div
-          className={`flex h-7 w-7 items-center justify-center rounded-l text-sm ${
+          className={`flex h-7 w-7 items-center justify-center rounded-l border-r border-black text-sm ${
             isSelected ? 'bg-highlight text-black' : 'bg-muted text-muted-foreground'
           }`}
         >
@@ -57,9 +57,9 @@ const DataRow: React.FC<DataRowProps> = ({
 
         {/* Color Circle (Optional) */}
         {colorHex && (
-          <div className="flex h-7 w-7 items-center justify-center">
+          <div className="flex h-7 w-5 items-center justify-center">
             <span
-              className="h-2 w-2 rounded-full"
+              className="ml-2 h-2 w-2 rounded-full"
               style={{ backgroundColor: colorHex }}
             ></span>
           </div>
@@ -107,7 +107,7 @@ const DataRow: React.FC<DataRowProps> = ({
       {/* Row 2 (Optional) */}
       {details && (
         <div className="flex h-7 items-center bg-black px-2 text-white">
-          <span className="truncate text-sm">{details}</span>
+          <span className="text-muted-foreground ml-7 truncate text-sm">{details}</span>
         </div>
       )}
     </div>
