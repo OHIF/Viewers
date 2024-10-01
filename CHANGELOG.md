@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.9.0-beta.92](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.91...v3.9.0-beta.92) (2024-10-01)
+
+
+### Bug Fixes
+
+* **Select:** select clear button ([#4398](https://github.com/OHIF/Viewers/issues/4398)) ([a11cd6d](https://github.com/OHIF/Viewers/commit/a11cd6d6cbe20d7d986430befb3398f910a03ada))
+
+
+
+
+
 # [3.9.0-beta.91](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.90...v3.9.0-beta.91) (2024-10-01)
 
 

@@ -1,6 +1,6 @@
 {
   "name": "@ohif/extension-dicom-pdf",
-  "version": "3.9.0-beta.91",
+  "version": "3.9.0-beta.92",
   "description": "OHIF extension for PDF display",
   "author": "OHIF",
   "license": "MIT",
