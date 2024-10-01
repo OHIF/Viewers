@@ -1,0 +1,42 @@
+[
+  {
+    "type": "Measurement",
+    "items": [
+      {
+        "id": 1,
+        "title": "Segmentation One",
+        "description": "Description for Measurement One.",
+        "optionalField": "Optional Info 1",
+        "colorHex": "#FF5733",
+        "details": "Secondary information"
+      },
+      {
+        "id": 2,
+        "title": "Segmentation Two",
+        "description": "Description for Measurement Two.",
+        "colorHex": "#33C1FF",
+        "details": "Secondary information"
+      }
+    ]
+  },
+  {
+    "type": "Segmentation",
+    "items": [
+      {
+        "id": 3,
+        "title": "Measurement Two",
+        "description": "Description for Segmentation One."
+      },
+      {
+        "id": 4,
+        "title": "Segmentation Two",
+        "description": "Description for Segmentation Two."
+      },
+      {
+        "id": 5,
+        "title": "Segmentation Two",
+        "description": "Description for Segmentation Two."
+      }
+    ]
+  }
+]
