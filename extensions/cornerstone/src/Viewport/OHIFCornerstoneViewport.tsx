@@ -18,7 +18,7 @@ import { getWindowLevelActionMenu } from '../components/WindowLevelActionMenu/ge
 import { useAppConfig } from '@state';
 
 import { LutPresentation, PositionPresentation } from '../types/Presentation';
-import { getViewportSegmentationMenu } from '../components/ViewportSegmentationMenu/getViewportSegmentationMenu';
+import { getViewportDataOverlaySettingsMenu } from '../components/ViewportDataOverlaySettingMenu';
 
 const STACK = 'stack';
 
@@ -354,7 +354,7 @@ const OHIFCornerstoneViewport = React.memo(
       viewportActionCornersService.addComponent({
         viewportId,
         id: 'segmentation',
-        component: getViewportSegmentationMenu({
+        component: getViewportDataOverlaySettingsMenu({
           viewportId,
           element: elementRef.current,
           displaySets,

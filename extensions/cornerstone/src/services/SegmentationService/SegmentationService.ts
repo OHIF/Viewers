@@ -22,6 +22,7 @@ import { SegmentationRepresentations } from '@cornerstonejs/tools/enums';
 import { addColorLUT } from '@cornerstonejs/tools/segmentation/addColorLUT';
 import { getNextColorLUTIndex } from '@cornerstonejs/tools/segmentation/getNextColorLUTIndex';
 import { Segment } from '@cornerstonejs/tools/types/SegmentationStateTypes';
+import { ContourStyle, LabelmapStyle, SurfaceStyle } from '@cornerstonejs/tools/types';
 
 const LABELMAP = csToolsEnums.SegmentationRepresentations.Labelmap;
 const CONTOUR = csToolsEnums.SegmentationRepresentations.Contour;
@@ -688,81 +689,35 @@ class SegmentationService extends PubSubService {
     cstSegmentation.activeSegmentation.setActiveSegmentation(viewportId, segmentationId);
   }
 
-  public getConfiguration = (viewportId?: string): SegmentationConfig => {
-    return {};
-    const brushSize = 1;
+  public getActiveSegmentation(viewportId: string): string | null {
+    return cstSegmentation.activeSegmentation.getActiveSegmentation(viewportId)?.segmentationId;
+  }
 
-    const brushThresholdGate = 1;
+  public getStyle = (specifier: {
+    viewportId: string;
+    segmentationId: string;
+    type: SegmentationRepresentations;
+    segmentIndex?: number;
+  }) => {
+    const style = cstSegmentation.config.style.getStyle(specifier);
 
-    const segmentationRepresentations = this.getSegmentationRepresentationsForViewport(viewportId);
-
-    const typeToUse = segmentationRepresentations?.[0]?.type || LABELMAP;
-    return {};
-
-    const config = cstSegmentation.config.getGlobalConfig();
-    const { renderInactiveRepresentations } = config;
-
-    const representation = config.representations[typeToUse];
-
-    const {
-      renderOutline,
-      outlineWidthActive,
-      renderFill,
-      fillAlpha,
-      fillAlphaInactive,
-      outlineOpacity,
-      outlineOpacityInactive,
-    } = representation as LabelmapConfig;
-
-    return {
-      brushSize,
-      brushThresholdGate,
-      fillAlpha,
-      fillAlphaInactive,
-      outlineWidthActive,
-      renderFill,
-      renderInactiveRepresentations,
-      renderOutline,
-      outlineOpacity,
-      outlineOpacityInactive,
-    };
+    return style;
   };
 
-  public setConfiguration = (configuration: SegmentationConfig): void => {
-    const {
-      fillAlpha,
-      fillAlphaInactive,
-      outlineWidthActive,
-      outlineOpacity,
-      renderFill,
-      renderInactiveRepresentations,
-      renderOutline,
-    } = configuration;
+  public setStyle = (
+    specifier: {
+      type: SegmentationRepresentations;
+      viewportId?: string;
+      segmentationId?: string;
+      segmentIndex?: number;
+    },
+    style: LabelmapStyle | ContourStyle | SurfaceStyle
+  ) => {
+    cstSegmentation.config.style.setStyle(specifier, style);
+  };
 
-    const setConfigValueIfDefined = (key, value, transformFn = null) => {
-      if (value !== undefined) {
-        const transformedValue = transformFn ? transformFn(value) : value;
-        this._setSegmentationConfig(key, transformedValue);
-      }
-    };
-
-    setConfigValueIfDefined('renderOutline', renderOutline);
-    setConfigValueIfDefined('outlineWidthActive', outlineWidthActive);
-    setConfigValueIfDefined('outlineOpacity', outlineOpacity, v => v / 100);
-    setConfigValueIfDefined('fillAlpha', fillAlpha, v => v / 100);
-    setConfigValueIfDefined('renderFill', renderFill);
-    setConfigValueIfDefined('fillAlphaInactive', fillAlphaInactive, v => v / 100);
-    setConfigValueIfDefined('outlineOpacityInactive', fillAlphaInactive, v =>
-      Math.max(0.75, v / 100)
-    );
-
-    if (renderInactiveRepresentations !== undefined) {
-      const config = cstSegmentation.config.getGlobalConfig();
-      config.renderInactiveRepresentations = renderInactiveRepresentations;
-      cstSegmentation.config.setGlobalConfig(config);
-    }
-
-    this._broadcastEvent(this.EVENTS.SEGMENTATION_REPRESENTATION_MODIFIED, this.getConfiguration());
+  public resetToGlobalStyle = () => {
+    cstSegmentation.config.style.resetToGlobalStyle();
   };
 
   /**
@@ -928,6 +883,14 @@ class SegmentationService extends PubSubService {
     this._setActiveSegment(segmentationId, segmentIndex);
   }
 
+  public setRenderInactiveSegmentations(viewportId: string, renderInactive: boolean): void {
+    cstSegmentation.config.style.setRenderInactiveSegmentations(viewportId, renderInactive);
+  }
+
+  public getRenderInactiveSegmentations(viewportId: string): boolean {
+    return cstSegmentation.config.style.getRenderInactiveSegmentations(viewportId);
+  }
+
   private _toOHIFSegmentationRepresentation(
     viewportId: string,
     csRepresentation: cstTypes.SegmentationRepresentation
@@ -977,7 +940,7 @@ class SegmentationService extends PubSubService {
       type,
     });
 
-    const id = `${segmentationId}-${type}-${viewportId}`
+    const id = `${segmentationId}-${type}-${viewportId}`;
 
     return {
       id: id,
@@ -1267,7 +1230,12 @@ class SegmentationService extends PubSubService {
       }
     }
 
-    const { fillAlpha } = this.getConfiguration(viewportId) || {};
+    const { fillAlpha } = this.getStyle({
+      viewportId,
+      segmentationId,
+      type: LABELMAP,
+      segmentIndex,
+    }) as cstTypes.LabelmapStyle;
 
     let startTime: number = null;
     const animation = (timestamp: number) => {
@@ -1278,7 +1246,7 @@ class SegmentationService extends PubSubService {
       const elapsed = timestamp - startTime;
       const progress = Math.min(elapsed / animationLength, 1);
 
-      cstSegmentation.config.style.setSegmentationSpecificStyle(
+      cstSegmentation.config.style.setStyle(
         {
           segmentationId,
           segmentIndex,
@@ -1292,7 +1260,7 @@ class SegmentationService extends PubSubService {
       if (progress < 1) {
         requestAnimationFrame(animation);
       } else {
-        cstSegmentation.config.style.setSegmentationSpecificStyle(
+        cstSegmentation.config.style.setStyle(
           {
             segmentationId,
             segmentIndex,
@@ -1321,7 +1289,7 @@ class SegmentationService extends PubSubService {
     const animate = (currentTime: number) => {
       const progress = (currentTime - startTime) / animationLength;
       if (progress >= 1) {
-        cstSegmentation.config.style.setSegmentationSpecificStyle(
+        cstSegmentation.config.style.setStyle(
           {
             segmentationId,
             segmentIndex,
@@ -1334,7 +1302,7 @@ class SegmentationService extends PubSubService {
 
       const reversedProgress = reverseEaseInOutBell(progress, 0.1);
 
-      cstSegmentation.config.style.setSegmentationSpecificStyle(
+      cstSegmentation.config.style.setStyle(
         {
           segmentationId,
           segmentIndex,
@@ -1358,12 +1326,18 @@ class SegmentationService extends PubSubService {
    * @param segmentationId - The ID of the segmentation.
    * @param isVisible - The new visibility state.
    */
-  public setSegmentationVisibility(viewportId: string, segmentationId: string, isVisible: boolean): void {
+  public setSegmentationVisibility(
+    viewportId: string,
+    segmentationId: string,
+    isVisible: boolean
+  ): void {
     const representations = this.getSegmentationRepresentations(viewportId, { segmentationId });
     const representation = representations[0];
 
     if (!representation) {
-      console.debug('No segmentation representation found for the given viewportId and segmentationId');
+      console.debug(
+        'No segmentation representation found for the given viewportId and segmentationId'
+      );
       return;
     }
 
@@ -1383,12 +1357,17 @@ class SegmentationService extends PubSubService {
    * @param segmentationId - The ID of the segmentation.
    * @returns The visibility state of the segmentation, or undefined if not found.
    */
-  public getSegmentationVisibility(viewportId: string, segmentationId: string): boolean | undefined {
+  public getSegmentationVisibility(
+    viewportId: string,
+    segmentationId: string
+  ): boolean | undefined {
     const representations = this.getSegmentationRepresentations(viewportId, { segmentationId });
     const representation = representations[0];
 
     if (!representation) {
-      console.debug('No segmentation representation found for the given viewportId and segmentationId');
+      console.debug(
+        'No segmentation representation found for the given viewportId and segmentationId'
+      );
       return undefined;
     }
 

@@ -1,8 +1,8 @@
-import React, { ReactNode } from 'react';
-import { Button, Popover } from '@ohif/ui-next';
+import React, { ReactNode, useState, useEffect } from 'react';
+import { Button, Icons, Popover } from '@ohif/ui-next';
 import ViewportSegmentationMenu from './ViewportSegmentationMenu';
 
-export function getViewportSegmentationMenu({
+export function ViewportSegmentationMenuWrapper({
   viewportId,
   displaySets,
   servicesManager,
@@ -10,11 +10,33 @@ export function getViewportSegmentationMenu({
   location,
 }: withAppTypes<{
   viewportId: string;
+  4;
   element: HTMLElement;
 }>): ReactNode {
-  const viewportActionCornersService = servicesManager.services.viewportActionCornersService;
+  const { segmentationService, viewportActionCornersService } = servicesManager.services;
   const ViewportActionCornersLocations = viewportActionCornersService.LOCATIONS;
-  // get align and side from the locations
+  const [representations, setRepresentations] = useState([]);
+
+  useEffect(() => {
+    const eventSubscriptions = [
+      segmentationService.EVENTS.SEGMENTATION_MODIFIED,
+      segmentationService.EVENTS.SEGMENTATION_REMOVED,
+      segmentationService.EVENTS.SEGMENTATION_REPRESENTATION_MODIFIED,
+    ];
+
+    const allUnsubscribeFunctions = eventSubscriptions.map(evt => {
+      const { unsubscribe } = segmentationService.subscribe(evt, () => {
+        const representations = segmentationService.getSegmentationRepresentations(viewportId);
+        setRepresentations(representations);
+      });
+
+      return unsubscribe;
+    });
+
+    return () => {
+      allUnsubscribeFunctions.forEach(unsubscribe => unsubscribe());
+    };
+  }, [segmentationService, viewportId]);
 
   const getAlignAndSide = location => {
     switch (location) {
@@ -34,14 +56,21 @@ export function getViewportSegmentationMenu({
 
   const { align, side } = getAlignAndSide(location);
 
+  if (!representations.length) {
+    return null;
+  }
+
   return (
     <Popover.Popover>
-      <Popover.PopoverTrigger asChild>
+      <Popover.PopoverTrigger
+        asChild
+        className="flex items-center justify-center"
+      >
         <Button
           variant="ghost"
           size="icon"
         >
-          SEG
+          <Icons.ViewportViews className="text-highlight" />
         </Button>
       </Popover.PopoverTrigger>
       <Popover.PopoverContent

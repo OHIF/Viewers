@@ -142,9 +142,12 @@ export default async function init({
     clearOnModeExit: true,
   });
 
-  cornerstoneTools.segmentation.config.style.setGlobalContourStyle({
-    renderFill: false,
-  });
+  cornerstoneTools.segmentation.config.style.setStyle(
+    { type: 'Contour' },
+    {
+      renderFill: false,
+    }
+  );
 
   const metadataProvider = OHIF.classes.MetadataProvider;
 
