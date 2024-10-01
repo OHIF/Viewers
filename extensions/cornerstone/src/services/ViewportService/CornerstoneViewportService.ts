@@ -404,6 +404,14 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
   ): void {
     const renderingEngine = this.getRenderingEngine();
 
+    // if not valid viewportData then return early
+    if (viewportData.viewportType === csEnums.ViewportType.STACK) {
+      // check if imageIds is valid
+      if (!viewportData.data[0].imageIds?.length) {
+        return;
+      }
+    }
+
     // This is the old viewportInfo, which may have old options but we might be
     // using its viewport (same viewportId as the new viewportInfo)
     const viewportInfo = this.viewportsById.get(viewportId);
@@ -640,6 +648,10 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     }
 
     this._handleOverlays(viewport);
+
+    if (!imageIds?.length) {
+      return;
+    }
 
     return viewport.setStack(imageIds, initialImageIndexToUse).then(() => {
       viewport.setProperties({ ...properties });

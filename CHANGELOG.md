@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.9.0-beta.90](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.89...v3.9.0-beta.90) (2024-09-30)
+
+
+### Bug Fixes
+
+* 🐛 Fix imports for ui-next ([#4394](https://github.com/OHIF/Viewers/issues/4394)) ([43efed2](https://github.com/OHIF/Viewers/commit/43efed207e0d8d13bcbf52fab14c1be034d22d0c))
+
+
+
+
+
 # [3.9.0-beta.89](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.88...v3.9.0-beta.89) (2024-09-27)
 
 **Note:** Version bump only for package ohif-monorepo-root

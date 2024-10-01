@@ -6,7 +6,6 @@ import toolNames from '../tools/toolNames';
 
 export default function addSRAnnotation(measurement, imageId, frameNumber) {
   let toolName = toolNames.DICOMSRDisplay;
-
   const renderableData = measurement.coords.reduce((acc, coordProps) => {
     acc[coordProps.GraphicType] = acc[coordProps.GraphicType] || [];
     acc[coordProps.GraphicType].push(getRenderableData({ ...coordProps, imageId }));
@@ -18,11 +17,19 @@ export default function addSRAnnotation(measurement, imageId, frameNumber) {
   const graphicTypePoints = renderableData[graphicType];
 
   /** TODO: Read the tool name from the DICOM SR identification type in the future. */
-  if (valueType === 'SCOORD3D') {
-    toolName = toolNames.SCOORD3DPoint;
+  let frameOfReferenceUID = null;
+
+  if (imageId) {
+    const imagePlaneModule = metaData.get('imagePlaneModule', imageId);
+    frameOfReferenceUID = imagePlaneModule?.frameOfReferenceUID;
   }
 
-  const imagePlaneModule = metaData.get('imagePlaneModule', imageId);
+  if (valueType === 'SCOORD3D') {
+    toolName = toolNames.SRSCOORD3DPoint;
+
+    // get the ReferencedFrameOfReferenceUID from the measurement
+    frameOfReferenceUID = measurement.coords[0].ReferencedFrameOfReferenceSequence;
+  }
 
   const SRAnnotation: Types.Annotation = {
     annotationUID: TrackingUniqueIdentifier,
@@ -33,20 +40,18 @@ export default function addSRAnnotation(measurement, imageId, frameNumber) {
       toolName,
       valueType,
       graphicType,
-      FrameOfReferenceUID: imagePlaneModule.frameOfReferenceUID,
+      FrameOfReferenceUID: frameOfReferenceUID,
       referencedImageId: imageId,
-      /** Used by SCOORD3DPoint */
-      cameraFocalPoint: toolName === toolNames.SCOORD3DPoint ? graphicTypePoints[0][0] : undefined,
     },
     data: {
       label: measurement.labels?.[0]?.value || undefined,
+      displayText: measurement.displayText || undefined,
       handles: {
         textBox: measurement.textBox ?? {},
         points: graphicTypePoints[0],
       },
       cachedStats: {},
       frameNumber,
-      /** Used by DICOMSRDisplayTool */
       renderableData,
       TrackingUniqueIdentifier,
       labels: measurement.labels,
