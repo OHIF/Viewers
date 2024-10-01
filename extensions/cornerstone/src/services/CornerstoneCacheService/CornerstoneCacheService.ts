@@ -188,6 +188,12 @@ class CornerstoneCacheService {
 
     const displaySet = nonOverlayDisplaySets[0];
 
+    if (displaySet.load && displaySet.load instanceof Function) {
+      const { userAuthenticationService } = this.servicesManager.services;
+      const headers = userAuthenticationService.getAuthorizationHeader();
+      await displaySet.load({ headers });
+    }
+
     let stackImageIds = this.stackImageIds.get(displaySet.displaySetInstanceUID);
 
     if (!stackImageIds) {

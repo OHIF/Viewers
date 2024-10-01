@@ -47,7 +47,6 @@ const measurementServiceMappingsFactory = (
       SplineROI: POLYLINE,
       LivewireContour: POLYLINE,
       Probe: POINT,
-      SCOORD3DPoint: POINT,
       UltrasoundDirectional: POLYLINE,
     };
 

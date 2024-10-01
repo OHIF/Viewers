@@ -4,7 +4,12 @@ import { adaptersSR } from '@cornerstonejs/adapters';
 
 import addSRAnnotation from './utils/addSRAnnotation';
 import isRehydratable from './utils/isRehydratable';
-import { SOPClassHandlerName, SOPClassHandlerId } from './id';
+import {
+  SOPClassHandlerName,
+  SOPClassHandlerId,
+  SOPClassHandlerId3D,
+  SOPClassHandlerName3D,
+} from './id';
 import { CodeNameCodeSequenceValues, CodingSchemeDesignators } from './enums';
 
 const { sopClassDictionary } = utils;
@@ -25,8 +30,6 @@ const sopClassUids = [
   sopClassDictionary.BasicTextSR,
   sopClassDictionary.EnhancedSR,
   sopClassDictionary.ComprehensiveSR,
-  sopClassDictionary.Comprehensive3DSR,
-  // sopClassDictionary.MammographyCADSR,
 ];
 
 const validateSameStudyUID = (uid: string, instances): void => {
@@ -92,6 +95,8 @@ function _getDisplaySetsFromSeries(
   } = instance;
   validateSameStudyUID(instance.StudyInstanceUID, instances);
 
+  const is3DSR = SOPClassUID === sopClassDictionary.Comprehensive3DSR;
+
   const isImagingMeasurementReport =
     ConceptNameCodeSequence?.CodeValue === CodeNameCodeSequenceValues.ImagingMeasurementReport;
 
@@ -104,7 +109,7 @@ function _getDisplaySetsFromSeries(
     SOPInstanceUID,
     SeriesInstanceUID,
     StudyInstanceUID,
-    SOPClassHandlerId,
+    SOPClassHandlerId: is3DSR ? SOPClassHandlerId3D : SOPClassHandlerId,
     SOPClassUID,
     instances,
     referencedImages: null,
@@ -124,19 +129,19 @@ function _getDisplaySetsFromSeries(
 
 /**
  * Loads the display set with the given services and extension manager.
- * @param displaySet - The display set to load.
+ * @param srDisplaySet - The display set to load.
  * @param servicesManager - The services manager containing displaySetService and measurementService.
  * @param extensionManager - The extension manager containing data sources.
  */
 async function _load(
-  displaySet: Types.DisplaySet,
+  srDisplaySet: Types.DisplaySet,
   servicesManager: AppTypes.ServicesManager,
   extensionManager: AppTypes.ExtensionManager
 ) {
   const { displaySetService, measurementService } = servicesManager.services;
   const dataSources = extensionManager.getDataSources();
   const dataSource = dataSources[0];
-  const { ContentSequence } = displaySet.instance;
+  const { ContentSequence } = srDisplaySet.instance;
 
   async function retrieveBulkData(obj, parentObj = null, key = null) {
     for (const prop in obj) {
@@ -147,9 +152,9 @@ async function _load(
       } else if (prop === 'BulkDataURI') {
         const value = await dataSource.retrieve.bulkDataURI({
           BulkDataURI: obj[prop],
-          StudyInstanceUID: displaySet.instance.StudyInstanceUID,
-          SeriesInstanceUID: displaySet.instance.SeriesInstanceUID,
-          SOPInstanceUID: displaySet.instance.SOPInstanceUID,
+          StudyInstanceUID: srDisplaySet.instance.StudyInstanceUID,
+          SeriesInstanceUID: srDisplaySet.instance.SeriesInstanceUID,
+          SOPInstanceUID: srDisplaySet.instance.SOPInstanceUID,
         });
         if (parentObj && key) {
           parentObj[key] = new Float32Array(value);
@@ -158,16 +163,16 @@ async function _load(
     }
   }
 
-  if (displaySet.isLoaded !== true) {
+  if (srDisplaySet.isLoaded !== true) {
     await retrieveBulkData(ContentSequence);
   }
 
-  if (displaySet.isImagingMeasurementReport) {
-    displaySet.referencedImages = _getReferencedImagesList(ContentSequence);
-    displaySet.measurements = _getMeasurements(ContentSequence);
+  if (srDisplaySet.isImagingMeasurementReport) {
+    srDisplaySet.referencedImages = _getReferencedImagesList(ContentSequence);
+    srDisplaySet.measurements = _getMeasurements(ContentSequence);
   } else {
-    displaySet.referencedImages = [];
-    displaySet.measurements = [];
+    srDisplaySet.referencedImages = [];
+    srDisplaySet.measurements = [];
   }
 
   const mappings = measurementService.getSourceMappings(
@@ -175,14 +180,14 @@ async function _load(
     CORNERSTONE_3D_TOOLS_SOURCE_VERSION
   );
 
-  displaySet.isHydrated = false;
-  displaySet.isRehydratable = isRehydratable(displaySet, mappings);
-  displaySet.isLoaded = true;
+  srDisplaySet.isHydrated = false;
+  srDisplaySet.isRehydratable = isRehydratable(srDisplaySet, mappings);
+  srDisplaySet.isLoaded = true;
 
   /** Check currently added displaySets and add measurements if the sources exist */
   displaySetService.activeDisplaySets.forEach(activeDisplaySet => {
     _checkIfCanAddMeasurementsToDisplaySet(
-      displaySet,
+      srDisplaySet,
       activeDisplaySet,
       dataSource,
       servicesManager
@@ -198,7 +203,7 @@ async function _load(
      */
     displaySetsAdded.forEach(newDisplaySet => {
       _checkIfCanAddMeasurementsToDisplaySet(
-        displaySet,
+        srDisplaySet,
         newDisplaySet,
         dataSource,
         servicesManager
@@ -223,7 +228,7 @@ function _checkIfCanAddMeasurementsToDisplaySet(
 ) {
   const { customizationService } = servicesManager.services;
 
-  let unloadedMeasurements = srDisplaySet.measurements.filter(
+  const unloadedMeasurements = srDisplaySet.measurements.filter(
     measurement => measurement.loaded === false
   );
 
@@ -235,9 +240,9 @@ function _checkIfCanAddMeasurementsToDisplaySet(
     return;
   }
 
-  const { sopClassUids } = newDisplaySet;
+  // const { sopClassUids } = newDisplaySet;
   // Create a Set for faster lookups
-  const sopClassUidSet = new Set(sopClassUids);
+  // const sopClassUidSet = new Set(sopClassUids);
 
   // Create a Map to efficiently look up ImageIds by SOPInstanceUID and frame number
   const imageIdMap = new Map<string, string>();
@@ -249,53 +254,11 @@ function _checkIfCanAddMeasurementsToDisplaySet(
     imageIdMap.set(key, imageId);
   }
 
-  // Filter unloaded measurements based on SOPClassUID
-  unloadedMeasurements = unloadedMeasurements.filter(measurement =>
-    measurement.coords.some(coord => {
-      if (coord.ReferencedSOPSequence === undefined && coord.ReferencedFrameOfReferenceSequence) {
-        for (const [key, imageId] of imageIdMap) {
-          const imageMetadata = metadataProvider.get('instance', imageId);
-          if (imageMetadata.FrameOfReferenceUID !== coord.ReferencedFrameOfReferenceSequence) {
-            continue;
-          }
-
-          const sliceNormal = [0, 0, 0];
-          const orientation = imageMetadata.ImageOrientationPatient;
-          sliceNormal[0] = orientation[1] * orientation[5] - orientation[2] * orientation[4];
-          sliceNormal[1] = orientation[2] * orientation[3] - orientation[0] * orientation[5];
-          sliceNormal[2] = orientation[0] * orientation[4] - orientation[1] * orientation[3];
-
-          let distanceAlongNormal = 0;
-          for (let j = 0; j < 3; ++j) {
-            distanceAlongNormal += sliceNormal[j] * imageMetadata.ImagePositionPatient[j];
-          }
-
-          /** Assuming 2 mm tolerance */
-          if (Math.abs(distanceAlongNormal - coord.GraphicData[2]) > 2) {
-            continue;
-          }
-
-          const [SOPInstanceUID, frameNumber] = key.split(':');
-          coord.ReferencedSOPSequence = {
-            ReferencedSOPClassUID: imageMetadata.SOPClassUID,
-            ReferencedSOPInstanceUID: SOPInstanceUID,
-            ReferencedFrameNumber: frameNumber !== '1' ? parseInt(frameNumber, 10) : undefined,
-          };
-
-          break;
-        }
-      }
-
-      return (
-        coord.ReferencedSOPSequence &&
-        sopClassUidSet.has(coord.ReferencedSOPSequence.ReferencedSOPClassUID)
-      );
-    })
-  );
-
-  if (unloadedMeasurements.length === 0) {
+  if (!unloadedMeasurements?.length) {
     return;
   }
+
+  const is3DSR = srDisplaySet.SOPClassUID === sopClassDictionary.Comprehensive3DSR;
 
   for (let j = unloadedMeasurements.length - 1; j >= 0; j--) {
     let measurement = unloadedMeasurements[j];
@@ -310,6 +273,13 @@ function _checkIfCanAddMeasurementsToDisplaySet(
         StudyInstanceUID: srDisplaySet.StudyInstanceUID,
         SeriesInstanceUID: srDisplaySet.SeriesInstanceUID,
       });
+    }
+
+    // if it is 3d SR we can just add the SR annotation
+    if (is3DSR) {
+      addSRAnnotation(measurement, null, null);
+      measurement.loaded = true;
+      continue;
     }
 
     const referencedSOPSequence = measurement.coords[0].ReferencedSOPSequence;
@@ -392,6 +362,11 @@ function getSopClassHandlerModule({ servicesManager, extensionManager }) {
       sopClassUids,
       getDisplaySetsFromSeries,
     },
+    {
+      name: SOPClassHandlerName3D,
+      sopClassUids: [sopClassDictionary.Comprehensive3DSR],
+      getDisplaySetsFromSeries,
+    },
   ];
 }
 
@@ -417,7 +392,6 @@ function _getMeasurements(ImagingMeasurementReportContentSequence) {
 
   const mergedContentSequencesByTrackingUniqueIdentifiers =
     _getMergedContentSequencesByTrackingUniqueIdentifiers(MeasurementGroups);
-
   const measurements = [];
 
   Object.keys(mergedContentSequencesByTrackingUniqueIdentifiers).forEach(

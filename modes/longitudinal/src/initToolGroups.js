@@ -70,7 +70,7 @@ function initDefaultToolGroup(
       { toolName: toolNames.Bidirectional },
       { toolName: toolNames.DragProbe },
       { toolName: toolNames.Probe },
-      { toolName: SRToolNames.SCOORD3DPoint },
+      // Todo: this should get moved to the cornerstone-dicom-sr extension
       { toolName: toolNames.EllipticalROI },
       { toolName: toolNames.CircleROI },
       { toolName: toolNames.RectangleROI },
@@ -92,7 +92,13 @@ function initDefaultToolGroup(
       { toolName: toolNames.LivewireContour },
       { toolName: toolNames.WindowLevelRegion },
     ],
-    enabled: [{ toolName: toolNames.ImageOverlayViewer }, { toolName: toolNames.ReferenceLines }],
+    enabled: [
+      { toolName: toolNames.ImageOverlayViewer },
+      { toolName: toolNames.ReferenceLines },
+      {
+        toolName: SRToolNames.SRSCOORD3DPoint,
+      },
+    ],
     disabled: [
       {
         toolName: toolNames.AdvancedMagnify,
@@ -168,7 +174,9 @@ function initSRToolGroup(extensionManager, toolGroupService) {
     enabled: [
       {
         toolName: SRToolNames.DICOMSRDisplay,
-        bindings: [],
+      },
+      {
+        toolName: SRToolNames.SRSCOORD3DPoint,
       },
     ],
     // disabled
@@ -233,7 +241,8 @@ function initMPRToolGroup(extensionManager, toolGroupService, commandsManager, m
       { toolName: toolNames.Bidirectional },
       { toolName: toolNames.DragProbe },
       { toolName: toolNames.Probe },
-      { toolName: SRToolNames.SCOORD3DPoint },
+      // Todo: this should get moved to the cornerstone-dicom-sr extension
+      { toolName: SRToolNames.SRSCOORD3DPoint },
       { toolName: toolNames.EllipticalROI },
       { toolName: toolNames.CircleROI },
       { toolName: toolNames.RectangleROI },

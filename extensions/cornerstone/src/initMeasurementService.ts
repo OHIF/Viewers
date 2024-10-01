@@ -165,14 +165,6 @@ const initMeasurementService = (
 
   measurementService.addMapping(
     csTools3DVer1MeasurementSource,
-    'SCOORD3DPoint',
-    Probe.matchingCriteria,
-    Probe.toAnnotation,
-    Probe.toMeasurement
-  );
-
-  measurementService.addMapping(
-    csTools3DVer1MeasurementSource,
     'UltrasoundDirectionalTool',
     UltrasoundDirectional.matchingCriteria,
     UltrasoundDirectional.toAnnotation,

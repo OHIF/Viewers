@@ -293,10 +293,6 @@ function _mapMeasurementToDisplay(measurement, displaySetService) {
 
   // TODO: We don't deal with multiframe well yet, would need to update
   // This in OHIF-312 when we add FrameIndex to measurements
-  const displaySets = displaySetService.getDisplaySetsForSeries(referenceSeriesUID);
-  if (!displaySets[0]?.instances) {
-    throw new Error('The tracked measurements panel should only be tracking "stack" displaySets.');
-  }
 
   const {
     displayText: baseDisplayText,
