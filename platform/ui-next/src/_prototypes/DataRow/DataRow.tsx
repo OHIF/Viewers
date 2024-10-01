@@ -38,7 +38,7 @@ const DataRow: React.FC<DataRowProps> = ({
     <div className="flex flex-col">
       {/* Row 1 with 'group' class to enable group-hover */}
       <div
-        className={`flex h-7 items-center px-2 ${
+        className={`flex h-7 items-center ${
           isSelected ? 'bg-popover' : 'bg-muted'
         } group relative cursor-pointer`}
         onClick={onSelect}
@@ -48,7 +48,7 @@ const DataRow: React.FC<DataRowProps> = ({
 
         {/* Number Box */}
         <div
-          className={`mr-2 flex h-7 w-7 items-center justify-center rounded ${
+          className={`flex h-7 w-7 items-center justify-center rounded-l text-sm ${
             isSelected ? 'bg-highlight text-black' : 'bg-muted text-muted-foreground'
           }`}
         >
@@ -57,7 +57,7 @@ const DataRow: React.FC<DataRowProps> = ({
 
         {/* Color Circle (Optional) */}
         {colorHex && (
-          <div className="mr-2 flex h-7 w-7 items-center justify-center">
+          <div className="flex h-7 w-7 items-center justify-center">
             <span
               className="h-2 w-2 rounded-full"
               style={{ backgroundColor: colorHex }}
@@ -66,9 +66,9 @@ const DataRow: React.FC<DataRowProps> = ({
         )}
 
         {/* Label */}
-        <div className="flex-1 overflow-hidden">
+        <div className="ml-2 flex-1 overflow-hidden">
           <span
-            className={`truncate text-sm ${
+            className={`truncate pr-2 text-sm ${
               isSelected ? 'text-foreground' : 'text-muted-foreground'
             }`}
           >
@@ -90,7 +90,7 @@ const DataRow: React.FC<DataRowProps> = ({
                 ⋮
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent>
+            <DropdownMenuContent align="end">
               {actionOptions.map((option, index) => (
                 <DropdownMenuItem
                   key={index}

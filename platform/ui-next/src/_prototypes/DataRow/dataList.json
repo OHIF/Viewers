@@ -4,17 +4,15 @@
     "items": [
       {
         "id": 1,
-        "title": "Segmentation One",
+        "title": "Measurement One",
         "description": "Description for Measurement One.",
         "optionalField": "Optional Info 1",
-        "colorHex": "#FF5733",
         "details": "Secondary information"
       },
       {
         "id": 2,
-        "title": "Segmentation Two",
+        "title": "Measurement Two",
         "description": "Description for Measurement Two.",
-        "colorHex": "#33C1FF",
         "details": "Secondary information"
       }
     ]
@@ -24,17 +22,20 @@
     "items": [
       {
         "id": 3,
-        "title": "Measurement Two",
+        "title": "Segmentation One",
+        "colorHex": "#FF5733",
         "description": "Description for Segmentation One."
       },
       {
         "id": 4,
         "title": "Segmentation Two",
+        "colorHex": "#FF5733",
         "description": "Description for Segmentation Two."
       },
       {
         "id": 5,
-        "title": "Segmentation Two",
+        "title": "Segmentation Three",
+        "colorHex": "#FF5733",
         "description": "Description for Segmentation Two."
       }
     ]
