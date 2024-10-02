@@ -1,5 +1,3 @@
-// src/_prototypes/DataRow/DataRow.tsx
-
 import React from 'react';
 import { Button } from '../../components/Button/Button';
 import {
@@ -7,7 +5,8 @@ import {
   DropdownMenuTrigger,
   DropdownMenuContent,
   DropdownMenuItem,
-} from '../../components/DropdownMenu'; // Adjust the import path as necessary
+} from '../../components/DropdownMenu';
+import { Icons } from '../../components/Icons/Icons';
 
 interface DataRowProps {
   number: number;
@@ -36,9 +35,9 @@ const DataRow: React.FC<DataRowProps> = ({
 }) => {
   return (
     <div className="flex flex-col">
-      {/* Row 1 with 'group' class to enable group-hover */}
+      {/* Row 1 */}
       <div
-        className={`flex h-7 items-center ${
+        className={`flex items-center ${
           isSelected ? 'bg-popover' : 'bg-muted'
         } group relative cursor-pointer`}
         onClick={onSelect}
@@ -69,7 +68,7 @@ const DataRow: React.FC<DataRowProps> = ({
         <div className="ml-2 flex-1 overflow-hidden">
           <span
             className={`truncate pr-2 text-sm ${
-              isSelected ? 'text-foreground' : 'text-muted-foreground'
+              isSelected ? 'text-highlight' : 'text-muted-foreground'
             }`}
           >
             {title}
@@ -77,17 +76,19 @@ const DataRow: React.FC<DataRowProps> = ({
         </div>
 
         {/* Actions Button (Appears on Hover of the entire row) */}
-        <div className="relative">
+        <div className="relative mr-0.5 flex items-center">
+          {' '}
+          {/* Updated div */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
                 size="small"
-                variant="ghost" // Using the ghost variant
+                variant="ghost"
                 className="h-6 w-6 opacity-0 transition-opacity group-hover:opacity-100"
                 aria-label="Actions"
-                onClick={e => e.stopPropagation()} // Prevent row selection on button click
+                onClick={e => e.stopPropagation()}
               >
-                ⋮
+                <Icons.More className="h-6 w-6" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
@@ -104,10 +105,12 @@ const DataRow: React.FC<DataRowProps> = ({
         </div>
       </div>
 
-      {/* Row 2 (Optional) */}
+      {/* Row 2 (Details) */}
       {details && (
-        <div className="flex h-7 items-center bg-black px-2 text-white">
-          <span className="text-muted-foreground ml-7 truncate text-sm">{details}</span>
+        <div className="ml-7 bg-black px-2 py-1">
+          <div className="text-secondary-foreground whitespace-pre-line text-sm leading-normal">
+            {details}
+          </div>
         </div>
       )}
     </div>

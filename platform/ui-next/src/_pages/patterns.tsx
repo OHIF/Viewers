@@ -4,12 +4,10 @@ import React, { useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import '../tailwind.css';
 
-// Component imports
 import DataRow from '../_prototypes/DataRow/DataRow';
 import dataList from '../_prototypes/DataRow/dataList.json';
 import actionOptionsMap from '../_prototypes/DataRow/actionOptionsMap';
 
-// TypeScript interfaces (if using TypeScript)
 interface DataItem {
   id: number;
   title: string;
@@ -26,16 +24,16 @@ interface ListGroup {
 
 function Patterns() {
   // State to track the selected row ID
-  const [selectedRowId, setSelectedRowId] = useState<number | null>(null);
+  const [selectedRowId, setSelectedRowId] = useState<string | null>(null); // Changed to string for composite ID
 
   // Handle actions from DataRow
-  const handleAction = (id: number, action: string) => {
+  const handleAction = (id: string, action: string) => {
     console.log(`Action "${action}" triggered for item with id: ${id}`);
     // Implement actual action logic here
   };
 
   // Handle row selection
-  const handleRowSelect = (id: number) => {
+  const handleRowSelect = (id: string) => {
     setSelectedRowId(prevSelectedId => (prevSelectedId === id ? null : id));
   };
 
@@ -46,30 +44,32 @@ function Patterns() {
       {/* Iterate over each list group */}
       {dataList.map((listGroup: ListGroup, groupIndex: number) => (
         <div
-          key={groupIndex}
-          className="mb-8"
+          key={`original-${groupIndex}`}
+          className="mb-18"
         >
           {/* List Group Title */}
-          <h2 className="mb-4 text-2xl font-bold">{listGroup.type}</h2>
+          <h2 className="mb-20 text-2xl font-bold">{listGroup.type}</h2>
 
           {/* Container for DataRow components */}
           <div className="space-y-px">
-            {' '}
-            {listGroup.items.map((item, index) => (
-              <DataRow
-                key={item.id}
-                number={index + 1}
-                title={item.title}
-                description={item.description}
-                optionalField={item.optionalField}
-                colorHex={item.colorHex}
-                details={item.details}
-                actionOptions={actionOptionsMap[listGroup.type] || ['Action']}
-                onAction={(action: string) => handleAction(item.id, action)}
-                isSelected={selectedRowId === item.id}
-                onSelect={() => handleRowSelect(item.id)}
-              />
-            ))}
+            {listGroup.items.map((item, index) => {
+              const compositeId = `${item.type}-${item.id}`; // Ensure 'type' is present in DataItem if needed
+              return (
+                <DataRow
+                  key={`original-${compositeId}`} // Prefix to ensure uniqueness
+                  number={index + 1}
+                  title={item.title}
+                  description={item.description}
+                  optionalField={item.optionalField}
+                  colorHex={item.colorHex}
+                  details={item.details}
+                  actionOptions={actionOptionsMap[listGroup.type] || ['Action']}
+                  onAction={(action: string) => handleAction(compositeId, action)}
+                  isSelected={selectedRowId === compositeId}
+                  onSelect={() => handleRowSelect(compositeId)}
+                />
+              );
+            })}
           </div>
         </div>
       ))}
@@ -80,15 +80,15 @@ function Patterns() {
           {dataList.map((listGroup: ListGroup, groupIndex: number) => (
             <div
               key={`panel-${groupIndex}`}
-              className="mb-4"
+              className="mb-20"
             >
               {/* List Group Title */}
-              <h3 className="mb-2 text-xl font-semibold">{listGroup.type}</h3>
+              <h3 className="mb-20 text-xl font-semibold">{listGroup.type}</h3>
 
               {/* Container for DataRow components */}
               <div className="space-y-px">
                 {listGroup.items.map((item, index) => {
-                  const compositeId = `${item.listType}-${item.id}-panel`; // Unique composite ID for panel
+                  const compositeId = `${item.type}-${item.id}-panel`; // Unique composite ID for panel
                   return (
                     <DataRow
                       key={`panel-${compositeId}`} // Prefix to ensure uniqueness
