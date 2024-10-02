@@ -73,6 +73,43 @@ function Patterns() {
           </div>
         </div>
       ))}
+
+      {/* New 250px Wide Panel */}
+      <div className="w-64">
+        <div className="space-y-1">
+          {dataList.map((listGroup: ListGroup, groupIndex: number) => (
+            <div
+              key={`panel-${groupIndex}`}
+              className="mb-4"
+            >
+              {/* List Group Title */}
+              <h3 className="mb-2 text-xl font-semibold">{listGroup.type}</h3>
+
+              {/* Container for DataRow components */}
+              <div className="space-y-px">
+                {listGroup.items.map((item, index) => {
+                  const compositeId = `${item.listType}-${item.id}-panel`; // Unique composite ID for panel
+                  return (
+                    <DataRow
+                      key={`panel-${compositeId}`} // Prefix to ensure uniqueness
+                      number={index + 1}
+                      title={item.title}
+                      description={item.description}
+                      optionalField={item.optionalField}
+                      colorHex={item.colorHex}
+                      details={item.details}
+                      actionOptions={actionOptionsMap[listGroup.type] || ['Action']}
+                      onAction={(action: string) => handleAction(compositeId, action)}
+                      isSelected={selectedRowId === compositeId}
+                      onSelect={() => handleRowSelect(compositeId)}
+                    />
+                  );
+                })}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }
