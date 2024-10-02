@@ -1,4 +1,6 @@
-import React from 'react';
+// src/_prototypes/DataRow/DataRow.tsx
+
+import React, { useState } from 'react';
 import { Button } from '../../components/Button/Button';
 import {
   DropdownMenu,
@@ -33,9 +35,12 @@ const DataRow: React.FC<DataRowProps> = ({
   isSelected = false,
   onSelect,
 }) => {
+  // State to track if the dropdown is open
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
   return (
     <div className="flex flex-col">
-      {/* Row 1 */}
+      {/* Row 1 with 'group' class to enable group-hover */}
       <div
         className={`flex items-center ${
           isSelected ? 'bg-popover' : 'bg-muted'
@@ -75,18 +80,18 @@ const DataRow: React.FC<DataRowProps> = ({
           </span>
         </div>
 
-        {/* Actions Button (Appears on Hover of the entire row) */}
+        {/* Actions Button (Appears on Hover or when Dropdown is Open or Selected) */}
         <div className="relative mr-0.5 flex items-center">
-          {' '}
-          {/* Updated div */}
-          <DropdownMenu>
+          <DropdownMenu onOpenChange={open => setIsDropdownOpen(open)}>
             <DropdownMenuTrigger asChild>
               <Button
                 size="small"
                 variant="ghost"
-                className="h-6 w-6 opacity-0 transition-opacity group-hover:opacity-100"
+                className={`h-6 w-6 transition-opacity ${
+                  isSelected || isDropdownOpen ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
+                }`}
                 aria-label="Actions"
-                onClick={e => e.stopPropagation()}
+                onClick={e => e.stopPropagation()} // Prevent row selection on button click
               >
                 <Icons.More className="h-6 w-6" />
               </Button>
