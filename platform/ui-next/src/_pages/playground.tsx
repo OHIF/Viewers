@@ -24,6 +24,23 @@ import { Checkbox } from '../components/Checkbox';
 import { Toggle, toggleVariants } from '../components/Toggle';
 import { Slider } from '../components/Slider';
 import { ScrollArea, ScrollBar } from '../components/ScrollArea';
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuCheckboxItem,
+  DropdownMenuRadioItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuShortcut,
+  DropdownMenuGroup,
+  DropdownMenuPortal,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
+  DropdownMenuRadioGroup,
+} from '../components/DropdownMenu';
 
 import { BackgroundColorSelect } from '../components/BackgroundColorSelect';
 
@@ -244,7 +261,7 @@ export default function Playground() {
         </div>
       </div>
 
-      <h2 className="section-header">Tabs</h2>
+      <h2 className="section-header">Select</h2>
       <div className="row">
         <div className="example">
           <Select>
@@ -257,6 +274,63 @@ export default function Playground() {
               <SelectItem value="system">System</SelectItem>
             </SelectContent>
           </Select>
+        </div>
+      </div>
+
+      <h2 className="section-header">Dropdown Menu</h2>
+      <div className="row">
+        <div className="example">
+          <DropdownMenu>
+            <DropdownMenuTrigger>
+              <Button>Open Basic</Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuItem>Item 1</DropdownMenuItem>
+              <DropdownMenuItem>Item 2</DropdownMenuItem>
+              <DropdownMenuItem>Long name Item 3</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+        <div className="example">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button>Open Align Start</Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start">
+              <DropdownMenuItem>Item 1</DropdownMenuItem>
+              <DropdownMenuItem>Item 2</DropdownMenuItem>
+              <DropdownMenuItem>Long name Item 3</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+        <div className="example">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button>Open Align End</Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem>Item 1</DropdownMenuItem>
+              <DropdownMenuItem>Item 2</DropdownMenuItem>
+              <DropdownMenuItem>Long name Item 3</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+        <div className="example">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button>Open Align Top</Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent
+              side="top"
+              align="start"
+            >
+              <DropdownMenuItem onSelect={() => console.log('Item 1')}>Item 1</DropdownMenuItem>
+              <DropdownMenuItem onSelect={() => console.log('Item 2')}>Item 2</DropdownMenuItem>
+              <DropdownMenuItem onSelect={() => console.log('Item 3')}>
+                Long name Item 3
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
 

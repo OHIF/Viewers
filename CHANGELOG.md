@@ -3,6 +3,47 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.9.0-beta.92](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.91...v3.9.0-beta.92) (2024-10-01)
+
+
+### Bug Fixes
+
+* **Select:** select clear button ([#4398](https://github.com/OHIF/Viewers/issues/4398)) ([a11cd6d](https://github.com/OHIF/Viewers/commit/a11cd6d6cbe20d7d986430befb3398f910a03ada))
+
+
+
+
+
+# [3.9.0-beta.91](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.90...v3.9.0-beta.91) (2024-10-01)
+
+
+### Bug Fixes
+
+* **dependent:** high priority vulnerabilities ([#4396](https://github.com/OHIF/Viewers/issues/4396)) ([b4f08ad](https://github.com/OHIF/Viewers/commit/b4f08adfb638e5df11bb77d3c1b128b5efdf77a7))
+
+
+
+
+
+# [3.9.0-beta.90](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.89...v3.9.0-beta.90) (2024-09-30)
+
+
+### Bug Fixes
+
+* 🐛 Fix imports for ui-next ([#4394](https://github.com/OHIF/Viewers/issues/4394)) ([43efed2](https://github.com/OHIF/Viewers/commit/43efed207e0d8d13bcbf52fab14c1be034d22d0c))
+
+
+
+
+
+# [3.9.0-beta.89](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.88...v3.9.0-beta.89) (2024-09-27)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
 # [3.9.0-beta.88](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.87...v3.9.0-beta.88) (2024-09-24)
 
 **Note:** Version bump only for package ohif-monorepo-root

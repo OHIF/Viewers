@@ -1,9 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import StudyItem from '../StudyItem';
-import StudyBrowserSort from '../StudyBrowserSort';
-import StudyBrowserViewOptions from '../StudyBrowserViewOptions';
+import { StudyItem } from '../StudyItem';
+import { StudyBrowserSort } from '../StudyBrowserSort';
+import { StudyBrowserViewOptions } from '../StudyBrowserViewOptions';
 
 const getTrackedSeries = displaySets => {
   let trackedSeries = 0;
@@ -140,4 +140,4 @@ StudyBrowser.propTypes = {
   ),
 };
 
-export default StudyBrowser;
+export { StudyBrowser };
