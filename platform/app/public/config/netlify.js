@@ -272,7 +272,7 @@ window.config = {
           text: 'You can zoom the images using the right click.',
           attachTo: {
             element: '.viewport-element',
-            on: 'top',
+            on: 'left',
           },
           advanceOn: {
             selector: '.cornerstone-viewport-element',
@@ -300,7 +300,7 @@ window.config = {
           text: 'You can modify the window level using the left click.',
           attachTo: {
             element: '.viewport-element',
-            on: 'top',
+            on: 'left',
           },
           advanceOn: {
             selector: '.cornerstone-viewport-element',
@@ -329,7 +329,7 @@ window.config = {
           text: 'Use the length tool on the viewport to measure the length of a region.',
           attachTo: {
             element: '.viewport-element',
-            on: 'top',
+            on: 'right',
           },
           advanceOn: {
             selector: 'body',
@@ -371,7 +371,7 @@ window.config = {
           text: 'Scroll the images using the mouse wheel away from the measurement.',
           attachTo: {
             element: '.viewport-element',
-            on: 'top',
+            on: 'left',
           },
           advanceOn: {
             selector: '.cornerstone-viewport-element',
