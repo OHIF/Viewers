@@ -142,6 +142,11 @@ when: {
 
 Once you have a basic tour in place, you can extend it with more advanced features like custom scrolling behavior, dynamic elements, and event-based step advancement. For more details, check out the [Shepherd.js documentation](https://shepherdjs.dev/).
 
+## Licensing
+All versions below 14.0 for Shepherd.JS is under the MIT license, if you wish to use any version above 14.0, you can visit the ShepherdJS website to learn about their pricing and plans [Shepherd.js](https://www.shepherdjs.dev/)
+
+[LICENSE](https://github.com/shipshapecode/shepherd?tab=License-1-ov-file#readme)
+
 ## Demo
 
 ![Tour Demo](<tour-demo.gif>)
