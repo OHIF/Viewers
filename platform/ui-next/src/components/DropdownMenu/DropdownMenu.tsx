@@ -142,7 +142,7 @@ const DropdownMenuLabel = React.forwardRef<
 >(({ className, inset, ...props }, ref) => (
   <DropdownMenuPrimitive.Label
     ref={ref}
-    className={cn('px-2 py-1 text-sm font-semibold', inset && 'pl-8', className)}
+    className={cn('text-muted-foreground px-2 py-1 text-xs', inset && 'pl-8', className)}
     {...props}
   />
 ));
@@ -154,7 +154,7 @@ const DropdownMenuSeparator = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <DropdownMenuPrimitive.Separator
     ref={ref}
-    className={cn('bg-muted -mx-1 my-1 h-px', className)}
+    className={cn('bg-muted my-1 mx-2 h-px', className)}
     {...props}
   />
 ));

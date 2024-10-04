@@ -374,6 +374,20 @@ export default function Playground() {
         </div>
       </div>
 
+      <h2 className="section-header">Accordion</h2>
+      <div className="row">
+        <div className="example">
+          <div className="w-40 px-5">
+            <Slider
+              className="w-full"
+              defaultValue={[50]}
+              max={100}
+              step={1}
+            />
+          </div>
+        </div>
+      </div>
+
       <h2 className="section-header">Scroll Area</h2>
       <div className="row">
         <div className="example">

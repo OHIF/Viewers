@@ -206,12 +206,9 @@ function Patterns() {
                   </AccordionContent>
                 </AccordionItem>
 
-                <div className="mt-1.5 flex h-9 w-full items-center justify-between rounded pl-6 pr-2">
-                  <Button
-                    size="small"
-                    variant="ghost"
-                  >
-                    <Icons.Add />
+                <div className="mt-2 flex h-9 w-full items-center justify-between rounded pl-6 pr-2">
+                  <Button variant="ghost">
+                    <Icons.Add className="h-3 w-3" />
                     Add Segment
                   </Button>
                   <Button
