@@ -561,7 +561,7 @@
   resolved "https://registry.yarnpkg.com/@babel/plugin-proposal-private-property-in-object/-/plugin-proposal-private-property-in-object-7.21.0-placeholder-for-preset-env.2.tgz#7844f9289546efa9febac2de4cfe358a050bd703"
   integrity sha512-SOSkfJDddaM7mak6cPEpswyTRnuRltl429hMraQEglW+OkovnCzsiszTmsrlY//qLFjCpQDFRvjdm2wA5pPm9w==
 
-"@babel/plugin-proposal-private-property-in-object@^7.16.7", "@babel/plugin-proposal-private-property-in-object@^7.21.11":
+"@babel/plugin-proposal-private-property-in-object@^7.21.11":
   version "7.21.11"
   resolved "https://registry.yarnpkg.com/@babel/plugin-proposal-private-property-in-object/-/plugin-proposal-private-property-in-object-7.21.11.tgz#69d597086b6760c4126525cfa154f34631ff272c"
   integrity sha512-0QZ8qP/3RLDVBwBFoWAwCtgcDZJVwA5LUJRZU8x2YFfKNuFq161wK3cuGrALu5yiPu+vzwTAg/sMWVNeWeNyaw==
@@ -2584,13 +2584,6 @@
   dependencies:
     "@floating-ui/utils" "^0.2.0"
 
-"@floating-ui/core@^1.6.0":
-  version "1.6.8"
-  resolved "https://registry.yarnpkg.com/@floating-ui/core/-/core-1.6.8.tgz#aa43561be075815879305965020f492cdb43da12"
-  integrity sha512-7XJ9cPU+yI2QeLS+FCSlqNFZJq8arvswefkZrYI1yQBbftw6FyrZOxYSh+9S7z7TpeWlRt9zJ5IhM1WIL334jA==
-  dependencies:
-    "@floating-ui/utils" "^0.2.8"
-
 "@floating-ui/dom@^1.0.0", "@floating-ui/dom@^1.0.1":
   version "1.6.5"
   resolved "https://registry.yarnpkg.com/@floating-ui/dom/-/dom-1.6.5.tgz#323f065c003f1d3ecf0ff16d2c2c4d38979f4cb9"
@@ -2598,14 +2591,6 @@
   dependencies:
     "@floating-ui/core" "^1.0.0"
     "@floating-ui/utils" "^0.2.0"
-
-"@floating-ui/dom@^1.6.5":
-  version "1.6.11"
-  resolved "https://registry.yarnpkg.com/@floating-ui/dom/-/dom-1.6.11.tgz#8631857838d34ee5712339eb7cbdfb8ad34da723"
-  integrity sha512-qkMCxSR24v2vGkhYDo/UzxfJN3D4syqSjyuTFz6C7XcpU1pASPRieNI0Kj5VP3/503mOfYiGY891ugBX1GlABQ==
-  dependencies:
-    "@floating-ui/core" "^1.6.0"
-    "@floating-ui/utils" "^0.2.8"
 
 "@floating-ui/react-dom@^2.0.0":
   version "2.1.0"
@@ -2618,11 +2603,6 @@
   version "0.2.2"
   resolved "https://registry.yarnpkg.com/@floating-ui/utils/-/utils-0.2.2.tgz#d8bae93ac8b815b2bd7a98078cf91e2724ef11e5"
   integrity sha512-J4yDIIthosAsRZ5CPYP/jQvUAQtlZTTD/4suA08/FEnlxqW3sKS9iAhgsa9VYLZ6vDHn/ixJgIqRQPotoBjxIw==
-
-"@floating-ui/utils@^0.2.8":
-  version "0.2.8"
-  resolved "https://registry.yarnpkg.com/@floating-ui/utils/-/utils-0.2.8.tgz#21a907684723bbbaa5f0974cf7730bd797eb8e62"
-  integrity sha512-kym7SodPp8/wloecOpcmSnWJsK7M0E5Wg8UcFA+uO4B9s5d0ywXOEro/8HM9x0rW+TljRzul/14UYz3TleT3ig==
 
 "@gar/promisify@^1.1.3":
   version "1.1.3"
@@ -4434,11 +4414,6 @@
   integrity sha512-c/qwwcHyafOQuVQJj0IlBjf5yYgBI7YPJ77k4fOJYesb41jio65eaJODRUmfYKhTOFBrIZ66kgvGPlNbjuoRdQ==
   dependencies:
     any-observable "^0.3.0"
-
-"@scarf/scarf@^1.3.0":
-  version "1.3.0"
-  resolved "https://registry.yarnpkg.com/@scarf/scarf/-/scarf-1.3.0.tgz#f8c75560d0dace4452dee1e31995e6396e61f3ee"
-  integrity sha512-lHKK8M5CTcpFj2hZDB3wIjb0KAbEOgDmiJGDv1WBRfQgRm/a8/XMEkG/N1iM01xgbUDsPQwi42D+dFo1XPAKew==
 
 "@sideway/address@^4.1.5":
   version "4.1.5"
@@ -7302,7 +7277,7 @@ axobject-query@^3.2.1:
   dependencies:
     dequal "^2.0.3"
 
-b4a@^1.6.4, b4a@^1.6.6, b4a@^1.6.6:
+b4a@^1.6.4, b4a@^1.6.6:
   version "1.6.7"
   resolved "https://registry.yarnpkg.com/b4a/-/b4a-1.6.7.tgz#a99587d4ebbfbd5a6e3b21bdb5d5fa385767abe4"
   integrity sha512-OnAYlL5b7LEkALw87fUVafQw5rVR9RjwGd4KUwNQ6DrrNmaVaUCgLipfVlzrPQ4tWOR9P0IXGNOx50jYCCdSJg==
@@ -9592,11 +9567,6 @@ deep-is@^0.1.3:
   version "0.1.4"
   resolved "https://registry.yarnpkg.com/deep-is/-/deep-is-0.1.4.tgz#a6f2dce612fadd2ef1f519b73551f17e85199831"
   integrity sha512-oIPzksmTg4/MriiaYGO+okXDT7ztn/w3Eptv/+gSIdMdKsJo0u4CfYNFJPy+4SKMuCqGw2wxnA+URMg3t8a/bQ==
-
-deepmerge-ts@^5.1.0:
-  version "5.1.0"
-  resolved "https://registry.yarnpkg.com/deepmerge-ts/-/deepmerge-ts-5.1.0.tgz#c55206cc4c7be2ded89b9c816cf3608884525d7a"
-  integrity sha512-eS8dRJOckyo9maw9Tu5O5RUi/4inFLrnoLkBe3cPfDMx3WZioXtmOew4TXQaxq7Rhl4xjDtR7c6x8nNTxOvbFw==
 
 deepmerge@^1.5.2:
   version "1.5.2"
@@ -18655,13 +18625,6 @@ react-shallow-renderer@^16.15.0:
     object-assign "^4.1.1"
     react-is "^16.12.0 || ^17.0.0 || ^18.0.0"
 
-react-shepherd@^6.1.1:
-  version "6.1.1"
-  resolved "https://registry.yarnpkg.com/react-shepherd/-/react-shepherd-6.1.1.tgz#41d384cc4e97e26c9625b221d8b5289f4f924626"
-  integrity sha512-lylVKsH8w9gV7674RznDhl4uPrTXLYuc2E0+gYJPrz4FymHrhUpDqYvYvqESPODigRK+TFFpTZAUdAZzwzPvRg==
-  dependencies:
-    shepherd.js "13.0.3"
-
 react-simple-code-editor@^0.10.0:
   version "0.10.0"
   resolved "https://registry.yarnpkg.com/react-simple-code-editor/-/react-simple-code-editor-0.10.0.tgz#73e7ac550a928069715482aeb33ccba36efe2373"
@@ -19798,15 +19761,6 @@ shelljs@0.8.5, shelljs@^0.8.5:
     glob "^7.0.0"
     interpret "^1.0.0"
     rechoir "^0.6.2"
-
-shepherd.js@13.0.3, shepherd.js@^13.0.3:
-  version "13.0.3"
-  resolved "https://registry.yarnpkg.com/shepherd.js/-/shepherd.js-13.0.3.tgz#78fc4b7a8c9df5a03b83c7893967c92b39396553"
-  integrity sha512-1lQtQUNQYi+8k9BAmbUZh7D2QxFfkxiWKU0XFTbzYaIrCkB4nR0DLQuarH5G7Ym6L8wfbadxP3hJhZ2HzVktaA==
-  dependencies:
-    "@floating-ui/dom" "^1.6.5"
-    "@scarf/scarf" "^1.3.0"
-    deepmerge-ts "^5.1.0"
 
 shx@^0.3.3:
   version "0.3.4"

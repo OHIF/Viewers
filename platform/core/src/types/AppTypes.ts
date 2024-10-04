@@ -22,8 +22,6 @@ import ExtensionManagerType from '../extensions/ExtensionManager';
 
 import Hotkey from '../classes/Hotkey';
 
-import { StepOptions, TourOptions } from 'shepherd.js';
-
 declare global {
   namespace AppTypes {
     export type ServicesManager = ServicesManagerType;
@@ -131,12 +129,6 @@ declare global {
         maxNumPrefetchRequests: number;
         order: 'closest' | 'downward' | 'upward';
       };
-      tours?: Array<{
-        id: string;
-        steps: StepOptions[];
-        tourOptions: TourOptions;
-        route: string;
-      }>;
     }
 
     export interface Test {
