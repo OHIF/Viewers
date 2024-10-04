@@ -44,5 +44,5 @@
 }
 
 .shepherd-modal-overlay-container.shepherd-modal-is-visible {
-  @apply !opacity-70
+  @apply !opacity-70;
 }

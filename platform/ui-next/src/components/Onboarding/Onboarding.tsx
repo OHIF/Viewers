@@ -35,8 +35,9 @@ const Onboarding = () => {
       ...matchingTour.tourOptions,
       defaultStepOptions: {
         ...matchingTour.tourOptions?.defaultStepOptions,
-        floatingUIOptions:
-          matchingTour.tourOptions?.defaultStepOptions?.floatingUIOptions || middleware,
+        floatingUIOptions: matchingTour.tourOptions?.defaultStepOptions?.floatingUIOptions || {
+          middleware,
+        },
         when: {
           ...matchingTour.tourOptions?.defaultStepOptions?.when,
           show:
