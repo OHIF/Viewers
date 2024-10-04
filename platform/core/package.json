@@ -54,6 +54,8 @@
     "moment": "*",
     "object-hash": "2.1.1",
     "query-string": "^6.14.0",
+    "react-shepherd": "^6.1.1",
+    "shepherd.js": "^13.0.3",
     "validate.js": "^0.12.0"
   },
   "devDependencies": {
