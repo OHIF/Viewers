@@ -298,21 +298,6 @@ window.config = {
       steps: [
         {
           id: 'scroll',
-          buttons: [
-            {
-              text: 'Skip all',
-              action() {
-                this.complete();
-              },
-              secondary: true,
-            },
-            {
-              text: 'Next',
-              action() {
-                this.next();
-              },
-            },
-          ],
           title: 'Scrolling Through Images',
           text: 'You can scroll through the images using the mouse wheel or scrollbar.',
           attachTo: {
@@ -333,21 +318,6 @@ window.config = {
             element: '.viewport-element',
             on: 'top',
           },
-          buttons: [
-            {
-              text: 'Skip all',
-              action() {
-                this.complete();
-              },
-              secondary: true,
-            },
-            {
-              text: 'Next',
-              action() {
-                this.next();
-              },
-            },
-          ],
           advanceOn: {
             selector: '.cornerstone-viewport-element',
             event: 'CORNERSTONE_TOOLS_MOUSE_UP',
@@ -362,21 +332,6 @@ window.config = {
             element: '.viewport-element',
             on: 'top',
           },
-          buttons: [
-            {
-              text: 'Skip all',
-              action() {
-                this.complete();
-              },
-              secondary: true,
-            },
-            {
-              text: 'Next',
-              action() {
-                this.next();
-              },
-            },
-          ],
           advanceOn: {
             selector: '.cornerstone-viewport-element',
             event: 'CORNERSTONE_TOOLS_MOUSE_UP',
@@ -391,21 +346,6 @@ window.config = {
             element: '.viewport-element',
             on: 'top',
           },
-          buttons: [
-            {
-              text: 'Skip all',
-              action() {
-                this.complete();
-              },
-              secondary: true,
-            },
-            {
-              text: 'Next',
-              action() {
-                this.next();
-              },
-            },
-          ],
           advanceOn: {
             selector: '.cornerstone-viewport-element',
             event: 'CORNERSTONE_TOOLS_MOUSE_UP',
@@ -420,21 +360,6 @@ window.config = {
             element: '[data-cy="MeasurementTools-split-button-primary"]',
             on: 'bottom',
           },
-          buttons: [
-            {
-              text: 'Skip all',
-              action() {
-                this.complete();
-              },
-              secondary: true,
-            },
-            {
-              text: 'Next',
-              action() {
-                this.next();
-              },
-            },
-          ],
           advanceOn: {
             selector: '[data-cy="MeasurementTools-split-button-primary"]',
             event: 'click',
@@ -450,21 +375,6 @@ window.config = {
             element: '.viewport-element',
             on: 'top',
           },
-          buttons: [
-            {
-              text: 'Skip all',
-              action() {
-                this.complete();
-              },
-              secondary: true,
-            },
-            {
-              text: 'Next',
-              action() {
-                this.next();
-              },
-            },
-          ],
           advanceOn: {
             selector: 'body',
             event: 'event::measurement_added',
@@ -483,21 +393,6 @@ window.config = {
             selector: '[data-cy="prompt-begin-tracking-yes-btn"]',
             event: 'click',
           },
-          buttons: [
-            {
-              text: 'Skip all',
-              action() {
-                this.complete();
-              },
-              secondary: true,
-            },
-            {
-              text: 'Next',
-              action() {
-                this.next();
-              },
-            },
-          ],
           beforeShowPromise: () => waitForElement('[data-cy="prompt-begin-tracking-yes-btn"]'),
         },
         {
@@ -508,21 +403,6 @@ window.config = {
             element: '#trackedMeasurements-btn',
             on: 'left-start',
           },
-          buttons: [
-            {
-              text: 'Skip all',
-              action() {
-                this.complete();
-              },
-              secondary: true,
-            },
-            {
-              text: 'Next',
-              action() {
-                this.next();
-              },
-            },
-          ],
           advanceOn: {
             selector: '#trackedMeasurements-btn',
             event: 'click',
@@ -537,21 +417,6 @@ window.config = {
             element: '.viewport-element',
             on: 'top',
           },
-          buttons: [
-            {
-              text: 'Skip all',
-              action() {
-                this.complete();
-              },
-              secondary: true,
-            },
-            {
-              text: 'Next',
-              action() {
-                this.next();
-              },
-            },
-          ],
           advanceOn: {
             selector: '.cornerstone-viewport-element',
             event: 'CORNERSTONE_TOOLS_MOUSE_WHEEL',
@@ -566,21 +431,6 @@ window.config = {
             element: '[data-cy="measurement-item"]',
             on: 'left-start',
           },
-          buttons: [
-            {
-              text: 'Skip all',
-              action() {
-                this.complete();
-              },
-              secondary: true,
-            },
-            {
-              text: 'Next',
-              action() {
-                this.next();
-              },
-            },
-          ],
           advanceOn: {
             selector: '[data-cy="measurement-item"]',
             event: 'click',
@@ -595,21 +445,6 @@ window.config = {
             element: '[data-cy="Layout"]',
             on: 'bottom',
           },
-          buttons: [
-            {
-              text: 'Skip all',
-              action() {
-                this.complete();
-              },
-              secondary: true,
-            },
-            {
-              text: 'Next',
-              action() {
-                this.next();
-              },
-            },
-          ],
           advanceOn: {
             selector: '[data-cy="Layout"]',
             event: 'click',
@@ -641,6 +476,23 @@ window.config = {
       ],
       tourOptions: {
         useModalOverlay: true,
+        defaultStepOptions: {
+          buttons: [
+            {
+              text: 'Skip all',
+              action() {
+                this.complete();
+              },
+              secondary: true,
+            },
+            {
+              text: 'Next',
+              action() {
+                this.next();
+              },
+            },
+          ],
+        },
       },
     },
   ],

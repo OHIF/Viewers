@@ -1,9 +1,9 @@
 .shepherd-header {
-  @apply !bg-popover !p-0;
+  @apply !bg-popover !w-[100%] !p-0;
 }
 
 .shepherd-title {
-  @apply text-highlight text-xl;
+  @apply !text-highlight !w-[100%] !break-words !text-lg !leading-[1.5];
 }
 
 .shepherd-content {
@@ -11,15 +11,15 @@
 }
 
 .shepherd-element {
-  @apply !bg-popover !min-w-[260px] !max-w-[382px];
+  @apply !bg-popover !max-w-[260px];
 }
 
 .shepherd-text {
-  @apply text-foreground p-0 text-base leading-normal;
+  @apply text-foreground !w-[100%] p-0 text-base leading-normal;
 }
 
 .shepherd-footer {
-  @apply p-0;
+  @apply !w-[100%] p-0;
 }
 
 .shepherd-button {
@@ -35,7 +35,8 @@
 }
 
 .shepherd-element[data-popper-placement^='left'] > .shepherd-arrow {
-  right: 4px !important;
+  right: 3px !important;
+  top: 6px !important;
 }
 
 .shepherd-element[data-popper-placement^='top'] > .shepherd-arrow {
