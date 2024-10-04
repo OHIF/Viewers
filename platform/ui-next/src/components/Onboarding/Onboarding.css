@@ -1,23 +1,43 @@
+.shepherd-header {
+  @apply !bg-popover !p-0;
+}
+
+.shepherd-title {
+  @apply text-highlight text-xl;
+}
+
+.shepherd-content {
+  @apply flex flex-col gap-[8px] p-[12px];
+}
+
 .shepherd-element {
-  @apply !bg-primary-dark !rounded-lg !p-2;
+  @apply !bg-popover !min-w-[260px] !max-w-[382px];
 }
 
 .shepherd-text {
-  @apply text-[11px] !text-white;
+  @apply text-foreground p-0 text-base leading-normal;
 }
 
 .shepherd-footer {
-  @apply !bg-primary-dark !rounded-b-lg;
+  @apply p-0;
 }
 
 .shepherd-button {
-  @apply !bg-primary-main hover:!bg-customblue-80 active:!bg-customblue-40 !box-content !inline-flex !h-[15px] !min-w-[60px] !flex-row !items-center !justify-center !gap-[5px] !whitespace-nowrap !rounded !px-[10px] !text-center !font-sans !text-[11px] !font-semibold !leading-[1.2] !text-white !outline-none !transition !duration-300 !ease-in-out focus:!outline-none;
+  @apply !inline-flex !h-[36px] !min-w-[62px] !flex-row !items-center !justify-center !gap-[5px] !whitespace-nowrap !rounded !bg-[#348cfd] !px-[10px] !text-center !font-sans !text-[14px] !leading-[1.2] !text-white !outline-none !transition !duration-300 !ease-in-out focus:!outline-none;
+}
+
+.shepherd-button.shepherd-button-secondary {
+  @apply !bg-transparent !text-[#348cfd];
 }
 
 .shepherd-arrow::before {
-  @apply !bg-primary-dark;
+  @apply !bg-popover !h-[30px] !w-[30px];
 }
 
 .shepherd-element[data-popper-placement^='left'] > .shepherd-arrow {
-  right: -5px !important;
+  right: 4px !important;
+}
+
+.shepherd-element[data-popper-placement^='top'] > .shepherd-arrow {
+  bottom: 2px !important;
 }
