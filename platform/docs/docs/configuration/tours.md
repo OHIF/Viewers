@@ -3,7 +3,7 @@ sidebar_position: 3
 sidebar_label: Tours
 ---
 
-# Configuring Tours with Shepherd.js
+# Configuring Tours in OHIF with Shepherd.js
 
 In OHIF, you can configure guided tours for users by leveraging [Shepherd.js](https://shepherdjs.dev/), a JavaScript library for building feature tours. This page explains how you can define and customize these tours within your app configuration file.
 
@@ -141,6 +141,10 @@ when: {
 ## Customizing Your Tour
 
 Once you have a basic tour in place, you can extend it with more advanced features like custom scrolling behavior, dynamic elements, and event-based step advancement. For more details, check out the [Shepherd.js documentation](https://shepherdjs.dev/).
+
+## Demo
+
+![Tour Demo](<tour-demo.gif>)
 
 ## Conclusion
 
