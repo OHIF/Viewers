@@ -459,14 +459,6 @@ window.config = {
             element: '[data-cy="MPR"]',
             on: 'left-start',
           },
-          buttons: [
-            {
-              text: 'Got it!',
-              action() {
-                this.complete();
-              },
-            },
-          ],
           advanceOn: {
             selector: '[data-cy="MPR"]',
             event: 'click',
@@ -485,32 +477,9 @@ window.config = {
               },
               secondary: true,
             },
-            {
-              text: 'Next',
-              action() {
-                this.next();
-              },
-            },
           ],
         },
       },
     },
   ],
 };
-
-function waitForElement(selector, maxAttempts = 20, interval = 25) {
-  return new Promise(resolve => {
-    let attempts = 0;
-
-    const checkForElement = setInterval(() => {
-      const element = document.querySelector(selector);
-
-      if (element || attempts >= maxAttempts) {
-        clearInterval(checkForElement);
-        resolve();
-      }
-
-      attempts++;
-    }, interval);
-  });
-}
