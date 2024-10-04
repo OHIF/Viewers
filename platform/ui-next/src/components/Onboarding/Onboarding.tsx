@@ -5,15 +5,7 @@ import { useLocation } from 'react-router';
 import 'shepherd.js/dist/css/shepherd.css';
 import './Onboarding.css';
 
-const getShownTours = () => JSON.parse(localStorage.getItem('shownTours')) || [];
-const hasTourBeenShown = (tourId: string) => getShownTours().includes(tourId);
-const markTourAsShown = (tourId: string) => {
-  const shownTours = getShownTours();
-  if (!shownTours.includes(tourId)) {
-    shownTours.push(tourId);
-    localStorage.setItem('shownTours', JSON.stringify(shownTours));
-  }
-};
+import { hasTourBeenShown, markTourAsShown, defaultShowHandler, middleware } from './utilities';
 
 const Onboarding = () => {
   const Shepherd = useShepherd();
@@ -25,6 +17,10 @@ const Onboarding = () => {
     steps: StepOptions[];
   }>;
 
+  /**
+   * Show the tour if it hasn't been shown yet based on the current route.
+   * Constructs a tour instance and adds steps to it based on the matching tour.
+   */
   useEffect(() => {
     if (!tours) {
       return;
@@ -35,29 +31,17 @@ const Onboarding = () => {
       return;
     }
 
-    const defaultShowHandler = () => {
-      const currentStep = Shepherd.activeTour?.getCurrentStep();
-      if (currentStep) {
-        const progress = document.createElement('span');
-        progress.className = 'shepherd-progress text-base text-muted-foreground';
-        progress.innerText = `${Shepherd.activeTour?.steps.indexOf(currentStep) + 1}/${Shepherd.activeTour?.steps.length}`;
-        progress.style.position = 'absolute';
-        progress.style.left = '13px';
-        progress.style.bottom = '20px';
-        progress.style.zIndex = '1';
-
-        const footer = currentStep?.getElement()?.querySelector('.shepherd-footer');
-        footer?.appendChild(progress);
-      }
-    };
-
     const tourInstance = new Shepherd.Tour({
       ...matchingTour.tourOptions,
       defaultStepOptions: {
-        ...matchingTour.tourOptions.defaultStepOptions,
+        ...matchingTour.tourOptions?.defaultStepOptions,
+        floatingUIOptions:
+          matchingTour.tourOptions?.defaultStepOptions?.floatingUIOptions || middleware,
         when: {
           ...matchingTour.tourOptions?.defaultStepOptions?.when,
-          show: matchingTour.tourOptions?.defaultStepOptions?.when?.show || defaultShowHandler,
+          show:
+            matchingTour.tourOptions?.defaultStepOptions?.when?.show ||
+            (() => defaultShowHandler(Shepherd)),
         },
       },
     });

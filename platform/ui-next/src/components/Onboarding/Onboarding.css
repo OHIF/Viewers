@@ -42,3 +42,7 @@
 .shepherd-element[data-popper-placement^='top'] > .shepherd-arrow {
   bottom: 2px !important;
 }
+
+.shepherd-modal-overlay-container.shepherd-modal-is-visible {
+  @apply !opacity-70
+}
