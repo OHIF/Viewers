@@ -11,7 +11,6 @@ const LoginSignup = ({ setIsAuthenticated }) => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
-
   const handleSubmit = async e => {
     e.preventDefault();
 

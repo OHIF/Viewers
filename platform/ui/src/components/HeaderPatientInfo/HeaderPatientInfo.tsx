@@ -84,7 +84,6 @@ function HeaderPatientInfo({ servicesManager, appConfig }: withAppTypes) {
   }, [isMixedPatients, expanded]);
 
   const handleOnClick = () => {
-    console.log(appConfig.showPatientInfo);
     if (!isMixedPatients && appConfig.showPatientInfo !== PatientInfoVisibility.VISIBLE_READONLY) {
       setExpanded(!expanded);
     }

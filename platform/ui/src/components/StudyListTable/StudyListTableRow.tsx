@@ -10,7 +10,6 @@ import Icon from '../Icon';
 const StudyListTableRow = props => {
   const { tableData, studyUid } = props;
   const { row, expandedContent, onClickRow, isExpanded, dataCY, clickableCY } = tableData;
-  console.log(tableData);
 
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [email, setEmail] = useState('');
