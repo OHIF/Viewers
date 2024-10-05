@@ -1,12 +1,12 @@
-// External
-
 import React, { useEffect, useState } from 'react';
+
 import PropTypes from 'prop-types';
 import i18n from '@ohif/i18n';
 import { I18nextProvider } from 'react-i18next';
-import { BrowserRouter } from 'react-router-dom';
+import { BrowserRouter, Routes, Route } from 'react-router-dom'; // Ensure Routes and Route are imported
 import Compose from './routes/Mode/Compose';
 import {
+  ServicesManager,
   ExtensionManager,
   CommandsManager,
   HotkeysManager,
@@ -31,6 +31,7 @@ import { AppConfigProvider } from '@state';
 import createRoutes from './routes';
 import appInit from './appInit.js';
 import OpenIdConnectRoutes from './utils/OpenIdConnectRoutes';
+import LoginSignup from './components/LoginSignup/LoginSignup';
 
 let commandsManager: CommandsManager,
   extensionManager: ExtensionManager,
@@ -60,6 +61,7 @@ function App({
   defaultModes = [],
 }) {
   const [init, setInit] = useState(null);
+  const [isAuthenticatedState, setIsAuthenticatedState] = useState(false); // Initialize authentication state
   useEffect(() => {
     const run = async () => {
       appInit(config, defaultExtensions, defaultModes).then(setInit).catch(console.error);
@@ -67,6 +69,21 @@ function App({
 
     run();
   }, []);
+  useEffect(() => {
+    // Check for tokens on initial load
+    const accessToken = localStorage.getItem('accessToken');
+    const refreshToken = localStorage.getItem('refreshToken');
+
+    if (accessToken && refreshToken) {
+      setIsAuthenticatedState(true);
+    } else {
+      console.log('false tus');
+      setIsAuthenticatedState(false);
+    }
+  }, []);
+  const setIsAuthenticated = (isAuthenticated: boolean) => {
+    setIsAuthenticatedState(isAuthenticated);
+  };
 
   if (!init) {
     return null;
@@ -158,7 +175,22 @@ function App({
     <CombinedProviders>
       <BrowserRouter basename={routerBasename}>
         {authRoutes}
-        {appRoutes}
+        <Routes>
+          {isAuthenticatedState ? (
+            // Redirect to home or main routes if authenticated
+            <Route
+              path="*"
+              element={appRoutes}
+            />
+          ) : (
+            // Show login page if not authenticated
+            <Route
+              path="*"
+              element={<LoginSignup setIsAuthenticated={setIsAuthenticated} />}
+            />
+          )}
+        </Routes>
+        {/* {appRoutes} */}
       </BrowserRouter>
     </CombinedProviders>
   );

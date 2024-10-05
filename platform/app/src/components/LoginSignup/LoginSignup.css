@@ -1,0 +1,114 @@
+/* General Styles */
+body {
+  max-height: 100px;
+  background-color: #1a1a1a;
+  color: #e6e6e6;
+  font-family: 'Arial', sans-serif;
+}
+
+/* .login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #1a1a1a;
+} */
+.login-container {
+  /* existing styles */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  background-color: #121212; /* Dark background for neon effect */
+}
+
+.header-container {
+  text-align: center;
+  margin-bottom: 20px; /* Space between heading/image and form */
+}
+
+.neon-heading {
+  color: #00ff99; /* Neon green color */
+  text-shadow:
+    0 0 20px rgba(0, 255, 255, 0.5),
+    0 0 30px rgba(0, 255, 255, 0.3);
+  font-size: 2.5rem;
+  margin: 0;
+}
+.logos {
+  display: flex;
+  justify-content: space-around;
+}
+.circular-image {
+  /* margin-left: 90px; */
+  width: 100px; /* Size of the circular image */
+  height: 100px; /* Size of the circular image */
+  border-radius: 50%;
+  object-fit: cover; /* Ensure image covers the circular area */
+  margin-top: 10px; /* Space between heading and image */
+}
+
+.login-form {
+  background-color: #222;
+  padding: 40px;
+  border-radius: 10px;
+  box-shadow:
+    0 0 20px rgba(0, 255, 255, 0.5),
+    0 0 30px rgba(0, 255, 255, 0.3);
+}
+
+.login-title {
+  margin-bottom: 20px;
+  font-size: 2em;
+  color: #00ff99;
+  text-shadow:
+    0 0 10px rgba(0, 255, 153, 0.7),
+    0 0 20px rgba(0, 255, 153, 0.4);
+}
+
+.login-error {
+  color: #ff6666;
+  margin-bottom: 20px;
+}
+
+.login-field {
+  margin-bottom: 20px;
+}
+
+.login-label {
+  display: block;
+  margin-bottom: 5px;
+  color: #00ffcc;
+}
+
+.login-input {
+  width: 100%;
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  background-color: #333;
+  color: #e6e6e6;
+  box-shadow: inset 0 0 10px rgba(0, 255, 255, 0.5);
+}
+
+.login-button {
+  width: 100%;
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  background-color: #00ff99;
+  color: #1a1a1a;
+  font-size: 1.2em;
+  cursor: pointer;
+  transition:
+    background-color 0.3s,
+    box-shadow 0.3s;
+}
+
+.login-button:hover {
+  background-color: #00e68a;
+  box-shadow:
+    0 0 20px rgba(0, 255, 153, 0.7),
+    0 0 30px rgba(0, 255, 153, 0.4);
+}
