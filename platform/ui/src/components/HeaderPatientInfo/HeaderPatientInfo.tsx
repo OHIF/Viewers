@@ -84,6 +84,7 @@ function HeaderPatientInfo({ servicesManager, appConfig }: withAppTypes) {
   }, [isMixedPatients, expanded]);
 
   const handleOnClick = () => {
+    console.log(appConfig.showPatientInfo);
     if (!isMixedPatients && appConfig.showPatientInfo !== PatientInfoVisibility.VISIBLE_READONLY) {
       setExpanded(!expanded);
     }
@@ -94,12 +95,12 @@ function HeaderPatientInfo({ servicesManager, appConfig }: withAppTypes) {
 
   return (
     <div
-      className="hover:bg-primary-dark flex cursor-pointer items-center justify-center gap-1 rounded-lg"
+      className="align-items-center flex cursor-pointer justify-center gap-1 rounded-lg hover:bg-[#1E5128]"
       onClick={handleOnClick}
     >
       <Icon
         name={isMixedPatients ? 'icon-multiple-patients' : 'icon-patient'}
-        className="text-primary-active"
+        className="text-white"
       />
       <div className="flex flex-col justify-center">
         {expanded ? (
@@ -107,14 +108,14 @@ function HeaderPatientInfo({ servicesManager, appConfig }: withAppTypes) {
             <div className="self-start text-[13px] font-bold text-white">
               {formattedPatientName}
             </div>
-            <div className="text-aqua-pale flex gap-2 text-[11px]">
+            <div className="flex gap-2 text-[11px] text-white">
               <div>{formattedPatientID}</div>
               <div>{patientInfo.PatientSex}</div>
               <div>{patientInfo.PatientDOB}</div>
             </div>
           </>
         ) : (
-          <div className="text-primary-active self-center text-[13px]">
+          <div className="self-center text-[13px] text-white">
             {' '}
             {isMixedPatients ? 'Multiple Patients' : 'Patient'}
           </div>
@@ -122,7 +123,7 @@ function HeaderPatientInfo({ servicesManager, appConfig }: withAppTypes) {
       </div>
       <Icon
         name="icon-chevron-patient"
-        className={`text-primary-active ${expanded ? 'rotate-180' : ''}`}
+        className={`text-white ${expanded ? 'rotate-180' : ''}`}
       />
     </div>
   );

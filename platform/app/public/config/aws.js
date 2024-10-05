@@ -1,12 +1,17 @@
-/** @type {AppTypes.Config} */
+const apiBaseUrl = 'http://coe-aih.apps.iitd.ac.in/data-portal/api/v1';
 
 window.config = {
+  apiBaseUrl: apiBaseUrl,
+
   routerBasename: '/',
   extensions: [],
   modes: [],
   showStudyList: true,
   // below flag is for performance reasons, but it might not work for all servers
-
+  customizationService: {
+    dicomUploadComponent:
+      '@ohif/extension-cornerstone.customizationModule.cornerstoneDicomUploadComponent',
+  },
   showWarningMessageForCrossOrigin: true,
   showCPUFallbackMessage: true,
   showLoadingIndicator: true,
@@ -27,6 +32,7 @@ window.config = {
         qidoSupportsIncludeField: false,
         imageRendering: 'wadors',
         thumbnailRendering: 'wadors',
+        dicomUploadEnabled: true,
         enableStudyLazyLoad: true,
         supportsFuzzyMatching: false,
         supportsWildcard: false,
@@ -39,6 +45,7 @@ window.config = {
       sourceName: 'dicomjson',
       configuration: {
         friendlyName: 'dicom json',
+        dicomUploadEnabled: true,
         name: 'json',
       },
     },
@@ -46,6 +53,7 @@ window.config = {
       namespace: '@ohif/extension-default.dataSourcesModule.dicomlocal',
       sourceName: 'dicomlocal',
       configuration: {
+        dicomUploadEnabled: true,
         friendlyName: 'dicom local',
       },
     },

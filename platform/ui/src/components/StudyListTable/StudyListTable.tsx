@@ -17,6 +17,8 @@ const StudyListTable = ({ tableDataSource, querying }) => {
                 <StudyListTableRow
                   tableData={tableData}
                   key={i}
+                  onClickRow={tableData.onClickRow}
+                  isExpanded={tableData.isExpanded}
                 />
               );
             })}

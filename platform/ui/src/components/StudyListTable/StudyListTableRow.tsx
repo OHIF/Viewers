@@ -1,13 +1,55 @@
-import React from 'react';
+import React, { useState } from 'react'; // Added useState
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
+import axios from 'axios';
 import getGridWidthClass from '../../utils/getGridWidthClass';
+import apiClient from '../../apis/apiClient';
 
 import Icon from '../Icon';
 
 const StudyListTableRow = props => {
-  const { tableData } = props;
+  const { tableData, studyUid } = props;
   const { row, expandedContent, onClickRow, isExpanded, dataCY, clickableCY } = tableData;
+  console.log(tableData);
+
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
+  const [email, setEmail] = useState('');
+  const [role, setRole] = useState('');
+  const [error, setError] = useState('');
+
+  const handleShareClick = e => {
+    e.stopPropagation();
+    setIsPopupOpen(!isPopupOpen);
+    setError('');
+  };
+  const handleSubmit = async () => {
+    console.log('Submit button clicked');
+    if (!email) {
+      setError('Username is required');
+      return;
+    }
+    // if (!role) {
+    //   setError('Role is required');
+    //   return;
+    // }
+    console.log('Sending API request with:', { email, role });
+    const response = await apiClient.updateAccess(
+      '1.2.1.2.276.0.50.192168001099.7810872.14547392.270',
+      email,
+      role
+    );
+    console.log(response);
+    if (response.success) {
+      console.log(response);
+      alert('Share request submitted successfully');
+      setIsPopupOpen(false);
+      setEmail(''); // Clear the username field
+      setRole('');
+    } else {
+      setError(response.error.user_friendly_message || 'Failed to submit share request');
+    }
+  };
+
   return (
     <>
       <tr
@@ -77,7 +119,83 @@ const StudyListTableRow = props => {
                       </td>
                     );
                   })}
+                  {/* <td>
+                    <button
+                      onClick={handleShareClick}
+                      className="ml-2 rounded-lg bg-[#4E9F3D] px-4 py-2 text-white hover:border-[#4E9F3D] hover:bg-[#008170]"
+                      style={{ border: '2px solid #191A19' }}
+                    >
+                      Share
+                    </button>
+                  </td> */}
                 </tr>
+                {isPopupOpen && ( // Added popup form
+                  <tr>
+                    <td colSpan={row.length}>
+                      <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-600 bg-opacity-50">
+                        <div className="mx-4 w-full max-w-sm rounded bg-[#1E5128] p-4 shadow-lg">
+                          <h2 className="mb-4 text-lg text-white">Share Study</h2>
+                          <form
+                            onSubmit={e => {
+                              e.preventDefault();
+                              handleSubmit();
+                            }}
+                          >
+                            {error && <div className="mb-4 text-red-500">{error}</div>}
+                            <div className="mb-4">
+                              <label
+                                className="mb-2 block text-sm font-bold text-white"
+                                htmlFor="email"
+                              >
+                                Username
+                              </label>
+                              <input
+                                className="w-full rounded border border-gray-400 bg-black px-3 py-2 text-white"
+                                id="username"
+                                type="text"
+                                placeholder="Enter username"
+                                value={email}
+                                onChange={e => setEmail(e.target.value)}
+                              />
+                            </div>
+                            <div className="mb-4">
+                              <label
+                                className="mb-2 block text-sm font-bold text-white"
+                                htmlFor="role"
+                              >
+                                Select Role
+                              </label>
+                              <select
+                                className="w-full rounded border border-gray-400 bg-black px-3 py-2 text-white"
+                                id="role"
+                                value={role}
+                                onChange={e => setRole(e.target.value)}
+                              >
+                                <option value="viewer">Viewer</option>
+                                <option value="editor">Editor</option>
+                              </select>
+                            </div>
+                            <div className="flex justify-between">
+                              <button
+                                className="rounded bg-[#4E9F3D] px-3 py-2 text-white"
+                                type="button"
+                                onClick={handleShareClick}
+                              >
+                                Close
+                              </button>
+                              <button
+                                className="rounded bg-[#4E9F3D] px-3 py-2 text-white"
+                                type="submit"
+                              >
+                                Submit
+                              </button>
+                            </div>
+                          </form>
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
+                )}
                 {isExpanded && (
                   <tr className="max-h-0 w-full select-text overflow-hidden bg-black">
                     <td colSpan={row.length}>{expandedContent}</td>

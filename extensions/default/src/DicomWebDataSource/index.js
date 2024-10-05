@@ -81,10 +81,12 @@ function createDicomWebApi(dicomWebConfig, servicesManager) {
 
       getAuthrorizationHeader = () => {
         const xhrRequestHeaders = {};
-        const authHeaders = userAuthenticationService.getAuthorizationHeader();
-        if (authHeaders && authHeaders.Authorization) {
-          xhrRequestHeaders.Authorization = authHeaders.Authorization;
-        }
+        //const authHeaders = userAuthenticationService.getAuthorizationHeader();
+        //if (authHeaders && authHeaders.Authorization) {
+        //   xhrRequestHeaders.Authorization = authHeaders.Authorization;
+        // }
+        xhrRequestHeaders.Authorization = `Bearer ${localStorage.getItem('accessToken')}`;
+
         return xhrRequestHeaders;
       };
 

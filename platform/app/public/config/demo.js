@@ -1,9 +1,13 @@
-/** @type {AppTypes.Config} */
 window.config = {
+  apiBaseUrl: 'http://midream.apps.iitd.ac.in/api/v1',
   routerBasename: '/',
-  modes: [],
+  modes: ['manas'],
   extensions: [],
   showStudyList: true,
+  customizationService: {
+    dicomUploadComponent:
+      '@ohif/extension-cornerstone.customizationModule.cornerstoneDicomUploadComponent',
+  },
   // below flag is for performance reasons, but it might not work for all servers
   showWarningMessageForCrossOrigin: true,
   strictZSpacingForVolumeViewport: true,
@@ -16,14 +20,16 @@ window.config = {
       configuration: {
         friendlyName: 'DCM4CHEE Server',
         name: 'DCM4CHEE',
-        wadoUriRoot: 'https://d14fa38qiwhyfd.cloudfront.net/dicomweb',
-        qidoRoot: 'https://d14fa38qiwhyfd.cloudfront.net/dicomweb',
-        wadoRoot: 'https://d14fa38qiwhyfd.cloudfront.net/dicomweb',
+        wadoUriRoot: 'https://d33do7qe4w26qo.cloudfront.net/dicomweb',
+        qidoRoot: 'https://d33do7qe4w26qo.cloudfront.net/dicomweb',
+        wadoRoot: 'https://d33do7qe4w26qo.cloudfront.net/dicomweb',
         qidoSupportsIncludeField: true,
         imageRendering: 'wadors',
+        dicomUploadEnabled: true,
         enableStudyLazyLoad: true,
         bulkDataURI: {
-          enabled: false,
+          enabled: true,
+          relativeResolution: 'series',
         },
         omitQuotationForMultipartRequest: true,
       },
