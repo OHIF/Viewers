@@ -67,6 +67,7 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuRadioGroup,
 } from './DropdownMenu';
+import { Onboarding } from './Onboarding';
 
 export {
   Button,
@@ -145,4 +146,5 @@ export {
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
   DropdownMenuRadioGroup,
+  Onboarding,
 };
