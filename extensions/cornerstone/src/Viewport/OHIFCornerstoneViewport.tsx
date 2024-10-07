@@ -125,9 +125,7 @@ const OHIFCornerstoneViewport = React.memo(
         toolGroupService.removeViewportFromToolGroup(viewportId, renderingEngineId);
 
         syncGroupService.removeViewportFromSyncGroup(viewportId, renderingEngineId, syncGroups);
-        // make sure always to remove the segmentation representation from the viewport
-        // we can rehydrate later since it is easy
-        segmentationService.removeSegmentationRepresentations(viewportId);
+
         viewportActionCornersService.clear(viewportId);
       },
       [viewportId]

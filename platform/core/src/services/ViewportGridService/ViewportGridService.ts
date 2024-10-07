@@ -114,11 +114,11 @@ class ViewportGridService extends PubSubService {
     this.serviceImplementation._setActiveViewport(id);
 
     // Use queueMicrotask to delay the event broadcast
-    queueMicrotask(() => {
+    setTimeout(() => {
       this._broadcastEvent(this.EVENTS.ACTIVE_VIEWPORT_ID_CHANGED, {
         viewportId: id,
       });
-    });
+    }, 0);
   }
 
   public getState() {
@@ -149,22 +149,33 @@ class ViewportGridService extends PubSubService {
   public async setDisplaySetsForViewports(props) {
     await this.serviceImplementation._setDisplaySetsForViewports(props);
     const state = this.getState();
-    const viewports = [];
+    const updatedViewports = [];
+
+    const removedViewportIds = [];
 
     for (const viewport of props) {
       const updatedViewport = state.viewports.get(viewport.viewportId);
+
       if (updatedViewport) {
-        viewports.push(updatedViewport);
+        updatedViewports.push(updatedViewport);
+
+        const updatedDisplaySetUIDs = updatedViewport.displaySetInstanceUIDs || [];
+
+        const isCleared = updatedDisplaySetUIDs.length === 0;
+
+        if (isCleared) {
+          removedViewportIds.push(viewport.viewportId);
+        }
       } else {
-        console.warn("ViewportGridService::Didn't find updated viewport", viewport);
+        removedViewportIds.push(viewport.viewportId);
       }
     }
 
-    // Use queueMicrotask to delay the event broadcast
-    queueMicrotask(() => {
+    setTimeout(() => {
       this._broadcastEvent(ViewportGridService.EVENTS.GRID_STATE_CHANGED, {
         state,
-        viewports,
+        viewports: updatedViewports,
+        removedViewportIds,
       });
     });
   }
@@ -197,6 +208,10 @@ class ViewportGridService extends PubSubService {
     findOrCreateViewport = undefined,
     isHangingProtocolLayout = false,
   }) {
+    // Get the previous state before the layout change
+    const prevState = this.getState();
+    const prevViewportIds = new Set(prevState.viewports.keys());
+
     await this.serviceImplementation._setLayout({
       numCols,
       numRows,
@@ -207,20 +222,25 @@ class ViewportGridService extends PubSubService {
       isHangingProtocolLayout,
     });
 
-    const state = this.getState();
+    // Use queueMicrotask to ensure the layout changed event is published after
+    setTimeout(() => {
+      // Get the new state after the layout change
+      const state = this.getState();
+      const currentViewportIds = new Set(state.viewports.keys());
 
-    // publish both the layout changed and the grid state changed
-    // with microtask to ensure the layout changed is published first
-    queueMicrotask(() => {
+      // Determine which viewport IDs have been removed
+      const removedViewportIds = [...prevViewportIds].filter(id => !currentViewportIds.has(id));
+
       this._broadcastEvent(this.EVENTS.LAYOUT_CHANGED, {
         numCols,
         numRows,
       });
-    });
 
-    this._broadcastEvent(this.EVENTS.GRID_STATE_CHANGED, {
-      state,
-    });
+      this._broadcastEvent(this.EVENTS.GRID_STATE_CHANGED, {
+        state,
+        removedViewportIds,
+      });
+    }, 0);
   }
 
   public reset() {
@@ -237,15 +257,23 @@ class ViewportGridService extends PubSubService {
     this.serviceImplementation._onModeExit();
   }
 
-  public set(state) {
-    this.serviceImplementation._set(state);
+  public set(newState) {
+    const prevState = this.getState();
+    const prevViewportIds = new Set(prevState.viewports.keys());
 
-    // Use queueMicrotask to delay the event broadcast
-    queueMicrotask(() => {
+    this.serviceImplementation._set(newState);
+
+    const state = this.getState();
+    const currentViewportIds = new Set(state.viewports.keys());
+
+    const removedViewportIds = [...prevViewportIds].filter(id => !currentViewportIds.has(id));
+
+    setTimeout(() => {
       this._broadcastEvent(this.EVENTS.GRID_STATE_CHANGED, {
         state,
+        removedViewportIds,
       });
-    });
+    }, 0);
   }
 
   public getNumViewportPanes() {

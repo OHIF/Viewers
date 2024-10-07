@@ -1,4 +1,4 @@
-import OHIF, { Types, errorHandler } from '@ohif/core';
+import OHIF, { errorHandler } from '@ohif/core';
 import React from 'react';
 
 import * as cornerstone from '@cornerstonejs/core';
@@ -18,6 +18,8 @@ import {
   cornerstoneStreamingImageVolumeLoader,
   cornerstoneStreamingDynamicImageVolumeLoader,
 } from '@cornerstonejs/core/loaders';
+
+import RequestTypes from '@cornerstonejs/core/enums/RequestType';
 
 import initWADOImageLoader from './initWADOImageLoader';
 import initCornerstoneTools from './initCornerstoneTools';
@@ -176,10 +178,10 @@ export default async function init({
   // These are set reasonably low to allow for interleaved retrieves and slower
   // connections.
   imageLoadPoolManager.maxNumRequests = {
-    interaction: appConfig?.maxNumRequests?.interaction || 10,
-    thumbnail: appConfig?.maxNumRequests?.thumbnail || 5,
-    prefetch: appConfig?.maxNumRequests?.prefetch || 5,
-    compute: appConfig?.maxNumRequests?.compute || 10,
+    [RequestTypes.Interaction]: appConfig?.maxNumRequests?.interaction || 10,
+    [RequestTypes.Thumbnail]: appConfig?.maxNumRequests?.thumbnail || 5,
+    [RequestTypes.Prefetch]: appConfig?.maxNumRequests?.prefetch || 5,
+    [RequestTypes.Compute]: appConfig?.maxNumRequests?.compute || 10,
   };
 
   initWADOImageLoader(userAuthenticationService, appConfig, extensionManager);
@@ -282,6 +284,16 @@ export default async function init({
     100
   );
 
+  viewportGridService.subscribe(
+    viewportGridService.EVENTS.GRID_STATE_CHANGED,
+    ({ removedViewportIds }) => {
+      console.debug('🚀 ~ removedViewportIds:', removedViewportIds);
+      removedViewportIds?.forEach(viewportId => {
+        segmentationService.removeSegmentationRepresentations(viewportId);
+      });
+    }
+  );
+
   const segRepAdded = segmentationService.EVENTS.SEGMENTATION_REPRESENTATION_MODIFIED;
   const segRepRemoved = segmentationService.EVENTS.SEGMENTATION_REPRESENTATION_REMOVED;
   const gridStateChange = viewportGridService.EVENTS.GRID_STATE_CHANGED;
@@ -289,11 +301,11 @@ export default async function init({
   const consolidateSegmentationRepresentations = () => {
     const gridState = viewportGridService.getState();
     const viewports = gridState.viewports as AppTypes.ViewportGrid.Viewports;
-    if (!viewports || viewports.size === 0) {
+    if (!viewports?.size) {
       return;
     }
 
-    const segmentations = segmentationService.getSegmentationRepresentations();
+    const segmentationsInfo = segmentationService.getSegmentationsInfo();
     for (const [viewportId, gridViewport] of viewports.entries()) {
       const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
 
@@ -302,19 +314,21 @@ export default async function init({
       }
 
       // get the overlay rule for this viewport from the hanging protocol
-      const { matchingRules: overlayRule, overlay } =
+      const { matchingRules: overlayRule } =
         hangingProtocolService.getOverlayRuleForViewport(viewportId) || {};
-      if (!overlayRule?.length || !segmentations?.length) {
+      if (!overlayRule?.length || !segmentationsInfo?.length) {
         continue;
       }
 
-      for (const segmentation of segmentations) {
+      for (const { segmentation } of segmentationsInfo) {
+        const segmentationId = segmentation.segmentationId;
         const matched = hangingProtocolService.runMatchingRules(segmentation, overlayRule, {
           viewport: {
             FrameOfReferenceUID: viewport.getFrameOfReferenceUID(),
           },
           segmentation: {
-            FrameOfReferenceUID: segmentation.FrameOfReferenceUID,
+            FrameOfReferenceUID:
+              segmentationService.getSegmentationFrameOfReferenceUID(segmentationId),
           },
         });
 
@@ -323,17 +337,16 @@ export default async function init({
         }
 
         const matchSuccess = matched.details.passed.length > 0;
-        const representations =
-          segmentationService.getSegmentationRepresentationsForViewport(viewportId);
-        const alreadyHasRepresentation = representations.some(
-          representation => representation.segmentationId === segmentation.id
-        );
+        const representations = segmentationService.getSegmentationRepresentations(viewportId, {
+          segmentationId,
+        });
+
+        const alreadyHasRepresentation = !!representations.length;
 
         if (matchSuccess && !alreadyHasRepresentation) {
           segmentationService.addSegmentationRepresentationToViewport({
             viewportId,
-            segmentationId: segmentation.id,
-            useExistingRepresentationIfExist: true,
+            segmentationId,
           });
         }
       }
@@ -345,15 +358,15 @@ export default async function init({
     // so that the overlay is visible or hidden accordingly
   };
 
-  // viewportGridService.subscribe(gridStateChange, consolidateSegmentationRepresentations);
-  // cornerstoneViewportService.subscribe(
-  //   cornerstoneViewportService.EVENTS.VIEWPORT_DATA_CHANGED,
-  //   consolidateSegmentationRepresentations
-  // );
+  viewportGridService.subscribe(gridStateChange, consolidateSegmentationRepresentations);
+  cornerstoneViewportService.subscribe(
+    cornerstoneViewportService.EVENTS.VIEWPORT_DATA_CHANGED,
+    consolidateSegmentationRepresentations
+  );
 
-  // [segRepAdded].forEach(event => {
-  //   segmentationService.subscribe(event, consolidateSegmentationRepresentations);
-  // });
+  [segRepAdded].forEach(event => {
+    segmentationService.subscribe(event, consolidateSegmentationRepresentations);
+  });
 }
 
 function CPUModal() {

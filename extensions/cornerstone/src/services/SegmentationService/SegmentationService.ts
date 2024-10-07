@@ -8,6 +8,7 @@ import {
   Types as csTypes,
   utilities as csUtils,
   VolumeViewport,
+  metaData,
 } from '@cornerstonejs/core';
 import {
   Enums as csToolsEnums,
@@ -23,6 +24,9 @@ import { addColorLUT } from '@cornerstonejs/tools/segmentation/addColorLUT';
 import { getNextColorLUTIndex } from '@cornerstonejs/tools/segmentation/getNextColorLUTIndex';
 import { Segment } from '@cornerstonejs/tools/types/SegmentationStateTypes';
 import { ContourStyle, LabelmapStyle, SurfaceStyle } from '@cornerstonejs/tools/types';
+import { getSegmentation } from '@cornerstonejs/tools/segmentation/getSegmentation';
+import { MetadataModules } from '@cornerstonejs/core/enums';
+import { ImagePlaneModuleMetadata } from '@cornerstonejs/core/types';
 
 const LABELMAP = csToolsEnums.SegmentationRepresentations.Labelmap;
 const CONTOUR = csToolsEnums.SegmentationRepresentations.Contour;
@@ -691,6 +695,14 @@ class SegmentationService extends PubSubService {
 
   public getActiveSegmentation(viewportId: string): string | null {
     return cstSegmentation.activeSegmentation.getActiveSegmentation(viewportId)?.segmentationId;
+  }
+
+  public hasCustomStyles(specifier: {
+    viewportId: string;
+    segmentationId: string;
+    type: SegmentationRepresentations;
+  }): boolean {
+    return cstSegmentation.config.style.hasCustomStyle(specifier);
   }
 
   public getStyle = (specifier: {
@@ -1377,6 +1389,26 @@ class SegmentationService extends PubSubService {
     });
 
     return segmentsHidden.size === 0;
+  }
+
+  public getSegmentationFrameOfReferenceUID(segmentationId: string) {
+    const csSegmentation = getSegmentation(segmentationId);
+
+    const labelmapData = csSegmentation.representationData[SegmentationRepresentations.Labelmap];
+
+    const { imageIds } = labelmapData;
+
+    if (imageIds) {
+      const imageId = imageIds[0];
+      const csImage = cache.getImage(imageId);
+      const referencedImageId = csImage.referencedImageId;
+      const imagePlaneModule = metaData.get(
+        MetadataModules.IMAGE_PLANE,
+        referencedImageId
+      ) as ImagePlaneModuleMetadata;
+
+      return imagePlaneModule.frameOfReferenceUID;
+    }
   }
 
   private _toggleSegmentationVisibility = (viewportId: string, segmentationId: string): void => {

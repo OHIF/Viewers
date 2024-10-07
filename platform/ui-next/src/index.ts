@@ -40,6 +40,7 @@ import {
   Slider,
   Input,
   Switch,
+  Checkbox,
 } from './components';
 
 import { useNotification, NotificationProvider } from './contextProviders';
@@ -52,6 +53,7 @@ export {
   Command,
   Popover,
   Combobox,
+  Checkbox,
   DoubleSlider,
   buttonVariants,
   ThemeWrapper,
