@@ -12,7 +12,7 @@ export type PositionPresentation = {
   // The position information has the zoom/pan and possibly other related information, but not LUT
   position: Types.ViewPresentation;
 
-  initialImageIndex: number;
+  initialImageIndex?: number;
 };
 
 /**
@@ -36,8 +36,7 @@ export interface LutPresentation {
  */
 export interface SegmentationPresentation {
   id: string;
-  viewportType: string;
-  presentation: Record<string, Types.ViewportProperties> | Types.ViewportProperties;
+  hydrated: boolean | null;
 }
 
 /**

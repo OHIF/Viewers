@@ -16,9 +16,8 @@ import type { Types } from '@ohif/core';
 import OHIFViewportActionCorners from '../components/OHIFViewportActionCorners';
 import { getWindowLevelActionMenu } from '../components/WindowLevelActionMenu/getWindowLevelActionMenu';
 import { useAppConfig } from '@state';
-
-import { LutPresentation, PositionPresentation } from '../types/Presentation';
 import { getViewportDataOverlaySettingsMenu } from '../components/ViewportDataOverlaySettingMenu';
+import { getViewportPresentations } from '../utils/presentations/getViewportPresentations';
 
 const STACK = 'stack';
 
@@ -123,12 +122,19 @@ const OHIFCornerstoneViewport = React.memo(
         const syncGroups = viewportInfo.getSyncGroups();
 
         toolGroupService.removeViewportFromToolGroup(viewportId, renderingEngineId);
-
         syncGroupService.removeViewportFromSyncGroup(viewportId, renderingEngineId, syncGroups);
+
+        segmentationService.removeSegmentationRepresentations(viewportId);
 
         viewportActionCornersService.clear(viewportId);
       },
-      [viewportId]
+      [
+        viewportId,
+        segmentationService,
+        syncGroupService,
+        toolGroupService,
+        viewportActionCornersService,
+      ]
     );
 
     const elementEnabledHandler = useCallback(
@@ -250,19 +256,8 @@ const OHIFCornerstoneViewport = React.memo(
           initialImageIndex
         );
 
-        // The presentation state will have been stored previously by closing
-        // a viewport.  Otherwise, this viewport will be unchanged and the
-        // presentation information will be directly carried over.
-        const state = stateSyncService.getState();
-        const lutPresentationStore = state.lutPresentationStore as unknown as LutPresentation;
-        const positionPresentationStore =
-          state.positionPresentationStore as unknown as PositionPresentation;
+        const presentations = getViewportPresentations(servicesManager, viewportOptions);
 
-        const { presentationIds } = viewportOptions;
-        const presentations = {
-          positionPresentation: positionPresentationStore[presentationIds?.positionPresentationId],
-          lutPresentation: lutPresentationStore[presentationIds?.lutPresentationId],
-        };
         let measurement;
         if (cacheJumpToMeasurementEvent?.viewportId === viewportId) {
           measurement = cacheJumpToMeasurementEvent.measurement;

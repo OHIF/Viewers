@@ -252,7 +252,7 @@ declare global {
     AppTypes.Services &
     AppTypes.Managers & {
       [key: string]: unknown;
-    };
+    } & AppTypes.Config;
 
   export type withTestTypes<T = object> = T & AppTypes.Test;
 }

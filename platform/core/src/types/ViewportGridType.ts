@@ -6,6 +6,7 @@ export interface GridViewportOptions {
   presentationIds?: {
     positionPresentationId?: string;
     lutPresentationId?: string;
+    segmentationPresentationId?: string;
   };
   flipHorizontal?: boolean;
   //

@@ -19,7 +19,12 @@ import { IViewportService } from './IViewportService';
 import { RENDERING_ENGINE_ID } from './constants';
 import ViewportInfo, { DisplaySetOptions, PublicViewportOptions } from './Viewport';
 import { StackViewportData, VolumeViewportData } from '../../types/CornerstoneCacheService';
-import { LutPresentation, PositionPresentation, Presentations } from '../../types/Presentation';
+import Presentation, {
+  LutPresentation,
+  PositionPresentation,
+  Presentations,
+  SegmentationPresentation,
+} from '../../types/Presentation';
 
 import JumpPresets from '../../utils/JumpPresets';
 import { ViewportProperties } from '@cornerstonejs/core/types';
@@ -182,7 +187,7 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
    */
   public setPresentations(
     viewportId: string,
-    presentations?: Presentations,
+    presentations: Presentations,
     viewportInfo?: ViewportInfo
   ): void {
     const viewport = this.getCornerstoneViewport(viewportId) as
@@ -193,29 +198,11 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
       return;
     }
 
-    const { lutPresentation, positionPresentation } = presentations;
-    if (lutPresentation) {
-      const { properties } = lutPresentation;
-      if (viewport instanceof BaseVolumeViewport) {
-        if (properties instanceof Map) {
-          properties.forEach((propertiesEntry, volumeId) => {
-            viewport.setProperties(propertiesEntry, volumeId);
-          });
-        } else {
-          viewport.setProperties(properties);
-        }
-      } else {
-        viewport.setProperties(properties);
-      }
-    }
+    const { lutPresentation, positionPresentation, segmentationPresentation } = presentations;
 
-    const viewRef = viewportInfo?.getViewReference() || positionPresentation?.viewReference;
-    if (viewRef) {
-      viewport.setViewReference(viewRef);
-    }
-    if (positionPresentation?.position) {
-      viewport.setViewPresentation(positionPresentation.position);
-    }
+    this._setLutPresentation(viewport, lutPresentation);
+    this._setPositionPresentation(viewport, positionPresentation, viewportInfo);
+    this._setSegmentationPresentation(viewport, segmentationPresentation);
   }
 
   /**
@@ -224,7 +211,7 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
    * @returns The position presentation object containing various properties
    * such as ID, viewport type, initial image index, view plane normal, view up, zoom, and pan.
    */
-  public getPositionPresentation(viewportId: string): PositionPresentation {
+  private _getPositionPresentation(viewportId: string): PositionPresentation {
     const viewportInfo = this.viewportsById.get(viewportId);
     if (!viewportInfo) {
       return;
@@ -256,7 +243,7 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
    * @param viewportId The ID of the viewport.
    * @returns The LUT presentation object, or undefined if the viewport does not exist.
    */
-  public getLutPresentation(viewportId: string): LutPresentation {
+  private _getLutPresentation(viewportId: string): LutPresentation {
     const viewportInfo = this.viewportsById.get(viewportId);
     if (!viewportInfo) {
       return;
@@ -305,6 +292,25 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     };
   }
 
+  private _getSegmentationPresentation(viewportId: string): SegmentationPresentation {
+    const viewportInfo = this.viewportsById.get(viewportId);
+    if (!viewportInfo) {
+      return;
+    }
+
+    const presentationIds = viewportInfo.getPresentationIds();
+
+    if (!presentationIds) {
+      return;
+    }
+
+    const { segmentationPresentationId } = presentationIds;
+
+    return {
+      id: segmentationPresentationId,
+    };
+  }
+
   /**
    * Retrieves the presentations for a given viewport.
    * @param viewportId - The ID of the viewport.
@@ -316,12 +322,14 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
       return;
     }
 
-    const positionPresentation = this.getPositionPresentation(viewportId);
-    const lutPresentation = this.getLutPresentation(viewportId);
+    const positionPresentation = this._getPositionPresentation(viewportId);
+    const lutPresentation = this._getLutPresentation(viewportId);
+    const segmentationPresentation = this._getSegmentationPresentation(viewportId);
 
     return {
       positionPresentation,
       lutPresentation,
+      segmentationPresentation,
     };
   }
 
@@ -348,44 +356,34 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     const { stateSyncService, syncGroupService } = this.servicesManager.services;
 
     const synchronizers = syncGroupService.getSynchronizersForViewport(viewportId);
+    const state = stateSyncService.getState();
 
-    const { positionPresentationStore, synchronizersStore, lutPresentationStore } =
-      stateSyncService.getState();
+    const { lutPresentation, positionPresentation, segmentationPresentation } = presentations;
 
-    const { lutPresentation, positionPresentation } = presentations;
-    const { id: positionPresentationId } = positionPresentation;
-    const { id: lutPresentationId } = lutPresentation;
+    const newState: Record<string, unknown> = {};
 
-    const updateStore = (store, id, value) => ({ ...store, [id]: value });
+    const updatePresentation = (store: string, presentation: Presentation) => {
+      if (presentation?.id) {
+        newState[store] = {
+          ...state[store],
+          [presentation.id]: presentation,
+        };
+      }
+    };
 
-    const newState = {} as { [key: string]: any };
-
-    if (lutPresentationId) {
-      newState.lutPresentationStore = updateStore(
-        lutPresentationStore,
-        lutPresentationId,
-        lutPresentation
-      );
-    }
-
-    if (positionPresentationId) {
-      newState.positionPresentationStore = updateStore(
-        positionPresentationStore,
-        positionPresentationId,
-        positionPresentation
-      );
-    }
+    updatePresentation('lutPresentationStore', lutPresentation);
+    updatePresentation('positionPresentationStore', positionPresentation);
+    updatePresentation('segmentationPresentationStore', segmentationPresentation);
 
     if (synchronizers?.length) {
-      newState.synchronizersStore = updateStore(
-        synchronizersStore,
-        viewportId,
-        synchronizers.map(synchronizer => ({
+      newState.synchronizersStore = {
+        ...state.synchronizersStore,
+        [viewportId]: synchronizers.map(synchronizer => ({
           id: synchronizer.id,
           sourceViewports: [...synchronizer.getSourceViewports()],
           targetViewports: [...synchronizer.getTargetViewports()],
-        }))
-      );
+        })),
+      };
     }
 
     stateSyncService.store(newState);
@@ -998,7 +996,7 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     }
 
     return this._setOtherViewport(
-      viewport as Types.IViewport,
+      viewport,
       viewportData as StackViewportData,
       viewportInfo,
       presentations
@@ -1095,7 +1093,7 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
 
       // Store the current position presentations for each viewport.
       viewports.forEach(({ id }) => {
-        const presentation = this.getPositionPresentation(id);
+        const presentation = this._getPositionPresentation(id);
         this.beforeResizePositionPresentations.set(id, presentation);
       });
 
@@ -1124,6 +1122,51 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     this.gridResizeTimeOut = setTimeout(() => {
       this.gridResizeTimeOut = null;
     }, this.gridResizeDelay);
+  }
+
+  private _setLutPresentation(
+    viewport: Types.IStackViewport | Types.IVolumeViewport,
+    lutPresentation: LutPresentation
+  ): void {
+    if (!lutPresentation) {
+      return;
+    }
+
+    const { properties } = lutPresentation;
+    if (viewport instanceof BaseVolumeViewport) {
+      if (properties instanceof Map) {
+        properties.forEach((propertiesEntry, volumeId) => {
+          viewport.setProperties(propertiesEntry, volumeId);
+        });
+      } else {
+        viewport.setProperties(properties);
+      }
+    } else {
+      viewport.setProperties(properties);
+    }
+  }
+
+  private _setPositionPresentation(
+    viewport: Types.IStackViewport | Types.IVolumeViewport,
+    positionPresentation: PositionPresentation,
+    viewportInfo?: ViewportInfo
+  ): void {
+    const viewRef = viewportInfo?.getViewReference() || positionPresentation?.viewReference;
+    if (viewRef) {
+      viewport.setViewReference(viewRef);
+    }
+    if (positionPresentation?.position) {
+      viewport.setViewPresentation(positionPresentation.position);
+    }
+  }
+
+  private _setSegmentationPresentation(
+    viewport: Types.IStackViewport | Types.IVolumeViewport,
+    segmentationPresentation: SegmentationPresentation
+  ): void {
+    if (segmentationPresentation) {
+      // viewport.setSegmentation(segmentationPresentation);
+    }
   }
 }
 

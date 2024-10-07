@@ -56,10 +56,6 @@ export default async function init({
   // DO NOT CHANGE THE ORDER
 
   await cs3DInit({
-    rendering: {
-      preferSizeOverAccuracy: Boolean(appConfig.preferSizeOverAccuracy),
-      useNorm16Texture: Boolean(appConfig.useNorm16Texture),
-    },
     peerImport: appConfig.peerImport,
   });
 
@@ -284,89 +280,88 @@ export default async function init({
     100
   );
 
-  viewportGridService.subscribe(
-    viewportGridService.EVENTS.GRID_STATE_CHANGED,
-    ({ removedViewportIds }) => {
-      console.debug('🚀 ~ removedViewportIds:', removedViewportIds);
-      removedViewportIds?.forEach(viewportId => {
-        segmentationService.removeSegmentationRepresentations(viewportId);
-      });
-    }
-  );
+  // viewportGridService.subscribe(
+  //   viewportGridService.EVENTS.GRID_STATE_CHANGED,
+  //   ({ removedViewportIds }) => {
+  //     removedViewportIds?.forEach(viewportId => {
+  //       segmentationService.removeSegmentationRepresentations(viewportId);
+  //     });
+  //   }
+  // );
 
-  const segRepAdded = segmentationService.EVENTS.SEGMENTATION_REPRESENTATION_MODIFIED;
-  const segRepRemoved = segmentationService.EVENTS.SEGMENTATION_REPRESENTATION_REMOVED;
-  const gridStateChange = viewportGridService.EVENTS.GRID_STATE_CHANGED;
+  // const segRepAdded = segmentationService.EVENTS.SEGMENTATION_REPRESENTATION_MODIFIED;
+  // const segRepRemoved = segmentationService.EVENTS.SEGMENTATION_REPRESENTATION_REMOVED;
+  // const gridStateChange = viewportGridService.EVENTS.GRID_STATE_CHANGED;
 
-  const consolidateSegmentationRepresentations = () => {
-    const gridState = viewportGridService.getState();
-    const viewports = gridState.viewports as AppTypes.ViewportGrid.Viewports;
-    if (!viewports?.size) {
-      return;
-    }
+  // const consolidateSegmentationRepresentations = () => {
+  //   const gridState = viewportGridService.getState();
+  //   const viewports = gridState.viewports as AppTypes.ViewportGrid.Viewports;
+  //   if (!viewports?.size) {
+  //     return;
+  //   }
 
-    const segmentationsInfo = segmentationService.getSegmentationsInfo();
-    for (const [viewportId, gridViewport] of viewports.entries()) {
-      const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
+  //   const segmentationsInfo = segmentationService.getSegmentationsInfo();
+  //   for (const [viewportId, gridViewport] of viewports.entries()) {
+  //     const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
 
-      if (!viewport) {
-        continue;
-      }
+  //     if (!viewport) {
+  //       continue;
+  //     }
 
-      // get the overlay rule for this viewport from the hanging protocol
-      const { matchingRules: overlayRule } =
-        hangingProtocolService.getOverlayRuleForViewport(viewportId) || {};
-      if (!overlayRule?.length || !segmentationsInfo?.length) {
-        continue;
-      }
+  //     // get the overlay rule for this viewport from the hanging protocol
+  //     const { matchingRules: overlayRule } =
+  //       hangingProtocolService.getOverlayRuleForViewport(viewportId) || {};
+  //     if (!overlayRule?.length || !segmentationsInfo?.length) {
+  //       continue;
+  //     }
 
-      for (const { segmentation } of segmentationsInfo) {
-        const segmentationId = segmentation.segmentationId;
-        const matched = hangingProtocolService.runMatchingRules(segmentation, overlayRule, {
-          viewport: {
-            FrameOfReferenceUID: viewport.getFrameOfReferenceUID(),
-          },
-          segmentation: {
-            FrameOfReferenceUID:
-              segmentationService.getSegmentationFrameOfReferenceUID(segmentationId),
-          },
-        });
+  //     for (const { segmentation } of segmentationsInfo) {
+  //       const segmentationId = segmentation.segmentationId;
+  //       const matched = hangingProtocolService.runMatchingRules(segmentation, overlayRule, {
+  //         viewport: {
+  //           FrameOfReferenceUID: viewport.getFrameOfReferenceUID(),
+  //         },
+  //         segmentation: {
+  //           FrameOfReferenceUID:
+  //             segmentationService.getSegmentationFrameOfReferenceUID(segmentationId),
+  //         },
+  //       });
 
-        if (!matched || matched.score === 0 || matched.requiredFailed) {
-          continue;
-        }
+  //       if (!matched || matched.score === 0 || matched.requiredFailed) {
+  //         continue;
+  //       }
 
-        const matchSuccess = matched.details.passed.length > 0;
-        const representations = segmentationService.getSegmentationRepresentations(viewportId, {
-          segmentationId,
-        });
+  //       const matchSuccess = matched.details.passed.length > 0;
+  //       const representations = segmentationService.getSegmentationRepresentations(viewportId, {
+  //         segmentationId,
+  //       });
 
-        const alreadyHasRepresentation = !!representations.length;
+  //       const alreadyHasRepresentation = !!representations.length;
 
-        if (matchSuccess && !alreadyHasRepresentation) {
-          segmentationService.addSegmentationRepresentationToViewport({
-            viewportId,
-            segmentationId,
-          });
-        }
-      }
-    }
+  //       if (matchSuccess && !alreadyHasRepresentation) {
+  //         segmentationService.addSegmentationRepresentationToViewport({
+  //           viewportId,
+  //           segmentationId,
+  //         });
+  //       }
+  //     }
+  //   }
 
-    // here we need to go over all the viewports and check if the overlay rules
-    // actually match the segmentation representation that was added or removed
-    // if so the viewport should be updated with that segmentation representation
-    // so that the overlay is visible or hidden accordingly
-  };
+  //   // here we need to go over all the viewports and check if the overlay rules
+  //   // actually match the segmentation representation that was added or removed
+  //   // if so the viewport should be updated with that segmentation representation
+  //   // so that the overlay is visible or hidden accordingly
+  // };
 
-  viewportGridService.subscribe(gridStateChange, consolidateSegmentationRepresentations);
-  cornerstoneViewportService.subscribe(
-    cornerstoneViewportService.EVENTS.VIEWPORT_DATA_CHANGED,
-    consolidateSegmentationRepresentations
-  );
+  // viewportGridService.subscribe(gridStateChange, consolidateSegmentationRepresentations);
+  // cornerstoneViewportService.subscribe(
+  //   cornerstoneViewportService.EVENTS.VIEWPORT_DATA_CHANGED,
+  //   consolidateSegmentationRepresentations
+  // );
 
-  [segRepAdded].forEach(event => {
-    segmentationService.subscribe(event, consolidateSegmentationRepresentations);
-  });
+  // [segRepAdded].forEach(event => {
+  //   segmentationService.subscribe(event, consolidateSegmentationRepresentations);
+  // });
 }
 
 function CPUModal() {

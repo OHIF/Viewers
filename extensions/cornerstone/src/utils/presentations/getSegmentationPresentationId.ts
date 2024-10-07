@@ -33,17 +33,13 @@ const getSegmentationPresentationId = (
     return;
   }
 
-  if (!viewport || !viewport.viewportOptions || !viewport.displaySetInstanceUIDs?.length) {
+  if (!viewport?.viewportOptions || !viewport.displaySetInstanceUIDs?.length) {
     return;
   }
 
-  const { displaySetOptions, displaySetInstanceUIDs } = viewport;
-  const segmentationId = _getSegmentationId(displaySetOptions[0], viewport);
-  const segmentationPresentationArr = [segmentationId];
+  const { displaySetInstanceUIDs } = viewport;
 
-  for (const uid of displaySetInstanceUIDs) {
-    segmentationPresentationArr.push(uid);
-  }
+  const segmentationPresentationArr = [...displaySetInstanceUIDs];
 
   addUniqueIndex(
     segmentationPresentationArr,

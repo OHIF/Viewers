@@ -70,7 +70,7 @@ class CornerstoneCacheService {
   }
 
   public async invalidateViewportData(
-    viewportData: VolumeViewportData,
+    viewportData: VolumeViewportData | StackViewportData,
     invalidatedDisplaySetInstanceUID: string,
     dataSource,
     displaySetService

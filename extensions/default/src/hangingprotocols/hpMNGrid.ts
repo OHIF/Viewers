@@ -77,6 +77,7 @@ const hpMN: Types.HangingProtocol.Protocol = {
   stages: [
     {
       id: '2x2',
+      name: '2x2',
       stageActivation: {
         enabled: {
           minViewportsMatched: 4,

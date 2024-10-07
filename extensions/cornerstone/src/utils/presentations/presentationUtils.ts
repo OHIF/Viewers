@@ -10,7 +10,12 @@ const DEFAULT_STR = 'default';
 // dragged and dropped the view in twice.  For example, it allows displaying
 // bone, brain and soft tissue views of a single display set, and to still
 // remember the specific changes to each viewport.
-const addUniqueIndex = (arr, key, viewports, isUpdatingSameViewport) => {
+const addUniqueIndex = (
+  arr,
+  key,
+  viewports: AppTypes.ViewportGrid.Viewports,
+  isUpdatingSameViewport
+) => {
   arr.push(0);
 
   // If we are updating the viewport, we should not increment the index
