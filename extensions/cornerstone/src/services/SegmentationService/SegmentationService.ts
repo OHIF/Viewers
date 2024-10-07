@@ -89,6 +89,13 @@ class SegmentationService extends PubSubService {
   };
 
   private _segmentationIdToColorLUTIndexMap: Map<string, number>;
+  private _viewportSegmentationPresentationMap: Map<
+    string,
+    {
+      hydrated: boolean;
+      config: unknown;
+    }
+  >;
   readonly servicesManager: AppTypes.ServicesManager;
   highlightIntervalId = null;
   readonly EVENTS = EVENTS;
@@ -97,6 +104,7 @@ class SegmentationService extends PubSubService {
     super(EVENTS);
 
     this._segmentationIdToColorLUTIndexMap = new Map();
+    this._viewportSegmentationPresentationMap = new Map();
 
     this.servicesManager = servicesManager;
 
@@ -202,6 +210,13 @@ class SegmentationService extends PubSubService {
     // }
 
     return segmentationsInfo;
+  }
+
+  public getSegmentationPresentation(viewportId: string): {
+    hydrated: boolean;
+    config: unknown;
+  } {
+    const viewportRepresentations = this.getSegmentationRepresentations(viewportId);
   }
 
   /**

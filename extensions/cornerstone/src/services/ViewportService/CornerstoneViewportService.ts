@@ -206,29 +206,46 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
   }
 
   /**
-   * Retrieves the position presentation information for a given viewport.
-   * @param viewportId The ID of the viewport.
-   * @returns The position presentation object containing various properties
-   * such as ID, viewport type, initial image index, view plane normal, view up, zoom, and pan.
+   * Retrieves the presentations for a given viewport.
+   * @param viewportId - The ID of the viewport.
+   * @returns The presentations for the viewport.
    */
-  private _getPositionPresentation(viewportId: string): PositionPresentation {
+  public getPresentations(viewportId: string): Presentations {
+    const presentationIds = this._getPresentationIds(viewportId);
+
+    if (!presentationIds?.length) {
+      return null;
+    }
+
+    const positionPresentation = this._getPositionPresentation(viewportId, presentationIds);
+    const lutPresentation = this._getLutPresentation(viewportId, presentationIds);
+    const segmentationPresentation = this._getSegmentationPresentation(viewportId, presentationIds);
+
+    return {
+      positionPresentation,
+      lutPresentation,
+      segmentationPresentation,
+    };
+  }
+
+  private _getPresentationIds(viewportId: string): string[] {
     const viewportInfo = this.viewportsById.get(viewportId);
     if (!viewportInfo) {
-      return;
+      return null;
     }
 
-    const presentationIds = viewportInfo.getPresentationIds();
+    return viewportInfo.getPresentationIds();
+  }
 
-    if (!presentationIds) {
-      return;
-    }
-
+  private _getPositionPresentation(viewportId: string, presentationIds): PositionPresentation {
     const { positionPresentationId } = presentationIds;
 
     const csViewport = this.getCornerstoneViewport(viewportId);
     if (!csViewport) {
       return;
     }
+
+    const viewportInfo = this.viewportsById.get(viewportId);
 
     return {
       id: positionPresentationId,
@@ -238,23 +255,7 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     };
   }
 
-  /**
-   * Retrieves the LUT (Lookup Table) presentation for a given viewport.
-   * @param viewportId The ID of the viewport.
-   * @returns The LUT presentation object, or undefined if the viewport does not exist.
-   */
-  private _getLutPresentation(viewportId: string): LutPresentation {
-    const viewportInfo = this.viewportsById.get(viewportId);
-    if (!viewportInfo) {
-      return;
-    }
-
-    const presentationIds = viewportInfo.getPresentationIds();
-
-    if (!presentationIds) {
-      return;
-    }
-
+  private _getLutPresentation(viewportId: string, presentationIds): LutPresentation {
     const { lutPresentationId } = presentationIds;
 
     const csViewport = this.getCornerstoneViewport(viewportId) as
@@ -285,6 +286,8 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
       });
     }
 
+    const viewportInfo = this.viewportsById.get(viewportId);
+
     return {
       id: lutPresentationId,
       viewportType: viewportInfo.getViewportType(),
@@ -292,44 +295,16 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     };
   }
 
-  private _getSegmentationPresentation(viewportId: string): SegmentationPresentation {
-    const viewportInfo = this.viewportsById.get(viewportId);
-    if (!viewportInfo) {
-      return;
-    }
-
-    const presentationIds = viewportInfo.getPresentationIds();
-
-    if (!presentationIds) {
-      return;
-    }
-
+  private _getSegmentationPresentation(
+    viewportId: string,
+    presentationIds
+  ): SegmentationPresentation {
     const { segmentationPresentationId } = presentationIds;
+
+    // segmentation presentation Id is in form of displaySetInstanceUID
 
     return {
       id: segmentationPresentationId,
-    };
-  }
-
-  /**
-   * Retrieves the presentations for a given viewport.
-   * @param viewportId - The ID of the viewport.
-   * @returns The presentations for the viewport.
-   */
-  public getPresentations(viewportId: string): Presentations {
-    const viewportInfo = this.viewportsById.get(viewportId);
-    if (!viewportInfo) {
-      return;
-    }
-
-    const positionPresentation = this._getPositionPresentation(viewportId);
-    const lutPresentation = this._getLutPresentation(viewportId);
-    const segmentationPresentation = this._getSegmentationPresentation(viewportId);
-
-    return {
-      positionPresentation,
-      lutPresentation,
-      segmentationPresentation,
     };
   }
 
@@ -342,14 +317,15 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
    * @param viewportId The ID of the viewport.
    */
   public storePresentation({ viewportId }) {
-    let presentations = null as Presentations;
+    let presentations: Presentations | null = null;
+
     try {
       presentations = this.getPresentations(viewportId);
       if (!presentations?.positionPresentation && !presentations?.lutPresentation) {
         return;
       }
     } catch (error) {
-      console.warn(error);
+      console.debug('Error getting presentations:', error);
       return;
     }
 
@@ -1092,9 +1068,10 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
       const viewports = this.getRenderingEngine().getViewports();
 
       // Store the current position presentations for each viewport.
-      viewports.forEach(({ id }) => {
-        const presentation = this._getPositionPresentation(id);
-        this.beforeResizePositionPresentations.set(id, presentation);
+      viewports.forEach(({ id: viewportId }) => {
+        const presentationIds = this._getPresentationIds(viewportId);
+        const presentation = this._getPositionPresentation(viewportId, presentationIds);
+        this.beforeResizePositionPresentations.set(viewportId, presentation);
       });
 
       // Resize the rendering engine and render.

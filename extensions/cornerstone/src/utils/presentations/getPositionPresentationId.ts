@@ -19,7 +19,7 @@ const getPositionPresentationId = (id, { viewport, viewports, isUpdatingSameView
     return;
   }
 
-  if (!viewport || !viewport.viewportOptions || !viewport.displaySetInstanceUIDs?.length) {
+  if (!viewport?.viewportOptions || !viewport.displaySetInstanceUIDs?.length) {
     return;
   }
 
