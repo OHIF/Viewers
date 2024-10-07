@@ -206,20 +206,96 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
   }
 
   /**
+   * Stores the presentation state for a given viewport inside the
+   * stateSyncService. This is used to persist the presentation state
+   * across different scenarios e.g., when the viewport is changing the
+   * display set, or when the viewport is moving to a different layout.
+   *
+   * @param viewportId The ID of the viewport.
+   */
+  public storePresentation({ viewportId }) {
+    const presentationIds = this.getPresentationIds(viewportId);
+
+    if (!presentationIds || Object.keys(presentationIds).length === 0) {
+      return null;
+    }
+
+    let presentations: Presentations | null = null;
+
+    try {
+      presentations = this.getPresentations(viewportId);
+      if (!presentations?.positionPresentation && !presentations?.lutPresentation) {
+        return;
+      }
+    } catch (error) {
+      console.debug('Error getting presentations:', error);
+      return;
+    }
+
+    const { stateSyncService, syncGroupService } = this.servicesManager.services;
+
+    const synchronizers = syncGroupService.getSynchronizersForViewport(viewportId);
+    const state = stateSyncService.getState();
+
+    const { lutPresentation, positionPresentation, segmentationPresentation } = presentations;
+
+    const newState: Record<string, unknown> = {};
+
+    const updatePresentation = (
+      store: string,
+      presentationId: string,
+      presentation: Presentation
+    ) => {
+      if (presentationId) {
+        newState[store] = {
+          ...state[store],
+          [presentationId]: presentation,
+        };
+      }
+    };
+
+    const { lutPresentationId, positionPresentationId, segmentationPresentationId } =
+      presentationIds;
+
+    if (lutPresentationId) {
+      updatePresentation('lutPresentationStore', lutPresentationId, lutPresentation);
+    }
+
+    if (positionPresentationId) {
+      updatePresentation('positionPresentationStore', positionPresentationId, positionPresentation);
+    }
+
+    if (segmentationPresentationId) {
+      updatePresentation(
+        'segmentationPresentationStore',
+        segmentationPresentationId,
+        segmentationPresentation
+      );
+    }
+
+    if (synchronizers?.length) {
+      newState.synchronizersStore = {
+        ...state.synchronizersStore,
+        [viewportId]: synchronizers.map(synchronizer => ({
+          id: synchronizer.id,
+          sourceViewports: [...synchronizer.getSourceViewports()],
+          targetViewports: [...synchronizer.getTargetViewports()],
+        })),
+      };
+    }
+
+    stateSyncService.store(newState);
+  }
+
+  /**
    * Retrieves the presentations for a given viewport.
    * @param viewportId - The ID of the viewport.
    * @returns The presentations for the viewport.
    */
   public getPresentations(viewportId: string): Presentations {
-    const presentationIds = this._getPresentationIds(viewportId);
-
-    if (!presentationIds?.length) {
-      return null;
-    }
-
-    const positionPresentation = this._getPositionPresentation(viewportId, presentationIds);
-    const lutPresentation = this._getLutPresentation(viewportId, presentationIds);
-    const segmentationPresentation = this._getSegmentationPresentation(viewportId, presentationIds);
+    const positionPresentation = this._getPositionPresentation(viewportId);
+    const lutPresentation = this._getLutPresentation(viewportId);
+    const segmentationPresentation = this._getSegmentationPresentation(viewportId);
 
     return {
       positionPresentation,
@@ -228,7 +304,7 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     };
   }
 
-  private _getPresentationIds(viewportId: string): string[] {
+  public getPresentationIds(viewportId: string): AppTypes.PresentationIds | null {
     const viewportInfo = this.viewportsById.get(viewportId);
     if (!viewportInfo) {
       return null;
@@ -237,9 +313,7 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     return viewportInfo.getPresentationIds();
   }
 
-  private _getPositionPresentation(viewportId: string, presentationIds): PositionPresentation {
-    const { positionPresentationId } = presentationIds;
-
+  private _getPositionPresentation(viewportId: string): PositionPresentation {
     const csViewport = this.getCornerstoneViewport(viewportId);
     if (!csViewport) {
       return;
@@ -248,16 +322,13 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     const viewportInfo = this.viewportsById.get(viewportId);
 
     return {
-      id: positionPresentationId,
       viewportType: viewportInfo.getViewportType(),
       viewReference: csViewport.getViewReference(),
       position: csViewport.getViewPresentation({ pan: true, zoom: true }),
     };
   }
 
-  private _getLutPresentation(viewportId: string, presentationIds): LutPresentation {
-    const { lutPresentationId } = presentationIds;
-
+  private _getLutPresentation(viewportId: string): LutPresentation {
     const csViewport = this.getCornerstoneViewport(viewportId) as
       | Types.IStackViewport
       | Types.IVolumeViewport;
@@ -289,80 +360,19 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     const viewportInfo = this.viewportsById.get(viewportId);
 
     return {
-      id: lutPresentationId,
       viewportType: viewportInfo.getViewportType(),
       properties,
     };
   }
 
-  private _getSegmentationPresentation(
-    viewportId: string,
-    presentationIds
-  ): SegmentationPresentation {
-    const { segmentationPresentationId } = presentationIds;
+  private _getSegmentationPresentation(viewportId: string): SegmentationPresentation {
+    const { segmentationService } = this.servicesManager.services;
 
-    // segmentation presentation Id is in form of displaySetInstanceUID
+    const segmentationPresentation = segmentationService.getSegmentationPresentation(viewportId);
 
     return {
-      id: segmentationPresentationId,
+      ...segmentationPresentation,
     };
-  }
-
-  /**
-   * Stores the presentation state for a given viewport inside the
-   * stateSyncService. This is used to persist the presentation state
-   * across different scenarios e.g., when the viewport is changing the
-   * display set, or when the viewport is moving to a different layout.
-   *
-   * @param viewportId The ID of the viewport.
-   */
-  public storePresentation({ viewportId }) {
-    let presentations: Presentations | null = null;
-
-    try {
-      presentations = this.getPresentations(viewportId);
-      if (!presentations?.positionPresentation && !presentations?.lutPresentation) {
-        return;
-      }
-    } catch (error) {
-      console.debug('Error getting presentations:', error);
-      return;
-    }
-
-    const { stateSyncService, syncGroupService } = this.servicesManager.services;
-
-    const synchronizers = syncGroupService.getSynchronizersForViewport(viewportId);
-    const state = stateSyncService.getState();
-
-    const { lutPresentation, positionPresentation, segmentationPresentation } = presentations;
-
-    const newState: Record<string, unknown> = {};
-
-    const updatePresentation = (store: string, presentation: Presentation) => {
-      if (presentation?.id) {
-        newState[store] = {
-          ...state[store],
-          [presentation.id]: presentation,
-        };
-      }
-    };
-
-    updatePresentation('lutPresentationStore', lutPresentation);
-    updatePresentation('positionPresentationStore', positionPresentation);
-    updatePresentation('segmentationPresentationStore', segmentationPresentation);
-
-    if (synchronizers?.length) {
-      newState.synchronizersStore = {
-        ...state.synchronizersStore,
-        [viewportId]: synchronizers.map(synchronizer => ({
-          id: synchronizer.id,
-          sourceViewports: [...synchronizer.getSourceViewports()],
-          targetViewports: [...synchronizer.getTargetViewports()],
-        })),
-      };
-    }
-
-    stateSyncService.store(newState);
   }
 
   /**
@@ -1069,8 +1079,7 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
 
       // Store the current position presentations for each viewport.
       viewports.forEach(({ id: viewportId }) => {
-        const presentationIds = this._getPresentationIds(viewportId);
-        const presentation = this._getPositionPresentation(viewportId, presentationIds);
+        const presentation = this._getPositionPresentation(viewportId);
         this.beforeResizePositionPresentations.set(viewportId, presentation);
       });
 

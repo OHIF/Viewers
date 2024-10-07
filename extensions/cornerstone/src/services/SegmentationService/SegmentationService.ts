@@ -212,10 +212,7 @@ class SegmentationService extends PubSubService {
     return segmentationsInfo;
   }
 
-  public getSegmentationPresentation(viewportId: string): {
-    hydrated: boolean;
-    config: unknown;
-  } {
+  public getSegmentationPresentation(viewportId: string): SegmentationPresentation {
     const viewportRepresentations = this.getSegmentationRepresentations(viewportId);
   }
 

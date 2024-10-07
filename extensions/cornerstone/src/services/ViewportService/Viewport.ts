@@ -25,7 +25,7 @@ export type ViewportOptions = {
   toolGroupId: string;
   viewportId: string;
   // Presentation ID to store/load presentation state from
-  presentationIds?: CoreTypes.PresentationIds;
+  presentationIds?: AppTypes.PresentationIds;
   orientation?: Enums.OrientationAxis;
   background?: Types.Point3;
   displayArea?: Types.DisplayArea;
@@ -283,7 +283,7 @@ class ViewportInfo {
     return this.viewportOptions;
   }
 
-  public getPresentationIds(): CoreTypes.PresentationIds {
+  public getPresentationIds(): AppTypes.PresentationIds | null {
     const { presentationIds } = this.viewportOptions;
     return presentationIds;
   }

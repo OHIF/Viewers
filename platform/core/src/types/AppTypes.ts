@@ -248,6 +248,8 @@ declare global {
     }
   }
 
+  export interface PresentationIds {}
+
   export type withAppTypes<T = object> = T &
     AppTypes.Services &
     AppTypes.Managers & {

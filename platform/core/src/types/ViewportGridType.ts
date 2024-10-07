@@ -3,11 +3,7 @@ export interface GridViewportOptions {
   viewportId?: string;
   viewportType?: string;
   toolGroupId?: string;
-  presentationIds?: {
-    positionPresentationId?: string;
-    lutPresentationId?: string;
-    segmentationPresentationId?: string;
-  };
+  presentationIds?: AppTypes.PresentationIds;
   flipHorizontal?: boolean;
   //
   orientation?: string;

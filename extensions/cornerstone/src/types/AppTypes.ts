@@ -43,6 +43,12 @@ declare global {
       export type SegmentationInfo = SegInfo;
     }
 
+    export interface PresentationIds {
+      lutPresentationId: string;
+      positionPresentationId: string;
+      segmentationPresentationId: string;
+    }
+
     export interface Test {
       services?: Services;
       cornerstone?: typeof cornerstone;

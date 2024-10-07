@@ -15,7 +15,7 @@ function _getSegmentationId(ds, viewport) {
  * @param {Object} options - The options object
  * @param {Object} options.viewport - The current viewport
  * @param {Map} options.viewports - The list of all viewports
- * @returns {string|undefined} The lutPresentationId or undefined
+ * @returns {string|undefined} The segmentationPresentationId or undefined
  */
 const getSegmentationPresentationId = (
   id,

@@ -3,14 +3,26 @@ export function getViewportPresentations(
   viewportOptions: AppTypes.ViewportGrid.GridViewportOptions
 ) {
   const { stateSyncService } = servicesManager.services;
+
   const state = stateSyncService.getState();
   const { lutPresentationStore, positionPresentationStore, segmentationPresentationStore } = state;
+
+  // NOTE: this is the new viewport state, we should not get the presentationIds from the cornerstoneViewportService
+  // since that has the old viewport state
   const { presentationIds } = viewportOptions;
 
+  if (!presentationIds) {
+    return {
+      positionPresentation: null,
+      lutPresentation: null,
+      segmentationPresentation: null,
+    };
+  }
+  const { lutPresentationId, positionPresentationId, segmentationPresentationId } = presentationIds;
+
   return {
-    positionPresentation: positionPresentationStore[presentationIds?.positionPresentationId],
-    lutPresentation: lutPresentationStore[presentationIds?.lutPresentationId],
-    segmentationPresentation:
-      segmentationPresentationStore[presentationIds?.segmentationPresentationId],
+    positionPresentation: positionPresentationStore[positionPresentationId],
+    lutPresentation: lutPresentationStore[lutPresentationId],
+    segmentationPresentation: segmentationPresentationStore[segmentationPresentationId],
   };
 }
