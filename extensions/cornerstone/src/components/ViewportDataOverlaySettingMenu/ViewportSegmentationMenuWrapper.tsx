@@ -1,6 +1,7 @@
-import React, { ReactNode, useState, useEffect } from 'react';
+import React, { ReactNode, useEffect, useState } from 'react';
 import { Button, Icons, Popover } from '@ohif/ui-next';
 import ViewportSegmentationMenu from './ViewportSegmentationMenu';
+import classNames from 'classnames';
 
 export function ViewportSegmentationMenuWrapper({
   viewportId,
@@ -10,53 +11,37 @@ export function ViewportSegmentationMenuWrapper({
   location,
 }: withAppTypes<{
   viewportId: string;
-  4;
   element: HTMLElement;
 }>): ReactNode {
-  const { segmentationService, viewportActionCornersService } = servicesManager.services;
-  const ViewportActionCornersLocations = viewportActionCornersService.LOCATIONS;
-  const [representations, setRepresentations] = useState([]);
+  const { segmentationService, viewportActionCornersService, viewportGridService } =
+    servicesManager.services;
+  const [representations, setRepresentations] = useState(null);
 
   useEffect(() => {
-    const eventSubscriptions = [
-      segmentationService.EVENTS.SEGMENTATION_MODIFIED,
-      segmentationService.EVENTS.SEGMENTATION_REMOVED,
+    const representations = segmentationService.getSegmentationsInfo();
+    setRepresentations(representations);
+  }, [viewportId, servicesManager]);
+
+  useEffect(() => {
+    const { unsubscribe } = segmentationService.subscribe(
       segmentationService.EVENTS.SEGMENTATION_REPRESENTATION_MODIFIED,
-    ];
-
-    const allUnsubscribeFunctions = eventSubscriptions.map(evt => {
-      const { unsubscribe } = segmentationService.subscribe(evt, () => {
-        const representations = segmentationService.getSegmentationRepresentations(viewportId);
+      () => {
+        const representations = segmentationService.getSegmentationsInfo();
         setRepresentations(representations);
-      });
-
-      return unsubscribe;
-    });
+      }
+    );
 
     return () => {
-      allUnsubscribeFunctions.forEach(unsubscribe => unsubscribe());
+      unsubscribe();
     };
-  }, [segmentationService, viewportId]);
+  }, [viewportId, servicesManager]);
 
-  const getAlignAndSide = location => {
-    switch (location) {
-      case ViewportActionCornersLocations.topLeft:
-        return { align: 'start', side: 'bottom' };
-      case ViewportActionCornersLocations.topRight:
-        return { align: 'end', side: 'bottom' };
-      case ViewportActionCornersLocations.bottomLeft:
-        return { align: 'start', side: 'top' };
-      case ViewportActionCornersLocations.bottomRight:
-        return { align: 'end', side: 'top' };
-      default:
-        console.debug('Unknown location, defaulting to bottom-start');
-        return { align: 'start', side: 'bottom' };
-    }
-  };
+  const activeViewportId = viewportGridService.getActiveViewportId();
+  const isActiveViewport = viewportId === activeViewportId;
 
-  const { align, side } = getAlignAndSide(location);
+  const { align, side } = getAlignAndSide(viewportActionCornersService, location);
 
-  if (!representations.length) {
+  if (!representations?.length) {
     return null;
   }
 
@@ -70,7 +55,12 @@ export function ViewportSegmentationMenuWrapper({
           variant="ghost"
           size="icon"
         >
-          <Icons.ViewportViews className="text-highlight" />
+          <Icons.ViewportViews
+            className={classNames(
+              'text-highlight',
+              isActiveViewport ? 'visible' : 'invisible group-hover/pane:visible'
+            )}
+          />
         </Button>
       </Popover.PopoverTrigger>
       <Popover.PopoverContent
@@ -91,3 +81,21 @@ export function ViewportSegmentationMenuWrapper({
     </Popover.Popover>
   );
 }
+
+const getAlignAndSide = (viewportActionCornersService, location) => {
+  const ViewportActionCornersLocations = viewportActionCornersService.LOCATIONS;
+
+  switch (location) {
+    case ViewportActionCornersLocations.topLeft:
+      return { align: 'start', side: 'bottom' };
+    case ViewportActionCornersLocations.topRight:
+      return { align: 'end', side: 'bottom' };
+    case ViewportActionCornersLocations.bottomLeft:
+      return { align: 'start', side: 'top' };
+    case ViewportActionCornersLocations.bottomRight:
+      return { align: 'end', side: 'top' };
+    default:
+      console.debug('Unknown location, defaulting to bottom-start');
+      return { align: 'start', side: 'bottom' };
+  }
+};

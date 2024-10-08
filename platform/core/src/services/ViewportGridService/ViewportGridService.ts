@@ -131,6 +131,11 @@ class ViewportGridService extends PubSubService {
     return this.serviceImplementation._getState();
   }
 
+  public getViewportState(viewportId: string) {
+    const state = this.getState();
+    return state.viewports.get(viewportId);
+  }
+
   public setViewportIsReady(viewportId, callback) {
     this.serviceImplementation._setViewportIsReady(viewportId, callback);
   }

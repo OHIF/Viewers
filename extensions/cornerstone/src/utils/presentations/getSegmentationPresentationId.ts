@@ -1,4 +1,4 @@
-import { addUniqueIndex, DEFAULT_STR, JOIN_STR } from './presentationUtils';
+import { JOIN_STR } from './presentationUtils';
 
 /**
  * Gets the segmentationPresentationId for a viewport.
@@ -17,8 +17,6 @@ const getSegmentationPresentationId = (
   id,
   {
     viewport,
-    viewports,
-    isUpdatingSameViewport,
   }: {
     viewport: AppTypes.ViewportGrid.Viewport;
     viewports: AppTypes.ViewportGrid.Viewports;

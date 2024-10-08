@@ -1618,10 +1618,9 @@ class SegmentationService extends PubSubService {
     }
 
     const { viewportGridService } = this.servicesManager.services;
-    const presentationId = viewportGridService.getPresentationId(
-      'segmentationPresentationId',
-      viewportId
-    );
+    const viewportState = viewportGridService.getViewportState(viewportId);
+    const { presentationIds } = viewportState.viewportOptions;
+    const presentationId = presentationIds.segmentationPresentationId;
 
     if (isAdding) {
       // Logic for adding

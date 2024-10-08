@@ -249,6 +249,7 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
       presentation: Presentation
     ) => {
       newState[store] = {
+        ...state[store],
         [presentationId]: presentation,
       };
     };
@@ -367,7 +368,6 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
   private _getSegmentationPresentation(viewportId: string): SegmentationPresentation {
     const presentationIds = this.getPresentationIds(viewportId);
     const { segmentationPresentationId } = presentationIds;
-
     const { segmentationService } = this.servicesManager.services;
 
     const presentation = segmentationService.getPresentation(

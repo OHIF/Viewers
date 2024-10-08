@@ -307,7 +307,7 @@ const _getArrowsComponent = (isTracked, switchMeasurement, isActiveViewport) => 
   return (
     <ViewportActionArrows
       onArrowsClick={direction => switchMeasurement(direction)}
-      className={isActiveViewport ? 'visible' : 'invisible group-hover:visible'}
+      className={isActiveViewport ? 'visible' : 'invisible group-hover/pane:visible'}
     ></ViewportActionArrows>
   );
 };

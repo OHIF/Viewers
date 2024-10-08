@@ -3,7 +3,7 @@ import { useResizeDetector } from 'react-resize-detector';
 import * as cs3DTools from '@cornerstonejs/tools';
 import { Enums, eventTarget, getEnabledElement } from '@cornerstonejs/core';
 import { MeasurementService } from '@ohif/core';
-import { Notification, useViewportDialog } from '@ohif/ui';
+import { AllInOneMenu, Notification, useViewportDialog } from '@ohif/ui';
 import type { Types as csTypes } from '@cornerstonejs/core';
 
 import { setEnabledElement } from '../state';
@@ -340,6 +340,8 @@ const OHIFCornerstoneViewport = React.memo(
           servicesManager,
           commandsManager,
           location,
+          verticalDirection: AllInOneMenu.VerticalDirection.TopToBottom,
+          horizontalDirection: AllInOneMenu.HorizontalDirection.RightToLeft,
         }),
         location,
       });

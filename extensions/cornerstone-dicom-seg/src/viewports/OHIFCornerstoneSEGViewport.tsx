@@ -286,7 +286,7 @@ function OHIFCornerstoneSEGViewport(props: withAppTypes) {
             key="actionArrows"
             onArrowsClick={onSegmentChange}
             className={
-              viewportId === activeViewportId ? 'visible' : 'invisible group-hover:visible'
+              viewportId === activeViewportId ? 'visible' : 'invisible group-hover/pane:visible'
             }
           ></ViewportActionArrows>
         ),
