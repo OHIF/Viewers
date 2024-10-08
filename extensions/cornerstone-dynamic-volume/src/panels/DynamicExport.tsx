@@ -43,12 +43,11 @@ function DynamicExport({ commandsManager, servicesManager, extensionManager }: w
    */
   useEffect(() => {
     // ~~ Subscription
-    const added = segmentationService.EVENTS.SEGMENTATION_ADDED;
     const updated = segmentationService.EVENTS.SEGMENTATION_MODIFIED;
     const removed = segmentationService.EVENTS.SEGMENTATION_REMOVED;
     const subscriptions = [];
 
-    [added, updated, removed].forEach(evt => {
+    [updated, removed].forEach(evt => {
       const { unsubscribe } = segmentationService.subscribe(evt, () => {
         const segmentations = segmentationService.getSegmentationRepresentations();
         setSegmentations(segmentations);

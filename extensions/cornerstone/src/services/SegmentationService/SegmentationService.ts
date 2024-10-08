@@ -7,7 +7,6 @@ import {
   imageLoader,
   Types as csTypes,
   utilities as csUtils,
-  VolumeViewport,
   metaData,
   VolumeViewport3D,
 } from '@cornerstonejs/core';
@@ -15,7 +14,6 @@ import {
   Enums as csToolsEnums,
   segmentation as cstSegmentation,
   Types as cstTypes,
-  utilities as cstUtils,
 } from '@cornerstonejs/tools';
 import { PubSubService, Types as OHIFTypes } from '@ohif/core';
 import { easeInOutBell, reverseEaseInOutBell } from '../../utils/transitions';
@@ -653,14 +651,14 @@ class SegmentationService extends PubSubService {
     }
 
     const segments: { [segmentIndex: string]: cstTypes.Segment } = {};
-    const segmentsCachedStats: { [segmentIndex: number]: unknown } = {};
+    let segmentsCachedStats = {};
 
     // Process each segment similarly to the SEG function
     for (const rtStructData of allRTStructData) {
       const { data, id, color, segmentIndex, geometryId } = rtStructData;
 
       try {
-        const geometry = await geometryLoader.createAndCacheGeometry(geometryId, {
+        const geometry = await geometryLoader.createAndCacheLocalGeometry(geometryId, {
           geometryData: {
             data,
             id,
@@ -668,13 +666,13 @@ class SegmentationService extends PubSubService {
             frameOfReferenceUID: structureSet.frameOfReferenceUID,
             segmentIndex,
           },
-          type: csEnums.GeometryType.Contour,
+          type: csEnums.GeometryType.CONTOUR,
         });
 
         const contourSet = geometry.data as csTypes.IContourSet;
-        const centroid = contourSet.getCentroid();
+        const centroid = contourSet.centroid;
 
-        segmentsCachedStats[segmentIndex] = {
+        segmentsCachedStats = {
           center: { world: centroid },
           modifiedTime: rtDisplaySet.SeriesDate, // Using SeriesDate as modifiedTime
         };
@@ -1082,110 +1080,9 @@ class SegmentationService extends PubSubService {
     }
   }
 
-  public getLabelmapVolume = (segmentationId: string) => {
-    if (!this.segmentationRepresentations?.[segmentationId]) {
-      return;
-    }
-
-    const labelmapVolumeData = this.segmentationRepresentations[segmentationId].representationData
-      .Labelmap as LabelmapSegmentationDataVolume;
-
-    const volumeId = labelmapVolumeData.volumeId;
-
-    return cache.getVolume(volumeId);
-  };
-
-  // Todo: this should not run on the main thread
-  public calculateCentroids = (
-    segmentationId: string,
-    segmentIndex?: number
-  ): Map<number, { x: number; y: number; z: number; world: number[] }> => {
-    const segmentation = this.getSegmentation(segmentationId);
-    const volume = this.getLabelmapVolume(segmentationId);
-    const { dimensions, imageData } = volume;
-    const volumeVoxelManager = volume.voxelManager;
-    const [dimX, dimY, numFrames] = dimensions;
-    const frameLength = dimX * dimY;
-
-    const segmentIndices = segmentIndex
-      ? [segmentIndex]
-      : segmentation.segments
-          .filter(segment => segment?.segmentIndex)
-          .map(segment => segment.segmentIndex);
-
-    const segmentIndicesSet = new Set(segmentIndices);
-
-    const centroids = new Map();
-    for (const index of segmentIndicesSet) {
-      centroids.set(index, { x: 0, y: 0, z: 0, count: 0 });
-    }
-
-    let voxelIndex = 0;
-    for (let frame = 0; frame < numFrames; frame++) {
-      for (let p = 0; p < frameLength; p++) {
-        const segmentIndex = volumeVoxelManager.getAtIndex(voxelIndex++) as number;
-        if (segmentIndicesSet.has(segmentIndex)) {
-          const centroid = centroids.get(segmentIndex);
-          centroid.x += p % dimX;
-          centroid.y += (p / dimX) | 0;
-          centroid.z += frame;
-          centroid.count++;
-        }
-      }
-    }
-
-    const result = new Map();
-    for (const [index, centroid] of centroids) {
-      const count = centroid.count;
-      const normalizedCentroid = {
-        x: centroid.x / count,
-        y: centroid.y / count,
-        z: centroid.z / count,
-        world: null,
-      };
-      normalizedCentroid.world = imageData.indexToWorld([
-        normalizedCentroid.x,
-        normalizedCentroid.y,
-        normalizedCentroid.z,
-      ]);
-      result.set(index, normalizedCentroid);
-    }
-
-    this.setCentroids(segmentationId, result);
-    return result;
-  };
-
-  private setCentroids = (
-    segmentationId: string,
-    centroids: Map<number, { image: number[]; world?: number[] }>
-  ): void => {
-    const segmentation = this.getSegmentation(segmentationId);
-    const imageData = this.getLabelmapVolume(segmentationId).imageData; // Assuming this method returns imageData
-
-    if (!segmentation.cachedStats) {
-      segmentation.cachedStats = { segmentCenter: {} };
-    } else if (!segmentation.cachedStats.segmentCenter) {
-      segmentation.cachedStats.segmentCenter = {};
-    }
-
-    for (const [segmentIndex, centroid] of centroids) {
-      let world = centroid.world;
-
-      // If world coordinates are not provided, calculate them
-      if (!world || world.length === 0) {
-        world = imageData.indexToWorld(centroid.image) as number[];
-      }
-
-      segmentation.cachedStats.segmentCenter[segmentIndex] = {
-        center: {
-          image: centroid.image,
-          world: world,
-        },
-      };
-    }
-
-    this.addOrUpdateSegmentation(segmentation, true, true);
-  };
+  public getSegmentation(segmentationId: string) {
+    return cstSegmentation.state.getSegmentation(segmentationId);
+  }
 
   public jumpToSegmentCenter(
     segmentationId: string,
@@ -1202,26 +1099,14 @@ class SegmentationService extends PubSubService {
       return;
     }
 
-    const { world, image } = center;
+    const { world } = center;
 
     // need to find which viewports are displaying the segmentation
     const viewportIds = this.getViewportIdsWithSegmentation(segmentationId);
 
     viewportIds.forEach(viewportId => {
       const { viewport } = getEnabledElementByViewportId(viewportId);
-
-      if (viewport instanceof VolumeViewport) {
-        world && cstUtils.viewport.jumpToWorld(viewport, world);
-      } else {
-        image && viewport.setImageIdIndex(image[2]);
-      }
-
-      if (!world && viewport instanceof VolumeViewport) {
-        return;
-      }
-      if (!image && !(viewport instanceof VolumeViewport)) {
-        return;
-      }
+      viewport.jumpToWorld(world);
 
       highlightSegment &&
         this.highlightSegment(
@@ -1386,6 +1271,17 @@ class SegmentationService extends PubSubService {
     const { segmentationId } = representation;
     const startTime = performance.now();
 
+    const prevStyle = cstSegmentation.config.style.getStyle({
+      viewportId,
+      segmentationId,
+      type: CONTOUR,
+      segmentIndex,
+    }) as ContourStyle;
+
+    const prevOutlineWidth = prevStyle.outlineWidth;
+    // make this configurable
+    const baseline = Math.max(prevOutlineWidth * 3.5, 5);
+
     const animate = (currentTime: number) => {
       const progress = (currentTime - startTime) / animationLength;
       if (progress >= 1) {
@@ -1393,23 +1289,23 @@ class SegmentationService extends PubSubService {
           {
             segmentationId,
             segmentIndex,
-            type: LABELMAP,
+            type: CONTOUR,
           },
           {}
         );
         return;
       }
 
-      const reversedProgress = reverseEaseInOutBell(progress, 0.1);
+      const reversedProgress = reverseEaseInOutBell(progress, baseline);
 
       cstSegmentation.config.style.setStyle(
         {
           segmentationId,
           segmentIndex,
-          type: LABELMAP,
+          type: CONTOUR,
         },
         {
-          fillAlpha: reversedProgress,
+          outlineWidth: reversedProgress,
         }
       );
 

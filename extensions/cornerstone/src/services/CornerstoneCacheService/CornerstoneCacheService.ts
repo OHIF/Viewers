@@ -248,6 +248,9 @@ class CornerstoneCacheService {
         });
 
         this.volumeImageIds.set(displaySet.displaySetInstanceUID, volumeImageIds);
+
+        // Add imageIds to the displaySet for volumes
+        displaySet.imageIds = volumeImageIds;
       }
 
       volumeData.push({

@@ -149,7 +149,7 @@ function OHIFCornerstoneRTViewport(props: withAppTypes) {
       segmentationService.jumpToSegmentCenter(segmentationId, newSelectedSegmentIndex, viewportId);
       setSelectedSegment(newSelectedSegmentIndex);
     },
-    [selectedSegment]
+    [selectedSegment, segmentationService]
   );
 
   useEffect(() => {
