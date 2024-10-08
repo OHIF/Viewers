@@ -46,6 +46,9 @@ const DataRow: React.FC<DataRowProps> = ({
   // State to track if the dropdown is open
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
+  // State to track visibility
+  const [isVisible, setIsVisible] = useState<boolean>(true);
+
   // Determine if the title exceeds 25 characters
   const isTitleLong = title.length > 25;
 
@@ -58,7 +61,7 @@ const DataRow: React.FC<DataRowProps> = ({
         <div
           className={`flex items-center ${
             isSelected ? 'bg-popover' : 'bg-muted'
-          } group relative cursor-pointer`}
+          } group relative cursor-pointer ${isVisible ? '' : 'opacity-60'}`}
           onClick={onSelect}
         >
           {/* Hover Overlay */}
@@ -114,8 +117,42 @@ const DataRow: React.FC<DataRowProps> = ({
             )}
           </div>
 
-          {/* Actions Button (Appears on Hover or when Dropdown is Open or Selected) */}
-          <div className="relative mr-0.5 flex items-center">
+          {/* Actions and Visibility Toggle */}
+          <div className="relative ml-2 flex items-center space-x-1">
+            {/* Visibility Toggle Icon */}
+            {isVisible ? (
+              // Show Icon.Hide on hover when visibility is true
+              <Button
+                size="small"
+                variant="ghost"
+                className={`h-6 w-6 transition-opacity ${
+                  isSelected ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
+                }`}
+                aria-label="Hide"
+                onClick={e => {
+                  e.stopPropagation(); // Prevent row selection on button click
+                  setIsVisible(false);
+                }}
+              >
+                <Icons.Hide className="h-6 w-6" />
+              </Button>
+            ) : (
+              // Show Icon.Show always when visibility is false
+              <Button
+                size="small"
+                variant="ghost"
+                className="h-6 w-6 opacity-100"
+                aria-label="Show"
+                onClick={e => {
+                  e.stopPropagation(); // Prevent row selection on button click
+                  setIsVisible(true);
+                }}
+              >
+                <Icons.Show className="h-6 w-6" />
+              </Button>
+            )}
+
+            {/* Actions Dropdown Menu */}
             <DropdownMenu onOpenChange={open => setIsDropdownOpen(open)}>
               <DropdownMenuTrigger asChild>
                 <Button
@@ -133,14 +170,18 @@ const DataRow: React.FC<DataRowProps> = ({
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                {actionOptions.map((option, index) => (
-                  <DropdownMenuItem
-                    key={index}
-                    onSelect={() => onAction(option)}
-                  >
-                    {option}
-                  </DropdownMenuItem>
-                ))}
+                <DropdownMenuItem>
+                  <Icons.Rename className="text-foreground" />
+                  <span className="pl-2">Rename</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem>
+                  <Icons.Lock className="text-foreground" />
+                  <span className="pl-2">Lock</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem>
+                  <Icons.Delete className="text-foreground" />
+                  <span className="pl-2">Delete</span>
+                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>

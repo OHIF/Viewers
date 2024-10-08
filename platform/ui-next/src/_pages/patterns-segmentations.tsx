@@ -196,13 +196,13 @@ function Patterns() {
                         >
                           <TabsList>
                             <TabsTrigger value="Fill & Outline">
-                              <Icons.DisplayFillAndOutline />
+                              <Icons.DisplayFillAndOutline className="text-primary" />
                             </TabsTrigger>
                             <TabsTrigger value="Outline Only">
-                              <Icons.DisplayOutlineOnly />
+                              <Icons.DisplayOutlineOnly className="text-primary" />
                             </TabsTrigger>
                             <TabsTrigger value="Fill Only">
-                              <Icons.DisplayFillOnly />
+                              <Icons.DisplayFillOnly className="text-primary" />
                             </TabsTrigger>
                           </TabsList>
                         </Tabs>
@@ -282,7 +282,7 @@ function Patterns() {
                 </AccordionItem>
 
                 {/* Action Buttons */}
-                <div className="my-px flex h-9 w-full items-center justify-between rounded pl-0.5 pr-2">
+                <div className="my-px flex h-9 w-full items-center justify-between rounded pl-0.5 pr-7">
                   <Button
                     size="sm"
                     variant="ghost"
