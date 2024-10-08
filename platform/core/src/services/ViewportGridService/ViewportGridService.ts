@@ -36,7 +36,13 @@ class ViewportGridService extends PubSubService {
     this.presentationIdProviders.set(id, provider);
   }
 
-  public getPresentationId(id, { viewport, viewports }) {
+  public getPresentationId(id: string, viewportId: string): string | null {
+    const state = this.getState();
+    const viewport = state.viewports.get(viewportId);
+    return this._getPresentationId(id, { viewport, viewports: state.viewports });
+  }
+
+  private _getPresentationId(id, { viewport, viewports }) {
     const isUpdatingSameViewport = [...viewports.values()].some(
       v =>
         v.displaySetInstanceUIDs?.toString() === viewport.displaySetInstanceUIDs?.toString() &&
@@ -56,7 +62,7 @@ class ViewportGridService extends PubSubService {
     const registeredPresentationProviders = Array.from(this.presentationIdProviders.keys());
 
     return registeredPresentationProviders.reduce((acc, id) => {
-      const value = this.getPresentationId(id, { viewport, viewports });
+      const value = this._getPresentationId(id, { viewport, viewports });
       if (value !== null) {
         acc[id] = value;
       }
@@ -121,7 +127,7 @@ class ViewportGridService extends PubSubService {
     }, 0);
   }
 
-  public getState() {
+  public getState(): AppTypes.ViewportGrid.State {
     return this.serviceImplementation._getState();
   }
 

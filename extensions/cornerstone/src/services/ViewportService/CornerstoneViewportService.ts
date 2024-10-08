@@ -24,6 +24,7 @@ import Presentation, {
   PositionPresentation,
   Presentations,
   SegmentationPresentation,
+  SegmentationPresentationItem,
 } from '../../types/Presentation';
 
 import JumpPresets from '../../utils/JumpPresets';
@@ -239,19 +240,17 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
 
     const { lutPresentation, positionPresentation, segmentationPresentation } = presentations;
 
-    const newState: Record<string, unknown> = {};
-
+    const newState: Record<string, unknown> = {
+      ...state,
+    };
     const updatePresentation = (
       store: string,
       presentationId: string,
       presentation: Presentation
     ) => {
-      if (presentationId) {
-        newState[store] = {
-          ...state[store],
-          [presentationId]: presentation,
-        };
-      }
+      newState[store] = {
+        [presentationId]: presentation,
+      };
     };
 
     const { lutPresentationId, positionPresentationId, segmentationPresentationId } =
@@ -304,7 +303,7 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     };
   }
 
-  public getPresentationIds(viewportId: string): AppTypes.PresentationIds | null {
+  private getPresentationIds(viewportId: string): AppTypes.PresentationIds | null {
     const viewportInfo = this.viewportsById.get(viewportId);
     if (!viewportInfo) {
       return null;
@@ -366,13 +365,16 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
   }
 
   private _getSegmentationPresentation(viewportId: string): SegmentationPresentation {
+    const presentationIds = this.getPresentationIds(viewportId);
+    const { segmentationPresentationId } = presentationIds;
+
     const { segmentationService } = this.servicesManager.services;
 
-    const segmentationPresentation = segmentationService.getSegmentationPresentation(viewportId);
-
-    return {
-      ...segmentationPresentation,
-    };
+    const presentation = segmentationService.getPresentation(
+      viewportId,
+      segmentationPresentationId
+    );
+    return presentation;
   }
 
   /**
@@ -402,6 +404,11 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     // the disableElement storePresentation handle would not be called in this case
     // and we would lose the presentation.
     this.storePresentation({ viewportId: viewportInfo.getViewportId() });
+
+    // Todo: i don't like this here, move it
+    this.servicesManager.services.segmentationService.clearSegmentationRepresentations(
+      viewportInfo.getViewportId()
+    );
 
     if (!viewportInfo) {
       throw new Error('element is not enabled for the given viewportId');
@@ -1150,9 +1157,23 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     viewport: Types.IStackViewport | Types.IVolumeViewport,
     segmentationPresentation: SegmentationPresentation
   ): void {
-    if (segmentationPresentation) {
-      // viewport.setSegmentation(segmentationPresentation);
+    if (!segmentationPresentation) {
+      return;
     }
+
+    const { segmentationService } = this.servicesManager.services;
+
+    segmentationPresentation.forEach((presentation: SegmentationPresentationItem) => {
+      const { segmentationId, type, hydrated } = presentation;
+
+      if (hydrated) {
+        segmentationService.addSegmentationRepresentationToViewport({
+          viewportId: viewport.id,
+          segmentationId,
+          representationType: type,
+        });
+      }
+    });
   }
 }
 

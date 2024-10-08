@@ -1,4 +1,4 @@
-import { utils, Types } from '@ohif/core';
+import { Types } from '@ohif/core';
 
 import { ContextMenuController, defaultContextMenu } from './CustomizableContextMenu';
 import DicomTagBrowser from './DicomTagBrowser/DicomTagBrowser';
@@ -11,7 +11,6 @@ import { ContextMenuProps } from './CustomizableContextMenu/types';
 import { NavigateHistory } from './types/commandModuleTypes';
 import { history } from '@ohif/app';
 
-const { subscribeToNextViewportGridChange } = utils;
 export type HangingProtocolParams = {
   protocolId?: string;
   stageIndex?: number;
@@ -395,19 +394,6 @@ const commandsModule = ({
           findOrCreateViewport,
           isHangingProtocolLayout: true,
         });
-
-        // Subscribe to ANY (i.e. manual and hanging protocol) layout changes so that
-        // any grid layout state to toggle to from one up is cleared. This is performed on
-        // a timeout to avoid clearing the state for the actual to one up change.
-        // Whenever the next layout change event is fired, the subscriptions are unsubscribed.
-        const clearToggleOneUpViewportGridStore = () => {
-          const toggleOneUpViewportGridStore = {};
-          stateSyncService.store({
-            toggleOneUpViewportGridStore,
-          });
-        };
-
-        subscribeToNextViewportGridChange(viewportGridService, clearToggleOneUpViewportGridStore);
       }
     },
 

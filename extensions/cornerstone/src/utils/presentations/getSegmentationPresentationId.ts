@@ -1,9 +1,5 @@
 import { addUniqueIndex, DEFAULT_STR, JOIN_STR } from './presentationUtils';
 
-function _getSegmentationId(ds, viewport) {
-  // check the segmentations for this viewport and displaySetInstanceUIDs
-}
-
 /**
  * Gets the segmentationPresentationId for a viewport.
  * Used for retrieving segmentation information based on:
@@ -41,12 +37,15 @@ const getSegmentationPresentationId = (
 
   const segmentationPresentationArr = [...displaySetInstanceUIDs];
 
-  addUniqueIndex(
-    segmentationPresentationArr,
-    'segmentationPresentationId',
-    viewports,
-    isUpdatingSameViewport
-  );
+  // Probably we don't need this for segmentation presentation id since we want
+  // the segmentation to appear on all the viewports with the same displayset i guess?
+
+  // addUniqueIndex(
+  //   segmentationPresentationArr,
+  //   'segmentationPresentationId',
+  //   viewports,
+  //   isUpdatingSameViewport
+  // );
 
   return segmentationPresentationArr.join(JOIN_STR);
 };

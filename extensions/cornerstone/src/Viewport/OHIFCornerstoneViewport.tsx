@@ -63,7 +63,6 @@ const OHIFCornerstoneViewport = React.memo(
       // eslint-disable-next-line react/prop-types
       isHangingProtocolLayout,
     } = props;
-
     const viewportId = viewportOptions.viewportId;
 
     if (!viewportId) {
@@ -124,7 +123,7 @@ const OHIFCornerstoneViewport = React.memo(
         toolGroupService.removeViewportFromToolGroup(viewportId, renderingEngineId);
         syncGroupService.removeViewportFromSyncGroup(viewportId, renderingEngineId, syncGroups);
 
-        segmentationService.removeSegmentationRepresentations(viewportId);
+        segmentationService.clearSegmentationRepresentations(viewportId);
 
         viewportActionCornersService.clear(viewportId);
       },
@@ -283,6 +282,7 @@ const OHIFCornerstoneViewport = React.memo(
           displaySetOptions,
           presentations
         );
+
         if (measurement) {
           cs3DTools.annotation.selection.setAnnotationSelected(measurement.uid);
         }
@@ -369,6 +369,7 @@ const OHIFCornerstoneViewport = React.memo(
     const { ref: resizeRef } = useResizeDetector({
       onResize,
     });
+
     return (
       <React.Fragment>
         <div className="viewport-wrapper">
@@ -565,18 +566,22 @@ OHIFCornerstoneViewport.displayName = 'OHIFCornerstoneViewport';
 
 function areEqual(prevProps, nextProps) {
   if (nextProps.needsRerendering) {
+    console.debug('OHIFCornerstoneViewport: Rerender caused by: needsRerendering');
     return false;
   }
 
   if (prevProps.displaySets.length !== nextProps.displaySets.length) {
+    console.debug('OHIFCornerstoneViewport: Rerender caused by: displaySets length change');
     return false;
   }
 
   if (prevProps.viewportOptions.orientation !== nextProps.viewportOptions.orientation) {
+    console.debug('OHIFCornerstoneViewport: Rerender caused by: orientation change');
     return false;
   }
 
   if (prevProps.viewportOptions.toolGroupId !== nextProps.viewportOptions.toolGroupId) {
+    console.debug('OHIFCornerstoneViewport: Rerender caused by: toolGroupId change');
     return false;
   }
 
@@ -584,10 +589,12 @@ function areEqual(prevProps, nextProps) {
     nextProps.viewportOptions.viewportType &&
     prevProps.viewportOptions.viewportType !== nextProps.viewportOptions.viewportType
   ) {
+    console.debug('OHIFCornerstoneViewport: Rerender caused by: viewportType change');
     return false;
   }
 
   if (nextProps.viewportOptions.needsRerendering) {
+    console.debug('OHIFCornerstoneViewport: Rerender caused by: viewportOptions.needsRerendering');
     return false;
   }
 
@@ -595,6 +602,7 @@ function areEqual(prevProps, nextProps) {
   const nextDisplaySets = nextProps.displaySets;
 
   if (prevDisplaySets.length !== nextDisplaySets.length) {
+    console.debug('OHIFCornerstoneViewport: Rerender caused by: displaySets length mismatch');
     return false;
   }
 
@@ -607,11 +615,13 @@ function areEqual(prevProps, nextProps) {
     );
 
     if (!foundDisplaySet) {
+      console.debug('OHIFCornerstoneViewport: Rerender caused by: displaySet not found');
       return false;
     }
 
     // check they contain the same image
     if (foundDisplaySet.images?.length !== prevDisplaySet.images?.length) {
+      console.debug('OHIFCornerstoneViewport: Rerender caused by: images length mismatch');
       return false;
     }
 
@@ -619,6 +629,7 @@ function areEqual(prevProps, nextProps) {
     if (foundDisplaySet.images?.length) {
       for (let j = 0; j < foundDisplaySet.images.length; j++) {
         if (foundDisplaySet.images[j].imageId !== prevDisplaySet.images[j].imageId) {
+          console.debug('OHIFCornerstoneViewport: Rerender caused by: imageId mismatch');
           return false;
         }
       }
@@ -626,6 +637,18 @@ function areEqual(prevProps, nextProps) {
   }
 
   return true;
+}
+
+// Helper function to check if display sets have changed
+function haveDisplaySetsChanged(prevDisplaySets, currentDisplaySets) {
+  if (prevDisplaySets.length !== currentDisplaySets.length) {
+    return true;
+  }
+
+  return currentDisplaySets.some((currentDS, index) => {
+    const prevDS = prevDisplaySets[index];
+    return currentDS.displaySetInstanceUID !== prevDS.displaySetInstanceUID;
+  });
 }
 
 export default OHIFCornerstoneViewport;

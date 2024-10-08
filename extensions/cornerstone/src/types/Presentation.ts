@@ -43,15 +43,14 @@ export interface LutPresentation {
  *
  * Config is the segmentation config, Todo: add stuff here
  */
-export interface SegmentationPresentation {
-  presentation: {
-    segmentationId: string;
-    type: SegmentationRepresentations;
-    //
-    hydrated: boolean | null;
-    config: unknown;
-  }[];
-}
+export type SegmentationPresentationItem = {
+  segmentationId: string;
+  type: SegmentationRepresentations;
+  hydrated: boolean | null;
+  config: unknown;
+};
+
+export type SegmentationPresentation = SegmentationPresentationItem[];
 
 /**
  * Presentation can be a PositionPresentation or a LutPresentation.

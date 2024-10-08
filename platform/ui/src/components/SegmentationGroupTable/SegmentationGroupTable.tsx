@@ -88,6 +88,11 @@ const SegmentationGroupTable: React.FC<SegmentationGroupTableProps> = ({
   }
 
   const activeSegmentationInfo = segmentationsInfo.find(info => info.representation.active);
+
+  if (!activeSegmentationInfo) {
+    return null;
+  }
+
   const activeSegmentationId = activeSegmentationInfo?.segmentation.segmentationId;
 
   return (

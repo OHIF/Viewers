@@ -9,6 +9,7 @@ import {
   utilities as csUtils,
   VolumeViewport,
   metaData,
+  VolumeViewport3D,
 } from '@cornerstonejs/core';
 import {
   Enums as csToolsEnums,
@@ -27,6 +28,7 @@ import { ContourStyle, LabelmapStyle, SurfaceStyle } from '@cornerstonejs/tools/
 import { getSegmentation } from '@cornerstonejs/tools/segmentation/getSegmentation';
 import { MetadataModules } from '@cornerstonejs/core/enums';
 import { ImagePlaneModuleMetadata } from '@cornerstonejs/core/types';
+import { SegmentationPresentation } from '../../types/Presentation';
 
 const LABELMAP = csToolsEnums.SegmentationRepresentations.Labelmap;
 const CONTOUR = csToolsEnums.SegmentationRepresentations.Contour;
@@ -89,12 +91,12 @@ class SegmentationService extends PubSubService {
   };
 
   private _segmentationIdToColorLUTIndexMap: Map<string, number>;
-  private _viewportSegmentationPresentationMap: Map<
+  private _removedDisplaySetAndRepresentationMaps: Map<
     string,
     {
-      hydrated: boolean;
-      config: unknown;
-    }
+      segmentationId: string;
+      type: SegmentationRepresentations;
+    }[]
   >;
   readonly servicesManager: AppTypes.ServicesManager;
   highlightIntervalId = null;
@@ -104,7 +106,7 @@ class SegmentationService extends PubSubService {
     super(EVENTS);
 
     this._segmentationIdToColorLUTIndexMap = new Map();
-    this._viewportSegmentationPresentationMap = new Map();
+    this._removedDisplaySetAndRepresentationMaps = new Map();
 
     this.servicesManager = servicesManager;
 
@@ -212,8 +214,42 @@ class SegmentationService extends PubSubService {
     return segmentationsInfo;
   }
 
-  public getSegmentationPresentation(viewportId: string): SegmentationPresentation {
-    const viewportRepresentations = this.getSegmentationRepresentations(viewportId);
+  public getPresentation(viewportId, presentationId: string): SegmentationPresentation {
+    const segmentationPresentations: SegmentationPresentation = [];
+    const segmentations = this.getSegmentationsInfo({ viewportId });
+    for (const segmentation of segmentations) {
+      const { segmentationId } = segmentation.segmentation;
+      const representation = segmentation.representation;
+
+      if (!representation) {
+        continue;
+      }
+
+      const { type } = representation;
+
+      segmentationPresentations.push({
+        segmentationId,
+        type,
+        hydrated: true,
+        config: representation.config || {},
+      });
+    }
+
+    // check inside the removedDisplaySetAndRepresentationMaps to see if any of the representations are not hydrated
+    const removedRepresentations = this._removedDisplaySetAndRepresentationMaps.get(presentationId);
+
+    if (removedRepresentations) {
+      removedRepresentations.forEach(rep => {
+        segmentationPresentations.push({
+          segmentationId: rep.segmentationId,
+          type: rep.type,
+          hydrated: false,
+          config: rep.config || {},
+        });
+      });
+    }
+
+    return segmentationPresentations;
   }
 
   /**
@@ -331,11 +367,6 @@ class SegmentationService extends PubSubService {
     segmentationId,
     representationType = csToolsEnums.SegmentationRepresentations.Labelmap,
     suppressEvents = false,
-  }: {
-    viewportId: string;
-    segmentationId: string;
-    representationType?: csToolsEnums.SegmentationRepresentations;
-    suppressEvents?: boolean;
   }): Promise<void> => {
     const segmentation = this.getSegmentationsInfo({ segmentationId });
 
@@ -343,12 +374,27 @@ class SegmentationService extends PubSubService {
       throw new Error(`Segmentation with segmentationId ${segmentationId} not found.`);
     }
 
+    this._updateRemovedDisplaySetAndRepresentationMaps(
+      viewportId,
+      [{ segmentationId, type: representationType }],
+      true // isAdding
+    );
+
     // does color lut exist in the
     const colorLUTIndex = this._segmentationIdToColorLUTIndexMap.get(segmentationId);
 
+    // if the viewport is 3d viewport and is asked for a labelmap, add a surface instead
+    // Todo: move this
+    const csViewport =
+      this.servicesManager.services.cornerstoneViewportService.getCornerstoneViewport(viewportId);
+    const is3DVolumeViewport = csViewport instanceof VolumeViewport3D;
+    const representationTypeToUse = is3DVolumeViewport
+      ? SegmentationRepresentations.Surface
+      : representationType;
+
     cstSegmentation.addSegmentationRepresentations(viewportId, [
       {
-        type: representationType,
+        type: representationTypeToUse,
         segmentationId,
         config: {
           colorLUTOrIndex: colorLUTIndex,
@@ -996,14 +1042,44 @@ class SegmentationService extends PubSubService {
     return viewportIds;
   };
 
+  /**
+   * Clears segmentation representations from the viewport.
+   * Unlike removeSegmentationRepresentations, this doesn't update
+   * removed display set and representation maps.
+   * We track removed segmentations manually to avoid re-adding them
+   * when the display set is added again.
+   * @param viewportId - The viewport ID to clear segmentation representations from.
+   */
+  public clearSegmentationRepresentations(viewportId: string): void {
+    this.removeSegmentationRepresentations(viewportId, { isCleanUp: true });
+  }
+
+  /**
+   * It removes the segmentation representations from the viewport.
+   * @param viewportId - The viewport id to remove the segmentation representations from.
+   * @param specifier - The specifier to remove the segmentation representations.
+   * @param isCleanUp - If true, it will not update the removed display set and representation maps.
+   */
   public removeSegmentationRepresentations(
     viewportId: string,
     specifier: {
       segmentationId?: string;
       type?: SegmentationRepresentations;
+      isCleanUp?: boolean;
     } = {}
   ): void {
-    cstSegmentation.removeSegmentationRepresentations(viewportId, specifier);
+    const removedSegRepresentations = cstSegmentation.removeSegmentationRepresentations(
+      viewportId,
+      specifier
+    );
+
+    if (!specifier.isCleanUp) {
+      this._updateRemovedDisplaySetAndRepresentationMaps(
+        viewportId,
+        removedSegRepresentations.map(({ segmentationId, type }) => ({ segmentationId, type })),
+        false // isAdding (i.e., removing)
+      );
+    }
   }
 
   public getLabelmapVolume = (segmentationId: string) => {
@@ -1529,6 +1605,49 @@ class SegmentationService extends PubSubService {
       segmentationId,
     });
   };
+
+  // Add this new method to the SegmentationService class
+
+  private _updateRemovedDisplaySetAndRepresentationMaps(
+    viewportId: string,
+    segmentations: Array<{ segmentationId: string; type: SegmentationRepresentations }>,
+    isAdding: boolean
+  ): void {
+    if (!segmentations.length) {
+      return;
+    }
+
+    const { viewportGridService } = this.servicesManager.services;
+    const presentationId = viewportGridService.getPresentationId(
+      'segmentationPresentationId',
+      viewportId
+    );
+
+    if (isAdding) {
+      // Logic for adding
+      if (this._removedDisplaySetAndRepresentationMaps.has(presentationId)) {
+        const representations = this._removedDisplaySetAndRepresentationMaps.get(presentationId);
+        segmentations.forEach(({ segmentationId, type }) => {
+          const index = representations.findIndex(
+            rep => rep.segmentationId === segmentationId && rep.type === type
+          );
+          if (index !== -1) {
+            representations.splice(index, 1);
+          }
+        });
+        if (representations.length === 0) {
+          this._removedDisplaySetAndRepresentationMaps.delete(presentationId);
+        }
+      }
+    } else {
+      // Logic for removing
+      if (!this._removedDisplaySetAndRepresentationMaps.has(presentationId)) {
+        this._removedDisplaySetAndRepresentationMaps.set(presentationId, []);
+      }
+      const representations = this._removedDisplaySetAndRepresentationMaps.get(presentationId);
+      representations.push(...segmentations);
+    }
+  }
 }
 
 export default SegmentationService;
