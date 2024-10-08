@@ -101,6 +101,9 @@ const Select = ({
       }}
       value={value && Array.isArray(value) ? selectedOptions : value}
       onChange={(selectedOptions, { action }) => {
+        if (selectedOptions === null) {
+          return onChange(null, action);
+        }
         const newSelection = !selectedOptions.length
           ? selectedOptions
           : selectedOptions.reduce((acc, curr) => acc.concat([curr.value]), []);
