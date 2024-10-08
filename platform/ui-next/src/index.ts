@@ -33,6 +33,7 @@ import {
   DisplaySetMessageListTooltip,
   Toolbox,
   ToolboxUI,
+  Onboarding,
 } from './components';
 
 import { useNotification, NotificationProvider } from './contextProviders';
@@ -76,4 +77,5 @@ export {
   DisplaySetMessageListTooltip,
   Toolbox,
   ToolboxUI,
+  Onboarding,
 };
