@@ -54,6 +54,7 @@ interface DataItem {
   optionalField?: string;
   colorHex?: string;
   details?: string;
+  series?: string;
 }
 
 interface ListGroup {
@@ -64,6 +65,9 @@ interface ListGroup {
 function Patterns() {
   // State to track the selected row ID
   const [selectedRowId, setSelectedRowId] = useState<string | null>(null);
+
+  // State to track the selected tab in Appearance Settings
+  const [selectedTab, setSelectedTab] = useState<string>('Fill & Outline');
 
   // Handle actions from DataRow
   const handleAction = (id: string, action: string) => {
@@ -103,12 +107,15 @@ function Patterns() {
               <div className="bg-muted mb-0.5 h-32 rounded-b pb-3"></div>
             </AccordionContent>
           </AccordionItem>
+
+          {/* Segmentation List */}
           <AccordionItem value="segmentation-list">
             <AccordionTrigger className="bg-popover hover:bg-accent text-muted-foreground my-0.5 flex h-7 w-full items-center justify-between rounded py-2 pr-1 pl-2 font-normal">
               <span>Segmentation List</span>
             </AccordionTrigger>
             <AccordionContent>
               <div className="mb-0">
+                {/* Header Controls */}
                 <div className="bg-muted flex h-10 w-full items-center space-x-1 rounded-t px-1.5">
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
@@ -166,6 +173,8 @@ function Patterns() {
                     <Icons.Info className="h-6 w-6" />
                   </Button>
                 </div>
+
+                {/* Appearance Settings */}
                 <AccordionItem value="segmentation-display">
                   <AccordionTrigger className="bg-muted hover:bg-accent mt-0.5 flex h-7 w-full items-center justify-between rounded-b pr-1 pl-2 font-normal text-white">
                     <div className="flex space-x-2">
@@ -175,6 +184,31 @@ function Patterns() {
                   </AccordionTrigger>
                   <AccordionContent>
                     <div className="bg-muted mb-0.5 space-y-2 rounded-b px-1.5 pt-0.5 pb-3">
+                      {/* Display Row */}
+                      <div className="mx-1 mb-2.5 mt-1 flex items-center justify-between space-x-4">
+                        {/* Display Label with Selected Tab */}
+                        <div className="text-muted-foreground text-xs">Show: {selectedTab}</div>
+
+                        {/* Tabs Controls */}
+                        <Tabs
+                          value={selectedTab}
+                          onValueChange={setSelectedTab}
+                        >
+                          <TabsList>
+                            <TabsTrigger value="Fill & Outline">
+                              <Icons.DisplayFillAndOutline />
+                            </TabsTrigger>
+                            <TabsTrigger value="Outline Only">
+                              <Icons.DisplayOutlineOnly />
+                            </TabsTrigger>
+                            <TabsTrigger value="Fill Only">
+                              <Icons.DisplayFillOnly />
+                            </TabsTrigger>
+                          </TabsList>
+                        </Tabs>
+                      </div>
+
+                      {/* Opacity Slider */}
                       <div className="my-2 flex items-center ">
                         <Label className="text-muted-foreground mx-1 w-14 flex-none whitespace-nowrap text-xs">
                           Opacity
@@ -190,7 +224,9 @@ function Patterns() {
                           placeholder="85"
                         />
                       </div>
-                      <div className="my-2 flex items-center  ">
+
+                      {/* Border Slider */}
+                      <div className="my-2 flex items-center">
                         <Label className="text-muted-foreground mx-1 w-14 flex-none whitespace-nowrap text-xs">
                           Border
                         </Label>
@@ -205,22 +241,47 @@ function Patterns() {
                           placeholder="2"
                         />
                       </div>
+
+                      {/* Sync Changes Switch */}
                       <div className="my-2 flex items-center pl-1 pb-1">
                         <Switch defaultChecked />
                         <Label className="text-muted-foreground mx-2 w-14 flex-none whitespace-nowrap text-xs">
                           Sync changes in all viewports
                         </Label>
                       </div>
+
+                      {/* Divider */}
+                      <div className="border-input w-full border"></div>
+
+                      {/* Display Inactive Segmentations Switch */}
                       <div className="my-2 flex items-center pl-1">
-                        <Switch />
+                        <Switch defaultChecked />
                         <Label className="text-muted-foreground mx-2 w-14 flex-none whitespace-nowrap text-xs">
                           Display inactive segmentations
                         </Label>
+                      </div>
+
+                      {/* Additional Opacity Slider */}
+                      <div className="my-2 flex items-center ">
+                        <Label className="text-muted-foreground mx-1 w-14 flex-none whitespace-nowrap text-xs">
+                          Opacity
+                        </Label>
+                        <Slider
+                          className="mx-1 flex-1"
+                          defaultValue={[65]}
+                          max={100}
+                          step={1}
+                        />
+                        <Input
+                          className="mx-1 w-10 flex-none"
+                          placeholder="65"
+                        />
                       </div>
                     </div>
                   </AccordionContent>
                 </AccordionItem>
 
+                {/* Action Buttons */}
                 <div className="my-px flex h-9 w-full items-center justify-between rounded pl-0.5 pr-2">
                   <Button
                     size="sm"
@@ -238,6 +299,8 @@ function Patterns() {
                   </Button>
                 </div>
               </div>
+
+              {/* Data Rows */}
               <div className="space-y-px">
                 {organSegmentationGroup.items.map((item, index) => {
                   const compositeId = `${organSegmentationGroup.type}-${item.id}-panel`; // Ensure unique composite ID
@@ -250,6 +313,7 @@ function Patterns() {
                       optionalField={item.optionalField}
                       colorHex={item.colorHex}
                       details={item.details}
+                      series={item.series}
                       actionOptions={actionOptionsMap[organSegmentationGroup.type] || ['Action']}
                       onAction={(action: string) => handleAction(compositeId, action)}
                       isSelected={selectedRowId === compositeId}

@@ -45,7 +45,7 @@ import { Label } from '../components/Label';
 import { Input } from '../components/Input';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '../components/Tabs';
 
-import { ChevronDownIcon } from '@radix-ui/react-icons'; // Ensure ChevronDownIcon is imported
+import { ChevronDownIcon } from '@radix-ui/react-icons';
 
 interface DataItem {
   id: number;
@@ -54,6 +54,7 @@ interface DataItem {
   optionalField?: string;
   colorHex?: string;
   details?: string;
+  series?: string;
 }
 
 interface ListGroup {
@@ -88,6 +89,10 @@ function Patterns() {
     return <div className="text-red-500">Organ Segmentation data not found.</div>;
   }
 
+  if (!roiToolsGroup) {
+    return <div className="text-red-500">ROI Tools data not found.</div>;
+  }
+
   return (
     <div className="my-4 flex max-w-6xl justify-end py-6">
       {/* Simulated Panel List for "Segmentation" */}
@@ -110,8 +115,8 @@ function Patterns() {
                     variant="ghost"
                     className="pl-0.5"
                   >
-                    <Icons.Add />
-                    Export
+                    <Icons.Download />
+                    CSV
                   </Button>
                   <Button
                     size="sm"
@@ -119,7 +124,7 @@ function Patterns() {
                     className="pl-0.5"
                   >
                     <Icons.Add />
-                    Create Report
+                    Create DICOM SR
                   </Button>
                 </div>
                 <Button
@@ -142,6 +147,7 @@ function Patterns() {
                       optionalField={item.optionalField}
                       colorHex={item.colorHex}
                       details={item.details}
+                      series={item.series} // Pass the new series field
                       actionOptions={actionOptionsMap[roiToolsGroup.type] || ['Action']}
                       onAction={(action: string) => handleAction(compositeId, action)}
                       isSelected={selectedRowId === compositeId}
@@ -153,6 +159,7 @@ function Patterns() {
             </AccordionContent>
           </AccordionItem>
 
+          {/* Additional Findings */}
           <AccordionItem value="measurements-additional">
             <AccordionTrigger className="bg-popover hover:bg-accent text-muted-foreground my-0.5 flex h-7 w-full items-center justify-between rounded py-2 pr-1 pl-2 font-normal">
               <span>Additional Findings</span>
