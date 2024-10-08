@@ -63,26 +63,18 @@ interface ListGroup {
 }
 
 function Patterns() {
-  // State to track the selected row ID
   const [selectedRowId, setSelectedRowId] = useState<string | null>(null);
-
-  // Handle actions from DataRow
   const handleAction = (id: string, action: string) => {
     console.log(`Action "${action}" triggered for item with id: ${id}`);
     // Implement actual action logic here
   };
-
-  // Handle row selection
   const handleRowSelect = (id: string) => {
     setSelectedRowId(prevSelectedId => (prevSelectedId === id ? null : id));
   };
 
-  // Find the "Organ Segmentation" list group
   const organSegmentationGroup = dataList.find(
     (listGroup: ListGroup) => listGroup.type === 'Organ Segmentation'
   );
-
-  // Find the "ROI Tools" list group
   const roiToolsGroup = dataList.find((listGroup: ListGroup) => listGroup.type === 'ROI Tools');
 
   if (!organSegmentationGroup) {

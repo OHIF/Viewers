@@ -1,5 +1,3 @@
-// src/_prototypes/DataRow/DataRow.tsx
-
 import React, { useState } from 'react';
 import { Button } from '../../components/Button/Button';
 import {
@@ -14,7 +12,7 @@ import {
   TooltipTrigger,
   TooltipContent,
   TooltipProvider,
-} from '../../components/Tooltip/Tooltip'; // Import Tooltip components
+} from '../../components/Tooltip/Tooltip';
 
 interface DataRowProps {
   number: number;
@@ -23,7 +21,7 @@ interface DataRowProps {
   optionalField?: string;
   colorHex?: string;
   details?: string;
-  series?: string; // Newly added optional field
+  series?: string;
   actionOptions: string[];
   onAction: (action: string) => void;
   isSelected?: boolean;
@@ -37,19 +35,14 @@ const DataRow: React.FC<DataRowProps> = ({
   optionalField,
   colorHex,
   details,
-  series, // Destructure the new prop
+  series,
   actionOptions,
   onAction,
   isSelected = false,
   onSelect,
 }) => {
-  // State to track if the dropdown is open
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-
-  // State to track visibility
   const [isVisible, setIsVisible] = useState<boolean>(true);
-
-  // Determine if the title exceeds 25 characters
   const isTitleLong = title.length > 25;
 
   return (
@@ -121,7 +114,6 @@ const DataRow: React.FC<DataRowProps> = ({
           <div className="relative ml-2 flex items-center space-x-1">
             {/* Visibility Toggle Icon */}
             {isVisible ? (
-              // Show Icon.Hide on hover when visibility is true
               <Button
                 size="small"
                 variant="ghost"
@@ -137,7 +129,6 @@ const DataRow: React.FC<DataRowProps> = ({
                 <Icons.Hide className="h-6 w-6" />
               </Button>
             ) : (
-              // Show Icon.Show always when visibility is false
               <Button
                 size="small"
                 variant="ghost"

@@ -1,5 +1,3 @@
-// src/_pages/patterns.tsx
-
 import React, { useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import '../tailwind.css';
@@ -45,7 +43,7 @@ import { Label } from '../components/Label';
 import { Input } from '../components/Input';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '../components/Tabs';
 
-import { ChevronDownIcon } from '@radix-ui/react-icons'; // Ensure ChevronDownIcon is imported
+import { ChevronDownIcon } from '@radix-ui/react-icons';
 
 interface DataItem {
   id: number;
@@ -63,13 +61,8 @@ interface ListGroup {
 }
 
 function Patterns() {
-  // State to track the selected row ID
   const [selectedRowId, setSelectedRowId] = useState<string | null>(null);
-
-  // State to track the selected tab in Appearance Settings
   const [selectedTab, setSelectedTab] = useState<string>('Fill & Outline');
-
-  // Handle actions from DataRow
   const handleAction = (id: string, action: string) => {
     console.log(`Action "${action}" triggered for item with id: ${id}`);
     // Implement actual action logic here
@@ -80,7 +73,6 @@ function Patterns() {
     setSelectedRowId(prevSelectedId => (prevSelectedId === id ? null : id));
   };
 
-  // Find the "Organ Segmentation" list group
   const organSegmentationGroup = dataList.find(
     (listGroup: ListGroup) => listGroup.type === 'Organ Segmentation'
   );
@@ -91,7 +83,6 @@ function Patterns() {
 
   return (
     <div className="my-4 flex max-w-6xl justify-end py-6">
-      {/* Simulated Panel List for "Segmentation" */}
       <div className="w-64 space-y-0">
         <Accordion
           type="multiple"
@@ -184,11 +175,9 @@ function Patterns() {
                   </AccordionTrigger>
                   <AccordionContent>
                     <div className="bg-muted mb-0.5 space-y-2 rounded-b px-1.5 pt-0.5 pb-3">
-                      {/* Display Row */}
                       <div className="mx-1 mb-2.5 mt-1 flex items-center justify-between space-x-4">
                         {/* Display Label with Selected Tab */}
                         <div className="text-muted-foreground text-xs">Show: {selectedTab}</div>
-
                         {/* Tabs Controls */}
                         <Tabs
                           value={selectedTab}
@@ -207,7 +196,6 @@ function Patterns() {
                           </TabsList>
                         </Tabs>
                       </div>
-
                       {/* Opacity Slider */}
                       <div className="my-2 flex items-center ">
                         <Label className="text-muted-foreground mx-1 w-14 flex-none whitespace-nowrap text-xs">
@@ -224,7 +212,6 @@ function Patterns() {
                           placeholder="85"
                         />
                       </div>
-
                       {/* Border Slider */}
                       <div className="my-2 flex items-center">
                         <Label className="text-muted-foreground mx-1 w-14 flex-none whitespace-nowrap text-xs">
@@ -241,7 +228,6 @@ function Patterns() {
                           placeholder="2"
                         />
                       </div>
-
                       {/* Sync Changes Switch */}
                       <div className="my-2 flex items-center pl-1 pb-1">
                         <Switch defaultChecked />
@@ -249,10 +235,7 @@ function Patterns() {
                           Sync changes in all viewports
                         </Label>
                       </div>
-
-                      {/* Divider */}
                       <div className="border-input w-full border"></div>
-
                       {/* Display Inactive Segmentations Switch */}
                       <div className="my-2 flex items-center pl-1">
                         <Switch defaultChecked />
@@ -260,7 +243,6 @@ function Patterns() {
                           Display inactive segmentations
                         </Label>
                       </div>
-
                       {/* Additional Opacity Slider */}
                       <div className="my-2 flex items-center ">
                         <Label className="text-muted-foreground mx-1 w-14 flex-none whitespace-nowrap text-xs">
@@ -280,7 +262,6 @@ function Patterns() {
                     </div>
                   </AccordionContent>
                 </AccordionItem>
-
                 {/* Action Buttons */}
                 <div className="my-px flex h-9 w-full items-center justify-between rounded pl-0.5 pr-7">
                   <Button
@@ -303,10 +284,10 @@ function Patterns() {
               {/* Data Rows */}
               <div className="space-y-px">
                 {organSegmentationGroup.items.map((item, index) => {
-                  const compositeId = `${organSegmentationGroup.type}-${item.id}-panel`; // Ensure unique composite ID
+                  const compositeId = `${organSegmentationGroup.type}-${item.id}-panel`;
                   return (
                     <DataRow
-                      key={`panel-${compositeId}`} // Prefix to ensure uniqueness
+                      key={`panel-${compositeId}`}
                       number={index + 1}
                       title={item.title}
                       description={item.description}
