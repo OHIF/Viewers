@@ -125,6 +125,7 @@ export const Icons = {
       width="18px"
       height="18px"
       viewBox="0 0 18 18"
+      {...props}
     >
       <g
         id="Controls"
@@ -213,6 +214,59 @@ export const Icons = {
       </g>
     </svg>
   ),
+  Delete: (props: IconProps) => (
+    <svg
+      width="24px"
+      height="24px"
+      viewBox="0 0 24 24"
+      {...props}
+    >
+      <g
+        id="Delete"
+        stroke="none"
+        strokeWidth="1"
+        fill="none"
+        fillRule="evenodd"
+      >
+        <rect
+          id="Rectangle"
+          x="0"
+          y="0"
+          width="24"
+          height="24"
+        ></rect>
+        <circle
+          id="Oval"
+          stroke="currentColor"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          cx="12"
+          cy="12"
+          r="7"
+        ></circle>
+        <line
+          x1="8.95652174"
+          y1="8.95652174"
+          x2="15.0434783"
+          y2="15.0434783"
+          id="Path"
+          stroke="currentColor"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        ></line>
+        <line
+          x1="15.0434783"
+          y1="8.95652174"
+          x2="8.95652174"
+          y2="15.0434783"
+          id="Path"
+          stroke="currentColor"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        ></line>
+      </g>
+    </svg>
+  ),
   Download: (props: IconProps) => (
     <svg
       width="24px"
@@ -281,6 +335,54 @@ export const Icons = {
           strokeLinecap="round"
           strokeLinejoin="round"
         ></line>
+      </g>
+    </svg>
+  ),
+  Export: (props: IconProps) => (
+    <svg
+      width="24px"
+      height="24px"
+      viewBox="0 0 24 24"
+      {...props}
+    >
+      <g
+        id="Export"
+        stroke="none"
+        strokeWidth="1"
+        fill="none"
+        fillRule="evenodd"
+      >
+        <rect
+          id="Rectangle"
+          x="0"
+          y="0"
+          width="24"
+          height="24"
+        ></rect>
+        <line
+          x1="12"
+          y1="13.125"
+          x2="12"
+          y2="5"
+          id="Path"
+          stroke="currentColor"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        ></line>
+        <polyline
+          id="Path"
+          stroke="currentColor"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          points="9.1875 7.8125 12 5 14.8125 7.8125"
+        ></polyline>
+        <path
+          d="M13.875,10.000625 L16.375,10.000625 C16.720178,10.000625 17,10.280447 17,10.625625 L17,18.750625 C17,19.095803 16.720178,19.375625 16.375,19.375625 L7.625,19.375625 C7.27982203,19.375625 7,19.095803 7,18.750625 L7,10.625625 C7,10.280447 7.27982203,10.000625 7.625,10.000625 L10.125,10.000625"
+          id="Path"
+          stroke="currentColor"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        ></path>
       </g>
     </svg>
   ),
@@ -367,6 +469,36 @@ export const Icons = {
           d="M14.139529,15.6867818 C14.3613689,15.6867818 14.5414129,15.8668257 14.5414129,16.0886656 C14.5414129,16.2855887 14.399146,16.4503611 14.2118681,16.4841193 L14.139529,16.4905495 L10.244471,16.4905495 C10.0226311,16.4905495 9.84258713,16.3105055 9.84258713,16.0886656 C9.84258713,15.8909388 9.984854,15.7269702 10.1721319,15.6932119 L10.244471,15.6867818 L14.139529,15.6867818 L14.139529,15.6867818 Z"
           id="Path"
           fill="#348CFD"
+          fillRule="nonzero"
+        ></path>
+      </g>
+    </svg>
+  ),
+  Lock: (props: IconProps) => (
+    <svg
+      width="24px"
+      height="24px"
+      viewBox="0 0 24 24"
+      {...props}
+    >
+      <g
+        id="Lock"
+        stroke="none"
+        strokeWidth="1"
+        fill="none"
+        fillRule="evenodd"
+      >
+        <rect
+          id="Rectangle"
+          x="0"
+          y="0"
+          width="24"
+          height="24"
+        ></rect>
+        <path
+          d="M16,10.6666667 L16,8 C16,5.79133333 14.2086667,4 12,4 C9.79133333,4 8,5.79133333 8,8 L8,10.6666667 L7.5,10.6666667 C6.67157288,10.6666667 6,11.3382395 6,12.1666667 L6,18.5 C6,19.3284271 6.67157288,20 7.5,20 L16.5,20 C17.3284271,20 18,19.3284271 18,18.5 L18,12.1666667 C18,11.3382395 17.3284271,10.6666667 16.5,10.6666667 L16,10.6666667 L16,10.6666667 Z M9.33333333,10.6666667 L9.33333333,8 C9.33333333,6.52933333 10.5293333,5.33333333 12,5.33333333 C13.4706667,5.33333333 14.6666667,6.52933333 14.6666667,8 L14.6666667,10.6666667 L9.33333333,10.6666667 Z"
+          id="Shape"
+          fill="currentColor"
           fillRule="nonzero"
         ></path>
       </g>
@@ -625,6 +757,51 @@ export const Icons = {
           strokeLinecap="round"
           strokeLinejoin="round"
         ></line>
+      </g>
+    </svg>
+  ),
+  Rename: (props: IconProps) => (
+    <svg
+      width="24px"
+      height="24px"
+      viewBox="0 0 24 24"
+      {...props}
+    >
+      <g
+        id="Rename"
+        stroke="none"
+        strokeWidth="1"
+        fill="none"
+        fillRule="evenodd"
+      >
+        <rect
+          id="Rectangle"
+          x="0"
+          y="0"
+          width="24"
+          height="24"
+        ></rect>
+        <g
+          id="rename"
+          transform="translate(4.5, 5)"
+          stroke="currentColor"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <polygon
+            id="Rectangle"
+            transform="translate(7.6682, 7.2953) rotate(45) translate(-7.6682, -7.2953)"
+            points="5.71337096 0.360798742 9.62306412 0.360798742 9.62306412 14.2297836 5.71337096 14.2297836"
+          ></polygon>
+          <polygon
+            id="Path"
+            points="1.38207653 10.8162548 0 14.963136 4.14688121 13.5810595"
+          ></polygon>
+          <path
+            d="M13.9536949,3.77359418 L11.1895418,1.00944111 L11.650234,0.548748934 C12.4172745,-0.192083594 13.6365239,-0.181488647 14.3905743,0.57256175 C15.1446246,1.32661215 15.1552196,2.54586147 14.4143871,3.312902 L13.9536949,3.77359418 Z"
+            id="Path"
+          ></path>
+        </g>
       </g>
     </svg>
   ),

@@ -105,11 +105,19 @@ function Patterns() {
             <AccordionContent>
               <div className="flex h-9 w-full items-center rounded pr-0.5">
                 <div className="flex space-x-1">
-                  <Button variant="ghost">
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    className="pl-0.5"
+                  >
                     <Icons.Add />
                     Export
                   </Button>
-                  <Button variant="ghost">
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    className="pl-0.5"
+                  >
                     <Icons.Add />
                     Create Report
                   </Button>
@@ -144,7 +152,7 @@ function Patterns() {
               </div>
             </AccordionContent>
           </AccordionItem>
-          {/*
+
           <AccordionItem value="measurements-additional">
             <AccordionTrigger className="bg-popover hover:bg-accent text-muted-foreground my-0.5 flex h-7 w-full items-center justify-between rounded py-2 pr-1 pl-2 font-normal">
               <span>Additional Findings</span>
@@ -153,7 +161,6 @@ function Patterns() {
               <div className="bg-muted mb-0.5 h-12 rounded-b pb-3"></div>
             </AccordionContent>
           </AccordionItem>
-          */}
         </Accordion>
       </div>
     </div>

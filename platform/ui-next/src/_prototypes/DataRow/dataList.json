@@ -47,55 +47,64 @@
         "id": 6,
         "title": "Linear",
         "description": "Description for Linear.",
-        "details": "49.2 mm (S:2 I:1)"
+        "details": "49.2 mm",
+        "series": "S:2 I:1"
       },
       {
         "id": 7,
         "title": "Bidirectional",
         "description": "Description for Bidirectional.",
-        "details": "L: 34.5 mm (S:2 I:2)\nW: 23.0 mm"
+        "details": "L: 34.5 mm\nW: 23.0 mm",
+        "series": "(S:2 I:2)"
       },
       {
         "id": 8,
         "title": "Ellipse",
         "description": "Description for Ellipse.",
-        "details": "2641 mm²\nMax: 1087 HU (S:2 I:4)"
+        "details": "2641 mm²\nMax: 1087 HU",
+        "series": "(S:2 I:4)"
       },
       {
         "id": 9,
         "title": "Rectangle",
         "description": "Description for Rectangle.",
-        "details": "1426 mm²\nMax: 718 HU (S:2 I:5)"
+        "details": "1426 mm²\nMax: 718 HU",
+        "series": "(S:2 I:5)"
       },
       {
         "id": 10,
         "title": "Circle",
         "description": "Description for Circle.",
-        "details": "7339 mm²\nMax: 871 HU (S:2 I:6)"
+        "details": "7339 mm²\nMax: 871 HU",
+        "series": "(S:2 I:6)"
       },
       {
         "id": 11,
         "title": "Freehand ROI",
         "description": "Description for Freehand ROI.",
-        "details": "S:2 I:7\nMean: 215 HU\nMax: 947 HU\nArea: 839 mm²"
+        "details": "Mean: 215 HU\nMax: 947 HU\nArea: 839 mm²",
+        "series": "(S:2 I:7)"
       },
       {
         "id": 12,
         "title": "Spline Tool",
         "description": "Description for Spline Tool.",
-        "details": "S:2 I:8\nArea: 203 mm²"
+        "details": "Area: 203 mm²",
+        "series": "(S:2 I:8)"
       },
       {
         "id": 13,
         "title": "Livewire Tool",
         "description": "Description for Livewire Tool.",
-        "details": "S:2 I:3"
+        "details": "",
+        "series": "(S:2 I:3)"
       },
       {
         "id": 14,
-        "title": "Annotation",
+        "title": "Annotation Lorem ipsum dolor sit amet long measurement name continues here",
         "description": "Description for Annotation.",
-        "details": "S:2 I:3"
+        "details": "",
+        "series": "(S:2 I:3)"
       }
     ]
   },
@@ -116,7 +125,7 @@
       },
       {
         "id": 17,
-        "title": "Kidney",
+        "title": "Kidney very long title name lorem ipsum dolor sit amet segmentation",
         "description": "Description for Kidney.",
         "colorHex": "#9ACD32"
       },
@@ -182,7 +191,7 @@
       },
       {
         "id": 28,
-        "title": "New Seg Test",
+        "title": "New Seg Test New Seg Test New Seg Test New Seg Test New Seg Test New Seg Test ",
         "description": "Description for New Seg Test.",
         "colorHex": "#4682B4"
       }

@@ -116,17 +116,29 @@ function Patterns() {
                         variant="ghost"
                         size="icon"
                       >
-                        <Icons.Actions className="h-6 w-6" />
+                        <Icons.More className="h-6 w-6" />
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="start">
-                      <DropdownMenuItem>Create New Segmentation</DropdownMenuItem>
+                      <DropdownMenuItem>
+                        <Icons.Add className="text-foreground" />
+                        <span className="pl-2">Create New Segmentation</span>
+                      </DropdownMenuItem>
                       <DropdownMenuSeparator />
                       <DropdownMenuLabel>Current Segmentation</DropdownMenuLabel>
-                      <DropdownMenuItem>Rename</DropdownMenuItem>
-                      <DropdownMenuItem>Delete</DropdownMenuItem>
+                      <DropdownMenuItem>
+                        <Icons.Rename className="text-foreground" />
+                        <span className="pl-2">Rename</span>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem>
+                        <Icons.Delete className="text-foreground" />
+                        <span className="pl-2">Delete</span>
+                      </DropdownMenuItem>
                       <DropdownMenuSub>
-                        <DropdownMenuSubTrigger>Export</DropdownMenuSubTrigger>
+                        <DropdownMenuSubTrigger>
+                          <Icons.Export className="text-foreground" />
+                          <span className="pl-2">Export & Download</span>
+                        </DropdownMenuSubTrigger>
                         <DropdownMenuPortal>
                           <DropdownMenuSubContent>
                             <DropdownMenuItem>Export DICOM SEG</DropdownMenuItem>
@@ -138,13 +150,13 @@ function Patterns() {
                     </DropdownMenuContent>
                   </DropdownMenu>
                   <Select>
-                    <SelectTrigger className="w-full">
+                    <SelectTrigger className="w-full overflow-hidden">
                       <SelectValue placeholder="Segmentation 1" />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="seg1">Segmentation 1</SelectItem>
                       <SelectItem value="seg2">Segmentation 2</SelectItem>
-                      <SelectItem value="seg3">Segmentation 3</SelectItem>
+                      <SelectItem value="seg3">Segmentation Long Name 123</SelectItem>
                     </SelectContent>
                   </Select>
                   <Button
@@ -156,12 +168,15 @@ function Patterns() {
                 </div>
                 <AccordionItem value="segmentation-display">
                   <AccordionTrigger className="bg-muted hover:bg-accent mt-0.5 flex h-7 w-full items-center justify-between rounded-b pr-1 pl-2 font-normal text-white">
-                    <span className="text-primary pl-8 pr-1">Appearance Settings</span>
+                    <div className="flex space-x-2">
+                      <Icons.Controls className="text-primary" />
+                      <span className="text-primary pr-1">Appearance Settings</span>
+                    </div>
                   </AccordionTrigger>
                   <AccordionContent>
-                    <div className="bg-muted mb-0.5 space-y-3 px-1.5 pt-1 pb-6">
-                      <div className="my-2 flex items-center">
-                        <Label className="text-muted-foreground mx-1 w-14 flex-none whitespace-nowrap">
+                    <div className="bg-muted mb-0.5 space-y-2 rounded-b px-1.5 pt-0.5 pb-3">
+                      <div className="my-2 flex items-center ">
+                        <Label className="text-muted-foreground mx-1 w-14 flex-none whitespace-nowrap text-xs">
                           Opacity
                         </Label>
                         <Slider
@@ -175,8 +190,8 @@ function Patterns() {
                           placeholder="85"
                         />
                       </div>
-                      <div className="my-2 flex items-center">
-                        <Label className="text-muted-foreground mx-1 w-14 flex-none whitespace-nowrap">
+                      <div className="my-2 flex items-center  ">
+                        <Label className="text-muted-foreground mx-1 w-14 flex-none whitespace-nowrap text-xs">
                           Border
                         </Label>
                         <Slider
@@ -190,25 +205,29 @@ function Patterns() {
                           placeholder="2"
                         />
                       </div>
-                      <div className="my-2 flex items-center pl-1">
+                      <div className="my-2 flex items-center pl-1 pb-1">
                         <Switch defaultChecked />
-                        <Label className="text-muted-foreground mx-2 w-14 flex-none whitespace-nowrap">
+                        <Label className="text-muted-foreground mx-2 w-14 flex-none whitespace-nowrap text-xs">
                           Sync changes in all viewports
                         </Label>
                       </div>
                       <div className="my-2 flex items-center pl-1">
                         <Switch />
-                        <Label className="text-muted-foreground mx-2 w-14 flex-none whitespace-nowrap">
-                          Display inactive segments
+                        <Label className="text-muted-foreground mx-2 w-14 flex-none whitespace-nowrap text-xs">
+                          Display inactive segmentations
                         </Label>
                       </div>
                     </div>
                   </AccordionContent>
                 </AccordionItem>
 
-                <div className="mt-2 flex h-9 w-full items-center justify-between rounded pl-6 pr-2">
-                  <Button variant="ghost">
-                    <Icons.Add className="h-3 w-3" />
+                <div className="my-px flex h-9 w-full items-center justify-between rounded pl-0.5 pr-2">
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    className="pr pl-0.5"
+                  >
+                    <Icons.Add />
                     Add Segment
                   </Button>
                   <Button
