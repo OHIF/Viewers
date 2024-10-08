@@ -284,10 +284,10 @@ function Patterns() {
               {/* Data Rows */}
               <div className="space-y-px">
                 {organSegmentationGroup.items.map((item, index) => {
-                  const compositeId = `${organSegmentationGroup.type}-${item.id}-panel`; // Ensure unique composite ID
+                  const compositeId = `${organSegmentationGroup.type}-${item.id}-panel`;
                   return (
                     <DataRow
-                      key={`panel-${compositeId}`} // Prefix to ensure uniqueness
+                      key={`panel-${compositeId}`}
                       number={index + 1}
                       title={item.title}
                       description={item.description}
