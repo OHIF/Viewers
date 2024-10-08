@@ -133,15 +133,14 @@ const DataRow: React.FC<DataRowProps> = ({
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <DropdownMenuItem>
-                  <Icons.Rename className="text-foreground" /> <span className="pl-2">Rename</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <Icons.Lock className="text-foreground" /> <span className="pl-2">Lock</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <Icons.Delete className="text-foreground" /> <span className="pl-2">Delete</span>
-                </DropdownMenuItem>
+                {actionOptions.map((option, index) => (
+                  <DropdownMenuItem
+                    key={index}
+                    onSelect={() => onAction(option)}
+                  >
+                    {option}
+                  </DropdownMenuItem>
+                ))}
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
@@ -150,7 +149,8 @@ const DataRow: React.FC<DataRowProps> = ({
         {/* Row 2 (Details and Series) */}
         {(details || series) && (
           <div className="ml-7 bg-black px-2 py-1">
-            <div className="text-secondary-foreground flex items-center justify-between whitespace-pre-line text-sm leading-normal">
+            {/* Updated Flex Container: Changed 'items-center' to 'items-start' */}
+            <div className="text-secondary-foreground flex items-start justify-between whitespace-pre-line text-sm leading-normal">
               <span>{details}</span>
               {series && <span className="text-muted-foreground">{series}</span>}
             </div>

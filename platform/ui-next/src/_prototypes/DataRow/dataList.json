@@ -55,56 +55,56 @@
         "title": "Bidirectional",
         "description": "Description for Bidirectional.",
         "details": "L: 34.5 mm\nW: 23.0 mm",
-        "series": "(S:2 I:2)"
+        "series": "S:2 I:2"
       },
       {
         "id": 8,
         "title": "Ellipse",
         "description": "Description for Ellipse.",
         "details": "2641 mm²\nMax: 1087 HU",
-        "series": "(S:2 I:4)"
+        "series": "S:2 I:4"
       },
       {
         "id": 9,
         "title": "Rectangle",
         "description": "Description for Rectangle.",
         "details": "1426 mm²\nMax: 718 HU",
-        "series": "(S:2 I:5)"
+        "series": "S:2 I:5"
       },
       {
         "id": 10,
         "title": "Circle",
         "description": "Description for Circle.",
         "details": "7339 mm²\nMax: 871 HU",
-        "series": "(S:2 I:6)"
+        "series": "S:2 I:6"
       },
       {
         "id": 11,
         "title": "Freehand ROI",
         "description": "Description for Freehand ROI.",
         "details": "Mean: 215 HU\nMax: 947 HU\nArea: 839 mm²",
-        "series": "(S:2 I:7)"
+        "series": "S:2 I:7"
       },
       {
         "id": 12,
         "title": "Spline Tool",
         "description": "Description for Spline Tool.",
         "details": "Area: 203 mm²",
-        "series": "(S:2 I:8)"
+        "series": "S:2 I:8"
       },
       {
         "id": 13,
         "title": "Livewire Tool",
         "description": "Description for Livewire Tool.",
         "details": "",
-        "series": "(S:2 I:3)"
+        "series": "S:2 I:3"
       },
       {
         "id": 14,
         "title": "Annotation Lorem ipsum dolor sit amet long measurement name continues here",
         "description": "Description for Annotation.",
         "details": "",
-        "series": "(S:2 I:3)"
+        "series": "S:2 I:3"
       }
     ]
   },
