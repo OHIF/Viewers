@@ -108,15 +108,22 @@ function Patterns() {
               <span>Measurements</span>
             </AccordionTrigger>
             <AccordionContent>
+              <div className="mx-2 my-0">
+                <div className="text-foreground text-sm">2024-Jan-01</div>
+                <div className="text-muted-foreground border-input border-b-2 pb-1 text-sm">
+                  Study title lorem ipsum
+                </div>
+              </div>
+
               <div className="flex h-9 w-full items-center rounded pr-0.5">
                 <div className="flex space-x-1">
                   <Button
                     size="sm"
                     variant="ghost"
-                    className="pl-0.5"
+                    className="pl-1.5"
                   >
                     <Icons.Download />
-                    CSV
+                    <span className="pl-1">CSV</span>
                   </Button>
                   <Button
                     size="sm"
@@ -127,13 +134,6 @@ function Patterns() {
                     Create DICOM SR
                   </Button>
                 </div>
-                <Button
-                  size="icon"
-                  variant="ghost"
-                  className="ml-auto"
-                >
-                  <Icons.Hide className="h-6 w-6" />
-                </Button>
               </div>
               <div className="space-y-px">
                 {roiToolsGroup.items.map((item, index) => {
