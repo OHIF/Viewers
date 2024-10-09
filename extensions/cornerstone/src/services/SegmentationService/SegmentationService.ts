@@ -213,8 +213,8 @@ class SegmentationService extends PubSubService {
     return segmentationsInfo;
   }
 
-  public getPresentation(viewportId: string, presentationId: string): SegmentationPresentation[] {
-    const segmentationPresentations: SegmentationPresentation[] = [];
+  public getPresentation(viewportId: string): SegmentationPresentation {
+    const segmentationPresentations: SegmentationPresentation = [];
     const segmentationsMap = new Map<string, SegmentationPresentationItem>();
 
     const segmentations = this.getSegmentationsInfo({ viewportId });
@@ -237,20 +237,20 @@ class SegmentationService extends PubSubService {
     }
 
     // Check inside the removedDisplaySetAndRepresentationMaps to see if any of the representations are not hydrated
-    const hydrationMap = this._segmentationRepresentationHydrationMaps.get(presentationId);
+    // const hydrationMap = this._segmentationRepresentationHydrationMaps.get(presentationId);
 
-    if (hydrationMap) {
-      hydrationMap.forEach(rep => {
-        segmentationsMap.set(rep.segmentationId, {
-          segmentationId: rep.segmentationId,
-          type: rep.type,
-          hydrated: rep.hydrated,
-          config: rep.config || {},
-        });
-      });
-    }
+    // if (hydrationMap) {
+    //   hydrationMap.forEach(rep => {
+    //     segmentationsMap.set(rep.segmentationId, {
+    //       segmentationId: rep.segmentationId,
+    //       type: rep.type,
+    //       hydrated: rep.hydrated,
+    //       config: rep.config || {},
+    //     });
+    //   });
+    // }
 
-    // Convert the Map to an array
+    // // Convert the Map to an array
     segmentationPresentations.push(...segmentationsMap.values());
 
     return segmentationPresentations;
@@ -1506,18 +1506,6 @@ class SegmentationService extends PubSubService {
       segmentationId,
     });
   };
-
-  // Add this new method to the SegmentationService class
-  // public hydrateSEG(
-  //   displaySetInstanceUID: string,
-  //   { segmentationId, type }: { segmentationId: string; type: SegmentationRepresentations }
-  // ) {
-  //   this._updateSegmentationRepresentationHydrationMap({
-  //     presentationId: displaySetInstanceUID,
-  //     segmentations: [{ segmentationId, type }],
-  //     isAdding: true,
-  //   });
-  // }
 
   private _updateSegmentationRepresentationHydrationMap({
     viewportId,

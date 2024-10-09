@@ -1,3 +1,4 @@
+import { devtools } from 'zustand/middleware';
 import { create } from 'zustand';
 import { SegmentationPresentation } from '../types/Presentation';
 import { JOIN_STR } from './presentationUtils';
@@ -7,7 +8,7 @@ import { JOIN_STR } from './presentationUtils';
  */
 type SegmentationPresentationStore = {
   segmentationPresentationStore: Record<string, SegmentationPresentation>;
-  setSegmentationPresentation: (key: string, value: SegmentationPresentation) => void;
+  setSegmentationPresentation: (presentationId: string, value: SegmentationPresentation) => void;
   clearSegmentationPresentationStore: () => void;
   getPresentationId: (
     id: string,
@@ -17,6 +18,11 @@ type SegmentationPresentationStore = {
       isUpdatingSameViewport: boolean;
     }
   ) => string | undefined;
+  addSegmentationPresentation: (
+    presentationId: string,
+    segmentationPresentation: SegmentationPresentation,
+    { servicesManager }: { servicesManager: AppTypes.ServicesManager }
+  ) => void;
 };
 
 /**
@@ -69,15 +75,37 @@ const getSegmentationPresentationId = (
 
 // Stores a map from `segmentationPresentationId` to a Presentation object so that
 // an OHIFCornerstoneViewport can be redisplayed with the same Segmentation
-export const useSegmentationPresentationStore = create<SegmentationPresentationStore>(set => ({
-  segmentationPresentationStore: {},
-  setSegmentationPresentation: (key, value) =>
-    set(state => ({
-      segmentationPresentationStore: {
-        ...state.segmentationPresentationStore,
-        [key]: value,
-      },
-    })),
-  clearSegmentationPresentationStore: () => set({ segmentationPresentationStore: {} }),
-  getPresentationId: getSegmentationPresentationId,
-}));
+export const useSegmentationPresentationStore = create<SegmentationPresentationStore>(
+  devtools(set => ({
+    segmentationPresentationStore: {},
+    clearSegmentationPresentationStore: () =>
+      set({ segmentationPresentationStore: {} }, false, 'clearSegmentationPresentationStore'),
+    addSegmentationPresentation: (
+      presentationId: string,
+      segmentationPresentation: SegmentationPresentation,
+      { servicesManager }: { servicesManager: AppTypes.ServicesManager }
+    ) =>
+      set(
+        {
+          segmentationPresentationStore: {
+            ...state.segmentationPresentationStore,
+            [presentationId]: segmentationPresentation,
+          },
+        },
+        false,
+        'addSegmentationPresentation'
+      ),
+    setSegmentationPresentation: (presentationId: string, value: SegmentationPresentation) =>
+      set(
+        state => ({
+          segmentationPresentationStore: {
+            ...state.segmentationPresentationStore,
+            [presentationId]: value,
+          },
+        }),
+        false,
+        'setSegmentationPresentation'
+      ),
+    getPresentationId: getSegmentationPresentationId,
+  }))
+);

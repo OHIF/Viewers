@@ -47,7 +47,7 @@ export type SegmentationPresentationItem = {
   segmentationId: string;
   type: SegmentationRepresentations;
   hydrated: boolean | null;
-  config: unknown;
+  config?: unknown;
 };
 
 export type SegmentationPresentation = SegmentationPresentationItem[];

@@ -4,6 +4,7 @@ import { LoadingIndicatorTotalPercent, useViewportGrid, ViewportActionArrows } f
 import createSEGToolGroupAndAddTools from '../utils/initSEGToolGroup';
 import promptHydrateSEG from '../utils/promptHydrateSEG';
 import _getStatusComponent from './_getStatusComponent';
+import { useSegmentationPresentationStore } from '@ohif/extension-cornerstone';
 import { SegmentationRepresentations } from '@cornerstonejs/tools/enums';
 
 const SEG_TOOLGROUP_BASE_NAME = 'SEGToolGroup';
@@ -148,16 +149,21 @@ function OHIFCornerstoneSEGViewport(props: withAppTypes) {
   );
 
   const hydrateSEG = useCallback(() => {
+    const { setSegmentationPresentation } = useSegmentationPresentationStore.getState();
+
     const referencedDisplaySetInstanceUID = segDisplaySet.referencedDisplaySetInstanceUID;
-    segmentationService.hydrateSEG(referencedDisplaySetInstanceUID, {
-      segmentationId: segDisplaySet.displaySetInstanceUID,
-      type: SegmentationRepresentations.Labelmap,
-    });
+    setSegmentationPresentation(referencedDisplaySetInstanceUID, [
+      {
+        segmentationId: segDisplaySet.displaySetInstanceUID,
+        hydrated: true,
+        type: SegmentationRepresentations.Labelmap,
+      },
+    ]);
+
     viewportGridService.setDisplaySetsForViewport({
       viewportId,
       displaySetInstanceUIDs: [referencedDisplaySet.displaySetInstanceUID],
     });
-    segmen;
   }, [viewportGridService, viewportId, referencedDisplaySet, segDisplaySet]);
 
   useEffect(() => {

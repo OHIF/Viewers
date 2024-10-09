@@ -24,6 +24,7 @@ import { useUIStateStore } from './stores/useUIStateStore';
 import { useDisplaySetSelectorStore } from './stores/useDisplaySetSelectorStore';
 import { useHangingProtocolStageIndexStore } from './stores/useHangingProtocolStageIndexStore';
 import { useToggleHangingProtocolStore } from './stores/useToggleHangingProtocolStore';
+import { useToggleOneUpViewportGridStore } from './stores/useToggleOneUpViewportGridStore';
 
 const defaultExtension: Types.Extensions.Extension = {
   /**
@@ -72,4 +73,12 @@ export {
   createReportAsync,
   StaticWadoClient,
   cleanDenaturalizedDataset,
+  // Export all stores
+  useDisplaySetSelectorStore,
+  useHangingProtocolStageIndexStore,
+  useToggleHangingProtocolStore,
+  useToggleOneUpViewportGridStore,
+  useUIStateStore,
+  useViewportGridStore,
+  useViewportsByPositionStore,
 };

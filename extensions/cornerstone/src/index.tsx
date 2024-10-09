@@ -40,9 +40,12 @@ import { findNearbyToolData } from './utils/findNearbyToolData';
 import { createFrameViewSynchronizer } from './synchronizers/frameViewSynchronizer';
 import { getSopClassHandlerModule } from './getSopClassHandlerModule';
 import { getDynamicVolumeInfo } from '@cornerstonejs/core/utilities';
-import { useLutPresentationStore } from './stores/useLutPresentationStore';
-import { usePositionPresentationStore } from './stores/usePositionPresentationStore';
-import { useSynchronizersStore } from './stores/useSynchronizersStore';
+import {
+  useLutPresentationStore,
+  usePositionPresentationStore,
+  useSegmentationPresentationStore,
+  useSynchronizersStore,
+} from './stores';
 import { useToggleOneUpViewportGridStore } from '../../default/src/stores/useToggleOneUpViewportGridStore';
 
 const { imageRetrieveMetadataProvider } = cornerstone.utilities;
@@ -240,5 +243,10 @@ export {
   ImageOverlayViewerTool,
   getSOPInstanceAttributes,
   dicomLoaderService,
+  // Export all stores
+  useLutPresentationStore,
+  usePositionPresentationStore,
+  useSegmentationPresentationStore,
+  useSynchronizersStore,
 };
 export default cornerstoneExtension;
