@@ -98,7 +98,8 @@
     "react-resize-detector": "^10.0.1",
     "react-router": "^6.23.1",
     "react-router-dom": "^6.8.1",
-    "url-loader": "^4.1.1"
+    "url-loader": "^4.1.1",
+    "zustand": "4.5.5"
   },
   "devDependencies": {
     "@babel/plugin-proposal-private-methods": "^7.18.6",

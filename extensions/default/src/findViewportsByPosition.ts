@@ -1,4 +1,4 @@
-import { StateSyncService } from '@ohif/core';
+import { useViewportsByPositionStore } from './stores/useViewportsByPositionStore';
 
 /**
  * This find or create viewport is paired with the reduce results from
@@ -71,12 +71,10 @@ export const findOrCreateViewport = (
  */
 const findViewportsByPosition = (
   state,
-  { numRows, numCols },
-  syncService: StateSyncService
+  { numRows, numCols }
 ): Record<string, Record<string, unknown>> => {
   const { viewports } = state;
-  const syncState = syncService.getState();
-  const viewportsByPosition = { ...syncState.viewportsByPosition };
+  const { viewportsByPosition, setViewportsByPosition } = useViewportsByPositionStore.getState();
   const initialInDisplay = [];
 
   viewports.forEach(viewport => {
@@ -85,7 +83,7 @@ const findViewportsByPosition = (
         ...viewport,
         viewportOptions: { ...viewport.viewportOptions },
       };
-      viewportsByPosition[viewport.positionId] = storedViewport;
+      setViewportsByPosition(viewport.positionId, storedViewport);
     }
   });
 
@@ -100,7 +98,7 @@ const findViewportsByPosition = (
   }
 
   // Store the initially displayed elements
-  viewportsByPosition.initialInDisplay = initialInDisplay;
+  setViewportsByPosition('initialInDisplay', initialInDisplay);
 
   return { viewportsByPosition };
 };

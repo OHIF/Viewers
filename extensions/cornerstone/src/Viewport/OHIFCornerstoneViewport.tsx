@@ -18,6 +18,7 @@ import { getWindowLevelActionMenu } from '../components/WindowLevelActionMenu/ge
 import { useAppConfig } from '@state';
 import { getViewportDataOverlaySettingsMenu } from '../components/ViewportDataOverlaySettingMenu';
 import { getViewportPresentations } from '../utils/presentations/getViewportPresentations';
+import { useSynchronizersStore } from '../stores/useSynchronizersStore';
 
 const STACK = 'stack';
 
@@ -96,7 +97,6 @@ const OHIFCornerstoneViewport = React.memo(
       cornerstoneViewportService,
       segmentationService,
       cornerstoneCacheService,
-      stateSyncService,
       viewportActionCornersService,
     } = servicesManager.services;
 
@@ -156,11 +156,11 @@ const OHIFCornerstoneViewport = React.memo(
 
         syncGroupService.addViewportToSyncGroup(viewportId, renderingEngineId, syncGroups);
 
-        const synchronizersStore = stateSyncService.getState().synchronizersStore;
-
+        // we don't need reactivity here so just use state
+        const { synchronizersStore } = useSynchronizersStore.getState();
         if (synchronizersStore?.[viewportId]?.length && !isHangingProtocolLayout) {
           // If the viewport used to have a synchronizer, re apply it again
-          _rehydrateSynchronizers(synchronizersStore, viewportId, syncGroupService);
+          _rehydrateSynchronizers(viewportId, syncGroupService);
         }
 
         if (onElementEnabled && typeof onElementEnabled === 'function') {
@@ -511,12 +511,15 @@ function _jumpToMeasurement(measurement, targetElementRef, viewportId, servicesM
   }
 }
 
-function _rehydrateSynchronizers(
-  synchronizersStore: { [key: string]: unknown[] },
-  viewportId: string,
-  syncGroupService: any
-) {
-  synchronizersStore[viewportId].forEach(synchronizerObj => {
+function _rehydrateSynchronizers(viewportId: string, syncGroupService: any) {
+  const { synchronizersStore } = useSynchronizersStore.getState();
+  const synchronizers = synchronizersStore[viewportId];
+
+  if (!synchronizers) {
+    return;
+  }
+
+  synchronizers.forEach(synchronizerObj => {
     if (!synchronizerObj.id) {
       return;
     }

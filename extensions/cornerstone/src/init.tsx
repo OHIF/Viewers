@@ -38,6 +38,8 @@ import getPositionPresentationId from './utils/presentations/getPositionPresenta
 import getLutPresentationId from './utils/presentations/getLutPresentationId';
 import getSegmentationPresentationId from './utils/presentations/getSegmentationPresentationId';
 import { SegmentationRepresentations } from '@cornerstonejs/tools/enums';
+import { useLutPresentationStore } from './stores/useLutPresentationStore';
+import { usePositionPresentationStore } from './stores/usePositionPresentationStore';
 
 const { registerColormap } = csUtilities.colormap;
 
@@ -89,8 +91,6 @@ export default async function init({
     cornerstoneViewportService,
     hangingProtocolService,
     viewportGridService,
-    segmentationService,
-    stateSyncService,
   } = servicesManager.services;
 
   window.services = servicesManager.services;
@@ -111,51 +111,6 @@ export default async function init({
     'segmentationPresentationId',
     getSegmentationPresentationId
   );
-
-  // Stores a map from `lutPresentationId` to a Presentation object so that
-  // an OHIFCornerstoneViewport can be redisplayed with the same LUT
-  stateSyncService.register('lutPresentationStore', { clearOnModeExit: true });
-
-  // Stores synchronizers state to be restored
-  stateSyncService.register('synchronizersStore', { clearOnModeExit: true });
-
-  // Stores a map from `positionPresentationId` to a Presentation object so that
-  // an OHIFCornerstoneViewport can be redisplayed with the same position
-  stateSyncService.register('positionPresentationStore', {
-    clearOnModeExit: true,
-  });
-
-  // Stores the entire ViewportGridService getState when toggling to one up
-  // (e.g. via a double click) so that it can be restored when toggling back.
-  stateSyncService.register('toggleOneUpViewportGridStore', {
-    clearOnModeExit: true,
-  });
-
-  // Register a map for segmentationPresentationId. This ID is used to
-  // store the segmentation representation for a viewport. When elements
-  // move around, the stateSyncService ensures the segmentation representation
-  // is rendered correctly. This applies to scenarios like stack-to-volume
-  // viewport transitions or new viewport creation that previously had
-  // the segmentation representation.
-  stateSyncService.register('segmentationPresentationStore', {
-    clearOnModeExit: true,
-    methods: {
-      updateSegmentationPresentation: (state, viewportId, segmentationPresentation) => ({
-        ...state,
-        [viewportId]: segmentationPresentation,
-      }),
-      addSegmentationToViewport: (state, viewportId, segmentationId, representationType) => {
-        const currentPresentation = state[viewportId] || [];
-        return {
-          ...state,
-          [viewportId]: [
-            ...currentPresentation,
-            { segmentationId, type: representationType, hydrated: true },
-          ],
-        };
-      },
-    },
-  });
 
   cornerstoneTools.segmentation.config.style.setStyle(
     { type: SegmentationRepresentations.Contour },
@@ -205,6 +160,9 @@ export default async function init({
   initCineService(servicesManager);
   initStudyPrefetcherService(servicesManager);
 
+  const { lutPresentationStore } = useLutPresentationStore.getState();
+  const { positionPresentationStore } = usePositionPresentationStore.getState();
+
   // When a custom image load is performed, update the relevant viewports
   hangingProtocolService.subscribe(
     hangingProtocolService.EVENTS.CUSTOM_IMAGE_LOAD_PERFORMED,
@@ -215,15 +173,11 @@ export default async function init({
 
         const ohifViewport = cornerstoneViewportService.getViewportInfo(viewportId);
 
-        const { lutPresentationStore, positionPresentationStore, segmentationPresentationStore } =
-          stateSyncService.getState();
         const { presentationIds } = ohifViewport.getViewportOptions();
 
         const presentations = {
           positionPresentation: positionPresentationStore[presentationIds?.positionPresentationId],
           lutPresentation: lutPresentationStore[presentationIds?.lutPresentationId],
-          segmentationPresentation:
-            segmentationPresentationStore[presentationIds?.segmentationPresentationId],
         };
 
         cornerstoneViewportService.setVolumesForViewport(viewport, volumeInputArray, presentations);

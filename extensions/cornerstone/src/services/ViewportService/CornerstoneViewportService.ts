@@ -19,7 +19,7 @@ import { IViewportService } from './IViewportService';
 import { RENDERING_ENGINE_ID } from './constants';
 import ViewportInfo, { DisplaySetOptions, PublicViewportOptions } from './Viewport';
 import { StackViewportData, VolumeViewportData } from '../../types/CornerstoneCacheService';
-import Presentation, {
+import {
   LutPresentation,
   PositionPresentation,
   Presentations,
@@ -29,13 +29,15 @@ import Presentation, {
 
 import JumpPresets from '../../utils/JumpPresets';
 import { ViewportProperties } from '@cornerstonejs/core/types';
+import { useLutPresentationStore } from '../../stores/useLutPresentationStore';
+import { usePositionPresentationStore } from '../../stores/usePositionPresentationStore';
+import { useSynchronizersStore } from '../../stores/useSynchronizersStore';
+import { useSegmentationPresentationStore } from '../../stores/useSegmentationPresentationStore';
 
 const EVENTS = {
   VIEWPORT_DATA_CHANGED: 'event::cornerstoneViewportService:viewportDataChanged',
   VIEWPORT_VOLUMES_CHANGED: 'event::cornerstoneViewportService:viewportVolumesChanged',
 };
-
-const VOLUME_LOADER_SCHEME = 'cornerstoneStreamingImageVolume';
 
 /**
  * Handles cornerstone viewport logic including enabling, disabling, and
@@ -208,7 +210,7 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
 
   /**
    * Stores the presentation state for a given viewport inside the
-   * stateSyncService. This is used to persist the presentation state
+   * each store. This is used to persist the presentation state
    * across different scenarios e.g., when the viewport is changing the
    * display set, or when the viewport is moving to a different layout.
    *
@@ -233,58 +235,41 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
       return;
     }
 
-    const { stateSyncService, syncGroupService } = this.servicesManager.services;
+    const { syncGroupService } = this.servicesManager.services;
 
     const synchronizers = syncGroupService.getSynchronizersForViewport(viewportId);
-    const state = stateSyncService.getState();
 
     const { lutPresentation, positionPresentation, segmentationPresentation } = presentations;
-
-    const newState: Record<string, unknown> = {
-      ...state,
-    };
-    const updatePresentation = (
-      store: string,
-      presentationId: string,
-      presentation: Presentation
-    ) => {
-      newState[store] = {
-        ...state[store],
-        [presentationId]: presentation,
-      };
-    };
-
     const { lutPresentationId, positionPresentationId, segmentationPresentationId } =
       presentationIds;
 
+    const { setLutPresentation } = useLutPresentationStore.getState();
+    const { setPositionPresentation } = usePositionPresentationStore.getState();
+    const { setSynchronizers } = useSynchronizersStore.getState();
+    const { setSegmentationPresentation } = useSegmentationPresentationStore.getState();
+
     if (lutPresentationId) {
-      updatePresentation('lutPresentationStore', lutPresentationId, lutPresentation);
+      setLutPresentation(lutPresentationId, lutPresentation);
     }
 
     if (positionPresentationId) {
-      updatePresentation('positionPresentationStore', positionPresentationId, positionPresentation);
+      setPositionPresentation(positionPresentationId, positionPresentation);
     }
 
     if (segmentationPresentationId) {
-      updatePresentation(
-        'segmentationPresentationStore',
-        segmentationPresentationId,
-        segmentationPresentation
-      );
+      setSegmentationPresentation(segmentationPresentationId, segmentationPresentation);
     }
 
     if (synchronizers?.length) {
-      newState.synchronizersStore = {
-        ...state.synchronizersStore,
-        [viewportId]: synchronizers.map(synchronizer => ({
+      setSynchronizers(
+        viewportId,
+        synchronizers.map(synchronizer => ({
           id: synchronizer.id,
           sourceViewports: [...synchronizer.getSourceViewports()],
           targetViewports: [...synchronizer.getTargetViewports()],
-        })),
-      };
+        }))
+      );
     }
-
-    stateSyncService.store(newState);
   }
 
   /**
@@ -418,8 +403,7 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     // since those are the newly set ones, we set them here so that it handles defaults
     const displaySetOptions = viewportInfo.setPublicDisplaySetOptions(publicDisplaySetOptions);
     // Specify an over-ride for the viewport type, even though it is in the public
-    // viewport options, because the one in the public viewport options is a suggestion
-    // for initial view, whereas the one in viewportData is a requirement based on the
+    // viewport options, because the one in the viewportData is a requirement based on the
     // type of data being displayed.
     const viewportOptions = viewportInfo.setPublicViewportOptions(
       publicViewportOptions,

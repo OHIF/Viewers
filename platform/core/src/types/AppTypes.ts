@@ -5,7 +5,6 @@ import MeasurementServiceType from '../services/MeasurementService';
 import ViewportGridServiceType from '../services/ViewportGridService';
 import ToolbarServiceType from '../services/ToolBarService';
 import DisplaySetServiceType from '../services/DisplaySetService';
-import StateSyncServiceType from '../services/StateSyncService';
 import UINotificationServiceType from '../services/UINotificationService';
 import UIModalServiceType from '../services/UIModalService';
 import WorkflowStepsServiceType from '../services/WorkflowStepsService';
@@ -47,7 +46,6 @@ declare global {
     export type ViewportGridService = ViewportGridServiceType;
     export type UIModalService = UIModalServiceType;
     export type UINotificationService = UINotificationServiceType;
-    export type StateSyncService = StateSyncServiceType;
     export type WorkflowStepsService = WorkflowStepsServiceType;
     export type CineService = CineServiceType;
     export type UserAuthenticationService = UserAuthenticationServiceType;
@@ -71,7 +69,6 @@ declare global {
       viewportGridService?: ViewportGridServiceType;
       uiModalService?: UIModalServiceType;
       uiNotificationService?: UINotificationServiceType;
-      stateSyncService?: StateSyncServiceType;
       workflowStepsService?: WorkflowStepsServiceType;
       cineService?: CineServiceType;
       userAuthenticationService?: UserAuthenticationServiceType;

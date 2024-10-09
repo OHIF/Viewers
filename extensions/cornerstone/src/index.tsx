@@ -40,6 +40,10 @@ import { findNearbyToolData } from './utils/findNearbyToolData';
 import { createFrameViewSynchronizer } from './synchronizers/frameViewSynchronizer';
 import { getSopClassHandlerModule } from './getSopClassHandlerModule';
 import { getDynamicVolumeInfo } from '@cornerstonejs/core/utilities';
+import { useLutPresentationStore } from './stores/useLutPresentationStore';
+import { usePositionPresentationStore } from './stores/usePositionPresentationStore';
+import { useSynchronizersStore } from './stores/useSynchronizersStore';
+import { useToggleOneUpViewportGridStore } from '../../default/src/stores/useToggleOneUpViewportGridStore';
 
 const { imageRetrieveMetadataProvider } = cornerstone.utilities;
 
@@ -117,6 +121,11 @@ const cornerstoneExtension: Types.Extensions.Extension = {
     cineService.setIsCineEnabled(false);
 
     enabledElementReset();
+
+    useLutPresentationStore.getState().clearLutPresentationStore();
+    usePositionPresentationStore.getState().clearPositionPresentationStore();
+    useSynchronizersStore.getState().clearSynchronizersStore();
+    useToggleOneUpViewportGridStore.getState().clearToggleOneUpViewportGridStore();
   },
 
   /**
