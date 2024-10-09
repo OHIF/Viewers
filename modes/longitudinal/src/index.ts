@@ -192,7 +192,7 @@ function modeFactory({ modeConfiguration }) {
             props: {
               leftPanels: [tracked.thumbnailList],
               rightPanels: [dicomSeg.panel, tracked.measurements],
-              rightPanelClosed: true,
+              // rightPanelClosed: true,
               viewports: [
                 {
                   namespace: tracked.viewport,

@@ -1,6 +1,6 @@
 import { createReportAsync } from '@ohif/extension-default';
-import React, { useEffect, useState, useCallback } from 'react';
-import { SegmentationGroupTable, SegmentationGroupTableExpanded } from '@ohif/ui';
+import React, { useEffect, useState } from 'react';
+import { SegmentationGroupTable, SegmentationGroupTableExpanded } from '@ohif/ui-next';
 import { SegmentationPanelMode } from '../types/segmentation';
 import callInputDialog from './callInputDialog';
 import callColorPickerDialog from './colorPickerDialog';
@@ -229,16 +229,14 @@ export default function PanelSegmentation({
     disableEditing,
   } = configuration ?? {};
 
-  // Select the appropriate component
   const SegmentationGroupTableComponent =
     components[segmentationPanelMode] ?? SegmentationGroupTable;
 
-  // Use the provided onSegmentationAdd if it's a function; otherwise, use the default handler
   const onSegmentationAddWrapper =
     typeof configOnSegmentationAdd === 'function' ? configOnSegmentationAdd : onSegmentationAdd;
 
   return (
-    <>
+    <div className="flex h-full flex-col overflow-hidden">
       {renderHeader && (
         <>
           <div className="bg-primary-dark flex select-none rounded-t pt-1.5 pb-[2px]">
@@ -257,28 +255,30 @@ export default function PanelSegmentation({
           />
         </>
       )}
-      <SegmentationGroupTableComponent
-        title={t('Segmentations')}
-        segmentationsInfo={segmentationsInfo}
-        disableEditing={disableEditing}
-        onSegmentationAdd={onSegmentationAddWrapper}
-        showAddSegment={allowAddSegment}
-        onSegmentationClick={onSegmentationClick}
-        onSegmentationDelete={onSegmentationDelete}
-        onSegmentationDownload={onSegmentationDownload}
-        onSegmentationDownloadRTSS={onSegmentationDownloadRTSS}
-        storeSegmentation={storeSegmentation}
-        onSegmentationEdit={onSegmentationEdit}
-        onSegmentClick={onSegmentClick}
-        onSegmentEdit={onSegmentEdit}
-        onSegmentAdd={onSegmentAdd}
-        onSegmentColorClick={onSegmentColorClick}
-        onSegmentDelete={onSegmentDelete}
-        onToggleSegmentVisibility={onToggleSegmentVisibility}
-        onToggleSegmentLock={onToggleSegmentLock}
-        onToggleSegmentationVisibility={onToggleSegmentationVisibility}
-        showDeleteSegment={true}
-      />
-    </>
+      <div className="flex-grow overflow-y-auto">
+        <SegmentationGroupTableComponent
+          title={t('Segmentations')}
+          segmentationsInfo={segmentationsInfo}
+          disableEditing={disableEditing}
+          onSegmentationAdd={onSegmentationAddWrapper}
+          showAddSegment={allowAddSegment}
+          onSegmentationClick={onSegmentationClick}
+          onSegmentationDelete={onSegmentationDelete}
+          onSegmentationDownload={onSegmentationDownload}
+          onSegmentationDownloadRTSS={onSegmentationDownloadRTSS}
+          storeSegmentation={storeSegmentation}
+          onSegmentationEdit={onSegmentationEdit}
+          onSegmentClick={onSegmentClick}
+          onSegmentEdit={onSegmentEdit}
+          onSegmentAdd={onSegmentAdd}
+          onSegmentColorClick={onSegmentColorClick}
+          onSegmentDelete={onSegmentDelete}
+          onToggleSegmentVisibility={onToggleSegmentVisibility}
+          onToggleLock={onToggleSegmentLock}
+          onToggleSegmentationVisibility={onToggleSegmentationVisibility}
+          showDeleteSegment={true}
+        />
+      </div>
+    </div>
   );
 }

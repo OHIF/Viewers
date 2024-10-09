@@ -33,7 +33,6 @@ import {
   DisplaySetMessageListTooltip,
   Toolbox,
   ToolboxUI,
-  Select,
   DoubleSlider,
   ScrollArea,
   Label,
@@ -42,13 +41,23 @@ import {
   Switch,
   Checkbox,
   Onboarding,
+  PopoverAnchor,
+  PopoverContent,
+  PopoverTrigger,
+  Select,
+  SelectTrigger,
+  SelectContent,
+  SelectItem,
+  SelectValue,
+  SegmentationGroupTable,
+  SegmentationGroupTableExpanded,
 } from './components';
+import { DataRow } from './components/DataRow';
 
 import { useNotification, NotificationProvider } from './contextProviders';
 
 export {
   // components
-  Select,
   Button,
   Dialog,
   Command,
@@ -94,4 +103,15 @@ export {
   Input,
   Switch,
   Onboarding,
+  PopoverAnchor,
+  PopoverContent,
+  PopoverTrigger,
+  Select,
+  SelectTrigger,
+  SelectContent,
+  SelectItem,
+  SelectValue,
+  SegmentationGroupTable,
+  SegmentationGroupTableExpanded,
+  DataRow,
 };

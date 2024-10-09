@@ -1,66 +1,61 @@
-import React, { useState } from 'react';
-import { Icons } from '../Icons';
-import PropTypes from 'prop-types';
+import React from 'react';
+import {
+  Accordion,
+  AccordionItem,
+  AccordionTrigger,
+  AccordionContent,
+} from '../Accordion/Accordion';
+import { cn } from '../../lib/utils';
+import { Icons } from '../Icons/Icons';
 
-const PanelSection = ({ title, children, actionIcons = [], childrenClassName }) => {
-  const [areChildrenVisible, setChildrenVisible] = useState(true);
+interface PanelSectionProps {
+  title: string;
+  children: React.ReactNode;
+  defaultOpen?: boolean;
+  className?: string;
+  headerClassName?: string;
+  contentClassName?: string;
+  icon?: keyof typeof Icons;
+}
 
-  const handleHeaderClick = () => {
-    setChildrenVisible(!areChildrenVisible);
-  };
+export const PanelSection: React.FC<PanelSectionProps> = ({
+  title,
+  children,
+  defaultOpen = true,
+  className,
+  headerClassName,
+  contentClassName,
+  icon,
+}) => {
+  const IconComponent = icon ? Icons[icon] : null;
 
   return (
-    <>
-      <div
-        className="bg-secondary-dark flex h-7 cursor-pointer select-none items-center justify-between rounded-[4px] pl-2.5 text-[13px]"
-        onClick={handleHeaderClick}
+    <Accordion
+      type="single"
+      collapsible
+      defaultValue={defaultOpen ? 'item' : undefined}
+      className={cn('overflow-hidden', className)}
+    >
+      <AccordionItem
+        value="item"
+        className="border-none"
       >
-        <div className="text-aqua-pale">{title}</div>
-        <div className="flex items-center space-x-1">
-          {actionIcons.map((icon, index) => {
-            const Icon = Icons[icon.name];
-            return (
-              <Icon
-                key={index}
-                onClick={e => {
-                  e.stopPropagation();
-                  if (!areChildrenVisible) {
-                    setChildrenVisible(true);
-                  }
-                  icon.onClick();
-                }}
-              />
-            );
-          })}
-          <div className="grid h-[28px] w-[28px] place-items-center">
-            {areChildrenVisible ? <Icons.ChevronOpen /> : <Icons.ChevronClosed />}
+        <AccordionTrigger
+          className={cn(
+            'bg-secondary-dark hover:bg-accent text-aqua-pale',
+            'my-0.5 flex h-7 w-full items-center justify-between rounded py-2 pr-1 pl-2.5 text-[13px]',
+            headerClassName
+          )}
+        >
+          <div className="flex items-center">
+            {IconComponent && <IconComponent className="mr-2 h-4 w-4" />}
+            <span>{title}</span>
           </div>
-        </div>
-      </div>
-      {areChildrenVisible && (
-        <>
-          <div className="h-[2px] bg-black"></div>
-          <div
-            className={`bg-primary-dark flex flex-col overflow-hidden rounded-b-[4px] ${childrenClassName}`}
-          >
-            {children}
-          </div>
-        </>
-      )}
-    </>
+        </AccordionTrigger>
+        <AccordionContent className={cn('overflow-hidden p-0', contentClassName)}>
+          <div className="bg-primary-dark rounded-b">{children}</div>
+        </AccordionContent>
+      </AccordionItem>
+    </Accordion>
   );
 };
-
-PanelSection.propTypes = {
-  title: PropTypes.string,
-  children: PropTypes.node,
-  childrenClassName: PropTypes.string,
-  actionIcons: PropTypes.arrayOf(
-    PropTypes.shape({
-      name: PropTypes.string,
-      onClick: PropTypes.func,
-    })
-  ),
-};
-
-export { PanelSection };

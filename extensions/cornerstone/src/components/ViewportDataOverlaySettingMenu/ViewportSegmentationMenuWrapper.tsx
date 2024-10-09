@@ -1,5 +1,5 @@
 import React, { ReactNode, useEffect, useState } from 'react';
-import { Button, Icons, Popover } from '@ohif/ui-next';
+import { Button, Icons, Popover, PopoverContent, PopoverTrigger } from '@ohif/ui-next';
 import ViewportSegmentationMenu from './ViewportSegmentationMenu';
 import classNames from 'classnames';
 
@@ -46,8 +46,8 @@ export function ViewportSegmentationMenuWrapper({
   }
 
   return (
-    <Popover.Popover>
-      <Popover.PopoverTrigger
+    <Popover>
+      <PopoverTrigger
         asChild
         className="flex items-center justify-center"
       >
@@ -62,8 +62,8 @@ export function ViewportSegmentationMenuWrapper({
             )}
           />
         </Button>
-      </Popover.PopoverTrigger>
-      <Popover.PopoverContent
+      </PopoverTrigger>
+      <PopoverContent
         className="border-none bg-transparent p-0 shadow-none"
         side={side}
         align={align}
@@ -77,8 +77,8 @@ export function ViewportSegmentationMenuWrapper({
           servicesManager={servicesManager}
           commandsManager={commandsManager}
         />
-      </Popover.PopoverContent>
-    </Popover.Popover>
+      </PopoverContent>
+    </Popover>
   );
 }
 

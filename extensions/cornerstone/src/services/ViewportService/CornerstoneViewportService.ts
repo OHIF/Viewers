@@ -669,7 +669,7 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     const lastSliceIndex = numberOfSlices - 1;
 
     if (imageIndex !== undefined) {
-      return csToolsUtils.clip(imageIndex, 0, lastSliceIndex);
+      return csUtils.clip(imageIndex, 0, lastSliceIndex);
     }
 
     if (preset === JumpPresets.First) {

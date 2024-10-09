@@ -47,10 +47,7 @@ const DataRow: React.FC<DataRowProps> = ({
 
   return (
     <TooltipProvider>
-      {' '}
-      {/* Ensure TooltipProvider wraps the component */}
       <div className="flex flex-col">
-        {/* Row 1 with 'group' class to enable group-hover */}
         <div
           className={`flex items-center ${
             isSelected ? 'bg-popover' : 'bg-muted'

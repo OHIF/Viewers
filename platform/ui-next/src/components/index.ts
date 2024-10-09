@@ -49,6 +49,7 @@ import { Thumbnail } from './Thumbnail';
 import { ThumbnailList } from './ThumbnailList';
 import { PanelSection } from './PanelSection';
 import { DisplaySetMessageListTooltip } from './DisplaySetMessageListTooltip';
+import { Tooltip, TooltipTrigger, TooltipContent } from './Tooltip';
 import { Toolbox, ToolboxUI } from './Toolbox';
 import {
   DropdownMenu,
@@ -68,12 +69,16 @@ import {
   DropdownMenuRadioGroup,
 } from './DropdownMenu';
 import { Onboarding } from './Onboarding';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './Select';
+import { DoubleSlider } from './DoubleSlider';
+import { SegmentationGroupTable, SegmentationGroupTableExpanded } from './SegmentationGroupTable';
+import { DataRow } from './DataRow';
 
 export {
-  Select,
   Button,
   buttonVariants,
   ThemeWrapper,
+  DoubleSlider,
   Command,
   CommandDialog,
   CommandInput,
@@ -148,4 +153,15 @@ export {
   DropdownMenuSubTrigger,
   DropdownMenuRadioGroup,
   Onboarding,
+  Select,
+  SelectTrigger,
+  SelectContent,
+  SelectItem,
+  SelectValue,
+  SegmentationGroupTable,
+  SegmentationGroupTableExpanded,
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+  DataRow,
 };

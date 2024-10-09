@@ -197,7 +197,7 @@ function Patterns() {
                         </Tabs>
                       </div>
                       {/* Opacity Slider */}
-                      <div className="my-2 flex items-center ">
+                      <div className="my-2 flex items-center">
                         <Label className="text-muted-foreground mx-1 w-14 flex-none whitespace-nowrap text-xs">
                           Opacity
                         </Label>
@@ -244,7 +244,7 @@ function Patterns() {
                         </Label>
                       </div>
                       {/* Additional Opacity Slider */}
-                      <div className="my-2 flex items-center ">
+                      <div className="my-2 flex items-center">
                         <Label className="text-muted-foreground mx-1 w-14 flex-none whitespace-nowrap text-xs">
                           Opacity
                         </Label>
