@@ -3,7 +3,7 @@ import { useLutPresentationStore } from '../../stores/useLutPresentationStore';
 import { useSegmentationPresentationStore } from '../../stores/useSegmentationPresentationStore';
 
 export function getViewportPresentations(
-  servicesManager: AppTypes.ServicesManager,
+  viewportId: string,
   viewportOptions: AppTypes.ViewportGrid.GridViewportOptions
 ) {
   const { lutPresentationStore } = useLutPresentationStore.getState();

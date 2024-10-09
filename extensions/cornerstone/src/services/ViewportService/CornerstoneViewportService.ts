@@ -202,9 +202,13 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
 
     const { lutPresentation, positionPresentation, segmentationPresentation } = presentations;
 
+    // Always set the segmentation presentation first, since there might be some
+    // lutpresentation states that need to be set on the segmentation
+    // Todo: i think we should even await this
+    this._setSegmentationPresentation(viewport, segmentationPresentation);
+
     this._setLutPresentation(viewport, lutPresentation);
     this._setPositionPresentation(viewport, positionPresentation, viewportInfo);
-    this._setSegmentationPresentation(viewport, segmentationPresentation);
   }
 
   /**
@@ -311,9 +315,9 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     }
 
     const cleanProperties = properties => {
-      if (properties.isComputedVOI) {
-        delete properties.voiRange;
-        delete properties.VOILUTFunction;
+      if (properties?.isComputedVOI) {
+        delete properties?.voiRange;
+        delete properties?.VOILUTFunction;
       }
       return properties;
     };
@@ -324,9 +328,10 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
         : cleanProperties(csViewport.getProperties());
 
     if (properties instanceof Map) {
-      csViewport.getActors().forEach(({ uid: volumeId }) => {
-        const properties = cleanProperties(csViewport.getProperties(volumeId));
-        properties.set(volumeId, properties);
+      const volumeIds = (csViewport as Types.IBaseVolumeViewport).getAllVolumeIds();
+      volumeIds?.forEach(volumeId => {
+        const csProps = cleanProperties(csViewport.getProperties(volumeId));
+        properties.set(volumeId, csProps);
       });
     }
 

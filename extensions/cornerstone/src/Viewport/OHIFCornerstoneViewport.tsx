@@ -255,7 +255,7 @@ const OHIFCornerstoneViewport = React.memo(
           initialImageIndex
         );
 
-        const presentations = getViewportPresentations(servicesManager, viewportOptions);
+        const presentations = getViewportPresentations(viewportId, viewportOptions);
 
         let measurement;
         if (cacheJumpToMeasurementEvent?.viewportId === viewportId) {

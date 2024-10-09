@@ -98,14 +98,12 @@ export default async function init({
   if (appConfig.showCPUFallbackMessage && cornerstone.getShouldUseCPURendering()) {
     _showCPURenderingModal(uiModalService, hangingProtocolService);
   }
-  const { lutPresentationStore, getPresentationId: getLutPresentationId } =
-    useLutPresentationStore.getState();
+  const { getPresentationId: getLutPresentationId } = useLutPresentationStore.getState();
 
   const { getPresentationId: getSegmentationPresentationId } =
     useSegmentationPresentationStore.getState();
 
-  const { positionPresentationStore, getPresentationId: getPositionPresentationId } =
-    usePositionPresentationStore.getState();
+  const { getPresentationId: getPositionPresentationId } = usePositionPresentationStore.getState();
 
   // register presentation id providers
   viewportGridService.addPresentationIdProvider(
@@ -170,6 +168,10 @@ export default async function init({
   hangingProtocolService.subscribe(
     hangingProtocolService.EVENTS.CUSTOM_IMAGE_LOAD_PERFORMED,
     volumeInputArrayMap => {
+      const { lutPresentationStore } = useLutPresentationStore.getState();
+      const { segmentationPresentationStore } = useSegmentationPresentationStore.getState();
+      const { positionPresentationStore } = usePositionPresentationStore.getState();
+
       for (const entry of volumeInputArrayMap.entries()) {
         const [viewportId, volumeInputArray] = entry;
         const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
@@ -181,6 +183,8 @@ export default async function init({
         const presentations = {
           positionPresentation: positionPresentationStore[presentationIds?.positionPresentationId],
           lutPresentation: lutPresentationStore[presentationIds?.lutPresentationId],
+          segmentationPresentation:
+            segmentationPresentationStore[presentationIds?.segmentationPresentationId],
         };
 
         cornerstoneViewportService.setVolumesForViewport(viewport, volumeInputArray, presentations);

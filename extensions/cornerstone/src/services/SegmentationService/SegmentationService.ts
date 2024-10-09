@@ -377,11 +377,6 @@ class SegmentationService extends PubSubService {
     if (!segmentation) {
       throw new Error(`Segmentation with segmentationId ${segmentationId} not found.`);
     }
-    // this._updateSegmentationRepresentationHydrationMap({
-    //   viewportId,
-    //   segmentations: [{ segmentationId, type: representationType }],
-    //   isAdding: true,
-    // });
 
     // does color lut exist in the
     const colorLUTIndex = this._segmentationIdToColorLUTIndexMap.get(segmentationId);
@@ -391,9 +386,18 @@ class SegmentationService extends PubSubService {
     const csViewport =
       this.servicesManager.services.cornerstoneViewportService.getCornerstoneViewport(viewportId);
     const is3DVolumeViewport = csViewport instanceof VolumeViewport3D;
-    const representationTypeToUse = is3DVolumeViewport
-      ? SegmentationRepresentations.Surface
-      : representationType;
+
+    let representationTypeToUse;
+    if (is3DVolumeViewport) {
+      representationTypeToUse = is3DVolumeViewport
+        ? SegmentationRepresentations.Surface
+        : representationType;
+    } else {
+      representationTypeToUse =
+        representationType === SegmentationRepresentations.Surface
+          ? SegmentationRepresentations.Labelmap
+          : representationType;
+    }
 
     cstSegmentation.addSegmentationRepresentations(viewportId, [
       {
@@ -1071,18 +1075,7 @@ class SegmentationService extends PubSubService {
       isCleanUp?: boolean;
     } = {}
   ): void {
-    const removedSegRepresentations = cstSegmentation.removeSegmentationRepresentations(
-      viewportId,
-      specifier
-    );
-    // this._updateSegmentationRepresentationHydrationMap({
-    //   viewportId,
-    //   segmentations: removedSegRepresentations.map(({ segmentationId, type }) => ({
-    //     segmentationId,
-    //     type,
-    //   })),
-    //   isAdding: specifier.isCleanUp ? undefined : false,
-    // });
+    cstSegmentation.removeSegmentationRepresentations(viewportId, specifier);
   }
 
   public getSegmentation(segmentationId: string) {
