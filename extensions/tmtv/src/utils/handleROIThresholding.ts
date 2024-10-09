@@ -1,40 +1,31 @@
-import { cache } from '@cornerstonejs/core';
-import { segmentation as csToolsSegmentation, type Types } from '@cornerstonejs/tools';
+import { Segment, Segmentation } from '@cornerstonejs/tools/types';
 
 export const handleROIThresholding = async ({
   segmentationId,
   commandsManager,
   segmentationService,
   config = {},
-}) => {
+}: withAppTypes<{
+  segmentationId: string;
+  config: Record<string, any>;
+}>) => {
   const segmentation = segmentationService.getSegmentation(segmentationId);
-  const csSegmentation = csToolsSegmentation.state.getSegmentation(segmentationId);
-
-  const labelmapData = csSegmentation.representationData
-    .Labelmap as Types.LabelmapToolOperationDataVolume;
-  const volumeId = labelmapData.volumeId;
 
   // re-calculating the cached stats for the active segmentation
   const updatedPerSegmentCachedStats = {};
-  segmentation.segments = await Promise.all(
-    segmentation.segments.map(async segment => {
-      if (!segment || !segment.segmentIndex) {
-        return segment;
+  await Promise.all(
+    Object.entries(segmentation.segments).map(async ([segmentIndex, segment]) => {
+      if (!segment) {
+        return [segmentIndex, segment];
       }
 
-      const labelmap = cache.getVolume(volumeId);
-
-      const segmentIndex = segment.segmentIndex;
-
       const lesionStats = commandsManager.run('getLesionStats', {
-        segmentation,
-        labelmap,
-        segmentIndex,
+        segmentationId,
+        segmentIndex: Number(segmentIndex),
       });
       const suvPeak = await commandsManager.run('calculateSuvPeak', {
-        labelmap,
-        segmentation,
-        segmentIndex,
+        segmentationId,
+        segmentIndex: Number(segmentIndex),
       });
       const lesionGlyoclysisStats = lesionStats.volume * lesionStats.meanValue;
 
@@ -45,34 +36,44 @@ export const handleROIThresholding = async ({
         lesionGlyoclysisStats,
       };
 
-      segment.cachedStats = cachedStats;
-      segment.displayText = [
-        `SUV Peak: ${suvPeak.suvPeak.toFixed(2)}`,
-        `Volume: ${lesionStats.volume.toFixed(2)} mm3`,
-      ];
-      updatedPerSegmentCachedStats[segmentIndex] = cachedStats;
+      const updatedSegment: Segment = {
+        ...segment,
+        cachedStats: {
+          ...segment.cachedStats,
+          ...cachedStats,
+        },
+      };
 
-      return segment;
+      updatedPerSegmentCachedStats[Number(segmentIndex)] = cachedStats;
+
+      return [segmentIndex, updatedSegment];
     })
   );
 
-  const notYetUpdatedAtSource = true;
+  // all available segmentations
+  const segmentationsInfo = segmentationService.getSegmentationsInfo();
 
-  const segmentations = segmentationService.getSegmentationRepresentations();
+  const segmentations = segmentationsInfo.map(({ segmentation }) => segmentation);
   const tmtv = commandsManager.run('calculateTMTV', { segmentations });
 
-  segmentation.cachedStats = Object.assign(segmentation.cachedStats, updatedPerSegmentCachedStats, {
-    tmtv: {
-      value: tmtv.toFixed(3),
-      config: { ...config },
-    },
+  // add the tmtv to all the segment cachedStats, although it is a global
+  // value but we don't have any other way to display it for now
+  Object.values(segmentation.segments).forEach(segment => {
+    if (segment) {
+      segment.cachedStats = {
+        ...segment.cachedStats,
+        tmtv,
+      };
+    }
   });
 
-  segmentationService.addOrUpdateSegmentation(
-    {
-      ...segmentation,
+  // Update the segmentation object
+  const updatedSegmentation: Segmentation = {
+    ...segmentation,
+    segments: {
+      ...segmentation.segments,
     },
-    false, // don't suppress events
-    notYetUpdatedAtSource
-  );
+  };
+
+  segmentationService.addOrUpdateSegmentation(segmentationId, updatedSegmentation);
 };

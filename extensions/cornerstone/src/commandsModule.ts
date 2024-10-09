@@ -555,7 +555,7 @@ function commandsModule({
 
       // Set slice to last slice
       const options = { imageIndex: jumpIndex };
-      cstUtils.jumpToSlice(viewport.element, options);
+      csUtils.jumpToSlice(viewport.element, options);
     },
     scroll: ({ direction }) => {
       const enabledElement = _getActiveViewportEnabledElement();
@@ -567,7 +567,7 @@ function commandsModule({
       const { viewport } = enabledElement;
       const options = { delta: direction };
 
-      cstUtils.scroll(viewport, options);
+      csUtils.scroll(viewport, options);
     },
     setViewportColormap: ({
       viewportId,

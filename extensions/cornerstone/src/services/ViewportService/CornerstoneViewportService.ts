@@ -874,7 +874,7 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     const imageIndex = this._getInitialImageIndexForViewport(viewportInfo);
 
     if (imageIndex !== undefined) {
-      csToolsUtils.jumpToSlice(viewport.element, {
+      csUtils.jumpToSlice(viewport.element, {
         imageIndex,
       });
     }
@@ -930,8 +930,10 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
       viewportId: viewport.id,
       segmentationId,
       representationType,
-      useExistingRepresentationIfExist: true,
     });
+
+    // store the segmentation presentation id in the viewport info
+    this.storePresentation({ viewportId: viewport.id });
   }
 
   // Todo: keepCamera is an interim solution until we have a better solution for
