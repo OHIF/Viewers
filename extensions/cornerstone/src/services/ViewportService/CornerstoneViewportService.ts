@@ -11,7 +11,6 @@ import {
   cache,
   Enums as csEnums,
   BaseVolumeViewport,
-  volumeLoader,
 } from '@cornerstonejs/core';
 
 import { utilities as csToolsUtils, Enums as csToolsEnums } from '@cornerstonejs/tools';
@@ -218,30 +217,19 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
    */
   public storePresentation({ viewportId }) {
     const presentationIds = this.getPresentationIds(viewportId);
+    const { syncGroupService } = this.servicesManager.services;
+    const synchronizers = syncGroupService.getSynchronizersForViewport(viewportId);
 
     if (!presentationIds || Object.keys(presentationIds).length === 0) {
       return null;
     }
 
-    let presentations: Presentations | null = null;
-
-    try {
-      presentations = this.getPresentations(viewportId);
-      if (!presentations?.positionPresentation && !presentations?.lutPresentation) {
-        return;
-      }
-    } catch (error) {
-      console.debug('Error getting presentations:', error);
-      return;
-    }
-
-    const { syncGroupService } = this.servicesManager.services;
-
-    const synchronizers = syncGroupService.getSynchronizersForViewport(viewportId);
-
-    const { lutPresentation, positionPresentation, segmentationPresentation } = presentations;
     const { lutPresentationId, positionPresentationId, segmentationPresentationId } =
       presentationIds;
+
+    const positionPresentation = this._getPositionPresentation(viewportId);
+    const lutPresentation = this._getLutPresentation(viewportId);
+    const segmentationPresentation = this._getSegmentationPresentation(viewportId);
 
     const { setLutPresentation } = useLutPresentationStore.getState();
     const { setPositionPresentation } = usePositionPresentationStore.getState();
@@ -351,14 +339,9 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
   }
 
   private _getSegmentationPresentation(viewportId: string): SegmentationPresentation {
-    const presentationIds = this.getPresentationIds(viewportId);
-    const { segmentationPresentationId } = presentationIds;
     const { segmentationService } = this.servicesManager.services;
 
-    const presentation = segmentationService.getPresentation(
-      viewportId,
-      segmentationPresentationId
-    );
+    const presentation = segmentationService.getPresentation(viewportId);
     return presentation;
   }
 
