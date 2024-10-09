@@ -18,7 +18,7 @@ import {
   SelectScrollDownButton,
 } from '../components/Select';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '../components/Tabs';
-import Separator from '../components/Separator';
+import { Separator } from '../components/Separator';
 import { Switch } from '../components/Switch';
 import { Checkbox } from '../components/Checkbox';
 import { Toggle, toggleVariants } from '../components/Toggle';
@@ -361,6 +361,20 @@ export default function Playground() {
       </div>
 
       <h2 className="section-header">Slider</h2>
+      <div className="row">
+        <div className="example">
+          <div className="w-40 px-5">
+            <Slider
+              className="w-full"
+              defaultValue={[50]}
+              max={100}
+              step={1}
+            />
+          </div>
+        </div>
+      </div>
+
+      <h2 className="section-header">Accordion</h2>
       <div className="row">
         <div className="example">
           <div className="w-40 px-5">
