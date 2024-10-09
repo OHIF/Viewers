@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import { useDrag } from 'react-dnd';
 import { Icons } from '../Icons';
-import DisplaySetMessageListTooltip from '../DisplaySetMessageListTooltip';
+import { DisplaySetMessageListTooltip } from '../DisplaySetMessageListTooltip';
 import { TooltipTrigger, TooltipContent, TooltipProvider, Tooltip } from '../Tooltip';
 
 /**
@@ -291,4 +291,4 @@ Thumbnail.propTypes = {
   countIcon: PropTypes.string,
 };
 
-export default Thumbnail;
+export { Thumbnail };

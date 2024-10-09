@@ -41,6 +41,7 @@ import {
   Input,
   Switch,
   Checkbox,
+  Onboarding,
 } from './components';
 
 import { useNotification, NotificationProvider } from './contextProviders';
@@ -92,4 +93,5 @@ export {
   Slider,
   Input,
   Switch,
+  Onboarding,
 };

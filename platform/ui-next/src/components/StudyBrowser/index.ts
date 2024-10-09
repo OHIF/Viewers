@@ -1,2 +1,2 @@
-import StudyBrowser from './StudyBrowser';
-export default StudyBrowser;
+import { StudyBrowser } from './StudyBrowser';
+export { StudyBrowser };
