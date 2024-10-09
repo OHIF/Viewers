@@ -34,12 +34,10 @@ import initContextMenu from './initContextMenu';
 import initDoubleClick from './initDoubleClick';
 import initViewTiming from './utils/initViewTiming';
 import { colormaps } from './utils/colormaps';
-import getPositionPresentationId from './utils/presentations/getPositionPresentationId';
-import getLutPresentationId from './utils/presentations/getLutPresentationId';
-import getSegmentationPresentationId from './utils/presentations/getSegmentationPresentationId';
 import { SegmentationRepresentations } from '@cornerstonejs/tools/enums';
 import { useLutPresentationStore } from './stores/useLutPresentationStore';
 import { usePositionPresentationStore } from './stores/usePositionPresentationStore';
+import { useSegmentationPresentationStore } from './stores/useSegmentationPresentationStore';
 
 const { registerColormap } = csUtilities.colormap;
 
@@ -100,6 +98,14 @@ export default async function init({
   if (appConfig.showCPUFallbackMessage && cornerstone.getShouldUseCPURendering()) {
     _showCPURenderingModal(uiModalService, hangingProtocolService);
   }
+  const { lutPresentationStore, getPresentationId: getLutPresentationId } =
+    useLutPresentationStore.getState();
+
+  const { getPresentationId: getSegmentationPresentationId } =
+    useSegmentationPresentationStore.getState();
+
+  const { positionPresentationStore, getPresentationId: getPositionPresentationId } =
+    usePositionPresentationStore.getState();
 
   // register presentation id providers
   viewportGridService.addPresentationIdProvider(
@@ -159,9 +165,6 @@ export default async function init({
 
   initCineService(servicesManager);
   initStudyPrefetcherService(servicesManager);
-
-  const { lutPresentationStore } = useLutPresentationStore.getState();
-  const { positionPresentationStore } = usePositionPresentationStore.getState();
 
   // When a custom image load is performed, update the relevant viewports
   hangingProtocolService.subscribe(

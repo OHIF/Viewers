@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { LoadingIndicatorTotalPercent, useViewportGrid, ViewportActionArrows } from '@ohif/ui';
@@ -158,6 +157,7 @@ function OHIFCornerstoneSEGViewport(props: withAppTypes) {
       viewportId,
       displaySetInstanceUIDs: [referencedDisplaySet.displaySetInstanceUID],
     });
+    segmen;
   }, [viewportGridService, viewportId, referencedDisplaySet, segDisplaySet]);
 
   useEffect(() => {
