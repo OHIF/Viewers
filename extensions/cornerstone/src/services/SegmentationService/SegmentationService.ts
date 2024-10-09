@@ -26,7 +26,7 @@ import { ContourStyle, LabelmapStyle, SurfaceStyle } from '@cornerstonejs/tools/
 import { getSegmentation } from '@cornerstonejs/tools/segmentation/getSegmentation';
 import { MetadataModules } from '@cornerstonejs/core/enums';
 import { ImagePlaneModuleMetadata } from '@cornerstonejs/core/types';
-import { SegmentationPresentation } from '../../types/Presentation';
+import { SegmentationPresentation, SegmentationPresentationItem } from '../../types/Presentation';
 
 const LABELMAP = csToolsEnums.SegmentationRepresentations.Labelmap;
 const CONTOUR = csToolsEnums.SegmentationRepresentations.Contour;
@@ -89,11 +89,12 @@ class SegmentationService extends PubSubService {
   };
 
   private _segmentationIdToColorLUTIndexMap: Map<string, number>;
-  private _removedDisplaySetAndRepresentationMaps: Map<
+  private _segmentationRepresentationHydrationMaps: Map<
     string,
     {
       segmentationId: string;
       type: SegmentationRepresentations;
+      hydrated: boolean | null;
     }[]
   >;
   readonly servicesManager: AppTypes.ServicesManager;
@@ -104,7 +105,7 @@ class SegmentationService extends PubSubService {
     super(EVENTS);
 
     this._segmentationIdToColorLUTIndexMap = new Map();
-    this._removedDisplaySetAndRepresentationMaps = new Map();
+    this._segmentationRepresentationHydrationMaps = new Map();
 
     this.servicesManager = servicesManager;
 
@@ -212,8 +213,10 @@ class SegmentationService extends PubSubService {
     return segmentationsInfo;
   }
 
-  public getPresentation(viewportId, presentationId: string): SegmentationPresentation {
-    const segmentationPresentations: SegmentationPresentation = [];
+  public getPresentation(viewportId: string, presentationId: string): SegmentationPresentation[] {
+    const segmentationPresentations: SegmentationPresentation[] = [];
+    const segmentationsMap = new Map<string, SegmentationPresentationItem>();
+
     const segmentations = this.getSegmentationsInfo({ viewportId });
     for (const segmentation of segmentations) {
       const { segmentationId } = segmentation.segmentation;
@@ -225,7 +228,7 @@ class SegmentationService extends PubSubService {
 
       const { type } = representation;
 
-      segmentationPresentations.push({
+      segmentationsMap.set(segmentationId, {
         segmentationId,
         type,
         hydrated: true,
@@ -233,19 +236,22 @@ class SegmentationService extends PubSubService {
       });
     }
 
-    // check inside the removedDisplaySetAndRepresentationMaps to see if any of the representations are not hydrated
-    const removedRepresentations = this._removedDisplaySetAndRepresentationMaps.get(presentationId);
+    // Check inside the removedDisplaySetAndRepresentationMaps to see if any of the representations are not hydrated
+    const hydrationMap = this._segmentationRepresentationHydrationMaps.get(presentationId);
 
-    if (removedRepresentations) {
-      removedRepresentations.forEach(rep => {
-        segmentationPresentations.push({
+    if (hydrationMap) {
+      hydrationMap.forEach(rep => {
+        segmentationsMap.set(rep.segmentationId, {
           segmentationId: rep.segmentationId,
           type: rep.type,
-          hydrated: false,
+          hydrated: rep.hydrated,
           config: rep.config || {},
         });
       });
     }
+
+    // Convert the Map to an array
+    segmentationPresentations.push(...segmentationsMap.values());
 
     return segmentationPresentations;
   }
@@ -371,12 +377,11 @@ class SegmentationService extends PubSubService {
     if (!segmentation) {
       throw new Error(`Segmentation with segmentationId ${segmentationId} not found.`);
     }
-
-    this._updateRemovedDisplaySetAndRepresentationMaps(
-      viewportId,
-      [{ segmentationId, type: representationType }],
-      true // isAdding
-    );
+    // this._updateSegmentationRepresentationHydrationMap({
+    //   viewportId,
+    //   segmentations: [{ segmentationId, type: representationType }],
+    //   isAdding: true,
+    // });
 
     // does color lut exist in the
     const colorLUTIndex = this._segmentationIdToColorLUTIndexMap.get(segmentationId);
@@ -1070,14 +1075,14 @@ class SegmentationService extends PubSubService {
       viewportId,
       specifier
     );
-
-    if (!specifier.isCleanUp) {
-      this._updateRemovedDisplaySetAndRepresentationMaps(
-        viewportId,
-        removedSegRepresentations.map(({ segmentationId, type }) => ({ segmentationId, type })),
-        false // isAdding (i.e., removing)
-      );
-    }
+    // this._updateSegmentationRepresentationHydrationMap({
+    //   viewportId,
+    //   segmentations: removedSegRepresentations.map(({ segmentationId, type }) => ({
+    //     segmentationId,
+    //     type,
+    //   })),
+    //   isAdding: specifier.isCleanUp ? undefined : false,
+    // });
   }
 
   public getSegmentation(segmentationId: string) {
@@ -1503,45 +1508,58 @@ class SegmentationService extends PubSubService {
   };
 
   // Add this new method to the SegmentationService class
+  // public hydrateSEG(
+  //   displaySetInstanceUID: string,
+  //   { segmentationId, type }: { segmentationId: string; type: SegmentationRepresentations }
+  // ) {
+  //   this._updateSegmentationRepresentationHydrationMap({
+  //     presentationId: displaySetInstanceUID,
+  //     segmentations: [{ segmentationId, type }],
+  //     isAdding: true,
+  //   });
+  // }
 
-  private _updateRemovedDisplaySetAndRepresentationMaps(
-    viewportId: string,
-    segmentations: Array<{ segmentationId: string; type: SegmentationRepresentations }>,
-    isAdding: boolean
-  ): void {
+  private _updateSegmentationRepresentationHydrationMap({
+    viewportId,
+    presentationId,
+    segmentations,
+    isAdding,
+  }: {
+    viewportId?: string;
+    presentationId?: string;
+    segmentations: Array<{ segmentationId: string; type: SegmentationRepresentations }>;
+    isAdding?: boolean;
+  }): void {
     if (!segmentations.length) {
       return;
     }
 
-    const { viewportGridService } = this.servicesManager.services;
-    const viewportState = viewportGridService.getViewportState(viewportId);
-    const { presentationIds } = viewportState.viewportOptions;
-    const presentationId = presentationIds.segmentationPresentationId;
-
-    if (isAdding) {
-      // Logic for adding
-      if (this._removedDisplaySetAndRepresentationMaps.has(presentationId)) {
-        const representations = this._removedDisplaySetAndRepresentationMaps.get(presentationId);
-        segmentations.forEach(({ segmentationId, type }) => {
-          const index = representations.findIndex(
-            rep => rep.segmentationId === segmentationId && rep.type === type
-          );
-          if (index !== -1) {
-            representations.splice(index, 1);
-          }
-        });
-        if (representations.length === 0) {
-          this._removedDisplaySetAndRepresentationMaps.delete(presentationId);
-        }
-      }
-    } else {
-      // Logic for removing
-      if (!this._removedDisplaySetAndRepresentationMaps.has(presentationId)) {
-        this._removedDisplaySetAndRepresentationMaps.set(presentationId, []);
-      }
-      const representations = this._removedDisplaySetAndRepresentationMaps.get(presentationId);
-      representations.push(...segmentations);
+    if (!presentationId) {
+      const { viewportGridService } = this.servicesManager.services;
+      const viewportState = viewportGridService.getViewportState(viewportId);
+      const { presentationIds } = viewportState.viewportOptions;
+      presentationId = presentationIds.segmentationPresentationId;
     }
+
+    if (!this._segmentationRepresentationHydrationMaps.has(presentationId)) {
+      this._segmentationRepresentationHydrationMaps.set(presentationId, []);
+    }
+
+    const hydrationMap = this._segmentationRepresentationHydrationMaps.get(presentationId);
+
+    segmentations.forEach(({ segmentationId, type }) => {
+      const existingIndex = hydrationMap.findIndex(
+        item => item.segmentationId === segmentationId && item.type === type
+      );
+
+      if (existingIndex !== -1) {
+        // Update existing entry
+        hydrationMap[existingIndex].hydrated = isAdding;
+      } else if (isAdding) {
+        // Add new entry only if isAdding is true
+        hydrationMap.push({ segmentationId, type, hydrated: true });
+      }
+    });
   }
 }
 

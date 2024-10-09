@@ -5,6 +5,7 @@ import { LoadingIndicatorTotalPercent, useViewportGrid, ViewportActionArrows } f
 import createSEGToolGroupAndAddTools from '../utils/initSEGToolGroup';
 import promptHydrateSEG from '../utils/promptHydrateSEG';
 import _getStatusComponent from './_getStatusComponent';
+import { SegmentationRepresentations } from '@cornerstonejs/tools/enums';
 
 const SEG_TOOLGROUP_BASE_NAME = 'SEGToolGroup';
 
@@ -147,13 +148,15 @@ function OHIFCornerstoneSEGViewport(props: withAppTypes) {
     [selectedSegment]
   );
 
-  const setDisplaySetsForViewport = useCallback(() => {
+  const hydrateSEG = useCallback(() => {
+    const referencedDisplaySetInstanceUID = segDisplaySet.referencedDisplaySetInstanceUID;
+    segmentationService.hydrateSEG(referencedDisplaySetInstanceUID, {
+      segmentationId: segDisplaySet.displaySetInstanceUID,
+      type: SegmentationRepresentations.Labelmap,
+    });
     viewportGridService.setDisplaySetsForViewport({
       viewportId,
-      displaySetInstanceUIDs: [
-        referencedDisplaySet.displaySetInstanceUID,
-        segDisplaySet.displaySetInstanceUID,
-      ],
+      displaySetInstanceUIDs: [referencedDisplaySet.displaySetInstanceUID],
     });
   }, [viewportGridService, viewportId, referencedDisplaySet, segDisplaySet]);
 
@@ -167,17 +170,17 @@ function OHIFCornerstoneSEGViewport(props: withAppTypes) {
       viewportId,
       segDisplaySet,
       preHydrateCallbacks: [storePresentationState],
-      hydrateCallback: setDisplaySetsForViewport,
+      hydrateCallback: hydrateSEG,
     }).then(isHydrated => {
       if (isHydrated) {
         setIsHydrated(true);
       }
     });
-  }, [servicesManager, viewportId, segDisplaySet, segIsLoading, setDisplaySetsForViewport]);
+  }, [servicesManager, viewportId, segDisplaySet, segIsLoading, hydrateSEG]);
 
   useEffect(() => {
     // on new seg display set, remove all segmentations from all viewports
-    segmentationService.removeSegmentationRepresentations(viewportId);
+    segmentationService.clearSegmentationRepresentations(viewportId);
 
     const { unsubscribe } = segmentationService.subscribe(
       segmentationService.EVENTS.SEGMENTATION_LOADING_COMPLETE,
@@ -239,7 +242,7 @@ function OHIFCornerstoneSEGViewport(props: withAppTypes) {
     }
     // always start fresh for this viewport since it is special type of viewport
     // that should only show one segmentation at a time.
-    segmentationService.removeSegmentationRepresentations(viewportId);
+    segmentationService.clearSegmentationRepresentations(viewportId);
 
     // This creates a custom tool group which has the lifetime of this view
     // only, and does NOT interfere with currently displayed segmentations.
@@ -248,7 +251,7 @@ function OHIFCornerstoneSEGViewport(props: withAppTypes) {
     return () => {
       // remove the segmentation representations if seg displayset changed
       // e.g., another seg displayset is dragged into the viewport
-      segmentationService.removeSegmentationRepresentations(viewportId);
+      segmentationService.clearSegmentationRepresentations(viewportId);
 
       // Only destroy the viewport specific implementation
       toolGroupService.destroyToolGroup(toolGroupId);
@@ -263,8 +266,8 @@ function OHIFCornerstoneSEGViewport(props: withAppTypes) {
     // presentation state (w/l and invert) and then opens the SEG. If we don't store
     // the presentation state, the viewport will be reset to the default presentation
     storePresentationState();
-    setDisplaySetsForViewport();
-  }, [storePresentationState, setDisplaySetsForViewport]);
+    hydrateSEG();
+  }, [storePresentationState, hydrateSEG]);
 
   useEffect(() => {
     viewportActionCornersService.addComponents([
@@ -343,13 +346,6 @@ function OHIFCornerstoneSEGViewport(props: withAppTypes) {
     </>
   );
 }
-
-OHIFCornerstoneSEGViewport.propTypes = {
-  displaySets: PropTypes.arrayOf(PropTypes.object),
-  viewportId: PropTypes.string.isRequired,
-  dataSource: PropTypes.object,
-  children: PropTypes.node,
-};
 
 function _getReferencedDisplaySetMetadata(referencedDisplaySet, segDisplaySet) {
   const { SharedFunctionalGroupsSequence } = segDisplaySet.instance;

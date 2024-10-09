@@ -26,23 +26,6 @@ export const only3D = {
       ],
     },
   },
-  overlaySelectors: {
-    appLabelmap: {
-      matchingRules: [
-        {
-          weight: 1,
-          attribute: 'FrameOfReferenceUID',
-          from: 'segmentation',
-          constraint: {
-            equals: {
-              attribute: 'FrameOfReferenceUID',
-              from: 'viewport',
-            },
-          },
-        },
-      ],
-    },
-  },
   stages: [
     {
       id: 'only3DStage',
@@ -74,12 +57,6 @@ export const only3D = {
                   default: 'CT-Bone',
                 },
               },
-            },
-          ],
-          overlays: [
-            {
-              id: 'appLabelmap',
-              options: { type: 'surface' },
             },
           ],
         },

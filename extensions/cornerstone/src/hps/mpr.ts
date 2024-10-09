@@ -30,23 +30,6 @@ export const mpr: Types.HangingProtocol.Protocol = {
       ],
     },
   },
-  overlaySelectors: {
-    appLabelmap: {
-      matchingRules: [
-        {
-          weight: 1,
-          attribute: 'FrameOfReferenceUID',
-          from: 'segmentation',
-          constraint: {
-            equals: {
-              attribute: 'FrameOfReferenceUID',
-              from: 'viewport',
-            },
-          },
-        },
-      ],
-    },
-  },
   stages: [
     {
       name: 'MPR 1x3',
@@ -104,12 +87,6 @@ export const mpr: Types.HangingProtocol.Protocol = {
               id: 'activeDisplaySet',
             },
           ],
-          overlays: [
-            {
-              id: 'appLabelmap',
-              options: {},
-            },
-          ],
         },
         {
           viewportOptions: {
@@ -137,12 +114,6 @@ export const mpr: Types.HangingProtocol.Protocol = {
               id: 'activeDisplaySet',
             },
           ],
-          overlays: [
-            {
-              id: 'appLabelmap',
-              options: {},
-            },
-          ],
         },
         {
           viewportOptions: {
@@ -168,12 +139,6 @@ export const mpr: Types.HangingProtocol.Protocol = {
           displaySets: [
             {
               id: 'activeDisplaySet',
-            },
-          ],
-          overlays: [
-            {
-              id: 'appLabelmap',
-              options: {},
             },
           ],
         },

@@ -1,4 +1,4 @@
-import { utilities } from '@cornerstonejs/core';
+import { cache, utilities } from '@cornerstonejs/core';
 import { utilities as cstUtils } from '@cornerstonejs/tools';
 import { vec3 } from 'gl-matrix';
 import vtkImageData from '@kitware/vtk.js/Common/DataModel/ImageData';
@@ -29,10 +29,14 @@ const createVolume = ({ dimensions, origin, direction, spacing, metadata, scalar
   });
   return {
     imageData,
+    spacing,
+    origin,
+    direction,
     metadata,
     voxelManager,
   };
 };
+
 /**
  * This method calculates the SUV peak on a segmented ROI from a reference PET
  * volume. If a rectangle annotation is provided, the peak is calculated within that
@@ -142,8 +146,68 @@ function calculateSuvPeak({ labelmapProps, referenceVolumeProps, annotations, se
   };
 }
 
+function calculateTMTV(labelmapProps, segmentIndex = 1) {
+  const labelmaps = labelmapProps.map(props => createVolume(props));
+
+  const mergedLabelmap =
+    labelmaps.length === 1
+      ? labelmaps[0]
+      : cstUtils.segmentation.createMergedLabelmapForIndex(labelmaps);
+
+  const { imageData, spacing } = mergedLabelmap;
+  const values = imageData.getPointData().getScalars().getData();
+
+  // count non-zero values inside the outputData, this would
+  // consider the overlapping regions to be only counted once
+  const numVoxels = values.reduce((acc, curr) => {
+    if (curr > 0) {
+      return acc + 1;
+    }
+    return acc;
+  }, 0);
+
+  return 1e-3 * numVoxels * spacing[0] * spacing[1] * spacing[2];
+}
+
+function getTotalLesionGlycolysis(labelmapProps) {
+  const labelmaps = labelmapProps.map(props => createVolume(props));
+
+  const mergedLabelmap =
+    labelmaps.length === 1
+      ? labelmaps[0]
+      : cstUtils.segmentation.createMergedLabelmapForIndex(labelmaps);
+
+  // grabbing the first labelmap referenceVolume since it will be the same for all
+  const { referencedVolumeId, spacing } = labelmaps[0];
+
+  if (!referencedVolumeId) {
+    console.error('commandsModule::getTotalLesionGlycolysis:No referencedVolumeId found');
+  }
+
+  const ptVolume = cache.getVolume(referencedVolumeId);
+
+  let suv = 0;
+  let totalLesionVoxelCount = 0;
+  const scalarDataLength = mergedLabelmap.voxelManager.getScalarDataLength();
+  for (let i = 0; i < scalarDataLength; i++) {
+    // if not background
+    if (mergedLabelmap.voxelManager.getAtIndex(i) !== 0) {
+      suv += ptVolume.voxelManager.getAtIndex(i);
+      totalLesionVoxelCount += 1;
+    }
+  }
+
+  // Average SUV for the merged labelmap
+  const averageSuv = suv / totalLesionVoxelCount;
+
+  // total Lesion Glycolysis [suv * ml]
+  return averageSuv * totalLesionVoxelCount * spacing[0] * spacing[1] * spacing[2] * 1e-3;
+}
+
 const obj = {
   calculateSuvPeak,
+  calculateTMTV,
+  getTotalLesionGlycolysis,
 };
 
 expose(obj);

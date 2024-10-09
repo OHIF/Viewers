@@ -19,9 +19,12 @@ export function getViewportPresentations(
     };
   }
   const { lutPresentationId, positionPresentationId, segmentationPresentationId } = presentationIds;
+  const positionPresentation = positionPresentationStore[positionPresentationId];
+  const lutPresentation = lutPresentationStore[lutPresentationId];
+  const segmentationPresentation = segmentationPresentationStore[segmentationPresentationId];
 
   return {
-    positionPresentation: positionPresentationStore[positionPresentationId],
+    positionPresentation,
     lutPresentation: lutPresentationStore[lutPresentationId],
     segmentationPresentation: segmentationPresentationStore[segmentationPresentationId],
   };

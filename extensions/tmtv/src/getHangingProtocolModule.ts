@@ -331,7 +331,7 @@ const ptCT: AppTypes.HangingProtocol.Protocol = {
     },
   },
   overlaySelectors: {
-    appLabelmap: {
+    sharedLabelmap: {
       matchingRules: [
         {
           weight: 1,

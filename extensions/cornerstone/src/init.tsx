@@ -37,6 +37,7 @@ import { colormaps } from './utils/colormaps';
 import getPositionPresentationId from './utils/presentations/getPositionPresentationId';
 import getLutPresentationId from './utils/presentations/getLutPresentationId';
 import getSegmentationPresentationId from './utils/presentations/getSegmentationPresentationId';
+import { SegmentationRepresentations } from '@cornerstonejs/tools/enums';
 
 const { registerColormap } = csUtilities.colormap;
 
@@ -138,10 +139,26 @@ export default async function init({
   // the segmentation representation.
   stateSyncService.register('segmentationPresentationStore', {
     clearOnModeExit: true,
+    methods: {
+      updateSegmentationPresentation: (state, viewportId, segmentationPresentation) => ({
+        ...state,
+        [viewportId]: segmentationPresentation,
+      }),
+      addSegmentationToViewport: (state, viewportId, segmentationId, representationType) => {
+        const currentPresentation = state[viewportId] || [];
+        return {
+          ...state,
+          [viewportId]: [
+            ...currentPresentation,
+            { segmentationId, type: representationType, hydrated: true },
+          ],
+        };
+      },
+    },
   });
 
   cornerstoneTools.segmentation.config.style.setStyle(
-    { type: 'Contour' },
+    { type: SegmentationRepresentations.Contour },
     {
       renderFill: false,
     }

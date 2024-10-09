@@ -5,6 +5,8 @@ const EVENTS = {};
 
 type Obj = Record<string, unknown>;
 
+type StateMethod = (...args: any[]) => any;
+
 type StateConfig = {
   /** clearOnModeExit defines state configuration that is cleared automatically on
    * exiting a mode.  This clearing occurs after the mode onModeExit,
@@ -12,6 +14,7 @@ type StateConfig = {
    * later.
    */
   clearOnModeExit?: boolean;
+  methods?: Record<string, StateMethod>;
 };
 
 type States = {
@@ -34,6 +37,9 @@ export default class StateSyncService extends PubSubService {
     [id: string]: StateConfig;
   } = {};
   state: States = {};
+  storeMethods: {
+    [id: string]: Record<string, StateMethod>;
+  } = {};
 
   constructor({ configuration }) {
     super(EVENTS);
@@ -51,6 +57,18 @@ export default class StateSyncService extends PubSubService {
   public register(id: string, config: StateConfig): void {
     this.registeredStateSets[id] = config;
     this.store({ [id]: {} });
+
+    if (config.methods) {
+      this.storeMethods[id] = {};
+      Object.entries(config.methods).forEach(([methodName, method]) => {
+        this.storeMethods[id][methodName] = (...args: any[]) => {
+          const currentState = this.state[id];
+          const updatedState = method(currentState, ...args);
+          this.store({ [id]: updatedState });
+          return updatedState;
+        };
+      });
+    }
   }
 
   public getState(): Record<string, Obj> {

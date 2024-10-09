@@ -95,9 +95,9 @@ function OHIFCornerstoneRTViewport(props: withAppTypes) {
   }, [viewportGrid]);
 
   const hydrateRTDisplaySet = ({ rtDisplaySet, viewportId }) => {
-    commandsManager.runCommand('loadSegmentationDisplaySetsForViewport', {
-      displaySets: [rtDisplaySet],
+    viewportGridService.setDisplaySetsForViewport({
       viewportId,
+      displaySetInstanceUIDs: [referencedDisplaySet.displaySetInstanceUID],
     });
   };
 
@@ -262,6 +262,22 @@ function OHIFCornerstoneRTViewport(props: withAppTypes) {
     };
   }, [rtDisplaySet]);
 
+  const onStatusClick = useCallback(async () => {
+    // Before hydrating a RT and make it added to all viewports in the grid
+    // that share the same frameOfReferenceUID, we need to store the viewport grid
+    // presentation state, so that we can restore it after hydrating the RT. This is
+    // required if the user has changed the viewport (other viewport than RT viewport)
+    // presentation state (w/l and invert) and then opens the RT. If we don't store
+    // the presentation state, the viewport will be reset to the default presentation
+    storePresentationState();
+    const isHydrated = await hydrateRTDisplaySet({
+      rtDisplaySet,
+      viewportId,
+    });
+
+    setIsHydrated(isHydrated);
+  }, [hydrateRTDisplaySet, rtDisplaySet, storePresentationState, viewportId]);
+
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   let childrenWithProps = null;
 
@@ -284,22 +300,6 @@ function OHIFCornerstoneRTViewport(props: withAppTypes) {
       );
     });
   }
-
-  const onStatusClick = useCallback(async () => {
-    // Before hydrating a RT and make it added to all viewports in the grid
-    // that share the same frameOfReferenceUID, we need to store the viewport grid
-    // presentation state, so that we can restore it after hydrating the RT. This is
-    // required if the user has changed the viewport (other viewport than RT viewport)
-    // presentation state (w/l and invert) and then opens the RT. If we don't store
-    // the presentation state, the viewport will be reset to the default presentation
-    storePresentationState();
-    const isHydrated = await hydrateRTDisplaySet({
-      rtDisplaySet,
-      viewportId,
-    });
-
-    setIsHydrated(isHydrated);
-  }, [hydrateRTDisplaySet, rtDisplaySet, storePresentationState, viewportId]);
 
   useEffect(() => {
     viewportActionCornersService.addComponents([

@@ -3,14 +3,12 @@ import * as cs from '@cornerstonejs/core';
 import * as csTools from '@cornerstonejs/tools';
 import { classes } from '@ohif/core';
 import getThresholdValues from './utils/getThresholdValue';
-import calculateTMTV from './utils/calculateTMTV';
 import createAndDownloadTMTVReport from './utils/createAndDownloadTMTVReport';
 
 import dicomRTAnnotationExport from './utils/dicomRTAnnotationExport/RTStructureSet';
 
 import { getWebWorkerManager } from '@cornerstonejs/core';
 import { Enums } from '@cornerstonejs/tools';
-import { IVolume } from '@cornerstonejs/core/types';
 
 const { SegmentationRepresentations } = Enums;
 
@@ -38,6 +36,28 @@ const workerFn = () => {
   });
 };
 
+function getVolumesFromSegmentation(segmentationId) {
+  const csSegmentation = csTools.segmentation.state.getSegmentation(segmentationId);
+  const labelmapData = csSegmentation.representationData[
+    SegmentationRepresentations.Labelmap
+  ] as csTools.Types.LabelmapToolOperationDataVolume;
+
+  const { volumeId, referencedVolumeId } = labelmapData;
+  const labelmapVolume = cs.cache.getVolume(volumeId);
+  const referencedVolume = cs.cache.getVolume(referencedVolumeId);
+
+  return { labelmapVolume, referencedVolume };
+}
+
+function getLabelmapVolumeFromSegmentation(segmentation) {
+  const { representationData } = segmentation;
+  const { volumeId } = representationData[
+    SegmentationRepresentations.Labelmap
+  ] as csTools.Types.LabelmapToolOperationDataVolume;
+
+  return cs.cache.getVolume(volumeId);
+}
+
 const commandsModule = ({ servicesManager, commandsManager, extensionManager }: withAppTypes) => {
   const {
     viewportGridService,
@@ -60,20 +80,6 @@ const commandsModule = ({ servicesManager, commandsManager, extensionManager }: 
     const { element } = getEnabledElement(activeViewportId) || {};
     const enabledElement = cs.getEnabledElement(element);
     return enabledElement;
-  }
-
-  function _getMatchedViewportIds() {
-    const { viewportMatchDetails } = hangingProtocolService.getMatchDetails();
-    const viewportIds = [];
-    viewportMatchDetails.forEach(viewport => {
-      const { viewportOptions } = viewport;
-      const { viewportId } = viewportOptions;
-      if (viewportIds.indexOf(viewportId) === -1) {
-        viewportIds.push(viewportId);
-      }
-    });
-
-    return viewportIds;
   }
 
   function _getAnnotationsSelectedByToolNames(toolNames) {
@@ -283,11 +289,19 @@ const commandsModule = ({ servicesManager, commandsManager, extensionManager }: 
         { overwrite: true, segmentIndex }
       );
     },
-    calculateSuvPeak: async ({ segmentation, labelmap, segmentIndex }) => {
+    calculateSuvPeak: async ({ segmentationId, segmentIndex }) => {
+      const segmentation = segmentationService.getSegmentation(segmentationId);
+
+      const { representationData } = segmentation;
+      const { volumeId, referencedVolumeId } = representationData[
+        SegmentationRepresentations.Labelmap
+      ] as csTools.Types.LabelmapToolOperationDataVolume;
+
+      const labelmap = cs.cache.getVolume(volumeId);
+      const referencedVolume = cs.cache.getVolume(referencedVolumeId);
+
       // if we put it in the top, it will appear in other modes
       workerManager.registerWorker('suv-peak-worker', workerFn, options);
-
-      const referencedVolume = segmentationService.getLabelmapReferencedVolume(segmentation.id);
 
       const annotationUIDs = _getAnnotationsSelectedByToolNames(ROI_THRESHOLD_MANUAL_TOOL_IDS);
 
@@ -331,12 +345,13 @@ const commandsModule = ({ servicesManager, commandsManager, extensionManager }: 
         };
       });
 
-      const suvPeak = await workerManager.executeTask('suv-peak-worker', 'calculateSuvPeak', {
-        labelmapProps,
-        referenceVolumeProps,
-        annotations: annotationsToSend,
-        segmentIndex,
-      });
+      const suvPeak =
+        (await workerManager.executeTask('suv-peak-worker', 'calculateSuvPeak', {
+          labelmapProps,
+          referenceVolumeProps,
+          annotations: annotationsToSend,
+          segmentIndex,
+        })) || {};
 
       return {
         suvPeak: suvPeak.mean,
@@ -345,9 +360,9 @@ const commandsModule = ({ servicesManager, commandsManager, extensionManager }: 
         suvMaxLPS: suvPeak.maxLPS,
       };
     },
-    getLesionStats: ({ segmentation, labelmap, segmentIndex = 1 }) => {
-      const { voxelManager: segVoxelManager, imageData, spacing } = labelmap as IVolume;
-      const referencedVolume = segmentationService.getLabelmapReferencedVolume(segmentation.id);
+    getLesionStats: ({ segmentationId, segmentIndex = 1 }) => {
+      const { labelmapVolume, referencedVolume } = getVolumesFromSegmentation(segmentationId);
+      const { voxelManager: segVoxelManager, imageData, spacing } = labelmapVolume;
       const { voxelManager: refVoxelManager } = referencedVolume;
 
       let segmentationMax = -Infinity;
@@ -391,14 +406,23 @@ const commandsModule = ({ servicesManager, commandsManager, extensionManager }: 
         lesionGlyoclysisStats: volume * meanValue,
       };
     },
-    calculateTMTV: ({ segmentations }) => {
-      const labelmaps = segmentations.map(s => segmentationService.getLabelmapVolume(s.id));
+    calculateTMTV: async ({ segmentations }) => {
+      const labelmapProps = segmentations.map(segmentation => {
+        const labelmap = getLabelmapVolumeFromSegmentation(segmentation);
+        return {
+          dimensions: labelmap.dimensions,
+          spacing: labelmap.spacing,
+          scalarData: labelmap.voxelManager.getCompleteScalarDataArray(),
+          origin: labelmap.origin,
+          direction: labelmap.direction,
+        };
+      });
 
-      if (!labelmaps.length) {
+      if (!labelmapProps.length) {
         return;
       }
 
-      return calculateTMTV(labelmaps);
+      return await workerManager.executeTask('suv-peak-worker', 'calculateTMTV', labelmapProps);
     },
     exportTMTVReportCSV: ({ segmentations, tmtv, config, options }) => {
       const segReport = commandsManager.runCommand('getSegmentationCSVReport', {
@@ -420,51 +444,36 @@ const commandsModule = ({ servicesManager, commandsManager, extensionManager }: 
 
       createAndDownloadTMTVReport(segReport, additionalReportRows, options);
     },
-    getTotalLesionGlycolysis: ({ segmentations }) => {
-      const labelmapVolumes = segmentations.map(s => segmentationService.getLabelmapVolume(s.id));
+    getTotalLesionGlycolysis: async ({ segmentations }) => {
+      const labelmapProps = segmentations.map(segmentation => {
+        const labelmap = getLabelmapVolumeFromSegmentation(segmentation);
+        return {
+          dimensions: labelmap.dimensions,
+          spacing: labelmap.spacing,
+          scalarData: labelmap.voxelManager.getCompleteScalarDataArray(),
+          origin: labelmap.origin,
+          direction: labelmap.direction,
+        };
+      });
 
-      let mergedLabelmap;
-      // merge labelmap will through an error if labels maps are not the same size
-      // or same direction or ....
-      try {
-        mergedLabelmap =
-          csTools.utilities.segmentation.createMergedLabelmapForIndex(labelmapVolumes);
-      } catch (e) {
-        console.error('commandsModule::getTotalLesionGlycolysis', e);
-        return;
-      }
-
-      // grabbing the first labelmap referenceVolume since it will be the same for all
-      const { referencedVolumeId, spacing } = labelmapVolumes[0];
-
-      if (!referencedVolumeId) {
-        console.error('commandsModule::getTotalLesionGlycolysis:No referencedVolumeId found');
-      }
+      const { referencedVolumeId } = getVolumesFromSegmentation(segmentations[0].id);
 
       const ptVolume = cs.cache.getVolume(referencedVolumeId);
-      const mergedLabelData = mergedLabelmap.getScalarData();
 
-      if (mergedLabelData.length !== ptVolume.getScalarData().length) {
-        console.error(
-          'commandsModule::getTotalLesionGlycolysis:Labelmap and ptVolume are not the same size'
-        );
-      }
+      const ptVolumeProps = {
+        dimensions: ptVolume.dimensions,
+        spacing: ptVolume.spacing,
+        scalarData: ptVolume.voxelManager.getCompleteScalarDataArray(),
+        origin: ptVolume.origin,
+        direction: ptVolume.direction,
+      };
 
-      let suv = 0;
-      let totalLesionVoxelCount = 0;
-      for (let i = 0; i < mergedLabelData.length; i++) {
-        // if not background
-        if (mergedLabelData[i] !== 0) {
-          suv += ptVolume.getScalarData()[i];
-          totalLesionVoxelCount += 1;
-        }
-      }
+      debugger;
 
-      // Average SUV for the merged labelmap
-      const averageSuv = suv / totalLesionVoxelCount;
-
-      // total Lesion Glycolysis [suv * ml]
-      return averageSuv * totalLesionVoxelCount * spacing[0] * spacing[1] * spacing[2] * 1e-3;
+      return await workerManager.executeTask('suv-peak-worker', 'getTotalLesionGlycolysis', {
+        labelmaps: labelmapProps,
+        ptVolume: ptVolumeProps,
+      });
     },
     setStartSliceForROIThresholdTool: () => {
       const { viewport } = _getActiveViewportsEnabledElement();
@@ -478,7 +487,7 @@ const commandsModule = ({ servicesManager, commandsManager, extensionManager }: 
 
       const annotation = csTools.annotation.state.getAnnotation(annotationUID);
 
-      // set the current focalpoint
+      // set the current focal point
       annotation.data.startCoordinate = focalPoint;
       // IMPORTANT: invalidate the toolData for the cached stat to get updated
       // and re-calculate the projection points
@@ -496,7 +505,7 @@ const commandsModule = ({ servicesManager, commandsManager, extensionManager }: 
 
       const annotation = csTools.annotation.state.getAnnotation(annotationUID);
 
-      // get the current focalpoint
+      // get the current focal point
       const focalPointToEnd = viewport.getCamera().focalPoint;
       annotation.data.endCoordinate = focalPointToEnd;
 
@@ -528,33 +537,41 @@ const commandsModule = ({ servicesManager, commandsManager, extensionManager }: 
     },
     getSegmentationCSVReport: ({ segmentations }) => {
       if (!segmentations || !segmentations.length) {
-        segmentations = segmentationService.getSegmentationRepresentations();
+        const segmentationsInfo = segmentationService.getSegmentationsInfo();
+        segmentations = segmentationsInfo.map(({ segmentation }) => segmentation);
       }
 
       const report = {};
 
       for (const segmentation of segmentations) {
-        const { id, label, cachedStats: data } = segmentation;
+        const { label, segmentationId, representationData } =
+          segmentation as csTools.Types.Segmentation;
+        const id = segmentationId;
 
         const segReport = { id, label };
 
-        if (!data) {
+        if (!representationData) {
           report[id] = segReport;
           continue;
         }
 
-        Object.keys(data).forEach(key => {
-          if (typeof data[key] !== 'object') {
-            segReport[key] = data[key];
-          } else {
-            Object.keys(data[key]).forEach(subKey => {
-              const newKey = `${key}_${subKey}`;
-              segReport[newKey] = data[key][subKey];
-            });
-          }
-        });
+        const { cachedStats } = segmentation.segments[1] || {}; // Assuming we want stats from the first segment
 
-        const labelmapVolume = segmentationService.getLabelmapVolume(id);
+        if (cachedStats) {
+          Object.entries(cachedStats).forEach(([key, value]) => {
+            if (typeof value !== 'object') {
+              segReport[key] = value;
+            } else {
+              Object.entries(value).forEach(([subKey, subValue]) => {
+                const newKey = `${key}_${subKey}`;
+                segReport[newKey] = subValue;
+              });
+            }
+          });
+        }
+
+        const labelmapVolume =
+          segmentation.representationData[SegmentationRepresentations.Labelmap];
 
         if (!labelmapVolume) {
           report[id] = segReport;
@@ -562,10 +579,8 @@ const commandsModule = ({ servicesManager, commandsManager, extensionManager }: 
         }
 
         const referencedVolumeId = labelmapVolume.referencedVolumeId;
-        segReport.referencedVolumeId = referencedVolumeId;
 
-        const referencedVolume =
-          segmentationService.getLabelmapReferencedVolume(referencedVolumeId);
+        const referencedVolume = cs.cache.getVolume(referencedVolumeId);
 
         if (!referencedVolume) {
           report[id] = segReport;

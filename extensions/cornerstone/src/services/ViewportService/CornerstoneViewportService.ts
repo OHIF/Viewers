@@ -829,39 +829,39 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
       return { properties, volumeId };
     });
 
-    const { imageIds: overlayReferenceVolumeImageIds } =
-      this._processOverlaysForViewport(viewport) || {};
+    // For SEG and RT viewports
+    this._processOverlaysForViewport(viewport);
 
     // Always load the reference volume if the displaySet is an overlay
     // This occurs in the preview SEG since we handle SEG via segmentation state directly
     // for hydrated segs
-    if (overlayReferenceVolumeImageIds) {
-      // we should check if the overlay reference volume image ids are already in the volumeInputArray
-      // if they are not, then we need to add them
-      const refStr = overlayReferenceVolumeImageIds.join(',');
-      const refVolumeInput = volumeInputArray.find(
-        volumeInput => volumeInput.imageIds.join(',') === refStr
-      );
-      if (!refVolumeInput) {
-        // create and load the volume
-        const displaySet = displaySetService.getDisplaySetByUID(displaySetUIDs[0]);
-        const volumeId = `${VOLUME_LOADER_SCHEME}:${displaySet.referencedDisplaySetInstanceUID}`;
+    // if (overlayReferenceVolumeImageIds) {
+    //   // we should check if the overlay reference volume image ids are already in the volumeInputArray
+    //   // if they are not, then we need to add them
+    //   const refStr = overlayReferenceVolumeImageIds.join(',');
+    //   const refVolumeInput = volumeInputArray.find(
+    //     volumeInput => volumeInput.imageIds.join(',') === refStr
+    //   );
+    //   if (!refVolumeInput) {
+    //     // create and load the volume
+    //     const displaySet = displaySetService.getDisplaySetByUID(displaySetUIDs[0]);
+    //     const volumeId = `${VOLUME_LOADER_SCHEME}:${displaySet.referencedDisplaySetInstanceUID}`;
 
-        const volume = cache.getVolume(volumeId);
+    //     const volume = cache.getVolume(volumeId);
 
-        if (!volume) {
-          await volumeLoader.createAndCacheVolume(volumeId, {
-            imageIds: overlayReferenceVolumeImageIds,
-          });
-        }
+    //     if (!volume) {
+    //       await volumeLoader.createAndCacheVolume(volumeId, {
+    //         imageIds: overlayReferenceVolumeImageIds,
+    //       });
+    //     }
 
-        volumeInputArray.push({
-          volumeId,
-          imageIds: overlayReferenceVolumeImageIds,
-          blendMode: displaySetOptions[0].blendMode,
-        });
-      }
-    }
+    //     volumeInputArray.push({
+    //       volumeId,
+    //       imageIds: overlayReferenceVolumeImageIds,
+    //       blendMode: displaySetOptions[0].blendMode,
+    //     });
+    //   }
+    // }
 
     await viewport.setVolumes(volumeInputArray);
 

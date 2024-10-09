@@ -33,7 +33,7 @@ const ctAXIAL: AppTypes.HangingProtocol.Viewport = {
   ],
   overlays: [
     {
-      id: 'appLabelmap',
+      id: 'sharedLabelmap',
     },
   ],
 };
@@ -69,7 +69,7 @@ const ctSAGITTAL: AppTypes.HangingProtocol.Viewport = {
   ],
   overlays: [
     {
-      id: 'appLabelmap',
+      id: 'sharedLabelmap',
     },
   ],
 };
@@ -104,7 +104,7 @@ const ctCORONAL: AppTypes.HangingProtocol.Viewport = {
   ],
   overlays: [
     {
-      id: 'appLabelmap',
+      id: 'sharedLabelmap',
     },
   ],
 };
@@ -160,7 +160,7 @@ const ptAXIAL: AppTypes.HangingProtocol.Viewport = {
   ],
   overlays: [
     {
-      id: 'appLabelmap',
+      id: 'sharedLabelmap',
     },
   ],
 };
@@ -212,7 +212,7 @@ const ptSAGITTAL: AppTypes.HangingProtocol.Viewport = {
   ],
   overlays: [
     {
-      id: 'appLabelmap',
+      id: 'sharedLabelmap',
     },
   ],
 };
@@ -264,7 +264,7 @@ const ptCORONAL: AppTypes.HangingProtocol.Viewport = {
   ],
   overlays: [
     {
-      id: 'appLabelmap',
+      id: 'sharedLabelmap',
     },
   ],
 };
@@ -335,7 +335,7 @@ const fusionAXIAL: AppTypes.HangingProtocol.Viewport = {
   ],
   overlays: [
     {
-      id: 'appLabelmap',
+      id: 'sharedLabelmap',
     },
   ],
 };
@@ -406,7 +406,7 @@ const fusionSAGITTAL = {
   ],
   overlays: [
     {
-      id: 'appLabelmap',
+      id: 'sharedLabelmap',
     },
   ],
 };
@@ -477,7 +477,7 @@ const fusionCORONAL = {
   ],
   overlays: [
     {
-      id: 'appLabelmap',
+      id: 'sharedLabelmap',
     },
   ],
 };
@@ -534,7 +534,7 @@ const mipSAGITTAL: AppTypes.HangingProtocol.Viewport = {
   ],
   // overlays: [
   //   {
-  //     id: 'appLabelmap',
+  //     id: 'sharedLabelmap',
   //   },
   // ],
 };

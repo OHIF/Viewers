@@ -43,24 +43,6 @@ const hpMN: Types.HangingProtocol.Protocol = {
       ],
     },
   },
-  overlaySelectors: {
-    appLabelmap: {
-      matchingRules: [
-        {
-          weight: 1,
-          attribute: 'FrameOfReferenceUID',
-          from: 'segmentation',
-          constraint: {
-            equals: {
-              attribute: 'FrameOfReferenceUID',
-              from: 'viewport',
-            },
-          },
-        },
-      ],
-    },
-  },
-
   defaultViewport: {
     viewportOptions: {
       viewportType: 'stack',
@@ -101,11 +83,6 @@ const hpMN: Types.HangingProtocol.Protocol = {
               id: 'defaultDisplaySetId',
             },
           ],
-          overlays: [
-            {
-              id: 'appLabelmap',
-            },
-          ],
         },
         {
           viewportOptions: {
@@ -116,11 +93,6 @@ const hpMN: Types.HangingProtocol.Protocol = {
             {
               matchedDisplaySetsIndex: 1,
               id: 'defaultDisplaySetId',
-            },
-          ],
-          overlays: [
-            {
-              id: 'appLabelmap',
             },
           ],
         },
@@ -135,11 +107,6 @@ const hpMN: Types.HangingProtocol.Protocol = {
               id: 'defaultDisplaySetId',
             },
           ],
-          overlays: [
-            {
-              id: 'appLabelmap',
-            },
-          ],
         },
         {
           viewportOptions: {
@@ -150,11 +117,6 @@ const hpMN: Types.HangingProtocol.Protocol = {
             {
               matchedDisplaySetsIndex: 3,
               id: 'defaultDisplaySetId',
-            },
-          ],
-          overlays: [
-            {
-              id: 'appLabelmap',
             },
           ],
         },

@@ -29,6 +29,7 @@ const OHIF_PORT = Number(process.env.OHIF_PORT || 3000);
 const ENTRY_TARGET = process.env.ENTRY_TARGET || `${SRC_DIR}/index.js`;
 const Dotenv = require('dotenv-webpack');
 const writePluginImportFile = require('./writePluginImportsFile.js');
+// const MillionLint = require('@million/lint');
 
 const copyPluginFromExtensions = writePluginImportFile(SRC_DIR, DIST_DIR);
 
@@ -80,6 +81,8 @@ module.exports = (env, argv) => {
       ],
     },
     plugins: [
+      // For debugging re-renders
+      // MillionLint.webpack(),
       new Dotenv(),
       // Clean output.path
       new CleanWebpackPlugin(),
