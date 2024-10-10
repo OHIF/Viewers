@@ -49,8 +49,12 @@ import {
   SelectContent,
   SelectItem,
   SelectValue,
+  DataRow,
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
 } from './components';
-import { DataRow } from './components/DataRow';
 
 import { useNotification, NotificationProvider } from './contextProviders';
 
@@ -110,4 +114,8 @@ export {
   SelectValue,
   DataRow,
   BackgroundColorSelect,
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
 };
