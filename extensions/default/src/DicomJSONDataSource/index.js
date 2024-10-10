@@ -1,5 +1,6 @@
 import { DicomMetadataStore, IWebApiDataSource } from '@ohif/core';
 import OHIF from '@ohif/core';
+import qs from 'query-string';
 
 import getImageId from '../DicomWebDataSource/utils/getImageId';
 import getDirectURL from '../utils/getDirectURL';
@@ -90,11 +91,14 @@ function createDicomJSONApi(dicomJsonConfig) {
             const { metadata: naturalizedDicom } = instance;
             const imageId = getImageId({ instance, config: dicomJsonConfig });
 
+            const { query } = qs.parseUrl(instance.url);
+
             // Add imageId specific mapping to this data as the URL isn't necessarliy WADO-URI.
             metadataProvider.addImageIdToUIDs(imageId, {
               StudyInstanceUID,
               SeriesInstanceUID,
               SOPInstanceUID: naturalizedDicom.SOPInstanceUID,
+              frameNumber: query.frame ? parseInt(query.frame) : undefined,
             });
           });
         });
@@ -258,26 +262,27 @@ function createDicomJSONApi(dicomJsonConfig) {
 
       const { StudyInstanceUID, SeriesInstanceUID } = displaySet;
       const study = findStudies('StudyInstanceUID', StudyInstanceUID)[0];
-      const series = study.series.find(s => s.SeriesInstanceUID === SeriesInstanceUID);
-      let instances = displaySet.images;
-      if (series.instances.length > displaySet.images.length) {
-        instances = series.instances;
-      }
+      const series = study.series.find(s => s.SeriesInstanceUID === SeriesInstanceUID) || [];
 
-      instances.forEach(instance => {
-        const NumberOfFrames = instance.NumberOfFrames;
+      const instanceMap = new Map();
+      series.instances.forEach(instance => {
+        if (instance?.metadata?.SOPInstanceUID) {
+          const { metadata, url } = instance;
+          const existingInstances = instanceMap.get(metadata.SOPInstanceUID) || [];
+          existingInstances.push({ ...metadata, url });
+          instanceMap.set(metadata.SOPInstanceUID, existingInstances);
+        }
+      });
 
-        if (NumberOfFrames > 1) {
-          for (let i = 0; i < NumberOfFrames; i++) {
-            const imageId = getImageId({
-              instance,
-              frame: i,
-              config: dicomJsonConfig,
-            });
-            imageIds.push(imageId);
-          }
-        } else {
-          const imageId = getImageId({ instance, config: dicomJsonConfig });
+      displaySet.images.forEach(instance => {
+        const NumberOfFrames = instance.NumberOfFrames || 1;
+        const instances = instanceMap.get(instance.SOPInstanceUID) || [instance];
+        for (let i = 0; i < NumberOfFrames; i++) {
+          const imageId = getImageId({
+            instance: instances[Math.min(i, instances.length - 1)],
+            frame: NumberOfFrames > 1 ? i : undefined,
+            config: dicomJsonConfig,
+          });
           imageIds.push(imageId);
         }
       });
