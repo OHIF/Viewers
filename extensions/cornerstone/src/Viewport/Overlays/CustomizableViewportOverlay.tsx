@@ -305,6 +305,8 @@ function CustomizableViewportOverlay({
         viewportId,
         toolGroupService,
       };
+      // console.log('tushita', props.instances);
+      // console.log('tushita', );
 
       return (
         <>

@@ -211,6 +211,7 @@ function GbcPanel({ servicesManager, extensionManager }) {
               onClick={jumpToImage}
               onEdit={onMeasurementItemEditHandler}
             />
+
             <div className="flex justify-center p-4">
               <ActionButtons
                 data={displayMeasurements}

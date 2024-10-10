@@ -7,6 +7,7 @@ const apiEndpoints = {
   mammoModel: studyUid => `/dicom-web/models/mammo/${studyUid}`,
   model: studyUid => `/dicom-web/run-model/${studyUid}`,
   taskStatus: taskId => `dicom-web/tasks/${taskId}`,
+  classificationOutput: studyUid => `dicom-web/manage/studies/${studyUid}/attachments/modelOutput`,
 };
 
 export default apiEndpoints;

@@ -1,5 +1,6 @@
 const apiBaseUrl = 'http://coe-aih.apps.iitd.ac.in/data-portal/api/v1';
-// const apiBaseUrl = 'http://10.184.164.236:8000/api/v1';
+// apiBaseUrl = 'http://10.184.164.236:8000/api/v1';
+// apiBaseUrl = 'http://10.194.167.60:8000/api/v1';
 window.config = {
   apiBaseUrl: apiBaseUrl,
 
@@ -11,6 +12,25 @@ window.config = {
   customizationService: {
     dicomUploadComponent:
       '@ohif/extension-cornerstone.customizationModule.cornerstoneDicomUploadComponent',
+    cornerstoneOverlayTopRight: {
+      id: 'cornerstoneOverlayTopRight',
+      items: [
+        {
+          id: 'PatientNameOverlay',
+          customizationType: 'ohif.overlayItem',
+          attribute: 'PatientName',
+          label: 'PN:',
+          title: 'Patient Name',
+          color: 'yellow',
+          condition: ({ instance }) =>
+            instance && instance.PatientName && instance.PatientName.Alphabetic,
+          contentF: ({ instance, formatters: { formatPN } }) =>
+            formatPN(instance.PatientName.Alphabetic) +
+            ' ' +
+            (instance.PatientSex ? '(' + instance.PatientSex + ')' : ''),
+        },
+      ],
+    },
   },
   showStudyList: true,
   // some windows systems have issues with more than 3 web workers

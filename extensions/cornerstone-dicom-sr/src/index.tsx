@@ -41,6 +41,7 @@ const dicomSRExtension = {
    */
   getViewportModule({ servicesManager, extensionManager }) {
     const ExtendedOHIFCornerstoneSRViewport = props => {
+      console.log('tushita', props);
       return (
         <OHIFCornerstoneSRViewport
           servicesManager={servicesManager}

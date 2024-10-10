@@ -13,6 +13,7 @@ const CodeNameCodeSequenceValues = {
   Finding: '121071',
   FindingSite: 'G-C0E3', // SRT
   CornerstoneFreeText: Cornerstone3DCodeScheme.codeValues.CORNERSTONEFREETEXT,
+  Procedure: '121058',
 };
 
 export { CodeNameCodeSequenceValues as default };

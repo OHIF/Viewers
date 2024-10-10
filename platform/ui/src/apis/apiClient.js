@@ -178,6 +178,17 @@ class APIClient {
     }
   }
 
+  async getClassificationOutput(studyUid) {
+    // console.log('Getting ground truth for study:', studyUid);
+    return await this.makeRequest(
+      'GET',
+      apiEndpoints.classificationOutput(studyUid),
+      undefined,
+      {},
+      true
+    );
+  }
+
   async handleXRayModel(studyUid, setToastMessage) {
     //console.log('Starting mammo model processing for study:', studyUid);
     setToastMessage('Starting X-Ray model processing for study:');

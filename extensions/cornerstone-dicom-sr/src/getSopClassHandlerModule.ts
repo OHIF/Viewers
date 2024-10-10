@@ -172,6 +172,7 @@ async function _load(displaySet, servicesManager: AppTypes.ServicesManager, exte
     displaySet.referencedImages = [];
     displaySet.measurements = [];
   }
+  const l = _procedureReportExists(ContentSequence);
 
   const mappings = measurementService.getSourceMappings(
     CORNERSTONE_3D_TOOLS_SOURCE_NAME,
@@ -349,8 +350,21 @@ function getSopClassHandlerModule({ servicesManager, extensionManager }) {
     },
   ];
 }
+function _procedureReportExists(ImagingMeasurementReportContentSequence) {
+  const ImagingMeasurements = ImagingMeasurementReportContentSequence.find(
+    item => item.ConceptNameCodeSequence.CodeValue === CodeNameCodeSequenceValues.Procedure
+  );
+  if (!ImagingMeasurements) {
+    console.log('procedure report does not exist leena');
 
+    return [];
+  }
+  console.log('procedure report does exist leena');
+  console.log('leena', ImagingMeasurements);
+  return [];
+}
 function _getMeasurements(ImagingMeasurementReportContentSequence) {
+  console.log(ImagingMeasurementReportContentSequence);
   const ImagingMeasurements = ImagingMeasurementReportContentSequence.find(
     item =>
       item.ConceptNameCodeSequence.CodeValue === CodeNameCodeSequenceValues.ImagingMeasurements

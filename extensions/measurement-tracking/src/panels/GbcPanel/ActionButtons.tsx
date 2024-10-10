@@ -216,6 +216,45 @@ function ActionButtons({
     //   alert('Failed to start mammo model processing.');
     // }
   };
+  const [modelResult, setModelResult] = useState(null);
+  const removeLQAdapter = obj => {
+    const { 'LQ Adapter': _, ...newObj } = obj; // Destructure to remove 'LQ Adapter'
+    return newObj;
+  };
+  const isObjectEmpty = obj => {
+    return Object.keys(obj).length === 0;
+  };
+  const getModelResult = async () => {
+    try {
+      const response = await apiClient.getClassificationOutput(studyInstanceUid);
+      if (response && response.result) {
+        const attachment = response.result.attachment;
+
+        if (
+          typeof attachment === 'object' &&
+          !Array.isArray(attachment) &&
+          isObjectEmpty(attachment)
+        ) {
+          setModelResult(null);
+        } else {
+          const arrayFromEntries = Object.entries(attachment);
+          setModelResult(removeLQAdapter(arrayFromEntries[0][1]));
+        }
+      } else {
+        console.log('Model has not been run yet');
+        setModelResult(null);
+      }
+    } catch (error) {
+      console.error('Failed to get Classification results', error);
+      alert('Failed to get Classification results');
+      console.log('Failed to get Classification results');
+      setModelResult(null);
+    }
+  };
+
+  useEffect(() => {
+    getModelResult();
+  }, []);
 
   const isSubmitDisabled = false;
 
@@ -287,6 +326,7 @@ function ActionButtons({
           {toastMessage}
         </div>
       )}
+
       <form>
         <div className="mb-6 flex flex-col space-y-4">
           <div className="text-white">
@@ -297,11 +337,11 @@ function ActionButtons({
               >
                 <p className="text-sm font-semibold text-green-400">Annotation No. {index + 1}</p>
                 <p className="mb-2 text-sm">
-                  <span className="text-blue-300">Top Left:</span> [{item.baseDisplayText[0]},{' '}
-                  {item.baseDisplayText[1]}]
+                  <span className="text-blue-300">Top Left:</span> [
+                  {item?.baseDisplayText?.[0] ?? 'N/A'}, {item?.baseDisplayText?.[1] ?? 'N/A'}]
                   <br />
-                  <span className="text-blue-300">Bottom Right:</span> [{item.baseLabel[0]},{' '}
-                  {item.baseLabel[1]}]
+                  <span className="text-blue-300">Bottom Right:</span> [
+                  {item?.baseLabel?.[0] ?? 'N/A'}, {item?.baseLabel?.[1] ?? 'N/A'}]
                 </p>
 
                 <div className="form-group">
@@ -721,9 +761,26 @@ function ActionButtons({
           </Button> */}
         </div>
       </form>
+      {/* Model Result Display */}
+      <h2 className="mb-4 text-xl font-semibold text-white">Classification Results</h2>
+      <div className="mb-6 flex flex-col space-y-4">
+        {modelResult ? (
+          <ul className="list-disc pl-5">
+            {Object.entries(modelResult).map(([key, value]) => (
+              <li
+                key={key}
+                className="text-white"
+              >
+                <strong>{key}:</strong> {value}
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className="text-red-400">Model not run yet</p>
+        )}
+      </div>
       <Button
         className="m-2 ml-0"
-        // size={ButtonEnums.size.small}
         onClick={handleRunModelsClick}
       >
         Run Models

@@ -10,6 +10,7 @@ function OHIFCornerstoneSRViewport(props: withAppTypes) {
   const { isImagingMeasurementReport } = displaySets[0];
 
   if (isImagingMeasurementReport) {
+    // console.log(props);
     return <OHIFCornerstoneSRMeasurementViewport {...props}></OHIFCornerstoneSRMeasurementViewport>;
   }
 

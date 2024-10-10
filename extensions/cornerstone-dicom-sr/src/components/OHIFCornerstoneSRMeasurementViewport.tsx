@@ -266,6 +266,7 @@ function OHIFCornerstoneSRMeasurementViewport(props: withAppTypes) {
         await srDisplaySet.load();
       }
       const numMeasurements = srDisplaySet.measurements.length;
+      // console.log(srDisplaySet);
       setMeasurementCount(numMeasurements);
       updateViewport(measurementSelected);
     };
