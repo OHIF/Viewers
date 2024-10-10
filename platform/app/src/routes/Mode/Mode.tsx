@@ -16,6 +16,7 @@ const { getSplitParam } = utils;
 
 export default function ModeRoute({
   mode,
+  modeRoutePath,
   dataSourceName,
   extensionManager,
   servicesManager,
@@ -84,7 +85,13 @@ export default function ModeRoute({
   const dataSource = extensionManager.getActiveDataSource()[0];
 
   // Only handling one route per mode for now
-  const route = mode.routes[0];
+  let route = mode.routes[0];
+  if (modeRoutePath) {
+    route = mode.routes.find(route => route.path === modeRoutePath);
+    if (!route) {
+      throw new Error(`Route not found for path: ${modeRoutePath}`);
+    }
+  }
 
   useEffect(() => {
     const loadExtensions = async () => {
@@ -398,6 +405,7 @@ function createCombinedContextProvider(extensionManager, servicesManager, comman
 
 ModeRoute.propTypes = {
   mode: PropTypes.object.isRequired,
+  modeRoutePath: PropTypes.string,
   dataSourceName: PropTypes.string,
   extensionManager: PropTypes.object,
   servicesManager: PropTypes.object,
