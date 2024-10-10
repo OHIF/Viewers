@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import CodeNameCodeSequenceValues from '../constants/CodeNameCodeSequenceValues';
+import { CodeNameCodeSequenceValues } from '../enums';
 import formatContentItemValue from '../utils/formatContentItem';
 
 const EMPTY_TAG_VALUE = '[empty]';

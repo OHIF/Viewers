@@ -19,11 +19,11 @@ const Probe = {
     getValueTypeFromToolType,
     customizationService
   ) => {
-    const { annotation, viewportId } = csToolsEventDetail;
+    const { annotation } = csToolsEventDetail;
     const { metadata, data, annotationUID } = annotation;
 
     if (!metadata || !data) {
-      console.warn('Length tool: Missing metadata or data');
+      console.warn('Probe tool: Missing metadata or data');
       return null;
     }
 

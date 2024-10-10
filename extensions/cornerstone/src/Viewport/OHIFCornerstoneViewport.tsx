@@ -610,5 +610,4 @@ OHIFCornerstoneViewport.propTypes = {
   // to set the initial state of the viewport's first image to render
   initialImageIdOrIndex: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
 };
-
 export default OHIFCornerstoneViewport;
