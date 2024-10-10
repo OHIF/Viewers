@@ -27,6 +27,8 @@ The `ToolBarService` is a straightforward service designed to handle the toolbar
 - `addButtons`: add the button definition to the service.
   [See below for button definition](#button-definitions).
 
+- `removeButton(key)` : remove a button from the toolbar.
+
 - `setButtons`: sets the buttons defined in the service. It overrides all the
   previous buttons
 

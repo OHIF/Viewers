@@ -113,6 +113,17 @@ export default class ToolbarService extends PubSubService {
   }
 
   /**
+   * Removes buttons from the toolbar.
+   * @param buttonId - The button to be removed.
+   */
+  public removeButton(buttonId : string ){
+    if(this.state.buttons[buttonId]) delete this.state.buttons[buttonId]
+    this._broadcastEvent(this.EVENTS.TOOL_BAR_MODIFIED, {
+      ...this.state,
+    });
+  }
+
+  /**
    * Adds buttons to the toolbar.
    * @param buttons - The buttons to be added.
    */
