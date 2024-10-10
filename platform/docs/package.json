@@ -18,7 +18,7 @@
     "clean": "shx rm -rf dist",
     "clean:deep": "yarn run clean && shx rm -rf node_modules",
     "start": "docusaurus start --port 8001",
-    "dev": "docusaurus start --port 8001",
+    "dev": "docusaurus clear && docusaurus start --port 8001",
     "docs": "docusaurus start --port 8001",
     "build": "docusaurus build",
     "swizzle": "docusaurus swizzle",

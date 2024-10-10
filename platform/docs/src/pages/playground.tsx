@@ -19,8 +19,8 @@ import React from 'react';
 //   ScrollArea,
 // } from '@ohif/ui-next';
 
-import { Button, ButtonEnums } from '@ohif/ui';
-import { Input } from '@ohif/ui-next';
+// import { Button, ButtonEnums } from '@ohif/ui';
+// import { Input, Switch } from '@ohif/ui-next';
 
 // export default function Playground() {
 //   return (
@@ -292,11 +292,15 @@ export default function Playground() {
       {/* <Button
         size={ButtonEnums.size.small}
         type={ButtonEnums.type.primary}
+        onClick={() => {
+          console.log('clicked');
+        }}
       >
         dd
-      </Button> */}
+      </Button>
       {/*  */}
-      <Input />
+      {/* <Input /> */}
+      {/* <Switch /> */}
     </div>
   );
 }
