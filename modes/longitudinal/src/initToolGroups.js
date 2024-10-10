@@ -70,7 +70,6 @@ function initDefaultToolGroup(
       { toolName: toolNames.Bidirectional },
       { toolName: toolNames.DragProbe },
       { toolName: toolNames.Probe },
-      // Todo: this should get moved to the cornerstone-dicom-sr extension
       { toolName: toolNames.EllipticalROI },
       { toolName: toolNames.CircleROI },
       { toolName: toolNames.RectangleROI },
@@ -175,9 +174,6 @@ function initSRToolGroup(extensionManager, toolGroupService) {
       {
         toolName: SRToolNames.DICOMSRDisplay,
       },
-      {
-        toolName: SRToolNames.SRSCOORD3DPoint,
-      },
     ],
     // disabled
   };
@@ -241,8 +237,6 @@ function initMPRToolGroup(extensionManager, toolGroupService, commandsManager, m
       { toolName: toolNames.Bidirectional },
       { toolName: toolNames.DragProbe },
       { toolName: toolNames.Probe },
-      // Todo: this should get moved to the cornerstone-dicom-sr extension
-      { toolName: SRToolNames.SRSCOORD3DPoint },
       { toolName: toolNames.EllipticalROI },
       { toolName: toolNames.CircleROI },
       { toolName: toolNames.RectangleROI },
