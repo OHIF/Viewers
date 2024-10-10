@@ -242,7 +242,7 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     return {
       id: positionPresentationId,
       viewportType: viewportInfo.getViewportType(),
-      viewReference: csViewport.getViewReference(),
+      viewReference: csViewport instanceof VolumeViewport3D ? null : csViewport.getViewReference(),
       position: csViewport.getViewPresentation({ pan: true, zoom: true }),
     };
   }
