@@ -19,7 +19,7 @@ import React from 'react';
 //   ScrollArea,
 // } from '@ohif/ui-next';
 
-import { Button, ButtonEnums } from '@ohif/ui';
+// import { Button, ButtonEnums } from '@ohif/ui';
 
 // export default function Playground() {
 //   return (
@@ -287,13 +287,13 @@ import { Button, ButtonEnums } from '@ohif/ui';
 export default function Playground() {
   return (
     <div>
-      <div className="text-red-500">Playgroundsss</div>
-      <Button
+      <div className="text-2xl text-red-500">Playgroundsss</div>
+      {/* <Button
         size={ButtonEnums.size.small}
         type={ButtonEnums.type.primary}
       >
         dd
-      </Button>
+      </Button> */}
     </div>
   );
 }
