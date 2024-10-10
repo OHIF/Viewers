@@ -11,10 +11,6 @@
   }
 }
 
-body {
-  background-color: #000;
-}
-
 /* Truncate 2 lines utility */
 .truncate-2-lines {
   overflow: hidden;

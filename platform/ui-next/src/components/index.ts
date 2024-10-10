@@ -23,6 +23,7 @@ import {
   DialogTitle,
   DialogDescription,
 } from './Dialog';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './Select';
 
 import { Combobox } from './Combobox';
 import { Popover, PopoverContent, PopoverTrigger, PopoverAnchor } from './Popover';
@@ -68,6 +69,8 @@ import {
   DropdownMenuRadioGroup,
 } from './DropdownMenu';
 import { Onboarding } from './Onboarding';
+import { BackgroundColorSelect } from './BackgroundColorSelect';
+import { DataRow } from './DataRow';
 
 export {
   Button,
@@ -147,4 +150,11 @@ export {
   DropdownMenuSubTrigger,
   DropdownMenuRadioGroup,
   Onboarding,
+  BackgroundColorSelect,
+  DataRow,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 };

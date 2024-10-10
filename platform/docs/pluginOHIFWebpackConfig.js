@@ -23,13 +23,13 @@ module.exports = function (context, options) {
     },
     configurePostCss(postcssOptions) {
       postcssOptions.plugins.push(
-        require('postcss-import')
-        /*require('postcss-preset-env')({
+        require('postcss-import'),
+        require('postcss-preset-env')({
           autoprefixer: {
             flexbox: 'no-2009',
           },
           stage: 4,
-        })*/
+        })
       );
       return postcssOptions;
     },
