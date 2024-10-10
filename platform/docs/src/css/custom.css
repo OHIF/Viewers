@@ -198,7 +198,7 @@ h3.section-header {
 }
 
 .row {
-  @apply mb-6 flex flex-row flex-wrap rounded-md border py-10;
+  @apply bg-card mb-6 flex flex-row flex-wrap rounded-md border py-10;
 }
 
 .example {

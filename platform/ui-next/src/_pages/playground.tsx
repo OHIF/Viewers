@@ -75,8 +75,6 @@ import { BackgroundColorSelect } from '../components/BackgroundColorSelect';
 export default function Playground() {
   return (
     <main className="my-4 mx-auto max-w-6xl py-6">
-      <BackgroundColorSelect />
-
       <h2 className="section-header">Button default</h2>
       <div className="row">
         <div className="example">
