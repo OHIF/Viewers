@@ -96,6 +96,7 @@ import MeasurementItem from './MeasurementTable/MeasurementItem';
 import LayoutPreset from './LayoutPreset';
 import ActionButtons from './ActionButtons';
 import StudyBrowserSort from './StudyBrowserSort';
+import SmartScrollbar from './SmartScrollbar';
 
 export {
   ActionButtons,
@@ -153,6 +154,7 @@ export {
   SegmentationGroupTable,
   SegmentationGroupTableExpanded,
   SidePanel,
+  SmartScrollbar,
   SplitButton,
   StudyBrowser,
   StudyItem,

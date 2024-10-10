@@ -11,13 +11,17 @@ const colorsByOrientation = {
 };
 
 function createTools(utilityModule) {
-  const { toolNames, Enums } = utilityModule.exports;
+  const { toolNames, Enums, shouldPreventScroll } = utilityModule.exports;
   return {
     active: [
       { toolName: toolNames.WindowLevel, bindings: [{ mouseButton: Enums.MouseBindings.Primary }] },
       { toolName: toolNames.Pan, bindings: [{ mouseButton: Enums.MouseBindings.Auxiliary }] },
       { toolName: toolNames.Zoom, bindings: [{ mouseButton: Enums.MouseBindings.Secondary }] },
-      { toolName: toolNames.StackScrollMouseWheel, bindings: [] },
+      {
+        toolName: toolNames.SmartStackScrollMouseWheel,
+        bindings: [],
+        configuration: { shouldPreventScroll },
+      },
     ],
     passive: [
       {
@@ -84,7 +88,13 @@ function createTools(utilityModule) {
       { toolName: toolNames.CircleScissors },
       { toolName: toolNames.RectangleScissors },
       { toolName: toolNames.SphereScissors },
-      { toolName: toolNames.StackScroll },
+      {
+        toolName: toolNames.SmartStackScroll,
+        bindings: [
+          { mouseButton: Enums.MouseBindings.Primary, modifierKey: Enums.KeyboardBindings.Ctrl },
+        ],
+        configuration: { shouldPreventScroll },
+      },
       { toolName: toolNames.Magnify },
       { toolName: toolNames.SegmentationDisplay },
       { toolName: toolNames.WindowLevelRegion },
