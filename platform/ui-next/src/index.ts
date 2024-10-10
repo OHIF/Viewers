@@ -1,4 +1,5 @@
 import {
+  BackgroundColorSelect,
   Button,
   buttonVariants,
   ThemeWrapper,
@@ -33,8 +34,23 @@ import {
   DisplaySetMessageListTooltip,
   Toolbox,
   ToolboxUI,
+  ScrollArea,
+  Label,
+  Slider,
+  Input,
+  Switch,
+  Checkbox,
   Onboarding,
+  PopoverAnchor,
+  PopoverContent,
+  PopoverTrigger,
+  Select,
+  SelectTrigger,
+  SelectContent,
+  SelectItem,
+  SelectValue,
 } from './components';
+import { DataRow } from './components/DataRow';
 
 import { useNotification, NotificationProvider } from './contextProviders';
 
@@ -45,6 +61,7 @@ export {
   Command,
   Popover,
   Combobox,
+  Checkbox,
   buttonVariants,
   ThemeWrapper,
   Calendar,
@@ -77,5 +94,20 @@ export {
   DisplaySetMessageListTooltip,
   Toolbox,
   ToolboxUI,
+  ScrollArea,
+  Label,
+  Slider,
+  Input,
+  Switch,
   Onboarding,
+  PopoverAnchor,
+  PopoverContent,
+  PopoverTrigger,
+  Select,
+  SelectTrigger,
+  SelectContent,
+  SelectItem,
+  SelectValue,
+  DataRow,
+  BackgroundColorSelect,
 };
