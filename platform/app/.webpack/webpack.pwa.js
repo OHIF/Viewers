@@ -72,6 +72,10 @@ module.exports = (env, argv) => {
         // Hoisted Yarn Workspace Modules
         path.resolve(__dirname, '../../../node_modules'),
         SRC_DIR,
+        path.resolve(
+          __dirname,
+          '/Users/tushitapandey/Desktop/Lab work /dataportal/extensions/data-portal/node_modules'
+        ),
       ],
     },
     plugins: [

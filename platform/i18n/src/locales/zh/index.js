@@ -10,6 +10,7 @@ import UserPreferencesModal from './UserPreferencesModal.json';
 import ViewportDownloadForm from './ViewportDownloadForm.json';
 import StudyBrowser from './StudyBrowser.json';
 import SidePanel from './SidePanel.json';
+import SidePanelModified from './SidePanelModified.json';
 import Modes from './Modes.json';
 import PatientInfo from './PatientInfo.json';
 import Notification from './Notification.json';
@@ -20,7 +21,7 @@ import Local from './Local.json';
 import ErrorBoundary from './ErrorBoundary.json';
 
 export default {
-  'zh': {
+  zh: {
     AboutModal,
     Buttons,
     CineDialog,
@@ -33,6 +34,7 @@ export default {
     ViewportDownloadForm,
     StudyBrowser,
     SidePanel,
+    SidePanelModified,
     Modes,
     PatientInfo,
     Notification,

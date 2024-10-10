@@ -22,6 +22,9 @@ const tracked = {
   measurements: '@ohif/extension-measurement-tracking.panelModule.trackedMeasurements',
   thumbnailList: '@ohif/extension-measurement-tracking.panelModule.seriesList',
   viewport: '@ohif/extension-measurement-tracking.viewportModule.cornerstone-tracked',
+  gbc: '@ohif/extension-measurement-tracking.panelModule.gbcPanel',
+  mammo: '@ohif/extension-measurement-tracking.panelModule.MammoPanel',
+  xray: '@ohif/extension-measurement-tracking.panelModule.XRayPanel',
 };
 
 const dicomsr = {
@@ -191,8 +194,8 @@ function modeFactory({ modeConfiguration }) {
             id: ohif.layout,
             props: {
               leftPanels: [tracked.thumbnailList],
-              rightPanels: [dicomSeg.panel, tracked.measurements],
-              rightPanelClosed: true,
+              rightPanels: [tracked.mammo, tracked.gbc, tracked.xray, tracked.measurements],
+              rightPanelClosed: false,
               viewports: [
                 {
                   namespace: tracked.viewport,
@@ -206,10 +209,10 @@ function modeFactory({ modeConfiguration }) {
                   namespace: dicomsr.viewport,
                   displaySetsToDisplay: [dicomsr.sopClassHandler],
                 },
-                // {
-                //   namespace: dicomvideo.viewport,
-                //   displaySetsToDisplay: [dicomvideo.sopClassHandler],
-                // },
+                {
+                  namespace: dicomvideo.viewport,
+                  displaySetsToDisplay: [dicomvideo.sopClassHandler],
+                },
                 {
                   namespace: dicompdf.viewport,
                   displaySetsToDisplay: [dicompdf.sopClassHandler],

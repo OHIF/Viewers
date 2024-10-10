@@ -6,7 +6,6 @@ import iitdelhiImage from '../../assests/iitdelhi.png';
 import aiimsdelhiImage from '../../assests/aiimsdelhi.png';
 
 const LoginSignup = ({ setIsAuthenticated }) => {
-  console.log('tus');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -22,7 +21,7 @@ const LoginSignup = ({ setIsAuthenticated }) => {
       localStorage.setItem('refreshToken', refresh);
       setIsAuthenticated(true); // Set authentication state
       navigate('/');
-      console.log('tus acess:' + access, 'refresh:' + refresh + 'sucess');
+
       console.log(response);
     } else {
       setError(response.error.user_friendly_message);

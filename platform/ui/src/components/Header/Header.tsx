@@ -210,10 +210,5 @@ Header.propTypes = {
   servicesManager: PropTypes.object,
 };
 
-Header.defaultProps = {
-  isReturnEnabled: true,
-  isSticky: false,
-};
-
 export default Header;
 //local storage -> cutom hook

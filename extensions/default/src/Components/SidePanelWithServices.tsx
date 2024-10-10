@@ -3,6 +3,7 @@ import { SidePanel as NewSidePanel } from '@ohif/ui-next';
 import { SidePanel as OldSidePanel } from '@ohif/ui';
 import { useAppConfig } from '@state';
 import { Types } from '@ohif/core';
+import { SidePanelModified } from '@ohif/ui';
 
 export type SidePanelWithServicesProps = {
   servicesManager: AppTypes.ServicesManager;
@@ -81,7 +82,7 @@ const SidePanelWithServices = ({
   const SidePanel = appConfig?.useExperimentalUI ? NewSidePanel : OldSidePanel;
 
   return (
-    <SidePanel
+    <SidePanelModified
       {...props}
       side={side}
       tabs={tabs}
@@ -89,7 +90,7 @@ const SidePanelWithServices = ({
       onOpen={handleSidePanelOpen}
       onActiveTabIndexChange={handleActiveTabIndexChange}
       expandedWidth={expandedWidth}
-    ></SidePanel>
+    ></SidePanelModified>
   );
 };
 

@@ -136,7 +136,10 @@ async function _load(displaySet, servicesManager: AppTypes.ServicesManager, exte
   const { displaySetService, measurementService } = servicesManager.services;
   const dataSources = extensionManager.getDataSources();
   const dataSource = dataSources[0];
+  console.log('taru', dataSources);
+
   const { ContentSequence } = displaySet.instance;
+  console.log('taru', ContentSequence);
 
   async function retrieveBulkData(obj, parentObj = null, key = null) {
     for (const prop in obj) {
@@ -378,7 +381,7 @@ function _getMeasurements(ImagingMeasurementReportContentSequence) {
       }
     }
   );
-
+  console.log('taru mesure', measurements);
   return measurements;
 }
 
@@ -637,6 +640,7 @@ function _getReferencedImagesList(ImagingMeasurementReportContentSequence) {
       }
     }
   });
+  console.log('taru ref images', referencedImages);
 
   return referencedImages;
 }

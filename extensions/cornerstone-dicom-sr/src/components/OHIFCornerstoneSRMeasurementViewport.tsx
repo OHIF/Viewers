@@ -64,7 +64,7 @@ function OHIFCornerstoneSRMeasurementViewport(props: withAppTypes) {
     sendTrackedMeasurementsEvent = tracked?.[1];
   }
   if (!sendTrackedMeasurementsEvent) {
-    // if no panels from measurement-tracking extension is used, this code will run
+    // if no panels from measurement-tracking extension is used, this code will run okay
     trackedMeasurements = null;
     sendTrackedMeasurementsEvent = (eventName, { displaySetInstanceUID }) => {
       measurementService.clearMeasurements();
@@ -387,6 +387,7 @@ async function _getViewportReferencedDisplaySetData(
   const measurement = measurements[measurementSelected];
 
   const { displaySetInstanceUID } = measurement;
+
   if (!displaySet.keyImageDisplaySet) {
     // Create a new display set, and preserve a reference to it here,
     // so that it can be re-displayed and shown inside the SR viewport.

@@ -1,5 +1,11 @@
 import { Types } from '@ohif/core';
-import { PanelMeasurementTableTracking, PanelStudyBrowserTracking } from './panels';
+import {
+  PanelMeasurementTableTracking,
+  PanelStudyBrowserTracking,
+  GbcPanel,
+  MammoPanel,
+  XRayPanel,
+} from './panels';
 import i18n from 'i18next';
 import React from 'react';
 
@@ -38,6 +44,39 @@ function getPanelModule({ commandsManager, extensionManager, servicesManager }):
           servicesManager={servicesManager}
         />
       ),
+    },
+    {
+      name: 'gbcPanel',
+      iconName: 'tab-linear',
+      iconLabel: 'Measure',
+      label: i18n.t('SidePanel:Measurements'),
+      component: GbcPanel.bind(null, {
+        commandsManager,
+        extensionManager,
+        servicesManager,
+      }),
+    },
+    {
+      name: 'MammoPanel',
+      iconName: 'tab-linear',
+      iconLabel: 'Measure',
+      label: i18n.t('SidePanel:Measurements'),
+      component: MammoPanel.bind(null, {
+        commandsManager,
+        extensionManager,
+        servicesManager,
+      }),
+    },
+    {
+      name: 'XRayPanel',
+      iconName: 'tab-linear',
+      iconLabel: 'Measure',
+      label: i18n.t('SidePanel:Measurements'),
+      component: XRayPanel.bind(null, {
+        commandsManager,
+        extensionManager,
+        servicesManager,
+      }),
     },
   ];
 }

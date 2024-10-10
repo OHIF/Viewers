@@ -164,6 +164,7 @@ function PanelStudyBrowserTracking({
 
   // ~~ Initial Thumbnails
   useEffect(() => {
+    console.log('thumbnail');
     if (!hasLoadedViewports) {
       if (activeViewportId) {
         // Once there is an active viewport id, it means the layout is ready
@@ -189,7 +190,7 @@ function PanelStudyBrowserTracking({
 
       const imageId = getImageIdForThumbnail(displaySet, imageIds);
 
-      // TODO: Is it okay that imageIds are not returned here for SR displaySets?
+      // TODO: Is it okay that imageIds are not returned here for SR displaySets? okay
       if (!imageId || displaySet?.unsupported) {
         return;
       }

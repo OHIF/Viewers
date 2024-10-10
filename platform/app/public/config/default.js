@@ -1,5 +1,5 @@
 const apiBaseUrl = 'http://coe-aih.apps.iitd.ac.in/data-portal/api/v1';
-
+// const apiBaseUrl = 'http://10.184.164.236:8000/api/v1';
 window.config = {
   apiBaseUrl: apiBaseUrl,
 
@@ -7,6 +7,7 @@ window.config = {
   // whiteLabeling: {},
   extensions: [],
   modes: [],
+  // customizationService: {},
   customizationService: {
     dicomUploadComponent:
       '@ohif/extension-cornerstone.customizationModule.cornerstoneDicomUploadComponent',
@@ -72,13 +73,7 @@ window.config = {
       },
     },
   ],
-  httpErrorHandler: error => {
-    // This is 429 when rejected from the public idc sandbox too often.
-    console.warn(error.status);
 
-    // Could use services manager here to bring up a dialog/modal if needed.
-    console.warn('test, navigate to https://ohif.org/');
-  },
   // whiteLabeling: {
   //   /* Optional: Should return a React component to be rendered in the "Logo" section of the application's Top Navigation bar */
   //   createLogoComponentFn: function (React) {
@@ -98,6 +93,7 @@ window.config = {
   //       ))
   //   },
   // },
+
   hotkeys: [
     {
       commandName: 'incrementActiveViewport',

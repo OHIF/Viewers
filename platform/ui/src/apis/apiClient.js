@@ -37,17 +37,17 @@ class APIClient {
     }
     //console.log('made it here', headers);
     try {
-      //console.log('--------------');
-      //console.log('');
-      //console.log('');
-      //console.log('url');
-      //console.log(url);
-      //console.log('headers');
-      //console.log(headers);
-      //console.log('body');
-      //console.log(body);
-      //console.log('');
-      //console.log('--------------', this.requestMethods[method]);
+      console.log('--------------');
+      console.log('');
+      console.log('');
+      console.log('url');
+      console.log(url);
+      console.log('headers');
+      console.log(headers);
+      console.log('body');
+      console.log(body);
+      console.log('');
+      console.log('--------------', this.requestMethods[method]);
       let response;
       if (body) {
         response = await this.requestMethods[method](url, body, { headers });
@@ -114,12 +114,12 @@ class APIClient {
 
   //groundtruth
   async getGroundTruth(studyUid) {
-    //console.log('Getting ground truth for study:', studyUid);
+    // console.log('Getting ground truth for study:', studyUid);
     return await this.makeRequest('GET', apiEndpoints.groundTruth(studyUid), undefined, {}, true);
   }
   //putting ground truth
   async putGroundTruth(studyUid, groundTruthData) {
-    //console.log('Updating ground truth for study:', studyUid);
+    // console.log('Updating ground truth for study:', studyUid);
     return await this.makeRequest(
       'PUT',
       apiEndpoints.groundTruth(studyUid),
@@ -134,10 +134,8 @@ class APIClient {
 
     const response = await this.makeRequest(
       'POST',
-      apiEndpoints.model(studyUid),
-      {
-        model: 'MAMMO',
-      },
+      apiEndpoints.mammoModel(studyUid),
+      {},
       {},
       true
     );
@@ -150,27 +148,58 @@ class APIClient {
       // alert('Models are running...');
       this.pollTaskStatus(response.result.id, setToastMessage); // Use response.result.id
     } else {
-      console.log('tushita');
       alert('Failed to retrieve task ID from the response.');
     }
   }
-
+  // async makeRequest(method, url, body = undefined, headers = {}, addAuth = false)
   async handleGBCModel(studyUid, setToastMessage) {
     //console.log('Starting mammo model processing for study:', studyUid);
-
+    setToastMessage('Starting GBC model processing for study:');
     const response = await this.makeRequest(
       'POST',
-      apiEndpoints.mammoModel(studyUid),
-      {},
+      apiEndpoints.model(studyUid),
+      {
+        model: 'GBC',
+      },
       {},
       true
     );
+    console.log('GBC model processing started:', response);
+    //console.log(response.result.id);
+    // setToastMessage('Models are running...');
     if (response.result && response.result.id) {
       //console.log('Mammo model processing started:', response);
       setToastMessage('Models are running...');
       // alert('Models are running...');
       this.pollTaskStatus(response.result.id, setToastMessage); // Use response.result.id
     } else {
+      setToastMessage('');
+      alert('Failed to retrieve task ID from the response.');
+    }
+  }
+
+  async handleXRayModel(studyUid, setToastMessage) {
+    //console.log('Starting mammo model processing for study:', studyUid);
+    setToastMessage('Starting X-Ray model processing for study:');
+    const response = await this.makeRequest(
+      'POST',
+      apiEndpoints.model(studyUid),
+      {
+        model: 'XRay',
+      },
+      {},
+      true
+    );
+    console.log('X-Ray model processing started:', response);
+    //console.log(response.result.id);
+    // setToastMessage('Models are running...');
+    if (response.result && response.result.id) {
+      //console.log('Mammo model processing started:', response);
+      setToastMessage('Models are running...');
+      // alert('Models are running...');
+      this.pollTaskStatus(response.result.id, setToastMessage); // Use response.result.id
+    } else {
+      setToastMessage('');
       alert('Failed to retrieve task ID from the response.');
     }
   }
