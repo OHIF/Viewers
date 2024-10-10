@@ -5,6 +5,7 @@ const ImageSet = classes.ImageSet;
 const findInstance = (measurement, displaySetService: DisplaySetService) => {
   // console.log(measurement);
   const { displaySetInstanceUID, ReferencedSOPInstanceUID: sopUid } = measurement;
+
   const referencedDisplaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
   if (!referencedDisplaySet.images) {
     return;
@@ -22,6 +23,7 @@ const findReferencedInstances = (displaySetService: DisplaySetService, displaySe
 
   for (const measurement of displaySet.measurements) {
     const { imageId } = measurement;
+
     if (!imageId) {
       continue;
     }
@@ -29,7 +31,7 @@ const findReferencedInstances = (displaySetService: DisplaySetService, displaySe
       continue;
     }
 
-    const instance = findInstance(imageId, displaySetService);
+    const instance = findInstance(measurement, displaySetService);
     if (!instance) {
       console.log('Measurement', imageId, 'had no instances found');
       continue;
