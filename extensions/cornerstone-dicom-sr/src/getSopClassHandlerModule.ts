@@ -350,17 +350,17 @@ function getSopClassHandlerModule({ servicesManager, extensionManager }) {
     },
   ];
 }
-function _procedureReportExists(ImagingMeasurementReportContentSequence) {
-  const ImagingMeasurements = ImagingMeasurementReportContentSequence.find(
+function _procedureReportExists(ProceduretReportContentSequence) {
+  const Procedure = ProceduretReportContentSequence.find(
     item => item.ConceptNameCodeSequence.CodeValue === CodeNameCodeSequenceValues.Procedure
   );
-  if (!ImagingMeasurements) {
-    console.log('procedure report does not exist leena');
+  if (!Procedure) {
+    // console.log('procedure report does not exist leena');
 
     return [];
   }
-  console.log('procedure report does exist leena');
-  console.log('leena', ImagingMeasurements);
+  // console.log('procedure report does exist leena');
+  // console.log('leena', Procedure);
   return [];
 }
 function _getMeasurements(ImagingMeasurementReportContentSequence) {

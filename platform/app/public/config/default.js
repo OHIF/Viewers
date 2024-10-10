@@ -1,6 +1,6 @@
 const apiBaseUrl = 'http://coe-aih.apps.iitd.ac.in/data-portal/api/v1';
 // apiBaseUrl = 'http://10.184.164.236:8000/api/v1';
-// apiBaseUrl = 'http://10.194.167.60:8000/api/v1';
+// const apiBaseUrl = 'http://10.194.167.60:8000/api/v1';
 window.config = {
   apiBaseUrl: apiBaseUrl,
 
