@@ -123,14 +123,14 @@ function Patterns() {
                         <span className="pl-2">Create New Segmentation</span>
                       </DropdownMenuItem>
                       <DropdownMenuSeparator />
-                      <DropdownMenuLabel>Current Segmentation</DropdownMenuLabel>
+                      <DropdownMenuLabel>Manage Current Segmentation</DropdownMenuLabel>
+                      <DropdownMenuItem>
+                        <Icons.Series className="text-foreground" />
+                        <span className="pl-2">Remove from Viewport</span>
+                      </DropdownMenuItem>
                       <DropdownMenuItem>
                         <Icons.Rename className="text-foreground" />
                         <span className="pl-2">Rename</span>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem>
-                        <Icons.Delete className="text-foreground" />
-                        <span className="pl-2">Delete</span>
                       </DropdownMenuItem>
                       <DropdownMenuSub>
                         <DropdownMenuSubTrigger>
@@ -145,6 +145,11 @@ function Patterns() {
                           </DropdownMenuSubContent>
                         </DropdownMenuPortal>
                       </DropdownMenuSub>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem>
+                        <Icons.Delete className="text-red-600" />
+                        <span className="pl-2 text-red-600">Delete</span>
+                      </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
                   <Select>
@@ -284,10 +289,10 @@ function Patterns() {
               {/* Data Rows */}
               <div className="space-y-px">
                 {organSegmentationGroup.items.map((item, index) => {
-                  const compositeId = `${organSegmentationGroup.type}-${item.id}-panel`;
+                  const compositeId = `${organSegmentationGroup.type}-${item.id}-panel`; // Ensure unique composite ID
                   return (
                     <DataRow
-                      key={`panel-${compositeId}`}
+                      key={`panel-${compositeId}`} // Prefix to ensure uniqueness
                       number={index + 1}
                       title={item.title}
                       description={item.description}
