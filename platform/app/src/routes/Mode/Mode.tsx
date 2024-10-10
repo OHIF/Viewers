@@ -95,7 +95,10 @@ export default function ModeRoute({
           await extensionManager.registerExtension(extension);
         }
       }
-      setExtensionDependenciesLoaded(true);
+
+      if (isMounted.current) {
+        setExtensionDependenciesLoaded(true);
+      }
     };
 
     loadExtensions();

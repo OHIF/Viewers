@@ -44,7 +44,7 @@ const initUserManager = (oidc, routerBasename) => {
     post_logout_redirect_uri: _makeAbsoluteIfNecessary(post_logout_redirect_uri, baseUri),
   });
 
-  const client = firstOpenIdClient.useAuthorizationCodeFlow ? NextClient: LegacyClient
+  const client = firstOpenIdClient.useAuthorizationCodeFlow ? NextClient : LegacyClient
 
   return client(openIdConnectConfiguration);
 };
@@ -110,8 +110,10 @@ function OpenIdConnectRoutes({ oidc, routerBasename, userAuthenticationService }
     };
   };
 
-  const handleUnauthenticated = async () => {
-    await userManager.signinRedirect();
+  const handleUnauthenticated = () => {
+    // Note: Don't await the redirect. If you make this component async it
+    // causes a react error before redirect as it returns a promise of a component rather than a component.
+    userManager.signinRedirect();
 
     // return null because this is used in a react component
     return null;
