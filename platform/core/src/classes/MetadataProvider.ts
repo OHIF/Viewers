@@ -6,6 +6,7 @@ import DicomMetadataStore from '../services/DicomMetadataStore';
 import fetchPaletteColorLookupTableData from '../utils/metadataProvider/fetchPaletteColorLookupTableData';
 import toNumber from '../utils/toNumber';
 import combineFrameInstance from '../utils/combineFrameInstance';
+import { orientationDirectionVectorMap } from '../defaults';
 
 class MetadataProvider {
   constructor() {
@@ -533,7 +534,7 @@ export default metadataProvider;
 
 const WADO_IMAGE_LOADER = {
   imagePlaneModule: instance => {
-    const { ImageOrientationPatient } = instance;
+    const { ImageOrientationPatient, PatientOrientation } = instance;
 
     // Fallback for DX images.
     // TODO: We should use the rest of the results of this function
@@ -554,6 +555,13 @@ const WADO_IMAGE_LOADER = {
     if (ImageOrientationPatient) {
       rowCosines = ImageOrientationPatient.slice(0, 3);
       columnCosines = ImageOrientationPatient.slice(3, 6);
+    } else if (PatientOrientation) {
+      let patientOrientation = PatientOrientation;
+      if (typeof patientOrientation === 'string') {
+        patientOrientation = patientOrientation.split('\\');
+      }
+      rowCosines = orientationDirectionVectorMap[patientOrientation[0]];
+      columnCosines = orientationDirectionVectorMap[patientOrientation[1][0]];
     }
 
     return {

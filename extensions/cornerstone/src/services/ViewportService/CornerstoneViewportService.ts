@@ -11,8 +11,8 @@ import {
   cache,
   Enums as csEnums,
   BaseVolumeViewport,
+  metaData,
 } from '@cornerstonejs/core';
-
 import { utilities as csToolsUtils, Enums as csToolsEnums } from '@cornerstonejs/tools';
 import { IViewportService } from './IViewportService';
 import { RENDERING_ENGINE_ID } from './constants';
@@ -21,6 +21,7 @@ import { StackViewportData, VolumeViewportData } from '../../types/CornerstoneCa
 import { LutPresentation, PositionPresentation, Presentations } from '../../types/Presentation';
 
 import JumpPresets from '../../utils/JumpPresets';
+import { getImageFlips } from '../../utils/getImageFlips';
 
 const EVENTS = {
   VIEWPORT_DATA_CHANGED: 'event::cornerstoneViewportService:viewportDataChanged',
@@ -643,6 +644,18 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
 
     return viewport.setStack(imageIds, initialImageIndexToUse).then(() => {
       viewport.setProperties({ ...properties });
+
+      const { customizationService } = this.servicesManager.services;
+      const { criteria: isOrientationCorrectionNeeded } = customizationService.get(
+        'orientationCorrectionCriterion'
+      );
+      const instance = metaData.get('instance', imageIds[initialImageIndexToUse]);
+
+      if ((isOrientationCorrectionNeeded as (input) => boolean)?.(instance)) {
+        const { hFlip, vFlip } = getImageFlips(instance);
+        (hFlip || vFlip) && viewport.setCamera({ flipHorizontal: hFlip, flipVertical: vFlip });
+      }
+
       this.setPresentations(viewport.id, presentations, viewportInfo);
       if (displayArea) {
         viewport.setDisplayArea(displayArea);
