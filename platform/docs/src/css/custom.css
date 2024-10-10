@@ -189,18 +189,6 @@
 
 */
 
-/* Updated Playground page styles */
-
-@layer base {
-  html {
-    font-family: 'Inter', sans-serif;
-  }
-
-  body {
-    @apply !bg-black;
-  }
-}
-
 h2.section-header {
   @apply py-4 text-2xl font-normal text-white;
 }
