@@ -217,8 +217,8 @@ function ActionButtons({
     // }
   };
   const [modelResult, setModelResult] = useState(null);
-  const removeLQAdapter = obj => {
-    const { 'LQ Adapter': _, ...newObj } = obj; // Destructure to remove 'LQ Adapter'
+  const removeModel = obj => {
+    const { 'LQ Adapter': _, 'Focus MAE': __, ...newObj } = obj; // Destructure to remove both properties
     return newObj;
   };
   const isObjectEmpty = obj => {
@@ -238,7 +238,7 @@ function ActionButtons({
           setModelResult(null);
         } else {
           const arrayFromEntries = Object.entries(attachment);
-          setModelResult(removeLQAdapter(arrayFromEntries[0][1]));
+          setModelResult(removeModel(arrayFromEntries[0][1]));
         }
       } else {
         console.log('Model has not been run yet');
