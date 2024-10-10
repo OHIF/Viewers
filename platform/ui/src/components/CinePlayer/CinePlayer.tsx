@@ -102,7 +102,7 @@ const CinePlayer: React.FC<CinePlayerProps> = ({
           name={getPlayPauseIconName()}
           className="active:text-primary-light hover:bg-customblue-300 cursor-pointer text-white hover:rounded"
           onClick={() => onPlayPauseChange(!isPlaying)}
-          data-cy="cine-player-play-pause"
+          data-cy={'cine-player-play-pause'}
         />
         {isDynamic && dynamicInfo && (
           <div className="min-w-16 max-w-44 flex flex-col  text-white">
@@ -119,7 +119,7 @@ const CinePlayer: React.FC<CinePlayerProps> = ({
           <div
             className={`${fpsButtonClassNames} rounded-l`}
             onClick={() => handleSetFrameRate(frameRate - 1)}
-            data-cy="cine-player-left-arrow"
+            data-cy={'cine-player-left-arrow'}
           >
             <Icon name="arrow-left-small" />
           </div>
@@ -151,7 +151,7 @@ const CinePlayer: React.FC<CinePlayerProps> = ({
           <div
             className={`${fpsButtonClassNames} rounded-r`}
             onClick={() => handleSetFrameRate(frameRate + 1)}
-            data-cy="cine-player-right-arrow"
+            data-cy={'cine-player-right-arrow'}
           >
             <Icon name="arrow-right-small" />
           </div>
@@ -160,7 +160,7 @@ const CinePlayer: React.FC<CinePlayerProps> = ({
           name="icon-close"
           className="text-primary-active active:text-primary-light hover:bg-customblue-300 cursor-pointer hover:rounded"
           onClick={onClose}
-          data-cy="cine-player-close"
+          data-cy={'cine-player-close'}
         />
       </div>
     </div>
