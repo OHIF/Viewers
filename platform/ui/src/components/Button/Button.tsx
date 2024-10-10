@@ -114,7 +114,6 @@ const Button = ({
       onClick={handleOnClick}
       data-cy={dataCY}
     >
-      {'abbas'}
       {startIconTooltip ? <Tooltip content={startIconTooltip}>{startIcon}</Tooltip> : startIcon}
       {children}
       {endIconTooltip ? <Tooltip content={endIconTooltip}>{endIcon}</Tooltip> : endIcon}

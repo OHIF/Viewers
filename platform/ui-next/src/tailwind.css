@@ -195,6 +195,10 @@
   html {
     font-family: 'Inter', sans-serif;
   }
+
+  body {
+    @apply !bg-black;
+  }
 }
 
 h2.section-header {
