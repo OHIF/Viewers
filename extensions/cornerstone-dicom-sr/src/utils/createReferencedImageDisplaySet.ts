@@ -3,7 +3,7 @@ import { DisplaySetService, classes } from '@ohif/core';
 const ImageSet = classes.ImageSet;
 
 const findInstance = (measurement, displaySetService: DisplaySetService) => {
-  console.log(measurement);
+  // console.log(measurement);
   const { displaySetInstanceUID, ReferencedSOPInstanceUID: sopUid } = measurement;
   const referencedDisplaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
   if (!referencedDisplaySet.images) {
@@ -21,21 +21,21 @@ const findReferencedInstances = (displaySetService: DisplaySetService, displaySe
   const instanceById = {};
 
   for (const measurement of displaySet.measurements) {
-    // const { imageId } = measurement;
-    if (!measurement) {
+    const { imageId } = measurement;
+    if (!imageId) {
       continue;
     }
-    if (instanceById[measurement]) {
+    if (instanceById[imageId]) {
       continue;
     }
 
-    const instance = findInstance(measurement, displaySetService);
+    const instance = findInstance(imageId, displaySetService);
     if (!instance) {
-      console.log('Measurement', measurement, 'had no instances found');
+      console.log('Measurement', imageId, 'had no instances found');
       continue;
     }
 
-    instanceById[measurement] = instance;
+    instanceById[imageId] = instance;
     instances.push(instance);
   }
   return instances;
