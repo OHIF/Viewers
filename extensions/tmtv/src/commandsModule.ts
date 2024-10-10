@@ -381,7 +381,7 @@ const commandsModule = ({ servicesManager, commandsManager, extensionManager }: 
           segmentationValues
             .map((k) => (k - mean) ** 2)
             .reduce((acc, curr) => acc + curr, 0) / voxelCount),
-        volume: voxelCount * spacing[0] * spacing[1] * spacing[2] * 1e-3,
+        volume: voxelCount * spacing[0] * spacing[1] * spacing[2],
       };
 
       return stats;
