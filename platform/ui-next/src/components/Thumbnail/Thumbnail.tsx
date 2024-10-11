@@ -39,7 +39,7 @@ const Thumbnail = ({
   isTracked = false,
   thumbnailType = 'thumbnail',
   onClickUntrack = () => {},
-  commandsManager,
+  onItemSelect,
 }: withAppTypes): React.ReactNode => {
   // TODO: We should wrap our thumbnail to create a "DraggableThumbnail", as
   // this will still allow for "drag", even if there is no drop target for the
@@ -153,7 +153,7 @@ const Thumbnail = ({
                 >
                   <DropdownMenuItem
                     onSelect={() => {
-                      runCommand('openDICOMTagViewer', {
+                      onItemSelect('openDICOMTagViewer', {
                         displaySetInstanceUID,
                       });
                     }}
@@ -186,10 +186,6 @@ const Thumbnail = ({
         </div>
       </div>
     );
-  };
-
-  const runCommand = (commandName, options) => {
-    commandsManager.runCommand(commandName, options);
   };
 
   const renderListPreset = () => {
@@ -284,7 +280,7 @@ const Thumbnail = ({
             >
               <DropdownMenuItem
                 onSelect={() => {
-                  runCommand('openDICOMTagViewer', {
+                  onItemSelect('openDICOMTagViewer', {
                     displaySetInstanceUID,
                   });
                 }}
