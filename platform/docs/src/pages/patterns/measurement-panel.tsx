@@ -1,5 +1,3 @@
-// src/_pages/patterns.tsx
-
 import React, { useState } from 'react';
 import {
   Button,
@@ -16,7 +14,6 @@ const actionOptionsMap: { [key: string]: string[] } = {
   Segmentation: ['Rename', 'Lock', 'Export', 'Delete'],
   'ROI Tools': ['Rename', 'Lock', 'Delete'],
   'Organ Segmentation': ['Rename', 'Lock', 'Export', 'Delete'],
-  // Add more types and their corresponding actions as needed
 };
 
 const dataList = [
@@ -265,7 +262,7 @@ export default function Measurements() {
         <Accordion
           type="multiple"
           defaultValue={['measurements-list', 'measurements-additional']}
-          collapsible
+          tabIndex={0}
         >
           {/* Segmentation Tools */}
           <AccordionItem value="measurements-list">

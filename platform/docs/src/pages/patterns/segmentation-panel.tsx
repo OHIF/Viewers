@@ -282,7 +282,6 @@ export default function SegmentationPanel() {
         <Accordion
           type="multiple"
           defaultValue={['segmentation-tools', 'segmentation-list']}
-          collapsible
         >
           {/* Segmentation Tools */}
           <AccordionItem value="segmentation-tools">

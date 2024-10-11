@@ -307,96 +307,16 @@ export default function ComponentShowcase() {
         <ShowcaseRow
           title="Dropdown Menu"
           description="Various dropdown menu examples"
-          code={`
-<DropdownMenu>
-  <DropdownMenuTrigger>
-    <Button>Open Basic</Button>
-  </DropdownMenuTrigger>
-  <DropdownMenuContent>
-    <DropdownMenuItem>Item 1</DropdownMenuItem>
-    <DropdownMenuItem>Item 2</DropdownMenuItem>
-    <DropdownMenuItem>Long name Item 3</DropdownMenuItem>
-  </DropdownMenuContent>
-</DropdownMenu>
-
-<DropdownMenu>
-  <DropdownMenuTrigger asChild>
-    <Button>Open Align Start</Button>
-  </DropdownMenuTrigger>
-  <DropdownMenuContent align="start">
-    <DropdownMenuItem>Item 1</DropdownMenuItem>
-    <DropdownMenuItem>Item 2</DropdownMenuItem>
-    <DropdownMenuItem>Long name Item 3</DropdownMenuItem>
-  </DropdownMenuContent>
-</DropdownMenu>
-
-<DropdownMenu>
-  <DropdownMenuTrigger asChild>
-    <Button>Open Align End</Button>
-  </DropdownMenuTrigger>
-  <DropdownMenuContent align="end">
-    <DropdownMenuItem>Item 1</DropdownMenuItem>
-    <DropdownMenuItem>Item 2</DropdownMenuItem>
-    <DropdownMenuItem>Long name Item 3</DropdownMenuItem>
-  </DropdownMenuContent>
-</DropdownMenu>
-
-<DropdownMenu>
-  <DropdownMenuTrigger asChild>
-    <Button>Open Align Top</Button>
-  </DropdownMenuTrigger>
-  <DropdownMenuContent side="top" align="start">
-    <DropdownMenuItem onSelect={() => console.debug('Item 1')}>Item 1</DropdownMenuItem>
-    <DropdownMenuItem onSelect={() => console.debug('Item 2')}>Item 2</DropdownMenuItem>
-    <DropdownMenuItem onSelect={() => console.debug('Item 3')}>Long name Item 3</DropdownMenuItem>
-  </DropdownMenuContent>
-</DropdownMenu>
-          `}
         >
           <div className="flex flex-wrap gap-4">
             <DropdownMenu>
               <DropdownMenuTrigger>
-                <Button>Open Basic</Button>
+                <div className="cursor-pointer bg-white">Open Basic</div>
               </DropdownMenuTrigger>
               <DropdownMenuContent>
                 <DropdownMenuItem>Item 1</DropdownMenuItem>
                 <DropdownMenuItem>Item 2</DropdownMenuItem>
                 <DropdownMenuItem>Long name Item 3</DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button>Open Align Start</Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="start">
-                <DropdownMenuItem>Item 1</DropdownMenuItem>
-                <DropdownMenuItem>Item 2</DropdownMenuItem>
-                <DropdownMenuItem>Long name Item 3</DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button>Open Align End</Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem>Item 1</DropdownMenuItem>
-                <DropdownMenuItem>Item 2</DropdownMenuItem>
-                <DropdownMenuItem>Long name Item 3</DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button>Open Align Top</Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent
-                side="top"
-                align="start"
-              >
-                <DropdownMenuItem onSelect={() => console.debug('Item 1')}>Item 1</DropdownMenuItem>
-                <DropdownMenuItem onSelect={() => console.debug('Item 2')}>Item 2</DropdownMenuItem>
-                <DropdownMenuItem onSelect={() => console.debug('Item 3')}>
-                  Long name Item 3
-                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
