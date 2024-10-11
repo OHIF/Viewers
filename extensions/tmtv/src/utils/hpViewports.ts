@@ -24,16 +24,26 @@ const ctAXIAL: AppTypes.HangingProtocol.Viewport = {
           syncColormap: true,
         },
       },
+      {
+        type: 'hydrateSEG',
+        id: 'sameFOR',
+        source: true,
+        target: true,
+        options: {
+          allowRemove: true,
+          syncConfig: true,
+          matchingRules: [
+            'sameFOR',
+            // same study instance uid
+            // not the same study instance uid
+          ],
+        },
+      },
     ],
   },
   displaySets: [
     {
       id: 'ctDisplaySet',
-    },
-  ],
-  overlays: [
-    {
-      id: 'sharedLabelmap',
     },
   ],
 };
@@ -60,6 +70,20 @@ const ctSAGITTAL: AppTypes.HangingProtocol.Viewport = {
           syncColormap: true,
         },
       },
+      {
+        type: 'hydrateSEG',
+        id: 'sameFOR',
+        source: true,
+        target: true,
+        options: {
+          allowRemove: true,
+          matchingRules: [
+            'sameFOR',
+            // same study instance uid
+            // not the same study instance uid
+          ],
+        },
+      },
     ],
   },
   displaySets: [
@@ -67,12 +91,8 @@ const ctSAGITTAL: AppTypes.HangingProtocol.Viewport = {
       id: 'ctDisplaySet',
     },
   ],
-  overlays: [
-    {
-      id: 'sharedLabelmap',
-    },
-  ],
 };
+
 const ctCORONAL: AppTypes.HangingProtocol.Viewport = {
   viewportOptions: {
     viewportId: 'ctCORONAL',

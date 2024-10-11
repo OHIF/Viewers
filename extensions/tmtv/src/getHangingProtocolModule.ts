@@ -331,7 +331,7 @@ const ptCT: AppTypes.HangingProtocol.Protocol = {
     },
   },
   overlaySelectors: {
-    sharedLabelmap: {
+    sameFORLabelmap: {
       matchingRules: [
         {
           weight: 1,
@@ -344,6 +344,8 @@ const ptCT: AppTypes.HangingProtocol.Protocol = {
             },
           },
         },
+        // same study instance uid
+        // not the same study instance uid
       ],
     },
   },
