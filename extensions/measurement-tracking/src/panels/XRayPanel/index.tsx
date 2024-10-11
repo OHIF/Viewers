@@ -46,8 +46,8 @@ function XRayPanel({
   const [toastMessage, setToastMessage] = useState('');
 
   const handleRunModelsClick = async () => {
-    const response = await apiClient.handleMammoModel(studyInstanceUid, setToastMessage);
-    console.log('Mammo model processing started:', response);
+    const response = await apiClient.handleXRayModel(studyInstanceUid, setToastMessage);
+    console.log('Xray model processing started:', response);
     // alert(response.result.message);
     // } catch (error) {
     //   console.error('Failed to start mammo model processing:', error);

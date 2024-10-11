@@ -134,8 +134,10 @@ class APIClient {
 
     const response = await this.makeRequest(
       'POST',
-      apiEndpoints.mammoModel(studyUid),
-      {},
+      apiEndpoints.model(studyUid),
+      {
+        model: 'Mammo',
+      },
       {},
       true
     );
@@ -196,7 +198,7 @@ class APIClient {
       'POST',
       apiEndpoints.model(studyUid),
       {
-        model: 'XRay',
+        model: 'CXR',
       },
       {},
       true

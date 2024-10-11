@@ -229,7 +229,8 @@ function ActionButtons({
       const response = await apiClient.getClassificationOutput(studyInstanceUid);
       if (response && response.result) {
         const attachment = response.result.attachment;
-
+        console.log('Model result gotten');
+        console.log(attachment);
         if (
           typeof attachment === 'object' &&
           !Array.isArray(attachment) &&
@@ -263,7 +264,7 @@ function ActionButtons({
     jsonArray.forEach(obj => {
       Object.keys(obj).forEach(key => {
         if (obj[key] !== null) {
-          result += key + obj[key].toString().replace(/,/g, '');
+          result += key + obj[key]?.toString()?.replace(/,/g, '');
         }
       });
     });
@@ -286,7 +287,7 @@ function ActionButtons({
     try {
       for (let index = 0; index < annotations.length; index++) {
         const annotation = annotations[index];
-        if (!annotation.gbRadScore) {
+        if (!annotation?.gbRadScore) {
           console.warn(`Skipping annotation ${index + 1} due to missing data.`);
           continue;
         }
