@@ -23,9 +23,6 @@ function PanelStudyBrowserTracking({
   getStudiesForPatientByMRN,
   requestDisplaySetCreationForStudy,
   dataSource,
-  renderHeader,
-  getCloseIcon,
-  tab,
   commandsManager,
 }: withAppTypes) {
   const {
@@ -466,23 +463,20 @@ function PanelStudyBrowserTracking({
 
   return (
     <>
-      {renderHeader && (
-        <>
-          <PanelStudyBrowserTrackingHeader
-            tab={tab}
-            getCloseIcon={getCloseIcon}
-            viewPresets={viewPresets}
-            updateViewPresetValue={updateViewPresetValue}
-            actionIcons={actionIcons}
-            updateActionIconValue={updateActionIconValue}
-          />
-          <Separator
-            orientation="horizontal"
-            className="bg-black"
-            thickness="2px"
-          />
-        </>
-      )}
+      <>
+        <PanelStudyBrowserTrackingHeader
+          viewPresets={viewPresets}
+          updateViewPresetValue={updateViewPresetValue}
+          actionIcons={actionIcons}
+          updateActionIconValue={updateActionIconValue}
+        />
+        <Separator
+          orientation="horizontal"
+          className="bg-black"
+          thickness="2px"
+        />
+      </>
+
       <StudyBrowser
         tabs={tabs}
         servicesManager={servicesManager}

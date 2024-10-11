@@ -4,20 +4,17 @@ import { Toolbox } from '@ohif/ui-next';
 import DynamicExport from './panels/DynamicExport';
 
 function getPanelModule({ commandsManager, extensionManager, servicesManager }) {
-  const wrappedDynamicDataPanel = ({ renderHeader, getCloseIcon, tab }) => {
+  const wrappedDynamicDataPanel = ({}) => {
     return (
       <DynamicDataPanel
         commandsManager={commandsManager}
         servicesManager={servicesManager}
         extensionManager={extensionManager}
-        renderHeader={renderHeader}
-        getCloseIcon={getCloseIcon}
-        tab={tab}
       />
     );
   };
 
-  const wrappedDynamicToolbox = ({ renderHeader, getCloseIcon, tab }) => {
+  const wrappedDynamicToolbox = ({}) => {
     return (
       <>
         <Toolbox
@@ -26,9 +23,6 @@ function getPanelModule({ commandsManager, extensionManager, servicesManager }) 
           extensionManager={extensionManager}
           buttonSectionId="dynamic-toolbox"
           title="Threshold Tools"
-          renderHeader={renderHeader}
-          getCloseIcon={getCloseIcon}
-          tab={tab}
         />
       </>
     );

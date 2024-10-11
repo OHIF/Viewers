@@ -8,20 +8,17 @@ import { Toolbox } from '@ohif/ui-next';
 // - show errors in UI for thumbnails if promise fails
 
 function getPanelModule({ commandsManager, extensionManager, servicesManager }) {
-  const wrappedPanelPetSuv = ({ renderHeader, getCloseIcon, tab }) => {
+  const wrappedPanelPetSuv = ({}) => {
     return (
       <PanelPetSUV
         commandsManager={commandsManager}
         servicesManager={servicesManager}
         extensionManager={extensionManager}
-        renderHeader={renderHeader}
-        getCloseIcon={getCloseIcon}
-        tab={tab}
       />
     );
   };
 
-  const wrappedROIThresholdToolbox = ({ renderHeader, getCloseIcon, tab }: withAppTypes) => {
+  const wrappedROIThresholdToolbox = ({}: withAppTypes) => {
     return (
       <>
         <Toolbox
@@ -30,9 +27,6 @@ function getPanelModule({ commandsManager, extensionManager, servicesManager }) 
           extensionManager={extensionManager}
           buttonSectionId="ROIThresholdToolbox"
           title="Threshold Tools"
-          renderHeader={renderHeader}
-          getCloseIcon={getCloseIcon}
-          tab={tab}
         />
       </>
     );

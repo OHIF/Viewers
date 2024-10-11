@@ -20,9 +20,6 @@ function PanelStudyBrowser({
   getStudiesForPatientByMRN,
   requestDisplaySetCreationForStudy,
   dataSource,
-  renderHeader,
-  getCloseIcon,
-  tab,
   commandsManager,
 }: withAppTypes) {
   const { hangingProtocolService, displaySetService, uiNotificationService, customizationService } =
@@ -285,23 +282,20 @@ function PanelStudyBrowser({
 
   return (
     <>
-      {renderHeader && (
-        <>
-          <PanelStudyBrowserHeader
-            tab={tab}
-            getCloseIcon={getCloseIcon}
-            viewPresets={viewPresets}
-            updateViewPresetValue={updateViewPresetValue}
-            actionIcons={actionIcons}
-            updateActionIconValue={updateActionIconValue}
-          />
-          <Separator
-            orientation="horizontal"
-            className="bg-black"
-            thickness="2px"
-          />
-        </>
-      )}
+      <>
+        <PanelStudyBrowserHeader
+          viewPresets={viewPresets}
+          updateViewPresetValue={updateViewPresetValue}
+          actionIcons={actionIcons}
+          updateActionIconValue={updateActionIconValue}
+        />
+        <Separator
+          orientation="horizontal"
+          className="bg-black"
+          thickness="2px"
+        />
+      </>
+
       <StudyBrowser
         tabs={tabs}
         servicesManager={servicesManager}
