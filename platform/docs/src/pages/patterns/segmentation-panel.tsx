@@ -1,35 +1,26 @@
 import React, { useState } from 'react';
+
+import { DataRow } from '../../../../ui-next/src/components/DataRow';
+import { Button } from '../../../../ui-next/src/components/Button';
 import {
-  Button,
   Select,
   SelectValue,
   SelectTrigger,
   SelectContent,
   SelectItem,
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuLabel,
-  DropdownMenuSub,
-  DropdownMenuSubTrigger,
-  DropdownMenuSubContent,
-  DropdownMenuPortal,
-  Icons,
-  DataRow,
+} from '../../../../ui-next/src/components/Select';
+import { Icons } from '../../../../ui-next/src/components/Icons';
+import {
   Accordion,
   AccordionItem,
   AccordionTrigger,
   AccordionContent,
-  Slider,
-  Switch,
-  Label,
-  Input,
-  Tabs,
-  TabsList,
-  TabsTrigger,
-} from '@ohif/ui-next';
+} from '../../../../ui-next/src/components/Accordion';
+import { Slider } from '../../../../ui-next/src/components/Slider';
+import { Switch } from '../../../../ui-next/src/components/Switch';
+import { Label } from '../../../../ui-next/src/components/Label';
+import { Input } from '../../../../ui-next/src/components/Input';
+import { Tabs, TabsList, TabsTrigger } from '../../../../ui-next/src/components/Tabs';
 
 const actionOptionsMap: { [key: string]: string[] } = {
   Measurement: ['Rename', 'Lock', 'Delete'],
@@ -302,45 +293,6 @@ export default function SegmentationPanel() {
               <div className="mb-0">
                 {/* Header Controls */}
                 <div className="bg-muted flex h-10 w-full items-center space-x-1 rounded-t px-1.5">
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                      >
-                        <Icons.More className="h-6 w-6" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="start">
-                      <DropdownMenuItem>
-                        <Icons.Add className="text-foreground" />
-                        <span className="pl-2">Create New Segmentation</span>
-                      </DropdownMenuItem>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuLabel>Current Segmentation</DropdownMenuLabel>
-                      <DropdownMenuItem>
-                        <Icons.Rename className="text-foreground" />
-                        <span className="pl-2">Rename</span>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem>
-                        <Icons.Delete className="text-foreground" />
-                        <span className="pl-2">Delete</span>
-                      </DropdownMenuItem>
-                      <DropdownMenuSub>
-                        <DropdownMenuSubTrigger>
-                          <Icons.Export className="text-foreground" />
-                          <span className="pl-2">Export & Download</span>
-                        </DropdownMenuSubTrigger>
-                        <DropdownMenuPortal>
-                          <DropdownMenuSubContent>
-                            <DropdownMenuItem>Export DICOM SEG</DropdownMenuItem>
-                            <DropdownMenuItem>Download DICOM SEG</DropdownMenuItem>
-                            <DropdownMenuItem>Download DICOM RTSTRUCT</DropdownMenuItem>
-                          </DropdownMenuSubContent>
-                        </DropdownMenuPortal>
-                      </DropdownMenuSub>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
                   <Select>
                     <SelectTrigger className="w-full overflow-hidden">
                       <SelectValue placeholder="Segmentation 1" />

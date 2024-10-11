@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
+import { Button } from '../../../../ui-next/src/components/Button';
+import { Icons } from '../../../../ui-next/src/components/Icons';
 import {
-  Button,
-  Icons,
   Accordion,
   AccordionItem,
   AccordionTrigger,
   AccordionContent,
-  DataRow,
-} from '@ohif/ui-next';
+} from '../../../../ui-next/src/components/Accordion';
+import { DataRow } from '../../../../ui-next/src/components/DataRow';
 
 const actionOptionsMap: { [key: string]: string[] } = {
   Measurement: ['Rename', 'Lock', 'Delete'],

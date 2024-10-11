@@ -1,30 +1,30 @@
 import React, { useState } from 'react';
 import '../css/custom.css';
 
+import { Label } from '../../../ui-next/src/components/Label';
+import { Input } from '../../../ui-next/src/components/Input';
+import { Separator } from '../../../ui-next/src/components/Separator';
+import { Tabs, TabsList, TabsTrigger } from '../../../ui-next/src/components/Tabs';
 import {
-  Label,
-  Input,
-  Separator,
-  Tabs,
-  TabsList,
-  TabsTrigger,
   Select,
   SelectTrigger,
   SelectContent,
   SelectItem,
-  Button,
   SelectValue,
-  Switch,
-  Checkbox,
-  Toggle,
-  Slider,
-  ScrollArea,
+} from '../../../ui-next/src/components/Select';
+import { Button } from '../../../ui-next/src/components/Button';
+import { Switch } from '../../../ui-next/src/components/Switch';
+import { Checkbox } from '../../../ui-next/src/components/Checkbox';
+import { Toggle } from '../../../ui-next/src/components/Toggle';
+import { Slider } from '../../../ui-next/src/components/Slider';
+import { ScrollArea } from '../../../ui-next/src/components/ScrollArea';
+import {
   DropdownMenu,
   DropdownMenuTrigger,
   DropdownMenuContent,
   DropdownMenuItem,
-  Icons,
-} from '@ohif/ui-next';
+} from '../../../ui-next/src/components/DropdownMenu';
+import { Icons } from '../../../ui-next/src/components/Icons';
 
 interface ShowcaseRowProps {
   title: string;
@@ -307,16 +307,96 @@ export default function ComponentShowcase() {
         <ShowcaseRow
           title="Dropdown Menu"
           description="Various dropdown menu examples"
+          code={`
+<DropdownMenu>
+  <DropdownMenuTrigger>
+    <Button>Open Basic</Button>
+  </DropdownMenuTrigger>
+  <DropdownMenuContent>
+    <DropdownMenuItem>Item 1</DropdownMenuItem>
+    <DropdownMenuItem>Item 2</DropdownMenuItem>
+    <DropdownMenuItem>Long name Item 3</DropdownMenuItem>
+  </DropdownMenuContent>
+</DropdownMenu>
+
+<DropdownMenu>
+  <DropdownMenuTrigger asChild>
+    <Button>Open Align Start</Button>
+  </DropdownMenuTrigger>
+  <DropdownMenuContent align="start">
+    <DropdownMenuItem>Item 1</DropdownMenuItem>
+    <DropdownMenuItem>Item 2</DropdownMenuItem>
+    <DropdownMenuItem>Long name Item 3</DropdownMenuItem>
+  </DropdownMenuContent>
+</DropdownMenu>
+
+<DropdownMenu>
+  <DropdownMenuTrigger asChild>
+    <Button>Open Align End</Button>
+  </DropdownMenuTrigger>
+  <DropdownMenuContent align="end">
+    <DropdownMenuItem>Item 1</DropdownMenuItem>
+    <DropdownMenuItem>Item 2</DropdownMenuItem>
+    <DropdownMenuItem>Long name Item 3</DropdownMenuItem>
+  </DropdownMenuContent>
+</DropdownMenu>
+
+<DropdownMenu>
+  <DropdownMenuTrigger asChild>
+    <Button>Open Align Top</Button>
+  </DropdownMenuTrigger>
+  <DropdownMenuContent side="top" align="start">
+    <DropdownMenuItem onSelect={() => console.debug('Item 1')}>Item 1</DropdownMenuItem>
+    <DropdownMenuItem onSelect={() => console.debug('Item 2')}>Item 2</DropdownMenuItem>
+    <DropdownMenuItem onSelect={() => console.debug('Item 3')}>Long name Item 3</DropdownMenuItem>
+  </DropdownMenuContent>
+</DropdownMenu>
+          `}
         >
           <div className="flex flex-wrap gap-4">
             <DropdownMenu>
               <DropdownMenuTrigger>
-                <div className="cursor-pointer bg-white">Open Basic</div>
+                <Button>Open Basic</Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent>
                 <DropdownMenuItem>Item 1</DropdownMenuItem>
                 <DropdownMenuItem>Item 2</DropdownMenuItem>
                 <DropdownMenuItem>Long name Item 3</DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button>Open Align Start</Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start">
+                <DropdownMenuItem>Item 1</DropdownMenuItem>
+                <DropdownMenuItem>Item 2</DropdownMenuItem>
+                <DropdownMenuItem>Long name Item 3</DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button>Open Align End</Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem>Item 1</DropdownMenuItem>
+                <DropdownMenuItem>Item 2</DropdownMenuItem>
+                <DropdownMenuItem>Long name Item 3</DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button>Open Align Top</Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                side="top"
+                align="start"
+              >
+                <DropdownMenuItem onSelect={() => console.debug('Item 1')}>Item 1</DropdownMenuItem>
+                <DropdownMenuItem onSelect={() => console.debug('Item 2')}>Item 2</DropdownMenuItem>
+                <DropdownMenuItem onSelect={() => console.debug('Item 3')}>
+                  Long name Item 3
+                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
