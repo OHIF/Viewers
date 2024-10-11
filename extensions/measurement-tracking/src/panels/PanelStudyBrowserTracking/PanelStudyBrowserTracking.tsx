@@ -461,7 +461,7 @@ function PanelStudyBrowserTracking({
     });
   };
 
-  const onItemSelect = (commandName, options) => {
+  const onThumbnailContextMenu = (commandName, options) => {
     commandsManager.runCommand(commandName, options);
   };
 
@@ -498,7 +498,7 @@ function PanelStudyBrowserTracking({
         activeDisplaySetInstanceUIDs={activeViewportDisplaySetInstanceUIDs}
         showSettings={actionIcons.find(icon => icon.id === 'settings').value}
         viewPresets={viewPresets}
-        onItemSelect={onItemSelect}
+        onThumbnailContextMenu={onThumbnailContextMenu}
       />
     </>
   );

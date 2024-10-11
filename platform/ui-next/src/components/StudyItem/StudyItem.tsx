@@ -19,7 +19,7 @@ const StudyItem = ({
   onDoubleClickThumbnail,
   onClickUntrack,
   viewPreset = 'thumbnails',
-  onItemSelect,
+  onThumbnailContextMenu,
 }: withAppTypes) => {
   return (
     <Accordion
@@ -61,7 +61,7 @@ const StudyItem = ({
               onThumbnailDoubleClick={onDoubleClickThumbnail}
               onClickUntrack={onClickUntrack}
               viewPreset={viewPreset}
-              onItemSelect={onItemSelect}
+              onThumbnailContextMenu={onThumbnailContextMenu}
             />
           )}
         </AccordionContent>
