@@ -280,6 +280,10 @@ function PanelStudyBrowser({
 
   const activeDisplaySetInstanceUIDs = viewports.get(activeViewportId)?.displaySetInstanceUIDs;
 
+  const onItemSelect = (commandName, options) => {
+    commandsManager.runCommand(commandName, options);
+  };
+
   return (
     <>
       <>
