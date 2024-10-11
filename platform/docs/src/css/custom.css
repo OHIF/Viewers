@@ -227,6 +227,15 @@ input[type='number'] {
   -moz-appearance: textfield; /* For Firefox */
 }
 
+.navbar__item {
+  display: flex;
+  align-items: center;
+}
+
+.navbar__item svg {
+  margin-left: 5px;
+}
+
 /* stylelint-disable docusaurus/copyright-header */
 /**
  * Any CSS included here will be global. The classic template

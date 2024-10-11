@@ -2,16 +2,6 @@
 id: index
 ---
 
-- [General FAQ](#general-faq)
-  - [How do I report a bug?](#how-do-i-report-a-bug)
-  - [How can I request a new feature?](#how-can-i-request-a-new-feature)
-  - [Who should I contact about Academic Collaborations?](#who-should-i-contact-about-academic-collaborations)
-  - [Does OHIF offer support?](#does-ohif-offer-support)
-  - [Does The OHIF Viewer have 510(k) Clearance from the U.S. F.D.A or CE Marking from the European Commission?](#does-the-ohif-viewer-have-510k-clearance-from-the-us-fda-or-ce-marking-from-the-european-commission)
-  - [Is there a DICOM Conformance Statement for the OHIF Viewer?](#is-there-a-dicom-conformance-statement-for-the-ohif-viewer)
-  - [Is The OHIF Viewer HIPAA Compliant?](#is-the-ohif-viewer-hipaa-compliant)
-  - [Could you provide me with a particular study from the OHIF Viewer Demo?](#could-you-provide-me-with-a-particular-study-from-the-ohif-viewer-demo)
-
 
 # General FAQ
 
@@ -77,7 +67,7 @@ You can check out the studies that we have put in this [Dropbox link](https://ww
   Links
   -->
 [general]: #general
-[technical]: #technical
+[technical]: #technicalß˚
 [report-bug]: #how-do-i-report-a-bug
 [new-feature]: #how-can-i-request-a-new-feature
 [commercial-support]: #does-ohif-offer-commercial-support

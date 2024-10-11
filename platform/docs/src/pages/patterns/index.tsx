@@ -2,25 +2,23 @@ import React from 'react';
 import Layout from '@theme/Layout';
 import { useHistory } from '@docusaurus/router';
 
-export default function Hello() {
+export default function Patterns() {
   const history = useHistory();
 
   return (
-    <Layout
-      title="Hello"
-      description="Hello React Page"
-    >
+    <Layout>
+      <h1>Patterns</h1>
       <button
         className="bg-slate-400"
-        onClick={() => history.push('/ui-playground')}
+        onClick={() => history.push('/patterns/segmentation-panel')}
       >
-        ui-playground
+        {'Segmentation Panel'}
       </button>
       <button
         className="bg-slate-400"
-        onClick={() => history.push('/patterns')}
+        onClick={() => history.push('/patterns/measurement-panel')}
       >
-        patterns
+        {'Measurements Panel'}
       </button>
     </Layout>
   );

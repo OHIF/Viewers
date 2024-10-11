@@ -177,8 +177,8 @@ module.exports = {
             position: 'left',
           },
           {
-            to: '/migration-guide',
-            label: 'Migration Guides',
+            to: '/playground',
+            label: 'UI Playground',
             position: 'left',
             className: 'new-badge',
           },
