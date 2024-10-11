@@ -10,7 +10,8 @@ const ThumbnailList = ({
   onClickUntrack,
   activeDisplaySetInstanceUIDs = [],
   viewPreset,
-}) => {
+  commandsManager,
+}: withAppTypes) => {
   return (
     <div
       id="ohif-thumbnail-list"
@@ -37,74 +38,33 @@ const ThumbnailList = ({
           isHydratedForDerivedDisplaySet,
         }) => {
           const isActive = activeDisplaySetInstanceUIDs.includes(displaySetInstanceUID);
-          switch (componentType) {
-            case 'thumbnail':
-              return (
-                <Thumbnail
-                  key={displaySetInstanceUID}
-                  displaySetInstanceUID={displaySetInstanceUID}
-                  dragData={dragData}
-                  description={description}
-                  seriesNumber={seriesNumber}
-                  numInstances={numInstances || 1}
-                  countIcon={countIcon}
-                  imageSrc={imageSrc}
-                  imageAltText={imageAltText}
-                  messages={messages}
-                  isActive={isActive}
-                  onClick={() => onThumbnailClick(displaySetInstanceUID)}
-                  onDoubleClick={() => onThumbnailDoubleClick(displaySetInstanceUID)}
-                  viewPreset={viewPreset}
-                  modality={modality}
-                />
-              );
-            case 'thumbnailTracked':
-              return (
-                <Thumbnail
-                  key={displaySetInstanceUID}
-                  displaySetInstanceUID={displaySetInstanceUID}
-                  dragData={dragData}
-                  description={description}
-                  seriesNumber={seriesNumber}
-                  numInstances={numInstances}
-                  loadingProgress={loadingProgress}
-                  countIcon={countIcon}
-                  imageSrc={imageSrc}
-                  imageAltText={imageAltText}
-                  messages={messages}
-                  isTracked={isTracked}
-                  isActive={isActive}
-                  onClick={() => onThumbnailClick(displaySetInstanceUID)}
-                  onDoubleClick={() => onThumbnailDoubleClick(displaySetInstanceUID)}
-                  onClickUntrack={() => onClickUntrack(displaySetInstanceUID)}
-                  viewPreset={viewPreset}
-                  modality={modality}
-                />
-              );
-            case 'thumbnailNoImage':
-              return (
-                <Thumbnail
-                  isActive={isActive}
-                  key={displaySetInstanceUID}
-                  displaySetInstanceUID={displaySetInstanceUID}
-                  dragData={dragData}
-                  modality={modality}
-                  messages={messages}
-                  description={description}
-                  onClick={() => onThumbnailClick(displaySetInstanceUID)}
-                  onDoubleClick={() => onThumbnailDoubleClick(displaySetInstanceUID)}
-                  viewPreset={viewPreset}
-                  countIcon={countIcon}
-                  seriesNumber={seriesNumber}
-                  numInstances={numInstances || 1}
-                  isHydratedForDerivedDisplaySet={isHydratedForDerivedDisplaySet}
-                  canReject={canReject}
-                  onReject={onReject}
-                />
-              );
-            default:
-              return <></>;
-          }
+          return (
+            <Thumbnail
+              key={displaySetInstanceUID}
+              displaySetInstanceUID={displaySetInstanceUID}
+              dragData={dragData}
+              description={description}
+              seriesNumber={seriesNumber}
+              numInstances={numInstances || 1}
+              countIcon={countIcon}
+              imageSrc={imageSrc}
+              imageAltText={imageAltText}
+              messages={messages}
+              isActive={isActive}
+              modality={modality}
+              viewPreset={componentType === 'thumbnailNoImage' ? 'list' : viewPreset}
+              thumbnailType={componentType}
+              onClick={() => onThumbnailClick(displaySetInstanceUID)}
+              onDoubleClick={() => onThumbnailDoubleClick(displaySetInstanceUID)}
+              isTracked={isTracked}
+              loadingProgress={loadingProgress}
+              onClickUntrack={() => onClickUntrack(displaySetInstanceUID)}
+              isHydratedForDerivedDisplaySet={isHydratedForDerivedDisplaySet}
+              canReject={canReject}
+              onReject={onReject}
+              commandsManager={commandsManager}
+            />
+          );
         }
       )}
     </div>
