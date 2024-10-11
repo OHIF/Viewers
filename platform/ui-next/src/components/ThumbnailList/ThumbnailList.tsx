@@ -10,7 +10,7 @@ const ThumbnailList = ({
   onClickUntrack,
   activeDisplaySetInstanceUIDs = [],
   viewPreset,
-  onItemSelect,
+  onThumbnailContextMenu,
 }: withAppTypes) => {
   return (
     <div
@@ -62,7 +62,7 @@ const ThumbnailList = ({
               isHydratedForDerivedDisplaySet={isHydratedForDerivedDisplaySet}
               canReject={canReject}
               onReject={onReject}
-              onItemSelect={onItemSelect}
+              onThumbnailContextMenu={onThumbnailContextMenu}
             />
           );
         }

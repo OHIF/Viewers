@@ -280,7 +280,7 @@ function PanelStudyBrowser({
 
   const activeDisplaySetInstanceUIDs = viewports.get(activeViewportId)?.displaySetInstanceUIDs;
 
-  const onItemSelect = (commandName, options) => {
+  const onThumbnailContextMenu = (commandName, options) => {
     commandsManager.runCommand(commandName, options);
   };
 
@@ -313,7 +313,7 @@ function PanelStudyBrowser({
         }}
         showSettings={actionIcons.find(icon => icon.id === 'settings').value}
         viewPresets={viewPresets}
-        onItemSelect={onItemSelect}
+        onThumbnailContextMenu={onThumbnailContextMenu}
       />
     </>
   );
