@@ -113,33 +113,33 @@ module.exports = (env, argv, { SRC_DIR, ENTRY }) => {
               },
             ]),
         {
-          test: /\.svg$/,
-          use: [
+          test: /\.svg?$/,
+          oneOf: [
             {
-              loader: '@svgr/webpack',
-              options: {
-                svgoConfig: {
-                  plugins: [
-                    {
-                      name: 'preset-default',
-                      params: {
-                        overrides: {
-                          removeViewBox: false,
+              use: [
+                {
+                  loader: '@svgr/webpack',
+                  options: {
+                    svgoConfig: {
+                      plugins: [
+                        {
+                          name: 'preset-default',
+                          params: {
+                            overrides: {
+                              removeViewBox: false,
+                            },
+                          },
                         },
-                      },
+                      ],
                     },
-                  ],
+                    prettier: false,
+                    svgo: true,
+                    titleProp: true,
+                  },
                 },
-                prettier: false,
-                svgo: true,
-                titleProp: true,
-                exportType: 'named',
-              },
-            },
-            {
-              loader: 'file-loader',
-              options: {
-                name: 'assets/[name].[hash:8].[ext]',
+              ],
+              issuer: {
+                and: [/\.(ts|tsx|js|jsx|md|mdx)$/],
               },
             },
           ],
