@@ -13,13 +13,11 @@ import {
   SelectContent,
   SelectItem,
   Button,
-  BackgroundColorSelect,
   SelectValue,
   Switch,
   Checkbox,
   Toggle,
   Slider,
-  Accordion,
   ScrollArea,
   DropdownMenu,
   DropdownMenuTrigger,
@@ -396,7 +394,9 @@ export default function ComponentShowcase() {
               >
                 <DropdownMenuItem onSelect={() => console.debug('Item 1')}>Item 1</DropdownMenuItem>
                 <DropdownMenuItem onSelect={() => console.debug('Item 2')}>Item 2</DropdownMenuItem>
-                <DropdownMenuItem onSelect={() => console.debug('Item 3')}>Long name Item 3</DropdownMenuItem>
+                <DropdownMenuItem onSelect={() => console.debug('Item 3')}>
+                  Long name Item 3
+                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
@@ -479,10 +479,13 @@ export default function ComponentShowcase() {
           `}
         >
           <ScrollArea className="border-input bg-background h-[150px] w-[350px] rounded-md border p-2 text-sm text-white">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco
-            laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat
-            non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore
-            magna aliqua.
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
+            incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud
+            exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure
+            dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+            Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt
+            mollit anim id est laborum. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
+            do eiusmod tempor incididunt ut labore et dolore magna aliqua.
           </ScrollArea>
         </ShowcaseRow>
       </div>
