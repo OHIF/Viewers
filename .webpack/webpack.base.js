@@ -22,7 +22,6 @@ const cssToJavaScript = require('./rules/cssToJavaScript.js');
 // const stylusToJavaScript = require('./rules/stylusToJavaScript.js');
 const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
 
-
 // ~~ ENV VARS
 const NODE_ENV = process.env.NODE_ENV;
 const QUICK_BUILD = process.env.QUICK_BUILD;
@@ -101,42 +100,46 @@ module.exports = (env, argv, { SRC_DIR, ENTRY }) => {
     module: {
       noParse: [/(codec)/, /(dicomicc)/],
       rules: [
-        ...(isProdBuild ? [] : [{
-          test: /\.[jt]sx?$/,
-          exclude: /node_modules/,
-          loader: 'babel-loader',
-          options: {
-            plugins: ['react-refresh/babel'],
-          },
-        }]),
-        {
-          test: /\.svg?$/,
-          oneOf: [
-            {
-              use: [
-                {
-                  loader: '@svgr/webpack',
-                  options: {
-                    svgoConfig: {
-                      plugins: [
-                        {
-                          name: 'preset-default',
-                          params: {
-                            overrides: {
-                              removeViewBox: false
-                            },
-                          },
-                        },
-                      ]
-                    },
-                    prettier: false,
-                    svgo: true,
-                    titleProp: true,
-                  },
+        ...(isProdBuild
+          ? []
+          : [
+              {
+                test: /\.[jt]sx?$/,
+                exclude: /node_modules/,
+                loader: 'babel-loader',
+                options: {
+                  plugins: ['react-refresh/babel'],
                 },
-              ],
-              issuer: {
-                and: [/\.(ts|tsx|js|jsx|md|mdx)$/],
+              },
+            ]),
+        {
+          test: /\.svg$/,
+          use: [
+            {
+              loader: '@svgr/webpack',
+              options: {
+                svgoConfig: {
+                  plugins: [
+                    {
+                      name: 'preset-default',
+                      params: {
+                        overrides: {
+                          removeViewBox: false,
+                        },
+                      },
+                    },
+                  ],
+                },
+                prettier: false,
+                svgo: true,
+                titleProp: true,
+                exportType: 'named',
+              },
+            },
+            {
+              loader: 'file-loader',
+              options: {
+                name: 'assets/[name].[hash:8].[ext]',
               },
             },
           ],

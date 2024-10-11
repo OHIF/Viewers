@@ -197,7 +197,7 @@ h3.section-header {
   @apply py-3 text-xl text-white;
 }
 
-.row {
+.playground-row {
   @apply bg-card mb-6 flex flex-row flex-wrap rounded-md border py-10;
 }
 

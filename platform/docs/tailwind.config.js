@@ -1,11 +1,15 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  // presets: [require('../ui/tailwind.config.js')],
+  // Don't purge any tailwind classes, usefull for debugging
+  // ...(process.env.NODE_ENV === 'development' && {
+  //   safelist: [{ pattern: /.*/ }],
+  // }),
   content: [
     './pages/**/*.{ts,tsx}',
     './components/**/*.{ts,tsx}',
     './app/**/*.{ts,tsx}',
     './src/**/*.{ts,tsx}',
+    '../ui-next/**/*.{ts,tsx,js, jsx}',
   ],
   prefix: '',
   theme: {

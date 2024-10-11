@@ -44,7 +44,7 @@ module.exports = {
         };
       },
     }),
-    // path.resolve(__dirname, './pluginOHIFWebpackConfig.js'),
+    path.resolve(__dirname, './pluginOHIFWebpackConfig.js'),
     // /path.resolve(__dirname, './postcss.js'),
     'docusaurus-plugin-image-zoom', // 3rd party plugin for image click to pop
     [
