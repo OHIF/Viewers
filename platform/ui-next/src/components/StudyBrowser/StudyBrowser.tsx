@@ -31,6 +31,7 @@ const StudyBrowser = ({
   servicesManager,
   showSettings,
   viewPresets,
+  commandsManager,
 }: withAppTypes) => {
   const getTabContent = () => {
     const tabData = tabs.find(tab => tab.name === activeTabName);
@@ -60,6 +61,7 @@ const StudyBrowser = ({
               activeDisplaySetInstanceUIDs={activeDisplaySetInstanceUIDs}
               data-cy="thumbnail-list"
               viewPreset={viewPreset}
+              commandsManager={commandsManager}
             />
           </React.Fragment>
         );

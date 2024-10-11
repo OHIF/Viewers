@@ -19,7 +19,8 @@ const StudyItem = ({
   onDoubleClickThumbnail,
   onClickUntrack,
   viewPreset = 'thumbnails',
-}) => {
+  commandsManager,
+}: withAppTypes) => {
   return (
     <Accordion
       type="single"
@@ -60,6 +61,7 @@ const StudyItem = ({
               onThumbnailDoubleClick={onDoubleClickThumbnail}
               onClickUntrack={onClickUntrack}
               viewPreset={viewPreset}
+              commandsManager={commandsManager}
             />
           )}
         </AccordionContent>

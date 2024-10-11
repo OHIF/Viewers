@@ -51,7 +51,7 @@ function PanelStudyBrowserTrackingHeader({
             </div>
 
             <div className="mr-[30px] flex items-center justify-center">
-              <div className="flex items-center space-x-1">
+              <div className="text-primary-active flex items-center space-x-1">
                 {actionIcons.map((icon: actionIcon, index) =>
                   React.createElement(Icons[icon.iconName] || Icons.MissingIcon, {
                     key: index,
