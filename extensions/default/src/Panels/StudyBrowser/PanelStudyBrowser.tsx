@@ -309,7 +309,7 @@ function PanelStudyBrowser({
         }}
         showSettings={actionIcons.find(icon => icon.id === 'settings').value}
         viewPresets={viewPresets}
-        commandsManager={commandsManager}
+        onItemSelect={onItemSelect}
       />
     </>
   );

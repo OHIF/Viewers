@@ -461,6 +461,10 @@ function PanelStudyBrowserTracking({
     });
   };
 
+  const onItemSelect = (commandName, options) => {
+    commandsManager.runCommand(commandName, options);
+  };
+
   return (
     <>
       <>
@@ -494,7 +498,7 @@ function PanelStudyBrowserTracking({
         activeDisplaySetInstanceUIDs={activeViewportDisplaySetInstanceUIDs}
         showSettings={actionIcons.find(icon => icon.id === 'settings').value}
         viewPresets={viewPresets}
-        commandsManager={commandsManager}
+        onItemSelect={onItemSelect}
       />
     </>
   );
