@@ -1,4 +1,3 @@
-/** @type {import('tailwindcss').Config} */
 module.exports = {
   // Don't purge any tailwind classes, usefull for debugging
   // ...(process.env.NODE_ENV === 'development' && {
