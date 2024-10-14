@@ -3,6 +3,36 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.9.0-beta.97](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.96...v3.9.0-beta.97) (2024-10-11)
+
+
+### Bug Fixes
+
+* **auth:** oidc-react-issue ([#4410](https://github.com/OHIF/Viewers/issues/4410)) ([e849199](https://github.com/OHIF/Viewers/commit/e849199eb0a9ecba4f9845aa1e07df775d5ded9b))
+
+
+
+
+
+# [3.9.0-beta.96](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.95...v3.9.0-beta.96) (2024-10-10)
+
+
+### Bug Fixes
+
+* **fossa:** update fossa to track licenses correctly ([#4411](https://github.com/OHIF/Viewers/issues/4411)) ([ec685ef](https://github.com/OHIF/Viewers/commit/ec685ef5b9c8bfa5bff3bbf869eb394548ae1cab))
+
+
+
+
+
+# [3.9.0-beta.95](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.94...v3.9.0-beta.95) (2024-10-08)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
 # [3.9.0-beta.94](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.93...v3.9.0-beta.94) (2024-10-04)
 
 
