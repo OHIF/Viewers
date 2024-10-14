@@ -209,10 +209,10 @@ function modeFactory({ modeConfiguration }) {
                   namespace: dicomsr.viewport,
                   displaySetsToDisplay: [dicomsr.sopClassHandler],
                 },
-                {
-                  namespace: dicomvideo.viewport,
-                  displaySetsToDisplay: [dicomvideo.sopClassHandler],
-                },
+                // {
+                //   namespace: dicomvideo.viewport,
+                //   displaySetsToDisplay: [dicomvideo.sopClassHandler],
+                // },
                 {
                   namespace: dicompdf.viewport,
                   displaySetsToDisplay: [dicompdf.sopClassHandler],

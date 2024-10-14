@@ -194,6 +194,48 @@ function XRayPanel({
     displayMeasurementsWithoutFindings.length === 0 &&
     nonAcquisitionMeasurements.length === 0;
 
+  const [modelResult, setModelResult] = useState(null);
+  const isObjectEmpty = obj => {
+    return Object.keys(obj).length === 0;
+  };
+  const getModelResult = async () => {
+    try {
+      const response = await apiClient.getClassificationOutput(studyInstanceUid);
+      if (response && response.result) {
+        const attachment = response.result.attachment;
+        if (typeof attachment === 'object' && isObjectEmpty(attachment)) {
+          setModelResult(null);
+        } else {
+          const arrayFromEntries = Object.entries(
+            Object.entries(Object.entries(attachment)[0][1])
+          )[0][1];
+          // const obj = Object.entries(arrayFromEntries)[0][1];
+          const data = Object.entries(arrayFromEntries[1]);
+          const predictedDiseases = data[0][1];
+          const scores = data[1][1];
+          const combinedObject = predictedDiseases.reduce((acc, key, index) => {
+            acc[key] = scores[index].toFixed(4);
+            return acc;
+          }, {});
+          setModelResult(combinedObject);
+        }
+      } else {
+        console.log('Model has not been run yet');
+        setModelResult(null);
+      }
+    } catch (error) {
+      console.error('Failed to get Classification results', error);
+      alert('Failed to get Classification results');
+      console.log('Failed to get Classification results');
+      setModelResult(null);
+    }
+  };
+
+  useEffect(() => {
+    setModelResult(null);
+    getModelResult();
+  }, []);
+
   return (
     <>
       {renderHeader && (
@@ -250,6 +292,25 @@ function XRayPanel({
             onClick={jumpToImage}
             onEdit={onMeasurementItemEditHandler}
           />
+        )}
+      </div>
+      <h3 className="mb-4 text-xl font-semibold text-white">
+        Predicted Diseases v/s Condifdence Score
+      </h3>
+      <div className="mb-6 flex flex-col space-y-4">
+        {modelResult ? (
+          <ul className="list-disc pl-5">
+            {Object.entries(modelResult).map(([key, value]) => (
+              <li
+                key={key}
+                className="text-white"
+              >
+                <strong>{key}:</strong> {value}
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className="text-red-400">Model not run yet</p>
         )}
       </div>
       <Button

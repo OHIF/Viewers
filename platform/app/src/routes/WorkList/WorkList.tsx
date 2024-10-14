@@ -336,6 +336,7 @@ function WorkList({
             modality: t('StudyList:Modality'),
             instances: t('StudyList:Instances'),
           }}
+          studyInstanceUid={studyInstanceUid}
           seriesTableDataSource={
             seriesInStudiesMap.has(studyInstanceUid)
               ? seriesInStudiesMap.get(studyInstanceUid).map(s => {
