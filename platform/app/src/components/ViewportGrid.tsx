@@ -1,9 +1,7 @@
-import React, { useEffect, useCallback, useRef, useState } from 'react';
+import React, { useEffect, useCallback, useRef } from 'react';
 import { useResizeDetector } from 'react-resize-detector';
-import PropTypes from 'prop-types';
-import { Types, MeasurementServic, StackViewport } from '@ohif/core';
+import { Types, MeasurementService } from '@ohif/core';
 import { ViewportGrid, ViewportPane, useViewportGrid } from '@ohif/ui';
-import { utilities as csToolsUtils } from '@cornerstonejs/tools';
 import EmptyViewport from './EmptyViewport';
 import classNames from 'classnames';
 import { useAppConfig } from '@state';
@@ -167,7 +165,7 @@ function ViewerViewportGrid(props: withAppTypes) {
 
   useEffect(() => {
     const { unsubscribe } = measurementService.subscribe(
-      measurementService.EVENTS.JUMP_TO_MEASUREMENT_LAYOUT,
+      MeasurementService.EVENTS.JUMP_TO_MEASUREMENT_LAYOUT,
       ({ viewportId, measurement, isConsumed }) => {
         if (isConsumed) {
           return;
@@ -183,28 +181,9 @@ function ViewerViewportGrid(props: withAppTypes) {
             'ViewportGrid::Unable to navigate to viewport containing',
             referencedDisplaySetInstanceUID
           );
-
-          try {
-            const currentViewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
-            const { viewPlaneNormal } = currentViewport.getCamera();
-            const referencedImageId = csToolsUtils.getClosestImageIdForStackViewport(
-              currentViewport as StackViewport,
-              measurement.points[0],
-              viewPlaneNormal
-            );
-            const imageIndex = (currentViewport as StackViewport)
-              .getImageIds()
-              .indexOf(referencedImageId);
-            csToolsUtils.jumpToSlice(currentViewport.element, { imageIndex });
-          } catch (error) {
-            console.warn(
-              'ViewportGrid::Unable to jump to image based on measurement coordinate',
-              error
-            );
-          }
-
           return;
         }
+
         // Arbitrarily assign the viewport to element 0
         // TODO - this should perform a search to find the most suitable viewport.
         updatedViewports[0] = { ...updatedViewports[0] };
