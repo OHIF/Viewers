@@ -10,6 +10,7 @@ export type DisplaySet = {
   numImages?: number;
   unsupported?: boolean;
   Modality?: string;
+  imageIds?: string[];
 };
 
 export type DisplaySetSeriesMetadataInvalidatedEvent = {

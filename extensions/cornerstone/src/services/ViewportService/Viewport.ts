@@ -5,7 +5,6 @@ import {
   VolumeViewport,
   utilities,
 } from '@cornerstonejs/core';
-import { Types as CoreTypes } from '@ohif/core';
 import { StackViewportData, VolumeViewportData } from '../../types/CornerstoneCacheService';
 import getCornerstoneBlendMode from '../../utils/getCornerstoneBlendMode';
 import getCornerstoneOrientation from '../../utils/getCornerstoneOrientation';
@@ -46,7 +45,7 @@ export type PublicViewportOptions = {
   id?: string;
   viewportType?: string;
   toolGroupId?: string;
-  presentationIds?: CoreTypes.PresentationIds;
+  presentationIds?: string[];
   viewportId?: string;
   orientation?: Enums.OrientationAxis;
   background?: Types.Point3;

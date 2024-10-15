@@ -876,14 +876,16 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     // displaySet imageIds and set them as the imageIds for the viewport,
     // here we can do some logic if the reference is missing
     // then find the most similar match of displaySet instead
-    if (segOrRTSOverlayDisplaySet) {
-      const referenceDisplaySet = displaySetService.getDisplaySetByUID(
-        segOrRTSOverlayDisplaySet.referencedDisplaySetInstanceUID
-      );
-      const imageIds = referenceDisplaySet.images.map(image => image.imageId);
-      this.addOverlayRepresentationForDisplaySet(segOrRTSOverlayDisplaySet, viewport);
-      return { imageIds };
+    if (!segOrRTSOverlayDisplaySet) {
+      return;
     }
+
+    const referenceDisplaySet = displaySetService.getDisplaySetByUID(
+      segOrRTSOverlayDisplaySet.referencedDisplaySetInstanceUID
+    );
+    const imageIds = referenceDisplaySet.images.map(image => image.imageId);
+    this.addOverlayRepresentationForDisplaySet(segOrRTSOverlayDisplaySet, viewport);
+    return { imageIds };
   }
 
   private addOverlayRepresentationForDisplaySet(

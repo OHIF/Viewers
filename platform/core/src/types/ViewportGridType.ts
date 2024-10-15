@@ -47,3 +47,24 @@ export interface ViewportGridState {
   isHangingProtocolLayout: boolean;
   viewports: GridViewports;
 }
+
+export type SetDisplaySetsForViewportsProps = Array<{
+  viewportId: string;
+  displaySetInstanceUIDs: string[];
+  viewportOptions?: AppTypes.ViewportGrid.GridViewportOptions;
+  displaySetOptions?: Array<{
+    id?: string;
+    voi?: {
+      windowWidth: number;
+      windowCenter: number;
+    };
+    voiInverted?: boolean;
+    blendMode?: string;
+    slabThickness?: number;
+    colormap?: {
+      name: string;
+      opacity?: number;
+    };
+    displayPreset?: string;
+  }>;
+}>;
