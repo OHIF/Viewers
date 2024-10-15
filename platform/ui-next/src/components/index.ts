@@ -23,6 +23,7 @@ import {
   DialogTitle,
   DialogDescription,
 } from './Dialog';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './Select';
 
 import { Combobox } from './Combobox';
 import { Popover, PopoverContent, PopoverTrigger, PopoverAnchor } from './Popover';
