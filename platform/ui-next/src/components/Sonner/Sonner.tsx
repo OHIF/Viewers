@@ -19,7 +19,7 @@ const Toaster = ({ ...props }: ToasterProps) => {
           error: 'group-[.toaster]:!border-background',
           success: 'group-[.toaster]:!border-background',
           warning: 'group-[.toaster]:!border-background',
-          description: 'group-[.toast]:text-muted-foreground',
+          description: 'group-[.toast]:text-secondary-foreground',
           actionButton: 'group-[.toast]:bg-primary group-[.toast]:text-primary-foreground',
           cancelButton: 'group-[.toast]:bg-muted group-[.toast]:text-muted-foreground',
         },
