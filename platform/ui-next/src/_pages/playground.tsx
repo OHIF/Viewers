@@ -1,3 +1,4 @@
+// src/_pages/playground.tsx
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 import '../tailwind.css';
@@ -44,35 +45,111 @@ import {
 
 import { BackgroundColorSelect } from '../components/BackgroundColorSelect';
 
-// import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from '../components/Tooltip';
+// Import the Toaster and toast functions from Sonner
+import { Toaster, toast } from '../components/Sonner';
 
-// import type { Metadata } from 'next';
-// import Script from 'next/script';
-// import BackgroundColorSelector from '@/components/backgroundcolor';
-// import { useState, useEffect } from 'react';
-// import { Inter } from 'next/font/google';
-// import { ThemeProvider } from '@/components/themeprovider';
-// import { Button2 } from '@/components/ui/button2';
-// import { Switch } from '@/components/ui/switch';
-// import { Slider } from '@/components/ui/slider';
-// import { ScrollArea } from '@/components/ui/scroll-area';
-// import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-// import { Separator } from '@/components/ui/separator';
-// import { Toggle } from '@/components/ui/toggle';
-// import { Checkbox } from '@/components/ui/checkbox';
-// import {
-//   Select,
-//   SelectContent,
-//   SelectItem,
-//   SelectTrigger,
-//   SelectValue,
-// } from '@/components/ui/select';
-// import { Input } from '@/components/ui/input';
-// import { Label } from '@/components/ui/label';
-// import icons from '../../components/icons';
-// import SegRow from '@/components/segrow';
+// **Import Icons**
+import { Icons } from '../components/Icons';
 
 export default function Playground() {
+  // Handlers to trigger different types of toasts
+  const triggerSuccess = () => {
+    toast.success('This is a success toast!');
+  };
+
+  const triggerError = () => {
+    toast.error('This is an error toast!');
+  };
+
+  const triggerInfo = () => {
+    toast.info('This is an info toast!');
+  };
+
+  const triggerWarning = () => {
+    toast.warning('This is a warning toast!');
+  };
+
+  // Handler to trigger a toast.promise example
+  const triggerPromiseToast = () => {
+    const promise = () =>
+      new Promise<{ name: string }>(resolve => setTimeout(() => resolve({ name: 'Sonner' }), 2000));
+
+    toast.promise(promise(), {
+      loading: 'Loading...', // Only pass the message as a string
+      success: data => `${data.name} toast has been added`,
+      error: 'Error',
+    });
+  };
+
+  // Handler to trigger a toast with description
+  const triggerDescriptionToast = () => {
+    toast.success('Success!', {
+      description: 'This is a detailed description of the success message.',
+    });
+  };
+
+  // Handler to trigger a toast with an action button
+  const triggerActionButtonToast = () => {
+    toast.info('Example heading', {
+      description: 'This is an info message with an action button.',
+      action: (
+        <Button
+          size="sm"
+          variant="ghost"
+          onClick={() => alert('Action button clicked')}
+        >
+          Undo
+        </Button>
+      ),
+    });
+  };
+
+  // Handler to trigger a toast with a cancel button
+  const triggerCancelButtonToast = () => {
+    toast.error('Error!', {
+      description: 'This is an error message with a cancel button.',
+      cancel: (
+        <Button
+          size="sm"
+          variant="ghost"
+          onClick={() => toast.dismiss()}
+        >
+          Dismiss
+        </Button>
+      ),
+    });
+  };
+
+  // Handler to trigger a toast with both action and cancel buttons
+  const triggerCombinedToast = () => {
+    toast.warning('Warning!', {
+      description: 'This is a warning with both action and cancel buttons.',
+      action: (
+        <Button
+          size="sm"
+          variant="ghost"
+          onClick={() => alert('Retry action clicked')}
+        >
+          Retry
+        </Button>
+      ),
+      cancel: (
+        <Button
+          size="sm"
+          variant="ghost"
+          onClick={() => toast.dismiss()}
+        >
+          Cancel
+        </Button>
+      ),
+    });
+  };
+
+  // Handler to trigger a loading toast using Toaster's default loading icon
+  const showLoadingToast = () => {
+    toast.loading('Loading your data...');
+  };
+
   return (
     <main className="my-4 mx-auto max-w-6xl py-6">
       <BackgroundColorSelect />
@@ -80,12 +157,7 @@ export default function Playground() {
       <h2 className="section-header">Button default</h2>
       <div className="row">
         <div className="example">
-          <Button
-            className=""
-            variant="default"
-          >
-            Primary Button
-          </Button>
+          <Button variant="default">Primary Button</Button>
         </div>
         <div className="example">
           <Button variant="secondary">Secondary Button</Button>
@@ -110,7 +182,6 @@ export default function Playground() {
       <div className="row">
         <div className="example">
           <Button
-            className=""
             variant="default"
             size="sm"
           >
@@ -155,7 +226,6 @@ export default function Playground() {
       <div className="row">
         <div className="example">
           <Button
-            className=""
             variant="default"
             size="lg"
           >
@@ -402,10 +472,77 @@ export default function Playground() {
           </ScrollArea>
         </div>
       </div>
+
+      {/* Toast Examples Section */}
+      <h2 className="section-header">Toast (Sonner)</h2>
+      <div className="row space-y-4">
+        <Button
+          variant="default"
+          onClick={triggerSuccess}
+        >
+          Show Success Toast
+        </Button>
+        <Button
+          variant="secondary"
+          onClick={triggerError}
+        >
+          Show Error Toast
+        </Button>
+        <Button
+          variant="ghost"
+          onClick={triggerInfo}
+        >
+          Show Info Toast
+        </Button>
+        <Button
+          variant="link"
+          onClick={triggerWarning}
+        >
+          Show Warning Toast
+        </Button>
+        <Button
+          variant="default"
+          onClick={triggerPromiseToast}
+        >
+          Start Async Operation
+        </Button>
+      </div>
+
+      {/* Additional Toast Examples Section */}
+      <h2 className="section-header">Additional Toast Examples</h2>
+      <div className="row space-y-4">
+        <Button
+          variant="default"
+          onClick={triggerDescriptionToast}
+        >
+          Show Toast with Description
+        </Button>
+        <Button
+          variant="secondary"
+          onClick={triggerActionButtonToast}
+        >
+          Show Toast with Action Button
+        </Button>
+        <Button
+          variant="ghost"
+          onClick={triggerCancelButtonToast}
+        >
+          Show Toast with Cancel Button
+        </Button>
+        <Button
+          variant="link"
+          onClick={triggerCombinedToast}
+        >
+          Show Toast with Action & Cancel Buttons
+        </Button>
+      </div>
+
+      {/* Render the Toaster component */}
+      <Toaster />
     </main>
   );
 }
 
 const container = document.getElementById('root');
-const root = createRoot(container);
-root.render(React.createElement(Playground));
+const root = createRoot(container!);
+root.render(<Playground />);
