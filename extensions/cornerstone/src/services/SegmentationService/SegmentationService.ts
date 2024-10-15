@@ -66,7 +66,6 @@ const EVENTS = {
   // fired when the segmentation is removed
   SEGMENTATION_REMOVED: 'event::segmentation_removed',
   //
-  //
   // fired when segmentation representation is added
   SEGMENTATION_REPRESENTATION_MODIFIED: 'event::segmentation_representation_modified',
   // fired when segmentation representation is removed
@@ -553,9 +552,31 @@ class SegmentationService extends PubSubService {
   }
 
   private async convertStackToVolumeViewport(viewport: csTypes.IViewport): Promise<boolean> {
-    const { viewportGridService } = this.servicesManager.services;
+    const { viewportGridService, cornerstoneViewportService } = this.servicesManager.services;
     const state = viewportGridService.getState();
     const gridViewport = state.viewports.get(viewport.id);
+
+    const prevViewPresentation = viewport.getViewPresentation();
+    const prevViewReference = viewport.getViewReference();
+    const stackViewport = cornerstoneViewportService.getCornerstoneViewport(viewport.id);
+    const { element } = stackViewport;
+
+    const volumeViewportNewVolumeHandler = () => {
+      const volumeViewport = cornerstoneViewportService.getCornerstoneViewport(viewport.id);
+      volumeViewport.setViewPresentation(prevViewPresentation);
+      volumeViewport.setViewReference(prevViewReference);
+      volumeViewport.render();
+
+      element.removeEventListener(
+        csEnums.Events.VOLUME_VIEWPORT_NEW_VOLUME,
+        volumeViewportNewVolumeHandler
+      );
+    };
+
+    element.addEventListener(
+      csEnums.Events.VOLUME_VIEWPORT_NEW_VOLUME,
+      volumeViewportNewVolumeHandler
+    );
 
     viewportGridService.setDisplaySetsForViewport({
       viewportId: viewport.id,
@@ -567,11 +588,6 @@ class SegmentationService extends PubSubService {
     });
 
     return true;
-    // const csViewportNew =
-    //   this.servicesManager.services.cornerstoneViewportService.getCornerstoneViewport(viewport.id);
-    // csViewportNew.setViewPresentation(prevViewPresentation);
-    // csViewportNew.setViewReference(prevViewReference);
-    // csViewportNew.render();
   }
 
   private async attemptStackToVolumeConversion(
