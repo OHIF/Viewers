@@ -339,9 +339,9 @@ class SegmentationService extends PubSubService {
     const displaySetInstanceUID =
       options.displaySetInstanceUID || viewport.displaySetInstanceUIDs[0];
 
-    const currentRepresentations = this.getSegmentationRepresentations(targetViewportId);
+    const segs = this.getSegmentationsInfo();
 
-    const label = options.label || `Segmentation ${currentRepresentations.length + 1}`;
+    const label = options.label || `Segmentation ${segs.length + 1}`;
     const segmentationId = options.segmentationId || `${csUtils.uuidv4()}`;
 
     const generatedSegmentationId = await this.createEmptyLabelmapForDisplaySetUID(
@@ -634,7 +634,6 @@ class SegmentationService extends PubSubService {
     const { displaySetService } = this.servicesManager.services;
 
     const displaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
-
     // Todo: random does not makes sense, make this better, like
     // labelmap 1, 2, 3 etc
     const segmentationId = options?.segmentationId ?? `${csUtils.uuidv4()}`;
