@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Icons, ScrollArea } from '@ohif/ui-next';
+import { Button, Icons, Separator } from '@ohif/ui-next';
 
 function ViewportSegmentationMenu({
   viewportId,
@@ -46,50 +46,78 @@ function ViewportSegmentationMenu({
     });
   };
 
+  const removeSegmentationFromViewport = segmentationId => {
+    segmentationService.removeSegmentationRepresentations(viewportId, {
+      segmentationId,
+    });
+  };
+
   return (
-    <div className="bg-primary-dark flex h-full w-[262px] flex-col rounded">
-      <ScrollArea className="flex-grow">
-        <ul className="space-y-1 p-2">
-          {activeSegmentations.map(segmentation => (
-            <li
-              key={segmentation.id}
-              className="bg-primary-dark flex items-center rounded p-2"
+    <div className="bg-muted flex h-full w-[262px] flex-col rounded p-3">
+      <span className="text-muted-foreground mb-2 text-xs font-semibold">Current Viewport</span>
+      <ul className="space-y-1">
+        {activeSegmentations.map(segmentation => (
+          <li
+            key={segmentation.id}
+            className="flex items-center text-sm"
+          >
+            <Button
+              variant="ghost"
+              size="icon"
+              className="text-muted-foreground mr-2"
+              onClick={() => removeSegmentationFromViewport(segmentation.segmentationId)}
             >
-              <Icons.StatusChecked className="text-primary-light mr-2 h-4 w-4" />
-              <span className="text-primary-light flex-grow text-sm">{segmentation.label}</span>
+              <Icons.Minus className="h-6 w-6" />
+            </Button>
+            <span className="text-foreground flex-grow">{segmentation.label}</span>
+            {segmentation.visible ? (
               <Button
                 variant="ghost"
                 size="icon"
+                className="text-muted-foreground"
                 onClick={() => toggleSegmentationVisibility(segmentation.segmentationId)}
-                aria-label={
-                  segmentation.visible ? `Hide ${segmentation.label}` : `Show ${segmentation.label}`
-                }
               >
-                {segmentation.visible ? (
-                  <Icons.EyeVisible className="text-primary-light h-4 w-4" />
-                ) : (
-                  <Icons.EyeHidden className="text-primary-light h-4 w-4" />
-                )}
+                <Icons.Hide className="h-6 w-6" />
               </Button>
-            </li>
-          ))}
-          {availableSegmentations.map(segmentation => (
-            <li
-              key={segmentation.segmentation.segmentationId}
-              className="bg-primary-dark flex items-center rounded p-2"
-            >
-              <Icons.Plus
-                className="text-primary-light mr-2 h-4 w-4 cursor-pointer"
-                onClick={() => addSegmentationToViewport(segmentation.segmentation.segmentationId)}
-              />
-              <span className="flex-grow text-sm text-[#726f7e]">
-                {segmentation.segmentation.label}
-              </span>
-              <span className="text-xs text-[#726f7e]">Available</span>
-            </li>
-          ))}
-        </ul>
-      </ScrollArea>
+            ) : (
+              <Button
+                variant="ghost"
+                size="icon"
+                className="text-muted-foreground"
+                onClick={() => toggleSegmentationVisibility(segmentation.segmentationId)}
+              >
+                <Icons.Show className="h-6 w-6" />
+              </Button>
+            )}
+          </li>
+        ))}
+      </ul>
+      {availableSegmentations.length > 0 && (
+        <>
+          <Separator className="bg-input mb-3" />
+          <span className="text-muted-foreground mb-2 text-xs font-semibold">Available</span>
+          <ul className="space-y-1">
+            {availableSegmentations.map(segmentation => (
+              <li
+                key={segmentation.segmentation.segmentationId}
+                className="flex items-center text-sm"
+              >
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="text-muted-foreground mr-2"
+                  onClick={() =>
+                    addSegmentationToViewport(segmentation.segmentation.segmentationId)
+                  }
+                >
+                  <Icons.Plus className="h-6 w-6" />
+                </Button>
+                <span className="text-foreground/60">{segmentation.segmentation.label}</span>
+              </li>
+            ))}
+          </ul>
+        </>
+      )}
     </div>
   );
 }
