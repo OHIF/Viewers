@@ -68,6 +68,7 @@ import {
   DropdownMenuRadioGroup,
 } from './DropdownMenu';
 import { Onboarding } from './Onboarding';
+import { Toaster } from './Sonner';
 
 export {
   Button,
@@ -147,4 +148,5 @@ export {
   DropdownMenuSubTrigger,
   DropdownMenuRadioGroup,
   Onboarding,
+  Toaster,
 };
