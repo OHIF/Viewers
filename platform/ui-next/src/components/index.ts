@@ -70,7 +70,6 @@ import {
   DropdownMenuRadioGroup,
 } from './DropdownMenu';
 import { Onboarding } from './Onboarding';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './Select';
 import { DoubleSlider } from './DoubleSlider';
 import { SegmentationGroupTable, SegmentationGroupTableExpanded } from './SegmentationGroupTable';
 import { DataRow } from './DataRow';

@@ -29,13 +29,15 @@ type SegmentationGroupTableProps = {
   onToggleSegmentVisibility?: (segmentationId: string, segmentIndex: number) => void;
   onToggleSegmentLock?: (segmentationId: string, segmentIndex: number) => void;
   onSegmentColorClick?: (segmentationId: string, segmentIndex: number) => void;
-  setFillAlpha?: (value: number) => void;
-  setFillAlphaInactive?: (value: number) => void;
-  setOutlineWidthActive?: (value: number) => void;
-  setOutlineOpacityActive?: (value: number) => void;
-  setRenderFill?: (value: boolean) => void;
-  setRenderInactiveRepresentations?: (value: boolean) => void;
-  setRenderOutline?: (value: boolean) => void;
+  setFillAlpha?: (segmentationId: string, type: string, value: number) => void;
+  setFillAlphaInactive?: (segmentationId: string, type: string, value: number) => void;
+  setOutlineWidthActive?: (segmentationId: string, type: string, value: number) => void;
+  setOutlineOpacityActive?: (segmentationId: string, type: string, value: number) => void;
+  setRenderFill?: (segmentationId: string, type: string, value: boolean) => void;
+  setRenderInactiveSegmentations?: (segmentationId: string, type: string, value: boolean) => void;
+  toggleRenderInactiveSegmentations?: (value: boolean) => void;
+  renderInactiveSegmentations?: boolean;
+  setRenderOutline?: (segmentationId: string, type: string, value: boolean) => void;
 };
 
 const SegmentationGroupTable: React.FC<SegmentationGroupTableProps> = ({
@@ -62,10 +64,10 @@ const SegmentationGroupTable: React.FC<SegmentationGroupTableProps> = ({
   setFillAlpha = () => {},
   setFillAlphaInactive = () => {},
   setOutlineWidthActive = () => {},
-  setOutlineOpacityActive = () => {},
+  toggleRenderInactiveSegmentations = () => {},
   setRenderFill = () => {},
-  setRenderInactiveRepresentations = () => {},
   setRenderOutline = () => {},
+  renderInactiveSegmentations = true,
 }) => {
   if (!segmentationsInfo?.length) {
     return (
@@ -106,14 +108,36 @@ const SegmentationGroupTable: React.FC<SegmentationGroupTableProps> = ({
           onToggleSegmentationVisibility={onToggleSegmentationVisibility}
         />
         <SegmentationConfig
-          config={activeSegmentationInfo.representation}
-          setRenderFill={setRenderFill}
-          setRenderOutline={setRenderOutline}
-          setOutlineOpacity={setOutlineOpacityActive}
-          setFillAlpha={setFillAlpha}
-          setOutlineWidth={setOutlineWidthActive}
-          setRenderInactiveSegmentations={setRenderInactiveRepresentations}
-          setFillAlphaInactive={setFillAlphaInactive}
+          representation={activeSegmentationInfo.representation}
+          setFillAlpha={(value: number) =>
+            setFillAlpha(activeSegmentationId, activeSegmentationInfo.representation.type, value)
+          }
+          setOutlineWidth={(value: number) =>
+            setOutlineWidthActive(
+              activeSegmentationId,
+              activeSegmentationInfo.representation.type,
+              value
+            )
+          }
+          renderInactiveSegmentations={renderInactiveSegmentations}
+          toggleRenderInactiveSegmentations={toggleRenderInactiveSegmentations}
+          setRenderFill={(value: boolean) =>
+            setRenderFill(activeSegmentationId, activeSegmentationInfo.representation.type, value)
+          }
+          setRenderOutline={(value: boolean) =>
+            setRenderOutline(
+              activeSegmentationId,
+              activeSegmentationInfo.representation.type,
+              value
+            )
+          }
+          setFillAlphaInactive={(value: number) =>
+            setFillAlphaInactive(
+              activeSegmentationId,
+              activeSegmentationInfo.representation.type,
+              value
+            )
+          }
         />
         {showAddSegment && (
           <div className="bg-primary-dark my-px flex h-9 w-full items-center justify-between rounded pl-0.5 pr-7">
@@ -156,7 +180,7 @@ const SegmentationGroupTable: React.FC<SegmentationGroupTableProps> = ({
                 label={label}
                 color={color}
                 isActive={active}
-                disableEditing={disableEditing}
+                disableEditing={disableEditing || !showDeleteSegment}
                 isLocked={locked}
                 isVisible={visible}
                 onClick={onSegmentClick}

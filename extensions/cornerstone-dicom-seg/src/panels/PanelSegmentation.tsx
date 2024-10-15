@@ -222,6 +222,10 @@ export default function PanelSegmentation({
     });
   };
 
+  const _setStyle = (segmentationId, type, key, value) => {
+    segmentationService.setStyle({ segmentationId, type }, { [key]: value });
+  };
+
   const {
     segmentationPanelMode,
     addSegment: allowAddSegment = true,
@@ -237,24 +241,6 @@ export default function PanelSegmentation({
 
   return (
     <div className="flex h-full flex-col overflow-hidden">
-      {renderHeader && (
-        <>
-          <div className="bg-primary-dark flex select-none rounded-t pt-1.5 pb-[2px]">
-            <div className="flex h-[24px] w-full cursor-pointer select-none justify-center self-center text-[14px]">
-              <div className="text-primary-active flex grow cursor-pointer select-none justify-center self-center text-[13px]">
-                <span>{tab.label}</span>
-              </div>
-            </div>
-
-            {getCloseIcon()}
-          </div>
-          <Separator
-            orientation="horizontal"
-            className="bg-black"
-            thickness="2px"
-          />
-        </>
-      )}
       <div className="flex-grow overflow-y-auto">
         <SegmentationGroupTableComponent
           title={t('Segmentations')}
@@ -276,6 +262,28 @@ export default function PanelSegmentation({
           onToggleSegmentVisibility={onToggleSegmentVisibility}
           onToggleLock={onToggleSegmentLock}
           onToggleSegmentationVisibility={onToggleSegmentationVisibility}
+          setRenderOutline={(segmentationId, type, value) =>
+            _setStyle(segmentationId, type, 'renderOutline', value)
+          }
+          setRenderFill={(segmentationId, type, value) =>
+            _setStyle(segmentationId, type, 'renderFill', value)
+          }
+          toggleRenderInactiveSegmentations={toggle => {
+            const viewportId = viewportGridService.getActiveViewportId();
+            segmentationService.setRenderInactiveSegmentations(viewportId, toggle);
+          }}
+          renderInactiveSegmentations={segmentationService.getRenderInactiveSegmentations(
+            viewportGridService.getActiveViewportId()
+          )}
+          setOutlineWidthActive={(segmentationId, type, value) =>
+            _setStyle(segmentationId, type, 'outlineWidth', value)
+          }
+          setFillAlpha={(segmentationId, type, value) =>
+            _setStyle(segmentationId, type, 'fillAlpha', value)
+          }
+          setFillAlphaInactive={(segmentationId, type, value) =>
+            _setStyle(segmentationId, type, 'fillAlphaInactive', value)
+          }
           showDeleteSegment={true}
         />
       </div>

@@ -3,38 +3,22 @@ import { Slider, Switch, Input, Tabs, TabsList, TabsTrigger } from '../../compon
 import { Icons } from '../Icons';
 import { useTranslation } from 'react-i18next';
 import { PanelSection } from '../PanelSection/PanelSection';
+import { Label } from '../../components';
 
-interface SegmentationConfigProps {
-  config: {
-    renderFill: boolean;
-    renderOutline: boolean;
-    outlineOpacity: number;
-    fillAlpha: number;
-    outlineWidth: number;
-    renderInactiveSegmentations: boolean;
-    fillAlphaInactive: number;
-  };
-  setRenderFill: (value: boolean) => void;
-  setRenderOutline: (value: boolean) => void;
-  setOutlineOpacity: (value: number) => void;
-  setFillAlpha: (value: number) => void;
-  setOutlineWidth: (value: number) => void;
-  setRenderInactiveSegmentations: (value: boolean) => void;
-  setFillAlphaInactive: (value: number) => void;
-}
-
-const SegmentationConfig: React.FC<SegmentationConfigProps> = ({
-  config,
-  setRenderFill,
-  setRenderOutline,
-  setOutlineOpacity,
+const SegmentationConfig = ({
+  representation,
   setFillAlpha,
   setOutlineWidth,
-  setRenderInactiveSegmentations,
+  toggleRenderInactiveSegmentations,
+  renderInactiveSegmentations,
   setFillAlphaInactive,
+  setRenderFill,
+  setRenderOutline,
 }) => {
   const { t } = useTranslation('SegmentationTable');
-  const [selectedTab, setSelectedTab] = React.useState('fill-and-outline');
+
+  const { fillAlpha, fillAlphaInactive, outlineWidth, renderFill, renderOutline } =
+    representation.styles;
 
   return (
     <PanelSection
@@ -43,19 +27,32 @@ const SegmentationConfig: React.FC<SegmentationConfigProps> = ({
       defaultOpen={false}
       headerClassName="px-2 py-1"
     >
-      <div className="space-y-4 p-4">
-        <div className="flex items-center justify-between">
-          <span className="text-aqua-pale">
+      <div className="bg-muted mb-0.5 space-y-2 rounded-b px-1.5 pt-0.5 pb-3">
+        <div className="my-1 flex items-center justify-between">
+          <span className="text-aqua-pale text-xs">
             {t('Show')}:{' '}
-            {selectedTab === 'fill-and-outline'
+            {renderFill && renderOutline
               ? t('Fill & Outline')
-              : selectedTab === 'outline'
+              : renderOutline
                 ? t('Outline Only')
                 : t('Fill Only')}
           </span>
           <Tabs
-            value={selectedTab}
-            onValueChange={setSelectedTab}
+            value={
+              renderFill && renderOutline ? 'fill-and-outline' : renderOutline ? 'outline' : 'fill'
+            }
+            onValueChange={value => {
+              if (value === 'fill-and-outline') {
+                setRenderFill(true);
+                setRenderOutline(true);
+              } else if (value === 'outline') {
+                setRenderFill(false);
+                setRenderOutline(true);
+              } else {
+                setRenderFill(true);
+                setRenderOutline(false);
+              }
+            }}
           >
             <TabsList>
               <TabsTrigger value="fill-and-outline">
@@ -72,69 +69,73 @@ const SegmentationConfig: React.FC<SegmentationConfigProps> = ({
         </div>
 
         <div className="space-y-2">
-          <div className="flex items-center justify-between">
-            <span className="text-aqua-pale">{t('Opacity')}</span>
+          <div className="my-2 flex items-center">
+            <Label className="text-muted-foreground w-14 flex-none whitespace-nowrap text-xs">
+              Opacity
+            </Label>
             <Slider
-              value={[config.fillAlpha * 100]}
-              onValueChange={([value]) => setFillAlpha(value / 100)}
-              max={100}
-              step={1}
-              className="w-3/4"
+              className="mx-1 flex-1"
+              value={[fillAlpha]}
+              onValueChange={([value]) => setFillAlpha(value)}
+              max={1}
+              min={0}
+              step={0.1}
             />
             <Input
-              value={Math.round(config.fillAlpha * 100)}
-              onChange={e => setFillAlpha(Number(e.target.value) / 100)}
-              className="w-12 text-center"
+              className="mx-1 w-10 flex-none"
+              value={fillAlpha}
+              onChange={e => setFillAlpha(Number(e.target.value))}
             />
           </div>
 
-          <div className="flex items-center justify-between">
-            <span className="text-aqua-pale">{t('Border')}</span>
+          <div className="my-2 flex items-center">
+            <Label className="text-muted-foreground w-14 flex-none whitespace-nowrap text-xs">
+              {t('Border')}
+            </Label>
             <Slider
-              value={[config.outlineWidth]}
+              value={[outlineWidth]}
               onValueChange={([value]) => setOutlineWidth(value)}
               max={10}
-              step={1}
-              className="w-3/4"
+              min={0}
+              step={0.1}
+              className="mx-1 flex-1"
             />
             <Input
-              value={config.outlineWidth}
+              value={outlineWidth}
               onChange={e => setOutlineWidth(Number(e.target.value))}
-              className="w-12 text-center"
+              className="mx-1 w-10 flex-none text-center"
             />
           </div>
         </div>
 
-        <div className="flex items-center justify-between">
-          <span className="text-aqua-pale">{t('Sync changes in all viewports')}</span>
-          <Switch
-            checked={true}
-            onCheckedChange={() => {}}
-          />
-        </div>
+        <div className="border-input w-full border"></div>
 
-        <div className="flex items-center justify-between">
-          <span className="text-aqua-pale">{t('Display inactive segmentations')}</span>
+        <div className="my-2 flex items-center pl-1">
           <Switch
-            checked={config.renderInactiveSegmentations}
-            onCheckedChange={setRenderInactiveSegmentations}
+            checked={renderInactiveSegmentations}
+            onCheckedChange={toggleRenderInactiveSegmentations}
           />
+          <Label className="text-muted-foreground mx-2 text-xs">
+            {t('Display inactive segmentations')}
+          </Label>
         </div>
-
-        {config.renderInactiveSegmentations && (
-          <div className="flex items-center justify-between">
-            <span className="text-aqua-pale">{t('Opacity')}</span>
+        {renderInactiveSegmentations && (
+          <div className="my-2 flex items-center">
+            <Label className="text-muted-foreground w-14 flex-none whitespace-nowrap text-xs">
+              Opacity
+            </Label>
             <Slider
-              value={[config.fillAlphaInactive * 100]}
-              onValueChange={([value]) => setFillAlphaInactive(value / 100)}
-              max={100}
-              step={1}
-              className="w-3/4"
+              className="mx-1 flex-1"
+              value={[fillAlphaInactive]}
+              onValueChange={([value]) => setFillAlphaInactive(value)}
+              max={1}
+              min={0}
+              step={0.1}
             />
             <Input
-              value={Math.round(config.fillAlphaInactive * 100)}
-              onChange={e => setFillAlphaInactive(Number(e.target.value) / 100)}
-              className="w-12 text-center"
+              className="mx-1 w-10 flex-none"
+              value={fillAlphaInactive}
+              onChange={e => setFillAlphaInactive(Number(e.target.value))}
             />
           </div>
         )}
