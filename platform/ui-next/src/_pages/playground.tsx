@@ -42,14 +42,10 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuRadioGroup,
 } from '../components/DropdownMenu';
+import { Toaster, toast } from '../components/Sonner';
+import { Icons } from '../components/Icons';
 
 import { BackgroundColorSelect } from '../components/BackgroundColorSelect';
-
-// Import the Toaster and toast functions from Sonner
-import { Toaster, toast } from '../components/Sonner';
-
-// **Import Icons**
-import { Icons } from '../components/Icons';
 
 export default function Playground() {
   // Handlers to trigger different types of toasts
@@ -72,25 +68,27 @@ export default function Playground() {
   // Handler to trigger a toast.promise example
   const triggerPromiseToast = () => {
     const promise = () =>
-      new Promise<{ name: string }>(resolve => setTimeout(() => resolve({ name: 'Sonner' }), 2000));
+      new Promise<{ name: string }>(resolve =>
+        setTimeout(() => resolve({ name: 'Segmentation 1' }), 3000)
+      );
 
     toast.promise(promise(), {
-      loading: 'Loading...', // Only pass the message as a string
-      success: data => `${data.name} toast has been added`,
+      loading: 'Loading Segmentation...',
+      success: data => `${data.name} has been added`,
       error: 'Error',
     });
   };
 
   // Handler to trigger a toast with description
   const triggerDescriptionToast = () => {
-    toast.success('Success!', {
+    toast.success('Success heading', {
       description: 'This is a detailed description of the success message.',
     });
   };
 
   // Handler to trigger a toast with an action button
   const triggerActionButtonToast = () => {
-    toast.info('Example heading', {
+    toast.info('Info heading', {
       description: 'This is an info message with an action button.',
       action: (
         <Button
