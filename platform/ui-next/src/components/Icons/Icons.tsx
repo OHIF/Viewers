@@ -1,10 +1,11 @@
 import React from 'react';
+import { Code } from 'lucide-react';
 
 type IconProps = React.HTMLAttributes<SVGElement>;
 
 export const Icons = {
   // Usage example: <Icons.ArrowLeft />
-
+  Code: Code,
   Add: (props: IconProps) => (
     <svg
       width="24px"
