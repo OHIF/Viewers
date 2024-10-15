@@ -3094,19 +3094,19 @@
   resolved "https://registry.yarnpkg.com/@docusaurus/preset-classic/-/preset-classic-3.5.2.tgz#977f78510bbc556aa0539149eef960bb7ab52bd9"
   integrity sha512-3ihfXQ95aOHiLB5uCu+9PRy2gZCeSZoDcqpnDvf3B+sTrMvMTr8qRUzBvWkoIqc82yG5prCboRjk1SVILKx6sg==
   dependencies:
-    "@docusaurus/core" "3.5.2"
-    "@docusaurus/plugin-content-blog" "3.5.2"
-    "@docusaurus/plugin-content-docs" "3.5.2"
-    "@docusaurus/plugin-content-pages" "3.5.2"
-    "@docusaurus/plugin-debug" "3.5.2"
-    "@docusaurus/plugin-google-analytics" "3.5.2"
-    "@docusaurus/plugin-google-gtag" "3.5.2"
-    "@docusaurus/plugin-google-tag-manager" "3.5.2"
-    "@docusaurus/plugin-sitemap" "3.5.2"
-    "@docusaurus/theme-classic" "3.5.2"
-    "@docusaurus/theme-common" "3.5.2"
-    "@docusaurus/theme-search-algolia" "3.5.2"
-    "@docusaurus/types" "3.5.2"
+    "@docusaurus/core" "2.4.3"
+    "@docusaurus/plugin-content-blog" "2.4.3"
+    "@docusaurus/plugin-content-docs" "2.4.3"
+    "@docusaurus/plugin-content-pages" "2.4.3"
+    "@docusaurus/plugin-debug" "2.4.3"
+    "@docusaurus/plugin-google-analytics" "2.4.3"
+    "@docusaurus/plugin-google-gtag" "2.4.3"
+    "@docusaurus/plugin-google-tag-manager" "2.4.3"
+    "@docusaurus/plugin-sitemap" "2.4.3"
+    "@docusaurus/theme-classic" "2.4.3"
+    "@docusaurus/theme-common" "2.4.3"
+    "@docusaurus/theme-search-algolia" "2.4.3"
+    "@docusaurus/types" "2.4.3"
 
 "@docusaurus/react-loadable@5.5.2":
   version "5.5.2"
@@ -20512,13 +20512,6 @@ react-loadable-ssr-addon-v5-slorber@^1.0.1:
     "@types/react" "*"
     prop-types "^15.6.2"
 
-"react-loadable@npm:@docusaurus/react-loadable@6.0.0":
-  version "6.0.0"
-  resolved "https://registry.yarnpkg.com/@docusaurus/react-loadable/-/react-loadable-6.0.0.tgz#de6c7f73c96542bd70786b8e522d535d69069dc4"
-  integrity sha512-YMMxTUQV/QFSnbgrP3tjDzLHRg7vsbMn8e9HAa8o/1iXoiomo48b7sk/kkmWEuWNDPJVlKSJRB6Y2fHqdJk+SQ==
-  dependencies:
-    "@types/react" "*"
-
 react-modal@3.11.2:
   version "3.11.2"
   resolved "https://registry.yarnpkg.com/react-modal/-/react-modal-3.11.2.tgz#bad911976d4add31aa30dba8a41d11e21c4ac8a4"
@@ -22424,7 +22417,7 @@ string-width@^1.0.1:
     is-fullwidth-code-point "^1.0.0"
     strip-ansi "^3.0.0"
 
-"string-width@^1.0.2 || 2 || 3 || 4", string-width@^4.1.0, string-width@^4.2.0, string-width@^4.2.3:
+"string-width@^1.0.2 || 2 || 3 || 4", string-width@^4.0.0, string-width@^4.1.0, string-width@^4.2.0, string-width@^4.2.2, string-width@^4.2.3:
   version "4.2.3"
   resolved "https://registry.yarnpkg.com/string-width/-/string-width-4.2.3.tgz#269c7117d27b05ad2e536830a8ec895ef9c6d010"
   integrity sha512-wKyQRQpjJ0sIp62ErSZdGsjMJWsap5oRNihHhu6G7JVO/9jIB6UyevL+tXuOqrng8j/cxKTWyWUwvSTriiZz/g==
