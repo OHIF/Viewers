@@ -473,66 +473,82 @@ export default function Playground() {
 
       {/* Toast Examples Section */}
       <h2 className="section-header">Toast (Sonner)</h2>
-      <div className="row space-y-4">
-        <Button
-          variant="default"
-          onClick={triggerSuccess}
-        >
-          Show Success Toast
-        </Button>
-        <Button
-          variant="secondary"
-          onClick={triggerError}
-        >
-          Show Error Toast
-        </Button>
-        <Button
-          variant="ghost"
-          onClick={triggerInfo}
-        >
-          Show Info Toast
-        </Button>
-        <Button
-          variant="link"
-          onClick={triggerWarning}
-        >
-          Show Warning Toast
-        </Button>
-        <Button
-          variant="default"
-          onClick={triggerPromiseToast}
-        >
-          Start Async Operation
-        </Button>
+      <div className="row">
+        <div className="example">
+          <Button
+            variant="default"
+            onClick={triggerSuccess}
+          >
+            Show Success Toast
+          </Button>
+        </div>
+        <div className="example">
+          <Button
+            variant="default"
+            onClick={triggerError}
+          >
+            Show Error Toast
+          </Button>
+        </div>
+        <div className="example">
+          <Button
+            variant="default"
+            onClick={triggerInfo}
+          >
+            Show Info Toast
+          </Button>
+        </div>
+        <div className="example">
+          <Button
+            variant="default"
+            onClick={triggerWarning}
+          >
+            Show Warning Toast
+          </Button>
+        </div>
+        <div className="example">
+          <Button
+            variant="default"
+            onClick={triggerPromiseToast}
+          >
+            Loading & Success Toast
+          </Button>
+        </div>
       </div>
 
-      {/* Additional Toast Examples Section */}
-      <h2 className="section-header">Additional Toast Examples</h2>
-      <div className="row space-y-4">
-        <Button
-          variant="default"
-          onClick={triggerDescriptionToast}
-        >
-          Show Toast with Description
-        </Button>
-        <Button
-          variant="secondary"
-          onClick={triggerActionButtonToast}
-        >
-          Show Toast with Action Button
-        </Button>
-        <Button
-          variant="ghost"
-          onClick={triggerCancelButtonToast}
-        >
-          Show Toast with Cancel Button
-        </Button>
-        <Button
-          variant="link"
-          onClick={triggerCombinedToast}
-        >
-          Show Toast with Action & Cancel Buttons
-        </Button>
+      <div className="row">
+        <div className="example">
+          <Button
+            variant="default"
+            onClick={triggerDescriptionToast}
+          >
+            Show Toast with Description
+          </Button>
+        </div>
+        <div className="example">
+          <Button
+            variant="default"
+            onClick={triggerActionButtonToast}
+          >
+            Show Toast with Action Button
+          </Button>
+        </div>
+        <div className="example">
+          <Button
+            variant="default"
+            onClick={triggerCancelButtonToast}
+          >
+            Show Toast with Cancel Button
+          </Button>
+        </div>
+        <div className="example">
+          <Button
+            variant="default"
+            onClick={triggerCombinedToast}
+          >
+            Show Toast with Action & Cancel Buttons
+          </Button>
+        </div>
       </div>
 
       {/* Render the Toaster component */}
