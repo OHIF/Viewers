@@ -14,7 +14,7 @@ import { Input, Dialog, ButtonEnums, LabellingFlow } from '@ohif/ui';
  * @param {string?} dialogConfig.inputLabel - show label above the input
  */
 
-function callInputDialog(
+export function callInputDialog(
   uiDialogService,
   data,
   callback,

@@ -138,7 +138,7 @@ declare global {
       dataSources?: Record<string, unknown>;
       oidc?: Record<string, unknown>;
       peerImport?: (moduleId: string) => Promise<Record<string, unknown>>;
-      studyPrefetcher: {
+      studyPrefetcher?: {
         enabled: boolean;
         displaySetsCount: number;
         maxNumPrefetchRequests: number;

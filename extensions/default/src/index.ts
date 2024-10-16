@@ -25,7 +25,12 @@ import { useDisplaySetSelectorStore } from './stores/useDisplaySetSelectorStore'
 import { useHangingProtocolStageIndexStore } from './stores/useHangingProtocolStageIndexStore';
 import { useToggleHangingProtocolStore } from './stores/useToggleHangingProtocolStore';
 import { useToggleOneUpViewportGridStore } from './stores/useToggleOneUpViewportGridStore';
-
+import { useMeasurements } from './utils/measurementUtils';
+import {
+  callLabelAutocompleteDialog,
+  showLabelAnnotationPopup,
+  callInputDialog,
+} from './utils/callInputDialog';
 const defaultExtension: Types.Extensions.Extension = {
   /**
    * Only required property. Should be a unique value across all extensions.
@@ -81,4 +86,8 @@ export {
   useUIStateStore,
   useViewportGridStore,
   useViewportsByPositionStore,
+  useMeasurements,
+  showLabelAnnotationPopup,
+  callLabelAutocompleteDialog,
+  callInputDialog,
 };

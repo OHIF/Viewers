@@ -13,10 +13,10 @@ import {
   ReferenceLinesTool,
 } from '@cornerstonejs/tools';
 import { Types as OhifTypes } from '@ohif/core';
+import { callLabelAutocompleteDialog, showLabelAnnotationPopup } from '@ohif/extension-default';
 import { vec3, mat4 } from 'gl-matrix';
 
 import CornerstoneViewportDownloadForm from './utils/CornerstoneViewportDownloadForm';
-import { callLabelAutocompleteDialog, showLabelAnnotationPopup } from './utils/callInputDialog';
 import toggleImageSliceSync from './utils/imageSliceSync/toggleImageSliceSync';
 import { getFirstAnnotationSelected } from './utils/measurementServiceMappings/utils/selection';
 import getActiveViewportEnabledElement from './utils/getActiveViewportEnabledElement';

@@ -45,15 +45,15 @@ const DataRow: React.FC<DataRowProps> = ({
   colorHex,
   details,
   series,
-  isSelected = false,
   onSelect,
-  isVisible,
   isLocked,
   onToggleVisibility,
   onToggleLocked,
   onRename,
   onDelete,
   onColor,
+  isSelected = false,
+  isVisible = true,
   disableEditing = false,
 }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);

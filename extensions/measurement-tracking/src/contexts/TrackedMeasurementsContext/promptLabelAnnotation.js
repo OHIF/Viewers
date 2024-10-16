@@ -1,10 +1,8 @@
-function promptLabelAnnotation({ servicesManager, extensionManager }, ctx, evt) {
+import { showLabelAnnotationPopup } from '@ohif/extension-default';
+
+function promptLabelAnnotation({ servicesManager }, ctx, evt) {
   const { measurementService, customizationService } = servicesManager.services;
   const { viewportId, StudyInstanceUID, SeriesInstanceUID, measurementId } = evt;
-  const utilityModule = extensionManager.getModuleEntry(
-    '@ohif/extension-cornerstone.utilityModule.common'
-  );
-  const { showLabelAnnotationPopup } = utilityModule.exports;
   return new Promise(async function (resolve) {
     const labelConfig = customizationService.get('measurementLabels');
     const measurement = measurementService.getMeasurement(measurementId);
