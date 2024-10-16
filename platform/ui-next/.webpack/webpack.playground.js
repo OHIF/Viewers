@@ -113,7 +113,7 @@ module.exports = {
     },
     hot: true,
     open: true,
-    port: 8000,
+    port: 8002,
     historyApiFallback: true,
     devMiddleware: {
       writeToDisk: true,
