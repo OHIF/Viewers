@@ -655,6 +655,9 @@ class SegmentationService extends PubSubService {
       config: {
         label: options.label,
         segments: options.segments ?? {},
+        cachedStats: {
+          info: `S${displaySet.SeriesNumber}: ${displaySet.SeriesDescription}`,
+        },
       },
     };
 

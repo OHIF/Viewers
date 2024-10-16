@@ -6,15 +6,7 @@ import { PanelSection } from '../PanelSection/PanelSection';
 import { Label } from '../../components';
 
 interface SegmentationConfigProps {
-  representation: {
-    styles: {
-      fillAlpha: number;
-      fillAlphaInactive: number;
-      outlineWidth: number;
-      renderFill: boolean;
-      renderOutline: boolean;
-    };
-  };
+  representation: unknown;
   setFillAlpha: (value: number) => void;
   setOutlineWidth: (value: number) => void;
   toggleRenderInactiveSegmentations: () => void;

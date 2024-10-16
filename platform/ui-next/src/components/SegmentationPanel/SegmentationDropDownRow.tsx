@@ -11,6 +11,10 @@ import {
   DropdownMenuPortal,
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+  TooltipProvider,
 } from '../../components';
 import { useTranslation } from 'react-i18next';
 import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from '@ohif/ui-next';
@@ -38,8 +42,6 @@ interface SegmentationDropDownRowProps {
 const SegmentationDropDownRow: React.FC<SegmentationDropDownRowProps> = ({
   segmentations,
   onActiveSegmentationChange,
-  disableEditing = false,
-  onToggleSegmentationVisibility,
   onSegmentationEdit,
   onSegmentationDownload,
   onSegmentationDownloadRTSS,
@@ -155,12 +157,24 @@ const SegmentationDropDownRow: React.FC<SegmentationDropDownRowProps> = ({
           ))}
         </SelectContent>
       </Select>
-      <Button
-        variant="ghost"
-        size="icon"
-      >
-        <Icons.Info className="h-6 w-6" />
-      </Button>
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              variant="ghost"
+              size="icon"
+            >
+              <Icons.Info className="h-6 w-6" />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent
+            side="bottom"
+            align="end"
+          >
+            {activeSegmentation.info}
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
     </div>
   );
 };

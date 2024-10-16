@@ -277,51 +277,6 @@ export default function PanelSegmentation({
   return (
     <div className="flex h-full flex-col overflow-hidden">
       <div className="flex-grow overflow-y-auto">
-        {/* <SegmentationGroupTableComponent
-          title={t('Segmentations')}
-          segmentationsInfo={segmentationsInfo}
-          disableEditing={disableEditing}
-          onSegmentationAdd={onSegmentationAddWrapper}
-          showAddSegment={allowAddSegment}
-          onSegmentationClick={onSegmentationClick}
-          onSegmentationDelete={onSegmentationDelete}
-          onSegmentationDownload={onSegmentationDownload}
-          onSegmentationDownloadRTSS={onSegmentationDownloadRTSS}
-          storeSegmentation={storeSegmentation}
-          onSegmentationEdit={onSegmentationEdit}
-          onSegmentClick={onSegmentClick}
-          onSegmentEdit={onSegmentEdit}
-          onSegmentAdd={onSegmentAdd}
-          onSegmentColorClick={onSegmentColorClick}
-          onSegmentDelete={onSegmentDelete}
-          onToggleSegmentVisibility={onToggleSegmentVisibility}
-          onToggleLock={onToggleSegmentLock}
-          onToggleSegmentationVisibility={onToggleSegmentationVisibility}
-          setRenderOutline={(segmentationId, type, value) =>
-            _setStyle(segmentationId, type, 'renderOutline', value)
-          }
-          setRenderFill={(segmentationId, type, value) =>
-            _setStyle(segmentationId, type, 'renderFill', value)
-          }
-          toggleRenderInactiveSegmentations={toggle => {
-            const viewportId = viewportGridService.getActiveViewportId();
-            segmentationService.setRenderInactiveSegmentations(viewportId, toggle);
-          }}
-          renderInactiveSegmentations={segmentationService.getRenderInactiveSegmentations(
-            viewportGridService.getActiveViewportId()
-          )}
-          setOutlineWidthActive={(segmentationId, type, value) =>
-            _setStyle(segmentationId, type, 'outlineWidth', value)
-          }
-          setFillAlpha={(segmentationId, type, value) =>
-            _setStyle(segmentationId, type, 'fillAlpha', value)
-          }
-          setFillAlphaInactive={(segmentationId, type, value) =>
-            _setStyle(segmentationId, type, 'fillAlphaInactive', value)
-          }
-          showDeleteSegment={true}
-        /> */}
-
         <PanelSection title="Segmentation List">
           <SegmentationDropDownRow
             segmentations={segmentationsInfo.map(info => ({
@@ -329,6 +284,7 @@ export default function PanelSegmentation({
               label: info.segmentation.label,
               isActive: info.representation.active,
               isVisible: info.representation.visible,
+              info: info.segmentation.cachedStats.info,
             }))}
             disableEditing={disableEditing}
             onActiveSegmentationChange={handlers.onSegmentationClick}
@@ -361,7 +317,10 @@ export default function PanelSegmentation({
             renderInactiveSegmentations={segmentationService.getRenderInactiveSegmentations(
               viewportGridService.getActiveViewportId()
             )}
-            toggleRenderInactiveSegmentations={handlers.toggleRenderInactiveSegmentations}
+            toggleRenderInactiveSegmentations={() => {
+              const viewportId = viewportGridService.getActiveViewportId();
+              segmentationService.setRenderInactiveSegmentations(viewportId, true);
+            }}
             setRenderFill={(value: boolean) =>
               handlers.setStyle(
                 activeSegmentationId,
@@ -387,25 +346,39 @@ export default function PanelSegmentation({
               )
             }
           />
-          {!disableEditing && (
-            <div className="bg-primary-dark my-px flex h-9 w-full items-center justify-between rounded pl-0.5 pr-7">
-              <Button
-                size="sm"
-                variant="ghost"
-                className="pr pl-0.5"
-                onClick={() => handlers.onSegmentAdd(activeSegmentationId)}
-              >
-                <Icons.Add />
-                Add Segment
-              </Button>
-              <Button
-                size="icon"
-                variant="ghost"
-              >
+          {!disableEditing &&
+            (() => {
+              const allSegmentsVisible = Object.values(
+                activeSegmentationInfo?.representation?.segments
+              ).every(segment => segment?.visible !== false);
+
+              const Icon = allSegmentsVisible ? (
                 <Icons.Hide className="h-6 w-6" />
-              </Button>
-            </div>
-          )}
+              ) : (
+                <Icons.Show className="h-6 w-6" />
+              );
+
+              return (
+                <div className="bg-primary-dark my-px flex h-9 w-full items-center justify-between rounded pl-0.5 pr-7">
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    className="pr pl-0.5"
+                    onClick={() => handlers.onSegmentAdd(activeSegmentationId)}
+                  >
+                    <Icons.Add />
+                    Add Segment
+                  </Button>
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    onClick={() => handlers.onToggleSegmentationVisibility(activeSegmentationId)}
+                  >
+                    {Icon}
+                  </Button>
+                </div>
+              );
+            })()}
           <ScrollArea
             className="ohif-scrollbar invisible-scrollbar bg-bkg-low h-[600px] space-y-px"
             showArrows={true}

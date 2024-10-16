@@ -50,7 +50,7 @@ import { Thumbnail } from './Thumbnail';
 import { ThumbnailList } from './ThumbnailList';
 import { PanelSection } from './PanelSection';
 import { DisplaySetMessageListTooltip } from './DisplaySetMessageListTooltip';
-import { Tooltip, TooltipTrigger, TooltipContent } from './Tooltip';
+import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from './Tooltip';
 import { Toolbox, ToolboxUI } from './Toolbox';
 import {
   DropdownMenu,
@@ -168,5 +168,6 @@ export {
   Tooltip,
   TooltipTrigger,
   TooltipContent,
+  TooltipProvider,
   DataRow,
 };
