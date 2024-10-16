@@ -171,6 +171,10 @@ const DataRow: React.FC<DataRowProps> = ({
                 </DropdownMenuItem>
                 <DropdownMenuItem>
                   <Icons.Delete className="text-foreground" />
+                  <span className="pl-2">Change Color</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem>
+                  <Icons.Delete className="text-foreground" />
                   <span className="pl-2">Delete</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>
