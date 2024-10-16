@@ -595,40 +595,38 @@ export default function ComponentShowcase() {
           code={`sdf`}
         >
           {/* Toast Examples Section */}
-          <Button
-            variant="default"
-            onClick={triggerSuccess}
-          >
-            Show Success Toast
-          </Button>
-
-          <Button
-            variant="default"
-            onClick={triggerError}
-          >
-            Show Error Toast
-          </Button>
-
-          <Button
-            variant="default"
-            onClick={triggerInfo}
-          >
-            Show Info Toast
-          </Button>
-
-          <Button
-            variant="default"
-            onClick={triggerWarning}
-          >
-            Show Warning Toast
-          </Button>
-
-          <Button
-            variant="default"
-            onClick={triggerPromiseToast}
-          >
-            Loading & Success Toast
-          </Button>
+          <div className="space-x-2">
+            <Button
+              variant="default"
+              onClick={triggerSuccess}
+            >
+              Show Success Toast
+            </Button>
+            <Button
+              variant="default"
+              onClick={triggerError}
+            >
+              Show Error Toast
+            </Button>
+            <Button
+              variant="default"
+              onClick={triggerInfo}
+            >
+              Show Info Toast
+            </Button>
+            <Button
+              variant="default"
+              onClick={triggerWarning}
+            >
+              Show Warning Toast
+            </Button>
+            <Button
+              variant="default"
+              onClick={triggerPromiseToast}
+            >
+              Loading & Success Toast
+            </Button>
+          </div>
         </ShowcaseRow>
 
         <ShowcaseRow

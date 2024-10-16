@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
-import { createRoot } from 'react-dom/client';
-import '../tailwind.css';
 
-import { Button } from '../components/Button';
+import { Button } from '../../../../ui-next/src/components/Button';
 import {
   Select,
   SelectGroup,
@@ -14,7 +12,7 @@ import {
   SelectSeparator,
   SelectScrollUpButton,
   SelectScrollDownButton,
-} from '../components/Select';
+} from '../../../../ui-next/src/components/Select';
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -26,22 +24,22 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuSubContent,
   DropdownMenuPortal,
-} from '../components/DropdownMenu';
-import { Icons } from '../components/Icons/Icons';
-import DataRow from '../_prototypes/DataRow/DataRow';
-import dataList from '../_prototypes/DataRow/dataList.json';
-import actionOptionsMap from '../_prototypes/DataRow/actionOptionsMap';
+} from '../../../../ui-next/src/components/DropdownMenu';
+import { Icons } from '../../../../ui-next/src/components/Icons/Icons';
+import { DataRow } from '../../../../ui-next/src/components/DataRow';
+import { actionOptionsMap, dataList } from '../../../../ui-next/assets/data';
+
 import {
   Accordion,
   AccordionItem,
   AccordionTrigger,
   AccordionContent,
-} from '../components/Accordion/Accordion';
-import { Slider } from '../components/Slider';
-import { Switch } from '../components/Switch';
-import { Label } from '../components/Label';
-import { Input } from '../components/Input';
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '../components/Tabs';
+} from '../../../../ui-next/src/components/Accordion/Accordion';
+import { Slider } from '../../../../ui-next/src/components/Slider';
+import { Switch } from '../../../../ui-next/src/components/Switch';
+import { Label } from '../../../../ui-next/src/components/Label';
+import { Input } from '../../../../ui-next/src/components/Input';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '../../../../ui-next/src/components/Tabs';
 
 import { ChevronDownIcon } from '@radix-ui/react-icons';
 
@@ -60,7 +58,7 @@ interface ListGroup {
   items: DataItem[];
 }
 
-function Patterns() {
+export default function TMTVPatterns() {
   const [selectedRowId, setSelectedRowId] = useState<string | null>(null);
   const [selectedTab, setSelectedTab] = useState<string>('Fill & Outline');
 
@@ -90,7 +88,7 @@ function Patterns() {
   }
 
   return (
-    <div className="my-4 flex max-w-6xl justify-end py-6">
+    <div className="px-auto my-4 flex h-full w-full justify-center bg-black py-6">
       <div className="w-64 space-y-0">
         <Accordion
           type="multiple"
@@ -434,7 +432,3 @@ function Patterns() {
     </div>
   );
 }
-
-const container = document.getElementById('root');
-const root = createRoot(container!);
-root.render(<Patterns />);
