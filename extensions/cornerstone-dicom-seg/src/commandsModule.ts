@@ -25,7 +25,7 @@ const { datasetToBlob } = dcmjs.data;
 
 const {
   Cornerstone3D: {
-    Segmentation: { generateLabelMaps2DFrom3D, generateSegmentation },
+    Segmentation: { generateSegmentation },
   },
 } = adaptersSEG;
 

@@ -1,6 +1,7 @@
-import { createReportAsync, createReportDialogPrompt } from '@ohif/extension-default';
-import getNextSRSeriesNumber from '../../_shared/getNextSRSeriesNumber';
-import RESPONSE from '../../_shared/PROMPT_RESPONSES';
+import createReportAsync from '../Actions/createReportAsync';
+import { createReportDialogPrompt } from '../Panels';
+import getNextSRSeriesNumber from './getNextSRSeriesNumber';
+import PROMPT_RESPONSES from './_shared/PROMPT_RESPONSES';
 
 async function promptSaveReport({ servicesManager, commandsManager, extensionManager }, ctx, evt) {
   const { uiDialogService, measurementService, displaySetService } = servicesManager.services;
@@ -17,7 +18,7 @@ async function promptSaveReport({ servicesManager, commandsManager, extensionMan
       extensionManager,
     });
 
-    if (promptResult.action === RESPONSE.CREATE_REPORT) {
+    if (promptResult.action === PROMPT_RESPONSES.CREATE_REPORT) {
       const dataSources = extensionManager.getDataSources();
       const dataSource = dataSources[0];
       const measurements = measurementService.getMeasurements();

@@ -14,7 +14,7 @@ import { id } from './id.js';
 import preRegistration from './init';
 import { ContextMenuController, CustomizableContextMenuTypes } from './CustomizableContextMenu';
 import * as dicomWebUtils from './DicomWebDataSource/utils';
-import { createReportDialogPrompt } from './Panels';
+import { createReportDialogPrompt, PanelMeasurementTable } from './Panels';
 import createReportAsync from './Actions/createReportAsync';
 import StaticWadoClient from './DicomWebDataSource/utils/StaticWadoClient';
 import { cleanDenaturalizedDataset } from './DicomWebDataSource/utils';
@@ -31,6 +31,10 @@ import {
   showLabelAnnotationPopup,
   callInputDialog,
 } from './utils/callInputDialog';
+
+import promptSaveReport from './utils/promptSaveReport';
+import promptLabelAnnotation from './utils/promptLabelAnnotation';
+
 const defaultExtension: Types.Extensions.Extension = {
   /**
    * Only required property. Should be a unique value across all extensions.
@@ -90,4 +94,7 @@ export {
   showLabelAnnotationPopup,
   callLabelAutocompleteDialog,
   callInputDialog,
+  PanelMeasurementTable,
+  promptSaveReport,
+  promptLabelAnnotation,
 };

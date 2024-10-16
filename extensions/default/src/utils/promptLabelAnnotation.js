@@ -1,4 +1,4 @@
-import { showLabelAnnotationPopup } from '@ohif/extension-default';
+import { showLabelAnnotationPopup } from './callInputDialog';
 
 function promptLabelAnnotation({ servicesManager }, ctx, evt) {
   const { measurementService, customizationService } = servicesManager.services;
