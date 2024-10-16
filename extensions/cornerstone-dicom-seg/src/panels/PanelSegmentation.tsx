@@ -5,10 +5,10 @@ import {
   SegmentationDropDownRow,
   Button,
   Icons,
-  SegmentItem,
   ScrollArea,
   NoSegmentationRow,
   SegmentationConfig,
+  DataRow,
 } from '@ohif/ui-next';
 import callInputDialog from './callInputDialog';
 import callColorPickerDialog from './colorPickerDialog';
@@ -419,24 +419,29 @@ export default function PanelSegmentation({
                 activeSegmentationInfo?.segmentation.segments[segmentIndex];
 
               const { locked, active, label } = segmentFromSegmentation;
+              const cssColor = `rgb(${color[0]},${color[1]},${color[2]})`;
 
               return (
-                <SegmentItem
+                <DataRow
                   key={segmentIndex}
-                  segmentationId={activeSegmentationId}
-                  segmentIndex={segmentIndex}
-                  label={label}
-                  color={color}
-                  isActive={active}
-                  disableEditing={disableEditing}
-                  isLocked={locked}
+                  number={segmentIndex}
+                  title={label}
+                  description=""
+                  colorHex={cssColor}
+                  isSelected={active}
                   isVisible={visible}
-                  onClick={handlers.onSegmentClick}
-                  onEdit={handlers.onSegmentEdit}
-                  onDelete={handlers.onSegmentDelete}
-                  onColor={handlers.onSegmentColorClick}
-                  onToggleVisibility={handlers.onToggleSegmentVisibility}
-                  onToggleLocked={handlers.onToggleSegmentLock}
+                  isLocked={locked}
+                  disableEditing={disableEditing}
+                  onColor={() => handlers.onSegmentColorClick(activeSegmentationId, segmentIndex)}
+                  onToggleVisibility={() =>
+                    handlers.onToggleSegmentVisibility(activeSegmentationId, segmentIndex)
+                  }
+                  onToggleLocked={() =>
+                    handlers.onToggleSegmentLock(activeSegmentationId, segmentIndex)
+                  }
+                  onSelect={() => handlers.onSegmentClick(activeSegmentationId, segmentIndex)}
+                  onRename={() => handlers.onSegmentEdit(activeSegmentationId, segmentIndex)}
+                  onDelete={() => handlers.onSegmentDelete(activeSegmentationId, segmentIndex)}
                 />
               );
             })}

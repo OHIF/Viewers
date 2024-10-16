@@ -5,7 +5,26 @@ import { useTranslation } from 'react-i18next';
 import { PanelSection } from '../PanelSection/PanelSection';
 import { Label } from '../../components';
 
-const SegmentationConfig = ({
+interface SegmentationConfigProps {
+  representation: {
+    styles: {
+      fillAlpha: number;
+      fillAlphaInactive: number;
+      outlineWidth: number;
+      renderFill: boolean;
+      renderOutline: boolean;
+    };
+  };
+  setFillAlpha: (value: number) => void;
+  setOutlineWidth: (value: number) => void;
+  toggleRenderInactiveSegmentations: () => void;
+  renderInactiveSegmentations: boolean;
+  setFillAlphaInactive: (value: number) => void;
+  setRenderFill: (value: boolean) => void;
+  setRenderOutline: (value: boolean) => void;
+}
+
+const SegmentationConfig: React.FC<SegmentationConfigProps> = ({
   representation,
   setFillAlpha,
   setOutlineWidth,

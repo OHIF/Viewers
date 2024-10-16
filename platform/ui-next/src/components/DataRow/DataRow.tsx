@@ -16,34 +16,66 @@ import {
 
 interface DataRowProps {
   number: number;
-  title: string;
+  disableEditing: boolean;
   description: string;
-  optionalField?: string;
-  colorHex?: string;
   details?: string;
   series?: string;
-  actionOptions: string[];
-  onAction: (action: string) => void;
+  //
   isSelected?: boolean;
   onSelect?: () => void;
+  //
+  isVisible: boolean;
+  onToggleVisibility: () => void;
+  //
+  isLocked: boolean;
+  onToggleLocked: () => void;
+  //
+  title: string;
+  onRename: () => void;
+  //
+  onDelete: () => void;
+  //
+  colorHex?: string;
+  onColor: () => void;
 }
 
 const DataRow: React.FC<DataRowProps> = ({
   number,
   title,
-  description,
-  optionalField,
   colorHex,
   details,
   series,
-  actionOptions,
-  onAction,
   isSelected = false,
   onSelect,
+  isVisible,
+  isLocked,
+  onToggleVisibility,
+  onToggleLocked,
+  onRename,
+  onDelete,
+  onColor,
+  disableEditing = false,
 }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [isVisible, setIsVisible] = useState<boolean>(true);
   const isTitleLong = title.length > 25;
+
+  const handleAction = (action: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    switch (action) {
+      case 'Rename':
+        onRename();
+        break;
+      case 'Lock':
+        onToggleLocked();
+        break;
+      case 'Delete':
+        onDelete();
+        break;
+      case 'Color':
+        onColor();
+        break;
+    }
+  };
 
   return (
     <TooltipProvider>
@@ -110,35 +142,23 @@ const DataRow: React.FC<DataRowProps> = ({
           {/* Actions and Visibility Toggle */}
           <div className="relative ml-2 flex items-center space-x-1">
             {/* Visibility Toggle Icon */}
-            {isVisible ? (
-              <Button
-                size="icon"
-                variant="ghost"
-                className={`h-6 w-6 transition-opacity ${
-                  isSelected ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
-                }`}
-                aria-label="Hide"
-                onClick={e => {
-                  e.stopPropagation(); // Prevent row selection on button click
-                  setIsVisible(false);
-                }}
-              >
-                <Icons.Hide className="h-6 w-6" />
-              </Button>
-            ) : (
-              <Button
-                size="icon"
-                variant="ghost"
-                className="h-6 w-6 opacity-100"
-                aria-label="Show"
-                onClick={e => {
-                  e.stopPropagation(); // Prevent row selection on button click
-                  setIsVisible(true);
-                }}
-              >
-                <Icons.Show className="h-6 w-6" />
-              </Button>
-            )}
+            <Button
+              size="icon"
+              variant="ghost"
+              className={`h-6 w-6 transition-opacity ${
+                isSelected || !isVisible ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
+              }`}
+              aria-label={isVisible ? 'Hide' : 'Show'}
+              onClick={e => {
+                e.stopPropagation();
+                onToggleVisibility();
+              }}
+            >
+              {isVisible ? <Icons.Hide className="h-6 w-6" /> : <Icons.Show className="h-6 w-6" />}
+            </Button>
+
+            {/* Lock Icon (if needed) */}
+            {isLocked && <Icons.Lock className="text-muted-foreground h-6 w-6" />}
 
             {/* Actions Dropdown Menu */}
             <DropdownMenu onOpenChange={open => setIsDropdownOpen(open)}>
@@ -158,17 +178,25 @@ const DataRow: React.FC<DataRowProps> = ({
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <DropdownMenuItem>
-                  <Icons.Rename className="text-foreground" />
-                  <span className="pl-2">Rename</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem>
+                {!disableEditing && (
+                  <>
+                    <DropdownMenuItem onClick={e => handleAction('Rename', e)}>
+                      <Icons.Rename className="text-foreground" />
+                      <span className="pl-2">Rename</span>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={e => handleAction('Delete', e)}>
+                      <Icons.Delete className="text-foreground" />
+                      <span className="pl-2">Delete</span>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={e => handleAction('Color', e)}>
+                      <Icons.Delete className="text-foreground" />
+                      <span className="pl-2">Change Color</span>
+                    </DropdownMenuItem>
+                  </>
+                )}
+                <DropdownMenuItem onClick={e => handleAction('Lock', e)}>
                   <Icons.Lock className="text-foreground" />
-                  <span className="pl-2">Lock</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <Icons.Delete className="text-foreground" />
-                  <span className="pl-2">Delete</span>
+                  <span className="pl-2">{isLocked ? 'Unlock' : 'Lock'}</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

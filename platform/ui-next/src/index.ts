@@ -65,7 +65,6 @@ import {
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
   DropdownMenuRadioGroup,
-  SegmentItem,
   ScrollArea,
   SegmentationConfig,
 } from './components';
@@ -145,7 +144,6 @@ export {
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
   DropdownMenuRadioGroup,
-  SegmentItem,
   ScrollArea,
   SegmentationConfig,
 };

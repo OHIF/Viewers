@@ -75,7 +75,6 @@ import {
   NoSegmentationRow,
   SegmentationConfig,
   SegmentationDropDownRow,
-  SegmentItem,
 } from './SegmentationPanel';
 import { DataRow } from './DataRow';
 
@@ -165,7 +164,6 @@ export {
   SelectValue,
   NoSegmentationRow,
   SegmentationDropDownRow,
-  SegmentItem,
   SegmentationConfig,
   Tooltip,
   TooltipTrigger,
