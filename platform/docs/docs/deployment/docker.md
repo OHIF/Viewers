@@ -36,7 +36,7 @@ Once the Docker image has been built, it can be run as a container from the comm
 |Flag|Description|
 |----|-----------|
 |-d|Run the container in the background and print the container ID|
-|-p {host-port}:{nginx-port}/tcp|Publish the `nginx` listen port on the given host port|
+|-p `{host-port}:{nginx-port}/tcp`|Publish the `nginx` listen port on the given host port|
 |--name|An arbitrary name for the container.|
 
 
@@ -58,7 +58,7 @@ Simply replace `latest` at the end of the command with any of the tags for a spe
 
 ### Configuring the `nginx` Listen Port
 
-The Dockerfile and entry point use the `${PORT}` environment variable as the port that the `nginx` server uses to serve the web server. The default value for `${PORT}` is `80`. One way to set this environment variable is to use the `-e` switch when running the container with `docker run`. The block below gives an example where the listen port is set to `8080` and published on the host as `3000`.
+The Dockerfile and entry point use the `{PORT}` environment variable as the port that the `nginx` server uses to serve the web server. The default value for `{PORT}` is `80`. One way to set this environment variable is to use the `-e` switch when running the container with `docker run`. The block below gives an example where the listen port is set to `8080` and published on the host as `3000`.
 
 ```sh
 docker run -d -e PORT=8080 -p 3000:8080/tcp --name ohif-viewer-container ohif-viewer-image
@@ -83,13 +83,13 @@ docker run -d -p 3000:80/tcp -v /path/to/config/file.js:/usr/share/nginx/html/ap
 :::
 #### Environment Variable
 
-In certain scenarios, such as deploying the Docker container to Google Cloud, it might be convenient to specify the configuration file (contents) as an environment variable. That environment variable is `${APP_CONFIG}` and it can be set in the `docker run` command using the `-e` switch.
+In certain scenarios, such as deploying the Docker container to Google Cloud, it might be convenient to specify the configuration file (contents) as an environment variable. That environment variable is `{APP_CONFIG}` and it can be set in the `docker run` command using the `-e` switch.
 
 :::tip
 It is important to stress here that the environment variable is the contents of the configuration file and NOT the path to the config file as is [typically specified](https://docs.ohif.org/configuration/configurationFiles#configuration-files) for development and build environments or for the [volume mounting method](#volume-mounting).
 :::
 
-Below the `cat` command is used to convert the configuration file to a string and its result set as the `${APP_CONFIG}` environment variable.
+Below the `cat` command is used to convert the configuration file to a string and its result set as the `{APP_CONFIG}` environment variable.
 
 ```sh
 docker run -d -p 3000:80/tcp -e APP_CONFIG="$(cat /path/to/the/config/file)" --name ohif-viewer-container ohif-viewer-image
@@ -100,7 +100,7 @@ To be safe, remove single line comments (i.e. `//`) from the configuration file 
 :::
 
 :::tip
-As an alternative to the `cat` command, convert the configuration file to a single line and copy and paste it as the value to the `${APP_CONFIG}` environment variable on the `docker run` line. Editors such as [Visual Studio Code](https://stackoverflow.com/questions/46491061/shortcut-for-joining-two-lines) and [Notepad++](https://superuser.com/questions/518229/how-do-i-remove-linebreaks-in-notepad) have 'Join Lines' commands to facilitate this.
+As an alternative to the `cat` command, convert the configuration file to a single line and copy and paste it as the value to the `{APP_CONFIG}` environment variable on the `docker run` line. Editors such as [Visual Studio Code](https://stackoverflow.com/questions/46491061/shortcut-for-joining-two-lines) and [Notepad++](https://superuser.com/questions/518229/how-do-i-remove-linebreaks-in-notepad) have 'Join Lines' commands to facilitate this.
 :::
 
 :::tip
@@ -139,7 +139,7 @@ Consideration must be given as to whether OHIF should be deployed in a secure co
 ### Specifying the SSL Port, Certificate and Private Key
 
 For convenience, the [built Docker image](#building-the-docker-image) can be run over SSL by
-- setting the `${SSL_PORT}` environment variable
+- setting the `{SSL_PORT}` environment variable
 - volume mounting the SSL certificate
 - volume mounting the SSL private key
 
@@ -147,7 +147,7 @@ For convenience, the [built Docker image](#building-the-docker-image) can be run
 The volume mounted SSL certificate and private key are mapped to the [`ssl_certificate`](http://nginx.org/en/docs/http/ngx_http_ssl_module.html#ssl_certificate) and [`ssl_certificate_key`](http://nginx.org/en/docs/http/ngx_http_ssl_module.html#ssl_certificate_key) `nginx` directives respectively.
 :::
 
-Similar to the [`nginx` listen port](#configuring-the-nginx-listen-port), the `${SSL_PORT}` environment variable is the internal port that `nginx` listens on to serve the OHIF web server over SSL and has to be likewise published via the `-p` switch.
+Similar to the [`nginx` listen port](#configuring-the-nginx-listen-port), the `{SSL_PORT}` environment variable is the internal port that `nginx` listens on to serve the OHIF web server over SSL and has to be likewise published via the `-p` switch.
 
 The following is an example command running the Docker container over SSL. Note that depending on the version of Docker, an absolute path to the certificate and private key files might be required.
 
@@ -164,7 +164,7 @@ The private key is a secure entity and should have restricted access. Keep it sa
 :::
 
 :::caution
-The presence of the `${SSL_PORT}` environment variable is used to trigger to deploy over SSL as opposed to HTTP. If `${SSL_PORT}` is NOT defined, then HTTP is used even if the certificate and private key volumes are mounted.
+The presence of the `{SSL_PORT}` environment variable is used to trigger to deploy over SSL as opposed to HTTP. If `{SSL_PORT}` is NOT defined, then HTTP is used even if the certificate and private key volumes are mounted.
 :::
 
 :::tip

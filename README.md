@@ -333,4 +333,4 @@ MIT © [OHIF](https://github.com/OHIF)
 [vtk-npm]: https://www.npmjs.com/package/@ohif/extension-vtk
 <!-- prettier-ignore-end -->
 
-[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2FOHIF%2FViewers.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2FOHIF%2FViewers?ref=badge_large)
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FOHIF%2FViewers.svg?type=large&issueType=license)](https://app.fossa.com/projects/git%2Bgithub.com%2FOHIF%2FViewers?ref=badge_large&issueType=license)

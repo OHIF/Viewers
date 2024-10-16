@@ -1,51 +1,14 @@
-// src/_pages/patterns.tsx
-
 import React, { useState } from 'react';
-import { createRoot } from 'react-dom/client';
-import '../tailwind.css';
-
-import { Button } from '../components/Button';
-import {
-  Select,
-  SelectGroup,
-  SelectValue,
-  SelectTrigger,
-  SelectContent,
-  SelectLabel,
-  SelectItem,
-  SelectSeparator,
-  SelectScrollUpButton,
-  SelectScrollDownButton,
-} from '../components/Select';
-import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuLabel,
-  DropdownMenuSub,
-  DropdownMenuSubTrigger,
-  DropdownMenuSubContent,
-  DropdownMenuPortal,
-} from '../components/DropdownMenu';
-import { Icons } from '../components/Icons/Icons';
-import DataRow from '../_prototypes/DataRow/DataRow';
-import dataList from '../_prototypes/DataRow/dataList.json';
-import actionOptionsMap from '../_prototypes/DataRow/actionOptionsMap';
+import { Button } from '../../../../ui-next/src/components/Button';
+import { Icons } from '../../../../ui-next/src/components/Icons';
 import {
   Accordion,
   AccordionItem,
   AccordionTrigger,
   AccordionContent,
-} from '../components/Accordion/Accordion';
-import { Slider } from '../components/Slider';
-import { Switch } from '../components/Switch';
-import { Label } from '../components/Label';
-import { Input } from '../components/Input';
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '../components/Tabs';
-
-import { ChevronDownIcon } from '@radix-ui/react-icons';
+} from '../../../../ui-next/src/components/Accordion';
+import { DataRow } from '../../../../ui-next/src/components/DataRow';
+import { actionOptionsMap, dataList } from '../../../../ui-next/assets/data';
 
 interface DataItem {
   id: number;
@@ -62,7 +25,7 @@ interface ListGroup {
   items: DataItem[];
 }
 
-function Patterns() {
+export default function Measurements() {
   const [selectedRowId, setSelectedRowId] = useState<string | null>(null);
   const handleAction = (id: string, action: string) => {
     console.log(`Action "${action}" triggered for item with id: ${id}`);
@@ -86,13 +49,13 @@ function Patterns() {
   }
 
   return (
-    <div className="my-4 flex max-w-6xl justify-end py-6">
+    <div className="my-4 flex max-w-6xl justify-end bg-black py-6">
       {/* Simulated Panel List for "Segmentation" */}
       <div className="w-64 space-y-0">
         <Accordion
           type="multiple"
           defaultValue={['measurements-list', 'measurements-additional']}
-          collapsible
+          tabIndex={0}
         >
           {/* Segmentation Tools */}
           <AccordionItem value="measurements-list">
@@ -165,7 +128,3 @@ function Patterns() {
     </div>
   );
 }
-
-const container = document.getElementById('root');
-const root = createRoot(container!);
-root.render(<Patterns />);
