@@ -18,7 +18,7 @@ interface SegmentItemProps {
   onToggleLocked: (segmentationId: string, segmentIndex: number) => void;
 }
 
-const SegmentationGroupSegment: React.FC<SegmentItemProps> = ({
+const SegmentItem: React.FC<SegmentItemProps> = ({
   segmentationId,
   segmentIndex,
   label,
@@ -68,4 +68,4 @@ const SegmentationGroupSegment: React.FC<SegmentItemProps> = ({
   );
 };
 
-export default SegmentationGroupSegment;
+export default SegmentItem;

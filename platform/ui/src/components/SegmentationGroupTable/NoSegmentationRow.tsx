@@ -2,8 +2,9 @@ import React from 'react';
 import Icon from '../Icon';
 import { useTranslation } from 'react-i18next';
 
-function NoSegmentationRow({ onSegmentationAdd, addSegmentationClassName }) {
+function NoSegmentationRow({ onSegmentationAdd, addSegmentationClassName = '' }) {
   const { t } = useTranslation('SegmentationTable');
+
   return (
     <div
       className={`group ${addSegmentationClassName}`}

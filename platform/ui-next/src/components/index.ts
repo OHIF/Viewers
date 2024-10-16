@@ -71,7 +71,12 @@ import {
 } from './DropdownMenu';
 import { Onboarding } from './Onboarding';
 import { DoubleSlider } from './DoubleSlider';
-import { SegmentationGroupTable, SegmentationGroupTableExpanded } from './SegmentationGroupTable';
+import {
+  NoSegmentationRow,
+  SegmentationConfig,
+  SegmentationDropDownRow,
+  SegmentItem,
+} from './SegmentationPanel';
 import { DataRow } from './DataRow';
 
 export {
@@ -158,8 +163,10 @@ export {
   SelectContent,
   SelectItem,
   SelectValue,
-  SegmentationGroupTable,
-  SegmentationGroupTableExpanded,
+  NoSegmentationRow,
+  SegmentationDropDownRow,
+  SegmentItem,
+  SegmentationConfig,
   Tooltip,
   TooltipTrigger,
   TooltipContent,
