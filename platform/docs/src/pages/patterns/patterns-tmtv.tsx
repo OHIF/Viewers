@@ -237,6 +237,10 @@ export default function TMTVPatterns() {
                             <Icons.Rename className="text-foreground" />
                             <span className="pl-2">Rename</span>
                           </DropdownMenuItem>
+                          <DropdownMenuItem>
+                            <Icons.Hide className="text-foreground" />
+                            <span className="pl-2">Hide or Show all Segments</span>
+                          </DropdownMenuItem>
                           <DropdownMenuSub>
                             <DropdownMenuSubTrigger>
                               <Icons.Export className="text-foreground" />
@@ -322,6 +326,10 @@ export default function TMTVPatterns() {
                           <DropdownMenuItem>
                             <Icons.Rename className="text-foreground" />
                             <span className="pl-2">Rename</span>
+                          </DropdownMenuItem>
+                          <DropdownMenuItem>
+                            <Icons.Hide className="text-foreground" />
+                            <span className="pl-2">Hide or Show all Segments</span>
                           </DropdownMenuItem>
                           <DropdownMenuSub>
                             <DropdownMenuSubTrigger>
