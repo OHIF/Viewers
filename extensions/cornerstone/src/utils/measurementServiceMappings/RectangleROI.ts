@@ -13,7 +13,7 @@ const RectangleROI = {
     getValueTypeFromToolType,
     customizationService
   ) => {
-    const { annotation, viewportId } = csToolsEventDetail;
+    const { annotation } = csToolsEventDetail;
     const { metadata, data, annotationUID } = annotation;
 
     if (!metadata || !data) {
@@ -163,11 +163,11 @@ function _getReport(mappedAnnotations, points, FrameOfReferenceUID, customizatio
 }
 
 function getDisplayText(mappedAnnotations, displaySet, customizationService) {
-  if (!mappedAnnotations || !mappedAnnotations.length) {
-    return '';
-  }
-
   const displayText = [];
+
+  if (!mappedAnnotations || !mappedAnnotations.length) {
+    return displayText;
+  }
 
   // Area is the same for all series
   const { area, SOPInstanceUID, frameNumber, areaUnit } = mappedAnnotations[0];
@@ -184,7 +184,10 @@ function getDisplayText(mappedAnnotations, displaySet, customizationService) {
 
   // Area sometimes becomes undefined if `preventHandleOutsideImage` is off.
   const roundedArea = utils.roundNumber(area || 0, 2);
-  displayText.push(`${roundedArea} ${getDisplayUnit(areaUnit)}`);
+  displayText.push({
+    text: [`${roundedArea} ${getDisplayUnit(areaUnit)}`],
+    series: null,
+  });
 
   // Todo: we need a better UI for displaying all these information
   mappedAnnotations.forEach(mappedAnnotation => {
@@ -193,9 +196,10 @@ function getDisplayText(mappedAnnotations, displaySet, customizationService) {
     const maxStr = getStatisticDisplayString(max, unit, 'max');
 
     const str = `${maxStr}(S:${SeriesNumber}${instanceText}${frameText})`;
-    if (!displayText.includes(str)) {
-      displayText.push(str);
-    }
+    displayText.push({
+      text: [str],
+      series: `S: ${SeriesNumber}${instanceText}${frameText}`,
+    });
   });
 
   return displayText;

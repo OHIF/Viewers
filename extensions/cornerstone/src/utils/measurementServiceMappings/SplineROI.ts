@@ -136,8 +136,6 @@ function getDisplayText(annotation, displaySet, customizationService) {
   }
   const { SOPInstanceUID, frameNumber } = getSOPInstanceAttributes(metadata.referencedImageId);
 
-  const displayTextArray = [];
-
   const instance = displaySet.instances.find(image => image.SOPInstanceUID === SOPInstanceUID);
   let InstanceNumber;
   if (instance) {
@@ -148,9 +146,7 @@ function getDisplayText(annotation, displaySet, customizationService) {
   const frameText = displaySet.isMultiFrame ? ` F: ${frameNumber}` : '';
 
   const { SeriesNumber } = displaySet;
-  if (SeriesNumber) {
-    displayTextArray.push(`S: ${SeriesNumber}${instanceText}${frameText}`);
-  }
+  const seriesText = `S: ${SeriesNumber}${instanceText}${frameText}`;
 
   const stats = data.cachedStats[`imageId:${metadata.referencedImageId}`];
 
@@ -160,10 +156,10 @@ function getDisplayText(annotation, displaySet, customizationService) {
         if (isNaN(value)) {
           return value;
         }
-        return utils.roundNumber(value);
+        return utils.roundNumber(value, 2);
       });
     }
-    return isNaN(values) ? values : utils.roundNumber(values);
+    return isNaN(values) ? [values] : [utils.roundNumber(values, 2)];
   };
 
   const findUnitForValue = (displayTextItems, value) =>
@@ -171,17 +167,24 @@ function getDisplayText(annotation, displaySet, customizationService) {
       ?.value;
 
   const formatDisplayText = (displayName, result, unit) =>
-    `${displayName}: ${Array.isArray(result) ? roundValues(result).join(', ') : roundValues(result)} ${unit}`;
+    `${displayName}: ${roundValues(result).join(', ')} ${unit}`;
+
+  const textLines = [];
 
   displayText.forEach(({ displayName, value, type }) => {
     if (type === 'value') {
       const result = stats[value];
       const unit = stats[findUnitForValue(displayText, value)] || '';
-      displayTextArray.push(formatDisplayText(displayName, result, unit));
+      textLines.push(formatDisplayText(displayName, result, unit));
     }
   });
 
-  return displayTextArray;
+  return [
+    {
+      text: textLines,
+      series: seriesText,
+    },
+  ];
 }
 
 export default SplineROI;

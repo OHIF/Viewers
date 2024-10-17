@@ -17,7 +17,7 @@ const Length = {
     getValueTypeFromToolType,
     customizationService
   ) => {
-    const { annotation, viewportId } = csToolsEventDetail;
+    const { annotation } = csToolsEventDetail;
     const { metadata, data, annotationUID } = annotation;
 
     if (!metadata || !data) {
@@ -53,7 +53,7 @@ const Length = {
 
     const mappedAnnotations = getMappedAnnotations(annotation, displaySetService);
 
-    const displayText = getDisplayText(mappedAnnotations, displaySet, customizationService);
+    const displayText = getDisplayText(mappedAnnotations, displaySet);
 
     return {
       uid: annotationUID,
@@ -107,12 +107,12 @@ function getMappedAnnotations(annotation, displaySetService) {
   return annotations;
 }
 
-function getDisplayText(mappedAnnotations, displaySet, customizationService) {
-  if (!mappedAnnotations) {
-    return '';
-  }
-
+function getDisplayText(mappedAnnotations, displaySet) {
   const displayText = [];
+
+  if (!mappedAnnotations) {
+    return displayText;
+  }
 
   // Area is the same for all series
   const { SeriesNumber, SOPInstanceUID, frameNumber } = mappedAnnotations[0];
@@ -127,7 +127,7 @@ function getDisplayText(mappedAnnotations, displaySet, customizationService) {
   const instanceText = InstanceNumber ? ` I: ${InstanceNumber}` : '';
   const frameText = displaySet.isMultiFrame ? ` F: ${frameNumber}` : '';
 
-  displayText.push(`(S: ${SeriesNumber}${instanceText}${frameText})`);
+  displayText.push({ text: [null], series: `S: ${SeriesNumber}${instanceText}${frameText}` });
 
   return displayText;
 }

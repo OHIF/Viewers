@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from 'react';
-import { MeasurementTable, useViewportGrid } from '@ohif/ui';
+import { useViewportGrid } from '@ohif/ui';
+import { MeasurementTable } from '@ohif/ui-next';
 import debounce from 'lodash.debounce';
 import { useMeasurements } from '../utils/measurementUtils';
 import { showLabelAnnotationPopup } from '../utils/callInputDialog';
@@ -82,7 +83,15 @@ export default function PanelMeasurementTable({
           servicesManager={servicesManager}
           onClick={jumpToImage}
           onEdit={onMeasurementItemEditHandler}
-        />
+        >
+          {typeof children === 'function'
+            ? children({
+                nonAcquisitionMeasurements,
+                additionalFindings,
+                displayMeasurementsWithoutFindings,
+              })
+            : children}
+        </MeasurementTable>
         {additionalFindings.length > 0 && (
           <MeasurementTable
             key="Additional Findings"
@@ -91,15 +100,16 @@ export default function PanelMeasurementTable({
             servicesManager={servicesManager}
             onClick={jumpToImage}
             onEdit={onMeasurementItemEditHandler}
-          />
+          >
+            {typeof children === 'function'
+              ? children({
+                  nonAcquisitionMeasurements,
+                  additionalFindings,
+                  displayMeasurementsWithoutFindings,
+                })
+              : children}
+          </MeasurementTable>
         )}
-        {typeof children === 'function'
-          ? children({
-              nonAcquisitionMeasurements,
-              additionalFindings,
-              displayMeasurementsWithoutFindings,
-            })
-          : children}
       </div>
     </>
   );

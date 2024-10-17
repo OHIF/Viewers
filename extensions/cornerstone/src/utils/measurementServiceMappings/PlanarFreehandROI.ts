@@ -149,16 +149,14 @@ function getDisplayText(annotation, displaySet, customizationService, displaySet
   const frameText = displaySet.isMultiFrame ? ` F: ${frameNumber}` : '';
 
   const { SeriesNumber } = displaySet;
-  if (SeriesNumber) {
-    displayTextArray.push(`S: ${SeriesNumber}${instanceText}${frameText}`);
-  }
+  const seriesText = `S: ${SeriesNumber}${instanceText}${frameText}`;
 
   const stats =
     data.cachedStats[`imageId:${metadata.referencedImageId}`] ||
     Array.from(Object.values(data.cachedStats))[0];
 
   if (!stats) {
-    return displayTextArray;
+    return [{ text: [], series: seriesText }];
   }
 
   const roundValues = values => {
@@ -180,12 +178,19 @@ function getDisplayText(annotation, displaySet, customizationService, displaySet
   const formatDisplayText = (displayName, result, unit) =>
     `${displayName}: ${roundValues(result).join(', ')} ${unit}`;
 
+  const textLines = [];
+
   displayText.forEach(({ displayName, value, type }) => {
     if (type === 'value') {
       const result = stats[value];
       const unit = stats[findUnitForValue(displayText, value)] || '';
-      displayTextArray.push(formatDisplayText(displayName, result, unit));
+      textLines.push(formatDisplayText(displayName, result, unit));
     }
+  });
+
+  displayTextArray.push({
+    text: textLines,
+    series: seriesText,
   });
 
   return displayTextArray;

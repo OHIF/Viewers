@@ -19,7 +19,7 @@ const CobbAngle = {
     getValueTypeFromToolType,
     customizationService
   ) => {
-    const { annotation, viewportId } = csToolsEventDetail;
+    const { annotation } = csToolsEventDetail;
     const { metadata, data, annotationUID } = annotation;
 
     if (!metadata || !data) {
@@ -159,11 +159,11 @@ function _getReport(mappedAnnotations, points, FrameOfReferenceUID, customizatio
 }
 
 function getDisplayText(mappedAnnotations, displaySet, customizationService) {
-  if (!mappedAnnotations || !mappedAnnotations.length) {
-    return '';
-  }
-
   const displayText = [];
+
+  if (!mappedAnnotations || !mappedAnnotations.length) {
+    return displayText;
+  }
 
   // Area is the same for all series
   const { angle, unit, SeriesNumber, SOPInstanceUID, frameNumber } = mappedAnnotations[0];
@@ -181,9 +181,10 @@ function getDisplayText(mappedAnnotations, displaySet, customizationService) {
     return displayText;
   }
   const roundedAngle = utils.roundNumber(angle, 2);
-  displayText.push(
-    `${roundedAngle} ${getDisplayUnit(unit)} (S: ${SeriesNumber}${instanceText}${frameText})`
-  );
+  displayText.push({
+    text: [`${roundedAngle} ${getDisplayUnit(unit)}`],
+    series: `S: ${SeriesNumber}${instanceText}${frameText}`,
+  });
 
   return displayText;
 }

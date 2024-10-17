@@ -19,6 +19,7 @@ function mapMeasurementToDisplay(measurement, displaySetService) {
     findingSites,
     finding,
     referencedImageId,
+    toolName,
   } = measurement;
 
   const firstSite = findingSites?.[0];
@@ -40,6 +41,7 @@ function mapMeasurementToDisplay(measurement, displaySetService) {
   return {
     uid,
     label,
+    toolName,
     baseLabel,
     measurementType: type,
     displayText,
@@ -66,7 +68,6 @@ export function useMeasurements(servicesManager, { measurementFilter }) {
 
   useEffect(() => {
     const updateDisplayMeasurements = () => {
-      debugger;
       let measurements = measurementService.getMeasurements();
       if (measurementFilter) {
         measurements = measurements.filter(measurementFilter);

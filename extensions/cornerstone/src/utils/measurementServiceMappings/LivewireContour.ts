@@ -119,7 +119,7 @@ function getColumnValueReport(annotation, customizationService) {
  * @param {Object} displaySet - The display set object.
  * @returns {string[]} - An array of display text.
  */
-function getDisplayText(annotation, displaySet, customizationService) {
+function getDisplayText(annotation, displaySet) {
   const { metadata, data } = annotation;
 
   if (!data.cachedStats || !data.cachedStats[`imageId:${metadata.referencedImageId}`]) {
@@ -142,18 +142,21 @@ function getDisplayText(annotation, displaySet, customizationService) {
   const frameText = displaySet.isMultiFrame ? ` F: ${frameNumber}` : '';
 
   const { SeriesNumber } = displaySet;
-  if (SeriesNumber) {
-    displayText.push(`S: ${SeriesNumber}${instanceText}${frameText}`);
+
+  const texts = [];
+  if (area) {
+    const roundedArea = utils.roundNumber(area || 0, 2);
+    texts.push(`${roundedArea} ${getDisplayUnit(areaUnit)}`);
   }
 
-  if (area) {
-    /**
-     * Add Area
-     * Area sometimes becomes undefined if `preventHandleOutsideImage` is off
-     */
-    const roundedArea = utils.roundNumber(area || 0, 2);
-    displayText.push(`${roundedArea} ${getDisplayUnit(areaUnit)}`);
+  if (SeriesNumber) {
+    texts.push(`S: ${SeriesNumber}${instanceText}${frameText}`);
   }
+
+  displayText.push({
+    text: texts,
+    series: `S: ${SeriesNumber}${instanceText}${frameText}`,
+  });
 
   return displayText;
 }

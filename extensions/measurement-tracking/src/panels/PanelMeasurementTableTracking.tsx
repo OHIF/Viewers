@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { showLabelAnnotationPopup, PanelMeasurementTable } from '@ohif/extension-default';
 import { StudySummary, useViewportGrid, ActionButtons } from '@ohif/ui';
+import { Button, Icons } from '@ohif/ui-next';
 import { DicomMetadataStore, utils } from '@ohif/core';
 import { useAppConfig } from '@state';
 import { useTrackedMeasurements } from '../getContextModule';
@@ -102,35 +103,41 @@ function PanelMeasurementTableTracking({
           }
 
           return (
-            <div className="flex justify-center p-4">
-              <ActionButtons
-                t={t}
-                actions={[
-                  {
-                    label: 'Download CSV',
-                    onClick: () => {
-                      const measurements = measurementService.getMeasurements();
-                      const trackedMeasurements = measurements.filter(
-                        m =>
-                          trackedStudy === m.referenceStudyUID &&
-                          trackedSeries.includes(m.referenceSeriesUID)
-                      );
+            <div className="bg-background flex h-9 w-full items-center rounded pr-0.5">
+              <div className="flex space-x-1">
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  className="pl-1.5"
+                  onClick={() => {
+                    const measurements = measurementService.getMeasurements();
+                    const trackedMeasurements = measurements.filter(
+                      m =>
+                        trackedStudy === m.referenceStudyUID &&
+                        trackedSeries.includes(m.referenceSeriesUID)
+                    );
 
-                      downloadCSVReport(trackedMeasurements);
-                    },
-                  },
-                  {
-                    label: 'Create Report',
-                    onClick: () => {
-                      sendTrackedMeasurementsEvent('SAVE_REPORT', {
-                        viewportId: viewportGrid.activeViewportId,
-                        isBackupSave: true,
-                      });
-                    },
-                  },
-                ]}
-                disabled={disabled}
-              />
+                    downloadCSVReport(trackedMeasurements);
+                  }}
+                >
+                  <Icons.Download />
+                  <span className="pl-1">CSV</span>
+                </Button>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  className="pl-0.5"
+                  onClick={() => {
+                    sendTrackedMeasurementsEvent('SAVE_REPORT', {
+                      viewportId: viewportGrid.activeViewportId,
+                      isBackupSave: true,
+                    });
+                  }}
+                >
+                  <Icons.Add />
+                  Create DICOM SR
+                </Button>
+              </div>
             </div>
           );
         }}

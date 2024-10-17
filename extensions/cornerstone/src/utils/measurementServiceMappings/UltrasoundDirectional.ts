@@ -19,7 +19,7 @@ const UltrasoundDirectional = {
     getValueTypeFromToolType,
     customizationService
   ) => {
-    const { annotation, viewportId } = csToolsEventDetail;
+    const { annotation } = csToolsEventDetail;
     const { metadata, data, annotationUID } = annotation;
 
     if (!metadata || !data) {
@@ -167,11 +167,11 @@ function _getReport(mappedAnnotations, points, FrameOfReferenceUID, customizatio
 }
 
 function getDisplayText(mappedAnnotations, displaySet, customizationService) {
-  if (!mappedAnnotations || !mappedAnnotations.length) {
-    return '';
-  }
-
   const displayText = [];
+
+  if (!mappedAnnotations || !mappedAnnotations.length) {
+    return displayText;
+  }
 
   const { xValues, yValues, units, isUnitless, SeriesNumber, SOPInstanceUID, frameNumber } =
     mappedAnnotations[0];
@@ -192,12 +192,20 @@ function getDisplayText(mappedAnnotations, displaySet, customizationService) {
   }
 
   if (isUnitless) {
-    displayText.push(`${utils.roundNumber(xValues[0], 2)} ${units[0]} ${seriesText}`);
+    displayText.push({
+      text: [`${utils.roundNumber(xValues[0], 2)} ${units[0]} ${seriesText}`],
+      series: seriesText,
+    });
   } else {
     const dist1 = Math.abs(xValues[1] - xValues[0]);
     const dist2 = Math.abs(yValues[1] - yValues[0]);
-    displayText.push(`${utils.roundNumber(dist1)} ${units[0]} ${seriesText}`);
-    displayText.push(`${utils.roundNumber(dist2)} ${units[1]} ${seriesText}`);
+    displayText.push({
+      text: [
+        `${utils.roundNumber(dist1)} ${units[0]} ${seriesText}`,
+        `${utils.roundNumber(dist2)} ${units[1]} ${seriesText}`,
+      ],
+      series: seriesText,
+    });
   }
 
   return displayText;

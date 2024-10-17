@@ -18,7 +18,7 @@ interface DataRowProps {
   number: number;
   disableEditing: boolean;
   description: string;
-  details?: string;
+  details?: Array<{ text: string[]; series: string }>;
   series?: string;
   //
   isSelected?: boolean;
@@ -44,7 +44,6 @@ const DataRow: React.FC<DataRowProps> = ({
   title,
   colorHex,
   details,
-  series,
   onSelect,
   isLocked,
   onToggleVisibility,
@@ -57,7 +56,7 @@ const DataRow: React.FC<DataRowProps> = ({
   disableEditing = false,
 }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const isTitleLong = title.length > 25;
+  const isTitleLong = title?.length > 25;
 
   const handleAction = (action: string, e: React.MouseEvent) => {
     e.stopPropagation();
@@ -75,6 +74,16 @@ const DataRow: React.FC<DataRowProps> = ({
         onColor();
         break;
     }
+  };
+
+  const renderDetailText = (text: string) => {
+    const parts = text.split(/(<small>.*?<\/small>)/);
+    return parts.map((part, index) => {
+      if (part.startsWith('<small>') && part.endsWith('</small>')) {
+        return <small key={index}>{part.slice(7, -8)}</small>;
+      }
+      return <span key={index}>{part}</span>;
+    });
   };
 
   return (
@@ -203,13 +212,26 @@ const DataRow: React.FC<DataRowProps> = ({
           </div>
         </div>
 
-        {/* Row 2 (Details and Series) */}
-        {(details || series) && (
-          <div className="ml-7 bg-black px-2 py-1">
-            {/* Updated Flex Container: Changed 'items-center' to 'items-start' */}
-            <div className="text-secondary-foreground flex items-start justify-between whitespace-pre-line text-sm leading-normal">
-              <span>{details}</span>
-              {series && <span className="text-muted-foreground">{series}</span>}
+        {details?.length > 0 && (
+          <div className="bg-background ml-7 px-2 py-2">
+            <div className="text-secondary-foreground flex flex-col space-y-2">
+              {details.map((detail, index) => (
+                <div
+                  key={index}
+                  className="flex items-start justify-between text-sm leading-normal"
+                >
+                  <div className="flex-grow whitespace-pre-line">
+                    {detail.text.map((line, lineIndex) => (
+                      <div key={lineIndex}>{renderDetailText(line)}</div>
+                    ))}
+                  </div>
+                  {detail.series && (
+                    <div className="text-muted-foreground ml-4 flex-shrink-0">
+                      <small>{detail.series}</small>
+                    </div>
+                  )}
+                </div>
+              ))}
             </div>
           </div>
         )}

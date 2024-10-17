@@ -19,7 +19,7 @@ const Probe = {
     getValueTypeFromToolType,
     customizationService
   ) => {
-    const { annotation, viewportId } = csToolsEventDetail;
+    const { annotation } = csToolsEventDetail;
     const { metadata, data, annotationUID } = annotation;
 
     if (!metadata || !data) {
@@ -155,11 +155,11 @@ function _getReport(mappedAnnotations, points, FrameOfReferenceUID, customizatio
 }
 
 function getDisplayText(mappedAnnotations, displaySet, customizationService) {
-  if (!mappedAnnotations || !mappedAnnotations.length) {
-    return '';
-  }
-
   const displayText = [];
+
+  if (!mappedAnnotations || !mappedAnnotations.length) {
+    return displayText;
+  }
 
   const { value, unit, SeriesNumber, SOPInstanceUID, frameNumber } = mappedAnnotations[0];
 
@@ -176,9 +176,10 @@ function getDisplayText(mappedAnnotations, displaySet, customizationService) {
     return displayText;
   }
   const roundedValue = utils.roundNumber(value, 2);
-  displayText.push(
-    `${roundedValue} ${getDisplayUnit(unit)} (S: ${SeriesNumber}${instanceText}${frameText})`
-  );
+  displayText.push({
+    text: [`${roundedValue} ${getDisplayUnit(unit)}`],
+    series: `S: ${SeriesNumber}${instanceText}${frameText}`,
+  });
 
   return displayText;
 }

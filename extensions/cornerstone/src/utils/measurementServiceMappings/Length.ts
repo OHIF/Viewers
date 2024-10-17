@@ -18,7 +18,7 @@ const Length = {
     getValueTypeFromToolType,
     customizationService
   ) => {
-    const { annotation, viewportId } = csToolsEventDetail;
+    const { annotation } = csToolsEventDetail;
     const { metadata, data, annotationUID } = annotation;
 
     if (!metadata || !data) {
@@ -54,7 +54,7 @@ const Length = {
 
     const mappedAnnotations = getMappedAnnotations(annotation, displaySetService);
 
-    const displayText = getDisplayText(mappedAnnotations, displaySet, customizationService);
+    const displayText = getDisplayText(mappedAnnotations, displaySet);
     const getReport = () =>
       _getReport(mappedAnnotations, points, FrameOfReferenceUID, customizationService);
 
@@ -158,12 +158,12 @@ function _getReport(mappedAnnotations, points, FrameOfReferenceUID, customizatio
   };
 }
 
-function getDisplayText(mappedAnnotations, displaySet, customizationService) {
-  if (!mappedAnnotations || !mappedAnnotations.length) {
-    return '';
-  }
-
+function getDisplayText(mappedAnnotations, displaySet) {
   const displayText = [];
+
+  if (!mappedAnnotations || !mappedAnnotations.length) {
+    return displayText;
+  }
 
   // Area is the same for all series
   const { length, SeriesNumber, SOPInstanceUID, frameNumber, unit } = mappedAnnotations[0];
@@ -182,7 +182,10 @@ function getDisplayText(mappedAnnotations, displaySet, customizationService) {
     return displayText;
   }
   const roundedLength = utils.roundNumber(length, 2);
-  displayText.push(`${roundedLength} ${unit} (S: ${SeriesNumber}${instanceText}${frameText})`);
+  displayText.push({
+    text: [`${roundedLength} ${unit}`],
+    series: `S: ${SeriesNumber}${instanceText}${frameText}`,
+  });
 
   return displayText;
 }

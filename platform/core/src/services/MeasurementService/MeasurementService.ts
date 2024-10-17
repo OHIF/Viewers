@@ -485,7 +485,6 @@ class MeasurementService extends PubSubService {
 
       /* Convert measurement */
       measurement = toMeasurementSchema(sourceAnnotationDetail);
-
       if (!measurement) {
         return;
       }

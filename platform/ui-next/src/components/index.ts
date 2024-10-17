@@ -77,7 +77,7 @@ import {
   SegmentationDropDownRow,
 } from './SegmentationPanel';
 import { DataRow } from './DataRow';
-
+import { MeasurementTable } from './MeasurementTable';
 export {
   Button,
   buttonVariants,
@@ -170,4 +170,5 @@ export {
   TooltipContent,
   TooltipProvider,
   DataRow,
+  MeasurementTable,
 };

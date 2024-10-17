@@ -67,6 +67,7 @@ import {
   DropdownMenuRadioGroup,
   ScrollArea,
   SegmentationConfig,
+  MeasurementTable,
 } from './components';
 import { DataRow } from './components/DataRow';
 
@@ -146,4 +147,5 @@ export {
   DropdownMenuRadioGroup,
   ScrollArea,
   SegmentationConfig,
+  MeasurementTable,
 };
