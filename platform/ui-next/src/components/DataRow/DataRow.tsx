@@ -75,6 +75,7 @@ const DataRow: React.FC<DataRowProps> = ({
     }
   };
 
+  debugger;
   const renderDetailText = (text: string) => {
     const parts = text.split(/(<small>.*?<\/small>)/);
     return parts.map((part, index) => {
@@ -87,11 +88,11 @@ const DataRow: React.FC<DataRowProps> = ({
 
   return (
     <TooltipProvider>
-      <div className="flex flex-col">
+      <div className={`flex flex-col ${isVisible ? '' : 'opacity-60'}`}>
         <div
           className={`flex items-center ${
             isSelected ? 'bg-popover' : 'bg-muted'
-          } group relative cursor-pointer ${isVisible ? '' : 'opacity-60'}`}
+          } group relative cursor-pointer`}
           onClick={onSelect}
         >
           {/* Hover Overlay */}
@@ -196,10 +197,12 @@ const DataRow: React.FC<DataRowProps> = ({
                       <Icons.Delete className="text-foreground" />
                       <span className="pl-2">Delete</span>
                     </DropdownMenuItem>
-                    <DropdownMenuItem>
-                      <Icons.ColorChange className="text-foreground" />
-                      <span className="pl-2">Change Color</span>
-                    </DropdownMenuItem>
+                    {onColor && (
+                      <DropdownMenuItem onClick={e => handleAction('Color', e)}>
+                        <Icons.ColorChange className="text-foreground" />
+                        <span className="pl-2">Change Color</span>
+                      </DropdownMenuItem>
+                    )}
                   </>
                 )}
                 <DropdownMenuItem onClick={e => handleAction('Lock', e)}>

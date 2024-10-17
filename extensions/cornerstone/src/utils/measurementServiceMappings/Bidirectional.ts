@@ -4,6 +4,7 @@ import SUPPORTED_TOOLS from './constants/supportedTools';
 import getSOPInstanceAttributes from './utils/getSOPInstanceAttributes';
 import { utils } from '@ohif/core';
 import { getDisplayUnit } from './utils';
+import { getIsLocked } from './utils/getIsLocked';
 
 const Bidirectional = {
   toAnnotation: measurement => {},
@@ -17,6 +18,7 @@ const Bidirectional = {
     const { annotation } = csToolsEventDetail;
     const { metadata, data, annotationUID } = annotation;
 
+    const isLocked = getIsLocked(annotation);
     if (!metadata || !data) {
       console.warn('Length tool: Missing metadata or data');
       return null;
@@ -60,6 +62,7 @@ const Bidirectional = {
       FrameOfReferenceUID,
       points,
       textBox,
+      isLocked,
       metadata,
       referenceSeriesUID: SeriesInstanceUID,
       referenceStudyUID: StudyInstanceUID,

@@ -4,6 +4,7 @@ import { MeasurementTable } from '@ohif/ui-next';
 import debounce from 'lodash.debounce';
 import { useMeasurements } from '../utils/measurementUtils';
 import { showLabelAnnotationPopup } from '../utils/callInputDialog';
+import colorPickerDialog from '../utils/colorPickerDialog';
 
 export default function PanelMeasurementTable({
   servicesManager,
@@ -28,22 +29,28 @@ export default function PanelMeasurementTable({
   }, [displayMeasurements.length]);
 
   const onMeasurementItemClickHandler = (uid: string, isActive: boolean) => {
-    if (!isActive) {
-      const measurements = [...displayMeasurements];
-      const measurement = measurements.find(m => m.uid === uid);
-
-      measurements.forEach(m => (m.isActive = m.uid !== uid ? false : true));
-      measurement.isActive = true;
+    if (isActive) {
+      return;
     }
+
+    const measurements = [...displayMeasurements];
+    const measurement = measurements.find(m => m.uid === uid);
+
+    measurements.forEach(m => (m.isActive = m.uid !== uid ? false : true));
+    measurement.isActive = true;
   };
 
-  const jumpToImage = (uid: string, isActive: boolean) => {
+  const jumpToImage = (uid: string) => {
     measurementService.jumpToMeasurement(viewportGrid.activeViewportId, uid);
-    onMeasurementItemClickHandler(uid, isActive);
+    onMeasurementItemClickHandler(uid, true);
   };
 
-  const onMeasurementItemEditHandler = (uid: string, isActive: boolean) => {
-    jumpToImage(uid, isActive);
+  const removeMeasurement = (uid: string) => {
+    measurementService.remove(uid);
+  };
+
+  const renameMeasurement = (uid: string) => {
+    jumpToImage(uid);
     const labelConfig = customizationService.get('measurementLabels');
     const measurement = measurementService.getMeasurement(uid);
     showLabelAnnotationPopup(measurement, uiDialogService, labelConfig).then(val => {
@@ -55,6 +62,34 @@ export default function PanelMeasurementTable({
         true
       );
     });
+  };
+
+  const changeColorMeasurement = (uid: string) => {
+    const { color } = measurementService.getMeasurement(uid);
+    debugger;
+    const rgbaColor = {
+      r: color[0],
+      g: color[1],
+      b: color[2],
+      a: color[3] / 255.0,
+    };
+    colorPickerDialog(uiDialogService, rgbaColor, (newRgbaColor, actionId) => {
+      if (actionId === 'cancel') {
+        return;
+      }
+
+      const color = [newRgbaColor.r, newRgbaColor.g, newRgbaColor.b, newRgbaColor.a * 255.0];
+      debugger;
+      // segmentationService.setSegmentColor(viewportId, segmentationId, segmentIndex, color);
+    });
+  };
+
+  const toggleLockMeasurement = (uid: string) => {
+    measurementService.toggleLockMeasurement(uid);
+  };
+
+  const toggleVisibilityMeasurement = (uid: string) => {
+    measurementService.toggleVisibilityMeasurement(uid);
   };
 
   const displayMeasurementsWithoutFindings = displayMeasurements.filter(
@@ -72,8 +107,14 @@ export default function PanelMeasurementTable({
         data-cy={'trackedMeasurements-panel'}
       >
         <MeasurementTable
-          data={displayMeasurementsWithoutFindings}
           title="Measurements"
+          data={displayMeasurementsWithoutFindings}
+          onClick={jumpToImage}
+          onDelete={removeMeasurement}
+          onToggleVisibility={toggleVisibilityMeasurement}
+          onToggleLocked={toggleLockMeasurement}
+          onRename={renameMeasurement}
+          // onColor={changeColorMeasurement}
         >
           <MeasurementTable.Header>
             {customHeader && (
@@ -87,20 +128,20 @@ export default function PanelMeasurementTable({
               </>
             )}
           </MeasurementTable.Header>
-          <MeasurementTable.Body
-            onClick={jumpToImage}
-            onDelete={onMeasurementItemEditHandler}
-          />
+          <MeasurementTable.Body />
         </MeasurementTable>
         {additionalFindings.length > 0 && (
           <MeasurementTable
             data={additionalFindings}
             title="Additional Findings"
+            onClick={jumpToImage}
+            onDelete={removeMeasurement}
+            onToggleVisibility={toggleVisibilityMeasurement}
+            onToggleLocked={toggleLockMeasurement}
+            onRename={renameMeasurement}
+            // onColor={changeColorMeasurement}
           >
-            <MeasurementTable.Body
-              onClick={jumpToImage}
-              onDelete={onMeasurementItemEditHandler}
-            />
+            <MeasurementTable.Body />
           </MeasurementTable>
         )}
       </div>

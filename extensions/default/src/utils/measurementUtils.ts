@@ -10,46 +10,40 @@ function mapMeasurementToDisplay(measurement, displaySetService) {
     throw new Error('The tracked measurements panel should only be tracking "stack" displaySets.');
   }
 
-  const {
-    displayText: baseDisplayText,
-    uid,
-    label: baseLabel,
-    type,
-    selected,
-    findingSites,
-    finding,
-    referencedImageId,
-    toolName,
-  } = measurement;
+  const { findingSites, finding, label: baseLabel, displayText: baseDisplayText } = measurement;
 
   const firstSite = findingSites?.[0];
   const label = baseLabel || finding?.text || firstSite?.text || '(empty)';
-  let displayText = baseDisplayText || [];
+
+  // Initialize displayText with the structure used in Length.ts and CobbAngle.ts
+  const displayText = {
+    primary: [],
+    secondary: baseDisplayText?.secondary || [],
+  };
+
+  // Add baseDisplayText to primary if it exists
+  if (baseDisplayText) {
+    displayText.primary.push(...baseDisplayText.primary);
+  }
+
+  // Add finding sites to primary
   if (findingSites) {
-    const siteText = [];
     findingSites.forEach(site => {
-      if (site?.text !== label) {
-        siteText.push(site.text);
+      if (site?.text && site.text !== label) {
+        displayText.primary.push(site.text);
       }
     });
-    displayText = [...siteText, ...displayText];
   }
-  if (finding && finding?.text !== label) {
-    displayText = [finding.text, ...displayText];
+
+  // Add finding to primary if it's different from the label
+  if (finding && finding.text && finding.text !== label) {
+    displayText.primary.push(finding.text);
   }
 
   return {
-    uid,
-    label,
-    toolName,
-    baseLabel,
-    measurementType: type,
+    ...measurement,
     displayText,
-    baseDisplayText,
-    isActive: selected,
-    finding,
-    findingSites,
-    referencedImageId,
+    label,
   };
 }
 

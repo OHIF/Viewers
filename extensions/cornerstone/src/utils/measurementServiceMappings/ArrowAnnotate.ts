@@ -1,4 +1,5 @@
 import SUPPORTED_TOOLS from './constants/supportedTools';
+import { getIsLocked } from './utils/getIsLocked';
 import getSOPInstanceAttributes from './utils/getSOPInstanceAttributes';
 
 const Length = {
@@ -20,6 +21,7 @@ const Length = {
     const { annotation } = csToolsEventDetail;
     const { metadata, data, annotationUID } = annotation;
 
+    const isLocked = getIsLocked(annotation);
     if (!metadata || !data) {
       console.warn('Length tool: Missing metadata or data');
       return null;
@@ -61,6 +63,7 @@ const Length = {
       FrameOfReferenceUID,
       points,
       textBox,
+      isLocked,
       metadata,
       referenceSeriesUID: SeriesInstanceUID,
       referenceStudyUID: StudyInstanceUID,

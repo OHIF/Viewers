@@ -1,5 +1,6 @@
 import SUPPORTED_TOOLS from './constants/supportedTools';
 import { getDisplayUnit } from './utils';
+import { getIsLocked } from './utils/getIsLocked';
 import getSOPInstanceAttributes from './utils/getSOPInstanceAttributes';
 import { utils } from '@ohif/core';
 import { getStatisticDisplayString } from './utils/getValueDisplayString';
@@ -16,6 +17,7 @@ const EllipticalROI = {
     const { annotation } = csToolsEventDetail;
     const { metadata, data, annotationUID } = annotation;
 
+    const isLocked = getIsLocked(annotation);
     if (!metadata || !data) {
       console.warn('Length tool: Missing metadata or data');
       return null;
@@ -60,6 +62,7 @@ const EllipticalROI = {
       points,
       textBox,
       metadata,
+      isLocked,
       referenceSeriesUID: SeriesInstanceUID,
       referenceStudyUID: StudyInstanceUID,
       referencedImageId,

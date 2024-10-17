@@ -1,5 +1,6 @@
 import SUPPORTED_TOOLS from './constants/supportedTools';
 import getSOPInstanceAttributes from './utils/getSOPInstanceAttributes';
+import { getIsLocked } from './utils/getIsLocked';
 import { utils } from '@ohif/core';
 
 /**
@@ -26,6 +27,7 @@ const SplineROI = {
   ) => {
     const { annotation } = csToolsEventDetail;
     const { metadata, data, annotationUID } = annotation;
+    const isLocked = getIsLocked(annotation);
 
     if (!metadata || !data) {
       console.warn('SplineROI tool: Missing metadata or data');
@@ -68,6 +70,7 @@ const SplineROI = {
       data: data.cachedStats,
       type: getValueTypeFromToolType(toolName),
       getReport: () => getColumnValueReport(annotation, customizationService),
+      isLocked,
     };
   },
 };

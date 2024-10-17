@@ -1,5 +1,6 @@
 import SUPPORTED_TOOLS from './constants/supportedTools';
 import { getDisplayUnit } from './utils';
+import { getIsLocked } from './utils/getIsLocked';
 import getSOPInstanceAttributes from './utils/getSOPInstanceAttributes';
 import { utils } from '@ohif/core';
 
@@ -22,6 +23,7 @@ const CobbAngle = {
     const { annotation } = csToolsEventDetail;
     const { metadata, data, annotationUID } = annotation;
 
+    const isLocked = getIsLocked(annotation);
     if (!metadata || !data) {
       console.warn('Cobb Angle tool: Missing metadata or data');
       return null;
@@ -65,6 +67,7 @@ const CobbAngle = {
       FrameOfReferenceUID,
       points,
       textBox,
+      isLocked,
       metadata,
       referenceSeriesUID: SeriesInstanceUID,
       referenceStudyUID: StudyInstanceUID,

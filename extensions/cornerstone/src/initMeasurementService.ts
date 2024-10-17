@@ -344,8 +344,7 @@ const connectMeasurementServiceToTools = (measurementService, cornerstoneViewpor
         return;
       }
 
-      const { uid, label } = measurement;
-
+      const { uid, label, isLocked, isVisible, color } = measurement;
       const sourceAnnotation = annotation.state.getAnnotation(uid);
       const { data, metadata } = sourceAnnotation;
 
@@ -361,7 +360,21 @@ const connectMeasurementServiceToTools = (measurementService, cornerstoneViewpor
         data.text = label;
       }
 
-      // Todo: trigger render for annotation
+      // update the isLocked state
+      annotation.locking.setAnnotationLocked(uid, isLocked);
+
+      // update the isVisible state
+      annotation.visibility.setAnnotationVisibility(uid, isVisible);
+
+      // annotation.config.style.setAnnotationStyles(uid, {
+      //   color: `rgb(${color[0]}, ${color[1]}, ${color[2]})`,
+      // });
+
+      // I don't like this but will fix later
+      const renderingEngine = cornerstoneViewportService.getRenderingEngine();
+      // Note: We could do a better job by triggering the render on the
+      // viewport itself, but the removeAnnotation does not include that info...
+      renderingEngine.render();
     }
   );
 

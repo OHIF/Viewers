@@ -31,6 +31,7 @@ import {
   showLabelAnnotationPopup,
   callInputDialog,
 } from './utils/callInputDialog';
+import colorPickerDialog from './utils/colorPickerDialog';
 
 import promptSaveReport from './utils/promptSaveReport';
 import promptLabelAnnotation from './utils/promptLabelAnnotation';
@@ -97,4 +98,5 @@ export {
   PanelMeasurementTable,
   promptSaveReport,
   promptLabelAnnotation,
+  colorPickerDialog,
 };

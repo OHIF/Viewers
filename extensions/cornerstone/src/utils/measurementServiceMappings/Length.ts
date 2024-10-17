@@ -1,6 +1,8 @@
 import SUPPORTED_TOOLS from './constants/supportedTools';
+import { getIsLocked } from './utils/getIsLocked';
 import getSOPInstanceAttributes from './utils/getSOPInstanceAttributes';
 import { utils } from '@ohif/core';
+import { config } from '@cornerstonejs/tools/annotation';
 
 const Length = {
   toAnnotation: measurement => {},
@@ -20,6 +22,12 @@ const Length = {
   ) => {
     const { annotation } = csToolsEventDetail;
     const { metadata, data, annotationUID } = annotation;
+
+    const isLocked = getIsLocked(annotation);
+    const colorString = config.style.getStyleProperty('color', { annotationUID });
+
+    // color string is like 'rgb(255, 255, 255)' we need them to be in RGBA array [255, 255, 255, 255]
+    const color = colorString.replace('rgb(', '').replace(')', '').split(',').map(Number);
 
     if (!metadata || !data) {
       console.warn('Length tool: Missing metadata or data');
@@ -64,7 +72,9 @@ const Length = {
       FrameOfReferenceUID,
       points,
       textBox,
+      isLocked,
       metadata,
+      // color,
       referenceSeriesUID: SeriesInstanceUID,
       referenceStudyUID: StudyInstanceUID,
       referencedImageId,

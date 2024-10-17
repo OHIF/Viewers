@@ -11,7 +11,7 @@ import {
   DataRow,
 } from '@ohif/ui-next';
 import callInputDialog from './callInputDialog';
-import callColorPickerDialog from './colorPickerDialog';
+import { colorPickerDialog } from '@ohif/extension-default';
 import { useTranslation } from 'react-i18next';
 
 // const components = {
@@ -157,7 +157,7 @@ export default function PanelSegmentation({
         b: color[2],
         a: color[3] / 255.0,
       };
-      callColorPickerDialog(uiDialogService, rgbaColor, (newRgbaColor, actionId) => {
+      colorPickerDialog(uiDialogService, rgbaColor, (newRgbaColor, actionId) => {
         if (actionId === 'cancel') {
           return;
         }

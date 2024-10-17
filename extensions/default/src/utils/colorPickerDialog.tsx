@@ -4,7 +4,7 @@ import { ChromePicker } from 'react-color';
 
 import './colorPickerDialog.css';
 
-function callColorPickerDialog(uiDialogService, rgbaColor, callback) {
+function colorPickerDialog(uiDialogService, rgbaColor, callback) {
   const dialogId = 'pick-color';
 
   const onSubmitHandler = ({ action, value }) => {
@@ -55,4 +55,4 @@ function callColorPickerDialog(uiDialogService, rgbaColor, callback) {
   }
 }
 
-export default callColorPickerDialog;
+export default colorPickerDialog;

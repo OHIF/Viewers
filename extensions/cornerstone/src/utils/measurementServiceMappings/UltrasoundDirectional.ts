@@ -1,8 +1,7 @@
 import SUPPORTED_TOOLS from './constants/supportedTools';
-import { getDisplayUnit } from './utils';
 import getSOPInstanceAttributes from './utils/getSOPInstanceAttributes';
 import { utils } from '@ohif/core';
-
+import { getIsLocked } from './utils/getIsLocked';
 const UltrasoundDirectional = {
   toAnnotation: measurement => {},
 
@@ -21,7 +20,7 @@ const UltrasoundDirectional = {
   ) => {
     const { annotation } = csToolsEventDetail;
     const { metadata, data, annotationUID } = annotation;
-
+    const isLocked = getIsLocked(annotation);
     if (!metadata || !data) {
       console.warn('Length tool: Missing metadata or data');
       return null;
@@ -72,6 +71,7 @@ const UltrasoundDirectional = {
       data: data.cachedStats,
       type: getValueTypeFromToolType(toolName),
       getReport,
+      isLocked,
     };
   },
 };
