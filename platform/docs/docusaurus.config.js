@@ -176,12 +176,14 @@ module.exports = {
             target: '_blank',
             position: 'left',
           },
+          /*
           {
             to: '/playground',
             label: 'UI Playground',
             position: 'left',
             className: 'new-badge',
           },
+          */
           {
             to: '/help',
             //activeBaseRegex: '(^/help$)|(/help)',

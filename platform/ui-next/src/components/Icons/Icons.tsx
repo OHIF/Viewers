@@ -122,6 +122,101 @@ export const Icons = {
       </g>
     </svg>
   ),
+  ColorChange: (props: IconProps) => (
+    <svg
+      width="24px"
+      height="24px"
+      viewBox="0 0 24 24"
+      {...props}
+    >
+      <g
+        id="ColorChange"
+        stroke="none"
+        strokeWidth="1"
+        fill="none"
+        fillRule="evenodd"
+      >
+        <rect
+          id="Rectangle"
+          x="0"
+          y="0"
+          width="24"
+          height="24"
+        ></rect>
+        <g
+          id="Group-4"
+          transform="translate(4, 5)"
+          stroke="currentColor"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <path
+            d="M11.9830989,1.93861826 C10.5789104,0.665654409 8.7439168,-0.0269214719 6.84881419,0.000801239617 C3.06621664,0.000801239617 0,2.55531723 0,5.70792489 C0.13353775,8.17267636 1.81407658,10.2821527 4.18664171,10.963157 C5.1582084,11.3047338 5.96098033,11.0256244 6.52318651,9.75767005 C6.72995019,9.15827585 7.22615951,8.70434675 7.84154981,8.55163978 C8.45694011,8.39893281 9.10779864,8.568221 9.57079585,9.00141636 L9.70370511,9.13432562"
+            id="Path"
+          ></path>
+          <line
+            x1="13.2723188"
+            y1="6.75657895"
+            x2="9.69838874"
+            y2="13.9017808"
+            id="Path"
+          ></line>
+          <path
+            d="M12.5054323,4.46389421 C12.1415749,5.29815229 12.4941364,6.27127189 13.3079188,6.67887077 C14.1217013,7.08646964 15.1121527,6.7860243 15.5623453,5.99500889 C16.4969889,4.55848545 16.3097611,2.6657723 15.1117829,1.44020853 C15.0640204,1.39470251 14.9942555,1.38091172 14.9327711,1.40482233 C14.8712867,1.42873293 14.8291685,1.48603381 14.8246989,1.55185231 C14.8366608,3.08695427 13.4517463,2.56727906 12.5054323,4.46389421 Z"
+            id="Path"
+          ></path>
+          <path
+            d="M3.52608268,6.59044238 C3.70959208,6.59044238 3.85835583,6.73920613 3.85835583,6.92271553"
+            id="Path"
+          ></path>
+          <path
+            d="M3.19380953,6.92404462 C3.19345611,6.83569024 3.22830728,6.75083342 3.29065893,6.68823236 C3.35301058,6.62563131 3.4377276,6.59044167 3.52608268,6.59044238"
+            id="Path"
+          ></path>
+          <path
+            d="M3.52608268,7.25498868 C3.34257329,7.25498868 3.19380953,7.10622492 3.19380953,6.92271553"
+            id="Path"
+          ></path>
+          <path
+            d="M3.85835583,6.92404462 C3.85762387,7.10703476 3.70907428,7.25499014 3.52608268,7.25498868"
+            id="Path"
+          ></path>
+          <path
+            d="M4.52290214,3.26771086 C4.70641153,3.26771086 4.85517529,3.41647462 4.85517529,3.59998401"
+            id="Path"
+          ></path>
+          <path
+            d="M4.19062898,3.60131311 C4.19062898,3.41780371 4.33939274,3.26903996 4.52290214,3.26903996"
+            id="Path"
+          ></path>
+          <path
+            d="M4.52290214,3.93225717 C4.33939274,3.93225717 4.19062898,3.78349341 4.19062898,3.59998401"
+            id="Path"
+          ></path>
+          <path
+            d="M4.85517529,3.60131311 C4.85444332,3.78430325 4.70589374,3.93225863 4.52290214,3.93225717"
+            id="Path"
+          ></path>
+          <path
+            d="M7.84563365,2.60316456 C8.02914304,2.60316456 8.1779068,2.75192832 8.1779068,2.93543771"
+            id="Path"
+          ></path>
+          <path
+            d="M7.5133605,2.9367668 C7.51300708,2.84841243 7.54785824,2.76355561 7.61020989,2.70095455 C7.67256154,2.63835349 7.75727857,2.60316385 7.84563365,2.60316456"
+            id="Path"
+          ></path>
+          <path
+            d="M7.84563365,3.26771086 C7.66212425,3.26771086 7.5133605,3.11894711 7.5133605,2.93543771"
+            id="Path"
+          ></path>
+          <path
+            d="M8.1779068,2.9367668 C8.1779068,3.1202762 8.02914304,3.26903996 7.84563365,3.26903996"
+            id="Path"
+          ></path>
+        </g>
+      </g>
+    </svg>
+  ),
   Controls: (props: IconProps) => (
     <svg
       width="18px"
@@ -1084,6 +1179,97 @@ export const Icons = {
       </g>
     </svg>
   ),
+  StatusError: (props: IconProps) => (
+    <svg
+      width="24px"
+      height="24px"
+      viewBox="0 0 24 24"
+    >
+      <g
+        id="StatusAlert"
+        stroke="none"
+        strokeWidth="1"
+        fill="none"
+        fillRule="evenodd"
+      >
+        <rect
+          id="Rectangle"
+          x="0"
+          y="0"
+          width="24"
+          height="24"
+        ></rect>
+        <circle
+          id="Oval"
+          stroke="currentColor"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          cx="12"
+          cy="12"
+          r="8"
+        ></circle>
+        <g
+          id="Group"
+          transform="translate(11.5, 8)"
+          stroke="currentColor"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <line
+            x1="0.502969489"
+            y1="5"
+            x2="0.502969489"
+            y2="5.55111512e-16"
+            id="Path"
+          ></line>
+          <path
+            d="M0.494019489,7.75 C0.427967985,7.75102315 0.365128544,7.77867594 0.319754003,7.82668634 C0.274379462,7.87469675 0.250315262,7.93899595 0.253019489,8.005 C0.257853669,8.14136674 0.369567839,8.24954844 0.506019489,8.25 L0.506019489,8.25 C0.57198073,8.2487037 0.634656968,8.22096694 0.679972815,8.17301863 C0.725288662,8.12507033 0.749445908,8.06092934 0.747019489,7.995 C0.742888429,7.86182395 0.636177529,7.75467571 0.503019489,7.75 L0.498019489,7.75"
+            id="Path"
+          ></path>
+        </g>
+      </g>
+    </svg>
+  ),
+  StatusSuccess: (props: IconProps) => (
+    <svg
+      width="24px"
+      height="24px"
+      viewBox="0 0 24 24"
+      {...props}
+    >
+      <g
+        id="StatusSuccess"
+        stroke="none"
+        strokeWidth="1"
+        fill="none"
+        fillRule="evenodd"
+      >
+        <rect
+          id="Rectangle"
+          x="0"
+          y="0"
+          width="24"
+          height="24"
+        ></rect>
+        <polyline
+          id="Path"
+          stroke="currentColor"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          points="16.173913 8.52173913 11.3043478 15.1304348 7.82608696 12.3478261"
+        ></polyline>
+        <circle
+          id="Oval"
+          stroke="currentColor"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          cx="12"
+          cy="12"
+          r="8"
+        ></circle>
+      </g>
+    </svg>
+  ),
   StatusTracking: (props: IconProps) => (
     <svg
       width="24px"
@@ -1290,6 +1476,50 @@ export const Icons = {
       </g>
     </svg>
   ),
+  LoadingSpinner: (props: IconProps) => (
+    <svg
+      role="status"
+      aria-label="Loading"
+      className={`h-5 w-5 animate-spin ${props.className}`}
+      width="24px"
+      height="24px"
+      viewBox="0 0 24 24"
+      {...props}
+    >
+      <g
+        id="LoadingSpinner"
+        stroke="none"
+        strokeWidth="1"
+        fill="none"
+        fillRule="evenodd"
+      >
+        <rect
+          id="Rectangle"
+          x="0"
+          y="0"
+          width="24"
+          height="24"
+        ></rect>
+        <g
+          id="Group"
+          transform="translate(1, 1)"
+          fillRule="nonzero"
+        >
+          <path
+            d="M11,0 C17.0751322,0 22,4.92486775 22,11 C22,17.0751322 17.0751322,22 11,22 C4.92486775,22 0,17.0751322 0,11 C0,4.92486775 4.92486775,0 11,0 Z M11,2 C6.02943725,2 2,6.02943725 2,11 C2,15.9705627 6.02943725,20 11,20 C15.9705627,20 20,15.9705627 20,11 C20,6.02943725 15.9705627,2 11,2 Z"
+            id="Oval"
+            fill="#348CFD"
+            opacity="0.25"
+          ></path>
+          <path
+            d="M19.0287175,4.94590384 C19.5005019,4.65878387 20.1157155,4.80848402 20.4028355,5.28026847 C21.4419642,6.98772474 22,8.94986784 22,10.9915479 C22,17.0666801 17.0751322,21.9915479 11,21.9915479 C10.4477153,21.9915479 10,21.5438326 10,20.9915479 C10,20.4392631 10.4477153,19.9915479 11,19.9915479 C15.9705627,19.9915479 20,15.9621106 20,10.9915479 C20,9.31924154 19.5441371,7.7163545 18.6943528,6.32002184 C18.4072329,5.84823739 18.556933,5.2330238 19.0287175,4.94590384 Z"
+            id="Oval"
+            fill="#5ACCE6"
+          ></path>
+        </g>
+      </g>
+    </svg>
+  ),
   NavigationPanelReveal: (props: IconProps) => (
     <svg
       width="17"
@@ -1311,6 +1541,48 @@ export const Icons = {
     </svg>
   ),
   MissingIcon: (props: IconProps) => <div>Missing icon</div>,
+  Series: (props: IconProps) => (
+    <svg
+      width="24px"
+      height="24px"
+      viewBox="0 0 24 24"
+      {...props}
+    >
+      <g
+        id="Series"
+        stroke="none"
+        strokeWidth="1"
+        fill="none"
+        fillRule="evenodd"
+      >
+        <rect
+          id="Rectangle"
+          x="0"
+          y="0"
+          width="24"
+          height="24"
+        ></rect>
+        <path
+          d="M8.17391304,15.826087 L4.69565217,15.826087 C4.31145409,15.826087 4,15.5146329 4,15.1304348 L4,4.69565217 C4,4.31145409 4.31145409,4 4.69565217,4 L15.1304348,4 C15.5146329,4 15.826087,4.31145409 15.826087,4.69565217 L15.826087,8.17391304"
+          id="Path"
+          stroke="currentColor"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        ></path>
+        <rect
+          id="Rectangle"
+          stroke="currentColor"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          x="8.17391304"
+          y="8.17391304"
+          width="11.826087"
+          height="11.826087"
+          rx="1"
+        ></rect>
+      </g>
+    </svg>
+  ),
   Settings: (props: IconProps) => (
     <svg
       width="15.7826087px"

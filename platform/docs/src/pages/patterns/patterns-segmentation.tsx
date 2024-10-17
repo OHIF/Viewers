@@ -11,6 +11,18 @@ import {
 } from '../../../../ui-next/src/components/Select';
 import { Icons } from '../../../../ui-next/src/components/Icons';
 import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuLabel,
+  DropdownMenuSub,
+  DropdownMenuSubTrigger,
+  DropdownMenuSubContent,
+  DropdownMenuPortal,
+} from '../../../../ui-next/src/components/DropdownMenu';
+import {
   Accordion,
   AccordionItem,
   AccordionTrigger,
@@ -85,6 +97,50 @@ export default function SegmentationPanel() {
               <div className="mb-0">
                 {/* Header Controls */}
                 <div className="bg-muted flex h-10 w-full items-center space-x-1 rounded-t px-1.5">
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                      >
+                        <Icons.More className="h-6 w-6" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="start">
+                      <DropdownMenuItem>
+                        <Icons.Add className="text-foreground" />
+                        <span className="pl-2">Create New Segmentation</span>
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuLabel>Manage Current Segmentation</DropdownMenuLabel>
+                      <DropdownMenuItem>
+                        <Icons.Series className="text-foreground" />
+                        <span className="pl-2">Remove from Viewport</span>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem>
+                        <Icons.Rename className="text-foreground" />
+                        <span className="pl-2">Rename</span>
+                      </DropdownMenuItem>
+                      <DropdownMenuSub>
+                        <DropdownMenuSubTrigger>
+                          <Icons.Export className="text-foreground" />
+                          <span className="pl-2">Export & Download</span>
+                        </DropdownMenuSubTrigger>
+                        <DropdownMenuPortal>
+                          <DropdownMenuSubContent>
+                            <DropdownMenuItem>Export DICOM SEG</DropdownMenuItem>
+                            <DropdownMenuItem>Download DICOM SEG</DropdownMenuItem>
+                            <DropdownMenuItem>Download DICOM RTSTRUCT</DropdownMenuItem>
+                          </DropdownMenuSubContent>
+                        </DropdownMenuPortal>
+                      </DropdownMenuSub>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem>
+                        <Icons.Delete className="text-red-600" />
+                        <span className="pl-2 text-red-600">Delete</span>
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                   <Select>
                     <SelectTrigger className="w-full overflow-hidden">
                       <SelectValue placeholder="Segmentation 1" />

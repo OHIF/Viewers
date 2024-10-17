@@ -71,6 +71,7 @@ import {
 import { Onboarding } from './Onboarding';
 import { BackgroundColorSelect } from './BackgroundColorSelect';
 import { DataRow } from './DataRow';
+import { Toaster } from './Sonner';
 
 export {
   Button,
@@ -157,4 +158,5 @@ export {
   SelectItem,
   SelectTrigger,
   SelectValue,
+  Toaster,
 };

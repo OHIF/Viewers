@@ -1,4 +1,4 @@
-export default [
+const supportedTools = [
   'Length',
   'EllipticalROI',
   'CircleROI',
@@ -11,6 +11,8 @@ export default [
   'PlanarFreehandROI',
   'SplineROI',
   'LivewireContour',
-  'Probe',
   'UltrasoundDirectionalTool',
+  'SCOORD3DPoint',
 ];
+
+export default supportedTools;
