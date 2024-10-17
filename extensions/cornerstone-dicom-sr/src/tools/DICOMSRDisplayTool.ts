@@ -230,7 +230,11 @@ export default class DICOMSRDisplayTool extends AnnotationTool {
       // This gives us one point for arrow
       canvasCoordinates.push(viewport.worldToCanvas(point));
 
-      // We get the other point for the arrow by using the image size
+      if (data[1] !== undefined) {
+        canvasCoordinates.push(viewport.worldToCanvas(data[1]));
+      }
+      else{
+         // We get the other point for the arrow by using the image size
       const imagePixelModule = metaData.get('imagePixelModule', referencedImageId);
 
       let xOffset = 10;
@@ -249,6 +253,9 @@ export default class DICOMSRDisplayTool extends AnnotationTool {
       ]);
 
       canvasCoordinates.push(viewport.worldToCanvas(arrowEnd));
+        
+      }
+     
 
       const arrowUID = `${index}`;
 
