@@ -7,9 +7,7 @@ import { showLabelAnnotationPopup } from '../utils/callInputDialog';
 
 export default function PanelMeasurementTable({
   servicesManager,
-  commandsManager,
-  extensionManager,
-  children,
+  customHeader,
   measurementFilter,
 }: withAppTypes): React.ReactNode {
   const measurementsPanelRef = useRef(null);
@@ -29,7 +27,7 @@ export default function PanelMeasurementTable({
     }
   }, [displayMeasurements.length]);
 
-  const onMeasurementItemClickHandler = ({ uid, isActive }) => {
+  const onMeasurementItemClickHandler = (uid: string, isActive: boolean) => {
     if (!isActive) {
       const measurements = [...displayMeasurements];
       const measurement = measurements.find(m => m.uid === uid);
@@ -39,14 +37,13 @@ export default function PanelMeasurementTable({
     }
   };
 
-  const jumpToImage = ({ uid, isActive }) => {
+  const jumpToImage = (uid: string, isActive: boolean) => {
     measurementService.jumpToMeasurement(viewportGrid.activeViewportId, uid);
-
-    onMeasurementItemClickHandler({ uid, isActive });
+    onMeasurementItemClickHandler(uid, isActive);
   };
 
-  const onMeasurementItemEditHandler = ({ uid, isActive }) => {
-    jumpToImage({ uid, isActive });
+  const onMeasurementItemEditHandler = (uid: string, isActive: boolean) => {
+    jumpToImage(uid, isActive);
     const labelConfig = customizationService.get('measurementLabels');
     const measurement = measurementService.getMeasurement(uid);
     showLabelAnnotationPopup(measurement, uiDialogService, labelConfig).then(val => {
@@ -67,8 +64,6 @@ export default function PanelMeasurementTable({
     dm => dm.measurementType === measurementService.VALUE_TYPES.POINT && dm.referencedImageId
   );
 
-  const nonAcquisitionMeasurements = displayMeasurements.filter(dm => dm.referencedImageId == null);
-
   return (
     <>
       <div
@@ -77,37 +72,35 @@ export default function PanelMeasurementTable({
         data-cy={'trackedMeasurements-panel'}
       >
         <MeasurementTable
-          key="Measurements"
-          title="Measurements"
           data={displayMeasurementsWithoutFindings}
-          servicesManager={servicesManager}
-          onClick={jumpToImage}
-          onEdit={onMeasurementItemEditHandler}
+          title="Measurements"
         >
-          {typeof children === 'function'
-            ? children({
-                nonAcquisitionMeasurements,
-                additionalFindings,
-                displayMeasurementsWithoutFindings,
-              })
-            : children}
+          <MeasurementTable.Header>
+            {customHeader && (
+              <>
+                {typeof customHeader === 'function'
+                  ? customHeader({
+                      additionalFindings,
+                      displayMeasurementsWithoutFindings,
+                    })
+                  : customHeader}
+              </>
+            )}
+          </MeasurementTable.Header>
+          <MeasurementTable.Body
+            onClick={jumpToImage}
+            onDelete={onMeasurementItemEditHandler}
+          />
         </MeasurementTable>
         {additionalFindings.length > 0 && (
           <MeasurementTable
-            key="Additional Findings"
-            title="Additional Findings"
             data={additionalFindings}
-            servicesManager={servicesManager}
-            onClick={jumpToImage}
-            onEdit={onMeasurementItemEditHandler}
+            title="Additional Findings"
           >
-            {typeof children === 'function'
-              ? children({
-                  nonAcquisitionMeasurements,
-                  additionalFindings,
-                  displayMeasurementsWithoutFindings,
-                })
-              : children}
+            <MeasurementTable.Body
+              onClick={jumpToImage}
+              onDelete={onMeasurementItemEditHandler}
+            />
           </MeasurementTable>
         )}
       </div>

@@ -87,16 +87,9 @@ function PanelMeasurementTableTracking({
           trackedStudy === measurement.referenceStudyUID &&
           trackedSeries.includes(measurement.referenceSeriesUID)
         }
-      >
-        {({
-          nonAcquisitionMeasurements,
-          additionalFindings,
-          displayMeasurementsWithoutFindings,
-        }) => {
+        customHeader={({ additionalFindings, displayMeasurementsWithoutFindings }) => {
           const disabled =
-            additionalFindings.length === 0 &&
-            displayMeasurementsWithoutFindings.length === 0 &&
-            nonAcquisitionMeasurements.length === 0;
+            additionalFindings.length === 0 && displayMeasurementsWithoutFindings.length === 0;
 
           if (appConfig?.disableEditing || disabled) {
             return null;
@@ -141,7 +134,7 @@ function PanelMeasurementTableTracking({
             </div>
           );
         }}
-      </PanelMeasurementTable>
+      ></PanelMeasurementTable>
     </>
   );
 }
