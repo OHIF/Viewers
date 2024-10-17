@@ -19,6 +19,7 @@ line, it will be truncated with ellipsis in the end.
 
 .viewport-overlay.right-viewport-scrollbar {
   text-align: right;
+  right: 1.7rem;
 }
 .viewport-overlay.right-viewport-scrollbar .flex.flex-row {
   justify-content: flex-end;

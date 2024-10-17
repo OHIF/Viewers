@@ -85,6 +85,7 @@ export {
   SegmentationGroupTable,
   SegmentationGroupTableExpanded,
   SidePanel,
+  SmartScrollbar,
   SplitButton,
   ProgressDropdown,
   LegacySplitButton,
