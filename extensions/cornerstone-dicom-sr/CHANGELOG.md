@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.9.0-beta.99](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.98...v3.9.0-beta.99) (2024-10-17)
+
+
+### Bug Fixes
+
+* **sr:** load existing point, if there is 2nd point in renderableData (Fix rotation in arrow annotation) ([#4356](https://github.com/OHIF/Viewers/issues/4356)) ([7353f7f](https://github.com/OHIF/Viewers/commit/7353f7f069446f8484278c2cff5b09149cfa23eb))
+
+
+### Features
+
+* **SR:** SCOORD3D point annotations support for stack viewports ([#4315](https://github.com/OHIF/Viewers/issues/4315)) ([ac1cad2](https://github.com/OHIF/Viewers/commit/ac1cad25af12ee0f7d508647e3134ed724d9b4d3))
+
+
+
+
+
 # [3.9.0-beta.98](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.97...v3.9.0-beta.98) (2024-10-15)
 
 **Note:** Version bump only for package @ohif/extension-cornerstone-dicom-sr
