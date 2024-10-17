@@ -15,6 +15,7 @@ import {
   TooltipTrigger,
   TooltipContent,
   TooltipProvider,
+  DropdownMenuLabel,
 } from '../../components';
 import { useTranslation } from 'react-i18next';
 import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from '@ohif/ui-next';
@@ -36,6 +37,7 @@ interface SegmentationDropDownRowProps {
   onSegmentationDownloadRTSS: (segmentationId: string) => void;
   storeSegmentation: (segmentationId: string) => void;
   onSegmentationDelete: (segmentationId: string) => void;
+  onSegmentationRemoveFromViewport: (segmentationId: string) => void;
   onSegmentationAdd: () => void;
 }
 
@@ -48,6 +50,7 @@ const SegmentationDropDownRow: React.FC<SegmentationDropDownRowProps> = ({
   storeSegmentation,
   onSegmentationDelete,
   onSegmentationAdd,
+  onSegmentationRemoveFromViewport,
 }) => {
   const { t } = useTranslation('SegmentationTable');
 
@@ -55,43 +58,6 @@ const SegmentationDropDownRow: React.FC<SegmentationDropDownRowProps> = ({
   if (!activeSegmentation) {
     return null;
   }
-
-  const dropdownItems = [
-    {
-      title: t('Create New Segmentation'),
-      icon: <Icons.Add className="text-foreground" />,
-      onClick: onSegmentationAdd,
-    },
-    { isDivider: true },
-    {
-      title: t('Rename'),
-      icon: <Icons.Rename className="text-foreground" />,
-      onClick: () => onSegmentationEdit(activeSegmentation.id),
-    },
-    {
-      title: t('Delete'),
-      icon: <Icons.Delete className="text-foreground" />,
-      onClick: () => onSegmentationDelete(activeSegmentation.id),
-    },
-    {
-      title: t('Export & Download'),
-      icon: <Icons.Export className="text-foreground" />,
-      subItems: [
-        {
-          title: t('Export DICOM SEG'),
-          onClick: () => storeSegmentation(activeSegmentation.id),
-        },
-        {
-          title: t('Download DICOM SEG'),
-          onClick: () => onSegmentationDownload(activeSegmentation.id),
-        },
-        {
-          title: t('Download DICOM RTSTRUCT'),
-          onClick: () => onSegmentationDownloadRTSS(activeSegmentation.id),
-        },
-      ],
-    },
-  ];
 
   return (
     <div className="bg-primary-dark flex h-10 w-full items-center space-x-1 rounded-t px-1.5">
@@ -105,45 +71,51 @@ const SegmentationDropDownRow: React.FC<SegmentationDropDownRowProps> = ({
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="start">
-          {dropdownItems.map((item, index) =>
-            item.isDivider ? (
-              <DropdownMenuSeparator key={index} />
-            ) : item.subItems ? (
-              <DropdownMenuSub key={index}>
-                <DropdownMenuSubTrigger>
-                  {item.icon}
-                  <span className="pl-2">{item.title}</span>
-                </DropdownMenuSubTrigger>
-                <DropdownMenuPortal>
-                  <DropdownMenuSubContent>
-                    {item.subItems.map((subItem, subIndex) => (
-                      <DropdownMenuItem
-                        key={subIndex}
-                        onClick={subItem.onClick}
-                      >
-                        {subItem.title}
-                      </DropdownMenuItem>
-                    ))}
-                  </DropdownMenuSubContent>
-                </DropdownMenuPortal>
-              </DropdownMenuSub>
-            ) : (
-              <DropdownMenuItem
-                key={index}
-                onClick={item.onClick}
-              >
-                {item.icon}
-                <span className="pl-2">{item.title}</span>
-              </DropdownMenuItem>
-            )
-          )}
+          <DropdownMenuItem onClick={onSegmentationAdd}>
+            <Icons.Add className="text-foreground" />
+            <span className="pl-2">{t('Create New Segmentation')}</span>
+          </DropdownMenuItem>
+          <DropdownMenuSeparator />
+          <DropdownMenuLabel>{t('Manage Current Segmentation')}</DropdownMenuLabel>
+          <DropdownMenuItem onClick={() => onSegmentationRemoveFromViewport(activeSegmentation.id)}>
+            <Icons.Series className="text-foreground" />
+            <span className="pl-2">{t('Remove from Viewport')}</span>
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => onSegmentationEdit(activeSegmentation.id)}>
+            <Icons.Rename className="text-foreground" />
+            <span className="pl-2">{t('Rename')}</span>
+          </DropdownMenuItem>
+          <DropdownMenuSub>
+            <DropdownMenuSubTrigger>
+              <Icons.Export className="text-foreground" />
+              <span className="pl-2">{t('Export & Download')}</span>
+            </DropdownMenuSubTrigger>
+            <DropdownMenuPortal>
+              <DropdownMenuSubContent>
+                <DropdownMenuItem onClick={() => storeSegmentation(activeSegmentation.id)}>
+                  {t('Export DICOM SEG')}
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => onSegmentationDownload(activeSegmentation.id)}>
+                  {t('Download DICOM SEG')}
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => onSegmentationDownloadRTSS(activeSegmentation.id)}>
+                  {t('Download DICOM RTSTRUCT')}
+                </DropdownMenuItem>
+              </DropdownMenuSubContent>
+            </DropdownMenuPortal>
+          </DropdownMenuSub>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem onClick={() => onSegmentationDelete(activeSegmentation.id)}>
+            <Icons.Delete className="text-red-600" />
+            <span className="pl-2 text-red-600">{t('Delete')}</span>
+          </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
       <Select
         onValueChange={value => onActiveSegmentationChange(value)}
         value={activeSegmentation.id}
       >
-        <SelectTrigger className="w-full">
+        <SelectTrigger className="w-full overflow-hidden">
           <SelectValue placeholder={t('Select a segmentation')} />
         </SelectTrigger>
         <SelectContent>

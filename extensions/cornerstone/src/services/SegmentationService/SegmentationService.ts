@@ -301,6 +301,11 @@ class SegmentationService extends PubSubService {
     );
 
     eventTarget.removeEventListener(
+      csToolsEnums.Events.SEGMENTATION_REMOVED,
+      this._onSegmentationModifiedFromSource
+    );
+
+    eventTarget.removeEventListener(
       csToolsEnums.Events.SEGMENTATION_DATA_MODIFIED,
       this._onSegmentationDataModifiedFromSource
     );
@@ -1261,6 +1266,14 @@ class SegmentationService extends PubSubService {
   }
 
   /**
+   * Completely removes a segmentation from the state
+   * @param segmentationId - The ID of the segmentation to remove.
+   */
+  public remove(segmentationId: string): void {
+    cstSegmentation.state.removeSegmentation(segmentationId);
+  }
+
+  /**
    * It removes the segmentation representations from the viewport.
    * @param viewportId - The viewport id to remove the segmentation representations from.
    * @param specifier - The specifier to remove the segmentation representations.
@@ -1364,6 +1377,11 @@ class SegmentationService extends PubSubService {
   private _initSegmentationService() {
     eventTarget.addEventListener(
       csToolsEnums.Events.SEGMENTATION_MODIFIED,
+      this._onSegmentationModifiedFromSource
+    );
+
+    eventTarget.addEventListener(
+      csToolsEnums.Events.SEGMENTATION_REMOVED,
       this._onSegmentationModifiedFromSource
     );
 

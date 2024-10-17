@@ -75,7 +75,6 @@ const DataRow: React.FC<DataRowProps> = ({
     }
   };
 
-  debugger;
   const renderDetailText = (text: string) => {
     const parts = text.split(/(<small>.*?<\/small>)/);
     return parts.map((part, index) => {

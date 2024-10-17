@@ -90,12 +90,7 @@ export default function PanelSegmentation({
     },
 
     onSegmentationDelete: (segmentationId: string) => {
-      segmentationService.removeSegmentationRepresentations(
-        viewportGridService.getActiveViewportId(),
-        {
-          segmentationId,
-        }
-      );
+      segmentationService.remove(segmentationId);
     },
 
     onSegmentAdd: segmentationId => {
@@ -230,13 +225,23 @@ export default function PanelSegmentation({
     },
 
     setStyle: (segmentationId, type, key, value) => {
-      segmentationService.setStyle({ segmentationId, type }, { [key]: value });
+      // Todo: make this more granular and allow per segmentaion styles
+      segmentationService.setStyle({ type }, { [key]: value });
     },
 
     // New handler for toggling render inactive segmentations
     toggleRenderInactiveSegmentations: toggle => {
       const viewportId = viewportGridService.getActiveViewportId();
       segmentationService.setRenderInactiveSegmentations(viewportId, toggle);
+    },
+
+    onSegmentationRemoveFromViewport: segmentationId => {
+      segmentationService.removeSegmentationRepresentations(
+        viewportGridService.getActiveViewportId(),
+        {
+          segmentationId,
+        }
+      );
     },
   };
 
@@ -288,6 +293,7 @@ export default function PanelSegmentation({
             }))}
             disableEditing={disableEditing}
             onActiveSegmentationChange={handlers.onSegmentationClick}
+            onSegmentationRemoveFromViewport={handlers.onSegmentationRemoveFromViewport}
             onSegmentationDelete={handlers.onSegmentationDelete}
             onSegmentationEdit={handlers.onSegmentationEdit}
             onSegmentationDownload={handlers.onSegmentationDownload}
@@ -319,7 +325,8 @@ export default function PanelSegmentation({
             )}
             toggleRenderInactiveSegmentations={() => {
               const viewportId = viewportGridService.getActiveViewportId();
-              segmentationService.setRenderInactiveSegmentations(viewportId, true);
+              const renderInactive = segmentationService.getRenderInactiveSegmentations(viewportId);
+              segmentationService.setRenderInactiveSegmentations(viewportId, !renderInactive);
             }}
             setRenderFill={(value: boolean) =>
               handlers.setStyle(
