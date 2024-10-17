@@ -137,8 +137,6 @@ function getDisplayText(annotation, displaySet, customizationService, displaySet
     annotation
   );
 
-  const displayTextArray = [];
-
   const instance = displaySet.instances.find(image => image.SOPInstanceUID === SOPInstanceUID);
   let InstanceNumber;
   if (instance) {
@@ -159,7 +157,7 @@ function getDisplayText(annotation, displaySet, customizationService, displaySet
     Array.from(Object.values(data.cachedStats))[0];
 
   if (!stats) {
-    return [{ text: [], series: seriesText }];
+    return { primary: [], secondary: [seriesText] };
   }
 
   const roundValues = values => {
@@ -181,22 +179,20 @@ function getDisplayText(annotation, displaySet, customizationService, displaySet
   const formatDisplayText = (displayName, result, unit) =>
     `${displayName}: ${roundValues(result).join(', ')} ${unit}`;
 
-  const textLines = [];
+  const primary = [];
 
   displayText.forEach(({ displayName, value, type }) => {
     if (type === 'value') {
       const result = stats[value];
       const unit = stats[findUnitForValue(displayText, value)] || '';
-      textLines.push(formatDisplayText(displayName, result, unit));
+      primary.push(formatDisplayText(displayName, result, unit));
     }
   });
 
-  displayTextArray.push({
-    text: textLines,
-    series: seriesText,
-  });
-
-  return displayTextArray;
+  return {
+    primary,
+    secondary: [seriesText],
+  };
 }
 
 export default PlanarFreehandROI;

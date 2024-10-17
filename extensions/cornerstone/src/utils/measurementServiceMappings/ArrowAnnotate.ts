@@ -108,14 +108,16 @@ function getMappedAnnotations(annotation, displaySetService) {
 }
 
 function getDisplayText(mappedAnnotations, displaySet) {
-  const displayText = [];
+  const displayText = {
+    primary: [],
+    secondary: [],
+  };
 
-  if (!mappedAnnotations) {
+  if (!mappedAnnotations || !mappedAnnotations.length) {
     return displayText;
   }
 
-  // Area is the same for all series
-  const { SeriesNumber, SOPInstanceUID, frameNumber } = mappedAnnotations[0];
+  const { SeriesNumber, SOPInstanceUID, frameNumber, text } = mappedAnnotations[0];
 
   const instance = displaySet.instances.find(image => image.SOPInstanceUID === SOPInstanceUID);
 
@@ -127,7 +129,13 @@ function getDisplayText(mappedAnnotations, displaySet) {
   const instanceText = InstanceNumber ? ` I: ${InstanceNumber}` : '';
   const frameText = displaySet.isMultiFrame ? ` F: ${frameNumber}` : '';
 
-  displayText.push({ text: [null], series: `S: ${SeriesNumber}${instanceText}${frameText}` });
+  // Add the annotation text to the primary array
+  if (text) {
+    displayText.primary.push(text);
+  }
+
+  // Add the series information to the secondary array
+  displayText.secondary.push(`S: ${SeriesNumber}${instanceText}${frameText}`);
 
   return displayText;
 }

@@ -159,13 +159,16 @@ function _getReport(mappedAnnotations, points, FrameOfReferenceUID, customizatio
 }
 
 function getDisplayText(mappedAnnotations, displaySet) {
-  const displayText = [];
+  const displayText = {
+    primary: [],
+    secondary: [],
+  };
 
   if (!mappedAnnotations || !mappedAnnotations.length) {
     return displayText;
   }
 
-  // Area is the same for all series
+  // Length is the same for all series
   const { length, SeriesNumber, SOPInstanceUID, frameNumber, unit } = mappedAnnotations[0];
 
   const instance = displaySet.instances.find(image => image.SOPInstanceUID === SOPInstanceUID);
@@ -182,10 +185,8 @@ function getDisplayText(mappedAnnotations, displaySet) {
     return displayText;
   }
   const roundedLength = utils.roundNumber(length, 2);
-  displayText.push({
-    text: [`${roundedLength} ${unit}`],
-    series: `S: ${SeriesNumber}${instanceText}${frameText}`,
-  });
+  displayText.primary.push(`${roundedLength} ${unit}`);
+  displayText.secondary.push(`S: ${SeriesNumber}${instanceText}${frameText}`);
 
   return displayText;
 }

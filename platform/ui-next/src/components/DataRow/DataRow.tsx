@@ -18,8 +18,7 @@ interface DataRowProps {
   number: number;
   disableEditing: boolean;
   description: string;
-  details?: Array<{ text: string[]; series: string }>;
-  series?: string;
+  details?: { primary: string[]; secondary: string[] };
   //
   isSelected?: boolean;
   onSelect?: () => void;
@@ -212,26 +211,23 @@ const DataRow: React.FC<DataRowProps> = ({
           </div>
         </div>
 
-        {details?.length > 0 && (
-          <div className="bg-background ml-7 px-2 py-2">
+        {details && (details.primary.length > 0 || details.secondary.length > 0) && (
+          <div className="ml-7 px-2 py-2">
             <div className="text-secondary-foreground flex flex-col space-y-2">
-              {details.map((detail, index) => (
-                <div
-                  key={index}
-                  className="flex items-start justify-between text-sm leading-normal"
-                >
-                  <div className="flex-grow whitespace-pre-line">
-                    {detail.text.map((line, lineIndex) => (
-                      <div key={lineIndex}>{renderDetailText(line)}</div>
+              <div className="flex items-start justify-between text-sm leading-normal">
+                <div className="flex-grow whitespace-pre-line">
+                  {details.primary.map((line, lineIndex) => (
+                    <div key={lineIndex}>{renderDetailText(line)}</div>
+                  ))}
+                </div>
+                {details.secondary.length > 0 && (
+                  <div className="text-muted-foreground ml-4 flex-shrink-0">
+                    {details.secondary.map((secondaryText, index) => (
+                      <small key={index}>{secondaryText}</small>
                     ))}
                   </div>
-                  {detail.series && (
-                    <div className="text-muted-foreground ml-4 flex-shrink-0">
-                      <small>{detail.series}</small>
-                    </div>
-                  )}
-                </div>
-              ))}
+                )}
+              </div>
             </div>
           </div>
         )}

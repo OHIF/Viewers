@@ -159,7 +159,10 @@ function _getReport(mappedAnnotations, points, FrameOfReferenceUID, customizatio
 }
 
 function getDisplayText(mappedAnnotations, displaySet) {
-  const displayText = [];
+  const displayText = {
+    primary: [],
+    secondary: [],
+  };
 
   if (!mappedAnnotations || !mappedAnnotations.length) {
     return displayText;
@@ -182,10 +185,8 @@ function getDisplayText(mappedAnnotations, displaySet) {
   }
   const roundedAngle = utils.roundNumber(angle, 2);
 
-  displayText.push({
-    text: [`${roundedAngle} ${getDisplayUnit(unit)}`],
-    series: `S: ${SeriesNumber}${instanceText}${frameText}`,
-  });
+  displayText.primary.push(`${roundedAngle} ${getDisplayUnit(unit)}`);
+  displayText.secondary.push(`S: ${SeriesNumber}${instanceText}${frameText}`);
 
   return displayText;
 }

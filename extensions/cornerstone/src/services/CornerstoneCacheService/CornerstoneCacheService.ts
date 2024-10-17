@@ -168,7 +168,8 @@ class CornerstoneCacheService {
     }
 
     // Ensuring the first non-overlay `displaySet` is always the primary one
-    const StackViewportData = displaySets.map(displaySet => {
+    const StackViewportData = [];
+    for (const displaySet of displaySets) {
       const { displaySetInstanceUID, StudyInstanceUID, isCompositeStack } = displaySet;
 
       if (displaySet.load && displaySet.load instanceof Function) {
@@ -186,14 +187,14 @@ class CornerstoneCacheService {
         this.stackImageIds.set(displaySet.displaySetInstanceUID, stackImageIds);
       }
 
-      return {
+      StackViewportData.push({
         StudyInstanceUID,
         displaySetInstanceUID,
         isCompositeStack,
         imageIds: stackImageIds,
         initialImageIndex,
-      };
-    });
+      });
+    }
 
     return {
       viewportType,

@@ -162,7 +162,10 @@ function _getReport(mappedAnnotations, points, FrameOfReferenceUID, customizatio
 }
 
 function getDisplayText(mappedAnnotations, displaySet) {
-  const displayText = [];
+  const displayText = {
+    primary: [],
+    secondary: [],
+  };
 
   if (!mappedAnnotations || !mappedAnnotations.length) {
     return displayText;
@@ -183,10 +186,7 @@ function getDisplayText(mappedAnnotations, displaySet) {
 
   // Area sometimes becomes undefined if `preventHandleOutsideImage` is off.
   const roundedArea = utils.roundNumber(area || 0, 2);
-  displayText.push({
-    text: [`${roundedArea} ${getDisplayUnit(areaUnit)}`],
-    series: null,
-  });
+  displayText.primary.push(`${roundedArea} ${getDisplayUnit(areaUnit)}`);
 
   // Todo: we need a better UI for displaying all these information
   mappedAnnotations.forEach(mappedAnnotation => {
@@ -194,10 +194,8 @@ function getDisplayText(mappedAnnotations, displaySet) {
 
     const maxStr = getStatisticDisplayString(max, unit, 'max');
 
-    displayText.push({
-      text: [maxStr],
-      series: `S: ${SeriesNumber}${instanceText}${frameText}`,
-    });
+    displayText.primary.push(maxStr);
+    displayText.secondary.push(`S: ${SeriesNumber}${instanceText}${frameText}`);
   });
 
   return displayText;

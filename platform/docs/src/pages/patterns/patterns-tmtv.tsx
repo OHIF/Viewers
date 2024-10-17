@@ -2,24 +2,11 @@ import React, { useState } from 'react';
 
 import { Button } from '../../../../ui-next/src/components/Button';
 import {
-  Select,
-  SelectGroup,
-  SelectValue,
-  SelectTrigger,
-  SelectContent,
-  SelectLabel,
-  SelectItem,
-  SelectSeparator,
-  SelectScrollUpButton,
-  SelectScrollDownButton,
-} from '../../../../ui-next/src/components/Select';
-import {
   DropdownMenu,
   DropdownMenuTrigger,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
-  DropdownMenuLabel,
   DropdownMenuSub,
   DropdownMenuSubTrigger,
   DropdownMenuSubContent,
@@ -39,9 +26,7 @@ import { Slider } from '../../../../ui-next/src/components/Slider';
 import { Switch } from '../../../../ui-next/src/components/Switch';
 import { Label } from '../../../../ui-next/src/components/Label';
 import { Input } from '../../../../ui-next/src/components/Input';
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '../../../../ui-next/src/components/Tabs';
-
-import { ChevronDownIcon } from '@radix-ui/react-icons';
+import { Tabs, TabsList, TabsTrigger } from '../../../../ui-next/src/components/Tabs';
 
 interface DataItem {
   id: number;
@@ -142,7 +127,7 @@ export default function TMTVPatterns() {
                       </Tabs>
                     </div>
                     {/* Opacity Slider */}
-                    <div className="my-2 flex items-center ">
+                    <div className="my-2 flex items-center">
                       <Label className="text-muted-foreground mx-1 w-14 flex-none whitespace-nowrap text-xs">
                         Opacity
                       </Label>
@@ -189,7 +174,7 @@ export default function TMTVPatterns() {
                       </Label>
                     </div>
                     {/* Additional Opacity Slider */}
-                    <div className="my-2 flex items-center ">
+                    <div className="my-2 flex items-center">
                       <Label className="text-muted-foreground mx-1 w-14 flex-none whitespace-nowrap text-xs">
                         Opacity
                       </Label>
@@ -354,7 +339,7 @@ export default function TMTVPatterns() {
 
                       <div className="pl-1.5">TMTV2 Segmentation</div>
                     </div>
-                    <div className="mr-1 flex items-center ">
+                    <div className="mr-1 flex items-center">
                       <Button
                         variant="ghost"
                         size="icon"

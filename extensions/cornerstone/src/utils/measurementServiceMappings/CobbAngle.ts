@@ -158,14 +158,17 @@ function _getReport(mappedAnnotations, points, FrameOfReferenceUID, customizatio
   };
 }
 
-function getDisplayText(mappedAnnotations, displaySet, customizationService) {
-  const displayText = [];
+function getDisplayText(mappedAnnotations, displaySet) {
+  const displayText = {
+    primary: [],
+    secondary: [],
+  };
 
   if (!mappedAnnotations || !mappedAnnotations.length) {
     return displayText;
   }
 
-  // Area is the same for all series
+  // Angle is the same for all series
   const { angle, unit, SeriesNumber, SOPInstanceUID, frameNumber } = mappedAnnotations[0];
 
   const instance = displaySet.instances.find(image => image.SOPInstanceUID === SOPInstanceUID);
@@ -181,10 +184,9 @@ function getDisplayText(mappedAnnotations, displaySet, customizationService) {
     return displayText;
   }
   const roundedAngle = utils.roundNumber(angle, 2);
-  displayText.push({
-    text: [`${roundedAngle} ${getDisplayUnit(unit)}`],
-    series: `S: ${SeriesNumber}${instanceText}${frameText}`,
-  });
+
+  displayText.primary.push(`${roundedAngle} ${getDisplayUnit(unit)}`);
+  displayText.secondary.push(`S: ${SeriesNumber}${instanceText}${frameText}`);
 
   return displayText;
 }

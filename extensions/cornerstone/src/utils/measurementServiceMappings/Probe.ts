@@ -155,7 +155,10 @@ function _getReport(mappedAnnotations, points, FrameOfReferenceUID, customizatio
 }
 
 function getDisplayText(mappedAnnotations, displaySet, customizationService) {
-  const displayText = [];
+  const displayText = {
+    primary: [],
+    secondary: [],
+  };
 
   if (!mappedAnnotations || !mappedAnnotations.length) {
     return displayText;
@@ -172,14 +175,12 @@ function getDisplayText(mappedAnnotations, displaySet, customizationService) {
 
   const instanceText = InstanceNumber ? ` I: ${InstanceNumber}` : '';
   const frameText = displaySet.isMultiFrame ? ` F: ${frameNumber}` : '';
-  if (value === undefined) {
-    return displayText;
+
+  if (value !== undefined) {
+    const roundedValue = utils.roundNumber(value, 2);
+    displayText.primary.push(`${roundedValue} ${getDisplayUnit(unit)}`);
+    displayText.secondary.push(`S: ${SeriesNumber}${instanceText}${frameText}`);
   }
-  const roundedValue = utils.roundNumber(value, 2);
-  displayText.push({
-    text: [`${roundedValue} ${getDisplayUnit(unit)}`],
-    series: `S: ${SeriesNumber}${instanceText}${frameText}`,
-  });
 
   return displayText;
 }

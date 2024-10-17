@@ -53,7 +53,7 @@ export const PanelSection: React.FC<PanelSectionProps> = ({
           </div>
         </AccordionTrigger>
         <AccordionContent className={cn('overflow-hidden p-0', contentClassName)}>
-          <div className="bg-primary-dark rounded-b">{children}</div>
+          <div className="rounded-b">{children}</div>
         </AccordionContent>
       </AccordionItem>
     </Accordion>

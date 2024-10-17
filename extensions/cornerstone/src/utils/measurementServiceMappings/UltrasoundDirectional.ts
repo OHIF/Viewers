@@ -167,7 +167,10 @@ function _getReport(mappedAnnotations, points, FrameOfReferenceUID, customizatio
 }
 
 function getDisplayText(mappedAnnotations, displaySet, customizationService) {
-  const displayText = [];
+  const displayText = {
+    primary: [],
+    secondary: [],
+  };
 
   if (!mappedAnnotations || !mappedAnnotations.length) {
     return displayText;
@@ -185,28 +188,22 @@ function getDisplayText(mappedAnnotations, displaySet, customizationService) {
 
   const instanceText = InstanceNumber ? ` I: ${InstanceNumber}` : '';
   const frameText = displaySet.isMultiFrame ? ` F: ${frameNumber}` : '';
-  const seriesText = `(S: ${SeriesNumber}${instanceText}${frameText})`;
+  const seriesText = `S: ${SeriesNumber}${instanceText}${frameText}`;
 
   if (xValues === undefined || yValues === undefined) {
     return displayText;
   }
 
   if (isUnitless) {
-    displayText.push({
-      text: [`${utils.roundNumber(xValues[0], 2)} ${units[0]} ${seriesText}`],
-      series: seriesText,
-    });
+    displayText.primary.push(`${utils.roundNumber(xValues[0], 2)} ${units[0]}`);
   } else {
     const dist1 = Math.abs(xValues[1] - xValues[0]);
     const dist2 = Math.abs(yValues[1] - yValues[0]);
-    displayText.push({
-      text: [
-        `${utils.roundNumber(dist1)} ${units[0]} ${seriesText}`,
-        `${utils.roundNumber(dist2)} ${units[1]} ${seriesText}`,
-      ],
-      series: seriesText,
-    });
+    displayText.primary.push(`${utils.roundNumber(dist1)} ${units[0]}`);
+    displayText.primary.push(`${utils.roundNumber(dist2)} ${units[1]}`);
   }
+
+  displayText.secondary.push(seriesText);
 
   return displayText;
 }
