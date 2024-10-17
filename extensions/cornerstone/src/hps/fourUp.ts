@@ -75,7 +75,7 @@ export const fourUp = {
           },
           displaySets: [
             {
-              id: 'mprDactiveDisplaySetisplaySet',
+              id: 'activeDisplaySet',
               options: {
                 displayPreset: {
                   CT: 'CT-Bone',
