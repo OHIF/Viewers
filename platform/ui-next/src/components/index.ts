@@ -78,6 +78,8 @@ import {
 } from './SegmentationPanel';
 import { DataRow } from './DataRow';
 import { MeasurementTable } from './MeasurementTable';
+import { Toaster } from './Sonner';
+
 export {
   Button,
   buttonVariants,
@@ -171,4 +173,5 @@ export {
   TooltipProvider,
   DataRow,
   MeasurementTable,
+  Toaster,
 };

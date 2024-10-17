@@ -1,3 +1,5 @@
+import { toolNames as SRToolNames } from '@ohif/extension-cornerstone-dicom-sr';
+
 const colours = {
   'viewport-0': 'rgb(200, 0, 0)',
   'viewport-1': 'rgb(200, 200, 0)',
@@ -91,7 +93,13 @@ function initDefaultToolGroup(
       { toolName: toolNames.LivewireContour },
       { toolName: toolNames.WindowLevelRegion },
     ],
-    enabled: [{ toolName: toolNames.ImageOverlayViewer }, { toolName: toolNames.ReferenceLines }],
+    enabled: [
+      { toolName: toolNames.ImageOverlayViewer },
+      { toolName: toolNames.ReferenceLines },
+      {
+        toolName: SRToolNames.SRSCOORD3DPoint,
+      },
+    ],
     disabled: [
       {
         toolName: toolNames.AdvancedMagnify,
@@ -161,7 +169,6 @@ function initSRToolGroup(extensionManager, toolGroupService) {
     enabled: [
       {
         toolName: SRToolNames.DICOMSRDisplay,
-        bindings: [],
       },
     ],
     // disabled

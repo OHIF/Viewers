@@ -149,7 +149,10 @@ function getDisplayText(annotation, displaySet, customizationService, displaySet
   const frameText = displaySet.isMultiFrame ? ` F: ${frameNumber}` : '';
 
   const { SeriesNumber } = displaySet;
-  const seriesText = `S: ${SeriesNumber}${instanceText}${frameText}`;
+  let seriesText = null;
+  if (SeriesNumber) {
+    seriesText = `S: ${SeriesNumber}${instanceText}${frameText}`;
+  }
 
   const stats =
     data.cachedStats[`imageId:${metadata.referencedImageId}`] ||

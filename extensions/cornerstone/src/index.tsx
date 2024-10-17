@@ -8,6 +8,7 @@ import {
 } from '@cornerstonejs/core';
 import { Enums as cs3DToolsEnums } from '@cornerstonejs/tools';
 import { Types } from '@ohif/core';
+import Enums from './enums';
 
 import init from './init';
 import getCustomizationModule from './getCustomizationModule';
@@ -246,5 +247,6 @@ export {
   usePositionPresentationStore,
   useSegmentationPresentationStore,
   useSynchronizersStore,
+  Enums,
 };
 export default cornerstoneExtension;

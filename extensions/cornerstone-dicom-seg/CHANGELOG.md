@@ -3,6 +3,30 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.9.0-beta.100](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.99...v3.9.0-beta.100) (2024-10-17)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone-dicom-seg
+
+
+
+
+
+# [3.9.0-beta.99](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.98...v3.9.0-beta.99) (2024-10-17)
+
+
+### Bug Fixes
+
+* **createReport:** early return on cancel in prompt ([#4243](https://github.com/OHIF/Viewers/issues/4243)) ([2ec4692](https://github.com/OHIF/Viewers/commit/2ec4692eaf2349e21b141a2c0b5b104ee10f7a28))
+
+
+### Features
+
+* **SR:** SCOORD3D point annotations support for stack viewports ([#4315](https://github.com/OHIF/Viewers/issues/4315)) ([ac1cad2](https://github.com/OHIF/Viewers/commit/ac1cad25af12ee0f7d508647e3134ed724d9b4d3))
+
+
+
+
+
 # [3.9.0-beta.98](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.97...v3.9.0-beta.98) (2024-10-15)
 
 **Note:** Version bump only for package @ohif/extension-cornerstone-dicom-seg

@@ -142,6 +142,10 @@ function getDisplayText(annotation, displaySet) {
   const frameText = displaySet.isMultiFrame ? ` F: ${frameNumber}` : '';
 
   const { SeriesNumber } = displaySet;
+  let seriesText = null;
+  if (SeriesNumber !== undefined) {
+    seriesText = `S: ${SeriesNumber}${instanceText}${frameText}`;
+  }
 
   const texts = [];
   if (area) {
@@ -149,13 +153,13 @@ function getDisplayText(annotation, displaySet) {
     texts.push(`${roundedArea} ${getDisplayUnit(areaUnit)}`);
   }
 
-  if (SeriesNumber) {
-    texts.push(`S: ${SeriesNumber}${instanceText}${frameText}`);
+  if (seriesText) {
+    texts.push(seriesText);
   }
 
   displayText.push({
     text: texts,
-    series: `S: ${SeriesNumber}${instanceText}${frameText}`,
+    series: seriesText,
   });
 
   return displayText;

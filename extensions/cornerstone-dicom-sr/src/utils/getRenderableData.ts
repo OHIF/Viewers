@@ -1,106 +1,49 @@
 import { vec3 } from 'gl-matrix';
-import { Types, annotation } from '@cornerstonejs/tools';
 import { metaData, utilities, Types as csTypes } from '@cornerstonejs/core';
 
-import toolNames from '../tools/toolNames';
-import SCOORD_TYPES from '../constants/scoordTypes';
+import { SCOORDTypes } from '../enums';
 
 const EPSILON = 1e-4;
 
-export default function addDICOMSRDisplayAnnotation(measurement, imageId, frameNumber) {
-  const toolName = toolNames.DICOMSRDisplay;
-
-  const measurementData = {
-    TrackingUniqueIdentifier: measurement.TrackingUniqueIdentifier,
-    renderableData: {},
-    labels: measurement.labels,
-    imageId,
-  };
-
-  measurement.coords.forEach(coord => {
-    const { GraphicType, GraphicData } = coord;
-
-    if (measurementData.renderableData[GraphicType] === undefined) {
-      measurementData.renderableData[GraphicType] = [];
+const getRenderableCoords = ({ GraphicData, ValueType, imageId }) => {
+  const renderableData = [];
+  if (ValueType === 'SCOORD3D') {
+    for (let i = 0; i < GraphicData.length; i += 3) {
+      renderableData.push([GraphicData[i], GraphicData[i + 1], GraphicData[i + 2]]);
     }
+  } else {
+    for (let i = 0; i < GraphicData.length; i += 2) {
+      const worldPos = utilities.imageToWorldCoords(imageId, [GraphicData[i], GraphicData[i + 1]]);
+      renderableData.push(worldPos);
+    }
+  }
+  return renderableData;
+};
 
-    measurementData.renderableData[GraphicType].push(
-      _getRenderableData(GraphicType, GraphicData, imageId)
-    );
-  });
-
-  const imagePlaneModule = metaData.get('imagePlaneModule', imageId);
-
-  const FrameOfReferenceUID = imagePlaneModule.frameOfReferenceUID;
-  /**
-   * This annotation (DICOMSRDisplay) is only used by the SR viewport.
-   * This is used before the annotation is hydrated. If hydrated the measurement will be added
-   * to the measurement service and will be available for the other viewports.
-   */
-  const SRAnnotation: Types.Annotation = {
-    annotationUID: measurement.TrackingUniqueIdentifier,
-    highlighted: false,
-    isLocked: false,
-    invalidated: false,
-    metadata: {
-      toolName: toolName,
-      FrameOfReferenceUID,
-      referencedImageId: imageId,
-    },
-    data: {
-      label: measurement.labels,
-      handles: {
-        textBox: measurement.textBox ?? {},
-      },
-      cachedStats: {},
-      TrackingUniqueIdentifier: measurementData.TrackingUniqueIdentifier,
-      renderableData: measurementData.renderableData,
-      frameNumber,
-    },
-  };
-  annotation.state.addAnnotation(SRAnnotation, FrameOfReferenceUID);
-}
-
-function _getRenderableData(GraphicType, GraphicData, imageId) {
-  let renderableData: csTypes.Point3[];
+function getRenderableData({ GraphicType, GraphicData, ValueType, imageId }) {
+  let renderableData = [];
 
   switch (GraphicType) {
-    case SCOORD_TYPES.POINT:
-    case SCOORD_TYPES.MULTIPOINT:
-    case SCOORD_TYPES.POLYLINE:
-      renderableData = [];
-
-      for (let i = 0; i < GraphicData.length; i += 2) {
-        const worldPos = utilities.imageToWorldCoords(imageId, [
-          GraphicData[i],
-          GraphicData[i + 1],
-        ]);
-
-        renderableData.push(worldPos);
-      }
-
+    case SCOORDTypes.POINT:
+    case SCOORDTypes.MULTIPOINT:
+    case SCOORDTypes.POLYLINE: {
+      renderableData = getRenderableCoords({ GraphicData, ValueType, imageId });
       break;
-    case SCOORD_TYPES.CIRCLE: {
-      const pointsWorld = [];
-      for (let i = 0; i < GraphicData.length; i += 2) {
-        const worldPos = utilities.imageToWorldCoords(imageId, [
-          GraphicData[i],
-          GraphicData[i + 1],
-        ]);
-
-        pointsWorld.push(worldPos);
-      }
-
+    }
+    case SCOORDTypes.CIRCLE: {
+      const pointsWorld: csTypes.Point3[] = getRenderableCoords({
+        GraphicData,
+        ValueType,
+        imageId,
+      });
       // We do not have an explicit draw circle svg helper in Cornerstone3D at
       // this time, but we can use the ellipse svg helper to draw a circle, so
       // here we reshape the data for that purpose.
       const center = pointsWorld[0];
       const onPerimeter = pointsWorld[1];
-
       const radius = vec3.distance(center, onPerimeter);
 
       const imagePlaneModule = metaData.get('imagePlaneModule', imageId);
-
       if (!imagePlaneModule) {
         throw new Error('No imagePlaneModule found');
       }
@@ -115,14 +58,12 @@ function _getRenderableData(GraphicType, GraphicData, imageId) {
 
       // we need to get major/minor axis (which are both the same size major = minor)
 
-      // first axisStart
       const firstAxisStart = vec3.create();
       vec3.scaleAndAdd(firstAxisStart, center, columnCosines, radius);
 
       const firstAxisEnd = vec3.create();
       vec3.scaleAndAdd(firstAxisEnd, center, columnCosines, -radius);
 
-      // second axisStart
       const secondAxisStart = vec3.create();
       vec3.scaleAndAdd(secondAxisStart, center, rowCosines, radius);
 
@@ -138,21 +79,16 @@ function _getRenderableData(GraphicType, GraphicData, imageId) {
 
       break;
     }
-    case SCOORD_TYPES.ELLIPSE: {
+    case SCOORDTypes.ELLIPSE: {
       // GraphicData is ordered as [majorAxisStartX, majorAxisStartY, majorAxisEndX, majorAxisEndY, minorAxisStartX, minorAxisStartY, minorAxisEndX, minorAxisEndY]
       // But Cornerstone3D points are ordered as top, bottom, left, right for the
       // ellipse so we need to identify if the majorAxis is horizontal or vertical
       // and then choose the correct points to use for the ellipse.
-
-      const pointsWorld: csTypes.Point3[] = [];
-      for (let i = 0; i < GraphicData.length; i += 2) {
-        const worldPos = utilities.imageToWorldCoords(imageId, [
-          GraphicData[i],
-          GraphicData[i + 1],
-        ]);
-
-        pointsWorld.push(worldPos);
-      }
+      const pointsWorld: csTypes.Point3[] = getRenderableCoords({
+        GraphicData,
+        ValueType,
+        imageId,
+      });
 
       const majorAxisStart = vec3.fromValues(...pointsWorld[0]);
       const majorAxisEnd = vec3.fromValues(...pointsWorld[1]);
@@ -202,3 +138,5 @@ function _getRenderableData(GraphicType, GraphicData, imageId) {
 
   return renderableData;
 }
+
+export default getRenderableData;

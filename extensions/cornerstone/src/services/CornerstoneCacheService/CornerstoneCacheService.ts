@@ -171,6 +171,12 @@ class CornerstoneCacheService {
     const StackViewportData = displaySets.map(displaySet => {
       const { displaySetInstanceUID, StudyInstanceUID, isCompositeStack } = displaySet;
 
+      if (displaySet.load && displaySet.load instanceof Function) {
+        const { userAuthenticationService } = this.servicesManager.services;
+        const headers = userAuthenticationService.getAuthorizationHeader();
+        await displaySet.load({ headers });
+      }
+
       let stackImageIds = this.stackImageIds.get(displaySet.displaySetInstanceUID);
 
       if (!stackImageIds) {

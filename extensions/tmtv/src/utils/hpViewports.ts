@@ -163,6 +163,7 @@ const ptAXIAL: AppTypes.HangingProtocol.Viewport = {
         target: false,
         options: {
           syncColormap: false,
+          syncInvertState: false,
         },
       },
     ],
@@ -215,6 +216,7 @@ const ptSAGITTAL: AppTypes.HangingProtocol.Viewport = {
         target: false,
         options: {
           syncColormap: false,
+          syncInvertState: false,
         },
       },
     ],
@@ -267,6 +269,7 @@ const ptCORONAL: AppTypes.HangingProtocol.Viewport = {
         target: false,
         options: {
           syncColormap: false,
+          syncInvertState: false,
         },
       },
     ],
@@ -328,6 +331,7 @@ const fusionAXIAL: AppTypes.HangingProtocol.Viewport = {
         target: true,
         options: {
           syncColormap: false,
+          syncInvertState: false,
         },
       },
     ],
@@ -399,6 +403,7 @@ const fusionSAGITTAL = {
         target: true,
         options: {
           syncColormap: false,
+          syncInvertState: false,
         },
       },
     ],
@@ -470,6 +475,7 @@ const fusionCORONAL = {
         target: true,
         options: {
           syncColormap: false,
+          syncInvertState: false,
         },
       },
     ],
@@ -526,6 +532,7 @@ const mipSAGITTAL: AppTypes.HangingProtocol.Viewport = {
         target: false,
         options: {
           syncColormap: false,
+          syncInvertState: false,
         },
       },
     ],

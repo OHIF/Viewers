@@ -307,7 +307,7 @@ const commandsModule = ({
         extensionManager,
       });
 
-      if (promptResult.action !== 1 && promptResult.value) {
+      if (promptResult.action !== 1 && !promptResult.value) {
         return;
       }
 

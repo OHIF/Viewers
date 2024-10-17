@@ -3,6 +3,26 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.9.0-beta.100](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.99...v3.9.0-beta.100) (2024-10-17)
+
+**Note:** Version bump only for package @ohif/extension-default
+
+
+
+
+
+# [3.9.0-beta.99](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.98...v3.9.0-beta.99) (2024-10-17)
+
+
+### Bug Fixes
+
+* **createReport:** early return on cancel in prompt ([#4243](https://github.com/OHIF/Viewers/issues/4243)) ([2ec4692](https://github.com/OHIF/Viewers/commit/2ec4692eaf2349e21b141a2c0b5b104ee10f7a28))
+* **dicomjson:** Update getUIDsFromImageID to work with json data source + update getDisplaySetImageUIDs to work with mixed sop class json ([#4322](https://github.com/OHIF/Viewers/issues/4322)) ([3dd0666](https://github.com/OHIF/Viewers/commit/3dd0666c0c090cbd66161f24bc9795f96abb3697))
+
+
+
+
+
 # [3.9.0-beta.98](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.97...v3.9.0-beta.98) (2024-10-15)
 
 **Note:** Version bump only for package @ohif/extension-default
