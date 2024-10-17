@@ -2265,17 +2265,16 @@
   resolved "https://registry.yarnpkg.com/@colors/colors/-/colors-1.5.0.tgz#bb504579c1cae923e6576a4f5da43d25f97bdbd9"
   integrity sha512-ooWCrlZP11i8GImSjTHYHLkvFDP48nS4+204nGb1RiX/WXYHmJA2III9/e2DWVabCESdW7hBAEzHRqUn9OUVvQ==
 
-"@cornerstonejs/adapters@^1.86.0":
-  version "1.86.0"
-  resolved "https://registry.yarnpkg.com/@cornerstonejs/adapters/-/adapters-1.86.0.tgz#389938f25b4b3f784c13dda46c3d2523a1db38cf"
-  integrity sha512-Ln8hC2W6d30q97Mhjboq57Qt5WhSl/2IG5Qf5VFRKha/k6Jgd4eP/gdhpUMxTlRZM3ibuQWwshsRZWCJl+VSgQ==
+"@cornerstonejs/adapters@^2.0.0-beta.27":
+  version "2.0.0-beta.30"
+  resolved "https://registry.yarnpkg.com/@cornerstonejs/adapters/-/adapters-2.0.0-beta.30.tgz#068657728aca1ff796f4f56842556dc2fad42b0e"
+  integrity sha512-HcwMkIc1UZCUpDGYCmXEpbfJgfm93PzXkjkhpp0tmhd0SIXbGddKZxpfnVgblAjbuZLxAnNPdIO4CyvFyPnH7Q==
   dependencies:
     "@babel/runtime-corejs2" "^7.17.8"
-    "@cornerstonejs/tools" "^1.86.0"
+    "@cornerstonejs/tools" "^2.0.0-beta.30"
     buffer "^6.0.3"
     dcmjs "^0.29.8"
     gl-matrix "^3.4.3"
-    lodash.clonedeep "^4.5.0"
     ndarray "^1.0.19"
 
 "@cornerstonejs/calculate-suv@^1.1.0":
@@ -2308,32 +2307,32 @@
   resolved "https://registry.yarnpkg.com/@cornerstonejs/core/-/core-1.83.1.tgz#626df83e896a5e8328012c681343f1158840dfc1"
   integrity sha512-VuLjcBZ+qPeUh+8RDrma7SvDGMEA/kXb1nsf+1yQTJQsqJmNiSyV+Pb7q/bn4X270KtGrEiyCJSNkb7b2zvfhQ==
   dependencies:
-    "@kitware/vtk.js" "32.1.0"
-    comlink "^4.4.1"
-    gl-matrix "^3.4.3"
-    lodash.clonedeep "4.5.0"
-
-"@cornerstonejs/core@^1.86.0":
-  version "1.86.0"
-  resolved "https://registry.yarnpkg.com/@cornerstonejs/core/-/core-1.86.0.tgz#19f94b8a4d37ffbd775b82f3963af5fbe38709de"
-  integrity sha512-yY3TC5abtU4hgcyBONQo+S0MXYgRyWzV/8bWujXilugAj5moDakex/zMc+YGIKlp4PvQBBRFjbu0H8YW3pseSw==
-  dependencies:
     "@kitware/vtk.js" "30.4.1"
     comlink "^4.4.1"
     detect-gpu "^5.0.22"
     gl-matrix "^3.4.3"
     lodash.clonedeep "4.5.0"
 
-"@cornerstonejs/dicom-image-loader@^1.86.0":
-  version "1.86.0"
-  resolved "https://registry.yarnpkg.com/@cornerstonejs/dicom-image-loader/-/dicom-image-loader-1.86.0.tgz#19a529bf1e5d27a0a6a9d0994068b12dab5e88dc"
-  integrity sha512-OPZCGdtdomj3TGktATQcLVIpTVv7ZqF8EyPgkEX+eIRXILzpu5Nm6gf3Lwofa5HVFwvmoJmVnU8jToKcoKPkqQ==
+"@cornerstonejs/core@^2.0.0-beta.27", "@cornerstonejs/core@^2.0.0-beta.30":
+  version "2.0.0-beta.30"
+  resolved "https://registry.yarnpkg.com/@cornerstonejs/core/-/core-2.0.0-beta.30.tgz#e70b1d4c46887c2653ae6ee306996327b07bfa75"
+  integrity sha512-OnhnRLyo7fcsXKIS/uPvG+SnSbRBUP7RMjl9KpZ4ZH9zBUqt4Zm9nIHwxk55JbZDfXxdVxOuOfnxTiFvA1BBIw==
+  dependencies:
+    "@kitware/vtk.js" "32.1.0"
+    comlink "^4.4.1"
+    gl-matrix "^3.4.3"
+
+"@cornerstonejs/dicom-image-loader@^2.0.0-beta.27":
+  version "2.0.0-beta.30"
+  resolved "https://registry.yarnpkg.com/@cornerstonejs/dicom-image-loader/-/dicom-image-loader-2.0.0-beta.30.tgz#eeca2d54d0a12a94690cd23cfcc62d1d7707c1bd"
+  integrity sha512-IvJHRwJ4erFO6mNFAYfLxMTAPLbDPKAjRx5ogTcRyGjdrMI8SVI1ok+h0IF7Dod+0rRniJtRrsnKS34Ohxc1tw==
   dependencies:
     "@cornerstonejs/codec-charls" "^1.2.3"
     "@cornerstonejs/codec-libjpeg-turbo-8bit" "^1.2.2"
     "@cornerstonejs/codec-openjpeg" "^1.2.2"
     "@cornerstonejs/codec-openjph" "^2.4.5"
-    "@cornerstonejs/core" "^1.86.0"
+    "@cornerstonejs/core" "^2.0.0-beta.30"
+    comlink "^4.4.1"
     dicom-parser "^1.8.9"
     pako "^2.0.4"
     uuid "^9.0.0"
@@ -2343,19 +2342,9 @@
   resolved "https://registry.yarnpkg.com/@cornerstonejs/tools/-/tools-2.0.0-beta.30.tgz#9f27ea55da0f453337d7d2552f0995a51ac8e8c6"
   integrity sha512-rcZ3YfHLwv6BWYw8kgxSG4kaLtkQfRjAIBA6BqA8jL4Z1vDoSuWAJwOoDKm0mZ77yzFXY6AglbWCHm8In9Us5Q==
   dependencies:
-    "@cornerstonejs/core" "^1.83.1"
-    comlink "^4.4.1"
-
-"@cornerstonejs/tools@^1.86.0":
-  version "1.86.0"
-  resolved "https://registry.yarnpkg.com/@cornerstonejs/tools/-/tools-1.86.0.tgz#ab7ca218faea4c6354866e02bcdf8005282d161c"
-  integrity sha512-yyy7r9Vo0NrTYYeKQtVqpbLRrVaequd9Q6aU2ifiNusdi6w+8Xslh1U/AHfw2Y9fueK8JBkLnKL+o/nLfdaOuQ==
-  dependencies:
-    "@cornerstonejs/core" "^1.86.0"
-    "@icr/polyseg-wasm" "0.4.0"
+    "@cornerstonejs/core" "^2.0.0-beta.30"
     "@types/offscreencanvas" "2019.7.3"
     comlink "^4.4.1"
-    lodash.clonedeep "4.5.0"
     lodash.get "^4.4.2"
 
 "@csstools/postcss-cascade-layers@^1.1.1":
@@ -6678,11 +6667,6 @@
   resolved "https://registry.yarnpkg.com/@types/normalize-package-data/-/normalize-package-data-2.4.4.tgz#56e2cc26c397c038fab0e3a917a12d5c5909e901"
   integrity sha512-37i+OaWTh9qeK4LSHPsyRC7NahnGotNuZvjLSgcPzblpHB3rrCJxAOgI5gCdKm7coonsaX1Of0ILiTcnZjbfxA==
 
-"@types/offscreencanvas@2019.7.3":
-  version "2019.7.3"
-  resolved "https://registry.yarnpkg.com/@types/offscreencanvas/-/offscreencanvas-2019.7.3.tgz#90267db13f64d6e9ccb5ae3eac92786a7c77a516"
-  integrity sha512-ieXiYmgSRXUDeOntE1InxjWyvEelZGP63M+cGuquuRLuIKKT1osnkXjxev9B7d1nXSug5vpunx+gNlbVxMlC9A==
-
 "@types/parse-json@^4.0.0":
   version "4.0.2"
   resolved "https://registry.yarnpkg.com/@types/parse-json/-/parse-json-4.0.2.tgz#5950e50960793055845e956c427fc2b0d70c5239"
@@ -7335,10 +7319,15 @@ acorn@^7.0.0, acorn@^7.4.1:
   resolved "https://registry.yarnpkg.com/acorn/-/acorn-7.4.1.tgz#feaed255973d2e77555b83dbc08851a6c63520fa"
   integrity sha512-nQyp0o1/mNdbTO1PO6kHkwSrmgZ0MT/jCCpNiwbUjGoRN4dlBhqJtoQuCnEOKzgTVwg0ZWiCoQy6SxMebQVh8A==
 
-acorn@^8.0.0, acorn@^8.0.4, acorn@^8.1.0, acorn@^8.11.0, acorn@^8.11.3, acorn@^8.7.1, acorn@^8.8.1, acorn@^8.8.2, acorn@^8.9.0:
+acorn@^8.0.0, acorn@^8.0.4, acorn@^8.1.0, acorn@^8.11.0, acorn@^8.7.1, acorn@^8.8.1, acorn@^8.8.2, acorn@^8.9.0:
   version "8.12.1"
   resolved "https://registry.yarnpkg.com/acorn/-/acorn-8.12.1.tgz#71616bdccbe25e27a54439e0046e89ca76df2248"
   integrity sha512-tcpGyI9zbizT9JbV6oYE477V6mTlXvvi0T0G3SNIYE2apm/G5huBa1+K89VGeovbg+jycCrfhl3ADxErOuO6Jg==
+
+acorn@^8.12.1:
+  version "8.13.0"
+  resolved "https://registry.yarnpkg.com/acorn/-/acorn-8.13.0.tgz#2a30d670818ad16ddd6a35d3842dacec9e5d7ca3"
+  integrity sha512-8zSiw54Oxrdym50NlZ9sUusyO1Z1ZchgRLWRaK6c86XJFClyCgFKetdowBg5bKxyp/u+CDBJG4Mpp0m3HLZl9w==
 
 add-stream@^1.0.0:
   version "1.0.0"
@@ -8650,7 +8639,7 @@ caniuse-api@^3.0.0:
     lodash.memoize "^4.1.2"
     lodash.uniq "^4.5.0"
 
-caniuse-lite@^1.0.0, caniuse-lite@^1.0.30001599:
+caniuse-lite@^1.0.0:
   version "1.0.30001636"
   resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001636.tgz#b15f52d2bdb95fad32c2f53c0b68032b85188a78"
   integrity sha512-bMg2vmr8XBsbL6Lr0UHXy/21m84FTxDLWn2FSqMd5PrlbMxwJlQnC2YWYxVgp66PZE+BBNF2jYQUBKCo1FDeZg==
@@ -13762,7 +13751,6 @@ ip-address@^9.0.5:
 
 ip@^1.1.0, "ip@https://registry.npmjs.org/ip-address/-/ip-address-9.0.5.tgz":
   version "9.0.5"
-  uid "117a960819b08780c3bd1f14ef3c1cc1d3f3ea5a"
   resolved "https://registry.npmjs.org/ip-address/-/ip-address-9.0.5.tgz#117a960819b08780c3bd1f14ef3c1cc1d3f3ea5a"
   dependencies:
     jsbn "1.1.0"
@@ -15503,7 +15491,7 @@ lodash-es@^4.17.15:
   resolved "https://registry.yarnpkg.com/lodash-es/-/lodash-es-4.17.21.tgz#43e626c46e6591b7750beb2b50117390c609e3ee"
   integrity sha512-mKnC+QJ9pWVzv+C4/U3rRsHapFfHvQFoFB92e52xeyGMcX6/OlIl78je1u8vePzYZSkkogMPJ2yjxxsb89cxyw==
 
-lodash.clonedeep@^4.5.0:
+lodash.clonedeep@4.5.0, lodash.clonedeep@^4.5.0:
   version "4.5.0"
   resolved "https://registry.yarnpkg.com/lodash.clonedeep/-/lodash.clonedeep-4.5.0.tgz#e23f3f9c4f8fbdde872529c1071857a086e5ccef"
   integrity sha512-H5ZhCF25riFd9uB5UCkVKo61m3S/xZk1x4wA6yp/L3RFP6Z/eHH1ymQcGLo7J3GMPfm0V/7m1tryHuGVxpqEBQ==
@@ -15512,11 +15500,6 @@ lodash.debounce@4.0.8, lodash.debounce@^4.0.8:
   version "4.0.8"
   resolved "https://registry.yarnpkg.com/lodash.debounce/-/lodash.debounce-4.0.8.tgz#82d79bff30a67c4005ffd5e2515300ad9ca4d7af"
   integrity sha512-FT1yDzDYEoYWhnSGnpE/4Kj1fLZkDFyqRb7fNt6FdYOSxlUWAtp42Eh6Wb0rGIv/m9Bgo7x4GhQbm5Ys4SG5ow==
-
-lodash.get@^4.4.2:
-  version "4.4.2"
-  resolved "https://registry.yarnpkg.com/lodash.get/-/lodash.get-4.4.2.tgz#2d177f652fa31e939b4438d5341499dfa3825e99"
-  integrity sha512-z+Uw/vLuy6gQe8cfaFWD7p0wVv8fJl3mbzXh33RS+0oW2wvUqiRXiQ69gLWSLpgB5/6sU+r6BlQR0MBILadqTQ==
 
 lodash.isequal@4.5.0:
   version "4.5.0"
@@ -19770,14 +19753,7 @@ q@^1.1.2:
   resolved "https://registry.yarnpkg.com/q/-/q-1.5.1.tgz#7e32f75b41381291d04611f1bf14109ac00651d7"
   integrity sha512-kV/CThkXo6xyFEZUugw/+pIOywXcDbFYgSct5cT3gqlbkBE1SJdwy6UQoZvodiWF/ckQLZyDE/Bu1M6gVu5lVw==
 
-qs@6.10.4:
-  version "6.10.4"
-  resolved "https://registry.yarnpkg.com/qs/-/qs-6.10.4.tgz#6a3003755add91c0ec9eacdc5f878b034e73f9e7"
-  integrity sha512-OQiU+C+Ds5qiH91qh/mg0w+8nwQuLjM4F4M/PbmhDOoYehPh+Fb0bDjtR1sOvy7YKxvj28Y/M0PhP5uVX0kB+g==
-  dependencies:
-    side-channel "^1.0.4"
-
-qs@6.13.0:
+qs@6.13.0, qs@^6.10.0, qs@^6.12.3:
   version "6.13.0"
   resolved "https://registry.yarnpkg.com/qs/-/qs-6.13.0.tgz#6ca3bd58439f7e245655798997787b0d88a51906"
   integrity sha512-+38qI9SOr8tfZ4QmJNplMUxqjbe7LKvvZgWdExBOmd+egZTtjLB67Gu0HRX3u/XOq7UU2Nx6nsjvS16Z9uwfpg==
