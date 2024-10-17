@@ -10,15 +10,21 @@ export default function Patterns() {
       <h1>Patterns</h1>
       <button
         className="bg-slate-400"
-        onClick={() => history.push('/patterns/segmentation-panel')}
+        onClick={() => history.push('/patterns/patterns-segmentation')}
       >
         {'Segmentation Panel'}
       </button>
       <button
         className="bg-slate-400"
-        onClick={() => history.push('/patterns/measurement-panel')}
+        onClick={() => history.push('/patterns/patterns-measurements')}
       >
         {'Measurements Panel'}
+      </button>
+      <button
+        className="bg-slate-400"
+        onClick={() => history.push('/patterns/patterns-tmtv')}
+      >
+        {'tmtv'}
       </button>
     </Layout>
   );

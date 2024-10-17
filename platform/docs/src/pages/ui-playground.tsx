@@ -25,6 +25,7 @@ import {
   DropdownMenuItem,
 } from '../../../ui-next/src/components/DropdownMenu';
 import { Icons } from '../../../ui-next/src/components/Icons';
+import { Toaster, toast } from '../../../ui-next/src/components/Sonner';
 
 interface ShowcaseRowProps {
   title: string;
@@ -34,6 +35,106 @@ interface ShowcaseRowProps {
 }
 
 export default function ComponentShowcase() {
+  // Handlers to trigger different types of toasts
+  const triggerSuccess = () => {
+    toast.success('This is a success toast!');
+  };
+
+  const triggerError = () => {
+    toast.error('This is an error toast!');
+  };
+
+  const triggerInfo = () => {
+    toast.info('This is an info toast!');
+  };
+
+  const triggerWarning = () => {
+    toast.warning('This is a warning toast!');
+  };
+
+  // Handler to trigger a toast.promise example
+  const triggerPromiseToast = () => {
+    const promise = () =>
+      new Promise<{ name: string }>(resolve =>
+        setTimeout(() => resolve({ name: 'Segmentation 1' }), 3000)
+      );
+
+    toast.promise(promise(), {
+      loading: 'Loading Segmentation...',
+      success: data => `${data.name} has been added`,
+      error: 'Error',
+    });
+  };
+
+  // Handler to trigger a toast with description
+  const triggerDescriptionToast = () => {
+    toast.success('Success heading', {
+      description: 'This is a detailed description of the success message.',
+    });
+  };
+
+  // Handler to trigger a toast with an action button
+  const triggerActionButtonToast = () => {
+    toast.info('Info heading', {
+      description: 'This is an info message with an action button.',
+      action: (
+        <Button
+          size="sm"
+          variant="ghost"
+          onClick={() => alert('Action button clicked')}
+        >
+          Undo
+        </Button>
+      ),
+    });
+  };
+
+  // Handler to trigger a toast with a cancel button
+  const triggerCancelButtonToast = () => {
+    toast.error('Error!', {
+      description: 'This is an error message with a cancel button.',
+      cancel: (
+        <Button
+          size="sm"
+          variant="ghost"
+          onClick={() => toast.dismiss()}
+        >
+          Dismiss
+        </Button>
+      ),
+    });
+  };
+
+  // Handler to trigger a toast with both action and cancel buttons
+  const triggerCombinedToast = () => {
+    toast.warning('Warning!', {
+      description: 'This is a warning with both action and cancel buttons.',
+      action: (
+        <Button
+          size="sm"
+          variant="ghost"
+          onClick={() => alert('Retry action clicked')}
+        >
+          Retry
+        </Button>
+      ),
+      cancel: (
+        <Button
+          size="sm"
+          variant="ghost"
+          onClick={() => toast.dismiss()}
+        >
+          Cancel
+        </Button>
+      ),
+    });
+  };
+
+  // Handler to trigger a loading toast using Toaster's default loading icon
+  const showLoadingToast = () => {
+    toast.loading('Loading your data...');
+  };
+
   return (
     <div className="bg-background text-foreground h-full">
       <div className="mx-auto my-4 max-w-6xl py-6">
@@ -487,6 +588,82 @@ export default function ComponentShowcase() {
             mollit anim id est laborum. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
             do eiusmod tempor incididunt ut labore et dolore magna aliqua.
           </ScrollArea>
+        </ShowcaseRow>
+        <ShowcaseRow
+          title="sonner 1"
+          description="sonner1"
+          code={`sdf`}
+        >
+          {/* Toast Examples Section */}
+          <div className="space-x-2">
+            <Button
+              variant="default"
+              onClick={triggerSuccess}
+            >
+              Show Success Toast
+            </Button>
+            <Button
+              variant="default"
+              onClick={triggerError}
+            >
+              Show Error Toast
+            </Button>
+            <Button
+              variant="default"
+              onClick={triggerInfo}
+            >
+              Show Info Toast
+            </Button>
+            <Button
+              variant="default"
+              onClick={triggerWarning}
+            >
+              Show Warning Toast
+            </Button>
+            <Button
+              variant="default"
+              onClick={triggerPromiseToast}
+            >
+              Loading & Success Toast
+            </Button>
+          </div>
+        </ShowcaseRow>
+
+        <ShowcaseRow
+          title="sonner 2"
+          description="sonner2"
+          code={`sdf`}
+        >
+          <Button
+            variant="default"
+            onClick={triggerDescriptionToast}
+          >
+            Show Toast with Description
+          </Button>
+
+          <Button
+            variant="default"
+            onClick={triggerActionButtonToast}
+          >
+            Show Toast with Action Button
+          </Button>
+
+          <Button
+            variant="default"
+            onClick={triggerCancelButtonToast}
+          >
+            Show Toast with Cancel Button
+          </Button>
+
+          <Button
+            variant="default"
+            onClick={triggerCombinedToast}
+          >
+            Show Toast with Action & Cancel Buttons
+          </Button>
+
+          {/* Render the Toaster component */}
+          <Toaster />
         </ShowcaseRow>
       </div>
     </div>

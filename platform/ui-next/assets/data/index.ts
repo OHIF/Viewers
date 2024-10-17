@@ -205,6 +205,58 @@ const dataList = [
       },
     ],
   },
+  {
+    type: 'TMTV1',
+    items: [
+      {
+        id: 29,
+        title: 'Segment 1',
+        colorHex: '#FF6F61',
+        description: 'Description for Segmentation One.',
+        details: 'SUV Peak: NaN\nVolume: 21.56mm³',
+      },
+      {
+        id: 30,
+        title: 'Segment 2',
+        colorHex: '#00CED1',
+        description: 'Description for Segmentation Two.',
+        details: 'SUV Peak: NaN\nVolume: 21.56mm³',
+      },
+      {
+        id: 31,
+        title: 'Segment 3',
+        colorHex: '#88B04B',
+        description: 'Description for Segmentation One.',
+        details: 'SUV Peak: NaN\nVolume: 21.56mm³',
+      },
+    ],
+  },
+  {
+    type: 'TMTV2',
+    items: [
+      {
+        id: 32,
+        title: 'Segment A',
+        colorHex: '#FF6F61',
+        description: 'Description for Segmentation One.',
+        details: 'SUV Peak: NaN\nVolume: 21.56mm³',
+      },
+      {
+        id: 33,
+        title: 'Segment B',
+        colorHex: '#00CED1',
+        description: 'Description for Segmentation Two.',
+        details: 'SUV Peak: NaN\nVolume: 21.56mm³',
+      },
+      {
+        id: 34,
+        title: 'Segment C',
+        colorHex: '#88B04B',
+        description: 'Description for Segmentation One.',
+        details: 'SUV Peak: NaN\nVolume: 21.56mm³',
+      },
+    ],
+  },
 ];
 
 export { actionOptionsMap, dataList };
