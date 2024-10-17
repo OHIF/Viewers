@@ -5,6 +5,7 @@ import {
   utilities as csUtils,
   Types as CoreTypes,
   BaseVolumeViewport,
+  metaData,
 } from '@cornerstonejs/core';
 import {
   ToolGroupManager,
@@ -21,6 +22,7 @@ import toggleImageSliceSync from './utils/imageSliceSync/toggleImageSliceSync';
 import { getFirstAnnotationSelected } from './utils/measurementServiceMappings/utils/selection';
 import getActiveViewportEnabledElement from './utils/getActiveViewportEnabledElement';
 import toggleVOISliceSync from './utils/toggleVOISliceSync';
+import { getImageFlips } from './utils/getImageFlips';
 
 const toggleSyncFunctions = {
   imageSlice: toggleImageSliceSync,
@@ -497,6 +499,16 @@ function commandsModule({
 
       viewport.resetProperties?.();
       viewport.resetCamera();
+
+      const { criteria: isOrientationCorrectionNeeded } = customizationService.get(
+        'orientationCorrectionCriterion'
+      );
+      const instance = metaData.get('instance', viewport.getCurrentImageId());
+
+      if ((isOrientationCorrectionNeeded as (input) => boolean)?.(instance)) {
+        const { hFlip, vFlip } = getImageFlips(instance);
+        (hFlip || vFlip) && viewport.setCamera({ flipHorizontal: hFlip, flipVertical: vFlip });
+      }
 
       viewport.render();
     },
