@@ -78,7 +78,7 @@ import {
 } from './SegmentationPanel';
 import { DataRow } from './DataRow';
 import { MeasurementTable } from './MeasurementTable';
-import { Toaster } from './Sonner';
+import { Toaster, toast } from './Sonner';
 
 export {
   Button,
@@ -174,4 +174,5 @@ export {
   DataRow,
   MeasurementTable,
   Toaster,
+  toast,
 };

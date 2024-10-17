@@ -1,25 +1,12 @@
-/**
- * A UI Notification
- *
- * @typedef {Object} Notification
- * @property {string} title -
- * @property {string} message -
- * @property {number} [duration=5000] - in ms
- * @property {string} [position="bottomRight"] -"topLeft" | "topCenter | "topRight" | "bottomLeft" | "bottomCenter" | "bottomRight"
- * @property {string} [type="info"] - "info" | "error" | "warning" | "success"
- * @property {boolean} [autoClose=true]
- */
-
-const serviceShowRequestQueue = [];
-
 const serviceImplementation = {
-  _hide: () => console.warn('hide() NOT IMPLEMENTED'),
+  _hide: () => console.debug('hide() NOT IMPLEMENTED'),
   _show: showArguments => {
-    serviceShowRequestQueue.push(showArguments);
-
-    console.warn('show() NOT IMPLEMENTED');
+    console.debug('show() NOT IMPLEMENTED');
+    return null;
   },
 };
+
+type ToastType = 'success' | 'error' | 'info' | 'warning' | 'loading';
 
 class UINotificationService {
   static REGISTRATION = {
@@ -44,11 +31,6 @@ class UINotificationService {
     }
     if (showImplementation) {
       serviceImplementation._show = showImplementation;
-
-      while (serviceShowRequestQueue.length > 0) {
-        const showArguments = serviceShowRequestQueue.pop();
-        serviceImplementation._show(showArguments);
-      }
     }
   }
 
@@ -59,24 +41,43 @@ class UINotificationService {
    * @returns undefined
    */
   public hide(id: string) {
-    return serviceImplementation._hide({ id });
+    return serviceImplementation._hide(id);
   }
 
   /**
    * Create and show a new UI notification; returns the
    * ID of the created notification.
    *
-   * @param {Notification} notification { title, message, duration, position, type, autoClose}
-   * @returns {number} id
+   * @param {object} notification - The notification object
+   * @param {string} notification.title - The title of the notification
+   * @param {string} notification.message - The message content of the notification
+   * @param {number} [notification.duration=5000] - The duration to show the notification (in milliseconds)
+   * @param {'top-left' | 'top-right' | 'bottom-left' | 'bottom-right' | 'top-center' | 'bottom-center'} [notification.position='bottom-right'] - The position of the notification
+   * @param {ToastType} [notification.type='info'] - The type of the notification
+   * @param {boolean} [notification.autoClose=true] - Whether the notification should auto-close
+   * @returns {string} id - The ID of the created notification
    */
   show({
     title,
     message,
     duration = 5000,
-    position = 'bottomRight',
+    position = 'bottom-right',
     type = 'info',
     autoClose = true,
-  }) {
+  }: {
+    title: string;
+    message: string;
+    duration?: number;
+    position?:
+      | 'top-left'
+      | 'top-right'
+      | 'bottom-left'
+      | 'bottom-right'
+      | 'top-center'
+      | 'bottom-center';
+    type?: ToastType;
+    autoClose?: boolean;
+  }): string {
     return serviceImplementation._show({
       title,
       message,
