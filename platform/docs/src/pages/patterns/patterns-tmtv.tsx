@@ -391,7 +391,7 @@ export default function TMTVPatterns() {
               </AccordionItem>
               {/* Footer or Additional Information */}
               <div className="bg-popover text-foreground flex h-8 items-center justify-between pl-9 pr-3 text-sm font-semibold">
-                <span>TMTV2</span>
+                <span>TMTV</span>
                 <span>21.555 mL</span>
               </div>
             </AccordionContent>
