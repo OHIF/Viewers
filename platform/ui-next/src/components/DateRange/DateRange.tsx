@@ -2,8 +2,8 @@ import * as React from 'react';
 import { format, parse, isValid } from 'date-fns';
 import { Calendar as CalendarIcon } from 'lucide-react';
 import { cn } from '../../lib/utils';
-import Calendar from '../Calendar';
-import Popover from '../Popover';
+import { Calendar } from '../Calendar';
+import * as Popover from '../Popover';
 
 export type DatePickerWithRangeProps = {
   id: string;
@@ -90,7 +90,7 @@ export function DatePickerWithRange({
               value={start}
               onChange={e => handleInputChange(e, 'start')}
               className={cn(
-                'border-inputfield-main focus:border-inputfield-focus  h-[32px] w-full justify-start rounded border bg-black py-[6.5px] pl-[6.5px] pr-[6.5px] text-left text-sm font-normal hover:bg-black hover:text-white',
+                'border-inputfield-main focus:border-inputfield-focus h-[32px] w-full justify-start rounded border bg-black py-[6.5px] pl-[6.5px] pr-[6.5px] text-left text-sm font-normal hover:bg-black hover:text-white',
                 !start && 'text-muted-foreground'
               )}
               data-cy="input-date-range-start"

@@ -13,6 +13,7 @@ module.exports = {
       inter: ['Inter', 'sans-serif'],
     },
     fontSize: {
+      xxs: '0.6875rem', // 11px
       xs: '0.75rem', // 12px
       sm: '0.8125rem', // 13px
       base: '0.875rem', // 14px
@@ -89,6 +90,20 @@ module.exports = {
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
+      },
+      bkg: {
+        low: '#050615',
+        med: '#090C29',
+        full: '#041C4A',
+      },
+      info: {
+        primary: '#FFFFFF',
+        secondary: '#7BB2CE',
+      },
+      actions: {
+        primary: '#348CFD',
+        highlight: '#5ACCE6',
+        hover: 'rgba(52, 140, 253, 0.2)',
       },
     },
   },

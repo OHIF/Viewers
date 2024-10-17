@@ -9,6 +9,7 @@ import {
 import * as csStreamingImageVolumeLoader from '@cornerstonejs/streaming-image-volume-loader';
 import { Enums as cs3DToolsEnums } from '@cornerstonejs/tools';
 import { Types } from '@ohif/core';
+import Enums from './enums';
 
 import init from './init';
 import getCustomizationModule from './getCustomizationModule';
@@ -234,5 +235,6 @@ export {
   ImageOverlayViewerTool,
   getSOPInstanceAttributes,
   dicomLoaderService,
+  Enums,
 };
 export default cornerstoneExtension;

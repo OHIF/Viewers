@@ -128,6 +128,7 @@ const ptAXIAL = {
         target: false,
         options: {
           syncColormap: false,
+          syncInvertState: false,
         },
       },
     ],
@@ -175,6 +176,7 @@ const ptSAGITTAL = {
         target: false,
         options: {
           syncColormap: false,
+          syncInvertState: false,
         },
       },
     ],
@@ -222,6 +224,7 @@ const ptCORONAL = {
         target: false,
         options: {
           syncColormap: false,
+          syncInvertState: false,
         },
       },
     ],
@@ -278,6 +281,7 @@ const fusionAXIAL = {
         target: true,
         options: {
           syncColormap: false,
+          syncInvertState: false,
         },
       },
     ],
@@ -344,6 +348,7 @@ const fusionSAGITTAL = {
         target: true,
         options: {
           syncColormap: false,
+          syncInvertState: false,
         },
       },
     ],
@@ -410,6 +415,7 @@ const fusionCORONAL = {
         target: true,
         options: {
           syncColormap: false,
+          syncInvertState: false,
         },
       },
     ],
@@ -461,6 +467,7 @@ const mipSAGITTAL = {
         target: false,
         options: {
           syncColormap: false,
+          syncInvertState: false,
         },
       },
     ],

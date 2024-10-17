@@ -18,7 +18,7 @@
     --primary: 214 98% 60%;
     --primary-foreground: 0 0% 98%;
     --secondary: 214 66% 48%;
-    --secondary-foreground: 0 0% 98%;
+    --secondary-foreground: 200 50% 84%;
     --muted: 234 64% 10%;
     --muted-foreground: 200 46% 65%;
     --accent: 217 79% 24%;
@@ -146,7 +146,7 @@
     --muted-foreground: 220 8.9% 46.1%;
     --accent: 220 14.3% 95.9%;
     --accent-foreground: 220.9 39.3% 11%;
-    --destructive: 0 84.2% 60.2%;
+    --destructive: 360 84.2% 60.2%;
     --destructive-foreground: 210 20% 98%;
     --border: 220 13% 91%;
     --input: 220 13% 91%;
@@ -174,7 +174,7 @@
     --muted-foreground: 217.9 10.6% 64.9%;
     --accent: 215 27.9% 16.9%;
     --accent-foreground: 210 20% 98%;
-    --destructive: 0 62.8% 30.6%;
+    --destructive: 360 84.2% 60.2%;
     --destructive-foreground: 210 20% 98%;
     --border: 215 27.9% 16.9%;
     --input: 215 27.9% 16.9%;
@@ -197,7 +197,7 @@
   }
 
   body {
-    @apply bg-black;
+    @apply !bg-black;
   }
 }
 
@@ -227,4 +227,14 @@ h3.section-header {
 
 .TooltipContent[data-side='bottom'] {
   animation-name: slideDown;
+}
+
+/* Custom CSS to hide default number input arrows */
+input[type='number']::-webkit-inner-spin-button,
+input[type='number']::-webkit-outer-spin-button {
+  @apply appearance-none;
+}
+
+input[type='number'] {
+  -moz-appearance: textfield; /* For Firefox */
 }

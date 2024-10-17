@@ -17,6 +17,7 @@ function LayoutPreset({
       onClick={() => {
         onSelection(commandOptions);
       }}
+      data-cy={title}
     >
       <Icon
         name={icon}

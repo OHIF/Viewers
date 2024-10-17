@@ -1,5 +1,5 @@
 import RectangleROIStartEndThreshold from './RectangleROIStartEndThreshold';
-import CircleROIStartEndThreshold from './CircleROIStartEndThreshold'
+import CircleROIStartEndThreshold from './CircleROIStartEndThreshold';
 
 const measurementServiceMappingsFactory = (
   measurementService,

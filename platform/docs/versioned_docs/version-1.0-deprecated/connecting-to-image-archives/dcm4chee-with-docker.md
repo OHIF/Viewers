@@ -29,16 +29,16 @@ sidebar_position: 4
 ## Web Service URLs from DCM4CHEE:
 Original source here: https://github.com/dcm4che/dcm4chee-arc-light/wiki/Running-on-Docker#web-service-urls
 
- - Archive UI: <http://localhost:8080/dcm4chee-arc/ui> - if secured, login with
+ - Archive UI: `http://localhost:8080/dcm4chee-arc/ui` - if secured, login with
 
      Username | Password | Role
      --- | --- | ---
      `user` | `user` | `user`
      `admin` | `admin` | `user` + `admin`
- - Keycloak Administration Console: <http://localhost:8080/auth>, login with Username: `admin`, Password: `admin`.
- - Wildfly Administration Console: <http://localhost:9990>, login with Username: `admin`, Password: `admin`.
- - Kibana UI: <http://localhost:5601>
- - DICOM QIDO-RS Base URL: <http://localhost:8080/dcm4chee-arc/aets/DCM4CHEE/rs>
- - DICOM STOW-RS Base URL: <http://localhost:8080/dcm4chee-arc/aets/DCM4CHEE/rs>
- - DICOM WADO-RS Base URL: <http://localhost:8080/dcm4chee-arc/aets/DCM4CHEE/rs>
- - DICOM WADO-URI: <http://localhost:8080/dcm4chee-arc/aets/DCM4CHEE/wado>
+ - Keycloak Administration Console: `http://localhost:8080/auth`, login with Username: `admin`, Password: `admin`.
+ - Wildfly Administration Console: `http://localhost:9990`, login with Username: `admin`, Password: `admin`.
+ - Kibana UI: `http://localhost:5601`
+ - DICOM QIDO-RS Base URL: `http://localhost:8080/dcm4chee-arc/aets/DCM4CHEE/rs`
+ - DICOM STOW-RS Base URL: `http://localhost:8080/dcm4chee-arc/aets/DCM4CHEE/rs`
+ - DICOM WADO-RS Base URL: `http://localhost:8080/dcm4chee-arc/aets/DCM4CHEE/rs`
+ - DICOM WADO-URI: `http://localhost:8080/dcm4chee-arc/aets/DCM4CHEE/wado`

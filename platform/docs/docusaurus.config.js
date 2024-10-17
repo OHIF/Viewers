@@ -11,39 +11,7 @@ const path = require('path');
 const fs = require('fs');
 const versions = fs.readFileSync('../../version.txt', 'utf8').split('\n');
 
-// This probably only makes sense for the beta phase, temporary
-// function getNextBetaVersionName() {
-//   const expectedPrefix = '';
-
-//   const lastReleasedVersion = versions[0];
-//   if (!lastReleasedVersion.includes(expectedPrefix)) {
-//     throw new Error(
-//       'this code is only meant to be used during the 2.0 beta phase.'
-//     );
-//   }
-//   const version = parseInt(lastReleasedVersion.replace(expectedPrefix, ''), 10);
-//   return `${expectedPrefix}${version + 1}`;
-// }
-
-// const allDocHomesPaths = [
-//   '/docs/',
-//   '/docs/next/',
-//   ...versions.slice(1).map(version => `/docs/${version}/`),
-// ];
-
-const isDev = process.env.NODE_ENV === 'development';
-
-const isDeployPreview = process.env.NETLIFY && process.env.CONTEXT === 'deploy-preview';
-
 const baseUrl = process.env.BASE_URL || '/';
-const isBootstrapPreset = process.env.DOCUSAURUS_PRESET === 'bootstrap';
-
-// Special deployment for staging locales until they get enough translations
-// https://app.netlify.com/sites/docusaurus-i18n-staging
-// https://docusaurus-i18n-staging.netlify.app/
-const isI18nStaging = process.env.I18N_STAGING === 'true';
-
-// const isVersioningDisabled = !!process.env.DISABLE_VERSIONING || isI18nStaging;
 
 /** @type {import('@docusaurus/types').DocusaurusConfig} */
 module.exports = {
@@ -56,22 +24,11 @@ module.exports = {
   url: 'https://docs.ohif.org',
   i18n: {
     defaultLocale: 'en',
-    locales: isDeployPreview
-      ? // Deploy preview: keep it fast!
-        ['en']
-      : isI18nStaging
-        ? // Staging locales: https://docusaurus-i18n-staging.netlify.app/
-          ['en']
-        : // Production locales
-          ['en'],
+    locales: ['en'],
   },
   onBrokenLinks: 'warn',
   onBrokenMarkdownLinks: 'warn',
   favicon: 'img/favicon.ico',
-  // customFields: {
-  //   description:
-  //     'An optimized site generator in React. Docusaurus helps you to move fast and write content. Build documentation websites, blogs, marketing pages, and more.',
-  // },
   themes: ['@docusaurus/theme-live-codeblock'],
   plugins: [
     () => ({
@@ -87,7 +44,8 @@ module.exports = {
         };
       },
     }),
-    path.resolve(__dirname, './pluginOHIFWebpackConfig.js'),
+    // path.resolve(__dirname, './pluginOHIFWebpackConfig.js'),
+    // /path.resolve(__dirname, './postcss.js'),
     'docusaurus-plugin-image-zoom', // 3rd party plugin for image click to pop
     [
       '@docusaurus/plugin-client-redirects',
@@ -103,34 +61,6 @@ module.exports = {
             ],
           },
         ],
-        // createRedirects: function(path) {
-        //   // redirect to /docs from /docs/introduction,
-        //   // as introduction has been made the home doc
-        //   // if (allDocHomesPaths.includes(path)) {
-        //   //   return [`${path}/introduction`];
-        //   // }
-        //   if (path.includes("/connecting-to-image-archives/google-cloud-healthcare")) {
-        //     return ["/deployment/recipes/google-cloud-healthcare"]
-        //   }
-        // },
-        // redirects: [
-        // {
-        //   from: ['/'],
-        //   to: '/docs',
-        // },
-        // {
-        //   from: ['/docs/support', '/docs/next/support'],
-        //   to: '/community/support',
-        // },
-        // {
-        //   from: ['/docs/team', '/docs/next/team'],
-        //   to: '/community/team',
-        // },
-        // {
-        //   from: ['/docs/resources', '/docs/next/resources'],
-        //   to: '/community/resources',
-        // },
-        // ],
       },
     ],
     [
@@ -142,73 +72,11 @@ module.exports = {
         steps: 2, // the max number of images generated between min and max (inclusive)
       },
     ],
-    // [
-    //   '@docusaurus/plugin-pwa',
-    //   {
-    //     debug: isDeployPreview,
-    //     offlineModeActivationStrategies: [
-    //       'appInstalled',
-    //       'standalone',
-    //       'queryString',
-    //     ],
-    //     // swRegister: false,
-    //     // swCustom: path.resolve(__dirname, 'src/sw.js'),
-    //     pwaHead: [
-    //       {
-    //         tagName: 'link',
-    //         rel: 'icon',
-    //         href: 'img/docusaurus.png',
-    //       },
-    //       {
-    //         tagName: 'link',
-    //         rel: 'manifest',
-    //         href: `${baseUrl}manifest.json`,
-    //       },
-    //       {
-    //         tagName: 'meta',
-    //         name: 'theme-color',
-    //         content: 'rgb(37, 194, 160)',
-    //       },
-    //       {
-    //         tagName: 'meta',
-    //         name: 'apple-mobile-web-app-capable',
-    //         content: 'yes',
-    //       },
-    //       {
-    //         tagName: 'meta',
-    //         name: 'apple-mobile-web-app-status-bar-style',
-    //         content: '#000',
-    //       },
-    //       {
-    //         tagName: 'link',
-    //         rel: 'apple-touch-icon',
-    //         href: 'img/docusaurus.png',
-    //       },
-    //       {
-    //         tagName: 'link',
-    //         rel: 'mask-icon',
-    //         href: 'img/docusaurus.svg',
-    //         color: 'rgb(62, 204, 94)',
-    //       },
-    //       {
-    //         tagName: 'meta',
-    //         name: 'msapplication-TileImage',
-    //         content: 'img/docusaurus.png',
-    //       },
-    //       {
-    //         tagName: 'meta',
-    //         name: 'msapplication-TileColor',
-    //         content: '#000',
-    //       },
-    //     ],
-    //   },
-    // ]
   ],
   presets: [
     [
       'classic',
-      /** @type {import('@docusaurus/preset-classic').Options} */
-      ({
+      {
         debug: true, // force debug plugin usage
         docs: {
           routeBasePath: '/',
@@ -247,7 +115,7 @@ module.exports = {
           trackingID: 'G-DDBJFE34EG',
           anonymizeIP: true,
         },
-      }),
+      },
     ],
   ],
   themeConfig:
@@ -273,24 +141,14 @@ module.exports = {
           '🎉 OHIF 3.8 has landed! Explore 4D and volume rendering, enhanced layout menus, streamlined visualization controls, workflow steps, and more. You can find the release notes by following this <a target="_blank" rel="noopener noreferrer" href="https://ohif.org/release-notes/3p8/">Link!</a> 🌟',
       },
       prism: {
-        theme: require('prism-react-renderer/themes/github'),
-        darkTheme: require('prism-react-renderer/themes/dracula'),
+        theme: require('prism-react-renderer').themes.github,
+        darkTheme: require('prism-react-renderer').themes.dracula,
       },
       algolia: {
         appId: 'EFLT6YIHHZ',
         apiKey: 'c220dd24fe4f86248eea3b1238a1fb60',
         indexName: 'ohif',
       },
-      // zoom: {
-      //   selector: '.markdown > img',
-      //   background: {
-      //     light: 'rgb(255, 255, 255)',
-      //     dark: 'rgb(50, 50, 50)',
-      //   },
-      //   config: {
-      //     // options you can specify via https://github.com/francoischalifour/medium-zoom#usage
-      //   },
-      // },
       navbar: {
         hideOnScroll: false,
         logo: {
@@ -318,12 +176,14 @@ module.exports = {
             target: '_blank',
             position: 'left',
           },
+          /*
           {
-            to: '/migration-guide',
-            label: 'Migration Guides',
+            to: '/playground',
+            label: 'UI Playground',
             position: 'left',
             className: 'new-badge',
           },
+          */
           {
             to: '/help',
             //activeBaseRegex: '(^/help$)|(/help)',

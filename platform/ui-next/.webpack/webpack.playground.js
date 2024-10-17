@@ -38,6 +38,7 @@ module.exports = {
   entry: {
     home: './src/_pages/index.tsx',
     playground: './src/_pages/playground.tsx',
+    patterns: './src/_pages/patterns.tsx',
     viewer: './src/_pages/viewer.tsx',
     colors: './src/_pages/colors.tsx',
     // add other pages here
@@ -84,6 +85,11 @@ module.exports = {
     }),
     new HtmlWebpackPlugin({
       template: './.webpack/template.html',
+      chunks: ['patterns'],
+      filename: 'patterns.html',
+    }),
+    new HtmlWebpackPlugin({
+      template: './.webpack/template.html',
       chunks: ['viewer'],
       filename: 'viewer.html',
     }),
@@ -107,7 +113,7 @@ module.exports = {
     },
     hot: true,
     open: true,
-    port: 8000,
+    port: 8002,
     historyApiFallback: true,
     devMiddleware: {
       writeToDisk: true,
