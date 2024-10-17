@@ -3,6 +3,34 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.9.0-beta.100](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.99...v3.9.0-beta.100) (2024-10-17)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone
+
+
+
+
+
+# [3.9.0-beta.99](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.98...v3.9.0-beta.99) (2024-10-17)
+
+
+### Bug Fixes
+
+* **3d-viewport:** exception was being thrown and 3d viewpot not getting resized. ([#4366](https://github.com/OHIF/Viewers/issues/4366)) ([433cc80](https://github.com/OHIF/Viewers/commit/433cc8089db6aa218c9075bd0eeb7952a7e4f028))
+* **hp-presets:** select the active displaySet when toggling an HP preset, not a random one from the series panel ([#4365](https://github.com/OHIF/Viewers/issues/4365)) ([ace67b3](https://github.com/OHIF/Viewers/commit/ace67b3bbb6be4e8c78e613e20d3e10b93762bf7))
+* **tools:** check if seriesNumber is an undefined properly ([#4338](https://github.com/OHIF/Viewers/issues/4338)) ([307b144](https://github.com/OHIF/Viewers/commit/307b14476be41b10b861d6a8474f7386b5107618))
+* **typo:** type in fourup preset ([#4426](https://github.com/OHIF/Viewers/issues/4426)) ([03aad4e](https://github.com/OHIF/Viewers/commit/03aad4eba24e33a266a6d91eaf74df52dc2a550e))
+* **updateIndex:** getNumberOfSlices is defined when used with a 3D viewport ([#4424](https://github.com/OHIF/Viewers/issues/4424)) ([d5bcf54](https://github.com/OHIF/Viewers/commit/d5bcf54e23ef68abd85c5f0ea671feca637c4f49))
+
+
+### Features
+
+* **SR:** SCOORD3D point annotations support for stack viewports ([#4315](https://github.com/OHIF/Viewers/issues/4315)) ([ac1cad2](https://github.com/OHIF/Viewers/commit/ac1cad25af12ee0f7d508647e3134ed724d9b4d3))
+
+
+
+
+
 # [3.9.0-beta.98](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.97...v3.9.0-beta.98) (2024-10-15)
 
 **Note:** Version bump only for package @ohif/extension-cornerstone

@@ -1,6 +1,6 @@
 {
   "name": "@ohif/extension-cornerstone-dicom-pmap",
-  "version": "3.9.0-beta.98",
+  "version": "3.9.0-beta.100",
   "description": "DICOM Parametric Map read workflow",
   "author": "OHIF",
   "license": "MIT",
@@ -33,10 +33,10 @@
     "start": "yarn run dev"
   },
   "peerDependencies": {
-    "@ohif/core": "3.9.0-beta.98",
-    "@ohif/extension-cornerstone": "3.9.0-beta.98",
-    "@ohif/extension-default": "3.9.0-beta.98",
-    "@ohif/i18n": "3.9.0-beta.98",
+    "@ohif/core": "3.9.0-beta.100",
+    "@ohif/extension-cornerstone": "3.9.0-beta.100",
+    "@ohif/extension-default": "3.9.0-beta.100",
+    "@ohif/i18n": "3.9.0-beta.100",
     "prop-types": "^15.6.2",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
@@ -46,8 +46,8 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.20.13",
-    "@cornerstonejs/adapters": "^1.77.6",
-    "@cornerstonejs/core": "^1.77.6",
+    "@cornerstonejs/adapters": "^1.86.0",
+    "@cornerstonejs/core": "^1.86.0",
     "@kitware/vtk.js": "30.4.1",
     "react-color": "^2.19.3"
   }

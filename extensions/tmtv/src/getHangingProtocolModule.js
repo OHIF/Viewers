@@ -20,6 +20,7 @@ import {
  */
 const stage1 = {
   name: 'default',
+  id: 'default',
   viewportStructure: {
     layoutType: 'grid',
     properties: {
@@ -112,6 +113,7 @@ const stage1 = {
  */
 const stage2 = {
   name: 'Fusion 2x2',
+  id: 'Fusion-2x2',
   viewportStructure: {
     layoutType: 'grid',
     properties: {
@@ -131,6 +133,7 @@ const stage2 = {
  */
 const stage3 = {
   name: '2x3-layout',
+  id: '2x3-layout',
   viewportStructure: {
     layoutType: 'grid',
     properties: {
@@ -152,6 +155,7 @@ const stage3 = {
  */
 const stage4 = {
   name: '2x4-layout',
+  id: '2x4-layout',
   viewportStructure: {
     layoutType: 'grid',
     properties: {

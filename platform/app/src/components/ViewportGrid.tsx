@@ -1,6 +1,5 @@
-import React, { useEffect, useCallback, useRef, useState } from 'react';
+import React, { useEffect, useCallback, useRef } from 'react';
 import { useResizeDetector } from 'react-resize-detector';
-import PropTypes from 'prop-types';
 import { Types, MeasurementService } from '@ohif/core';
 import { ViewportGrid, ViewportPane, useViewportGrid } from '@ohif/ui';
 import EmptyViewport from './EmptyViewport';
@@ -24,8 +23,13 @@ function ViewerViewportGrid(props: withAppTypes) {
   });
   const layoutHash = useRef(null);
 
-  const { displaySetService, measurementService, hangingProtocolService, uiNotificationService } =
-    servicesManager.services;
+  const {
+    displaySetService,
+    measurementService,
+    hangingProtocolService,
+    cornerstoneViewportService,
+    uiNotificationService,
+  } = servicesManager.services;
 
   const generateLayoutHash = () => `${numCols}-${numRows}`;
 
@@ -108,6 +112,10 @@ function ViewerViewportGrid(props: withAppTypes) {
 
   const _getUpdatedViewports = useCallback(
     (viewportId, displaySetInstanceUID) => {
+      if (!displaySetInstanceUID) {
+        return [];
+      }
+
       let updatedViewports = [];
       try {
         updatedViewports = hangingProtocolService.getViewportsRequireUpdate(
@@ -175,6 +183,7 @@ function ViewerViewportGrid(props: withAppTypes) {
           );
           return;
         }
+
         // Arbitrarily assign the viewport to element 0
         // TODO - this should perform a search to find the most suitable viewport.
         updatedViewports[0] = { ...updatedViewports[0] };

@@ -2428,7 +2428,7 @@
   resolved "https://registry.yarnpkg.com/@colors/colors/-/colors-1.5.0.tgz#bb504579c1cae923e6576a4f5da43d25f97bdbd9"
   integrity sha512-ooWCrlZP11i8GImSjTHYHLkvFDP48nS4+204nGb1RiX/WXYHmJA2III9/e2DWVabCESdW7hBAEzHRqUn9OUVvQ==
 
-"@cornerstonejs/adapters@^1.77.6", "@cornerstonejs/adapters@^1.81.6", "@cornerstonejs/adapters@^1.82.4":
+"@cornerstonejs/adapters@^1.86.0":
   version "1.86.0"
   resolved "https://registry.yarnpkg.com/@cornerstonejs/adapters/-/adapters-1.86.0.tgz#389938f25b4b3f784c13dda46c3d2523a1db38cf"
   integrity sha512-Ln8hC2W6d30q97Mhjboq57Qt5WhSl/2IG5Qf5VFRKha/k6Jgd4eP/gdhpUMxTlRZM3ibuQWwshsRZWCJl+VSgQ==
@@ -2456,7 +2456,7 @@
   resolved "https://registry.yarnpkg.com/@cornerstonejs/codec-libjpeg-turbo-8bit/-/codec-libjpeg-turbo-8bit-1.2.2.tgz#ae384b149d6655e3dd6e18b9891fab479ab5e144"
   integrity sha512-aAUMK2958YNpOb/7G6e2/aG7hExTiFTASlMt/v90XA0pRHdWiNg5ny4S5SAju0FbIw4zcMnR0qfY+yW3VG2ivg==
 
-"@cornerstonejs/codec-openjpeg@^1.2.2":
+"@cornerstonejs/codec-openjpeg@^1.2.2", "@cornerstonejs/codec-openjpeg@^1.2.4":
   version "1.2.4"
   resolved "https://registry.yarnpkg.com/@cornerstonejs/codec-openjpeg/-/codec-openjpeg-1.2.4.tgz#c7cf67a34091eb74a6676abec80a5251c412b551"
   integrity sha512-UT2su6xZZnCPSuWf2ldzKa/2+guQ7BGgfBSKqxanggwJHh48gZqIAzekmsLyJHMMK5YDK+ti+fzvVJhBS3Xi/g==
@@ -2465,17 +2465,6 @@
   version "2.4.5"
   resolved "https://registry.yarnpkg.com/@cornerstonejs/codec-openjph/-/codec-openjph-2.4.5.tgz#8690b61a86fa53ef38a70eee9d665a79229517c0"
   integrity sha512-MZCUy8VG0VG5Nl1l58+g+kH3LujAzLYTfJqkwpWI2gjSrGXnP6lgwyy4GmPRZWVoS40/B1LDNALK905cNWm+sg==
-
-"@cornerstonejs/core@^1.77.6", "@cornerstonejs/core@^1.81.6", "@cornerstonejs/core@^1.82.4", "@cornerstonejs/core@^1.86.0":
-  version "1.86.0"
-  resolved "https://registry.yarnpkg.com/@cornerstonejs/core/-/core-1.86.0.tgz#19f94b8a4d37ffbd775b82f3963af5fbe38709de"
-  integrity sha512-yY3TC5abtU4hgcyBONQo+S0MXYgRyWzV/8bWujXilugAj5moDakex/zMc+YGIKlp4PvQBBRFjbu0H8YW3pseSw==
-  dependencies:
-    "@kitware/vtk.js" "30.4.1"
-    comlink "^4.4.1"
-    detect-gpu "^5.0.22"
-    gl-matrix "^3.4.3"
-    lodash.clonedeep "4.5.0"
 
 "@cornerstonejs/core@^1.83.1":
   version "1.83.1"
@@ -2488,7 +2477,18 @@
     gl-matrix "^3.4.3"
     lodash.clonedeep "4.5.0"
 
-"@cornerstonejs/dicom-image-loader@^1.77.6":
+"@cornerstonejs/core@^1.86.0":
+  version "1.86.0"
+  resolved "https://registry.yarnpkg.com/@cornerstonejs/core/-/core-1.86.0.tgz#19f94b8a4d37ffbd775b82f3963af5fbe38709de"
+  integrity sha512-yY3TC5abtU4hgcyBONQo+S0MXYgRyWzV/8bWujXilugAj5moDakex/zMc+YGIKlp4PvQBBRFjbu0H8YW3pseSw==
+  dependencies:
+    "@kitware/vtk.js" "30.4.1"
+    comlink "^4.4.1"
+    detect-gpu "^5.0.22"
+    gl-matrix "^3.4.3"
+    lodash.clonedeep "4.5.0"
+
+"@cornerstonejs/dicom-image-loader@^1.86.0":
   version "1.86.0"
   resolved "https://registry.yarnpkg.com/@cornerstonejs/dicom-image-loader/-/dicom-image-loader-1.86.0.tgz#19a529bf1e5d27a0a6a9d0994068b12dab5e88dc"
   integrity sha512-OPZCGdtdomj3TGktATQcLVIpTVv7ZqF8EyPgkEX+eIRXILzpu5Nm6gf3Lwofa5HVFwvmoJmVnU8jToKcoKPkqQ==
@@ -2510,7 +2510,7 @@
     "@cornerstonejs/core" "^1.83.1"
     comlink "^4.4.1"
 
-"@cornerstonejs/tools@^1.82.4", "@cornerstonejs/tools@^1.86.0":
+"@cornerstonejs/tools@^1.86.0":
   version "1.86.0"
   resolved "https://registry.yarnpkg.com/@cornerstonejs/tools/-/tools-1.86.0.tgz#ab7ca218faea4c6354866e02bcdf8005282d161c"
   integrity sha512-yyy7r9Vo0NrTYYeKQtVqpbLRrVaequd9Q6aU2ifiNusdi6w+8Xslh1U/AHfw2Y9fueK8JBkLnKL+o/nLfdaOuQ==
@@ -7271,7 +7271,7 @@
   resolved "https://registry.yarnpkg.com/@ungap/structured-clone/-/structured-clone-1.2.0.tgz#756641adb587851b5ccb3e095daf27ae581c8406"
   integrity sha512-zuVdFrMJiuCDQUMCzQaD6KL28MjnqqN8XnAqiEq9PNm/hCPTSGfrXCOfwj1ow4LFb/tNymJPwsNbVePc1xFqrQ==
 
-"@webassemblyjs/ast@1.12.1", "@webassemblyjs/ast@^1.11.5", "@webassemblyjs/ast@^1.12.1":
+"@webassemblyjs/ast@1.12.1", "@webassemblyjs/ast@^1.12.1":
   version "1.12.1"
   resolved "https://registry.yarnpkg.com/@webassemblyjs/ast/-/ast-1.12.1.tgz#bb16a0e8b1914f979f45864c23819cc3e3f0d4bb"
   integrity sha512-EKfMUOPRRUTy5UII4qJDGPpqfwjOmZ5jeGFwid9mnoqIFK+e0vqoi1qH56JpmZSzEL53jKnNzScdmftJyG5xWg==
@@ -7337,7 +7337,7 @@
   resolved "https://registry.yarnpkg.com/@webassemblyjs/utf8/-/utf8-1.11.6.tgz#90f8bc34c561595fe156603be7253cdbcd0fab5a"
   integrity sha512-vtXf2wTQ3+up9Zsg8sa2yWiQpzSsMyXj0qViVP6xKGCUT8p8YJ6HqI7l5eCnWx1T/FYdsv07HQs2wTFbbof/RA==
 
-"@webassemblyjs/wasm-edit@^1.11.5", "@webassemblyjs/wasm-edit@^1.12.1":
+"@webassemblyjs/wasm-edit@^1.12.1":
   version "1.12.1"
   resolved "https://registry.yarnpkg.com/@webassemblyjs/wasm-edit/-/wasm-edit-1.12.1.tgz#9f9f3ff52a14c980939be0ef9d5df9ebc678ae3b"
   integrity sha512-1DuwbVvADvS5mGnXbE+c9NfA8QRcZ6iKquqjjmR10k6o+zzsRVesil54DKexiowcFCPdr/Q0qaMgB01+SQ1u6g==
@@ -7372,7 +7372,7 @@
     "@webassemblyjs/wasm-gen" "1.12.1"
     "@webassemblyjs/wasm-parser" "1.12.1"
 
-"@webassemblyjs/wasm-parser@1.12.1", "@webassemblyjs/wasm-parser@^1.11.5", "@webassemblyjs/wasm-parser@^1.12.1":
+"@webassemblyjs/wasm-parser@1.12.1", "@webassemblyjs/wasm-parser@^1.12.1":
   version "1.12.1"
   resolved "https://registry.yarnpkg.com/@webassemblyjs/wasm-parser/-/wasm-parser-1.12.1.tgz#c47acb90e6f083391e3fa61d113650eea1e95937"
   integrity sha512-xikIi7c2FHXysxXe3COrVUPSheuBtpcfhbpFj4gmu7KRLYOzANztwUU0IbsqvMqzuNK2+glRGWCEqZo1WCLyAQ==
@@ -7518,11 +7518,6 @@ acorn-globals@^7.0.0:
   dependencies:
     acorn "^8.1.0"
     acorn-walk "^8.0.2"
-
-acorn-import-assertions@^1.9.0:
-  version "1.9.0"
-  resolved "https://registry.yarnpkg.com/acorn-import-assertions/-/acorn-import-assertions-1.9.0.tgz#507276249d684797c84e0734ef84860334cfb1ac"
-  integrity sha512-cmMwop9x+8KFhxvKrKfPYmN6/pKTYYHBqLa0DfvVZcKMJWNyWLnaqND7dx/qn66R7ewM1UX5XMaDVP5wlVTaVA==
 
 acorn-import-attributes@^1.9.5:
   version "1.9.5"
@@ -8677,7 +8672,7 @@ browserify-zlib@^0.1.4:
   dependencies:
     pako "~0.2.0"
 
-browserslist@^4.0.0, browserslist@^4.14.5, browserslist@^4.18.1, browserslist@^4.21.10, browserslist@^4.21.4, browserslist@^4.22.2, browserslist@^4.23.0, browserslist@^4.23.3, browserslist@^4.24.0:
+browserslist@^4.0.0, browserslist@^4.18.1, browserslist@^4.21.10, browserslist@^4.21.4, browserslist@^4.22.2, browserslist@^4.23.0, browserslist@^4.23.3, browserslist@^4.24.0:
   version "4.24.0"
   resolved "https://registry.yarnpkg.com/browserslist/-/browserslist-4.24.0.tgz#a1325fe4bc80b64fda169629fc01b3d6cecd38d4"
   integrity sha512-Rmb62sR1Zpjql25eSanFGEhAxcFwfA1K0GuQcLoaJBAcENegrQut3hYdhXFF1obQfiDyqIW/cLM5HSJ/9k884A==
@@ -11238,7 +11233,7 @@ endent@^2.0.1:
     fast-json-parse "^1.0.3"
     objectorarray "^1.0.5"
 
-enhanced-resolve@^5.15.0, enhanced-resolve@^5.17.1:
+enhanced-resolve@^5.17.1:
   version "5.17.1"
   resolved "https://registry.yarnpkg.com/enhanced-resolve/-/enhanced-resolve-5.17.1.tgz#67bfbbcc2f81d511be77d686a90267ef7f898a15"
   integrity sha512-LMHl3dXhTcfv8gM4kEzIUeTQ+7fpdA0l2tUf34BddXPkz2A5xJ5L/Pchd5BL6rdccM9QGvu0sWZzK1Z1t4wwyg==
@@ -14026,6 +14021,7 @@ ip-address@^9.0.5:
 
 ip@^1.1.0, ip@^2.0.1, "ip@https://registry.npmjs.org/ip-address/-/ip-address-9.0.5.tgz":
   version "9.0.5"
+  uid "117a960819b08780c3bd1f14ef3c1cc1d3f3ea5a"
   resolved "https://registry.npmjs.org/ip-address/-/ip-address-9.0.5.tgz#117a960819b08780c3bd1f14ef3c1cc1d3f3ea5a"
   dependencies:
     jsbn "1.1.0"
@@ -21923,7 +21919,7 @@ socks@^2.6.2:
     ip-address "^9.0.5"
     smart-buffer "^4.2.0"
 
-sonner@^1.4.41:
+sonner@^1.4.41, sonner@^1.5.0:
   version "1.5.0"
   resolved "https://registry.yarnpkg.com/sonner/-/sonner-1.5.0.tgz#af359f817063318415326b33aab54c5d17c747b7"
   integrity sha512-FBjhG/gnnbN6FY0jaNnqZOMmB73R+5IiyYAw8yBj7L54ER7HB3fOSE5OFiQiE2iXWxeXKvg6fIP4LtVppHEdJA==
@@ -22919,7 +22915,7 @@ tempy@^1.0.1:
     type-fest "^0.16.0"
     unique-string "^2.0.0"
 
-terser-webpack-plugin@^5.1.4, terser-webpack-plugin@^5.3.1, terser-webpack-plugin@^5.3.10, terser-webpack-plugin@^5.3.7, terser-webpack-plugin@^5.3.9:
+terser-webpack-plugin@^5.1.4, terser-webpack-plugin@^5.3.1, terser-webpack-plugin@^5.3.10, terser-webpack-plugin@^5.3.9:
   version "5.3.10"
   resolved "https://registry.yarnpkg.com/terser-webpack-plugin/-/terser-webpack-plugin-5.3.10.tgz#904f4c9193c6fd2a03f693a2150c62a92f40d199"
   integrity sha512-BKFPWlPDndPs+NGGCr1U59t0XScL5317Y0UReNrHaw9/FwhPENlq6bfgs+4yPfyP51vqC1bQ4rp1EfXW5ZSH9w==
@@ -24205,34 +24201,33 @@ webpack@5, webpack@^5.88.1:
     watchpack "^2.4.1"
     webpack-sources "^3.2.3"
 
-webpack@5.89.0:
-  version "5.89.0"
-  resolved "https://registry.yarnpkg.com/webpack/-/webpack-5.89.0.tgz#56b8bf9a34356e93a6625770006490bf3a7f32dc"
-  integrity sha512-qyfIC10pOr70V+jkmud8tMfajraGCZMBWJtrmuBymQKCrLTRejBI8STDp1MCyZu/QTdZSeacCQYpYNQVOzX5kw==
+webpack@5.94.0:
+  version "5.94.0"
+  resolved "https://registry.yarnpkg.com/webpack/-/webpack-5.94.0.tgz#77a6089c716e7ab90c1c67574a28da518a20970f"
+  integrity sha512-KcsGn50VT+06JH/iunZJedYGUJS5FGjow8wb9c0v5n1Om8O1g4L6LjtfxwlXIATopoQu+vOXXa7gYisWxCoPyg==
   dependencies:
-    "@types/eslint-scope" "^3.7.3"
-    "@types/estree" "^1.0.0"
-    "@webassemblyjs/ast" "^1.11.5"
-    "@webassemblyjs/wasm-edit" "^1.11.5"
-    "@webassemblyjs/wasm-parser" "^1.11.5"
+    "@types/estree" "^1.0.5"
+    "@webassemblyjs/ast" "^1.12.1"
+    "@webassemblyjs/wasm-edit" "^1.12.1"
+    "@webassemblyjs/wasm-parser" "^1.12.1"
     acorn "^8.7.1"
-    acorn-import-assertions "^1.9.0"
-    browserslist "^4.14.5"
+    acorn-import-attributes "^1.9.5"
+    browserslist "^4.21.10"
     chrome-trace-event "^1.0.2"
-    enhanced-resolve "^5.15.0"
+    enhanced-resolve "^5.17.1"
     es-module-lexer "^1.2.1"
     eslint-scope "5.1.1"
     events "^3.2.0"
     glob-to-regexp "^0.4.1"
-    graceful-fs "^4.2.9"
+    graceful-fs "^4.2.11"
     json-parse-even-better-errors "^2.3.1"
     loader-runner "^4.2.0"
     mime-types "^2.1.27"
     neo-async "^2.6.2"
     schema-utils "^3.2.0"
     tapable "^2.1.1"
-    terser-webpack-plugin "^5.3.7"
-    watchpack "^2.4.0"
+    terser-webpack-plugin "^5.3.10"
+    watchpack "^2.4.1"
     webpack-sources "^3.2.3"
 
 webpackbar@^5.0.2:
