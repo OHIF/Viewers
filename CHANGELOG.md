@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.9.0-beta.100](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.99...v3.9.0-beta.100) (2024-10-17)
+
+
+### Bug Fixes
+
+* **tmtv:** prevent fusion row in tmtv from getting inverted unexpectedly ([#4420](https://github.com/OHIF/Viewers/issues/4420)) ([33af9bb](https://github.com/OHIF/Viewers/commit/33af9bb021ff3a6c3b683d4df2c730413400ff8a))
+
+
+
+
+
 # [3.9.0-beta.99](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.98...v3.9.0-beta.99) (2024-10-17)
 
 
