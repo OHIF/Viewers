@@ -71,13 +71,9 @@ import {
 } from './DropdownMenu';
 import { Onboarding } from './Onboarding';
 import { DoubleSlider } from './DoubleSlider';
-import {
-  NoSegmentationRow,
-  SegmentationConfig,
-  SegmentationDropDownRow,
-} from './SegmentationPanel';
 import { DataRow } from './DataRow';
 import { MeasurementTable } from './MeasurementTable';
+import { SegmentationTable, useSegmentationTableContext } from './SegmentationTable';
 import { Toaster, toast } from './Sonner';
 
 export {
@@ -164,9 +160,6 @@ export {
   SelectContent,
   SelectItem,
   SelectValue,
-  NoSegmentationRow,
-  SegmentationDropDownRow,
-  SegmentationConfig,
   Tooltip,
   TooltipTrigger,
   TooltipContent,
@@ -175,4 +168,6 @@ export {
   MeasurementTable,
   Toaster,
   toast,
+  SegmentationTable,
+  useSegmentationTableContext,
 };

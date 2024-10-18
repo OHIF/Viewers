@@ -1,14 +1,32 @@
 import React from 'react';
 import { Icons } from '../Icons';
 import { useTranslation } from 'react-i18next';
+import { useSegmentationTableContext } from './SegmentationTableContext';
 
-function NoSegmentationRow({ onSegmentationAdd, addSegmentationClassName = '' }) {
+export const AddSegmentationRow: React.FC<{ children?: React.ReactNode }> = ({
+  children = null,
+}) => {
   const { t } = useTranslation('SegmentationTable');
+
+  const { onSegmentationAdd, data, disableEditing } =
+    useSegmentationTableContext('SegmentationTable');
+
+  const isEmpty = data.length === 0;
+
+  if (!isEmpty) {
+    return null;
+  }
+
+  if (disableEditing) {
+    return null;
+  }
+
   return (
     <div
-      className={`group ${addSegmentationClassName}`}
-      onClick={onSegmentationAdd}
+      className={`group`}
+      onClick={() => onSegmentationAdd('')}
     >
+      {children}
       <div className="text-primary-active group-hover:bg-secondary-dark flex items-center rounded-[4px] group-hover:cursor-pointer">
         <div className="grid h-[28px] w-[28px] place-items-center">
           <Icons.Add />
@@ -17,6 +35,4 @@ function NoSegmentationRow({ onSegmentationAdd, addSegmentationClassName = '' })
       </div>
     </div>
   );
-}
-
-export default NoSegmentationRow;
+};

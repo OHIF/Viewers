@@ -4,6 +4,7 @@ import { id } from './id';
 import initToolGroups from './initToolGroups';
 import toolbarButtons from './toolbarButtons';
 import moreTools from './moreTools';
+import { performCustomizations } from './customizations';
 
 // Allow this mode by excluding non-imaging modalities such as SR, SEG
 // Also, SM is not a simple imaging modalities, so exclude it.
@@ -86,19 +87,7 @@ function modeFactory({ modeConfiguration }) {
 
       measurementService.clearMeasurements();
 
-      // customizationService.addModeCustomizations([
-      //   {
-      //     id: 'measurementLabels',
-      //     labelOnMeasure: true,
-      //     exclusive: true,
-      //     items: [
-      //       { value: 'Head', label: 'Head' },
-      //       { value: 'Shoulder', label: 'Shoulder' },
-      //       { value: 'Knee', label: 'Knee' },
-      //       { value: 'Toe', label: 'Toe' },
-      //     ],
-      //   },
-      // ]);
+      performCustomizations(customizationService);
 
       // Init Default and SR ToolGroups
       initToolGroups(extensionManager, toolGroupService, commandsManager, this.labelConfig);
@@ -114,13 +103,6 @@ function modeFactory({ modeConfiguration }) {
         'Layout',
         'Crosshairs',
         'MoreTools',
-      ]);
-
-      customizationService.addModeCustomizations([
-        {
-          id: 'segmentation.panel',
-          disableEditing: true,
-        },
       ]);
 
       // // ActivatePanel event trigger for when a segmentation or measurement is added.

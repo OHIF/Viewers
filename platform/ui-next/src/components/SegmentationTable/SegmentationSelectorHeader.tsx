@@ -17,47 +17,49 @@ import {
   TooltipProvider,
   DropdownMenuLabel,
 } from '../../components';
+
 import { useTranslation } from 'react-i18next';
 import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from '@ohif/ui-next';
+import { useSegmentationTableContext } from './SegmentationTableContext';
 
-type Segmentation = {
-  id: string;
-  label: string;
-  isActive: boolean;
-  isVisible: boolean;
-};
-
-interface SegmentationDropDownRowProps {
-  segmentations: Segmentation[];
-  onActiveSegmentationChange: (segmentationId: string) => void;
-  disableEditing?: boolean;
-  onToggleSegmentationVisibility: (segmentationId: string) => void;
-  onSegmentationEdit: (segmentationId: string) => void;
-  onSegmentationDownload: (segmentationId: string) => void;
-  onSegmentationDownloadRTSS: (segmentationId: string) => void;
-  storeSegmentation: (segmentationId: string) => void;
-  onSegmentationDelete: (segmentationId: string) => void;
-  onSegmentationRemoveFromViewport: (segmentationId: string) => void;
-  onSegmentationAdd: () => void;
-}
-
-const SegmentationDropDownRow: React.FC<SegmentationDropDownRowProps> = ({
-  segmentations,
-  onActiveSegmentationChange,
-  onSegmentationEdit,
-  onSegmentationDownload,
-  onSegmentationDownloadRTSS,
-  storeSegmentation,
-  onSegmentationDelete,
-  onSegmentationAdd,
-  onSegmentationRemoveFromViewport,
+export const SegmentationSelectorHeader: React.FC<{ children?: React.ReactNode }> = ({
+  children = null,
 }) => {
-  const { t } = useTranslation('SegmentationTable');
+  const { t } = useTranslation('SegmentationTable.HeaderCollapsed');
 
-  const activeSegmentation = segmentations.find(seg => seg.isActive);
-  if (!activeSegmentation) {
+  const {
+    data,
+    activeSegmentationId,
+    mode,
+    onSegmentationClick,
+    onSegmentationAdd,
+    onSegmentationRemoveFromViewport,
+    onSegmentationEdit,
+    onSegmentationDelete,
+    onSegmentationDownload,
+    onSegmentationDownloadRTSS,
+    storeSegmentation,
+  } = useSegmentationTableContext('SegmentationTable.HeaderCollapsed');
+
+  if (mode !== 'collapsed' || !data?.length) {
     return null;
   }
+
+  const activeSegmentationObj = data.find(
+    seg => seg.segmentation.segmentationId === activeSegmentationId
+  );
+
+  const activeSegmentation = {
+    id: activeSegmentationObj?.segmentation.segmentationId,
+    label: activeSegmentationObj?.segmentation.label,
+    info: activeSegmentationObj?.segmentation.cachedStats?.info,
+  };
+
+  const segmentations = data.map(seg => ({
+    id: seg.segmentation.segmentationId,
+    label: seg.segmentation.label,
+    info: seg.segmentation.cachedStats?.info,
+  }));
 
   return (
     <div className="bg-primary-dark flex h-10 w-full items-center space-x-1 rounded-t px-1.5">
@@ -71,7 +73,7 @@ const SegmentationDropDownRow: React.FC<SegmentationDropDownRowProps> = ({
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="start">
-          <DropdownMenuItem onClick={onSegmentationAdd}>
+          <DropdownMenuItem onClick={() => onSegmentationAdd(activeSegmentation.id)}>
             <Icons.Add className="text-foreground" />
             <span className="pl-2">{t('Create New Segmentation')}</span>
           </DropdownMenuItem>
@@ -112,7 +114,7 @@ const SegmentationDropDownRow: React.FC<SegmentationDropDownRowProps> = ({
         </DropdownMenuContent>
       </DropdownMenu>
       <Select
-        onValueChange={value => onActiveSegmentationChange(value)}
+        onValueChange={value => onSegmentationClick(value)}
         value={activeSegmentation.id}
       >
         <SelectTrigger className="w-full overflow-hidden">
@@ -150,5 +152,3 @@ const SegmentationDropDownRow: React.FC<SegmentationDropDownRowProps> = ({
     </div>
   );
 };
-
-export default SegmentationDropDownRow;

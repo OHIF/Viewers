@@ -1,23 +1,16 @@
 import { createReportAsync } from '@ohif/extension-default';
 import React, { useEffect, useState } from 'react';
 import {
-  PanelSection,
-  SegmentationDropDownRow,
-  Button,
-  Icons,
-  ScrollArea,
-  NoSegmentationRow,
-  SegmentationConfig,
-  DataRow,
+  NoSegmentationRow as DefaultNoSegmentationRow,
+  AddSegmentRow as DefaultAddSegmentRow,
+  SegmentationTable,
+  SegmentationTableConfig as DefaultSegmentationTableConfig,
+  SegmentationHeaderCollapsed as DefaultSegmentationHeaderCollapsed,
+  SegmentationHeaderExpanded as DefaultSegmentationHeaderExpanded,
 } from '@ohif/ui-next';
 import callInputDialog from './callInputDialog';
 import { colorPickerDialog } from '@ohif/extension-default';
 import { useTranslation } from 'react-i18next';
-
-// const components = {
-//   [SegmentationPanelMode.Expanded]: SegmentationGroupTableExpanded,
-//   [SegmentationPanelMode.Dropdown]: SegmentationGroupTable,
-// };
 
 export default function PanelSegmentation({
   servicesManager,
@@ -28,7 +21,8 @@ export default function PanelSegmentation({
   getCloseIcon,
   tab,
 }: withAppTypes) {
-  const { segmentationService, viewportGridService, uiDialogService } = servicesManager.services;
+  const { segmentationService, viewportGridService, uiDialogService, customizationService } =
+    servicesManager.services;
 
   const { t } = useTranslation('PanelSegmentation');
 
@@ -87,10 +81,6 @@ export default function PanelSegmentation({
         viewportGridService.getActiveViewportId(),
         segmentationId
       );
-    },
-
-    onSegmentationDelete: (segmentationId: string) => {
-      segmentationService.remove(segmentationId);
     },
 
     onSegmentAdd: segmentationId => {
@@ -230,9 +220,10 @@ export default function PanelSegmentation({
     },
 
     // New handler for toggling render inactive segmentations
-    toggleRenderInactiveSegmentations: toggle => {
+    toggleRenderInactiveSegmentations: () => {
       const viewportId = viewportGridService.getActiveViewportId();
-      segmentationService.setRenderInactiveSegmentations(viewportId, toggle);
+      const renderInactive = segmentationService.getRenderInactiveSegmentations(viewportId);
+      segmentationService.setRenderInactiveSegmentations(viewportId, !renderInactive);
     },
 
     onSegmentationRemoveFromViewport: segmentationId => {
@@ -243,6 +234,28 @@ export default function PanelSegmentation({
         }
       );
     },
+
+    onSegmentationDelete: segmentationId => {
+      segmentationService.remove(segmentationId);
+    },
+
+    setFillAlpha: ({ type }, value: number) =>
+      segmentationService.setStyle({ type }, { fillAlpha: value }),
+
+    setOutlineWidth: ({ type }, value: number) =>
+      segmentationService.setStyle({ type }, { outlineWidth: value }),
+
+    getRenderInactiveSegmentations: () =>
+      segmentationService.getRenderInactiveSegmentations(viewportGridService.getActiveViewportId()),
+
+    setRenderFill: ({ type }, value: boolean) =>
+      segmentationService.setStyle({ type }, { renderFill: value }),
+
+    setRenderOutline: ({ type }, value: boolean) =>
+      segmentationService.setStyle({ type }, { renderOutline: value }),
+
+    setFillAlphaInactive: ({ type }, value: number) =>
+      segmentationService.setStyle({ type }, { fillAlphaInactive: value }),
   };
 
   // Merge configuration into handlers
@@ -254,180 +267,63 @@ export default function PanelSegmentation({
         : initialHandlers.onSegmentationAdd,
   };
 
-  const {
-    segmentationPanelMode,
-    addSegment: allowAddSegment = true,
-    disableEditing,
-  } = configuration ?? {};
+  const { disableEditing } = configuration ?? {};
 
-  // const SegmentationGroupTableComponent =
-  //   components[segmentationPanelMode] ?? SegmentationGroupTable;
-
-  if (!segmentationsInfo?.length) {
-    return (
-      <div className="select-none bg-black py-[3px]">
-        {!disableEditing && <NoSegmentationRow onSegmentationAdd={handlers.onSegmentationAdd} />}
-      </div>
-    );
-  }
-
-  const activeSegmentationInfo = segmentationsInfo.find(info => info.representation.active);
-
-  if (!activeSegmentationInfo) {
-    return null;
-  }
-
-  const activeSegmentationId = activeSegmentationInfo?.segmentation.segmentationId;
+  const { mode: SegmentationTableMode } = customizationService.getCustomization(
+    'segmentationTable.mode',
+    {
+      id: 'default.segmentationTable.mode',
+      mode: 'collapsed',
+    }
+  );
 
   return (
-    <div className="flex h-full flex-col overflow-hidden">
-      <div className="flex-grow overflow-y-auto">
-        <PanelSection title="Segmentation List">
-          <SegmentationDropDownRow
-            segmentations={segmentationsInfo.map(info => ({
-              id: info.segmentation.segmentationId,
-              label: info.segmentation.label,
-              isActive: info.representation.active,
-              isVisible: info.representation.visible,
-              info: info.segmentation.cachedStats.info,
-            }))}
-            disableEditing={disableEditing}
-            onActiveSegmentationChange={handlers.onSegmentationClick}
-            onSegmentationRemoveFromViewport={handlers.onSegmentationRemoveFromViewport}
-            onSegmentationDelete={handlers.onSegmentationDelete}
-            onSegmentationEdit={handlers.onSegmentationEdit}
-            onSegmentationDownload={handlers.onSegmentationDownload}
-            onSegmentationDownloadRTSS={handlers.onSegmentationDownloadRTSS}
-            storeSegmentation={handlers.storeSegmentation}
-            onSegmentationAdd={handlers.onSegmentationAdd}
-            onToggleSegmentationVisibility={handlers.onToggleSegmentationVisibility}
-          />
-          <SegmentationConfig
-            representation={activeSegmentationInfo.representation}
-            setFillAlpha={(value: number) =>
-              handlers.setStyle(
-                activeSegmentationId,
-                activeSegmentationInfo.representation.type,
-                'fillAlpha',
-                value
-              )
-            }
-            setOutlineWidth={(value: number) =>
-              handlers.setStyle(
-                activeSegmentationId,
-                activeSegmentationInfo.representation.type,
-                'outlineWidth',
-                value
-              )
-            }
-            renderInactiveSegmentations={segmentationService.getRenderInactiveSegmentations(
-              viewportGridService.getActiveViewportId()
-            )}
-            toggleRenderInactiveSegmentations={() => {
-              const viewportId = viewportGridService.getActiveViewportId();
-              const renderInactive = segmentationService.getRenderInactiveSegmentations(viewportId);
-              segmentationService.setRenderInactiveSegmentations(viewportId, !renderInactive);
-            }}
-            setRenderFill={(value: boolean) =>
-              handlers.setStyle(
-                activeSegmentationId,
-                activeSegmentationInfo.representation.type,
-                'renderFill',
-                value
-              )
-            }
-            setRenderOutline={(value: boolean) =>
-              handlers.setStyle(
-                activeSegmentationId,
-                activeSegmentationInfo.representation.type,
-                'renderOutline',
-                value
-              )
-            }
-            setFillAlphaInactive={(value: number) =>
-              handlers.setStyle(
-                activeSegmentationId,
-                activeSegmentationInfo.representation.type,
-                'fillAlphaInactive',
-                value
-              )
-            }
-          />
-          {!disableEditing &&
-            (() => {
-              const allSegmentsVisible = Object.values(
-                activeSegmentationInfo?.representation?.segments
-              ).every(segment => segment?.visible !== false);
+    <SegmentationTable
+      data={segmentationsInfo}
+      mode={SegmentationTableMode}
+      title="Segmentations"
+      disableEditing={disableEditing}
+      onSegmentationAdd={handlers.onSegmentationAdd}
+      onSegmentationClick={handlers.onSegmentationClick}
+      onSegmentationDelete={handlers.onSegmentationDelete}
+      onSegmentAdd={handlers.onSegmentAdd}
+      onSegmentClick={handlers.onSegmentClick}
+      onSegmentEdit={handlers.onSegmentEdit}
+      onSegmentationEdit={handlers.onSegmentationEdit}
+      onSegmentColorClick={handlers.onSegmentColorClick}
+      onSegmentDelete={handlers.onSegmentDelete}
+      onToggleSegmentVisibility={handlers.onToggleSegmentVisibility}
+      onToggleSegmentLock={handlers.onToggleSegmentLock}
+      onToggleSegmentationVisibility={handlers.onToggleSegmentationVisibility}
+      onSegmentationDownload={handlers.onSegmentationDownload}
+      storeSegmentation={handlers.storeSegmentation}
+      onSegmentationDownloadRTSS={handlers.onSegmentationDownloadRTSS}
+      setStyle={handlers.setStyle}
+      toggleRenderInactiveSegmentations={handlers.toggleRenderInactiveSegmentations}
+      onSegmentationRemoveFromViewport={handlers.onSegmentationRemoveFromViewport}
+      setFillAlpha={handlers.setFillAlpha}
+      setOutlineWidth={handlers.setOutlineWidth}
+      renderInactiveSegmentations={handlers.getRenderInactiveSegmentations()}
+      setRenderFill={handlers.setRenderFill}
+      setRenderOutline={handlers.setRenderOutline}
+      setFillAlphaInactive={handlers.setFillAlphaInactive}
+    >
+      <SegmentationTable.Config />
+      <SegmentationTable.AddSegmentationRow />
 
-              const Icon = allSegmentsVisible ? (
-                <Icons.Hide className="h-6 w-6" />
-              ) : (
-                <Icons.Show className="h-6 w-6" />
-              );
-
-              return (
-                <div className="bg-primary-dark my-px flex h-9 w-full items-center justify-between rounded pl-0.5 pr-7">
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    className="pr pl-0.5"
-                    onClick={() => handlers.onSegmentAdd(activeSegmentationId)}
-                  >
-                    <Icons.Add />
-                    Add Segment
-                  </Button>
-                  <Button
-                    size="icon"
-                    variant="ghost"
-                    onClick={() => handlers.onToggleSegmentationVisibility(activeSegmentationId)}
-                  >
-                    {Icon}
-                  </Button>
-                </div>
-              );
-            })()}
-          <ScrollArea
-            className="ohif-scrollbar invisible-scrollbar bg-bkg-low h-[600px] space-y-px"
-            showArrows={true}
-          >
-            {Object.values(activeSegmentationInfo?.representation?.segments).map(segment => {
-              if (!segment) {
-                return null;
-              }
-              const { segmentIndex, color, visible } = segment;
-              const segmentFromSegmentation =
-                activeSegmentationInfo?.segmentation.segments[segmentIndex];
-
-              const { locked, active, label } = segmentFromSegmentation;
-              const cssColor = `rgb(${color[0]},${color[1]},${color[2]})`;
-
-              return (
-                <DataRow
-                  key={segmentIndex}
-                  number={segmentIndex}
-                  title={label}
-                  description=""
-                  colorHex={cssColor}
-                  isSelected={active}
-                  isVisible={visible}
-                  isLocked={locked}
-                  disableEditing={disableEditing}
-                  onColor={() => handlers.onSegmentColorClick(activeSegmentationId, segmentIndex)}
-                  onToggleVisibility={() =>
-                    handlers.onToggleSegmentVisibility(activeSegmentationId, segmentIndex)
-                  }
-                  onToggleLocked={() =>
-                    handlers.onToggleSegmentLock(activeSegmentationId, segmentIndex)
-                  }
-                  onSelect={() => handlers.onSegmentClick(activeSegmentationId, segmentIndex)}
-                  onRename={() => handlers.onSegmentEdit(activeSegmentationId, segmentIndex)}
-                  onDelete={() => handlers.onSegmentDelete(activeSegmentationId, segmentIndex)}
-                />
-              );
-            })}
-          </ScrollArea>
-        </PanelSection>
-      </div>
-    </div>
+      {SegmentationTableMode === 'collapsed' ? (
+        <SegmentationTable.Collapsed>
+          <SegmentationTable.SelectorHeader />
+          <SegmentationTable.AddSegmentRow />
+          <SegmentationTable.Segments />
+        </SegmentationTable.Collapsed>
+      ) : (
+        <SegmentationTable.Expanded>
+          <SegmentationTable.Header />
+          <SegmentationTable.AddSegmentRow />
+          <SegmentationTable.Segments />
+        </SegmentationTable.Expanded>
+      )}
+    </SegmentationTable>
   );
 }

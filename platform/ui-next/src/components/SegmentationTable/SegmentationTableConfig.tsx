@@ -1,35 +1,36 @@
 import React from 'react';
-import { Slider, Switch, Input, Tabs, TabsList, TabsTrigger } from '../../components';
-import { Icons } from '../Icons';
 import { useTranslation } from 'react-i18next';
-import { PanelSection } from '../PanelSection/PanelSection';
-import { Label } from '../../components';
+import { PanelSection } from '../PanelSection';
+import { Tabs, TabsList, TabsTrigger } from '../Tabs';
+import { Slider } from '../Slider';
+import { Icons } from '../Icons';
+import { Switch } from '../Switch';
+import { Label } from '../Label';
+import { Input } from '../Input';
+import { useSegmentationTableContext } from './SegmentationTableContext';
 
-interface SegmentationConfigProps {
-  representation: unknown;
-  setFillAlpha: (value: number) => void;
-  setOutlineWidth: (value: number) => void;
-  toggleRenderInactiveSegmentations: () => void;
-  renderInactiveSegmentations: boolean;
-  setFillAlphaInactive: (value: number) => void;
-  setRenderFill: (value: boolean) => void;
-  setRenderOutline: (value: boolean) => void;
-}
+export const SegmentationTableConfig: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
+  const { t } = useTranslation('SegmentationTable.AppearanceSettings');
+  const {
+    renderFill,
+    renderOutline,
+    setRenderFill,
+    setRenderOutline,
+    activeRepresentation,
+    fillAlpha,
+    fillAlphaInactive,
+    outlineWidth,
+    setFillAlpha,
+    setFillAlphaInactive,
+    setOutlineWidth,
+    renderInactiveSegmentations,
+    toggleRenderInactiveSegmentations,
+    data,
+  } = useSegmentationTableContext('styles');
 
-const SegmentationConfig: React.FC<SegmentationConfigProps> = ({
-  representation,
-  setFillAlpha,
-  setOutlineWidth,
-  toggleRenderInactiveSegmentations,
-  renderInactiveSegmentations,
-  setFillAlphaInactive,
-  setRenderFill,
-  setRenderOutline,
-}) => {
-  const { t } = useTranslation('SegmentationTable');
-
-  const { fillAlpha, fillAlphaInactive, outlineWidth, renderFill, renderOutline } =
-    representation.styles;
+  if (!data?.length) {
+    return null;
+  }
 
   return (
     <PanelSection
@@ -54,14 +55,14 @@ const SegmentationConfig: React.FC<SegmentationConfigProps> = ({
             }
             onValueChange={value => {
               if (value === 'fill-and-outline') {
-                setRenderFill(true);
-                setRenderOutline(true);
+                setRenderFill({ type: activeRepresentation.type }, true);
+                setRenderOutline({ type: activeRepresentation.type }, true);
               } else if (value === 'outline') {
-                setRenderFill(false);
-                setRenderOutline(true);
+                setRenderFill({ type: activeRepresentation.type }, false);
+                setRenderOutline({ type: activeRepresentation.type }, true);
               } else {
-                setRenderFill(true);
-                setRenderOutline(false);
+                setRenderFill({ type: activeRepresentation.type }, true);
+                setRenderOutline({ type: activeRepresentation.type }, false);
               }
             }}
           >
@@ -87,7 +88,7 @@ const SegmentationConfig: React.FC<SegmentationConfigProps> = ({
             <Slider
               className="mx-1 flex-1"
               value={[fillAlpha]}
-              onValueChange={([value]) => setFillAlpha(value)}
+              onValueChange={([value]) => setFillAlpha({ type: activeRepresentation.type }, value)}
               max={1}
               min={0}
               step={0.1}
@@ -95,7 +96,9 @@ const SegmentationConfig: React.FC<SegmentationConfigProps> = ({
             <Input
               className="mx-1 w-10 flex-none"
               value={fillAlpha}
-              onChange={e => setFillAlpha(Number(e.target.value))}
+              onChange={e =>
+                setFillAlpha({ type: activeRepresentation.type }, Number(e.target.value))
+              }
             />
           </div>
 
@@ -105,7 +108,9 @@ const SegmentationConfig: React.FC<SegmentationConfigProps> = ({
             </Label>
             <Slider
               value={[outlineWidth]}
-              onValueChange={([value]) => setOutlineWidth(value)}
+              onValueChange={([value]) =>
+                setOutlineWidth({ type: activeRepresentation.type }, value)
+              }
               max={10}
               min={0}
               step={0.1}
@@ -113,7 +118,9 @@ const SegmentationConfig: React.FC<SegmentationConfigProps> = ({
             />
             <Input
               value={outlineWidth}
-              onChange={e => setOutlineWidth(Number(e.target.value))}
+              onChange={e =>
+                setOutlineWidth({ type: activeRepresentation.type }, Number(e.target.value))
+              }
               className="mx-1 w-10 flex-none text-center"
             />
           </div>
@@ -138,7 +145,9 @@ const SegmentationConfig: React.FC<SegmentationConfigProps> = ({
             <Slider
               className="mx-1 flex-1"
               value={[fillAlphaInactive]}
-              onValueChange={([value]) => setFillAlphaInactive(value)}
+              onValueChange={([value]) =>
+                setFillAlphaInactive({ type: activeRepresentation.type }, value)
+              }
               max={1}
               min={0}
               step={0.1}
@@ -146,13 +155,14 @@ const SegmentationConfig: React.FC<SegmentationConfigProps> = ({
             <Input
               className="mx-1 w-10 flex-none"
               value={fillAlphaInactive}
-              onChange={e => setFillAlphaInactive(Number(e.target.value))}
+              onChange={e =>
+                setFillAlphaInactive({ type: activeRepresentation.type }, Number(e.target.value))
+              }
             />
           </div>
         )}
       </div>
+      {children}
     </PanelSection>
   );
 };
-
-export default SegmentationConfig;

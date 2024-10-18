@@ -275,6 +275,30 @@ export default class CustomizationService extends PubSubService {
     return result.transform?.(this) || result;
   }
 
+  /**
+   * Helper method to easily add and retrieve customizations
+   * @param id The unique identifier for the customization
+   * @param defaultComponent The default component to use if no customization is set
+   * @param customComponent Optional custom component to set
+   * @returns The custom component if set, otherwise the default component
+   */
+  public getCustomComponent(
+    id: string,
+    defaultComponent: React.ComponentType<any>,
+    customComponent?: React.ComponentType<any>
+  ) {
+    const customization = this.getCustomization(id, {
+      id: `default-${id}`,
+      content: defaultComponent,
+    });
+
+    if (customComponent) {
+      this.setModeCustomization(id, { content: customComponent });
+    }
+
+    return customization.content;
+  }
+
   public addModeCustomizations(modeCustomizations): void {
     if (!modeCustomizations) {
       return;
@@ -313,7 +337,12 @@ export default class CustomizationService extends PubSubService {
       return newValue;
     }
 
-    const returnValue = mergeWith({}, oldValue, newValue, mergeType === MergeEnum.Append ? appendCustomizer : mergeCustomizer);
+    const returnValue = mergeWith(
+      {},
+      oldValue,
+      newValue,
+      mergeType === MergeEnum.Append ? appendCustomizer : mergeCustomizer
+    );
     return returnValue;
   }
 
@@ -426,7 +455,12 @@ function appendCustomizer(obj, src) {
         const { position, isMerge } = findPosition(key, value, newList);
         if (isMerge) {
           if (typeof obj[position] === 'object') {
-            newList[position] = mergeWith(Array.isArray(newList[position]) ? [] : {}, newList[position], value, appendCustomizer);
+            newList[position] = mergeWith(
+              Array.isArray(newList[position]) ? [] : {},
+              newList[position],
+              value,
+              appendCustomizer
+            );
           } else {
             newList[position] = value;
           }
@@ -455,7 +489,7 @@ function findPosition(key, value, newList) {
       return { isMerge: true, position: (numVal + len) % len };
     }
     const absPosition = Math.ceil(numVal < 0 ? len + numVal : numVal);
-    return { isMerge: false, position: Math.min(len, Math.max(absPosition, 0)) }
+    return { isMerge: false, position: Math.min(len, Math.max(absPosition, 0)) };
   }
   const findIndex = newList.findIndex(it => it.id === key);
   if (findIndex !== -1) {
@@ -467,7 +501,7 @@ function findPosition(key, value, newList) {
       return { isMerge: true, position: (priority + len) % len };
     }
     const absPosition = Math.ceil(priority < 0 ? len + priority : priority);
-    return { isMerge: false, position: Math.min(len, Math.max(absPosition, 0)) }
+    return { isMerge: false, position: Math.min(len, Math.max(absPosition, 0)) };
   }
   return { isMerge: false, position: len };
 }

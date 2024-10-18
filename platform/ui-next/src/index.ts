@@ -48,8 +48,6 @@ import {
   SelectContent,
   SelectItem,
   SelectValue,
-  NoSegmentationRow,
-  SegmentationDropDownRow,
   DropdownMenu,
   DropdownMenuTrigger,
   DropdownMenuContent,
@@ -66,8 +64,9 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuRadioGroup,
   ScrollArea,
-  SegmentationConfig,
   MeasurementTable,
+  SegmentationTable,
+  useSegmentationTableContext,
 } from './components';
 import { DataRow } from './components/DataRow';
 
@@ -127,8 +126,6 @@ export {
   SelectContent,
   SelectItem,
   SelectValue,
-  NoSegmentationRow,
-  SegmentationDropDownRow,
   DataRow,
   DropdownMenu,
   DropdownMenuTrigger,
@@ -146,6 +143,7 @@ export {
   DropdownMenuSubTrigger,
   DropdownMenuRadioGroup,
   ScrollArea,
-  SegmentationConfig,
   MeasurementTable,
+  SegmentationTable,
+  useSegmentationTableContext,
 };
