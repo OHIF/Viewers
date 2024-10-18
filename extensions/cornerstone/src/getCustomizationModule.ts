@@ -5,6 +5,7 @@ import defaultWindowLevelPresets from './components/WindowLevelActionMenu/defaul
 import { colormaps } from './utils/colormaps';
 import { CONSTANTS } from '@cornerstonejs/core';
 import { CornerstoneOverlay } from './Viewport/Overlays/CustomizableViewportOverlay';
+import isOrientationCorrectionNeeded from './utils/isOrientationCorrectionNeeded';
 
 const DefaultColormap = 'Grayscale';
 const { VIEWPORT_PRESETS } = CONSTANTS;
@@ -211,6 +212,8 @@ function getCustomizationModule() {
             ],
           },
         },
+        // TODO: Move this customization to MG specific mode when introduced in OHIF.
+        { id: 'orientationCorrectionCriterion', criteria: isOrientationCorrectionNeeded },
       ],
     },
   ];
