@@ -4,9 +4,7 @@ import { useTranslation } from 'react-i18next';
 import PropTypes from 'prop-types';
 import { utils } from '@ohif/core';
 import { useImageViewer, useViewportGrid, Dialog, ButtonEnums } from '@ohif/ui';
-import { StudyBrowser as NewStudyBrowser } from '@ohif/ui-next';
-import { StudyBrowser as OldStudyBrowser } from '@ohif/ui';
-import { useAppConfig } from '@state';
+import { StudyBrowser } from '@ohif/ui-next';
 
 import { useTrackedMeasurements } from '../../getContextModule';
 import { Separator } from '@ohif/ui-next';
@@ -25,9 +23,7 @@ function PanelStudyBrowserTracking({
   getStudiesForPatientByMRN,
   requestDisplaySetCreationForStudy,
   dataSource,
-  renderHeader,
-  getCloseIcon,
-  tab,
+  commandsManager,
 }: withAppTypes) {
   const {
     displaySetService,
@@ -41,7 +37,6 @@ function PanelStudyBrowserTracking({
   const navigate = useNavigate();
 
   const { t } = useTranslation('Common');
-  const [appConfig] = useAppConfig();
 
   // Normally you nest the components so the tree isn't so deep, and the data
   // doesn't have to have such an intense shape. This works well enough for now.
@@ -50,7 +45,7 @@ function PanelStudyBrowserTracking({
   const [{ activeViewportId, viewports, isHangingProtocolLayout }, viewportGridService] =
     useViewportGrid();
   const [trackedMeasurements, sendTrackedMeasurementsEvent] = useTrackedMeasurements();
-  const [activeTabName, setActiveTabName] = useState('primary');
+  const [activeTabName, setActiveTabName] = useState('all');
   const [expandedStudyInstanceUIDs, setExpandedStudyInstanceUIDs] = useState([
     ...StudyInstanceUIDs,
   ]);
@@ -466,27 +461,26 @@ function PanelStudyBrowserTracking({
     });
   };
 
-  const StudyBrowser = appConfig.useExperimentalUI ? NewStudyBrowser : OldStudyBrowser;
+  const onThumbnailContextMenu = (commandName, options) => {
+    commandsManager.runCommand(commandName, options);
+  };
 
   return (
     <>
-      {renderHeader && (
-        <>
-          <PanelStudyBrowserTrackingHeader
-            tab={tab}
-            getCloseIcon={getCloseIcon}
-            viewPresets={viewPresets}
-            updateViewPresetValue={updateViewPresetValue}
-            actionIcons={actionIcons}
-            updateActionIconValue={updateActionIconValue}
-          />
-          <Separator
-            orientation="horizontal"
-            className="bg-black"
-            thickness="2px"
-          />
-        </>
-      )}
+      <>
+        <PanelStudyBrowserTrackingHeader
+          viewPresets={viewPresets}
+          updateViewPresetValue={updateViewPresetValue}
+          actionIcons={actionIcons}
+          updateActionIconValue={updateActionIconValue}
+        />
+        <Separator
+          orientation="horizontal"
+          className="bg-black"
+          thickness="2px"
+        />
+      </>
+
       <StudyBrowser
         tabs={tabs}
         servicesManager={servicesManager}
@@ -504,6 +498,7 @@ function PanelStudyBrowserTracking({
         activeDisplaySetInstanceUIDs={activeViewportDisplaySetInstanceUIDs}
         showSettings={actionIcons.find(icon => icon.id === 'settings').value}
         viewPresets={viewPresets}
+        onThumbnailContextMenu={onThumbnailContextMenu}
       />
     </>
   );
