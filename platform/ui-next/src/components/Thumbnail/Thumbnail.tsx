@@ -168,7 +168,9 @@ const Thumbnail = ({
           </div>
         </div>
         <div className="flex h-[52px] w-[128px] flex-col">
-          <div className="min-h-[18px] text-[12px] text-white">{description}</div>
+          <div className="min-h-[18px] w-[128px] overflow-hidden text-ellipsis text-[12px] text-white">
+            {description}
+          </div>
           <div className="flex h-[12px] items-center gap-[7px] overflow-hidden">
             <div className="text-muted-foreground text-[12px]"> S:{seriesNumber}</div>
             <div className="text-muted-foreground text-[12px]">
