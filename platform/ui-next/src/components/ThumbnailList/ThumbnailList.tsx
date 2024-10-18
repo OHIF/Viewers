@@ -13,60 +13,62 @@ const ThumbnailList = ({
   onThumbnailContextMenu,
 }: withAppTypes) => {
   return (
-    <div
-      id="ohif-thumbnail-list"
-      className={`ohif-scrollbar bg-bkg-low grid place-items-center overflow-y-hidden pt-[4px] pr-[2.5px] pl-[2.5px] ${viewPreset === 'thumbnails' ? 'grid-cols-2 gap-[4px] pb-[12px]' : 'grid-cols-1 gap-[2px]'}`}
-    >
-      {thumbnails.map(
-        ({
-          displaySetInstanceUID,
-          description,
-          dragData,
-          seriesNumber,
-          numInstances,
-          loadingProgress,
-          modality,
-          componentType,
-          seriesDate,
-          countIcon,
-          isTracked,
-          canReject,
-          onReject,
-          imageSrc,
-          messages,
-          imageAltText,
-          isHydratedForDerivedDisplaySet,
-        }) => {
-          const isActive = activeDisplaySetInstanceUIDs.includes(displaySetInstanceUID);
-          return (
-            <Thumbnail
-              key={displaySetInstanceUID}
-              displaySetInstanceUID={displaySetInstanceUID}
-              dragData={dragData}
-              description={description}
-              seriesNumber={seriesNumber}
-              numInstances={numInstances || 1}
-              countIcon={countIcon}
-              imageSrc={imageSrc}
-              imageAltText={imageAltText}
-              messages={messages}
-              isActive={isActive}
-              modality={modality}
-              viewPreset={componentType === 'thumbnailNoImage' ? 'list' : viewPreset}
-              thumbnailType={componentType}
-              onClick={() => onThumbnailClick(displaySetInstanceUID)}
-              onDoubleClick={() => onThumbnailDoubleClick(displaySetInstanceUID)}
-              isTracked={isTracked}
-              loadingProgress={loadingProgress}
-              onClickUntrack={() => onClickUntrack(displaySetInstanceUID)}
-              isHydratedForDerivedDisplaySet={isHydratedForDerivedDisplaySet}
-              canReject={canReject}
-              onReject={onReject}
-              onThumbnailContextMenu={onThumbnailContextMenu}
-            />
-          );
-        }
-      )}
+    <div className="min-h-[350px]">
+      <div
+        id="ohif-thumbnail-list"
+        className={`ohif-scrollbar bg-bkg-low grid place-items-center overflow-y-hidden pt-[4px] pr-[2.5px] pl-[2.5px] ${viewPreset === 'thumbnails' ? 'grid-cols-2 gap-[4px] pb-[12px]' : 'grid-cols-1 gap-[2px]'}`}
+      >
+        {thumbnails.map(
+          ({
+            displaySetInstanceUID,
+            description,
+            dragData,
+            seriesNumber,
+            numInstances,
+            loadingProgress,
+            modality,
+            componentType,
+            seriesDate,
+            countIcon,
+            isTracked,
+            canReject,
+            onReject,
+            imageSrc,
+            messages,
+            imageAltText,
+            isHydratedForDerivedDisplaySet,
+          }) => {
+            const isActive = activeDisplaySetInstanceUIDs.includes(displaySetInstanceUID);
+            return (
+              <Thumbnail
+                key={displaySetInstanceUID}
+                displaySetInstanceUID={displaySetInstanceUID}
+                dragData={dragData}
+                description={description}
+                seriesNumber={seriesNumber}
+                numInstances={numInstances || 1}
+                countIcon={countIcon}
+                imageSrc={imageSrc}
+                imageAltText={imageAltText}
+                messages={messages}
+                isActive={isActive}
+                modality={modality}
+                viewPreset={componentType === 'thumbnailNoImage' ? 'list' : viewPreset}
+                thumbnailType={componentType}
+                onClick={() => onThumbnailClick(displaySetInstanceUID)}
+                onDoubleClick={() => onThumbnailDoubleClick(displaySetInstanceUID)}
+                isTracked={isTracked}
+                loadingProgress={loadingProgress}
+                onClickUntrack={() => onClickUntrack(displaySetInstanceUID)}
+                isHydratedForDerivedDisplaySet={isHydratedForDerivedDisplaySet}
+                canReject={canReject}
+                onReject={onReject}
+                onThumbnailContextMenu={onThumbnailContextMenu}
+              />
+            );
+          }
+        )}
+      </div>
     </div>
   );
 };
