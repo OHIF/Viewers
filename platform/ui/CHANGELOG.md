@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.8.4](https://github.com/OHIF/Viewers/compare/v3.8.3...v3.8.4) (2024-10-18)
+
+
+### Bug Fixes
+
+* **4d:** panel generate image ([#4430](https://github.com/OHIF/Viewers/issues/4430)) ([c7522db](https://github.com/OHIF/Viewers/commit/c7522db9bf5eb932d2df526086b7d290efe73e83))
+
+
+
+
+
 ## [3.8.3](https://github.com/OHIF/Viewers/compare/v3.8.2...v3.8.3) (2024-06-28)
 
 **Note:** Version bump only for package @ohif/ui
