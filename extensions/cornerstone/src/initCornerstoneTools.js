@@ -42,6 +42,8 @@ import {
 
 import CalibrationLineTool from './tools/CalibrationLineTool';
 import ImageOverlayViewerTool from './tools/ImageOverlayViewerTool';
+import SmartStackScrollMouseWheelTool from './tools/SmartStackScrollMouseWheelTool';
+import SmartStackScrollTool from './tools/SmartStackScrollTool';
 
 export default function initCornerstoneTools(configuration = {}) {
   CrosshairsTool.isAnnotation = false;
@@ -87,6 +89,8 @@ export default function initCornerstoneTools(configuration = {}) {
   addTool(OrientationMarkerTool);
   addTool(WindowLevelRegionTool);
   addTool(PlanarFreehandContourSegmentationTool);
+  addTool(SmartStackScrollMouseWheelTool);
+  addTool(SmartStackScrollTool);
 
   // Modify annotation tools to use dashed lines on SR
   const annotationStyle = {
@@ -142,6 +146,8 @@ const toolNames = {
   OrientationMarker: OrientationMarkerTool.toolName,
   WindowLevelRegion: WindowLevelRegionTool.toolName,
   PlanarFreehandContourSegmentation: PlanarFreehandContourSegmentationTool.toolName,
+  SmartStackScrollMouseWheel: SmartStackScrollMouseWheelTool.toolName,
+  SmartStackScroll: SmartStackScrollTool.toolName,
 };
 
 export { toolNames };

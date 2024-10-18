@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { SmartScrollbar } from '@ohif/ui';
 
 import ViewportImageScrollbar from './ViewportImageScrollbar';
 import CustomizableViewportOverlay from './CustomizableViewportOverlay';
@@ -45,7 +46,7 @@ function CornerstoneOverlays(props: withAppTypes) {
 
   return (
     <div className="noselect">
-      <ViewportImageScrollbar
+      <SmartScrollbar
         viewportId={viewportId}
         viewportData={viewportData}
         element={element}
