@@ -256,6 +256,9 @@ async function createComputedVolume(dynamicVolumeId, computedVolumeId) {
   if (!cache.getVolume(computedVolumeId)) {
     const computedVolume = await volumeLoader.createAndCacheDerivedVolume(dynamicVolumeId, {
       volumeId: computedVolumeId,
+      targetBuffer: {
+        type: 'Float32Array',
+      },
     });
     return computedVolume;
   }
