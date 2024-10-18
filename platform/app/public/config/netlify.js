@@ -8,7 +8,6 @@ window.config = {
   // below flag is for performance reasons, but it might not work for all servers
   showWarningMessageForCrossOrigin: true,
   showCPUFallbackMessage: true,
-  useExperimentalUI: false,
   showLoadingIndicator: true,
   experimentalStudyBrowserSort: false,
   strictZSpacingForVolumeViewport: true,

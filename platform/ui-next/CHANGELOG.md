@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.9.0-beta.101](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.100...v3.9.0-beta.101) (2024-10-18)
+
+
+### Features
+
+* **new-study-panel:** default to list view for non thumbnail series, change default fitler to all, and add more menu to thumbnail items with a dicom tag browser ([#4417](https://github.com/OHIF/Viewers/issues/4417)) ([a7fd9fa](https://github.com/OHIF/Viewers/commit/a7fd9fa5bfff7a1b533d99cb96f7147a35fd528f))
+
+
+
+
+
 # [3.9.0-beta.100](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.99...v3.9.0-beta.100) (2024-10-17)
 
 **Note:** Version bump only for package @ohif/ui-next
