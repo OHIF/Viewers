@@ -127,6 +127,9 @@ function modeFactory({ modeConfiguration }) {
       };
     },
     routes: [
+      // This example has multiple routes & multiple layouts
+      // Navigating to /dev/no-panels with this mode registered will render a layout without panels
+      // navigating to just /dev/ will render the 0th route's layout
       {
         path: 'viewer-cs3d',
         /*init: ({ servicesManager, extensionManager }) => {
@@ -151,6 +154,27 @@ function modeFactory({ modeConfiguration }) {
                 {
                   namespace: dicompdf.viewport,
                   displaySetsToDisplay: [dicompdf.sopClassHandler],
+                },
+              ],
+            },
+          };
+        },
+      },
+      {
+        path: 'no-panels',
+        layoutTemplate: ({ location, servicesManager }) => {
+          return {
+            id: ohif.layout,
+            props: {
+              // TODO: Should be optional, or required to pass empty array for slots?
+              leftPanels: [ohif.thumbnailList],
+              rightPanels: [ohif.measurements],
+              rightPanelClosed: true,
+              leftPanelClosed: true,
+              viewports: [
+                {
+                  namespace: cs3d.viewport,
+                  displaySetsToDisplay: [ohif.sopClassHandler],
                 },
               ],
             },
