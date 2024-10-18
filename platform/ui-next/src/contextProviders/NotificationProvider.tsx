@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useCallback, useEffect } from 'react';
+import React, { createContext, useContext, useCallback, useEffect, ReactNode } from 'react';
 import PropTypes from 'prop-types';
 import { Toaster, toast } from '../components';
 
@@ -16,7 +16,24 @@ const NotificationProvider = ({ children, service }) => {
   };
 
   const show = useCallback(options => {
-    const { title, message, duration, position, type } = { ...DEFAULT_OPTIONS, ...options };
+    const { title, message, duration, position, type, promise } = {
+      ...DEFAULT_OPTIONS,
+      ...options,
+    };
+
+    if (promise) {
+      return toast.promise(promise, {
+        loading: title || 'Loading...',
+        success: (data: unknown) => ({
+          title: title || 'Success',
+          description: typeof message === 'function' ? message(data) : message,
+        }),
+        error: (err: unknown) => ({
+          title: title || 'Error',
+          description: typeof message === 'function' ? message(err) : message,
+        }),
+      });
+    }
 
     return toast[type](title, {
       duration,

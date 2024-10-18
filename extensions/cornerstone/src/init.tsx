@@ -258,6 +258,9 @@ export default async function init({
     100
   );
 
+  // Call this function when initializing
+  initializeWebWorkerProgressHandler(servicesManager.services.uiNotificationService);
+
   // viewportGridService.subscribe(
   //   viewportGridService.EVENTS.GRID_STATE_CHANGED,
   //   ({ removedViewportIds }) => {
@@ -340,6 +343,55 @@ export default async function init({
   // [segRepAdded].forEach(event => {
   //   segmentationService.subscribe(event, consolidateSegmentationRepresentations);
   // });
+}
+
+function initializeWebWorkerProgressHandler(uiNotificationService) {
+  const activeToasts = new Map();
+
+  eventTarget.addEventListener(EVENTS.WEB_WORKER_PROGRESS, ({ detail }) => {
+    const { progress, type, id } = detail;
+
+    const cacheKey = `${type}-${id}`;
+    if (progress === 0 && !activeToasts.has(cacheKey)) {
+      const progressPromise = new Promise((resolve, reject) => {
+        activeToasts.set(cacheKey, { resolve, reject });
+      });
+
+      uiNotificationService.show({
+        id: cacheKey,
+        title: 'Web Worker Progress',
+        message: `${type}: ${progress}%`,
+        autoClose: false,
+        promise: progressPromise,
+        promiseMessages: {
+          loading: `Computing...`,
+          success: data => `${data.type} completed`,
+          error: 'Web Worker failed',
+        },
+      });
+    } else {
+      if (progress === 100) {
+        const { resolve } = activeToasts.get(cacheKey);
+        resolve({ progress, type });
+        activeToasts.delete(cacheKey);
+      }
+    }
+
+    // We should be able to update the toast here, but it's not working
+    // else {
+    //   // Update existing toast
+    //   uiNotificationService.show({
+    //     id: activeToasts.get(type).toastId,
+    //     message: `${type}: ${progress}%`,
+    //   });
+    // }
+
+    // if (progress === 100) {
+    //   const { resolve } = activeToasts.get(type);
+    //   resolve({ progress, type });
+    //   activeToasts.delete(type);
+    // }
+  });
 }
 
 function CPUModal() {
