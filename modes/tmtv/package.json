@@ -34,13 +34,13 @@
     "test:unit:ci": "jest --ci --runInBand --collectCoverage --passWithNoTests"
   },
   "peerDependencies": {
-    "@ohif/core": "3.8.3",
-    "@ohif/extension-cornerstone": "3.8.3",
-    "@ohif/extension-cornerstone-dicom-sr": "3.8.3",
-    "@ohif/extension-default": "3.8.3",
-    "@ohif/extension-dicom-pdf": "3.8.3",
-    "@ohif/extension-dicom-video": "3.8.3",
-    "@ohif/extension-measurement-tracking": "3.8.3"
+    "@ohif/core": "3.8.4\n",
+    "@ohif/extension-cornerstone": "3.8.4\n",
+    "@ohif/extension-cornerstone-dicom-sr": "3.8.4\n",
+    "@ohif/extension-default": "3.8.4\n",
+    "@ohif/extension-dicom-pdf": "3.8.4\n",
+    "@ohif/extension-dicom-video": "3.8.4\n",
+    "@ohif/extension-measurement-tracking": "3.8.4\n"
   },
   "dependencies": {
     "@babel/runtime": "^7.20.13",
