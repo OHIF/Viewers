@@ -25,9 +25,6 @@ export default function PanelMeasurementTable({
   servicesManager,
   commandsManager,
   extensionManager,
-  renderHeader,
-  getCloseIcon,
-  tab,
 }: withAppTypes): React.FunctionComponent {
   const { t } = useTranslation('MeasurementTable');
 
@@ -216,24 +213,6 @@ export default function PanelMeasurementTable({
 
   return (
     <>
-      {renderHeader && (
-        <>
-          <div className="bg-primary-dark flex select-none rounded-t pt-1.5 pb-[2px]">
-            <div className="flex h-[24px] w-full cursor-pointer select-none justify-center self-center text-[14px]">
-              <div className="text-primary-active flex grow cursor-pointer select-none justify-center self-center text-[13px]">
-                <span>{tab.label}</span>
-              </div>
-            </div>
-
-            {getCloseIcon()}
-          </div>
-          <Separator
-            orientation="horizontal"
-            className="bg-black"
-            thickness="2px"
-          />
-        </>
-      )}
       <div
         className="ohif-scrollbar overflow-y-auto overflow-x-hidden"
         data-cy={'measurements-panel'}

@@ -1,10 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { useImageViewer, useViewportGrid } from '@ohif/ui';
-import { StudyBrowser as NewStudyBrowser } from '@ohif/ui-next';
-import { StudyBrowser as OldStudyBrowser } from '@ohif/ui';
+import { StudyBrowser } from '@ohif/ui-next';
 import { utils } from '@ohif/core';
-import { useAppConfig } from '@state';
 import { useNavigate } from 'react-router-dom';
 import { Separator } from '@ohif/ui-next';
 import { PanelStudyBrowserHeader } from './PanelStudyBrowserHeader';
@@ -22,14 +20,11 @@ function PanelStudyBrowser({
   getStudiesForPatientByMRN,
   requestDisplaySetCreationForStudy,
   dataSource,
-  renderHeader,
-  getCloseIcon,
-  tab,
+  commandsManager,
 }: withAppTypes) {
   const { hangingProtocolService, displaySetService, uiNotificationService, customizationService } =
     servicesManager.services;
   const navigate = useNavigate();
-  const [appConfig] = useAppConfig();
 
   // Normally you nest the components so the tree isn't so deep, and the data
   // doesn't have to have such an intense shape. This works well enough for now.
@@ -37,7 +32,7 @@ function PanelStudyBrowser({
   const { StudyInstanceUIDs } = useImageViewer();
   const [{ activeViewportId, viewports, isHangingProtocolLayout }, viewportGridService] =
     useViewportGrid();
-  const [activeTabName, setActiveTabName] = useState('primary');
+  const [activeTabName, setActiveTabName] = useState('all');
   const [expandedStudyInstanceUIDs, setExpandedStudyInstanceUIDs] = useState([
     ...StudyInstanceUIDs,
   ]);
@@ -285,27 +280,26 @@ function PanelStudyBrowser({
 
   const activeDisplaySetInstanceUIDs = viewports.get(activeViewportId)?.displaySetInstanceUIDs;
 
-  const StudyBrowser = appConfig?.useExperimentalUI ? NewStudyBrowser : OldStudyBrowser;
+  const onThumbnailContextMenu = (commandName, options) => {
+    commandsManager.runCommand(commandName, options);
+  };
 
   return (
     <>
-      {renderHeader && (
-        <>
-          <PanelStudyBrowserHeader
-            tab={tab}
-            getCloseIcon={getCloseIcon}
-            viewPresets={viewPresets}
-            updateViewPresetValue={updateViewPresetValue}
-            actionIcons={actionIcons}
-            updateActionIconValue={updateActionIconValue}
-          />
-          <Separator
-            orientation="horizontal"
-            className="bg-black"
-            thickness="2px"
-          />
-        </>
-      )}
+      <>
+        <PanelStudyBrowserHeader
+          viewPresets={viewPresets}
+          updateViewPresetValue={updateViewPresetValue}
+          actionIcons={actionIcons}
+          updateActionIconValue={updateActionIconValue}
+        />
+        <Separator
+          orientation="horizontal"
+          className="bg-black"
+          thickness="2px"
+        />
+      </>
+
       <StudyBrowser
         tabs={tabs}
         servicesManager={servicesManager}
@@ -319,6 +313,7 @@ function PanelStudyBrowser({
         }}
         showSettings={actionIcons.find(icon => icon.id === 'settings').value}
         viewPresets={viewPresets}
+        onThumbnailContextMenu={onThumbnailContextMenu}
       />
     </>
   );

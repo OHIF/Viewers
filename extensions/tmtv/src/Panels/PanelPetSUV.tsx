@@ -23,13 +23,7 @@ const DEFAULT_MEATADATA = {
  * @param param0
  * @returns
  */
-export default function PanelPetSUV({
-  servicesManager,
-  commandsManager,
-  renderHeader,
-  getCloseIcon,
-  tab,
-}: withAppTypes) {
+export default function PanelPetSUV({ servicesManager, commandsManager }: withAppTypes) {
   const { t } = useTranslation('PanelSUV');
   const { displaySetService, toolGroupService, toolbarService, hangingProtocolService } =
     servicesManager.services;
@@ -133,24 +127,6 @@ export default function PanelPetSUV({
   }
   return (
     <>
-      {renderHeader && (
-        <>
-          <div className="bg-primary-dark flex select-none rounded-t pt-1.5 pb-[2px]">
-            <div className="flex h-[24px] w-full cursor-pointer select-none justify-center self-center text-[14px]">
-              <div className="text-primary-active flex grow cursor-pointer select-none justify-center self-center text-[13px]">
-                <span>{tab.label}</span>
-              </div>
-            </div>
-
-            {getCloseIcon()}
-          </div>
-          <Separator
-            orientation="horizontal"
-            className="bg-black"
-            thickness="2px"
-          />
-        </>
-      )}
       <div className="ohif-scrollbar flex min-h-0 flex-auto select-none flex-col justify-between overflow-auto">
         <div className="flex min-h-0 flex-1 flex-col bg-black text-[13px] font-[300]">
           <PanelSection title={t('Patient Information')}>

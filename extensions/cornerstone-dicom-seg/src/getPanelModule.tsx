@@ -1,40 +1,13 @@
 import React from 'react';
 
 import { useAppConfig } from '@state';
-import { Toolbox as NewToolbox } from '@ohif/ui-next';
-import { Toolbox as OldToolbox } from '@ohif/ui';
+import { Toolbox } from '@ohif/ui-next';
 import PanelSegmentation from './panels/PanelSegmentation';
 
-const getPanelModule = ({
-  commandsManager,
-  servicesManager,
-  extensionManager,
-  configuration,
-  title,
-}: withAppTypes) => {
+const getPanelModule = ({ commandsManager, servicesManager, extensionManager }: withAppTypes) => {
   const { customizationService } = servicesManager.services;
 
-  const wrappedPanelSegmentation = ({ configuration, renderHeader, getCloseIcon, tab }) => {
-    const [appConfig] = useAppConfig();
-
-    return (
-      <PanelSegmentation
-        commandsManager={commandsManager}
-        servicesManager={servicesManager}
-        extensionManager={extensionManager}
-        configuration={{
-          ...configuration,
-          disableEditing: appConfig.disableEditing,
-          ...customizationService.get('segmentation.panel'),
-        }}
-        renderHeader={renderHeader}
-        getCloseIcon={getCloseIcon}
-        tab={tab}
-      />
-    );
-  };
-
-  const wrappedPanelSegmentationNoHeader = ({ configuration }) => {
+  const wrappedPanelSegmentation = ({ configuration }) => {
     const [appConfig] = useAppConfig();
 
     return (
@@ -51,15 +24,8 @@ const getPanelModule = ({
     );
   };
 
-  const wrappedPanelSegmentationWithTools = ({
-    configuration,
-    renderHeader,
-    getCloseIcon,
-    tab,
-  }) => {
+  const wrappedPanelSegmentationWithTools = ({ configuration }) => {
     const [appConfig] = useAppConfig();
-
-    const Toolbox = appConfig.useExperimentalUI ? NewToolbox : OldToolbox;
 
     return (
       <>
@@ -72,9 +38,6 @@ const getPanelModule = ({
           configuration={{
             ...configuration,
           }}
-          renderHeader={renderHeader}
-          getCloseIcon={getCloseIcon}
-          tab={tab}
         />
         <PanelSegmentation
           commandsManager={commandsManager}
@@ -104,13 +67,6 @@ const getPanelModule = ({
       iconLabel: 'Segmentation',
       label: 'Segmentation',
       component: wrappedPanelSegmentationWithTools,
-    },
-    {
-      name: 'panelSegmentationNoHeader',
-      iconName: 'tab-segmentation',
-      iconLabel: 'Segmentation',
-      label: 'Segmentation',
-      component: wrappedPanelSegmentationNoHeader,
     },
   ];
 };

@@ -57,9 +57,6 @@ interface IMicroscopyPanelProps extends WithTranslation {
   servicesManager: AppTypes.ServicesManager;
   extensionManager: ExtensionManager;
   commandsManager: CommandsManager;
-  renderHeader?: boolean;
-  getCloseIcon?: PropTypes.func;
-  tab: PropTypes.object;
 }
 
 /**
@@ -332,20 +329,6 @@ function MicroscopyPanel(props: IMicroscopyPanelProps) {
 
   return (
     <>
-      {props.renderHeader && (
-        <>
-          <div className="bg-primary-dark flex select-none rounded-t pt-1.5 pb-[2px]">
-            <div className="flex h-[24px] w-full cursor-pointer select-none justify-center self-center text-[14px]">
-              <div className="text-primary-active flex grow cursor-pointer select-none justify-center self-center text-[13px]">
-                <span>{props.tab.label}</span>
-              </div>
-            </div>
-
-            {props.getCloseIcon()}
-          </div>
-          <Separator orientation="horizontal" className="bg-black" thickness="2px" />
-        </>
-      )}{' '}
       <div
         className="ohif-scrollbar overflow-y-auto overflow-x-hidden"
         data-cy={'measurements-panel'}
