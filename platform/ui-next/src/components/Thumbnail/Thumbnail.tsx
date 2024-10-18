@@ -307,7 +307,11 @@ const Thumbnail = ({
         viewPreset === 'list' && 'col-span-2 h-[40px] w-[275px]'
       )}
       id={`thumbnail-${displaySetInstanceUID}`}
-      data-cy={`study-browser-thumbnail`}
+      data-cy={
+        thumbnailType === 'thumbnailNoImage'
+          ? 'study-browser-thumbnail-no-image'
+          : 'study-browser-thumbnail'
+      }
       data-series={seriesNumber}
       onClick={onClick}
       onDoubleClick={onDoubleClick}
