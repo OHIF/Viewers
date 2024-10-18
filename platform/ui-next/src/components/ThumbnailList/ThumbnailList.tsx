@@ -13,7 +13,12 @@ const ThumbnailList = ({
   onThumbnailContextMenu,
 }: withAppTypes) => {
   return (
-    <div className="min-h-[350px]">
+    <div
+      className="min-h-[350px]"
+      style={{
+        '--radix-accordion-content-height': '350px',
+      }}
+    >
       <div
         id="ohif-thumbnail-list"
         className={`ohif-scrollbar bg-bkg-low grid place-items-center overflow-y-hidden pt-[4px] pr-[2.5px] pl-[2.5px] ${viewPreset === 'thumbnails' ? 'grid-cols-2 gap-[4px] pb-[12px]' : 'grid-cols-1 gap-[2px]'}`}
