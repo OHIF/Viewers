@@ -67,6 +67,10 @@ import {
   MeasurementTable,
   SegmentationTable,
   useSegmentationTableContext,
+  TooltipProvider,
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
 } from './components';
 import { DataRow } from './components/DataRow';
 
@@ -146,4 +150,8 @@ export {
   MeasurementTable,
   SegmentationTable,
   useSegmentationTableContext,
+  TooltipProvider,
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
 };

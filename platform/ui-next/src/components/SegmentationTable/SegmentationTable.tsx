@@ -54,11 +54,11 @@ export const SegmentationTable: SegmentationTableComponent = (props: Segmentatio
       activeRepresentation={activeRepresentation}
       {...contextProps}
     >
-      <PanelSection
-        title={`${t(title)}`}
-        defaultOpen={true}
-      >
-        {children}
+      <PanelSection defaultOpen={true}>
+        <PanelSection.Header>
+          <span>{t(title)}</span>
+        </PanelSection.Header>
+        <PanelSection.Content>{children}</PanelSection.Content>
       </PanelSection>
     </SegmentationTableProvider>
   );

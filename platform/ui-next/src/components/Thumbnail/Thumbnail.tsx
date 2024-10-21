@@ -97,33 +97,31 @@ const Thumbnail = ({
                 />
               )}
               {isTracked && (
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger>
-                      <div className="group">
-                        <Icons.StatusTracking className="text-primary-light h-[20px] w-[20px] group-hover:hidden" />
-                        <Icons.Cancel
-                          className="text-primary-light hidden h-[15px] w-[15px] group-hover:block"
-                          onClick={onClickUntrack}
-                        />
+                <Tooltip>
+                  <TooltipTrigger>
+                    <div className="group">
+                      <Icons.StatusTracking className="text-primary-light h-[20px] w-[20px] group-hover:hidden" />
+                      <Icons.Cancel
+                        className="text-primary-light hidden h-[15px] w-[15px] group-hover:block"
+                        onClick={onClickUntrack}
+                      />
+                    </div>
+                  </TooltipTrigger>
+                  <TooltipContent side="right">
+                    <div className="flex flex-1 flex-row">
+                      <div className="flex-2 flex items-center justify-center pr-4">
+                        <Icons.InfoLink className="text-primary-active" />
                       </div>
-                    </TooltipTrigger>
-                    <TooltipContent side="right">
-                      <div className="flex flex-1 flex-row">
-                        <div className="flex-2 flex items-center justify-center pr-4">
-                          <Icons.InfoLink className="text-primary-active" />
-                        </div>
-                        <div className="flex flex-1 flex-col">
-                          <span>
-                            <span className="text-white">
-                              {isTracked ? 'Series is tracked' : 'Series is untracked'}
-                            </span>
+                      <div className="flex flex-1 flex-col">
+                        <span>
+                          <span className="text-white">
+                            {isTracked ? 'Series is tracked' : 'Series is untracked'}
                           </span>
-                        </div>
+                        </span>
                       </div>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
+                    </div>
+                  </TooltipContent>
+                </Tooltip>
               )}
             </div>
           </div>
@@ -197,33 +195,31 @@ const Thumbnail = ({
             />
           )}
           {isTracked && (
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger>
-                  <div className="group">
-                    <Icons.StatusTracking className="text-primary-light h-[20px] w-[20px] group-hover:hidden" />
-                    <Icons.Cancel
-                      className="text-primary-light hidden h-[15px] w-[15px] group-hover:block"
-                      onClick={onClickUntrack}
-                    />
+            <Tooltip>
+              <TooltipTrigger>
+                <div className="group">
+                  <Icons.StatusTracking className="text-primary-light h-[20px] w-[20px] group-hover:hidden" />
+                  <Icons.Cancel
+                    className="text-primary-light hidden h-[15px] w-[15px] group-hover:block"
+                    onClick={onClickUntrack}
+                  />
+                </div>
+              </TooltipTrigger>
+              <TooltipContent side="right">
+                <div className="flex flex-1 flex-row">
+                  <div className="flex-2 flex items-center justify-center pr-4">
+                    <Icons.InfoLink className="text-primary-active" />
                   </div>
-                </TooltipTrigger>
-                <TooltipContent side="right">
-                  <div className="flex flex-1 flex-row">
-                    <div className="flex-2 flex items-center justify-center pr-4">
-                      <Icons.InfoLink className="text-primary-active" />
-                    </div>
-                    <div className="flex flex-1 flex-col">
-                      <span>
-                        <span className="text-white">
-                          {isTracked ? 'Series is tracked' : 'Series is untracked'}
-                        </span>
+                  <div className="flex flex-1 flex-col">
+                    <span>
+                      <span className="text-white">
+                        {isTracked ? 'Series is tracked' : 'Series is untracked'}
                       </span>
-                    </div>
+                    </span>
                   </div>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
+                </div>
+              </TooltipContent>
+            </Tooltip>
           )}
         </div>
       </div>

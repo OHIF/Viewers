@@ -8,12 +8,12 @@ export const AddSegmentationRow: React.FC<{ children?: React.ReactNode }> = ({
 }) => {
   const { t } = useTranslation('SegmentationTable');
 
-  const { onSegmentationAdd, data, disableEditing } =
+  const { onSegmentationAdd, data, disableEditing, mode } =
     useSegmentationTableContext('SegmentationTable');
 
   const isEmpty = data.length === 0;
 
-  if (!isEmpty) {
+  if (!isEmpty && mode === 'collapsed') {
     return null;
   }
 
@@ -27,7 +27,7 @@ export const AddSegmentationRow: React.FC<{ children?: React.ReactNode }> = ({
       onClick={() => onSegmentationAdd('')}
     >
       {children}
-      <div className="text-primary-active group-hover:bg-secondary-dark flex items-center rounded-[4px] group-hover:cursor-pointer">
+      <div className="text-primary-active group-hover:bg-secondary-dark flex items-center rounded-[4px] pl-1 group-hover:cursor-pointer">
         <div className="grid h-[28px] w-[28px] place-items-center">
           <Icons.Add />
         </div>

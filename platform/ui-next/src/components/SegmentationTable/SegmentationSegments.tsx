@@ -2,7 +2,10 @@ import React from 'react';
 import { ScrollArea, DataRow } from '../../components';
 import { useSegmentationTableContext } from './SegmentationTableContext';
 
-export const SegmentationSegments: React.FC<{ segmentationId?: string }> = ({ segmentationId }) => {
+export const SegmentationSegments: React.FC<{
+  segmentation?: unknown;
+  representation?: unknown;
+}> = ({ segmentation, representation }) => {
   const {
     activeSegmentationId,
     disableEditing,
@@ -10,32 +13,39 @@ export const SegmentationSegments: React.FC<{ segmentationId?: string }> = ({ se
     onToggleSegmentVisibility,
     onToggleSegmentLock,
     onSegmentClick,
+    mode,
     onSegmentEdit,
     onSegmentDelete,
     data,
   } = useSegmentationTableContext('SegmentationTable.Segments');
 
-  const segmentationIdToUse = segmentationId ? segmentationId : activeSegmentationId;
-  const entry = data.find(seg => seg.segmentation.segmentationId === segmentationIdToUse);
+  let segmentationToUse = segmentation;
+  let representationToUse = representation;
+  let segmentationIdToUse = activeSegmentationId;
+  if (!segmentationToUse || !representationToUse) {
+    const entry = data.find(seg => seg.segmentation.segmentationId === activeSegmentationId);
+    segmentationToUse = entry?.segmentation;
+    representationToUse = entry?.representation;
+    segmentationIdToUse = entry?.segmentation.segmentationId;
+  }
 
-  const segmentation = entry?.segmentation;
-  const representation = entry?.representation;
-
-  if (!representation || !segmentation) {
+  if (!representationToUse || !segmentationToUse) {
     return null;
   }
 
+  const height = mode === 'collapsed' ? 'h-[600px]' : 'h-[200px]';
+
   return (
     <ScrollArea
-      className="ohif-scrollbar invisible-scrollbar bg-bkg-low h-[600px] space-y-px"
+      className={`ohif-scrollbar invisible-scrollbar bg-bkg-low space-y-px ${height}`}
       showArrows={true}
     >
-      {Object.values(representation.segments).map(segment => {
+      {Object.values(representationToUse.segments).map(segment => {
         if (!segment) {
           return null;
         }
         const { segmentIndex, color, visible } = segment;
-        const segmentFromSegmentation = segmentation.segments[segmentIndex];
+        const segmentFromSegmentation = segmentationToUse.segments[segmentIndex];
 
         const { locked, active, label } = segmentFromSegmentation;
         const cssColor = `rgb(${color[0]},${color[1]},${color[2]})`;
@@ -51,12 +61,12 @@ export const SegmentationSegments: React.FC<{ segmentationId?: string }> = ({ se
             isVisible={visible}
             isLocked={locked}
             disableEditing={disableEditing}
-            onColor={() => onSegmentColorClick(activeSegmentationId, segmentIndex)}
-            onToggleVisibility={() => onToggleSegmentVisibility(activeSegmentationId, segmentIndex)}
-            onToggleLocked={() => onToggleSegmentLock(activeSegmentationId, segmentIndex)}
-            onSelect={() => onSegmentClick(activeSegmentationId, segmentIndex)}
-            onRename={() => onSegmentEdit(activeSegmentationId, segmentIndex)}
-            onDelete={() => onSegmentDelete(activeSegmentationId, segmentIndex)}
+            onColor={() => onSegmentColorClick(segmentationIdToUse, segmentIndex)}
+            onToggleVisibility={() => onToggleSegmentVisibility(segmentationIdToUse, segmentIndex)}
+            onToggleLocked={() => onToggleSegmentLock(segmentationIdToUse, segmentIndex)}
+            onSelect={() => onSegmentClick(segmentationIdToUse, segmentIndex)}
+            onRename={() => onSegmentEdit(segmentationIdToUse, segmentIndex)}
+            onDelete={() => onSegmentDelete(segmentationIdToUse, segmentIndex)}
           />
         );
       })}

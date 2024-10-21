@@ -14,7 +14,6 @@ import {
   Tooltip,
   TooltipTrigger,
   TooltipContent,
-  TooltipProvider,
   DropdownMenuLabel,
   Accordion,
   AccordionItem,

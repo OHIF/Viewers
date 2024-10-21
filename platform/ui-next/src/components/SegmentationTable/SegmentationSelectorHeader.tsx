@@ -14,7 +14,6 @@ import {
   Tooltip,
   TooltipTrigger,
   TooltipContent,
-  TooltipProvider,
   DropdownMenuLabel,
 } from '../../components';
 
@@ -131,24 +130,22 @@ export const SegmentationSelectorHeader: React.FC<{ children?: React.ReactNode }
           ))}
         </SelectContent>
       </Select>
-      <TooltipProvider>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              variant="ghost"
-              size="icon"
-            >
-              <Icons.Info className="h-6 w-6" />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent
-            side="bottom"
-            align="end"
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Button
+            variant="ghost"
+            size="icon"
           >
-            {activeSegmentation.info}
-          </TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
+            <Icons.Info className="h-6 w-6" />
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent
+          side="bottom"
+          align="end"
+        >
+          {activeSegmentation.info}
+        </TooltipContent>
+      </Tooltip>
     </div>
   );
 };

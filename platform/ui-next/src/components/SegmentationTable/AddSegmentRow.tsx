@@ -2,7 +2,10 @@ import React from 'react';
 import { Button, Icons } from '@ohif/ui-next';
 import { useSegmentationTableContext } from './SegmentationTableContext';
 
-export const AddSegmentRow: React.FC<{ children?: React.ReactNode }> = ({ children = null }) => {
+export const AddSegmentRow: React.FC<{
+  children?: React.ReactNode;
+  segmentation?: unknown;
+}> = ({ children = null, segmentation }) => {
   const {
     activeRepresentation,
     disableEditing,
@@ -16,6 +19,8 @@ export const AddSegmentRow: React.FC<{ children?: React.ReactNode }> = ({ childr
     segment => segment?.visible !== false
   );
 
+  const segmentationIdToUse = segmentation ? segmentation.segmentationId : activeSegmentationId;
+
   if (!data?.length) {
     return null;
   }
@@ -27,13 +32,13 @@ export const AddSegmentRow: React.FC<{ children?: React.ReactNode }> = ({ childr
   );
 
   return (
-    <div className="bg-primary-dark my-px flex h-9 w-full items-center justify-between rounded pl-0.5 pr-7">
+    <div className="bg-primary-dark my-px flex h-7 w-full items-center justify-between rounded pl-0.5 pr-7">
       {disableEditing ? null : (
         <Button
           size="sm"
           variant="ghost"
           className="pr pl-0.5"
-          onClick={() => onSegmentAdd(activeSegmentationId)}
+          onClick={() => onSegmentAdd(segmentationIdToUse)}
         >
           <Icons.Add />
           Add Segment
@@ -42,7 +47,7 @@ export const AddSegmentRow: React.FC<{ children?: React.ReactNode }> = ({ childr
       <Button
         size="icon"
         variant="ghost"
-        onClick={() => onToggleSegmentationVisibility(activeSegmentationId)}
+        onClick={() => onToggleSegmentationVisibility(segmentationIdToUse)}
       >
         {Icon}
       </Button>

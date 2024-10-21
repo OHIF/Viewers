@@ -48,11 +48,11 @@ const MeasurementTable = ({
       onColor={onColor}
       disableEditing={disableEditing}
     >
-      <PanelSection
-        title={`${t(title)} (${amount})`}
-        defaultOpen={true}
-      >
-        {children}
+      <PanelSection defaultOpen={true}>
+        <PanelSection.Header className="bg-secondary-dark">
+          <span>{`${t(title)} (${amount})`}</span>
+        </PanelSection.Header>
+        <PanelSection.Content>{children}</PanelSection.Content>
       </PanelSection>
     </MeasurementTableProvider>
   );

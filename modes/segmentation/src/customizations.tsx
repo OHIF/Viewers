@@ -6,7 +6,7 @@ export const performCustomizations = customizationService => {
   customizationService.addModeCustomizations([
     {
       id: 'segmentationTable.mode',
-      // mode: 'expanded',
+      mode: 'expanded',
     },
     // {
     //   id: 'component.SegmentationTableConfig',

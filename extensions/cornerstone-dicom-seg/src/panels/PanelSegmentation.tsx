@@ -320,7 +320,7 @@ export default function PanelSegmentation({
       ) : (
         <SegmentationTable.Expanded>
           <SegmentationTable.Header />
-          <SegmentationTable.AddSegmentRow />
+          {/* <SegmentationTable.AddSegmentRow /> */}
           <SegmentationTable.Segments />
         </SegmentationTable.Expanded>
       )}
