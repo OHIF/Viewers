@@ -47,6 +47,10 @@ export const SegmentationSegments: React.FC<{
         const { segmentIndex, color, visible } = segment;
         const segmentFromSegmentation = segmentationToUse.segments[segmentIndex];
 
+        if (!segmentFromSegmentation) {
+          return null;
+        }
+
         const { locked, active, label } = segmentFromSegmentation;
         const cssColor = `rgb(${color[0]},${color[1]},${color[2]})`;
 

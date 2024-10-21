@@ -78,7 +78,7 @@ const SidePanelWithServices = ({
     };
   }, [tabs, hasBeenOpened, panelService]);
 
-  const SidePanel = appConfig?.useExperimentalUI ? NewSidePanel : OldSidePanel;
+  const SidePanel = NewSidePanel;
 
   return (
     <SidePanel

@@ -1,10 +1,8 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useImageViewer, useViewportGrid } from '@ohif/ui';
-import { StudyBrowser as NewStudyBrowser } from '@ohif/ui-next';
-import { StudyBrowser as OldStudyBrowser } from '@ohif/ui';
+import { StudyBrowser } from '@ohif/ui-next';
 import { utils } from '@ohif/core';
-import { useAppConfig } from '@state';
 import { useNavigate } from 'react-router-dom';
 import { Separator } from '@ohif/ui-next';
 import { PanelStudyBrowserHeader } from './PanelStudyBrowserHeader';
@@ -29,7 +27,6 @@ function PanelStudyBrowser({
   const { hangingProtocolService, displaySetService, uiNotificationService, customizationService } =
     servicesManager.services;
   const navigate = useNavigate();
-  const [appConfig] = useAppConfig();
 
   // Normally you nest the components so the tree isn't so deep, and the data
   // doesn't have to have such an intense shape. This works well enough for now.
@@ -203,7 +200,7 @@ function PanelStudyBrowser({
         // if (!hasLoadedViewports) {
         //   return;
         // }
-        const { displaySetsAdded, options } = data;
+        const { displaySetsAdded } = data;
         displaySetsAdded.forEach(async dSet => {
           const newImageSrcEntry = {};
           const displaySet = displaySetService.getDisplaySetByUID(dSet.displaySetInstanceUID);
@@ -284,8 +281,6 @@ function PanelStudyBrowser({
   }
 
   const activeDisplaySetInstanceUIDs = viewports.get(activeViewportId)?.displaySetInstanceUIDs;
-
-  const StudyBrowser = appConfig?.useExperimentalUI ? NewStudyBrowser : OldStudyBrowser;
 
   return (
     <>

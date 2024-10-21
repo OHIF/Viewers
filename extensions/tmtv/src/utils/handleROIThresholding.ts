@@ -4,10 +4,8 @@ export const handleROIThresholding = async ({
   segmentationId,
   commandsManager,
   segmentationService,
-  config = {},
 }: withAppTypes<{
   segmentationId: string;
-  config: Record<string, any>;
 }>) => {
   const segmentation = segmentationService.getSegmentation(segmentationId);
 
@@ -58,14 +56,10 @@ export const handleROIThresholding = async ({
 
   // add the tmtv to all the segment cachedStats, although it is a global
   // value but we don't have any other way to display it for now
-  Object.values(segmentation.segments).forEach(segment => {
-    if (segment) {
-      segment.cachedStats = {
-        ...segment.cachedStats,
-        tmtv,
-      };
-    }
-  });
+  segmentation.cachedStats = {
+    ...segmentation.cachedStats,
+    tmtv,
+  };
 
   // Update the segmentation object
   const updatedSegmentation: Segmentation = {

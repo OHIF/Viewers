@@ -24,10 +24,7 @@ function getPanelModule({ commandsManager, extensionManager, servicesManager }) 
   };
 
   const wrappedROIThresholdToolbox = ({ renderHeader, getCloseIcon, tab }: withAppTypes) => {
-    const [appConfig] = useAppConfig();
-
-    const Toolbox = appConfig.useExperimentalUI ? NewToolbox : OldToolbox;
-
+    const Toolbox = NewToolbox;
     return (
       <>
         <Toolbox
