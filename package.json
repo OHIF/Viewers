@@ -56,7 +56,7 @@
     "see-changed": "lerna changed",
     "docs:preview": "lerna run docs:preview --stream",
     "docs:publish": "chmod +x ./build-and-publish-docs.sh && ./build-and-publish-docs.sh",
-    "release": "yarn run lerna:version && yarn run lerna:publish",
+    "release": "yarn run lerna:version && npm run lerna:publish",
     "lerna:clean": "lerna clean",
     "lerna:cache": "./netlify-lerna-cache.sh",
     "lerna:restore": "./netlify-lerna-restore.sh",
@@ -64,6 +64,7 @@
     "link-list": "npm ls --depth=0 --link=true"
   },
   "dependencies": {
+    "@cornerstonejs/adapters": "^1.86.0",
     "execa": "^8.0.1"
   },
   "optionalDependencies": {
@@ -101,7 +102,6 @@
     ]
   },
   "resolutions": {
-    "**/@babel/runtime": "^7.20.13",
     "commander": "8.3.0",
     "dcmjs": ">=0.33.0",
     "dicomweb-client": ">=0.10.4",

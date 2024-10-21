@@ -7,7 +7,7 @@ window.config = {
     dicomUploadComponent:
       '@ohif/extension-cornerstone.customizationModule.cornerstoneDicomUploadComponent',
   },
-  extensions: ['deemea', '@ohif/extension-cornerstone'],
+  extensions: ['deemea-extension', '@ohif/extension-cornerstone'],
   modes: ['deemea-mode'],
   // below flag is for performance reasons, but it might not work for all servers
   showWarningMessageForCrossOrigin: true,
