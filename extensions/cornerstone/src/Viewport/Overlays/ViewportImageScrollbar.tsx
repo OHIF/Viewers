@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { Enums, VolumeViewport3D } from '@cornerstonejs/core';
-import { utilities as csToolsUtils } from '@cornerstonejs/tools';
+import { Enums, VolumeViewport3D, utilities as csUtils } from '@cornerstonejs/core';
 import { ImageScrollbar } from '@ohif/ui';
 
 function CornerstoneImageScrollbar({

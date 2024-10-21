@@ -175,23 +175,19 @@ const commandsModule = ({ servicesManager, commandsManager, extensionManager }: 
         return;
       }
 
-      const currentSegmentations = segmentationService.getSegmentationRepresentations();
+      const currentSegmentations =
+        segmentationService.getSegmentationRepresentations(withPTViewportId);
 
       const segmentationId = await segmentationService.createEmptyLabelmapForDisplaySetUID(
         ptDisplaySet.displaySetInstanceUID,
-        { label: `Segmentation ${currentSegmentations.length + 1}` }
+        {
+          label: `Segmentation ${currentSegmentations.length + 1}`,
+          segments: { 1: { label: 'Segment 1' } },
+        }
       );
 
-      segmentationService.addSegmentationRepresentationToViewport({
-        viewportId: withPTViewportId,
+      segmentationService.addSegmentationRepresentation(withPTViewportId, {
         segmentationId,
-      });
-
-      segmentationService.addSegment(segmentationId, {
-        segmentIndex: 1,
-        properties: {
-          label: 'Segment 1',
-        },
       });
 
       return segmentationId;

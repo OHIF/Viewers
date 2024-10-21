@@ -102,8 +102,7 @@ const commandsModule = ({
 
           segmentationService.addOrUpdateSegmentation(segmentation);
 
-          await segmentationService.addSegmentationRepresentationToViewport({
-            viewportId,
+          await segmentationService.addSegmentationRepresentation(viewportId, {
             segmentationId,
           });
 

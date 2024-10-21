@@ -48,6 +48,17 @@ const hpMN: Types.HangingProtocol.Protocol = {
       viewportType: 'stack',
       toolGroupId: 'default',
       allowUnmatchedView: true,
+      syncGroups: [
+        {
+          type: 'hydrateseg',
+          id: 'sameFORId',
+          source: true,
+          target: true,
+          options: {
+            matchingRules: ['sameFOR'],
+          },
+        },
+      ],
     },
     displaySets: [
       {
@@ -77,6 +88,17 @@ const hpMN: Types.HangingProtocol.Protocol = {
           viewportOptions: {
             toolGroupId: 'default',
             allowUnmatchedView: true,
+            syncGroups: [
+              {
+                type: 'hydrateseg',
+                id: 'sameFORId',
+                source: true,
+                target: true,
+                options: {
+                  matchingRules: ['sameFOR'],
+                },
+              },
+            ],
           },
           displaySets: [
             {
@@ -100,6 +122,17 @@ const hpMN: Types.HangingProtocol.Protocol = {
           viewportOptions: {
             toolGroupId: 'default',
             allowUnmatchedView: true,
+            syncGroups: [
+              {
+                type: 'hydrateseg',
+                id: 'sameFORId',
+                source: true,
+                target: true,
+                // options: {
+                //   matchingRules: ['sameFOR'],
+                // },
+              },
+            ],
           },
           displaySets: [
             {
@@ -112,6 +145,17 @@ const hpMN: Types.HangingProtocol.Protocol = {
           viewportOptions: {
             toolGroupId: 'default',
             allowUnmatchedView: true,
+            syncGroups: [
+              {
+                type: 'hydrateseg',
+                id: 'sameFORId',
+                source: true,
+                target: true,
+                // options: {
+                //   matchingRules: ['sameFOR'],
+                // },
+              },
+            ],
           },
           displaySets: [
             {

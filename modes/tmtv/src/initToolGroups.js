@@ -151,14 +151,8 @@ function _initToolGroups(toolNames, Enums, toolGroupService, commandsManager, mo
   const mipTools = {
     active: [
       {
-        toolName: toolNames.StackScroll,
+        toolName: toolNames.VolumeRotate,
         bindings: [{ mouseButton: Enums.MouseBindings.Wheel }],
-        configuration: {
-          rotate: {
-            enabled: true,
-            incrementDegrees: 5,
-          },
-        },
       },
       {
         toolName: toolNames.MipJumpToClick,
@@ -183,22 +177,8 @@ function _initToolGroups(toolNames, Enums, toolGroupService, commandsManager, mo
   toolGroupService.createToolGroupAndAddTools(toolGroupIds.MIP, mipTools);
 }
 
-function initToolGroups(
-  toolNames,
-  Enums,
-  toolGroupService,
-  commandsManager,
-  modeLabelConfig,
-  servicesManager
-) {
-  _initToolGroups(
-    toolNames,
-    Enums,
-    toolGroupService,
-    commandsManager,
-    modeLabelConfig,
-    servicesManager
-  );
+function initToolGroups(toolNames, Enums, toolGroupService, commandsManager, modeLabelConfig) {
+  _initToolGroups(toolNames, Enums, toolGroupService, commandsManager, modeLabelConfig);
 }
 
 export default initToolGroups;

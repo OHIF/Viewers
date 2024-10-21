@@ -25,18 +25,12 @@ const ctAXIAL: AppTypes.HangingProtocol.Viewport = {
         },
       },
       {
-        type: 'hydrateSEG',
-        id: 'sameFOR',
+        type: 'hydrateseg',
+        id: 'sameFORId',
         source: true,
         target: true,
         options: {
-          allowRemove: true,
-          syncConfig: true,
-          matchingRules: [
-            'sameFOR',
-            // same study instance uid
-            // not the same study instance uid
-          ],
+          matchingRules: ['sameFOR'],
         },
       },
     ],
@@ -71,17 +65,12 @@ const ctSAGITTAL: AppTypes.HangingProtocol.Viewport = {
         },
       },
       {
-        type: 'hydrateSEG',
-        id: 'sameFOR',
+        type: 'hydrateseg',
+        id: 'sameFORId',
         source: true,
         target: true,
         options: {
-          allowRemove: true,
-          matchingRules: [
-            'sameFOR',
-            // same study instance uid
-            // not the same study instance uid
-          ],
+          matchingRules: ['sameFOR'],
         },
       },
     ],
@@ -115,16 +104,20 @@ const ctCORONAL: AppTypes.HangingProtocol.Viewport = {
           syncColormap: true,
         },
       },
+      {
+        type: 'hydrateseg',
+        id: 'sameFORId',
+        source: true,
+        target: true,
+        options: {
+          matchingRules: ['sameFOR'],
+        },
+      },
     ],
   },
   displaySets: [
     {
       id: 'ctDisplaySet',
-    },
-  ],
-  overlays: [
-    {
-      id: 'sharedLabelmap',
     },
   ],
 };
@@ -166,6 +159,15 @@ const ptAXIAL: AppTypes.HangingProtocol.Viewport = {
           syncInvertState: false,
         },
       },
+      {
+        type: 'hydrateseg',
+        id: 'sameFORId',
+        source: true,
+        target: true,
+        options: {
+          matchingRules: ['sameFOR'],
+        },
+      },
     ],
   },
   displaySets: [
@@ -177,11 +179,6 @@ const ptAXIAL: AppTypes.HangingProtocol.Viewport = {
         voiInverted: true,
       },
       id: 'ptDisplaySet',
-    },
-  ],
-  overlays: [
-    {
-      id: 'sharedLabelmap',
     },
   ],
 };
@@ -219,6 +216,15 @@ const ptSAGITTAL: AppTypes.HangingProtocol.Viewport = {
           syncInvertState: false,
         },
       },
+      {
+        type: 'hydrateseg',
+        id: 'sameFORId',
+        source: true,
+        target: true,
+        options: {
+          matchingRules: ['sameFOR'],
+        },
+      },
     ],
   },
   displaySets: [
@@ -230,11 +236,6 @@ const ptSAGITTAL: AppTypes.HangingProtocol.Viewport = {
         voiInverted: true,
       },
       id: 'ptDisplaySet',
-    },
-  ],
-  overlays: [
-    {
-      id: 'sharedLabelmap',
     },
   ],
 };
@@ -272,6 +273,15 @@ const ptCORONAL: AppTypes.HangingProtocol.Viewport = {
           syncInvertState: false,
         },
       },
+      {
+        type: 'hydrateseg',
+        id: 'sameFORId',
+        source: true,
+        target: true,
+        options: {
+          matchingRules: ['sameFOR'],
+        },
+      },
     ],
   },
   displaySets: [
@@ -283,11 +293,6 @@ const ptCORONAL: AppTypes.HangingProtocol.Viewport = {
         voiInverted: true,
       },
       id: 'ptDisplaySet',
-    },
-  ],
-  overlays: [
-    {
-      id: 'sharedLabelmap',
     },
   ],
 };
@@ -334,6 +339,15 @@ const fusionAXIAL: AppTypes.HangingProtocol.Viewport = {
           syncInvertState: false,
         },
       },
+      {
+        type: 'hydrateseg',
+        id: 'sameFORId',
+        source: true,
+        target: true,
+        options: {
+          matchingRules: ['sameFOR'],
+        },
+      },
     ],
   },
   displaySets: [
@@ -355,11 +369,6 @@ const fusionAXIAL: AppTypes.HangingProtocol.Viewport = {
           custom: 'getPTVOIRange',
         },
       },
-    },
-  ],
-  overlays: [
-    {
-      id: 'sharedLabelmap',
     },
   ],
 };
@@ -406,6 +415,15 @@ const fusionSAGITTAL = {
           syncInvertState: false,
         },
       },
+      {
+        type: 'hydrateseg',
+        id: 'sameFORId',
+        source: true,
+        target: true,
+        options: {
+          matchingRules: ['sameFOR'],
+        },
+      },
     ],
   },
   displaySets: [
@@ -427,11 +445,6 @@ const fusionSAGITTAL = {
           custom: 'getPTVOIRange',
         },
       },
-    },
-  ],
-  overlays: [
-    {
-      id: 'sharedLabelmap',
     },
   ],
 };
@@ -478,6 +491,15 @@ const fusionCORONAL = {
           syncInvertState: false,
         },
       },
+      {
+        type: 'hydrateseg',
+        id: 'sameFORId',
+        source: true,
+        target: true,
+        options: {
+          matchingRules: ['sameFOR'],
+        },
+      },
     ],
   },
   displaySets: [
@@ -499,11 +521,6 @@ const fusionCORONAL = {
           custom: 'getPTVOIRange',
         },
       },
-    },
-  ],
-  overlays: [
-    {
-      id: 'sharedLabelmap',
     },
   ],
 };
@@ -535,6 +552,15 @@ const mipSAGITTAL: AppTypes.HangingProtocol.Viewport = {
           syncInvertState: false,
         },
       },
+      {
+        type: 'hydrateseg',
+        id: 'sameFORId',
+        source: true,
+        target: true,
+        options: {
+          matchingRules: ['sameFOR'],
+        },
+      },
     ],
 
     // Custom props can be used to set custom properties which extensions
@@ -559,11 +585,6 @@ const mipSAGITTAL: AppTypes.HangingProtocol.Viewport = {
       id: 'ptDisplaySet',
     },
   ],
-  // overlays: [
-  //   {
-  //     id: 'sharedLabelmap',
-  //   },
-  // ],
 };
 
 export {

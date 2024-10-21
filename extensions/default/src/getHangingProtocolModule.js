@@ -27,6 +27,17 @@ const defaultProtocol = {
       viewportType: 'stack',
       toolGroupId: 'default',
       allowUnmatchedView: true,
+      syncGroups: [
+        {
+          type: 'hydrateseg',
+          id: 'sameFORId',
+          source: true,
+          target: true,
+          options: {
+            matchingRules: ['sameFOR'],
+          },
+        },
+      ],
     },
     displaySets: [
       {
@@ -86,6 +97,17 @@ const defaultProtocol = {
             //   index: 180,
             //   preset: 'middle', // 'first', 'last', 'middle'
             // },
+            syncGroups: [
+              {
+                type: 'hydrateseg',
+                id: 'sameFORId',
+                source: true,
+                target: true,
+                // options: {
+                //   matchingRules: ['sameFOR'],
+                // },
+              },
+            ],
           },
           displaySets: [
             {

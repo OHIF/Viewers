@@ -320,7 +320,7 @@ export default async function init({
   //       const alreadyHasRepresentation = !!representations.length;
 
   //       if (matchSuccess && !alreadyHasRepresentation) {
-  //         segmentationService.addSegmentationRepresentationToViewport({
+  //         segmentationService.addSegmentationRepresentation({
   //           viewportId,
   //           segmentationId,
   //         });

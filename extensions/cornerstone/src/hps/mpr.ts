@@ -80,6 +80,15 @@ export const mpr: Types.HangingProtocol.Protocol = {
                   syncColormap: true,
                 },
               },
+              {
+                type: 'hydrateseg',
+                id: 'sameFORId',
+                source: true,
+                target: true,
+                options: {
+                  matchingRules: ['sameFOR'],
+                },
+              },
             ],
           },
           displaySets: [
@@ -107,6 +116,15 @@ export const mpr: Types.HangingProtocol.Protocol = {
                   syncColormap: true,
                 },
               },
+              {
+                type: 'hydrateseg',
+                id: 'sameFORId',
+                source: true,
+                target: true,
+                options: {
+                  matchingRules: ['sameFOR'],
+                },
+              },
             ],
           },
           displaySets: [
@@ -132,6 +150,15 @@ export const mpr: Types.HangingProtocol.Protocol = {
                 target: true,
                 options: {
                   syncColormap: true,
+                },
+              },
+              {
+                type: 'hydrateseg',
+                id: 'sameFORId',
+                source: true,
+                target: true,
+                options: {
+                  matchingRules: ['sameFOR'],
                 },
               },
             ],

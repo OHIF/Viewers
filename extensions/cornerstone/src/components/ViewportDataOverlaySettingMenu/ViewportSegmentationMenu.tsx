@@ -40,10 +40,7 @@ function ViewportSegmentationMenu({
   };
 
   const addSegmentationToViewport = segmentationId => {
-    segmentationService.addSegmentationRepresentationToViewport({
-      viewportId,
-      segmentationId,
-    });
+    segmentationService.addSegmentationRepresentation(viewportId, { segmentationId });
   };
 
   const removeSegmentationFromViewport = segmentationId => {

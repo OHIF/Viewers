@@ -310,6 +310,11 @@ class SegmentationService extends PubSubService {
       this._onSegmentationDataModifiedFromSource
     );
 
+    eventTarget.removeEventListener(
+      csToolsEnums.Events.SEGMENTATION_REPRESENTATION_ADDED,
+      this._onSegmentationModifiedFromSource
+    );
+
     this.listeners = {};
   };
 
@@ -365,26 +370,26 @@ class SegmentationService extends PubSubService {
       }
     );
 
-    await this.addSegmentationRepresentationToViewport({
-      viewportId,
+    await this.addSegmentationRepresentation(viewportId, {
       segmentationId,
-      representationType: LABELMAP,
+      type: csToolsEnums.SegmentationRepresentations.Labelmap,
     });
 
     return generatedSegmentationId;
   }
 
-  public async addSegmentationRepresentationToViewport({
-    viewportId,
-    segmentationId,
-    representationType = csToolsEnums.SegmentationRepresentations.Labelmap,
-    suppressEvents = false,
-  }: {
-    viewportId: string;
-    segmentationId: string;
-    representationType?: csToolsEnums.SegmentationRepresentations;
-    suppressEvents?: boolean;
-  }): Promise<void> {
+  public async addSegmentationRepresentation(
+    viewportId: string,
+    {
+      segmentationId,
+      type,
+      suppressEvents = false,
+    }: {
+      segmentationId: string;
+      type?: csToolsEnums.SegmentationRepresentations;
+      suppressEvents?: boolean;
+    }
+  ): Promise<void> {
     const segmentation = this.getAndValidateSegmentation(segmentationId);
     const csViewport = this.getAndValidateViewport(viewportId);
     const colorLUTIndex = this._segmentationIdToColorLUTIndexMap.get(segmentationId);
@@ -401,10 +406,10 @@ class SegmentationService extends PubSubService {
       segmentation,
       viewportId,
       segmentationId,
-      representationType
+      type ? type : csToolsEnums.SegmentationRepresentations.Labelmap
     );
 
-    await this.addSegmentationRepresentation(
+    await this._addSegmentationRepresentation(
       viewportId,
       segmentationId,
       representationTypeToUse,
@@ -506,7 +511,7 @@ class SegmentationService extends PubSubService {
     return { representationTypeToUse: SegmentationRepresentations.Labelmap, isConverted };
   }
 
-  private async addSegmentationRepresentation(
+  private async _addSegmentationRepresentation(
     viewportId: string,
     segmentationId: string,
     representationType: csToolsEnums.SegmentationRepresentations,
@@ -1392,6 +1397,11 @@ class SegmentationService extends PubSubService {
 
     eventTarget.addEventListener(
       csToolsEnums.Events.SEGMENTATION_REPRESENTATION_MODIFIED,
+      this._onSegmentationRepresentationModifiedFromSource
+    );
+
+    eventTarget.addEventListener(
+      csToolsEnums.Events.SEGMENTATION_REPRESENTATION_ADDED,
       this._onSegmentationRepresentationModifiedFromSource
     );
 

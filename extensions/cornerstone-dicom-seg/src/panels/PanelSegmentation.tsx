@@ -1,30 +1,17 @@
 import { createReportAsync } from '@ohif/extension-default';
 import React, { useEffect, useState } from 'react';
-import {
-  NoSegmentationRow as DefaultNoSegmentationRow,
-  AddSegmentRow as DefaultAddSegmentRow,
-  SegmentationTable,
-  SegmentationTableConfig as DefaultSegmentationTableConfig,
-  SegmentationHeaderCollapsed as DefaultSegmentationHeaderCollapsed,
-  SegmentationHeaderExpanded as DefaultSegmentationHeaderExpanded,
-} from '@ohif/ui-next';
+import { SegmentationTable } from '@ohif/ui-next';
 import callInputDialog from './callInputDialog';
 import { colorPickerDialog } from '@ohif/extension-default';
-import { useTranslation } from 'react-i18next';
 
 export default function PanelSegmentation({
   servicesManager,
   commandsManager,
   extensionManager,
   configuration,
-  renderHeader,
-  getCloseIcon,
-  tab,
 }: withAppTypes) {
   const { segmentationService, viewportGridService, uiDialogService, customizationService } =
     servicesManager.services;
-
-  const { t } = useTranslation('PanelSegmentation');
 
   const [segmentationsInfo, setSegmentationsInfo] = useState(() =>
     segmentationService.getSegmentationsInfo({
@@ -261,10 +248,6 @@ export default function PanelSegmentation({
   // Merge configuration into handlers
   const handlers = {
     ...initialHandlers,
-    onSegmentationAdd:
-      typeof configuration?.onSegmentationAdd === 'function'
-        ? configuration.onSegmentationAdd
-        : initialHandlers.onSegmentationAdd,
   };
 
   const { disableEditing } = configuration ?? {};
@@ -277,13 +260,22 @@ export default function PanelSegmentation({
     }
   );
 
+  // custom onSegmentationAdd if provided
+  const { onSegmentationAdd } = customizationService.getCustomization(
+    'segmentation.onSegmentationAdd',
+    {
+      id: 'segmentation.onSegmentationAdd',
+      onSegmentationAdd: handlers.onSegmentationAdd,
+    }
+  );
+
   return (
     <SegmentationTable
       data={segmentationsInfo}
       mode={SegmentationTableMode}
       title="Segmentations"
       disableEditing={disableEditing}
-      onSegmentationAdd={handlers.onSegmentationAdd}
+      onSegmentationAdd={onSegmentationAdd}
       onSegmentationClick={handlers.onSegmentationClick}
       onSegmentationDelete={handlers.onSegmentationDelete}
       onSegmentAdd={handlers.onSegmentAdd}

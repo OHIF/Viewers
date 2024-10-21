@@ -104,10 +104,13 @@ function modeFactory({ modeConfiguration }) {
 
       customizationService.addModeCustomizations([
         {
-          id: 'segmentation.panel',
-          segmentationPanelMode: 'expanded',
-          addSegment: false,
+          id: 'segmentationTable.mode',
+          mode: 'expanded',
+        },
+        {
+          id: 'segmentation.onSegmentationAdd',
           onSegmentationAdd: () => {
+            debugger;
             commandsManager.run('createNewLabelmapFromPT');
           },
         },

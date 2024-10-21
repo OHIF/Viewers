@@ -347,8 +347,7 @@ const commandsModule = ({ commandsManager, servicesManager }: withAppTypes) => {
 
       for (const viewport of viewports.values()) {
         const viewportId = viewport.viewportId;
-        await segmentationService.addSegmentationRepresentationToViewport({
-          viewportId,
+        await segmentationService.addSegmentationRepresentation(viewportId, {
           segmentationId,
         });
 

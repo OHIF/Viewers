@@ -908,10 +908,9 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
         ? csToolsEnums.SegmentationRepresentations.Labelmap
         : csToolsEnums.SegmentationRepresentations.Contour;
 
-    segmentationService.addSegmentationRepresentationToViewport({
-      viewportId: viewport.id,
+    segmentationService.addSegmentationRepresentation(viewport.id, {
       segmentationId,
-      representationType,
+      type: representationType,
     });
 
     // store the segmentation presentation id in the viewport info
@@ -1151,10 +1150,9 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
       const { segmentationId, type, hydrated } = presentation;
 
       if (hydrated) {
-        segmentationService.addSegmentationRepresentationToViewport({
-          viewportId: viewport.id,
+        segmentationService.addSegmentationRepresentation(viewport.id, {
           segmentationId,
-          representationType: type,
+          type,
         });
       }
     });

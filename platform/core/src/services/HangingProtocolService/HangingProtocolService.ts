@@ -512,12 +512,6 @@ export default class HangingProtocolService extends PubSubService {
 
   _validateProtocol(protocol: HangingProtocol.Protocol): HangingProtocol.Protocol {
     protocol.id = protocol.id || protocol.name;
-    const defaultViewportOptions = {
-      toolGroupId: 'default',
-      viewportType: 'stack',
-    };
-    // Automatically compute some number of attributes if they
-    // aren't present.  Makes defining new HPs easier.
     protocol.name = protocol.name || protocol.id;
     const { stages } = protocol;
 
@@ -544,10 +538,10 @@ export default class HangingProtocolService extends PubSubService {
         const { rows, columns } = stage.viewportStructure.properties;
 
         for (let i = 0; i < rows * columns; i++) {
+          const defaultViewport = stage.defaultViewport || protocol.defaultViewport || {};
           stage.viewports.push({
             viewportOptions: {
-              ...defaultViewportOptions,
-              // Use 'default' for the first viewport, and UUIDs for the rest.
+              ...defaultViewport.viewportOptions,
               viewportId: i === 0 ? 'default' : uuidv4(),
             },
             displaySets: [],
@@ -556,14 +550,14 @@ export default class HangingProtocolService extends PubSubService {
       } else {
         // Clone each viewport to ensure independent objects
         stage.viewports = stage.viewports.map((viewport, index) => {
+          const defaultViewport = stage.defaultViewport || protocol.defaultViewport || {};
           const existingViewportId = viewport.viewportOptions?.viewportId;
 
           return {
             ...viewport,
             viewportOptions: {
-              ...(viewport.viewportOptions || defaultViewportOptions),
-              // use provided viewportId when available, otherwise use default for first viewport
-              // and uuid for the rest
+              ...defaultViewport.viewportOptions,
+              ...viewport.viewportOptions,
               viewportId: existingViewportId
                 ? existingViewportId
                 : index === 0

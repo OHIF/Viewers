@@ -13,12 +13,24 @@ import {
   DropdownMenuPortal,
 } from '../DropdownMenu';
 import { Tooltip, TooltipTrigger, TooltipContent } from '../Tooltip/Tooltip';
+import { useSegmentationTableContext } from './SegmentationTableContext';
+import { useTranslation } from 'react-i18next';
 
 export const SegmentationHeader: React.FC<{
   segmentation?: any;
-  representation?: any;
-}> = ({ segmentation, representation }) => {
-  if (!segmentation || !representation) {
+}> = ({ segmentation }) => {
+  const { t } = useTranslation('SegmentationTable');
+  const {
+    onSegmentAdd,
+    onSegmentationRemoveFromViewport,
+    onSegmentationEdit,
+    onSegmentationDelete,
+    onSegmentationDownload,
+    onSegmentationDownloadRTSS,
+    storeSegmentation,
+  } = useSegmentationTableContext('SegmentationHeader');
+
+  if (!segmentation) {
     return null;
   }
 
@@ -31,45 +43,82 @@ export const SegmentationHeader: React.FC<{
               variant="ghost"
               size="icon"
               className="ml-1"
+              onClick={e => e.stopPropagation()}
             >
               <Icons.More className="h-6 w-6" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="start">
-            <DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={e => {
+                e.stopPropagation();
+                onSegmentAdd(segmentation.segmentationId);
+              }}
+            >
               <Icons.Add className="text-foreground" />
-              <span className="pl-2">Add Segment</span>
+              <span className="pl-2">{t('Add Segment')}</span>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={e => {
+                e.stopPropagation();
+                onSegmentationRemoveFromViewport(segmentation.segmentationId);
+              }}
+            >
               <Icons.Series className="text-foreground" />
-              <span className="pl-2">Remove from Viewport</span>
+              <span className="pl-2">{t('Remove from Viewport')}</span>
             </DropdownMenuItem>
-            <DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={e => {
+                e.stopPropagation();
+                onSegmentationEdit(segmentation.segmentationId);
+              }}
+            >
               <Icons.Rename className="text-foreground" />
-              <span className="pl-2">Rename</span>
+              <span className="pl-2">{t('Rename')}</span>
             </DropdownMenuItem>
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={e => e.stopPropagation()}>
               <Icons.Hide className="text-foreground" />
-              <span className="pl-2">Hide or Show all Segments</span>
+              <span className="pl-2">{t('Hide or Show all Segments')}</span>
             </DropdownMenuItem>
             <DropdownMenuSub>
-              <DropdownMenuSubTrigger>
+              <DropdownMenuSubTrigger onClick={e => e.stopPropagation()}>
                 <Icons.Export className="text-foreground" />
-                <span className="pl-2">Export & Download</span>
+                <span className="pl-2">{t('Export & Download')}</span>
               </DropdownMenuSubTrigger>
               <DropdownMenuPortal>
                 <DropdownMenuSubContent>
-                  <DropdownMenuItem>Export DICOM SEG</DropdownMenuItem>
-                  <DropdownMenuItem>Download DICOM SEG</DropdownMenuItem>
-                  <DropdownMenuItem>Download DICOM RTSTRUCT</DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={e => {
+                      e.stopPropagation();
+                      storeSegmentation(segmentation.segmentationId);
+                    }}
+                  >
+                    {t('Export DICOM SEG')}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={e => {
+                      e.stopPropagation();
+                      onSegmentationDownload(segmentation.segmentationId);
+                    }}
+                  >
+                    {t('Download DICOM SEG')}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={e => {
+                      e.stopPropagation();
+                      onSegmentationDownloadRTSS(segmentation.segmentationId);
+                    }}
+                  >
+                    {t('Download DICOM RTSTRUCT')}
+                  </DropdownMenuItem>
                 </DropdownMenuSubContent>
               </DropdownMenuPortal>
             </DropdownMenuSub>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={() => onSegmentationDelete(segmentation.segmentationId)}>
               <Icons.Delete className="text-red-600" />
-              <span className="pl-2 text-red-600">Delete</span>
+              <span className="pl-2 text-red-600">{t('Delete')}</span>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
