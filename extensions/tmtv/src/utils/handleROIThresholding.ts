@@ -1,4 +1,5 @@
 import { Segment, Segmentation } from '@cornerstonejs/tools/types';
+import { triggerEvent, eventTarget, Enums } from '@cornerstonejs/core';
 
 export const handleROIThresholding = async ({
   segmentationId,
@@ -9,50 +10,64 @@ export const handleROIThresholding = async ({
 }>) => {
   const segmentation = segmentationService.getSegmentation(segmentationId);
 
+  triggerEvent(eventTarget, Enums.Events.WEB_WORKER_PROGRESS, {
+    progress: 0,
+    type: 'Calculate Lesion Stats',
+    id: segmentationId,
+  });
+
   // re-calculating the cached stats for the active segmentation
   const updatedPerSegmentCachedStats = {};
-  await Promise.all(
-    Object.entries(segmentation.segments).map(async ([segmentIndex, segment]) => {
-      if (!segment) {
-        return [segmentIndex, segment];
-      }
+  for (const [segmentIndex, segment] of Object.entries(segmentation.segments)) {
+    if (!segment) {
+      continue;
+    }
 
-      const lesionStats = commandsManager.run('getLesionStats', {
-        segmentationId,
-        segmentIndex: Number(segmentIndex),
-      });
-      const suvPeak = await commandsManager.run('calculateSuvPeak', {
-        segmentationId,
-        segmentIndex: Number(segmentIndex),
-      });
-      const lesionGlyoclysisStats = lesionStats.volume * lesionStats.meanValue;
+    const numericSegmentIndex = Number(segmentIndex);
 
-      // update segDetails with the suv peak for the active segmentation
-      const cachedStats = {
-        lesionStats,
-        suvPeak,
-        lesionGlyoclysisStats,
-      };
+    const lesionStats = await commandsManager.run('getLesionStats', {
+      segmentationId,
+      segmentIndex: numericSegmentIndex,
+    });
 
-      const updatedSegment: Segment = {
-        ...segment,
-        cachedStats: {
-          ...segment.cachedStats,
-          ...cachedStats,
-        },
-      };
+    const suvPeak = await commandsManager.run('calculateSuvPeak', {
+      segmentationId,
+      segmentIndex: numericSegmentIndex,
+    });
 
-      updatedPerSegmentCachedStats[Number(segmentIndex)] = cachedStats;
+    const lesionGlyoclysisStats = lesionStats.volume * lesionStats.meanValue;
 
-      return [segmentIndex, updatedSegment];
-    })
-  );
+    // update segDetails with the suv peak for the active segmentation
+    const cachedStats = {
+      lesionStats,
+      suvPeak,
+      lesionGlyoclysisStats,
+    };
+
+    const updatedSegment: Segment = {
+      ...segment,
+      cachedStats: {
+        ...segment.cachedStats,
+        ...cachedStats,
+      },
+    };
+
+    updatedPerSegmentCachedStats[numericSegmentIndex] = cachedStats;
+
+    segmentation.segments[segmentIndex] = updatedSegment;
+  }
 
   // all available segmentations
   const segmentationsInfo = segmentationService.getSegmentationsInfo();
 
   const segmentations = segmentationsInfo.map(({ segmentation }) => segmentation);
-  const tmtv = commandsManager.run('calculateTMTV', { segmentations });
+  const tmtv = await commandsManager.run('calculateTMTV', { segmentations });
+
+  triggerEvent(eventTarget, Enums.Events.WEB_WORKER_PROGRESS, {
+    progress: 100,
+    type: 'Calculate Lesion Stats',
+    id: segmentationId,
+  });
 
   // add the tmtv to all the segment cachedStats, although it is a global
   // value but we don't have any other way to display it for now

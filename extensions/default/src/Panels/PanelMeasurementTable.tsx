@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import { useViewportGrid } from '@ohif/ui';
 import { MeasurementTable } from '@ohif/ui-next';
 import debounce from 'lodash.debounce';
-import { useMeasurements } from '../utils/measurementUtils';
+import { useMeasurements } from '../utils/useMeasurements';
 import { showLabelAnnotationPopup } from '../utils/callInputDialog';
 import colorPickerDialog from '../utils/colorPickerDialog';
 

@@ -25,7 +25,7 @@ import { useDisplaySetSelectorStore } from './stores/useDisplaySetSelectorStore'
 import { useHangingProtocolStageIndexStore } from './stores/useHangingProtocolStageIndexStore';
 import { useToggleHangingProtocolStore } from './stores/useToggleHangingProtocolStore';
 import { useToggleOneUpViewportGridStore } from './stores/useToggleOneUpViewportGridStore';
-import { useMeasurements } from './utils/measurementUtils';
+import { useMeasurements } from './utils/useMeasurements';
 import {
   callLabelAutocompleteDialog,
   showLabelAnnotationPopup,

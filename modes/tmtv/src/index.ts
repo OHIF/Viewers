@@ -104,14 +104,28 @@ function modeFactory({ modeConfiguration }) {
 
       customizationService.addModeCustomizations([
         {
-          id: 'segmentationTable.mode',
+          id: 'PanelSegmentation.mode',
           mode: 'expanded',
         },
         {
-          id: 'segmentation.onSegmentationAdd',
+          id: 'PanelSegmentation.onSegmentationAdd',
           onSegmentationAdd: () => {
-            debugger;
             commandsManager.run('createNewLabelmapFromPT');
+          },
+        },
+        {
+          id: 'PanelSegmentation.readableText',
+          // remove following if you are not interested in that stats
+          readableText: {
+            lesionStats: 'Lesion Statistics',
+            minValue: 'Minimum Value',
+            maxValue: 'Maximum Value',
+            meanValue: 'Mean Value',
+            volume: 'Volume',
+            suvPeak: 'SUV Peak',
+            suvMax: 'Maximum SUV',
+            suvMaxIJK: 'SUV Max IJK',
+            lesionGlyoclysisStats: 'Lesion Glycolysis',
           },
         },
       ]);

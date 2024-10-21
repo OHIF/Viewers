@@ -1,8 +1,9 @@
 import { createReportAsync } from '@ohif/extension-default';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { SegmentationTable } from '@ohif/ui-next';
 import callInputDialog from './callInputDialog';
 import { colorPickerDialog } from '@ohif/extension-default';
+import { useSegmentations } from './useSegmentations';
 
 export default function PanelSegmentation({
   servicesManager,
@@ -13,52 +14,9 @@ export default function PanelSegmentation({
   const { segmentationService, viewportGridService, uiDialogService, customizationService } =
     servicesManager.services;
 
-  const [segmentationsInfo, setSegmentationsInfo] = useState(() =>
-    segmentationService.getSegmentationsInfo({
-      viewportId: viewportGridService.getActiveViewportId(),
-    })
-  );
+  const segmentationsInfo = useSegmentations({ servicesManager });
 
-  useEffect(() => {
-    const eventSubscriptions = [
-      {
-        service: segmentationService,
-        events: [
-          segmentationService.EVENTS.SEGMENTATION_MODIFIED,
-          segmentationService.EVENTS.SEGMENTATION_REMOVED,
-          segmentationService.EVENTS.SEGMENTATION_REPRESENTATION_MODIFIED,
-        ],
-      },
-      {
-        service: viewportGridService,
-        events: [
-          viewportGridService.EVENTS.ACTIVE_VIEWPORT_ID_CHANGED,
-          viewportGridService.EVENTS.GRID_STATE_CHANGED,
-        ],
-      },
-    ];
-
-    // Handler to update segmentations info
-    const updateSegmentationsInfo = () => {
-      const viewportId = viewportGridService.getActiveViewportId();
-      const segmentationsInfo = segmentationService.getSegmentationsInfo({ viewportId });
-      setSegmentationsInfo(segmentationsInfo);
-    };
-
-    // Subscribe to all events and collect unsubscribe functions
-    const allUnsubscribeFunctions = eventSubscriptions.flatMap(({ service, events }) =>
-      events.map(evt => {
-        const { unsubscribe } = service.subscribe(evt, updateSegmentationsInfo);
-        return unsubscribe;
-      })
-    );
-
-    return () => {
-      allUnsubscribeFunctions.forEach(unsubscribe => unsubscribe());
-    };
-  }, [viewportGridService, segmentationService]);
-
-  const initialHandlers = {
+  const handlers = {
     onSegmentationAdd: async () => {
       segmentationService.createEmptyLabelmapForViewport(viewportGridService.getActiveViewportId());
     },
@@ -245,15 +203,10 @@ export default function PanelSegmentation({
       segmentationService.setStyle({ type }, { fillAlphaInactive: value }),
   };
 
-  // Merge configuration into handlers
-  const handlers = {
-    ...initialHandlers,
-  };
-
   const { disableEditing } = configuration ?? {};
 
   const { mode: SegmentationTableMode } = customizationService.getCustomization(
-    'segmentationTable.mode',
+    'PanelSegmentation.mode',
     {
       id: 'default.segmentationTable.mode',
       mode: 'collapsed',
@@ -262,7 +215,7 @@ export default function PanelSegmentation({
 
   // custom onSegmentationAdd if provided
   const { onSegmentationAdd } = customizationService.getCustomization(
-    'segmentation.onSegmentationAdd',
+    'PanelSegmentation.onSegmentationAdd',
     {
       id: 'segmentation.onSegmentationAdd',
       onSegmentationAdd: handlers.onSegmentationAdd,

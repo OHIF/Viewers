@@ -33,7 +33,8 @@ export const SegmentationSegments: React.FC<{
     return null;
   }
 
-  const height = mode === 'collapsed' ? 'h-[600px]' : 'h-[200px]';
+  const segmentCount = Object.keys(representationToUse.segments).length;
+  const height = mode === 'collapsed' ? 'h-[600px]' : `h-[${segmentCount * 200}px]`;
 
   return (
     <ScrollArea
@@ -51,7 +52,7 @@ export const SegmentationSegments: React.FC<{
           return null;
         }
 
-        const { locked, active, label } = segmentFromSegmentation;
+        const { locked, active, label, displayText } = segmentFromSegmentation;
         const cssColor = `rgb(${color[0]},${color[1]},${color[2]})`;
 
         return (
@@ -59,7 +60,7 @@ export const SegmentationSegments: React.FC<{
             key={segmentIndex}
             number={segmentIndex}
             title={label}
-            description=""
+            details={displayText}
             colorHex={cssColor}
             isSelected={active}
             isVisible={visible}

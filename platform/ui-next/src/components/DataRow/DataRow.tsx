@@ -70,14 +70,68 @@ const DataRow: React.FC<DataRowProps> = ({
     }
   };
 
-  const renderDetailText = (text: string) => {
-    const parts = text.split(/(<small>.*?<\/small>)/);
-    return parts.map((part, index) => {
-      if (part.startsWith('<small>') && part.endsWith('</small>')) {
-        return <small key={index}>{part.slice(7, -8)}</small>;
-      }
-      return <span key={index}>{part}</span>;
-    });
+  const renderDetailText = (text: string, indent: number = 0) => {
+    const indentation = '  '.repeat(indent);
+    if (text === '') {
+      return (
+        <div
+          key={`empty-${indent}`}
+          className="h-2"
+        ></div>
+      ); // Empty row
+    }
+    return (
+      <div
+        key={text}
+        className="whitespace-pre-wrap"
+      >
+        {indentation}
+        {text.includes(':') ? (
+          <>
+            <span className="font-medium">{text.split(':')[0]}:</span>
+            {text.split(':')[1]}
+          </>
+        ) : (
+          <span className="font-medium">{text}</span> // Category title
+        )}
+      </div>
+    );
+  };
+
+  const renderDetails = (details: string[]) => {
+    const visibleLines = details.slice(0, 4);
+    const hiddenLines = details.slice(4);
+
+    return (
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <div className="cursor-help">
+            <div className="flex flex-col space-y-1">
+              {visibleLines.map((line, lineIndex) =>
+                renderDetailText(line, line.startsWith('  ') ? 1 : 0)
+              )}
+            </div>
+            {hiddenLines.length > 0 && (
+              <div className="text-muted-foreground mt-1 flex items-center text-sm">
+                <span>...</span>
+                <Icons.Info className="mr-1 h-5 w-5" />
+              </div>
+            )}
+          </div>
+        </TooltipTrigger>
+        <TooltipContent
+          side="right"
+          align="start"
+          className="max-w-md"
+        >
+          <div className="text-secondary-foreground flex flex-col space-y-1 text-sm leading-normal">
+            {details.map((line, lineIndex) =>
+              renderDetailText(line, line.startsWith('  ') ? 1 : 0)
+            )}
+          </div>
+        </TooltipContent>
+      </Tooltip>
+    );
   };
 
   return (
@@ -205,23 +259,10 @@ const DataRow: React.FC<DataRowProps> = ({
         </div>
       </div>
 
-      {details && (details.primary.length > 0 || details.secondary.length > 0) && (
+      {details && details.primary?.length > 0 && (
         <div className="ml-7 px-2 py-2">
-          <div className="text-secondary-foreground flex flex-col space-y-2">
-            <div className="flex items-start justify-between text-sm leading-normal">
-              <div className="flex-grow whitespace-pre-line">
-                {details.primary.map((line, lineIndex) => (
-                  <div key={lineIndex}>{renderDetailText(line)}</div>
-                ))}
-              </div>
-              {details.secondary.length > 0 && (
-                <div className="text-muted-foreground ml-4 flex-shrink-0">
-                  {details.secondary.map((secondaryText, index) => (
-                    <small key={index}>{secondaryText}</small>
-                  ))}
-                </div>
-              )}
-            </div>
+          <div className="text-secondary-foreground text-sm leading-normal">
+            {renderDetails(details.primary)}
           </div>
         </div>
       )}

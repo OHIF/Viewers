@@ -1,7 +1,6 @@
 import React from 'react';
 
-import { SegmentationTable } from './SegmentationTable';
-import { useSegmentationTableContext } from './SegmentationTableContext';
+import { SegmentationTable, useSegmentationTableContext } from './SegmentationTable';
 import { SegmentationTableConfig } from './SegmentationTableConfig';
 import { AddSegmentationRow } from './AddSegmentationRow';
 import { AddSegmentRow } from './AddSegmentRow';
