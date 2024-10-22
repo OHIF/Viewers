@@ -1,6 +1,7 @@
 import SUPPORTED_TOOLS from './constants/supportedTools';
 import getSOPInstanceAttributes from './utils/getSOPInstanceAttributes';
 import { getIsLocked } from './utils/getIsLocked';
+import { getIsVisible } from './utils/getIsVisible';
 import { utils } from '@ohif/core';
 
 /**
@@ -27,8 +28,8 @@ const SplineROI = {
   ) => {
     const { annotation } = csToolsEventDetail;
     const { metadata, data, annotationUID } = annotation;
-    const isLocked = getIsLocked(annotation);
-
+    const isLocked = getIsLocked(annotationUID);
+    const isVisible = getIsVisible(annotationUID);
     if (!metadata || !data) {
       console.warn('SplineROI tool: Missing metadata or data');
       return null;
@@ -71,6 +72,7 @@ const SplineROI = {
       type: getValueTypeFromToolType(toolName),
       getReport: () => getColumnValueReport(annotation, customizationService),
       isLocked,
+      isVisible,
     };
   },
 };

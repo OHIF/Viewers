@@ -71,6 +71,7 @@ import {
   Tooltip,
   TooltipTrigger,
   TooltipContent,
+  StudySummary,
 } from './components';
 import { DataRow } from './components/DataRow';
 
@@ -154,4 +155,5 @@ export {
   Tooltip,
   TooltipTrigger,
   TooltipContent,
+  StudySummary,
 };

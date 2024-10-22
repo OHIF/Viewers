@@ -40,6 +40,7 @@ function mapMeasurementToDisplay(measurement, displaySetService) {
     displayText.primary.push(finding.text);
   }
 
+  console.debug('measurement', measurement);
   return {
     ...measurement,
     displayText,

@@ -89,7 +89,7 @@ export default function PanelMeasurementTable({
     measurementService.toggleVisibilityMeasurement(uid);
   };
 
-  const displayMeasurementsWithoutFindings = displayMeasurements.filter(
+  const measurements = displayMeasurements.filter(
     dm => dm.measurementType !== measurementService.VALUE_TYPES.POINT && dm.referencedImageId
   );
   const additionalFindings = displayMeasurements.filter(
@@ -105,7 +105,7 @@ export default function PanelMeasurementTable({
       >
         <MeasurementTable
           title="Measurements"
-          data={displayMeasurementsWithoutFindings}
+          data={measurements}
           onClick={jumpToImage}
           onDelete={removeMeasurement}
           onToggleVisibility={toggleVisibilityMeasurement}
@@ -119,7 +119,7 @@ export default function PanelMeasurementTable({
                 {typeof customHeader === 'function'
                   ? customHeader({
                       additionalFindings,
-                      displayMeasurementsWithoutFindings,
+                      measurements,
                     })
                   : customHeader}
               </>

@@ -3,6 +3,7 @@ import { getDisplayUnit } from './utils';
 import getSOPInstanceAttributes from './utils/getSOPInstanceAttributes';
 import { utils } from '@ohif/core';
 import { getIsLocked } from './utils/getIsLocked';
+import { getIsVisible } from './utils/getIsVisible';
 const Probe = {
   toAnnotation: measurement => {},
 
@@ -21,7 +22,8 @@ const Probe = {
   ) => {
     const { annotation } = csToolsEventDetail;
     const { metadata, data, annotationUID } = annotation;
-    const isLocked = getIsLocked(annotation);
+    const isLocked = getIsLocked(annotationUID);
+    const isVisible = getIsVisible(annotationUID);
     if (!metadata || !data) {
       console.warn('Probe tool: Missing metadata or data');
       return null;
@@ -66,6 +68,7 @@ const Probe = {
       points,
       metadata,
       isLocked,
+      isVisible,
       referenceSeriesUID: SeriesInstanceUID,
       referenceStudyUID: StudyInstanceUID,
       referencedImageId,

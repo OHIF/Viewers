@@ -1,7 +1,7 @@
 import SUPPORTED_TOOLS from './constants/supportedTools';
 import { getIsLocked } from './utils/getIsLocked';
 import getSOPInstanceAttributes from './utils/getSOPInstanceAttributes';
-
+import { getIsVisible } from './utils/getIsVisible';
 const Length = {
   toAnnotation: measurement => {},
 
@@ -21,7 +21,8 @@ const Length = {
     const { annotation } = csToolsEventDetail;
     const { metadata, data, annotationUID } = annotation;
 
-    const isLocked = getIsLocked(annotation);
+    const isLocked = getIsLocked(annotationUID);
+    const isVisible = getIsVisible(annotationUID);
     if (!metadata || !data) {
       console.warn('Length tool: Missing metadata or data');
       return null;
@@ -64,6 +65,7 @@ const Length = {
       points,
       textBox,
       isLocked,
+      isVisible,
       metadata,
       referenceSeriesUID: SeriesInstanceUID,
       referenceStudyUID: StudyInstanceUID,

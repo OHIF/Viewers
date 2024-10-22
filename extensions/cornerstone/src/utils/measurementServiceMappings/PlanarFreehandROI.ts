@@ -2,6 +2,7 @@ import SUPPORTED_TOOLS from './constants/supportedTools';
 import getSOPInstanceAttributes from './utils/getSOPInstanceAttributes';
 import { utils } from '@ohif/core';
 import { getIsLocked } from './utils/getIsLocked';
+import { getIsVisible } from './utils/getIsVisible';
 /**
  * Represents a mapping utility for Planar Freehand ROI measurements.
  */
@@ -27,8 +28,8 @@ const PlanarFreehandROI = {
     const { annotation } = csToolsEventDetail;
     const { metadata, data, annotationUID } = annotation;
 
-    const isLocked = getIsLocked(annotation);
-
+    const isLocked = getIsLocked(annotationUID);
+    const isVisible = getIsVisible(annotationUID);
     if (!metadata || !data) {
       console.warn('PlanarFreehandROI tool: Missing metadata or data');
       return null;
@@ -72,6 +73,7 @@ const PlanarFreehandROI = {
       type: getValueTypeFromToolType(toolName),
       getReport: () => getColumnValueReport(annotation, customizationService),
       isLocked,
+      isVisible,
     };
   },
 };

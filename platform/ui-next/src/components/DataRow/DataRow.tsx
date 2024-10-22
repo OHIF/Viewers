@@ -206,6 +206,7 @@ const DataRow: React.FC<DataRowProps> = ({
             }`}
             aria-label={isVisible ? 'Hide' : 'Show'}
             onClick={e => {
+              console.debug('DataRow: Visibility Toggle Clicked');
               e.stopPropagation();
               onToggleVisibility();
             }}

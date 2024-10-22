@@ -4,6 +4,7 @@ import getSOPInstanceAttributes from './utils/getSOPInstanceAttributes';
 import { utils } from '@ohif/core';
 import { getStatisticDisplayString } from './utils/getValueDisplayString';
 import { getIsLocked } from './utils/getIsLocked';
+import { getIsVisible } from './utils/getIsVisible';
 
 const CircleROI = {
   toAnnotation: measurement => {},
@@ -17,7 +18,9 @@ const CircleROI = {
     const { annotation } = csToolsEventDetail;
     const { metadata, data, annotationUID } = annotation;
 
-    const isLocked = getIsLocked(annotation);
+    const isLocked = getIsLocked(annotationUID);
+    const isVisible = getIsVisible(annotationUID);
+
     if (!metadata || !data) {
       console.warn('Length tool: Missing metadata or data');
       return null;
@@ -62,6 +65,7 @@ const CircleROI = {
       points,
       textBox,
       isLocked,
+      isVisible,
       metadata,
       referenceSeriesUID: SeriesInstanceUID,
       referenceStudyUID: StudyInstanceUID,

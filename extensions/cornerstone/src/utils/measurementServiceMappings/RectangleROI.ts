@@ -4,6 +4,7 @@ import getSOPInstanceAttributes from './utils/getSOPInstanceAttributes';
 import { utils } from '@ohif/core';
 import { getStatisticDisplayString } from './utils/getValueDisplayString';
 import { getIsLocked } from './utils/getIsLocked';
+import { getIsVisible } from './utils/getIsVisible';
 
 const RectangleROI = {
   toAnnotation: measurement => {},
@@ -16,7 +17,9 @@ const RectangleROI = {
   ) => {
     const { annotation } = csToolsEventDetail;
     const { metadata, data, annotationUID } = annotation;
-    const isLocked = getIsLocked(annotation);
+    const isLocked = getIsLocked(annotationUID);
+    const isVisible = getIsVisible(annotationUID);
+
     if (!metadata || !data) {
       console.warn('Rectangle ROI tool: Missing metadata or data');
       return null;
@@ -73,6 +76,7 @@ const RectangleROI = {
       type: getValueTypeFromToolType(toolName),
       getReport,
       isLocked,
+      isVisible,
     };
   },
 };

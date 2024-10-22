@@ -44,6 +44,7 @@ const MEASUREMENT_SCHEMA_KEYS = [
   'displaySetInstanceUID',
   'label',
   'isLocked',
+  'isVisible',
   'description',
   'type',
   'unit',

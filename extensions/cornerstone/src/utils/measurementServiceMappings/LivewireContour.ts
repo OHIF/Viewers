@@ -3,6 +3,7 @@ import getSOPInstanceAttributes from './utils/getSOPInstanceAttributes';
 import { getDisplayUnit } from './utils';
 import { utils } from '@ohif/core';
 import { getIsLocked } from './utils/getIsLocked';
+import { getIsVisible } from './utils/getIsVisible';
 /**
  * Represents a mapping utility for Livewire measurements.
  */
@@ -28,8 +29,8 @@ const LivewireContour = {
     const { annotation } = csToolsEventDetail;
     const { metadata, data, annotationUID } = annotation;
 
-    const isLocked = getIsLocked(annotation);
-
+    const isLocked = getIsLocked(annotationUID);
+    const isVisible = getIsVisible(annotationUID);
     if (!metadata || !data) {
       console.warn('Livewire tool: Missing metadata or data');
       return null;
@@ -68,7 +69,8 @@ const LivewireContour = {
       displaySetInstanceUID: displaySet.displaySetInstanceUID,
       label: data.label,
       isLocked,
-      displayText: getDisplayText(annotation, displaySet, customizationService),
+      isVisible,
+      displayText: getDisplayText(annotation, displaySet),
       data: data.cachedStats,
       type: getValueTypeFromToolType(toolName),
       getReport: () => getColumnValueReport(annotation, customizationService),

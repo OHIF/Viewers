@@ -50,7 +50,7 @@ import { useSegmentations } from './hooks/useSegmentations';
 import { useMeasurements } from './hooks/useMeasurements';
 import getPanelModule from './getPanelModule';
 import PanelSegmentation from './panels/PanelSegmentation';
-import PanelMeasurements from './panels/PanelMeasurement';
+import PanelMeasurement from './panels/PanelMeasurement';
 
 const { imageRetrieveMetadataProvider } = cornerstone.utilities;
 
@@ -245,6 +245,6 @@ export {
   useMeasurements,
   useSegmentations,
   PanelSegmentation,
-  PanelMeasurements,
+  PanelMeasurement,
 };
 export default cornerstoneExtension;

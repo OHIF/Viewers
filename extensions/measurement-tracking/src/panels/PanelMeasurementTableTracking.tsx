@@ -1,6 +1,7 @@
-import React, { useEffect, useState, useRef } from 'react';
-import { showLabelAnnotationPopup, PanelMeasurementTable } from '@ohif/extension-default';
-import { StudySummary, useViewportGrid, ActionButtons } from '@ohif/ui';
+import React, { useEffect, useState } from 'react';
+import { PanelMeasurement } from '@ohif/extension-cornerstone';
+import { useViewportGrid } from '@ohif/ui';
+import { StudySummary } from '@ohif/ui-next';
 import { Button, Icons } from '@ohif/ui-next';
 import { DicomMetadataStore, utils } from '@ohif/core';
 import { useAppConfig } from '@state';
@@ -75,11 +76,10 @@ function PanelMeasurementTableTracking({
       {displayStudySummary.key && (
         <StudySummary
           date={formatDate(displayStudySummary.date)}
-          modality={displayStudySummary.modality}
           description={displayStudySummary.description}
         />
       )}
-      <PanelMeasurementTable
+      <PanelMeasurement
         servicesManager={servicesManager}
         extensionManager={extensionManager}
         commandsManager={commandsManager}
@@ -87,9 +87,8 @@ function PanelMeasurementTableTracking({
           trackedStudy === measurement.referenceStudyUID &&
           trackedSeries.includes(measurement.referenceSeriesUID)
         }
-        customHeader={({ additionalFindings, displayMeasurementsWithoutFindings }) => {
-          const disabled =
-            additionalFindings.length === 0 && displayMeasurementsWithoutFindings.length === 0;
+        customHeader={({ additionalFindings, measurements }) => {
+          const disabled = additionalFindings.length === 0 && measurements.length === 0;
 
           if (appConfig?.disableEditing || disabled) {
             return null;
@@ -134,7 +133,7 @@ function PanelMeasurementTableTracking({
             </div>
           );
         }}
-      ></PanelMeasurementTable>
+      ></PanelMeasurement>
     </>
   );
 }

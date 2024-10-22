@@ -1,5 +1,6 @@
 import SUPPORTED_TOOLS from './constants/supportedTools';
 import { getIsLocked } from './utils/getIsLocked';
+import { getIsVisible } from './utils/getIsVisible';
 import getSOPInstanceAttributes from './utils/getSOPInstanceAttributes';
 import { utils } from '@ohif/core';
 import { config } from '@cornerstonejs/tools/annotation';
@@ -23,7 +24,8 @@ const Length = {
     const { annotation } = csToolsEventDetail;
     const { metadata, data, annotationUID } = annotation;
 
-    const isLocked = getIsLocked(annotation);
+    const isLocked = getIsLocked(annotationUID);
+    const isVisible = getIsVisible(annotationUID);
     const colorString = config.style.getStyleProperty('color', { annotationUID });
 
     // color string is like 'rgb(255, 255, 255)' we need them to be in RGBA array [255, 255, 255, 255]
@@ -73,6 +75,7 @@ const Length = {
       points,
       textBox,
       isLocked,
+      isVisible,
       metadata,
       // color,
       referenceSeriesUID: SeriesInstanceUID,
