@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useImageViewer, useViewportGrid } from '@ohif/ui';
 import { StudyBrowser } from '@ohif/ui-next';
-import { StudyBrowser } from '@ohif/ui-next';
 import { utils } from '@ohif/core';
 import { useNavigate } from 'react-router-dom';
 import { Separator } from '@ohif/ui-next';
@@ -319,16 +318,6 @@ function PanelStudyBrowser({
     </>
   );
 }
-
-PanelStudyBrowser.propTypes = {
-  servicesManager: PropTypes.object.isRequired,
-  dataSource: PropTypes.shape({
-    getImageIdsForDisplaySet: PropTypes.func.isRequired,
-  }).isRequired,
-  getImageSrc: PropTypes.func.isRequired,
-  getStudiesForPatientByMRN: PropTypes.func.isRequired,
-  requestDisplaySetCreationForStudy: PropTypes.func.isRequired,
-};
 
 export default PanelStudyBrowser;
 

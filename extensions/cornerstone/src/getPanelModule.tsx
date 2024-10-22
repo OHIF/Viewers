@@ -2,7 +2,6 @@ import React from 'react';
 
 import { useAppConfig } from '@state';
 import { Toolbox } from '@ohif/ui-next';
-import { Toolbox } from '@ohif/ui-next';
 import PanelSegmentation from './panels/PanelSegmentation';
 import ActiveViewportWindowLevel from './components/ActiveViewportWindowLevel';
 

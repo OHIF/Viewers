@@ -19,7 +19,7 @@ function mapSegmentationToDisplay(segmentation, customizationService) {
     for (const key in stats) {
       if (Object.prototype.hasOwnProperty.call(stats, key)) {
         const value = stats[key];
-        const readableText = readableTextMap[key];
+        const readableText = readableTextMap?.[key];
 
         if (!readableText) {
           continue;
