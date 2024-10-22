@@ -17,7 +17,6 @@ const actionsNotSupportedByVideoViewport = [
   'StackScroll',
   'invert',
   'Probe',
-  'Cine',
   'Angle',
   'CobbAngle',
   'Magnify',
