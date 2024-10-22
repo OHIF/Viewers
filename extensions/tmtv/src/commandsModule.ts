@@ -182,7 +182,7 @@ const commandsModule = ({ servicesManager, commandsManager, extensionManager }: 
         ptDisplaySet.displaySetInstanceUID,
         {
           label: `Segmentation ${currentSegmentations.length + 1}`,
-          segments: { 1: { label: 'Segment 1' } },
+          segments: { 1: { label: 'Segment 1', active: true } },
         }
       );
 

@@ -2,9 +2,8 @@ import React, { useEffect, useRef } from 'react';
 import { useViewportGrid } from '@ohif/ui';
 import { MeasurementTable } from '@ohif/ui-next';
 import debounce from 'lodash.debounce';
-import { useMeasurements } from '../utils/useMeasurements';
-import { showLabelAnnotationPopup } from '../utils/callInputDialog';
-import colorPickerDialog from '../utils/colorPickerDialog';
+import { useMeasurements } from '../hooks/useMeasurements';
+import { showLabelAnnotationPopup, colorPickerDialog } from '@ohif/extension-default';
 
 export default function PanelMeasurementTable({
   servicesManager,
@@ -66,7 +65,6 @@ export default function PanelMeasurementTable({
 
   const changeColorMeasurement = (uid: string) => {
     const { color } = measurementService.getMeasurement(uid);
-    debugger;
     const rgbaColor = {
       r: color[0],
       g: color[1],
@@ -79,7 +77,6 @@ export default function PanelMeasurementTable({
       }
 
       const color = [newRgbaColor.r, newRgbaColor.g, newRgbaColor.b, newRgbaColor.a * 255.0];
-      debugger;
       // segmentationService.setSegmentColor(viewportId, segmentationId, segmentIndex, color);
     });
   };

@@ -9,6 +9,7 @@ import {
 } from '../../../../ui-next/src/components/Accordion';
 import { DataRow } from '../../../../ui-next/src/components/DataRow';
 import { actionOptionsMap, dataList } from '../../../../ui-next/assets/data';
+import { TooltipProvider } from '../../../../ui-next/src';
 
 interface DataItem {
   id: number;
@@ -50,81 +51,83 @@ export default function Measurements() {
 
   return (
     <div className="my-4 flex max-w-6xl justify-end bg-black py-6">
-      {/* Simulated Panel List for "Segmentation" */}
-      <div className="w-64 space-y-0">
-        <Accordion
-          type="multiple"
-          defaultValue={['measurements-list', 'measurements-additional']}
-          tabIndex={0}
-        >
-          {/* Segmentation Tools */}
-          <AccordionItem value="measurements-list">
-            <AccordionTrigger className="bg-popover hover:bg-accent text-muted-foreground my-0.5 flex h-7 w-full items-center justify-between rounded py-2 pr-1 pl-2 font-normal">
-              <span>Measurements</span>
-            </AccordionTrigger>
-            <AccordionContent>
-              <div className="mx-2 my-0">
-                <div className="text-foreground text-sm">2024-Jan-01</div>
-                <div className="text-muted-foreground border-input border-b-2 pb-1 text-sm">
-                  Study title lorem ipsum
+      <TooltipProvider>
+        {/* Simulated Panel List for "Segmentation" */}
+        <div className="w-64 space-y-0">
+          <Accordion
+            type="multiple"
+            defaultValue={['measurements-list', 'measurements-additional']}
+            tabIndex={0}
+          >
+            {/* Segmentation Tools */}
+            <AccordionItem value="measurements-list">
+              <AccordionTrigger className="bg-popover hover:bg-accent text-muted-foreground my-0.5 flex h-7 w-full items-center justify-between rounded py-2 pr-1 pl-2 font-normal">
+                <span>Measurements</span>
+              </AccordionTrigger>
+              <AccordionContent>
+                <div className="mx-2 my-0">
+                  <div className="text-foreground text-sm">2024-Jan-01</div>
+                  <div className="text-muted-foreground border-input border-b-2 pb-1 text-sm">
+                    Study title lorem ipsum
+                  </div>
                 </div>
-              </div>
 
-              <div className="flex h-9 w-full items-center rounded pr-0.5">
-                <div className="flex space-x-1">
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    className="pl-1.5"
-                  >
-                    <Icons.Download />
-                    <span className="pl-1">CSV</span>
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    className="pl-0.5"
-                  >
-                    <Icons.Add />
-                    Create DICOM SR
-                  </Button>
+                <div className="flex h-9 w-full items-center rounded pr-0.5">
+                  <div className="flex space-x-1">
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      className="pl-1.5"
+                    >
+                      <Icons.Download />
+                      <span className="pl-1">CSV</span>
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      className="pl-0.5"
+                    >
+                      <Icons.Add />
+                      Create DICOM SR
+                    </Button>
+                  </div>
                 </div>
-              </div>
-              <div className="space-y-px">
-                {roiToolsGroup.items.map((item, index) => {
-                  const compositeId = `${roiToolsGroup.type}-${item.id}-panel`; // Ensure unique composite ID
-                  return (
-                    <DataRow
-                      key={`panel-${compositeId}`} // Prefix to ensure uniqueness
-                      number={index + 1}
-                      title={item.title}
-                      description={item.description}
-                      optionalField={item.optionalField}
-                      colorHex={item.colorHex}
-                      details={item.details}
-                      series={item.series} // Pass the new series field
-                      actionOptions={actionOptionsMap[roiToolsGroup.type] || ['Action']}
-                      onAction={(action: string) => handleAction(compositeId, action)}
-                      isSelected={selectedRowId === compositeId}
-                      onSelect={() => handleRowSelect(compositeId)}
-                    />
-                  );
-                })}
-              </div>
-            </AccordionContent>
-          </AccordionItem>
+                <div className="space-y-px">
+                  {roiToolsGroup.items.map((item, index) => {
+                    const compositeId = `${roiToolsGroup.type}-${item.id}-panel`; // Ensure unique composite ID
+                    return (
+                      <DataRow
+                        key={`panel-${compositeId}`} // Prefix to ensure uniqueness
+                        number={index + 1}
+                        title={item.title}
+                        description={item.description}
+                        optionalField={item.optionalField}
+                        colorHex={item.colorHex}
+                        details={item.details}
+                        series={item.series} // Pass the new series field
+                        actionOptions={actionOptionsMap[roiToolsGroup.type] || ['Action']}
+                        onAction={(action: string) => handleAction(compositeId, action)}
+                        isSelected={selectedRowId === compositeId}
+                        onSelect={() => handleRowSelect(compositeId)}
+                      />
+                    );
+                  })}
+                </div>
+              </AccordionContent>
+            </AccordionItem>
 
-          {/* Additional Findings */}
-          <AccordionItem value="measurements-additional">
-            <AccordionTrigger className="bg-popover hover:bg-accent text-muted-foreground my-0.5 flex h-7 w-full items-center justify-between rounded py-2 pr-1 pl-2 font-normal">
-              <span>Additional Findings</span>
-            </AccordionTrigger>
-            <AccordionContent>
-              <div className="bg-muted mb-0.5 h-12 rounded-b pb-3"></div>
-            </AccordionContent>
-          </AccordionItem>
-        </Accordion>
-      </div>
+            {/* Additional Findings */}
+            <AccordionItem value="measurements-additional">
+              <AccordionTrigger className="bg-popover hover:bg-accent text-muted-foreground my-0.5 flex h-7 w-full items-center justify-between rounded py-2 pr-1 pl-2 font-normal">
+                <span>Additional Findings</span>
+              </AccordionTrigger>
+              <AccordionContent>
+                <div className="bg-muted mb-0.5 h-12 rounded-b pb-3"></div>
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
+        </div>
+      </TooltipProvider>
     </div>
   );
 }

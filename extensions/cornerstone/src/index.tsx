@@ -34,7 +34,6 @@ import type { PublicViewportOptions } from './services/ViewportService/Viewport'
 import ImageOverlayViewerTool from './tools/ImageOverlayViewerTool';
 import ViewportActionCornersService from './services/ViewportActionCornersService/ViewportActionCornersService';
 import { ViewportActionCornersProvider } from './contextProviders/ViewportActionCornersProvider';
-import ActiveViewportWindowLevel from './components/ActiveViewportWindowLevel';
 import getSOPInstanceAttributes from './utils/measurementServiceMappings/utils/getSOPInstanceAttributes';
 import { findNearbyToolData } from './utils/findNearbyToolData';
 import { createFrameViewSynchronizer } from './synchronizers/frameViewSynchronizer';
@@ -47,6 +46,11 @@ import {
   useSynchronizersStore,
 } from './stores';
 import { useToggleOneUpViewportGridStore } from '../../default/src/stores/useToggleOneUpViewportGridStore';
+import { useSegmentations } from './hooks/useSegmentations';
+import { useMeasurements } from './hooks/useMeasurements';
+import getPanelModule from './getPanelModule';
+import PanelSegmentation from './panels/PanelSegmentation';
+import PanelMeasurements from './panels/PanelMeasurement';
 
 const { imageRetrieveMetadataProvider } = cornerstone.utilities;
 
@@ -111,7 +115,7 @@ const cornerstoneExtension: Types.Extensions.Extension = {
     // how to define them.
     imageRetrieveMetadataProvider.add('stack', stackRetrieveOptions);
   },
-
+  getPanelModule,
   onModeExit: ({ servicesManager }: withAppTypes): void => {
     const { cineService } = servicesManager.services;
     // Empty out the image load and retrieval pools to prevent memory leaks
@@ -157,16 +161,6 @@ const cornerstoneExtension: Types.Extensions.Extension = {
   },
 
   getToolbarModule,
-  getPanelModule({ servicesManager }) {
-    return [
-      {
-        name: 'activeViewportWindowLevel',
-        component: () => {
-          return <ActiveViewportWindowLevel servicesManager={servicesManager} />;
-        },
-      },
-    ];
-  },
   getHangingProtocolModule,
   getViewportModule({ servicesManager, commandsManager }) {
     const ExtendedOHIFCornerstoneViewport = props => {
@@ -248,5 +242,9 @@ export {
   useSegmentationPresentationStore,
   useSynchronizersStore,
   Enums,
+  useMeasurements,
+  useSegmentations,
+  PanelSegmentation,
+  PanelMeasurements,
 };
 export default cornerstoneExtension;

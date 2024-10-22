@@ -1,15 +1,14 @@
-import { createReportAsync } from '@ohif/extension-default';
 import React from 'react';
 import { SegmentationTable } from '@ohif/ui-next';
-import callInputDialog from './callInputDialog';
-import { colorPickerDialog } from '@ohif/extension-default';
-import { useSegmentations } from './useSegmentations';
+import { callInputDialog, colorPickerDialog, createReportAsync } from '@ohif/extension-default';
+import { useSegmentations } from '../hooks/useSegmentations';
 
 export default function PanelSegmentation({
   servicesManager,
   commandsManager,
   extensionManager,
   configuration,
+  children,
 }: withAppTypes) {
   const { segmentationService, viewportGridService, uiDialogService, customizationService } =
     servicesManager.services;
@@ -223,52 +222,55 @@ export default function PanelSegmentation({
   );
 
   return (
-    <SegmentationTable
-      data={segmentationsInfo}
-      mode={SegmentationTableMode}
-      title="Segmentations"
-      disableEditing={disableEditing}
-      onSegmentationAdd={onSegmentationAdd}
-      onSegmentationClick={handlers.onSegmentationClick}
-      onSegmentationDelete={handlers.onSegmentationDelete}
-      onSegmentAdd={handlers.onSegmentAdd}
-      onSegmentClick={handlers.onSegmentClick}
-      onSegmentEdit={handlers.onSegmentEdit}
-      onSegmentationEdit={handlers.onSegmentationEdit}
-      onSegmentColorClick={handlers.onSegmentColorClick}
-      onSegmentDelete={handlers.onSegmentDelete}
-      onToggleSegmentVisibility={handlers.onToggleSegmentVisibility}
-      onToggleSegmentLock={handlers.onToggleSegmentLock}
-      onToggleSegmentationVisibility={handlers.onToggleSegmentationVisibility}
-      onSegmentationDownload={handlers.onSegmentationDownload}
-      storeSegmentation={handlers.storeSegmentation}
-      onSegmentationDownloadRTSS={handlers.onSegmentationDownloadRTSS}
-      setStyle={handlers.setStyle}
-      toggleRenderInactiveSegmentations={handlers.toggleRenderInactiveSegmentations}
-      onSegmentationRemoveFromViewport={handlers.onSegmentationRemoveFromViewport}
-      setFillAlpha={handlers.setFillAlpha}
-      setOutlineWidth={handlers.setOutlineWidth}
-      renderInactiveSegmentations={handlers.getRenderInactiveSegmentations()}
-      setRenderFill={handlers.setRenderFill}
-      setRenderOutline={handlers.setRenderOutline}
-      setFillAlphaInactive={handlers.setFillAlphaInactive}
-    >
-      <SegmentationTable.Config />
-      <SegmentationTable.AddSegmentationRow />
+    <>
+      <SegmentationTable
+        data={segmentationsInfo}
+        mode={SegmentationTableMode}
+        title="Segmentations"
+        disableEditing={disableEditing}
+        onSegmentationAdd={onSegmentationAdd}
+        onSegmentationClick={handlers.onSegmentationClick}
+        onSegmentationDelete={handlers.onSegmentationDelete}
+        onSegmentAdd={handlers.onSegmentAdd}
+        onSegmentClick={handlers.onSegmentClick}
+        onSegmentEdit={handlers.onSegmentEdit}
+        onSegmentationEdit={handlers.onSegmentationEdit}
+        onSegmentColorClick={handlers.onSegmentColorClick}
+        onSegmentDelete={handlers.onSegmentDelete}
+        onToggleSegmentVisibility={handlers.onToggleSegmentVisibility}
+        onToggleSegmentLock={handlers.onToggleSegmentLock}
+        onToggleSegmentationVisibility={handlers.onToggleSegmentationVisibility}
+        onSegmentationDownload={handlers.onSegmentationDownload}
+        storeSegmentation={handlers.storeSegmentation}
+        onSegmentationDownloadRTSS={handlers.onSegmentationDownloadRTSS}
+        setStyle={handlers.setStyle}
+        toggleRenderInactiveSegmentations={handlers.toggleRenderInactiveSegmentations}
+        onSegmentationRemoveFromViewport={handlers.onSegmentationRemoveFromViewport}
+        setFillAlpha={handlers.setFillAlpha}
+        setOutlineWidth={handlers.setOutlineWidth}
+        renderInactiveSegmentations={handlers.getRenderInactiveSegmentations()}
+        setRenderFill={handlers.setRenderFill}
+        setRenderOutline={handlers.setRenderOutline}
+        setFillAlphaInactive={handlers.setFillAlphaInactive}
+      >
+        {children}
+        <SegmentationTable.Config />
+        <SegmentationTable.AddSegmentationRow />
 
-      {SegmentationTableMode === 'collapsed' ? (
-        <SegmentationTable.Collapsed>
-          <SegmentationTable.SelectorHeader />
-          <SegmentationTable.AddSegmentRow />
-          <SegmentationTable.Segments />
-        </SegmentationTable.Collapsed>
-      ) : (
-        <SegmentationTable.Expanded>
-          <SegmentationTable.Header />
-          {/* <SegmentationTable.AddSegmentRow /> */}
-          <SegmentationTable.Segments />
-        </SegmentationTable.Expanded>
-      )}
-    </SegmentationTable>
+        {SegmentationTableMode === 'collapsed' ? (
+          <SegmentationTable.Collapsed>
+            <SegmentationTable.SelectorHeader />
+            <SegmentationTable.AddSegmentRow />
+            <SegmentationTable.Segments />
+          </SegmentationTable.Collapsed>
+        ) : (
+          <SegmentationTable.Expanded>
+            <SegmentationTable.Header />
+            {/* <SegmentationTable.AddSegmentRow /> */}
+            <SegmentationTable.Segments />
+          </SegmentationTable.Expanded>
+        )}
+      </SegmentationTable>
+    </>
   );
 }

@@ -16,7 +16,11 @@ const ohif = {
   thumbnailList: '@ohif/extension-default.panelModule.seriesList',
   wsiSopClassHandler:
     '@ohif/extension-cornerstone.sopClassHandlerModule.DicomMicroscopySopClassHandler',
-  measurements: '@ohif/extension-default.panelModule.measurements',
+};
+
+const cornerstone = {
+  measurements: '@ohif/extension-cornerstone.panelModule.measurements',
+  segmentation: '@ohif/extension-cornerstone.panelModule.panelSegmentation',
 };
 
 const tracked = {
@@ -44,7 +48,6 @@ const dicompdf = {
 const dicomSeg = {
   sopClassHandler: '@ohif/extension-cornerstone-dicom-seg.sopClassHandlerModule.dicom-seg',
   viewport: '@ohif/extension-cornerstone-dicom-seg.viewportModule.dicom-seg',
-  panel: '@ohif/extension-cornerstone-dicom-seg.panelModule.panelSegmentation',
 };
 
 const dicomPmap = {
@@ -174,7 +177,7 @@ function modeFactory({ modeConfiguration }) {
             id: ohif.layout,
             props: {
               leftPanels: [tracked.thumbnailList],
-              rightPanels: [dicomSeg.panel, tracked.measurements],
+              rightPanels: [cornerstone.segmentation, tracked.measurements],
               // leftPanelClosed: true,
               viewports: [
                 {

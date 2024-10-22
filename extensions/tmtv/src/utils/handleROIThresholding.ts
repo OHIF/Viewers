@@ -71,18 +71,29 @@ export const handleROIThresholding = async ({
 
   // add the tmtv to all the segment cachedStats, although it is a global
   // value but we don't have any other way to display it for now
-  segmentation.cachedStats = {
-    ...segmentation.cachedStats,
-    tmtv,
-  };
+  // Update all segmentations with the calculated TMTV
+  segmentationsInfo.forEach(({ segmentation }) => {
+    segmentation.cachedStats = {
+      ...segmentation.cachedStats,
+      tmtv,
+    };
 
-  // Update the segmentation object
-  const updatedSegmentation: Segmentation = {
-    ...segmentation,
-    segments: {
-      ...segmentation.segments,
-    },
-  };
+    // Update each segment within the segmentation
+    Object.keys(segmentation.segments).forEach(segmentIndex => {
+      segmentation.segments[segmentIndex].cachedStats = {
+        ...segmentation.segments[segmentIndex].cachedStats,
+        tmtv,
+      };
+    });
 
-  segmentationService.addOrUpdateSegmentation(segmentationId, updatedSegmentation);
+    // Update the segmentation object
+    const updatedSegmentation: Segmentation = {
+      ...segmentation,
+      segments: {
+        ...segmentation.segments,
+      },
+    };
+
+    segmentationService.addOrUpdateSegmentation(segmentation.segmentationId, updatedSegmentation);
+  });
 };

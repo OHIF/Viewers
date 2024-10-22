@@ -77,7 +77,11 @@ function mapSegmentationToDisplay(segmentation, customizationService) {
   };
 }
 
-export function useSegmentations({ servicesManager }) {
+export function useSegmentations({
+  servicesManager,
+  subscribeToDataModified = false,
+  debounceTime = 0,
+}) {
   const { segmentationService, viewportGridService, customizationService } =
     servicesManager.services;
   const [segmentationsInfo, setSegmentationsInfo] = useState([]);
@@ -103,7 +107,8 @@ export function useSegmentations({ servicesManager }) {
       setSegmentationsInfo(mappedSegmentations);
     };
 
-    const debouncedUpdate = debounce(updateSegmentationsInfo, 100);
+    const debouncedUpdate =
+      debounceTime > 0 ? debounce(updateSegmentationsInfo, debounceTime) : updateSegmentationsInfo;
 
     updateSegmentationsInfo();
 
@@ -127,11 +132,22 @@ export function useSegmentations({ servicesManager }) {
       viewportGridService.subscribe(viewportGridService.EVENTS.GRID_STATE_CHANGED, debouncedUpdate),
     ];
 
+    if (subscribeToDataModified) {
+      subscriptions.push(
+        segmentationService.subscribe(
+          segmentationService.EVENTS.SEGMENTATION_DATA_MODIFIED,
+          debouncedUpdate
+        )
+      );
+    }
+
     return () => {
       subscriptions.forEach(subscription => subscription.unsubscribe());
-      debouncedUpdate.cancel();
+      if (debounceTime > 0) {
+        debouncedUpdate.cancel();
+      }
     };
-  }, [segmentationService, viewportGridService, customizationService]);
+  }, [segmentationService, viewportGridService, customizationService, debounceTime]);
 
   return segmentationsInfo;
 }

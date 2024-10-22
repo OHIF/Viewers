@@ -14,7 +14,7 @@ import { id } from './id.js';
 import preRegistration from './init';
 import { ContextMenuController, CustomizableContextMenuTypes } from './CustomizableContextMenu';
 import * as dicomWebUtils from './DicomWebDataSource/utils';
-import { createReportDialogPrompt, PanelMeasurementTable } from './Panels';
+import { createReportDialogPrompt } from './Panels';
 import createReportAsync from './Actions/createReportAsync';
 import StaticWadoClient from './DicomWebDataSource/utils/StaticWadoClient';
 import { cleanDenaturalizedDataset } from './DicomWebDataSource/utils';
@@ -25,7 +25,6 @@ import { useDisplaySetSelectorStore } from './stores/useDisplaySetSelectorStore'
 import { useHangingProtocolStageIndexStore } from './stores/useHangingProtocolStageIndexStore';
 import { useToggleHangingProtocolStore } from './stores/useToggleHangingProtocolStore';
 import { useToggleOneUpViewportGridStore } from './stores/useToggleOneUpViewportGridStore';
-import { useMeasurements } from './utils/useMeasurements';
 import {
   callLabelAutocompleteDialog,
   showLabelAnnotationPopup,
@@ -91,11 +90,9 @@ export {
   useUIStateStore,
   useViewportGridStore,
   useViewportsByPositionStore,
-  useMeasurements,
   showLabelAnnotationPopup,
   callLabelAutocompleteDialog,
   callInputDialog,
-  PanelMeasurementTable,
   promptSaveReport,
   promptLabelAnnotation,
   colorPickerDialog,

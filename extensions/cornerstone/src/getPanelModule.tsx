@@ -3,6 +3,7 @@ import React from 'react';
 import { useAppConfig } from '@state';
 import { Toolbox } from '@ohif/ui-next';
 import PanelSegmentation from './panels/PanelSegmentation';
+import ActiveViewportWindowLevel from './components/ActiveViewportWindowLevel';
 
 const getPanelModule = ({
   commandsManager,
@@ -12,9 +13,8 @@ const getPanelModule = ({
   title,
 }: withAppTypes) => {
   const { customizationService } = servicesManager.services;
-  const modeCustomization = customizationService.getModeCustomization('segmentation.panel');
 
-  const wrappedPanelSegmentation = ({ configuration, renderHeader, getCloseIcon, tab }) => {
+  const wrappedPanelSegmentation = ({ configuration }) => {
     const [appConfig] = useAppConfig();
 
     return (
@@ -27,9 +27,6 @@ const getPanelModule = ({
           disableEditing: appConfig.disableEditing,
           ...customizationService.get('segmentation.panel'),
         }}
-        renderHeader={renderHeader}
-        getCloseIcon={getCloseIcon}
-        tab={tab}
       />
     );
   };
@@ -45,7 +42,6 @@ const getPanelModule = ({
         configuration={{
           ...configuration,
           disableEditing: appConfig.disableEditing,
-          ...modeCustomization,
         }}
       />
     );
@@ -81,7 +77,6 @@ const getPanelModule = ({
           configuration={{
             ...configuration,
             disableEditing: appConfig.disableEditing,
-            ...modeCustomization,
           }}
         />
       </>
@@ -89,6 +84,12 @@ const getPanelModule = ({
   };
 
   return [
+    {
+      name: 'activeViewportWindowLevel',
+      component: () => {
+        return <ActiveViewportWindowLevel servicesManager={servicesManager} />;
+      },
+    },
     {
       name: 'panelSegmentation',
       iconName: 'tab-segmentation',
