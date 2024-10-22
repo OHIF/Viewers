@@ -418,7 +418,7 @@ const commandsModule = ({
       history.navigate(historyArgs.to, historyArgs.options);
     },
 
-    openDICOMTagViewer() {
+    openDICOMTagViewer({ displaySetInstanceUID }: { displaySetInstanceUID?: string }) {
       const { activeViewportId, viewports } = viewportGridService.getState();
       const activeViewportSpecificData = viewports.get(activeViewportId);
       const { displaySetInstanceUIDs } = activeViewportSpecificData;
@@ -426,12 +426,12 @@ const commandsModule = ({
       const displaySets = displaySetService.activeDisplaySets;
       const { UIModalService } = servicesManager.services;
 
-      const displaySetInstanceUID = displaySetInstanceUIDs[0];
+      const defaultDisplaySetInstanceUID = displaySetInstanceUID || displaySetInstanceUIDs[0];
       UIModalService.show({
         content: DicomTagBrowser,
         contentProps: {
           displaySets,
-          displaySetInstanceUID,
+          displaySetInstanceUID: defaultDisplaySetInstanceUID,
           onClose: UIModalService.hide,
         },
         containerDimensions: 'w-[70%] max-w-[900px]',

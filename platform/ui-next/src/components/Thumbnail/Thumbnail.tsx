@@ -5,6 +5,13 @@ import { useDrag } from 'react-dnd';
 import { Icons } from '../Icons';
 import { DisplaySetMessageListTooltip } from '../DisplaySetMessageListTooltip';
 import { TooltipTrigger, TooltipContent, TooltipProvider, Tooltip } from '../Tooltip';
+import { Button } from '../Button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '../DropdownMenu';
 
 /**
  * Display a thumbnail for a display set.
@@ -30,8 +37,10 @@ const Thumbnail = ({
   canReject = false,
   onReject = () => {},
   isTracked = false,
+  thumbnailType = 'thumbnail',
   onClickUntrack = () => {},
-}): React.ReactNode => {
+  onThumbnailContextMenu,
+}: withAppTypes): React.ReactNode => {
   // TODO: We should wrap our thumbnail to create a "DraggableThumbnail", as
   // this will still allow for "drag", even if there is no drop target for the
   // specified item.
@@ -124,10 +133,42 @@ const Thumbnail = ({
                 </Tooltip>
               )}
             </div>
+            {/* bottom right */}
+            <div className="absolute bottom-0 right-0 flex items-center gap-[4px] p-[4px]">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="hidden group-hover:inline-flex data-[state=open]:inline-flex"
+                  >
+                    <Icons.More />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent
+                  asChild
+                  hideWhenDetached
+                >
+                  <DropdownMenuItem
+                    onSelect={() => {
+                      onThumbnailContextMenu('openDICOMTagViewer', {
+                        displaySetInstanceUID,
+                      });
+                    }}
+                    className="gap-[6px]"
+                  >
+                    <Icons.DicomTagBrowser />
+                    Tag Browser
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
           </div>
         </div>
         <div className="flex h-[52px] w-[128px] flex-col">
-          <div className="text-[12px] text-white">{description}</div>
+          <div className="min-h-[18px] w-[128px] overflow-hidden text-ellipsis text-[12px] text-white">
+            {description}
+          </div>
           <div className="flex h-[12px] items-center gap-[7px] overflow-hidden">
             <div className="text-muted-foreground text-[12px]"> S:{seriesNumber}</div>
             <div className="text-muted-foreground text-[12px]">
@@ -221,6 +262,33 @@ const Thumbnail = ({
               </TooltipContent>
             </Tooltip>
           )}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="hidden group-hover:inline-flex data-[state=open]:inline-flex"
+              >
+                <Icons.More />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent
+              asChild
+              hideWhenDetached
+            >
+              <DropdownMenuItem
+                onSelect={() => {
+                  onThumbnailContextMenu('openDICOMTagViewer', {
+                    displaySetInstanceUID,
+                  });
+                }}
+                className="gap-[6px]"
+              >
+                <Icons.DicomTagBrowser />
+                Tag Browser
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
     );
@@ -230,12 +298,16 @@ const Thumbnail = ({
     <div
       className={classnames(
         className,
-        'bg-muted hover:bg-primary/30 flex cursor-pointer select-none flex-col outline-none',
+        'bg-muted hover:bg-primary/30 group flex cursor-pointer select-none flex-col outline-none',
         viewPreset === 'thumbnails' && 'h-[170px] w-[135px]',
-        viewPreset === 'list' && 'h-[40px] w-[275px]'
+        viewPreset === 'list' && 'col-span-2 h-[40px] w-[275px]'
       )}
       id={`thumbnail-${displaySetInstanceUID}`}
-      data-cy={`study-browser-thumbnail`}
+      data-cy={
+        thumbnailType === 'thumbnailNoImage'
+          ? 'study-browser-thumbnail-no-image'
+          : 'study-browser-thumbnail'
+      }
       data-series={seriesNumber}
       onClick={onClick}
       onDoubleClick={onDoubleClick}
@@ -285,6 +357,7 @@ Thumbnail.propTypes = {
   isTracked: PropTypes.bool,
   onClickUntrack: PropTypes.func,
   countIcon: PropTypes.string,
+  thumbnailType: PropTypes.oneOf(['thumbnail', 'thumbnailTracked', 'thumbnailNoImage']),
 };
 
 export { Thumbnail };

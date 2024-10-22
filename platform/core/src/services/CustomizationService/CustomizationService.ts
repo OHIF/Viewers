@@ -156,6 +156,12 @@ export default class CustomizationService extends PubSubService {
 
   public onModeEnter(): void {
     super.reset();
+
+    const modeCustomizationKeys = Array.from(this.modeCustomizations.keys());
+    for (const key of modeCustomizationKeys) {
+      this.transformedCustomizations.delete(key);
+    }
+
     this.modeCustomizations.clear();
   }
 

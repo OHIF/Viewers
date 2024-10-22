@@ -4,15 +4,11 @@ import { Icons } from '@ohif/ui-next';
 import { actionIcon, viewPreset } from './types';
 
 function PanelStudyBrowserTrackingHeader({
-  tab,
-  getCloseIcon,
   viewPresets,
   updateViewPresetValue,
   actionIcons,
   updateActionIconValue,
 }: {
-  tab: any;
-  getCloseIcon: () => JSX.Element;
   viewPresets: viewPreset[];
   updateViewPresetValue: (viewPreset: viewPreset) => void;
   actionIcons: actionIcon[];
@@ -22,7 +18,7 @@ function PanelStudyBrowserTrackingHeader({
     <>
       <div className="bg-muted flex h-[40px] select-none rounded-t p-2">
         <div className={'flex h-[24px] w-full select-none justify-center self-center text-[14px]'}>
-          <div className="flex w-full items-center justify-between">
+          <div className="flex w-full items-center gap-[10px]">
             <div className="flex h-full items-center justify-center">
               <ToggleGroup
                 type="single"
@@ -44,14 +40,8 @@ function PanelStudyBrowserTrackingHeader({
                 ))}
               </ToggleGroup>
             </div>
-
-            <div className="text-muted-foreground flex items-center justify-center">
-              {' '}
-              <span>{tab.label}</span>{' '}
-            </div>
-
-            <div className="mr-[30px] flex items-center justify-center">
-              <div className="flex items-center space-x-1">
+            <div className="flex items-center justify-center">
+              <div className="text-primary-active flex items-center space-x-1">
                 {actionIcons.map((icon: actionIcon, index) =>
                   React.createElement(Icons[icon.iconName] || Icons.MissingIcon, {
                     key: index,
@@ -63,7 +53,6 @@ function PanelStudyBrowserTrackingHeader({
             </div>
           </div>
         </div>
-        {getCloseIcon()}
       </div>
     </>
   );

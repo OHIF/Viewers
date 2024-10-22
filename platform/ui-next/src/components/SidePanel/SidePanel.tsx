@@ -153,7 +153,6 @@ const SidePanel = ({
   onActiveTabIndexChange,
 }) => {
   const [panelOpen, setPanelOpen] = useState(activeTabIndexProp !== null);
-  const [renderHeader, setRenderHeader] = useState(false);
   const [activeTabIndex, setActiveTabIndex] = useState(0);
 
   const styleMap = createStyleMap(expandedWidth, borderSize, collapsedWidth);
@@ -190,9 +189,6 @@ const SidePanel = ({
     [onActiveTabIndexChange, updatePanelOpen]
   );
 
-  useEffect(() => {
-    setRenderHeader(tabs.length === 1);
-  }, [tabs]);
   useEffect(() => {
     updateActiveTabIndex(activeTabIndexProp);
   }, [activeTabIndexProp, updateActiveTabIndex]);
@@ -260,7 +256,7 @@ const SidePanel = ({
     return (
       <div
         className={classnames(
-          'absolute flex h-[24px] cursor-pointer items-center justify-center',
+          'absolute flex cursor-pointer items-center justify-center',
           side === 'left' ? 'right-0' : 'left-0'
         )}
         style={{ width: `${closeIconWidth}px` }}
@@ -282,7 +278,6 @@ const SidePanel = ({
     return (
       <>
         {getCloseIcon()}
-
         <div className={classnames('flex grow justify-center')}>
           <div className={classnames('bg-primary-dark text-primary-active flex flex-wrap')}>
             {tabs.map((tab, tabIndex) => {
@@ -344,15 +339,26 @@ const SidePanel = ({
     );
   };
 
-  const getOpenStateComponent = () => {
-    if (tabs.length === 1) {
-      return null;
-    }
+  const getOneTabComponent = () => {
+    return (
+      <div
+        className={classnames(
+          'text-primary-active flex grow cursor-pointer select-none justify-center self-center text-[13px]'
+        )}
+        data-cy={`${tabs[0].name}-btn`}
+        onClick={() => updatePanelOpen(!panelOpen)}
+      >
+        {getCloseIcon()}
+        <span>{tabs[0].label}</span>
+      </div>
+    );
+  };
 
+  const getOpenStateComponent = () => {
     return (
       <>
         <div className="bg-bkg-med flex h-[40px] select-none rounded-t p-2">
-          {getTabGridComponent()}
+          {tabs.length === 1 ? getOneTabComponent() : getTabGridComponent()}
         </div>
         <Separator
           orientation="horizontal"
@@ -373,14 +379,7 @@ const SidePanel = ({
           {getOpenStateComponent()}
           {tabs.map((tab, tabIndex) => {
             if (tabIndex === activeTabIndex) {
-              return (
-                <tab.content
-                  key={tabIndex}
-                  getCloseIcon={getCloseIcon}
-                  tab={tab}
-                  renderHeader={renderHeader}
-                />
-              );
+              return <tab.content key={tabIndex} />;
             }
             return null;
           })}

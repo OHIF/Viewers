@@ -145,7 +145,7 @@ function OHIFCornerstoneSRMeasurementViewport(props: withAppTypes) {
 
         if (
           referencedDisplaySet.displaySetInstanceUID ===
-          activeImageDisplaySetData.displaySetInstanceUID
+          activeImageDisplaySetData?.displaySetInstanceUID
         ) {
           const { measurements } = srDisplaySet;
 

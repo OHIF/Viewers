@@ -2,16 +2,11 @@ import React from 'react';
 
 import { useAppConfig } from '@state';
 import { Toolbox } from '@ohif/ui-next';
+import { Toolbox } from '@ohif/ui-next';
 import PanelSegmentation from './panels/PanelSegmentation';
 import ActiveViewportWindowLevel from './components/ActiveViewportWindowLevel';
 
-const getPanelModule = ({
-  commandsManager,
-  servicesManager,
-  extensionManager,
-  configuration,
-  title,
-}: withAppTypes) => {
+const getPanelModule = ({ commandsManager, servicesManager, extensionManager }: withAppTypes) => {
   const { customizationService } = servicesManager.services;
 
   const wrappedPanelSegmentation = ({ configuration }) => {
@@ -47,12 +42,7 @@ const getPanelModule = ({
     );
   };
 
-  const wrappedPanelSegmentationWithTools = ({
-    configuration,
-    renderHeader,
-    getCloseIcon,
-    tab,
-  }) => {
+  const wrappedPanelSegmentationWithTools = ({ configuration }) => {
     const [appConfig] = useAppConfig();
 
     return (
@@ -66,9 +56,6 @@ const getPanelModule = ({
           configuration={{
             ...configuration,
           }}
-          renderHeader={renderHeader}
-          getCloseIcon={getCloseIcon}
-          tab={tab}
         />
         <PanelSegmentation
           commandsManager={commandsManager}
@@ -103,13 +90,6 @@ const getPanelModule = ({
       iconLabel: 'Segmentation',
       label: 'Segmentation',
       component: wrappedPanelSegmentationWithTools,
-    },
-    {
-      name: 'panelSegmentationNoHeader',
-      iconName: 'tab-segmentation',
-      iconLabel: 'Segmentation',
-      label: 'Segmentation',
-      component: wrappedPanelSegmentationNoHeader,
     },
   ];
 };
