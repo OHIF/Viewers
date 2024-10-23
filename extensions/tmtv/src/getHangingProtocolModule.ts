@@ -334,25 +334,6 @@ const ptCT: AppTypes.HangingProtocol.Protocol = {
       ],
     },
   },
-  overlaySelectors: {
-    sameFORLabelmap: {
-      matchingRules: [
-        {
-          weight: 1,
-          attribute: 'FrameOfReferenceUID',
-          from: 'segmentation',
-          constraint: {
-            equals: {
-              attribute: 'FrameOfReferenceUID',
-              from: 'viewport',
-            },
-          },
-        },
-        // same study instance uid
-        // not the same study instance uid
-      ],
-    },
-  },
   stages: [stage2, stage3, stage4],
   numberOfPriorsReferenced: -1,
 };

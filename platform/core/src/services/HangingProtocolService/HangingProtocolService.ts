@@ -759,38 +759,6 @@ export default class HangingProtocolService extends PubSubService {
     return viewportsToUpdate;
   }
 
-  public getOverlayRuleForViewport(viewportId: string) {
-    const protocol = this.protocol;
-    const protocolStage = protocol.stages[this.stageIndex];
-    const protocolViewports = protocolStage.viewports;
-    let protocolViewport = protocolViewports.find(
-      pv => pv.viewportOptions.viewportId === viewportId
-    );
-
-    // if no viewport, then we can assume we can use the default viewport
-    if (!protocolViewport) {
-      protocolViewport = protocolViewports[0];
-    }
-
-    const overlays = protocolViewport.overlays;
-
-    if (!overlays || overlays.length === 0) {
-      return null;
-    }
-
-    const overlay = overlays[0];
-
-    const overlaySelector = protocol.overlaySelectors[overlay.id];
-
-    if (!overlaySelector) {
-      return null;
-    }
-
-    const { matchingRules } = overlaySelector;
-
-    return { matchingRules, overlay };
-  }
-
   public runMatchingRules(metadataArray, matchingRules, options) {
     return this.protocolEngine.findMatch(metadataArray, matchingRules, options);
   }

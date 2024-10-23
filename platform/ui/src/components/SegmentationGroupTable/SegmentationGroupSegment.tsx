@@ -1,38 +1,12 @@
 import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 import classnames from 'classnames';
 
 import Icon from '../Icon';
 
-interface SegmentItemProps {
-  segmentIndex: number;
-  label: string;
-  isActive?: boolean;
-  isVisible: boolean;
-  color: number[];
-  showDelete: boolean;
-  disableEditing: boolean;
-  isLocked?: boolean;
-  onClick: (segmentIndex: number) => void;
-  onEdit: (segmentIndex: number) => void;
-  onDelete: (segmentIndex: number) => void;
-  onColor: (segmentIndex: number) => void;
-  onToggleVisibility: (segmentIndex: number) => void;
-  onToggleLocked: (segmentIndex: number) => void;
-  displayText: string;
-}
-
-interface HoveringIconsProps {
-  disableEditing: boolean;
-  onEdit: (segmentIndex: number) => void;
-  isLocked: boolean;
-  isVisible: boolean;
-  onToggleLocked: (segmentIndex: number) => void;
-  onToggleVisibility: (segmentIndex: number) => void;
-  segmentIndex: number;
-}
-
-const SegmentItem: React.FC<SegmentItemProps> = ({
+const SegmentItem = ({
   segmentIndex,
+  segmentationId,
   label,
   isActive = false,
   isVisible,
@@ -62,7 +36,7 @@ const SegmentItem: React.FC<SegmentItemProps> = ({
       )}
       onClick={e => {
         e.stopPropagation();
-        onClick(segmentIndex);
+        onClick(segmentationId, segmentIndex);
       }}
       tabIndex={0}
       data-cy={'segment-item'}
@@ -87,7 +61,7 @@ const SegmentItem: React.FC<SegmentItemProps> = ({
                   return;
                 }
                 e.stopPropagation();
-                onDelete(segmentIndex);
+                onDelete(segmentationId, segmentIndex);
               }}
             />
           ) : (
@@ -114,7 +88,7 @@ const SegmentItem: React.FC<SegmentItemProps> = ({
                     return;
                   }
                   e.stopPropagation();
-                  onColor(segmentIndex);
+                  onColor(segmentationId, segmentIndex);
                 }}
               />
             </div>
@@ -133,7 +107,7 @@ const SegmentItem: React.FC<SegmentItemProps> = ({
                   className="h-5 w-5 text-[#3d5871]"
                   onClick={e => {
                     e.stopPropagation();
-                    onToggleVisibility(segmentIndex);
+                    onToggleVisibility(segmentationId, segmentIndex);
                   }}
                 />
               )}
@@ -148,7 +122,7 @@ const SegmentItem: React.FC<SegmentItemProps> = ({
                     className="h-5 w-5 text-[#3d5871]"
                     onClick={e => {
                       e.stopPropagation();
-                      onToggleLocked(segmentIndex);
+                      onToggleLocked(segmentationId, segmentIndex);
                     }}
                   />
 
@@ -172,6 +146,7 @@ const SegmentItem: React.FC<SegmentItemProps> = ({
                 isVisible={isVisible}
                 onToggleLocked={onToggleLocked}
                 onToggleVisibility={onToggleVisibility}
+                segmentationId={segmentationId}
                 segmentIndex={segmentIndex}
               />
             </div>
@@ -200,20 +175,21 @@ const SegmentItem: React.FC<SegmentItemProps> = ({
   );
 };
 
-const HoveringIcons: React.FC<HoveringIconsProps> = ({
+const HoveringIcons = ({
   disableEditing,
   onEdit,
   isLocked,
   isVisible,
   onToggleLocked,
   onToggleVisibility,
+  segmentationId,
   segmentIndex,
 }) => {
   const iconClass = 'w-5 h-5 hover:cursor-pointer hover:opacity-60';
 
   const handleIconClick = (e, action) => {
     e.stopPropagation();
-    action(segmentIndex);
+    action(segmentationId, segmentIndex);
   };
 
   const createIcon = (name, action, color = null) => (
@@ -240,6 +216,24 @@ const HoveringIcons: React.FC<HoveringIconsProps> = ({
       )}
     </div>
   );
+};
+
+SegmentItem.propTypes = {
+  segmentIndex: PropTypes.number.isRequired,
+  segmentationId: PropTypes.string.isRequired,
+  label: PropTypes.string,
+  disableEditing: PropTypes.bool,
+  // color as array
+  color: PropTypes.array,
+  isActive: PropTypes.bool.isRequired,
+  isVisible: PropTypes.bool.isRequired,
+  isLocked: PropTypes.bool,
+  onClick: PropTypes.func.isRequired,
+  onEdit: PropTypes.func.isRequired,
+  onDelete: PropTypes.func.isRequired,
+  onToggleVisibility: PropTypes.func.isRequired,
+  onToggleLocked: PropTypes.func,
+  displayText: PropTypes.string,
 };
 
 export default SegmentItem;

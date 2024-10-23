@@ -260,89 +260,6 @@ export default async function init({
 
   // Call this function when initializing
   initializeWebWorkerProgressHandler(servicesManager.services.uiNotificationService);
-
-  // viewportGridService.subscribe(
-  //   viewportGridService.EVENTS.GRID_STATE_CHANGED,
-  //   ({ removedViewportIds }) => {
-  //     removedViewportIds?.forEach(viewportId => {
-  //       segmentationService.removeSegmentationRepresentations(viewportId);
-  //     });
-  //   }
-  // );
-
-  // const segRepAdded = segmentationService.EVENTS.SEGMENTATION_REPRESENTATION_MODIFIED;
-  // const segRepRemoved = segmentationService.EVENTS.SEGMENTATION_REPRESENTATION_REMOVED;
-  // const gridStateChange = viewportGridService.EVENTS.GRID_STATE_CHANGED;
-
-  // const consolidateSegmentationRepresentations = () => {
-  //   const gridState = viewportGridService.getState();
-  //   const viewports = gridState.viewports as AppTypes.ViewportGrid.Viewports;
-  //   if (!viewports?.size) {
-  //     return;
-  //   }
-
-  //   const segmentationsInfo = segmentationService.getSegmentationsInfo();
-  //   for (const [viewportId, gridViewport] of viewports.entries()) {
-  //     const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
-
-  //     if (!viewport) {
-  //       continue;
-  //     }
-
-  //     // get the overlay rule for this viewport from the hanging protocol
-  //     const { matchingRules: overlayRule } =
-  //       hangingProtocolService.getOverlayRuleForViewport(viewportId) || {};
-  //     if (!overlayRule?.length || !segmentationsInfo?.length) {
-  //       continue;
-  //     }
-
-  //     for (const { segmentation } of segmentationsInfo) {
-  //       const segmentationId = segmentation.segmentationId;
-  //       const matched = hangingProtocolService.runMatchingRules(segmentation, overlayRule, {
-  //         viewport: {
-  //           FrameOfReferenceUID: viewport.getFrameOfReferenceUID(),
-  //         },
-  //         segmentation: {
-  //           FrameOfReferenceUID:
-  //             segmentationService.getSegmentationFrameOfReferenceUID(segmentationId),
-  //         },
-  //       });
-
-  //       if (!matched || matched.score === 0 || matched.requiredFailed) {
-  //         continue;
-  //       }
-
-  //       const matchSuccess = matched.details.passed.length > 0;
-  //       const representations = segmentationService.getSegmentationRepresentations(viewportId, {
-  //         segmentationId,
-  //       });
-
-  //       const alreadyHasRepresentation = !!representations.length;
-
-  //       if (matchSuccess && !alreadyHasRepresentation) {
-  //         segmentationService.addSegmentationRepresentation({
-  //           viewportId,
-  //           segmentationId,
-  //         });
-  //       }
-  //     }
-  //   }
-
-  //   // here we need to go over all the viewports and check if the overlay rules
-  //   // actually match the segmentation representation that was added or removed
-  //   // if so the viewport should be updated with that segmentation representation
-  //   // so that the overlay is visible or hidden accordingly
-  // };
-
-  // viewportGridService.subscribe(gridStateChange, consolidateSegmentationRepresentations);
-  // cornerstoneViewportService.subscribe(
-  //   cornerstoneViewportService.EVENTS.VIEWPORT_DATA_CHANGED,
-  //   consolidateSegmentationRepresentations
-  // );
-
-  // [segRepAdded].forEach(event => {
-  //   segmentationService.subscribe(event, consolidateSegmentationRepresentations);
-  // });
 }
 
 function initializeWebWorkerProgressHandler(uiNotificationService) {
@@ -376,21 +293,6 @@ function initializeWebWorkerProgressHandler(uiNotificationService) {
         activeToasts.delete(cacheKey);
       }
     }
-
-    // We should be able to update the toast here, but it's not working
-    // else {
-    //   // Update existing toast
-    //   uiNotificationService.show({
-    //     id: activeToasts.get(type).toastId,
-    //     message: `${type}: ${progress}%`,
-    //   });
-    // }
-
-    // if (progress === 100) {
-    //   const { resolve } = activeToasts.get(type);
-    //   resolve({ progress, type });
-    //   activeToasts.delete(type);
-    // }
   });
 }
 

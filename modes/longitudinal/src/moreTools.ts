@@ -133,7 +133,7 @@ const moreTools = [
           label: 'Cine',
           tooltip: 'Cine',
           commands: 'toggleCine',
-          evaluate: ['evaluate.cine', 'evaluate.not3D', 'evaluate.action.not.video'],
+          evaluate: ['evaluate.cine', 'evaluate.not3D'],
         }),
         createButton({
           id: 'Angle',

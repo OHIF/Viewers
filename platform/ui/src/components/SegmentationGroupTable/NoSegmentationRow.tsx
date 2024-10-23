@@ -2,9 +2,8 @@ import React from 'react';
 import Icon from '../Icon';
 import { useTranslation } from 'react-i18next';
 
-function NoSegmentationRow({ onSegmentationAdd, addSegmentationClassName = '' }) {
+function NoSegmentationRow({ onSegmentationAdd, addSegmentationClassName }) {
   const { t } = useTranslation('SegmentationTable');
-
   return (
     <div
       className={`group ${addSegmentationClassName}`}
@@ -14,7 +13,7 @@ function NoSegmentationRow({ onSegmentationAdd, addSegmentationClassName = '' })
         <div className="grid h-[28px] w-[28px] place-items-center">
           <Icon name="icon-add" />
         </div>
-        <span className="text-[13px]">{t('Add Segmentation')}</span>
+        <span className="text-[13px]">{t('Add segmentation')}</span>
       </div>
     </div>
   );

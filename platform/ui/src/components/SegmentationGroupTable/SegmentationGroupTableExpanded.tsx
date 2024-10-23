@@ -33,7 +33,7 @@ const SegmentationGroupTableExpanded = ({
   setOutlineWidthActive = () => {},
   setOutlineOpacityActive = () => {},
   setRenderFill = () => {},
-  setRenderInactiveRepresentations = () => {},
+  setRenderInactiveSegmentations = () => {},
   setRenderOutline = () => {},
 }) => {
   const [isConfigOpen, setIsConfigOpen] = useState(false);
@@ -81,7 +81,7 @@ const SegmentationGroupTableExpanded = ({
             setOutlineWidthActive={setOutlineWidthActive}
             setOutlineOpacityActive={setOutlineOpacityActive}
             setRenderFill={setRenderFill}
-            setRenderInactiveRepresentations={setRenderInactiveRepresentations}
+            setRenderInactiveSegmentations={setRenderInactiveSegmentations}
             setRenderOutline={setRenderOutline}
             segmentationConfig={segmentationConfig}
           />
@@ -170,7 +170,7 @@ SegmentationGroupTableExpanded.propTypes = {
   setOutlineWidthActive: PropTypes.func.isRequired,
   setOutlineOpacityActive: PropTypes.func.isRequired,
   setRenderFill: PropTypes.func.isRequired,
-  setRenderInactiveRepresentations: PropTypes.func.isRequired,
+  setRenderInactiveSegmentations: PropTypes.func.isRequired,
   setRenderOutline: PropTypes.func.isRequired,
 };
 

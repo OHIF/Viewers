@@ -7,7 +7,6 @@ import {
   imageLoader,
   Types as csTypes,
   utilities as csUtils,
-  metaData,
 } from '@cornerstonejs/core';
 import {
   Enums as csToolsEnums,
@@ -22,15 +21,12 @@ import { addColorLUT } from '@cornerstonejs/tools/segmentation/addColorLUT';
 import { getNextColorLUTIndex } from '@cornerstonejs/tools/segmentation/getNextColorLUTIndex';
 import { Segment } from '@cornerstonejs/tools/types/SegmentationStateTypes';
 import { ContourStyle, LabelmapStyle, SurfaceStyle } from '@cornerstonejs/tools/types';
-import { getSegmentation } from '@cornerstonejs/tools/segmentation/getSegmentation';
-import { MetadataModules, ViewportType } from '@cornerstonejs/core/enums';
-import { ImagePlaneModuleMetadata } from '@cornerstonejs/core/types';
+import { ViewportType } from '@cornerstonejs/core/enums';
 import { SegmentationPresentation, SegmentationPresentationItem } from '../../types/Presentation';
 import { updateLabelmapSegmentationImageReferences } from '@cornerstonejs/tools/segmentation/updateLabelmapSegmentationImageReferences';
 import { triggerSegmentationRepresentationModified } from '@cornerstonejs/tools/segmentation/triggerSegmentationEvents';
 import { convertStackToVolumeLabelmap } from '@cornerstonejs/tools/segmentation/helpers/convertStackToVolumeLabelmap';
 import { getLabelmapImageIds } from '@cornerstonejs/tools/segmentation';
-import { LabelmapSegmentationDataStack } from '@cornerstonejs/tools/types/LabelmapTypes';
 
 const LABELMAP = csToolsEnums.SegmentationRepresentations.Labelmap;
 const CONTOUR = csToolsEnums.SegmentationRepresentations.Contour;
@@ -92,14 +88,6 @@ class SegmentationService extends PubSubService {
   };
 
   private _segmentationIdToColorLUTIndexMap: Map<string, number>;
-  private _segmentationRepresentationHydrationMaps: Map<
-    string,
-    {
-      segmentationId: string;
-      type: SegmentationRepresentations;
-      hydrated: boolean | null;
-    }[]
-  >;
   readonly servicesManager: AppTypes.ServicesManager;
   highlightIntervalId = null;
   readonly EVENTS = EVENTS;
@@ -108,11 +96,25 @@ class SegmentationService extends PubSubService {
     super(EVENTS);
 
     this._segmentationIdToColorLUTIndexMap = new Map();
-    this._segmentationRepresentationHydrationMaps = new Map();
 
     this.servicesManager = servicesManager;
 
     this._initSegmentationService();
+  }
+
+  /**
+   * Retrieves a segmentation by its ID.
+   *
+   * @param segmentationId - The unique identifier of the segmentation to retrieve.
+   * @returns The segmentation object if found, or undefined if not found.
+   *
+   * @remarks
+   * This method directly accesses the cornerstone tools segmentation state to fetch
+   * the segmentation data. It's useful when you need to access specific properties
+   * or perform operations on a particular segmentation.
+   */
+  public getSegmentation(segmentationId: string): cstTypes.Segmentation | undefined {
+    return cstSegmentation.state.getSegmentation(segmentationId);
   }
 
   /**
@@ -419,206 +421,6 @@ class SegmentationService extends PubSubService {
 
     if (!suppressEvents) {
       this._broadcastEvent(this.EVENTS.SEGMENTATION_REPRESENTATION_MODIFIED, { segmentationId });
-    }
-  }
-
-  private getAndValidateSegmentation(segmentationId: string) {
-    const segmentation = this.getSegmentationsInfo({ segmentationId });
-    if (!segmentation) {
-      throw new Error(`Segmentation with segmentationId ${segmentationId} not found.`);
-    }
-    return segmentation;
-  }
-
-  private getAndValidateViewport(viewportId: string) {
-    const csViewport =
-      this.servicesManager.services.cornerstoneViewportService.getCornerstoneViewport(viewportId);
-    if (!csViewport) {
-      throw new Error(`Viewport with id ${viewportId} not found.`);
-    }
-    return csViewport;
-  }
-
-  private determineViewportAndSegmentationType(csViewport, segmentation) {
-    const isVolumeViewport =
-      csViewport.type === ViewportType.ORTHOGRAPHIC || csViewport.type === ViewportType.VOLUME_3D;
-    const isVolumeSegmentation =
-      'volumeId' in segmentation[0].segmentation.representationData[LABELMAP];
-    return { isVolumeViewport, isVolumeSegmentation };
-  }
-
-  private async handleViewportConversion(
-    isVolumeViewport: boolean,
-    isVolumeSegmentation: boolean,
-    csViewport: csTypes.IViewport,
-    segmentation: SegmentationInfo[],
-    viewportId: string,
-    segmentationId: string,
-    representationType: csToolsEnums.SegmentationRepresentations
-  ) {
-    let representationTypeToUse = representationType;
-    let isConverted = false;
-
-    const handler = isVolumeViewport ? this.handleVolumeViewportCase : this.handleStackViewportCase;
-
-    ({ representationTypeToUse, isConverted } = await handler.apply(this, [
-      csViewport,
-      segmentation,
-      isVolumeSegmentation,
-      viewportId,
-      segmentationId,
-    ]));
-
-    return { representationTypeToUse, isConverted };
-  }
-
-  private async handleVolumeViewportCase(csViewport, segmentation, isVolumeSegmentation) {
-    if (csViewport.type === ViewportType.VOLUME_3D) {
-      return { representationTypeToUse: SegmentationRepresentations.Surface, isConverted: false };
-    } else {
-      await this.handleVolumeViewport(
-        csViewport as csTypes.IVolumeViewport,
-        segmentation[0].segmentation,
-        isVolumeSegmentation
-      );
-      return { representationTypeToUse: SegmentationRepresentations.Labelmap, isConverted: false };
-    }
-  }
-
-  private async handleStackViewportCase(
-    csViewport: csTypes.IViewport,
-    segmentation: SegmentationInfo[],
-    isVolumeSegmentation: boolean,
-    viewportId: string,
-    segmentationId: string
-  ): Promise<{ representationTypeToUse: SegmentationRepresentations; isConverted: boolean }> {
-    if (isVolumeSegmentation) {
-      const isConverted = await this.convertStackToVolumeViewport(csViewport);
-      return { representationTypeToUse: SegmentationRepresentations.Labelmap, isConverted };
-    }
-
-    if (updateLabelmapSegmentationImageReferences(viewportId, segmentationId)) {
-      return { representationTypeToUse: SegmentationRepresentations.Labelmap, isConverted: false };
-    }
-
-    const isConverted = await this.attemptStackToVolumeConversion(
-      csViewport as csTypes.IStackViewport,
-      segmentation[0].segmentation,
-      viewportId,
-      segmentationId
-    );
-
-    return { representationTypeToUse: SegmentationRepresentations.Labelmap, isConverted };
-  }
-
-  private async _addSegmentationRepresentation(
-    viewportId: string,
-    segmentationId: string,
-    representationType: csToolsEnums.SegmentationRepresentations,
-    colorLUTIndex: number,
-    isConverted: boolean
-  ): Promise<void> {
-    const representation = {
-      type: representationType,
-      segmentationId,
-      config: { colorLUTOrIndex: colorLUTIndex },
-    };
-
-    const addRepresentation = () =>
-      cstSegmentation.addSegmentationRepresentations(viewportId, [representation]);
-
-    if (isConverted) {
-      const { viewportGridService } = this.servicesManager.services;
-      await new Promise<void>(resolve => {
-        const { unsubscribe } = viewportGridService.subscribe(
-          viewportGridService.EVENTS.GRID_STATE_CHANGED,
-          () => {
-            addRepresentation();
-            unsubscribe();
-            resolve();
-          }
-        );
-      });
-    } else {
-      addRepresentation();
-    }
-  }
-  private async handleVolumeViewport(
-    viewport: csTypes.IVolumeViewport,
-    segmentation: SegmentationData,
-    isVolumeSegmentation: boolean
-  ): Promise<void> {
-    if (isVolumeSegmentation) {
-      return; // Volume Labelmap on Volume Viewport is natively supported
-    }
-
-    const frameOfReferenceUID = viewport.getFrameOfReferenceUID();
-    const imageIds = getLabelmapImageIds(segmentation.segmentationId);
-    const segImage = cache.getImage(imageIds[0]);
-
-    if (segImage?.FrameOfReferenceUID === frameOfReferenceUID) {
-      await convertStackToVolumeLabelmap(segmentation);
-    }
-  }
-
-  private async convertStackToVolumeViewport(viewport: csTypes.IViewport): Promise<boolean> {
-    const { viewportGridService, cornerstoneViewportService } = this.servicesManager.services;
-    const state = viewportGridService.getState();
-    const gridViewport = state.viewports.get(viewport.id);
-
-    const prevViewPresentation = viewport.getViewPresentation();
-    const prevViewReference = viewport.getViewReference();
-    const stackViewport = cornerstoneViewportService.getCornerstoneViewport(viewport.id);
-    const { element } = stackViewport;
-
-    const volumeViewportNewVolumeHandler = () => {
-      const volumeViewport = cornerstoneViewportService.getCornerstoneViewport(viewport.id);
-      volumeViewport.setViewPresentation(prevViewPresentation);
-      volumeViewport.setViewReference(prevViewReference);
-      volumeViewport.render();
-
-      element.removeEventListener(
-        csEnums.Events.VOLUME_VIEWPORT_NEW_VOLUME,
-        volumeViewportNewVolumeHandler
-      );
-    };
-
-    element.addEventListener(
-      csEnums.Events.VOLUME_VIEWPORT_NEW_VOLUME,
-      volumeViewportNewVolumeHandler
-    );
-
-    viewportGridService.setDisplaySetsForViewport({
-      viewportId: viewport.id,
-      displaySetInstanceUIDs: gridViewport.displaySetInstanceUIDs,
-      viewportOptions: {
-        ...gridViewport.viewportOptions,
-        viewportType: ViewportType.ORTHOGRAPHIC,
-      },
-    });
-
-    return true;
-  }
-
-  private async attemptStackToVolumeConversion(
-    viewport: csTypes.IStackViewport,
-    segmentation: SegmentationData,
-    viewportId: string,
-    segmentationId: string
-  ): Promise<boolean> {
-    const imageIds = getLabelmapImageIds(segmentation.segmentationId);
-    const frameOfReferenceUID = viewport.getFrameOfReferenceUID();
-    const segImage = cache.getImage(imageIds[0]);
-
-    if (segImage?.FrameOfReferenceUID === frameOfReferenceUID) {
-      const isConverted = await this.convertStackToVolumeViewport(viewport);
-      triggerSegmentationRepresentationModified(
-        viewportId,
-        segmentationId,
-        SegmentationRepresentations.Labelmap
-      );
-
-      return isConverted;
     }
   }
 
@@ -949,20 +751,6 @@ class SegmentationService extends PubSubService {
     }
   }
 
-  private addSegmentationToSource(
-    segmentationId: string,
-    segmentationPublicInput: cstTypes.SegmentationPublicInput
-  ) {
-    cstSegmentation.addSegmentations([segmentationPublicInput]);
-  }
-
-  private updateSegmentationInSource(
-    segmentationId: string,
-    payload: Partial<cstTypes.Segmentation>
-  ) {
-    cstSegmentation.updateSegmentations([{ segmentationId, payload }]);
-  }
-
   public setActiveSegmentation(viewportId: string, segmentationId: string): void {
     cstSegmentation.activeSegmentation.setActiveSegmentation(viewportId, segmentationId);
   }
@@ -1177,6 +965,415 @@ class SegmentationService extends PubSubService {
     return cstSegmentation.config.style.getRenderInactiveSegmentations(viewportId);
   }
 
+  /**
+   * Toggles the visibility of a segmentation in the state, and broadcasts the event.
+   * Note: this method does not update the segmentation state in the source. It only
+   * updates the state, and there should be separate listeners for that.
+   * @param ids segmentation ids
+   */
+  public toggleSegmentationVisibility = (viewportId: string, segmentationId: string): void => {
+    this._toggleSegmentationVisibility(viewportId, segmentationId);
+  };
+
+  public getViewportIdsWithSegmentation = (segmentationId: string): string[] => {
+    const viewportIds = cstSegmentation.state.getViewportIdsWithSegmentation(segmentationId);
+    return viewportIds;
+  };
+
+  /**
+   * Clears segmentation representations from the viewport.
+   * Unlike removeSegmentationRepresentations, this doesn't update
+   * removed display set and representation maps.
+   * We track removed segmentations manually to avoid re-adding them
+   * when the display set is added again.
+   * @param viewportId - The viewport ID to clear segmentation representations from.
+   */
+  public clearSegmentationRepresentations(viewportId: string): void {
+    this.removeSegmentationRepresentations(viewportId, { isCleanUp: true });
+  }
+
+  /**
+   * Completely removes a segmentation from the state
+   * @param segmentationId - The ID of the segmentation to remove.
+   */
+  public remove(segmentationId: string): void {
+    cstSegmentation.state.removeSegmentation(segmentationId);
+  }
+
+  /**
+   * It removes the segmentation representations from the viewport.
+   * @param viewportId - The viewport id to remove the segmentation representations from.
+   * @param specifier - The specifier to remove the segmentation representations.
+   * @param isCleanUp - If true, it will not update the removed display set and representation maps.
+   */
+  public removeSegmentationRepresentations(
+    viewportId: string,
+    specifier: {
+      segmentationId?: string;
+      type?: SegmentationRepresentations;
+      isCleanUp?: boolean;
+    } = {}
+  ): void {
+    cstSegmentation.removeSegmentationRepresentations(viewportId, specifier);
+  }
+
+  /**
+   * Sets the visibility of a segmentation representation.
+   *
+   * @param viewportId - The ID of the viewport.
+   * @param segmentationId - The ID of the segmentation.
+   * @param isVisible - The new visibility state.
+   */
+  public setSegmentationVisibility(
+    viewportId: string,
+    segmentationId: string,
+    isVisible: boolean
+  ): void {
+    const representations = this.getSegmentationRepresentations(viewportId, { segmentationId });
+    const representation = representations[0];
+
+    if (!representation) {
+      console.debug(
+        'No segmentation representation found for the given viewportId and segmentationId'
+      );
+      return;
+    }
+
+    cstSegmentation.config.visibility.setSegmentationRepresentationVisibility(
+      viewportId,
+      {
+        segmentationId,
+      },
+      isVisible
+    );
+  }
+
+  /**
+   * Gets the visibility of a segmentation representation.
+   *
+   * @param viewportId - The ID of the viewport.
+   * @param segmentationId - The ID of the segmentation.
+   * @returns The visibility state of the segmentation, or undefined if not found.
+   */
+  public getSegmentationVisibility(
+    viewportId: string,
+    segmentationId: string
+  ): boolean | undefined {
+    const representations = this.getSegmentationRepresentations(viewportId, { segmentationId });
+    const representation = representations[0];
+
+    if (!representation) {
+      console.debug(
+        'No segmentation representation found for the given viewportId and segmentationId'
+      );
+      return undefined;
+    }
+
+    const segmentsHidden = cstSegmentation.config.visibility.getHiddenSegmentIndices(viewportId, {
+      segmentationId,
+      type: representation.type,
+    });
+
+    return segmentsHidden.size === 0;
+  }
+
+  public jumpToSegmentCenter(
+    segmentationId: string,
+    segmentIndex: number,
+    viewportId?: string,
+    highlightAlpha = 0.9,
+    highlightSegment = true,
+    animationLength = 750,
+    highlightHideOthers = false,
+    highlightFunctionType = 'ease-in-out' // todo: make animation functions configurable from outside
+  ): void {
+    const center = this._getSegmentCenter(segmentationId, segmentIndex);
+
+    if (!center) {
+      return;
+    }
+
+    const { world } = center as { world: csTypes.Point3 };
+
+    // need to find which viewports are displaying the segmentation
+    const viewportIds = viewportId
+      ? [viewportId]
+      : this.getViewportIdsWithSegmentation(segmentationId);
+
+    viewportIds.forEach(viewportId => {
+      const { viewport } = getEnabledElementByViewportId(viewportId);
+      viewport.jumpToWorld(world);
+
+      highlightSegment &&
+        this.highlightSegment(
+          segmentationId,
+          segmentIndex,
+          viewportId,
+          highlightAlpha,
+          animationLength,
+          highlightHideOthers
+        );
+    });
+  }
+
+  public highlightSegment(
+    segmentationId: string,
+    segmentIndex: number,
+    viewportId?: string,
+    alpha = 0.9,
+    animationLength = 750,
+    hideOthers = true
+  ): void {
+    if (this.highlightIntervalId) {
+      clearInterval(this.highlightIntervalId);
+    }
+
+    const csSegmentation = this.getCornerstoneSegmentation(segmentationId);
+
+    const viewportIds = viewportId
+      ? [viewportId]
+      : this.getViewportIdsWithSegmentation(segmentationId);
+
+    viewportIds.forEach(viewportId => {
+      const segmentationRepresentation = this.getSegmentationRepresentations(viewportId, {
+        segmentationId,
+      });
+
+      const representation = segmentationRepresentation[0];
+      const { type } = representation;
+      const segments = csSegmentation.segments;
+
+      const highlightFn =
+        type === LABELMAP ? this._highlightLabelmap.bind(this) : this._highlightContour.bind(this);
+
+      const adjustedAlpha = type === LABELMAP ? alpha : 1 - alpha;
+
+      highlightFn(
+        segmentIndex,
+        adjustedAlpha,
+        hideOthers,
+        segments,
+        viewportId,
+        animationLength,
+        representation
+      );
+    });
+  }
+
+  private getAndValidateSegmentation(segmentationId: string) {
+    const segmentation = this.getSegmentationsInfo({ segmentationId });
+    if (!segmentation) {
+      throw new Error(`Segmentation with segmentationId ${segmentationId} not found.`);
+    }
+    return segmentation;
+  }
+
+  private getAndValidateViewport(viewportId: string) {
+    const csViewport =
+      this.servicesManager.services.cornerstoneViewportService.getCornerstoneViewport(viewportId);
+    if (!csViewport) {
+      throw new Error(`Viewport with id ${viewportId} not found.`);
+    }
+    return csViewport;
+  }
+
+  private determineViewportAndSegmentationType(csViewport, segmentation) {
+    const isVolumeViewport =
+      csViewport.type === ViewportType.ORTHOGRAPHIC || csViewport.type === ViewportType.VOLUME_3D;
+    const isVolumeSegmentation =
+      'volumeId' in segmentation[0].segmentation.representationData[LABELMAP];
+    return { isVolumeViewport, isVolumeSegmentation };
+  }
+
+  private async handleViewportConversion(
+    isVolumeViewport: boolean,
+    isVolumeSegmentation: boolean,
+    csViewport: csTypes.IViewport,
+    segmentation: SegmentationInfo[],
+    viewportId: string,
+    segmentationId: string,
+    representationType: csToolsEnums.SegmentationRepresentations
+  ) {
+    let representationTypeToUse = representationType;
+    let isConverted = false;
+
+    const handler = isVolumeViewport ? this.handleVolumeViewportCase : this.handleStackViewportCase;
+
+    ({ representationTypeToUse, isConverted } = await handler.apply(this, [
+      csViewport,
+      segmentation,
+      isVolumeSegmentation,
+      viewportId,
+      segmentationId,
+    ]));
+
+    return { representationTypeToUse, isConverted };
+  }
+
+  private async handleVolumeViewportCase(csViewport, segmentation, isVolumeSegmentation) {
+    if (csViewport.type === ViewportType.VOLUME_3D) {
+      return { representationTypeToUse: SegmentationRepresentations.Surface, isConverted: false };
+    } else {
+      await this.handleVolumeViewport(
+        csViewport as csTypes.IVolumeViewport,
+        segmentation[0].segmentation,
+        isVolumeSegmentation
+      );
+      return { representationTypeToUse: SegmentationRepresentations.Labelmap, isConverted: false };
+    }
+  }
+
+  private async handleStackViewportCase(
+    csViewport: csTypes.IViewport,
+    segmentation: SegmentationInfo[],
+    isVolumeSegmentation: boolean,
+    viewportId: string,
+    segmentationId: string
+  ): Promise<{ representationTypeToUse: SegmentationRepresentations; isConverted: boolean }> {
+    if (isVolumeSegmentation) {
+      const isConverted = await this.convertStackToVolumeViewport(csViewport);
+      return { representationTypeToUse: SegmentationRepresentations.Labelmap, isConverted };
+    }
+
+    if (updateLabelmapSegmentationImageReferences(viewportId, segmentationId)) {
+      return { representationTypeToUse: SegmentationRepresentations.Labelmap, isConverted: false };
+    }
+
+    const isConverted = await this.attemptStackToVolumeConversion(
+      csViewport as csTypes.IStackViewport,
+      segmentation[0].segmentation,
+      viewportId,
+      segmentationId
+    );
+
+    return { representationTypeToUse: SegmentationRepresentations.Labelmap, isConverted };
+  }
+
+  private async _addSegmentationRepresentation(
+    viewportId: string,
+    segmentationId: string,
+    representationType: csToolsEnums.SegmentationRepresentations,
+    colorLUTIndex: number,
+    isConverted: boolean
+  ): Promise<void> {
+    const representation = {
+      type: representationType,
+      segmentationId,
+      config: { colorLUTOrIndex: colorLUTIndex },
+    };
+
+    const addRepresentation = () =>
+      cstSegmentation.addSegmentationRepresentations(viewportId, [representation]);
+
+    if (isConverted) {
+      const { viewportGridService } = this.servicesManager.services;
+      await new Promise<void>(resolve => {
+        const { unsubscribe } = viewportGridService.subscribe(
+          viewportGridService.EVENTS.GRID_STATE_CHANGED,
+          () => {
+            addRepresentation();
+            unsubscribe();
+            resolve();
+          }
+        );
+      });
+    } else {
+      addRepresentation();
+    }
+  }
+  private async handleVolumeViewport(
+    viewport: csTypes.IVolumeViewport,
+    segmentation: SegmentationData,
+    isVolumeSegmentation: boolean
+  ): Promise<void> {
+    if (isVolumeSegmentation) {
+      return; // Volume Labelmap on Volume Viewport is natively supported
+    }
+
+    const frameOfReferenceUID = viewport.getFrameOfReferenceUID();
+    const imageIds = getLabelmapImageIds(segmentation.segmentationId);
+    const segImage = cache.getImage(imageIds[0]);
+
+    if (segImage?.FrameOfReferenceUID === frameOfReferenceUID) {
+      await convertStackToVolumeLabelmap(segmentation);
+    }
+  }
+
+  private async convertStackToVolumeViewport(viewport: csTypes.IViewport): Promise<boolean> {
+    const { viewportGridService, cornerstoneViewportService } = this.servicesManager.services;
+    const state = viewportGridService.getState();
+    const gridViewport = state.viewports.get(viewport.id);
+
+    const prevViewPresentation = viewport.getViewPresentation();
+    const prevViewReference = viewport.getViewReference();
+    const stackViewport = cornerstoneViewportService.getCornerstoneViewport(viewport.id);
+    const { element } = stackViewport;
+
+    const volumeViewportNewVolumeHandler = () => {
+      const volumeViewport = cornerstoneViewportService.getCornerstoneViewport(viewport.id);
+      volumeViewport.setViewPresentation(prevViewPresentation);
+      volumeViewport.setViewReference(prevViewReference);
+      volumeViewport.render();
+
+      element.removeEventListener(
+        csEnums.Events.VOLUME_VIEWPORT_NEW_VOLUME,
+        volumeViewportNewVolumeHandler
+      );
+    };
+
+    element.addEventListener(
+      csEnums.Events.VOLUME_VIEWPORT_NEW_VOLUME,
+      volumeViewportNewVolumeHandler
+    );
+
+    viewportGridService.setDisplaySetsForViewport({
+      viewportId: viewport.id,
+      displaySetInstanceUIDs: gridViewport.displaySetInstanceUIDs,
+      viewportOptions: {
+        ...gridViewport.viewportOptions,
+        viewportType: ViewportType.ORTHOGRAPHIC,
+      },
+    });
+
+    return true;
+  }
+
+  private async attemptStackToVolumeConversion(
+    viewport: csTypes.IStackViewport,
+    segmentation: SegmentationData,
+    viewportId: string,
+    segmentationId: string
+  ): Promise<boolean> {
+    const imageIds = getLabelmapImageIds(segmentation.segmentationId);
+    const frameOfReferenceUID = viewport.getFrameOfReferenceUID();
+    const segImage = cache.getImage(imageIds[0]);
+
+    if (segImage?.FrameOfReferenceUID === frameOfReferenceUID) {
+      const isConverted = await this.convertStackToVolumeViewport(viewport);
+      triggerSegmentationRepresentationModified(
+        viewportId,
+        segmentationId,
+        SegmentationRepresentations.Labelmap
+      );
+
+      return isConverted;
+    }
+  }
+
+  private addSegmentationToSource(
+    segmentationId: string,
+    segmentationPublicInput: cstTypes.SegmentationPublicInput
+  ) {
+    cstSegmentation.addSegmentations([segmentationPublicInput]);
+  }
+
+  private updateSegmentationInSource(
+    segmentationId: string,
+    payload: Partial<cstTypes.Segmentation>
+  ) {
+    cstSegmentation.updateSegmentations([{ segmentationId, payload }]);
+  }
+
   private _toOHIFSegmentationRepresentation(
     viewportId: string,
     csRepresentation: cstTypes.SegmentationRepresentation
@@ -1241,142 +1438,6 @@ class SegmentationService extends PubSubService {
       colorLUTIndex,
       config: {},
     };
-  }
-
-  /**
-   * Toggles the visibility of a segmentation in the state, and broadcasts the event.
-   * Note: this method does not update the segmentation state in the source. It only
-   * updates the state, and there should be separate listeners for that.
-   * @param ids segmentation ids
-   */
-  public toggleSegmentationVisibility = (viewportId: string, segmentationId: string): void => {
-    this._toggleSegmentationVisibility(viewportId, segmentationId);
-  };
-
-  public getViewportIdsWithSegmentation = (segmentationId: string): string[] => {
-    const viewportIds = cstSegmentation.state.getViewportIdsWithSegmentation(segmentationId);
-    return viewportIds;
-  };
-
-  /**
-   * Clears segmentation representations from the viewport.
-   * Unlike removeSegmentationRepresentations, this doesn't update
-   * removed display set and representation maps.
-   * We track removed segmentations manually to avoid re-adding them
-   * when the display set is added again.
-   * @param viewportId - The viewport ID to clear segmentation representations from.
-   */
-  public clearSegmentationRepresentations(viewportId: string): void {
-    this.removeSegmentationRepresentations(viewportId, { isCleanUp: true });
-  }
-
-  /**
-   * Completely removes a segmentation from the state
-   * @param segmentationId - The ID of the segmentation to remove.
-   */
-  public remove(segmentationId: string): void {
-    cstSegmentation.state.removeSegmentation(segmentationId);
-  }
-
-  /**
-   * It removes the segmentation representations from the viewport.
-   * @param viewportId - The viewport id to remove the segmentation representations from.
-   * @param specifier - The specifier to remove the segmentation representations.
-   * @param isCleanUp - If true, it will not update the removed display set and representation maps.
-   */
-  public removeSegmentationRepresentations(
-    viewportId: string,
-    specifier: {
-      segmentationId?: string;
-      type?: SegmentationRepresentations;
-      isCleanUp?: boolean;
-    } = {}
-  ): void {
-    cstSegmentation.removeSegmentationRepresentations(viewportId, specifier);
-  }
-
-  public getSegmentation(segmentationId: string) {
-    return cstSegmentation.state.getSegmentation(segmentationId);
-  }
-
-  public jumpToSegmentCenter(
-    segmentationId: string,
-    segmentIndex: number,
-    highlightAlpha = 0.9,
-    highlightSegment = true,
-    animationLength = 750,
-    highlightHideOthers = false,
-    highlightFunctionType = 'ease-in-out' // todo: make animation functions configurable from outside
-  ): void {
-    const center = this._getSegmentCenter(segmentationId, segmentIndex);
-
-    if (!center) {
-      return;
-    }
-
-    const { world } = center as { world: csTypes.Point3 };
-
-    // need to find which viewports are displaying the segmentation
-    const viewportIds = this.getViewportIdsWithSegmentation(segmentationId);
-
-    viewportIds.forEach(viewportId => {
-      const { viewport } = getEnabledElementByViewportId(viewportId);
-      viewport.jumpToWorld(world);
-
-      highlightSegment &&
-        this.highlightSegment(
-          segmentationId,
-          segmentIndex,
-          viewportId,
-          highlightAlpha,
-          animationLength,
-          highlightHideOthers
-        );
-    });
-  }
-
-  public highlightSegment(
-    segmentationId: string,
-    segmentIndex: number,
-    viewportId?: string,
-    alpha = 0.9,
-    animationLength = 750,
-    hideOthers = true
-  ): void {
-    if (this.highlightIntervalId) {
-      clearInterval(this.highlightIntervalId);
-    }
-
-    const csSegmentation = this.getCornerstoneSegmentation(segmentationId);
-
-    const viewportIds = viewportId
-      ? [viewportId]
-      : this.getViewportIdsWithSegmentation(segmentationId);
-
-    viewportIds.forEach(viewportId => {
-      const segmentationRepresentation = this.getSegmentationRepresentations(viewportId, {
-        segmentationId,
-      });
-
-      const representation = segmentationRepresentation[0];
-      const { type } = representation;
-      const segments = csSegmentation.segments;
-
-      const highlightFn =
-        type === LABELMAP ? this._highlightLabelmap.bind(this) : this._highlightContour.bind(this);
-
-      const adjustedAlpha = type === LABELMAP ? alpha : 1 - alpha;
-
-      highlightFn(
-        segmentIndex,
-        adjustedAlpha,
-        hideOthers,
-        segments,
-        viewportId,
-        animationLength,
-        representation
-      );
-    });
   }
 
   private _initSegmentationService() {
@@ -1540,86 +1601,6 @@ class SegmentationService extends PubSubService {
     requestAnimationFrame(animate);
   }
 
-  /**
-   * Sets the visibility of a segmentation representation.
-   *
-   * @param viewportId - The ID of the viewport.
-   * @param segmentationId - The ID of the segmentation.
-   * @param isVisible - The new visibility state.
-   */
-  public setSegmentationVisibility(
-    viewportId: string,
-    segmentationId: string,
-    isVisible: boolean
-  ): void {
-    const representations = this.getSegmentationRepresentations(viewportId, { segmentationId });
-    const representation = representations[0];
-
-    if (!representation) {
-      console.debug(
-        'No segmentation representation found for the given viewportId and segmentationId'
-      );
-      return;
-    }
-
-    cstSegmentation.config.visibility.setSegmentationRepresentationVisibility(
-      viewportId,
-      {
-        segmentationId,
-      },
-      isVisible
-    );
-  }
-
-  /**
-   * Gets the visibility of a segmentation representation.
-   *
-   * @param viewportId - The ID of the viewport.
-   * @param segmentationId - The ID of the segmentation.
-   * @returns The visibility state of the segmentation, or undefined if not found.
-   */
-  public getSegmentationVisibility(
-    viewportId: string,
-    segmentationId: string
-  ): boolean | undefined {
-    const representations = this.getSegmentationRepresentations(viewportId, { segmentationId });
-    const representation = representations[0];
-
-    if (!representation) {
-      console.debug(
-        'No segmentation representation found for the given viewportId and segmentationId'
-      );
-      return undefined;
-    }
-
-    const segmentsHidden = cstSegmentation.config.visibility.getHiddenSegmentIndices(viewportId, {
-      segmentationId,
-      type: representation.type,
-    });
-
-    return segmentsHidden.size === 0;
-  }
-
-  public getSegmentationFrameOfReferenceUID(segmentationId: string) {
-    const csSegmentation = getSegmentation(segmentationId);
-
-    const labelmapData = csSegmentation.representationData[SegmentationRepresentations.Labelmap];
-
-    const { imageIds } = labelmapData as LabelmapSegmentationDataStack;
-
-    if (imageIds) {
-      const imageId = imageIds[0];
-      const csImage = cache.getImage(imageId);
-      const referencedImageId = csImage.referencedImageId;
-      const imagePlaneModule = metaData.get(
-        MetadataModules.IMAGE_PLANE,
-        referencedImageId
-      ) as ImagePlaneModuleMetadata;
-
-      return imagePlaneModule.frameOfReferenceUID;
-    }
-  }
-
   private _toggleSegmentationVisibility = (viewportId: string, segmentationId: string): void => {
     const representations = this.getSegmentationRepresentations(viewportId, { segmentationId });
     const representation = representations[0];
@@ -1726,49 +1707,6 @@ class SegmentationService extends PubSubService {
       segmentationId,
     });
   };
-
-  private _updateSegmentationRepresentationHydrationMap({
-    viewportId,
-    presentationId,
-    segmentations,
-    isAdding,
-  }: {
-    viewportId?: string;
-    presentationId?: string;
-    segmentations: Array<{ segmentationId: string; type: SegmentationRepresentations }>;
-    isAdding?: boolean;
-  }): void {
-    if (!segmentations.length) {
-      return;
-    }
-
-    if (!presentationId) {
-      const { viewportGridService } = this.servicesManager.services;
-      const viewportState = viewportGridService.getViewportState(viewportId);
-      const { presentationIds } = viewportState.viewportOptions;
-      presentationId = presentationIds.segmentationPresentationId;
-    }
-
-    if (!this._segmentationRepresentationHydrationMaps.has(presentationId)) {
-      this._segmentationRepresentationHydrationMaps.set(presentationId, []);
-    }
-
-    const hydrationMap = this._segmentationRepresentationHydrationMaps.get(presentationId);
-
-    segmentations.forEach(({ segmentationId, type }) => {
-      const existingIndex = hydrationMap.findIndex(
-        item => item.segmentationId === segmentationId && item.type === type
-      );
-
-      if (existingIndex !== -1) {
-        // Update existing entry
-        hydrationMap[existingIndex].hydrated = isAdding;
-      } else if (isAdding) {
-        // Add new entry only if isAdding is true
-        hydrationMap.push({ segmentationId, type, hydrated: true });
-      }
-    });
-  }
 }
 
 export default SegmentationService;
