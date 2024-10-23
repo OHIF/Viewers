@@ -1,4 +1,4 @@
-import React, { useState, useEffect, Children } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ErrorBoundary as ReactErrorBoundary } from 'react-error-boundary';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
@@ -38,7 +38,6 @@ interface ErrorBoundaryProps {
 const DefaultFallback = ({
   error,
   context,
-  children,
   resetErrorBoundary = () => {},
 }: DefaultFallbackProps) => {
   const { t } = useTranslation('ErrorBoundary');
@@ -73,7 +72,6 @@ Stack: ${error.stack}
 
   return (
     <>
-      {children}
       <Dialog
         open={showDetails}
         onOpenChange={setShowDetails}
@@ -173,20 +171,33 @@ const ErrorBoundary = ({
     onError(error, componentStack, context);
   };
 
-  // If we caught an error via window event listener, render the fallback
-  if (error) {
-    return (
-      <FallbackComponent
-        error={error}
-        context={context}
-        resetErrorBoundary={() => setError(null)}
-      >
+  return (
+    <ReactErrorBoundary
+      fallbackRender={props => (
+        <>
+          {children}
+          <FallbackComponent
+            error={props.error}
+            context={context}
+            resetErrorBoundary={props.resetErrorBoundary}
+          />
+        </>
+      )}
+      onReset={onResetHandler}
+      onError={onErrorHandler}
+    >
+      <>
         {children}
-      </FallbackComponent>
-    );
-  }
-
-  return children;
+        {error && (
+          <FallbackComponent
+            error={error}
+            context={context}
+            resetErrorBoundary={() => setError(null)}
+          />
+        )}
+      </>
+    </ReactErrorBoundary>
+  );
 };
 
 export { ErrorBoundary };
