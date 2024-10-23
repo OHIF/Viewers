@@ -1,5 +1,3 @@
-import React from 'react';
-
 export const performCustomizations = customizationService => {
   // Set the custom SegmentationTable
   customizationService.addModeCustomizations([

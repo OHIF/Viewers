@@ -46,6 +46,15 @@ const segmentationRepresentationModifiedCallback = async (
 
   const targetViewportId = targetViewport.viewportId;
 
+  const { viewport } = getEnabledElementByViewportId(targetViewportId);
+
+  const targetFrameOfReferenceUID = viewport.getFrameOfReferenceUID();
+
+  if (!targetFrameOfReferenceUID) {
+    console.debug('No frame of reference UID found for the target viewport');
+    return;
+  }
+
   const targetViewportRepresentation = segmentationService.getSegmentationRepresentations(
     targetViewportId,
     { segmentationId }

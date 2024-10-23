@@ -2441,6 +2441,7 @@ export const Icons = {
       viewBox="0 0 28 28"
       version="1.1"
       xmlns="http://www.w3.org/2000/svg"
+      {...props}
     >
       <title>tool-dicom-tag-browser</title>
       <g

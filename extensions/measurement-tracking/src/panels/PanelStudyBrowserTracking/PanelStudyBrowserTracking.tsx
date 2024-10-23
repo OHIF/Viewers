@@ -5,7 +5,6 @@ import PropTypes from 'prop-types';
 import { utils } from '@ohif/core';
 import { useImageViewer, useViewportGrid, Dialog, ButtonEnums } from '@ohif/ui';
 import { StudyBrowser } from '@ohif/ui-next';
-import { useAppConfig } from '@state';
 
 import { useTrackedMeasurements } from '../../getContextModule';
 import { Separator } from '@ohif/ui-next';

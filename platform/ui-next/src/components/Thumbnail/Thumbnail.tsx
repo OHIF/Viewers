@@ -4,7 +4,7 @@ import classnames from 'classnames';
 import { useDrag } from 'react-dnd';
 import { Icons } from '../Icons';
 import { DisplaySetMessageListTooltip } from '../DisplaySetMessageListTooltip';
-import { TooltipTrigger, TooltipContent, TooltipProvider, Tooltip } from '../Tooltip';
+import { TooltipTrigger, TooltipContent, Tooltip } from '../Tooltip';
 import { Button } from '../Button';
 import {
   DropdownMenu,
@@ -173,7 +173,6 @@ const Thumbnail = ({
             <div className="text-muted-foreground text-[12px]"> S:{seriesNumber}</div>
             <div className="text-muted-foreground text-[12px]">
               <div className="flex items-center gap-[4px]">
-                {' '}
                 {countIcon ? (
                   React.createElement(Icons[countIcon] || Icons.MissingIcon, { className: 'w-3' })
                 ) : (
