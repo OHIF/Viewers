@@ -93,8 +93,19 @@ function _getDisplaySetsFromSeries(
     return referencedDisplaySet;
   };
 
-  displaySet.load = async ({ headers }) =>
-    await _load(displaySet, servicesManager, extensionManager, headers);
+  displaySet.load = async ({ headers }) => {
+    try {
+      await _load(displaySet, servicesManager, extensionManager, headers);
+    } catch (e) {
+      const { uiNotificationService } = servicesManager.services;
+      uiNotificationService.show({
+        title: 'Error loading displaySet',
+        message: e.message,
+        type: 'error',
+      });
+      console.error(e);
+    }
+  };
 
   return [displaySet];
 }
@@ -122,12 +133,17 @@ function _load(
   // and also return the same promise to any other callers.
   loadPromises[SOPInstanceUID] = new Promise(async (resolve, reject) => {
     if (!segDisplaySet.segments || Object.keys(segDisplaySet.segments).length === 0) {
-      await _loadSegments({
-        extensionManager,
-        servicesManager,
-        segDisplaySet,
-        headers,
-      });
+      try {
+        await _loadSegments({
+          extensionManager,
+          servicesManager,
+          segDisplaySet,
+          headers,
+        });
+      } catch (e) {
+        segDisplaySet.loading = false;
+        return reject(e);
+      }
     }
 
     const suppressEvents = true;
