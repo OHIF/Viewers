@@ -133,6 +133,7 @@ const cornerstoneExtension: Types.Extensions.Extension = {
     usePositionPresentationStore.getState().clearPositionPresentationStore();
     useSynchronizersStore.getState().clearSynchronizersStore();
     useToggleOneUpViewportGridStore.getState().clearToggleOneUpViewportGridStore();
+    useSegmentationPresentationStore.getState().clearSegmentationPresentationStore();
   },
 
   /**

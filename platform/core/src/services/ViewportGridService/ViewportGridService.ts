@@ -12,19 +12,21 @@ class ViewportGridService extends PubSubService {
   public static REGISTRATION = {
     name: 'viewportGridService',
     altName: 'ViewportGridService',
-    create: ({ configuration = {} }) => {
-      return new ViewportGridService();
+    create: ({ configuration = {}, servicesManager }) => {
+      return new ViewportGridService({ servicesManager });
     },
   };
 
   serviceImplementation = {};
+  servicesManager: AppTypes.ServicesManager;
   presentationIdProviders: Map<
     string,
-    (id: string, { viewport, viewports, isUpdatingSameViewport }) => unknown
+    (id: string, { viewport, viewports, isUpdatingSameViewport, servicesManager }) => unknown
   >;
 
-  constructor() {
+  constructor({ servicesManager }) {
     super(ViewportGridService.EVENTS);
+    this.servicesManager = servicesManager;
     this.serviceImplementation = {};
     this.presentationIdProviders = new Map();
   }
@@ -39,7 +41,10 @@ class ViewportGridService extends PubSubService {
   public getPresentationId(id: string, viewportId: string): string | null {
     const state = this.getState();
     const viewport = state.viewports.get(viewportId);
-    return this._getPresentationId(id, { viewport, viewports: state.viewports });
+    return this._getPresentationId(id, {
+      viewport,
+      viewports: state.viewports,
+    });
   }
 
   private _getPresentationId(id, { viewport, viewports }) {
@@ -51,7 +56,12 @@ class ViewportGridService extends PubSubService {
 
     const provider = this.presentationIdProviders.get(id);
     if (provider) {
-      const result = provider(id, { viewport, viewports, isUpdatingSameViewport });
+      const result = provider(id, {
+        viewport,
+        viewports,
+        isUpdatingSameViewport,
+        servicesManager: this.servicesManager,
+      });
       return result;
     }
     return null;
@@ -62,7 +72,10 @@ class ViewportGridService extends PubSubService {
     const registeredPresentationProviders = Array.from(this.presentationIdProviders.keys());
 
     return registeredPresentationProviders.reduce((acc, id) => {
-      const value = this._getPresentationId(id, { viewport, viewports });
+      const value = this._getPresentationId(id, {
+        viewport,
+        viewports,
+      });
       if (value !== null) {
         acc[id] = value;
       }

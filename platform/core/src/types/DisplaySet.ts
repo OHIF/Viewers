@@ -11,6 +11,7 @@ export type DisplaySet = {
   unsupported?: boolean;
   Modality?: string;
   imageIds?: string[];
+  images?: unknown[];
 };
 
 export type DisplaySetSeriesMetadataInvalidatedEvent = {

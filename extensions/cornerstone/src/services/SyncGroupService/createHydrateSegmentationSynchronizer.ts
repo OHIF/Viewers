@@ -59,6 +59,7 @@ const segmentationRepresentationModifiedCallback = async (
     targetViewportId,
     { segmentationId }
   );
+
   if (targetViewportRepresentation.length > 0) {
     return;
   }

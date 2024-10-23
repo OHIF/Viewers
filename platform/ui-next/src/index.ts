@@ -72,12 +72,14 @@ import {
   TooltipTrigger,
   TooltipContent,
   StudySummary,
+  ErrorBoundary,
 } from './components';
 import { DataRow } from './components/DataRow';
 
 import { useNotification, NotificationProvider } from './contextProviders';
 
 export {
+  ErrorBoundary,
   // components
   Button,
   Dialog,

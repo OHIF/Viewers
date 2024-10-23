@@ -1,6 +1,8 @@
 import React, { ReactNode } from 'react';
 import { WindowLevelActionMenu } from './WindowLevelActionMenu';
 
+const cannotShowModalities = ['SM', 'OT'];
+
 export function getWindowLevelActionMenu({
   viewportId,
   element,
@@ -27,6 +29,12 @@ export function getWindowLevelActionMenu({
     .map(displaySet => {
       return { [displaySet.Modality]: presets[displaySet.Modality] };
     });
+
+  const modalities = displaySets.map(displaySet => displaySet.Modality);
+
+  if (modalities.some(modality => cannotShowModalities.includes(modality))) {
+    return null;
+  }
 
   return (
     <WindowLevelActionMenu

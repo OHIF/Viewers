@@ -78,12 +78,21 @@ function _getDisplaySetsFromSeries(
   );
 
   if (!referencedDisplaySets || referencedDisplaySets.length === 0) {
-    throw new Error('Referenced DisplaySet is missing for the RT');
+    // Instead of throwing error, subscribe to display sets added
+    const { unsubscribe } = displaySetService.subscribe(
+      displaySetService.EVENTS.DISPLAY_SETS_ADDED,
+      ({ displaySetsAdded }) => {
+        const addedDisplaySet = displaySetsAdded[0];
+        if (addedDisplaySet.SeriesInstanceUID === displaySet.referencedSeriesInstanceUID) {
+          displaySet.referencedDisplaySetInstanceUID = addedDisplaySet.displaySetInstanceUID;
+          unsubscribe();
+        }
+      }
+    );
+  } else {
+    const referencedDisplaySet = referencedDisplaySets[0];
+    displaySet.referencedDisplaySetInstanceUID = referencedDisplaySet.displaySetInstanceUID;
   }
-
-  const referencedDisplaySet = referencedDisplaySets[0];
-
-  displaySet.referencedDisplaySetInstanceUID = referencedDisplaySet.displaySetInstanceUID;
 
   displaySet.load = ({ headers }) => _load(displaySet, servicesManager, extensionManager, headers);
 

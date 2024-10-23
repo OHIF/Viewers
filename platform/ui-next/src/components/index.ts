@@ -76,8 +76,10 @@ import { MeasurementTable } from './MeasurementTable';
 import { SegmentationTable, useSegmentationTableContext } from './SegmentationTable';
 import { Toaster, toast } from './Sonner';
 import { StudySummary } from './StudySummary';
+import { ErrorBoundary } from './Errorboundary';
 
 export {
+  ErrorBoundary,
   Button,
   buttonVariants,
   ThemeWrapper,

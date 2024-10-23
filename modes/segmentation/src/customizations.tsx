@@ -2,7 +2,6 @@ import React from 'react';
 import { Button, useSegmentationTableContext } from '@ohif/ui-next';
 
 export const performCustomizations = customizationService => {
-  // Set the custom SegmentationTable
   // customizationService.addModeCustomizations([
   // {
   //   id: 'component.SegmentationTableConfig',

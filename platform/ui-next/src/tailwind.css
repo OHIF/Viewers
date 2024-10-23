@@ -4,6 +4,10 @@
 @tailwind components;
 @tailwind utilities;
 
+* {
+  min-height: 0 !important;
+}
+
 /* OHIF Theme */
 
 @layer base {

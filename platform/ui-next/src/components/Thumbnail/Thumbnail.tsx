@@ -165,7 +165,7 @@ const Thumbnail = ({
             </div>
           </div>
         </div>
-        <div className="flex h-[52px] w-[128px] flex-col">
+        <div className="flex h-[52px] w-[128px] flex-col pt-1">
           <div className="min-h-[18px] w-[128px] overflow-hidden text-ellipsis text-[12px] text-white">
             {description}
           </div>

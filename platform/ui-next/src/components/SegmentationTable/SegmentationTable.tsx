@@ -31,7 +31,7 @@ export const SegmentationTable: SegmentationTableComponent = (props: Segmentatio
   const { t } = useTranslation('SegmentationTable');
   const { data = [], mode, title, disableEditing, children, ...contextProps } = props;
 
-  const activeSegmentationInfo = data.find(info => info.representation.active);
+  const activeSegmentationInfo = data.find(info => info.representation?.active);
 
   const activeSegmentationId = activeSegmentationInfo?.segmentation?.segmentationId;
   const activeRepresentation = activeSegmentationInfo?.representation;

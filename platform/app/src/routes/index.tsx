@@ -1,6 +1,6 @@
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
-import { ErrorBoundary } from '@ohif/ui';
+import { ErrorBoundary } from '@ohif/ui-next';
 
 // Route Components
 import DataSourceWrapper from './DataSourceWrapper';

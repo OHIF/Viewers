@@ -15,11 +15,10 @@ const ohif = {
 
 const cornerstone = {
   viewport: '@ohif/extension-cornerstone.viewportModule.cornerstone',
+  panelTool: '@ohif/extension-cornerstone.panelModule.panelSegmentationWithTools',
 };
 
 const segmentation = {
-  panel: '@ohif/extension-cornerstone.panelModule.panelSegmentation',
-  panelTool: '@ohif/extension-cornerstone.panelModule.panelSegmentationWithTools',
   sopClassHandler: '@ohif/extension-cornerstone-dicom-seg.sopClassHandlerModule.dicom-seg',
   viewport: '@ohif/extension-cornerstone-dicom-seg.viewportModule.dicom-seg',
 };
@@ -81,7 +80,6 @@ function modeFactory({ modeConfiguration }) {
       const {
         toolGroupService,
         syncGroupService,
-        toolbarService,
         segmentationService,
         cornerstoneViewportService,
         uiDialogService,
@@ -136,7 +134,7 @@ function modeFactory({ modeConfiguration }) {
             id: ohif.layout,
             props: {
               leftPanels: [ohif.leftPanel],
-              rightPanels: [segmentation.panelTool],
+              rightPanels: [cornerstone.panelTool],
               leftPanelClosed: true,
               viewports: [
                 {

@@ -12,7 +12,7 @@ import {
   utilities as csToolsUtils,
 } from '@cornerstonejs/tools';
 import { Types, MeasurementService } from '@ohif/core';
-import { StackViewport } from '@cornerstonejs/core';
+import { StackViewport, utilities as csUtils } from '@cornerstonejs/core';
 import { Enums as CSExtensionEnums } from '@ohif/extension-cornerstone';
 import DICOMSRDisplayTool from './tools/DICOMSRDisplayTool';
 import SCOORD3DPointTool from './tools/SCOORD3DPointTool';
@@ -95,7 +95,7 @@ export default function init({
         const imageIndex = (currentViewport as StackViewport)
           .getImageIds()
           .indexOf(referencedImageId);
-        csToolsUtils.jumpToSlice(currentViewport.element, { imageIndex });
+        csUtils.jumpToSlice(currentViewport.element, { imageIndex });
       } catch (error) {
         console.warn('Unable to jump to image based on measurement coordinate', error);
       }

@@ -463,8 +463,6 @@ const commandsModule = ({ servicesManager, commandsManager, extensionManager }: 
         direction: ptVolume.direction,
       };
 
-      debugger;
-
       return await workerManager.executeTask('suv-peak-worker', 'getTotalLesionGlycolysis', {
         labelmaps: labelmapProps,
         ptVolume: ptVolumeProps,

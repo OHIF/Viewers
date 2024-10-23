@@ -409,20 +409,26 @@ class SegmentationService extends PubSubService {
     const csViewport = this.getAndValidateViewport(viewportId);
     const colorLUTIndex = this._segmentationIdToColorLUTIndexMap.get(segmentationId);
 
-    const { isVolumeViewport, isVolumeSegmentation } = this.determineViewportAndSegmentationType(
-      csViewport,
-      segmentation
-    );
+    const defaultRepresentationType = csToolsEnums.SegmentationRepresentations.Labelmap;
+    let representationTypeToUse = type || defaultRepresentationType;
+    let isConverted = false;
 
-    const { representationTypeToUse, isConverted } = await this.handleViewportConversion(
-      isVolumeViewport,
-      isVolumeSegmentation,
-      csViewport,
-      segmentation,
-      viewportId,
-      segmentationId,
-      type ? type : csToolsEnums.SegmentationRepresentations.Labelmap
-    );
+    if (type === csToolsEnums.SegmentationRepresentations.Labelmap) {
+      const { isVolumeViewport, isVolumeSegmentation } = this.determineViewportAndSegmentationType(
+        csViewport,
+        segmentation
+      );
+
+      ({ representationTypeToUse, isConverted } = await this.handleViewportConversion(
+        isVolumeViewport,
+        isVolumeSegmentation,
+        csViewport,
+        segmentation,
+        viewportId,
+        segmentationId,
+        representationTypeToUse
+      ));
+    }
 
     await this._addSegmentationRepresentation(
       viewportId,
@@ -551,8 +557,10 @@ class SegmentationService extends PubSubService {
 
       colorLUT.push(rgba);
 
-      const { x, y, z } = segDisplaySet.centroids.get(index) || { x: 0, y: 0, z: 0 };
       const segmentIndex = Number(SegmentNumber);
+
+      const imageCentroidXYZ = segDisplaySet.centroids.get(index).image || { x: 0, y: 0, z: 0 };
+      const worldCentroidXYZ = segDisplaySet.centroids.get(index).world || { x: 0, y: 0, z: 0 };
 
       segments[segmentIndex] = {
         segmentIndex,
@@ -561,7 +569,8 @@ class SegmentationService extends PubSubService {
         active: false,
         cachedStats: {
           center: {
-            image: [x, y, z],
+            image: [imageCentroidXYZ.x, imageCentroidXYZ.y, imageCentroidXYZ.z],
+            world: [worldCentroidXYZ.x, worldCentroidXYZ.y, worldCentroidXYZ.z],
           },
           modifiedTime: segDisplaySet.SeriesDate,
           category: SegmentedPropertyCategoryCodeSequence

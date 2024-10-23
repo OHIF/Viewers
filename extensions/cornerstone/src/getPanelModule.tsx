@@ -6,8 +6,6 @@ import PanelSegmentation from './panels/PanelSegmentation';
 import ActiveViewportWindowLevel from './components/ActiveViewportWindowLevel';
 
 const getPanelModule = ({ commandsManager, servicesManager, extensionManager }: withAppTypes) => {
-  const { customizationService } = servicesManager.services;
-
   const wrappedPanelSegmentation = ({ configuration }) => {
     const [appConfig] = useAppConfig();
 
@@ -19,7 +17,6 @@ const getPanelModule = ({ commandsManager, servicesManager, extensionManager }: 
         configuration={{
           ...configuration,
           disableEditing: appConfig.disableEditing,
-          ...customizationService.get('segmentation.panel'),
         }}
       />
     );
