@@ -340,10 +340,13 @@ const commandsModule = ({ commandsManager, servicesManager }: withAppTypes) => {
         throw new Error('No reference display set found based on the dynamic data');
       }
 
-      const segmentationId = await segmentationService.createEmptyLabelmapForDisplaySetUID(
-        referenceDisplaySet.displaySetInstanceUID,
-        { label }
+      const displaySet = displaySetService.getDisplaySetByUID(
+        referenceDisplaySet.displaySetInstanceUID
       );
+
+      const segmentationId = await segmentationService.createLabelmapForDisplaySet(displaySet, {
+        label,
+      });
 
       for (const viewport of viewports.values()) {
         const viewportId = viewport.viewportId;

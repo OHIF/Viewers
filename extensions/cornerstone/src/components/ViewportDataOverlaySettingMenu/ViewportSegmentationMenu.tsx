@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Button, Icons, Separator } from '@ohif/ui-next';
+import { SegmentationRepresentations } from '@cornerstonejs/tools/enums';
 
 function ViewportSegmentationMenu({
   viewportId,
@@ -35,8 +36,14 @@ function ViewportSegmentationMenu({
     };
   }, [segmentationService, viewportId]);
 
-  const toggleSegmentationVisibility = segmentationId => {
-    segmentationService.toggleSegmentationVisibility(viewportId, segmentationId);
+  const toggleSegmentationRepresentationVisibility = (
+    segmentationId,
+    type = SegmentationRepresentations.Labelmap
+  ) => {
+    segmentationService.toggleSegmentationRepresentationVisibility(viewportId, {
+      segmentationId,
+      type,
+    });
   };
 
   const addSegmentationToViewport = segmentationId => {
@@ -72,7 +79,12 @@ function ViewportSegmentationMenu({
                 variant="ghost"
                 size="icon"
                 className="text-muted-foreground"
-                onClick={() => toggleSegmentationVisibility(segmentation.segmentationId)}
+                onClick={() =>
+                  toggleSegmentationRepresentationVisibility(
+                    segmentation.segmentationId,
+                    segmentation.type
+                  )
+                }
               >
                 <Icons.Hide className="h-6 w-6" />
               </Button>
@@ -81,7 +93,12 @@ function ViewportSegmentationMenu({
                 variant="ghost"
                 size="icon"
                 className="text-muted-foreground"
-                onClick={() => toggleSegmentationVisibility(segmentation.segmentationId)}
+                onClick={() =>
+                  toggleSegmentationRepresentationVisibility(
+                    segmentation.segmentationId,
+                    segmentation.type
+                  )
+                }
               >
                 <Icons.Show className="h-6 w-6" />
               </Button>

@@ -90,7 +90,9 @@ const commandsModule = ({
 
           delete segmentation.segments;
 
-          await segmentationService.createEmptyLabelmapForDisplaySetUID(displaySetInstanceUID, {
+          const displaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
+
+          await segmentationService.createLabelmapForDisplaySet(displaySet, {
             segmentationId,
             label,
           });

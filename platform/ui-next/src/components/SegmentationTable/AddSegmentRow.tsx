@@ -11,7 +11,7 @@ export const AddSegmentRow: React.FC<{
     disableEditing,
     activeSegmentationId,
     onSegmentAdd,
-    onToggleSegmentationVisibility,
+    onToggleSegmentationRepresentationVisibility,
     data,
   } = useSegmentationTableContext('SegmentationTable');
 
@@ -47,7 +47,12 @@ export const AddSegmentRow: React.FC<{
       <Button
         size="icon"
         variant="ghost"
-        onClick={() => onToggleSegmentationVisibility(segmentationIdToUse)}
+        onClick={() =>
+          onToggleSegmentationRepresentationVisibility(
+            segmentationIdToUse,
+            activeRepresentation?.type
+          )
+        }
       >
         {Icon}
       </Button>

@@ -178,13 +178,12 @@ const commandsModule = ({ servicesManager, commandsManager, extensionManager }: 
       const currentSegmentations =
         segmentationService.getSegmentationRepresentations(withPTViewportId);
 
-      const segmentationId = await segmentationService.createEmptyLabelmapForDisplaySetUID(
-        ptDisplaySet.displaySetInstanceUID,
-        {
-          label: `Segmentation ${currentSegmentations.length + 1}`,
-          segments: { 1: { label: 'Segment 1', active: true } },
-        }
-      );
+      const displaySet = displaySetService.getDisplaySetByUID(ptDisplaySet.displaySetInstanceUID);
+
+      const segmentationId = await segmentationService.createLabelmapForDisplaySet(displaySet, {
+        label: `Segmentation ${currentSegmentations.length + 1}`,
+        segments: { 1: { label: 'Segment 1', active: true } },
+      });
 
       segmentationService.addSegmentationRepresentation(withPTViewportId, {
         segmentationId,

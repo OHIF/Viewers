@@ -1,4 +1,3 @@
-import React from 'react';
 import { createContext } from '../../lib/createContext';
 
 interface Segmentation {
@@ -56,7 +55,7 @@ interface SegmentationTableContext {
   onSegmentDelete: (segmentationId: string, segmentIndex: number) => void;
   onToggleSegmentVisibility: (segmentationId: string, segmentIndex: number) => void;
   onToggleSegmentLock: (segmentationId: string, segmentIndex: number) => void;
-  onToggleSegmentationVisibility: (segmentationId: string) => void;
+  onToggleSegmentationRepresentationVisibility: (segmentationId: string, type: string) => void;
   onSegmentationDownload: (segmentationId: string) => void;
   storeSegmentation: (segmentationId: string) => void;
   onSegmentationDownloadRTSS: (segmentationId: string) => void;

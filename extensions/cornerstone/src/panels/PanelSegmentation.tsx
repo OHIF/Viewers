@@ -17,7 +17,7 @@ export default function PanelSegmentation({
 
   const handlers = {
     onSegmentationAdd: async () => {
-      segmentationService.createEmptyLabelmapForViewport(viewportGridService.getActiveViewportId());
+      segmentationService.createLabelmapForViewport(viewportGridService.getActiveViewportId());
     },
 
     onSegmentationClick: (segmentationId: string) => {
@@ -112,10 +112,10 @@ export default function PanelSegmentation({
       segmentationService.toggleSegmentLocked(segmentationId, segmentIndex);
     },
 
-    onToggleSegmentationVisibility: segmentationId => {
-      segmentationService.toggleSegmentationVisibility(
+    onToggleSegmentationRepresentationVisibility: (segmentationId, type) => {
+      segmentationService.toggleSegmentationRepresentationVisibility(
         viewportGridService.getActiveViewportId(),
-        segmentationId
+        { segmentationId, type }
       );
     },
 
@@ -239,7 +239,9 @@ export default function PanelSegmentation({
         onSegmentDelete={handlers.onSegmentDelete}
         onToggleSegmentVisibility={handlers.onToggleSegmentVisibility}
         onToggleSegmentLock={handlers.onToggleSegmentLock}
-        onToggleSegmentationVisibility={handlers.onToggleSegmentationVisibility}
+        onToggleSegmentationRepresentationVisibility={
+          handlers.onToggleSegmentationRepresentationVisibility
+        }
         onSegmentationDownload={handlers.onSegmentationDownload}
         storeSegmentation={handlers.storeSegmentation}
         onSegmentationDownloadRTSS={handlers.onSegmentationDownloadRTSS}
