@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import {
-  InputDoubleRange,
   Button,
   PanelSection,
   ButtonGroup,
@@ -9,6 +8,8 @@ import {
   Icon,
   Tooltip,
 } from '@ohif/ui';
+
+import { DoubleSlider } from '@ohif/ui-next';
 
 import { Enums } from '@cornerstonejs/core';
 
@@ -55,20 +56,14 @@ const DynamicVolumeControls = ({
 
   const [computeViewMode, setComputeViewMode] = useState(Enums.DynamicOperatorType.SUM);
 
-  const [sliderRangeValues, setSliderRangeValues] = useState([framesLength / 4, framesLength / 2]);
-
-  useEffect(() => {
-    setSliderRangeValues([framesLength / 4, framesLength / 2]);
-  }, [framesLength]);
+  const [sliderRangeValues, setSliderRangeValues] = useState([1, framesLength]);
 
   const handleSliderChange = newValues => {
     onDoubleRangeChange(newValues);
-
-    if (newValues[0] === sliderRangeValues[0] && newValues[1] === sliderRangeValues[1]) {
-      return;
-    }
     setSliderRangeValues(newValues);
   };
+
+  const formatLabel = value => Math.round(value);
 
   return (
     <div className="flex select-none flex-col">
@@ -134,7 +129,7 @@ const DynamicVolumeControls = ({
             }
           />
           <ButtonGroup
-            className={`mt-2 w-full `}
+            className={`mt-2 w-full`}
             separated={true}
           >
             <button
@@ -156,15 +151,15 @@ const DynamicVolumeControls = ({
               {Enums.DynamicOperatorType.SUBTRACT.toString().toUpperCase()}
             </button>
           </ButtonGroup>
-          <div className="w-ful mt-2">
-            <InputDoubleRange
-              values={sliderRangeValues}
-              onChange={handleSliderChange}
-              minValue={0}
-              showLabel={true}
-              allowNumberEdit={true}
-              maxValue={framesLength}
+          <div className="mt-2 w-full">
+            <DoubleSlider
+              min={0}
+              max={framesLength}
               step={1}
+              defaultValue={sliderRangeValues}
+              onValueChange={handleSliderChange}
+              formatLabel={formatLabel}
+              className="w-full"
             />
           </div>
           <Button
@@ -216,7 +211,7 @@ function FrameControls({
         >
           <Icon
             name={getPlayPauseIconName()}
-            className=" active:text-primary-light hover:bg-customblue-300 h-[24px] w-[24px] cursor-pointer text-white"
+            className="active:text-primary-light hover:bg-customblue-300 h-[24px] w-[24px] cursor-pointer text-white"
           />
         </IconButton>
         <InputNumber

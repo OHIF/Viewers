@@ -25,7 +25,7 @@ const { datasetToBlob } = dcmjs.data;
 
 const {
   Cornerstone3D: {
-    Segmentation: { generateLabelMaps2DFrom3D, generateSegmentation },
+    Segmentation: { generateSegmentation },
   },
 } = adaptersSEG;
 
@@ -42,7 +42,6 @@ const commandsModule = ({
   extensionManager,
 }: Types.Extensions.ExtensionParams): Types.Extensions.CommandsModule => {
   const {
-    uiNotificationService,
     segmentationService,
     uiDialogService,
     displaySetService,
@@ -65,64 +64,6 @@ const commandsModule = ({
      * @returns {Array} Returns an array of viewports that require updates for segmentation rendering.
      */
     getUpdatedViewportsForSegmentation,
-    /**
-     * Creates an empty segmentation for a specified viewport.
-     * It first checks if the display set associated with the viewport is reconstructable.
-     * If not, it raises a notification error. Otherwise, it creates a new segmentation
-     * for the display set after handling the necessary steps for making the viewport
-     * a volume viewport first
-     *
-     * @param {Object} params - Parameters for the function.
-     * @param params.viewportId - the target viewport ID.
-     *
-     */
-    createEmptySegmentationForViewport: async ({ viewportId }) => {
-      const viewport = getTargetViewport({ viewportId, viewportGridService });
-      // Todo: add support for multiple display sets
-      const displaySetInstanceUID = viewport.displaySetInstanceUIDs[0];
-
-      const displaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
-
-      if (!displaySet.isReconstructable) {
-        uiNotificationService.show({
-          title: 'Segmentation',
-          message: 'Segmentation is not supported for non-reconstructible displaysets yet',
-          type: 'error',
-        });
-        return;
-      }
-
-      updateViewportsForSegmentationRendering({
-        viewportId,
-        servicesManager,
-        displaySet,
-        loadFn: async () => {
-          const currentSegmentations = segmentationService.getSegmentations();
-          const segmentationId = await segmentationService.createSegmentationForDisplaySet(
-            displaySetInstanceUID,
-            { label: `Segmentation ${currentSegmentations.length + 1}` }
-          );
-
-          const toolGroupId = viewport.viewportOptions.toolGroupId;
-
-          await segmentationService.addSegmentationRepresentationToToolGroup(
-            toolGroupId,
-            segmentationId
-          );
-
-          // Add only one segment for now
-          segmentationService.addSegment(segmentationId, {
-            toolGroupId,
-            segmentIndex: 1,
-            properties: {
-              label: 'Segment 1',
-            },
-          });
-
-          return segmentationId;
-        },
-      });
-    },
     /**
      * Loads segmentations for a specified viewport.
      * The function prepares the viewport for rendering, then loads the segmentation details.
@@ -149,7 +90,9 @@ const commandsModule = ({
 
           delete segmentation.segments;
 
-          await segmentationService.createSegmentationForDisplaySet(displaySetInstanceUID, {
+          const displaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
+
+          await segmentationService.createLabelmapForDisplaySet(displaySet, {
             segmentationId,
             label,
           });
@@ -161,11 +104,9 @@ const commandsModule = ({
 
           segmentationService.addOrUpdateSegmentation(segmentation);
 
-          const toolGroupId = viewport.viewportOptions.toolGroupId;
-          await segmentationService.addSegmentationRepresentationToToolGroup(
-            toolGroupId,
-            segmentationId
-          );
+          await segmentationService.addSegmentationRepresentation(viewportId, {
+            segmentationId,
+          });
 
           segments.forEach(segment => {
             if (segment === null) {
@@ -173,7 +114,7 @@ const commandsModule = ({
             }
             segmentationService.addSegment(segmentationId, {
               segmentIndex: segment.segmentIndex,
-              toolGroupId,
+              viewportId,
               properties: {
                 color: segment.color,
                 label: segment.label,
@@ -220,14 +161,13 @@ const commandsModule = ({
         displaySet,
         loadFn: async () => {
           const segDisplaySet = displaySet;
-          const suppressEvents = false;
           const serviceFunction =
             segDisplaySet.Modality === 'SEG'
               ? 'createSegmentationForSEGDisplaySet'
               : 'createSegmentationForRTDisplaySet';
 
           const boundFn = segmentationService[serviceFunction].bind(segmentationService);
-          const segmentationId = await boundFn(segDisplaySet, null, suppressEvents);
+          const segmentationId = await boundFn(segDisplaySet, { segmentationId: null });
           const segmentation = segmentationService.getSegmentation(segmentationId);
           segmentation.description = `S${referencedDisplaySet.SeriesNumber}: ${referencedDisplaySet.SeriesDescription}`;
           return segmentationId;
@@ -251,16 +191,45 @@ const commandsModule = ({
     generateSegmentation: ({ segmentationId, options = {} }) => {
       const segmentation = cornerstoneToolsSegmentation.state.getSegmentation(segmentationId);
 
-      const { referencedVolumeId } = segmentation.representationData.LABELMAP;
+      const { imageIds } = segmentation.representationData.Labelmap;
 
-      const segmentationVolume = cache.getVolume(segmentationId);
-      const referencedVolume = cache.getVolume(referencedVolumeId);
-      const referencedImages = referencedVolume.getCornerstoneImages();
+      const segImages = imageIds.map(imageId => cache.getImage(imageId));
+      const referencedImages = segImages.map(image => cache.getImage(image.referencedImageId));
 
-      const labelmapObj = generateLabelMaps2DFrom3D(segmentationVolume);
+      const labelmaps2D = [];
 
-      // Generate fake metadata as an example
-      labelmapObj.metadata = [];
+      let z = 0;
+
+      for (const segImage of segImages) {
+        const segmentsOnLabelmap = [];
+
+        const pixelData = segImage.getPixelData();
+        const { rows, columns } = segImage;
+        for (let i = 0; i < pixelData.length; i++) {
+          const segment = pixelData[i];
+          if (!segmentsOnLabelmap.includes(segment) && segment !== 0) {
+            segmentsOnLabelmap.push(segment);
+          }
+        }
+
+        const labelmap2D = {
+          segmentsOnLabelmap,
+          pixelData,
+          rows,
+          columns,
+        };
+
+        labelmaps2D[z] = labelmap2D;
+        z++;
+      }
+
+      const allSegmentsOnLabelmap = labelmaps2D.map(labelmap => labelmap.segmentsOnLabelmap);
+
+      const labelmap3D = {
+        segmentsOnLabelmap: Array.from(new Set(allSegmentsOnLabelmap.flat())),
+        metadata: [],
+        labelmaps2D,
+      };
 
       const segmentationInOHIF = segmentationService.getSegmentation(segmentationId);
       segmentationInOHIF.segments.forEach(segment => {
@@ -292,12 +261,12 @@ const commandsModule = ({
             CodeMeaning: 'Tissue',
           },
         };
-        labelmapObj.metadata[segmentIndex] = segmentMetadata;
+        labelmap3D.metadata[segmentIndex] = segmentMetadata;
       });
 
       const generatedSegmentation = generateSegmentation(
         referencedImages,
-        labelmapObj,
+        labelmap3D,
         metaData,
         options
       );
@@ -453,9 +422,6 @@ const commandsModule = ({
     },
     loadSegmentationsForViewport: {
       commandFn: actions.loadSegmentationsForViewport,
-    },
-    createEmptySegmentationForViewport: {
-      commandFn: actions.createEmptySegmentationForViewport,
     },
     generateSegmentation: {
       commandFn: actions.generateSegmentation,

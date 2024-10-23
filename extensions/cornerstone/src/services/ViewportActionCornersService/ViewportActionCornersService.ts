@@ -7,7 +7,7 @@ export type ActionComponentInfo = {
   id: string;
   component: ReactNode;
   location: ViewportActionCornersLocations;
-  indexPriority: number;
+  indexPriority?: number;
 };
 
 class ViewportActionCornersService extends PubSubService {
@@ -33,21 +33,21 @@ class ViewportActionCornersService extends PubSubService {
 
   public setServiceImplementation({
     getState: getStateImplementation,
-    setComponent: setComponentImplementation,
-    setComponents: setComponentsImplementation,
-    clear: clearImplementation,
+    addComponent: addComponentImplementation,
+    addComponents: addComponentsImplementation,
+    clear: clearComponentsImplementation,
   }): void {
     if (getStateImplementation) {
       this.serviceImplementation._getState = getStateImplementation;
     }
-    if (setComponentImplementation) {
-      this.serviceImplementation._setComponent = setComponentImplementation;
+    if (addComponentImplementation) {
+      this.serviceImplementation._addComponent = addComponentImplementation;
     }
-    if (setComponentsImplementation) {
-      this.serviceImplementation._setComponents = setComponentsImplementation;
+    if (addComponentsImplementation) {
+      this.serviceImplementation._addComponents = addComponentsImplementation;
     }
-    if (clearImplementation) {
-      this.serviceImplementation._clear = clearImplementation;
+    if (clearComponentsImplementation) {
+      this.serviceImplementation._clear = clearComponentsImplementation;
     }
   }
 
@@ -55,12 +55,12 @@ class ViewportActionCornersService extends PubSubService {
     return this.serviceImplementation._getState();
   }
 
-  public setComponent(component: ActionComponentInfo) {
-    this.serviceImplementation._setComponent(component);
+  public addComponent(component: ActionComponentInfo) {
+    this.serviceImplementation._addComponent(component);
   }
 
-  public setComponents(components: Array<ActionComponentInfo>) {
-    this.serviceImplementation._setComponents(components);
+  public addComponents(components: Array<ActionComponentInfo>) {
+    this.serviceImplementation._addComponents(components);
   }
 
   public clear(viewportId: string) {

@@ -34,9 +34,9 @@ class CineService extends PubSubService {
     // Todo: for some reason i need to do this setTimeout since the
     // reducer state does not get updated right away and if we publish the
     // event and we use the cineService.getState() it will return the old state
-    setTimeout(() => {
+    queueMicrotask(() => {
       this._broadcastEvent(this.EVENTS.CINE_STATE_CHANGED, { isCineEnabled });
-    }, 0);
+    });
   }
 
   public playClip(element, playClipOptions) {

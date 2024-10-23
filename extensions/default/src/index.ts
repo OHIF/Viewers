@@ -18,6 +18,22 @@ import { createReportDialogPrompt } from './Panels';
 import createReportAsync from './Actions/createReportAsync';
 import StaticWadoClient from './DicomWebDataSource/utils/StaticWadoClient';
 import { cleanDenaturalizedDataset } from './DicomWebDataSource/utils';
+import { useViewportsByPositionStore } from './stores/useViewportsByPositionStore';
+import { useViewportGridStore } from './stores/useViewportGridStore';
+import { useUIStateStore } from './stores/useUIStateStore';
+import { useDisplaySetSelectorStore } from './stores/useDisplaySetSelectorStore';
+import { useHangingProtocolStageIndexStore } from './stores/useHangingProtocolStageIndexStore';
+import { useToggleHangingProtocolStore } from './stores/useToggleHangingProtocolStore';
+import { useToggleOneUpViewportGridStore } from './stores/useToggleOneUpViewportGridStore';
+import {
+  callLabelAutocompleteDialog,
+  showLabelAnnotationPopup,
+  callInputDialog,
+} from './utils/callInputDialog';
+import colorPickerDialog from './utils/colorPickerDialog';
+
+import promptSaveReport from './utils/promptSaveReport';
+import promptLabelAnnotation from './utils/promptLabelAnnotation';
 
 const defaultExtension: Types.Extensions.Extension = {
   /**
@@ -25,6 +41,14 @@ const defaultExtension: Types.Extensions.Extension = {
    */
   id,
   preRegistration,
+  onModeExit() {
+    useViewportGridStore.getState().clearViewportGridState();
+    useUIStateStore.getState().clearUIState();
+    useDisplaySetSelectorStore.getState().clearDisplaySetSelectorMap();
+    useHangingProtocolStageIndexStore.getState().clearHangingProtocolStageIndexMap();
+    useToggleHangingProtocolStore.getState().clearToggleHangingProtocol();
+    useViewportsByPositionStore.getState().clearViewportsByPosition();
+  },
   getDataSourcesModule,
   getViewportModule,
   getLayoutTemplateModule,
@@ -58,4 +82,18 @@ export {
   createReportAsync,
   StaticWadoClient,
   cleanDenaturalizedDataset,
+  // Export all stores
+  useDisplaySetSelectorStore,
+  useHangingProtocolStageIndexStore,
+  useToggleHangingProtocolStore,
+  useToggleOneUpViewportGridStore,
+  useUIStateStore,
+  useViewportGridStore,
+  useViewportsByPositionStore,
+  showLabelAnnotationPopup,
+  callLabelAutocompleteDialog,
+  callInputDialog,
+  promptSaveReport,
+  promptLabelAnnotation,
+  colorPickerDialog,
 };

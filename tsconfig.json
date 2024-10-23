@@ -2,7 +2,6 @@
   "compilerOptions": {
     "baseUrl": "./",
     "checkJs": true,
-    // Ensure that Babel can safely transpile files in the TypeScript project
     "isolatedModules": true,
     "emitDeclarationOnly": true,
     "jsx": "react",
@@ -10,14 +9,23 @@
     "esModuleInterop": true,
     "sourceMap": true,
     "declaration": true,
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
+    "module": "esnext",
+    "target": "ES2022",
     "outDir": "./dist",
     "paths": {
       "@ohif/core": ["platform/core/src"],
       "@ohif/ui": ["platform/ui/src"],
       "@ohif/ui-next": ["platform/ui-next/src"],
       "@ohif/i18n": ["platform/i18n/src"],
-      "@ohif/app": ["platform/app/src"]
+      "@ohif/app": ["platform/app/src"],
+      "@ohif/extension-default": ["./extensions/default/src"],
+      "@ohif/extension-measurement-tracking": ["./extensions/measurement-tracking/src"],
+      "@ohif/extension-cornerstone-dicom-sr": ["./extensions/cornerstone-dicom-sr/src"],
+      "@ohif/extension-cornerstone-dicom-seg": ["./extensions/cornerstone-dicom-seg/src"],
+      "@ohif/extension-cornerstone": ["./extensions/cornerstone/src"],
+      "@ohif/extension-dicom-pdf": ["./extensions/dicom-pdf/src"],
+      "@state": ["./platform/app/src/state"]
     }
   },
   "include": [
@@ -25,7 +33,7 @@
     "platform/**/public/**/*",
     "extensions/**/src/**/*",
     "modes/**/src/**/*",
-    "tests/**/*",
+    "tests/**/*"
   ],
   "exclude": ["node_modules", "dist"]
 }

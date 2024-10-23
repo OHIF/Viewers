@@ -20,11 +20,10 @@ There are seven events that get publish in `MeasurementService`:
 
 | Event                 | Description                                            |
 | --------------------- | ------------------------------------------------------ |
-| SEGMENTATION_UPDATED   | Fires when a segmentation is updated e.g., segment added, removed etc.|
+| SEGMENTATION_MODIFIED   | Fires when a segmentation is updated e.g., segment added, removed etc.|
 | SEGMENTATION_DATA_MODIFIED     | Fires when the segmentation data changes  |
 | SEGMENTATION_ADDED | Fires when a new segmentation is added to OHIF |
 | SEGMENTATION_REMOVED   | Fires when a segmentation is removed from OHIF                 |
-| SEGMENTATION_CONFIGURATION_CHANGED  | Fires when a segmentation configuration is changed                |
 | SEGMENT_LOADING_COMPLETE   | Fires when a segment group adds its pixel data to the volume    |
 | SEGMENTATION_LOADING_COMPLETE   | Fires when the full segmentation volume is filled with its segments   |
 
@@ -33,7 +32,7 @@ There are seven events that get publish in `MeasurementService`:
 
 ### Segmentation Creation
 
-- `createSegmentationForDisplaySet`: based on a reference displaySet, create a new segmentation. E.g., create a new segmentation based on a CT series
+- `createEmptyLabelmapForDisplaySetUID`: based on a reference displaySet, create a new segmentation. E.g., create a new segmentation based on a CT series
 - `createSegmentationForSEGDisplaySet`: given a segDisplaySet loaded by a sopClassHandler, create a new segmentation
 - `addSegmentationRepresentationToToolGroup`: given the toolGroupId, add the given segmentationId to the toolGroup.
 

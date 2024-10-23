@@ -23,10 +23,12 @@ const tools = {
       toolName: toolNames.Zoom,
       bindings: [{ mouseButton: Enums.MouseBindings.Secondary }],
     },
-    { toolName: toolNames.StackScrollMouseWheel, bindings: [] },
+    {
+      toolName: toolNames.StackScroll,
+      bindings: [{ mouseButton: Enums.MouseBindings.Wheel }],
+    },
   ],
   enabled: [
-    { toolName: toolNames.SegmentationDisplay },
     {
       toolName: toolNames.PlanarFreehandContourSegmentation,
       configuration: {
@@ -120,7 +122,7 @@ function getCustomizationModule() {
                 type: 'value',
               },
               {
-                value: 'areaUnit',
+                value: 'areaUnits',
                 for: ['area'],
                 type: 'unit',
               },
@@ -140,7 +142,7 @@ function getCustomizationModule() {
               },
               {
                 displayName: 'Unit',
-                value: 'areaUnit',
+                value: 'areaUnits',
                 type: 'value',
               },
             ],
@@ -170,12 +172,12 @@ function getCustomizationModule() {
                 type: 'value',
               },
               {
-                value: 'modalityUnit',
+                value: 'pixelValueUnits',
                 for: ['mean', 'max' /** 'stdDev **/],
                 type: 'unit',
               },
               {
-                value: 'areaUnit',
+                value: 'areaUnits',
                 for: ['area'],
                 type: 'unit',
               },

@@ -10,7 +10,6 @@ export const mpr: Types.HangingProtocol.Protocol = {
   modifiedDate: '2023-08-15',
   availableTo: {},
   editableBy: {},
-  // Unknown number of priors referenced - so just match any study
   numberOfPriorsReferenced: 0,
   protocolMatchingRules: [],
   imageLoadStrategy: 'nth',
@@ -81,6 +80,15 @@ export const mpr: Types.HangingProtocol.Protocol = {
                   syncColormap: true,
                 },
               },
+              {
+                type: 'hydrateseg',
+                id: 'sameFORId',
+                source: true,
+                target: true,
+                options: {
+                  matchingRules: ['sameFOR'],
+                },
+              },
             ],
           },
           displaySets: [
@@ -108,6 +116,15 @@ export const mpr: Types.HangingProtocol.Protocol = {
                   syncColormap: true,
                 },
               },
+              {
+                type: 'hydrateseg',
+                id: 'sameFORId',
+                source: true,
+                target: true,
+                options: {
+                  matchingRules: ['sameFOR'],
+                },
+              },
             ],
           },
           displaySets: [
@@ -133,6 +150,15 @@ export const mpr: Types.HangingProtocol.Protocol = {
                 target: true,
                 options: {
                   syncColormap: true,
+                },
+              },
+              {
+                type: 'hydrateseg',
+                id: 'sameFORId',
+                source: true,
+                target: true,
+                options: {
+                  matchingRules: ['sameFOR'],
                 },
               },
             ],

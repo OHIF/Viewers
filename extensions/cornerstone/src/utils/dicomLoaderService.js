@@ -161,7 +161,7 @@ class DicomLoaderService {
           getDicomDataMethod = fetchIt.bind(this, imageId);
           break;
         default:
-          throw new Error(`Unsupported image type: ${loaderType} for imageId: ${imageId}`);
+          return;
       }
 
       return getDicomDataMethod();

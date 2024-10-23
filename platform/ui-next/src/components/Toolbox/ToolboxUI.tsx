@@ -110,11 +110,11 @@ function ToolboxUI(props: withAppTypes) {
   return (
     <>
       {useCollapsedPanel ? (
-        <PanelSection
-          childrenClassName="flex-shrink-0"
-          title={title}
-        >
-          {render()}
+        <PanelSection>
+          <PanelSection.Header>
+            <span>{title}</span>
+          </PanelSection.Header>
+          <PanelSection.Content className="flex-shrink-0">{render()}</PanelSection.Content>
         </PanelSection>
       ) : (
         render()

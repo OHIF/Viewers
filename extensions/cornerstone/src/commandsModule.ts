@@ -13,10 +13,10 @@ import {
   ReferenceLinesTool,
 } from '@cornerstonejs/tools';
 import { Types as OhifTypes } from '@ohif/core';
+import { callLabelAutocompleteDialog, showLabelAnnotationPopup } from '@ohif/extension-default';
 import { vec3, mat4 } from 'gl-matrix';
 
 import CornerstoneViewportDownloadForm from './utils/CornerstoneViewportDownloadForm';
-import { callLabelAutocompleteDialog, showLabelAnnotationPopup } from './utils/callInputDialog';
 import toggleImageSliceSync from './utils/imageSliceSync/toggleImageSliceSync';
 import { getFirstAnnotationSelected } from './utils/measurementServiceMappings/utils/selection';
 import getActiveViewportEnabledElement from './utils/getActiveViewportEnabledElement';
@@ -435,9 +435,10 @@ function commandsModule({
         viewport.setCamera({ viewUp: rotatedViewUp as CoreTypes.Point3 });
         viewport.render();
       } else if (viewport.getRotation !== undefined) {
-        const currentRotation = viewport.getRotation();
+        const presentation = viewport.getViewPresentation();
+        const { rotation: currentRotation } = presentation;
         const newRotation = (currentRotation + rotation) % 360;
-        viewport.setProperties({ rotation: newRotation });
+        viewport.setViewPresentation({ rotation: newRotation });
         viewport.render();
       }
     },
@@ -554,7 +555,7 @@ function commandsModule({
 
       // Set slice to last slice
       const options = { imageIndex: jumpIndex };
-      cstUtils.jumpToSlice(viewport.element, options);
+      csUtils.jumpToSlice(viewport.element, options);
     },
     scroll: ({ direction }) => {
       const enabledElement = _getActiveViewportEnabledElement();
@@ -566,7 +567,7 @@ function commandsModule({
       const { viewport } = enabledElement;
       const options = { delta: direction };
 
-      cstUtils.scroll(viewport, options);
+      csUtils.scroll(viewport, options);
     },
     setViewportColormap: ({
       viewportId,
@@ -577,7 +578,6 @@ function commandsModule({
     }) => {
       const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
 
-      const actorEntries = viewport.getActors();
       let hpOpacity;
       // Retrieve active protocol's viewport match details
       const { viewportMatchDetails } = hangingProtocolService.getActiveProtocol();
@@ -596,14 +596,8 @@ function commandsModule({
       // HP takes priority over the default opacity
       colormap = { ...colormap, opacity: hpOpacity || opacity };
 
-      const setViewportProperties = (viewport, uid) => {
-        const actorEntry = actorEntries.find(entry => entry.uid.includes(uid));
-        const { actor: volumeActor, uid: volumeId } = actorEntry;
-        viewport.setProperties({ colormap, volumeActor }, volumeId);
-      };
-
       if (viewport instanceof StackViewport) {
-        setViewportProperties(viewport, viewportId);
+        viewport.setProperties({ colormap });
       }
 
       if (viewport instanceof VolumeViewport) {
@@ -611,7 +605,11 @@ function commandsModule({
           const { viewports } = viewportGridService.getState();
           displaySetInstanceUID = viewports.get(viewportId)?.displaySetInstanceUIDs[0];
         }
-        setViewportProperties(viewport, displaySetInstanceUID);
+
+        const volumeId = viewport
+          .getActors()
+          .find(entry => entry.referencedId.includes(displaySetInstanceUID))?.referencedId;
+        viewport.setProperties({ colormap }, volumeId);
       }
 
       if (immediate) {

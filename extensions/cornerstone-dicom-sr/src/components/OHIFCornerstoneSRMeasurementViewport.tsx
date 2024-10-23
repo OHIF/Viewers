@@ -307,7 +307,7 @@ function OHIFCornerstoneSRMeasurementViewport(props: withAppTypes) {
   }, [trackedMeasurements]);
 
   useEffect(() => {
-    viewportActionCornersService.setComponents([
+    viewportActionCornersService.addComponents([
       {
         viewportId,
         id: 'viewportStatusComponent',

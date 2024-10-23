@@ -24,7 +24,6 @@ function getPanelModule({ commandsManager, extensionManager, servicesManager }):
         />
       ),
     },
-
     {
       name: 'trackedMeasurements',
       iconName: 'tab-linear',

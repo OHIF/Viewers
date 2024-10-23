@@ -50,7 +50,10 @@ const combineFrameInstance = (frame, instance) => {
 
     // Todo: we should cache this combined instance somewhere, maybe add it
     // back to the dicomMetaStore so we don't have to do this again.
-    return newInstance;
+    return {
+      ...newInstance,
+      ImagePositionPatient: newInstance.ImagePositionPatient ?? [0, 0, frameNumber],
+    };
   } else {
     return instance;
   }

@@ -2,7 +2,6 @@ export function toolboxReducer(state, action) {
   let newState = { ...state };
 
   const { payload } = action;
-  const { stateSyncService, buttonSectionId } = payload || {};
 
   switch (action.type) {
     case 'SET_ACTIVE_TOOL':
@@ -49,18 +48,5 @@ export function toolboxReducer(state, action) {
       break;
   }
 
-  // store the state in the stateSyncService
-  if (payload?.stateSyncService) {
-    const prevState = stateSyncService.getState()?.['uiStateStore']?.[buttonSectionId];
-    stateSyncService.store({
-      uiStateStore: {
-        ...stateSyncService.getState()?.['uiStateStore'],
-        [buttonSectionId]: {
-          ...prevState,
-          ...newState,
-        },
-      },
-    });
-  }
   return newState;
 }

@@ -39,7 +39,10 @@ function initDefaultToolGroup(
         toolName: toolNames.Zoom,
         bindings: [{ mouseButton: Enums.MouseBindings.Secondary }],
       },
-      { toolName: toolNames.StackScrollMouseWheel, bindings: [] },
+      {
+        toolName: toolNames.StackScroll,
+        bindings: [{ mouseButton: Enums.MouseBindings.Wheel }],
+      },
     ],
     passive: [
       { toolName: toolNames.Length },
@@ -77,7 +80,6 @@ function initDefaultToolGroup(
       { toolName: toolNames.Angle },
       { toolName: toolNames.CobbAngle },
       { toolName: toolNames.Magnify },
-      { toolName: toolNames.SegmentationDisplay },
       { toolName: toolNames.CalibrationLine },
       {
         toolName: toolNames.PlanarFreehandContourSegmentation,
@@ -150,8 +152,8 @@ function initSRToolGroup(extensionManager, toolGroupService) {
         ],
       },
       {
-        toolName: toolNames.StackScrollMouseWheel,
-        bindings: [],
+        toolName: toolNames.StackScroll,
+        bindings: [{ mouseButton: Enums.MouseBindings.Wheel }],
       },
     ],
     passive: [
@@ -163,12 +165,6 @@ function initSRToolGroup(extensionManager, toolGroupService) {
       { toolName: SRToolNames.SRPlanarFreehandROI },
       { toolName: SRToolNames.SRRectangleROI },
       { toolName: toolNames.WindowLevelRegion },
-      {
-        toolName: SRToolNames.SRPlanarFreehandContourSegmentation,
-        configuration: {
-          displayOnePointAsCrosshairs: true,
-        },
-      },
     ],
     enabled: [
       {
@@ -206,7 +202,10 @@ function initMPRToolGroup(extensionManager, toolGroupService, commandsManager, m
         toolName: toolNames.Zoom,
         bindings: [{ mouseButton: Enums.MouseBindings.Secondary }],
       },
-      { toolName: toolNames.StackScrollMouseWheel, bindings: [] },
+      {
+        toolName: toolNames.StackScroll,
+        bindings: [{ mouseButton: Enums.MouseBindings.Wheel }],
+      },
     ],
     passive: [
       { toolName: toolNames.Length },
@@ -244,7 +243,6 @@ function initMPRToolGroup(extensionManager, toolGroupService, commandsManager, m
       { toolName: toolNames.Angle },
       { toolName: toolNames.CobbAngle },
       { toolName: toolNames.PlanarFreehandROI },
-      { toolName: toolNames.SegmentationDisplay },
       { toolName: toolNames.WindowLevelRegion },
       {
         toolName: toolNames.PlanarFreehandContourSegmentation,

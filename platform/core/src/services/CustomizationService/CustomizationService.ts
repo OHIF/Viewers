@@ -281,6 +281,30 @@ export default class CustomizationService extends PubSubService {
     return result.transform?.(this) || result;
   }
 
+  /**
+   * Helper method to easily add and retrieve customizations
+   * @param id The unique identifier for the customization
+   * @param defaultComponent The default component to use if no customization is set
+   * @param customComponent Optional custom component to set
+   * @returns The custom component if set, otherwise the default component
+   */
+  public getCustomComponent(
+    id: string,
+    defaultComponent: React.ComponentType<any>,
+    customComponent?: React.ComponentType<any>
+  ) {
+    const customization = this.getCustomization(id, {
+      id: `default-${id}`,
+      content: defaultComponent,
+    });
+
+    if (customComponent) {
+      this.setModeCustomization(id, { content: customComponent });
+    }
+
+    return customization.content;
+  }
+
   public addModeCustomizations(modeCustomizations): void {
     if (!modeCustomizations) {
       return;

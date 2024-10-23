@@ -1,7 +1,8 @@
 import SUPPORTED_TOOLS from './constants/supportedTools';
 import getSOPInstanceAttributes from './utils/getSOPInstanceAttributes';
 import { utils } from '@ohif/core';
-
+import { getIsLocked } from './utils/getIsLocked';
+import { getIsVisible } from './utils/getIsVisible';
 /**
  * Represents a mapping utility for Planar Freehand ROI measurements.
  */
@@ -27,6 +28,8 @@ const PlanarFreehandROI = {
     const { annotation } = csToolsEventDetail;
     const { metadata, data, annotationUID } = annotation;
 
+    const isLocked = getIsLocked(annotationUID);
+    const isVisible = getIsVisible(annotationUID);
     if (!metadata || !data) {
       console.warn('PlanarFreehandROI tool: Missing metadata or data');
       return null;
@@ -69,6 +72,8 @@ const PlanarFreehandROI = {
       data: data.cachedStats,
       type: getValueTypeFromToolType(toolName),
       getReport: () => getColumnValueReport(annotation, customizationService),
+      isLocked,
+      isVisible,
     };
   },
 };
@@ -137,8 +142,6 @@ function getDisplayText(annotation, displaySet, customizationService, displaySet
     annotation
   );
 
-  const displayTextArray = [];
-
   const instance = displaySet.instances.find(image => image.SOPInstanceUID === SOPInstanceUID);
   let InstanceNumber;
   if (instance) {
@@ -149,8 +152,9 @@ function getDisplayText(annotation, displaySet, customizationService, displaySet
   const frameText = displaySet.isMultiFrame ? ` F: ${frameNumber}` : '';
 
   const { SeriesNumber } = displaySet;
-  if (SeriesNumber !== undefined) {
-    displayTextArray.push(`S: ${SeriesNumber}${instanceText}${frameText}`);
+  let seriesText = null;
+  if (SeriesNumber) {
+    seriesText = `S: ${SeriesNumber}${instanceText}${frameText}`;
   }
 
   const stats =
@@ -158,7 +162,7 @@ function getDisplayText(annotation, displaySet, customizationService, displaySet
     Array.from(Object.values(data.cachedStats))[0];
 
   if (!stats) {
-    return displayTextArray;
+    return { primary: [], secondary: [seriesText] };
   }
 
   const roundValues = values => {
@@ -180,15 +184,20 @@ function getDisplayText(annotation, displaySet, customizationService, displaySet
   const formatDisplayText = (displayName, result, unit) =>
     `${displayName}: ${roundValues(result).join(', ')} ${unit}`;
 
+  const primary = [];
+
   displayText.forEach(({ displayName, value, type }) => {
     if (type === 'value') {
       const result = stats[value];
       const unit = stats[findUnitForValue(displayText, value)] || '';
-      displayTextArray.push(formatDisplayText(displayName, result, unit));
+      primary.push(formatDisplayText(displayName, result, unit));
     }
   });
 
-  return displayTextArray;
+  return {
+    primary,
+    secondary: [seriesText],
+  };
 }
 
 export default PlanarFreehandROI;

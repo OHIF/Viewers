@@ -6,6 +6,31 @@ const getToggledClassName = (isToggled: boolean) => {
     : '!text-common-bright hover:!bg-primary-dark hover:text-primary-light';
 };
 
+const toolsNotSupportedByVideoViewport = ['LivewireContour'];
+// Todo: this is really ugly but we don't have a standard way for id of actions
+const actionsNotSupportedByVideoViewport = [
+  'rotate-right',
+  'flipHorizontal',
+  'ImageSliceSync',
+  'ReferenceLines',
+  'ImageOverlayViewer',
+  'StackScroll',
+  'invert',
+  'Probe',
+  'Angle',
+  'CobbAngle',
+  'Magnify',
+  'CalibrationLine',
+  'AdvancedMagnify',
+  'WindowLevelRegion',
+];
+
+const getDisabledState = (disabledText?: string) => ({
+  disabled: true,
+  className: '!text-common-bright ohif-disabled',
+  disabledText: disabledText ?? 'Not available on the current viewport',
+});
+
 export default function getToolbarModule({ commandsManager, servicesManager }: withAppTypes) {
   const {
     toolGroupService,
@@ -21,8 +46,31 @@ export default function getToolbarModule({ commandsManager, servicesManager }: w
     // functions/helpers to be used by the toolbar buttons to decide if they should
     // enabled or not
     {
+      name: 'evaluate.not.sm',
+      evaluate: ({ viewportId }) => {
+        const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
+        return viewport?.type === 'wholeSlide' ? getDisabledState() : undefined;
+      },
+    },
+    {
+      name: 'evaluate.action.not.video',
+      evaluate: ({ viewportId, button }) => {
+        const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
+
+        if (viewport?.type === 'video') {
+          if (actionsNotSupportedByVideoViewport.includes(button.id)) {
+            return getDisabledState();
+          }
+        }
+      },
+    },
+    {
       name: 'evaluate.cornerstoneTool',
       evaluate: ({ viewportId, button, toolNames, disabledText }) => {
+        if (toolsNotSupportedByVideoViewport.includes(button.id)) {
+          return getDisabledState(disabledText);
+        }
+
         const toolGroup = toolGroupService.getToolGroupForViewport(viewportId);
 
         if (!toolGroup) {
@@ -32,11 +80,7 @@ export default function getToolbarModule({ commandsManager, servicesManager }: w
         const toolName = toolbarService.getToolNameForButton(button);
 
         if (!toolGroup || (!toolGroup.hasTool(toolName) && !toolNames)) {
-          return {
-            disabled: true,
-            className: '!text-common-bright ohif-disabled',
-            disabledText: disabledText ?? 'Not available on the current viewport',
-          };
+          return getDisabledState(disabledText);
         }
 
         const isPrimaryActive = toolNames
@@ -176,14 +220,7 @@ export default function getToolbarModule({ commandsManager, servicesManager }: w
       name: 'evaluate.not3D',
       evaluate: ({ viewportId, disabledText }) => {
         const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
-
-        if (viewport?.type === 'volume3d') {
-          return {
-            disabled: true,
-            className: '!text-common-bright ohif-disabled',
-            disabledText: disabledText ?? 'Not available on the current viewport',
-          };
-        }
+        return viewport?.type === 'volume3d' ? getDisabledState(disabledText) : undefined;
       },
     },
     {
@@ -198,11 +235,7 @@ export default function getToolbarModule({ commandsManager, servicesManager }: w
         const displaySets = displaySetUIDs.map(displaySetService.getDisplaySetByUID);
         const isUS = displaySets.some(displaySet => displaySet?.Modality === 'US');
         if (!isUS) {
-          return {
-            disabled: true,
-            className: '!text-common-bright ohif-disabled',
-            disabledText: disabledText ?? 'Not available on the current viewport',
-          };
+          return getDisabledState(disabledText);
         }
       },
     },
@@ -254,11 +287,7 @@ export default function getToolbarModule({ commandsManager, servicesManager }: w
         });
 
         if (!areReconstructable) {
-          return {
-            disabled: true,
-            className: '!text-common-bright ohif-disabled',
-            disabledText: disabledText ?? 'Not available on the current viewport',
-          };
+          return getDisabledState(disabledText);
         }
 
         const isMpr = protocol?.id === 'mpr';
@@ -288,11 +317,7 @@ function _evaluateToggle({
   const toolName = toolbarService.getToolNameForButton(button);
 
   if (!toolGroup.hasTool(toolName)) {
-    return {
-      disabled: true,
-      className: '!text-common-bright ohif-disabled',
-      disabledText: disabledText ?? 'Not available on the current viewport',
-    };
+    return getDisabledState(disabledText);
   }
 
   const isOff = offModes.includes(toolGroup.getToolOptions(toolName).mode);

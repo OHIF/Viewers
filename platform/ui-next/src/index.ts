@@ -1,5 +1,4 @@
 import {
-  BackgroundColorSelect,
   Button,
   buttonVariants,
   ThemeWrapper,
@@ -34,7 +33,7 @@ import {
   DisplaySetMessageListTooltip,
   Toolbox,
   ToolboxUI,
-  ScrollArea,
+  DoubleSlider,
   Label,
   Slider,
   Input,
@@ -49,7 +48,6 @@ import {
   SelectContent,
   SelectItem,
   SelectValue,
-  DataRow,
   DropdownMenu,
   DropdownMenuTrigger,
   DropdownMenuContent,
@@ -65,7 +63,17 @@ import {
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
   DropdownMenuRadioGroup,
+  ScrollArea,
+  MeasurementTable,
+  SegmentationTable,
+  useSegmentationTableContext,
+  TooltipProvider,
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+  StudySummary,
 } from './components';
+import { DataRow } from './components/DataRow';
 
 import { useNotification, NotificationProvider } from './contextProviders';
 
@@ -77,6 +85,7 @@ export {
   Popover,
   Combobox,
   Checkbox,
+  DoubleSlider,
   buttonVariants,
   ThemeWrapper,
   Calendar,
@@ -109,7 +118,6 @@ export {
   DisplaySetMessageListTooltip,
   Toolbox,
   ToolboxUI,
-  ScrollArea,
   Label,
   Slider,
   Input,
@@ -124,7 +132,6 @@ export {
   SelectItem,
   SelectValue,
   DataRow,
-  BackgroundColorSelect,
   DropdownMenu,
   DropdownMenuTrigger,
   DropdownMenuContent,
@@ -140,4 +147,13 @@ export {
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
   DropdownMenuRadioGroup,
+  ScrollArea,
+  MeasurementTable,
+  SegmentationTable,
+  useSegmentationTableContext,
+  TooltipProvider,
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+  StudySummary,
 };

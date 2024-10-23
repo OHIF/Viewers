@@ -68,7 +68,7 @@ const moreTools = [
             },
           },
           listeners: {
-            [EVENTS.STACK_VIEWPORT_NEW_STACK]: {
+            [EVENTS.VIEWPORT_NEW_IMAGE_SET]: {
               commandName: 'toggleImageSliceSync',
               commandOptions: { toggledState: true },
             },

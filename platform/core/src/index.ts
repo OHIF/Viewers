@@ -30,7 +30,6 @@ import {
   PubSubService,
   UserAuthenticationService,
   CustomizationService,
-  StateSyncService,
   PanelService,
   WorkflowStepsService,
   StudyPrefetcherService,
@@ -68,7 +67,6 @@ const OHIF = {
   //
   CineService,
   CustomizationService,
-  StateSyncService,
   UIDialogService,
   UIModalService,
   UINotificationService,
@@ -111,7 +109,6 @@ export {
   //
   CineService,
   CustomizationService,
-  StateSyncService,
   UIDialogService,
   UIModalService,
   UINotificationService,

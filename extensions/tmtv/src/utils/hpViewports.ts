@@ -1,4 +1,4 @@
-const ctAXIAL = {
+const ctAXIAL: AppTypes.HangingProtocol.Viewport = {
   viewportOptions: {
     viewportId: 'ctAXIAL',
     viewportType: 'volume',
@@ -24,6 +24,15 @@ const ctAXIAL = {
           syncColormap: true,
         },
       },
+      {
+        type: 'hydrateseg',
+        id: 'sameFORId',
+        source: true,
+        target: true,
+        options: {
+          matchingRules: ['sameFOR'],
+        },
+      },
     ],
   },
   displaySets: [
@@ -33,7 +42,7 @@ const ctAXIAL = {
   ],
 };
 
-const ctSAGITTAL = {
+const ctSAGITTAL: AppTypes.HangingProtocol.Viewport = {
   viewportOptions: {
     viewportId: 'ctSAGITTAL',
     viewportType: 'volume',
@@ -55,6 +64,15 @@ const ctSAGITTAL = {
           syncColormap: true,
         },
       },
+      {
+        type: 'hydrateseg',
+        id: 'sameFORId',
+        source: true,
+        target: true,
+        options: {
+          matchingRules: ['sameFOR'],
+        },
+      },
     ],
   },
   displaySets: [
@@ -63,7 +81,8 @@ const ctSAGITTAL = {
     },
   ],
 };
-const ctCORONAL = {
+
+const ctCORONAL: AppTypes.HangingProtocol.Viewport = {
   viewportOptions: {
     viewportId: 'ctCORONAL',
     viewportType: 'volume',
@@ -85,6 +104,15 @@ const ctCORONAL = {
           syncColormap: true,
         },
       },
+      {
+        type: 'hydrateseg',
+        id: 'sameFORId',
+        source: true,
+        target: true,
+        options: {
+          matchingRules: ['sameFOR'],
+        },
+      },
     ],
   },
   displaySets: [
@@ -94,7 +122,7 @@ const ctCORONAL = {
   ],
 };
 
-const ptAXIAL = {
+const ptAXIAL: AppTypes.HangingProtocol.Viewport = {
   viewportOptions: {
     viewportId: 'ptAXIAL',
     viewportType: 'volume',
@@ -131,6 +159,15 @@ const ptAXIAL = {
           syncInvertState: false,
         },
       },
+      {
+        type: 'hydrateseg',
+        id: 'sameFORId',
+        source: true,
+        target: true,
+        options: {
+          matchingRules: ['sameFOR'],
+        },
+      },
     ],
   },
   displaySets: [
@@ -146,7 +183,7 @@ const ptAXIAL = {
   ],
 };
 
-const ptSAGITTAL = {
+const ptSAGITTAL: AppTypes.HangingProtocol.Viewport = {
   viewportOptions: {
     viewportId: 'ptSAGITTAL',
     viewportType: 'volume',
@@ -179,6 +216,15 @@ const ptSAGITTAL = {
           syncInvertState: false,
         },
       },
+      {
+        type: 'hydrateseg',
+        id: 'sameFORId',
+        source: true,
+        target: true,
+        options: {
+          matchingRules: ['sameFOR'],
+        },
+      },
     ],
   },
   displaySets: [
@@ -194,7 +240,7 @@ const ptSAGITTAL = {
   ],
 };
 
-const ptCORONAL = {
+const ptCORONAL: AppTypes.HangingProtocol.Viewport = {
   viewportOptions: {
     viewportId: 'ptCORONAL',
     viewportType: 'volume',
@@ -227,6 +273,15 @@ const ptCORONAL = {
           syncInvertState: false,
         },
       },
+      {
+        type: 'hydrateseg',
+        id: 'sameFORId',
+        source: true,
+        target: true,
+        options: {
+          matchingRules: ['sameFOR'],
+        },
+      },
     ],
   },
   displaySets: [
@@ -242,7 +297,7 @@ const ptCORONAL = {
   ],
 };
 
-const fusionAXIAL = {
+const fusionAXIAL: AppTypes.HangingProtocol.Viewport = {
   viewportOptions: {
     viewportId: 'fusionAXIAL',
     viewportType: 'volume',
@@ -282,6 +337,15 @@ const fusionAXIAL = {
         options: {
           syncColormap: false,
           syncInvertState: false,
+        },
+      },
+      {
+        type: 'hydrateseg',
+        id: 'sameFORId',
+        source: true,
+        target: true,
+        options: {
+          matchingRules: ['sameFOR'],
         },
       },
     ],
@@ -351,6 +415,15 @@ const fusionSAGITTAL = {
           syncInvertState: false,
         },
       },
+      {
+        type: 'hydrateseg',
+        id: 'sameFORId',
+        source: true,
+        target: true,
+        options: {
+          matchingRules: ['sameFOR'],
+        },
+      },
     ],
   },
   displaySets: [
@@ -418,6 +491,15 @@ const fusionCORONAL = {
           syncInvertState: false,
         },
       },
+      {
+        type: 'hydrateseg',
+        id: 'sameFORId',
+        source: true,
+        target: true,
+        options: {
+          matchingRules: ['sameFOR'],
+        },
+      },
     ],
   },
   displaySets: [
@@ -443,7 +525,7 @@ const fusionCORONAL = {
   ],
 };
 
-const mipSAGITTAL = {
+const mipSAGITTAL: AppTypes.HangingProtocol.Viewport = {
   viewportOptions: {
     viewportId: 'mipSagittal',
     viewportType: 'volume',
@@ -468,6 +550,15 @@ const mipSAGITTAL = {
         options: {
           syncColormap: false,
           syncInvertState: false,
+        },
+      },
+      {
+        type: 'hydrateseg',
+        id: 'sameFORId',
+        source: true,
+        target: true,
+        options: {
+          matchingRules: ['sameFOR'],
         },
       },
     ],

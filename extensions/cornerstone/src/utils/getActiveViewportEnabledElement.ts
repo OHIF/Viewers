@@ -1,5 +1,5 @@
 import { getEnabledElement } from '@cornerstonejs/core';
-import { IEnabledElement } from '@cornerstonejs/core/dist/esm/types';
+import { IEnabledElement } from '@cornerstonejs/core/types';
 
 import { getEnabledElement as OHIFgetEnabledElement } from '../state';
 

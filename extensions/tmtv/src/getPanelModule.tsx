@@ -1,6 +1,7 @@
 import React from 'react';
 import { PanelPetSUV, PanelROIThresholdExport } from './Panels';
 import { Toolbox } from '@ohif/ui-next';
+import PanelTMTV from './Panels/PanelTMTV';
 
 // TODO:
 // - No loading UI exists yet
@@ -18,7 +19,7 @@ function getPanelModule({ commandsManager, extensionManager, servicesManager }) 
     );
   };
 
-  const wrappedROIThresholdToolbox = ({}: withAppTypes) => {
+  const wrappedROIThresholdToolbox = ({ renderHeader, getCloseIcon, tab }: withAppTypes) => {
     return (
       <>
         <Toolbox
@@ -43,6 +44,28 @@ function getPanelModule({ commandsManager, extensionManager, servicesManager }) 
     );
   };
 
+  const wrappedPanelTMTV = () => {
+    return (
+      <>
+        <Toolbox
+          commandsManager={commandsManager}
+          servicesManager={servicesManager}
+          extensionManager={extensionManager}
+          buttonSectionId="ROIThresholdToolbox"
+          title="Threshold Tools"
+        />
+        <PanelTMTV
+          commandsManager={commandsManager}
+          servicesManager={servicesManager}
+        />
+        <PanelROIThresholdExport
+          commandsManager={commandsManager}
+          servicesManager={servicesManager}
+        />
+      </>
+    );
+  };
+
   return [
     {
       name: 'petSUV',
@@ -50,6 +73,12 @@ function getPanelModule({ commandsManager, extensionManager, servicesManager }) 
       iconLabel: 'Patient Info',
       label: 'Patient Info',
       component: wrappedPanelPetSuv,
+    },
+    {
+      name: 'tmtv',
+      iconName: 'tab-segmentation',
+      iconLabel: 'Segmentation',
+      component: wrappedPanelTMTV,
     },
     {
       name: 'tmtvBox',

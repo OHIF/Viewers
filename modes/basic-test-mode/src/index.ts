@@ -42,7 +42,10 @@ const dicompdf = {
 const dicomSeg = {
   sopClassHandler: '@ohif/extension-cornerstone-dicom-seg.sopClassHandlerModule.dicom-seg',
   viewport: '@ohif/extension-cornerstone-dicom-seg.viewportModule.dicom-seg',
-  panel: '@ohif/extension-cornerstone-dicom-seg.panelModule.panelSegmentation',
+};
+
+const cornerstone = {
+  panel: '@ohif/extension-cornerstone.panelModule.panelSegmentation',
 };
 
 const dicomPmap = {
@@ -147,7 +150,7 @@ function modeFactory() {
               // leftPanels: [ohif.thumbnailList],
               // rightPanels: [dicomSeg.panel, ohif.measurements],
               leftPanels: [tracked.thumbnailList],
-              rightPanels: [dicomSeg.panel, tracked.measurements],
+              rightPanels: [cornerstone.panel, tracked.measurements],
               // rightPanelClosed: true, // optional prop to start with collapse panels
               viewports: [
                 {

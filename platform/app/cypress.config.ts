@@ -13,10 +13,6 @@ export default defineConfig({
         console.log(launchOptions.args); // print all current args
 
         console.log('***', browser.family, browser.name, '***');
-        if (browser.family === 'chromium' && browser.name !== 'electron') {
-          // auto open devtools
-          launchOptions.args.push('--enable-features=SharedArrayBuffer');
-        }
 
         // whatever you return here becomes the launchOptions
         return launchOptions;

@@ -340,29 +340,21 @@ const commandsModule = ({ commandsManager, servicesManager }: withAppTypes) => {
         throw new Error('No reference display set found based on the dynamic data');
       }
 
-      const segmentationId = await segmentationService.createSegmentationForDisplaySet(
-        referenceDisplaySet.displaySetInstanceUID,
-        { label }
+      const displaySet = displaySetService.getDisplaySetByUID(
+        referenceDisplaySet.displaySetInstanceUID
       );
 
-      // Add Segmentation to all toolGroupIds in the viewer
-      const toolGroupIds = Array.from(
-        viewports.values(),
-        viewport => viewport.viewportOptions.toolGroupId
-      );
+      const segmentationId = await segmentationService.createLabelmapForDisplaySet(displaySet, {
+        label,
+      });
 
-      const representationType = LABELMAP;
-
-      for (const toolGroupId of toolGroupIds) {
-        const hydrateSegmentation = true;
-        await segmentationService.addSegmentationRepresentationToToolGroup(
-          toolGroupId,
+      for (const viewport of viewports.values()) {
+        const viewportId = viewport.viewportId;
+        await segmentationService.addSegmentationRepresentation(viewportId, {
           segmentationId,
-          hydrateSegmentation,
-          representationType
-        );
+        });
 
-        segmentationService.setActiveSegmentationForToolGroup(segmentationId, toolGroupId);
+        segmentationService.setActiveSegmentationForViewport(segmentationId, viewportId);
       }
 
       return segmentationId;

@@ -6,7 +6,7 @@ import { Icon } from '@ohif/ui';
 function Debug() {
   return (
     <div style={{ width: '100%', height: '100%' }}>
-      <div className="flex h-screen w-screen items-center justify-center ">
+      <div className="flex h-screen w-screen items-center justify-center">
         <div className="bg-secondary-dark mx-auto space-y-2 rounded-lg py-8 px-8 drop-shadow-md">
           <img
             className="mx-auto block h-14"
@@ -24,21 +24,6 @@ function Debug() {
                   }
                   className="h-5 w-5"
                 />
-                {!window.crossOriginIsolated && (
-                  <div className="text-md flex-1 text-white">
-                    We use SharedArrayBuffer to render volume data (e.g., MPR). If you are seeing
-                    this message, it means that your browser has not enabled COOP/COEP. Please see
-                    the following link for more information:{' '}
-                    <a
-                      href="https://web.dev/coop-coep/"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-primary-active"
-                    >
-                      Learn More
-                    </a>
-                  </div>
-                )}
               </div>
             </div>
           </div>

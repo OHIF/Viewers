@@ -157,20 +157,14 @@ function _getSegmentationData(segmentation, volumesTimePointsCache, displaySetSe
 
   // since we only use one segmentation representation per segmentationId
   // it is fine to pick the first one
-  const segmentationRepresentations = csTools.segmentation.state.getSegmentationIdRepresentations(
-    segmentation.id
-  );
+  const segmentationRepresentations =
+    csTools.segmentation.state.getSegmentationRepresentationsForSegmentation(segmentation.id);
 
   const segmentationRepresentationUID =
     segmentationRepresentations[0].segmentationRepresentationUID;
 
-  const toolGroupId = csTools.segmentation.state.getToolGroupIdFromSegmentationRepresentationUID(
-    segmentationRepresentationUID
-  );
-
   // Todo: this is useless we should be able to grab color with just segRepUID and segmentIndex
-  const color = csTools.segmentation.config.color.getColorForSegmentIndex(
-    toolGroupId,
+  const color = csTools.segmentation.config.color.getSegmentIndexColor(
     segmentationRepresentationUID,
     1 // segmentIndex
   );
@@ -267,7 +261,7 @@ function _getInstanceFromSegmentations(segmentations, displaySetService) {
 
 function updateSegmentationsChartDisplaySet({ servicesManager }: withAppTypes): void {
   const { segmentationService, displaySetService } = servicesManager.services;
-  const segmentations = segmentationService.getSegmentations();
+  const segmentations = segmentationService.getSegmentationRepresentations();
   const { seriesMetadata, instance } =
     _getInstanceFromSegmentations(segmentations, displaySetService) ?? {};
 

@@ -267,7 +267,6 @@ export default class HangingProtocolService extends PubSubService {
     // and the protocol or a function that returns a protocol as the value
     const protocols = [];
     const keys = this.activeProtocolIds || this.protocols.keys();
-    // @ts-ignore
     for (const protocolId of keys) {
       const protocol = this.getProtocolById(protocolId);
       if (protocol) {
@@ -513,12 +512,6 @@ export default class HangingProtocolService extends PubSubService {
 
   _validateProtocol(protocol: HangingProtocol.Protocol): HangingProtocol.Protocol {
     protocol.id = protocol.id || protocol.name;
-    const defaultViewportOptions = {
-      toolGroupId: 'default',
-      viewportType: 'stack',
-    };
-    // Automatically compute some number of attributes if they
-    // aren't present.  Makes defining new HPs easier.
     protocol.name = protocol.name || protocol.id;
     const { stages } = protocol;
 
@@ -545,10 +538,10 @@ export default class HangingProtocolService extends PubSubService {
         const { rows, columns } = stage.viewportStructure.properties;
 
         for (let i = 0; i < rows * columns; i++) {
+          const defaultViewport = stage.defaultViewport || protocol.defaultViewport || {};
           stage.viewports.push({
             viewportOptions: {
-              ...defaultViewportOptions,
-              // Use 'default' for the first viewport, and UUIDs for the rest.
+              ...defaultViewport.viewportOptions,
               viewportId: i === 0 ? 'default' : uuidv4(),
             },
             displaySets: [],
@@ -557,14 +550,14 @@ export default class HangingProtocolService extends PubSubService {
       } else {
         // Clone each viewport to ensure independent objects
         stage.viewports = stage.viewports.map((viewport, index) => {
+          const defaultViewport = stage.defaultViewport || protocol.defaultViewport || {};
           const existingViewportId = viewport.viewportOptions?.viewportId;
 
           return {
             ...viewport,
             viewportOptions: {
-              ...(viewport.viewportOptions || defaultViewportOptions),
-              // use provided viewportId when available, otherwise use default for first viewport
-              // and uuid for the rest
+              ...defaultViewport.viewportOptions,
+              ...viewport.viewportOptions,
               viewportId: existingViewportId
                 ? existingViewportId
                 : index === 0
@@ -764,6 +757,10 @@ export default class HangingProtocolService extends PubSubService {
     });
 
     return viewportsToUpdate;
+  }
+
+  public runMatchingRules(metadataArray, matchingRules, options) {
+    return this.protocolEngine.findMatch(metadataArray, matchingRules, options);
   }
 
   private _updateDisplaySetInstanceUIDs(
@@ -1111,7 +1108,7 @@ export default class HangingProtocolService extends PubSubService {
       this.stageIndex = 0;
     }
     const protocol = this.protocol;
-    const stage = protocol.stages[stageIdx];
+    const stage = protocol.stages[stageIdx] ?? protocol.stages[this.stageIndex];
     const defaultViewport = stage.defaultViewport || protocol.defaultViewport;
     if (!defaultViewport) {
       return;
@@ -1407,8 +1404,8 @@ export default class HangingProtocolService extends PubSubService {
   }
 
   public areRequiredSelectorsValid(
-    displaySetSelectors: HangingProtocol.DisplaySetSelector,
-    displaySet: any
+    displaySetSelectors: HangingProtocol.DisplaySetSelector[],
+    displaySet: DisplaySet
   ): boolean {
     let pass = true;
     for (const displaySetSelector of displaySetSelectors) {
@@ -1424,7 +1421,7 @@ export default class HangingProtocolService extends PubSubService {
 
   private _validateRequiredSelectors(
     displaySetSelector: HangingProtocol.DisplaySetSelector,
-    displaySet: any
+    displaySet: DisplaySet
   ) {
     const { seriesMatchingRules } = displaySetSelector;
 

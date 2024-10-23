@@ -28,6 +28,7 @@ async function updateViewportsForSegmentationRendering({
   displaySet?: any;
   initialSliceIndex?: number;
 }) {
+  throw new Error('updateViewportsForSegmentationRendering this should not be used');
   const { cornerstoneViewportService, segmentationService, viewportGridService } =
     servicesManager.services;
 
@@ -74,6 +75,7 @@ async function updateViewportsForSegmentationRendering({
 
     const csViewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
     const prevCamera = csViewport.getCamera();
+    console.debug('🚀 ~ prevCamera:', prevCamera);
 
     // only run the createSegmentationForVolume for the targetViewportId
     // since the rest will get handled by cornerstoneViewportService
@@ -91,7 +93,7 @@ async function updateViewportsForSegmentationRendering({
       // during the time it took for the volume to be mounted, for instance
       // the stack viewport has been changed to a volume viewport
       const volumeViewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
-      volumeViewport.setCamera(prevCamera);
+      // volumeViewport.setCamera(prevCamera);
 
       volumeViewport.element.removeEventListener(
         Enums.Events.VOLUME_VIEWPORT_NEW_VOLUME,

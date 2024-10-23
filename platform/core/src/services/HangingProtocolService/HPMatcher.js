@@ -50,16 +50,23 @@ const match = (metadataInstance, rules = [], customAttributeRetrievalCallbacks, 
       readValues[attribute] = fromSrc[from]?.[attribute] ?? instance?.[attribute];
     }
 
+    // handle cases where the constraint is also a custom attribute
+    const resolvedConstraint = resolveConstraintAttributes(
+      readValues,
+      rule.constraint,
+      customAttributeRetrievalCallbacks,
+      fromSrc
+    );
+
     // Format the constraint as required by Validate.js
     const testConstraint = {
-      [attribute]: rule.constraint,
+      [attribute]: resolvedConstraint,
     };
 
     // Create a single attribute object to be validated, since metadataInstance is an
     // instance of Metadata (StudyMetadata, SeriesMetadata or InstanceMetadata)
-    let attributeValue = readValues[attribute];
     const attributeMap = {
-      [attribute]: attributeValue,
+      [attribute]: readValues[attribute],
     };
 
     // Use Validate.js to evaluate the constraints on the specified metadataInstance
@@ -116,6 +123,47 @@ const match = (metadataInstance, rules = [], customAttributeRetrievalCallbacks, 
     details,
     requiredFailed,
   };
+};
+
+// New helper function to resolve constraint attributes
+const resolveConstraintAttributes = (
+  readValues,
+  constraint,
+  customAttributeRetrievalCallbacks,
+  fromSrc
+) => {
+  if (typeof constraint !== 'object' || constraint === null) {
+    return constraint;
+  }
+
+  const resolvedConstraint = {};
+  Object.entries(constraint).forEach(([key, value]) => {
+    if (typeof value === 'object' && Object.keys(value).length > 0 && 'attribute' in value) {
+      const attributeName = value.attribute;
+      const attributeFrom = value.from ?? 'metadataInstance';
+
+      if (customAttributeRetrievalCallbacks.hasOwnProperty(attributeName)) {
+        const value = customAttributeRetrievalCallbacks[attributeName].callback.call(
+          null,
+          fromSrc[attributeFrom],
+          fromSrc.options
+        );
+
+        resolvedConstraint[key] = {
+          value,
+        };
+      } else {
+        resolvedConstraint[key] = {
+          value:
+            fromSrc[attributeFrom]?.[attributeName] ?? fromSrc.metadataInstance?.[attributeName],
+        };
+      }
+    } else {
+      resolvedConstraint[key] = value;
+    }
+  }, {});
+
+  return resolvedConstraint;
 };
 
 const HPMatcher = {

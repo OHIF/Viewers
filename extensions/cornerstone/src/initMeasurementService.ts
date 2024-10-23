@@ -1,4 +1,4 @@
-import { eventTarget } from '@cornerstonejs/core';
+import { eventTarget, Types } from '@cornerstonejs/core';
 import { Enums, annotation } from '@cornerstonejs/tools';
 import { DicomMetadataStore } from '@ohif/core';
 
@@ -7,6 +7,7 @@ import { toolNames } from './initCornerstoneTools';
 import { onCompletedCalibrationLine } from './tools/CalibrationLineTool';
 import measurementServiceMappingsFactory from './utils/measurementServiceMappings/measurementServiceMappingsFactory';
 import getSOPInstanceAttributes from './utils/measurementServiceMappings/utils/getSOPInstanceAttributes';
+import { triggerAnnotationRenderForViewportIds } from '@cornerstonejs/tools/utilities';
 
 const { CORNERSTONE_3D_TOOLS_SOURCE_NAME, CORNERSTONE_3D_TOOLS_SOURCE_VERSION } = CSExtensionEnums;
 const { removeAnnotation } = annotation.state;
@@ -344,8 +345,7 @@ const connectMeasurementServiceToTools = (measurementService, cornerstoneViewpor
         return;
       }
 
-      const { uid, label } = measurement;
-
+      const { uid, label, isLocked, isVisible } = measurement;
       const sourceAnnotation = annotation.state.getAnnotation(uid);
       const { data, metadata } = sourceAnnotation;
 
@@ -361,7 +361,23 @@ const connectMeasurementServiceToTools = (measurementService, cornerstoneViewpor
         data.text = label;
       }
 
-      // Todo: trigger render for annotation
+      // update the isLocked state
+      annotation.locking.setAnnotationLocked(uid, isLocked);
+
+      // update the isVisible state
+      annotation.visibility.setAnnotationVisibility(uid, isVisible);
+
+      // annotation.config.style.setAnnotationStyles(uid, {
+      //   color: `rgb(${color[0]}, ${color[1]}, ${color[2]})`,
+      // });
+
+      // I don't like this but will fix later
+      const renderingEngine =
+        cornerstoneViewportService.getRenderingEngine() as Types.IRenderingEngine;
+      // Note: We could do a better job by triggering the render on the
+      // viewport itself, but the removeAnnotation does not include that info...
+      const viewportIds = renderingEngine.getViewports().map(viewport => viewport.id);
+      triggerAnnotationRenderForViewportIds(viewportIds);
     }
   );
 

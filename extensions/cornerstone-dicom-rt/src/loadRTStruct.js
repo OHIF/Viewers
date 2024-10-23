@@ -89,12 +89,7 @@ async function checkAndLoadContourData(instance, datasource) {
   });
 }
 
-export default async function loadRTStruct(
-  extensionManager,
-  rtStructDisplaySet,
-  referencedDisplaySet,
-  headers
-) {
+export default async function loadRTStruct(extensionManager, rtStructDisplaySet, headers) {
   const utilityModule = extensionManager.getModuleEntry(
     '@ohif/extension-cornerstone.utilityModule.common'
   );
@@ -102,8 +97,6 @@ export default async function loadRTStruct(
   const { bulkDataURI } = dataSource.getConfig?.() || {};
 
   const { dicomLoaderService } = utilityModule.exports;
-  const imageIdSopInstanceUidPairs =
-    _getImageIdSopInstanceUidPairsForDisplaySet(referencedDisplaySet);
 
   // Set here is loading is asynchronous.
   // If this function throws its set back to false.
@@ -149,8 +142,7 @@ export default async function loadRTStruct(
 
     const contourPoints = [];
     for (let c = 0; c < ContourSequenceArray.length; c++) {
-      const { ContourImageSequence, ContourData, NumberOfContourPoints, ContourGeometricType } =
-        ContourSequenceArray[c];
+      const { ContourData, NumberOfContourPoints, ContourGeometricType } = ContourSequenceArray[c];
 
       let isSupported = false;
 
@@ -192,24 +184,6 @@ export default async function loadRTStruct(
     );
   }
   return structureSet;
-}
-
-const _getImageId = (imageIdSopInstanceUidPairs, sopInstanceUID) => {
-  const imageIdSopInstanceUidPairsEntry = imageIdSopInstanceUidPairs.find(
-    imageIdSopInstanceUidPairsEntry =>
-      imageIdSopInstanceUidPairsEntry.sopInstanceUID === sopInstanceUID
-  );
-
-  return imageIdSopInstanceUidPairsEntry ? imageIdSopInstanceUidPairsEntry.imageId : null;
-};
-
-function _getImageIdSopInstanceUidPairsForDisplaySet(referencedDisplaySet) {
-  return referencedDisplaySet.images.map(image => {
-    return {
-      imageId: image.imageId,
-      sopInstanceUID: image.SOPInstanceUID,
-    };
-  });
 }
 
 function _setROIContourMetadata(

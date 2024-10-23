@@ -1324,6 +1324,7 @@ export const Icons = {
       viewBox="0 0 24 24"
       version="1.1"
       xmlns="http://www.w3.org/2000/svg"
+      {...props}
     >
       <title>status-warning</title>
       <g
@@ -1925,6 +1926,7 @@ export const Icons = {
       height="22"
       viewBox="0 0 22 22"
       xmlns="http://www.w3.org/2000/svg"
+      {...props}
     >
       <g
         fill="none"
@@ -2124,6 +2126,310 @@ export const Icons = {
           <path d="m1 14 2.5-2.5L6 14M1 17.5 3.5 20 6 17.5" />
         </g>
         <path d="M0 0h22v22H0z" />
+      </g>
+    </svg>
+  ),
+  Plus: (props: IconProps) => (
+    <svg
+      width="21"
+      height="21"
+      viewBox="0 0 21 21"
+      xmlns="http://www.w3.org/2000/svg"
+      {...props}
+    >
+      <g
+        fill="none"
+        fillRule="evenodd"
+      >
+        <path d="M0 0h21v21H0z" />
+        <g
+          stroke="#348CFD"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth="1.25"
+        >
+          <path d="M10.5 5.5v10M15.5 10.5h-10" />
+        </g>
+      </g>
+    </svg>
+  ),
+  Minus: (props: IconProps) => (
+    <svg
+      width="24px"
+      height="24px"
+      viewBox="0 0 24 24"
+      xmlns="http://www.w3.org/2000/svg"
+      {...props}
+    >
+      <g
+        id="Remove"
+        stroke="none"
+        strokeWidth="1"
+        fill="none"
+        fillRule="evenodd"
+      >
+        <rect
+          id="Rectangle"
+          x="0"
+          y="0"
+          width="24"
+          height="24"
+        ></rect>
+        <line
+          x1="18"
+          y1="12"
+          x2="6"
+          y2="12"
+          id="Path"
+          stroke="currentColor"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        ></line>
+      </g>
+    </svg>
+  ),
+
+  FillAndOutline: (props: IconProps) => (
+    <svg
+      width="18px"
+      height="18px"
+      viewBox="0 0 18 18"
+      {...props}
+    >
+      <g
+        id="view-outline-fill"
+        stroke="none"
+        strokeWidth="1"
+        fill="none"
+        fillRule="evenodd"
+      >
+        <g id="Group-13">
+          <rect
+            id="Rectangle"
+            x="0"
+            y="0"
+            width="18"
+            height="18"
+          ></rect>
+          <rect
+            id="Rectangle"
+            stroke="#348CFD"
+            x="1.5"
+            y="1.5"
+            width="15"
+            height="15"
+            rx="1"
+          ></rect>
+          <rect
+            id="Rectangle"
+            fill="#348CFD"
+            x="3.5"
+            y="3.5"
+            width="11"
+            height="11"
+            rx="1"
+          ></rect>
+        </g>
+      </g>
+    </svg>
+  ),
+  OutlineOnly: (props: IconProps) => (
+    <svg
+      width="18px"
+      height="18px"
+      viewBox="0 0 18 18"
+      {...props}
+    >
+      <g
+        id="view-outline"
+        stroke="none"
+        strokeWidth="1"
+        fill="none"
+        fillRule="evenodd"
+      >
+        <g id="Group-13">
+          <rect
+            id="Rectangle"
+            x="0"
+            y="0"
+            width="18"
+            height="18"
+          ></rect>
+          <rect
+            id="Rectangle"
+            stroke="#348CFD"
+            x="1.5"
+            y="1.5"
+            width="15"
+            height="15"
+            rx="1"
+          ></rect>
+        </g>
+      </g>
+    </svg>
+  ),
+  FillOnly: (props: IconProps) => (
+    <svg
+      width="18px"
+      height="18px"
+      viewBox="0 0 18 18"
+      {...props}
+    >
+      <g
+        id="view-fill"
+        stroke="none"
+        strokeWidth="1"
+        fill="none"
+        fillRule="evenodd"
+      >
+        <g id="Group-13">
+          <rect
+            id="Rectangle"
+            x="0"
+            y="0"
+            width="18"
+            height="18"
+          ></rect>
+          <rect
+            id="Rectangle"
+            fill="#348CFD"
+            x="2"
+            y="2"
+            width="14"
+            height="14"
+            rx="1"
+          ></rect>
+        </g>
+      </g>
+    </svg>
+  ),
+  EyeVisible: (props: IconProps) => (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 20 13"
+      {...props}
+    >
+      <g
+        fill="none"
+        fillRule="evenodd"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        transform="translate(0 1)"
+      >
+        <circle
+          cx="10"
+          cy="5.833"
+          r="2.917"
+        />
+        <path d="M19.48 5.56C18.51 4.46 14.635.417 10 .417 5.365.417 1.49 4.46.52 5.56c-.136.157-.136.39 0 .547.97 1.1 4.845 5.143 9.48 5.143 4.635 0 8.51-4.043 9.48-5.143.136-.157.136-.39 0-.547z" />
+      </g>
+    </svg>
+  ),
+  EyeHidden: (props: IconProps) => (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 20"
+      {...props}
+    >
+      <g
+        fill="none"
+        fillRule="evenodd"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="1.5"
+      >
+        <g opacity=".5">
+          <path
+            d="M17.433 2.556c1.352.98 2.578 2.122 3.65 3.402 0 0-4.719 5.959-10.541 5.959-.933-.006-1.86-.149-2.75-.426M3.637 9.35C2.29 8.373 1.07 7.234 0 5.958 0 5.958 4.719 0 10.542 0c.773.003 1.543.103 2.291.298M6.875 5.958c0-2.025 1.642-3.666 3.667-3.666M14.208 5.958c0 2.025-1.641 3.667-3.666 3.667"
+            transform="translate(1 1) translate(.458 3.208)"
+          />
+        </g>
+        <path
+          d="M19.938 0.229L2.063 18.104"
+          transform="translate(1 1)"
+        />
+      </g>
+    </svg>
+  ),
+  ViewportViews: (props: IconProps) => (
+    <svg
+      width="24px"
+      height="24px"
+      viewBox="0 0 24 24"
+      version="1.1"
+      xmlns="http://www.w3.org/2000/svg"
+      {...props}
+    >
+      <g
+        id="icon-views"
+        stroke="none"
+        strokeWidth="1"
+        fill="none"
+        fillRule="evenodd"
+      >
+        <rect
+          id="Rectangle"
+          x="0"
+          y="0"
+          width="24"
+          height="24"
+        ></rect>
+        <path
+          d="M12.1675111,14.754511 C12.0607016,14.815163 11.9392984,14.815163 11.8324889,14.754511 L3.25173267,9.89965265 C3.09886891,9.81313583 3,9.61689546 3,9.4 C3,9.18310454 3.09886891,8.98686417 3.25173267,8.90034735 L11.8324889,4.04548902 C11.9392984,3.98483699 12.0607016,3.98483699 12.1675111,4.04548902 L20.7482673,8.90034735 C20.9011311,8.98686417 21,9.18310454 21,9.4 C21,9.61689546 20.9011311,9.81313583 20.7482673,9.89965265 L12.1675111,14.754511 Z"
+          id="Path"
+          stroke="currentColor"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        ></path>
+        <path
+          d="M16.7792809,12.1 L20.7482673,14.3367372 C20.9011311,14.4227204 21,14.6177503 21,14.833308 C21,15.0488656 20.9011311,15.2438955 20.7482673,15.3298787 L12.1675111,20.1547916 C12.0607016,20.2150695 11.9392984,20.2150695 11.8324889,20.1547916 L3.25173267,15.3298787 C3.09886891,15.2438955 3,15.0488656 3,14.833308 C3,14.6177503 3.09886891,14.4227204 3.25173267,14.3367372 L7.2018101,12.1"
+          id="Path"
+          stroke="currentColor"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        ></path>
+      </g>
+    </svg>
+  ),
+  StatusChecked: (props: IconProps) => (
+    <svg
+      width="14px"
+      height="14px"
+      viewBox="0 0 14 14"
+      {...props}
+    >
+      <g
+        id="status-checked"
+        stroke="none"
+        strokeWidth="1"
+        fill="none"
+        fillRule="evenodd"
+      >
+        <rect
+          id="Rectangle"
+          x="0"
+          y="0"
+          width="14"
+          height="14"
+        ></rect>
+        <circle
+          id="Oval"
+          stroke="currentColor"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          cx="7"
+          cy="7"
+          r="6"
+        ></circle>
+        <path
+          d="M9.674,5.256 L6.769,9.129 C6.63825806,9.30267425 6.43875708,9.41127411 6.22192754,9.42680302 C6.00509799,9.44233192 5.79215707,9.36327034 5.638,9.21 L4.138,7.71"
+          id="Path"
+          stroke="currentColor"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        ></path>
       </g>
     </svg>
   ),
