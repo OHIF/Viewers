@@ -4,28 +4,46 @@ import { SegmentationPresentation } from '../types/Presentation';
 import { JOIN_STR } from './presentationUtils';
 import { getViewportOrientationFromImageOrientationPatient } from '../utils/getViewportOrientationFromImageOrientationPatient';
 
+const PRESENTATION_TYPE_ID = 'segmentationPresentationId';
+const DEBUG_STORE = false;
+
 /**
- * The keys are the presentationId
+ * The keys are the presentationId.
  */
 type SegmentationPresentationStore = {
-  /** Store for managing segmentation presentation state */
+  /**
+   * Type identifier for the store.
+   */
+  type: string;
+
+  /**
+   * Stores segmentation presentations indexed by their presentation ID.
+   */
   segmentationPresentationStore: Record<string, SegmentationPresentation>;
 
-  /** Sets the presentation state for a given segmentation ID */
+  /**
+   * Sets the segmentation presentation for a given segmentation ID.
+   *
+   * @param presentationId - The presentation ID.
+   * @param value - The `SegmentationPresentation` to associate with the ID.
+   */
   setSegmentationPresentation: (presentationId: string, value: SegmentationPresentation) => void;
 
-  /** Clears all segmentation presentation state */
+  /**
+   * Clears all segmentation presentations from the store.
+   */
   clearSegmentationPresentationStore: () => void;
 
   /**
-   * Gets the presentation ID for a viewport based on its configuration
-   * @param id - The ID to check
-   * @param options - Configuration options
-   * @param options.viewport - The current viewport
-   * @param options.viewports - All available viewports
-   * @param options.isUpdatingSameViewport - Whether updating same viewport
-   * @param options.servicesManager - The services manager instance
-   * @returns The presentation ID or undefined
+   * Retrieves the presentation ID based on the provided parameters.
+   *
+   * @param id - The ID to check.
+   * @param options - Configuration options.
+   * @param options.viewport - The current viewport.
+   * @param options.viewports - All available viewports.
+   * @param options.isUpdatingSameViewport - Indicates if the same viewport is being updated.
+   * @param options.servicesManager - The services manager instance.
+   * @returns The segmentation presentation ID or undefined.
    */
   getPresentationId: (
     id: string,
@@ -38,10 +56,11 @@ type SegmentationPresentationStore = {
   ) => string | undefined;
 
   /**
-   * Adds a new segmentation presentation state
-   * @param presentationId - The presentation ID
-   * @param segmentationPresentation - The presentation state to add
-   * @param servicesManager - The services manager instance
+   * Adds a new segmentation presentation state.
+   *
+   * @param presentationId - The presentation ID.
+   * @param segmentationPresentation - The `SegmentationPresentation` to add.
+   * @param servicesManager - The services manager instance.
    */
   addSegmentationPresentation: (
     presentationId: string,
@@ -49,7 +68,14 @@ type SegmentationPresentationStore = {
     { servicesManager }: { servicesManager: AppTypes.ServicesManager }
   ) => void;
 
-  /** Gets the current segmentation presentation ID */
+  /**
+   * Gets the current segmentation presentation ID.
+   *
+   * @param params - Parameters for retrieving the segmentation presentation ID.
+   * @param params.viewport - The current viewport.
+   * @param params.servicesManager - The services manager instance.
+   * @returns The current segmentation presentation ID.
+   */
   getSegmentationPresentationId: ({
     viewport,
     servicesManager,
@@ -60,22 +86,22 @@ type SegmentationPresentationStore = {
 };
 
 /**
- * Gets the segmentationPresentationId for a viewport.
- * Used for retrieving segmentation information based on:
- * - displaySetOption[0].options (including id if present)
- * - displaySetUIDs
- * - a unique index if the generated key is already displayed
+ * Generates a segmentation presentation ID based on the viewport configuration.
  *
- * @param {string} id - The ID to check
- * @param {Object} options - The options object
- * @param {Object} options.viewport - The current viewport
- * @param {Map} options.viewports - The list of all viewports
- * @returns {string|undefined} The segmentationPresentationId or undefined
+ * @param id - The ID to check.
+ * @param options - Configuration options.
+ * @param options.viewport - The current viewport.
+ * @param options.viewports - All available viewports.
+ * @param options.isUpdatingSameViewport - Indicates if the same viewport is being updated.
+ * @param options.servicesManager - The services manager instance.
+ * @returns The segmentation presentation ID or undefined.
  */
 const getPresentationId = (
   id: string,
   {
     viewport,
+    viewports,
+    isUpdatingSameViewport,
     servicesManager,
   }: {
     viewport: AppTypes.ViewportGrid.Viewport;
@@ -84,13 +110,21 @@ const getPresentationId = (
     servicesManager: AppTypes.ServicesManager;
   }
 ): string | undefined => {
-  if (id !== 'segmentationPresentationId') {
+  if (id !== PRESENTATION_TYPE_ID) {
     return;
   }
 
   return _getSegmentationPresentationId({ viewport, servicesManager });
 };
 
+/**
+ * Helper function to generate the segmentation presentation ID.
+ *
+ * @param params - Parameters for generating the segmentation presentation ID.
+ * @param params.viewport - The current viewport.
+ * @param params.servicesManager - The services manager instance.
+ * @returns The segmentation presentation ID or undefined.
+ */
 const _getSegmentationPresentationId = ({
   viewport,
   servicesManager,
@@ -107,7 +141,7 @@ const _getSegmentationPresentationId = ({
   let orientation = viewportOptions.orientation;
 
   if (!orientation) {
-    // calculate it from the viewport sample image
+    // Calculate orientation from the viewport sample image
     const displaySet = servicesManager.services.displaySetService.getDisplaySetByUID(
       displaySetInstanceUIDs[0]
     );
@@ -117,13 +151,11 @@ const _getSegmentationPresentationId = ({
     orientation = getViewportOrientationFromImageOrientationPatient(imageOrientationPatient);
   }
 
-  // const segmentationPresentationArr = [orientation || 'acquisition'];
   const segmentationPresentationArr = [];
 
   segmentationPresentationArr.push(...displaySetInstanceUIDs);
-  // Probably we don't need this for segmentation presentation id since we want
-  // the segmentation to appear on all the viewports with the same displayset i guess?
 
+  // Uncomment if unique indexing is needed
   // addUniqueIndex(
   //   segmentationPresentationArr,
   //   'segmentationPresentationId',
@@ -134,47 +166,73 @@ const _getSegmentationPresentationId = ({
   return segmentationPresentationArr.join(JOIN_STR);
 };
 
-// Stores a map from `segmentationPresentationId` to a Presentation object so that
-// an OHIFCornerstoneViewport can be redisplayed with the same Segmentation
+/**
+ * Creates the Segmentation Presentation store.
+ *
+ * @param set - The zustand set function.
+ * @returns The Segmentation Presentation store state and actions.
+ */
+const createSegmentationPresentationStore = set => ({
+  type: PRESENTATION_TYPE_ID,
+  segmentationPresentationStore: {},
+
+  /**
+   * Clears all segmentation presentations from the store.
+   */
+  clearSegmentationPresentationStore: () =>
+    set({ segmentationPresentationStore: {} }, false, 'clearSegmentationPresentationStore'),
+
+  /**
+   * Adds a new segmentation presentation to the store.
+   */
+  addSegmentationPresentation: (
+    presentationId: string,
+    segmentationPresentation: SegmentationPresentation,
+    { servicesManager }: { servicesManager: AppTypes.ServicesManager }
+  ) =>
+    set(
+      state => ({
+        segmentationPresentationStore: {
+          ...state.segmentationPresentationStore,
+          [presentationId]: segmentationPresentation,
+        },
+      }),
+      false,
+      'addSegmentationPresentation'
+    ),
+
+  /**
+   * Sets the segmentation presentation for a given presentation ID.
+   */
+  setSegmentationPresentation: (presentationId: string, value: SegmentationPresentation) =>
+    set(
+      state => ({
+        segmentationPresentationStore: {
+          ...state.segmentationPresentationStore,
+          [presentationId]: value,
+        },
+      }),
+      false,
+      'setSegmentationPresentation'
+    ),
+
+  /**
+   * Retrieves the presentation ID based on the provided parameters.
+   */
+  getPresentationId,
+
+  /**
+   * Retrieves the current segmentation presentation ID.
+   */
+  getSegmentationPresentationId: _getSegmentationPresentationId,
+});
+
+/**
+ * Zustand store for managing segmentation presentations.
+ * Applies devtools middleware when DEBUG_STORE is enabled.
+ */
 export const useSegmentationPresentationStore = create<SegmentationPresentationStore>()(
-  devtools(
-    set => ({
-      segmentationPresentationStore: {},
-      clearSegmentationPresentationStore: () =>
-        set({ segmentationPresentationStore: {} }, false, 'clearSegmentationPresentationStore'),
-      addSegmentationPresentation: (
-        presentationId: string,
-        segmentationPresentation: SegmentationPresentation,
-        { servicesManager }: { servicesManager: AppTypes.ServicesManager }
-      ) =>
-        set(
-          state => ({
-            segmentationPresentationStore: {
-              ...state.segmentationPresentationStore,
-              [presentationId]: segmentationPresentation,
-            },
-          }),
-          false,
-          'addSegmentationPresentation'
-        ),
-      setSegmentationPresentation: (presentationId: string, value: SegmentationPresentation) =>
-        set(
-          state => {
-            return {
-              segmentationPresentationStore: {
-                ...state.segmentationPresentationStore,
-                [presentationId]: value,
-              },
-            };
-          },
-          false,
-          'setSegmentationPresentation'
-        ),
-      getPresentationId,
-      getSegmentationPresentationId: _getSegmentationPresentationId,
-    }),
-    {
-      name: 'Segmentation Presentation Store',
-    }
-  )
+  DEBUG_STORE
+    ? devtools(createSegmentationPresentationStore, { name: 'Segmentation Presentation Store' })
+    : createSegmentationPresentationStore
 );

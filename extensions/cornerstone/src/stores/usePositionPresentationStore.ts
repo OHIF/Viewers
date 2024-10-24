@@ -1,11 +1,48 @@
 import { create } from 'zustand';
+import { devtools } from 'zustand/middleware';
 import { PositionPresentation } from '../types/Presentation';
 import { addUniqueIndex, JOIN_STR } from './presentationUtils';
 
+const PRESENTATION_TYPE_ID = 'positionPresentationId';
+const DEBUG_STORE = false;
+
+/**
+ * Represents the state and actions for managing position presentations.
+ */
 type PositionPresentationState = {
+  /**
+   * Type identifier for the store.
+   */
+  type: string;
+
+  /**
+   * Stores position presentations indexed by their presentation ID.
+   */
   positionPresentationStore: Record<string, PositionPresentation>;
+
+  /**
+   * Sets the position presentation for a given key.
+   *
+   * @param key - The key identifying the position presentation.
+   * @param value - The `PositionPresentation` to associate with the key.
+   */
   setPositionPresentation: (key: string, value: PositionPresentation) => void;
+
+  /**
+   * Clears all position presentations from the store.
+   */
   clearPositionPresentationStore: () => void;
+
+  /**
+   * Retrieves the presentation ID based on the provided parameters.
+   *
+   * @param id - The ID to check.
+   * @param options - Configuration options.
+   * @param options.viewport - The current viewport.
+   * @param options.viewports - All available viewports.
+   * @param options.isUpdatingSameViewport - Indicates if the same viewport is being updated.
+   * @returns The position presentation ID or undefined.
+   */
   getPresentationId: (
     id: string,
     options: {
@@ -17,18 +54,14 @@ type PositionPresentationState = {
 };
 
 /**
- * Gets the positionPresentationId for a viewport.
- * Used for retrieving camera/initial position state sync values based on:
- * - viewportOptions.id
- * - viewportOptions.orientation
- * - display set UIDs (excluding segmentations)
- * - a unique index if the generated key is already displayed
+ * Generates a position presentation ID based on the viewport configuration.
  *
- * @param {string} id - The ID to check
- * @param {Object} options - The options object
- * @param {Object} options.viewport - The current viewport
- * @param {Map} options.viewports - The list of all viewports
- * @returns {string|undefined} The positionPresentationId or undefined
+ * @param id - The ID to check.
+ * @param options - Configuration options.
+ * @param options.viewport - The current viewport.
+ * @param options.viewports - All available viewports.
+ * @param options.isUpdatingSameViewport - Indicates if the same viewport is being updated.
+ * @returns The position presentation ID or undefined.
  */
 const getPositionPresentationId = (
   id: string,
@@ -42,7 +75,7 @@ const getPositionPresentationId = (
     isUpdatingSameViewport: boolean;
   }
 ): string | undefined => {
-  if (id !== 'positionPresentationId') {
+  if (id !== PRESENTATION_TYPE_ID) {
     return;
   }
 
@@ -66,27 +99,54 @@ const getPositionPresentationId = (
     positionPresentationArr.push(uid);
   }
 
-  addUniqueIndex(
-    positionPresentationArr,
-    'positionPresentationId',
-    viewports,
-    isUpdatingSameViewport
-  );
+  addUniqueIndex(positionPresentationArr, PRESENTATION_TYPE_ID, viewports, isUpdatingSameViewport);
 
   return positionPresentationArr.join(JOIN_STR);
 };
 
-// Stores a map from `positionPresentationId` to a Presentation object so that
-// an OHIFCornerstoneViewport can be redisplayed with the same position
-export const usePositionPresentationStore = create<PositionPresentationState>(set => ({
+/**
+ * Creates the Position Presentation store.
+ *
+ * @param set - The zustand set function.
+ * @returns The Position Presentation store state and actions.
+ */
+const createPositionPresentationStore = set => ({
+  type: PRESENTATION_TYPE_ID,
   positionPresentationStore: {},
+
+  /**
+   * Sets the position presentation for a given key.
+   */
   setPositionPresentation: (key, value) =>
-    set(state => ({
-      positionPresentationStore: {
-        ...state.positionPresentationStore,
-        [key]: value,
-      },
-    })),
-  clearPositionPresentationStore: () => set({ positionPresentationStore: {} }),
+    set(
+      state => ({
+        positionPresentationStore: {
+          ...state.positionPresentationStore,
+          [key]: value,
+        },
+      }),
+      false,
+      'setPositionPresentation'
+    ),
+
+  /**
+   * Clears all position presentations from the store.
+   */
+  clearPositionPresentationStore: () =>
+    set({ positionPresentationStore: {} }, false, 'clearPositionPresentationStore'),
+
+  /**
+   * Retrieves the presentation ID based on the provided parameters.
+   */
   getPresentationId: getPositionPresentationId,
-}));
+});
+
+/**
+ * Zustand store for managing position presentations.
+ * Applies devtools middleware when DEBUG_STORE is enabled.
+ */
+export const usePositionPresentationStore = create<PositionPresentationState>()(
+  DEBUG_STORE
+    ? devtools(createPositionPresentationStore, { name: 'PositionPresentationStore' })
+    : createPositionPresentationStore
+);
