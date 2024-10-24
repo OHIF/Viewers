@@ -191,6 +191,8 @@ export default function ComponentShowcase() {
           <div className="ml-6 mb-6 text-base">
             <h1 className="text-foreground mb-3 text-5xl">Components</h1>
           </div>
+
+          {/* Alphabetically Sorted ShowcaseRows */}
           <ShowcaseRow
             title="Buttons"
             description="Button components and size variants. Use the primary and secondary buttons in dialogs or screens where one action is required. In the Viewer application, use ghost button in panels where many different actions are available."
@@ -204,7 +206,7 @@ export default function ComponentShowcase() {
 <Button variant="ghost" size="icon">?</Button>
 
 <Button variant="link">Link</Button>
-          `}
+            `}
           >
             <div className="flex flex-wrap gap-4">
               <Button variant="default">Primary Button</Button>
@@ -234,194 +236,7 @@ export default function ComponentShowcase() {
               </Button>
             </div>
           </ShowcaseRow>
-          <ShowcaseRow
-            title="Input"
-            description="Input fields can be used with or without example text"
-            code={`
-<div className="inline-block">
-  <div className="mr-4 inline-block">
-    <Label>Patient Weight</Label>
-  </div>
-  <div className="inline-block">
-    <Input placeholder="(kg)" />
-  </div>
-</div>
-          `}
-          >
-            <div className="inline-block">
-              <div className="mr-4 inline-block">
-                <Label>Patient Weight</Label>
-              </div>
-              <div className="inline-block">
-                <Input placeholder="(kg)" />
-              </div>
-            </div>
-          </ShowcaseRow>
-          <ShowcaseRow
-            title="Tabs"
-            description="Tabs (or segmented controls) can be used to provide navigation options or allow users to switch between multiple options (e.g., tool settings) "
-            code={`
-<Tabs className="w-[400px]">
-  <TabsList>
-    <TabsTrigger value="circle">Circle</TabsTrigger>
-    <Separator orientation="vertical" />
-    <TabsTrigger value="sphere">Sphere</TabsTrigger>
-    <Separator orientation="vertical" />
-    <TabsTrigger value="square">Square</TabsTrigger>
-  </TabsList>
-</Tabs>
-          `}
-          >
-            <Tabs className="w-[400px]">
-              <TabsList>
-                <TabsTrigger value="circle">Circle</TabsTrigger>
-                <Separator orientation="vertical" />
-                <TabsTrigger value="sphere">Sphere</TabsTrigger>
-                <Separator orientation="vertical" />
-                <TabsTrigger value="square">Square</TabsTrigger>
-              </TabsList>
-            </Tabs>
-          </ShowcaseRow>
-          <ShowcaseRow
-            title="Select"
-            description="Switch between a list of options"
-            code={`
-<Select>
-  <SelectTrigger className="w-[180px]">
-    <SelectValue placeholder="Theme" />
-  </SelectTrigger>
-  <SelectContent>
-    <SelectItem value="light">Light</SelectItem>
-    <SelectItem value="dark">Dark</SelectItem>
-    <SelectItem value="system">System</SelectItem>
-  </SelectContent>
-</Select>
-          `}
-          >
-            <Select>
-              <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="Theme" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="light">Light</SelectItem>
-                <SelectItem value="dark">Dark</SelectItem>
-                <SelectItem value="system">System</SelectItem>
-              </SelectContent>
-            </Select>
-          </ShowcaseRow>
-          <ShowcaseRow
-            title="Dropdown Menu"
-            description="Dropdown menu provides a flexible list of options that can open from buttons or other elements"
-            code={`
-<DropdownMenu>
-  <DropdownMenuTrigger>
-    <Button>Open Basic</Button>
-  </DropdownMenuTrigger>
-  <DropdownMenuContent>
-    <DropdownMenuItem>Item 1</DropdownMenuItem>
-    <DropdownMenuItem>Item 2</DropdownMenuItem>
-    <DropdownMenuItem>Long name Item 3</DropdownMenuItem>
-  </DropdownMenuContent>
-</DropdownMenu>
 
-<DropdownMenu>
-  <DropdownMenuTrigger asChild>
-    <Button>Open Align Start</Button>
-  </DropdownMenuTrigger>
-  <DropdownMenuContent align="start">
-    <DropdownMenuItem>Item 1</DropdownMenuItem>
-    <DropdownMenuItem>Item 2</DropdownMenuItem>
-    <DropdownMenuItem>Long name Item 3</DropdownMenuItem>
-  </DropdownMenuContent>
-</DropdownMenu>
-
-<DropdownMenu>
-  <DropdownMenuTrigger asChild>
-    <Button>Open Align End</Button>
-  </DropdownMenuTrigger>
-  <DropdownMenuContent align="end">
-    <DropdownMenuItem>Item 1</DropdownMenuItem>
-    <DropdownMenuItem>Item 2</DropdownMenuItem>
-    <DropdownMenuItem>Long name Item 3</DropdownMenuItem>
-  </DropdownMenuContent>
-</DropdownMenu>
-
-<DropdownMenu>
-  <DropdownMenuTrigger asChild>
-    <Button>Open Align Top</Button>
-  </DropdownMenuTrigger>
-  <DropdownMenuContent side="top" align="start">
-    <DropdownMenuItem onSelect={() => console.debug('Item 1')}>Item 1</DropdownMenuItem>
-    <DropdownMenuItem onSelect={() => console.debug('Item 2')}>Item 2</DropdownMenuItem>
-    <DropdownMenuItem onSelect={() => console.debug('Item 3')}>Long name Item 3</DropdownMenuItem>
-  </DropdownMenuContent>
-</DropdownMenu>
-          `}
-          >
-            <div className="flex flex-wrap gap-4">
-              <DropdownMenu>
-                <DropdownMenuTrigger>
-                  <Button>Open Basic</Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent>
-                  <DropdownMenuItem>Item 1</DropdownMenuItem>
-                  <DropdownMenuItem>Item 2</DropdownMenuItem>
-                  <DropdownMenuItem>Long name Item 3</DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button>Open Align Start</Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="start">
-                  <DropdownMenuItem>Item 1</DropdownMenuItem>
-                  <DropdownMenuItem>Item 2</DropdownMenuItem>
-                  <DropdownMenuItem>Long name Item 3</DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button>Open Align End</Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem>Item 1</DropdownMenuItem>
-                  <DropdownMenuItem>Item 2</DropdownMenuItem>
-                  <DropdownMenuItem>Long name Item 3</DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button>Open Align Top</Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent
-                  side="top"
-                  align="start"
-                >
-                  <DropdownMenuItem onSelect={() => console.debug('Item 1')}>
-                    Item 1
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onSelect={() => console.debug('Item 2')}>
-                    Item 2
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onSelect={() => console.debug('Item 3')}>
-                    Long name Item 3
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
-          </ShowcaseRow>
-          <ShowcaseRow
-            title="Switch"
-            description="A toggle Switch is used to change between two different states. Use descriptive labels next to Switches that are understandable before interacting."
-            code={`
-<Switch />
-          `}
-          >
-            <Switch defaultChecked />
-            <Label className="text-foreground mx-2 w-14 flex-none whitespace-nowrap text-sm">
-              Sync changes in all viewports
-            </Label>
-          </ShowcaseRow>
           <ShowcaseRow
             title="Checkbox"
             description="When possible use Switch in place of checkbox. If necessary, Checkbox provides a smaller component to change between two states or options."
@@ -432,7 +247,7 @@ export default function ComponentShowcase() {
     <Label>Display inactive segmentations</Label>
   </div>
 </div>
-          `}
+            `}
           >
             <div className="items-top flex space-x-2">
               <Checkbox id="terms1" />
@@ -441,42 +256,10 @@ export default function ComponentShowcase() {
               </div>
             </div>
           </ShowcaseRow>
-          {/* <ShowcaseRow
-          title="Toggle"
-          description="Toggle component"
-          code={`
-<Toggle>Hello</Toggle>
-          `}
-        >
-          <Toggle>Hello</Toggle>
-        </ShowcaseRow> */}
-          <ShowcaseRow
-            title="Slider"
-            description="Slider component"
-            code={`
-<div className="w-40 px-5">
-  <Slider
-    className="w-full"
-    defaultValue={[50]}
-    max={100}
-    step={1}
-  />
-</div>
-          `}
-          >
-            <div className="w-40 px-5">
-              <Slider
-                className="w-full"
-                defaultValue={[50]}
-                max={100}
-                step={1}
-              />
-            </div>
-          </ShowcaseRow>
 
           <ShowcaseRow
             title="Data Row"
-            description="Data Row component displays a list of items with actions and selection capabilities."
+            description="A selectable row with action menu options and visibility toggle. Color, Secondary details, and Image Series are optional to display."
             code={`
 import React, { useState } from 'react';
 import { DataRow } from '../../../ui-next/src/components/DataRow';
@@ -547,10 +330,136 @@ const DataRowExample = () => {
 };
 
 export default DataRowExample;
-              `}
+            `}
           >
             {/* Render the DataRowExample component */}
             <DataRowExample />
+          </ShowcaseRow>
+
+          <ShowcaseRow
+            title="Dropdown Menu"
+            description="Dropdown menu provides a flexible list of options that can open from buttons or other elements"
+            code={`
+<DropdownMenu>
+  <DropdownMenuTrigger>
+    <Button>Open Basic</Button>
+  </DropdownMenuTrigger>
+  <DropdownMenuContent>
+    <DropdownMenuItem>Item 1</DropdownMenuItem>
+    <DropdownMenuItem>Item 2</DropdownMenuItem>
+    <DropdownMenuItem>Long name Item 3</DropdownMenuItem>
+  </DropdownMenuContent>
+</DropdownMenu>
+
+<DropdownMenu>
+  <DropdownMenuTrigger asChild>
+    <Button>Open Align Start</Button>
+  </DropdownMenuTrigger>
+  <DropdownMenuContent align="start">
+    <DropdownMenuItem>Item 1</DropdownMenuItem>
+    <DropdownMenuItem>Item 2</DropdownMenuItem>
+    <DropdownMenuItem>Long name Item 3</DropdownMenuItem>
+  </DropdownMenuContent>
+</DropdownMenu>
+
+<DropdownMenu>
+  <DropdownMenuTrigger asChild>
+    <Button>Open Align End</Button>
+  </DropdownMenuTrigger>
+  <DropdownMenuContent align="end">
+    <DropdownMenuItem>Item 1</DropdownMenuItem>
+    <DropdownMenuItem>Item 2</DropdownMenuItem>
+    <DropdownMenuItem>Long name Item 3</DropdownMenuItem>
+  </DropdownMenuContent>
+</DropdownMenu>
+
+<DropdownMenu>
+  <DropdownMenuTrigger asChild>
+    <Button>Open Align Top</Button>
+  </DropdownMenuTrigger>
+  <DropdownMenuContent side="top" align="start">
+    <DropdownMenuItem onSelect={() => console.debug('Item 1')}>Item 1</DropdownMenuItem>
+    <DropdownMenuItem onSelect={() => console.debug('Item 2')}>Item 2</DropdownMenuItem>
+    <DropdownMenuItem onSelect={() => console.debug('Item 3')}>Long name Item 3</DropdownMenuItem>
+  </DropdownMenuContent>
+</DropdownMenu>
+            `}
+          >
+            <div className="flex flex-wrap gap-4">
+              <DropdownMenu>
+                <DropdownMenuTrigger>
+                  <Button>Open Basic</Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  <DropdownMenuItem>Item 1</DropdownMenuItem>
+                  <DropdownMenuItem>Item 2</DropdownMenuItem>
+                  <DropdownMenuItem>Long name Item 3</DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button>Open Align Start</Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="start">
+                  <DropdownMenuItem>Item 1</DropdownMenuItem>
+                  <DropdownMenuItem>Item 2</DropdownMenuItem>
+                  <DropdownMenuItem>Long name Item 3</DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button>Open Align End</Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem>Item 1</DropdownMenuItem>
+                  <DropdownMenuItem>Item 2</DropdownMenuItem>
+                  <DropdownMenuItem>Long name Item 3</DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button>Open Align Top</Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent
+                  side="top"
+                  align="start"
+                >
+                  <DropdownMenuItem onSelect={() => console.debug('Item 1')}>
+                    Item 1
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onSelect={() => console.debug('Item 2')}>
+                    Item 2
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onSelect={() => console.debug('Item 3')}>
+                    Long name Item 3
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+          </ShowcaseRow>
+
+          <ShowcaseRow
+            title="Input"
+            description="Input fields can be used with or without example text"
+            code={`
+<div className="inline-block">
+  <div className="mr-4 inline-block">
+    <Label>Patient Weight</Label>
+  </div>
+  <div className="inline-block">
+    <Input placeholder="(kg)" />
+  </div>
+</div>
+            `}
+          >
+            <div className="inline-block">
+              <div className="mr-4 inline-block">
+                <Label>Patient Weight</Label>
+              </div>
+              <div className="inline-block">
+                <Input placeholder="(kg)" />
+              </div>
+            </div>
           </ShowcaseRow>
 
           <ShowcaseRow
@@ -563,7 +472,7 @@ export default DataRowExample;
   non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore
   magna aliqua.
 </ScrollArea>
-          `}
+            `}
           >
             <ScrollArea className="border-input bg-background h-[150px] w-[350px] rounded-md border p-2 text-sm text-white">
               Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
@@ -575,6 +484,98 @@ export default DataRowExample;
               sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
             </ScrollArea>
           </ShowcaseRow>
+
+          <ShowcaseRow
+            title="Select"
+            description="Switch between a list of options"
+            code={`
+<Select>
+  <SelectTrigger className="w-[180px]">
+    <SelectValue placeholder="Theme" />
+  </SelectTrigger>
+  <SelectContent>
+    <SelectItem value="light">Light</SelectItem>
+    <SelectItem value="dark">Dark</SelectItem>
+    <SelectItem value="system">System</SelectItem>
+  </SelectContent>
+</Select>
+            `}
+          >
+            <Select>
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="Theme" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="light">Light</SelectItem>
+                <SelectItem value="dark">Dark</SelectItem>
+                <SelectItem value="system">System</SelectItem>
+              </SelectContent>
+            </Select>
+          </ShowcaseRow>
+
+          <ShowcaseRow
+            title="Slider"
+            description="Slider component"
+            code={`
+<div className="w-40 px-5">
+  <Slider
+    className="w-full"
+    defaultValue={[50]}
+    max={100}
+    step={1}
+  />
+</div>
+            `}
+          >
+            <div className="w-40 px-5">
+              <Slider
+                className="w-full"
+                defaultValue={[50]}
+                max={100}
+                step={1}
+              />
+            </div>
+          </ShowcaseRow>
+
+          <ShowcaseRow
+            title="Switch"
+            description="A toggle Switch is used to change between two different states. Use descriptive labels next to Switches that are understandable before interacting."
+            code={`
+<Switch />
+            `}
+          >
+            <Switch defaultChecked />
+            <Label className="text-foreground mx-2 w-14 flex-none whitespace-nowrap text-sm">
+              Sync changes in all viewports
+            </Label>
+          </ShowcaseRow>
+
+          <ShowcaseRow
+            title="Tabs"
+            description="Tabs (or segmented controls) can be used to provide navigation options or allow users to switch between multiple options (e.g., tool settings) "
+            code={`
+<Tabs className="w-[400px]">
+  <TabsList>
+    <TabsTrigger value="circle">Circle</TabsTrigger>
+    <Separator orientation="vertical" />
+    <TabsTrigger value="sphere">Sphere</TabsTrigger>
+    <Separator orientation="vertical" />
+    <TabsTrigger value="square">Square</TabsTrigger>
+  </TabsList>
+</Tabs>
+            `}
+          >
+            <Tabs className="w-[400px]">
+              <TabsList>
+                <TabsTrigger value="circle">Circle</TabsTrigger>
+                <Separator orientation="vertical" />
+                <TabsTrigger value="sphere">Sphere</TabsTrigger>
+                <Separator orientation="vertical" />
+                <TabsTrigger value="square">Square</TabsTrigger>
+              </TabsList>
+            </Tabs>
+          </ShowcaseRow>
+
           <ShowcaseRow
             title="Toast"
             description="A toast notification displays temporary feedback messages to users above the current UI. Notifications stack into one unit after multiple cascading notifications."
@@ -643,25 +644,6 @@ export default DataRowExample;
             </div>
             {/* Render the Toaster component */}
             <Toaster />
-          </ShowcaseRow>
-
-          <ShowcaseRow
-            title="Card"
-            description="Card"
-            code={`sdf`}
-          >
-            <a
-              href="/playground"
-              className="block"
-            >
-              <Card className="hover:bg-primary/20 w-[350px] transition-colors">
-                <CardHeader>
-                  <CardTitle className="text-foreground hover:border-0">Create project</CardTitle>
-                  <CardDescription>Deploy your new project in one-click.</CardDescription>
-                </CardHeader>
-                <CardContent></CardContent>
-              </Card>
-            </a>
           </ShowcaseRow>
         </div>
       </div>

@@ -186,7 +186,7 @@ module.exports = {
             to: '/help',
             //activeBaseRegex: '(^/help$)|(/help)',
             label: 'Help',
-            position: 'right',
+            position: 'left',
           },
           {
             type: 'docsVersionDropdown',

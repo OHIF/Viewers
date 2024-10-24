@@ -189,18 +189,19 @@ export default function ComponentShowcase() {
           <h1 className="text-foreground ml-6 mb-6 text-5xl">Patterns</h1>
 
           <ShowcaseRow
-            title="Segmentation Panel"
-            description="Segmentation panel example text lorem ipsum dolor sit amet"
+            title="Segmentation List"
+            description={
+              <div className="space-y-4">
+                <div className="block">
+                  Measurement panel uses the Data Row component to displays a list of measurements.
+                  a custom "Label" appears in each primary row and measurement data appearing on the
+                  secondary row
+                </div>
+                <Button variant="default">Launch Segmentations Example</Button>
+              </div>
+            }
             code={`
-<Button variant="default">Primary Button</Button>
-
-<Button variant="secondary">Secondary Button</Button>
-
-<Button variant="ghost">Ghost Button</Button>
-
-<Button variant="ghost" size="icon">?</Button>
-
-<Button variant="link">Link</Button>
+aaa
           `}
           >
             <div className="flex flex-wrap gap-4"></div>
@@ -214,18 +215,18 @@ export default function ComponentShowcase() {
           </ShowcaseRow>
 
           <ShowcaseRow
-            title="Measurements Panel"
-            description="Measurement panel example text lorem ipsum dolor sit amet"
+            title="Measurement List"
+            description={
+              <div className="space-y-4">
+                <div className="block">
+                  Uses the Data Row component to displays a list of measurements. A custom "Label"
+                  starts each row with measurement data appearing on the secondary row
+                </div>
+                <Button variant="default">Launch Measurements Example</Button>
+              </div>
+            }
             code={`
-<Button variant="default">Primary Button</Button>
-
-<Button variant="secondary">Secondary Button</Button>
-
-<Button variant="ghost">Ghost Button</Button>
-
-<Button variant="ghost" size="icon">?</Button>
-
-<Button variant="link">Link</Button>
+aaa
           `}
           >
             <div className="flex flex-wrap gap-4"></div>
