@@ -184,7 +184,7 @@ const DataRow: React.FC<DataRowProps> = ({
 
         {/* Row 2 (Details and Series) */}
         {(details || series) && (
-          <div className="ml-7 bg-black px-2 py-1">
+          <div className="ml-7 px-2 py-1">
             {/* Updated Flex Container: Changed 'items-center' to 'items-start' */}
             <div className="text-secondary-foreground flex items-start justify-between whitespace-pre-line text-sm leading-normal">
               <span>{details}</span>

@@ -72,6 +72,7 @@ import { Onboarding } from './Onboarding';
 import { BackgroundColorSelect } from './BackgroundColorSelect';
 import { DataRow } from './DataRow';
 import { Toaster } from './Sonner';
+import { Card, CardHeader, CardFooter, CardTitle, CardDescription, CardContent } from './Card';
 
 export {
   Button,
@@ -159,4 +160,10 @@ export {
   SelectTrigger,
   SelectValue,
   Toaster,
+  Card,
+  CardHeader,
+  CardFooter,
+  CardTitle,
+  CardDescription,
+  CardContent,
 };

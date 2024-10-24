@@ -26,6 +26,14 @@ import {
 } from '../../../ui-next/src/components/DropdownMenu';
 import { Icons } from '../../../ui-next/src/components/Icons';
 import { Toaster, toast } from '../../../ui-next/src/components/Sonner';
+import {
+  Card,
+  CardHeader,
+  CardFooter,
+  CardTitle,
+  CardDescription,
+  CardContent,
+} from '../../../ui-next/src/components/Card';
 
 interface ShowcaseRowProps {
   title: string;
@@ -75,33 +83,15 @@ export default function ComponentShowcase() {
 
   // Handler to trigger a toast with an action button
   const triggerActionButtonToast = () => {
-    toast.info('Info heading', {
-      description: 'This is an info message with an action button.',
-      action: (
-        <Button
-          size="sm"
-          variant="ghost"
-          onClick={() => alert('Action button clicked')}
-        >
-          Undo
-        </Button>
-      ),
+    toast.info('No active segmentation detected', {
+      description: 'Create a segmentation before using the Brush',
     });
   };
 
   // Handler to trigger a toast with a cancel button
   const triggerCancelButtonToast = () => {
-    toast.error('Error!', {
-      description: 'This is an error message with a cancel button.',
-      cancel: (
-        <Button
-          size="sm"
-          variant="ghost"
-          onClick={() => toast.dismiss()}
-        >
-          Dismiss
-        </Button>
-      ),
+    toast.error('No active segmentation detected', {
+      description: 'Create a segmentation before using the Brush',
     });
   };
 
