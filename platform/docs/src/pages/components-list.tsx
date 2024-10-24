@@ -464,7 +464,7 @@ export default DataRowExample;
 
           <ShowcaseRow
             title="Scroll Area"
-            description="Scroll Area component"
+            description="Displays a scroll indicator when hovering within an element."
             code={`
 <ScrollArea className="border-input bg-background h-[150px] w-[350px] rounded-md border p-2 text-sm text-white">
   Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco
@@ -515,7 +515,7 @@ export default DataRowExample;
 
           <ShowcaseRow
             title="Slider"
-            description="Slider component"
+            description="Used to select a value in a predefined range."
             code={`
 <div className="w-40 px-5">
   <Slider

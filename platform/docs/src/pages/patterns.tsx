@@ -44,6 +44,11 @@ interface ShowcaseRowProps {
 }
 
 export default function ComponentShowcase() {
+  // Function to open links in a new window
+  const openLinkInNewWindow = url => {
+    window.open(url, '_blank', 'noopener,noreferrer');
+  };
+
   // Handlers to trigger different types of toasts
   const triggerSuccess = () => {
     toast.success('This is a success toast!');
@@ -193,11 +198,15 @@ export default function ComponentShowcase() {
             description={
               <div className="space-y-4">
                 <div className="block">
-                  Measurement panel uses the Data Row component to displays a list of measurements.
-                  a custom "Label" appears in each primary row and measurement data appearing on the
-                  secondary row
+                  Uses the Data Row component to displays a list of segments. The current
+                  "Segmentation" is chosen with a Select above the current list.
                 </div>
-                <Button variant="default">Launch Segmentations Example</Button>
+                <Button
+                  variant="default"
+                  onClick={() => openLinkInNewWindow('./patterns/patterns-segmentation')}
+                >
+                  Launch Segmentation Example
+                </Button>
               </div>
             }
             code={`
@@ -222,7 +231,12 @@ aaa
                   Uses the Data Row component to displays a list of measurements. A custom "Label"
                   starts each row with measurement data appearing on the secondary row
                 </div>
-                <Button variant="default">Launch Measurements Example</Button>
+                <Button
+                  variant="default"
+                  onClick={() => openLinkInNewWindow('./patterns/patterns-measurements')}
+                >
+                  Launch Measurements Example
+                </Button>
               </div>
             }
             code={`
@@ -258,9 +272,7 @@ function ShowcaseRow({ title, description, children, code }: ShowcaseRowProps) {
           variant="ghost"
           size="sm"
           onClick={() => setShowCode(!showCode)}
-        >
-          {showCode ? 'Hide Code' : 'Show Code'} <Icons.Code className="ml-2 h-4 w-4" />
-        </Button>
+        ></Button>
       </div>
       <div className="grid grid-cols-1 gap-9 md:grid-cols-3">
         <div className="text-base md:col-span-1">

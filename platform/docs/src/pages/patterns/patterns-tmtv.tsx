@@ -142,7 +142,7 @@ export default function TMTVPatterns() {
                       </Tabs>
                     </div>
                     {/* Opacity Slider */}
-                    <div className="my-2 flex items-center ">
+                    <div className="my-2 flex items-center">
                       <Label className="text-muted-foreground mx-1 w-14 flex-none whitespace-nowrap text-xs">
                         Opacity
                       </Label>
@@ -189,7 +189,7 @@ export default function TMTVPatterns() {
                       </Label>
                     </div>
                     {/* Additional Opacity Slider */}
-                    <div className="my-2 flex items-center ">
+                    <div className="my-2 flex items-center">
                       <Label className="text-muted-foreground mx-1 w-14 flex-none whitespace-nowrap text-xs">
                         Opacity
                       </Label>
@@ -354,7 +354,7 @@ export default function TMTVPatterns() {
 
                       <div className="pl-1.5">TMTV2 Segmentation</div>
                     </div>
-                    <div className="mr-1 flex items-center ">
+                    <div className="mr-1 flex items-center">
                       <Button
                         variant="ghost"
                         size="icon"
