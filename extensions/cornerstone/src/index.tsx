@@ -46,7 +46,7 @@ import {
   useSynchronizersStore,
 } from './stores';
 import { useToggleOneUpViewportGridStore } from '../../default/src/stores/useToggleOneUpViewportGridStore';
-import { useSegmentations } from './hooks/useSegmentations';
+import { useActiveViewportSegmentationRepresentations } from './hooks/useActiveViewportSegmentationRepresentations';
 import { useMeasurements } from './hooks/useMeasurements';
 import getPanelModule from './getPanelModule';
 import PanelSegmentation from './panels/PanelSegmentation';
@@ -251,7 +251,7 @@ export {
   useSynchronizersStore,
   Enums,
   useMeasurements,
-  useSegmentations,
+  useActiveViewportSegmentationRepresentations,
   PanelSegmentation,
   PanelMeasurement,
   DicomUpload,

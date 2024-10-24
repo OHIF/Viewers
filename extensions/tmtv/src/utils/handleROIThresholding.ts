@@ -58,9 +58,7 @@ export const handleROIThresholding = async ({
   }
 
   // all available segmentations
-  const segmentationsInfo = segmentationService.getSegmentationsInfo();
-
-  const segmentations = segmentationsInfo.map(({ segmentation }) => segmentation);
+  const segmentations = segmentationService.getSegmentations();
   const tmtv = await commandsManager.run('calculateTMTV', { segmentations });
 
   triggerEvent(eventTarget, Enums.Events.WEB_WORKER_PROGRESS, {
@@ -72,7 +70,7 @@ export const handleROIThresholding = async ({
   // add the tmtv to all the segment cachedStats, although it is a global
   // value but we don't have any other way to display it for now
   // Update all segmentations with the calculated TMTV
-  segmentationsInfo.forEach(({ segmentation }) => {
+  segmentations.forEach(segmentation => {
     segmentation.cachedStats = {
       ...segmentation.cachedStats,
       tmtv,

@@ -1,6 +1,10 @@
 import { useState, useEffect } from 'react';
 import debounce from 'lodash.debounce';
 import { roundNumber } from '@ohif/core/src/utils';
+import {
+  SegmentationData,
+  SegmentationRepresentation,
+} from '../services/SegmentationService/SegmentationService';
 
 function mapSegmentationToDisplay(segmentation, customizationService) {
   const { label, segments } = segmentation;
@@ -77,40 +81,62 @@ function mapSegmentationToDisplay(segmentation, customizationService) {
   };
 }
 
-export function useSegmentations({
+/**
+ * Represents the combination of segmentation data and its representation in a viewport.
+ */
+type ViewportSegmentationRepresentation = {
+  representation: SegmentationRepresentation;
+  segmentation: SegmentationData;
+};
+
+/**
+ * Custom hook that provides segmentation data and their representations for the active viewport.
+ * @param options - The options object.
+ * @param options.servicesManager - The services manager object.
+ * @param options.subscribeToDataModified - Whether to subscribe to segmentation data modifications.
+ * @param options.debounceTime - Debounce time in milliseconds for updates.
+ * @returns An array of segmentation data and their representations for the active viewport.
+ */
+export function useActiveViewportSegmentationRepresentations({
   servicesManager,
   subscribeToDataModified = false,
   debounceTime = 0,
-}) {
+}: withAppTypes<{ debounceTime?: number }>): ViewportSegmentationRepresentation[] {
   const { segmentationService, viewportGridService, customizationService } =
     servicesManager.services;
-  const [segmentationsInfo, setSegmentationsInfo] = useState([]);
+  const [segmentationsWithRepresentations, setSegmentationsWithRepresentations] = useState<
+    ViewportSegmentationRepresentation[]
+  >([]);
 
   useEffect(() => {
-    const updateSegmentationsInfo = () => {
+    const update = () => {
       const viewportId = viewportGridService.getActiveViewportId();
-      const segmentations = segmentationService.getSegmentationsInfo({ viewportId });
+      const segmentations = segmentationService.getSegmentations();
 
       if (!segmentations?.length) {
-        setSegmentationsInfo([]);
+        setSegmentationsWithRepresentations([]);
         return;
       }
 
-      const mappedSegmentations = segmentations.map(({ segmentation, representation }) => {
-        const mappedSegmentation = mapSegmentationToDisplay(segmentation, customizationService);
-        return {
-          segmentation: mappedSegmentation,
-          representation,
-        };
-      });
+      const representations = segmentationService.getSegmentationRepresentations(viewportId);
 
-      setSegmentationsInfo(mappedSegmentations);
+      const tempSegmentationsWithRepresentations: ViewportSegmentationRepresentation[] = [];
+      for (const representation of representations) {
+        const segmentation = segmentationService.getSegmentation(representation.segmentationId);
+        const mappedSegmentation = mapSegmentationToDisplay(segmentation, customizationService);
+
+        tempSegmentationsWithRepresentations.push({
+          representation,
+          segmentation: mappedSegmentation,
+        });
+      }
+
+      setSegmentationsWithRepresentations(tempSegmentationsWithRepresentations);
     };
 
-    const debouncedUpdate =
-      debounceTime > 0 ? debounce(updateSegmentationsInfo, debounceTime) : updateSegmentationsInfo;
+    const debouncedUpdate = debounceTime > 0 ? debounce(update, debounceTime) : update;
 
-    updateSegmentationsInfo();
+    update();
 
     const subscriptions = [
       segmentationService.subscribe(
@@ -147,7 +173,13 @@ export function useSegmentations({
         debouncedUpdate.cancel();
       }
     };
-  }, [segmentationService, viewportGridService, customizationService, debounceTime]);
+  }, [
+    segmentationService,
+    viewportGridService,
+    customizationService,
+    debounceTime,
+    subscribeToDataModified,
+  ]);
 
-  return segmentationsInfo;
+  return segmentationsWithRepresentations;
 }

@@ -131,115 +131,13 @@ class SegmentationService extends PubSubService {
     return cstSegmentation.state.getSegmentations();
   }
 
-  /**
-   * Retrieves information about specific segmentations and their representations based on the provided criteria.
-   *
-   * @param specifier - An object containing optional parameters to specify the segmentation representation.
-   * @param specifier.segmentationId - Optional. The ID of the segmentation.
-   * @param specifier.viewportId - Optional. The ID of the viewport containing the segmentation representation.
-   * @param specifier.type - Optional. The type of segmentation representation.
-   * @returns An array of `Segmentation` objects containing the segmentation data and its representation.
-   *
-   * @remarks
-   * This method filters segmentations and their representations according to the provided `specifier`:
-   * - **No parameters provided**: Returns all segmentations with their data and no specific representations.
-   * - **Only `segmentationId` provided**: Returns the specified segmentation regardless of viewport or type.
-   * - **Only `viewportId` provided**: Returns all segmentations represented in the specified viewport.
-   * - **Only `type` provided**: Returns all segmentations of the specified type.
-   * - **Combination of parameters**: Returns segmentations matching all specified criteria.
-   */
-  public getSegmentationsInfo(
-    specifier: {
-      segmentationId?: string;
-      viewportId?: string;
-      type?: SegmentationRepresentations;
-    } = {}
-  ): SegmentationInfo[] {
-    const { segmentationId, viewportId, type } = specifier;
-    const segmentationsInfo: SegmentationInfo[] = [];
-
-    const segmentations = cstSegmentation.state.getSegmentations();
-    // Case 1: No specifier provided - return all segmentations without representations
-    if (!segmentationId && !viewportId && !type) {
-      return segmentations.map(segmentation => ({
-        segmentation,
-        representation: null,
-      }));
-    }
-
-    if (segmentationId && !viewportId && !type) {
-      // filter segmentations by segmentationId
-      const filteredSegmentations = segmentations.filter(
-        (segmentation: cstTypes.Segmentation) => segmentation.segmentationId === segmentationId
-      );
-
-      return filteredSegmentations.map(segmentation => ({
-        segmentation,
-        representation: null,
-      }));
-    }
-
-    const segmentationIds = new Set<string>();
-
-    if (viewportId) {
-      // Fetch representations based on viewportId and other specifiers
-      const representations = this.getSegmentationRepresentations(viewportId, {
-        segmentationId,
-        type,
-      });
-
-      representations.forEach(rep => {
-        const segmentation = cstSegmentation.state.getSegmentation(rep.segmentationId);
-        if (segmentation && !segmentationIds.has(segmentation.segmentationId)) {
-          segmentationsInfo.push({
-            segmentation,
-            representation: rep,
-          });
-          segmentationIds.add(segmentation.segmentationId);
-        }
-      });
-    }
-
-    // if (segmentationId && !viewportId) {
-    //   const segmentation = cstSegmentation.state.getSegmentation(segmentationId);
-    //   if (segmentation && !segmentationIds.has(segmentation.segmentationId)) {
-    //     // If type is specified, ensure the segmentation matches the type
-    //     if (!type || segmentation.type === type) {
-    //       segmentationsInfo.push({
-    //         segmentation,
-    //         representation: null,
-    //       });
-    //       segmentationIds.add(segmentation.segmentationId);
-    //     }
-    //   }
-    // }
-
-    // if (type && !viewportId && !segmentationId) {
-    //   // Fetch all segmentations of the specified type
-    //   const filteredSegmentations = this.getSegmentationRepresentations()
-
-    //   filteredSegmentations.forEach(segmentation => {
-    //     if (!segmentationIds.has(segmentation.segmentationId)) {
-    //       segmentationsInfo.push({
-    //         segmentation,
-    //         representation: null,
-    //       });
-    //       segmentationIds.add(segmentation.segmentationId);
-    //     }
-    //   });
-    // }
-
-    return segmentationsInfo;
-  }
-
   public getPresentation(viewportId: string): SegmentationPresentation {
     const segmentationPresentations: SegmentationPresentation = [];
     const segmentationsMap = new Map<string, SegmentationPresentationItem>();
 
-    const segmentations = this.getSegmentationsInfo({ viewportId });
-    for (const segmentation of segmentations) {
-      const { segmentationId } = segmentation.segmentation;
-      const representation = segmentation.representation;
+    const representations = this.getSegmentationRepresentations(viewportId);
+    for (const representation of representations) {
+      const { segmentationId } = representation;
 
       if (!representation) {
         continue;
@@ -365,7 +263,7 @@ class SegmentationService extends PubSubService {
     const displaySetInstanceUID =
       options.displaySetInstanceUID || viewport.displaySetInstanceUIDs[0];
 
-    const segs = this.getSegmentationsInfo();
+    const segs = this.getSegmentations();
 
     const label = options.label || `Segmentation ${segs.length + 1}`;
     const segmentationId = options.segmentationId || `${csUtils.uuidv4()}`;
@@ -1792,8 +1690,7 @@ class SegmentationService extends PubSubService {
   }
 
   private _getSegmentCenter(segmentationId, segmentIndex) {
-    const segmentations = this.getSegmentationsInfo({ segmentationId });
-    const { segmentation } = segmentations[0];
+    const segmentation = this.getSegmentation(segmentationId);
 
     if (!segmentation) {
       return;

@@ -18,15 +18,15 @@ export function ViewportSegmentationMenuWrapper({
   const [representations, setRepresentations] = useState(null);
 
   useEffect(() => {
-    const representations = segmentationService.getSegmentationsInfo();
+    const representations = segmentationService.getSegmentationRepresentations(viewportId);
     setRepresentations(representations);
-  }, [viewportId, servicesManager]);
+  }, [viewportId, segmentationService]);
 
   useEffect(() => {
     const { unsubscribe } = segmentationService.subscribe(
       segmentationService.EVENTS.SEGMENTATION_REPRESENTATION_MODIFIED,
       () => {
-        const representations = segmentationService.getSegmentationsInfo();
+        const representations = segmentationService.getSegmentationRepresentations(viewportId);
         setRepresentations(representations);
       }
     );
@@ -34,7 +34,7 @@ export function ViewportSegmentationMenuWrapper({
     return () => {
       unsubscribe();
     };
-  }, [viewportId, servicesManager]);
+  }, [viewportId, segmentationService]);
 
   const activeViewportId = viewportGridService.getActiveViewportId();
   const isActiveViewport = viewportId === activeViewportId;

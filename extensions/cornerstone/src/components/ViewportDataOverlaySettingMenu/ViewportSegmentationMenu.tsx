@@ -15,10 +15,9 @@ function ViewportSegmentationMenu({
       const active = segmentationService.getSegmentationRepresentations(viewportId);
       setActiveSegmentations(active);
 
-      const all = segmentationService.getSegmentationsInfo();
+      const all = segmentationService.getSegmentations();
       const available = all.filter(
-        seg =>
-          !active.some(activeSeg => activeSeg.segmentationId === seg.segmentation.segmentationId)
+        seg => !active.some(activeSeg => activeSeg.segmentationId === seg.segmentationId)
       );
       setAvailableSegmentations(available);
     };

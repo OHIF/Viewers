@@ -1,7 +1,7 @@
 import React from 'react';
 import { SegmentationTable } from '@ohif/ui-next';
 import { callInputDialog, colorPickerDialog, createReportAsync } from '@ohif/extension-default';
-import { useSegmentations } from '../hooks/useSegmentations';
+import { useActiveViewportSegmentationRepresentations } from '../hooks/useActiveViewportSegmentationRepresentations';
 
 export default function PanelSegmentation({
   servicesManager,
@@ -13,7 +13,9 @@ export default function PanelSegmentation({
   const { segmentationService, viewportGridService, uiDialogService, customizationService } =
     servicesManager.services;
 
-  const segmentationsInfo = useSegmentations({ servicesManager });
+  const viewportSegmentationInfo = useActiveViewportSegmentationRepresentations({
+    servicesManager,
+  });
 
   const handlers = {
     onSegmentationAdd: async () => {
@@ -37,13 +39,11 @@ export default function PanelSegmentation({
     },
 
     onSegmentEdit: (segmentationId, segmentIndex) => {
-      const segmentations = segmentationService.getSegmentationsInfo({ segmentationId });
+      const segmentation = segmentationService.getSegmentation(segmentationId);
 
-      if (!segmentations?.length) {
+      if (!segmentation) {
         return;
       }
-
-      const segmentation = segmentations[0].segmentation;
 
       const segment = segmentation.segments[segmentIndex];
       const { label } = segment;
@@ -58,13 +58,12 @@ export default function PanelSegmentation({
     },
 
     onSegmentationEdit: segmentationId => {
-      const segmentations = segmentationService.getSegmentationsInfo({ segmentationId });
+      const segmentation = segmentationService.getSegmentation(segmentationId);
 
-      if (!segmentations?.length) {
+      if (!segmentation) {
         return;
       }
 
-      const segmentation = segmentations[0].segmentation;
       const { label } = segmentation;
 
       callInputDialog(uiDialogService, label, (label, actionId) => {
@@ -225,7 +224,7 @@ export default function PanelSegmentation({
   return (
     <>
       <SegmentationTable
-        data={segmentationsInfo}
+        data={viewportSegmentationInfo}
         mode={SegmentationTableMode}
         title="Segmentations"
         disableEditing={disableEditing}

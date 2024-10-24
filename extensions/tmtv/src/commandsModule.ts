@@ -451,7 +451,7 @@ const commandsModule = ({ servicesManager, commandsManager, extensionManager }: 
         };
       });
 
-      const { referencedVolumeId } = getVolumesFromSegmentation(segmentations[0].id);
+      const { referencedVolumeId } = getVolumesFromSegmentation(segmentations[0].segmentationId);
 
       const ptVolume = cs.cache.getVolume(referencedVolumeId);
 
@@ -530,8 +530,7 @@ const commandsModule = ({ servicesManager, commandsManager, extensionManager }: 
     },
     getSegmentationCSVReport: ({ segmentations }) => {
       if (!segmentations || !segmentations.length) {
-        const segmentationsInfo = segmentationService.getSegmentationsInfo();
-        segmentations = segmentationsInfo.map(({ segmentation }) => segmentation);
+        segmentations = segmentationService.getSegmentations();
       }
 
       const report = {};

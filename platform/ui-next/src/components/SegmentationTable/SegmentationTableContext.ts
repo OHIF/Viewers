@@ -21,13 +21,13 @@ interface Representation {
   };
 }
 
-interface SegmentationInfo {
+interface ViewportSegmentationInfo {
   segmentation: Segmentation;
   representation: Representation;
 }
 
 interface SegmentationTableContext {
-  data: SegmentationInfo[];
+  data: ViewportSegmentationInfo[];
   mode: 'collapsed' | 'expanded';
   fillAlpha: number;
   fillAlphaInactive: number;

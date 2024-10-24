@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { useSegmentations } from '@ohif/extension-cornerstone';
+import { useActiveViewportSegmentationRepresentations } from '@ohif/extension-cornerstone';
 import { handleROIThresholding } from '../../utils/handleROIThresholding';
 import { debounce } from '@ohif/core/src/utils';
 
@@ -8,11 +8,11 @@ export default function PanelRoiThresholdSegmentation({
   commandsManager,
 }: withAppTypes) {
   const { segmentationService } = servicesManager.services;
-  const segmentationsInfo = useSegmentations({ servicesManager });
+  const segmentationsInfo = useActiveViewportSegmentationRepresentations({ servicesManager });
 
   useEffect(() => {
     const segmentationIds = segmentationsInfo.map(
-      ({ segmentation }) => segmentation.segmentationId
+      segmentationInfo => segmentationInfo.segmentation.segmentationId
     );
 
     const initialRun = async () => {

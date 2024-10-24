@@ -1,5 +1,8 @@
 import React from 'react';
-import { PanelSegmentation, useSegmentations } from '@ohif/extension-cornerstone';
+import {
+  PanelSegmentation,
+  useActiveViewportSegmentationRepresentations,
+} from '@ohif/extension-cornerstone';
 import { Button, Icons } from '@ohif/ui-next';
 
 export default function PanelTMTV({
@@ -26,9 +29,9 @@ export default function PanelTMTV({
 }
 
 const ExportCSV = ({ servicesManager, commandsManager }: withAppTypes) => {
-  const segmentationsInfo = useSegmentations({ servicesManager });
+  const representations = useActiveViewportSegmentationRepresentations({ servicesManager });
 
-  const tmtv = segmentationsInfo[0]?.segmentation.cachedStats?.tmtv;
+  const tmtv = representations[0]?.segmentation.cachedStats?.tmtv;
 
   return (
     <div className="flex h-8 w-full items-center rounded pr-0.5">
@@ -38,7 +41,7 @@ const ExportCSV = ({ servicesManager, commandsManager }: withAppTypes) => {
         className="pl-1.5"
         onClick={() => {
           commandsManager.runCommand('exportTMTVReportCSV', {
-            segmentations: segmentationsInfo.map(({ segmentation }) => segmentation),
+            segmentations,
             tmtv,
             config: {},
           });
