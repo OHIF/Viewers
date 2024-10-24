@@ -30,10 +30,10 @@
     "start": "yarn run dev"
   },
   "peerDependencies": {
-    "@ohif/core": "3.8.4\n",
-    "@ohif/extension-default": "3.8.4\n",
-    "@ohif/i18n": "3.8.4\n",
-    "@ohif/ui": "3.8.4\n",
+    "@ohif/core": "3.8.5\n",
+    "@ohif/extension-default": "3.8.5\n",
+    "@ohif/i18n": "3.8.5\n",
+    "@ohif/ui": "3.8.5\n",
     "prop-types": "^15.6.2",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
