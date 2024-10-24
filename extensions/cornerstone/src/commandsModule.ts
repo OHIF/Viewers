@@ -116,7 +116,7 @@ function commandsModule({
     },
     updateStoredPositionPresentation: ({ viewportId, displaySetInstanceUID }) => {
       const presentations = cornerstoneViewportService.getPresentations(viewportId);
-      const { positionPresentationStore, setPositionPresentation, id } =
+      const { positionPresentationStore, setPositionPresentation, getPositionPresentationId } =
         usePositionPresentationStore.getState();
 
       // Look inside positionPresentationStore and find the key that includes the displaySetInstanceUID
@@ -135,10 +135,15 @@ function commandsModule({
       }
 
       // if not found means we have not visited that referencedDisplaySetInstanceUID before
-      // so we need to grab the positionPresentationId directly from the zustand store
-      //
+      // so we need to grab the positionPresentationId directly from the store,
+      // Todo: this is really hacky, we should have a better way for this
 
-      const positionPresentationId = viewportGridService.getPresentationId(id, viewportId);
+      const positionPresentationId = getPositionPresentationId({
+        displaySetInstanceUIDs: [displaySetInstanceUID],
+        viewportId,
+      });
+
+      setPositionPresentation(positionPresentationId, presentations.positionPresentation);
     },
     getNearbyToolData({ nearbyToolData, element, canvasCoordinates }) {
       return nearbyToolData ?? cstUtils.getAnnotationNearPoint(element, canvasCoordinates);

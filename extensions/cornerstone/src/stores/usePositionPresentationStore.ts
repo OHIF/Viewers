@@ -4,7 +4,7 @@ import { PositionPresentation } from '../types/Presentation';
 import { addUniqueIndex, JOIN_STR } from './presentationUtils';
 
 const PRESENTATION_TYPE_ID = 'positionPresentationId';
-const DEBUG_STORE = false;
+const DEBUG_STORE = true;
 
 /**
  * Represents the state and actions for managing position presentations.
@@ -51,6 +51,12 @@ type PositionPresentationState = {
       isUpdatingSameViewport: boolean;
     }
   ) => string | undefined;
+
+  getPositionPresentationId: (
+    viewport: any,
+    viewports?: any,
+    isUpdatingSameViewport?: boolean
+  ) => string | undefined;
 };
 
 /**
@@ -63,7 +69,7 @@ type PositionPresentationState = {
  * @param options.isUpdatingSameViewport - Indicates if the same viewport is being updated.
  * @returns The position presentation ID or undefined.
  */
-const getPositionPresentationId = (
+const getPresentationId = (
   id: string,
   {
     viewport,
@@ -83,7 +89,11 @@ const getPositionPresentationId = (
     return;
   }
 
-  const { viewportOptions, displaySetInstanceUIDs, displaySetOptions } = viewport;
+  return getPositionPresentationId(viewport, viewports, isUpdatingSameViewport);
+};
+
+function getPositionPresentationId(viewport, viewports, isUpdatingSameViewport) {
+  const { viewportOptions = {}, displaySetInstanceUIDs = [], displaySetOptions = [] } = viewport;
   const { id: viewportOptionId, orientation } = viewportOptions;
 
   const positionPresentationArr = [orientation || 'acquisition'];
@@ -91,7 +101,7 @@ const getPositionPresentationId = (
     positionPresentationArr.push(viewportOptionId);
   }
 
-  if (displaySetOptions.some(ds => ds.options?.blendMode || ds.options?.displayPreset)) {
+  if (displaySetOptions?.some(ds => ds.options?.blendMode || ds.options?.displayPreset)) {
     positionPresentationArr.push(`custom`);
   }
 
@@ -99,10 +109,19 @@ const getPositionPresentationId = (
     positionPresentationArr.push(uid);
   }
 
-  addUniqueIndex(positionPresentationArr, PRESENTATION_TYPE_ID, viewports, isUpdatingSameViewport);
+  if (viewports && viewports.length && isUpdatingSameViewport !== undefined) {
+    addUniqueIndex(
+      positionPresentationArr,
+      PRESENTATION_TYPE_ID,
+      viewports,
+      isUpdatingSameViewport
+    );
+  } else {
+    positionPresentationArr.push(0);
+  }
 
   return positionPresentationArr.join(JOIN_STR);
-};
+}
 
 /**
  * Creates the Position Presentation store.
@@ -138,7 +157,8 @@ const createPositionPresentationStore = set => ({
   /**
    * Retrieves the presentation ID based on the provided parameters.
    */
-  getPresentationId: getPositionPresentationId,
+  getPresentationId,
+  getPositionPresentationId: getPositionPresentationId,
 });
 
 /**
