@@ -21,6 +21,7 @@ import toggleImageSliceSync from './utils/imageSliceSync/toggleImageSliceSync';
 import { getFirstAnnotationSelected } from './utils/measurementServiceMappings/utils/selection';
 import getActiveViewportEnabledElement from './utils/getActiveViewportEnabledElement';
 import toggleVOISliceSync from './utils/toggleVOISliceSync';
+import { usePositionPresentationStore, useSegmentationPresentationStore } from './stores';
 
 const toggleSyncFunctions = {
   imageSlice: toggleImageSliceSync,
@@ -101,7 +102,44 @@ function commandsModule({
 
       commandsManager.run(options, optionsToUse);
     },
+    updateStoredSegmentationPresentation: ({ displaySet, type }) => {
+      const { setSegmentationPresentation } = useSegmentationPresentationStore.getState();
 
+      const referencedDisplaySetInstanceUID = displaySet.referencedDisplaySetInstanceUID;
+      setSegmentationPresentation(referencedDisplaySetInstanceUID, [
+        {
+          segmentationId: displaySet.displaySetInstanceUID,
+          hydrated: true,
+          type,
+        },
+      ]);
+    },
+    updateStoredPositionPresentation: ({ viewportId, displaySetInstanceUID }) => {
+      const presentations = cornerstoneViewportService.getPresentations(viewportId);
+      const { positionPresentationStore, setPositionPresentation, id } =
+        usePositionPresentationStore.getState();
+
+      // Look inside positionPresentationStore and find the key that includes the displaySetInstanceUID
+      // and the value has viewportId as activeViewportId.
+      const previousReferencedDisplaySetStoreKey = Object.entries(positionPresentationStore).find(
+        ([key, value]) => key.includes(displaySetInstanceUID) && value.viewportId === viewportId
+      )?.[0];
+
+      if (previousReferencedDisplaySetStoreKey) {
+        setPositionPresentation(
+          previousReferencedDisplaySetStoreKey,
+          presentations.positionPresentation
+        );
+
+        return;
+      }
+
+      // if not found means we have not visited that referencedDisplaySetInstanceUID before
+      // so we need to grab the positionPresentationId directly from the zustand store
+      //
+
+      const positionPresentationId = viewportGridService.getPresentationId(id, viewportId);
+    },
     getNearbyToolData({ nearbyToolData, element, canvasCoordinates }) {
       return nearbyToolData ?? cstUtils.getAnnotationNearPoint(element, canvasCoordinates);
     },
@@ -985,6 +1023,12 @@ function commandsModule({
     },
     toggleActiveDisabledToolbar: {
       commandFn: actions.toggleActiveDisabledToolbar,
+    },
+    updateStoredPositionPresentation: {
+      commandFn: actions.updateStoredPositionPresentation,
+    },
+    updateStoredSegmentationPresentation: {
+      commandFn: actions.updateStoredSegmentationPresentation,
     },
   };
 

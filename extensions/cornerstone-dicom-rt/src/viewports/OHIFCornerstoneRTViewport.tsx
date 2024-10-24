@@ -99,23 +99,28 @@ function OHIFCornerstoneRTViewport(props: withAppTypes) {
 
   const hydrateRTDisplaySet = useCallback(
     ({ rtDisplaySet, viewportId }) => {
-      const { setSegmentationPresentation } = useSegmentationPresentationStore.getState();
+      // update the previously stored segmentationPresentation with the new viewportId
+      // presentation so that when we put the referencedDisplaySet back in the viewport
+      // it will have the correct segmentation representation hydrated
+      commandsManager.runCommand('updateStoredSegmentationPresentation', {
+        displaySet: rtDisplaySet,
+        type: SegmentationRepresentations.Contour,
+      });
 
-      const referencedDisplaySetInstanceUID = rtDisplaySet.referencedDisplaySetInstanceUID;
-      setSegmentationPresentation(referencedDisplaySetInstanceUID, [
-        {
-          segmentationId: rtDisplaySet.displaySetInstanceUID,
-          hydrated: true,
-          type: SegmentationRepresentations.Contour,
-        },
-      ]);
+      // update the previously stored positionPresentation with the new viewportId
+      // presentation so that when we put the referencedDisplaySet back in the viewport
+      // it will be in the correct position zoom and pan
+      commandsManager.runCommand('updateStoredPositionPresentation', {
+        viewportId,
+        displaySetInstanceUID: referencedDisplaySet.displaySetInstanceUID,
+      });
 
       viewportGridService.setDisplaySetsForViewport({
         viewportId,
         displaySetInstanceUIDs: [referencedDisplaySet.displaySetInstanceUID],
       });
     },
-    [viewportGridService, referencedDisplaySet]
+    [commandsManager, viewportGridService, referencedDisplaySet]
   );
 
   const getCornerstoneViewport = useCallback(() => {

@@ -149,23 +149,27 @@ function OHIFCornerstoneSEGViewport(props: withAppTypes) {
   );
 
   const hydrateSEG = useCallback(() => {
-    const { setSegmentationPresentation } = useSegmentationPresentationStore.getState();
+    // update the previously stored segmentationPresentation with the new viewportId
+    // presentation so that when we put the referencedDisplaySet back in the viewport
+    // it will have the correct segmentation representation hydrated
+    commandsManager.runCommand('updateStoredSegmentationPresentation', {
+      displaySet: segDisplaySet,
+      type: SegmentationRepresentations.Labelmap,
+    });
 
-    // Todo: this is hacky, we need to fix this by abstracting the getPresentationId
-    const referencedDisplaySetInstanceUID = segDisplaySet.referencedDisplaySetInstanceUID;
-    setSegmentationPresentation(referencedDisplaySetInstanceUID, [
-      {
-        segmentationId: segDisplaySet.displaySetInstanceUID,
-        hydrated: true,
-        type: SegmentationRepresentations.Labelmap,
-      },
-    ]);
+    // update the previously stored positionPresentation with the new viewportId
+    // presentation so that when we put the referencedDisplaySet back in the viewport
+    // it will be in the correct position zoom and pan
+    commandsManager.runCommand('updateStoredPositionPresentation', {
+      viewportId,
+      displaySetInstanceUID: referencedDisplaySet.displaySetInstanceUID,
+    });
 
     viewportGridService.setDisplaySetsForViewport({
       viewportId,
       displaySetInstanceUIDs: [referencedDisplaySet.displaySetInstanceUID],
     });
-  }, [viewportGridService, viewportId, referencedDisplaySet, segDisplaySet]);
+  }, [commandsManager, viewportId, referencedDisplaySet, segDisplaySet]);
 
   useEffect(() => {
     if (segIsLoading) {

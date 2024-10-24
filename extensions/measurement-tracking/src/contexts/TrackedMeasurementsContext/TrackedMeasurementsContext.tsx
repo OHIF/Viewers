@@ -95,17 +95,18 @@ function TrackedMeasurementsContextProvider(
 
       const trackedMeasurement = trackedMeasurements[0];
       const referencedDisplaySetUID = trackedMeasurement.displaySetInstanceUID;
-      const viewport = cornerstoneViewportService.getCornerstoneViewport(activeViewportId);
-      const imageIndex = viewport.getCurrentImageIdIndex();
+
+      // update the previously stored positionPresentation with the new viewportId
+      // presentation so that when we put the referencedDisplaySet back in the viewport
+      // it will be in the correct position zoom and pan
+      commandsManager.runCommand('updateStoredPositionPresentation', {
+        viewportId: activeViewportId,
+        displaySetInstanceUID: referencedDisplaySetUID,
+      });
 
       viewportGridService.setDisplaySetsForViewport({
         viewportId: activeViewportId,
         displaySetInstanceUIDs: [referencedDisplaySetUID],
-        viewportOptions: {
-          initialImageOptions: {
-            index: imageIndex,
-          },
-        },
       });
     },
     showStructuredReportDisplaySetInActiveViewport: (ctx, evt) => {

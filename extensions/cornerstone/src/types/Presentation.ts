@@ -10,9 +10,15 @@ export type PositionPresentation = {
   // The view reference has the basic information as to what image orientation/slice is shown
   viewReference: Types.ViewReference;
   // The position information has the zoom/pan and possibly other related information, but not LUT
-  position: Types.ViewPresentation;
-
+  viewPresentation: Types.ViewPresentation;
+  /**
+   * Optionals
+   */
   initialImageIndex?: number;
+  // viewportId helps when hydrating SR or SEG - we can use it to filter
+  // presentations to get the one prior to the current viewport and reuse it
+  // for viewReference and viewPresentation
+  viewportId?: string;
 };
 
 /**

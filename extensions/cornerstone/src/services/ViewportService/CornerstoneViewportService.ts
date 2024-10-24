@@ -187,11 +187,7 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
    * @param presentations - The presentations to apply to the viewport.
    * @param viewportInfo - Contains a view reference for immediate application
    */
-  public setPresentations(
-    viewportId: string,
-    presentations: Presentations,
-    viewportInfo?: ViewportInfo
-  ): void {
+  public setPresentations(viewportId: string, presentations: Presentations): void {
     const viewport = this.getCornerstoneViewport(viewportId) as
       | Types.IStackViewport
       | Types.IVolumeViewport;
@@ -208,7 +204,7 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     this._setSegmentationPresentation(viewport, segmentationPresentation);
 
     this._setLutPresentation(viewport, lutPresentation);
-    this._setPositionPresentation(viewport, positionPresentation, viewportInfo);
+    this._setPositionPresentation(viewport, { ...positionPresentation, viewportId });
   }
 
   /**
@@ -301,7 +297,8 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     return {
       viewportType: viewportInfo.getViewportType(),
       viewReference: csViewport instanceof VolumeViewport3D ? null : csViewport.getViewReference(),
-      position: csViewport.getViewPresentation({ pan: true, zoom: true }),
+      viewPresentation: csViewport.getViewPresentation({ pan: true, zoom: true }),
+      viewportId,
     };
   }
 
@@ -1124,15 +1121,16 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
 
   private _setPositionPresentation(
     viewport: Types.IStackViewport | Types.IVolumeViewport,
-    positionPresentation: PositionPresentation,
-    viewportInfo?: ViewportInfo
+    positionPresentation: PositionPresentation
   ): void {
-    const viewRef = viewportInfo?.getViewReference() || positionPresentation?.viewReference;
+    const viewRef = positionPresentation?.viewReference;
     if (viewRef) {
       viewport.setViewReference(viewRef);
     }
-    if (positionPresentation?.position) {
-      viewport.setViewPresentation(positionPresentation.position);
+
+    const viewPresentation = positionPresentation?.viewPresentation;
+    if (viewPresentation) {
+      viewport.setViewPresentation(viewPresentation);
     }
   }
 
