@@ -505,7 +505,7 @@ workflows:
             - HOLD_FOR_APPROVAL
       - DOCKER_RELEASE_PUBLISH:
           requires:
-            - HOLD_FOR_APPROVAL
+            - NPM_PUBLISH
 
   ###
   # Unit and E2E tests have already run for PR_CHECKS
