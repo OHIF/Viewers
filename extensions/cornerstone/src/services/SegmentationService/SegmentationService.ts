@@ -405,7 +405,7 @@ class SegmentationService extends PubSubService {
       suppressEvents?: boolean;
     }
   ): Promise<void> {
-    const segmentation = this.getAndValidateSegmentation(segmentationId);
+    const segmentation = this.getSegmentation(segmentationId);
     const csViewport = this.getAndValidateViewport(viewportId);
     const colorLUTIndex = this._segmentationIdToColorLUTIndexMap.get(segmentationId);
 
@@ -1002,16 +1002,21 @@ class SegmentationService extends PubSubService {
     this._setSegmentLockedStatus(segmentationId, segmentIndex, !isLocked);
   }
 
-  public toggleSegmentVisibility(viewportId, segmentationId: string, segmentIndex: number): void {
+  public toggleSegmentVisibility(
+    viewportId: string,
+    segmentationId: string,
+    segmentIndex: number,
+    type: SegmentationRepresentations
+  ): void {
     const isVisible = cstSegmentation.config.visibility.getSegmentIndexVisibility(
       viewportId,
       {
         segmentationId,
-        type: LABELMAP,
+        type,
       },
       segmentIndex
     );
-    this._setSegmentVisibility(viewportId, segmentationId, segmentIndex, !isVisible);
+    this._setSegmentVisibility(viewportId, segmentationId, segmentIndex, !isVisible, type);
   }
 
   /**
@@ -1283,14 +1288,6 @@ class SegmentationService extends PubSubService {
     });
   }
 
-  private getAndValidateSegmentation(segmentationId: string) {
-    const segmentation = this.getSegmentationsInfo({ segmentationId });
-    if (!segmentation) {
-      throw new Error(`Segmentation with segmentationId ${segmentationId} not found.`);
-    }
-    return segmentation;
-  }
-
   private getAndValidateViewport(viewportId: string) {
     const csViewport =
       this.servicesManager.services.cornerstoneViewportService.getCornerstoneViewport(viewportId);
@@ -1339,8 +1336,7 @@ class SegmentationService extends PubSubService {
   private determineViewportAndSegmentationType(csViewport, segmentation) {
     const isVolumeViewport =
       csViewport.type === ViewportType.ORTHOGRAPHIC || csViewport.type === ViewportType.VOLUME_3D;
-    const isVolumeSegmentation =
-      'volumeId' in segmentation[0].segmentation.representationData[LABELMAP];
+    const isVolumeSegmentation = 'volumeId' in segmentation.representationData[LABELMAP];
     return { isVolumeViewport, isVolumeSegmentation };
   }
 
@@ -1348,7 +1344,7 @@ class SegmentationService extends PubSubService {
     isVolumeViewport: boolean,
     isVolumeSegmentation: boolean,
     csViewport: csTypes.IViewport,
-    segmentation: SegmentationInfo[],
+    segmentation: cstTypes.Segmentation,
     viewportId: string,
     segmentationId: string,
     representationType: csToolsEnums.SegmentationRepresentations
@@ -1375,7 +1371,7 @@ class SegmentationService extends PubSubService {
     } else {
       await this.handleVolumeViewport(
         csViewport as csTypes.IVolumeViewport,
-        segmentation[0].segmentation,
+        segmentation,
         isVolumeSegmentation
       );
       return { representationTypeToUse: SegmentationRepresentations.Labelmap, isConverted: false };
@@ -1384,7 +1380,7 @@ class SegmentationService extends PubSubService {
 
   private async handleStackViewportCase(
     csViewport: csTypes.IViewport,
-    segmentation: SegmentationInfo[],
+    segmentation: cstTypes.Segmentation,
     isVolumeSegmentation: boolean,
     viewportId: string,
     segmentationId: string
@@ -1400,7 +1396,7 @@ class SegmentationService extends PubSubService {
 
     const isConverted = await this.attemptStackToVolumeConversion(
       csViewport as csTypes.IStackViewport,
-      segmentation[0].segmentation,
+      segmentation,
       viewportId,
       segmentationId
     );

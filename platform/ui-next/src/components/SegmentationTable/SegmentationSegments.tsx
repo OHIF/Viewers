@@ -67,7 +67,9 @@ export const SegmentationSegments: React.FC<{
             isLocked={locked}
             disableEditing={disableEditing}
             onColor={() => onSegmentColorClick(segmentationIdToUse, segmentIndex)}
-            onToggleVisibility={() => onToggleSegmentVisibility(segmentationIdToUse, segmentIndex)}
+            onToggleVisibility={() =>
+              onToggleSegmentVisibility(segmentationIdToUse, segmentIndex, representationToUse.type)
+            }
             onToggleLocked={() => onToggleSegmentLock(segmentationIdToUse, segmentIndex)}
             onSelect={() => onSegmentClick(segmentationIdToUse, segmentIndex)}
             onRename={() => onSegmentEdit(segmentationIdToUse, segmentIndex)}

@@ -64,5 +64,16 @@ const segmentationRepresentationModifiedCallback = async (
     return;
   }
 
-  await segmentationService.addSegmentationRepresentation(targetViewportId, { segmentationId });
+  // whatever type the source viewport has, we need to add that to the target viewport
+  const sourceViewportRepresentation = segmentationService.getSegmentationRepresentations(
+    sourceViewport.viewportId,
+    { segmentationId }
+  );
+
+  const type = sourceViewportRepresentation[0].type;
+
+  await segmentationService.addSegmentationRepresentation(targetViewportId, {
+    segmentationId,
+    type,
+  });
 };

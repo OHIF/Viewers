@@ -4,7 +4,10 @@ import { useViewportGrid, LoadingIndicatorTotalPercent, ViewportActionArrows } f
 
 import promptHydrateRT from '../utils/promptHydrateRT';
 import _getStatusComponent from './_getStatusComponent';
+import { useSegmentationPresentationStore } from '@ohif/extension-cornerstone';
+
 import createRTToolGroupAndAddTools from '../utils/initRTToolGroup';
+import { SegmentationRepresentations } from '@cornerstonejs/tools/enums';
 
 const RT_TOOLGROUP_BASE_NAME = 'RTToolGroup';
 
@@ -94,12 +97,26 @@ function OHIFCornerstoneRTViewport(props: withAppTypes) {
     });
   }, [viewportGrid]);
 
-  const hydrateRTDisplaySet = ({ rtDisplaySet, viewportId }) => {
-    viewportGridService.setDisplaySetsForViewport({
-      viewportId,
-      displaySetInstanceUIDs: [referencedDisplaySet.displaySetInstanceUID],
-    });
-  };
+  const hydrateRTDisplaySet = useCallback(
+    ({ rtDisplaySet, viewportId }) => {
+      const { setSegmentationPresentation } = useSegmentationPresentationStore.getState();
+
+      const referencedDisplaySetInstanceUID = rtDisplaySet.referencedDisplaySetInstanceUID;
+      setSegmentationPresentation(referencedDisplaySetInstanceUID, [
+        {
+          segmentationId: rtDisplaySet.displaySetInstanceUID,
+          hydrated: true,
+          type: SegmentationRepresentations.Contour,
+        },
+      ]);
+
+      viewportGridService.setDisplaySetsForViewport({
+        viewportId,
+        displaySetInstanceUIDs: [referencedDisplaySet.displaySetInstanceUID],
+      });
+    },
+    [viewportGridService, referencedDisplaySet]
+  );
 
   const getCornerstoneViewport = useCallback(() => {
     const { component: Component } = extensionManager.getModuleEntry(

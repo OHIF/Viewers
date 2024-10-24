@@ -45,6 +45,7 @@ export default function initCornerstoneTools(configuration = {}) {
   CrosshairsTool.isAnnotation = false;
   ReferenceLinesTool.isAnnotation = false;
   AdvancedMagnifyTool.isAnnotation = false;
+  PlanarFreehandContourSegmentationTool.isAnnotation = false;
 
   init(configuration);
   addTool(PanTool);

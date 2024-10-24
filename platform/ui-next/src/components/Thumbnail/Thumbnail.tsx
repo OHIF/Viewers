@@ -99,12 +99,6 @@ const Thumbnail = ({
                 messages={messages}
                 id={`display-set-tooltip-${displaySetInstanceUID}`}
               />
-              {canReject && (
-                <Icons.Trash
-                  className="h-[20px] w-[20px] text-red-500"
-                  onClick={onReject}
-                />
-              )}
               {isTracked && (
                 <Tooltip>
                   <TooltipTrigger>
@@ -145,10 +139,7 @@ const Thumbnail = ({
                     <Icons.More />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent
-                  asChild
-                  hideWhenDetached
-                >
+                <DropdownMenuContent hideWhenDetached>
                   <DropdownMenuItem
                     onSelect={() => {
                       onThumbnailContextMenu('openDICOMTagViewer', {
@@ -160,6 +151,17 @@ const Thumbnail = ({
                     <Icons.DicomTagBrowser />
                     Tag Browser
                   </DropdownMenuItem>
+                  {canReject && (
+                    <DropdownMenuItem
+                      onSelect={() => {
+                        onReject();
+                      }}
+                      className="gap-[6px]"
+                    >
+                      <Icons.Trash className="h-5 w-5 text-red-500" />
+                      Delete Report
+                    </DropdownMenuItem>
+                  )}
                 </DropdownMenuContent>
               </DropdownMenu>
             </div>
@@ -228,12 +230,7 @@ const Thumbnail = ({
             messages={messages}
             id={`display-set-tooltip-${displaySetInstanceUID}`}
           />
-          {canReject && (
-            <Icons.Trash
-              className="h-[20px] w-[20px] text-red-500"
-              onClick={onReject}
-            />
-          )}
+
           {isTracked && (
             <Tooltip>
               <TooltipTrigger>
@@ -271,10 +268,7 @@ const Thumbnail = ({
                 <Icons.More />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent
-              asChild
-              hideWhenDetached
-            >
+            <DropdownMenuContent hideWhenDetached>
               <DropdownMenuItem
                 onSelect={() => {
                   onThumbnailContextMenu('openDICOMTagViewer', {
@@ -286,6 +280,17 @@ const Thumbnail = ({
                 <Icons.DicomTagBrowser />
                 Tag Browser
               </DropdownMenuItem>
+              {canReject && (
+                <DropdownMenuItem
+                  onSelect={() => {
+                    onReject();
+                  }}
+                  className="gap-[6px]"
+                >
+                  <Icons.Trash className="h-5 w-5 text-red-500" />
+                  Delete Report
+                </DropdownMenuItem>
+              )}
             </DropdownMenuContent>
           </DropdownMenu>
         </div>

@@ -151,6 +151,7 @@ function OHIFCornerstoneSEGViewport(props: withAppTypes) {
   const hydrateSEG = useCallback(() => {
     const { setSegmentationPresentation } = useSegmentationPresentationStore.getState();
 
+    // Todo: this is hacky, we need to fix this by abstracting the getPresentationId
     const referencedDisplaySetInstanceUID = segDisplaySet.referencedDisplaySetInstanceUID;
     setSegmentationPresentation(referencedDisplaySetInstanceUID, [
       {

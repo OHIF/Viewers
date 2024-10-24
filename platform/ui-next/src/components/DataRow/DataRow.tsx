@@ -70,6 +70,12 @@ const DataRow: React.FC<DataRowProps> = ({
     }
   };
 
+  const decodeHTML = (html: string) => {
+    const txt = document.createElement('textarea');
+    txt.innerHTML = html;
+    return txt.value;
+  };
+
   const renderDetailText = (text: string, indent: number = 0) => {
     const indentation = '  '.repeat(indent);
     if (text === '') {
@@ -80,19 +86,20 @@ const DataRow: React.FC<DataRowProps> = ({
         ></div>
       ); // Empty row
     }
+    const cleanText = decodeHTML(text);
     return (
       <div
-        key={text}
+        key={cleanText}
         className="whitespace-pre-wrap"
       >
         {indentation}
-        {text.includes(':') ? (
+        {cleanText.includes(':') ? (
           <>
-            <span className="font-medium">{text.split(':')[0]}:</span>
-            {text.split(':')[1]}
+            <span className="font-medium">{cleanText.split(':')[0].replace(/<[^>]*>/g, '')}:</span>
+            {cleanText.split(':')[1].replace(/<[^>]*>/g, '')}
           </>
         ) : (
-          <span className="font-medium">{text}</span> // Category title
+          <span className="font-medium">{cleanText.replace(/<[^>]*>/g, '')}</span>
         )}
       </div>
     );
@@ -206,7 +213,6 @@ const DataRow: React.FC<DataRowProps> = ({
             }`}
             aria-label={isVisible ? 'Hide' : 'Show'}
             onClick={e => {
-              console.debug('DataRow: Visibility Toggle Clicked');
               e.stopPropagation();
               onToggleVisibility();
             }}

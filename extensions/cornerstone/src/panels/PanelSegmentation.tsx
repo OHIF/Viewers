@@ -100,11 +100,12 @@ export default function PanelSegmentation({
       segmentationService.removeSegment(segmentationId, segmentIndex);
     },
 
-    onToggleSegmentVisibility: (segmentationId, segmentIndex) => {
+    onToggleSegmentVisibility: (segmentationId, segmentIndex, type) => {
       segmentationService.toggleSegmentVisibility(
         viewportGridService.getActiveViewportId(),
         segmentationId,
-        segmentIndex
+        segmentIndex,
+        type
       );
     },
 
