@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.8.5](https://github.com/OHIF/Viewers/compare/v3.8.4...v3.8.5) (2024-10-24)
+
+
+### Bug Fixes
+
+* **DicomWebDataSource:** Enhance QIDO query to disable wildcard for mrn ([#4435](https://github.com/OHIF/Viewers/issues/4435)) ([22a1f32](https://github.com/OHIF/Viewers/commit/22a1f321af6e01eb12edd6acbc2c829fc243a19b))
+
+
+
+
+
 ## [3.8.4](https://github.com/OHIF/Viewers/compare/v3.8.3...v3.8.4) (2024-10-18)
 
 **Note:** Version bump only for package @ohif/extension-default

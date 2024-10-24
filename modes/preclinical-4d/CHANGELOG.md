@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.8.5](https://github.com/OHIF/Viewers/compare/v3.8.4...v3.8.5) (2024-10-24)
+
+**Note:** Version bump only for package @ohif/mode-preclinical-4d
+
+
+
+
+
 ## [3.8.4](https://github.com/OHIF/Viewers/compare/v3.8.3...v3.8.4) (2024-10-18)
 
 **Note:** Version bump only for package @ohif/mode-preclinical-4d
