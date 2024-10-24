@@ -1,6 +1,5 @@
 import { Enums } from '@cornerstonejs/tools';
 import { toolNames } from './initCornerstoneTools';
-import DicomUpload from './components/DicomUpload/DicomUpload';
 import defaultWindowLevelPresets from './components/WindowLevelActionMenu/defaultWindowLevelPresets';
 import { colormaps } from './utils/colormaps';
 import { CONSTANTS } from '@cornerstonejs/core';
@@ -40,13 +39,6 @@ const tools = {
 
 function getCustomizationModule() {
   return [
-    {
-      name: 'cornerstoneDicomUploadComponent',
-      value: {
-        id: 'dicomUploadComponent',
-        component: DicomUpload,
-      },
-    },
     {
       name: 'default',
       value: [

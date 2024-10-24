@@ -185,17 +185,6 @@ For DICOM video and PDF it has been found that Orthanc delivers multipart, while
 To learn more about how you can configure the OHIF Viewer, check out our
 [Configuration Guide](../index.md).
 
-### DICOM Upload
-See the [`dicomUploadEnabled`](#dicomuploadenabled) data source configuration option.
-
-Don't forget to add the customization to the config as well
-
-```js
-customizationService: {
-  dicomUploadComponent:
-    '@ohif/extension-cornerstone.customizationModule.cornerstoneDicomUploadComponent',
-},
-```
 
 ### DICOM PDF
 See the [`singlepart`](#singlepart) data source configuration option.

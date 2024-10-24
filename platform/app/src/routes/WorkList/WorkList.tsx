@@ -497,29 +497,32 @@ function WorkList({
   }
 
   const { customizationService } = servicesManager.services;
-  const { component: dicomUploadComponent } =
-    customizationService.get('dicomUploadComponent') ?? {};
+  const { component: DicomUploadComponent } =
+    customizationService.getCustomization('dicomUploadComponent') || {};
+
   const uploadProps =
-    dicomUploadComponent && dataSource.getConfig()?.dicomUploadEnabled
+    DicomUploadComponent && dataSource.getConfig()?.dicomUploadEnabled
       ? {
           title: 'Upload files',
           closeButton: true,
           shouldCloseOnEsc: false,
           shouldCloseOnOverlayClick: false,
-          content: dicomUploadComponent.bind(null, {
-            dataSource,
-            onComplete: () => {
-              hide();
-              onRefresh();
-            },
-            onStarted: () => {
-              show({
-                ...uploadProps,
-                // when upload starts, hide the default close button as closing the dialogue must be handled by the upload dialogue itself
-                closeButton: false,
-              });
-            },
-          }),
+          content: () => (
+            <DicomUploadComponent
+              dataSource={dataSource}
+              onComplete={() => {
+                hide();
+                onRefresh();
+              }}
+              onStarted={() => {
+                show({
+                  ...uploadProps,
+                  // when upload starts, hide the default close button as closing the dialogue must be handled by the upload dialogue itself
+                  closeButton: false,
+                });
+              }}
+            />
+          ),
         }
       : undefined;
 

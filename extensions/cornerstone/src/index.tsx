@@ -51,6 +51,7 @@ import { useMeasurements } from './hooks/useMeasurements';
 import getPanelModule from './getPanelModule';
 import PanelSegmentation from './panels/PanelSegmentation';
 import PanelMeasurement from './panels/PanelMeasurement';
+import DicomUpload from './components/DicomUpload/DicomUpload';
 
 const { imageRetrieveMetadataProvider } = cornerstone.utilities;
 
@@ -85,8 +86,12 @@ const cornerstoneExtension: Types.Extensions.Extension = {
   id,
 
   onModeEnter: ({ servicesManager }: withAppTypes): void => {
-    const { cornerstoneViewportService, toolbarService, segmentationService } =
-      servicesManager.services;
+    const {
+      cornerstoneViewportService,
+      toolbarService,
+      segmentationService,
+      customizationService,
+    } = servicesManager.services;
     toolbarService.registerEventForToolbarUpdate(cornerstoneViewportService, [
       cornerstoneViewportService.EVENTS.VIEWPORT_DATA_CHANGED,
     ]);
@@ -158,9 +163,11 @@ const cornerstoneExtension: Types.Extensions.Extension = {
 
     const { syncGroupService } = servicesManager.services;
     syncGroupService.registerCustomSynchronizer('frameview', createFrameViewSynchronizer);
+    servicesManager.services.customizationService.setGlobalCustomization('dicomUploadComponent', {
+      component: props => <DicomUpload {...props} />,
+    });
     return init.call(this, props);
   },
-
   getToolbarModule,
   getHangingProtocolModule,
   getViewportModule({ servicesManager, commandsManager }) {
@@ -247,5 +254,6 @@ export {
   useSegmentations,
   PanelSegmentation,
   PanelMeasurement,
+  DicomUpload,
 };
 export default cornerstoneExtension;

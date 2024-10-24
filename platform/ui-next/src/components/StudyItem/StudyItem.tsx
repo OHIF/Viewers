@@ -26,7 +26,7 @@ const StudyItem = ({
       type="single"
       collapsible
       onClick={onClick}
-      onKeyDown={onClick}
+      onKeyDown={() => {}}
       role="button"
       tabIndex={0}
       defaultValue={isActive ? 'study-item' : undefined}
