@@ -68,7 +68,7 @@
   },
   "optionalDependencies": {
     "@percy/cypress": "^3.1.1",
-    "@playwright/test": "^1.44.0",
+    "@playwright/test": "^1.48.0",
     "cypress": "13.7.2",
     "cypress-file-upload": "^3.5.3"
   },
@@ -112,6 +112,12 @@
     "package-json": "^8.1.0",
     "typescript": "4.6.4",
     "sharp": "^0.32.6",
-    "ip": "https://registry.npmjs.org/ip-address/-/ip-address-9.0.5.tgz"
+    "ip": "https://registry.npmjs.org/ip-address/-/ip-address-9.0.5.tgz",
+    "**/express/path-to-regexp": "0.1.10",
+    "**/serve/serve-handler/path-to-regexp": "3.3.0",
+    "**/@docusaurus/core/serve-handler/path-to-regexp": "3.3.0",
+    "**/react-router/**/path-to-regexp": "1.9.0",
+    "rollup": "2.79.2",
+    "body-parser": "1.20.3"
   }
 }

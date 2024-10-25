@@ -1,7 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { SidePanel as NewSidePanel } from '@ohif/ui-next';
-import { SidePanel as OldSidePanel } from '@ohif/ui';
-import { useAppConfig } from '@state';
+import { SidePanel } from '@ohif/ui-next';
 import { Types } from '@ohif/core';
 import { SidePanelModified } from '@ohif/ui';
 
@@ -29,7 +27,6 @@ const SidePanelWithServices = ({
   const [hasBeenOpened, setHasBeenOpened] = useState(false);
   const [activeTabIndex, setActiveTabIndex] = useState(activeTabIndexProp);
   const [tabs, setTabs] = useState(tabsProp ?? panelService.getPanels(side));
-  const [appConfig] = useAppConfig();
 
   const handleSidePanelOpen = useCallback(() => {
     setHasBeenOpened(true);
@@ -78,8 +75,6 @@ const SidePanelWithServices = ({
       activatePanelSubscription.unsubscribe();
     };
   }, [tabs, hasBeenOpened, panelService]);
-
-  const SidePanel = appConfig?.useExperimentalUI ? NewSidePanel : OldSidePanel;
 
   return (
     <SidePanelModified

@@ -135,6 +135,10 @@ function OHIFCornerstoneSRMeasurementViewport(props: withAppTypes) {
         newMeasurementSelected,
         displaySetService
       ).then(({ referencedDisplaySet, referencedDisplaySetMetadata }) => {
+        if (!referencedDisplaySet || !referencedDisplaySetMetadata) {
+          return;
+        }
+
         setMeasurementSelected(newMeasurementSelected);
         setActiveImageDisplaySetData(referencedDisplaySet);
         setReferencedDisplaySetMetadata(referencedDisplaySetMetadata);
@@ -150,6 +154,10 @@ function OHIFCornerstoneSRMeasurementViewport(props: withAppTypes) {
           // are the same we just need to use measurementService to jump to the
           // new measurement
           const csViewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
+
+          if (!csViewport) {
+            return;
+          }
 
           const imageIds = csViewport.getImageIds();
 
@@ -395,6 +403,10 @@ async function _getViewportReferencedDisplaySetData(
     // This is only for ease of redisplay - the display set is stored in the
     // usual manner in the display set service.
     displaySet.keyImageDisplaySet = createReferencedImageDisplaySet(displaySetService, displaySet);
+  }
+
+  if (!displaySetInstanceUID) {
+    return { referencedDisplaySetMetadata: null, referencedDisplaySet: null };
   }
 
   const referencedDisplaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);

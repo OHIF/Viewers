@@ -3,6 +3,131 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.9.0-beta.101](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.100...v3.9.0-beta.101) (2024-10-18)
+
+
+### Features
+
+* **new-study-panel:** default to list view for non thumbnail series, change default fitler to all, and add more menu to thumbnail items with a dicom tag browser ([#4417](https://github.com/OHIF/Viewers/issues/4417)) ([a7fd9fa](https://github.com/OHIF/Viewers/commit/a7fd9fa5bfff7a1b533d99cb96f7147a35fd528f))
+
+
+
+
+
+# [3.9.0-beta.100](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.99...v3.9.0-beta.100) (2024-10-17)
+
+
+### Bug Fixes
+
+* **tmtv:** prevent fusion row in tmtv from getting inverted unexpectedly ([#4420](https://github.com/OHIF/Viewers/issues/4420)) ([33af9bb](https://github.com/OHIF/Viewers/commit/33af9bb021ff3a6c3b683d4df2c730413400ff8a))
+
+
+
+
+
+# [3.9.0-beta.99](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.98...v3.9.0-beta.99) (2024-10-17)
+
+
+### Bug Fixes
+
+* **3d-viewport:** exception was being thrown and 3d viewpot not getting resized. ([#4366](https://github.com/OHIF/Viewers/issues/4366)) ([433cc80](https://github.com/OHIF/Viewers/commit/433cc8089db6aa218c9075bd0eeb7952a7e4f028))
+* **createReport:** early return on cancel in prompt ([#4243](https://github.com/OHIF/Viewers/issues/4243)) ([2ec4692](https://github.com/OHIF/Viewers/commit/2ec4692eaf2349e21b141a2c0b5b104ee10f7a28))
+* **dicomjson:** Update getUIDsFromImageID to work with json data source + update getDisplaySetImageUIDs to work with mixed sop class json ([#4322](https://github.com/OHIF/Viewers/issues/4322)) ([3dd0666](https://github.com/OHIF/Viewers/commit/3dd0666c0c090cbd66161f24bc9795f96abb3697))
+* **hp-presets:** select the active displaySet when toggling an HP preset, not a random one from the series panel ([#4365](https://github.com/OHIF/Viewers/issues/4365)) ([ace67b3](https://github.com/OHIF/Viewers/commit/ace67b3bbb6be4e8c78e613e20d3e10b93762bf7))
+* **sr:** load existing point, if there is 2nd point in renderableData (Fix rotation in arrow annotation) ([#4356](https://github.com/OHIF/Viewers/issues/4356)) ([7353f7f](https://github.com/OHIF/Viewers/commit/7353f7f069446f8484278c2cff5b09149cfa23eb))
+* **tools:** check if seriesNumber is an undefined properly ([#4338](https://github.com/OHIF/Viewers/issues/4338)) ([307b144](https://github.com/OHIF/Viewers/commit/307b14476be41b10b861d6a8474f7386b5107618))
+* **typo:** type in fourup preset ([#4426](https://github.com/OHIF/Viewers/issues/4426)) ([03aad4e](https://github.com/OHIF/Viewers/commit/03aad4eba24e33a266a6d91eaf74df52dc2a550e))
+* **updateIndex:** getNumberOfSlices is defined when used with a 3D viewport ([#4424](https://github.com/OHIF/Viewers/issues/4424)) ([d5bcf54](https://github.com/OHIF/Viewers/commit/d5bcf54e23ef68abd85c5f0ea671feca637c4f49))
+
+
+### Features
+
+* **hangingProtocols:** added selection of the HangingProtocol stage from the url ([#4310](https://github.com/OHIF/Viewers/issues/4310)) ([fa2435d](https://github.com/OHIF/Viewers/commit/fa2435d5e94e5f903404ca94687b086f90f8d1f8))
+* **SR:** SCOORD3D point annotations support for stack viewports ([#4315](https://github.com/OHIF/Viewers/issues/4315)) ([ac1cad2](https://github.com/OHIF/Viewers/commit/ac1cad25af12ee0f7d508647e3134ed724d9b4d3))
+
+
+
+
+
+# [3.9.0-beta.98](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.97...v3.9.0-beta.98) (2024-10-15)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.9.0-beta.97](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.96...v3.9.0-beta.97) (2024-10-11)
+
+
+### Bug Fixes
+
+* **auth:** oidc-react-issue ([#4410](https://github.com/OHIF/Viewers/issues/4410)) ([e849199](https://github.com/OHIF/Viewers/commit/e849199eb0a9ecba4f9845aa1e07df775d5ded9b))
+
+
+
+
+
+# [3.9.0-beta.96](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.95...v3.9.0-beta.96) (2024-10-10)
+
+
+### Bug Fixes
+
+* **fossa:** update fossa to track licenses correctly ([#4411](https://github.com/OHIF/Viewers/issues/4411)) ([ec685ef](https://github.com/OHIF/Viewers/commit/ec685ef5b9c8bfa5bff3bbf869eb394548ae1cab))
+
+
+
+
+
+# [3.9.0-beta.95](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.94...v3.9.0-beta.95) (2024-10-08)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.9.0-beta.94](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.93...v3.9.0-beta.94) (2024-10-04)
+
+
+### Features
+
+* **tours:** freeze versions and add licensings doc ([#4407](https://github.com/OHIF/Viewers/issues/4407)) ([60a8d51](https://github.com/OHIF/Viewers/commit/60a8d5154a5d6d2b121bd93aeacf12d97ef9f8cb))
+
+
+
+
+
+# [3.9.0-beta.93](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.92...v3.9.0-beta.93) (2024-10-04)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.9.0-beta.92](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.91...v3.9.0-beta.92) (2024-10-01)
+
+
+### Bug Fixes
+
+* **Select:** select clear button ([#4398](https://github.com/OHIF/Viewers/issues/4398)) ([a11cd6d](https://github.com/OHIF/Viewers/commit/a11cd6d6cbe20d7d986430befb3398f910a03ada))
+
+
+
+
+
+# [3.9.0-beta.91](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.90...v3.9.0-beta.91) (2024-10-01)
+
+
+### Bug Fixes
+
+* **dependent:** high priority vulnerabilities ([#4396](https://github.com/OHIF/Viewers/issues/4396)) ([b4f08ad](https://github.com/OHIF/Viewers/commit/b4f08adfb638e5df11bb77d3c1b128b5efdf77a7))
+
+
+
+
+
 # [3.9.0-beta.90](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.89...v3.9.0-beta.90) (2024-09-30)
 
 

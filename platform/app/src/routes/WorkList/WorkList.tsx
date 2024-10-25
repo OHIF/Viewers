@@ -34,6 +34,7 @@ import {
 import { Types } from '@ohif/ui';
 
 import i18n from '@ohif/i18n';
+import { Onboarding } from '@ohif/ui-next';
 
 const PatientInfoVisibility = Types.PatientInfoVisibility;
 
@@ -530,6 +531,7 @@ function WorkList({
         WhiteLabeling={appConfig.whiteLabeling}
         showPatientInfo={PatientInfoVisibility.DISABLED}
       />
+      <Onboarding />
       <InvestigationalUseDialog dialogConfiguration={appConfig?.investigationalUseDialog} />
       <div className="ohif-scrollbar ohif-scrollbar-stable-gutter flex grow flex-col overflow-y-auto sm:px-5">
         <StudyListFilter

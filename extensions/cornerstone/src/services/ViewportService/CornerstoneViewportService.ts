@@ -242,7 +242,7 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     return {
       id: positionPresentationId,
       viewportType: viewportInfo.getViewportType(),
-      viewReference: csViewport.getViewReference(),
+      viewReference: csViewport instanceof VolumeViewport3D ? null : csViewport.getViewReference(),
       position: csViewport.getViewPresentation({ pan: true, zoom: true }),
     };
   }
@@ -403,6 +403,14 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     presentations?: Presentations
   ): void {
     const renderingEngine = this.getRenderingEngine();
+
+    // if not valid viewportData then return early
+    if (viewportData.viewportType === csEnums.ViewportType.STACK) {
+      // check if imageIds is valid
+      if (!viewportData.data[0].imageIds?.length) {
+        return;
+      }
+    }
 
     // This is the old viewportInfo, which may have old options but we might be
     // using its viewport (same viewportId as the new viewportInfo)
@@ -640,6 +648,10 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     }
 
     this._handleOverlays(viewport);
+
+    if (!imageIds?.length) {
+      return;
+    }
 
     return viewport.setStack(imageIds, initialImageIndexToUse).then(() => {
       viewport.setProperties({ ...properties });

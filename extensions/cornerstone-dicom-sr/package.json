@@ -1,6 +1,6 @@
 {
   "name": "@ohif/extension-cornerstone-dicom-sr",
-  "version": "3.9.0-beta.90",
+  "version": "3.9.0-beta.101",
   "description": "OHIF extension for an SR Cornerstone Viewport",
   "author": "OHIF",
   "license": "MIT",
@@ -34,10 +34,10 @@
     "test:unit:ci": "jest --ci --runInBand --collectCoverage --passWithNoTests"
   },
   "peerDependencies": {
-    "@ohif/core": "3.9.0-beta.90",
-    "@ohif/extension-cornerstone": "3.9.0-beta.90",
-    "@ohif/extension-measurement-tracking": "3.9.0-beta.90",
-    "@ohif/ui": "3.9.0-beta.90",
+    "@ohif/core": "3.9.0-beta.101",
+    "@ohif/extension-cornerstone": "3.9.0-beta.101",
+    "@ohif/extension-measurement-tracking": "3.9.0-beta.101",
+    "@ohif/ui": "3.9.0-beta.101",
     "dcmjs": "*",
     "dicom-parser": "^1.8.9",
     "hammerjs": "^2.0.8",
@@ -46,9 +46,9 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.20.13",
-    "@cornerstonejs/adapters": "^1.82.4",
-    "@cornerstonejs/core": "^1.82.4",
-    "@cornerstonejs/tools": "^1.82.4",
+    "@cornerstonejs/adapters": "^1.86.0",
+    "@cornerstonejs/core": "^1.86.0",
+    "@cornerstonejs/tools": "^1.86.0",
     "classnames": "^2.3.2"
   }
 }

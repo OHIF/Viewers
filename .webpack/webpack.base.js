@@ -22,7 +22,6 @@ const cssToJavaScript = require('./rules/cssToJavaScript.js');
 // const stylusToJavaScript = require('./rules/stylusToJavaScript.js');
 const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
 
-
 // ~~ ENV VARS
 const NODE_ENV = process.env.NODE_ENV;
 const QUICK_BUILD = process.env.QUICK_BUILD;
@@ -101,14 +100,18 @@ module.exports = (env, argv, { SRC_DIR, ENTRY }) => {
     module: {
       noParse: [/(codec)/, /(dicomicc)/],
       rules: [
-        ...(isProdBuild ? [] : [{
-          test: /\.[jt]sx?$/,
-          exclude: /node_modules/,
-          loader: 'babel-loader',
-          options: {
-            plugins: ['react-refresh/babel'],
-          },
-        }]),
+        ...(isProdBuild
+          ? []
+          : [
+              {
+                test: /\.[jt]sx?$/,
+                exclude: /node_modules/,
+                loader: 'babel-loader',
+                options: {
+                  plugins: ['react-refresh/babel'],
+                },
+              },
+            ]),
         {
           test: /\.svg?$/,
           oneOf: [
@@ -123,11 +126,11 @@ module.exports = (env, argv, { SRC_DIR, ENTRY }) => {
                           name: 'preset-default',
                           params: {
                             overrides: {
-                              removeViewBox: false
+                              removeViewBox: false,
                             },
                           },
                         },
-                      ]
+                      ],
                     },
                     prettier: false,
                     svgo: true,

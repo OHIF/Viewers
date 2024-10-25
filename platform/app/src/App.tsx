@@ -31,6 +31,7 @@ import { AppConfigProvider } from '@state';
 import createRoutes from './routes';
 import appInit from './appInit.js';
 import OpenIdConnectRoutes from './utils/OpenIdConnectRoutes';
+import { ShepherdJourneyProvider } from 'react-shepherd';
 import LoginSignup from './components/LoginSignup/LoginSignup';
 
 let commandsManager: CommandsManager,
@@ -132,6 +133,7 @@ function App({
     [SnackbarProvider, { service: uiNotificationService }],
     [DialogProvider, { service: uiDialogService }],
     [ModalProvider, { service: uiModalService, modal: Modal }],
+    [ShepherdJourneyProvider],
   ];
 
   // Loop through and register each of the service providers registered with the ServiceProvidersManager.

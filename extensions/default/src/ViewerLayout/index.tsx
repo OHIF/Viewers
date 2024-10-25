@@ -6,6 +6,7 @@ import { HangingProtocolService, CommandsManager } from '@ohif/core';
 import { useAppConfig } from '@state';
 import ViewerHeader from './ViewerHeader';
 import SidePanelWithServices from '../Components/SidePanelWithServices';
+import { Onboarding } from '@ohif/ui-next';
 
 function ViewerLayout({
   // From Extension Module Params
@@ -155,7 +156,7 @@ function ViewerLayout({
           ) : null}
         </React.Fragment>
       </div>
-
+      <Onboarding />
       <InvestigationalUseDialog dialogConfiguration={appConfig?.investigationalUseDialog} />
     </div>
   );
