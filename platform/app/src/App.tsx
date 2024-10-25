@@ -152,6 +152,7 @@ function App({
         oidc={oidc}
         routerBasename={routerBasename}
         userAuthenticationService={userAuthenticationService}
+        silentRenewIntervalMinutes={oidc.silentRenewIntervalMinutes || 15}
       />
     );
   }
