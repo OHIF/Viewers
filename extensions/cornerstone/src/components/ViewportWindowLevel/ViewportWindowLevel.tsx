@@ -177,6 +177,11 @@ const ViewportWindowLevel = ({
           };
 
           const histogram = await getViewportVolumeHistogram(viewport, volume, options);
+
+          if (!histogram) {
+            return null;
+          }
+
           const { voi: displaySetVOI, colormap: displaySetColormap } =
             viewportInfo.displaySetOptions[volumeIndex];
 
@@ -307,7 +312,6 @@ const ViewportWindowLevel = ({
 
     const intervalId = setInterval(() => {
       if (isLoading) {
-        console.debug('Updating histogram while loading...');
         updateViewportHistograms();
       }
     }, 1000);

@@ -15,7 +15,6 @@ interface DoubleSliderProps {
 
 const DoubleSlider = React.forwardRef<HTMLDivElement, DoubleSliderProps>(
   ({ className, min, max, step = 1, defaultValue = [min, max], onValueChange }, ref) => {
-    console.debug(defaultValue);
     const [value, setValue] = React.useState<[number, number]>(defaultValue);
 
     const prevDefaultValueRef = React.useRef<[number, number] | null>(null);
