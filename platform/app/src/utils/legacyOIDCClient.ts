@@ -1,4 +1,4 @@
-import { UserManager } from 'oidc-client';
+import { UserManager, WebStorageStateStore } from 'oidc-client';
 
 /**
  * Creates a userManager from oidcSettings
@@ -23,6 +23,7 @@ export default function getUserManagerForOpenIdConnectClient(oidcSettings) {
     revokeAccessTokenOnSignout: true,
     filterProtocolClaims: true,
     loadUserInfo: true,
+    userStore: new WebStorageStateStore({ store: window.localStorage }),
   };
 
   const userManager = new UserManager(settings);

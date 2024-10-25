@@ -1,4 +1,4 @@
-import { UserManager } from 'oidc-client-ts';
+import { UserManager, WebStorageStateStore } from 'oidc-client-ts';
 
 /**
  * Creates a userManager from oidcSettings
@@ -29,6 +29,7 @@ export default function getUserManagerForOpenIdConnectClient(oidcSettings) {
     revokeTokensOnSignout: oidcSettings.revokeAccessTokenOnSignout ?? true,
     filterProtocolClaims: true,
     loadUserInfo: true,
+    userStore: new WebStorageStateStore({ store: window.localStorage }),
     // the followings are default values in the lib so no need to set them
     // automaticSilentRenew: true,
   };
