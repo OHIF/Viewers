@@ -81,25 +81,6 @@ window.config = {
   customizationService: {
     dicomUploadComponent:
       '@ohif/extension-cornerstone.customizationModule.cornerstoneDicomUploadComponent',
-    cornerstoneOverlayTopRight: {
-      id: 'cornerstoneOverlayTopRight',
-      items: [
-        {
-          id: 'PatientNameOverlay',
-          customizationType: 'ohif.overlayItem',
-          attribute: 'PatientName',
-          label: 'PN:',
-          title: 'Patient Name',
-          color: 'yellow',
-          condition: ({ instance }) =>
-            instance && instance.PatientName && instance.PatientName.Alphabetic,
-          contentF: ({ instance, formatters: { formatPN } }) =>
-            formatPN(instance.PatientName.Alphabetic) +
-            ' ' +
-            (instance.PatientSex ? '(' + instance.PatientSex + ')' : ''),
-        },
-      ],
-    },
   },
   showStudyList: true,
   // some windows systems have issues with more than 3 web workers
