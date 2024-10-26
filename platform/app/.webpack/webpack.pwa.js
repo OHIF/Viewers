@@ -20,8 +20,11 @@ const PUBLIC_URL = process.env.PUBLIC_URL || '/';
 const APP_CONFIG = process.env.APP_CONFIG || 'config/default.js';
 const PROXY_TARGET = process.env.PROXY_TARGET;
 const PROXY_DOMAIN = process.env.PROXY_DOMAIN;
+const PROXY_PATH_REWRITE_FROM = process.env.PROXY_PATH_REWRITE_FROM;
+const PROXY_PATH_REWRITE_TO = process.env.PROXY_PATH_REWRITE_TO;
 const OHIF_PORT = Number(process.env.OHIF_PORT || 3000);
 const ENTRY_TARGET = process.env.ENTRY_TARGET || `${SRC_DIR}/index.js`;
+
 const Dotenv = require('dotenv-webpack');
 const writePluginImportFile = require('./writePluginImportsFile.js');
 
@@ -182,9 +185,17 @@ module.exports = (env, argv) => {
     },
   });
 
-  if (hasProxy) {
+   if (hasProxy) {
     mergedConfig.devServer.proxy = mergedConfig.devServer.proxy || {};
-    mergedConfig.devServer.proxy[PROXY_TARGET] = PROXY_DOMAIN;
+    mergedConfig.devServer.proxy = {
+      [PROXY_TARGET]: {
+        target: PROXY_DOMAIN,
+        changeOrigin: true,
+        pathRewrite: {
+          [`^${PROXY_PATH_REWRITE_FROM}`]: PROXY_PATH_REWRITE_TO,
+        },
+      },
+    };
   }
 
   if (isProdBuild) {
