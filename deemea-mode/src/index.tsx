@@ -28,7 +28,7 @@ const deemea = {
 const extensionDependencies = {
   '@ohif/extension-default': '^3.9.0-beta.76',
   '@ohif/extension-cornerstone': '^3.0.0',
-  deemea: '^0.0.1',
+  'deemea-extension': '^0.0.1',
 };
 
 function modeFactory({ modeConfiguration }) {
@@ -142,6 +142,8 @@ function modeFactory({ modeConfiguration }) {
     // hangingProtocol: [''],
     /** SopClassHandlers used by the mode */
     sopClassHandlers: [ohif.sopClassHandler],
+    hangingProtocol: 'default',
+
     /** hotkeys for mode */
     hotkeys: [...hotkeys.defaults.hotkeyBindings],
   };
