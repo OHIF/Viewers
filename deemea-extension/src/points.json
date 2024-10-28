@@ -1,0 +1,40 @@
+{
+    "id": 35133,
+    "name": "patella_transverse_interior_left",
+    "x": null,
+    "y": null,
+    "xOrigin": "0.6696428656578064",
+    "yOrigin": "0.8514971137046814",
+    "lastModificationUserId": null,
+    "lastModificationDate": "2024-10-22T07:52:00.716Z"
+}
+{
+    "id": 35128,
+    "name": "patella_transverse_exterior_left",
+    "x": null,
+    "y": null,
+    "xOrigin": "0.7879464030265808",
+    "yOrigin": "0.8514971137046814",
+    "lastModificationUserId": null,
+    "lastModificationDate": "2024-10-22T07:52:00.714Z"
+}
+{
+    "id": 35131,
+    "name": "femur_condyle_interior_left",
+    "x": null,
+    "y": null,
+    "xOrigin": "0.6808035373687744",
+    "yOrigin": "0.8705706000328064",
+    "lastModificationUserId": null,
+    "lastModificationDate": "2024-10-22T07:52:00.716Z"
+}
+{
+    "id": 35127,
+    "name": "femur_condyle_exterior_left",
+    "x": null,
+    "y": null,
+    "xOrigin": "0.7834821343421936",
+    "yOrigin": "0.8678457736968994",
+    "lastModificationUserId": null,
+    "lastModificationDate": "2024-10-22T07:52:00.714Z"
+}
