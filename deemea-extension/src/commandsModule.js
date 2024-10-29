@@ -79,7 +79,7 @@ const commandsModule = ({ servicesManager }) => {
               type: 'send_points_to_front',
               message: {
                 points: newPoints,
-                unit: event.measurement.toolName,
+                elementType: event.measurement.toolName,
               },
             },
             '*'

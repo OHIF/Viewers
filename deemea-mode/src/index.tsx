@@ -1,5 +1,6 @@
 import { hotkeys } from '@ohif/core';
-import { initToolGroups, toolbarButtons } from '@ohif/mode-longitudinal';
+import initToolGroups from '../src/initToolGroups';
+import toolbarButtons from '../src/toolbarButtons';
 import { id } from './id';
 // Importez l'ID de votre extension Deemea
 import { id as deemeaExtensionId } from 'deemea-extension/src/id';
@@ -70,7 +71,6 @@ function modeFactory({ modeConfiguration }) {
         'Pan',
         'Capture',
         'Layout',
-        'Crosshairs',
         'MoreTools',
         `${deemeaExtensionId}.DeemeaButton`,
       ]);
