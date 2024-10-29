@@ -69,20 +69,19 @@ export const findOrCreateViewport = (
  * @returns Set of states that can be applied to the state sync to remember
  *   the current view state.
  */
-const findViewportsByPosition = (
-  state,
-  { numRows, numCols }
-): Record<string, Record<string, unknown>> => {
+const findViewportsByPosition = (state, { numRows, numCols }) => {
   const { viewports } = state;
-  const { viewportsByPosition, setViewportsByPosition } = useViewportsByPositionStore.getState();
+  const { setViewportsByPosition, addInitialInDisplay } = useViewportsByPositionStore.getState();
   const initialInDisplay = [];
 
+  const viewportsByPosition = {};
   viewports.forEach(viewport => {
     if (viewport.positionId) {
       const storedViewport = {
         ...viewport,
         viewportOptions: { ...viewport.viewportOptions },
       };
+      viewportsByPosition[viewport.positionId] = storedViewport;
       setViewportsByPosition(viewport.positionId, storedViewport);
     }
   });
@@ -97,10 +96,7 @@ const findViewportsByPosition = (
     }
   }
 
-  // Store the initially displayed elements
-  setViewportsByPosition('initialInDisplay', initialInDisplay);
-
-  return { viewportsByPosition };
+  initialInDisplay.forEach(displaySetInstanceUID => addInitialInDisplay(displaySetInstanceUID));
 };
 
 export default findViewportsByPosition;

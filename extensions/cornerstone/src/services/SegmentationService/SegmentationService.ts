@@ -1093,6 +1093,10 @@ class SegmentationService extends PubSubService {
     cstSegmentation.state.removeSegmentation(segmentationId);
   }
 
+  public removeAllSegmentations(): void {
+    cstSegmentation.state.removeAllSegmentations();
+  }
+
   /**
    * It removes the segmentation representations from the viewport.
    * @param viewportId - The viewport id to remove the segmentation representations from.

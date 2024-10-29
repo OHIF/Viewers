@@ -281,12 +281,14 @@ const commandsModule = ({
       const completeLayout = () => {
         const state = viewportGridService.getState();
         findViewportsByPosition(state, { numRows, numCols });
-        const { viewportsByPosition } = useViewportsByPositionStore.getState();
+
+        const { viewportsByPosition, initialInDisplay } = useViewportsByPositionStore.getState();
+
         const findOrCreateViewport = layoutFindOrCreate.bind(
           null,
           hangingProtocolService,
           isHangingProtocolLayout,
-          viewportsByPosition
+          { ...viewportsByPosition, initialInDisplay }
         );
 
         viewportGridService.setLayout({
@@ -376,7 +378,6 @@ const commandsModule = ({
         const { setToggleOneUpViewportGridStore } = useToggleOneUpViewportGridStore.getState();
         setToggleOneUpViewportGridStore(viewportGridState);
 
-        // This findOrCreateViewport only return one viewport - the active
         // one being toggled to one up.
         const findOrCreateViewport = () => {
           return {

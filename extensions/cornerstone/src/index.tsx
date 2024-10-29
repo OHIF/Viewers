@@ -86,12 +86,8 @@ const cornerstoneExtension: Types.Extensions.Extension = {
   id,
 
   onModeEnter: ({ servicesManager }: withAppTypes): void => {
-    const {
-      cornerstoneViewportService,
-      toolbarService,
-      segmentationService,
-      customizationService,
-    } = servicesManager.services;
+    const { cornerstoneViewportService, toolbarService, segmentationService } =
+      servicesManager.services;
     toolbarService.registerEventForToolbarUpdate(cornerstoneViewportService, [
       cornerstoneViewportService.EVENTS.VIEWPORT_DATA_CHANGED,
     ]);
@@ -122,7 +118,7 @@ const cornerstoneExtension: Types.Extensions.Extension = {
   },
   getPanelModule,
   onModeExit: ({ servicesManager }: withAppTypes): void => {
-    const { cineService } = servicesManager.services;
+    const { cineService, segmentationService } = servicesManager.services;
     // Empty out the image load and retrieval pools to prevent memory leaks
     // on the mode exits
     Object.values(cs3DEnums.RequestType).forEach(type => {
@@ -139,6 +135,7 @@ const cornerstoneExtension: Types.Extensions.Extension = {
     useSynchronizersStore.getState().clearSynchronizersStore();
     useToggleOneUpViewportGridStore.getState().clearToggleOneUpViewportGridStore();
     useSegmentationPresentationStore.getState().clearSegmentationPresentationStore();
+    segmentationService.removeAllSegmentations();
   },
 
   /**

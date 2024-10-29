@@ -23,13 +23,8 @@ function ViewerViewportGrid(props: withAppTypes) {
   });
   const layoutHash = useRef(null);
 
-  const {
-    displaySetService,
-    measurementService,
-    hangingProtocolService,
-    cornerstoneViewportService,
-    uiNotificationService,
-  } = servicesManager.services;
+  const { displaySetService, measurementService, hangingProtocolService, uiNotificationService } =
+    servicesManager.services;
 
   const generateLayoutHash = () => `${numCols}-${numRows}`;
 

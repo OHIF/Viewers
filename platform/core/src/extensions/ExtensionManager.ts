@@ -51,7 +51,7 @@ export interface Extension {
   getToolbarModule?: (p: ExtensionParams) => unknown;
   getPanelModule?: (p: ExtensionParams) => unknown;
   onModeEnter?: (p: AppTypes) => void;
-  onModeExit?: () => void;
+  onModeExit?: (p: AppTypes) => void;
 }
 
 export type ExtensionRegister = {

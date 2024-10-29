@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
 
 const PRESENTATION_TYPE_ID = 'viewportsByPositionId';
-const DEBUG_STORE = false;
+const DEBUG_STORE = true;
 
 /**
  * Represents the state and actions for managing viewports by position.
@@ -19,6 +19,11 @@ type ViewportsByPositionState = {
   viewportsByPosition: Record<string, unknown>;
 
   /**
+   * Stores initial display viewports as an array of strings.
+   */
+  initialInDisplay: string[];
+
+  /**
    * Sets the viewport for a given key.
    *
    * @param key - The key identifying the viewport position.
@@ -30,6 +35,13 @@ type ViewportsByPositionState = {
    * Clears all viewports by position.
    */
   clearViewportsByPosition: () => void;
+
+  /**
+   * Adds an initial display viewport.
+   *
+   * @param value - The viewport identifier to add.
+   */
+  addInitialInDisplay: (value: string) => void;
 };
 
 /**
@@ -41,6 +53,7 @@ type ViewportsByPositionState = {
 const createViewportsByPositionStore = (set): ViewportsByPositionState => ({
   type: PRESENTATION_TYPE_ID,
   viewportsByPosition: {},
+  initialInDisplay: [],
 
   /**
    * Sets the viewport for a given key.
@@ -62,6 +75,18 @@ const createViewportsByPositionStore = (set): ViewportsByPositionState => ({
    */
   clearViewportsByPosition: () =>
     set({ viewportsByPosition: {} }, false, 'clearViewportsByPosition'),
+
+  /**
+   * Adds an initial display viewport.
+   */
+  addInitialInDisplay: value =>
+    set(
+      state => ({
+        initialInDisplay: [...state.initialInDisplay, value],
+      }),
+      false,
+      'addInitialInDisplay'
+    ),
 });
 
 /**
