@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.9.0-beta.103](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.102...v3.9.0-beta.103) (2024-10-29)
+
+
+### Bug Fixes
+
+* **ui:** display error in ui while loading seg ([#4433](https://github.com/OHIF/Viewers/issues/4433)) ([2e96371](https://github.com/OHIF/Viewers/commit/2e96371b0631a9e5d411b0142300708ab8ba7d27))
+
+
+
+
+
 # [3.9.0-beta.102](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.101...v3.9.0-beta.102) (2024-10-29)
 
 **Note:** Version bump only for package @ohif/extension-cornerstone-dicom-seg
