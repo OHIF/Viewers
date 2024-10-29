@@ -178,7 +178,7 @@ function modeFactory({ modeConfiguration }) {
             props: {
               leftPanels: [tracked.thumbnailList],
               rightPanels: [cornerstone.segmentation, tracked.measurements],
-              // leftPanelClosed: true,
+              rightPanelClosed: true,
               viewports: [
                 {
                   namespace: tracked.viewport,
