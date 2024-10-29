@@ -103,7 +103,6 @@ declare global {
         thumbnail?: number;
         compute?: number;
       };
-      disableEditing?: boolean;
       maxNumberOfWebWorkers?: number;
       acceptHeader?: string[];
       investigationalUseDialog?: {

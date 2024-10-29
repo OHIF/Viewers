@@ -1,10 +1,16 @@
 export const performCustomizations = customizationService => {
   // Set the custom SegmentationTable
   customizationService.addModeCustomizations([
+    // To disable editing in the SegmentationTable
     {
-      id: 'segmentation.panel',
+      id: 'PanelSegmentation.disableEditing',
       disableEditing: true,
     },
+    // To disable editing in the MeasurementTable
+    // {
+    //   id: 'PanelMeasurement.disableEditing',
+    //   disableEditing: true,
+    // },
     //   {
     //     id: 'measurementLabels',
     //     labelOnMeasure: true,

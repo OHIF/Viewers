@@ -203,8 +203,6 @@ export default function PanelSegmentation({
       segmentationService.setStyle({ type }, { fillAlphaInactive: value }),
   };
 
-  const { disableEditing } = configuration ?? {};
-
   const { mode: SegmentationTableMode } = customizationService.getCustomization(
     'PanelSegmentation.mode',
     {
@@ -219,6 +217,14 @@ export default function PanelSegmentation({
     {
       id: 'segmentation.onSegmentationAdd',
       onSegmentationAdd: handlers.onSegmentationAdd,
+    }
+  );
+
+  const { disableEditing } = customizationService.getCustomization(
+    'PanelSegmentation.disableEditing',
+    {
+      id: 'default.disableEditing',
+      disableEditing: false,
     }
   );
 

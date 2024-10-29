@@ -48,7 +48,7 @@ const commandsModule = ({
     viewportGridService,
     toolGroupService,
     cornerstoneViewportService,
-  } = servicesManager.services;
+  } = servicesManager.services as AppTypes.Services;
 
   const actions = {
     /**
@@ -201,26 +201,24 @@ const commandsModule = ({
       let z = 0;
 
       for (const segImage of segImages) {
-        const segmentsOnLabelmap = [];
-
+        const segmentsOnLabelmap = new Set();
         const pixelData = segImage.getPixelData();
         const { rows, columns } = segImage;
+
+        // Use a single pass through the pixel data
         for (let i = 0; i < pixelData.length; i++) {
           const segment = pixelData[i];
-          if (!segmentsOnLabelmap.includes(segment) && segment !== 0) {
-            segmentsOnLabelmap.push(segment);
+          if (segment !== 0) {
+            segmentsOnLabelmap.add(segment);
           }
         }
 
-        const labelmap2D = {
-          segmentsOnLabelmap,
+        labelmaps2D[z++] = {
+          segmentsOnLabelmap: Array.from(segmentsOnLabelmap),
           pixelData,
           rows,
           columns,
         };
-
-        labelmaps2D[z] = labelmap2D;
-        z++;
       }
 
       const allSegmentsOnLabelmap = labelmaps2D.map(labelmap => labelmap.segmentsOnLabelmap);
@@ -232,13 +230,22 @@ const commandsModule = ({
       };
 
       const segmentationInOHIF = segmentationService.getSegmentation(segmentationId);
-      segmentationInOHIF.segments.forEach(segment => {
+      const representations = segmentationService.getRepresentationsForSegmentation(segmentationId);
+
+      Object.entries(segmentationInOHIF.segments).forEach(([segmentIndex, segment]) => {
         // segmentation service already has a color for each segment
         if (!segment) {
           return;
         }
-        const segmentIndex = segment.segmentIndex;
-        const { label, color } = segment;
+
+        const { label } = segment;
+
+        const firstRepresentation = representations[0];
+        const color = segmentationService.getSegmentColor(
+          firstRepresentation.viewportId,
+          segmentationId,
+          segment.segmentIndex
+        );
 
         const RecommendedDisplayCIELabValue = dcmjs.data.Colors.rgb2DICOMLAB(
           color.slice(0, 3).map(value => value / 255)

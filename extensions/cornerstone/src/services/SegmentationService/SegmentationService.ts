@@ -173,6 +173,15 @@ class SegmentationService extends PubSubService {
     return segmentationPresentations;
   }
 
+  public getRepresentationsForSegmentation(
+    segmentationId: string
+  ): { viewportId: string; representations: any[] }[] {
+    const representations =
+      cstSegmentation.state.getSegmentationRepresentationsBySegmentationId(segmentationId);
+
+    return representations;
+  }
+
   /**
    * Retrieves segmentation representations (labelmap, contour, surface) based on specified criteria.
    *
@@ -815,6 +824,9 @@ class SegmentationService extends PubSubService {
             ...currentSegments,
             [segmentIndex]: {
               ...currentSegments[segmentIndex],
+              segmentIndex,
+              cachedStats: {},
+              locked: false,
               ...config,
             },
           },

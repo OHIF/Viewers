@@ -7,8 +7,6 @@ import ActiveViewportWindowLevel from './components/ActiveViewportWindowLevel';
 
 const getPanelModule = ({ commandsManager, servicesManager, extensionManager }: withAppTypes) => {
   const wrappedPanelSegmentation = ({ configuration }) => {
-    const [appConfig] = useAppConfig();
-
     return (
       <PanelSegmentation
         commandsManager={commandsManager}
@@ -16,7 +14,6 @@ const getPanelModule = ({ commandsManager, servicesManager, extensionManager }: 
         extensionManager={extensionManager}
         configuration={{
           ...configuration,
-          disableEditing: appConfig.disableEditing,
         }}
       />
     );
@@ -32,7 +29,6 @@ const getPanelModule = ({ commandsManager, servicesManager, extensionManager }: 
         extensionManager={extensionManager}
         configuration={{
           ...configuration,
-          disableEditing: appConfig.disableEditing,
         }}
       />
     );
@@ -59,7 +55,6 @@ const getPanelModule = ({ commandsManager, servicesManager, extensionManager }: 
           extensionManager={extensionManager}
           configuration={{
             ...configuration,
-            disableEditing: appConfig.disableEditing,
           }}
         />
       </>

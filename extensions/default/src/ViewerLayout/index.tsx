@@ -126,43 +126,28 @@ function ViewerLayout({
           {showLoadingIndicator && <LoadingIndicatorProgress className="h-full w-full bg-black" />}
           {/* LEFT SIDEPANELS */}
           {hasLeftPanels ? (
-            <ErrorBoundary
-              context="Left Panel"
-              isPage={false}
-            >
-              <SidePanelWithServices
-                side="left"
-                activeTabIndex={leftPanelClosedState ? null : 0}
-                servicesManager={servicesManager}
-              />
-            </ErrorBoundary>
+            <SidePanelWithServices
+              side="left"
+              activeTabIndex={leftPanelClosedState ? null : 0}
+              servicesManager={servicesManager}
+            />
           ) : null}
           {/* TOOLBAR + GRID */}
           <div className="flex h-full flex-1 flex-col">
             <div className="relative flex h-full flex-1 items-center justify-center overflow-hidden bg-black">
-              <ErrorBoundary
-                context="Grid"
-                isPage={false}
-              >
-                <ViewportGridComp
-                  servicesManager={servicesManager}
-                  viewportComponents={viewportComponents}
-                  commandsManager={commandsManager}
-                />
-              </ErrorBoundary>
+              <ViewportGridComp
+                servicesManager={servicesManager}
+                viewportComponents={viewportComponents}
+                commandsManager={commandsManager}
+              />
             </div>
           </div>
           {hasRightPanels ? (
-            <ErrorBoundary
-              context="Right Panel"
-              isPage={false}
-            >
-              <SidePanelWithServices
-                side="right"
-                activeTabIndex={rightPanelClosedState ? null : 0}
-                servicesManager={servicesManager}
-              />
-            </ErrorBoundary>
+            <SidePanelWithServices
+              side="right"
+              activeTabIndex={rightPanelClosedState ? null : 0}
+              servicesManager={servicesManager}
+            />
           ) : null}
         </React.Fragment>
       </div>

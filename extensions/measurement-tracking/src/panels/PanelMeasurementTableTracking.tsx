@@ -4,7 +4,6 @@ import { useViewportGrid } from '@ohif/ui';
 import { StudySummary } from '@ohif/ui-next';
 import { Button, Icons } from '@ohif/ui-next';
 import { DicomMetadataStore, utils } from '@ohif/core';
-import { useAppConfig } from '@state';
 import { useTrackedMeasurements } from '../getContextModule';
 import { useTranslation } from 'react-i18next';
 
@@ -24,13 +23,12 @@ function PanelMeasurementTableTracking({
 }: withAppTypes) {
   const [viewportGrid] = useViewportGrid();
   const { t } = useTranslation('MeasurementTable');
-  const { measurementService } = servicesManager.services;
+  const { measurementService, customizationService } = servicesManager.services;
   const [trackedMeasurements, sendTrackedMeasurementsEvent] = useTrackedMeasurements();
   const { trackedStudy, trackedSeries } = trackedMeasurements.context;
   const [displayStudySummary, setDisplayStudySummary] = useState(
     DISPLAY_STUDY_SUMMARY_INITIAL_VALUE
   );
-  const [appConfig] = useAppConfig();
 
   useEffect(() => {
     const updateDisplayStudySummary = async () => {
@@ -71,6 +69,14 @@ function PanelMeasurementTableTracking({
     updateDisplayStudySummary();
   }, [trackedMeasurements, trackedStudy, trackedSeries]);
 
+  const { disableEditing } = customizationService.getCustomization(
+    'PanelMeasurement.disableEditing',
+    {
+      id: 'default.disableEditing',
+      disableEditing: false,
+    }
+  );
+
   return (
     <>
       {displayStudySummary.key && (
@@ -90,7 +96,7 @@ function PanelMeasurementTableTracking({
         customHeader={({ additionalFindings, measurements }) => {
           const disabled = additionalFindings.length === 0 && measurements.length === 0;
 
-          if (appConfig?.disableEditing || disabled) {
+          if (disableEditing || disabled) {
             return null;
           }
 
