@@ -8,6 +8,7 @@ import {
 } from '../../components/DropdownMenu';
 import { Icons } from '../../components/Icons/Icons';
 import { Tooltip, TooltipTrigger, TooltipContent } from '../../components/Tooltip/Tooltip';
+import sanitizeHtml from 'sanitize-html';
 
 interface DataRowProps {
   number: number;
@@ -95,11 +96,11 @@ const DataRow: React.FC<DataRowProps> = ({
         {indentation}
         {cleanText.includes(':') ? (
           <>
-            <span className="font-medium">{cleanText.split(':')[0].replace(/<[^>]*>/g, '')}:</span>
-            {cleanText.split(':')[1].replace(/<[^>]*>/g, '')}
+            <span className="font-medium">{sanitizeHtml(cleanText.split(':')[0])}:</span>
+            {sanitizeHtml(cleanText.split(':')[1])}
           </>
         ) : (
-          <span className="font-medium">{cleanText.replace(/<[^>]*>/g, '')}</span>
+          <span className="font-medium">{sanitizeHtml(cleanText)}</span>
         )}
       </div>
     );
