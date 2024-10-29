@@ -1,57 +1,78 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, memo } from 'react';
 
 const MODALITIES_REQUIRING_CINE_AUTO_MOUNT = ['OT', 'US'];
 
-function ActiveViewportBehavior({
-  servicesManager,
-  viewportId,
-}: withAppTypes<{ viewportId: string }>) {
-  const { displaySetService, cineService, viewportGridService, customizationService } =
-    servicesManager.services;
+const ActiveViewportBehavior = memo(
+  ({ servicesManager, viewportId }: withAppTypes<{ viewportId: string }>) => {
+    const { displaySetService, cineService, viewportGridService, customizationService } =
+      servicesManager.services;
 
-  const [activeViewportId, setActiveViewportId] = useState(viewportId);
+    const [activeViewportId, setActiveViewportId] = useState(viewportId);
 
-  useEffect(() => {
-    const subscription = viewportGridService.subscribe(
-      viewportGridService.EVENTS.ACTIVE_VIEWPORT_ID_CHANGED,
-      ({ viewportId }) => setActiveViewportId(viewportId)
-    );
+    useEffect(() => {
+      const subscription = viewportGridService.subscribe(
+        viewportGridService.EVENTS.ACTIVE_VIEWPORT_ID_CHANGED,
+        ({ viewportId }) => setActiveViewportId(viewportId)
+      );
 
-    return () => subscription.unsubscribe();
-  }, [viewportId, viewportGridService]);
+      return () => subscription.unsubscribe();
+    }, [viewportId, viewportGridService]);
 
-  const state = cineService.getState();
+    useEffect(() => {
+      if (cineService.isViewportCineClosed(activeViewportId)) {
+        return;
+      }
 
-  if (cineService.isViewportCineClosed(activeViewportId)) {
+      const displaySetInstanceUIDs =
+        viewportGridService.getDisplaySetsUIDsForViewport(activeViewportId);
+
+      if (!displaySetInstanceUIDs) {
+        return;
+      }
+
+      const displaySets = displaySetInstanceUIDs.map(uid =>
+        displaySetService.getDisplaySetByUID(uid)
+      );
+
+      if (!displaySets.length) {
+        return;
+      }
+
+      const modalities = displaySets.map(displaySet => displaySet?.Modality);
+
+      const { modalities: sourceModalities } = customizationService.getModeCustomization(
+        'autoCineModalities',
+        {
+          id: 'autoCineModalities',
+          modalities: MODALITIES_REQUIRING_CINE_AUTO_MOUNT,
+        }
+      );
+
+      const requiresCine = modalities.some(modality => sourceModalities.includes(modality));
+
+      if (requiresCine && !cineService.getState().isCineEnabled) {
+        cineService.setIsCineEnabled(true);
+      }
+    }, [
+      activeViewportId,
+      cineService,
+      viewportGridService,
+      displaySetService,
+      customizationService,
+    ]);
+
     return null;
-  }
+  },
+  arePropsEqual
+);
 
-  const displaySetInstanceUIDs =
-    viewportGridService.getDisplaySetsUIDsForViewport(activeViewportId);
+ActiveViewportBehavior.displayName = 'ActiveViewportBehavior';
 
-  if (!displaySetInstanceUIDs) {
-    return null;
-  }
-
-  const displaySets = displaySetInstanceUIDs.map(uid => displaySetService.getDisplaySetByUID(uid));
-
-  const modalities = displaySets.map(displaySet => displaySet.Modality);
-
-  const { modalities: sourceModalities } = customizationService.getModeCustomization(
-    'autoCineModalities',
-    {
-      id: 'autoCineModalities',
-      modalities: MODALITIES_REQUIRING_CINE_AUTO_MOUNT,
-    }
+function arePropsEqual(prevProps, nextProps) {
+  return (
+    prevProps.viewportId === nextProps.viewportId &&
+    prevProps.servicesManager === nextProps.servicesManager
   );
-
-  const requiresCine = modalities.some(modality => sourceModalities.includes(modality));
-
-  if (requiresCine && !state.isCineEnabled) {
-    cineService.setIsCineEnabled(true);
-  }
-
-  return null;
 }
 
 export default ActiveViewportBehavior;
