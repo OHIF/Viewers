@@ -13,9 +13,10 @@ export default function PanelSegmentation({
   const { segmentationService, viewportGridService, uiDialogService, customizationService } =
     servicesManager.services;
 
-  const viewportSegmentationInfo = useActiveViewportSegmentationRepresentations({
-    servicesManager,
-  });
+  const { segmentationsWithRepresentations, disabled } =
+    useActiveViewportSegmentationRepresentations({
+      servicesManager,
+    });
 
   const handlers = {
     onSegmentationAdd: async () => {
@@ -224,7 +225,8 @@ export default function PanelSegmentation({
   return (
     <>
       <SegmentationTable
-        data={viewportSegmentationInfo}
+        disabled={disabled}
+        data={segmentationsWithRepresentations}
         mode={SegmentationTableMode}
         title="Segmentations"
         disableEditing={disableEditing}

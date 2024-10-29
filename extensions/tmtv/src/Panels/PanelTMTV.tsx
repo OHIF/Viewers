@@ -29,7 +29,8 @@ export default function PanelTMTV({
 }
 
 const ExportCSV = ({ servicesManager, commandsManager }: withAppTypes) => {
-  const representations = useActiveViewportSegmentationRepresentations({ servicesManager });
+  const { segmentationsWithRepresentations: representations } =
+    useActiveViewportSegmentationRepresentations({ servicesManager });
 
   const tmtv = representations[0]?.segmentation.cachedStats?.tmtv;
 

@@ -8,7 +8,8 @@ export default function PanelRoiThresholdSegmentation({
   commandsManager,
 }: withAppTypes) {
   const { segmentationService } = servicesManager.services;
-  const segmentationsInfo = useActiveViewportSegmentationRepresentations({ servicesManager });
+  const { segmentationsWithRepresentations: segmentationsInfo } =
+    useActiveViewportSegmentationRepresentations({ servicesManager });
 
   useEffect(() => {
     const segmentationIds = segmentationsInfo.map(

@@ -12,6 +12,7 @@ import { SegmentationCollapsed } from './SegmentationCollapsed';
 import { SegmentationExpanded } from './SegmentationExpanded';
 
 interface SegmentationTableProps extends SegmentationTableContext {
+  disabled?: boolean;
   title?: string;
   children?: ReactNode;
 }
@@ -29,7 +30,7 @@ interface SegmentationTableComponent extends React.FC<SegmentationTableProps> {
 
 export const SegmentationTable: SegmentationTableComponent = (props: SegmentationTableProps) => {
   const { t } = useTranslation('SegmentationTable');
-  const { data = [], mode, title, disableEditing, children, ...contextProps } = props;
+  const { data = [], mode, title, disableEditing, disabled, children, ...contextProps } = props;
 
   const activeSegmentationInfo = data.find(info => info.representation?.active);
 
@@ -43,6 +44,7 @@ export const SegmentationTable: SegmentationTableComponent = (props: Segmentatio
     <SegmentationTableProvider
       data={data}
       mode={mode}
+      disabled={disabled}
       disableEditing={disableEditing}
       fillAlpha={fillAlpha}
       fillAlphaInactive={fillAlphaInactive}

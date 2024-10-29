@@ -28,6 +28,7 @@ interface ViewportSegmentationInfo {
 
 interface SegmentationTableContext {
   data: ViewportSegmentationInfo[];
+  disabled: boolean;
   mode: 'collapsed' | 'expanded';
   fillAlpha: number;
   fillAlphaInactive: number;

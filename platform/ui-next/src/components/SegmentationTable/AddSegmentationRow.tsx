@@ -8,7 +8,7 @@ export const AddSegmentationRow: React.FC<{ children?: React.ReactNode }> = ({
 }) => {
   const { t } = useTranslation('SegmentationTable');
 
-  const { onSegmentationAdd, data, disableEditing, mode } =
+  const { onSegmentationAdd, data, disableEditing, mode, disabled } =
     useSegmentationTableContext('SegmentationTable');
 
   const isEmpty = data.length === 0;
@@ -23,15 +23,17 @@ export const AddSegmentationRow: React.FC<{ children?: React.ReactNode }> = ({
 
   return (
     <div
-      className={`group`}
-      onClick={() => onSegmentationAdd('')}
+      className={`group ${disabled ? 'pointer-events-none cursor-not-allowed opacity-70' : ''}`}
+      onClick={() => !disabled && onSegmentationAdd('')}
     >
       {children}
       <div className="text-primary-active group-hover:bg-secondary-dark flex items-center rounded-[4px] pl-1 group-hover:cursor-pointer">
         <div className="grid h-[28px] w-[28px] place-items-center">
-          <Icons.Add />
+          {disabled ? <Icons.Info /> : <Icons.Add />}
         </div>
-        <span className="text-[13px]">{t('Add Segmentation')}</span>
+        <span className="text-[13px]">
+          {t(`${disabled ? 'Segmentation Not Supported' : 'Add Segmentation'}`)}
+        </span>
       </div>
     </div>
   );

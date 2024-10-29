@@ -6,6 +6,8 @@ import {
   SegmentationRepresentation,
 } from '../services/SegmentationService/SegmentationService';
 
+const excludedModalities = ['SM', 'OT', 'DOC', 'ECG'];
+
 function mapSegmentationToDisplay(segmentation, customizationService) {
   const { label, segments } = segmentation;
 
@@ -85,8 +87,11 @@ function mapSegmentationToDisplay(segmentation, customizationService) {
  * Represents the combination of segmentation data and its representation in a viewport.
  */
 type ViewportSegmentationRepresentation = {
-  representation: SegmentationRepresentation;
-  segmentation: SegmentationData;
+  segmentationsWithRepresentations: {
+    representation: SegmentationRepresentation;
+    segmentation: SegmentationData;
+  }[];
+  disabled: boolean;
 };
 
 /**
@@ -101,40 +106,68 @@ export function useActiveViewportSegmentationRepresentations({
   servicesManager,
   subscribeToDataModified = false,
   debounceTime = 0,
-}: withAppTypes<{ debounceTime?: number }>): ViewportSegmentationRepresentation[] {
-  const { segmentationService, viewportGridService, customizationService } =
+}: withAppTypes<{ debounceTime?: number }>): ViewportSegmentationRepresentation {
+  const { segmentationService, viewportGridService, customizationService, displaySetService } =
     servicesManager.services;
-  const [segmentationsWithRepresentations, setSegmentationsWithRepresentations] = useState<
-    ViewportSegmentationRepresentation[]
-  >([]);
+
+  const [segmentationsWithRepresentations, setSegmentationsWithRepresentations] =
+    useState<ViewportSegmentationRepresentation>({
+      segmentationsWithRepresentations: [],
+      disabled: false,
+    });
 
   useEffect(() => {
     const update = () => {
       const viewportId = viewportGridService.getActiveViewportId();
+      const displaySetUIDs = viewportGridService.getDisplaySetsUIDsForViewport(viewportId);
+
+      if (!displaySetUIDs?.length) {
+        return;
+      }
+
+      const displaySet = displaySetService.getDisplaySetByUID(displaySetUIDs[0]);
+
+      if (!displaySet) {
+        return;
+      }
+
+      if (excludedModalities.includes(displaySet.Modality)) {
+        setSegmentationsWithRepresentations(prev => ({
+          segmentationsWithRepresentations: [],
+          disabled: true,
+        }));
+        return;
+      }
+
       const segmentations = segmentationService.getSegmentations();
 
       if (!segmentations?.length) {
-        setSegmentationsWithRepresentations([]);
+        setSegmentationsWithRepresentations(prev => ({
+          segmentationsWithRepresentations: [],
+          disabled: false,
+        }));
         return;
       }
 
       const representations = segmentationService.getSegmentationRepresentations(viewportId);
 
-      const tempSegmentationsWithRepresentations: ViewportSegmentationRepresentation[] = [];
-      for (const representation of representations) {
+      const newSegmentationsWithRepresentations = representations.map(representation => {
         const segmentation = segmentationService.getSegmentation(representation.segmentationId);
         const mappedSegmentation = mapSegmentationToDisplay(segmentation, customizationService);
-
-        tempSegmentationsWithRepresentations.push({
+        return {
           representation,
           segmentation: mappedSegmentation,
-        });
-      }
+        };
+      });
 
-      setSegmentationsWithRepresentations(tempSegmentationsWithRepresentations);
+      setSegmentationsWithRepresentations({
+        segmentationsWithRepresentations: newSegmentationsWithRepresentations,
+        disabled: false,
+      });
     };
 
-    const debouncedUpdate = debounceTime > 0 ? debounce(update, debounceTime) : update;
+    const debouncedUpdate =
+      debounceTime > 0 ? debounce(update, debounceTime, { leading: true, trailing: true }) : update;
 
     update();
 
@@ -177,6 +210,7 @@ export function useActiveViewportSegmentationRepresentations({
     segmentationService,
     viewportGridService,
     customizationService,
+    displaySetService,
     debounceTime,
     subscribeToDataModified,
   ]);
