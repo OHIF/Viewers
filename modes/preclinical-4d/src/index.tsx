@@ -36,7 +36,7 @@ function modeFactory({ modeConfiguration }) {
   return {
     id,
     routeName: 'dynamic-volume',
-    displayName: '4D PT/CT',
+    displayName: 'Preclinical 4D Mode',
     onModeEnter: function ({ servicesManager, extensionManager, commandsManager }: withAppTypes) {
       const {
         measurementService,

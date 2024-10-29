@@ -81,6 +81,13 @@ const getPanelModule = ({ commandsManager, servicesManager, extensionManager }: 
       component: wrappedPanelSegmentation,
     },
     {
+      name: 'panelSegmentationNoHeader',
+      iconName: 'tab-segmentation',
+      iconLabel: 'Segmentation',
+      label: 'Segmentation',
+      component: wrappedPanelSegmentationNoHeader,
+    },
+    {
       name: 'panelSegmentationWithTools',
       iconName: 'tab-segmentation',
       iconLabel: 'Segmentation',

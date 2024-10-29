@@ -110,7 +110,12 @@ function _getTimePointsData(volume) {
   return { timePoints, timePointsUnit };
 }
 
-function _getSegmentationData(segmentation, volumesTimePointsCache, displaySetService) {
+function _getSegmentationData(
+  segmentation,
+  volumesTimePointsCache,
+  { servicesManager }: { servicesManager: AppTypes.ServicesManager }
+) {
+  const { displaySetService, segmentationService, viewportGridService } = servicesManager.services;
   const displaySets = displaySetService.getActiveDisplaySets();
 
   const dynamic4DDisplaySet = displaySets.find(displaySet => {
@@ -146,7 +151,7 @@ function _getSegmentationData(segmentation, volumesTimePointsCache, displaySetSe
   );
 
   const [timeData, _] = csToolsUtils.dynamicVolume.getDataInTime(referencedDynamicVolume, {
-    maskVolumeId: segmentation.id,
+    maskVolumeId: segmentation.segmentationId,
   }) as number[][];
 
   const pixelCount = timeData.length;
@@ -155,21 +160,15 @@ function _getSegmentationData(segmentation, volumesTimePointsCache, displaySetSe
     return [];
   }
 
-  // since we only use one segmentation representation per segmentationId
-  // it is fine to pick the first one
-  const segmentationRepresentations =
-    csTools.segmentation.state.getSegmentationRepresentationsForSegmentation(segmentation.id);
-
-  const segmentationRepresentationUID =
-    segmentationRepresentations[0].segmentationRepresentationUID;
-
   // Todo: this is useless we should be able to grab color with just segRepUID and segmentIndex
-  const color = csTools.segmentation.config.color.getSegmentIndexColor(
-    segmentationRepresentationUID,
-    1 // segmentIndex
-  );
+  // const color = csTools.segmentation.config.color.getSegmentIndexColor(
+  //   segmentationRepresentationUID,
+  //   1 // segmentIndex
+  // );
+  const viewportId = viewportGridService.getActiveViewportId();
+  const color = segmentationService.getSegmentColor(viewportId, segmentation.segmentationId, 1);
 
-  const hexColor = cs.utilities.color.rgbToHex(...color);
+  const hexColor = cs.utilities.color.rgbToHex(color[0], color[1], color[2]);
   let timePointsData = volumesTimePointsCache.get(referencedDynamicVolume);
 
   if (!timePointsData) {
@@ -213,14 +212,14 @@ function _getSegmentationData(segmentation, volumesTimePointsCache, displaySetSe
   };
 }
 
-function _getInstanceFromSegmentations(segmentations, displaySetService) {
+function _getInstanceFromSegmentations(segmentations, { servicesManager }) {
   if (!segmentations.length) {
     return;
   }
 
   const volumesTimePointsCache = new WeakMap();
   const segmentationsData = segmentations.map(segmentation =>
-    _getSegmentationData(segmentation, volumesTimePointsCache, displaySetService)
+    _getSegmentationData(segmentation, volumesTimePointsCache, { servicesManager })
   );
 
   const { date: seriesDate, time: seriesTime } = _getDateTimeStr();
@@ -260,10 +259,11 @@ function _getInstanceFromSegmentations(segmentations, displaySetService) {
 }
 
 function updateSegmentationsChartDisplaySet({ servicesManager }: withAppTypes): void {
-  const { segmentationService, displaySetService } = servicesManager.services;
-  const segmentations = segmentationService.getSegmentationRepresentations();
+  debugger;
+  const { segmentationService } = servicesManager.services;
+  const segmentations = segmentationService.getSegmentations();
   const { seriesMetadata, instance } =
-    _getInstanceFromSegmentations(segmentations, displaySetService) ?? {};
+    _getInstanceFromSegmentations(segmentations, { servicesManager }) ?? {};
 
   if (seriesMetadata && instance) {
     // An event is triggered after adding the instance and the displaySet is created

@@ -116,8 +116,10 @@ export default class ToolbarService extends PubSubService {
    * Removes buttons from the toolbar.
    * @param buttonId - The button to be removed.
    */
-  public removeButton(buttonId : string ){
-    if(this.state.buttons[buttonId]) delete this.state.buttons[buttonId]
+  public removeButton(buttonId: string) {
+    if (this.state.buttons[buttonId]) {
+      delete this.state.buttons[buttonId];
+    }
     this._broadcastEvent(this.EVENTS.TOOL_BAR_MODIFIED, {
       ...this.state,
     });
@@ -555,6 +557,11 @@ export default class ToolbarService extends PubSubService {
   };
 
   getButtonComponentForUIType(uiType: string) {
-    return uiType ? this._getButtonUITypes()[uiType]?.defaultComponent ?? null : null;
+    return uiType ? (this._getButtonUITypes()[uiType]?.defaultComponent ?? null) : null;
+  }
+
+  clearButtonSection(buttonSection: string) {
+    this.state.buttonSections[buttonSection] = [];
+    this._broadcastEvent(this.EVENTS.TOOL_BAR_MODIFIED, { ...this.state });
   }
 }
