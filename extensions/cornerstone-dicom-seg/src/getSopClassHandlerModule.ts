@@ -93,19 +93,8 @@ function _getDisplaySetsFromSeries(
     return referencedDisplaySet;
   };
 
-  displaySet.load = async ({ headers }) => {
-    try {
-      await _load(displaySet, servicesManager, extensionManager, headers);
-    } catch (e) {
-      const { uiNotificationService } = servicesManager.services;
-      uiNotificationService.show({
-        title: 'Error loading displaySet',
-        message: e.message,
-        type: 'error',
-      });
-      console.error(e);
-    }
-  };
+  displaySet.load = async ({ headers }) =>
+    await _load(displaySet, servicesManager, extensionManager, headers);
 
   return [displaySet];
 }
