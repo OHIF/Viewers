@@ -19,6 +19,7 @@ import { useAppConfig } from '@state';
 import { getViewportDataOverlaySettingsMenu } from '../components/ViewportDataOverlaySettingMenu';
 import { getViewportPresentations } from '../utils/presentations/getViewportPresentations';
 import { useSynchronizersStore } from '../stores/useSynchronizersStore';
+import ActiveViewportBehavior from '../utils/ActiveViewportBehavior';
 
 const STACK = 'stack';
 
@@ -394,6 +395,10 @@ const OHIFCornerstoneViewport = React.memo(
           />
           <CinePlayer
             enabledVPElement={enabledVPElement}
+            viewportId={viewportId}
+            servicesManager={servicesManager}
+          />
+          <ActiveViewportBehavior
             viewportId={viewportId}
             servicesManager={servicesManager}
           />

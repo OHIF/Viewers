@@ -225,6 +225,7 @@ function RenderCinePlayer({
           isPlaying: false,
         });
         cineService.setIsCineEnabled(false);
+        cineService.setViewportCineClosed(viewportId);
       }}
       onPlayPauseChange={isPlaying => {
         cineService.setCine({

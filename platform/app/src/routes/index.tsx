@@ -120,10 +120,7 @@ const createRoutes = ({
   function RouteWithErrorBoundary({ route, ...rest }) {
     // eslint-disable-next-line react/jsx-props-no-spreading
     return (
-      <ErrorBoundary
-        context={`Route ${route.path}`}
-        fallbackRoute="/"
-      >
+      <ErrorBoundary context={`Route ${route.path}`}>
         <route.children
           {...rest}
           {...route.props}

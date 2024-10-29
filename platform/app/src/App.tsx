@@ -92,8 +92,10 @@ function App({
   const canvas = document.createElement('canvas');
   const gl = canvas.getContext('webgl2');
 
-  const max3DTextureSize = gl.getParameter(gl.MAX_3D_TEXTURE_SIZE);
-  appConfigState.max3DTextureSize = max3DTextureSize;
+  if (gl) {
+    const max3DTextureSize = gl.getParameter(gl.MAX_3D_TEXTURE_SIZE);
+    appConfigState.max3DTextureSize = max3DTextureSize;
+  }
 
   const {
     uiDialogService,

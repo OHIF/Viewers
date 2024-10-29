@@ -178,6 +178,9 @@ module.exports = (env, argv) => {
         'Cross-Origin-Embedder-Policy': 'require-corp',
         'Cross-Origin-Opener-Policy': 'same-origin',
       },
+      devMiddleware: {
+        writeToDisk: true,
+      },
     },
   });
 

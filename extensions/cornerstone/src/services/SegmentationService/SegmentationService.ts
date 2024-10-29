@@ -595,7 +595,7 @@ class SegmentationService extends PubSubService {
       const { data, id, color, segmentIndex, geometryId } = rtStructData;
 
       try {
-        const geometry = await geometryLoader.createAndCacheLocalGeometry(geometryId, {
+        const geometry = await geometryLoader.createAndCacheGeometry(geometryId, {
           geometryData: {
             data,
             id,

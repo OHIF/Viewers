@@ -3,6 +3,12 @@ import { Button, useSegmentationTableContext } from '@ohif/ui-next';
 
 export const performCustomizations = customizationService => {
   // customizationService.addModeCustomizations([
+  //   {
+  //     id: 'autoCineModalities',
+  //     modalities: ['OT'],
+  //   },
+  // ]);
+  // customizationService.addModeCustomizations([
   // {
   //   id: 'component.SegmentationTableConfig',
   //   content: props => {
