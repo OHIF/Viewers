@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.9.0-beta.102](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.101...v3.9.0-beta.102) (2024-10-29)
+
+
+### Bug Fixes
+
+* **packages:** http-proxy-middleware vulnerability ([#4443](https://github.com/OHIF/Viewers/issues/4443)) ([0610425](https://github.com/OHIF/Viewers/commit/06104257402e872d447e59cb166184d9a3548f8b))
+
+
+
+
+
 # [3.9.0-beta.101](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.100...v3.9.0-beta.101) (2024-10-18)
 
 

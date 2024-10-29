@@ -1,6 +1,6 @@
 {
   "name": "@ohif/extension-cornerstone-dicom-pmap",
-  "version": "3.9.0-beta.101",
+  "version": "3.9.0-beta.102",
   "description": "DICOM Parametric Map read workflow",
   "author": "OHIF",
   "license": "MIT",
