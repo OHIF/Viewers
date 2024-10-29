@@ -242,7 +242,18 @@ class CornerstoneCacheService {
       if (displaySet.load && displaySet.load instanceof Function) {
         const { userAuthenticationService } = this.servicesManager.services;
         const headers = userAuthenticationService.getAuthorizationHeader();
-        await displaySet.load({ headers });
+
+        try {
+          await displaySet.load({ headers });
+        } catch (e) {
+          const { uiNotificationService } = this.servicesManager.services;
+          uiNotificationService.show({
+            title: 'Error loading displaySet',
+            message: e.message,
+            type: 'error',
+          });
+          console.error(e);
+        }
 
         // Parametric maps have a `load` method but it should not be loaded in the
         // same way as SEG and RTSTRUCT but like a normal volume
