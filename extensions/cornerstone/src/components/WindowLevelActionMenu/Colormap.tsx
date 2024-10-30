@@ -54,7 +54,7 @@ export function Colormap({
       return colormap;
     }
     const actorEntries = viewport.getActors();
-    const actorEntry = actorEntries.find(entry =>
+    const actorEntry = actorEntries?.find(entry =>
       entry.referencedId.includes(displaySetInstanceUID)
     );
     const { colormap } = (viewport as Types.IVolumeViewport).getProperties(actorEntry.referencedId);

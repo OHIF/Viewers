@@ -34,6 +34,12 @@ const ExportCSV = ({ servicesManager, commandsManager }: withAppTypes) => {
 
   const tmtv = representations[0]?.segmentation.cachedStats?.tmtv;
 
+  const segmentations = representations.map(representation => representation.segmentation);
+
+  if (!segmentations.length) {
+    return null;
+  }
+
   return (
     <div className="flex h-8 w-full items-center rounded pr-0.5">
       <Button

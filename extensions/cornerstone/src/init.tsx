@@ -276,13 +276,13 @@ function initializeWebWorkerProgressHandler(uiNotificationService) {
 
       uiNotificationService.show({
         id: cacheKey,
-        title: 'Web Worker Progress',
+        title: `${type}`,
         message: `${type}: ${progress}%`,
         autoClose: false,
         promise: progressPromise,
         promiseMessages: {
           loading: `Computing...`,
-          success: data => `${data.type} completed`,
+          success: `Completed successfully`,
           error: 'Web Worker failed',
         },
       });

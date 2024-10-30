@@ -451,9 +451,9 @@ const commandsModule = ({ servicesManager, commandsManager, extensionManager }: 
         };
       });
 
-      const { referencedVolumeId } = getVolumesFromSegmentation(segmentations[0].segmentationId);
-
-      const ptVolume = cs.cache.getVolume(referencedVolumeId);
+      const { referencedVolume: ptVolume } = getVolumesFromSegmentation(
+        segmentations[0].segmentationId
+      );
 
       const ptVolumeProps = {
         dimensions: ptVolume.dimensions,

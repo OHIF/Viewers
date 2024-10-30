@@ -736,7 +736,6 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
 
       const displaySetOptions = displaySetOptionsArray[index];
       const { volumeId } = volume;
-
       volumeInputArray.push({
         imageIds,
         volumeId,
@@ -1000,11 +999,11 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
       // calculate the slab thickness based on the volume dimensions
       const imageVolume = cache.getVolume(volumeId);
 
-      const { dimensions } = imageVolume;
+      const { dimensions, spacing } = imageVolume;
       const slabThickness = Math.sqrt(
-        dimensions[0] * dimensions[0] +
-          dimensions[1] * dimensions[1] +
-          dimensions[2] * dimensions[2]
+        Math.pow(dimensions[0] * spacing[0], 2) +
+          Math.pow(dimensions[1] * spacing[1], 2) +
+          Math.pow(dimensions[2] * spacing[2], 2)
       );
 
       return slabThickness;
