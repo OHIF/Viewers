@@ -11,10 +11,24 @@ const path = require('path');
 const fs = require('fs');
 const versions = fs.readFileSync('../../version.txt', 'utf8').split('\n');
 
+const ArchivedVersionsDropdownItems = [
+  {
+    version: '2.0-deprecated',
+    href: 'v2.docs.ohif.org',
+  },
+  {
+    version: '1.0-deprecated',
+    href: 'v1.docs.ohif.org',
+  },
+];
+
 const baseUrl = process.env.BASE_URL || '/';
 
 /** @type {import('@docusaurus/types').DocusaurusConfig} */
 module.exports = {
+  future: {
+    experimental_faster: true,
+  },
   title: 'OHIF',
   tagline: 'Open-source web-based medical imaging platform',
   organizationName: 'Open Health Imaging Foundation',
@@ -200,9 +214,14 @@ module.exports = {
                 value: '<hr class="dropdown-separator">',
               },
               {
-                to: '/versions',
-                label: 'All versions',
+                type: 'html',
+                className: 'dropdown-archived-versions',
+                value: '<b>Archived versions</b>',
               },
+              ...ArchivedVersionsDropdownItems.map(item => ({
+                label: item.version,
+                href: item.href,
+              })),
             ],
           },
           {

@@ -537,3 +537,11 @@ div[class^='announcementBar_'] {
   );
   font-weight: 700;
 }
+
+/* #__docusaurus {
+  height: 100%;
+} */
+
+.dropdown-separator {
+  border-top: 1px solid #808080;
+}
