@@ -545,3 +545,14 @@ div[class^='announcementBar_'] {
 .dropdown-separator {
   border-top: 1px solid #808080;
 }
+
+/* flex items , center */
+.dropdown__link {
+  display: flex;
+  align-items: center;
+}
+
+.footer__link-item {
+  display: flex;
+  align-items: center;
+}

@@ -14,11 +14,13 @@ const versions = fs.readFileSync('../../version.txt', 'utf8').split('\n');
 const ArchivedVersionsDropdownItems = [
   {
     version: '2.0-deprecated',
-    href: 'v2.docs.ohif.org',
+    href: 'https://v2.docs.ohif.org',
+    isExternal: true,
   },
   {
     version: '1.0-deprecated',
-    href: 'v1.docs.ohif.org',
+    href: 'https://v1.docs.ohif.org',
+    isExternal: true,
   },
 ];
 
@@ -219,8 +221,10 @@ module.exports = {
                 value: '<b>Archived versions</b>',
               },
               ...ArchivedVersionsDropdownItems.map(item => ({
-                label: item.version,
+                label: `${item.version} `,
                 href: item.href,
+                target: item.isExternal ? '_blank' : undefined,
+                rel: item.isExternal ? 'noopener noreferrer' : undefined,
               })),
             ],
           },
