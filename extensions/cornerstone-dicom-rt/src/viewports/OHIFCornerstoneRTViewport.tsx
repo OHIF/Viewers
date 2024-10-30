@@ -4,7 +4,6 @@ import { useViewportGrid, LoadingIndicatorTotalPercent, ViewportActionArrows } f
 
 import promptHydrateRT from '../utils/promptHydrateRT';
 import _getStatusComponent from './_getStatusComponent';
-import { useSegmentationPresentationStore } from '@ohif/extension-cornerstone';
 
 import createRTToolGroupAndAddTools from '../utils/initRTToolGroup';
 import { SegmentationRepresentations } from '@cornerstonejs/tools/enums';
@@ -99,28 +98,12 @@ function OHIFCornerstoneRTViewport(props: withAppTypes) {
 
   const hydrateRTDisplaySet = useCallback(
     ({ rtDisplaySet, viewportId }) => {
-      // update the previously stored segmentationPresentation with the new viewportId
-      // presentation so that when we put the referencedDisplaySet back in the viewport
-      // it will have the correct segmentation representation hydrated
-      commandsManager.runCommand('updateStoredSegmentationPresentation', {
+      commandsManager.runCommand('hydrateRTSDisplaySet', {
         displaySet: rtDisplaySet,
-        type: SegmentationRepresentations.Contour,
-      });
-
-      // update the previously stored positionPresentation with the new viewportId
-      // presentation so that when we put the referencedDisplaySet back in the viewport
-      // it will be in the correct position zoom and pan
-      commandsManager.runCommand('updateStoredPositionPresentation', {
         viewportId,
-        displaySetInstanceUID: referencedDisplaySet.displaySetInstanceUID,
-      });
-
-      viewportGridService.setDisplaySetsForViewport({
-        viewportId,
-        displaySetInstanceUIDs: [referencedDisplaySet.displaySetInstanceUID],
       });
     },
-    [commandsManager, viewportGridService, referencedDisplaySet]
+    [commandsManager]
   );
 
   const getCornerstoneViewport = useCallback(() => {
