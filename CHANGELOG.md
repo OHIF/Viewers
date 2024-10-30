@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.9.0-beta.104](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.103...v3.9.0-beta.104) (2024-10-30)
+
+
+### Bug Fixes
+
+* **ui:** show ui notification on displaySet load error ([#4447](https://github.com/OHIF/Viewers/issues/4447)) ([4f20523](https://github.com/OHIF/Viewers/commit/4f20523109ecbb7ec5a6d5f2c97f7e73f81cda09))
+
+
+
+
+
 # [3.9.0-beta.103](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.102...v3.9.0-beta.103) (2024-10-29)
 
 
