@@ -81,7 +81,9 @@ export default class DICOMSRDisplayTool extends AnnotationTool {
     const { style: annotationStyle } = annotation.config;
 
     for (let i = 0; i < filteredAnnotations.length; i++) {
-      const annotation = filteredAnnotations[i];
+      const { updatedAnnotation: annotation, annotationColor } =
+        window.config.customization.processDicomSRAnnotation(filteredAnnotations[i]);
+
       const annotationUID = annotation.annotationUID;
       const { renderableData, TrackingUniqueIdentifier } = annotation.data;
       const { referencedImageId } = annotation.metadata;
@@ -95,9 +97,11 @@ export default class DICOMSRDisplayTool extends AnnotationTool {
       const lineWidth = this.getStyle('lineWidth', styleSpecifier, annotation);
       const lineDash = this.getStyle('lineDash', styleSpecifier, annotation);
       const color =
-        TrackingUniqueIdentifier === activeTrackingUniqueIdentifier
-          ? 'rgb(0, 255, 0)'
-          : this.getStyle('color', styleSpecifier, annotation);
+        annotationColor !== null
+          ? annotationColor
+          : TrackingUniqueIdentifier === activeTrackingUniqueIdentifier
+            ? 'rgb(0, 255, 0)'
+            : this.getStyle('color', styleSpecifier, annotation);
 
       const options = {
         color,
@@ -253,9 +257,9 @@ export default class DICOMSRDisplayTool extends AnnotationTool {
       ]);
 
       canvasCoordinates.push(viewport.worldToCanvas(arrowEnd));
-        
+
       }
-     
+
 
       const arrowUID = `${index}`;
 

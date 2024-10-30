@@ -1,8 +1,77 @@
-const apiBaseUrl = 'http://coe-aih.apps.iitd.ac.in/data-portal/api/v1';
+const apiBaseUrl = 'http://rtx4090b.cse.iitd.ac.in:8000/api/v1';
 // apiBaseUrl = 'http://10.184.164.236:8000/api/v1';
 // const apiBaseUrl = 'http://10.194.167.60:8000/api/v1';
+
+const availableMlModels = {
+  'LQ Adapter': {
+    displayName: 'LQ Adapter',
+    type: 'Detection',
+    annotationColor: 'rgb(255, 0, 0)',
+    detectedObject: 'Gall Bladder',
+  },
+  focalnet: {
+    displayName: 'FocalNet-DINO',
+    type: 'Detection',
+    annotationColor: 'rgb(0, 255, 0)',
+    detectedObject: 'Breast Cancer',
+  },
+  multiview: {
+    displayName: 'Multiview',
+    type: 'Detection',
+    annotationColor: 'rgb(255, 255, 255)',
+    detectedObject: 'Breast Cancer',
+  },
+  densemass: {
+    displayName: 'Densemass',
+    type: 'Detection',
+    annotationColor: 'rgb(255, 0, 0)',
+    detectedObject: 'Breast Cancer',
+  },
+  smallmass: {
+    displayName: 'Smallmass',
+    type: 'Detection',
+    annotationColor: 'rgb(255, 192, 203)',
+    detectedObject: 'Breast Cancer',
+  },
+};
+const availableMlModelsEnumsSet = new Set(Object.keys(availableMlModels));
+const availableMlModelsDisplayNamesSet = new Set(
+  Object.keys(availableMlModels).map(mlModelEnum => availableMlModels[mlModelEnum].displayName)
+);
+const mlModelDisplayNameToEnum = Object.keys(availableMlModels).reduce((acc, key) => {
+  const displayName = availableMlModels[key].displayName;
+  acc[displayName] = key;
+  return acc;
+}, {});
+
+function processDicomSRAnnotation(annotation) {
+  const annotationLabel = annotation.data.labels[0].label;
+  let annotationColor = null;
+
+  if (availableMlModelsEnumsSet.has(annotationLabel)) {
+    const modelEnum = annotationLabel;
+
+    annotation.data.labels[0].label = availableMlModels[modelEnum].displayName;
+    annotation.data.labels[0].value = availableMlModels[modelEnum].detectedObject;
+    annotationColor = availableMlModels[modelEnum].annotationColor;
+  } else if (availableMlModelsDisplayNamesSet.has(annotationLabel)) {
+    const modelEnum = mlModelDisplayNameToEnum[annotationLabel];
+    annotationColor = availableMlModels[modelEnum].annotationColor;
+  }
+
+  return {
+    updatedAnnotation: annotation,
+    annotationColor: annotationColor,
+  };
+}
+
+const customization = {
+  processDicomSRAnnotation: processDicomSRAnnotation,
+};
+
 window.config = {
   apiBaseUrl: apiBaseUrl,
+  customization: customization,
 
   routerBasename: '/data-portal',
   // whiteLabeling: {},
@@ -68,7 +137,7 @@ window.config = {
       namespace: '@ohif/extension-default.dataSourcesModule.dicomweb',
       sourceName: 'dicomweb',
       configuration: {
-        friendlyName: 'AWS S3 Static wado server',
+        friendlyName: 'CoE DICOM Web Wrapper',
         name: 'aws',
         wadoUriRoot: 'https://d33do7qe4w26qo.cloudfront.net/dicomweb',
         qidoRoot: `${apiBaseUrl}/dicom-web/qido-rs`,
