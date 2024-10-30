@@ -34,7 +34,7 @@ import {
 import { Types } from '@ohif/ui';
 
 import i18n from '@ohif/i18n';
-import { Onboarding } from '@ohif/ui-next';
+import { Onboarding, ScrollArea } from '@ohif/ui-next';
 
 const PatientInfoVisibility = Types.PatientInfoVisibility;
 
@@ -540,45 +540,51 @@ function WorkList({
       />
       <Onboarding />
       <InvestigationalUseDialog dialogConfiguration={appConfig?.investigationalUseDialog} />
-      <div className="ohif-scrollbar ohif-scrollbar-stable-gutter flex grow flex-col overflow-y-auto sm:px-5">
-        <StudyListFilter
-          numOfStudies={pageNumber * resultsPerPage > 100 ? 101 : numOfStudies}
-          filtersMeta={filtersMeta}
-          filterValues={{ ...filterValues, ...defaultSortValues }}
-          onChange={setFilterValues}
-          clearFilters={() => setFilterValues(defaultFilterValues)}
-          isFiltering={isFiltering(filterValues, defaultFilterValues)}
-          onUploadClick={uploadProps ? () => show(uploadProps) : undefined}
-          getDataSourceConfigurationComponent={
-            dataSourceConfigurationComponent ? () => dataSourceConfigurationComponent() : undefined
-          }
-        />
-        {hasStudies ? (
+      <div className="flex flex-col overflow-y-auto">
+        <ScrollArea>
           <div className="flex grow flex-col">
-            <StudyListTable
-              tableDataSource={tableDataSource.slice(offset, offsetAndTake)}
-              numOfStudies={numOfStudies}
-              querying={querying}
+            <StudyListFilter
+              numOfStudies={pageNumber * resultsPerPage > 100 ? 101 : numOfStudies}
               filtersMeta={filtersMeta}
+              filterValues={{ ...filterValues, ...defaultSortValues }}
+              onChange={setFilterValues}
+              clearFilters={() => setFilterValues(defaultFilterValues)}
+              isFiltering={isFiltering(filterValues, defaultFilterValues)}
+              onUploadClick={uploadProps ? () => show(uploadProps) : undefined}
+              getDataSourceConfigurationComponent={
+                dataSourceConfigurationComponent
+                  ? () => dataSourceConfigurationComponent()
+                  : undefined
+              }
             />
-            <div className="grow">
-              <StudyListPagination
-                onChangePage={onPageNumberChange}
-                onChangePerPage={onResultsPerPageChange}
-                currentPage={pageNumber}
-                perPage={resultsPerPage}
+          </div>
+          {hasStudies ? (
+            <div className="flex grow flex-col">
+              <StudyListTable
+                tableDataSource={tableDataSource.slice(offset, offsetAndTake)}
+                numOfStudies={numOfStudies}
+                querying={querying}
+                filtersMeta={filtersMeta}
               />
+              <div className="grow">
+                <StudyListPagination
+                  onChangePage={onPageNumberChange}
+                  onChangePerPage={onResultsPerPageChange}
+                  currentPage={pageNumber}
+                  perPage={resultsPerPage}
+                />
+              </div>
             </div>
-          </div>
-        ) : (
-          <div className="flex flex-col items-center justify-center pt-48">
-            {appConfig.showLoadingIndicator && isLoadingData ? (
-              <LoadingIndicatorProgress className={'h-full w-full bg-black'} />
-            ) : (
-              <EmptyStudies />
-            )}
-          </div>
-        )}
+          ) : (
+            <div className="flex flex-col items-center justify-center pt-48">
+              {appConfig.showLoadingIndicator && isLoadingData ? (
+                <LoadingIndicatorProgress className={'h-full w-full bg-black'} />
+              ) : (
+                <EmptyStudies />
+              )}
+            </div>
+          )}
+        </ScrollArea>
       </div>
     </div>
   );
