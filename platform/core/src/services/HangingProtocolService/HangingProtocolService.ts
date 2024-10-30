@@ -10,6 +10,7 @@ import * as HangingProtocol from '../../types/HangingProtocol';
 import { isDisplaySetFromUrl, sopInstanceLocation } from './custom-attribute/isDisplaySetFromUrl';
 import numberOfDisplaySetsWithImages from './custom-attribute/numberOfDisplaySetsWithImages';
 import seriesDescriptionsFromDisplaySets from './custom-attribute/seriesDescriptionsFromDisplaySets';
+import isMammoPos from './custom-attribute/isMammoPos';
 import uuidv4 from '../../utils/uuidv4';
 
 type Protocol = HangingProtocol.Protocol | HangingProtocol.ProtocolGenerator;
@@ -109,6 +110,22 @@ export default class HangingProtocolService extends PubSubService {
       name: 'numberOfDisplaySetsWithImages',
       description: 'Number of displays sets with images',
       callback: numberOfDisplaySetsWithImages,
+    },
+    isRCC: {
+      name: 'is rcc',
+      callback: displaySet => isMammoPos(displaySet, 'R', 'CC'),
+    },
+    isLCC: {
+      name: 'is lcc',
+      callback: displaySet => isMammoPos(displaySet, 'L', 'CC'),
+    },
+    isRMLO: {
+      name: 'is rmlo',
+      callback: displaySet => isMammoPos(displaySet, 'R', 'MLO'),
+    },
+    isLMLO: {
+      name: 'is lmlo',
+      callback: displaySet => isMammoPos(displaySet, 'L', 'MLO'),
     },
   };
   listeners = {};
