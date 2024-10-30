@@ -142,7 +142,13 @@ this pattern, where multiple toolbar buttons are using the same evaluator but wi
 You can choose to set up multiple evaluators for a single button. This comes in handy when you need to assess the button according to various conditions. For example, we aim to prevent the Cine player from showing up on the 3D viewport, so we have:
 
 ```js
-evaluate: ['evaluate.cine', 'evaluate.not3D'],
+evaluate: [
+  'evaluate.cine',
+  {
+    name: 'evaluate.viewport.supported',
+    unsupportedViewportTypes: ['volume3d'],
+  },
+],
 ```
 
 You can even come up with advanced evaluators such as:

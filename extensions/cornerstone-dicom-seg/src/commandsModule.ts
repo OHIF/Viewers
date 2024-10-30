@@ -14,11 +14,7 @@ import vtkImageMarchingSquares from '@kitware/vtk.js/Filters/General/ImageMarchi
 import vtkDataArray from '@kitware/vtk.js/Common/Core/DataArray';
 import vtkImageData from '@kitware/vtk.js/Common/DataModel/ImageData';
 
-import {
-  updateViewportsForSegmentationRendering,
-  getUpdatedViewportsForSegmentation,
-  getTargetViewport,
-} from './utils/hydrationUtils';
+import { updateViewportsForSegmentationRendering, getTargetViewport } from './utils/hydrationUtils';
 const { segmentation: segmentationUtils } = utilities;
 
 const { datasetToBlob } = dcmjs.data;
@@ -51,19 +47,6 @@ const commandsModule = ({
   } = servicesManager.services as AppTypes.Services;
 
   const actions = {
-    /**
-     * Retrieves a list of viewports that require updates in preparation for segmentation rendering.
-     * This function evaluates viewports based on their compatibility with the provided segmentation's
-     * frame of reference UID and appends them to the updated list if they should render the segmentation.
-     *
-     * @param {Object} params - Parameters for the function.
-     * @param params.viewportId - the ID of the viewport to be updated.
-     * @param params.servicesManager - The services manager
-     * @param params.referencedDisplaySetInstanceUID - Optional UID for the referenced display set instance.
-     *
-     * @returns {Array} Returns an array of viewports that require updates for segmentation rendering.
-     */
-    getUpdatedViewportsForSegmentation,
     /**
      * Loads segmentations for a specified viewport.
      * The function prepares the viewport for rendering, then loads the segmentation details.
@@ -421,15 +404,19 @@ const commandsModule = ({
   };
 
   const definitions = {
-    getUpdatedViewportsForSegmentation: {
-      commandFn: actions.getUpdatedViewportsForSegmentation,
-    },
+    /**
+     * Obsolete?
+     */
     loadSegmentationDisplaySetsForViewport: {
       commandFn: actions.loadSegmentationDisplaySetsForViewport,
     },
+    /**
+     * Obsolete?
+     */
     loadSegmentationsForViewport: {
       commandFn: actions.loadSegmentationsForViewport,
     },
+
     generateSegmentation: {
       commandFn: actions.generateSegmentation,
     },

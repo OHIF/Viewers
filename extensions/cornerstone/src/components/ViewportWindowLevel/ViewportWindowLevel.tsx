@@ -16,10 +16,9 @@ const ViewportWindowLevel = ({
 }>): ReactElement => {
   const { cornerstoneViewportService } = servicesManager.services;
   const [windowLevels, setWindowLevels] = useState([]);
-  const [cachedHistograms, setCachedHistograms] = useState({});
   const [isLoading, setIsLoading] = useState(true);
 
-  /**c
+  /**
    * Looks for all viewports that has exactly all volumeIds passed as parameter.
    */
   const getViewportsWithVolumeIds = useCallback(
@@ -138,83 +137,79 @@ const ViewportWindowLevel = ({
     return undefined;
   }, []);
 
-  const getWindowLevelsData = useCallback(
-    async (viewportId: string) => {
-      const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
+  const getWindowLevelsData = useCallback(async (viewportId: string) => {
+    const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
 
-      if (!viewport) {
-        return [];
-      }
+    if (!viewport) {
+      return [];
+    }
 
-      const viewportInfo = cornerstoneViewportService.getViewportInfo(viewportId);
+    const viewportInfo = cornerstoneViewportService.getViewportInfo(viewportId);
 
-      const volumeIds = viewport.getActors().map(actor => actor.referencedId);
-      const viewportProperties = viewport.getProperties();
-      const { voiRange } = viewportProperties;
-      const viewportVoi = voiRange
-        ? {
-            windowWidth: voiRange.upper - voiRange.lower,
-            windowCenter: voiRange.lower + (voiRange.upper - voiRange.lower) / 2,
-          }
-        : undefined;
+    const volumeIds = viewport.getActors().map(actor => actor.referencedId);
+    const viewportProperties = viewport.getProperties();
+    const { voiRange } = viewportProperties;
+    const viewportVoi = voiRange
+      ? {
+          windowWidth: voiRange.upper - voiRange.lower,
+          windowCenter: voiRange.lower + (voiRange.upper - voiRange.lower) / 2,
+        }
+      : undefined;
 
-      const windowLevels = await Promise.all(
-        volumeIds.map(async (volumeId, volumeIndex) => {
-          const volume = cs3DCache.getVolume(volumeId);
+    const windowLevels = await Promise.all(
+      volumeIds.map(async (volumeId, volumeIndex) => {
+        const volume = cs3DCache.getVolume(volumeId);
 
-          if (!volume) {
-            return null;
-          }
+        if (!volume) {
+          return null;
+        }
 
-          const opacity = getVolumeOpacity(viewport, volumeId);
-          const { metadata, scaling } = volume;
-          const modality = metadata.Modality;
+        const opacity = getVolumeOpacity(viewport, volumeId);
+        const { metadata, scaling } = volume;
+        const modality = metadata.Modality;
 
-          // TODO: find a proper way to fix the histogram
-          const options = {
-            min: modality === 'PT' ? 0.1 : -999,
-            max: modality === 'PT' ? 5 : 10000,
-          };
+        // TODO: find a proper way to fix the histogram
+        const options = {
+          min: modality === 'PT' ? 0.1 : -999,
+          max: modality === 'PT' ? 5 : 10000,
+        };
 
-          const histogram = await getViewportVolumeHistogram(viewport, volume, options);
+        const histogram = await getViewportVolumeHistogram(viewport, volume, options);
 
-          if (!histogram) {
-            return null;
-          }
+        if (!histogram) {
+          return null;
+        }
 
-          const { voi: displaySetVOI, colormap: displaySetColormap } =
-            viewportInfo.displaySetOptions[volumeIndex];
+        const { voi: displaySetVOI, colormap: displaySetColormap } =
+          viewportInfo.displaySetOptions[volumeIndex];
 
-          let colormap;
-          if (displaySetColormap) {
-            colormap =
-              csUtils.colormap.getColormap(displaySetColormap.name) ??
-              vtkColorMaps.getPresetByName(displaySetColormap.name);
-          }
+        let colormap;
+        if (displaySetColormap) {
+          colormap =
+            csUtils.colormap.getColormap(displaySetColormap.name) ??
+            vtkColorMaps.getPresetByName(displaySetColormap.name);
+        }
 
-          const voi = !volumeIndex ? (viewportVoi ?? displaySetVOI) : displaySetVOI;
+        const voi = !volumeIndex ? (viewportVoi ?? displaySetVOI) : displaySetVOI;
 
-          return {
-            viewportId,
-            modality,
-            volumeId,
-            volumeIndex,
-            voi,
-            histogram,
-            colormap,
-            step: scaling?.PT ? 0.05 : 1,
-            opacity,
-            showOpacitySlider: volumeIndex === 1 && opacity !== undefined,
-          };
-        })
-      );
+        return {
+          viewportId,
+          modality,
+          volumeId,
+          volumeIndex,
+          voi,
+          histogram,
+          colormap,
+          step: scaling?.PT ? 0.05 : 1,
+          opacity,
+          showOpacitySlider: volumeIndex === 1 && opacity !== undefined,
+        };
+      })
+    );
 
-      const data = windowLevels.filter(Boolean);
-      return data;
-    },
-
-    [cachedHistograms, cornerstoneViewportService, getVolumeOpacity]
-  );
+    const data = windowLevels.filter(Boolean);
+    return data;
+  });
 
   const updateViewportHistograms = useCallback(() => {
     getWindowLevelsData(viewportId).then(windowLevels => {

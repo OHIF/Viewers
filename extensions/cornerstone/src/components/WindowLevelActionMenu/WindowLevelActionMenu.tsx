@@ -15,7 +15,7 @@ import { ViewportPreset } from '../../types/ViewportPresets';
 import { VolumeViewport3D } from '@cornerstonejs/core';
 import { utilities } from '@cornerstonejs/core';
 
-const nonImageModalities = ['SR', 'SEG', 'SM', 'RTSTRUCT', 'RTPLAN', 'RTDOSE', 'SM'];
+export const nonWLModalities = ['SR', 'SEG', 'SM', 'RTSTRUCT', 'RTPLAN', 'RTDOSE'];
 
 export type WindowLevelActionMenuProps = {
   viewportId: string;
@@ -131,7 +131,7 @@ export function WindowLevelActionMenu({
         {!is3DVolume && (
           <Colorbar
             viewportId={viewportId}
-            displaySets={displaySets.filter(ds => !nonImageModalities.includes(ds.Modality))}
+            displaySets={displaySets.filter(ds => !nonWLModalities.includes(ds.Modality))}
             commandsManager={commandsManager}
             servicesManager={servicesManager}
             colorbarProperties={colorbarProperties}
@@ -147,7 +147,7 @@ export function WindowLevelActionMenu({
             <Colormap
               colormaps={colormaps}
               viewportId={viewportId}
-              displaySets={displaySets.filter(ds => !nonImageModalities.includes(ds.Modality))}
+              displaySets={displaySets.filter(ds => !nonWLModalities.includes(ds.Modality))}
               commandsManager={commandsManager}
               servicesManager={servicesManager}
             />

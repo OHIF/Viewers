@@ -6,25 +6,6 @@ const getToggledClassName = (isToggled: boolean) => {
     : '!text-common-bright hover:!bg-primary-dark hover:text-primary-light';
 };
 
-const toolsNotSupportedByVideoViewport = ['LivewireContour'];
-// Todo: this is really ugly but we don't have a standard way for id of actions
-const actionsNotSupportedByVideoViewport = [
-  'rotate-right',
-  'flipHorizontal',
-  'ImageSliceSync',
-  'ReferenceLines',
-  'ImageOverlayViewer',
-  'StackScroll',
-  'invert',
-  'Probe',
-  'Angle',
-  'CobbAngle',
-  'Magnify',
-  'CalibrationLine',
-  'AdvancedMagnify',
-  'WindowLevelRegion',
-];
-
 const getDisabledState = (disabledText?: string) => ({
   disabled: true,
   className: '!text-common-bright ohif-disabled',
@@ -46,20 +27,47 @@ export default function getToolbarModule({ commandsManager, servicesManager }: w
     // functions/helpers to be used by the toolbar buttons to decide if they should
     // enabled or not
     {
-      name: 'evaluate.not.sm',
-      evaluate: ({ viewportId }) => {
+      name: 'evaluate.viewport.supported',
+      evaluate: ({ viewportId, unsupportedViewportTypes, disabledText }) => {
         const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
-        return viewport?.type === 'wholeSlide' ? getDisabledState() : undefined;
+
+        if (viewport && unsupportedViewportTypes?.includes(viewport.type)) {
+          return getDisabledState(disabledText);
+        }
+
+        return undefined;
       },
     },
     {
-      name: 'evaluate.action.not.video',
-      evaluate: ({ viewportId, button }) => {
-        const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
+      name: 'evaluate.modality.supported',
+      evaluate: ({ viewportId, unsupportedModalities, supportedModalities, disabledText }) => {
+        const displaySetUIDs = viewportGridService.getDisplaySetsUIDsForViewport(viewportId);
 
-        if (viewport?.type === 'video') {
-          if (actionsNotSupportedByVideoViewport.includes(button.id)) {
-            return getDisabledState();
+        if (!displaySetUIDs?.length) {
+          return;
+        }
+
+        const displaySets = displaySetUIDs.map(displaySetService.getDisplaySetByUID);
+
+        // Check for unsupported modalities (exclusion)
+        if (unsupportedModalities?.length) {
+          const hasUnsupportedModality = displaySets.some(displaySet =>
+            unsupportedModalities.includes(displaySet?.Modality)
+          );
+
+          if (hasUnsupportedModality) {
+            return getDisabledState(disabledText);
+          }
+        }
+
+        // Check for supported modalities (inclusion)
+        if (supportedModalities?.length) {
+          const hasAnySupportedModality = displaySets.some(displaySet =>
+            supportedModalities.includes(displaySet?.Modality)
+          );
+
+          if (!hasAnySupportedModality) {
+            return getDisabledState(disabledText || 'Tool not available for this modality');
           }
         }
       },
@@ -67,10 +75,6 @@ export default function getToolbarModule({ commandsManager, servicesManager }: w
     {
       name: 'evaluate.cornerstoneTool',
       evaluate: ({ viewportId, button, toolNames, disabledText }) => {
-        if (toolsNotSupportedByVideoViewport.includes(button.id)) {
-          return getDisabledState(disabledText);
-        }
-
         const toolGroup = toolGroupService.getToolGroupForViewport(viewportId);
 
         if (!toolGroup) {
@@ -214,29 +218,6 @@ export default function getToolbarModule({ commandsManager, servicesManager }: w
         return {
           className: getToggledClassName(isEnabled),
         };
-      },
-    },
-    {
-      name: 'evaluate.not3D',
-      evaluate: ({ viewportId, disabledText }) => {
-        const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
-        return viewport?.type === 'volume3d' ? getDisabledState(disabledText) : undefined;
-      },
-    },
-    {
-      name: 'evaluate.isUS',
-      evaluate: ({ viewportId, disabledText }) => {
-        const displaySetUIDs = viewportGridService.getDisplaySetsUIDsForViewport(viewportId);
-
-        if (!displaySetUIDs?.length) {
-          return;
-        }
-
-        const displaySets = displaySetUIDs.map(displaySetService.getDisplaySetByUID);
-        const isUS = displaySets.some(displaySet => displaySet?.Modality === 'US');
-        if (!isUS) {
-          return getDisabledState(disabledText);
-        }
       },
     },
     {

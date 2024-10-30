@@ -188,7 +188,13 @@ const moreTools = [
           label: 'Ultrasound Directional',
           tooltip: 'Ultrasound Directional',
           commands: setToolActiveToolbar,
-          evaluate: ['evaluate.cornerstoneTool', 'evaluate.isUS'],
+          evaluate: [
+            'evaluate.cornerstoneTool',
+            {
+              name: 'evaluate.modality.supported',
+              supportedModalities: ['US'],
+            },
+          ],
         }),
         createButton({
           id: 'WindowLevelRegion',
