@@ -64,6 +64,8 @@
     "link-list": "npm ls --depth=0 --link=true"
   },
   "dependencies": {
+    "@ant-design/icons": "5.5.1",
+    "antd": "5.21.6",
     "execa": "^8.0.1"
   },
   "optionalDependencies": {
@@ -86,6 +88,7 @@
     "@babel/preset-env": "7.24.7",
     "@babel/preset-react": "^7.16.7",
     "@babel/preset-typescript": "^7.13.0",
+    "@types/antd": "^1.0.4",
     "prettier": "^3.3.2",
     "prettier-plugin-tailwindcss": "^0.6.5"
   },

@@ -1,42 +1,54 @@
-import dcmjs from 'dcmjs';
-import moment from 'moment';
 import React, { useState, useMemo, useEffect } from 'react';
-import { classes } from '@ohif/core';
-import { InputRange, Select, Typography, InputFilterText } from '@ohif/ui';
-import debounce from 'lodash.debounce';
+import { Select, Input, Slider, Typography, Table } from 'antd';
+import { SearchOutlined } from '@ant-design/icons';
 
-import DicomTagTable from './DicomTagTable';
+import { formatDicomDate } from './formatDicomDate';
 import './DicomTagBrowser.css';
+import { getSortedTags } from './dicomTagUtils';
 
-const { ImageSet } = classes;
-const { DicomMetaDictionary } = dcmjs.data;
-const { nameMap } = DicomMetaDictionary;
+const { Option } = Select;
 
-const DicomTagBrowser = ({ displaySets, displaySetInstanceUID }) => {
-  // The column indices that are to be excluded during a filter of the table.
-  // At present the column indices are:
-  // 0: DICOM tag
-  // 1: VR
-  // 2: Keyword
-  // 3: Value
-  const excludedColumnIndicesForFilter: Set<number> = new Set([1]);
+interface DisplaySet {
+  uid: string;
+  displaySetInstanceUID: number;
+  SeriesDate: string;
+  SeriesTime: string;
+  SeriesNumber: number;
+  SeriesDescription: string;
+  Modality: string;
+  images: any[];
+}
 
+interface TableDataItem {
+  key: string;
+  tag: string;
+  vr: string;
+  keyword: string;
+  value: string;
+  children?: TableDataItem[];
+}
+
+const DicomTagBrowser = ({
+  displaySets,
+  displaySetInstanceUID,
+}: {
+  displaySets: DisplaySet[];
+  displaySetInstanceUID: string;
+}): JSX.Element => {
   const [selectedDisplaySetInstanceUID, setSelectedDisplaySetInstanceUID] =
     useState(displaySetInstanceUID);
   const [instanceNumber, setInstanceNumber] = useState(1);
   const [filterValue, setFilterValue] = useState('');
+  const [expandedKeys, setExpandedKeys] = useState<string[]>([]);
+  const [searchExpandedKeys, setSearchExpandedKeys] = useState<string[]>([]);
+  const [currentDisplaySet, setCurrentDisplaySet] = useState<DisplaySet>();
 
-  const onSelectChange = value => {
-    setSelectedDisplaySetInstanceUID(value.value);
-    setInstanceNumber(1);
-  };
-
-  const activeDisplaySet = displaySets.find(
-    ds => ds.displaySetInstanceUID === selectedDisplaySetInstanceUID
-  );
-
-  const isImageStack = _isImageStack(activeDisplaySet);
-  const showInstanceList = isImageStack && activeDisplaySet.images.length > 1;
+  useEffect(() => {
+    const displaySet = displaySets.find(
+      displaySet => displaySet.uid === selectedDisplaySetInstanceUID
+    );
+    setCurrentDisplaySet(displaySet);
+  }, [displaySets, selectedDisplaySetInstanceUID]);
 
   const displaySetList = useMemo(() => {
     displaySets.sort((a, b) => a.SeriesNumber - b.SeriesNumber);
@@ -50,10 +62,8 @@ const DicomTagBrowser = ({ displaySets, displaySetInstanceUID }) => {
         Modality,
       } = displaySet;
 
-      /* Map to display representation */
-      const dateStr = `${SeriesDate}:${SeriesTime}`.split('.')[0];
-      const date = moment(dateStr, 'YYYYMMDD:HHmmss');
-      const displayDate = date.format('ddd, MMM Do YYYY');
+      const dateStr = SeriesDate && SeriesTime ? `${SeriesDate}:${SeriesTime}`.split('.')[0] : '';
+      const displayDate = formatDicomDate(dateStr);
 
       return {
         value: displaySetInstanceUID,
@@ -63,293 +73,220 @@ const DicomTagBrowser = ({ displaySets, displaySetInstanceUID }) => {
     });
   }, [displaySets]);
 
-  const rows = useMemo(() => {
-    let metadata;
-    if (isImageStack) {
-      metadata = activeDisplaySet.images[instanceNumber - 1];
-    } else {
-      metadata = activeDisplaySet.instance || activeDisplaySet;
+  const showInstanceList = currentDisplaySet?.images.length > 1;
+
+  const instanceSliderMarks = useMemo(() => {
+    if (currentDisplaySet === undefined) {
+      return {};
     }
+    const totalInstances = currentDisplaySet.images.length;
+
+    const marks: Record<number, string> = {
+      1: '1',
+      [Math.ceil(totalInstances / 2)]: String(Math.ceil(totalInstances / 2)),
+      [totalInstances]: String(totalInstances),
+    };
+
+    return marks;
+  }, [currentDisplaySet]);
+
+  const columns = [
+    {
+      title: 'Tag',
+      dataIndex: 'tag',
+      key: 'tag',
+      width: '30%',
+    },
+    {
+      title: 'VR',
+      dataIndex: 'vr',
+      key: 'vr',
+      width: '5%',
+    },
+    {
+      title: 'Keyword',
+      dataIndex: 'keyword',
+      key: 'keyword',
+      width: '30%',
+    },
+    {
+      title: 'Value',
+      dataIndex: 'value',
+      key: 'value',
+      width: '40%',
+    },
+  ];
+
+  const tableData = useMemo(() => {
+    const transformTagsToTableData = (tags: any[], parentKey = ''): TableDataItem[] => {
+      return tags.map((tag, index) => {
+        const currentKey = parentKey !== undefined ? `${parentKey}-${index}` : `${index}`;
+
+        const item: TableDataItem = {
+          key: currentKey,
+          tag: tag.tag,
+          vr: tag.vr,
+          keyword: tag.keyword,
+          value: tag.value,
+        };
+
+        if (tag.children !== undefined && tag.children.length > 0) {
+          item.children = transformTagsToTableData(tag.children, currentKey);
+        }
+
+        return item;
+      });
+    };
+
+    if (currentDisplaySet === undefined) {
+      return [];
+    }
+    const metadata = currentDisplaySet?.images[instanceNumber - 1];
     const tags = getSortedTags(metadata);
-    return getFormattedRowsFromTags(tags, metadata);
-  }, [instanceNumber, selectedDisplaySetInstanceUID]);
+    return transformTagsToTableData(tags);
+  }, [instanceNumber, currentDisplaySet]);
 
-  const filteredRows = useMemo(() => {
-    if (!filterValue) {
-      return rows;
+  const filteredData = useMemo(() => {
+    if (filterValue === undefined || filterValue === '') {
+      return tableData;
     }
 
-    const filterValueLowerCase = filterValue.toLowerCase();
-    return rows.filter(row => {
-      return row.reduce((keepRow, col, colIndex) => {
-        if (keepRow) {
-          // We are already keeping the row, why do more work so return now.
-          return keepRow;
-        }
+    const searchLower = filterValue.toLowerCase();
+    const newSearchExpandedKeys: string[] = [];
 
-        if (excludedColumnIndicesForFilter.has(colIndex)) {
-          return keepRow;
-        }
+    const filterNodes = (nodes: TableDataItem[], parentKey = ''): TableDataItem[] => {
+      return nodes
+        .map(node => {
+          const newNode = { ...node };
 
-        return keepRow || col.toLowerCase().includes(filterValueLowerCase);
-      }, false);
-    });
-  }, [rows, filterValue]);
+          const matchesSearch =
+            (node.tag?.toLowerCase() ?? '').includes(searchLower) ||
+            (node.vr?.toLowerCase() ?? '').includes(searchLower) ||
+            (node.keyword?.toLowerCase() ?? '').includes(searchLower) ||
+            (node.value?.toString().toLowerCase() ?? '').includes(searchLower);
 
-  const debouncedSetFilterValue = useMemo(() => {
-    return debounce(setFilterValue, 200);
-  }, []);
+          if (node.children != null) {
+            const filteredChildren = filterNodes(node.children, node.key);
+            newNode.children = filteredChildren;
+
+            if (matchesSearch || filteredChildren.length > 0) {
+              if (parentKey !== undefined) {
+                newSearchExpandedKeys.push(parentKey);
+              }
+              newSearchExpandedKeys.push(node.key);
+              return newNode;
+            }
+          }
+
+          return matchesSearch ? newNode : null;
+        })
+        .filter((node): node is TableDataItem => node !== null);
+    };
+
+    const filtered = filterNodes(tableData);
+    setSearchExpandedKeys(newSearchExpandedKeys);
+    return filtered;
+  }, [tableData, filterValue]);
 
   useEffect(() => {
-    return () => {
-      debouncedSetFilterValue?.cancel();
-    };
-  }, []);
+    if (filterValue === undefined || filterValue === '') {
+      setSearchExpandedKeys([]);
+    }
+  }, [filterValue]);
+
+  const allExpandedKeys = useMemo(() => {
+    return [...new Set([...expandedKeys, ...searchExpandedKeys])];
+  }, [expandedKeys, searchExpandedKeys]);
 
   return (
-    <div className="dicom-tag-browser-content">
-      <div className="mb-6 flex flex-row items-center pl-1">
-        <div className="flex w-1/2 flex-row items-center">
-          <Typography
-            variant="subtitle"
-            className="mr-4"
-          >
-            Series
-          </Typography>
-          <div className="mr-8 grow">
-            <Select
-              id="display-set-selector"
-              isClearable={false}
-              onChange={onSelectChange}
-              options={displaySetList}
-              value={displaySetList.find(ds => ds.value === selectedDisplaySetInstanceUID)}
-              className="text-white"
-            />
-          </div>
-        </div>
-        <div className="flex w-1/2 flex-row items-center">
-          {showInstanceList && (
-            <Typography
-              variant="subtitle"
-              className="mr-4"
+    <div className="dicom-tag-browser h-full">
+      <div className="w-full py-5 pl-4 pr-5">
+        <div className="mb-8 flex h-full gap-6">
+          <div className="max-w-[50%] flex-1">
+            <Typography.Text
+              strong
+              className="mb-2 block text-white"
             >
-              Instance Number
-            </Typography>
-          )}
+              Series
+            </Typography.Text>
+            <Select
+              className="w-full"
+              value={selectedDisplaySetInstanceUID}
+              defaultValue={0}
+              onChange={value => {
+                setSelectedDisplaySetInstanceUID(value);
+                setInstanceNumber(1);
+              }}
+              optionLabelProp="label"
+              optionFilterProp="label"
+            >
+              {displaySetList.map(item => (
+                <Option
+                  key={item.value}
+                  value={item.value}
+                  label={item.label}
+                  className="bg-black text-white"
+                >
+                  <div>
+                    <div>{item.label}</div>
+                    {item.description ? <div className="text-xs">{item.description}</div> : <></>}
+                  </div>
+                </Option>
+              ))}
+            </Select>
+          </div>
+
           {showInstanceList && (
-            <div className="grow">
-              <InputRange
+            <div className="ml-[-32px] max-w-[50%] flex-1 pl-[32px]">
+              <Typography.Text
+                strong
+                className="mb-2 block text-white"
+              >
+                Instance Number: {instanceNumber}
+              </Typography.Text>
+              <Slider
+                min={1}
+                max={currentDisplaySet?.images.length}
                 value={instanceNumber}
-                key={selectedDisplaySetInstanceUID}
-                onChange={value => {
-                  setInstanceNumber(parseInt(value));
+                onChange={value => setInstanceNumber(value)}
+                marks={instanceSliderMarks}
+                tooltip={{
+                  formatter: (value: number | undefined) =>
+                    value !== undefined ? `Instance ${value}` : '',
                 }}
-                minValue={1}
-                maxValue={activeDisplaySet.images.length}
-                step={1}
-                inputClassName="w-full"
-                labelPosition="left"
-                trackColor={'#3a3f99'}
               />
             </div>
           )}
         </div>
-      </div>
-      <div className="h-1 w-full bg-black"></div>
-      <div className="my-3 flex w-1/2 flex-row">
-        <InputFilterText
-          className="mr-8 block w-full"
+
+        <Input
+          className="mb-5 max-w-[50%] border-[#3a3f99] bg-black text-[#7bb2ce]"
           placeholder="Search metadata..."
-          onDebounceChange={setFilterValue}
-        ></InputFilterText>
+          prefix={<SearchOutlined />}
+          onChange={e => setFilterValue(e.target.value)}
+          value={filterValue}
+        />
+
+        <Table
+          className="h-96 bg-black text-white"
+          columns={columns}
+          dataSource={filteredData}
+          pagination={false}
+          expandable={{
+            expandedRowKeys: allExpandedKeys,
+            onExpandedRowsChange: keys => setExpandedKeys(keys as string[]),
+          }}
+          size="small"
+          scroll={{ y: 350 }}
+          locale={{
+            emptyText: (
+              <div className="flex h-80 w-full items-center justify-center text-white">No data</div>
+            ),
+          }}
+        />
       </div>
-      <DicomTagTable rows={filteredRows} />
     </div>
   );
 };
-
-function getFormattedRowsFromTags(tags, metadata) {
-  const rows = [];
-
-  tags.forEach(tagInfo => {
-    if (tagInfo.vr === 'SQ') {
-      rows.push([`${tagInfo.tagIndent}${tagInfo.tag}`, tagInfo.vr, tagInfo.keyword, '']);
-
-      const { values } = tagInfo;
-
-      values.forEach((item, index) => {
-        const formatedRowsFromTags = getFormattedRowsFromTags(item, metadata);
-
-        rows.push([`${item[0].tagIndent}(FFFE,E000)`, '', `Item #${index}`, '']);
-
-        rows.push(...formatedRowsFromTags);
-      });
-    } else {
-      if (tagInfo.vr === 'xs') {
-        try {
-          const tag = dcmjs.data.Tag.fromPString(tagInfo.tag).toCleanString();
-          const originalTagInfo = metadata[tag];
-          tagInfo.vr = originalTagInfo.vr;
-        } catch (error) {
-          console.error(`Failed to parse value representation for tag '${tagInfo.keyword}'`);
-        }
-      }
-      rows.push([`${tagInfo.tagIndent}${tagInfo.tag}`, tagInfo.vr, tagInfo.keyword, tagInfo.value]);
-    }
-  });
-
-  return rows;
-}
-
-function getSortedTags(metadata) {
-  const tagList = getRows(metadata);
-
-  // Sort top level tags, sequence groups are sorted when created.
-  _sortTagList(tagList);
-
-  return tagList;
-}
-
-function getRows(metadata, depth = 0) {
-  // Tag, Type, Value, Keyword
-
-  const keywords = Object.keys(metadata);
-
-  let tagIndent = '';
-
-  for (let i = 0; i < depth; i++) {
-    tagIndent += '>';
-  }
-
-  if (depth > 0) {
-    tagIndent += ' '; // If indented, add a space after the indents.
-  }
-
-  const rows = [];
-  for (let i = 0; i < keywords.length; i++) {
-    let keyword = keywords[i];
-
-    if (keyword === '_vrMap') {
-      continue;
-    }
-
-    const tagInfo = nameMap[keyword];
-
-    let value = metadata[keyword];
-
-    if (tagInfo && tagInfo.vr === 'SQ') {
-      const sequenceAsArray = toArray(value);
-
-      // Push line defining the sequence
-
-      const sequence = {
-        tag: tagInfo.tag,
-        tagIndent,
-        vr: tagInfo.vr,
-        keyword,
-        values: [],
-      };
-
-      rows.push(sequence);
-
-      if (value === null) {
-        // Type 2 Sequence
-        continue;
-      }
-
-      sequenceAsArray.forEach(item => {
-        const sequenceRows = getRows(item, depth + 1);
-
-        if (sequenceRows.length) {
-          // Sort the sequence group.
-          _sortTagList(sequenceRows);
-          sequence.values.push(sequenceRows);
-        }
-      });
-
-      continue;
-    }
-
-    if (Array.isArray(value)) {
-      if (value.length > 0 && typeof value[0] != 'object') {
-        value = value.join('\\');
-      }
-    }
-
-    if (typeof value === 'number') {
-      value = value.toString();
-    }
-
-    if (typeof value !== 'string') {
-      if (value === null) {
-        value = ' ';
-      } else {
-        if (typeof value === 'object') {
-          if (value.InlineBinary) {
-            value = 'Inline Binary';
-          } else if (value.BulkDataURI) {
-            value = `Bulk Data URI`; //: ${value.BulkDataURI}`;
-          } else if (value.Alphabetic) {
-            value = value.Alphabetic;
-          } else {
-            console.warn(`Unrecognised Value: ${value} for ${keyword}:`);
-            console.warn(value);
-            value = ' ';
-          }
-        } else {
-          console.warn(`Unrecognised Value: ${value} for ${keyword}:`);
-          value = ' ';
-        }
-      }
-    }
-
-    // tag / vr/ keyword/ value
-
-    // Remove retired tags
-    keyword = keyword.replace('RETIRED_', '');
-    if (tagInfo) {
-      rows.push({
-        tag: tagInfo.tag,
-        tagIndent,
-        vr: tagInfo.vr,
-        keyword,
-        value,
-      });
-    } else {
-      // skip properties without hex tag numbers
-      const regex = /[0-9A-Fa-f]{6}/g;
-      if (keyword.match(regex)) {
-        const tag = `(${keyword.substring(0, 4)},${keyword.substring(4, 8)})`;
-        rows.push({
-          tag,
-          tagIndent,
-          vr: '',
-          keyword: 'Private Tag',
-          value,
-        });
-      }
-    }
-  }
-
-  return rows;
-}
-
-function _isImageStack(displaySet) {
-  return displaySet instanceof ImageSet;
-}
-
-function toArray(objectOrArray) {
-  return Array.isArray(objectOrArray) ? objectOrArray : [objectOrArray];
-}
-
-function _sortTagList(tagList) {
-  tagList.sort((a, b) => {
-    if (a.tag < b.tag) {
-      return -1;
-    }
-
-    return 1;
-  });
-}
 
 export default DicomTagBrowser;
