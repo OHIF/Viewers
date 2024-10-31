@@ -10,13 +10,14 @@ const { Option } = Select;
 
 interface DisplaySet {
   uid: string;
-  displaySetInstanceUID: number;
+  displaySetInstanceUID: string;
   SeriesDate: string;
   SeriesTime: string;
   SeriesNumber: number;
   SeriesDescription: string;
   Modality: string;
   images: any[];
+  instances: any;
 }
 
 interface TableDataItem {
@@ -45,8 +46,15 @@ const DicomTagBrowser = ({
 
   useEffect(() => {
     const displaySet = displaySets.find(
-      displaySet => displaySet.uid === selectedDisplaySetInstanceUID
+      displaySet =>
+        displaySet.uid === selectedDisplaySetInstanceUID ||
+        displaySet.displaySetInstanceUID === selectedDisplaySetInstanceUID
     );
+
+    if (displaySet && !displaySet.images) {
+      return setCurrentDisplaySet({ ...displaySet, images: displaySet.instances });
+    }
+
     setCurrentDisplaySet(displaySet);
   }, [displaySets, selectedDisplaySetInstanceUID]);
 
@@ -73,13 +81,13 @@ const DicomTagBrowser = ({
     });
   }, [displaySets]);
 
-  const showInstanceList = currentDisplaySet?.images.length > 1;
+  const showInstanceList = currentDisplaySet?.images?.length > 1;
 
   const instanceSliderMarks = useMemo(() => {
     if (currentDisplaySet === undefined) {
       return {};
     }
-    const totalInstances = currentDisplaySet.images.length;
+    const totalInstances = currentDisplaySet?.images?.length;
 
     const marks: Record<number, string> = {
       1: '1',
@@ -141,7 +149,7 @@ const DicomTagBrowser = ({
     if (currentDisplaySet === undefined) {
       return [];
     }
-    const metadata = currentDisplaySet?.images[instanceNumber - 1];
+    const metadata = currentDisplaySet?.images?.[instanceNumber - 1];
     const tags = getSortedTags(metadata);
     return transformTagsToTableData(tags);
   }, [instanceNumber, currentDisplaySet]);
@@ -246,7 +254,7 @@ const DicomTagBrowser = ({
               </Typography.Text>
               <Slider
                 min={1}
-                max={currentDisplaySet?.images.length}
+                max={currentDisplaySet?.images?.length}
                 value={instanceNumber}
                 onChange={value => setInstanceNumber(value)}
                 marks={instanceSliderMarks}
