@@ -56,7 +56,7 @@ const DynamicVolumeControls = ({
 
   const [computeViewMode, setComputeViewMode] = useState(Enums.DynamicOperatorType.SUM);
 
-  const [sliderRangeValues, setSliderRangeValues] = useState([1, framesLength]);
+  const [sliderRangeValues, setSliderRangeValues] = useState([0, framesLength - 1]);
 
   const handleSliderChange = newValues => {
     onDoubleRangeChange(newValues);
@@ -154,7 +154,7 @@ const DynamicVolumeControls = ({
           <div className="mt-2 w-full">
             <DoubleSlider
               min={0}
-              max={framesLength}
+              max={framesLength - 1}
               step={1}
               defaultValue={sliderRangeValues}
               onValueChange={handleSliderChange}
@@ -218,7 +218,7 @@ function FrameControls({
           value={currentFrameIndex}
           onChange={onFrameChange}
           minValue={0}
-          maxValue={framesLength}
+          maxValue={framesLength - 1}
           label="Frame"
           {...controlClassNames}
         />
