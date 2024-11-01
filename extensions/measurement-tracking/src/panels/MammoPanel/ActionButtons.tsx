@@ -501,7 +501,7 @@ function ActionButtons({ disabled = false, data = null, orthancId = null }) {
                 <strong>RESULT:</strong> {modelResult.get(currentImage)}
               </p>
             ) : (
-              <p className="text-red-400">Key {currentImage} does not exist.</p>
+              <p className="text-red-400">Model not run yet</p>
             )}
           </>
         ) : (

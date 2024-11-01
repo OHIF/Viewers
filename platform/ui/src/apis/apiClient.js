@@ -32,22 +32,22 @@ class APIClient {
       // Add Auth header
 
       const accessToken = localStorage.getItem('accessToken');
-      //console.log('access token: ', accessToken);
+      ////console.log('access token: ', accessToken);
       headers.Authorization = `Bearer ${accessToken}`;
     }
-    //console.log('made it here', headers);
+    ////console.log('made it here', headers);
     try {
-      console.log('--------------');
-      console.log('');
-      console.log('');
-      console.log('url');
-      console.log(url);
-      console.log('headers');
-      console.log(headers);
-      console.log('body');
-      console.log(body);
-      console.log('');
-      console.log('--------------', this.requestMethods[method]);
+      //console.log('--------------');
+      //console.log('');
+      //console.log('');
+      //console.log('url');
+      //console.log(url);
+      //console.log('headers');
+      //console.log(headers);
+      //console.log('body');
+      //console.log(body);
+      //console.log('');
+      //console.log('--------------', this.requestMethods[method]);
       let response;
       if (body) {
         response = await this.requestMethods[method](url, body, { headers });
@@ -57,10 +57,10 @@ class APIClient {
       // const ll = await axiosInstance.post(url, body, { headers });
       const responseData = await response.data;
 
-      //console.log('RDATA', responseData);
+      ////console.log('RDATA', responseData);
       return responseData;
     } catch (error) {
-      //console.log('ERROR:', error);
+      ////console.log('ERROR:', error);
       if (!error.response) {
         return this.badResponse;
       }
@@ -85,12 +85,12 @@ class APIClient {
   }
 
   async updateAccess(studyUid, email, role) {
-    //console.log(studyUid);
+    ////console.log(studyUid);
     const requestBody = {
       email: email,
       role: role,
     };
-    //console.log('sending share api', apiEndpoints.updateAccess(studyUid));
+    ////console.log('sending share api', apiEndpoints.updateAccess(studyUid));
     const res = await this.makeRequest(
       'POST',
       apiEndpoints.updateAccess(studyUid),
@@ -98,28 +98,28 @@ class APIClient {
       {},
       true
     );
-    //console.log('RESS', res);
+    ////console.log('RESS', res);
     return res;
   }
 
   async getAccessList(studyUid) {
-    //console.log('sending share list api', apiEndpoints.getAccessList(studyUid));
+    ////console.log('sending share list api', apiEndpoints.getAccessList(studyUid));
     return await this.makeRequest('GET', apiEndpoints.getAccessList(studyUid), undefined, {}, true);
   }
 
   async deleteStudy(studyUid) {
-    //console.log('Deleting this study', apiEndpoints.manage(studyUid));
+    ////console.log('Deleting this study', apiEndpoints.manage(studyUid));
     return await this.makeRequest('DELETE', apiEndpoints.manage(studyUid), undefined, {}, true);
   }
 
   //groundtruth
   async getGroundTruth(studyUid) {
-    // console.log('Getting ground truth for study:', studyUid);
+    // //console.log('Getting ground truth for study:', studyUid);
     return await this.makeRequest('GET', apiEndpoints.groundTruth(studyUid), undefined, {}, true);
   }
   //putting ground truth
   async putGroundTruth(studyUid, groundTruthData) {
-    // console.log('Updating ground truth for study:', studyUid);
+    // //console.log('Updating ground truth for study:', studyUid);
     return await this.makeRequest(
       'PUT',
       apiEndpoints.groundTruth(studyUid),
@@ -136,16 +136,16 @@ class APIClient {
       'POST',
       apiEndpoints.model(studyUid),
       {
-        model: 'Mammo',
+        model: 'MAMMO',
       },
       {},
       true
     );
-    console.log('Mammo model processing started:', response);
-    //console.log(response.result.id);z
+    //console.log('Mammo model processing started:', response);
+    ////console.log(response.result.id);z
     // setToastMessage('Models are running...');
     if (response.result && response.result.id) {
-      //console.log('Mammo model processing started:', response);
+      ////console.log('Mammo model processing started:', response);
       setToastMessage('Models are running...');
       // alert('Models are running...');
       this.pollTaskStatus(response.result.id, setToastMessage); // Use response.result.id
@@ -155,7 +155,7 @@ class APIClient {
   }
   // async makeRequest(method, url, body = undefined, headers = {}, addAuth = false)
   async handleGBCModel(studyUid, setToastMessage) {
-    //console.log('Starting mammo model processing for study:', studyUid);
+    ////console.log('Starting mammo model processing for study:', studyUid);
     setToastMessage('Starting GBC model processing for study:');
     const response = await this.makeRequest(
       'POST',
@@ -166,11 +166,11 @@ class APIClient {
       {},
       true
     );
-    console.log('GBC model processing started:', response);
-    //console.log(response.result.id);
+    //console.log('GBC model processing started:', response);
+    ////console.log(response.result.id);
     // setToastMessage('Models are running...');
     if (response.result && response.result.id) {
-      //console.log('Mammo model processing started:', response);
+      ////console.log('Mammo model processing started:', response);
       setToastMessage('Models are running...');
       // alert('Models are running...');
       this.pollTaskStatus(response.result.id, setToastMessage); // Use response.result.id
@@ -181,7 +181,6 @@ class APIClient {
   }
 
   async getClassificationOutput(studyUid) {
-    // console.log('Getting ground truth for study:', studyUid);
     return await this.makeRequest(
       'GET',
       apiEndpoints.classificationOutput(studyUid),
@@ -192,7 +191,7 @@ class APIClient {
   }
 
   async handleXRayModel(studyUid, setToastMessage) {
-    //console.log('Starting mammo model processing for study:', studyUid);
+    ////console.log('Starting mammo model processing for study:', studyUid);
     setToastMessage('Starting X-Ray model processing for study:');
     const response = await this.makeRequest(
       'POST',
@@ -203,11 +202,11 @@ class APIClient {
       {},
       true
     );
-    console.log('X-Ray model processing started:', response);
-    //console.log(response.result.id);
+    //console.log('X-Ray model processing started:', response);
+    ////console.log(response.result.id);
     // setToastMessage('Models are running...');
     if (response.result && response.result.id) {
-      //console.log('Mammo model processing started:', response);
+      ////console.log('Mammo model processing started:', response);
       setToastMessage('Models are running...');
       // alert('Models are running...');
       this.pollTaskStatus(response.result.id, setToastMessage); // Use response.result.id
@@ -220,7 +219,7 @@ class APIClient {
   // return response;
 
   async pollTaskStatus(taskId, setToastMessage) {
-    //console.log('task id is =' + taskId);
+    ////console.log('task id is =' + taskId);
     const url = apiEndpoints.taskStatus(taskId);
     let polling = true;
 
@@ -235,7 +234,7 @@ class APIClient {
           this.handleTaskCompletion();
         } else {
           setToastMessage('Task still processing...');
-          //console.log('Task still processing...');
+          ////console.log('Task still processing...');
           // Continue polling
           setTimeout(poll, 10000); // Poll every 10 seconds
         }

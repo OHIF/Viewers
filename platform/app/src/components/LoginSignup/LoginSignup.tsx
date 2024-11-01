@@ -14,7 +14,6 @@ const LoginSignup = ({ setIsAuthenticated }) => {
     e.preventDefault();
 
     const response = await apiClient.obtainAuthTokenPair(username, password);
-    console.log(response, 'tus');
     if (response.success) {
       const { access, refresh } = response.result.tokens;
       localStorage.setItem('accessToken', access);

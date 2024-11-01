@@ -225,8 +225,6 @@ function XRayPanel({
       }
     } catch (error) {
       console.error('Failed to get Classification results', error);
-      alert('Failed to get Classification results');
-      console.log('Failed to get Classification results');
       setModelResult(null);
     }
   };
