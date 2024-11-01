@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { Button, ButtonEnums } from '@ohif/ui';
 import axios from 'axios';
 import apiClient from '../../../../../platform/ui/src/apis/apiClient';
-
+import { Classification } from '../Classification';
 function ActionButtons({
   onExportClick = () => alert('Export'),
   onCreateReportClick = () => alert('Create Report'),
@@ -239,7 +239,12 @@ function ActionButtons({
           setModelResult(null);
         } else {
           const arrayFromEntries = Object.entries(attachment);
-          setModelResult(removeModel(arrayFromEntries[0][1]));
+          // console.log(arrayFromEntries);
+          if (arrayFromEntries[0][1] === 'indication' || arrayFromEntries[0][0] === 'indications') {
+            return;
+          } else {
+            setModelResult(removeModel(arrayFromEntries[0][1]));
+          }
         }
       } else {
         console.log('Model has not been run yet');
@@ -424,10 +429,13 @@ function ActionButtons({
           {/*Demographic Details */}
           <div className="mb-4">
             <h2
-              className="mb-4 cursor-pointer text-white"
+              className="mb-4 flex cursor-pointer items-center text-white"
               onClick={() => toggleSection('demographic')}
             >
-              Demographic Details
+              <span className={`mr-2 ${visibleSection === 'demographic' ? 'rotate-45' : ''}`}>
+                ➕
+              </span>
+              <span className="font-bold">Demographic Details</span>
             </h2>
             {visibleSection === 'demographic' && (
               <div>
@@ -481,10 +489,11 @@ function ActionButtons({
           {/* Clinical Details Dropdown */}
           <div className="mb-4">
             <h2
-              className="mb-4 cursor-pointer text-white"
+              className="mb-4 flex cursor-pointer items-center text-white"
               onClick={() => toggleSection('clinical')}
             >
-              Clinical Details
+              <span className={`mr-2 ${visibleSection === 'clinical' ? 'rotate-45' : ''}`}>➕</span>
+              <span className="font-bold">Clinical Details</span>
             </h2>
             {visibleSection === 'clinical' && (
               <div>
@@ -516,10 +525,13 @@ function ActionButtons({
 
           <div className="mb-4">
             <h2
-              className="mb-4 cursor-pointer text-white"
+              className="mb-4 flex cursor-pointer items-center text-white"
               onClick={() => toggleSection('ultrasound')}
             >
-              Ultrasound Findings
+              <span className={`mr-2 ${visibleSection === 'ultrasound' ? 'rotate-45' : ''}`}>
+                ➕
+              </span>
+              <span className="font-bold">Ultrasound Findings</span>
             </h2>
             {visibleSection === 'ultrasound' && (
               <div>
@@ -766,20 +778,29 @@ function ActionButtons({
       <h2 className="mb-4 text-xl font-semibold text-white">Classification Results</h2>
       <div className="mb-6 flex flex-col space-y-4">
         {modelResult ? (
-          <ul className="list-disc pl-5">
+          <div className="overflow-hidden text-sm">
             {Object.entries(modelResult).map(([key, value]) => (
-              <li
+              <div
                 key={key}
-                className="text-white"
+                className={`mb-2 p-2 text-base font-bold text-white ${
+                  value === Classification.Normal
+                    ? 'bg-green-500'
+                    : value === Classification.Benign
+                      ? 'bg-yellow-500'
+                      : value === Classification.Malignant
+                        ? 'bg-red-500'
+                        : 'bg-gray-500' // Default color if value doesn't match any case
+                }`}
               >
                 <strong>{key}:</strong> {value}
-              </li>
+              </div>
             ))}
-          </ul>
+          </div>
         ) : (
           <p className="text-red-400">Model not run yet</p>
         )}
       </div>
+
       <Button
         className="m-2 ml-0"
         onClick={handleRunModelsClick}

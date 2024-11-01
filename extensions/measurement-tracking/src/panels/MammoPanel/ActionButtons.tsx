@@ -5,7 +5,7 @@ import { Button, ButtonEnums } from '@ohif/ui';
 import axios from 'axios';
 import apiClient from '../../../../../platform/ui/src/apis/apiClient';
 import eventEmitter from '../../../../cornerstone/src/utils/eventEmitter';
-
+import { Classification } from '../Classification';
 function ActionButtons({ disabled = false, data = null, orthancId = null }) {
   const { t } = useTranslation('MeasurementTable');
   const [formData, setFormData] = useState({
@@ -497,9 +497,15 @@ function ActionButtons({ disabled = false, data = null, orthancId = null }) {
         {modelResult ? (
           <>
             {modelResult.has(currentImage) ? (
-              <p className="text-white">
-                <strong>RESULT:</strong> {modelResult.get(currentImage)}
-              </p>
+              <div
+                className={`p-2 font-bold text-white ${
+                  modelResult.get(currentImage) === Classification.Malignant
+                    ? 'bg-red-500' // Color for Malignant
+                    : 'bg-green-500' // Color for NonMalignant
+                }`}
+              >
+                {modelResult.get(currentImage)}
+              </div>
             ) : (
               <p className="text-red-400">Model not run yet</p>
             )}
@@ -508,6 +514,7 @@ function ActionButtons({ disabled = false, data = null, orthancId = null }) {
           <p className="text-red-400">Model not run yet</p>
         )}
       </div>
+
       <Button
         className="m-2 ml-0"
         // size={ButtonEnums.size.small}
