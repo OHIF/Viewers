@@ -4,11 +4,10 @@ import { useTranslation } from 'react-i18next';
 import { Button, ButtonEnums } from '@ohif/ui';
 import axios from 'axios';
 import apiClient from '../../../../../platform/ui/src/apis/apiClient';
+import eventEmitter from '../../../../cornerstone/src/utils/eventEmitter';
 
 function ActionButtons({ disabled = false, data = null, orthancId = null }) {
   const { t } = useTranslation('MeasurementTable');
-  //console.log(orthancId, 'orthancId');
-
   const [formData, setFormData] = useState({
     indications: '',
     findings: '',
@@ -218,6 +217,73 @@ function ActionButtons({ disabled = false, data = null, orthancId = null }) {
       // Optionally, show error messages or handle the error state
     }
   };
+  const [modelResult, setModelResult] = useState(null);
+
+  const isObjectEmpty = obj => {
+    return Object.keys(obj).length === 0;
+  };
+  const getModelResult = async () => {
+    try {
+      const response = await apiClient.getClassificationOutput(studyInstanceUid);
+      console.log(response);
+      if (response && response.result) {
+        const attachment = response.result.attachment;
+        console.log('Model result gotten');
+        console.log(response);
+        if (
+          typeof attachment === 'object' &&
+          !Array.isArray(attachment) &&
+          isObjectEmpty(attachment)
+        ) {
+          setModelResult(null);
+        } else {
+          console.log(attachment);
+          const clinicalMap = new Map();
+          delete attachment.indications;
+          Object.keys(attachment).forEach(key => {
+            clinicalMap.set(key, attachment[key].clinical.result);
+          });
+          // console.log(clinicalMap);
+          setModelResult(clinicalMap);
+        }
+      } else {
+        console.log('Model has not been run yet');
+        setModelResult(null);
+      }
+    } catch (error) {
+      console.error('Failed to get Classification results', error);
+      alert('Failed to get Classification results');
+      setModelResult(null);
+    }
+  };
+  const [displaySets, setDisplaySets] = useState<any>(eventEmitter.getLastDisplaySets());
+  const [currentImage, setCurrentImage] = useState(null);
+
+  useEffect(() => {
+    getModelResult();
+    // console.log('Initial displaySets on load:', displaySets);
+    if (displaySets) {
+      setCurrentImage(displaySets[0]['SeriesInstanceUID']);
+    }
+    const handleViewportDataLoaded = (data: any) => {
+      // console.log('Received displaySets:', data);
+      if (data) {
+        setCurrentImage(data[0]['SeriesInstanceUID']);
+        setDisplaySets(data);
+      }
+    };
+
+    // Subscribe to the viewportDataLoaded event
+    eventEmitter.on('viewportDataLoaded', handleViewportDataLoaded);
+
+    return () => {
+      eventEmitter.off('viewportDataLoaded', handleViewportDataLoaded);
+    };
+  }, []);
+
+  // useEffect(() => {
+  //   console.log('Current image updated:', currentImage);
+  // }, [currentImage]);
 
   return (
     <div className="m-2">
@@ -236,11 +302,11 @@ function ActionButtons({ disabled = false, data = null, orthancId = null }) {
               >
                 <p className="text-sm font-semibold text-green-400">Annotation No. {index + 1}</p>
                 <p className="mb-2 text-sm">
-                  <span className="text-blue-300">Top Left:</span> [{item.baseDisplayText[0]},{' '}
-                  {item.baseDisplayText[1]}]
+                  <span className="text-blue-300">Top Left:</span> [{item?.baseDisplayText[0]},{' '}
+                  {item?.baseDisplayText[1]}]
                   <br />
-                  <span className="text-blue-300">Bottom Right:</span> [{item.baseLabel[0]},{' '}
-                  {item.baseLabel[1]}]
+                  <span className="text-blue-300">Bottom Right:</span> [{item?.baseLabel[0]},{' '}
+                  {item?.baseLabel[1]}]
                 </p>
 
                 <div className="form-group">
@@ -425,6 +491,23 @@ function ActionButtons({ disabled = false, data = null, orthancId = null }) {
           </Button> */}
         </div>
       </form>
+      {/* Model Result Display */}
+      <h2 className="mb-4 text-xl font-semibold text-white">Classification Results</h2>
+      <div className="mb-6 flex flex-col space-y-4">
+        {modelResult ? (
+          <>
+            {modelResult.has(currentImage) ? (
+              <p className="text-white">
+                <strong>RESULT:</strong> {modelResult.get(currentImage)}
+              </p>
+            ) : (
+              <p className="text-red-400">Key {currentImage} does not exist.</p>
+            )}
+          </>
+        ) : (
+          <p className="text-red-400">Model not run yet</p>
+        )}
+      </div>
       <Button
         className="m-2 ml-0"
         // size={ButtonEnums.size.small}
