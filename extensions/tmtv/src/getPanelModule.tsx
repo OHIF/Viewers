@@ -3,13 +3,8 @@ import { PanelPetSUV, PanelROIThresholdExport } from './Panels';
 import { Toolbox } from '@ohif/ui-next';
 import PanelTMTV from './Panels/PanelTMTV';
 
-// TODO:
-// - No loading UI exists yet
-// - cancel promises when component is destroyed
-// - show errors in UI for thumbnails if promise fails
-
 function getPanelModule({ commandsManager, extensionManager, servicesManager }) {
-  const wrappedPanelPetSuv = ({}) => {
+  const wrappedPanelPetSuv = () => {
     return (
       <PanelPetSUV
         commandsManager={commandsManager}
@@ -19,28 +14,24 @@ function getPanelModule({ commandsManager, extensionManager, servicesManager }) 
     );
   };
 
-  const wrappedROIThresholdToolbox = ({ renderHeader, getCloseIcon, tab }: withAppTypes) => {
+  const wrappedROIThresholdToolbox = () => {
     return (
-      <>
-        <Toolbox
-          commandsManager={commandsManager}
-          servicesManager={servicesManager}
-          extensionManager={extensionManager}
-          buttonSectionId="ROIThresholdToolbox"
-          title="Threshold Tools"
-        />
-      </>
+      <Toolbox
+        commandsManager={commandsManager}
+        servicesManager={servicesManager}
+        extensionManager={extensionManager}
+        buttonSectionId="ROIThresholdToolbox"
+        title="Threshold Tools"
+      />
     );
   };
 
   const wrappedROIThresholdExport = () => {
     return (
-      <>
-        <PanelROIThresholdExport
-          commandsManager={commandsManager}
-          servicesManager={servicesManager}
-        />
-      </>
+      <PanelROIThresholdExport
+        commandsManager={commandsManager}
+        servicesManager={servicesManager}
+      />
     );
   };
 

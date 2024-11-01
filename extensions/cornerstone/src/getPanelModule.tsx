@@ -1,6 +1,5 @@
 import React from 'react';
 
-import { useAppConfig } from '@state';
 import { Toolbox } from '@ohif/ui-next';
 import PanelSegmentation from './panels/PanelSegmentation';
 import ActiveViewportWindowLevel from './components/ActiveViewportWindowLevel';
@@ -20,8 +19,6 @@ const getPanelModule = ({ commandsManager, servicesManager, extensionManager }: 
   };
 
   const wrappedPanelSegmentationNoHeader = ({ configuration }) => {
-    const [appConfig] = useAppConfig();
-
     return (
       <PanelSegmentation
         commandsManager={commandsManager}
@@ -35,8 +32,6 @@ const getPanelModule = ({ commandsManager, servicesManager, extensionManager }: 
   };
 
   const wrappedPanelSegmentationWithTools = ({ configuration }) => {
-    const [appConfig] = useAppConfig();
-
     return (
       <>
         <Toolbox

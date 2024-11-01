@@ -294,4 +294,4 @@ https://www.cancerimagingarchive.net/collection/ea1141/
 From OFFIS DICOM-Team
 
 https://www.offis.de/
-Dr. Marco Eichelberg, OFFIS DICOM-Team
+OFFIS DICOM-Team

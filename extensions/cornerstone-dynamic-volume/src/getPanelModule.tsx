@@ -1,11 +1,11 @@
 import React from 'react';
 import { DynamicDataPanel } from './panels';
 import { Toolbox } from '@ohif/ui-next';
-import { useAppConfig } from '@state';
+import { PanelSegmentation } from '@ohif/extension-cornerstone';
 import DynamicExport from './panels/DynamicExport';
 
-function getPanelModule({ commandsManager, extensionManager, servicesManager }) {
-  const wrappedDynamicDataPanel = ({}) => {
+function getPanelModule({ commandsManager, extensionManager, servicesManager, configuration }) {
+  const wrappedDynamicDataPanel = () => {
     return (
       <DynamicDataPanel
         commandsManager={commandsManager}
@@ -15,7 +15,7 @@ function getPanelModule({ commandsManager, extensionManager, servicesManager }) 
     );
   };
 
-  const wrappedDynamicToolbox = () => {
+  const wrappedDynamicSegmentation = () => {
     return (
       <>
         <Toolbox
@@ -25,18 +25,17 @@ function getPanelModule({ commandsManager, extensionManager, servicesManager }) 
           buttonSectionId="dynamic-toolbox"
           title="Threshold Tools"
         />
-      </>
-    );
-  };
-
-  const wrappedDynamicExport = () => {
-    return (
-      <>
-        <DynamicExport
-          commandsManager={commandsManager}
+        <PanelSegmentation
           servicesManager={servicesManager}
+          commandsManager={commandsManager}
           extensionManager={extensionManager}
-        />
+          configuration={configuration}
+        >
+          <DynamicExport
+            servicesManager={servicesManager}
+            commandsManager={commandsManager}
+          />
+        </PanelSegmentation>
       </>
     );
   };
@@ -50,18 +49,11 @@ function getPanelModule({ commandsManager, extensionManager, servicesManager }) 
       component: wrappedDynamicDataPanel,
     },
     {
-      name: 'dynamic-toolbox',
-      iconName: 'tab-4d',
-      iconLabel: '4D Workflow',
-      label: 'Dynamic Toolbox',
-      component: wrappedDynamicToolbox,
-    },
-    {
-      name: 'dynamic-export',
-      iconName: 'tab-4d',
-      iconLabel: '4D Workflow',
-      label: '4D Workflow',
-      component: wrappedDynamicExport,
+      name: 'dynamic-segmentation',
+      iconName: 'tab-segmentation',
+      iconLabel: 'Segmentation',
+      label: 'Segmentation',
+      component: wrappedDynamicSegmentation,
     },
   ];
 }

@@ -3,7 +3,13 @@ import PropTypes from 'prop-types';
 import debounce from 'lodash.debounce';
 import { PanelSection, WindowLevel } from '@ohif/ui';
 import vtkColorMaps from '@kitware/vtk.js/Rendering/Core/ColorTransferFunction/ColorMaps';
-import { Enums, eventTarget, cache as cs3DCache, utilities as csUtils } from '@cornerstonejs/core';
+import {
+  Enums,
+  eventTarget,
+  cache as cs3DCache,
+  utilities as csUtils,
+  Types,
+} from '@cornerstonejs/core';
 import { getViewportVolumeHistogram } from './getViewportVolumeHistogram';
 
 const { Events } = Enums;
@@ -146,7 +152,7 @@ const ViewportWindowLevel = ({
 
     const viewportInfo = cornerstoneViewportService.getViewportInfo(viewportId);
 
-    const volumeIds = viewport.getActors().map(actor => actor.referencedId);
+    const volumeIds = (viewport as Types.IBaseVolumeViewport).getAllVolumeIds();
     const viewportProperties = viewport.getProperties();
     const { voiRange } = viewportProperties;
     const viewportVoi = voiRange
@@ -159,6 +165,11 @@ const ViewportWindowLevel = ({
     const windowLevels = await Promise.all(
       volumeIds.map(async (volumeId, volumeIndex) => {
         const volume = cs3DCache.getVolume(volumeId);
+
+        // if volume is derived volume we don't need histogram
+        if (volume.referencedVolumeId !== undefined) {
+          return null;
+        }
 
         if (!volume) {
           return null;
@@ -177,6 +188,10 @@ const ViewportWindowLevel = ({
         const histogram = await getViewportVolumeHistogram(viewport, volume, options);
 
         if (!histogram) {
+          return null;
+        }
+
+        if (histogram.range.min === histogram.range.max) {
           return null;
         }
 
