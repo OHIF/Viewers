@@ -6,6 +6,12 @@ import Select from 'react-select';
 import Icon from '../Icon';
 import Tooltip from '../Tooltip';
 
+const OptionEnum = {
+  Mammo: 'Mammo',
+  GBC: 'GBC',
+  XRay: 'X-Ray',
+};
+
 type StyleMap = {
   open: {
     left: { marginLeft: string };
@@ -309,21 +315,33 @@ const SidePanelModified = ({
     }),
   };
   const [selectedOption, setSelectedOption] = useState(null);
+  useEffect(() => {
+    const storedOption = localStorage.getItem('selectedOption');
+    if (storedOption) {
+      const parsedOption = JSON.parse(storedOption);
+      setSelectedOption(parsedOption);
+      // Update the active tab index based on the stored option
+      handleSelectChange(parsedOption);
+    }
+  }, []);
 
   const handleSelectChange = selected => {
     setSelectedOption(selected);
+    localStorage.setItem('selectedOption', JSON.stringify(selected));
     switch (selected?.value) {
-      case 'Mammo':
+      case OptionEnum.Mammo:
         updateActiveTabIndex(0);
         break;
-      case 'GBC':
+      case OptionEnum.GBC:
         updateActiveTabIndex(1);
+        break;
+      case OptionEnum.XRay:
+        updateActiveTabIndex(2);
         break;
       default:
         updateActiveTabIndex(2);
         break;
     }
-    // const index = selected?.value === 'Mammo' ? 0 : 1;
   };
 
   return (
@@ -331,43 +349,36 @@ const SidePanelModified = ({
       className={classnames(className, baseClasses, classesMap[openStatus][side])}
       style={style}
     >
-      {side === 'right' ? null : side === 'left' && panelOpen ? (
+      {/* Always render left panel content if side is 'left' */}
+      {side === 'left' && (
         <>
           {getOpenStateComponent()}
-          {tabs.map((tab, tabIndex) => {
-            if (tabIndex === activeTabIndex) {
-              return <tab.content key={tabIndex} />;
-            }
-            return null;
-          })}
+          {tabs[0] && React.createElement(tabs[0].content)}
         </>
-      ) : (
-        <React.Fragment>{getCloseStateComponent()}</React.Fragment>
       )}
 
-      {side === 'right' ? (
-        <Select
-          options={[
-            { value: 'Mammo', label: 'Mammo' },
-            { value: 'GBC', label: 'GBC' },
-            { value: 'X-Ray', label: 'X-Ray' },
-          ]}
-          styles={customStyles}
-          onChange={handleSelectChange} // Use the handler to update state
-        />
-      ) : null}
-      {selectedOption ? (
+      {/* Render the right side with Select component */}
+      {side === 'right' && (
         <>
-          {getOpenStateComponent()}
-          {tabs.map((tab, tabIndex) => {
-            if (tabIndex === activeTabIndex) {
-              return <tab.content key={tabIndex} />;
-            }
-            return null;
-          })}
+          <Select
+            options={[
+              { value: 'Mammo', label: 'Mammo' },
+              { value: 'GBC', label: 'GBC' },
+              { value: 'X-Ray', label: 'X-Ray' },
+            ]}
+            styles={customStyles}
+            onChange={handleSelectChange}
+            value={selectedOption}
+          />
+          {selectedOption && (
+            <>
+              {getOpenStateComponent()}
+              {tabs.map((tab, tabIndex) =>
+                tabIndex === activeTabIndex ? <tab.content key={tabIndex} /> : null
+              )}
+            </>
+          )}
         </>
-      ) : (
-        <React.Fragment></React.Fragment>
       )}
     </div>
   );
