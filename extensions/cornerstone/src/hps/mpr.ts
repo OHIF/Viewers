@@ -1,5 +1,25 @@
 import { Types } from '@ohif/core';
 
+const VOI_SYNC_GROUP = {
+  type: 'voi',
+  id: 'mpr',
+  source: true,
+  target: true,
+  options: {
+    syncColormap: true,
+  },
+};
+
+const HYDRATE_SEG_SYNC_GROUP = {
+  type: 'hydrateseg',
+  id: 'sameFORId',
+  source: true,
+  target: true,
+  options: {
+    matchingRules: ['sameFOR'],
+  },
+};
+
 export const mpr: Types.HangingProtocol.Protocol = {
   id: 'mpr',
   name: 'MPR',
@@ -70,26 +90,7 @@ export const mpr: Types.HangingProtocol.Protocol = {
             initialImageOptions: {
               preset: 'middle',
             },
-            syncGroups: [
-              {
-                type: 'voi',
-                id: 'mpr',
-                source: true,
-                target: true,
-                options: {
-                  syncColormap: true,
-                },
-              },
-              {
-                type: 'hydrateseg',
-                id: 'sameFORId',
-                source: true,
-                target: true,
-                options: {
-                  matchingRules: ['sameFOR'],
-                },
-              },
-            ],
+            syncGroups: [VOI_SYNC_GROUP, HYDRATE_SEG_SYNC_GROUP],
           },
           displaySets: [
             {
@@ -106,26 +107,7 @@ export const mpr: Types.HangingProtocol.Protocol = {
             initialImageOptions: {
               preset: 'middle',
             },
-            syncGroups: [
-              {
-                type: 'voi',
-                id: 'mpr',
-                source: true,
-                target: true,
-                options: {
-                  syncColormap: true,
-                },
-              },
-              {
-                type: 'hydrateseg',
-                id: 'sameFORId',
-                source: true,
-                target: true,
-                options: {
-                  matchingRules: ['sameFOR'],
-                },
-              },
-            ],
+            syncGroups: [VOI_SYNC_GROUP, HYDRATE_SEG_SYNC_GROUP],
           },
           displaySets: [
             {
@@ -142,26 +124,7 @@ export const mpr: Types.HangingProtocol.Protocol = {
             initialImageOptions: {
               preset: 'middle',
             },
-            syncGroups: [
-              {
-                type: 'voi',
-                id: 'mpr',
-                source: true,
-                target: true,
-                options: {
-                  syncColormap: true,
-                },
-              },
-              {
-                type: 'hydrateseg',
-                id: 'sameFORId',
-                source: true,
-                target: true,
-                options: {
-                  matchingRules: ['sameFOR'],
-                },
-              },
-            ],
+            syncGroups: [VOI_SYNC_GROUP, HYDRATE_SEG_SYNC_GROUP],
           },
           displaySets: [
             {

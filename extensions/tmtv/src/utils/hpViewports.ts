@@ -1,3 +1,21 @@
+// Common sync group configurations
+const cameraPositionSync = (id: string) => ({
+  type: 'cameraPosition',
+  id,
+  source: true,
+  target: true,
+});
+
+const hydrateSegSync = {
+  type: 'hydrateseg',
+  id: 'sameFORId',
+  source: true,
+  target: true,
+  options: {
+    matchingRules: ['sameFOR'],
+  },
+};
+
 const ctAXIAL: AppTypes.HangingProtocol.Viewport = {
   viewportOptions: {
     viewportId: 'ctAXIAL',
@@ -9,12 +27,7 @@ const ctAXIAL: AppTypes.HangingProtocol.Viewport = {
       preset: 'first', // 'first', 'last', 'middle'
     },
     syncGroups: [
-      {
-        type: 'cameraPosition',
-        id: 'axialSync',
-        source: true,
-        target: true,
-      },
+      cameraPositionSync('axialSync'),
       {
         type: 'voi',
         id: 'ctWLSync',
@@ -24,15 +37,7 @@ const ctAXIAL: AppTypes.HangingProtocol.Viewport = {
           syncColormap: true,
         },
       },
-      {
-        type: 'hydrateseg',
-        id: 'sameFORId',
-        source: true,
-        target: true,
-        options: {
-          matchingRules: ['sameFOR'],
-        },
-      },
+      hydrateSegSync,
     ],
   },
   displaySets: [
@@ -49,12 +54,7 @@ const ctSAGITTAL: AppTypes.HangingProtocol.Viewport = {
     orientation: 'sagittal',
     toolGroupId: 'ctToolGroup',
     syncGroups: [
-      {
-        type: 'cameraPosition',
-        id: 'sagittalSync',
-        source: true,
-        target: true,
-      },
+      cameraPositionSync('sagittalSync'),
       {
         type: 'voi',
         id: 'ctWLSync',
@@ -64,15 +64,7 @@ const ctSAGITTAL: AppTypes.HangingProtocol.Viewport = {
           syncColormap: true,
         },
       },
-      {
-        type: 'hydrateseg',
-        id: 'sameFORId',
-        source: true,
-        target: true,
-        options: {
-          matchingRules: ['sameFOR'],
-        },
-      },
+      hydrateSegSync,
     ],
   },
   displaySets: [
@@ -89,12 +81,7 @@ const ctCORONAL: AppTypes.HangingProtocol.Viewport = {
     orientation: 'coronal',
     toolGroupId: 'ctToolGroup',
     syncGroups: [
-      {
-        type: 'cameraPosition',
-        id: 'coronalSync',
-        source: true,
-        target: true,
-      },
+      cameraPositionSync('coronalSync'),
       {
         type: 'voi',
         id: 'ctWLSync',
@@ -104,15 +91,7 @@ const ctCORONAL: AppTypes.HangingProtocol.Viewport = {
           syncColormap: true,
         },
       },
-      {
-        type: 'hydrateseg',
-        id: 'sameFORId',
-        source: true,
-        target: true,
-        options: {
-          matchingRules: ['sameFOR'],
-        },
-      },
+      hydrateSegSync,
     ],
   },
   displaySets: [
@@ -134,12 +113,7 @@ const ptAXIAL: AppTypes.HangingProtocol.Viewport = {
       preset: 'first', // 'first', 'last', 'middle'
     },
     syncGroups: [
-      {
-        type: 'cameraPosition',
-        id: 'axialSync',
-        source: true,
-        target: true,
-      },
+      cameraPositionSync('axialSync'),
       {
         type: 'voi',
         id: 'ptWLSync',
@@ -159,15 +133,7 @@ const ptAXIAL: AppTypes.HangingProtocol.Viewport = {
           syncInvertState: false,
         },
       },
-      {
-        type: 'hydrateseg',
-        id: 'sameFORId',
-        source: true,
-        target: true,
-        options: {
-          matchingRules: ['sameFOR'],
-        },
-      },
+      hydrateSegSync,
     ],
   },
   displaySets: [
@@ -191,12 +157,7 @@ const ptSAGITTAL: AppTypes.HangingProtocol.Viewport = {
     background: [1, 1, 1],
     toolGroupId: 'ptToolGroup',
     syncGroups: [
-      {
-        type: 'cameraPosition',
-        id: 'sagittalSync',
-        source: true,
-        target: true,
-      },
+      cameraPositionSync('sagittalSync'),
       {
         type: 'voi',
         id: 'ptWLSync',
@@ -216,15 +177,7 @@ const ptSAGITTAL: AppTypes.HangingProtocol.Viewport = {
           syncInvertState: false,
         },
       },
-      {
-        type: 'hydrateseg',
-        id: 'sameFORId',
-        source: true,
-        target: true,
-        options: {
-          matchingRules: ['sameFOR'],
-        },
-      },
+      hydrateSegSync,
     ],
   },
   displaySets: [
@@ -248,12 +201,7 @@ const ptCORONAL: AppTypes.HangingProtocol.Viewport = {
     background: [1, 1, 1],
     toolGroupId: 'ptToolGroup',
     syncGroups: [
-      {
-        type: 'cameraPosition',
-        id: 'coronalSync',
-        source: true,
-        target: true,
-      },
+      cameraPositionSync('coronalSync'),
       {
         type: 'voi',
         id: 'ptWLSync',
@@ -273,15 +221,7 @@ const ptCORONAL: AppTypes.HangingProtocol.Viewport = {
           syncInvertState: false,
         },
       },
-      {
-        type: 'hydrateseg',
-        id: 'sameFORId',
-        source: true,
-        target: true,
-        options: {
-          matchingRules: ['sameFOR'],
-        },
-      },
+      hydrateSegSync,
     ],
   },
   displaySets: [
@@ -308,12 +248,7 @@ const fusionAXIAL: AppTypes.HangingProtocol.Viewport = {
       preset: 'first', // 'first', 'last', 'middle'
     },
     syncGroups: [
-      {
-        type: 'cameraPosition',
-        id: 'axialSync',
-        source: true,
-        target: true,
-      },
+      cameraPositionSync('axialSync'),
       {
         type: 'voi',
         id: 'ctWLSync',
@@ -339,15 +274,7 @@ const fusionAXIAL: AppTypes.HangingProtocol.Viewport = {
           syncInvertState: false,
         },
       },
-      {
-        type: 'hydrateseg',
-        id: 'sameFORId',
-        source: true,
-        target: true,
-        options: {
-          matchingRules: ['sameFOR'],
-        },
-      },
+      hydrateSegSync,
     ],
   },
   displaySets: [
@@ -384,12 +311,7 @@ const fusionSAGITTAL = {
     //   preset: 'middle', // 'first', 'last', 'middle'
     // },
     syncGroups: [
-      {
-        type: 'cameraPosition',
-        id: 'sagittalSync',
-        source: true,
-        target: true,
-      },
+      cameraPositionSync('sagittalSync'),
       {
         type: 'voi',
         id: 'ctWLSync',
@@ -415,15 +337,7 @@ const fusionSAGITTAL = {
           syncInvertState: false,
         },
       },
-      {
-        type: 'hydrateseg',
-        id: 'sameFORId',
-        source: true,
-        target: true,
-        options: {
-          matchingRules: ['sameFOR'],
-        },
-      },
+      hydrateSegSync,
     ],
   },
   displaySets: [
@@ -460,12 +374,7 @@ const fusionCORONAL = {
     //   preset: 'middle', // 'first', 'last', 'middle'
     // },
     syncGroups: [
-      {
-        type: 'cameraPosition',
-        id: 'coronalSync',
-        source: true,
-        target: true,
-      },
+      cameraPositionSync('coronalSync'),
       {
         type: 'voi',
         id: 'ctWLSync',
@@ -491,15 +400,7 @@ const fusionCORONAL = {
           syncInvertState: false,
         },
       },
-      {
-        type: 'hydrateseg',
-        id: 'sameFORId',
-        source: true,
-        target: true,
-        options: {
-          matchingRules: ['sameFOR'],
-        },
-      },
+      hydrateSegSync,
     ],
   },
   displaySets: [
@@ -552,15 +453,7 @@ const mipSAGITTAL: AppTypes.HangingProtocol.Viewport = {
           syncInvertState: false,
         },
       },
-      {
-        type: 'hydrateseg',
-        id: 'sameFORId',
-        source: true,
-        target: true,
-        options: {
-          matchingRules: ['sameFOR'],
-        },
-      },
+      hydrateSegSync,
     ],
 
     // Custom props can be used to set custom properties which extensions
