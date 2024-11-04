@@ -241,65 +241,6 @@ class SegmentationService extends PubSubService {
     this.listeners = {};
   };
 
-  /**
-   * Creates an empty labelmap segmentation for a specified viewport.
-   *
-   * @param viewportId - The ID of the viewport to create the segmentation for.
-   * @param options - Optional parameters for creating the segmentation.
-   * @param options.displaySetInstanceUID - The UID of the display set to use. If not provided, it will use the first display set of the viewport.
-   * @param options.label - The label for the segmentation. If not provided, a default label will be generated.
-   * @param options.segmentationId - The ID for the segmentation. If not provided, a UUID will be generated.
-   * @returns A promise that resolves to the generated segmentation ID.
-   */
-  public async createLabelmapForViewport(
-    viewportId: string,
-    options: {
-      displaySetInstanceUID?: string;
-      label?: string;
-      segmentationId?: string;
-      createInitialSegment?: boolean;
-    } = {
-      createInitialSegment: true,
-    }
-  ): Promise<string> {
-    const { viewportGridService, displaySetService } = this.servicesManager.services;
-    const { viewports } = viewportGridService.getState();
-    const targetViewportId = viewportId;
-
-    const viewport = viewports.get(targetViewportId);
-
-    // Todo: add support for multiple display sets
-    const displaySetInstanceUID =
-      options.displaySetInstanceUID || viewport.displaySetInstanceUIDs[0];
-
-    const segs = this.getSegmentations();
-
-    const label = options.label || `Segmentation ${segs.length + 1}`;
-    const segmentationId = options.segmentationId || `${csUtils.uuidv4()}`;
-
-    const displaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
-
-    const generatedSegmentationId = await this.createLabelmapForDisplaySet(displaySet, {
-      label,
-      segmentationId,
-      segments: options.createInitialSegment
-        ? {
-            1: {
-              label: 'Segment 1',
-              active: true,
-            },
-          }
-        : {},
-    });
-
-    await this.addSegmentationRepresentation(viewportId, {
-      segmentationId,
-      type: csToolsEnums.SegmentationRepresentations.Labelmap,
-    });
-
-    return generatedSegmentationId;
-  }
-
   public async addSegmentationRepresentation(
     viewportId: string,
     {

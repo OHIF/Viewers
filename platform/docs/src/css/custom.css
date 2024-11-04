@@ -556,3 +556,82 @@ div[class^='announcementBar_'] {
   display: flex;
   align-items: center;
 }
+
+/* add proper ui link styling */
+
+/* Bullet point styling */
+ul {
+  list-style-type: disc;
+  padding-left: 1.5rem;
+  margin: 1rem 0;
+}
+
+ul li {
+  margin-bottom: 0.5rem;
+}
+
+/* Nested bullet points */
+ul ul {
+  list-style-type: circle;
+  margin: 0.5rem 0;
+}
+
+/* For documentation bullet points specifically */
+.markdown ul {
+  list-style-type: disc;
+  padding-left: 1.5rem;
+}
+
+.markdown ul li {
+  margin-bottom: 0.5rem;
+}
+
+/* Markdown link styling */
+.markdown a {
+  color: #0066cc;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.markdown a:hover {
+  color: #0051a3;
+  text-decoration: underline;
+}
+
+/* Dark mode link styling */
+html[data-theme='dark'] .markdown a {
+  color: #66b3ff;
+}
+
+html[data-theme='dark'] .markdown a:hover {
+  color: #99ccff;
+}
+
+/* Horizontal rule styling */
+.markdown hr {
+  height: 1px;
+  border: none;
+  background: linear-gradient(to right, #0066cc, #66b3ff);
+  margin: 2rem 0;
+  opacity: 0.6;
+}
+
+/* Dark mode horizontal rule */
+html[data-theme='dark'] .markdown hr {
+  background: linear-gradient(to right, #66b3ff, #99ccff);
+}
+
+/* Markdown code block styling */
+.markdown pre {
+  font-size: 0.9rem;
+}
+
+.theme-code-block {
+  font-size: 0.9rem;
+}
+
+/* Target both light and dark themes */
+[data-theme='light'] .theme-code-block,
+[data-theme='dark'] .theme-code-block {
+  font-size: 0.9rem;
+}

@@ -877,9 +877,47 @@ function commandsModule({
     /**
      * Creates a labelmap for the active viewport
      */
-    createLabelmapForViewport: () => {
-      const { viewportGridService, segmentationService } = servicesManager.services;
-      segmentationService.createLabelmapForViewport(viewportGridService.getActiveViewportId());
+    createLabelmapForViewport: async ({ viewportId, options }) => {
+      const { viewportGridService, displaySetService, segmentationService } =
+        servicesManager.services;
+      const { viewports } = viewportGridService.getState();
+      const targetViewportId = viewportId;
+
+      const viewport = viewports.get(targetViewportId);
+
+      // Todo: add support for multiple display sets
+      const displaySetInstanceUID =
+        options.displaySetInstanceUID || viewport.displaySetInstanceUIDs[0];
+
+      const segs = this.getSegmentations();
+
+      const label = options.label || `Segmentation ${segs.length + 1}`;
+      const segmentationId = options.segmentationId || `${csUtils.uuidv4()}`;
+
+      const displaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
+
+      const generatedSegmentationId = await segmentationService.createLabelmapForDisplaySet(
+        displaySet,
+        {
+          label,
+          segmentationId,
+          segments: options.createInitialSegment
+            ? {
+                1: {
+                  label: 'Segment 1',
+                  active: true,
+                },
+              }
+            : {},
+        }
+      );
+
+      await segmentationService.addSegmentationRepresentation(viewportId, {
+        segmentationId,
+        type: Enums.SegmentationRepresentations.Labelmap,
+      });
+
+      return generatedSegmentationId;
     },
 
     /**
