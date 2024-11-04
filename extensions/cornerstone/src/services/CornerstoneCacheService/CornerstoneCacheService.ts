@@ -158,12 +158,22 @@ class CornerstoneCacheService {
     initialImageIndex,
     viewportType: Enums.ViewportType
   ): Promise<StackViewportData> {
+    const { uiNotificationService } = this.servicesManager.services;
     const overlayDisplaySets = displaySets.filter(ds => ds.isOverlayDisplaySet);
     for (const overlayDisplaySet of overlayDisplaySets) {
       if (overlayDisplaySet.load && overlayDisplaySet.load instanceof Function) {
         const { userAuthenticationService } = this.servicesManager.services;
         const headers = userAuthenticationService.getAuthorizationHeader();
-        await overlayDisplaySet.load({ headers });
+        try {
+          await displaySet.load({ headers });
+        } catch (e) {
+          uiNotificationService.show({
+            title: 'Error loading displaySet',
+            message: e.message,
+            type: 'error',
+          });
+          console.error(e);
+        }
       }
     }
 
@@ -175,7 +185,16 @@ class CornerstoneCacheService {
       if (displaySet.load && displaySet.load instanceof Function) {
         const { userAuthenticationService } = this.servicesManager.services;
         const headers = userAuthenticationService.getAuthorizationHeader();
-        await displaySet.load({ headers });
+        try {
+          await displaySet.load({ headers });
+        } catch (e) {
+          uiNotificationService.show({
+            title: 'Error loading displaySet',
+            message: e.message,
+            type: 'error',
+          });
+          console.error(e);
+        }
       }
 
       let stackImageIds = this.stackImageIds.get(displaySet.displaySetInstanceUID);
@@ -225,7 +244,18 @@ class CornerstoneCacheService {
       if (displaySet.load && displaySet.load instanceof Function) {
         const { userAuthenticationService } = this.servicesManager.services;
         const headers = userAuthenticationService.getAuthorizationHeader();
-        await displaySet.load({ headers });
+
+        try {
+          await displaySet.load({ headers });
+        } catch (e) {
+          const { uiNotificationService } = this.servicesManager.services;
+          uiNotificationService.show({
+            title: 'Error loading displaySet',
+            message: e.message,
+            type: 'error',
+          });
+          console.error(e);
+        }
 
         // Parametric maps have a `load` method but it should not be loaded in the
         // same way as SEG and RTSTRUCT but like a normal volume

@@ -126,12 +126,17 @@ function _load(
   // and also return the same promise to any other callers.
   loadPromises[SOPInstanceUID] = new Promise(async (resolve, reject) => {
     if (!segDisplaySet.segments || Object.keys(segDisplaySet.segments).length === 0) {
-      await _loadSegments({
-        extensionManager,
-        servicesManager,
-        segDisplaySet,
-        headers,
-      });
+      try {
+        await _loadSegments({
+          extensionManager,
+          servicesManager,
+          segDisplaySet,
+          headers,
+        });
+      } catch (e) {
+        segDisplaySet.loading = false;
+        return reject(e);
+      }
     }
 
     segmentationService
