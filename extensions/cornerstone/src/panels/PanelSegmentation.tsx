@@ -9,7 +9,7 @@ export default function PanelSegmentation({
   configuration,
   children,
 }: withAppTypes) {
-  const { customizationService } = servicesManager.services;
+  const { customizationService, viewportGridService } = servicesManager.services;
 
   const { segmentationsWithRepresentations, disabled } =
     useActiveViewportSegmentationRepresentations({
@@ -18,7 +18,8 @@ export default function PanelSegmentation({
 
   const handlers = {
     onSegmentationAdd: async () => {
-      commandsManager.run('createLabelmapForViewport');
+      const viewportId = viewportGridService.getState().activeViewportId;
+      commandsManager.run('createLabelmapForViewport', { viewportId });
     },
 
     onSegmentationClick: (segmentationId: string) => {
@@ -88,6 +89,30 @@ export default function PanelSegmentation({
     onSegmentationDelete: segmentationId => {
       commandsManager.run('deleteSegmentation', { segmentationId });
     },
+
+    setFillAlpha: (type, value) => {
+      commandsManager.run('setFillAlpha', { type, value });
+    },
+
+    setOutlineWidth: (type, value) => {
+      commandsManager.run('setOutlineWidth', { type, value });
+    },
+
+    setRenderFill: (type, value) => {
+      commandsManager.run('setRenderFill', { type, value });
+    },
+
+    setRenderOutline: (type, value) => {
+      commandsManager.run('setRenderOutline', { type, value });
+    },
+
+    setFillAlphaInactive: (type, value) => {
+      commandsManager.run('setFillAlphaInactive', { type, value });
+    },
+
+    getRenderInactiveSegmentations: () => {
+      return commandsManager.run('getRenderInactiveSegmentations');
+    },
   };
 
   const { mode: SegmentationTableMode } = customizationService.getCustomization(
@@ -154,10 +179,10 @@ export default function PanelSegmentation({
         onSegmentationRemoveFromViewport={handlers.onSegmentationRemoveFromViewport}
         setFillAlpha={handlers.setFillAlpha}
         setOutlineWidth={handlers.setOutlineWidth}
-        renderInactiveSegmentations={handlers.getRenderInactiveSegmentations()}
         setRenderFill={handlers.setRenderFill}
         setRenderOutline={handlers.setRenderOutline}
         setFillAlphaInactive={handlers.setFillAlphaInactive}
+        renderInactiveSegmentations={handlers.getRenderInactiveSegmentations()}
       >
         {children}
         <SegmentationTable.Config />

@@ -128,7 +128,6 @@ export {
   pubSubServiceInterface,
   PubSubService,
   Enums,
-  Types,
   PanelService,
   WorkflowStepsService,
   StudyPrefetcherService,
@@ -137,5 +136,7 @@ export {
 };
 
 export { OHIF };
+
+export type { Types };
 
 export default OHIF;

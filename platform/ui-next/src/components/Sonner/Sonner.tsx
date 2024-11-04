@@ -19,7 +19,7 @@ const Toaster = ({ ...props }: ToasterProps) => {
       richColors="true"
       toastOptions={{
         style: {
-          width: '420px', // Set a maximum width
+          width: '430px', // Set a maximum width
           right: '8px',
         },
       }}

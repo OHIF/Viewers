@@ -14,10 +14,18 @@ import vtkImageMarchingSquares from '@kitware/vtk.js/Filters/General/ImageMarchi
 import vtkDataArray from '@kitware/vtk.js/Common/Core/DataArray';
 import vtkImageData from '@kitware/vtk.js/Common/DataModel/ImageData';
 
-import { updateViewportsForSegmentationRendering, getTargetViewport } from './utils/hydrationUtils';
 const { segmentation: segmentationUtils } = utilities;
 
 const { datasetToBlob } = dcmjs.data;
+
+const getTargetViewport = ({ viewportId, viewportGridService }) => {
+  const { viewports, activeViewportId } = viewportGridService.getState();
+  const targetViewportId = viewportId || activeViewportId;
+
+  const viewport = viewports.get(targetViewportId);
+
+  return viewport;
+};
 
 const {
   Cornerstone3D: {
@@ -43,7 +51,6 @@ const commandsModule = ({
     displaySetService,
     viewportGridService,
     toolGroupService,
-    cornerstoneViewportService,
   } = servicesManager.services as AppTypes.Services;
 
   const actions = {
@@ -58,105 +65,30 @@ const commandsModule = ({
      *
      */
     loadSegmentationsForViewport: async ({ segmentations, viewportId }) => {
-      updateViewportsForSegmentationRendering({
-        viewportId,
-        servicesManager,
-        loadFn: async () => {
-          // Todo: handle adding more than one segmentation
-          const viewport = getTargetViewport({ viewportId, viewportGridService });
-          const displaySetInstanceUID = viewport.displaySetInstanceUIDs[0];
-
-          const segmentation = segmentations[0];
-          const segmentationId = segmentation.id;
-          const label = segmentation.label;
-          const segments = segmentation.segments;
-
-          delete segmentation.segments;
-
-          const displaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
-
-          await segmentationService.createLabelmapForDisplaySet(displaySet, {
-            segmentationId,
-            label,
-          });
-
-          if (segmentation.scalarData) {
-            const labelmapVolume = segmentationService.getLabelmapVolume(segmentationId);
-            labelmapVolume.scalarData.set(segmentation.scalarData);
-          }
-
-          segmentationService.addOrUpdateSegmentation(segmentation);
-
-          await segmentationService.addSegmentationRepresentation(viewportId, {
-            segmentationId,
-          });
-
-          segments.forEach(segment => {
-            if (segment === null) {
-              return;
-            }
-            segmentationService.addSegment(segmentationId, {
-              segmentIndex: segment.segmentIndex,
-              viewportId,
-              properties: {
-                color: segment.color,
-                label: segment.label,
-                opacity: segment.opacity,
-                isLocked: segment.isLocked,
-                visibility: segment.isVisible,
-                active: segmentation.activeSegmentIndex === segment.segmentIndex,
-              },
-            });
-          });
-
-          if (segmentation.centroidsIJK) {
-            segmentationService.setCentroids(segmentation.id, segmentation.centroidsIJK);
-          }
-
-          return segmentationId;
-        },
-      });
-    },
-    /**
-     * Loads segmentation display sets for a specified viewport.
-     * Depending on the modality of the display set (SEG or RTSTRUCT),
-     * it chooses the appropriate service function to create
-     * the segmentation for the display set.
-     * The function then prepares the viewport for rendering segmentation.
-     *
-     * @param {Object} params - Parameters for the function.
-     * @param params.viewportId - ID of the viewport where the segmentation display sets should be loaded.
-     * @param params.displaySets - Array of display sets to be loaded for segmentation.
-     *
-     */
-    loadSegmentationDisplaySetsForViewport: async ({ viewportId, displaySets }) => {
       // Todo: handle adding more than one segmentation
-      const displaySet = displaySets[0];
-      const referencedDisplaySet = displaySetService.getDisplaySetByUID(
-        displaySet.referencedDisplaySetInstanceUID
-      );
-      const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
-      const initialSliceIndex = viewport.getSliceIndex();
+      const viewport = getTargetViewport({ viewportId, viewportGridService });
+      const displaySetInstanceUID = viewport.displaySetInstanceUIDs[0];
 
-      updateViewportsForSegmentationRendering({
-        viewportId,
-        servicesManager,
-        displaySet,
-        loadFn: async () => {
-          const segDisplaySet = displaySet;
-          const serviceFunction =
-            segDisplaySet.Modality === 'SEG'
-              ? 'createSegmentationForSEGDisplaySet'
-              : 'createSegmentationForRTDisplaySet';
+      const segmentation = segmentations[0];
+      const segmentationId = segmentation.segmentationId;
+      const label = segmentation.config.label;
+      const segments = segmentation.config.segments;
 
-          const boundFn = segmentationService[serviceFunction].bind(segmentationService);
-          const segmentationId = await boundFn(segDisplaySet, { segmentationId: null });
-          const segmentation = segmentationService.getSegmentation(segmentationId);
-          segmentation.description = `S${referencedDisplaySet.SeriesNumber}: ${referencedDisplaySet.SeriesDescription}`;
-          return segmentationId;
-        },
-        initialSliceIndex,
+      const displaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
+
+      await segmentationService.createLabelmapForDisplaySet(displaySet, {
+        segmentationId,
+        segments,
+        label,
       });
+
+      segmentationService.addOrUpdateSegmentation(segmentation);
+
+      await segmentationService.addSegmentationRepresentation(viewport.viewportId, {
+        segmentationId,
+      });
+
+      return segmentationId;
     },
     /**
      * Generates a segmentation from a given segmentation ID.

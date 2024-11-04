@@ -26,7 +26,6 @@ addOrUpdateSegmentation(
 
 ```js
 addOrUpdateSegmentation(
-  segmentationId: string,
   segmentationInput: SegmentationPublicInput | Partial<Segmentation>
 )
 ```
@@ -112,7 +111,8 @@ const newSegmentation = {
 segmentationService.addOrUpdateSegmentation(newSegmentation);
 
 // After
-segmentationService.addOrUpdateSegmentation('seg1', {
+segmentationService.addOrUpdateSegmentation({
+  segmentationId: 'seg1',
   representation: {
     type: SegmentationRepresentations.Labelmap,
     data: {
@@ -144,7 +144,8 @@ const updatedSegmentation = {
 segmentationService.addOrUpdateSegmentation(updatedSegmentation);
 
 // After
-segmentationService.addOrUpdateSegmentation('seg1', {
+segmentationService.addOrUpdateSegmentation({
+  segmentationId: 'seg1',
   config: {
     segments: {
       2: { active: true },
@@ -154,6 +155,67 @@ segmentationService.addOrUpdateSegmentation('seg1', {
 ```
 
 </details>
+
+
+## loadSegmentationsForViewport
+
+same as addOrUpdateSegmentation, you should pass in the new segmentation data structure.
+
+For instance
+
+**Before**
+
+```js
+const segmentations = [
+  {
+    id: '1',
+    label: 'Segmentations',
+    segments: labels.map((label, index) => ({
+      segmentIndex: index + 1,
+      label
+    })),
+    isActive: true,
+    activeSegmentIndex: 1,
+  },
+];
+
+commandsManager.runCommand('loadSegmentationsForViewport', {
+  segmentations,
+});
+```
+
+
+
+**After**
+
+```js
+
+const labels = ['Segment 1', 'Segment 2', 'Segment 3'];
+
+const segmentations = [
+  {
+    segmentationId: '1',
+    representation: {
+      type: Enums.SegmentationRepresentations.Labelmap,
+    },
+    config: {
+      label: 'Segmentations',
+      segments: labels.reduce((acc, label, index) => {
+        acc[index + 1] = {
+          label,
+          active: index === 0, // First segment is active
+          locked: false,
+        };
+        return acc;
+      }, {}),
+    },
+  },
+];
+
+commandsManager.runCommand('loadSegmentationsForViewport', {
+  segmentations,
+});
+```
 
 
 ---

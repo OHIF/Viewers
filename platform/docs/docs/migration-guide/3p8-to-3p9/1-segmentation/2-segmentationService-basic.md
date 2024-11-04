@@ -7,7 +7,17 @@ title: SegmentationService API
 
 Below we will review the changes to the API of the `SegmentationService`
 
-## SegmentationService API
+# SegmentationService API
+
+## Events
+
+SEGMENTATION_UPDATED -> SEGMENTATION_MODIFIED
+
+
+Just a rename to match the cornerstone terminology
+
+
+
 
 ## getSegmentation(segmentationId)
 

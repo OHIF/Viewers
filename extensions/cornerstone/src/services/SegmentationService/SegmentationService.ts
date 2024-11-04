@@ -57,6 +57,8 @@ export type SegmentationInfo = {
 
 const EVENTS = {
   SEGMENTATION_MODIFIED: 'event::segmentation_modified',
+  // fired when the segmentation is added
+  SEGMENTATION_ADDED: 'event::segmentation_added',
   //
   SEGMENTATION_DATA_MODIFIED: 'event::segmentation_data_modified',
   // fired when the segmentation is removed
@@ -238,6 +240,11 @@ class SegmentationService extends PubSubService {
       this._onSegmentationModifiedFromSource
     );
 
+    eventTarget.removeEventListener(
+      csToolsEnums.Events.SEGMENTATION_ADDED,
+      this._onSegmentationAddedFromSource
+    );
+
     this.listeners = {};
   };
 
@@ -358,7 +365,7 @@ class SegmentationService extends PubSubService {
       },
     };
 
-    this.addOrUpdateSegmentation(segmentationId, segmentationPublicInput);
+    this.addOrUpdateSegmentation(segmentationPublicInput);
     return segmentationId;
   }
 
@@ -496,7 +503,7 @@ class SegmentationService extends PubSubService {
 
     segDisplaySet.isLoaded = true;
 
-    this.addOrUpdateSegmentation(segmentationId, seg);
+    this.addOrUpdateSegmentation(seg);
 
     return segmentationId;
   }
@@ -619,7 +626,7 @@ class SegmentationService extends PubSubService {
     rtDisplaySet.isLoaded = true;
 
     // Add or update the segmentation in the state
-    this.addOrUpdateSegmentation(segmentationId, segmentation);
+    this.addOrUpdateSegmentation(segmentation);
 
     return segmentationId;
   }
@@ -635,9 +642,9 @@ class SegmentationService extends PubSubService {
    * If the segmentation does not exist, it adds a new segmentation.
    */
   public addOrUpdateSegmentation(
-    segmentationId: string,
     data: cstTypes.SegmentationPublicInput | Partial<cstTypes.Segmentation>
   ) {
+    const segmentationId = data.segmentationId;
     const existingSegmentation = cstSegmentation.state.getSegmentation(segmentationId);
 
     if (existingSegmentation) {
@@ -1501,6 +1508,11 @@ class SegmentationService extends PubSubService {
       csToolsEnums.Events.SEGMENTATION_REPRESENTATION_REMOVED,
       this._onSegmentationRepresentationModifiedFromSource
     );
+
+    eventTarget.addEventListener(
+      csToolsEnums.Events.SEGMENTATION_ADDED,
+      this._onSegmentationAddedFromSource
+    );
   }
 
   private getCornerstoneSegmentation(segmentationId: string) {
@@ -1746,6 +1758,16 @@ class SegmentationService extends PubSubService {
     const { segmentationId } = evt.detail;
 
     this._broadcastEvent(this.EVENTS.SEGMENTATION_MODIFIED, {
+      segmentationId,
+    });
+  };
+
+  private _onSegmentationAddedFromSource = (
+    evt: cstTypes.EventTypes.SegmentationAddedEventType
+  ) => {
+    const { segmentationId } = evt.detail;
+
+    this._broadcastEvent(this.EVENTS.SEGMENTATION_ADDED, {
       segmentationId,
     });
   };

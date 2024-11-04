@@ -877,7 +877,7 @@ function commandsModule({
     /**
      * Creates a labelmap for the active viewport
      */
-    createLabelmapForViewport: async ({ viewportId, options }) => {
+    createLabelmapForViewport: async ({ viewportId, options = {} }) => {
       const { viewportGridService, displaySetService, segmentationService } =
         servicesManager.services;
       const { viewports } = viewportGridService.getState();
@@ -889,7 +889,7 @@ function commandsModule({
       const displaySetInstanceUID =
         options.displaySetInstanceUID || viewport.displaySetInstanceUIDs[0];
 
-      const segs = this.getSegmentations();
+      const segs = segmentationService.getSegmentations();
 
       const label = options.label || `Segmentation ${segs.length + 1}`;
       const segmentationId = options.segmentationId || `${csUtils.uuidv4()}`;
