@@ -2,8 +2,7 @@ const dynamicVolume = {
   sopClassHandler:
     '@ohif/extension-cornerstone-dynamic-volume.sopClassHandlerModule.dynamic-volume',
   leftPanel: '@ohif/extension-cornerstone-dynamic-volume.panelModule.dynamic-volume',
-  toolBox: '@ohif/extension-cornerstone-dynamic-volume.panelModule.dynamic-toolbox',
-  export: '@ohif/extension-cornerstone-dynamic-volume.panelModule.dynamic-export',
+  segmentation: '@ohif/extension-cornerstone-dynamic-volume.panelModule.dynamic-segmentation',
 };
 
 const cornerstone = {
@@ -60,7 +59,7 @@ function getWorkflowSettings({ servicesManager }) {
         layout: {
           panels: {
             left: defaultLeftPanel,
-            right: [[dynamicVolume.toolBox, cornerstone.segmentation, dynamicVolume.export]],
+            right: [[dynamicVolume.segmentation]],
           },
           options: {
             leftPanelClosed: false,

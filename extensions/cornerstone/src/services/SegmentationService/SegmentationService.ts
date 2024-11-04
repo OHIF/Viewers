@@ -366,14 +366,27 @@ class SegmentationService extends PubSubService {
       segmentationId?: string;
       segments?: { [segmentIndex: number]: Partial<cstTypes.Segment> };
       FrameOfReferenceUID?: string;
-      label: string;
+      label?: string;
     }
   ): Promise<string> {
     // Todo: random does not makes sense, make this better, like
     // labelmap 1, 2, 3 etc
     const segmentationId = options?.segmentationId ?? `${csUtils.uuidv4()}`;
-    const referenceImageIds = displaySet.imageIds;
+
+    const isDynamicVolume = displaySet.isDynamicVolume;
+
+    let referenceImageIds = displaySet.imageIds;
+    if (isDynamicVolume) {
+      // get the middle timepoint for referenceImageIds
+      const timePoints = displaySet.dynamicVolumeInfo.timePoints;
+      const middleTimePoint = timePoints[Math.floor(timePoints.length / 2)];
+      referenceImageIds = middleTimePoint;
+    }
+
     const derivedImages = await imageLoader.createAndCacheDerivedLabelmapImages(referenceImageIds);
+
+    const segs = this.getSegmentations();
+    const label = options.label || `Segmentation ${segs.length + 1}`;
 
     const segImageIds = derivedImages.map(image => image.imageId);
 
@@ -388,8 +401,16 @@ class SegmentationService extends PubSubService {
         },
       },
       config: {
-        label: options.label,
-        segments: options.segments ?? {},
+        label,
+        segments:
+          options.segments && Object.keys(options.segments).length > 0
+            ? options.segments
+            : {
+                1: {
+                  label: 'Segment 1',
+                  active: true,
+                },
+              },
         cachedStats: {
           info: `S${displaySet.SeriesNumber}: ${displaySet.SeriesDescription}`,
         },

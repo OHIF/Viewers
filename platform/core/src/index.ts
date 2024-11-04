@@ -38,6 +38,7 @@ import {
 import { DisplaySetMessage, DisplaySetMessageList } from './services/DisplaySetService';
 
 import IWebApiDataSource from './DataSources/IWebApiDataSource';
+import useActiveViewportDisplaySets from './hooks/useActiveViewportDisplaySets';
 
 const hotkeys = {
   ...utils.hotkeys,
@@ -83,6 +84,7 @@ const OHIF = {
   PubSubService,
   PanelService,
   useToolbar,
+  useActiveViewportDisplaySets,
   WorkflowStepsService,
   StudyPrefetcherService,
 };
@@ -131,6 +133,7 @@ export {
   WorkflowStepsService,
   StudyPrefetcherService,
   useToolbar,
+  useActiveViewportDisplaySets,
 };
 
 export { OHIF };

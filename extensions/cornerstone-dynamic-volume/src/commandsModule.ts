@@ -364,14 +364,11 @@ const commandsModule = ({ commandsManager, servicesManager }: withAppTypes) => {
         label,
       });
 
-      for (const viewport of viewports.values()) {
-        const viewportId = viewport.viewportId;
-        await segmentationService.addSegmentationRepresentation(viewportId, {
-          segmentationId,
-        });
+      const firstViewport = viewports.values().next().value;
 
-        segmentationService.setActiveSegmentationForViewport(segmentationId, viewportId);
-      }
+      await segmentationService.addSegmentationRepresentation(firstViewport.viewportId, {
+        segmentationId,
+      });
 
       return segmentationId;
     },

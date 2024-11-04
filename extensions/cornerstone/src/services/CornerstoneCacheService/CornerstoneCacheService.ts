@@ -281,6 +281,10 @@ class CornerstoneCacheService {
   }
 
   private _getCornerstoneVolumeImageIds(displaySet, dataSource): string[] {
+    if (displaySet.imageIds) {
+      return displaySet.imageIds;
+    }
+
     const stackImageIds = this._getCornerstoneStackImageIds(displaySet, dataSource);
 
     return stackImageIds;

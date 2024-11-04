@@ -36,7 +36,7 @@ function modeFactory({ modeConfiguration }) {
   return {
     id,
     routeName: 'dynamic-volume',
-    displayName: 'Preclinical 4D Mode',
+    displayName: 'Preclinical 4D',
     onModeEnter: function ({ servicesManager, extensionManager, commandsManager }: withAppTypes) {
       const {
         measurementService,
@@ -64,11 +64,31 @@ function modeFactory({ modeConfiguration }) {
       // specific to the step
       customizationService.addModeCustomizations([
         {
-          id: 'segmentation.panel',
-          segmentationPanelMode: 'expanded',
-          addSegment: false,
+          id: 'PanelSegmentation.mode',
+          mode: 'expanded',
+        },
+        {
+          id: 'PanelSegmentation.onSegmentationAdd',
           onSegmentationAdd: () => {
-            commandsManager.run('createNewLabelmapFromPT');
+            commandsManager.run('createNewLabelMapForDynamicVolume');
+          },
+        },
+        {
+          id: 'PanelSegmentation.showAddSegment',
+          showAddSegment: false,
+        },
+        {
+          id: 'PanelSegmentation.readableText',
+          // remove following if you are not interested in that stats
+          readableText: {
+            lesionStats: 'Lesion Statistics',
+            minValue: 'Minimum Value',
+            maxValue: 'Maximum Value',
+            meanValue: 'Mean Value',
+            volume: 'Volume',
+            suvPeak: 'SUV Peak',
+            suvMax: 'Maximum SUV',
+            suvMaxIJK: 'SUV Max IJK',
           },
         },
       ]);

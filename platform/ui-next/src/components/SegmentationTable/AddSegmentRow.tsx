@@ -13,6 +13,7 @@ export const AddSegmentRow: React.FC<{
     onSegmentAdd,
     onToggleSegmentationRepresentationVisibility,
     data,
+    showAddSegment,
   } = useSegmentationTableContext('SegmentationTable');
 
   const allSegmentsVisible = Object.values(activeRepresentation?.segments || {}).every(
@@ -31,9 +32,11 @@ export const AddSegmentRow: React.FC<{
     <Icons.Show className="h-6 w-6" />
   );
 
+  const allowAddSegment = showAddSegment && !disableEditing;
+
   return (
     <div className="bg-primary-dark my-px flex h-7 w-full items-center justify-between rounded pl-0.5 pr-7">
-      {disableEditing ? null : (
+      {allowAddSegment ? (
         <Button
           size="sm"
           variant="ghost"
@@ -43,7 +46,7 @@ export const AddSegmentRow: React.FC<{
           <Icons.Add />
           Add Segment
         </Button>
-      )}
+      ) : null}
       <Button
         size="icon"
         variant="ghost"

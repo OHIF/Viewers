@@ -148,6 +148,7 @@ const WindowLevel = ({
                 showLabel={true}
                 allowNumberEdit={true}
                 onChange={handleOpacityChange}
+                showAdjustmentArrows={false}
               />
             </div>
           )}

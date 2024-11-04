@@ -165,6 +165,7 @@ export default function PanelGenerateImage({ servicesManager, commandsManager }:
         madeInClient: true,
         FrameOfReferenceUID: dynamicVolume.metadata.FrameOfReferenceUID,
         isDerived: true,
+        imageIds: computedVolume.imageIds,
       };
       setComputedDisplaySet(displaySet);
       renderGeneratedImage(displaySet);
@@ -172,19 +173,8 @@ export default function PanelGenerateImage({ servicesManager, commandsManager }:
       commandsManager.runCommand('updateVolumeData', {
         volume: computedVolume,
       });
-      // Check if viewport is currently displaying the computed volume, if so,
-      // call render on the viewports to update the image, if not, call
-      // renderGeneratedImage
-      // if (!cache.getVolume(dynamicVolumeId)) {
-      //   for (const viewportId of viewports.keys()) {
-      //     const viewportForRendering =
-      //       cornerstoneViewportService.getCornerstoneViewport(viewportId);
-      //     viewportForRendering.render();
-      //   }
-      // } else {
       cornerstoneViewportService.getRenderingEngine().render();
       renderGeneratedImage(computedDisplaySet);
-      // }
     }
   }
 

@@ -228,6 +228,14 @@ export default function PanelSegmentation({
     }
   );
 
+  const { showAddSegment } = customizationService.getCustomization(
+    'PanelSegmentation.showAddSegment',
+    {
+      id: 'default.showAddSegment',
+      showAddSegment: true,
+    }
+  );
+
   return (
     <>
       <SegmentationTable
@@ -239,6 +247,7 @@ export default function PanelSegmentation({
         onSegmentationAdd={onSegmentationAdd}
         onSegmentationClick={handlers.onSegmentationClick}
         onSegmentationDelete={handlers.onSegmentationDelete}
+        showAddSegment={showAddSegment}
         onSegmentAdd={handlers.onSegmentAdd}
         onSegmentClick={handlers.onSegmentClick}
         onSegmentEdit={handlers.onSegmentEdit}

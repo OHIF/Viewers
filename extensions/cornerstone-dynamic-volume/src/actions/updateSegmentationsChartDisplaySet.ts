@@ -150,8 +150,11 @@ function _getSegmentationData(
     referencedDynamicVolume.imageIds[0]
   );
 
+  const segmentationVolume = segmentationService.getLabelmapVolume(segmentation.segmentationId);
+  const maskVolumeId = segmentationVolume?.volumeId;
+
   const [timeData, _] = csToolsUtils.dynamicVolume.getDataInTime(referencedDynamicVolume, {
-    maskVolumeId: segmentation.segmentationId,
+    maskVolumeId,
   }) as number[][];
 
   const pixelCount = timeData.length;
