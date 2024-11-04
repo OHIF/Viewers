@@ -112,3 +112,146 @@ To disable it, remove the configuration from the `initToolGroups` in your mode.
   }
 }
 ```
+
+---
+
+
+## useAuthorizationCodeFlow
+
+`useAuthorizationCodeFlow` config is deprecated
+
+now internally we detect the authorizationCodeFlow if the response_type is equal to `code`
+
+you can remove the config from the appConfig
+
+---
+
+## StackScrollMouseWheel -> StackScroll Tool + Mouse bindings
+
+If you previously used:
+
+```js
+{ toolName: toolNames.StackScrollMouseWheel, bindings: [] }
+```
+
+in your `initToolGroups`, you should now use:
+
+```js
+{
+  toolName: toolNames.StackScroll,
+  bindings: [{ mouseButton: Enums.MouseBindings.Wheel }],
+}
+```
+
+This change allows for more flexible mouse bindings and keyboard combinations.
+
+## VolumeRotateMouseWheel -> VolumeRotate Tool + Mouse bindings
+
+Before:
+
+```js
+{
+  toolName: toolNames.VolumeRotateMouseWheel,
+  configuration: {
+    rotateIncrementDegrees: 5,
+  },
+},
+```
+
+Now:
+
+```js
+{
+  toolName: toolNames.VolumeRotate,
+  bindings: [{ mouseButton: Enums.MouseBindings.Wheel }],
+  configuration: {
+    rotateIncrementDegrees: 5,
+  },
+},
+```
+
+---
+
+## DicomUpload
+
+The DICOM upload functionality in OHIF has been refactored to use the standard customization service pattern. Now you don't need to put
+
+`customizationService: { dicomUploadComponent: '@ohif/extension-cornerstone.customizationModule.cornerstoneDicomUploadComponent', },`
+
+in your config, we will automatically add that if you have `dicomUploadEnabled`
+
+---
+
+## Viewport and Modality Support for Toolbar Buttons
+
+Previously, toolbar buttons had limited support for disabling themselves based on the active viewport type (e.g., `volume3d`, `video`, `sr`) or the modality of the displayed data (e.g., `US`, `SM`). This led to inconsistencies and sometimes enabled tools in contexts where they weren't applicable.
+
+The new implementation introduces more robust and flexible evaluators to control the enabled/disabled state of toolbar buttons based on viewport types and modalities.
+
+**Key Changes**
+
+1. **New Evaluators:** New evaluators have been added to the `getToolbarModule`:
+    - `evaluate.viewport.supported`: Disables a button if the active viewport's type is listed in the `unsupportedViewportTypes` property.
+    - `evaluate.modality.supported`: Disables a button based on the modalities of the displayed data. It checks for both `unsupportedModalities` (exclusion) and `supportedModalities` (inclusion).
+2. **Removal of Legacy Evaluators:**
+    - Evaluators such as `evaluate.not.sm`, `evaluate.action.not.video`, `evaluate.not3D`, and `evaluate.isUS` have been removed. Migrate your toolbar button definitions to use the new evaluators mentioned above.
+
+
+**Replace Legacy Evaluators:**
+ - Replace `evaluate.not.sm` with:
+
+     ```json
+     {
+       name: 'evaluate.viewport.supported',
+       unsupportedViewportTypes: ['sm'],
+     }
+     ```
+
+ - Replace `evaluate.action.not.video` with:
+
+     ```json
+     {
+       name: 'evaluate.viewport.supported',
+       unsupportedViewportTypes: ['video'],
+     }
+     ```
+
+ - Replace `evaluate.not3D` with:
+
+     ```json
+     {
+       name: 'evaluate.viewport.supported',
+       unsupportedViewportTypes: ['volume3d'],
+     }
+     ```
+
+ - Replace `evaluate.isUS` with:
+
+     ```json
+     {
+       name: 'evaluate.modality.supported',
+       supportedModalities: ['US'],
+     }
+     ```
+
+<details>
+<summary>Example Migration</summary>
+
+Before:
+
+```json
+evaluate: ['evaluate.cine', 'evaluate.not3D'],
+```
+
+After
+
+```json
+evaluate: [
+  'evaluate.cine',
+  {
+    name: 'evaluate.viewport.supported',
+    unsupportedViewportTypes: ['volume3d'],
+  },
+],
+```
+</details>

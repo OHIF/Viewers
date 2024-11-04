@@ -64,7 +64,7 @@ function modeFactory({ modeConfiguration }) {
       // specific to the step
       customizationService.addModeCustomizations([
         {
-          id: 'PanelSegmentation.mode',
+          id: 'PanelSegmentation.tableMode',
           mode: 'expanded',
         },
         {

@@ -1,12 +1,9 @@
 ---
-sidebar_position: 1
-sidebar_label: 3.8 -> 3.9-beta
+title: Other Changes
 ---
 
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
-
-
 
 
 ## External Libraries
@@ -14,12 +11,12 @@ Some libraries are loaded via dynamic import.  You can provide a global function
 `browserImport` the allows loading of dynamic imports without affecting the
 webpack build.  This import looks like:
 
-```
+```html
 <script>
-      function browserImportFunction(moduleId) {
-        return import(moduleId);
-      }
-    </script>
+  function browserImportFunction(moduleId) {
+    return import(moduleId);
+  }
+</script>
 ```
 
 and belongs in the root html file for your application.
@@ -30,7 +27,7 @@ to the external import in your `pluginConfig.json` file.
 The example below imports the `dicom-microscopy-viewer` for use as an external
 dependency.  The example is part of the default `pluginConfig.json` file.
 
-```
+```json
   "public": [
     {
       "directory": "./platform/public"
@@ -58,12 +55,15 @@ the example in `init.tsx` for the cornerstone extension for how this is passed
 into CS3D for loading the whole slide imaging library.
 
 
-## Renaming some interfaces
-A few interfaces are being renamed to simple types to reflect the fact that
-they don't contain methods and are thus more properly simple types.
 
-* IDisplaySet renamed to DisplaySet
-  * Adding some field declarations to agree with actual usage
+---
+
+
+
+---
+
+
+---
 
 
 ## Use of ViewReference for navigation

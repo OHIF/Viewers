@@ -91,7 +91,7 @@ export default function PanelSegmentation({
   };
 
   const { mode: SegmentationTableMode } = customizationService.getCustomization(
-    'PanelSegmentation.mode',
+    'PanelSegmentation.tableMode',
     {
       id: 'default.segmentationTable.mode',
       mode: 'collapsed',

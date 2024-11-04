@@ -103,7 +103,7 @@ function modeFactory({ modeConfiguration }) {
 
       customizationService.addModeCustomizations([
         {
-          id: 'PanelSegmentation.mode',
+          id: 'PanelSegmentation.tableMode',
           mode: 'expanded',
         },
         {
