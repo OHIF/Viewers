@@ -4,10 +4,32 @@ import * as ScrollAreaPrimitive from '@radix-ui/react-scroll-area';
 import { cn } from '../../lib/utils';
 import { Icons } from '../Icons';
 
+/**
+ * Props interface for the ScrollArea component.
+ * Extends Radix UI ScrollArea root props.
+ */
 interface ScrollAreaProps extends React.ComponentPropsWithoutRef<typeof ScrollAreaPrimitive.Root> {
+  /** Flag to show/hide scroll indicator arrows at top and bottom */
   showArrows?: boolean;
 }
 
+/**
+ * A custom scroll area component built on top of Radix UI's ScrollArea.
+ * Provides a scrollable container with custom styling and optional scroll indicators.
+ *
+ * @param props - The component props
+ * @param props.className - Additional CSS classes to apply
+ * @param props.children - The content to be scrolled
+ * @param props.showArrows - Whether to show scroll indicator arrows
+ * @param ref - Forward ref for the root element
+ *
+ * @example
+ * ```tsx
+ * <ScrollArea showArrows>
+ *   <div>Scrollable content</div>
+ * </ScrollArea>
+ * ```
+ */
 const ScrollArea = React.forwardRef<
   React.ElementRef<typeof ScrollAreaPrimitive.Root>,
   ScrollAreaProps
@@ -61,6 +83,20 @@ const ScrollArea = React.forwardRef<
 
 ScrollArea.displayName = ScrollAreaPrimitive.Root.displayName;
 
+/**
+ * Custom scrollbar component for the ScrollArea.
+ * Provides styled scrollbars that can be either vertical or horizontal.
+ *
+ * @param props - The component props
+ * @param props.className - Additional CSS classes to apply
+ * @param props.orientation - The scrollbar orientation ('vertical' | 'horizontal')
+ * @param ref - Forward ref for the scrollbar element
+ *
+ * @example
+ * ```tsx
+ * <ScrollBar orientation="vertical" />
+ * ```
+ */
 const ScrollBar = React.forwardRef<
   React.ElementRef<typeof ScrollAreaPrimitive.ScrollAreaScrollbar>,
   React.ComponentPropsWithoutRef<typeof ScrollAreaPrimitive.ScrollAreaScrollbar>

@@ -12,8 +12,15 @@ import {
   utilities as cstUtils,
   ReferenceLinesTool,
 } from '@cornerstonejs/tools';
+
 import { Types as OhifTypes } from '@ohif/core';
-import { callLabelAutocompleteDialog, showLabelAnnotationPopup } from '@ohif/extension-default';
+import {
+  callLabelAutocompleteDialog,
+  showLabelAnnotationPopup,
+  createReportAsync,
+  callInputDialog,
+  colorPickerDialog,
+} from '@ohif/extension-default';
 import { vec3, mat4 } from 'gl-matrix';
 
 import CornerstoneViewportDownloadForm from './utils/CornerstoneViewportDownloadForm';
@@ -30,6 +37,7 @@ const toggleSyncFunctions = {
 
 function commandsModule({
   servicesManager,
+  extensionManager,
   commandsManager,
 }: OhifTypes.Extensions.ExtensionParams): OhifTypes.Extensions.CommandsModule {
   const {
@@ -866,6 +874,301 @@ function commandsModule({
         ins?.resetCrosshairs();
       });
     },
+    /**
+     * Creates a labelmap for the active viewport
+     */
+    createLabelmapForViewport: () => {
+      const { viewportGridService, segmentationService } = servicesManager.services;
+      segmentationService.createLabelmapForViewport(viewportGridService.getActiveViewportId());
+    },
+
+    /**
+     * Sets the active segmentation for a viewport
+     * @param props.segmentationId - The ID of the segmentation to set as active
+     */
+    setActiveSegmentation: ({ segmentationId }) => {
+      const { viewportGridService, segmentationService } = servicesManager.services;
+      segmentationService.setActiveSegmentation(
+        viewportGridService.getActiveViewportId(),
+        segmentationId
+      );
+    },
+
+    /**
+     * Adds a new segment to a segmentation
+     * @param props.segmentationId - The ID of the segmentation to add the segment to
+     */
+    addSegmentCommand: ({ segmentationId }) => {
+      const { segmentationService } = servicesManager.services;
+      segmentationService.addSegment(segmentationId);
+    },
+
+    /**
+     * Sets the active segment and jumps to its center
+     * @param props.segmentationId - The ID of the segmentation
+     * @param props.segmentIndex - The index of the segment to activate
+     */
+    setActiveSegmentAndCenterCommand: ({ segmentationId, segmentIndex }) => {
+      const { segmentationService } = servicesManager.services;
+      segmentationService.setActiveSegment(segmentationId, segmentIndex);
+      segmentationService.jumpToSegmentCenter(segmentationId, segmentIndex);
+    },
+
+    /**
+     * Toggles the visibility of a segment
+     * @param props.segmentationId - The ID of the segmentation
+     * @param props.segmentIndex - The index of the segment
+     * @param props.type - The type of visibility to toggle
+     */
+    toggleSegmentVisibilityCommand: ({ segmentationId, segmentIndex, type }) => {
+      const { segmentationService, viewportGridService } = servicesManager.services;
+      segmentationService.toggleSegmentVisibility(
+        viewportGridService.getActiveViewportId(),
+        segmentationId,
+        segmentIndex,
+        type
+      );
+    },
+
+    /**
+     * Toggles the lock state of a segment
+     * @param props.segmentationId - The ID of the segmentation
+     * @param props.segmentIndex - The index of the segment
+     */
+    toggleSegmentLockCommand: ({ segmentationId, segmentIndex }) => {
+      const { segmentationService } = servicesManager.services;
+      segmentationService.toggleSegmentLocked(segmentationId, segmentIndex);
+    },
+
+    /**
+     * Toggles the visibility of a segmentation representation
+     * @param props.segmentationId - The ID of the segmentation
+     * @param props.type - The type of representation
+     */
+    toggleSegmentationVisibilityCommand: ({ segmentationId, type }) => {
+      const { segmentationService, viewportGridService } = servicesManager.services;
+      segmentationService.toggleSegmentationRepresentationVisibility(
+        viewportGridService.getActiveViewportId(),
+        { segmentationId, type }
+      );
+    },
+
+    /**
+     * Downloads a segmentation
+     * @param props.segmentationId - The ID of the segmentation to download
+     */
+    downloadSegmentationCommand: ({ segmentationId }) => {
+      const { segmentationService } = servicesManager.services;
+      segmentationService.downloadSegmentation(segmentationId);
+    },
+
+    /**
+     * Stores a segmentation and shows it in the viewport
+     * @param props.segmentationId - The ID of the segmentation to store
+     */
+    storeSegmentationCommand: async ({ segmentationId }) => {
+      const { segmentationService, viewportGridService } = servicesManager.services;
+      const datasources = extensionManager.getActiveDataSource();
+
+      const displaySetInstanceUIDs = await createReportAsync({
+        servicesManager,
+        getReport: () =>
+          commandsManager.runCommand('storeSegmentation', {
+            segmentationId,
+            dataSource: datasources[0],
+          }),
+        reportType: 'Segmentation',
+      });
+
+      if (displaySetInstanceUIDs) {
+        segmentationService.remove(segmentationId);
+        viewportGridService.setDisplaySetsForViewport({
+          viewportId: viewportGridService.getActiveViewportId(),
+          displaySetInstanceUIDs,
+        });
+      }
+    },
+
+    /**
+     * Downloads a segmentation as RTSS
+     * @param props.segmentationId - The ID of the segmentation
+     */
+    downloadRTSSCommand: ({ segmentationId }) => {
+      const { segmentationService } = servicesManager.services;
+      segmentationService.downloadRTSS(segmentationId);
+    },
+
+    /**
+     * Sets the style for a segmentation
+     * @param props.segmentationId - The ID of the segmentation
+     * @param props.type - The type of style
+     * @param props.key - The style key to set
+     * @param props.value - The style value
+     */
+    setSegmentationStyleCommand: ({ segmentationId, type, key, value }) => {
+      const { segmentationService } = servicesManager.services;
+      segmentationService.setStyle({ type }, { [key]: value });
+    },
+
+    /**
+     * Deletes a segment from a segmentation
+     * @param props.segmentationId - The ID of the segmentation
+     * @param props.segmentIndex - The index of the segment to delete
+     */
+    deleteSegmentCommand: ({ segmentationId, segmentIndex }) => {
+      const { segmentationService } = servicesManager.services;
+      segmentationService.removeSegment(segmentationId, segmentIndex);
+    },
+
+    /**
+     * Deletes an entire segmentation
+     * @param props.segmentationId - The ID of the segmentation to delete
+     */
+    deleteSegmentationCommand: ({ segmentationId }) => {
+      const { segmentationService } = servicesManager.services;
+      segmentationService.remove(segmentationId);
+    },
+
+    /**
+     * Removes a segmentation from the viewport
+     * @param props.segmentationId - The ID of the segmentation to remove
+     */
+    removeSegmentationFromViewportCommand: ({ segmentationId }) => {
+      const { segmentationService, viewportGridService } = servicesManager.services;
+      segmentationService.removeSegmentationRepresentations(
+        viewportGridService.getActiveViewportId(),
+        { segmentationId }
+      );
+    },
+
+    /**
+     * Toggles rendering of inactive segmentations
+     */
+    toggleRenderInactiveSegmentationsCommand: () => {
+      const { segmentationService, viewportGridService } = servicesManager.services;
+      const viewportId = viewportGridService.getActiveViewportId();
+      const renderInactive = segmentationService.getRenderInactiveSegmentations(viewportId);
+      segmentationService.setRenderInactiveSegmentations(viewportId, !renderInactive);
+    },
+
+    /**
+     * Sets the fill alpha value for a segmentation type
+     * @param props.type - The type of segmentation
+     * @param props.value - The alpha value to set
+     */
+    setFillAlphaCommand: ({ type, value }) => {
+      const { segmentationService } = servicesManager.services;
+      segmentationService.setStyle({ type }, { fillAlpha: value });
+    },
+
+    /**
+     * Sets the outline width for a segmentation type
+     * @param props.type - The type of segmentation
+     * @param props.value - The width value to set
+     */
+    setOutlineWidthCommand: ({ type, value }) => {
+      const { segmentationService } = servicesManager.services;
+      segmentationService.setStyle({ type }, { outlineWidth: value });
+    },
+
+    /**
+     * Sets whether to render fill for a segmentation type
+     * @param props.type - The type of segmentation
+     * @param props.value - Whether to render fill
+     */
+    setRenderFillCommand: ({ type, value }) => {
+      const { segmentationService } = servicesManager.services;
+      segmentationService.setStyle({ type }, { renderFill: value });
+    },
+
+    /**
+     * Sets whether to render outline for a segmentation type
+     * @param props.type - The type of segmentation
+     * @param props.value - Whether to render outline
+     */
+    setRenderOutlineCommand: ({ type, value }) => {
+      const { segmentationService } = servicesManager.services;
+      segmentationService.setStyle({ type }, { renderOutline: value });
+    },
+
+    /**
+     * Sets the fill alpha for inactive segmentations
+     * @param props.type - The type of segmentation
+     * @param props.value - The alpha value to set
+     */
+    setFillAlphaInactiveCommand: ({ type, value }) => {
+      const { segmentationService } = servicesManager.services;
+      segmentationService.setStyle({ type }, { fillAlphaInactive: value });
+    },
+
+    editSegmentLabel: ({ segmentationId, segmentIndex }) => {
+      const { segmentationService, uiDialogService } = servicesManager.services;
+      const segmentation = segmentationService.getSegmentation(segmentationId);
+
+      if (!segmentation) {
+        return;
+      }
+
+      const segment = segmentation.segments[segmentIndex];
+      const { label } = segment;
+
+      callInputDialog(uiDialogService, label, (label, actionId) => {
+        if (label === '') {
+          return;
+        }
+
+        segmentationService.setSegmentLabel(segmentationId, segmentIndex, label);
+      });
+    },
+
+    editSegmentationLabel: ({ segmentationId }) => {
+      const { segmentationService, uiDialogService } = servicesManager.services;
+      const segmentation = segmentationService.getSegmentation(segmentationId);
+
+      if (!segmentation) {
+        return;
+      }
+
+      const { label } = segmentation;
+
+      callInputDialog(uiDialogService, label, (label, actionId) => {
+        if (label === '') {
+          return;
+        }
+
+        segmentationService.addOrUpdateSegmentation(segmentationId, { label: label });
+      });
+    },
+
+    editSegmentColor: ({ segmentationId, segmentIndex }) => {
+      const { segmentationService, uiDialogService, viewportGridService } =
+        servicesManager.services;
+      const viewportId = viewportGridService.getActiveViewportId();
+      const color = segmentationService.getSegmentColor(viewportId, segmentationId, segmentIndex);
+
+      const rgbaColor = {
+        r: color[0],
+        g: color[1],
+        b: color[2],
+        a: color[3] / 255.0,
+      };
+
+      colorPickerDialog(uiDialogService, rgbaColor, (newRgbaColor, actionId) => {
+        if (actionId === 'cancel') {
+          return;
+        }
+
+        const color = [newRgbaColor.r, newRgbaColor.g, newRgbaColor.b, newRgbaColor.a * 255.0];
+        segmentationService.setSegmentColor(viewportId, segmentationId, segmentIndex, color);
+      });
+    },
+
+    getRenderInactiveSegmentations: () => {
+      const { segmentationService, viewportGridService } = servicesManager.services;
+      return segmentationService.getRenderInactiveSegmentations(
+        viewportGridService.getActiveViewportId()
+      );
+    },
   };
 
   const definitions = {
@@ -1032,6 +1335,78 @@ function commandsModule({
     },
     updateStoredSegmentationPresentation: {
       commandFn: actions.updateStoredSegmentationPresentation,
+    },
+    createLabelmapForViewport: {
+      commandFn: actions.createLabelmapForViewport,
+    },
+    setActiveSegmentation: {
+      commandFn: actions.setActiveSegmentation,
+    },
+    addSegment: {
+      commandFn: actions.addSegmentCommand,
+    },
+    setActiveSegmentAndCenter: {
+      commandFn: actions.setActiveSegmentAndCenterCommand,
+    },
+    toggleSegmentVisibility: {
+      commandFn: actions.toggleSegmentVisibilityCommand,
+    },
+    toggleSegmentLock: {
+      commandFn: actions.toggleSegmentLockCommand,
+    },
+    toggleSegmentationVisibility: {
+      commandFn: actions.toggleSegmentationVisibilityCommand,
+    },
+    downloadSegmentation: {
+      commandFn: actions.downloadSegmentationCommand,
+    },
+    storeSegmentation: {
+      commandFn: actions.storeSegmentationCommand,
+    },
+    downloadRTSS: {
+      commandFn: actions.downloadRTSSCommand,
+    },
+    setSegmentationStyle: {
+      commandFn: actions.setSegmentationStyleCommand,
+    },
+    deleteSegment: {
+      commandFn: actions.deleteSegmentCommand,
+    },
+    deleteSegmentation: {
+      commandFn: actions.deleteSegmentationCommand,
+    },
+    removeSegmentationFromViewport: {
+      commandFn: actions.removeSegmentationFromViewportCommand,
+    },
+    toggleRenderInactiveSegmentations: {
+      commandFn: actions.toggleRenderInactiveSegmentationsCommand,
+    },
+    setFillAlpha: {
+      commandFn: actions.setFillAlphaCommand,
+    },
+    setOutlineWidth: {
+      commandFn: actions.setOutlineWidthCommand,
+    },
+    setRenderFill: {
+      commandFn: actions.setRenderFillCommand,
+    },
+    setRenderOutline: {
+      commandFn: actions.setRenderOutlineCommand,
+    },
+    setFillAlphaInactive: {
+      commandFn: actions.setFillAlphaInactiveCommand,
+    },
+    editSegmentLabel: {
+      commandFn: actions.editSegmentLabel,
+    },
+    editSegmentationLabel: {
+      commandFn: actions.editSegmentationLabel,
+    },
+    editSegmentColor: {
+      commandFn: actions.editSegmentColor,
+    },
+    getRenderInactiveSegmentations: {
+      commandFn: actions.getRenderInactiveSegmentations,
     },
   };
 

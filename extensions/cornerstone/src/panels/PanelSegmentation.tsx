@@ -1,6 +1,5 @@
 import React from 'react';
 import { SegmentationTable } from '@ohif/ui-next';
-import { callInputDialog, colorPickerDialog, createReportAsync } from '@ohif/extension-default';
 import { useActiveViewportSegmentationRepresentations } from '../hooks/useActiveViewportSegmentationRepresentations';
 
 export default function PanelSegmentation({
@@ -10,8 +9,7 @@ export default function PanelSegmentation({
   configuration,
   children,
 }: withAppTypes) {
-  const { segmentationService, viewportGridService, uiDialogService, customizationService } =
-    servicesManager.services;
+  const { customizationService } = servicesManager.services;
 
   const { segmentationsWithRepresentations, disabled } =
     useActiveViewportSegmentationRepresentations({
@@ -20,187 +18,76 @@ export default function PanelSegmentation({
 
   const handlers = {
     onSegmentationAdd: async () => {
-      segmentationService.createLabelmapForViewport(viewportGridService.getActiveViewportId());
+      commandsManager.run('createLabelmapForViewport');
     },
 
     onSegmentationClick: (segmentationId: string) => {
-      segmentationService.setActiveSegmentation(
-        viewportGridService.getActiveViewportId(),
-        segmentationId
-      );
+      commandsManager.run('setActiveSegmentation', { segmentationId });
     },
 
     onSegmentAdd: segmentationId => {
-      segmentationService.addSegment(segmentationId);
+      commandsManager.run('addSegment', { segmentationId });
     },
 
     onSegmentClick: (segmentationId, segmentIndex) => {
-      segmentationService.setActiveSegment(segmentationId, segmentIndex);
-      segmentationService.jumpToSegmentCenter(segmentationId, segmentIndex);
+      commandsManager.run('setActiveSegmentAndCenter', { segmentationId, segmentIndex });
     },
 
     onSegmentEdit: (segmentationId, segmentIndex) => {
-      const segmentation = segmentationService.getSegmentation(segmentationId);
-
-      if (!segmentation) {
-        return;
-      }
-
-      const segment = segmentation.segments[segmentIndex];
-      const { label } = segment;
-
-      callInputDialog(uiDialogService, label, (label, actionId) => {
-        if (label === '') {
-          return;
-        }
-
-        segmentationService.setSegmentLabel(segmentationId, segmentIndex, label);
-      });
+      commandsManager.run('editSegmentLabel', { segmentationId, segmentIndex });
     },
 
     onSegmentationEdit: segmentationId => {
-      const segmentation = segmentationService.getSegmentation(segmentationId);
-
-      if (!segmentation) {
-        return;
-      }
-
-      const { label } = segmentation;
-
-      callInputDialog(uiDialogService, label, (label, actionId) => {
-        if (label === '') {
-          return;
-        }
-
-        segmentationService.addOrUpdateSegmentation(segmentationId, { label: label });
-      });
+      commandsManager.run('editSegmentationLabel', { segmentationId });
     },
 
     onSegmentColorClick: (segmentationId, segmentIndex) => {
-      const viewportId = viewportGridService.getActiveViewportId();
-      const color = segmentationService.getSegmentColor(viewportId, segmentationId, segmentIndex);
-
-      const rgbaColor = {
-        r: color[0],
-        g: color[1],
-        b: color[2],
-        a: color[3] / 255.0,
-      };
-      colorPickerDialog(uiDialogService, rgbaColor, (newRgbaColor, actionId) => {
-        if (actionId === 'cancel') {
-          return;
-        }
-
-        const color = [newRgbaColor.r, newRgbaColor.g, newRgbaColor.b, newRgbaColor.a * 255.0];
-        segmentationService.setSegmentColor(viewportId, segmentationId, segmentIndex, color);
-      });
+      commandsManager.run('editSegmentColor', { segmentationId, segmentIndex });
     },
 
     onSegmentDelete: (segmentationId, segmentIndex) => {
-      segmentationService.removeSegment(segmentationId, segmentIndex);
+      commandsManager.run('deleteSegment', { segmentationId, segmentIndex });
     },
 
     onToggleSegmentVisibility: (segmentationId, segmentIndex, type) => {
-      segmentationService.toggleSegmentVisibility(
-        viewportGridService.getActiveViewportId(),
-        segmentationId,
-        segmentIndex,
-        type
-      );
+      commandsManager.run('toggleSegmentVisibility', { segmentationId, segmentIndex, type });
     },
 
     onToggleSegmentLock: (segmentationId, segmentIndex) => {
-      segmentationService.toggleSegmentLocked(segmentationId, segmentIndex);
+      commandsManager.run('toggleSegmentLock', { segmentationId, segmentIndex });
     },
 
     onToggleSegmentationRepresentationVisibility: (segmentationId, type) => {
-      segmentationService.toggleSegmentationRepresentationVisibility(
-        viewportGridService.getActiveViewportId(),
-        { segmentationId, type }
-      );
+      commandsManager.run('toggleSegmentationVisibility', { segmentationId, type });
     },
 
     onSegmentationDownload: segmentationId => {
-      commandsManager.runCommand('downloadSegmentation', {
-        segmentationId,
-      });
+      commandsManager.run('downloadSegmentation', { segmentationId });
     },
 
     storeSegmentation: async segmentationId => {
-      const datasources = extensionManager.getActiveDataSource();
-
-      const displaySetInstanceUIDs = await createReportAsync({
-        servicesManager,
-        getReport: () =>
-          commandsManager.runCommand('storeSegmentation', {
-            segmentationId,
-            dataSource: datasources[0],
-          }),
-        reportType: 'Segmentation',
-      });
-
-      // Show the exported report in the active viewport as read only (similar to SR)
-      if (displaySetInstanceUIDs) {
-        // clear the segmentation that we exported, similar to the storeMeasurement
-        // where we remove the measurements and prompt again the user if they would like
-        // to re-read the measurements in a SR read only viewport
-        segmentationService.remove(segmentationId);
-
-        viewportGridService.setDisplaySetsForViewport({
-          viewportId: viewportGridService.getActiveViewportId(),
-          displaySetInstanceUIDs,
-        });
-      }
+      commandsManager.run('storeSegmentation', { segmentationId });
     },
 
     onSegmentationDownloadRTSS: segmentationId => {
-      commandsManager.runCommand('downloadRTSS', {
-        segmentationId,
-      });
+      commandsManager.run('downloadRTSS', { segmentationId });
     },
 
     setStyle: (segmentationId, type, key, value) => {
-      // Todo: make this more granular and allow per segmentaion styles
-      segmentationService.setStyle({ type }, { [key]: value });
+      commandsManager.run('setSegmentationStyle', { segmentationId, type, key, value });
     },
 
-    // New handler for toggling render inactive segmentations
     toggleRenderInactiveSegmentations: () => {
-      const viewportId = viewportGridService.getActiveViewportId();
-      const renderInactive = segmentationService.getRenderInactiveSegmentations(viewportId);
-      segmentationService.setRenderInactiveSegmentations(viewportId, !renderInactive);
+      commandsManager.run('toggleRenderInactiveSegmentations');
     },
 
     onSegmentationRemoveFromViewport: segmentationId => {
-      segmentationService.removeSegmentationRepresentations(
-        viewportGridService.getActiveViewportId(),
-        {
-          segmentationId,
-        }
-      );
+      commandsManager.run('removeSegmentationFromViewport', { segmentationId });
     },
 
     onSegmentationDelete: segmentationId => {
-      segmentationService.remove(segmentationId);
+      commandsManager.run('deleteSegmentation', { segmentationId });
     },
-
-    setFillAlpha: ({ type }, value: number) =>
-      segmentationService.setStyle({ type }, { fillAlpha: value }),
-
-    setOutlineWidth: ({ type }, value: number) =>
-      segmentationService.setStyle({ type }, { outlineWidth: value }),
-
-    getRenderInactiveSegmentations: () =>
-      segmentationService.getRenderInactiveSegmentations(viewportGridService.getActiveViewportId()),
-
-    setRenderFill: ({ type }, value: boolean) =>
-      segmentationService.setStyle({ type }, { renderFill: value }),
-
-    setRenderOutline: ({ type }, value: boolean) =>
-      segmentationService.setStyle({ type }, { renderOutline: value }),
-
-    setFillAlphaInactive: ({ type }, value: number) =>
-      segmentationService.setStyle({ type }, { fillAlphaInactive: value }),
   };
 
   const { mode: SegmentationTableMode } = customizationService.getCustomization(

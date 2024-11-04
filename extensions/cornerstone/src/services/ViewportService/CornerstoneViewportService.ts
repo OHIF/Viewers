@@ -622,7 +622,7 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     });
 
     let imageIdsToSet = imageIds;
-    const res = this._processOverlaysForViewport(viewport);
+    const res = this._processExtraDisplaySetsForViewport(viewport);
     imageIdsToSet = res?.imageIds ?? imageIdsToSet;
 
     return viewport.setStack(imageIdsToSet, initialImageIndexToUse).then(() => {
@@ -806,38 +806,7 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     });
 
     // For SEG and RT viewports
-    this._processOverlaysForViewport(viewport);
-
-    // Always load the reference volume if the displaySet is an overlay
-    // This occurs in the preview SEG since we handle SEG via segmentation state directly
-    // for hydrated segs
-    // if (overlayReferenceVolumeImageIds) {
-    //   // we should check if the overlay reference volume image ids are already in the volumeInputArray
-    //   // if they are not, then we need to add them
-    //   const refStr = overlayReferenceVolumeImageIds.join(',');
-    //   const refVolumeInput = volumeInputArray.find(
-    //     volumeInput => volumeInput.imageIds.join(',') === refStr
-    //   );
-    //   if (!refVolumeInput) {
-    //     // create and load the volume
-    //     const displaySet = displaySetService.getDisplaySetByUID(displaySetUIDs[0]);
-    //     const volumeId = `${VOLUME_LOADER_SCHEME}:${displaySet.referencedDisplaySetInstanceUID}`;
-
-    //     const volume = cache.getVolume(volumeId);
-
-    //     if (!volume) {
-    //       await volumeLoader.createAndCacheVolume(volumeId, {
-    //         imageIds: overlayReferenceVolumeImageIds,
-    //       });
-    //     }
-
-    //     volumeInputArray.push({
-    //       volumeId,
-    //       imageIds: overlayReferenceVolumeImageIds,
-    //       blendMode: displaySetOptions[0].blendMode,
-    //     });
-    //   }
-    // }
+    this._processExtraDisplaySetsForViewport(viewport);
 
     await viewport.setVolumes(volumeInputArray);
 
@@ -862,7 +831,9 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     });
   }
 
-  private _processOverlaysForViewport(viewport: Types.IStackViewport | Types.IVolumeViewport) {
+  private _processExtraDisplaySetsForViewport(
+    viewport: Types.IStackViewport | Types.IVolumeViewport
+  ) {
     const { displaySetService } = this.servicesManager.services;
 
     // load any secondary displaySets

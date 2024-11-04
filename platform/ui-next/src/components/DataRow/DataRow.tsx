@@ -10,6 +10,52 @@ import { Icons } from '../../components/Icons/Icons';
 import { Tooltip, TooltipTrigger, TooltipContent } from '../../components/Tooltip/Tooltip';
 import sanitizeHtml from 'sanitize-html';
 
+/**
+ * DataRow is a complex UI component that displays a selectable, interactive row with hierarchical data.
+ * It's designed to show a numbered item with a title, optional color indicator, and expandable details.
+ * The row supports various interactive features like visibility toggling, locking, and contextual actions.
+ *
+ * @component
+ * @example
+ * ```tsx
+ * <DataRow
+ *   number={1}
+ *   title="My Item"
+ *   details={{
+ *     primary: ["Main detail", "  Sub detail"],
+ *     secondary: []
+ *   }}
+ *   isVisible={true}
+ *   isLocked={false}
+ *   onToggleVisibility={() => {}}
+ *   onToggleLocked={() => {}}
+ *   onRename={() => {}}
+ *   onDelete={() => {}}
+ *   onColor={() => {}}
+ * />
+ * ```
+ */
+
+/**
+ * Props for the DataRow component
+ * @interface DataRowProps
+ * @property {number} number - The display number/index of the row
+ * @property {string} title - The main text label for the row
+ * @property {boolean} disableEditing - When true, prevents rename and delete operations
+ * @property {string} [colorHex] - Optional hex color code to display a color indicator
+ * @property {Object} [details] - Optional hierarchical details to display below the row
+ * @property {string[]} details.primary - Primary details shown immediately below the row
+ * @property {string[]} details.secondary - Secondary details (currently unused)
+ * @property {boolean} [isSelected] - Whether the row is currently selected
+ * @property {() => void} [onSelect] - Callback when the row is clicked/selected
+ * @property {boolean} isVisible - Controls the row's visibility state
+ * @property {() => void} onToggleVisibility - Callback to toggle visibility
+ * @property {boolean} isLocked - Controls the row's locked state
+ * @property {() => void} onToggleLocked - Callback to toggle locked state
+ * @property {() => void} onRename - Callback when rename is requested
+ * @property {() => void} onDelete - Callback when delete is requested
+ * @property {() => void} onColor - Callback when color change is requested
+ */
 interface DataRowProps {
   number: number;
   disableEditing: boolean;

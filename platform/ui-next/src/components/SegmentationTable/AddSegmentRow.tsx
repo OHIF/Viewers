@@ -2,10 +2,25 @@ import React from 'react';
 import { Button, Icons } from '@ohif/ui-next';
 import { useSegmentationTableContext } from './SegmentationTableContext';
 
-export const AddSegmentRow: React.FC<{
+/**
+ * Props interface for the AddSegmentRow component
+ */
+interface AddSegmentRowProps {
+  /** Optional child elements to render within the row */
   children?: React.ReactNode;
+  /** Optional segmentation object to override the active segmentation */
   segmentation?: unknown;
-}> = ({ children = null, segmentation }) => {
+}
+
+/**
+ * A component that renders a row with controls for adding segments and toggling visibility
+ * in the segmentation table.
+ *
+ * @param props - Component properties
+ * @param props.children - Optional child elements to render within the row
+ * @param props.segmentation - Optional segmentation object to override the active segmentation
+ */
+export const AddSegmentRow: React.FC<AddSegmentRowProps> = ({ children = null, segmentation }) => {
   const {
     activeRepresentation,
     disableEditing,

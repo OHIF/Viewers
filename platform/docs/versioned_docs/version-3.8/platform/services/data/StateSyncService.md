@@ -1,76 +1,93 @@
 ---
 sidebar_position: 8
-sidebar_label: State Sync Service
+sidebar_label: State Sync
 ---
 
-# State Sync Service
+# State Sync
 
 ## Overview
-The state sync service is designed to allow short and long term memory of things such as
-annotations applied, last annotation state, hanging protocol viewport state,
-window level etc.  This allows for better interaction with things like navigation
-between hanging protocols, ensuring that the previously displayed layouts
-can be redisplayed after returning to a given hanging protocol.
 
-Currently, all the state sync service configurations have one of the following two
-lifetimes.  See the mode description for general information on the mode lifetime.
+Applications often need a way to save and restore state, allowing users to continue their work seamlessly across sessions or after restarts. This is essential for keeping user preferences, preserving app context, and providing a consistent experience. For example, hanging protocol layouts, and window level improves user interactions, allowing for smooth navigation between protocols and restoring layouts upon returning. This document explains how to manage and sync state in the application using Zustand stores, providing built-in state stores and tools for extensions to create and manage their own.
 
-* Application load - when the application is restarted, the state is lost
-* `clearOnModeExit` - which stores state until the mode onModeExit is called, and then throws away the remaining state.  This is useful for mode specific information.
 
-### TODO work - add more storage locations
-It is expected to add a few more storage locations, which will store to various
-locations on updates:
+## Built-in Zustand Stores
 
-* User specific server store - to store things between application restarts at the user level
-* Browser state store - to store things in the browser local state, to recover after crashing.
-* Study specific server store - to store things relevant to a given study between application restarts, on the server.
+The following stores are available for managing different aspects of application state:
 
-## Events
+* **`useLutPresentationStore`**: Manages LUT (window level) presentation state.  Key features:
+    * `setLutPresentation(key, value)`: Sets a LUT presentation for a given `key`.
+    * `clearLutPresentationStore()`: Clears all stored LUT presentations.
+    * `getPresentationId(id, options)`: Retrieves the presentation ID based on viewport and display set information.
 
-Currently the service does not fire events.
+* **`usePositionPresentationStore`**: Manages viewport position (camera, initial image) state. Key features:
+    * `setPositionPresentation(key, value)`: Sets a position presentation for a given `key`.
+    * `clearPositionPresentationStore()`: Clears all stored position presentations.
+    * `getPresentationId(id, options)`: Retrieves the presentation ID based on viewport and display set information.
+    * `getPositionPresentationId(viewport, viewports?, isUpdatingSameViewport?)`:  Gets the position presentation ID.
 
-## API
+* **`useSegmentationPresentationStore`**: Manages segmentation presentation state. Key features:
+    * `setSegmentationPresentation(presentationId, value)`: Sets a segmentation presentation for a given `presentationId`.
+    * `clearSegmentationPresentationStore()`: Clears all stored segmentation presentations.
+    * `getPresentationId(id, options)`: Retrieves the presentation ID based on viewport, display set, and services manager information.
+    * `addSegmentationPresentation(presentationId, segmentationPresentation, { servicesManager })`: Adds a new segmentation presentation.
+    * `getSegmentationPresentationId({ viewport, servicesManager })`: Retrieves the current segmentation presentation ID.
 
-- `register`: to create a new named state storage
-- `reduce`: to apply a set of changes to several states at once
-- `getState`: to retrieve the current state
-- `onModeExit`: clears the states configured as clearOnModeExit states
+* **`useSynchronizersStore`**: Manages viewport synchronization state. Key features:
+    * `setSynchronizers(viewportId, synchronizers)`: Sets synchronizers for a specific viewport.
+    * `clearSynchronizersStore()`: Clears the entire synchronizers store.
 
-### register
-The register call is typically added to an extension to create a new
-syncable state.  A typical call is shown below, registering the viewport
-grid store state as a modal state.
+
+## Creating Custom State Stores with Zustand
+
+Extensions can create their own Zustand stores to manage custom state.  This approach leverages Zustand's simplicity and performance.
 
 ```javascript
-  stateSyncService.register('viewportGridStore', { clearOnModeExit: true });
+import { create } from 'zustand';
+import { devtools } from 'zustand/middleware';
+
+// Define your state shape
+interface MyCustomState {
+  count: number;
+  increment: () => void;
+  reset: () => void;
+}
+
+// Create your store
+const useMyCustomStore = create<MyCustomState>()(
+  devtools((set) => ({
+    count: 0,
+    increment: () => set((state) => ({ count: state.count + 1 })),
+    reset: () => set({ count: 0 }),
+  }), { name: 'MyCustomStore' }) // Use devtools for debugging
+);
+
+// Use the store in your component
+function MyComponent() {
+  const { count, increment, reset } = useMyCustomStore();
+
+  return (
+    <div>
+      <p>Count: {count}</p>
+      <button onClick={increment}>Increment</button>
+      <button onClick={reset}>Reset</button>
+    </div>
+  );
+}
 ```
 
-### getState
-The `getState` call returns an object containing all of the registered states,
-by id.  The values can be read directly, but should not be modified.
+### Best Practices
 
-### reduce
-The `reduce` call is used to apply a set of updates to various states.  The
-updates are performed for every state as a simply "set" call.
+* **Naming:** Use a clear and descriptive name for your store, prefixed with `use`, e.g., `useMyCustomStore`.
+* **Typing:** Define the state interface using TypeScript for better type safety and code maintainability.
+* **Devtools:** Use the `devtools` middleware in development to easily inspect and debug your store's state changes.
+* **State Updates:** Use the `set` function to update the state, ensuring immutability by returning a new state object or using the callback form to access the previous state.
 
-### onModeExit
-When the Mode is exited, the onModeExit is called on the sync state, and this
-clears all states registered with `clearOnModeExit: true`.
-To avoid clearing the state, the mode definition should store any transient
-state in the mode onModeExit and recover it in the `mode.onModeEnter`.
 
-## OHIF Registered State Sync Stores
-There are a number of defined stores here.  It is recommended to update this
-list as state stores are added:
 
-### Default Extension Stores
+## Migration from Legacy State Sync Service
 
-* `viewportGridStore` has viewport grid restore information for returning to an earlier grid layout.
-* `reuseIdMap` has a map of names to display sets for preserving user changes to hp display set selections.
-* `hanging` has a map of the hanging protocol stage information applied (HPInfo)
+Existing extensions using the legacy `stateSyncService` should migrate to using individual Zustand stores.  This involves:
 
-### Cornerstone Extension Stores
-
-* `lutPresentationStore` has the cornerstone LUT (window level) presentation state information
-* `positionPresentationStore` has the cornerstone viewport position (camera, initial image) information
+1.  Creating a new Zustand store for each piece of state previously managed by `stateSyncService`.
+2.  Updating the extension code to use the new store instead of `stateSyncService`.
+3.  Removing the legacy `stateSyncService` registration code.

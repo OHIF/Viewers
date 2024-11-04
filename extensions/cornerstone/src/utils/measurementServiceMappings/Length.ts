@@ -29,7 +29,8 @@ const Length = {
     const colorString = config.style.getStyleProperty('color', { annotationUID });
 
     // color string is like 'rgb(255, 255, 255)' we need them to be in RGBA array [255, 255, 255, 255]
-    const color = colorString.replace('rgb(', '').replace(')', '').split(',').map(Number);
+    // Todo: this should be in a utility
+    // const color = colorString.replace('rgb(', '').replace(')', '').split(',').map(Number);
 
     if (!metadata || !data) {
       console.warn('Length tool: Missing metadata or data');
