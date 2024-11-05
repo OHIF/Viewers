@@ -73,6 +73,7 @@ import {
   TooltipContent,
   StudySummary,
   ErrorBoundary,
+  Header,
 } from './components';
 import { DataRow } from './components/DataRow';
 
@@ -158,4 +159,5 @@ export {
   TooltipTrigger,
   TooltipContent,
   StudySummary,
+  Header,
 };

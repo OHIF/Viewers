@@ -3,11 +3,13 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useLocation } from 'react-router';
 
-import { ErrorBoundary } from '@ohif/ui-next';
-import { UserPreferences, AboutModal, Header, useModal } from '@ohif/ui';
+import { UserPreferences, AboutModal, useModal } from '@ohif/ui';
+import { Header } from '@ohif/ui-next';
 import i18n from '@ohif/i18n';
 import { hotkeys } from '@ohif/core';
 import { Toolbar } from '../Toolbar/Toolbar';
+import HeaderPatientInfo from './HeaderPatientInfo';
+import { PatientInfoVisibility } from './HeaderPatientInfo/HeaderPatientInfo';
 
 const { availableLanguages, defaultLanguage, currentLanguage } = i18n;
 
@@ -16,7 +18,7 @@ function ViewerHeader({
   extensionManager,
   servicesManager,
   appConfig,
-}: withAppTypes) {
+}: withAppTypes<{ appConfig: AppTypes.Config }>) {
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -111,15 +113,20 @@ function ViewerHeader({
       isReturnEnabled={!!appConfig.showStudyList}
       onClickReturnButton={onClickReturnButton}
       WhiteLabeling={appConfig.whiteLabeling}
-      showPatientInfo={appConfig.showPatientInfo}
-      servicesManager={servicesManager}
       Secondary={
         <Toolbar
           servicesManager={servicesManager}
           buttonSection="secondary"
         />
       }
-      appConfig={appConfig}
+      PatientInfo={
+        appConfig.showPatientInfo !== PatientInfoVisibility.DISABLED && (
+          <HeaderPatientInfo
+            servicesManager={servicesManager}
+            appConfig={appConfig}
+          />
+        )
+      }
     >
       <div className="relative flex justify-center gap-[4px]">
         <Toolbar servicesManager={servicesManager} />

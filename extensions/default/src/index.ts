@@ -34,6 +34,7 @@ import colorPickerDialog from './utils/colorPickerDialog';
 
 import promptSaveReport from './utils/promptSaveReport';
 import promptLabelAnnotation from './utils/promptLabelAnnotation';
+import usePatientInfo from './hooks/usePatientInfo';
 
 const defaultExtension: Types.Extensions.Extension = {
   /**
@@ -96,4 +97,5 @@ export {
   promptSaveReport,
   promptLabelAnnotation,
   colorPickerDialog,
+  usePatientInfo,
 };

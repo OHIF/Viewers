@@ -125,12 +125,10 @@ const ErrorBoundary = ({
   fallbackRoute = null,
   isPage,
 }: ErrorBoundaryProps) => {
-  const [isOpen, setIsOpen] = useState(true);
   const [error, setError] = useState<ErrorBoundaryError | null>(null);
 
   const onResetHandler = () => {
     setError(null);
-    setIsOpen(true);
     onReset();
   };
 
@@ -174,14 +172,11 @@ const ErrorBoundary = ({
   return (
     <ReactErrorBoundary
       fallbackRender={props => (
-        <>
-          {children}
-          <FallbackComponent
-            error={props.error}
-            context={context}
-            resetErrorBoundary={props.resetErrorBoundary}
-          />
-        </>
+        <FallbackComponent
+          error={props.error}
+          context={context}
+          resetErrorBoundary={props.resetErrorBoundary}
+        />
       )}
       onReset={onResetHandler}
       onError={onErrorHandler}

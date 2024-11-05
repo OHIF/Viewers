@@ -87,3 +87,54 @@ uiNotificationService.hide(notificationId);
 Previously, when targeting the viewport pane to add custom CSS, you likely used `group-hover:visible` with the viewportPane having a `group` class.
 
 The naming was confusing as we added more groups, so we renamed it to `group/pane`. Now you can apply `group-hover/pane` for better clarity.
+
+
+---
+
+## Header Component
+
+
+Header Component has been refactored in the @ohif/ui-next package.
+
+
+**Before**
+
+
+```js
+function Header({
+  children,
+  menuOptions,
+  isReturnEnabled,
+  onClickReturnButton,
+  isSticky,
+  WhiteLabeling,
+  showPatientInfo,
+  servicesManager,
+  Secondary,
+  appConfig,
+  ...props
+}: withAppTypes): ReactNode
+```
+
+**After**
+
+```js
+function Header({
+  children,
+  menuOptions,
+  isReturnEnabled,
+  onClickReturnButton,
+  isSticky,
+  WhiteLabeling,
+  PatientInfo,
+  Secondary,
+  ...props
+}: HeaderProps): ReactNode
+```
+
+The `PatientInfo` component is now preferred, and the `showPatientInfo` prop has been removed. The previous method depended on `servicesManager`, which was cumbersome because the UI shouldn't need to interact with `servicesManager`.
+
+All the DropDown and Icons are now in the @ohif/ui-next package.
+
+
+---
