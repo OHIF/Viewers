@@ -2,8 +2,15 @@ import dcmjs from 'dcmjs';
 import moment from 'moment';
 import React, { useState, useMemo, useEffect } from 'react';
 import { classes } from '@ohif/core';
-import { InputRange, Select, Typography, InputFilterText } from '@ohif/ui';
+import { Typography, InputFilterText } from '@ohif/ui';
 import debounce from 'lodash.debounce';
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  Slider,
+} from '@ohif/ui-next';
 
 import DicomTagTable from './DicomTagTable';
 import './DicomTagBrowser.css';
@@ -57,7 +64,7 @@ const DicomTagBrowser = ({ displaySets, displaySetInstanceUID }) => {
 
       return {
         value: displaySetInstanceUID,
-        label: `${SeriesNumber} (${Modality}): ${SeriesDescription}`,
+        label: `${SeriesNumber} (${Modality}):  ${SeriesDescription}`,
         description: displayDate,
       };
     });
@@ -109,59 +116,54 @@ const DicomTagBrowser = ({ displaySets, displaySetInstanceUID }) => {
   return (
     <div className="dicom-tag-browser-content">
       <div className="mb-6 flex flex-row items-center pl-1">
-        <div className="flex w-1/2 flex-row items-center">
-          <Typography
-            variant="subtitle"
-            className="mr-4"
-          >
-            Series
-          </Typography>
-          <div className="mr-8 grow">
-            <Select
-              id="display-set-selector"
-              isClearable={false}
-              onChange={onSelectChange}
-              options={displaySetList}
-              value={displaySetList.find(ds => ds.value === selectedDisplaySetInstanceUID)}
-              className="text-white"
-            />
+        <div className="flex w-full flex-row items-center">
+          <div className="flex w-1/3 flex-col gap-2">
+            <span className="text-muted-foreground text-xs">Series</span>
+            <DropdownMenu>
+              <DropdownMenuTrigger className="border-input">
+                {displaySetList.find(ds => ds.value === selectedDisplaySetInstanceUID)?.label ||
+                  'Select Series'}
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                className="text-sm"
+                align="start"
+              >
+                {displaySetList.map(item => (
+                  <DropdownMenuItem
+                    key={item.value}
+                    onClick={() => onSelectChange({ value: item.value })}
+                  >
+                    {item.label}
+                    <span className="text-muted-foreground text-xs">{item.description}</span>
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
-        </div>
-        <div className="flex w-1/2 flex-row items-center">
           {showInstanceList && (
-            <Typography
-              variant="subtitle"
-              className="mr-4"
-            >
-              Instance Number
-            </Typography>
-          )}
-          {showInstanceList && (
-            <div className="grow">
-              <InputRange
-                value={instanceNumber}
-                key={selectedDisplaySetInstanceUID}
-                onChange={value => {
-                  setInstanceNumber(parseInt(value));
+            <div className="mx-4 flex w-1/5 flex-col gap-2">
+              <span className="text-muted-foreground text-xs">
+                Instance Number ({instanceNumber} of {activeDisplaySet.images.length})
+              </span>
+              <Slider
+                value={[instanceNumber]}
+                onValueChange={([value]) => {
+                  setInstanceNumber(value);
                 }}
-                minValue={1}
-                maxValue={activeDisplaySet.images.length}
+                min={1}
+                max={activeDisplaySet.images.length}
                 step={1}
-                inputClassName="w-full"
-                labelPosition="left"
-                trackColor={'#3a3f99'}
               />
             </div>
           )}
+          <div className="flex w-1/3 flex-col gap-2">
+            <span className="text-muted-foreground text-xs">Search metadata</span>
+            <InputFilterText
+              placeholder="Search metadata..."
+              onDebounceChange={setFilterValue}
+            ></InputFilterText>
+          </div>
         </div>
-      </div>
-      <div className="h-1 w-full bg-black"></div>
-      <div className="my-3 flex w-1/2 flex-row">
-        <InputFilterText
-          className="mr-8 block w-full"
-          placeholder="Search metadata..."
-          onDebounceChange={setFilterValue}
-        ></InputFilterText>
       </div>
       <DicomTagTable rows={filteredRows} />
     </div>
