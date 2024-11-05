@@ -168,7 +168,6 @@ module.exports = {
             to: '/components',
             label: 'Components',
             position: 'left',
-            className: 'new-badge',
           },
           {
             href: 'https://ohif.org/showcase',

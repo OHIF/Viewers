@@ -49,7 +49,7 @@ export default function Measurements() {
   }
 
   return (
-    <div className="my-4 flex max-w-6xl justify-end bg-black py-6">
+    <div className="px-auto flex min-h-screen w-full justify-center bg-black py-12">
       {/* Simulated Panel List for "Segmentation" */}
       <div className="w-64 space-y-0">
         <Accordion

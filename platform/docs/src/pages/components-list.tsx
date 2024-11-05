@@ -579,7 +579,31 @@ export default DataRowExample;
           <ShowcaseRow
             title="Toast"
             description="A toast notification displays temporary feedback messages to users above the current UI. Notifications stack into one unit after multiple cascading notifications."
-            code={`sdf`}
+            code={`
+import { toast } from "sonner"
+
+import { Button } from "@/components/ui/button"
+
+export function SonnerDemo() {
+  return (
+    <Button
+      variant="outline"
+      onClick={() =>
+        toast("Event has been created", {
+          description: "Sunday, December 03, 2023 at 9:00 AM",
+          action: {
+            label: "Undo",
+            onClick: () => console.log("Undo"),
+          },
+        })
+      }
+    >
+      Show Toast
+    </Button>
+  )
+}
+
+              `}
           >
             {/* Toast Examples Section */}
             Simple message:
