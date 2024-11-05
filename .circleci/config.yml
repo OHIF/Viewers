@@ -36,6 +36,16 @@ defaults: &defaults
         QUICK_BUILD: true
   working_directory: ~/repo
 
+commands:
+  install_bun:
+    steps:
+      - run:
+          name: Install Bun
+          command: |
+            curl -fsSL https://bun.sh/install | bash
+            echo 'export BUN_INSTALL="$HOME/.bun"' >> $BASH_ENV
+            echo 'export PATH="$BUN_INSTALL/bin:$PATH"' >> $BASH_ENV
+
 jobs:
   ###
   # Workflow: PR_CHECKS
@@ -44,55 +54,17 @@ jobs:
     <<: *defaults
     resource_class: large
     steps:
-      # Update yarn
-      - run: yarn -v
+      - install_bun
       - run: node --version
       # Checkout code and ALL Git Tags
       - checkout
-      - restore_cache:
-          name: Restore Yarn and Cypress Package Cache
-          keys:
-            # when lock file changes, use increasingly general patterns to restore cache
-            - yarn-packages-{{ checksum "yarn.lock" }}
-            - yarn-packages-
       - run:
           name: Install Dependencies
-          command: yarn install --frozen-lockfile
-      - save_cache:
-          name: Save Yarn Package Cache
-          paths:
-            - ~/.cache ## Cache yarn and Cypress
-          key: yarn-packages-{{ checksum "yarn.lock" }}
+          command: bun install
       # RUN TESTS
       - run:
           name: 'JavaScript Test Suite'
-          command: yarn run test:unit:ci
-      # platform/app
-      - run:
-          name: 'VIEWER: Combine report output'
-          command: |
-            viewerCov="/home/circleci/repo/platform/app/coverage"
-            touch "${viewerCov}/reports"
-            cat "${viewerCov}/clover.xml" >> "${viewerCov}/reports"
-            echo "\<<\<<\<< EOF" >> "${viewerCov}/reports"
-            cat "${viewerCov}/lcov.info" >>"${viewerCov}/reports"
-            echo "\<<\<<\<< EOF" >> "${viewerCov}/reports"
-      - codecov/upload:
-          file: '/home/circleci/repo/platform/app/coverage/reports'
-          flags: 'viewer'
-      # PLATFORM/CORE
-      - run:
-          name: 'CORE: Combine report output'
-          command: |
-            coreCov="/home/circleci/repo/platform/core/coverage"
-            touch "${coreCov}/reports"
-            cat "${coreCov}/clover.xml" >> "${coreCov}/reports"
-            echo "\<<\<<\<< EOF" >> "${coreCov}/reports"
-            cat "${coreCov}/lcov.info" >> "${coreCov}/reports"
-            echo "\<<\<<\<< EOF" >> "${coreCov}/reports"
-      - codecov/upload:
-          file: '/home/circleci/repo/platform/core/coverage/reports'
-          flags: 'core'
+          command: bun run test:unit:ci
 
   ###
   # Workflow: DEPLOY
@@ -103,27 +75,17 @@ jobs:
     steps:
       # Checkout code and ALL Git Tags
       - checkout
-      - restore_cache:
-          name: Restore Yarn and Cypress Package Cache
-          keys:
-            # when lock file changes, use increasingly general patterns to restore cache
-            - yarn-packages-{{ checksum "yarn.lock" }}
-            - yarn-packages-
+      - install_bun
       - run:
           name: Install Dependencies
-          command: yarn install --frozen-lockfile
-      - save_cache:
-          name: Save Yarn Package Cache
-          paths:
-            - ~/.cache ## Cache yarn and Cypress
-          key: yarn-packages-{{ checksum "yarn.lock" }}
+          command: bun install
       # Build & Test
       - run:
           name: 'Perform the versioning before build'
-          command: node ./version.mjs
+          command: bun ./version.mjs
       - run:
           name: 'Build the OHIF Viewer'
-          command: yarn run build
+          command: bun run build
           no_output_timeout: 45m
       - run:
           name: 'Upload SourceMaps, Send Deploy Notification'
@@ -150,25 +112,13 @@ jobs:
     <<: *defaults
     resource_class: large
     steps:
-      - run: yarn -v
-      # Checkout code and ALL Git Tags
       - checkout
+      - install_bun
       - attach_workspace:
           at: ~/repo
-      # Use increasingly general patterns to restore cache
-      - restore_cache:
-          name: Restore Yarn and Cypress Package Cache
-          keys:
-            - yarn-packages-{{ checksum "yarn.lock" }}
-            - yarn-packages-
       - run:
           name: Install Dependencies
-          command: yarn install --frozen-lockfile
-      - save_cache:
-          name: Save Yarn Package Cache
-          paths:
-            - ~/.cache/yarn
-          key: yarn-packages-{{ checksum "yarn.lock" }}
+          command: bun install
       - run:
           name: Avoid hosts unknown for github
           command: |
@@ -181,17 +131,13 @@ jobs:
           name: Authenticate with NPM registry
           command: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/repo/.npmrc
       - run:
-          name: Increase the event emitter limit
-          command: |
-            node ./increaseEventEmitterLimit.mjs
-      - run:
           name: build half of the packages (to avoid out of memory in circleci)
           command: |
-            yarn run build:package-all
+            bun run build:package-all
       - run:
           name: build the other half of the packages
           command: |
-            yarn run build:package-all-1
+            bun run build:package-all-1
 
   ###
   # Workflow: RELEASE
@@ -200,25 +146,13 @@ jobs:
     <<: *defaults
     resource_class: large
     steps:
-      - run: yarn -v
-      # Checkout code and ALL Git Tags
       - checkout
+      - install_bun
       - attach_workspace:
           at: ~/repo
-      # Use increasingly general patterns to restore cache
-      - restore_cache:
-          name: Restore Yarn and Cypress Package Cache
-          keys:
-            - yarn-packages-{{ checksum "yarn.lock" }}
-            - yarn-packages-
       - run:
           name: Install Dependencies
-          command: yarn install --frozen-lockfile
-      - save_cache:
-          name: Save Yarn Package Cache
-          paths:
-            - ~/.cache/yarn
-          key: yarn-packages-{{ checksum "yarn.lock" }}
+          command: bun install
       - run:
           name: Avoid hosts unknown for github
           command: |
@@ -231,17 +165,13 @@ jobs:
           name: Authenticate with NPM registry
           command: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/repo/.npmrc
       - run:
-          name: Increase the event emitter limit
-          command: |
-            node ./increaseEventEmitterLimit.mjs
-      - run:
           name: build half of the packages (to avoid out of memory in circleci)
           command: |
-            yarn run build:package-all
+            bun run build:package-all
       - run:
           name: build the other half of the packages
           command: |
-            yarn run build:package-all-1
+            bun run build:package-all-1
       - run:
           name: increase min time out
           command: |
@@ -253,14 +183,14 @@ jobs:
       - run:
           name: publish package versions
           command: |
-            node ./publish-version.mjs
+            bun ./publish-version.mjs
       - run:
           name: Again set the NPM registry (was deleted in the version script)
           command: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/repo/.npmrc
       - run:
           name: publish package dist
           command: |
-            node ./publish-package.mjs
+            bun ./publish-package.mjs
       - persist_to_workspace:
           root: ~/repo
           paths:
@@ -451,35 +381,6 @@ workflows:
           requires:
             - BUILD_PACKAGES_QUICK
 
-  # PR_OPTIONAL_VISUAL_TESTS:
-  #   jobs:
-  #     - AWAIT_APPROVAL:
-  #         type: approval
-  #     # Update hub.docker.org
-  #     - cypress/run:
-  #         name: 'Generate Percy Snapshots'
-  #         executor: cypress/browsers-chrome76
-  #         browser: chrome
-  #         pre-steps:
-  #           - run: 'rm -rf ~/.yarn && yarn -v && yarn global add wait-on'
-  #         yarn: true
-  #         store_artifacts: false
-  #         working_directory: platform/app
-  #         build:
-  #           yarn test:data && npx cross-env QUICK_BUILD=true APP_CONFIG=config/dicomweb-server.js
-  #           yarn run build
-  #         # start server --> verify running --> percy + chrome + cypress
-  #         command: yarn run test:e2e:dist
-  #         cache-key: 'yarn-packages-{{ checksum "yarn.lock" }}'
-  #         no-workspace: true # Don't persist workspace
-  #         post-steps:
-  #           - store_artifacts:
-  #               path: platform/app/cypress/screenshots
-  #           - store_artifacts:
-  #               path: platform/app/cypress/videos
-  #         requires:
-  #           - AWAIT_APPROVAL
-
   # Our master branch deploys to viewer-dev.ohif.org, the viewer.ohif.org is
   # deployed from the release branch which is more stable and less frequently updated.
   DEPLOY_MASTER:
@@ -513,50 +414,3 @@ workflows:
       - DOCKER_RELEASE_PUBLISH:
           requires:
             - NPM_PUBLISH
-
-  ###
-  # Unit and E2E tests have already run for PR_CHECKS
-  # Re-running should not gain us any confidence here
-  ###
-  # RELEASE:
-  #   jobs:
-  #     - NPM_PUBLISH:
-  #         filters:
-  #           branches:
-  #             only: master
-  #     - DOCS_PUBLISH:
-  #         filters:
-  #           branches:
-  #             only: master
-  #     # Update base branch snapshots
-  #     # and record a Cypress dashboard test run
-  #     - cypress/run:
-  #         name: 'Generate Percy Snapshots'
-  #         executor: cypress/browsers-chrome76
-  #         browser: chrome
-  #         pre-steps:
-  #           - run: 'rm -rf ~/.yarn && npm i -g yarn && yarn -v && yarn global
-  #               add wait-on' # Use yarn latest
-  #         yarn: true
-  #         store_artifacts: false
-  #         working_directory: platform/app
-  #         build:
-  #           npx cross-env QUICK_BUILD=true APP_CONFIG=config/e2e.js yarn run
-  #           build
-  #         # start server --> verify running --> percy + chrome + cypress
-  #         command: yarn run test:e2e:dist
-  #         cache-key: 'yarn-packages-{{ checksum "yarn.lock" }}'
-  #         no-workspace: true # Don't persist workspace
-  #         post-steps:
-  #           - store_artifacts:
-  #               path: platform/app/cypress/screenshots
-  #           - store_artifacts:
-  #               path: platform/app/cypress/videos
-  #           - store_test_results:
-  #               path: platform/app/cypress/results
-  #         filters:
-  #           branches:
-  #             only: master
-  #     - DOCKER_MASTER_PUBLISH:
-  #         requires:
-  #           - NPM_PUBLISH

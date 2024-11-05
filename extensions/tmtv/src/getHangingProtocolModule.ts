@@ -334,7 +334,7 @@ const ptCT: AppTypes.HangingProtocol.Protocol = {
       ],
     },
   },
-  stages: [stage1, stage2, stage3, stage4],
+  stages: [stage2, stage3, stage4],
   numberOfPriorsReferenced: -1,
 };
 

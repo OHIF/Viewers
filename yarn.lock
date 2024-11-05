@@ -2580,10 +2580,10 @@
   resolved "https://registry.yarnpkg.com/@colors/colors/-/colors-1.5.0.tgz#bb504579c1cae923e6576a4f5da43d25f97bdbd9"
   integrity sha512-ooWCrlZP11i8GImSjTHYHLkvFDP48nS4+204nGb1RiX/WXYHmJA2III9/e2DWVabCESdW7hBAEzHRqUn9OUVvQ==
 
-"@cornerstonejs/adapters@^2.1.7":
-  version "2.1.7"
-  resolved "https://registry.yarnpkg.com/@cornerstonejs/adapters/-/adapters-2.1.7.tgz#36d501078f704367971e9488d10bedec8c66c55a"
-  integrity sha512-4cBoT4w1r0Vk6J14HZ3dvZrmInO0tbs9ZWu42aLF/6qj2C8zF0zkgQrPwpg0mT1XQRz7b1YRjcTmC2bIJC0CYw==
+"@cornerstonejs/adapters@^2.1.8":
+  version "2.1.8"
+  resolved "https://registry.yarnpkg.com/@cornerstonejs/adapters/-/adapters-2.1.8.tgz#116cc201e1d0106bbc12e0faace6a3d4e2db6a52"
+  integrity sha512-P5zWZoLtmRjoGdFwPc8a2hf/yHkdJ1bxRgrQszrs+RoUqEXS9Cc8+e29lyCtUi55jZmfYI/0xMvE1fRWXKIHNg==
   dependencies:
     "@babel/runtime-corejs2" "^7.17.8"
     buffer "^6.0.3"
@@ -2616,19 +2616,19 @@
   resolved "https://registry.yarnpkg.com/@cornerstonejs/codec-openjph/-/codec-openjph-2.4.5.tgz#8690b61a86fa53ef38a70eee9d665a79229517c0"
   integrity sha512-MZCUy8VG0VG5Nl1l58+g+kH3LujAzLYTfJqkwpWI2gjSrGXnP6lgwyy4GmPRZWVoS40/B1LDNALK905cNWm+sg==
 
-"@cornerstonejs/core@^2.1.7":
-  version "2.1.7"
-  resolved "https://registry.yarnpkg.com/@cornerstonejs/core/-/core-2.1.7.tgz#8246587adbc2fa76286f50c0747e971482661585"
-  integrity sha512-aOM7sjqkjfWar06WgK/m8PWcyJnAl0jwJy1YHmeEpPq2/0HGYjVphlPdOg9Fjtq3onc698F2+/zXNhlMn8y5rg==
+"@cornerstonejs/core@^2.1.8":
+  version "2.1.8"
+  resolved "https://registry.yarnpkg.com/@cornerstonejs/core/-/core-2.1.8.tgz#6ec7838adc1270ef82acc89ef153b3fe43762079"
+  integrity sha512-LZgrtxAchNski92ZMX6xMj79OVQaVI5eLBZYMrKu/XnkRyhcOYhDZkCex1VMmbbaxJqfnzyAf3pXxPMO/KmzlQ==
   dependencies:
     "@kitware/vtk.js" "32.1.0"
     comlink "^4.4.1"
     gl-matrix "^3.4.3"
 
-"@cornerstonejs/dicom-image-loader@^2.1.7":
-  version "2.1.7"
-  resolved "https://registry.yarnpkg.com/@cornerstonejs/dicom-image-loader/-/dicom-image-loader-2.1.7.tgz#f03ff66e7e28149ae820feccef9568df47665dfb"
-  integrity sha512-MA95Blyi/PxDXsFsf0T11kj4Yuz+qMhn82zU5CPCvC9pCUA3MQxj4JifRmRuNumYwvteIneEe2QcnxQsg5EjAg==
+"@cornerstonejs/dicom-image-loader@^2.1.8":
+  version "2.1.8"
+  resolved "https://registry.yarnpkg.com/@cornerstonejs/dicom-image-loader/-/dicom-image-loader-2.1.8.tgz#7e3156621282d5e2130e96b5b30bd713b40006bb"
+  integrity sha512-wlouiDTZWQ/3l6jsXG+clC1fVaBgm9sJHyRM6v7h5kVamxPEZFbpuTy6c6RapCiSRRflpZby1uCNE59OIsYKeg==
   dependencies:
     "@cornerstonejs/codec-charls" "^1.2.3"
     "@cornerstonejs/codec-libjpeg-turbo-8bit" "^1.2.2"
@@ -2638,10 +2638,10 @@
     pako "^2.0.4"
     uuid "^9.0.0"
 
-"@cornerstonejs/tools@^2.1.7":
-  version "2.1.7"
-  resolved "https://registry.yarnpkg.com/@cornerstonejs/tools/-/tools-2.1.7.tgz#58cb2a94da8d4e2370690af00308177b7b3a00f1"
-  integrity sha512-WzYxaMJ/S5OwGBUuaxrwJle5YQaQVDRILT37CRVoXV1+PBZK2sX8DdFgR/lTq8u3HSo1vQmqy1QPU7uCa3nUMQ==
+"@cornerstonejs/tools@^2.1.8":
+  version "2.1.8"
+  resolved "https://registry.yarnpkg.com/@cornerstonejs/tools/-/tools-2.1.8.tgz#74b125a496959e40bffc5b4c5a05bbe55d434036"
+  integrity sha512-AA28o2vpelbfoHEVI5FfyNBl7ZXiUpON7Bqm9aBvySNALjCkw/toXxc9jLSW6GemJaEaSBwJvfSDm4P16qO+Yw==
   dependencies:
     "@types/offscreencanvas" "2019.7.3"
     comlink "^4.4.1"
