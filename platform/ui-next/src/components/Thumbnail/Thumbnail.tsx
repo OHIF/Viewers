@@ -67,7 +67,12 @@ const Thumbnail = ({
 
   const renderThumbnailPreset = () => {
     return (
-      <div className="flex h-full w-full flex-col items-center justify-center gap-[2px] p-[4px]">
+      <div
+        className={classnames(
+          'flex h-full w-full flex-col items-center justify-center gap-[2px] p-[4px]',
+          isActive && 'bg-popover'
+        )}
+      >
         <div className="h-[114px] w-[128px]">
           <div className="relative">
             {imageSrc ? (
@@ -82,7 +87,7 @@ const Thumbnail = ({
             )}
 
             {/* bottom left */}
-            <div className="bg-muted absolute bottom-0 left-0 flex h-[14px] items-center gap-[4px] rounded-tr pt-[10px] pb-[8px] pr-[6px] pl-[3px]">
+            <div className="absolute bottom-0 left-0 flex h-[14px] items-center gap-[4px] rounded-tr pt-[10px] pb-[8px] pr-[6px] pl-[3px]">
               <div
                 className={classnames(
                   'h-[10px] w-[10px] rounded-[2px]',
@@ -194,7 +199,12 @@ const Thumbnail = ({
 
   const renderListPreset = () => {
     return (
-      <div className="flex h-full w-full items-center justify-between pr-[8px] pl-[8px] pt-[4px] pb-[4px]">
+      <div
+        className={classnames(
+          'flex h-full w-full items-center justify-between pr-[8px] pl-[8px] pt-[4px] pb-[4px]',
+          isActive && 'bg-popover'
+        )}
+      >
         <div className="relative flex h-[32px] items-center gap-[8px]">
           <div
             className={classnames(
