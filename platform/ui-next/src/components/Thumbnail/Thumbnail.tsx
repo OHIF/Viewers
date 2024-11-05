@@ -139,7 +139,10 @@ const Thumbnail = ({
                     <Icons.More />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent hideWhenDetached>
+                <DropdownMenuContent
+                  hideWhenDetached
+                  align="start"
+                >
                   <DropdownMenuItem
                     onSelect={() => {
                       onThumbnailContextMenu('openDICOMTagViewer', {

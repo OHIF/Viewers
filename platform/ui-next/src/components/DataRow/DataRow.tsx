@@ -195,6 +195,7 @@ const DataRow: React.FC<DataRowProps> = ({
           isSelected ? 'bg-popover' : 'bg-muted'
         } group relative cursor-pointer`}
         onClick={onSelect}
+        data-cy="data-row"
       >
         {/* Hover Overlay */}
         <div className="bg-primary/20 pointer-events-none absolute inset-0 opacity-0 transition-opacity group-hover:opacity-100"></div>

@@ -3,7 +3,17 @@ import { ExtensionManager } from '../../extensions';
 import ServicesManager from '../ServicesManager';
 import ViewportGridService from '../ViewportGridService';
 import { DisplaySet } from '../../types';
-import { RequestType } from '@cornerstonejs/core/enums';
+
+enum RequestType {
+  /** Highest priority for loading*/
+  Interaction = 'interaction',
+  /** Second highest priority for loading*/
+  Thumbnail = 'thumbnail',
+  /** Third highest priority for loading, usually used for image loading in the background*/
+  Prefetch = 'prefetch',
+  /** Lower priority, often used for background computations in the worker */
+  Compute = 'compute',
+}
 
 export const EVENTS = {
   SERVICE_STARTED: 'event::studyPrefetcherService:started',
