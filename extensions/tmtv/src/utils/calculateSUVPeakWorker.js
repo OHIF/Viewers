@@ -1,4 +1,4 @@
-import { cache, utilities } from '@cornerstonejs/core';
+import { utilities } from '@cornerstonejs/core';
 import { utilities as cstUtils } from '@cornerstonejs/tools';
 import { vec3 } from 'gl-matrix';
 import vtkImageData from '@kitware/vtk.js/Common/DataModel/ImageData';
@@ -169,7 +169,7 @@ function calculateTMTV(labelmapProps, segmentIndex = 1) {
   return 1e-3 * numVoxels * spacing[0] * spacing[1] * spacing[2];
 }
 
-function getTotalLesionGlycolysis(labelmapProps) {
+function getTotalLesionGlycolysis({ labelmapProps, referenceVolumeProps }) {
   const labelmaps = labelmapProps.map(props => createVolume(props));
 
   const mergedLabelmap =
@@ -178,13 +178,9 @@ function getTotalLesionGlycolysis(labelmapProps) {
       : cstUtils.segmentation.createMergedLabelmapForIndex(labelmaps);
 
   // grabbing the first labelmap referenceVolume since it will be the same for all
-  const { referencedVolumeId, spacing } = labelmaps[0];
+  const { spacing } = labelmaps[0];
 
-  if (!referencedVolumeId) {
-    console.error('commandsModule::getTotalLesionGlycolysis:No referencedVolumeId found');
-  }
-
-  const ptVolume = cache.getVolume(referencedVolumeId);
+  const ptVolume = createVolume(referenceVolumeProps);
 
   let suv = 0;
   let totalLesionVoxelCount = 0;

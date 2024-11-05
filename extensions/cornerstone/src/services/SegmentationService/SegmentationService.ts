@@ -652,7 +652,7 @@ class SegmentationService extends PubSubService {
       this.updateSegmentationInSource(segmentationId, data as Partial<cstTypes.Segmentation>);
     } else {
       // Add a new segmentation
-      this.addSegmentationToSource(segmentationId, data as cstTypes.SegmentationPublicInput);
+      this.addSegmentationToSource(data as cstTypes.SegmentationPublicInput);
     }
   }
 
@@ -1398,10 +1398,7 @@ class SegmentationService extends PubSubService {
     }
   }
 
-  private addSegmentationToSource(
-    segmentationId: string,
-    segmentationPublicInput: cstTypes.SegmentationPublicInput
-  ) {
+  private addSegmentationToSource(segmentationPublicInput: cstTypes.SegmentationPublicInput) {
     cstSegmentation.addSegmentations([segmentationPublicInput]);
   }
 

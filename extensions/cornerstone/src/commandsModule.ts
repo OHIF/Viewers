@@ -1174,7 +1174,7 @@ function commandsModule({
           return;
         }
 
-        segmentationService.addOrUpdateSegmentation(segmentationId, { label: label });
+        segmentationService.addOrUpdateSegmentation({ label: label });
       });
     },
 

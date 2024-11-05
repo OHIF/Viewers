@@ -92,6 +92,6 @@ export const handleROIThresholding = async ({
       },
     };
 
-    segmentationService.addOrUpdateSegmentation(segmentation.segmentationId, updatedSegmentation);
+    segmentationService.addOrUpdateSegmentation(updatedSegmentation);
   });
 };

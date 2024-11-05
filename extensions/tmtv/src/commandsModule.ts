@@ -419,12 +419,12 @@ const commandsModule = ({ servicesManager, commandsManager, extensionManager }: 
 
       return await workerManager.executeTask('suv-peak-worker', 'calculateTMTV', labelmapProps);
     },
-    exportTMTVReportCSV: ({ segmentations, tmtv, config, options }) => {
+    exportTMTVReportCSV: async ({ segmentations, tmtv, config, options }) => {
       const segReport = commandsManager.runCommand('getSegmentationCSVReport', {
         segmentations,
       });
 
-      const tlg = actions.getTotalLesionGlycolysis({ segmentations });
+      const tlg = await actions.getTotalLesionGlycolysis({ segmentations });
       const additionalReportRows = [
         { key: 'Total Lesion Glycolysis', value: { tlg: tlg.toFixed(4) } },
         { key: 'Threshold Configuration', value: { ...config } },
@@ -464,8 +464,8 @@ const commandsModule = ({ servicesManager, commandsManager, extensionManager }: 
       };
 
       return await workerManager.executeTask('suv-peak-worker', 'getTotalLesionGlycolysis', {
-        labelmaps: labelmapProps,
-        ptVolume: ptVolumeProps,
+        labelmapProps,
+        referenceVolumeProps: ptVolumeProps,
       });
     },
     setStartSliceForROIThresholdTool: () => {

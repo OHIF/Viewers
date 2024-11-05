@@ -45,7 +45,7 @@ export const SegmentationHeader: React.FC<{
               className="ml-1"
               onClick={e => e.stopPropagation()}
             >
-              <Icons.More className="h-6 w-6" />
+              <Icons.More />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="start">
@@ -54,6 +54,7 @@ export const SegmentationHeader: React.FC<{
                 e.stopPropagation();
                 onSegmentAdd(segmentation.segmentationId);
               }}
+              className="px-1"
             >
               <Icons.Add className="text-foreground" />
               <span className="pl-2">{t('Add Segment')}</span>
@@ -64,6 +65,7 @@ export const SegmentationHeader: React.FC<{
                 e.stopPropagation();
                 onSegmentationRemoveFromViewport(segmentation.segmentationId);
               }}
+              className="px-1"
             >
               <Icons.Series className="text-foreground" />
               <span className="pl-2">{t('Remove from Viewport')}</span>
@@ -73,16 +75,23 @@ export const SegmentationHeader: React.FC<{
                 e.stopPropagation();
                 onSegmentationEdit(segmentation.segmentationId);
               }}
+              className="px-1"
             >
               <Icons.Rename className="text-foreground" />
               <span className="pl-2">{t('Rename')}</span>
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={e => e.stopPropagation()}>
+            <DropdownMenuItem
+              onClick={e => e.stopPropagation()}
+              className="px-1"
+            >
               <Icons.Hide className="text-foreground" />
               <span className="pl-2">{t('Hide or Show all Segments')}</span>
             </DropdownMenuItem>
             <DropdownMenuSub>
-              <DropdownMenuSubTrigger onClick={e => e.stopPropagation()}>
+              <DropdownMenuSubTrigger
+                onClick={e => e.stopPropagation()}
+                className="px-1"
+              >
                 <Icons.Export className="text-foreground" />
                 <span className="pl-2">{t('Export & Download')}</span>
               </DropdownMenuSubTrigger>
@@ -101,6 +110,7 @@ export const SegmentationHeader: React.FC<{
                       e.stopPropagation();
                       onSegmentationDownload(segmentation.segmentationId);
                     }}
+                    className="px-1"
                   >
                     {t('Download DICOM SEG')}
                   </DropdownMenuItem>
@@ -116,7 +126,10 @@ export const SegmentationHeader: React.FC<{
               </DropdownMenuPortal>
             </DropdownMenuSub>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => onSegmentationDelete(segmentation.segmentationId)}>
+            <DropdownMenuItem
+              onClick={() => onSegmentationDelete(segmentation.segmentationId)}
+              className="px-1"
+            >
               <Icons.Delete className="text-red-600" />
               <span className="pl-2 text-red-600">{t('Delete')}</span>
             </DropdownMenuItem>
