@@ -82,7 +82,7 @@ const Thumbnail = ({
             )}
 
             {/* bottom left */}
-            <div className="bg-muted absolute bottom-0 left-0 flex h-[14px] items-center gap-[4px] p-[4px]">
+            <div className="bg-muted absolute bottom-0 left-0 flex h-[14px] items-center gap-[4px] rounded-tr pt-[10px] pb-[8px] pr-[6px] pl-[3px]">
               <div
                 className={classnames(
                   'h-[10px] w-[10px] rounded-[2px]',
@@ -90,7 +90,7 @@ const Thumbnail = ({
                   loadingProgress && loadingProgress < 1 && 'bg-primary/25'
                 )}
               ></div>
-              <div className="text-[11px] text-white">{modality}</div>
+              <div className="text-[11px] font-semibold text-white">{modality}</div>
             </div>
 
             {/* top right */}
@@ -168,12 +168,12 @@ const Thumbnail = ({
           </div>
         </div>
         <div className="flex h-[52px] w-[128px] flex-col">
-          <div className="min-h-[18px] w-[128px] overflow-hidden text-ellipsis text-[12px] text-white">
+          <div className="min-h-[18px] w-[128px] overflow-hidden text-ellipsis pb-0.5 pl-1 text-[12px] font-normal leading-4 text-white">
             {description}
           </div>
           <div className="flex h-[12px] items-center gap-[7px] overflow-hidden">
-            <div className="text-muted-foreground text-[12px]"> S:{seriesNumber}</div>
-            <div className="text-muted-foreground text-[12px]">
+            <div className="text-muted-foreground pl-1 text-[11px]"> S:{seriesNumber}</div>
+            <div className="text-muted-foreground text-[11px]">
               <div className="flex items-center gap-[4px]">
                 {' '}
                 {countIcon ? (
@@ -203,9 +203,9 @@ const Thumbnail = ({
           ></div>
           <div className="flex h-full flex-col">
             <div className="flex items-center gap-[7px]">
-              <div className="text-[13px] text-white">{modality}</div>
+              <div className="text-[13px] font-semibold text-white">{modality}</div>
 
-              <div className="max-w-[160px] overflow-hidden overflow-ellipsis whitespace-nowrap text-[13px] text-white">
+              <div className="max-w-[160px] overflow-hidden overflow-ellipsis whitespace-nowrap text-[13px] font-normal text-white">
                 {description}
               </div>
             </div>
@@ -302,7 +302,7 @@ const Thumbnail = ({
     <div
       className={classnames(
         className,
-        'bg-muted hover:bg-primary/30 group flex cursor-pointer select-none flex-col outline-none',
+        'bg-muted hover:bg-primary/30 group flex cursor-pointer select-none flex-col rounded outline-none',
         viewPreset === 'thumbnails' && 'h-[170px] w-[135px]',
         viewPreset === 'list' && 'col-span-2 h-[40px] w-[275px]'
       )}

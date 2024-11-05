@@ -20,20 +20,20 @@ const DisplaySetMessageListTooltip = ({ messages, id }): React.ReactNode => {
               <Icons.StatusWarning className="h-[20px] w-[20px]" />
             </TooltipTrigger>
             <TooltipContent side="right">
-              <div className="max-w-64 text-left text-base text-white">
+              <div className="max-w-68 text-left text-base text-white">
                 <div
-                  className="break-normal text-base font-bold text-blue-300"
+                  className="break-normal text-base font-semibold text-blue-300"
                   style={{
-                    marginLeft: '12px',
-                    marginTop: '12px',
+                    marginLeft: '4px',
+                    marginTop: '4px',
                   }}
                 >
                   {t('Display Set Messages')}
                 </div>
                 <ol
                   style={{
-                    marginLeft: '12px',
-                    marginRight: '12px',
+                    marginLeft: '4px',
+                    marginRight: '4px',
                   }}
                 >
                   {messages.messages.map((message, index) => (
