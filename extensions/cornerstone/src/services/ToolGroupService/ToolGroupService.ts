@@ -252,8 +252,8 @@ export default class ToolGroupService {
     }
 
     if (passive) {
-      passive.forEach(({ toolName }) => {
-        toolGroup.setToolPassive(toolName);
+      passive.forEach(({ toolName, bindings }) => {
+        toolGroup.setToolPassive(toolName, { bindings });
       });
     }
 

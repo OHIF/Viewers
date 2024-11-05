@@ -21,6 +21,7 @@ import toggleImageSliceSync from './utils/imageSliceSync/toggleImageSliceSync';
 import { getFirstAnnotationSelected } from './utils/measurementServiceMappings/utils/selection';
 import getActiveViewportEnabledElement from './utils/getActiveViewportEnabledElement';
 import toggleVOISliceSync from './utils/toggleVOISliceSync';
+import shouldPreventScroll from './utils/shouldPreventScroll';
 
 const toggleSyncFunctions = {
   imageSlice: toggleImageSliceSync,
@@ -556,7 +557,7 @@ function commandsModule({
       const options = { imageIndex: jumpIndex };
       cstUtils.jumpToSlice(viewport.element, options);
     },
-    scroll: ({ direction }) => {
+    scroll: ({ direction, isSmartScrolling = false }) => {
       const enabledElement = _getActiveViewportEnabledElement();
 
       if (!enabledElement) {
@@ -565,6 +566,16 @@ function commandsModule({
 
       const { viewport } = enabledElement;
       const options = { delta: direction };
+
+      if (
+        shouldPreventScroll(
+          !isSmartScrolling,
+          viewport.getCurrentImageIdIndex() + direction,
+          servicesManager
+        )
+      ) {
+        return;
+      }
 
       cstUtils.scroll(viewport, options);
     },
