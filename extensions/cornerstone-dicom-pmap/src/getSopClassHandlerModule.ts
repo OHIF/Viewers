@@ -213,9 +213,12 @@ async function _loadParametricMap({ displaySet, headers }: withAppTypes) {
     },
   });
 
-  derivedVolume.voxelManager.setCompleteScalarDataArray(pixelData);
-
-  const range = getRangeFromPixelData(pixelData);
+  const newPixelData = new TypedArrayConstructor(pixelData.length);
+  for (let i = 0; i < pixelData.length; i++) {
+    newPixelData[i] = pixelData[i] * 100;
+  }
+  derivedVolume.voxelManager.setCompleteScalarDataArray(newPixelData);
+  const range = getRangeFromPixelData(newPixelData);
   const windowLevel = csUtils.windowLevel.toWindowLevel(range[0], range[1]);
 
   derivedVolume.metadata.voiLut = [windowLevel];

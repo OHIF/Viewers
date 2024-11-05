@@ -70,6 +70,11 @@ export default class ColorbarService extends PubSubService {
   public addColorbar(viewportId, displaySetInstanceUIDs, options = {} as ColorbarOptions) {
     const renderingEngine = getRenderingEngine(RENDERING_ENGINE_ID);
     const viewport = renderingEngine.getViewport(viewportId);
+
+    if (!viewport) {
+      return;
+    }
+
     const { element } = viewport;
     const actorEntries = viewport.getActors();
 

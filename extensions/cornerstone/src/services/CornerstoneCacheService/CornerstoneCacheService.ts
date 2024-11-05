@@ -165,7 +165,7 @@ class CornerstoneCacheService {
         const { userAuthenticationService } = this.servicesManager.services;
         const headers = userAuthenticationService.getAuthorizationHeader();
         try {
-          await displaySet.load({ headers });
+          await overlayDisplaySet.load({ headers });
         } catch (e) {
           uiNotificationService.show({
             title: 'Error loading displaySet',

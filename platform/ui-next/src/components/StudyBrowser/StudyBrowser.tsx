@@ -70,7 +70,7 @@ const StudyBrowser = ({
   };
 
   return (
-    <React.Fragment data-cy={'studyBrowser-panel'}>
+    <div data-cy={'studyBrowser-panel'}>
       {showSettings && (
         <div className="w-100 bg-bkg-low flex h-[48px] items-center justify-center gap-[10px] px-[8px] py-[10px]">
           <>
@@ -87,7 +87,7 @@ const StudyBrowser = ({
       <div className="ohif-scrollbar invisible-scrollbar bg-bkg-low flex flex-1 flex-col gap-[4px] overflow-auto">
         {getTabContent()}
       </div>
-    </React.Fragment>
+    </div>
   );
 };
 

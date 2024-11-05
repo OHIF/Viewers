@@ -1,9 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useViewportGrid, LoadingIndicatorTotalPercent } from '@ohif/ui';
-import createPMAPToolGroupAndAddTools from '../utils/initPMAPToolGroup';
-
-const PMAP_TOOLGROUP_BASE_NAME = 'PMAPToolGroup';
 
 function OHIFCornerstonePMAPViewport(props: withAppTypes) {
   const {
@@ -15,9 +12,7 @@ function OHIFCornerstonePMAPViewport(props: withAppTypes) {
     extensionManager,
   } = props;
   const viewportId = viewportOptions.viewportId;
-  const { displaySetService, toolGroupService, customizationService, segmentationService } =
-    servicesManager.services;
-  const toolGroupId = `${PMAP_TOOLGROUP_BASE_NAME}-${viewportId}`;
+  const { displaySetService, segmentationService } = servicesManager.services;
 
   // PMAP viewport will always have a single display set
   if (displaySets.length !== 1) {
@@ -71,11 +66,18 @@ function OHIFCornerstonePMAPViewport(props: withAppTypes) {
 
     Object.assign(pmapDisplaySetOptions.options, {
       colormap: {
-        name: 'rainbow',
+        name: 'rainbow_2',
         opacity: [
-          { value: 0, opacity: 0.5 },
-          { value: 1, opacity: 1 },
+          { value: 0, opacity: 0 },
+          { value: 0.25, opacity: 0.25 },
+          { value: 0.5, opacity: 0.5 },
+          { value: 0.75, opacity: 0.75 },
+          { value: 0.9, opacity: 1 },
         ],
+      },
+      voi: {
+        windowCenter: 50,
+        windowWidth: 100,
       },
     });
 
@@ -86,7 +88,6 @@ function OHIFCornerstonePMAPViewport(props: withAppTypes) {
         displaySets={[referencedDisplaySet, pmapDisplaySet]}
         viewportOptions={{
           viewportType: 'volume',
-          toolGroupId: toolGroupId,
           orientation: viewportOptions.orientation,
           viewportId: viewportOptions.viewportId,
         }}
@@ -98,7 +99,6 @@ function OHIFCornerstonePMAPViewport(props: withAppTypes) {
     displaySetOptions,
     props,
     pmapDisplaySet,
-    toolGroupId,
     viewportOptions.orientation,
     viewportOptions.viewportId,
   ]);
@@ -122,19 +122,6 @@ function OHIFCornerstonePMAPViewport(props: withAppTypes) {
       onDisplaySetsRemovedSubscription.unsubscribe();
     };
   }, [activeViewportId, displaySetService, viewportGridService, viewports]);
-
-  useEffect(() => {
-    let toolGroup = toolGroupService.getToolGroup(toolGroupId);
-
-    if (toolGroup) {
-      return;
-    }
-
-    // This creates a custom tool group which has the lifetime of this view only
-    toolGroup = createPMAPToolGroupAndAddTools(toolGroupService, customizationService, toolGroupId);
-
-    return () => toolGroupService.destroyToolGroup(toolGroupId);
-  }, [customizationService, toolGroupId, toolGroupService]);
 
   let childrenWithProps = null;
 

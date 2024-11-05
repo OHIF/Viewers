@@ -16,7 +16,15 @@ SEGMENTATION_UPDATED -> SEGMENTATION_MODIFIED
 
 Just a rename to match the cornerstone terminology
 
+## VolumeId vs SegmentationId
 
+Previously, we used the SegmentationId as the VolumeId for volume-based segmentations, which led to confusion and issues.
+
+Now, we have two separate IDs: one for the segmentation and one for the volume.
+
+`segmentationService.getLabelmapVolume(segmentationId)` will return the volume associated with the segmentation.
+
+If your code uses `cache.getVolume(segmentationId)`, update it to use the new `getLabelmapVolume` method.
 
 
 ## getSegmentation(segmentationId)
