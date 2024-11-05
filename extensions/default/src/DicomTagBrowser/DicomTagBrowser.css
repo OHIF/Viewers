@@ -1,53 +1,109 @@
-.dicom-tag-browser-table {
-  margin-right: auto;
-  margin-left: auto;
+/**
+  Unfortunately, styling antd tables is not easy, since there's no proper api to do so.
+  The only solution I could find to make it work was using the hideous css code below
+*/
+
+.dicom-tag-browser .ant-table-cell {
+  word-break: break-word;
 }
 
-.dicom-tag-browser-table-wrapper {
-  /*  height: 500px;*/
-  /*overflow-y: scroll;*/
-  overflow-x: scroll;
+.dicom-tag-browser .ant-select-selector {
+  color: #7bb2ce !important;
+  background-color: black !important;
+  border-color: #3a3f99 !important;
+  &:hover,
+  &:active {
+    border-color: #5acbe6 !important;
+  }
 }
 
-.dicom-tag-browser-table tr {
-  padding-left: 10px;
-  padding-right: 10px;
-  color: #ffffff;
-  border-top: 1px solid #ddd;
-  white-space: nowrap;
+.ant-select-dropdown,
+.ant-select-item {
+  background-color: #151515 !important;
+  color: #7bb2ce !important;
+
+  &:hover {
+    background-color: #13306f !important;
+  }
 }
 
-.stick {
-  position: sticky;
-  overflow: clip;
+.ant-select-arrow {
+  color: white !important;
 }
 
-.dicom-tag-browser-content {
-  overflow: hidden;
-  width: 100%;
-  padding-bottom: 50px;
-  /*height: 500px;*/
+.ant-select-single.ant-select-open .ant-select-selection-item {
+  color: rgba(123, 178, 206) !important;
 }
 
-.dicom-tag-browser-instance-range .range {
-  height: 20px;
+input.ant-input::placeholder,
+.anticon {
+  color: #7bb2ce !important;
 }
 
-.dicom-tag-browser-instance-range {
-  padding: 20px 0 20px 0;
+.ant-input-affix-wrapper-focused,
+.ant-input-outlined {
+  background-color: black !important;
+  border-color: #3a3f99;
+  &:hover,
+  &:active,
+  &:focus-within {
+    border-color: #5acbe6;
+    color: white;
+  }
 }
 
-.dicom-tag-browser-table td.dicom-tag-browser-table-center {
-  text-align: center;
+.ant-table-wrapper,
+.ant-table,
+.ant-table-header {
+  color: white !important;
+  background-color: black !important;
+  scrollbar-color: inherit !important;
 }
 
-.dicom-tag-browser-table th {
-  padding-left: 10px;
-  padding-right: 10px;
-  text-align: center;
-  color: '#20A5D6';
+.ant-slider-step {
+  background-color: #3a3f99 !important;
 }
 
-.dicom-tag-browser-table th.dicom-tag-browser-table-left {
-  text-align: left;
+.ant-slider-handle:after {
+  background-color: #5acbe6 !important;
+}
+
+tr.ant-table-placeholder {
+  color: white !important;
+  background-color: black !important;
+}
+
+tr.ant-table-placeholder .ant-table-cell:hover {
+  background-color: #13306f !important;
+  background: #13306f !important;
+}
+
+.ant-empty-description {
+  background: inherit;
+  background-color: inherit;
+  color: white !important;
+}
+
+.ant-table-cell-row-hover {
+  background-color: #13306f !important;
+}
+
+th.ant-table-cell {
+  color: white !important;
+  background-color: #041c4a !important;
+  &:before {
+    background-color: transparent !important;
+  }
+}
+
+.ant-table-wrapper .ant-table-tbody > tr > td {
+  border-color: #3a3f99 !important;
+}
+
+.ant-table-cell-scrollbar {
+  box-shadow: none !important;
+}
+
+.ant-table-row-expand-icon {
+  background-color: inherit !important;
 }
