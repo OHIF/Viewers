@@ -5,6 +5,7 @@ import CallbackPage from '../routes/CallbackPage';
 import SignoutCallbackComponent from '../routes/SignoutCallbackComponent';
 import LegacyClient from './legacyOIDCClient';
 import NextClient from './nextOIDCClient';
+import PropTypes from 'prop-types';
 
 function _isAbsoluteUrl(url) {
   return url.includes('http://') || url.includes('https://');
@@ -44,7 +45,7 @@ const initUserManager = (oidc, routerBasename) => {
     post_logout_redirect_uri: _makeAbsoluteIfNecessary(post_logout_redirect_uri, baseUri),
   });
 
-  const client = firstOpenIdClient.useAuthorizationCodeFlow ? NextClient : LegacyClient
+  const client = firstOpenIdClient.useAuthorizationCodeFlow ? NextClient : LegacyClient;
 
   return client(openIdConnectConfiguration);
 };
@@ -96,29 +97,6 @@ function LoginComponent(userManager) {
 function OpenIdConnectRoutes({ oidc, routerBasename, userAuthenticationService }) {
   const userManager = initUserManager(oidc, routerBasename);
 
-  const getAuthorizationHeader = () => {
-    const user = userAuthenticationService.getUser();
-
-    // if the user is null return early, next time
-    // we hit this function we will have a user
-    if (!user) {
-      return;
-    }
-
-    return {
-      Authorization: `Bearer ${user.access_token}`,
-    };
-  };
-
-  const handleUnauthenticated = () => {
-    // Note: Don't await the redirect. If you make this component async it
-    // causes a react error before redirect as it returns a promise of a component rather than a component.
-    userManager.signinRedirect();
-
-    // return null because this is used in a react component
-    return null;
-  };
-
   const navigate = useNavigate();
 
   //for multi-tab logout
@@ -136,16 +114,37 @@ function OpenIdConnectRoutes({ oidc, routerBasename, userAuthenticationService }
     return () => {
       window.removeEventListener('storage', storageEventListener);
     };
-  }, []);
+  }, [navigate]);
 
   useEffect(() => {
+    const handleUnauthenticated = async () => {
+      await userManager.signinRedirect();
+
+      // return null because this is used in a react component
+      return null;
+    };
+
+    const getAuthorizationHeader = () => {
+      const user = userAuthenticationService.getUser();
+
+      // if the user is null return early, next time
+      // we hit this function we will have a user
+      if (!user) {
+        return;
+      }
+
+      return {
+        Authorization: `Bearer ${user.access_token}`,
+      };
+    };
+
     userAuthenticationService.set({ enabled: true });
 
     userAuthenticationService.setServiceImplementation({
       getAuthorizationHeader,
       handleUnauthenticated,
     });
-  }, []);
+  }, [userAuthenticationService, userManager]);
 
   const oidcAuthority = oidc[0].authority;
 
@@ -170,6 +169,16 @@ function OpenIdConnectRoutes({ oidc, routerBasename, userAuthenticationService }
   if (pathname !== redirect_uri) {
     sessionStorage.setItem('ohif-redirect-to', JSON.stringify({ pathname, search }));
   }
+
+  useEffect(() => {
+    userManager.getUser().then(user => {
+      if (user && !user.expired) {
+        userAuthenticationService.setUser(user);
+      } else {
+        userManager.signinRedirect();
+      }
+    });
+  }, [userAuthenticationService, userManager]);
 
   return (
     <Routes>
@@ -226,5 +235,11 @@ function OpenIdConnectRoutes({ oidc, routerBasename, userAuthenticationService }
     </Routes>
   );
 }
+
+OpenIdConnectRoutes.propTypes = {
+  oidc: PropTypes.array.isRequired,
+  routerBasename: PropTypes.string.isRequired,
+  userAuthenticationService: PropTypes.object.isRequired,
+};
 
 export default OpenIdConnectRoutes;
