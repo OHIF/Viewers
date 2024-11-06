@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.9.0-beta.107](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.106...v3.9.0-beta.107) (2024-11-06)
+
+
+### Bug Fixes
+
+* build ([#4471](https://github.com/OHIF/Viewers/issues/4471)) ([3d11ef2](https://github.com/OHIF/Viewers/commit/3d11ef28f213361ec7586809317bd219fa70e742))
+
+
+
+
+
 # [3.9.0-beta.106](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.105...v3.9.0-beta.106) (2024-11-06)
 
 **Note:** Version bump only for package @ohif/core
