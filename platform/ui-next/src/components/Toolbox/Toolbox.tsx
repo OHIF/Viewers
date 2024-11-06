@@ -3,7 +3,6 @@ import { useToolbar } from '@ohif/core';
 import { ToolboxUI } from './';
 // Migrate this file to the new UI eventually
 import { useToolbox } from '@ohif/ui';
-import { Separator } from '../Separator';
 
 /**
  * A toolbox is a collection of buttons and commands that they invoke, used to provide

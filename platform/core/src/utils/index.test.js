@@ -41,7 +41,6 @@ describe('Top level exports', () => {
       'resolveObjectPath',
       'hierarchicalListUtils',
       'progressTrackingUtils',
-      'subscribeToNextViewportGridChange',
       'uuidv4',
       'addAccessors',
     ].sort();

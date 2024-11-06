@@ -144,11 +144,6 @@ module.exports = (env, argv, { SRC_DIR, ENTRY }) => {
             },
           ],
         },
-        {
-          test: /\.js$/,
-          enforce: 'pre',
-          use: 'source-map-loader',
-        },
         transpileJavaScriptRule(mode),
         loadWebWorkersRule,
         // loadShadersRule,
@@ -188,8 +183,8 @@ module.exports = (env, argv, { SRC_DIR, ENTRY }) => {
         '@hooks': path.resolve(__dirname, '../platform/app/src/hooks'),
         '@routes': path.resolve(__dirname, '../platform/app/src/routes'),
         '@state': path.resolve(__dirname, '../platform/app/src/state'),
-        '@cornerstonejs/dicom-image-loader':
-          '@cornerstonejs/dicom-image-loader/dist/dynamic-import/cornerstoneDICOMImageLoader.min.js',
+        'dicom-microscopy-viewer':
+          'dicom-microscopy-viewer/dist/dynamic-import/dicomMicroscopyViewer.min.js',
       },
       // Which directories to search when resolving modules
       modules: [
@@ -217,7 +212,7 @@ module.exports = (env, argv, { SRC_DIR, ENTRY }) => {
       new webpack.ProvidePlugin({
         Buffer: ['buffer', 'Buffer'],
       }),
-      ...(isProdBuild ? [] : [new ReactRefreshWebpackPlugin()]),
+      ...(isProdBuild ? [] : [new ReactRefreshWebpackPlugin({ overlay: false })]),
       // Uncomment to generate bundle analyzer
       // new BundleAnalyzerPlugin(),
     ],

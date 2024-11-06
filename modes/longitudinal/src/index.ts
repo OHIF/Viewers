@@ -4,6 +4,7 @@ import { id } from './id';
 import initToolGroups from './initToolGroups';
 import toolbarButtons from './toolbarButtons';
 import moreTools from './moreTools';
+import { performCustomizations } from './customizations';
 
 // Allow this mode by excluding non-imaging modalities such as SR, SEG
 // Also, SM is not a simple imaging modalities, so exclude it.
@@ -15,7 +16,11 @@ const ohif = {
   thumbnailList: '@ohif/extension-default.panelModule.seriesList',
   wsiSopClassHandler:
     '@ohif/extension-cornerstone.sopClassHandlerModule.DicomMicroscopySopClassHandler',
-  measurements: '@ohif/extension-default.panelModule.measurements',
+};
+
+const cornerstone = {
+  measurements: '@ohif/extension-cornerstone.panelModule.measurements',
+  segmentation: '@ohif/extension-cornerstone.panelModule.panelSegmentation',
 };
 
 const tracked = {
@@ -43,7 +48,6 @@ const dicompdf = {
 const dicomSeg = {
   sopClassHandler: '@ohif/extension-cornerstone-dicom-seg.sopClassHandlerModule.dicom-seg',
   viewport: '@ohif/extension-cornerstone-dicom-seg.viewportModule.dicom-seg',
-  panel: '@ohif/extension-cornerstone-dicom-seg.panelModule.panelSegmentation',
 };
 
 const dicomPmap = {
@@ -86,19 +90,7 @@ function modeFactory({ modeConfiguration }) {
 
       measurementService.clearMeasurements();
 
-      // customizationService.addModeCustomizations([
-      //   {
-      //     id: 'measurementLabels',
-      //     labelOnMeasure: true,
-      //     exclusive: true,
-      //     items: [
-      //       { value: 'Head', label: 'Head' },
-      //       { value: 'Shoulder', label: 'Shoulder' },
-      //       { value: 'Knee', label: 'Knee' },
-      //       { value: 'Toe', label: 'Toe' },
-      //     ],
-      //   },
-      // ]);
+      performCustomizations(customizationService);
 
       // Init Default and SR ToolGroups
       initToolGroups(extensionManager, toolGroupService, commandsManager, this.labelConfig);
@@ -114,13 +106,6 @@ function modeFactory({ modeConfiguration }) {
         'Layout',
         'Crosshairs',
         'MoreTools',
-      ]);
-
-      customizationService.addModeCustomizations([
-        {
-          id: 'segmentation.panel',
-          disableEditing: true,
-        },
       ]);
 
       // // ActivatePanel event trigger for when a segmentation or measurement is added.
@@ -192,7 +177,7 @@ function modeFactory({ modeConfiguration }) {
             id: ohif.layout,
             props: {
               leftPanels: [tracked.thumbnailList],
-              rightPanels: [dicomSeg.panel, tracked.measurements],
+              rightPanels: [cornerstone.segmentation, tracked.measurements],
               rightPanelClosed: true,
               viewports: [
                 {

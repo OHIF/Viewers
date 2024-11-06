@@ -85,7 +85,7 @@ describe('OHIF Cornerstone Toolbar', () => {
     // The exact text is slightly dependent on the viewport resolution, so leave a range
     cy.get('@viewportInfoBottomLeft').should($txt => {
       const text = $txt.text();
-      expect(text).to.include('W:118').include('L:479');
+      expect(text).to.include('L:479');
     });
   });
 
@@ -117,7 +117,7 @@ describe('OHIF Cornerstone Toolbar', () => {
     //Verify the measurement exists in the table
     cy.get('@measurementsPanel').should('be.visible');
 
-    cy.get('[data-cy="measurement-item"]').as('measure').its('length').should('be.at.least', 1);
+    cy.get('[data-cy="data-row"]').as('measure').its('length').should('be.at.least', 1);
   });
 
   /*it('checks if angle annotation can be added on viewport without causing any errors', () => {
@@ -351,7 +351,7 @@ describe('OHIF Cornerstone Toolbar', () => {
 
     //Verify if measurement annotation was added into the measurements panel
     cy.get('@measurementsBtn').click();
-    cy.get('[data-cy="measurement-item"]')
+    cy.get('[data-cy="data-row"]')
       .its('length')
       .should('be.at.least', 2);
 

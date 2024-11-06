@@ -1,4 +1,3 @@
-import { hydrateStructuredReport } from '@ohif/extension-cornerstone-dicom-sr';
 import { assign } from 'xstate';
 
 const RESPONSE = {

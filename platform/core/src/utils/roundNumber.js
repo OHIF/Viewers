@@ -13,10 +13,10 @@
 
 function roundNumber(value, precision = 2) {
   if (Array.isArray(value)) {
-    return value.map((v) => roundNumber(v, precision)).join(", ");
+    return value.map(v => roundNumber(v, precision)).join(', ');
   }
-  if (value === undefined || value === null || value === "") {
-    return "NaN";
+  if (value === undefined || value === null || value === '') {
+    return 'NaN';
   }
   value = Number(value);
   const absValue = Math.abs(value);
@@ -27,16 +27,16 @@ function roundNumber(value, precision = 2) {
     absValue >= 100
       ? precision - 2
       : absValue >= 10
-      ? precision - 1
-      : absValue >= 1
-      ? precision
-      : absValue >= 0.1
-      ? precision + 1
-      : absValue >= 0.01
-      ? precision + 2
-      : absValue >= 0.001
-      ? precision + 3
-      : precision + 4;
+        ? precision - 1
+        : absValue >= 1
+          ? precision
+          : absValue >= 0.1
+            ? precision + 1
+            : absValue >= 0.01
+              ? precision + 2
+              : absValue >= 0.001
+                ? precision + 3
+                : precision + 4;
   return value.toFixed(fixedPrecision);
 }
 

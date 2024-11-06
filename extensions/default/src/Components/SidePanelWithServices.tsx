@@ -5,7 +5,7 @@ import { Types } from '@ohif/core';
 export type SidePanelWithServicesProps = {
   servicesManager: AppTypes.ServicesManager;
   side: 'left' | 'right';
-  className: string;
+  className?: string;
   activeTabIndex: number;
   tabs: any;
   expandedWidth?: number;

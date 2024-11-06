@@ -1,5 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
-import PropTypes from 'prop-types';
+import React, { useState, useEffect } from 'react';
 import { useImageViewer, useViewportGrid } from '@ohif/ui';
 import { StudyBrowser } from '@ohif/ui-next';
 import { utils } from '@ohif/core';
@@ -80,7 +79,7 @@ function PanelStudyBrowser({
       uiNotificationService.show({
         title: 'Thumbnail Double Click',
         message: 'The selected display sets could not be added to the viewport.',
-        type: 'info',
+        type: 'error',
         duration: 3000,
       });
     }
@@ -198,7 +197,7 @@ function PanelStudyBrowser({
         // if (!hasLoadedViewports) {
         //   return;
         // }
-        const { displaySetsAdded, options } = data;
+        const { displaySetsAdded } = data;
         displaySetsAdded.forEach(async dSet => {
           const newImageSrcEntry = {};
           const displaySet = displaySetService.getDisplaySetByUID(dSet.displaySetInstanceUID);
@@ -318,16 +317,6 @@ function PanelStudyBrowser({
     </>
   );
 }
-
-PanelStudyBrowser.propTypes = {
-  servicesManager: PropTypes.object.isRequired,
-  dataSource: PropTypes.shape({
-    getImageIdsForDisplaySet: PropTypes.func.isRequired,
-  }).isRequired,
-  getImageSrc: PropTypes.func.isRequired,
-  getStudiesForPatientByMRN: PropTypes.func.isRequired,
-  requestDisplaySetCreationForStudy: PropTypes.func.isRequired,
-};
 
 export default PanelStudyBrowser;
 

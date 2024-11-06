@@ -1,5 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { Icons } from '../Icons';
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from '../DropdownMenu/DropdownMenu';
 
 export function StudyBrowserSort({ servicesManager }: withAppTypes) {
   const { customizationService, displaySetService } = servicesManager.services;
@@ -8,9 +14,8 @@ export function StudyBrowserSort({ servicesManager }: withAppTypes) {
   const [selectedSort, setSelectedSort] = useState(sortFunctions[0]);
   const [sortDirection, setSortDirection] = useState('ascending');
 
-  const handleSortChange = event => {
-    const selectedSortFunction = sortFunctions.find(sort => sort.label === event.target.value);
-    setSelectedSort(selectedSortFunction);
+  const handleSortChange = sortFunction => {
+    setSelectedSort(sortFunction);
   };
 
   const toggleSortDirection = e => {
@@ -43,26 +48,26 @@ export function StudyBrowserSort({ servicesManager }: withAppTypes) {
   }, [displaySetService, selectedSort, sortDirection]);
 
   return (
-    <div className="border-inputfield-main focus:border-inputfield-main flex h-[26px] w-[125px] items-center justify-center rounded border bg-black p-2">
-      <select
-        onChange={handleSortChange}
-        value={selectedSort.label}
-        onClick={e => e.stopPropagation()}
-        className="w-full appearance-none bg-transparent text-sm leading-tight text-white shadow transition duration-300 focus:outline-none"
-      >
-        {sortFunctions.map(sort => (
-          <option
-            className="appearance-none bg-black text-white"
-            value={sort.label}
-            key={sort.label}
-          >
-            {sort.label}
-          </option>
-        ))}
-      </select>
+    <div className="flex items-center gap-1">
+      <DropdownMenu>
+        <DropdownMenuTrigger className="border-inputfield-main focus:border-inputfield-main flex h-[26px] w-[125px] items-center justify-start rounded border bg-black p-2 text-sm text-white">
+          {selectedSort.label}
+        </DropdownMenuTrigger>
+        <DropdownMenuContent className="bg-black">
+          {sortFunctions.map(sort => (
+            <DropdownMenuItem
+              key={sort.label}
+              className="text-white"
+              onClick={() => handleSortChange(sort)}
+            >
+              {sort.label}
+            </DropdownMenuItem>
+          ))}
+        </DropdownMenuContent>
+      </DropdownMenu>
       <button
         onClick={toggleSortDirection}
-        className="flex items-center justify-center"
+        className="flex h-[26px] items-center justify-center bg-black"
       >
         {sortDirection === 'ascending' ? (
           <Icons.SortingAscending className="text-primary-main w-2" />

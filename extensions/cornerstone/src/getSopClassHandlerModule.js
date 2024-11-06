@@ -89,7 +89,7 @@ function _getDisplaySetsFromSeries(instances, servicesManager, extensionManager)
   const displaySet = {
     plugin: 'microscopy',
     Modality: 'SM',
-    viewportType: csEnums.ViewportType.WholeSlide,
+    viewportType: csEnums.ViewportType.WHOLE_SLIDE,
     altImageText: 'Microscopy',
     displaySetInstanceUID: utils.guid(),
     SOPInstanceUID,

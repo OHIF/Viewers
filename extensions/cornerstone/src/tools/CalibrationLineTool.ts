@@ -1,5 +1,5 @@
 import { LengthTool, utilities } from '@cornerstonejs/tools';
-import callInputDialog from '../utils/callInputDialog';
+import { callInputDialog } from '@ohif/extension-default';
 import getActiveViewportEnabledElement from '../utils/getActiveViewportEnabledElement';
 
 const { calibrateImageSpacing } = utilities;

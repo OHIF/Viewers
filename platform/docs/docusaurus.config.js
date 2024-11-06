@@ -11,10 +11,26 @@ const path = require('path');
 const fs = require('fs');
 const versions = fs.readFileSync('../../version.txt', 'utf8').split('\n');
 
+const ArchivedVersionsDropdownItems = [
+  {
+    version: '2.0-deprecated',
+    href: 'https://v2.docs.ohif.org',
+    isExternal: true,
+  },
+  {
+    version: '1.0-deprecated',
+    href: 'https://v1.docs.ohif.org',
+    isExternal: true,
+  },
+];
+
 const baseUrl = process.env.BASE_URL || '/';
 
 /** @type {import('@docusaurus/types').DocusaurusConfig} */
 module.exports = {
+  future: {
+    experimental_faster: true,
+  },
   title: 'OHIF',
   tagline: 'Open-source web-based medical imaging platform',
   organizationName: 'Open Health Imaging Foundation',
@@ -47,22 +63,6 @@ module.exports = {
     // path.resolve(__dirname, './pluginOHIFWebpackConfig.js'),
     // /path.resolve(__dirname, './postcss.js'),
     'docusaurus-plugin-image-zoom', // 3rd party plugin for image click to pop
-    [
-      '@docusaurus/plugin-client-redirects',
-      {
-        fromExtensions: ['html'],
-        redirects: [
-          {
-            // we need this for https://cloud.google.com/healthcare/docs/how-tos/dicom-viewers
-            to: '/2.0-deprecated/deployment/recipes/google-cloud-healthcare',
-            from: [
-              '/connecting-to-image-archives/google-cloud-healthcare',
-              '/connecting-to-image-archives/google-cloud-healthcare.html',
-            ],
-          },
-        ],
-      },
-    ],
     [
       '@docusaurus/plugin-ideal-image',
       {
@@ -200,9 +200,16 @@ module.exports = {
                 value: '<hr class="dropdown-separator">',
               },
               {
-                to: '/versions',
-                label: 'All versions',
+                type: 'html',
+                className: 'dropdown-archived-versions',
+                value: '<b>Archived versions</b>',
               },
+              ...ArchivedVersionsDropdownItems.map(item => ({
+                label: `${item.version} `,
+                href: item.href,
+                target: item.isExternal ? '_blank' : undefined,
+                rel: item.isExternal ? 'noopener noreferrer' : undefined,
+              })),
             ],
           },
           {
