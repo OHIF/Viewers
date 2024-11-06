@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import classnames from 'classnames';
-import PropTypes, { object } from 'prop-types';
+import PropTypes from 'prop-types';
 import { Link, useNavigate } from 'react-router-dom';
 import moment from 'moment';
 import qs from 'query-string';
@@ -20,7 +20,6 @@ import {
   StudyListPagination,
   StudyListFilter,
   TooltipClipboard,
-  Header,
   useModal,
   AboutModal,
   UserPreferences,
@@ -30,6 +29,8 @@ import {
   Button,
   ButtonEnums,
 } from '@ohif/ui';
+
+import { Header } from '@ohif/ui-next';
 
 import { Types } from '@ohif/ui';
 

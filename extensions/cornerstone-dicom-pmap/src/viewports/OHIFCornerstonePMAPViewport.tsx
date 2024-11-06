@@ -12,7 +12,8 @@ function OHIFCornerstonePMAPViewport(props: withAppTypes) {
     extensionManager,
   } = props;
   const viewportId = viewportOptions.viewportId;
-  const { displaySetService, segmentationService } = servicesManager.services;
+  const { displaySetService, segmentationService, uiNotificationService } =
+    servicesManager.services;
 
   // PMAP viewport will always have a single display set
   if (displaySets.length !== 1) {
@@ -72,13 +73,19 @@ function OHIFCornerstonePMAPViewport(props: withAppTypes) {
           { value: 0.25, opacity: 0.25 },
           { value: 0.5, opacity: 0.5 },
           { value: 0.75, opacity: 0.75 },
-          { value: 0.9, opacity: 1 },
+          { value: 0.9, opacity: 0.99 },
         ],
       },
       voi: {
         windowCenter: 50,
         windowWidth: 100,
       },
+    });
+
+    uiNotificationService.show({
+      title: 'Parametric Map',
+      type: 'warning',
+      message: 'The values are multiplied by 100 in the viewport for better visibility',
     });
 
     return (

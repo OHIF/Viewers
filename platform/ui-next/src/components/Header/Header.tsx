@@ -84,9 +84,9 @@ function Header({
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="text-primary-active hover:bg-primary-dark h-full w-full"
+                  className="text-primary-active hover:bg-primary-dark mt-2 h-full w-full"
                 >
-                  <Icons.More />
+                  <Icons.GearSettings />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">

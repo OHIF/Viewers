@@ -38,6 +38,7 @@ export const SegmentationSelectorHeader: React.FC<{ children?: React.ReactNode }
     onSegmentationDownload,
     onSegmentationDownloadRTSS,
     storeSegmentation,
+    exportOptions,
   } = useSegmentationTableContext('SegmentationTable.HeaderCollapsed');
 
   if (mode !== 'collapsed' || !data?.length) {
@@ -59,6 +60,10 @@ export const SegmentationSelectorHeader: React.FC<{ children?: React.ReactNode }
     label: seg.segmentation.label,
     info: seg.segmentation.cachedStats?.info,
   }));
+
+  const allowExport = exportOptions.find(
+    ({ segmentationId }) => segmentationId === activeSegmentation.id
+  )?.isExportable;
 
   return (
     <div className="bg-primary-dark flex h-10 w-full items-center space-x-1 rounded-t px-1.5">
@@ -87,7 +92,10 @@ export const SegmentationSelectorHeader: React.FC<{ children?: React.ReactNode }
             <span className="pl-2">{t('Rename')}</span>
           </DropdownMenuItem>
           <DropdownMenuSub>
-            <DropdownMenuSubTrigger>
+            <DropdownMenuSubTrigger
+              disabled={!allowExport}
+              className="pl-1"
+            >
               <Icons.Export className="text-foreground" />
               <span className="pl-2">{t('Export & Download')}</span>
             </DropdownMenuSubTrigger>

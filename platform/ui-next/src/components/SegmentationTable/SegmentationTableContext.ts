@@ -31,6 +31,10 @@ interface SegmentationTableContext {
   disabled: boolean;
   mode: 'collapsed' | 'expanded';
   fillAlpha: number;
+  exportOptions: {
+    segmentationId: string;
+    isExportable: boolean;
+  }[];
   fillAlphaInactive: number;
   outlineWidth: number;
   renderFill: boolean;

@@ -1,6 +1,7 @@
 import React from 'react';
 import { SegmentationTable } from '@ohif/ui-next';
 import { useActiveViewportSegmentationRepresentations } from '../hooks/useActiveViewportSegmentationRepresentations';
+import { metaData } from '@cornerstonejs/core';
 
 export default function PanelSegmentation({
   servicesManager,
@@ -9,7 +10,7 @@ export default function PanelSegmentation({
   configuration,
   children,
 }: withAppTypes) {
-  const { customizationService, viewportGridService } = servicesManager.services;
+  const { customizationService, viewportGridService, displaySetService } = servicesManager.services;
 
   const { segmentationsWithRepresentations, disabled } =
     useActiveViewportSegmentationRepresentations({
@@ -148,6 +149,27 @@ export default function PanelSegmentation({
     }
   );
 
+  const exportOptions = segmentationsWithRepresentations.map(({ segmentation }) => {
+    const { representationData, segmentationId } = segmentation;
+    const { Labelmap } = representationData;
+    const referencedImageIds = Labelmap.referencedImageIds;
+    const firstImageId = referencedImageIds[0];
+
+    const instance = metaData.get('instance', firstImageId);
+    const { SOPInstanceUID, SeriesInstanceUID } = instance;
+
+    const displaySet = displaySetService.getDisplaySetForSOPInstanceUID(
+      SOPInstanceUID,
+      SeriesInstanceUID
+    );
+    const isExportable = displaySet.isReconstructable;
+
+    return {
+      segmentationId,
+      isExportable,
+    };
+  });
+
   return (
     <>
       <SegmentationTable
@@ -155,6 +177,7 @@ export default function PanelSegmentation({
         data={segmentationsWithRepresentations}
         mode={SegmentationTableMode}
         title="Segmentations"
+        exportOptions={exportOptions}
         disableEditing={disableEditing}
         onSegmentationAdd={onSegmentationAdd}
         onSegmentationClick={handlers.onSegmentationClick}
