@@ -98,7 +98,7 @@ module.exports = (env, argv, { SRC_DIR, ENTRY }) => {
       type: 'filesystem',
     },
     module: {
-      noParse: [/(codec)/, /(dicomicc)/],
+      noParse: [/(dicomicc)/],
       rules: [
         ...(isProdBuild
           ? []
