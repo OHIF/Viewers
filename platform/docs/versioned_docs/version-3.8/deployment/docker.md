@@ -36,7 +36,7 @@ Once the Docker image has been built, it can be run as a container from the comm
 |Flag|Description|
 |----|-----------|
 |-d|Run the container in the background and print the container ID|
-|-p {host-port}:{nginx-port}/tcp|Publish the `nginx` listen port on the given host port|
+|-p `{host-port}:{nginx-port}/tcp`|Publish the `nginx` listen port on the given host port|
 |--name|An arbitrary name for the container.|
 
 

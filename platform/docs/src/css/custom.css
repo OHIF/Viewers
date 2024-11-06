@@ -635,3 +635,32 @@ html[data-theme='dark'] .markdown hr {
 [data-theme='dark'] .theme-code-block {
   font-size: 0.9rem;
 }
+
+/* Dropdown menu positioning and interaction fixes */
+.dropdown {
+  position: relative;
+}
+
+.dropdown__menu {
+  top: 100%;
+  margin-top: 0;
+  padding-top: 0.5rem;
+}
+
+/* Add a hover area to prevent menu from disappearing */
+.dropdown__menu::before {
+  content: '';
+  position: absolute;
+  top: -10px;
+  left: 0;
+  right: 0;
+  height: 10px;
+}
+
+/* Ensure menu stays visible while hovering */
+.dropdown:hover .dropdown__menu,
+.dropdown__menu:hover {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}

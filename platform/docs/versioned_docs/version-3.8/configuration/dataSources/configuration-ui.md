@@ -69,7 +69,7 @@ API, this would be `['Project', 'Location', 'Data set', 'DICOM store']`.
 
 Besides the configurable item labels themselves, several other string look ups
 are used base on EACH of the labels returned by this method.
-For instance, for the label `{itemLabel}``, the following strings are fetched for
+For instance, for the label `{itemLabel}`, the following strings are fetched for
 translation...
 1. `No {itemLabel} available`
    - used to indicate no such items are available

@@ -64,22 +64,6 @@ module.exports = {
     // /path.resolve(__dirname, './postcss.js'),
     'docusaurus-plugin-image-zoom', // 3rd party plugin for image click to pop
     [
-      '@docusaurus/plugin-client-redirects',
-      {
-        fromExtensions: ['html'],
-        redirects: [
-          {
-            // we need this for https://cloud.google.com/healthcare/docs/how-tos/dicom-viewers
-            to: '/2.0-deprecated/deployment/recipes/google-cloud-healthcare',
-            from: [
-              '/connecting-to-image-archives/google-cloud-healthcare',
-              '/connecting-to-image-archives/google-cloud-healthcare.html',
-            ],
-          },
-        ],
-      },
-    ],
-    [
       '@docusaurus/plugin-ideal-image',
       {
         quality: 70,
