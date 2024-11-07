@@ -8,7 +8,6 @@ import {
 } from '../../components/DropdownMenu';
 import { Icons } from '../../components/Icons/Icons';
 import { Tooltip, TooltipTrigger, TooltipContent } from '../../components/Tooltip/Tooltip';
-import sanitizeHtml from 'sanitize-html';
 
 /**
  * DataRow is a complex UI component that displays a selectable, interactive row with hierarchical data.
@@ -131,7 +130,7 @@ const DataRow: React.FC<DataRowProps> = ({
           key={`empty-${indent}`}
           className="h-2"
         ></div>
-      ); // Empty row
+      );
     }
     const cleanText = decodeHTML(text);
     return (
@@ -142,11 +141,11 @@ const DataRow: React.FC<DataRowProps> = ({
         {indentation}
         {cleanText.includes(':') ? (
           <>
-            <span className="font-medium">{sanitizeHtml(cleanText.split(':')[0])}:</span>
-            {sanitizeHtml(cleanText.split(':')[1])}
+            <span className="font-medium">{cleanText.split(':')[0]}:</span>
+            {cleanText.split(':')[1]}
           </>
         ) : (
-          <span className="font-medium">{sanitizeHtml(cleanText)}</span>
+          <span className="font-medium">{cleanText}</span>
         )}
       </div>
     );
