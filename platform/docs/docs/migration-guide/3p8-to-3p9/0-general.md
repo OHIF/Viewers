@@ -6,6 +6,12 @@ title: General
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
+# Not SharedArrayBuffer anymore!
+
+We have streamlined the process of loading volumes without sacrificing speed by eliminating the need for shared array buffers. This change resolves issues across various frameworks, where previously, specific security headers were required. Now, you can remove any previously set headers, which lowers the barrier for adopting Cornerstone 3D in frameworks that didn't support those headers. Shared array buffers are no longer necessary, and all related headers can be removed.
+
+You can remove `Cross-Origin-Opener-Policy` and `Cross-Origin-Embedder-Policy` from your custom headers if you don't need them in other
+aspects of your app.
 
 # React 18 Migration Guide
 As we upgrade to React 18, we're making some exciting changes to improve performance and developer experience. This guide will help you navigate the key updates and ensure your custom extensions and modes are compatible with the new version.

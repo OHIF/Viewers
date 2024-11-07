@@ -371,6 +371,11 @@ const commandsModule = ({
           findOrCreateViewport,
           isHangingProtocolLayout: true,
         });
+
+        // Reset crosshairs after restoring the layout
+        setTimeout(() => {
+          commandsManager.runCommand('resetCrosshairs');
+        }, 0);
       } else {
         // We are not in one-up, so toggle to one up.
 

@@ -110,22 +110,20 @@ function ViewportSegmentationMenu({
           <Separator className="bg-input mb-3" />
           <span className="text-muted-foreground mb-2 text-xs font-semibold">Available</span>
           <ul className="space-y-1">
-            {availableSegmentations.map(segmentation => (
+            {availableSegmentations.map(({segmentationId, label}) => (
               <li
-                key={segmentation.segmentation.segmentationId}
+                key={segmentationId}
                 className="flex items-center text-sm"
               >
                 <Button
                   variant="ghost"
                   size="icon"
                   className="text-muted-foreground mr-2"
-                  onClick={() =>
-                    addSegmentationToViewport(segmentation.segmentation.segmentationId)
-                  }
+                  onClick={() => addSegmentationToViewport(segmentationId)}
                 >
                   <Icons.Plus className="h-6 w-6" />
                 </Button>
-                <span className="text-foreground/60">{segmentation.segmentation.label}</span>
+                <span className="text-foreground/60">{label}</span>
               </li>
             ))}
           </ul>

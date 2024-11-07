@@ -1,9 +1,13 @@
 ---
 id: seg-creation
-title: SegmentationService Creation
+title: Segmentation  Creation
 ---
 
+## createEmptySegmentationForViewport
 
+is now `createLabelmapForViewport` to align with other segmentation creation methods.
+
+Run it using `commandsManager.runCommand('createLabelmapForViewport', {viewportId})`.
 
 ## createSegmentationForDisplaySet
 

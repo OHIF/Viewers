@@ -2,6 +2,7 @@ import React, { ReactNode, useEffect, useState } from 'react';
 import { Button, Icons, Popover, PopoverContent, PopoverTrigger } from '@ohif/ui-next';
 import ViewportSegmentationMenu from './ViewportSegmentationMenu';
 import classNames from 'classnames';
+import { useSegmentations } from '../../hooks/useSegmentations';
 
 export function ViewportSegmentationMenuWrapper({
   viewportId,
@@ -13,35 +14,16 @@ export function ViewportSegmentationMenuWrapper({
   viewportId: string;
   element: HTMLElement;
 }>): ReactNode {
-  const { segmentationService, viewportActionCornersService, viewportGridService } =
-    servicesManager.services;
-  const [representations, setRepresentations] = useState(null);
+  const { viewportActionCornersService, viewportGridService } = servicesManager.services;
 
-  useEffect(() => {
-    const representations = segmentationService.getSegmentationRepresentations(viewportId);
-    setRepresentations(representations);
-  }, [viewportId, segmentationService]);
-
-  useEffect(() => {
-    const { unsubscribe } = segmentationService.subscribe(
-      segmentationService.EVENTS.SEGMENTATION_REPRESENTATION_MODIFIED,
-      () => {
-        const representations = segmentationService.getSegmentationRepresentations(viewportId);
-        setRepresentations(representations);
-      }
-    );
-
-    return () => {
-      unsubscribe();
-    };
-  }, [viewportId, segmentationService]);
+  const segmentations = useSegmentations({ servicesManager });
 
   const activeViewportId = viewportGridService.getActiveViewportId();
   const isActiveViewport = viewportId === activeViewportId;
 
   const { align, side } = getAlignAndSide(viewportActionCornersService, location);
 
-  if (!representations?.length) {
+  if (!segmentations?.length) {
     return null;
   }
 

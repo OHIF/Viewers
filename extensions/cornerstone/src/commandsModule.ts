@@ -871,7 +871,7 @@ function commandsModule({
       }
 
       crosshairInstances.forEach(ins => {
-        ins?.resetCrosshairs();
+        ins?.computeToolCenter();
       });
     },
     /**
