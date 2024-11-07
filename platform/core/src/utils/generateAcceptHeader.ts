@@ -9,15 +9,20 @@ const generateAcceptHeader = (
   }
 
   let acceptHeader = ['multipart/related'];
+  let hasTransferSyntax = false;
   if (requestTransferSyntaxUID && typeForTS[requestTransferSyntaxUID]) {
     const type = typeForTS[requestTransferSyntaxUID];
     acceptHeader.push('type=' + type);
     acceptHeader.push('transfer-syntax=' + requestTransferSyntaxUID);
+    hasTransferSyntax = true;
   } else {
     acceptHeader.push('type=application/octet-stream');
   }
 
-  acceptHeader.push('transfer-syntax=*');
+  if (!hasTransferSyntax) {
+    acceptHeader.push('transfer-syntax=*');
+  }
+
   if (!omitQuotationForMultipartRequest) {
     //need to add quotation for each mime type of each accept entry
     acceptHeader = acceptHeader.map(mime => {
