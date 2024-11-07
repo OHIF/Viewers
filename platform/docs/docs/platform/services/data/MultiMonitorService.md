@@ -8,26 +8,25 @@ sidebar_label: Multi Monitor Service
 The multi-monitor service provides detection, launch and communication support
 for multiple monitors or windows/screens within a single monitor.
 
-
-
 ## GUI Behaviour
 
-Double click study in study browser => set as active study for current screen and apply hanging protocol as
-active study
+### Initial behaviour
 
-(later)
-Right click study in study browser => brings up menu to select as prior, or apply specific HP
+On launching any mode into multi-monitor, apply the window resize to fill the
+specified area on the specified monitor.
 
-Two modes
-  - independent left/right windows
-    - launch studies on left/right windows
-    - each applies own hanging protocol on "active" study for that window
+On clicking view in second monitor, apply the default hanging protocol to that
+display, and LINK the monitors rather than opening up entirely new monitors.
+  * Make sure M0 can launch M1 and vice versa, and that existing annotations are
+preserved.
 
-(later)
-  - coordinated hanging protocol
-    - determined by hanging protocol
-    - coordinates mixed studies
-    - applies full hanging protocol, but sub-selects it for specific screen
+### Secondary behaviour
 
-(later)
-Single "launch" button for launching to other screen
+Add communications bus from Mi to all to communicate changes
+
+Add sender/listener for:
+  * Viewed display sets
+  * Annotations
+
+Maybe add a simple "mode" with a worklist for a given patient that always launches
+to secondary window (or maybe have selector for destination) to allow extending the launch.
