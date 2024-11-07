@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.9.0-beta.108](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.107...v3.9.0-beta.108) (2024-11-07)
+
+
+### Bug Fixes
+
+* **tmtv:** fix toggle one up weird behaviours ([#4473](https://github.com/OHIF/Viewers/issues/4473)) ([aa2b649](https://github.com/OHIF/Viewers/commit/aa2b649444eb4fe5422e72ea7830a709c4d24a90))
+
+
+
+
+
 # [3.9.0-beta.107](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.106...v3.9.0-beta.107) (2024-11-06)
 
 **Note:** Version bump only for package ohif-docs
