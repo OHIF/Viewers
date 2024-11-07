@@ -23,16 +23,26 @@ const SidePanelWithServices = ({
 
   // Tracks whether this SidePanel has been opened at least once since this SidePanel was inserted into the DOM.
   // Thus going to the Study List page and back to the viewer resets this flag for a SidePanel.
-  const [hasBeenOpened, setHasBeenOpened] = useState(false);
+  const [sidePanelOpen, setSidePanelOpen] = useState(activeTabIndexProp !== null);
   const [activeTabIndex, setActiveTabIndex] = useState(activeTabIndexProp);
   const [tabs, setTabs] = useState(tabsProp ?? panelService.getPanels(side));
 
-  const handleSidePanelOpen = useCallback(() => {
-    setHasBeenOpened(true);
-  }, []);
-
   const handleActiveTabIndexChange = useCallback(({ activeTabIndex }) => {
     setActiveTabIndex(activeTabIndex);
+    setSidePanelOpen(activeTabIndex !== null);
+  }, []);
+
+  const handleOpen = useCallback(() => {
+    setSidePanelOpen(true);
+    // If panel is being opened but no tab is active, set first tab as active
+    if (activeTabIndex === null && tabs.length > 0) {
+      setActiveTabIndex(0);
+    }
+  }, [activeTabIndex, tabs]);
+
+  const handleClose = useCallback(() => {
+    setSidePanelOpen(false);
+    setActiveTabIndex(null);
   }, []);
 
   /** update the active tab index from outside */
@@ -61,7 +71,7 @@ const SidePanelWithServices = ({
     const activatePanelSubscription = panelService.subscribe(
       panelService.EVENTS.ACTIVATE_PANEL,
       (activatePanelEvent: Types.ActivatePanelEvent) => {
-        if (!hasBeenOpened || activatePanelEvent.forceActive) {
+        if (sidePanelOpen || activatePanelEvent.forceActive) {
           const tabIndex = tabs.findIndex(tab => tab.id === activatePanelEvent.panelId);
           if (tabIndex !== -1) {
             setActiveTabIndex(tabIndex);
@@ -73,7 +83,7 @@ const SidePanelWithServices = ({
     return () => {
       activatePanelSubscription.unsubscribe();
     };
-  }, [tabs, hasBeenOpened, panelService]);
+  }, [tabs, sidePanelOpen, panelService]);
 
   return (
     <SidePanel
@@ -81,10 +91,11 @@ const SidePanelWithServices = ({
       side={side}
       tabs={tabs}
       activeTabIndex={activeTabIndex}
-      onOpen={handleSidePanelOpen}
+      onOpen={handleOpen}
+      onClose={handleClose}
       onActiveTabIndexChange={handleActiveTabIndexChange}
       expandedWidth={expandedWidth}
-    ></SidePanel>
+    />
   );
 };
 
