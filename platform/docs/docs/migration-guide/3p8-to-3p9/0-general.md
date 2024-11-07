@@ -178,6 +178,31 @@ Now:
 
 ---
 
+## SidePanel auto switch if open
+
+In `basic viewer` mode, if the side panel is open and the segmentation panel is active, adding a measurement will automatically switch to the measurement panel. This switch won't occur if the side panel is closed. To enable or disable this feature, adjust your mode configuration accordingly.
+
+```js
+panelService.addActivatePanelTriggers('your.panel.id', [
+{
+  sourcePubSubService: segmentationService,
+  sourceEvents: [segmentationService.EVENTS.SEGMENTATION_ADDED],
+},
+])
+
+panelService.addActivatePanelTriggers('your.panel.id', [
+  {
+    sourcePubSubService: measurementService,
+    sourceEvents: [
+      measurementService.EVENTS.MEASUREMENT_ADDED,
+      measurementService.EVENTS.RAW_MEASUREMENT_ADDED,
+    ],
+  },
+])
+```
+
+---
+
 ## DicomUpload
 
 The DICOM upload functionality in OHIF has been refactored to use the standard customization service pattern. Now you don't need to put
