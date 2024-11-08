@@ -25,6 +25,8 @@ jobs:
           node-version: 18
       - name: Install dependencies
         run: bun install --frozen-lockfile
+      - name: Set up Git safe directory
+        run: git config --global --add safe.directory /__w/Viewers/Viewers
       - name: Run Playwright tests
         run:
           export NODE_OPTIONS="--max_old_space_size=8192" && bun x playwright test --shard=${{
