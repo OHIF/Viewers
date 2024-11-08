@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.9.0-beta.109](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.108...v3.9.0-beta.109) (2024-11-08)
+
+
+### Bug Fixes
+
+* **style:** worklist shifting ([#4477](https://github.com/OHIF/Viewers/issues/4477)) ([8fb8b3b](https://github.com/OHIF/Viewers/commit/8fb8b3bfd1c887cd67fc058629d7aba598c76f9e))
+
+
+
+
+
 # [3.9.0-beta.108](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.107...v3.9.0-beta.108) (2024-11-07)
 
 
