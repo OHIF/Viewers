@@ -1043,7 +1043,7 @@ function commandsModule({
      * @param props.key - The style key to set
      * @param props.value - The style value
      */
-    setSegmentationStyleCommand: ({ segmentationId, type, key, value }) => {
+    setSegmentationStyleCommand: ({ type, key, value }) => {
       const { segmentationService } = servicesManager.services;
       segmentationService.setStyle({ type }, { [key]: value });
     },
@@ -1150,12 +1150,17 @@ function commandsModule({
       const segment = segmentation.segments[segmentIndex];
       const { label } = segment;
 
-      callInputDialog(uiDialogService, label, (label, actionId) => {
+      const callback = (label, actionId) => {
         if (label === '') {
           return;
         }
 
         segmentationService.setSegmentLabel(segmentationId, segmentIndex, label);
+      };
+
+      callInputDialog(uiDialogService, label, callback, false, {
+        dialogTitle: 'Edit Segment Label',
+        inputLabel: 'Enter new label',
       });
     },
 
@@ -1169,12 +1174,17 @@ function commandsModule({
 
       const { label } = segmentation;
 
-      callInputDialog(uiDialogService, label, (label, actionId) => {
+      const callback = (label, actionId) => {
         if (label === '') {
           return;
         }
 
         segmentationService.addOrUpdateSegmentation({ segmentationId, label });
+      };
+
+      callInputDialog(uiDialogService, label, callback, false, {
+        dialogTitle: 'Edit Segmentation Label',
+        inputLabel: 'Enter new label',
       });
     },
 

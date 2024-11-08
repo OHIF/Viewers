@@ -100,8 +100,14 @@ class SegmentationService extends PubSubService {
     this._segmentationIdToColorLUTIndexMap = new Map();
 
     this.servicesManager = servicesManager;
+  }
 
+  public onModeEnter(): void {
     this._initSegmentationService();
+  }
+
+  public onModeExit(): void {
+    this.destroy();
   }
 
   /**

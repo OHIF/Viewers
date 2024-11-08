@@ -61,7 +61,7 @@ export const SegmentationSelectorHeader: React.FC<{ children?: React.ReactNode }
     info: seg.segmentation.cachedStats?.info,
   }));
 
-  const allowExport = exportOptions.find(
+  const allowExport = exportOptions?.find(
     ({ segmentationId }) => segmentationId === activeSegmentation.id
   )?.isExportable;
 
