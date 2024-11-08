@@ -25,34 +25,41 @@ defaults: &defaults
         QUICK_BUILD: true
   working_directory: ~/repo
 
+commands:
+  install_bun:
+    steps:
+      - restore_cache:
+          keys:
+            - bun-cache-v2-{{ arch }}-latest
+      - run:
+          name: Install Bun
+          command: |
+            if [ ! -d "$HOME/.bun" ]; then
+              curl -fsSL https://bun.sh/install | bash
+            fi
+            echo 'export BUN_INSTALL="$HOME/.bun"' >> $BASH_ENV
+            echo 'export PATH="$BUN_INSTALL/bin:$PATH"' >> $BASH_ENV
+            source $BASH_ENV
+      - save_cache:
+          key: bun-cache-v2-{{ arch }}-latest
+          paths:
+            - ~/.bun
+
 jobs:
   UNIT_TESTS:
     <<: *defaults
     resource_class: large
     steps:
-      # Update yarn
-      - run: yarn -v
+      - install_bun
       - run: node --version
-      # Checkout code and ALL Git Tags
       - checkout
-      - restore_cache:
-          name: Restore Yarn and Cypress Package Cache
-          keys:
-            # when lock file changes, use increasingly general patterns to restore cache
-            - yarn-packages-{{ checksum "yarn.lock" }}
-            - yarn-packages-
       - run:
           name: Install Dependencies
-          command: yarn install --frozen-lockfile
-      - save_cache:
-          name: Save Yarn Package Cache
-          paths:
-            - ~/.cache ## Cache yarn and Cypress
-          key: yarn-packages-{{ checksum "yarn.lock" }}
+          command: bun install --no-save
       # RUN TESTS
       - run:
           name: 'JavaScript Test Suite'
-          command: yarn run test:unit:ci
+          command: bun run test:unit:ci
       # platform/app
       - run:
           name: 'VIEWER: Combine report output'
@@ -86,27 +93,17 @@ jobs:
     steps:
       # Checkout code and ALL Git Tags
       - checkout
-      - restore_cache:
-          name: Restore Yarn and Cypress Package Cache
-          keys:
-            # when lock file changes, use increasingly general patterns to restore cache
-            - yarn-packages-{{ checksum "yarn.lock" }}
-            - yarn-packages-
+      - install_bun
       - run:
           name: Install Dependencies
-          command: yarn install --frozen-lockfile
-      - save_cache:
-          name: Save Yarn Package Cache
-          paths:
-            - ~/.cache ## Cache yarn and Cypress
-          key: yarn-packages-{{ checksum "yarn.lock" }}
+          command: bun install --no-save
       # Build & Test
       - run:
           name: 'Perform the versioning before build'
-          command: node ./version.mjs
+          command: bun ./version.mjs
       - run:
           name: 'Build the OHIF Viewer'
-          command: yarn run build
+          command: bun run build
           no_output_timeout: 45m
       - run:
           name: 'Upload SourceMaps, Send Deploy Notification'
@@ -132,25 +129,14 @@ jobs:
     <<: *defaults
     resource_class: large
     steps:
-      - run: yarn -v
+      - install_bun
       # Checkout code and ALL Git Tags
       - checkout
       - attach_workspace:
           at: ~/repo
-      # Use increasingly general patterns to restore cache
-      - restore_cache:
-          name: Restore Yarn and Cypress Package Cache
-          keys:
-            - yarn-packages-{{ checksum "yarn.lock" }}
-            - yarn-packages-
       - run:
           name: Install Dependencies
-          command: yarn install --frozen-lockfile
-      - save_cache:
-          name: Save Yarn Package Cache
-          paths:
-            - ~/.cache/yarn
-          key: yarn-packages-{{ checksum "yarn.lock" }}
+          command: bun install --frozen-lockfile
       - run:
           name: Avoid hosts unknown for github
           command: |
@@ -165,35 +151,24 @@ jobs:
       - run:
           name: build half of the packages (to avoid out of memory in circleci)
           command: |
-            yarn run build:package-all
+            bun run build:package-all
       - run:
           name: build the other half of the packages
           command: |
-            yarn run build:package-all-1
+            bun run build:package-all-1
 
   NPM_PUBLISH:
     <<: *defaults
     resource_class: large
     steps:
-      - run: yarn -v
+      - install_bun
       # Checkout code and ALL Git Tags
       - checkout
       - attach_workspace:
           at: ~/repo
-      # Use increasingly general patterns to restore cache
-      - restore_cache:
-          name: Restore Yarn and Cypress Package Cache
-          keys:
-            - yarn-packages-{{ checksum "yarn.lock" }}
-            - yarn-packages-
       - run:
           name: Install Dependencies
-          command: yarn install --frozen-lockfile
-      - save_cache:
-          name: Save Yarn Package Cache
-          paths:
-            - ~/.cache/yarn
-          key: yarn-packages-{{ checksum "yarn.lock" }}
+          command: bun install --no-save
       - run:
           name: Avoid hosts unknown for github
           command: |
@@ -208,11 +183,11 @@ jobs:
       - run:
           name: build half of the packages (to avoid out of memory in circleci)
           command: |
-            yarn run build:package-all
+            bun run build:package-all
       - run:
           name: build the other half of the packages
           command: |
-            yarn run build:package-all-1
+            bun run build:package-all-1
       - run:
           name: increase min time out
           command: |
@@ -224,14 +199,14 @@ jobs:
       - run:
           name: publish package versions
           command: |
-            node ./publish-version.mjs
+            bun ./publish-version.mjs
       - run:
           name: Again set the NPM registry (was deleted in the version script)
           command: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/repo/.npmrc
       - run:
           name: publish package dist
           command: |
-            node ./publish-package.mjs
+            bun ./publish-package.mjs
       - persist_to_workspace:
           root: ~/repo
           paths:
@@ -396,9 +371,7 @@ workflows:
           filters:
             branches:
               ignore: master
-      - UNIT_TESTS:
-          requires:
-            - BUILD_PACKAGES_QUICK
+      - UNIT_TESTS
       - CYPRESS_CUSTOM_RUN:
           name: 'Cypress Tests'
           context: cypress
@@ -417,8 +390,6 @@ workflows:
                 - 'yarn-packages-{{ checksum "yarn.lock" }}'
               cypress-cache-path:
                 - '~/.cache/Cypress'
-          requires:
-            - BUILD_PACKAGES_QUICK
 
   # viewer-dev.ohif.org
   DEPLOY_MASTER:
