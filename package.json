@@ -101,7 +101,7 @@
     ]
   },
   "resolutions": {
-    "@babel/runtime": "^7.20.13",
+    "**/@babel/runtime": "^7.20.13",
     "commander": "8.3.0",
     "dcmjs": ">=0.33.0",
     "dicomweb-client": ">=0.10.4",
@@ -112,6 +112,11 @@
     "package-json": "^8.1.0",
     "typescript": "5.5.4",
     "sharp": "^0.32.6",
-    "ip": "https://registry.npmjs.org/ip-address/-/ip-address-9.0.5.tgz"
+    "**/express/path-to-regexp": "0.1.10",
+    "**/serve/serve-handler/path-to-regexp": "3.3.0",
+    "**/@docusaurus/core/serve-handler/path-to-regexp": "3.3.0",
+    "**/react-router/**/path-to-regexp": "1.9.0",
+    "rollup": "2.79.2",
+    "body-parser": "1.20.3"
   }
 }

@@ -36,7 +36,7 @@
     "@babel/preset-typescript": "^7.13.0"
   },
   "resolutions": {
-    "@babel/runtime": "^7.20.13",
+    "**/@babel/runtime": "^7.20.13",
     "commander": "8.3.0",
     "dcmjs": ">=0.33.0",
     "dicomweb-client": ">=0.10.4",
