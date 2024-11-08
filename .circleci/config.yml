@@ -2,20 +2,7 @@ version: 2.1
 
 orbs:
   codecov: codecov/codecov@1.0.5
-  cypress: cypress-io/cypress@3.3.1
-
-executors:
-  cypress-custom:
-    description: |
-      Single Docker container used to run Cypress Tests
-    docker:
-      - image: cimg/node:<< parameters.node-version >>-browsers
-    parameters:
-      node-version:
-        default: '18.16.1'
-        description: |
-          The version of Node to run your tests with.
-        type: string
+  cypress: cypress-io/cypress@3
 
 defaults: &defaults
   docker:
