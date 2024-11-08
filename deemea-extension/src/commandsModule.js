@@ -14,7 +14,7 @@ const commandsModule = ({ servicesManager }) => {
   const actions = {
     demonstrateMeasurementService: () => {
       const {
-        MeasurementService,
+        measurementService,
         ViewportGridService,
         CornerstoneViewportService,
         UINotificationService,
@@ -22,12 +22,12 @@ const commandsModule = ({ servicesManager }) => {
         PanelService,
       } = servicesManager.services;
 
-      console.log('MeasurementService:', MeasurementService.EVENTS);
+      console.log('measurementService:', measurementService.EVENTS);
       console.log('ViewportGridService:', ViewportGridService);
       console.log('CornerstoneViewportService:', CornerstoneViewportService);
       console.log('UINotificationService:', UINotificationService);
       console.log('PanelService:', PanelService);
-      if (!MeasurementService || !ViewportGridService || !CornerstoneViewportService) {
+      if (!measurementService || !ViewportGridService || !CornerstoneViewportService) {
         console.error('Required services are not available');
         return;
       }
@@ -37,6 +37,11 @@ const commandsModule = ({ servicesManager }) => {
           console.log('Points updated:', event.data.points);
           // Update measurements based on points
           demonstrateMeasurementService(servicesManager);
+        }
+
+        if (event.data.type === 'remove_measure') {
+          console.log('here', event.data);
+          measurementService.remove(event.data.message.uid);
         }
       });
 
@@ -60,11 +65,12 @@ const commandsModule = ({ servicesManager }) => {
         servicesManager.services;
 
       measurementService.subscribe(measurementService.EVENTS.MEASUREMENT_ADDED, event => {
-        console.log('ADDING NEW POINTS', event);
         const viewportId = viewportGridService.getActiveViewportId();
         const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
         const imageId = viewport.getCurrentImageId();
         const imageMetadata = viewport.getImageData(imageId);
+
+        console.log('event', event.measurement.points);
 
         const newPoints = [];
 
@@ -76,15 +82,46 @@ const commandsModule = ({ servicesManager }) => {
         if (newPoints) {
           window.parent.postMessage(
             {
-              type: 'send_points_to_front',
+              type: 'create_measure',
               message: {
                 points: newPoints,
                 elementType: event.measurement.toolName,
+                uid: event.measurement.uid,
               },
             },
             '*'
           );
         }
+      });
+
+      let dataToSend = [];
+      measurementService.subscribe(measurementService.EVENTS.MEASUREMENT_UPDATED, event => {
+        const viewportId = viewportGridService.getActiveViewportId();
+        const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
+        const imageId = viewport.getCurrentImageId();
+        const imageMetadata = viewport.getImageData(imageId);
+
+        const updatedPoints = [];
+        event.measurement.points.forEach(point =>
+          updatedPoints.push(NormalizeDicomCoordinates(imageMetadata.direction, point))
+        );
+
+        dataToSend = {
+          points: updatedPoints,
+          elementType: event.measurement.toolName,
+          uid: event.measurement.uid,
+        };
+
+        if (updatedPoints) {
+          window.parent.postMessage(
+            {
+              type: 'update_measure',
+              message: dataToSend,
+            },
+            '*'
+          );
+        }
+        console.log('send points ', dataToSend);
       });
     },
   };
