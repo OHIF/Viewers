@@ -612,7 +612,6 @@ export const Icons = {
       xmlns="http://www.w3.org/2000/svg"
       {...props}
     >
-      <title>icon-list-view</title>
       <g
         id="icon-list-view"
         stroke="none"

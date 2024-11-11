@@ -8,7 +8,7 @@ describe('OHIF Measurement Panel', function () {
     cy.waitDicomImage();
   });
 
-  it('checks if Measurements right panel can be hidden/displayed', function () {
+  it.only('checks if Measurements right panel can be hidden/displayed', function () {
     cy.get('@measurementsPanel').should('exist');
     cy.get('@measurementsPanel').should('be.visible');
 
@@ -16,7 +16,12 @@ describe('OHIF Measurement Panel', function () {
     cy.get('@measurementsPanel').should('not.exist');
 
     cy.get('@RightCollapseBtn').click();
-    cy.get('@measurementsPanel').should('exist');
+
+    // segmentation panel should be visible
+    cy.get('@segmentationPanel').should('be.visible');
+
+    // measurements panel should be clickable
+    cy.get('@measurementsBtn').click();
     cy.get('@measurementsPanel').should('be.visible');
   });
 

@@ -19,7 +19,18 @@ function PanelStudyBrowserHeader({
       <div className="bg-muted flex h-[40px] select-none rounded-t p-2">
         <div className={'flex h-[24px] w-full select-none justify-center self-center text-[14px]'}>
           <div className="flex w-full items-center gap-[10px]">
-            <div className="flex h-full items-center justify-center">
+            <div className="flex items-center justify-center">
+              <div className="text-primary-active flex items-center space-x-1">
+                {actionIcons.map((icon: actionIcon, index) =>
+                  React.createElement(Icons[icon.iconName] || Icons.MissingIcon, {
+                    key: index,
+                    onClick: () => updateActionIconValue(icon),
+                    className: `cursor-pointer`,
+                  })
+                )}
+              </div>
+            </div>
+            <div className="ml-auto flex h-full items-center justify-center">
               <ToggleGroup
                 type="single"
                 value={viewPresets.filter(preset => preset.selected)[0].id}
@@ -39,18 +50,6 @@ function PanelStudyBrowserHeader({
                   </ToggleGroupItem>
                 ))}
               </ToggleGroup>
-            </div>
-
-            <div className="flex items-center justify-center">
-              <div className="text-primary-active flex items-center space-x-1">
-                {actionIcons.map((icon: actionIcon, index) =>
-                  React.createElement(Icons[icon.iconName] || Icons.MissingIcon, {
-                    key: index,
-                    onClick: () => updateActionIconValue(icon),
-                    className: `cursor-pointer`,
-                  })
-                )}
-              </div>
             </div>
           </div>
         </div>

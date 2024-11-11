@@ -118,7 +118,7 @@ function PanelMeasurementTableTracking({
                     downloadCSVReport(trackedMeasurements);
                   }}
                 >
-                  <Icons.Download />
+                  <Icons.Download className="h-5 w-5" />
                   <span className="pl-1">CSV</span>
                 </Button>
                 <Button
@@ -133,7 +133,18 @@ function PanelMeasurementTableTracking({
                   }}
                 >
                   <Icons.Add />
-                  Create DICOM SR
+                  Create SR
+                </Button>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  className="pl-0.5"
+                  onClick={() => {
+                    measurementService.clearMeasurements();
+                  }}
+                >
+                  <Icons.Delete />
+                  Delete All
                 </Button>
               </div>
             </div>
