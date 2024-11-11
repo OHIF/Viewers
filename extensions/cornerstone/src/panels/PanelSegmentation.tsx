@@ -6,8 +6,6 @@ import { metaData } from '@cornerstonejs/core';
 export default function PanelSegmentation({
   servicesManager,
   commandsManager,
-  extensionManager,
-  configuration,
   children,
 }: withAppTypes) {
   const { customizationService, viewportGridService, displaySetService } = servicesManager.services;
@@ -91,23 +89,23 @@ export default function PanelSegmentation({
       commandsManager.run('deleteSegmentation', { segmentationId });
     },
 
-    setFillAlpha: (type, value) => {
+    setFillAlpha: ({ type }, value) => {
       commandsManager.run('setFillAlpha', { type, value });
     },
 
-    setOutlineWidth: (type, value) => {
+    setOutlineWidth: ({ type }, value) => {
       commandsManager.run('setOutlineWidth', { type, value });
     },
 
-    setRenderFill: (type, value) => {
+    setRenderFill: ({ type }, value) => {
       commandsManager.run('setRenderFill', { type, value });
     },
 
-    setRenderOutline: (type, value) => {
+    setRenderOutline: ({ type }, value) => {
       commandsManager.run('setRenderOutline', { type, value });
     },
 
-    setFillAlphaInactive: (type, value) => {
+    setFillAlphaInactive: ({ type }, value) => {
       commandsManager.run('setFillAlphaInactive', { type, value });
     },
 
@@ -152,6 +150,14 @@ export default function PanelSegmentation({
   const exportOptions = segmentationsWithRepresentations.map(({ segmentation }) => {
     const { representationData, segmentationId } = segmentation;
     const { Labelmap } = representationData;
+
+    if (!Labelmap) {
+      return {
+        segmentationId,
+        isExportable: true,
+      };
+    }
+
     const referencedImageIds = Labelmap.referencedImageIds;
     const firstImageId = referencedImageIds[0];
 

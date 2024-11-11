@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
-import { SegmentationPresentation } from '../types/Presentation';
+import { SegmentationPresentation, SegmentationPresentationItem } from '../types/Presentation';
 import { JOIN_STR } from './presentationUtils';
 import { getViewportOrientationFromImageOrientationPatient } from '../utils/getViewportOrientationFromImageOrientationPatient';
 
@@ -62,10 +62,9 @@ type SegmentationPresentationStore = {
    * @param segmentationPresentation - The `SegmentationPresentation` to add.
    * @param servicesManager - The services manager instance.
    */
-  addSegmentationPresentation: (
+  addSegmentationPresentationItem: (
     presentationId: string,
-    segmentationPresentation: SegmentationPresentation,
-    { servicesManager }: { servicesManager: AppTypes.ServicesManager }
+    segmentationPresentationItem: SegmentationPresentationItem
   ) => void;
 
   /**
@@ -183,33 +182,52 @@ const createSegmentationPresentationStore = set => ({
     set({ segmentationPresentationStore: {} }, false, 'clearSegmentationPresentationStore'),
 
   /**
-   * Adds a new segmentation presentation to the store.
+   * Adds a new segmentation presentation item to the store.
+   *
+   * segmentationPresentationItem: {
+   *   segmentationId: string;
+   *   type: SegmentationRepresentations;
+   *   hydrated: boolean | null;
+   *   config?: unknown;
+   * }
    */
-  addSegmentationPresentation: (
+  addSegmentationPresentationItem: (
     presentationId: string,
-    segmentationPresentation: SegmentationPresentation,
-    { servicesManager }: { servicesManager: AppTypes.ServicesManager }
+    segmentationPresentationItem: SegmentationPresentationItem
   ) =>
     set(
       state => ({
         segmentationPresentationStore: {
           ...state.segmentationPresentationStore,
-          [presentationId]: segmentationPresentation,
+          [presentationId]: [
+            ...(state.segmentationPresentationStore[presentationId] || []),
+            segmentationPresentationItem,
+          ],
         },
       }),
       false,
-      'addSegmentationPresentation'
+      'addSegmentationPresentationItem'
     ),
 
   /**
-   * Sets the segmentation presentation for a given presentation ID.
+   * Sets the segmentation presentation for a given presentation ID. A segmentation
+   * presentation is an array of SegmentationPresentationItem.
+   *
+   * segmentationPresentationItem: {
+   *   segmentationId: string;
+   *   type: SegmentationRepresentations;
+   *   hydrated: boolean | null;
+   *   config?: unknown;
+   * }
+   *
+   * segmentationPresentation: SegmentationPresentationItem[]
    */
-  setSegmentationPresentation: (presentationId: string, value: SegmentationPresentation) =>
+  setSegmentationPresentation: (presentationId: string, values: SegmentationPresentation) =>
     set(
       state => ({
         segmentationPresentationStore: {
           ...state.segmentationPresentationStore,
-          [presentationId]: value,
+          [presentationId]: values,
         },
       }),
       false,

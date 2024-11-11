@@ -2580,10 +2580,10 @@
   resolved "https://registry.yarnpkg.com/@colors/colors/-/colors-1.5.0.tgz#bb504579c1cae923e6576a4f5da43d25f97bdbd9"
   integrity sha512-ooWCrlZP11i8GImSjTHYHLkvFDP48nS4+204nGb1RiX/WXYHmJA2III9/e2DWVabCESdW7hBAEzHRqUn9OUVvQ==
 
-"@cornerstonejs/adapters@^2.1.17":
-  version "2.1.17"
-  resolved "https://registry.yarnpkg.com/@cornerstonejs/adapters/-/adapters-2.1.17.tgz#509e62d500c733ab8babde7a3918548d59d6fa08"
-  integrity sha512-+eptnnP+C+qKfRh0t0ZoZqQvxtDtwXZzMWk5IzNs/APRPh4XTt/VGh4hWt9UPUwxldG67k/bndjxilQkFUVNkA==
+"@cornerstonejs/adapters@^2.2.1":
+  version "2.2.1"
+  resolved "https://registry.yarnpkg.com/@cornerstonejs/adapters/-/adapters-2.2.1.tgz#9bed051a7fd9ca5ad5af3ccb97fbb79862feadc1"
+  integrity sha512-7eIZTN3PO4s95vaLrAAD018bNKsD1w7l0FL+bLv+eqebNHrhBMQQbAfEWuQCueE+tYd1mVDCpNWVDMKMMabHmQ==
   dependencies:
     "@babel/runtime-corejs2" "^7.17.8"
     buffer "^6.0.3"
@@ -2616,32 +2616,33 @@
   resolved "https://registry.yarnpkg.com/@cornerstonejs/codec-openjph/-/codec-openjph-2.4.5.tgz#8690b61a86fa53ef38a70eee9d665a79229517c0"
   integrity sha512-MZCUy8VG0VG5Nl1l58+g+kH3LujAzLYTfJqkwpWI2gjSrGXnP6lgwyy4GmPRZWVoS40/B1LDNALK905cNWm+sg==
 
-"@cornerstonejs/core@^2.1.17":
-  version "2.1.17"
-  resolved "https://registry.yarnpkg.com/@cornerstonejs/core/-/core-2.1.17.tgz#3cf4e7b586fccc0cd430947933f69bb08aaa6839"
-  integrity sha512-rtjRzRlEWk95Q4xlWkUaLitcX9g6bPsGXLASDm2nds8Dd5aEXCnPyEdBo6ow/rhvanohd7I1eC2fK2Wz7WWbJw==
+"@cornerstonejs/core@^2.2.1":
+  version "2.2.1"
+  resolved "https://registry.yarnpkg.com/@cornerstonejs/core/-/core-2.2.1.tgz#37cc052d40fffcc093f0f773051787c610d07386"
+  integrity sha512-5ZZcpa7hU+E45jM4MvEJrIFA+WHFaLWIVh9FO1HksJXtkIeBurdYr6R95aOfk7ujkkft2rsgQA29a5Jl8E6aGg==
   dependencies:
     "@kitware/vtk.js" "32.1.0"
     comlink "^4.4.1"
     gl-matrix "^3.4.3"
 
-"@cornerstonejs/dicom-image-loader@^2.1.17":
-  version "2.1.17"
-  resolved "https://registry.yarnpkg.com/@cornerstonejs/dicom-image-loader/-/dicom-image-loader-2.1.17.tgz#5429a10b921ed5586f093f51a363524e45cf6ecb"
-  integrity sha512-UIH4th4+F+a2s/myACpEmMjkPWFljAFbXeoj2Qo0JpL02FYYYGQuO7Ov+gjK/gv90twAh7q8Qg2+yNbHkC9pzA==
+"@cornerstonejs/dicom-image-loader@^2.2.1":
+  version "2.2.1"
+  resolved "https://registry.yarnpkg.com/@cornerstonejs/dicom-image-loader/-/dicom-image-loader-2.2.1.tgz#01f38061cd128c56b00fb5a3c47488880fb0f6bf"
+  integrity sha512-yFO6K4vFZqG1dkUBpVSsQhOxS6nkb7uKEETwobhroAs8lIIfQ8141R8u2DfxBTIY7o9uJuYpabYzlhbyUYr4eA==
   dependencies:
     "@cornerstonejs/codec-charls" "^1.2.3"
     "@cornerstonejs/codec-libjpeg-turbo-8bit" "^1.2.2"
     "@cornerstonejs/codec-openjpeg" "^1.2.2"
     "@cornerstonejs/codec-openjph" "^2.4.5"
     comlink "^4.4.1"
+    jpeg-lossless-decoder-js "^2.1.0"
     pako "^2.0.4"
     uuid "^9.0.0"
 
-"@cornerstonejs/tools@^2.1.17":
-  version "2.1.17"
-  resolved "https://registry.yarnpkg.com/@cornerstonejs/tools/-/tools-2.1.17.tgz#74e7a18845da779f5bc513902de6dbfe1880add0"
-  integrity sha512-vHdCVKV0kxYgvbS2ff9lDjd6AOKy6hP2Ohp96ac0enbZBNakUwDhqxWp94SezKqK7vn19fxRdSnPRLIchrqvJA==
+"@cornerstonejs/tools@^2.2.1":
+  version "2.2.1"
+  resolved "https://registry.yarnpkg.com/@cornerstonejs/tools/-/tools-2.2.1.tgz#a6d34c39c330927c485e4af8b4c99026226249e4"
+  integrity sha512-cxTZAr+zA1atAJjspA4u4yD+mMZsV+H/fqf2Oa8yn3EZU5ONmFF37QbwLiXd3Zo47GYfEgTPDKQwFWG7wIAsxg==
   dependencies:
     "@types/offscreencanvas" "2019.7.3"
     comlink "^4.4.1"
@@ -5489,6 +5490,11 @@
     "@types/estree" "^1.0.0"
     estree-walker "^2.0.2"
     picomatch "^2.3.1"
+
+"@rollup/rollup-linux-x64-gnu@4.13.0":
+  version "4.13.0"
+  resolved "https://registry.yarnpkg.com/@rollup/rollup-linux-x64-gnu/-/rollup-linux-x64-gnu-4.13.0.tgz#f672f6508f090fc73f08ba40ff76c20b57424778"
+  integrity sha512-yUD/8wMffnTKuiIsl6xU+4IA8UNhQ/f1sAnQebmE/lyQ8abjsVyDkyRkWop0kdMhKMprpNIhPmYlCxgHrPoXoA==
 
 "@rspack/binding-darwin-arm64@1.0.14":
   version "1.0.14"
@@ -13955,7 +13961,7 @@ htmlparser2@^6.1.0:
     domutils "^2.5.2"
     entities "^2.0.0"
 
-htmlparser2@^8.0.0, htmlparser2@^8.0.1:
+htmlparser2@^8.0.1:
   version "8.0.2"
   resolved "https://registry.yarnpkg.com/htmlparser2/-/htmlparser2-8.0.2.tgz#f002151705b383e62433b5cf466f5b716edaec21"
   integrity sha512-GYdjWKDkbRLkZ5geuHs5NY1puJ+PXwP7+fHPRz06Eirsb9ugf6d8kkXav6ADhcODhFFPMIXyxkxSuMf3D6NCFA==
@@ -15487,6 +15493,13 @@ joi@^17.9.2:
     "@sideway/address" "^4.1.5"
     "@sideway/formula" "^3.0.1"
     "@sideway/pinpoint" "^2.0.0"
+
+jpeg-lossless-decoder-js@^2.1.0:
+  version "2.1.2"
+  resolved "https://registry.yarnpkg.com/jpeg-lossless-decoder-js/-/jpeg-lossless-decoder-js-2.1.2.tgz#9ff0ecfcafa6acaee6097c532720bd526278aa3d"
+  integrity sha512-fYf/plymnuKwVw+s8gJ8O/BPw8y8OLaN11MBvEcT05kuy3m45o7BEC4J0JbxMNUYyO+MdK/I/jq0q1gkVYZm2Q==
+  optionalDependencies:
+    "@rollup/rollup-linux-x64-gnu" "4.13.0"
 
 "js-tokens@^3.0.0 || ^4.0.0", js-tokens@^4.0.0:
   version "4.0.0"
@@ -18990,11 +19003,6 @@ parse-path@^7.0.0:
   dependencies:
     protocols "^2.0.0"
 
-parse-srcset@^1.0.2:
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/parse-srcset/-/parse-srcset-1.0.2.tgz#f2bd221f6cc970a938d88556abc589caaaa2bde1"
-  integrity sha512-/2qh0lav6CmI15FzA3i/2Bzk2zCgQhGMkvhOhKNcBVQ1ldgpbfiNTVslmooUmWJcADi1f1kIeynbDRVzNlfR6Q==
-
 parse-url@^8.1.0:
   version "8.1.0"
   resolved "https://registry.yarnpkg.com/parse-url/-/parse-url-8.1.0.tgz#972e0827ed4b57fc85f0ea6b0d839f0d8a57a57d"
@@ -20145,7 +20153,7 @@ postcss@^8.2.1, postcss@^8.3.5, postcss@^8.4.18, postcss@^8.4.23, postcss@^8.4.3
     picocolors "^1.0.0"
     source-map-js "^1.2.0"
 
-postcss@^8.3.11, postcss@^8.4.21, postcss@^8.4.24, postcss@^8.4.26, postcss@^8.4.38, postcss@^8.4.47:
+postcss@^8.4.21, postcss@^8.4.24, postcss@^8.4.26, postcss@^8.4.38, postcss@^8.4.47:
   version "8.4.47"
   resolved "https://registry.yarnpkg.com/postcss/-/postcss-8.4.47.tgz#5bf6c9a010f3e724c503bf03ef7947dcb0fea365"
   integrity sha512-56rxCq7G/XfB4EkXq9Egn5GCqugWvDFjafDOThIdMBsI15iqPqR5r15TfSr1YPYeEI19YeaXMCbY6u88Y76GLQ==
@@ -21859,18 +21867,6 @@ safe-regex-test@^1.0.3:
   version "2.1.2"
   resolved "https://registry.yarnpkg.com/safer-buffer/-/safer-buffer-2.1.2.tgz#44fa161b0187b9549dd84bb91802f9bd8385cd6a"
   integrity sha512-YZo3K82SD7Riyi0E1EQPojLz7kpepnSQI9IyPbHHg1XXXevb5dJI7tpyN2ADxGcQbHG7vcyRHk0cbwqcQriUtg==
-
-sanitize-html@^2.13.1:
-  version "2.13.1"
-  resolved "https://registry.yarnpkg.com/sanitize-html/-/sanitize-html-2.13.1.tgz#b4639b0a09574ab62b1b353cb99b1b87af742834"
-  integrity sha512-ZXtKq89oue4RP7abL9wp/9URJcqQNABB5GGJ2acW1sdO8JTVl92f4ygD7Yc9Ze09VAZhnt2zegeU0tbNsdcLYg==
-  dependencies:
-    deepmerge "^4.2.2"
-    escape-string-regexp "^4.0.0"
-    htmlparser2 "^8.0.0"
-    is-plain-object "^5.0.0"
-    parse-srcset "^1.0.2"
-    postcss "^8.3.11"
 
 sax@^1.2.4:
   version "1.4.1"

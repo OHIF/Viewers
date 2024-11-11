@@ -165,6 +165,10 @@ export default class CustomizationService extends PubSubService {
     this.modeCustomizations.clear();
   }
 
+  public onModeExit(): void {
+    this.onModeEnter();
+  }
+
   public getModeCustomizations(): Map<string, Customization> {
     return this.modeCustomizations;
   }
