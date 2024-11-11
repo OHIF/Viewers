@@ -111,16 +111,14 @@ function commandsModule({
       commandsManager.run(options, optionsToUse);
     },
     updateStoredSegmentationPresentation: ({ displaySet, type }) => {
-      const { setSegmentationPresentation } = useSegmentationPresentationStore.getState();
+      const { addSegmentationPresentationItem } = useSegmentationPresentationStore.getState();
 
       const referencedDisplaySetInstanceUID = displaySet.referencedDisplaySetInstanceUID;
-      setSegmentationPresentation(referencedDisplaySetInstanceUID, [
-        {
-          segmentationId: displaySet.displaySetInstanceUID,
-          hydrated: true,
-          type,
-        },
-      ]);
+      addSegmentationPresentationItem(referencedDisplaySetInstanceUID, {
+        segmentationId: displaySet.displaySetInstanceUID,
+        hydrated: true,
+        type,
+      });
     },
     updateStoredPositionPresentation: ({ viewportId, displaySetInstanceUID }) => {
       const presentations = cornerstoneViewportService.getPresentations(viewportId);

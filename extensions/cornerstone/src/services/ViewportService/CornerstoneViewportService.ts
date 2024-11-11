@@ -763,6 +763,10 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
       });
     }
 
+    if (!volumesNotLoaded.length) {
+      return;
+    }
+
     // This returns the async continuation only
     return this.setVolumesForViewport(viewport, volumeInputArray, presentations);
   }
@@ -1114,8 +1118,8 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
 
     const { segmentationService } = this.servicesManager.services;
 
-    segmentationPresentation.forEach((presentation: SegmentationPresentationItem) => {
-      const { segmentationId, type, hydrated } = presentation;
+    segmentationPresentation.forEach((presentationItem: SegmentationPresentationItem) => {
+      const { segmentationId, type, hydrated } = presentationItem;
 
       if (hydrated) {
         segmentationService.addSegmentationRepresentation(viewport.id, {
