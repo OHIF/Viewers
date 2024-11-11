@@ -2580,10 +2580,10 @@
   resolved "https://registry.yarnpkg.com/@colors/colors/-/colors-1.5.0.tgz#bb504579c1cae923e6576a4f5da43d25f97bdbd9"
   integrity sha512-ooWCrlZP11i8GImSjTHYHLkvFDP48nS4+204nGb1RiX/WXYHmJA2III9/e2DWVabCESdW7hBAEzHRqUn9OUVvQ==
 
-"@cornerstonejs/adapters@^2.1.19":
-  version "2.1.19"
-  resolved "https://registry.yarnpkg.com/@cornerstonejs/adapters/-/adapters-2.1.19.tgz#62af4f453884cbd9ec2d733336b81b30323a5d7e"
-  integrity sha512-PHL+uDyDxxs2jB9HmV+933kRscJx/yLYLgFiDt81tICCfGAIz/8YJMSELuKaWDUyyutz+GCbsqWZHRHi3VKnDA==
+"@cornerstonejs/adapters@^2.2.1":
+  version "2.2.1"
+  resolved "https://registry.yarnpkg.com/@cornerstonejs/adapters/-/adapters-2.2.1.tgz#9bed051a7fd9ca5ad5af3ccb97fbb79862feadc1"
+  integrity sha512-7eIZTN3PO4s95vaLrAAD018bNKsD1w7l0FL+bLv+eqebNHrhBMQQbAfEWuQCueE+tYd1mVDCpNWVDMKMMabHmQ==
   dependencies:
     "@babel/runtime-corejs2" "^7.17.8"
     buffer "^6.0.3"
@@ -2616,32 +2616,33 @@
   resolved "https://registry.yarnpkg.com/@cornerstonejs/codec-openjph/-/codec-openjph-2.4.5.tgz#8690b61a86fa53ef38a70eee9d665a79229517c0"
   integrity sha512-MZCUy8VG0VG5Nl1l58+g+kH3LujAzLYTfJqkwpWI2gjSrGXnP6lgwyy4GmPRZWVoS40/B1LDNALK905cNWm+sg==
 
-"@cornerstonejs/core@^2.1.19":
-  version "2.1.19"
-  resolved "https://registry.yarnpkg.com/@cornerstonejs/core/-/core-2.1.19.tgz#898ecf9348e061a242cb16104cfef443a9690845"
-  integrity sha512-+RVg2kLuqQgnOEzWpy76FRzB1DKYQVLeU76hRLU4E6FJyv5FdIfXb2yVAexgkj5fBBkGpmAfg8JLMqLu1M+aFQ==
+"@cornerstonejs/core@^2.2.1":
+  version "2.2.1"
+  resolved "https://registry.yarnpkg.com/@cornerstonejs/core/-/core-2.2.1.tgz#37cc052d40fffcc093f0f773051787c610d07386"
+  integrity sha512-5ZZcpa7hU+E45jM4MvEJrIFA+WHFaLWIVh9FO1HksJXtkIeBurdYr6R95aOfk7ujkkft2rsgQA29a5Jl8E6aGg==
   dependencies:
     "@kitware/vtk.js" "32.1.0"
     comlink "^4.4.1"
     gl-matrix "^3.4.3"
 
-"@cornerstonejs/dicom-image-loader@^2.1.19":
-  version "2.1.19"
-  resolved "https://registry.yarnpkg.com/@cornerstonejs/dicom-image-loader/-/dicom-image-loader-2.1.19.tgz#1bce495794e90d2f69fef61d247632a19bca57cc"
-  integrity sha512-yRlSPk0Iqt6+dYI07KJnuZ9tA34ARsoitD91IaaivHufWDZG2e2vTV7VazzIyBT7HoLUcAVlopC43bqp1S78Gw==
+"@cornerstonejs/dicom-image-loader@^2.2.1":
+  version "2.2.1"
+  resolved "https://registry.yarnpkg.com/@cornerstonejs/dicom-image-loader/-/dicom-image-loader-2.2.1.tgz#01f38061cd128c56b00fb5a3c47488880fb0f6bf"
+  integrity sha512-yFO6K4vFZqG1dkUBpVSsQhOxS6nkb7uKEETwobhroAs8lIIfQ8141R8u2DfxBTIY7o9uJuYpabYzlhbyUYr4eA==
   dependencies:
     "@cornerstonejs/codec-charls" "^1.2.3"
     "@cornerstonejs/codec-libjpeg-turbo-8bit" "^1.2.2"
     "@cornerstonejs/codec-openjpeg" "^1.2.2"
     "@cornerstonejs/codec-openjph" "^2.4.5"
     comlink "^4.4.1"
+    jpeg-lossless-decoder-js "^2.1.0"
     pako "^2.0.4"
     uuid "^9.0.0"
 
-"@cornerstonejs/tools@^2.1.19":
-  version "2.1.19"
-  resolved "https://registry.yarnpkg.com/@cornerstonejs/tools/-/tools-2.1.19.tgz#f0c334cd7750f3c27ec31f661273561ee784f9af"
-  integrity sha512-WQwf4W8vY55+34k1LiOjetnDhW608XLZI9/IdTB9H0WoeqKij89anCpduFYOllwqUQpSaH8t5J/b7kWQc3PkSw==
+"@cornerstonejs/tools@^2.2.1":
+  version "2.2.1"
+  resolved "https://registry.yarnpkg.com/@cornerstonejs/tools/-/tools-2.2.1.tgz#a6d34c39c330927c485e4af8b4c99026226249e4"
+  integrity sha512-cxTZAr+zA1atAJjspA4u4yD+mMZsV+H/fqf2Oa8yn3EZU5ONmFF37QbwLiXd3Zo47GYfEgTPDKQwFWG7wIAsxg==
   dependencies:
     "@types/offscreencanvas" "2019.7.3"
     comlink "^4.4.1"
@@ -5489,6 +5490,11 @@
     "@types/estree" "^1.0.0"
     estree-walker "^2.0.2"
     picomatch "^2.3.1"
+
+"@rollup/rollup-linux-x64-gnu@4.13.0":
+  version "4.13.0"
+  resolved "https://registry.yarnpkg.com/@rollup/rollup-linux-x64-gnu/-/rollup-linux-x64-gnu-4.13.0.tgz#f672f6508f090fc73f08ba40ff76c20b57424778"
+  integrity sha512-yUD/8wMffnTKuiIsl6xU+4IA8UNhQ/f1sAnQebmE/lyQ8abjsVyDkyRkWop0kdMhKMprpNIhPmYlCxgHrPoXoA==
 
 "@rspack/binding-darwin-arm64@1.0.14":
   version "1.0.14"
@@ -15487,6 +15493,13 @@ joi@^17.9.2:
     "@sideway/address" "^4.1.5"
     "@sideway/formula" "^3.0.1"
     "@sideway/pinpoint" "^2.0.0"
+
+jpeg-lossless-decoder-js@^2.1.0:
+  version "2.1.2"
+  resolved "https://registry.yarnpkg.com/jpeg-lossless-decoder-js/-/jpeg-lossless-decoder-js-2.1.2.tgz#9ff0ecfcafa6acaee6097c532720bd526278aa3d"
+  integrity sha512-fYf/plymnuKwVw+s8gJ8O/BPw8y8OLaN11MBvEcT05kuy3m45o7BEC4J0JbxMNUYyO+MdK/I/jq0q1gkVYZm2Q==
+  optionalDependencies:
+    "@rollup/rollup-linux-x64-gnu" "4.13.0"
 
 "js-tokens@^3.0.0 || ^4.0.0", js-tokens@^4.0.0:
   version "4.0.0"
