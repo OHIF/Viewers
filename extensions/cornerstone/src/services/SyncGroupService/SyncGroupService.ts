@@ -148,6 +148,11 @@ export default class SyncGroupService {
       const { type, target = true, source = true, options = {}, id = type } = syncGroupObj;
 
       const synchronizer = this._getOrCreateSynchronizer(type, id, options);
+
+      if (!synchronizer) {
+        return;
+      }
+
       synchronizer.setOptions(viewportId, options);
 
       const viewportInfo = { viewportId, renderingEngineId };

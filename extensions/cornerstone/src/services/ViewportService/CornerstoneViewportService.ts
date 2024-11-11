@@ -763,9 +763,11 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
       });
     }
 
-    if (!volumesNotLoaded.length) {
-      return;
-    }
+    // It's crucial not to return here because the volume may be loaded,
+    // but the viewport also needs to set the volume.
+    // if (!volumesNotLoaded.length) {
+    //   return;
+    // }
 
     // This returns the async continuation only
     return this.setVolumesForViewport(viewport, volumeInputArray, presentations);
