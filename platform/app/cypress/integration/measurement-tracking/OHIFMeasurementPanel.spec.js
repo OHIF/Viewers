@@ -8,7 +8,7 @@ describe('OHIF Measurement Panel', function () {
     cy.waitDicomImage();
   });
 
-  it.only('checks if Measurements right panel can be hidden/displayed', function () {
+  it('checks if Measurements right panel can be hidden/displayed', function () {
     cy.get('@measurementsPanel').should('exist');
     cy.get('@measurementsPanel').should('be.visible');
 
