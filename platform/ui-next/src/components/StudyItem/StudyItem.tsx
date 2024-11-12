@@ -27,6 +27,7 @@ const StudyItem = ({
       collapsible
       onClick={onClick}
       onKeyDown={() => {}}
+      className="flex-shrink-0"
       role="button"
       tabIndex={0}
       defaultValue={isActive ? 'study-item' : undefined}
