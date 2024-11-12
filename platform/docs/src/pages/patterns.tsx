@@ -2,39 +2,9 @@ import React, { useState } from 'react';
 import '../css/custom.css';
 
 import Layout from '@theme/Layout';
-import { Label } from '../../../ui-next/src/components/Label';
-import { Input } from '../../../ui-next/src/components/Input';
-import { Separator } from '../../../ui-next/src/components/Separator';
-import { Tabs, TabsList, TabsTrigger } from '../../../ui-next/src/components/Tabs';
-import {
-  Select,
-  SelectTrigger,
-  SelectContent,
-  SelectItem,
-  SelectValue,
-} from '../../../ui-next/src/components/Select';
 import { Button } from '../../../ui-next/src/components/Button';
-import { Switch } from '../../../ui-next/src/components/Switch';
-import { Checkbox } from '../../../ui-next/src/components/Checkbox';
-import { Toggle } from '../../../ui-next/src/components/Toggle';
-import { Slider } from '../../../ui-next/src/components/Slider';
-import { ScrollArea } from '../../../ui-next/src/components/ScrollArea';
-import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuItem,
-} from '../../../ui-next/src/components/DropdownMenu';
 import { Icons } from '../../../ui-next/src/components/Icons';
-import { Toaster, toast } from '../../../ui-next/src/components/Sonner';
-import {
-  Card,
-  CardHeader,
-  CardFooter,
-  CardTitle,
-  CardDescription,
-  CardContent,
-} from '../../../ui-next/src/components/Card';
+import { Card, CardHeader, CardTitle, CardDescription } from '../../../ui-next/src/components/Card';
 
 interface ShowcaseRowProps {
   title: string;
@@ -44,91 +14,11 @@ interface ShowcaseRowProps {
 }
 
 export default function ComponentShowcase() {
-  // Function to open links in a new window
-  const openLinkInNewWindow = url => {
-    window.open(url, '_blank', 'noopener,noreferrer');
-  };
-
-  // Handlers to trigger different types of toasts
-  const triggerSuccess = () => {
-    toast.success('This is a success toast!');
-  };
-
-  const triggerError = () => {
-    toast.error('This is an error toast!');
-  };
-
-  const triggerInfo = () => {
-    toast.info('This is an info toast!');
-  };
-
-  const triggerWarning = () => {
-    toast.warning('This is a warning toast!');
-  };
-
-  // Handler to trigger a toast.promise example
-  const triggerPromiseToast = () => {
-    const promise = () =>
-      new Promise<{ name: string }>(resolve =>
-        setTimeout(() => resolve({ name: 'Segmentation 1' }), 3000)
-      );
-
-    toast.promise(promise(), {
-      loading: 'Loading Segmentation...',
-      success: data => `${data.name} has been added`,
-      error: 'Error',
-    });
-  };
-
-  // Handler to trigger a toast with description
-  const triggerDescriptionToast = () => {
-    toast.success('Success heading', {
-      description: 'This is a detailed description of the success message.',
-    });
-  };
-
-  // Handler to trigger a toast with an action button
-  const triggerActionButtonToast = () => {
-    toast.info('No active segmentation detected', {
-      description: 'Create a segmentation before using the Brush',
-    });
-  };
-
-  // Handler to trigger a toast with a cancel button
-  const triggerCancelButtonToast = () => {
-    toast.error('No active segmentation detected', {
-      description: 'Create a segmentation before using the Brush',
-    });
-  };
-
-  // Handler to trigger a toast with both action and cancel buttons
-  const triggerCombinedToast = () => {
-    toast.warning('Warning!', {
-      description: 'This is a warning with both action and cancel buttons.',
-      action: (
-        <Button
-          size="sm"
-          variant="ghost"
-          onClick={() => alert('Retry action clicked')}
-        >
-          Retry
-        </Button>
-      ),
-      cancel: (
-        <Button
-          size="sm"
-          variant="ghost"
-          onClick={() => toast.dismiss()}
-        >
-          Cancel
-        </Button>
-      ),
-    });
-  };
-
-  // Handler to trigger a loading toast using Toaster's default loading icon
-  const showLoadingToast = () => {
-    toast.loading('Loading your data...');
+  // Update function to handle paths correctly
+  const openLinkInNewWindow = (url: string) => {
+    // Remove leading dot if present to fix production paths
+    const cleanUrl = url.startsWith('.') ? url.substring(1) : url;
+    window.open(cleanUrl, '_blank', 'noopener,noreferrer');
   };
 
   return (
@@ -203,7 +93,7 @@ export default function ComponentShowcase() {
                 </div>
                 <Button
                   variant="default"
-                  onClick={() => openLinkInNewWindow('./patterns/patterns-segmentation')}
+                  onClick={() => openLinkInNewWindow('/patterns/patterns-segmentation')}
                 >
                   Launch Segmentation Example
                 </Button>
@@ -233,7 +123,7 @@ aaa
                 </div>
                 <Button
                   variant="default"
-                  onClick={() => openLinkInNewWindow('./patterns/patterns-measurements')}
+                  onClick={() => openLinkInNewWindow('/patterns/patterns-measurements')}
                 >
                   Launch Measurements Example
                 </Button>
