@@ -23,7 +23,7 @@ async function run() {
     console.log('Branch: release');
     await fs.writeFile('./commit.txt', currentCommitHash);
     const version = await fs.readFile('./version.txt', 'utf-8');
-    const nextVersion = version.trim();
+    nextVersion = version.trim();
     console.log('Version from version.txt:', nextVersion);
   } else {
     console.log('Branch: master');
