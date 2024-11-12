@@ -1,7 +1,7 @@
 {
   "name": "@externals/dicom-microscopy-viewer",
   "description": "External reference to dicom-microscopy-viewer",
-  "version": "3.9.0-beta.111",
+  "version": "3.10.0-beta.0",
   "license": "MIT",
   "dependencies": {
     "dicom-microscopy-viewer": "^0.46.1"
