@@ -70,21 +70,23 @@ const StudyBrowser = ({
   };
 
   return (
-    <div data-cy={'studyBrowser-panel'}>
-      {showSettings && (
-        <div className="w-100 bg-bkg-low flex h-[48px] items-center justify-center gap-[10px] px-[8px] py-[10px]">
-          <>
-            <StudyBrowserViewOptions
-              tabs={tabs}
-              onSelectTab={onClickTab}
-              activeTabName={activeTabName}
-            />
-            <StudyBrowserSort servicesManager={servicesManager} />
-          </>
-        </div>
-      )}
-
-      <div className="ohif-scrollbar invisible-scrollbar bg-bkg-low flex flex-1 flex-col gap-[4px] overflow-auto">
+    <div
+      className="ohif-scrollbar invisible-scrollbar bg-bkg-low flex flex-1 flex-col gap-[4px] overflow-auto"
+      data-cy={'studyBrowser-panel'}
+    >
+      <div>
+        {showSettings && (
+          <div className="w-100 bg-bkg-low flex h-[48px] items-center justify-center gap-[10px] px-[8px] py-[10px]">
+            <>
+              <StudyBrowserViewOptions
+                tabs={tabs}
+                onSelectTab={onClickTab}
+                activeTabName={activeTabName}
+              />
+              <StudyBrowserSort servicesManager={servicesManager} />
+            </>
+          </div>
+        )}
         {getTabContent()}
       </div>
     </div>
