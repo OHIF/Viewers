@@ -41,4 +41,6 @@ RUN chmod -R 777 /app/
 ENTRYPOINT ["/app/entrypoint.sh"]
 CMD ["nginx", "-g", "daemon off;"]
 
-#docker build -f Dockerfile-MIB-AIR -t viewer-test:latest .
+
+# Use the following command to build the image in macOS
+#docker build --platform linux/amd64 -f Dockerfile-MIB-AIR -t viewer-test:latest .
