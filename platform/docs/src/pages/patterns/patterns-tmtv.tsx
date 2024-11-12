@@ -27,7 +27,6 @@ import { Switch } from '../../../../ui-next/src/components/Switch';
 import { Label } from '../../../../ui-next/src/components/Label';
 import { Input } from '../../../../ui-next/src/components/Input';
 import { Tabs, TabsList, TabsTrigger } from '../../../../ui-next/src/components/Tabs';
-import { TooltipProvider } from '../../../../ui-next/src';
 import BrowserOnly from '@docusaurus/BrowserOnly';
 
 interface DataItem {
