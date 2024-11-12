@@ -233,7 +233,9 @@ input[type='number'] {
 }
 
 .navbar__item svg {
-  margin-left: 5px;
+  margin-right: 5px;
+  display: inline-block;
+  vertical-align: middle;
 }
 
 /* stylelint-disable docusaurus/copyright-header */
