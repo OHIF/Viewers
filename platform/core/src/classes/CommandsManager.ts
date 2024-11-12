@@ -19,8 +19,13 @@ import { Command, Commands, ComplexCommand } from '../types/Command';
  * to extend this class, please check it's source before adding new methods.
  */
 export class CommandsManager {
-  constructor({} = {}) {
-    this.contexts = {};
+  private contexts = {};
+  // Has the current context priorities
+  private contextPriorities = new Map<string, number>();
+  private contextOrder: string[];
+
+  constructor(_options = {}) {
+    // No-op
   }
 
   /**
@@ -33,7 +38,7 @@ export class CommandsManager {
    * @param {string} contextName - Namespace for commands
    * @returns {undefined}
    */
-  createContext(contextName) {
+  createContext(contextName, priority?: number) {
     if (!contextName) {
       return;
     }
@@ -43,6 +48,20 @@ export class CommandsManager {
     }
 
     this.contexts[contextName] = {};
+    priority ??= this.contextPriorities.size + 1;
+    this.setContextPriority(contextName, priority);
+  }
+
+  /**
+   * Sets the current context priority, so that user specified modules can
+   * be run in the order
+   */
+  public setContextPriority(contextName: string, priority: number) {
+    this.contextPriorities.set(contextName, priority);
+    const contextOrder = [...this.contextPriorities.entries()].filter(it => it[1] >= 0);
+    // Order by decreasing priority
+    contextOrder.sort((a, b) => b[1] - a[1]);
+    this.contextOrder = contextOrder.map(it => it[0]);
   }
 
   /**
@@ -104,34 +123,22 @@ export class CommandsManager {
    *
    * @method
    * @param {String} commandName - Command to find
-   * @param {String} [contextName] - Specific command to look in. Defaults to current activeContexts
+   * @param {String} [contextName] - Specific command to look in. Defaults to current activeContexts.
+   *                 Also allows an array of contexts to look in.
    */
-  getCommand = (commandName: string, contextName?: string) => {
+  getCommand = (commandName: string, contextName: string | string[] = this.contextOrder) => {
     const contexts = [];
 
-    if (contextName) {
+    if (Array.isArray(contextName)) {
+      contexts.push(...contextName.map(name => this.getContext(name)).filter(it => !!it));
+    } else if (contextName) {
       const context = this.getContext(contextName);
       if (context) {
         contexts.push(context);
       }
-    } else {
-      Object.keys(this.contexts).forEach(contextName => {
-        contexts.push(this.getContext(contextName));
-      });
     }
 
-    if (contexts.length === 0) {
-      return;
-    }
-
-    let foundCommand;
-    contexts.forEach(context => {
-      if (context[commandName]) {
-        foundCommand = context[commandName];
-      }
-    });
-
-    return foundCommand;
+    return contexts.find(context => !!context[commandName])?.[commandName];
   };
 
   /**
@@ -141,7 +148,7 @@ export class CommandsManager {
    * @param {Object} [options={}] - Extra options to pass the command. Like a mousedown event
    * @param {String} [contextName]
    */
-  public runCommand(commandName: string, options = {}, contextName?: string) {
+  public runCommand(commandName: string, options = {}, contextName?: string | string[]) {
     const definition = this.getCommand(commandName, contextName);
     if (!definition) {
       log.warn(`Command "${commandName}" not found in current context`);

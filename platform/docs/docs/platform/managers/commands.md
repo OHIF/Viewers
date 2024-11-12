@@ -7,12 +7,21 @@ sidebar_label: Commands Manager
 ## Overview
 
 
-The `CommandsManager` is a class defined in the `@ohif/core` project. The Commands Manager tracks named commands (or functions) that are scoped to
+The `CommandsManager` is a class defined in the `@ohif/core` project.
+The Commands Manager tracks named commands (or functions) that are scoped to
 a context. When we attempt to run a command with a given name, we look for it
-in our active contexts. If found, we run the command, passing in any application
+in our active contexts, in the order specified.
+If found, we run the command, passing in any application
 or call specific data specified in the command's definition.
 
-> Note: A single instance of `CommandsManager` should be defined in the consuming application, and it is used when constructing the `ExtensionManager`.
+The order specified is, by default, the reverse order of registration - that is,
+last registered wins.  That allows adding next extensions and having their commands
+take priority.  This can be overridden on a per-context basis by setting the priorities
+specifically using setContextPriority.   High values are first in the list, and negative
+values are excluded.
+
+> Note: A single instance of `CommandsManager` should be defined in the consuming
+application, and it is used when constructing the `ExtensionManager`.
 
 A `simplified skeleton` of the `CommandsManager` is shown below:
 
