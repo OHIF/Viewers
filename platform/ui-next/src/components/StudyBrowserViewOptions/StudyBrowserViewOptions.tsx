@@ -15,7 +15,7 @@ export function StudyBrowserViewOptions({ tabs, onSelectTab, activeTabName }: wi
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger className="border-inputfield-main focus:border-inputfield-main flex h-[26px] w-[125px] items-center justify-start rounded border bg-black p-2 text-sm text-white">
+      <DropdownMenuTrigger className="border-inputfield-main focus:border-inputfield-main flex h-[26px] w-[125px] items-center justify-start rounded border bg-black p-2 text-base text-white">
         {activeTab?.label}
       </DropdownMenuTrigger>
       <DropdownMenuContent className="bg-black">

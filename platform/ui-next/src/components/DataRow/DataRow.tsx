@@ -199,14 +199,14 @@ const DataRow: React.FC<DataRowProps> = ({
         {/* Hover Overlay */}
         <div className="bg-primary/20 pointer-events-none absolute inset-0 opacity-0 transition-opacity group-hover:opacity-100"></div>
 
-        {/* Number Box */}
-        <div
-          className={`flex h-7 max-h-7 w-7 flex-shrink-0 items-center justify-center rounded-l border-r border-black text-sm ${
-            isSelected ? 'bg-highlight text-black' : 'bg-muted text-muted-foreground'
-          } overflow-hidden`}
-        >
-          {number}
-        </div>
+          {/* Number Box */}
+          <div
+            className={`flex h-7 max-h-7 w-7 flex-shrink-0 items-center justify-center rounded-l border-r border-black text-base ${
+              isSelected ? 'bg-highlight text-black' : 'bg-muted text-muted-foreground'
+            } overflow-hidden`}
+          >
+            {number}
+          </div>
 
         {/* Color Circle (Optional) */}
         {colorHex && (
@@ -224,7 +224,7 @@ const DataRow: React.FC<DataRowProps> = ({
             <Tooltip>
               <TooltipTrigger asChild>
                 <span
-                  className={`cursor-default text-sm ${
+                  className={`cursor-default text-base ${
                     isSelected ? 'text-highlight' : 'text-muted-foreground'
                   } [overflow:hidden] [display:-webkit-box] [-webkit-line-clamp:2] [-webkit-box-orient:vertical]`}
                 >
@@ -240,7 +240,7 @@ const DataRow: React.FC<DataRowProps> = ({
             </Tooltip>
           ) : (
             <span
-              className={`text-sm ${
+              className={`text-base ${
                 isSelected ? 'text-highlight' : 'text-muted-foreground'
               } [overflow:hidden] [display:-webkit-box] [-webkit-line-clamp:2] [-webkit-box-orient:vertical]`}
             >
@@ -315,7 +315,7 @@ const DataRow: React.FC<DataRowProps> = ({
 
       {details && details.primary?.length > 0 && (
         <div className="ml-7 px-2 py-2">
-          <div className="text-secondary-foreground text-sm leading-normal">
+          <div className="text-secondary-foreground text-base leading-normal">
             {renderDetails(details.primary)}
           </div>
         </div>

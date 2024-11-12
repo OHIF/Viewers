@@ -75,7 +75,7 @@ export default function SegmentationPanel() {
   }
 
   return (
-    <div className="my-4 flex h-full w-full max-w-6xl justify-end bg-black py-6">
+    <div className="px-auto flex min-h-screen w-full justify-center bg-black py-12">
       <div className="w-64 space-y-0">
         <TooltipProvider>
           <Accordion

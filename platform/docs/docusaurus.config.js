@@ -158,12 +158,6 @@ module.exports = {
         },
         items: [
           {
-            href: 'https://ohif.org/showcase',
-            label: 'Showcase',
-            target: '_blank',
-            position: 'left',
-          },
-          {
             position: 'left',
             to: '/',
             activeBaseRegex: '^(/next/|/)$',
@@ -171,24 +165,27 @@ module.exports = {
             label: 'Docs',
           },
           {
+            to: '/components',
+            label: 'Components',
+            position: 'left',
+          },
+          {
+            href: 'https://ohif.org/showcase',
+            label: 'Showcase',
+            target: '_blank',
+            position: 'left',
+          },
+          {
             href: 'https://ohif.org/collaborate',
             label: 'Collaborate',
             target: '_blank',
             position: 'left',
           },
-          /*
-          {
-            to: '/playground',
-            label: 'UI Playground',
-            position: 'left',
-            className: 'new-badge',
-          },
-          */
           {
             to: '/help',
             //activeBaseRegex: '(^/help$)|(/help)',
             label: 'Help',
-            position: 'right',
+            position: 'left',
           },
           {
             type: 'docsVersionDropdown',

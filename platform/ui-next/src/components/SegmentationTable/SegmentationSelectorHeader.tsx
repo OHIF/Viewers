@@ -138,7 +138,7 @@ export const SegmentationSelectorHeader: React.FC<{ children?: React.ReactNode }
           ))}
         </SelectContent>
       </Select>
-      <Tooltip>
+      <Tooltip delayDuration={100}>
         <TooltipTrigger asChild>
           <Button
             variant="ghost"

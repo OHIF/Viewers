@@ -2865,4 +2865,12 @@ export const Icons = {
   'icon-chevron-patient': (props: IconProps) => Icons.ChevronPatient(props),
   info: (props: IconProps) => Icons.Info(props),
   settings: (props: IconProps) => Icons.Settings(props),
+
+  /** Adds an icon to the set of icons */
+  addIcon: (name: string, icon) => {
+    if (Icons[name]) {
+      console.warn('Replacing icon', name);
+    }
+    Icons[name] = icon;
+  },
 };

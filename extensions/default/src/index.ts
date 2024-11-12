@@ -36,6 +36,7 @@ import promptSaveReport from './utils/promptSaveReport';
 import promptLabelAnnotation from './utils/promptLabelAnnotation';
 import usePatientInfo from './hooks/usePatientInfo';
 import { PanelStudyBrowserHeader } from './Panels/StudyBrowser/PanelStudyBrowserHeader';
+import * as utils from './utils';
 
 const defaultExtension: Types.Extensions.Extension = {
   /**
@@ -100,4 +101,5 @@ export {
   colorPickerDialog,
   usePatientInfo,
   PanelStudyBrowserHeader,
+  utils,
 };
