@@ -666,3 +666,7 @@ html[data-theme='dark'] .markdown hr {
   visibility: visible;
   transform: translateY(0);
 }
+
+.theme-doc-version-banner {
+  display: none;
+}
