@@ -36,7 +36,7 @@ const StudyListFilter = ({
             <div className="mb-5 flex flex-row justify-between">
               <div className="flex min-w-[1px] shrink flex-row items-center gap-6">
                 <Typography
-                  variant="h4"
+                  variant="h6"
                   className="text-white"
                 >
                   {t('StudyList')}
@@ -69,14 +69,14 @@ const StudyListFilter = ({
                 )}
 
                 <Typography
-                  variant="h4"
+                  variant="h6"
                   className="mr-2"
                   data-cy={'num-studies'}
                 >
                   {numOfStudies > 100 ? '>100' : numOfStudies}
                 </Typography>
                 <Typography
-                  variant="h4"
+                  variant="h6"
                   className="text-primary-light"
                 >
                   {`${t('Studies')} `}

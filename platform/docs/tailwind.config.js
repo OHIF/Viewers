@@ -22,10 +22,12 @@ module.exports = {
       base: '0.8125rem', // 13px
       lg: '0.875rem', // 14px
       xl: '1rem', // 16px
-      '2xl': '1.125rem', // 18px
-      '3xl': '1.375rem', // 22px
-      '4xl': '1.5rem', // 24px
-      '5xl': '1.875rem', // 30px
+      // 2xl and above will be updated in an upcoming version
+      '2xl': '1.5rem',
+      '3xl': '1.875rem',
+      '4xl': '2.25rem',
+      '5xl': '3rem',
+      '6xl': '4rem',
     },
     fontWeight: {
       hairline: '100',
