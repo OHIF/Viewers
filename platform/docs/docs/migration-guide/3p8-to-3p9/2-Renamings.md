@@ -26,3 +26,8 @@ Find and replace
     @ohif/extension-default.panelModule.measurements
   </TabItem>
 </Tabs>
+
+## addIcon from ui
+
+The addIcon from the ui package has had a version added in the default extension as
+`utils.addIcon` which adds to both `ui` and `ui-next`.
