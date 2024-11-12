@@ -162,7 +162,7 @@ function PanelMeasurementTableTracking({
                           },
                           {
                             id: 'yes',
-                            text: 'Yes',
+                            text: 'Delete All',
                             type: ButtonEnums.type.primary,
                             classes: ['delete-all-yes-button'],
                           },
