@@ -1,6 +1,6 @@
 {
   "name": "@ohif/mode-basic-dev-mode",
-  "version": "3.9.0-beta.111",
+  "version": "3.10.0-beta.0",
   "description": "Basic OHIF Viewer Using Cornerstone",
   "author": "OHIF",
   "license": "MIT",
@@ -31,12 +31,12 @@
     "test:unit:ci": "jest --ci --runInBand --collectCoverage --passWithNoTests"
   },
   "peerDependencies": {
-    "@ohif/core": "3.9.0-beta.111",
-    "@ohif/extension-cornerstone": "3.9.0-beta.111",
-    "@ohif/extension-cornerstone-dicom-sr": "3.9.0-beta.111",
-    "@ohif/extension-default": "3.9.0-beta.111",
-    "@ohif/extension-dicom-pdf": "3.9.0-beta.111",
-    "@ohif/extension-dicom-video": "3.9.0-beta.111"
+    "@ohif/core": "3.10.0-beta.0",
+    "@ohif/extension-cornerstone": "3.10.0-beta.0",
+    "@ohif/extension-cornerstone-dicom-sr": "3.10.0-beta.0",
+    "@ohif/extension-default": "3.10.0-beta.0",
+    "@ohif/extension-dicom-pdf": "3.10.0-beta.0",
+    "@ohif/extension-dicom-video": "3.10.0-beta.0"
   },
   "dependencies": {
     "@babel/runtime": "^7.20.13",
