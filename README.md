@@ -142,13 +142,11 @@ Here is a schematic representation of our development workflow:
 
 ### Getting Started
 
-1. [Fork this repository][how-to-fork]
-2. [Clone your forked repository][how-to-clone]
-   - `git clone https://github.com/YOUR-USERNAME/Viewers.git`
-3. Navigate to the cloned project's directory
-4. Add this repo as a `remote` named `upstream`
-   - `git remote add upstream https://github.com/OHIF/Viewers.git`
-5. `yarn install` to restore dependencies and link projects
+1. Clone the repository
+   - `git clone https://github.com/OHIF/Viewers.git`
+2. Navigate to the cloned project's directory
+3. `yarn install` to restore dependencies and link projects
+4. `yarn dev` to start the development server
 
 #### To Develop
 
@@ -168,7 +166,7 @@ These commands are available from the root directory. Each project directory
 also supports a number of commands that can be found in their respective
 `README.md` and `package.json` files.
 
-| Yarn Commands                | Description                                                   |
+| Commands                | Description                                                   |
 | ---------------------------- | ------------------------------------------------------------- |
 | **Develop**                  |                                                               |
 | `dev` or `start`             | Default development experience for Viewer                     |
