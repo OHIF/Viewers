@@ -2,7 +2,6 @@
 # files from Docker (can't COPY or ADD these)
 
 # Output
-dist/
 build/
 
 # Dependencies

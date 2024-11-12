@@ -31,7 +31,7 @@ RUN rm -rf /usr/share/nginx/html/*
 RUN rm /etc/nginx/conf.d/default.conf
 COPY .docker/Viewer-v3.x/default.conf /etc/nginx/conf.d
 COPY .docker/Viewer-v3.x /app
-COPY --from=builder /app/platform/app/dist /usr/share/nginx/html
+COPY --from=builder /app/platform/viewer/dist /usr/share/nginx/html
 
 # Copy the entrypoint script
 RUN chmod -R 777 /usr/share/nginx/html/
@@ -40,3 +40,5 @@ RUN chmod -R 777 /app/
 # Start the application
 ENTRYPOINT ["/app/entrypoint.sh"]
 CMD ["nginx", "-g", "daemon off;"]
+
+#docker build -f Dockerfile-MIB-AIR -t viewer-test:latest .
