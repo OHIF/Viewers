@@ -19,7 +19,7 @@ const ohif = {
 };
 
 const cornerstone = {
-  measurements: '@ohif/extension-cornerstone.panelModule.measurements',
+  measurements: '@ohif/extension-cornerstone.panelModule.panelMeasurement',
   segmentation: '@ohif/extension-cornerstone.panelModule.panelSegmentation',
 };
 
@@ -181,7 +181,7 @@ function modeFactory({ modeConfiguration }) {
             id: ohif.layout,
             props: {
               leftPanels: [tracked.thumbnailList],
-              rightPanels: [cornerstone.segmentation, tracked.measurements],
+              rightPanels: [cornerstone.segmentation, cornerstone.measurements],
               rightPanelClosed: true,
               viewports: [
                 {
