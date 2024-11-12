@@ -1,6 +1,6 @@
 {
   "name": "@ohif/extension-cornerstone-dynamic-volume",
-  "version": "3.9.0-beta.109",
+  "version": "3.9.0-beta.110",
   "description": "OHIF extension for 4D volumes data",
   "author": "OHIF",
   "license": "MIT",
@@ -29,11 +29,11 @@
     "test:unit:ci": "jest --ci --runInBand --collectCoverage --passWithNoTests"
   },
   "peerDependencies": {
-    "@ohif/core": "3.9.0-beta.109",
-    "@ohif/extension-cornerstone": "3.9.0-beta.109",
-    "@ohif/extension-default": "3.9.0-beta.109",
-    "@ohif/i18n": "3.9.0-beta.109",
-    "@ohif/ui": "3.9.0-beta.109",
+    "@ohif/core": "3.9.0-beta.110",
+    "@ohif/extension-cornerstone": "3.9.0-beta.110",
+    "@ohif/extension-default": "3.9.0-beta.110",
+    "@ohif/i18n": "3.9.0-beta.110",
+    "@ohif/ui": "3.9.0-beta.110",
     "dcmjs": "*",
     "dicom-parser": "^1.8.21",
     "hammerjs": "^2.0.8",
