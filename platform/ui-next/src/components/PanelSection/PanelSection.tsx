@@ -34,7 +34,7 @@ export const PanelSection: React.FC<PanelSectionProps> & {
       type="single"
       collapsible
       defaultValue={defaultOpen ? 'item' : undefined}
-      className={cn('overflow-hidden', className)}
+      className={cn('flex-shrink-0 overflow-hidden', className)}
     >
       <AccordionItem
         value="item"
