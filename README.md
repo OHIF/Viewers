@@ -166,7 +166,7 @@ These commands are available from the root directory. Each project directory
 also supports a number of commands that can be found in their respective
 `README.md` and `package.json` files.
 
-| Yarn Commands                | Description                                                   |
+| Commands                | Description                                                   |
 | ---------------------------- | ------------------------------------------------------------- |
 | **Develop**                  |                                                               |
 | `dev` or `start`             | Default development experience for Viewer                     |
