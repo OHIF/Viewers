@@ -261,75 +261,7 @@ export default function ComponentShowcase() {
             title="Data Row"
             description="A selectable row with action menu options and visibility toggle. Color, Secondary details, and Image Series are optional to display."
             code={`
-import React, { useState } from 'react';
-import { DataRow } from '../../../ui-next/src/components/DataRow';
-import { Button } from '../../../ui-next/src/components/Button';
-import { Icons } from '../../../ui-next/src/components/Icons';
-
-const DataRowExample = () => {
-  const [selectedRowId, setSelectedRowId] = useState<string | null>(null);
-
-  const handleAction = (id: string, action: string) => {
-    console.log(\`Action "\${action}" triggered for item with id: \${id}\`);
-    // Implement actual action logic here
-  };
-
-  const handleRowSelect = (id: string) => {
-    setSelectedRowId(prevSelectedId => (prevSelectedId === id ? null : id));
-  };
-
-  const mockData = [
-    {
-      id: 1,
-      title: 'Segment 1',
-      description: 'Description for Segment 1',
-      optionalField: 'Optional Info 1',
-      colorHex: '#FF5733',
-      details: 'Detailed information about Segment 1',
-      series: 'Series A',
-    },
-    {
-      id: 2,
-      title: 'Segment 2',
-      description: 'Description for Segment 2',
-      optionalField: 'Optional Info 2',
-      colorHex: '#33C1FF',
-      details: 'Detailed information about Segment 2',
-      series: 'Series B',
-    },
-    // Add more mock items as needed
-  ];
-
-  const actionOptionsMap = {
-    'ROI Tools': ['Edit', 'Delete', 'View'],
-  };
-
-  return (
-    <div className="space-y-px">
-      {mockData.map((item, index) => {
-        const compositeId = \`ROI Tools-\${item.id}-panel\`; // Ensure unique composite ID
-        return (
-          <DataRow
-            key={\`panel-\${compositeId}\`} // Prefix to ensure uniqueness
-            number={index + 1}
-            title={item.title}
-            description={item.description}
-            optionalField={item.optionalField}
-            colorHex={item.colorHex}
-            details={item.details}
-            series={item.series}
-            actionOptions={actionOptionsMap['ROI Tools'] || ['Action']}
-            onAction={(action: string) => handleAction(compositeId, action)}
-            isSelected={selectedRowId === compositeId}
-            onSelect={() => handleRowSelect(compositeId)}
-          />
-        );
-      })}
-    </div>
-  );
-};
-
-export default DataRowExample;
+Example code coming soon.
             `}
           >
             {/* Render the DataRowExample component */}
@@ -580,28 +512,7 @@ export default DataRowExample;
             title="Toast"
             description="A toast notification displays temporary feedback messages to users above the current UI. Notifications stack into one unit after multiple cascading notifications."
             code={`
-import { toast } from "sonner"
-
-import { Button } from "@/components/ui/button"
-
-export function SonnerDemo() {
-  return (
-    <Button
-      variant="outline"
-      onClick={() =>
-        toast("Event has been created", {
-          description: "Sunday, December 03, 2023 at 9:00 AM",
-          action: {
-            label: "Undo",
-            onClick: () => console.log("Undo"),
-          },
-        })
-      }
-    >
-      Show Toast
-    </Button>
-  )
-}
+Example code coming soon.
 
               `}
           >

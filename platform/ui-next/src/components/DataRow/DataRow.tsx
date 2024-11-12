@@ -62,7 +62,7 @@ const DataRow: React.FC<DataRowProps> = ({
 
           {/* Number Box */}
           <div
-            className={`flex h-7 max-h-7 w-7 flex-shrink-0 items-center justify-center rounded-l border-r border-black text-sm ${
+            className={`flex h-7 max-h-7 w-7 flex-shrink-0 items-center justify-center rounded-l border-r border-black text-base ${
               isSelected ? 'bg-highlight text-black' : 'bg-muted text-muted-foreground'
             } overflow-hidden`}
           >
@@ -85,7 +85,7 @@ const DataRow: React.FC<DataRowProps> = ({
               <Tooltip>
                 <TooltipTrigger asChild>
                   <span
-                    className={`cursor-default text-sm ${
+                    className={`cursor-default text-base ${
                       isSelected ? 'text-highlight' : 'text-muted-foreground'
                     } [overflow:hidden] [display:-webkit-box] [-webkit-line-clamp:2] [-webkit-box-orient:vertical]`}
                   >
@@ -101,7 +101,7 @@ const DataRow: React.FC<DataRowProps> = ({
               </Tooltip>
             ) : (
               <span
-                className={`text-sm ${
+                className={`text-base ${
                   isSelected ? 'text-highlight' : 'text-muted-foreground'
                 } [overflow:hidden] [display:-webkit-box] [-webkit-line-clamp:2] [-webkit-box-orient:vertical]`}
               >
@@ -186,7 +186,7 @@ const DataRow: React.FC<DataRowProps> = ({
         {(details || series) && (
           <div className="ml-7 px-2 py-1">
             {/* Updated Flex Container: Changed 'items-center' to 'items-start' */}
-            <div className="text-secondary-foreground flex items-start justify-between whitespace-pre-line text-sm leading-normal">
+            <div className="text-secondary-foreground flex items-start justify-between whitespace-pre-line text-base leading-normal">
               <span>{details}</span>
               {series && <span className="text-muted-foreground">{series}</span>}
             </div>

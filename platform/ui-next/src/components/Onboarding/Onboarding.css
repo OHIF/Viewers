@@ -3,7 +3,7 @@
 }
 
 .shepherd-title {
-  @apply !text-highlight !w-[100%] !break-words !text-lg !leading-[1.5];
+  @apply !text-highlight !w-[100%] !break-words !text-xl !leading-[1.5];
 }
 
 .shepherd-content {
@@ -15,7 +15,7 @@
 }
 
 .shepherd-text {
-  @apply text-foreground !w-[100%] p-0 text-base leading-normal;
+  @apply text-foreground !w-[100%] p-0 text-lg leading-normal;
 }
 
 .shepherd-footer {

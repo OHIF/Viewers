@@ -11,7 +11,7 @@ export function StudyBrowserViewOptions({ tabs, onSelectTab, activeTabName }: wi
         onChange={e => handleTabChange(e.target.value)}
         value={activeTabName}
         onClick={e => e.stopPropagation()}
-        className="w-full appearance-none bg-transparent text-sm leading-tight text-white shadow transition duration-300 focus:outline-none"
+        className="w-full appearance-none bg-transparent text-base leading-tight text-white shadow transition duration-300 focus:outline-none"
       >
         {tabs.map(tab => {
           const { name, label, studies } = tab;

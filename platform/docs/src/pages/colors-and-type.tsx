@@ -144,7 +144,7 @@ export default function ComponentShowcase() {
                     <Icons.ColorChange className="h-12 w-12" />
                     Colors & Typography
                   </CardTitle>
-                  <CardDescription className="text-base">
+                  <CardDescription className="text-lg">
                     Color Palette and Typography Guidelines
                   </CardDescription>
                 </CardHeader>
@@ -160,7 +160,7 @@ export default function ComponentShowcase() {
                     <Icons.ColorChange className="h-12 w-12" />
                     Components
                   </CardTitle>
-                  <CardDescription className="text-base">
+                  <CardDescription className="text-lg">
                     Essential UI Components with Variants
                   </CardDescription>
                 </CardHeader>
@@ -176,7 +176,7 @@ export default function ComponentShowcase() {
                     <Icons.ColorChange className="h-12 w-12" />
                     Patterns
                   </CardTitle>
-                  <CardDescription className="text-base">
+                  <CardDescription className="text-lg">
                     Component-Based Layout Examples
                   </CardDescription>
                 </CardHeader>
@@ -191,40 +191,72 @@ export default function ComponentShowcase() {
           <ShowcaseRow
             title="Colors"
             description="Updated color variables for new components."
-            code={`sdf`}
+            code={`Code Example Coming Soon`}
           >
-            <div className="grid grid-cols-2 items-start gap-x-4 gap-y-1">
-              <div className="mb-3 flex items-center space-x-3">
-                <div className="bg-highlight h-[30px] w-[30px] rounded"></div>
-                <span className="text-foreground text-md">highlight</span>
+            <div className="mb-6 grid grid-cols-[28%,1fr] items-start gap-x-8">
+              <div className="space-y-2.5">
+                <div className="flex items-center space-x-3">
+                  <div className="bg-highlight h-[30px] w-[30px] rounded"></div>
+                  <span className="text-foreground text-lg">highlight</span>
+                </div>
+                <div className="flex items-center space-x-3"></div>
               </div>
-              <div className="flex items-center space-x-2"></div>
-              <div className="mb-3 flex items-center space-x-3">
-                <div className="bg-primary h-[30px] w-[30px] rounded"></div>
-                <span className="text-foreground text-md">primary</span>
+              <div className="text-secondary-foreground flex items-center pt-1.5 text-lg">
+                Used for active or selected elements in the Viewer.
               </div>
-              <div className="flex items-center space-x-2"></div>
-              <div className="mb-3 flex items-center space-x-3">
-                <div className="bg-background border-input h-[30px] w-[30px] rounded border"></div>
-                <span className="text-foreground text-md">background</span>
+            </div>
+
+            <div className="mb-6 grid grid-cols-[28%,1fr] items-start gap-x-8">
+              <div className="space-y-2.5">
+                <div className="flex items-center space-x-3">
+                  <div className="bg-primary h-[30px] w-[30px] rounded"></div>
+                  <span className="text-foreground text-lg">primary</span>
+                </div>
+                <div className="flex items-center space-x-3"></div>
               </div>
-              <div className="flex items-center space-x-2">
-                <div className="bg-foreground h-[30px] w-[30px] rounded"></div>
-                <span className="text-foreground text-md">foreground</span>
+              <div className="text-secondary-foreground flex items-center pt-1.5 text-lg">
+                Used for Actions. Icons use 'primary' at 100% opacity while various components will
+                use a reduced opacity. Hover and other states increase the opacity.
               </div>
-              <div className="mb-3 flex items-center space-x-3">
-                <div className="bg-muted h-[30px] w-[30px] rounded"></div>
-                <span className="text-foreground text-md">muted</span>
+            </div>
+
+            <div className="mb-8 grid grid-cols-[28%,1fr] items-start gap-x-8">
+              <div className="space-y-2.5">
+                <div className="flex items-center space-x-3">
+                  <div className="bg-popover h-[30px] w-[30px] rounded"></div>
+                  <span className="text-foreground text-lg">popover</span>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <div className="bg-muted h-[30px] w-[30px] rounded"></div>
+                  <span className="text-foreground text-lg">muted</span>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <div className="bg-background border-input h-[30px] w-[30px] rounded border"></div>
+                  <span className="text-foreground text-lg">background</span>
+                </div>
               </div>
-              <div className="flex items-center space-x-2">
-                <div className="bg-muted-foreground h-[30px] w-[30px] rounded"></div>
-                <span className="text-foreground text-md">muted-foreground</span>
+              <div className="text-secondary-foreground flex items-center pt-1.5 text-lg">
+                These three colors are used as background colors. For the lowest level above black
+                use 'background'. For normal panel backgrounds and other interactive components, use
+                'muted'. For elements such as menus and popovers, use 'popover'.
               </div>
-              <div className="mb-3 flex items-center space-x-3">
-                <div className="bg-popover h-[30px] w-[30px] rounded"></div>
-                <span className="text-foreground text-md">popover</span>
+            </div>
+
+            <div className="mb-8 grid grid-cols-[28%,1fr] items-start gap-x-8">
+              <div className="space-y-2.5">
+                <div className="flex items-center space-x-3">
+                  <div className="bg-foreground h-[30px] w-[30px] rounded"></div>
+                  <span className="text-foreground text-lg">foreground</span>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <div className="bg-muted-foreground border-input h-[30px] w-[30px] rounded border"></div>
+                  <span className="text-foreground text-lg">muted-foreground</span>
+                </div>
               </div>
-              <div className="flex items-center space-x-2"></div>
+              <div className="text-secondary-foreground flex items-center pt-1.5 text-lg">
+                For primary and important text, use 'foreground'. When secondary text is available,
+                use 'muted-foreground' to create separation and readability.
+              </div>
             </div>
           </ShowcaseRow>
 
@@ -232,36 +264,86 @@ export default function ComponentShowcase() {
             title="Typography"
             description="Type variables and guidelines"
             code={`
-<div className="text-base text-white">Standard text size (text-base) 14px</div>
-<div className="text-sm text-white">Small text size (text-sm) 13px</div>
-<div className="text-xs text-white">Extra small text size (text-xs) 12px</div>
-<div className="text-lg text-white">Large text size (text-lg) 16px</div>
-<div className="text-xl text-white">Extra large text size (text-xl) 18px</div>
-<div className="text-2xl text-white">Double extra large text size (text-2xl) 20px</div>
+Code example coming soon
           `}
           >
-            <div className="flex flex-col gap-2">
-              <div className="text-xs text-white">
-                text-xs: <span className="text-muted-foreground">12px</span> Small text used for
-                small descriptions or notes
+            <div className="mb-6 grid grid-cols-[28%,1fr] items-start gap-x-8">
+              <div className="space-y-2.5">
+                <div className="flex items-center space-x-3 text-base">
+                  <span className="text-foreground">text-base</span>
+                  <span className="text-muted-foreground">13px</span>
+                </div>
+                <div className="flex items-center space-x-3"></div>
               </div>
-              <div className="text-sm text-white">
-                text-sm: <span className="text-muted-foreground">13px</span> Standard text size in
-                panels and application information
+              <div className="text-secondary-foreground flex items-center pt-0 text-lg">
+                text-base is used as the base font size of the Viewer interface. Use when putting
+                text in panels or other interface elements next to medical images.
               </div>
-              <div className="text-base text-white">
-                text-base: <span className="text-muted-foreground">14px</span> Standard text size
-                used in dialogs or other pages
+            </div>
+
+            <div className="mb-6 grid grid-cols-[28%,1fr] items-start gap-x-8">
+              <div className="space-y-2.5">
+                <div className="flex items-center space-x-3 text-lg">
+                  <span className="text-foreground">text-lg</span>
+                  <span className="text-muted-foreground">14px</span>
+                </div>
+                <div className="flex items-center space-x-3"></div>
               </div>
-              <div className="text-lg text-white">
-                text-lg: <span className="text-muted-foreground">16px</span> Large text size
+              <div className="text-secondary-foreground flex items-center pt-0 text-lg">
+                text-lg can be used for dialog text or important messaging text within the Viewer.
+                Use this font size for easier reading on other standard text pages.
               </div>
-              <div className="text-xl text-white">
-                text-xl: <span className="text-muted-foreground">18px</span> Extra large text size
+            </div>
+
+            <div className="mb-6 grid grid-cols-[28%,1fr] items-start gap-x-8">
+              <div className="space-y-2.5">
+                <div className="flex items-center space-x-3 text-xl">
+                  <span className="text-foreground">text-xl</span>
+                  <span className="text-muted-foreground">16px</span>
+                </div>
+                <div className="flex items-center space-x-3"></div>
               </div>
-              <div className="text-2xl text-white">
-                text-2xl: <span className="text-muted-foreground">20px</span> Double extra large
-                text size
+              <div className="text-secondary-foreground flex items-center pt-0 text-lg">
+                text-xl can be used as headings within dialogs or messaging.
+              </div>
+            </div>
+
+            <div className="mb-6 grid grid-cols-[28%,1fr] items-start gap-x-8">
+              <div className="space-y-2.5">
+                <div className="flex items-center space-x-3 text-2xl">
+                  <span className="text-foreground">text-2xl</span>
+                  <span className="text-muted-foreground">18px</span>
+                </div>
+                <div className="flex items-center space-x-3"></div>
+              </div>
+              <div className="text-secondary-foreground flex items-center pt-0 text-lg">
+                text-2xl can be used for page headers in the Viewer application or as dialog titles.
+              </div>
+            </div>
+
+            <div className="mb-6 grid grid-cols-[28%,1fr] items-start gap-x-8">
+              <div className="space-y-2.5">
+                <div className="flex items-center space-x-3 text-3xl">
+                  <span className="text-foreground">text-3xl</span>
+                  <span className="text-muted-foreground">20px</span>
+                </div>
+                <div className="flex items-center space-x-3"></div>
+              </div>
+              <div className="text-secondary-foreground flex items-center pt-0 text-lg">
+                text-3xl can be used for extra large text size in the application.
+              </div>
+            </div>
+
+            <div className="mb-6 grid grid-cols-[28%,1fr] items-start gap-x-8">
+              <div className="space-y-2.5">
+                <div className="flex items-center space-x-3 text-sm">
+                  <span className="text-foreground">text-sm</span>
+                  <span className="text-muted-foreground">12px</span>
+                </div>
+                <div className="flex items-center space-x-3"></div>
+              </div>
+              <div className="text-secondary-foreground flex items-center pt-0 text-lg">
+                text-sm can be used for details that do not need to be standard sizes in the Viewer.
               </div>
             </div>
           </ShowcaseRow>
@@ -290,7 +372,7 @@ function ShowcaseRow({ title, description, children, code }: ShowcaseRowProps) {
         </Button>
       </div>
       <div className="grid grid-cols-1 gap-9 md:grid-cols-3">
-        <div className="text-base md:col-span-1">
+        <div className="text-lg md:col-span-1">
           {description && <p className="text-secondary-foreground mt-2">{description}</p>}
         </div>
         <div className="flex min-h-[120px] items-center md:col-span-2">
@@ -314,7 +396,7 @@ function ShowcaseRow({ title, description, children, code }: ShowcaseRowProps) {
 //       <div className="mb-4 flex items-start justify-between">
 //         <div>
 //           <h2 className="text-2xl font-bold">{title}</h2>
-//           {description && <p className="text-muted-foreground mt-1">{description}</p>}
+//           {description && <p className="text-secondary-foreground mt-1">{description}</p>}
 //         </div>
 //         <Button
 //           className="text-primary"

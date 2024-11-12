@@ -48,7 +48,7 @@ export function StudyBrowserSort({ servicesManager }: withAppTypes) {
         onChange={handleSortChange}
         value={selectedSort.label}
         onClick={e => e.stopPropagation()}
-        className="w-full appearance-none bg-transparent text-sm leading-tight text-white shadow transition duration-300 focus:outline-none"
+        className="w-full appearance-none bg-transparent text-base leading-tight text-white shadow transition duration-300 focus:outline-none"
       >
         {sortFunctions.map(sort => (
           <option

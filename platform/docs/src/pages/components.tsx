@@ -144,7 +144,7 @@ export default function ComponentShowcase() {
                     <Icons.ColorChange className="h-12 w-12" />
                     Colors & Typography
                   </CardTitle>
-                  <CardDescription className="text-base">
+                  <CardDescription className="text-lg">
                     Color Palette and Typography Guidelines
                   </CardDescription>
                 </CardHeader>
@@ -160,7 +160,7 @@ export default function ComponentShowcase() {
                     <Icons.ColorChange className="h-12 w-12" />
                     Components
                   </CardTitle>
-                  <CardDescription className="text-base">
+                  <CardDescription className="text-lg">
                     Essential UI Components with Variants
                   </CardDescription>
                 </CardHeader>
@@ -176,7 +176,7 @@ export default function ComponentShowcase() {
                     <Icons.ColorChange className="h-12 w-12" />
                     Patterns
                   </CardTitle>
-                  <CardDescription className="text-base">
+                  <CardDescription className="text-lg">
                     Component-Based Layout Examples
                   </CardDescription>
                 </CardHeader>
@@ -215,7 +215,7 @@ function ShowcaseRow({ title, description, children, code }: ShowcaseRowProps) {
       {/* Content Section: 1/3 Left, 2/3 Right */}
       <div className="grid grid-cols-1 gap-9 md:grid-cols-3">
         {/* Left Side: Title and Description */}
-        <div className="text-base md:col-span-1">
+        <div className="text-lg md:col-span-1">
           {description && <p className="text-muted-foreground mt-2">{description}</p>}
         </div>
 
