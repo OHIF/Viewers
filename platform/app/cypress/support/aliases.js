@@ -27,6 +27,7 @@ export function initCommonElementsAliases(skipMarkers) {
 
   // TODO: Panels are not in DOM when closed, move this somewhere else
   cy.get('[data-cy="trackedMeasurements-panel"]').as('measurementsPanel');
+  cy.get('[data-cy="panelSegmentation-btn"]').as('segmentationPanel');
   cy.get('[data-cy="studyBrowser-panel"]').as('seriesPanel');
   cy.get('[data-cy="viewport-overlay-top-right"]').as('viewportInfoTopRight');
   cy.get('[data-cy="viewport-overlay-top-left"]').as('viewportInfoTopLeft');

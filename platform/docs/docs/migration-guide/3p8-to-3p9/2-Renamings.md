@@ -10,11 +10,11 @@ import TabItem from '@theme/TabItem';
 
 ## Panel Measurements
 
-The panel in the default extension is renamed from `measure` to `measurements` to be more consistent with the rest of the extensions.
+The panel in the default extension is renamed from `measure` to `panelMeasurement` to be more consistent with the rest of the extensions.
 
 **Action Needed**
 
-Update any references to the `measure` panel to `measurements` in your code.
+Update any references to the `measure` panel to `panelMeasurement` in your code.
 
 Find and replace
 
@@ -23,7 +23,7 @@ Find and replace
     @ohif/extension-default.panelModule.measure
   </TabItem>
   <TabItem value="After" label="After 🚀" >
-    @ohif/extension-default.panelModule.measurements
+    @ohif/extension-cornerstone.panelModule.panelMeasurement
   </TabItem>
 </Tabs>
 

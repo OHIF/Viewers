@@ -19,7 +19,7 @@ const ohif = {
 };
 
 const cornerstone = {
-  measurements: '@ohif/extension-cornerstone.panelModule.measurements',
+  measurements: '@ohif/extension-cornerstone.panelModule.panelMeasurement',
   segmentation: '@ohif/extension-cornerstone.panelModule.panelSegmentation',
 };
 
