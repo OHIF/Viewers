@@ -1,33 +1,41 @@
 import React from 'react';
 import { PanelPetSUV, PanelROIThresholdExport } from './Panels';
-import { Toolbox as NewToolbox } from '@ohif/ui-next';
-import { Toolbox as OldToolbox } from '@ohif/ui';
-import { useAppConfig } from '@state';
-
-// TODO:
-// - No loading UI exists yet
-// - cancel promises when component is destroyed
-// - show errors in UI for thumbnails if promise fails
+import { Toolbox } from '@ohif/ui-next';
+import PanelTMTV from './Panels/PanelTMTV';
 
 function getPanelModule({ commandsManager, extensionManager, servicesManager }) {
-  const wrappedPanelPetSuv = ({ renderHeader, getCloseIcon, tab }) => {
+  const wrappedPanelPetSuv = () => {
     return (
       <PanelPetSUV
         commandsManager={commandsManager}
         servicesManager={servicesManager}
         extensionManager={extensionManager}
-        renderHeader={renderHeader}
-        getCloseIcon={getCloseIcon}
-        tab={tab}
       />
     );
   };
 
-  const wrappedROIThresholdToolbox = ({ renderHeader, getCloseIcon, tab }: withAppTypes) => {
-    const [appConfig] = useAppConfig();
+  const wrappedROIThresholdToolbox = () => {
+    return (
+      <Toolbox
+        commandsManager={commandsManager}
+        servicesManager={servicesManager}
+        extensionManager={extensionManager}
+        buttonSectionId="ROIThresholdToolbox"
+        title="Threshold Tools"
+      />
+    );
+  };
 
-    const Toolbox = appConfig.useExperimentalUI ? NewToolbox : OldToolbox;
+  const wrappedROIThresholdExport = () => {
+    return (
+      <PanelROIThresholdExport
+        commandsManager={commandsManager}
+        servicesManager={servicesManager}
+      />
+    );
+  };
 
+  const wrappedPanelTMTV = () => {
     return (
       <>
         <Toolbox
@@ -36,17 +44,11 @@ function getPanelModule({ commandsManager, extensionManager, servicesManager }) 
           extensionManager={extensionManager}
           buttonSectionId="ROIThresholdToolbox"
           title="Threshold Tools"
-          renderHeader={renderHeader}
-          getCloseIcon={getCloseIcon}
-          tab={tab}
         />
-      </>
-    );
-  };
-
-  const wrappedROIThresholdExport = () => {
-    return (
-      <>
+        <PanelTMTV
+          commandsManager={commandsManager}
+          servicesManager={servicesManager}
+        />
         <PanelROIThresholdExport
           commandsManager={commandsManager}
           servicesManager={servicesManager}
@@ -62,6 +64,12 @@ function getPanelModule({ commandsManager, extensionManager, servicesManager }) 
       iconLabel: 'Patient Info',
       label: 'Patient Info',
       component: wrappedPanelPetSuv,
+    },
+    {
+      name: 'tmtv',
+      iconName: 'tab-segmentation',
+      iconLabel: 'Segmentation',
+      component: wrappedPanelTMTV,
     },
     {
       name: 'tmtvBox',

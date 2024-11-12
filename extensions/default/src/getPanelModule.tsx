@@ -1,5 +1,5 @@
 import React from 'react';
-import { WrappedPanelStudyBrowser, PanelMeasurementTable } from './Panels';
+import { WrappedPanelStudyBrowser } from './Panels';
 import i18n from 'i18next';
 
 // TODO:
@@ -8,19 +8,6 @@ import i18n from 'i18next';
 // - show errors in UI for thumbnails if promise fails
 
 function getPanelModule({ commandsManager, extensionManager, servicesManager }) {
-  const wrappedMeasurementPanel = ({ renderHeader, getCloseIcon, tab }) => {
-    return (
-      <PanelMeasurementTable
-        commandsManager={commandsManager}
-        servicesManager={servicesManager}
-        extensionManager={extensionManager}
-        renderHeader={renderHeader}
-        getCloseIcon={getCloseIcon}
-        tab={tab}
-      />
-    );
-  };
-
   return [
     {
       name: 'seriesList',
@@ -35,14 +22,6 @@ function getPanelModule({ commandsManager, extensionManager, servicesManager }) 
           servicesManager={servicesManager}
         />
       ),
-    },
-    {
-      name: 'measurements',
-      iconName: 'tab-linear',
-      iconLabel: 'Measure',
-      label: i18n.t('SidePanel:Measurements'),
-      secondaryLabel: i18n.t('SidePanel:Measurements'),
-      component: wrappedMeasurementPanel,
     },
   ];
 }

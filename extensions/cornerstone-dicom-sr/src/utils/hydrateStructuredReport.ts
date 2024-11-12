@@ -45,11 +45,19 @@ export default function hydrateStructuredReport(
   displaySetInstanceUID
 ) {
   const annotationManager = CsAnnotation.state.getAnnotationManager();
-  const disableEditing = appConfig?.disableEditing;
   const dataSource = extensionManager.getActiveDataSource()[0];
   const { measurementService, displaySetService, customizationService } = servicesManager.services;
 
   const codingValues = customizationService.getCustomization('codingValues', {});
+
+  const { disableEditing } = customizationService.getCustomization(
+    'PanelMeasurement.disableEditing',
+    {
+      id: 'default.disableEditing',
+      disableEditing: false,
+    }
+  );
+
   const displaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
 
   // TODO -> We should define a strict versioning somewhere.

@@ -6,14 +6,7 @@ export const toolGroupIds = {
   default: 'default',
 };
 
-function _initToolGroups(
-  toolNames,
-  Enums,
-  toolGroupService,
-  commandsManager,
-  modeLabelConfig,
-  servicesManager
-) {
+function _initToolGroups(toolNames, Enums, toolGroupService, commandsManager, modeLabelConfig) {
   const tools = {
     active: [
       {
@@ -28,7 +21,10 @@ function _initToolGroups(
         toolName: toolNames.Zoom,
         bindings: [{ mouseButton: Enums.MouseBindings.Secondary }],
       },
-      { toolName: toolNames.StackScrollMouseWheel, bindings: [] },
+      {
+        toolName: toolNames.StackScroll,
+        bindings: [{ mouseButton: Enums.MouseBindings.Wheel }],
+      },
     ],
     passive: [
       { toolName: toolNames.Length },
@@ -127,7 +123,7 @@ function _initToolGroups(
         },
       },
     ],
-    enabled: [{ toolName: toolNames.SegmentationDisplay }],
+    enabled: [],
     disabled: [
       {
         toolName: toolNames.Crosshairs,
@@ -155,7 +151,8 @@ function _initToolGroups(
   const mipTools = {
     active: [
       {
-        toolName: toolNames.VolumeRotateMouseWheel,
+        toolName: toolNames.VolumeRotate,
+        bindings: [{ mouseButton: Enums.MouseBindings.Wheel }],
         configuration: {
           rotateIncrementDegrees: 5,
         },
@@ -169,7 +166,6 @@ function _initToolGroups(
       },
     ],
     enabled: [
-      { toolName: toolNames.SegmentationDisplay },
       {
         toolName: toolNames.OrientationMarker,
         configuration: {
@@ -184,22 +180,8 @@ function _initToolGroups(
   toolGroupService.createToolGroupAndAddTools(toolGroupIds.MIP, mipTools);
 }
 
-function initToolGroups(
-  toolNames,
-  Enums,
-  toolGroupService,
-  commandsManager,
-  modeLabelConfig,
-  servicesManager
-) {
-  _initToolGroups(
-    toolNames,
-    Enums,
-    toolGroupService,
-    commandsManager,
-    modeLabelConfig,
-    servicesManager
-  );
+function initToolGroups(toolNames, Enums, toolGroupService, commandsManager, modeLabelConfig) {
+  _initToolGroups(toolNames, Enums, toolGroupService, commandsManager, modeLabelConfig);
 }
 
 export default initToolGroups;

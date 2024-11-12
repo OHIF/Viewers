@@ -1,4 +1,7 @@
-import { HangingProtocolService, StateSyncService, Types } from '@ohif/core';
+import { HangingProtocolService, Types } from '@ohif/core';
+import { useViewportGridStore } from '../stores/useViewportGridStore';
+import { useDisplaySetSelectorStore } from '../stores/useDisplaySetSelectorStore';
+import { useHangingProtocolStageIndexStore } from '../stores/useHangingProtocolStageIndexStore';
 
 export type ReturnType = {
   hangingProtocolStageIndexMap: Record<string, Types.HangingProtocol.HPInfo>;
@@ -14,11 +17,7 @@ export type ReturnType = {
  * @returns Set of states that can be applied to the state sync to remember
  *   the current view state.
  */
-const reuseCachedLayout = (
-  state,
-  hangingProtocolService: HangingProtocolService,
-  syncService: StateSyncService
-): ReturnType => {
+const reuseCachedLayout = (state, hangingProtocolService: HangingProtocolService): ReturnType => {
   const { activeViewportId } = state;
   const { protocol } = hangingProtocolService.getActiveProtocol();
 
@@ -29,16 +28,14 @@ const reuseCachedLayout = (
   const hpInfo = hangingProtocolService.getState();
   const { protocolId, stageIndex, activeStudyUID } = hpInfo;
 
-  const syncState = syncService.getState();
-  const viewportGridStore = { ...syncState.viewportGridStore };
-  const displaySetSelectorMap = { ...syncState.displaySetSelectorMap };
+  const { viewportGridState, setViewportGridState } = useViewportGridStore.getState();
+  const { displaySetSelectorMap, setDisplaySetSelector } = useDisplaySetSelectorStore.getState();
+  const { hangingProtocolStageIndexMap, setHangingProtocolStageIndex } =
+    useHangingProtocolStageIndexStore.getState();
 
   const stage = protocol.stages[stageIndex];
   const storeId = `${activeStudyUID}:${protocolId}:${stageIndex}`;
   const cacheId = `${activeStudyUID}:${protocolId}`;
-  const hangingProtocolStageIndexMap = {
-    ...syncState.hangingProtocolStageIndexMap,
-  };
   const { rows, columns } = stage.viewportStructure.properties;
   const custom =
     stage.viewports.length !== state.viewports.size ||
@@ -48,7 +45,7 @@ const reuseCachedLayout = (
   hangingProtocolStageIndexMap[cacheId] = hpInfo;
 
   if (storeId && custom) {
-    viewportGridStore[storeId] = { ...state };
+    setViewportGridState(storeId, { ...state });
   }
 
   state.viewports.forEach((viewport, viewportId) => {
@@ -62,21 +59,24 @@ const reuseCachedLayout = (
         continue;
       }
       if (viewportId === activeViewportId && i === 0) {
-        displaySetSelectorMap[`${activeStudyUID}:activeDisplaySet:0`] = displaySetUID;
+        setDisplaySetSelector(`${activeStudyUID}:activeDisplaySet:0`, displaySetUID);
       }
       if (displaySetOptions[i]?.id) {
-        displaySetSelectorMap[
+        setDisplaySetSelector(
           `${activeStudyUID}:${displaySetOptions[i].id}:${
             displaySetOptions[i].matchedDisplaySetsIndex || 0
-          }`
-        ] = displaySetUID;
+          }`,
+          displaySetUID
+        );
       }
     }
   });
 
+  setHangingProtocolStageIndex(cacheId, hpInfo);
+
   return {
     hangingProtocolStageIndexMap,
-    viewportGridStore,
+    viewportGridStore: viewportGridState,
     displaySetSelectorMap,
   };
 };

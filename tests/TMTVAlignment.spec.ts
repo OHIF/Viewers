@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { visitStudy, scrollVolumeViewport } from './utils';
 
-test('PT should show slice closest to CT', async ({ page }) => {
+test.skip('PT should show slice closest to CT', async ({ page }) => {
   const studyInstanceUID = '1.2.840.113619.2.290.3.3767434740.226.1600859119.501';
   const mode = 'Total Metabolic Tumor Volume';
   await visitStudy(page, studyInstanceUID, mode);

@@ -94,7 +94,7 @@ const SegmentationGroupTable = ({
             segmentationConfig={segmentationConfig}
           />
         )}
-        <div className="bg-primary-dark ">
+        <div className="bg-primary-dark">
           {segmentations?.length === 0 ? (
             <div className="select-none bg-black py-[3px]">
               {showAddSegmentation && !disableEditing && (

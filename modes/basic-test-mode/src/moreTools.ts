@@ -68,7 +68,7 @@ const moreTools = [
             },
           },
           listeners: {
-            [EVENTS.STACK_VIEWPORT_NEW_STACK]: {
+            [EVENTS.VIEWPORT_NEW_IMAGE_SET]: {
               commandName: 'toggleImageSliceSync',
               commandOptions: { toggledState: true },
             },
@@ -188,7 +188,13 @@ const moreTools = [
           label: 'Ultrasound Directional',
           tooltip: 'Ultrasound Directional',
           commands: setToolActiveToolbar,
-          evaluate: ['evaluate.cornerstoneTool', 'evaluate.isUS'],
+          evaluate: [
+            'evaluate.cornerstoneTool',
+            {
+              name: 'evaluate.modality.supported',
+              supportedModalities: ['US'],
+            },
+          ],
         }),
         createButton({
           id: 'WindowLevelRegion',

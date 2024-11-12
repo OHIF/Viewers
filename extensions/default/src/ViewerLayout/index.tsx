@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import PropTypes from 'prop-types';
 
-import { ErrorBoundary, LoadingIndicatorProgress, InvestigationalUseDialog } from '@ohif/ui';
+import { LoadingIndicatorProgress, InvestigationalUseDialog } from '@ohif/ui';
 import { HangingProtocolService, CommandsManager } from '@ohif/core';
 import { useAppConfig } from '@state';
 import ViewerHeader from './ViewerHeader';
@@ -125,34 +125,28 @@ function ViewerLayout({
           {showLoadingIndicator && <LoadingIndicatorProgress className="h-full w-full bg-black" />}
           {/* LEFT SIDEPANELS */}
           {hasLeftPanels ? (
-            <ErrorBoundary context="Left Panel">
-              <SidePanelWithServices
-                side="left"
-                activeTabIndex={leftPanelClosedState ? null : 0}
-                servicesManager={servicesManager}
-              />
-            </ErrorBoundary>
+            <SidePanelWithServices
+              side="left"
+              activeTabIndex={leftPanelClosedState ? null : 0}
+              servicesManager={servicesManager}
+            />
           ) : null}
           {/* TOOLBAR + GRID */}
           <div className="flex h-full flex-1 flex-col">
             <div className="relative flex h-full flex-1 items-center justify-center overflow-hidden bg-black">
-              <ErrorBoundary context="Grid">
-                <ViewportGridComp
-                  servicesManager={servicesManager}
-                  viewportComponents={viewportComponents}
-                  commandsManager={commandsManager}
-                />
-              </ErrorBoundary>
+              <ViewportGridComp
+                servicesManager={servicesManager}
+                viewportComponents={viewportComponents}
+                commandsManager={commandsManager}
+              />
             </div>
           </div>
           {hasRightPanels ? (
-            <ErrorBoundary context="Right Panel">
-              <SidePanelWithServices
-                side="right"
-                activeTabIndex={rightPanelClosedState ? null : 0}
-                servicesManager={servicesManager}
-              />
-            </ErrorBoundary>
+            <SidePanelWithServices
+              side="right"
+              activeTabIndex={rightPanelClosedState ? null : 0}
+              servicesManager={servicesManager}
+            />
           ) : null}
         </React.Fragment>
       </div>

@@ -18,16 +18,9 @@ const Toaster = ({ ...props }: ToasterProps) => {
       theme="dark"
       richColors="true"
       toastOptions={{
-        classNames: {
-          toast:
-            'group toast group-[.toaster]:bg-popover group-[.toaster]:text-foreground group-[.toaster]:border-background group-[.toaster]:shadow-lg',
-          info: 'group-[.toast] group-[.toaster]:!bg-popover group-[.toaster]:!text-foreground group-[.toaster]:!border-background',
-          error: 'group-[.toaster]:!border-background',
-          success: 'group-[.toaster]:!border-background',
-          warning: 'group-[.toaster]:!border-background',
-          description: 'group-[.toast]:text-secondary-foreground',
-          actionButton: 'group-[.toast]:bg-primary group-[.toast]:text-primary-foreground',
-          cancelButton: 'group-[.toast]:bg-muted group-[.toast]:text-muted-foreground',
+        style: {
+          width: '430px', // Set a maximum width
+          right: '8px',
         },
       }}
       {...props}

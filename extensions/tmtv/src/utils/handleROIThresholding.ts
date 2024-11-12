@@ -1,64 +1,97 @@
-import { cache } from '@cornerstonejs/core';
+import { Segment, Segmentation } from '@cornerstonejs/tools/types';
+import { triggerEvent, eventTarget, Enums } from '@cornerstonejs/core';
 
 export const handleROIThresholding = async ({
   segmentationId,
   commandsManager,
   segmentationService,
-  config = {},
-}) => {
+}: withAppTypes<{
+  segmentationId: string;
+}>) => {
   const segmentation = segmentationService.getSegmentation(segmentationId);
+
+  triggerEvent(eventTarget, Enums.Events.WEB_WORKER_PROGRESS, {
+    progress: 0,
+    type: 'Calculate Lesion Stats',
+    id: segmentationId,
+  });
 
   // re-calculating the cached stats for the active segmentation
   const updatedPerSegmentCachedStats = {};
-  segmentation.segments = await Promise.all(
-    segmentation.segments.map(async segment => {
-      if (!segment || !segment.segmentIndex) {
-        return segment;
-      }
+  for (const [segmentIndex, segment] of Object.entries(segmentation.segments)) {
+    if (!segment) {
+      continue;
+    }
 
-      const labelmap = cache.getVolume(segmentationId);
+    const numericSegmentIndex = Number(segmentIndex);
 
-      const segmentIndex = segment.segmentIndex;
+    const lesionStats = await commandsManager.run('getLesionStats', {
+      segmentationId,
+      segmentIndex: numericSegmentIndex,
+    });
 
-      const lesionStats = commandsManager.run('getLesionStats', { labelmap, segmentIndex });
-      const suvPeak = await commandsManager.run('calculateSuvPeak', { labelmap, segmentIndex });
-      const lesionGlyoclysisStats = lesionStats.volume * lesionStats.meanValue;
+    const suvPeak = await commandsManager.run('calculateSuvPeak', {
+      segmentationId,
+      segmentIndex: numericSegmentIndex,
+    });
 
-      // update segDetails with the suv peak for the active segmentation
-      const cachedStats = {
-        lesionStats,
-        suvPeak,
-        lesionGlyoclysisStats,
-      };
+    const lesionGlyoclysisStats = lesionStats.volume * lesionStats.meanValue;
 
-      segment.cachedStats = cachedStats;
-      segment.displayText = [
-        `SUV Peak: ${suvPeak.suvPeak.toFixed(2)}`,
-        `Volume: ${lesionStats.volume.toFixed(2)} mm3`,
-      ];
-      updatedPerSegmentCachedStats[segmentIndex] = cachedStats;
+    // update segDetails with the suv peak for the active segmentation
+    const cachedStats = {
+      lesionStats,
+      suvPeak,
+      lesionGlyoclysisStats,
+    };
 
-      return segment;
-    })
-  );
+    const updatedSegment: Segment = {
+      ...segment,
+      cachedStats: {
+        ...segment.cachedStats,
+        ...cachedStats,
+      },
+    };
 
-  const notYetUpdatedAtSource = true;
+    updatedPerSegmentCachedStats[numericSegmentIndex] = cachedStats;
 
+    segmentation.segments[segmentIndex] = updatedSegment;
+  }
+
+  // all available segmentations
   const segmentations = segmentationService.getSegmentations();
-  const tmtv = commandsManager.run('calculateTMTV', { segmentations });
+  const tmtv = await commandsManager.run('calculateTMTV', { segmentations });
 
-  segmentation.cachedStats = Object.assign(segmentation.cachedStats, updatedPerSegmentCachedStats, {
-    tmtv: {
-      value: tmtv.toFixed(3),
-      config: { ...config },
-    },
+  triggerEvent(eventTarget, Enums.Events.WEB_WORKER_PROGRESS, {
+    progress: 100,
+    type: 'Calculate Lesion Stats',
+    id: segmentationId,
   });
 
-  segmentationService.addOrUpdateSegmentation(
-    {
+  // add the tmtv to all the segment cachedStats, although it is a global
+  // value but we don't have any other way to display it for now
+  // Update all segmentations with the calculated TMTV
+  segmentations.forEach(segmentation => {
+    segmentation.cachedStats = {
+      ...segmentation.cachedStats,
+      tmtv,
+    };
+
+    // Update each segment within the segmentation
+    Object.keys(segmentation.segments).forEach(segmentIndex => {
+      segmentation.segments[segmentIndex].cachedStats = {
+        ...segmentation.segments[segmentIndex].cachedStats,
+        tmtv,
+      };
+    });
+
+    // Update the segmentation object
+    const updatedSegmentation: Segmentation = {
       ...segmentation,
-    },
-    false, // don't suppress events
-    notYetUpdatedAtSource
-  );
+      segments: {
+        ...segmentation.segments,
+      },
+    };
+
+    segmentationService.addOrUpdateSegmentation(updatedSegmentation);
+  });
 };

@@ -36,7 +36,6 @@ import {
   sortingCriteria,
   seriesSortCriteria,
 } from './sortStudy';
-import { subscribeToNextViewportGridChange } from './subscribeToNextViewportGridChange';
 import { splitComma, getSplitParam } from './splitComma';
 import { createStudyBrowserTabs } from './createStudyBrowserTabs';
 import { sopClassDictionary } from './sopClassDictionary';
@@ -81,7 +80,6 @@ const utils = {
   debounce,
   roundNumber,
   downloadCSVReport,
-  subscribeToNextViewportGridChange,
   splitComma,
   getSplitParam,
   generateAcceptHeader,

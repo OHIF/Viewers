@@ -1,1 +1,3 @@
-export { default as DataRow } from './DataRow';
+import DataRow from './DataRow';
+
+export { DataRow };

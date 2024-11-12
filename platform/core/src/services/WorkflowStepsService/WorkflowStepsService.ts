@@ -135,6 +135,7 @@ class WorkflowStepsService extends PubSubService {
     const toUse = Array.isArray(toolbarButtons) ? toolbarButtons : [toolbarButtons];
 
     toUse.forEach(({ buttonSection, buttons }) => {
+      toolbarService.clearButtonSection(buttonSection);
       toolbarService.createButtonSection(buttonSection, buttons);
     });
   }

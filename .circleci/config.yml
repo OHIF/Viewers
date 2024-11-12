@@ -181,10 +181,6 @@ jobs:
           name: Authenticate with NPM registry
           command: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/repo/.npmrc
       - run:
-          name: Increase the event emitter limit
-          command: |
-            node ./increaseEventEmitterLimit.mjs
-      - run:
           name: build half of the packages (to avoid out of memory in circleci)
           command: |
             yarn run build:package-all
@@ -230,10 +226,6 @@ jobs:
       - run:
           name: Authenticate with NPM registry
           command: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/repo/.npmrc
-      - run:
-          name: Increase the event emitter limit
-          command: |
-            node ./increaseEventEmitterLimit.mjs
       - run:
           name: build half of the packages (to avoid out of memory in circleci)
           command: |

@@ -50,6 +50,7 @@ import { Thumbnail } from './Thumbnail';
 import { ThumbnailList } from './ThumbnailList';
 import { PanelSection } from './PanelSection';
 import { DisplaySetMessageListTooltip } from './DisplaySetMessageListTooltip';
+import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from './Tooltip';
 import { Toolbox, ToolboxUI } from './Toolbox';
 import {
   DropdownMenu,
@@ -69,15 +70,22 @@ import {
   DropdownMenuRadioGroup,
 } from './DropdownMenu';
 import { Onboarding } from './Onboarding';
-import { BackgroundColorSelect } from './BackgroundColorSelect';
+import { DoubleSlider } from './DoubleSlider';
 import { DataRow } from './DataRow';
-import { Toaster } from './Sonner';
+import { MeasurementTable } from './MeasurementTable';
+import { SegmentationTable, useSegmentationTableContext } from './SegmentationTable';
+import { Toaster, toast } from './Sonner';
+import { StudySummary } from './StudySummary';
+import { ErrorBoundary } from './Errorboundary';
+import { Header } from './Header';
 import { Card, CardHeader, CardFooter, CardTitle, CardDescription, CardContent } from './Card';
 
 export {
+  ErrorBoundary,
   Button,
   buttonVariants,
   ThemeWrapper,
+  DoubleSlider,
   Command,
   CommandDialog,
   CommandInput,
@@ -152,14 +160,23 @@ export {
   DropdownMenuSubTrigger,
   DropdownMenuRadioGroup,
   Onboarding,
-  BackgroundColorSelect,
-  DataRow,
   Select,
+  SelectTrigger,
   SelectContent,
   SelectItem,
-  SelectTrigger,
   SelectValue,
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+  TooltipProvider,
+  DataRow,
+  MeasurementTable,
   Toaster,
+  toast,
+  SegmentationTable,
+  useSegmentationTableContext,
+  StudySummary,
+  Header,
   Card,
   CardHeader,
   CardFooter,

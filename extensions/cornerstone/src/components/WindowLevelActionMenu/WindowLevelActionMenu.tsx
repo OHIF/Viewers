@@ -15,12 +15,12 @@ import { ViewportPreset } from '../../types/ViewportPresets';
 import { VolumeViewport3D } from '@cornerstonejs/core';
 import { utilities } from '@cornerstonejs/core';
 
+export const nonWLModalities = ['SR', 'SEG', 'SM', 'RTSTRUCT', 'RTPLAN', 'RTDOSE'];
+
 export type WindowLevelActionMenuProps = {
   viewportId: string;
   element: HTMLElement;
   presets: Array<Record<string, Array<WindowLevelPreset>>>;
-  verticalDirection: AllInOneMenu.VerticalDirection;
-  horizontalDirection: AllInOneMenu.HorizontalDirection;
   colorbarProperties: ColorbarProperties;
   displaySets: Array<any>;
   volumeRenderingPresets: Array<ViewportPreset>;
@@ -52,8 +52,6 @@ export function WindowLevelActionMenu({
   const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
   const backgroundColor = viewportInfo.getViewportOptions().background;
   const isLight = backgroundColor ? utilities.isEqual(backgroundColor, [1, 1, 1]) : false;
-
-  const nonImageModalities = ['SR', 'SEG', 'SM', 'RTSTRUCT', 'RTPLAN', 'RTDOSE'];
 
   const { t } = useTranslation('WindowLevelActionMenu');
 
@@ -119,7 +117,7 @@ export function WindowLevelActionMenu({
       horizontalDirection={horizontalDirection}
       iconClassName={classNames(
         // Visible on hover and for the active viewport
-        activeViewportId === viewportId ? 'visible' : 'invisible group-hover:visible',
+        activeViewportId === viewportId ? 'visible' : 'invisible group-hover/pane:visible',
         'flex shrink-0 cursor-pointer rounded active:text-white text-primary-light',
         isLight ? ' hover:bg-secondary-dark' : 'hover:bg-secondary-light/60'
       )}
@@ -133,7 +131,7 @@ export function WindowLevelActionMenu({
         {!is3DVolume && (
           <Colorbar
             viewportId={viewportId}
-            displaySets={displaySets.filter(ds => !nonImageModalities.includes(ds.Modality))}
+            displaySets={displaySets.filter(ds => !nonWLModalities.includes(ds.Modality))}
             commandsManager={commandsManager}
             servicesManager={servicesManager}
             colorbarProperties={colorbarProperties}
@@ -149,7 +147,7 @@ export function WindowLevelActionMenu({
             <Colormap
               colormaps={colormaps}
               viewportId={viewportId}
-              displaySets={displaySets.filter(ds => !nonImageModalities.includes(ds.Modality))}
+              displaySets={displaySets.filter(ds => !nonWLModalities.includes(ds.Modality))}
               commandsManager={commandsManager}
               servicesManager={servicesManager}
             />

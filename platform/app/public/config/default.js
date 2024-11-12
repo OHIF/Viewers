@@ -16,7 +16,6 @@ window.config = {
   experimentalStudyBrowserSort: false,
   strictZSpacingForVolumeViewport: true,
   groupEnabledModesFirst: true,
-  useExperimentalUI: false,
   maxNumRequests: {
     interaction: 100,
     thumbnail: 75,
@@ -428,14 +427,14 @@ window.config = {
           title: 'Jumping to Measurements in the Panel',
           text: 'Click the measurement in the measurement panel to jump to it.',
           attachTo: {
-            element: '[data-cy="measurement-item"]',
+            element: '[data-cy="data-row"]',
             on: 'left-start',
           },
           advanceOn: {
-            selector: '[data-cy="measurement-item"]',
+            selector: '[data-cy="data-row"]',
             event: 'click',
           },
-          beforeShowPromise: () => waitForElement('[data-cy="measurement-item"]'),
+          beforeShowPromise: () => waitForElement('[data-cy="data-row"]'),
         },
         {
           id: 'changeLayout',
