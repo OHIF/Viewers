@@ -50,7 +50,7 @@ export function StudyBrowserSort({ servicesManager }: withAppTypes) {
   return (
     <div className="flex items-center gap-1">
       <DropdownMenu>
-        <DropdownMenuTrigger className="border-inputfield-main focus:border-inputfield-main flex h-[26px] w-[125px] items-center justify-start rounded border bg-black p-2 text-sm text-white">
+        <DropdownMenuTrigger className="border-inputfield-main focus:border-inputfield-main flex h-[26px] w-[125px] items-center justify-start rounded border bg-black p-2 text-base text-white">
           {selectedSort.label}
         </DropdownMenuTrigger>
         <DropdownMenuContent className="bg-black">

@@ -78,6 +78,7 @@ import { Toaster, toast } from './Sonner';
 import { StudySummary } from './StudySummary';
 import { ErrorBoundary } from './Errorboundary';
 import { Header } from './Header';
+import { Card, CardHeader, CardFooter, CardTitle, CardDescription, CardContent } from './Card';
 
 export {
   ErrorBoundary,
@@ -176,4 +177,10 @@ export {
   useSegmentationTableContext,
   StudySummary,
   Header,
+  Card,
+  CardHeader,
+  CardFooter,
+  CardTitle,
+  CardDescription,
+  CardContent,
 };
