@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.9.1](https://github.com/OHIF/Viewers/compare/v3.9.0...v3.9.1) (2024-11-13)
+
+
+### Bug Fixes
+
+* **ui:** Scrolling and display fixes for study panel ([#4494](https://github.com/OHIF/Viewers/issues/4494)) ([4f8281b](https://github.com/OHIF/Viewers/commit/4f8281b04a1eae6890e7ecd94f8a61c281217d3f))
+
+
+
+
+
 # [3.9.0](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.111...v3.9.0) (2024-11-12)
 
 **Note:** Version bump only for package @ohif/ui-next

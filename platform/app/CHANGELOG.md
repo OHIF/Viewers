@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.9.1](https://github.com/OHIF/Viewers/compare/v3.9.0...v3.9.1) (2024-11-13)
+
+
+### Bug Fixes
+
+* video playback ([#4497](https://github.com/OHIF/Viewers/issues/4497)) ([610faa5](https://github.com/OHIF/Viewers/commit/610faa5a2738da5eabc40e57e338c359f481e852))
+
+
+
+
+
 # [3.9.0](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.111...v3.9.0) (2024-11-12)
 
 **Note:** Version bump only for package @ohif/app
