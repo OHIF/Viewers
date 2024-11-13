@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { PanelMeasurement } from '@ohif/extension-cornerstone';
-import { useViewportGrid } from '@ohif/ui';
+import { useViewportGrid, ButtonEnums, Dialog } from '@ohif/ui';
 import { StudySummary } from '@ohif/ui-next';
 import { Button, Icons } from '@ohif/ui-next';
 import { DicomMetadataStore, utils } from '@ohif/core';
@@ -23,7 +23,7 @@ function PanelMeasurementTableTracking({
 }: withAppTypes) {
   const [viewportGrid] = useViewportGrid();
   const { t } = useTranslation('MeasurementTable');
-  const { measurementService, customizationService } = servicesManager.services;
+  const { measurementService, customizationService, uiDialogService } = servicesManager.services;
   const [trackedMeasurements, sendTrackedMeasurementsEvent] = useTrackedMeasurements();
   const { trackedStudy, trackedSeries } = trackedMeasurements.context;
   const [displayStudySummary, setDisplayStudySummary] = useState(
@@ -140,7 +140,47 @@ function PanelMeasurementTableTracking({
                   variant="ghost"
                   className="pl-0.5"
                   onClick={() => {
-                    measurementService.clearMeasurements();
+                    uiDialogService.create({
+                      id: 'delete-all-measurements',
+                      centralize: true,
+                      isDraggable: false,
+                      showOverlay: true,
+                      content: Dialog,
+                      contentProps: {
+                        title: 'Delete All Measurements',
+                        body: () => (
+                          <div className="bg-primary-dark text-white">
+                            <p>Are you sure you want to delete all measurements?</p>
+                            <p className="mt-2">This action cannot be undone.</p>
+                          </div>
+                        ),
+                        actions: [
+                          {
+                            id: 'cancel',
+                            text: 'Cancel',
+                            type: ButtonEnums.type.secondary,
+                          },
+                          {
+                            id: 'yes',
+                            text: 'Delete All',
+                            type: ButtonEnums.type.primary,
+                            classes: ['delete-all-yes-button'],
+                          },
+                        ],
+                        onClose: () => uiDialogService.dismiss({ id: 'delete-all-measurements' }),
+                        onSubmit: async ({ action }) => {
+                          switch (action.id) {
+                            case 'yes':
+                              measurementService.clearMeasurements();
+                              uiDialogService.dismiss({ id: 'delete-all-measurements' });
+                              break;
+                            case 'cancel':
+                              uiDialogService.dismiss({ id: 'delete-all-measurements' });
+                              break;
+                          }
+                        },
+                      },
+                    });
                   }}
                 >
                   <Icons.Delete />
