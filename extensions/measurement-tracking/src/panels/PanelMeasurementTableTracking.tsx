@@ -7,7 +7,7 @@ import { DicomMetadataStore, utils } from '@ohif/core';
 import { useTrackedMeasurements } from '../getContextModule';
 import { useTranslation } from 'react-i18next';
 
-const { downloadCSVReport, formatDate } = utils;
+const { formatDate } = utils;
 
 const DISPLAY_STUDY_SUMMARY_INITIAL_VALUE = {
   key: undefined, //
@@ -15,6 +15,19 @@ const DISPLAY_STUDY_SUMMARY_INITIAL_VALUE = {
   modality: '', // 'CT',
   description: '', // 'CHEST/ABD/PELVIS W CONTRAST',
 };
+
+export enum MeasurementGroups {
+  Measurement = 'Measurement',
+  Untracked = 'Untracked',
+  AdditionalFindings = 'AdditionalFindings',
+  Label = 'Label',
+}
+
+const groups = [MeasurementGroups.Measurement, MeasurementGroups.AdditionalFindings];
+
+const MeasurementGroupFilter = { group: MeasurementGroups.Measurement };
+// const UntrackedGroupFilter = { group: MeasurementGroups.Untracked };
+// const LabelGroupFilter = { group: MeasurementGroups.Label };
 
 function PanelMeasurementTableTracking({
   servicesManager,
@@ -63,7 +76,19 @@ function PanelMeasurementTableTracking({
         });
       } else if (!trackedStudy) {
         setDisplayStudySummary(DISPLAY_STUDY_SUMMARY_INITIAL_VALUE);
+        console.log('*********** No tracked study');
       }
+      measurementService.setGroupFilter(
+        'Measurement',
+        measurement =>
+          (trackedStudy === measurement.referenceStudyUID &&
+            trackedSeries.includes(measurement.referenceSeriesUID)) ||
+          !trackedStudy
+      );
+      measurementService.setGroupFilter(
+        'Untracked',
+        measurement => !measurementService.isInOtherGroup(measurement, 'Untracked')
+      );
     };
 
     updateDisplayStudySummary();
@@ -89,10 +114,7 @@ function PanelMeasurementTableTracking({
         servicesManager={servicesManager}
         extensionManager={extensionManager}
         commandsManager={commandsManager}
-        measurementFilter={measurement =>
-          trackedStudy === measurement.referenceStudyUID &&
-          trackedSeries.includes(measurement.referenceSeriesUID)
-        }
+        groups={groups}
         customHeader={({ additionalFindings, measurements }) => {
           const disabled = additionalFindings.length === 0 && measurements.length === 0;
 
@@ -108,14 +130,9 @@ function PanelMeasurementTableTracking({
                   variant="ghost"
                   className="pl-1.5"
                   onClick={() => {
-                    const measurements = measurementService.getMeasurements();
-                    const trackedMeasurements = measurements.filter(
-                      m =>
-                        trackedStudy === m.referenceStudyUID &&
-                        trackedSeries.includes(m.referenceSeriesUID)
-                    );
-
-                    downloadCSVReport(trackedMeasurements);
+                    commandsManager.runCommand('clearMeasurements', {
+                      measurementFilter: MeasurementGroupFilter,
+                    });
                   }}
                 >
                   <Icons.Download className="h-5 w-5" />
@@ -140,7 +157,9 @@ function PanelMeasurementTableTracking({
                   variant="ghost"
                   className="pl-0.5"
                   onClick={() => {
-                    measurementService.clearMeasurements();
+                    commandsManager.runCommand('clearMeasurements', {
+                      measurementFilter: MeasurementGroupFilter,
+                    });
                   }}
                 >
                   <Icons.Delete />

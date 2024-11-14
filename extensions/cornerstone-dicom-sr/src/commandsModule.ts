@@ -1,6 +1,6 @@
 import { metaData, utilities } from '@cornerstonejs/core';
 
-import OHIF, { DicomMetadataStore } from '@ohif/core';
+import OHIF, { DicomMetadataStore, utils } from '@ohif/core';
 import dcmjs from 'dcmjs';
 import { adaptersSR } from '@cornerstonejs/adapters';
 
@@ -42,7 +42,7 @@ const _generateReport = (measurementData, additionalFindingTypes, options = {}) 
 
 const commandsModule = (props: withAppTypes) => {
   const { servicesManager } = props;
-  const { customizationService } = servicesManager.services;
+  const { customizationService, measurementService } = servicesManager.services;
   const actions = {
     /**
      *
@@ -59,6 +59,20 @@ const commandsModule = (props: withAppTypes) => {
       //Create a URL for the binary.
       const objectUrl = URL.createObjectURL(reportBlob);
       window.location.assign(objectUrl);
+    },
+
+    /**
+     * Clear the measurements
+     */
+    clearMeasurements: ({ measurementFilter }) => {
+      measurementService.clearMeasurements(measurementFilter);
+    },
+
+    /**
+     * Download the CSV report for the measurements.
+     */
+    downloadCSVMeasurementsReport: ({ measurementFilter }) => {
+      utils.downloadCSVReport(measurementService.getMeasurements(measurementFilter));
     },
 
     /**
@@ -131,6 +145,12 @@ const commandsModule = (props: withAppTypes) => {
     },
     storeMeasurements: {
       commandFn: actions.storeMeasurements,
+    },
+    clearMeasurements: {
+      commandFn: actions.clearMeasurements,
+    },
+    downloadCSVMeasurementsReport: {
+      commandFn: actions.downloadCSVMeasurementsReport,
     },
   };
 

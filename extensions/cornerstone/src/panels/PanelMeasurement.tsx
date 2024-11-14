@@ -8,7 +8,7 @@ import { showLabelAnnotationPopup, colorPickerDialog } from '@ohif/extension-def
 export default function PanelMeasurementTable({
   servicesManager,
   customHeader,
-  measurementFilter,
+  groups,
 }: withAppTypes): React.ReactNode {
   const measurementsPanelRef = useRef(null);
 
@@ -32,11 +32,7 @@ export default function PanelMeasurementTable({
       return;
     }
 
-    const measurements = [...displayMeasurements];
-    const measurement = measurements.find(m => m.uid === uid);
-
-    measurements.forEach(m => (m.isActive = m.uid !== uid ? false : true));
-    measurement.isActive = true;
+    displayMeasurements.forEach(m => (m.isActive = m.uid === uid));
   };
 
   const jumpToImage = (uid: string) => {

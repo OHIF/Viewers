@@ -92,6 +92,18 @@ const VALUE_TYPES = {
   ROI_THRESHOLD_MANUAL: 'value_type::roiThresholdManual',
 };
 
+/** Selection for measurements to be in different groups */
+export type MeasurementSelectionFilter = {
+  studyInstanceUID?: string;
+  group?: string;
+  groups?: string[];
+};
+
+export type MeasurementGroupInfo = {
+  name: string;
+  filter?: (measurement, measurementService: MeasurementService) => boolean;
+};
+
 /**
  * MeasurementService class that supports source management and measurement management.
  * Sources can be any library that can provide "annotations" (e.g. cornerstone-tools, cornerstone, etc.)
@@ -120,10 +132,13 @@ class MeasurementService extends PubSubService {
   private measurements = new Map();
   private unmappedMeasurements = new Map();
 
+  private sources = {};
+  private mappings = {};
+
+  private groupInfos = new Map<string, MeasurementGroupInfo>();
+
   constructor() {
     super(EVENTS);
-    this.sources = {};
-    this.mappings = {};
   }
 
   /**
@@ -168,8 +183,73 @@ class MeasurementService extends PubSubService {
    *
    * @return {Measurement[]} Array of measurements
    */
-  getMeasurements() {
+  public getMeasurements(options?: MeasurementSelectionFilter) {
+    if (options) {
+      return [
+        ...this.measurements
+          .values()
+          .filter(measurement => this.isMeasurementFilter(measurement, options)),
+      ];
+    }
     return [...this.measurements.values()];
+  }
+
+  public isMeasurementFilter(measurement, options?: MeasurementSelectionFilter) {
+    if (!options || !(options.studyInstanceUID || options.group || options.groups?.length)) {
+      return true;
+    }
+    const { studyInstanceUID, group, groups } = options;
+    if (studyInstanceUID && studyInstanceUID !== measurement.referenceStudyUID) {
+      return false;
+    }
+    if (groups?.length) {
+      return !!groups.find(groupName => this.isMeasurementInGroup(measurement, groupName));
+    }
+    if (group) {
+      return this.isMeasurementInGroup(measurement, group);
+    }
+    return true;
+  }
+
+  /**
+   * Determines if the measurement is in another group
+   */
+  public isInOtherGroup(measurement, group) {
+    for (const groupInfo of this.groupInfos.values()) {
+      if (groupInfo.name === group) {
+        continue;
+      }
+      if (groupInfo.filter && groupInfo.filter(measurement, this)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  public getGroupsForMeasurement(measurement) {
+    const groups = [];
+    for (const groupInfo of this.groupInfos.values()) {
+      if (!groupInfo.filter || groupInfo.filter(measurement, this)) {
+        groups.push(groupInfo.name);
+      }
+    }
+    if (!groups.length) {
+      groups.push('Measurements');
+    }
+  }
+
+  /** Find out if the measurement is in this group */
+  public isMeasurementInGroup(measurement, group: string) {
+    const groupInfo = this.groupInfos.get(group);
+    return groupInfo?.filter ? groupInfo.filter(measurement, this) : true;
+  }
+
+  public setGroupFilter(name: string, filter) {
+    if (!this.groupInfos.has(name)) {
+      this.groupInfos.set(name, { name, filter });
+      return;
+    }
+    this.groupInfos.get(name).filter = filter;
   }
 
   /**
@@ -582,11 +662,13 @@ class MeasurementService extends PubSubService {
     });
   }
 
-  clearMeasurements() {
+  public clearMeasurements(options?: MeasurementSelectionFilter) {
     // Make a copy of the measurements
-    const measurements = [...this.measurements.values(), ...this.unmappedMeasurements.values()];
+    const toClear = this.getMeasurements(options);
+    const measurements = [...toClear, ...this.unmappedMeasurements.values()];
     this.unmappedMeasurements.clear();
-    this.measurements.clear();
+    toClear.forEach(measurement => this.measurements.delete(measurement.uid));
+    console.log('After clearMeasurements, size is', this.measurements.size);
     this._broadcastEvent(this.EVENTS.MEASUREMENTS_CLEARED, { measurements });
   }
 
@@ -597,6 +679,13 @@ class MeasurementService extends PubSubService {
    */
   onModeExit() {
     this.clearMeasurements();
+    this.groupInfos.clear();
+    // Creates a default measurements group filter which excludes everything but measurements
+    this.setGroupFilter(
+      'Measurements',
+      (measurement, service: MeasurementService) =>
+        !service.isInOtherGroup(measurement, 'Measurements')
+    );
   }
 
   /**
