@@ -130,6 +130,21 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
    * individual resize observers
    */
   public resize(isGridResize = false) {
+    // https://stackoverflow.com/a/26279685
+    // This resize() call, among other things, rerenders the viewports. But when the entire viewer is
+    // display: none'd, it makes the size of all hidden elements 0, including the viewport canvas and its containers.
+    // Even if the viewer is later displayed again, trying to render when the size is 0 permanently "breaks" the
+    // viewport, making it fully black even after the size is normal again. So just ignore resize events when hidden:
+    const areViewportsHidden = Array.from(this.viewportsById.values()).every(viewportInfo => {
+      const element = viewportInfo.getElement();
+
+      return element.clientWidth === 0 && element.clientHeight === 0;
+    });
+    if (areViewportsHidden) {
+      console.warn('Ignoring resize when viewports have size 0');
+      return;
+    }
+
     // if there is a grid resize happening, it means the viewport grid
     // has been manipulated (e.g., panels closed, added, etc.) and we need
     // to resize all viewports, so we will add a timeout here to make sure
