@@ -100,8 +100,14 @@ class SegmentationService extends PubSubService {
     this._segmentationIdToColorLUTIndexMap = new Map();
 
     this.servicesManager = servicesManager;
+  }
 
+  public onModeEnter(): void {
     this._initSegmentationService();
+  }
+
+  public onModeExit(): void {
+    this.destroy();
   }
 
   /**
@@ -1386,7 +1392,11 @@ class SegmentationService extends PubSubService {
     const frameOfReferenceUID = viewport.getFrameOfReferenceUID();
     const segImage = cache.getImage(imageIds[0]);
 
-    if (segImage?.FrameOfReferenceUID === frameOfReferenceUID) {
+    if (
+      segImage?.FrameOfReferenceUID &&
+      frameOfReferenceUID &&
+      segImage.FrameOfReferenceUID === frameOfReferenceUID
+    ) {
       const isConverted = await this.convertStackToVolumeViewport(viewport);
       triggerSegmentationRepresentationModified(
         viewportId,

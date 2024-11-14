@@ -612,7 +612,6 @@ export const Icons = {
       xmlns="http://www.w3.org/2000/svg"
       {...props}
     >
-      <title>icon-list-view</title>
       <g
         id="icon-list-view"
         stroke="none"
@@ -2866,4 +2865,12 @@ export const Icons = {
   'icon-chevron-patient': (props: IconProps) => Icons.ChevronPatient(props),
   info: (props: IconProps) => Icons.Info(props),
   settings: (props: IconProps) => Icons.Settings(props),
+
+  /** Adds an icon to the set of icons */
+  addIcon: (name: string, icon) => {
+    if (Icons[name]) {
+      console.warn('Replacing icon', name);
+    }
+    Icons[name] = icon;
+  },
 };

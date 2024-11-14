@@ -8,7 +8,7 @@ import { StudyBrowser } from '@ohif/ui-next';
 
 import { useTrackedMeasurements } from '../../getContextModule';
 import { Separator } from '@ohif/ui-next';
-import { PanelStudyBrowserTrackingHeader } from './PanelStudyBrowserTrackingHeader';
+import { PanelStudyBrowserHeader } from '@ohif/extension-default';
 import { defaultActionIcons, defaultViewPresets } from './constants';
 
 const { formatDate, createStudyBrowserTabs } = utils;
@@ -482,7 +482,7 @@ function PanelStudyBrowserTracking({
   return (
     <>
       <>
-        <PanelStudyBrowserTrackingHeader
+        <PanelStudyBrowserHeader
           viewPresets={viewPresets}
           updateViewPresetValue={updateViewPresetValue}
           actionIcons={actionIcons}

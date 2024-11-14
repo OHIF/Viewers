@@ -19,7 +19,7 @@ const ohif = {
 };
 
 const cornerstone = {
-  measurements: '@ohif/extension-cornerstone.panelModule.measurements',
+  measurements: '@ohif/extension-cornerstone.panelModule.panelMeasurement',
   segmentation: '@ohif/extension-cornerstone.panelModule.panelSegmentation',
 };
 
@@ -85,8 +85,14 @@ function modeFactory({ modeConfiguration }) {
      * Lifecycle hooks
      */
     onModeEnter: function ({ servicesManager, extensionManager, commandsManager }: withAppTypes) {
-      const { measurementService, toolbarService, toolGroupService, customizationService } =
-        servicesManager.services;
+      const {
+        measurementService,
+        toolbarService,
+        toolGroupService,
+        customizationService,
+        panelService,
+        segmentationService,
+      } = servicesManager.services;
 
       measurementService.clearMeasurements();
 
@@ -110,25 +116,23 @@ function modeFactory({ modeConfiguration }) {
 
       // // ActivatePanel event trigger for when a segmentation or measurement is added.
       // // Do not force activation so as to respect the state the user may have left the UI in.
-      // _activatePanelTriggersSubscriptions = [
-      //   ...panelService.addActivatePanelTriggers(dicomSeg.panel, [
-      //     {
-      //       sourcePubSubService: segmentationService,
-      //       sourceEvents: [
-      //         segmentationService.EVENTS.SEGMENTATION_PIXEL_DATA_CREATED,
-      //       ],
-      //     },
-      //   ]),
-      //   ...panelService.addActivatePanelTriggers(tracked.measurements, [
-      //     {
-      //       sourcePubSubService: measurementService,
-      //       sourceEvents: [
-      //         measurementService.EVENTS.MEASUREMENT_ADDED,
-      //         measurementService.EVENTS.RAW_MEASUREMENT_ADDED,
-      //       ],
-      //     },
-      //   ]),
-      // ];
+      _activatePanelTriggersSubscriptions = [
+        ...panelService.addActivatePanelTriggers(cornerstone.segmentation, [
+          {
+            sourcePubSubService: segmentationService,
+            sourceEvents: [segmentationService.EVENTS.SEGMENTATION_ADDED],
+          },
+        ]),
+        ...panelService.addActivatePanelTriggers(tracked.measurements, [
+          {
+            sourcePubSubService: measurementService,
+            sourceEvents: [
+              measurementService.EVENTS.MEASUREMENT_ADDED,
+              measurementService.EVENTS.RAW_MEASUREMENT_ADDED,
+            ],
+          },
+        ]),
+      ];
     },
     onModeExit: ({ servicesManager }: withAppTypes) => {
       const {

@@ -23,8 +23,8 @@ async function run() {
     console.log('Branch: release');
     await fs.writeFile('./commit.txt', currentCommitHash);
     const version = await fs.readFile('./version.txt', 'utf-8');
-    console.log('Version from version.txt:', version.trim());
-    return;
+    nextVersion = version.trim();
+    console.log('Version from version.txt:', nextVersion);
   } else {
     console.log('Branch: master');
     const prereleaseComponents = semver.prerelease(currentVersion);

@@ -51,17 +51,19 @@ export const AddSegmentRow: React.FC<AddSegmentRowProps> = ({ children = null, s
 
   return (
     <div className="bg-primary-dark my-px flex h-7 w-full items-center justify-between rounded pl-0.5 pr-7">
-      {allowAddSegment ? (
-        <Button
-          size="sm"
-          variant="ghost"
-          className="pr pl-0.5"
-          onClick={() => onSegmentAdd(segmentationIdToUse)}
-        >
-          <Icons.Add />
-          Add Segment
-        </Button>
-      ) : null}
+      <div className="flex-1">
+        {allowAddSegment ? (
+          <Button
+            size="sm"
+            variant="ghost"
+            className="pr pl-0.5"
+            onClick={() => onSegmentAdd(segmentationIdToUse)}
+          >
+            <Icons.Add />
+            Add Segment
+          </Button>
+        ) : null}
+      </div>
       <Button
         size="icon"
         variant="ghost"

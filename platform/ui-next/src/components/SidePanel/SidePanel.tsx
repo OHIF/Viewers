@@ -149,6 +149,7 @@ const SidePanel = ({
   activeTabIndex: activeTabIndexProp = null,
   tabs,
   onOpen,
+  onClose,
   expandedWidth = 280,
   onActiveTabIndexChange,
 }) => {
@@ -167,9 +168,11 @@ const SidePanel = ({
       setPanelOpen(panelOpen);
       if (panelOpen && onOpen) {
         onOpen();
+      } else if (onClose && !panelOpen) {
+        onClose();
       }
     },
-    [onOpen]
+    [onOpen, onClose]
   );
 
   const updateActiveTabIndex = useCallback(
@@ -357,7 +360,7 @@ const SidePanel = ({
   const getOpenStateComponent = () => {
     return (
       <>
-        <div className="bg-bkg-med flex h-[40px] select-none rounded-t p-2">
+        <div className="bg-bkg-med flex h-[40px] flex-shrink-0 select-none rounded-t p-2">
           {tabs.length === 1 ? getOneTabComponent() : getTabGridComponent()}
         </div>
         <Separator
@@ -407,6 +410,7 @@ SidePanel.propTypes = {
     ),
   ]),
   onOpen: PropTypes.func,
+  onClose: PropTypes.func,
   onActiveTabIndexChange: PropTypes.func,
   expandedWidth: PropTypes.number,
 };

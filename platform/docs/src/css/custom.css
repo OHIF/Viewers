@@ -34,6 +34,9 @@
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
     --radius: 0.5rem;
+    --badge-new-color: hsl(var(--primary-foreground));
+    --badge-new-background: linear-gradient(135deg, hsl(var(--highlight)), hsl(var(--primary)));
+    --badge-latest-stable-color: hsl(var(--primary));
   }
 
   .dark {
@@ -61,6 +64,9 @@
     --chart-3: 30 80% 55%;
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
+    --badge-new-color: hsl(var(--primary-foreground));
+    --badge-new-background: linear-gradient(135deg, hsl(var(--highlight)), hsl(var(--primary)));
+    --badge-latest-stable-color: hsl(var(--primary));
   }
 }
 
@@ -233,7 +239,9 @@ input[type='number'] {
 }
 
 .navbar__item svg {
-  margin-left: 5px;
+  margin-right: 5px;
+  display: inline-block;
+  vertical-align: middle;
 }
 
 /* stylelint-disable docusaurus/copyright-header */
@@ -663,4 +671,47 @@ html[data-theme='dark'] .markdown hr {
   opacity: 1;
   visibility: visible;
   transform: translateY(0);
+}
+
+.theme-doc-version-banner {
+  display: none;
+}
+
+/* New badge styling */
+/* New Badge Styling */
+a.navbar__item.navbar__link.navbar__link--active[href='/migration-guide/3p8-to-3p9/'][aria-current='page']::after {
+  content: ' NEW';
+  display: inline-block;
+  margin-left: 8px;
+  padding: 2px 6px;
+  font-size: 0.75em;
+  font-weight: bold;
+  color: var(--badge-new-color);
+  background: var(--badge-new-background);
+  border-radius: 12px;
+  position: relative;
+  overflow: hidden;
+  white-space: nowrap;
+  /* Shiny Effect */
+  background-size: 200% 200%;
+  animation: shine 2s linear infinite;
+  box-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+}
+
+/* Shiny Animation */
+@keyframes shine {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 100% 50%;
+  }
+}
+
+/* "(latest stable)" Text Styling */
+a.dropdown__link[href='/3.9/migration-guide/3p8-to-3p9/']::after {
+  content: ' (latest stable)';
+  color: var(--badge-latest-stable-color);
+  font-size: 0.9em;
+  margin-left: 4px;
 }

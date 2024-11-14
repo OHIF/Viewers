@@ -111,16 +111,14 @@ function commandsModule({
       commandsManager.run(options, optionsToUse);
     },
     updateStoredSegmentationPresentation: ({ displaySet, type }) => {
-      const { setSegmentationPresentation } = useSegmentationPresentationStore.getState();
+      const { addSegmentationPresentationItem } = useSegmentationPresentationStore.getState();
 
       const referencedDisplaySetInstanceUID = displaySet.referencedDisplaySetInstanceUID;
-      setSegmentationPresentation(referencedDisplaySetInstanceUID, [
-        {
-          segmentationId: displaySet.displaySetInstanceUID,
-          hydrated: true,
-          type,
-        },
-      ]);
+      addSegmentationPresentationItem(referencedDisplaySetInstanceUID, {
+        segmentationId: displaySet.displaySetInstanceUID,
+        hydrated: true,
+        type,
+      });
     },
     updateStoredPositionPresentation: ({ viewportId, displaySetInstanceUID }) => {
       const presentations = cornerstoneViewportService.getPresentations(viewportId);
@@ -1043,7 +1041,7 @@ function commandsModule({
      * @param props.key - The style key to set
      * @param props.value - The style value
      */
-    setSegmentationStyleCommand: ({ segmentationId, type, key, value }) => {
+    setSegmentationStyleCommand: ({ type, key, value }) => {
       const { segmentationService } = servicesManager.services;
       segmentationService.setStyle({ type }, { [key]: value });
     },
@@ -1150,12 +1148,17 @@ function commandsModule({
       const segment = segmentation.segments[segmentIndex];
       const { label } = segment;
 
-      callInputDialog(uiDialogService, label, (label, actionId) => {
+      const callback = (label, actionId) => {
         if (label === '') {
           return;
         }
 
         segmentationService.setSegmentLabel(segmentationId, segmentIndex, label);
+      };
+
+      callInputDialog(uiDialogService, label, callback, false, {
+        dialogTitle: 'Edit Segment Label',
+        inputLabel: 'Enter new label',
       });
     },
 
@@ -1169,12 +1172,17 @@ function commandsModule({
 
       const { label } = segmentation;
 
-      callInputDialog(uiDialogService, label, (label, actionId) => {
+      const callback = (label, actionId) => {
         if (label === '') {
           return;
         }
 
         segmentationService.addOrUpdateSegmentation({ segmentationId, label });
+      };
+
+      callInputDialog(uiDialogService, label, callback, false, {
+        dialogTitle: 'Edit Segmentation Label',
+        inputLabel: 'Enter new label',
       });
     },
 

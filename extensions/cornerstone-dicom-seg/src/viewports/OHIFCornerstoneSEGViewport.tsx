@@ -4,7 +4,6 @@ import { LoadingIndicatorTotalPercent, useViewportGrid, ViewportActionArrows } f
 import createSEGToolGroupAndAddTools from '../utils/initSEGToolGroup';
 import promptHydrateSEG from '../utils/promptHydrateSEG';
 import _getStatusComponent from './_getStatusComponent';
-import { useSegmentationPresentationStore } from '@ohif/extension-cornerstone';
 import { SegmentationRepresentations } from '@cornerstonejs/tools/enums';
 
 const SEG_TOOLGROUP_BASE_NAME = 'SEGToolGroup';
@@ -251,6 +250,14 @@ function OHIFCornerstoneSEGViewport(props: withAppTypes) {
     if (toolGroup) {
       return;
     }
+
+    // keep the already stored segmentationPresentation for this viewport in memory
+    // so that we can restore it after hydrating the SEG
+    commandsManager.runCommand('updateStoredSegmentationPresentation', {
+      displaySet: segDisplaySet,
+      type: SegmentationRepresentations.Labelmap,
+    });
+
     // always start fresh for this viewport since it is special type of viewport
     // that should only show one segmentation at a time.
     segmentationService.clearSegmentationRepresentations(viewportId);

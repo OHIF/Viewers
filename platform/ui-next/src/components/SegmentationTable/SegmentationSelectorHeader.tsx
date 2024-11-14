@@ -61,7 +61,7 @@ export const SegmentationSelectorHeader: React.FC<{ children?: React.ReactNode }
     info: seg.segmentation.cachedStats?.info,
   }));
 
-  const allowExport = exportOptions.find(
+  const allowExport = exportOptions?.find(
     ({ segmentationId }) => segmentationId === activeSegmentation.id
   )?.isExportable;
 
@@ -138,7 +138,7 @@ export const SegmentationSelectorHeader: React.FC<{ children?: React.ReactNode }
           ))}
         </SelectContent>
       </Select>
-      <Tooltip>
+      <Tooltip delayDuration={100}>
         <TooltipTrigger asChild>
           <Button
             variant="ghost"

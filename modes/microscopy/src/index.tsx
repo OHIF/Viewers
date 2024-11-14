@@ -114,8 +114,7 @@ function modeFactory({ modeConfiguration }) {
       },
     ],
     extensions: extensionDependencies,
-    hangingProtocol: ['default'],
-
+    hangingProtocol: 'default',
     sopClassHandlers: [
       '@ohif/extension-cornerstone.sopClassHandlerModule.DicomMicroscopySopClassHandler',
       '@ohif/extension-dicom-microscopy.sopClassHandlerModule.DicomMicroscopySRSopClassHandler',

@@ -330,6 +330,9 @@ const connectMeasurementServiceToTools = (measurementService, cornerstoneViewpor
       }
       removeAnnotation(uid);
     }
+
+    // trigger a render
+    cornerstoneViewportService.getRenderingEngine().render();
   });
 
   measurementService.subscribe(

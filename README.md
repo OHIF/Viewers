@@ -176,7 +176,7 @@ also supports a number of commands that can be found in their respective
 | **Deploy**                   |                                                               |
 | `build`\*                    | Builds production output for our PWA Viewer                   |  |
 
-\* - For more information on our different builds, check out our [Deploy
+\* - For more information on different builds, check out our [Deploy
 Docs][deployment-docs]
 
 ## Project

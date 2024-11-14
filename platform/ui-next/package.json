@@ -1,6 +1,6 @@
 {
   "name": "@ohif/ui-next",
-  "version": "3.9.0-beta.108",
+  "version": "3.10.0-beta.2",
   "description": "Next version of OHIF Viewers UI, more customizable using shadcn/ui",
   "main": "dist/ohif-ui-next.umd.js",
   "module": "src/index.ts",
@@ -53,7 +53,6 @@
     "react": "^18.3.1",
     "react-day-picker": "^8.10.1",
     "react-shepherd": "6.1.1",
-    "sanitize-html": "^2.13.1",
     "shepherd.js": "13.0.3",
     "sonner": "^1.5.0",
     "tailwind-merge": "^2.3.0",

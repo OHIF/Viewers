@@ -30,12 +30,7 @@ function TrackedMeasurementsContextProvider(
 
   const [viewportGrid, viewportGridService] = useViewportGrid();
   const { activeViewportId, viewports } = viewportGrid;
-  const {
-    measurementService,
-    displaySetService,
-    customizationService,
-    cornerstoneViewportService,
-  } = servicesManager.services;
+  const { measurementService, displaySetService, customizationService } = servicesManager.services;
 
   const machineOptions = Object.assign({}, defaultOptions);
   machineOptions.actions = Object.assign({}, machineOptions.actions, {
