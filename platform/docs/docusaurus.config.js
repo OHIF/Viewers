@@ -194,6 +194,12 @@ module.exports = {
             position: 'left',
           },
           {
+            to: '/migration-guide/3p8-to-3p9/',
+            //activeBaseRegex: '(^/help$)|(/help)',
+            label: '3.9 Migration Guides',
+            position: 'left',
+          },
+          {
             type: 'docsVersionDropdown',
             position: 'right',
             dropdownActiveClassDisabled: true,
