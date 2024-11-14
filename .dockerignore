@@ -1,9 +1,6 @@
 # Reduces size of context and hides
 # files from Docker (can't COPY or ADD these)
 
-# Output
-build/
-
 # Dependencies
 node_modules/
 
@@ -20,10 +17,7 @@ dockerfile
 .circleci
 
 # Unnecessary things to pull into container
-.circleci/
 .github/
 .netlify/
 .scripts/
-.vscode/
-coverage/
 docs/

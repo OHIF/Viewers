@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "baseUrl": "./",
+    "allowJs": true,
     "checkJs": true,
     // Ensure that Babel can safely transpile files in the TypeScript project
     "isolatedModules": true,

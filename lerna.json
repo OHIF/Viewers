@@ -2,6 +2,7 @@
   "version": "independent",
   "packages": ["extensions/*", "platform/*", "modes/*"],
   "npmClient": "yarn",
+  "useWorkspaces": true,
   "command": {
     "publish": {
       "ignoreChanges": ["*.md", "*.yml", "*.spec.js", "*.test.js"],
