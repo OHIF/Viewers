@@ -1,6 +1,6 @@
 {
   "name": "@ohif/extension-cornerstone-dicom-seg",
-  "version": "3.10.0-beta.2",
+  "version": "3.10.0-beta.3",
   "description": "DICOM SEG read workflow",
   "author": "OHIF",
   "license": "MIT",
