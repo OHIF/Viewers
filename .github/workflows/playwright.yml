@@ -8,23 +8,28 @@ jobs:
   playwright-tests:
     timeout-minutes: 60
     runs-on: ubuntu-latest
+    container:
+      image: mcr.microsoft.com/playwright:v1.48.1-focal
     strategy:
       fail-fast: false
       matrix:
-        shardIndex: [1, 2, 3, 4, 5]
-        shardTotal: [5]
+        shardIndex: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+        shardTotal: [10]
     steps:
       - uses: actions/checkout@v4
+      - name: Install unzip
+        run: apt-get update && apt-get install -y unzip
+      - uses: oven-sh/setup-bun@v2
       - uses: actions/setup-node@v4
         with:
           node-version: 18
       - name: Install dependencies
-        run: yarn install --frozen-lockfile
-      - name: Install Playwright Browsers
-        run: npx playwright install --with-deps
+        run: bun install --frozen-lockfile
+      - name: Set up Git safe directory
+        run: git config --global --add safe.directory /__w/Viewers/Viewers
       - name: Run Playwright tests
         run:
-          export NODE_OPTIONS="--max_old_space_size=8192" && npx playwright test --shard=${{
+          export NODE_OPTIONS="--max_old_space_size=8192" && bun x playwright test --shard=${{
           matrix.shardIndex }}/${{ matrix.shardTotal }}
 
       - name: Upload blob report to GitHub Actions Artifacts
@@ -40,12 +45,15 @@ jobs:
     needs: [playwright-tests]
     runs-on: ubuntu-latest
     steps:
+      - name: Install unzip
+        run: apt-get update && apt-get install -y unzip
+      - uses: oven-sh/setup-bun@v2
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 18
       - name: Install dependencies
-        run: yarn install --frozen-lockfile
+        run: bun install --frozen-lockfile
 
       - name: Download blob reports from GitHub Actions Artifacts
         uses: actions/download-artifact@v4
@@ -55,7 +63,7 @@ jobs:
           merge-multiple: true
 
       - name: Merge into HTML Report
-        run: npx playwright merge-reports --reporter html ./all-blob-reports
+        run: bun x playwright merge-reports --reporter html ./all-blob-reports
 
       - name: Upload HTML report
         uses: actions/upload-artifact@v4
