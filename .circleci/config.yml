@@ -284,12 +284,12 @@ jobs:
       - cypress/install:
           install-browsers: true
           install-command: bun install --no-save
-          package-manager: yarn
+          package-manager: bun
       - cypress/run-tests:
           cypress-command:
             npx wait-on@latest http://localhost:3000 && cd platform/app &&  npx cypress run --record
             --browser chrome --parallel
-          start-command: yarn run test:data && yarn run test:e2e:serve
+          start-command: bun run test:data && bun run test:e2e:serve
 
 workflows:
   PR_CHECKS:
