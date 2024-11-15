@@ -20,9 +20,8 @@ import { Command, Commands, ComplexCommand } from '../types/Command';
  */
 export class CommandsManager {
   private contexts = {};
-  // Has the current context priorities
-  private contextPriorities = new Map<string, number>();
-  private contextOrder: string[];
+  // Has the reverse order in which contexts are created, used for the default ordering
+  private contextOrder = new Array<string>();
 
   constructor(_options = {}) {
     // No-op
@@ -48,20 +47,8 @@ export class CommandsManager {
     }
 
     this.contexts[contextName] = {};
-    priority ??= this.contextPriorities.size + 1;
-    this.setContextPriority(contextName, priority);
-  }
-
-  /**
-   * Sets the current context priority, so that user specified modules can
-   * be run in the order
-   */
-  public setContextPriority(contextName: string, priority: number) {
-    this.contextPriorities.set(contextName, priority);
-    const contextOrder = [...this.contextPriorities.entries()].filter(it => it[1] >= 0);
-    // Order by decreasing priority
-    contextOrder.sort((a, b) => b[1] - a[1]);
-    this.contextOrder = contextOrder.map(it => it[0]);
+    // Add the context name to the start of the list.
+    this.contextOrder.splice(0, 0, contextName);
   }
 
   /**
