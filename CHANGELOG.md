@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.10.0-beta.4](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.3...v3.10.0-beta.4) (2024-11-15)
+
+
+### Bug Fixes
+
+* **ci:** address error in merge report step of the playwright workflow ([#4518](https://github.com/OHIF/Viewers/issues/4518)) ([d05db4c](https://github.com/OHIF/Viewers/commit/d05db4cb61b9f0492fd2498990f2ef0309cfaaa3))
+
+
+
+
+
 # [3.10.0-beta.3](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.2...v3.10.0-beta.3) (2024-11-14)
 
 
