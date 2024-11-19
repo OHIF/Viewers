@@ -4,7 +4,6 @@ import { useViewportGrid } from '@ohif/ui';
 import { MeasurementTable } from '@ohif/ui-next';
 import debounce from 'lodash.debounce';
 import { useMeasurements } from '../hooks/useMeasurements';
-import { showLabelAnnotationPopup, colorPickerDialog } from '@ohif/extension-default';
 
 const { filterAdditionalFinding, filterOr, filterAny } = utils.MeasurementFilters;
 

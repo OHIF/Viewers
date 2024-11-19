@@ -3,6 +3,7 @@ import { metaData, utilities } from '@cornerstonejs/core';
 import OHIF, { DicomMetadataStore, utils } from '@ohif/core';
 import dcmjs from 'dcmjs';
 import { adaptersSR } from '@cornerstonejs/adapters';
+import { showLabelAnnotationPopup, colorPickerDialog } from '@ohif/extension-default';
 
 import getFilteredCornerstoneToolState from './utils/getFilteredCornerstoneToolState';
 
@@ -42,7 +43,7 @@ const _generateReport = (measurementData, additionalFindingTypes, options = {}) 
 
 const commandsModule = (props: withAppTypes) => {
   const { servicesManager } = props;
-  const { customizationService, measurementService, viewportGridService } =
+  const { customizationService, measurementService, viewportGridService, uiDialogService } =
     servicesManager.services;
   const actions = {
     jumpToMeasurement: ({ uid }) => {
