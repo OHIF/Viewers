@@ -3,6 +3,54 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.10.0-beta.5](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.4...v3.10.0-beta.5) (2024-11-15)
+
+**Note:** Version bump only for package @ohif/mode-preclinical-4d
+
+
+
+
+
+# [3.10.0-beta.4](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.3...v3.10.0-beta.4) (2024-11-15)
+
+**Note:** Version bump only for package @ohif/mode-preclinical-4d
+
+
+
+
+
+# [3.10.0-beta.3](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.2...v3.10.0-beta.3) (2024-11-14)
+
+**Note:** Version bump only for package @ohif/mode-preclinical-4d
+
+
+
+
+
+# [3.10.0-beta.2](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.1...v3.10.0-beta.2) (2024-11-13)
+
+**Note:** Version bump only for package @ohif/mode-preclinical-4d
+
+
+
+
+
+# [3.10.0-beta.1](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.0...v3.10.0-beta.1) (2024-11-12)
+
+**Note:** Version bump only for package @ohif/mode-preclinical-4d
+
+
+
+
+
+# [3.10.0-beta.0](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.111...v3.10.0-beta.0) (2024-11-12)
+
+**Note:** Version bump only for package @ohif/mode-preclinical-4d
+
+
+
+
+
 # [3.9.0-beta.111](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.110...v3.9.0-beta.111) (2024-11-12)
 
 **Note:** Version bump only for package @ohif/mode-preclinical-4d

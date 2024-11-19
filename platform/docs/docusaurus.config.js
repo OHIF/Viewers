@@ -13,12 +13,17 @@ const versions = fs.readFileSync('../../version.txt', 'utf8').split('\n');
 
 const ArchivedVersionsDropdownItems = [
   {
-    version: '2.0-deprecated',
+    version: '3.8.5',
+    href: 'https://v3p8.docs.ohif.org',
+    isExternal: true,
+  },
+  {
+    version: '2.0',
     href: 'https://v2.docs.ohif.org',
     isExternal: true,
   },
   {
-    version: '1.0-deprecated',
+    version: '1.0',
     href: 'https://v1.docs.ohif.org',
     isExternal: true,
   },
@@ -136,10 +141,11 @@ module.exports = {
         // respectPrefersColorScheme: true,
       },
       announcementBar: {
-        id: 'healthimaging',
+        id: 'cornerstone20_ohif_anniversary',
         content:
-          '🎉 OHIF 3.8 has landed! Explore 4D and volume rendering, enhanced layout menus, streamlined visualization controls, workflow steps, and more. You can find the release notes by following this <a target="_blank" rel="noopener noreferrer" href="https://ohif.org/release-notes/3p8/">Link!</a> 🌟',
+          '🎉 Celebrating OHIF’s 10-Year Anniversary with Cornerstone 2.0! Explore enhanced segmentation, new video & microscopy viewports, UI/UX upgrades, and blazing fast prefetching. Dive into the release notes <a target="_blank" rel="noopener noreferrer" href="https://ohif.org/release-notes/3p9/">here</a>! 🚀',
       },
+
       prism: {
         theme: require('prism-react-renderer').themes.github,
         darkTheme: require('prism-react-renderer').themes.dracula,
@@ -185,6 +191,12 @@ module.exports = {
             to: '/help',
             //activeBaseRegex: '(^/help$)|(/help)',
             label: 'Help',
+            position: 'left',
+          },
+          {
+            to: '/migration-guide/3p8-to-3p9/',
+            //activeBaseRegex: '(^/help$)|(/help)',
+            label: '3.9 Migration Guides',
             position: 'left',
           },
           {
