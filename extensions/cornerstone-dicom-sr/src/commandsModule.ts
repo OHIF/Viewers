@@ -42,8 +42,57 @@ const _generateReport = (measurementData, additionalFindingTypes, options = {}) 
 
 const commandsModule = (props: withAppTypes) => {
   const { servicesManager } = props;
-  const { customizationService, measurementService } = servicesManager.services;
+  const { customizationService, measurementService, viewportGridService } =
+    servicesManager.services;
   const actions = {
+    jumpToMeasurement: ({ uid }) => {
+      measurementService.jumpToMeasurement(viewportGridService.getActiveViewportId(), uid);
+    },
+
+    removeMeasurement: ({ uid }) => {
+      measurementService.remove(uid);
+    },
+
+    renameMeasurement: ({ uid }) => {
+      const labelConfig = customizationService.get('measurementLabels');
+      const measurement = measurementService.getMeasurement(uid);
+      showLabelAnnotationPopup(measurement, uiDialogService, labelConfig).then(val => {
+        measurementService.update(
+          uid,
+          {
+            ...val,
+          },
+          true
+        );
+      });
+    },
+
+    changeColorMeasurement: ({ uid }) => {
+      const { color } = measurementService.getMeasurement(uid);
+      const rgbaColor = {
+        r: color[0],
+        g: color[1],
+        b: color[2],
+        a: color[3] / 255.0,
+      };
+      colorPickerDialog(uiDialogService, rgbaColor, (newRgbaColor, actionId) => {
+        if (actionId === 'cancel') {
+          return;
+        }
+
+        const color = [newRgbaColor.r, newRgbaColor.g, newRgbaColor.b, newRgbaColor.a * 255.0];
+        // segmentationService.setSegmentColor(viewportId, segmentationId, segmentIndex, color);
+      });
+    },
+
+    toggleLockMeasurement: ({ uid }) => {
+      measurementService.toggleLockMeasurement(uid);
+    },
+
+    toggleVisibilityMeasurement: ({ uid }) => {
+      measurementService.toggleVisibilityMeasurement(uid);
+    },
+
     /**
      *
      * @param measurementData An array of measurements from the measurements service
@@ -151,6 +200,21 @@ const commandsModule = (props: withAppTypes) => {
     },
     downloadCSVMeasurementsReport: {
       commandFn: actions.downloadCSVMeasurementsReport,
+    },
+    jumpToMeasurement: {
+      commandFn: actions.jumpToMeasurement,
+    },
+    removeMeasurement: {
+      commandFn: actions.removeMeasurement,
+    },
+    renameMeasurement: {
+      commandFn: actions.renameMeasurement,
+    },
+    toggleLockMeasurement: {
+      commandFn: actions.toggleLockMeasurement,
+    },
+    toggleVisibilityMeasurement: {
+      commandFn: actions.toggleVisibilityMeasurement,
     },
   };
 

@@ -14,6 +14,7 @@ export type withAppAndFilters = withAppTypes & {
 
 export default function PanelMeasurementTable({
   servicesManager,
+  commandsManager,
   customHeader,
   measurementFilters,
 }: withAppAndFilters): React.ReactNode {
@@ -45,55 +46,26 @@ export default function PanelMeasurementTable({
     displayMeasurements.forEach(m => (m.isActive = m.uid === uid));
   };
 
-  const jumpToImage = (uid: string) => {
-    measurementService.jumpToMeasurement(viewportGrid.activeViewportId, uid);
-    onMeasurementItemClickHandler(uid, true);
-  };
-
-  const removeMeasurement = (uid: string) => {
-    measurementService.remove(uid);
-  };
-
-  const renameMeasurement = (uid: string) => {
-    jumpToImage(uid);
-    const labelConfig = customizationService.get('measurementLabels');
-    const measurement = measurementService.getMeasurement(uid);
-    showLabelAnnotationPopup(measurement, uiDialogService, labelConfig).then(val => {
-      measurementService.update(
-        uid,
-        {
-          ...val,
-        },
-        true
-      );
-    });
-  };
-
-  const changeColorMeasurement = (uid: string) => {
-    const { color } = measurementService.getMeasurement(uid);
-    const rgbaColor = {
-      r: color[0],
-      g: color[1],
-      b: color[2],
-      a: color[3] / 255.0,
-    };
-    colorPickerDialog(uiDialogService, rgbaColor, (newRgbaColor, actionId) => {
-      if (actionId === 'cancel') {
-        return;
+  const bindCommand = (name: string, callJump = false) => {
+    return (uid: string) => {
+      if (!uid) {
+        debugger;
       }
-
-      const color = [newRgbaColor.r, newRgbaColor.g, newRgbaColor.b, newRgbaColor.a * 255.0];
-      // segmentationService.setSegmentColor(viewportId, segmentationId, segmentIndex, color);
-    });
+      if (callJump) {
+        commandsManager.runCommand('jumpToMeasurement');
+      }
+      commandsManager.runCommand(name, { uid });
+      if (callJump === null) {
+        onMeasurementItemClickHandler(uid, true);
+      }
+    };
   };
 
-  const toggleLockMeasurement = (uid: string) => {
-    measurementService.toggleLockMeasurement(uid);
-  };
-
-  const toggleVisibilityMeasurement = (uid: string) => {
-    measurementService.toggleVisibilityMeasurement(uid);
-  };
+  const jumpToImage = bindCommand('jumpToMeasurement', null);
+  const removeMeasurement = bindCommand('removeMeasurement');
+  const renameMeasurement = bindCommand('renameMeasurement', true);
+  const toggleLockMeasurement = bindCommand('toggleLockMeasurement');
+  const toggleVisibilityMeasurement = bindCommand('toggleVisibilityMeasurement');
 
   const additionalFilter = filterAdditionalFinding(measurementService);
 
