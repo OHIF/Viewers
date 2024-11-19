@@ -48,7 +48,7 @@ function usePatientInfo(servicesManager: AppTypes.ServicesManager) {
     }
     setPatientInfo({
       PatientID: instance.PatientID || null,
-      PatientName: instance.PatientName ? formatPN(instance.PatientName.Alphabetic) : null,
+      PatientName: instance.PatientName ? formatPN(instance.PatientName[0]?.Alphabetic) : null,
       PatientSex: instance.PatientSex || null,
       PatientDOB: formatDate(instance.PatientBirthDate) || null,
     });
@@ -116,7 +116,7 @@ function HeaderPatientInfo({ servicesManager, appConfig }: withAppTypes) {
         ) : (
           <div className="text-primary-active self-center text-[13px]">
             {' '}
-            {isMixedPatients ? 'Multiple Patients' : 'Patient'}
+            {isMixedPatients ? 'Multiple Patients' : patientInfo.PatientName}
           </div>
         )}
       </div>
