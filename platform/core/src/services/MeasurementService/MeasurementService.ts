@@ -92,17 +92,7 @@ const VALUE_TYPES = {
   ROI_THRESHOLD_MANUAL: 'value_type::roiThresholdManual',
 };
 
-/** Selection for measurements to be in different groups */
-export type MeasurementSelectionFilter = {
-  studyInstanceUID?: string;
-  group?: string;
-  groups?: string[];
-};
-
-export type MeasurementGroupInfo = {
-  name: string;
-  filter?: (measurement, measurementService: MeasurementService) => boolean;
-};
+export type MeasurementFilter = (measurement) => boolean;
 
 /**
  * MeasurementService class that supports source management and measurement management.
@@ -120,7 +110,7 @@ class MeasurementService extends PubSubService {
   public static REGISTRATION = {
     name: 'measurementService',
     altName: 'MeasurementService',
-    create: ({ configuration = {} }) => {
+    create: _options => {
       return new MeasurementService();
     },
   };
@@ -134,8 +124,6 @@ class MeasurementService extends PubSubService {
 
   private sources = {};
   private mappings = {};
-
-  private groupInfos = new Map<string, MeasurementGroupInfo>();
 
   constructor() {
     super(EVENTS);
@@ -183,73 +171,11 @@ class MeasurementService extends PubSubService {
    *
    * @return {Measurement[]} Array of measurements
    */
-  public getMeasurements(options?: MeasurementSelectionFilter) {
-    if (options) {
-      return [
-        ...this.measurements
-          .values()
-          .filter(measurement => this.isMeasurementFilter(measurement, options)),
-      ];
+  public getMeasurements(filter?: MeasurementFilter) {
+    if (filter) {
+      return [...this.measurements.values()].filter(measurement => filter.call(this, measurement));
     }
     return [...this.measurements.values()];
-  }
-
-  public isMeasurementFilter(measurement, options?: MeasurementSelectionFilter) {
-    if (!options || !(options.studyInstanceUID || options.group || options.groups?.length)) {
-      return true;
-    }
-    const { studyInstanceUID, group, groups } = options;
-    if (studyInstanceUID && studyInstanceUID !== measurement.referenceStudyUID) {
-      return false;
-    }
-    if (groups?.length) {
-      return !!groups.find(groupName => this.isMeasurementInGroup(measurement, groupName));
-    }
-    if (group) {
-      return this.isMeasurementInGroup(measurement, group);
-    }
-    return true;
-  }
-
-  /**
-   * Determines if the measurement is in another group
-   */
-  public isInOtherGroup(measurement, group) {
-    for (const groupInfo of this.groupInfos.values()) {
-      if (groupInfo.name === group) {
-        continue;
-      }
-      if (groupInfo.filter && groupInfo.filter(measurement, this)) {
-        return true;
-      }
-    }
-    return false;
-  }
-
-  public getGroupsForMeasurement(measurement) {
-    const groups = [];
-    for (const groupInfo of this.groupInfos.values()) {
-      if (!groupInfo.filter || groupInfo.filter(measurement, this)) {
-        groups.push(groupInfo.name);
-      }
-    }
-    if (!groups.length) {
-      groups.push('Measurements');
-    }
-  }
-
-  /** Find out if the measurement is in this group */
-  public isMeasurementInGroup(measurement, group: string) {
-    const groupInfo = this.groupInfos.get(group);
-    return groupInfo?.filter ? groupInfo.filter(measurement, this) : true;
-  }
-
-  public setGroupFilter(name: string, filter) {
-    if (!this.groupInfos.has(name)) {
-      this.groupInfos.set(name, { name, filter });
-      return;
-    }
-    this.groupInfos.get(name).filter = filter;
   }
 
   /**
@@ -662,13 +588,15 @@ class MeasurementService extends PubSubService {
     });
   }
 
-  public clearMeasurements(options?: MeasurementSelectionFilter) {
+  public clearMeasurements(filter?: MeasurementFilter) {
     // Make a copy of the measurements
-    const toClear = this.getMeasurements(options);
-    const measurements = [...toClear, ...this.unmappedMeasurements.values()];
-    this.unmappedMeasurements.clear();
+    const toClear = this.getMeasurements(filter);
+    const unmappedClear = filter
+      ? [...this.unmappedMeasurements.values()].filter(filter)
+      : this.unmappedMeasurements;
+    const measurements = [...toClear, ...unmappedClear];
+    unmappedClear.forEach(measurement => this.unmappedMeasurements.delete(measurement.uid));
     toClear.forEach(measurement => this.measurements.delete(measurement.uid));
-    console.log('After clearMeasurements, size is', this.measurements.size);
     this._broadcastEvent(this.EVENTS.MEASUREMENTS_CLEARED, { measurements });
   }
 
@@ -679,13 +607,6 @@ class MeasurementService extends PubSubService {
    */
   onModeExit() {
     this.clearMeasurements();
-    this.groupInfos.clear();
-    // Creates a default measurements group filter which excludes everything but measurements
-    this.setGroupFilter(
-      'Measurements',
-      (measurement, service: MeasurementService) =>
-        !service.isInOtherGroup(measurement, 'Measurements')
-    );
   }
 
   /**

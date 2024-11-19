@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { PanelMeasurement } from '@ohif/extension-cornerstone';
+import { DicomMetadataStore, utils } from '@ohif/core';
 import { useViewportGrid } from '@ohif/ui';
 import { StudySummary } from '@ohif/ui-next';
 import { Button, Icons } from '@ohif/ui-next';
-import { DicomMetadataStore, utils } from '@ohif/core';
+import { PanelMeasurement } from '@ohif/extension-cornerstone';
 import { useTrackedMeasurements } from '../getContextModule';
 import { useTranslation } from 'react-i18next';
+
+const { filterAny, filterNone, filterNot, filterTracked } = utils.MeasurementFilters;
 
 const { formatDate } = utils;
 
@@ -15,19 +17,6 @@ const DISPLAY_STUDY_SUMMARY_INITIAL_VALUE = {
   modality: '', // 'CT',
   description: '', // 'CHEST/ABD/PELVIS W CONTRAST',
 };
-
-export enum MeasurementGroups {
-  Measurement = 'Measurement',
-  Untracked = 'Untracked',
-  AdditionalFindings = 'AdditionalFindings',
-  Label = 'Label',
-}
-
-const groups = [MeasurementGroups.Measurement, MeasurementGroups.AdditionalFindings];
-
-const MeasurementGroupFilter = { group: MeasurementGroups.Measurement };
-// const UntrackedGroupFilter = { group: MeasurementGroups.Untracked };
-// const LabelGroupFilter = { group: MeasurementGroups.Label };
 
 function PanelMeasurementTableTracking({
   servicesManager,
@@ -42,9 +31,18 @@ function PanelMeasurementTableTracking({
   const [displayStudySummary, setDisplayStudySummary] = useState(
     DISPLAY_STUDY_SUMMARY_INITIAL_VALUE
   );
+  const initialTrackedFilter = trackedStudy
+    ? filterTracked(trackedStudy, trackedSeries)
+    : filterAny;
+  const [measurementFilters, setMeasurementFilters] = useState({
+    measurementFilter: initialTrackedFilter,
+    untrackedFilter: filterNot('measurementFilter'),
+    unmappedFilter: filterAny,
+  });
 
   useEffect(() => {
     const updateDisplayStudySummary = async () => {
+      let updatedMeasurementFilters = { ...measurementFilters };
       if (trackedMeasurements.matches('tracking') && trackedStudy) {
         const studyMeta = DicomMetadataStore.getStudy(trackedStudy);
         if (!studyMeta || !studyMeta.series || studyMeta.series.length === 0) {
@@ -74,21 +72,12 @@ function PanelMeasurementTableTracking({
           }
           return prevSummary;
         });
+        updatedMeasurementFilters.measurementFilter = filterTracked(trackedStudy, trackedSeries);
       } else if (!trackedStudy) {
         setDisplayStudySummary(DISPLAY_STUDY_SUMMARY_INITIAL_VALUE);
-        console.log('*********** No tracked study');
+        updatedMeasurementFilters.measurementFilter = filterAny;
       }
-      measurementService.setGroupFilter(
-        'Measurement',
-        measurement =>
-          (trackedStudy === measurement.referenceStudyUID &&
-            trackedSeries.includes(measurement.referenceSeriesUID)) ||
-          !trackedStudy
-      );
-      measurementService.setGroupFilter(
-        'Untracked',
-        measurement => !measurementService.isInOtherGroup(measurement, 'Untracked')
-      );
+      setMeasurementFilters(updatedMeasurementFilters);
     };
 
     updateDisplayStudySummary();
@@ -114,7 +103,7 @@ function PanelMeasurementTableTracking({
         servicesManager={servicesManager}
         extensionManager={extensionManager}
         commandsManager={commandsManager}
-        groups={groups}
+        measurementFilters={measurementFilters}
         customHeader={({ additionalFindings, measurements }) => {
           const disabled = additionalFindings.length === 0 && measurements.length === 0;
 
@@ -130,9 +119,7 @@ function PanelMeasurementTableTracking({
                   variant="ghost"
                   className="pl-1.5"
                   onClick={() => {
-                    commandsManager.runCommand('clearMeasurements', {
-                      measurementFilter: MeasurementGroupFilter,
-                    });
+                    commandsManager.runCommand('clearMeasurements', measurementFilters);
                   }}
                 >
                   <Icons.Download className="h-5 w-5" />
@@ -157,9 +144,7 @@ function PanelMeasurementTableTracking({
                   variant="ghost"
                   className="pl-0.5"
                   onClick={() => {
-                    commandsManager.runCommand('clearMeasurements', {
-                      measurementFilter: MeasurementGroupFilter,
-                    });
+                    commandsManager.runCommand('clearMeasurements', measurementFilters);
                   }}
                 >
                   <Icons.Delete />
