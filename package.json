@@ -112,7 +112,6 @@
     "package-json": "^8.1.0",
     "typescript": "5.5.4",
     "sharp": "^0.32.6",
-    "ip": "https://registry.npmjs.org/ip-address/-/ip-address-9.0.5.tgz",
     "**/express/path-to-regexp": "0.1.10",
     "**/serve/serve-handler/path-to-regexp": "3.3.0",
     "**/@docusaurus/core/serve-handler/path-to-regexp": "3.3.0",

@@ -3,6 +3,39 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.10.0-beta.5](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.4...v3.10.0-beta.5) (2024-11-15)
+
+
+### Bug Fixes
+
+* **viewport:** set a minimum width of 5px on viewports to prevent them from turning black/ going into an unrecoverable state. ([#4517](https://github.com/OHIF/Viewers/issues/4517)) ([32fe262](https://github.com/OHIF/Viewers/commit/32fe2623cfb5129a19ee07031dd50e79b530c7e0))
+
+
+
+
+
+# [3.10.0-beta.4](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.3...v3.10.0-beta.4) (2024-11-15)
+
+
+### Bug Fixes
+
+* **ci:** address error in merge report step of the playwright workflow ([#4518](https://github.com/OHIF/Viewers/issues/4518)) ([d05db4c](https://github.com/OHIF/Viewers/commit/d05db4cb61b9f0492fd2498990f2ef0309cfaaa3))
+
+
+
+
+
+# [3.10.0-beta.3](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.2...v3.10.0-beta.3) (2024-11-14)
+
+
+### Bug Fixes
+
+* avoid black images after hiding the viewports ([#4502](https://github.com/OHIF/Viewers/issues/4502)) ([ad8f205](https://github.com/OHIF/Viewers/commit/ad8f205e419d439bd8e51eff1101b2ef4c314214))
+
+
+
+
+
 # [3.10.0-beta.2](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.1...v3.10.0-beta.2) (2024-11-13)
 
 **Note:** Version bump only for package ohif-monorepo-root
