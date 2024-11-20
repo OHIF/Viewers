@@ -4,31 +4,6 @@
 import { metaData } from '@cornerstonejs/core';
 import * as cs3dTools from '@cornerstonejs/tools';
 
-/*
-{
-    "id": 35133,
-    "name": "patella_transverse_interior_left",
-    "x": null,
-    "y": null,
-    "xOrigin": "0.6696428656578064",
-    "yOrigin": "0.8514971137046814",
-    "lastModificationUserId": null,
-    "lastModificationDate": "2024-10-22T07:52:00.716Z"
-}
-{
-    "id": 35128,
-    "name": "patella_transverse_exterior_left",
-    "x": null,
-    "y": null,
-    "xOrigin": "0.7879464030265808",
-    "yOrigin": "0.8514971137046814",
-    "lastModificationUserId": null,
-    "lastModificationDate": "2024-10-22T07:52:00.714Z"
-}
-
-8ca9e2a6-42d3-48aa-b2d0-92e05d62149c
-*/
-
 function convertToDicomCoordinates(
   normalizedX,
   normalizedY,
@@ -59,8 +34,8 @@ function convertToDicomCoordinates(
   return [dicomX, dicomY, dicomZ];
 }
 
-export async function demonstrateMeasurementService(servicesManager) {
-  console.log('Demonstrating MeasurementService functionality');
+export async function demonstrateMeasurementService(servicesManager, points) {
+  console.log('Demonstrating MeasurementService functionality', points);
   const { ViewportGridService, CornerstoneViewportService } = servicesManager.services;
 
   const viewportId = ViewportGridService.getActiveViewportId();
@@ -72,8 +47,6 @@ export async function demonstrateMeasurementService(servicesManager) {
   const imageMetadata = viewport.getImageData(imageId);
 
   console.log('imageMetadata:', imageMetadata, imageId);
-
-  console.log('test', cs3dTools.state.enabledElements);
 
   if (!imageId) {
     console.error('No image ID found');
@@ -90,89 +63,68 @@ export async function demonstrateMeasurementService(servicesManager) {
   );
   console.log('imageSize', imageSize, imageMetadata);
 
-  const normalizedX = '0.6696428656578064';
-  const normalizedY = '0.8514971137046814';
-  const imageWidth = imageMetadata.dimensions[0];
-  const imageHeight = imageMetadata.dimensions[1];
-  const pixelSpacingX = imageMetadata.spacing[0];
-  const pixelSpacingY = imageMetadata.spacing[1];
-  const imagePositionPatient = imageMetadata.origin;
-  const orientationMatrix = imageMetadata.direction;
-
-  const dicomCoords = convertToDicomCoordinates(
-    normalizedX,
-    normalizedY,
-    imageWidth,
-    imageHeight,
-    pixelSpacingX,
-    pixelSpacingY,
-    imagePositionPatient,
-    orientationMatrix
-  );
-  console.log(dicomCoords); // Outputs the DICOM coordinates (x, y, z)
-
-  const normalizedX2 = '0.7879464030265808';
-  const normalizedY2 = '0.8514971137046814';
-  const imageWidth2 = imageMetadata.dimensions[0];
-  const imageHeight2 = imageMetadata.dimensions[1];
-  const pixelSpacingX2 = imageMetadata.spacing[0];
-  const pixelSpacingY2 = imageMetadata.spacing[1];
-  const imagePositionPatient2 = imageMetadata.origin;
-  const orientationMatrix2 = imageMetadata.direction;
-
-  const dicomCoords2 = convertToDicomCoordinates(
-    normalizedX2,
-    normalizedY2,
-    imageWidth2,
-    imageHeight2,
-    pixelSpacingX2,
-    pixelSpacingY2,
-    imagePositionPatient2,
-    orientationMatrix2
-  );
-
-  console.log(dicomCoords2); // Outputs the DICOM coordinates (x, y, z)
-
-  //const testMeasurement = createTestMeasurement(imageId, imageSize);
-
-  try {
-    cs3dTools.LengthTool.createAndAddAnnotation(viewport, {
-      data: {
-        handles: {
-          points: [dicomCoords, dicomCoords2],
-        },
-        cachedStats: {
-          [`imageId:${imageId}`]: {
-            length: '114',
-            unit: 'mm',
+  points.forEach((point) => {
+    console.log('point', point);
+    try {
+      const normalizedX = point[0].xOrigin;
+      const normalizedY = point[0].yOrigin;
+      const imageWidth = imageMetadata.dimensions[0];
+      const imageHeight = imageMetadata.dimensions[1];
+      const pixelSpacingX = imageMetadata.spacing[0];
+      const pixelSpacingY = imageMetadata.spacing[1];
+      const imagePositionPatient = imageMetadata.origin;
+      const orientationMatrix = imageMetadata.direction;
+    
+      const dicomCoords = convertToDicomCoordinates(
+        normalizedX,
+        normalizedY,
+        imageWidth,
+        imageHeight,
+        pixelSpacingX,
+        pixelSpacingY,
+        imagePositionPatient,
+        orientationMatrix
+      );
+    
+      const normalizedX2 = point[1].xOrigin;
+      const normalizedY2 = point[1].yOrigin;
+      const imageWidth2 = imageMetadata.dimensions[0];
+      const imageHeight2 = imageMetadata.dimensions[1];
+      const pixelSpacingX2 = imageMetadata.spacing[0];
+      const pixelSpacingY2 = imageMetadata.spacing[1];
+      const imagePositionPatient2 = imageMetadata.origin;
+      const orientationMatrix2 = imageMetadata.direction;
+    
+      const dicomCoords2 = convertToDicomCoordinates(
+        normalizedX2,
+        normalizedY2,
+        imageWidth2,
+        imageHeight2,
+        pixelSpacingX2,
+        pixelSpacingY2,
+        imagePositionPatient2,
+        orientationMatrix2
+      );
+  
+      console.log('dicomCoords', dicomCoords, dicomCoords2);
+  
+      cs3dTools.LengthTool.createAndAddAnnotation(viewport, {
+        data: {
+          handles: {
+            points: [dicomCoords, dicomCoords2],
+          },
+          cachedStats: {
+            [`imageId:${imageId}`]: {
+              length: '114',
+              unit: 'mm',
+            },
           },
         },
-      },
-    });
-    /*const annotation: cs3dTools.Types.Annotation = {
-      metadata: {
-        toolName: testMeasurement.toolName,
-        FrameOfReferenceUID: testMeasurement.metadata.FrameOfReferenceUID,
-        referencedImageId: imageId,
-      },
-      data: {
-        handles: {
-          points: testMeasurement.data.handles.points.map(point => [point.x, point.y, point.z]),
-        },
-        cachedStats: testMeasurement.data.cachedStats,
-      },
-      highlighted: false,
-      isLocked: false,
-      isVisible: true,
-      invalidated: false,
-    };
-
-    cs3dTools.annotation.state.addAnnotation(annotation, 'CORNERSTONE_3D_TOOLS');*/
-
-    //viewport.render();
-  } catch (error) {
-    console.error('Error adding measurement:', error);
-  }
+      });
+    } catch (error) {
+      console.error('Error adding measurement:', error);
+    }
+  })
 }
 
 function createTestMeasurement(imageId, imageSize) {
