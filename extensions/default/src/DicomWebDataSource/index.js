@@ -438,19 +438,37 @@ function createDicomWebApi(dicomWebConfig, servicesManager) {
             instance,
           });
 
+          const isMultiframe = instance.NumberOfFrames > 1;
+
+          if (isMultiframe) {
+            // we need to break each frame into a separate instance
+            for (let i = 0; i < instance.NumberOfFrames; i++) {
+              const imageId = implementation.getImageIdsForInstance({
+                instance,
+                frame: i + 1,
+              });
+
+              metadataProvider.addImageIdToUIDs(imageId, {
+                StudyInstanceUID,
+                SeriesInstanceUID: instance.SeriesInstanceUID,
+                SOPInstanceUID: instance.SOPInstanceUID,
+                frameNumber: i + 1,
+              });
+            }
+          } else {
+            // Adding UIDs to metadataProvider
+            // Note: storing imageURI in metadataProvider since stack viewports
+            // will use the same imageURI
+            metadataProvider.addImageIdToUIDs(imageId, {
+              StudyInstanceUID,
+              SeriesInstanceUID: instance.SeriesInstanceUID,
+              SOPInstanceUID: instance.SOPInstanceUID,
+            });
+          }
           // Adding imageId to each instance
           // Todo: This is not the best way I can think of to let external
           // metadata handlers know about the imageId that is stored in the store
           instance.imageId = imageId;
-
-          // Adding UIDs to metadataProvider
-          // Note: storing imageURI in metadataProvider since stack viewports
-          // will use the same imageURI
-          metadataProvider.addImageIdToUIDs(imageId, {
-            StudyInstanceUID,
-            SeriesInstanceUID: instance.SeriesInstanceUID,
-            SOPInstanceUID: instance.SOPInstanceUID,
-          });
         });
 
         DicomMetadataStore.addInstances(naturalizedInstances, madeInClient);

@@ -153,14 +153,33 @@ function createDicomLocalApi(dicomLocalConfig) {
               } = instance;
 
               instance.imageId = imageId;
+              if (isMultiframe) {
+                // we need to break each frame into a separate instance
+                // and create a new imageId for each frame
+                for (let i = 0; i < instance.NumberOfFrames; i++) {
+                  const frameNumber = i + 1;
+                  const frameImageId = implementation.getImageIdsForInstance({
+                    instance,
+                    frame: frameNumber,
+                  });
 
-              // Add imageId specific mapping to this data as the URL isn't necessarily WADO-URI.
-              metadataProvider.addImageIdToUIDs(imageId, {
-                StudyInstanceUID,
-                SeriesInstanceUID,
-                SOPInstanceUID,
-                frameIndex: isMultiframe ? index : 1,
-              });
+                  // Add imageId specific mapping to this data as the URL isn't necessarily WADO-URI.
+                  metadataProvider.addImageIdToUIDs(frameImageId, {
+                    StudyInstanceUID,
+                    SeriesInstanceUID,
+                    SOPInstanceUID,
+                    frameNumber,
+                  });
+                }
+              } else {
+                // Add imageId specific mapping to this data as the URL isn't necessarily WADO-URI.
+                metadataProvider.addImageIdToUIDs(imageId, {
+                  StudyInstanceUID,
+                  SeriesInstanceUID,
+                  SOPInstanceUID,
+                  frameIndex: isMultiframe ? index : 1,
+                });
+              }
             });
 
             DicomMetadataStore._broadcastEvent(EVENTS.INSTANCES_ADDED, {
@@ -209,9 +228,11 @@ function createDicomLocalApi(dicomLocalConfig) {
       return imageIds;
     },
     getImageIdsForInstance({ instance, frame }) {
-      if (instance.imageId) {
-        return instance.imageId;
-      }
+      // Important: Never use instance.imageId because it might be multiframe,
+      // which would make it an invalid imageId.
+      // if (instance.imageId) {
+      //   return instance.imageId;
+      // }
 
       const { StudyInstanceUID, SeriesInstanceUID, SOPInstanceUID } = instance;
       const storedInstance = DicomMetadataStore.getInstance(
