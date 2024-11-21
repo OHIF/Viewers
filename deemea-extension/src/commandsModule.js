@@ -18,15 +18,9 @@ const commandsModule = ({ servicesManager }) => {
         ViewportGridService,
         CornerstoneViewportService,
         UINotificationService,
-        LayoutService,
         PanelService,
       } = servicesManager.services;
 
-      console.log('measurementService:', measurementService.EVENTS);
-      console.log('ViewportGridService:', ViewportGridService);
-      console.log('CornerstoneViewportService:', CornerstoneViewportService);
-      console.log('UINotificationService:', UINotificationService);
-      console.log('PanelService:', PanelService);
       if (!measurementService || !ViewportGridService || !CornerstoneViewportService) {
         console.error('Required services are not available');
         return;
@@ -34,9 +28,18 @@ const commandsModule = ({ servicesManager }) => {
 
       window.addEventListener('message', event => {
         if (event.data.type === 'POINTS_UPDATED') {
-          console.log('Points updated:', event.data.points);
+          const relatedPoints = event.data.points;
+          console.log('Points updated:', relatedPoints);
           // Update measurements based on points
-          demonstrateMeasurementService(servicesManager);
+          // demonstrateMeasurementService(servicesManager, event.data.points);
+          CornerstoneViewportService.subscribe(
+            CornerstoneViewportService.EVENTS.VIEWPORT_DATA_CHANGED,
+            event => {
+              console.log('Viewport data changed:', event);
+              demonstrateMeasurementService(servicesManager, relatedPoints);
+              measurementService.removeAll();
+            }
+          );
         }
 
         if (event.data.type === 'remove_measure') {
@@ -45,7 +48,6 @@ const commandsModule = ({ servicesManager }) => {
         }
       });
 
-      // permet de capturer les changements de viewport et de déclencher la fonction demonstrateMeasurementService
       CornerstoneViewportService.subscribe(
         CornerstoneViewportService.EVENTS.VIEWPORT_DATA_CHANGED,
         event => {
