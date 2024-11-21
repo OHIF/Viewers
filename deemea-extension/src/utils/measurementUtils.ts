@@ -115,8 +115,8 @@ export async function demonstrateMeasurementService(servicesManager, points) {
           },
           cachedStats: {
             [`imageId:${imageId}`]: {
-              length: '114',
-              unit: 'mm',
+              length: 'X',
+              unit: 'px',
             },
           },
         },
