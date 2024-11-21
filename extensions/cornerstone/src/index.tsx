@@ -108,10 +108,10 @@ const cornerstoneExtension: Types.Extensions.Extension = {
     // image retrieve, but don't perform progressive loading per image
     // This interleaves images and replicates them for low-resolution depth volume
     // reconstruction, which progressively improves
-    imageRetrieveMetadataProvider.add(
-      'volume',
-      cornerstone.ProgressiveRetrieveImages.interleavedRetrieveStages
-    );
+    // imageRetrieveMetadataProvider.add(
+    //   'volume',
+    //   cornerstone.ProgressiveRetrieveImages.interleavedRetrieveStages
+    // );
     // The default stack loading option is to progressive load HTJ2K images
     // There are other possible options, but these need more thought about
     // how to define them.
