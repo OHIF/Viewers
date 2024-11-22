@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.10.0-beta.7](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.6...v3.10.0-beta.7) (2024-11-22)
+
+
+### Bug Fixes
+
+* Make the commands ordering the registration order of hte mode ([#4492](https://github.com/OHIF/Viewers/issues/4492)) ([edfaf72](https://github.com/OHIF/Viewers/commit/edfaf7248d217707e90d24642361a40c6f1a03ff))
+
+
+
+
+
+# [3.10.0-beta.6](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.5...v3.10.0-beta.6) (2024-11-22)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
 # [3.10.0-beta.5](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.4...v3.10.0-beta.5) (2024-11-15)
 
 **Note:** Version bump only for package @ohif/core
