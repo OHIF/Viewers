@@ -36,12 +36,6 @@ const commandsModule = ({ servicesManager }) => {
           demonstrateMeasurementService(servicesManager);
         }
       );
-
-      UINotificationService.show({
-        title: 'Measurement Service',
-        message: 'Demonstrating Measurement Service functionality...',
-        type: 'info',
-      });
     },
     linkMeasurement: info => {
       window.parent.postMessage(
