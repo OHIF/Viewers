@@ -78,25 +78,25 @@ Stack: ${error.stack}
       >
         <DialogContent className="border-input h-[50vh] w-[90vw] border-2 sm:max-w-[900px]">
           <DialogHeader>
-            <DialogTitle className="text-muted-foreground text-xl">{title}</DialogTitle>
+            <DialogTitle className="text-muted-foreground flex justify-between text-xl">
+              <div className="flex items-center">{title}</div>
+              <button
+                onClick={() => {
+                  copyErrorDetails();
+                  setShowDetails(false);
+                }}
+                className="text-aqua-pale hover:text-aqua-pale/80 flex items-center gap-2 rounded bg-gray-800 px-4 py-2 font-light"
+              >
+                <Icons.Code className="h-4 w-4" />
+                {t('Copy Details')}
+              </button>
+            </DialogTitle>
+
             <DialogDescription className="text-lg">{subtitle}</DialogDescription>
           </DialogHeader>
 
           <ScrollArea className="h-[100%]">
             <div className="space-y-4 pr-4 font-mono text-base">
-              <div className="flex justify-end">
-                <button
-                  onClick={() => {
-                    copyErrorDetails();
-                    setShowDetails(false);
-                  }}
-                  className="text-aqua-pale hover:text-aqua-pale/80 flex items-center gap-2 rounded bg-gray-800 px-4 py-2"
-                >
-                  <Icons.Code className="h-4 w-4" />
-                  {t('Copy Details')}
-                </button>
-              </div>
-
               <div className="space-y-4">
                 <p className="text-aqua-pale break-words text-lg">
                   {t('Context')}: {context}
