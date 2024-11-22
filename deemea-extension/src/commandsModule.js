@@ -1,14 +1,4 @@
-import { demonstrateMeasurementService } from './utils/measurementUtils';
-
-function NormalizeDicomCoordinates(matrix, coords) {
-  let result = [];
-
-  result[0] = matrix[0] * coords[0] + matrix[1] * coords[1] + matrix[2] * coords[2]; // X'
-  result[1] = matrix[3] * coords[0] + matrix[4] * coords[1] + matrix[5] * coords[2]; // Y'
-  result[2] = matrix[6] * coords[0] + matrix[7] * coords[1] + matrix[8] * coords[2]; // Z'
-
-  return result;
-}
+import { demonstrateMeasurementService, createMeasurement } from './utils/measurementUtils';
 
 const commandsModule = ({ servicesManager }) => {
   const actions = {
@@ -18,7 +8,6 @@ const commandsModule = ({ servicesManager }) => {
         ViewportGridService,
         CornerstoneViewportService,
         UINotificationService,
-        PanelService,
       } = servicesManager.services;
 
       if (!measurementService || !ViewportGridService || !CornerstoneViewportService) {
@@ -29,13 +18,11 @@ const commandsModule = ({ servicesManager }) => {
       window.addEventListener('message', event => {
         if (event.data.type === 'POINTS_UPDATED') {
           const relatedPoints = event.data.points;
-          console.log('Points updated:', relatedPoints);
           // Update measurements based on points
           // demonstrateMeasurementService(servicesManager, event.data.points);
           CornerstoneViewportService.subscribe(
             CornerstoneViewportService.EVENTS.VIEWPORT_DATA_CHANGED,
-            event => {
-              console.log('Viewport data changed:', event);
+            () => {
               demonstrateMeasurementService(servicesManager, relatedPoints);
               measurementService.removeAll();
             }
@@ -50,8 +37,7 @@ const commandsModule = ({ servicesManager }) => {
 
       CornerstoneViewportService.subscribe(
         CornerstoneViewportService.EVENTS.VIEWPORT_DATA_CHANGED,
-        event => {
-          console.log('Viewport data changed:', event);
+        () => {
           demonstrateMeasurementService(servicesManager);
         }
       );
@@ -63,30 +49,20 @@ const commandsModule = ({ servicesManager }) => {
       });
     },
     createForms: () => {
-      const { measurementService, viewportGridService, cornerstoneViewportService } =
-        servicesManager.services;
+      const { measurementService } = servicesManager.services;
 
-      measurementService.subscribe(measurementService.EVENTS.MEASUREMENT_ADDED, event => {
-        const viewportId = viewportGridService.getActiveViewportId();
-        const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
-        const imageId = viewport.getCurrentImageId();
-        const imageMetadata = viewport.getImageData(imageId);
-
-        console.log('event', event.measurement.points);
-
+      measurementService.subscribe(measurementService.EVENTS.MEASUREMENT_ADDED, async event => {
         const newPoints = [];
 
-        event.measurement.points.forEach(point =>
-          newPoints.push(NormalizeDicomCoordinates(imageMetadata.direction, point))
-        );
+        event.measurement.points.forEach(point => newPoints.push(point));
 
-        console.log('ADDING', newPoints);
         if (newPoints) {
+          const normalizedPoints = await createMeasurement(servicesManager, newPoints);
           window.parent.postMessage(
             {
               type: 'create_measure',
               message: {
-                points: newPoints,
+                points: normalizedPoints,
                 elementType: event.measurement.toolName,
                 uid: event.measurement.uid,
               },
@@ -97,24 +73,19 @@ const commandsModule = ({ servicesManager }) => {
       });
 
       let dataToSend = [];
-      measurementService.subscribe(measurementService.EVENTS.MEASUREMENT_UPDATED, event => {
-        const viewportId = viewportGridService.getActiveViewportId();
-        const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
-        const imageId = viewport.getCurrentImageId();
-        const imageMetadata = viewport.getImageData(imageId);
-
+      measurementService.subscribe(measurementService.EVENTS.MEASUREMENT_UPDATED, async event => {
         const updatedPoints = [];
-        event.measurement.points.forEach(point =>
-          updatedPoints.push(NormalizeDicomCoordinates(imageMetadata.direction, point))
-        );
+        event.measurement.points.forEach(point => updatedPoints.push(point));
+
+        const normalizedPoints = await createMeasurement(servicesManager, updatedPoints);
 
         dataToSend = {
-          points: updatedPoints,
+          points: normalizedPoints,
           elementType: event.measurement.toolName,
           uid: event.measurement.uid,
         };
 
-        if (updatedPoints) {
+        if (normalizedPoints) {
           window.parent.postMessage(
             {
               type: 'update_measure',
@@ -123,7 +94,6 @@ const commandsModule = ({ servicesManager }) => {
             '*'
           );
         }
-        console.log('send points ', dataToSend);
       });
     },
   };
