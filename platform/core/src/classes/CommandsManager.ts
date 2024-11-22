@@ -169,7 +169,7 @@ export class CommandsManager {
    *   the commandOptions specified in the base.
    */
   public run(
-    toRun: Command | Commands | Command[] | string | undefined,
+    toRun: Command | Commands | (Command | string)[] | string | undefined,
     options?: Record<string, unknown>
   ): unknown {
     if (!toRun) {

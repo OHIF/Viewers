@@ -32,16 +32,15 @@ export default function PanelMeasurementTable({
     }
   }, [displayMeasurements.length]);
 
-  const bindCommand = (name: string, options?) => {
+  const bindCommand = (name: string | string[], options?) => {
     return (uid: string) => {
-      commandsManager.runCommand(name, { ...options, uid });
+      commandsManager.run(name, { ...options, uid });
     };
   };
 
   const jumpToImage = bindCommand('jumpToMeasurement', { displayMeasurements });
   const removeMeasurement = bindCommand('removeMeasurement');
-  const renameMeasurement = bindCommand('run', {
-    commands: ['jumpToMeasurement', 'renameMeasurement'],
+  const renameMeasurement = bindCommand(['jumpToMeasurement', 'renameMeasurement'], {
     displayMeasurements,
   });
   const toggleLockMeasurement = bindCommand('toggleLockMeasurement');
