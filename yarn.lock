@@ -2580,10 +2580,10 @@
   resolved "https://registry.yarnpkg.com/@colors/colors/-/colors-1.5.0.tgz#bb504579c1cae923e6576a4f5da43d25f97bdbd9"
   integrity sha512-ooWCrlZP11i8GImSjTHYHLkvFDP48nS4+204nGb1RiX/WXYHmJA2III9/e2DWVabCESdW7hBAEzHRqUn9OUVvQ==
 
-"@cornerstonejs/adapters@^2.2.3":
-  version "2.2.3"
-  resolved "https://registry.yarnpkg.com/@cornerstonejs/adapters/-/adapters-2.2.3.tgz#6dc37ec2b002c8a1406924c4545509d0bda575af"
-  integrity sha512-hVUsE2bghSshQGjRszksBk+2UdzGyOzzqNU7+OtJkMHkmiEWvZoBYNlEp7w/hQsF6bKaHnsc0zJGZ3txho65sQ==
+"@cornerstonejs/adapters@^2.2.13":
+  version "2.2.13"
+  resolved "https://registry.yarnpkg.com/@cornerstonejs/adapters/-/adapters-2.2.13.tgz#81e69d3e203ed05d961e501da751355fdc563664"
+  integrity sha512-W11fKs4TJLKUS18HQ9yTyMaLrROpGDTNwGvXHtDa556H5zqSkW1/zE17922vLnHdmtlUZztoNYPdKnVFthp8QA==
   dependencies:
     "@babel/runtime-corejs2" "^7.17.8"
     buffer "^6.0.3"
@@ -2616,19 +2616,19 @@
   resolved "https://registry.yarnpkg.com/@cornerstonejs/codec-openjph/-/codec-openjph-2.4.5.tgz#8690b61a86fa53ef38a70eee9d665a79229517c0"
   integrity sha512-MZCUy8VG0VG5Nl1l58+g+kH3LujAzLYTfJqkwpWI2gjSrGXnP6lgwyy4GmPRZWVoS40/B1LDNALK905cNWm+sg==
 
-"@cornerstonejs/core@^2.2.3":
-  version "2.2.3"
-  resolved "https://registry.yarnpkg.com/@cornerstonejs/core/-/core-2.2.3.tgz#e6fe86e38b41269eb6347de1b2445a5d80d00e1a"
-  integrity sha512-dq+CYUY2sk/Kpwc2lpnbr+9/9upKhzU/F4phdaVR0OfFlQRSJuv0lyI3lgyDw31ZsNt7H6LWcx5DtMTO+ZFtJg==
+"@cornerstonejs/core@^2.2.13":
+  version "2.2.13"
+  resolved "https://registry.yarnpkg.com/@cornerstonejs/core/-/core-2.2.13.tgz#acbb07717865c7ca055f4dfdc0a9177bc1158235"
+  integrity sha512-euLbx4onXAEbgvIUyVwRB+Ce6X+XdVnH4sJEOaYSdzRj83oJGrk0Kaf3yfV3hkbX29Mmxee6uNsNEfJLg6gDBQ==
   dependencies:
-    "@kitware/vtk.js" "32.1.0"
+    "@kitware/vtk.js" "32.1.1"
     comlink "^4.4.1"
     gl-matrix "^3.4.3"
 
-"@cornerstonejs/dicom-image-loader@^2.2.3":
-  version "2.2.3"
-  resolved "https://registry.yarnpkg.com/@cornerstonejs/dicom-image-loader/-/dicom-image-loader-2.2.3.tgz#021a312f37afdd924b13762780bfa9ebcfa3a10e"
-  integrity sha512-OvReDd+hgO9O9TFeXv8sEntDva+I4tb4vR0SVJ97u39ye6NEWHCb4PJ6bLZIQ2yNpKQqUDlS5LQc5At+QxfkDA==
+"@cornerstonejs/dicom-image-loader@^2.2.13":
+  version "2.2.13"
+  resolved "https://registry.yarnpkg.com/@cornerstonejs/dicom-image-loader/-/dicom-image-loader-2.2.13.tgz#106f26c19b0f87522005ef61a4d081bb9dceb549"
+  integrity sha512-9gKC/XbfssTt0ztuY2EzWuMiwBzD31EgrDQ81eQRA9SAn6uqHFDSoVE2ZHuaRf9nWMPVhuV/q89eRd1G68E3sQ==
   dependencies:
     "@cornerstonejs/codec-charls" "^1.2.3"
     "@cornerstonejs/codec-libjpeg-turbo-8bit" "^1.2.2"
@@ -2639,10 +2639,10 @@
     pako "^2.0.4"
     uuid "^9.0.0"
 
-"@cornerstonejs/tools@^2.2.3":
-  version "2.2.3"
-  resolved "https://registry.yarnpkg.com/@cornerstonejs/tools/-/tools-2.2.3.tgz#31b04918861a2e76249eb62340f63ae7645ca7c1"
-  integrity sha512-GyMz7LwssYk0D8ao4OPrWlob8jIKzEHYEJdYQbZ72rTOKHbpmu147rUjQ3AiihL5T1lftFsV4t9kTfUTHd2ZBA==
+"@cornerstonejs/tools@^2.2.13":
+  version "2.2.13"
+  resolved "https://registry.yarnpkg.com/@cornerstonejs/tools/-/tools-2.2.13.tgz#c13cabf64eb2a8e9b5738610b4960198f9c5a61e"
+  integrity sha512-CglFYk26Uv4ZbgEnv/bK+uxFiXK0O7xHSH5mr24Oos9LWek/vAkFW/VTCCLNoiTw+Fw/899yu4lZugl1aQGSUg==
   dependencies:
     "@types/offscreencanvas" "2019.7.3"
     comlink "^4.4.1"
@@ -4006,10 +4006,10 @@
   resolved "https://registry.yarnpkg.com/@juggle/resize-observer/-/resize-observer-3.4.0.tgz#08d6c5e20cf7e4cc02fd181c4b0c225cd31dbb60"
   integrity sha512-dfLbk+PwWvFzSxwk3n5ySL0hfBog779o8h68wK/7/APo/7cgyWp5jcXockbxdk5kFRkbeXWm4Fbi9FrdN381sA==
 
-"@kitware/vtk.js@32.1.0":
-  version "32.1.0"
-  resolved "https://registry.yarnpkg.com/@kitware/vtk.js/-/vtk.js-32.1.0.tgz#db46655633b9ce8ef93a6df736fd6ee55395350f"
-  integrity sha512-lVLOwZtQPHCJnZ2WDXSPF8yIaGBYw97YUNFAKnQszk6G2OrHvoir3jHdUgE/Vmw0VpoXwngWumY7JY52BwXzew==
+"@kitware/vtk.js@32.1.1":
+  version "32.1.1"
+  resolved "https://registry.yarnpkg.com/@kitware/vtk.js/-/vtk.js-32.1.1.tgz#20179cb5f65f33dea4626a948afe24eb16364f8a"
+  integrity sha512-rrh+PvmjpMDCOsgr7B8ZVxnF75TXjUJOVleMO5QJFh7DP+31927l9DJA4WRiJU7mbpYuZGt8/vAojO5fCizUkA==
   dependencies:
     "@babel/runtime" "7.22.11"
     "@types/webxr" "^0.5.5"
