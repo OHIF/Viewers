@@ -174,10 +174,6 @@ module.exports = (env, argv) => {
         disableDotRule: true,
         index: PUBLIC_URL + 'index.html',
       },
-      headers: {
-        'Cross-Origin-Embedder-Policy': 'require-corp',
-        'Cross-Origin-Opener-Policy': 'same-origin',
-      },
       devMiddleware: {
         writeToDisk: true,
       },

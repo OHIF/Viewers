@@ -280,7 +280,7 @@ export default class CustomizationService extends PubSubService {
       return customization;
     }
     const parent = this.getCustomization(customizationType);
-    const result = parent ? Object.assign(Object.create(parent), customization) : customization;
+    const result = parent ? Object.assign({}, parent, customization) : customization;
     // Execute an nested type information
     return result.transform?.(this) || result;
   }
