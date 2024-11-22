@@ -19,8 +19,12 @@ import { Command, Commands, ComplexCommand } from '../types/Command';
  * to extend this class, please check it's source before adding new methods.
  */
 export class CommandsManager {
-  constructor({} = {}) {
-    this.contexts = {};
+  private contexts = {};
+  // Has the reverse order in which contexts are created, used for the default ordering
+  private contextOrder = new Array<string>();
+
+  constructor(_options = {}) {
+    // No-op
   }
 
   /**
@@ -33,7 +37,7 @@ export class CommandsManager {
    * @param {string} contextName - Namespace for commands
    * @returns {undefined}
    */
-  createContext(contextName) {
+  createContext(contextName, priority?: number) {
     if (!contextName) {
       return;
     }
@@ -43,6 +47,8 @@ export class CommandsManager {
     }
 
     this.contexts[contextName] = {};
+    // Add the context name to the start of the list.
+    this.contextOrder.splice(0, 0, contextName);
   }
 
   /**
@@ -104,34 +110,22 @@ export class CommandsManager {
    *
    * @method
    * @param {String} commandName - Command to find
-   * @param {String} [contextName] - Specific command to look in. Defaults to current activeContexts
+   * @param {String} [contextName] - Specific command to look in. Defaults to current activeContexts.
+   *                 Also allows an array of contexts to look in.
    */
-  getCommand = (commandName: string, contextName?: string) => {
+  getCommand = (commandName: string, contextName: string | string[] = this.contextOrder) => {
     const contexts = [];
 
-    if (contextName) {
+    if (Array.isArray(contextName)) {
+      contexts.push(...contextName.map(name => this.getContext(name)).filter(it => !!it));
+    } else if (contextName) {
       const context = this.getContext(contextName);
       if (context) {
         contexts.push(context);
       }
-    } else {
-      Object.keys(this.contexts).forEach(contextName => {
-        contexts.push(this.getContext(contextName));
-      });
     }
 
-    if (contexts.length === 0) {
-      return;
-    }
-
-    let foundCommand;
-    contexts.forEach(context => {
-      if (context[commandName]) {
-        foundCommand = context[commandName];
-      }
-    });
-
-    return foundCommand;
+    return contexts.find(context => !!context[commandName])?.[commandName];
   };
 
   /**
@@ -141,7 +135,7 @@ export class CommandsManager {
    * @param {Object} [options={}] - Extra options to pass the command. Like a mousedown event
    * @param {String} [contextName]
    */
-  public runCommand(commandName: string, options = {}, contextName?: string) {
+  public runCommand(commandName: string, options = {}, contextName?: string | string[]) {
     const definition = this.getCommand(commandName, contextName);
     if (!definition) {
       log.warn(`Command "${commandName}" not found in current context`);
