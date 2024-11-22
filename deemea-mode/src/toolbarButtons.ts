@@ -58,14 +58,6 @@ const toolbarButtons: Button[] = [
           evaluate: 'evaluate.cornerstoneTool',
         }),
         createButton({
-          id: 'CircleROI',
-          icon: 'tool-circle',
-          label: 'Circle',
-          tooltip: 'Circle Tool',
-          commands: setToolActiveToolbar,
-          evaluate: 'evaluate.cornerstoneTool',
-        }),
-        createButton({
           id: 'CalibrationLine',
           icon: 'tool-calibration',
           label: 'Calibration',

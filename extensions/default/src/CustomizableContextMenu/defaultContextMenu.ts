@@ -8,13 +8,10 @@ const defaultContextMenu = {
       selector: ({ nearbyToolData }) => !!nearbyToolData,
       items: [
         {
-          label: 'Delete measurement',
+          label: 'Link to an imaging data',
           commands: [
             {
-              commandName: 'deleteMeasurement',
-              // we only have support for cornerstoneTools context menu since
-              // they are svg based
-              context: 'CORNERSTONE',
+              commandName: 'linkMeasurement',
             },
           ],
         },
@@ -23,6 +20,14 @@ const defaultContextMenu = {
           commands: [
             {
               commandName: 'setMeasurementLabel',
+            },
+          ],
+        },
+        {
+          label: 'Delete measurement',
+          commands: [
+            {
+              commandName: 'deleteMeasurement',
             },
           ],
         },

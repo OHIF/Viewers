@@ -28,11 +28,6 @@ const commandsModule = ({ servicesManager }) => {
             }
           );
         }
-
-        if (event.data.type === 'remove_measure') {
-          console.log('here', event.data);
-          measurementService.remove(event.data.message.uid);
-        }
       });
 
       CornerstoneViewportService.subscribe(
@@ -47,6 +42,18 @@ const commandsModule = ({ servicesManager }) => {
         message: 'Demonstrating Measurement Service functionality...',
         type: 'info',
       });
+    },
+    linkMeasurement: info => {
+      window.parent.postMessage(
+        {
+          type: 'link_measure',
+          message: {
+            elementType: info.toolName,
+            uid: info.uid,
+          },
+        },
+        '*'
+      );
     },
     createForms: () => {
       const { measurementService } = servicesManager.services;
@@ -96,6 +103,20 @@ const commandsModule = ({ servicesManager }) => {
         }
       });
     },
+    deleteMeasurement: ({ uid }) => {
+      if (uid) {
+        const { measurementService } = servicesManager.services;
+        measurementService.remove(uid);
+
+        window.parent.postMessage(
+          {
+            type: 'delete_measure',
+            message: { uid },
+          },
+          '*'
+        );
+      }
+    },
   };
 
   return {
@@ -107,6 +128,12 @@ const commandsModule = ({ servicesManager }) => {
       },
       createForms: {
         commandFn: actions.createForms,
+      },
+      linkMeasurement: {
+        commandFn: actions.linkMeasurement,
+      },
+      deleteMeasurement: {
+        commandFn: actions.deleteMeasurement,
       },
     },
     defaultContext: 'VIEWER',
