@@ -78,11 +78,11 @@ Stack: ${error.stack}
       >
         <DialogContent className="border-input h-[50vh] w-[90vw] border-2 sm:max-w-[900px]">
           <DialogHeader>
-            <DialogTitle className="text-xl">{title}</DialogTitle>
+            <DialogTitle className="text-muted-foreground text-xl">{title}</DialogTitle>
             <DialogDescription className="text-lg">{subtitle}</DialogDescription>
           </DialogHeader>
 
-          <ScrollArea className="h-[calc(90vh-120px)]">
+          <ScrollArea className="h-[100%]">
             <div className="space-y-4 pr-4 font-mono text-base">
               <div className="flex justify-end">
                 <button
