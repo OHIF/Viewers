@@ -86,7 +86,7 @@ export async function demonstrateMeasurementService(servicesManager, points) {
     return;
   }
 
-  points.forEach(point => {
+  points?.forEach(point => {
     try {
       const normalizedX = point[0].x ? point[0].x : point[0].xOrigin;
       const normalizedY = point[0].y ? point[0].y : point[0].yOrigin;
@@ -166,7 +166,7 @@ export async function createMeasurement(servicesManager, points) {
   const orientationMatrix = imageMetadata.direction;
 
   const normalizedPoints: number[][] = [];
-  points.forEach(point => {
+  points?.forEach(point => {
     const normalizedCoords = convertFromDicomCoordinates(
       point[0],
       point[1],
