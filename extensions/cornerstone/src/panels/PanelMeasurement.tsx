@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { utils } from '@ohif/core';
-import { useViewportGrid } from '@ohif/ui';
 import { MeasurementTable } from '@ohif/ui-next';
 import debounce from 'lodash.debounce';
 import { useMeasurements } from '../hooks/useMeasurements';
@@ -19,11 +18,7 @@ export default function PanelMeasurementTable({
 }: withAppAndFilters): React.ReactNode {
   const measurementsPanelRef = useRef(null);
 
-  const [viewportGrid] = useViewportGrid();
-  const { measurementService, customizationService, uiDialogService } = servicesManager.services;
-  const [measurements, setMeasurements] = useState([]);
-  const [additionalFindings, setAdditionalFindings] = useState([]);
-  const [untrackedFindings, setUntrackedFindings] = useState([]);
+  const { measurementService, customizationService } = servicesManager.services;
 
   const displayMeasurements = useMeasurements(servicesManager, {
     measurementFilter: filterAny, // filterOr(measurementFilters);
@@ -45,39 +40,34 @@ export default function PanelMeasurementTable({
     displayMeasurements.forEach(m => (m.isActive = m.uid === uid));
   };
 
-  const bindCommand = (name: string, callJump = false) => {
+  const bindCommand = (name: string, options?) => {
     return (uid: string) => {
-      if (!uid) {
-        debugger;
-      }
-      if (callJump) {
-        commandsManager.runCommand('jumpToMeasurement');
-      }
-      commandsManager.runCommand(name, { uid });
-      if (callJump === null) {
+      commandsManager.runCommand(name, { ...options, uid });
+      if (options?.clickUid) {
         onMeasurementItemClickHandler(uid, true);
       }
     };
   };
 
-  const jumpToImage = bindCommand('jumpToMeasurement', null);
+  const jumpToImage = bindCommand('jumpToMeasurement', { clickUid: true });
   const removeMeasurement = bindCommand('removeMeasurement');
-  const renameMeasurement = bindCommand('renameMeasurement', true);
+  const renameMeasurement = bindCommand('run', {
+    commands: ['jumpToMeasurement', 'renameMeasurement'],
+    clickUid: true,
+  });
   const toggleLockMeasurement = bindCommand('toggleLockMeasurement');
   const toggleVisibilityMeasurement = bindCommand('toggleVisibilityMeasurement');
 
   const additionalFilter = filterAdditionalFinding(measurementService);
 
-  useEffect(() => {
-    const { measurementFilter: trackedFilter, untrackedFilter } = measurementFilters;
-    setMeasurements(
-      displayMeasurements.filter(item => !additionalFilter(item) && trackedFilter(item))
-    );
-    setAdditionalFindings(
-      displayMeasurements.filter(item => additionalFilter(item) && trackedFilter(item))
-    );
-    setUntrackedFindings(displayMeasurements.filter(untrackedFilter.bind(measurementFilters)));
-  }, [measurementFilters, displayMeasurements]);
+  const { measurementFilter: trackedFilter, untrackedFilter } = measurementFilters;
+  const measurements = displayMeasurements.filter(
+    item => !additionalFilter(item) && trackedFilter(item)
+  );
+  const additionalFindings = displayMeasurements.filter(
+    item => additionalFilter(item) && trackedFilter(item)
+  );
+  const untrackedFindings = displayMeasurements.filter(untrackedFilter.bind(measurementFilters));
 
   const onArgs = {
     onClick: jumpToImage,
