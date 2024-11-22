@@ -1,22 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { DicomMetadataStore, utils } from '@ohif/core';
 import { useViewportGrid } from '@ohif/ui';
-import { StudySummary } from '@ohif/ui-next';
 import { Button, Icons } from '@ohif/ui-next';
-import { PanelMeasurement } from '@ohif/extension-cornerstone';
+import { PanelMeasurement, StudySummaryFromMetadata } from '@ohif/extension-cornerstone';
 import { useTrackedMeasurements } from '../getContextModule';
 import { useTranslation } from 'react-i18next';
 
 const { filterAny, filterNone, filterNot, filterTracked } = utils.MeasurementFilters;
-
-const { formatDate } = utils;
-
-const DISPLAY_STUDY_SUMMARY_INITIAL_VALUE = {
-  key: undefined, //
-  date: '', // '07-Sep-2010',
-  modality: '', // 'CT',
-  description: '', // 'CHEST/ABD/PELVIS W CONTRAST',
-};
 
 function PanelMeasurementTableTracking({
   servicesManager,
@@ -25,12 +15,9 @@ function PanelMeasurementTableTracking({
 }: withAppTypes) {
   const [viewportGrid] = useViewportGrid();
   const { t } = useTranslation('MeasurementTable');
-  const { measurementService, customizationService } = servicesManager.services;
+  const { customizationService } = servicesManager.services;
   const [trackedMeasurements, sendTrackedMeasurementsEvent] = useTrackedMeasurements();
   const { trackedStudy, trackedSeries } = trackedMeasurements.context;
-  const [displayStudySummary, setDisplayStudySummary] = useState(
-    DISPLAY_STUDY_SUMMARY_INITIAL_VALUE
-  );
   const initialTrackedFilter = trackedStudy
     ? filterTracked(trackedStudy, trackedSeries)
     : filterAny;
@@ -41,46 +28,13 @@ function PanelMeasurementTableTracking({
   });
 
   useEffect(() => {
-    const updateDisplayStudySummary = async () => {
-      let updatedMeasurementFilters = { ...measurementFilters };
-      if (trackedMeasurements.matches('tracking') && trackedStudy) {
-        const studyMeta = DicomMetadataStore.getStudy(trackedStudy);
-        if (!studyMeta || !studyMeta.series || studyMeta.series.length === 0) {
-          console.debug('Study metadata not available');
-          return;
-        }
-
-        const instanceMeta = studyMeta.series[0].instances[0];
-        const { StudyDate, StudyDescription } = instanceMeta;
-
-        const modalities = new Set();
-        studyMeta.series.forEach(series => {
-          if (trackedSeries.includes(series.SeriesInstanceUID)) {
-            modalities.add(series.instances[0].Modality);
-          }
-        });
-        const modality = Array.from(modalities).join('/');
-
-        setDisplayStudySummary(prevSummary => {
-          if (prevSummary.key !== trackedStudy) {
-            return {
-              key: trackedStudy,
-              date: StudyDate,
-              modality,
-              description: StudyDescription,
-            };
-          }
-          return prevSummary;
-        });
-        updatedMeasurementFilters.measurementFilter = filterTracked(trackedStudy, trackedSeries);
-      } else if (!trackedStudy) {
-        setDisplayStudySummary(DISPLAY_STUDY_SUMMARY_INITIAL_VALUE);
-        updatedMeasurementFilters.measurementFilter = filterAny;
-      }
-      setMeasurementFilters(updatedMeasurementFilters);
-    };
-
-    updateDisplayStudySummary();
+    let updatedMeasurementFilters = { ...measurementFilters };
+    if (trackedMeasurements.matches('tracking') && trackedStudy) {
+      updatedMeasurementFilters.measurementFilter = filterTracked(trackedStudy, trackedSeries);
+    } else {
+      updatedMeasurementFilters.measurementFilter = filterAny;
+    }
+    setMeasurementFilters(updatedMeasurementFilters);
   }, [trackedMeasurements, trackedStudy, trackedSeries]);
 
   const { disableEditing } = customizationService.getCustomization(
@@ -93,12 +47,7 @@ function PanelMeasurementTableTracking({
 
   return (
     <>
-      {displayStudySummary.key && (
-        <StudySummary
-          date={formatDate(displayStudySummary.date)}
-          description={displayStudySummary.description}
-        />
-      )}
+      <StudySummaryFromMetadata studyInstanceUID={trackedStudy} />
       <PanelMeasurement
         servicesManager={servicesManager}
         extensionManager={extensionManager}

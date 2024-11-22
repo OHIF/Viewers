@@ -21,7 +21,7 @@ export default function PanelMeasurementTable({
   const { measurementService, customizationService } = servicesManager.services;
 
   const displayMeasurements = useMeasurements(servicesManager, {
-    measurementFilter: filterAny, // filterOr(measurementFilters);
+    measurementFilter: filterAny,
   });
 
   useEffect(() => {
@@ -32,42 +32,30 @@ export default function PanelMeasurementTable({
     }
   }, [displayMeasurements.length]);
 
-  const onMeasurementItemClickHandler = (uid: string, isActive: boolean) => {
-    if (isActive) {
-      return;
-    }
-
-    displayMeasurements.forEach(m => (m.isActive = m.uid === uid));
-  };
-
   const bindCommand = (name: string, options?) => {
     return (uid: string) => {
       commandsManager.runCommand(name, { ...options, uid });
-      if (options?.clickUid) {
-        onMeasurementItemClickHandler(uid, true);
-      }
     };
   };
 
-  const jumpToImage = bindCommand('jumpToMeasurement', { clickUid: true });
+  const jumpToImage = bindCommand('jumpToMeasurement', { displayMeasurements });
   const removeMeasurement = bindCommand('removeMeasurement');
   const renameMeasurement = bindCommand('run', {
     commands: ['jumpToMeasurement', 'renameMeasurement'],
-    clickUid: true,
+    displayMeasurements,
   });
   const toggleLockMeasurement = bindCommand('toggleLockMeasurement');
   const toggleVisibilityMeasurement = bindCommand('toggleVisibilityMeasurement');
 
   const additionalFilter = filterAdditionalFinding(measurementService);
 
-  const { measurementFilter: trackedFilter, untrackedFilter } = measurementFilters;
+  const { measurementFilter: trackedFilter } = measurementFilters;
   const measurements = displayMeasurements.filter(
     item => !additionalFilter(item) && trackedFilter(item)
   );
   const additionalFindings = displayMeasurements.filter(
     item => additionalFilter(item) && trackedFilter(item)
   );
-  const untrackedFindings = displayMeasurements.filter(untrackedFilter.bind(measurementFilters));
 
   const onArgs = {
     onClick: jumpToImage,
@@ -110,16 +98,6 @@ export default function PanelMeasurementTable({
             key="additional"
             data={additionalFindings}
             title="Additional Findings"
-            {...onArgs}
-          >
-            <MeasurementTable.Body />
-          </MeasurementTable>
-        )}
-        {untrackedFindings.length > 0 && (
-          <MeasurementTable
-            key="untracked"
-            data={untrackedFindings}
-            title="Untracked Findings"
             {...onArgs}
           >
             <MeasurementTable.Body />

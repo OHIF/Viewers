@@ -266,8 +266,15 @@ function commandsModule({
       measurementService.update(updatedMeasurement.uid, updatedMeasurement, true);
     },
 
-    jumpToMeasurement: ({ uid }) => {
+    /**
+     * Jumps to the specified (by uid) measurement in the active viewport.
+     * Also marks any provided display measurements isActive value
+     */
+    jumpToMeasurement: ({ uid, displayMeasurements = [] }) => {
       measurementService.jumpToMeasurement(viewportGridService.getActiveViewportId(), uid);
+      for (const measurement of displayMeasurements) {
+        measurement.isActive = measurement.uid === uid;
+      }
     },
 
     removeMeasurement: ({ uid }) => {
