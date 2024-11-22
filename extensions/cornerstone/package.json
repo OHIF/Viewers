@@ -59,7 +59,7 @@
     "@cornerstonejs/core": "^2.2.11",
     "@cornerstonejs/tools": "^2.2.11",
     "@icr/polyseg-wasm": "^0.4.0",
-    "@kitware/vtk.js": "32.1.0",
+    "@kitware/vtk.js": "32.1.1",
     "html2canvas": "^1.4.1",
     "lodash.debounce": "^4.0.8",
     "lodash.merge": "^4.6.2",
