@@ -9,7 +9,7 @@ jobs:
     timeout-minutes: 60
     runs-on: ubuntu-latest
     container:
-      image: mcr.microsoft.com/playwright:v1.49.0-focal
+      image: mcr.microsoft.com/playwright:v1.49.0-noble
     strategy:
       fail-fast: false
       matrix:
