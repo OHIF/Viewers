@@ -48,6 +48,39 @@ const commandsModule = ({
 
   const actions = {
     /**
+     * Runs commands specified in the options.
+     * This allows running multiple commands when only one is specified.  It
+     * also allows an async instantiation of a command so that the return is
+     * immediate without waiting for the command to complete.
+     *
+     * @param options.options - shared options for the child command
+     * @param options.commands - a list of commands to run.  This is an array, and can
+     *      be either a full command, or just a name.
+     * @param options.async - set to true to run async
+     * @param options.parallel - set to false, WITH async true to run non-parallel
+     */
+    run: options => {
+      const { options: sharedOptions, commands = [], parallel = true, async = false } = options;
+      const childOptions = {
+        ...options,
+        options: undefined,
+        commands: undefined,
+        parallel: undefined,
+        async: undefined,
+        ...sharedOptions,
+      };
+      if (async) {
+        if (parallel) {
+          return Promise.all(
+            commands.map(async command => commandsManager.run(command, childOptions))
+          );
+        }
+        return (async () => await commandsManager.run(commands, childOptions))();
+      }
+      return commandsManager.run(commands, childOptions);
+    },
+
+    /**
      * Show the context menu.
      * @param options.menuId defines the menu name to lookup, from customizationService
      * @param options.defaultMenu contains the default menu set to use
@@ -554,9 +587,8 @@ const commandsModule = ({
   };
 
   const definitions = {
-    showContextMenu: {
-      commandFn: actions.showContextMenu,
-    },
+    run: actions.run,
+    showContextMenu: actions.showContextMenu,
     closeContextMenu: {
       commandFn: actions.closeContextMenu,
     },

@@ -11,7 +11,6 @@ const { MeasurementReport } = adaptersSR.Cornerstone3D;
 const { log } = OHIF;
 
 /**
- *
  * @param measurementData An array of measurements from the measurements service
  * that you wish to serialize.
  * @param additionalFindingTypes toolTypes that should be stored with labels as Findings
@@ -46,52 +45,24 @@ const commandsModule = (props: withAppTypes) => {
   const { customizationService, measurementService, viewportGridService, uiDialogService } =
     servicesManager.services;
   const actions = {
-    jumpToMeasurement: ({ uid }) => {
-      measurementService.jumpToMeasurement(viewportGridService.getActiveViewportId(), uid);
-    },
-
-    removeMeasurement: ({ uid }) => {
-      measurementService.remove(uid);
-    },
-
-    renameMeasurement: ({ uid }) => {
-      const labelConfig = customizationService.get('measurementLabels');
-      const measurement = measurementService.getMeasurement(uid);
-      showLabelAnnotationPopup(measurement, uiDialogService, labelConfig).then(val => {
-        measurementService.update(
-          uid,
-          {
-            ...val,
-          },
-          true
-        );
-      });
-    },
-
     changeColorMeasurement: ({ uid }) => {
-      const { color } = measurementService.getMeasurement(uid);
-      const rgbaColor = {
-        r: color[0],
-        g: color[1],
-        b: color[2],
-        a: color[3] / 255.0,
-      };
-      colorPickerDialog(uiDialogService, rgbaColor, (newRgbaColor, actionId) => {
-        if (actionId === 'cancel') {
-          return;
-        }
+      // When this gets supported, it probably belongs in cornerstone, not sr
+      throw new Error('Unsupported operation: changeColorMeasurement');
+      // const { color } = measurementService.getMeasurement(uid);
+      // const rgbaColor = {
+      //   r: color[0],
+      //   g: color[1],
+      //   b: color[2],
+      //   a: color[3] / 255.0,
+      // };
+      // colorPickerDialog(uiDialogService, rgbaColor, (newRgbaColor, actionId) => {
+      //   if (actionId === 'cancel') {
+      //     return;
+      //   }
 
-        const color = [newRgbaColor.r, newRgbaColor.g, newRgbaColor.b, newRgbaColor.a * 255.0];
-        // segmentationService.setSegmentColor(viewportId, segmentationId, segmentIndex, color);
-      });
-    },
-
-    toggleLockMeasurement: ({ uid }) => {
-      measurementService.toggleLockMeasurement(uid);
-    },
-
-    toggleVisibilityMeasurement: ({ uid }) => {
-      measurementService.toggleVisibilityMeasurement(uid);
+      //   const color = [newRgbaColor.r, newRgbaColor.g, newRgbaColor.b, newRgbaColor.a * 255.0];
+      // segmentationService.setSegmentColor(viewportId, segmentationId, segmentIndex, color);
+      // });
     },
 
     /**
@@ -109,13 +80,6 @@ const commandsModule = (props: withAppTypes) => {
       //Create a URL for the binary.
       const objectUrl = URL.createObjectURL(reportBlob);
       window.location.assign(objectUrl);
-    },
-
-    /**
-     * Clear the measurements
-     */
-    clearMeasurements: ({ measurementFilter }) => {
-      measurementService.clearMeasurements(measurementFilter);
     },
 
     /**
@@ -196,26 +160,8 @@ const commandsModule = (props: withAppTypes) => {
     storeMeasurements: {
       commandFn: actions.storeMeasurements,
     },
-    clearMeasurements: {
-      commandFn: actions.clearMeasurements,
-    },
     downloadCSVMeasurementsReport: {
       commandFn: actions.downloadCSVMeasurementsReport,
-    },
-    jumpToMeasurement: {
-      commandFn: actions.jumpToMeasurement,
-    },
-    removeMeasurement: {
-      commandFn: actions.removeMeasurement,
-    },
-    renameMeasurement: {
-      commandFn: actions.renameMeasurement,
-    },
-    toggleLockMeasurement: {
-      commandFn: actions.toggleLockMeasurement,
-    },
-    toggleVisibilityMeasurement: {
-      commandFn: actions.toggleVisibilityMeasurement,
     },
   };
 

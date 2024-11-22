@@ -266,6 +266,42 @@ function commandsModule({
       measurementService.update(updatedMeasurement.uid, updatedMeasurement, true);
     },
 
+    jumpToMeasurement: ({ uid }) => {
+      measurementService.jumpToMeasurement(viewportGridService.getActiveViewportId(), uid);
+    },
+
+    removeMeasurement: ({ uid }) => {
+      measurementService.remove(uid);
+    },
+
+    renameMeasurement: ({ uid }) => {
+      const labelConfig = customizationService.get('measurementLabels');
+      const measurement = measurementService.getMeasurement(uid);
+      showLabelAnnotationPopup(measurement, uiDialogService, labelConfig).then(val => {
+        measurementService.update(
+          uid,
+          {
+            ...val,
+          },
+          true
+        );
+      });
+    },
+
+    toggleLockMeasurement: ({ uid }) => {
+      measurementService.toggleLockMeasurement(uid);
+    },
+
+    toggleVisibilityMeasurement: ({ uid }) => {
+      measurementService.toggleVisibilityMeasurement(uid);
+    },
+    /**
+     * Clear the measurements
+     */
+    clearMeasurements: ({ measurementFilter }) => {
+      measurementService.clearMeasurements(measurementFilter);
+    },
+
     // Retrieve value commands
     getActiveViewportEnabledElement: _getActiveViewportEnabledElement,
 
@@ -1251,6 +1287,24 @@ function commandsModule({
     },
     updateMeasurement: {
       commandFn: actions.updateMeasurement,
+    },
+    clearMeasurements: {
+      commandFn: actions.clearMeasurements,
+    },
+    jumpToMeasurement: {
+      commandFn: actions.jumpToMeasurement,
+    },
+    removeMeasurement: {
+      commandFn: actions.removeMeasurement,
+    },
+    renameMeasurement: {
+      commandFn: actions.renameMeasurement,
+    },
+    toggleLockMeasurement: {
+      commandFn: actions.toggleLockMeasurement,
+    },
+    toggleVisibilityMeasurement: {
+      commandFn: actions.toggleVisibilityMeasurement,
     },
     setViewportWindowLevel: {
       commandFn: actions.setViewportWindowLevel,

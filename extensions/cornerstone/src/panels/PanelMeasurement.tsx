@@ -122,11 +122,6 @@ export default function PanelMeasurementTable({
             title="Additional Findings"
             {...onArgs}
           >
-            <MeasurementTable.Header>
-              <>
-                <div>Hello World</div>
-              </>
-            </MeasurementTable.Header>
             <MeasurementTable.Body />
           </MeasurementTable>
         )}
@@ -137,11 +132,6 @@ export default function PanelMeasurementTable({
             title="Untracked Findings"
             {...onArgs}
           >
-            <MeasurementTable.Header>
-              <>
-                <span>Untracked</span>
-              </>
-            </MeasurementTable.Header>
             <MeasurementTable.Body />
           </MeasurementTable>
         )}
