@@ -124,7 +124,9 @@ function modeFactory({ modeConfiguration }) {
             id: ohif.layout,
             props: {
               leftPanels: [ohif.leftPanel],
-              rightPanels: [ohif.rightPanel, deemea.rightPanel], // Ajoutez le panneau Deemea ici
+              rightPanels: [ohif.rightPanel],
+              leftPanelClosed: true,
+              rightPanelClosed: true,
               viewports: [
                 {
                   namespace: cornerstone.viewport,
