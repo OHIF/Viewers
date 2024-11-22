@@ -218,11 +218,11 @@ export default function ModeRoute({
         : hangingProtocol;
 
       // Determine the index of the stageId if the hangingProtocolIdToUse is defined
-      const stageIndex = hangingProtocolIdToUse
-        ? hangingProtocolService.getStageIndex(hangingProtocolIdToUse, {
+      const stageIndex = Array.isArray(hangingProtocolIdToUse)
+        ? -1
+        : hangingProtocolService.getStageIndex(hangingProtocolIdToUse, {
             stageId: runTimeStageId || undefined,
-          })
-        : -1;
+          });
       // Ensure that the stage index is never negative
       // If stageIndex is negative (e.g., if stage wasn't found), use 0 as the default
       const stageIndexToUse = Math.max(0, stageIndex);
