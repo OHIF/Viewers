@@ -1,6 +1,21 @@
 import { Types } from '@ohif/core';
 
 /**
+ * Sync group configuration for hydrating segmentations across viewports
+ * that share the same frame of reference
+ * @type {Types.HangingProtocol.SyncGroup}
+ */
+export const HYDRATE_SEG_SYNC_GROUP = {
+  type: 'hydrateseg',
+  id: 'sameFORId',
+  source: true,
+  target: true,
+  options: {
+    matchingRules: ['sameFOR'],
+  },
+} as const;
+
+/**
  * This hanging protocol can be activated on the primary mode by directly
  * referencing it in a URL or by directly including it within a mode, e.g.:
  * `&hangingProtocolId=@ohif/mnGrid` added to the viewer URL
@@ -66,6 +81,7 @@ const hpMN: Types.HangingProtocol.Protocol = {
       viewportType: 'stack',
       toolGroupId: 'default',
       allowUnmatchedView: true,
+      syncGroups: [HYDRATE_SEG_SYNC_GROUP],
     },
     displaySets: [
       {
@@ -76,6 +92,7 @@ const hpMN: Types.HangingProtocol.Protocol = {
   },
   stages: [
     {
+      name: '2x2',
       name: '2x2',
       stageActivation: {
         enabled: {
@@ -94,6 +111,17 @@ const hpMN: Types.HangingProtocol.Protocol = {
           viewportOptions: {
             toolGroupId: 'default',
             allowUnmatchedView: true,
+            syncGroups: [
+              {
+                type: 'hydrateseg',
+                id: 'sameFORId',
+                source: true,
+                target: true,
+                options: {
+                  matchingRules: ['sameFOR'],
+                },
+              },
+            ],
           },
           displaySets: [
             {
@@ -117,6 +145,17 @@ const hpMN: Types.HangingProtocol.Protocol = {
           viewportOptions: {
             toolGroupId: 'default',
             allowUnmatchedView: true,
+            syncGroups: [
+              {
+                type: 'hydrateseg',
+                id: 'sameFORId',
+                source: true,
+                target: true,
+                // options: {
+                //   matchingRules: ['sameFOR'],
+                // },
+              },
+            ],
           },
           displaySets: [
             {
@@ -129,6 +168,17 @@ const hpMN: Types.HangingProtocol.Protocol = {
           viewportOptions: {
             toolGroupId: 'default',
             allowUnmatchedView: true,
+            syncGroups: [
+              {
+                type: 'hydrateseg',
+                id: 'sameFORId',
+                source: true,
+                target: true,
+                // options: {
+                //   matchingRules: ['sameFOR'],
+                // },
+              },
+            ],
           },
           displaySets: [
             {

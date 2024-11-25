@@ -113,6 +113,19 @@ export default class ToolbarService extends PubSubService {
   }
 
   /**
+   * Removes buttons from the toolbar.
+   * @param buttonId - The button to be removed.
+   */
+  public removeButton(buttonId: string) {
+    if (this.state.buttons[buttonId]) {
+      delete this.state.buttons[buttonId];
+    }
+    this._broadcastEvent(this.EVENTS.TOOL_BAR_MODIFIED, {
+      ...this.state,
+    });
+  }
+
+  /**
    * Adds buttons to the toolbar.
    * @param buttons - The buttons to be added.
    */
@@ -374,8 +387,11 @@ export default class ToolbarService extends PubSubService {
    * @param {Array} buttons - The buttons to be added to the section.
    */
   createButtonSection(key, buttons) {
-    // make sure all buttons have at least an empty props
-    this.state.buttonSections[key] = buttons;
+    if (this.state.buttonSections[key]) {
+      this.state.buttonSections[key].push(...buttons);
+    } else {
+      this.state.buttonSections[key] = buttons;
+    }
     this._broadcastEvent(this.EVENTS.TOOL_BAR_MODIFIED, { ...this.state });
   }
 
@@ -541,6 +557,11 @@ export default class ToolbarService extends PubSubService {
   };
 
   getButtonComponentForUIType(uiType: string) {
-    return uiType ? this._getButtonUITypes()[uiType]?.defaultComponent ?? null : null;
+    return uiType ? (this._getButtonUITypes()[uiType]?.defaultComponent ?? null) : null;
+  }
+
+  clearButtonSection(buttonSection: string) {
+    this.state.buttonSections[buttonSection] = [];
+    this._broadcastEvent(this.EVENTS.TOOL_BAR_MODIFIED, { ...this.state });
   }
 }

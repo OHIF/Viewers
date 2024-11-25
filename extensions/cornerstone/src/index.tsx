@@ -6,9 +6,9 @@ import {
   imageLoadPoolManager,
   imageRetrievalPoolManager,
 } from '@cornerstonejs/core';
-import * as csStreamingImageVolumeLoader from '@cornerstonejs/streaming-image-volume-loader';
 import { Enums as cs3DToolsEnums } from '@cornerstonejs/tools';
 import { Types } from '@ohif/core';
+import Enums from './enums';
 
 import init from './init';
 import getCustomizationModule from './getCustomizationModule';
@@ -32,16 +32,28 @@ import { id } from './id';
 import { measurementMappingUtils } from './utils/measurementServiceMappings';
 import type { PublicViewportOptions } from './services/ViewportService/Viewport';
 import ImageOverlayViewerTool from './tools/ImageOverlayViewerTool';
-import { showLabelAnnotationPopup } from './utils/callInputDialog';
 import ViewportActionCornersService from './services/ViewportActionCornersService/ViewportActionCornersService';
 import { ViewportActionCornersProvider } from './contextProviders/ViewportActionCornersProvider';
-import ActiveViewportWindowLevel from './components/ActiveViewportWindowLevel';
 import getSOPInstanceAttributes from './utils/measurementServiceMappings/utils/getSOPInstanceAttributes';
 import { findNearbyToolData } from './utils/findNearbyToolData';
 import { createFrameViewSynchronizer } from './synchronizers/frameViewSynchronizer';
+import { getSopClassHandlerModule } from './getSopClassHandlerModule';
+import { getDynamicVolumeInfo } from '@cornerstonejs/core/utilities';
+import {
+  useLutPresentationStore,
+  usePositionPresentationStore,
+  useSegmentationPresentationStore,
+  useSynchronizersStore,
+} from './stores';
+import { useToggleOneUpViewportGridStore } from '../../default/src/stores/useToggleOneUpViewportGridStore';
+import { useActiveViewportSegmentationRepresentations } from './hooks/useActiveViewportSegmentationRepresentations';
+import { useMeasurements } from './hooks/useMeasurements';
+import getPanelModule from './getPanelModule';
+import PanelSegmentation from './panels/PanelSegmentation';
+import PanelMeasurement from './panels/PanelMeasurement';
+import DicomUpload from './components/DicomUpload/DicomUpload';
+import { useSegmentations } from './hooks/useSegmentations';
 
-const { helpers: volumeLoaderHelpers } = csStreamingImageVolumeLoader;
-const { getDynamicVolumeInfo } = volumeLoaderHelpers ?? {};
 const { imageRetrieveMetadataProvider } = cornerstone.utilities;
 
 const Component = React.lazy(() => {
@@ -82,9 +94,8 @@ const cornerstoneExtension: Types.Extensions.Extension = {
     ]);
 
     toolbarService.registerEventForToolbarUpdate(segmentationService, [
-      segmentationService.EVENTS.SEGMENTATION_ADDED,
       segmentationService.EVENTS.SEGMENTATION_REMOVED,
-      segmentationService.EVENTS.SEGMENTATION_UPDATED,
+      segmentationService.EVENTS.SEGMENTATION_MODIFIED,
     ]);
 
     toolbarService.registerEventForToolbarUpdate(cornerstone.eventTarget, [
@@ -106,9 +117,9 @@ const cornerstoneExtension: Types.Extensions.Extension = {
     // how to define them.
     imageRetrieveMetadataProvider.add('stack', stackRetrieveOptions);
   },
-
+  getPanelModule,
   onModeExit: ({ servicesManager }: withAppTypes): void => {
-    const { cineService } = servicesManager.services;
+    const { cineService, segmentationService } = servicesManager.services;
     // Empty out the image load and retrieval pools to prevent memory leaks
     // on the mode exits
     Object.values(cs3DEnums.RequestType).forEach(type => {
@@ -119,6 +130,13 @@ const cornerstoneExtension: Types.Extensions.Extension = {
     cineService.setIsCineEnabled(false);
 
     enabledElementReset();
+
+    useLutPresentationStore.getState().clearLutPresentationStore();
+    usePositionPresentationStore.getState().clearPositionPresentationStore();
+    useSynchronizersStore.getState().clearSynchronizersStore();
+    useToggleOneUpViewportGridStore.getState().clearToggleOneUpViewportGridStore();
+    useSegmentationPresentationStore.getState().clearSegmentationPresentationStore();
+    segmentationService.removeAllSegmentations();
   },
 
   /**
@@ -143,20 +161,12 @@ const cornerstoneExtension: Types.Extensions.Extension = {
 
     const { syncGroupService } = servicesManager.services;
     syncGroupService.registerCustomSynchronizer('frameview', createFrameViewSynchronizer);
+    servicesManager.services.customizationService.setGlobalCustomization('dicomUploadComponent', {
+      component: props => <DicomUpload {...props} />,
+    });
     return init.call(this, props);
   },
-
   getToolbarModule,
-  getPanelModule({ servicesManager }) {
-    return [
-      {
-        name: 'activeViewportWindowLevel',
-        component: () => {
-          return <ActiveViewportWindowLevel servicesManager={servicesManager} />;
-        },
-      },
-    ];
-  },
   getHangingProtocolModule,
   getViewportModule({ servicesManager, commandsManager }) {
     const ExtendedOHIFCornerstoneViewport = props => {
@@ -194,7 +204,6 @@ const cornerstoneExtension: Types.Extensions.Extension = {
           },
           getEnabledElement,
           dicomLoaderService,
-          showLabelAnnotationPopup,
         },
       },
       {
@@ -218,6 +227,7 @@ const cornerstoneExtension: Types.Extensions.Extension = {
       },
     ];
   },
+  getSopClassHandlerModule,
 };
 
 export type { PublicViewportOptions };
@@ -232,5 +242,17 @@ export {
   ImageOverlayViewerTool,
   getSOPInstanceAttributes,
   dicomLoaderService,
+  // Export all stores
+  useLutPresentationStore,
+  usePositionPresentationStore,
+  useSegmentationPresentationStore,
+  useSynchronizersStore,
+  Enums,
+  useMeasurements,
+  useActiveViewportSegmentationRepresentations,
+  useSegmentations,
+  PanelSegmentation,
+  PanelMeasurement,
+  DicomUpload,
 };
 export default cornerstoneExtension;

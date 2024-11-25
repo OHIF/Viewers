@@ -4,9 +4,6 @@ import toolbarButtons from './toolbarButtons';
 import segmentationButtons from './segmentationButtons';
 import initToolGroups from './initToolGroups';
 
-const DEFAULT_TOOL_GROUP_ID = 'default';
-const VOLUME3D_TOOL_GROUP_ID = 'volume3d';
-
 const ohif = {
   layout: '@ohif/extension-default.layoutTemplateModule.viewerLayout',
   sopClassHandler: '@ohif/extension-default.sopClassHandlerModule.stack',
@@ -17,11 +14,10 @@ const ohif = {
 
 const cornerstone = {
   viewport: '@ohif/extension-cornerstone.viewportModule.cornerstone',
+  panelTool: '@ohif/extension-cornerstone.panelModule.panelSegmentationWithTools',
 };
 
 const segmentation = {
-  panel: '@ohif/extension-cornerstone-dicom-seg.panelModule.panelSegmentation',
-  panelTool: '@ohif/extension-cornerstone-dicom-seg.panelModule.panelSegmentationWithTools',
   sopClassHandler: '@ohif/extension-cornerstone-dicom-seg.sopClassHandlerModule.dicom-seg',
   viewport: '@ohif/extension-cornerstone-dicom-seg.viewportModule.dicom-seg',
 };
@@ -80,7 +76,6 @@ function modeFactory({ modeConfiguration }) {
       const {
         toolGroupService,
         syncGroupService,
-        toolbarService,
         segmentationService,
         cornerstoneViewportService,
         uiDialogService,
@@ -111,10 +106,10 @@ function modeFactory({ modeConfiguration }) {
       return {
         valid:
           modalitiesArray.length === 1
-            ? !['SM', 'US', 'MG', 'OT', 'DOC', 'CR'].includes(modalitiesArray[0])
+            ? !['SM', 'ECG', 'OT', 'DOC'].includes(modalitiesArray[0])
             : true,
         description:
-          'The mode does not support studies that ONLY include the following modalities: SM, US, MG, OT, DOC, CR',
+          'The mode does not support studies that ONLY include the following modalities: SM, OT, DOC',
       };
     },
     /**
@@ -137,7 +132,8 @@ function modeFactory({ modeConfiguration }) {
             id: ohif.layout,
             props: {
               leftPanels: [ohif.leftPanel],
-              rightPanels: [segmentation.panelTool],
+              rightPanels: [cornerstone.panelTool],
+              // leftPanelClosed: true,
               viewports: [
                 {
                   namespace: cornerstone.viewport,

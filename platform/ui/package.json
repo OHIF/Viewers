@@ -1,6 +1,6 @@
 {
   "name": "@ohif/ui",
-  "version": "3.9.0-beta.74",
+  "version": "3.10.0-beta.9",
   "description": "A set of React components for Medical Imaging Viewers",
   "author": "OHIF Contributors",
   "license": "MIT",
@@ -60,7 +60,7 @@
     "react-window": "^1.8.9",
     "react-with-direction": "^1.3.1",
     "swiper": "^8.4.2",
-    "webpack": "5.89.0"
+    "webpack": "5.94.0"
   },
   "devDependencies": {
     "@babel/core": "7.24.7",

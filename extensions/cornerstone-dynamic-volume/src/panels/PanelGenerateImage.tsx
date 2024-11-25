@@ -1,8 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
-import PropTypes from 'prop-types';
 import { useCine, useViewportGrid } from '@ohif/ui';
-import { cache, utilities as csUtils, volumeLoader, eventTarget } from '@cornerstonejs/core';
-import { Enums } from '@cornerstonejs/streaming-image-volume-loader';
+import { utilities as csUtils, volumeLoader, eventTarget, Enums, cache } from '@cornerstonejs/core';
 import { utilities as cstUtils } from '@cornerstonejs/tools';
 import DynamicVolumeControls from './DynamicVolumeControls';
 
@@ -16,8 +14,8 @@ export default function PanelGenerateImage({ servicesManager, commandsManager }:
   const [{ activeViewportId }] = useViewportGrid();
 
   //
-  const [timePointsRange, setTimePointsRange] = useState([]);
-  const [timePointsRangeToUseForGenerate, setTimePointsRangeToUseForGenerate] = useState([]);
+  const [timePointsRange, setTimePointsRange] = useState([0, 0]);
+  const [timePointsRangeToUseForGenerate, setTimePointsRangeToUseForGenerate] = useState([0, 0]);
   const [computedDisplaySet, setComputedDisplaySet] = useState(null);
   const [dynamicVolume, setDynamicVolume] = useState(null);
   const [frameRate, setFrameRate] = useState(20);
@@ -31,47 +29,62 @@ export default function PanelGenerateImage({ servicesManager, commandsManager }:
   const computedVolumeId = `cornerstoneStreamingImageVolume:${uuidComputedVolume.current}`;
 
   useEffect(() => {
-    const evt = cornerstoneViewportService.EVENTS.VIEWPORT_DATA_CHANGED;
+    const viewportDataChangedEvt = cornerstoneViewportService.EVENTS.VIEWPORT_DATA_CHANGED;
+    const cineStateChangedEvt = servicesManager.services.cineService.EVENTS.CINE_STATE_CHANGED;
 
-    const { unsubscribe } = cornerstoneViewportService.subscribe(evt, evtDetails => {
+    const viewportDataChangedCallback = evtDetails => {
       evtDetails.viewportData.data.forEach(volumeData => {
-        if (volumeData.volume.isDynamicVolume()) {
+        if (volumeData.volume?.isDynamicVolume()) {
           setDynamicVolume(volumeData.volume);
           uuidDynamicVolume.current = volumeData.displaySetInstanceUID;
-          setTimePointsRange([1, volumeData.volume.numTimePoints]);
+          const newRange = [1, volumeData.volume.numTimePoints];
+          setTimePointsRange(newRange);
+          setTimePointsRangeToUseForGenerate(newRange);
         }
       });
-    });
+    };
+
+    const cineStateChangedCallback = evt => {
+      setIsPlaying(evt.isPlaying);
+    };
+
+    const { unsubscribe: unsubscribeViewportData } = cornerstoneViewportService.subscribe(
+      viewportDataChangedEvt,
+      viewportDataChangedCallback
+    );
+    const { unsubscribe: unsubscribeCineState } = servicesManager.services.cineService.subscribe(
+      cineStateChangedEvt,
+      cineStateChangedCallback
+    );
 
     return () => {
-      unsubscribe();
+      unsubscribeViewportData();
+      unsubscribeCineState();
+    };
+  }, [cornerstoneViewportService, cineService, servicesManager.services.cineService]);
+
+  useEffect(() => {
+    const evt = Enums.Events.DYNAMIC_VOLUME_TIME_POINT_INDEX_CHANGED;
+
+    const callback = evt => {
+      setTimePointRendered(evt.detail.timePointIndex);
+    };
+
+    eventTarget.addEventListener(evt, callback);
+
+    return () => {
+      eventTarget.removeEventListener(evt, callback);
     };
   }, [cornerstoneViewportService]);
 
   useEffect(() => {
-    const { unsubscribe } = servicesManager.services.cineService.subscribe(
-      servicesManager.services.cineService.EVENTS.CINE_STATE_CHANGED,
-      evt => {
-        setIsPlaying(evt.isPlaying);
-      }
-    );
-
-    return () => {
-      unsubscribe();
-    };
-  }, [cineService]);
-
-  useEffect(() => {
     const displaySetUIDs = viewportGridService.getDisplaySetsUIDsForViewport(activeViewportId);
 
-    if (!displaySetUIDs || displaySetUIDs.length === 0) {
+    if (!displaySetUIDs?.length) {
       return;
     }
 
-    const displaySets = displaySetUIDs.map(displaySetUID =>
-      displaySetService.getDisplaySetByUID(displaySetUID)
-    );
-
+    const displaySets = displaySetUIDs.map(displaySetService.getDisplaySetByUID);
     const dynamicVolumeDisplaySet = displaySets.find(displaySet => displaySet.isDynamicVolume);
 
     if (!dynamicVolumeDisplaySet) {
@@ -88,23 +101,16 @@ export default function PanelGenerateImage({ servicesManager, commandsManager }:
 
     setDynamicVolume(dynamicVolume);
     uuidDynamicVolume.current = dynamicVolumeDisplaySet.displaySetInstanceUID;
-    setTimePointsRange([1, dynamicVolume.numTimePoints]);
-  }, [activeViewportId, cornerstoneViewportService]);
-
-  useEffect(() => {
-    // ~~ Subscription
-    const evt = Enums.Events.DYNAMIC_VOLUME_TIME_POINT_INDEX_CHANGED;
-
-    const callback = evt => {
-      setTimePointRendered(evt.detail.timePointIndex);
-    };
-
-    eventTarget.addEventListener(evt, callback);
-
-    return () => {
-      eventTarget.removeEventListener(evt, callback);
-    };
-  }, [cornerstoneViewportService]);
+    const newRange = [1, dynamicVolume.numTimePoints];
+    setTimePointsRange(newRange);
+    setTimePointsRangeToUseForGenerate(newRange);
+  }, [
+    activeViewportId,
+    viewportGridService,
+    displaySetService,
+    cornerstoneViewportService,
+    cineService,
+  ]);
 
   function renderGeneratedImage(displaySet) {
     commandsManager.runCommand('swapDynamicWithComputedDisplaySet', {
@@ -130,26 +136,19 @@ export default function PanelGenerateImage({ servicesManager, commandsManager }:
     let computedVolume = cache.getVolume(computedVolumeId);
 
     if (!computedVolume) {
-      await createComputedVolume(dynamicVolumeId, computedVolumeId);
-      computedVolume = cache.getVolume(computedVolumeId);
+      computedVolume = await volumeLoader.createAndCacheDerivedVolume(dynamicVolumeId, {
+        volumeId: computedVolumeId,
+      });
     }
+    const [start, end] = timePointsRangeToUseForGenerate;
+    const frameNumbers = Array.from({ length: end - start + 1 }, (_, i) => i + start - 1);
 
-    const vals = timePointsRangeToUseForGenerate;
+    const options = {
+      frameNumbers: operationName === 'SUBTRACT' ? [start, end - 1] : frameNumbers,
+      targetVolume: computedVolume,
+    };
 
-    const targets = Array.from({ length: vals[1] - vals[0] + 1 }, (_, i) => i + vals[0]);
-
-    const dataInTime = cstUtils.dynamicVolume.generateImageFromTimeData(
-      dynamicVolume,
-      operationName,
-      operationName === 'SUBTRACT' ? vals : targets
-    );
-
-    // Add loadStatus.loaded to computed volume and set to true
-    computedVolume.loadStatus = {};
-    computedVolume.loadStatus.loaded = true;
-    // Set computed scalar data to volume
-    const scalarData = computedVolume.getScalarData();
-    scalarData.set(dataInTime);
+    cstUtils.dynamicVolume.updateVolumeFromTimeData(dynamicVolume, operationName, options);
 
     // If computed display set does not exist, create an object to be used as
     // the displaySet. If it does exist, update the image data and vtkTexture
@@ -166,6 +165,7 @@ export default function PanelGenerateImage({ servicesManager, commandsManager }:
         madeInClient: true,
         FrameOfReferenceUID: dynamicVolume.metadata.FrameOfReferenceUID,
         isDerived: true,
+        imageIds: computedVolume.imageIds,
       };
       setComputedDisplaySet(displaySet);
       renderGeneratedImage(displaySet);
@@ -173,19 +173,8 @@ export default function PanelGenerateImage({ servicesManager, commandsManager }:
       commandsManager.runCommand('updateVolumeData', {
         volume: computedVolume,
       });
-      // Check if viewport is currently displaying the computed volume, if so,
-      // call render on the viewports to update the image, if not, call
-      // renderGeneratedImage
-      // if (!cache.getVolume(dynamicVolumeId)) {
-      //   for (const viewportId of viewports.keys()) {
-      //     const viewportForRendering =
-      //       cornerstoneViewportService.getCornerstoneViewport(viewportId);
-      //     viewportForRendering.render();
-      //   }
-      // } else {
       cornerstoneViewportService.getRenderingEngine().render();
       renderGeneratedImage(computedDisplaySet);
-      // }
     }
   }
 
@@ -248,28 +237,7 @@ export default function PanelGenerateImage({ servicesManager, commandsManager }:
       onGenerate={onGenerateImage}
       onDynamicClick={displayingComputed ? () => renderDynamicImage(computedDisplaySet) : null}
       onDoubleRangeChange={handleSliderChange}
+      initialRangeValues={timePointsRangeToUseForGenerate}
     />
   );
 }
-
-async function createComputedVolume(dynamicVolumeId, computedVolumeId) {
-  if (!cache.getVolume(computedVolumeId)) {
-    const computedVolume = await volumeLoader.createAndCacheDerivedVolume(dynamicVolumeId, {
-      volumeId: computedVolumeId,
-    });
-    return computedVolume;
-  }
-}
-
-PanelGenerateImage.propTypes = {
-  servicesManager: PropTypes.shape({
-    services: PropTypes.shape({
-      measurementService: PropTypes.shape({
-        getMeasurements: PropTypes.func.isRequired,
-        subscribe: PropTypes.func.isRequired,
-        EVENTS: PropTypes.object.isRequired,
-        VALUE_TYPES: PropTypes.object.isRequired,
-      }).isRequired,
-    }).isRequired,
-  }).isRequired,
-};

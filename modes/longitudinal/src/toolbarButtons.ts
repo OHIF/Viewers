@@ -126,7 +126,13 @@ const toolbarButtons: Button[] = [
       icon: 'tool-window-level',
       label: 'Window Level',
       commands: setToolActiveToolbar,
-      evaluate: 'evaluate.cornerstoneTool',
+      evaluate: [
+        'evaluate.cornerstoneTool',
+        {
+          name: 'evaluate.viewport.supported',
+          unsupportedViewportTypes: ['wholeSlide'],
+        },
+      ],
     },
   },
   // Pan...
@@ -162,7 +168,13 @@ const toolbarButtons: Button[] = [
       icon: 'tool-capture',
       label: 'Capture',
       commands: 'showDownloadViewportModal',
-      evaluate: 'evaluate.action',
+      evaluate: [
+        'evaluate.action',
+        {
+          name: 'evaluate.viewport.supported',
+          unsupportedViewportTypes: ['video', 'wholeSlide'],
+        },
+      ],
     },
   },
   {

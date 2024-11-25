@@ -1,16 +1,19 @@
 import PropTypes from 'prop-types';
-import React, { useCallback, useEffect, useRef } from 'react';
-import { useViewportGrid } from '@ohif/ui';
-import createPMAPToolGroupAndAddTools from '../utils/initPMAPToolGroup';
-
-const PMAP_TOOLGROUP_BASE_NAME = 'PMAPToolGroup';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { useViewportGrid, LoadingIndicatorTotalPercent } from '@ohif/ui';
 
 function OHIFCornerstonePMAPViewport(props: withAppTypes) {
-  const { displaySets, viewportOptions, displaySetOptions, servicesManager, extensionManager } =
-    props;
+  const {
+    displaySets,
+    children,
+    viewportOptions,
+    displaySetOptions,
+    servicesManager,
+    extensionManager,
+  } = props;
   const viewportId = viewportOptions.viewportId;
-  const { displaySetService, toolGroupService, customizationService } = servicesManager.services;
-  const toolGroupId = `${PMAP_TOOLGROUP_BASE_NAME}-${viewportId}`;
+  const { displaySetService, segmentationService, uiNotificationService } =
+    servicesManager.services;
 
   // PMAP viewport will always have a single display set
   if (displaySets.length !== 1) {
@@ -32,6 +35,24 @@ function OHIFCornerstonePMAPViewport(props: withAppTypes) {
     metadata: referencedDisplaySetMetadata,
   };
 
+  const [pmapIsLoading, setPmapIsLoading] = useState(!pmapDisplaySet.isLoaded);
+
+  // Add effect to listen for loading complete
+  useEffect(() => {
+    const { unsubscribe } = segmentationService.subscribe(
+      segmentationService.EVENTS.SEGMENTATION_LOADING_COMPLETE,
+      evt => {
+        if (evt.pmapDisplaySet?.displaySetInstanceUID === pmapDisplaySet.displaySetInstanceUID) {
+          setPmapIsLoading(false);
+        }
+      }
+    );
+
+    return () => {
+      unsubscribe();
+    };
+  }, [pmapDisplaySet]);
+
   const getCornerstoneViewport = useCallback(() => {
     const { displaySet: referencedDisplaySet } = referencedDisplaySetRef.current;
     const { component: Component } = extensionManager.getModuleEntry(
@@ -46,12 +67,25 @@ function OHIFCornerstonePMAPViewport(props: withAppTypes) {
 
     Object.assign(pmapDisplaySetOptions.options, {
       colormap: {
-        name: 'rainbow',
+        name: 'rainbow_2',
         opacity: [
-          { value: 0, opacity: 0.5 },
-          { value: 1, opacity: 1 },
+          { value: 0, opacity: 0 },
+          { value: 0.25, opacity: 0.25 },
+          { value: 0.5, opacity: 0.5 },
+          { value: 0.75, opacity: 0.75 },
+          { value: 0.9, opacity: 0.99 },
         ],
       },
+      voi: {
+        windowCenter: 50,
+        windowWidth: 100,
+      },
+    });
+
+    uiNotificationService.show({
+      title: 'Parametric Map',
+      type: 'warning',
+      message: 'The values are multiplied by 100 in the viewport for better visibility',
     });
 
     return (
@@ -61,7 +95,6 @@ function OHIFCornerstonePMAPViewport(props: withAppTypes) {
         displaySets={[referencedDisplaySet, pmapDisplaySet]}
         viewportOptions={{
           viewportType: 'volume',
-          toolGroupId: toolGroupId,
           orientation: viewportOptions.orientation,
           viewportId: viewportOptions.viewportId,
         }}
@@ -73,7 +106,6 @@ function OHIFCornerstonePMAPViewport(props: withAppTypes) {
     displaySetOptions,
     props,
     pmapDisplaySet,
-    toolGroupId,
     viewportOptions.orientation,
     viewportOptions.viewportId,
   ]);
@@ -98,23 +130,33 @@ function OHIFCornerstonePMAPViewport(props: withAppTypes) {
     };
   }, [activeViewportId, displaySetService, viewportGridService, viewports]);
 
-  useEffect(() => {
-    let toolGroup = toolGroupService.getToolGroup(toolGroupId);
+  let childrenWithProps = null;
 
-    if (toolGroup) {
-      return;
-    }
-
-    // This creates a custom tool group which has the lifetime of this view only
-    toolGroup = createPMAPToolGroupAndAddTools(toolGroupService, customizationService, toolGroupId);
-
-    return () => toolGroupService.destroyToolGroup(toolGroupId);
-  }, [customizationService, toolGroupId, toolGroupService]);
+  if (children && children.length) {
+    childrenWithProps = children.map((child, index) => {
+      return (
+        child &&
+        React.cloneElement(child, {
+          viewportId,
+          key: index,
+        })
+      );
+    });
+  }
 
   return (
     <>
       <div className="relative flex h-full w-full flex-row overflow-hidden">
+        {pmapIsLoading && (
+          <LoadingIndicatorTotalPercent
+            className="h-full w-full"
+            totalNumbers={null}
+            percentComplete={null}
+            loadingText="Loading Parametric Map..."
+          />
+        )}
         {getCornerstoneViewport()}
+        {childrenWithProps}
       </div>
     </>
   );

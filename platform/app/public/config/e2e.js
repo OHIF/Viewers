@@ -109,6 +109,7 @@ window.config = {
         bulkDataURI: {
           enabled: true,
           relativeResolution: 'studies',
+          transform: url => url.replace('/pixeldata.mp4', '/index.mp4'),
         },
       },
     },
@@ -166,9 +167,9 @@ window.config = {
       configuration: {
         friendlyName: 'AWS S3 Static wado server',
         name: 'aws',
-        wadoUriRoot: 'https://d33do7qe4w26qo.cloudfront.net/dicomweb',
-        qidoRoot: 'https://d33do7qe4w26qo.cloudfront.net/dicomweb',
-        wadoRoot: 'https://d33do7qe4w26qo.cloudfront.net/dicomweb',
+        wadoUriRoot: 'https://d14fa38qiwhyfd.cloudfront.net/dicomweb',
+        qidoRoot: 'https://d14fa38qiwhyfd.cloudfront.net/dicomweb',
+        wadoRoot: 'https://d14fa38qiwhyfd.cloudfront.net/dicomweb',
         qidoSupportsIncludeField: false,
         imageRendering: 'wadors',
         thumbnailRendering: 'wadors',
@@ -180,6 +181,7 @@ window.config = {
         bulkDataURI: {
           enabled: true,
           relativeResolution: 'studies',
+          transform: url => url.replace('/pixeldata.mp4', '/rendered'),
         },
       },
     },
@@ -190,9 +192,9 @@ window.config = {
       configuration: {
         friendlyName: 'AWS S3 Static wado secondary server',
         name: 'aws',
-        wadoUriRoot: 'https://d28o5kq0jsoob5.cloudfront.net/dicomweb',
-        qidoRoot: 'https://d28o5kq0jsoob5.cloudfront.net/dicomweb',
-        wadoRoot: 'https://d28o5kq0jsoob5.cloudfront.net/dicomweb',
+        wadoUriRoot: 'https://dd14fa38qiwhyfd.cloudfront.net/dicomweb',
+        qidoRoot: 'https://dd14fa38qiwhyfd.cloudfront.net/dicomweb',
+        wadoRoot: 'https://dd14fa38qiwhyfd.cloudfront.net/dicomweb',
         qidoSupportsIncludeField: false,
         supportsReject: false,
         imageRendering: 'wadors',

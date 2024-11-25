@@ -11,20 +11,19 @@ const { MetadataProvider } = classes;
 const ohif = {
   layout: '@ohif/extension-default.layoutTemplateModule.viewerLayout',
   sopClassHandler: '@ohif/extension-default.sopClassHandlerModule.stack',
-  measurements: '@ohif/extension-default.panelModule.measure',
   thumbnailList: '@ohif/extension-default.panelModule.seriesList',
 };
 
 const cs3d = {
   viewport: '@ohif/extension-cornerstone.viewportModule.cornerstone',
-  segPanel: '@ohif/extension-cornerstone-dicom-seg.panelModule.panelSegmentation',
+  segPanel: '@ohif/extension-cornerstone.panelModule.panelSegmentationNoHeader',
+  measurements: '@ohif/extension-cornerstone.panelModule.measurements',
 };
 
 const tmtv = {
   hangingProtocol: '@ohif/extension-tmtv.hangingProtocolModule.ptCT',
   petSUV: '@ohif/extension-tmtv.panelModule.petSUV',
-  toolbox: '@ohif/extension-tmtv.panelModule.tmtvBox',
-  export: '@ohif/extension-tmtv.panelModule.tmtvExport',
+  tmtv: '@ohif/extension-tmtv.panelModule.tmtv',
 };
 
 const extensionDependencies = {
@@ -104,11 +103,28 @@ function modeFactory({ modeConfiguration }) {
 
       customizationService.addModeCustomizations([
         {
-          id: 'segmentation.panel',
-          segmentationPanelMode: 'expanded',
-          addSegment: false,
+          id: 'PanelSegmentation.tableMode',
+          mode: 'expanded',
+        },
+        {
+          id: 'PanelSegmentation.onSegmentationAdd',
           onSegmentationAdd: () => {
             commandsManager.run('createNewLabelmapFromPT');
+          },
+        },
+        {
+          id: 'PanelSegmentation.readableText',
+          // remove following if you are not interested in that stats
+          readableText: {
+            lesionStats: 'Lesion Statistics',
+            minValue: 'Minimum Value',
+            maxValue: 'Maximum Value',
+            meanValue: 'Mean Value',
+            volume: 'Volume',
+            suvPeak: 'SUV Peak',
+            suvMax: 'Maximum SUV',
+            suvMaxIJK: 'SUV Max IJK',
+            lesionGlyoclysisStats: 'Lesion Glycolysis',
           },
         },
       ]);
@@ -200,7 +216,7 @@ function modeFactory({ modeConfiguration }) {
             props: {
               leftPanels: [ohif.thumbnailList],
               leftPanelClosed: true,
-              rightPanels: [[tmtv.toolbox, cs3d.segPanel, tmtv.export], tmtv.petSUV],
+              rightPanels: [tmtv.tmtv, tmtv.petSUV],
               viewports: [
                 {
                   namespace: cs3d.viewport,

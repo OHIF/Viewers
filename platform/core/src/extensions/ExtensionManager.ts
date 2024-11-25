@@ -51,7 +51,7 @@ export interface Extension {
   getToolbarModule?: (p: ExtensionParams) => unknown;
   getPanelModule?: (p: ExtensionParams) => unknown;
   onModeEnter?: (p: AppTypes) => void;
-  onModeExit?: () => void;
+  onModeExit?: (p: AppTypes) => void;
 }
 
 export type ExtensionRegister = {
@@ -440,7 +440,7 @@ export default class ExtensionManager extends PubSubService {
 
       return extensionModule;
     } catch (ex) {
-      console.log(ex);
+      console.error(ex);
       throw new Error(
         `Exception thrown while trying to call ${getModuleFnName} for the ${extensionId} extension`
       );

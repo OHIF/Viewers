@@ -3,11 +3,26 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import PropTypes from 'prop-types';
 import { utils } from '@ohif/core';
-import { StudyBrowser, useImageViewer, useViewportGrid, Dialog, ButtonEnums } from '@ohif/ui';
+import { useImageViewer, useViewportGrid, Dialog, ButtonEnums } from '@ohif/ui';
+import { StudyBrowser } from '@ohif/ui-next';
+
 import { useTrackedMeasurements } from '../../getContextModule';
+import { Separator } from '@ohif/ui-next';
+import { PanelStudyBrowserHeader } from '@ohif/extension-default';
+import { defaultActionIcons, defaultViewPresets } from './constants';
 
 const { formatDate, createStudyBrowserTabs } = utils;
-
+const thumbnailNoImageModalities = [
+  'SR',
+  'SEG',
+  'SM',
+  'RTSTRUCT',
+  'RTPLAN',
+  'RTDOSE',
+  'DOC',
+  'OT',
+  'PMAP',
+];
 /**
  *
  * @param {*} param0
@@ -18,6 +33,7 @@ function PanelStudyBrowserTracking({
   getStudiesForPatientByMRN,
   requestDisplaySetCreationForStudy,
   dataSource,
+  commandsManager,
 }: withAppTypes) {
   const {
     displaySetService,
@@ -26,6 +42,7 @@ function PanelStudyBrowserTracking({
     uiNotificationService,
     measurementService,
     studyPrefetcherService,
+    customizationService,
     multiMonitorService,
   } = servicesManager.services;
   const navigate = useNavigate();
@@ -39,7 +56,7 @@ function PanelStudyBrowserTracking({
   const [{ activeViewportId, viewports, isHangingProtocolLayout }, viewportGridService] =
     useViewportGrid();
   const [trackedMeasurements, sendTrackedMeasurementsEvent] = useTrackedMeasurements();
-  const [activeTabName, setActiveTabName] = useState('primary');
+  const [activeTabName, setActiveTabName] = useState('all');
   const [expandedStudyInstanceUIDs, setExpandedStudyInstanceUIDs] = useState([
     ...StudyInstanceUIDs,
   ]);
@@ -49,6 +66,29 @@ function PanelStudyBrowserTracking({
   const [displaySetsLoadingState, setDisplaySetsLoadingState] = useState({});
   const [thumbnailImageSrcMap, setThumbnailImageSrcMap] = useState({});
   const [jumpToDisplaySet, setJumpToDisplaySet] = useState(null);
+
+  const [viewPresets, setViewPresets] = useState(
+    customizationService.getCustomization('studyBrowser.viewPresets')?.value || defaultViewPresets
+  );
+
+  const [actionIcons, setActionIcons] = useState(defaultActionIcons);
+
+  const updateActionIconValue = actionIcon => {
+    actionIcon.value = !actionIcon.value;
+    const newActionIcons = [...actionIcons];
+    setActionIcons(newActionIcons);
+  };
+
+  const updateViewPresetValue = viewPreset => {
+    if (!viewPreset) {
+      return;
+    }
+    const newViewPresets = viewPresets.map(preset => {
+      preset.selected = preset.id === viewPreset.id;
+      return preset;
+    });
+    setViewPresets(newViewPresets);
+  };
 
   const onDoubleClickThumbnailHandler = displaySetInstanceUID => {
     let updatedViewports = [];
@@ -65,7 +105,7 @@ function PanelStudyBrowserTracking({
         title: 'Thumbnail Double Click',
         message:
           'The selected display sets could not be added to the viewport due to a mismatch in the Hanging Protocol rules.',
-        type: 'info',
+        type: 'error',
         duration: 3000,
       });
     }
@@ -142,7 +182,11 @@ function PanelStudyBrowserTracking({
       return;
     }
 
-    const currentDisplaySets = displaySetService.activeDisplaySets;
+    let currentDisplaySets = displaySetService.activeDisplaySets;
+    // filter non based on the list of modalities that are supported by cornerstone
+    currentDisplaySets = currentDisplaySets.filter(
+      ds => !thumbnailNoImageModalities.includes(ds.Modality)
+    );
 
     if (!currentDisplaySets.length) {
       return;
@@ -329,17 +373,17 @@ function PanelStudyBrowserTracking({
       : null;
 
   // TODO: Should not fire this on "close"
-  function _handleStudyClick(studyInstanceUID) {
-    const shouldCollapseStudy = expandedStudyInstanceUIDs.includes(studyInstanceUID);
+  function _handleStudyClick(StudyInstanceUID) {
+    const shouldCollapseStudy = expandedStudyInstanceUIDs.includes(StudyInstanceUID);
     const updatedExpandedStudyInstanceUIDs = shouldCollapseStudy
-      ? [...expandedStudyInstanceUIDs.filter(studyUid => studyUid !== studyInstanceUID)]
-      : [...expandedStudyInstanceUIDs, studyInstanceUID];
+      ? [...expandedStudyInstanceUIDs.filter(stdyUid => stdyUid !== StudyInstanceUID)]
+      : [...expandedStudyInstanceUIDs, StudyInstanceUID];
 
     setExpandedStudyInstanceUIDs(updatedExpandedStudyInstanceUIDs);
 
     if (!shouldCollapseStudy) {
       const madeInClient = true;
-      requestDisplaySetCreationForStudy(displaySetService, studyInstanceUID, madeInClient);
+      requestDisplaySetCreationForStudy(displaySetService, StudyInstanceUID, madeInClient);
     }
   }
 
@@ -439,24 +483,46 @@ function PanelStudyBrowserTracking({
     });
   };
 
+  const onThumbnailContextMenu = (commandName, options) => {
+    commandsManager.runCommand(commandName, options);
+  };
+
   return (
-    <StudyBrowser
-      tabs={tabs}
-      servicesManager={servicesManager}
-      activeTabName={activeTabName}
-      expandedStudyInstanceUIDs={expandedStudyInstanceUIDs}
-      onClickStudy={_handleStudyClick}
-      onClickLaunch={_launchMultiMonitor}
-      onClickTab={clickedTabName => {
-        setActiveTabName(clickedTabName);
-      }}
-      onClickUntrack={displaySetInstanceUID => {
-        onClickUntrack(displaySetInstanceUID);
-      }}
-      onClickThumbnail={() => {}}
-      onDoubleClickThumbnail={onDoubleClickThumbnailHandler}
-      activeDisplaySetInstanceUIDs={activeViewportDisplaySetInstanceUIDs}
-    />
+    <>
+      <>
+        <PanelStudyBrowserHeader
+          viewPresets={viewPresets}
+          updateViewPresetValue={updateViewPresetValue}
+          actionIcons={actionIcons}
+          updateActionIconValue={updateActionIconValue}
+        />
+        <Separator
+          orientation="horizontal"
+          className="bg-black"
+          thickness="2px"
+        />
+      </>
+
+      <StudyBrowser
+        tabs={tabs}
+        servicesManager={servicesManager}
+        activeTabName={activeTabName}
+        expandedStudyInstanceUIDs={expandedStudyInstanceUIDs}
+        onClickStudy={_handleStudyClick}
+        onClickTab={clickedTabName => {
+          setActiveTabName(clickedTabName);
+        }}
+        onClickUntrack={displaySetInstanceUID => {
+          onClickUntrack(displaySetInstanceUID);
+        }}
+        onClickThumbnail={() => {}}
+        onDoubleClickThumbnail={onDoubleClickThumbnailHandler}
+        activeDisplaySetInstanceUIDs={activeViewportDisplaySetInstanceUIDs}
+        showSettings={actionIcons.find(icon => icon.id === 'settings').value}
+        viewPresets={viewPresets}
+        onThumbnailContextMenu={onThumbnailContextMenu}
+      />
+    </>
   );
 }
 
@@ -632,18 +698,6 @@ function _mapDisplaySets(
 
   return [...thumbnailDisplaySets, ...thumbnailNoImageDisplaySets];
 }
-
-const thumbnailNoImageModalities = [
-  'SR',
-  'SEG',
-  'SM',
-  'RTSTRUCT',
-  'RTPLAN',
-  'RTDOSE',
-  'DOC',
-  'OT',
-  'PMAP',
-];
 
 function _getComponentType(ds) {
   if (thumbnailNoImageModalities.includes(ds.Modality) || ds?.unsupported) {

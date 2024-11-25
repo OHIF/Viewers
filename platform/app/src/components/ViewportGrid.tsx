@@ -1,6 +1,5 @@
-import React, { useEffect, useCallback, useRef, useState } from 'react';
+import React, { useEffect, useCallback, useRef } from 'react';
 import { useResizeDetector } from 'react-resize-detector';
-import PropTypes from 'prop-types';
 import { Types, MeasurementService } from '@ohif/core';
 import { ViewportGrid, ViewportPane, useViewportGrid } from '@ohif/ui';
 import EmptyViewport from './EmptyViewport';
@@ -108,6 +107,10 @@ function ViewerViewportGrid(props: withAppTypes) {
 
   const _getUpdatedViewports = useCallback(
     (viewportId, displaySetInstanceUID) => {
+      if (!displaySetInstanceUID) {
+        return [];
+      }
+
       let updatedViewports = [];
       try {
         updatedViewports = hangingProtocolService.getViewportsRequireUpdate(
@@ -121,7 +124,7 @@ function ViewerViewportGrid(props: withAppTypes) {
           title: 'Drag and Drop',
           message:
             'The selected display sets could not be added to the viewport due to a mismatch in the Hanging Protocol rules.',
-          type: 'info',
+          type: 'error',
           duration: 3000,
         });
       }
@@ -168,10 +171,7 @@ function ViewerViewportGrid(props: withAppTypes) {
         const { displaySetInstanceUID: referencedDisplaySetInstanceUID } = measurement;
 
         const updatedViewports = _getUpdatedViewports(viewportId, referencedDisplaySetInstanceUID);
-        // Arbitrarily assign the viewport to element 0
-        const viewport = updatedViewports?.[0];
-
-        if (!viewport) {
+        if (!updatedViewports[0]) {
           console.warn(
             'ViewportGrid::Unable to navigate to viewport containing',
             referencedDisplaySetInstanceUID
@@ -179,22 +179,24 @@ function ViewerViewportGrid(props: withAppTypes) {
           return;
         }
 
-        viewport.viewportOptions ||= {};
-        viewport.viewportOptions.orientation = 'acquisition';
+        // Arbitrarily assign the viewport to element 0
+        // TODO - this should perform a search to find the most suitable viewport.
+        updatedViewports[0] = { ...updatedViewports[0] };
+        const [viewport] = updatedViewports;
 
-        const displaySet = displaySetService.getDisplaySetByUID(referencedDisplaySetInstanceUID);
-        // jump straight to the initial image index if we can
-        if (displaySet.images && measurement.SOPInstanceUID) {
-          for (let index = 0; index < displaySet.images.length; index++) {
-            const image = displaySet.images[index];
-            if (image.SOPInstanceUID === measurement.SOPInstanceUID) {
-              viewport.viewportOptions.initialImageOptions = {
-                index,
-              };
-              break;
-            }
-          }
-        }
+        // Copy the viewport options to prevent modifying the internal data
+        viewport.viewportOptions = {
+          ...viewport.viewportOptions,
+          orientation: 'acquisition',
+          // The preferred way to jump to the measurement view is to set the
+          // view reference, as this can hold information such as the orientation
+          // or zoom level required to display an annotation.  The metadata attribute
+          // of the measurement is a viewReference, so use it to show the measurement.
+          // Longer term this should clear the view reference data
+          viewReference: measurement.metadata,
+          viewportType: measurement.metadata.volumeId ? 'volume' : null,
+        };
+
         viewportGridService.setDisplaySetsForViewports(updatedViewports);
       }
     );
@@ -290,7 +292,7 @@ function ViewerViewportGrid(props: withAppTypes) {
         >
           <div
             data-cy="viewport-pane"
-            className={classNames('flex h-full w-full flex-col', {
+            className={classNames('flex h-full w-full min-w-[5px] flex-col', {
               'pointer-events-none':
                 !isActive && (appConfig?.activateViewportBeforeInteraction ?? true),
             })}
@@ -337,11 +339,6 @@ function ViewerViewportGrid(props: withAppTypes) {
     </div>
   );
 }
-
-ViewerViewportGrid.propTypes = {
-  viewportComponents: PropTypes.array.isRequired,
-  servicesManager: PropTypes.instanceOf(Object).isRequired,
-};
 
 function _getViewportComponent(displaySets, viewportComponents, uiNotificationService) {
   if (!displaySets || !displaySets.length) {

@@ -2,7 +2,8 @@ import SUPPORTED_TOOLS from './constants/supportedTools';
 import { getDisplayUnit } from './utils';
 import getSOPInstanceAttributes from './utils/getSOPInstanceAttributes';
 import { utils } from '@ohif/core';
-
+import { getIsLocked } from './utils/getIsLocked';
+import { getIsVisible } from './utils/getIsVisible';
 const Probe = {
   toAnnotation: measurement => {},
 
@@ -19,11 +20,12 @@ const Probe = {
     getValueTypeFromToolType,
     customizationService
   ) => {
-    const { annotation, viewportId } = csToolsEventDetail;
+    const { annotation } = csToolsEventDetail;
     const { metadata, data, annotationUID } = annotation;
-
+    const isLocked = getIsLocked(annotationUID);
+    const isVisible = getIsVisible(annotationUID);
     if (!metadata || !data) {
-      console.warn('Length tool: Missing metadata or data');
+      console.warn('Probe tool: Missing metadata or data');
       return null;
     }
 
@@ -65,6 +67,8 @@ const Probe = {
       FrameOfReferenceUID,
       points,
       metadata,
+      isLocked,
+      isVisible,
       referenceSeriesUID: SeriesInstanceUID,
       referenceStudyUID: StudyInstanceUID,
       referencedImageId,
@@ -155,15 +159,18 @@ function _getReport(mappedAnnotations, points, FrameOfReferenceUID, customizatio
 }
 
 function getDisplayText(mappedAnnotations, displaySet, customizationService) {
-  if (!mappedAnnotations || !mappedAnnotations.length) {
-    return '';
-  }
+  const displayText = {
+    primary: [],
+    secondary: [],
+  };
 
-  const displayText = [];
+  if (!mappedAnnotations || !mappedAnnotations.length) {
+    return displayText;
+  }
 
   const { value, unit, SeriesNumber, SOPInstanceUID, frameNumber } = mappedAnnotations[0];
 
-  const instance = displaySet.images.find(image => image.SOPInstanceUID === SOPInstanceUID);
+  const instance = displaySet.instances.find(image => image.SOPInstanceUID === SOPInstanceUID);
 
   let InstanceNumber;
   if (instance) {
@@ -172,13 +179,12 @@ function getDisplayText(mappedAnnotations, displaySet, customizationService) {
 
   const instanceText = InstanceNumber ? ` I: ${InstanceNumber}` : '';
   const frameText = displaySet.isMultiFrame ? ` F: ${frameNumber}` : '';
-  if (value === undefined) {
-    return displayText;
+
+  if (value !== undefined) {
+    const roundedValue = utils.roundNumber(value, 2);
+    displayText.primary.push(`${roundedValue} ${getDisplayUnit(unit)}`);
+    displayText.secondary.push(`S: ${SeriesNumber}${instanceText}${frameText}`);
   }
-  const roundedValue = utils.roundNumber(value, 2);
-  displayText.push(
-    `${roundedValue} ${getDisplayUnit(unit)} (S: ${SeriesNumber}${instanceText}${frameText})`
-  );
 
   return displayText;
 }

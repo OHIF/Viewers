@@ -1,7 +1,6 @@
 {
   "name": "ohif-monorepo-root",
   "private": true,
-  "packageManager": "yarn@1.22.22",
   "workspaces": {
     "packages": [
       "platform/*",
@@ -38,7 +37,7 @@
     "dev:orthanc:no:cache": "lerna run dev:orthanc:no:cache --stream",
     "dev:dcm4chee": "lerna run dev:dcm4chee --stream",
     "dev:static": "lerna run dev:static --stream",
-    "orthanc:up": "docker-compose -f platform/app/.recipes/Nginx-Orthanc/docker-compose.yml up",
+    "orthanc:up": "docker compose -f platform/app/.recipes/Nginx-Orthanc/docker-compose.yml up",
     "install:dev": "cp -f yarn.lock addOns/yarn.lock && cd addOns && yarn install --modules-folder ../node_modules",
     "preinstall": "node preinstall.js",
     "start": "yarn run dev",
@@ -68,7 +67,7 @@
   },
   "optionalDependencies": {
     "@percy/cypress": "^3.1.1",
-    "@playwright/test": "^1.44.0",
+    "@playwright/test": "^1.48.0",
     "cypress": "13.7.2",
     "cypress-file-upload": "^3.5.3"
   },
@@ -86,8 +85,8 @@
     "@babel/preset-env": "7.24.7",
     "@babel/preset-react": "^7.16.7",
     "@babel/preset-typescript": "^7.13.0",
-    "prettier": "^3.3.2",
-    "prettier-plugin-tailwindcss": "^0.6.5"
+    "prettier": "^3.3.3",
+    "prettier-plugin-tailwindcss": "0.6.8"
   },
   "husky": {
     "hooks": {
@@ -110,8 +109,13 @@
     "glob-parent": "^6.0.2",
     "trim": "^1.0.0",
     "package-json": "^8.1.0",
-    "typescript": "4.6.4",
+    "typescript": "5.5.4",
     "sharp": "^0.32.6",
-    "ip": "https://registry.npmjs.org/ip-address/-/ip-address-9.0.5.tgz"
+    "**/express/path-to-regexp": "0.1.10",
+    "**/serve/serve-handler/path-to-regexp": "3.3.0",
+    "**/@docusaurus/core/serve-handler/path-to-regexp": "3.3.0",
+    "**/react-router/**/path-to-regexp": "1.9.0",
+    "rollup": "2.79.2",
+    "body-parser": "1.20.3"
   }
 }

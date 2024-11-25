@@ -7,21 +7,30 @@ sidebar_label: Commands Manager
 ## Overview
 
 
-The `CommandsManager` is a class defined in the `@ohif/core` project. The Commands Manager tracks named commands (or functions) that are scoped to
+The `CommandsManager` is a class defined in the `@ohif/core` project.
+The Commands Manager tracks named commands (or functions) that are scoped to
 a context. When we attempt to run a command with a given name, we look for it
-in our active contexts. If found, we run the command, passing in any application
+in our active contexts, in the order specified.
+If found, we run the command, passing in any application
 or call specific data specified in the command's definition.
 
-> Note: A single instance of `CommandsManager` should be defined in the consuming application, and it is used when constructing the `ExtensionManager`.
+The order specified is the REVERSE of the order the modules are registered in
+for the mode dependency.  That is, the last module registered has the highest priority
+and will be searched first for commands.  This has nothing to do with when the
+command itself is registered, although registrations for the same command in different
+modules in the same context will also use last registration wins.
+
+> Note: A single instance of `CommandsManager` should be defined in the consuming
+application, and it is used when constructing the `ExtensionManager`.
 
 A `simplified skeleton` of the `CommandsManager` is shown below:
 
 ```js
 export class CommandsManager {
-  constructor({ getActiveContexts } = {}) {
-    this.contexts = {};
-    this._getActiveContexts = getActiveContexts;
-  }
+  contexts = {};
+  contextOrder = [];
+
+  constructor(_ignoredConfig) {}
 
   getContext(contextName) {
     const context = this.contexts[contextName];
@@ -33,6 +42,7 @@ export class CommandsManager {
   createContext(contextName) {
 	  /** ... **/
     this.contexts[contextName] = {};
+    this.contextOrder.push at beginning(contextName)
   }
 
 
@@ -41,6 +51,11 @@ export class CommandsManager {
     const context = this.getContext(contextName);
     /**...**/
     context[commandName] = definition;
+  }
+
+  getCommand(commandName, contextName) {
+    const useContext = contextName || first context having commandName in contextOrder
+    return useContext[commandName];
   }
 
   runCommand(commandName, options = {}, contextName) {
@@ -64,33 +79,13 @@ export class CommandsManager {
 
 ### Instantiating
 
-When we instantiate the `CommandsManager`, we are passing two methods:
-
-- `getAppState` - Should return the application's state when called (Not implemented in `v3`)
-- `getActiveContexts` - Should return the application's active contexts when
-  called
-
-These methods are used internally to help determine which commands are currently
-valid, and how to provide them with any state they may need at the time they are
-called.
-
-```js title="platform/app/src/appInit.js"
-const commandsManagerConfig = {
-  getAppState: () => {},
-  /** Used by commands to determine active context */
-  getActiveContexts: () => [
-    'VIEWER',
-    'DEFAULT',
-    'ACTIVE_VIEWPORT::CORNERSTONE',
-  ],
-};
-
-const commandsManager = new CommandsManager(commandsManagerConfig);
-```
+No methods or configuration is used within the construction.
 
 
 ## Commands/Context Registration
-The `ExtensionManager` handles registering commands and creating contexts, so you don't need to register all your commands manually. Simply, create a `commandsModule` in your extension, and it will get automatically registered in the `context` provided.
+The `ExtensionManager` handles registering commands and creating contexts, so you
+don't need to register all your commands manually. Simply, create a `commandsModule`
+in your extension, and it will get automatically registered in the `context` provided.
 
 A *simplified version* of this registration is shown below to give an idea about the process.
 
@@ -173,7 +168,7 @@ use `runCommand(commandName, options = {}, contextName)`.
 commandsManager.runCommand('speak', { command: 'hello' });
 
 // Run command, from Default context
-commandsManager.runCommand('speak', { command: 'hello' }, ['DEFAULT']);
+commandsManager.runCommand('speak', { command: 'hello' }, 'DEFAULT');
 
 // Returns all commands for a given context
 commandsManager.getContext('string');

@@ -8,7 +8,9 @@ import { useTrackedMeasurements } from './../getContextModule';
 import { BaseVolumeViewport, Enums } from '@cornerstonejs/core';
 import { useTranslation } from 'react-i18next';
 
-function TrackedCornerstoneViewport(props: withAppTypes) {
+function TrackedCornerstoneViewport(
+  props: withAppTypes<{ viewportId: string; displaySets: AppTypes.DisplaySet[] }>
+) {
   const { displaySets, viewportId, servicesManager, extensionManager } = props;
 
   const {
@@ -96,6 +98,9 @@ function TrackedCornerstoneViewport(props: withAppTypes) {
   useEffect(() => {
     if (isTracked) {
       annotation.config.style.setViewportToolStyles(viewportId, {
+        ReferenceLines: {
+          lineDash: '4,4',
+        },
         global: {
           lineDash: '',
         },
@@ -193,7 +198,7 @@ function TrackedCornerstoneViewport(props: withAppTypes) {
       viewportId === activeViewportId
     );
 
-    viewportActionCornersService.setComponents([
+    viewportActionCornersService.addComponents([
       {
         viewportId,
         id: 'viewportStatusComponent',
@@ -305,7 +310,7 @@ const _getArrowsComponent = (isTracked, switchMeasurement, isActiveViewport) => 
   return (
     <ViewportActionArrows
       onArrowsClick={direction => switchMeasurement(direction)}
-      className={isActiveViewport ? 'visible' : 'invisible group-hover:visible'}
+      className={isActiveViewport ? 'visible' : 'invisible group-hover/pane:visible'}
     ></ViewportActionArrows>
   );
 };

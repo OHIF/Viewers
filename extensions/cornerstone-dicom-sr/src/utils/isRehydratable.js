@@ -4,7 +4,7 @@ const cornerstoneAdapters =
   adaptersSR.Cornerstone3D.MeasurementReport.CORNERSTONE_TOOL_CLASSES_BY_UTILITY_TYPE;
 
 const supportedLegacyCornerstoneTags = ['cornerstoneTools@^4.0.0'];
-const CORNERSTONE_3D_TAG = cornerstoneAdapters.CORNERSTONE_3D_TAG;
+const CORNERSTONE_3D_TAG = adaptersSR.Cornerstone3D.CORNERSTONE_3D_TAG;
 
 /**
  * Checks if the given `displaySet`can be rehydrated into the `measurementService`.

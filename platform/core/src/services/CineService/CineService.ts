@@ -15,6 +15,7 @@ class CineService extends PubSubService {
 
   serviceImplementation = {};
   startedClips = new Map();
+  closedViewports = new Set();
 
   constructor() {
     super(CineService.EVENTS);
@@ -34,9 +35,15 @@ class CineService extends PubSubService {
     // Todo: for some reason i need to do this setTimeout since the
     // reducer state does not get updated right away and if we publish the
     // event and we use the cineService.getState() it will return the old state
-    setTimeout(() => {
+    if (isCineEnabled) {
+      this.closedViewports.forEach(viewportId => {
+        this.clearViewportCineClosed(viewportId);
+      });
+    }
+
+    queueMicrotask(() => {
       this._broadcastEvent(this.EVENTS.CINE_STATE_CHANGED, { isCineEnabled });
-    }, 0);
+    });
   }
 
   public playClip(element, playClipOptions) {
@@ -66,6 +73,19 @@ class CineService extends PubSubService {
 
   public getSyncedViewports(viewportId) {
     return this.serviceImplementation._getSyncedViewports(viewportId);
+  }
+
+  public setViewportCineClosed(viewportId) {
+    this.closedViewports.add(viewportId);
+  }
+
+  public isViewportCineClosed(viewportId) {
+    // Todo: we should move towards per viewport cine closed in next release
+    return this.closedViewports.size > 0;
+  }
+
+  public clearViewportCineClosed(viewportId) {
+    this.closedViewports.delete(viewportId);
   }
 
   public setServiceImplementation({

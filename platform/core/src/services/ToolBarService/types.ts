@@ -1,10 +1,20 @@
 import type { RunCommand } from '../../types/Command';
 
-export type EvaluatePublic = string | EvaluateFunction | string[];
+export type EvaluatePublic =
+  | string
+  | EvaluateFunction
+  | EvaluateObject
+  | (string | EvaluateFunction | EvaluateObject)[];
 
 export type EvaluateFunction = (props: Record<string, unknown>) => {
   disabled: boolean;
   className: string;
+};
+
+export type EvaluateObject = {
+  name: string;
+  // Allow any additional properties
+  [key: string]: unknown;
 };
 
 export type ButtonProps = {

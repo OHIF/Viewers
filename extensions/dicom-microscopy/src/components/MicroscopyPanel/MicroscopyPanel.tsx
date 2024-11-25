@@ -5,9 +5,10 @@ import { MeasurementTable } from '@ohif/ui';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { EVENTS as MicroscopyEvents } from '../../services/MicroscopyService';
 import dcmjs from 'dcmjs';
-import callInputDialog from '../../utils/callInputDialog';
+import { callInputDialog } from '@ohif/extension-default';
 import constructSR from '../../utils/constructSR';
 import { saveByteArray } from '../../utils/saveByteArray';
+import { Separator } from '@ohif/ui-next';
 
 let saving = false;
 const { datasetToBuffer } = dcmjs.data;

@@ -69,7 +69,13 @@ const toolbarButtons: Button[] = [
       icon: 'tool-capture',
       label: 'Capture',
       commands: 'showDownloadViewportModal',
-      evaluate: 'evaluate.action',
+      evaluate: [
+        'evaluate.action',
+        {
+          name: 'evaluate.viewport.supported',
+          unsupportedViewportTypes: ['video', 'wholeSlide'],
+        },
+      ],
     },
   },
   {
@@ -142,7 +148,13 @@ const toolbarButtons: Button[] = [
           label: 'Flip Horizontal',
           tooltip: 'Flip Horizontally',
           commands: 'flipViewportHorizontal',
-          evaluate: ['evaluate.viewportProperties.toggle', 'evaluate.not3D'],
+          evaluate: [
+            'evaluate.viewportProperties.toggle',
+            {
+              name: 'evaluate.viewport.supported',
+              unsupportedViewportTypes: ['volume3d'],
+            },
+          ],
         }),
         createButton({
           id: 'ReferenceLines',
@@ -194,7 +206,13 @@ const toolbarButtons: Button[] = [
           label: 'Cine',
           tooltip: 'Cine',
           commands: 'toggleCine',
-          evaluate: ['evaluate.cine', 'evaluate.not3D'],
+          evaluate: [
+            'evaluate.cine',
+            {
+              name: 'evaluate.viewport.supported',
+              unsupportedViewportTypes: ['volume3d'],
+            },
+          ],
         }),
         createButton({
           id: 'Angle',
@@ -249,7 +267,13 @@ const toolbarButtons: Button[] = [
           label: 'Ultrasound Directional',
           tooltip: 'Ultrasound Directional',
           commands: setToolActiveToolbar,
-          evaluate: ['evaluate.cornerstoneTool', 'evaluate.isUS'],
+          evaluate: [
+            'evaluate.cornerstoneTool',
+            {
+              name: 'evaluate.modality.supported',
+              supportedModalities: ['US'],
+            },
+          ],
         }),
         createButton({
           id: 'WindowLevelRegion',

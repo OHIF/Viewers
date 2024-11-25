@@ -1,3 +1,249 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* OHIF Theme */
+
+@layer base {
+  :root {
+    --highlight: 191 74% 63%;
+    --background: 236 62% 5%;
+    --foreground: 0 0% 98%;
+    --card: 236 62% 5%;
+    --card-foreground: 0 0% 98%;
+    --popover: 219 90% 15%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 214 98% 60%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 214 66% 48%;
+    --secondary-foreground: 200 50% 84%;
+    --muted: 234 64% 10%;
+    --muted-foreground: 200 46% 65%;
+    --accent: 217 79% 24%;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 14.9%;
+    --input: 236 45% 21%;
+    --ring: 214 98% 60%;
+    --chart-1: 220 70% 50%;
+    --chart-2: 160 60% 45%;
+    --chart-3: 30 80% 55%;
+    --chart-4: 280 65% 60%;
+    --chart-5: 340 75% 55%;
+    --radius: 0.5rem;
+    --badge-new-color: hsl(var(--primary-foreground));
+    --badge-new-background: linear-gradient(135deg, hsl(var(--highlight)), hsl(var(--primary)));
+    --badge-latest-stable-color: hsl(var(--primary));
+  }
+
+  .dark {
+    --background: 0 0% 3.9%;
+    --foreground: 0 0% 98%;
+    --card: 0 0% 3.9%;
+    --card-foreground: 0 0% 98%;
+    --popover: 0 0% 3.9%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 214 98% 60%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 0 0% 14.9%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 0 0% 14.9%;
+    --muted-foreground: 0 0% 63.9%;
+    --accent: 0 0% 14.9%;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 14.9%;
+    --input: 236 45% 21%;
+    --ring: 214 98% 60%;
+    --chart-1: 220 70% 50%;
+    --chart-2: 160 60% 45%;
+    --chart-3: 30 80% 55%;
+    --chart-4: 280 65% 60%;
+    --chart-5: 340 75% 55%;
+    --badge-new-color: hsl(var(--primary-foreground));
+    --badge-new-background: linear-gradient(135deg, hsl(var(--highlight)), hsl(var(--primary)));
+    --badge-latest-stable-color: hsl(var(--primary));
+  }
+}
+
+/* ORIGINAL THEME for comparison and testing
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 240 10% 3.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 240 10% 3.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 10% 3.9%;
+    --primary: 240 5.9% 10%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 240 4.8% 95.9%;
+    --secondary-foreground: 240 5.9% 10%;
+    --muted: 240 4.8% 95.9%;
+    --muted-foreground: 240 3.8% 46.1%;
+    --accent: 240 4.8% 95.9%;
+    --accent-foreground: 240 5.9% 10%;
+    --destructive: 0 72.22% 50.59%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 5.9% 90%;
+    --input: 240 5.9% 90%;
+    --ring: 240 5% 64.9%;
+    --radius: 0.5rem;
+
+    --chart-1: 12 76% 61%;
+    --chart-2: 173 58% 39%;
+    --chart-3: 197 37% 24%;
+    --chart-4: 43 74% 66%;
+    --chart-5: 27 87% 67%;
+  }
+
+
+  .dark {
+    --background: 240 10% 3.9%;
+    --foreground: 0 0% 98%;
+    --card: 240 10% 3.9%;
+    --card-foreground: 0 0% 98%;
+    --popover: 240 10% 3.9%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 0 0% 98%;
+    --primary-foreground: 240 5.9% 10%;
+    --secondary: 240 3.7% 15.9%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 240 3.7% 15.9%;
+    --muted-foreground: 240 5% 64.9%;
+    --accent: 240 3.7% 15.9%;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 85.7% 97.3%;
+    --border: 240 3.7% 15.9%;
+    --input: 240 3.7% 15.9%;
+    --ring: 240 4.9% 83.9%;
+
+    --chart-1: 220 70% 50%;
+    --chart-2: 160 60% 45%;
+    --chart-3: 30 80% 55%;
+    --chart-4: 280 65% 60%;
+    --chart-5: 340 75% 55%;
+  }
+}
+
+*/
+
+/* Theme Copy Example
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 224 71.4% 4.1%;
+    --card: 0 0% 100%;
+    --card-foreground: 224 71.4% 4.1%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 224 71.4% 4.1%;
+    --primary: 262.1 83.3% 57.8%;
+    --primary-foreground: 210 20% 98%;
+    --secondary: 220 14.3% 95.9%;
+    --secondary-foreground: 220.9 39.3% 11%;
+    --muted: 220 14.3% 95.9%;
+    --muted-foreground: 220 8.9% 46.1%;
+    --accent: 220 14.3% 95.9%;
+    --accent-foreground: 220.9 39.3% 11%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 20% 98%;
+    --border: 220 13% 91%;
+    --input: 220 13% 91%;
+    --ring: 262.1 83.3% 57.8%;
+    --radius: 0.5rem;
+    --chart-1: ;
+    --chart-2: ;
+    --chart-3: ;
+    --chart-4: ;
+    --chart-5: ;
+  }
+
+  .dark {
+    --background: 224 71.4% 4.1%;
+    --foreground: 210 20% 98%;
+    --card: 224 71.4% 4.1%;
+    --card-foreground: 210 20% 98%;
+    --popover: 224 71.4% 4.1%;
+    --popover-foreground: 210 20% 98%;
+    --primary: 263.4 70% 50.4%;
+    --primary-foreground: 210 20% 98%;
+    --secondary: 215 27.9% 16.9%;
+    --secondary-foreground: 210 20% 98%;
+    --muted: 215 27.9% 16.9%;
+    --muted-foreground: 217.9 10.6% 64.9%;
+    --accent: 215 27.9% 16.9%;
+    --accent-foreground: 210 20% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 20% 98%;
+    --border: 215 27.9% 16.9%;
+    --input: 215 27.9% 16.9%;
+    --ring: 263.4 70% 50.4%;
+    --chart-1: ;
+    --chart-2: ;
+    --chart-3: ;
+    --chart-4: ;
+    --chart-5: ;
+  }
+}
+
+*/
+
+h2.section-header {
+  @apply py-4 text-2xl font-normal text-white;
+}
+
+h3.section-header {
+  @apply py-3 text-xl text-white;
+}
+
+.playground-row {
+  @apply bg-card mb-6 flex flex-row flex-wrap rounded-md border py-10;
+}
+
+.example {
+  @apply flex-initial px-6;
+}
+
+.example2 {
+  @apply flex-initial px-4;
+}
+
+/* Additional CSS edits to components */
+
+/* Tooltip */
+
+.TooltipContent[data-side='bottom'] {
+  animation-name: slideDown;
+}
+
+/* Custom CSS to hide default number input arrows */
+input[type='number']::-webkit-inner-spin-button,
+input[type='number']::-webkit-outer-spin-button {
+  @apply appearance-none;
+}
+
+input[type='number'] {
+  -moz-appearance: textfield; /* For Firefox */
+}
+
+.navbar__item {
+  display: flex;
+  align-items: center;
+}
+
+.navbar__item svg {
+  margin-right: 5px;
+  display: inline-block;
+  vertical-align: middle;
+}
+
 /* stylelint-disable docusaurus/copyright-header */
 /**
  * Any CSS included here will be global. The classic template
@@ -97,8 +343,6 @@ html[data-theme='dark'] {
 */
 
 /* Typography updates */
-
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
 
 html {
   font-size: 1em;
@@ -300,4 +544,174 @@ div[class^='announcementBar_'] {
     var(--site-announcement-bar-stripe-color2) 40px
   );
   font-weight: 700;
+}
+
+/* #__docusaurus {
+  height: 100%;
+} */
+
+.dropdown-separator {
+  border-top: 1px solid #808080;
+}
+
+/* flex items , center */
+.dropdown__link {
+  display: flex;
+  align-items: center;
+}
+
+.footer__link-item {
+  display: flex;
+  align-items: center;
+}
+
+/* add proper ui link styling */
+
+/* Bullet point styling */
+ul {
+  list-style-type: disc;
+  padding-left: 1.5rem;
+  margin: 1rem 0;
+}
+
+ul li {
+  margin-bottom: 0.5rem;
+}
+
+/* Nested bullet points */
+ul ul {
+  list-style-type: circle;
+  margin: 0.5rem 0;
+}
+
+/* For documentation bullet points specifically */
+.markdown ul {
+  list-style-type: disc;
+  padding-left: 1.5rem;
+}
+
+.markdown ul li {
+  margin-bottom: 0.5rem;
+}
+
+/* Markdown link styling */
+.markdown a {
+  color: #0066cc;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.markdown a:hover {
+  color: #0051a3;
+  text-decoration: underline;
+}
+
+/* Dark mode link styling */
+html[data-theme='dark'] .markdown a {
+  color: #66b3ff;
+}
+
+html[data-theme='dark'] .markdown a:hover {
+  color: #99ccff;
+}
+
+/* Horizontal rule styling */
+.markdown hr {
+  height: 1px;
+  border: none;
+  background: linear-gradient(to right, #0066cc, #66b3ff);
+  margin: 2rem 0;
+  opacity: 0.6;
+}
+
+/* Dark mode horizontal rule */
+html[data-theme='dark'] .markdown hr {
+  background: linear-gradient(to right, #66b3ff, #99ccff);
+}
+
+/* Markdown code block styling */
+.markdown pre {
+  font-size: 0.9rem;
+}
+
+.theme-code-block {
+  font-size: 0.9rem;
+}
+
+/* Target both light and dark themes */
+[data-theme='light'] .theme-code-block,
+[data-theme='dark'] .theme-code-block {
+  font-size: 0.9rem;
+}
+
+/* Dropdown menu positioning and interaction fixes */
+.dropdown {
+  position: relative;
+}
+
+.dropdown__menu {
+  top: 100%;
+  margin-top: 0;
+  padding-top: 0.5rem;
+}
+
+/* Add a hover area to prevent menu from disappearing */
+.dropdown__menu::before {
+  content: '';
+  position: absolute;
+  top: -10px;
+  left: 0;
+  right: 0;
+  height: 10px;
+}
+
+/* Ensure menu stays visible while hovering */
+.dropdown:hover .dropdown__menu,
+.dropdown__menu:hover {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.theme-doc-version-banner {
+  display: none;
+}
+
+/* New badge styling */
+/* New Badge Styling */
+a.navbar__item.navbar__link.navbar__link--active[href='/migration-guide/3p8-to-3p9/'][aria-current='page']::after {
+  content: ' NEW';
+  display: inline-block;
+  margin-left: 8px;
+  padding: 2px 6px;
+  font-size: 0.75em;
+  font-weight: bold;
+  color: var(--badge-new-color);
+  background: var(--badge-new-background);
+  border-radius: 12px;
+  position: relative;
+  overflow: hidden;
+  white-space: nowrap;
+  /* Shiny Effect */
+  background-size: 200% 200%;
+  animation: shine 2s linear infinite;
+  box-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+}
+
+/* Shiny Animation */
+@keyframes shine {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 100% 50%;
+  }
+}
+
+/* "(latest stable)" Text Styling */
+a.dropdown__link[href='/3.9/migration-guide/3p8-to-3p9/']::after {
+  content: ' (latest stable)';
+  color: var(--badge-latest-stable-color);
+  font-size: 0.9em;
+  margin-left: 4px;
 }

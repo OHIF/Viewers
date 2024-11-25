@@ -1,4 +1,4 @@
-import OHIF, { Types, errorHandler } from '@ohif/core';
+import OHIF, { errorHandler } from '@ohif/core';
 import React from 'react';
 
 import * as cornerstone from '@cornerstonejs/core';
@@ -13,12 +13,13 @@ import {
   getEnabledElement,
   Settings,
   utilities as csUtilities,
-  Enums as csEnums,
 } from '@cornerstonejs/core';
 import {
   cornerstoneStreamingImageVolumeLoader,
   cornerstoneStreamingDynamicImageVolumeLoader,
-} from '@cornerstonejs/streaming-image-volume-loader';
+} from '@cornerstonejs/core/loaders';
+
+import RequestTypes from '@cornerstonejs/core/enums/RequestType';
 
 import initWADOImageLoader from './initWADOImageLoader';
 import initCornerstoneTools from './initCornerstoneTools';
@@ -33,6 +34,10 @@ import initContextMenu from './initContextMenu';
 import initDoubleClick from './initDoubleClick';
 import initViewTiming from './utils/initViewTiming';
 import { colormaps } from './utils/colormaps';
+import { SegmentationRepresentations } from '@cornerstonejs/tools/enums';
+import { useLutPresentationStore } from './stores/useLutPresentationStore';
+import { usePositionPresentationStore } from './stores/usePositionPresentationStore';
+import { useSegmentationPresentationStore } from './stores/useSegmentationPresentationStore';
 
 const { registerColormap } = csUtilities.colormap;
 
@@ -46,27 +51,12 @@ export default async function init({
   servicesManager,
   commandsManager,
   extensionManager,
-  appConfig
-}: Types.Extensions.ExtensionParams): Promise<void> {
+  appConfig,
+}: withAppTypes): Promise<void> {
   // Note: this should run first before initializing the cornerstone
   // DO NOT CHANGE THE ORDER
-  const value = appConfig.useSharedArrayBuffer;
-  let sharedArrayBufferDisabled = false;
-
-  if (value === 'AUTO') {
-    cornerstone.setUseSharedArrayBuffer(csEnums.SharedArrayBufferModes.AUTO);
-  } else if (value === 'FALSE' || value === false) {
-    cornerstone.setUseSharedArrayBuffer(csEnums.SharedArrayBufferModes.FALSE);
-    sharedArrayBufferDisabled = true;
-  } else {
-    cornerstone.setUseSharedArrayBuffer(csEnums.SharedArrayBufferModes.TRUE);
-  }
 
   await cs3DInit({
-    rendering: {
-      preferSizeOverAccuracy: Boolean(appConfig.preferSizeOverAccuracy),
-      useNorm16Texture: Boolean(appConfig.useNorm16Texture),
-    },
     peerImport: appConfig.peerImport,
   });
 
@@ -99,63 +89,39 @@ export default async function init({
     cornerstoneViewportService,
     hangingProtocolService,
     viewportGridService,
-    stateSyncService,
-    studyPrefetcherService,
   } = servicesManager.services;
 
   window.services = servicesManager.services;
   window.extensionManager = extensionManager;
   window.commandsManager = commandsManager;
 
-  if (
-    appConfig.showWarningMessageForCrossOrigin &&
-    !window.crossOriginIsolated &&
-    !sharedArrayBufferDisabled
-  ) {
-    uiNotificationService.show({
-      title: 'Cross Origin Isolation',
-      message:
-        'Cross Origin Isolation is not enabled, read more about it here: https://docs.ohif.org/faq/',
-      type: 'warning',
-    });
-  }
-
   if (appConfig.showCPUFallbackMessage && cornerstone.getShouldUseCPURendering()) {
     _showCPURenderingModal(uiModalService, hangingProtocolService);
   }
+  const { getPresentationId: getLutPresentationId } = useLutPresentationStore.getState();
 
-  // Stores a map from `lutPresentationId` to a Presentation object so that
-  // an OHIFCornerstoneViewport can be redisplayed with the same LUT
-  stateSyncService.register('lutPresentationStore', { clearOnModeExit: true });
+  const { getPresentationId: getSegmentationPresentationId } =
+    useSegmentationPresentationStore.getState();
 
-  // Stores synchronizers state to be restored
-  stateSyncService.register('synchronizersStore', { clearOnModeExit: true });
+  const { getPresentationId: getPositionPresentationId } = usePositionPresentationStore.getState();
 
-  // Stores a map from `positionPresentationId` to a Presentation object so that
-  // an OHIFCornerstoneViewport can be redisplayed with the same position
-  stateSyncService.register('positionPresentationStore', {
-    clearOnModeExit: true,
-  });
+  // register presentation id providers
+  viewportGridService.addPresentationIdProvider(
+    'positionPresentationId',
+    getPositionPresentationId
+  );
+  viewportGridService.addPresentationIdProvider('lutPresentationId', getLutPresentationId);
+  viewportGridService.addPresentationIdProvider(
+    'segmentationPresentationId',
+    getSegmentationPresentationId
+  );
 
-  // Stores the entire ViewportGridService getState when toggling to one up
-  // (e.g. via a double click) so that it can be restored when toggling back.
-  stateSyncService.register('toggleOneUpViewportGridStore', {
-    clearOnModeExit: true,
-  });
-
-  const labelmapRepresentation = cornerstoneTools.Enums.SegmentationRepresentations.Labelmap;
-  const contourRepresentation = cornerstoneTools.Enums.SegmentationRepresentations.Contour;
-
-  cornerstoneTools.segmentation.config.setGlobalRepresentationConfig(labelmapRepresentation, {
-    fillAlpha: 0.5,
-    fillAlphaInactive: 0.2,
-    outlineOpacity: 1,
-    outlineOpacityInactive: 0.65,
-  });
-
-  cornerstoneTools.segmentation.config.setGlobalRepresentationConfig(contourRepresentation, {
-    renderFill: false,
-  });
+  cornerstoneTools.segmentation.config.style.setStyle(
+    { type: SegmentationRepresentations.Contour },
+    {
+      renderFill: false,
+    }
+  );
 
   const metadataProvider = OHIF.classes.MetadataProvider;
 
@@ -184,9 +150,10 @@ export default async function init({
   // These are set reasonably low to allow for interleaved retrieves and slower
   // connections.
   imageLoadPoolManager.maxNumRequests = {
-    interaction: appConfig?.maxNumRequests?.interaction || 10,
-    thumbnail: appConfig?.maxNumRequests?.thumbnail || 5,
-    prefetch: appConfig?.maxNumRequests?.prefetch || 5,
+    [RequestTypes.Interaction]: appConfig?.maxNumRequests?.interaction || 10,
+    [RequestTypes.Thumbnail]: appConfig?.maxNumRequests?.thumbnail || 5,
+    [RequestTypes.Prefetch]: appConfig?.maxNumRequests?.prefetch || 5,
+    [RequestTypes.Compute]: appConfig?.maxNumRequests?.compute || 10,
   };
 
   initWADOImageLoader(userAuthenticationService, appConfig, extensionManager);
@@ -201,17 +168,23 @@ export default async function init({
   hangingProtocolService.subscribe(
     hangingProtocolService.EVENTS.CUSTOM_IMAGE_LOAD_PERFORMED,
     volumeInputArrayMap => {
+      const { lutPresentationStore } = useLutPresentationStore.getState();
+      const { segmentationPresentationStore } = useSegmentationPresentationStore.getState();
+      const { positionPresentationStore } = usePositionPresentationStore.getState();
+
       for (const entry of volumeInputArrayMap.entries()) {
         const [viewportId, volumeInputArray] = entry;
         const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
 
         const ohifViewport = cornerstoneViewportService.getViewportInfo(viewportId);
 
-        const { lutPresentationStore, positionPresentationStore } = stateSyncService.getState();
         const { presentationIds } = ohifViewport.getViewportOptions();
+
         const presentations = {
           positionPresentation: positionPresentationStore[presentationIds?.positionPresentationId],
           lutPresentation: lutPresentationStore[presentationIds?.lutPresentationId],
+          segmentationPresentation:
+            segmentationPresentationStore[presentationIds?.segmentationPresentationId],
         };
 
         cornerstoneViewportService.setVolumesForViewport(viewport, volumeInputArray, presentations);
@@ -249,10 +222,6 @@ export default async function init({
     handler(detail.error);
   };
 
-  eventTarget.addEventListener(EVENTS.STACK_VIEWPORT_NEW_STACK, evt => {
-    const { element } = evt.detail;
-    cornerstoneTools.utilities.stackContextPrefetch.enable(element);
-  });
   eventTarget.addEventListener(EVENTS.IMAGE_LOAD_FAILED, imageLoadFailedHandler);
   eventTarget.addEventListener(EVENTS.IMAGE_LOAD_ERROR, imageLoadFailedHandler);
 
@@ -269,26 +238,11 @@ export default async function init({
       commandsManager.runCommand('resetCrosshairs', { viewportId });
     });
 
-    // eventTarget.addEventListener(EVENTS.STACK_VIEWPORT_NEW_STACK, toolbarEventListener);
-
     initViewTiming({ element });
-  }
-
-  function elementDisabledHandler(evt) {
-    const { element } = evt.detail;
-
-    // element.removeEventListener(EVENTS.CAMERA_RESET, resetCrosshairs);
-
-    // TODO - consider removing the callback when all elements are gone
-    // eventTarget.removeEventListener(
-    //   EVENTS.STACK_VIEWPORT_NEW_STACK,
-    //   newStackCallback
-    // );
   }
 
   eventTarget.addEventListener(EVENTS.ELEMENT_ENABLED, elementEnabledHandler.bind(null));
 
-  eventTarget.addEventListener(EVENTS.ELEMENT_DISABLED, elementDisabledHandler.bind(null));
   colormaps.forEach(registerColormap);
 
   // Event listener
@@ -301,8 +255,45 @@ export default async function init({
         type: 'error',
       });
     },
-    1000
+    100
   );
+
+  // Call this function when initializing
+  initializeWebWorkerProgressHandler(servicesManager.services.uiNotificationService);
+}
+
+function initializeWebWorkerProgressHandler(uiNotificationService) {
+  const activeToasts = new Map();
+
+  eventTarget.addEventListener(EVENTS.WEB_WORKER_PROGRESS, ({ detail }) => {
+    const { progress, type, id } = detail;
+
+    const cacheKey = `${type}-${id}`;
+    if (progress === 0 && !activeToasts.has(cacheKey)) {
+      const progressPromise = new Promise((resolve, reject) => {
+        activeToasts.set(cacheKey, { resolve, reject });
+      });
+
+      uiNotificationService.show({
+        id: cacheKey,
+        title: `${type}`,
+        message: `${type}: ${progress}%`,
+        autoClose: false,
+        promise: progressPromise,
+        promiseMessages: {
+          loading: `Computing...`,
+          success: `Completed successfully`,
+          error: 'Web Worker failed',
+        },
+      });
+    } else {
+      if (progress === 100) {
+        const { resolve } = activeToasts.get(cacheKey);
+        resolve({ progress, type });
+        activeToasts.delete(cacheKey);
+      }
+    }
+  });
 }
 
 function CPUModal() {

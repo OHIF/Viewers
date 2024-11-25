@@ -9,7 +9,6 @@ import {
   UIDialogService,
   UIViewportDialogService,
   MeasurementService,
-  StateSyncService,
   DisplaySetService,
   ToolbarService,
   ViewportGridService,
@@ -75,7 +74,6 @@ async function appInit(appConfigOrFunc, defaultExtensions, defaultModes) {
     UserAuthenticationService.REGISTRATION,
     PanelService.REGISTRATION,
     WorkflowStepsService.REGISTRATION,
-    StateSyncService.REGISTRATION,
     [StudyPrefetcherService.REGISTRATION, appConfig.studyPrefetcher],
   ]);
 
