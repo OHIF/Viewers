@@ -14,14 +14,14 @@ export default function PanelMeasurementTable({
   servicesManager,
   commandsManager,
   customHeader,
-  measurementFilters,
+  measurementFilters = { measurementFilter: filterAny },
 }: withAppAndFilters): React.ReactNode {
   const measurementsPanelRef = useRef(null);
 
   const { measurementService, customizationService } = servicesManager.services;
 
   const displayMeasurements = useMeasurements(servicesManager, {
-    measurementFilter: filterAny,
+    measurementFilter: measurementFilters.measurementFilter.bind(measurementFilters),
   });
 
   useEffect(() => {

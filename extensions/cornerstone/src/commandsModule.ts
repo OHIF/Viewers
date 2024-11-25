@@ -302,11 +302,22 @@ function commandsModule({
     toggleVisibilityMeasurement: ({ uid }) => {
       measurementService.toggleVisibilityMeasurement(uid);
     },
+
     /**
      * Clear the measurements
      */
-    clearMeasurements: ({ measurementFilter }) => {
-      measurementService.clearMeasurements(measurementFilter);
+    clearMeasurements: options => {
+      const { measurementFilter } = options;
+      measurementService.clearMeasurements(
+        measurementFilter ? measurementFilter.bind(options) : null
+      );
+    },
+
+    /**
+     * Download the CSV report for the measurements.
+     */
+    downloadCSVMeasurementsReport: ({ measurementFilter }) => {
+      utils.downloadCSVReport(measurementService.getMeasurements(measurementFilter));
     },
 
     // Retrieve value commands
@@ -1312,6 +1323,9 @@ function commandsModule({
     },
     toggleVisibilityMeasurement: {
       commandFn: actions.toggleVisibilityMeasurement,
+    },
+    downloadCSVMeasurementsReport: {
+      commandFn: actions.downloadCSVMeasurementsReport,
     },
     setViewportWindowLevel: {
       commandFn: actions.setViewportWindowLevel,

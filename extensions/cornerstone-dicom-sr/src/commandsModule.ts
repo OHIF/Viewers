@@ -83,13 +83,6 @@ const commandsModule = (props: withAppTypes) => {
     },
 
     /**
-     * Download the CSV report for the measurements.
-     */
-    downloadCSVMeasurementsReport: ({ measurementFilter }) => {
-      utils.downloadCSVReport(measurementService.getMeasurements(measurementFilter));
-    },
-
-    /**
      *
      * @param measurementData An array of measurements from the measurements service
      * that you wish to serialize.
@@ -159,9 +152,6 @@ const commandsModule = (props: withAppTypes) => {
     },
     storeMeasurements: {
       commandFn: actions.storeMeasurements,
-    },
-    downloadCSVMeasurementsReport: {
-      commandFn: actions.downloadCSVMeasurementsReport,
     },
   };
 

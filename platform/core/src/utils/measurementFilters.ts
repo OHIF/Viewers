@@ -22,13 +22,15 @@ export function filterNone(_measurement) {
 }
 
 /**
- *  Filters the measurements which are found in any of the filters in the provided
- * object.  This can be used to query for any matching of a set.
- * This passes the this argument to the child function(s)
+ *  Filters the measurements which are found in any of the specified
+ * filters.  Strings will be looked up by name.
  */
-export function filterOr(measurementFilters) {
+export function filterOr(...filters) {
   return function (item) {
-    for (const filter of Object.values(measurementFilters)) {
+    for (let filter of filters) {
+      if (typeof filter === 'string') {
+        filter = this[filter];
+      }
       if (typeof filter !== 'function') {
         continue;
       }
