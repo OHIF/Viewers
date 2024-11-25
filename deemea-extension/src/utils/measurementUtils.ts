@@ -141,9 +141,41 @@ export async function demonstrateMeasurementService(servicesManager, points) {
           },
         },
       });
+
+      createRectangleMeasurement(servicesManager, points);
     } catch (error) {
       console.error('Error adding measurement:', error);
     }
+  });
+}
+
+export async function createRectangleMeasurement(servicesManager, points) {
+  const { ViewportGridService, CornerstoneViewportService } = servicesManager.services;
+
+  const viewportId = ViewportGridService.getActiveViewportId();
+  console.log(viewportId);
+  const viewport = CornerstoneViewportService.getCornerstoneViewport(viewportId);
+
+  const imageId = viewport.getCurrentImageId();
+
+  const imageMetadata = viewport.getImageData(imageId);
+
+  if (!imageId) {
+    console.error('No image ID found');
+    return;
+  }
+
+  cs3dTools.RectangleROITool.createAndAddAnnotation(viewport, {
+    data: {
+      handles: {
+        points: [
+          [0, 0],
+          [1, 0],
+          [1, 1],
+          [0, 1],
+        ],
+      },
+    },
   });
 }
 
