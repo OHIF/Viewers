@@ -66,6 +66,7 @@ function convertToDicomCoordinates(
 }
 
 export async function demonstrateMeasurementService(servicesManager, points) {
+  console.log('demonstrateMeasurementService piints:', points);
   const { ViewportGridService, CornerstoneViewportService } = servicesManager.services;
 
   const viewportId = ViewportGridService.getActiveViewportId();
