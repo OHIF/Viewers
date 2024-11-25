@@ -29,9 +29,9 @@ window.config = {
       configuration: {
         friendlyName: 'Orthanc Deemea',
         name: 'DCM4CHEE',
-        wadoUriRoot: 'http://100.92.76.68/orthanc/dicom-web',
-        qidoRoot: 'http://100.92.76.68/orthanc/dicom-web',
-        wadoRoot: 'http://100.92.76.68/orthanc/dicom-web',
+        wadoUriRoot: 'https://dev-f4c.deemea.com/didier/dicom-web',
+        qidoRoot: 'https://dev-f4c.deemea.com/didier/dicom-web',
+        wadoRoot: 'https://dev-f4c.deemea.com/didier/dicom-web',
         qidoSupportsIncludeField: true,
         supportsReject: true,
         imageRendering: 'wadors',
