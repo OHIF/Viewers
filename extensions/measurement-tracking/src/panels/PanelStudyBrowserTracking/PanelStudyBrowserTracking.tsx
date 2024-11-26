@@ -368,8 +368,8 @@ function PanelStudyBrowserTracking({
   const _launchMultiMonitor =
     multiMonitorService.numberOfScreens > 1
       ? (studyInstanceUID, screenDelta) => {
-        multiMonitorService.launchStudy(studyInstanceUID, screenDelta);
-      }
+          multiMonitorService.launchStudy(studyInstanceUID, screenDelta);
+        }
       : null;
 
   // TODO: Should not fire this on "close"
@@ -509,6 +509,7 @@ function PanelStudyBrowserTracking({
         activeTabName={activeTabName}
         expandedStudyInstanceUIDs={expandedStudyInstanceUIDs}
         onClickStudy={_handleStudyClick}
+        onClickStudyInfo={_launchMultiMonitor}
         onClickTab={clickedTabName => {
           setActiveTabName(clickedTabName);
         }}

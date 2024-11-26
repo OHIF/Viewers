@@ -24,6 +24,12 @@ export class MultiMonitorService {
     const multimonitor = params.get('multimonitor');
     const testParams = { params, screenNumber, multimonitor };
     this.screenNumber = screenNumber ? Number(screenNumber) : 0;
+    console.log(
+      '************* multimonitor',
+      multimonitor,
+      screenNumber,
+      (window as any).multimonitor
+    );
     (window as any).multimonitor ||= {
       setLaunchWindows: this.setLaunchWindows,
       launchWindows: this.launchWindows,
@@ -50,7 +56,7 @@ export class MultiMonitorService {
   }
 
   /**
-   * Calls append ont he query with the multimonitor mode as appropriate.
+   * Calls append to the query the multimonitor mode as appropriate.
    */
   public appendQuery(query) {
     if (!this.isMultimonitor) {
@@ -70,6 +76,7 @@ export class MultiMonitorService {
 
   public async launchStudy(studyUid: string, screenDelta = 1) {
     const forScreen = (this.screenNumber + screenDelta) % this.numberOfScreens;
+    console.log('*************** launch Study', studyUid, forScreen);
     const url = this.createUrlForStudy(studyUid, forScreen);
     const forWindow = await this.getOrCreateWindow(forScreen, url);
     forWindow.location = url;

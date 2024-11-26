@@ -12,6 +12,7 @@ const StudyItem = ({
   modalities,
   isActive,
   onClick,
+  onClickStudyInfo = onClick,
   isExpanded,
   displaySets,
   activeDisplaySetInstanceUIDs,
@@ -34,7 +35,10 @@ const StudyItem = ({
       <AccordionItem value="study-item">
         <AccordionTrigger className={classnames('hover:bg-accent bg-popover rounded')}>
           <div className="flex h-[40px] flex-1 flex-row">
-            <div className="flex w-full flex-row items-center justify-between">
+            <div
+              className="flex w-full flex-row items-center justify-between"
+              onClick={onClickStudyInfo}
+            >
               <div className="flex flex-col items-start text-[13px]">
                 <div className="text-white">{date}</div>
                 <div className="text-muted-foreground h-[18px] max-w-[160px] overflow-hidden truncate whitespace-nowrap">
