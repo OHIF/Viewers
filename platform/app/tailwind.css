@@ -2,7 +2,3 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-* {
-  min-height: 0 !important;
-}

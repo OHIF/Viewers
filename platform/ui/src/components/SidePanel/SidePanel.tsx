@@ -237,7 +237,7 @@ const SidePanel = ({
               content={getToolTipContent(childComponent.label, childComponent.disabled)}
               className={classnames(
                 'flex items-center',
-                side === 'left' ? 'justify-end ' : 'justify-start '
+                side === 'left' ? 'justify-end' : 'justify-start'
               )}
             >
               <div
@@ -292,7 +292,7 @@ const SidePanel = ({
     const numCols = getNumGridColumns(tabs.length, gridWidth);
 
     return (
-      <div className={classnames('flex grow ', side === 'right' ? 'justify-start' : 'justify-end')}>
+      <div className={classnames('flex grow', side === 'right' ? 'justify-start' : 'justify-end')}>
         <div
           className={classnames('bg-primary-dark text-primary-active flex flex-wrap')}
           style={getGridStyle(side, tabs.length, gridWidth, expandedWidth)}
@@ -354,7 +354,7 @@ const SidePanel = ({
     return (
       <div
         className={classnames(
-          'text-primary-active flex	 grow cursor-pointer select-none justify-center self-center text-[13px]'
+          'text-primary-active flex grow cursor-pointer select-none justify-center self-center text-[13px]'
         )}
         style={{
           ...(side === 'left'
@@ -371,7 +371,7 @@ const SidePanel = ({
 
   const getOpenStateComponent = () => {
     return (
-      <div className="bg-primary-dark flex select-none rounded-t pt-1.5 pb-[2px]	">
+      <div className="bg-primary-dark flex select-none rounded-t pt-1.5 pb-[2px]">
         {getCloseIcon()}
         {tabs.length === 1 ? getOneTabComponent() : getTabGridComponent()}
       </div>
