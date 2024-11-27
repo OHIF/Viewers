@@ -98,6 +98,8 @@ export default function initCornerstoneTools(configuration = {}) {
   annotation.config.style.setDefaultToolStyles({
     global: {
       ...defaultStyles.global,
+      textBoxVisibility: false,
+      shadow: false,
       ...annotationStyle,
     },
   });

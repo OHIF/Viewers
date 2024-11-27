@@ -66,30 +66,40 @@ function convertToDicomCoordinates(
   return [dicomX, dicomY, dicomZ];
 }
 
-async function matchNameWithAxis(pointName1, pointName2): Promise<string | null> {
+async function matchNameWithAxis(
+  pointName1,
+  pointName2
+): Promise<{ color: string; highlighted: string } | null> {
   const matchedAxis = axis.find(
     axe =>
       ((pointName1 === axe.head || pointName1 === axe.tail) && pointName2 === axe.head) ||
       pointName2 === axe.tail
   );
 
-  return matchedAxis ? matchedAxis.color : null;
+  return matchedAxis ? matchedAxis : null;
 }
 
 async function setMeasurementStyle() {
   const annotations = cs3dTools.annotation.state.getAllAnnotations();
   annotations?.map(async annotation => {
-    const color = await matchNameWithAxis(
+    const axisColor = await matchNameWithAxis(
       annotation.data.handles?.headName,
       annotation.data.handles?.tailName
     );
-    if (color) {
-      cs3dTools.annotation.config.style.setAnnotationStyles(annotation.annotationUID!, {
-        color: color,
-        colorHighlighted: color,
-        colorSelected: color,
-      });
+    let style = {
+      color: '#00ff00',
+      colorHighlighted: '#fff000',
+      colorSelected: '#fff000',
+    };
+    if (axisColor) {
+      style = {
+        ...style,
+        color: axisColor.color,
+        colorHighlighted: axisColor.highlighted,
+        colorSelected: axisColor.highlighted,
+      };
     }
+    cs3dTools.annotation.config.style.setAnnotationStyles(annotation.annotationUID!, style);
   });
 }
 
