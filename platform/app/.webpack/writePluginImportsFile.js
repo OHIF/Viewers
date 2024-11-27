@@ -204,12 +204,6 @@ function writePluginImportsFile(SRC_DIR, DIST_DIR) {
     'dist'
   );
 
-  console.warn('copy plugins', [
-    ...copyPluginPublicToDistBuild,
-    ...copyPluginPublicToDistLink,
-    ...copyPluginDistToDistBuild,
-    ...copyPluginDistToDistLink,
-  ]);
   return [
     ...copyPluginPublicToDistBuild,
     ...copyPluginPublicToDistLink,
