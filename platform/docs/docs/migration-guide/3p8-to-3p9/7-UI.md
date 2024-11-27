@@ -149,3 +149,8 @@ All the DropDown and Icons are now in the @ohif/ui-next package.
 ## ui, ui-next configs
 
 We currently have two component libraries that we plan to merge in the future, so we need to maintain both configurations. If your styles aren't applying correctly, ensure you update both `platform/ui-next/tailwind.config.js` and `platform/ui/tailwind.config.js`.
+
+
+### addIcon from ui-next
+
+if you add custom icons, you may need to add them using a new `addIcon` utility which adds the icon to both `ui` and `ui-next`.

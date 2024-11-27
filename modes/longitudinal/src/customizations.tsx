@@ -6,6 +6,11 @@ export const performCustomizations = customizationService => {
       id: 'PanelSegmentation.disableEditing',
       disableEditing: true,
     },
+    // to only show current study in the panel study browser
+    // {
+    //   id: 'PanelStudyBrowser.studyMode',
+    //   mode: 'primary',
+    // },
     // To disable editing in the MeasurementTable
     // {
     //   id: 'PanelMeasurement.disableEditing',

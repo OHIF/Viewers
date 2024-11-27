@@ -46,7 +46,10 @@ export default function PanelStudyBrowserTracking({
     customizationService,
   } = servicesManager.services;
   const navigate = useNavigate();
-  const [appConfig] = useAppConfig();
+  const { mode: studyMode } = customizationService.getCustomization('PanelStudyBrowser.studyMode', {
+    id: 'default',
+    mode: 'all',
+  });
 
   const { t } = useTranslation('Common');
 
@@ -58,7 +61,7 @@ export default function PanelStudyBrowserTracking({
     useViewportGrid();
   const [trackedMeasurements, sendTrackedMeasurementsEvent] = useTrackedMeasurements();
 
-  const [activeTabName, setActiveTabName] = useState(appConfig.studyBrowserMode || 'all');
+  const [activeTabName, setActiveTabName] = useState(studyMode);
   const [expandedStudyInstanceUIDs, setExpandedStudyInstanceUIDs] = useState([
     ...StudyInstanceUIDs,
   ]);
@@ -119,6 +122,10 @@ export default function PanelStudyBrowserTracking({
     viewports.get(activeViewportId)?.displaySetInstanceUIDs;
 
   const { trackedSeries } = trackedMeasurements.context;
+
+  useEffect(() => {
+    setActiveTabName(studyMode);
+  }, [studyMode]);
 
   // ~~ studyDisplayList
   useEffect(() => {

@@ -42,15 +42,6 @@ We can use the `npx serve` to serve the build folder. There are two things you n
 // final serve.json
 {
   "rewrites": [{ "source": "*", "destination": "my-awesome-viewer/index.html" }],
-  "headers": [
-    {
-      "source": "**/*",
-      "headers": [
-        { "key": "Cross-Origin-Embedder-Policy", "value": "require-corp" },
-        { "key": "Cross-Origin-Opener-Policy", "value": "same-origin" }
-      ]
-    }
-  ]
 }
 ```
 
