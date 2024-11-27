@@ -58,7 +58,8 @@ if (!process.env.APP_CONFIG) {
 
 module.exports = (env, argv, { SRC_DIR, ENTRY }) => {
   if (!process.env.NODE_ENV) {
-    throw new Error('process.env.NODE_ENV not set');
+    console.log('NODE_ENV not set, setting to production');
+    process.env.NODE_ENV = 'production';
   }
 
   const mode = NODE_ENV === 'production' ? 'production' : 'development';

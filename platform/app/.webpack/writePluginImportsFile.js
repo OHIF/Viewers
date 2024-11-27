@@ -73,7 +73,10 @@ function getRuntimeLoadModesExtensions(modules) {
       dynamicLoad.push(
         `  if( module==="${packageName}") {`,
         `    const imported = await window.browserImportFunction('${module.importPath}');`,
-        '    return ' + (module.globalName ? `window["${module.globalName}"];` : `imported["${module.importName || 'default'}"];`),
+        '    return ' +
+          (module.globalName
+            ? `window["${module.globalName}"];`
+            : `imported["${module.importName || 'default'}"];`),
         '  }'
       );
       return;
