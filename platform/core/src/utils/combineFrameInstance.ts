@@ -24,14 +24,14 @@ const combineFrameInstance = (frame, instance) => {
       ? Object.values(SharedFunctionalGroupsSequence[0])
           .filter(Boolean)
           .map(it => it[0])
-          .filter(it => it !== undefined && typeof it === 'object')
+          .filter(it => typeof it === 'object')
       : [];
 
     const perFrame = PerFrameFunctionalGroupsSequence
       ? Object.values(PerFrameFunctionalGroupsSequence[frameNumber - 1])
           .filter(Boolean)
           .map(it => it[0])
-          .filter(it => it !== undefined && typeof it === 'object')
+          .filter(it => typeof it === 'object')
       : [];
 
     // this is to fix NM multiframe datasets with position and orientation
@@ -45,27 +45,26 @@ const combineFrameInstance = (frame, instance) => {
 
     if (!instance.ImagePositionPatient && instance.DetectorInformationSequence) {
       const imagePositionPatient = instance.DetectorInformationSequence[0].ImagePositionPatient;
+      const imageOrientationPatient = instance.ImageOrientationPatient;
 
       // Calculate the position for the current frame
-      if (instance.ImageOrientationPatient && SpacingBetweenSlices) {
+      if (imageOrientationPatient && SpacingBetweenSlices) {
         const rowOrientation = vec3.fromValues(
-          instance.ImageOrientationPatient[0],
-          instance.ImageOrientationPatient[1],
-          instance.ImageOrientationPatient[2]
+          imageOrientationPatient[0],
+          imageOrientationPatient[1],
+          imageOrientationPatient[2]
         );
 
         const colOrientation = vec3.fromValues(
-          instance.ImageOrientationPatient[3],
-          instance.ImageOrientationPatient[4],
-          instance.ImageOrientationPatient[5]
+          imageOrientationPatient[3],
+          imageOrientationPatient[4],
+          imageOrientationPatient[5]
         );
 
-        const normalVector = vec3.create();
-        vec3.cross(normalVector, rowOrientation, colOrientation);
+        const normalVector = vec3.cross(vec3.create(), rowOrientation, colOrientation);
 
-        const position = vec3.create();
-        vec3.scaleAndAdd(
-          position,
+        const position = vec3.scaleAndAdd(
+          vec3.create(),
           imagePositionPatient,
           normalVector,
           SpacingBetweenSlices * (frameNumber - 1)
@@ -74,6 +73,7 @@ const combineFrameInstance = (frame, instance) => {
         ImagePositionPatientToUse = [position[0], position[1], position[2]];
       }
     }
+    console.debug('🚀 ~ ImagePositionPatientToUse:', ImagePositionPatientToUse);
 
     const newInstance = Object.assign(instance, { frameNumber: frameNumber });
 
