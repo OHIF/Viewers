@@ -3,7 +3,7 @@ name: Continuous Deployment DEV !!
 on:
   push:
     branches:
-      - 'reate-cd-to-automatically-deploy-viewer-on-dev'
+      - 'master'
 
 jobs:
   deploy:
