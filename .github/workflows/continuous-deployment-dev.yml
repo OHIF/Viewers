@@ -3,7 +3,7 @@ name: Continuous Deployment DEV !!
 on:
   push:
     branches:
-      - 'master'
+      - 'reate-cd-to-automatically-deploy-viewer-on-dev'
 
 jobs:
   deploy:
@@ -28,7 +28,7 @@ jobs:
       run: aws s3 rm s3://deemea-ohif-dev --recursive --region ${{ secrets.AWS_DEFAULT_REGION }}
 
     - name: Copy build folder to AWS bucket
-      run: aws s3 cp platform/app/build/ s3://deemea-ohif-dev --recursive --region ${{ secrets.AWS_DEFAULT_REGION }}
+      run: aws s3 cp platform/app/dist/ s3://deemea-ohif-dev --recursive --region ${{ secrets.AWS_DEFAULT_REGION }}
     
     - name: Create invalidation to not use Cloud Front cache
       env: 
