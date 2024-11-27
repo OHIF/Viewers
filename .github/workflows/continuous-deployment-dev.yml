@@ -3,11 +3,7 @@ name: Continuous Deployment DEV !!
 on:
   push:
     branches:
-<<<<<<< Updated upstream
-      - 'main'
-=======
       - 'master'
->>>>>>> Stashed changes
 
 jobs:
   deploy:
