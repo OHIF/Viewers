@@ -97,6 +97,35 @@ import { ReactComponent as arrowDown } from './../../assets/icons/arrow-down.svg
 We have removed the Polyfill.io script from the Viewer. If you require polyfills, you can add them to your project manually. This change primarily affects Internet Explorer, which Microsoft has already [ended support for](https://learn.microsoft.com/en-us/lifecycle/faq/internet-explorer-microsoft-edge#is-internet-explorer-11-the-last-version-of-internet-explorer-).
 
 
+---
+
+## Webpack changes
+
+We previously were copying dicom-image-loader wasm files to the public folder via
+
+```js
+// platform/app/.webpack/webpack.pwa.js
+{
+  from: '../../../node_modules/@cornerstonejs/dicom-image-loader/dist/dynamic-import',
+  to: DIST_DIR,
+},
+```
+
+but now after our upgrade to Cornerstone 3D 2.0, we don't need to do this anymore.
+
+
+---
+## Scroll utility
+
+
+The `jumpToSlice` utility has been relocated from `@cornerstonejs/tools` utilities to `@cornerstonejs/core/utilities`.
+
+migration
+
+```js
+import { jumpToSlice } from '@cornerstonejs/core/utilities';
+```
+
 
 ---
 
@@ -178,9 +207,19 @@ Now:
 
 ---
 
+## CustomizationService
+
+The `CustomizationService` uses `contentF` instead of `content`.
+
+So make sure your customizations are updated accordingly.
+
+---
+
 ## SidePanel auto switch if open
 
-In `basic viewer` mode, if the side panel is open and the segmentation panel is active, adding a measurement will automatically switch to the measurement panel. This switch won't occur if the side panel is closed. To enable or disable this feature, adjust your mode configuration accordingly.
+In `basic viewer` mode, when the side panel is open and the segmentation panel is active, adding a measurement will automatically switch to the measurement panel. This switch won't happen if the side panel is closed. To enable or disable this feature, adjust your mode configuration accordingly.
+
+To prevent this behavior, remove the following code from your mode:
 
 ```js
 panelService.addActivatePanelTriggers('your.panel.id', [

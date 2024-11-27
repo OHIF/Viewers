@@ -139,14 +139,7 @@ const DataRow: React.FC<DataRowProps> = ({
         className="whitespace-pre-wrap"
       >
         {indentation}
-        {cleanText.includes(':') ? (
-          <>
-            <span className="font-medium">{cleanText.split(':')[0]}:</span>
-            {cleanText.split(':')[1]}
-          </>
-        ) : (
-          <span className="font-medium">{cleanText}</span>
-        )}
+        <span className="font-medium">{cleanText}</span>
       </div>
     );
   };
@@ -199,14 +192,14 @@ const DataRow: React.FC<DataRowProps> = ({
         {/* Hover Overlay */}
         <div className="bg-primary/20 pointer-events-none absolute inset-0 opacity-0 transition-opacity group-hover:opacity-100"></div>
 
-          {/* Number Box */}
-          <div
-            className={`flex h-7 max-h-7 w-7 flex-shrink-0 items-center justify-center rounded-l border-r border-black text-base ${
-              isSelected ? 'bg-highlight text-black' : 'bg-muted text-muted-foreground'
-            } overflow-hidden`}
-          >
-            {number}
-          </div>
+        {/* Number Box */}
+        <div
+          className={`flex h-7 max-h-7 w-7 flex-shrink-0 items-center justify-center rounded-l border-r border-black text-base ${
+            isSelected ? 'bg-highlight text-black' : 'bg-muted text-muted-foreground'
+          } overflow-hidden`}
+        >
+          {number}
+        </div>
 
         {/* Color Circle (Optional) */}
         {colorHex && (
@@ -313,10 +306,16 @@ const DataRow: React.FC<DataRowProps> = ({
         </div>
       </div>
 
-      {details && details.primary?.length > 0 && (
+      {/* Details Section */}
+      {details && (details.primary?.length > 0 || details.secondary?.length > 0) && (
         <div className="ml-7 px-2 py-2">
-          <div className="text-secondary-foreground text-base leading-normal">
-            {renderDetails(details.primary)}
+          <div className="text-secondary-foreground flex items-center gap-1 text-base leading-normal">
+            {details.primary?.length > 0 && renderDetails(details.primary)}
+            {details.secondary?.length > 0 && (
+              <div className="text-muted-foreground ml-auto text-sm">
+                {renderDetails(details.secondary)}
+              </div>
+            )}
           </div>
         </div>
       )}

@@ -120,7 +120,7 @@ function modeFactory({ modeConfiguration }) {
             minValue: 'Minimum Value',
             maxValue: 'Maximum Value',
             meanValue: 'Mean Value',
-            volume: 'Volume',
+            volume: 'Volume (ml)',
             suvPeak: 'SUV Peak',
             suvMax: 'Maximum SUV',
             suvMaxIJK: 'SUV Max IJK',

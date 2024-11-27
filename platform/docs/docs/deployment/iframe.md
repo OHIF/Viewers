@@ -1,5 +1,5 @@
 ---
-sidebar_position: 8
+sidebar_position: 7
 sidebar_label: iframe
 ---
 
@@ -40,7 +40,7 @@ The PUBLIC_URL tells the application where to find the static assets and the rou
 
 ### Try it locally
 
-Download the index.html and the build (against the /ohif/ path) from [here](https://ohif-assets.s3.us-east-2.amazonaws.com/iframe-basic/Archive.zip)
+Download the index.html and the build (against the /ohif/ path) from [here](https://ohif-assets-new.s3.us-east-1.amazonaws.com/iframe-basic/Archive.zip)
 
 Then run the
 
@@ -53,119 +53,3 @@ npx http-server unzipped-folder
 You should be able to see
 
 ![Alt text](../assets/img/iframe-basic.png)
-
-:::info
-Notice the Cross Origin Isolation Warning. It is present to indicate that OHIF cannot render volumes because the volume viewports
-use SharedArrayBuffer which is not allowed for non cross origin isolated apps. You can read more about Cross Origin Isolation here
-https://web.dev/coop-coep/ or follow the steps below to enable it.
-:::
-
-### Fixing the Cross Origin Isolation Warning to enable volume rendering
-
-For that we need a more sophisticated setup, since we need to add the Cross Origin Embedder Policy and Cross Origin Opener Policy headers
-to make the parent app cross origin isolated. For that we can use an Express server. (Note: you can use any other method
-to add the headers, this is just one of the methods)
-
-Download files from [here](https://ohif-assets.s3.us-east-2.amazonaws.com/iframe-express/Archive.zip)
-
-```js
-const express = require("express")
-const app = express()
-
-app.use((req, res, next) => {
-  res.setHeader("Cross-Origin-Opener-Policy", "same-origin")
-  res.setHeader("Cross-Origin-Embedder-Policy", "require-corp")
-  next()
-})
-
-app.use(express.static("public")) // 'public' should be the folder with the static OHIF build files
-
-app.listen(8080, () => console.log("Listening on port 8080!"))
-```
-
-![Alt text](../assets/img/iframe-headers.png)
-
-
-:::tip
-if you are using webpack with react you can set
-
-```js
-devServer: {
-  headers: {
-    "Cross-Origin-Opener-Policy": "same-origin",
-    "Cross-Origin-Embedder-Policy": "require-corp"
-  }
-}
-```
-
-:::
-
-:::tip
-If you are using Angular, you should modify the `angular.json` file to add the headers
-
-```js
-"serve": {
-  //
-  "configurations": {
-    //
-    "development": {
-      //
-      "headers": {
-        "Cross-Origin-Opener-Policy": "same-origin",
-        "Cross-Origin-Embedder-Policy": "require-corp"
-      }
-    }
-  },
-  //
-},
-```
-:::
-
-
-
-## Development Server
-
-If you are not using the static build, you can use the iframe to load the viewer from the local development server. For example, if you are running the viewer locally on port 3000, you can use the following iframe element to load the viewer:
-
-```html
-// e.g., app running on 3001 and iframe loading the viewer from 3000
-<iframe src="http://localhost:3000" style="width: 100%; height: 500px; border: none"/>
-```
-
-Notice that not including the static build removes the need for
-the PUBLIC_URL and the routerBasename. However, the Cross Origin Resource Policy (CORP)
-headers must be set because the viewer will be loaded from a different port. You can read
-more about CORP [here](https://developer.mozilla.org/en-US/docs/Web/HTTP/Cross-Origin_Resource_Policy).
-Basically in the development server that is serving the viewer, add the following headers:
-
-```js
-// use this if the embedding app is running on the same site as OHIF
-// (e.g. parent/embedding app is http://localhost:3001 and OHIF is http://localhost:3000)
-"Cross-Origin-Resource-Policy": "same-site"
-or
-
-// use this if the embedding app is a completely different origin than OHIF (e.g.
-// parent/embedding app is http://192.168.1.2 and OHIF is http://localhost:3000)
-"Cross-Origin-Resource-Policy": "cross-origin"
-```
-
-:::info
-You can't set the `Cross-Origin-Resource-Policy` to `same-origin` since the viewer is loaded from a different port.
-:::
-
-:::tip
-If you are using webpack to serve the viewer it would be
-
-```js
-devServer: {
-  headers: {
-    "Cross-Origin-Resource-Policy": "same-site" // cross-origin is also valid
-  }
-}
-```
-
-:::tip
-Take a look at how other people have integrated OHIF in their react app
-
-example1: https://github.com/OHIF/Viewers/issues/3371#issuecomment-1630405255
-:::
