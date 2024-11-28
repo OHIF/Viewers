@@ -81,6 +81,7 @@ declare global {
     }
 
     export interface Config {
+      studyBrowserMode?: 'all' | 'primary';
       routerBasename?: string;
       customizationService?: CustomizationServiceType;
       extensions?: string[];

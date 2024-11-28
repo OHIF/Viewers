@@ -434,23 +434,32 @@ function createDicomWebApi(dicomWebConfig, servicesManager) {
           instance.wadoRoot = dicomWebConfig.wadoRoot;
           instance.wadoUri = dicomWebConfig.wadoUri;
 
-          const imageId = implementation.getImageIdsForInstance({
-            instance,
-          });
+          const { StudyInstanceUID, SeriesInstanceUID, SOPInstanceUID } = instance;
+
+          const numberOfFrames = instance.NumberOfFrames || 1;
+          // Process all frames consistently, whether single or multiframe
+          for (let i = 0; i < numberOfFrames; i++) {
+            const frameNumber = i + 1;
+            const frameImageId = implementation.getImageIdsForInstance({
+              instance,
+              frame: frameNumber,
+            });
+            // Add imageId specific mapping to this data as the URL isn't necessarily WADO-URI.
+            metadataProvider.addImageIdToUIDs(frameImageId, {
+              StudyInstanceUID,
+              SeriesInstanceUID,
+              SOPInstanceUID,
+              frameNumber: numberOfFrames > 1 ? frameNumber : undefined,
+            });
+          }
 
           // Adding imageId to each instance
           // Todo: This is not the best way I can think of to let external
           // metadata handlers know about the imageId that is stored in the store
-          instance.imageId = imageId;
-
-          // Adding UIDs to metadataProvider
-          // Note: storing imageURI in metadataProvider since stack viewports
-          // will use the same imageURI
-          metadataProvider.addImageIdToUIDs(imageId, {
-            StudyInstanceUID,
-            SeriesInstanceUID: instance.SeriesInstanceUID,
-            SOPInstanceUID: instance.SOPInstanceUID,
+          const imageId = implementation.getImageIdsForInstance({
+            instance,
           });
+          instance.imageId = imageId;
         });
 
         DicomMetadataStore.addInstances(naturalizedInstances, madeInClient);

@@ -93,7 +93,7 @@ function createDicomJSONApi(dicomJsonConfig) {
 
             const { query } = qs.parseUrl(instance.url);
 
-            // Add imageId specific mapping to this data as the URL isn't necessarliy WADO-URI.
+            // Add imageId specific mapping to this data as the URL isn't necessarily WADO-URI.
             metadataProvider.addImageIdToUIDs(imageId, {
               StudyInstanceUID,
               SeriesInstanceUID,

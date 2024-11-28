@@ -45,7 +45,7 @@ import {
   useSegmentationPresentationStore,
   useSynchronizersStore,
 } from './stores';
-import { useToggleOneUpViewportGridStore } from '../../default/src/stores/useToggleOneUpViewportGridStore';
+import { useToggleOneUpViewportGridStore } from '@ohif/extension-default';
 import { useActiveViewportSegmentationRepresentations } from './hooks/useActiveViewportSegmentationRepresentations';
 import { useMeasurements } from './hooks/useMeasurements';
 import getPanelModule from './getPanelModule';
