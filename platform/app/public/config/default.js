@@ -74,14 +74,12 @@ window.config = {
           target: '_self',
           rel: 'noopener noreferrer',
           className: 'text-purple-600 line-through',
-          href: '/',
         },
-        React.createElement('img',
-          {
-            src: './assets/logoDeemea.svg',
-            className: 'w-15 h-10',
-          }
-        ))
+        React.createElement('img', {
+          src: './assets/logoDeemea.svg',
+          className: 'w-15 h-10',
+        })
+      );
     },
   },
   hotkeys: [
