@@ -1,7 +1,7 @@
 {
   "name": "@externals/devDependencies",
   "description": "External dev dependencies - put dev build dependencies here",
-  "version": "3.10.0-beta.4",
+  "version": "3.10.0-beta.9",
   "license": "MIT",
   "private": true,
   "engines": {
@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.20.13",
-    "@kitware/vtk.js": "32.1.0",
+    "@kitware/vtk.js": "32.1.1",
     "clsx": "^2.1.1",
     "core-js": "^3.2.1",
     "moment": "^2.9.4"

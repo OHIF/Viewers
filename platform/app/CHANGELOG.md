@@ -3,6 +3,58 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.10.0-beta.9](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.8...v3.10.0-beta.9) (2024-11-22)
+
+
+### Bug Fixes
+
+* **colorlut:** use the correct colorlut index and update vtk ([#4544](https://github.com/OHIF/Viewers/issues/4544)) ([b9c26e7](https://github.com/OHIF/Viewers/commit/b9c26e775a49044673473418dd5bdee2e5562ab9))
+
+
+
+
+
+# [3.10.0-beta.8](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.7...v3.10.0-beta.8) (2024-11-22)
+
+
+### Bug Fixes
+
+* **modes:** don't attempt to retrieve a stage index if HPs are an array ([#4542](https://github.com/OHIF/Viewers/issues/4542)) ([44648ee](https://github.com/OHIF/Viewers/commit/44648eef92265f0a80c0c72ca1729d6eca6c4178))
+
+
+
+
+
+# [3.10.0-beta.7](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.6...v3.10.0-beta.7) (2024-11-22)
+
+**Note:** Version bump only for package @ohif/app
+
+
+
+
+
+# [3.10.0-beta.6](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.5...v3.10.0-beta.6) (2024-11-22)
+
+
+### Bug Fixes
+
+* **error-boundray:** prevent stack trace from overflowing and make it scrollable ([#4541](https://github.com/OHIF/Viewers/issues/4541)) ([27ae385](https://github.com/OHIF/Viewers/commit/27ae385fd7787bf34af00366c5d490ac33abeff9))
+
+
+
+
+
+# [3.10.0-beta.5](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.4...v3.10.0-beta.5) (2024-11-15)
+
+
+### Bug Fixes
+
+* **viewport:** set a minimum width of 5px on viewports to prevent them from turning black/ going into an unrecoverable state. ([#4517](https://github.com/OHIF/Viewers/issues/4517)) ([32fe262](https://github.com/OHIF/Viewers/commit/32fe2623cfb5129a19ee07031dd50e79b530c7e0))
+
+
+
+
+
 # [3.10.0-beta.4](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.3...v3.10.0-beta.4) (2024-11-15)
 
 **Note:** Version bump only for package @ohif/app
