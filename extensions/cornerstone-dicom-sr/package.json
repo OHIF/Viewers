@@ -1,6 +1,6 @@
 {
   "name": "@ohif/extension-cornerstone-dicom-sr",
-  "version": "3.10.0-beta.10",
+  "version": "3.10.0-beta.11",
   "description": "OHIF extension for an SR Cornerstone Viewport",
   "author": "OHIF",
   "license": "MIT",
