@@ -46,7 +46,13 @@ export default function hydrateStructuredReport(
 ) {
   const annotationManager = CsAnnotation.state.getAnnotationManager();
   const dataSource = extensionManager.getActiveDataSource()[0];
-  const { measurementService, displaySetService, customizationService } = servicesManager.services;
+  const {
+    measurementService,
+    displaySetService,
+    customizationService,
+    viewportGridService,
+    cornerstoneViewportService,
+  } = servicesManager.services;
 
   const codingValues = customizationService.getCustomization('codingValues', {});
 
@@ -191,13 +197,18 @@ export default function hydrateStructuredReport(
         // StudyInstanceUID,
       } = instance;
 
+      const activeViewportId = viewportGridService.getActiveViewportId();
+      const cornerstoneViewport =
+        cornerstoneViewportService.getCornerstoneViewport(activeViewportId);
+      const viewRef = cornerstoneViewport.getViewReference({ referenceImageId: imageId });
+
       const annotation = {
         annotationUID: toolData.annotation.annotationUID,
         data: toolData.annotation.data,
         metadata: {
           toolName: annotationType,
-          referencedImageId: imageId,
           FrameOfReferenceUID,
+          ...viewRef,
         },
       };
 

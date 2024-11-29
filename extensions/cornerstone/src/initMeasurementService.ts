@@ -420,9 +420,7 @@ const connectMeasurementServiceToTools = (measurementService, cornerstoneViewpor
         isLocked: false,
         invalidated: false,
         metadata: {
-          toolName: measurement.toolName,
-          FrameOfReferenceUID: measurement.FrameOfReferenceUID,
-          referencedImageId: imageId,
+          ...measurement.metadata,
         },
         data: {
           /**
