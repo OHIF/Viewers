@@ -3,11 +3,16 @@ import { useTranslation } from 'react-i18next';
 import { Icon, useModal } from '@ohif/ui';
 import { Types } from '@ohif/core';
 import DataSourceConfigurationModalComponent from './DataSourceConfigurationModalComponent';
+import {
+  DataSourceConfigurationAPI,
+  GoogleCloudDataSourceConfigurationAPI,
+} from '../DataSourceConfigurationAPI';
 
 function DataSourceConfigurationComponent({
   servicesManager,
   extensionManager,
-}: withAppTypes): ReactElement {
+  type,
+}: withAppTypes<{ type: string }>): ReactElement {
   const { t } = useTranslation('DataSourceConfiguration');
   const { show, hide } = useModal();
 
@@ -23,14 +28,22 @@ function DataSourceConfigurationComponent({
 
     const dataSourceChangedCallback = async () => {
       const activeDataSourceDef = extensionManager.getActiveDataSourceDefinition();
+      const { dataSourceSelectionApi } = extensionManager.appConfig;
 
-      if (!activeDataSourceDef.configuration.configurationAPI) {
+      if (!activeDataSourceDef.configuration.configurationAPI && !dataSourceSelectionApi) {
         return;
       }
 
-      const { factory: configurationAPIFactory } =
-        customizationService.get(activeDataSourceDef.configuration.configurationAPI) ?? {};
-
+      let configurationAPIFactory: (
+        sourceName: string
+      ) => DataSourceConfigurationAPI | GoogleCloudDataSourceConfigurationAPI;
+      if (type === 'sourceSelector') {
+        configurationAPIFactory = customizationService.get(dataSourceSelectionApi)?.factory;
+      } else {
+        configurationAPIFactory = customizationService.get(
+          activeDataSourceDef.configuration.configurationAPI
+        )?.factory;
+      }
       if (!configurationAPIFactory) {
         return;
       }
