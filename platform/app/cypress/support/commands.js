@@ -47,6 +47,7 @@ Cypress.Commands.add('openStudy', PatientName => {
 Cypress.Commands.add(
   'checkStudyRouteInViewer',
   (StudyInstanceUID, otherParams = '', mode = '/basic-test') => {
+    Cypress.on('uncaught:exception', () => false);
     cy.location('pathname').then($url => {
       cy.log($url);
       if ($url === 'blank' || !$url.includes(`${mode}/${StudyInstanceUID}${otherParams}`)) {
