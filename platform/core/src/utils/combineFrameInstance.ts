@@ -75,27 +75,39 @@ const combineFrameInstance = (frame, instance) => {
     }
     console.debug('🚀 ~ ImagePositionPatientToUse:', ImagePositionPatientToUse);
 
-    const newInstance = Object.assign(Object.create(instance), { frameNumber: frameNumber });
-
-    // merge the shared first then the per frame to override
-    [...shared, ...perFrame].forEach(item => {
-      if (item.SOPInstanceUID) {
-        // This sub-item is a previous value information item, so don't merge it
-        return;
-      }
-      Object.entries(item).forEach(([key, value]) => {
-        newInstance[key] = value;
-      });
-    });
-
+    const sharedInstance = createCombinedValue(instance, shared);
+    const newInstance = createCombinedValue(sharedInstance, perFrame);
     newInstance.ImagePositionPatient = ImagePositionPatientToUse ??
       newInstance.ImagePositionPatient ?? [0, 0, frameNumber];
-    // Todo: we should cache this combined instance somewhere, maybe add it
-    // back to the dicomMetaStore so we don't have to do this again.
+    newInstance.frameNumber = frameNumber;
     return newInstance;
   } else {
     return instance;
   }
 };
+
+function createCombinedValue(parent, shared) {
+  if (shared._sharedValue) {
+    return shared._sharedValue;
+  }
+  const newInstance = Object.create(parent);
+
+  // merge the shared first then the per frame to override
+  [...shared].forEach(item => {
+    if (item.SOPInstanceUID) {
+      // This sub-item is a previous value information item, so don't merge it
+      return;
+    }
+    Object.entries(item).forEach(([key, value]) => {
+      newInstance[key] = value;
+    });
+  });
+  Object.defineProperty(shared, '_sharedValue', {
+    value: newInstance,
+    writable: false,
+    enumerable: false,
+  });
+  return newInstance;
+}
 
 export default combineFrameInstance;
