@@ -1,3 +1,4 @@
+# syntax=docker/dockerfile:1.7-labs
 # This dockerfile is used to publish the `ohif/app` image on dockerhub.
 #
 # It's a good example of how to build our static application and package it
@@ -19,45 +20,51 @@
 #
 
 
+# syntax=docker/dockerfile:1.7-labs
+# This dockerfile is used to publish the `ohif/app` image on dockerhub.
+#
+# It's a good example of how to build our static application and package it
+# with a web server capable of hosting it as static content.
+#
+# docker build
+# --------------
+# If you would like to use this dockerfile to build and tag an image, make sure
+# you set the context to the project's root directory:
+# https://docs.docker.com/engine/reference/commandline/build/
+#
+#
+# SUMMARY
+# --------------
+# This dockerfile is used as an input for a second stage to make things run faster.
+#
+
+
 # Stage 1: Build the application
 # docker build -t ohif/viewer:latest .
-FROM node:18.16.1-slim as json-copier
-
-RUN mkdir /usr/src/app
-WORKDIR /usr/src/app
-
-COPY ["package.json", "yarn.lock", "preinstall.js", "./"]
-COPY extensions /usr/src/app/extensions
-COPY modes /usr/src/app/modes
-COPY platform /usr/src/app/platform
-
-# Find and remove non-package.json files
-#RUN find extensions \! -name "package.json" -mindepth 2 -maxdepth 2 -print | xargs rm -rf
-#RUN find modes \! -name "package.json" -mindepth 2 -maxdepth 2 -print | xargs rm -rf
-#RUN find platform \! -name "package.json" -mindepth 2 -maxdepth 2 -print | xargs rm -rf
-
 # Copy Files
-FROM node:18.16.1-slim as builder
+FROM node:22 as builder
 RUN apt-get update && apt-get install -y build-essential python3
 RUN mkdir /usr/src/app
 WORKDIR /usr/src/app
-
-COPY --from=json-copier /usr/src/app .
-
-# Run the install before copying the rest of the files
 RUN yarn config set workspaces-experimental true
-RUN yarn install --frozen-lockfile --verbose
+# RUN npm install -g lerna@7.4.2
+ENV PATH=/usr/src/app/node_modules/.bin:$PATH
 
-COPY . .
+# Do an initial install and then a final install
+COPY package.json yarn.lock preinstall.js lerna.json ./
+COPY --parents ./addOns/package.json ./addOns/*/*/package.json ./extensions/*/package.json ./modes/*/package.json ./platform/*/package.json ./
+# Run the install before copying the rest of the files
+RUN yarn install
+# Copy the local directory
+COPY --link --exclude=node_modules --exclude=yarn.lock --exclude=package.json . .
+# Do a second install to finalize things after the copy
+RUN yarn install
 
-# To restore workspaces symlinks
-RUN yarn install --frozen-lockfile --verbose
-
-ENV PATH /usr/src/app/node_modules/.bin:$PATH
+# Build here
+# After install it should hopefully be stable until the local directory changes
 ENV QUICK_BUILD true
 # ENV GENERATE_SOURCEMAP=false
-# ENV REACT_APP_CONFIG=config/default.js
-
+ENV REACT_APP_CONFIG=config/default.js
 RUN yarn run build
 
 # Stage 3: Bundle the built application into a Docker container
