@@ -398,17 +398,6 @@ SidePanel.propTypes = {
   side: PropTypes.oneOf(['left', 'right']).isRequired,
   className: PropTypes.string,
   activeTabIndex: PropTypes.number,
-  tabs: PropTypes.oneOfType([
-    PropTypes.arrayOf(
-      PropTypes.shape({
-        iconName: PropTypes.string.isRequired,
-        iconLabel: PropTypes.string.isRequired,
-        name: PropTypes.string.isRequired,
-        label: PropTypes.string.isRequired,
-        content: PropTypes.func, // TODO: Should be node, but it keeps complaining?
-      })
-    ),
-  ]),
   onOpen: PropTypes.func,
   onClose: PropTypes.func,
   onActiveTabIndexChange: PropTypes.func,

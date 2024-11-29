@@ -4,17 +4,9 @@ import {
   Button,
   DropdownMenu,
   DropdownMenuTrigger,
-  DropdownMenuItem,
-  DropdownMenuContent,
-  DropdownMenuSeparator,
-  DropdownMenuSub,
-  DropdownMenuPortal,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
   Tooltip,
   TooltipTrigger,
   TooltipContent,
-  DropdownMenuLabel,
 } from '../../components';
 
 import { useTranslation } from 'react-i18next';
@@ -26,20 +18,8 @@ export const SegmentationSelectorHeader: React.FC<{ children?: React.ReactNode }
 }) => {
   const { t } = useTranslation('SegmentationTable.HeaderCollapsed');
 
-  const {
-    data,
-    activeSegmentationId,
-    mode,
-    onSegmentationClick,
-    onSegmentationAdd,
-    onSegmentationRemoveFromViewport,
-    onSegmentationEdit,
-    onSegmentationDelete,
-    onSegmentationDownload,
-    onSegmentationDownloadRTSS,
-    storeSegmentation,
-    exportOptions,
-  } = useSegmentationTableContext('SegmentationTable.HeaderCollapsed');
+  const { data, activeSegmentationId, mode, onSegmentationClick, exportOptions, ...contextProps } =
+    useSegmentationTableContext('SegmentationTable.HeaderCollapsed');
 
   if (mode !== 'collapsed' || !data?.length) {
     return null;
@@ -65,6 +45,17 @@ export const SegmentationSelectorHeader: React.FC<{ children?: React.ReactNode }
     ({ segmentationId }) => segmentationId === activeSegmentation.id
   )?.isExportable;
 
+  const childrenWithProps = React.Children.map(children, child =>
+    React.isValidElement(child)
+      ? React.cloneElement(child, {
+          activeSegmentation,
+          allowExport,
+          t,
+          ...contextProps,
+        })
+      : child
+  );
+
   return (
     <div className="bg-primary-dark flex h-10 w-full items-center space-x-1 rounded-t px-1.5">
       <DropdownMenu>
@@ -76,49 +67,7 @@ export const SegmentationSelectorHeader: React.FC<{ children?: React.ReactNode }
             <Icons.More className="h-6 w-6" />
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="start">
-          <DropdownMenuItem onClick={() => onSegmentationAdd(activeSegmentation.id)}>
-            <Icons.Add className="text-foreground" />
-            <span className="pl-2">{t('Create New Segmentation')}</span>
-          </DropdownMenuItem>
-          <DropdownMenuSeparator />
-          <DropdownMenuLabel>{t('Manage Current Segmentation')}</DropdownMenuLabel>
-          <DropdownMenuItem onClick={() => onSegmentationRemoveFromViewport(activeSegmentation.id)}>
-            <Icons.Series className="text-foreground" />
-            <span className="pl-2">{t('Remove from Viewport')}</span>
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => onSegmentationEdit(activeSegmentation.id)}>
-            <Icons.Rename className="text-foreground" />
-            <span className="pl-2">{t('Rename')}</span>
-          </DropdownMenuItem>
-          <DropdownMenuSub>
-            <DropdownMenuSubTrigger
-              disabled={!allowExport}
-              className="pl-1"
-            >
-              <Icons.Export className="text-foreground" />
-              <span className="pl-2">{t('Export & Download')}</span>
-            </DropdownMenuSubTrigger>
-            <DropdownMenuPortal>
-              <DropdownMenuSubContent>
-                <DropdownMenuItem onClick={() => storeSegmentation(activeSegmentation.id)}>
-                  {t('Export DICOM SEG')}
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => onSegmentationDownload(activeSegmentation.id)}>
-                  {t('Download DICOM SEG')}
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => onSegmentationDownloadRTSS(activeSegmentation.id)}>
-                  {t('Download DICOM RTSTRUCT')}
-                </DropdownMenuItem>
-              </DropdownMenuSubContent>
-            </DropdownMenuPortal>
-          </DropdownMenuSub>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={() => onSegmentationDelete(activeSegmentation.id)}>
-            <Icons.Delete className="text-red-600" />
-            <span className="pl-2 text-red-600">{t('Delete')}</span>
-          </DropdownMenuItem>
-        </DropdownMenuContent>
+        {childrenWithProps}
       </DropdownMenu>
       <Select
         onValueChange={value => onSegmentationClick(value)}

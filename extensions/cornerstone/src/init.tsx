@@ -38,6 +38,7 @@ import { SegmentationRepresentations } from '@cornerstonejs/tools/enums';
 import { useLutPresentationStore } from './stores/useLutPresentationStore';
 import { usePositionPresentationStore } from './stores/usePositionPresentationStore';
 import { useSegmentationPresentationStore } from './stores/useSegmentationPresentationStore';
+import { imageRetrieveMetadataProvider } from '@cornerstonejs/core/utilities';
 
 const { registerColormap } = csUtilities.colormap;
 
@@ -135,9 +136,21 @@ export default async function init({
     cornerstoneStreamingDynamicImageVolumeLoader
   );
 
-  hangingProtocolService.registerImageLoadStrategy('interleaveCenter', interleaveCenterLoader);
-  hangingProtocolService.registerImageLoadStrategy('interleaveTopToBottom', interleaveTopToBottom);
-  hangingProtocolService.registerImageLoadStrategy('nth', nthLoader);
+  // Register strategies using the wrapper
+  const imageLoadStrategies = {
+    interleaveCenter: interleaveCenterLoader,
+    interleaveTopToBottom: interleaveTopToBottom,
+    nth: nthLoader,
+  };
+
+  Object.entries(imageLoadStrategies).forEach(([name, strategyFn]) => {
+    hangingProtocolService.registerImageLoadStrategy(
+      name,
+      createMetadataWrappedStrategy(strategyFn)
+    );
+  });
+
+  // ... existing code ...
 
   // add metadata providers
   metaData.addProvider(
@@ -295,6 +308,28 @@ function initializeWebWorkerProgressHandler(uiNotificationService) {
     }
   });
 }
+
+/**
+ * Creates a wrapped image load strategy with metadata handling
+ * @param strategyFn - The image loading strategy function to wrap
+ * @returns A wrapped strategy function that handles metadata configuration
+ */
+const createMetadataWrappedStrategy = (strategyFn: (args: any) => any) => {
+  return (args: any) => {
+    const clonedConfig = imageRetrieveMetadataProvider.clone();
+    imageRetrieveMetadataProvider.clear();
+
+    try {
+      const result = strategyFn(args);
+      return result;
+    } finally {
+      // Ensure metadata is always restored, even if there's an error
+      setTimeout(() => {
+        imageRetrieveMetadataProvider.restore(clonedConfig);
+      }, 10);
+    }
+  };
+};
 
 function CPUModal() {
   return (
