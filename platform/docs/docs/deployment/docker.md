@@ -18,6 +18,14 @@ The machine on which to build and run the Docker container must have:
 3. [Docker](https://docs.docker.com/get-docker/) installed.
 
 ## Building the Docker Image
+
+:::info
+In this tutorial, we will build the Docker image for the OHIF Viewer and OHIF server as defined in the `default.js` config. If you need a custom build, you can modify the configuration file to include your data sources and then build the Docker image. For more information on data sources, see [here](../platform/extensions/modules/data-source.md).
+
+Below we show how to point the Docker image to a custom configuration file.
+:::
+
+
 The docker image can be built from a terminal window as such:
 1. Switch to the OHIF Viewer code root directory.
 2. Issue the following Docker command. Note that what follows `-t` flag is the `{name}:{tag}` for the Docker image and is arbitrary when creating a local Docker image.
@@ -121,20 +129,8 @@ For SSL Docker deployments, the CORP header value is set [here](https://github.c
 We make no claims or guarantees regarding this section concerning security. If in doubt, enlist the help of an expert and conduct proper audits.
 :::
 
-### Why SSL?
-As described [here](./cors.md), OHIF must be used in a [secure context](./cors.md#secure-context) in order to fully leverage all of OHIF's capabilities. Whenever OHIF is not running in a secure context and is navigated to using the OHIF's server IP address (e.g. `http://192.168.1.162:3000`) or domain name (e.g. `http://my.ohif.server`) then the following popup message will be displayed in OHIF
 
-![OHIF in non-secure context](../assets/img/ohif-non-secure-context.png)
-
-and the following message will appear in the browser console.
-
-![browser console for non-secure context](../assets/img/browser-console-non-secure-context.png)
-
-:::info
-The above indicate that OHIF is not running in a secure context. Among other things, this means information transferred to/from OHIF is not encrypted and certain capabilities such as 3D volume loading will NOT work. However, basic stack viewport functionality will continue to function.
-
-Consideration must be given as to whether OHIF should be deployed in a secure context over SSL.
-:::
+If OHIF is not deployed over SSL, this means information transferred to/from OHIF is not encrypted. Consideration must be given as to whether OHIF should be deployed in a secure context over SSL.
 
 ### Specifying the SSL Port, Certificate and Private Key
 

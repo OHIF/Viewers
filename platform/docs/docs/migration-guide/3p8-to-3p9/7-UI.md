@@ -2,9 +2,6 @@
 title: UI
 ---
 
-
-
-
 ## New Components
 
 You can explore our new playground at `docs.ohif.org/ui` to see the latest components and their properties. We haven't provided a migration guide yet because the old components are still available. Feel free to update your codebase, including custom extensions and UI, to use the new Button, Dropdown, Icons, and other new components from `@ohif/ui-next`. The old methods (importing from `@ohif/ui`) will continue to work for now. However, the new components have a slightly different API, and we plan to deprecate the old components in a future release, as we see the new ones as the future of OHIF.
@@ -147,3 +144,13 @@ All the DropDown and Icons are now in the @ohif/ui-next package.
 
 
 ---
+
+
+## ui, ui-next configs
+
+We currently have two component libraries that we plan to merge in the future, so we need to maintain both configurations. If your styles aren't applying correctly, ensure you update both `platform/ui-next/tailwind.config.js` and `platform/ui/tailwind.config.js`.
+
+
+### addIcon from ui-next
+
+if you add custom icons, you may need to add them using a new `addIcon` utility which adds the icon to both `ui` and `ui-next`.
