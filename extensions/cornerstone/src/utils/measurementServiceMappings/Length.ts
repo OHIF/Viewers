@@ -6,7 +6,7 @@ import { utils } from '@ohif/core';
 import { config } from '@cornerstonejs/tools/annotation';
 
 const Length = {
-  toAnnotation: measurement => { },
+  toAnnotation: measurement => {},
 
   /**
    * Maps cornerstone annotation event data to measurement service format.

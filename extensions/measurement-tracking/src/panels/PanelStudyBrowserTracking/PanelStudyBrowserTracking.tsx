@@ -282,14 +282,13 @@ export default function PanelStudyBrowserTracking({
         const { displaySetsAdded, options } = data;
         displaySetsAdded.forEach(async dSet => {
           const displaySetInstanceUID = dSet.displaySetInstanceUID;
-          const isExcludedFromThumbnailBrowser = dSet.excludeFromThumbnailBrowser;
           const newImageSrcEntry = {};
           const displaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
           if (displaySet?.unsupported) {
             return;
           }
 
-          if (options.madeInClient && !isExcludedFromThumbnailBrowser) {
+          if (options.madeInClient && !dSet.excludeFromThumbnailBrowser) {
             setJumpToDisplaySet(displaySetInstanceUID);
           }
 
