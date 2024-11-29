@@ -75,22 +75,24 @@ const combineFrameInstance = (frame, instance) => {
     }
     console.debug('🚀 ~ ImagePositionPatientToUse:', ImagePositionPatientToUse);
 
-    const newInstance = Object.assign(instance, { frameNumber: frameNumber });
+    const newInstance = Object.assign(Object.create(instance), { frameNumber: frameNumber });
 
     // merge the shared first then the per frame to override
     [...shared, ...perFrame].forEach(item => {
+      if (item.SOPInstanceUID) {
+        // This sub-item is a previous value information item, so don't merge it
+        return;
+      }
       Object.entries(item).forEach(([key, value]) => {
         newInstance[key] = value;
       });
     });
 
+    newInstance.ImagePositionPatient = ImagePositionPatientToUse ??
+      newInstance.ImagePositionPatient ?? [0, 0, frameNumber];
     // Todo: we should cache this combined instance somewhere, maybe add it
     // back to the dicomMetaStore so we don't have to do this again.
-    return {
-      ...newInstance,
-      ImagePositionPatient: ImagePositionPatientToUse ??
-        newInstance.ImagePositionPatient ?? [0, 0, frameNumber],
-    };
+    return newInstance;
   } else {
     return instance;
   }
