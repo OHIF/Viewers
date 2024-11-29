@@ -46,7 +46,10 @@ function modeFactory({ modeConfiguration }) {
         toolGroupService,
         customizationService,
         viewportGridService,
+        dynamicVolumeService,
       } = servicesManager.services;
+
+      dynamicVolumeService.setUseDynamicVolume(true);
 
       const utilityModule = extensionManager.getModuleEntry(
         '@ohif/extension-cornerstone.utilityModule.tools'

@@ -33,11 +33,22 @@ const isMultiFrame = instance => {
 };
 
 function getDisplaySetInfo(instances) {
+  const { appConfig, servicesManager } = appContext;
+
+  const { dynamicVolumeService } = servicesManager.services;
+  const useDynamicVolume = dynamicVolumeService.getUseDynamicVolume();
+
+  if (!useDynamicVolume) {
+    console.debug('Dynamic Volume is disabled');
+    return {
+      isDynamicVolume: false,
+      isReconstructable: isDisplaySetReconstructable(instances, appConfig),
+    };
+  }
+
   const dynamicVolumeInfo = getDynamicVolumeInfo(instances);
   const { isDynamicVolume, timePoints } = dynamicVolumeInfo;
   let displaySetInfo;
-
-  const { appConfig } = appContext;
 
   if (isDynamicVolume) {
     const timePoint = timePoints[0];
