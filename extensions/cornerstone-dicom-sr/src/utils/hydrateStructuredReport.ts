@@ -200,7 +200,10 @@ export default function hydrateStructuredReport(
       const activeViewportId = viewportGridService.getActiveViewportId();
       const cornerstoneViewport =
         cornerstoneViewportService.getCornerstoneViewport(activeViewportId);
-      const viewRef = cornerstoneViewport.getViewReference({ referenceImageId: imageId });
+      const imageIds = cornerstoneViewport.getImageIds();
+      const viewRef = cornerstoneViewport.getViewReference({
+        sliceIndex: imageIds.indexOf(imageId),
+      });
 
       const annotation = {
         annotationUID: toolData.annotation.annotationUID,
