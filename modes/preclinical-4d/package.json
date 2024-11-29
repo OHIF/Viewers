@@ -17,6 +17,9 @@
     "public/**",
     "README.md"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
   "keywords": [
     "ohif-mode"
   ],
