@@ -73,8 +73,6 @@ const combineFrameInstance = (frame, instance) => {
         ImagePositionPatientToUse = [position[0], position[1], position[2]];
       }
     }
-    console.debug('🚀 ~ ImagePositionPatientToUse:', ImagePositionPatientToUse);
-
     const sharedInstance = createCombinedValue(instance, shared);
     const newInstance = createCombinedValue(sharedInstance, perFrame);
     newInstance.ImagePositionPatient = ImagePositionPatientToUse ??
