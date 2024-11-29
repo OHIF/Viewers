@@ -39,7 +39,6 @@ function getDisplaySetInfo(instances) {
   const useDynamicVolume = dynamicVolumeService.getUseDynamicVolume();
 
   if (!useDynamicVolume) {
-    console.debug('Dynamic Volume is disabled');
     return {
       isDynamicVolume: false,
       isReconstructable: isDisplaySetReconstructable(instances, appConfig),
