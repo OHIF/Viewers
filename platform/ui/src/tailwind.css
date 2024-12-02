@@ -5,10 +5,6 @@
 @tailwind components;
 @tailwind utilities;
 
-* {
-  min-height: 0 !important;
-}
-
 @layer base {
   html {
     font-family: 'Inter', sans-serif;
