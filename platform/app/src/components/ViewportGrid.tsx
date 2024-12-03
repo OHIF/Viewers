@@ -292,7 +292,7 @@ function ViewerViewportGrid(props: withAppTypes) {
         >
           <div
             data-cy="viewport-pane"
-            className={classNames('flex h-full w-full flex-col', {
+            className={classNames('flex h-full w-full min-w-[5px] flex-col', {
               'pointer-events-none':
                 !isActive && (appConfig?.activateViewportBeforeInteraction ?? true),
             })}
