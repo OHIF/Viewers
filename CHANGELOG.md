@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.9.2](https://github.com/OHIF/Viewers/compare/v3.9.1...v3.9.2) (2024-12-03)
+
+
+### Bug Fixes
+
+* **modes:** don't attempt to retrieve a stage index if HPs  ([#4552](https://github.com/OHIF/Viewers/issues/4552)) ([e5286d9](https://github.com/OHIF/Viewers/commit/e5286d9fc2449da50b738e7e6208d489cce1633e))
+* **multiframe:** metadata handling of NM studies and loading order ([#4540](https://github.com/OHIF/Viewers/issues/4540)) ([71f06dc](https://github.com/OHIF/Viewers/commit/71f06dcd3e6d24f1e3d931f7db756c26038927da))
+
+
+
+
+
 ## [3.9.1](https://github.com/OHIF/Viewers/compare/v3.9.0...v3.9.1) (2024-11-13)
 
 
