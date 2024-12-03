@@ -1,7 +1,7 @@
 /** @type {AppTypes.Config} */
 window.config = {
   routerBasename: '/',
-  showStudyList: true,
+  showStudyList: false, // hide stud list
   extensions: [],
   modes: [],
   // below flag is for performance reasons, but it might not work for all servers
@@ -17,6 +17,12 @@ window.config = {
     order: 'closest',
   },
   defaultDataSourceName: 'dicomweb',
+  whiteLabeling: {
+    /* Optional: Should return a React component to be rendered in the "Logo" section of the application's Top Navigation bar */
+    createLogoComponentFn: function (React) {
+      return React.createElement('div');
+    },
+  },
   dataSources: [
     {
       namespace: '@ohif/extension-default.dataSourcesModule.dicomweb',
