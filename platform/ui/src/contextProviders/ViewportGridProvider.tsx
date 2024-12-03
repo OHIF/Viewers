@@ -187,7 +187,7 @@ export function ViewportGridProvider({ children, service }: ViewportGridProvider
             updatedViewport?.viewportOptions
           );
 
-          const displaySetOptions = updatedViewport.displaySetOptions || [];
+          const displaySetOptions = updatedViewport?.displaySetOptions || [];
           if (!displaySetOptions.length) {
             // Copy all the display set options, assuming a full set of displaySet UID's is provided.
             if (state.isHangingProtocolLayout) {
