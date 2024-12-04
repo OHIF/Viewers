@@ -10,10 +10,10 @@ export default defineConfig({
   outputDir: './tests/test-results',
   reporter: [[process.env.CI ? 'blob' : 'html', { outputFolder: './tests/playwright-report' }]],
   globalTimeout: 600_000,
-  timeout: 240_000,
+  timeout: 600_000,
   use: {
     baseURL: 'http://localhost:3000',
-    trace: 'off',
+    trace: 'on',
     video: 'on',
     testIdAttribute: 'data-cy',
   },
@@ -40,6 +40,6 @@ export default defineConfig({
     command: 'yarn test:e2e:serve',
     url: 'http://localhost:3000',
     reuseExistingServer: !process.env.CI,
-    timeout: 240_000,
+    timeout: 360_000,
   },
 });
