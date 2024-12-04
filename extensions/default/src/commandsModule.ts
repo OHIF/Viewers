@@ -1,4 +1,4 @@
-import { Types } from '@ohif/core';
+import { Types, DicomMetadataStore } from '@ohif/core';
 
 import { ContextMenuController, defaultContextMenu } from './CustomizableContextMenu';
 import DicomTagBrowser from './DicomTagBrowser/DicomTagBrowser';
@@ -16,6 +16,7 @@ import { useHangingProtocolStageIndexStore } from './stores/useHangingProtocolSt
 import { useToggleHangingProtocolStore } from './stores/useToggleHangingProtocolStore';
 import { useViewportsByPositionStore } from './stores/useViewportsByPositionStore';
 import { useToggleOneUpViewportGridStore } from './stores/useToggleOneUpViewportGridStore';
+import requestDisplaySetCreationForStudy from './Panels/requestDisplaySetCreationForStudy';
 
 export type HangingProtocolParams = {
   protocolId?: string;
@@ -23,6 +24,26 @@ export type HangingProtocolParams = {
   activeStudyUID?: string;
   stageId?: string;
   reset?: false;
+};
+
+/**
+ * The studies from display sets gets the studies in study date
+ * order or in study instance UID order - not very useful, but
+ * if not specifically specified then at least making it consistent is useful.
+ */
+const getStudiesfromDisplaySets = displaySets => {
+  const studyMap = {};
+
+  const ret = displaySets.reduce((prev, curr) => {
+    const { StudyInstanceUID } = curr;
+    if (!studyMap[StudyInstanceUID]) {
+      const study = DicomMetadataStore.getStudy(StudyInstanceUID);
+      studyMap[StudyInstanceUID] = study;
+      prev.push(study);
+    }
+    return prev;
+  }, []);
+  return ret;
 };
 
 export type UpdateViewportDisplaySetParams = {
@@ -33,6 +54,7 @@ export type UpdateViewportDisplaySetParams = {
 const commandsModule = ({
   servicesManager,
   commandsManager,
+  extensionManager,
 }: Types.Extensions.ExtensionParams): Types.Extensions.CommandsModule => {
   const {
     customizationService,
@@ -61,6 +83,20 @@ const commandsModule = ({
       if (commands) {
         multiMonitorService.run(screenDelta, commands, options);
       }
+    },
+
+    /** Ensures that the specified study is available for display */
+    loadStudy: async options => {
+      const { studyInstanceUID } = options;
+      if (hangingProtocolService.hasStudyUID(studyInstanceUID)) {
+        return;
+      }
+      const [dataSource] = extensionManager.getActiveDataSource();
+      await requestDisplaySetCreationForStudy(dataSource, displaySetService, studyInstanceUID);
+      const activeStudy = DicomMetadataStore.getStudy(studyInstanceUID);
+      hangingProtocolService.addStudy(activeStudy);
+      const displaySets = displaySetService.getActiveDisplaySets();
+      hangingProtocolService.setDisplaySets(displaySets);
     },
 
     /**
@@ -580,6 +616,9 @@ const commandsModule = ({
   const definitions = {
     multimonitor: {
       commandFn: actions.multimonitor,
+    },
+    loadStudy: {
+      commandFn: actions.loadStudy,
     },
     showContextMenu: {
       commandFn: actions.showContextMenu,

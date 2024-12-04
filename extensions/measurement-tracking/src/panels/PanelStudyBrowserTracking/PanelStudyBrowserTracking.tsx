@@ -9,7 +9,6 @@ import { StudyBrowser } from '@ohif/ui-next';
 import { useTrackedMeasurements } from '../../getContextModule';
 import { Separator } from '@ohif/ui-next';
 import { PanelStudyBrowserHeader } from '@ohif/extension-default';
-import { useAppConfig } from '@state';
 import { defaultActionIcons, defaultViewPresets } from './constants';
 
 const { formatDate, createStudyBrowserTabs } = utils;
@@ -44,7 +43,6 @@ export default function PanelStudyBrowserTracking({
     measurementService,
     studyPrefetcherService,
     customizationService,
-    multiMonitorService,
   } = servicesManager.services;
   const navigate = useNavigate();
   const { mode: studyMode } = customizationService.getCustomization('PanelStudyBrowser.studyMode', {
@@ -396,12 +394,20 @@ export default function PanelStudyBrowserTracking({
       screenDelta,
       activeStudyUID: studyInstanceUID,
       fallback: () => _handleStudyClick(studyInstanceUID),
-      commands: {
-        commandName: 'setHangingProtocol',
-        commandOptions: {
-          protocolId: 'default',
+      commands: [
+        {
+          commandName: 'loadStudy',
+          commandOptions: {
+            protocolId: '@ohif/mnGrid',
+          },
         },
-      },
+        {
+          commandName: 'setHangingProtocol',
+          commandOptions: {
+            protocolId: '@ohif/mnGrid',
+          },
+        },
+      ],
     });
   };
 

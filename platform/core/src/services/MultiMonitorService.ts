@@ -66,7 +66,7 @@ export class MultiMonitorService {
       console.warn("Didn't find a commands manager to run in the other window", otherWindow);
       return;
     }
-    otherWindow.multimonitor.commandsManager.run(commands, options);
+    otherWindow.multimonitor.commandsManager.runAsync(commands, options);
   }
 
   /**
