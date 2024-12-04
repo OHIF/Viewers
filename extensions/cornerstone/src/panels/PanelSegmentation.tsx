@@ -1,5 +1,16 @@
 import React from 'react';
-import { SegmentationTable } from '@ohif/ui-next';
+import {
+  DropdownMenuLabel,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuPortal,
+  DropdownMenuSeparator,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  Icons,
+  SegmentationTable,
+  DropdownMenuSubTrigger,
+} from '@ohif/ui-next';
 import { useActiveViewportSegmentationRepresentations } from '../hooks/useActiveViewportSegmentationRepresentations';
 import { metaData } from '@cornerstonejs/core';
 
@@ -147,6 +158,66 @@ export default function PanelSegmentation({
     }
   );
 
+  const CustomDropdownMenuContent = customizationService.getCustomComponent(
+    'PanelSegmentation.CustomDropdownMenuContent',
+    ({
+      activeSegmentation,
+      onSegmentationAdd,
+      onSegmentationRemoveFromViewport,
+      onSegmentationEdit,
+      onSegmentationDelete,
+      allowExport,
+      storeSegmentation,
+      onSegmentationDownload,
+      onSegmentationDownloadRTSS,
+      t,
+    }) => (
+      <DropdownMenuContent align="start">
+        <DropdownMenuItem onClick={() => onSegmentationAdd(activeSegmentation.id)}>
+          <Icons.Add className="text-foreground" />
+          <span className="pl-2">{t('Create New Segmentation')}</span>
+        </DropdownMenuItem>
+        <DropdownMenuSeparator />
+        <DropdownMenuLabel>{t('Manage Current Segmentation')}</DropdownMenuLabel>
+        <DropdownMenuItem onClick={() => onSegmentationRemoveFromViewport(activeSegmentation.id)}>
+          <Icons.Series className="text-foreground" />
+          <span className="pl-2">{t('Remove from Viewport')}</span>
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => onSegmentationEdit(activeSegmentation.id)}>
+          <Icons.Rename className="text-foreground" />
+          <span className="pl-2">{t('Rename')}</span>
+        </DropdownMenuItem>
+        <DropdownMenuSub>
+          <DropdownMenuSubTrigger
+            disabled={!allowExport}
+            className="pl-1"
+          >
+            <Icons.Export className="text-foreground" />
+            <span className="pl-2">{t('Export & Download')}</span>
+          </DropdownMenuSubTrigger>
+          <DropdownMenuPortal>
+            <DropdownMenuSubContent>
+              <DropdownMenuItem onClick={() => storeSegmentation(activeSegmentation.id)}>
+                {t('Export DICOM SEG')}
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => onSegmentationDownload(activeSegmentation.id)}>
+                {t('Download DICOM SEG')}
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => onSegmentationDownloadRTSS(activeSegmentation.id)}>
+                {t('Download DICOM RTSTRUCT')}
+              </DropdownMenuItem>
+            </DropdownMenuSubContent>
+          </DropdownMenuPortal>
+        </DropdownMenuSub>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem onClick={() => onSegmentationDelete(activeSegmentation.id)}>
+          <Icons.Delete className="text-red-600" />
+          <span className="pl-2 text-red-600">{t('Delete')}</span>
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    )
+  );
+
   const exportOptions = segmentationsWithRepresentations.map(({ segmentation }) => {
     const { representationData, segmentationId } = segmentation;
     const { Labelmap } = representationData;
@@ -219,13 +290,17 @@ export default function PanelSegmentation({
 
         {SegmentationTableMode === 'collapsed' ? (
           <SegmentationTable.Collapsed>
-            <SegmentationTable.SelectorHeader />
+            <SegmentationTable.SelectorHeader>
+              <CustomDropdownMenuContent />
+            </SegmentationTable.SelectorHeader>
             <SegmentationTable.AddSegmentRow />
             <SegmentationTable.Segments />
           </SegmentationTable.Collapsed>
         ) : (
           <SegmentationTable.Expanded>
-            <SegmentationTable.Header />
+            <SegmentationTable.Header>
+              <CustomDropdownMenuContent />
+            </SegmentationTable.Header>
             {/* <SegmentationTable.AddSegmentRow /> */}
             <SegmentationTable.Segments />
           </SegmentationTable.Expanded>
