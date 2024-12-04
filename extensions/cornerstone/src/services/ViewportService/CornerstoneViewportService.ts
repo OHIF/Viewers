@@ -48,11 +48,14 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     altName: 'CornerstoneViewportService',
     create: ({
       servicesManager,
+      extensionManager,
     }: OhifTypes.Extensions.ExtensionParams): CornerstoneViewportService => {
-      return new CornerstoneViewportService(servicesManager);
+      const appConfig = extensionManager.appConfig;
+      return new CornerstoneViewportService(servicesManager, appConfig);
     },
   };
 
+  useCPURendering: boolean;
   renderingEngine: Types.IRenderingEngine | null;
   viewportsById: Map<string, ViewportInfo> = new Map();
   viewportGridResizeObserver: ResizeObserver | null;
@@ -70,11 +73,12 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
   gridResizeDelay = 50;
   gridResizeTimeOut = null;
 
-  constructor(servicesManager: AppTypes.ServicesManager) {
+  constructor(servicesManager: AppTypes.ServicesManager, appConfig: AppTypes.Config) {
     super(EVENTS);
     this.renderingEngine = null;
     this.viewportGridResizeObserver = null;
     this.servicesManager = servicesManager;
+    this.useCPURendering = appConfig.useCPURendering;
   }
   hangingProtocolService: unknown;
   viewportsInfo: unknown;
@@ -1073,11 +1077,14 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
 
       // Reset the camera for all viewports using position presentation to maintain relative size/position
       // which means only those viewports that have a zoom level of 1.
-      this.beforeResizePositionPresentations.forEach((positionPresentation, viewportId) => {
-        this.setPresentations(viewportId, {
-          positionPresentation,
+      // Todo: cpu rendering has some bug with regard to the camera position
+      if (!this.useCPURendering) {
+        this.beforeResizePositionPresentations.forEach((positionPresentation, viewportId) => {
+          this.setPresentations(viewportId, {
+            positionPresentation,
+          });
         });
-      });
+      }
 
       // Resize and render the rendering engine again.
       renderingEngine.resize(isImmediate);
