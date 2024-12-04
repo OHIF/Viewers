@@ -375,13 +375,6 @@ export default function PanelStudyBrowserTracking({
 
   const tabs = createStudyBrowserTabs(StudyInstanceUIDs, studyDisplayList, displaySets);
 
-  const _launchMultiMonitor =
-    multiMonitorService.numberOfScreens > 1
-      ? (studyInstanceUID, screenDelta) => {
-          multiMonitorService.launchStudy(studyInstanceUID, screenDelta);
-        }
-      : null;
-
   // TODO: Should not fire this on "close"
   function _handleStudyClick(StudyInstanceUID) {
     const shouldCollapseStudy = expandedStudyInstanceUIDs.includes(StudyInstanceUID);
@@ -396,6 +389,21 @@ export default function PanelStudyBrowserTracking({
       requestDisplaySetCreationForStudy(displaySetService, StudyInstanceUID, madeInClient);
     }
   }
+
+  const _launchMultiMonitor = (studyInstanceUID, screenDelta) => {
+    commandsManager.run('multimonitor', {
+      studyInstanceUID,
+      screenDelta,
+      activeStudyUID: studyInstanceUID,
+      fallback: () => _handleStudyClick(studyInstanceUID),
+      commands: {
+        commandName: 'setHangingProtocol',
+        commandOptions: {
+          protocolId: 'default',
+        },
+      },
+    });
+  };
 
   useEffect(() => {
     if (jumpToDisplaySet) {

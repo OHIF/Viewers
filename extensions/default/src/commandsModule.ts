@@ -41,12 +41,28 @@ const commandsModule = ({
     uiNotificationService,
     viewportGridService,
     displaySetService,
+    multiMonitorService,
   } = servicesManager.services;
 
   // Define a context menu controller for use with any context menus
   const contextMenuController = new ContextMenuController(servicesManager, commandsManager);
 
   const actions = {
+    /**
+     * Runs a command in multi-monitor mode.  No-op if not multi-monitor.
+     */
+    multimonitor: async options => {
+      const { commands, screenDelta, studyInstanceUID } = options;
+      if (multiMonitorService.numberOfScreens < 2) {
+        return options.fallback?.(options);
+      }
+
+      await multiMonitorService.launchWindow(studyInstanceUID, screenDelta, options);
+      if (commands) {
+        multiMonitorService.run(screenDelta, commands, options);
+      }
+    },
+
     /**
      * Show the context menu.
      * @param options.menuId defines the menu name to lookup, from customizationService
@@ -562,6 +578,9 @@ const commandsModule = ({
   };
 
   const definitions = {
+    multimonitor: {
+      commandFn: actions.multimonitor,
+    },
     showContextMenu: {
       commandFn: actions.showContextMenu,
     },

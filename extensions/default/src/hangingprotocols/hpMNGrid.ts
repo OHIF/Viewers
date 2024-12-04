@@ -58,24 +58,6 @@ const hpMN: Types.HangingProtocol.Protocol = {
       ],
     },
   },
-  screens: [
-    // This hanging protocol will match screens primary and secondary
-    {
-      matches: ['primary', 'secondary'],
-      primary: {
-        x: 0.5,
-        y: 0,
-        width: 0.5,
-        height: 1,
-      },
-      secondary: {
-        x: 0.5,
-        y: 0,
-        width: 0.5,
-        height: 1,
-      },
-    },
-  ],
   defaultViewport: {
     viewportOptions: {
       viewportType: 'stack',

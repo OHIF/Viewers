@@ -6,38 +6,38 @@ export class MultiMonitorService {
   private windowsConfig;
   private screenConfig;
   private launchWindows = [];
+  private commandsManager;
 
   public readonly screenNumber: number;
   public readonly isMultimonitor: boolean;
 
   public static REGISTRATION = {
     name: 'multiMonitorService',
-    create: ({ configuration }): MultiMonitorService => {
-      const service = new MultiMonitorService(configuration);
+    create: ({ configuration, commandsManager }): MultiMonitorService => {
+      const service = new MultiMonitorService(configuration, commandsManager);
       return service;
     },
   };
 
-  constructor(configuration) {
+  constructor(configuration, commandsManager) {
     const params = new URLSearchParams(window.location.search);
     const screenNumber = params.get('screenNumber');
     const multimonitor = params.get('multimonitor');
     const testParams = { params, screenNumber, multimonitor };
     this.screenNumber = screenNumber ? Number(screenNumber) : 0;
-    console.log(
-      '************* multimonitor',
-      multimonitor,
-      screenNumber,
-      (window as any).multimonitor
-    );
-    (window as any).multimonitor ||= {
+    this.commandsManager = commandsManager;
+    const windowAny = window as any;
+    windowAny.multimonitor ||= {
       setLaunchWindows: this.setLaunchWindows,
       launchWindows: this.launchWindows,
+      commandsManager,
     };
+    windowAny.multimonitor.commandsManager = commandsManager;
     this.launchWindows = (window as any).multimonitor?.launchWindows || this.launchWindows;
     if (!this.screenNumber) {
       this.launchWindows[0] = window;
     }
+    windowAny.commandsManager = (...args) => configuration.commandsManager;
     for (const windowsConfig of Array.isArray(configuration) ? configuration : []) {
       if (windowsConfig.test(testParams)) {
         this.isMultimonitor = true;
@@ -53,6 +53,20 @@ export class MultiMonitorService {
     }
     this.numberOfScreens = 1;
     this.isMultimonitor = false;
+  }
+
+  public run(screenDelta = 1, commands, options) {
+    const screenNumber = (this.screenNumber + (screenDelta ?? 1)) % this.numberOfScreens;
+    const otherWindow = this.getWindow(screenNumber);
+    if (!otherWindow) {
+      console.warn('No multimonitor found for screen', screenNumber, commands);
+      return;
+    }
+    if (!otherWindow.multimonitor?.commandsManager) {
+      console.warn("Didn't find a commands manager to run in the other window", otherWindow);
+      return;
+    }
+    otherWindow.multimonitor.commandsManager.run(commands, options);
   }
 
   /**
@@ -74,9 +88,11 @@ export class MultiMonitorService {
     (window as any).multimonitor.launchWindows = launchWindows;
   };
 
-  public async launchStudy(studyUid: string, screenDelta = 1) {
+  public async launchWindow(studyUid: string, screenDelta = 1) {
     const forScreen = (this.screenNumber + screenDelta) % this.numberOfScreens;
-    console.log('*************** launch Study', studyUid, forScreen);
+    if (this.getWindow(forScreen)) {
+      return;
+    }
     const url = this.createUrlForStudy(studyUid, forScreen);
     const forWindow = await this.getOrCreateWindow(forScreen, url);
     forWindow.location = url;
@@ -94,6 +110,15 @@ export class MultiMonitorService {
   createUrlForStudy(studyUid, screenNumber) {
     const { pathname, origin } = window.location;
     return `${origin}${pathname}?StudyInstanceUIDs=${studyUid}&multimonitor=${this.windowsConfig.id}&screenNumber=${screenNumber}`;
+  }
+
+  public getWindow(screenNumber) {
+    if (screenNumber === this.screenNumber) {
+      return window;
+    }
+    if (this.launchWindows[screenNumber] && !this.launchWindows[screenNumber].closed) {
+      return this.launchWindows[screenNumber];
+    }
   }
 
   /**
