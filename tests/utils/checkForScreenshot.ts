@@ -24,7 +24,7 @@ const checkForScreenshot = async (
       });
       return true;
     } catch (error) {
-      if (i === attempts || i === 20) {
+      if (i === attempts) {
         throw new Error('Screenshot does not match.');
       }
       await new Promise(resolve => setTimeout(resolve, delay));
