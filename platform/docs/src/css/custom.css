@@ -8,31 +8,31 @@
 
 @layer base {
   :root {
-    --highlight: 191 74% 63%;
-    --background: 236 62% 5%;
-    --foreground: 0 0% 98%;
-    --card: 236 62% 5%;
-    --card-foreground: 0 0% 98%;
-    --popover: 219 90% 15%;
-    --popover-foreground: 0 0% 98%;
-    --primary: 214 98% 60%;
-    --primary-foreground: 0 0% 98%;
-    --secondary: 214 66% 48%;
-    --secondary-foreground: 200 50% 84%;
-    --muted: 234 64% 10%;
-    --muted-foreground: 200 46% 65%;
-    --accent: 217 79% 24%;
-    --accent-foreground: 0 0% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 14.9%;
-    --input: 236 45% 21%;
-    --ring: 214 98% 60%;
-    --chart-1: 220 70% 50%;
-    --chart-2: 160 60% 45%;
-    --chart-3: 30 80% 55%;
-    --chart-4: 280 65% 60%;
-    --chart-5: 340 75% 55%;
+    --highlight: 0 0% 50%;
+    --background: 0 0% 15%;
+    --foreground: 0 0% 90%;
+    --card: 0 0% 15%;
+    --card-foreground: 0 0% 90%;
+    --popover: 0 0% 20%;
+    --popover-foreground: 0 0% 90%;
+    --primary: 0 0% 60%;
+    --primary-foreground: 0 0% 90%;
+    --secondary: 0 0% 40%;
+    --secondary-foreground: 0 0% 80%;
+    --muted: 0 0% 30%;
+    --muted-foreground: 0 0% 50%;
+    --accent: 0 0% 40%;
+    --accent-foreground: 0 0% 90%;
+    --destructive: 0 0% 30%;
+    --destructive-foreground: 0 0% 90%;
+    --border: 0 0% 40%;
+    --input: 0 0% 30%;
+    --ring: 0 0% 60%;
+    --chart-1: 0 0% 50%;
+    --chart-2: 0 0% 45%;
+    --chart-3: 0 0% 55%;
+    --chart-4: 0 0% 60%;
+    --chart-5: 0 0% 55%;
     --radius: 0.5rem;
     --badge-new-color: hsl(var(--primary-foreground));
     --badge-new-background: linear-gradient(135deg, hsl(var(--highlight)), hsl(var(--primary)));
@@ -40,30 +40,30 @@
   }
 
   .dark {
-    --background: 0 0% 3.9%;
-    --foreground: 0 0% 98%;
-    --card: 0 0% 3.9%;
-    --card-foreground: 0 0% 98%;
-    --popover: 0 0% 3.9%;
-    --popover-foreground: 0 0% 98%;
-    --primary: 214 98% 60%;
-    --primary-foreground: 0 0% 98%;
-    --secondary: 0 0% 14.9%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 0 0% 14.9%;
-    --muted-foreground: 0 0% 63.9%;
-    --accent: 0 0% 14.9%;
-    --accent-foreground: 0 0% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 14.9%;
-    --input: 236 45% 21%;
-    --ring: 214 98% 60%;
-    --chart-1: 220 70% 50%;
-    --chart-2: 160 60% 45%;
-    --chart-3: 30 80% 55%;
-    --chart-4: 280 65% 60%;
-    --chart-5: 340 75% 55%;
+    --background: 0 0% 10%;
+    --foreground: 0 0% 95%;
+    --card: 0 0% 10%;
+    --card-foreground: 0 0% 95%;
+    --popover: 0 0% 10%;
+    --popover-foreground: 0 0% 95%;
+    --primary: 0 0% 60%;
+    --primary-foreground: 0 0% 95%;
+    --secondary: 0 0% 20%;
+    --secondary-foreground: 0 0% 95%;
+    --muted: 0 0% 20%;
+    --muted-foreground: 0 0% 55%;
+    --accent: 0 0% 20%;
+    --accent-foreground: 0 0% 95%;
+    --destructive: 0 0% 20%;
+    --destructive-foreground: 0 0% 95%;
+    --border: 0 0% 20%;
+    --input: 0 0% 25%;
+    --ring: 0 0% 60%;
+    --chart-1: 0 0% 50%;
+    --chart-2: 0 0% 45%;
+    --chart-3: 0 0% 55%;
+    --chart-4: 0 0% 60%;
+    --chart-5: 0 0% 55%;
     --badge-new-color: hsl(var(--primary-foreground));
     --badge-new-background: linear-gradient(135deg, hsl(var(--highlight)), hsl(var(--primary)));
     --badge-latest-stable-color: hsl(var(--primary));
@@ -254,34 +254,34 @@ input[type='number'] {
 /* https://infima.dev/docs/utilities/colors */
 /* https://docs.theochu.com/docusaurus/styling/ */
 :root {
-  --ifm-color-primary: #25c2a0;
-  --ifm-color-primary-dark: rgb(33, 175, 144);
-  --ifm-color-primary-darker: rgb(31, 165, 136);
-  --ifm-color-primary-darkest: rgb(26, 136, 112);
-  --ifm-color-primary-light: rgb(70, 203, 174);
-  --ifm-color-primary-lighter: rgb(102, 212, 189);
-  --ifm-color-primary-lightest: rgb(146, 224, 208);
-  --ifm-font-color-base: #474747;
-  --ifm-color-primary: #0151d9;
-  --ifm-color-primary-dark: #0149c3;
-  --ifm-color-primary-darker: #0145b8;
-  --ifm-color-primary-darkest: #013998;
-  --ifm-color-primary-light: #0159ef;
-  --ifm-color-primary-lighter: #015dfa;
-  --ifm-color-primary-lightest: #1d71fe;
-  --ifm-color-secondary: #e8f7f7;
+  --ifm-color-primary: #5d5d5d; /* Approximate gray scale equivalent of #25c2a0 */
+  --ifm-color-primary-dark: #4d4d4d; /* Approximate gray scale equivalent of rgb(33, 175, 144) */
+  --ifm-color-primary-darker: #4a4a4a; /* Approximate gray scale equivalent of rgb(31, 165, 136) */
+  --ifm-color-primary-darkest: #3e3e3e; /* Approximate gray scale equivalent of rgb(26, 136, 112) */
+  --ifm-color-primary-light: #a6a6a6; /* Approximate gray scale equivalent of rgb(70, 203, 174) */
+  --ifm-color-primary-lighter: #b6b6b6; /* Approximate gray scale equivalent of rgb(102, 212, 189) */
+  --ifm-color-primary-lightest: #c8c8c8; /* Approximate gray scale equivalent of rgb(146, 224, 208) */
+  --ifm-font-color-base: #6e6e6e; /* Approximate gray scale equivalent of #474747 */
+  --ifm-color-primary: #2a2a2a; /* Approximate gray scale equivalent of #0151d9 */
+  --ifm-color-primary-dark: #2a2a2a; /* Approximate gray scale equivalent of #0149c3 */
+  --ifm-color-primary-darker: #2a2a2a; /* Approximate gray scale equivalent of #0145b8 */
+  --ifm-color-primary-darkest: #2a2a2a; /* Approximate gray scale equivalent of #013998 */
+  --ifm-color-primary-light: #3a3a3a; /* Approximate gray scale equivalent of #0159ef */
+  --ifm-color-primary-lighter: #3a3a3a; /* Approximate gray scale equivalent of #015dfa */
+  --ifm-color-primary-lightest: #4c4c4c; /* Approximate gray scale equivalent of #1d71fe */
+  --ifm-color-secondary: #e0e0e0; /* Approximate gray scale equivalent of #e8f7f7 */
   --ifm-code-font-size: 95%;
-  --ifm-background-color: #ffffff;
-  --ifm-zoom-image-background-color: #ffffffe5;
-  --ifm-background-surface-color: #ffffff;
-  --ifm-menu-color: #1e427e;
-  --ifm-code-background: #e8f7f7;
-  --ifm-toc-border-color: #ffffff;
-  --ifm-footer-background-color: #000000;
-  --ifm-table-stripe-background: #f4fbfb;
-  --ifm-color-warning: #e9e489;
-  --ifm-alert-color: #333333;
-  --ohif-color-border: #7bb2ce;
+  --ifm-background-color: #f5f5f5; /* Approximate gray scale equivalent of #ffffff */
+  --ifm-zoom-image-background-color: #f5f5f5e5; /* Approximate gray scale equivalent of #ffffffe5 */
+  --ifm-background-surface-color: #f5f5f5; /* Approximate gray scale equivalent of #ffffff */
+  --ifm-menu-color: #333333; /* Approximate gray scale equivalent of #1e427e */
+  --ifm-code-background: #e0e0e0; /* Approximate gray scale equivalent of #e8f7f7 */
+  --ifm-toc-border-color: #f5f5f5; /* Approximate gray scale equivalent of #ffffff */
+  --ifm-footer-background-color: #2b2b2b; /* Approximate gray scale equivalent of #000000 */
+  --ifm-table-stripe-background: #f9f9f9; /* Approximate gray scale equivalent of #f4fbfb */
+  --ifm-color-warning: #b8b849; /* Approximate gray scale equivalent of #e9e489 */
+  --ifm-alert-color: #595959; /* Approximate gray scale equivalent of #333333 */
+  --ohif-color-border: #8a8a8a; /* Approximate gray scale equivalent of #7bb2ce */
   --site-primary-hue-saturation: 167 68%;
   --site-primary-hue-saturation-light: 167 56%; /* do we really need this extra one? */
 }
@@ -293,29 +293,29 @@ html[data-theme='dark'] .header-github-link:before {
 
 html[data-theme='dark'] {
   --ifm-menu-link-sublist-icon: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="15px" height="15px" viewBox="0 0 24 24"><path fill="rgba(0,0,0,0.4)" d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z"></path></svg>');
-  --ifm-color-primary: #5acce6;
-  --ifm-color-primary-dark: #3ec3e2;
-  --ifm-color-primary-darker: #30bfe0;
-  --ifm-color-primary-darkest: #1da4c3;
-  --ifm-color-primary-light: #76d5ea;
-  --ifm-color-primary-lighter: #84d9ec;
-  --ifm-color-primary-lightest: #ade6f3;
-  --ifm-font-color-base: #ffffff;
-  --ifm-color-secondary: #050719;
-  --ifm-blockquote-color: #7bb2ce;
-  --ifm-background-color: #080b2b;
-  --ifm-zoom-image-background-color: #080b2be5;
-  --ifm-background-surface-color: #080b2b;
-  --ifm-menu-color: #7bb2ce;
-  --ifm-toc-link-color: #7bb2ce;
-  --ifm-code-background: #1c296d;
-  --ifm-toc-border-color: #080b2b;
-  --ifm-menu-color-active: #ffffff;
-  --ifm-footer-background-color: #000000;
-  --ifm-table-stripe-background: #060920;
-  --ifm-color-warning: #f1c55a;
-  --ifm-alert-color: #000000;
-  --ohif-color-border: #3a3f99;
+  --ifm-color-primary: #a6a6a6; /* Approximate gray scale equivalent of #5acce6 */
+  --ifm-color-primary-dark: #8c8c8c; /* Approximate gray scale equivalent of #3ec3e2 */
+  --ifm-color-primary-darker: #7f7f7f; /* Approximate gray scale equivalent of #30bfe0 */
+  --ifm-color-primary-darkest: #6e6e6e; /* Approximate gray scale equivalent of #1da4c3 */
+  --ifm-color-primary-light: #b3b3b3; /* Approximate gray scale equivalent of #76d5ea */
+  --ifm-color-primary-lighter: #b8b8b8; /* Approximate gray scale equivalent of #84d9ec */
+  --ifm-color-primary-lightest: #d1d1d1; /* Approximate gray scale equivalent of #ade6f3 */
+  --ifm-font-color-base: #ffffff; /* White */
+  --ifm-color-secondary: #1c1c29; /* Approximate gray scale equivalent of #050719 */
+  --ifm-blockquote-color: #8a8a8a; /* Approximate gray scale equivalent of #7bb2ce */
+  --ifm-background-color: #1e1e3c; /* Approximate gray scale equivalent of #080b2b */
+  --ifm-zoom-image-background-color: #1e1e3ce5; /* Approximate gray scale equivalent of #080b2be5 */
+  --ifm-background-surface-color: #1e1e3c; /* Approximate gray scale equivalent of #080b2b */
+  --ifm-menu-color: #8a8a8a; /* Approximate gray scale equivalent of #7bb2ce */
+  --ifm-toc-link-color: #8a8a8a; /* Approximate gray scale equivalent of #7bb2ce */
+  --ifm-code-background: #4f5b8d; /* Approximate gray scale equivalent of #1c296d */
+  --ifm-toc-border-color: #1e1e3c; /* Approximate gray scale equivalent of #080b2b */
+  --ifm-menu-color-active: #ffffff; /* White */
+  --ifm-footer-background-color: #2b2b2b; /* Approximate gray scale equivalent of #000000 */
+  --ifm-table-stripe-background: #2a2a37; /* Approximate gray scale equivalent of #060920 */
+  --ifm-color-warning: #b9b155; /* Approximate gray scale equivalent of #f1c55a */
+  --ifm-alert-color: #2b2b2b; /* Approximate gray scale equivalent of #000000 */
+  --ohif-color-border: #585e7b; /* Approximate gray scale equivalent of #3a3f99 */
 }
 
 .medium-zoom-overlay {
@@ -363,7 +363,7 @@ h5 {
 }
 
 blockquote {
-  border-left: 3px solid #4042af;
+  border-left: 3px solid #6f6f99;
 }
 
 /* Temporary Type Size Changes */
@@ -394,7 +394,7 @@ article header h3 {
 }
 
 .footer a {
-  color: #7bb2ce;
+  color: #8f8f8f;
 }
 
 .footer a:hover {
@@ -450,15 +450,15 @@ article header h3 {
 }
 
 .button--secondary:not(.button--outline) {
-  --ifm-button-background-color: #e8f7f7;
+  --ifm-button-background-color: #d0d0d0;
 }
 
 .admonition-icon svg {
-  fill: #0151d9;
+  fill: #4a4a4a;
 }
 
 .table-of-contents__left-border {
-  border-left: #013998;
+  border-left: #3e3e3e;
 }
 
 .footer__col:first-of-type {
@@ -471,7 +471,7 @@ article header h3 {
 }
 
 .docusaurus-highlight-code-line {
-  background-color: rgb(206, 208, 211);
+  background-color: #d0d0d0;
   display: block;
   margin: 0 calc(-1 * var(--ifm-pre-padding));
   padding: 0 var(--ifm-pre-padding);
@@ -480,7 +480,7 @@ article header h3 {
 /* If you have a different syntax highlighting theme for dark mode. */
 html[data-theme='dark'] .docusaurus-highlight-code-line {
   /* Color which works with dark mode syntax highlighting theme */
-  background-color: rgb(100, 100, 100);
+  background-color: #646464;
 }
 
 /* .DocSearch {
@@ -596,37 +596,37 @@ ul ul {
 
 /* Markdown link styling */
 .markdown a {
-  color: #0066cc;
+  color: #575757;
   text-decoration: none;
   transition: color 0.2s ease;
 }
 
 .markdown a:hover {
-  color: #0051a3;
+  color: #404040;
   text-decoration: underline;
 }
 
 /* Dark mode link styling */
 html[data-theme='dark'] .markdown a {
-  color: #66b3ff;
+  color: #a3a3a3;
 }
 
 html[data-theme='dark'] .markdown a:hover {
-  color: #99ccff;
+  color: #c4c4c4;
 }
 
 /* Horizontal rule styling */
 .markdown hr {
   height: 1px;
   border: none;
-  background: linear-gradient(to right, #0066cc, #66b3ff);
+  background: linear-gradient(to right, #4d4d4d, #a8a8a8);
   margin: 2rem 0;
   opacity: 0.6;
 }
 
 /* Dark mode horizontal rule */
 html[data-theme='dark'] .markdown hr {
-  background: linear-gradient(to right, #66b3ff, #99ccff);
+  background: linear-gradient(to right, #a8a8a8, #bfbfbf);
 }
 
 /* Markdown code block styling */

@@ -40,41 +40,41 @@ module.exports = {
       inherit: 'inherit',
 
       indigo: {
-        dark: '#0b1a42',
+        dark: '#2a2a2a',
       },
       aqua: {
-        pale: '#7bb2ce',
+        pale: '#8c8c8c',
       },
 
       primary: {
-        light: '#5acce6',
-        main: '#0944b3',
-        dark: '#090c29',
-        active: '#348cfd',
+        light: '#8c8c8c',
+        main: '#2a2a2a',
+        dark: '#1a1a1a',
+        active: '#999999',
       },
 
       secondary: {
-        light: '#3a3f99',
-        main: '#2b166b',
-        dark: '#041c4a',
-        active: '#1f1f27',
+        light: '#666666',
+        main: '#4d4d4d',
+        dark: '#1a1a1a',
+        active: '#333333',
       },
 
       common: {
         bright: '#e1e1e1',
-        light: '#a19fad',
+        light: '#8c8c8c',
         main: '#fff',
-        dark: '#726f7e',
-        active: '#2c3074',
+        dark: '#7f7f7f',
+        active: '#4d4d4d',
       },
 
       customgreen: {
-        100: '#05D97C',
+        100: '#7f7f7f',
       },
 
       customblue: {
-        100: '#c4fdff',
-        200: '#38daff',
+        100: '#bfbfbf',
+        200: '#8c8c8c',
       },
     },
   },
@@ -86,10 +86,10 @@ You can also use the color variable like before. For instance:
 ```js
 primary: {
   default: ‘var(--default-color)‘,
-  light: ‘#5ACCE6’,
-  main: ‘#0944B3’,
-  dark: ‘#090C29’,
-  active: ‘#348CFD’,
+  light: ‘#8c8c8c’,
+  main: ‘#2a2a2a’,
+  dark: ‘#1a1a1a’,
+  active: ‘#7f7f7f’,
 }
 ```
 

@@ -85,10 +85,10 @@ const CinePlayer: React.FC<CinePlayerProps> = ({
           step={1}
           containerClassName="mb-3 w-full"
           labelClassName="text-xs text-white"
-          leftColor="#3a3f99"
-          rightColor="#3a3f99"
+          leftColor="#666666"
+          rightColor="#666666"
           trackHeight="4px"
-          thumbColor="#348cfd"
+          thumbColor="#999999"
           thumbColorOuter="#000000"
           showLabel={false}
         />
@@ -105,7 +105,7 @@ const CinePlayer: React.FC<CinePlayerProps> = ({
           data-cy={'cine-player-play-pause'}
         />
         {isDynamic && dynamicInfo && (
-          <div className="min-w-16 max-w-44 flex flex-col  text-white">
+          <div className="min-w-16 max-w-44 flex flex-col text-white">
             {/* Add Tailwind classes for monospace font and center alignment */}
             <div className="text-[11px]">
               <span className="w-2 text-white">{dynamicInfo.timePointIndex}</span>{' '}

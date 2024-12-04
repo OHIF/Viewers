@@ -29,7 +29,7 @@ function LayoutSelector({ onSelection = () => {}, rows = 3, columns = 4 }) {
         .map(index => (
           <div
             key={index}
-            className={`border-primary-dark border ${isHovered(index) ? 'bg-primary-active' : 'bg-[#04225b]'} cursor-pointer`}
+            className={`border-primary-dark border ${isHovered(index) ? 'bg-primary-active' : 'bg-[#fff]'} cursor-pointer`}
             data-cy={`Layout-${index % columns}-${Math.floor(index / columns)}`}
             onClick={() => {
               const x = index % columns;

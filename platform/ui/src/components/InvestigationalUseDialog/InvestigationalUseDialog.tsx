@@ -104,4 +104,4 @@ InvestigationalUseDialog.propTypes = {
   }),
 };
 
-export default InvestigationalUseDialog;
+//export default InvestigationalUseDialog;

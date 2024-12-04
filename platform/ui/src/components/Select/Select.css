@@ -42,7 +42,7 @@
   padding: 4px;
 }
 
- .customSelect__option {
+.customSelect__option {
   color: #d6d6d6 !important;
   font-size: 14px !important;
   display: flex !important;
@@ -90,20 +90,20 @@
 }
 
 .customSelect__menu-portal .customSelect__menu-list::-webkit-scrollbar-thumb {
-  background-color: #0944b3;
+  background-color: #2a2a2a;
   border-radius: 10px;
 }
 
 .customSelect__option--is-focused {
-  background-color: #0944b391 !important;
+  background-color: #2a2a2a !important;
 }
 
 .customSelect__menu-portal .customSelect__option:hover {
-  background-color: #0944b391;
+  background-color: #2a2a2a;
 }
 
 .customSelect__menu-portal .customSelect__menu {
-  border: 2px solid #0944b3;
+  border: 2px solid #2a2a2a;
   border-radius: 6px;
   background-color: #151515 !important;
 }

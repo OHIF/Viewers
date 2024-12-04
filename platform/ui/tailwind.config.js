@@ -25,186 +25,185 @@ module.exports = {
       inherit: 'inherit',
 
       aqua: {
-        pale: '#7bb2ce',
+        pale: '#A1A1A1',
       },
 
       primary: {
-        light: '#5acce6',
-        main: '#0944b3',
-        dark: '#090c29',
-        active: '#348cfd',
+        light: '#7b7b7b', // Gray light
+        main: '#4a4a4a', // Medium gray
+        dark: '#1e1e1e', // Dark gray
+        active: '#8c8c8c', // Light gray
       },
       inputfield: {
-        main: '#3a3f99',
-        disabled: '#2b166b',
-        focus: '#5acce6',
-        placeholder: '#39383f',
+        main: '#5a5a5a', // Medium gray
+        disabled: '#2e2e2e', // Darker gray for disabled input
+        focus: '#8c8c8c', // Light gray on focus
+        placeholder: '#3a3a3a', // Slightly lighter gray
       },
 
       secondary: {
-        light: '#3a3f99',
-        main: '#2b166b',
-        dark: '#041c4a',
-        active: '#1f1f27',
+        light: '#8c8c8c', // Lighter gray
+        main: '#4a4a4a', // Medium gray
+        dark: '#2c2c2c', // Darker gray
+        active: '#1e1e1e', // Dark gray
       },
-
       indigo: {
         dark: '#0b1a42',
       },
 
       common: {
-        bright: '#e1e1e1',
-        light: '#a19fad',
-        main: '#fff',
-        dark: '#726f7e',
-        active: '#2c3074',
+        bright: '#e1e1e1', // Very light gray
+        light: '#a1a1a1', // Light gray
+        main: '#ffffff', // White
+        dark: '#3e3e3e', // Medium dark gray
+        active: '#6f6f6f', // Medium light gray
       },
       bkg: {
-        low: '#050615',
-        med: '#090C29',
-        full: '#041C4A',
+        low: '#1a1a1a', // Dark background
+        med: '#2b2b2b', // Medium dark background
+        full: '#121212', // Full dark background
       },
       info: {
-        primary: '#FFFFFF',
-        secondary: '#7BB2CE',
+        primary: '#FFFFFF', // White for info primary
+        secondary: '#A1A1A1', // Light gray for info secondary
       },
       actions: {
-        primary: '#348CFD',
-        highlight: '#5ACCE6',
-        hover: 'rgba(52, 140, 253, 0.2)',
+        primary: '#8c8c8c', // Light gray for primary action
+        highlight: '#b0b0b0', // Brighter gray for highlight
+        hover: 'rgba(140, 140, 140, 0.2)', // Light gray hover effect
       },
       customgreen: {
-        100: '#05D97C',
-        200: '#0FD97C',
+        100: '#6c6c6c', // Custom dark gray
+        200: '#888888', // Custom lighter gray
       },
 
       customblue: {
-        10: '#0A163F',
-        20: '#0B1F54',
-        30: '#09286e',
-        40: '#0E307F',
-        50: '#0F3A94',
-        80: '#1454D4',
-        100: '#c4fdff',
-        200: '#38daff',
-        300: '#1D204D',
-        400: '#90A0C1',
+        10: '#212121', // Very dark gray
+        20: '#2a2a2a', // Darker gray
+        30: '#333333', // Dark gray
+        40: '#3c3c3c', // Dark gray
+        50: '#444444', // Medium dark gray
+        80: '#505050', // Medium gray
+        100: '#b0b0b0', // Light gray
+        200: '#c6c6c6', // Lighter gray
+        300: '#d1d1d1', // Very light gray
+        400: '#e2e2e2', // Almost white gray
       },
 
       customgray: {
-        100: '#262943',
+        100: '#3e3e3e', // Dark gray
       },
 
       gray: {
-        100: '#f7fafc',
-        200: '#edf2f7',
-        300: '#e2e8f0',
-        400: '#cbd5e0',
-        500: '#a0aec0',
-        600: '#718096',
-        700: '#4a5568',
-        800: '#2d3748',
-        900: '#1a202c',
+        100: '#f7fafc', // Very light gray
+        200: '#edf2f7', // Light gray
+        300: '#e2e8f0', // Slightly darker gray
+        400: '#cbd5e0', // Medium light gray
+        500: '#a0aec0', // Medium gray
+        600: '#718096', // Darker gray
+        700: '#4a5568', // Darker gray
+        800: '#2d3748', // Very dark gray
+        900: '#1a202c', // Almost black
       },
       red: {
-        100: '#fff5f5',
-        200: '#fed7d7',
-        300: '#feb2b2',
-        400: '#fc8181',
-        500: '#f56565',
-        600: '#e53e3e',
-        700: '#c53030',
-        800: '#9b2c2c',
-        900: '#742a2a',
+        100: '#fff5f5', // Very light red
+        200: '#fed7d7', // Light red
+        300: '#feb2b2', // Soft red
+        400: '#fc8181', // Light red
+        500: '#f56565', // Medium red
+        600: '#e53e3e', // Dark red
+        700: '#c53030', // Darker red
+        800: '#9b2c2c', // Very dark red
+        900: '#742a2a', // Almost black red
       },
       orange: {
-        100: '#fffaf0',
-        200: '#feebc8',
-        300: '#fbd38d',
-        400: '#f6ad55',
-        500: '#ed8936',
-        600: '#dd6b20',
-        700: '#c05621',
-        800: '#9c4221',
-        900: '#7b341e',
+        100: '#fffaf0', // Very light orange
+        200: '#feebc8', // Light orange
+        300: '#fbd38d', // Soft orange
+        400: '#f6ad55', // Medium orange
+        500: '#ed8936', // Medium orange
+        600: '#dd6b20', // Dark orange
+        700: '#c05621', // Darker orange
+        800: '#9c4221', // Very dark orange
+        900: '#7b341e', // Almost black orange
       },
       yellow: {
-        100: '#fffff0',
-        200: '#fefcbf',
-        300: '#faf089',
-        400: '#f6e05e',
-        500: '#ecc94b',
-        600: '#d69e2e',
-        700: '#b7791f',
-        800: '#975a16',
-        900: '#744210',
+        100: '#fffff0', // Very light yellow
+        200: '#fefcbf', // Light yellow
+        300: '#faf089', // Soft yellow
+        400: '#f6e05e', // Medium yellow
+        500: '#ecc94b', // Medium yellow
+        600: '#d69e2e', // Dark yellow
+        700: '#b7791f', // Darker yellow
+        800: '#975a16', // Very dark yellow
+        900: '#744210', // Almost black yellow
       },
       green: {
-        100: '#f0fff4',
-        200: '#c6f6d5',
-        300: '#9ae6b4',
-        400: '#68d391',
-        500: '#48bb78',
-        600: '#38a169',
-        700: '#2f855a',
-        800: '#276749',
-        900: '#22543d',
+        100: '#f0fff4', // Very light green
+        200: '#c6f6d5', // Light green
+        300: '#9ae6b4', // Soft green
+        400: '#68d391', // Medium green
+        500: '#48bb78', // Medium green
+        600: '#38a169', // Dark green
+        700: '#2f855a', // Darker green
+        800: '#276749', // Very dark green
+        900: '#22543d', // Almost black green
       },
       teal: {
-        100: '#e6fffa',
-        200: '#b2f5ea',
-        300: '#81e6d9',
-        400: '#4fd1c5',
-        500: '#38b2ac',
-        600: '#319795',
-        700: '#2c7a7b',
-        800: '#285e61',
-        900: '#234e52',
+        100: '#e6fffa', // Very light teal
+        200: '#b2f5ea', // Light teal
+        300: '#81e6d9', // Soft teal
+        400: '#4fd1c5', // Medium teal
+        500: '#38b2ac', // Medium teal
+        600: '#319795', // Dark teal
+        700: '#2c7a7b', // Darker teal
+        800: '#285e61', // Very dark teal
+        900: '#234e52', // Almost black teal
       },
       blue: {
-        100: '#ebf8ff',
-        200: '#bee3f8',
-        300: '#90cdf4',
-        400: '#63b3ed',
-        500: '#4299e1',
-        600: '#3182ce',
-        700: '#2b6cb0',
-        800: '#2c5282',
-        900: '#2a4365',
+        100: '#ebf8ff', // Very light blue
+        200: '#bee3f8', // Light blue
+        300: '#90cdf4', // Soft blue
+        400: '#63b3ed', // Medium blue
+        500: '#4299e1', // Medium blue
+        600: '#3182ce', // Dark blue
+        700: '#2b6cb0', // Darker blue
+        800: '#2c5282', // Very dark blue
+        900: '#2a4365', // Almost black blue
       },
       indigo: {
-        100: '#ebf4ff',
-        200: '#c3dafe',
-        300: '#a3bffa',
-        400: '#7f9cf5',
-        500: '#667eea',
-        600: '#5a67d8',
-        700: '#4c51bf',
-        800: '#434190',
-        900: '#3c366b',
-        dark: '#0b1a42',
+        100: '#ebf4ff', // Very light indigo
+        200: '#c3dafe', // Light indigo
+        300: '#a3bffa', // Soft indigo
+        400: '#7f9cf5', // Medium indigo
+        500: '#667eea', // Medium indigo
+        600: '#5a67d8', // Dark indigo
+        700: '#4c51bf', // Darker indigo
+        800: '#434190', // Very dark indigo
+        900: '#3c366b', // Almost black indigo
+        dark: '#7F7F7F', // Very dark indigo
       },
       purple: {
-        100: '#faf5ff',
-        200: '#e9d8fd',
-        300: '#d6bcfa',
-        400: '#b794f4',
-        500: '#9f7aea',
-        600: '#805ad5',
-        700: '#6b46c1',
-        800: '#553c9a',
-        900: '#44337a',
+        100: '#faf5ff', // Very light purple
+        200: '#e9d8fd', // Light purple
+        300: '#d6bcfa', // Soft purple
+        400: '#b794f4', // Medium purple
+        500: '#9f7aea', // Medium purple
+        600: '#805ad5', // Dark purple
+        700: '#6b46c1', // Darker purple
+        800: '#553c9a', // Very dark purple
+        900: '#44337a', // Almost black purple
       },
       pink: {
-        100: '#fff5f7',
-        200: '#fed7e2',
-        300: '#fbb6ce',
-        400: '#f687b3',
-        500: '#ed64a6',
-        600: '#d53f8c',
-        700: '#b83280',
-        800: '#97266d',
-        900: '#702459',
+        100: '#fff5f7', // Very light pink
+        200: '#fed7e2', // Light pink
+        300: '#fbb6ce', // Soft pink
+        400: '#f687b3', // Medium pink
+        500: '#ed64a6', // Medium pink
+        600: '#d53f8c', // Dark pink
+        700: '#b83280', // Darker pink
+        800: '#97266d', // Very dark pink
+        900: '#702459', // Almost black pink
       },
     },
     backgroundColor: theme => theme('colors'),

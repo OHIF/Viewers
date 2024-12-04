@@ -5,7 +5,7 @@
         <g id="Segmentation---assets" transform="translate(-254.875, -64.875)">
             <g id="icon-delete" transform="translate(250, 60)">
                 <rect id="Rectangle" x="0" y="0" width="20" height="20"></rect>
-                <g id="Group-31" transform="translate(5, 5)" stroke="#348CFD" stroke-linecap="round" stroke-width="1.25">
+                <g id="Group-31" transform="translate(5, 5)" stroke="#6E6E6E" stroke-linecap="round" stroke-width="1.25">
                     <g id="Group-30">
                         <line x1="0.5" y1="0.5" x2="9.5" y2="9.5" id="Line-4"></line>
                         <line x1="0.5" y1="0.5" x2="9.5" y2="9.5" id="Line-4" transform="translate(5, 5) scale(-1, 1) translate(-5, -5)"></line>

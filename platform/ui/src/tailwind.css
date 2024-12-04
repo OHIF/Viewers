@@ -31,73 +31,73 @@
 
 @layer base {
   :root {
-    --highlight: 191 74% 63%;
-    --background: 236 62% 5%;
-    --foreground: 0 0% 98%;
-    --card: 236 62% 5%;
-    --card-foreground: 0 0% 98%;
-    --popover: 219 90% 15%;
-    --popover-foreground: 0 0% 98%;
-    --primary: 214 98% 60%;
-    --primary-foreground: 0 0% 98%;
-    --secondary: 214 66% 48%;
-    --secondary-foreground: 200 50% 84%;
-    --muted: 234 64% 10%;
-    --muted-foreground: 200 46% 65%;
-    --accent: 217 79% 24%;
-    --accent-foreground: 0 0% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 14.9%;
-    --input: 236 45% 21%;
-    --ring: 214 98% 60%;
-    --chart-1: 220 70% 50%;
-    --chart-2: 160 60% 45%;
-    --chart-3: 30 80% 55%;
-    --chart-4: 280 65% 60%;
-    --chart-5: 340 75% 55%;
-    --radius: 0.5rem;
-    --success-bg: hsl(143, 85%, 96%);
-    --success-border: hsl(145, 92%, 91%);
-    --success-text: hsl(140, 100%, 27%);
+    --highlight: 0 0% 63%; /* Light gray */
+    --background: 0 0% 18%; /* Very dark gray */
+    --foreground: 0 0% 98%; /* White */
+    --card: 0 0% 18%; /* Very dark gray */
+    --card-foreground: 0 0% 98%; /* White */
+    --popover: 0 0% 15%; /* Darker gray */
+    --popover-foreground: 0 0% 98%; /* White */
+    --primary: 0 0% 50%; /* Medium gray */
+    --primary-foreground: 0 0% 98%; /* White */
+    --secondary: 0 0% 40%; /* Darker gray */
+    --secondary-foreground: 0 0% 80%; /* Lighter gray */
+    --muted: 0 0% 25%; /* Darker gray */
+    --muted-foreground: 0 0% 60%; /* Medium gray */
+    --accent: 0 0% 35%; /* Dark gray */
+    --accent-foreground: 0 0% 98%; /* White */
+    --destructive: 0 62.8% 20%; /* Dark red */
+    --destructive-foreground: 0 0% 98%; /* White */
+    --border: 0 0% 20%; /* Darker border */
+    --input: 0 0% 30%; /* Darker gray for input fields */
+    --ring: 0 0% 60%; /* Lighter gray ring */
+    --chart-1: 0 0% 50%; /* Neutral gray for chart 1 */
+    --chart-2: 0 0% 40%; /* Darker gray for chart 2 */
+    --chart-3: 0 0% 30%; /* Darker gray for chart 3 */
+    --chart-4: 0 0% 60%; /* Lighter gray for chart 4 */
+    --chart-5: 0 0% 50%; /* Neutral gray for chart 5 */
+    --radius: 0.5rem; /* Keep rounded corners consistent */
+    --success-bg: hsl(143, 85%, 20%); /* Darker green for success background */
+    --success-border: hsl(145, 92%, 35%); /* Darker green border */
+    --success-text: hsl(140, 100%, 45%); /* Green text */
 
-    --info-bg: hsl(208, 100%, 97%);
-    --info-border: hsl(221, 91%, 91%);
-    --info-text: hsl(210, 92%, 45%);
+    --info-bg: hsl(208, 100%, 20%); /* Darker blue for info background */
+    --info-border: hsl(221, 91%, 35%); /* Darker blue border */
+    --info-text: hsl(210, 92%, 45%); /* Blue text */
 
-    --warning-bg: hsl(49, 100%, 97%);
-    --warning-border: hsl(49, 91%, 91%);
-    --warning-text: hsl(31, 92%, 45%);
+    --warning-bg: hsl(49, 100%, 20%); /* Darker yellow for warning background */
+    --warning-border: hsl(49, 91%, 35%); /* Darker yellow border */
+    --warning-text: hsl(31, 92%, 45%); /* Dark yellow text */
 
-    --error-bg: hsl(359, 100%, 97%);
-    --error-border: hsl(359, 100%, 94%);
-    --error-text: hsl(360, 100%, 45%);
+    --error-bg: hsl(359, 100%, 20%); /* Darker red for error background */
+    --error-border: hsl(359, 100%, 30%); /* Darker red border */
+    --error-text: hsl(360, 100%, 45%); /* Red text */
   }
 
   .dark {
-    --background: 0 0% 3.9%;
-    --foreground: 0 0% 98%;
-    --card: 0 0% 3.9%;
-    --card-foreground: 0 0% 98%;
-    --popover: 0 0% 3.9%;
-    --popover-foreground: 0 0% 98%;
-    --primary: 214 98% 60%;
-    --primary-foreground: 0 0% 98%;
-    --secondary: 0 0% 14.9%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 0 0% 14.9%;
-    --muted-foreground: 0 0% 63.9%;
-    --accent: 0 0% 14.9%;
-    --accent-foreground: 0 0% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 14.9%;
-    --input: 236 45% 21%;
-    --ring: 214 98% 60%;
-    --chart-1: 220 70% 50%;
-    --chart-2: 160 60% 45%;
-    --chart-3: 30 80% 55%;
-    --chart-4: 280 65% 60%;
-    --chart-5: 340 75% 55%;
+    --background: 0 0% 8%; /* Darker background */
+    --foreground: 0 0% 98%; /* White foreground */
+    --card: 0 0% 8%; /* Darker card background */
+    --card-foreground: 0 0% 98%; /* White card text */
+    --popover: 0 0% 8%; /* Darker popover background */
+    --popover-foreground: 0 0% 98%; /* White popover text */
+    --primary: 0 0% 50%; /* Medium gray for primary */
+    --primary-foreground: 0 0% 98%; /* White primary text */
+    --secondary: 0 0% 20%; /* Dark gray for secondary */
+    --secondary-foreground: 0 0% 90%; /* Light gray secondary text */
+    --muted: 0 0% 18%; /* Darker muted color */
+    --muted-foreground: 0 0% 70%; /* Medium gray muted text */
+    --accent: 0 0% 25%; /* Dark gray accent */
+    --accent-foreground: 0 0% 98%; /* White accent text */
+    --destructive: 0 62.8% 20%; /* Darker red for destructive */
+    --destructive-foreground: 0 0% 98%; /* White destructive text */
+    --border: 0 0% 20%; /* Dark border */
+    --input: 0 0% 25%; /* Dark input field */
+    --ring: 0 0% 60%; /* Light gray ring */
+    --chart-1: 0 0% 50%; /* Neutral gray for chart 1 */
+    --chart-2: 0 0% 40%; /* Darker gray for chart 2 */
+    --chart-3: 0 0% 30%; /* Darker gray for chart 3 */
+    --chart-4: 0 0% 60%; /* Lighter gray for chart 4 */
+    --chart-5: 0 0% 50%; /* Neutral gray for chart 5 */
   }
 }

@@ -2,7 +2,7 @@
 <svg width="15.7826087px" height="15.7826087px" viewBox="0 0 15.7826087 15.7826087" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
     <title>icon-display-settings</title>
     <g id="Artboards" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round">
-        <g id="Segmentation---assets" transform="translate(-42.127, -62.1087)" stroke="#348CFD">
+        <g id="Segmentation---assets" transform="translate(-42.127, -62.1087)" stroke="#999999">
             <g id="icon-display-settings" transform="translate(40, 60)">
                 <circle id="Oval" cx="10" cy="4.34782609" r="1.73913043"></circle>
                 <line x1="11.7373913" y1="4.34782609" x2="17.4095652" y2="4.34782609" id="Path"></line>

@@ -5,10 +5,10 @@
         <g id="Segmentation---assets" transform="translate(-286, -61)">
             <g id="icon-more-menu" transform="translate(285, 60)">
                 <g id="Group-28" transform="translate(1, 1)">
-                    <circle id="Oval" fill="#348CFD" cx="5.625" cy="9" r="1.125"></circle>
-                    <circle id="Oval" fill="#348CFD" cx="9" cy="9" r="1.125"></circle>
-                    <circle id="Oval" fill="#348CFD" cx="12.375" cy="9" r="1.125"></circle>
-                    <circle id="Oval" stroke="#348CFD" cx="9" cy="9" r="8.5"></circle>
+                    <circle id="Oval" fill="#6E6E6E" cx="5.625" cy="9" r="1.125"></circle>
+                    <circle id="Oval" fill="#6E6E6E" cx="9" cy="9" r="1.125"></circle>
+                    <circle id="Oval" fill="#6E6E6E" cx="12.375" cy="9" r="1.125"></circle>
+                    <circle id="Oval" stroke="#6E6E6E" cx="9" cy="9" r="8.5"></circle>
                 </g>
                 <rect id="Rectangle" x="0" y="0" width="20" height="20"></rect>
             </g>
