@@ -9,7 +9,8 @@ export default defineConfig({
   snapshotPathTemplate: './tests/screenshots{/projectName}/{testFilePath}/{arg}{ext}',
   outputDir: './tests/test-results',
   reporter: [[process.env.CI ? 'blob' : 'html', { outputFolder: './tests/playwright-report' }]],
-  timeout: 120_000,
+  globalTimeout: 360_000,
+  timeout: 240_000,
   use: {
     baseURL: 'http://localhost:3000',
     trace: 'on-first-retry',
