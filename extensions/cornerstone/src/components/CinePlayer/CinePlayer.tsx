@@ -76,7 +76,6 @@ function WrappedCinePlayer({
 
   useEffect(() => {
     isMountedRef.current = true;
-
     newDisplaySetHandler();
 
     return () => {
