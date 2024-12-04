@@ -9,7 +9,7 @@ export default defineConfig({
   snapshotPathTemplate: './tests/screenshots{/projectName}/{testFilePath}/{arg}{ext}',
   outputDir: './tests/test-results',
   reporter: [[process.env.CI ? 'blob' : 'html', { outputFolder: './tests/playwright-report' }]],
-  timeout: 720 * 1000,
+  timeout: 120_000,
   use: {
     baseURL: 'http://localhost:3000',
     trace: 'on-first-retry',
@@ -39,6 +39,6 @@ export default defineConfig({
     command: 'yarn test:e2e:serve',
     url: 'http://localhost:3000',
     reuseExistingServer: !process.env.CI,
-    timeout: 240 * 1000,
+    timeout: 120_000,
   },
 });
