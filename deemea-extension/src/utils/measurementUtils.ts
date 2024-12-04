@@ -69,7 +69,7 @@ function convertToDicomCoordinates(
 async function matchNameWithAxis(
   pointName1,
   pointName2
-): Promise<{ color: string; highlighted: string } | null> {
+): Promise<{ color: string; highlighted: string; dotted?: boolean } | null> {
   const matchedAxis = axis.find(
     axe =>
       ((pointName1 === axe.head || pointName1 === axe.tail) && pointName2 === axe.head) ||
@@ -90,6 +90,7 @@ async function setMeasurementStyle() {
       color: '#00ff00',
       colorHighlighted: '#fff000',
       colorSelected: '#fff000',
+      lineDash: '',
     };
     if (axisColor) {
       style = {
@@ -97,6 +98,7 @@ async function setMeasurementStyle() {
         color: axisColor.color,
         colorHighlighted: axisColor.highlighted,
         colorSelected: axisColor.highlighted,
+        lineDash: axisColor.dotted ? '3,2' : '',
       };
     }
     cs3dTools.annotation.config.style.setAnnotationStyles(annotation.annotationUID!, style);
