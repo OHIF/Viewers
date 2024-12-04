@@ -1,3 +1,4 @@
+import { OHIFMessageType } from './utils/enums';
 import { demonstrateMeasurementService, createMeasurement } from './utils/measurementUtils';
 
 const commandsModule = ({ servicesManager }) => {
@@ -15,30 +16,30 @@ const commandsModule = ({ servicesManager }) => {
         return;
       }
 
-      window.addEventListener('message', event => {
-        if (event.data.type === 'POINTS_UPDATED') {
-          const relatedPoints = event.data.points;
-          // Update measurements based on points
-          CornerstoneViewportService.subscribe(
-            CornerstoneViewportService.EVENTS.VIEWPORT_DATA_CHANGED,
-            () => {
-              demonstrateMeasurementService(servicesManager, relatedPoints);
-            }
-          );
-        }
-      });
-
-      /*CornerstoneViewportService.subscribe(
+      CornerstoneViewportService.subscribe(
         CornerstoneViewportService.EVENTS.VIEWPORT_DATA_CHANGED,
         () => {
-          demonstrateMeasurementService(servicesManager);
+          window.parent.postMessage(
+            {
+              type: OHIFMessageType.IMAGE_READY,
+            },
+            '*'
+          );
         }
-      );*/
+      );
+
+      window.addEventListener('message', event => {
+        if (event.data.type === OHIFMessageType.SEND_MEASURE) {
+          const relatedPoints = event.data.points;
+          // Update measurements based on points
+          demonstrateMeasurementService(servicesManager, relatedPoints);
+        }
+      });
     },
     linkMeasurement: info => {
       window.parent.postMessage(
         {
-          type: 'link_measure',
+          type: OHIFMessageType.LINK_MEASURE,
           message: {
             elementType: info.toolName,
             uid: info.uid,
@@ -59,7 +60,7 @@ const commandsModule = ({ servicesManager }) => {
           const normalizedPoints = await createMeasurement(servicesManager, newPoints);
           window.parent.postMessage(
             {
-              type: 'create_measure',
+              type: OHIFMessageType.CREATE_MEASURE,
               message: {
                 points: normalizedPoints,
                 elementType: event.measurement.toolName,
@@ -77,17 +78,18 @@ const commandsModule = ({ servicesManager }) => {
         event.measurement.points.forEach(point => updatedPoints.push(point));
 
         const normalizedPoints = await createMeasurement(servicesManager, updatedPoints);
-
         dataToSend = {
           points: normalizedPoints,
+          pointIds: event?.measurement?.label.pointIds,
           elementType: event.measurement.toolName,
           uid: event.measurement.uid,
+          measurementId: event?.measurement?.label.measurementId,
         };
 
         if (normalizedPoints) {
           window.parent.postMessage(
             {
-              type: 'update_measure',
+              type: OHIFMessageType.UPDATE_MEASURE,
               message: dataToSend,
             },
             '*'
@@ -102,7 +104,7 @@ const commandsModule = ({ servicesManager }) => {
 
         window.parent.postMessage(
           {
-            type: 'delete_measure',
+            type: OHIFMessageType.DELETE_MEASURE,
             message: { uid },
           },
           '*'

@@ -10,12 +10,8 @@ const extension = {
   },
 
   onModeEnter: ({ extensionManager, servicesManager, commandsManager }) => {
-    console.log('onModeEnter', servicesManager);
-
-    const { measurementService } = servicesManager.services;
     commandsManager.runCommand('demonstrateMeasurementService');
 
-    measurementService.clearMeasurements();
     if (!onModeInit) {
       onModeInit = true;
       commandsManager.runCommand('createForms');
@@ -24,7 +20,6 @@ const extension = {
 
   onModeExit: ({ servicesManager, commandsManager }) => {
     const { measurementService } = servicesManager.services;
-    console.log('onModeExit', commandsManager.getContext());
     measurementService.reset();
   },
 

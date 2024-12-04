@@ -105,8 +105,8 @@ async function setMeasurementStyle() {
   });
 }
 
-export async function demonstrateMeasurementService(servicesManager, points) {
-  console.log('demonstrateMeasurementService piints:', points);
+export async function demonstrateMeasurementService(servicesManager, relatedPoints) {
+  console.log('demonstrateMeasurementService piints:', relatedPoints);
   const { ViewportGridService, CornerstoneViewportService } = servicesManager.services;
 
   const viewportId = ViewportGridService.getActiveViewportId();
@@ -127,10 +127,10 @@ export async function demonstrateMeasurementService(servicesManager, points) {
     return;
   }
 
-  points?.forEach(point => {
+  relatedPoints?.forEach(data => {
     try {
-      const normalizedX = point[0].x ? point[0].x : point[0].xOrigin;
-      const normalizedY = point[0].y ? point[0].y : point[0].yOrigin;
+      const normalizedX = data.points[0].x ? data.points[0].x : data.points[0].xOrigin;
+      const normalizedY = data.points[0].y ? data.points[0].y : data.points[0].yOrigin;
       const imageWidth = imageMetadata.dimensions[0];
       const imageHeight = imageMetadata.dimensions[1];
       const pixelSpacingX = imageMetadata.spacing[0];
@@ -149,8 +149,8 @@ export async function demonstrateMeasurementService(servicesManager, points) {
         orientationMatrix
       );
 
-      const normalizedX2 = point[1].x ? point[1].x : point[1].xOrigin;
-      const normalizedY2 = point[1].y ? point[1].y : point[1].yOrigin;
+      const normalizedX2 = data.points[1].x ? data.points[1].x : data.points[1].xOrigin;
+      const normalizedY2 = data.points[1].y ? data.points[1].y : data.points[1].yOrigin;
       const imageWidth2 = imageMetadata.dimensions[0];
       const imageHeight2 = imageMetadata.dimensions[1];
       const pixelSpacingX2 = imageMetadata.spacing[0];
@@ -169,12 +169,18 @@ export async function demonstrateMeasurementService(servicesManager, points) {
         orientationMatrix2
       );
 
+      const pointsId = data.points.map(point => point.id);
+
       cs3dTools.LengthTool.createAndAddAnnotation(viewport, {
         data: {
+          label: {
+            measurementId: data?.measurementId,
+            pointIds: pointsId,
+          },
           handles: {
             points: [dicomCoords, dicomCoords2],
-            headName: point[0].name,
-            tailName: point[1].name,
+            headName: data.points[0].name,
+            tailName: data.points[1].name,
           },
           cachedStats: {
             [`imageId:${imageId}`]: {
@@ -184,7 +190,6 @@ export async function demonstrateMeasurementService(servicesManager, points) {
           },
         },
       });
-
     } catch (error) {
       console.error('Error adding measurement:', error);
     }
@@ -192,7 +197,6 @@ export async function demonstrateMeasurementService(servicesManager, points) {
 
   setMeasurementStyle();
 }
-
 
 export async function createMeasurement(servicesManager, points) {
   const { ViewportGridService, CornerstoneViewportService } = servicesManager.services;
