@@ -3,7 +3,7 @@ name: Continuous Deployment PROD !!
 on:
   push:
     branches:
-      - 'deploy-auto-to-prod'
+      - 'prod'
 
 jobs:
   deploy:
