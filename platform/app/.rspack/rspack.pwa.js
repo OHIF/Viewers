@@ -60,13 +60,13 @@ module.exports = (env, argv) => {
       clean: true,
       filename: isProdBuild ? '[name].bundle.[chunkhash].js' : '[name].js',
       publicPath: PUBLIC_URL,
-      // devtoolModuleFilenameTemplate: function (info) {
-      //   if (isProdBuild) {
-      //     return `rspack:///${info.resourcePath}`;
-      //   } else {
-      //     return 'file:///' + encodeURI(info.absoluteResourcePath);
-      //   }
-      // },
+      devtoolModuleFilenameTemplate: function (info) {
+        if (isProdBuild) {
+          return `rspack:///${info.resourcePath}`;
+        } else {
+          return 'file:///' + encodeURI(info.absoluteResourcePath);
+        }
+      },
     },
     resolve: {
       modules: [

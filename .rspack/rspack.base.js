@@ -57,20 +57,18 @@ module.exports = (env, argv, { SRC_DIR, ENTRY }) => {
       publicPath: '/',
     },
     context: SRC_DIR,
-    stats: {
-      colors: true,
-      hash: true,
-      timings: true,
-      assets: true,
-      chunks: false,
-      chunkModules: false,
-      modules: false,
-      children: false,
-      warnings: true,
-    },
-    cache: {
-      type: 'filesystem',
-    },
+    // stats: {
+    //   colors: true,
+    //   hash: true,
+    //   timings: true,
+    //   assets: true,
+    //   chunks: false,
+    //   chunkModules: false,
+    //   modules: false,
+    //   children: false,
+    //   warnings: true,
+    // },
+    cache: true,
     module: {
       noParse: [/(dicomicc)/],
       rules: [
@@ -83,6 +81,8 @@ module.exports = (env, argv, { SRC_DIR, ENTRY }) => {
               parser: {
                 syntax: 'typescript',
                 tsx: true,
+                decorators: true,
+                dynamicImport: true,
               },
               transform: {
                 react: {
@@ -96,36 +96,41 @@ module.exports = (env, argv, { SRC_DIR, ENTRY }) => {
             },
           },
         },
-        // {
-        //   test: /\.svg$/,
-        //   type: 'asset/resource',
-        //   use: [
-        //     {
-        //       loader: '@svgr/webpack',
-        //       options: {
-        //         svgoConfig: {
-        //           plugins: [
-        //             {
-        //               name: 'preset-default',
-        //               params: {
-        //                 overrides: {
-        //                   removeViewBox: false,
-        //                 },
-        //               },
-        //             },
-        //           ],
-        //         },
-        //         prettier: false,
-        //         svgo: true,
-        //         titleProp: true,
-        //       },
-        //     },
-        //   ],
-        // },
         {
           test: /\.svg$/i,
           issuer: /\.[jt]sx?$/,
-          use: ['@svgr/webpack'],
+          oneOf: [
+            {
+              // For SVG imports ending with ?url
+              resourceQuery: /url/,
+              type: 'asset/resource',
+            },
+            {
+              // Default behavior: convert SVG to React component
+              use: [
+                {
+                  loader: '@svgr/webpack',
+                  options: {
+                    svgoConfig: {
+                      plugins: [
+                        {
+                          name: 'preset-default',
+                          params: {
+                            overrides: {
+                              removeViewBox: false,
+                            },
+                          },
+                        },
+                      ],
+                    },
+                    prettier: false,
+                    svgo: true,
+                    titleProp: true,
+                  },
+                },
+              ],
+            },
+          ],
         },
         {
           test: /\.css$/,
@@ -186,7 +191,6 @@ module.exports = (env, argv, { SRC_DIR, ENTRY }) => {
     },
     plugins: [
       new rspack.DefinePlugin(defineValues),
-      new rspack.CssExtractRspackPlugin({}),
       new rspack.ProvidePlugin({
         Buffer: ['buffer', 'Buffer'],
       }),
