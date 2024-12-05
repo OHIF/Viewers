@@ -49,7 +49,6 @@ test.describe('Crosshairs Test', async () => {
   test('should render the crosshairs correctly.', async ({ page }) => {
     await page.getByTestId('Layout').click();
     await page.locator('div').filter({ hasText: /^MPR$/ }).first().click();
-    await page.waitForTimeout(5000);
     await page.getByTestId('Crosshairs').click();
 
     await checkForScreenshot(page, page, screenShotPaths.crosshairs.crosshairsRendered);
@@ -58,7 +57,6 @@ test.describe('Crosshairs Test', async () => {
   test('should allow the user to rotate the crosshairs', async ({ page }) => {
     await page.getByTestId('Layout').click();
     await page.locator('div').filter({ hasText: /^MPR$/ }).first().click();
-    await page.waitForTimeout(5000);
     await page.getByTestId('Crosshairs').click();
 
     await rotateCrosshairs(page, '#svg-layer-mpr-axial', 3);
@@ -71,7 +69,6 @@ test.describe('Crosshairs Test', async () => {
   test('should allow the user to adjust the slab thickness', async ({ page }) => {
     await page.getByTestId('Layout').click();
     await page.locator('div').filter({ hasText: /^MPR$/ }).first().click();
-    await page.waitForTimeout(5000);
     await page.getByTestId('Crosshairs').click();
 
     await increaseSlabThickness(page, '#svg-layer-mpr-axial', 0, 'x');
@@ -86,7 +83,6 @@ test.describe('Crosshairs Test', async () => {
   }) => {
     await page.getByTestId('Layout').click();
     await page.locator('div').filter({ hasText: /^MPR$/ }).first().click();
-    await page.waitForTimeout(5000);
     await page.getByTestId('Crosshairs').click();
 
     await rotateCrosshairs(page, '#svg-layer-mpr-axial', 3);
@@ -101,7 +97,6 @@ test.describe('Crosshairs Test', async () => {
   test('should reset the crosshairs when a new displayset is loaded', async ({ page }) => {
     await page.getByTestId('Layout').click();
     await page.locator('div').filter({ hasText: /^MPR$/ }).first().click();
-    await page.waitForTimeout(5000);
     await page.getByTestId('Crosshairs').click();
 
     await rotateCrosshairs(page, '#svg-layer-mpr-axial', 0);
