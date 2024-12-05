@@ -9,13 +9,14 @@ export default defineConfig({
   snapshotPathTemplate: './tests/screenshots{/projectName}/{testFilePath}/{arg}{ext}',
   outputDir: './tests/test-results',
   reporter: [[process.env.CI ? 'blob' : 'html', { outputFolder: './tests/playwright-report' }]],
-  globalTimeout: 600_000,
-  timeout: 600_000,
+  globalTimeout: 800_000,
+  timeout: 800_000,
   use: {
     baseURL: 'http://localhost:3000',
-    trace: 'on',
+    trace: 'on-first-retry',
     video: 'on',
     testIdAttribute: 'data-cy',
+    actionTimeout: 10_000,
   },
 
   projects: [

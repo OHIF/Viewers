@@ -20,5 +20,6 @@ export async function visitStudy(
   await page.getByRole('button', { name: mode }).click();
   await page.waitForLoadState('domcontentloaded');
   await page.waitForLoadState('networkidle');
+  await page.waitForTimeout(5000);
   await page.waitForTimeout(delay);
 }
