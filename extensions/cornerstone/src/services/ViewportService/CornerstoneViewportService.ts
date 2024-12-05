@@ -1058,6 +1058,7 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
       // Store the current position presentations for each viewport.
       viewports.forEach(({ id: viewportId }) => {
         const presentation = this._getPositionPresentation(viewportId);
+
         // During a resize, the slice index should remain unchanged. This is a temporary fix for
         // a larger issue regarding the definition of slice index with slab thickness.
         // We need to revisit this to make it more robust and understandable.
