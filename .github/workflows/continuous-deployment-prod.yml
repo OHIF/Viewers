@@ -1,0 +1,36 @@
+name: Continuous Deployment PROD !!
+
+on:
+  push:
+    branches:
+      - 'deploy-auto-to-prod'
+
+jobs:
+  deploy:
+    name: Deploy on PROD
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set env variable
+      run: | 
+        echo "AWS_ACCESS_KEY_ID=${{ secrets.PROD_AWS_ACCESS_KEY_ID }}" >> $GITHUB_ENV
+        echo "AWS_SECRET_ACCESS_KEY=${{ secrets.PROD_AWS_SECRET_ACCESS_KEY }}" >> $GITHUB_ENV
+
+    - name: Install dependencies
+      run: yarn install && yarn run cli link-mode deemea-mode && yarn run cli link-extension deemea-extension
+        
+    - name: Create production build 
+      run: yarn build
+
+    - name: Remove files in AWS bucket
+      run: aws s3 rm s3://deemea-ohif-prod --recursive --region ${{ secrets.AWS_DEFAULT_REGION }}
+
+    - name: Copy build folder to AWS bucket
+      run: aws s3 cp platform/app/dist/ s3://deemea-ohif-prod --recursive --region ${{ secrets.AWS_DEFAULT_REGION }}
+    
+    - name: Create invalidation to not use Cloud Front cache
+      env: 
+        CLOUDFRONT_DISTRIBUTION_ID: $(aws cloudfront list-distributions --region ${{ secrets.AWS_DEFAULT_REGION }} | jq -r '.DistributionList.Items[] | select(.Aliases.Items[0] == "ohif.deemea.com").Id')
+      run: aws cloudfront create-invalidation --distribution-id ${{ env.CLOUDFRONT_DISTRIBUTION_ID }} --paths "/*" --region ${{ secrets.AWS_DEFAULT_REGION }}
