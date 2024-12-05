@@ -1,4 +1,4 @@
-const debugMode = !!(process.env.NODE_ENV !== 'production' && process.env.REACT_APP_I18N_DEBUG);
+const debugMode = false;
 
 const detectionOptions = {
   // order and from where user language should be detected

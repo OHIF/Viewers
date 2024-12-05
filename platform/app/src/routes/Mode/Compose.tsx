@@ -18,7 +18,6 @@ export default function Compose(props) {
     </React.Fragment>
   );
 }
-
 // https://juliuskoronci.medium.com/avoid-a-long-list-of-react-providers-c45a269d80c1
 Compose.propTypes = {
   components: PropTypes.array,
