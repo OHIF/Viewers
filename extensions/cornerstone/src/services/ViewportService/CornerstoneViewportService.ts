@@ -1061,9 +1061,7 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
         // During a resize, the slice index should remain unchanged. This is a temporary fix for
         // a larger issue regarding the definition of slice index with slab thickness.
         // We need to revisit this to make it more robust and understandable.
-        if (presentation?.viewReference) {
-          delete presentation.viewReference.sliceIndex;
-        }
+        delete presentation.viewReference?.sliceIndex;
         this.beforeResizePositionPresentations.set(viewportId, presentation);
       });
 
