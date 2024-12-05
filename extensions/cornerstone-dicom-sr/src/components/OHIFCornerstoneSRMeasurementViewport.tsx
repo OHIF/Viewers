@@ -16,7 +16,6 @@ const SR_TOOLGROUP_BASE_NAME = 'SRToolGroup';
 
 function OHIFCornerstoneSRMeasurementViewport(props: withAppTypes) {
   const {
-    commandsManager,
     children,
     dataSource,
     displaySets,
@@ -202,9 +201,12 @@ function OHIFCornerstoneSRMeasurementViewport(props: withAppTypes) {
       return null;
     }
 
-    const initialImageIndex = activeImageDisplaySetData.images.findIndex(
-      image => image.imageId === measurement.imageId
-    );
+
+    const initialImageIndex = activeImageDisplaySetData.isMultiFrame
+      ? 0
+      : activeImageDisplaySetData.images.findIndex(
+          image => image.imageId === measurement.imageId
+        );
 
     return (
       <Component
