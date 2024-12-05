@@ -5,6 +5,7 @@ import dcmjs from 'dcmjs';
 import { adaptersSR } from '@cornerstonejs/adapters';
 
 import getFilteredCornerstoneToolState from './utils/getFilteredCornerstoneToolState';
+import hydrateStructuredReport from './utils/hydrateStructuredReport';
 
 const { MeasurementReport } = adaptersSR.Cornerstone3D;
 const { log } = OHIF;
@@ -41,8 +42,8 @@ const _generateReport = (measurementData, additionalFindingTypes, options = {}) 
 };
 
 const commandsModule = (props: withAppTypes) => {
-  const { servicesManager } = props;
-  const { customizationService } = servicesManager.services;
+  const { servicesManager, extensionManager } = props;
+  const { customizationService, displaySetService, viewportGridService } = servicesManager.services;
   const actions = {
     /**
      *
@@ -123,6 +124,32 @@ const commandsModule = (props: withAppTypes) => {
         throw new Error(error.message || 'Error while saving the measurements.');
       }
     },
+
+    loadMeasurements: ({
+      loadMeasurementsFn,
+      loadMeasurementsEventName,
+      loadMeasurementsEventArgs,
+    }) => {
+      if (loadMeasurementsFn) {
+        loadMeasurementsFn(loadMeasurementsEventName, loadMeasurementsEventArgs);
+        return;
+      }
+
+      const { SeriesInstanceUIDs } = hydrateStructuredReport(
+        { servicesManager, extensionManager },
+        loadMeasurementsEventArgs.displaySetInstanceUID
+      );
+
+      const displaySets = displaySetService.getDisplaySetsForSeries(SeriesInstanceUIDs[0]);
+      if (displaySets.length) {
+        viewportGridService.setDisplaySetsForViewports([
+          {
+            viewportId: viewportGridService.getActiveViewportId(),
+            displaySetInstanceUIDs: [displaySets[0].displaySetInstanceUID],
+          },
+        ]);
+      }
+    },
   };
 
   const definitions = {
@@ -131,6 +158,9 @@ const commandsModule = (props: withAppTypes) => {
     },
     storeMeasurements: {
       commandFn: actions.storeMeasurements,
+    },
+    loadMeasurements: {
+      commandFn: actions.loadMeasurements,
     },
   };
 

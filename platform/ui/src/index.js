@@ -116,6 +116,7 @@ export {
   Viewport,
   ViewportActionArrows,
   ViewportActionBar,
+  ViewportActionButton,
   ViewportActionCorners,
   ViewportActionCornersLocations,
   ViewportDownloadForm,
