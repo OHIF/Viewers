@@ -107,7 +107,7 @@ declare global {
       maxNumberOfWebWorkers?: number;
       acceptHeader?: string[];
       investigationalUseDialog?: {
-        option: 'always' | 'never' | 'configure';
+        option: 'never'; //option: 'always' | 'never' | 'configure';
         days?: number;
       };
       groupEnabledModesFirst?: boolean;

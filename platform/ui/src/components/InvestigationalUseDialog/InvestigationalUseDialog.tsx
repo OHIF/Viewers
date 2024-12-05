@@ -11,7 +11,7 @@ export enum showDialogOption {
 
 const InvestigationalUseDialog = ({
   dialogConfiguration = {
-    option: showDialogOption.AlwaysShowDialog,
+    option: showDialogOption.NeverShowDialog,
   },
 }) => {
   const { option, days } = dialogConfiguration;
@@ -79,7 +79,7 @@ const InvestigationalUseDialog = ({
                 className="text-primary-active cursor-pointer"
                 onClick={() => window.open('https://ohif.org/', '_blank')}
               >
-                Learn more about OHIF Viewer
+                Learn more about Viewer
               </span>
             </div>
           </div>
@@ -104,4 +104,4 @@ InvestigationalUseDialog.propTypes = {
   }),
 };
 
-//export default InvestigationalUseDialog;
+export default InvestigationalUseDialog;

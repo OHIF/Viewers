@@ -1,7 +1,7 @@
 {
-  "name": "OHIF Viewer",
+  "name": "DICOM Viewer",
   "short_name": "Viewer",
-  "description": "OHIF Viewer",
+  "description": "DICOM Viewer",
   "dir": "auto",
   "lang": "en-US",
   "orientation": "any",
