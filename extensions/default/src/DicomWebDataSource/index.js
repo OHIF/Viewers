@@ -392,7 +392,8 @@ function createDicomWebApi(dicomWebConfig, servicesManager) {
 
           if (Array.isArray(value) && typeof value[0] === 'object') {
             // Fix recursive values
-            value.forEach(child => addRetrieveBulkDataNaturalized(child, instance));
+            const validValues = value.filter(Boolean);
+            validValues.forEach(child => addRetrieveBulkDataNaturalized(child, instance));
             continue;
           }
 
