@@ -9,7 +9,6 @@ import { StudyBrowser } from '@ohif/ui-next';
 import { useTrackedMeasurements } from '../../getContextModule';
 import { Separator } from '@ohif/ui-next';
 import { PanelStudyBrowserHeader } from '@ohif/extension-default';
-import { useAppConfig } from '@state';
 import { defaultActionIcons, defaultViewPresets } from './constants';
 
 const { formatDate, createStudyBrowserTabs } = utils;
@@ -389,6 +388,29 @@ export default function PanelStudyBrowserTracking({
     }
   }
 
+  const _launchMultiMonitor = (studyInstanceUID, screenDelta) => {
+    commandsManager.run('multimonitor', {
+      studyInstanceUID,
+      screenDelta,
+      activeStudyUID: studyInstanceUID,
+      fallback: () => _handleStudyClick(studyInstanceUID),
+      commands: [
+        {
+          commandName: 'loadStudy',
+          commandOptions: {
+            protocolId: '@ohif/mnGrid',
+          },
+        },
+        {
+          commandName: 'setHangingProtocol',
+          commandOptions: {
+            protocolId: '@ohif/mnGrid',
+          },
+        },
+      ],
+    });
+  };
+
   useEffect(() => {
     if (jumpToDisplaySet) {
       // Get element by displaySetInstanceUID
@@ -511,6 +533,7 @@ export default function PanelStudyBrowserTracking({
         activeTabName={activeTabName}
         expandedStudyInstanceUIDs={expandedStudyInstanceUIDs}
         onClickStudy={_handleStudyClick}
+        onClickStudyInfo={_launchMultiMonitor}
         onClickTab={clickedTabName => {
           setActiveTabName(clickedTabName);
         }}

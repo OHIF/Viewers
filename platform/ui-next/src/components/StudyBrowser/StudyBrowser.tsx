@@ -24,6 +24,7 @@ const StudyBrowser = ({
   expandedStudyInstanceUIDs,
   onClickTab = noop,
   onClickStudy = noop,
+  onClickStudyInfo = onClickStudy,
   onClickThumbnail = noop,
   onDoubleClickThumbnail = noop,
   onClickUntrack = noop,
@@ -54,6 +55,10 @@ const StudyBrowser = ({
               isActive={isExpanded}
               onClick={() => {
                 onClickStudy(studyInstanceUid);
+              }}
+              onClickStudyInfo={e => {
+                onClickStudyInfo(studyInstanceUid);
+                e.stopPropagation();
               }}
               onClickThumbnail={onClickThumbnail}
               onDoubleClickThumbnail={onDoubleClickThumbnail}
