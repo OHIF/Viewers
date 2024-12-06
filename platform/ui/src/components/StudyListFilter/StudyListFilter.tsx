@@ -16,6 +16,7 @@ const StudyListFilter = ({
   numOfStudies,
   onUploadClick,
   getDataSourceConfigurationComponent,
+  getDataSourceSelectorComponent,
 }) => {
   const { t } = useTranslation('StudyList');
   const { sortBy, sortDirection } = filterValues;
@@ -41,6 +42,7 @@ const StudyListFilter = ({
                 >
                   {t('StudyList')}
                 </Typography>
+                {getDataSourceSelectorComponent && getDataSourceSelectorComponent()}
                 {getDataSourceConfigurationComponent && getDataSourceConfigurationComponent()}
                 {onUploadClick && (
                   <div
@@ -139,6 +141,7 @@ StudyListFilter.propTypes = {
   isFiltering: PropTypes.bool.isRequired,
   onUploadClick: PropTypes.func,
   getDataSourceConfigurationComponent: PropTypes.func,
+  getDataSourceSelectorComponent: PropTypes.func,
 };
 
 export default StudyListFilter;

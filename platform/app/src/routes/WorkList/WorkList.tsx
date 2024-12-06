@@ -529,6 +529,8 @@ function WorkList({
 
   const { component: dataSourceConfigurationComponent } =
     customizationService.get('ohif.dataSourceConfigurationComponent') ?? {};
+  const { component: dataSourceSelectorComponent } =
+    customizationService.get('ohif.dataSourceSelectorComponent') ?? {};
 
   return (
     <div className="flex h-screen flex-col bg-black">
@@ -541,7 +543,7 @@ function WorkList({
       />
       <Onboarding />
       <InvestigationalUseDialog dialogConfiguration={appConfig?.investigationalUseDialog} />
-      <div className="flex flex-col h-full overflow-y-auto">
+      <div className="flex h-full flex-col overflow-y-auto">
         <ScrollArea>
           <div className="flex grow flex-col">
             <StudyListFilter
@@ -556,6 +558,9 @@ function WorkList({
                 dataSourceConfigurationComponent
                   ? () => dataSourceConfigurationComponent()
                   : undefined
+              }
+              getDataSourceSelectorComponent={
+                dataSourceSelectorComponent ? () => dataSourceSelectorComponent() : undefined
               }
             />
           </div>
