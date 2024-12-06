@@ -1,4 +1,5 @@
 import { vec3 } from 'gl-matrix';
+import { dicomSplit } from './dicomSplit';
 
 /**
  * Combine the Per instance frame data, the shared frame data
@@ -16,23 +17,13 @@ const combineFrameInstance = (frame, instance) => {
     SharedFunctionalGroupsSequence,
     NumberOfFrames,
     SpacingBetweenSlices,
+    ImageType,
   } = instance;
+
+  instance.ImageType = dicomSplit(ImageType);
 
   if (PerFrameFunctionalGroupsSequence || NumberOfFrames > 1) {
     const frameNumber = Number.parseInt(frame || 1);
-    const shared = SharedFunctionalGroupsSequence
-      ? Object.values(SharedFunctionalGroupsSequence[0])
-          .filter(Boolean)
-          .map(it => it[0])
-          .filter(it => typeof it === 'object')
-      : [];
-
-    const perFrame = PerFrameFunctionalGroupsSequence
-      ? Object.values(PerFrameFunctionalGroupsSequence[frameNumber - 1])
-          .filter(Boolean)
-          .map(it => it[0])
-          .filter(it => typeof it === 'object')
-      : [];
 
     // this is to fix NM multiframe datasets with position and orientation
     // information inside DetectorInformationSequence
@@ -73,27 +64,51 @@ const combineFrameInstance = (frame, instance) => {
         ImagePositionPatientToUse = [position[0], position[1], position[2]];
       }
     }
-    console.debug('🚀 ~ ImagePositionPatientToUse:', ImagePositionPatientToUse);
-
-    const newInstance = Object.assign(instance, { frameNumber: frameNumber });
-
-    // merge the shared first then the per frame to override
-    [...shared, ...perFrame].forEach(item => {
-      Object.entries(item).forEach(([key, value]) => {
-        newInstance[key] = value;
-      });
-    });
-
-    // Todo: we should cache this combined instance somewhere, maybe add it
-    // back to the dicomMetaStore so we don't have to do this again.
-    return {
-      ...newInstance,
-      ImagePositionPatient: ImagePositionPatientToUse ??
-        newInstance.ImagePositionPatient ?? [0, 0, frameNumber],
-    };
+    const sharedInstance = createCombinedValue(instance, SharedFunctionalGroupsSequence?.[0]);
+    const newInstance = createCombinedValue(
+      sharedInstance,
+      PerFrameFunctionalGroupsSequence?.[frameNumber]
+    );
+    newInstance.ImagePositionPatient = ImagePositionPatientToUse ??
+      newInstance.ImagePositionPatient ?? [0, 0, frameNumber];
+    newInstance.frameNumber = frameNumber;
+    return newInstance;
   } else {
     return instance;
   }
 };
+
+function createCombinedValue(parent, functionalGroups) {
+  const newInstance = Object.create(parent);
+  if (!functionalGroups) {
+    return newInstance;
+  }
+  if (functionalGroups._sharedValue) {
+    return functionalGroups._sharedValue;
+  }
+  const shared = functionalGroups
+    ? Object.values(functionalGroups)
+        .filter(Boolean)
+        .map(it => it[0])
+        .filter(it => typeof it === 'object')
+    : [];
+
+  // merge the shared first then the per frame to override
+  [...shared].forEach(item => {
+    if (item.SOPInstanceUID) {
+      // This sub-item is a previous value information item, so don't merge it
+      return;
+    }
+    Object.entries(item).forEach(([key, value]) => {
+      newInstance[key] = value;
+    });
+  });
+  Object.defineProperty(functionalGroups, '_sharedValue', {
+    value: newInstance,
+    writable: false,
+    enumerable: false,
+  });
+  return newInstance;
+}
 
 export default combineFrameInstance;
