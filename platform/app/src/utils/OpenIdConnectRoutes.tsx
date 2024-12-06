@@ -171,6 +171,15 @@ function OpenIdConnectRoutes({ oidc, routerBasename, userAuthenticationService }
     sessionStorage.setItem('ohif-redirect-to', JSON.stringify({ pathname, search }));
   }
 
+  useEffect(() => {
+    const user = JSON.parse(
+      sessionStorage.getItem(Object.keys(sessionStorage).find(k => k.startsWith('oidc')))
+    );
+    if (user) {
+      userAuthenticationService.setUser(user);
+    }
+  }, []);
+
   return (
     <Routes>
       <Route
