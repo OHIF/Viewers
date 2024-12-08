@@ -56,7 +56,7 @@ COPY --parents ./addOns/package.json ./addOns/*/*/package.json ./extensions/*/pa
 # Run the install before copying the rest of the files
 RUN yarn install
 # Copy the local directory
-COPY --link --exclude=node_modules --exclude=yarn.lock --exclude=package.json . .
+COPY --link --exclude=node_modules --exclude=yarn.lock --exclude=package.json --exclude=Dockerfile . .
 # Do a second install to finalize things after the copy
 RUN yarn install
 
@@ -64,8 +64,14 @@ RUN yarn install
 # After install it should hopefully be stable until the local directory changes
 ENV QUICK_BUILD true
 # ENV GENERATE_SOURCEMAP=false
-ENV REACT_APP_CONFIG=config/default.js
+ARG REACT_APP_CONFIG=config/default.js
+ARG PUBLIC_URL
+
 RUN yarn run build
+
+# Precompress files
+RUN chmod u+x .docker/compressDist.sh
+RUN ./.docker/compressDist.sh
 
 # Stage 3: Bundle the built application into a Docker container
 # which runs Nginx using Alpine Linux
