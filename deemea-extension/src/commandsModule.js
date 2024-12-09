@@ -111,6 +111,14 @@ const commandsModule = ({ servicesManager }) => {
         );
       }
     },
+    resetPoints: () => {
+      window.parent.postMessage(
+        {
+          type: OHIFMessageType.RESET_POINTS,
+        },
+        '*'
+      );
+    },
   };
 
   return {
@@ -128,6 +136,9 @@ const commandsModule = ({ servicesManager }) => {
       },
       deleteMeasurement: {
         commandFn: actions.deleteMeasurement,
+      },
+      resetPoints: {
+        commandFn: actions.resetPoints,
       },
     },
     defaultContext: 'VIEWER',
