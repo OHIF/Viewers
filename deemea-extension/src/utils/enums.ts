@@ -5,4 +5,5 @@ export enum OHIFMessageType {
   LINK_MEASURE = 'link_measure',
   IMAGE_READY = 'image_ready',
   SEND_MEASURE = 'send_measure',
+  RESET_POINTS = 'reset_points',
 }

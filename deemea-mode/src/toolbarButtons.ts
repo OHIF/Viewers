@@ -14,6 +14,18 @@ export const setToolActiveToolbar = {
 
 const toolbarButtons: Button[] = [
   {
+    id: 'TestButton',
+    uiType: 'ohif.radioGroup',
+    props: {
+      icon: 'icon-transferring',
+      label: 'Reset Points',
+      commands: {
+        commandName: 'resetPoints',
+        context: 'VIEWER',
+      },
+    },
+  },
+  {
     id: 'MeasurementTools',
     uiType: 'ohif.splitButton',
     props: {

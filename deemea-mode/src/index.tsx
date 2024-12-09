@@ -32,6 +32,13 @@ const extensionDependencies = {
   'deemea-extension': '^0.0.1',
 };
 
+const customButtons = [
+  {
+    id: 'DeemeaButton',
+    uiType: 'ohif.buttonGroup',
+  },
+];
+
 function modeFactory({ modeConfiguration }) {
   return {
     /**
@@ -50,6 +57,7 @@ function modeFactory({ modeConfiguration }) {
      * Services and other resources.
      */
     onModeEnter: async ({ servicesManager, extensionManager, commandsManager }: withAppTypes) => {
+      console.log('onModeEnter', commandsManager);
       const { measurementService, toolbarService, toolGroupService, cornerstoneViewportService } =
         servicesManager.services;
 
@@ -65,6 +73,7 @@ function modeFactory({ modeConfiguration }) {
 
       toolbarService.addButtons(toolbarButtons);
       toolbarService.createButtonSection('primary', [
+        'TestButton',
         'MeasurementTools',
         'Zoom',
         'WindowLevel',
