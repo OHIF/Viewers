@@ -52,12 +52,11 @@ const commandsModule = ({ servicesManager }) => {
       const { measurementService } = servicesManager.services;
 
       measurementService.subscribe(measurementService.EVENTS.MEASUREMENT_ADDED, async event => {
-        const newPoints = [];
-
-        event.measurement.points.forEach(point => newPoints.push(point));
-
-        if (newPoints) {
-          const normalizedPoints = await createMeasurement(servicesManager, newPoints);
+        if (event.measurement.points) {
+          const normalizedPoints = await createMeasurement(
+            servicesManager,
+            event.measurement.points
+          );
           window.parent.postMessage(
             {
               type: OHIFMessageType.CREATE_MEASURE,
@@ -74,13 +73,27 @@ const commandsModule = ({ servicesManager }) => {
 
       let dataToSend = [];
       measurementService.subscribe(measurementService.EVENTS.MEASUREMENT_UPDATED, async event => {
-        const updatedPoints = [];
-        event.measurement.points.forEach(point => updatedPoints.push(point));
+        const normalizedPoints = await createMeasurement(servicesManager, event.measurement.points);
+        const matchedPoints = [];
+        if (event?.measurement?.label?.predicted) {
+          event?.measurement?.label.pointsInfo.forEach((point, index) => {
+            matchedPoints.push({
+              ...point,
+              x: normalizedPoints[index][0],
+              y: normalizedPoints[index][1],
+            });
+          });
+        } else {
+          event.measurement.points.forEach((point, index) => {
+            matchedPoints.push({
+              x: normalizedPoints[index][0],
+              y: normalizedPoints[index][1],
+            });
+          });
+        }
 
-        const normalizedPoints = await createMeasurement(servicesManager, updatedPoints);
         dataToSend = {
-          points: normalizedPoints,
-          pointIds: event?.measurement?.label.pointIds,
+          points: matchedPoints,
           elementType: event.measurement.toolName,
           uid: event.measurement.uid,
           measurementId: event?.measurement?.label.measurementId,

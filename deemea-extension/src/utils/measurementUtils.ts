@@ -169,13 +169,12 @@ export async function demonstrateMeasurementService(servicesManager, relatedPoin
         orientationMatrix2
       );
 
-      const pointsId = data.points.map(point => point.id);
-
       cs3dTools.LengthTool.createAndAddAnnotation(viewport, {
         data: {
           label: {
             measurementId: data?.measurementId,
-            pointIds: pointsId,
+            pointsInfo: data.points,
+            predicted: true,
           },
           handles: {
             points: [dicomCoords, dicomCoords2],
