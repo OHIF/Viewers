@@ -1,5 +1,6 @@
 import * as cs3dTools from '@cornerstonejs/tools';
 import { axis } from './axisColors';
+import { Palette } from './palette';
 
 function convertFromDicomCoordinates(
   dicomX,
@@ -82,16 +83,25 @@ async function matchNameWithAxis(
 async function setMeasurementStyle() {
   const annotations = cs3dTools.annotation.state.getAllAnnotations();
   annotations?.map(async annotation => {
-    const axisColor = await matchNameWithAxis(
-      annotation.data.handles?.headName,
-      annotation.data.handles?.tailName
-    );
     let style = {
       color: '#00ff00',
       colorHighlighted: '#fff000',
       colorSelected: '#fff000',
       lineDash: '',
     };
+    if (annotation.data.handles?.type === 'rectangle') {
+      style = {
+        color: Palette.Turquoise,
+        colorHighlighted: Palette.DarkTurquoise,
+        colorSelected: Palette.Turquoise,
+        lineDash: '',
+      };
+    }
+    const axisColor = await matchNameWithAxis(
+      annotation.data.handles?.headName,
+      annotation.data.handles?.tailName
+    );
+
     if (axisColor) {
       style = {
         ...style,
@@ -106,11 +116,9 @@ async function setMeasurementStyle() {
 }
 
 export async function demonstrateMeasurementService(servicesManager, relatedPoints) {
-  console.log('demonstrateMeasurementService piints:', relatedPoints);
   const { ViewportGridService, CornerstoneViewportService } = servicesManager.services;
 
   const viewportId = ViewportGridService.getActiveViewportId();
-  console.log(viewportId);
   const viewport = CornerstoneViewportService.getCornerstoneViewport(viewportId);
 
   const imageId = viewport.getCurrentImageId();
@@ -128,9 +136,20 @@ export async function demonstrateMeasurementService(servicesManager, relatedPoin
   }
 
   relatedPoints?.forEach(data => {
-    try {
-      const normalizedX = data.points[0].x ? data.points[0].x : data.points[0].xOrigin;
-      const normalizedY = data.points[0].y ? data.points[0].y : data.points[0].yOrigin;
+    if (data.points.length === 2) {
+      createLength(viewport, imageMetadata, imageId, data);
+    } else if (data.points.length === 4) {
+      createRectangleROI(viewport, imageMetadata, imageId, data);
+    }
+  });
+  setMeasurementStyle();
+}
+
+export function createRectangleROI(viewport, imageMetadata, imageId, data) {
+  try {
+    const normalizedPoints = data.points.map(point => {
+      const normalizedX = point.x ? point.x : point.xOrigin;
+      const normalizedY = point.y ? point.y : point.yOrigin;
       const imageWidth = imageMetadata.dimensions[0];
       const imageHeight = imageMetadata.dimensions[1];
       const pixelSpacingX = imageMetadata.spacing[0];
@@ -138,7 +157,7 @@ export async function demonstrateMeasurementService(servicesManager, relatedPoin
       const imagePositionPatient = imageMetadata.origin;
       const orientationMatrix = imageMetadata.direction;
 
-      const dicomCoords = convertToDicomCoordinates(
+      return convertToDicomCoordinates(
         normalizedX,
         normalizedY,
         imageWidth,
@@ -148,60 +167,145 @@ export async function demonstrateMeasurementService(servicesManager, relatedPoin
         imagePositionPatient,
         orientationMatrix
       );
+    });
 
-      const normalizedX2 = data.points[1].x ? data.points[1].x : data.points[1].xOrigin;
-      const normalizedY2 = data.points[1].y ? data.points[1].y : data.points[1].yOrigin;
-      const imageWidth2 = imageMetadata.dimensions[0];
-      const imageHeight2 = imageMetadata.dimensions[1];
-      const pixelSpacingX2 = imageMetadata.spacing[0];
-      const pixelSpacingY2 = imageMetadata.spacing[1];
-      const imagePositionPatient2 = imageMetadata.origin;
-      const orientationMatrix2 = imageMetadata.direction;
-
-      const dicomCoords2 = convertToDicomCoordinates(
-        normalizedX2,
-        normalizedY2,
-        imageWidth2,
-        imageHeight2,
-        pixelSpacingX2,
-        pixelSpacingY2,
-        imagePositionPatient2,
-        orientationMatrix2
-      );
-
-      cs3dTools.LengthTool.createAndAddAnnotation(viewport, {
-        data: {
-          label: {
-            measurementId: data?.measurementId,
-            pointsInfo: data.points,
-            predicted: true,
-          },
-          handles: {
-            points: [dicomCoords, dicomCoords2],
-            headName: data.points[0].name,
-            tailName: data.points[1].name,
-          },
+    cs3dTools.RectangleROITool.createAndAddAnnotation(viewport, {
+      data: {
+        label: {
+          measurementId: data?.measurementId,
+          pointsInfo: data.points,
+          predicted: true,
+        },
+        handles: {
+          points: normalizedPoints,
+          type: 'rectangle',
+          activeHandleIndex: null,
           cachedStats: {
             [`imageId:${imageId}`]: {
-              length: 'X',
-              unit: 'px',
+              modality: 'CT',
+              area: 0,
+              modalityUnit: 'HU',
+              max: 0,
+              mean: 0,
+              stdDev: 0,
+              statsArray: [
+                {
+                  name: 'max',
+                  label: 'Max Pixel',
+                  value: 988,
+                  unit: null,
+                },
+                {
+                  name: 'mean',
+                  label: 'Mean Pixel',
+                  value: -170.3221583652618,
+                  unit: null,
+                },
+                {
+                  name: 'stdDev',
+                  label: 'Standard Deviation',
+                  value: 456.7336608514075,
+                  unit: null,
+                },
+                {
+                  name: 'stdDev',
+                  label: 'Standard Deviation',
+                  value: 456.7336608514075,
+                  unit: null,
+                },
+                {
+                  name: 'count',
+                  label: 'Pixel Count',
+                  value: 6264,
+                  unit: null,
+                },
+              ],
             },
           },
         },
-      });
-    } catch (error) {
-      console.error('Error adding measurement:', error);
-    }
-  });
+      },
+    });
+  } catch (error) {
+    console.error('Error adding measurement:', error);
+  }
+}
 
-  setMeasurementStyle();
+export function createLength(viewport, imageMetadata, imageId, data) {
+  if (!imageMetadata) {
+    console.error('No image metadata found');
+    return;
+  }
+
+  try {
+    const normalizedX = data.points[0].x ? data.points[0].x : data.points[0].xOrigin;
+    const normalizedY = data.points[0].y ? data.points[0].y : data.points[0].yOrigin;
+    const imageWidth = imageMetadata.dimensions[0];
+    const imageHeight = imageMetadata.dimensions[1];
+    const pixelSpacingX = imageMetadata.spacing[0];
+    const pixelSpacingY = imageMetadata.spacing[1];
+    const imagePositionPatient = imageMetadata.origin;
+    const orientationMatrix = imageMetadata.direction;
+
+    const dicomCoords = convertToDicomCoordinates(
+      normalizedX,
+      normalizedY,
+      imageWidth,
+      imageHeight,
+      pixelSpacingX,
+      pixelSpacingY,
+      imagePositionPatient,
+      orientationMatrix
+    );
+
+    const normalizedX2 = data.points[1].x ? data.points[1].x : data.points[1].xOrigin;
+    const normalizedY2 = data.points[1].y ? data.points[1].y : data.points[1].yOrigin;
+    const imageWidth2 = imageMetadata.dimensions[0];
+    const imageHeight2 = imageMetadata.dimensions[1];
+    const pixelSpacingX2 = imageMetadata.spacing[0];
+    const pixelSpacingY2 = imageMetadata.spacing[1];
+    const imagePositionPatient2 = imageMetadata.origin;
+    const orientationMatrix2 = imageMetadata.direction;
+
+    const dicomCoords2 = convertToDicomCoordinates(
+      normalizedX2,
+      normalizedY2,
+      imageWidth2,
+      imageHeight2,
+      pixelSpacingX2,
+      pixelSpacingY2,
+      imagePositionPatient2,
+      orientationMatrix2
+    );
+
+    cs3dTools.LengthTool.createAndAddAnnotation(viewport, {
+      data: {
+        handles: {
+          points: [dicomCoords, dicomCoords2],
+          headName: data.points[0].name,
+          tailName: data.points[1].name,
+        },
+        label: {
+          measurementId: data?.measurementId,
+          pointsInfo: data.points,
+          predicted: true,
+        },
+        cachedStats: {
+          [`imageId:${imageId}`]: {
+            length: 'X',
+            unit: 'px',
+          },
+        },
+      },
+    });
+  } catch (error) {
+    console.error('Error adding measurement:', error);
+  }
 }
 
 export async function createMeasurement(servicesManager, points) {
   const { ViewportGridService, CornerstoneViewportService } = servicesManager.services;
 
   const viewportId = ViewportGridService.getActiveViewportId();
-  console.log(viewportId);
   const viewport = CornerstoneViewportService.getCornerstoneViewport(viewportId);
 
   const imageId = viewport.getCurrentImageId();
