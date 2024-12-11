@@ -32,6 +32,14 @@ oidc: [
 ]
 ```
 
+Ensure that you have granted the correct permissions to your app by selecting Dicom.ReadWrite in the Permission Management section in Azure:
+
+![alt text](<../assets/img/azure1.png>)
+
+Your app's client ID and tenant ID are available on the app's Overview page:
+
+![alt text](<../assets/img/azure2.png>)
+
 #### Parameters:
 - **redirect_uri**: The URL where users are redirected after successful authentication.
 - **response_type**: Specifies the authentication response type (`id_token` and `token`).
@@ -68,6 +76,10 @@ Update the data source configuration file with your Azure Healthcare APIs detail
   }
 }
 ```
+
+The DICOM service endpoint can be located in the DICOM Service dashboard within the Azure portal:
+
+![alt text](<../assets/img/azure3.png>)
 
 #### Parameters:
 - **qidoRoot**: Base URL for QIDO-RS queries.
