@@ -106,11 +106,9 @@ async function setMeasurementStyle() {
 }
 
 export async function demonstrateMeasurementService(servicesManager, relatedPoints) {
-  console.log('demonstrateMeasurementService piints:', relatedPoints);
   const { ViewportGridService, CornerstoneViewportService } = servicesManager.services;
 
   const viewportId = ViewportGridService.getActiveViewportId();
-  console.log(viewportId);
   const viewport = CornerstoneViewportService.getCornerstoneViewport(viewportId);
 
   const imageId = viewport.getCurrentImageId();
