@@ -95,10 +95,13 @@ function WorkList({
   const sortModifier = sortDirection === 'descending' ? 1 : -1;
   const defaultSortValues =
     shouldUseDefaultSort && canSort ? { sortBy: 'studyDate', sortDirection: 'ascending' } : {};
-  const sortedStudies = studies;
 
-  if (canSort) {
-    studies.sort((s1, s2) => {
+  const sortedStudies = useMemo(() => {
+    if (!canSort) {
+      return studies;
+    }
+
+    return [...studies].sort((s1, s2) => {
       if (shouldUseDefaultSort) {
         const ascendingSortModifier = -1;
         return _sortStringDates(s1, s2, ascendingSortModifier);
@@ -121,7 +124,7 @@ function WorkList({
 
       return 0;
     });
-  }
+  }, [canSort, studies, shouldUseDefaultSort, sortBy, sortModifier]);
 
   // ~ Rows & Studies
   const [expandedRows, setExpandedRows] = useState([]);
@@ -541,7 +544,7 @@ function WorkList({
       />
       <Onboarding />
       <InvestigationalUseDialog dialogConfiguration={appConfig?.investigationalUseDialog} />
-      <div className="flex flex-col h-full overflow-y-auto">
+      <div className="flex h-full flex-col overflow-y-auto">
         <ScrollArea>
           <div className="flex grow flex-col">
             <StudyListFilter
