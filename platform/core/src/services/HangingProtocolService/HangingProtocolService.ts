@@ -415,6 +415,8 @@ export default class HangingProtocolService extends PubSubService {
       displaySets,
     });
     this._setProtocol(matchedProtocol);
+
+    this._commandsManager.run(matchedProtocol?.callbacks?.onProtocolEnter);
   }
 
   /**
