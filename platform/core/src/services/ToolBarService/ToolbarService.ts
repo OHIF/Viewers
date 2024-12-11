@@ -452,7 +452,7 @@ export default class ToolbarService extends PubSubService {
 
     const buttonType = buttonTypes[uiType];
 
-    if (!buttonType) {
+    if (!buttonType && !component) {
       return;
     }
 

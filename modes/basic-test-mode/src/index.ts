@@ -102,6 +102,7 @@ function modeFactory() {
         'Crosshairs',
         'MoreTools',
       ]);
+      toolbarService.createButtonSection('loadMeasurements', ['LoadMeasurements']);
     },
     onModeExit: ({ servicesManager }: withAppTypes) => {
       const {

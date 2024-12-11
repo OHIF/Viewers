@@ -9,6 +9,7 @@ import toolNames from './tools/toolNames';
 import hydrateStructuredReport from './utils/hydrateStructuredReport';
 import createReferencedImageDisplaySet from './utils/createReferencedImageDisplaySet';
 import Enums from './enums';
+import { commandsManager } from 'platform/app/src/App';
 
 const Component = React.lazy(() => {
   return import(/* webpackPrefetch: true */ './components/OHIFCornerstoneSRViewport');
@@ -40,10 +41,11 @@ const dicomSRExtension = {
    * @param {object} [configuration={}]
    * @param {object|array} [configuration.csToolsConfig] - Passed directly to `initCornerstoneTools`
    */
-  getViewportModule({ servicesManager, extensionManager }) {
+  getViewportModule({ servicesManager, extensionManager, commandsManager }) {
     const ExtendedOHIFCornerstoneSRViewport = props => {
       return (
         <OHIFCornerstoneSRViewport
+          commandsManager={commandsManager}
           servicesManager={servicesManager}
           extensionManager={extensionManager}
           {...props}
