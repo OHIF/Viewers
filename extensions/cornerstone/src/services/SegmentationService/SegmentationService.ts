@@ -441,8 +441,9 @@ class SegmentationService extends PubSubService {
 
       const segmentIndex = Number(SegmentNumber);
 
-      const imageCentroidXYZ = segDisplaySet.centroids.get(index).image || { x: 0, y: 0, z: 0 };
-      const worldCentroidXYZ = segDisplaySet.centroids.get(index).world || { x: 0, y: 0, z: 0 };
+      const centroid = segDisplaySet.centroids?.get(index);
+      const imageCentroidXYZ = centroid?.image || { x: 0, y: 0, z: 0 };
+      const worldCentroidXYZ = centroid?.world || { x: 0, y: 0, z: 0 };
 
       segments[segmentIndex] = {
         segmentIndex,
