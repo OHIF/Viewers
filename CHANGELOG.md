@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.10.0-beta.20](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.19...v3.10.0-beta.20) (2024-12-11)
+
+
+### Bug Fixes
+
+* **worklist:** selected patient changes randomly when clicked.  ([#4592](https://github.com/OHIF/Viewers/issues/4592)) ([684267b](https://github.com/OHIF/Viewers/commit/684267b19b553817590b8760a188a56e17e5d2ec))
+
+
+
+
+
 # [3.10.0-beta.19](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.18...v3.10.0-beta.19) (2024-12-11)
 
 **Note:** Version bump only for package ohif-monorepo-root
