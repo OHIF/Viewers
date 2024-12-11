@@ -58,15 +58,17 @@ RUN bun install
 # Copy the local directory
 COPY --link --exclude=node_modules --exclude=yarn.lock --exclude=package.json --exclude=Dockerfile . .
 # Do a second install to finalize things after the copy
+RUN bun run show:config
 RUN bun install
 
 # Build here
 # After install it should hopefully be stable until the local directory changes
 ENV QUICK_BUILD true
 # ENV GENERATE_SOURCEMAP=false
-ARG REACT_APP_CONFIG=config/default.js
-ARG PUBLIC_URL
+ARG APP_CONFIG=config/default.js
+ARG PUBLIC_URL=/
 
+RUN bun run show:config
 RUN bun run build
 
 # Precompress files
@@ -78,15 +80,18 @@ RUN ./.docker/compressDist.sh
 FROM nginxinc/nginx-unprivileged:1.25-alpine as final
 #RUN apk add --no-cache bash
 ENV PORT=80
+ARG PUBLIC_URL=/
+ENV PUBLIC_URL=${PUBLIC_URL}
 RUN rm /etc/nginx/conf.d/default.conf
 USER nginx
 COPY --chown=nginx:nginx .docker/Viewer-v3.x /usr/src
 RUN chmod 777 /usr/src/entrypoint.sh
-COPY --from=builder /usr/src/app/platform/app/dist /usr/share/nginx/html
+COPY --from=builder /usr/src/app/platform/app/dist /usr/share/nginx/html${PUBLIC_URL}
+COPY --from=builder /usr/src/app/platform/app/dist/index.html /usr/share/nginx/html
 # In entrypoint.sh, app-config.js might be overwritten, so chmod it to be writeable.
 # The nginx user cannot chmod it, so change to root.
 USER root
-RUN chmod 666 /usr/share/nginx/html/app-config.js
+RUN chown -R nginx:nginx /usr/share/nginx/html
 USER nginx
 ENTRYPOINT ["/usr/src/entrypoint.sh"]
 CMD ["nginx", "-g", "daemon off;"]

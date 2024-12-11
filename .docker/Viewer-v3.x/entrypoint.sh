@@ -7,9 +7,15 @@ if [ -n "$SSL_PORT" ]
     envsubst '${PORT}' < /usr/src/default.conf.template > /etc/nginx/conf.d/default.conf
 fi
 
-if [ -n "$APP_CONFIG" ]
+if [ -n "$APP_CONFIG" ] ; then
+  echo "$APP_CONFIG" > /usr/share/nginx/html${PUBLIC_URL}app-config.js
+  rm /usr/share/nginx/html${PUBLIC_URL}app-config.js.gz
+  gzip /usr/share/nginx/html${PUBLIC_URL}app-config.js
+  touch /usr/share/nginx/html${PUBLIC_URL}app-config.js
+fi
+if [ ! -n "$APP_CONFIG" ]
   then
-    echo "$APP_CONFIG" > /usr/share/nginx/html/app-config.js
+    echo "Not using custom app config"
 fi
 
 if [ -n "$CLIENT_ID" ] || [ -n "$HEALTHCARE_API_ENDPOINT" ]
@@ -40,6 +46,6 @@ if [ -n "$CLIENT_ID" ] || [ -n "$HEALTHCARE_API_ENDPOINT" ]
 	  cp /usr/share/nginx/html/google.js /usr/share/nginx/html/app-config.js
 fi
 
-echo "Starting Nginx to serve the OHIF Viewer..."
+echo "Starting Nginx to serve the OHIF Viewer on ${PUBLIC_URL}"
 
 exec "$@"
