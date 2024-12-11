@@ -46,7 +46,7 @@ FROM node:20 as builder
 RUN apt-get update && apt-get install -y build-essential python3
 RUN mkdir /usr/src/app
 WORKDIR /usr/src/app
-RUN yarn config set workspaces-experimental true
+RUN npm install -g bun
 # RUN npm install -g lerna@7.4.2
 ENV PATH=/usr/src/app/node_modules/.bin:$PATH
 
@@ -54,11 +54,11 @@ ENV PATH=/usr/src/app/node_modules/.bin:$PATH
 COPY package.json yarn.lock preinstall.js lerna.json ./
 COPY --parents ./addOns/package.json ./addOns/*/*/package.json ./extensions/*/package.json ./modes/*/package.json ./platform/*/package.json ./
 # Run the install before copying the rest of the files
-RUN yarn install
+RUN bun install
 # Copy the local directory
 COPY --link --exclude=node_modules --exclude=yarn.lock --exclude=package.json --exclude=Dockerfile . .
 # Do a second install to finalize things after the copy
-RUN yarn install
+RUN bun install
 
 # Build here
 # After install it should hopefully be stable until the local directory changes
@@ -67,7 +67,7 @@ ENV QUICK_BUILD true
 ARG REACT_APP_CONFIG=config/default.js
 ARG PUBLIC_URL
 
-RUN yarn run build
+RUN bun run build
 
 # Precompress files
 RUN chmod u+x .docker/compressDist.sh

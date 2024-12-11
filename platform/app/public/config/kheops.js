@@ -1,6 +1,7 @@
 /** @type {AppTypes.Config} */
 
 window.config = {
+  name: 'config/kheops.js',
   routerBasename: '/',
   extensions: [],
   modes: [],
