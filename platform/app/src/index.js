@@ -7,6 +7,7 @@ import App from './App';
 import React from 'react';
 export { history } from './utils/history';
 export { preserveQueryParameters, preserveQueryStrings } from './utils/preserveQueryParameters';
+export { publicUrl } from './utils/publicUrl';
 
 /**
  * EXTENSIONS AND MODES
