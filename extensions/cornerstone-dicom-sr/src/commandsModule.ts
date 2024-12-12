@@ -126,12 +126,12 @@ const commandsModule = (props: withAppTypes) => {
     },
 
     loadMeasurements: ({
-      loadMeasurementsFn,
+      loadMeasurementsEventFn,
       loadMeasurementsEventName,
       loadMeasurementsEventArgs,
     }) => {
-      if (loadMeasurementsFn) {
-        loadMeasurementsFn(loadMeasurementsEventName, loadMeasurementsEventArgs);
+      if (loadMeasurementsEventFn) {
+        loadMeasurementsEventFn(loadMeasurementsEventName, loadMeasurementsEventArgs);
         return;
       }
 

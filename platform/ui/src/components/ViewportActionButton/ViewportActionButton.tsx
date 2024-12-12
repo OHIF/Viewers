@@ -19,10 +19,10 @@ function ViewportActionButton({ onInteraction, label, commands, id }) {
 }
 
 ViewportActionButton.propTypes = {
-  id: PropTypes.string.isRequired,
+  id: PropTypes.string,
   onInteraction: PropTypes.func.isRequired,
   label: PropTypes.string.isRequired,
-  commands: PropTypes.array.isRequired,
+  commands: PropTypes.array,
 };
 
 export default ViewportActionButton;

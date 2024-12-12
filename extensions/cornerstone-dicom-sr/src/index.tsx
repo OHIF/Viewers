@@ -9,7 +9,8 @@ import toolNames from './tools/toolNames';
 import hydrateStructuredReport from './utils/hydrateStructuredReport';
 import createReferencedImageDisplaySet from './utils/createReferencedImageDisplaySet';
 import Enums from './enums';
-import { commandsManager } from 'platform/app/src/App';
+import { ViewportActionButton } from '@ohif/ui';
+import i18n from '@ohif/i18n';
 
 const Component = React.lazy(() => {
   return import(/* webpackPrefetch: true */ './components/OHIFCornerstoneSRViewport');
@@ -31,7 +32,27 @@ const dicomSRExtension = {
    * Only required property. Should be a unique value across all extensions.
    */
   id,
-  onModeEnter,
+
+  onModeEnter({ servicesManager }) {
+    const { toolbarService } = servicesManager.services;
+
+    toolbarService.addButtons([
+      {
+        id: 'LoadMeasurements',
+        component: ViewportActionButton,
+        props: {
+          label: i18n.t('Common:LOAD'),
+          commands: [
+            {
+              commandName: 'loadMeasurements',
+              context: 'CORNERSTONE_STRUCTURED_REPORT',
+            },
+          ],
+        },
+      },
+    ]);
+    toolbarService.createButtonSection('loadMeasurements', ['LoadMeasurements']);
+  },
 
   preRegistration,
 
@@ -41,11 +62,10 @@ const dicomSRExtension = {
    * @param {object} [configuration={}]
    * @param {object|array} [configuration.csToolsConfig] - Passed directly to `initCornerstoneTools`
    */
-  getViewportModule({ servicesManager, extensionManager, commandsManager }) {
+  getViewportModule({ servicesManager, extensionManager }) {
     const ExtendedOHIFCornerstoneSRViewport = props => {
       return (
         <OHIFCornerstoneSRViewport
-          commandsManager={commandsManager}
           servicesManager={servicesManager}
           extensionManager={extensionManager}
           {...props}

@@ -114,8 +114,6 @@ function modeFactory({ modeConfiguration }) {
         'MoreTools',
       ]);
 
-      toolbarService.createButtonSection('loadMeasurements', ['LoadMeasurements']);
-
       // // ActivatePanel event trigger for when a segmentation or measurement is added.
       // // Do not force activation so as to respect the state the user may have left the UI in.
       _activatePanelTriggersSubscriptions = [

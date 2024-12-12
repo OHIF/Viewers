@@ -1,13 +1,11 @@
 import PropTypes from 'prop-types';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ExtensionManager, ToolbarService, useToolbar } from '@ohif/core';
+import { ExtensionManager, useToolbar } from '@ohif/core';
 
 import { setTrackingUniqueIdentifiersForElement } from '../tools/modules/dicomSRModule';
 
 import { Icon, Tooltip, useViewportGrid, ViewportActionArrows } from '@ohif/ui';
-import hydrateStructuredReport from '../utils/hydrateStructuredReport';
-import { useAppConfig } from '@state';
 import createReferencedImageDisplaySet from '../utils/createReferencedImageDisplaySet';
 import { usePositionPresentationStore } from '@ohif/extension-cornerstone';
 
@@ -19,8 +17,7 @@ function OHIFCornerstoneSRMeasurementViewport(props: withAppTypes) {
   const { children, dataSource, displaySets, viewportOptions, servicesManager, extensionManager } =
     props;
 
-  const { displaySetService, viewportActionCornersService, toolbarService } =
-    servicesManager.services;
+  const { displaySetService, viewportActionCornersService } = servicesManager.services;
 
   const viewportId = viewportOptions.viewportId;
 
@@ -444,6 +441,15 @@ function _getStatusComponent({
       buttonSection: 'loadMeasurements',
     });
 
+    const commandOptions = {
+      loadMeasurementsEventFn: sendTrackedMeasurementsEvent,
+      loadMeasurementsEventName: 'HYDRATE_SR',
+      loadMeasurementsEventArgs: {
+        displaySetInstanceUID: srDisplaySet.displaySetInstanceUID,
+        viewportId,
+      },
+    };
+
     return (
       <div className="flex h-6 cursor-default text-sm leading-6 text-white">
         <div className="bg-customgray-100 flex min-w-[45px] items-center rounded-l-xl rounded-r p-1">
@@ -457,22 +463,11 @@ function _getStatusComponent({
                 return null;
               }
               const { id, Component, componentProps } = toolDef;
-              componentProps.commands.forEach(command => {
-                command.commandOptions = {
-                  ...command.commandOptions,
-                  loadMeasurementsFn: sendTrackedMeasurementsEvent,
-                  loadMeasurementsEventName: 'HYDRATE_SR',
-                  loadMeasurementsEventArgs: {
-                    displaySetInstanceUID: srDisplaySet.displaySetInstanceUID,
-                    viewportId,
-                  },
-                };
-              });
               const tool = (
                 <Component
                   key={id}
                   id={id}
-                  onInteraction={onInteraction}
+                  onInteraction={args => onInteraction({ ...args, ...commandOptions })}
                   {...componentProps}
                 />
               );

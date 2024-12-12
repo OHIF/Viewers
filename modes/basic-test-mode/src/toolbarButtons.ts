@@ -1,9 +1,6 @@
-import i18n from '@ohif/i18n';
-
 // TODO: torn, can either bake this here; or have to create a whole new button type
 // Only ways that you can pass in a custom React component for render :l
 import {
-  ViewportActionButton,
   // ListMenu,
   WindowLevelMenuItem,
 } from '@ohif/ui';
@@ -249,19 +246,6 @@ const toolbarButtons: Button[] = [
         },
       },
       evaluate: 'evaluate.cornerstoneTool',
-    },
-  },
-  {
-    id: 'LoadMeasurements',
-    component: ViewportActionButton,
-    props: {
-      label: i18n.t('Common:LOAD'),
-      commands: [
-        {
-          commandName: 'loadMeasurements',
-          context: 'CORNERSTONE_STRUCTURED_REPORT',
-        },
-      ],
     },
   },
 ];

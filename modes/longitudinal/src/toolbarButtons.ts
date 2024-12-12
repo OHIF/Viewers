@@ -1,10 +1,7 @@
-import i18n from 'i18next';
-
 // TODO: torn, can either bake this here; or have to create a whole new button type
 // Only ways that you can pass in a custom React component for render :l
 import { ToolbarService } from '@ohif/core';
 import type { Button } from '@ohif/core/types';
-import { ViewportActionButton } from '@ohif/ui';
 
 const { createButton } = ToolbarService;
 
@@ -206,19 +203,6 @@ const toolbarButtons: Button[] = [
         name: 'evaluate.cornerstoneTool',
         disabledText: 'Select an MPR viewport to enable this tool',
       },
-    },
-  },
-  {
-    id: 'LoadMeasurements',
-    component: ViewportActionButton,
-    props: {
-      label: i18n.t('Common:LOAD'),
-      commands: [
-        {
-          commandName: 'loadMeasurements',
-          context: 'CORNERSTONE_STRUCTURED_REPORT',
-        },
-      ],
     },
   },
 ];
