@@ -14,7 +14,7 @@ export const setToolActiveToolbar = {
 
 const toolbarButtons: Button[] = [
   {
-    id: 'TestButton',
+    id: 'ResetButton',
     uiType: 'ohif.radioGroup',
     props: {
       icon: 'icon-transferring',
