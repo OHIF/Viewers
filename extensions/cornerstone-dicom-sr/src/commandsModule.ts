@@ -42,7 +42,7 @@ const _generateReport = (measurementData, additionalFindingTypes, options = {}) 
 };
 
 const commandsModule = (props: withAppTypes) => {
-  const { servicesManager, extensionManager } = props;
+  const { servicesManager, extensionManager, commandsManager } = props;
   const { customizationService, displaySetService, viewportGridService } = servicesManager.services;
   const actions = {
     /**
@@ -125,14 +125,29 @@ const commandsModule = (props: withAppTypes) => {
       }
     },
 
+    /**
+     * Loads measurements using either the given function or if the function is not present
+     * it hydrates and loads the SR for the given display set instance UID and displays
+     * it in the active viewport.
+     * @param loadMeasurementsEventFn the function to call to load the measurements
+     * @param loadMeasurementsEventName the name of the event to fire to load the measurements
+     * @param loadMeasurementsEventArgs arguments for the event; in particular the display set instance UID
+     * @param clearMeasurements optionally clear the measurements prior to hydrating the SR when loadMeasurementsEventFn is not present
+     * @returns
+     */
     loadMeasurements: ({
       loadMeasurementsEventFn,
       loadMeasurementsEventName,
       loadMeasurementsEventArgs,
+      clearMeasurements = true,
     }) => {
       if (loadMeasurementsEventFn) {
         loadMeasurementsEventFn(loadMeasurementsEventName, loadMeasurementsEventArgs);
         return;
+      }
+
+      if (clearMeasurements) {
+        commandsManager.run('clearMeasurements');
       }
 
       const { SeriesInstanceUIDs } = hydrateStructuredReport(
