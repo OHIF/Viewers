@@ -36,6 +36,7 @@ import { Types } from '@ohif/ui';
 
 import i18n from '@ohif/i18n';
 import { Onboarding, ScrollArea } from '@ohif/ui-next';
+import { preserveQueryParameters, preserveQueryStrings } from '../../utils/preserveQueryParameters';
 
 const PatientInfoVisibility = Types.PatientInfoVisibility;
 
@@ -199,11 +200,12 @@ function WorkList({
       }
     });
 
+    preserveQueryStrings(queryString);
+
     const search = qs.stringify(queryString, {
       skipNull: true,
       skipEmptyString: true,
     });
-
     navigate({
       pathname: '/',
       search: search ? `?${search}` : undefined,
@@ -392,6 +394,8 @@ function WorkList({
                 query.append('configUrl', filterValues.configUrl);
               }
               query.append('StudyInstanceUIDs', studyInstanceUid);
+              preserveQueryParameters(query);
+
               return (
                 mode.displayName && (
                   <Link
@@ -619,7 +623,6 @@ const defaultFilterValues = {
   pageNumber: 1,
   resultsPerPage: 25,
   datasources: '',
-  configUrl: null,
 };
 
 function _tryParseInt(str, defaultValue) {
