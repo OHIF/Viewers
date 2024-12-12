@@ -28,7 +28,6 @@ export default function getUserManagerForOpenIdConnectClient(oidcSettings) {
     response_type: 'code',
     revokeTokensOnSignout: oidcSettings.revokeAccessTokenOnSignout ?? true,
     filterProtocolClaims: true,
-    loadUserInfo: true,
     // the followings are default values in the lib so no need to set them
     // automaticSilentRenew: true,
   };
