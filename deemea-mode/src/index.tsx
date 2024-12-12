@@ -65,6 +65,7 @@ function modeFactory({ modeConfiguration }) {
 
       toolbarService.addButtons(toolbarButtons);
       toolbarService.createButtonSection('primary', [
+        'ResetButton',
         'MeasurementTools',
         'Zoom',
         'WindowLevel',

@@ -8,7 +8,6 @@ const commandsModule = ({ servicesManager }) => {
         measurementService,
         ViewportGridService,
         CornerstoneViewportService,
-        UINotificationService,
       } = servicesManager.services;
 
       if (!measurementService || !ViewportGridService || !CornerstoneViewportService) {
@@ -31,7 +30,6 @@ const commandsModule = ({ servicesManager }) => {
       window.addEventListener('message', event => {
         if (event.data.type === OHIFMessageType.SEND_MEASURE) {
           const relatedPoints = event.data.points;
-          // Update measurements based on points
           demonstrateMeasurementService(servicesManager, relatedPoints);
         }
       });
@@ -124,6 +122,16 @@ const commandsModule = ({ servicesManager }) => {
         );
       }
     },
+    resetPoints: () => {
+      const { measurementService } = servicesManager.services;
+      window.parent.postMessage(
+        {
+          type: OHIFMessageType.RESET_POINTS,
+        },
+        '*'
+      );
+      measurementService.clearMeasurements();
+    },
   };
 
   return {
@@ -141,6 +149,9 @@ const commandsModule = ({ servicesManager }) => {
       },
       deleteMeasurement: {
         commandFn: actions.deleteMeasurement,
+      },
+      resetPoints: {
+        commandFn: actions.resetPoints,
       },
     },
     defaultContext: 'VIEWER',
