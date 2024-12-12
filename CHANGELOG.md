@@ -3,6 +3,85 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.10.0-beta.21](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.20...v3.10.0-beta.21) (2024-12-11)
+
+
+### Features
+
+* **node:** move to node 20 ([#4594](https://github.com/OHIF/Viewers/issues/4594)) ([1f04d6c](https://github.com/OHIF/Viewers/commit/1f04d6c1be729a26fe7bcda923770a1cd461053c))
+
+
+
+
+
+# [3.10.0-beta.20](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.19...v3.10.0-beta.20) (2024-12-11)
+
+
+### Bug Fixes
+
+* **worklist:** selected patient changes randomly when clicked.  ([#4592](https://github.com/OHIF/Viewers/issues/4592)) ([684267b](https://github.com/OHIF/Viewers/commit/684267b19b553817590b8760a188a56e17e5d2ec))
+
+
+
+
+
+# [3.10.0-beta.19](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.18...v3.10.0-beta.19) (2024-12-11)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.10.0-beta.18](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.17...v3.10.0-beta.18) (2024-12-06)
+
+
+### Bug Fixes
+
+* **sr:** correct jump to first image via viewRef ([#4576](https://github.com/OHIF/Viewers/issues/4576)) ([6ec04ca](https://github.com/OHIF/Viewers/commit/6ec04ca65ea2f0fe95eaf624652911b87a6f81e6))
+
+
+
+
+
+# [3.10.0-beta.17](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.16...v3.10.0-beta.17) (2024-12-06)
+
+
+### Bug Fixes
+
+* **touch:** For viewport interactions use onPointerDown. ([#4572](https://github.com/OHIF/Viewers/issues/4572)) ([6160718](https://github.com/OHIF/Viewers/commit/6160718fd20db6bac6dd511183a30359d9420140))
+
+
+
+
+
+# [3.10.0-beta.16](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.15...v3.10.0-beta.16) (2024-12-05)
+
+
+### Bug Fixes
+
+* **defaultRouteInit:** fixes 'madeInClient' parameter when 'makeDisplaySets' is called ([#4571](https://github.com/OHIF/Viewers/issues/4571)) ([7cc6c14](https://github.com/OHIF/Viewers/commit/7cc6c1484a551026af5f641254431c23b729c2c2))
+
+
+### Features
+
+* **extension:** added 'extensionManager' to 'onModeEnter' parameter list ([#4569](https://github.com/OHIF/Viewers/issues/4569)) ([f87c6cd](https://github.com/OHIF/Viewers/commit/f87c6cd2aa83007393302d4437b417150ed26e2e))
+
+
+
+
+
+# [3.10.0-beta.15](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.14...v3.10.0-beta.15) (2024-12-05)
+
+
+### Bug Fixes
+
+* **CinePlayer:** always show cine player for dynamic data ([#4575](https://github.com/OHIF/Viewers/issues/4575)) ([b8e8bbe](https://github.com/OHIF/Viewers/commit/b8e8bbe482b66e8cbe9167d03e9d8dedd2d3b6c5))
+
+
+
+
+
 # [3.10.0-beta.14](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.13...v3.10.0-beta.14) (2024-12-03)
 
 

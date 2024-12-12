@@ -6,7 +6,7 @@ orbs:
 
 defaults: &defaults
   docker:
-    - image: cimg/node:18.18
+    - image: cimg/node:20.18.1
       environment:
         TERM: xterm
         QUICK_BUILD: true
