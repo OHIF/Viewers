@@ -38,6 +38,10 @@ const dicomSRExtension = {
 
     toolbarService.addButtons([
       {
+        // A default button for loading measurements added to the toolbar below.
+        // Customizations to this button can be made in the mode using this extension.
+        // For example, the button label can be changed and/or command props to
+        // not clear the measurements can be passed to the command.
         id: 'LoadMeasurements',
         component: ViewportActionButton,
         props: {
@@ -51,6 +55,9 @@ const dicomSRExtension = {
         },
       },
     ]);
+
+    // The toolbar used in the viewport's status bar. The mode can further customize
+    // it to optionally add other buttons.
     toolbarService.createButtonSection('loadMeasurements', ['LoadMeasurements']);
   },
 
