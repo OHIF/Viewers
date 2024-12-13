@@ -1,10 +1,7 @@
 import commandsModule from './commandsModule';
-import CustomPanel from './components/customePanel';
 import getPanelModule from './components/getPanelModule';
 import getToolBarModule from './components/getToolBarModule';
 let onModeInit = false;
-
-
 
 const extension = {
   id: 'deemea-extension',
@@ -38,7 +35,7 @@ const extension = {
 
   getPanelModule,
 
-  getToolBarModule
+  getToolBarModule,
 };
 
 export default extension;

@@ -4,11 +4,8 @@ import { OHIFMessageType } from './utils/enums';
 const commandsModule = ({ servicesManager }) => {
   const actions = {
     demonstrateMeasurementService: () => {
-      const {
-        measurementService,
-        ViewportGridService,
-        CornerstoneViewportService,
-      } = servicesManager.services;
+      const { measurementService, ViewportGridService, CornerstoneViewportService } =
+        servicesManager.services;
 
       if (!measurementService || !ViewportGridService || !CornerstoneViewportService) {
         console.error('Required services are not available');
@@ -31,6 +28,24 @@ const commandsModule = ({ servicesManager }) => {
         if (event.data.type === OHIFMessageType.SEND_MEASURE) {
           const relatedPoints = event.data.points;
           demonstrateMeasurementService(servicesManager, relatedPoints);
+          const viewportId = ViewportGridService.getActiveViewportId();
+          const viewport = CornerstoneViewportService.getCornerstoneViewport(viewportId);
+          const imageId = viewport.getCurrentImageId();
+          const imageMetadata = viewport.getImageData(imageId);
+
+          const imageWidth = imageMetadata.dimensions[0];
+          const imageHeight = imageMetadata.dimensions[1];
+
+          window.parent.postMessage(
+            {
+              type: OHIFMessageType.IMAGE_SIZE,
+              message: {
+                width: imageWidth,
+                height: imageHeight,
+              },
+            },
+            '*'
+          );
         }
       });
     },
