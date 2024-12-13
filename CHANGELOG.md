@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.10.0-beta.22](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.21...v3.10.0-beta.22) (2024-12-13)
+
+
+### Bug Fixes
+
+* **tag-browser:** fix dicom tag browser not loading in segmentation mode in study panel ([#4601](https://github.com/OHIF/Viewers/issues/4601)) ([60fc7d6](https://github.com/OHIF/Viewers/commit/60fc7d6a112da99b47e26c5e3460b920bbc3c0b0))
+
+
+
+
+
 # [3.10.0-beta.21](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.20...v3.10.0-beta.21) (2024-12-11)
 
 
