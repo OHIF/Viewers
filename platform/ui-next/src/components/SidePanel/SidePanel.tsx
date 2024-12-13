@@ -2,38 +2,24 @@ import classnames from 'classnames';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useState } from 'react';
 import { Icons } from '../Icons';
-import { TooltipTrigger, TooltipContent, TooltipProvider, Tooltip } from '../Tooltip';
+import { TooltipTrigger, TooltipContent, Tooltip } from '../Tooltip';
 import { Separator } from '../Separator';
 
 type StyleMap = {
   open: {
-    left: { marginLeft: string };
-    right: { marginRight: string };
+    left: { marginLeft: string; marginRight: string };
+    right: { marginLeft: string; marginRight: string };
   };
   closed: {
-    left: { marginLeft: string };
-    right: { marginRight: string };
+    left: { marginLeft: string; marginRight: string; alignItems: string };
+    right: { marginLeft: string; marginRight: string; alignItems: string };
   };
 };
-const borderSize = 4;
-const collapsedWidth = 25;
 const closeIconWidth = 30;
 const gridHorizontalPadding = 10;
 const tabSpacerWidth = 2;
 
-const baseClasses =
-  'transition-all duration-300 ease-in-out bg-black border-black justify-start box-content flex flex-col';
-
-const classesMap = {
-  open: {
-    left: `mr-1`,
-    right: `ml-1`,
-  },
-  closed: {
-    left: `mr-2 items-end`,
-    right: `ml-2 items-start`,
-  },
-};
+const baseClasses = 'bg-black border-black justify-start box-content flex flex-col';
 
 const openStateIconName = {
   left: 'SidePanelCloseLeft',
@@ -106,19 +92,29 @@ const getTabIconClassNames = (numTabs: number, isActiveTab: boolean) => {
 };
 const createStyleMap = (
   expandedWidth: number,
-  borderSize: number,
-  collapsedWidth: number
+  expandedInsideBorderSize: number,
+  collapsedWidth: number,
+  collapsedInsideBorderSize: number,
+  collapsedOutsideBorderSize: number
 ): StyleMap => {
-  const collapsedHideWidth = expandedWidth - collapsedWidth - borderSize;
+  const collapsedHideWidth = expandedWidth - collapsedWidth - collapsedInsideBorderSize;
 
   return {
     open: {
-      left: { marginLeft: '0px' },
-      right: { marginRight: '0px' },
+      left: { marginLeft: '0px', marginRight: `${expandedInsideBorderSize}px` },
+      right: { marginLeft: `${expandedInsideBorderSize}px`, marginRight: '0px' },
     },
     closed: {
-      left: { marginLeft: `-${collapsedHideWidth}px` },
-      right: { marginRight: `-${collapsedHideWidth}px` },
+      left: {
+        marginLeft: `-${collapsedHideWidth}px`,
+        marginRight: `${collapsedOutsideBorderSize}px`,
+        alignItems: `flex-end`,
+      },
+      right: {
+        marginLeft: `${collapsedOutsideBorderSize}px`,
+        marginRight: `-${collapsedHideWidth}px`,
+        alignItems: `flex-start`,
+      },
     },
   };
 };
@@ -143,47 +139,67 @@ const createBaseStyle = (expandedWidth: number) => {
     height: '99.8%',
   };
 };
+
 const SidePanel = ({
   side,
   className,
-  activeTabIndex: activeTabIndexProp = null,
+  activeTabIndex: activeTabIndexProp,
+  isExpanded,
   tabs,
   onOpen,
   onClose,
-  expandedWidth = 280,
   onActiveTabIndexChange,
+  expandedWidth = 280,
+  collapsedWidth = 25,
+  expandedInsideBorderSize = 4,
+  collapsedInsideBorderSize = 8,
+  collapsedOutsideBorderSize = 4,
 }) => {
-  const [panelOpen, setPanelOpen] = useState(activeTabIndexProp !== null);
-  const [activeTabIndex, setActiveTabIndex] = useState(0);
+  const [panelOpen, setPanelOpen] = useState(isExpanded);
+  const [activeTabIndex, setActiveTabIndex] = useState(activeTabIndexProp ?? 0);
 
-  const styleMap = createStyleMap(expandedWidth, borderSize, collapsedWidth);
-  const baseStyle = createBaseStyle(expandedWidth);
-  const gridAvailableWidth = expandedWidth - closeIconWidth - gridHorizontalPadding;
-  const gridWidth = getGridWidth(tabs.length, gridAvailableWidth);
+  const [styleMap, setStyleMap] = useState(
+    createStyleMap(
+      expandedWidth,
+      expandedInsideBorderSize,
+      collapsedWidth,
+      collapsedInsideBorderSize,
+      collapsedOutsideBorderSize
+    )
+  );
+
+  const [baseStyle, setBaseStyle] = useState(createBaseStyle(expandedWidth));
+
+  const [gridAvailableWidth, setGridAvailableWidth] = useState(
+    expandedWidth - closeIconWidth - gridHorizontalPadding
+  );
+
+  const [gridWidth, setGridWidth] = useState(getGridWidth(tabs.length, gridAvailableWidth));
   const openStatus = panelOpen ? 'open' : 'closed';
   const style = Object.assign({}, styleMap[openStatus][side], baseStyle);
 
   const updatePanelOpen = useCallback(
-    (panelOpen: boolean) => {
-      setPanelOpen(panelOpen);
-      if (panelOpen && onOpen) {
-        onOpen();
-      } else if (onClose && !panelOpen) {
-        onClose();
+    (isOpen: boolean) => {
+      setPanelOpen(isOpen);
+      if (isOpen !== panelOpen) {
+        // only fire events for changes
+        if (isOpen && onOpen) {
+          onOpen();
+        } else if (onClose && !isOpen) {
+          onClose();
+        }
       }
     },
-    [onOpen, onClose]
+    [panelOpen, onOpen, onClose]
   );
 
   const updateActiveTabIndex = useCallback(
-    (activeTabIndex: number) => {
-      if (activeTabIndex === null) {
-        updatePanelOpen(false);
-        return;
+    (activeTabIndex: number, forceOpen: boolean = false) => {
+      if (forceOpen) {
+        updatePanelOpen(true);
       }
 
       setActiveTabIndex(activeTabIndex);
-      updatePanelOpen(true);
 
       if (onActiveTabIndexChange) {
         onActiveTabIndexChange({ activeTabIndex });
@@ -193,7 +209,35 @@ const SidePanel = ({
   );
 
   useEffect(() => {
-    updateActiveTabIndex(activeTabIndexProp);
+    updatePanelOpen(isExpanded);
+  }, [isExpanded, updatePanelOpen]);
+
+  useEffect(() => {
+    setStyleMap(
+      createStyleMap(
+        expandedWidth,
+        expandedInsideBorderSize,
+        collapsedWidth,
+        collapsedInsideBorderSize,
+        collapsedOutsideBorderSize
+      )
+    );
+    setBaseStyle(createBaseStyle(expandedWidth));
+
+    const gridAvailableWidth = expandedWidth - closeIconWidth - gridHorizontalPadding;
+    setGridAvailableWidth(gridAvailableWidth);
+    setGridWidth(getGridWidth(tabs.length, gridAvailableWidth));
+  }, [
+    collapsedInsideBorderSize,
+    collapsedWidth,
+    expandedWidth,
+    expandedInsideBorderSize,
+    tabs.length,
+    collapsedOutsideBorderSize,
+  ]);
+
+  useEffect(() => {
+    updateActiveTabIndex(activeTabIndexProp ?? 0);
   }, [activeTabIndexProp, updateActiveTabIndex]);
 
   const getCloseStateComponent = () => {
@@ -223,7 +267,7 @@ const SidePanel = ({
                   data-cy={`${childComponent.name}-btn`}
                   className="text-primary-active hover:cursor-pointer"
                   onClick={() => {
-                    return childComponent.disabled ? null : updateActiveTabIndex(index);
+                    return childComponent.disabled ? null : updateActiveTabIndex(index, true);
                   }}
                 >
                   {React.createElement(Icons[childComponent.iconName] || Icons.MissingIcon, {
@@ -374,7 +418,7 @@ const SidePanel = ({
 
   return (
     <div
-      className={classnames(className, baseClasses, classesMap[openStatus][side])}
+      className={classnames(className, baseClasses)}
       style={style}
     >
       {panelOpen ? (
@@ -401,7 +445,13 @@ SidePanel.propTypes = {
   onOpen: PropTypes.func,
   onClose: PropTypes.func,
   onActiveTabIndexChange: PropTypes.func,
+  isExpanded: PropTypes.bool,
   expandedWidth: PropTypes.number,
+  collapsedWidth: PropTypes.number,
+  expandedInsideBorderSize: PropTypes.number,
+  collapsedInsideBorderSize: PropTypes.number,
+  collapsedOutsideBorderSize: PropTypes.number,
+  tabs: PropTypes.any,
 };
 
 export { SidePanel };

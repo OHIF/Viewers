@@ -156,6 +156,8 @@ export default class PanelService extends PubSubService {
     options: {
       rightPanelClosed?: boolean;
       leftPanelClosed?: boolean;
+      rightPanelResizable?: boolean;
+      leftPanelResizable?: boolean;
     }
   ): void {
     this.reset();

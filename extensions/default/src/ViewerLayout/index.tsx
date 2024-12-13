@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useLayoutEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 
 import { LoadingIndicatorProgress, InvestigationalUseDialog } from '@ohif/ui';
@@ -6,7 +6,28 @@ import { HangingProtocolService, CommandsManager } from '@ohif/core';
 import { useAppConfig } from '@state';
 import ViewerHeader from './ViewerHeader';
 import SidePanelWithServices from '../Components/SidePanelWithServices';
-import { Onboarding } from '@ohif/ui-next';
+import { Onboarding, ResizablePanelGroup, ResizablePanel, ResizableHandle } from '@ohif/ui-next';
+
+// Id needed to grab the panel group for converting pixels to percentages
+const viewerLayoutResizablePanelGroupId = 'viewerLayoutResizablePanelGroup';
+
+// Ids needed for conditionally rendered resizable panels.
+// See https://github.com/bvaughn/react-resizable-panels/tree/main/packages/react-resizable-panels#how-can-i-fix-layoutsizing-problems-with-conditionally-rendered-panels.
+const viewerLayoutResizableLeftPanelId = 'viewerLayoutResizableLeftPanel';
+const viewerLayoutResizableRightPanelId = 'viewerLayoutResizableRightPanel';
+const viewerLayoutResizableViewportGridPanelId = 'viewerLayoutResizableViewportGridPanel';
+
+const sidePanelExpandedDefaultWidth = 280;
+const sidePanelExpandedInsideBorderSize = 4;
+const sidePanelExpandedDefaultOffsetWidth =
+  sidePanelExpandedDefaultWidth + sidePanelExpandedInsideBorderSize;
+const sidePanelCollapsedInsideBorderSize = 4;
+const sidePanelCollapsedOutsideBorderSize = 8;
+const sidePanelCollapsedWidth = 25;
+const sidePanelCollapsedOffsetWidth =
+  sidePanelCollapsedWidth +
+  sidePanelCollapsedInsideBorderSize +
+  sidePanelCollapsedOutsideBorderSize;
 
 function ViewerLayout({
   // From Extension Module Params
@@ -19,6 +40,8 @@ function ViewerLayout({
   ViewportGridComp,
   leftPanelClosed = false,
   rightPanelClosed = false,
+  leftPanelResizable = false,
+  rightPanelResizable = false,
 }: withAppTypes): React.FunctionComponent {
   const [appConfig] = useAppConfig();
 
@@ -34,6 +57,166 @@ function ViewerLayout({
   const [hasLeftPanels, setHasLeftPanels] = useState(hasPanels('left'));
   const [leftPanelClosedState, setLeftPanelClosed] = useState(leftPanelClosed);
   const [rightPanelClosedState, setRightPanelClosed] = useState(rightPanelClosed);
+  const [leftPanelExpandedWidth, setLeftPanelExpandedWidth] = useState(
+    sidePanelExpandedDefaultWidth
+  );
+  const [rightPanelExpandedWidth, setRightPanelExpandedWidth] = useState(
+    sidePanelExpandedDefaultWidth
+  );
+  const [resizablePanelCollapsedSize, setResizablePanelCollapsedSize] = useState(0);
+  const [resizablePanelDefaultSize, setResizablePanelDefaultSize] = useState(0);
+  const [resizablePanelGroupElem, setResizablePanelGroupElem] = useState(null);
+  const resizableLeftPanelRef = useRef(null);
+  const resizableRightPanelRef = useRef(null);
+
+  // This useLayoutEffect follows the pattern prescribed by the react-resizable-panels
+  // readme for converting between pixel values and percentages. An example of
+  // the pattern can be found here:
+  // https://github.com/bvaughn/react-resizable-panels/issues/46#issuecomment-1368108416
+  // This useLayoutEffect is used to...
+  // - Grab a reference to the resizable panel group whose width is needed for
+  //   converting to percentages in various callbacks.
+  // - Expand those panels that are initially expanded.
+  // - Add a resize observer to the resizable panel group to reset various state
+  //   values whenever the resizable panel group is resized (e.g. whenever the
+  //   browser window is resized).
+  useLayoutEffect(() => {
+    const panelGroup = document.querySelector(
+      `[data-panel-group-id="${viewerLayoutResizablePanelGroupId}"]`
+    );
+
+    setResizablePanelGroupElem(panelGroup);
+    const { width: panelGroupWidth } = panelGroup.getBoundingClientRect();
+
+    const resizablePanelExpandedSize =
+      (sidePanelExpandedDefaultOffsetWidth / panelGroupWidth) * 100;
+
+    // Since both resizable panels are collapsed by default (i.e. their default size is zero),
+    // on the very first render check if either/both side panels should be expanded.
+    // If so, then check if there is space to expand either panel and expand them
+    // with the appropriate size.
+    if (!leftPanelClosed && resizablePanelExpandedSize <= 50) {
+      resizableLeftPanelRef?.current?.expand(resizablePanelExpandedSize);
+    }
+
+    if (!rightPanelClosed && resizablePanelExpandedSize <= 50) {
+      resizableRightPanelRef?.current?.expand(resizablePanelExpandedSize);
+    }
+
+    // This observer kicks in when the ViewportLayout resizable panel group
+    // component is resized. This typically occurs when the browser window resizes.
+    const observer = new ResizeObserver(() => {
+      const { width: panelGroupWidth } = panelGroup.getBoundingClientRect();
+      const defaultSize = (sidePanelExpandedDefaultOffsetWidth / panelGroupWidth) * 100;
+
+      // Set the new default and collapsed resizable panel sizes.
+      setResizablePanelDefaultSize(Math.min(50, defaultSize));
+      setResizablePanelCollapsedSize((sidePanelCollapsedOffsetWidth / panelGroupWidth) * 100);
+
+      if (resizableLeftPanelRef?.current && !resizableLeftPanelRef.current.isCollapsed()) {
+        if (!leftPanelResizable) {
+          // The panel is not resizable so resize to the default size.
+          resizableLeftPanelRef.current.resize(defaultSize);
+        } else {
+          // The side panel is expanded. Check if there is enough space
+          // to continue showing it expanded.
+          const leftSize = resizableLeftPanelRef.current.getSize();
+          if (leftSize < defaultSize) {
+            // There is not enough space at the current size of the resizable panel.
+            // Check if there is enough space in the resizable panel group.
+            if (panelGroupWidth / 2 < sidePanelExpandedDefaultOffsetWidth) {
+              // There is not enough space in the resizable panel group
+              // so collapse the side panel.
+              resizableLeftPanelRef.current.collapse();
+            } else {
+              // There is enough space in the resizable panel group so resize
+              // the resizable panel that contains the side panel.
+              resizableLeftPanelRef.current.resize(defaultSize);
+            }
+          } else {
+            // It can stay expanded in the space the resizable panel has available,
+            // just adjust its pixel width.
+            setLeftPanelExpandedWidth(
+              (leftSize / 100) * panelGroupWidth - sidePanelExpandedInsideBorderSize
+            );
+          }
+        }
+      }
+
+      if (resizableRightPanelRef?.current && !resizableRightPanelRef.current.isCollapsed()) {
+        if (!rightPanelResizable) {
+          // The panel is not resizable so resize to the default size.
+          resizableRightPanelRef.current.resize(defaultSize);
+        } else {
+          // The side panel is expanded. Check if there is enough space
+          // to continue showing it expanded.
+          const rightSize = resizableRightPanelRef.current.getSize();
+          if (rightSize < defaultSize) {
+            // There is not enough space at the current size of the resizable panel.
+            // Check if there is enough space in the resizable panel group.
+            if (panelGroupWidth / 2 < sidePanelExpandedDefaultOffsetWidth) {
+              // There is not enough space in the resizable panel group
+              // so collapse the side panel.
+              resizableRightPanelRef.current.collapse();
+            } else {
+              // There is enough space in the resizable panel group so resize
+              // the resizable panel that contains the side panel.
+              resizableRightPanelRef.current.resize(defaultSize);
+            }
+          } else {
+            // It can stay expanded in the space the resizable panel has available,
+            // just adjust its pixel width.
+            setRightPanelExpandedWidth(
+              (rightSize / 100) * panelGroupWidth - sidePanelExpandedInsideBorderSize
+            );
+          }
+        }
+      }
+    });
+    observer.observe(panelGroup);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, []); // needs to be performed only once prior to the very first render, so no dependencies
+
+  const onLeftPanelClose = useCallback(() => {
+    setLeftPanelClosed(true);
+    resizableLeftPanelRef?.current?.collapse();
+  }, []);
+
+  const onLeftPanelOpen = useCallback(() => {
+    resizableLeftPanelRef?.current?.expand();
+    setLeftPanelClosed(false);
+  }, []);
+
+  const onLeftPanelResize = useCallback(() => {
+    if (!resizablePanelGroupElem || resizableLeftPanelRef?.current?.isCollapsed()) {
+      return;
+    }
+    const size = resizableLeftPanelRef?.current?.getSize();
+    const { width: panelGroupWidth } = resizablePanelGroupElem.getBoundingClientRect();
+    setLeftPanelExpandedWidth((size / 100) * panelGroupWidth - sidePanelExpandedInsideBorderSize);
+  }, [resizablePanelGroupElem]);
+
+  const onRightPanelClose = useCallback(() => {
+    setRightPanelClosed(true);
+    resizableRightPanelRef?.current?.collapse();
+  }, []);
+
+  const onRightPanelOpen = useCallback(() => {
+    resizableRightPanelRef?.current?.expand();
+    setRightPanelClosed(false);
+  }, []);
+
+  const onRightPanelResize = useCallback(() => {
+    if (!resizablePanelGroupElem || resizableRightPanelRef?.current?.isCollapsed()) {
+      return;
+    }
+    const size = resizableRightPanelRef?.current?.getSize();
+    const { width: panelGroupWidth } = resizablePanelGroupElem.getBoundingClientRect();
+    setRightPanelExpandedWidth((size / 100) * panelGroupWidth - sidePanelExpandedInsideBorderSize);
+  }, [resizablePanelGroupElem]);
 
   /**
    * Set body classes (tailwindcss) that don't allow vertical
@@ -123,31 +306,94 @@ function ViewerLayout({
       >
         <React.Fragment>
           {showLoadingIndicator && <LoadingIndicatorProgress className="h-full w-full bg-black" />}
-          {/* LEFT SIDEPANELS */}
-          {hasLeftPanels ? (
-            <SidePanelWithServices
-              side="left"
-              activeTabIndex={leftPanelClosedState ? null : 0}
-              servicesManager={servicesManager}
-            />
-          ) : null}
-          {/* TOOLBAR + GRID */}
-          <div className="flex h-full flex-1 flex-col">
-            <div className="relative flex h-full flex-1 items-center justify-center overflow-hidden bg-black">
-              <ViewportGridComp
-                servicesManager={servicesManager}
-                viewportComponents={viewportComponents}
-                commandsManager={commandsManager}
-              />
-            </div>
-          </div>
-          {hasRightPanels ? (
-            <SidePanelWithServices
-              side="right"
-              activeTabIndex={rightPanelClosedState ? null : 0}
-              servicesManager={servicesManager}
-            />
-          ) : null}
+          <ResizablePanelGroup
+            direction="horizontal"
+            id={viewerLayoutResizablePanelGroupId}
+          >
+            {/* LEFT SIDEPANELS */}
+
+            {hasLeftPanels ? (
+              <>
+                <ResizablePanel
+                  defaultSize={resizablePanelDefaultSize}
+                  minSize={resizablePanelDefaultSize}
+                  onResize={onLeftPanelResize}
+                  collapsible={true}
+                  collapsedSize={resizablePanelCollapsedSize}
+                  onCollapse={() => setLeftPanelClosed(true)}
+                  onExpand={() => setLeftPanelClosed(false)}
+                  ref={resizableLeftPanelRef}
+                  order={0}
+                  id={viewerLayoutResizableLeftPanelId}
+                >
+                  <SidePanelWithServices
+                    side="left"
+                    isExpanded={!leftPanelClosedState}
+                    servicesManager={servicesManager}
+                    expandedWidth={leftPanelExpandedWidth}
+                    collapsedWidth={sidePanelCollapsedWidth}
+                    collapsedInsideBorderSize={sidePanelCollapsedInsideBorderSize}
+                    collapsedOutsideBorderSize={sidePanelCollapsedOutsideBorderSize}
+                    expandedInsideBorderSize={sidePanelExpandedInsideBorderSize}
+                    onClose={onLeftPanelClose}
+                    onOpen={onLeftPanelOpen}
+                  />
+                </ResizablePanel>
+                <ResizableHandle
+                  disabled={!leftPanelResizable}
+                  className="!w-0"
+                />
+              </>
+            ) : null}
+            {/* TOOLBAR + GRID */}
+            <ResizablePanel
+              order={1}
+              id={viewerLayoutResizableViewportGridPanelId}
+            >
+              <div className="flex h-full flex-1 flex-col">
+                <div className="relative flex h-full flex-1 items-center justify-center overflow-hidden bg-black">
+                  <ViewportGridComp
+                    servicesManager={servicesManager}
+                    viewportComponents={viewportComponents}
+                    commandsManager={commandsManager}
+                  />
+                </div>
+              </div>
+            </ResizablePanel>
+            {hasRightPanels ? (
+              <>
+                <ResizableHandle
+                  disabled={!rightPanelResizable}
+                  className="!w-0"
+                />
+                <ResizablePanel
+                  defaultSize={resizablePanelDefaultSize}
+                  minSize={resizablePanelDefaultSize}
+                  onResize={onRightPanelResize}
+                  collapsible={true}
+                  collapsedSize={resizablePanelCollapsedSize}
+                  onCollapse={() => setRightPanelClosed(true)}
+                  onExpand={() => setRightPanelClosed(false)}
+                  ref={resizableRightPanelRef}
+                  order={3}
+                  id={viewerLayoutResizableRightPanelId}
+                >
+                  <SidePanelWithServices
+                    side="right"
+                    isExpanded={!rightPanelClosedState}
+                    servicesManager={servicesManager}
+                    expandedWidth={rightPanelExpandedWidth}
+                    collapsedWidth={sidePanelCollapsedWidth}
+                    collapsedInsideBorderSize={sidePanelCollapsedInsideBorderSize}
+                    collapsedOutsideBorderSize={sidePanelCollapsedOutsideBorderSize}
+                    expandedInsideBorderSize={sidePanelExpandedInsideBorderSize}
+                    onClose={onRightPanelClose}
+                    onOpen={onRightPanelOpen}
+                  />
+                </ResizablePanel>
+              </>
+            ) : null}
+          </ResizablePanelGroup>
         </React.Fragment>
       </div>
       <Onboarding />

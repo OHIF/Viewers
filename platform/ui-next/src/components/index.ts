@@ -27,6 +27,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { Clipboard } from './Clipboard';
 import { Combobox } from './Combobox';
 import { Popover, PopoverContent, PopoverTrigger, PopoverAnchor } from './Popover';
+import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from './Resizable';
 import { Calendar } from './Calendar';
 import { DatePickerWithRange } from './DateRange';
 import { Separator } from './Separator';
@@ -121,6 +122,9 @@ export {
   PopoverContent,
   PopoverTrigger,
   PopoverAnchor,
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
   Calendar,
   DatePickerWithRange,
   Input,
