@@ -52,7 +52,9 @@ window.config = {
         supportsFuzzyMatching: false,
         supportsWildcard: true,
         staticWado: true,
-        caseSensitive: false,
+        caseSensitive: {
+          patientname: false,
+        },
         singlepart: 'bulkdata,video',
         // whether the data source should use retrieveBulkData to grab metadata,
         // and in case of relative path, what would it be relative to, options

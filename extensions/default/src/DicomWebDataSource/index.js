@@ -54,7 +54,7 @@ const metadataProvider = classes.MetadataProvider;
  * @param {boolean} dicomWebConfig.bulkDataURI - Whether to enable bulkDataURI
  * @param {function} dicomWebConfig.onConfiguration - Function that is called after the configuration is initialized
  * @param {boolean} dicomWebConfig.staticWado - Whether to use the static WADO client
- * @param {boolean} dicomWebConfig.caseSensitive - Whether to use case sensitive filtering on results (default: true)
+ * @param {object} dicomWebConfig.caseSensitive - Whether to use case sensitive filtering on results
  * @param {object} userAuthenticationService - User authentication service
  * @param {object} userAuthenticationService.getAuthorizationHeader - Function that returns the authorization header
  * @returns {object} - DICOM Web API object
@@ -108,7 +108,7 @@ function createDicomWebApi(dicomWebConfig, servicesManager) {
         url: dicomWebConfig.qidoRoot,
         staticWado: dicomWebConfig.staticWado,
         singlepart: dicomWebConfig.singlepart,
-        caseSensitive: dicomWebConfig.caseSensitive,
+        caseSensitive: dicomWebConfig.caseSensitive || {},
         headers: userAuthenticationService.getAuthorizationHeader(),
         errorInterceptor: errorHandler.getHTTPErrorHandler(),
       };
@@ -117,7 +117,7 @@ function createDicomWebApi(dicomWebConfig, servicesManager) {
         url: dicomWebConfig.wadoRoot,
         staticWado: dicomWebConfig.staticWado,
         singlepart: dicomWebConfig.singlepart,
-        caseSensitive: dicomWebConfig.caseSensitive,
+        caseSensitive: dicomWebConfig.caseSensitive || {},
         headers: userAuthenticationService.getAuthorizationHeader(),
         errorInterceptor: errorHandler.getHTTPErrorHandler(),
       };

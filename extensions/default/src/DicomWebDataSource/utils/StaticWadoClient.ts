@@ -111,11 +111,16 @@ export default class StaticWadoClient extends api.DICOMwebClient {
     }
 
     const lowerParams = this.toLowerParams(queryParams);
-    const caseSensitive = this.config.caseSensitive;
     const filtered = searchResult.filter(study => {
       for (const key of Object.keys(StaticWadoClient.studyFilterKeys)) {
         if (
-          !this.filterItem(key, lowerParams, study, StaticWadoClient.studyFilterKeys, caseSensitive)
+          !this.filterItem(
+            key,
+            lowerParams,
+            study,
+            StaticWadoClient.studyFilterKeys,
+            this.config.caseSensitive[key]
+          )
         ) {
           return false;
         }
