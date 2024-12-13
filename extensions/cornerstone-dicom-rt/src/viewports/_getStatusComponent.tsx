@@ -34,10 +34,7 @@ export default function _getStatusComponent({ isHydrated, onStatusClick }) {
           <span className="ml-1">RTSTRUCT</span>
         </div>
         {!isHydrated && (
-          <ViewportActionButton
-            label={loadStr}
-            onInteraction={onStatusClick}
-          />
+          <ViewportActionButton onInteraction={onStatusClick}>{loadStr}</ViewportActionButton>
         )}
       </div>
     );

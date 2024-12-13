@@ -34,10 +34,7 @@ export default function _getStatusComponent({ isHydrated, onStatusClick }) {
           <span className="ml-1">SEG</span>
         </div>
         {!isHydrated && (
-          <ViewportActionButton
-            onInteraction={onStatusClick}
-            label={loadStr}
-          />
+          <ViewportActionButton onInteraction={onStatusClick}>{loadStr}</ViewportActionButton>
         )}
       </div>
     );

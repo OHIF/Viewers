@@ -129,20 +129,20 @@ const commandsModule = (props: withAppTypes) => {
      * Loads measurements using either the given function or if the function is not present
      * it hydrates and loads the SR for the given display set instance UID and displays
      * it in the active viewport.
-     * @param loadMeasurementsEventFn the function to call to load the measurements
-     * @param loadMeasurementsEventName the name of the event to fire to load the measurements
-     * @param loadMeasurementsEventArgs arguments for the event; in particular the display set instance UID
-     * @param clearMeasurements optionally clear the measurements prior to hydrating the SR when loadMeasurementsEventFn is not present
+     * @param loadSRMeasurementsEventFn the function to call to load the measurements
+     * @param loadSRMeasurementsEventName the name of the event to fire to load the measurements
+     * @param loadSRMeasurementsEventArgs arguments for the event; in particular the display set instance UID
+     * @param clearMeasurements optionally clear the measurements prior to hydrating the SR when loadSRMeasurementsEventFn is not present
      * @returns
      */
-    loadMeasurements: ({
-      loadMeasurementsEventFn,
-      loadMeasurementsEventName,
-      loadMeasurementsEventArgs,
+    loadSRMeasurements: ({
+      loadSRMeasurementsEventFn,
+      loadSRMeasurementsEventName,
+      loadSRMeasurementsEventArgs,
       clearMeasurements = true,
     }) => {
-      if (loadMeasurementsEventFn) {
-        loadMeasurementsEventFn(loadMeasurementsEventName, loadMeasurementsEventArgs);
+      if (loadSRMeasurementsEventFn) {
+        loadSRMeasurementsEventFn(loadSRMeasurementsEventName, loadSRMeasurementsEventArgs);
         return;
       }
 
@@ -152,7 +152,7 @@ const commandsModule = (props: withAppTypes) => {
 
       const { SeriesInstanceUIDs } = hydrateStructuredReport(
         { servicesManager, extensionManager },
-        loadMeasurementsEventArgs.displaySetInstanceUID
+        loadSRMeasurementsEventArgs.displaySetInstanceUID
       );
 
       const displaySets = displaySetService.getDisplaySetsForSeries(SeriesInstanceUIDs[0]);
@@ -174,8 +174,8 @@ const commandsModule = (props: withAppTypes) => {
     storeMeasurements: {
       commandFn: actions.storeMeasurements,
     },
-    loadMeasurements: {
-      commandFn: actions.loadMeasurements,
+    loadSRMeasurements: {
+      commandFn: actions.loadSRMeasurements,
     },
   };
 

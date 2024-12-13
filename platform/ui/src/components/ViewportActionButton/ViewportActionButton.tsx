@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 
-function ViewportActionButton({ onInteraction, label, commands, id }) {
+function ViewportActionButton({ onInteraction, commands, id, children }) {
   return (
     <div
       className="bg-primary-main hover:bg-primary-light ml-1 cursor-pointer rounded px-1.5 hover:text-black"
@@ -13,7 +13,7 @@ function ViewportActionButton({ onInteraction, label, commands, id }) {
         });
       }}
     >
-      {label}
+      {children}
     </div>
   );
 }
@@ -21,8 +21,8 @@ function ViewportActionButton({ onInteraction, label, commands, id }) {
 ViewportActionButton.propTypes = {
   id: PropTypes.string,
   onInteraction: PropTypes.func.isRequired,
-  label: PropTypes.string.isRequired,
   commands: PropTypes.array,
+  children: PropTypes.node,
 };
 
 export default ViewportActionButton;

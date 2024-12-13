@@ -1,7 +1,6 @@
 import React from 'react';
 import getSopClassHandlerModule from './getSopClassHandlerModule';
 import { srProtocol } from './getHangingProtocolModule';
-import onModeEnter from './onModeEnter';
 import getCommandsModule from './commandsModule';
 import preRegistration from './init';
 import { id } from './id.js';
@@ -42,14 +41,14 @@ const dicomSRExtension = {
         // Customizations to this button can be made in the mode using this extension.
         // For example, the button label can be changed and/or command props to
         // not clear the measurements can be passed to the command.
-        id: 'LoadMeasurements',
-        component: ViewportActionButton,
+        id: 'loadSRMeasurements',
+        component: props => (
+          <ViewportActionButton {...props}>{i18n.t('Common:LOAD')}</ViewportActionButton>
+        ),
         props: {
-          label: i18n.t('Common:LOAD'),
           commands: [
             {
-              commandName: 'loadMeasurements',
-              context: 'CORNERSTONE_STRUCTURED_REPORT',
+              commandName: 'loadSRMeasurements',
             },
           ],
         },
@@ -58,7 +57,7 @@ const dicomSRExtension = {
 
     // The toolbar used in the viewport's status bar. The mode can further customize
     // it to optionally add other buttons.
-    toolbarService.createButtonSection('loadMeasurements', ['LoadMeasurements']);
+    toolbarService.createButtonSection('loadSRMeasurements', ['loadSRMeasurements']);
   },
 
   preRegistration,

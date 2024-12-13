@@ -436,15 +436,15 @@ function _getStatusComponent({
   }
 
   const StatusArea = () => {
-    const { toolbarButtons: loadMeasurementsButtons, onInteraction } = useToolbar({
+    const { toolbarButtons: loadSRMeasurementsButtons, onInteraction } = useToolbar({
       servicesManager,
-      buttonSection: 'loadMeasurements',
+      buttonSection: 'loadSRMeasurements',
     });
 
     const commandOptions = {
-      loadMeasurementsEventFn: sendTrackedMeasurementsEvent,
-      loadMeasurementsEventName: 'HYDRATE_SR',
-      loadMeasurementsEventArgs: {
+      loadSRMeasurementsEventFn: sendTrackedMeasurementsEvent,
+      loadSRMeasurementsEventName: 'HYDRATE_SR',
+      loadSRMeasurementsEventArgs: {
         displaySetInstanceUID: srDisplaySet.displaySetInstanceUID,
         viewportId,
       },
@@ -458,7 +458,7 @@ function _getStatusComponent({
         </div>
         {state === 3 && (
           <>
-            {loadMeasurementsButtons.map(toolDef => {
+            {loadSRMeasurementsButtons.map(toolDef => {
               if (!toolDef) {
                 return null;
               }
