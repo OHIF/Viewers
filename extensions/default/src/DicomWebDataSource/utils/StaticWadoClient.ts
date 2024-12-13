@@ -111,9 +111,12 @@ export default class StaticWadoClient extends api.DICOMwebClient {
     }
 
     const lowerParams = this.toLowerParams(queryParams);
+    const caseSensitive = this.config.caseSensitive;
     const filtered = searchResult.filter(study => {
       for (const key of Object.keys(StaticWadoClient.studyFilterKeys)) {
-        if (!this.filterItem(key, lowerParams, study, StaticWadoClient.studyFilterKeys)) {
+        if (
+          !this.filterItem(key, lowerParams, study, StaticWadoClient.studyFilterKeys, caseSensitive)
+        ) {
           return false;
         }
       }
@@ -156,19 +159,28 @@ export default class StaticWadoClient extends api.DICOMwebClient {
    *
    * @param {*} desired
    * @param {*} actual
+   * @param {boolean} caseSensitive
    * @returns true if the values match
    */
-  compareValues(desired, actual) {
+  compareValues(desired, actual, caseSensitive = true) {
     if (Array.isArray(desired)) {
-      return desired.find(item => this.compareValues(item, actual));
+      return desired.find(item => this.compareValues(item, actual, caseSensitive));
     }
     if (Array.isArray(actual)) {
-      return actual.find(actualItem => this.compareValues(desired, actualItem));
+      return actual.find(actualItem => this.compareValues(desired, actualItem, caseSensitive));
     }
     if (actual?.Alphabetic) {
       actual = actual.Alphabetic;
     }
     if (typeof actual == 'string') {
+      if (!caseSensitive) {
+        if (typeof desired === 'string') {
+          desired = desired.toLowerCase();
+        }
+        if (typeof actual === 'string') {
+          actual = actual.toLowerCase();
+        }
+      }
       if (actual.length === 0) {
         return true;
       }
@@ -208,9 +220,10 @@ export default class StaticWadoClient extends api.DICOMwebClient {
    * @param queryParams -
    * @param {*} study
    * @param {*} sourceFilterMap
+   * @param {boolean} caseSensitive
    * @returns
    */
-  filterItem(key: string, queryParams, study, sourceFilterMap) {
+  filterItem(key: string, queryParams, study, sourceFilterMap, caseSensitive = true) {
     const altKey = sourceFilterMap[key] || key;
     if (!queryParams) {
       return true;
@@ -227,7 +240,7 @@ export default class StaticWadoClient extends api.DICOMwebClient {
       return this.compareDateRange(testValue, valueElem.Value[0]);
     }
     const value = valueElem.Value;
-    return this.compareValues(testValue, value);
+    return this.compareValues(testValue, value, caseSensitive);
   }
 
   /** Converts the query parameters to lower case query parameters */
