@@ -388,26 +388,20 @@ export default function PanelStudyBrowserTracking({
     }
   }
 
-  const _launchMultiMonitor = (studyInstanceUID, screenDelta) => {
-    commandsManager.run('multimonitor', {
+  const _studyContextMenu = (event, studyInstanceUID) => {
+    console.log('Trying to show context menu StudyBrowser.studyContextMenu');
+    event.preventDefault();
+    const selectorProps = {
       studyInstanceUID,
-      screenDelta,
       activeStudyUID: studyInstanceUID,
-      fallback: () => _handleStudyClick(studyInstanceUID),
-      commands: [
-        {
-          commandName: 'loadStudy',
-          commandOptions: {
-            protocolId: '@ohif/mnGrid',
-          },
-        },
-        {
-          commandName: 'setHangingProtocol',
-          commandOptions: {
-            protocolId: '@ohif/mnGrid',
-          },
-        },
-      ],
+      isMultimonitor: servicesManager.services.multiMonitorService.isMultimonitor,
+    };
+    commandsManager.run('showContextMenu', {
+      event,
+      menuId: 'studyBrowserContextMenu',
+      menuCustomizationId: 'StudyBrowser.studyContextMenu',
+      selectorProps,
+      ...selectorProps,
     });
   };
 
@@ -533,7 +527,7 @@ export default function PanelStudyBrowserTracking({
         activeTabName={activeTabName}
         expandedStudyInstanceUIDs={expandedStudyInstanceUIDs}
         onClickStudy={_handleStudyClick}
-        onClickStudyInfo={_launchMultiMonitor}
+        onStudyContextMenu={_studyContextMenu}
         onClickTab={clickedTabName => {
           setActiveTabName(clickedTabName);
         }}

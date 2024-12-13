@@ -66,7 +66,9 @@ export class MultiMonitorService {
       console.warn("Didn't find a commands manager to run in the other window", otherWindow);
       return;
     }
-    otherWindow.multimonitor.commandsManager.runAsync(commands, options);
+    console.log('Running commands in other window', commands, options);
+    const result = otherWindow.multimonitor.commandsManager.runAsync(commands, options);
+    console.log('Got result', result);
   }
 
   /**
@@ -160,5 +162,34 @@ export class MultiMonitorService {
       };
     }
     return this.launchWindows[screenNumber];
+  }
+
+  /**
+   * Try moving the screen to the correct location - this will only work with
+   * screens opened with openWindow containing no more than 1 tab.
+   */
+  public async onModeEnter() {
+    if (this.isMultimonitor && this.screenNumber === 0) {
+      const { screen = null, width, height, left, top } = this.screenConfig.location;
+      const screenDetails = await window.getScreenDetails();
+      const screenDetail =
+        screen === null ? screenDetails.currentScreen : screenDetails.screens[screen];
+      const leftPx = Math.floor(left * screenDetail.availLeft);
+      const topPx = Math.floor(top * screenDetail.availTop);
+      const widthPx = Math.floor(width * screenDetail.availWidth);
+      const heightPx = Math.floor(height * screenDetail.availHeight);
+      window.resizeTo(widthPx, heightPx);
+      window.moveTo(leftPx, topPx);
+      // Put out a message so it is clear what is happening when the window doesn't
+      // move for pre-existing windows.
+      console.log(
+        'For window 0 opened with openWindow: moved to',
+        screen === null ? 'current screen' : screen,
+        leftPx,
+        topPx,
+        widthPx,
+        heightPx
+      );
+    }
   }
 }

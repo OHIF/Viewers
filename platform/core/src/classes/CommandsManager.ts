@@ -204,8 +204,9 @@ export class CommandsManager {
         result = this.runCommand(
           commandName,
           {
-            ...commandOptions,
+            // Put options first so that repeated child options override correctly
             ...options,
+            ...commandOptions,
           },
           context
         );

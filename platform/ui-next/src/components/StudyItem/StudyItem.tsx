@@ -12,7 +12,7 @@ const StudyItem = ({
   modalities,
   isActive,
   onClick,
-  onClickStudyInfo = onClick,
+  onContextMenu,
   isExpanded,
   displaySets,
   activeDisplaySetInstanceUIDs,
@@ -37,7 +37,7 @@ const StudyItem = ({
           <div className="flex h-[40px] flex-1 flex-row">
             <div
               className="flex w-full flex-row items-center justify-between"
-              onClick={onClickStudyInfo}
+              onContextMenu={onContextMenu}
             >
               <div className="flex flex-col items-start text-[13px]">
                 <div className="text-white">{date}</div>
