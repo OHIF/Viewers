@@ -415,15 +415,10 @@ class SegmentationService extends PubSubService {
       imageIds as string[]
     );
 
-    segDisplaySet.images = derivedSegmentationImages;
-
-    segDisplaySet.images = segDisplaySet.images.map(image => {
-      const instance = metaData.get('instance', image.referencedImageId);
-      return {
-        ...image,
-        ...instance,
-      };
-    });
+    segDisplaySet.images = derivedSegmentationImages.map(image => ({
+      ...image,
+      ...metaData.get('instance', image.referencedImageId),
+    }));
 
     const segmentsInfo = segDisplaySet.segMetadata.data;
 
