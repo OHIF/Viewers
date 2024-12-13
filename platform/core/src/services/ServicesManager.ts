@@ -15,7 +15,7 @@ export default class ServicesManager {
     this.registeredServiceNames = [];
   }
 
-  setExtensionManager(extensionManager) {
+  public setExtensionManager(extensionManager) {
     this._extensionManager = extensionManager;
   }
 
@@ -25,7 +25,7 @@ export default class ServicesManager {
    * @param {Object} service
    * @param {Object} configuration
    */
-  registerService(service, configuration = {}) {
+  public registerService(service, configuration = {}) {
     if (!service) {
       log.warn('Attempting to register a null/undefined service. Exiting early.');
       return;
@@ -49,7 +49,6 @@ export default class ServicesManager {
         extensionManager: this._extensionManager,
         commandsManager: this._commandsManager,
         servicesManager: this,
-        extensionManager: this._extensionManager,
       });
       if (service.altName) {
         // TODO - remove this registration
@@ -70,7 +69,7 @@ export default class ServicesManager {
    *
    * @param {Object[]} services - Array of services
    */
-  registerServices(services) {
+  public registerServices(services) {
     services.forEach(service => {
       const hasConfiguration = Array.isArray(service);
 

@@ -9,7 +9,6 @@ import { StudyBrowser } from '@ohif/ui-next';
 import { useTrackedMeasurements } from '../../getContextModule';
 import { Separator } from '@ohif/ui-next';
 import { PanelStudyBrowserHeader } from '@ohif/extension-default';
-import { useAppConfig } from '@state';
 import { defaultActionIcons, defaultViewPresets } from './constants';
 
 const { formatDate, createStudyBrowserTabs } = utils;
@@ -389,6 +388,23 @@ export default function PanelStudyBrowserTracking({
     }
   }
 
+  const _studyContextMenu = (event, studyInstanceUID) => {
+    console.log('Trying to show context menu StudyBrowser.studyContextMenu');
+    event.preventDefault();
+    const selectorProps = {
+      studyInstanceUID,
+      activeStudyUID: studyInstanceUID,
+      isMultimonitor: servicesManager.services.multiMonitorService.isMultimonitor,
+    };
+    commandsManager.run('showContextMenu', {
+      event,
+      menuId: 'studyBrowserContextMenu',
+      menuCustomizationId: 'StudyBrowser.studyContextMenu',
+      selectorProps,
+      ...selectorProps,
+    });
+  };
+
   useEffect(() => {
     if (jumpToDisplaySet) {
       // Get element by displaySetInstanceUID
@@ -511,6 +527,7 @@ export default function PanelStudyBrowserTracking({
         activeTabName={activeTabName}
         expandedStudyInstanceUIDs={expandedStudyInstanceUIDs}
         onClickStudy={_handleStudyClick}
+        onStudyContextMenu={_studyContextMenu}
         onClickTab={clickedTabName => {
           setActiveTabName(clickedTabName);
         }}

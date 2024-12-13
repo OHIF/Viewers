@@ -24,6 +24,7 @@ const StudyBrowser = ({
   expandedStudyInstanceUIDs,
   onClickTab = noop,
   onClickStudy = noop,
+  onStudyContextMenu = noop,
   onClickThumbnail = noop,
   onDoubleClickThumbnail = noop,
   onClickUntrack = noop,
@@ -52,9 +53,8 @@ const StudyBrowser = ({
               modalities={modalities}
               trackedSeries={getTrackedSeries(displaySets)}
               isActive={isExpanded}
-              onClick={() => {
-                onClickStudy(studyInstanceUid);
-              }}
+              onClick={() => onClickStudy(studyInstanceUid)}
+              onContextMenu={e => onStudyContextMenu(e, studyInstanceUid)}
               onClickThumbnail={onClickThumbnail}
               onDoubleClickThumbnail={onDoubleClickThumbnail}
               onClickUntrack={onClickUntrack}
