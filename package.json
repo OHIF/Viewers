@@ -30,6 +30,7 @@
     "build:demo": "lerna run build:viewer:demo --stream",
     "build:package-all": "lerna run build:package --parallel --stream",
     "build:package-all-1": "lerna run build:package-1 --parallel --stream",
+    "dev:fast": "lerna run dev:fast --stream",
     "dev": "lerna run dev:viewer --stream",
     "dev:no:cache": "lerna run dev:no:cache --stream",
     "dev:project": ".scripts/dev.sh",
