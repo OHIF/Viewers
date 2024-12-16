@@ -201,13 +201,13 @@ function OHIFCornerstoneSEGViewport(props: withAppTypes) {
           setSegIsLoading(false);
         }
 
-        if (segDisplaySet?.firstNonZeroVoxelImageId && viewportOptions?.presentationIds) {
-          const { firstNonZeroVoxelImageId } = segDisplaySet;
+        if (segDisplaySet?.firstSegmentedSliceImageId && viewportOptions?.presentationIds) {
+          const { firstSegmentedSliceImageId } = segDisplaySet;
           const { presentationIds } = viewportOptions;
 
           setPositionPresentation(presentationIds.positionPresentationId, {
             viewReference: {
-              referencedImageId: firstNonZeroVoxelImageId,
+              referencedImageId: firstSegmentedSliceImageId,
             },
           });
         }

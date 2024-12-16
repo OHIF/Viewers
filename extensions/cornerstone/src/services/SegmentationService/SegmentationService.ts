@@ -495,7 +495,7 @@ class SegmentationService extends PubSubService {
     }
 
     // assign the first non zero voxel image id to the segDisplaySet
-    segDisplaySet.firstNonZeroVoxelImageId = firstSegmentedSliceImageId;
+    segDisplaySet.firstSegmentedSliceImageId = firstSegmentedSliceImageId;
 
     this._broadcastEvent(EVENTS.SEGMENTATION_LOADING_COMPLETE, {
       segmentationId,
@@ -553,7 +553,19 @@ class SegmentationService extends PubSubService {
     }
 
     const rtDisplaySetUID = rtDisplaySet.displaySetInstanceUID;
+    const referencedDisplaySet = this.servicesManager.services.displaySetService.getDisplaySetByUID(
+      rtDisplaySet.referencedDisplaySetInstanceUID
+    );
 
+    const referencedImageIdsWithGeometry = Array.from(structureSet.ReferencedSOPInstanceUIDsSet);
+
+    const referencedImageIds = referencedDisplaySet.instances.map(image => image.imageId);
+    // find the first image id that contains a referenced SOP instance UID
+    const firstSegmentedSliceImageId = referencedImageIds.find(imageId =>
+      referencedImageIdsWithGeometry.some(referencedId => imageId.includes(referencedId))
+    );
+
+    rtDisplaySet.firstSegmentedSliceImageId = firstSegmentedSliceImageId;
     // Map ROI contours to RT Struct Data
     const allRTStructData = mapROIContoursToRTStructData(structureSet, rtDisplaySetUID);
 
