@@ -4,6 +4,7 @@ import { LoadingIndicatorTotalPercent, useViewportGrid, ViewportActionArrows } f
 import createSEGToolGroupAndAddTools from '../utils/initSEGToolGroup';
 import promptHydrateSEG from '../utils/promptHydrateSEG';
 import _getStatusComponent from './_getStatusComponent';
+import { usePositionPresentationStore } from '@ohif/extension-cornerstone';
 import { SegmentationRepresentations } from '@cornerstonejs/tools/enums';
 
 const SEG_TOOLGROUP_BASE_NAME = 'SEGToolGroup';
@@ -41,6 +42,7 @@ function OHIFCornerstoneSEGViewport(props: withAppTypes) {
 
   // States
   const [selectedSegment, setSelectedSegment] = useState(1);
+  const { setPositionPresentation } = usePositionPresentationStore();
 
   // Hydration means that the SEG is opened and segments are loaded into the
   // segmentation panel, and SEG is also rendered on any viewport that is in the
@@ -197,6 +199,17 @@ function OHIFCornerstoneSEGViewport(props: withAppTypes) {
       evt => {
         if (evt.segDisplaySet.displaySetInstanceUID === segDisplaySet.displaySetInstanceUID) {
           setSegIsLoading(false);
+        }
+
+        if (segDisplaySet?.firstNonZeroVoxelImageId && viewportOptions?.presentationIds) {
+          const { firstNonZeroVoxelImageId } = segDisplaySet;
+          const { presentationIds } = viewportOptions;
+
+          setPositionPresentation(presentationIds.positionPresentationId, {
+            viewReference: {
+              referencedImageId: firstNonZeroVoxelImageId,
+            },
+          });
         }
       }
     );
