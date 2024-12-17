@@ -1,7 +1,7 @@
 ---
 id: 3p8-to-3p9
 title: 3.8 -> 3.9
-sidebar_position: 1
+sidebar_position: 2
 ---
 
 

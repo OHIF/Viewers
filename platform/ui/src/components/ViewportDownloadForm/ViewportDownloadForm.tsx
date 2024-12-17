@@ -315,7 +315,7 @@ const ViewportDownloadForm = ({
                   size="small"
                   rounded="full"
                 >
-                  <Icon name={keepAspect ? 'link' : 'unlink'} />
+                  <Icons.Legacy name={keepAspect ? 'link' : 'unlink'} />
                 </IconButton>
               </Tooltip>
             </div>

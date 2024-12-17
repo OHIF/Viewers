@@ -2,10 +2,9 @@ import React, { useEffect, useState, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import debounce from 'lodash.debounce';
 
-import Icon from '../Icon';
 import Tooltip from '../Tooltip';
 import InputRange from '../InputRange';
-
+import { Icons } from '@ohif/ui-next';
 import './CinePlayer.css';
 
 export type CinePlayerProps = {
@@ -98,14 +97,14 @@ const CinePlayer: React.FC<CinePlayerProps> = ({
           'border-secondary-light/60 bg-primary-dark inline-flex select-none items-center gap-2 rounded border px-2 py-2'
         }
       >
-        <Icon
+        <Icons.Legacy
           name={getPlayPauseIconName()}
           className="active:text-primary-light hover:bg-customblue-300 cursor-pointer text-white hover:rounded"
           onClick={() => onPlayPauseChange(!isPlaying)}
           data-cy={'cine-player-play-pause'}
         />
         {isDynamic && dynamicInfo && (
-          <div className="min-w-16 max-w-44 flex flex-col  text-white">
+          <div className="min-w-16 max-w-44 flex flex-col text-white">
             {/* Add Tailwind classes for monospace font and center alignment */}
             <div className="text-[11px]">
               <span className="w-2 text-white">{dynamicInfo.timePointIndex}</span>{' '}
@@ -121,7 +120,7 @@ const CinePlayer: React.FC<CinePlayerProps> = ({
             onClick={() => handleSetFrameRate(frameRate - 1)}
             data-cy={'cine-player-left-arrow'}
           >
-            <Icon name="arrow-left-small" />
+            <Icons.ArrowLeft />
           </div>
           <Tooltip
             position="top"
@@ -153,11 +152,10 @@ const CinePlayer: React.FC<CinePlayerProps> = ({
             onClick={() => handleSetFrameRate(frameRate + 1)}
             data-cy={'cine-player-right-arrow'}
           >
-            <Icon name="arrow-right-small" />
+            <Icons.ArrowRight />
           </div>
         </div>
-        <Icon
-          name="icon-close"
+        <Icons.Close
           className="text-primary-active active:text-primary-light hover:bg-customblue-300 cursor-pointer hover:rounded"
           onClick={onClose}
           data-cy={'cine-player-close'}

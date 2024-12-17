@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
-import Icon from '../Icon/Icon';
+import { Icons } from '@ohif/ui-next';
 
 function LayoutPreset({
   onSelection = () => {},
@@ -11,6 +11,7 @@ function LayoutPreset({
   classNames: classNameProps,
   disabled,
 }) {
+  console.debug('🚀 ~ icon:', icon);
   return (
     <div
       className={classNames(classNameProps, disabled && 'ohif-disabled')}
@@ -19,7 +20,7 @@ function LayoutPreset({
       }}
       data-cy={title}
     >
-      <Icon
+      <Icons.Legacy
         name={icon}
         className="group-hover:text-primary-light"
       />

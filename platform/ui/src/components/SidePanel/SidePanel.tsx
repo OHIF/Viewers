@@ -2,8 +2,7 @@ import classnames from 'classnames';
 import PropTypes from 'prop-types';
 import React, { CSSProperties, useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-
-import Icon from '../Icon';
+import { Icons } from '@ohif/ui-next';
 import Tooltip from '../Tooltip';
 
 type StyleMap = {
@@ -224,8 +223,7 @@ const SidePanel = ({
           }}
           data-cy={`side-panel-header-${side}`}
         >
-          <Icon
-            name={'navigation-panel-right-reveal'}
+          <Icons.NavigationPanelReveal
             className={classnames('text-primary-active', side === 'left' && 'rotate-180 transform')}
           />
         </div>
@@ -248,7 +246,7 @@ const SidePanel = ({
                   return childComponent.disabled ? null : updateActiveTabIndex(index);
                 }}
               >
-                <Icon
+                <Icons.Legacy
                   name={childComponent.iconName}
                   className={classnames({
                     'text-primary-active': true,
@@ -280,7 +278,7 @@ const SidePanel = ({
         }}
         data-cy={`side-panel-header-${side}`}
       >
-        <Icon
+        <Icons.Legacy
           name={openStateIconName[side]}
           className="text-primary-active"
         />
@@ -331,14 +329,14 @@ const SidePanel = ({
                     data-cy={`${tab.name}-btn`}
                   >
                     <div className={getTabIconClassNames(tabs.length, tabIndex === activeTabIndex)}>
-                      <Icon
+                      <Icons.Legacy
                         name={tab.iconName}
                         className={`${tab.disabled && 'ohif-disabled'}`}
                         style={{
                           width: '22px',
                           height: '22px',
                         }}
-                      ></Icon>
+                      />
                     </div>
                   </div>
                 </Tooltip>
