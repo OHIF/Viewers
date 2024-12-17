@@ -126,33 +126,13 @@ const commandsModule = (props: withAppTypes) => {
     },
 
     /**
-     * Loads measurements using either the given function or if the function is not present
-     * it hydrates and loads the SR for the given display set instance UID and displays
-     * it in the active viewport.
-     * @param loadSRMeasurementsEventFn the function to call to load the measurements
-     * @param loadSRMeasurementsEventName the name of the event to fire to load the measurements
-     * @param loadSRMeasurementsEventArgs arguments for the event; in particular the display set instance UID
-     * @param clearMeasurements optionally clear the measurements prior to hydrating the SR when loadSRMeasurementsEventFn is not present
-     * @returns
+     * Loads measurements by hydrating and loading the SR for the given display set instance UID
+     * and displays it in the active viewport.
      */
-    loadSRMeasurements: ({
-      loadSRMeasurementsEventFn,
-      loadSRMeasurementsEventName,
-      loadSRMeasurementsEventArgs,
-      clearMeasurements = true,
-    }) => {
-      if (loadSRMeasurementsEventFn) {
-        loadSRMeasurementsEventFn(loadSRMeasurementsEventName, loadSRMeasurementsEventArgs);
-        return;
-      }
-
-      if (clearMeasurements) {
-        commandsManager.run('clearMeasurements');
-      }
-
+    loadSRMeasurements: ({ displaySetInstanceUID }) => {
       const { SeriesInstanceUIDs } = hydrateStructuredReport(
         { servicesManager, extensionManager },
-        loadSRMeasurementsEventArgs.displaySetInstanceUID
+        displaySetInstanceUID
       );
 
       const displaySets = displaySetService.getDisplaySetsForSeries(SeriesInstanceUIDs[0]);

@@ -42,7 +42,6 @@ function OHIFCornerstoneSRMeasurementViewport(props: withAppTypes) {
 
   // Optional hook into tracking extension, if present.
   let trackedMeasurements;
-  let sendTrackedMeasurementsEvent;
 
   const hasMeasurementTrackingExtension = extensionManager.registeredExtensionIds.includes(
     MEASUREMENT_TRACKING_EXTENSION_ID
@@ -55,7 +54,6 @@ function OHIFCornerstoneSRMeasurementViewport(props: withAppTypes) {
 
     const tracked = useContext(contextModule.context);
     trackedMeasurements = tracked?.[0];
-    sendTrackedMeasurementsEvent = tracked?.[1];
   }
 
   /**
@@ -269,7 +267,6 @@ function OHIFCornerstoneSRMeasurementViewport(props: withAppTypes) {
           viewportId,
           isRehydratable: srDisplaySet.isRehydratable,
           isLocked,
-          sendTrackedMeasurementsEvent,
           t,
           servicesManager,
         }),
@@ -290,15 +287,7 @@ function OHIFCornerstoneSRMeasurementViewport(props: withAppTypes) {
         location: viewportActionCornersService.LOCATIONS.topRight,
       },
     ]);
-  }, [
-    isLocked,
-    onMeasurementChange,
-    sendTrackedMeasurementsEvent,
-    srDisplaySet,
-    t,
-    viewportActionCornersService,
-    viewportId,
-  ]);
+  }, [isLocked, onMeasurementChange, srDisplaySet, t, viewportActionCornersService, viewportId]);
 
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   let childrenWithProps = null;
@@ -386,7 +375,6 @@ function _getStatusComponent({
   viewportId,
   isRehydratable,
   isLocked,
-  sendTrackedMeasurementsEvent,
   t,
   servicesManager,
 }) {
@@ -442,12 +430,8 @@ function _getStatusComponent({
     });
 
     const commandOptions = {
-      loadSRMeasurementsEventFn: sendTrackedMeasurementsEvent,
-      loadSRMeasurementsEventName: 'HYDRATE_SR',
-      loadSRMeasurementsEventArgs: {
-        displaySetInstanceUID: srDisplaySet.displaySetInstanceUID,
-        viewportId,
-      },
+      displaySetInstanceUID: srDisplaySet.displaySetInstanceUID,
+      viewportId,
     };
 
     return (

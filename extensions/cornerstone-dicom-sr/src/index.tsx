@@ -37,16 +37,19 @@ const dicomSRExtension = {
 
     toolbarService.addButtons([
       {
-        // A default button for loading measurements added to the toolbar below.
-        // Customizations to this button can be made in the mode using this extension.
-        // For example, the button label can be changed and/or command props to
-        // not clear the measurements can be passed to the command.
+        // A base/default button for loading measurements. It is added to the toolbar below.
+        // Customizations to this button can be made in the mode or by another extension.
+        // For example, the button label can be changed and/or the command to clear
+        // the measurements can be dropped.
         id: 'loadSRMeasurements',
         component: props => (
           <ViewportActionButton {...props}>{i18n.t('Common:LOAD')}</ViewportActionButton>
         ),
         props: {
           commands: [
+            {
+              commandName: 'clearMeasurements',
+            },
             {
               commandName: 'loadSRMeasurements',
             },
@@ -55,7 +58,7 @@ const dicomSRExtension = {
       },
     ]);
 
-    // The toolbar used in the viewport's status bar. The mode can further customize
+    // The toolbar used in the viewport's status bar. Modes and extensions can further customize
     // it to optionally add other buttons.
     toolbarService.createButtonSection('loadSRMeasurements', ['loadSRMeasurements']);
   },
