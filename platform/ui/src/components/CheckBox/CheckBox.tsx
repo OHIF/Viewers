@@ -1,6 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import PropTypes from 'prop-types';
-import { Icon, Typography } from '../../';
+import { Typography } from '../../';
+import { Icons } from '@ohif/ui-next';
 
 /**
  * REACT CheckBox component
@@ -31,12 +32,15 @@ const CheckBox: React.FC<{
       className={`flex cursor-pointer items-center space-x-1 ${className ? className : ''}`}
       onClick={handleClick}
     >
-      {isChecked ? <Icon name="checkbox-checked" /> : <Icon name="checkbox-unchecked" />}
-
+      {isChecked ? (
+        <Icons.ByName name="checkbox-checked" />
+      ) : (
+        <Icons.ByName name="checkbox-unchecked" />
+      )}
       <Typography
         variant={labelVariant ?? 'subtitle'}
         component="p"
-        className={labelClassName ?? 'text-white '}
+        className={labelClassName ?? 'text-white'}
       >
         {label}
       </Typography>
