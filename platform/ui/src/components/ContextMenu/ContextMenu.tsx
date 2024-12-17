@@ -23,7 +23,7 @@ const ContextMenu = ({ items, ...props }) => {
         >
           <Typography>{item.label}</Typography>
           {item.iconRight && (
-            <Icons.Legacy
+            <Icons.ByName
               name={item.iconRight}
               className="inline"
             />

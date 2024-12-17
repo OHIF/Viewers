@@ -130,7 +130,7 @@ const InputNumber: React.FC<{
               className={arrowHorizontalClassName}
               onClick={() => decrement()}
             >
-              <Icons.Legacy name="arrow-left" />
+              <Icons.ByName name="arrow-left" />
             </div>
           )}
           <input
@@ -148,7 +148,7 @@ const InputNumber: React.FC<{
               className={arrowHorizontalClassName}
               onClick={() => increment()}
             >
-              <Icons.Legacy name="arrow-right" />
+              <Icons.ByName name="arrow-right" />
             </div>
           )}
           {showAdjustmentArrows && arrowsDirection === 'vertical' && (
@@ -177,7 +177,7 @@ const ArrowButton = ({ onClick, rotate = false }: { onClick: () => void; rotate?
     className={`text-[#726f7e] ${rotate ? 'rotate-180 transform' : ''}`}
     onClick={onClick}
   >
-    <Icons.Legacy name="arrow-down" />
+    <Icons.ByName name="arrow-down" />
   </IconButton>
 );
 

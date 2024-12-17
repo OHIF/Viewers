@@ -59,7 +59,7 @@ function ThumbnailTracked({
               </div>
             }
           >
-            <Icons.Legacy
+            <Icons.ByName
               name={trackedIcon}
               className="text-primary-light mb-2 w-4"
             />

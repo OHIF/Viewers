@@ -102,7 +102,7 @@ function Header({
                     >
                       {IconComponent && (
                         <span className="flex h-4 w-4 items-center justify-center">
-                          <Icons.Legacy name={IconComponent.name} />
+                          <Icons.ByName name={IconComponent.name} />
                         </span>
                       )}
                       <span className="flex-1">{option.title}</span>

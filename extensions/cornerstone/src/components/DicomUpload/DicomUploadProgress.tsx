@@ -314,10 +314,10 @@ function DicomUploadProgress({
       <div className="ml-auto flex w-6 justify-center">
         {numFails > 0 && (
           <div onClick={() => setShowFailedOnly(currentShowFailedOnly => !currentShowFailedOnly)}>
-            <Icons.Legacy
+            <Icons.ByName
               className="cursor-pointer"
               name="icon-status-alert"
-            ></Icons.Legacy>
+            ></Icons.ByName>
           </div>
         )}
       </div>

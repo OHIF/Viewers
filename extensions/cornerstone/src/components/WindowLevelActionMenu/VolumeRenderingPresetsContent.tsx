@@ -61,7 +61,7 @@ export function VolumeRenderingPresetsContent({
                   handleApply({ preset: preset.name, viewportId });
                 }}
               >
-                <Icons.Legacy
+                <Icons.ByName
                   name={preset.name}
                   className={
                     selectedPreset?.name === preset.name

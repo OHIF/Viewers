@@ -59,7 +59,7 @@ const Dropdown = ({
           data-cy={id}
         >
           {!!icon && (
-            <Icons.Legacy
+            <Icons.ByName
               name={icon}
               className="mr-2 w-4 text-white"
             />
@@ -96,7 +96,7 @@ const Dropdown = ({
       <div className="flex items-center">
         {children}
         {showDropdownIcon && (
-          <Icons.Legacy
+          <Icons.ByName
             name="chevron-down"
             className="ml-1"
           />

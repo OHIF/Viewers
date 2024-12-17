@@ -143,7 +143,7 @@ const SegmentationConfig = ({
           onClick={() => setIsMinimized(!isMinimized)}
           className="flex cursor-pointer items-center pl-2 pb-[9px]"
         >
-          <Icons.Legacy
+          <Icons.ByName
             name="panel-group-open-close"
             className={classNames('h-5 w-5 cursor-pointer text-white transition duration-300', {
               'rotate-90 transform': !isMinimized,

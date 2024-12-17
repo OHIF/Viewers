@@ -20,7 +20,7 @@ function LayoutPreset({
       }}
       data-cy={title}
     >
-      <Icons.Legacy
+      <Icons.ByName
         name={icon}
         className="group-hover:text-primary-light"
       />

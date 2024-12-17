@@ -52,7 +52,7 @@ const AdvancedToolbox = ({ title, items }) => {
                         'hover:bg-primary-light cursor-pointer hover:cursor-pointer hover:text-black'
                     )}
                   >
-                    <Icons.Legacy name={item.icon} />
+                    <Icons.ByName name={item.icon} />
                   </div>
                 </div>
               </Tooltip>

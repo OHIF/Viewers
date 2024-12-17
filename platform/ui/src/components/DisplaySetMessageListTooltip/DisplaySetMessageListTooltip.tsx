@@ -14,7 +14,7 @@ const DisplaySetMessageListTooltip = ({ messages, id }): React.ReactNode => {
   if (messages?.size()) {
     return (
       <>
-        <Icons.Legacy
+        <Icons.ByName
           id={id}
           onMouseOver={() => setIsOpen(true)}
           onFocus={() => setIsOpen(true)}

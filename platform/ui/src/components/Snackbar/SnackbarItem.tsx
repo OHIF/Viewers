@@ -33,7 +33,7 @@ const SnackbarItem = ({ options, onClose }) => {
       className={classNames(`${options.visible ? '' : hidden} sb-item`, typeClasses[options.type])}
     >
       <div className="flex">
-        <Icons.Legacy
+        <Icons.ByName
           name={iconClasses[options.type]}
           className="mt-[1px] h-5 w-5"
         />
@@ -50,7 +50,7 @@ const SnackbarItem = ({ options, onClose }) => {
           onClick={handleClose}
           className="relative left-[3px] top-[-3px] ml-auto flex h-5 w-5 items-center justify-center self-start rounded-full text-[#0944b3]"
         >
-          <Icons.Legacy
+          <Icons.ByName
             name="close"
             className="text-black"
           />

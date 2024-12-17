@@ -24,7 +24,7 @@ export default class SelectTreeBreadcrumb extends Component<PropType> {
           />
           <span className="cursor-pointer whitespace-nowrap">
             <span className="pr-2.5">
-              <Icons.Legacy name="fast-backward" />
+              <Icons.ByName name="fast-backward" />
             </span>
             {this.props.label}
           </span>

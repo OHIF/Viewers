@@ -32,7 +32,7 @@ export function VolumeRenderingPresets({
     <AllInOneMenu.Item
       label="Rendering Presets"
       icon={<Icons.VolumeRendering />}
-      rightIcon={<Icons.Legacy name="action-new-dialog" />}
+      rightIcon={<Icons.ByName name="action-new-dialog" />}
       onClick={onClickPresets}
     />
   );

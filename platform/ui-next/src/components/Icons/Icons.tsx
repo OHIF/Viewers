@@ -675,7 +675,7 @@ export const Icons = {
     Icons[name] = icon;
   },
 
-  Legacy: ({ name, className, ...props }: { name: string; className?: string }) => {
+  ByName: ({ name, className, ...props }: { name: string; className?: string }) => {
     const IconComponent = Icons[name];
 
     if (!IconComponent) {

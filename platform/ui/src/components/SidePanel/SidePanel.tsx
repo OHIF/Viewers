@@ -246,7 +246,7 @@ const SidePanel = ({
                   return childComponent.disabled ? null : updateActiveTabIndex(index);
                 }}
               >
-                <Icons.Legacy
+                <Icons.ByName
                   name={childComponent.iconName}
                   className={classnames({
                     'text-primary-active': true,
@@ -278,7 +278,7 @@ const SidePanel = ({
         }}
         data-cy={`side-panel-header-${side}`}
       >
-        <Icons.Legacy
+        <Icons.ByName
           name={openStateIconName[side]}
           className="text-primary-active"
         />
@@ -329,7 +329,7 @@ const SidePanel = ({
                     data-cy={`${tab.name}-btn`}
                   >
                     <div className={getTabIconClassNames(tabs.length, tabIndex === activeTabIndex)}>
-                      <Icons.Legacy
+                      <Icons.ByName
                         name={tab.iconName}
                         className={`${tab.disabled && 'ohif-disabled'}`}
                         style={{

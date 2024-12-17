@@ -433,7 +433,7 @@ function _getStatusComponent({
 
   switch (state) {
     case 1:
-      StatusIcon = () => <Icons.Legacy name="status-alert" />;
+      StatusIcon = () => <Icons.ByName name="status-alert" />;
 
       ToolTipMessage = () => (
         <div>
@@ -444,7 +444,7 @@ function _getStatusComponent({
       );
       break;
     case 2:
-      StatusIcon = () => <Icons.Legacy name="status-locked" />;
+      StatusIcon = () => <Icons.ByName name="status-locked" />;
 
       ToolTipMessage = () => (
         <div>
@@ -458,7 +458,7 @@ function _getStatusComponent({
       break;
     case 3:
       StatusIcon = () => (
-        <Icons.Legacy
+        <Icons.ByName
           className="text-aqua-pale"
           name="status-untracked"
         />

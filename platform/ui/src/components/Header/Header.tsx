@@ -79,7 +79,7 @@ function Header({
                 size="initial"
                 className="text-primary-active hover:bg-primary-dark h-full w-full"
               >
-                <Icons.Legacy name="icon-settings" />
+                <Icons.ByName name="icon-settings" />
               </IconButton>
             </Dropdown>
           </div>

@@ -54,17 +54,17 @@ const DicomUploadProgressItem = memo(
       switch (dicomFileUploader.getStatus()) {
         case UploadStatus.Success:
           return (
-            <Icons.Legacy
+            <Icons.ByName
               name="status-tracked"
               className="text-primary-light"
             />
           );
         case UploadStatus.InProgress:
-          return <Icons.Legacy name="icon-transferring" />;
+          return <Icons.ByName name="icon-transferring" />;
         case UploadStatus.Failed:
-          return <Icons.Legacy name="icon-alert-small" />;
+          return <Icons.ByName name="icon-alert-small" />;
         case UploadStatus.Cancelled:
-          return <Icons.Legacy name="icon-alert-outline" />;
+          return <Icons.ByName name="icon-alert-outline" />;
         default:
           return <></>;
       }

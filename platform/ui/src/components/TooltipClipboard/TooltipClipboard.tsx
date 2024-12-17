@@ -144,7 +144,7 @@ const TooltipClipboard = ({ children, text = '' }) => {
             <>
               {children}
               <div className="border-secondary-light ml-2 border-l pl-2">
-                <Icons.Legacy
+                <Icons.ByName
                   name="clipboard"
                   className="w-4 text-white"
                 />

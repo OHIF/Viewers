@@ -97,7 +97,7 @@ function HeaderPatientInfo({ servicesManager, appConfig }: withAppTypes) {
       className="hover:bg-primary-dark flex cursor-pointer items-center justify-center gap-1 rounded-lg"
       onClick={handleOnClick}
     >
-      <Icons.Legacy
+      <Icons.ByName
         name={isMixedPatients ? 'icon-multiple-patients' : 'icon-patient'}
         className="text-primary-active"
       />

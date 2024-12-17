@@ -52,7 +52,7 @@ export default function IconMenu({
           className={iconClassName}
           onClick={toggleMenuVisibility}
         >
-          <Icons.Legacy name={icon} />
+          <Icons.ByName name={icon} />
         </div>
         <AllInOneMenu.Menu
           key={menuKey}

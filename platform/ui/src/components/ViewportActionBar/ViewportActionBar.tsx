@@ -134,12 +134,12 @@ const ViewportActionBar = ({
       )}
       {showArrows && (
         <>
-          <Icons.Legacy
+          <Icons.ByName
             className={`ml-auto ${arrowClasses}`}
             name="chevron-prev"
             onClick={() => onArrowsClick('left')}
           />
-          <Icons.Legacy
+          <Icons.ByName
             className={arrowClasses}
             name="chevron-next"
             onClick={() => onArrowsClick('right')}

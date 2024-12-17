@@ -97,7 +97,7 @@ const CinePlayer: React.FC<CinePlayerProps> = ({
           'border-secondary-light/60 bg-primary-dark inline-flex select-none items-center gap-2 rounded border px-2 py-2'
         }
       >
-        <Icons.Legacy
+        <Icons.ByName
           name={getPlayPauseIconName()}
           className="active:text-primary-light hover:bg-customblue-300 cursor-pointer text-white hover:rounded"
           onClick={() => onPlayPauseChange(!isPlaying)}

@@ -25,7 +25,7 @@ const ToolbarButton = ({
 }) => {
   const shouldShowDropdown = !!dropdownContent;
   const iconEl = icon ? (
-    <Icons.Legacy name={icon} />
+    <Icons.ByName name={icon} />
   ) : (
     <div>{label || 'Missing icon and label'}</div>
   );

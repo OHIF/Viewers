@@ -19,7 +19,7 @@ const Header = ({ title, tooltip }) => (
       tight={true}
       tooltipBoxClassName="max-w-xs p-2"
     >
-      <Icons.Legacy
+      <Icons.ByName
         name="info-link"
         className="text-primary-active h-[14px] w-[14px]"
       />
@@ -201,7 +201,7 @@ function FrameControls({
           className="bg-customblue-30 h-[26px] w-[58px] rounded-[4px]"
           onClick={() => onPlayPauseChange(!isPlaying)}
         >
-          <Icons.Legacy
+          <Icons.ByName
             name={getPlayPauseIconName()}
             className="active:text-primary-light hover:bg-customblue-300 h-[24px] w-[24px] cursor-pointer text-white"
           />

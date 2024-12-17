@@ -46,7 +46,7 @@ const ProgressItemDetail = ({ option }: { option: ProgressDropdownOption }): Rea
     <>
       {icon && (
         <div>
-          <Icons.Legacy
+          <Icons.ByName
             name={icon}
             className={iconClassNames}
           />

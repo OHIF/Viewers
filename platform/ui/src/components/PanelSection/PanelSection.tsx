@@ -17,7 +17,7 @@ const PanelSection = ({ title, children, actionIcons = [], childrenClassName }) 
         <div className="text-aqua-pale">{title}</div>
         <div className="flex items-center space-x-1">
           {actionIcons.map((icon, index) => (
-            <Icons.Legacy
+            <Icons.ByName
               key={index}
               name={icon.name}
               onClick={e => {

@@ -80,7 +80,7 @@ const Notification = ({
       tabIndex={0}
     >
       <div className="flex grow items-center">
-        <Icons.Legacy
+        <Icons.ByName
           name={icon}
           className={classnames('h-6 w-6', color)}
         />

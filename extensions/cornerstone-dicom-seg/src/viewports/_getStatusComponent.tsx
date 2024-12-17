@@ -9,13 +9,13 @@ export default function _getStatusComponent({ isHydrated, onStatusClick }) {
 
   switch (isHydrated) {
     case true:
-      StatusIcon = () => <Icons.Legacy name="status-alert" />;
+      StatusIcon = () => <Icons.ByName name="status-alert" />;
 
       ToolTipMessage = () => <div>This Segmentation is loaded in the segmentation panel</div>;
       break;
     case false:
       StatusIcon = () => (
-        <Icons.Legacy
+        <Icons.ByName
           className="text-aqua-pale"
           name="status-untracked"
         />

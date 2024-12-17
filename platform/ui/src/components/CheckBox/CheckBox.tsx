@@ -33,9 +33,9 @@ const CheckBox: React.FC<{
       onClick={handleClick}
     >
       {isChecked ? (
-        <Icons.Legacy name="checkbox-checked" />
+        <Icons.ByName name="checkbox-checked" />
       ) : (
-        <Icons.Legacy name="checkbox-unchecked" />
+        <Icons.ByName name="checkbox-unchecked" />
       )}
       <Typography
         variant={labelVariant ?? 'subtitle'}

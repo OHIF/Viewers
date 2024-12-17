@@ -71,7 +71,7 @@ const DefaultListItemRenderer = props => {
     >
       {icon && (
         <span className="mr-4">
-          <Icons.Legacy
+          <Icons.ByName
             name={icon}
             className="h-[28px] w-[28px]"
           />
@@ -93,7 +93,7 @@ const SplitButton = ({
   items,
   renderer = null,
   onInteraction,
-  Component = Icons.Legacy,
+  Component = Icons.ByName,
 }) => {
   const { t } = useTranslation('Buttons');
   const [state, setState] = useState({ isHovering: false, isExpanded: false });
@@ -148,7 +148,7 @@ const SplitButton = ({
                 content={secondary.tooltip}
                 className="h-full"
               >
-                <Icons.Legacy
+                <Icons.ByName
                   name={secondary.icon}
                   className={classes.SecondaryIcon({ ...state })}
                 />

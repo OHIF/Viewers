@@ -66,7 +66,7 @@ function ItemListComponent({
                       <Button
                         onClick={() => onItemClicked(item)}
                         className="invisible group-hover:visible"
-                        endIcon={<Icons.Legacy name="arrow-left" />}
+                        endIcon={<Icons.ByName name="arrow-left" />}
                       >
                         {t('Select')}
                       </Button>

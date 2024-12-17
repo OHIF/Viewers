@@ -184,7 +184,7 @@ const HoveringIcons = ({
   };
 
   const createIcon = (name, action, color = null) => (
-    <Icons.Legacy
+    <Icons.ByName
       name={name}
       className={classnames(iconClass, color ?? 'text-white')}
       onClick={e => handleIconClick(e, action)}
