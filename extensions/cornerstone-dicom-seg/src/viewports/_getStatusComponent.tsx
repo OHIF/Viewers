@@ -1,6 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Icon, Tooltip, ViewportActionButton } from '@ohif/ui';
+import { Tooltip, ViewportActionButton } from '@ohif/ui';
+import { Icons } from '@ohif/ui-next';
 
 export default function _getStatusComponent({ isHydrated, onStatusClick }) {
   let ToolTipMessage = null;
@@ -8,13 +9,13 @@ export default function _getStatusComponent({ isHydrated, onStatusClick }) {
 
   switch (isHydrated) {
     case true:
-      StatusIcon = () => <Icon name="status-alert" />;
+      StatusIcon = () => <Icons.ByName name="status-alert" />;
 
       ToolTipMessage = () => <div>This Segmentation is loaded in the segmentation panel</div>;
       break;
     case false:
       StatusIcon = () => (
-        <Icon
+        <Icons.ByName
           className="text-aqua-pale"
           name="status-untracked"
         />

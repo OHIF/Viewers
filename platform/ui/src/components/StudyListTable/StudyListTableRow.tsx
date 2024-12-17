@@ -2,8 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import getGridWidthClass from '../../utils/getGridWidthClass';
-
-import Icon from '../Icon';
+import { Icons } from '@ohif/ui-next';
 
 const StudyListTableRow = props => {
   const { tableData } = props;
@@ -62,10 +61,11 @@ const StudyListTableRow = props => {
                         <div className="flex">
                           {index === 0 && (
                             <div>
-                              <Icon
-                                name={isExpanded ? 'chevron-down' : 'chevron-right'}
-                                className="mr-4 inline-flex"
-                              />
+                              {isExpanded ? (
+                                <Icons.ChevronOpen className="-mt-1 mr-4 inline-flex" />
+                              ) : (
+                                <Icons.ChevronClosed className="-mt-1 mr-4 inline-flex rotate-180" />
+                              )}
                             </div>
                           )}
                           <div

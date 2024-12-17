@@ -1,6 +1,6 @@
 {
   "name": "@ohif/extension-dicom-microscopy",
-  "version": "3.10.0-beta.22",
+  "version": "3.10.0-beta.25",
   "description": "OHIF extension for DICOM microscopy",
   "author": "Bill Wallace, md-prog",
   "license": "MIT",
@@ -30,10 +30,10 @@
     "start": "yarn run dev"
   },
   "peerDependencies": {
-    "@ohif/core": "3.10.0-beta.22",
-    "@ohif/extension-default": "3.10.0-beta.22",
-    "@ohif/i18n": "3.10.0-beta.22",
-    "@ohif/ui": "3.10.0-beta.22",
+    "@ohif/core": "3.10.0-beta.25",
+    "@ohif/extension-default": "3.10.0-beta.25",
+    "@ohif/i18n": "3.10.0-beta.25",
+    "@ohif/ui": "3.10.0-beta.25",
     "prop-types": "^15.6.2",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
