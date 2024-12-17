@@ -1,7 +1,7 @@
 {
   "name": "@externals/devDependencies",
   "description": "External dev dependencies - put dev build dependencies here",
-  "version": "3.10.0-beta.23",
+  "version": "3.10.0-beta.24",
   "license": "MIT",
   "private": true,
   "engines": {

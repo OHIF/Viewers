@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.10.0-beta.24](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.23...v3.10.0-beta.24) (2024-12-17)
+
+
+### Features
+
+* migrate icons to ui-next  ([#4606](https://github.com/OHIF/Viewers/issues/4606)) ([4e2ae32](https://github.com/OHIF/Viewers/commit/4e2ae328744ed95589c2cdf7a531454a25bf88b5))
+
+
+
+
+
 # [3.10.0-beta.23](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.22...v3.10.0-beta.23) (2024-12-17)
 
 
