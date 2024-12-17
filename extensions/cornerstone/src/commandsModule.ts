@@ -277,7 +277,6 @@ function commandsModule({
 
       if (style) {
         // Reset the selected values to preserve appearance on selection
-        style.colorSelected ||= style.color;
         style.lineDashSelected ||= style.lineDash;
         annotation.config.style.setAnnotationStyles(measurement.uid, style);
 
