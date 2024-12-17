@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.10.0-beta.23](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.22...v3.10.0-beta.23) (2024-12-17)
+
+
+### Bug Fixes
+
+* **seg:** jump to the first slice in SEG and RT that has data ([#4605](https://github.com/OHIF/Viewers/issues/4605)) ([9bf24d6](https://github.com/OHIF/Viewers/commit/9bf24d6dc58ed8f65c90899a17c11044b792cf40))
+
+
+
+
+
 # [3.10.0-beta.22](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.21...v3.10.0-beta.22) (2024-12-13)
 
 **Note:** Version bump only for package @ohif/extension-cornerstone
