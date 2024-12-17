@@ -15,24 +15,13 @@ const MEASUREMENT_TRACKING_EXTENSION_ID = '@ohif/extension-measurement-tracking'
 const SR_TOOLGROUP_BASE_NAME = 'SRToolGroup';
 
 function OHIFCornerstoneSRMeasurementViewport(props: withAppTypes) {
-  const {
-    commandsManager,
-    children,
-    dataSource,
-    displaySets,
-    viewportOptions,
-    servicesManager,
-    extensionManager,
-  } = props;
+  const { children, dataSource, displaySets, viewportOptions, servicesManager, extensionManager } =
+    props;
 
   const [appConfig] = useAppConfig();
 
-  const {
-    displaySetService,
-    cornerstoneViewportService,
-    measurementService,
-    viewportActionCornersService,
-  } = servicesManager.services;
+  const { displaySetService, measurementService, viewportActionCornersService } =
+    servicesManager.services;
 
   const viewportId = viewportOptions.viewportId;
 
@@ -42,6 +31,8 @@ function OHIFCornerstoneSRMeasurementViewport(props: withAppTypes) {
   }
 
   const srDisplaySet = displaySets[0];
+
+  const { setPositionPresentation } = usePositionPresentationStore();
 
   const [viewportGrid, viewportGridService] = useViewportGrid();
   const [measurementSelected, setMeasurementSelected] = useState(0);
@@ -157,30 +148,13 @@ function OHIFCornerstoneSRMeasurementViewport(props: withAppTypes) {
         setActiveImageDisplaySetData(referencedDisplaySet);
         setReferencedDisplaySetMetadata(referencedDisplaySetMetadata);
 
-        if (
-          referencedDisplaySet.displaySetInstanceUID ===
-          activeImageDisplaySetData?.displaySetInstanceUID
-        ) {
-          const { measurements } = srDisplaySet;
-
-          // it means that we have a new referenced display set, and the
-          // imageIdIndex will handle it by updating the viewport, but if they
-          // are the same we just need to use measurementService to jump to the
-          // new measurement
-          const csViewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
-
-          if (!csViewport) {
-            return;
-          }
-
-          const imageIds = csViewport.getImageIds();
-
-          const imageIdIndex = imageIds.indexOf(measurements[newMeasurementSelected].imageId);
-
-          if (imageIdIndex !== -1) {
-            csViewport.setImageIdIndex(imageIdIndex);
-          }
-        }
+        const { presentationIds } = viewportOptions;
+        const measurement = srDisplaySet.measurements[newMeasurementSelected];
+        setPositionPresentation(presentationIds.positionPresentationId, {
+          viewReference: {
+            referencedImageId: measurement.imageId,
+          },
+        });
       });
     },
     [dataSource, srDisplaySet, activeImageDisplaySetData, viewportId]
@@ -201,10 +175,6 @@ function OHIFCornerstoneSRMeasurementViewport(props: withAppTypes) {
     if (!measurement) {
       return null;
     }
-
-    const initialImageIndex = activeImageDisplaySetData.images.findIndex(
-      image => image.imageId === measurement.imageId
-    );
 
     return (
       <Component
