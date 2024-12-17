@@ -1,0 +1,3339 @@
+import React from 'react';
+import type { IconProps } from '../types';
+
+export const ToolLayout = (props: IconProps) => (
+  <svg
+    width="28px"
+    height="28px"
+    viewBox="0 0 28 28"
+    version="1.1"
+    xmlns="http://www.w3.org/2000/svg"
+    {...props}
+  >
+    <title>tool-layout</title>
+    <g
+      id="tool-layout"
+      stroke="none"
+      strokeWidth="1"
+      fill="none"
+      fillRule="evenodd"
+    >
+      <rect
+        id="Rectangle"
+        x="0"
+        y="0"
+        width="28"
+        height="28"
+      ></rect>
+      <g
+        id="Group"
+        transform="translate(0.5, 4)"
+        strokeLinecap="round"
+      >
+        <g
+          id="Group-3"
+          transform="translate(0, 0)"
+          stroke="currentColor"
+          strokeWidth="1.25"
+        >
+          <path
+            d="M5.45696821e-12,9.49450549 L5.45696821e-12,17.3947362 C5.45710348e-12,18.4993057 0.8954305,19.3947362 2,19.3947362 L13.2443085,19.3947362 L13.2443085,19.3947362"
+            id="Path-3"
+          ></path>
+          <path
+            d="M9.49450549,0 L9.49450549,4.91369247 L9.49450549,6 C9.49450549,7.1045695 10.389936,8 11.4945055,8 L19.195248,8 L19.195248,8"
+            id="Path-3"
+            transform="translate(14.3449, 4) rotate(180) translate(-14.3449, -4)"
+          ></path>
+          <path
+            d="M0.0997440877,-0.0997440877 L0.0997440877,7.80048659 C0.0997440877,8.90505609 0.995174588,9.80048659 2.09974409,9.80048659 L9.80048659,9.80048659 L9.80048659,9.80048659"
+            id="Path-3"
+            transform="translate(4.9501, 4.8504) rotate(90) translate(-4.9501, -4.8504)"
+          ></path>
+        </g>
+        <g
+          id="Group-10"
+          opacity="0.550000012"
+          transform="translate(2, 2)"
+          stroke="currentColor"
+          strokeWidth="1.5"
+        >
+          <line
+            x1="7.5"
+            y1="14.5"
+            x2="7.5"
+            y2="0.5"
+            id="Line-2"
+          ></line>
+          <line
+            x1="7"
+            y1="14"
+            x2="7"
+            y2="1"
+            id="Line-2"
+            transform="translate(7, 7.5) rotate(90) translate(-7, -7.5)"
+          ></line>
+        </g>
+        <g
+          id="gear"
+          transform="translate(21.0876, 17.2796) rotate(-20) translate(-21.0876, -17.2796)translate(15.9634, 11.5127)"
+          stroke="#348CFD"
+          strokeLinejoin="round"
+          strokeWidth="1.25"
+        >
+          <circle
+            id="Oval"
+            cx="5.12378058"
+            cy="5.76719178"
+            r="1.28158482"
+          ></circle>
+          <path
+            d="M6.21361819,0.80762797 L6.59086967,2.04907966 C6.72061095,2.47639719 7.15892721,2.73042581 7.59419808,2.63056421 L8.85259487,2.33893009 C9.34216301,2.22858155 9.84650092,2.45011894 10.0964357,2.88530436 C10.3463705,3.32048979 10.2835655,3.86774756 9.94154064,4.23499782 L9.06128718,5.18481538 C8.75980718,5.51248709 8.75980718,6.0165454 9.06128718,6.3442171 L9.94154064,7.29403466 C10.2835655,7.66128493 10.3463705,8.2085427 10.0964357,8.64372812 C9.84650092,9.07891354 9.34216301,9.30045094 8.85259487,9.1901024 L7.59419808,8.89846827 C7.15663131,8.79632613 6.71524652,9.05279063 6.58730228,9.48352022 L6.2100508,10.7249719 C6.0649735,11.2053044 5.62242271,11.5339347 5.12065911,11.5339347 C4.61889551,11.5339347 4.17634472,11.2053044 4.03126742,10.7249719 L3.65669148,9.48352022 C3.52807698,9.05567912 3.08963152,8.80095947 2.65425492,8.90114382 L1.39585813,9.19277794 C0.90628999,9.30312648 0.401952083,9.08158909 0.152017275,8.64640366 C-0.0979175321,8.21121824 -0.035112502,7.66396047 0.306912358,7.29671021 L1.18716582,6.34689264 C1.48864582,6.01922094 1.48864582,5.51516263 1.18716582,5.18749093 L0.306912358,4.23767336 C-0.035112502,3.8704231 -0.0979175321,3.32316533 0.152017275,2.88797991 C0.401952083,2.45279448 0.90628999,2.23125709 1.39585813,2.34160563 L2.65425492,2.63323975 C3.08937078,2.73350334 3.52770594,2.47923776 3.65669148,2.0517552 L4.03483481,0.810303513 C4.17932126,0.32979188 4.62146882,0.000617032116 5.12323309,0 C5.62499736,-0.000615299293 6.06795204,0.327472644 6.21361819,0.80762797 Z"
+            id="Path"
+          ></path>
+        </g>
+      </g>
+    </g>
+  </svg>
+);
+
+export const ToolLength = (props: IconProps) => (
+  <svg
+    width="28px"
+    height="28px"
+    viewBox="0 0 28 28"
+    version="1.1"
+    xmlns="http://www.w3.org/2000/svg"
+    {...props}
+  >
+    <g
+      id="tool-length"
+      stroke="none"
+      strokeWidth="1"
+      fill="none"
+      fillRule="evenodd"
+    >
+      <rect
+        id="Rectangle"
+        x="0"
+        y="0"
+        width="28"
+        height="28"
+      ></rect>
+      <g
+        id="ruler"
+        transform="translate(2, 2.5)"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <rect
+          id="Rectangle"
+          strokeWidth="1.5"
+          transform="translate(11.5003, 11.5005) rotate(-45.001) translate(-11.5003, -11.5005)"
+          x="-0.874220029"
+          y="7.6109894"
+          width="24.749"
+          height="7.779"
+          rx="1"
+        ></rect>
+        <line
+          x1="5.11737261"
+          y1="12.3844231"
+          x2="7.13237261"
+          y2="14.3684231"
+          id="Path"
+        ></line>
+        <line
+          x1="7.68571234"
+          y1="9.81508336"
+          x2="10.1857123"
+          y2="12.3150834"
+          id="Path"
+        ></line>
+        <line
+          x1="10.1225521"
+          y1="7.37924362"
+          x2="11.8725521"
+          y2="9.12924362"
+          id="Path"
+        ></line>
+        <line
+          x1="12.5583918"
+          y1="4.94240389"
+          x2="15.0583918"
+          y2="7.44240389"
+          id="Path"
+        ></line>
+        <line
+          x1="15.1127315"
+          y1="2.38806416"
+          x2="17.1277315"
+          y2="4.37406416"
+          id="Path"
+        ></line>
+        <line
+          x1="2.56403288"
+          y1="14.9377628"
+          x2="5.06403288"
+          y2="17.4377628"
+          id="Path"
+        ></line>
+      </g>
+    </g>
+  </svg>
+);
+
+export const Tool3DRotate = (props: IconProps) => (
+  <svg
+    width="28px"
+    height="28px"
+    viewBox="0 0 28 28"
+    version="1.1"
+    xmlns="http://www.w3.org/2000/svg"
+    {...props}
+  >
+    <g
+      id="tool-3d-rotate"
+      stroke="none"
+      strokeWidth="1"
+      fill="none"
+      fillRule="evenodd"
+    >
+      <rect
+        id="Rectangle"
+        x="0"
+        y="0"
+        width="28"
+        height="28"
+      />
+      <g
+        id="Group"
+        transform="translate(4, 3)"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="1.5"
+      >
+        <g id="group">
+          <polyline
+            id="Path"
+            points="6 21.996 8.5 19.998 6 17.996"
+          />
+          <path
+            d="M8.5,19.998 C5.038,20.652 1,18.498 0,14.998"
+            id="Path"
+          />
+          <polyline
+            id="Path"
+            points="14 0 11.5 1.998 14 4"
+          />
+          <path
+            d="M11.5,1.998 C14.962,1.344 19,3.498 20,6.998"
+            id="Path"
+          />
+        </g>
+        <g
+          id="3d"
+          transform="translate(5, 5.75)"
+        >
+          <polygon
+            id="Path"
+            points="5 0 0 2.1875 5 4.375 10 2.1875"
+          />
+          <polyline
+            id="Path"
+            points="0 2.1875 0 8.125 5 10.3125 10 8.125 10 2.1875"
+          />
+          <line
+            x1="5"
+            y1="4.375"
+            x2="5"
+            y2="10.3125"
+            id="Path"
+          />
+        </g>
+      </g>
+    </g>
+  </svg>
+);
+
+export const ToolAngle = (props: IconProps) => (
+  <svg
+    width="28px"
+    height="28px"
+    viewBox="0 0 28 28"
+    version="1.1"
+    xmlns="http://www.w3.org/2000/svg"
+    {...props}
+  >
+    <g
+      id="tool-angle"
+      stroke="none"
+      strokeWidth="1"
+      fill="none"
+      fillRule="evenodd"
+    >
+      <rect
+        id="Rectangle"
+        x="0"
+        y="0"
+        width="28"
+        height="28"
+      />
+      <g
+        id="Group-6"
+        transform="translate(2.4559, 6)"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeWidth="1.5"
+      >
+        <line
+          x1="2.5"
+          y1="14.5"
+          x2="20.6875"
+          y2="14.4375"
+          id="Line-4"
+        />
+        <line
+          x1="1"
+          y1="13.3775095"
+          x2="13.0650095"
+          y2="1.3125"
+          id="Line-4"
+          transform="translate(7.0325, 7.345) rotate(-10) translate(-7.0325, -7.345)"
+        />
+      </g>
+      <path
+        d="M19.3390559,17.0930296 C19.4124327,13.0930296 17.4130821,11.0930296 13.3410041,11.0930296"
+        id="Path-4"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeDasharray="1,2.7"
+        transform="translate(16.341, 14.093) rotate(12) translate(-16.341, -14.093)"
+      />
+    </g>
+  </svg>
+);
+
+export const ToolAnnotate = (props: IconProps) => (
+  <svg
+    width="28px"
+    height="28px"
+    viewBox="0 0 28 28"
+    version="1.1"
+    xmlns="http://www.w3.org/2000/svg"
+    {...props}
+  >
+    <g
+      id="tool-annotate"
+      stroke="none"
+      strokeWidth="1"
+      fill="none"
+      fillRule="evenodd"
+    >
+      <rect
+        id="Rectangle"
+        x="0"
+        y="0"
+        width="28"
+        height="28"
+      />
+      <g
+        id="Group"
+        transform="translate(4, 3.3899)"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="1.5"
+      >
+        <polyline
+          id="Path"
+          points="8.59335038 20.2520716 -6.1284311e-14 20.2520716 -6.1284311e-14 11.6587212"
+        />
+        <line
+          x1="-4.08562073e-14"
+          y1="20.2520716"
+          x2="19.6419437"
+          y2="0.610127877"
+          id="Path"
+        />
+      </g>
+    </g>
+  </svg>
+);
+
+export const ToolBidirectional = (props: IconProps) => (
+  <svg
+    width="28px"
+    height="28px"
+    viewBox="0 0 28 28"
+    version="1.1"
+    xmlns="http://www.w3.org/2000/svg"
+    {...props}
+  >
+    <title>tool-bidirectional</title>
+    <g
+      id="tool-bidirectional"
+      stroke="none"
+      strokeWidth="1"
+      fill="none"
+      fillRule="evenodd"
+    >
+      <rect
+        id="Rectangle"
+        x="0"
+        y="0"
+        width="28"
+        height="28"
+      ></rect>
+      <g
+        id="group"
+        transform="translate(2.5, 2.5)"
+        stroke="currentColor"
+      >
+        <g
+          id="Group-5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <path
+            d="M19.7288691,-0.335661423 C20.1766848,-0.335701004 20.6245155,-0.164922663 20.9661629,0.176604012 L22.785192,1.99444856 C23.0988548,2.30800052 23.2685446,2.7110041 23.2944775,3.12134197 C23.3217954,3.55359523 23.188997,3.99381095 22.8972982,4.34658876 L4.09686309,23.1566959 C3.72728287,23.5261645 3.24294798,23.7108988 2.75861309,23.7108988 C2.2742782,23.7108988 1.78994331,23.5261645 1.420283,23.1566158 L-0.19579707,21.5405357 C-0.56526569,21.1709555 -0.75,20.6866206 -0.75,20.2022857 C-0.75,19.7179508 -0.56526569,19.2336159 -0.195713448,18.8639521 L18.4915869,0.176901703 C18.833253,-0.16476434 19.2810535,-0.335621842 19.7288691,-0.335661423 Z"
+            id="Path"
+            strokeWidth="1.5"
+          ></path>
+          <line
+            x1="4.1448988"
+            y1="18.9142857"
+            x2="5.71632738"
+            y2="20.4765714"
+            id="Path"
+          ></line>
+          <line
+            x1="6.5688988"
+            y1="16.4902857"
+            x2="8.14261309"
+            y2="18.0502857"
+            id="Path"
+          ></line>
+          <line
+            x1="8.9928988"
+            y1="14.0662857"
+            x2="10.5654702"
+            y2="15.6274286"
+            id="Path"
+          ></line>
+          <line
+            x1="11.4168988"
+            y1="11.6422857"
+            x2="12.9917559"
+            y2="13.2011429"
+            id="Path"
+          ></line>
+          <line
+            x1="13.8408988"
+            y1="9.21714286"
+            x2="15.4066131"
+            y2="10.7874286"
+            id="Path"
+          ></line>
+          <line
+            x1="16.1345622"
+            y1="6.9234795"
+            x2="17.7002765"
+            y2="8.49376521"
+            id="Path"
+          ></line>
+          <line
+            x1="18.5589283"
+            y1="4.49911339"
+            x2="20.1246426"
+            y2="6.0693991"
+            id="Path"
+          ></line>
+        </g>
+        <path
+          d="M9.21155442,3 L3.86096848,3 C3.30868373,3 2.86096848,3.44771525 2.86096848,4 L2.86096848,6.5 C2.86096848,7.05228475 3.30868373,7.5 3.86096848,7.5 L9.21155442,7.5 L9.21155442,7.5"
+          id="Path-6"
+          strokeWidth="1.5"
+          transform="translate(6.0363, 5.25) rotate(-315) translate(-6.0363, -5.25)"
+        ></path>
+        <path
+          d="M21.0115544,14.7862614 L15.6609685,14.7862614 C15.1086837,14.7862614 14.6609685,15.2339767 14.6609685,15.7862614 L14.6609685,18.2862614 C14.6609685,18.8385462 15.1086837,19.2862614 15.6609685,19.2862614 L21.0115544,19.2862614 L21.0115544,19.2862614"
+          id="Path-6"
+          strokeWidth="1.5"
+          transform="translate(17.8363, 17.0363) rotate(-135) translate(-17.8363, -17.0363)"
+        ></path>
+      </g>
+    </g>
+  </svg>
+);
+
+export const ToolCalibrate = (props: IconProps) => (
+  <svg
+    width="28px"
+    height="28px"
+    viewBox="0 0 28 28"
+    version="1.1"
+    xmlns="http://www.w3.org/2000/svg"
+    {...props}
+  >
+    <g
+      id="tool-calibrate"
+      stroke="none"
+      strokeWidth="1"
+      fill="none"
+      fillRule="evenodd"
+    >
+      <rect
+        id="Rectangle"
+        x="0"
+        y="0"
+        width="28"
+        height="28"
+      ></rect>
+      <g
+        id="calibrate"
+        transform="translate(2.5, 16.5)"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="1.25"
+      >
+        <polyline
+          id="Path"
+          points="20 6 23 3 20 0"
+        ></polyline>
+        <line
+          x1="1"
+          y1="3"
+          x2="22"
+          y2="3"
+          id="Path"
+        ></line>
+        <polyline
+          id="Path"
+          points="3 6 0 3 3 0"
+        ></polyline>
+      </g>
+      <rect
+        id="Rectangle"
+        stroke="currentColor"
+        strokeWidth="1.25"
+        x="2"
+        y="5"
+        width="24"
+        height="6"
+        rx="2"
+      ></rect>
+      <line
+        x1="6.5"
+        y1="10.5"
+        x2="6.5"
+        y2="8.5"
+        id="Line-5"
+        stroke="currentColor"
+        strokeLinecap="round"
+      ></line>
+      <line
+        x1="9.5"
+        y1="10.5"
+        x2="9.5"
+        y2="8.5"
+        id="Line-5"
+        stroke="currentColor"
+        strokeLinecap="round"
+      ></line>
+      <line
+        x1="12.5"
+        y1="10.5"
+        x2="12.5"
+        y2="8.5"
+        id="Line-5"
+        stroke="currentColor"
+        strokeLinecap="round"
+      ></line>
+      <line
+        x1="15.5"
+        y1="10.5"
+        x2="15.5"
+        y2="8.5"
+        id="Line-5"
+        stroke="currentColor"
+        strokeLinecap="round"
+      ></line>
+      <line
+        x1="18.5"
+        y1="10.5"
+        x2="18.5"
+        y2="8.5"
+        id="Line-5"
+        stroke="currentColor"
+        strokeLinecap="round"
+      ></line>
+      <line
+        x1="21.5"
+        y1="10.5"
+        x2="21.5"
+        y2="8.5"
+        id="Line-5"
+        stroke="currentColor"
+        strokeLinecap="round"
+      ></line>
+    </g>
+  </svg>
+);
+
+export const ToolCapture = (props: IconProps) => (
+  <svg
+    width="28px"
+    height="28px"
+    viewBox="0 0 28 28"
+    version="1.1"
+    xmlns="http://www.w3.org/2000/svg"
+    {...props}
+  >
+    <title>tool-</title>
+    <g
+      id="tool-"
+      stroke="none"
+      strokeWidth="1"
+      fill="none"
+      fillRule="evenodd"
+    >
+      <rect
+        id="Rectangle"
+        x="0"
+        y="0"
+        width="28"
+        height="28"
+      ></rect>
+      <path
+        d="M8.64381845,8.55555556 C9.05021618,8.5340019 9.43897503,8.38261884 9.75292956,8.12366667 L11.6057073,6.43188889 C11.919523,6.17269999 12.308363,6.02128533 12.7148185,6 L15.6179296,6 C16.0208348,6.0234362 16.4057732,6.17472593 16.7168185,6.43188889 L18.5695962,8.12366667 C18.8835508,8.38261884 19.2723096,8.5340019 19.6787073,8.55555556 L23.1057073,8.55555556 C24.2042675,8.66849081 25.0354336,9.60050503 25.0225258,10.7047778 L25.0225258,19.4166667 C25.0225258,20.4752124 24.1642531,21.3333333 23.1057073,21.3333333 L5.21681845,21.3333333 C4.15827268,21.3333333 3.3,20.4752124 3.3,19.4166667 L3.3,10.7047778 C3.28709219,9.60050503 4.11825826,8.66849081 5.21681845,8.55555556 L8.64381845,8.55555556 Z"
+        id="Path"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      ></path>
+      <circle
+        id="Oval"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        cx="14.1612629"
+        cy="13.9861111"
+        r="3.51388889"
+      ></circle>
+      <path
+        d="M21.8279296,11.4305556 C22.0043539,11.4305556 22.147374,11.5735757 22.147374,11.75 C22.147374,11.9264243 22.0043539,12.0694444 21.8279296,12.0694444 C21.6515053,12.0694444 21.5084851,11.9264243 21.5084851,11.75 C21.5084851,11.5735757 21.6515053,11.4305556 21.8279296,11.4305556"
+        id="Path"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      ></path>
+    </g>
+  </svg>
+);
+
+export const ToolCine = (props: IconProps) => (
+  <svg
+    width="28px"
+    height="28px"
+    viewBox="0 0 28 28"
+    version="1.1"
+    xmlns="http://www.w3.org/2000/svg"
+    {...props}
+  >
+    <g
+      id="tool-cine"
+      stroke="none"
+      strokeWidth="1"
+      fill="none"
+      fillRule="evenodd"
+    >
+      <rect
+        id="Rectangle"
+        x="0"
+        y="0"
+        width="28"
+        height="28"
+      ></rect>
+      <circle
+        id="Oval"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        cx="14"
+        cy="13.9990833"
+        r="10.5416667"
+      ></circle>
+      <path
+        d="M11.5416667,11.7236444 L17.3036401,14.0295711 L11.5416667,16.9105578 L11.5416667,11.7236444 Z"
+        id="Path"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        fill="currentColor"
+      ></path>
+    </g>
+  </svg>
+);
+
+export const ToolCircle = (props: IconProps) => (
+  <svg
+    width="28px"
+    height="28px"
+    viewBox="0 0 28 28"
+    version="1.1"
+    xmlns="http://www.w3.org/2000/svg"
+    {...props}
+  >
+    <g
+      id="tool-circle"
+      stroke="none"
+      strokeWidth="1"
+      fill="none"
+      fillRule="evenodd"
+    >
+      <rect
+        id="Rectangle"
+        x="0"
+        y="0"
+        width="28"
+        height="28"
+      ></rect>
+      <circle
+        id="Oval"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        cx="14"
+        cy="14"
+        r="9.5"
+      ></circle>
+    </g>
+  </svg>
+);
+
+export const ToolCobbAngle = (props: IconProps) => (
+  <svg
+    width="28px"
+    height="28px"
+    viewBox="0 0 28 28"
+    version="1.1"
+    xmlns="http://www.w3.org/2000/svg"
+    {...props}
+  >
+    <g
+      id="tool-cobb-angle"
+      stroke="none"
+      strokeWidth="1"
+      fill="none"
+      fillRule="evenodd"
+    >
+      <rect
+        id="Rectangle"
+        x="0"
+        y="0"
+        width="28"
+        height="28"
+      ></rect>
+      <g
+        id="Group"
+        transform="translate(6.5, 0.68)"
+        fill="currentColor"
+      >
+        <path
+          d="M8.5,10.1817844 C9.88071187,10.1817844 11,11.3010725 11,12.6817844 L11,13.6817844 C11,15.0624963 9.88071187,16.1817844 8.5,16.1817844 L2.5,16.1817844 C1.11928813,16.1817844 0,15.0624963 0,13.6817844 L0,12.6817844 C0,11.3010725 1.11928813,10.1817844 2.5,10.1817844 L8.5,10.1817844 Z M8.5,11.6817844 L2.5,11.6817844 C1.94771525,11.6817844 1.5,12.1294997 1.5,12.6817844 L1.5,13.6817844 C1.5,14.2340692 1.94771525,14.6817844 2.5,14.6817844 L8.5,14.6817844 C9.05228475,14.6817844 9.5,14.2340692 9.5,13.6817844 L9.5,12.6817844 C9.5,12.1294997 9.05228475,11.6817844 8.5,11.6817844 Z"
+          id="Rectangle"
+          fillRule="nonzero"
+        ></path>
+        <circle
+          id="Oval"
+          cx="6.5"
+          cy="8.6976195"
+          r="1"
+        ></circle>
+        <circle
+          id="Oval"
+          cx="6.5"
+          cy="17.6976195"
+          r="1"
+        ></circle>
+        <path
+          d="M11.5,1.70018865 C12.8807119,1.70018865 14,2.81947678 14,4.20018865 L14,5.20018865 C14,6.58090053 12.8807119,7.70018865 11.5,7.70018865 L5.5,7.70018865 C4.11928813,7.70018865 3,6.58090053 3,5.20018865 L3,4.20018865 C3,2.81947678 4.11928813,1.70018865 5.5,1.70018865 L11.5,1.70018865 Z M11.5,3.20018865 L5.5,3.20018865 C4.94771525,3.20018865 4.5,3.6479039 4.5,4.20018865 L4.5,5.20018865 C4.5,5.7524734 4.94771525,6.20018865 5.5,6.20018865 L11.5,6.20018865 C12.0522847,6.20018865 12.5,5.7524734 12.5,5.20018865 L12.5,4.20018865 C12.5,3.6479039 12.0522847,3.20018865 11.5,3.20018865 Z"
+          id="Rectangle"
+          fillRule="nonzero"
+          transform="translate(8.5, 4.7002) rotate(20) translate(-8.5, -4.7002)"
+        ></path>
+        <path
+          d="M11.5,18.7001887 C12.8807119,18.7001887 14,19.8194768 14,21.2001887 L14,22.2001887 C14,23.5809005 12.8807119,24.7001887 11.5,24.7001887 L5.5,24.7001887 C4.11928813,24.7001887 3,23.5809005 3,22.2001887 L3,21.2001887 C3,19.8194768 4.11928813,18.7001887 5.5,18.7001887 L11.5,18.7001887 Z M11.5,20.2001887 L5.5,20.2001887 C4.94771525,20.2001887 4.5,20.6479039 4.5,21.2001887 L4.5,22.2001887 C4.5,22.7524734 4.94771525,23.2001887 5.5,23.2001887 L11.5,23.2001887 C12.0522847,23.2001887 12.5,22.7524734 12.5,22.2001887 L12.5,21.2001887 C12.5,20.6479039 12.0522847,20.2001887 11.5,20.2001887 Z"
+          id="Rectangle"
+          fillRule="nonzero"
+          transform="translate(8.5, 21.7002) rotate(-20) translate(-8.5, -21.7002)"
+        ></path>
+      </g>
+    </g>
+  </svg>
+);
+
+export const ToolCreateThreshold = (props: IconProps) => (
+  <svg
+    width="25px"
+    height="25px"
+    viewBox="0 0 25 25"
+    version="1.1"
+    xmlns="http://www.w3.org/2000/svg"
+    {...props}
+  >
+    <g
+      id="create-threshold"
+      stroke="currentColor"
+      strokeWidth="1"
+      fill="none"
+      fillRule="evenodd"
+    >
+      <polyline
+        id="Path-3"
+        stroke="currentColor"
+        strokeWidth="1.75"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        points="18.85656 16.2174437 21.3536565 13.7203472 23.850753 16.2174437"
+      ></polyline>
+      <polyline
+        id="Path-3"
+        stroke="currentColor"
+        strokeWidth="1.75"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        transform="translate(21.353657, 21.471076) scale(1, -1) translate(-21.353657, -21.471076) "
+        points="18.85656 22.7196245 21.3536565 20.222528 23.850753 22.7196245"
+      ></polyline>
+      <path
+        d="M21.8903104,6.56040847 L11.830485,16.6215711 C11.7372012,16.7144344 11.6185826,16.7776976 11.4894966,16.8034316 L7.65571758,17.5696525 C7.43667607,17.6132586 7.21032569,17.5446155 7.05240058,17.3866904 C6.89447547,17.2287653 6.8258324,17.0024149 6.86943853,16.7833734 L7.63565944,12.9509316 C7.66176759,12.8216917 7.72550512,12.7030561 7.81885711,12.6099433 L17.8786825,2.54878063 C18.9836118,1.44420272 20.7746834,1.44420272 21.8796127,2.54878063 L21.8903104,2.56081551 C22.9947353,3.66528595 22.9947353,5.45593803 21.8903104,6.56040847 Z"
+        id="Path"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      ></path>
+      <line
+        x1="9.60946699"
+        y1="12.6534866"
+        x2="11.9466763"
+        y2="14.9906958"
+        id="Line"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="square"
+      ></line>
+      <path
+        d="M-5.52848657,13.180889 L-5.52848657,15.180889 C-5.52848657,16.7687077 -4.24130523,18.055889 -2.65348657,18.055889 L-1.21495403,18.055889 C-0.731704876,18.055889 -0.339954032,17.6641382 -0.339954032,17.180889 C-0.339954032,16.6976399 -0.731704876,16.305889 -1.21495403,16.305889 L-2.65348657,16.305889 C-3.27480692,16.305889 -3.77848657,15.8022094 -3.77848657,15.180889 L-3.77848657,13.180889 C-3.77848657,12.6976399 -4.17023742,12.305889 -4.65348657,12.305889 C-5.13673573,12.305889 -5.52848657,12.6976399 -5.52848657,13.180889 Z M3.03504597,18.055889 L9.53504597,18.055889 C10.0182951,18.055889 10.410046,17.6641382 10.410046,17.180889 C10.410046,16.6976399 10.0182951,16.305889 9.53504597,16.305889 L3.03504597,16.305889 C2.55179681,16.305889 2.16004597,16.6976399 2.16004597,17.180889 C2.16004597,17.6641382 2.55179681,18.055889 3.03504597,18.055889 Z M13.785046,18.055889 L15.180889,18.055889 C16.7687077,18.055889 18.055889,16.7687077 18.055889,15.180889 L18.055889,13.1381996 C18.055889,12.6549504 17.6641382,12.2631996 17.180889,12.2631996 C16.6976399,12.2631996 16.305889,12.6549504 16.305889,13.1381996 L16.305889,15.180889 C16.305889,15.8022094 15.8022094,16.305889 15.180889,16.305889 L13.785046,16.305889 C13.3017968,16.305889 12.910046,16.6976399 12.910046,17.180889 C12.910046,17.6641382 13.3017968,18.055889 13.785046,18.055889 Z M18.055889,8.88819957 L18.055889,6.65348657 C18.055889,6.17023742 17.6641382,5.77848657 17.180889,5.77848657 C16.6976399,5.77848657 16.305889,6.17023742 16.305889,6.65348657 L16.305889,8.88819957 C16.305889,9.37144872 16.6976399,9.76319957 17.180889,9.76319957 C17.6641382,9.76319957 18.055889,9.37144872 18.055889,8.88819957 Z"
+        id="Path-4"
+        fill="currentColor"
+        fillRule="nonzero"
+        transform="translate(6.263701, 11.917188) scale(1, -1) rotate(90.000000) translate(-6.263701, -11.917188) "
+      ></path>
+    </g>
+  </svg>
+);
+
+export const ToolCrosshair = (props: IconProps) => (
+  <svg
+    width="28px"
+    height="28px"
+    viewBox="0 0 28 28"
+    version="1.1"
+    xmlns="http://www.w3.org/2000/svg"
+    {...props}
+  >
+    <g
+      id="tool-crosshair"
+      stroke="none"
+      strokeWidth="1"
+      fill="none"
+      fillRule="evenodd"
+    >
+      <rect
+        id="Rectangle"
+        x="0"
+        y="0"
+        width="28"
+        height="28"
+      ></rect>
+      <g
+        id="cursor-target-2"
+        transform="translate(3, 3)"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="1.5"
+      >
+        <line
+          x1="11"
+          y1="-8.8817842e-16"
+          x2="11"
+          y2="6"
+          id="Path"
+        ></line>
+        <line
+          x1="0"
+          y1="11"
+          x2="6"
+          y2="11"
+          id="Path"
+        ></line>
+        <line
+          x1="11"
+          y1="22"
+          x2="11"
+          y2="16"
+          id="Path"
+        ></line>
+        <line
+          x1="22"
+          y1="11"
+          x2="16"
+          y2="11"
+          id="Path"
+        ></line>
+        <circle
+          id="Oval"
+          cx="11.001"
+          cy="11.001"
+          r="2"
+        ></circle>
+      </g>
+    </g>
+  </svg>
+);
+
+export const ToolDicomTagBrowser = (props: IconProps) => (
+  <svg
+    width="28px"
+    height="28px"
+    viewBox="0 0 28 28"
+    version="1.1"
+    xmlns="http://www.w3.org/2000/svg"
+    {...props}
+  >
+    <g
+      id="tool-dicom-tag-browser"
+      stroke="none"
+      strokeWidth="1"
+      fill="none"
+      fillRule="evenodd"
+    >
+      <rect
+        id="Rectangle"
+        x="0"
+        y="0"
+        width="28"
+        height="28"
+      ></rect>
+      <g
+        id="Group"
+        transform="translate(4, 5.5)"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="1.5"
+      >
+        <circle
+          id="Oval"
+          cx="1.73913043"
+          cy="1.73913043"
+          r="1.73913043"
+        ></circle>
+        <line
+          x1="6.95652174"
+          y1="1.73913043"
+          x2="20"
+          y2="1.73913043"
+          id="Path"
+        ></line>
+        <circle
+          id="Oval"
+          cx="1.73913043"
+          cy="8.69565217"
+          r="1.73913043"
+        ></circle>
+        <line
+          x1="6.95652174"
+          y1="8.69565217"
+          x2="20"
+          y2="8.69565217"
+          id="Path"
+        ></line>
+        <circle
+          id="Oval"
+          cx="1.73913043"
+          cy="15.6521739"
+          r="1.73913043"
+        ></circle>
+        <line
+          x1="6.95652174"
+          y1="15.6521739"
+          x2="20"
+          y2="15.6521739"
+          id="Path"
+        ></line>
+      </g>
+    </g>
+  </svg>
+);
+
+export const ToolFlipHorizontal = (props: IconProps) => (
+  <svg
+    width="28px"
+    height="28px"
+    viewBox="0 0 28 28"
+    version="1.1"
+    xmlns="http://www.w3.org/2000/svg"
+    {...props}
+  >
+    <g
+      id="tool-flip-horizontal"
+      stroke="none"
+      strokeWidth="1"
+      fill="none"
+      fillRule="evenodd"
+    >
+      <rect
+        id="Rectangle"
+        x="0"
+        y="0"
+        width="28"
+        height="28"
+      ></rect>
+      <path
+        d="M10.6315789,7.31578947 L6,7.31578947 C4.8954305,7.31578947 4,8.21121997 4,9.31578947 L4,18.5789474 C4,19.6835169 4.8954305,20.5789474 6,20.5789474 L10.6315789,20.5789474 L10.6315789,20.5789474"
+        id="Path-2"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+      ></path>
+      <path
+        d="M25,7.31578947 L20.3684211,7.31578947 C19.2638516,7.31578947 18.3684211,8.21121997 18.3684211,9.31578947 L18.3684211,18.5789474 C18.3684211,19.6835169 19.2638516,20.5789474 20.3684211,20.5789474 L25,20.5789474 L25,20.5789474"
+        id="Path-2"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeDasharray="1,3.1"
+        transform="translate(21.6842, 13.9474) scale(-1, 1) translate(-21.6842, -13.9474)"
+      ></path>
+      <line
+        x1="14.5"
+        y1="4.55263158"
+        x2="14.5"
+        y2="23.3421053"
+        id="Line-3"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+      ></line>
+    </g>
+  </svg>
+);
+
+export const ToolFreehandPolygon = (props: IconProps) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 18 18"
+    {...props}
+  >
+    <g
+      id="icon-freehand-sculpt"
+      fill="none"
+      strokeWidth="1.5"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <line
+        id="svg_1"
+        y2="2.559367"
+        x2="10.184807"
+        y1="4.467781"
+        x1="8.81711"
+      />
+      <line
+        id="svg_4"
+        y2="1.493836"
+        x2="11.727442"
+        y1="2.766112"
+        x1="10.089386"
+      />
+      <line
+        id="svg_7"
+        y2="1.080346"
+        x2="13.047428"
+        y1="1.748291"
+        x1="11.345759"
+      />
+      <line
+        id="svg_8"
+        y2="1.000829"
+        x2="14.351511"
+        y1="1.112153"
+        x1="12.77707"
+      />
+      <line
+        id="svg_9"
+        y2="1.350705"
+        x2="15.242104"
+        y1="0.905408"
+        x1="13.969828"
+      />
+      <line
+        id="svg_10"
+        y2="2.098167"
+        x2="15.862339"
+        y1="1.14396"
+        x1="14.955842"
+      />
+      <line
+        id="svg_11"
+        y2="3.195505"
+        x2="16.41896"
+        y1="1.939133"
+        x1="15.766918"
+      />
+      <line
+        id="svg_12"
+        y2="4.292843"
+        x2="16.530284"
+        y1="2.925147"
+        x1="16.387153"
+      />
+      <line
+        id="svg_16"
+        y2="5.644637"
+        x2="16.196311"
+        y1="3.831643"
+        x1="16.593898"
+      />
+      <line
+        id="svg_18"
+        y2="7.266789"
+        x2="15.623787"
+        y1="5.19934"
+        x1="16.275829"
+      />
+      <line
+        id="svg_19"
+        y2="10.813258"
+        x2="14.526449"
+        y1="6.726071"
+        x1="15.766918"
+      />
+      <line
+        id="svg_20"
+        y2="5.056209"
+        x2="8.085552"
+        y1="4.181519"
+        x1="8.976145"
+      />
+      <line
+        id="svg_23"
+        y2="5.326568"
+        x2="7.481221"
+        y1="4.78585"
+        x1="8.403621"
+      />
+      <line
+        id="svg_24"
+        y2="5.565119"
+        x2="6.749662"
+        y1="5.294761"
+        x1="7.624352"
+      />
+      <line
+        id="svg_25"
+        y2="5.994512"
+        x2="5.429675"
+        y1="5.533312"
+        x1="6.956407"
+      />
+      <line
+        id="svg_27"
+        y2="6.551133"
+        x2="4.284627"
+        y1="5.962706"
+        x1="5.572807"
+      />
+      <line
+        id="svg_28"
+        y2="7.584858"
+        x2="3.044158"
+        y1="6.392099"
+        x1="4.427758"
+      />
+      <line
+        id="svg_29"
+        y2="8.84123"
+        x2="2.185372"
+        y1="7.489437"
+        x1="3.219096"
+      />
+      <line
+        id="svg_31"
+        y2="10.606513"
+        x2="1.644654"
+        y1="8.602678"
+        x1="2.280792"
+      />
+      <line
+        id="svg_32"
+        y2="13.214679"
+        x2="1.48562"
+        y1="10.352058"
+        x1="1.724171"
+      />
+      <line
+        id="svg_33"
+        y2="14.375631"
+        x2="1.676461"
+        y1="12.992031"
+        x1="1.453813"
+      />
+      <line
+        id="svg_34"
+        y2="15.298031"
+        x2="2.264889"
+        y1="14.152983"
+        x1="1.517427"
+      />
+      <line
+        id="svg_35"
+        y2="16.172721"
+        x2="3.521261"
+        y1="14.948155"
+        x1="1.915013"
+      />
+      <line
+        id="svg_36"
+        y2="16.824762"
+        x2="5.207027"
+        y1="15.997783"
+        x1="3.28271"
+      />
+      <line
+        id="svg_38"
+        y2="17.063314"
+        x2="7.035924"
+        y1="16.745245"
+        x1="4.968475"
+      />
+      <line
+        id="svg_39"
+        y2="16.888376"
+        x2="9.278311"
+        y1="17.047411"
+        x1="6.733758"
+      />
+      <line
+        id="svg_40"
+        y2="16.284045"
+        x2="10.661911"
+        y1="16.983797"
+        x1="8.992048"
+      />
+      <line
+        id="svg_41"
+        y2="15.313934"
+        x2="11.647925"
+        y1="16.395369"
+        x1="10.455166"
+      />
+      <line
+        id="svg_44"
+        y2="13.898527"
+        x2="12.82478"
+        y1="15.425259"
+        x1="11.504794"
+      />
+      <line
+        id="svg_45"
+        y2="12.037824"
+        x2="14.144766"
+        y1="14.312017"
+        x1="12.522614"
+      />
+      <line
+        id="svg_47"
+        y2="10.59061"
+        x2="14.605966"
+        y1="12.228665"
+        x1="13.953925"
+      />
+      <ellipse
+        ry="1"
+        rx="1"
+        id="svg_48"
+        cy="3.982726"
+        cx="13.460918"
+      />
+    </g>
+  </svg>
+);
+
+export const ToolFreehandRoi = (props: IconProps) => (
+  <svg
+    width="28px"
+    height="28px"
+    viewBox="0 0 28 28"
+    version="1.1"
+    xmlns="http://www.w3.org/2000/svg"
+    {...props}
+  >
+    <g
+      id="tool-freehand-roi"
+      stroke="none"
+      strokeWidth="1"
+      fill="none"
+      fillRule="evenodd"
+    >
+      <rect
+        id="Rectangle"
+        x="0"
+        y="0"
+        width="28"
+        height="28"
+      ></rect>
+      <g
+        id="Group-2"
+        transform="translate(3, 2)"
+        stroke="currentColor"
+        strokeWidth="1.5"
+      >
+        <path
+          d="M0,0 C8,3 5,8.5 2,15.5 C-1,22.5 3.5,23 5,23 C6.08963707,23.0518834 7.15942037,22.6952889 8,22"
+          id="Path"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        ></path>
+        <path
+          d="M21.38,12.619 L13.75,20.25 L10,21 L10.75,17.25 L18.38,9.619 C19.2062949,8.79296781 20.5457051,8.79296781 21.372,9.619 L21.38,9.628 C21.7771113,10.0243763 22.000268,10.5624193 22.000268,11.1235 C22.000268,11.6845807 21.7771113,12.2226237 21.38,12.619 L21.38,12.619 Z"
+          id="Path"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        ></path>
+        <path
+          d="M10.654274,17.2961006 C11.6738332,18.1907082 12.6933924,19.0853157 13.7129517,19.9799232"
+          id="Path-4"
+        ></path>
+      </g>
+    </g>
+  </svg>
+);
+
+export const ToolFreehand = (props: IconProps) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 18 18"
+    {...props}
+  >
+    <g
+      fill="currentColor"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="miter"
+    >
+      <ellipse
+        ry="1"
+        rx="1"
+        id="svg_3"
+        cy="4.240343"
+        cx="14.306499"
+      />
+      <line
+        id="svg_4"
+        y2="3.58462"
+        x2="12.242186"
+        y1="3.997482"
+        x1="13.432202"
+      />
+      <line
+        id="svg_5"
+        y2="3.268901"
+        x2="10.857882"
+        y1="3.608906"
+        x1="12.387902"
+      />
+      <line
+        id="svg_6"
+        y2="3.147471"
+        x2="9.740724"
+        y1="3.293187"
+        x1="10.955026"
+      />
+      <line
+        id="svg_7"
+        y2="3.147471"
+        x2="8.089274"
+        y1="3.196043"
+        x1="9.983585"
+      />
+      <line
+        id="svg_8"
+        y2="3.268901"
+        x2="6.874972"
+        y1="3.123185"
+        x1="8.307848"
+      />
+      <line
+        id="svg_9"
+        y2="3.657478"
+        x2="5.587812"
+        y1="3.220329"
+        x1="7.020688"
+      />
+      <line
+        id="svg_10"
+        y2="4.046054"
+        x2="4.737801"
+        y1="3.560334"
+        x1="5.854959"
+      />
+      <line
+        id="svg_11"
+        y2="4.337487"
+        x2="4.300652"
+        y1="3.997482"
+        x1="4.834945"
+      />
+      <line
+        id="svg_12"
+        y2="4.726063"
+        x2="3.88779"
+        y1="4.191771"
+        x1="4.470655"
+      />
+      <line
+        id="svg_15"
+        y2="5.3575"
+        x2="3.377783"
+        y1="4.604633"
+        x1="3.960648"
+      />
+      <line
+        id="svg_16"
+        y2="6.183226"
+        x2="2.916348"
+        y1="5.138926"
+        x1="3.547785"
+      />
+      <line
+        id="svg_17"
+        y2="6.960379"
+        x2="2.770632"
+        y1="5.867507"
+        x1="3.037779"
+      />
+      <line
+        id="svg_18"
+        y2="7.713246"
+        x2="2.673488"
+        y1="6.741804"
+        x1="2.819204"
+      />
+      <line
+        id="svg_19"
+        y2="8.684687"
+        x2="2.697774"
+        y1="7.616102"
+        x1="2.673488"
+      />
+      <line
+        id="svg_20"
+        y2="9.753273"
+        x2="2.892062"
+        y1="8.611829"
+        x1="2.697774"
+      />
+      <line
+        id="svg_21"
+        y2="10.724714"
+        x2="3.134923"
+        y1="9.534698"
+        x1="2.84349"
+      />
+      <line
+        id="svg_23"
+        y2="11.647583"
+        x2="3.596357"
+        y1="10.578998"
+        x1="3.086351"
+      />
+      <line
+        id="svg_25"
+        y2="12.521881"
+        x2="4.276366"
+        y1="11.501867"
+        x1="3.499213"
+      />
+      <line
+        id="svg_26"
+        y2="13.930471"
+        x2="5.830673"
+        y1="12.376165"
+        x1="4.13065"
+      />
+      <line
+        id="svg_28"
+        y2="14.707624"
+        x2="7.263549"
+        y1="13.881899"
+        x1="5.733528"
+      />
+      <line
+        id="svg_29"
+        y2="15.339061"
+        x2="8.963571"
+        y1="14.61048"
+        x1="7.06926"
+      />
+      <line
+        id="svg_30"
+        y2="15.581921"
+        x2="10.882168"
+        y1="15.314775"
+        x1="8.817855"
+      />
+      <line
+        id="svg_31"
+        y2="15.460491"
+        x2="12.023612"
+        y1="15.581921"
+        x1="10.785024"
+      />
+      <line
+        id="svg_33"
+        y2="15.120487"
+        x2="13.092197"
+        y1="15.484777"
+        x1="11.877895"
+      />
+      <line
+        id="svg_34"
+        y2="14.586194"
+        x2="13.86935"
+        y1="15.217631"
+        x1="12.897909"
+      />
+      <line
+        id="svg_35"
+        y2="13.833327"
+        x2="14.597931"
+        y1="14.756196"
+        x1="13.699348"
+      />
+      <line
+        id="svg_37"
+        y2="12.716169"
+        x2="15.180796"
+        y1="13.881899"
+        x1="14.549359"
+      />
+      <line
+        id="svg_39"
+        y2="11.429009"
+        x2="15.520801"
+        y1="12.813313"
+        x1="15.15651"
+      />
+      <ellipse
+        ry="1"
+        rx="1"
+        id="svg_40"
+        cy="10.967574"
+        cx="15.520801"
+      />
+    </g>
+  </svg>
+);
+
+export const ToolFusionColor = (props: IconProps) => (
+  <svg
+    width="25px"
+    height="25px"
+    viewBox="0 0 25 25"
+    version="1.1"
+    xmlns="http://www.w3.org/2000/svg"
+    {...props}
+  >
+    <g
+      stroke="currentColor"
+      strokeWidth="1"
+      fill="none"
+      fillRule="evenodd"
+    >
+      <path
+        d="M18,2 C19.1045695,2 20,2.8954305 20,4 L20.000443,11.5700239 C18.8210504,10.0206853 17.6279451,8.77097591 17.1182222,8.25530435 C16.9570959,8.09231818 16.733654,8.00006956 16.5,8.00006956 C16.266346,8.00006956 16.0429041,8.09231818 15.8817778,8.25530435 C14.719,9.43165217 10,14.4278261 10,18.0869565 C10,18.7674866 10.1126915,19.4091677 10.3210825,20.0009348 L4,20 C2.8954305,20 2,19.1045695 2,18 L2,4 C2,2.8954305 2.8954305,2 4,2 L18,2 Z"
+        id="Combined-Shape"
+        stroke="currentColor"
+        strokeWidth="1.75"
+      ></path>
+      <g
+        id="color-drop-pick"
+        transform="translate(9.591386, 8.000070)"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <path
+          d="M7.52683573,0.255234787 C7.36570938,0.0922486197 7.14226748,0 6.90861351,0 C6.67495954,0 6.45151764,0.0922486197 6.29039129,0.255234787 C5.12761351,1.43158261 0.408613509,6.42775653 0.408613509,10.086887 C0.408613509,13.5449739 3.31844684,15.9999304 6.90861351,15.9999304 C10.4987802,15.9999304 13.4086135,13.5449739 13.4086135,10.086887 C13.4086135,6.42775653 8.68961351,1.43158261 7.52683573,0.255234787 Z"
+          id="Path"
+          strokeWidth="1.75"
+        ></path>
+        <g
+          id="Group"
+          transform="translate(7.015298, 8.975291) rotate(40.000000) translate(-7.015298, -8.975291) translate(3.731654, 1.974720)"
+        >
+          <line
+            x1="0.5"
+            y1="12.5"
+            x2="0.5"
+            y2="1.56125113e-15"
+            id="Path"
+          ></line>
+          <line
+            x1="3.420153"
+            y1="1.25018584"
+            x2="3.420153"
+            y2="14.0011428"
+            id="Path"
+          ></line>
+          <line
+            x1="6.06728889"
+            y1="1.86765717"
+            x2="6.06728889"
+            y2="12.7034832"
+            id="Path"
+          ></line>
+        </g>
+      </g>
+    </g>
+  </svg>
+);
+
+export const ToolInvert = (props: IconProps) => (
+  <svg
+    width="28px"
+    height="28px"
+    viewBox="0 0 28 28"
+    version="1.1"
+    xmlns="http://www.w3.org/2000/svg"
+    {...props}
+  >
+    <g
+      id="tool-invert"
+      stroke="none"
+      strokeWidth="1"
+      fill="none"
+      fillRule="evenodd"
+    >
+      <rect
+        id="Rectangle"
+        x="0"
+        y="0"
+        width="28"
+        height="28"
+      ></rect>
+      <rect
+        id="Rectangle"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        x="4"
+        y="5"
+        width="20"
+        height="18"
+        rx="2"
+      ></rect>
+      <path
+        d="M14,23 L6,23 C4.8954305,23 4,22.1045695 4,21 L4,7 C4,5.8954305 4.8954305,5 6,5 L14,5 L14,8 C10.6862915,8 8,10.6862915 8,14 C8,17.3137085 10.6862915,20 14,20 L14,23 Z"
+        id="Combined-Shape"
+        fill="currentColor"
+      ></path>
+      <path
+        d="M14,8 C17.3137085,8 20,10.6862915 20,14 C20,17.3137085 17.3137085,20 14,20 Z"
+        id="Combined-Shape"
+        fill="currentColor"
+      ></path>
+    </g>
+  </svg>
+);
+
+export const ToolLayoutDefault = (props: IconProps) => (
+  <svg
+    width="28px"
+    height="28px"
+    viewBox="0 0 28 28"
+    version="1.1"
+    xmlns="http://www.w3.org/2000/svg"
+    {...props}
+  >
+    <g
+      id="tool-layout"
+      stroke="none"
+      strokeWidth="1"
+      fill="none"
+      fillRule="evenodd"
+    >
+      <rect
+        id="Rectangle"
+        x="0"
+        y="0"
+        width="28"
+        height="28"
+      ></rect>
+      <g
+        id="Group"
+        transform="translate(0.5, 4)"
+        strokeLinecap="round"
+      >
+        <g
+          id="Group-3"
+          transform="translate(0, 0)"
+          stroke="currentColor"
+          strokeWidth="1.25"
+        >
+          <path
+            d="M5.45696821e-12,9.49450549 L5.45696821e-12,17.3947362 C5.45710348e-12,18.4993057 0.8954305,19.3947362 2,19.3947362 L13.2443085,19.3947362 L13.2443085,19.3947362"
+            id="Path-3"
+          ></path>
+          <path
+            d="M9.49450549,0 L9.49450549,4.91369247 L9.49450549,6 C9.49450549,7.1045695 10.389936,8 11.4945055,8 L19.195248,8 L19.195248,8"
+            id="Path-3"
+            transform="translate(14.3449, 4) rotate(180) translate(-14.3449, -4)"
+          ></path>
+          <path
+            d="M0.0997440877,-0.0997440877 L0.0997440877,7.80048659 C0.0997440877,8.90505609 0.995174588,9.80048659 2.09974409,9.80048659 L9.80048659,9.80048659 L9.80048659,9.80048659"
+            id="Path-3"
+            transform="translate(4.9501, 4.8504) rotate(90) translate(-4.9501, -4.8504)"
+          ></path>
+        </g>
+        <g
+          id="Group-10"
+          opacity="0.550000012"
+          transform="translate(2, 2)"
+          stroke="currentColor"
+          strokeWidth="1.5"
+        >
+          <line
+            x1="7.5"
+            y1="14.5"
+            x2="7.5"
+            y2="0.5"
+            id="Line-2"
+          ></line>
+          <line
+            x1="7"
+            y1="14"
+            x2="7"
+            y2="1"
+            id="Line-2"
+            transform="translate(7, 7.5) rotate(90) translate(-7, -7.5)"
+          ></line>
+        </g>
+        <g
+          id="gear"
+          transform="translate(21.0876, 17.2796) rotate(-20) translate(-21.0876, -17.2796)translate(15.9634, 11.5127)"
+          stroke="#348CFD"
+          strokeLinejoin="round"
+          strokeWidth="1.25"
+        >
+          <circle
+            id="Oval"
+            cx="5.12378058"
+            cy="5.76719178"
+            r="1.28158482"
+          ></circle>
+          <path
+            d="M6.21361819,0.80762797 L6.59086967,2.04907966 C6.72061095,2.47639719 7.15892721,2.73042581 7.59419808,2.63056421 L8.85259487,2.33893009 C9.34216301,2.22858155 9.84650092,2.45011894 10.0964357,2.88530436 C10.3463705,3.32048979 10.2835655,3.86774756 9.94154064,4.23499782 L9.06128718,5.18481538 C8.75980718,5.51248709 8.75980718,6.0165454 9.06128718,6.3442171 L9.94154064,7.29403466 C10.2835655,7.66128493 10.3463705,8.2085427 10.0964357,8.64372812 C9.84650092,9.07891354 9.34216301,9.30045094 8.85259487,9.1901024 L7.59419808,8.89846827 C7.15663131,8.79632613 6.71524652,9.05279063 6.58730228,9.48352022 L6.2100508,10.7249719 C6.0649735,11.2053044 5.62242271,11.5339347 5.12065911,11.5339347 C4.61889551,11.5339347 4.17634472,11.2053044 4.03126742,10.7249719 L3.65669148,9.48352022 C3.52807698,9.05567912 3.08963152,8.80095947 2.65425492,8.90114382 L1.39585813,9.19277794 C0.90628999,9.30312648 0.401952083,9.08158909 0.152017275,8.64640366 C-0.0979175321,8.21121824 -0.035112502,7.66396047 0.306912358,7.29671021 L1.18716582,6.34689264 C1.48864582,6.01922094 1.48864582,5.51516263 1.18716582,5.18749093 L0.306912358,4.23767336 C-0.035112502,3.8704231 -0.0979175321,3.32316533 0.152017275,2.88797991 C0.401952083,2.45279448 0.90628999,2.23125709 1.39585813,2.34160563 L2.65425492,2.63323975 C3.08937078,2.73350334 3.52770594,2.47923776 3.65669148,2.0517552 L4.03483481,0.810303513 C4.17932126,0.32979188 4.62146882,0.000617032116 5.12323309,0 C5.62499736,-0.000615299293 6.06795204,0.327472644 6.21361819,0.80762797 Z"
+            id="Path"
+          ></path>
+        </g>
+      </g>
+    </g>
+  </svg>
+);
+
+export const ToolMagneticRoi = (props: IconProps) => (
+  <svg
+    width="28px"
+    height="28px"
+    viewBox="0 0 28 28"
+    version="1.1"
+    xmlns="http://www.w3.org/2000/svg"
+    {...props}
+  >
+    <g
+      id="tool-livewire"
+      stroke="none"
+      strokeWidth="1"
+      fill="none"
+      fillRule="evenodd"
+    >
+      <rect
+        id="Rectangle"
+        x="0"
+        y="0"
+        width="28"
+        height="28"
+      ></rect>
+      <line
+        x1="12.5"
+        y1="6.5"
+        x2="8.5"
+        y2="9.5"
+        id="Line"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="square"
+      ></line>
+      <line
+        x1="6.5"
+        y1="12.5"
+        x2="5.5"
+        y2="19.5"
+        id="Line"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="square"
+      ></line>
+      <g
+        id="Group"
+        transform="translate(16.998, 17.5912) rotate(45) translate(-16.998, -17.5912)translate(12.496, 13.5)"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="1.5"
+      >
+        <line
+          x1="0.00327299164"
+          y1="2.45474373"
+          x2="3.27626463"
+          y2="2.45474373"
+          id="Path"
+        ></line>
+        <line
+          x1="5.73100836"
+          y1="2.45474373"
+          x2="9.004"
+          y2="2.45474373"
+          id="Path"
+        ></line>
+        <path
+          d="M5.72773537,4.09123955 C5.72773537,4.76909831 5.17822227,5.31861141 4.5003635,5.31861141 C3.82250474,5.31861141 3.27299164,4.76909831 3.27299164,4.09123955 L3.27299164,0.81824791 C3.25976214,0.371936739 2.9010549,0.0132295012 2.45474373,-5.11613498e-14 L0.81824791,-5.11613498e-14 C0.371936739,0.0132295012 0.0132295012,0.371936739 0,0.81824791 L0,4.09123955 C0,6.80209487 2.01452635,8.1824791 4.5003635,8.1824791 C6.98620065,8.1824791 9.00072701,6.80209487 9.00072701,4.09123955 L9.00072701,0.81824791 C8.98749751,0.371936739 8.62879027,0.0132295012 8.1824791,-5.11613498e-14 L6.54598328,-5.11613498e-14 C6.09967211,0.0132295012 5.74096487,0.371936739 5.72773537,0.81824791 L5.72773537,4.09123955 Z"
+          id="Path"
+        ></path>
+      </g>
+      <circle
+        id="Oval"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        cx="14.5"
+        cy="5.5"
+        r="1.5"
+      ></circle>
+      <circle
+        id="Oval"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        cx="5.5"
+        cy="21.5"
+        r="1.5"
+      ></circle>
+      <circle
+        id="Oval"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        cx="7"
+        cy="10.5"
+        r="1.5"
+      ></circle>
+    </g>
+  </svg>
+);
+
+export const ToolMagnify = (props: IconProps) => (
+  <svg
+    width="28px"
+    height="28px"
+    viewBox="0 0 28 28"
+    version="1.1"
+    xmlns="http://www.w3.org/2000/svg"
+    {...props}
+  >
+    <g
+      id="tool-zoom-in"
+      stroke="none"
+      strokeWidth="1"
+      fill="none"
+      fillRule="evenodd"
+    >
+      <rect
+        id="Rectangle"
+        x="0"
+        y="0"
+        width="28"
+        height="28"
+      ></rect>
+      <circle
+        id="Oval"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        cx="12.75"
+        cy="12.7491667"
+        r="8.33333333"
+      ></circle>
+      <line
+        x1="23.5833333"
+        y1="23.5825"
+        x2="18.6425"
+        y2="18.6416667"
+        id="Path"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      ></line>
+      <line
+        x1="8.58333333"
+        y1="12.7491667"
+        x2="16.9166667"
+        y2="12.7491667"
+        id="Path"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      ></line>
+      <line
+        x1="12.75"
+        y1="8.5825"
+        x2="12.75"
+        y2="16.9158333"
+        id="Path"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      ></line>
+    </g>
+  </svg>
+);
+
+export const ToolMeasureEllipse = (props: IconProps) => (
+  <svg
+    width="28px"
+    height="28px"
+    viewBox="0 0 28 28"
+    version="1.1"
+    xmlns="http://www.w3.org/2000/svg"
+    {...props}
+  >
+    <g
+      id="tool-measure-elipse"
+      stroke="none"
+      strokeWidth="1"
+      fill="none"
+      fillRule="evenodd"
+    >
+      <rect
+        id="Rectangle"
+        x="0"
+        y="0"
+        width="28"
+        height="28"
+      ></rect>
+      <g
+        id="Group"
+        transform="translate(1.6119, 2.6735)"
+        stroke="currentColor"
+        strokeWidth="1.5"
+      >
+        <line
+          x1="19.8333333"
+          y1="14.625"
+          x2="19.8333333"
+          y2="22.9583333"
+          id="Path"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        ></line>
+        <line
+          x1="24"
+          y1="18.7916667"
+          x2="15.6666667"
+          y2="18.7916667"
+          id="Path"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        ></line>
+        <ellipse
+          id="Oval"
+          transform="translate(10.5, 7) rotate(89) translate(-10.5, -7)"
+          cx="10.5"
+          cy="7"
+          rx="6.5"
+          ry="10"
+        ></ellipse>
+      </g>
+    </g>
+  </svg>
+);
+
+export const ToolMoreMenu = (props: IconProps) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 20 6"
+    {...props}
+  >
+    <g
+      fill="none"
+      fillRule="evenodd"
+    >
+      <path
+        d="M0 0L29 0 29 29 0 29z"
+        transform="translate(-4.5 -11.5)"
+      />
+      <path
+        fill="currentColor"
+        fillRule="nonzero"
+        d="M7.25 12.083c-1.33 0-2.417 1.088-2.417 2.417 0 1.33 1.088 2.417 2.417 2.417 1.33 0 2.417-1.088 2.417-2.417 0-1.33-1.088-2.417-2.417-2.417zm14.5 0c-1.33 0-2.417 1.088-2.417 2.417 0 1.33 1.088 2.417 2.417 2.417 1.33 0 2.417-1.088 2.417-2.417 0-1.33-1.088-2.417-2.417-2.417zm-7.25 0c-1.33 0-2.417 1.088-2.417 2.417 0 1.33 1.088 2.417 2.417 2.417 1.33 0 2.417-1.088 2.417-2.417 0-1.33-1.088-2.417-2.417-2.417z"
+        transform="translate(-4.5 -11.5)"
+      />
+    </g>
+  </svg>
+);
+
+export const ToolMove = (props: IconProps) => (
+  <svg
+    width="28px"
+    height="28px"
+    viewBox="0 0 28 28"
+    version="1.1"
+    xmlns="http://www.w3.org/2000/svg"
+    {...props}
+  >
+    <g
+      id="tool-move"
+      stroke="none"
+      strokeWidth="1"
+      fill="none"
+      fillRule="evenodd"
+    >
+      <rect
+        id="Rectangle"
+        x="0"
+        y="0"
+        width="28"
+        height="28"
+      ></rect>
+      <line
+        x1="13.8823529"
+        y1="22.5294118"
+        x2="13.8823529"
+        y2="4"
+        id="Line"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      ></line>
+      <line
+        x1="22.5294118"
+        y1="13.8823529"
+        x2="5.23529412"
+        y2="13.8823529"
+        id="Line"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      ></line>
+      <polyline
+        id="Path-28"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        points="11.4117647 6.46832349 13.8800882 4 16.3642969 6.48420875"
+      ></polyline>
+      <polyline
+        id="Path-28"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        transform="translate(13.888, 22.5362) rotate(-180) translate(-13.888, -22.5362)"
+        points="11.4117647 23.7624411 13.8800882 21.2941176 16.3642969 23.7783264"
+      ></polyline>
+      <polyline
+        id="Path-28"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        transform="translate(5.2421, 13.888) rotate(-90) translate(-5.2421, -13.888)"
+        points="2.76583826 15.1142499 5.23416174 12.6459264 7.71837049 15.1301352"
+      ></polyline>
+      <polyline
+        id="Path-28"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        transform="translate(22.5362, 13.888) rotate(-270) translate(-22.5362, -13.888)"
+        points="20.0599559 15.1142499 22.5282794 12.6459264 25.0124881 15.1301352"
+      ></polyline>
+    </g>
+  </svg>
+);
+
+export const ToolPolygon = (props: IconProps) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    x="0px"
+    y="0px"
+    viewBox="0 0 50 50"
+    {...props}
+  >
+    <polygon
+      points="24 1, 46 18, 40 49, 9 49, 1 18"
+      stroke="currentColor"
+      strokeWidth="3"
+      fill="none"
+    />
+  </svg>
+);
+
+export const ToolQuickMagnify = (props: IconProps) => (
+  <svg
+    width="28px"
+    height="28px"
+    viewBox="0 0 28 28"
+    version="1.1"
+    xmlns="http://www.w3.org/2000/svg"
+    {...props}
+  >
+    <g
+      id="tool-zoom-in"
+      stroke="none"
+      strokeWidth="1"
+      fill="none"
+      fillRule="evenodd"
+    >
+      <rect
+        id="Rectangle"
+        x="0"
+        y="0"
+        width="28"
+        height="28"
+      ></rect>
+      <circle
+        id="Oval"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        cx="12.75"
+        cy="12.7491667"
+        r="8.33333333"
+      ></circle>
+      <line
+        x1="23.5833333"
+        y1="23.5825"
+        x2="18.6425"
+        y2="18.6416667"
+        id="Path"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      ></line>
+      <line
+        x1="8.58333333"
+        y1="12.7491667"
+        x2="16.9166667"
+        y2="12.7491667"
+        id="Path"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      ></line>
+      <line
+        x1="12.75"
+        y1="8.5825"
+        x2="12.75"
+        y2="16.9158333"
+        id="Path"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      ></line>
+    </g>
+  </svg>
+);
+
+export const ToolRectangle = (props: IconProps) => (
+  <svg
+    width="28px"
+    height="28px"
+    viewBox="0 0 28 28"
+    version="1.1"
+    xmlns="http://www.w3.org/2000/svg"
+    {...props}
+  >
+    <g
+      id="tool-rectangle"
+      stroke="none"
+      strokeWidth="1"
+      fill="none"
+      fillRule="evenodd"
+    >
+      <rect
+        id="Rectangle"
+        x="0"
+        y="0"
+        width="28"
+        height="28"
+      ></rect>
+      <g
+        id="Group-8"
+        transform="translate(15.8182, 15.5)"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="1.65"
+      >
+        <line
+          x1="3.78787879"
+          y1="1.69561335e-14"
+          x2="3.78787879"
+          y2="7.57575758"
+          id="Path"
+        ></line>
+        <line
+          x1="7.57575758"
+          y1="3.78787879"
+          x2="-1.37263938e-13"
+          y2="3.78787879"
+          id="Path"
+        ></line>
+      </g>
+      <path
+        d="M12.030303,19.2878788 L6,19.2878788 C4.8954305,19.2878788 4,18.3924483 4,17.2878788 L4,7.5 C4,6.3954305 4.8954305,5.5 6,5.5 L19.8924006,5.5 C20.9969701,5.5 21.8924006,6.3954305 21.8924006,7.5 L21.8924006,12.0059038 L21.8924006,12.0059038"
+        id="Path-5"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+      ></path>
+    </g>
+  </svg>
+);
+
+export const ToolReferenceLines = (props: IconProps) => (
+  <svg
+    width="28px"
+    height="28px"
+    viewBox="0 0 28 28"
+    version="1.1"
+    xmlns="http://www.w3.org/2000/svg"
+    {...props}
+  >
+    <g
+      id="tool-reference-lines"
+      stroke="none"
+      strokeWidth="1"
+      fill="none"
+      fillRule="evenodd"
+    >
+      <rect
+        id="Rectangle"
+        x="0"
+        y="0"
+        width="28"
+        height="28"
+      ></rect>
+      <path
+        d="M5.75,14.75 L7.75,14.75 C8.16421356,14.75 8.5,14.4142136 8.5,14 C8.5,13.5857864 8.16421356,13.25 7.75,13.25 L5.75,13.25 C5.33578644,13.25 5,13.5857864 5,14 C5,14.4142136 5.33578644,14.75 5.75,14.75 Z"
+        id="Path"
+        fill="currentColor"
+        fillRule="nonzero"
+      ></path>
+      <path
+        d="M10.75,14.75 L12.75,14.75 C13.1642136,14.75 13.5,14.4142136 13.5,14 C13.5,13.5857864 13.1642136,13.25 12.75,13.25 L10.75,13.25 C10.3357864,13.25 10,13.5857864 10,14 C10,14.4142136 10.3357864,14.75 10.75,14.75 Z"
+        id="Path"
+        fill="currentColor"
+        fillRule="nonzero"
+      ></path>
+      <path
+        d="M15.75,14.75 L17.75,14.75 C18.1642136,14.75 18.5,14.4142136 18.5,14 C18.5,13.5857864 18.1642136,13.25 17.75,13.25 L15.75,13.25 C15.3357864,13.25 15,13.5857864 15,14 C15,14.4142136 15.3357864,14.75 15.75,14.75 Z"
+        id="Path"
+        fill="currentColor"
+        fillRule="nonzero"
+      ></path>
+      <path
+        d="M20.75,14.75 L22.75,14.75 C23.1642136,14.75 23.5,14.4142136 23.5,14 C23.5,13.5857864 23.1642136,13.25 22.75,13.25 L20.75,13.25 C20.3357864,13.25 20,13.5857864 20,14 C20,14.4142136 20.3357864,14.75 20.75,14.75 Z"
+        id="Path"
+        fill="currentColor"
+        fillRule="nonzero"
+      ></path>
+      <path
+        d="M6.25,10 L6.25,7 C6.25,6.44771525 6.69771525,6 7.25,6 L12.9765472,6 L12.9765472,6 L21.25,6 C21.8022847,6 22.25,6.44771525 22.25,7 L22.25,10 L22.25,10"
+        id="Path-7"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+      ></path>
+      <path
+        d="M6.25,22.426395 L6.25,19.426395 C6.25,18.8741103 6.69771525,18.426395 7.25,18.426395 L21.25,18.426395 C21.8022847,18.426395 22.25,18.8741103 22.25,19.426395 L22.25,22.426395 L22.25,22.426395"
+        id="Path-7"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        transform="translate(14.25, 20.4264) scale(1, -1) translate(-14.25, -20.4264)"
+      ></path>
+    </g>
+  </svg>
+);
+
+export const ToolProbe = (props: IconProps) => (
+  <svg
+    width="28px"
+    height="28px"
+    viewBox="0 0 28 28"
+    version="1.1"
+    xmlns="http://www.w3.org/2000/svg"
+    {...props}
+  >
+    <g
+      fill="none"
+      fillRule="evenodd"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth="1.5"
+      transform="translate(4 4)"
+    >
+      <path d="M10 0L10 3.333M10 16.667L10 20M0 10L3.333 10M16.667 10L20 10" />
+      <circle
+        cx="10"
+        cy="10"
+        r="6.667"
+      />
+      <path d="M10 9.583c.23 0 .417.187.417.417 0 .23-.187.417-.417.417-.23 0-.417-.187-.417-.417 0-.23.187-.417.417-.417" />
+    </g>
+  </svg>
+);
+
+export const ToolReset = (props: IconProps) => (
+  <svg
+    width="28px"
+    height="28px"
+    viewBox="0 0 28 28"
+    version="1.1"
+    xmlns="http://www.w3.org/2000/svg"
+    {...props}
+  >
+    <g
+      id="tool-reset"
+      stroke="none"
+      strokeWidth="1"
+      fill="none"
+      fillRule="evenodd"
+    >
+      <rect
+        id="Rectangle"
+        x="0"
+        y="0"
+        width="28"
+        height="28"
+      ></rect>
+      <polyline
+        id="Path"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        points="15.7879373 10.9230769 22.7110142 10.9230769 22.7110142 4"
+      ></polyline>
+      <path
+        d="M22.1848604,10.9230769 C20.7833124,6.95640473 16.8769835,4.43920288 12.6856477,4.80187309 C8.49431195,5.16454329 5.07842549,8.3153258 4.37906817,12.4637863 C3.67971085,16.6122468 5.8738281,20.708777 9.71461129,22.4255209 C13.5553945,24.1422648 18.0710813,23.0448664 20.6956296,19.7569231"
+        id="Path"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      ></path>
+    </g>
+  </svg>
+);
+
+export const ToolRotateRight = (props: IconProps) => (
+  <svg
+    width="28px"
+    height="28px"
+    viewBox="0 0 28 28"
+    version="1.1"
+    xmlns="http://www.w3.org/2000/svg"
+    {...props}
+  >
+    <g
+      id="tool-rotate-right"
+      stroke="none"
+      strokeWidth="1"
+      fill="none"
+      fillRule="evenodd"
+    >
+      <rect
+        id="Rectangle"
+        x="0"
+        y="0"
+        width="28"
+        height="28"
+      ></rect>
+      <rect
+        id="Rectangle"
+        fill="currentColor"
+        x="9.55555556"
+        y="13"
+        width="14.4444444"
+        height="11.1111111"
+        rx="2"
+      ></rect>
+      <g
+        id="Group-11"
+        transform="translate(4, 3)"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="1.5"
+      >
+        <path
+          d="M8.88888889,3.33333333 L4.44444444,3.33333333 C1.98984556,3.33333333 0,5.32317889 0,7.77777778 L0,12.2222222"
+          id="Path"
+        ></path>
+        <polyline
+          id="Path"
+          points="5.55555556 0 8.88888889 3.33333333 5.55555556 6.66666667"
+        ></polyline>
+      </g>
+    </g>
+  </svg>
+);
+
+export const ToolSegBrush = (props: IconProps) => (
+  <svg
+    width="24px"
+    height="24px"
+    viewBox="0 0 24 24"
+    version="1.1"
+    xmlns="http://www.w3.org/2000/svg"
+    {...props}
+  >
+    <g
+      id="tool-seg-brush"
+      stroke="none"
+      strokeWidth="1"
+      fill="none"
+      fillRule="evenodd"
+    >
+      <rect
+        id="Rectangle"
+        x="0"
+        y="0"
+        width="24"
+        height="24"
+      ></rect>
+      <path
+        d="M3.24640621,21.8286833 C3.09173375,21.7551472 2.99513748,21.5971513 3.00018895,21.4259625 C3.00524042,21.2547737 3.11098486,21.1027485 3.26972426,21.0384606 C5.3260304,20.2059201 4.66362518,17.8620247 5.27421252,16.6088957 C6.02197747,15.1026514 7.84114758,14.4766383 9.35746132,15.2037675 C13.9485253,17.4422999 8.48346644,24.3211232 3.24640621,21.8286833 Z"
+        id="Path"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      ></path>
+      <path
+        d="M21.5968442,2.302022 C21.1256527,1.8826075 20.4094461,1.90228142 19.9619901,2.34693083 L9.69255027,12.5887345 C11.0536437,13.0051578 12.1843437,13.9616637 12.8206229,15.2349008 L21.7410706,3.93687606 C22.1347378,3.44008272 22.0714081,2.72222021 21.5968442,2.302022 Z"
+        id="Path"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      ></path>
+    </g>
+  </svg>
+);
+
+export const ToolSegEraser = (props: IconProps) => (
+  <svg
+    width="24px"
+    height="24px"
+    viewBox="0 0 24 24"
+    version="1.1"
+    xmlns="http://www.w3.org/2000/svg"
+    {...props}
+  >
+    <g
+      id="tool-seg-eraser"
+      stroke="none"
+      strokeWidth="1"
+      fill="none"
+      fillRule="evenodd"
+    >
+      <rect
+        id="Rectangle"
+        x="0"
+        y="0"
+        width="24"
+        height="24"
+      ></rect>
+      <path
+        d="M8.47826087,18.0030772 C7.48731947,17.9495317 6.54439458,17.5591084 5.80565217,16.8964685 L4.1066087,15.1958598 C3.49763625,14.5834856 3.49763625,13.5942339 4.1066087,12.9818598 L13.6317391,3.45672934 C14.2441133,2.84775689 15.233365,2.84775689 15.8457391,3.45672934 L19.8926087,7.5035989 C20.5015811,8.11597307 20.5015811,9.10522473 19.8926087,9.7175989 L12.7153043,16.8949033 C11.9769855,17.5579476 11.0343414,17.9489213 10.0434783,18.0030772 L8.47826087,18.0030772 Z"
+        id="Path"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      ></path>
+      <line
+        x1="10.0434783"
+        y1="7.04499021"
+        x2="16.3043478"
+        y2="13.3058598"
+        id="Path"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      ></line>
+      <line
+        x1="3"
+        y1="20.5667293"
+        x2="21"
+        y2="20.5667293"
+        id="Path"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      ></line>
+    </g>
+  </svg>
+);
+
+export const ToolSegShape = (props: IconProps) => (
+  <svg
+    width="24px"
+    height="24px"
+    viewBox="0 0 24 24"
+    version="1.1"
+    xmlns="http://www.w3.org/2000/svg"
+    {...props}
+  >
+    <g
+      id="tool-seg-shape"
+      stroke="none"
+      strokeWidth="1"
+      fill="none"
+      fillRule="evenodd"
+    >
+      <rect
+        id="Rectangle"
+        x="0"
+        y="0"
+        width="24"
+        height="24"
+      ></rect>
+      <circle
+        id="Oval"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        cx="16"
+        cy="15"
+        r="6"
+      ></circle>
+      <rect
+        id="Rectangle"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        x="3"
+        y="3"
+        width="13"
+        height="13"
+        rx="2"
+      ></rect>
+    </g>
+  </svg>
+);
+
+export const ToolSegThreshold = (props: IconProps) => (
+  <svg
+    width="24px"
+    height="24px"
+    viewBox="0 0 24 24"
+    version="1.1"
+    xmlns="http://www.w3.org/2000/svg"
+    {...props}
+  >
+    <g
+      id="tool-seg-threshold"
+      stroke="none"
+      strokeWidth="1"
+      fill="none"
+      fillRule="evenodd"
+    >
+      <rect
+        id="Rectangle"
+        x="0"
+        y="0"
+        width="24"
+        height="24"
+      ></rect>
+      <g
+        id="Group"
+        transform="translate(2.4184, 14.3673)"
+        stroke="currentColor"
+        strokeWidth="1.5"
+      >
+        <line
+          x1="16.5816327"
+          y1="2.13265306"
+          x2="19.0816327"
+          y2="2.13265306"
+          id="Line-2"
+          strokeLinecap="round"
+        ></line>
+        <line
+          x1="0.0816326531"
+          y1="2.13265306"
+          x2="12.0816327"
+          y2="2.13265306"
+          id="Line-2"
+          strokeLinecap="round"
+        ></line>
+        <circle
+          id="Oval"
+          cx="14.2244898"
+          cy="2.09183673"
+          r="2.09183673"
+        ></circle>
+      </g>
+      <g
+        id="Group"
+        transform="translate(11.7092, 7.4592) scale(-1, 1) translate(-11.7092, -7.4592)translate(1.9184, 5.3673)"
+        stroke="currentColor"
+        strokeWidth="1.5"
+      >
+        <line
+          x1="16"
+          y1="2.13265306"
+          x2="19.0816327"
+          y2="2.13265306"
+          id="Line-2"
+          strokeLinecap="round"
+        ></line>
+        <line
+          x1="0.0816326531"
+          y1="2.13265306"
+          x2="11"
+          y2="2.13265306"
+          id="Line-2"
+          strokeLinecap="round"
+        ></line>
+        <circle
+          id="Oval"
+          cx="13.2244898"
+          cy="2.09183673"
+          r="2.09183673"
+        ></circle>
+      </g>
+    </g>
+  </svg>
+);
+
+export const ToolSplineRoi = (props: IconProps) => (
+  <svg
+    width="28px"
+    height="28px"
+    viewBox="0 0 28 28"
+    version="1.1"
+    xmlns="http://www.w3.org/2000/svg"
+    {...props}
+  >
+    <g
+      id="tool-spline-roi"
+      stroke="none"
+      strokeWidth="1"
+      fill="none"
+      fillRule="evenodd"
+    >
+      <rect
+        id="Rectangle"
+        x="0"
+        y="0"
+        width="28"
+        height="28"
+      ></rect>
+      <g
+        id="Group-3"
+        transform="translate(5, 5)"
+        stroke="currentColor"
+        strokeLinejoin="round"
+        strokeWidth="1.5"
+      >
+        <path
+          d="M5,4 C6.80276265,2.42407491 9.10583462,1.538278 11.5,1.5 L15.5,1.5"
+          id="Path"
+        ></path>
+        <path
+          d="M1.5,15.5 L1.5,11.5 C1.50313857,9.33936854 2.19845937,7.23658385 3.484,5.5"
+          id="Path"
+        ></path>
+        <circle
+          id="Oval"
+          strokeLinecap="round"
+          cx="4"
+          cy="4.5"
+          r="1.5"
+        ></circle>
+        <circle
+          id="Oval"
+          strokeLinecap="round"
+          cx="17.5"
+          cy="1.5"
+          r="1.5"
+        ></circle>
+        <circle
+          id="Oval"
+          strokeLinecap="round"
+          cx="1.5"
+          cy="17.5"
+          r="1.5"
+        ></circle>
+      </g>
+    </g>
+  </svg>
+);
+
+export const ToolStackImageSync = (props: IconProps) => (
+  <svg
+    width="28px"
+    height="28px"
+    viewBox="0 0 28 28"
+    version="1.1"
+    xmlns="http://www.w3.org/2000/svg"
+    {...props}
+  >
+    <g
+      id="tool-stack-image-sync"
+      stroke="none"
+      strokeWidth="1"
+      fill="none"
+      fillRule="evenodd"
+    >
+      <rect
+        id="Rectangle"
+        x="0"
+        y="0"
+        width="28"
+        height="28"
+      ></rect>
+      <path
+        d="M16.4346891,14.4875228 L16.5216447,14.5744783 C17.2833202,15.336115 18.5181991,15.336115 19.2798746,14.5744783 L23.1459183,10.7049564 C24.2824086,9.55997894 24.2824086,7.71258895 23.1459183,6.56761146 L21.4311549,4.85371762 C20.2872588,3.71542746 18.4385755,3.71542746 17.2946795,4.85371762 L13.4277663,8.71976127 C12.6661296,9.48143685 12.6661296,10.7163157 13.4277663,11.4779913 L13.5147218,11.5649468"
+        id="Path"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      ></path>
+      <path
+        d="M11.5651784,13.5118815 L11.4782229,13.424926 C10.7165473,12.6632893 9.48166848,12.6632893 8.7199929,13.424926 L4.85307969,17.2944478 C3.7156401,18.439034 3.7156401,20.2872066 4.85307969,21.4317928 L6.56697354,23.1456867 C7.71077373,24.2850306 9.56051831,24.2850306 10.7043185,23.1456867 L14.5703622,19.279643 C14.9365407,18.9140991 15.1423111,18.4179341 15.1423111,17.900528 C15.1423111,17.3831219 14.9365407,16.8869569 14.5703622,16.521413 L14.4834066,16.4344575"
+        id="Path"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      ></path>
+      <line
+        x1="10.2069328"
+        y1="17.7927031"
+        x2="17.7911957"
+        y2="10.2067011"
+        id="Path"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      ></line>
+    </g>
+  </svg>
+);
+
+export const ToolStackScroll = (props: IconProps) => (
+  <svg
+    width="28px"
+    height="28px"
+    viewBox="0 0 28 28"
+    version="1.1"
+    xmlns="http://www.w3.org/2000/svg"
+    {...props}
+  >
+    <g
+      id="tool-stack-scroll"
+      stroke="none"
+      strokeWidth="1"
+      fill="none"
+      fillRule="evenodd"
+    >
+      <rect
+        id="Rectangle"
+        x="0"
+        y="0"
+        width="28"
+        height="28"
+      ></rect>
+      <rect
+        id="Rectangle"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        x="4"
+        y="9.71428571"
+        width="14.2857143"
+        height="14.2857143"
+        rx="2"
+      ></rect>
+      <path
+        d="M7.0094401,6.85714286 L18.9906762,6.85714286 C20.0952457,6.85714286 20.9906762,7.75257336 20.9906762,8.85714286 L20.9906762,21.1428571 L20.9906762,21.1428571"
+        id="Path-3"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+      ></path>
+      <path
+        d="M9.71428571,4 L21.6955218,4 C22.8000913,4 23.6955218,4.8954305 23.6955218,6 L23.6955218,18.2857143 L23.6955218,18.2857143"
+        id="Path-3"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+      ></path>
+    </g>
+  </svg>
+);
+
+export const ToolToggleDicomOverlay = (props: IconProps) => (
+  <svg
+    width="28px"
+    height="28px"
+    viewBox="0 0 28 28"
+    version="1.1"
+    xmlns="http://www.w3.org/2000/svg"
+    {...props}
+  >
+    <g
+      id="tool-toggle-dicom-overlay"
+      stroke="none"
+      strokeWidth="1"
+      fill="none"
+      fillRule="evenodd"
+    >
+      <rect
+        id="Rectangle"
+        x="0"
+        y="0"
+        width="28"
+        height="28"
+      ></rect>
+      <path
+        d="M21.5629346,19 C21.9081126,19 22.1879346,19.279822 22.1879346,19.625 C22.1879346,19.970178 21.9081126,20.25 21.5629346,20.25 L20.2129346,20.25 C19.8677566,20.25 19.5879346,19.970178 19.5879346,19.625 C19.5879346,19.279822 19.8677566,19 20.2129346,19 L21.5629346,19 Z M17.4829346,19 C17.8281125,19 18.1079346,19.279822 18.1079346,19.625 C18.1079346,19.970178 17.8281125,20.25 17.4829346,20.25 L16.1329346,20.25 C15.7877566,20.25 15.5079346,19.970178 15.5079346,19.625 C15.5079346,19.279822 15.7877566,19 16.1329346,19 L17.4829346,19 Z M13.4029345,19 C13.7481125,19 14.0279345,19.279822 14.0279345,19.625 C14.0279345,19.970178 13.7481125,20.25 13.4029345,20.25 L12.0529345,20.25 C11.7077565,20.25 11.4279345,19.970178 11.4279345,19.625 C11.4279345,19.279822 11.7077565,19 12.0529345,19 L13.4029345,19 Z M8.98988002,17.034041 C9.33501017,17.0282959 9.61945075,17.3034219 9.62519584,17.648552 C9.63057519,17.9717108 9.74731641,18.2750986 9.95299373,18.5163531 C10.1769336,18.7790292 10.1455318,19.1735095 9.88285564,19.3974494 C9.62017952,19.6213893 9.22569928,19.5899874 9.00175936,19.3273113 C8.60957687,18.8672907 8.38562164,18.2852745 8.37536899,17.6693568 C8.3696239,17.3242267 8.64474986,17.0397861 8.98988002,17.034041 Z M24,16.4185328 C24.345178,16.4185328 24.625,16.6983548 24.625,17.0435328 L24.625,17.625 C24.625,17.9681799 24.5587904,18.303203 24.431654,18.6151793 C24.3013887,18.9348335 23.936657,19.0883635 23.6170028,18.9580982 C23.2973486,18.8278329 23.1438186,18.4631012 23.2740839,18.143447 C23.3404391,17.9806197 23.375,17.8057405 23.375,17.625 L23.375,17.0435328 C23.375,16.6983548 23.654822,16.4185328 24,16.4185328 Z M9,12.9544019 C9.34517797,12.9544019 9.625,13.2342239 9.625,13.5794019 L9.625,14.9294019 C9.625,15.2745799 9.34517797,15.5544019 9,15.5544019 C8.65482203,15.5544019 8.375,15.2745799 8.375,14.9294019 L8.375,13.5794019 C8.375,13.2342239 8.65482203,12.9544019 9,12.9544019 Z M24,12.3385328 C24.345178,12.3385328 24.625,12.6183548 24.625,12.9635328 L24.625,14.3135328 C24.625,14.6587107 24.345178,14.9385328 24,14.9385328 C23.654822,14.9385328 23.375,14.6587107 23.375,14.3135328 L23.375,12.9635328 C23.375,12.6183548 23.654822,12.3385328 24,12.3385328 Z M9,8.87440184 C9.34517797,8.87440184 9.625,9.15422387 9.625,9.49940184 L9.625,10.8494019 C9.625,11.1945798 9.34517797,11.4744019 9,11.4744019 C8.65482203,11.4744019 8.375,11.1945798 8.375,10.8494019 L8.375,9.49940184 C8.375,9.15422387 8.65482203,8.87440184 9,8.87440184 Z M24,8.25853271 C24.345178,8.25853271 24.625,8.53835474 24.625,8.88353271 L24.625,10.2335327 C24.625,10.5787107 24.345178,10.8585327 24,10.8585327 C23.654822,10.8585327 23.375,10.5787107 23.375,10.2335327 L23.375,8.88353271 C23.375,8.53835474 23.654822,8.25853271 24,8.25853271 Z M8.85203131,5.11578232 C9.05066164,4.83348137 9.44053346,4.76565293 9.72283441,4.96428326 C10.0051354,5.16291358 10.0729638,5.55278541 9.87433347,5.83508635 C9.71277357,6.06470142 9.625,6.33744835 9.625,6.625 L9.625,6.76940182 C9.625,7.11457979 9.34517797,7.39440182 9,7.39440182 C8.65482203,7.39440182 8.375,7.11457979 8.375,6.76940182 L8.375,6.625 C8.375,6.07783578 8.54347711,5.55431124 8.85203131,5.11578232 Z M22.6742845,4.64042222 C22.8779596,4.36173907 23.2689882,4.30093301 23.5476713,4.50460808 C24.037257,4.86242093 24.3909544,5.3800285 24.5426114,5.97056314 C24.6284714,6.30489214 24.4270475,6.64552267 24.0927185,6.73138272 C23.7583895,6.81724277 23.417759,6.61581889 23.331899,6.28148989 C23.2527262,5.9732005 23.0672181,5.70172435 22.8100986,5.51380903 C22.5314155,5.31013396 22.4706094,4.91910536 22.6742845,4.64042222 Z M12.35,4 C12.695178,4 12.975,4.27982203 12.975,4.625 C12.975,4.97017797 12.695178,5.25 12.35,5.25 L11,5.25 C10.654822,5.25 10.375,4.97017797 10.375,4.625 C10.375,4.27982203 10.654822,4 11,4 L12.35,4 Z M16.4300001,4 C16.775178,4 17.0550001,4.27982203 17.0550001,4.625 C17.0550001,4.97017797 16.775178,5.25 16.4300001,5.25 L15.08,5.25 C14.7348221,5.25 14.455,4.97017797 14.455,4.625 C14.455,4.27982203 14.7348221,4 15.08,4 L16.4300001,4 Z M20.5100001,4 C20.8551781,4 21.1350001,4.27982203 21.1350001,4.625 C21.1350001,4.97017797 20.8551781,5.25 20.5100001,5.25 L19.1600001,5.25 C18.8148221,5.25 18.5350001,4.97017797 18.5350001,4.625 C18.5350001,4.27982203 18.8148221,4 19.1600001,4 L20.5100001,4 Z"
+        id="Rectangle"
+        fill="currentColor"
+        fillRule="nonzero"
+        transform="translate(16.5, 12.125) rotate(180) translate(-16.5, -12.125)"
+      ></path>
+      <path
+        d="M6.1678365,9.125 L5.5,9.125 C4.3954305,9.125 3.5,10.0204305 3.5,11.125 L3.5,22.125 C3.5,23.2295695 4.3954305,24.125 5.5,24.125 L16.5,24.125 C17.6045695,24.125 18.5,23.2295695 18.5,22.125 L18.5,21.9543874 L18.5,21.9543874"
+        id="Path-9"
+        stroke="currentColor"
+        strokeWidth="1.25"
+        strokeLinecap="round"
+      ></path>
+    </g>
+  </svg>
+);
+
+export const ToolUltrasoundBidirectional = (props: IconProps) => (
+  <svg
+    width="28px"
+    height="28px"
+    viewBox="0 0 28 28"
+    version="1.1"
+    xmlns="http://www.w3.org/2000/svg"
+    {...props}
+  >
+    <g
+      id="tool-ultrasound-bidirectional"
+      stroke="none"
+      strokeWidth="1"
+      fill="none"
+      fillRule="evenodd"
+    >
+      <line
+        x1="4"
+        y1="17.5"
+        x2="4"
+        y2="23.5"
+        id="Line"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="square"
+      ></line>
+      <line
+        x1="7.5"
+        y1="20.5"
+        x2="7.5"
+        y2="26.5"
+        id="Line"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="square"
+        transform="translate(7.5, 23.5) rotate(-90) translate(-7.5, -23.5)"
+      ></line>
+      <circle
+        id="Oval"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        cx="4"
+        cy="15.5"
+        r="1.5"
+      ></circle>
+      <circle
+        id="Oval"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        cx="12.5"
+        cy="23.5"
+        r="1.5"
+      ></circle>
+      <rect
+        id="Rectangle"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        x="8"
+        y="4"
+        width="17"
+        height="10"
+        rx="2"
+      ></rect>
+      <g
+        id="US"
+        transform="translate(11.6055, 6.5586)"
+        fill="currentColor"
+        fillRule="nonzero"
+      >
+        <path
+          d="M2.15625,4.61328125 C1.49609375,4.61328125 1.05859375,4.21875 1.05859375,3.4921875 L1.05859375,0.109375 L0,0.109375 L0,3.6015625 C0,4.76953125 0.84375,5.54296875 2.15625,5.54296875 C3.46484375,5.54296875 4.30859375,4.76953125 4.30859375,3.6015625 L4.30859375,0.109375 L3.25,0.109375 L3.25,3.4921875 C3.25,4.21484375 2.8125,4.61328125 2.15625,4.61328125 Z"
+          id="Path"
+        ></path>
+        <path
+          d="M5.25390625,3.97265625 C5.30078125,4.81640625 5.95703125,5.54296875 7.3125,5.54296875 C8.6640625,5.54296875 9.42578125,4.859375 9.42578125,3.859375 C9.42578125,2.953125 8.85546875,2.5390625 7.9921875,2.34765625 L7.1640625,2.1640625 C6.6953125,2.06640625 6.43359375,1.86328125 6.43359375,1.546875 C6.43359375,1.1484375 6.78125,0.85546875 7.36328125,0.85546875 C7.9296875,0.85546875 8.27734375,1.1484375 8.34375,1.51953125 L9.34375,1.51953125 C9.29296875,0.6953125 8.58984375,0 7.37109375,0 C6.1953125,0 5.37890625,0.63671875 5.37890625,1.625 C5.37890625,2.44921875 5.90234375,2.91796875 6.73046875,3.10546875 L7.5546875,3.29296875 C8.109375,3.41796875 8.375,3.6015625 8.375,3.96484375 C8.375,4.38671875 8.02734375,4.6796875 7.37109375,4.6796875 C6.7421875,4.6796875 6.34375,4.375 6.2734375,3.97265625 L5.25390625,3.97265625 Z"
+          id="Path"
+        ></path>
+      </g>
+    </g>
+  </svg>
+);
+
+export const ToolWindowLevel = (props: IconProps) => (
+  <svg
+    width="28px"
+    height="28px"
+    viewBox="0 0 28 28"
+    version="1.1"
+    xmlns="http://www.w3.org/2000/svg"
+    {...props}
+  >
+    <g
+      id="tool-window-level"
+      stroke="none"
+      strokeWidth="1"
+      fill="none"
+      fillRule="evenodd"
+    >
+      <rect
+        id="Rectangle"
+        x="0"
+        y="0"
+        width="28"
+        height="28"
+      ></rect>
+      <circle
+        id="Oval-2"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        cx="14"
+        cy="14"
+        r="10"
+      ></circle>
+      <path
+        d="M21.4837076,7.36702528 C23.0493155,9.13213184 24,11.4550438 24,14 C24,19.5228475 19.5228475,24 14,24 C11.4550438,24 9.13213184,23.0493155 7.36702528,21.4837076 Z"
+        id="Combined-Shape"
+        fill="currentColor"
+      ></path>
+    </g>
+  </svg>
+);
+
+export const ToolWindowRegion = (props: IconProps) => (
+  <svg
+    width="28px"
+    height="28px"
+    viewBox="0 0 28 28"
+    version="1.1"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <g
+      id="tool-window-region"
+      stroke="none"
+      strokeWidth="1"
+      fill="none"
+      fillRule="evenodd"
+    >
+      <rect
+        id="Rectangle"
+        x="0"
+        y="0"
+        width="28"
+        height="28"
+      ></rect>
+      <path
+        d="M10.3460449,22 L4,22 C3.44771525,22 3,21.5522847 3,21 L3,4 C3,3.44771525 3.44771525,3 4,3 L21,3 C21.5522847,3 22,3.44771525 22,4 L22,11.3197021"
+        id="Path"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      ></path>
+      <g
+        id="Group"
+        transform="translate(14, 15)"
+        fill="currentColor"
+      >
+        <path
+          d="M5.5,-0.75 C8.95177969,-0.75 11.75,2.04822031 11.75,5.5 C11.75,8.95177969 8.95177969,11.75 5.5,11.75 C2.04822031,11.75 -0.75,8.95177969 -0.75,5.5 C-0.75,2.04822031 2.04822031,-0.75 5.5,-0.75 Z M5.5,0.75 C2.87664744,0.75 0.75,2.87664744 0.75,5.5 C0.75,8.12335256 2.87664744,10.25 5.5,10.25 C8.12335256,10.25 10.25,8.12335256 10.25,5.5 C10.25,2.87664744 8.12335256,0.75 5.5,0.75 Z"
+          id="Oval"
+          fillRule="nonzero"
+        ></path>
+        <path
+          d="M9.61552427,1.85128344 C10.4769151,2.82216322 11,4.09999509 11,5.5 C11,8.53756612 8.53756612,11 5.5,11 C4.09999509,11 2.82216322,10.4769151 1.85128344,9.61552427 Z"
+          id="Combined-Shape"
+        ></path>
+      </g>
+    </g>
+  </svg>
+);
+
+export const ToolZoom = (props: IconProps) => (
+  <svg
+    width="28px"
+    height="28px"
+    viewBox="0 0 28 28"
+    version="1.1"
+    xmlns="http://www.w3.org/2000/svg"
+    {...props}
+  >
+    <g
+      id="tool-zoom"
+      stroke="none"
+      strokeWidth="1"
+      fill="none"
+      fillRule="evenodd"
+    >
+      <rect
+        id="Rectangle"
+        x="0"
+        y="0"
+        width="28"
+        height="28"
+      ></rect>
+      <ellipse
+        id="Oval-1"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        cx="11.5581395"
+        cy="12.0909091"
+        rx="7.81395349"
+        ry="7.63636364"
+      ></ellipse>
+      <line
+        x1="17.4186047"
+        y1="17.8181818"
+        x2="23.2790698"
+        y2="23.5454545"
+        id="Line"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      ></line>
+    </g>
+  </svg>
+);
+
+export const ToolBrush = (props: IconProps) => (
+  <svg
+    width="28px"
+    height="28px"
+    viewBox="0 0 28 28"
+    version="1.1"
+    xmlns="http://www.w3.org/2000/svg"
+    {...props}
+  >
+    <g
+      id="tool-seg-brush"
+      stroke="none"
+      strokeWidth="1"
+      fill="none"
+      fillRule="evenodd"
+    >
+      <rect
+        id="Rectangle"
+        x="0"
+        y="0"
+        width="28"
+        height="28"
+      ></rect>
+      <path
+        d="M3.24640621,21.8286833 C3.09173375,21.7551472 2.99513748,21.5971513 3.00018895,21.4259625 C3.00524042,21.2547737 3.11098486,21.1027485 3.26972426,21.0384606 C5.3260304,20.2059201 4.66362518,17.8620247 5.27421252,16.6088957 C6.02197747,15.1026514 7.84114758,14.4766383 9.35746132,15.2037675 C13.9485253,17.4422999 8.48346644,24.3211232 3.24640621,21.8286833 Z"
+        id="Path"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      ></path>
+      <path
+        d="M21.5968442,2.302022 C21.1256527,1.8826075 20.4094461,1.90228142 19.9619901,2.34693083 L9.69255027,12.5887345 C11.0536437,13.0051578 12.1843437,13.9616637 12.8206229,15.2349008 L21.7410706,3.93687606 C22.1347378,3.44008272 22.0714081,2.72222021 21.5968442,2.302022 Z"
+        id="Path"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      ></path>
+    </g>
+  </svg>
+);
+
+export const ToolEraser = (props: IconProps) => (
+  <svg
+    width="28px"
+    height="28px"
+    viewBox="0 0 28 28"
+    version="1.1"
+    xmlns="http://www.w3.org/2000/svg"
+    {...props}
+  >
+    <g
+      id="tool-seg-eraser"
+      stroke="none"
+      strokeWidth="1"
+      fill="none"
+      fillRule="evenodd"
+    >
+      <rect
+        id="Rectangle"
+        x="0"
+        y="0"
+        width="28"
+        height="28"
+      ></rect>
+      <path
+        d="M8.47826087,18.0030772 C7.48731947,17.9495317 6.54439458,17.5591084 5.80565217,16.8964685 L4.1066087,15.1958598 C3.49763625,14.5834856 3.49763625,13.5942339 4.1066087,12.9818598 L13.6317391,3.45672934 C14.2441133,2.84775689 15.233365,2.84775689 15.8457391,3.45672934 L19.8926087,7.5035989 C20.5015811,8.11597307 20.5015811,9.10522473 19.8926087,9.7175989 L12.7153043,16.8949033 C11.9769855,17.5579476 11.0343414,17.9489213 10.0434783,18.0030772 L8.47826087,18.0030772 Z"
+        id="Path"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      ></path>
+      <line
+        x1="10.0434783"
+        y1="7.04499021"
+        x2="16.3043478"
+        y2="13.3058598"
+        id="Path"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      ></line>
+      <line
+        x1="3"
+        y1="20.5667293"
+        x2="21"
+        y2="20.5667293"
+        id="Path"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      ></line>
+    </g>
+  </svg>
+);
+
+export const ToolThreshold = (props: IconProps) => (
+  <svg
+    width="28px"
+    height="28px"
+    viewBox="0 0 28 28"
+    version="1.1"
+    xmlns="http://www.w3.org/2000/svg"
+    {...props}
+  >
+    <g
+      id="tool-seg-threshold"
+      stroke="none"
+      strokeWidth="1"
+      fill="none"
+      fillRule="evenodd"
+    >
+      <rect
+        id="Rectangle"
+        x="0"
+        y="0"
+        width="28"
+        height="28"
+      ></rect>
+      <g
+        id="Group"
+        transform="translate(2.4184, 14.3673)"
+        stroke="currentColor"
+        strokeWidth="1.5"
+      >
+        <line
+          x1="16.5816327"
+          y1="2.13265306"
+          x2="19.0816327"
+          y2="2.13265306"
+          id="Line-2"
+          strokeLinecap="round"
+        ></line>
+        <line
+          x1="0.0816326531"
+          y1="2.13265306"
+          x2="12.0816327"
+          y2="2.13265306"
+          id="Line-2"
+          strokeLinecap="round"
+        ></line>
+        <circle
+          id="Oval"
+          cx="14.2244898"
+          cy="2.09183673"
+          r="2.09183673"
+        ></circle>
+      </g>
+      <g
+        id="Group"
+        transform="translate(11.7092, 7.4592) scale(-1, 1) translate(-11.7092, -7.4592)translate(1.9184, 5.3673)"
+        stroke="currentColor"
+        strokeWidth="1.5"
+      >
+        <line
+          x1="16"
+          y1="2.13265306"
+          x2="19.0816327"
+          y2="2.13265306"
+          id="Line-2"
+          strokeLinecap="round"
+        ></line>
+        <line
+          x1="0.0816326531"
+          y1="2.13265306"
+          x2="11"
+          y2="2.13265306"
+          id="Line-2"
+          strokeLinecap="round"
+        ></line>
+        <circle
+          id="Oval"
+          cx="13.2244898"
+          cy="2.09183673"
+          r="2.09183673"
+        ></circle>
+      </g>
+    </g>
+  </svg>
+);
+
+export const ToolShape = (props: IconProps) => (
+  <svg
+    width="28px"
+    height="28px"
+    viewBox="0 0 28 28"
+    version="1.1"
+    xmlns="http://www.w3.org/2000/svg"
+    {...props}
+  >
+    <g
+      id="tool-seg-shape"
+      stroke="none"
+      strokeWidth="1"
+      fill="none"
+      fillRule="evenodd"
+    >
+      <rect
+        id="Rectangle"
+        x="0"
+        y="0"
+        width="28"
+        height="28"
+      ></rect>
+      <circle
+        id="Oval"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        cx="16"
+        cy="15"
+        r="6"
+      ></circle>
+      <rect
+        id="Rectangle"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        x="3"
+        y="3"
+        width="13"
+        height="13"
+        rx="2"
+      ></rect>
+    </g>
+  </svg>
+);
