@@ -40,7 +40,6 @@ import StudyListFilter from './StudyListFilter';
 import StudyListPagination from './StudyListPagination';
 import { StudyListTable, StudyListTableRow } from './StudyListTable';
 import StudySummary from './StudySummary';
-import Svg from './Svg';
 import Table from './Table';
 import TableBody from './TableBody';
 import TableCell from './TableCell';
@@ -162,7 +161,6 @@ export {
   StudyListTable,
   StudyListTableRow,
   StudySummary,
-  Svg,
   SwitchButton,
   SwitchLabelLocation,
   Table,

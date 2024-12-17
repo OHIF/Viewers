@@ -96,7 +96,6 @@ export {
   StudyListTable,
   StudyListTableRow,
   StudySummary,
-  Svg,
   SwitchButton,
   SwitchLabelLocation,
   Table,

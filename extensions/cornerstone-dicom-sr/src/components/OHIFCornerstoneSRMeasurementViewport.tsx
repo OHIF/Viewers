@@ -10,7 +10,7 @@ import hydrateStructuredReport from '../utils/hydrateStructuredReport';
 import { useAppConfig } from '@state';
 import createReferencedImageDisplaySet from '../utils/createReferencedImageDisplaySet';
 import { usePositionPresentationStore } from '@ohif/extension-cornerstone';
-
+import { Icons } from '@ohif/ui-next';
 const MEASUREMENT_TRACKING_EXTENSION_ID = '@ohif/extension-measurement-tracking';
 
 const SR_TOOLGROUP_BASE_NAME = 'SRToolGroup';
@@ -433,7 +433,7 @@ function _getStatusComponent({
 
   switch (state) {
     case 1:
-      StatusIcon = () => <Icon name="status-alert" />;
+      StatusIcon = () => <Icons.ByName name="status-alert" />;
 
       ToolTipMessage = () => (
         <div>
@@ -444,7 +444,7 @@ function _getStatusComponent({
       );
       break;
     case 2:
-      StatusIcon = () => <Icon name="status-locked" />;
+      StatusIcon = () => <Icons.ByName name="status-locked" />;
 
       ToolTipMessage = () => (
         <div>
@@ -458,7 +458,7 @@ function _getStatusComponent({
       break;
     case 3:
       StatusIcon = () => (
-        <Icon
+        <Icons.ByName
           className="text-aqua-pale"
           name="status-untracked"
         />

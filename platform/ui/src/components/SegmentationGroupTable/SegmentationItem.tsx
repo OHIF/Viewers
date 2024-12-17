@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { Icon, Dropdown } from '../../components';
+import { Dropdown } from '../../components';
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
 import AddSegmentRow from './AddSegmentRow';
 import SegmentationGroupSegment from './SegmentationGroupSegment';
 import { Tooltip } from '../../components';
+import { Icons } from '@ohif/ui-next';
 
 function SegmentationItem({
   segmentation = {},
@@ -94,12 +95,12 @@ function SegmentationItem({
               ],
             ]}
           >
-            <div className="hover:bg-secondary-dark grid h-[28px] w-[28px]  cursor-pointer place-items-center rounded-[4px]">
-              <Icon name="icon-more-menu"></Icon>
+            <div className="hover:bg-secondary-dark grid h-[28px] w-[28px] cursor-pointer place-items-center rounded-[4px]">
+              <Icons.More />
             </div>
           </Dropdown>
           <div
-            className=" h-[28px] bg-black"
+            className="h-[28px] bg-black"
             style={{ width: '3px' }}
           ></div>
         </div>
@@ -118,13 +119,10 @@ function SegmentationItem({
                 </div>
               }
             >
-              <Icon
-                name="info-action"
-                className="text-primary-active"
-              />
+              <Icons.Info className="text-primary-active" />
             </Tooltip>
             <div className={areChildrenVisible ? '' : 'mr-[4px]'}>
-              <Icon name={areChildrenVisible ? 'chevron-down-new' : 'chevron-left-new'} />
+              {areChildrenVisible ? <Icons.ChevronOpen /> : <Icons.ChevronClosed />}
             </div>
           </div>
         </div>

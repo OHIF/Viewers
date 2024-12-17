@@ -2,8 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import { useTranslation } from 'react-i18next';
-
-import Icon from '../Icon';
+import { Icons } from '@ohif/ui-next';
 
 const baseClasses =
   'first:border-0 border-t border-secondary-light cursor-pointer select-none outline-none';
@@ -33,10 +32,7 @@ const StudyItem = ({
         <div className="flex flex-row items-center justify-between pt-2 pb-2">
           <div className="text-base text-white">{date}</div>
           <div className="flex flex-row items-center text-base text-blue-300">
-            <Icon
-              name="group-layers"
-              className="mx-2 w-4 text-blue-300"
-            />
+            <Icons.GroupLayers className="mx-2 w-4 text-blue-300" />
             {numInstances}
           </div>
         </div>
@@ -55,10 +51,7 @@ const StudyItem = ({
                 : 'mx-4 mb-4 rounded-sm'
             )}
           >
-            <Icon
-              name="tracked"
-              className="text-primary-light mr-2 w-4"
-            />
+            <Icons.StatusTracking className="text-primary-light mr-2 w-4" />
             {t('Tracked series', { trackedSeries: trackedSeries })}
           </div>
         </div>
