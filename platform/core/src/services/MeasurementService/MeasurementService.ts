@@ -92,6 +92,8 @@ const VALUE_TYPES = {
   ROI_THRESHOLD_MANUAL: 'value_type::roiThresholdManual',
 };
 
+export type MeasurementFilter = (measurement) => boolean;
+
 /**
  * MeasurementService class that supports source management and measurement management.
  * Sources can be any library that can provide "annotations" (e.g. cornerstone-tools, cornerstone, etc.)
@@ -108,7 +110,7 @@ class MeasurementService extends PubSubService {
   public static REGISTRATION = {
     name: 'measurementService',
     altName: 'MeasurementService',
-    create: ({ configuration = {} }) => {
+    create: _options => {
       return new MeasurementService();
     },
   };
@@ -120,10 +122,11 @@ class MeasurementService extends PubSubService {
   private measurements = new Map();
   private unmappedMeasurements = new Map();
 
+  private sources = {};
+  private mappings = {};
+
   constructor() {
     super(EVENTS);
-    this.sources = {};
-    this.mappings = {};
   }
 
   /**
@@ -168,7 +171,10 @@ class MeasurementService extends PubSubService {
    *
    * @return {Measurement[]} Array of measurements
    */
-  getMeasurements() {
+  public getMeasurements(filter?: MeasurementFilter) {
+    if (filter) {
+      return [...this.measurements.values()].filter(measurement => filter.call(this, measurement));
+    }
     return [...this.measurements.values()];
   }
 
@@ -582,11 +588,15 @@ class MeasurementService extends PubSubService {
     });
   }
 
-  clearMeasurements() {
+  public clearMeasurements(filter?: MeasurementFilter) {
     // Make a copy of the measurements
-    const measurements = [...this.measurements.values(), ...this.unmappedMeasurements.values()];
-    this.unmappedMeasurements.clear();
-    this.measurements.clear();
+    const toClear = this.getMeasurements(filter);
+    const unmappedClear = filter
+      ? [...this.unmappedMeasurements.values()].filter(filter)
+      : this.unmappedMeasurements;
+    const measurements = [...toClear, ...unmappedClear];
+    unmappedClear.forEach(measurement => this.unmappedMeasurements.delete(measurement.uid));
+    toClear.forEach(measurement => this.measurements.delete(measurement.uid));
     this._broadcastEvent(this.EVENTS.MEASUREMENTS_CLEARED, { measurements });
   }
 
