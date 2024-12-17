@@ -31,11 +31,7 @@ const measurementTrackingExtension = {
             <ViewportActionButton {...props}>{i18n.t('Common:LOAD')}</ViewportActionButton>
           ),
           props: {
-            commands: [
-              {
-                commandName: 'loadTrackedSRMeasurements',
-              },
-            ],
+            commands: ['loadTrackedSRMeasurements'],
           },
         },
       ],

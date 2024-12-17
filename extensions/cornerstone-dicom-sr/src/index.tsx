@@ -46,14 +46,7 @@ const dicomSRExtension = {
           <ViewportActionButton {...props}>{i18n.t('Common:LOAD')}</ViewportActionButton>
         ),
         props: {
-          commands: [
-            {
-              commandName: 'clearMeasurements',
-            },
-            {
-              commandName: 'loadSRMeasurements',
-            },
-          ],
+          commands: ['clearMeasurements', 'loadSRMeasurements'],
         },
       },
     ]);
