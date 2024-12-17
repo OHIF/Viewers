@@ -16,22 +16,13 @@ const MEASUREMENT_TRACKING_EXTENSION_ID = '@ohif/extension-measurement-tracking'
 const SR_TOOLGROUP_BASE_NAME = 'SRToolGroup';
 
 function OHIFCornerstoneSRMeasurementViewport(props: withAppTypes) {
-  const {
-    children,
-    dataSource,
-    displaySets,
-    viewportOptions,
-    servicesManager,
-    extensionManager,
-  } = props;
+  const { children, dataSource, displaySets, viewportOptions, servicesManager, extensionManager } =
+    props;
 
   const [appConfig] = useAppConfig();
 
-  const {
-    displaySetService,
-    measurementService,
-    viewportActionCornersService,
-  } = servicesManager.services;
+  const { displaySetService, measurementService, viewportActionCornersService } =
+    servicesManager.services;
 
   const viewportId = viewportOptions.viewportId;
 
@@ -43,7 +34,6 @@ function OHIFCornerstoneSRMeasurementViewport(props: withAppTypes) {
   const srDisplaySet = displaySets[0];
 
   const { setPositionPresentation } = usePositionPresentationStore();
-
 
   const [viewportGrid, viewportGridService] = useViewportGrid();
   const [measurementSelected, setMeasurementSelected] = useState(0);
@@ -160,13 +150,13 @@ function OHIFCornerstoneSRMeasurementViewport(props: withAppTypes) {
         setActiveImageDisplaySetData(referencedDisplaySet);
         setReferencedDisplaySetMetadata(referencedDisplaySetMetadata);
 
-        const { presentationIds } = viewportOptions
-        const measurement = srDisplaySet.measurements[newMeasurementSelected]
-    setPositionPresentation(presentationIds.positionPresentationId, {
+        const { presentationIds } = viewportOptions;
+        const measurement = srDisplaySet.measurements[newMeasurementSelected];
+        setPositionPresentation(presentationIds.positionPresentationId, {
           viewReference: {
-            referencedImageId: measurement.imageId
-          }
-        })
+            referencedImageId: measurement.imageId,
+          },
+        });
       });
     },
     [dataSource, srDisplaySet, activeImageDisplaySetData, viewportId]
@@ -187,8 +177,6 @@ function OHIFCornerstoneSRMeasurementViewport(props: withAppTypes) {
     if (!measurement) {
       return null;
     }
-
-
 
     return (
       <Component
