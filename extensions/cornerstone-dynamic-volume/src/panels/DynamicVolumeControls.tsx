@@ -1,15 +1,7 @@
-import React, { useEffect, useState } from 'react';
-import {
-  Button,
-  PanelSection,
-  ButtonGroup,
-  IconButton,
-  InputNumber,
-  Icon,
-  Tooltip,
-} from '@ohif/ui';
+import React, { useState } from 'react';
+import { Button, PanelSection, ButtonGroup, IconButton, InputNumber, Tooltip } from '@ohif/ui';
 
-import { DoubleSlider } from '@ohif/ui-next';
+import { DoubleSlider, Icons } from '@ohif/ui-next';
 
 import { Enums } from '@cornerstonejs/core';
 
@@ -27,7 +19,7 @@ const Header = ({ title, tooltip }) => (
       tight={true}
       tooltipBoxClassName="max-w-xs p-2"
     >
-      <Icon
+      <Icons.ByName
         name="info-link"
         className="text-primary-active h-[14px] w-[14px]"
       />
@@ -209,7 +201,7 @@ function FrameControls({
           className="bg-customblue-30 h-[26px] w-[58px] rounded-[4px]"
           onClick={() => onPlayPauseChange(!isPlaying)}
         >
-          <Icon
+          <Icons.ByName
             name={getPlayPauseIconName()}
             className="active:text-primary-light hover:bg-customblue-300 h-[24px] w-[24px] cursor-pointer text-white"
           />
