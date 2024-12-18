@@ -49,7 +49,7 @@ function Header({
           >
             {isReturnEnabled && <Icons.ChevronClosed className="text-primary-active w-8" />}
             <div className="ml-1">
-              {WhiteLabeling?.createLogoComponentFn?.(React, props) || <Svg name="logo-ohif" />}
+              {WhiteLabeling?.createLogoComponentFn?.(React, props) || <Icons.OHIFLogo />}
             </div>
           </div>
         </div>
