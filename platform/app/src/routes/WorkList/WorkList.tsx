@@ -11,6 +11,7 @@ import filtersMeta from './filtersMeta.js';
 import { useAppConfig } from '@state';
 import { useDebounce, useSearchParams } from '@hooks';
 import { utils, hotkeys } from '@ohif/core';
+import publicUrl from '../../utils/publicUrl';
 
 import {
   Icon,
@@ -205,7 +206,7 @@ function WorkList({
     });
 
     navigate({
-      pathname: '/',
+      pathname: publicUrl,
       search: search ? `?${search}` : undefined,
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps

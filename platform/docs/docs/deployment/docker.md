@@ -29,6 +29,10 @@ Below we show how to point the Docker image to a custom configuration file.
 The docker image can be built from a terminal window as such:
 1. Switch to the OHIF Viewer code root directory.
 2. Issue the following Docker command. Note that what follows `-t` flag is the `{name}:{tag}` for the Docker image and is arbitrary when creating a local Docker image.
+3. Choose the deployment path using ` --build-arg PUBLIC_URL=/ohif/`
+   * This cannot be over-ridden with rebuilding as it modifies the output build.
+4. Choose the default app config using `--build-arg APP_CONFIG=config/e2e.js`
+   * This can be overridden by setting an environment variable later on
 
     ```sh
     docker build . -t ohif-viewer-image
