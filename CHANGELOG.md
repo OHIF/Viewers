@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.10.0-beta.29](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.28...v3.10.0-beta.29) (2024-12-18)
+
+
+### Bug Fixes
+
+* **icons:** Add Clipboard icon and update MetadataProvider for null checks ([#4615](https://github.com/OHIF/Viewers/issues/4615)) ([93d7076](https://github.com/OHIF/Viewers/commit/93d707690104ae099df6e08156e2efd8c1a6e076))
+
+
+
+
+
 # [3.10.0-beta.28](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.27...v3.10.0-beta.28) (2024-12-18)
 
 **Note:** Version bump only for package ohif-monorepo-root
