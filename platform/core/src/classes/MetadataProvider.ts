@@ -200,7 +200,7 @@ class MetadataProvider {
         break;
       case WADO_IMAGE_LOADER_TAGS.VOI_LUT_MODULE:
         const { WindowCenter, WindowWidth, VOILUTFunction } = instance;
-        if (WindowCenter === undefined || WindowWidth === undefined) {
+        if (WindowCenter == null || WindowWidth == null) {
           return;
         }
         const windowCenter = Array.isArray(WindowCenter) ? WindowCenter : [WindowCenter];
