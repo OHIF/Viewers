@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.10.0-beta.27](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.26...v3.10.0-beta.27) (2024-12-18)
+
+
+### Features
+
+* **measurements:** Provide for the Load (SR) measurements button to optionally clear existing measurements prior to loading the SR. ([#4586](https://github.com/OHIF/Viewers/issues/4586)) ([4d3d5e7](https://github.com/OHIF/Viewers/commit/4d3d5e794cb99212eba06bf91dbb30a258725efe))
+
+
+
+
+
 # [3.10.0-beta.26](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.25...v3.10.0-beta.26) (2024-12-18)
 
 **Note:** Version bump only for package @ohif/core
