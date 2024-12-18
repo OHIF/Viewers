@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.10.0-beta.30](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.29...v3.10.0-beta.30) (2024-12-18)
+
+
+### Bug Fixes
+
+* **SR:** Bring back the onModeEnter for the cornerstone-dicom-sr extension that was accidentally removed by PR [#4586](https://github.com/OHIF/Viewers/issues/4586) ([#4616](https://github.com/OHIF/Viewers/issues/4616)) ([2df8e1d](https://github.com/OHIF/Viewers/commit/2df8e1d5cd7a203bdde1cac6230b60a0b87bfcdd))
+
+
+
+
+
 # [3.10.0-beta.29](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.28...v3.10.0-beta.29) (2024-12-18)
 
 **Note:** Version bump only for package @ohif/extension-cornerstone-dicom-sr
