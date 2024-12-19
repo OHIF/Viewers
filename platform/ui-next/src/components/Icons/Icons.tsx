@@ -69,6 +69,7 @@ import InvestigationalUse from './Sources/InvestigationalUse';
 import IconTransferring from './Sources/IconTransferring';
 import Alert from './Sources/Alert';
 import AlertOutline from './Sources/AlertOutline';
+import Clipboard from './Sources/Clipboard';
 import {
   Tool3DRotate,
   ToolAngle,
@@ -360,6 +361,7 @@ export const Icons = {
     />
   ),
   // Icons
+  Clipboard,
   ActionNewDialog,
   GroupLayers,
   Database,
@@ -666,6 +668,7 @@ export const Icons = {
   'layout-common-2x3': (props: IconProps) => LayoutCommon2x3(props),
   pencil: (props: IconProps) => Pencil(props),
   'icon-list-view': (props: IconProps) => ListView(props),
+  clipboard: (props: IconProps) => Clipboard(props),
 
   /** Adds an icon to the set of icons */
   addIcon: (name: string, icon) => {

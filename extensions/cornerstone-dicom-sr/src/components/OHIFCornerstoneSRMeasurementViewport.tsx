@@ -1,13 +1,11 @@
 import PropTypes from 'prop-types';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ExtensionManager } from '@ohif/core';
+import { ExtensionManager, useToolbar } from '@ohif/core';
 
 import { setTrackingUniqueIdentifiersForElement } from '../tools/modules/dicomSRModule';
 
 import { Icon, Tooltip, useViewportGrid, ViewportActionArrows } from '@ohif/ui';
-import hydrateStructuredReport from '../utils/hydrateStructuredReport';
-import { useAppConfig } from '@state';
 import createReferencedImageDisplaySet from '../utils/createReferencedImageDisplaySet';
 import { usePositionPresentationStore } from '@ohif/extension-cornerstone';
 import { Icons } from '@ohif/ui-next';
@@ -19,10 +17,7 @@ function OHIFCornerstoneSRMeasurementViewport(props: withAppTypes) {
   const { children, dataSource, displaySets, viewportOptions, servicesManager, extensionManager } =
     props;
 
-  const [appConfig] = useAppConfig();
-
-  const { displaySetService, measurementService, viewportActionCornersService } =
-    servicesManager.services;
+  const { displaySetService, viewportActionCornersService } = servicesManager.services;
 
   const viewportId = viewportOptions.viewportId;
 
@@ -47,7 +42,6 @@ function OHIFCornerstoneSRMeasurementViewport(props: withAppTypes) {
 
   // Optional hook into tracking extension, if present.
   let trackedMeasurements;
-  let sendTrackedMeasurementsEvent;
 
   const hasMeasurementTrackingExtension = extensionManager.registeredExtensionIds.includes(
     MEASUREMENT_TRACKING_EXTENSION_ID
@@ -60,29 +54,6 @@ function OHIFCornerstoneSRMeasurementViewport(props: withAppTypes) {
 
     const tracked = useContext(contextModule.context);
     trackedMeasurements = tracked?.[0];
-    sendTrackedMeasurementsEvent = tracked?.[1];
-  }
-
-  if (!sendTrackedMeasurementsEvent) {
-    // if no panels from measurement-tracking extension is used, this code will run
-    trackedMeasurements = null;
-    sendTrackedMeasurementsEvent = (eventName, { displaySetInstanceUID }) => {
-      measurementService.clearMeasurements();
-      const { SeriesInstanceUIDs } = hydrateStructuredReport(
-        { servicesManager, extensionManager, appConfig },
-        displaySetInstanceUID
-      );
-
-      const displaySets = displaySetService.getDisplaySetsForSeries(SeriesInstanceUIDs[0]);
-      if (displaySets.length) {
-        viewportGridService.setDisplaySetsForViewports([
-          {
-            viewportId: activeViewportId,
-            displaySetInstanceUIDs: [displaySets[0].displaySetInstanceUID],
-          },
-        ]);
-      }
-    };
   }
 
   /**
@@ -296,8 +267,8 @@ function OHIFCornerstoneSRMeasurementViewport(props: withAppTypes) {
           viewportId,
           isRehydratable: srDisplaySet.isRehydratable,
           isLocked,
-          sendTrackedMeasurementsEvent,
           t,
+          servicesManager,
         }),
         indexPriority: -100,
         location: viewportActionCornersService.LOCATIONS.topLeft,
@@ -316,15 +287,7 @@ function OHIFCornerstoneSRMeasurementViewport(props: withAppTypes) {
         location: viewportActionCornersService.LOCATIONS.topRight,
       },
     ]);
-  }, [
-    isLocked,
-    onMeasurementChange,
-    sendTrackedMeasurementsEvent,
-    srDisplaySet,
-    t,
-    viewportActionCornersService,
-    viewportId,
-  ]);
+  }, [isLocked, onMeasurementChange, srDisplaySet, t, viewportActionCornersService, viewportId]);
 
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   let childrenWithProps = null;
@@ -412,16 +375,9 @@ function _getStatusComponent({
   viewportId,
   isRehydratable,
   isLocked,
-  sendTrackedMeasurementsEvent,
   t,
+  servicesManager,
 }) {
-  const handleMouseUp = () => {
-    sendTrackedMeasurementsEvent('HYDRATE_SR', {
-      displaySetInstanceUID: srDisplaySet.displaySetInstanceUID,
-      viewportId,
-    });
-  };
-
   const loadStr = t('LOAD');
 
   // 1 - Incompatible
@@ -467,23 +423,46 @@ function _getStatusComponent({
       ToolTipMessage = () => <div>{`Click ${loadStr} to restore measurements.`}</div>;
   }
 
-  const StatusArea = () => (
-    <div className="flex h-6 cursor-default text-sm leading-6 text-white">
-      <div className="bg-customgray-100 flex min-w-[45px] items-center rounded-l-xl rounded-r p-1">
-        <StatusIcon />
-        <span className="ml-1">SR</span>
-      </div>
-      {state === 3 && (
-        <div
-          className="bg-primary-main hover:bg-primary-light ml-1 cursor-pointer rounded px-1.5 hover:text-black"
-          // Using onMouseUp here because onClick is not working when the viewport is not active and is styled with pointer-events:none
-          onMouseUp={handleMouseUp}
-        >
-          {loadStr}
+  const StatusArea = () => {
+    const { toolbarButtons: loadSRMeasurementsButtons, onInteraction } = useToolbar({
+      servicesManager,
+      buttonSection: 'loadSRMeasurements',
+    });
+
+    const commandOptions = {
+      displaySetInstanceUID: srDisplaySet.displaySetInstanceUID,
+      viewportId,
+    };
+
+    return (
+      <div className="flex h-6 cursor-default text-sm leading-6 text-white">
+        <div className="bg-customgray-100 flex min-w-[45px] items-center rounded-l-xl rounded-r p-1">
+          <StatusIcon />
+          <span className="ml-1">SR</span>
         </div>
-      )}
-    </div>
-  );
+        {state === 3 && (
+          <>
+            {loadSRMeasurementsButtons.map(toolDef => {
+              if (!toolDef) {
+                return null;
+              }
+              const { id, Component, componentProps } = toolDef;
+              const tool = (
+                <Component
+                  key={id}
+                  id={id}
+                  onInteraction={args => onInteraction({ ...args, ...commandOptions })}
+                  {...componentProps}
+                />
+              );
+
+              return <div key={id}>{tool}</div>;
+            })}
+          </>
+        )}
+      </div>
+    );
+  };
 
   return (
     <>

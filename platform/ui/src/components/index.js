@@ -86,6 +86,7 @@ import LabellingFlow from './Labelling';
 import SwitchButton, { SwitchLabelLocation } from './SwitchButton';
 import * as AllInOneMenu from './AllInOneMenu';
 import ViewportActionArrows from './ViewportActionArrows';
+import ViewportActionButton from './ViewportActionButton';
 import HeaderPatientInfo from './HeaderPatientInfo';
 import LegacySplitButton from './LegacySplitButton';
 import { ToolSettings } from './AdvancedToolbox';
@@ -180,6 +181,7 @@ export {
   Viewport,
   ViewportActionArrows,
   ViewportActionBar,
+  ViewportActionButton,
   ViewportActionCorners,
   ViewportActionCornersLocations,
   ViewportDownloadForm,
