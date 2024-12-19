@@ -9,6 +9,7 @@ const { filterAdditionalFinding, filterAny } = utils.MeasurementFilters;
 export type withAppAndFilters = withAppTypes & {
   measurementFilters: Record<string, (item) => boolean>;
   groupBy: string;
+  title: string;
 };
 
 export default function PanelMeasurementTable({
@@ -16,6 +17,7 @@ export default function PanelMeasurementTable({
   commandsManager,
   customHeader,
   measurementFilters = { measurementFilter: filterAny },
+  title,
 }: withAppAndFilters): React.ReactNode {
   const measurementsPanelRef = useRef(null);
 
@@ -89,7 +91,7 @@ export default function PanelMeasurementTable({
           return (
             <MeasurementTable
               key={`tracked-${key}`}
-              title={`Measurements for ${key}`}
+              title={title ? title : `Measurements for ${key}`}
               data={value}
               {...onArgs}
               // onColor={changeColorMeasurement}
