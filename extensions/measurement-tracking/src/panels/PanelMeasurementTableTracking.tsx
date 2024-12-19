@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { DicomMetadataStore, utils } from '@ohif/core';
+import { utils } from '@ohif/core';
 import { useViewportGrid } from '@ohif/ui';
 import { Button, Icons } from '@ohif/ui-next';
 import { PanelMeasurement, StudySummaryFromMetadata } from '@ohif/extension-cornerstone';
 import { useTrackedMeasurements } from '../getContextModule';
 import { useTranslation } from 'react-i18next';
 
-const { filterAny, filterNone, filterNot, filterTracked } = utils.MeasurementFilters;
+const { filterAny, filterNot, filterTracked } = utils.MeasurementFilters;
 
 function PanelMeasurementTableTracking({
   servicesManager,
@@ -28,7 +28,7 @@ function PanelMeasurementTableTracking({
   });
 
   useEffect(() => {
-    let updatedMeasurementFilters = { ...measurementFilters };
+    const updatedMeasurementFilters = { ...measurementFilters };
     if (trackedMeasurements.matches('tracking') && trackedStudy) {
       updatedMeasurementFilters.measurementFilter = filterTracked(trackedStudy, trackedSeries);
     } else {
