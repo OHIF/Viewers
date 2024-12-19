@@ -23,6 +23,7 @@ window.config = {
         wadoRoot: 'http://localhost/dicom-web',
         qidoSupportsIncludeField: true,
         supportsReject: true,
+        dicomUploadEnabled: true,
         imageRendering: 'wadors',
         thumbnailRendering: 'wadors',
         enableStudyLazyLoad: true,

@@ -272,6 +272,14 @@ function TrackedMeasurementsContextProvider(
     viewports,
   ]);
 
+  useEffect(() => {
+    // The command needs to be bound to the context's sendTrackedMeasurementsEvent
+    // so the command has to be registered in a React component.
+    commandsManager.registerCommand('DEFAULT', 'loadTrackedSRMeasurements', {
+      commandFn: props => sendTrackedMeasurementsEvent('HYDRATE_SR', props),
+    });
+  }, [commandsManager, sendTrackedMeasurementsEvent]);
+
   return (
     <TrackedMeasurementsContext.Provider
       value={[trackedMeasurements, sendTrackedMeasurementsEvent]}

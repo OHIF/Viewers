@@ -2,9 +2,10 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { withTranslation } from 'react-i18next';
 
-import { IconButton, Icon, NavBar } from '../../../components';
+import { IconButton, NavBar } from '../../../components';
 
 import OHIFLogo from './OHIFLogo';
+import { Icons } from '@ohif/ui-next';
 
 function Header({ appLogo = OHIFLogo(), children, t }) {
   const showSettingsDropdown = () => {
@@ -29,8 +30,8 @@ function Header({ appLogo = OHIFLogo(), children, t }) {
           onClick={showSettingsDropdown}
         >
           <React.Fragment>
-            <Icon name="settings" />
-            <Icon name="chevron-down" />
+            <Icons.Settings />
+            <Icons.ChevronOpen />
           </React.Fragment>
         </IconButton>
       </div>
