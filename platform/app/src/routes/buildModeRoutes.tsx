@@ -45,7 +45,6 @@ export default function buildModeRoutes({
     dataSourceNames.forEach(dataSourceName => {
       const path = `${publicUrl}${mode.routeName}/${dataSourceName}`;
 
-      console.log('Full path is', path, publicUrl);
       // TODO move up.
       const children = () => (
         <ModeRoute
@@ -68,7 +67,6 @@ export default function buildModeRoutes({
     // Add active DataSource route.
     // This is the DataSource route for the active data source defined in ExtensionManager.getActiveDataSource
     const path = `${publicUrl}${mode.routeName}`;
-    console.log('Base path is', path);
 
     // TODO move up.
     const children = () => (
