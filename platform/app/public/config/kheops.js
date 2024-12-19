@@ -26,7 +26,7 @@ window.config = {
   // filterQueryParam: false,
   // Uses the ohif datasource as the default - this requires that KHEOPS be
   // configured with an OHIF path to .../viewer/dicomwebproxy
-  defaultDataSourceName: 'ohif2',
+  defaultDataSourceName: 'ohif3',
   /* Dynamic config allows user to pass "configUrl" query string this allows to load config without recompiling application. The regex will ensure valid configuration source */
   // dangerouslyUseDynamicConfig: {
   //   enabled: true,
