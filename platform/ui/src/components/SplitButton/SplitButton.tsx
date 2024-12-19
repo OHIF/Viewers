@@ -4,16 +4,16 @@ import classNames from 'classnames';
 import OutsideClickHandler from 'react-outside-click-handler';
 import { useTranslation } from 'react-i18next';
 
-import Icon from '../Icon';
 import Tooltip from '../Tooltip';
 import ListMenu from '../ListMenu';
+import { Icons } from '@ohif/ui-next';
 
 const baseClasses = {
   Button: 'flex items-center rounded-md border-transparent group/button',
   Primary: 'h-full rounded-tl-md rounded-bl-md group/primary',
   Secondary:
     'h-full flex items-center justify-center rounded-tr-md rounded-br-md w-4 border-2 border-transparent group/secondary',
-  SecondaryIcon: 'w-4 h-full stroke-1',
+  SecondaryIcon: 'w-[24px] h-full stroke-1',
   Separator: 'border-l py-3 ml-0.5',
   Content: 'absolute z-10 top-0 mt-12',
 };
@@ -66,12 +66,12 @@ const DefaultListItemRenderer = props => {
         'flex h-8 w-full select-none flex-row items-center p-3',
         'whitespace-pre text-base',
         className,
-        `${isActive ? 'hover:opacity-80' : 'hover:bg-primary-dark '}`
+        `${isActive ? 'hover:opacity-80' : 'hover:bg-primary-dark'}`
       )}
     >
       {icon && (
         <span className="mr-4">
-          <Icon
+          <Icons.ByName
             name={icon}
             className="h-[28px] w-[28px]"
           />
@@ -93,7 +93,7 @@ const SplitButton = ({
   items,
   renderer = null,
   onInteraction,
-  Component = Icon,
+  Component = Icons.ByName,
 }) => {
   const { t } = useTranslation('Buttons');
   const [state, setState] = useState({ isHovering: false, isExpanded: false });
@@ -148,7 +148,7 @@ const SplitButton = ({
                 content={secondary.tooltip}
                 className="h-full"
               >
-                <Icon
+                <Icons.ByName
                   name={secondary.icon}
                   className={classes.SecondaryIcon({ ...state })}
                 />

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import Icon from '../Icon';
+import { Icons } from '@ohif/ui-next';
 import Button, { ButtonEnums } from '../Button';
 
 export enum showDialogOption {
@@ -65,10 +65,7 @@ const InvestigationalUseDialog = ({
     <div className="fixed bottom-2 z-50 flex h-[86px] w-full justify-center">
       <div className="bg-secondary-dark border-primary-dark flex w-[90%] items-center justify-between rounded-lg border-2 pl-[22px] pr-[22px] pt-[10px] pb-[10px] shadow-lg">
         <div className="flex items-center gap-4">
-          <Icon
-            name="illustration-investigational-use"
-            className="h-18 w-18"
-          />
+          <Icons.InvestigationalUse className="h-18 w-18" />
           <div className="flex flex-col">
             <div className="text-[19px] text-white">
               OHIF Viewer is{' '}
