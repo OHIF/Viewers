@@ -389,7 +389,6 @@ export default function PanelStudyBrowserTracking({
   }
 
   const _studyContextMenu = (event, studyInstanceUID) => {
-    console.log('Trying to show context menu StudyBrowser.studyContextMenu');
     event.preventDefault();
     const selectorProps = {
       studyInstanceUID,
