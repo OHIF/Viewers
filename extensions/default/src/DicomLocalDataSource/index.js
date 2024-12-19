@@ -221,7 +221,8 @@ function createDicomLocalApi(dicomLocalConfig) {
       //   return instance.imageId;
       // }
 
-      const { StudyInstanceUID, SeriesInstanceUID, SOPInstanceUID } = instance;
+      const { StudyInstanceUID, SeriesInstanceUID } = instance;
+      const SOPInstanceUID = instance.SOPInstanceUID || instance.SopInstanceUID;
       const storedInstance = DicomMetadataStore.getInstance(
         StudyInstanceUID,
         SeriesInstanceUID,

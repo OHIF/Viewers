@@ -7,6 +7,7 @@ import {
   imageLoader,
   Types as csTypes,
   utilities as csUtils,
+  metaData,
 } from '@cornerstonejs/core';
 import {
   Enums as csToolsEnums,
@@ -360,11 +361,11 @@ class SegmentationService extends PubSubService {
           options.segments && Object.keys(options.segments).length > 0
             ? options.segments
             : {
-                1: {
-                  label: 'Segment 1',
-                  active: true,
-                },
+              1: {
+                label: 'Segment 1',
+                active: true,
               },
+            },
         cachedStats: {
           info: `S${displaySet.SeriesNumber}: ${displaySet.SeriesDescription}`,
         },
@@ -381,8 +382,8 @@ class SegmentationService extends PubSubService {
       segmentationId?: string;
       type: SegmentationRepresentations;
     } = {
-      type: LABELMAP,
-    }
+        type: LABELMAP,
+      }
   ): Promise<string> {
     const { type } = options;
     let { segmentationId } = options;
@@ -414,7 +415,10 @@ class SegmentationService extends PubSubService {
       imageIds as string[]
     );
 
-    segDisplaySet.images = derivedSegmentationImages;
+    segDisplaySet.images = derivedSegmentationImages.map(image => ({
+      ...image,
+      ...metaData.get('instance', image.referencedImageId),
+    }));
 
     const segmentsInfo = segDisplaySet.segMetadata.data;
 
@@ -531,8 +535,8 @@ class SegmentationService extends PubSubService {
       segmentationId?: string;
       type: SegmentationRepresentations;
     } = {
-      type: CONTOUR,
-    }
+        type: CONTOUR,
+      }
   ): Promise<string> {
     const { type } = options;
     let { segmentationId } = options;
