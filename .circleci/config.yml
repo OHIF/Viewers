@@ -229,6 +229,36 @@ jobs:
               docker push ohif/app:latest
             fi
 
+  DOCKER_RELEASE_PUBLISH_ARM:
+    <<: *defaults
+    resource_class: arm.large
+    steps:
+      - attach_workspace:
+          at: ~/repo
+      - setup_remote_docker:
+          docker_layer_caching: false
+      - run:
+          name: Build and push ARM64 Docker image from the release branch
+          command: |
+            # This file will exist if a new version was published by
+            # our command in the previous job.
+            if [[ ! -e version.txt ]]; then
+              exit 0
+            else
+              # Remove npm config
+              rm -f ./.npmrc
+              # Set our version number using vars
+              export IMAGE_VERSION=$(cat version.txt)
+              export IMAGE_VERSION_FULL=v$IMAGE_VERSION
+              echo $IMAGE_VERSION
+              echo $IMAGE_VERSION_FULL
+              # Build our ARM64 image, auth, and push
+              docker build --tag ohif/app:$IMAGE_VERSION_FULL-arm64 --tag ohif/app:latest-arm64 .
+              echo $DOCKER_PWD | docker login -u $DOCKER_LOGIN --password-stdin
+              docker push ohif/app:$IMAGE_VERSION_FULL-arm64
+              docker push ohif/app:latest-arm64
+            fi
+
   DOCKER_BETA_PUBLISH:
     <<: *defaults
     resource_class: large
@@ -263,6 +293,41 @@ jobs:
 
               echo "starting docker push"
               docker push ohif/app:$IMAGE_VERSION_FULL
+            fi
+
+  DOCKER_BETA_PUBLISH_ARM:
+    <<: *defaults
+    resource_class: arm.large
+    steps:
+      - attach_workspace:
+          at: ~/repo
+      - setup_remote_docker:
+          docker_layer_caching: false
+      - run:
+          name: Build and push ARM64 Docker image from the master branch (beta releases)
+          command: |
+            echo $(ls -l)
+
+            # This file will exist if a new version was published by
+            # our command in the previous job.
+            if [[ ! -e version.txt ]]; then
+              echo "don't have version txt"
+              exit 0
+            else
+              echo "Building and pushing ARM64 Docker image from the master branch (beta releases)"
+              rm -f ./.npmrc
+              # Set our version number using vars
+              export IMAGE_VERSION=$(cat version.txt)
+              export IMAGE_VERSION_FULL=v$IMAGE_VERSION
+              echo $IMAGE_VERSION
+              echo $IMAGE_VERSION_FULL
+              # Build our ARM64 image, auth, and push
+              echo "starting docker build"
+              docker build --tag ohif/app:$IMAGE_VERSION_FULL-arm64 .
+              echo $DOCKER_PWD | docker login -u $DOCKER_LOGIN --password-stdin
+
+              echo "starting docker push"
+              docker push ohif/app:$IMAGE_VERSION_FULL-arm64
             fi
 
   CYPRESS:
@@ -316,6 +381,9 @@ workflows:
       - DOCKER_BETA_PUBLISH:
           requires:
             - NPM_PUBLISH
+      - DOCKER_BETA_PUBLISH_ARM:
+          requires:
+            - NPM_PUBLISH
 
   # viewer.ohif.org
   DEPLOY_RELEASE:
@@ -332,5 +400,8 @@ workflows:
           requires:
             - HOLD_FOR_APPROVAL
       - DOCKER_RELEASE_PUBLISH:
+          requires:
+            - NPM_PUBLISH
+      - DOCKER_RELEASE_PUBLISH_ARM:
           requires:
             - NPM_PUBLISH
