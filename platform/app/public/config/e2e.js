@@ -37,6 +37,7 @@ window.config = {
             left: 0,
             top: 0,
           },
+          options: 'location=no,menubar=no,scrollbars=no,status=no,titlebar=no',
         },
         {
           id: 'ohif1',
@@ -47,6 +48,7 @@ window.config = {
             left: 0.5,
             top: 0,
           },
+          options: 'location=no,menubar=no,scrollbars=no,status=no,titlebar=no',
         },
       ],
     },
@@ -64,6 +66,7 @@ window.config = {
             left: 0,
             top: 0,
           },
+          options: 'fullscreen=yes,location=no,menubar=no,scrollbars=no,status=no,titlebar=no',
         },
         {
           id: 'ohif1',
@@ -74,6 +77,7 @@ window.config = {
             left: 0,
             top: 0,
           },
+          options: 'fullscreen=yes,location=no,menubar=no,scrollbars=no,status=no,titlebar=no',
         },
       ],
     },

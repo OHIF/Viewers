@@ -121,7 +121,6 @@ export class MultiMonitorService {
     }
     const screenInfo = this.windowsConfig.screens[screenNumber];
     const screenDetails = await window.getScreenDetails?.();
-    debugger;
     const screen =
       (screenInfo.screen >= 0 && screenDetails.screens[screenInfo.screen]) ||
       screenDetails.currentScreen ||
@@ -141,7 +140,8 @@ export class MultiMonitorService {
     const useHeight = Math.round(height * heightPercent);
     const url = `${this.basePath}&screenNumber=${screenNumber}`;
     const newId = newScreen.id;
-    const position = `screenX=${useLeft},screenY=${useTop},width=${useWidth},height=${useHeight}`;
+    const options = newScreen.options || '';
+    const position = `screenX=${useLeft},screenY=${useTop},width=${useWidth},height=${useHeight},${options}`;
 
     let newWindow;
     if (!reload) {
