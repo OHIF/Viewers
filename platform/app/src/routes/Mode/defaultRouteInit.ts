@@ -119,7 +119,7 @@ export async function defaultRouteInit(
     const remainingPromises = [];
 
     function startRemainingPromises(remainingPromises) {
-      remainingPromises.forEach(p => p.forEach(p => p.start()));
+      remainingPromises.forEach(p => p.forEach(p => p));
     }
 
     promises.forEach(promise => {
@@ -130,7 +130,7 @@ export async function defaultRouteInit(
 
       if (displaySetFromUrl) {
         const requiredSeriesPromises = retrieveSeriesMetadataPromise.map(promise =>
-          promise.start()
+          promise
         );
         allPromises.push(Promise.allSettled(requiredSeriesPromises));
       } else {
@@ -138,7 +138,7 @@ export async function defaultRouteInit(
           hangingProtocolId,
           retrieveSeriesMetadataPromise
         );
-        const requiredSeriesPromises = requiredSeries.map(promise => promise.start());
+        const requiredSeriesPromises = requiredSeries.map(promise => promise);
         allPromises.push(Promise.allSettled(requiredSeriesPromises));
         remainingPromises.push(remaining);
       }
