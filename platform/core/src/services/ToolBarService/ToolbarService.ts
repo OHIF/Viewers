@@ -391,9 +391,8 @@ export default class ToolbarService extends PubSubService {
   createButtonSection(key, buttons) {
     if (this.state.buttonSections[key]) {
       this.state.buttonSections[key].push(
-        buttons.filter(
-          button =>
-            !this.state.buttonSections[key].find(sectionButton => sectionButton.id === button.id)
+        ...buttons.filter(
+          button => !this.state.buttonSections[key].find(sectionButton => sectionButton === button)
         )
       );
     } else {
