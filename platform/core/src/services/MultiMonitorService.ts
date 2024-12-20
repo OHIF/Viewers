@@ -108,14 +108,14 @@ export class MultiMonitorService {
     if (this.launchWindows[screenNumber] && !this.launchWindows[screenNumber].closed) {
       return this.launchWindows[screenNumber];
     }
-    return this.createWindow(screenNumber, false);
+    return this.createWindow(screenNumber);
   }
 
   /**
    * Creates a new window showing the given url by default, or gets an existing
    * window.
    */
-  public async createWindow(screenNumber, reload = true) {
+  public async createWindow(screenNumber) {
     if (screenNumber === this.screenNumber) {
       return window;
     }
@@ -143,11 +143,8 @@ export class MultiMonitorService {
     const options = newScreen.options || '';
     const position = `screenX=${useLeft},screenY=${useTop},width=${useWidth},height=${useHeight},${options}`;
 
-    let newWindow;
-    if (!reload) {
-      newWindow = window.open('', newId, position);
-    }
-    if (!newWindow?.multimonitor) {
+    let newWindow = window.open('', newId, position);
+    if (newWindow?.location.href !== url) {
       newWindow = window.open(url, newId, position);
     }
     if (!newWindow) {
