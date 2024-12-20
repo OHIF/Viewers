@@ -39,7 +39,6 @@ describe('OHIF MPR', () => {
       .its('cornerstone')
       .then(cornerstone => {
         const viewports = cornerstone.getRenderingEngines()[0].getViewports();
-
         // The stack viewport still exists after the changes to viewportId and inde
         const imageData1 = viewports[0].getImageData();
         const imageData2 = viewports[1].getImageData();
