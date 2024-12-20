@@ -243,13 +243,15 @@ export default function PanelSegmentation({
     const firstImageId = referencedImageIds[0];
 
     const instance = metaData.get('instance', firstImageId);
-    const { SOPInstanceUID, SeriesInstanceUID } = instance;
+    const SOPInstanceUID = instance.SOPInstanceUID || instance.SopInstanceUID;
+    const SeriesInstanceUID = instance.SeriesInstanceUID;
 
     const displaySet = displaySetService.getDisplaySetForSOPInstanceUID(
       SOPInstanceUID,
       SeriesInstanceUID
     );
-    const isExportable = displaySet.isReconstructable;
+
+    const isExportable = displaySet?.isReconstructable;
 
     return {
       segmentationId,
