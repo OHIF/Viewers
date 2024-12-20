@@ -34,7 +34,6 @@ function LayoutSelector({ onSelection = () => {}, rows = 3, columns = 4 }) {
             onClick={() => {
               const x = index % columns;
               const y = Math.floor(index / columns);
-
               onSelection({
                 numRows: y + 1,
                 numCols: x + 1,

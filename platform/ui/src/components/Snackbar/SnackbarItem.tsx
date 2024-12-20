@@ -1,9 +1,8 @@
 import React, { useEffect } from 'react';
 import classNames from 'classnames';
-import Icon from '../Icon';
 
 import SnackbarTypes from './SnackbarTypes';
-
+import { Icons } from '@ohif/ui-next';
 const iconClasses = {
   [SnackbarTypes.INFO]: 'notifications-info',
   [SnackbarTypes.WARNING]: 'notifications-warning',
@@ -34,7 +33,7 @@ const SnackbarItem = ({ options, onClose }) => {
       className={classNames(`${options.visible ? '' : hidden} sb-item`, typeClasses[options.type])}
     >
       <div className="flex">
-        <Icon
+        <Icons.ByName
           name={iconClasses[options.type]}
           className="mt-[1px] h-5 w-5"
         />
@@ -51,7 +50,7 @@ const SnackbarItem = ({ options, onClose }) => {
           onClick={handleClose}
           className="relative left-[3px] top-[-3px] ml-auto flex h-5 w-5 items-center justify-center self-start rounded-full text-[#0944b3]"
         >
-          <Icon
+          <Icons.ByName
             name="close"
             className="text-black"
           />

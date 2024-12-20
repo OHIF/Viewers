@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import Icon from '../Icon';
+import { Icons } from '@ohif/ui-next';
 
 export default function StudyBrowserSort({ servicesManager }: withAppTypes) {
   const { customizationService, displaySetService } = servicesManager.services;
@@ -63,10 +63,11 @@ export default function StudyBrowserSort({ servicesManager }: withAppTypes) {
         onClick={toggleSortDirection}
         className="border-inputfield-main flex items-center justify-center rounded border bg-black"
       >
-        <Icon
-          name={sortDirection === 'ascending' ? 'sorting-active-up' : 'sorting-active-down'}
-          className="text-primary-main mx-2 w-2"
-        />
+        {sortDirection === 'ascending' ? (
+          <Icons.SortingAscending className="text-primary-main mx-2 w-2" />
+        ) : (
+          <Icons.SortingDescending className="text-primary-main mx-2 w-2" />
+        )}
       </button>
     </div>
   );

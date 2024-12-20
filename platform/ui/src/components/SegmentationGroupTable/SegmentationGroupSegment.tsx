@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
-
-import Icon from '../Icon';
+import { Icons } from '@ohif/ui-next';
 
 const SegmentItem = ({
   segmentIndex,
@@ -51,8 +50,7 @@ const SegmentItem = ({
           onMouseLeave={() => setIsNumberBoxHovering(false)}
         >
           {isNumberBoxHovering && showDelete ? (
-            <Icon
-              name="close"
+            <Icons.Close
               className={classnames('h-[8px] w-[8px]', {
                 'hover:cursor-pointer hover:opacity-60': !disableEditing,
               })}
@@ -102,8 +100,7 @@ const SegmentItem = ({
           >
             <div className="group-hover/row:hidden">
               {!isVisible && (
-                <Icon
-                  name="row-hidden"
+                <Icons.EyeHidden
                   className="h-5 w-5 text-[#3d5871]"
                   onClick={e => {
                     e.stopPropagation();
@@ -117,8 +114,7 @@ const SegmentItem = ({
             <div className="group-hover/row:hidden">
               {isLocked && (
                 <div className="flex">
-                  <Icon
-                    name="row-lock"
+                  <Icons.Lock
                     className="h-5 w-5 text-[#3d5871]"
                     onClick={e => {
                       e.stopPropagation();
@@ -127,12 +123,7 @@ const SegmentItem = ({
                   />
 
                   {/* This icon is visible when 'isVisible' is true */}
-                  {isVisible && (
-                    <Icon
-                      name="row-hidden"
-                      className="h-5 w-5 opacity-0"
-                    />
-                  )}
+                  {isVisible && <Icons.Lock className="h-5 w-5 opacity-0" />}
                 </div>
               )}
             </div>
@@ -193,7 +184,7 @@ const HoveringIcons = ({
   };
 
   const createIcon = (name, action, color = null) => (
-    <Icon
+    <Icons.ByName
       name={name}
       className={classnames(iconClass, color ?? 'text-white')}
       onClick={e => handleIconClick(e, action)}

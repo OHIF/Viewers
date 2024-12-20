@@ -1,5 +1,6 @@
 import React, { useState, useMemo, ReactElement } from 'react';
-import { Icon, Tooltip } from '../../components';
+import { Icons } from '@ohif/ui-next';
+import { Tooltip } from '../../components';
 import { ProgressDropdownOption, ProgressDropdownOptionPropType } from './types';
 
 const MAX_TOOLTIP_LENGTH = 150;
@@ -45,7 +46,7 @@ const ProgressItemDetail = ({ option }: { option: ProgressDropdownOption }): Rea
     <>
       {icon && (
         <div>
-          <Icon
+          <Icons.ByName
             name={icon}
             className={iconClassNames}
           />

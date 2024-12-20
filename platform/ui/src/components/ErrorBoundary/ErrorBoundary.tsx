@@ -5,9 +5,8 @@ import { useTranslation } from 'react-i18next';
 import i18n from 'i18next';
 
 import Modal from '../Modal';
-import Icon from '../Icon';
 import IconButton from '../IconButton';
-
+import { Icons } from '@ohif/ui-next';
 const isProduction = process.env.NODE_ENV === 'production';
 
 const DefaultFallback = ({ error, context, resetErrorBoundary = () => {}, fallbackRoute }) => {
@@ -40,11 +39,7 @@ const DefaultFallback = ({ error, context, resetErrorBoundary = () => {}, fallba
           >
             <React.Fragment>
               <div>{t('Stack Trace')}</div>
-              <Icon
-                width="15px"
-                height="15px"
-                name="chevron-down"
-              />
+              <Icons.ChevronOpen />
             </React.Fragment>
           </IconButton>
 

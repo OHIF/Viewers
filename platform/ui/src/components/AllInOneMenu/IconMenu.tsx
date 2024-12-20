@@ -1,9 +1,10 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import OutsideClickHandler from 'react-outside-click-handler';
 import { MenuProps } from './Menu';
-import getIcon from '../Icon/getIcon';
 import classNames from 'classnames';
 import { AllInOneMenu } from '..';
+import { Icons } from '@ohif/ui-next';
+
 export interface IconMenuProps extends MenuProps {
   icon: string;
   iconClassName?: string;
@@ -51,7 +52,7 @@ export default function IconMenu({
           className={iconClassName}
           onClick={toggleMenuVisibility}
         >
-          {getIcon(icon)}
+          <Icons.ByName name={icon} />
         </div>
         <AllInOneMenu.Menu
           key={menuKey}

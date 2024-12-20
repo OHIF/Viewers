@@ -4,7 +4,7 @@ import detect from 'browser-detect';
 import { useTranslation } from 'react-i18next';
 
 import Typography from '../Typography';
-import Icon from '../Icon';
+import { Icons } from '@ohif/ui-next';
 
 const Link = ({ href, children, showIcon = false }) => {
   return (
@@ -20,12 +20,7 @@ const Link = ({ href, children, showIcon = false }) => {
         className="flex items-center"
       >
         {children}
-        {!!showIcon && (
-          <Icon
-            name="external-link"
-            className="ml-2 w-5 text-white"
-          />
-        )}
+        {!!showIcon && <Icons.ExternalLink className="ml-2 w-5 text-white" />}
       </Typography>
     </a>
   );
@@ -81,7 +76,7 @@ const AboutModal = ({ buildNumber, versionNumber, commitHash }) => {
           href="https://community.ohif.org/"
           showIcon={true}
         >
-            {t('Visit the forum')}
+          {t('Visit the forum')}
         </Link>
         <span className="ml-4">
           <Link
@@ -96,7 +91,7 @@ const AboutModal = ({ buildNumber, versionNumber, commitHash }) => {
             href="https://ohif.org/"
             showIcon={true}
           >
-          {t('More details')}
+            {t('More details')}
           </Link>
         </span>
       </div>

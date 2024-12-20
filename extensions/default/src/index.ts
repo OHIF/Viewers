@@ -1,16 +1,16 @@
 import { Types } from '@ohif/core';
 
-import getDataSourcesModule from './getDataSourcesModule.js';
-import getLayoutTemplateModule from './getLayoutTemplateModule.js';
+import getDataSourcesModule from './getDataSourcesModule';
+import getLayoutTemplateModule from './getLayoutTemplateModule';
 import getPanelModule from './getPanelModule';
-import getSopClassHandlerModule from './getSopClassHandlerModule.js';
+import getSopClassHandlerModule from './getSopClassHandlerModule';
 import getToolbarModule from './getToolbarModule';
 import getCommandsModule from './commandsModule';
 import getHangingProtocolModule from './getHangingProtocolModule';
 import getStudiesForPatientByMRN from './Panels/getStudiesForPatientByMRN';
 import getCustomizationModule from './getCustomizationModule';
 import getViewportModule from './getViewportModule';
-import { id } from './id.js';
+import { id } from './id';
 import preRegistration from './init';
 import { ContextMenuController, CustomizableContextMenuTypes } from './CustomizableContextMenu';
 import * as dicomWebUtils from './DicomWebDataSource/utils';

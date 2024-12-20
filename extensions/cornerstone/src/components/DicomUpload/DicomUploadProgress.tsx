@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState, ReactElement } from 'react';
 import PropTypes from 'prop-types';
-import { Button, Icon, ProgressLoadingBar } from '@ohif/ui';
+import { Button, ProgressLoadingBar } from '@ohif/ui';
+import { Icons } from '@ohif/ui-next';
 import DicomFileUploader, {
   EVENTS,
   UploadStatus,
@@ -313,10 +314,10 @@ function DicomUploadProgress({
       <div className="ml-auto flex w-6 justify-center">
         {numFails > 0 && (
           <div onClick={() => setShowFailedOnly(currentShowFailedOnly => !currentShowFailedOnly)}>
-            <Icon
+            <Icons.ByName
               className="cursor-pointer"
               name="icon-status-alert"
-            ></Icon>
+            ></Icons.ByName>
           </div>
         )}
       </div>

@@ -66,7 +66,7 @@ function HeaderPatientInfo({ servicesManager, appConfig }: withAppTypes) {
           </div>
         )}
       </div>
-      <Icons.ChevronPatient className={`text-primary-active ${expanded ? 'rotate-180' : ''}`} />
+      <Icons.ArrowLeft className={`text-primary-active ${expanded ? 'rotate-180' : ''}`} />
     </div>
   );
 }

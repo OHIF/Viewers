@@ -1,7 +1,7 @@
 import classNames from 'classnames';
 import React, { ReactElement, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Icon } from '@ohif/ui';
+import { Icons } from '@ohif/ui-next';
 import { Types } from '@ohif/core';
 import ItemListComponent from './ItemListComponent';
 
@@ -109,8 +109,8 @@ function DataSourceConfigurationModalComponent({
     itemIndex === currentSelectedItemIndex + 1
       ? classNames('border-2', 'border-solid', 'border-primary-light')
       : itemIndex < selectedItems.length
-      ? 'border border-solid border-primary-active hover:border-primary-light active:border-white'
-      : 'border border-dashed border-secondary-light';
+        ? 'border border-solid border-primary-active hover:border-primary-light active:border-white'
+        : 'border border-dashed border-secondary-light';
 
   const getSelectedItemTextClasses = itemIndex =>
     itemIndex <= selectedItems.length ? 'text-primary-light' : 'text-primary-active';
@@ -152,9 +152,9 @@ function DataSourceConfigurationModalComponent({
             >
               <div className="text- flex items-center gap-2">
                 {itemLabelIndex < selectedItems.length ? (
-                  <Icon name="status-tracked" />
+                  <Icons.ByName name="status-tracked" />
                 ) : (
-                  <Icon name="status-untracked" />
+                  <Icons.ByName name="status-untracked" />
                 )}
                 <div className={classNames(NO_WRAP_ELLIPSIS_CLASS_NAMES)}>{t(itemLabel)}</div>
               </div>
