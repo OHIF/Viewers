@@ -30,8 +30,8 @@
     "test:unit:ci": "jest --ci --runInBand --collectCoverage --passWithNoTests"
   },
   "peerDependencies": {
-    "@ohif/core": "3.10.0-beta.31",
-    "@ohif/ui": "3.10.0-beta.31",
+    "@ohif/core": "3.10.0-beta.32",
+    "@ohif/ui": "3.10.0-beta.32",
     "dcmjs": "*",
     "dicom-parser": "^1.8.9",
     "hammerjs": "^2.0.8",
