@@ -29,7 +29,6 @@ window.config = {
         enableStudyLazyLoad: true,
         supportsFuzzyMatching: true,
         supportsWildcard: true,
-        dicomUploadEnabled: true,
         omitQuotationForMultipartRequest: true,
         bulkDataURI: {
           enabled: true,
