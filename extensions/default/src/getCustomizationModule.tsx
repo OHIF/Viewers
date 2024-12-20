@@ -5,6 +5,7 @@ import { ProgressDropdownWithService } from './Components/ProgressDropdownWithSe
 import DataSourceConfigurationComponent from './Components/DataSourceConfigurationComponent';
 import { GoogleCloudDataSourceConfigurationAPI } from './DataSourceConfigurationAPI/GoogleCloudDataSourceConfigurationAPI';
 import { utils } from '@ohif/core';
+import studyBrowserContextMenu from './customizations/studyBrowserContextMenu';
 
 const formatDate = utils.formatDate;
 
@@ -140,6 +141,7 @@ export default function getCustomizationModule({ servicesManager, extensionManag
             return clonedObject;
           },
         },
+        studyBrowserContextMenu,
 
         {
           // the generic GUI component to configure a data source using an instance of a BaseDataSourceConfigurationAPI

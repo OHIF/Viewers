@@ -20,6 +20,7 @@ import {
   PanelService,
   WorkflowStepsService,
   StudyPrefetcherService,
+  MultiMonitorService,
   // utils,
 } from '@ohif/core';
 
@@ -58,6 +59,7 @@ async function appInit(appConfigOrFunc, defaultExtensions, defaultModes) {
   servicesManager.setExtensionManager(extensionManager);
 
   servicesManager.registerServices([
+    [MultiMonitorService.REGISTRATION, appConfig.multimonitor],
     UINotificationService.REGISTRATION,
     UIModalService.REGISTRATION,
     UIDialogService.REGISTRATION,

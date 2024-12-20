@@ -33,6 +33,7 @@ import {
   PanelService,
   WorkflowStepsService,
   StudyPrefetcherService,
+  MultiMonitorService,
 } from './services';
 
 import { DisplaySetMessage, DisplaySetMessageList } from './services/DisplaySetService';
@@ -78,6 +79,7 @@ const OHIF = {
   ViewportGridService,
   HangingProtocolService,
   UserAuthenticationService,
+  MultiMonitorService,
   IWebApiDataSource,
   DicomMetadataStore,
   pubSubServiceInterface,
@@ -119,6 +121,7 @@ export {
   DisplaySetMessage,
   DisplaySetMessageList,
   MeasurementService,
+  MultiMonitorService,
   ToolbarService,
   ViewportGridService,
   HangingProtocolService,

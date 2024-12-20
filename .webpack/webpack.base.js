@@ -218,6 +218,7 @@ module.exports = (env, argv, { SRC_DIR, ENTRY }) => {
     config.optimization.minimizer = [
       new TerserJSPlugin({
         parallel: true,
+        exclude: /app-config.js/,
         terserOptions: {},
       }),
     ];
