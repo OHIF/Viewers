@@ -52,6 +52,10 @@ Examples:
 * `docker build . --build-arg PORT=6000`
 * `docker build . --build-arg PUBLIC_URL=/ohif/ --build-arg APP_CONFIG=config/kheops.js --build-arg PORT=6000`
 
+### `PUBLIC_URL`
+The public url build argument can be used to set the public path that is used to serve up OHIF.  For example, setting to `/ohif/` as the above example shows causes the worklist to be available on `http://host/ohif/` and the viewer to be on `http://host/ohif/viewer` etc.
+The worklist will also be available on `http://host/` but note that it will redirect to the PUBLIC_URL.
+
 ## Running the Docker Container
 Once the Docker image has been built, it can be run as a container from the command line as in the block below. Note that the last argument to the command is the name of the Docker image and the table below describes the other arguments.
 
