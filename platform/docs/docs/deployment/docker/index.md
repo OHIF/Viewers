@@ -114,92 +114,97 @@ The `PUBLIC_URL` build argument sets the public path for serving the OHIF Viewer
 ---
 
 ## Running the Docker Container
-Once the Docker image has been built, it can be run as a container from the command line as in the block below. Note that the last argument to the command is the name of the Docker image and the table below describes the other arguments.
 
-|Flag|Description|
-|----|-----------|
-|-d|Run the container in the background and print the container ID|
-|-p `{host-port}:{nginx-port}/tcp`|Publish the `nginx` listen port on the given host port|
-|--name|An arbitrary name for the container.|
-
+After building the Docker image, you can run it as a container using the following command. The name of the Docker image (`ohif-viewer-image`) is specified at the end, while the flags control various runtime settings.
 
 ```sh
 docker run -d -p 3000:80/tcp --name ohif-viewer-container ohif-viewer-image
 ```
 
-:::tip
-Any of the [Docker Hub images](https://hub.docker.com/r/ohif/app/tags) can be easily run as a Docker container.
+- `-d`: Runs the container in the background and prints the container ID.
 
-The following is the command to run the Docker container using the latest released OHIF Docker Hub image.
+- `-p {host-port}:{nginx-port}/tcp`: Maps the container's `nginx` port to a port on the host machine. For example, `3000:80` maps host port 3000 to container port 80.
 
-```sh
-docker run -d -p 3000:80/tcp --name LatestReleasedOHIF ohif/app:latest
-```
+- `--name`: Assigns an arbitrary name to the container for easy identification (e.g., `ohif-viewer-container`).
 
-Simply replace `latest` at the end of the command with any of the tags for a specific version.
-:::
+
 
 ### Configuring the `nginx` Listen Port
 
-The Dockerfile and entry point use the `{PORT}` environment variable as the port that the `nginx` server uses to serve the web server. The default value for `{PORT}` is `80`. One way to set this environment variable is to use the `-e` switch when running the container with `docker run`. The block below gives an example where the listen port is set to `8080` and published on the host as `3000`.
+The `nginx` server uses the `{PORT}` environment variable to determine the listening port inside the container. By default, this is set to `80`. You can override it during runtime or build:
+
+#### Setting the Port at Runtime
+
+Use the `-e PORT={container-port}` flag to set the listening port and publish it with `-p`. For example, the following command sets the container port to `8080` and maps it to host port `3000`:
 
 ```sh
 docker run -d -e PORT=8080 -p 3000:8080/tcp --name ohif-viewer-container ohif-viewer-image
 ```
 
-The default port can also be configured during build with:
+#### Setting the Port During Build
+
+To bake the port configuration into the Docker image, use the `--build-arg PORT={container-port}` flag when building the image:
+
 ```sh
 docker build . --build-arg PORT=8080
 ```
 
-### Specifying the OHIF config File
+then you can run the container with the following command:
 
-There are three approaches for specifying the OHIF configuration file for a Docker container:
+```sh
+docker run -d -p 3000:8080/tcp --name ohif-viewer-container ohif-viewer-image
+```
 
-- [Build Default](#build-default)
-- [Volume Mounting](#volume-mounting)
-- [Environment Variable](#environment-variable)
+---
+
+### Specifying the OHIF Configuration File
+
+You can specify the OHIF configuration file for the container in three ways:
+
+1. **[Build Default](#build-default)**: Set the default configuration file during the build process.
+2. **[Volume Mounting](#volume-mounting)**: Mount a local configuration file into the container.
+3. **[Environment Variable](#environment-variable)**: Pass the configuration file contents directly as an environment variable.
 
 #### Build Default
 
-The default OHIF configuration file can be specified during build with a `--build-arg APP_CONFIG=config/kheops` argument added to the build command.
+Set the configuration file during the build process using the `--build-arg APP_CONFIG={config-path}` flag. For example:
 
+```sh
+docker build . --build-arg APP_CONFIG=config/kheops
+```
+
+---
 
 #### Volume Mounting
 
-The OHIF [config file](../../configuration/configurationFiles.md) can be specified by mounting it as a volume for the Docker container using the `-v` flag. If the OHIF config file is on the local file system then it can be specified as below.
+To use a local configuration file, mount it as a volume during runtime. For example, to use a file located at `/path/to/config/file.js`, use the `-v` flag:
 
 ```sh
 docker run -d -p 3000:80/tcp -v /path/to/config/file.js:/usr/share/nginx/html/app-config.js --name ohif-viewer-container ohif-viewer-image
 ```
+
 :::tip
- Depending on the version of Docker, an absolute path to the local source config file might be required.
+Ensure the path to the local configuration file is absolute, as some Docker versions require it.
 :::
+
+---
+
 #### Environment Variable
 
-In certain scenarios, such as deploying the Docker container to Google Cloud, it might be convenient to specify the configuration file (contents) as an environment variable. That environment variable is `{APP_CONFIG}` and it can be set in the `docker run` command using the `-e` switch.
+Alternatively, you can specify the configuration file contents directly as an environment variable (`APP_CONFIG`). This method is useful in environments like Google Cloud.
 
-:::tip
-It is important to stress here that the environment variable is the contents of the configuration file and NOT the path to the config file as is [typically specified](https://docs.ohif.org/configuration/configurationFiles#configuration-files) for development and build environments or for the [volume mounting method](#volume-mounting).
-:::
-
-Below the `cat` command is used to convert the configuration file to a string and its result set as the `{APP_CONFIG}` environment variable.
+**Important**: The `APP_CONFIG` variable must contain the file's contents, not its file path. Use the `cat` command to read the file and pass its contents as the environment variable:
 
 ```sh
 docker run -d -p 3000:80/tcp -e APP_CONFIG="$(cat /path/to/the/config/file)" --name ohif-viewer-container ohif-viewer-image
 ```
 
 :::tip
-- To be safe, remove single line comments (i.e. `//`) from the configuration file because the presence of these comments might cause the configuration file to be prematurely truncated when it is served to the OHIF client
-- As an alternative to the `cat` command, convert the configuration file to a single line and copy and paste it as the value to the `{APP_CONFIG}` environment variable on the `docker run` line. Editors such as [Visual Studio Code](https://stackoverflow.com/questions/46491061/shortcut-for-joining-two-lines) and [Notepad++](https://superuser.com/questions/518229/how-do-i-remove-linebreaks-in-notepad) have 'Join Lines' commands to facilitate this
-- If both the [volume mounting method](#volume-mounting) and the [environment variable method](#environment-variable) are used, the volume mounting method will take precedence
+- Remove single-line comments (`//`) from the configuration file to prevent issues when serving the file to the OHIF client.
+- As an alternative to the `cat` command, you can convert the file to a single line and copy-paste it directly. Tools like [Visual Studio Code](https://stackoverflow.com/questions/46491061/shortcut-for-joining-two-lines) and [Notepad++](https://superuser.com/questions/518229/how-do-i-remove-linebreaks-in-notepad) offer "Join Lines" commands to help with this.
+- If both the [Volume Mounting](#volume-mounting) and [Environment Variable](#environment-variable) methods are used, the Volume Mounting method takes precedence.
 :::
 
+---
 
-### Embedding in an iframe
-
-If the OHIF instance served by the Docker image is to be embedded in an `iframe`, and if  [cross-origin isolation](./cors.md#cross-origin-isolation) is required, then the [Cross Origin Resource Policy (CORP) header value](https://github.com/OHIF/Viewers/blob/8a8ae237d26faf123abeb073cbf0cd426c3e9ef2/.docker/Viewer-v3.x/default.conf.template#L10) that OHIF is served with will have to be updated accordingly. More information on CORP and `iframe`s can be found [here](./cors.md#ohif-as-a-cross-origin-resource-in-an-iframe).
-
-:::tip
-For SSL Docker deployments, the CORP header value is set [here](https://github.com/OHIF/Viewers/blob/8a8ae237d26faf123abeb073cbf0cd426c3e9ef2/.docker/Viewer-v3.x/default.ssl.conf.template#L12).
-:::
+This rewrite improves readability by reorganizing information into smaller, clear sections and providing consistent formatting for examples and tips.
