@@ -1,11 +1,17 @@
 import { demonstrateMeasurementService, createMeasurement } from './utils/measurementUtils';
 import { OHIFMessageType } from './utils/enums';
+import toolbarButtonsValidated from '../../deemea-mode/src/toolbarButtonsValidated';
+import toolbarButtons from '../../deemea-mode/src/toolbarButtons';
 
 const commandsModule = ({ servicesManager }) => {
   const actions = {
     demonstrateMeasurementService: () => {
-      const { measurementService, ViewportGridService, CornerstoneViewportService } =
-        servicesManager.services;
+      const {
+        measurementService,
+        ViewportGridService,
+        CornerstoneViewportService,
+        toolbarService,
+      } = servicesManager.services;
 
       if (!measurementService || !ViewportGridService || !CornerstoneViewportService) {
         console.error('Required services are not available');
@@ -25,9 +31,19 @@ const commandsModule = ({ servicesManager }) => {
       );
 
       window.addEventListener('message', event => {
+        if (event.data.type === OHIFMessageType.IMAGE_STATUS) {
+          if (event.data.message === 'Validated') {
+            toolbarService?.setButtons(toolbarButtonsValidated);
+            toolbarService?.refreshToolbarState();
+          } else {
+            toolbarService?.setButtons(toolbarButtons);
+            toolbarService?.refreshToolbarState();
+          }
+        }
         if (event.data.type === OHIFMessageType.SEND_MEASURE) {
-          const relatedPoints = event.data.message;
-          demonstrateMeasurementService(servicesManager, relatedPoints);
+          measurementService.clearMeasurements();
+          const relatedPoints = event.data.message.measures;
+          demonstrateMeasurementService(servicesManager, relatedPoints, event.data.message.status);
           const viewportId = ViewportGridService.getActiveViewportId();
           const viewport = CornerstoneViewportService.getCornerstoneViewport(viewportId);
           const imageId = viewport.getCurrentImageId();

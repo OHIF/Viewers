@@ -115,7 +115,11 @@ async function setMeasurementStyle() {
   });
 }
 
-export async function demonstrateMeasurementService(servicesManager, relatedPoints) {
+export async function demonstrateMeasurementService(
+  servicesManager,
+  relatedPoints,
+  imageStatus = false
+) {
   const { ViewportGridService, CornerstoneViewportService } = servicesManager.services;
 
   const viewportId = ViewportGridService.getActiveViewportId();
@@ -137,15 +141,15 @@ export async function demonstrateMeasurementService(servicesManager, relatedPoin
 
   relatedPoints?.forEach(data => {
     if (data.points.length === 2) {
-      createLength(viewport, imageMetadata, imageId, data);
+      createLength(viewport, imageMetadata, imageId, data, imageStatus);
     } else if (data.points.length === 4) {
-      createRectangleROI(viewport, imageMetadata, imageId, data);
+      createRectangleROI(viewport, imageMetadata, imageId, data, imageStatus);
     }
   });
   setMeasurementStyle();
 }
 
-export function createRectangleROI(viewport, imageMetadata, imageId, data) {
+export function createRectangleROI(viewport, imageMetadata, imageId, data, imageStatus) {
   try {
     const normalizedPoints = data.points.map(point => {
       const normalizedX = point.x ? point.x : point.xOrigin;
@@ -226,13 +230,14 @@ export function createRectangleROI(viewport, imageMetadata, imageId, data) {
         },
       },
       isVisible: !data.hide,
+      isLocked: imageStatus,
     });
   } catch (error) {
     console.error('Error adding measurement:', error);
   }
 }
 
-export function createLength(viewport, imageMetadata, imageId, data) {
+export function createLength(viewport, imageMetadata, imageId, data, imageStatus) {
   if (!imageMetadata) {
     console.error('No image metadata found');
     return;
@@ -299,6 +304,7 @@ export function createLength(viewport, imageMetadata, imageId, data) {
         },
       },
       isVisible: !data.hide,
+      isLocked: imageStatus,
     });
   } catch (error) {
     console.error('Error adding measurement:', error);

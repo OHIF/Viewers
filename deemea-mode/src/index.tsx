@@ -73,7 +73,6 @@ function modeFactory({ modeConfiguration }) {
         'Capture',
         'Layout',
         'MoreTools',
-        `${deemeaExtensionId}.DeemeaButton`,
       ]);
     },
     onModeExit: ({ servicesManager }: withAppTypes) => {

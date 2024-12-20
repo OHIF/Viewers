@@ -12,7 +12,7 @@ export const setToolActiveToolbar = {
   },
 };
 
-const toolbarButtons: Button[] = [
+const toolbarButtonsValidated: Button[] = [
   {
     id: 'ResetButton',
     uiType: 'ohif.radioGroup',
@@ -23,6 +23,11 @@ const toolbarButtons: Button[] = [
         commandName: 'resetPoints',
         context: 'VIEWER',
       },
+      evaluate: () => {
+        return {
+          disabled: true,
+        };
+      },
     },
   },
   {
@@ -31,14 +36,23 @@ const toolbarButtons: Button[] = [
     props: {
       groupId: 'MeasurementTools',
       // group evaluate to determine which item should move to the top
-      evaluate: 'evaluate.group.promoteToPrimaryIfCornerstoneToolNotActiveInTheList',
+      // evaluate: 'evaluate.group.promoteToPrimaryIfCornerstoneToolNotActiveInTheList',
+      evaluate: () => {
+        return {
+          disabled: true,
+        };
+      },
       primary: createButton({
         id: 'Length',
         icon: 'tool-length',
         label: 'Length',
         tooltip: 'Length Tool',
         commands: setToolActiveToolbar,
-        evaluate: 'evaluate.cornerstoneTool',
+        evaluate: () => {
+          return {
+            disabled: true,
+          };
+        },
       }),
       secondary: {
         icon: 'chevron-down',
@@ -50,8 +64,13 @@ const toolbarButtons: Button[] = [
           icon: 'tool-length',
           label: 'Length',
           tooltip: 'Length Tool',
+          disabled: true,
           commands: setToolActiveToolbar,
-          evaluate: 'evaluate.cornerstoneTool',
+          evaluate: () => {
+            return {
+              disabled: true,
+            };
+          },
         }),
         createButton({
           id: 'RectangleROI',
@@ -59,7 +78,11 @@ const toolbarButtons: Button[] = [
           label: 'Rectangle',
           tooltip: 'Rectangle ROI',
           commands: setToolActiveToolbar,
-          evaluate: 'evaluate.cornerstoneTool',
+          evaluate: () => {
+            return {
+              disabled: true,
+            };
+          },
         }),
         createButton({
           id: 'Angle',
@@ -67,7 +90,11 @@ const toolbarButtons: Button[] = [
           label: 'Angle',
           tooltip: 'Angle',
           commands: setToolActiveToolbar,
-          evaluate: 'evaluate.cornerstoneTool',
+          evaluate: () => {
+            return {
+              disabled: true,
+            };
+          },
         }),
         createButton({
           id: 'CalibrationLine',
@@ -75,7 +102,11 @@ const toolbarButtons: Button[] = [
           label: 'Calibration',
           tooltip: 'Calibration Line',
           commands: setToolActiveToolbar,
-          evaluate: 'evaluate.cornerstoneTool',
+          evaluate: () => {
+            return {
+              disabled: true,
+            };
+          },
         }),
       ],
     },
@@ -125,4 +156,4 @@ const toolbarButtons: Button[] = [
   },
 ];
 
-export default toolbarButtons;
+export default toolbarButtonsValidated;

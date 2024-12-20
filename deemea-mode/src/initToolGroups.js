@@ -23,9 +23,6 @@ function initDefaultToolGroup(
 
   const { toolNames, Enums } = utilityModule.exports;
 
-  console.log('toolNames', toolNames);
-  console.log('Enums', Enums);
-
   const tools = {
     active: [
       {
