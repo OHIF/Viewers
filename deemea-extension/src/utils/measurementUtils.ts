@@ -175,6 +175,7 @@ export function createRectangleROI(viewport, imageMetadata, imageId, data) {
           measurementId: data?.measurementId,
           pointsInfo: data.points,
           predicted: true,
+          hide: data.hide,
         },
         handles: {
           points: normalizedPoints,
@@ -224,6 +225,7 @@ export function createRectangleROI(viewport, imageMetadata, imageId, data) {
           },
         },
       },
+      isVisible: !data.hide,
     });
   } catch (error) {
     console.error('Error adding measurement:', error);
@@ -296,6 +298,7 @@ export function createLength(viewport, imageMetadata, imageId, data) {
           },
         },
       },
+      isVisible: !data.hide,
     });
   } catch (error) {
     console.error('Error adding measurement:', error);

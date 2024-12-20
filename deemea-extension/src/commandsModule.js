@@ -26,7 +26,7 @@ const commandsModule = ({ servicesManager }) => {
 
       window.addEventListener('message', event => {
         if (event.data.type === OHIFMessageType.SEND_MEASURE) {
-          const relatedPoints = event.data.points;
+          const relatedPoints = event.data.message;
           demonstrateMeasurementService(servicesManager, relatedPoints);
           const viewportId = ViewportGridService.getActiveViewportId();
           const viewport = CornerstoneViewportService.getCornerstoneViewport(viewportId);
@@ -110,6 +110,7 @@ const commandsModule = ({ servicesManager }) => {
           elementType: event.measurement.toolName,
           uid: event.measurement.uid,
           measurementId: event?.measurement?.label.measurementId,
+          hide: event?.measurement?.label?.hide,
         };
 
         if (normalizedPoints) {
