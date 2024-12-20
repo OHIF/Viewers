@@ -38,8 +38,9 @@ describe('OHIF MPR', () => {
     cy.window()
       .its('cornerstone')
       .then(cornerstone => {
-        const viewports = cornerstone.getRenderingEngines()[0].getViewports();
+        cy.wait(4000);
 
+        const viewports = cornerstone.getRenderingEngines()[0].getViewports();
         // The stack viewport still exists after the changes to viewportId and inde
         const imageData1 = viewports[0].getImageData();
         const imageData2 = viewports[1].getImageData();
