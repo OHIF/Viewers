@@ -6,6 +6,7 @@ import { adaptersSR } from '@cornerstonejs/adapters';
 import { showLabelAnnotationPopup, colorPickerDialog } from '@ohif/extension-default';
 
 import getFilteredCornerstoneToolState from './utils/getFilteredCornerstoneToolState';
+import hydrateStructuredReport from './utils/hydrateStructuredReport';
 
 const { MeasurementReport } = adaptersSR.Cornerstone3D;
 const { log } = OHIF;
@@ -41,9 +42,10 @@ const _generateReport = (measurementData, additionalFindingTypes, options = {}) 
 };
 
 const commandsModule = (props: withAppTypes) => {
-  const { servicesManager } = props;
+  const { servicesManager, extensionManager, commandsManager } = props;
   const { customizationService, measurementService, viewportGridService, uiDialogService } =
     servicesManager.services;
+
   const actions = {
     changeColorMeasurement: ({ uid }) => {
       // When this gets supported, it probably belongs in cornerstone, not sr
@@ -144,6 +146,27 @@ const commandsModule = (props: withAppTypes) => {
         throw new Error(error.message || 'Error while saving the measurements.');
       }
     },
+
+    /**
+     * Loads measurements by hydrating and loading the SR for the given display set instance UID
+     * and displays it in the active viewport.
+     */
+    loadSRMeasurements: ({ displaySetInstanceUID }) => {
+      const { SeriesInstanceUIDs } = hydrateStructuredReport(
+        { servicesManager, extensionManager },
+        displaySetInstanceUID
+      );
+
+      const displaySets = displaySetService.getDisplaySetsForSeries(SeriesInstanceUIDs[0]);
+      if (displaySets.length) {
+        viewportGridService.setDisplaySetsForViewports([
+          {
+            viewportId: viewportGridService.getActiveViewportId(),
+            displaySetInstanceUIDs: [displaySets[0].displaySetInstanceUID],
+          },
+        ]);
+      }
+    },
   };
 
   const definitions = {
@@ -152,6 +175,9 @@ const commandsModule = (props: withAppTypes) => {
     },
     storeMeasurements: {
       commandFn: actions.storeMeasurements,
+    },
+    loadSRMeasurements: {
+      commandFn: actions.loadSRMeasurements,
     },
   };
 

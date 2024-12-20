@@ -110,7 +110,7 @@ function ViewportSegmentationMenu({
           <Separator className="bg-input mb-3" />
           <span className="text-muted-foreground mb-2 text-xs font-semibold">Available</span>
           <ul className="space-y-1">
-            {availableSegmentations.map(({segmentationId, label}) => (
+            {availableSegmentations.map(({ segmentationId, label }) => (
               <li
                 key={segmentationId}
                 className="flex items-center text-sm"
