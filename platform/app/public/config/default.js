@@ -25,10 +25,10 @@ window.config = {
   dataSources: [
     {
       namespace: '@ohif/extension-default.dataSourcesModule.dicomweb',
-      sourceName: 'orthanc',
+      sourceName: 'DEV_F4C',
       configuration: {
-        friendlyName: 'Orthanc Deemea',
-        name: 'DCM4CHEE',
+        friendlyName: 'dev-didier',
+        name: 'dev-didier',
         wadoUriRoot: 'https://dev-f4c.deemea.com/didier/dicom-web',
         qidoRoot: 'https://dev-f4c.deemea.com/didier/dicom-web',
         wadoRoot: 'https://dev-f4c.deemea.com/didier/dicom-web',
@@ -57,6 +57,29 @@ window.config = {
         },
       },
     },
+    {
+      namespace: '@ohif/extension-default.dataSourcesModule.dicomweb',
+      sourceName: 'QA_F4C',
+      configuration: {
+        friendlyName: 'qa-didier',
+        name: 'qa-didier',
+        wadoUriRoot: 'https://qa-f4c.deemea.com/didier/dicom-web',
+        qidoRoot: 'https://qa-f4c.deemea.com/didier/dicom-web',
+        wadoRoot: 'https://qa-f4c.deemea.com/didier/dicom-web',
+        qidoSupportsIncludeField: true,
+        supportsReject: true,
+        imageRendering: 'wadors',
+        thumbnailRendering: 'wadors',
+        enableStudyLazyLoad: true,
+        supportsFuzzyMatching: true,
+        supportsWildcard: true,
+        dicomUploadEnabled: true,
+        omitQuotationForMultipartRequest: true,
+        bulkDataURI: {
+          enabled: true,
+        },
+      },
+    },
   ],
   httpErrorHandler: error => {
     // This is 429 when rejected from the public idc sandbox too often.
@@ -76,7 +99,7 @@ window.config = {
           className: 'text-purple-600 line-through',
         },
         React.createElement('img', {
-          src: './assets/logoDeemea.svg',
+          src: '../assets/logoDeemea.svg',
           className: 'w-15 h-10',
         })
       );
