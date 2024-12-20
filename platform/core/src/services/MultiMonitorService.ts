@@ -7,9 +7,24 @@ export class MultiMonitorService {
   private screenConfig;
   private launchWindows = [];
   private commandsManager;
+  private basePath: string;
 
   public readonly screenNumber: number;
   public readonly isMultimonitor: boolean;
+
+  public static readonly SOURCE_SCREEN = {
+    id: 'source',
+    // This is the primary screen, so don't launch is separately, but use primary
+    launch: 'source',
+    screen: null,
+    location: {
+      screen: null,
+      width: 1,
+      height: 1,
+      left: 0,
+      top: 0,
+    },
+  };
 
   public static REGISTRATION = {
     name: 'multiMonitorService',
@@ -24,7 +39,7 @@ export class MultiMonitorService {
     const screenNumber = params.get('screenNumber');
     const multimonitor = params.get('multimonitor');
     const testParams = { params, screenNumber, multimonitor };
-    this.screenNumber = screenNumber ? Number(screenNumber) : 0;
+    this.screenNumber = screenNumber ? Number(screenNumber) : -1;
     this.commandsManager = commandsManager;
     const windowAny = window as any;
     windowAny.multimonitor ||= {
@@ -34,8 +49,8 @@ export class MultiMonitorService {
     };
     windowAny.multimonitor.commandsManager = commandsManager;
     this.launchWindows = (window as any).multimonitor?.launchWindows || this.launchWindows;
-    if (!this.screenNumber) {
-      this.launchWindows[0] = window;
+    if (this.screenNumber !== -1) {
+      this.launchWindows[this.screenNumber] = window;
     }
     windowAny.commandsManager = (...args) => configuration.commandsManager;
     for (const windowsConfig of Array.isArray(configuration) ? configuration : []) {
@@ -43,16 +58,20 @@ export class MultiMonitorService {
         this.isMultimonitor = true;
         this.numberOfScreens = windowsConfig.screens.length;
         this.windowsConfig = windowsConfig;
-        this.screenConfig = windowsConfig.screens[this.screenNumber];
-        if (!this.screenConfig) {
-          throw new Error(`Screen ${screenNumber} not configured in ${this.windowsConfig}`);
+        if (this.screenNumber === -1 || this.screenNumber === null) {
+          this.screenConfig = MultiMonitorService.SOURCE_SCREEN;
+        } else {
+          this.screenConfig = windowsConfig.screens[this.screenNumber];
+          if (!this.screenConfig) {
+            throw new Error(`Screen ${screenNumber} not configured in ${this.windowsConfig}`);
+          }
+          window.name = this.screenConfig.id;
         }
-        window.name = this.screenConfig.id;
         return;
       }
+      this.numberOfScreens = 1;
+      this.isMultimonitor = false;
     }
-    this.numberOfScreens = 1;
-    this.isMultimonitor = false;
   }
 
   public run(screenDelta = 1, commands, options) {
@@ -71,19 +90,6 @@ export class MultiMonitorService {
     console.log('Got result', result);
   }
 
-  /**
-   * Calls append to the query the multimonitor mode as appropriate.
-   */
-  public appendQuery(query) {
-    if (!this.isMultimonitor) {
-      return;
-    }
-    query.append('multimonitor', this.windowsConfig.id);
-    if (this.screenNumber) {
-      query.append('screenNumber', String(this.screenNumber));
-    }
-  }
-
   /** Sets the launch windows for later use, shared amongst all windows. */
   public setLaunchWindows = launchWindows => {
     this.launchWindows = launchWindows;
@@ -92,26 +98,7 @@ export class MultiMonitorService {
 
   public async launchWindow(studyUid: string, screenDelta = 1) {
     const forScreen = (this.screenNumber + screenDelta) % this.numberOfScreens;
-    if (this.getWindow(forScreen)) {
-      return;
-    }
-    const url = this.createUrlForStudy(studyUid, forScreen);
-    const forWindow = await this.getOrCreateWindow(forScreen, url);
-    forWindow.location = url;
-    forWindow.onload = () => {
-      if ((forWindow as any).multimonitor.setLaunchWindows) {
-        (forWindow as any).multimonitor.setLaunchWindows(this.launchWindows);
-      } else {
-        console.warn('At end of load, no launch windows array');
-      }
-      forWindow.onload = null;
-    };
-    forWindow.multimonitor?.setLaunchWindows?.(this.launchWindows);
-  }
-
-  createUrlForStudy(studyUid, screenNumber) {
-    const { pathname, origin } = window.location;
-    return `${origin}${pathname}?StudyInstanceUIDs=${studyUid}&multimonitor=${this.windowsConfig.id}&screenNumber=${screenNumber}`;
+    return this.getWindow(forScreen);
   }
 
   public getWindow(screenNumber) {
@@ -121,47 +108,71 @@ export class MultiMonitorService {
     if (this.launchWindows[screenNumber] && !this.launchWindows[screenNumber].closed) {
       return this.launchWindows[screenNumber];
     }
+    return this.createWindow(screenNumber, false);
   }
 
   /**
    * Creates a new window showing the given url by default, or gets an existing
    * window.
    */
-  public async getOrCreateWindow(screenNumber, url) {
+  public async createWindow(screenNumber, reload = true) {
     if (screenNumber === this.screenNumber) {
       return window;
     }
     const screenInfo = this.windowsConfig.screens[screenNumber];
-    if (!this.launchWindows[screenNumber] || this.launchWindows[screenNumber].closed) {
-      const screenDetails = await window.getScreenDetails?.();
-      const screen =
-        (screenInfo.screen >= 0 && screenDetails.screens[screenInfo.screen]) ||
-        screenDetails.currentScreen ||
-        window.screen;
-      const { width = 1024, height = 1024, availLeft = 0, availTop = 0 } = screen || {};
-      const newScreen = this.windowsConfig.screens[screenNumber];
-      const {
-        width: widthPercent = 1,
-        height: heightPercent = 1,
-        top: topPercent = 0,
-        left: leftPercent = 0,
-      } = newScreen.location || {};
+    const screenDetails = await window.getScreenDetails?.();
+    debugger;
+    const screen =
+      (screenInfo.screen >= 0 && screenDetails.screens[screenInfo.screen]) ||
+      screenDetails.currentScreen ||
+      window.screen;
+    const { width = 1024, height = 1024, availLeft = 0, availTop = 0 } = screen || {};
+    const newScreen = this.windowsConfig.screens[screenNumber];
+    const {
+      width: widthPercent = 1,
+      height: heightPercent = 1,
+      top: topPercent = 0,
+      left: leftPercent = 0,
+    } = newScreen.location || {};
 
-      const useLeft = Math.round(availLeft + leftPercent * width);
-      const useTop = Math.round(availTop + topPercent * height);
-      const useWidth = Math.round(width * widthPercent);
-      const useHeight = Math.round(height * heightPercent);
+    const useLeft = Math.round(availLeft + leftPercent * width);
+    const useTop = Math.round(availTop + topPercent * height);
+    const useWidth = Math.round(width * widthPercent);
+    const useHeight = Math.round(height * heightPercent);
+    const url = `${this.basePath}&screenNumber=${screenNumber}`;
+    const newId = newScreen.id;
+    const position = `screenX=${useLeft},screenY=${useTop},width=${useWidth},height=${useHeight}`;
 
-      const newWindow = (this.launchWindows[screenNumber] = window.open(
-        `${url}&multimonitor=secondary&screenNumber=${screenNumber}`,
-        `${newScreen.id}`,
-        `screenX=${useLeft},screenY=${useTop},width=${useWidth},height=${useHeight}`
-      ));
-      (newWindow as any).multimonitor = {
-        launchWindows: this.launchWindows,
-      };
+    let newWindow;
+    if (!reload) {
+      newWindow = window.open('', newId, position);
     }
-    return this.launchWindows[screenNumber];
+    if (!newWindow?.multimonitor) {
+      newWindow = window.open(url, newId, position);
+    }
+    if (!newWindow) {
+      console.warn('Unable to launch window', url, 'called', newId, 'at', position);
+      return;
+    }
+    console.info('Launching', screenNumber, newId, url, position);
+    this.launchWindows[screenNumber] = newWindow;
+    return newWindow;
+  }
+
+  /** Launches all the windows using the initial configuration */
+  public launchAll() {
+    for (let i = 0; i < this.numberOfScreens; i++) {
+      this.createWindow(i);
+    }
+  }
+
+  public setBasePath() {
+    const url = new URL(window.location.href);
+    url.searchParams.delete('screenNumber');
+    url.searchParams.delete('protocolId');
+    url.searchParams.delete('launchAll');
+    url.searchParams.set('multimonitor', url.searchParams.get('multimonitor') || 'split');
+    this.basePath = url.toString();
   }
 
   /**
@@ -169,27 +180,13 @@ export class MultiMonitorService {
    * screens opened with openWindow containing no more than 1 tab.
    */
   public async onModeEnter() {
-    if (this.isMultimonitor && this.screenNumber === 0) {
-      const { screen = null, width, height, left, top } = this.screenConfig.location;
-      const screenDetails = await window.getScreenDetails();
-      const screenDetail =
-        screen === null ? screenDetails.currentScreen : screenDetails.screens[screen];
-      const leftPx = Math.floor(left * screenDetail.availLeft);
-      const topPx = Math.floor(top * screenDetail.availTop);
-      const widthPx = Math.floor(width * screenDetail.availWidth);
-      const heightPx = Math.floor(height * screenDetail.availHeight);
-      window.resizeTo(widthPx, heightPx);
-      window.moveTo(leftPx, topPx);
-      // Put out a message so it is clear what is happening when the window doesn't
-      // move for pre-existing windows.
-      console.log(
-        'For window 0 opened with openWindow: moved to',
-        screen === null ? 'current screen' : screen,
-        leftPx,
-        topPx,
-        widthPx,
-        heightPx
-      );
+    this.setBasePath();
+
+    if (
+      (this.isMultimonitor && this.screenNumber === -1) ||
+      window.location.href.indexOf('launchAll') !== -1
+    ) {
+      this.launchAll();
     }
   }
 }

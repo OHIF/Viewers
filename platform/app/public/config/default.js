@@ -31,9 +31,7 @@ window.config = {
       test: ({ multimonitor }) => multimonitor === 'split',
       screens: [
         {
-          id: 'primary',
-          // This is the primary screen, so don't launch is separately, but use primary
-          launch: 'primary',
+          id: 'ohif0',
           screen: null,
           location: {
             screen: 0,
@@ -44,14 +42,12 @@ window.config = {
           },
         },
         {
-          id: 'secondary',
-          // This is a window instance, so launch as a url
-          launch: 'url',
+          id: 'ohif1',
           screen: null,
           location: {
-            width: 0.48,
+            width: 0.5,
             height: 1,
-            left: 0.52,
+            left: 0.5,
             top: 0,
           },
         },
@@ -63,25 +59,21 @@ window.config = {
       test: ({ multimonitor }) => multimonitor === '2',
       screens: [
         {
-          id: 'primary',
-          // This is the primary screen, so don't launch is separately, but use primary
-          launch: 'primary',
+          id: 'ohif0',
           screen: 0,
           location: {
-            width: 100,
-            height: 100,
+            width: 1,
+            height: 1,
             left: 0,
             top: 0,
           },
         },
         {
-          id: 'secondary',
-          // This is a window instance, so launch as a url
-          launch: 'url',
+          id: 'ohif1',
           screen: 1,
           location: {
-            width: 100,
-            height: 100,
+            width: 1,
+            height: 1,
             left: 0,
             top: 0,
           },
