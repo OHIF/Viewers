@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
 
-import { Tooltip, Icon, ViewportActionArrows, useViewportGrid } from '@ohif/ui';
+import { Tooltip, ViewportActionArrows, useViewportGrid } from '@ohif/ui';
+import { Icons } from '@ohif/ui-next';
 
 import { annotation } from '@cornerstonejs/tools';
 import { useTrackedMeasurements } from './../getContextModule';
@@ -327,10 +328,7 @@ function _getStatusComponent(isTracked, t) {
         content={
           <div className="flex py-2">
             <div className="flex pt-1">
-              <Icon
-                name="info-link"
-                className="text-primary-main w-4"
-              />
+              <Icons.InfoLink className="text-primary-main w-4" />
             </div>
             <div className="ml-4 flex">
               <span className="text-common-light text-base">
@@ -348,10 +346,7 @@ function _getStatusComponent(isTracked, t) {
           </div>
         }
       >
-        <Icon
-          name={'viewport-status-tracked'}
-          className="text-aqua-pale"
-        />
+        <Icons.StatusTracking className="text-aqua-pale" />
       </Tooltip>
     </div>
   );

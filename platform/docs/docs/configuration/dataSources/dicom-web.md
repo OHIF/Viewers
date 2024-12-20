@@ -194,13 +194,14 @@ See the [`singlepart`](#singlepart) data source configuration option.
 
 ### BulkDataURI
 
-The `bulkDataURI` configuration option allows the datasource to use the
-bulkdata end points for retrieving metadata if originally was not included in the
+The `bulkDataURI` configuration option alters how the datasource uses the
+bulkdata end points for retrieving metadata if the data was originally not included in the
 response from the server. This is useful for the metadata information that
 are big and can/should be retrieved in a separate request. In case the bulkData URI
 is relative (instead of absolute) the `relativeResolution` option can be used to
-specify the resolution of the relative URI. The possible values are `studies`, `series` and `instances`.
-Certainly the knowledge of how the server is configured is required to use this option.
+specify the resolution of the relative URI. The possible values are `studies`, `series`.
+
+The default value is shown below (this will be added if not included in the config).
 
 ```js
 bulkDataURI: {
@@ -209,6 +210,12 @@ bulkDataURI: {
 },
 ```
 
+The other options allowed are:
+
+* transform - to take the string and return an updated string
+* startsWith and prefixWith - to remove a standard prefix and add an optional prefix
+  * Used primarily for a reverse proxy or change in URL naming
+* relativeResolution - used to set bulkdata paths to studies resolution for incorrect bulkdata paths
 
 ### Running DCM4CHEE
 

@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import classnames from 'classnames';
-import { PanelSection, Icon, Tooltip } from '../../components';
+import { PanelSection, Tooltip } from '../../components';
 import ToolSettings from './ToolSettings';
+import { Icons } from '@ohif/ui-next';
 
 /**
  * Use Toolbox component instead of this although it doesn't have "Advanced" in its name
@@ -44,14 +45,14 @@ const AdvancedToolbox = ({ title, items }) => {
                 >
                   <div
                     className={classnames(
-                      'text-primary-active grid h-[40px] w-[40px] place-items-center rounded-md bg-black  ',
+                      'text-primary-active grid h-[40px] w-[40px] place-items-center rounded-md bg-black',
                       activeItemName === item.name && 'bg-primary-light text-black',
                       item.disabled && 'opacity-50',
                       !item.disabled &&
                         'hover:bg-primary-light cursor-pointer hover:cursor-pointer hover:text-black'
                     )}
                   >
-                    <Icon name={item.icon} />
+                    <Icons.ByName name={item.icon} />
                   </div>
                 </div>
               </Tooltip>

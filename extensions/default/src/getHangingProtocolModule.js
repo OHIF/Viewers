@@ -63,7 +63,7 @@ const defaultProtocol = {
         // It has no affect if nothing is specified in the URL.
         {
           attribute: 'isDisplaySetFromUrl',
-          weight: 10,
+          weight: 20,
           constraint: {
             equals: true,
           },

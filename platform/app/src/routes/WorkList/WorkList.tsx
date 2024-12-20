@@ -30,7 +30,7 @@ import {
   ButtonEnums,
 } from '@ohif/ui';
 
-import { Header } from '@ohif/ui-next';
+import { Header, Icons } from '@ohif/ui-next';
 
 import { Types } from '@ohif/ui';
 
@@ -322,8 +322,7 @@ function WorkList({
           key: 'instances',
           content: (
             <>
-              <Icon
-                name="group-layers"
+              <Icons.GroupLayers
                 className={classnames('mr-2 inline-flex w-4', {
                   'text-primary-active': isExpanded,
                   'text-secondary-light': !isExpanded,
@@ -422,11 +421,12 @@ function WorkList({
                         ) : null
                       }
                       startIcon={
-                        <Icon
-                          className="!h-[20px] !w-[20px] text-black"
-                          name={isValidMode ? 'launch-arrow' : 'launch-info'}
-                        />
-                      } // launch-arrow | launch-info
+                        isValidMode ? (
+                          <Icons.LaunchArrow className="!h-[20px] !w-[20px] text-black" />
+                        ) : (
+                          <Icons.LaunchInfo className="!h-[20px] !w-[20px] text-black" />
+                        )
+                      }
                       onClick={() => {}}
                       dataCY={`mode-${mode.routeName}-${studyInstanceUid}`}
                       className={isValidMode ? 'text-[13px]' : 'bg-[#222d44] text-[13px]'}
