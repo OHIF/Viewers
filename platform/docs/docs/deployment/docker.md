@@ -20,7 +20,7 @@ The machine on which to build and run the Docker container must have:
 ## Building the Docker Image
 
 :::info
-In this tutorial, we will build the Docker image for the OHIF Viewer and OHIF server as defined in the `default.js` config. If you need a custom build, you can modify the configuration file to include your data sources and then build the Docker image. For more information on data sources, see [here](../platform/extensions/modules/data-source.md).
+In this tutorial, we will build the Docker image for the OHIF Viewer and OHIF server as defined in the `default.js` config. If you need a custom build, you can set build arguments to specify your data sources. For more information on data sources, see [here](../platform/extensions/modules/data-source.md).
 
 Below we show how to point the Docker image to a custom configuration file.
 :::
@@ -41,6 +41,16 @@ The docker image can be built from a terminal window as such:
 :::tip
 Building a Docker image comes in handy when OHIF has been customized (e.g. with custom extensions, modes, hanging protocols, etc.). For convenience, there are basic OHIF images built in Docker Hub. Find the latest [release](https://hub.docker.com/r/ohif/app/tags?page=1&name=latest) and [dev](https://hub.docker.com/r/ohif/app/tags?page=1&name=beta) images all in Docker Hub.
 :::
+
+### Available Build Arguments
+The available build arguments to set defaults are `APP_CONFIG`, `PUBLIC_URL` and `PORT`.  They are set with the `--build-arg` command.
+
+Examples:
+
+* `docker build . --build-arg PUBLIC_URL=/ohif/`
+* `docker build . --build-arg APP_CONFIG=config/kheops.js`
+* `docker build . --build-arg PORT=6000`
+* `docker build . --build-arg PUBLIC_URL=/ohif/ --build-arg APP_CONFIG=config/kheops.js --build-arg PORT=6000`
 
 ## Running the Docker Container
 Once the Docker image has been built, it can be run as a container from the command line as in the block below. Note that the last argument to the command is the name of the Docker image and the table below describes the other arguments.
@@ -76,12 +86,18 @@ The Dockerfile and entry point use the `{PORT}` environment variable as the port
 docker run -d -e PORT=8080 -p 3000:8080/tcp --name ohif-viewer-container ohif-viewer-image
 ```
 
+The default port can also be configured during build with:
+```sh
+docker build . --build-arg PORT=8080
+```
+
 ### Specifying the OHIF config File
 
-There are two approaches for specifying the OHIF configuration file for a Docker container:
+There are three approaches for specifying the OHIF configuration file for a Docker container:
 
 - [Volume Mounting](#volume-mounting)
 - [Environment Variable](#environment-variable)
+- [Build Default](#build-default)
 
 #### Volume Mounting
 
@@ -118,6 +134,10 @@ As an alternative to the `cat` command, convert the configuration file to a sing
 :::tip
 If both the [volume mounting method](#volume-mounting) and the [environment variable method](#environment-variable) are used, the volume mounting method will take precedence.
 :::
+
+#### Build Default
+
+The default OHIF configuration file can be specified during build with a `--build-arg APP_CONFIG=config/kheops` argument added to the build command.
 
 ### Embedding in an iframe
 
