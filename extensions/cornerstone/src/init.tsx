@@ -46,7 +46,7 @@ export default async function init({
   servicesManager,
   commandsManager,
   extensionManager,
-  appConfig
+  appConfig,
 }: Types.Extensions.ExtensionParams): Promise<void> {
   // Note: this should run first before initializing the cornerstone
   // DO NOT CHANGE THE ORDER
@@ -110,7 +110,8 @@ export default async function init({
   if (
     appConfig.showWarningMessageForCrossOrigin &&
     !window.crossOriginIsolated &&
-    !sharedArrayBufferDisabled
+    !sharedArrayBufferDisabled &&
+    false // TODO : Fix cross origin to support 3D images
   ) {
     uiNotificationService.show({
       title: 'Cross Origin Isolation',
