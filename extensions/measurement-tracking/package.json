@@ -34,7 +34,7 @@
   "peerDependencies": {
     "@cornerstonejs/core": "^2.14.0",
     "@cornerstonejs/tools": "^2.14.0",
-    "@ohif/core": "3.10.0-beta.32"
+    "@ohif/core": "3.10.0-beta.32",
     "@ohif/extension-cornerstone-dicom-sr": "3.10.0-beta.32",
     "@ohif/extension-default": "3.10.0-beta.32",
     "@ohif/ui": "3.10.0-beta.32",
