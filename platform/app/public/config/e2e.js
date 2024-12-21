@@ -46,6 +46,12 @@ window.config = {
           relativeResolution: 'studies',
           transform: url => url.replace('/pixeldata.mp4', '/index.mp4'),
         },
+        caseSensitive: {
+          patientname: false,
+          studydescription: false,
+          accessionnumber: false,
+          '00100020': false,
+        },
       },
     },
     {
@@ -117,6 +123,12 @@ window.config = {
           enabled: true,
           relativeResolution: 'studies',
           transform: url => url.replace('/pixeldata.mp4', '/rendered'),
+        },
+        caseSensitive: {
+          patientname: false,
+          studydescription: false,
+          accessionnumber: false,
+          '00100020': false,
         },
       },
     },

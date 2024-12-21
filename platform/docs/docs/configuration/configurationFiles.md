@@ -193,7 +193,7 @@ if auth headers are used, a preflight request is required.
 - `activateViewportBeforeInteraction`: (default to true), if set to false, tools can be used directly without the need to click and activate the viewport.
 - `autoPlayCine`: (default to false), if set to true, data sets with the DICOM frame time tag (i.e. (0018,1063)) will auto play when displayed
 - `addWindowLevelActionMenu`: (default to true), if set to false, the window level action menu item is NOT added to the viewport action corners
-- `caseSensitive`: an object with filter keys that should be case sensitive. By default, all filters are case sensitive. If you want to set a filter to be case insensitive, you can set it to false. Example:
+- `caseSensitive`: an object with filter keys that should be case sensitive, only works on STATIC-WADO backends. By default, all filters are case sensitive. If you want to set a filter to be case insensitive, you can set it to false. Example:
   ```js
   caseSensitive: {
     patientname: false,

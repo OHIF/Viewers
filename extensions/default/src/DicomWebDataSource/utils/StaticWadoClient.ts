@@ -113,15 +113,7 @@ export default class StaticWadoClient extends api.DICOMwebClient {
     const lowerParams = this.toLowerParams(queryParams);
     const filtered = searchResult.filter(study => {
       for (const key of Object.keys(StaticWadoClient.studyFilterKeys)) {
-        if (
-          !this.filterItem(
-            key,
-            lowerParams,
-            study,
-            StaticWadoClient.studyFilterKeys,
-            this.config.caseSensitive[key]
-          )
-        ) {
+        if (!this.filterItem(key, lowerParams, study, StaticWadoClient.studyFilterKeys)) {
           return false;
         }
       }
@@ -177,15 +169,15 @@ export default class StaticWadoClient extends api.DICOMwebClient {
     if (actual?.Alphabetic) {
       actual = actual.Alphabetic;
     }
+
     if (typeof actual == 'string') {
       if (!caseSensitive) {
-        if (typeof desired === 'string') {
-          desired = desired.toLowerCase();
-        }
-        if (typeof actual === 'string') {
-          actual = actual.toLowerCase();
-        }
+        desired = desired.toLowerCase();
+        actual = actual.toLowerCase();
       }
+    }
+
+    if (typeof actual == 'string') {
       if (actual.length === 0) {
         return true;
       }
@@ -225,10 +217,9 @@ export default class StaticWadoClient extends api.DICOMwebClient {
    * @param queryParams -
    * @param {*} study
    * @param {*} sourceFilterMap
-   * @param {boolean} caseSensitive
    * @returns
    */
-  filterItem(key: string, queryParams, study, sourceFilterMap, caseSensitive = true) {
+  filterItem(key: string, queryParams, study, sourceFilterMap) {
     const altKey = sourceFilterMap[key] || key;
     if (!queryParams) {
       return true;
@@ -245,6 +236,8 @@ export default class StaticWadoClient extends api.DICOMwebClient {
       return this.compareDateRange(testValue, valueElem.Value[0]);
     }
     const value = valueElem.Value;
+    const caseSensitive = this.config.caseSensitive[key];
+
     return this.compareValues(testValue, value, caseSensitive);
   }
 
