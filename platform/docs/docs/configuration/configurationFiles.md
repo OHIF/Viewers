@@ -197,6 +197,9 @@ if auth headers are used, a preflight request is required.
   ```js
   caseSensitive: {
     patientname: false,
+    studydescription: false,
+    accessionnumber: false,
+    '00100020': false,
   }
   ```
 - `dangerouslyUseDynamicConfig`: Dynamic config allows user to pass `configUrl` query string. This allows to load config without recompiling application. If the `configUrl` query string is passed, the worklist and modes will load from the referenced json rather than the default .env config. If there is no `configUrl` path provided, the default behaviour is used and there should not be any deviation from current user experience.<br/>
