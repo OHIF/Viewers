@@ -44,6 +44,7 @@ const _generateReport = (measurementData, additionalFindingTypes, options = {}) 
 const commandsModule = (props: withAppTypes) => {
   const { servicesManager, extensionManager } = props;
   const { customizationService, displaySetService, viewportGridService } = servicesManager.services;
+
   const actions = {
     changeColorMeasurement: ({ uid }) => {
       // When this gets supported, it probably belongs in cornerstone, not sr

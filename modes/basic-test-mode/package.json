@@ -1,6 +1,6 @@
 {
   "name": "@ohif/mode-test",
-  "version": "3.10.0-beta.30",
+  "version": "3.10.0-beta.32",
   "description": "Basic mode for testing",
   "author": "OHIF",
   "license": "MIT",
@@ -34,14 +34,14 @@
     "test:unit:ci": "jest --ci --runInBand --collectCoverage --passWithNoTests"
   },
   "peerDependencies": {
-    "@ohif/core": "3.10.0-beta.30",
-    "@ohif/extension-cornerstone": "3.10.0-beta.30",
-    "@ohif/extension-cornerstone-dicom-sr": "3.10.0-beta.30",
-    "@ohif/extension-default": "3.10.0-beta.30",
-    "@ohif/extension-dicom-pdf": "3.10.0-beta.30",
-    "@ohif/extension-dicom-video": "3.10.0-beta.30",
-    "@ohif/extension-measurement-tracking": "3.10.0-beta.30",
-    "@ohif/extension-test": "3.10.0-beta.30"
+    "@ohif/core": "3.10.0-beta.32",
+    "@ohif/extension-cornerstone": "3.10.0-beta.32",
+    "@ohif/extension-cornerstone-dicom-sr": "3.10.0-beta.32",
+    "@ohif/extension-default": "3.10.0-beta.32",
+    "@ohif/extension-dicom-pdf": "3.10.0-beta.32",
+    "@ohif/extension-dicom-video": "3.10.0-beta.32",
+    "@ohif/extension-measurement-tracking": "3.10.0-beta.32",
+    "@ohif/extension-test": "3.10.0-beta.32"
   },
   "dependencies": {
     "@babel/runtime": "^7.20.13",
