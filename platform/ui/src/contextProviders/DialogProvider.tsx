@@ -18,14 +18,15 @@ import classNames from 'classnames';
  * we import to instantiate cornerstone
  */
 import guid from './../../../core/src/utils/guid';
-
+import { CustomizationService } from '@ohif/core';
 import './DialogProvider.css';
 
 const DialogContext = createContext(null);
 
 export const useDialog = () => useContext(DialogContext);
 
-const DialogProvider = ({ children, service = null }) => {
+const DialogProvider = ({ children, services = null }) => {
+  const { uiDialogService, customizationService } = services;
   const [isDragging, setIsDragging] = useState(false);
   const [dialogs, setDialogs] = useState([]);
   const [lastDialogId, setLastDialogId] = useState(null);
@@ -137,10 +138,10 @@ const DialogProvider = ({ children, service = null }) => {
    * @returns void
    */
   useEffect(() => {
-    if (service) {
-      service.setServiceImplementation({ create, dismiss, dismissAll });
+    if (uiDialogService) {
+      uiDialogService.setServiceImplementation({ create, dismiss, dismissAll });
     }
-  }, [create, dismiss, service]);
+  }, [create, dismiss, uiDialogService]);
 
   useEffect(() => _bringToFront(lastDialogId), [_bringToFront, lastDialogId]);
 
@@ -215,6 +216,7 @@ const DialogProvider = ({ children, service = null }) => {
             <DialogContent
               {...dialog}
               {...contentProps}
+              customizationService={customizationService}
             />
           </div>
         </Draggable>
@@ -316,8 +318,9 @@ export const withDialog = Component => {
 DialogProvider.propTypes = {
   children: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.node), PropTypes.node, PropTypes.func])
     .isRequired,
-  service: PropTypes.shape({
-    setServiceImplementation: PropTypes.func,
+  services: PropTypes.shape({
+    uiDialogService: PropTypes.shape({ setServiceImplementation: PropTypes.func }),
+    customizationService: PropTypes.instanceOf(CustomizationService),
   }),
 };
 
