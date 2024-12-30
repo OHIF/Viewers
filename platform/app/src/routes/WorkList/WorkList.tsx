@@ -19,7 +19,6 @@ import {
   StudyListTable,
   StudyListPagination,
   StudyListFilter,
-  TooltipClipboard,
   useModal,
   AboutModal,
   UserPreferences,
@@ -30,12 +29,19 @@ import {
   ButtonEnums,
 } from '@ohif/ui';
 
-import { Header, Icons } from '@ohif/ui-next';
+import {
+  Header,
+  Icons,
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+  Onboarding,
+  ScrollArea,
+} from '@ohif/ui-next';
 
 import { Types } from '@ohif/ui';
 
 import i18n from '@ohif/i18n';
-import { Onboarding, ScrollArea } from '@ohif/ui-next';
 
 const PatientInfoVisibility = Types.PatientInfoVisibility;
 
@@ -273,6 +279,26 @@ function WorkList({
         t('Common:localTimeFormat', 'hh:mm A')
       );
 
+    const makeCopyTooltipCell = textValue => {
+      if (!textValue) {
+        return <span className="text-gray-700">(Empty)</span>;
+      }
+      return (
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <span className="cursor-pointer truncate">{textValue}</span>
+          </TooltipTrigger>
+          <TooltipContent
+            copyEnabled
+            copyText={textValue}
+            side="bottom"
+          >
+            {textValue}
+          </TooltipContent>
+        </Tooltip>
+      );
+    };
+
     return {
       dataCY: `studyRow-${studyInstanceUid}`,
       clickableCY: studyInstanceUid,
@@ -280,7 +306,7 @@ function WorkList({
         {
           key: 'patientName',
           content: patientName ? (
-            <TooltipClipboard>{patientName}</TooltipClipboard>
+            makeCopyTooltipCell(patientName)
           ) : (
             <span className="text-gray-700">(Empty)</span>
           ),
@@ -288,7 +314,7 @@ function WorkList({
         },
         {
           key: 'mrn',
-          content: <TooltipClipboard>{mrn}</TooltipClipboard>,
+          content: makeCopyTooltipCell(mrn),
           gridCol: 3,
         },
         {
@@ -304,7 +330,7 @@ function WorkList({
         },
         {
           key: 'description',
-          content: <TooltipClipboard>{description}</TooltipClipboard>,
+          content: makeCopyTooltipCell(description),
           gridCol: 4,
         },
         {
@@ -315,7 +341,7 @@ function WorkList({
         },
         {
           key: 'accession',
-          content: <TooltipClipboard>{accession}</TooltipClipboard>,
+          content: makeCopyTooltipCell(accession),
           gridCol: 3,
         },
         {
@@ -391,6 +417,7 @@ function WorkList({
                 query.append('configUrl', filterValues.configUrl);
               }
               query.append('StudyInstanceUIDs', studyInstanceUid);
+
               return (
                 mode.displayName && (
                   <Link
