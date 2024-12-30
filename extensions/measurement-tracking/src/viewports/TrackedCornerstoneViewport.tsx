@@ -299,23 +299,16 @@ function _getStatusComponent(isTracked, t) {
           <Icons.StatusTracking className="text-aqua-pale" />
         </span>
       </TooltipTrigger>
-      <TooltipContent side="bottom">
-        <div className="flex py-2">
-          <div className="flex pt-1">
-            <Icons.InfoLink className="text-primary-main w-4" />
-          </div>
-          <div className="ml-4 flex">
-            <span className="text-common-light text-base">
-              {isTracked ? (
-                <>{t('Series is tracked and can be viewed in the measurement panel')}</>
-              ) : (
-                <>
-                  {t('Measurements for untracked series will not be shown in the measurements panel')}
-                </>
-              )}
-            </span>
-          </div>
-        </div>
+      <TooltipContent
+        side="right"
+        align="start"
+        side="bottom"
+      >
+        {isTracked ? (
+          <>{t('Series is tracked and can be viewed in the measurement panel')}</>
+        ) : (
+          <>{t('Measurements for untracked series will not be shown in the measurements panel')}</>
+        )}
       </TooltipContent>
     </Tooltip>
   );
