@@ -9,6 +9,7 @@ interface PropType {
   labelData: any;
   exclusive: boolean;
   componentClassName: any;
+  customizationService: any;
 }
 
 interface StateType {
@@ -87,13 +88,28 @@ class LabellingFlow extends Component<PropType> {
   };
 
   labellingStateFragment = () => {
-    return (
+    const annotationLabelComponent = this.props.customizationService?.get(
+      'customAnnotationLabelComponent'
+    );
+
+    const CustomAnnotationLabelComponent = annotationLabelComponent?.component;
+
+    return CustomAnnotationLabelComponent ? (
+      <CustomAnnotationLabelComponent
+        onSelected={this.selectTreeSelectCalback}
+        closePopup={this.closePopup}
+        label={this.state.label}
+        measurementData={this.props.measurementData}
+        currentItems={this.currentItems}
+        exclusive={this.props.exclusive}
+      />
+    ) : (
       <SelectTree
         items={this.currentItems}
         columns={1}
         onSelected={this.selectTreeSelectCalback}
         closePopup={this.closePopup}
-        selectTreeFirstTitle="Annotation"
+        selectTreeFirstTitle="Select Label"
         exclusive={this.props.exclusive}
         label={this.state.label}
       />
