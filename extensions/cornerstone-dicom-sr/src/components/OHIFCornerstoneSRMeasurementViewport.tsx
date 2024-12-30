@@ -5,10 +5,11 @@ import { ExtensionManager, useToolbar } from '@ohif/core';
 
 import { setTrackingUniqueIdentifiersForElement } from '../tools/modules/dicomSRModule';
 
-import { Icon, Tooltip, useViewportGrid, ViewportActionArrows } from '@ohif/ui';
 import createReferencedImageDisplaySet from '../utils/createReferencedImageDisplaySet';
 import { usePositionPresentationStore } from '@ohif/extension-cornerstone';
-import { Icons } from '@ohif/ui-next';
+import { useViewportGrid, ViewportActionArrows, displaySetService } from '@ohif/ui';
+import { Icons, Tooltip, TooltipTrigger, TooltipContent } from '@ohif/ui-next';
+
 const MEASUREMENT_TRACKING_EXTENSION_ID = '@ohif/extension-measurement-tracking';
 
 const SR_TOOLGROUP_BASE_NAME = 'SRToolGroup';
@@ -467,11 +468,18 @@ function _getStatusComponent({
   return (
     <>
       {ToolTipMessage && (
-        <Tooltip
-          content={<ToolTipMessage />}
-          position="bottom-left"
-        >
-          <StatusArea />
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <span>
+              <StatusArea />
+            </span>
+          </TooltipTrigger>
+          <TooltipContent
+            side="bottom"
+            align="start"
+          >
+            <ToolTipMessage />
+          </TooltipContent>
         </Tooltip>
       )}
       {!ToolTipMessage && <StatusArea />}
