@@ -3,6 +3,30 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.10.0-beta.33](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.32...v3.10.0-beta.33) (2024-12-20)
+
+**Note:** Version bump only for package @ohif/mode-tmtv
+
+
+
+
+
+# [3.10.0-beta.32](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.31...v3.10.0-beta.32) (2024-12-20)
+
+**Note:** Version bump only for package @ohif/mode-tmtv
+
+
+
+
+
+# [3.10.0-beta.31](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.30...v3.10.0-beta.31) (2024-12-20)
+
+**Note:** Version bump only for package @ohif/mode-tmtv
+
+
+
+
+
 # [3.10.0-beta.30](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.29...v3.10.0-beta.30) (2024-12-18)
 
 **Note:** Version bump only for package @ohif/mode-tmtv
