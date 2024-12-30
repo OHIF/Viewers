@@ -373,6 +373,9 @@ export default class HangingProtocolService extends PubSubService {
    * specifically, but will show another study instead.
    */
   public setActiveStudyUID(activeStudyUID: string) {
+    if (!activeStudyUID || activeStudyUID === this.activeStudy?.StudyInstanceUID) {
+      return;
+    }
     this.activeStudy = this.studies.find(it => it.StudyInstanceUID === activeStudyUID);
     return this.activeStudy;
   }
@@ -408,15 +411,18 @@ export default class HangingProtocolService extends PubSubService {
    *        the studies to display in viewports.
    * @param protocol is a specific protocol to apply.
    */
-  public run({ studies, displaySets, activeStudy }, protocolId, options = {}) {
+  public run({ studies, displaySets, activeStudy, activeStudyUID }, protocolId, options = {}) {
     this.studies = [...(studies || this.studies)];
-    this.displaySets = displaySets;
-    this.setActiveStudyUID((activeStudy || studies[0])?.StudyInstanceUID);
+    this.displaySets = displaySets || this.displaySets;
+    this.setActiveStudyUID(activeStudyUID || (activeStudy || this.studies[0])?.StudyInstanceUID);
 
     this.protocolEngine = new ProtocolEngine(
       this.getProtocols(),
       this.customAttributeRetrievalCallbacks
     );
+
+    // Resets the full protocol status here.
+    this.protocol = null;
 
     if (protocolId && typeof protocolId === 'string') {
       const protocol = this.getProtocolById(protocolId);
@@ -1014,6 +1020,7 @@ export default class HangingProtocolService extends PubSubService {
 
     try {
       if (!this.protocol || this.protocol.id !== protocol.id) {
+        console.log('***** Resetting protocol', this.protocol, this.activeStudy);
         this.stageIndex = options?.stageIndex || 0;
         //Reset load performed to false to re-fire loading strategy at new study opening
         this.customImageLoadPerformed = false;

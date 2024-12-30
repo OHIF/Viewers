@@ -1,4 +1,6 @@
 import { Types } from '@ohif/core';
+import { studyWithImages } from './studySelectors';
+import { seriesWithImages } from './seriesSelectors';
 
 /**
  * Sync group configuration for hydrating segmentations across viewports
@@ -25,37 +27,11 @@ const hpMN: Types.HangingProtocol.Protocol = {
   id: '@ohif/mnGrid',
   description: 'Has various hanging protocol grid layouts',
   name: '2x2',
-  protocolMatchingRules: [
-    {
-      id: 'OneOrMoreSeries',
-      weight: 25,
-      attribute: 'numberOfDisplaySetsWithImages',
-      constraint: {
-        greaterThan: 0,
-      },
-    },
-  ],
+  protocolMatchingRules: studyWithImages,
   toolGroupIds: ['default'],
   displaySetSelectors: {
     defaultDisplaySetId: {
-      seriesMatchingRules: [
-        {
-          attribute: 'numImageFrames',
-          constraint: {
-            greaterThan: { value: 0 },
-          },
-          required: true,
-        },
-        // This display set will select the specified items by preference
-        // It has no affect if nothing is specified in the URL.
-        {
-          attribute: 'isDisplaySetFromUrl',
-          weight: 20,
-          constraint: {
-            equals: true,
-          },
-        },
-      ],
+      seriesMatchingRules: seriesWithImages,
     },
   },
   defaultViewport: {
@@ -74,7 +50,7 @@ const hpMN: Types.HangingProtocol.Protocol = {
   },
   stages: [
     {
-      name: '2x2',
+      id: '2x2',
       name: '2x2',
       stageActivation: {
         enabled: {

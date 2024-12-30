@@ -221,11 +221,9 @@ const commandsModule = ({
             stageIndex,
           });
 
-        if (activeStudyUID) {
-          hangingProtocolService.setActiveStudyUID(activeStudyUID);
-        }
+        const activeStudyChanged = hangingProtocolService.setActiveStudyUID(activeStudyUID);
 
-        const storedHanging = `${hangingProtocolService.getState().activeStudyUID}:${protocolId}:${
+        const storedHanging = `${activeStudyUID || hangingProtocolService.getState().activeStudyUID}:${protocolId}:${
           useStageIdx || 0
         }`;
 
@@ -233,6 +231,17 @@ const commandsModule = ({
         const restoreProtocol = !reset && viewportGridState[storedHanging];
 
         if (
+          reset ||
+          (activeStudyChanged &&
+            !viewportGridState[storedHanging] &&
+            stageIndex === undefined &&
+            stageId === undefined)
+        ) {
+          // Run the hanging protocol fresh, re-using the existing study data
+          // This is done on reset or when the study changes and we haven't yet
+          // applied it, and don't specify exact stage to use.
+          hangingProtocolService.run({ activeStudyUID }, protocolId);
+        } else if (
           protocolId === hpInfo.protocolId &&
           useStageIdx === hpInfo.stageIndex &&
           !activeStudyUID

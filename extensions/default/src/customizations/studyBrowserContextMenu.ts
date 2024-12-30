@@ -17,9 +17,6 @@ export const studyBrowserContextMenu = {
                 commands: [
                   {
                     commandName: 'loadStudy',
-                    commandOptions: {
-                      protocolId: '@ohif/mnGrid',
-                    },
                   },
                   {
                     commandName: 'setHangingProtocol',
