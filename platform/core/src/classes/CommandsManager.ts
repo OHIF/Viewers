@@ -157,6 +157,24 @@ export class CommandsManager {
     }
   }
 
+  public static convertCommands(toRun: Command | Commands | Command[] | string) {
+    if (typeof toRun === 'string') {
+      return [{ commandName: toRun }];
+    }
+    if ('commandName' in toRun) {
+      return [toRun as ComplexCommand];
+    }
+    if ('commands' in toRun) {
+      const commandsInput = (toRun as Commands).commands;
+      return this.convertCommands(commandsInput);
+    }
+    if (Array.isArray(toRun)) {
+      return toRun.map(command => CommandsManager.convertCommands(command)[0]);
+    }
+
+    return [];
+  }
+
   /**
    * Run one or more commands with specified extra options.
    * Returns the result of the last command run.
@@ -176,20 +194,7 @@ export class CommandsManager {
       return;
     }
 
-    // Normalize `toRun` to an array of `ComplexCommand`
-    let commands: ComplexCommand[] = [];
-    if (typeof toRun === 'string') {
-      commands = [{ commandName: toRun }];
-    } else if ('commandName' in toRun) {
-      commands = [toRun as ComplexCommand];
-    } else if ('commands' in toRun) {
-      const commandsInput = (toRun as Commands).commands;
-      commands = Array.isArray(commandsInput)
-        ? commandsInput.map(cmd => (typeof cmd === 'string' ? { commandName: cmd } : cmd))
-        : [{ commandName: commandsInput }];
-    } else if (Array.isArray(toRun)) {
-      commands = toRun.map(cmd => (typeof cmd === 'string' ? { commandName: cmd } : cmd));
-    }
+    const commands: ComplexCommand[] = CommandsManager.convertCommands(toRun);
 
     if (commands.length === 0) {
       console.log("Command isn't runnable", toRun);
@@ -204,8 +209,9 @@ export class CommandsManager {
         result = this.runCommand(
           commandName,
           {
-            ...commandOptions,
+            // Put options first so that repeated child options override correctly
             ...options,
+            ...commandOptions,
           },
           context
         );
@@ -217,6 +223,47 @@ export class CommandsManager {
         }
       }
     });
+
+    return result;
+  }
+
+  /** Like run, but await each command before continuing */
+  public async runAsync(
+    toRun: Command | Commands | Command[] | string | undefined,
+    options?: Record<string, unknown>
+  ): unknown {
+    if (!toRun) {
+      return;
+    }
+
+    const commands: ComplexCommand[] = CommandsManager.convertCommands(toRun);
+
+    if (commands.length === 0) {
+      console.log("Command isn't runnable", toRun);
+      return;
+    }
+
+    // Execute each command in the array
+    let result: unknown;
+    for (const command of commands) {
+      const { commandName, commandOptions, context } = command;
+      if (commandName) {
+        result = await this.runCommand(
+          commandName,
+          {
+            ...commandOptions,
+            ...options,
+          },
+          context
+        );
+      } else {
+        if (typeof command === 'function') {
+          result = await command();
+        } else {
+          console.warn('No command name supplied in', toRun);
+        }
+      }
+    }
 
     return result;
   }

@@ -3,6 +3,7 @@ import lateralityAttribute from './laterality';
 import registerHangingProtocolAttributes from './registerHangingProtocolAttributes';
 import hpMammography from './hpMammo';
 import hpMNGrid from './hpMNGrid';
+export * from './hpMNGrid';
 import hpCompare from './hpCompare';
 
 export {

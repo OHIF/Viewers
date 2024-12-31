@@ -372,8 +372,26 @@ export default class HangingProtocolService extends PubSubService {
    * for example, a prior view hanging protocol will NOT show the active study
    * specifically, but will show another study instead.
    */
-  public setActiveStudyUID(activeStudyUID: string): void {
+  public setActiveStudyUID(activeStudyUID: string) {
+    if (!activeStudyUID || activeStudyUID === this.activeStudy?.StudyInstanceUID) {
+      return;
+    }
     this.activeStudy = this.studies.find(it => it.StudyInstanceUID === activeStudyUID);
+    return this.activeStudy;
+  }
+
+  public hasStudyUID(studyUID: string): boolean {
+    return this.studies.some(it => it.StudyInstanceUID === studyUID);
+  }
+
+  public addStudy(study) {
+    if (!this.hasStudyUID(study.StudyInstanceUID)) {
+      this.studies.push(study);
+    }
+  }
+
+  public setDisplaySets(displaySets) {
+    this.displaySets = displaySets;
   }
 
   /**
@@ -393,15 +411,18 @@ export default class HangingProtocolService extends PubSubService {
    *        the studies to display in viewports.
    * @param protocol is a specific protocol to apply.
    */
-  public run({ studies, displaySets, activeStudy }, protocolId, options = {}) {
+  public run({ studies, displaySets, activeStudy, activeStudyUID }, protocolId, options = {}) {
     this.studies = [...(studies || this.studies)];
-    this.displaySets = displaySets;
-    this.setActiveStudyUID((activeStudy || studies[0])?.StudyInstanceUID);
+    this.displaySets = displaySets || this.displaySets;
+    this.setActiveStudyUID(activeStudyUID || (activeStudy || this.studies[0])?.StudyInstanceUID);
 
     this.protocolEngine = new ProtocolEngine(
       this.getProtocols(),
       this.customAttributeRetrievalCallbacks
     );
+
+    // Resets the full protocol status here.
+    this.protocol = null;
 
     if (protocolId && typeof protocolId === 'string') {
       const protocol = this.getProtocolById(protocolId);
@@ -999,6 +1020,7 @@ export default class HangingProtocolService extends PubSubService {
 
     try {
       if (!this.protocol || this.protocol.id !== protocol.id) {
+        console.log('***** Resetting protocol', this.protocol, this.activeStudy);
         this.stageIndex = options?.stageIndex || 0;
         //Reset load performed to false to re-fire loading strategy at new study opening
         this.customImageLoadPerformed = false;
@@ -1200,6 +1222,7 @@ export default class HangingProtocolService extends PubSubService {
     viewportMatchDetails: Map<string, HangingProtocol.ViewportMatchDetails>;
     displaySetMatchDetails: Map<string, HangingProtocol.DisplaySetMatchDetails>;
   } {
+    this.activeStudy ||= this.studies[0];
     let matchedViewports = 0;
     stageModel.viewports.forEach(viewport => {
       const viewportId = viewport.viewportOptions.viewportId;

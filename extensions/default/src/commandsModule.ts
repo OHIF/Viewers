@@ -1,4 +1,4 @@
-import { Types } from '@ohif/core';
+import { Types, DicomMetadataStore } from '@ohif/core';
 
 import { ContextMenuController, defaultContextMenu } from './CustomizableContextMenu';
 import DicomTagBrowser from './DicomTagBrowser/DicomTagBrowser';
@@ -16,6 +16,7 @@ import { useHangingProtocolStageIndexStore } from './stores/useHangingProtocolSt
 import { useToggleHangingProtocolStore } from './stores/useToggleHangingProtocolStore';
 import { useViewportsByPositionStore } from './stores/useViewportsByPositionStore';
 import { useToggleOneUpViewportGridStore } from './stores/useToggleOneUpViewportGridStore';
+import requestDisplaySetCreationForStudy from './Panels/requestDisplaySetCreationForStudy';
 
 export type HangingProtocolParams = {
   protocolId?: string;
@@ -23,6 +24,26 @@ export type HangingProtocolParams = {
   activeStudyUID?: string;
   stageId?: string;
   reset?: false;
+};
+
+/**
+ * The studies from display sets gets the studies in study date
+ * order or in study instance UID order - not very useful, but
+ * if not specifically specified then at least making it consistent is useful.
+ */
+const getStudiesfromDisplaySets = displaySets => {
+  const studyMap = {};
+
+  const ret = displaySets.reduce((prev, curr) => {
+    const { StudyInstanceUID } = curr;
+    if (!studyMap[StudyInstanceUID]) {
+      const study = DicomMetadataStore.getStudy(StudyInstanceUID);
+      studyMap[StudyInstanceUID] = study;
+      prev.push(study);
+    }
+    return prev;
+  }, []);
+  return ret;
 };
 
 export type UpdateViewportDisplaySetParams = {
@@ -33,6 +54,7 @@ export type UpdateViewportDisplaySetParams = {
 const commandsModule = ({
   servicesManager,
   commandsManager,
+  extensionManager,
 }: Types.Extensions.ExtensionParams): Types.Extensions.CommandsModule => {
   const {
     customizationService,
@@ -41,12 +63,46 @@ const commandsModule = ({
     uiNotificationService,
     viewportGridService,
     displaySetService,
+    multiMonitorService,
   } = servicesManager.services;
 
   // Define a context menu controller for use with any context menus
   const contextMenuController = new ContextMenuController(servicesManager, commandsManager);
 
   const actions = {
+    /**
+     * Runs a command in multi-monitor mode.  No-op if not multi-monitor.
+     */
+    multimonitor: async options => {
+      const { commands, screenDelta, studyInstanceUID } = options;
+      if (multiMonitorService.numberOfScreens < 2) {
+        return options.fallback?.(options);
+      }
+
+      await multiMonitorService.launchWindow(studyInstanceUID, screenDelta, options);
+      if (commands) {
+        multiMonitorService.run(screenDelta, commands, options);
+      }
+    },
+
+    /**
+     * Ensures that the specified study is available for display
+     * Then, if commands is specified, runs the given commands list/instance
+     */
+    loadStudy: async options => {
+      const { studyInstanceUID, commands } = options;
+      if (hangingProtocolService.hasStudyUID(studyInstanceUID)) {
+        return commands && commandsManager.run(commands, options);
+      }
+      const [dataSource] = extensionManager.getActiveDataSource();
+      await requestDisplaySetCreationForStudy(dataSource, displaySetService, studyInstanceUID);
+      const activeStudy = DicomMetadataStore.getStudy(studyInstanceUID);
+      hangingProtocolService.addStudy(activeStudy);
+      const displaySets = displaySetService.getActiveDisplaySets();
+      hangingProtocolService.setDisplaySets(displaySets);
+      return commands && commandsManager.run(commands, options);
+    },
+
     /**
      * Show the context menu.
      * @param options.menuId defines the menu name to lookup, from customizationService
@@ -141,6 +197,7 @@ const commandsModule = ({
       reset = false,
     }: HangingProtocolParams): boolean => {
       try {
+        console.log('******** Set hanging protocol', activeStudyUID);
         // Stores in the state the display set selector id to displaySetUID mapping
         // Pass in viewportId for the active viewport.  This item will get set as
         // the activeViewportId
@@ -169,11 +226,9 @@ const commandsModule = ({
             stageIndex,
           });
 
-        if (activeStudyUID) {
-          hangingProtocolService.setActiveStudyUID(activeStudyUID);
-        }
+        const activeStudyChanged = hangingProtocolService.setActiveStudyUID(activeStudyUID);
 
-        const storedHanging = `${hangingProtocolService.getState().activeStudyUID}:${protocolId}:${
+        const storedHanging = `${activeStudyUID || hangingProtocolService.getState().activeStudyUID}:${protocolId}:${
           useStageIdx || 0
         }`;
 
@@ -181,6 +236,17 @@ const commandsModule = ({
         const restoreProtocol = !reset && viewportGridState[storedHanging];
 
         if (
+          reset ||
+          (activeStudyChanged &&
+            !viewportGridState[storedHanging] &&
+            stageIndex === undefined &&
+            stageId === undefined)
+        ) {
+          // Run the hanging protocol fresh, re-using the existing study data
+          // This is done on reset or when the study changes and we haven't yet
+          // applied it, and don't specify exact stage to use.
+          hangingProtocolService.run({ activeStudyUID }, protocolId);
+        } else if (
           protocolId === hpInfo.protocolId &&
           useStageIdx === hpInfo.stageIndex &&
           !activeStudyUID
@@ -562,6 +628,12 @@ const commandsModule = ({
   };
 
   const definitions = {
+    multimonitor: {
+      commandFn: actions.multimonitor,
+    },
+    loadStudy: {
+      commandFn: actions.loadStudy,
+    },
     showContextMenu: {
       commandFn: actions.showContextMenu,
     },
