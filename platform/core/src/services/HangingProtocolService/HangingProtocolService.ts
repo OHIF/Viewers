@@ -1222,6 +1222,7 @@ export default class HangingProtocolService extends PubSubService {
     viewportMatchDetails: Map<string, HangingProtocol.ViewportMatchDetails>;
     displaySetMatchDetails: Map<string, HangingProtocol.DisplaySetMatchDetails>;
   } {
+    this.activeStudy ||= this.studies[0];
     let matchedViewports = 0;
     stageModel.viewports.forEach(viewport => {
       const viewportId = viewport.viewportOptions.viewportId;

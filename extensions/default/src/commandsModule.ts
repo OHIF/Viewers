@@ -85,11 +85,14 @@ const commandsModule = ({
       }
     },
 
-    /** Ensures that the specified study is available for display */
+    /**
+     * Ensures that the specified study is available for display
+     * Then, if commands is specified, runs the given commands list/instance
+     */
     loadStudy: async options => {
-      const { studyInstanceUID } = options;
+      const { studyInstanceUID, commands } = options;
       if (hangingProtocolService.hasStudyUID(studyInstanceUID)) {
-        return;
+        return commands && commandsManager.run(commands, options);
       }
       const [dataSource] = extensionManager.getActiveDataSource();
       await requestDisplaySetCreationForStudy(dataSource, displaySetService, studyInstanceUID);
@@ -97,6 +100,7 @@ const commandsModule = ({
       hangingProtocolService.addStudy(activeStudy);
       const displaySets = displaySetService.getActiveDisplaySets();
       hangingProtocolService.setDisplaySets(displaySets);
+      return commands && commandsManager.run(commands, options);
     },
 
     /**
@@ -193,6 +197,7 @@ const commandsModule = ({
       reset = false,
     }: HangingProtocolParams): boolean => {
       try {
+        console.log('******** Set hanging protocol', activeStudyUID);
         // Stores in the state the display set selector id to displaySetUID mapping
         // Pass in viewportId for the active viewport.  This item will get set as
         // the activeViewportId
