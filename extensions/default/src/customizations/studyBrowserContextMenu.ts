@@ -14,14 +14,13 @@ export const studyBrowserContextMenu = {
               commands: {
                 commandName: 'setHangingProtocol',
                 commandOptions: {
-                  protocolId: '@ohif/mnGrid',
+                  protocolId: '@ohif/mnGrid8',
                 },
               },
             },
           },
         },
         {
-          // customizationType is implicit here in the configuration setup
           label: 'Show in other monitor',
           selector: ({ isMultimonitor }) => isMultimonitor,
           commands: {
@@ -33,13 +32,46 @@ export const studyBrowserContextMenu = {
                   commands: {
                     commandName: 'setHangingProtocol',
                     commandOptions: {
-                      protocolId: '@ohif/mnGrid',
+                      protocolId: '@ohif/mnGrid8',
                     },
                   },
                 },
               },
             },
           },
+        },
+        {
+          label: 'Compare All',
+          selector: ({ isMultimonitor }) => isMultimonitor,
+          commands: [
+            {
+              commandName: 'loadStudy',
+              commandOptions: {
+                commands: {
+                  commandName: 'setHangingProtocol',
+                  commandOptions: {
+                    protocolId: '@ohif/mnGrid',
+                  },
+                },
+              },
+            },
+            {
+              commandName: 'multimonitor',
+              commandOptions: {
+                commands: {
+                  commandName: 'loadStudy',
+                  commandOptions: {
+                    commands: {
+                      commandName: 'setHangingProtocol',
+                      commandOptions: {
+                        protocolId: '@ohif/mnGridMonitor2',
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          ],
         },
       ],
     },
