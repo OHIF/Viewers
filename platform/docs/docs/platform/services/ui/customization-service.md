@@ -489,6 +489,19 @@ context menus.  Currently it supports buttons 1-3, as well as modifier keys
 by associating a commands list with the button to click.  See `initContextMenu`
 for more details.
 
+## Customizable Annotation Labelling component.
+
+The Annotation Labelling Component can be customized using the ID `measurement.labellingComponent`. This allows users to replace the default `SelectTree` component with a custom component of their choice. Below is a sample for customization implementation:
+
+```
+customizationService.setGlobalCustomization('measurement.labellingComponent', {
+    component: AnnotationLabel,
+});
+
+
+```
+
+
 ## Please add additional customizations above this section
 > 3rd Party implementers may be added to this table via pull requests.
 

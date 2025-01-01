@@ -89,7 +89,7 @@ class LabellingFlow extends Component<PropType> {
 
   labellingStateFragment = () => {
     const annotationLabelComponent = this.props.customizationService?.get(
-      'customAnnotationLabelComponent'
+      'measurement.labellingComponent'
     );
 
     const CustomAnnotationLabelComponent = annotationLabelComponent?.component;
