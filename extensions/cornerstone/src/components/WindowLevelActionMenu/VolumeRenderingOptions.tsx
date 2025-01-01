@@ -11,7 +11,7 @@ export function VolumeRenderingOptions({
   volumeRenderingQualityRange,
   servicesManager,
 }: VolumeRenderingOptionsProps): ReactElement {
-  const [isShadeToggled, setShadeToggled] = useState(false);
+  const [hasShade, setShade] = useState(false);
   return (
     <AllInOneMenu.ItemPanel>
       <VolumeRenderingQuality
@@ -35,14 +35,14 @@ export function VolumeRenderingOptions({
           commandsManager={commandsManager}
           servicesManager={servicesManager}
           viewportId={viewportId}
-          onClickShade={setShadeToggled}
+          onClickShade={setShade}
         />
       </div>
       <VolumeLighting
         viewportId={viewportId}
         commandsManager={commandsManager}
         servicesManager={servicesManager}
-        isShadeToggled={isShadeToggled}
+        hasShade={hasShade}
       />
     </AllInOneMenu.ItemPanel>
   );

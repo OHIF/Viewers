@@ -5,7 +5,7 @@ export function VolumeLighting({
   servicesManager,
   commandsManager,
   viewportId,
-  isShadeToggled,
+  hasShade,
 }: VolumeLightingProps): ReactElement {
   const { cornerstoneViewportService } = servicesManager.services;
   const [ambient, setAmbient] = useState(null);
@@ -39,8 +39,8 @@ export function VolumeLighting({
     setDiffuse(diffuse);
     setSpecular(specular);
   }, [viewportId, cornerstoneViewportService]);
-  const disableOption = isShadeToggled ? '' : 'ohif-disabled !opacity-40';
-  const disableSlider = !isShadeToggled;
+  const disableOption = hasShade ? '' : 'ohif-disabled !opacity-40';
+  const disableSlider = !hasShade;
   return (
     <>
       <div

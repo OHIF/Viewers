@@ -64,5 +64,5 @@ export type VolumeLightingProps = {
   viewportId: string;
   commandsManager: CommandsManager;
   servicesManager: AppTypes.ServicesManager;
-  isShadeToggled: boolean;
+  hasShade: boolean;
 };
