@@ -1,5 +1,5 @@
 import React from 'react';
-import { ScrollArea, DataRow } from '../../components';
+import { ScrollArea, DataRow } from '../';
 import { useSegmentationTableContext } from './SegmentationTableContext';
 
 export const SegmentationSegments: React.FC<{
@@ -22,6 +22,7 @@ export const SegmentationSegments: React.FC<{
   let segmentationToUse = segmentation;
   let representationToUse = representation;
   let segmentationIdToUse = activeSegmentationId;
+
   if (!segmentationToUse || !representationToUse) {
     const entry = data.find(seg => seg.segmentation.segmentationId === activeSegmentationId);
     segmentationToUse = entry?.segmentation;
@@ -41,7 +42,7 @@ export const SegmentationSegments: React.FC<{
       className={`ohif-scrollbar invisible-scrollbar bg-bkg-low space-y-px ${height}`}
       showArrows={true}
     >
-      {Object.values(representationToUse.segments).map(segment => {
+      {Object.values(representationToUse.segments).map((segment: any) => {
         if (!segment) {
           return null;
         }

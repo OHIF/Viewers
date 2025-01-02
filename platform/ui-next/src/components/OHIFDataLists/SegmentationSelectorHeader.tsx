@@ -7,10 +7,14 @@ import {
   Tooltip,
   TooltipTrigger,
   TooltipContent,
-} from '../../components';
+  Select,
+  SelectTrigger,
+  SelectContent,
+  SelectItem,
+  SelectValue,
+} from '@ohif/ui-next';
 
 import { useTranslation } from 'react-i18next';
-import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from '@ohif/ui-next';
 import { useSegmentationTableContext } from './SegmentationTableContext';
 
 export const SegmentationSelectorHeader: React.FC<{ children?: React.ReactNode }> = ({

@@ -2,17 +2,17 @@ import React from 'react';
 import { useSegmentationTableContext } from './SegmentationTableContext';
 import { PanelSection } from '../PanelSection';
 import { SegmentationHeader } from './SegmentationHeader';
-import { SegmentationTable } from './SegmentationTable';
+import { OHIFSegmentationTable } from './OHIFSegmentationTable';
 
 export const SegmentationExpanded: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
   const { data } = useSegmentationTableContext('SegmentationExpanded');
 
-  // Separate the Header component from other children
+  // Separate out the .Header sub-component
   const headerComponent = React.Children.toArray(children).find(
-    child => React.isValidElement(child) && child.type === SegmentationTable.Header
+    child => React.isValidElement(child) && child.type === OHIFSegmentationTable.Header
   );
   const otherChildren = React.Children.toArray(children).filter(
-    child => !(React.isValidElement(child) && child.type === SegmentationTable.Header)
+    child => !(React.isValidElement(child) && child.type === OHIFSegmentationTable.Header)
   );
 
   return (

@@ -1,5 +1,3 @@
-// File: /ui-next/src/components/index.ts
-
 import { Button, buttonVariants } from './Button';
 import { ThemeWrapper } from './ThemeWrapper';
 import {
@@ -66,8 +64,8 @@ import {
 import { Onboarding } from './Onboarding';
 import { DoubleSlider } from './DoubleSlider';
 import { DataRow } from './DataRow';
-import { MeasurementTable } from './MeasurementTable';
-import { SegmentationTable, useSegmentationTableContext } from './SegmentationTable';
+import { OHIFMeasurementTable } from './OHIFDataLists';
+import { OHIFSegmentationTable, useSegmentationTableContext } from './OHIFDataLists';
 import { Toaster, toast } from './Sonner';
 import { ErrorBoundary } from './Errorboundary';
 import {
@@ -162,15 +160,16 @@ export {
   SelectItem,
   SelectValue,
   DataRow,
-  MeasurementTable,
   Toaster,
   toast,
-  SegmentationTable,
-  useSegmentationTableContext,
   Tooltip,
   TooltipTrigger,
   TooltipContent,
   TooltipProvider,
+  // OHIF Data Lists
+  OHIFMeasurementTable,
+  OHIFSegmentationTable,
+  useSegmentationTableContext,
   // OHIF Study Browser
   OHIFStudyBrowser,
   OHIFStudyBrowserSort,

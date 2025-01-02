@@ -1,7 +1,8 @@
 import React, { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { PanelSection } from '../PanelSection';
-import { SegmentationTableProvider, SegmentationTableContext } from './SegmentationTableContext';
+
+import { SegmentationTableProvider } from './SegmentationTableContext';
 import { SegmentationSegments } from './SegmentationSegments';
 import { SegmentationTableConfig } from './SegmentationTableConfig';
 import { AddSegmentRow } from './AddSegmentRow';
@@ -11,24 +12,26 @@ import { SegmentationHeader } from './SegmentationHeader';
 import { SegmentationCollapsed } from './SegmentationCollapsed';
 import { SegmentationExpanded } from './SegmentationExpanded';
 
-interface SegmentationTableProps extends SegmentationTableContext {
-  disabled?: boolean;
+interface ViewportSegmentationInfo {
+  segmentation: any;
+  representation: any;
+}
+
+interface OHIFSegmentationTableProps {
+  data?: ViewportSegmentationInfo[];
+  mode?: 'collapsed' | 'expanded';
   title?: string;
   children?: ReactNode;
+  disableEditing?: boolean;
+  disabled?: boolean;
+  [key: string]: any; // Additional dynamic props
 }
 
-interface SegmentationTableComponent extends React.FC<SegmentationTableProps> {
-  Segments: typeof SegmentationSegments;
-  Config: typeof SegmentationTableConfig;
-  AddSegmentRow: typeof AddSegmentRow;
-  AddSegmentationRow: typeof AddSegmentationRow;
-  SelectorHeader: typeof SegmentationSelectorHeader;
-  Header: typeof SegmentationHeader;
-  Collapsed: typeof SegmentationCollapsed;
-  Expanded: typeof SegmentationExpanded;
-}
-
-export const SegmentationTable: SegmentationTableComponent = (props: SegmentationTableProps) => {
+/**
+ * The main "OHIFSegmentationTable" component that provides a context for
+ * child segments, configs, and row-add features.
+ */
+export function OHIFSegmentationTable(props: OHIFSegmentationTableProps) {
   const { t } = useTranslation('SegmentationTable');
   const { data = [], mode, title, disableEditing, disabled, children, ...contextProps } = props;
 
@@ -58,19 +61,20 @@ export const SegmentationTable: SegmentationTableComponent = (props: Segmentatio
     >
       <PanelSection defaultOpen={true}>
         <PanelSection.Header>
-          <span>{t(title)}</span>
+          <span>{t(title || '')}</span>
         </PanelSection.Header>
         <PanelSection.Content>{children}</PanelSection.Content>
       </PanelSection>
     </SegmentationTableProvider>
   );
-};
+}
 
-SegmentationTable.Segments = SegmentationSegments;
-SegmentationTable.Config = SegmentationTableConfig;
-SegmentationTable.AddSegmentRow = AddSegmentRow;
-SegmentationTable.AddSegmentationRow = AddSegmentationRow;
-SegmentationTable.SelectorHeader = SegmentationSelectorHeader;
-SegmentationTable.Header = SegmentationHeader;
-SegmentationTable.Collapsed = SegmentationCollapsed;
-SegmentationTable.Expanded = SegmentationExpanded;
+/** Sub-Component Attachments */
+OHIFSegmentationTable.Segments = SegmentationSegments;
+OHIFSegmentationTable.Config = SegmentationTableConfig;
+OHIFSegmentationTable.AddSegmentRow = AddSegmentRow;
+OHIFSegmentationTable.AddSegmentationRow = AddSegmentationRow;
+OHIFSegmentationTable.SelectorHeader = SegmentationSelectorHeader;
+OHIFSegmentationTable.Header = SegmentationHeader;
+OHIFSegmentationTable.Collapsed = SegmentationCollapsed;
+OHIFSegmentationTable.Expanded = SegmentationExpanded;
