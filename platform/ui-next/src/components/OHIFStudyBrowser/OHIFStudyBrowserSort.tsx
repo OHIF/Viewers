@@ -7,7 +7,7 @@ import {
   DropdownMenuItem,
 } from '../DropdownMenu/DropdownMenu';
 
-export function StudyBrowserSort({ servicesManager }: withAppTypes) {
+export function OHIFStudyBrowserSort({ servicesManager }: withAppTypes) {
   const { customizationService, displaySetService } = servicesManager.services;
   const { values: sortFunctions } = customizationService.get('studyBrowser.sortFunctions');
 
@@ -20,7 +20,9 @@ export function StudyBrowserSort({ servicesManager }: withAppTypes) {
 
   const toggleSortDirection = e => {
     e.stopPropagation();
-    setSortDirection(prevDirection => (prevDirection === 'ascending' ? 'descending' : 'ascending'));
+    setSortDirection(prevDirection =>
+      prevDirection === 'ascending' ? 'descending' : 'ascending'
+    );
   };
 
   useEffect(() => {

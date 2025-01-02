@@ -1,11 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
-import { ThumbnailList } from '../ThumbnailList';
+import { OHIFThumbnailList } from './OHIFThumbnailList';
 
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../Accordion';
 
-const StudyItem = ({
+export function OHIFStudyItem({
   date,
   description,
   numInstances,
@@ -20,7 +20,7 @@ const StudyItem = ({
   onClickUntrack,
   viewPreset = 'thumbnails',
   onThumbnailContextMenu,
-}: withAppTypes) => {
+}: withAppTypes) {
   return (
     <Accordion
       type="single"
@@ -54,7 +54,7 @@ const StudyItem = ({
           }}
         >
           {isExpanded && displaySets && (
-            <ThumbnailList
+            <OHIFThumbnailList
               thumbnails={displaySets}
               activeDisplaySetInstanceUIDs={activeDisplaySetInstanceUIDs}
               onThumbnailClick={onClickThumbnail}
@@ -68,9 +68,9 @@ const StudyItem = ({
       </AccordionItem>
     </Accordion>
   );
-};
+}
 
-StudyItem.propTypes = {
+OHIFStudyItem.propTypes = {
   date: PropTypes.string.isRequired,
   description: PropTypes.string,
   modalities: PropTypes.string.isRequired,
@@ -86,5 +86,3 @@ StudyItem.propTypes = {
   onClickUntrack: PropTypes.func,
   viewPreset: PropTypes.string,
 };
-
-export { StudyItem };

@@ -24,7 +24,6 @@ import {
   DialogDescription,
 } from './Dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './Select';
-
 import { Combobox } from './Combobox';
 import { Popover, PopoverContent, PopoverTrigger, PopoverAnchor } from './Popover';
 import { Calendar } from './Calendar';
@@ -42,14 +41,7 @@ import { ScrollArea, ScrollBar } from './ScrollArea';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from './Accordion';
 import { Icons } from './Icons';
 import { SidePanel } from './SidePanel';
-import { StudyItem } from './StudyItem';
-import { StudyBrowser } from './StudyBrowser';
-import { StudyBrowserSort } from './StudyBrowserSort';
-import { StudyBrowserViewOptions } from './StudyBrowserViewOptions';
-import { Thumbnail } from './Thumbnail';
-import { ThumbnailList } from './ThumbnailList';
 import { PanelSection } from './PanelSection';
-import { DisplaySetMessageListTooltip } from './DisplaySetMessageListTooltip';
 import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from './Tooltip';
 import { Toolbox, ToolboxUI } from './Toolbox';
 import {
@@ -75,10 +67,19 @@ import { DataRow } from './DataRow';
 import { MeasurementTable } from './MeasurementTable';
 import { SegmentationTable, useSegmentationTableContext } from './SegmentationTable';
 import { Toaster, toast } from './Sonner';
-import { StudySummary } from './StudySummary';
 import { ErrorBoundary } from './Errorboundary';
 import { Header } from './Header';
 import { Card, CardHeader, CardFooter, CardTitle, CardDescription, CardContent } from './Card';
+import {
+  OHIFStudyBrowser,
+  OHIFStudyBrowserSort,
+  OHIFStudyBrowserViewOptions,
+  OHIFStudyItem,
+  OHIFThumbnail,
+  OHIFThumbnailList,
+  OHIFDisplaySetMessageListTooltip,
+  OHIFStudySummary,
+} from './OHIFStudyBrowser';
 
 export {
   ErrorBoundary,
@@ -134,14 +135,7 @@ export {
   AccordionTrigger,
   Icons,
   SidePanel,
-  StudyItem,
-  StudyBrowser,
-  StudyBrowserSort,
-  StudyBrowserViewOptions,
-  Thumbnail,
-  ThumbnailList,
   PanelSection,
-  DisplaySetMessageListTooltip,
   Toolbox,
   ToolboxUI,
   DropdownMenu,
@@ -175,7 +169,6 @@ export {
   toast,
   SegmentationTable,
   useSegmentationTableContext,
-  StudySummary,
   Header,
   Card,
   CardHeader,
@@ -183,4 +176,12 @@ export {
   CardTitle,
   CardDescription,
   CardContent,
+  OHIFStudyBrowser,
+  OHIFStudyBrowserSort,
+  OHIFStudyBrowserViewOptions,
+  OHIFStudyItem,
+  OHIFThumbnail,
+  OHIFThumbnailList,
+  OHIFDisplaySetMessageListTooltip,
+  OHIFStudySummary,
 };

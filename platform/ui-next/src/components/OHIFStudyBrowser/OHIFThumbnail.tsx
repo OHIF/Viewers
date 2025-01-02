@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import { useDrag } from 'react-dnd';
 import { Icons } from '../Icons';
-import { DisplaySetMessageListTooltip } from '../DisplaySetMessageListTooltip';
+import { OHIFDisplaySetMessageListTooltip } from './OHIFDisplaySetMessageListTooltip';
 import { TooltipTrigger, TooltipContent, Tooltip } from '../Tooltip';
 import { Button } from '../Button';
 import {
@@ -13,10 +13,7 @@ import {
   DropdownMenuTrigger,
 } from '../DropdownMenu';
 
-/**
- * Display a thumbnail for a display set.
- */
-const Thumbnail = ({
+export function OHIFThumbnail({
   displaySetInstanceUID,
   className,
   imageSrc,
@@ -40,14 +37,11 @@ const Thumbnail = ({
   thumbnailType = 'thumbnail',
   onClickUntrack = () => {},
   onThumbnailContextMenu,
-}: withAppTypes): React.ReactNode => {
-  // TODO: We should wrap our thumbnail to create a "DraggableThumbnail", as
-  // this will still allow for "drag", even if there is no drop target for the
-  // specified item.
-  const [collectedProps, drag, dragPreview] = useDrag({
+}: withAppTypes): React.ReactNode {
+  const [collectedProps, drag] = useDrag({
     type: 'displayset',
     item: { ...dragData },
-    canDrag: function (monitor) {
+    canDrag: function () {
       return Object.keys(dragData).length !== 0;
     },
   });
@@ -100,7 +94,7 @@ const Thumbnail = ({
 
             {/* top right */}
             <div className="absolute top-0 right-0 flex items-center gap-[4px]">
-              <DisplaySetMessageListTooltip
+              <OHIFDisplaySetMessageListTooltip
                 messages={messages}
                 id={`display-set-tooltip-${displaySetInstanceUID}`}
               />
@@ -144,10 +138,7 @@ const Thumbnail = ({
                     <Icons.More />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent
-                  hideWhenDetached
-                  align="start"
-                >
+                <DropdownMenuContent hideWhenDetached align="start">
                   <DropdownMenuItem
                     onSelect={() => {
                       onThumbnailContextMenu('openDICOMTagViewer', {
@@ -239,7 +230,7 @@ const Thumbnail = ({
           </div>
         </div>
         <div className="flex h-full items-center gap-[4px]">
-          <DisplaySetMessageListTooltip
+          <OHIFDisplaySetMessageListTooltip
             messages={messages}
             id={`display-set-tooltip-${displaySetInstanceUID}`}
           />
@@ -331,30 +322,19 @@ const Thumbnail = ({
       onTouchEnd={handleTouchEnd}
       role="button"
     >
-      <div
-        ref={drag}
-        className="h-full w-full"
-      >
+      <div ref={drag} className="h-full w-full">
         {viewPreset === 'thumbnails' && renderThumbnailPreset()}
         {viewPreset === 'list' && renderListPreset()}
       </div>
     </div>
   );
-};
+}
 
-Thumbnail.propTypes = {
+OHIFThumbnail.propTypes = {
   displaySetInstanceUID: PropTypes.string.isRequired,
   className: PropTypes.string,
   imageSrc: PropTypes.string,
-  /**
-   * Data the thumbnail should expose to a receiving drop target. Use a matching
-   * `dragData.type` to identify which targets can receive this draggable item.
-   * If this is not set, drag-n-drop will be disabled for this thumbnail.
-   *
-   * Ref: https://react-dnd.github.io/react-dnd/docs/api/use-drag#specification-object-members
-   */
   dragData: PropTypes.shape({
-    /** Must match the "type" a dropTarget expects */
     type: PropTypes.string.isRequired,
   }),
   imageAltText: PropTypes.string,
@@ -376,5 +356,3 @@ Thumbnail.propTypes = {
   countIcon: PropTypes.string,
   thumbnailType: PropTypes.oneOf(['thumbnail', 'thumbnailTracked', 'thumbnailNoImage']),
 };
-
-export { Thumbnail };

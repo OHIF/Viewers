@@ -1,9 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import { StudyItem } from '../StudyItem';
-import { StudyBrowserSort } from '../StudyBrowserSort';
-import { StudyBrowserViewOptions } from '../StudyBrowserViewOptions';
+import { OHIFStudyItem } from './OHIFStudyItem';
+import { OHIFStudyBrowserSort } from './OHIFStudyBrowserSort';
+import { OHIFStudyBrowserViewOptions } from './OHIFStudyBrowserViewOptions';
 
 const getTrackedSeries = displaySets => {
   let trackedSeries = 0;
@@ -18,7 +18,7 @@ const getTrackedSeries = displaySets => {
 
 const noop = () => {};
 
-const StudyBrowser = ({
+export function OHIFStudyBrowser({
   tabs,
   activeTabName,
   expandedStudyInstanceUIDs,
@@ -32,7 +32,7 @@ const StudyBrowser = ({
   showSettings,
   viewPresets,
   onThumbnailContextMenu,
-}: withAppTypes) => {
+}: withAppTypes) {
   const getTabContent = () => {
     const tabData = tabs.find(tab => tab.name === activeTabName);
     const viewPreset = viewPresets
@@ -43,7 +43,7 @@ const StudyBrowser = ({
         const isExpanded = expandedStudyInstanceUIDs.includes(studyInstanceUid);
         return (
           <React.Fragment key={studyInstanceUid}>
-            <StudyItem
+            <OHIFStudyItem
               date={date}
               description={description}
               numInstances={numInstances}
@@ -78,12 +78,12 @@ const StudyBrowser = ({
         {showSettings && (
           <div className="w-100 bg-bkg-low flex h-[48px] items-center justify-center gap-[10px] px-[8px] py-[10px]">
             <>
-              <StudyBrowserViewOptions
+              <OHIFStudyBrowserViewOptions
                 tabs={tabs}
                 onSelectTab={onClickTab}
                 activeTabName={activeTabName}
               />
-              <StudyBrowserSort servicesManager={servicesManager} />
+              <OHIFStudyBrowserSort servicesManager={servicesManager} />
             </>
           </div>
         )}
@@ -91,9 +91,9 @@ const StudyBrowser = ({
       </div>
     </div>
   );
-};
+}
 
-StudyBrowser.propTypes = {
+OHIFStudyBrowser.propTypes = {
   onClickTab: PropTypes.func.isRequired,
   onClickStudy: PropTypes.func,
   onClickThumbnail: PropTypes.func,
@@ -122,18 +122,13 @@ StudyBrowser.propTypes = {
               seriesNumber: PropTypes.any,
               numInstances: PropTypes.number,
               description: PropTypes.string,
-              componentType: PropTypes.oneOf(['thumbnail', 'thumbnailTracked', 'thumbnailNoImage'])
-                .isRequired,
+              componentType: PropTypes.oneOf([
+                'thumbnail',
+                'thumbnailTracked',
+                'thumbnailNoImage',
+              ]).isRequired,
               isTracked: PropTypes.bool,
-              /**
-               * Data the thumbnail should expose to a receiving drop target. Use a matching
-               * `dragData.type` to identify which targets can receive this draggable item.
-               * If this is not set, drag-n-drop will be disabled for this thumbnail.
-               *
-               * Ref: https://react-dnd.github.io/react-dnd/docs/api/use-drag#specification-object-members
-               */
               dragData: PropTypes.shape({
-                /** Must match the "type" a dropTarget expects */
                 type: PropTypes.string.isRequired,
               }),
             })
@@ -143,5 +138,3 @@ StudyBrowser.propTypes = {
     })
   ),
 };
-
-export { StudyBrowser };
