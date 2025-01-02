@@ -373,11 +373,12 @@ const OHIFCornerstoneViewport = React.memo(
     const { ref: resizeRef } = useResizeDetector({
       onResize,
     });
-    const customNotificationComponent =
-      customizationService.get('notificationComponent')?.component;
+
+    const customNotificationComponent = customizationService.get('notificationComponent')?.content;
     const NotificationComponent = customNotificationComponent
       ? customNotificationComponent
       : Notification;
+
     return (
       <React.Fragment>
         <div className="viewport-wrapper">
