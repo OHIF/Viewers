@@ -103,7 +103,7 @@ const createRoutes = ({
   const { customizationService } = servicesManager.services;
 
   const WorkListRoute = {
-    path: '/',
+    path: publicUrl,
     children: DataSourceWrapper,
     private: true,
     props: { children: WorkList, servicesManager, extensionManager },
@@ -113,7 +113,8 @@ const createRoutes = ({
   const allRoutes = [
     ...routes,
     ...(showStudyList ? [WorkListRoute] : []),
-    ...(publicUrl !== '/' && showStudyList ? [{ ...WorkListRoute, path: publicUrl }] : []),
+    // This next line adds a route on / to allow loading from the route and redirecting to the public url
+    ...(publicUrl !== '/' && showStudyList ? [{ ...WorkListRoute, path: '/' }] : []),
     ...(customRoutes?.routes || []),
     ...bakedInRoutes,
     customRoutes?.notFoundRoute || notFoundRoute,
