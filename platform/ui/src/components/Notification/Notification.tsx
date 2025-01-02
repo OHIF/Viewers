@@ -8,7 +8,7 @@ import { Icons } from '@ohif/ui-next';
 const Notification = ({
   id,
   type = 'info',
-  message,
+  content,
   actions,
   onSubmit,
   onOutsideClick = () => {},
@@ -84,7 +84,7 @@ const Notification = ({
           name={icon}
           className={classnames('h-6 w-6', color)}
         />
-        <span className="ml-2 text-[13px] text-black">{message}</span>
+        <span className="ml-2 text-[13px] text-black">{content}</span>
       </div>
       <div className="mt-2 flex flex-wrap justify-end gap-2">
         {actions?.map((action, index) => {
@@ -109,7 +109,7 @@ const Notification = ({
 
 Notification.propTypes = {
   type: PropTypes.oneOf(['error', 'warning', 'info', 'success']),
-  message: PropTypes.string.isRequired,
+  message: PropTypes.oneOfType([PropTypes.string, PropTypes.node]).isRequired,
   actions: PropTypes.arrayOf(
     PropTypes.shape({
       text: PropTypes.string.isRequired,

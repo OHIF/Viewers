@@ -99,6 +99,7 @@ const OHIFCornerstoneViewport = React.memo(
       segmentationService,
       cornerstoneCacheService,
       viewportActionCornersService,
+      customizationService,
     } = servicesManager.services;
 
     const [viewportDialogState] = useViewportDialog();
@@ -372,7 +373,11 @@ const OHIFCornerstoneViewport = React.memo(
     const { ref: resizeRef } = useResizeDetector({
       onResize,
     });
-
+    const customNotificationComponent =
+      customizationService.get('notificationComponent')?.component;
+    const NotificationComponent = customNotificationComponent
+      ? customNotificationComponent
+      : Notification;
     return (
       <React.Fragment>
         <div className="viewport-wrapper">
@@ -406,9 +411,9 @@ const OHIFCornerstoneViewport = React.memo(
         {/* top offset of 24px to account for ViewportActionCorners. */}
         <div className="absolute top-[24px] w-full">
           {viewportDialogState.viewportId === viewportId && (
-            <Notification
+            <NotificationComponent
               id="viewport-notification"
-              message={viewportDialogState.message}
+              content={viewportDialogState.content}
               type={viewportDialogState.type}
               actions={viewportDialogState.actions}
               onSubmit={viewportDialogState.onSubmit}
