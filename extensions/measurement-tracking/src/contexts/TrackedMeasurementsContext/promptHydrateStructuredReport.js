@@ -51,7 +51,7 @@ function promptHydrateStructuredReport(
 
 function _askTrackMeasurements(uiViewportDialogService, viewportId) {
   return new Promise(function (resolve, reject) {
-    const message = 'Do you want to continue tracking measurements for this study?';
+    const content = 'Do you want to continue tracking measurements for this study?';
     const actions = [
       {
         id: 'no-hydrate',
@@ -74,7 +74,7 @@ function _askTrackMeasurements(uiViewportDialogService, viewportId) {
     uiViewportDialogService.show({
       viewportId,
       type: 'info',
-      message,
+      content,
       actions,
       onSubmit,
       onOutsideClick: () => {

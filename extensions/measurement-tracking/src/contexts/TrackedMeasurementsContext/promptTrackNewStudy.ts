@@ -39,7 +39,7 @@ function _askTrackMeasurements(
   viewportId
 ) {
   return new Promise(function (resolve, reject) {
-    const message = i18n.t('MeasurementTable:Track measurements for this series?');
+    const content = i18n.t('MeasurementTable:Track measurements for this series?');
     const actions = [
       { type: 'cancel', text: i18n.t('MeasurementTable:No'), value: RESPONSE.CANCEL },
       {
@@ -61,7 +61,7 @@ function _askTrackMeasurements(
     UIViewportDialogService.show({
       viewportId,
       type: 'info',
-      message,
+      content,
       actions,
       onSubmit,
       onOutsideClick: () => {
@@ -83,7 +83,7 @@ function _askSaveDiscardOrCancel(
   viewportId
 ) {
   return new Promise(function (resolve, reject) {
-    const message =
+    const content =
       'Measurements cannot span across multiple studies. Do you want to save your tracked measurements?';
     const actions = [
       { type: 'cancel', text: 'Cancel', value: RESPONSE.CANCEL },
@@ -106,7 +106,7 @@ function _askSaveDiscardOrCancel(
     UIViewportDialogService.show({
       viewportId,
       type: 'warning',
-      message,
+      content,
       actions,
       onSubmit,
       onOutsideClick: () => {
