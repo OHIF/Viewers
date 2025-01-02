@@ -5,7 +5,7 @@ import classnames from 'classnames';
 const stickyClasses = 'sticky top-0';
 const notStickyClasses = 'relative';
 
-const NavBar = ({
+export function OHIFNavBar({
   className,
   children,
   isSticky,
@@ -13,25 +13,22 @@ const NavBar = ({
   className?: string;
   children?: React.ReactNode;
   isSticky?: boolean;
-}) => {
+}) {
   return (
     <div
       className={classnames(
         'bg-secondary-dark z-20 border-black px-1',
-        isSticky && stickyClasses,
-        !isSticky && notStickyClasses,
+        isSticky ? stickyClasses : notStickyClasses,
         className
       )}
     >
       {children}
     </div>
   );
-};
+}
 
-NavBar.propTypes = {
+OHIFNavBar.propTypes = {
   className: PropTypes.string,
   children: PropTypes.node,
   isSticky: PropTypes.bool,
 };
-
-export default NavBar;

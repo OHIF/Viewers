@@ -74,7 +74,7 @@ import {
   TooltipTrigger,
   TooltipContent,
   ErrorBoundary,
-  Header,
+  OHIFHeader,
   OHIFStudyBrowser,
   OHIFStudyBrowserSort,
   OHIFStudyBrowserViewOptions,
@@ -177,5 +177,5 @@ export {
   Tooltip,
   TooltipTrigger,
   TooltipContent,
-  Header,
+  OHIFHeader,
 };

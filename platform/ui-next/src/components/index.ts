@@ -1,3 +1,5 @@
+// File: /ui-next/src/components/index.ts
+
 import { Button, buttonVariants } from './Button';
 import { ThemeWrapper } from './ThemeWrapper';
 import {
@@ -68,8 +70,6 @@ import { MeasurementTable } from './MeasurementTable';
 import { SegmentationTable, useSegmentationTableContext } from './SegmentationTable';
 import { Toaster, toast } from './Sonner';
 import { ErrorBoundary } from './Errorboundary';
-import { Header } from './Header';
-import { Card, CardHeader, CardFooter, CardTitle, CardDescription, CardContent } from './Card';
 import {
   OHIFStudyBrowser,
   OHIFStudyBrowserSort,
@@ -80,6 +80,8 @@ import {
   OHIFDisplaySetMessageListTooltip,
   OHIFStudySummary,
 } from './OHIFStudyBrowser';
+import { OHIFNavBar, OHIFHeader } from './OHIFHeader';
+import { Card, CardHeader, CardFooter, CardTitle, CardDescription, CardContent } from './Card';
 
 export {
   ErrorBoundary,
@@ -159,23 +161,17 @@ export {
   SelectContent,
   SelectItem,
   SelectValue,
-  Tooltip,
-  TooltipTrigger,
-  TooltipContent,
-  TooltipProvider,
   DataRow,
   MeasurementTable,
   Toaster,
   toast,
   SegmentationTable,
   useSegmentationTableContext,
-  Header,
-  Card,
-  CardHeader,
-  CardFooter,
-  CardTitle,
-  CardDescription,
-  CardContent,
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+  TooltipProvider,
+  // OHIF Study Browser
   OHIFStudyBrowser,
   OHIFStudyBrowserSort,
   OHIFStudyBrowserViewOptions,
@@ -184,4 +180,14 @@ export {
   OHIFThumbnailList,
   OHIFDisplaySetMessageListTooltip,
   OHIFStudySummary,
+  // OHIF Header
+  OHIFNavBar,
+  OHIFHeader,
+  // Cards
+  Card,
+  CardHeader,
+  CardFooter,
+  CardTitle,
+  CardDescription,
+  CardContent,
 };
