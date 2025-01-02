@@ -1,5 +1,5 @@
 import React from 'react';
-import { Input, Dialog, ButtonEnums, LabellingFlow } from '@ohif/ui';
+import { Input, Dialog, ButtonEnums, OHIFLabellingFlow } from '@ohif/ui-next';
 
 /**
  *
@@ -13,7 +13,6 @@ import { Input, Dialog, ButtonEnums, LabellingFlow } from '@ohif/ui';
  * @param {string?} dialogConfig.dialogTitle - title of the input dialog
  * @param {string?} dialogConfig.inputLabel - show label above the input
  */
-
 export function callInputDialog(
   uiDialogService,
   data,
@@ -26,7 +25,7 @@ export function callInputDialog(
   const {
     dialogTitle = 'Annotation',
     inputLabel = 'Enter your annotation',
-    validateFunc = value => true,
+    validateFunc = (value: string) => true,
   } = dialogConfig;
 
   const onSubmitHandler = ({ action, value }) => {
@@ -35,7 +34,6 @@ export function callInputDialog(
         if (typeof validateFunc === 'function' && !validateFunc(value.label)) {
           return;
         }
-
         callback(value.label, action.id);
         break;
       case 'cancel':
@@ -74,7 +72,7 @@ export function callInputDialog(
               value={value.label}
               onChange={event => {
                 event.persist();
-                setValue(value => ({ ...value, label: event.target.value }));
+                setValue(val => ({ ...val, label: event.target.value }));
               }}
               onKeyPress={event => {
                 if (event.key === 'Enter') {
@@ -93,11 +91,11 @@ export function callLabelAutocompleteDialog(uiDialogService, callback, dialogCon
   const exclusive = labelConfig ? labelConfig.exclusive : false;
   const dropDownItems = labelConfig ? labelConfig.items : [];
 
-  const { validateFunc = value => true } = dialogConfig;
+  const { validateFunc = (value: string) => true } = dialogConfig;
 
-  const labellingDoneCallback = value => {
+  const labellingDoneCallback = (value: string) => {
     if (typeof value === 'string') {
-      if (typeof validateFunc === 'function' && !validateFunc(value)) {
+      if (!validateFunc(value)) {
         return;
       }
       callback(value, 'save');
@@ -112,13 +110,13 @@ export function callLabelAutocompleteDialog(uiDialogService, callback, dialogCon
     centralize: true,
     isDraggable: false,
     showOverlay: true,
-    content: LabellingFlow,
+    content: OHIFLabellingFlow,
     contentProps: {
-      labellingDoneCallback: labellingDoneCallback,
+      labellingDoneCallback,
       measurementData: { label: '' },
       componentClassName: {},
       labelData: dropDownItems,
-      exclusive: exclusive,
+      exclusive,
     },
   });
 }
@@ -126,8 +124,9 @@ export function callLabelAutocompleteDialog(uiDialogService, callback, dialogCon
 export function showLabelAnnotationPopup(measurement, uiDialogService, labelConfig) {
   const exclusive = labelConfig ? labelConfig.exclusive : false;
   const dropDownItems = labelConfig ? labelConfig.items : [];
-  return new Promise<Map<any, any>>((resolve, reject) => {
-    const labellingDoneCallback = value => {
+
+  return new Promise((resolve, _reject) => {
+    const labellingDoneCallback = (value: string) => {
       uiDialogService.dismiss({ id: 'select-annotation' });
       if (typeof value === 'string') {
         measurement.label = value;
@@ -139,17 +138,17 @@ export function showLabelAnnotationPopup(measurement, uiDialogService, labelConf
       id: 'select-annotation',
       isDraggable: false,
       showOverlay: true,
-      content: LabellingFlow,
+      content: OHIFLabellingFlow,
       defaultPosition: {
         x: window.innerWidth / 2,
         y: window.innerHeight / 2,
       },
       contentProps: {
-        labellingDoneCallback: labellingDoneCallback,
+        labellingDoneCallback,
         measurementData: measurement,
         componentClassName: {},
         labelData: dropDownItems,
-        exclusive: exclusive,
+        exclusive,
       },
     });
   });
