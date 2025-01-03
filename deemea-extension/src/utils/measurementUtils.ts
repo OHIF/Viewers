@@ -97,6 +97,14 @@ async function setMeasurementStyle() {
         lineDash: '',
       };
     }
+    if (annotation.data.handles?.type === 'probe') {
+      style = {
+        color: Palette.Red,
+        colorHighlighted: Palette.DarkRed,
+        colorSelected: Palette.Red,
+        lineDash: '',
+      };
+    }
     const axisColor = await matchNameWithAxis(
       annotation.data.handles?.headName,
       annotation.data.handles?.tailName
@@ -140,7 +148,9 @@ export async function demonstrateMeasurementService(
   }
 
   relatedPoints?.forEach(data => {
-    if (data.points.length === 2) {
+    if (data.points.length === 1) {
+      createPoint(viewport, imageMetadata, imageId, data, imageStatus);
+    } else if (data.points.length === 2) {
       createLength(viewport, imageMetadata, imageId, data, imageStatus);
     } else if (data.points.length === 3) {
       createAngleROI(viewport, imageMetadata, imageId, data, imageStatus);
@@ -228,6 +238,59 @@ export function createRectangleROI(viewport, imageMetadata, imageId, data, image
                 },
               ],
             },
+          },
+        },
+      },
+      isVisible: !data.hide,
+      isLocked: imageStatus,
+    });
+  } catch (error) {
+    console.error('Error adding measurement:', error);
+  }
+}
+
+export function createPoint(viewport, imageMetadata, imageId, data, imageStatus) {
+  if (!imageMetadata) {
+    console.error('No image metadata found');
+    return;
+  }
+
+  try {
+    const normalizedX = data.points[0].x ? data.points[0].x : data.points[0].xOrigin;
+    const normalizedY = data.points[0].y ? data.points[0].y : data.points[0].yOrigin;
+    const imageWidth = imageMetadata.dimensions[0];
+    const imageHeight = imageMetadata.dimensions[1];
+    const pixelSpacingX = imageMetadata.spacing[0];
+    const pixelSpacingY = imageMetadata.spacing[1];
+    const imagePositionPatient = imageMetadata.origin;
+    const orientationMatrix = imageMetadata.direction;
+
+    const dicomCoords = convertToDicomCoordinates(
+      normalizedX,
+      normalizedY,
+      imageWidth,
+      imageHeight,
+      pixelSpacingX,
+      pixelSpacingY,
+      imagePositionPatient,
+      orientationMatrix
+    );
+
+    cs3dTools.ProbeTool.createAndAddAnnotation(viewport, {
+      data: {
+        handles: {
+          points: [dicomCoords],
+          type: 'probe',
+        },
+        label: {
+          measurementId: data?.measurementId,
+          pointsInfo: data.points,
+          predicted: true,
+        },
+        cachedStats: {
+          [`imageId:${imageId}`]: {
+            length: 'X',
+            unit: 'px',
           },
         },
       },

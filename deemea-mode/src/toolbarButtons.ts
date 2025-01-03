@@ -70,6 +70,14 @@ const toolbarButtons: Button[] = [
           evaluate: 'evaluate.cornerstoneTool',
         }),
         createButton({
+          id: 'Probe',
+          icon: 'tool-probe',
+          label: 'Probe',
+          tooltip: 'Probe',
+          commands: setToolActiveToolbar,
+          evaluate: 'evaluate.cornerstoneTool',
+        }),
+        createButton({
           id: 'CalibrationLine',
           icon: 'tool-calibration',
           label: 'Calibration',

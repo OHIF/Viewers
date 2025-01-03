@@ -97,6 +97,18 @@ const toolbarButtonsValidated: Button[] = [
           },
         }),
         createButton({
+          id: 'Probe',
+          icon: 'tool-probe',
+          label: 'Probe',
+          tooltip: 'Probe',
+          commands: setToolActiveToolbar,
+          evaluate: () => {
+            return {
+              disabled: true,
+            };
+          },
+        }),
+        createButton({
           id: 'CalibrationLine',
           icon: 'tool-calibration',
           label: 'Calibration',

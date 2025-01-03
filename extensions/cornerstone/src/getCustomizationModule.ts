@@ -112,6 +112,10 @@ function getCustomizationModule() {
             displayText: [],
             report: [],
           },
+          Probe: {
+            displayText: [],
+            report: [],
+          },
           SplineROI: {
             displayText: [
               {
