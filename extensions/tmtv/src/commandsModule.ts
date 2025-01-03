@@ -2,6 +2,7 @@ import OHIF from '@ohif/core';
 import * as cs from '@cornerstonejs/core';
 import * as csTools from '@cornerstonejs/tools';
 import { classes } from '@ohif/core';
+import i18n from '@ohif/i18n';
 import getThresholdValues from './utils/getThresholdValue';
 import createAndDownloadTMTVReport from './utils/createAndDownloadTMTVReport';
 
@@ -182,7 +183,7 @@ const commandsModule = ({ servicesManager, commandsManager, extensionManager }: 
 
       const segmentationId = await segmentationService.createLabelmapForDisplaySet(displaySet, {
         label: `Segmentation ${currentSegmentations.length + 1}`,
-        segments: { 1: { label: 'Segment 1', active: true } },
+        segments: { 1: { label: `${i18n.t('Segment')} 1`, active: true } },
       });
 
       segmentationService.addSegmentationRepresentation(withPTViewportId, {
