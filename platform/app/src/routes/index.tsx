@@ -12,6 +12,7 @@ import buildModeRoutes from './buildModeRoutes';
 import PrivateRoute from './PrivateRoute';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
+import publicUrl from '../utils/publicUrl';
 
 const NotFoundServer = ({
   message = 'Unable to query for studies at this time. Check your data source configuration or network connection',
@@ -55,23 +56,23 @@ NotFoundStudy.propTypes = {
 // TODO: Include "routes" debug route if dev build
 const bakedInRoutes = [
   {
-    path: '/notfoundserver',
+    path: `${publicUrl}notfoundserver`,
     children: NotFoundServer,
   },
   {
-    path: '/notfoundstudy',
+    path: `${publicUrl}notfoundstudy`,
     children: NotFoundStudy,
   },
   {
-    path: '/debug',
+    path: `${publicUrl}debug`,
     children: Debug,
   },
   {
-    path: '/local',
+    path: `${publicUrl}local`,
     children: Local.bind(null, { modePath: '' }), // navigate to the worklist
   },
   {
-    path: '/localbasic',
+    path: `${publicUrl}localbasic`,
     children: Local.bind(null, { modePath: 'viewer/dicomlocal' }),
   },
 ];
@@ -102,7 +103,7 @@ const createRoutes = ({
   const { customizationService } = servicesManager.services;
 
   const WorkListRoute = {
-    path: '/',
+    path: publicUrl,
     children: DataSourceWrapper,
     private: true,
     props: { children: WorkList, servicesManager, extensionManager },
@@ -112,6 +113,8 @@ const createRoutes = ({
   const allRoutes = [
     ...routes,
     ...(showStudyList ? [WorkListRoute] : []),
+    // This next line adds a route on / to allow loading from the route and redirecting to the public url
+    ...(publicUrl !== '/' && showStudyList ? [{ ...WorkListRoute, path: '/' }] : []),
     ...(customRoutes?.routes || []),
     ...bakedInRoutes,
     customRoutes?.notFoundRoute || notFoundRoute,
