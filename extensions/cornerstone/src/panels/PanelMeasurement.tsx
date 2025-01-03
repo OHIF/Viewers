@@ -8,7 +8,7 @@ const { filterAdditionalFinding, filterAny } = utils.MeasurementFilters;
 
 export type withAppAndFilters = withAppTypes & {
   measurementFilters: Record<string, (item) => boolean>;
-  groupBy: string;
+  groupingFunction: (groupedMeasurements: Map<string, object[]>, item) => Map<string, object[]>;
   title: string;
 };
 
@@ -17,6 +17,7 @@ export default function PanelMeasurementTable({
   commandsManager,
   customHeader,
   measurementFilters = { measurementFilter: filterAny },
+  groupingFunction,
   title,
 }: withAppAndFilters): React.ReactNode {
   const measurementsPanelRef = useRef(null);
@@ -52,21 +53,25 @@ export default function PanelMeasurementTable({
   const additionalFilter = filterAdditionalFinding(measurementService);
 
   const { measurementFilter } = measurementFilters;
+  const defaultGroupingFunction = (groupedMeasurements, item) => {
+    const displaySet = displaySetService.getDisplaySetByUID(item.displaySetInstanceUID);
+    const key = displaySet.instances[0].StudyDescription;
+
+    if (!groupedMeasurements.has(key)) {
+      groupedMeasurements.set(key, [item]);
+      return groupedMeasurements;
+    }
+
+    const oldValues = groupedMeasurements.get(key);
+    oldValues.push(item);
+    return groupedMeasurements;
+  };
+
+  const effectiveGroupingFunction = groupingFunction ?? defaultGroupingFunction;
+
   const measurements = displayMeasurements
     .filter(item => !additionalFilter(item) && measurementFilter(item))
-    .reduce((groupedMeasurements, item) => {
-      const displaySet = displaySetService.getDisplaySetByUID(item.displaySetInstanceUID);
-      const key = displaySet.instances[0].StudyDescription;
-
-      if (!groupedMeasurements.has(key)) {
-        groupedMeasurements.set(key, [item]);
-        return groupedMeasurements;
-      }
-
-      const oldValues = groupedMeasurements.get(key);
-      oldValues.push(item);
-      return groupedMeasurements;
-    }, new Map<string, object[]>());
+    .reduce(effectiveGroupingFunction, new Map<string, object[]>());
 
   const additionalFindings = displayMeasurements.filter(
     item => additionalFilter(item) && measurementFilter(item)
