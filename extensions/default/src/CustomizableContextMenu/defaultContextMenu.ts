@@ -16,14 +16,6 @@ const defaultContextMenu = {
           ],
         },
         {
-          label: 'Add Label',
-          commands: [
-            {
-              commandName: 'setMeasurementLabel',
-            },
-          ],
-        },
-        {
           label: 'Delete measurement',
           commands: [
             {
