@@ -51,9 +51,9 @@ export default function PanelMeasurementTable({
 
   const additionalFilter = filterAdditionalFinding(measurementService);
 
-  const { measurementFilter: trackedFilter } = measurementFilters;
+  const { measurementFilter } = measurementFilters;
   const measurements = displayMeasurements
-    .filter(item => !additionalFilter(item) && trackedFilter(item))
+    .filter(item => !additionalFilter(item) && measurementFilter(item))
     .reduce((groupedMeasurements, item) => {
       const displaySet = displaySetService.getDisplaySetByUID(item.displaySetInstanceUID);
       const key = displaySet.instances[0].StudyDescription;
@@ -66,10 +66,10 @@ export default function PanelMeasurementTable({
       const oldValues = groupedMeasurements.get(key);
       oldValues.push(item);
       return groupedMeasurements;
-    }, new Map()) as Map<string, object[]>;
+    }, new Map<string, object[]>());
 
   const additionalFindings = displayMeasurements.filter(
-    item => additionalFilter(item) && trackedFilter(item)
+    item => additionalFilter(item) && measurementFilter(item)
   );
 
   const onArgs = {
@@ -85,12 +85,12 @@ export default function PanelMeasurementTable({
       <div
         className="invisible-scrollbar overflow-y-auto overflow-x-hidden"
         ref={measurementsPanelRef}
-        data-cy={'trackedMeasurements-panel'}
+        data-cy={'measurements-panel'}
       >
         {Array.from(measurements).map(([key, value]) => {
           return (
             <MeasurementTable
-              key={`tracked-${key}`}
+              key={`${key}`}
               title={title ? title : `Measurements for ${key}`}
               data={value}
               {...onArgs}
