@@ -1,13 +1,15 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { utils } from '@ohif/core';
 import { MeasurementTable } from '@ohif/ui-next';
 import debounce from 'lodash.debounce';
 import { useMeasurements } from '../hooks/useMeasurements';
 
-const { filterAdditionalFinding, filterOr, filterAny } = utils.MeasurementFilters;
+const { filterAdditionalFinding, filterAny } = utils.MeasurementFilters;
 
 export type withAppAndFilters = withAppTypes & {
   measurementFilters: Record<string, (item) => boolean>;
+  groupingFunction: (groupedMeasurements: Map<string, object[]>, item) => Map<string, object[]>;
+  title: string;
 };
 
 export default function PanelMeasurementTable({
@@ -15,10 +17,12 @@ export default function PanelMeasurementTable({
   commandsManager,
   customHeader,
   measurementFilters = { measurementFilter: filterAny },
+  groupingFunction,
+  title,
 }: withAppAndFilters): React.ReactNode {
   const measurementsPanelRef = useRef(null);
 
-  const { measurementService, customizationService } = servicesManager.services;
+  const { measurementService, displaySetService } = servicesManager.services;
 
   const displayMeasurements = useMeasurements(servicesManager, {
     measurementFilter: measurementFilters.measurementFilter.bind(measurementFilters),
@@ -48,12 +52,29 @@ export default function PanelMeasurementTable({
 
   const additionalFilter = filterAdditionalFinding(measurementService);
 
-  const { measurementFilter: trackedFilter } = measurementFilters;
-  const measurements = displayMeasurements.filter(
-    item => !additionalFilter(item) && trackedFilter(item)
-  );
+  const { measurementFilter } = measurementFilters;
+  const defaultGroupingFunction = (groupedMeasurements, item) => {
+    const displaySet = displaySetService.getDisplaySetByUID(item.displaySetInstanceUID);
+    const key = displaySet.instances[0].StudyDescription;
+
+    if (!groupedMeasurements.has(key)) {
+      groupedMeasurements.set(key, [item]);
+      return groupedMeasurements;
+    }
+
+    const oldValues = groupedMeasurements.get(key);
+    oldValues.push(item);
+    return groupedMeasurements;
+  };
+
+  const effectiveGroupingFunction = groupingFunction ?? defaultGroupingFunction;
+
+  const measurements = displayMeasurements
+    .filter(item => !additionalFilter(item) && measurementFilter(item))
+    .reduce(effectiveGroupingFunction, new Map<string, object[]>());
+
   const additionalFindings = displayMeasurements.filter(
-    item => additionalFilter(item) && trackedFilter(item)
+    item => additionalFilter(item) && measurementFilter(item)
   );
 
   const onArgs = {
@@ -69,29 +90,39 @@ export default function PanelMeasurementTable({
       <div
         className="invisible-scrollbar overflow-y-auto overflow-x-hidden"
         ref={measurementsPanelRef}
-        data-cy={'trackedMeasurements-panel'}
+        data-cy={'measurements-panel'}
       >
-        <MeasurementTable
-          key="tracked"
-          title="Measurements"
-          data={measurements}
-          {...onArgs}
-          // onColor={changeColorMeasurement}
-        >
-          <MeasurementTable.Header>
-            {customHeader && (
-              <>
-                {typeof customHeader === 'function'
-                  ? customHeader({
-                      additionalFindings,
-                      measurements,
-                    })
-                  : customHeader}
-              </>
-            )}
-          </MeasurementTable.Header>
-          <MeasurementTable.Body />
-        </MeasurementTable>
+        {Array.from(measurements).length === 0 && additionalFindings.length === 0 ? (
+          <div className="text-primary-light mb-1 flex flex-1 items-center px-2 py-2 text-base">
+            No measurements
+          </div>
+        ) : (
+          <></>
+        )}
+        {Array.from(measurements).map(([key, value]) => {
+          return (
+            <MeasurementTable
+              key={`${key}`}
+              title={title ? title : `Measurements for ${key}`}
+              data={value}
+              {...onArgs}
+            >
+              <MeasurementTable.Header>
+                {customHeader && (
+                  <>
+                    {typeof customHeader === 'function'
+                      ? customHeader({
+                          additionalFindings,
+                          measurements,
+                        })
+                      : customHeader}
+                  </>
+                )}
+              </MeasurementTable.Header>
+              <MeasurementTable.Body />
+            </MeasurementTable>
+          );
+        })}
         {additionalFindings.length > 0 && (
           <MeasurementTable
             key="additional"
