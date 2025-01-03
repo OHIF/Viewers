@@ -87,6 +87,13 @@ export default function PanelMeasurementTable({
         ref={measurementsPanelRef}
         data-cy={'measurements-panel'}
       >
+        {Array.from(measurements).length === 0 && additionalFindings.length === 0 ? (
+          <div className="text-primary-light mb-1 flex flex-1 items-center px-2 py-2 text-base">
+            No measurements
+          </div>
+        ) : (
+          <></>
+        )}
         {Array.from(measurements).map(([key, value]) => {
           return (
             <MeasurementTable
@@ -94,7 +101,6 @@ export default function PanelMeasurementTable({
               title={title ? title : `Measurements for ${key}`}
               data={value}
               {...onArgs}
-              // onColor={changeColorMeasurement}
             >
               <MeasurementTable.Header>
                 {customHeader && (
