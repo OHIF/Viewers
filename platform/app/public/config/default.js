@@ -88,6 +88,9 @@ window.config = {
     // Could use services manager here to bring up a dialog/modal if needed.
     console.warn('test, navigate to https://ohif.org/');
   },
+  investigationalUseDialog: {
+    option: 'never',
+  },
   whiteLabeling: {
     /* Optional: Should return a React component to be rendered in the "Logo" section of the application's Top Navigation bar */
     createLogoComponentFn: function (React) {
