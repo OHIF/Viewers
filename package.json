@@ -61,7 +61,9 @@
     "lerna:cache": "./netlify-lerna-cache.sh",
     "lerna:restore": "./netlify-lerna-restore.sh",
     "lerna:customVersion": "node version.mjs",
-    "link-list": "npm ls --depth=0 --link=true"
+    "link-list": "npm ls --depth=0 --link=true",
+    "electron:dev": "lerna run electron:dev",
+    "electron:publish": "lerna run electron:publish"
   },
   "dependencies": {
     "execa": "^8.0.1"
@@ -102,7 +104,6 @@
   },
   "resolutions": {
     "**/@babel/runtime": "^7.20.13",
-    "commander": "8.3.0",
     "dcmjs": ">=0.33.0",
     "dicomweb-client": ">=0.10.4",
     "nth-check": "^2.1.1",

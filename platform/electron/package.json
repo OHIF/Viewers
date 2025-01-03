@@ -1,0 +1,36 @@
+{
+  "private": true,
+  "name": "unica",
+  "productName": "UniCa",
+  "version": "0.0.1",
+  "description": "UniCa Desktop Application",
+  "main": "src/index.js",
+  "scripts": {
+    "electron:dev": "electron-forge start",
+    "package": "cp -r ../app/dist ./src/build && electron-forge package",
+    "make": "electron-forge make",
+    "electron:publish": "electron-forge publish --platform win32",
+    "lint": "echo \"No linting configured\""
+  },
+  "devDependencies": {
+    "@electron-forge/cli": "^7.6.0",
+    "@electron-forge/maker-deb": "^7.6.0",
+    "@electron-forge/maker-rpm": "^7.6.0",
+    "@electron-forge/maker-squirrel": "^7.6.0",
+    "@electron-forge/maker-zip": "^7.6.0",
+    "@electron-forge/plugin-auto-unpack-natives": "^7.6.0",
+    "@electron-forge/plugin-fuses": "^7.6.0",
+    "@electron-forge/publisher-github": "^7.6.0",
+    "@electron/fuses": "^1.8.0",
+    "electron": "33.2.1"
+  },
+  "keywords": [],
+  "author": {
+    "name": "Zacharias Knudsen",
+    "email": "z@chari.as"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "electron-squirrel-startup": "^1.0.1"
+  }
+}
