@@ -142,6 +142,8 @@ export async function demonstrateMeasurementService(
   relatedPoints?.forEach(data => {
     if (data.points.length === 2) {
       createLength(viewport, imageMetadata, imageId, data, imageStatus);
+    } else if (data.points.length === 3) {
+      createAngleROI(viewport, imageMetadata, imageId, data, imageStatus);
     } else if (data.points.length === 4) {
       createRectangleROI(viewport, imageMetadata, imageId, data, imageStatus);
     }
@@ -288,6 +290,62 @@ export function createLength(viewport, imageMetadata, imageId, data, imageStatus
       data: {
         handles: {
           points: [dicomCoords, dicomCoords2],
+          headName: data.points[0].name,
+          tailName: data.points[1].name,
+        },
+        label: {
+          measurementId: data?.measurementId,
+          pointsInfo: data.points,
+          predicted: true,
+        },
+        cachedStats: {
+          [`imageId:${imageId}`]: {
+            length: 'X',
+            unit: 'px',
+          },
+        },
+      },
+      isVisible: !data.hide,
+      isLocked: imageStatus,
+    });
+  } catch (error) {
+    console.error('Error adding measurement:', error);
+  }
+}
+
+export function createAngleROI(viewport, imageMetadata, imageId, data, imageStatus) {
+  if (!imageMetadata) {
+    console.error('No image metadata found');
+    return;
+  }
+
+  try {
+    const normalizedPoints = data.points.map(point => {
+      const normalizedX = point.x ? point.x : point.xOrigin;
+      const normalizedY = point.y ? point.y : point.yOrigin;
+      const imageWidth = imageMetadata.dimensions[0];
+      const imageHeight = imageMetadata.dimensions[1];
+      const pixelSpacingX = imageMetadata.spacing[0];
+      const pixelSpacingY = imageMetadata.spacing[1];
+      const imagePositionPatient = imageMetadata.origin;
+      const orientationMatrix = imageMetadata.direction;
+
+      return convertToDicomCoordinates(
+        normalizedX,
+        normalizedY,
+        imageWidth,
+        imageHeight,
+        pixelSpacingX,
+        pixelSpacingY,
+        imagePositionPatient,
+        orientationMatrix
+      );
+    });
+
+    cs3dTools.AngleTool.createAndAddAnnotation(viewport, {
+      data: {
+        handles: {
+          points: normalizedPoints,
           headName: data.points[0].name,
           tailName: data.points[1].name,
         },
