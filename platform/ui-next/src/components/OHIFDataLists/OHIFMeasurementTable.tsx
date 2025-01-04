@@ -1,6 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { DataRow, PanelSection } from '../../index';
+import { DataRow, PanelSection } from '../';
 import { createContext } from '../../lib/createContext';
 
 interface MeasurementTableContext {
@@ -17,12 +17,27 @@ interface MeasurementTableContext {
 const [MeasurementTableProvider, useMeasurementTableContext] =
   createContext<MeasurementTableContext>('MeasurementTable', { data: [] });
 
-interface MeasurementDataProps extends MeasurementTableContext {
+interface MeasurementItem {
+  uid: string;
+  label: string;
+  colorHex: string;
+  isSelected: boolean;
+  displayText: { primary: string[]; secondary: string[] };
+  isVisible: boolean;
+  isLocked: boolean;
+  toolName: string;
+}
+
+interface OHIFMeasurementTableProps extends MeasurementTableContext {
   title: string;
   children: React.ReactNode;
 }
 
-const MeasurementTable = ({
+/**
+ * The top-level measurement table component, renamed to OHIFMeasurementTable.
+ * Houses sub-components (Header, Body, Footer, Row) as static properties.
+ */
+export function OHIFMeasurementTable({
   data = [],
   onClick,
   onDelete,
@@ -33,7 +48,7 @@ const MeasurementTable = ({
   title,
   children,
   disableEditing = false,
-}: MeasurementDataProps) => {
+}: OHIFMeasurementTableProps) {
   const { t } = useTranslation('MeasurementTable');
   const amount = data.length;
 
@@ -56,13 +71,17 @@ const MeasurementTable = ({
       </PanelSection>
     </MeasurementTableProvider>
   );
-};
+}
 
-const Header = ({ children }: { children: React.ReactNode }) => {
+/** Sub-components for OHIFMeasurementTable */
+
+/** Header */
+function Header({ children }: { children: React.ReactNode }) {
   return <div className="measurement-table-header">{children}</div>;
-};
+}
 
-const Body = () => {
+/** Body */
+function Body() {
   const { data } = useMeasurementTableContext('MeasurementTable.Body');
 
   if (!data || data.length === 0) {
@@ -84,29 +103,20 @@ const Body = () => {
       ))}
     </div>
   );
-};
-
-const Footer = ({ children }: { children: React.ReactNode }) => {
-  return <div className="measurement-table-footer">{children}</div>;
-};
-
-interface MeasurementItem {
-  uid: string;
-  label: string;
-  colorHex: string;
-  isSelected: boolean;
-  displayText: { primary: string[]; secondary: string[] };
-  isVisible: boolean;
-  isLocked: boolean;
-  toolName: string;
 }
 
+/** Footer */
+function Footer({ children }: { children: React.ReactNode }) {
+  return <div className="measurement-table-footer">{children}</div>;
+}
+
+/** Row */
 interface RowProps {
   item: MeasurementItem;
   index: number;
 }
 
-const Row = ({ item, index }: RowProps) => {
+function Row({ item, index }: RowProps) {
   const {
     onClick,
     onDelete,
@@ -126,22 +136,20 @@ const Row = ({ item, index }: RowProps) => {
       colorHex={item.colorHex}
       isSelected={item.isSelected}
       details={item.displayText}
-      onSelect={() => onClick(item.uid)}
-      onDelete={() => onDelete(item.uid)}
+      onSelect={() => onClick?.(item.uid)}
+      onDelete={() => onDelete?.(item.uid)}
       disableEditing={disableEditing}
       isVisible={item.isVisible}
       isLocked={item.isLocked}
-      onToggleVisibility={() => onToggleVisibility(item.uid)}
-      onToggleLocked={() => onToggleLocked(item.uid)}
-      onRename={() => onRename(item.uid)}
-      // onColor={() => onColor(item.uid)}
+      onToggleVisibility={() => onToggleVisibility?.(item.uid)}
+      onToggleLocked={() => onToggleLocked?.(item.uid)}
+      onRename={() => onRename?.(item.uid)}
+      // onColor={() => onColor?.(item.uid)} // Uncomment if color picking is re-enabled
     />
   );
-};
+}
 
-MeasurementTable.Header = Header;
-MeasurementTable.Body = Body;
-MeasurementTable.Footer = Footer;
-MeasurementTable.Row = Row;
-
-export default MeasurementTable;
+OHIFMeasurementTable.Header = Header;
+OHIFMeasurementTable.Body = Body;
+OHIFMeasurementTable.Footer = Footer;
+OHIFMeasurementTable.Row = Row;

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useImageViewer, useViewportGrid } from '@ohif/ui';
-import { StudyBrowser } from '@ohif/ui-next';
+import { OHIFStudyBrowser } from '@ohif/ui-next';
 import { utils } from '@ohif/core';
 import { useNavigate } from 'react-router-dom';
 import { Separator } from '@ohif/ui-next';
@@ -299,7 +299,7 @@ function PanelStudyBrowser({
         />
       </>
 
-      <StudyBrowser
+      <OHIFStudyBrowser
         tabs={tabs}
         servicesManager={servicesManager}
         activeTabName={activeTabName}

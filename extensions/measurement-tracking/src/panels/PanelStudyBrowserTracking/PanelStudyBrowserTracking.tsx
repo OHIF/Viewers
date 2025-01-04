@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import PropTypes from 'prop-types';
 import { utils } from '@ohif/core';
 import { useImageViewer, useViewportGrid, Dialog, ButtonEnums } from '@ohif/ui';
-import { StudyBrowser } from '@ohif/ui-next';
+import { OHIFStudyBrowser } from '@ohif/ui-next';
 
 import { useTrackedMeasurements } from '../../getContextModule';
 import { Separator } from '@ohif/ui-next';
@@ -505,7 +505,7 @@ export default function PanelStudyBrowserTracking({
         />
       </>
 
-      <StudyBrowser
+      <OHIFStudyBrowser
         tabs={tabs}
         servicesManager={servicesManager}
         activeTabName={activeTabName}

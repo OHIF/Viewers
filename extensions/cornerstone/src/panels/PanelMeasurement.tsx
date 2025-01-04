@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { useViewportGrid } from '@ohif/ui';
-import { MeasurementTable } from '@ohif/ui-next';
+import { OHIFMeasurementTable } from '@ohif/ui-next';
 import debounce from 'lodash.debounce';
 import { useMeasurements } from '../hooks/useMeasurements';
 import { showLabelAnnotationPopup, colorPickerDialog } from '@ohif/extension-default';
@@ -22,7 +22,9 @@ export default function PanelMeasurementTable({
   useEffect(() => {
     if (displayMeasurements.length > 0) {
       debounce(() => {
-        measurementsPanelRef.current.scrollTop = measurementsPanelRef.current.scrollHeight;
+        if (measurementsPanelRef.current) {
+          measurementsPanelRef.current.scrollTop = measurementsPanelRef.current.scrollHeight;
+        }
       }, 300)();
     }
   }, [displayMeasurements.length]);
@@ -76,8 +78,8 @@ export default function PanelMeasurementTable({
         return;
       }
 
-      const color = [newRgbaColor.r, newRgbaColor.g, newRgbaColor.b, newRgbaColor.a * 255.0];
-      // segmentationService.setSegmentColor(viewportId, segmentationId, segmentIndex, color);
+      const updatedColor = [newRgbaColor.r, newRgbaColor.g, newRgbaColor.b, newRgbaColor.a * 255.0];
+      // If there's a command to set a measurement color, you'd run it here
     });
   };
 
@@ -97,15 +99,40 @@ export default function PanelMeasurementTable({
   );
 
   return (
-    <>
-      <div
-        className="invisible-scrollbar overflow-y-auto overflow-x-hidden"
-        ref={measurementsPanelRef}
-        data-cy={'trackedMeasurements-panel'}
+    <div
+      className="invisible-scrollbar overflow-y-auto overflow-x-hidden"
+      ref={measurementsPanelRef}
+      data-cy={'trackedMeasurements-panel'}
+    >
+      <OHIFMeasurementTable
+        title="Measurements"
+        data={measurements}
+        onClick={jumpToImage}
+        onDelete={removeMeasurement}
+        onToggleVisibility={toggleVisibilityMeasurement}
+        onToggleLocked={toggleLockMeasurement}
+        onRename={renameMeasurement}
+        // onColor={changeColorMeasurement}
       >
-        <MeasurementTable
-          title="Measurements"
-          data={measurements}
+        <OHIFMeasurementTable.Header>
+          {customHeader && (
+            <>
+              {typeof customHeader === 'function'
+                ? customHeader({
+                    additionalFindings,
+                    measurements,
+                  })
+                : customHeader}
+            </>
+          )}
+        </OHIFMeasurementTable.Header>
+        <OHIFMeasurementTable.Body />
+      </OHIFMeasurementTable>
+
+      {additionalFindings.length > 0 && (
+        <OHIFMeasurementTable
+          data={additionalFindings}
+          title="Additional Findings"
           onClick={jumpToImage}
           onDelete={removeMeasurement}
           onToggleVisibility={toggleVisibilityMeasurement}
@@ -113,35 +140,9 @@ export default function PanelMeasurementTable({
           onRename={renameMeasurement}
           // onColor={changeColorMeasurement}
         >
-          <MeasurementTable.Header>
-            {customHeader && (
-              <>
-                {typeof customHeader === 'function'
-                  ? customHeader({
-                      additionalFindings,
-                      measurements,
-                    })
-                  : customHeader}
-              </>
-            )}
-          </MeasurementTable.Header>
-          <MeasurementTable.Body />
-        </MeasurementTable>
-        {additionalFindings.length > 0 && (
-          <MeasurementTable
-            data={additionalFindings}
-            title="Additional Findings"
-            onClick={jumpToImage}
-            onDelete={removeMeasurement}
-            onToggleVisibility={toggleVisibilityMeasurement}
-            onToggleLocked={toggleLockMeasurement}
-            onRename={renameMeasurement}
-            // onColor={changeColorMeasurement}
-          >
-            <MeasurementTable.Body />
-          </MeasurementTable>
-        )}
-      </div>
-    </>
+          <OHIFMeasurementTable.Body />
+        </OHIFMeasurementTable>
+      )}
+    </div>
   );
 }

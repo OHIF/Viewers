@@ -31,7 +31,7 @@ import {
   ButtonEnums,
 } from '@ohif/ui';
 
-import { Header, Icons } from '@ohif/ui-next';
+import { OHIFHeader, Icons } from '@ohif/ui-next';
 
 import { Types } from '@ohif/ui';
 
@@ -534,7 +534,7 @@ function WorkList({
 
   return (
     <div className="flex h-screen flex-col bg-black">
-      <Header
+      <OHIFHeader
         isSticky
         menuOptions={menuOptions}
         isReturnEnabled={false}

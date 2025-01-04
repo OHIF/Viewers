@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useLocation } from 'react-router';
 
 import { UserPreferences, AboutModal, useModal } from '@ohif/ui';
-import { Header } from '@ohif/ui-next';
+import { OHIFHeader } from '@ohif/ui-next';
 import i18n from '@ohif/i18n';
 import { hotkeys } from '@ohif/core';
 import { Toolbar } from '../Toolbar/Toolbar';
@@ -109,7 +109,7 @@ function ViewerHeader({
   }
 
   return (
-    <Header
+    <OHIFHeader
       menuOptions={menuOptions}
       isReturnEnabled={!!appConfig.showStudyList}
       onClickReturnButton={onClickReturnButton}
@@ -132,7 +132,7 @@ function ViewerHeader({
       <div className="relative flex justify-center gap-[4px]">
         <Toolbar servicesManager={servicesManager} />
       </div>
-    </Header>
+    </OHIFHeader>
   );
 }
 

@@ -24,7 +24,6 @@ import {
   DialogDescription,
 } from './Dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './Select';
-
 import { Combobox } from './Combobox';
 import { Popover, PopoverContent, PopoverTrigger, PopoverAnchor } from './Popover';
 import { Calendar } from './Calendar';
@@ -42,14 +41,7 @@ import { ScrollArea, ScrollBar } from './ScrollArea';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from './Accordion';
 import { Icons } from './Icons';
 import { SidePanel } from './SidePanel';
-import { StudyItem } from './StudyItem';
-import { StudyBrowser } from './StudyBrowser';
-import { StudyBrowserSort } from './StudyBrowserSort';
-import { StudyBrowserViewOptions } from './StudyBrowserViewOptions';
-import { Thumbnail } from './Thumbnail';
-import { ThumbnailList } from './ThumbnailList';
 import { PanelSection } from './PanelSection';
-import { DisplaySetMessageListTooltip } from './DisplaySetMessageListTooltip';
 import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from './Tooltip';
 import { Toolbox, ToolboxUI } from './Toolbox';
 import {
@@ -72,12 +64,21 @@ import {
 import { Onboarding } from './Onboarding';
 import { DoubleSlider } from './DoubleSlider';
 import { DataRow } from './DataRow';
-import { MeasurementTable } from './MeasurementTable';
-import { SegmentationTable, useSegmentationTableContext } from './SegmentationTable';
+import { OHIFMeasurementTable } from './OHIFDataLists';
+import { OHIFSegmentationTable, useSegmentationTableContext } from './OHIFDataLists';
 import { Toaster, toast } from './Sonner';
-import { StudySummary } from './StudySummary';
 import { ErrorBoundary } from './Errorboundary';
-import { Header } from './Header';
+import {
+  OHIFStudyBrowser,
+  OHIFStudyBrowserSort,
+  OHIFStudyBrowserViewOptions,
+  OHIFStudyItem,
+  OHIFThumbnail,
+  OHIFThumbnailList,
+  OHIFDisplaySetMessageListTooltip,
+  OHIFStudySummary,
+} from './OHIFStudyBrowser';
+import { OHIFNavBar, OHIFHeader } from './OHIFHeader';
 import { Card, CardHeader, CardFooter, CardTitle, CardDescription, CardContent } from './Card';
 
 export {
@@ -134,14 +135,7 @@ export {
   AccordionTrigger,
   Icons,
   SidePanel,
-  StudyItem,
-  StudyBrowser,
-  StudyBrowserSort,
-  StudyBrowserViewOptions,
-  Thumbnail,
-  ThumbnailList,
   PanelSection,
-  DisplaySetMessageListTooltip,
   Toolbox,
   ToolboxUI,
   DropdownMenu,
@@ -165,18 +159,30 @@ export {
   SelectContent,
   SelectItem,
   SelectValue,
+  DataRow,
+  Toaster,
+  toast,
   Tooltip,
   TooltipTrigger,
   TooltipContent,
   TooltipProvider,
-  DataRow,
-  MeasurementTable,
-  Toaster,
-  toast,
-  SegmentationTable,
+  // OHIF Data Lists
+  OHIFMeasurementTable,
+  OHIFSegmentationTable,
   useSegmentationTableContext,
-  StudySummary,
-  Header,
+  // OHIF Study Browser
+  OHIFStudyBrowser,
+  OHIFStudyBrowserSort,
+  OHIFStudyBrowserViewOptions,
+  OHIFStudyItem,
+  OHIFThumbnail,
+  OHIFThumbnailList,
+  OHIFDisplaySetMessageListTooltip,
+  OHIFStudySummary,
+  // OHIF Header
+  OHIFNavBar,
+  OHIFHeader,
+  // Cards
   Card,
   CardHeader,
   CardFooter,
