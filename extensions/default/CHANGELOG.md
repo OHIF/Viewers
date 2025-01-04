@@ -3,6 +3,55 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.10.0-beta.36](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.35...v3.10.0-beta.36) (2025-01-03)
+
+
+### Bug Fixes
+
+* **context menu:** restrict the context menu accessibility for locked and hidden annotations ([#4625](https://github.com/OHIF/Viewers/issues/4625)) ([e11ceb9](https://github.com/OHIF/Viewers/commit/e11ceb9d20fa5e680a0247f6ca7c27825daea6c5))
+
+
+
+
+
+# [3.10.0-beta.35](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.34...v3.10.0-beta.35) (2025-01-03)
+
+**Note:** Version bump only for package @ohif/extension-default
+
+
+
+
+
+# [3.10.0-beta.34](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.33...v3.10.0-beta.34) (2025-01-02)
+
+
+### Bug Fixes
+
+* Docker build time was very slow on a tiny change ([#4559](https://github.com/OHIF/Viewers/issues/4559)) ([7e43b2f](https://github.com/OHIF/Viewers/commit/7e43b2f768cfc3e08ecde9dfdae275194daece2b))
+
+
+
+
+
+# [3.10.0-beta.33](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.32...v3.10.0-beta.33) (2024-12-20)
+
+**Note:** Version bump only for package @ohif/extension-default
+
+
+
+
+
+# [3.10.0-beta.32](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.31...v3.10.0-beta.32) (2024-12-20)
+
+
+### Bug Fixes
+
+* **datasource:** attach auth headers for delete requests in the dicomweb datasource ([#4619](https://github.com/OHIF/Viewers/issues/4619)) ([8d0ed80](https://github.com/OHIF/Viewers/commit/8d0ed80e0c4570ab799281c29e487dbb39f47b95))
+
+
+
+
+
 # [3.10.0-beta.31](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.30...v3.10.0-beta.31) (2024-12-20)
 
 
