@@ -156,18 +156,27 @@ export default class StaticWadoClient extends api.DICOMwebClient {
    *
    * @param {*} desired
    * @param {*} actual
+   * @param {boolean} caseSensitive
    * @returns true if the values match
    */
-  compareValues(desired, actual) {
+  compareValues(desired, actual, caseSensitive = true) {
     if (Array.isArray(desired)) {
-      return desired.find(item => this.compareValues(item, actual));
+      return desired.find(item => this.compareValues(item, actual, caseSensitive));
     }
     if (Array.isArray(actual)) {
-      return actual.find(actualItem => this.compareValues(desired, actualItem));
+      return actual.find(actualItem => this.compareValues(desired, actualItem, caseSensitive));
     }
     if (actual?.Alphabetic) {
       actual = actual.Alphabetic;
     }
+
+    if (typeof actual == 'string') {
+      if (!caseSensitive) {
+        desired = desired.toLowerCase();
+        actual = actual.toLowerCase();
+      }
+    }
+
     if (typeof actual == 'string') {
       if (actual.length === 0) {
         return true;
@@ -227,7 +236,9 @@ export default class StaticWadoClient extends api.DICOMwebClient {
       return this.compareDateRange(testValue, valueElem.Value[0]);
     }
     const value = valueElem.Value;
-    return this.compareValues(testValue, value);
+    const caseSensitive = this.config.caseSensitive[key];
+
+    return this.compareValues(testValue, value, caseSensitive);
   }
 
   /** Converts the query parameters to lower case query parameters */
