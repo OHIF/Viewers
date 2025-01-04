@@ -1,158 +1,97 @@
-import React from 'react';
-import { Input, Dialog, ButtonEnums, LabellingFlow } from '@ohif/ui';
+// EARLY DRAFT WITH NEW COMPONENTS
 
-/**
- *
- * @param {*} data
- * @param {*} data.text
- * @param {*} data.label
- * @param {*} event
- * @param {*} callback
- * @param {*} isArrowAnnotateInputDialog
- * @param {*} dialogConfig
- * @param {string?} dialogConfig.dialogTitle - title of the input dialog
- * @param {string?} dialogConfig.inputLabel - show label above the input
- */
+import React, { useState } from 'react';
+// We'll import Popover + other essentials from ui-next
+import { Popover, PopoverTrigger, PopoverContent, Button, Input } from '@ohif/ui-next';
 
 export function callInputDialog(
   uiDialogService,
   data,
   callback,
   isArrowAnnotateInputDialog = true,
-  dialogConfig: any = {}
+  dialogConfig = {}
 ) {
-  const dialogId = 'dialog-enter-annotation';
+  const dialogId = 'popover-label-annotation';
   const label = data ? (isArrowAnnotateInputDialog ? data.text : data.label) : '';
   const {
     dialogTitle = 'Annotation',
     inputLabel = 'Enter your annotation',
-    validateFunc = value => true,
+    validateFunc = val => true,
   } = dialogConfig;
 
-  const onSubmitHandler = ({ action, value }) => {
-    switch (action.id) {
-      case 'save':
-        if (typeof validateFunc === 'function' && !validateFunc(value.label)) {
-          return;
-        }
+  // Instead of creating a modal, we create a component that uses Popover
+  // and pass it to uiDialogService (or render it directly in your UI).
+  const PopoverLabelPrompt = () => {
+    const [open, setOpen] = useState(true);
+    const [value, setValue] = useState(label);
 
-        callback(value.label, action.id);
-        break;
-      case 'cancel':
-        callback('', action.id);
-        break;
-    }
-    uiDialogService.dismiss({ id: dialogId });
-  };
+    const onCancel = () => {
+      callback('', 'cancel');
+      setOpen(false);
+      uiDialogService.dismiss({ id: dialogId });
+    };
 
-  if (uiDialogService) {
-    uiDialogService.create({
-      id: dialogId,
-      centralize: true,
-      isDraggable: false,
-      showOverlay: true,
-      content: Dialog,
-      contentProps: {
-        title: dialogTitle,
-        value: { label },
-        noCloseButton: true,
-        onClose: () => uiDialogService.dismiss({ id: dialogId }),
-        actions: [
-          { id: 'cancel', text: 'Cancel', type: ButtonEnums.type.secondary },
-          { id: 'save', text: 'Save', type: ButtonEnums.type.primary },
-        ],
-        onSubmit: onSubmitHandler,
-        body: ({ value, setValue }) => {
-          return (
-            <Input
-              autoFocus
-              className="border-primary-main bg-black"
-              type="text"
-              id="annotation"
-              label={inputLabel}
-              labelClassName="text-white text-[14px] leading-[1.2]"
-              value={value.label}
-              onChange={event => {
-                event.persist();
-                setValue(value => ({ ...value, label: event.target.value }));
-              }}
-              onKeyPress={event => {
-                if (event.key === 'Enter') {
-                  onSubmitHandler({ value, action: { id: 'save' } });
-                }
-              }}
-            />
-          );
-        },
-      },
-    });
-  }
-}
-
-export function callLabelAutocompleteDialog(uiDialogService, callback, dialogConfig, labelConfig) {
-  const exclusive = labelConfig ? labelConfig.exclusive : false;
-  const dropDownItems = labelConfig ? labelConfig.items : [];
-
-  const { validateFunc = value => true } = dialogConfig;
-
-  const labellingDoneCallback = value => {
-    if (typeof value === 'string') {
-      if (typeof validateFunc === 'function' && !validateFunc(value)) {
+    const onSave = () => {
+      if (!validateFunc(value)) {
         return;
       }
       callback(value, 'save');
-    } else {
-      callback('', 'cancel');
-    }
-    uiDialogService.dismiss({ id: 'select-annotation' });
-  };
-
-  uiDialogService.create({
-    id: 'select-annotation',
-    centralize: true,
-    isDraggable: false,
-    showOverlay: true,
-    content: LabellingFlow,
-    contentProps: {
-      labellingDoneCallback: labellingDoneCallback,
-      measurementData: { label: '' },
-      componentClassName: {},
-      labelData: dropDownItems,
-      exclusive: exclusive,
-    },
-  });
-}
-
-export function showLabelAnnotationPopup(measurement, uiDialogService, labelConfig) {
-  const exclusive = labelConfig ? labelConfig.exclusive : false;
-  const dropDownItems = labelConfig ? labelConfig.items : [];
-  return new Promise<Map<any, any>>((resolve, reject) => {
-    const labellingDoneCallback = value => {
-      uiDialogService.dismiss({ id: 'select-annotation' });
-      if (typeof value === 'string') {
-        measurement.label = value;
-      }
-      resolve(measurement);
+      setOpen(false);
+      uiDialogService.dismiss({ id: dialogId });
     };
 
-    uiDialogService.create({
-      id: 'select-annotation',
-      isDraggable: false,
-      showOverlay: true,
-      content: LabellingFlow,
-      defaultPosition: {
-        x: window.innerWidth / 2,
-        y: window.innerHeight / 2,
-      },
-      contentProps: {
-        labellingDoneCallback: labellingDoneCallback,
-        measurementData: measurement,
-        componentClassName: {},
-        labelData: dropDownItems,
-        exclusive: exclusive,
-      },
-    });
-  });
-}
+    return (
+      <Popover
+        open={open}
+        onOpenChange={setOpen}
+      >
+        {/* A Popover usually needs a Trigger. You can hide it with a hidden button or anchor */}
+        <PopoverTrigger asChild>
+          <Button className="hidden" />
+        </PopoverTrigger>
+        <PopoverContent className="flex w-72 flex-col gap-2">
+          <div className="text-primary-light text-lg font-semibold">{dialogTitle}</div>
+          <div className="flex flex-col gap-2">
+            <label className="text-sm">{inputLabel}</label>
+            <Input
+              autoFocus
+              value={value}
+              onChange={e => setValue(e.target.value)}
+              onKeyDown={e => {
+                if (e.key === 'Enter') {
+                  onSave();
+                }
+              }}
+            />
+          </div>
+          <div className="mt-2 flex justify-end gap-2">
+            <Button
+              variant="outline"
+              onClick={onCancel}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="default"
+              onClick={onSave}
+            >
+              Save
+            </Button>
+          </div>
+        </PopoverContent>
+      </Popover>
+    );
+  };
 
-export default callInputDialog;
+  // Now we create that popover component with uiDialogService
+  if (uiDialogService) {
+    uiDialogService.create({
+      id: dialogId,
+      centralize: false,
+      isDraggable: false,
+      showOverlay: false, // We might not need an overlay for a popover
+      content: PopoverLabelPrompt,
+      contentProps: {},
+    });
+  }
+}
