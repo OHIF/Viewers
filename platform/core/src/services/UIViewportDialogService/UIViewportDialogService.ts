@@ -22,12 +22,12 @@ class UIViewportDialogService extends PubSubService {
     };
   }
 
-  public show({ viewportId, id, type, message, actions, onSubmit, onOutsideClick, onKeyPress }) {
+  public show({ viewportId, id, type, content, actions, onSubmit, onOutsideClick, onKeyPress }) {
     return this.serviceImplementation._show({
       viewportId,
       id,
       type,
-      message,
+      content,
       actions,
       onSubmit,
       onOutsideClick,
