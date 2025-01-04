@@ -3,13 +3,14 @@ import { utils } from '@ohif/core';
 import { MeasurementTable } from '@ohif/ui-next';
 import debounce from 'lodash.debounce';
 import { useMeasurements } from '../hooks/useMeasurements';
+import { StudySummaryFromMetadata } from '../components/StudySummaryFromMetadata';
 
 const { groupByStudy } = utils.MeasurementGroupings;
 const { filterAdditionalFinding, filterAny } = utils.MeasurementFilters;
 
 export type withAppAndFilters = withAppTypes & {
   measurementFilters: Record<string, (item) => boolean>;
-  groupingFunction: (groupedMeasurements: Map<string, object[]>, item) => Map<string, object[]>;
+  groupingFunction?: (groupedMeasurements: Map<string, object[]>, item) => Map<string, object[]>;
   title: string;
 };
 
@@ -107,11 +108,12 @@ export default function PanelMeasurementTable({
         {items.map(item => {
           return (
             <div key={`${item.study}`}>
+              <StudySummaryFromMetadata studyInstanceUID={item.study} />
               {item.measurements.length === 0 ? (
                 <></>
               ) : (
                 <MeasurementTable
-                  title={title ? title : `Measurements for ${item.study}`}
+                  title={title ? title : `Measurements`}
                   data={item.measurements}
                   {...onArgs}
                 >
@@ -137,7 +139,7 @@ export default function PanelMeasurementTable({
                 <MeasurementTable
                   key="additional"
                   data={item.additionalFindings}
-                  title={`Additional Findings for ${item.study}`}
+                  title={`Additional Findings`}
                   {...onArgs}
                 >
                   <MeasurementTable.Body />
