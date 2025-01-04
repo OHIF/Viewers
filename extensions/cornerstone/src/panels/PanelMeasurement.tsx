@@ -4,6 +4,7 @@ import { MeasurementTable } from '@ohif/ui-next';
 import debounce from 'lodash.debounce';
 import { useMeasurements } from '../hooks/useMeasurements';
 
+const { groupByStudy } = utils.MeasurementGroupings;
 const { filterAdditionalFinding, filterAny } = utils.MeasurementFilters;
 
 export type withAppAndFilters = withAppTypes & {
@@ -53,29 +54,33 @@ export default function PanelMeasurementTable({
   const additionalFilter = filterAdditionalFinding(measurementService);
 
   const { measurementFilter } = measurementFilters;
-  const defaultGroupingFunction = (groupedMeasurements, item) => {
-    const displaySet = displaySetService.getDisplaySetByUID(item.displaySetInstanceUID);
-    const key = displaySet.instances[0].StudyDescription;
 
-    if (!groupedMeasurements.has(key)) {
-      groupedMeasurements.set(key, [item]);
-      return groupedMeasurements;
-    }
-
-    const oldValues = groupedMeasurements.get(key);
-    oldValues.push(item);
-    return groupedMeasurements;
-  };
-
+  const defaultGroupingFunction = groupByStudy(displaySetService);
   const effectiveGroupingFunction = groupingFunction ?? defaultGroupingFunction;
 
   const measurements = displayMeasurements
     .filter(item => !additionalFilter(item) && measurementFilter(item))
     .reduce(effectiveGroupingFunction, new Map<string, object[]>());
 
-  const additionalFindings = displayMeasurements.filter(
-    item => additionalFilter(item) && measurementFilter(item)
-  );
+  const additionalFindings = displayMeasurements
+    .filter(item => additionalFilter(item) && measurementFilter(item))
+    .reduce(effectiveGroupingFunction, new Map<string, object[]>());
+
+  const measurementItemKeys = Array.from(measurements).map(([key]) => {
+    return key;
+  });
+
+  const additionalItemKeys = Array.from(additionalFindings).map(([key]) => {
+    return key;
+  });
+
+  const items = Array.from(new Set([...measurementItemKeys, ...additionalItemKeys])).map(study => {
+    return {
+      study,
+      measurements: measurements.get(study) ?? [],
+      additionalFindings: additionalFindings.get(study) ?? [],
+    };
+  });
 
   const onArgs = {
     onClick: jumpToImage,
@@ -92,47 +97,55 @@ export default function PanelMeasurementTable({
         ref={measurementsPanelRef}
         data-cy={'measurements-panel'}
       >
-        {Array.from(measurements).length === 0 && additionalFindings.length === 0 ? (
+        {items.length === 0 ? (
           <div className="text-primary-light mb-1 flex flex-1 items-center px-2 py-2 text-base">
             No measurements
           </div>
         ) : (
           <></>
         )}
-        {Array.from(measurements).map(([key, value]) => {
+        {items.map(item => {
           return (
-            <MeasurementTable
-              key={`${key}`}
-              title={title ? title : `Measurements for ${key}`}
-              data={value}
-              {...onArgs}
-            >
-              <MeasurementTable.Header>
-                {customHeader && (
-                  <>
-                    {typeof customHeader === 'function'
-                      ? customHeader({
-                          additionalFindings,
-                          measurements,
-                        })
-                      : customHeader}
-                  </>
-                )}
-              </MeasurementTable.Header>
-              <MeasurementTable.Body />
-            </MeasurementTable>
+            <div key={`${item.study}`}>
+              {item.measurements.length === 0 ? (
+                <></>
+              ) : (
+                <MeasurementTable
+                  title={title ? title : `Measurements for ${item.study}`}
+                  data={item.measurements}
+                  {...onArgs}
+                >
+                  <MeasurementTable.Header>
+                    {customHeader && (
+                      <>
+                        {typeof customHeader === 'function'
+                          ? customHeader({
+                              additionalFindings,
+                              measurements,
+                            })
+                          : customHeader}
+                      </>
+                    )}
+                  </MeasurementTable.Header>
+                  <MeasurementTable.Body />
+                </MeasurementTable>
+              )}
+
+              {item.additionalFindings.length === 0 ? (
+                <></>
+              ) : (
+                <MeasurementTable
+                  key="additional"
+                  data={item.additionalFindings}
+                  title={`Additional Findings for ${item.study}`}
+                  {...onArgs}
+                >
+                  <MeasurementTable.Body />
+                </MeasurementTable>
+              )}
+            </div>
           );
         })}
-        {additionalFindings.length > 0 && (
-          <MeasurementTable
-            key="additional"
-            data={additionalFindings}
-            title="Additional Findings"
-            {...onArgs}
-          >
-            <MeasurementTable.Body />
-          </MeasurementTable>
-        )}
       </div>
     </>
   );
