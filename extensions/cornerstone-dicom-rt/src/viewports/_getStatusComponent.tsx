@@ -1,7 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Icon, Tooltip, ViewportActionButton } from '@ohif/ui';
-import { Icons } from '@ohif/ui-next';
+import { ViewportActionButton } from '@ohif/ui';
+import { Icons, Tooltip, TooltipTrigger, TooltipContent } from '@ohif/ui-next';
 
 export default function _getStatusComponent({ isHydrated, onStatusClick }) {
   let ToolTipMessage = null;
@@ -10,7 +10,6 @@ export default function _getStatusComponent({ isHydrated, onStatusClick }) {
   switch (isHydrated) {
     case true:
       StatusIcon = () => <Icons.ByName name="status-alert" />;
-
       ToolTipMessage = () => <div>This Segmentation is loaded in the segmentation panel</div>;
       break;
     case false:
@@ -20,7 +19,6 @@ export default function _getStatusComponent({ isHydrated, onStatusClick }) {
           name="status-untracked"
         />
       );
-
       ToolTipMessage = () => <div>Click LOAD to load RTSTRUCT.</div>;
   }
 
@@ -44,11 +42,15 @@ export default function _getStatusComponent({ isHydrated, onStatusClick }) {
   return (
     <>
       {ToolTipMessage && (
-        <Tooltip
-          content={<ToolTipMessage />}
-          position="bottom-left"
-        >
-          <StatusArea />
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <span>
+              <StatusArea />
+            </span>
+          </TooltipTrigger>
+          <TooltipContent side="bottom">
+            <ToolTipMessage />
+          </TooltipContent>
         </Tooltip>
       )}
       {!ToolTipMessage && <StatusArea />}

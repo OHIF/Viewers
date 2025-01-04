@@ -7,6 +7,7 @@ import ChevronOpen from './Sources/ChevronOpen';
 import Code from './Sources/Code';
 import ColorChange from './Sources/ColorChange';
 import Controls from './Sources/Controls';
+import Copy from './Sources/Copy';
 import Delete from './Sources/Delete';
 import DicomTagBrowser from './Sources/DicomTagBrowser';
 import DisplayFillAndOutline from './Sources/DisplayFillAndOutline';
@@ -16,6 +17,7 @@ import Download from './Sources/Download';
 import Export from './Sources/Export';
 import EyeHidden from './Sources/EyeHidden';
 import EyeVisible from './Sources/EyeVisible';
+import FeedbackComplete from './Sources/FeedbackComplete';
 import GearSettings from './Sources/GearSettings';
 import Hide from './Sources/Hide';
 import IconMPR from './Sources/IconMPR';
@@ -418,6 +420,7 @@ export const Icons = {
   Code,
   ColorChange,
   Controls,
+  Copy,
   Delete,
   DicomTagBrowser,
   DisplayFillAndOutline,
@@ -430,6 +433,7 @@ export const Icons = {
   Export,
   EyeHidden,
   EyeVisible,
+  FeedbackComplete,
   GearSettings,
   Hide,
   IconMPR,
