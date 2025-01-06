@@ -31,7 +31,7 @@ import { Calendar } from './Calendar';
 import { DatePickerWithRange } from './DateRange';
 import { Separator } from './Separator';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './Tabs';
-import { Toggle, toggleVariants } from './Toggle';
+import { Toggle, toggleVariants, ToolToggle } from './Toggle';
 import { ToggleGroup, ToggleGroupItem } from './ToggleGroup';
 import { Input } from './Input';
 import { Label } from './Label';
@@ -123,6 +123,7 @@ export {
   Checkbox,
   Toggle,
   toggleVariants,
+  ToolToggle,
   Slider,
   ScrollArea,
   ToggleGroup,

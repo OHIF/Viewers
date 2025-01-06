@@ -1,3 +1,4 @@
-import { Toggle, toggleVariants } from "./Toggle";
+import { Toggle, toggleVariants } from './Toggle';
+import ToolToggle from './ToolToggle';
 
-export { Toggle, toggleVariants };
+export { Toggle, toggleVariants, ToolToggle };

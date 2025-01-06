@@ -580,6 +580,16 @@ Example code coming soon.
             {/* Render the Toaster component */}
             <Toaster />
           </ShowcaseRow>
+
+          <ShowcaseRow
+            title="Toggle"
+            description="A toggle Switch is used to change between two different states. Use descriptive labels next to Switches that are understandable before interacting."
+            code={`
+<Switch />
+            `}
+          >
+            <Toggle>Hi</Toggle>
+          </ShowcaseRow>
         </div>
       </div>
     </Layout>
