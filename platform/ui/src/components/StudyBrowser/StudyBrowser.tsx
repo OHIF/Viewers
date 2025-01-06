@@ -42,7 +42,7 @@ const StudyBrowser = ({
   const { experimentalStudyBrowserSort } = window.config;
   const getTabContent = () => {
     const tabData = tabs.find(tab => tab.name === activeTabName);
-    return tabData.studies.map(
+    return tabData?.studies?.map(
       ({ studyInstanceUid, date, description, numInstances, modalities, displaySets }) => {
         if (!experimentalStudyBrowserSort) {
           sortStudySeries(displaySets);

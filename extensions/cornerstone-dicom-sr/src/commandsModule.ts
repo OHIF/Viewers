@@ -99,7 +99,7 @@ const commandsModule = (props: withAppTypes) => {
         }
 
         const onBeforeDicomStore =
-          customizationService.getModeCustomization('onBeforeDicomStore')?.value;
+          customizationService.getCustomization('onBeforeDicomStore')?.value;
 
         let dicomDict;
         if (typeof onBeforeDicomStore === 'function') {

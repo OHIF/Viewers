@@ -50,7 +50,7 @@ export default function PanelMeasurementTable({
 
   const renameMeasurement = (uid: string) => {
     jumpToImage(uid);
-    const labelConfig = customizationService.get('measurementLabels');
+    const labelConfig = customizationService.getCustomization('measurementLabels');
     const measurement = measurementService.getMeasurement(uid);
     showLabelAnnotationPopup(measurement, uiDialogService, labelConfig).then(val => {
       measurementService.update(

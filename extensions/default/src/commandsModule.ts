@@ -69,7 +69,7 @@ const commandsModule = ({
       if (menuCustomizationId) {
         Object.assign(
           optionsToUse,
-          customizationService.get(menuCustomizationId, defaultContextMenu)
+          customizationService.getCustomization(menuCustomizationId) || defaultContextMenu
         );
       }
 

@@ -77,8 +77,8 @@ export enum CustomizationScope {
  */
 export default class CustomizationService extends PubSubService {
   public static EVENTS = EVENTS;
-  public static CUSTOMIZATION_SCOPE = CustomizationScope;
-  public static MERGE_ENUM = MergeEnum;
+  public Scope = CustomizationScope;
+  public Enum = MergeEnum;
 
   public static REGISTRATION = {
     name: 'customizationService',
@@ -170,7 +170,7 @@ export default class CustomizationService extends PubSubService {
    *                 If not specified, it retrieves based on priority: global > mode > default.
    * @returns The requested customization.
    */
-  public getCustomization(customizationId: string, scope?: CustomizationScope): Customization {
+  public getCustomization(customizationId: string): Customization {
     const transformed = this.transformedCustomizations.get(customizationId);
     if (transformed) {
       return transformed;
@@ -190,17 +190,23 @@ export default class CustomizationService extends PubSubService {
    * Unified setter for customizations.
    *
    * @param customizationId - The unique identifier for the customization.
-   * @param customization - The customization object containing the desired settings.
+   * @param customization - The customization object containing the desired settings or
+   *                  string which is the module id to load from an extension
    * @param merge - The merge strategy to apply. Defaults to `MergeEnum.Merge`.
    * @param scope - The scope to set the customization: 'global', 'mode', or 'default'.
    *                Defaults to 'mode'.
    */
   public setCustomization(
     customizationId: string,
-    customization: Customization,
+    customization: Customization | string,
     scope: CustomizationScope,
     merge = MergeEnum.Merge
   ): void {
+    if (typeof customization === 'string') {
+      const extensionValue = this._findExtensionValue(customization);
+      customization = extensionValue.value;
+    }
+
     switch (scope) {
       case CustomizationScope.Global:
         this.setGlobalCustomization(customizationId, customization, merge);
@@ -214,6 +220,16 @@ export default class CustomizationService extends PubSubService {
       default:
         throw new Error(`Invalid customization scope: ${scope}`);
     }
+  }
+
+  public setCustomizations(
+    customizations: Customization[] | string[],
+    scope: CustomizationScope,
+    merge = MergeEnum.Merge
+  ): void {
+    customizations.forEach(customization =>
+      this.setCustomization(customization.id, customization, scope, merge)
+    );
   }
 
   /**
@@ -311,6 +327,7 @@ export default class CustomizationService extends PubSubService {
       (globCustomization && cloneDeepWith(globCustomization, cloneCustomizer)) ||
       defaultCustomization ||
       {};
+
     this.globalCustomizations.set(
       id,
       this.mergeValue(sourceCustomization, value, value.merge ?? merge)

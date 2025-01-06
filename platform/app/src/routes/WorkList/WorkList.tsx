@@ -500,8 +500,9 @@ function WorkList({
   }
 
   const { customizationService } = servicesManager.services;
-  const { component: DicomUploadComponent } =
-    customizationService.getCustomization('dicomUploadComponent') || {};
+  const { component: DicomUploadComponent } = customizationService.getCustomization(
+    'dicomUploadComponent'
+  ) || { component: null };
 
   const uploadProps =
     DicomUploadComponent && dataSource.getConfig()?.dicomUploadEnabled
@@ -530,7 +531,7 @@ function WorkList({
       : undefined;
 
   const { component: dataSourceConfigurationComponent } =
-    customizationService.get('ohif.dataSourceConfigurationComponent') ?? {};
+    customizationService.getCustomization('ohif.dataSourceConfigurationComponent') ?? {};
 
   return (
     <div className="flex h-screen flex-col bg-black">

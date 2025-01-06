@@ -126,41 +126,34 @@ export default function PanelSegmentation({
   };
 
   const { mode: SegmentationTableMode } = customizationService.getCustomization(
-    'PanelSegmentation.tableMode',
-    {
-      id: 'default.segmentationTable.mode',
-      mode: 'collapsed',
-    }
-  );
+    'PanelSegmentation.tableMode'
+  ) || {
+    mode: 'collapsed',
+  };
 
   // custom onSegmentationAdd if provided
   const { onSegmentationAdd } = customizationService.getCustomization(
-    'PanelSegmentation.onSegmentationAdd',
-    {
-      id: 'segmentation.onSegmentationAdd',
-      onSegmentationAdd: handlers.onSegmentationAdd,
-    }
-  );
+    'PanelSegmentation.onSegmentationAdd'
+  ) || {
+    onSegmentationAdd: handlers.onSegmentationAdd,
+  };
 
   const { disableEditing } = customizationService.getCustomization(
-    'PanelSegmentation.disableEditing',
-    {
-      id: 'default.disableEditing',
-      disableEditing: false,
-    }
-  );
+    'PanelSegmentation.disableEditing'
+  ) || {
+    disableEditing: false,
+  };
 
   const { showAddSegment } = customizationService.getCustomization(
-    'PanelSegmentation.showAddSegment',
-    {
-      id: 'default.showAddSegment',
-      showAddSegment: true,
-    }
-  );
+    'PanelSegmentation.showAddSegment'
+  ) || {
+    showAddSegment: true,
+  };
 
-  const CustomDropdownMenuContent = customizationService.getCustomComponent(
-    'PanelSegmentation.CustomDropdownMenuContent',
-    ({
+  const { content: CustomDropdownMenuContent } = customizationService.getCustomization(
+    'PanelSegmentation.CustomDropdownMenuContent'
+  ) || {
+    content: ({
       activeSegmentation,
       onSegmentationAdd,
       onSegmentationRemoveFromViewport,
@@ -225,8 +218,8 @@ export default function PanelSegmentation({
           </DropdownMenuItem>
         </DropdownMenuContent>
       );
-    }
-  );
+    },
+  };
 
   const exportOptions = segmentationsWithRepresentations.map(({ segmentation }) => {
     const { representationData, segmentationId } = segmentation;

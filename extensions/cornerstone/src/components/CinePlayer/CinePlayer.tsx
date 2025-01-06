@@ -161,7 +161,7 @@ function RenderCinePlayer({
   customizationService,
 }) {
   const { component: CinePlayerComponent = CinePlayer } =
-    customizationService.get('cinePlayer') ?? {};
+    customizationService.getCustomization('cinePlayer') ?? {};
 
   const [dynamicInfo, setDynamicInfo] = useState(dynamicInfoProp);
 

@@ -70,12 +70,10 @@ function PanelMeasurementTableTracking({
   }, [trackedMeasurements, trackedStudy, trackedSeries]);
 
   const { disableEditing } = customizationService.getCustomization(
-    'PanelMeasurement.disableEditing',
-    {
-      id: 'default.disableEditing',
-      disableEditing: false,
-    }
-  );
+    'PanelMeasurement.disableEditing'
+  ) || {
+    disableEditing: false,
+  };
 
   return (
     <>

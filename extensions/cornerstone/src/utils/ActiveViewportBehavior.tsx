@@ -41,13 +41,11 @@ const ActiveViewportBehavior = memo(
       const modalities = displaySets.map(displaySet => displaySet?.Modality);
       const isDynamicVolume = displaySets.some(displaySet => displaySet?.isDynamicVolume);
 
-      const { modalities: sourceModalities } = customizationService.getModeCustomization(
-        'autoCineModalities',
-        {
-          id: 'autoCineModalities',
-          modalities: MODALITIES_REQUIRING_CINE_AUTO_MOUNT,
-        }
-      );
+      const { modalities: sourceModalities } = customizationService.getCustomization(
+        'autoCineModalities'
+      ) || {
+        modalities: MODALITIES_REQUIRING_CINE_AUTO_MOUNT,
+      };
 
       const requiresCine = modalities.some(modality => sourceModalities.includes(modality));
 

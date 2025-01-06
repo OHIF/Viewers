@@ -48,15 +48,13 @@ export default function hydrateStructuredReport(
   const dataSource = extensionManager.getActiveDataSource()[0];
   const { measurementService, displaySetService, customizationService } = servicesManager.services;
 
-  const codingValues = customizationService.getCustomization('codingValues', {});
+  const codingValues = customizationService.getCustomization('codingValues') || {};
 
   const { disableEditing } = customizationService.getCustomization(
-    'PanelMeasurement.disableEditing',
-    {
-      id: 'default.disableEditing',
-      disableEditing: false,
-    }
-  );
+    'PanelMeasurement.disableEditing'
+  ) || {
+    disableEditing: false,
+  };
 
   const displaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
 
@@ -107,8 +105,7 @@ export default function hydrateStructuredReport(
     metaData
   );
 
-  const onBeforeSRHydration =
-    customizationService.getModeCustomization('onBeforeSRHydration')?.value;
+  const onBeforeSRHydration = customizationService.getCustomization('onBeforeSRHydration')?.value;
 
   if (typeof onBeforeSRHydration === 'function') {
     storedMeasurementByAnnotationType = onBeforeSRHydration({

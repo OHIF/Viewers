@@ -61,7 +61,9 @@ function initContextMenu({
    */
   const cornerstoneViewportHandleEvent = (name, evt) => {
     const customizations =
-      customizationService.get('cornerstoneViewportClickCommands') || DEFAULT_CONTEXT_MENU_CLICKS;
+      customizationService.getCustomization('cornerstoneViewportClickCommands') ||
+      DEFAULT_CONTEXT_MENU_CLICKS;
+
     const toRun = customizations[name];
 
     if (!toRun) {

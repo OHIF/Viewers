@@ -62,36 +62,39 @@ function modeFactory({ modeConfiguration }) {
 
       // the primary button section is created in the workflow steps
       // specific to the step
-      customizationService.addModeCustomizations([
-        {
-          id: 'PanelSegmentation.tableMode',
-          mode: 'expanded',
-        },
-        {
-          id: 'PanelSegmentation.onSegmentationAdd',
-          onSegmentationAdd: () => {
-            commandsManager.run('createNewLabelMapForDynamicVolume');
+      customizationService.setCustomizations(
+        [
+          {
+            id: 'PanelSegmentation.tableMode',
+            mode: 'expanded',
           },
-        },
-        {
-          id: 'PanelSegmentation.showAddSegment',
-          showAddSegment: false,
-        },
-        {
-          id: 'PanelSegmentation.readableText',
-          // remove following if you are not interested in that stats
-          readableText: {
-            lesionStats: 'Lesion Statistics',
-            minValue: 'Minimum Value',
-            maxValue: 'Maximum Value',
-            meanValue: 'Mean Value (ml)',
-            volume: 'Volume',
-            suvPeak: 'SUV Peak',
-            suvMax: 'Maximum SUV',
-            suvMaxIJK: 'SUV Max IJK',
+          {
+            id: 'PanelSegmentation.onSegmentationAdd',
+            onSegmentationAdd: () => {
+              commandsManager.run('createNewLabelMapForDynamicVolume');
+            },
           },
-        },
-      ]);
+          {
+            id: 'PanelSegmentation.showAddSegment',
+            showAddSegment: false,
+          },
+          {
+            id: 'PanelSegmentation.readableText',
+            // remove following if you are not interested in that stats
+            readableText: {
+              lesionStats: 'Lesion Statistics',
+              minValue: 'Minimum Value',
+              maxValue: 'Maximum Value',
+              meanValue: 'Mean Value (ml)',
+              volume: 'Volume',
+              suvPeak: 'SUV Peak',
+              suvMax: 'Maximum SUV',
+              suvMaxIJK: 'SUV Max IJK',
+            },
+          },
+        ],
+        customizationService.Scope.Mode
+      );
 
       // Auto play the clip initially when the volumes are loaded
       const { unsubscribe } = cornerstoneViewportService.subscribe(

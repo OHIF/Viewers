@@ -86,7 +86,7 @@ export async function defaultRouteInit(
       filters,
       returnPromises: true,
       sortCriteria:
-        customizationService.get('sortingCriteria') ||
+        customizationService.getCustomization('sortingCriteria') ||
         sortingCriteria.seriesSortCriteria.seriesInfoSortingCriteria,
     })
   );

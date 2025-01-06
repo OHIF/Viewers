@@ -7,7 +7,7 @@ const codeMenuItem = {
     if (!codeRef) {
       throw new Error(`item ${this} has no code ref`);
     }
-    const codingValues = customizationService.get('codingValues');
+    const codingValues = customizationService.getCustomization('codingValues');
     const code = codingValues[codeRef];
     return {
       ...this,

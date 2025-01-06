@@ -46,10 +46,11 @@ export default function PanelStudyBrowserTracking({
     customizationService,
   } = servicesManager.services;
   const navigate = useNavigate();
-  const { mode: studyMode } = customizationService.getCustomization('PanelStudyBrowser.studyMode', {
-    id: 'default',
+  const { mode: studyMode } = customizationService.getCustomization(
+    'PanelStudyBrowser.studyMode'
+  ) || {
     mode: 'all',
-  });
+  };
 
   const { t } = useTranslation('Common');
 

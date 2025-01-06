@@ -51,7 +51,8 @@ function initDoubleClick({ customizationService, commandsManager }: initDoubleCl
 
     // Allows for the customization of the double click on a viewport.
     const customizations =
-      customizationService.get('cornerstoneViewportClickCommands') || DEFAULT_DOUBLE_CLICK;
+      customizationService.getCustomization('cornerstoneViewportClickCommands') ||
+      DEFAULT_DOUBLE_CLICK;
 
     const toRun = customizations[eventName];
 

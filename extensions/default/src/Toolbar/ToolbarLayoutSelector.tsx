@@ -138,9 +138,11 @@ function LayoutSelector({
   const dropdownRef = useRef(null);
 
   const { customizationService } = servicesManager.services;
-  const commonPresets = customizationService.get('commonPresets') || defaultCommonPresets;
+  const commonPresets =
+    customizationService.getCustomization('commonPresets') || defaultCommonPresets;
   const advancedPresets =
-    customizationService.get('advancedPresets') || generateAdvancedPresets({ servicesManager });
+    customizationService.getCustomization('advancedPresets') ||
+    generateAdvancedPresets({ servicesManager });
 
   const closeOnOutsideClick = event => {
     if (isOpen && dropdownRef.current) {
@@ -216,7 +218,7 @@ function LayoutSelector({
               </div>
             </div>
 
-            <div className="bg-primary-dark flex flex-col gap-2.5 border-l-2 border-solid border-black  p-2">
+            <div className="bg-primary-dark flex flex-col gap-2.5 border-l-2 border-solid border-black p-2">
               <div className="text-aqua-pale text-xs">Custom</div>
               <DropdownContent
                 rows={rows}
