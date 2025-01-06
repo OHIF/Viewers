@@ -30,7 +30,7 @@ interface SegmentationTableComponent extends React.FC<SegmentationTableProps> {
 
 export const SegmentationTable: SegmentationTableComponent = (props: SegmentationTableProps) => {
   const { t } = useTranslation('SegmentationTable');
-  const { data = [], mode, title, disableEditing, disabled, children, ...contextProps } = props;
+  const { data = [], mode, title, disableEditing, disabled, children, showAddSegment = true, ...contextProps } = props;
 
   const activeSegmentationInfo = data.find(info => info.representation?.active);
 
@@ -54,6 +54,7 @@ export const SegmentationTable: SegmentationTableComponent = (props: Segmentatio
       activeSegmentationId={activeSegmentationId}
       activeSegmentation={activeSegmentation}
       activeRepresentation={activeRepresentation}
+      showAddSegment={showAddSegment}
       {...contextProps}
     >
       <PanelSection defaultOpen={true}>

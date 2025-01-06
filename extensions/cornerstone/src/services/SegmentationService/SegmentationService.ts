@@ -12,6 +12,7 @@ import {
   Enums as csToolsEnums,
   segmentation as cstSegmentation,
   Types as cstTypes,
+  ToolGroupManager,
 } from '@cornerstonejs/tools';
 import { PubSubService, Types as OHIFTypes } from '@ohif/core';
 import { easeInOutBell, reverseEaseInOutBell } from '../../utils/transitions';
@@ -61,6 +62,8 @@ const EVENTS = {
   SEGMENTATION_ADDED: 'event::segmentation_added',
   //
   SEGMENTATION_DATA_MODIFIED: 'event::segmentation_data_modified',
+  // fired when all segments in a segmentation are removed
+  SEGMENTATION_ALL_SEGMENTS_REMOVED: 'event::segmentation_all_segments_removed',
   // fired when the segmentation is removed
   SEGMENTATION_REMOVED: 'event::segmentation_removed',
   //
@@ -79,6 +82,16 @@ const EVENTS = {
 const VALUE_TYPES = {};
 
 const VOLUME_LOADER_SCHEME = 'cornerstoneStreamingImageVolume';
+
+import {
+  SegmentVisibilityParams,
+  ToggleSegmentVisibilityParams,
+  SegmentLockedParams,
+  SetSegmentLabelParams,
+  SetActiveSegmentParams,
+  GetLabelmapVolumeParams,
+  SetRenderInactiveSegmentationsParams,
+} from './types';
 
 class SegmentationService extends PubSubService {
   static REGISTRATION = {
@@ -102,11 +115,11 @@ class SegmentationService extends PubSubService {
     this.servicesManager = servicesManager;
   }
 
-  public onModeEnter(): void {
+  onModeEnter(): void {
     this._initSegmentationService();
   }
 
-  public onModeExit(): void {
+  onModeExit(): void {
     this.destroy();
   }
 
@@ -121,7 +134,7 @@ class SegmentationService extends PubSubService {
    * the segmentation data. It's useful when you need to access specific properties
    * or perform operations on a particular segmentation.
    */
-  public getSegmentation(segmentationId: string): cstTypes.Segmentation | undefined {
+  getSegmentation(segmentationId: string): cstTypes.Segmentation | undefined {
     return cstSegmentation.state.getSegmentation(segmentationId);
   }
 
@@ -135,11 +148,11 @@ class SegmentationService extends PubSubService {
    * segmentation state to get all available segmentations. It returns the raw
    * segmentation objects without any additional processing or filtering.
    */
-  public getSegmentations(): cstTypes.Segmentation[] | [] {
+  getSegmentations(): cstTypes.Segmentation[] | [] {
     return cstSegmentation.state.getSegmentations();
   }
 
-  public getPresentation(viewportId: string): SegmentationPresentation {
+  getPresentation(viewportId: string): SegmentationPresentation {
     const segmentationPresentations: SegmentationPresentation = [];
     const segmentationsMap = new Map<string, SegmentationPresentationItem>();
 
@@ -181,7 +194,7 @@ class SegmentationService extends PubSubService {
     return segmentationPresentations;
   }
 
-  public getRepresentationsForSegmentation(
+  getRepresentationsForSegmentation(
     segmentationId: string
   ): { viewportId: string; representations: any[] }[] {
     const representations =
@@ -204,7 +217,7 @@ class SegmentationService extends PubSubService {
    * - **Only `type` provided**: Returns all representations of that `type` associated with the given `viewportId`.
    * - **Both `segmentationId` and `type` provided**: Returns representations matching both criteria, regardless of `viewportId`.
    */
-  public getSegmentationRepresentations(
+  getSegmentationRepresentations(
     viewportId: string,
     specifier: {
       segmentationId?: string;
@@ -225,7 +238,7 @@ class SegmentationService extends PubSubService {
     return ohifRepresentations;
   }
 
-  public destroy = () => {
+  destroy = () => {
     eventTarget.removeEventListener(
       csToolsEnums.Events.SEGMENTATION_MODIFIED,
       this._onSegmentationModifiedFromSource
@@ -254,7 +267,7 @@ class SegmentationService extends PubSubService {
     this.listeners = {};
   };
 
-  public async addSegmentationRepresentation(
+  async addSegmentationRepresentation(
     viewportId: string,
     {
       segmentationId,
@@ -314,7 +327,7 @@ class SegmentationService extends PubSubService {
    * @param options.label - Label for the segmentation.
    * @returns A promise that resolves to the created segmentation ID.
    */
-  public async createLabelmapForDisplaySet(
+  async createLabelmapForDisplaySet(
     displaySet: AppTypes.DisplaySet,
     options?: {
       segmentationId?: string;
@@ -375,7 +388,7 @@ class SegmentationService extends PubSubService {
     return segmentationId;
   }
 
-  public async createSegmentationForSEGDisplaySet(
+  async createSegmentationForSEGDisplaySet(
     segDisplaySet,
     options: {
       segmentationId?: string;
@@ -515,7 +528,7 @@ class SegmentationService extends PubSubService {
     return segmentationId;
   }
 
-  public async createSegmentationForRTDisplaySet(
+  async createSegmentationForRTDisplaySet(
     rtDisplaySet,
     options: {
       segmentationId?: string;
@@ -648,7 +661,7 @@ class SegmentationService extends PubSubService {
    * If the segmentation already exists, it updates the existing segmentation.
    * If the segmentation does not exist, it adds a new segmentation.
    */
-  public addOrUpdateSegmentation(
+  addOrUpdateSegmentation(
     data: cstTypes.SegmentationPublicInput | Partial<cstTypes.Segmentation>
   ) {
     const segmentationId = data.segmentationId;
@@ -663,7 +676,7 @@ class SegmentationService extends PubSubService {
     }
   }
 
-  public setActiveSegmentation(viewportId: string, segmentationId: string): void {
+  setActiveSegmentation(viewportId: string, segmentationId: string): void {
     cstSegmentation.activeSegmentation.setActiveSegmentation(viewportId, segmentationId);
   }
 
@@ -677,7 +690,7 @@ class SegmentationService extends PubSubService {
    * The active segmentation is the one that is currently selected for editing operations.
    * Returns null if no segmentation is active in the viewport.
    */
-  public getActiveSegmentation(viewportId: string): cstTypes.Segmentation | null {
+  getActiveSegmentation(viewportId: string): cstTypes.Segmentation | null {
     return cstSegmentation.activeSegmentation.getActiveSegmentation(viewportId);
   }
 
@@ -692,7 +705,7 @@ class SegmentationService extends PubSubService {
    * selected for editing operations. Returns undefined if no segment is active or
    * if there is no active segmentation.
    */
-  public getActiveSegment(viewportId: string): cstTypes.Segment | undefined {
+  getActiveSegment(viewportId: string): cstTypes.Segment | undefined {
     const activeSegmentation = this.getActiveSegmentation(viewportId);
 
     if (!activeSegmentation) {
@@ -712,7 +725,7 @@ class SegmentationService extends PubSubService {
     return activeSegment;
   }
 
-  public hasCustomStyles(specifier: {
+  hasCustomStyles(specifier: {
     viewportId: string;
     segmentationId: string;
     type: SegmentationRepresentations;
@@ -720,7 +733,7 @@ class SegmentationService extends PubSubService {
     return cstSegmentation.config.style.hasCustomStyle(specifier);
   }
 
-  public getStyle = (specifier: {
+  getStyle = (specifier: {
     viewportId: string;
     segmentationId: string;
     type: SegmentationRepresentations;
@@ -731,7 +744,7 @@ class SegmentationService extends PubSubService {
     return style;
   };
 
-  public setStyle = (
+  setStyle = (
     specifier: {
       type: SegmentationRepresentations;
       viewportId?: string;
@@ -743,7 +756,7 @@ class SegmentationService extends PubSubService {
     cstSegmentation.config.style.setStyle(specifier, style);
   };
 
-  public resetToGlobalStyle = () => {
+  resetToGlobalStyle = () => {
     cstSegmentation.config.style.resetToGlobalStyle();
   };
 
@@ -761,15 +774,16 @@ class SegmentationService extends PubSubService {
    *     - isLocked: (optional) Whether the new segment should be locked for editing. If not provided, the segment will not be locked by default.
    *     - active: (optional) Whether the new segment should be the active segment to be edited. If not provided, the segment will not be active by default.
    */
-  public addSegment(
+  addSegment(
     segmentationId: string,
     config: {
       segmentIndex?: number;
       label?: string;
       isLocked?: boolean;
       active?: boolean;
-      color?: csTypes.Color; // Add color type
-      visibility?: boolean; // Add visibility option
+      color?: csTypes.Color;
+      visibility?: boolean;
+      type?: csToolsEnums.SegmentationRepresentations;
     } = {}
   ): void {
     if (config?.segmentIndex === 0) {
@@ -828,7 +842,13 @@ class SegmentationService extends PubSubService {
 
       // Set visibility if provided
       if (config.visibility !== undefined) {
-        this.setSegmentVisibility(viewportId, segmentationId, segmentIndex, config.visibility);
+        this.setSegmentVisibility({
+          viewportId,
+          segmentationId,
+          segmentIndex,
+          isVisible: config.visibility,
+          type: config.type
+        });
       }
     });
   }
@@ -846,18 +866,52 @@ class SegmentationService extends PubSubService {
    * 3. If the removed segment was the active segment, it updates the active segment index.
    *
    */
-  public removeSegment(segmentationId: string, segmentIndex: number): void {
+  removeSegment(segmentationId: string, segmentIndex: number): void {
     cstSegmentation.removeSegment(segmentationId, segmentIndex);
+
+    // Check if this was the last segment
+    const segmentation = this.getSegmentation(segmentationId);
+    const hasNoSegments = !segmentation?.segments || Object.keys(segmentation.segments).length === 0;
+
+    if (hasNoSegments) {
+      // Notify that all segments have been removed
+      this._broadcastEvent(this.EVENTS.SEGMENTATION_ALL_SEGMENTS_REMOVED, {
+        segmentationId,
+      });
+
+      // Get all tool groups and deactivate segmentation tools
+      const toolGroups = ToolGroupManager.getAllToolGroups();
+      
+      // Deactivate segmentation tools in all tool groups
+      toolGroups.forEach(toolGroup => {
+        // Disable all segmentation tools
+        ['RectangleScissors', 'CircleScissors', 'SphereScissors'].forEach(toolName => {
+          toolGroup.setToolDisabled(toolName);
+        });
+        
+        // Enable default tool
+        toolGroup.setToolActive('WindowLevel', {
+          bindings: [{ mouseButton: 1 }],
+        });
+      });
+      }
+    }
   }
 
-  public setSegmentVisibility(
-    viewportId: string,
-    segmentationId: string,
-    segmentIndex: number,
-    isVisible: boolean,
-    type?: SegmentationRepresentations
-  ): void {
-    this._setSegmentVisibility(viewportId, segmentationId, segmentIndex, isVisible, type);
+  /**
+   * Sets the visibility of a specific segment in a segmentation.
+   *
+   * @param viewportId - The ID of the viewport containing the segmentation.
+   * @param segmentationId - The ID of the segmentation containing the segment.
+   * @param segmentIndex - The index of the segment to set visibility for.
+   * @param isVisible - The new visibility state of the segment.
+   * @param type - Optional type of segmentation representation.
+   */
+  setSegmentVisibility(params: SegmentVisibilityParams): void {
+    const { viewportId, segmentationId, segmentIndex, isVisible, type } = params;
+    if (viewportId && segmentationId && typeof segmentIndex === 'number' && typeof isVisible === 'boolean') {
+      this._setSegmentVisibility({ viewportId, segmentationId, segmentIndex, isVisible, type });
+    }
   }
 
   /**
@@ -871,8 +925,8 @@ class SegmentationService extends PubSubService {
    * This method updates the locked status of a specific segment within a segmentation.
    * A locked segment cannot be modified or edited.
    */
-  public setSegmentLocked(segmentationId: string, segmentIndex: number, isLocked: boolean): void {
-    this._setSegmentLockedStatus(segmentationId, segmentIndex, isLocked);
+  setSegmentLocked(params: { segmentationId: string; segmentIndex: number; isLocked: boolean }): void {
+    this._setSegmentLockedStatus(params);
   }
 
   /**
@@ -880,20 +934,17 @@ class SegmentationService extends PubSubService {
    * @param segmentationId - The ID of the segmentation.
    * @param segmentIndex - The index of the segment to toggle.
    */
-  public toggleSegmentLocked(segmentationId: string, segmentIndex: number): void {
+  toggleSegmentLocked(params: { segmentationId: string; segmentIndex: number }): void {
+    const { segmentationId, segmentIndex } = params;
     const isLocked = cstSegmentation.segmentLocking.isSegmentIndexLocked(
       segmentationId,
       segmentIndex
     );
-    this._setSegmentLockedStatus(segmentationId, segmentIndex, !isLocked);
+    this._setSegmentLockedStatus({ segmentationId, segmentIndex, isLocked: !isLocked });
   }
 
-  public toggleSegmentVisibility(
-    viewportId: string,
-    segmentationId: string,
-    segmentIndex: number,
-    type: SegmentationRepresentations
-  ): void {
+  toggleSegmentVisibility(params: ToggleSegmentVisibilityParams): void {
+    const { viewportId, segmentationId, segmentIndex, type } = params;
     const isVisible = cstSegmentation.config.visibility.getSegmentIndexVisibility(
       viewportId,
       {
@@ -902,7 +953,13 @@ class SegmentationService extends PubSubService {
       },
       segmentIndex
     );
-    this._setSegmentVisibility(viewportId, segmentationId, segmentIndex, !isVisible, type);
+    this.setSegmentVisibility({
+      viewportId,
+      segmentationId,
+      segmentIndex,
+      isVisible: !isVisible,
+      type,
+    });
   }
 
   /**
@@ -917,12 +974,8 @@ class SegmentationService extends PubSubService {
    * This method updates the color of a specific segment within a segmentation.
    * The color parameter should be an array of 4 numbers representing RGBA values.
    */
-  public setSegmentColor(
-    viewportId: string,
-    segmentationId: string,
-    segmentIndex: number,
-    color: csTypes.Color
-  ): void {
+  setSegmentColor(params: SetSegmentColorParams): void {
+    const { viewportId, segmentationId, segmentIndex, color } = params;
     cstSegmentation.config.color.setSegmentIndexColor(
       viewportId,
       segmentationId,
@@ -943,7 +996,8 @@ class SegmentationService extends PubSubService {
    * This method retrieves the current color of a specific segment within a segmentation.
    * The returned color is an array of 4 numbers representing RGBA values.
    */
-  public getSegmentColor(viewportId: string, segmentationId: string, segmentIndex: number) {
+  getSegmentColor(params: GetSegmentColorParams) {
+    const { viewportId, segmentationId, segmentIndex } = params;
     return cstSegmentation.config.color.getSegmentIndexColor(
       viewportId,
       segmentationId,
@@ -961,7 +1015,8 @@ class SegmentationService extends PubSubService {
    * The labelmap volume contains the actual segmentation data in the form of a 3D volume.
    * Returns null if the segmentation does not have valid labelmap volume data.
    */
-  public getLabelmapVolume(segmentationId: string) {
+  getLabelmapVolume(params: GetLabelmapVolumeParams): cstTypes.LabelmapToolOperationDataVolume | null {
+    const { segmentationId } = params;
     const csSegmentation = cstSegmentation.state.getSegmentation(segmentationId);
     const labelmapData = csSegmentation.representationData[
       SegmentationRepresentations.Labelmap
@@ -987,8 +1042,9 @@ class SegmentationService extends PubSubService {
    * This method updates the text label of a specific segment within a segmentation.
    * The label is used to identify and describe the segment in the UI.
    */
-  public setSegmentLabel(segmentationId: string, segmentIndex: number, label: string) {
-    this._setSegmentLabel(segmentationId, segmentIndex, label);
+  setSegmentLabel(params: SetSegmentLabelParams): void {
+    const { segmentationId, segmentIndex, label } = params;
+    this._setSegmentLabel({ segmentationId, segmentIndex, label });
   }
 
   /**
@@ -1000,7 +1056,8 @@ class SegmentationService extends PubSubService {
    * This method updates which segment is considered "active" within a segmentation.
    * The active segment is typically highlighted and available for editing operations.
    */
-  public setActiveSegment(segmentationId: string, segmentIndex: number): void {
+  setActiveSegment(params: SetActiveSegmentParams): void {
+    const { segmentationId, segmentIndex } = params;
     this._setActiveSegment(segmentationId, segmentIndex);
   }
 
@@ -1014,7 +1071,8 @@ class SegmentationService extends PubSubService {
    * should still be visible in the specified viewport. This can be useful
    * for comparing or viewing multiple segmentations simultaneously.
    */
-  public setRenderInactiveSegmentations(viewportId: string, renderInactive: boolean): void {
+  setRenderInactiveSegmentations(params: SetRenderInactiveSegmentationsParams): void {
+    const { viewportId, renderInactive } = params;
     cstSegmentation.config.style.setRenderInactiveSegmentations(viewportId, renderInactive);
   }
 
@@ -1677,7 +1735,8 @@ class SegmentationService extends PubSubService {
     );
   };
 
-  private _setActiveSegment(segmentationId: string, segmentIndex: number) {
+  private _setActiveSegment(params: SetActiveSegmentParams): void {
+    const { segmentationId, segmentIndex } = params;
     cstSegmentation.segmentIndex.setActiveSegmentIndex(segmentationId, segmentIndex);
   }
 
@@ -1711,13 +1770,8 @@ class SegmentationService extends PubSubService {
     cstSegmentation.segmentLocking.setSegmentIndexLocked(segmentationId, segmentIndex, isLocked);
   }
 
-  private _setSegmentVisibility(
-    viewportId: string,
-    segmentationId: string,
-    segmentIndex: number,
-    isVisible: boolean,
-    type?: SegmentationRepresentations
-  ) {
+  private _setSegmentVisibility(params: SegmentVisibilityParams): void {
+    const { viewportId, segmentationId, segmentIndex, isVisible, type } = params;
     cstSegmentation.config.visibility.setSegmentIndexVisibility(
       viewportId,
       {
@@ -1729,11 +1783,12 @@ class SegmentationService extends PubSubService {
     );
   }
 
-  private _setSegmentLabel(segmentationId: string, segmentIndex: number, segmentLabel: string) {
+  private _setSegmentLabel(params: SetSegmentLabelParams): void {
+    const { segmentationId, segmentIndex, label } = params;
     const segmentation = this.getCornerstoneSegmentation(segmentationId);
     const { segments } = segmentation;
 
-    segments[segmentIndex].label = segmentLabel;
+    segments[segmentIndex].label = label;
 
     cstSegmentation.updateSegmentations([
       {

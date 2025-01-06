@@ -72,6 +72,8 @@ interface SegmentationTableContext {
   ) => void;
   onSegmentationRemoveFromViewport: (segmentationId: string) => void;
   disableEditing: boolean;
+  /** Whether to show the add segment button. Defaults to true. */
+  showAddSegment?: boolean;
 }
 
 const [SegmentationTableProvider, useSegmentationTableContext] =
