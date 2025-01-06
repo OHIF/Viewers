@@ -51,7 +51,7 @@ export default function ToolToggle({
       // Shadcn toggle props
       pressed={pressed}
       onPressedChange={handlePressedChange}
-      variant="default"
+      variant="tool"
       size="default"
       disabled={disabled}
       // Merge any custom classes that you or evaluate might provide:

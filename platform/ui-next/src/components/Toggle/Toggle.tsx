@@ -10,8 +10,12 @@ const toggleVariants = cva(
     variants: {
       variant: {
         default: 'bg-transparent hover:text-primary',
-        outline:
-          'border border-input bg-transparent shadow-sm hover:bg-primary/20 hover:text-primary-foreground',
+        outline: 'border border-input hover:bg-primary/20 hover:text-primary-foreground',
+        tool: [
+          'bg-transparent text-foreground',
+          'hover:bg-background hover:text-primary',
+          'data-[state=on]:bg-highlight data-[state=on]:text-background data-[state=on]:hover:bg-highlight/50 ',
+        ].join(' '),
       },
       size: {
         default: 'h-10 w-10',
@@ -19,6 +23,7 @@ const toggleVariants = cva(
         lg: 'h-10 px-3',
       },
     },
+
     defaultVariants: {
       variant: 'default',
       size: 'default',
