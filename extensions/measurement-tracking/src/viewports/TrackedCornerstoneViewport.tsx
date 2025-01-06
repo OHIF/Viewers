@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
 
-import { Tooltip, ViewportActionArrows, useViewportGrid } from '@ohif/ui';
+import { Tooltip, ViewportActionArrows } from '@ohif/ui';
+import { useViewportGrid } from '@ohif/ui-next';
 import { Icons } from '@ohif/ui-next';
 
 import { annotation } from '@cornerstonejs/tools';

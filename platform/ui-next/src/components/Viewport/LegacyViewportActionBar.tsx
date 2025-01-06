@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { Icons } from '@ohif/ui-next';
 
-import LegacyPatientInfo from './LegacyPatientInfo'; // If needed or inline code
+import LegacyPatientInfo from './LegacyPatientInfo';
 import { Button, ButtonEnums } from '@ohif/ui-next';
 
 /**

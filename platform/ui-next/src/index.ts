@@ -95,6 +95,7 @@ import {
 import { DataRow } from './components/DataRow';
 
 import { useNotification, NotificationProvider } from './contextProviders';
+import { ViewportGridContext, ViewportGridProvider, useViewportGrid } from './contextProviders';
 
 export {
   ErrorBoundary,
@@ -113,6 +114,9 @@ export {
   // contextProviders
   NotificationProvider,
   useNotification,
+  ViewportGridContext,
+  ViewportGridProvider,
+  useViewportGrid,
   Separator,
   Tabs,
   TabsContent,

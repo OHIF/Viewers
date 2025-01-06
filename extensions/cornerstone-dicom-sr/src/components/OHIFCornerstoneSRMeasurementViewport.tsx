@@ -5,7 +5,8 @@ import { ExtensionManager, useToolbar } from '@ohif/core';
 
 import { setTrackingUniqueIdentifiersForElement } from '../tools/modules/dicomSRModule';
 
-import { Icon, Tooltip, useViewportGrid, ViewportActionArrows } from '@ohif/ui';
+import { Icon, Tooltip, ViewportActionArrows } from '@ohif/ui';
+import { useViewportGrid } from '@ohif/ui-next';
 import createReferencedImageDisplaySet from '../utils/createReferencedImageDisplaySet';
 import { usePositionPresentationStore } from '@ohif/extension-cornerstone';
 import { Icons } from '@ohif/ui-next';

@@ -1,7 +1,8 @@
 import React, { useEffect, useCallback, useRef } from 'react';
 import { useResizeDetector } from 'react-resize-detector';
 import { Types, MeasurementService } from '@ohif/core';
-import { ViewportGrid, ViewportPane, useViewportGrid } from '@ohif/ui';
+import { ViewportGrid, ViewportPane } from '@ohif/ui';
+import { useViewportGrid } from '@ohif/ui-next';
 import EmptyViewport from './EmptyViewport';
 import classNames from 'classnames';
 import { useAppConfig } from '@state';

@@ -64,4 +64,4 @@ ViewportActionCorners.propTypes = {
   cornerComponents: PropTypes.object.isRequired,
 };
 
-export { ViewportActionCorners, ViewportActionCornersLocations };
+export { ViewportActionCorners };
