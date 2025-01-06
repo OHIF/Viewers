@@ -30,6 +30,7 @@
     "build:demo": "lerna run build:viewer:demo --stream",
     "build:package-all": "lerna run build:package --parallel --stream",
     "build:package-all-1": "lerna run build:package-1 --parallel --stream",
+    "show:config": "echo Config is $APP_CONFIG on $PUBLIC_URL",
     "dev": "lerna run dev:viewer --stream",
     "dev:no:cache": "lerna run dev:no:cache --stream",
     "dev:project": ".scripts/dev.sh",
@@ -68,8 +69,8 @@
   "optionalDependencies": {
     "@percy/cypress": "^3.1.1",
     "@playwright/test": "^1.48.0",
-    "cypress": "13.7.2",
-    "cypress-file-upload": "^3.5.3"
+    "cypress": "^13.16.1",
+    "cypress-file-upload": "^5.0.8"
   },
   "devDependencies": {
     "@babel/core": "7.24.7",

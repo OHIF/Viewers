@@ -48,15 +48,13 @@ export default class ContextMenuController {
 
     const { event, subMenu, menuId, menus, selectorProps } = contextMenuProps;
 
-    const annotationManager = CsAnnotation.state.getAnnotationManager();
-    const { locking } = CsAnnotation;
+    const { locking, visibility } = CsAnnotation;
     const targetAnnotationId = selectorProps?.nearbyToolData?.annotationUID as string;
-    const isLocked = locking.isAnnotationLocked(
-      annotationManager.getAnnotation(targetAnnotationId)
-    );
+    const isLocked = locking.isAnnotationLocked(targetAnnotationId);
+    const isVisible = visibility.isAnnotationVisible(targetAnnotationId);
 
-    if (isLocked) {
-      console.warn('Annotation is locked.');
+    if (isLocked || !isVisible) {
+      console.warn(`Annotation is ${isLocked ? 'locked' : 'not visible'}.`);
       return;
     }
 
