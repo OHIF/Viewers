@@ -1,6 +1,7 @@
 import { Palette } from './palette';
 
 export const axis = [
+  // BIANKA
   {
     // Frontal & Lateral
     tail: 'femur_medullar_canal_center',
@@ -99,11 +100,164 @@ export const axis = [
     color: Palette.Turquoise,
     highlighted: Palette.DarkTurquoise,
   },
+
+  // LILIA
   {
-    // Calibration ball
-    tail: 'calibration_p1',
-    head: 'calibration_p2',
-    color: Palette.Orange,
-    highlighted: Palette.DarkOrange,
+    tail: 'hip_rotation_center_left',
+    head: 'femur_neck_femoral_anatomical_axis_intersection_left',
+    color: Palette.LightBlue,
+    highlighted: Palette.DarkLightBlue,
+  },
+  {
+    tail: 'hip_rotation_center_right',
+    head: 'femur_neck_femoral_anatomical_axis_intersection_right',
+    color: Palette.LightBlue,
+    highlighted: Palette.DarkLightBlue,
+  },
+  // Femur : mechanical axis
+  {
+    tail: 'hip_rotation_center_left',
+    head: 'femoral_notch_left',
+    color: Palette.Purple,
+    highlighted: Palette.DarkPurple,
+  },
+  {
+    tail: 'hip_rotation_center_right',
+    head: 'femoral_notch_right',
+    color: Palette.Purple,
+    highlighted: Palette.DarkPurple,
+  },
+  // Femur anatomical axis
+  {
+    tail: 'femur_axis_proximal_center_left',
+    head: 'femur_axis_distal_center_left',
+    color: Palette.Pink,
+    highlighted: Palette.DarkPink,
+  },
+  {
+    tail: 'femur_axis_proximal_center_right',
+    head: 'femur_axis_distal_center_right',
+    color: Palette.Pink,
+    highlighted: Palette.DarkPink,
+  },
+  // condyles tangent
+  {
+    tail: 'condyle_external_left',
+    head: 'condyle_internal_left',
+    color: Palette.Turquoise,
+    highlighted: Palette.DarkTurquoise,
+  },
+  {
+    tail: 'condyle_external_right',
+    head: 'condyle_internal_right',
+    color: Palette.Turquoise,
+    highlighted: Palette.DarkTurquoise,
+  },
+  // Tibia mechanical axis
+  {
+    tail: 'tibial_spines_left',
+    head: 'ankle_center_left',
+    color: Palette.Blue,
+    highlighted: Palette.DarkBlue,
+  },
+  {
+    tail: 'tibial_spines_right',
+    head: 'ankle_center_right',
+    color: Palette.Blue,
+    highlighted: Palette.DarkBlue,
+  },
+  // Tibia plateau
+  {
+    tail: 'plateau_external_left',
+    head: 'plateau_internal_left',
+    color: Palette.Yellow,
+    highlighted: Palette.DarkYellow,
+  },
+  {
+    tail: 'plateau_external_right',
+    head: 'plateau_internal_right',
+    color: Palette.Yellow,
+    highlighted: Palette.DarkYellow,
+  },
+  // Ankle axis
+  {
+    tail: 'ankle_external_left',
+    head: 'ankle_internal_left',
+    color: Palette.Red,
+    highlighted: Palette.DarkRed,
+  },
+  {
+    tail: 'ankle_external_right',
+    head: 'ankle_internal_right',
+    color: Palette.Red,
+    highlighted: Palette.DarkRed,
+  },
+
+  // HIPPOLYNE
+  {
+    tail: 'pelvis_distal_left',
+    head: 'pelvis_distal_right',
+    color: Palette.Yellow,
+    highlighted: Palette.DarkYellow,
+  },
+  // Femur : col
+  {
+    tail: 'hip_rotation_center_left',
+    head: 'femur_neck_femoral_anatomical_axis_intersection_left',
+    color: Palette.LightBlue,
+    highlighted: Palette.DarkLightBlue,
+  },
+  {
+    tail: 'hip_rotation_center_right',
+    head: 'femur_neck_femoral_anatomical_axis_intersection_right',
+    color: Palette.LightBlue,
+    highlighted: Palette.DarkLightBlue,
+  },
+  // Femur anatomical axis
+  {
+    tail: 'femur_distal_center_left',
+    head: 'femur_anatomical_axis_hip_offset_intersection_left',
+    color: Palette.Pink,
+    highlighted: Palette.DarkPink,
+  },
+  {
+    tail: 'femur_distal_center_right',
+    head: 'femur_anatomical_axis_hip_offset_intersection_right',
+    color: Palette.Pink,
+    highlighted: Palette.DarkPink,
+  },
+  // Prothese : cotyles
+  {
+    tail: 'cup_edge_external_left',
+    head: 'cup_edge_internal_left',
+    color: Palette.Red,
+    highlighted: Palette.DarkRed,
+  },
+  {
+    tail: 'cup_edge_external_right',
+    head: 'cup_edge_internal_right',
+    color: Palette.Red,
+    highlighted: Palette.DarkRed,
+  },
+  {
+    tail: 'stem_axis_proximal_left',
+    head: 'stem_axis_distal_left',
+    color: Palette.Purple,
+    highlighted: Palette.DarkPurple,
+  },
+  {
+    tail: 'stem_axis_proximal_right',
+    head: 'stem_axis_distal_right',
+    color: Palette.Purple,
+    highlighted: Palette.DarkPurple,
+  },
+
+  // AMELYA
+
+  {
+    tail: 'pelvis_distal_left',
+    head: 'pelvis_distal_right',
+    color: Palette.Yellow,
+    highlighted: Palette.DarkYellow,
   },
 ];
