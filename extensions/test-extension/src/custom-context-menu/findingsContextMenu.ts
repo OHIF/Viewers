@@ -1,6 +1,6 @@
 const findingsContextMenu = {
   id: 'measurementsContextMenu',
-  customizationType: 'ohif.contextMenu',
+  inheritsFrom: 'ohif.contextMenu',
   menus: [
     {
       id: 'forExistingMeasurement',
@@ -8,19 +8,19 @@ const findingsContextMenu = {
       selector: ({ nearbyToolData }) => !!nearbyToolData,
       items: [
         {
-          customizationType: 'ohif.contextSubMenu',
+          inheritsFrom: 'ohif.contextSubMenu',
           label: 'Site',
           actionType: 'ShowSubMenu',
           subMenu: 'siteSelectionSubMenu',
         },
         {
-          customizationType: 'ohif.contextSubMenu',
+          inheritsFrom: 'ohif.contextSubMenu',
           label: 'Finding',
           actionType: 'ShowSubMenu',
           subMenu: 'findingSelectionSubMenu',
         },
         {
-          // customizationType is implicit here in the configuration setup
+          // inheritsFrom is implicit here in the configuration setup
           label: 'Delete Measurement',
           commands: [
             {
@@ -55,11 +55,11 @@ const findingsContextMenu = {
       selector: ({ nearbyToolData }) => false,
       items: [
         {
-          customizationType: '@ohif/contextMenuAnnotationCode',
+          inheritsFrom: '@ohif/contextMenuAnnotationCode',
           code: 'SCT:24422004',
         },
         {
-          customizationType: '@ohif/contextMenuAnnotationCode',
+          inheritsFrom: '@ohif/contextMenuAnnotationCode',
           code: 'SCT:81654009',
         },
       ],
@@ -70,11 +70,11 @@ const findingsContextMenu = {
       selector: ({ nearbyToolData }) => false,
       items: [
         {
-          customizationType: '@ohif/contextMenuAnnotationCode',
+          inheritsFrom: '@ohif/contextMenuAnnotationCode',
           code: 'SCT:371861004',
         },
         {
-          customizationType: '@ohif/contextMenuAnnotationCode',
+          inheritsFrom: '@ohif/contextMenuAnnotationCode',
           code: 'SCT:194983005',
         },
       ],
@@ -85,11 +85,11 @@ const findingsContextMenu = {
       selector: ({ nearbyToolData }) => !!nearbyToolData,
       items: [
         {
-          customizationType: '@ohif/contextMenuAnnotationCode',
+          inheritsFrom: '@ohif/contextMenuAnnotationCode',
           code: 'SCT:69536005',
         },
         {
-          customizationType: '@ohif/contextMenuAnnotationCode',
+          inheritsFrom: '@ohif/contextMenuAnnotationCode',
           code: 'SCT:45048000',
         },
       ],

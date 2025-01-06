@@ -47,7 +47,7 @@ const OverlayItemComponents = {
 
 const studyDateItem = {
   id: 'StudyDate',
-  customizationType: 'ohif.overlayItem',
+  inheritsFrom: 'ohif.overlayItem',
   label: '',
   title: 'Study date',
   condition: ({ referenceInstance }) => referenceInstance?.StudyDate,
@@ -57,7 +57,7 @@ const studyDateItem = {
 
 const seriesDescriptionItem = {
   id: 'SeriesDescription',
-  customizationType: 'ohif.overlayItem',
+  inheritsFrom: 'ohif.overlayItem',
   label: '',
   title: 'Series description',
   condition: ({ referenceInstance }) => {
@@ -78,11 +78,11 @@ const bottomLeftItems = {
   items: [
     {
       id: 'WindowLevel',
-      customizationType: 'ohif.overlayItem.windowLevel',
+      inheritsFrom: 'ohif.overlayItem.windowLevel',
     },
     {
       id: 'ZoomLevel',
-      customizationType: 'ohif.overlayItem.zoomLevel',
+      inheritsFrom: 'ohif.overlayItem.zoomLevel',
       condition: props => {
         const activeToolName = props.toolGroupService.getActiveToolForViewport(props.viewportId);
         return activeToolName === 'Zoom';
@@ -96,7 +96,7 @@ const bottomRightItems = {
   items: [
     {
       id: 'InstanceNumber',
-      customizationType: 'ohif.overlayItem.instanceNumber',
+      inheritsFrom: 'ohif.overlayItem.instanceNumber',
     },
   ],
 };
@@ -262,8 +262,8 @@ function CustomizableViewportOverlay({
         return null;
       }
 
-      const { customizationType } = item;
-      const OverlayItemComponent = OverlayItemComponents[customizationType];
+      const { inheritsFrom } = item;
+      const OverlayItemComponent = OverlayItemComponents[inheritsFrom];
 
       if (OverlayItemComponent) {
         return <OverlayItemComponent {...overlayItemProps} />;

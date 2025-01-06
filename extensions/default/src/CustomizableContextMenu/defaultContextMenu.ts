@@ -1,6 +1,6 @@
 const defaultContextMenu = {
   id: 'measurementsContextMenu',
-  customizationType: 'ohif.contextMenu',
+  inheritsFrom: 'ohif.contextMenu',
   menus: [
     // Get the items from the UI Customization for the menu name (and have a custom name)
     {

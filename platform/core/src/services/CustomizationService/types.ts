@@ -5,7 +5,7 @@ export type Obj = Record<string, unknown>;
 
 export interface BaseCustomization extends Obj {
   id: string;
-  customizationType?: string;
+  inheritsFrom?: string;
   description?: string;
   label?: string;
   commands?: Command[];

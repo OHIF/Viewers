@@ -64,7 +64,7 @@ export default function getCustomizationModule({ servicesManager, extensionManag
          *
          * {
          *   id: string - unique id for the overlay item
-         *   customizationType: string - indicates customization type definition to this
+         *   inheritsFrom: string - indicates customization type definition to this
          *   label: string - Label, to be displayed for the item
          *   title: string - Tooltip, for the item
          *   color: string - Color of the text
@@ -76,7 +76,7 @@ export default function getCustomizationModule({ servicesManager, extensionManag
          * @example
          *  {
          *    id: 'PatientNameOverlay',
-         *    customizationType: 'ohif.overlayItem',
+         *    inheritsFrom: 'ohif.overlayItem',
          *    label: 'PN:',
          *    title: 'Patient Name',
          *    color: 'yellow',
@@ -120,8 +120,8 @@ export default function getCustomizationModule({ servicesManager, extensionManag
 
         {
           id: 'ohif.contextMenu',
-
-          /** Applies the customizationType to all the menu items.
+          /**
+           * Applies the inheritsFrom to all the menu items.
            * This function clones the object and child objects to prevent
            * changes to the original customization object.
            */

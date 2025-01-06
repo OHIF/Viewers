@@ -8,26 +8,7 @@ import type { ExtensionManager } from '../../extensions';
 const EVENTS = {
   MODE_CUSTOMIZATION_MODIFIED: 'event::CustomizationService:modeModified',
   GLOBAL_CUSTOMIZATION_MODIFIED: 'event::CustomizationService:globalModified',
-};
-
-const flattenNestedStrings = (
-  strs: NestedStrings | string,
-  ret?: Record<string, string>
-): Record<string, string> => {
-  if (!ret) {
-    ret = {};
-  }
-  if (!strs) {
-    return ret;
-  }
-  if (Array.isArray(strs)) {
-    for (const val of strs) {
-      flattenNestedStrings(val, ret);
-    }
-  } else {
-    ret[strs] = strs;
-  }
-  return ret;
+  DEFAULT_CUSTOMIZATION_MODIFIED: 'event::CustomizationService:defaultModified',
 };
 
 export enum MergeEnum {
@@ -45,10 +26,27 @@ export enum MergeEnum {
   Replace = 'Replace',
 }
 
-export enum CustomizationType {
-  Global = 'Global',
-  Mode = 'Mode',
-  Default = 'Default',
+/**
+ * Enum representing the different scopes of customizations available in the system.
+ */
+export enum CustomizationScope {
+  /**
+   * Global customizations that override both mode and default customizations.
+   * These are applied universally across the application.
+   */
+  Global = 'global',
+
+  /**
+   * Mode-specific customizations that are only active during a particular mode.
+   * These are cleared and reset when switching between modes.
+   */
+  Mode = 'mode',
+
+  /**
+   * Default customizations that serve as fallbacks when no global or mode-specific
+   * customizations are defined. These can only be defined once.
+   */
+  Default = 'default',
 }
 
 /**
@@ -78,10 +76,14 @@ export enum CustomizationType {
  * every module for the given id and to load it/add it to the extensions.
  */
 export default class CustomizationService extends PubSubService {
+  public static EVENTS = EVENTS;
+  public static CUSTOMIZATION_SCOPE = CustomizationScope;
+  public static MERGE_ENUM = MergeEnum;
+
   public static REGISTRATION = {
     name: 'customizationService',
-    create: ({ configuration = {}, commandsManager }) => {
-      return new CustomizationService({ configuration, commandsManager });
+    create: ({ commandsManager }) => {
+      return new CustomizationService({ commandsManager });
     },
   };
 
@@ -89,22 +91,25 @@ export default class CustomizationService extends PubSubService {
   extensionManager: ExtensionManager;
 
   /**
-   * mode customizations are changes to the default behaviour which are reset
-   * every time a new mode is entered.  This allows the mode to define custom
-   * behaviour, and not interfere with other modes.
-   */
-  private modeCustomizations = new Map<string, Customization>();
-  /**
-   * global customizations, are customizations which are set as a global default
-   * This allows changes across the board to be applied, essentially as a priority
-   * setting.
+   * A collection of global customizations that act as a priority layer.
+   * These customizations are applied universally, overriding both mode-specific
+   * and default customizations. Ideal for system-wide changes.
    */
   private globalCustomizations = new Map<string, Customization>();
 
   /**
-   * Default customizations allow applying default values.  The intent is that
-   * there is only one customization of that type, and it is registered at setup
-   * time.
+   * A collection of mode-specific customizations. These allow modes to define
+   * their own behavior without impacting other modes. These customizations
+   * are cleared and redefined whenever a mode changes, ensuring isolation
+   * between modes. Read more about modes in the modes documentation.
+   */
+  private modeCustomizations = new Map<string, Customization>();
+
+  /**
+   * A collection of default customizations used as fallbacks. These serve as
+   * the base configuration and are registered at setup. Default customizations
+   * provide baseline values that can be overridden by mode or global customizations.
+   * Use these for cases where default values are necessary for predictable behavior.
    */
   private defaultCustomizations = new Map<string, Customization>();
 
@@ -114,12 +119,9 @@ export default class CustomizationService extends PubSubService {
    */
   private transformedCustomizations = new Map<string, Customization>();
 
-  configuration: any;
-
-  constructor({ configuration, commandsManager }) {
+  constructor({ commandsManager }) {
     super(EVENTS);
     this.commandsManager = commandsManager;
-    this.configuration = configuration || {};
   }
 
   public init(extensionManager: ExtensionManager): void {
@@ -128,30 +130,21 @@ export default class CustomizationService extends PubSubService {
     this.defaultCustomizations.clear();
     // Clear modes because those are defined in onModeEnter functions.
     this.modeCustomizations.clear();
-    this.initDefaults();
-    this.addReferences(this.configuration);
-  }
 
-  initDefaults(): void {
     this.extensionManager.getRegisteredExtensionIds().forEach(extensionId => {
       const keyDefault = `${extensionId}.customizationModule.default`;
-      const defaultCustomizations = this.findExtensionValue(keyDefault);
+      const defaultCustomizations = this._findExtensionValue(keyDefault);
       if (defaultCustomizations) {
         const { value } = defaultCustomizations;
-        this.addReference(value, CustomizationType.Default);
+        this._addReference(value, CustomizationScope.Default);
       }
       const keyGlobal = `${extensionId}.customizationModule.global`;
-      const globalCustomizations = this.findExtensionValue(keyGlobal);
+      const globalCustomizations = this._findExtensionValue(keyGlobal);
       if (globalCustomizations) {
         const { value } = globalCustomizations;
-        this.addReference(value, CustomizationType.Global);
+        this._addReference(value, CustomizationScope.Global);
       }
     });
-  }
-
-  findExtensionValue(value: string) {
-    const entry = this.extensionManager.getModuleEntry(value);
-    return entry as { value: Customization };
   }
 
   public onModeEnter(): void {
@@ -169,10 +162,118 @@ export default class CustomizationService extends PubSubService {
     this.onModeEnter();
   }
 
-  public getModeCustomizations(): Map<string, Customization> {
-    return this.modeCustomizations;
+  /**
+   * Unified getter for customizations.
+   *
+   * @param customizationId - The ID of the customization to retrieve.
+   * @param scope - (Optional) The scope to retrieve from: 'global', 'mode', or 'default'.
+   *                 If not specified, it retrieves based on priority: global > mode > default.
+   * @returns The requested customization.
+   */
+  public getCustomization(customizationId: string, scope?: CustomizationScope): Customization {
+    const transformed = this.transformedCustomizations.get(customizationId);
+    if (transformed) {
+      return transformed;
+    }
+    const customization =
+      this.globalCustomizations.get(customizationId) ??
+      this.modeCustomizations.get(customizationId) ??
+      this.defaultCustomizations.get(customizationId);
+    const newTransformed = this.transform(customization);
+    if (newTransformed !== undefined) {
+      this.transformedCustomizations.set(customizationId, newTransformed);
+    }
+    return newTransformed;
   }
 
+  /**
+   * Unified setter for customizations.
+   *
+   * @param customizationId - The unique identifier for the customization.
+   * @param customization - The customization object containing the desired settings.
+   * @param merge - The merge strategy to apply. Defaults to `MergeEnum.Merge`.
+   * @param scope - The scope to set the customization: 'global', 'mode', or 'default'.
+   *                Defaults to 'mode'.
+   */
+  public setCustomization(
+    customizationId: string,
+    customization: Customization,
+    scope: CustomizationScope,
+    merge = MergeEnum.Merge
+  ): void {
+    switch (scope) {
+      case CustomizationScope.Global:
+        this.setGlobalCustomization(customizationId, customization, merge);
+        break;
+      case CustomizationScope.Mode:
+        this.setModeCustomization(customizationId, customization, merge);
+        break;
+      case CustomizationScope.Default:
+        this.setDefaultCustomization(customizationId, customization, merge);
+        break;
+      default:
+        throw new Error(`Invalid customization scope: ${scope}`);
+    }
+  }
+
+  /**
+   * Gets all customizations for a given scope.
+   *
+   * @param scope - The scope to retrieve customizations from: 'global', 'mode', or 'default'
+   * @returns A Map containing all customizations for the specified scope
+   */
+  public getCustomizations(scope: CustomizationScope): Map<string, Customization> {
+    if (scope === CustomizationScope.Global) {
+      return this.globalCustomizations;
+    }
+    if (scope === CustomizationScope.Mode) {
+      return this.modeCustomizations;
+    }
+    return this.defaultCustomizations;
+  }
+
+  /**
+   *  Returns true if there is a mode customization.  Doesn't include defaults, but
+   * does return global overrides.
+   */
+  public hasCustomization(customizationId: string) {
+    return (
+      this.globalCustomizations.has(customizationId) || this.modeCustomizations.has(customizationId)
+    );
+  }
+
+  /**
+   * Applies any inheritance due to UI Type customization.
+   * This will look for inheritsFrom in the customization object
+   * and if that is found, will assign all iterable values from that
+   * type into the new type, allowing default behaviour to be configured.
+   */
+  public transform(customization: Customization): Customization {
+    if (!customization) {
+      return customization;
+    }
+    const { inheritsFrom } = customization;
+    if (!inheritsFrom) {
+      return customization;
+    }
+    const parent = this.getCustomization(inheritsFrom);
+    const result = parent ? Object.assign({}, parent, customization) : customization;
+    // Execute an nested type information
+    return result.transform?.(this) || result;
+  }
+
+  /**
+   *
+   * Sets a mode-specific customization.
+   *
+   * This method allows you to define or update a customization that applies only to the current mode.
+   * Mode customizations are temporary and isolated, reset whenever a mode changes.
+   *
+   * @param customizationId - The unique identifier for the customization.
+   * @param customization - The customization object containing the desired settings.
+   * @param merge - (Optional) Specifies how the customization should be merged with existing ones.
+   *                Defaults to `MergeEnum.Merge`.
+   */
   public setModeCustomization(
     customizationId: string,
     customization: Customization,
@@ -199,140 +300,50 @@ export default class CustomizationService extends PubSubService {
     });
   }
 
-  /**
-   * This is the preferred getter for all customizations,
-   * getting global (priority) customizations first,
-   * then mode customizations, and finally the default customization.
-   *
-   * @param customizationId - the customization id to look for
-   * @param defaultValue - is the default value to return.
-   *    This value will be assigned as the default customization if there isn't
-   *    currently a default customization, and thus, the first default provided
-   *    will be used as the default - you cannot update this after or have it depend
-   *    on changing values.
-   *    Also, the value returned by the get customization has merges/updates applied,
-   *    and is thus may be modified from the value provided, and may not be the original
-   *    default provided.  This allows applying the defaults for things like inheritance.
-   * @return A customization to use if one is found, or the default customization,
-   *    both enhanced with any customizationType inheritance (see transform)
-   */
-  public getCustomization(customizationId: string, defaultValue?: Customization): Customization {
-    const transformed = this.transformedCustomizations.get(customizationId);
-    if (transformed) {
-      return transformed;
-    }
-    if (defaultValue && !this.defaultCustomizations.has(customizationId)) {
-      this.setDefaultCustomization(customizationId, defaultValue);
-    }
-    const customization =
-      this.globalCustomizations.get(customizationId) ??
-      this.modeCustomizations.get(customizationId) ??
-      this.defaultCustomizations.get(customizationId);
-    const newTransformed = this.transform(customization);
-    if (newTransformed !== undefined) {
-      this.transformedCustomizations.set(customizationId, newTransformed);
-    }
-    return newTransformed;
-  }
-
-  /** Mode customizations are changes to the behavior of the extensions
-   * when running in a given mode.  Reset clears mode customizations.
-   *
-   * Note that global customizations over-ride mode customizations
-   *
-   * @param defaultValue to return if no customization specified.
-   */
-  public getModeCustomization = this.getCustomization;
-
-  /**
-   *  Returns true if there is a mode customization.  Doesn't include defaults, but
-   * does return global overrides.
-   */
-  public hasModeCustomization(customizationId: string) {
-    return (
-      this.globalCustomizations.has(customizationId) || this.modeCustomizations.has(customizationId)
-    );
-  }
-
-  /**
-   * get is an alias for getModeCustomization, as it is the generic getter
-   * which will return both mode and global customizations, and should be
-   * used generally.
-   * Note that the second parameter, defaultValue, will be expanded to include
-   * any customizationType values defined in it, so it is not the same as doing:
-   *   `customizationService.get('key') || defaultValue`
-   * unless the defaultValue does not contain any customizationType definitions.
-   */
-  public get = this.getModeCustomization;
-
-  /**
-   * Applies any inheritance due to UI Type customization.
-   * This will look for customizationType in the customization object
-   * and if that is found, will assign all iterable values from that
-   * type into the new type, allowing default behaviour to be configured.
-   */
-  public transform(customization: Customization): Customization {
-    if (!customization) {
-      return customization;
-    }
-    const { customizationType } = customization;
-    if (!customizationType) {
-      return customization;
-    }
-    const parent = this.getCustomization(customizationType);
-    const result = parent ? Object.assign({}, parent, customization) : customization;
-    // Execute an nested type information
-    return result.transform?.(this) || result;
-  }
-
-  /**
-   * Helper method to easily add and retrieve customizations
-   * @param id The unique identifier for the customization
-   * @param defaultComponent The default component to use if no customization is set
-   * @param customComponent Optional custom component to set
-   * @returns The custom component if set, otherwise the default component
-   */
-  public getCustomComponent(
+  private setGlobalCustomization(
     id: string,
-    defaultComponent: React.ComponentType<any>,
-    customComponent?: React.ComponentType<any>
-  ) {
-    const customization = this.getCustomization(id, {
-      id: `default-${id}`,
-      content: defaultComponent,
-    });
-
-    if (customComponent) {
-      this.setModeCustomization(id, { content: customComponent });
-    }
-
-    return customization.content;
-  }
-
-  public addModeCustomizations(modeCustomizations): void {
-    if (!modeCustomizations) {
-      return;
-    }
-    this.addReferences(modeCustomizations, CustomizationType.Mode);
-
-    this._broadcastModeCustomizationModified();
-  }
-
-  _broadcastModeCustomizationModified(): void {
-    this._broadcastEvent(EVENTS.MODE_CUSTOMIZATION_MODIFIED, {
-      modeCustomizations: this.modeCustomizations,
-      globalCustomizations: this.globalCustomizations,
-    });
-  }
-
-  /** Global customizations are those that affect parts of the GUI other than
-   * the modes.  They include things like settings for the search screen.
-   * Reset does NOT clear global customizations.
-   */
-  getGlobalCustomization(id: string, defaultValue?: Customization): Customization | void {
-    return this.transform(
-      this.globalCustomizations.get(id) ?? this.defaultCustomizations.get(id) ?? defaultValue
+    value: Customization,
+    merge = MergeEnum.Replace
+  ): void {
+    const defaultCustomization = this.defaultCustomizations.get(id);
+    const globCustomization = this.globalCustomizations.get(id);
+    const sourceCustomization =
+      (globCustomization && cloneDeepWith(globCustomization, cloneCustomizer)) ||
+      defaultCustomization ||
+      {};
+    this.globalCustomizations.set(
+      id,
+      this.mergeValue(sourceCustomization, value, value.merge ?? merge)
     );
+    this.transformedCustomizations.clear();
+    this._broadcastEvent(this.EVENTS.DEFAULT_CUSTOMIZATION_MODIFIED, {
+      buttons: this.defaultCustomizations,
+      button: this.defaultCustomizations.get(id),
+    });
+  }
+
+  private setDefaultCustomization(
+    id: string,
+    value: Customization,
+    merge = MergeEnum.Replace
+  ): void {
+    if (this.defaultCustomizations.has(id)) {
+      throw new Error(`Trying to update existing default for customization ${id}`);
+    }
+    this.transformedCustomizations.clear();
+    this.defaultCustomizations.set(
+      id,
+      this.mergeValue(this.defaultCustomizations.get(id), value, merge)
+    );
+    this._broadcastEvent(this.EVENTS.DEFAULT_CUSTOMIZATION_MODIFIED, {
+      buttons: this.defaultCustomizations,
+      button: this.defaultCustomizations.get(id),
+    });
+  }
+
+  _findExtensionValue(value: string) {
+    const entry = this.extensionManager.getModuleEntry(value);
+    return entry as { value: Customization };
   }
 
   /**
@@ -342,7 +353,11 @@ export default class CustomizationService extends PubSubService {
    * However, you can append to a global value too, as long as you ensure it
    * only gets merged once.
    */
-  private mergeValue(oldValue, newValue, mergeType = MergeEnum.Replace) {
+  private mergeValue(
+    oldValue: Customization,
+    newValue: Customization,
+    mergeType = MergeEnum.Replace
+  ) {
     if (mergeType === MergeEnum.Replace) {
       return newValue;
     }
@@ -356,73 +371,26 @@ export default class CustomizationService extends PubSubService {
     return returnValue;
   }
 
-  public setGlobalCustomization(id: string, value: Customization, merge = MergeEnum.Replace): void {
-    const defaultCustomization = this.defaultCustomizations.get(id);
-    const globCustomization = this.globalCustomizations.get(id);
-    const sourceCustomization =
-      (globCustomization && cloneDeepWith(globCustomization, cloneCustomizer)) ||
-      defaultCustomization ||
-      {};
-    this.globalCustomizations.set(
-      id,
-      this.mergeValue(sourceCustomization, value, value.merge ?? merge)
-    );
-    this.transformedCustomizations.clear();
-    this._broadcastGlobalCustomizationModified();
-  }
-
-  public setDefaultCustomization(
-    id: string,
-    value: Customization,
-    merge = MergeEnum.Replace
-  ): void {
-    if (this.defaultCustomizations.has(id)) {
-      throw new Error(`Trying to update existing default for customization ${id}`);
-    }
-    this.transformedCustomizations.clear();
-    this.defaultCustomizations.set(
-      id,
-      this.mergeValue(this.defaultCustomizations.get(id), value, merge)
-    );
-  }
-
-  protected setConfigGlobalCustomization(configuration: AppConfigCustomization): void {
-    this.globalCustomizations.clear();
-    const keys = flattenNestedStrings(configuration.globalCustomizations);
-    this.readCustomizationTypes(v => keys[v.name] && v.customization, this.globalCustomizations);
-
-    // TODO - iterate over customizations, loading them from the extension
-    // manager.
-    this._broadcastGlobalCustomizationModified();
-  }
-
-  _broadcastGlobalCustomizationModified(): void {
-    this._broadcastEvent(EVENTS.GLOBAL_CUSTOMIZATION_MODIFIED, {
-      modeCustomizations: this.modeCustomizations,
-      globalCustomizations: this.globalCustomizations,
-    });
-  }
-
   /**
    * A single reference is either an string to be loaded from a module,
    * or a customization itself.
    */
-  addReference(value?, type = CustomizationType.Global, id?: string, merge?: MergeEnum): void {
+  _addReference(value?, type = CustomizationScope.Global, id?: string, merge?: MergeEnum): void {
     if (!value) {
       return;
     }
     if (typeof value === 'string') {
-      const extensionValue = this.findExtensionValue(value);
+      const extensionValue = this._findExtensionValue(value);
       // The child of a reference is only a set of references when an array,
-      // so call the addReference direct.  It could be a secondary reference perhaps
-      this.addReference(extensionValue.value, type, extensionValue.name, extensionValue.merge);
+      // so call the _addReference direct.  It could be a secondary reference perhaps
+      this._addReference(extensionValue.value, type, extensionValue.name, extensionValue.merge);
     } else if (Array.isArray(value)) {
-      this.addReferences(value, type);
+      this._addReferences(value, type);
     } else {
       const useId = value.id || id;
       const setName =
-        (type === CustomizationType.Global && 'setGlobalCustomization') ||
-        (type === CustomizationType.Default && 'setDefaultCustomization') ||
+        (type === CustomizationScope.Global && 'setGlobalCustomization') ||
+        (type === CustomizationScope.Default && 'setDefaultCustomization') ||
         'setModeCustomization';
       this[setName](useId as string, value, merge);
     }
@@ -433,18 +401,18 @@ export default class CustomizationService extends PubSubService {
    * or as an object whose key is the reference id, and the value is the string
    * or customization.
    */
-  addReferences(references?, type = CustomizationType.Global): void {
+  _addReferences(references?, type = CustomizationScope.Global): void {
     if (!references) {
       return;
     }
     if (Array.isArray(references)) {
       references.forEach(item => {
-        this.addReference(item, type);
+        this._addReference(item, type);
       });
     } else {
       for (const key of Object.keys(references)) {
         const value = references[key];
-        this.addReference(value, type, key);
+        this._addReference(value, type, key);
       }
     }
   }
