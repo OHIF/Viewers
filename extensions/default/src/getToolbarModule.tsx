@@ -2,7 +2,7 @@ import ToolbarDivider from './Toolbar/ToolbarDivider';
 import ToolbarLayoutSelectorWithServices from './Toolbar/ToolbarLayoutSelector';
 import ToolbarSplitButtonWithServices from './Toolbar/ToolbarSplitButtonWithServices';
 import ToolbarButtonGroupWithServices from './Toolbar/ToolbarButtonGroupWithServices';
-import { ToolToggle } from '@ohif/ui-next';
+import { ToolToggle, ToolToggleList } from '@ohif/ui-next';
 import { ToolbarButton } from '@ohif/ui';
 import { ProgressDropdownWithService } from './Components/ProgressDropdownWithService';
 
@@ -32,6 +32,10 @@ export default function getToolbarModule({ commandsManager, servicesManager }: w
     {
       name: 'ohif.toggleTool',
       defaultComponent: ToolToggle,
+    },
+    {
+      name: 'ohif.toggleToolList',
+      defaultComponent: ToolToggleList,
     },
     {
       name: 'ohif.layoutSelector',
