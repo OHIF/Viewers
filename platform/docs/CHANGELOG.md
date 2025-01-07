@@ -3,6 +3,65 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.10.0-beta.37](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.36...v3.10.0-beta.37) (2025-01-06)
+
+**Note:** Version bump only for package ohif-docs
+
+
+
+
+
+# [3.10.0-beta.36](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.35...v3.10.0-beta.36) (2025-01-03)
+
+**Note:** Version bump only for package ohif-docs
+
+
+
+
+
+# [3.10.0-beta.35](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.34...v3.10.0-beta.35) (2025-01-03)
+
+**Note:** Version bump only for package ohif-docs
+
+
+
+
+
+# [3.10.0-beta.34](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.33...v3.10.0-beta.34) (2025-01-02)
+
+
+### Bug Fixes
+
+* Docker build time was very slow on a tiny change ([#4559](https://github.com/OHIF/Viewers/issues/4559)) ([7e43b2f](https://github.com/OHIF/Viewers/commit/7e43b2f768cfc3e08ecde9dfdae275194daece2b))
+
+
+
+
+
+# [3.10.0-beta.33](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.32...v3.10.0-beta.33) (2024-12-20)
+
+**Note:** Version bump only for package ohif-docs
+
+
+
+
+
+# [3.10.0-beta.32](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.31...v3.10.0-beta.32) (2024-12-20)
+
+**Note:** Version bump only for package ohif-docs
+
+
+
+
+
+# [3.10.0-beta.31](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.30...v3.10.0-beta.31) (2024-12-20)
+
+**Note:** Version bump only for package ohif-docs
+
+
+
+
+
 # [3.10.0-beta.30](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.29...v3.10.0-beta.30) (2024-12-18)
 
 **Note:** Version bump only for package ohif-docs

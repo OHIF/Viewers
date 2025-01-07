@@ -3,6 +3,74 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.10.0-beta.37](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.36...v3.10.0-beta.37) (2025-01-06)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone
+
+
+
+
+
+# [3.10.0-beta.36](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.35...v3.10.0-beta.36) (2025-01-03)
+
+
+### Features
+
+* Implemented CSV support for Arrow annotation. ([#4623](https://github.com/OHIF/Viewers/issues/4623)) ([55fe185](https://github.com/OHIF/Viewers/commit/55fe185c72500256452e25d2f2b17fc9faa99dff))
+
+
+
+
+
+# [3.10.0-beta.35](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.34...v3.10.0-beta.35) (2025-01-03)
+
+
+### Bug Fixes
+
+* **3D rendering:** disabled light sliders when shade is off ([#4631](https://github.com/OHIF/Viewers/issues/4631)) ([5322064](https://github.com/OHIF/Viewers/commit/5322064e9eb66791bc598f82bdf4edd35e40be11))
+
+
+
+
+
+# [3.10.0-beta.34](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.33...v3.10.0-beta.34) (2025-01-02)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone
+
+
+
+
+
+# [3.10.0-beta.33](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.32...v3.10.0-beta.33) (2024-12-20)
+
+
+### Bug Fixes
+
+* **tools:** enable additional tools in volume viewport ([#4620](https://github.com/OHIF/Viewers/issues/4620)) ([1992002](https://github.com/OHIF/Viewers/commit/1992002d2dced171c17b9a0163baf707fc551e3d))
+
+
+
+
+
+# [3.10.0-beta.32](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.31...v3.10.0-beta.32) (2024-12-20)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone
+
+
+
+
+
+# [3.10.0-beta.31](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.30...v3.10.0-beta.31) (2024-12-20)
+
+
+### Bug Fixes
+
+* **segmentation:** black preview when loading a seg, and crash on opening panel ([#4602](https://github.com/OHIF/Viewers/issues/4602)) ([faf5515](https://github.com/OHIF/Viewers/commit/faf5515e4b93da58b673f1ae59ec345e30870446))
+
+
+
+
+
 # [3.10.0-beta.30](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.29...v3.10.0-beta.30) (2024-12-18)
 
 **Note:** Version bump only for package @ohif/extension-cornerstone

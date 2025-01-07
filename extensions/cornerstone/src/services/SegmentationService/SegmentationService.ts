@@ -7,6 +7,7 @@ import {
   imageLoader,
   Types as csTypes,
   utilities as csUtils,
+  metaData,
 } from '@cornerstonejs/core';
 import {
   Enums as csToolsEnums,
@@ -14,6 +15,7 @@ import {
   Types as cstTypes,
 } from '@cornerstonejs/tools';
 import { PubSubService, Types as OHIFTypes } from '@ohif/core';
+import i18n from '@ohif/i18n';
 import { easeInOutBell, reverseEaseInOutBell } from '../../utils/transitions';
 import { mapROIContoursToRTStructData } from './RTSTRUCT/mapROIContoursToRTStructData';
 import { SegmentationRepresentations } from '@cornerstonejs/tools/enums';
@@ -361,7 +363,7 @@ class SegmentationService extends PubSubService {
             ? options.segments
             : {
                 1: {
-                  label: 'Segment 1',
+                  label: `${i18n.t('Segment')} 1`,
                   active: true,
                 },
               },
@@ -414,7 +416,10 @@ class SegmentationService extends PubSubService {
       imageIds as string[]
     );
 
-    segDisplaySet.images = derivedSegmentationImages;
+    segDisplaySet.images = derivedSegmentationImages.map(image => ({
+      ...image,
+      ...metaData.get('instance', image.referencedImageId),
+    }));
 
     const segmentsInfo = segDisplaySet.segMetadata.data;
 
@@ -795,7 +800,7 @@ class SegmentationService extends PubSubService {
     } = {}
   ): void {
     if (config?.segmentIndex === 0) {
-      throw new Error('Segment index 0 is reserved for "no label"');
+      throw new Error(i18n.t('Segment') + ' index 0 is reserved for "no label"');
     }
 
     const csSegmentation = this.getCornerstoneSegmentation(segmentationId);
@@ -809,7 +814,7 @@ class SegmentationService extends PubSubService {
 
     // update the segmentation
     if (!config.label) {
-      config.label = `Segment ${segmentIndex}`;
+      config.label = `${i18n.t('Segment')} ${segmentIndex}`;
     }
 
     const currentSegments = csSegmentation.segments;

@@ -3,6 +3,89 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.10.0-beta.37](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.36...v3.10.0-beta.37) (2025-01-06)
+
+
+### Bug Fixes
+
+* year 2025 missing in date picker ([#4647](https://github.com/OHIF/Viewers/issues/4647)) ([4a8e8ca](https://github.com/OHIF/Viewers/commit/4a8e8cacf2fa5a7e2ed2429cba79edcd3f2a6d78))
+
+
+
+
+
+# [3.10.0-beta.36](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.35...v3.10.0-beta.36) (2025-01-03)
+
+
+### Bug Fixes
+
+* **context menu:** Implemented closing of context menu on outside click ([#4627](https://github.com/OHIF/Viewers/issues/4627)) ([6b851df](https://github.com/OHIF/Viewers/commit/6b851dfc12f4cf617d02f683e0661feeebfbcf20))
+* **context menu:** restrict the context menu accessibility for locked and hidden annotations ([#4625](https://github.com/OHIF/Viewers/issues/4625)) ([e11ceb9](https://github.com/OHIF/Viewers/commit/e11ceb9d20fa5e680a0247f6ca7c27825daea6c5))
+
+
+### Features
+
+* Implemented CSV support for Arrow annotation. ([#4623](https://github.com/OHIF/Viewers/issues/4623)) ([55fe185](https://github.com/OHIF/Viewers/commit/55fe185c72500256452e25d2f2b17fc9faa99dff))
+
+
+
+
+
+# [3.10.0-beta.35](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.34...v3.10.0-beta.35) (2025-01-03)
+
+
+### Bug Fixes
+
+* **3D rendering:** disabled light sliders when shade is off ([#4631](https://github.com/OHIF/Viewers/issues/4631)) ([5322064](https://github.com/OHIF/Viewers/commit/5322064e9eb66791bc598f82bdf4edd35e40be11))
+
+
+
+
+
+# [3.10.0-beta.34](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.33...v3.10.0-beta.34) (2025-01-02)
+
+
+### Bug Fixes
+
+* Docker build time was very slow on a tiny change ([#4559](https://github.com/OHIF/Viewers/issues/4559)) ([7e43b2f](https://github.com/OHIF/Viewers/commit/7e43b2f768cfc3e08ecde9dfdae275194daece2b))
+
+
+
+
+
+# [3.10.0-beta.33](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.32...v3.10.0-beta.33) (2024-12-20)
+
+
+### Bug Fixes
+
+* **tools:** enable additional tools in volume viewport ([#4620](https://github.com/OHIF/Viewers/issues/4620)) ([1992002](https://github.com/OHIF/Viewers/commit/1992002d2dced171c17b9a0163baf707fc551e3d))
+
+
+
+
+
+# [3.10.0-beta.32](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.31...v3.10.0-beta.32) (2024-12-20)
+
+
+### Bug Fixes
+
+* **datasource:** attach auth headers for delete requests in the dicomweb datasource ([#4619](https://github.com/OHIF/Viewers/issues/4619)) ([8d0ed80](https://github.com/OHIF/Viewers/commit/8d0ed80e0c4570ab799281c29e487dbb39f47b95))
+
+
+
+
+
+# [3.10.0-beta.31](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.30...v3.10.0-beta.31) (2024-12-20)
+
+
+### Bug Fixes
+
+* **segmentation:** black preview when loading a seg, and crash on opening panel ([#4602](https://github.com/OHIF/Viewers/issues/4602)) ([faf5515](https://github.com/OHIF/Viewers/commit/faf5515e4b93da58b673f1ae59ec345e30870446))
+
+
+
+
+
 # [3.10.0-beta.30](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.29...v3.10.0-beta.30) (2024-12-18)
 
 
