@@ -5,13 +5,14 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '../../lib/utils';
 
 const toggleVariants = cva(
-  'inline-flex items-center justify-center rounded-md text-primary-foreground/80 font-medium transition-colors hover:bg-primary/20 hover:text-primary-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 data-[state=on]:bg-primary/20 data-[state=on]:text-highlight',
+  'inline-flex items-center justify-center text-primary-foreground/80 font-medium transition-colors hover:bg-primary/20 hover:text-primary-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 data-[state=on]:bg-primary/20 data-[state=on]:text-highlight',
   {
     variants: {
       variant: {
-        default: 'bg-transparent hover:text-primary',
-        outline: 'border border-input hover:bg-primary/20 hover:text-primary-foreground',
+        default: 'rounded-md bg-transparent hover:text-primary',
+        outline: 'rounded-md border border-input hover:bg-primary/20 hover:text-primary-foreground',
         tool: [
+          '!rounded-lg',
           'bg-transparent text-foreground', // default
           'hover:bg-background hover:text-primary', // hover
           'data-[state=on]:bg-highlight data-[state=on]:text-background data-[state=on]:hover:bg-highlight/50 ', // active
