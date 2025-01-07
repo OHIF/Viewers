@@ -102,7 +102,7 @@ window.config = {
           className: 'text-purple-600 line-through',
         },
         React.createElement('img', {
-          src: '../assets/logoDeemea.svg',
+          src: '../../assets/logoDeemea.svg',
           className: 'w-15 h-10',
         })
       );
