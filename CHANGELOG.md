@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.10.0-beta.38](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.37...v3.10.0-beta.38) (2025-01-07)
+
+
+### Bug Fixes
+
+* **toolbars:** Fix error when filtering out duplicate buttons for a button section. ([#4618](https://github.com/OHIF/Viewers/issues/4618)) ([28cf3a1](https://github.com/OHIF/Viewers/commit/28cf3a17fad5070ba00d0d5d27633237b499da7a))
+
+
+
+
+
 # [3.10.0-beta.37](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.36...v3.10.0-beta.37) (2025-01-06)
 
 
