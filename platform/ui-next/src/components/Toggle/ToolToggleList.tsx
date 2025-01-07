@@ -29,7 +29,7 @@ import {
  *  - isActive: boolean (whether the current tool is active)
  *  - disabled: boolean (disable the entire control)
  *  - onInteraction: callback, called with { itemId, commands }
- *  - dropdownItems: array of { id, icon, label, commands } for secondary tools
+ *  - items: array of { id, icon, label, commands } for secondary tools
  */
 
 export default function ToolToggleList({
@@ -41,7 +41,7 @@ export default function ToolToggleList({
   disabled = false,
   onInteraction,
   className,
-  dropdownItems = [], // array of secondary tools e.g. [{ id, icon, label, commands }, ...]
+  items = [], // array of secondary tools e.g. [{ id, icon, label, commands }, ...]
   ...rest
 }) {
   // Pressed state for the main button, synced to isActive
@@ -117,7 +117,7 @@ export default function ToolToggleList({
           </TooltipTrigger>
 
           {/* --- Dropdown Arrow (shows secondary tools) --- */}
-          {dropdownItems.length > 0 && (
+          {items.length > 0 && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Toggle
@@ -138,7 +138,7 @@ export default function ToolToggleList({
                 side="bottom"
                 align="end"
               >
-                {dropdownItems.map(item => (
+                {items.map(item => (
                   <DropdownMenuItem
                     key={item.id}
                     onClick={() => handleSelectTool(item)}
