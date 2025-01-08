@@ -85,12 +85,10 @@ import {
   ViewportActionBar,
   ViewportActionArrows,
   ViewportPane,
-  ViewportDownloadForm,
   ViewportActionCorners,
   ViewportActionCornersLocations,
   ViewportOverlay,
   ViewportGrid,
-  LegacyViewportActionBar,
 } from './components';
 import { DataRow } from './components/DataRow';
 
@@ -192,10 +190,8 @@ export {
   ViewportActionBar,
   ViewportActionArrows,
   ViewportPane,
-  ViewportDownloadForm,
   ViewportActionCorners,
   ViewportActionCornersLocations,
   ViewportOverlay,
   ViewportGrid,
-  LegacyViewportActionBar,
 };

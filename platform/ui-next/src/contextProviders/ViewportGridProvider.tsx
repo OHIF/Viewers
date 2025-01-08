@@ -10,8 +10,6 @@ import merge from 'lodash.merge';
 
 import PropTypes from 'prop-types';
 import { ViewportGridService, utils } from '@ohif/core';
-// import viewportLabels from '../utils/viewportLabels';
-// NOTE: Temporarily commenting this out since lettered viewport labels are no longer used
 
 const DEFAULT_STATE: AppTypes.ViewportGrid.State = {
   activeViewportId: null,
@@ -53,12 +51,6 @@ const DEFAULT_STATE: AppTypes.ViewportGrid.State = {
     })
   ),
 };
-
-// const getViewportLabel = (viewports, viewportId) => {
-//   const viewportIds = Array.from(viewports.keys());
-//   return viewportLabels[viewportIds.indexOf(viewportId)];
-// };
-// NOTE: Viewport labels are no longer being used
 
 const determineActiveViewportId = (
   state: AppTypes.ViewportGrid.State,
@@ -306,8 +298,6 @@ export function ViewportGridProvider({ children, service }: ViewportGridProvider
               y: yPos,
             });
 
-            // viewport.viewportLabel = getViewportLabel(viewports, viewport.viewportId);
-            // NOTE: Viewport labels are no longer being used
             viewport.isReady = false;
 
             if (!viewport.viewportOptions.presentationIds) {

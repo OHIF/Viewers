@@ -7,7 +7,6 @@ import React, {
   useState,
 } from 'react';
 import PropTypes from 'prop-types';
-import classNames from 'classnames';
 import { useTranslation } from 'react-i18next';
 
 import { Icons } from '@ohif/ui-next';

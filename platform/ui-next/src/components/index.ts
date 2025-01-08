@@ -85,12 +85,10 @@ import {
   ViewportActionBar,
   ViewportActionArrows,
   ViewportPane,
-  ViewportDownloadForm,
   ViewportActionCorners,
   ViewportActionCornersLocations,
   ViewportOverlay,
   ViewportGrid,
-  LegacyViewportActionBar,
 } from './Viewport';
 
 export {
@@ -201,10 +199,8 @@ export {
   ViewportActionBar,
   ViewportActionArrows,
   ViewportPane,
-  ViewportDownloadForm,
   ViewportActionCorners,
   ViewportActionCornersLocations,
   ViewportOverlay,
   ViewportGrid,
-  LegacyViewportActionBar,
 };
