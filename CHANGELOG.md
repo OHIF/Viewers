@@ -3,6 +3,66 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.10.0-beta.43](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.42...v3.10.0-beta.43) (2025-01-08)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.10.0-beta.42](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.41...v3.10.0-beta.42) (2025-01-08)
+
+
+### Bug Fixes
+
+* Convert Rows and Columns to numbers before comparison ([#4654](https://github.com/OHIF/Viewers/issues/4654)) ([#4656](https://github.com/OHIF/Viewers/issues/4656)) ([2f5076e](https://github.com/OHIF/Viewers/commit/2f5076ece8b3125c3426014efdf7fc6b498606d0))
+
+
+
+
+
+# [3.10.0-beta.41](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.40...v3.10.0-beta.41) (2025-01-08)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.10.0-beta.40](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.39...v3.10.0-beta.40) (2025-01-08)
+
+
+### Bug Fixes
+
+* **docker:** make multiarch work ([#4655](https://github.com/OHIF/Viewers/issues/4655)) ([8e12021](https://github.com/OHIF/Viewers/commit/8e120219390a91474fb634711ea8c3312a7d9539))
+
+
+
+
+
+# [3.10.0-beta.39](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.38...v3.10.0-beta.39) (2025-01-08)
+
+
+### Bug Fixes
+
+* **docker:** publish manifest for multiarch and update cs3d ([#4650](https://github.com/OHIF/Viewers/issues/4650)) ([836e67a](https://github.com/OHIF/Viewers/commit/836e67a6ab8de66d8908c75856774318729544f4))
+
+
+
+
+
+# [3.10.0-beta.38](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.37...v3.10.0-beta.38) (2025-01-07)
+
+
+### Bug Fixes
+
+* **toolbars:** Fix error when filtering out duplicate buttons for a button section. ([#4618](https://github.com/OHIF/Viewers/issues/4618)) ([28cf3a1](https://github.com/OHIF/Viewers/commit/28cf3a17fad5070ba00d0d5d27633237b499da7a))
+
+
+
+
+
 # [3.10.0-beta.37](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.36...v3.10.0-beta.37) (2025-01-06)
 
 
