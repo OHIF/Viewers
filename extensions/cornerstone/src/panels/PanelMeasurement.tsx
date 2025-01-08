@@ -1,16 +1,22 @@
 import React, { useEffect, useRef } from 'react';
-import { utils } from '@ohif/core';
+import { CommandsManager, ServicesManager, utils } from '@ohif/core';
 import { MeasurementTable } from '@ohif/ui-next';
 import debounce from 'lodash.debounce';
 import { useMeasurements } from '../hooks/useMeasurements';
 import { StudySummaryFromMetadata } from '../components/StudySummaryFromMetadata';
 
-const { groupByStudy } = utils.MeasurementGroupings;
+const { groupByStudy: defaultGroupingFunction } = utils.MeasurementGroupings;
 const { filterAdditionalFinding, filterAny } = utils.MeasurementFilters;
 
 export type withAppAndFilters = withAppTypes & {
-  measurementFilters: Record<string, (item) => boolean>;
-  groupingFunction?: (groupedMeasurements: Map<string, object[]>, item) => Map<string, object[]>;
+  measurementFilter: (item) => boolean;
+  groupingFunction?: ({
+    servicesManager,
+    commandsManager,
+  }: {
+    servicesManager?: ServicesManager;
+    commandsManager?: CommandsManager;
+  }) => (groupedMeasurements: Map<string, object[]>, item) => Map<string, object[]>;
   title: string;
 };
 
@@ -18,16 +24,16 @@ export default function PanelMeasurementTable({
   servicesManager,
   commandsManager,
   customHeader,
-  measurementFilters = { measurementFilter: filterAny },
+  measurementFilter = filterAny,
   groupingFunction,
   title,
 }: withAppAndFilters): React.ReactNode {
   const measurementsPanelRef = useRef(null);
 
-  const { measurementService, displaySetService } = servicesManager.services;
+  const { measurementService } = servicesManager.services;
 
   const displayMeasurements = useMeasurements(servicesManager, {
-    measurementFilter: measurementFilters.measurementFilter.bind(measurementFilters),
+    measurementFilter,
   });
 
   useEffect(() => {
@@ -54,10 +60,10 @@ export default function PanelMeasurementTable({
 
   const additionalFilter = filterAdditionalFinding(measurementService);
 
-  const { measurementFilter } = measurementFilters;
-
-  const defaultGroupingFunction = groupByStudy(displaySetService);
-  const effectiveGroupingFunction = groupingFunction ?? defaultGroupingFunction;
+  const effectiveGroupingFunction = (groupingFunction ?? defaultGroupingFunction)({
+    servicesManager,
+    commandsManager,
+  });
 
   const measurements = displayMeasurements
     .filter(item => !additionalFilter(item) && measurementFilter(item))
@@ -124,6 +130,8 @@ export default function PanelMeasurementTable({
                           ? customHeader({
                               additionalFindings,
                               measurements,
+                              measurementFilter,
+                              studyInstanceUID: item.study,
                             })
                           : customHeader}
                       </>
