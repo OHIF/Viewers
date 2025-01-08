@@ -4,14 +4,21 @@ import { useTranslation } from 'react-i18next';
 import PropTypes from 'prop-types';
 import { utils } from '@ohif/core';
 import { useImageViewer, Dialog, ButtonEnums } from '@ohif/ui';
-import { useViewportGrid } from '@ohif/ui-next';
+import {
+  useViewportGrid,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  Icons,
+  Button,
+} from '@ohif/ui-next';
 import { StudyBrowser } from '@ohif/ui-next';
 
 import { useTrackedMeasurements } from '../../getContextModule';
 import { Separator } from '@ohif/ui-next';
 import { PanelStudyBrowserHeader } from '@ohif/extension-default';
 import { defaultActionIcons, defaultViewPresets } from './constants';
-
 const { formatDate, createStudyBrowserTabs } = utils;
 const thumbnailNoImageModalities = [
   'SR',
@@ -389,22 +396,6 @@ export default function PanelStudyBrowserTracking({
     }
   }
 
-  const _studyContextMenu = (event, studyInstanceUID) => {
-    event.preventDefault();
-    const selectorProps = {
-      studyInstanceUID,
-      activeStudyUID: studyInstanceUID,
-      isMultimonitor: servicesManager.services.multiMonitorService.isMultimonitor,
-    };
-    commandsManager.run('showContextMenu', {
-      event,
-      menuId: 'studyBrowserContextMenu',
-      menuCustomizationId: 'StudyBrowser.studyContextMenu',
-      selectorProps,
-      ...selectorProps,
-    });
-  };
-
   useEffect(() => {
     if (jumpToDisplaySet) {
       // Get element by displaySetInstanceUID
@@ -501,9 +492,51 @@ export default function PanelStudyBrowserTracking({
     });
   };
 
-  const onThumbnailContextMenu = (commandName, options) => {
-    commandsManager.runCommand(commandName, options);
-  };
+  const ThumbnailMenuItems = customizationService.getCustomComponent(
+    'PanelStudyBrowserTracking.ThumbnailMenuItems',
+    ({ displaySetInstanceUID, canReject, onReject }) => {
+      return (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="hidden group-hover:inline-flex data-[state=open]:inline-flex"
+            >
+              <Icons.More />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent
+            hideWhenDetached
+            align="start"
+          >
+            <DropdownMenuItem
+              onSelect={() => {
+                commandsManager.run('openDICOMTagViewer', {
+                  displaySetInstanceUID,
+                });
+              }}
+              className="gap-[6px]"
+            >
+              <Icons.DicomTagBrowser />
+              Tag Browser
+            </DropdownMenuItem>
+            {canReject && (
+              <DropdownMenuItem
+                onSelect={() => {
+                  onReject();
+                }}
+                className="gap-[6px]"
+              >
+                <Icons.Trash className="h-5 w-5 text-red-500" />
+                Delete Report
+              </DropdownMenuItem>
+            )}
+          </DropdownMenuContent>
+        </DropdownMenu>
+      );
+    }
+  );
 
   return (
     <>
@@ -527,7 +560,6 @@ export default function PanelStudyBrowserTracking({
         activeTabName={activeTabName}
         expandedStudyInstanceUIDs={expandedStudyInstanceUIDs}
         onClickStudy={_handleStudyClick}
-        onStudyContextMenu={_studyContextMenu}
         onClickTab={clickedTabName => {
           setActiveTabName(clickedTabName);
         }}
@@ -539,7 +571,7 @@ export default function PanelStudyBrowserTracking({
         activeDisplaySetInstanceUIDs={activeViewportDisplaySetInstanceUIDs}
         showSettings={actionIcons.find(icon => icon.id === 'settings').value}
         viewPresets={viewPresets}
-        onThumbnailContextMenu={onThumbnailContextMenu}
+        ThumbnailMenuItems={ThumbnailMenuItems}
       />
     </>
   );
@@ -609,7 +641,6 @@ function _mapDisplaySets(
     .forEach(ds => {
       const imageSrc = thumbnailImageSrcMap[ds.displaySetInstanceUID];
       const componentType = _getComponentType(ds);
-      const numPanes = viewportGridService.getNumViewportPanes();
 
       const array =
         componentType === 'thumbnailTracked' ? thumbnailDisplaySets : thumbnailNoImageDisplaySets;

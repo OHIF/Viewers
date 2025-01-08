@@ -5,13 +5,6 @@ import { useDrag } from 'react-dnd';
 import { Icons } from '../Icons';
 import { DisplaySetMessageListTooltip } from '../DisplaySetMessageListTooltip';
 import { TooltipTrigger, TooltipContent, Tooltip } from '../Tooltip';
-import { Button } from '../Button';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '../DropdownMenu';
 
 /**
  * Display a thumbnail for a display set.
@@ -34,12 +27,12 @@ const Thumbnail = ({
   viewPreset = 'thumbnails',
   modality,
   isHydratedForDerivedDisplaySet = false,
+  isTracked = false,
   canReject = false,
   onReject = () => {},
-  isTracked = false,
   thumbnailType = 'thumbnail',
   onClickUntrack = () => {},
-  onThumbnailContextMenu,
+  ThumbnailMenuItems = () => {},
 }: withAppTypes): React.ReactNode => {
   // TODO: We should wrap our thumbnail to create a "DraggableThumbnail", as
   // this will still allow for "drag", even if there is no drop target for the
@@ -134,44 +127,11 @@ const Thumbnail = ({
             </div>
             {/* bottom right */}
             <div className="absolute bottom-0 right-0 flex items-center gap-[4px] p-[4px]">
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="hidden group-hover:inline-flex data-[state=open]:inline-flex"
-                  >
-                    <Icons.More />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent
-                  hideWhenDetached
-                  align="start"
-                >
-                  <DropdownMenuItem
-                    onSelect={() => {
-                      onThumbnailContextMenu('openDICOMTagViewer', {
-                        displaySetInstanceUID,
-                      });
-                    }}
-                    className="gap-[6px]"
-                  >
-                    <Icons.DicomTagBrowser />
-                    Tag Browser
-                  </DropdownMenuItem>
-                  {canReject && (
-                    <DropdownMenuItem
-                      onSelect={() => {
-                        onReject();
-                      }}
-                      className="gap-[6px]"
-                    >
-                      <Icons.Trash className="h-5 w-5 text-red-500" />
-                      Delete Report
-                    </DropdownMenuItem>
-                  )}
-                </DropdownMenuContent>
-              </DropdownMenu>
+              <ThumbnailMenuItems
+                displaySetInstanceUID={displaySetInstanceUID}
+                canReject={canReject}
+                onReject={onReject}
+              />
             </div>
           </div>
         </div>
@@ -243,7 +203,6 @@ const Thumbnail = ({
             messages={messages}
             id={`display-set-tooltip-${displaySetInstanceUID}`}
           />
-
           {isTracked && (
             <Tooltip>
               <TooltipTrigger>
@@ -271,41 +230,11 @@ const Thumbnail = ({
               </TooltipContent>
             </Tooltip>
           )}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="hidden group-hover:inline-flex data-[state=open]:inline-flex"
-              >
-                <Icons.More />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent hideWhenDetached>
-              <DropdownMenuItem
-                onSelect={() => {
-                  onThumbnailContextMenu('openDICOMTagViewer', {
-                    displaySetInstanceUID,
-                  });
-                }}
-                className="gap-[6px]"
-              >
-                <Icons.DicomTagBrowser />
-                Tag Browser
-              </DropdownMenuItem>
-              {canReject && (
-                <DropdownMenuItem
-                  onSelect={() => {
-                    onReject();
-                  }}
-                  className="gap-[6px]"
-                >
-                  <Icons.Trash className="h-5 w-5 text-red-500" />
-                  Delete Report
-                </DropdownMenuItem>
-              )}
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <ThumbnailMenuItems
+            displaySetInstanceUID={displaySetInstanceUID}
+            canReject={canReject}
+            onReject={onReject}
+          />
         </div>
       </div>
     );
@@ -369,8 +298,6 @@ Thumbnail.propTypes = {
   viewPreset: PropTypes.string,
   modality: PropTypes.string,
   isHydratedForDerivedDisplaySet: PropTypes.bool,
-  canReject: PropTypes.bool,
-  onReject: PropTypes.func,
   isTracked: PropTypes.bool,
   onClickUntrack: PropTypes.func,
   countIcon: PropTypes.string,
