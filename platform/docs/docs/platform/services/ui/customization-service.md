@@ -9,51 +9,62 @@ differently between different modes or for different deployments.  A mode
 example might be the use of a custom overlay showing mode related DICOM header
 information such as radiation dose or patient age.
 
-The use of this service enables these to be defined in a typed fashion by
+The use of `customizationService` enables these to be defined in a typed fashion by
 providing an easy way to set default values for this, but to allow a
 non-default value to be specified by the configuration or mode.
 
-This service is a UI service in that part of the registration allows for registering
-UI components and types to deal with, but it does not directly provide an UI
-displayable elements unless customized to do so.
 
-<b>Note:</b> Customization Service itself doesn't implement the actual customization,
+:::note
+
+`customizationService` itself doesn't implement the actual customization,
 but rather just provide mechanism to register reusable prototypes, to configure
 those prototypes with actual configurations, and to use the configured objects
 (components, data, whatever).
+
 Actual implementation of the customization is totally up to the component that
-supports customization. (for example, `CustomizableViewportOverlay` component uses
-`CustomizationService` to implement viewport overlay that is easily customizable
-from configuration.)
+supports customization.
+:::
 
-## Global, Default and Mode customizations
-There are various customization sets that define the lifetime/setup of the
-customization.  The global customizations are those used for overriding
-customizations defined elsewhere, and allow replacing a customization.
 
-Mode customizations are only registered for the lifetime of the mode, allowing
-the mode definition to update/modify the underlying behaviour.  This is related
-to default customizations, which provide a fallback if the mode or global customization
-isn't defined.  Default customizations may only be defined once, otherwise throwing
-an exception.
 
-## Append and Merge Customizations
-In addition to the replace a customization, there is the ability to merge or append
-a customization.  The merge customization simply applies the lodash merge functionality
-to the existing customization, with the new one, while the append customization
-modifies the customization by appending to the value.
+Here's a rewritten version of the requested section for improved clarity and organization:
 
-### Append Behaviour
-When a list is found in the destination object, the append source object is
-examined to see how to handle the change.  If the source is simply a list,
-then the list object is appended, and no additional changes are performed.
-However, if the source is an object other than a list, then the iterable
-attributes of the object are examined to match child objects to the destination list,
-according to the following table:
+---
 
-* Natural or zero number value - match the given index location and merge at the point
-* Fractional number value - insert at a new point in the list, starting from the end or beginning
-* keyword - match a value having the same id as the keyword, inserting at the end, or at _priority as defined in the keywords above.
+## Customization Types: Global, Default, and Mode
+
+Customizations in this service are categorized based on their scope and lifespan:
+
+- **Global Customizations**: These serve as overrides for other customization levels. They allow complete replacement of a customization.
+- **Mode Customizations**: These are temporary and only active during the lifespan of a specific workflow mode (read more about modes [here](../../modes/index.md)). They enable mode-specific behavior and updates while ensuring isolation from global settings.
+- **Default Customizations**: These act as fallbacks when no global or mode customizations are defined. Each default customization must be uniquely defined; attempting to redefine a default customization will result in an error.
+
+---
+
+## Modification Methods: Append and Merge
+
+Customizations can be modified using three methods:
+
+1. **Merge**: Combines the existing customization with a new one using a deep merge approach (e.g., lodash merge).
+2. **Append**: Updates the customization by adding new elements to the existing structure.
+3. **Replace**: Replaces the existing customization with a new one.
+
+
+<details>
+<summary>
+Appending customizations involving lists
+</summary>
+
+When appending customizations involving lists, the source and destination structures dictate the handling:
+
+- If the destination is a list and the source is also a list, the source list is appended to the destination.
+- If the source is an object, its properties are iterated and matched to the destination list based on these rules:
+  - **Natural numbers or zero**: Merge at the corresponding index in the list.
+  - **Fractional numbers**: Insert a new item starting from the nearest end (beginning or end of the list).
+  - **Keywords**: Match items based on a unique identifier (e.g., `id`) and insert at a specific position determined by a priority system.
+
+</details>
+
 
 #### Example Append
 
@@ -81,6 +92,78 @@ Finally, position -1 (the end position) is updated from value 3 to value -3.
 
 The ordering is not specified on any of these insertions, so can happen out of order.  Use multiple updates to perform order specific inserts.
 
+
+Here's a cleaned-up and more concise version of the section based on your input:
+
+---
+
+## Registering and Using Customization Prototypes
+
+Customization templates (or prototypes) should be defined and exported by extensions or modes via the `getCustomizationModule()` function. This allows for clear, reusable definitions that can be leveraged across the application. Below is an example of registering and utilizing a customization module:
+
+### Example: Registering a Customization Module
+
+```javascript
+function getCustomizationModule() {
+  return [
+    {
+      id: 'studyBrowser.sortFunctions',
+      values: [
+        {
+          label: 'Series Date',
+          sortFunction: (a, b) => {
+            const dateA = new Date(a?.SeriesDate);
+            const dateB = new Date(b?.SeriesDate);
+            return dateB.getTime() - dateA.getTime();
+          },
+        },
+      ],
+    },
+  ];
+}
+```
+
+This module defines one customization called `studyBrowser.sortFunctions` for a study browser, showing what can be customized by developers.
+
+### Example: Using Customization in a UI Component
+
+Below is an example of how the customization can be consumed in a React component:
+
+```javascript
+import React, { useEffect, useState } from 'react';
+
+export function StudyBrowserSort({ servicesManager }) {
+  const { values: sortFunctions } = customizationService.getCustomization('studyBrowser.sortFunctions');
+
+  // rest of the component
+
+  return (
+    // rest of the component
+  );
+}
+```
+
+
+### Modifying Customizations
+
+Now we can use the `customizationService` to modify the customizations. For instance if in our `onModeEnter` file we add the following code
+
+```js
+customizationService.setCustomization(
+  'studyBrowser.sortFunctions',
+  {
+    label: 'Series Number',
+    sortFunction: (a, b) => a?.SeriesNumber - b?.SeriesNumber,
+  },
+  customizationService.Scope.Mode // Scope of the customization
+);
+```
+
+
+
+
+
+
 ## Registering customizable modules (or defining customization prototypes)
 
 Extensions and Modes can register customization templates they support.
@@ -99,7 +182,6 @@ In the `value` of each customizations, you will define customization prototype(s
 These customization prototype(s) can be considered like "Prototype" in Javascript.
 These can be used to extend the customization definitions from configurations.
 Default customizations will be often used to define all the customization prototypes,
-Default customizations will be often used to define all the customization prototypes,
 as they will be loaded automatically along with the defining extension or mode.
 
 
@@ -108,7 +190,6 @@ For example, the `@ohif/extension-default` extension defines,
 ```js
   getCustomizationModule: () => [
     //...
-
     {
       name: 'default',
       value: [
@@ -142,7 +223,6 @@ For example, the `@ohif/extension-default` extension defines,
         },
       ],
     },
-
     //...
   ],
 ```
@@ -341,22 +421,10 @@ const overlayItem: Types.UIOverlayItem = {
 };
 ```
 
-# Customizations
+## Customizations
 
 This section can be used to specify various customization capabilities.
 
-## Text color for StudyBrowser tabs
-
-This is the recommended pattern for deep customization of class attributes,
-making it fine grained, and have it apply a set of attributes, mostly from
-tailwind.  In this case it is a double indirection, as the buttons class
-uses it's own internal class names.
-
-* Name: 'class:StudyBrowser'
-* Attributes:
-** `true` for the is active true text color
-** `false` for the is active false text color.
-** Values are button colors, from the Button class, eg default, white, black
 
 ## customRoutes
 
@@ -489,12 +557,6 @@ context menus.  Currently it supports buttons 1-3, as well as modifier keys
 by associating a commands list with the button to click.  See `initContextMenu`
 for more details.
 
-## Please add additional customizations above this section
-> 3rd Party implementers may be added to this table via pull requests.
-
-<!--
-  LINKS
--->
 
 <!-- prettier-ignore-start -->
 [interface]: https://github.com/OHIF/Viewers/blob/master/platform/core/src/services/UIModalService/index.js

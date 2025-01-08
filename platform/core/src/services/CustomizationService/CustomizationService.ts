@@ -290,7 +290,7 @@ export default class CustomizationService extends PubSubService {
    * @param merge - (Optional) Specifies how the customization should be merged with existing ones.
    *                Defaults to `MergeEnum.Merge`.
    */
-  public setModeCustomization(
+  private setModeCustomization(
     customizationId: string,
     customization: Customization,
     merge = MergeEnum.Merge
