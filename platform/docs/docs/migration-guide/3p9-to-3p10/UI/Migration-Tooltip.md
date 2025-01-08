@@ -1,3 +1,6 @@
+---
+title: Tooltip
+---
 
 ##  Tooltip Updates
 
@@ -34,33 +37,26 @@
    </Tooltip>
    ```
 
-3. Replace `TooltipClipboard` with custom `makeCopyTooltipCell`:
-   ```tsx
-   const makeCopyTooltipCell = textValue => (
-     <Tooltip>
-       <TooltipTrigger asChild>
-         <span className="cursor-pointer truncate">{textValue}</span>
-       </TooltipTrigger>
-       <TooltipContent copyEnabled copyText={textValue} side="bottom">
-         {textValue}
-       </TooltipContent>
-     </Tooltip>
-   );
 
-   // Usage:
-   content: makeCopyTooltipCell(value)
-   ```
+3. TooltipClipboard Replacement:
+The `TooltipClipboard` component has been removed. Instead, use the `Clipboard` component inside `TooltipContent` for copying text functionality.
 
----
+#### Before:
+```tsx
+<TooltipClipboard>{text}</TooltipClipboard>
+```
 
-
-## 3. General Refactoring
-
-### Migration Checklist:
-1. Update all components using Tooltips:
-   - `DynamicVolumeControls.tsx`
-   - `TrackedCornerstoneViewport.tsx`
-   - `WorkList.tsx`
-   - Others as applicable.
-
-2. Review and replace all icon usages with `Icons.ByName`.
+#### After:
+```tsx
+<Tooltip>
+  <TooltipTrigger asChild>
+    <span className="cursor-pointer truncate">{text}</span>
+  </TooltipTrigger>
+  <TooltipContent side="bottom">
+    <div className="flex items-center justify-between gap-2">
+      {text}
+      <Clipboard>{text}</Clipboard>
+    </div>
+  </TooltipContent>
+</Tooltip>
+```
