@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
 
-import { ViewportActionArrows, useViewportGrid } from '@ohif/ui';
-import { Icons, Tooltip, TooltipTrigger, TooltipContent } from '@ohif/ui-next';
+import { ViewportActionArrows } from '@ohif/ui';
+import { useViewportGrid, Icons, Tooltip, TooltipTrigger, TooltipContent } from '@ohif/ui-next';
 
 import { annotation } from '@cornerstonejs/tools';
 import { useTrackedMeasurements } from './../getContextModule';

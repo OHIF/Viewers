@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { Machine } from 'xstate';
 import { useMachine } from '@xstate/react';
-import { useViewportGrid } from '@ohif/ui';
+import { useViewportGrid } from '@ohif/ui-next';
 import { promptLabelAnnotation, promptSaveReport } from '@ohif/extension-default';
 import { machineConfiguration, defaultOptions, RESPONSE } from './measurementTrackingMachine';
 import promptBeginTracking from './promptBeginTracking';

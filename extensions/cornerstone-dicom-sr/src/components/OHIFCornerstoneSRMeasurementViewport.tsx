@@ -5,9 +5,10 @@ import { ExtensionManager, useToolbar } from '@ohif/core';
 
 import { setTrackingUniqueIdentifiersForElement } from '../tools/modules/dicomSRModule';
 
+import { ViewportActionArrows } from '@ohif/ui';
 import createReferencedImageDisplaySet from '../utils/createReferencedImageDisplaySet';
 import { usePositionPresentationStore } from '@ohif/extension-cornerstone';
-import { useViewportGrid, ViewportActionArrows } from '@ohif/ui';
+import { useViewportGrid } from '@ohif/ui-next';
 import { Icons, Tooltip, TooltipTrigger, TooltipContent } from '@ohif/ui-next';
 
 const MEASUREMENT_TRACKING_EXTENSION_ID = '@ohif/extension-measurement-tracking';

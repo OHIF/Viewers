@@ -79,6 +79,17 @@ import { StudySummary } from './StudySummary';
 import { ErrorBoundary } from './Errorboundary';
 import { Header } from './Header';
 import { Card, CardHeader, CardFooter, CardTitle, CardDescription, CardContent } from './Card';
+import {
+  ViewportActionButton,
+  PatientInfo,
+  ViewportActionBar,
+  ViewportActionArrows,
+  ViewportPane,
+  ViewportActionCorners,
+  ViewportActionCornersLocations,
+  ViewportOverlay,
+  ViewportGrid,
+} from './Viewport';
 
 export {
   ErrorBoundary,
@@ -183,5 +194,14 @@ export {
   CardTitle,
   CardDescription,
   CardContent,
+  ViewportActionButton,
+  PatientInfo,
+  ViewportActionBar,
+  ViewportActionArrows,
+  ViewportPane,
+  ViewportActionCorners,
+  ViewportActionCornersLocations,
+  ViewportOverlay,
+  ViewportGrid,
   Clipboard,
 };

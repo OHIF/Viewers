@@ -81,10 +81,20 @@ import {
   StudySummary,
   ErrorBoundary,
   Header,
+  ViewportActionButton,
+  PatientInfo,
+  ViewportActionBar,
+  ViewportActionArrows,
+  ViewportPane,
+  ViewportActionCorners,
+  ViewportActionCornersLocations,
+  ViewportOverlay,
+  ViewportGrid,
 } from './components';
 import { DataRow } from './components/DataRow';
 
 import { useNotification, NotificationProvider } from './contextProviders';
+import { ViewportGridContext, ViewportGridProvider, useViewportGrid } from './contextProviders';
 
 export {
   ErrorBoundary,
@@ -104,6 +114,9 @@ export {
   // contextProviders
   NotificationProvider,
   useNotification,
+  ViewportGridContext,
+  ViewportGridProvider,
+  useViewportGrid,
   Separator,
   Tabs,
   TabsContent,
@@ -174,4 +187,13 @@ export {
   TooltipContent,
   StudySummary,
   Header,
+  ViewportActionButton,
+  PatientInfo,
+  ViewportActionBar,
+  ViewportActionArrows,
+  ViewportPane,
+  ViewportActionCorners,
+  ViewportActionCornersLocations,
+  ViewportOverlay,
+  ViewportGrid,
 };
