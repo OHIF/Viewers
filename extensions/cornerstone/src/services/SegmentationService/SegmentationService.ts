@@ -66,8 +66,8 @@ const EVENTS = {
   SEGMENTATION_DATA_MODIFIED: 'event::segmentation_data_modified',
   // fired when the segmentation is removed
   SEGMENTATION_REMOVED: 'event::segmentation_removed',
-  // fired when the segmentation is changed
-  SEGMENTATION_CHANGED: 'event::segmentation_changed',
+  // fired when the active segmentation is changed
+  ACTIVE_SEGMENTATION_CHANGED: 'event::active_segmentation_changed',
   //
   // fired when segmentation representation is added
   SEGMENTATION_REPRESENTATION_MODIFIED: 'event::segmentation_representation_modified',
@@ -710,7 +710,7 @@ class SegmentationService extends PubSubService {
     // Set the tool mode for the tool group
     setSegToolModeForToolGroups(toolGroupService, toolMode);
 
-    this._broadcastEvent(EVENTS.SEGMENTATION_CHANGED, {
+    this._broadcastEvent(EVENTS.ACTIVE_SEGMENTATION_CHANGED, {
       segmentationId,
     });
   }
