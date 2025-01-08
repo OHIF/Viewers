@@ -24,7 +24,7 @@ import {
   DialogDescription,
 } from './Dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './Select';
-
+import { Clipboard } from './Clipboard';
 import { Combobox } from './Combobox';
 import { Popover, PopoverContent, PopoverTrigger, PopoverAnchor } from './Popover';
 import { Calendar } from './Calendar';
@@ -183,4 +183,5 @@ export {
   CardTitle,
   CardDescription,
   CardContent,
+  Clipboard,
 };

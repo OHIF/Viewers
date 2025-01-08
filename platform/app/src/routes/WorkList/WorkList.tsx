@@ -35,6 +35,7 @@ import {
   Tooltip,
   TooltipTrigger,
   TooltipContent,
+  Clipboard,
   Onboarding,
   ScrollArea,
 } from '@ohif/ui-next';
@@ -281,19 +282,18 @@ function WorkList({
 
     const makeCopyTooltipCell = textValue => {
       if (!textValue) {
-        return null;
+        return '';
       }
       return (
         <Tooltip>
           <TooltipTrigger asChild>
             <span className="cursor-pointer truncate">{textValue}</span>
           </TooltipTrigger>
-          <TooltipContent
-            copyEnabled
-            copyText={textValue}
-            side="bottom"
-          >
-            {textValue}
+          <TooltipContent side="bottom">
+            <div className="flex items-center justify-between gap-2">
+              {textValue}
+              <Clipboard>{textValue}</Clipboard>
+            </div>
           </TooltipContent>
         </Tooltip>
       );
@@ -371,7 +371,7 @@ function WorkList({
             seriesInStudiesMap.has(studyInstanceUid)
               ? seriesInStudiesMap.get(studyInstanceUid).map(s => {
                   return {
-                    description: s.description || '(empty)',
+                    description: s.description || '',
                     seriesNumber: s.seriesNumber ?? '',
                     modality: s.modality || '',
                     instances: s.numSeriesInstances || '',
@@ -413,12 +413,15 @@ function WorkList({
                 query.append('configUrl', filterValues.configUrl);
               }
               query.append('StudyInstanceUIDs', studyInstanceUid);
+
               return (
                 mode.displayName && (
                   <Link
                     className={isValidMode ? '' : 'cursor-not-allowed'}
                     key={i}
-                    to={`${publicUrl}${mode.routeName}${dataPath || ''}?${query.toString()}`}
+                    to={`${dataPath ? '../../' : ''}${mode.routeName}${
+                      dataPath || ''
+                    }?${query.toString()}`}
                     onClick={event => {
                       // In case any event bubbles up for an invalid mode, prevent the navigation.
                       // For example, the event bubbles up when the icon embedded in the disabled button is clicked.
