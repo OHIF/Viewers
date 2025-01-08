@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import { useTranslation } from 'react-i18next';
-import { Icons, Tooltip } from '@ohif/ui-next';
+import { Icons, Tooltip, TooltipTrigger, TooltipContent } from '../../components';
 
 const classes = {
   infoHeader: 'text-base text-primary-light',
@@ -35,12 +35,15 @@ function PatientInfo({
 
   return (
     <div ref={showPatientInfoRef}>
-      <Tooltip
-        isSticky
-        isDisabled={!isOpen}
-        position="bottom-right"
-        content={
-          isOpen && (
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Icons.Info className="hover:text-primary-light cursor-pointer text-white" />
+        </TooltipTrigger>
+        {isOpen && (
+          <TooltipContent
+            side="bottom"
+            align="end"
+          >
             <div className="flex py-2">
               <div className="flex pt-1">
                 <Icons.InfoLink className="text-primary-main w-4" />
@@ -112,10 +115,8 @@ function PatientInfo({
                 </div>
               </div>
             </div>
-          )
-        }
-      >
-        <Icons.Info className="hover:text-primary-light cursor-pointer text-white" />
+          </TooltipContent>
+        )}
       </Tooltip>
     </div>
   );
