@@ -7,8 +7,48 @@ import { useNavigate } from 'react-router-dom';
 import { Separator } from '@ohif/ui-next';
 import { PanelStudyBrowserHeader } from './PanelStudyBrowserHeader';
 import { defaultActionIcons, defaultViewPresets } from './constants';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  Icons,
+  Button,
+} from '@ohif/ui-next';
 
 const { sortStudyInstances, formatDate, createStudyBrowserTabs } = utils;
+
+const ThumbnailMenuItems = ({ displaySetInstanceUID, commandsManager }) => {
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="hidden group-hover:inline-flex data-[state=open]:inline-flex"
+        >
+          <Icons.More />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent
+        hideWhenDetached
+        align="start"
+      >
+        <DropdownMenuItem
+          onSelect={() => {
+            commandsManager.run('openDICOMTagViewer', {
+              displaySetInstanceUID,
+            });
+          }}
+          className="gap-[6px]"
+        >
+          <Icons.DicomTagBrowser />
+          Tag Browser
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+};
 
 /**
  *
@@ -280,9 +320,10 @@ function PanelStudyBrowser({
 
   const activeDisplaySetInstanceUIDs = viewports.get(activeViewportId)?.displaySetInstanceUIDs;
 
-  const onThumbnailContextMenu = (commandName, options) => {
-    commandsManager.runCommand(commandName, options);
-  };
+  const CustomizedThumbnailMenuItems = customizationService.getCustomComponent(
+    'PanelStudyBrowser.ThumbnailMenuItems',
+    ThumbnailMenuItems
+  );
 
   return (
     <>
@@ -304,16 +345,22 @@ function PanelStudyBrowser({
         tabs={tabs}
         servicesManager={servicesManager}
         activeTabName={activeTabName}
-        onDoubleClickThumbnail={onDoubleClickThumbnailHandler}
-        activeDisplaySetInstanceUIDs={activeDisplaySetInstanceUIDs}
         expandedStudyInstanceUIDs={expandedStudyInstanceUIDs}
         onClickStudy={_handleStudyClick}
         onClickTab={clickedTabName => {
           setActiveTabName(clickedTabName);
         }}
+        onClickThumbnail={() => {}}
+        onDoubleClickThumbnail={onDoubleClickThumbnailHandler}
+        activeDisplaySetInstanceUIDs={activeDisplaySetInstanceUIDs}
         showSettings={actionIcons.find(icon => icon.id === 'settings').value}
         viewPresets={viewPresets}
-        onThumbnailContextMenu={onThumbnailContextMenu}
+        ThumbnailMenuItems={props => (
+          <CustomizedThumbnailMenuItems
+            {...props}
+            commandsManager={commandsManager}
+          />
+        )}
       />
     </>
   );
