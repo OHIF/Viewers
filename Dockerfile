@@ -61,6 +61,8 @@ ENV PATH=/usr/src/app/node_modules/.bin:$PATH
 COPY package.json yarn.lock preinstall.js lerna.json ./
 COPY --parents ./addOns/package.json ./addOns/*/*/package.json ./extensions/*/package.json ./modes/*/package.json ./platform/*/package.json ./
 # Run the install before copying the rest of the files
+
+RUN bun pm cache rm
 RUN bun install
 # Copy the local directory
 COPY --link --exclude=yarn.lock --exclude=package.json --exclude=Dockerfile . .
