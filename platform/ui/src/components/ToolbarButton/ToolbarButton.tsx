@@ -3,7 +3,8 @@ import PropTypes from 'prop-types';
 import classNames from 'classnames';
 
 import IconButton from '../IconButton';
-import { Icons, Tooltip, TooltipTrigger, TooltipContent } from '@ohif/ui-next';
+import { Icons } from '@ohif/ui-next';
+import Tooltip from '../Tooltip';
 
 const ToolbarButton = ({
   id,
@@ -12,6 +13,7 @@ const ToolbarButton = ({
   commands,
   onInteraction,
   dropdownContent = null,
+  //
   className,
   disabled,
   disabledText,
@@ -19,6 +21,7 @@ const ToolbarButton = ({
   toolTipClassName,
   disableToolTip = false,
   ...rest
+  //
 }) => {
   const shouldShowDropdown = !!dropdownContent;
   const iconEl = icon ? (
@@ -28,21 +31,32 @@ const ToolbarButton = ({
   );
 
   const sizeToUse = size ?? 'toolbar';
+  const toolTipClassNameToUse =
+    toolTipClassName !== undefined
+      ? toolTipClassName
+      : sizeToUse === 'toolbar'
+        ? 'w-[40px] h-[40px]'
+        : 'w-[32px] h-[32px]';
 
-  const handleClick = () => {
-    onInteraction({
-      itemId: id,
-      commands,
-    });
-  };
-
-  if (disableToolTip) {
-    return (
-      <div key={id}>
+  return (
+    <div key={id}>
+      <Tooltip
+        isSticky={shouldShowDropdown}
+        content={shouldShowDropdown ? dropdownContent : label}
+        secondaryContent={disabled ? disabledText : null}
+        tight={shouldShowDropdown}
+        className={toolTipClassNameToUse}
+        isDisabled={disableToolTip}
+      >
         <IconButton
           size={sizeToUse}
           className={classNames(className, disabled ? 'ohif-disabled' : '')}
-          onClick={handleClick}
+          onClick={() => {
+            onInteraction({
+              itemId: id,
+              commands,
+            });
+          }}
           name={label}
           key={id}
           id={id}
@@ -50,38 +64,6 @@ const ToolbarButton = ({
         >
           {iconEl}
         </IconButton>
-      </div>
-    );
-  }
-
-  return (
-    <div key={id}>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <span>
-            <IconButton
-              size={sizeToUse}
-              className={classNames(className, disabled ? 'ohif-disabled' : '')}
-              onClick={handleClick}
-              name={label}
-              key={id}
-              id={id}
-              {...rest}
-            >
-              {iconEl}
-            </IconButton>
-          </span>
-        </TooltipTrigger>
-
-        <TooltipContent
-          side="bottom"
-          className={classNames('w-auto', toolTipClassName)}
-        >
-          {shouldShowDropdown ? dropdownContent : label}
-          {disabled && disabledText ? (
-            <div className="text-muted-foreground mt-0 text-sm">{disabledText}</div>
-          ) : null}
-        </TooltipContent>
       </Tooltip>
     </div>
   );
@@ -101,7 +83,6 @@ ToolbarButton.propTypes = {
   toolTipClassName: PropTypes.string,
   disableToolTip: PropTypes.bool,
   disabled: PropTypes.bool,
-  disabledText: PropTypes.string,
 };
 
 export default ToolbarButton;
