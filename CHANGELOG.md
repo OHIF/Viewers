@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.10.0-beta.40](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.39...v3.10.0-beta.40) (2025-01-08)
+
+
+### Bug Fixes
+
+* **docker:** make multiarch work ([#4655](https://github.com/OHIF/Viewers/issues/4655)) ([8e12021](https://github.com/OHIF/Viewers/commit/8e120219390a91474fb634711ea8c3312a7d9539))
+
+
+
+
+
 # [3.10.0-beta.39](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.38...v3.10.0-beta.39) (2025-01-08)
 
 
