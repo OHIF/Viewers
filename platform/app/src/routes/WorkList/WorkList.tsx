@@ -13,7 +13,6 @@ import { useDebounce, useSearchParams } from '@hooks';
 import { utils, hotkeys } from '@ohif/core';
 
 import {
-  Icon,
   StudyListExpandedRow,
   EmptyStudies,
   StudyListTable,
@@ -281,7 +280,7 @@ function WorkList({
 
     const makeCopyTooltipCell = textValue => {
       if (!textValue) {
-        return <span className="text-gray-700">(Empty)</span>;
+        return null;
       }
       return (
         <Tooltip>
@@ -305,11 +304,7 @@ function WorkList({
       row: [
         {
           key: 'patientName',
-          content: patientName ? (
-            makeCopyTooltipCell(patientName)
-          ) : (
-            <span className="text-gray-700">(Empty)</span>
-          ),
+          content: patientName ? makeCopyTooltipCell(patientName) : null,
           gridCol: 4,
         },
         {
@@ -417,7 +412,6 @@ function WorkList({
                 query.append('configUrl', filterValues.configUrl);
               }
               query.append('StudyInstanceUIDs', studyInstanceUid);
-
               return (
                 mode.displayName && (
                   <Link

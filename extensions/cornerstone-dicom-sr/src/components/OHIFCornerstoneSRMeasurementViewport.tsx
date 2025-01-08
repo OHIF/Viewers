@@ -7,7 +7,7 @@ import { setTrackingUniqueIdentifiersForElement } from '../tools/modules/dicomSR
 
 import createReferencedImageDisplaySet from '../utils/createReferencedImageDisplaySet';
 import { usePositionPresentationStore } from '@ohif/extension-cornerstone';
-import { useViewportGrid, ViewportActionArrows, displaySetService } from '@ohif/ui';
+import { useViewportGrid, ViewportActionArrows } from '@ohif/ui';
 import { Icons, Tooltip, TooltipTrigger, TooltipContent } from '@ohif/ui-next';
 
 const MEASUREMENT_TRACKING_EXTENSION_ID = '@ohif/extension-measurement-tracking';

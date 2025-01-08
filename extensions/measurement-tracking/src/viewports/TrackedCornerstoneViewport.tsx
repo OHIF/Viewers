@@ -35,13 +35,17 @@ function TrackedCornerstoneViewport(
   const [viewportElem, setViewportElem] = useState(null);
 
   const { trackedSeries } = trackedMeasurements.context;
+
   const { SeriesInstanceUID } = displaySet;
 
   const updateIsTracked = useCallback(() => {
     const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
 
     if (viewport instanceof BaseVolumeViewport) {
+      // A current image id will only exist for volume viewports that can have measurements tracked.
+      // Typically these are those volume viewports for the series of acquisition.
       const currentImageId = viewport?.getCurrentImageId();
+
       if (!currentImageId) {
         if (isTracked) {
           setIsTracked(false);
@@ -58,6 +62,7 @@ function TrackedCornerstoneViewport(
   const onElementEnabled = useCallback(
     evt => {
       if (evt.detail.element !== viewportElem) {
+        // The VOLUME_VIEWPORT_NEW_VOLUME event allows updateIsTracked to reliably fetch the image id for a volume viewport.
         evt.detail.element?.addEventListener(
           Enums.Events.VOLUME_VIEWPORT_NEW_VOLUME,
           updateIsTracked
@@ -81,6 +86,7 @@ function TrackedCornerstoneViewport(
         if (props.viewportId !== viewportId) {
           return;
         }
+
         updateIsTracked();
       }
     );
@@ -102,6 +108,7 @@ function TrackedCornerstoneViewport(
       });
 
       cornerstoneViewportService.getRenderingEngine().renderViewport(viewportId);
+
       return;
     }
 
@@ -118,6 +125,13 @@ function TrackedCornerstoneViewport(
     };
   }, [isTracked]);
 
+  /**
+   * The effect for listening to measurement service measurement added events
+   * and in turn firing an event to update the measurement tracking state machine.
+   * The TrackedCornerstoneViewport is the best place for this because when
+   * a measurement is added, at least one TrackedCornerstoneViewport will be in
+   * the DOM and thus can react to the events fired.
+   */
   useEffect(() => {
     const added = measurementService.EVENTS.MEASUREMENT_ADDED;
     const addedRaw = measurementService.EVENTS.RAW_MEASUREMENT_ADDED;
@@ -128,6 +142,9 @@ function TrackedCornerstoneViewport(
         measurementService.subscribe(evt, ({ source, measurement }) => {
           const { activeViewportId } = viewportGridService.getState();
 
+          // Each TrackedCornerstoneViewport receives the MeasurementService's events.
+          // Only send the tracked measurements event for the active viewport to avoid
+          // sending it more than once.
           if (viewportId === activeViewportId) {
             const {
               referenceStudyUID: StudyInstanceUID,
@@ -168,6 +185,7 @@ function TrackedCornerstoneViewport(
       }
 
       setTrackedMeasurementUID(newTrackedMeasurementUID);
+
       measurementService.jumpToMeasurement(viewportId, newTrackedMeasurementUID);
     },
     [measurementService, servicesManager, trackedMeasurementUID, trackedMeasurements, viewportId]
@@ -245,6 +263,11 @@ function _getNextMeasurementUID(
 
   const { trackedSeries } = trackedMeasurements.context;
 
+  // Get the potentially trackable measurements for the series of the
+  // active viewport.
+  // The measurements to jump between are the same
+  // regardless if this series is tracked or not.
+
   const filteredMeasurements = measurements.filter(
     m =>
       trackedSeries.includes(m.referenceSeriesUID) &&
@@ -252,14 +275,17 @@ function _getNextMeasurementUID(
   );
 
   if (!filteredMeasurements.length) {
+    // No measurements on this series.
     return;
   }
 
   const measurementCount = filteredMeasurements.length;
+
   const uids = filteredMeasurements.map(fm => fm.uid);
   let measurementIndex = uids.findIndex(uid => uid === trackedMeasurementId);
 
   if (measurementIndex === -1) {
+    // Not tracking a measurement, or previous measurement now deleted, revert to 0.
     measurementIndex = 0;
   } else {
     measurementIndex += direction;
@@ -271,6 +297,7 @@ function _getNextMeasurementUID(
   }
 
   const newTrackedMeasurementId = uids[measurementIndex];
+
   return newTrackedMeasurementId;
 }
 
@@ -300,7 +327,6 @@ function _getStatusComponent(isTracked, t) {
         </span>
       </TooltipTrigger>
       <TooltipContent
-        side="right"
         align="start"
         side="bottom"
       >

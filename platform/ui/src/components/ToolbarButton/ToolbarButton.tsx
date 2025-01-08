@@ -88,12 +88,14 @@ const ToolbarButton = ({
 };
 
 ToolbarButton.propTypes = {
+  /* Influences background/hover styling */
   id: PropTypes.string.isRequired,
   className: PropTypes.string,
   commands: PropTypes.oneOfType([PropTypes.array, PropTypes.object, PropTypes.string]),
   onInteraction: PropTypes.func,
   icon: PropTypes.string.isRequired,
   label: PropTypes.string.isRequired,
+  /** Tooltip content can be replaced for a customized content by passing a node to this value. */
   dropdownContent: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
   size: PropTypes.string,
   toolTipClassName: PropTypes.string,
