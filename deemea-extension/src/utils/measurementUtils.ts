@@ -191,6 +191,7 @@ export function createRectangleROI(viewport, imageMetadata, imageId, data, image
           measurementId: data?.measurementId,
           pointsInfo: data.points,
           predicted: true,
+          imagingData: data?.imagingData,
           hide: data.hide,
         },
         handles: {
@@ -286,6 +287,7 @@ export function createPoint(viewport, imageMetadata, imageId, data, imageStatus)
           measurementId: data?.measurementId,
           pointsInfo: data.points,
           predicted: true,
+          imagingData: data?.imagingData,
         },
         cachedStats: {
           [`imageId:${imageId}`]: {
@@ -360,6 +362,7 @@ export function createLength(viewport, imageMetadata, imageId, data, imageStatus
           measurementId: data?.measurementId,
           pointsInfo: data.points,
           predicted: true,
+          imagingData: data?.imagingData,
         },
         cachedStats: {
           [`imageId:${imageId}`]: {
@@ -416,6 +419,7 @@ export function createAngleROI(viewport, imageMetadata, imageId, data, imageStat
           measurementId: data?.measurementId,
           pointsInfo: data.points,
           predicted: true,
+          imagingData: data?.imagingData,
         },
         cachedStats: {
           [`imageId:${imageId}`]: {
