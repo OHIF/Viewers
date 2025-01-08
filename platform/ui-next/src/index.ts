@@ -12,6 +12,7 @@ import {
   Tabs,
   TabsContent,
   TabsList,
+  Clipboard,
   TabsTrigger,
   Toggle,
   toggleVariants,
@@ -109,6 +110,7 @@ export {
   ThemeWrapper,
   Calendar,
   DatePickerWithRange,
+  Clipboard,
   // contextProviders
   NotificationProvider,
   useNotification,

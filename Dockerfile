@@ -43,7 +43,14 @@
 # docker build -t ohif/viewer:latest .
 # Copy Files
 FROM node:20.18.1-slim as builder
-RUN apt-get update && apt-get install -y build-essential python3
+
+RUN apt-get update \
+  && apt-get upgrade -y \
+  && apt-get install -y build-essential python3 \
+  && apt-get clean \
+  && rm -rf /var/lib/apt/lists/*
+
+
 RUN mkdir /usr/src/app
 WORKDIR /usr/src/app
 RUN npm install -g bun

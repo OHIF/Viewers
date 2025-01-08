@@ -1,6 +1,5 @@
 ---
-sidebar_position: 2
-sidebar_label: Icons
+title: Icons
 ---
 
 ## Migration Guide: Icon Component Updates
