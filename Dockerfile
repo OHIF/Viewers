@@ -44,11 +44,7 @@
 # Copy Files
 FROM node:20.18.1-slim as builder
 
-RUN apt-get update \
-  && apt-get upgrade -y \
-  && apt-get install -y build-essential python3 \
-  && apt-get clean \
-  && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y build-essential python3
 
 
 RUN mkdir /usr/src/app
