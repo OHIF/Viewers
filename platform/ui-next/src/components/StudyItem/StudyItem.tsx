@@ -12,7 +12,6 @@ const StudyItem = ({
   modalities,
   isActive,
   onClick,
-  onContextMenu,
   isExpanded,
   displaySets,
   activeDisplaySetInstanceUIDs,
@@ -20,7 +19,7 @@ const StudyItem = ({
   onDoubleClickThumbnail,
   onClickUntrack,
   viewPreset = 'thumbnails',
-  onThumbnailContextMenu,
+  ThumbnailMenuItems,
 }: withAppTypes) => {
   return (
     <Accordion
@@ -35,10 +34,7 @@ const StudyItem = ({
       <AccordionItem value="study-item">
         <AccordionTrigger className={classnames('hover:bg-accent bg-popover rounded')}>
           <div className="flex h-[40px] flex-1 flex-row">
-            <div
-              className="flex w-full flex-row items-center justify-between"
-              onContextMenu={onContextMenu}
-            >
+            <div className="flex w-full flex-row items-center justify-between">
               <div className="flex flex-col items-start text-[13px]">
                 <div className="text-white">{date}</div>
                 <div className="text-muted-foreground h-[18px] max-w-[160px] overflow-hidden truncate whitespace-nowrap">
@@ -65,7 +61,7 @@ const StudyItem = ({
               onThumbnailDoubleClick={onDoubleClickThumbnail}
               onClickUntrack={onClickUntrack}
               viewPreset={viewPreset}
-              onThumbnailContextMenu={onThumbnailContextMenu}
+              ThumbnailMenuItems={ThumbnailMenuItems}
             />
           )}
         </AccordionContent>
@@ -79,7 +75,6 @@ StudyItem.propTypes = {
   description: PropTypes.string,
   modalities: PropTypes.string.isRequired,
   numInstances: PropTypes.number.isRequired,
-  trackedSeries: PropTypes.number,
   isActive: PropTypes.bool,
   onClick: PropTypes.func.isRequired,
   isExpanded: PropTypes.bool,
