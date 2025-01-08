@@ -31,6 +31,82 @@ const thumbnailNoImageModalities = [
   'OT',
   'PMAP',
 ];
+
+const ThumbnailMenuItems = ({ displaySetInstanceUID, canReject, onReject, commandsManager }) => {
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="hidden group-hover:inline-flex data-[state=open]:inline-flex"
+        >
+          <Icons.More />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent
+        hideWhenDetached
+        align="start"
+      >
+        <DropdownMenuItem
+          onSelect={() => {
+            commandsManager.run('openDICOMTagViewer', {
+              displaySetInstanceUID,
+            });
+          }}
+          className="gap-[6px]"
+        >
+          <Icons.DicomTagBrowser />
+          Tag Browser
+        </DropdownMenuItem>
+        {canReject && (
+          <DropdownMenuItem
+            onSelect={() => {
+              onReject();
+            }}
+            className="gap-[6px]"
+          >
+            <Icons.Trash className="h-5 w-5 text-red-500" />
+            Delete Report
+          </DropdownMenuItem>
+        )}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+};
+
+const StudyMenuItems = ({ StudyInstanceUID, commandsManager }) => {
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="hidden group-hover:inline-flex data-[state=open]:inline-flex"
+        >
+          <Icons.More />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent
+        hideWhenDetached
+        align="start"
+      >
+        <DropdownMenuItem
+          onSelect={() => {
+            commandsManager.run('openDICOMTagViewer', {
+              StudyInstanceUID,
+            });
+          }}
+          className="gap-[6px]"
+        >
+          <Icons.DicomTagBrowser />
+          Study Tags
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+};
+
 /**
  *
  * @param {*} param0
@@ -492,50 +568,14 @@ export default function PanelStudyBrowserTracking({
     });
   };
 
-  const ThumbnailMenuItems = customizationService.getCustomComponent(
+  const CustomizedThumbnailMenuItems = customizationService.getCustomComponent(
     'PanelStudyBrowserTracking.ThumbnailMenuItems',
-    ({ displaySetInstanceUID, canReject, onReject }) => {
-      return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="hidden group-hover:inline-flex data-[state=open]:inline-flex"
-            >
-              <Icons.More />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent
-            hideWhenDetached
-            align="start"
-          >
-            <DropdownMenuItem
-              onSelect={() => {
-                commandsManager.run('openDICOMTagViewer', {
-                  displaySetInstanceUID,
-                });
-              }}
-              className="gap-[6px]"
-            >
-              <Icons.DicomTagBrowser />
-              Tag Browser
-            </DropdownMenuItem>
-            {canReject && (
-              <DropdownMenuItem
-                onSelect={() => {
-                  onReject();
-                }}
-                className="gap-[6px]"
-              >
-                <Icons.Trash className="h-5 w-5 text-red-500" />
-                Delete Report
-              </DropdownMenuItem>
-            )}
-          </DropdownMenuContent>
-        </DropdownMenu>
-      );
-    }
+    ThumbnailMenuItems
+  );
+
+  const CustomizedStudyMenuItems = customizationService.getCustomComponent(
+    'PanelStudyBrowserTracking.StudyMenuItems',
+    StudyMenuItems
   );
 
   return (
@@ -571,7 +611,18 @@ export default function PanelStudyBrowserTracking({
         activeDisplaySetInstanceUIDs={activeViewportDisplaySetInstanceUIDs}
         showSettings={actionIcons.find(icon => icon.id === 'settings').value}
         viewPresets={viewPresets}
-        ThumbnailMenuItems={ThumbnailMenuItems}
+        ThumbnailMenuItems={props => (
+          <CustomizedThumbnailMenuItems
+            {...props}
+            commandsManager={commandsManager}
+          />
+        )}
+        StudyMenuItems={props => (
+          <CustomizedStudyMenuItems
+            {...props}
+            commandsManager={commandsManager}
+          />
+        )}
       />
     </>
   );

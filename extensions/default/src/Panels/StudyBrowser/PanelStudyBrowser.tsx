@@ -18,7 +18,7 @@ import {
 
 const { sortStudyInstances, formatDate, createStudyBrowserTabs } = utils;
 
-const ThumbnailMenuItems = ({ displaySetInstanceUID, commandsManager }) => {
+const StudyMenuItems = ({ StudyInstanceUID, commandsManager }) => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -37,13 +37,13 @@ const ThumbnailMenuItems = ({ displaySetInstanceUID, commandsManager }) => {
         <DropdownMenuItem
           onSelect={() => {
             commandsManager.run('openDICOMTagViewer', {
-              displaySetInstanceUID,
+              StudyInstanceUID,
             });
           }}
           className="gap-[6px]"
         >
           <Icons.DicomTagBrowser />
-          Tag Browser
+          Study Tags
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
@@ -322,7 +322,7 @@ function PanelStudyBrowser({
 
   const CustomizedThumbnailMenuItems = customizationService.getCustomComponent(
     'PanelStudyBrowser.ThumbnailMenuItems',
-    ThumbnailMenuItems
+    StudyMenuItems
   );
 
   return (
