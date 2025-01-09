@@ -51,6 +51,7 @@ function ToolButtonList({ groupId, primary, items = [], onInteraction, servicesM
         }}
       />
 
+      <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button
             variant="ghost"
