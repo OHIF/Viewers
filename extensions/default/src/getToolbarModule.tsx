@@ -4,6 +4,7 @@ import ToolbarSplitButtonWithServices from './Toolbar/ToolbarSplitButtonWithServ
 import ToolbarButtonGroupWithServices from './Toolbar/ToolbarButtonGroupWithServices';
 import { ToolbarButton } from '@ohif/ui';
 import { ToolButton } from '@ohif/ui-next';
+import { ToolButtonList } from '@ohif/ui-next';
 import { ProgressDropdownWithService } from './Components/ProgressDropdownWithService';
 
 const getClassName = isToggled => {
@@ -24,6 +25,10 @@ export default function getToolbarModule({ commandsManager, servicesManager }: w
     {
       name: 'ohif.toolButton',
       defaultComponent: ToolButton,
+    },
+    {
+      name: 'ohif.toolButtonList',
+      defaultComponent: ToolButtonList,
     },
     {
       name: 'ohif.divider',

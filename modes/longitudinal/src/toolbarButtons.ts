@@ -15,7 +15,7 @@ export const setToolActiveToolbar = {
 const toolbarButtons: Button[] = [
   {
     id: 'MeasurementTools',
-    uiType: 'ohif.splitButton',
+    uiType: 'ohif.toolButtonList',
     props: {
       groupId: 'MeasurementTools',
       // group evaluate to determine which item should move to the top
