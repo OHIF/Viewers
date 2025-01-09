@@ -55,13 +55,15 @@ export default class ContextMenuController {
     const annotationManager = CsAnnotation.state.getAnnotationManager();
     const { locking } = CsAnnotation;
     const targetAnnotationId = selectorProps?.nearbyToolData?.annotationUID as string;
-    const isLocked = locking.isAnnotationLocked(
-      annotationManager.getAnnotation(targetAnnotationId)
-    );
+    if (targetAnnotationId) {
+      const isLocked = locking.isAnnotationLocked(
+        annotationManager.getAnnotation(targetAnnotationId)
+      );
 
-    if (isLocked) {
-      console.warn('Annotation is locked.');
-      return;
+      if (isLocked) {
+        console.warn('Annotation is locked.');
+        return;
+      }
     }
 
     const items = ContextMenuItemsBuilder.getMenuItems(
