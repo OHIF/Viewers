@@ -43,7 +43,6 @@ import {
 import { Types } from '@ohif/ui';
 
 import i18n from '@ohif/i18n';
-import { Onboarding, ScrollArea } from '@ohif/ui-next';
 import { preserveQueryParameters, preserveQueryStrings } from '../../utils/preserveQueryParameters';
 
 const PatientInfoVisibility = Types.PatientInfoVisibility;
