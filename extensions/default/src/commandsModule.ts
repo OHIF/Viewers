@@ -26,26 +26,6 @@ export type HangingProtocolParams = {
   reset?: false;
 };
 
-/**
- * The studies from display sets gets the studies in study date
- * order or in study instance UID order - not very useful, but
- * if not specifically specified then at least making it consistent is useful.
- */
-const getStudiesfromDisplaySets = displaySets => {
-  const studyMap = {};
-
-  const ret = displaySets.reduce((prev, curr) => {
-    const { StudyInstanceUID } = curr;
-    if (!studyMap[StudyInstanceUID]) {
-      const study = DicomMetadataStore.getStudy(StudyInstanceUID);
-      studyMap[StudyInstanceUID] = study;
-      prev.push(study);
-    }
-    return prev;
-  }, []);
-  return ret;
-};
-
 export type UpdateViewportDisplaySetParams = {
   direction: number;
   excludeNonImageModalities?: boolean;
@@ -97,8 +77,6 @@ const commandsModule = ({
      */
     loadStudy: async options => {
       const { StudyInstanceUID } = options;
-      console.debug('🚀 ~ StudyInstanceUID:', StudyInstanceUID);
-
       const displaySets = displaySetService.getActiveDisplaySets();
       const isActive = displaySets.find(ds => ds.StudyInstanceUID === StudyInstanceUID);
       if (isActive) {
@@ -199,11 +177,13 @@ const commandsModule = ({
      */
     setHangingProtocol: ({
       activeStudyUID = '',
+      StudyInstanceUID = '',
       protocolId,
       stageId,
       stageIndex,
       reset = false,
     }: HangingProtocolParams): boolean => {
+      const toUseStudyInstanceUID = activeStudyUID || StudyInstanceUID;
       try {
         // Stores in the state the display set selector id to displaySetUID mapping
         // Pass in viewportId for the active viewport.  This item will get set as
@@ -222,7 +202,7 @@ const commandsModule = ({
           }
         } else if (stageIndex === undefined && stageId === undefined) {
           // Re-set the same stage as was previously used
-          const hangingId = `${activeStudyUID || hpInfo.activeStudyUID}:${protocolId}`;
+          const hangingId = `${toUseStudyInstanceUID || hpInfo.activeStudyUID}:${protocolId}`;
           stageIndex = hangingProtocolStageIndexMap[hangingId]?.stageIndex;
         }
 
@@ -233,9 +213,9 @@ const commandsModule = ({
             stageIndex,
           });
 
-        const activeStudyChanged = hangingProtocolService.setActiveStudyUID(activeStudyUID);
+        const activeStudyChanged = hangingProtocolService.setActiveStudyUID(toUseStudyInstanceUID);
 
-        const storedHanging = `${activeStudyUID || hangingProtocolService.getState().activeStudyUID}:${protocolId}:${
+        const storedHanging = `${toUseStudyInstanceUID || hangingProtocolService.getState().activeStudyUID}:${protocolId}:${
           useStageIdx || 0
         }`;
 
@@ -253,11 +233,14 @@ const commandsModule = ({
           // This is done on reset or when the study changes and we haven't yet
           // applied it, and don't specify exact stage to use.
           const displaySets = displaySetService.getActiveDisplaySets();
-          hangingProtocolService.run({ activeStudyUID, displaySets }, protocolId);
+          hangingProtocolService.run(
+            { activeStudyUID: toUseStudyInstanceUID, displaySets },
+            protocolId
+          );
         } else if (
           protocolId === hpInfo.protocolId &&
           useStageIdx === hpInfo.stageIndex &&
-          !activeStudyUID
+          !toUseStudyInstanceUID
         ) {
           // Clear the HP setting to reset them
           hangingProtocolService.setProtocol(protocolId, {
@@ -278,7 +261,7 @@ const commandsModule = ({
         // Do this after successfully applying the update
         const { setDisplaySetSelector } = useDisplaySetSelectorStore.getState();
         setDisplaySetSelector(
-          `${activeStudyUID || hpInfo.activeStudyUID}:activeDisplaySet:0`,
+          `${toUseStudyInstanceUID || hpInfo.activeStudyUID}:activeDisplaySet:0`,
           null
         );
         return true;

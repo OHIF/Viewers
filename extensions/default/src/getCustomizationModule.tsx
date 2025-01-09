@@ -250,7 +250,7 @@ export default function getCustomizationModule({ servicesManager, extensionManag
               <DropdownMenuItem
                 disabled={isDisabled}
                 onSelect={() => {
-                  commandsManager.run(item.commands, {
+                  commandsManager.runAsync(item.commands, {
                     ...item.commandOptions,
                     ...rest,
                   });
@@ -272,16 +272,10 @@ export default function getCustomizationModule({ servicesManager, extensionManag
               label: 'Show In Grid',
               iconName: 'DicomTagBrowser',
               commands: [
-                {
-                  commandName: 'loadStudy',
-                  commandOptions: {
-                    StudyInstanceUID: '{StudyInstanceUID}',
-                  },
-                },
+                'loadStudy',
                 {
                   commandName: 'setHangingProtocol',
                   commandOptions: {
-                    activeStudyUID: '{StudyInstanceUID}',
                     protocolId: '@ohif/mnGrid8',
                   },
                 },
@@ -327,18 +321,11 @@ export default function getCustomizationModule({ servicesManager, extensionManag
               commands: {
                 commandName: 'multimonitor',
                 commandOptions: {
-                  StudyInstanceUID: '{StudyInstanceUID}',
                   commands: [
-                    {
-                      commandName: 'loadStudy',
-                      commandOptions: {
-                        StudyInstanceUID: '{StudyInstanceUID}',
-                      },
-                    },
+                    'loadStudy',
                     {
                       commandName: 'setHangingProtocol',
                       commandOptions: {
-                        activeStudyUID: '{StudyInstanceUID}',
                         protocolId: '@ohif/mnGrid8',
                       },
                     },
