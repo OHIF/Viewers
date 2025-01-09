@@ -74,9 +74,9 @@ export class MultiMonitorService {
     }
   }
 
-  public run(screenDelta = 1, commands, options) {
+  public async run(screenDelta = 1, commands, options) {
     const screenNumber = (this.screenNumber + (screenDelta ?? 1)) % this.numberOfScreens;
-    const otherWindow = this.getWindow(screenNumber);
+    const otherWindow = await this.getWindow(screenNumber);
     if (!otherWindow) {
       console.warn('No multimonitor found for screen', screenNumber, commands);
       return;
@@ -85,9 +85,9 @@ export class MultiMonitorService {
       console.warn("Didn't find a commands manager to run in the other window", otherWindow);
       return;
     }
-    console.log('Running commands in other window', commands, options);
+    console.warn('Running commands in other window', commands, options);
     const result = otherWindow.multimonitor.commandsManager.runAsync(commands, options);
-    console.log('Got result', result);
+    console.warn('Got result', result);
   }
 
   /** Sets the launch windows for later use, shared amongst all windows. */
@@ -98,24 +98,26 @@ export class MultiMonitorService {
 
   public async launchWindow(studyUid: string, screenDelta = 1) {
     const forScreen = (this.screenNumber + screenDelta) % this.numberOfScreens;
-    return this.getWindow(forScreen);
+    const url = new URL(this.basePath);
+    url.searchParams.set('studyInstanceUIDs', studyUid);
+    return this.getWindow(forScreen, url.toString());
   }
 
-  public getWindow(screenNumber) {
+  public async getWindow(screenNumber, urlToUse?: string) {
     if (screenNumber === this.screenNumber) {
       return window;
     }
     if (this.launchWindows[screenNumber] && !this.launchWindows[screenNumber].closed) {
       return this.launchWindows[screenNumber];
     }
-    return this.createWindow(screenNumber);
+    return await this.createWindow(screenNumber, urlToUse);
   }
 
   /**
    * Creates a new window showing the given url by default, or gets an existing
    * window.
    */
-  public async createWindow(screenNumber) {
+  public async createWindow(screenNumber, urlToUse?: string) {
     if (screenNumber === this.screenNumber) {
       return window;
     }
@@ -138,20 +140,49 @@ export class MultiMonitorService {
     const useTop = Math.round(availTop + topPercent * height);
     const useWidth = Math.round(width * widthPercent);
     const useHeight = Math.round(height * heightPercent);
-    const url = `${this.basePath}&screenNumber=${screenNumber}`;
+
+    let finalUrl;
+    if (urlToUse) {
+      const baseUrl = new URL(window.location.origin + window.location.pathname);
+
+      const sourceUrl = new URL(urlToUse);
+      const studyUID = sourceUrl.searchParams.get('StudyInstanceUIDs');
+      if (studyUID) {
+        baseUrl.searchParams.set('StudyInstanceUIDs', studyUID);
+      }
+
+      baseUrl.searchParams.set('multimonitor', 'split');
+      baseUrl.searchParams.set('screenNumber', screenNumber.toString());
+
+      finalUrl = baseUrl.toString();
+    } else {
+      finalUrl = `${this.basePath}&screenNumber=${screenNumber}`;
+    }
+
     const newId = newScreen.id;
     const options = newScreen.options || '';
     const position = `screenX=${useLeft},screenY=${useTop},width=${useWidth},height=${useHeight},${options}`;
 
     let newWindow = window.open('', newId, position);
-    if (newWindow?.location.href !== url) {
-      newWindow = window.open(url, newId, position);
+    if (newWindow?.location.href !== finalUrl) {
+      newWindow = window.open(finalUrl, newId, position);
     }
     if (!newWindow) {
-      console.warn('Unable to launch window', url, 'called', newId, 'at', position);
+      console.warn('Unable to launch window', finalUrl, 'called', newId, 'at', position);
       return;
     }
-    console.info('Launching', screenNumber, newId, url, position);
+
+    console.warn('Launching', screenNumber, newId, finalUrl, position);
+
+    // Wait for the window to fully load
+    await new Promise<void>(resolve => {
+      if (newWindow.document.readyState === 'complete') {
+        resolve();
+      } else {
+        newWindow.addEventListener('load', () => resolve());
+      }
+    });
+
     this.launchWindows[screenNumber] = newWindow;
     return newWindow;
   }
