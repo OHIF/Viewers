@@ -1,9 +1,11 @@
+import React from 'react';
 import { Enums } from '@cornerstonejs/tools';
 import { toolNames } from './initCornerstoneTools';
 import defaultWindowLevelPresets from './components/WindowLevelActionMenu/defaultWindowLevelPresets';
 import { colormaps } from './utils/colormaps';
 import { CONSTANTS } from '@cornerstonejs/core';
 import { CornerstoneOverlay } from './Viewport/Overlays/CustomizableViewportOverlay';
+import DicomUpload from './components/DicomUpload/DicomUpload';
 
 const DefaultColormap = 'Grayscale';
 const { VIEWPORT_PRESETS } = CONSTANTS;
@@ -41,26 +43,19 @@ function getCustomizationModule() {
   return [
     {
       name: 'default',
-      value: [
+      value: {
+        dicomUploadComponent: DicomUpload,
         CornerstoneOverlay,
-        {
-          id: 'cornerstone.overlayViewportTools',
-          tools,
-        },
-        {
-          id: 'cornerstone.windowLevelPresets',
-          presets: defaultWindowLevelPresets,
-        },
-        {
-          id: 'cornerstone.colorbar',
+        'cornerstone.overlayViewportTools': tools,
+        'cornerstone.windowLevelPresets': defaultWindowLevelPresets,
+        'cornerstone.colorbar': {
           width: '16px',
           colorbarTickPosition: 'left',
           colormaps,
           colorbarContainerPosition: 'right',
           colorbarInitialColormap: DefaultColormap,
         },
-        {
-          id: 'cornerstone.3dVolumeRendering',
+        'cornerstone.3dVolumeRendering': {
           volumeRenderingPresets: VIEWPORT_PRESETS,
           volumeRenderingQualityRange: {
             min: 1,
@@ -68,8 +63,7 @@ function getCustomizationModule() {
             step: 1,
           },
         },
-        {
-          id: 'cornerstone.measurements',
+        'cornerstone.measurements': {
           Angle: {
             displayText: [],
             report: [],
@@ -205,7 +199,7 @@ function getCustomizationModule() {
             ],
           },
         },
-      ],
+      },
     },
   ];
 }

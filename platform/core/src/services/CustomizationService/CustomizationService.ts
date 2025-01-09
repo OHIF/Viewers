@@ -82,8 +82,8 @@ export default class CustomizationService extends PubSubService {
 
   public static REGISTRATION = {
     name: 'customizationService',
-    create: ({ commandsManager }) => {
-      return new CustomizationService({ commandsManager });
+    create: ({ configuration, commandsManager }) => {
+      return new CustomizationService({ configuration, commandsManager });
     },
   };
 
@@ -118,9 +118,11 @@ export default class CustomizationService extends PubSubService {
    * transform every time a customization is requested.
    */
   private transformedCustomizations = new Map<string, Customization>();
+  private configuration: AppTypes.Config;
 
-  constructor({ commandsManager }) {
+  constructor({ configuration, commandsManager }) {
     super(EVENTS);
+    this.configuration = configuration;
     this.commandsManager = commandsManager;
   }
 
@@ -145,6 +147,8 @@ export default class CustomizationService extends PubSubService {
         this._addReference(value, CustomizationScope.Global);
       }
     });
+
+    this.addReferences(this.configuration);
   }
 
   public onModeEnter(): void {
@@ -262,7 +266,7 @@ export default class CustomizationService extends PubSubService {
    * Applies any inheritance due to UI Type customization.
    * This will look for inheritsFrom in the customization object
    * and if that is found, will assign all iterable values from that
-   * type into the new type, allowing default behaviour to be configured.
+   * type into the new type, allowing default behavior to be configured.
    */
   public transform(customization: Customization): Customization {
     if (!customization) {
@@ -392,25 +396,26 @@ export default class CustomizationService extends PubSubService {
    * A single reference is either an string to be loaded from a module,
    * or a customization itself.
    */
-  _addReference(value?, type = CustomizationScope.Global, id?: string, merge?: MergeEnum): void {
+  _addReference(value?, type = CustomizationScope.Global, merge?: MergeEnum): void {
     if (!value) {
       return;
     }
+
+    let mergeType = merge;
     if (typeof value === 'string') {
       const extensionValue = this._findExtensionValue(value);
-      // The child of a reference is only a set of references when an array,
-      // so call the _addReference direct.  It could be a secondary reference perhaps
-      this._addReference(extensionValue.value, type, extensionValue.name, extensionValue.merge);
-    } else if (Array.isArray(value)) {
-      this._addReferences(value, type);
-    } else {
-      const useId = value.id || id;
+      value = extensionValue.value;
+      mergeType = extensionValue.merge;
+    }
+
+    Object.entries(value).forEach(([id, customization]) => {
+      const useId = id;
       const setName =
         (type === CustomizationScope.Global && 'setGlobalCustomization') ||
         (type === CustomizationScope.Default && 'setDefaultCustomization') ||
         'setModeCustomization';
-      this[setName](useId as string, value, merge);
-    }
+      this[setName](useId as string, customization, mergeType);
+    });
   }
 
   /**
@@ -418,7 +423,7 @@ export default class CustomizationService extends PubSubService {
    * or as an object whose key is the reference id, and the value is the string
    * or customization.
    */
-  _addReferences(references?, type = CustomizationScope.Global): void {
+  addReferences(references?, type = CustomizationScope.Global): void {
     if (!references) {
       return;
     }

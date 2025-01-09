@@ -23,13 +23,14 @@ export default function getCustomizationModule({ servicesManager, extensionManag
       name: 'helloPage',
       merge: 'Append',
       value: {
-        id: 'customRoutes',
-        routes: [
-          {
-            path: '/custom',
-            children: () => <h1 style={{ color: 'white' }}>Hello Custom Route</h1>,
-          },
-        ],
+        customRoutes: {
+          routes: [
+            {
+              path: '/custom',
+              children: () => <h1 style={{ color: 'white' }}>Hello Custom Route</h1>,
+            },
+          ],
+        },
       },
     },
 
@@ -38,19 +39,20 @@ export default function getCustomizationModule({ servicesManager, extensionManag
       name: 'datasources',
       merge: 'Append',
       value: {
-        id: 'customRoutes',
-        routes: [
-          {
-            path: '/datasources',
-            children: DataSourceSelector,
-          },
-        ],
+        customRoutes: {
+          routes: [
+            {
+              path: '/datasources',
+              children: DataSourceSelector,
+            },
+          ],
+        },
       },
     },
 
     {
       name: 'default',
-      value: [
+      value: {
         /**
          * Customization Component Type definition for overlay items.
          * Overlay items are texts (or other components) that will be displayed
@@ -87,120 +89,97 @@ export default function getCustomizationModule({ servicesManager, extensionManag
          *
          * @see CustomizableViewportOverlay
          */
-        {
-          id: 'ohif.overlayItem',
-          content: function (props) {
-            if (this.condition && !this.condition(props)) {
-              return null;
-            }
+        'ohif.overlayItem': function (props) {
+          if (this.condition && !this.condition(props)) {
+            return null;
+          }
 
-            const { instance } = props;
-            const value =
-              instance && this.attribute
-                ? instance[this.attribute]
-                : this.contentF && typeof this.contentF === 'function'
-                  ? this.contentF(props)
-                  : null;
-            if (!value) {
-              return null;
-            }
+          const { instance } = props;
+          const value =
+            instance && this.attribute
+              ? instance[this.attribute]
+              : this.contentF && typeof this.contentF === 'function'
+                ? this.contentF(props)
+                : null;
+          if (!value) {
+            return null;
+          }
 
-            return (
-              <span
-                className="overlay-item flex flex-row"
-                style={{ color: this.color || undefined }}
-                title={this.title || ''}
-              >
-                {this.label && <span className="mr-1 shrink-0">{this.label}</span>}
-                <span className="font-light">{value}</span>
-              </span>
-            );
-          },
+          return (
+            <span
+              className="overlay-item flex flex-row"
+              style={{ color: this.color || undefined }}
+              title={this.title || ''}
+            >
+              {this.label && <span className="mr-1 shrink-0">{this.label}</span>}
+              <span className="font-light">{value}</span>
+            </span>
+          );
         },
 
-        {
-          id: 'ohif.contextMenu',
+        'ohif.contextMenu': function (customizationService: CustomizationService) {
           /**
            * Applies the inheritsFrom to all the menu items.
            * This function clones the object and child objects to prevent
            * changes to the original customization object.
            */
-          transform: function (customizationService: CustomizationService) {
-            // Don't modify the children, as those are copied by reference
-            const clonedObject = { ...this };
-            clonedObject.menus = this.menus.map(menu => ({ ...menu }));
+          // Don't modify the children, as those are copied by reference
+          const clonedObject = { ...this };
+          clonedObject.menus = this.menus.map(menu => ({ ...menu }));
 
-            for (const menu of clonedObject.menus) {
-              const { items: originalItems } = menu;
-              menu.items = [];
-              for (const item of originalItems) {
-                menu.items.push(customizationService.transform(item));
-              }
+          for (const menu of clonedObject.menus) {
+            const { items: originalItems } = menu;
+            menu.items = [];
+            for (const item of originalItems) {
+              menu.items.push(customizationService.transform(item));
             }
-            return clonedObject;
-          },
+          }
+          return clonedObject;
         },
+        // the generic GUI component to configure a data source using an instance of a BaseDataSourceConfigurationAPI
+        'ohif.dataSourceConfigurationComponent': DataSourceConfigurationComponent.bind(null, {
+          servicesManager,
+          extensionManager,
+        }),
 
-        {
-          // the generic GUI component to configure a data source using an instance of a BaseDataSourceConfigurationAPI
-          id: 'ohif.dataSourceConfigurationComponent',
-          component: DataSourceConfigurationComponent.bind(null, {
+        // The factory for creating an instance of a BaseDataSourceConfigurationAPI for Google Cloud Healthcare
+        'ohif.dataSourceConfigurationAPI.google': (dataSourceName: string) =>
+          new GoogleCloudDataSourceConfigurationAPI(
+            dataSourceName,
             servicesManager,
-            extensionManager,
-          }),
-        },
+            extensionManager
+          ),
 
-        {
-          // The factory for creating an instance of a BaseDataSourceConfigurationAPI for Google Cloud Healthcare
-          id: 'ohif.dataSourceConfigurationAPI.google',
-          factory: (dataSourceName: string) =>
-            new GoogleCloudDataSourceConfigurationAPI(
-              dataSourceName,
-              servicesManager,
-              extensionManager
-            ),
-        },
-
-        {
-          id: 'progressDropdownWithServiceComponent',
-          component: ProgressDropdownWithService,
-        },
-        {
-          id: 'studyBrowser.sortFunctions',
-          values: [
-            {
-              label: 'Series Number',
-              sortFunction: (a, b) => {
-                return a?.SeriesNumber - b?.SeriesNumber;
-              },
+        progressDropdownWithServiceComponent: ProgressDropdownWithService,
+        'studyBrowser.sortFunctions': [
+          {
+            label: 'Series Number',
+            sortFunction: (a, b) => {
+              return a?.SeriesNumber - b?.SeriesNumber;
             },
-            {
-              label: 'Series Date',
-              sortFunction: (a, b) => {
-                const dateA = new Date(formatDate(a?.SeriesDate));
-                const dateB = new Date(formatDate(b?.SeriesDate));
-                return dateB.getTime() - dateA.getTime();
-              },
+          },
+          {
+            label: 'Series Date',
+            sortFunction: (a, b) => {
+              const dateA = new Date(formatDate(a?.SeriesDate));
+              const dateB = new Date(formatDate(b?.SeriesDate));
+              return dateB.getTime() - dateA.getTime();
             },
-          ],
-        },
-        {
-          id: 'studyBrowser.viewPresets',
-          // change your default selected preset here
-          value: [
-            {
-              id: 'list',
-              iconName: 'ListView',
-              selected: false,
-            },
-            {
-              id: 'thumbnails',
-              iconName: 'ThumbnailView',
-              selected: true,
-            },
-          ],
-        },
-      ],
+          },
+        ],
+        'studyBrowser.viewPresets': [
+          {
+            id: 'list',
+            iconName: 'ListView',
+            selected: false,
+          },
+          {
+            id: 'thumbnails',
+            iconName: 'ThumbnailView',
+            selected: true,
+          },
+        ],
+      },
     },
   ];
 }

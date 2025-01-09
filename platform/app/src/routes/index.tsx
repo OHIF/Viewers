@@ -110,7 +110,7 @@ const createRoutes = ({
   };
 
   const customRoutes = customizationService.getCustomization('customRoutes');
-
+  debugger;
   const allRoutes = [
     ...routes,
     ...(showStudyList ? [WorkListRoute] : []),

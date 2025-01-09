@@ -6,7 +6,10 @@ window.config = {
   // whiteLabeling: {},
   extensions: [],
   modes: [],
-  customizationService: {},
+  customizationService: [
+    '@ohif/extension-default.customizationModule.helloPage',
+    '@ohif/extension-default.customizationModule.datasources',
+  ],
   showStudyList: true,
   // some windows systems have issues with more than 3 web workers
   maxNumberOfWebWorkers: 3,

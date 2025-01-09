@@ -5,13 +5,12 @@ import { id } from './id';
 import hpTestSwitch from './hpTestSwitch';
 
 import getCustomizationModule from './getCustomizationModule';
-// import {setViewportZoomPan, storeViewportZoomPan } from './custom-viewport/setViewportZoomPan';
 import sameAs from './custom-attribute/sameAs';
 import numberOfDisplaySets from './custom-attribute/numberOfDisplaySets';
 import maxNumImageFrames from './custom-attribute/maxNumImageFrames';
 
 /**
- * The test extension provides additional behaviour for testing various
+ * The test extension provides additional behavior for testing various
  * customizations and settings for OHIF.
  */
 const testExtension: Types.Extensions.Extension = {
@@ -20,7 +19,8 @@ const testExtension: Types.Extensions.Extension = {
    */
   id,
 
-  /** Register additional behaviour:
+  /**
+   * Register additional behavior:
    *   * HP custom attribute seriesDescriptions to retrieve an array of all series descriptions
    *   * HP custom attribute numberOfDisplaySets to retrieve the number of display sets
    *   * HP custom attribute numberOfDisplaySetsWithImages to retrieve the number of display sets containing images
