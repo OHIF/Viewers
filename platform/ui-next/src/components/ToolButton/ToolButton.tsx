@@ -14,48 +14,50 @@ interface ToolButtonProps {
   tooltip?: string;
   /** Whether this button is active (selected) or not */
   isActive?: boolean;
-  /** Fired when user clicks the tool button */
-  onInteraction?: (details: { id: string }) => void;
+  /** Commands object - typically { commandName, commandOptions } */
+  commands?: any;
+  /**
+   * Fired when user clicks the tool button;
+   * returns { itemId, commands }
+   */
+  onInteraction?: (details: { itemId: string; commands?: any }) => void;
   /** Additional classes or styles can be passed here */
   className?: string;
 }
 
-/**
- * ToolButton Component
- *
- * Renders a square button (w-10 h-10) with a rounded-lg corner, an icon in center,
- * and uses hover/default/active states to visually indicate selection.
- */
-interface ToolButtonProps {
-  id: string;
-  icon?: string;
-  label?: string;
-  tooltip?: string;
-  isActive?: boolean;
-  onInteraction?: (details: {
-    itemId: string;
-    commands?: any;
-    // Could also pass "toolGroupIds", etc. if needed
-  }) => void;
-  commands?: any;  // <--- Add this
-  className?: string;
-}
+function ToolButton(props: ToolButtonProps) {
+  const {
+    id,
+    icon = 'MissingIcon',
+    label,
+    tooltip,
+    isActive = false,
+    commands,
+    onInteraction,
+    className,
+  } = props;
 
+  // Determine icon component
   const IconComponent = Icons[icon] || Icons['MissingIcon'];
 
+  // Base sizing classes
   const baseClasses = 'w-10 h-10 rounded-lg inline-flex items-center justify-center';
+  // Default vs. Active styles
   const defaultClasses =
     'bg-transparent text-primary-foreground hover:bg-primary-dark hover:text-primary-light';
-  const activeClasses = 'bg-primary-light text-primary-dark'; // adjust tokens as needed
+  const activeClasses = 'bg-primary-light text-primary-dark';
 
   // Merge the correct "active" or "default" classes
   const appliedClasses = isActive
     ? cn(baseClasses, activeClasses, className)
     : cn(baseClasses, defaultClasses, className);
 
-  // When the button is clicked, we inform the parent which tool was selected
+  // Handle click: trigger parent's onInteraction
   const handleClick = () => {
-    onInteraction?.({ id });
+    onInteraction?.({
+      itemId: id,
+      commands,
+    });
   };
 
   return (
@@ -73,6 +75,7 @@ interface ToolButtonProps {
             <IconComponent className="h-7 w-7" />
           </Button>
         </TooltipTrigger>
+        {/* Show tooltip if 'label' or 'tooltip' is provided */}
         {tooltip && <TooltipContent side="right">{tooltip}</TooltipContent>}
       </Tooltip>
     </TooltipProvider>
