@@ -231,10 +231,12 @@ export default function getCustomizationModule({ servicesManager, extensionManag
               return (
                 <DropdownMenuSub>
                   <DropdownMenuSubTrigger className="gap-[6px]">
-                    <Icons.ByName
-                      name={item.iconName}
-                      className="-ml-1"
-                    />
+                    {item.iconName && (
+                      <Icons.ByName
+                        name={item.iconName}
+                        className="-ml-1"
+                      />
+                    )}
                     {item.label}
                   </DropdownMenuSubTrigger>
                   <DropdownMenuPortal>
@@ -260,7 +262,12 @@ export default function getCustomizationModule({ servicesManager, extensionManag
                 }}
                 className="gap-[6px]"
               >
-                <Icons.ByName name={item.iconName} />
+                {item.iconName && (
+                  <Icons.ByName
+                    name={item.iconName}
+                    className="-ml-1"
+                  />
+                )}
                 {item.label}
               </DropdownMenuItem>
             );
@@ -277,32 +284,37 @@ export default function getCustomizationModule({ servicesManager, extensionManag
               items: [
                 {
                   id: 'applyDefaultProtocol',
-                  label: 'Default Protocol',
-                  iconName: 'Layout2D',
-                  commands: {
-                    commandName: 'setHangingProtocol',
-                    commandOptions: {
-                      protocolId: '@ohif/default',
+                  label: 'Default',
+                  commands: [
+                    'loadStudy',
+                    {
+                      commandName: 'setHangingProtocol',
+                      commandOptions: {
+                        protocolId: 'default',
+                      },
                     },
-                  },
+                  ],
                 },
                 {
                   id: 'applyMPRProtocol',
-                  label: 'MPR Protocol',
-                  iconName: 'IconMPR',
-                  commands: {
-                    commandName: 'setHangingProtocol',
-                    commandOptions: {
-                      protocolId: '@ohif/mnGrid',
+                  label: '2x2 Grid',
+                  commands: [
+                    'loadStudy',
+                    {
+                      commandName: 'setHangingProtocol',
+                      commandOptions: {
+                        protocolId: '@ohif/mnGrid',
+                      },
                     },
-                  },
+                  ],
                 },
               ],
             },
             {
               id: 'showInOtherMonitor',
-              label: 'Show In Other Monitor',
+              label: 'Launch In Monitor 2',
               iconName: 'DicomTagBrowser',
+              // we should use evaluator for this, as these are basically toolbar buttons
               selector: ({ servicesManager }) => {
                 const { multiMonitorService } = servicesManager.services;
                 return multiMonitorService.isMultimonitor;
