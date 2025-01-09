@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { DicomMetadataStore, utils } from '@ohif/core';
-import { useViewportGrid } from '@ohif/ui';
+import { useViewportGrid } from '@ohif/ui-next';
 import { Button, Icons } from '@ohif/ui-next';
 import { PanelMeasurement, StudySummaryFromMetadata } from '@ohif/extension-cornerstone';
 import { useTrackedMeasurements } from '../getContextModule';
