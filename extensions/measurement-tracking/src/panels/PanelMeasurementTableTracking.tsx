@@ -14,28 +14,10 @@ function PanelMeasurementTableTracking({
   commandsManager,
 }: withAppTypes) {
   const [viewportGrid] = useViewportGrid();
-  const { t } = useTranslation('MeasurementTable');
   const { customizationService } = servicesManager.services;
   const [trackedMeasurements, sendTrackedMeasurementsEvent] = useTrackedMeasurements();
   const { trackedStudy, trackedSeries } = trackedMeasurements.context;
-  const initialTrackedFilter = trackedStudy
-    ? filterMeasurementsBySeriesUID(trackedSeries)
-    : filterAny;
-  const [measurementFilters, setMeasurementFilters] = useState({
-    measurementFilter: initialTrackedFilter,
-    untrackedFilter: filterNot('measurementFilter'),
-    unmappedFilter: filterAny,
-  });
-
-  useEffect(() => {
-    let updatedMeasurementFilters = { ...measurementFilters };
-    if (trackedMeasurements.matches('tracking') && trackedStudy) {
-      updatedMeasurementFilters.measurementFilter = filterMeasurementsBySeriesUID(trackedSeries);
-    } else {
-      updatedMeasurementFilters.measurementFilter = filterAny;
-    }
-    setMeasurementFilters(updatedMeasurementFilters);
-  }, [trackedMeasurements, trackedStudy, trackedSeries]);
+  const measurementFilter = trackedStudy ? filterMeasurementsBySeriesUID(trackedSeries) : filterAny;
 
   const { disableEditing } = customizationService.getCustomization(
     'PanelMeasurement.disableEditing',
@@ -52,7 +34,7 @@ function PanelMeasurementTableTracking({
         servicesManager={servicesManager}
         extensionManager={extensionManager}
         commandsManager={commandsManager}
-        measurementFilters={measurementFilters}
+        measurementFilter={measurementFilter}
         customHeader={({ additionalFindings, measurements }) => {
           const disabled = additionalFindings.length === 0 && measurements.length === 0;
 
@@ -68,7 +50,7 @@ function PanelMeasurementTableTracking({
                   variant="ghost"
                   className="pl-1.5"
                   onClick={() => {
-                    commandsManager.runCommand('clearMeasurements', measurementFilters);
+                    commandsManager.runCommand('clearMeasurements', { measurementFilter });
                   }}
                 >
                   <Icons.Download className="h-5 w-5" />
@@ -93,7 +75,7 @@ function PanelMeasurementTableTracking({
                   variant="ghost"
                   className="pl-0.5"
                   onClick={() => {
-                    commandsManager.runCommand('clearMeasurements', measurementFilters);
+                    commandsManager.runCommand('clearMeasurements', { measurementFilter });
                   }}
                 >
                   <Icons.Delete />

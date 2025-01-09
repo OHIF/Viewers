@@ -12,21 +12,21 @@ const {
 } = utils.MeasurementFilters;
 
 export type withAppAndFilters = withAppTypes & {
-  measurementFilters: Record<string, (item) => boolean>;
+  measurementFilter: (item) => boolean;
 };
 
-export default function PanelMeasurementTable({
+export default function PanelMeasurement({
   servicesManager,
   commandsManager,
   customHeader,
-  measurementFilters = { measurementFilter: filterAny },
+  measurementFilter = filterAny,
 }: withAppAndFilters): React.ReactNode {
   const measurementsPanelRef = useRef(null);
 
-  const { measurementService, customizationService } = servicesManager.services;
+  const { measurementService } = servicesManager.services;
 
   const displayMeasurements = useMeasurements(servicesManager, {
-    measurementFilter: measurementFilters.measurementFilter.bind(measurementFilters),
+    measurementFilter,
   });
 
   useEffect(() => {
@@ -53,12 +53,11 @@ export default function PanelMeasurementTable({
 
   const additionalFilter = filterAdditionalFinding(measurementService);
 
-  const { measurementFilter: trackedFilter } = measurementFilters;
   const measurements = displayMeasurements.filter(
-    item => !additionalFilter(item) && trackedFilter(item)
+    item => !additionalFilter(item) && measurementFilter(item)
   );
   const additionalFindings = displayMeasurements.filter(
-    item => additionalFilter(item) && trackedFilter(item)
+    item => additionalFilter(item) && measurementFilter(item)
   );
 
   const onArgs = {
