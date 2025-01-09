@@ -1,12 +1,13 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
-import { useViewportGrid, LoadingIndicatorTotalPercent, ViewportActionArrows } from '@ohif/ui';
+import { LoadingIndicatorTotalPercent, ViewportActionArrows } from '@ohif/ui';
+import { useViewportGrid } from '@ohif/ui-next';
 
 import promptHydrateRT from '../utils/promptHydrateRT';
 import _getStatusComponent from './_getStatusComponent';
 
 import createRTToolGroupAndAddTools from '../utils/initRTToolGroup';
-import { SegmentationRepresentations } from '@cornerstonejs/tools/enums';
+import { usePositionPresentationStore } from '@ohif/extension-cornerstone';
 
 const RT_TOOLGROUP_BASE_NAME = 'RTToolGroup';
 
@@ -43,8 +44,8 @@ function OHIFCornerstoneRTViewport(props: withAppTypes) {
   const [viewportGrid, viewportGridService] = useViewportGrid();
 
   // States
-  const [isToolGroupCreated, setToolGroupCreated] = useState(false);
   const [selectedSegment, setSelectedSegment] = useState(1);
+  const { setPositionPresentation } = usePositionPresentationStore();
 
   // Hydration means that the RT is opened and segments are loaded into the
   // segmentation panel, and RT is also rendered on any viewport that is in the
@@ -123,6 +124,7 @@ function OHIFCornerstoneRTViewport(props: withAppTypes) {
           toolGroupId: toolGroupId,
           orientation: viewportOptions.orientation,
           viewportId: viewportOptions.viewportId,
+          presentationIds: viewportOptions.presentationIds,
         }}
         onElementEnabled={evt => {
           props.onElementEnabled?.(evt);
@@ -183,6 +185,19 @@ function OHIFCornerstoneRTViewport(props: withAppTypes) {
       evt => {
         if (evt.rtDisplaySet.displaySetInstanceUID === rtDisplaySet.displaySetInstanceUID) {
           setRtIsLoading(false);
+        }
+
+        if (rtDisplaySet?.firstSegmentedSliceImageId && viewportOptions?.presentationIds) {
+          const { firstSegmentedSliceImageId } = rtDisplaySet;
+          const { presentationIds } = viewportOptions;
+
+          setPositionPresentation(presentationIds.positionPresentationId, {
+            viewportType: 'stack',
+            viewReference: {
+              referencedImageId: firstSegmentedSliceImageId,
+            },
+            viewPresentation: {},
+          });
         }
 
         if (evt.overlappingSegments) {
@@ -246,8 +261,6 @@ function OHIFCornerstoneRTViewport(props: withAppTypes) {
     }
 
     toolGroup = createRTToolGroupAndAddTools(toolGroupService, customizationService, toolGroupId);
-
-    setToolGroupCreated(true);
 
     return () => {
       // remove the segmentation representations if seg displayset changed

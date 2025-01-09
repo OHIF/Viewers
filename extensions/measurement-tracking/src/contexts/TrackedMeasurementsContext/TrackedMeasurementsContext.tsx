@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { Machine } from 'xstate';
 import { useMachine } from '@xstate/react';
-import { useViewportGrid } from '@ohif/ui';
+import { useViewportGrid } from '@ohif/ui-next';
 import { promptLabelAnnotation, promptSaveReport } from '@ohif/extension-default';
 import { machineConfiguration, defaultOptions, RESPONSE } from './measurementTrackingMachine';
 import promptBeginTracking from './promptBeginTracking';
@@ -271,6 +271,14 @@ function TrackedMeasurementsContextProvider(
     servicesManager.services,
     viewports,
   ]);
+
+  useEffect(() => {
+    // The command needs to be bound to the context's sendTrackedMeasurementsEvent
+    // so the command has to be registered in a React component.
+    commandsManager.registerCommand('DEFAULT', 'loadTrackedSRMeasurements', {
+      commandFn: props => sendTrackedMeasurementsEvent('HYDRATE_SR', props),
+    });
+  }, [commandsManager, sendTrackedMeasurementsEvent]);
 
   return (
     <TrackedMeasurementsContext.Provider

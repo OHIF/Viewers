@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { useViewportGrid, LoadingIndicatorTotalPercent } from '@ohif/ui';
+import { LoadingIndicatorTotalPercent } from '@ohif/ui';
+import { useViewportGrid } from '@ohif/ui-next';
 
 function OHIFCornerstonePMAPViewport(props: withAppTypes) {
   const {
@@ -97,6 +98,7 @@ function OHIFCornerstonePMAPViewport(props: withAppTypes) {
           viewportType: 'volume',
           orientation: viewportOptions.orientation,
           viewportId: viewportOptions.viewportId,
+          presentationIds: viewportOptions.presentationIds,
         }}
         displaySetOptions={[{}, pmapDisplaySetOptions]}
       ></Component>

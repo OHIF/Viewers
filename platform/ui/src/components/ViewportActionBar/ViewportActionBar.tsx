@@ -11,8 +11,7 @@ import { useResizeObserver } from '../../hooks';
 import useOnClickOutside from '../../utils/useOnClickOutside';
 
 import PatientInfo from '../PatientInfo';
-import Icon from '../Icon';
-
+import { Icons } from '@ohif/ui-next';
 export type ViewportActionBarProps = {
   studyData: any;
   onArrowsClick: (arrow: string) => void;
@@ -135,12 +134,12 @@ const ViewportActionBar = ({
       )}
       {showArrows && (
         <>
-          <Icon
+          <Icons.ByName
             className={`ml-auto ${arrowClasses}`}
             name="chevron-prev"
             onClick={() => onArrowsClick('left')}
           />
-          <Icon
+          <Icons.ByName
             className={arrowClasses}
             name="chevron-next"
             onClick={() => onArrowsClick('right')}
