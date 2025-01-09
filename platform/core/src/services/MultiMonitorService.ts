@@ -6,7 +6,6 @@ export class MultiMonitorService {
   private windowsConfig;
   private screenConfig;
   private launchWindows = [];
-  private commandsManager;
   private basePath: string;
 
   public readonly screenNumber: number;

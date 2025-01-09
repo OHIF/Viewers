@@ -202,6 +202,72 @@ export default function getCustomizationModule({ servicesManager, extensionManag
             },
           ],
         },
+        {
+          id: 'studyBrowser.thumbnailMenuItems',
+          value: [
+            {
+              id: 'tagBrowser',
+              label: 'Tag Browser',
+              iconName: 'DicomTagBrowser',
+              commands: 'openDICOMTagViewer',
+            },
+          ],
+        },
+        {
+          id: 'studyBrowser.studyMenuItems',
+          value: [
+            {
+              id: 'showInGrid',
+              label: 'Show In Grid',
+              iconName: 'DicomTagBrowser',
+              commands: [
+                {
+                  commandName: 'loadStudy',
+                  commandOptions: {
+                    StudyInstanceUID: '{StudyInstanceUID}',
+                  },
+                },
+                {
+                  commandName: 'setHangingProtocol',
+                  commandOptions: {
+                    activeStudyUID: '{StudyInstanceUID}',
+                    protocolId: '@ohif/mnGrid8',
+                  },
+                },
+              ],
+            },
+            {
+              id: 'showInOtherMonitor',
+              label: 'Show In Other Monitor',
+              iconName: 'DicomTagBrowser',
+              selector: ({ servicesManager }) => {
+                const { multiMonitorService } = servicesManager.services;
+                return multiMonitorService.isMultimonitor;
+              },
+              commands: {
+                commandName: 'multimonitor',
+                commandOptions: {
+                  StudyInstanceUID: '{StudyInstanceUID}',
+                  commands: [
+                    {
+                      commandName: 'loadStudy',
+                      commandOptions: {
+                        StudyInstanceUID: '{StudyInstanceUID}',
+                      },
+                    },
+                    {
+                      commandName: 'setHangingProtocol',
+                      commandOptions: {
+                        activeStudyUID: '{StudyInstanceUID}',
+                        protocolId: '@ohif/mnGrid8',
+                      },
+                    },
+                  ],
+                },
+              },
+            },
+          ],
+        },
       ],
     },
   ];

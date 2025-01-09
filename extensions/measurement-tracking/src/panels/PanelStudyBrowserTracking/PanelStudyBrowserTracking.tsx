@@ -32,140 +32,33 @@ const thumbnailNoImageModalities = [
   'PMAP',
 ];
 
-const ThumbnailMenuItems = ({ displaySetInstanceUID, canReject, onReject, commandsManager }) => {
+const getMenuItems = ({ commandsManager, items, servicesManager, ...props }) => {
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="hidden group-hover:inline-flex data-[state=open]:inline-flex"
-        >
-          <Icons.More />
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent
-        hideWhenDetached
-        align="start"
-      >
-        <DropdownMenuItem
-          onSelect={() => {
-            commandsManager.run('openDICOMTagViewer', {
-              displaySetInstanceUID,
-            });
-          }}
-          className="gap-[6px]"
-        >
-          <Icons.DicomTagBrowser />
-          Tag Browser
-        </DropdownMenuItem>
-        {canReject && (
+    <DropdownMenuContent
+      hideWhenDetached
+      align="start"
+    >
+      {items?.map(item => {
+        const isDisabled = item.selector && !item.selector({ servicesManager });
+
+        return (
           <DropdownMenuItem
+            key={item.id}
+            disabled={isDisabled}
             onSelect={() => {
-              onReject();
+              commandsManager.run(item.commands, {
+                ...item.commandOptions,
+                ...props,
+              });
             }}
             className="gap-[6px]"
           >
-            <Icons.Trash className="h-5 w-5 text-red-500" />
-            Delete Report
+            <Icons.ByName name={item.iconName} />
+            {item.label}
           </DropdownMenuItem>
-        )}
-      </DropdownMenuContent>
-    </DropdownMenu>
-  );
-};
-
-const StudyMenuItems = ({ StudyInstanceUID, commandsManager, servicesManager }) => {
-  const { multiMonitorService } = servicesManager.services;
-  const isMultimonitor = multiMonitorService.isMultimonitor;
-
-  return (
-    <DropdownMenu modal={true}>
-      <DropdownMenuTrigger
-        asChild
-        onClick={e => {
-          e.preventDefault();
-          e.stopPropagation();
-        }}
-      >
-        <Button
-          variant="ghost"
-          size="icon"
-          className="hidden group-hover:inline-flex data-[state=open]:inline-flex"
-          onClick={e => {
-            e.preventDefault();
-            e.stopPropagation();
-          }}
-        >
-          <Icons.More />
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent
-        hideWhenDetached
-        align="start"
-        onClick={e => {
-          e.preventDefault();
-          e.stopPropagation();
-        }}
-      >
-        <DropdownMenuItem
-          onSelect={event => {
-            event.preventDefault();
-            event.stopPropagation();
-
-            commandsManager.runAsync([
-              {
-                commandName: 'loadStudy',
-                commandOptions: {
-                  StudyInstanceUID,
-                },
-              },
-              {
-                commandName: 'setHangingProtocol',
-                commandOptions: {
-                  activeStudyUID: StudyInstanceUID,
-                  protocolId: '@ohif/mnGrid8',
-                },
-              },
-            ]);
-          }}
-          className="gap-[6px]"
-        >
-          <Icons.DicomTagBrowser />
-          Show In Grid
-        </DropdownMenuItem>
-        {isMultimonitor && (
-          <DropdownMenuItem
-            onSelect={() => {
-              commandsManager.run({
-                commandName: 'multimonitor',
-                commandOptions: {
-                  StudyInstanceUID,
-                  commands: [
-                    {
-                      commandName: 'loadStudy',
-                      commandOptions: {
-                        StudyInstanceUID,
-                      },
-                    },
-                    {
-                      commandName: 'setHangingProtocol',
-                      commandOptions: {
-                        activeStudyUID: StudyInstanceUID,
-                        protocolId: '@ohif/mnGrid8',
-                      },
-                    },
-                  ],
-                },
-              });
-            }}
-          >
-            <Icons.DicomTagBrowser />
-            Show In Other Monitor
-          </DropdownMenuItem>
-        )}
-      </DropdownMenuContent>
-    </DropdownMenu>
+        );
+      })}
+    </DropdownMenuContent>
   );
 };
 
@@ -630,16 +523,6 @@ export default function PanelStudyBrowserTracking({
     });
   };
 
-  const CustomizedThumbnailMenuItems = customizationService.getCustomComponent(
-    'PanelStudyBrowserTracking.ThumbnailMenuItems',
-    ThumbnailMenuItems
-  );
-
-  const CustomizedStudyMenuItems = customizationService.getCustomComponent(
-    'PanelStudyBrowserTracking.StudyMenuItems',
-    StudyMenuItems
-  );
-
   return (
     <>
       <>
@@ -674,18 +557,51 @@ export default function PanelStudyBrowserTracking({
         showSettings={actionIcons.find(icon => icon.id === 'settings').value}
         viewPresets={viewPresets}
         ThumbnailMenuItems={props => (
-          <CustomizedThumbnailMenuItems
-            {...props}
-            commandsManager={commandsManager}
-            servicesManager={servicesManager}
-          />
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="hidden group-hover:inline-flex data-[state=open]:inline-flex"
+                onClick={e => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                }}
+              >
+                <Icons.More />
+              </Button>
+            </DropdownMenuTrigger>
+            {getMenuItems({
+              ...props,
+              commandsManager: commandsManager,
+              servicesManager: servicesManager,
+              items: customizationService.getCustomization('studyBrowser.thumbnailMenuItems')
+                ?.value,
+            })}
+          </DropdownMenu>
         )}
         StudyMenuItems={props => (
-          <CustomizedStudyMenuItems
-            {...props}
-            commandsManager={commandsManager}
-            servicesManager={servicesManager}
-          />
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="hidden group-hover:inline-flex data-[state=open]:inline-flex"
+                onClick={e => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                }}
+              >
+                <Icons.More />
+              </Button>
+            </DropdownMenuTrigger>
+            {getMenuItems({
+              ...props,
+              commandsManager: commandsManager,
+              servicesManager: servicesManager,
+              items: customizationService.getCustomization('studyBrowser.studyMenuItems')?.value,
+            })}
+          </DropdownMenu>
         )}
       />
     </>
