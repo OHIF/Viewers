@@ -432,10 +432,7 @@ export default class CustomizationService extends PubSubService {
         this._addReference(item, type);
       });
     } else {
-      for (const key of Object.keys(references)) {
-        const value = references[key];
-        this._addReference(value, type, key);
-      }
+      this._addReference(references, type);
     }
   }
 }
