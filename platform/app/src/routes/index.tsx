@@ -103,7 +103,7 @@ const createRoutes = ({
   const { customizationService } = servicesManager.services;
 
   const WorkListRoute = {
-    path: '/',
+    path: publicUrl,
     children: DataSourceWrapper,
     private: true,
     props: { children: WorkList, servicesManager, extensionManager },
