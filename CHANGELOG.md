@@ -3,6 +3,73 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.10.0-beta.49](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.48...v3.10.0-beta.49) (2025-01-09)
+
+
+### Bug Fixes
+
+* Execute HP onProtocolEnter callback after HPservice.run( ([#4589](https://github.com/OHIF/Viewers/issues/4589)) ([8e2c607](https://github.com/OHIF/Viewers/commit/8e2c60790437d4df583a236c99e856d21dbc0dfe))
+
+
+
+
+
+# [3.10.0-beta.48](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.47...v3.10.0-beta.48) (2025-01-09)
+
+
+### Bug Fixes
+
+* Make StudyInstanceUID optional to retrieve a Series from DicomMetadataStore  ([#4644](https://github.com/OHIF/Viewers/issues/4644)) ([aef68d1](https://github.com/OHIF/Viewers/commit/aef68d18b82455ee485fef70df4ee7ba2c775417))
+
+
+
+
+
+# [3.10.0-beta.47](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.46...v3.10.0-beta.47) (2025-01-09)
+
+
+### Bug Fixes
+
+* Inconsistencies and update the style setting on load for embedded styles from codingValues ([#4599](https://github.com/OHIF/Viewers/issues/4599)) ([e0088ec](https://github.com/OHIF/Viewers/commit/e0088ec91807fa6a8e11e1e6942f51cedd080cc9))
+
+
+
+
+
+# [3.10.0-beta.46](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.45...v3.10.0-beta.46) (2025-01-08)
+
+
+### Bug Fixes
+
+* **circleci:** Update workflow dependencies for Docker publishing stages ([#4661](https://github.com/OHIF/Viewers/issues/4661)) ([66eebbe](https://github.com/OHIF/Viewers/commit/66eebbed0f27975082bf8997f4637c5de169af79))
+* **circleci:** Update workflow dependencies for Docker publishing stages ([#4662](https://github.com/OHIF/Viewers/issues/4662)) ([38edde5](https://github.com/OHIF/Viewers/commit/38edde5e37e8408b853c3712d240bd0423464701))
+
+
+
+
+
+# [3.10.0-beta.45](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.44...v3.10.0-beta.45) (2025-01-08)
+
+
+### Bug Fixes
+
+* **circleci:** Update workflow dependencies for Docker publishing stages ([#4660](https://github.com/OHIF/Viewers/issues/4660)) ([3c6a5ef](https://github.com/OHIF/Viewers/commit/3c6a5ef69e9914bdc9f3fda1b149400881e2ce1e))
+
+
+
+
+
+# [3.10.0-beta.44](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.43...v3.10.0-beta.44) (2025-01-08)
+
+
+### Bug Fixes
+
+* **Dockerfile:** Clear bun package manager cache before installation ([#4659](https://github.com/OHIF/Viewers/issues/4659)) ([5f6f528](https://github.com/OHIF/Viewers/commit/5f6f528fbf166a524f447708e1d0b4b8f3766d3c))
+
+
+
+
+
 # [3.10.0-beta.43](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.42...v3.10.0-beta.43) (2025-01-08)
 
 **Note:** Version bump only for package ohif-monorepo-root

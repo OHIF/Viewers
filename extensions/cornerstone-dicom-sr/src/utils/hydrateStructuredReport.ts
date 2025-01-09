@@ -205,7 +205,11 @@ export default function hydrateStructuredReport(
       annotation.data.label = getLabelFromDCMJSImportedToolData(toolData);
       annotation.data.finding = convertCode(codingValues, toolData.finding?.[0]);
       annotation.data.findingSites = convertSites(codingValues, toolData.findingSites);
-      annotation.data.site = annotation.data.findingSites?.[0];
+      annotation.data.findingSites?.forEach(site => {
+        if (site.type) {
+          annotation.data[site.type] = site;
+        }
+      });
 
       const matchingMapping = mappings.find(m => m.annotationType === annotationType);
 
@@ -216,6 +220,11 @@ export default function hydrateStructuredReport(
         matchingMapping.toMeasurementSchema,
         dataSource
       );
+
+      commandsManager.runCommand('updateMeasurement', {
+        uid: newAnnotationUID,
+        code: annotation.data.finding,
+      });
 
       if (disableEditing) {
         const addedAnnotation = annotationManager.getAnnotation(newAnnotationUID);

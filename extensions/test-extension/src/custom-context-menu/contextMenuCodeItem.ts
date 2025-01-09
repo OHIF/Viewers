@@ -13,7 +13,7 @@ const codeMenuItem = {
       ...this,
       codeRef,
       code: { ref: codeRef, ...code },
-      label: code.text,
+      label: this.label || code.text || codeRef,
       commands: [
         {
           commandName: 'updateMeasurement',
