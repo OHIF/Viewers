@@ -54,12 +54,16 @@ const commandsModule = ({
      * Runs a command in multi-monitor mode.  No-op if not multi-monitor.
      */
     multimonitor: async options => {
-      const { screenDelta, StudyInstanceUID, commands } = options;
+      const { screenDelta, StudyInstanceUID, commands, hashParams } = options;
       if (multiMonitorService.numberOfScreens < 2) {
         return options.fallback?.(options);
       }
 
-      const newWindow = await multiMonitorService.launchWindow(StudyInstanceUID, screenDelta);
+      const newWindow = await multiMonitorService.launchWindow(
+        StudyInstanceUID,
+        screenDelta,
+        hashParams
+      );
 
       // Only run commands if we successfully got a window with a commands manager
       if (newWindow && commands) {

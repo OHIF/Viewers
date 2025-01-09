@@ -95,21 +95,19 @@ export class MultiMonitorService {
     (window as any).multimonitor.launchWindows = launchWindows;
   };
 
-  public async launchWindow(studyUid: string, screenDelta = 1) {
+  public async launchWindow(studyUid: string, screenDelta = 1, hashParams = '') {
     const forScreen = (this.screenNumber + screenDelta) % this.numberOfScreens;
-    const url = new URL(this.basePath);
-    url.searchParams.set('StudyInstanceUIDs', studyUid);
-    return this.getWindow(forScreen, url.toString());
+    return this.getWindow(forScreen, studyUid ? `StudyInstanceUIDs=${studyUid}${hashParams}` : '');
   }
 
-  public async getWindow(screenNumber, urlToUse?: string) {
+  public async getWindow(screenNumber, hashParam?: string) {
     if (screenNumber === this.screenNumber) {
       return window;
     }
     if (this.launchWindows[screenNumber] && !this.launchWindows[screenNumber].closed) {
       return this.launchWindows[screenNumber];
     }
-    return await this.createWindow(screenNumber, urlToUse);
+    return await this.createWindow(screenNumber, hashParam);
   }
 
   /**
@@ -142,19 +140,7 @@ export class MultiMonitorService {
 
     let finalUrl;
     if (urlToUse) {
-      const baseUrl = new URL(window.location.origin + window.location.pathname);
-
-      const sourceUrl = new URL(urlToUse);
-      const studyUID = sourceUrl.searchParams.get('StudyInstanceUIDs');
-      debugger;
-      if (studyUID) {
-        baseUrl.searchParams.set('StudyInstanceUIDs', studyUID);
-      }
-
-      baseUrl.searchParams.set('multimonitor', 'split');
-      baseUrl.searchParams.set('screenNumber', screenNumber.toString());
-
-      finalUrl = baseUrl.toString();
+      finalUrl = `${this.basePath}&screenNumber=${screenNumber}#${urlToUse}`;
     } else {
       finalUrl = `${this.basePath}&screenNumber=${screenNumber}`;
     }
@@ -194,12 +180,18 @@ export class MultiMonitorService {
     }
   }
 
+  /**
+   * Sets the base path to use for launching other windows, based on the
+   * original base path without hash values in order to preserve consistent
+   * URLs so that windows are refreshed on relaunch.
+   */
   public setBasePath() {
     const url = new URL(window.location.href);
     url.searchParams.delete('screenNumber');
     url.searchParams.delete('protocolId');
     url.searchParams.delete('launchAll');
     url.searchParams.set('multimonitor', url.searchParams.get('multimonitor') || 'split');
+    url.hash = '';
     this.basePath = url.toString();
   }
 

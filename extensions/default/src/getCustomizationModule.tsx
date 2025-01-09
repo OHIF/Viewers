@@ -322,6 +322,7 @@ export default function getCustomizationModule({ servicesManager, extensionManag
               commands: {
                 commandName: 'multimonitor',
                 commandOptions: {
+                  hashParams: '&hangingProtocolId=@ohif/mnGrid8',
                   commands: [
                     'loadStudy',
                     {
