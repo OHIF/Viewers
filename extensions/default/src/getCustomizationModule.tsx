@@ -231,7 +231,10 @@ export default function getCustomizationModule({ servicesManager, extensionManag
               return (
                 <DropdownMenuSub>
                   <DropdownMenuSubTrigger className="gap-[6px]">
-                    <Icons.ByName name={item.iconName} />
+                    <Icons.ByName
+                      name={item.iconName}
+                      className="-ml-1"
+                    />
                     {item.label}
                   </DropdownMenuSubTrigger>
                   <DropdownMenuPortal>
@@ -267,20 +270,6 @@ export default function getCustomizationModule({ servicesManager, extensionManag
           id: 'studyBrowser.studyMenuItems',
           customizationType: 'ohif.menuContent',
           value: [
-            {
-              id: 'showInGrid',
-              label: 'Show In Grid',
-              iconName: 'DicomTagBrowser',
-              commands: [
-                'loadStudy',
-                {
-                  commandName: 'setHangingProtocol',
-                  commandOptions: {
-                    protocolId: '@ohif/mnGrid8',
-                  },
-                },
-              ],
-            },
             {
               id: 'applyHangingProtocol',
               label: 'Apply Hanging Protocol',
