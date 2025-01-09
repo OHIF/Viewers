@@ -41,6 +41,10 @@ const getMenuItems = ({ commandsManager, items, servicesManager, ...props }) => 
     <DropdownMenuContent
       hideWhenDetached
       align="start"
+      onClick={e => {
+        e.stopPropagation();
+        e.preventDefault();
+      }}
     >
       {items?.map(item =>
         menuContent.content({

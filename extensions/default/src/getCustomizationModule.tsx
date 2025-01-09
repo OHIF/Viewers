@@ -282,29 +282,29 @@ export default function getCustomizationModule({ servicesManager, extensionManag
               ],
             },
             {
-              id: 'viewOptions',
-              label: 'View Options',
-              iconName: 'Group',
+              id: 'applyHangingProtocol',
+              label: 'Apply Hanging Protocol',
+              iconName: 'ViewportViews',
               items: [
                 {
-                  id: 'viewIn2D',
-                  label: '2D View',
+                  id: 'applyDefaultProtocol',
+                  label: 'Default Protocol',
                   iconName: 'Layout2D',
                   commands: {
                     commandName: 'setHangingProtocol',
                     commandOptions: {
-                      protocolId: '@ohif/2D',
+                      protocolId: '@ohif/default',
                     },
                   },
                 },
                 {
-                  id: 'viewIn3D',
-                  label: '3D View',
-                  iconName: 'Layout3D',
+                  id: 'applyMPRProtocol',
+                  label: 'MPR Protocol',
+                  iconName: 'IconMPR',
                   commands: {
                     commandName: 'setHangingProtocol',
                     commandOptions: {
-                      protocolId: '@ohif/3D',
+                      protocolId: '@ohif/mnGrid',
                     },
                   },
                 },
