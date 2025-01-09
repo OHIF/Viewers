@@ -6,6 +6,14 @@ import DataSourceConfigurationComponent from './Components/DataSourceConfigurati
 import { GoogleCloudDataSourceConfigurationAPI } from './DataSourceConfigurationAPI/GoogleCloudDataSourceConfigurationAPI';
 import { utils } from '@ohif/core';
 import studyBrowserContextMenu from './customizations/studyBrowserContextMenu';
+import {
+  DropdownMenuSub,
+  DropdownMenuSubTrigger,
+  DropdownMenuPortal,
+  DropdownMenuSubContent,
+  DropdownMenuItem,
+  Icons,
+} from '@ohif/ui-next';
 
 const formatDate = utils.formatDate;
 
@@ -214,7 +222,50 @@ export default function getCustomizationModule({ servicesManager, extensionManag
           ],
         },
         {
+          id: 'ohif.menuContent',
+          content: function (props) {
+            const { item, commandsManager, servicesManager, ...rest } = props;
+
+            // If item has sub-items, render a submenu
+            if (item.items) {
+              return (
+                <DropdownMenuSub>
+                  <DropdownMenuSubTrigger className="gap-[6px]">
+                    <Icons.ByName name={item.iconName} />
+                    {item.label}
+                  </DropdownMenuSubTrigger>
+                  <DropdownMenuPortal>
+                    <DropdownMenuSubContent>
+                      {item.items.map(subItem => this.content({ ...props, item: subItem }))}
+                    </DropdownMenuSubContent>
+                  </DropdownMenuPortal>
+                </DropdownMenuSub>
+              );
+            }
+
+            // Regular menu item
+            const isDisabled = item.selector && !item.selector({ servicesManager });
+
+            return (
+              <DropdownMenuItem
+                disabled={isDisabled}
+                onSelect={() => {
+                  commandsManager.run(item.commands, {
+                    ...item.commandOptions,
+                    ...rest,
+                  });
+                }}
+                className="gap-[6px]"
+              >
+                <Icons.ByName name={item.iconName} />
+                {item.label}
+              </DropdownMenuItem>
+            );
+          },
+        },
+        {
           id: 'studyBrowser.studyMenuItems',
+          customizationType: 'ohif.menuContent',
           value: [
             {
               id: 'showInGrid',
