@@ -138,19 +138,15 @@ export class MultiMonitorService {
     const useWidth = Math.round(width * widthPercent);
     const useHeight = Math.round(height * heightPercent);
 
-    let finalUrl;
-    if (urlToUse) {
-      finalUrl = `${this.basePath}&screenNumber=${screenNumber}#${urlToUse}`;
-    } else {
-      finalUrl = `${this.basePath}&screenNumber=${screenNumber}`;
-    }
+    const baseFinalUrl = `${this.basePath}&screenNumber=${screenNumber}`;
+    const finalUrl = urlToUse ? `${baseFinalUrl}#${urlToUse}` : baseFinalUrl;
 
     const newId = newScreen.id;
     const options = newScreen.options || '';
     const position = `screenX=${useLeft},screenY=${useTop},width=${useWidth},height=${useHeight},${options}`;
 
     let newWindow = window.open('', newId, position);
-    if (newWindow?.location.href !== finalUrl) {
+    if (!newWindow?.location.href.startsWith(baseFinalUrl)) {
       newWindow = window.open(finalUrl, newId, position);
     }
     if (!newWindow) {
