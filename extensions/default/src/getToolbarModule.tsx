@@ -3,6 +3,7 @@ import ToolbarLayoutSelectorWithServices from './Toolbar/ToolbarLayoutSelector';
 import ToolbarSplitButtonWithServices from './Toolbar/ToolbarSplitButtonWithServices';
 import ToolbarButtonGroupWithServices from './Toolbar/ToolbarButtonGroupWithServices';
 import { ToolbarButton } from '@ohif/ui';
+import { ToolButton } from '@ohif/ui-next';
 import { ProgressDropdownWithService } from './Components/ProgressDropdownWithService';
 
 const getClassName = isToggled => {
@@ -19,6 +20,10 @@ export default function getToolbarModule({ commandsManager, servicesManager }: w
     {
       name: 'ohif.radioGroup',
       defaultComponent: ToolbarButton,
+    },
+    {
+      name: 'ohif.toolButton',
+      defaultComponent: ToolButton,
     },
     {
       name: 'ohif.divider',

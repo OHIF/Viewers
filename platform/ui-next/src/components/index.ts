@@ -90,6 +90,7 @@ import {
   ViewportOverlay,
   ViewportGrid,
 } from './Viewport';
+import { ToolButton } from './ToolButton';
 
 export {
   ErrorBoundary,
@@ -204,4 +205,5 @@ export {
   ViewportOverlay,
   ViewportGrid,
   Clipboard,
+  ToolButton,
 };

@@ -90,6 +90,7 @@ import {
   ViewportActionCornersLocations,
   ViewportOverlay,
   ViewportGrid,
+  ToolButton,
 } from './components';
 import { DataRow } from './components/DataRow';
 
@@ -196,4 +197,5 @@ export {
   ViewportActionCornersLocations,
   ViewportOverlay,
   ViewportGrid,
+  ToolButton,
 };
