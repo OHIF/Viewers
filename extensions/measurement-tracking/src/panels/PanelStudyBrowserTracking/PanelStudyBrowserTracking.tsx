@@ -75,14 +75,27 @@ const ThumbnailMenuItems = ({ displaySetInstanceUID, canReject, onReject, comman
   );
 };
 
-const StudyMenuItems = ({ StudyInstanceUID, commandsManager }) => {
+const StudyMenuItems = ({ StudyInstanceUID, commandsManager, servicesManager }) => {
+  const { multiMonitorService } = servicesManager.services;
+  const isMultimonitor = multiMonitorService.isMultimonitor;
+
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
+    <DropdownMenu modal={true}>
+      <DropdownMenuTrigger
+        asChild
+        onClick={e => {
+          e.preventDefault();
+          e.stopPropagation();
+        }}
+      >
         <Button
           variant="ghost"
           size="icon"
           className="hidden group-hover:inline-flex data-[state=open]:inline-flex"
+          onClick={e => {
+            e.preventDefault();
+            e.stopPropagation();
+          }}
         >
           <Icons.More />
         </Button>
@@ -90,18 +103,67 @@ const StudyMenuItems = ({ StudyInstanceUID, commandsManager }) => {
       <DropdownMenuContent
         hideWhenDetached
         align="start"
+        onClick={e => {
+          e.preventDefault();
+          e.stopPropagation();
+        }}
       >
         <DropdownMenuItem
-          onSelect={() => {
-            commandsManager.run('openDICOMTagViewer', {
-              StudyInstanceUID,
-            });
+          onSelect={event => {
+            event.preventDefault();
+            event.stopPropagation();
+
+            commandsManager.runAsync([
+              {
+                commandName: 'loadStudy',
+                commandOptions: {
+                  StudyInstanceUID,
+                },
+              },
+              {
+                commandName: 'setHangingProtocol',
+                commandOptions: {
+                  activeStudyUID: StudyInstanceUID,
+                  protocolId: '@ohif/mnGrid8',
+                },
+              },
+            ]);
           }}
           className="gap-[6px]"
         >
           <Icons.DicomTagBrowser />
-          Study Tags
+          Show In Grid
         </DropdownMenuItem>
+        {isMultimonitor && (
+          <DropdownMenuItem
+            onSelect={() => {
+              commandsManager.run({
+                commandName: 'multimonitor',
+                commandOptions: {
+                  StudyInstanceUID,
+                  commands: [
+                    {
+                      commandName: 'loadStudy',
+                      commandOptions: {
+                        StudyInstanceUID,
+                      },
+                    },
+                    {
+                      commandName: 'setHangingProtocol',
+                      commandOptions: {
+                        activeStudyUID: StudyInstanceUID,
+                        protocolId: '@ohif/mnGrid8',
+                      },
+                    },
+                  ],
+                },
+              });
+            }}
+          >
+            <Icons.DicomTagBrowser />
+            Show In Other Monitor
+          </DropdownMenuItem>
+        )}
       </DropdownMenuContent>
     </DropdownMenu>
   );
@@ -615,12 +677,14 @@ export default function PanelStudyBrowserTracking({
           <CustomizedThumbnailMenuItems
             {...props}
             commandsManager={commandsManager}
+            servicesManager={servicesManager}
           />
         )}
         StudyMenuItems={props => (
           <CustomizedStudyMenuItems
             {...props}
             commandsManager={commandsManager}
+            servicesManager={servicesManager}
           />
         )}
       />

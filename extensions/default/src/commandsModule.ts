@@ -74,14 +74,20 @@ const commandsModule = ({
      * Runs a command in multi-monitor mode.  No-op if not multi-monitor.
      */
     multimonitor: async options => {
-      const { commands, screenDelta, studyInstanceUID } = options;
+      const { screenDelta, StudyInstanceUID, commands } = options;
       if (multiMonitorService.numberOfScreens < 2) {
         return options.fallback?.(options);
       }
 
-      await multiMonitorService.launchWindow(studyInstanceUID, screenDelta, options);
-      if (commands) {
-        multiMonitorService.run(screenDelta, commands, options);
+      const newWindow = await multiMonitorService.launchWindow(StudyInstanceUID, screenDelta);
+
+      // Only run commands if we successfully got a window with a commands manager
+      if (newWindow && commands) {
+        // Todo: fix this properly, but it takes time for the new window to load
+        // and then the commandsManager is available for it
+        setTimeout(() => {
+          multiMonitorService.run(screenDelta, commands, options);
+        }, 1000);
       }
     },
 
@@ -90,17 +96,19 @@ const commandsModule = ({
      * Then, if commands is specified, runs the given commands list/instance
      */
     loadStudy: async options => {
-      const { studyInstanceUID, commands } = options;
-      if (hangingProtocolService.hasStudyUID(studyInstanceUID)) {
-        return commands && commandsManager.run(commands, options);
+      const { StudyInstanceUID } = options;
+      console.debug('🚀 ~ StudyInstanceUID:', StudyInstanceUID);
+
+      const displaySets = displaySetService.getActiveDisplaySets();
+      const isActive = displaySets.find(ds => ds.StudyInstanceUID === StudyInstanceUID);
+      if (isActive) {
+        return;
       }
       const [dataSource] = extensionManager.getActiveDataSource();
-      await requestDisplaySetCreationForStudy(dataSource, displaySetService, studyInstanceUID);
-      const activeStudy = DicomMetadataStore.getStudy(studyInstanceUID);
-      hangingProtocolService.addStudy(activeStudy);
-      const displaySets = displaySetService.getActiveDisplaySets();
-      hangingProtocolService.setDisplaySets(displaySets);
-      return commands && commandsManager.run(commands, options);
+      await requestDisplaySetCreationForStudy(dataSource, displaySetService, StudyInstanceUID);
+
+      const study = DicomMetadataStore.getStudy(StudyInstanceUID);
+      hangingProtocolService.addStudy(study);
     },
 
     /**
@@ -197,7 +205,6 @@ const commandsModule = ({
       reset = false,
     }: HangingProtocolParams): boolean => {
       try {
-        console.log('******** Set hanging protocol', activeStudyUID);
         // Stores in the state the display set selector id to displaySetUID mapping
         // Pass in viewportId for the active viewport.  This item will get set as
         // the activeViewportId
@@ -245,7 +252,8 @@ const commandsModule = ({
           // Run the hanging protocol fresh, re-using the existing study data
           // This is done on reset or when the study changes and we haven't yet
           // applied it, and don't specify exact stage to use.
-          hangingProtocolService.run({ activeStudyUID }, protocolId);
+          const displaySets = displaySetService.getActiveDisplaySets();
+          hangingProtocolService.run({ activeStudyUID, displaySets }, protocolId);
         } else if (
           protocolId === hpInfo.protocolId &&
           useStageIdx === hpInfo.stageIndex &&

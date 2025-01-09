@@ -390,10 +390,6 @@ export default class HangingProtocolService extends PubSubService {
     }
   }
 
-  public setDisplaySets(displaySets) {
-    this.displaySets = displaySets;
-  }
-
   /**
    * Run the hanging protocol decisions tree on the active study,
    * studies list and display sets, firing a PROTOCOL_CHANGED event when
@@ -413,7 +409,7 @@ export default class HangingProtocolService extends PubSubService {
    */
   public run({ studies, displaySets, activeStudy, activeStudyUID }, protocolId, options = {}) {
     this.studies = [...(studies || this.studies)];
-    this.displaySets = displaySets || this.displaySets;
+    this.displaySets = displaySets;
     this.setActiveStudyUID(activeStudyUID || (activeStudy || this.studies[0])?.StudyInstanceUID);
 
     this.protocolEngine = new ProtocolEngine(
