@@ -12,6 +12,10 @@ import {
   DropdownMenuTrigger,
   Icons,
   Button,
+  DropdownMenuSub,
+  DropdownMenuSubTrigger,
+  DropdownMenuPortal,
+  DropdownMenuSubContent,
 } from '@ohif/ui-next';
 import { StudyBrowser } from '@ohif/ui-next';
 
@@ -33,31 +37,51 @@ const thumbnailNoImageModalities = [
 ];
 
 const getMenuItems = ({ commandsManager, items, servicesManager, ...props }) => {
+  const renderMenuItem = item => {
+    // If item has sub-items, render a submenu
+    if (item.items) {
+      return (
+        <DropdownMenuSub key={item.id}>
+          <DropdownMenuSubTrigger className="gap-[6px]">
+            <Icons.ByName name={item.iconName} />
+            {item.label}
+          </DropdownMenuSubTrigger>
+          <DropdownMenuPortal>
+            <DropdownMenuSubContent>
+              {item.items.map(subItem => renderMenuItem(subItem))}
+            </DropdownMenuSubContent>
+          </DropdownMenuPortal>
+        </DropdownMenuSub>
+      );
+    }
+
+    // Regular menu item
+    const isDisabled = item.selector && !item.selector({ servicesManager });
+
+    return (
+      <DropdownMenuItem
+        key={item.id}
+        disabled={isDisabled}
+        onSelect={() => {
+          commandsManager.run(item.commands, {
+            ...item.commandOptions,
+            ...props,
+          });
+        }}
+        className="gap-[6px]"
+      >
+        <Icons.ByName name={item.iconName} />
+        {item.label}
+      </DropdownMenuItem>
+    );
+  };
+
   return (
     <DropdownMenuContent
       hideWhenDetached
       align="start"
     >
-      {items?.map(item => {
-        const isDisabled = item.selector && !item.selector({ servicesManager });
-
-        return (
-          <DropdownMenuItem
-            key={item.id}
-            disabled={isDisabled}
-            onSelect={() => {
-              commandsManager.run(item.commands, {
-                ...item.commandOptions,
-                ...props,
-              });
-            }}
-            className="gap-[6px]"
-          >
-            <Icons.ByName name={item.iconName} />
-            {item.label}
-          </DropdownMenuItem>
-        );
-      })}
+      {items?.map(item => renderMenuItem(item))}
     </DropdownMenuContent>
   );
 };

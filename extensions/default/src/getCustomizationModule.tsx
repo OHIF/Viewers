@@ -237,6 +237,35 @@ export default function getCustomizationModule({ servicesManager, extensionManag
               ],
             },
             {
+              id: 'viewOptions',
+              label: 'View Options',
+              iconName: 'Group',
+              items: [
+                {
+                  id: 'viewIn2D',
+                  label: '2D View',
+                  iconName: 'Layout2D',
+                  commands: {
+                    commandName: 'setHangingProtocol',
+                    commandOptions: {
+                      protocolId: '@ohif/2D',
+                    },
+                  },
+                },
+                {
+                  id: 'viewIn3D',
+                  label: '3D View',
+                  iconName: 'Layout3D',
+                  commands: {
+                    commandName: 'setHangingProtocol',
+                    commandOptions: {
+                      protocolId: '@ohif/3D',
+                    },
+                  },
+                },
+              ],
+            },
+            {
               id: 'showInOtherMonitor',
               label: 'Show In Other Monitor',
               iconName: 'DicomTagBrowser',
