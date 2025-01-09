@@ -99,7 +99,7 @@ export class MultiMonitorService {
   public async launchWindow(studyUid: string, screenDelta = 1) {
     const forScreen = (this.screenNumber + screenDelta) % this.numberOfScreens;
     const url = new URL(this.basePath);
-    url.searchParams.set('studyInstanceUIDs', studyUid);
+    url.searchParams.set('StudyInstanceUIDs', studyUid);
     return this.getWindow(forScreen, url.toString());
   }
 
@@ -147,6 +147,7 @@ export class MultiMonitorService {
 
       const sourceUrl = new URL(urlToUse);
       const studyUID = sourceUrl.searchParams.get('StudyInstanceUIDs');
+      debugger;
       if (studyUID) {
         baseUrl.searchParams.set('StudyInstanceUIDs', studyUID);
       }
