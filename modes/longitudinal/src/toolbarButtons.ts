@@ -121,7 +121,7 @@ const toolbarButtons: Button[] = [
   // Window Level
   {
     id: 'WindowLevel',
-    uiType: 'ohif.radioGroup',
+    uiType: 'ohif.toolButton',
     props: {
       icon: 'tool-window-level',
       label: 'Window Level',
@@ -138,7 +138,7 @@ const toolbarButtons: Button[] = [
   // Pan...
   {
     id: 'Pan',
-    uiType: 'ohif.radioGroup',
+    uiType: 'ohif.toolButton',
     props: {
       type: 'tool',
       icon: 'tool-move',
@@ -149,7 +149,7 @@ const toolbarButtons: Button[] = [
   },
   {
     id: 'TrackballRotate',
-    uiType: 'ohif.radioGroup',
+    uiType: 'ohif.toolButton',
     props: {
       type: 'tool',
       icon: 'tool-3d-rotate',
@@ -163,7 +163,7 @@ const toolbarButtons: Button[] = [
   },
   {
     id: 'Capture',
-    uiType: 'ohif.radioGroup',
+    uiType: 'ohif.toolButton',
     props: {
       icon: 'tool-capture',
       label: 'Capture',
@@ -188,7 +188,7 @@ const toolbarButtons: Button[] = [
   },
   {
     id: 'Crosshairs',
-    uiType: 'ohif.radioGroup',
+    uiType: 'ohif.toolButton',
     props: {
       type: 'tool',
       icon: 'tool-crosshair',
