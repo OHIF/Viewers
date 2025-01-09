@@ -5,9 +5,6 @@ import 'regenerator-runtime/runtime';
 import { createRoot } from 'react-dom/client';
 import App from './App';
 import React from 'react';
-export { history } from './utils/history';
-export { preserveQueryParameters, preserveQueryStrings } from './utils/preserveQueryParameters';
-export { publicUrl } from './utils/publicUrl';
 
 /**
  * EXTENSIONS AND MODES
@@ -20,6 +17,9 @@ export { publicUrl } from './utils/publicUrl';
  */
 import { modes as defaultModes, extensions as defaultExtensions } from './pluginImports';
 import loadDynamicConfig from './loadDynamicConfig';
+export { history } from './utils/history';
+export { preserveQueryParameters, preserveQueryStrings } from './utils/preserveQueryParameters';
+export { publicUrl } from './utils/publicUrl';
 
 loadDynamicConfig(window.config).then(config_json => {
   // Reset Dynamic config if defined
