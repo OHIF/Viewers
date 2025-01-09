@@ -465,10 +465,9 @@ workflows:
             - NPM_PUBLISH
       - DOCKER_BETA_PUBLISH_ARM:
           requires:
-            - NPM_PUBLISH
+            - DOCKER_BETA_PUBLISH
       - DOCKER_BETA_MULTIARCH_MANIFEST:
           requires:
-            - DOCKER_BETA_PUBLISH
             - DOCKER_BETA_PUBLISH_ARM
 
   # viewer.ohif.org
@@ -490,8 +489,7 @@ workflows:
             - NPM_PUBLISH
       - DOCKER_RELEASE_PUBLISH_ARM:
           requires:
-            - NPM_PUBLISH
+            - DOCKER_RELEASE_PUBLISH
       - DOCKER_MULTIARCH_MANIFEST:
           requires:
-            - DOCKER_RELEASE_PUBLISH
             - DOCKER_RELEASE_PUBLISH_ARM

@@ -44,11 +44,7 @@
 # Copy Files
 FROM node:20.18.1-slim as builder
 
-RUN apt-get update \
-  && apt-get upgrade -y \
-  && apt-get install -y build-essential python3 \
-  && apt-get clean \
-  && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y build-essential python3
 
 
 RUN mkdir /usr/src/app
@@ -61,6 +57,8 @@ ENV PATH=/usr/src/app/node_modules/.bin:$PATH
 COPY package.json yarn.lock preinstall.js lerna.json ./
 COPY --parents ./addOns/package.json ./addOns/*/*/package.json ./extensions/*/package.json ./modes/*/package.json ./platform/*/package.json ./
 # Run the install before copying the rest of the files
+
+RUN bun pm cache rm
 RUN bun install
 # Copy the local directory
 COPY --link --exclude=yarn.lock --exclude=package.json --exclude=Dockerfile . .

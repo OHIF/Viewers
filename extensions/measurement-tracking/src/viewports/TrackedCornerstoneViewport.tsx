@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
 
-import { Tooltip, ViewportActionArrows, useViewportGrid } from '@ohif/ui';
-import { Icons } from '@ohif/ui-next';
+import { ViewportActionArrows } from '@ohif/ui';
+import { useViewportGrid, Icons, Tooltip, TooltipTrigger, TooltipContent } from '@ohif/ui-next';
 
 import { annotation } from '@cornerstonejs/tools';
 import { useTrackedMeasurements } from './../getContextModule';
@@ -235,11 +235,9 @@ function TrackedCornerstoneViewport(
   };
 
   return (
-    <>
-      <div className="relative flex h-full w-full flex-row overflow-hidden">
-        {getCornerstoneViewport()}
-      </div>
-    </>
+    <div className="relative flex h-full w-full flex-row overflow-hidden">
+      {getCornerstoneViewport()}
+    </div>
   );
 }
 
@@ -312,7 +310,7 @@ const _getArrowsComponent = (isTracked, switchMeasurement, isActiveViewport) => 
     <ViewportActionArrows
       onArrowsClick={direction => switchMeasurement(direction)}
       className={isActiveViewport ? 'visible' : 'invisible group-hover/pane:visible'}
-    ></ViewportActionArrows>
+    />
   );
 };
 
@@ -322,33 +320,23 @@ function _getStatusComponent(isTracked, t) {
   }
 
   return (
-    <div className="relative">
-      <Tooltip
-        position="bottom-left"
-        content={
-          <div className="flex py-2">
-            <div className="flex pt-1">
-              <Icons.InfoLink className="text-primary-main w-4" />
-            </div>
-            <div className="ml-4 flex">
-              <span className="text-common-light text-base">
-                {isTracked ? (
-                  <>{t('Series is tracked and can be viewed in the measurement panel')}</>
-                ) : (
-                  <>
-                    {t(
-                      'Measurements for untracked series will not be shown in the measurements panel'
-                    )}
-                  </>
-                )}
-              </span>
-            </div>
-          </div>
-        }
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <span>
+          <Icons.StatusTracking className="text-aqua-pale" />
+        </span>
+      </TooltipTrigger>
+      <TooltipContent
+        align="start"
+        side="bottom"
       >
-        <Icons.StatusTracking className="text-aqua-pale" />
-      </Tooltip>
-    </div>
+        {isTracked ? (
+          <>{t('Series is tracked and can be viewed in the measurement panel')}</>
+        ) : (
+          <>{t('Measurements for untracked series will not be shown in the measurements panel')}</>
+        )}
+      </TooltipContent>
+    </Tooltip>
   );
 }
 
