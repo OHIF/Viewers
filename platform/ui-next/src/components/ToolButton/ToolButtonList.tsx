@@ -72,13 +72,13 @@ function ToolButtonList({ groupId, primary, items = [], onInteraction, servicesM
           <Button
             variant="ghost"
             size="icon"
-            className="text-primary-foreground hover:bg-primary-dark hover:text-primary-light inline-flex h-10 w-10 items-center justify-center !rounded-lg bg-transparent"
+            className="text-primary-foreground hover:bg-primary-dark hover:text-primary-light border-primary inline-flex h-10 w-5 items-center justify-center !rounded-tr-lg !rounded-br-lg !rounded-tl-none !rounded-bl-none border-l bg-transparent"
             aria-label="Open tool list"
           >
             {/* Example arrow-down icon */}
             <Icons.ByName
               name="chevron-down"
-              className="h-5 w-5"
+              className="text-primary h-5 w-5"
             />
           </Button>
         </DropdownMenuTrigger>
