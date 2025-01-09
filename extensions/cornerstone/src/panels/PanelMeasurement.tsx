@@ -5,7 +5,11 @@ import { MeasurementTable } from '@ohif/ui-next';
 import debounce from 'lodash.debounce';
 import { useMeasurements } from '../hooks/useMeasurements';
 
-const { filterAdditionalFinding, filterOr, filterAny } = utils.MeasurementFilters;
+const {
+  filterAdditionalFindings: filterAdditionalFinding,
+  filterOr,
+  filterAny,
+} = utils.MeasurementFilters;
 
 export type withAppAndFilters = withAppTypes & {
   measurementFilters: Record<string, (item) => boolean>;

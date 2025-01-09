@@ -6,7 +6,7 @@ import { PanelMeasurement, StudySummaryFromMetadata } from '@ohif/extension-corn
 import { useTrackedMeasurements } from '../getContextModule';
 import { useTranslation } from 'react-i18next';
 
-const { filterAny, filterNone, filterNot, filterTracked } = utils.MeasurementFilters;
+const { filterAny, filterNot, filterMeasurementsBySeriesUID } = utils.MeasurementFilters;
 
 function PanelMeasurementTableTracking({
   servicesManager,
@@ -19,7 +19,7 @@ function PanelMeasurementTableTracking({
   const [trackedMeasurements, sendTrackedMeasurementsEvent] = useTrackedMeasurements();
   const { trackedStudy, trackedSeries } = trackedMeasurements.context;
   const initialTrackedFilter = trackedStudy
-    ? filterTracked(trackedStudy, trackedSeries)
+    ? filterMeasurementsBySeriesUID(trackedSeries)
     : filterAny;
   const [measurementFilters, setMeasurementFilters] = useState({
     measurementFilter: initialTrackedFilter,
@@ -30,7 +30,7 @@ function PanelMeasurementTableTracking({
   useEffect(() => {
     let updatedMeasurementFilters = { ...measurementFilters };
     if (trackedMeasurements.matches('tracking') && trackedStudy) {
-      updatedMeasurementFilters.measurementFilter = filterTracked(trackedStudy, trackedSeries);
+      updatedMeasurementFilters.measurementFilter = filterMeasurementsBySeriesUID(trackedSeries);
     } else {
       updatedMeasurementFilters.measurementFilter = filterAny;
     }
@@ -47,7 +47,7 @@ function PanelMeasurementTableTracking({
 
   return (
     <>
-      <StudySummaryFromMetadata studyInstanceUID={trackedStudy} />
+      <StudySummaryFromMetadata StudyInstanceUID={trackedStudy} />
       <PanelMeasurement
         servicesManager={servicesManager}
         extensionManager={extensionManager}
