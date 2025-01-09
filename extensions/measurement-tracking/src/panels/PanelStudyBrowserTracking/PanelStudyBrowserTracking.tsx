@@ -33,6 +33,8 @@ const thumbnailNoImageModalities = [
 
 const getMenuItems = ({ commandsManager, items, servicesManager, ...props }) => {
   const { customizationService } = servicesManager.services;
+
+  // Todo: this feels odd, but maybe my feelings are wrong
   const menuContent = customizationService.getCustomization('ohif.menuContent');
 
   return (
