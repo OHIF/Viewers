@@ -84,9 +84,7 @@ export class MultiMonitorService {
       console.warn("Didn't find a commands manager to run in the other window", otherWindow);
       return;
     }
-    console.warn('Running commands in other window', commands, options);
-    const result = otherWindow.multimonitor.commandsManager.runAsync(commands, options);
-    console.warn('Got result', result);
+    otherWindow.multimonitor.commandsManager.runAsync(commands, options);
   }
 
   /** Sets the launch windows for later use, shared amongst all windows. */
@@ -153,8 +151,6 @@ export class MultiMonitorService {
       console.warn('Unable to launch window', finalUrl, 'called', newId, 'at', position);
       return;
     }
-
-    console.warn('Launching', screenNumber, newId, finalUrl, position);
 
     // Wait for the window to fully load
     await new Promise<void>(resolve => {

@@ -312,7 +312,7 @@ export default function getCustomizationModule({ servicesManager, extensionManag
             },
             {
               id: 'showInOtherMonitor',
-              label: 'Launch In Monitor 2',
+              label: 'Launch On Other Monitor',
               iconName: 'DicomTagBrowser',
               // we should use evaluator for this, as these are basically toolbar buttons
               selector: ({ servicesManager }) => {
