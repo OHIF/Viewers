@@ -58,7 +58,7 @@ function _getStudy(StudyInstanceUID) {
 }
 
 function _getSeries(StudyInstanceUID, SeriesInstanceUID) {
-  if(StudyInstanceUID == null) {
+  if(!StudyInstanceUID) {
     const series = _model.studies.map(study => study.series).flat();
     return series.find(aSeries => aSeries.SeriesInstanceUID === SeriesInstanceUID);
   }
