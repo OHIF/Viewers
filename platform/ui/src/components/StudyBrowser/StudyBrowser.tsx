@@ -94,7 +94,7 @@ const StudyBrowser = ({
             const isActive = activeTabName === name;
             const isDisabled = !studies.length;
             // Apply the contrasting color for brighter button color visibility
-            const classStudyBrowser = customizationService?.getModeCustomization(
+            const classStudyBrowser = customizationService?.getCustomization(
               'class:StudyBrowser'
             ) || {
               true: 'default',

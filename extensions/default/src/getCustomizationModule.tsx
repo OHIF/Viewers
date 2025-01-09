@@ -33,7 +33,6 @@ export default function getCustomizationModule({ servicesManager, extensionManag
         },
       },
     },
-
     // Example customization to list a set of datasources
     {
       name: 'datasources',

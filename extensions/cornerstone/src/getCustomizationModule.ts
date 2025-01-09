@@ -1,10 +1,8 @@
-import React from 'react';
 import { Enums } from '@cornerstonejs/tools';
 import { toolNames } from './initCornerstoneTools';
 import defaultWindowLevelPresets from './components/WindowLevelActionMenu/defaultWindowLevelPresets';
 import { colormaps } from './utils/colormaps';
 import { CONSTANTS } from '@cornerstonejs/core';
-import { CornerstoneOverlay } from './Viewport/Overlays/CustomizableViewportOverlay';
 import DicomUpload from './components/DicomUpload/DicomUpload';
 
 const DefaultColormap = 'Grayscale';
@@ -45,7 +43,50 @@ function getCustomizationModule() {
       name: 'default',
       value: {
         dicomUploadComponent: DicomUpload,
-        CornerstoneOverlay,
+        'viewportOverlay.topLeft': [
+          {
+            id: 'StudyDate',
+            inheritsFrom: 'ohif.overlayItem',
+            label: '',
+            title: 'Study date',
+            condition: ({ referenceInstance }) => referenceInstance?.StudyDate,
+            contentF: ({ referenceInstance, formatters: { formatDate } }) =>
+              formatDate(referenceInstance.StudyDate),
+          },
+          {
+            id: 'SeriesDescription',
+            inheritsFrom: 'ohif.overlayItem',
+            label: '',
+            title: 'Series description',
+            condition: ({ referenceInstance }) => {
+              return referenceInstance && referenceInstance.SeriesDescription;
+            },
+            contentF: ({ referenceInstance }) => referenceInstance.SeriesDescription,
+          },
+        ],
+        'viewportOverlay.topRight': [],
+        'viewportOverlay.bottomLeft': [
+          {
+            id: 'WindowLevel',
+            inheritsFrom: 'ohif.overlayItem.windowLevel',
+          },
+          {
+            id: 'ZoomLevel',
+            inheritsFrom: 'ohif.overlayItem.zoomLevel',
+            condition: props => {
+              const activeToolName = props.toolGroupService.getActiveToolForViewport(
+                props.viewportId
+              );
+              return activeToolName === 'Zoom';
+            },
+          },
+        ],
+        'viewportOverlay.bottomRight': [
+          {
+            id: 'InstanceNumber',
+            inheritsFrom: 'ohif.overlayItem.instanceNumber',
+          },
+        ],
         'cornerstone.overlayViewportTools': tools,
         'cornerstone.windowLevelPresets': defaultWindowLevelPresets,
         'cornerstone.colorbar': {
