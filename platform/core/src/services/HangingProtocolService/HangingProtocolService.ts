@@ -427,15 +427,16 @@ export default class HangingProtocolService extends PubSubService {
     if (protocolId && typeof protocolId === 'string') {
       const protocol = this.getProtocolById(protocolId);
       this._setProtocol(protocol, options);
-      return;
+    }else {
+      const matchedProtocol = this.protocolEngine.run({
+        studies: this.studies,
+        activeStudy,
+        displaySets,
+      });
+      this._setProtocol(matchedProtocol);
     }
 
-    const matchedProtocol = this.protocolEngine.run({
-      studies: this.studies,
-      activeStudy,
-      displaySets,
-    });
-    this._setProtocol(matchedProtocol);
+    this._commandsManager.run(this.protocol?.callbacks?.onProtocolEnter);
   }
 
   /**

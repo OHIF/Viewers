@@ -3,7 +3,7 @@ import React from 'react';
 import { Toolbox } from '@ohif/ui-next';
 import PanelSegmentation from './panels/PanelSegmentation';
 import ActiveViewportWindowLevel from './components/ActiveViewportWindowLevel';
-import PanelMeasurementTable from './panels/PanelMeasurement';
+import PanelMeasurement from './panels/PanelMeasurement';
 
 const getPanelModule = ({ commandsManager, servicesManager, extensionManager }: withAppTypes) => {
   const wrappedPanelSegmentation = ({ configuration }) => {
@@ -59,7 +59,7 @@ const getPanelModule = ({ commandsManager, servicesManager, extensionManager }: 
 
   const wrappedPanelMeasurement = ({ configuration }) => {
     return (
-      <PanelMeasurementTable
+      <PanelMeasurement
         commandsManager={commandsManager}
         servicesManager={servicesManager}
         extensionManager={extensionManager}

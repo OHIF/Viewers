@@ -26,26 +26,6 @@ export type HangingProtocolParams = {
   reset?: false;
 };
 
-/**
- * The studies from display sets gets the studies in study date
- * order or in study instance UID order - not very useful, but
- * if not specifically specified then at least making it consistent is useful.
- */
-const getStudiesfromDisplaySets = displaySets => {
-  const studyMap = {};
-
-  const ret = displaySets.reduce((prev, curr) => {
-    const { StudyInstanceUID } = curr;
-    if (!studyMap[StudyInstanceUID]) {
-      const study = DicomMetadataStore.getStudy(StudyInstanceUID);
-      studyMap[StudyInstanceUID] = study;
-      prev.push(study);
-    }
-    return prev;
-  }, []);
-  return ret;
-};
-
 export type UpdateViewportDisplaySetParams = {
   direction: number;
   excludeNonImageModalities?: boolean;
@@ -74,14 +54,24 @@ const commandsModule = ({
      * Runs a command in multi-monitor mode.  No-op if not multi-monitor.
      */
     multimonitor: async options => {
-      const { commands, screenDelta, studyInstanceUID } = options;
+      const { screenDelta, StudyInstanceUID, commands, hashParams } = options;
       if (multiMonitorService.numberOfScreens < 2) {
         return options.fallback?.(options);
       }
 
-      await multiMonitorService.launchWindow(studyInstanceUID, screenDelta, options);
-      if (commands) {
-        multiMonitorService.run(screenDelta, commands, options);
+      const newWindow = await multiMonitorService.launchWindow(
+        StudyInstanceUID,
+        screenDelta,
+        hashParams
+      );
+
+      // Only run commands if we successfully got a window with a commands manager
+      if (newWindow && commands) {
+        // Todo: fix this properly, but it takes time for the new window to load
+        // and then the commandsManager is available for it
+        setTimeout(() => {
+          multiMonitorService.run(screenDelta, commands, options);
+        }, 1000);
       }
     },
 
@@ -90,17 +80,17 @@ const commandsModule = ({
      * Then, if commands is specified, runs the given commands list/instance
      */
     loadStudy: async options => {
-      const { studyInstanceUID, commands } = options;
-      if (hangingProtocolService.hasStudyUID(studyInstanceUID)) {
-        return commands && commandsManager.run(commands, options);
+      const { StudyInstanceUID } = options;
+      const displaySets = displaySetService.getActiveDisplaySets();
+      const isActive = displaySets.find(ds => ds.StudyInstanceUID === StudyInstanceUID);
+      if (isActive) {
+        return;
       }
       const [dataSource] = extensionManager.getActiveDataSource();
-      await requestDisplaySetCreationForStudy(dataSource, displaySetService, studyInstanceUID);
-      const activeStudy = DicomMetadataStore.getStudy(studyInstanceUID);
-      hangingProtocolService.addStudy(activeStudy);
-      const displaySets = displaySetService.getActiveDisplaySets();
-      hangingProtocolService.setDisplaySets(displaySets);
-      return commands && commandsManager.run(commands, options);
+      await requestDisplaySetCreationForStudy(dataSource, displaySetService, StudyInstanceUID);
+
+      const study = DicomMetadataStore.getStudy(StudyInstanceUID);
+      hangingProtocolService.addStudy(study);
     },
 
     /**
@@ -191,13 +181,14 @@ const commandsModule = ({
      */
     setHangingProtocol: ({
       activeStudyUID = '',
+      StudyInstanceUID = '',
       protocolId,
       stageId,
       stageIndex,
       reset = false,
     }: HangingProtocolParams): boolean => {
+      const toUseStudyInstanceUID = activeStudyUID || StudyInstanceUID;
       try {
-        console.log('******** Set hanging protocol', activeStudyUID);
         // Stores in the state the display set selector id to displaySetUID mapping
         // Pass in viewportId for the active viewport.  This item will get set as
         // the activeViewportId
@@ -215,7 +206,7 @@ const commandsModule = ({
           }
         } else if (stageIndex === undefined && stageId === undefined) {
           // Re-set the same stage as was previously used
-          const hangingId = `${activeStudyUID || hpInfo.activeStudyUID}:${protocolId}`;
+          const hangingId = `${toUseStudyInstanceUID || hpInfo.activeStudyUID}:${protocolId}`;
           stageIndex = hangingProtocolStageIndexMap[hangingId]?.stageIndex;
         }
 
@@ -226,9 +217,9 @@ const commandsModule = ({
             stageIndex,
           });
 
-        const activeStudyChanged = hangingProtocolService.setActiveStudyUID(activeStudyUID);
+        const activeStudyChanged = hangingProtocolService.setActiveStudyUID(toUseStudyInstanceUID);
 
-        const storedHanging = `${activeStudyUID || hangingProtocolService.getState().activeStudyUID}:${protocolId}:${
+        const storedHanging = `${toUseStudyInstanceUID || hangingProtocolService.getState().activeStudyUID}:${protocolId}:${
           useStageIdx || 0
         }`;
 
@@ -245,11 +236,15 @@ const commandsModule = ({
           // Run the hanging protocol fresh, re-using the existing study data
           // This is done on reset or when the study changes and we haven't yet
           // applied it, and don't specify exact stage to use.
-          hangingProtocolService.run({ activeStudyUID }, protocolId);
+          const displaySets = displaySetService.getActiveDisplaySets();
+          hangingProtocolService.run(
+            { activeStudyUID: toUseStudyInstanceUID, displaySets },
+            protocolId
+          );
         } else if (
           protocolId === hpInfo.protocolId &&
           useStageIdx === hpInfo.stageIndex &&
-          !activeStudyUID
+          !toUseStudyInstanceUID
         ) {
           // Clear the HP setting to reset them
           hangingProtocolService.setProtocol(protocolId, {
@@ -270,7 +265,7 @@ const commandsModule = ({
         // Do this after successfully applying the update
         const { setDisplaySetSelector } = useDisplaySetSelectorStore.getState();
         setDisplaySetSelector(
-          `${activeStudyUID || hpInfo.activeStudyUID}:activeDisplaySet:0`,
+          `${toUseStudyInstanceUID || hpInfo.activeStudyUID}:activeDisplaySet:0`,
           null
         );
         return true;
@@ -628,33 +623,15 @@ const commandsModule = ({
   };
 
   const definitions = {
-    multimonitor: {
-      commandFn: actions.multimonitor,
-    },
-    loadStudy: {
-      commandFn: actions.loadStudy,
-    },
-    showContextMenu: {
-      commandFn: actions.showContextMenu,
-    },
-    closeContextMenu: {
-      commandFn: actions.closeContextMenu,
-    },
-    clearMeasurements: {
-      commandFn: actions.clearMeasurements,
-    },
-    displayNotification: {
-      commandFn: actions.displayNotification,
-    },
-    setHangingProtocol: {
-      commandFn: actions.setHangingProtocol,
-    },
-    toggleHangingProtocol: {
-      commandFn: actions.toggleHangingProtocol,
-    },
-    navigateHistory: {
-      commandFn: actions.navigateHistory,
-    },
+    multimonitor: actions.multimonitor,
+    loadStudy: actions.loadStudy,
+    showContextMenu: actions.showContextMenu,
+    closeContextMenu: actions.closeContextMenu,
+    clearMeasurements: actions.clearMeasurements,
+    displayNotification: actions.displayNotification,
+    setHangingProtocol: actions.setHangingProtocol,
+    toggleHangingProtocol: actions.toggleHangingProtocol,
+    navigateHistory: actions.navigateHistory,
     nextStage: {
       commandFn: actions.deltaStage,
       options: { direction: 1 },
@@ -663,18 +640,10 @@ const commandsModule = ({
       commandFn: actions.deltaStage,
       options: { direction: -1 },
     },
-    setViewportGridLayout: {
-      commandFn: actions.setViewportGridLayout,
-    },
-    toggleOneUp: {
-      commandFn: actions.toggleOneUp,
-    },
-    openDICOMTagViewer: {
-      commandFn: actions.openDICOMTagViewer,
-    },
-    updateViewportDisplaySet: {
-      commandFn: actions.updateViewportDisplaySet,
-    },
+    setViewportGridLayout: actions.setViewportGridLayout,
+    toggleOneUp: actions.toggleOneUp,
+    openDICOMTagViewer: actions.openDICOMTagViewer,
+    updateViewportDisplaySet: actions.updateViewportDisplaySet,
   };
 
   return {
