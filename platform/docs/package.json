@@ -2,19 +2,6 @@
   "name": "ohif-docs",
   "version": "3.10.0-beta.52",
   "private": true,
-  "workspaces": {
-    "nohoist": [
-      "@docusaurus/**",
-      "**/@docusaurus/**",
-      "@docusaurus/preset-classic",
-      "@docusaurus/preset-classic/**",
-      "**/react-router-dom/**",
-      "**/react-router/**",
-      "**/history/**",
-      "**/@types/react/**",
-      "**/@types/react-dom/**"
-    ]
-  },
   "scripts": {
     "docusaurus": "docusaurus",
     "clean": "shx rm -rf dist",

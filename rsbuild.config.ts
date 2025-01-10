@@ -2,7 +2,7 @@ import { defineConfig } from '@rsbuild/core';
 import { pluginReact } from '@rsbuild/plugin-react';
 import { pluginNodePolyfill } from '@rsbuild/plugin-node-polyfill';
 import path from 'path';
-import writePluginImportsFile from './platform/app/.rspack/writePluginImportsFile';
+import writePluginImportsFile from './platform/app/.webpack/writePluginImportsFile';
 
 const SRC_DIR = path.resolve(__dirname, './platform/app/src');
 const DIST_DIR = path.resolve(__dirname, './platform/app/dist');

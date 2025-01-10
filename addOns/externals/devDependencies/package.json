@@ -17,8 +17,7 @@
   },
   "peerDependencies": {
     "react": "^18.3.1",
-    "react-dom": "^18.3.1",
-    "react-router": "^7.1.1"
+    "react-dom": "^18.3.1"
   },
   "devDependencies": {
     "@pmmmwh/react-refresh-webpack-plugin": "^0.5.15",

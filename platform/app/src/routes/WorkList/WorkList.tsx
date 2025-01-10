@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
-import { Link, useNavigate } from 'react-router';
+import { Link, useNavigate } from 'react-router-dom';
 import moment from 'moment';
 import qs from 'query-string';
 import isEqual from 'lodash.isequal';

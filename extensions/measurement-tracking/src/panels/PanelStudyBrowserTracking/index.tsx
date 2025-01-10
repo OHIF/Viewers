@@ -40,16 +40,14 @@ function WrappedPanelStudyBrowserTracking({
   );
 
   return (
-    <div>
-      <PanelStudyBrowserTracking
-        servicesManager={servicesManager}
-        commandsManager={commandsManager}
-        dataSource={dataSource}
-        getImageSrc={_getImageSrcFromImageId}
-        getStudiesForPatientByMRN={_getStudiesForPatientByMRN}
-        requestDisplaySetCreationForStudy={_requestDisplaySetCreationForStudy}
-      />
-    </div>
+    <PanelStudyBrowserTracking
+      servicesManager={servicesManager}
+      commandsManager={commandsManager}
+      dataSource={dataSource}
+      getImageSrc={_getImageSrcFromImageId}
+      getStudiesForPatientByMRN={_getStudiesForPatientByMRN}
+      requestDisplaySetCreationForStudy={_requestDisplaySetCreationForStudy}
+    />
   );
 }
 

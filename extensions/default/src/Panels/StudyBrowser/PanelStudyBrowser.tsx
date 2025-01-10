@@ -3,7 +3,7 @@ import { useImageViewer } from '@ohif/ui';
 import { useViewportGrid } from '@ohif/ui-next';
 import { StudyBrowser } from '@ohif/ui-next';
 import { utils } from '@ohif/core';
-import { useNavigate } from 'react-router';
+import { useNavigate } from 'react-router-dom';
 import { Separator } from '@ohif/ui-next';
 import { PanelStudyBrowserHeader } from './PanelStudyBrowserHeader';
 import { defaultActionIcons, defaultViewPresets } from './constants';
