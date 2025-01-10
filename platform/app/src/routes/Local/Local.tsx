@@ -8,7 +8,8 @@ import filesToStudies from './filesToStudies';
 
 import { extensionManager } from '../../App.tsx';
 
-import { Icon, Button, LoadingIndicatorProgress } from '@ohif/ui';
+import { Button, Icon, LoadingIndicatorProgress } from '@ohif/ui';
+import { Icons } from '@ohif/ui-next';
 
 const getLoadButton = (onDrop, text, isDir) => {
   return (
@@ -22,7 +23,7 @@ const getLoadButton = (onDrop, text, isDir) => {
             rounded="full"
             variant="contained" // outlined
             disabled={false}
-            endIcon={<Icon name="launch-arrow" />} // launch-arrow | launch-info
+            endIcon={<Icons.LaunchArrow />}
             className={classnames('font-medium', 'ml-2')}
             onClick={() => {}}
           >
@@ -126,10 +127,7 @@ function Local({ modePath }: LocalProps) {
           <div className="flex h-screen w-screen items-center justify-center">
             <div className="bg-secondary-dark mx-auto space-y-2 rounded-lg py-8 px-8 drop-shadow-md">
               <div className="flex items-center justify-center">
-                <Icon
-                  name="logo-dark-background"
-                  className="h-28"
-                />
+                <Icons.OHIFLogoColorDarkBackground className="h-28" />
               </div>
               <div className="space-y-2 pt-4 text-center">
                 {dropInitiated ? (

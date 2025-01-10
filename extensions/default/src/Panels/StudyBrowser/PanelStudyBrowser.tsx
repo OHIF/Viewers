@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { useImageViewer, useViewportGrid } from '@ohif/ui';
+import { useImageViewer } from '@ohif/ui';
+import { useViewportGrid } from '@ohif/ui-next';
 import { StudyBrowser } from '@ohif/ui-next';
 import { utils } from '@ohif/core';
 import { useNavigate } from 'react-router';

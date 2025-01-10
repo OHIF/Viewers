@@ -3,7 +3,8 @@ import { useNavigate } from 'react-router';
 import { useTranslation } from 'react-i18next';
 import PropTypes from 'prop-types';
 import { utils } from '@ohif/core';
-import { useImageViewer, useViewportGrid, Dialog, ButtonEnums } from '@ohif/ui';
+import { useImageViewer, Dialog, ButtonEnums } from '@ohif/ui';
+import { useViewportGrid } from '@ohif/ui-next';
 import { StudyBrowser } from '@ohif/ui-next';
 
 import { useTrackedMeasurements } from '../../getContextModule';

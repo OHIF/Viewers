@@ -71,7 +71,7 @@ export async function defaultRouteInit(
         });
       }
 
-      displaySetService.makeDisplaySets(seriesMetadata.instances, madeInClient);
+      displaySetService.makeDisplaySets(seriesMetadata.instances, { madeInClient });
     }
   );
 

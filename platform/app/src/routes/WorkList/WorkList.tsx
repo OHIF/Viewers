@@ -11,15 +11,14 @@ import filtersMeta from './filtersMeta.js';
 import { useAppConfig } from '@state';
 import { useDebounce, useSearchParams } from '@hooks';
 import { utils, hotkeys } from '@ohif/core';
+import publicUrl from '../../utils/publicUrl';
 
 import {
-  Icon,
   StudyListExpandedRow,
   EmptyStudies,
   StudyListTable,
   StudyListPagination,
   StudyListFilter,
-  TooltipClipboard,
   useModal,
   AboutModal,
   UserPreferences,
@@ -30,12 +29,20 @@ import {
   ButtonEnums,
 } from '@ohif/ui';
 
-import { Header } from '@ohif/ui-next';
+import {
+  Header,
+  Icons,
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+  Clipboard,
+  Onboarding,
+  ScrollArea,
+} from '@ohif/ui-next';
 
 import { Types } from '@ohif/ui';
 
 import i18n from '@ohif/i18n';
-import { Onboarding, ScrollArea } from '@ohif/ui-next';
 
 const PatientInfoVisibility = Types.PatientInfoVisibility;
 
@@ -95,10 +102,13 @@ function WorkList({
   const sortModifier = sortDirection === 'descending' ? 1 : -1;
   const defaultSortValues =
     shouldUseDefaultSort && canSort ? { sortBy: 'studyDate', sortDirection: 'ascending' } : {};
-  const sortedStudies = studies;
 
-  if (canSort) {
-    studies.sort((s1, s2) => {
+  const sortedStudies = useMemo(() => {
+    if (!canSort) {
+      return studies;
+    }
+
+    return [...studies].sort((s1, s2) => {
       if (shouldUseDefaultSort) {
         const ascendingSortModifier = -1;
         return _sortStringDates(s1, s2, ascendingSortModifier);
@@ -121,7 +131,7 @@ function WorkList({
 
       return 0;
     });
-  }
+  }, [canSort, studies, shouldUseDefaultSort, sortBy, sortModifier]);
 
   // ~ Rows & Studies
   const [expandedRows, setExpandedRows] = useState([]);
@@ -202,7 +212,7 @@ function WorkList({
     });
 
     navigate({
-      pathname: '/',
+      pathname: publicUrl,
       search: search ? `?${search}` : undefined,
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -270,22 +280,37 @@ function WorkList({
         t('Common:localTimeFormat', 'hh:mm A')
       );
 
+    const makeCopyTooltipCell = textValue => {
+      if (!textValue) {
+        return '';
+      }
+      return (
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <span className="cursor-pointer truncate">{textValue}</span>
+          </TooltipTrigger>
+          <TooltipContent side="bottom">
+            <div className="flex items-center justify-between gap-2">
+              {textValue}
+              <Clipboard>{textValue}</Clipboard>
+            </div>
+          </TooltipContent>
+        </Tooltip>
+      );
+    };
+
     return {
       dataCY: `studyRow-${studyInstanceUid}`,
       clickableCY: studyInstanceUid,
       row: [
         {
           key: 'patientName',
-          content: patientName ? (
-            <TooltipClipboard>{patientName}</TooltipClipboard>
-          ) : (
-            <span className="text-gray-700">(Empty)</span>
-          ),
+          content: patientName ? makeCopyTooltipCell(patientName) : null,
           gridCol: 4,
         },
         {
           key: 'mrn',
-          content: <TooltipClipboard>{mrn}</TooltipClipboard>,
+          content: makeCopyTooltipCell(mrn),
           gridCol: 3,
         },
         {
@@ -301,7 +326,7 @@ function WorkList({
         },
         {
           key: 'description',
-          content: <TooltipClipboard>{description}</TooltipClipboard>,
+          content: makeCopyTooltipCell(description),
           gridCol: 4,
         },
         {
@@ -312,15 +337,14 @@ function WorkList({
         },
         {
           key: 'accession',
-          content: <TooltipClipboard>{accession}</TooltipClipboard>,
+          content: makeCopyTooltipCell(accession),
           gridCol: 3,
         },
         {
           key: 'instances',
           content: (
             <>
-              <Icon
-                name="group-layers"
+              <Icons.GroupLayers
                 className={classnames('mr-2 inline-flex w-4', {
                   'text-primary-active': isExpanded,
                   'text-secondary-light': !isExpanded,
@@ -389,14 +413,13 @@ function WorkList({
                 query.append('configUrl', filterValues.configUrl);
               }
               query.append('StudyInstanceUIDs', studyInstanceUid);
+
               return (
                 mode.displayName && (
                   <Link
                     className={isValidMode ? '' : 'cursor-not-allowed'}
                     key={i}
-                    to={`${dataPath ? '../../' : ''}${mode.routeName}${
-                      dataPath || ''
-                    }?${query.toString()}`}
+                    to={`${publicUrl}${mode.routeName}${dataPath || ''}?${query.toString()}`}
                     onClick={event => {
                       // In case any event bubbles up for an invalid mode, prevent the navigation.
                       // For example, the event bubbles up when the icon embedded in the disabled button is clicked.
@@ -419,11 +442,12 @@ function WorkList({
                         ) : null
                       }
                       startIcon={
-                        <Icon
-                          className="!h-[20px] !w-[20px] text-black"
-                          name={isValidMode ? 'launch-arrow' : 'launch-info'}
-                        />
-                      } // launch-arrow | launch-info
+                        isValidMode ? (
+                          <Icons.LaunchArrow className="!h-[20px] !w-[20px] text-black" />
+                        ) : (
+                          <Icons.LaunchInfo className="!h-[20px] !w-[20px] text-black" />
+                        )
+                      }
                       onClick={() => {}}
                       dataCY={`mode-${mode.routeName}-${studyInstanceUid}`}
                       className={isValidMode ? 'text-[13px]' : 'bg-[#222d44] text-[13px]'}

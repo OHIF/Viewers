@@ -1,4 +1,5 @@
-import { AllInOneMenu, Icon } from '@ohif/ui';
+import { AllInOneMenu } from '@ohif/ui';
+import { Icons } from '@ohif/ui-next';
 import React, { ReactElement } from 'react';
 import { VolumeRenderingPresetsProps } from '../../types/ViewportPresets';
 import { VolumeRenderingPresetsContent } from './VolumeRenderingPresetsContent';
@@ -30,8 +31,8 @@ export function VolumeRenderingPresets({
   return (
     <AllInOneMenu.Item
       label="Rendering Presets"
-      icon={<Icon name="VolumeRendering" />}
-      rightIcon={<Icon name="action-new-dialog" />}
+      icon={<Icons.VolumeRendering />}
+      rightIcon={<Icons.ByName name="action-new-dialog" />}
       onClick={onClickPresets}
     />
   );
