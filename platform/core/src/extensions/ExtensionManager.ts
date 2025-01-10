@@ -597,7 +597,10 @@ export default class ExtensionManager extends PubSubService {
     }
 
     Object.keys(definitions).forEach(commandName => {
-      const commandDefinition = definitions[commandName];
+      let commandDefinition = definitions[commandName];
+      if (typeof commandDefinition === 'function') {
+        commandDefinition = { commandFn: commandDefinition };
+      }
       const commandHasContextThatDoesNotExist =
         commandDefinition.context && !this._commandsManager.getContext(commandDefinition.context);
 
