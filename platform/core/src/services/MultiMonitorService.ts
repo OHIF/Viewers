@@ -196,7 +196,7 @@ export class MultiMonitorService {
 
     if (
       (this.isMultimonitor && this.screenNumber === -1) ||
-      window.location.href.indexOf('launchAll') !== -1
+      window.location.href.toLowerCase().indexOf('launchall') !== -1
     ) {
       this.launchAll();
     }

@@ -126,7 +126,6 @@ export default function getCustomizationModule({ servicesManager, extensionManag
             );
           },
         },
-
         {
           id: 'ohif.contextMenu',
 
