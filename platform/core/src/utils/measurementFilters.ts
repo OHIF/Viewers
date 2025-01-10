@@ -6,6 +6,13 @@ export function filterMeasurementsBySeriesUID(selectedSeries: string[]) {
   return measurement => selectedSeries.includes(measurement.referenceSeriesUID);
 }
 
+/**
+ * @returns true for measurements include referencedImageId (coplanar with an image)
+ */
+export function filterPlanarMeasurement(measurement) {
+  return measurement?.referencedImageId;
+}
+
 /** A filter that always returns true */
 export function filterAny(_measurement) {
   return true;

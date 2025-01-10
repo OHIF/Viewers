@@ -4,9 +4,9 @@ import { useViewportGrid } from '@ohif/ui-next';
 import { Button, Icons } from '@ohif/ui-next';
 import { PanelMeasurement, StudySummaryFromMetadata } from '@ohif/extension-cornerstone';
 import { useTrackedMeasurements } from '../getContextModule';
-import { useTranslation } from 'react-i18next';
 
-const { filterAny, filterNot, filterMeasurementsBySeriesUID } = utils.MeasurementFilters;
+const { filterAnd, filterPlanarMeasurement, filterAny, filterMeasurementsBySeriesUID } =
+  utils.MeasurementFilters;
 
 function PanelMeasurementTableTracking({
   servicesManager,
@@ -17,7 +17,9 @@ function PanelMeasurementTableTracking({
   const { customizationService } = servicesManager.services;
   const [trackedMeasurements, sendTrackedMeasurementsEvent] = useTrackedMeasurements();
   const { trackedStudy, trackedSeries } = trackedMeasurements.context;
-  const measurementFilter = trackedStudy ? filterMeasurementsBySeriesUID(trackedSeries) : filterAny;
+  const measurementFilter = trackedStudy
+    ? filterAnd(filterPlanarMeasurement, filterMeasurementsBySeriesUID(trackedSeries))
+    : filterPlanarMeasurement;
 
   const { disableEditing } = customizationService.getCustomization(
     'PanelMeasurement.disableEditing',
@@ -50,7 +52,9 @@ function PanelMeasurementTableTracking({
                   variant="ghost"
                   className="pl-1.5"
                   onClick={() => {
-                    commandsManager.runCommand('clearMeasurements', { measurementFilter });
+                    commandsManager.runCommand('downloadCSVMeasurementsReport', {
+                      measurementFilter,
+                    });
                   }}
                 >
                   <Icons.Download className="h-5 w-5" />

@@ -14,7 +14,7 @@ import {
   annotation,
 } from '@cornerstonejs/tools';
 
-import { Types as OhifTypes } from '@ohif/core';
+import { Types as OhifTypes, utils } from '@ohif/core';
 import i18n from '@ohif/i18n';
 import {
   callLabelAutocompleteDialog,
