@@ -16,11 +16,15 @@ else
 fi
 
 if [ -f /usr/share/nginx/html${PUBLIC_URL}app-config.js ]; then
-  echo "Detected app-config.js. Ensuring .gz file is updated..."
-  rm -f /usr/share/nginx/html${PUBLIC_URL}app-config.js.gz
-  gzip /usr/share/nginx/html${PUBLIC_URL}app-config.js
-  touch /usr/share/nginx/html${PUBLIC_URL}app-config.js
-  echo "Compressed app-config.js to app-config.js.gz"
+  if [ -s /usr/share/nginx/html${PUBLIC_URL}app-config.js ]; then
+    echo "Detected non-empty app-config.js. Ensuring .gz file is updated..."
+    rm -f /usr/share/nginx/html${PUBLIC_URL}app-config.js.gz
+    gzip /usr/share/nginx/html${PUBLIC_URL}app-config.js
+    touch /usr/share/nginx/html${PUBLIC_URL}app-config.js
+    echo "Compressed app-config.js to app-config.js.gz"
+  else
+    echo "app-config.js is empty. Skipping compression."
+  fi
 else
   echo "No app-config.js file found. Skipping compression."
 fi
