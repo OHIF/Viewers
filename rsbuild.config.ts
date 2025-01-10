@@ -38,6 +38,10 @@ export default defineConfig({
       '@state': path.resolve(__dirname, './platform/app/src/state'),
       'dicom-microscopy-viewer':
         'dicom-microscopy-viewer/dist/dynamic-import/dicomMicroscopyViewer.min.js',
+      // 'react-router-dom': path.resolve(__dirname, './node_modules/react-router-dom'),
+      // react: path.resolve(__dirname, './node_modules/react'),
+      // 'react-dom': path.resolve(__dirname, './node_modules/react-dom'),
+      // 'react-router': path.resolve(__dirname, './node_modules/react-router'),
     },
   },
 });
