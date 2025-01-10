@@ -6,7 +6,6 @@ export class MultiMonitorService {
   private windowsConfig;
   private screenConfig;
   private launchWindows = [];
-  private commandsManager;
   private basePath: string;
 
   public readonly screenNumber: number;
@@ -74,9 +73,9 @@ export class MultiMonitorService {
     }
   }
 
-  public run(screenDelta = 1, commands, options) {
+  public async run(screenDelta = 1, commands, options) {
     const screenNumber = (this.screenNumber + (screenDelta ?? 1)) % this.numberOfScreens;
-    const otherWindow = this.getWindow(screenNumber);
+    const otherWindow = await this.getWindow(screenNumber);
     if (!otherWindow) {
       console.warn('No multimonitor found for screen', screenNumber, commands);
       return;
@@ -85,9 +84,7 @@ export class MultiMonitorService {
       console.warn("Didn't find a commands manager to run in the other window", otherWindow);
       return;
     }
-    console.log('Running commands in other window', commands, options);
-    const result = otherWindow.multimonitor.commandsManager.runAsync(commands, options);
-    console.log('Got result', result);
+    otherWindow.multimonitor.commandsManager.runAsync(commands, options);
   }
 
   /** Sets the launch windows for later use, shared amongst all windows. */
@@ -96,26 +93,26 @@ export class MultiMonitorService {
     (window as any).multimonitor.launchWindows = launchWindows;
   };
 
-  public async launchWindow(studyUid: string, screenDelta = 1) {
+  public async launchWindow(studyUid: string, screenDelta = 1, hashParams = '') {
     const forScreen = (this.screenNumber + screenDelta) % this.numberOfScreens;
-    return this.getWindow(forScreen);
+    return this.getWindow(forScreen, studyUid ? `StudyInstanceUIDs=${studyUid}${hashParams}` : '');
   }
 
-  public getWindow(screenNumber) {
+  public async getWindow(screenNumber, hashParam?: string) {
     if (screenNumber === this.screenNumber) {
       return window;
     }
     if (this.launchWindows[screenNumber] && !this.launchWindows[screenNumber].closed) {
       return this.launchWindows[screenNumber];
     }
-    return this.createWindow(screenNumber);
+    return await this.createWindow(screenNumber, hashParam);
   }
 
   /**
    * Creates a new window showing the given url by default, or gets an existing
    * window.
    */
-  public async createWindow(screenNumber) {
+  public async createWindow(screenNumber, urlToUse?: string) {
     if (screenNumber === this.screenNumber) {
       return window;
     }
@@ -138,20 +135,32 @@ export class MultiMonitorService {
     const useTop = Math.round(availTop + topPercent * height);
     const useWidth = Math.round(width * widthPercent);
     const useHeight = Math.round(height * heightPercent);
-    const url = `${this.basePath}&screenNumber=${screenNumber}`;
+
+    const baseFinalUrl = `${this.basePath}&screenNumber=${screenNumber}`;
+    const finalUrl = urlToUse ? `${baseFinalUrl}#${urlToUse}` : baseFinalUrl;
+
     const newId = newScreen.id;
     const options = newScreen.options || '';
     const position = `screenX=${useLeft},screenY=${useTop},width=${useWidth},height=${useHeight},${options}`;
 
     let newWindow = window.open('', newId, position);
-    if (newWindow?.location.href !== url) {
-      newWindow = window.open(url, newId, position);
+    if (!newWindow?.location.href.startsWith(baseFinalUrl)) {
+      newWindow = window.open(finalUrl, newId, position);
     }
     if (!newWindow) {
-      console.warn('Unable to launch window', url, 'called', newId, 'at', position);
+      console.warn('Unable to launch window', finalUrl, 'called', newId, 'at', position);
       return;
     }
-    console.info('Launching', screenNumber, newId, url, position);
+
+    // Wait for the window to fully load
+    await new Promise<void>(resolve => {
+      if (newWindow.document.readyState === 'complete') {
+        resolve();
+      } else {
+        newWindow.addEventListener('load', () => resolve());
+      }
+    });
+
     this.launchWindows[screenNumber] = newWindow;
     return newWindow;
   }
@@ -163,12 +172,18 @@ export class MultiMonitorService {
     }
   }
 
+  /**
+   * Sets the base path to use for launching other windows, based on the
+   * original base path without hash values in order to preserve consistent
+   * URLs so that windows are refreshed on relaunch.
+   */
   public setBasePath() {
     const url = new URL(window.location.href);
     url.searchParams.delete('screenNumber');
     url.searchParams.delete('protocolId');
     url.searchParams.delete('launchAll');
     url.searchParams.set('multimonitor', url.searchParams.get('multimonitor') || 'split');
+    url.hash = '';
     this.basePath = url.toString();
   }
 

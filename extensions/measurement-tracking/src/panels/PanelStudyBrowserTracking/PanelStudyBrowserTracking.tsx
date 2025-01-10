@@ -4,14 +4,20 @@ import { useTranslation } from 'react-i18next';
 import PropTypes from 'prop-types';
 import { utils } from '@ohif/core';
 import { useImageViewer, Dialog, ButtonEnums } from '@ohif/ui';
-import { useViewportGrid } from '@ohif/ui-next';
+import {
+  useViewportGrid,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+  Icons,
+  Button,
+} from '@ohif/ui-next';
 import { StudyBrowser } from '@ohif/ui-next';
 
 import { useTrackedMeasurements } from '../../getContextModule';
 import { Separator } from '@ohif/ui-next';
 import { PanelStudyBrowserHeader } from '@ohif/extension-default';
 import { defaultActionIcons, defaultViewPresets } from './constants';
-
 const { formatDate, createStudyBrowserTabs } = utils;
 const thumbnailNoImageModalities = [
   'SR',
@@ -24,6 +30,35 @@ const thumbnailNoImageModalities = [
   'OT',
   'PMAP',
 ];
+
+const getMenuItems = ({ commandsManager, items, servicesManager, ...props }) => {
+  const { customizationService } = servicesManager.services;
+
+  // Todo: this feels odd, but maybe my feelings are wrong
+  const menuContent = customizationService.getCustomization('ohif.menuContent');
+
+  return (
+    <DropdownMenuContent
+      hideWhenDetached
+      align="start"
+      onClick={e => {
+        e.stopPropagation();
+        e.preventDefault();
+      }}
+    >
+      {items?.map(item =>
+        menuContent.content({
+          key: item.id,
+          item,
+          commandsManager,
+          servicesManager,
+          ...props,
+        })
+      )}
+    </DropdownMenuContent>
+  );
+};
+
 /**
  *
  * @param {*} param0
@@ -389,22 +424,6 @@ export default function PanelStudyBrowserTracking({
     }
   }
 
-  const _studyContextMenu = (event, studyInstanceUID) => {
-    event.preventDefault();
-    const selectorProps = {
-      studyInstanceUID,
-      activeStudyUID: studyInstanceUID,
-      isMultimonitor: servicesManager.services.multiMonitorService.isMultimonitor,
-    };
-    commandsManager.run('showContextMenu', {
-      event,
-      menuId: 'studyBrowserContextMenu',
-      menuCustomizationId: 'StudyBrowser.studyContextMenu',
-      selectorProps,
-      ...selectorProps,
-    });
-  };
-
   useEffect(() => {
     if (jumpToDisplaySet) {
       // Get element by displaySetInstanceUID
@@ -501,10 +520,6 @@ export default function PanelStudyBrowserTracking({
     });
   };
 
-  const onThumbnailContextMenu = (commandName, options) => {
-    commandsManager.runCommand(commandName, options);
-  };
-
   return (
     <>
       <>
@@ -527,7 +542,6 @@ export default function PanelStudyBrowserTracking({
         activeTabName={activeTabName}
         expandedStudyInstanceUIDs={expandedStudyInstanceUIDs}
         onClickStudy={_handleStudyClick}
-        onStudyContextMenu={_studyContextMenu}
         onClickTab={clickedTabName => {
           setActiveTabName(clickedTabName);
         }}
@@ -539,7 +553,53 @@ export default function PanelStudyBrowserTracking({
         activeDisplaySetInstanceUIDs={activeViewportDisplaySetInstanceUIDs}
         showSettings={actionIcons.find(icon => icon.id === 'settings').value}
         viewPresets={viewPresets}
-        onThumbnailContextMenu={onThumbnailContextMenu}
+        ThumbnailMenuItems={props => (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="hidden group-hover:inline-flex data-[state=open]:inline-flex"
+                onClick={e => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                }}
+              >
+                <Icons.More />
+              </Button>
+            </DropdownMenuTrigger>
+            {getMenuItems({
+              ...props,
+              commandsManager: commandsManager,
+              servicesManager: servicesManager,
+              items: customizationService.getCustomization('studyBrowser.thumbnailMenuItems')
+                ?.value,
+            })}
+          </DropdownMenu>
+        )}
+        StudyMenuItems={props => (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="hidden group-hover:inline-flex data-[state=open]:inline-flex"
+                onClick={e => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                }}
+              >
+                <Icons.More />
+              </Button>
+            </DropdownMenuTrigger>
+            {getMenuItems({
+              ...props,
+              commandsManager: commandsManager,
+              servicesManager: servicesManager,
+              items: customizationService.getCustomization('studyBrowser.studyMenuItems')?.value,
+            })}
+          </DropdownMenu>
+        )}
       />
     </>
   );
@@ -609,7 +669,6 @@ function _mapDisplaySets(
     .forEach(ds => {
       const imageSrc = thumbnailImageSrcMap[ds.displaySetInstanceUID];
       const componentType = _getComponentType(ds);
-      const numPanes = viewportGridService.getNumViewportPanes();
 
       const array =
         componentType === 'thumbnailTracked' ? thumbnailDisplaySets : thumbnailNoImageDisplaySets;
