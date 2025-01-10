@@ -161,6 +161,16 @@ export class CommandsManager {
    * Run one or more commands with specified extra options.
    * Returns the result of the last command run.
    *
+   * Example commands to run are:
+   * * 'updateMeasurement'
+   * * `{commandName: 'displayWhatever'}`
+   * * `['updateMeasurement', {commandName: 'displayWhatever'}]`
+   * * `{ commands: 'updateMeasurement' }`
+   * * `{ commands: ['updateMeasurement', {commandName: 'displayWhatever'}]}`
+   *
+   * Note how the various styles can be mixed, simplifying the declaration of
+   * sets of commands.
+   *
    * @param toRun - A specification of one or more commands,
    *  typically an object of { commandName, commandOptions, context }
    * or an array of such objects. It can also be a single commandName as string
@@ -169,7 +179,7 @@ export class CommandsManager {
    *   the commandOptions specified in the base.
    */
   public run(
-    toRun: Command | Commands | Command[] | string | undefined,
+    toRun: Command | Commands | (Command | string)[] | string | undefined,
     options?: Record<string, unknown>
   ): unknown {
     if (!toRun) {
