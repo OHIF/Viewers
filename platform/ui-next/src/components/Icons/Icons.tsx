@@ -183,6 +183,7 @@ import Magnifier from './Sources/Magnifier';
 import LoadingOHIFMark from './Sources/LoadingOHIFMark';
 import ArrowLeftBold from './Sources/ArrowLeftBold';
 import Pencil from './Sources/Pencil';
+import NotificationWarning from './Sources/NotificationWarning';
 //
 //
 //
@@ -651,6 +652,7 @@ export const Icons = {
   'status-alert': (props: IconProps) => Alert(props),
   info: (props: IconProps) => Info(props),
   'notifications-info': (props: IconProps) => NotificationInfo(props),
+  'notificationwarning-diamond': (props: IconProps) => NotificationWarning(props),
   'content-prev': (props: IconProps) => ContentPrev(props),
   'content-next': (props: IconProps) => ContentNext(props),
   'icon-settings': (props: IconProps) => Settings(props),

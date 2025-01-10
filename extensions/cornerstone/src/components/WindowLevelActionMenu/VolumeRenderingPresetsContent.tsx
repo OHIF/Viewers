@@ -62,7 +62,7 @@ export function VolumeRenderingPresetsContent({
                 }}
               >
                 <Icons.ByName
-                  name={preset.name}
+                  name={preset.name.replace(/-/g, '')}
                   className={
                     selectedPreset?.name === preset.name
                       ? 'border-primary-light h-[75px] w-[95px] max-w-none rounded border-2'
