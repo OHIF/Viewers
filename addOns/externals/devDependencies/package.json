@@ -22,9 +22,13 @@
   "devDependencies": {
     "@pmmmwh/react-refresh-webpack-plugin": "^0.5.15",
     "@svgr/webpack": "^8.1.0",
+    "@swc/helpers": "^0.5.15",
     "@types/jest": "^27.5.0",
     "@typescript-eslint/eslint-plugin": "^6.3.0",
     "@typescript-eslint/parser": "^6.3.0",
+    "@rsbuild/core": "^1.1.13",
+    "@rsbuild/plugin-react": "^1.1.0",
+    "@rsbuild/plugin-node-polyfill": "1.2.0",
     "autoprefixer": "^10.4.4",
     "babel-eslint": "9.x",
     "babel-loader": "^8.2.4",

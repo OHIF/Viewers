@@ -10,7 +10,6 @@ import { StudyBrowser } from '@ohif/ui-next';
 import { useTrackedMeasurements } from '../../getContextModule';
 import { Separator } from '@ohif/ui-next';
 import { PanelStudyBrowserHeader } from '@ohif/extension-default';
-import { useAppConfig } from '@state';
 import { defaultActionIcons, defaultViewPresets } from './constants';
 
 const { formatDate, createStudyBrowserTabs } = utils;
