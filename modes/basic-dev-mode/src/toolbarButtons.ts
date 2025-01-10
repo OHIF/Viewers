@@ -1,5 +1,6 @@
 import { WindowLevelMenuItem } from '@ohif/ui';
 import { defaults, ToolbarService } from '@ohif/core';
+import type { Button } from '@ohif/core/types';
 
 const { windowLevelPresets } = defaults;
 
@@ -31,7 +32,7 @@ function _createSetToolActiveCommands(toolName, toolGroupIds = ['default', 'mpr'
   }));
 }
 
-const toolbarButtons = [
+const toolbarButtons: Button[] = [
   {
     id: 'MeasurementTools',
     uiType: 'ohif.splitButton',
