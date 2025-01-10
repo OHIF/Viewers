@@ -27,6 +27,23 @@ export default defineConfig({
       module: {
         rules: [
           {
+            test: /\.css$/,
+            use: [
+              {
+                loader: 'postcss-loader',
+                options: {
+                  postcssOptions: {
+                    plugins: {
+                      tailwindcss: {},
+                      autoprefixer: {},
+                    },
+                  },
+                },
+              },
+            ],
+            type: 'javascript/auto',
+          },
+          {
             test: /\.wasm$/,
             type: 'asset/resource',
           },
