@@ -123,7 +123,7 @@ function Local({ modePath }: LocalProps) {
           {...getRootProps()}
           style={{ width: '100%', height: '100%' }}
         >
-          <div className="flex h-screen w-screen items-center justify-center ">
+          <div className="flex h-screen w-screen items-center justify-center">
             <div className="bg-secondary-dark mx-auto space-y-2 rounded-lg py-8 px-8 drop-shadow-md">
               <div className="flex items-center justify-center">
                 <Icon
@@ -149,7 +149,7 @@ function Local({ modePath }: LocalProps) {
                   </div>
                 )}
               </div>
-              <div className="flex justify-around pt-4 ">
+              <div className="flex justify-around pt-4">
                 {getLoadButton(onDrop, 'Load files', false)}
                 {getLoadButton(onDrop, 'Load folders', true)}
               </div>
