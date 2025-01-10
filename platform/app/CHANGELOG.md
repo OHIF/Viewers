@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.10.0-beta.51](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.50...v3.10.0-beta.51) (2025-01-10)
+
+
+### Bug Fixes
+
+* orthanc datasource dev ([#4663](https://github.com/OHIF/Viewers/issues/4663)) ([ebbc37d](https://github.com/OHIF/Viewers/commit/ebbc37d291ba9bfa11baf164bf673c6f0994014c))
+
+
+
+
+
 # [3.10.0-beta.50](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.49...v3.10.0-beta.50) (2025-01-10)
 
 **Note:** Version bump only for package @ohif/app

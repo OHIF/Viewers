@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.10.0-beta.51](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.50...v3.10.0-beta.51) (2025-01-10)
+
+**Note:** Version bump only for package @ohif/i18n
+
+
+
+
+
 # [3.10.0-beta.50](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.49...v3.10.0-beta.50) (2025-01-10)
 
 **Note:** Version bump only for package @ohif/i18n
