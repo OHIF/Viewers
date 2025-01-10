@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import classnames from 'classnames';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 import { DicomMetadataStore, MODULE_TYPES } from '@ohif/core';
 
 import Dropzone from 'react-dropzone';

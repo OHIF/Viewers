@@ -5,7 +5,7 @@ import { Enums, ExtensionManager, MODULE_TYPES, log } from '@ohif/core';
 //
 import { extensionManager } from '../App.tsx';
 import { useParams, useLocation } from 'react-router';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 import useSearchParams from '../hooks/useSearchParams.ts';
 
 /**

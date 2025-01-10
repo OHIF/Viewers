@@ -1,6 +1,6 @@
 import React from 'react';
 import classnames from 'classnames';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 import { useAppConfig } from '@state';
 
 import { Button, ButtonEnums } from '@ohif/ui';

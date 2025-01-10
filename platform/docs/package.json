@@ -8,6 +8,8 @@
       "@docusaurus/core",
       "@docusaurus/preset-classic",
       "@docusaurus/preset-classic/**",
+      "react-router-dom",
+      "react-router",
       "**/history"
     ]
   },

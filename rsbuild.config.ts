@@ -1,15 +1,21 @@
 import { defineConfig } from '@rsbuild/core';
 import { pluginReact } from '@rsbuild/plugin-react';
 import { pluginNodePolyfill } from '@rsbuild/plugin-node-polyfill';
-
 import path from 'path';
+import writePluginImportsFile from './platform/app/.rspack/writePluginImportsFile';
 
 const SRC_DIR = path.resolve(__dirname, './platform/app/src');
+const DIST_DIR = path.resolve(__dirname, './platform/app/dist');
+const PUBLIC_DIR = path.resolve(__dirname, './platform/app/public');
+
+// Environment variables (similar to webpack.pwa.js)
+const APP_CONFIG = process.env.APP_CONFIG || 'config/default.js';
+const PUBLIC_URL = process.env.PUBLIC_URL || '/';
 
 export default defineConfig({
   source: {
     entry: {
-      app: `${SRC_DIR}/index.js`,
+      index: `${SRC_DIR}/index.js`,
     },
   },
   plugins: [pluginReact(), pluginNodePolyfill()],
@@ -30,7 +36,6 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      // Viewer project
       '@': path.resolve(__dirname, './platform/app/src'),
       '@components': path.resolve(__dirname, './platform/app/src/components'),
       '@hooks': path.resolve(__dirname, './platform/app/src/hooks'),
@@ -38,10 +43,44 @@ export default defineConfig({
       '@state': path.resolve(__dirname, './platform/app/src/state'),
       'dicom-microscopy-viewer':
         'dicom-microscopy-viewer/dist/dynamic-import/dicomMicroscopyViewer.min.js',
-      // 'react-router-dom': path.resolve(__dirname, './node_modules/react-router-dom'),
-      // react: path.resolve(__dirname, './node_modules/react'),
-      // 'react-dom': path.resolve(__dirname, './node_modules/react-dom'),
-      // 'react-router': path.resolve(__dirname, './node_modules/react-router'),
+    },
+  },
+  output: {
+    copy: [
+      // Copy plugin files (handled by writePluginImportsFile)
+      ...(writePluginImportsFile(SRC_DIR, DIST_DIR) || []),
+      // Copy public directory except config and html-templates
+      {
+        from: PUBLIC_DIR,
+        to: DIST_DIR,
+        globOptions: {
+          ignore: ['**/config/**', '**/html-templates/**', '.DS_Store'],
+        },
+      },
+      // Copy Google config
+      {
+        from: path.resolve(PUBLIC_DIR, 'config/google.js'),
+        to: 'google.js',
+      },
+      // Copy app config
+      {
+        from: path.resolve(PUBLIC_DIR, APP_CONFIG),
+        to: 'app-config.js',
+      },
+      // Copy Dicom Microscopy Viewer files
+      {
+        from: path.resolve(__dirname, 'node_modules/dicom-microscopy-viewer/dist/dynamic-import'),
+        to: DIST_DIR,
+        globOptions: {
+          ignore: ['**/*.min.js.map'],
+        },
+      },
+    ],
+  },
+  html: {
+    template: path.resolve(PUBLIC_DIR, 'html-templates/index.html'),
+    templateParameters: {
+      PUBLIC_URL,
     },
   },
 });
