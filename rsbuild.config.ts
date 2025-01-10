@@ -137,6 +137,7 @@ export default defineConfig({
   },
   server: {
     port: OHIF_PORT,
+    open: true,
     // Configure proxy
     proxy: {
       '/dicomweb': {
