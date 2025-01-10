@@ -4,13 +4,15 @@
   "private": true,
   "workspaces": {
     "nohoist": [
-      "@docusaurus/core/**",
-      "@docusaurus/core",
+      "@docusaurus/**",
+      "**/@docusaurus/**",
       "@docusaurus/preset-classic",
       "@docusaurus/preset-classic/**",
-      "react-router-dom",
-      "react-router",
-      "**/history"
+      "**/react-router-dom/**",
+      "**/react-router/**",
+      "**/history/**",
+      "**/@types/react/**",
+      "**/@types/react-dom/**"
     ]
   },
   "scripts": {
