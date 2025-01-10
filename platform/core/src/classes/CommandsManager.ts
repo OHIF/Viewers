@@ -255,7 +255,9 @@ export class CommandsManager {
 
     // Execute each command in the array
     let result: unknown;
-    for (const command of commands) {
+    // Babel test doesn't support for of
+    for (let i = 0; i < commands.length; i++) {
+      const command = commands[i];
       const { commandName, commandOptions, context } = command;
       if (commandName) {
         result = await this.runCommand(
