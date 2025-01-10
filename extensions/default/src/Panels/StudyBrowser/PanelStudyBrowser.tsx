@@ -10,7 +10,6 @@ import { defaultActionIcons, defaultViewPresets } from './constants';
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuItem,
   DropdownMenuTrigger,
   Icons,
   Button,
@@ -18,35 +17,31 @@ import {
 
 const { sortStudyInstances, formatDate, createStudyBrowserTabs } = utils;
 
-const StudyMenuItems = ({ StudyInstanceUID, commandsManager }) => {
+const getMenuItems = ({ commandsManager, items, servicesManager, ...props }) => {
+  const { customizationService } = servicesManager.services;
+
+  // Todo: this feels odd, but maybe my feelings are wrong
+  const menuContent = customizationService.getCustomization('ohif.menuContent');
+
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="hidden group-hover:inline-flex data-[state=open]:inline-flex"
-        >
-          <Icons.More />
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent
-        hideWhenDetached
-        align="start"
-      >
-        <DropdownMenuItem
-          onSelect={() => {
-            commandsManager.run('openDICOMTagViewer', {
-              StudyInstanceUID,
-            });
-          }}
-          className="gap-[6px]"
-        >
-          <Icons.DicomTagBrowser />
-          Study Tags
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
+    <DropdownMenuContent
+      hideWhenDetached
+      align="start"
+      onClick={e => {
+        e.stopPropagation();
+        e.preventDefault();
+      }}
+    >
+      {items?.map(item =>
+        menuContent.content({
+          key: item.id,
+          item,
+          commandsManager,
+          servicesManager,
+          ...props,
+        })
+      )}
+    </DropdownMenuContent>
   );
 };
 
@@ -320,11 +315,6 @@ function PanelStudyBrowser({
 
   const activeDisplaySetInstanceUIDs = viewports.get(activeViewportId)?.displaySetInstanceUIDs;
 
-  const CustomizedThumbnailMenuItems = customizationService.getCustomComponent(
-    'PanelStudyBrowser.ThumbnailMenuItems',
-    StudyMenuItems
-  );
-
   return (
     <>
       <>
@@ -356,10 +346,51 @@ function PanelStudyBrowser({
         showSettings={actionIcons.find(icon => icon.id === 'settings').value}
         viewPresets={viewPresets}
         ThumbnailMenuItems={props => (
-          <CustomizedThumbnailMenuItems
-            {...props}
-            commandsManager={commandsManager}
-          />
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="hidden group-hover:inline-flex data-[state=open]:inline-flex"
+                onClick={e => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                }}
+              >
+                <Icons.More />
+              </Button>
+            </DropdownMenuTrigger>
+            {getMenuItems({
+              ...props,
+              commandsManager: commandsManager,
+              servicesManager: servicesManager,
+              items: customizationService.getCustomization('studyBrowser.thumbnailMenuItems')
+                ?.value,
+            })}
+          </DropdownMenu>
+        )}
+        StudyMenuItems={props => (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="hidden group-hover:inline-flex data-[state=open]:inline-flex"
+                onClick={e => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                }}
+              >
+                <Icons.More />
+              </Button>
+            </DropdownMenuTrigger>
+            {getMenuItems({
+              ...props,
+              commandsManager: commandsManager,
+              servicesManager: servicesManager,
+              items: customizationService.getCustomization('studyBrowser.studyMenuItems')?.value,
+            })}
+          </DropdownMenu>
         )}
       />
     </>
