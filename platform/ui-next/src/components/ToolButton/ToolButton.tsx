@@ -30,9 +30,8 @@ function ToolButton(props: ToolButtonProps) {
   const IconComponent = Icons[icon] || Icons['MissingIcon'];
 
   const baseClasses = 'w-10 h-10 !rounded-lg inline-flex items-center justify-center';
-  const defaultClasses =
-    'bg-transparent text-primary-foreground hover:bg-primary-dark hover:text-primary-light';
-  const activeClasses = 'bg-primary-light text-primary-dark';
+  const defaultClasses = 'bg-transparent text-foreground hover:bg-background hover:text-highlight';
+  const activeClasses = 'bg-highlight text-background hover:!bg-highlight/80';
   const appliedClasses = isActive
     ? cn(baseClasses, activeClasses, className)
     : cn(baseClasses, defaultClasses, className);
