@@ -127,9 +127,7 @@ export default function PanelSegmentation({
 
   const { mode: SegmentationTableMode } = customizationService.getCustomization(
     'PanelSegmentation.tableMode'
-  ) || {
-    mode: 'collapsed',
-  };
+  );
 
   // custom onSegmentationAdd if provided
   const { onSegmentationAdd } = customizationService.getCustomization(

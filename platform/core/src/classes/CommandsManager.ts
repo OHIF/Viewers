@@ -230,7 +230,7 @@ export class CommandsManager {
    * @param options - to include in the commands run beyond
    *   the commandOptions specified in the base.
    */
-  public run(input: RunInput, options: Record<string, unknown> = {}): unknown[] {
+  public run(input: RunInput, options: Record<string, unknown> = {}): unknown {
     const commands = this.validate(input, options);
 
     const results: unknown[] = [];
@@ -240,14 +240,12 @@ export class CommandsManager {
       results.push(this.runCommand(commandName, commandOptions, context));
     }
 
+    // return results.length === 1 ? results[0] : results;
     return results;
   }
 
   /** Like run, but await each command before continuing */
-  public async runAsync(
-    input: RunInput,
-    options: Record<string, unknown> = {}
-  ): Promise<unknown[]> {
+  public async runAsync(input: RunInput, options: Record<string, unknown> = {}): Promise<unknown> {
     const commands = this.validate(input, options);
 
     const results: unknown[] = [];
@@ -256,6 +254,8 @@ export class CommandsManager {
       const { commandName, commandOptions, context } = command;
       results.push(await this.runCommand(commandName, commandOptions, context));
     }
+
+    // return results.length === 1 ? results[0] : results;
 
     return results;
   }

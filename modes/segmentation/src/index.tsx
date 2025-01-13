@@ -133,7 +133,8 @@ function modeFactory({ modeConfiguration }) {
             props: {
               leftPanels: [ohif.leftPanel],
               rightPanels: [cornerstone.panelTool],
-              // leftPanelClosed: true,
+              rightPanelClosed: true,
+              leftPanelClosed: true,
               viewports: [
                 {
                   namespace: cornerstone.viewport,

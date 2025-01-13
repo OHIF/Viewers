@@ -59,6 +59,7 @@ export const handleROIThresholding = async ({
 
   // all available segmentations
   const segmentations = segmentationService.getSegmentations();
+
   const tmtv = await commandsManager.run('calculateTMTV', { segmentations });
 
   triggerEvent(eventTarget, Enums.Events.WEB_WORKER_PROGRESS, {

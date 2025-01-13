@@ -4,7 +4,7 @@ import { ComponentType } from 'react';
 export type Obj = Record<string, unknown>;
 
 export interface BaseCustomization extends Obj {
-  id: string;
+  id?: string;
   inheritsFrom?: string;
   description?: string;
   label?: string;

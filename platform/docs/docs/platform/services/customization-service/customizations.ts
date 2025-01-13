@@ -187,7 +187,6 @@ window.config = {
 };
     `,
   },
-
   {
     id: 'cornerstone.3dVolumeRendering',
     description:
@@ -219,3 +218,5 @@ window.config = {
     `,
   },
 ];
+
+const segmentationCustomizations = [];
