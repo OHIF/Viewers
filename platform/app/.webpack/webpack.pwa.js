@@ -152,7 +152,14 @@ module.exports = (env, argv) => {
         overlay: { errors: true, warnings: false },
       },
       proxy: {
-        '/dicomweb': 'http://localhost:5000',
+        '/dicom-web': {
+          target: 'http://localhost:8063',
+          changeOrigin: true,
+          secure: false,
+          headers: {
+            'Access-Control-Allow-Origin': '*'
+          }
+        }
       },
       static: [
         {

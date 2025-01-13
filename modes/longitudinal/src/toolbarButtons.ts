@@ -105,6 +105,16 @@ const toolbarButtons: Button[] = [
           commands: setToolActiveToolbar,
           evaluate: 'evaluate.cornerstoneTool',
         }),
+        createButton({
+          id: 'RandomRectangle',
+          icon: 'tool-rectangle',
+          label: 'Random Rectangle',
+          tooltip: 'Add Random Rectangle ROI',
+          commands: {
+            commandName: 'addRandomRectangle',
+          },
+          evaluate: 'evaluate.action',
+        }),
       ],
     },
   },
