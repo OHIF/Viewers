@@ -1,6 +1,8 @@
 import log from '../log.js';
 import { Command, Commands, ComplexCommand } from '../types/Command';
 
+export type RunInput = Command | Commands | Command[] | string | undefined;
+
 /**
  * The definition of a command
  *
@@ -175,6 +177,26 @@ export class CommandsManager {
     return [];
   }
 
+  private validate(input: RunInput, options: Record<string, unknown> = {}): ComplexCommand[] {
+    if (!input) {
+      console.debug('No command to run');
+      return [];
+    }
+
+    // convert commands
+    const converted: ComplexCommand[] = CommandsManager.convertCommands(input);
+    if (!converted.length) {
+      console.debug('Command is not runnable', input);
+      return [];
+    }
+
+    return converted.map(command => ({
+      commandName: command.commandName,
+      commandOptions: { ...options, ...command.commandOptions },
+      context: command.context,
+    }));
+  }
+
   /**
    * Run one or more commands with specified extra options.
    * Returns the result of the last command run.
@@ -196,88 +218,32 @@ export class CommandsManager {
    * @param options - to include in the commands run beyond
    *   the commandOptions specified in the base.
    */
-  public run(
-    toRun: Command | Commands | (Command | string)[] | string | undefined,
-    options?: Record<string, unknown>
-  ): unknown {
-    if (!toRun) {
-      return;
-    }
+  public run(input: RunInput, options: Record<string, unknown> = {}): unknown[] {
+    const commands = this.validate(input, options);
 
-    const commands: ComplexCommand[] = CommandsManager.convertCommands(toRun);
-
-    if (commands.length === 0) {
-      console.log("Command isn't runnable", toRun);
-      return;
-    }
-
-    // Execute each command in the array
-    let result: unknown;
-    commands.forEach(command => {
+    const results: unknown[] = [];
+    for (const command of commands) {
       const { commandName, commandOptions, context } = command;
-      if (commandName) {
-        result = this.runCommand(
-          commandName,
-          {
-            // Put options first so that repeated child options override correctly
-            ...options,
-            ...commandOptions,
-          },
-          context
-        );
-      } else {
-        if (typeof command === 'function') {
-          result = command();
-        } else {
-          console.warn('No command name supplied in', toRun);
-        }
-      }
-    });
+      results.push(this.runCommand(commandName, commandOptions, context));
+    }
 
-    return result;
+    return results;
   }
 
   /** Like run, but await each command before continuing */
   public async runAsync(
-    toRun: Command | Commands | Command[] | string | undefined,
-    options?: Record<string, unknown>
-  ): unknown {
-    if (!toRun) {
-      return;
-    }
+    input: RunInput,
+    options: Record<string, unknown> = {}
+  ): Promise<unknown[]> {
+    const commands = this.validate(input, options);
 
-    const commands: ComplexCommand[] = CommandsManager.convertCommands(toRun);
-
-    if (commands.length === 0) {
-      console.log("Command isn't runnable", toRun);
-      return;
-    }
-
-    // Execute each command in the array
-    let result: unknown;
-    // Babel test doesn't support for of
-    for (let i = 0; i < commands.length; i++) {
-      const command = commands[i];
+    const results: unknown[] = [];
+    for (const command of commands) {
       const { commandName, commandOptions, context } = command;
-      if (commandName) {
-        result = await this.runCommand(
-          commandName,
-          {
-            ...commandOptions,
-            ...options,
-          },
-          context
-        );
-      } else {
-        if (typeof command === 'function') {
-          result = await command();
-        } else {
-          console.warn('No command name supplied in', toRun);
-        }
-      }
+      results.push(await this.runCommand(commandName, commandOptions, context));
     }
 
-    return result;
+    return results;
   }
 }
 
