@@ -1,4 +1,4 @@
-import toolbarButtons from './toolbarButtons.js';
+import toolbarButtons from './toolbarButtons';
 import { hotkeys } from '@ohif/core';
 import { id } from './id';
 import i18n from 'i18next';

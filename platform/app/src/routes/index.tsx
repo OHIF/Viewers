@@ -1,5 +1,5 @@
 import React from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Link } from 'react-router-dom';
 import { ErrorBoundary } from '@ohif/ui-next';
 
 // Route Components
@@ -11,7 +11,6 @@ import NotFound from './NotFound';
 import buildModeRoutes from './buildModeRoutes';
 import PrivateRoute from './PrivateRoute';
 import PropTypes from 'prop-types';
-import { Link } from 'react-router-dom';
 import publicUrl from '../utils/publicUrl';
 
 const NotFoundServer = ({

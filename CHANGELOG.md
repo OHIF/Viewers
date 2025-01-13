@@ -3,6 +3,58 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.10.0-beta.57](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.56...v3.10.0-beta.57) (2025-01-13)
+
+
+### Bug Fixes
+
+* **toolbarService:** All header tools are enabled in volume3D viewport ([#4677](https://github.com/OHIF/Viewers/issues/4677)) ([9832dbe](https://github.com/OHIF/Viewers/commit/9832dbe653a196280a0de57460436b6600a6aaa8))
+
+
+
+
+
+# [3.10.0-beta.56](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.55...v3.10.0-beta.56) (2025-01-13)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.10.0-beta.55](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.54...v3.10.0-beta.55) (2025-01-10)
+
+
+### Features
+
+* **dev:** move to rsbuild for dev - faster ([#4674](https://github.com/OHIF/Viewers/issues/4674)) ([d4a4267](https://github.com/OHIF/Viewers/commit/d4a4267429c02916dd51f6aefb290d96dd1c3b04))
+
+
+
+
+
+# [3.10.0-beta.54](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.53...v3.10.0-beta.54) (2025-01-10)
+
+
+### Bug Fixes
+
+* **docker:** run compression regardless of APP_CONFIG being present ( in cases such as volume mount) ([#4673](https://github.com/OHIF/Viewers/issues/4673)) ([a2d34c9](https://github.com/OHIF/Viewers/commit/a2d34c97edcdc34f14b4b99a1bca6c1b43e80006))
+
+
+
+
+
+# [3.10.0-beta.53](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.52...v3.10.0-beta.53) (2025-01-10)
+
+
+### Bug Fixes
+
+* **icons:** icons missing for volume presets and others ([#4671](https://github.com/OHIF/Viewers/issues/4671)) ([01924b8](https://github.com/OHIF/Viewers/commit/01924b8bf27da045d39dfaeb126b73cb4efcdb08))
+
+
+
+
+
 # [3.10.0-beta.52](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.51...v3.10.0-beta.52) (2025-01-10)
 
 **Note:** Version bump only for package ohif-monorepo-root

@@ -3,6 +3,49 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.10.0-beta.57](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.56...v3.10.0-beta.57) (2025-01-13)
+
+**Note:** Version bump only for package @ohif/extension-measurement-tracking
+
+
+
+
+
+# [3.10.0-beta.56](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.55...v3.10.0-beta.56) (2025-01-13)
+
+**Note:** Version bump only for package @ohif/extension-measurement-tracking
+
+
+
+
+
+# [3.10.0-beta.55](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.54...v3.10.0-beta.55) (2025-01-10)
+
+
+### Features
+
+* **dev:** move to rsbuild for dev - faster ([#4674](https://github.com/OHIF/Viewers/issues/4674)) ([d4a4267](https://github.com/OHIF/Viewers/commit/d4a4267429c02916dd51f6aefb290d96dd1c3b04))
+
+
+
+
+
+# [3.10.0-beta.54](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.53...v3.10.0-beta.54) (2025-01-10)
+
+**Note:** Version bump only for package @ohif/extension-measurement-tracking
+
+
+
+
+
+# [3.10.0-beta.53](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.52...v3.10.0-beta.53) (2025-01-10)
+
+**Note:** Version bump only for package @ohif/extension-measurement-tracking
+
+
+
+
+
 # [3.10.0-beta.52](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.51...v3.10.0-beta.52) (2025-01-10)
 
 **Note:** Version bump only for package @ohif/extension-measurement-tracking
