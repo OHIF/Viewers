@@ -1,7 +1,7 @@
 ---
-sidebar_position: 7
 sidebar_label: Customization Service
 ---
+
 # Customization Service
 
 There are a lot of places where users may want to configure certain elements
@@ -36,7 +36,7 @@ Here's a rewritten version of the requested section for improved clarity and org
 Customizations in this service are categorized based on their scope and lifespan:
 
 - **Global Customizations**: These serve as overrides for other customization levels. They allow complete replacement of a customization.
-- **Mode Customizations**: These are temporary and only active during the lifespan of a specific workflow mode (read more about modes [here](../../modes/index.md)). They enable mode-specific behavior and updates while ensuring isolation from global settings.
+- **Mode Customizations**: These are temporary and only active during the lifespan of a specific workflow mode (read more about modes [here](../modes/index.md)). They enable mode-specific behavior and updates while ensuring isolation from global settings.
 - **Default Customizations**: These act as fallbacks when no global or mode customizations are defined. Each default customization must be uniquely defined; attempting to redefine a default customization will result in an error.
 
 ---
@@ -533,7 +533,7 @@ window.config = {
 ...
 ```
 
-<img src="../../../assets/img/customizable-overlay.jpeg" />
+<img src="../../assets/img/customizable-overlay.jpeg" />
 
 ## Context Menus
 

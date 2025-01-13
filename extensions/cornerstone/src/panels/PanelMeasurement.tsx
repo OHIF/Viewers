@@ -1,15 +1,10 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { utils } from '@ohif/core';
-import { useViewportGrid } from '@ohif/ui-next';
 import { MeasurementTable } from '@ohif/ui-next';
 import debounce from 'lodash.debounce';
 import { useMeasurements } from '../hooks/useMeasurements';
 
-const {
-  filterAdditionalFindings: filterAdditionalFinding,
-  filterOr,
-  filterAny,
-} = utils.MeasurementFilters;
+const { filterAdditionalFindings: filterAdditionalFinding, filterAny } = utils.MeasurementFilters;
 
 export type withAppAndFilters = withAppTypes & {
   measurementFilter: (item) => boolean;

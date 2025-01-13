@@ -1,30 +1,36 @@
-import { mergeWith, cloneDeepWith } from 'lodash';
-
+import update, { extend } from 'immutability-helper';
 import { PubSubService } from '../_shared/pubSubServiceInterface';
 import type { Customization, NestedStrings } from './types';
 import type { CommandsManager } from '../../classes';
 import type { ExtensionManager } from '../../extensions';
+
+/** Add custom $filter command */
+extend('$filter', (query, original) => {
+  if (!Array.isArray(original)) {
+    return original;
+  }
+
+  // If query is a function, filter by that
+  if (typeof query === 'function') {
+    return original.filter(query);
+  }
+
+  // If query is an object or string with an 'id', remove matching items
+  if (typeof query === 'object' && query?.id) {
+    return original.filter(item => item.id !== query.id);
+  }
+  if (typeof query === 'string') {
+    return original.filter(item => item.id !== query);
+  }
+
+  return original;
+});
 
 const EVENTS = {
   MODE_CUSTOMIZATION_MODIFIED: 'event::CustomizationService:modeModified',
   GLOBAL_CUSTOMIZATION_MODIFIED: 'event::CustomizationService:globalModified',
   DEFAULT_CUSTOMIZATION_MODIFIED: 'event::CustomizationService:defaultModified',
 };
-
-export enum MergeEnum {
-  /**
-   * Append values in the nested arrays
-   */
-  Append = 'Append',
-  /**
-   * Merge values, replacing arrays
-   */
-  Merge = 'Merge',
-  /**
-   * Replace the given value - this is the default
-   */
-  Replace = 'Replace',
-}
 
 /**
  * Enum representing the different scopes of customizations available in the system.
@@ -78,7 +84,6 @@ export enum CustomizationScope {
 export default class CustomizationService extends PubSubService {
   public static EVENTS = EVENTS;
   public Scope = CustomizationScope;
-  public Enum = MergeEnum;
 
   public static REGISTRATION = {
     name: 'customizationService',
@@ -196,15 +201,13 @@ export default class CustomizationService extends PubSubService {
    * @param customizationId - The unique identifier for the customization.
    * @param customization - The customization object containing the desired settings or
    *                  string which is the module id to load from an extension
-   * @param merge - The merge strategy to apply. Defaults to `MergeEnum.Merge`.
    * @param scope - The scope to set the customization: 'global', 'mode', or 'default'.
    *                Defaults to 'mode'.
    */
   public setCustomization(
     customizationId: string,
     customization: Customization | string,
-    scope: CustomizationScope,
-    merge = MergeEnum.Merge
+    scope: CustomizationScope
   ): void {
     if (typeof customization === 'string') {
       const extensionValue = this._findExtensionValue(customization);
@@ -213,27 +216,36 @@ export default class CustomizationService extends PubSubService {
 
     switch (scope) {
       case CustomizationScope.Global:
-        this.setGlobalCustomization(customizationId, customization, merge);
+        this.setGlobalCustomization(customizationId, customization);
         break;
       case CustomizationScope.Mode:
-        this.setModeCustomization(customizationId, customization, merge);
+        this.setModeCustomization(customizationId, customization);
         break;
       case CustomizationScope.Default:
-        this.setDefaultCustomization(customizationId, customization, merge);
+        this.setDefaultCustomization(customizationId, customization);
         break;
       default:
         throw new Error(`Invalid customization scope: ${scope}`);
     }
   }
 
+  /**
+   * Takes an object with multiple properties, each property containing
+   * immutability-helper commands, and applies them one by one.
+   *
+   * Example:
+   *   customizationService.setCustomizations({
+   *     showAddSegment: { $set: false },
+   *     NumbersList: { $push: [99] },
+   *   }, CustomizationScope.Mode)
+   */
   public setCustomizations(
-    customizations: Customization[] | string[],
-    scope: CustomizationScope,
-    merge = MergeEnum.Merge
+    customizations: Record<string, any>,
+    scope: CustomizationScope = CustomizationScope.Mode
   ): void {
-    customizations.forEach(customization =>
-      this.setCustomization(customization.id, customization, scope, merge)
-    );
+    Object.entries(customizations).forEach(([key, value]) => {
+      this.setCustomization(key, value, scope);
+    });
   }
 
   /**
@@ -291,28 +303,17 @@ export default class CustomizationService extends PubSubService {
    *
    * @param customizationId - The unique identifier for the customization.
    * @param customization - The customization object containing the desired settings.
-   * @param merge - (Optional) Specifies how the customization should be merged with existing ones.
-   *                Defaults to `MergeEnum.Merge`.
    */
-  private setModeCustomization(
-    customizationId: string,
-    customization: Customization,
-    merge = MergeEnum.Merge
-  ): void {
+  private setModeCustomization(customizationId: string, customization: Customization): void {
     const defaultCustomization = this.defaultCustomizations.get(customizationId);
     const modeCustomization = this.modeCustomizations.get(customizationId);
     const globCustomization = this.globalCustomizations.get(customizationId);
-    const sourceCustomization =
-      modeCustomization ||
-      (globCustomization && cloneDeepWith(globCustomization, cloneCustomizer)) ||
-      defaultCustomization ||
-      {};
 
-    // use the source merge type if not provided then fallback to merge
-    this.modeCustomizations.set(
-      customizationId,
-      this.mergeValue(sourceCustomization, customization, sourceCustomization.merge ?? merge)
-    );
+    const sourceCustomization =
+      modeCustomization || this._cloneIfNeeded(globCustomization) || defaultCustomization || {};
+
+    this.modeCustomizations.set(customizationId, this._update(sourceCustomization, customization));
+
     this.transformedCustomizations.clear();
     this._broadcastEvent(this.EVENTS.CUSTOMIZATION_MODIFIED, {
       buttons: this.modeCustomizations,
@@ -320,22 +321,14 @@ export default class CustomizationService extends PubSubService {
     });
   }
 
-  private setGlobalCustomization(
-    id: string,
-    value: Customization,
-    merge = MergeEnum.Replace
-  ): void {
+  private setGlobalCustomization(id: string, value: Customization): void {
     const defaultCustomization = this.defaultCustomizations.get(id);
     const globCustomization = this.globalCustomizations.get(id);
     const sourceCustomization =
-      (globCustomization && cloneDeepWith(globCustomization, cloneCustomizer)) ||
-      defaultCustomization ||
-      {};
+      this._cloneIfNeeded(globCustomization) || defaultCustomization || {};
 
-    this.globalCustomizations.set(
-      id,
-      this.mergeValue(sourceCustomization, value, value.merge ?? merge)
-    );
+    this.globalCustomizations.set(id, this._update(sourceCustomization, value));
+
     this.transformedCustomizations.clear();
     this._broadcastEvent(this.EVENTS.DEFAULT_CUSTOMIZATION_MODIFIED, {
       buttons: this.defaultCustomizations,
@@ -343,78 +336,65 @@ export default class CustomizationService extends PubSubService {
     });
   }
 
-  private setDefaultCustomization(
-    id: string,
-    value: Customization,
-    merge = MergeEnum.Replace
-  ): void {
+  private setDefaultCustomization(id: string, value: Customization): void {
     if (this.defaultCustomizations.has(id)) {
       throw new Error(`Trying to update existing default for customization ${id}`);
     }
     this.transformedCustomizations.clear();
-    this.defaultCustomizations.set(
-      id,
-      this.mergeValue(this.defaultCustomizations.get(id), value, merge)
-    );
+    this.defaultCustomizations.set(id, this._update(this.defaultCustomizations.get(id), value));
     this._broadcastEvent(this.EVENTS.DEFAULT_CUSTOMIZATION_MODIFIED, {
       buttons: this.defaultCustomizations,
       button: this.defaultCustomizations.get(id),
     });
   }
 
-  _findExtensionValue(value: string) {
+  private _findExtensionValue(value: string) {
     const entry = this.extensionManager.getModuleEntry(value);
     return entry as { value: Customization };
   }
 
   /**
-   * Performs a merge, creating a new instance value - that is, not referencing
-   * the old one.  This only works if you run once for the merge, so in general,
-   * the source value should be global, while the appends should be mode based.
-   * However, you can append to a global value too, as long as you ensure it
-   * only gets merged once.
+   * Uses immutability-helper to apply the user's commands (e.g. $set, $push, $apply, etc.)
+   * Takes into account the 'mergeType' if it's explicitly 'Replace'; otherwise does a normal update.
    */
-  private mergeValue(
-    oldValue: Customization,
-    newValue: Customization,
-    mergeType = MergeEnum.Replace
-  ) {
-    if (mergeType === MergeEnum.Replace) {
-      return newValue;
+  private _update(oldValue: any, newValue: any) {
+    if (!oldValue) {
+      // If there was no old value, treat that as 'undefined' so that $set, etc. work
+      oldValue = undefined;
     }
 
-    const returnValue = mergeWith(
-      {},
-      oldValue,
-      newValue,
-      mergeType === MergeEnum.Append ? appendCustomizer : mergeCustomizer
-    );
-    return returnValue;
+    // Otherwise do a normal immutability-helper update with the oldValue as base
+    return update(oldValue, newValue);
   }
 
-  /**
-   * A single reference is either an string to be loaded from a module,
-   * or a customization itself.
-   */
-  _addReference(value?, type = CustomizationScope.Global, merge?: MergeEnum): void {
+  private _cloneIfNeeded(value: any) {
+    if (!value) {
+      return undefined;
+    }
+    // If it's an object or array, we can just do a shallow copy,
+    // but if it's a function we keep it as-is. Typically we rely on immutability-helper anyway.
+    if (typeof value === 'object') {
+      return JSON.parse(JSON.stringify(value));
+    }
+    return value;
+  }
+
+  _addReference(value?: any, type = CustomizationScope.Global): void {
     if (!value) {
       return;
     }
 
-    let mergeType = merge;
     if (typeof value === 'string') {
       const extensionValue = this._findExtensionValue(value);
       value = extensionValue.value;
-      mergeType = extensionValue.merge;
     }
 
     Object.entries(value).forEach(([id, customization]) => {
-      const useId = id;
       const setName =
         (type === CustomizationScope.Global && 'setGlobalCustomization') ||
         (type === CustomizationScope.Default && 'setDefaultCustomization') ||
         'setModeCustomization';
-      this[setName](useId as string, customization, mergeType);
+      this[setName](id as string, customization);
     });
   }
 
@@ -423,7 +403,7 @@ export default class CustomizationService extends PubSubService {
    * or as an object whose key is the reference id, and the value is the string
    * or customization.
    */
-  addReferences(references?, type = CustomizationScope.Global): void {
+  addReferences(references?: any, type = CustomizationScope.Global): void {
     if (!references) {
       return;
     }
@@ -434,80 +414,5 @@ export default class CustomizationService extends PubSubService {
     } else {
       this._addReference(references, type);
     }
-  }
-}
-
-/**
- * Custom merging function, to handle merging arrays and copying functions
- */
-function appendCustomizer(obj, src) {
-  if (Array.isArray(obj)) {
-    const srcArray = Array.isArray(src);
-    if (srcArray) {
-      return obj.concat(...src);
-    }
-    if (typeof src === 'object') {
-      const newList = obj.map(value => cloneDeepWith(value, cloneCustomizer));
-      for (const [key, value] of Object.entries(src)) {
-        const { position, isMerge } = findPosition(key, value, newList);
-        if (isMerge) {
-          if (typeof obj[position] === 'object') {
-            newList[position] = mergeWith(
-              Array.isArray(newList[position]) ? [] : {},
-              newList[position],
-              value,
-              appendCustomizer
-            );
-          } else {
-            newList[position] = value;
-          }
-        } else {
-          newList.splice(position, 0, value);
-        }
-      }
-      return newList;
-    }
-    return obj.concat(src);
-  }
-  return cloneCustomizer(src);
-}
-
-function mergeCustomizer(obj, src) {
-  return cloneCustomizer(src);
-}
-
-function findPosition(key, value, newList) {
-  const numVal = Number(key);
-  const isNumeric = !isNaN(numVal);
-  const { length: len } = newList;
-
-  if (isNumeric) {
-    if (newList[numVal < 0 ? numVal + len : numVal]) {
-      return { isMerge: true, position: (numVal + len) % len };
-    }
-    const absPosition = Math.ceil(numVal < 0 ? len + numVal : numVal);
-    return { isMerge: false, position: Math.min(len, Math.max(absPosition, 0)) };
-  }
-  const findIndex = newList.findIndex(it => it.id === key);
-  if (findIndex !== -1) {
-    return { isMerge: true, position: findIndex };
-  }
-  const { _priority: priority } = value;
-  if (priority !== undefined) {
-    if (newList[(priority + len) % len]) {
-      return { isMerge: true, position: (priority + len) % len };
-    }
-    const absPosition = Math.ceil(priority < 0 ? len + priority : priority);
-    return { isMerge: false, position: Math.min(len, Math.max(absPosition, 0)) };
-  }
-  return { isMerge: false, position: len };
-}
-
-/**
- * Custom cloning function to just copy function reference
- */
-function cloneCustomizer(value) {
-  if (typeof value === 'function') {
-    return value;
   }
 }
