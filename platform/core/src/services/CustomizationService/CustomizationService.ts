@@ -4,28 +4,6 @@ import type { Customization, NestedStrings } from './types';
 import type { CommandsManager } from '../../classes';
 import type { ExtensionManager } from '../../extensions';
 
-/** Add custom $filter command */
-extend('$filter', (query, original) => {
-  if (!Array.isArray(original)) {
-    return original;
-  }
-
-  // If query is a function, filter by that
-  if (typeof query === 'function') {
-    return original.filter(query);
-  }
-
-  // If query is an object or string with an 'id', remove matching items
-  if (typeof query === 'object' && query?.id) {
-    return original.filter(item => item.id !== query.id);
-  }
-  if (typeof query === 'string') {
-    return original.filter(item => item.id !== query);
-  }
-
-  return original;
-});
-
 const EVENTS = {
   MODE_CUSTOMIZATION_MODIFIED: 'event::CustomizationService:modeModified',
   GLOBAL_CUSTOMIZATION_MODIFIED: 'event::CustomizationService:globalModified',
@@ -196,23 +174,50 @@ export default class CustomizationService extends PubSubService {
   }
 
   /**
-   * Unified setter for customizations.
+   * Takes an object with multiple properties, each property containing
+   * immutability-helper commands, and applies them one by one.
    *
-   * @param customizationId - The unique identifier for the customization.
-   * @param customization - The customization object containing the desired settings or
-   *                  string which is the module id to load from an extension
-   * @param scope - The scope to set the customization: 'global', 'mode', or 'default'.
-   *                Defaults to 'mode'.
+   * Example:
+   *   customizationService.setCustomizations({
+   *     showAddSegment: { $set: false },
+   *     NumbersList: { $push: [99] },
+   *   }, CustomizationScope.Mode)
+   */
+  public setCustomizations(
+    customizations: Record<string, Customization>,
+    scope: CustomizationScope = CustomizationScope.Mode
+  ): void {
+    Object.entries(customizations).forEach(([key, value]) => {
+      this._setCustomization(key, value, scope);
+    });
+  }
+
+  /**
+   * @deprecated Use setCustomizations instead
    */
   public setCustomization(
     customizationId: string,
     customization: Customization | string,
-    scope: CustomizationScope
+    scope: CustomizationScope = CustomizationScope.Mode
   ): void {
-    if (typeof customization === 'string') {
-      const extensionValue = this._findExtensionValue(customization);
-      customization = extensionValue.value;
-    }
+    console.warn(
+      'setCustomization is deprecated. Please use setCustomizations with an object instead.'
+    );
+    this._setCustomization(customizationId, customization, scope);
+  }
+
+  /**
+   * Internal method to set a single customization
+   */
+  private _setCustomization(
+    customizationId: string,
+    customization: Customization,
+    scope: CustomizationScope = CustomizationScope.Mode
+  ): void {
+    // if (typeof customization === 'string') {
+    //   const extensionValue = this._findExtensionValue(customization);
+    //   customization = extensionValue.value;
+    // }
 
     switch (scope) {
       case CustomizationScope.Global:
@@ -227,25 +232,6 @@ export default class CustomizationService extends PubSubService {
       default:
         throw new Error(`Invalid customization scope: ${scope}`);
     }
-  }
-
-  /**
-   * Takes an object with multiple properties, each property containing
-   * immutability-helper commands, and applies them one by one.
-   *
-   * Example:
-   *   customizationService.setCustomizations({
-   *     showAddSegment: { $set: false },
-   *     NumbersList: { $push: [99] },
-   *   }, CustomizationScope.Mode)
-   */
-  public setCustomizations(
-    customizations: Record<string, any>,
-    scope: CustomizationScope = CustomizationScope.Mode
-  ): void {
-    Object.entries(customizations).forEach(([key, value]) => {
-      this.setCustomization(key, value, scope);
-    });
   }
 
   /**
@@ -310,9 +296,14 @@ export default class CustomizationService extends PubSubService {
     const globCustomization = this.globalCustomizations.get(customizationId);
 
     const sourceCustomization =
-      modeCustomization || this._cloneIfNeeded(globCustomization) || defaultCustomization || {};
+      modeCustomization || this._cloneIfNeeded(globCustomization) || defaultCustomization;
 
-    this.modeCustomizations.set(customizationId, this._update(sourceCustomization, customization));
+    if (!sourceCustomization) {
+      this.modeCustomizations.set(customizationId, customization);
+    } else {
+      const result = this._update(sourceCustomization, customization);
+      this.modeCustomizations.set(customizationId, result);
+    }
 
     this.transformedCustomizations.clear();
     this._broadcastEvent(this.EVENTS.CUSTOMIZATION_MODIFIED, {
@@ -324,10 +315,14 @@ export default class CustomizationService extends PubSubService {
   private setGlobalCustomization(id: string, value: Customization): void {
     const defaultCustomization = this.defaultCustomizations.get(id);
     const globCustomization = this.globalCustomizations.get(id);
-    const sourceCustomization =
-      this._cloneIfNeeded(globCustomization) || defaultCustomization || {};
 
-    this.globalCustomizations.set(id, this._update(sourceCustomization, value));
+    const sourceCustomization = this._cloneIfNeeded(globCustomization) || defaultCustomization;
+
+    if (!sourceCustomization) {
+      this.globalCustomizations.set(id, value);
+    } else {
+      this.globalCustomizations.set(id, this._update(sourceCustomization, value));
+    }
 
     this.transformedCustomizations.clear();
     this._broadcastEvent(this.EVENTS.DEFAULT_CUSTOMIZATION_MODIFIED, {
@@ -337,11 +332,20 @@ export default class CustomizationService extends PubSubService {
   }
 
   private setDefaultCustomization(id: string, value: Customization): void {
+    debugger;
     if (this.defaultCustomizations.has(id)) {
       throw new Error(`Trying to update existing default for customization ${id}`);
     }
     this.transformedCustomizations.clear();
-    this.defaultCustomizations.set(id, this._update(this.defaultCustomizations.get(id), value));
+
+    const sourceCustomization = this.defaultCustomizations.get(id);
+
+    if (!sourceCustomization) {
+      this.defaultCustomizations.set(id, value);
+    } else {
+      this.defaultCustomizations.set(id, this._update(sourceCustomization, value));
+    }
+
     this._broadcastEvent(this.EVENTS.DEFAULT_CUSTOMIZATION_MODIFIED, {
       buttons: this.defaultCustomizations,
       button: this.defaultCustomizations.get(id),
@@ -363,7 +367,7 @@ export default class CustomizationService extends PubSubService {
       oldValue = undefined;
     }
 
-    // Otherwise do a normal immutability-helper update with the oldValue as base
+    // Use immutability-helper to apply the commands
     return update(oldValue, newValue);
   }
 
@@ -416,3 +420,73 @@ export default class CustomizationService extends PubSubService {
     }
   }
 }
+
+/** Add custom $filter command */
+extend('$filter', (query, original) => {
+  // This helper checks if an object matches all key/value pairs in `match`
+  function objectMatches(item, matchObj) {
+    return (
+      item && typeof item === 'object' && Object.entries(matchObj).every(([k, v]) => item[k] === v)
+    );
+  }
+
+  // Recursively walk objects/arrays. Whenever we hit an array, we either filter
+  // or update items that match, depending on what was passed in via `query`.
+  function deepFilter(value, filterQuery) {
+    // If it's an array, apply the filtering/updating logic to each item
+    if (Array.isArray(value)) {
+      let result = value;
+
+      // 1) If it's a function, filter array items
+      if (typeof filterQuery === 'function') {
+        return value.filter(filterQuery);
+      }
+
+      // 2) If it's a string, remove items whose .id matches that string
+      if (typeof filterQuery === 'string') {
+        return value.filter(item => item.id !== filterQuery);
+      }
+
+      // 3) If it's an object with .match and .merge, apply the merge to matched items
+      if (typeof filterQuery === 'object' && filterQuery.match && filterQuery.$merge) {
+        // First recurse into sub-objects/arrays so we handle deeply nested arrays
+        result = value.map(item => deepFilter(item, filterQuery));
+        // Then update items that match
+        return result.map(item => {
+          if (objectMatches(item, filterQuery.match)) {
+            return { ...item, ...filterQuery.$merge };
+          }
+          return item;
+        });
+      }
+
+      // 4) If it's an object with .id and .$merge, for backwards-compat
+      if (typeof filterQuery === 'object' && filterQuery.id && filterQuery.$merge) {
+        result = value.map(item => deepFilter(item, filterQuery));
+        return result.map(item => {
+          if (item.id === filterQuery.id) {
+            return { ...item, ...filterQuery.$merge };
+          }
+          return item;
+        });
+      }
+
+      // Otherwise, just recurse into sub-objects without filtering
+      return value.map(item => deepFilter(item, filterQuery));
+    }
+
+    // If it's a plain object, recurse into its properties
+    if (value && typeof value === 'object') {
+      const newObj = { ...value };
+      for (const [key, val] of Object.entries(newObj)) {
+        newObj[key] = deepFilter(val, filterQuery);
+      }
+      return newObj;
+    }
+
+    // If it's neither array nor object, just return it
+    return value;
+  }
+
+  return deepFilter(original, query);
+});

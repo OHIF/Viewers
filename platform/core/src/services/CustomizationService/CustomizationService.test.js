@@ -1,5 +1,5 @@
 // File: CustomizationService.registrationAndOperations.test.js
-import CustomizationService, { CustomizationScope, MergeEnum } from './CustomizationService';
+import CustomizationService, { CustomizationScope } from './CustomizationService';
 
 const commandsManager = {};
 const extensionManager = {
@@ -12,37 +12,49 @@ const extensionManager = {
 };
 
 const noop = () => {};
-const consoleAlertStub = () => 'alert';
 
 // A helper default customization module that mimics the structure returned by the module.
 function getDefaultCustomizationModule() {
-  return [
-    {
-      // Simple types
-      showAddSegment: true,
-      onAddSegment: () => 'default add',
-      // Array of primitives
-      NumbersList: [1, 2, 3, 4],
-      // Object
-      SeriesInfo: {
+  return {
+    // Simple types
+    showAddSegment: true,
+    onAddSegment: () => 'default add',
+    // Array of primitives
+    NumbersList: [1, 2, 3, 4],
+    // Object
+    SeriesInfo: {
+      label: 'Series Date',
+      sortFunction: noop,
+      views: ['sagittal', 'coronal', 'axial'],
+      advanced: {
+        subKey: 'original',
+        anotherKey: 42,
+      },
+    },
+    // Array of objects
+    studyBrowser: [
+      {
+        id: 'seriesDate',
         label: 'Series Date',
         sortFunction: noop,
-        views: ['sagittal', 'coronal', 'axial'],
-        advanced: {
-          subKey: 'original',
-          anotherKey: 42,
-        },
       },
-      // Array of objects
-      studyBrowser: [
+    ],
+    advanced: {
+      firstLabel: 'hello',
+      functions: [
         {
           id: 'seriesDate',
           label: 'Series Date',
-          sortFunction: noop,
+          sortFunction: () => {},
+          viewFunctions: [
+            { id: 'sagittal', label: 'Sagittal', sortFunction: () => {} },
+            { id: 'coronal', label: 'Coronal', sortFunction: () => {} },
+            { id: 'axial', label: 'Axial', sortFunction: () => {} },
+          ],
         },
       ],
     },
-  ];
+  };
 }
 
 describe('CustomizationService - Registration + API Operations', () => {
@@ -59,147 +71,169 @@ describe('CustomizationService - Registration + API Operations', () => {
 
   // Check that defaults are registered
   it('has registered default customizations', () => {
-    const defaultShowAddSegment = customizationService.getCustomization(
-      'showAddSegment',
-      CustomizationScope.Default
-    );
+    const defaultShowAddSegment = customizationService.getCustomization('showAddSegment');
     expect(defaultShowAddSegment).toBe(true);
 
-    const defaultNumbersList = customizationService.getCustomization(
-      'NumbersList',
-      CustomizationScope.Default
-    );
+    const defaultNumbersList = customizationService.getCustomization('NumbersList');
     expect(defaultNumbersList).toEqual([1, 2, 3, 4]);
 
-    const defaultSeriesInfo = customizationService.getCustomization(
-      'SeriesInfo',
-      CustomizationScope.Default
-    );
+    const defaultSeriesInfo = customizationService.getCustomization('SeriesInfo');
     expect(defaultSeriesInfo.label).toBe('Series Date');
     expect(defaultSeriesInfo.advanced.subKey).toBe('original');
 
-    const defaultStudyBrowser = customizationService.getCustomization(
-      'studyBrowser',
-      CustomizationScope.Default
-    );
+    const defaultStudyBrowser = customizationService.getCustomization('studyBrowser');
     expect(Array.isArray(defaultStudyBrowser)).toBe(true);
     expect(defaultStudyBrowser.length).toBe(1);
+
+    //
+    const advanced = customizationService.getCustomization('advanced');
+    expect(advanced.firstLabel).toBe('hello');
+    expect(advanced.functions.length).toBe(1);
+    expect(advanced.functions[0].id).toBe('seriesDate');
+    expect(advanced.functions[0].viewFunctions.length).toBe(3);
+    expect(advanced.functions[0].viewFunctions[0].id).toBe('sagittal');
+    expect(advanced.functions[0].viewFunctions[1].id).toBe('coronal');
+    expect(advanced.functions[0].viewFunctions[2].id).toBe('axial');
   });
 
   // 1. Simple Data Types
   describe('Simple Data Types', () => {
     it('replaces boolean value using $set over the default', () => {
       // Update the default value with a new one using $set.
-      customizationService.setCustomization(
-        'showAddSegment',
-        { $set: false },
-        CustomizationScope.Mode,
-        MergeEnum.Replace
-      );
+      customizationService.setCustomizations({
+        showAddSegment: { $set: false },
+      });
       const result = customizationService.getCustomization('showAddSegment');
+
       // Mode/global should override the default.
-      expect(result.$set || result).toEqual(false);
+      expect(result).toBe(false);
     });
 
     it('replaces function value using $set over the default', () => {
       // Original default returns "default add"
-      const original = customizationService.getCustomization(
-        'onAddSegment',
-        CustomizationScope.Default
-      );
+      const original = customizationService.getCustomization('onAddSegment');
       expect(original()).toBe('default add');
 
       // Now update the function
-      customizationService.setCustomization(
-        'onAddSegment',
-        { $set: () => consoleAlertStub() },
-        CustomizationScope.Mode,
-        MergeEnum.Replace
-      );
+      customizationService.setCustomizations({
+        onAddSegment: { $set: () => 999 },
+      });
       const updated = customizationService.getCustomization('onAddSegment');
-      expect(updated.$set ? updated.$set() : updated()).toBe('alert');
+      expect(updated()).toBe(999);
+    });
+
+    it('replaces two properties at once', () => {
+      // Original default returns "default add"
+      const original = customizationService.getCustomization('onAddSegment');
+      expect(original()).toBe('default add');
+
+      // Now update the function
+      customizationService.setCustomizations({
+        onAddSegment: { $set: () => 998 },
+        showAddSegment: { $set: false },
+      });
+      expect(customizationService.getCustomization('onAddSegment')).toBeDefined();
+      expect(customizationService.getCustomization('showAddSegment')).toBe(false);
+      expect(customizationService.getCustomization('onAddSegment')()).toBe(998);
     });
   });
 
   // 2. Arrays of Primitives
   describe('Arrays of Primitives', () => {
     it('replaces entire array with $set over default', () => {
-      customizationService.setCustomization(
-        'NumbersList',
-        { $set: [5, 6, 7, 8, 9] },
-        CustomizationScope.Mode,
-        MergeEnum.Replace
-      );
+      customizationService.setCustomizations({
+        NumbersList: { $set: [5, 6, 7, 8, 9] },
+      });
       const result = customizationService.getCustomization('NumbersList');
-      expect(result.$set || result).toEqual([5, 6, 7, 8, 9]);
+      expect(result).toEqual([5, 6, 7, 8, 9]);
     });
 
     it('applies $push, $unshift, and $splice to default array', () => {
       // Update array using merge commands
-      customizationService.setCustomization(
-        'NumbersList',
-        {
+      customizationService.setCustomizations({
+        NumbersList: {
           $push: [5, 6],
+        },
+      });
+      const result = customizationService.getCustomization('NumbersList');
+      expect(result).toEqual([1, 2, 3, 4, 5, 6]);
+    });
+
+    it('applies $push, $unshift, and $splice to default array', () => {
+      // Update array using merge commands
+      customizationService.setCustomizations({
+        NumbersList: {
           $unshift: [0],
+        },
+      });
+      const result = customizationService.getCustomization('NumbersList');
+      expect(result).toEqual([0, 1, 2, 3, 4]);
+    });
+
+    it('applies $push, $unshift, and $splice to default array', () => {
+      // Update array using merge commands
+      customizationService.setCustomizations({
+        NumbersList: {
           $splice: [
-            [2, 1, 99], // At index 2, remove 1 element and insert 99
+            [2, 1, 99], // At index 2, remove
           ],
         },
-        CustomizationScope.Mode,
-        MergeEnum.Merge
-      );
+      });
+      const result = customizationService.getCustomization('NumbersList');
+      expect(result).toEqual([1, 2, 99, 4]);
+    });
+
+    it('applies $push, $unshift, and $splice to default array', () => {
+      // Update array using merge commands
+      customizationService.setCustomizations({
+        NumbersList: {
+          $push: [5, 6],
+          $unshift: [0],
+        },
+      });
       const result = customizationService.getCustomization('NumbersList');
 
-      // Since the merge implementation is custom, we check for presence of array commands.
-      // An integration test may compute the final array based on the operations.
-      expect(result.$push).toEqual([5, 6]);
-      expect(result.$unshift).toEqual([0]);
-      expect(result.$splice).toEqual([[2, 1, 99]]);
+      expect(result).toEqual([0, 1, 2, 3, 4, 5, 6]);
     });
   });
 
   // 3. Objects
   describe('Objects', () => {
     it('replaces entire object with $set', () => {
-      customizationService.setCustomization(
-        'SeriesInfo',
-        {
+      customizationService.setCustomizations({
+        SeriesInfo: {
           $set: {
             label: 'Series Number',
             sortFunction: (a, b) => a?.SeriesNumber - b?.SeriesNumber,
             views: ['3D'],
           },
         },
-        CustomizationScope.Mode,
-        MergeEnum.Replace
-      );
+      });
       const result = customizationService.getCustomization('SeriesInfo');
-      expect(result.$set.label).toBe('Series Number');
-      expect(result.$set.views).toEqual(['3D']);
+
+      expect(result.label).toBe('Series Number');
+      expect(result.sortFunction).not.toEqual(noop);
+      expect(result.views).toEqual(['3D']);
     });
 
     it('merges object fields with $merge over default', () => {
       // Merge basic fields (in mode should override defaults)
-      customizationService.setCustomization(
-        'SeriesInfo',
-        {
+      customizationService.setCustomizations({
+        SeriesInfo: {
           $merge: {
             label: 'New Label',
             extraField: true,
           },
         },
-        CustomizationScope.Mode,
-        MergeEnum.Merge
-      );
+      });
       let result = customizationService.getCustomization('SeriesInfo');
-      // Validate that label has been updated and new fields added.
-      expect(result.$merge.label).toBe('New Label');
-      expect(result.$merge.extraField).toBe(true);
+
+      expect(result.label).toBe('New Label');
+      expect(result.extraField).toBe(true);
 
       // Merge deeper nested fields on the "advanced" property.
-      customizationService.setCustomization(
-        'SeriesInfo',
-        {
+      customizationService.setCustomizations({
+        SeriesInfo: {
           advanced: {
             $merge: {
               subKey: 'updatedSubValue',
@@ -207,43 +241,33 @@ describe('CustomizationService - Registration + API Operations', () => {
             },
           },
         },
-        CustomizationScope.Mode,
-        MergeEnum.Merge
-      );
+      });
       result = customizationService.getCustomization('SeriesInfo');
-      expect(result.advanced.$merge.subKey).toBe('updatedSubValue');
-      expect(result.advanced.$merge.newSubKey).toBe(123);
-      expect(result.advanced.$merge.anotherKey).toBe(42);
+      expect(result.advanced.subKey).toBe('updatedSubValue');
+      expect(result.advanced.newSubKey).toBe(123);
+      expect(result.advanced.anotherKey).toBe(42);
     });
 
     it('applies a function to modify a property with $apply', () => {
-      customizationService.setCustomization(
-        'SeriesInfo',
-        {
+      customizationService.setCustomizations({
+        SeriesInfo: {
           $apply: oldValue => ({
             ...oldValue,
             label: 'Series Number (via $apply)',
           }),
         },
-        CustomizationScope.Mode,
-        MergeEnum.Merge
-      );
+      });
       const result = customizationService.getCustomization('SeriesInfo');
-      // Either check the direct value if transformation happened,
-      // or verify that an $apply key is present that would be used during transformation.
-      const transformed = result.$apply
-        ? result.$apply({ label: 'Series Date', sortFunction: noop })
-        : result;
-      expect(transformed.label).toBe('Series Number (via $apply)');
+
+      expect(result.label).toBe('Series Number (via $apply)');
     });
   });
 
   // 4. Arrays of Objects
   describe('Arrays of Objects', () => {
     it('replaces entire array of objects using $set', () => {
-      customizationService.setCustomization(
-        'studyBrowser',
-        {
+      customizationService.setCustomizations({
+        studyBrowser: {
           $set: [
             {
               id: 'seriesNumber',
@@ -257,19 +281,17 @@ describe('CustomizationService - Registration + API Operations', () => {
             },
           ],
         },
-        CustomizationScope.Mode,
-        MergeEnum.Replace
-      );
+      });
       const result = customizationService.getCustomization('studyBrowser');
-      expect(result.$set.length).toBe(2);
-      expect(result.$set[0].id).toBe('seriesNumber');
+      expect(result.length).toBe(2);
+      expect(result[0].label).toBe('Series Number');
+      expect(result[1].label).toBe('Series Date');
     });
 
     it('updates array of objects with $push and $splice', () => {
       // Append a new item using $push
-      customizationService.setCustomization(
-        'studyBrowser',
-        {
+      customizationService.setCustomizations({
+        studyBrowser: {
           $push: [
             {
               id: 'seriesNumber',
@@ -278,13 +300,16 @@ describe('CustomizationService - Registration + API Operations', () => {
             },
           ],
         },
-        CustomizationScope.Mode,
-        MergeEnum.Merge
-      );
+      });
+
+      let result = customizationService.getCustomization('studyBrowser');
+      expect(result.length).toBe(2);
+      expect(result[0].label).toBe('Series Date');
+      expect(result[1].label).toBe('Series Number');
+
       // Insert at index 1 with $splice
-      customizationService.setCustomization(
-        'studyBrowser',
-        {
+      customizationService.setCustomizations({
+        studyBrowser: {
           $splice: [
             [
               1,
@@ -297,67 +322,66 @@ describe('CustomizationService - Registration + API Operations', () => {
             ],
           ],
         },
-        CustomizationScope.Mode,
-        MergeEnum.Merge
-      );
-      const result = customizationService.getCustomization('studyBrowser');
-      expect(result.$push).toBeDefined();
-      expect(result.$splice).toBeDefined();
+      });
+      result = customizationService.getCustomization('studyBrowser');
+      expect(result.length).toBe(3);
+      expect(result[0].label).toBe('Series Date');
+      expect(result[1].label).toBe('Another Item');
     });
   });
 
   // 5. Advanced Nested Structures
   describe('Advanced Nested Structures', () => {
-    it('updates a simple nested property using $set', () => {
-      customizationService.setCustomization(
-        'studyBrowser',
-        {
-          firstLabel: { $set: 'newLabel' },
+    it('updates first level properties in advanced object', () => {
+      customizationService.setCustomizations({
+        advanced: {
+          firstLabel: {
+            $set: 'newLabel',
+          },
         },
-        CustomizationScope.Mode,
-        MergeEnum.Merge
-      );
-      const result = customizationService.getCustomization('studyBrowser');
-      // The test verifies that the nested firstLabel was updated.
-      expect(result.firstLabel.$set || result.firstLabel).toBe('newLabel');
+      });
+
+      const result = customizationService.getCustomization('advanced');
+      expect(result.firstLabel).toBe('newLabel');
+      expect(result.functions).toBeDefined();
     });
 
-    it('updates array within nested object using $push and $splice', () => {
-      // Append a new function to the nested array of functions.
-      customizationService.setCustomization(
-        'studyBrowser',
-        {
-          functions: {
-            $push: [{ id: 'seriesDescription', label: 'Series Description', sortFunction: noop }],
+    it('updates nested objects within functions array using $filter and $merge', () => {
+      customizationService.setCustomizations({
+        advanced: {
+          // filter an object that is inside the advanced object
+          // and then merge the object
+          $filter: {
+            match: { id: 'seriesDate' },
+            $merge: {
+              label: 'Series Data (via $filter)',
+            },
           },
         },
-        CustomizationScope.Mode,
-        MergeEnum.Merge
-      );
-      // Insert a function at index 1.
-      customizationService.setCustomization(
-        'studyBrowser',
-        {
-          functions: {
-            $splice: [
-              [
-                1,
-                0,
-                {
-                  id: 'seriesDateReverse',
-                  label: 'Series Date (Reverse)',
-                  sortFunction: (a, b) => new Date(a?.SeriesDate) - new Date(b?.SeriesDate),
-                },
-              ],
-            ],
+      });
+
+      const result = customizationService.getCustomization('advanced');
+
+      expect(result.functions.length).toBe(1);
+      expect(result.functions[0].label).toBe('Series Data (via $filter)');
+    });
+
+    it('updates deeply nested view functions using $filter', () => {
+      customizationService.setCustomizations({
+        advanced: {
+          $filter: {
+            match: { id: 'axial' },
+            $merge: {
+              label: 'Axial (via $filter)',
+            },
           },
         },
-        CustomizationScope.Mode,
-        MergeEnum.Merge
-      );
-      const result = customizationService.getCustomization('studyBrowser');
-      expect(result.functions.$push).toBeDefined();
-      expect(result.functions.$splice).toBeDefined();
+      });
+
+      const result = customizationService.getCustomization('advanced');
+
+      expect(result.functions.length).toBe(1);
+      expect(result.functions[0].viewFunctions[2].label).toBe('Axial (via $filter)');
     });
   });
 });
