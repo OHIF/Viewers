@@ -222,7 +222,8 @@ export class CommandsManager {
     const commands = this.validate(input, options);
 
     const results: unknown[] = [];
-    for (const command of commands) {
+    for (let i = 0; i < commands.length; i++) {
+      const command = commands[i];
       const { commandName, commandOptions, context } = command;
       results.push(this.runCommand(commandName, commandOptions, context));
     }
@@ -238,7 +239,8 @@ export class CommandsManager {
     const commands = this.validate(input, options);
 
     const results: unknown[] = [];
-    for (const command of commands) {
+    for (let i = 0; i < commands.length; i++) {
+      const command = commands[i];
       const { commandName, commandOptions, context } = command;
       results.push(await this.runCommand(commandName, commandOptions, context));
     }
