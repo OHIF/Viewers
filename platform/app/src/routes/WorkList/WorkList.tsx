@@ -553,6 +553,8 @@ function WorkList({
 
   const { component: dataSourceConfigurationComponent } =
     customizationService.get('ohif.dataSourceConfigurationComponent') ?? {};
+  const { component: dataSourceSelectorComponent } =
+    customizationService.get('ohif.dataSourceSelectorComponent') ?? {};
 
   return (
     <div className="flex h-screen flex-col bg-black">
@@ -580,6 +582,9 @@ function WorkList({
                 dataSourceConfigurationComponent
                   ? () => dataSourceConfigurationComponent()
                   : undefined
+              }
+              getDataSourceSelectorComponent={
+                dataSourceSelectorComponent ? () => dataSourceSelectorComponent() : undefined
               }
             />
           </div>

@@ -5,6 +5,7 @@ import { ProgressDropdownWithService } from './Components/ProgressDropdownWithSe
 import DataSourceConfigurationComponent from './Components/DataSourceConfigurationComponent';
 import { GoogleCloudDataSourceConfigurationAPI } from './DataSourceConfigurationAPI/GoogleCloudDataSourceConfigurationAPI';
 import { utils } from '@ohif/core';
+import { DataSourceConfigurationAPI } from './DataSourceConfigurationAPI';
 
 const formatDate = utils.formatDate;
 
@@ -147,6 +148,17 @@ export default function getCustomizationModule({ servicesManager, extensionManag
           component: DataSourceConfigurationComponent.bind(null, {
             servicesManager,
             extensionManager,
+            type: 'sourceConfigurationSelector',
+          }),
+        },
+
+        {
+          // the generic GUI component to change a data source using an instance of a BaseDataSourceConfigurationAPI
+          id: 'ohif.dataSourceSelectorComponent',
+          component: DataSourceConfigurationComponent.bind(null, {
+            servicesManager,
+            extensionManager,
+            type: 'sourceSelector',
           }),
         },
 
@@ -159,6 +171,11 @@ export default function getCustomizationModule({ servicesManager, extensionManag
               servicesManager,
               extensionManager
             ),
+        },
+        {
+          // The factory for creating an instance of a BaseDataSourceConfigurationAPI for selecting data source
+          id: 'ohif.dataSourceSelectionAPI',
+          factory: () => new DataSourceConfigurationAPI(extensionManager),
         },
 
         {
