@@ -40,6 +40,19 @@ const tools = {
 function getCustomizationModule() {
   return [
     {
+      name: 'newCustomization',
+      value: {
+        'studyBrowser.sortFunctions': {
+          $push: [
+            {
+              label: 'Something else',
+              sortFunction: (a, b) => a.studyDate - b.studyDate,
+            },
+          ],
+        },
+      },
+    },
+    {
       name: 'default',
       value: {
         dicomUploadComponent: DicomUpload,

@@ -6,30 +6,7 @@ window.config = {
   // whiteLabeling: {},
   extensions: [],
   modes: [],
-  customizationService: [
-    '@ohif/extension-default.customizationModule.helloPage',
-    '@ohif/extension-default.customizationModule.datasources',
-    {
-      'viewportOverlay.topLeft': {
-        $push: [
-          {
-            id: 'PatientNameOverlay',
-            customizationType: 'ohif.overlayItem',
-            attribute: 'PatientName',
-            label: 'PN:',
-            title: 'Patient Name',
-            color: 'yellow',
-            condition: ({ instance }) =>
-              instance && instance.PatientName && instance.PatientName.Alphabetic,
-            contentF: ({ instance, formatters: { formatPN } }) =>
-              formatPN(instance.PatientName.Alphabetic) +
-              ' ' +
-              (instance.PatientSex ? '(' + instance.PatientSex + ')' : ''),
-          },
-        ],
-      },
-    },
-  ],
+  customizationService: ['@ohif/extension-cornerstone.customizationModule.newCustomization'],
   showStudyList: true,
   // some windows systems have issues with more than 3 web workers
   maxNumberOfWebWorkers: 3,
