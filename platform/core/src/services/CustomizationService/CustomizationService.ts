@@ -1,6 +1,6 @@
 import update, { extend } from 'immutability-helper';
 import { PubSubService } from '../_shared/pubSubServiceInterface';
-import type { Customization, NestedStrings } from './types';
+import type { Customization } from './types';
 import type { CommandsManager } from '../../classes';
 import type { ExtensionManager } from '../../extensions';
 
@@ -332,7 +332,6 @@ export default class CustomizationService extends PubSubService {
   }
 
   private setDefaultCustomization(id: string, value: Customization): void {
-    debugger;
     if (this.defaultCustomizations.has(id)) {
       throw new Error(`Trying to update existing default for customization ${id}`);
     }
