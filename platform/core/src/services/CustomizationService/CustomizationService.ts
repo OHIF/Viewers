@@ -362,24 +362,27 @@ export default class CustomizationService extends PubSubService {
    */
   private _update(oldValue: any, newValue: any) {
     if (!oldValue) {
-      // If there was no old value, treat that as 'undefined' so that $set, etc. work
       oldValue = undefined;
     }
 
     // Use immutability-helper to apply the commands
-    return update(oldValue, newValue);
+    const result = update(oldValue, newValue);
+    return result;
   }
 
   private _cloneIfNeeded(value: any) {
-    if (!value) {
-      return undefined;
+    // If it's null/undefined or not an object, return as is
+    if (!value || typeof value !== 'object') {
+      return value;
     }
-    // If it's an object or array, we can just do a shallow copy,
-    // but if it's a function we keep it as-is. Typically we rely on immutability-helper anyway.
-    if (typeof value === 'object') {
-      return JSON.parse(JSON.stringify(value));
+
+    // If it's an array, create a shallow copy
+    if (Array.isArray(value)) {
+      return [...value];
     }
-    return value;
+
+    // Otherwise create a shallow copy of the object
+    return { ...value };
   }
 
   _addReference(value?: any, type = CustomizationScope.Global): void {
@@ -397,7 +400,7 @@ export default class CustomizationService extends PubSubService {
         (type === CustomizationScope.Global && 'setGlobalCustomization') ||
         (type === CustomizationScope.Default && 'setDefaultCustomization') ||
         'setModeCustomization';
-      this[setName](id as string, customization);
+      this[setName](id as string, customization as Customization);
     });
   }
 

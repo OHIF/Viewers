@@ -23,31 +23,33 @@ export default function getCustomizationModule({ servicesManager, extensionManag
       name: 'helloPage',
       value: {
         customRoutes: {
-          routes: [
-            {
-              path: '/custom',
-              children: () => <h1 style={{ color: 'white' }}>Hello Custom Route</h1>,
-            },
-          ],
+          routes: {
+            $push: [
+              {
+                path: '/custom',
+                children: () => <h1 style={{ color: 'white' }}>Hello Custom Route</h1>,
+              },
+            ],
+          },
         },
       },
     },
     // Example customization to list a set of datasources
-    // {
-    //   name: 'datasources',
-    //   merge: 'Append',
-    //   value: {
-    //     customRoutes: {
-    //       routes: [
-    //         {
-    //           path: '/datasources',
-    //           children: DataSourceSelector,
-    //         },
-    //       ],
-    //     },
-    //   },
-    // },
-
+    {
+      name: 'datasources',
+      value: {
+        customRoutes: {
+          routes: {
+            $push: [
+              {
+                path: '/datasources',
+                children: DataSourceSelector,
+              },
+            ],
+          },
+        },
+      },
+    },
     {
       name: 'default',
       value: {
@@ -87,6 +89,10 @@ export default function getCustomizationModule({ servicesManager, extensionManag
          *
          * @see CustomizableViewportOverlay
          */
+        customRoutes: {
+          routes: [],
+          notFoundRoute: null,
+        },
         'ohif.overlayItem': function (props) {
           if (this.condition && !this.condition(props)) {
             return null;
