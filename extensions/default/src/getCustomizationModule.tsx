@@ -5,6 +5,15 @@ import { ProgressDropdownWithService } from './Components/ProgressDropdownWithSe
 import DataSourceConfigurationComponent from './Components/DataSourceConfigurationComponent';
 import { GoogleCloudDataSourceConfigurationAPI } from './DataSourceConfigurationAPI/GoogleCloudDataSourceConfigurationAPI';
 import { utils } from '@ohif/core';
+import studyBrowserContextMenu from './customizations/studyBrowserContextMenu';
+import {
+  DropdownMenuSub,
+  DropdownMenuSubTrigger,
+  DropdownMenuPortal,
+  DropdownMenuSubContent,
+  DropdownMenuItem,
+  Icons,
+} from '@ohif/ui-next';
 
 const formatDate = utils.formatDate;
 

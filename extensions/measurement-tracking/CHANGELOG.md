@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.10.0-beta.58](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.57...v3.10.0-beta.58) (2025-01-13)
+
+
+### Features
+
+* **multimonitor:** Add simple multi-monitor support to open another study([#4178](https://github.com/OHIF/Viewers/issues/4178)) ([07c628e](https://github.com/OHIF/Viewers/commit/07c628e689b28f831317a7c28d712509b69c6b13))
+
+
+
+
+
 # [3.10.0-beta.57](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.56...v3.10.0-beta.57) (2025-01-13)
 
 **Note:** Version bump only for package @ohif/extension-measurement-tracking

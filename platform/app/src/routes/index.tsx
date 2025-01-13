@@ -113,8 +113,7 @@ const createRoutes = ({
   const allRoutes = [
     ...routes,
     ...(showStudyList ? [WorkListRoute] : []),
-    // This next line adds a route on / to allow loading from the route and redirecting to the public url
-    ...(publicUrl !== '/' && showStudyList ? [{ ...WorkListRoute, path: '/' }] : []),
+    ...(publicUrl !== '/' && showStudyList ? [{ ...WorkListRoute, path: publicUrl }] : []),
     ...(customRoutes?.routes || []),
     ...bakedInRoutes,
     customRoutes?.notFoundRoute || notFoundRoute,
