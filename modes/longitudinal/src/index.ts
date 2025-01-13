@@ -112,6 +112,7 @@ function modeFactory({ modeConfiguration }) {
         'Layout',
         'Crosshairs',
         'MoreTools',
+        'RandomSegmentation',
       ]);
 
       // // ActivatePanel event trigger for when a segmentation or measurement is added.

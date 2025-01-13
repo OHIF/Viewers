@@ -34,10 +34,21 @@ import toggleVOISliceSync from './utils/toggleVOISliceSync';
 import { usePositionPresentationStore, useSegmentationPresentationStore } from './stores';
 import { toolNames } from './initCornerstoneTools';
 import addRandomRectangle from './utils/addRandomRectangle';
+import addRandomSegmentation from './utils/addRandomSegmentation';
 
 const toggleSyncFunctions = {
   imageSlice: toggleImageSliceSync,
   voi: toggleVOISliceSync,
+  addRandomRectangle: () => {
+    const element = _getActiveViewportEnabledElement()?.viewport?.element;
+    if (!element) {
+      return;
+    }
+    addRandomRectangle(element, toolGroupService);
+  },
+  addRandomSegmentation: async () => {
+    return addRandomSegmentation({ servicesManager });
+  },
 };
 
 function commandsModule({
@@ -1308,6 +1319,10 @@ function commandsModule({
       }
       addRandomRectangle(element, toolGroupService);
     },
+
+    addRandomSegmentation: async () => {
+      return addRandomSegmentation({ servicesManager });
+    }
   };
 
   const definitions = {
@@ -1571,6 +1586,9 @@ function commandsModule({
     addRandomRectangle: {
       commandFn: actions.addRandomRectangle,
     },
+    addRandomSegmentation: {
+      commandFn: actions.addRandomSegmentation,
+    }
   };
 
   return {

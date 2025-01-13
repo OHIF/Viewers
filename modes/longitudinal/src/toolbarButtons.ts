@@ -215,6 +215,22 @@ const toolbarButtons: Button[] = [
       },
     },
   },
+  {
+    id: 'RandomSegmentation',
+    uiType: 'ohif.radioGroup',
+    props: {
+      icon: 'tool-circle',
+      label: 'Random Segmentation',
+      tooltip: 'Add Random Segmentation',
+      commands: [
+        {
+          commandName: 'addRandomSegmentation',
+          context: 'CORNERSTONE',
+        },
+      ],
+      evaluate: 'evaluate.action',
+    },
+  },
 ];
 
 export default toolbarButtons;
