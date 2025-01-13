@@ -1,7 +1,7 @@
 import { Types } from '@ohif/core';
-import { studyWithImages } from './studySelectors';
-import { seriesWithImages } from './seriesSelectors';
-import { viewportOptions } from './viewportOptions';
+import { studyWithImages } from './utils/studySelectors';
+import { seriesWithImages } from './utils/seriesSelectors';
+import { viewportOptions } from './utils/viewportOptions';
 
 /**
  * Sync group configuration for hydrating segmentations across viewports
@@ -218,7 +218,7 @@ export const hpMN: Types.HangingProtocol.Protocol = {
 /**
  * This hanging protocol can be activated on the primary mode by directly
  * referencing it in a URL or by directly including it within a mode, e.g.:
- * `&hangingProtocolId=@ohif/mnGrid` added to the viewer URL
+ * `&hangingProtocolId=@ohif/mnGrid8` added to the viewer URL
  * It is not included in the viewer mode by default.
  */
 export const hpMN8: Types.HangingProtocol.Protocol = {
@@ -401,7 +401,7 @@ export const hpMN8: Types.HangingProtocol.Protocol = {
 export const hpMNMonitor2: Types.HangingProtocol.Protocol = {
   ...hpMN,
   id: '@ohif/mnGridMonitor2',
-  description: 'A basic two monitor view',
+  description: 'Second monitor HP with 2x2 grid',
   name: '2x2 Monitor 2',
   stages: [
     {

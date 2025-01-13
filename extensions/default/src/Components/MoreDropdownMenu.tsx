@@ -1,3 +1,4 @@
+import React from 'react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -56,6 +57,10 @@ export default function MoreDropdownMenu(bindProps) {
   const { customizationService } = servicesManager.services;
 
   const items = customizationService.getCustomization(menuItemsKey)?.value;
+
+  if (!items) {
+    return null;
+  }
 
   function BoundMoreDropdownMenu(props) {
     return (

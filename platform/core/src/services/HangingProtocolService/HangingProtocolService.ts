@@ -407,10 +407,12 @@ export default class HangingProtocolService extends PubSubService {
    *        the studies to display in viewports.
    * @param protocol is a specific protocol to apply.
    */
-  public run({ studies, displaySets, activeStudy, activeStudyUID }, protocolId, options = {}) {
+  public run({ studies, displaySets, activeStudy }, protocolId, options = {}) {
     this.studies = [...(studies || this.studies)];
     this.displaySets = displaySets;
-    this.setActiveStudyUID(activeStudyUID || (activeStudy || this.studies[0])?.StudyInstanceUID);
+    this.setActiveStudyUID(
+      activeStudy?.StudyInstanceUID || (activeStudy || this.studies[0])?.StudyInstanceUID
+    );
 
     this.protocolEngine = new ProtocolEngine(
       this.getProtocols(),
@@ -423,7 +425,7 @@ export default class HangingProtocolService extends PubSubService {
     if (protocolId && typeof protocolId === 'string') {
       const protocol = this.getProtocolById(protocolId);
       this._setProtocol(protocol, options);
-    }else {
+    } else {
       const matchedProtocol = this.protocolEngine.run({
         studies: this.studies,
         activeStudy,
@@ -1017,7 +1019,6 @@ export default class HangingProtocolService extends PubSubService {
 
     try {
       if (!this.protocol || this.protocol.id !== protocol.id) {
-        console.log('***** Resetting protocol', this.protocol, this.activeStudy);
         this.stageIndex = options?.stageIndex || 0;
         //Reset load performed to false to re-fire loading strategy at new study opening
         this.customImageLoadPerformed = false;

@@ -9,6 +9,16 @@ sidebar_label: Multi Monitor Service
 The multi-monitor service provides detection, launch and communication support
 for multiple monitors or windows/screens within a single monitor.
 
+:::info
+
+The multi-monitor service is currently applied via configuration file.
+
+```js
+customizationService: ['@ohif/extension-default.customizationModule.multimonitor'],
+```
+
+:::
+
 ## Configurations
 The service supports two predefined configurations:
 

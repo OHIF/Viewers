@@ -237,10 +237,11 @@ const commandsModule = ({
           // This is done on reset or when the study changes and we haven't yet
           // applied it, and don't specify exact stage to use.
           const displaySets = displaySetService.getActiveDisplaySets();
-          hangingProtocolService.run(
-            { activeStudyUID: toUseStudyInstanceUID, displaySets },
-            protocolId
-          );
+          const activeStudy = {
+            StudyInstanceUID: toUseStudyInstanceUID,
+            displaySets,
+          };
+          hangingProtocolService.run(activeStudy, protocolId);
         } else if (
           protocolId === hpInfo.protocolId &&
           useStageIdx === hpInfo.stageIndex &&
