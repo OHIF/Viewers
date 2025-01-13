@@ -34,7 +34,7 @@ import toggleVOISliceSync from './utils/toggleVOISliceSync';
 import { usePositionPresentationStore, useSegmentationPresentationStore } from './stores';
 import { toolNames } from './initCornerstoneTools';
 import addRandomRectangle from './utils/addRandomRectangle';
-import addRandomSegmentation from './utils/addRandomSegmentation';
+import addSegmentationFromLabelmap, { createSphereLabelmap } from './utils/addRandomSegmentation';
 
 const toggleSyncFunctions = {
   imageSlice: toggleImageSliceSync,
@@ -45,9 +45,6 @@ const toggleSyncFunctions = {
       return;
     }
     addRandomRectangle(element, toolGroupService);
-  },
-  addRandomSegmentation: async () => {
-    return addRandomSegmentation({ servicesManager });
   },
 };
 
@@ -1312,16 +1309,15 @@ function commandsModule({
       );
     },
 
-    addRandomRectangle: () => {
-      const element = _getActiveViewportEnabledElement()?.viewport?.element;
-      if (!element) {
-        return;
-      }
-      addRandomRectangle(element, toolGroupService);
-    },
-
     addRandomSegmentation: async () => {
-      return addRandomSegmentation({ servicesManager });
+      const mockSphereLabelmap = createSphereLabelmap(44, 512, 512);
+      return addSegmentationFromLabelmap({
+        servicesManager,
+        labelmap: mockSphereLabelmap,
+        segmentationLabel: 'Sphere Segmentation',
+        segmentLabel: 'Sphere',
+        segmentColor: [255, 0, 0, 255],
+      });
     }
   };
 
@@ -1582,9 +1578,6 @@ function commandsModule({
     },
     getRenderInactiveSegmentations: {
       commandFn: actions.getRenderInactiveSegmentations,
-    },
-    addRandomRectangle: {
-      commandFn: actions.addRandomRectangle,
     },
     addRandomSegmentation: {
       commandFn: actions.addRandomSegmentation,
