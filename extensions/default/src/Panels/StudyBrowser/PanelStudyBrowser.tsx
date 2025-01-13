@@ -311,16 +311,16 @@ function PanelStudyBrowser({
         activeDisplaySetInstanceUIDs={activeDisplaySetInstanceUIDs}
         showSettings={actionIcons.find(icon => icon.id === 'settings').value}
         viewPresets={viewPresets}
-        ThumbnailMenuItems={MoreDropdownMenu({
-          commandsManager,
-          servicesManager,
-          menuItemsKey: 'studyBrowser.thumbnailMenuItems',
-        })}
-        StudyMenuItems={MoreDropdownMenu({
-          commandsManager,
-          servicesManager,
-          menuItemsKey: 'studyBrowser.studyMenuItems',
-        })}
+        // ThumbnailMenuItems={MoreDropdownMenu({
+        //   commandsManager,
+        //   servicesManager,
+        //   menuItemsKey: 'studyBrowser.thumbnailMenuItems',
+        // })}
+        // StudyMenuItems={MoreDropdownMenu({
+        //   commandsManager,
+        //   servicesManager,
+        //   menuItemsKey: 'studyBrowser.studyMenuItems',
+        // })}
       />
     </>
   );

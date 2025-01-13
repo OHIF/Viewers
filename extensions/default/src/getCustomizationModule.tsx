@@ -5,15 +5,6 @@ import { ProgressDropdownWithService } from './Components/ProgressDropdownWithSe
 import DataSourceConfigurationComponent from './Components/DataSourceConfigurationComponent';
 import { GoogleCloudDataSourceConfigurationAPI } from './DataSourceConfigurationAPI/GoogleCloudDataSourceConfigurationAPI';
 import { utils } from '@ohif/core';
-import studyBrowserContextMenu from './customizations/studyBrowserContextMenu';
-import {
-  DropdownMenuSub,
-  DropdownMenuSubTrigger,
-  DropdownMenuPortal,
-  DropdownMenuSubContent,
-  DropdownMenuItem,
-  Icons,
-} from '@ohif/ui-next';
 
 const formatDate = utils.formatDate;
 
@@ -57,6 +48,73 @@ export default function getCustomizationModule({ servicesManager, extensionManag
             ],
           },
         },
+      },
+    },
+    {
+      name: 'multimonitor',
+      merge: 'Append',
+      value: {
+        customizationType: 'ohif.menuContent',
+        'studyBrowser.studyMenuItems': [
+          {
+            id: 'applyHangingProtocol',
+            label: 'Apply Hanging Protocol',
+            iconName: 'ViewportViews',
+            items: [
+              {
+                id: 'applyDefaultProtocol',
+                label: 'Default',
+                commands: [
+                  'loadStudy',
+                  {
+                    commandName: 'setHangingProtocol',
+                    commandOptions: {
+                      protocolId: 'default',
+                    },
+                  },
+                ],
+              },
+              {
+                id: 'applyMPRProtocol',
+                label: '2x2 Grid',
+                commands: [
+                  'loadStudy',
+                  {
+                    commandName: 'setHangingProtocol',
+                    commandOptions: {
+                      protocolId: '@ohif/mnGrid',
+                    },
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            id: 'showInOtherMonitor',
+            label: 'Launch On Second Monitor',
+            iconName: 'DicomTagBrowser',
+            // we should use evaluator for this, as these are basically toolbar buttons
+            selector: ({ servicesManager }) => {
+              const { multiMonitorService } = servicesManager.services;
+              return multiMonitorService.isMultimonitor;
+            },
+            commands: {
+              commandName: 'multimonitor',
+              commandOptions: {
+                hashParams: '&hangingProtocolId=@ohif/mnGrid8',
+                commands: [
+                  'loadStudy',
+                  {
+                    commandName: 'setHangingProtocol',
+                    commandOptions: {
+                      protocolId: '@ohif/mnGrid8',
+                    },
+                  },
+                ],
+              },
+            },
+          },
+        ],
       },
     },
     {

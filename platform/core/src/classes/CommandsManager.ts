@@ -94,7 +94,7 @@ export class CommandsManager {
    * @param {CommandDefinition} definition - {@link CommandDefinition}
    */
   registerCommand(contextName, commandName, definition) {
-    if (typeof definition !== 'object') {
+    if (typeof definition !== 'object' && typeof definition !== 'function') {
       return;
     }
 
@@ -103,7 +103,11 @@ export class CommandsManager {
       return;
     }
 
-    context[commandName] = definition;
+    if (typeof definition === 'function') {
+      context[commandName] = { commandFn: definition, options: {} };
+    } else {
+      context[commandName] = definition;
+    }
   }
 
   /**
@@ -138,6 +142,11 @@ export class CommandsManager {
    * @param {String} [contextName]
    */
   public runCommand(commandName: string, options = {}, contextName?: string | string[]) {
+    if (typeof commandName === 'function') {
+      // If commandName is a function, run it directly
+      return commandName(options);
+    }
+
     const definition = this.getCommand(commandName, contextName);
     if (!definition) {
       log.warn(`Command "${commandName}" not found in current context`);
@@ -147,7 +156,7 @@ export class CommandsManager {
     const { commandFn } = definition;
     const commandParams = Object.assign(
       {},
-      definition.options, // "Command configuration"
+      definition.options || {}, // "Command configuration"
       options // "Time of call" info
     );
 
@@ -159,12 +168,15 @@ export class CommandsManager {
     }
   }
 
-  public static convertCommands(toRun: Command | Commands | Command[] | string) {
+  public static convertCommands(toRun: Command | Commands | Command[] | string | Function) {
     if (typeof toRun === 'string') {
       return [{ commandName: toRun }];
     }
     if ('commandName' in toRun) {
       return [toRun as ComplexCommand];
+    }
+    if (typeof toRun === 'function') {
+      return [{ commandName: toRun }];
     }
     if ('commands' in toRun) {
       const commandsInput = (toRun as Commands).commands;

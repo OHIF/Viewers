@@ -4,6 +4,7 @@ import defaultWindowLevelPresets from './components/WindowLevelActionMenu/defaul
 import { colormaps } from './utils/colormaps';
 import { CONSTANTS } from '@cornerstonejs/core';
 import DicomUpload from './components/DicomUpload/DicomUpload';
+import { CinePlayer } from '@ohif/ui';
 
 const DefaultColormap = 'Grayscale';
 const { VIEWPORT_PRESETS } = CONSTANTS;
@@ -42,6 +43,7 @@ function getCustomizationModule() {
     {
       name: 'default',
       value: {
+        cinePlayer: CinePlayer,
         cornerstoneViewportClickCommands: {
           doubleClick: ['toggleOneUp'],
           button1: ['closeContextMenu'],

@@ -8,16 +8,12 @@ window.config = {
   modes: [],
   customizationService: [
     {
-      cornerstoneViewportClickCommands: {
-        doubleClick: {
-          $push: [
-            {
-              commandName: 'rotateViewport',
-              commandOptions: {
-                rotation: 45,
-              },
-            },
-          ],
+      'cornerstone.colorbar': {
+        $merge: {
+          width: '20px',
+          colorbarTickPosition: 'right',
+          colorbarContainerPosition: 'left',
+          colorbarInitialColormap: 'NewColormap',
         },
       },
     },
