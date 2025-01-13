@@ -30,17 +30,17 @@ export const performCustomizations = customizationService => {
       //   id: 'PanelMeasurement.disableEditing',
       //   disableEditing: true,
       // },
-      {
-        id: 'measurementLabels',
-        labelOnMeasure: true,
-        exclusive: true,
-        items: [
-          { value: 'Head', label: 'Head' },
-          { value: 'Shoulder', label: 'Shoulder' },
-          { value: 'Knee', label: 'Knee' },
-          { value: 'Toe', label: 'Toe' },
-        ],
-      },
+      // {
+      //   id: 'measurementLabels',
+      //   labelOnMeasure: true,
+      //   exclusive: true,
+      //   items: [
+      //     { value: 'Head', label: 'Head' },
+      //     { value: 'Shoulder', label: 'Shoulder' },
+      //     { value: 'Knee', label: 'Knee' },
+      //     { value: 'Toe', label: 'Toe' },
+      //   ],
+      // },
       /**
        * Custom Dropdown Menu Item
        */

@@ -40,21 +40,21 @@ const tools = {
 function getCustomizationModule() {
   return [
     {
-      name: 'newCustomization',
+      name: 'default',
       value: {
-        'studyBrowser.sortFunctions': {
-          $push: [
+        cornerstoneViewportClickCommands: {
+          doubleClick: ['toggleOneUp'],
+          button1: ['closeContextMenu'],
+          button3: [
             {
-              label: 'Something else',
-              sortFunction: (a, b) => a.studyDate - b.studyDate,
+              commandName: 'showCornerstoneContextMenu',
+              commandOptions: {
+                requireNearbyToolData: true,
+                menuId: 'measurementsContextMenu',
+              },
             },
           ],
         },
-      },
-    },
-    {
-      name: 'default',
-      value: {
         dicomUploadComponent: DicomUpload,
         'viewportOverlay.topLeft': [
           {

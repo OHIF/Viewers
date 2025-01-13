@@ -311,7 +311,7 @@ function commandsModule({
     },
 
     renameMeasurement: ({ uid }) => {
-      const labelConfig = customizationService.get('measurementLabels');
+      const labelConfig = customizationService.getCustomization('measurementLabels');
       const measurement = measurementService.getMeasurement(uid);
       showLabelAnnotationPopup(measurement, uiDialogService, labelConfig).then(val => {
         measurementService.update(

@@ -163,7 +163,7 @@ export class CommandsManager {
    *
    * Example commands to run are:
    * * 'updateMeasurement'
-   * * `{commandName: 'displayWhatever'}`
+   * * `{ commandName: 'displayWhatever'}`
    * * `['updateMeasurement', {commandName: 'displayWhatever'}]`
    * * `{ commands: 'updateMeasurement' }`
    * * `{ commands: ['updateMeasurement', {commandName: 'displayWhatever'}]}`

@@ -3,6 +3,10 @@ sidebar_label: Introduction
 sidebar_position: 1
 ---
 
+import { customizations } from './customizations';
+import Heading from '@theme/Heading';
+import TOCInline from '@theme/TOCInline';
+
 # Customization Service
 
 There are a lot of places where users may want to configure certain elements
@@ -457,3 +461,42 @@ customizationService.setCustomizations({
 
 
 ## Customizable Parts of OHIF
+
+{customizations.map(({ id, description, default: defaultValue, configuration, image }) => (
+  <div key={id} style={{ marginBottom: '2rem',  borderRadius: '8px', padding: '1rem' }}>
+    <h3 id={id.toLowerCase().replace(/\./g, '')}>{id}</h3>
+    <table style={{ width: '100%', tableLayout: 'fixed' }}>
+      <tbody>
+        <tr>
+          <th style={{ textAlign: 'left', verticalAlign: 'top', width: '20%' }}>ID</th>
+          <td style={{ wordBreak: 'break-word' }}><code>{id}</code></td>
+        </tr>
+        <tr>
+          <th style={{ textAlign: 'left', verticalAlign: 'top', width: '20%' }}>Description</th>
+          <td>
+            <div>{description}</div>
+            {image && (
+              <div>
+                <img src={image} alt={id} style={{ maxWidth: '50%', height: 'auto', marginTop: '10px' }} />
+              </div>
+            )}
+          </td>
+        </tr>
+        <tr>
+          <th style={{ textAlign: 'left', verticalAlign: 'top', width: '20%' }}>Default Value</th>
+          <td style={{ wordBreak: 'break-word' }}><pre>{JSON.stringify(defaultValue, null, 2)}</pre></td>
+        </tr>
+        <tr>
+          <th style={{ textAlign: 'left', verticalAlign: 'top', width: '20%' }}>Example</th>
+          <td style={{ wordBreak: 'break-word' }}>
+            {configuration && (
+              <div>
+                <pre><code>{configuration}</code></pre>
+              </div>
+            )}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+))}

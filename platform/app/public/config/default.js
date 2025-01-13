@@ -6,7 +6,22 @@ window.config = {
   // whiteLabeling: {},
   extensions: [],
   modes: [],
-  customizationService: ['@ohif/extension-cornerstone.customizationModule.newCustomization'],
+  customizationService: [
+    {
+      cornerstoneViewportClickCommands: {
+        doubleClick: {
+          $push: [
+            {
+              commandName: 'rotateViewport',
+              commandOptions: {
+                rotation: 45,
+              },
+            },
+          ],
+        },
+      },
+    },
+  ],
   showStudyList: true,
   // some windows systems have issues with more than 3 web workers
   maxNumberOfWebWorkers: 3,

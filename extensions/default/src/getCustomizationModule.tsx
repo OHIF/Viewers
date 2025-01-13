@@ -93,6 +93,7 @@ export default function getCustomizationModule({ servicesManager, extensionManag
           routes: [],
           notFoundRoute: null,
         },
+        measurementLabels: [],
         'ohif.overlayItem': function (props) {
           if (this.condition && !this.condition(props)) {
             return null;
