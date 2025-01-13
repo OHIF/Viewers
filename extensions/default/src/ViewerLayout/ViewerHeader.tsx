@@ -25,8 +25,6 @@ function ViewerHeader({
   const onClickReturnButton = () => {
     const { pathname } = location;
     const dataSourceIdx = pathname.indexOf('/', 1);
-    const query = new URLSearchParams(window.location.search);
-    const configUrl = query.get('configUrl');
 
     const dataSourceName = pathname.substring(dataSourceIdx + 1);
     const existingDataSource = extensionManager.getDataSources(dataSourceName);
@@ -35,10 +33,7 @@ function ViewerHeader({
     if (dataSourceIdx !== -1 && existingDataSource) {
       searchQuery.append('datasources', pathname.substring(dataSourceIdx + 1));
     }
-
-    if (configUrl) {
-      searchQuery.append('configUrl', configUrl);
-    }
+    preserveQueryParameters(searchQuery);
 
     navigate({
       pathname: publicUrl,
