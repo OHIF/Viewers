@@ -6,6 +6,15 @@ sidebar_label: Multi Monitor Service
 
 # Multi Monitor Service
 
+::: info
+
+We plan to enhance this service in the future. Currently, it offers a basic implementation of multi-monitor support, allowing you to manually open multiple windows on the same monitor. It is not yet a full multi-monitor solution!
+
+:::
+
+
+
+
 The multi-monitor service provides detection, launch and communication support
 for multiple monitors or windows/screens within a single monitor.
 
@@ -18,6 +27,8 @@ customizationService: ['@ohif/extension-default.customizationModule.multimonitor
 ```
 
 :::
+
+
 
 ## Configurations
 The service supports two predefined configurations:
