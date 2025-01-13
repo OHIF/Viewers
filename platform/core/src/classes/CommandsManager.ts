@@ -240,8 +240,7 @@ export class CommandsManager {
       results.push(this.runCommand(commandName, commandOptions, context));
     }
 
-    // return results.length === 1 ? results[0] : results;
-    return results;
+    return results.length === 1 ? results[0] : results;
   }
 
   /** Like run, but await each command before continuing */
@@ -255,9 +254,7 @@ export class CommandsManager {
       results.push(await this.runCommand(commandName, commandOptions, context));
     }
 
-    // return results.length === 1 ? results[0] : results;
-
-    return results;
+    return results.length === 1 ? results[0] : results;
   }
 }
 

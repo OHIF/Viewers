@@ -1,4 +1,4 @@
-import { hpMN, hpMN8, hpMNMonitor2 } from './hangingprotocols/hpMNGrid';
+import { hpMN, hpMN8 } from './hangingprotocols/hpMNGrid';
 import hpMNCompare from './hangingprotocols/hpCompare';
 import hpMammography from './hangingprotocols/hpMammo';
 import hpScale from './hangingprotocols/hpScale';
@@ -148,10 +148,6 @@ function getHangingProtocolModule() {
     {
       name: hpMN8.id,
       protocol: hpMN8,
-    },
-    {
-      name: hpMNMonitor2.id,
-      protocol: hpMNMonitor2,
     },
   ];
 }
