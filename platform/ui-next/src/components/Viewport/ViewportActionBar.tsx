@@ -10,7 +10,7 @@ import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
 
 import { Icons } from '@ohif/ui-next';
-import PatientInfo from './PatientInfo';
+import { PatientInfo } from './PatientInfo';
 
 /**
  * This is the modern Viewport Action Bar, showing patient info, series date,

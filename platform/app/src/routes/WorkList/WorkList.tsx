@@ -43,6 +43,7 @@ import {
 import { Types } from '@ohif/ui';
 
 import i18n from '@ohif/i18n';
+import { preserveQueryParameters, preserveQueryStrings } from '../../utils/preserveQueryParameters';
 
 const PatientInfoVisibility = Types.PatientInfoVisibility;
 
@@ -206,11 +207,12 @@ function WorkList({
       }
     });
 
+    preserveQueryStrings(queryString);
+
     const search = qs.stringify(queryString, {
       skipNull: true,
       skipEmptyString: true,
     });
-
     navigate({
       pathname: publicUrl,
       search: search ? `?${search}` : undefined,
@@ -413,6 +415,7 @@ function WorkList({
                 query.append('configUrl', filterValues.configUrl);
               }
               query.append('StudyInstanceUIDs', studyInstanceUid);
+              preserveQueryParameters(query);
 
               return (
                 mode.displayName && (
@@ -640,7 +643,6 @@ const defaultFilterValues = {
   pageNumber: 1,
   resultsPerPage: 25,
   datasources: '',
-  configUrl: null,
 };
 
 function _tryParseInt(str, defaultValue) {

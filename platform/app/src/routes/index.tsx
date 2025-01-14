@@ -1,5 +1,5 @@
 import React from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Link } from 'react-router-dom';
 import { ErrorBoundary } from '@ohif/ui-next';
 
 // Route Components
@@ -11,7 +11,6 @@ import NotFound from './NotFound';
 import buildModeRoutes from './buildModeRoutes';
 import PrivateRoute from './PrivateRoute';
 import PropTypes from 'prop-types';
-import { Link } from 'react-router-dom';
 import publicUrl from '../utils/publicUrl';
 
 const NotFoundServer = ({
@@ -113,8 +112,7 @@ const createRoutes = ({
   const allRoutes = [
     ...routes,
     ...(showStudyList ? [WorkListRoute] : []),
-    // This next line adds a route on / to allow loading from the route and redirecting to the public url
-    ...(publicUrl !== '/' && showStudyList ? [{ ...WorkListRoute, path: '/' }] : []),
+    ...(publicUrl !== '/' && showStudyList ? [{ ...WorkListRoute, path: publicUrl }] : []),
     ...(customRoutes?.routes || []),
     ...bakedInRoutes,
     customRoutes?.notFoundRoute || notFoundRoute,

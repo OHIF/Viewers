@@ -25,6 +25,67 @@ window.config = {
     prefetch: 25,
   },
   // filterQueryParam: false,
+  // Defines multi-monitor layouts
+  multimonitor: [
+    {
+      id: 'split',
+      test: ({ multimonitor }) => multimonitor === 'split',
+      screens: [
+        {
+          id: 'ohif0',
+          screen: null,
+          location: {
+            screen: 0,
+            width: 0.5,
+            height: 1,
+            left: 0,
+            top: 0,
+          },
+          options: 'location=no,menubar=no,scrollbars=no,status=no,titlebar=no',
+        },
+        {
+          id: 'ohif1',
+          screen: null,
+          location: {
+            width: 0.5,
+            height: 1,
+            left: 0.5,
+            top: 0,
+          },
+          options: 'location=no,menubar=no,scrollbars=no,status=no,titlebar=no',
+        },
+      ],
+    },
+
+    {
+      id: '2',
+      test: ({ multimonitor }) => multimonitor === '2',
+      screens: [
+        {
+          id: 'ohif0',
+          screen: 0,
+          location: {
+            width: 1,
+            height: 1,
+            left: 0,
+            top: 0,
+          },
+          options: 'fullscreen=yes,location=no,menubar=no,scrollbars=no,status=no,titlebar=no',
+        },
+        {
+          id: 'ohif1',
+          screen: 1,
+          location: {
+            width: 1,
+            height: 1,
+            left: 0,
+            top: 0,
+          },
+          options: 'fullscreen=yes,location=no,menubar=no,scrollbars=no,status=no,titlebar=no',
+        },
+      ],
+    },
+  ],
   defaultDataSourceName: 'dicomweb',
   /* Dynamic config allows user to pass "configUrl" query string this allows to load config without recompiling application. The regex will ensure valid configuration source */
   // dangerouslyUseDynamicConfig: {
