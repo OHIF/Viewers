@@ -556,6 +556,34 @@ window.config = {
 };
     `,
   },
+  {
+    id: 'PanelSegmentation.readableText',
+    description: 'Defines the readable text labels for segmentation panel statistics and metrics.',
+    default: {
+      lesionStats: 'Lesion Statistics',
+      minValue: 'Minimum Value',
+      maxValue: 'Maximum Value',
+      meanValue: 'Mean Value',
+      volume: 'Volume (ml)',
+      suvPeak: 'SUV Peak',
+      suvMax: 'Maximum SUV',
+      suvMaxIJK: 'SUV Max IJK',
+      lesionGlyoclysisStats: 'Lesion Glycolysis',
+    },
+    configuration: `
+window.config = {
+  customizationService: [
+    {
+      'PanelSegmentation.readableText': {
+        $merge: {
+          lesionStats: 'Lesion Stats',
+        },
+      },
+    },
+  ],
+};
+  `,
+  },
 ];
 
 export const measurementsCustomizations = [

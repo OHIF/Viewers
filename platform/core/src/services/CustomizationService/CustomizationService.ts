@@ -353,7 +353,7 @@ export default class CustomizationService extends PubSubService {
 
     // Use immutability-helper to apply the commands
     // if $ is not part of the value in the json string, then we just return the newValue
-    if (!JSON.stringify(newValue)?.includes('$')) {
+    if (!hasDollarKey(newValue)) {
       return newValue;
     }
 
@@ -483,3 +483,23 @@ extend('$filter', (query, original) => {
 
   return deepFilter(original, query);
 });
+
+function hasDollarKey(value) {
+  if (Array.isArray(value)) {
+    for (const item of value) {
+      if (hasDollarKey(item)) {
+        return true;
+      }
+    }
+  } else if (value && typeof value === 'object') {
+    for (const key of Object.keys(value)) {
+      if (key.startsWith('$')) {
+        return true;
+      }
+      if (hasDollarKey(value[key])) {
+        return true;
+      }
+    }
+  }
+  return false;
+}

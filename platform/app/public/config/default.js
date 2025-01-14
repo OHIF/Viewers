@@ -8,29 +8,10 @@ window.config = {
   modes: [],
   customizationService: [
     {
-      'viewportOverlay.bottomLeft': {
-        $push: [
-          {
-            id: 'PatientNameOverlay',
-            // Note below that here we are using the customization prototype of
-            // `ohif.overlayItem` which was registered to the customization module in
-            // `ohif/extension-default` extension.
-            inheritsFrom: 'ohif.overlayItem',
-            // the following props are passed to the `ohif.overlayItem` prototype
-            // which is used to render the overlay item based on the label, color,
-            // conditions, etc.
-            attribute: 'PatientName',
-            label: 'PN:',
-            title: 'Patient Name',
-            color: 'yellow',
-            condition: ({ instance }) =>
-              instance && instance.PatientName && instance.PatientName.Alphabetic,
-            contentF: ({ instance, formatters: { formatPN } }) =>
-              formatPN(instance.PatientName.Alphabetic) +
-              ' ' +
-              (instance.PatientSex ? '(' + instance.PatientSex + ')' : ''),
-          },
-        ],
+      'PanelSegmentation.readableText': {
+        $merge: {
+          lesionStats: 'Lesion Stats',
+        },
       },
     },
   ],

@@ -1,16 +1,5 @@
 import React from 'react';
-import {
-  DropdownMenuLabel,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuPortal,
-  DropdownMenuSeparator,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  Icons,
-  SegmentationTable,
-  DropdownMenuSubTrigger,
-} from '@ohif/ui-next';
+import { SegmentationTable } from '@ohif/ui-next';
 import { useActiveViewportSegmentationRepresentations } from '../hooks/useActiveViewportSegmentationRepresentations';
 import { metaData } from '@cornerstonejs/core';
 
@@ -19,7 +8,7 @@ export default function PanelSegmentation({
   commandsManager,
   children,
 }: withAppTypes) {
-  const { customizationService, viewportGridService, displaySetService } = servicesManager.services;
+  const { customizationService, displaySetService } = servicesManager.services;
 
   const { segmentationsWithRepresentations, disabled } =
     useActiveViewportSegmentationRepresentations({
@@ -27,11 +16,6 @@ export default function PanelSegmentation({
     });
 
   const handlers = {
-    onSegmentationAdd: async () => {
-      const viewportId = viewportGridService.getState().activeViewportId;
-      commandsManager.run('createLabelmapForViewport', { viewportId });
-    },
-
     onSegmentationClick: (segmentationId: string) => {
       commandsManager.run('setActiveSegmentation', { segmentationId });
     },
@@ -133,6 +117,7 @@ export default function PanelSegmentation({
   const onSegmentationAdd = customizationService.getCustomization(
     'PanelSegmentation.onSegmentationAdd'
   );
+
   const disableEditing = customizationService.getCustomization('PanelSegmentation.disableEditing');
   const showAddSegment = customizationService.getCustomization('PanelSegmentation.showAddSegment');
   const CustomDropdownMenuContent = customizationService.getCustomization(
