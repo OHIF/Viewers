@@ -86,10 +86,9 @@ function modeFactory() {
       initToolGroups(extensionManager, toolGroupService, commandsManager);
 
       // init customizations
-      customizationService.setCustomizations(
-        ['@ohif/extension-test.customizationModule.custom-context-menu'],
-        customizationService.Scope.Mode
-      );
+      customizationService.setCustomizations([
+        '@ohif/extension-test.customizationModule.custom-context-menu',
+      ]);
 
       toolbarService.addButtons([...toolbarButtons, ...moreTools]);
       toolbarService.createButtonSection('primary', [

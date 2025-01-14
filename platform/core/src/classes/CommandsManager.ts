@@ -98,6 +98,15 @@ export class CommandsManager {
       return;
     }
 
+    // Validate and restrict keys to prevent prototype pollution
+    const isSafeKey = key => {
+      return key !== '__proto__' && key !== 'constructor' && key !== 'prototype';
+    };
+
+    if (!isSafeKey(contextName) || !isSafeKey(commandName)) {
+      throw new Error('Invalid key name to prevent prototype pollution');
+    }
+
     const context = this.getContext(contextName);
     if (!context) {
       return;

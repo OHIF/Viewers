@@ -17,8 +17,6 @@
  * for definitions of SCT and other code values.
  */
 const codingValues = {
-  id: 'codingValues',
-
   // Sites
   'SCT:69536005': {
     text: 'Head',
