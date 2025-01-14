@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.10.0-beta.59](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.58...v3.10.0-beta.59) (2025-01-14)
+
+
+### Bug Fixes
+
+* cs dicom sr commands module ([#4683](https://github.com/OHIF/Viewers/issues/4683)) ([2d611d0](https://github.com/OHIF/Viewers/commit/2d611d06ed759bbd1e83ccfac7dceeff9eb6238e))
+
+
+
+
+
 # [3.10.0-beta.58](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.57...v3.10.0-beta.58) (2025-01-13)
 
 **Note:** Version bump only for package @ohif/extension-cornerstone-dicom-sr
