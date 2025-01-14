@@ -11,12 +11,6 @@ import { Onboarding, ResizablePanelGroup, ResizablePanel, ResizableHandle } from
 // Id needed to grab the panel group for converting pixels to percentages
 const viewerLayoutResizablePanelGroupId = 'viewerLayoutResizablePanelGroup';
 
-// Ids needed for conditionally rendered resizable panels.
-// See https://github.com/bvaughn/react-resizable-panels/tree/main/packages/react-resizable-panels#how-can-i-fix-layoutsizing-problems-with-conditionally-rendered-panels.
-const viewerLayoutResizableLeftPanelId = 'viewerLayoutResizableLeftPanel';
-const viewerLayoutResizableRightPanelId = 'viewerLayoutResizableRightPanel';
-const viewerLayoutResizableViewportGridPanelId = 'viewerLayoutResizableViewportGridPanel';
-
 const sidePanelExpandedDefaultWidth = 280;
 const sidePanelExpandedInsideBorderSize = 4;
 const sidePanelExpandedDefaultOffsetWidth =
@@ -324,7 +318,7 @@ function ViewerLayout({
                   onExpand={() => setLeftPanelClosed(false)}
                   ref={resizableLeftPanelRef}
                   order={0}
-                  id={viewerLayoutResizableLeftPanelId}
+                  id={'viewerLayoutResizableLeftPanel'}
                 >
                   <SidePanelWithServices
                     side="left"
@@ -348,7 +342,7 @@ function ViewerLayout({
             {/* TOOLBAR + GRID */}
             <ResizablePanel
               order={1}
-              id={viewerLayoutResizableViewportGridPanelId}
+              id={'viewerLayoutResizableViewportGridPanel'}
             >
               <div className="flex h-full flex-1 flex-col">
                 <div className="relative flex h-full flex-1 items-center justify-center overflow-hidden bg-black">
@@ -376,7 +370,7 @@ function ViewerLayout({
                   onExpand={() => setRightPanelClosed(false)}
                   ref={resizableRightPanelRef}
                   order={3}
-                  id={viewerLayoutResizableRightPanelId}
+                  id={'viewerLayoutResizableRightPanel'}
                 >
                   <SidePanelWithServices
                     side="right"

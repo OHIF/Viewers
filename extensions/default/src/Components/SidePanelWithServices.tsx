@@ -32,7 +32,7 @@ const SidePanelWithServices = ({
 
   // Tracks whether this SidePanel has been opened at least once since this SidePanel was inserted into the DOM.
   // Thus going to the Study List page and back to the viewer resets this flag for a SidePanel.
-  const [sidePanelOpen, setSidePanelOpen] = useState(isExpanded);
+  const [sidePanelExpanded, setSidePanelExpanded] = useState(isExpanded);
   const [activeTabIndex, setActiveTabIndex] = useState(activeTabIndexProp ?? 0);
   const [closedManually, setClosedManually] = useState(false);
   const [tabs, setTabs] = useState(tabsProp ?? panelService.getPanels(side));
@@ -42,18 +42,18 @@ const SidePanelWithServices = ({
   }, []);
 
   const handleOpen = useCallback(() => {
-    setSidePanelOpen(true);
+    setSidePanelExpanded(true);
     onOpen?.();
   }, [onOpen]);
 
   const handleClose = useCallback(() => {
-    setSidePanelOpen(false);
+    setSidePanelExpanded(false);
     setClosedManually(true);
     onClose?.();
   }, [onClose]);
 
   useEffect(() => {
-    setSidePanelOpen(isExpanded);
+    setSidePanelExpanded(isExpanded);
   }, [isExpanded]);
 
   /** update the active tab index from outside */
@@ -82,11 +82,11 @@ const SidePanelWithServices = ({
     const activatePanelSubscription = panelService.subscribe(
       panelService.EVENTS.ACTIVATE_PANEL,
       (activatePanelEvent: Types.ActivatePanelEvent) => {
-        if (sidePanelOpen || activatePanelEvent.forceActive) {
+        if (sidePanelExpanded || activatePanelEvent.forceActive) {
           const tabIndex = tabs.findIndex(tab => tab.id === activatePanelEvent.panelId);
           if (tabIndex !== -1) {
             if (!closedManually) {
-              setSidePanelOpen(true);
+              setSidePanelExpanded(true);
             }
             setActiveTabIndex(tabIndex);
           }
@@ -97,7 +97,7 @@ const SidePanelWithServices = ({
     return () => {
       activatePanelSubscription.unsubscribe();
     };
-  }, [tabs, sidePanelOpen, panelService, closedManually]);
+  }, [tabs, sidePanelExpanded, panelService, closedManually]);
 
   return (
     <SidePanel
@@ -105,7 +105,7 @@ const SidePanelWithServices = ({
       side={side}
       tabs={tabs}
       activeTabIndex={activeTabIndex}
-      isExpanded={sidePanelOpen}
+      isExpanded={sidePanelExpanded}
       onOpen={handleOpen}
       onClose={handleClose}
       onActiveTabIndexChange={handleActiveTabIndexChange}

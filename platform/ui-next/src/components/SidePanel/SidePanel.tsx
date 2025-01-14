@@ -1,18 +1,57 @@
 import classnames from 'classnames';
-import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useState } from 'react';
 import { Icons } from '../Icons';
 import { TooltipTrigger, TooltipContent, Tooltip } from '../Tooltip';
 import { Separator } from '../Separator';
 
+/**
+ * SidePanel component properties.
+ * Note that the component monitors changes to the various widths and border sizes and will resize dynamically
+ * @property {boolean} isExpanded - boolean indicating if the side panel is expanded/open or collapsed
+ * @property {number} expandedWidth - the width of this side panel when expanded not including any borders or margins
+ * @property {number} collapsedWidth - the width of this side panel when collapsed not including any borders or margins
+ * @property {number} expandedInsideBorderSize - the width of the space between the expanded side panel content and viewport grid
+ * @property {number} collapsedInsideBorderSize - the width of the space between the collapsed side panel content and the viewport grid
+ * @property {number} collapsedOutsideBorderSize - the width of the space between the collapsed side panel content and the edge of the browser window
+ */
+type SidePanelProps = {
+  side: 'left' | 'right';
+  className: string;
+  activeTabIndex: number;
+  onOpen: () => void;
+  onClose: () => void;
+  onActiveTabIndexChange: () => void;
+  isExpanded: boolean;
+  expandedWidth: number;
+  collapsedWidth: number;
+  expandedInsideBorderSize: number;
+  collapsedInsideBorderSize: number;
+  collapsedOutsideBorderSize: number;
+  tabs: any;
+};
+
 type StyleMap = {
   open: {
-    left: { marginLeft: string; marginRight: string };
-    right: { marginLeft: string; marginRight: string };
+    left: {
+      marginLeft: string; // the space between the expanded/open left side panel and the browser window left edge
+      marginRight: string; // the space between the expanded/open left side panel and the viewport grid
+    };
+    right: {
+      marginLeft: string; // the space between the expanded/open right side panel and the viewport grid
+      marginRight: string; // the space between the expanded/open right side panel and the browser window right edge
+    };
   };
   closed: {
-    left: { marginLeft: string; marginRight: string; alignItems: string };
-    right: { marginLeft: string; marginRight: string; alignItems: string };
+    left: {
+      marginLeft: string; // the space between the collapsed/closed left panel and the browser window left edge
+      marginRight: string; // the space between the collapsed/closed left panel and the viewport grid
+      alignItems: 'flex-end'; // the flexbox layout align-items property
+    };
+    right: {
+      marginLeft: string; // the space between the collapsed/closed right panel and the viewport grid
+      marginRight: string; // the space between the collapsed/closed right panel and the browser window right edge
+      alignItems: 'flex-start'; // the flexbox layout align-items property
+    };
   };
 };
 const closeIconWidth = 30;
@@ -154,7 +193,7 @@ const SidePanel = ({
   expandedInsideBorderSize = 4,
   collapsedInsideBorderSize = 8,
   collapsedOutsideBorderSize = 4,
-}) => {
+}: SidePanelProps) => {
   const [panelOpen, setPanelOpen] = useState(isExpanded);
   const [activeTabIndex, setActiveTabIndex] = useState(activeTabIndexProp ?? 0);
 
@@ -436,22 +475,6 @@ const SidePanel = ({
       )}
     </div>
   );
-};
-
-SidePanel.propTypes = {
-  side: PropTypes.oneOf(['left', 'right']).isRequired,
-  className: PropTypes.string,
-  activeTabIndex: PropTypes.number,
-  onOpen: PropTypes.func,
-  onClose: PropTypes.func,
-  onActiveTabIndexChange: PropTypes.func,
-  isExpanded: PropTypes.bool,
-  expandedWidth: PropTypes.number,
-  collapsedWidth: PropTypes.number,
-  expandedInsideBorderSize: PropTypes.number,
-  collapsedInsideBorderSize: PropTypes.number,
-  collapsedOutsideBorderSize: PropTypes.number,
-  tabs: PropTypes.any,
 };
 
 export { SidePanel };
