@@ -12,6 +12,7 @@ import { Separator } from '@ohif/ui-next';
 import { PanelStudyBrowserHeader } from '@ohif/extension-default';
 import { defaultActionIcons } from './constants';
 const { formatDate, createStudyBrowserTabs } = utils;
+
 const thumbnailNoImageModalities = [
   'SR',
   'SEG',

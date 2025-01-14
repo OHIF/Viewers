@@ -9,6 +9,9 @@ import segmentationShowAddSegmentImage from '../../../assets/img/segmentationSho
 import layoutSelectorCommonPresetsImage from '../../../assets/img/layoutSelectorCommonPresetsImage.png';
 import layoutSelectorAdvancedPresetGeneratorImage from '../../../assets/img/layoutSelectorAdvancedPresetGeneratorImage.png';
 
+import segDisplayEditingTrue from '../../../assets/img/segDisplayEditingTrue.png';
+import segDisplayEditingFalse from '../../../assets/img/segDisplayEditingFalse.png';
+
 export const viewportOverlayCustomizations = [
   {
     id: 'viewportOverlay.topRight',
@@ -518,6 +521,39 @@ window.config = {
 };
   `,
   },
+  {
+    id: 'sortingCriteria',
+    description:
+      'Defines the series sorting criteria for hanging protocols. Note that this does not affect the order in which series are displayed in the study browser.',
+    default: `function seriesInfoSortingCriteria(firstSeries, secondSeries) {
+      const aLowPriority = isLowPriorityModality(firstSeries.Modality ?? firstSeries.modality);
+      const bLowPriority = isLowPriorityModality(secondSeries.Modality ?? secondSeries.modality);
+
+      if (aLowPriority) {
+        // Use the reverse sort order for low priority modalities so that the
+        // most recent one comes up first as usually that is the one of interest.
+        return bLowPriority ? defaultSeriesSort(secondSeries, firstSeries) : 1;
+      } else if (bLowPriority) {
+        return -1;
+      }
+
+      return defaultSeriesSort(firstSeries, secondSeries);
+    }`,
+    configuration: `
+window.config = {
+  customizationService: [
+    {
+      'sortingCriteria': {
+        $set: function customSortingCriteria(firstSeries, secondSeries) {
+
+          return someSort(firstSeries, secondSeries);
+        },
+      },
+    },
+  ],
+};
+  `,
+  },
 ];
 
 export const segmentationCustomizations = [
@@ -578,6 +614,48 @@ window.config = {
         $merge: {
           lesionStats: 'Lesion Stats',
         },
+      },
+    },
+  ],
+};
+  `,
+  },
+  {
+    id: 'PanelSegmentation.onSegmentationAdd',
+    description: 'Defines the behavior when a new segmentation is added to the segmentation panel.',
+    default: `() => {
+      // default is to create a labelmap for the active viewport
+      const { viewportGridService } = servicesManager.services;
+      const viewportId = viewportGridService.getState().activeViewportId;
+      commandsManager.run('createLabelmapForViewport', { viewportId });
+    }`,
+    configuration: `
+window.config = {
+  customizationService: [
+    {
+      'PanelSegmentation.onSegmentationAdd': {
+        $set: () => {
+          const { viewportGridService } = servicesManager.services;
+          const viewportId = viewportGridService.getState().activeViewportId;
+          commandsManager.run('createNewLabelmapFromPT');
+        },
+      },
+    },
+  ],
+};
+  `,
+  },
+  {
+    id: 'PanelSegmentation.disableEditing',
+    description: 'Determines whether editing of segmentations in the panel is disabled.',
+    default: false,
+    image: [segDisplayEditingTrue, segDisplayEditingFalse],
+    configuration: `
+window.config = {
+  customizationService: [
+    {
+      'PanelSegmentation.disableEditing': {
+        $set: true, // Disables editing of segmentations in the panel
       },
     },
   ],

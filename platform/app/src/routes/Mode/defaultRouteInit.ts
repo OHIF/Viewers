@@ -1,10 +1,8 @@
 import getStudies from './studiesList';
-import { DicomMetadataStore, log } from '@ohif/core';
+import { DicomMetadataStore, log, utils, Enums } from '@ohif/core';
 import isSeriesFilterUsed from '../../utils/isSeriesFilterUsed';
 
-import { utils, Enums } from '@ohif/core';
-
-const { sortingCriteria, getSplitParam } = utils;
+const { getSplitParam } = utils;
 
 /**
  * Initialize the route.
@@ -85,9 +83,7 @@ export async function defaultRouteInit(
       StudyInstanceUID,
       filters,
       returnPromises: true,
-      sortCriteria:
-        customizationService.getCustomization('sortingCriteria') ||
-        sortingCriteria.seriesSortCriteria.seriesInfoSortingCriteria,
+      sortCriteria: customizationService.getCustomization('sortingCriteria'),
     })
   );
 

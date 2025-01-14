@@ -8,10 +8,8 @@ window.config = {
   modes: [],
   customizationService: [
     {
-      'PanelSegmentation.readableText': {
-        $merge: {
-          lesionStats: 'Lesion Stats',
-        },
+      'PanelSegmentation.disableEditing': {
+        $set: false, // Disables editing of segmentations in the panel
       },
     },
   ],

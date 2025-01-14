@@ -6,6 +6,7 @@ import DataSourceConfigurationComponent from './Components/DataSourceConfigurati
 import { GoogleCloudDataSourceConfigurationAPI } from './DataSourceConfigurationAPI/GoogleCloudDataSourceConfigurationAPI';
 import { utils } from '@ohif/core';
 
+const { sortingCriteria } = utils;
 const formatDate = utils.formatDate;
 
 /**
@@ -251,6 +252,7 @@ export default function getCustomizationModule({ servicesManager, extensionManag
             selected: true,
           },
         ],
+        sortingCriteria: sortingCriteria.seriesSortCriteria.seriesInfoSortingCriteria,
       },
     },
   ];

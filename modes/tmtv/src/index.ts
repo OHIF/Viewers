@@ -101,7 +101,6 @@ function modeFactory({ modeConfiguration }) {
         'BrushTools',
       ]);
 
-      debugger;
       customizationService.setCustomizations({
         'PanelSegmentation.tableMode': {
           $set: 'expanded',
