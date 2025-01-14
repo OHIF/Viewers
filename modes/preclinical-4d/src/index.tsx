@@ -66,14 +66,14 @@ function modeFactory({ modeConfiguration }) {
         'PanelSegmentation.tableMode': {
           $set: 'expanded',
         },
-        // 'PanelSegmentation.onSegmentationAdd': {
-        //   $set: () => {
-        //     commandsManager.run('createNewLabelMapForDynamicVolume');
-        //   },
-        // },
-        // 'PanelSegmentation.showAddSegment': {
-        //   $set: false,
-        // },
+        'PanelSegmentation.onSegmentationAdd': {
+          $set: () => {
+            commandsManager.run('createNewLabelMapForDynamicVolume');
+          },
+        },
+        'PanelSegmentation.showAddSegment': {
+          $set: false,
+        },
       });
 
       // Auto play the clip initially when the volumes are loaded
