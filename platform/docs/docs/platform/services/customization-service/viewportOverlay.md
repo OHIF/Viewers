@@ -1,6 +1,7 @@
 ---
 sidebar_position: 1
 ---
+import { viewportOverlayCustomizations , TableGenerator } from './customizations';
 
 # Viewport Overlay
 
@@ -10,7 +11,11 @@ Viewport Overlays are the information that is displayed on the viewport.
 
 There are 4 viewport overlays customization end points
 
-- `viewportOverlay.topLeft`
 - `viewportOverlay.topRight`
+- `viewportOverlay.topLeft`
 - `viewportOverlay.bottomLeft`
 - `viewportOverlay.bottomRight`
+
+
+
+{TableGenerator(viewportOverlayCustomizations)}

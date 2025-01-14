@@ -9,6 +9,126 @@ import segmentationShowAddSegmentImage from '../../../assets/img/segmentationSho
 import layoutSelectorCommonPresetsImage from '../../../assets/img/layoutSelectorCommonPresetsImage.png';
 import layoutSelectorAdvancedPresetGeneratorImage from '../../../assets/img/layoutSelectorAdvancedPresetGeneratorImage.png';
 
+export const viewportOverlayCustomizations = [
+  {
+    id: 'viewportOverlay.topRight',
+    description: 'Defines the items displayed in the top-right overlay of the viewport.',
+    default: [],
+    configuration: `
+window.config = {
+  customizationService: [
+    {
+      'viewportOverlay.topRight': {
+        $set: [
+          // Add your overlay items here, e.g.:
+          // { id: 'CustomOverlay', inheritsFrom: 'ohif.overlayItem.custom' },
+        ],
+      },
+    },
+  ],
+};
+  `,
+  },
+  {
+    id: 'viewportOverlay.topLeft',
+    description: 'Defines the items displayed in the top-left overlay of the viewport.',
+    default: [
+      {
+        id: 'StudyDate',
+        inheritsFrom: 'ohif.overlayItem',
+        label: '',
+        title: 'Study date',
+        condition: ({ referenceInstance }) => referenceInstance?.StudyDate,
+        contentF: ({ referenceInstance, formatters: { formatDate } }) =>
+          formatDate(referenceInstance.StudyDate),
+      },
+      {
+        id: 'SeriesDescription',
+        inheritsFrom: 'ohif.overlayItem',
+        label: '',
+        title: 'Series description',
+        condition: ({ referenceInstance }) =>
+          referenceInstance && referenceInstance.SeriesDescription,
+        contentF: ({ referenceInstance }) => referenceInstance.SeriesDescription,
+      },
+    ],
+    configuration: `
+window.config = {
+  customizationService: [
+    {
+      'viewportOverlay.topLeft': {
+        $splice: [
+          [0, 1], // Remove 1 item starting at index 0 (removes StudyDate)
+        ],
+      },
+    },
+  ],
+};
+  `,
+  },
+  {
+    id: 'viewportOverlay.bottomLeft',
+    description: 'Defines the items displayed in the bottom-left overlay of the viewport.',
+    default: [
+      {
+        id: 'WindowLevel',
+        inheritsFrom: 'ohif.overlayItem.windowLevel',
+      },
+      {
+        id: 'ZoomLevel',
+        inheritsFrom: 'ohif.overlayItem.zoomLevel',
+        condition: props => {
+          const activeToolName = props.toolGroupService.getActiveToolForViewport(props.viewportId);
+          return activeToolName === 'Zoom';
+        },
+      },
+    ],
+    configuration: `
+
+    // the following will push a yellow PatientNameOverlay to the bottomLeft overlay
+window.config = {
+  customizationService: [
+    {
+      'viewportOverlay.bottomLeft': {
+        $push: [
+           {
+            id: 'PatientNameOverlay',
+            inheritsFrom: 'ohif.overlayItem',
+            attribute: 'PatientName',
+            label: 'PN:',
+            title: 'Patient Name',
+            color: 'yellow',
+            condition: ({ instance }) =>
+              instance &&
+              instance.PatientName &&
+              instance.PatientName.Alphabetic,
+            contentF: ({ instance, formatters: { formatPN } }) =>
+              formatPN(instance.PatientName.Alphabetic) +
+              ' ' +
+              (instance.PatientSex ? '(' + instance.PatientSex + ')' : ''),
+          },
+        ],
+      },
+    },
+  ],
+};
+  `,
+  },
+  {
+    id: 'viewportOverlay.bottomRight',
+    description: 'Defines the items displayed in the bottom-right overlay of the viewport.',
+    default: [
+      {
+        id: 'InstanceNumber',
+        inheritsFrom: 'ohif.overlayItem.instanceNumber',
+      },
+    ],
+    configuration: `
+      // same as above
+  `,
+  },
+];
+
 export const customizations = [
   {
     id: 'measurementLabels',
