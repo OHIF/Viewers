@@ -583,8 +583,11 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
       return dicomWebConfigCopy;
     },
     getStudyInstanceUIDs({ params, query }) {
-      const { StudyInstanceUIDs: paramsStudyInstanceUIDs } = params;
-      const queryStudyInstanceUIDs = utils.splitComma(query.getAll('StudyInstanceUIDs'));
+      const paramsStudyInstanceUIDs = params.StudyInstanceUIDs || params.studyInstanceUIDs;
+
+      const queryStudyInstanceUIDs = utils.splitComma(
+        query.getAll('StudyInstanceUIDs').concat(query.getAll('studyInstanceUIDs'))
+      );
 
       const StudyInstanceUIDs =
         (queryStudyInstanceUIDs.length && queryStudyInstanceUIDs) || paramsStudyInstanceUIDs;
