@@ -9,6 +9,7 @@ import { Icon, Tooltip, useViewportGrid, ViewportActionArrows } from '@ohif/ui';
 import hydrateStructuredReport from '../utils/hydrateStructuredReport';
 import { useAppConfig } from '@state';
 import createReferencedImageDisplaySet from '../utils/createReferencedImageDisplaySet';
+import { usePositionPresentationStore } from '@ohif/extension-cornerstone';
 
 const MEASUREMENT_TRACKING_EXTENSION_ID = '@ohif/extension-measurement-tracking';
 
@@ -20,8 +21,14 @@ function OHIFCornerstoneSRMeasurementViewport(props: withAppTypes) {
 
   const [appConfig] = useAppConfig();
 
-  const { displaySetService, measurementService, viewportActionCornersService } =
-    servicesManager.services;
+  const { setPositionPresentation } = usePositionPresentationStore();
+
+  const {
+    displaySetService,
+    cornerstoneViewportService,
+    measurementService,
+    viewportActionCornersService,
+  } = servicesManager.services;
 
   const viewportId = viewportOptions.viewportId;
 
@@ -31,8 +38,6 @@ function OHIFCornerstoneSRMeasurementViewport(props: withAppTypes) {
   }
 
   const srDisplaySet = displaySets[0];
-
-  const { setPositionPresentation } = usePositionPresentationStore();
 
   const [viewportGrid, viewportGridService] = useViewportGrid();
   const [measurementSelected, setMeasurementSelected] = useState(0);
@@ -200,7 +205,6 @@ function OHIFCornerstoneSRMeasurementViewport(props: withAppTypes) {
           props.onElementEnabled?.(evt);
           onElementEnabled(evt);
         }}
-        initialImageIndex={initialImageIndex}
         isJumpToMeasurementDisabled={true}
       ></Component>
     );
