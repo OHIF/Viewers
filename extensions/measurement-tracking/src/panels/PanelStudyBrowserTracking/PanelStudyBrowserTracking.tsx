@@ -9,7 +9,7 @@ import { StudyBrowser } from '@ohif/ui-next';
 
 import { useTrackedMeasurements } from '../../getContextModule';
 import { Separator } from '@ohif/ui-next';
-import { PanelStudyBrowserHeader } from '@ohif/extension-default';
+import { MoreDropdownMenu, PanelStudyBrowserHeader } from '@ohif/extension-default';
 import { defaultActionIcons } from './constants';
 const { formatDate, createStudyBrowserTabs } = utils;
 
@@ -516,16 +516,16 @@ export default function PanelStudyBrowserTracking({
         activeDisplaySetInstanceUIDs={activeViewportDisplaySetInstanceUIDs}
         showSettings={actionIcons.find(icon => icon.id === 'settings').value}
         viewPresets={viewPresets}
-        // ThumbnailMenuItems={MoreDropdownMenu({
-        //   commandsManager,
-        //   servicesManager,
-        //   menuItemsKey: 'studyBrowser.thumbnailMenuItems',
-        // })}
-        // StudyMenuItems={MoreDropdownMenu({
-        //   commandsManager,
-        //   servicesManager,
-        //   menuItemsKey: 'studyBrowser.studyMenuItems',
-        // })}
+        ThumbnailMenuItems={MoreDropdownMenu({
+          commandsManager,
+          servicesManager,
+          menuItemsKey: 'studyBrowser.thumbnailMenuItems',
+        })}
+        StudyMenuItems={MoreDropdownMenu({
+          commandsManager,
+          servicesManager,
+          menuItemsKey: 'studyBrowser.studyMenuItems',
+        })}
       />
     </>
   );

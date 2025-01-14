@@ -6,7 +6,7 @@ import { utils } from '@ohif/core';
 import { useNavigate } from 'react-router-dom';
 import { Separator } from '@ohif/ui-next';
 import { PanelStudyBrowserHeader } from './PanelStudyBrowserHeader';
-import { defaultActionIcons, defaultViewPresets } from './constants';
+import { defaultActionIcons } from './constants';
 import MoreDropdownMenu from '../../Components/MoreDropdownMenu';
 
 const { sortStudyInstances, formatDate, createStudyBrowserTabs } = utils;
@@ -311,16 +311,16 @@ function PanelStudyBrowser({
         activeDisplaySetInstanceUIDs={activeDisplaySetInstanceUIDs}
         showSettings={actionIcons.find(icon => icon.id === 'settings').value}
         viewPresets={viewPresets}
-        // ThumbnailMenuItems={MoreDropdownMenu({
-        //   commandsManager,
-        //   servicesManager,
-        //   menuItemsKey: 'studyBrowser.thumbnailMenuItems',
-        // })}
-        // StudyMenuItems={MoreDropdownMenu({
-        //   commandsManager,
-        //   servicesManager,
-        //   menuItemsKey: 'studyBrowser.studyMenuItems',
-        // })}
+        ThumbnailMenuItems={MoreDropdownMenu({
+          commandsManager,
+          servicesManager,
+          menuItemsKey: 'studyBrowser.thumbnailMenuItems',
+        })}
+        StudyMenuItems={MoreDropdownMenu({
+          commandsManager,
+          servicesManager,
+          menuItemsKey: 'studyBrowser.studyMenuItems',
+        })}
       />
     </>
   );

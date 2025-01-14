@@ -5,6 +5,14 @@ import { ProgressDropdownWithService } from './Components/ProgressDropdownWithSe
 import DataSourceConfigurationComponent from './Components/DataSourceConfigurationComponent';
 import { GoogleCloudDataSourceConfigurationAPI } from './DataSourceConfigurationAPI/GoogleCloudDataSourceConfigurationAPI';
 import { utils } from '@ohif/core';
+import {
+  DropdownMenuSub,
+  DropdownMenuSubTrigger,
+  DropdownMenuPortal,
+  DropdownMenuSubContent,
+  DropdownMenuItem,
+  Icons,
+} from '@ohif/ui-next';
 
 const { sortingCriteria } = utils;
 const formatDate = utils.formatDate;
@@ -120,46 +128,19 @@ export default function getCustomizationModule({ servicesManager, extensionManag
     {
       name: 'default',
       value: {
-        /**
-         * Customization Component Type definition for overlay items.
-         * Overlay items are texts (or other components) that will be displayed
-         * on a Viewport Overlay, which contains the information panels on the
-         * four corners of a viewport.
-         *
-         * @definition of a overlay item using this type
-         * The value to be displayed is defined by
-         *  - setting DICOM image instance's property to this field,
-         *  - or defining contentF()
-         *
-         * {
-         *   id: string - unique id for the overlay item
-         *   inheritsFrom: string - indicates customization type definition to this
-         *   label: string - Label, to be displayed for the item
-         *   title: string - Tooltip, for the item
-         *   color: string - Color of the text
-         *   condition: ({ instance }) => boolean - decides whether to display the overlay item or not
-         *   attribute: string - property name of the DICOM image instance
-         *   contentF: ({ instance, formatters }) => string | component,
-         * }
-         *
-         * @example
-         *  {
-         *    id: 'PatientNameOverlay',
-         *    inheritsFrom: 'ohif.overlayItem',
-         *    label: 'PN:',
-         *    title: 'Patient Name',
-         *    color: 'yellow',
-         *    condition: ({ instance }) => instance && instance.PatientName && instance.PatientName.Alphabetic,
-         *    attribute: 'PatientName',
-         *    contentF: ({ instance, formatters: { formatPN } }) => `${formatPN(instance.PatientName.Alphabetic)} ${(instance.PatientSex ? '(' + instance.PatientSex + ')' : '')}`,
-         *  },
-         *
-         * @see CustomizableViewportOverlay
-         */
         customRoutes: {
           routes: [],
           notFoundRoute: null,
         },
+        'studyBrowser.studyMenuItems': [],
+        'studyBrowser.thumbnailMenuItems': [
+          {
+            id: 'tagBrowser',
+            label: 'Tag Browser',
+            iconName: 'DicomTagBrowser',
+            commands: 'openDICOMTagViewer',
+          },
+        ],
         measurementLabels: [],
         'ohif.overlayItem': function (props) {
           if (this.condition && !this.condition(props)) {
@@ -253,6 +234,55 @@ export default function getCustomizationModule({ servicesManager, extensionManag
           },
         ],
         sortingCriteria: sortingCriteria.seriesSortCriteria.seriesInfoSortingCriteria,
+        'ohif.menuContent': function (props) {
+          const { item, commandsManager, servicesManager, ...rest } = props;
+
+          // If item has sub-items, render a submenu
+          if (item.items) {
+            return (
+              <DropdownMenuSub>
+                <DropdownMenuSubTrigger className="gap-[6px]">
+                  {item.iconName && (
+                    <Icons.ByName
+                      name={item.iconName}
+                      className="-ml-1"
+                    />
+                  )}
+                  {item.label}
+                </DropdownMenuSubTrigger>
+                <DropdownMenuPortal>
+                  <DropdownMenuSubContent>
+                    {item.items.map(subItem => this.content({ ...props, item: subItem }))}
+                  </DropdownMenuSubContent>
+                </DropdownMenuPortal>
+              </DropdownMenuSub>
+            );
+          }
+
+          // Regular menu item
+          const isDisabled = item.selector && !item.selector({ servicesManager });
+
+          return (
+            <DropdownMenuItem
+              disabled={isDisabled}
+              onSelect={() => {
+                commandsManager.runAsync(item.commands, {
+                  ...item.commandOptions,
+                  ...rest,
+                });
+              }}
+              className="gap-[6px]"
+            >
+              {item.iconName && (
+                <Icons.ByName
+                  name={item.iconName}
+                  className="-ml-1"
+                />
+              )}
+              {item.label}
+            </DropdownMenuItem>
+          );
+        },
       },
     },
   ];

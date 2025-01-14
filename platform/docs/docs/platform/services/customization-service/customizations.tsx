@@ -12,6 +12,9 @@ import layoutSelectorAdvancedPresetGeneratorImage from '../../../assets/img/layo
 import segDisplayEditingTrue from '../../../assets/img/segDisplayEditingTrue.png';
 import segDisplayEditingFalse from '../../../assets/img/segDisplayEditingFalse.png';
 
+import thumbnailMenuItemsImage from '../../../assets/img/thumbnailMenuItemsImage.png';
+import studyMenuItemsImage from '../../../assets/img/studyMenuItemsImage.png';
+
 export const viewportOverlayCustomizations = [
   {
     id: 'viewportOverlay.topRight',
@@ -999,6 +1002,75 @@ window.config = {
   ],
 };
     `,
+  },
+  {
+    id: 'studyBrowser.thumbnailMenuItems',
+    description:
+      'Defines the menu items available in the thumbnail menu items of the study browser.',
+    image: thumbnailMenuItemsImage,
+    default: [
+      {
+        id: 'tagBrowser',
+        label: 'Tag Browser',
+        iconName: 'DicomTagBrowser',
+        commands: 'openDICOMTagViewer',
+      },
+    ],
+    configuration: `
+window.config = {
+  customizationService: [
+    {
+      'studyBrowser.thumbnailMenuItems': {
+        $set: [
+          {
+            id: 'tagBrowser',
+            label: 'Tag Browser',
+            iconName: 'DicomTagBrowser',
+            commands: 'openDICOMTagViewer',
+          },
+          {
+            id: 'deleteThumbnail',
+            label: 'Delete',
+            iconName: 'Delete',
+            commands: 'deleteThumbnail',
+          },
+          {
+            id: 'markAsFavorite',
+            label: 'Mark as Favorite',
+            commands: 'markAsFavorite',
+          },
+        ],
+      },
+    },
+  ],
+};
+  `,
+  },
+  {
+    id: 'studyBrowser.studyMenuItems',
+    description: 'Defines the menu items available in the study menu items of the study browser.',
+    image: studyMenuItemsImage,
+    default: [],
+    configuration: `
+window.config = {
+  customizationService: [
+    {
+      'studyBrowser.studyMenuItems': {
+        $set: [
+          {
+            id: 'downloadStudy',
+            label: 'Download Study',
+            iconName: 'Download',
+            commands: () => {
+              console.debug('downloadStudy');
+            },
+          },
+        ],
+      },
+    },
+  ],
+};
+  `,
   },
 ];
 

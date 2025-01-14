@@ -6,13 +6,7 @@ window.config = {
   // whiteLabeling: {},
   extensions: [],
   modes: [],
-  customizationService: [
-    {
-      'PanelSegmentation.disableEditing': {
-        $set: false, // Disables editing of segmentations in the panel
-      },
-    },
-  ],
+  customizationService: [],
   showStudyList: true,
   // some windows systems have issues with more than 3 web workers
   maxNumberOfWebWorkers: 3,
