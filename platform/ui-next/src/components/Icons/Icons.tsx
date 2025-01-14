@@ -7,6 +7,7 @@ import ChevronOpen from './Sources/ChevronOpen';
 import Code from './Sources/Code';
 import ColorChange from './Sources/ColorChange';
 import Controls from './Sources/Controls';
+import Copy from './Sources/Copy';
 import Delete from './Sources/Delete';
 import DicomTagBrowser from './Sources/DicomTagBrowser';
 import DisplayFillAndOutline from './Sources/DisplayFillAndOutline';
@@ -16,6 +17,7 @@ import Download from './Sources/Download';
 import Export from './Sources/Export';
 import EyeHidden from './Sources/EyeHidden';
 import EyeVisible from './Sources/EyeVisible';
+import FeedbackComplete from './Sources/FeedbackComplete';
 import GearSettings from './Sources/GearSettings';
 import Hide from './Sources/Hide';
 import IconMPR from './Sources/IconMPR';
@@ -181,6 +183,7 @@ import Magnifier from './Sources/Magnifier';
 import LoadingOHIFMark from './Sources/LoadingOHIFMark';
 import ArrowLeftBold from './Sources/ArrowLeftBold';
 import Pencil from './Sources/Pencil';
+import NotificationWarning from './Sources/NotificationWarning';
 //
 //
 //
@@ -198,157 +201,157 @@ const ImageWrapper = ({ src, ...props }: { src: string } & ImageIconProps) => {
 };
 
 export const Icons = {
-  CTAAA: (props: ImageIconProps) => (
+  'CT-AAA': (props: ImageIconProps) => (
     <ImageWrapper
       src={CTAAA}
       {...props}
     />
   ),
-  CTAAA2: (props: ImageIconProps) => (
+  'CT-AAA2': (props: ImageIconProps) => (
     <ImageWrapper
       src={CTAAA2}
       {...props}
     />
   ),
-  CTAir: (props: ImageIconProps) => (
+  'CT-Air': (props: ImageIconProps) => (
     <ImageWrapper
       src={CTAir}
       {...props}
     />
   ),
-  CTBone: (props: ImageIconProps) => (
+  'CT-Bone': (props: ImageIconProps) => (
     <ImageWrapper
       src={CTBone}
       {...props}
     />
   ),
-  CTBones: (props: ImageIconProps) => (
+  'CT-Bones': (props: ImageIconProps) => (
     <ImageWrapper
       src={CTBones}
       {...props}
     />
   ),
-  CTCardiac: (props: ImageIconProps) => (
+  'CT-Cardiac': (props: ImageIconProps) => (
     <ImageWrapper
       src={CTCardiac}
       {...props}
     />
   ),
-  CTCardiac2: (props: ImageIconProps) => (
+  'CT-Cardiac2': (props: ImageIconProps) => (
     <ImageWrapper
       src={CTCardiac2}
       {...props}
     />
   ),
-  CTCardiac3: (props: ImageIconProps) => (
+  'CT-Cardiac3': (props: ImageIconProps) => (
     <ImageWrapper
       src={CTCardiac3}
       {...props}
     />
   ),
-  CTChestContrastEnhanced: (props: ImageIconProps) => (
+  'CT-Chest-Contrast-Enhanced': (props: ImageIconProps) => (
     <ImageWrapper
       src={CTChestContrastEnhanced}
       {...props}
     />
   ),
-  CTChestVessels: (props: ImageIconProps) => (
+  'CT-Chest-Vessels': (props: ImageIconProps) => (
     <ImageWrapper
       src={CTChestVessels}
       {...props}
     />
   ),
-  CTCoronaryArteries: (props: ImageIconProps) => (
+  'CT-Coronary-Arteries': (props: ImageIconProps) => (
     <ImageWrapper
       src={CTCoronaryArteries}
       {...props}
     />
   ),
-  CTCoronaryArteries2: (props: ImageIconProps) => (
+  'CT-Coronary-Arteries-2': (props: ImageIconProps) => (
     <ImageWrapper
       src={CTCoronaryArteries2}
       {...props}
     />
   ),
-  CTCoronaryArteries3: (props: ImageIconProps) => (
+  'CT-Coronary-Arteries-3': (props: ImageIconProps) => (
     <ImageWrapper
       src={CTCoronaryArteries3}
       {...props}
     />
   ),
-  CTCroppedVolumeBone: (props: ImageIconProps) => (
+  'CT-Cropped-Volume-Bone': (props: ImageIconProps) => (
     <ImageWrapper
       src={CTCroppedVolumeBone}
       {...props}
     />
   ),
-  CTFat: (props: ImageIconProps) => (
+  'CT-Fat': (props: ImageIconProps) => (
     <ImageWrapper
       src={CTFat}
       {...props}
     />
   ),
-  CTLiverVasculature: (props: ImageIconProps) => (
+  'CT-Liver-Vasculature': (props: ImageIconProps) => (
     <ImageWrapper
       src={CTLiverVasculature}
       {...props}
     />
   ),
-  CTLung: (props: ImageIconProps) => (
+  'CT-Lung': (props: ImageIconProps) => (
     <ImageWrapper
       src={CTLung}
       {...props}
     />
   ),
-  CTMIP: (props: ImageIconProps) => (
+  'CT-MIP': (props: ImageIconProps) => (
     <ImageWrapper
       src={CTMIP}
       {...props}
     />
   ),
-  CTMuscle: (props: ImageIconProps) => (
+  'CT-Muscle': (props: ImageIconProps) => (
     <ImageWrapper
       src={CTMuscle}
       {...props}
     />
   ),
-  CTPulmonaryArteries: (props: ImageIconProps) => (
+  'CT-Pulmonary-Arteries': (props: ImageIconProps) => (
     <ImageWrapper
       src={CTPulmonaryArteries}
       {...props}
     />
   ),
-  CTSoftTissue: (props: ImageIconProps) => (
+  'CT-Soft-Tissue': (props: ImageIconProps) => (
     <ImageWrapper
       src={CTSoftTissue}
       {...props}
     />
   ),
-  DTIFABrain: (props: ImageIconProps) => (
+  'DTI-FA-Brain': (props: ImageIconProps) => (
     <ImageWrapper
       src={DTIFABrain}
       {...props}
     />
   ),
-  MRAngio: (props: ImageIconProps) => (
+  'MR-Angio': (props: ImageIconProps) => (
     <ImageWrapper
       src={MRAngio}
       {...props}
     />
   ),
-  MRDefault: (props: ImageIconProps) => (
+  'MR-Default': (props: ImageIconProps) => (
     <ImageWrapper
       src={MRDefault}
       {...props}
     />
   ),
-  MRMIP: (props: ImageIconProps) => (
+  'MR-MIP': (props: ImageIconProps) => (
     <ImageWrapper
       src={MRMIP}
       {...props}
     />
   ),
-  MRT2Brain: (props: ImageIconProps) => (
+  'MR-T2-Brain': (props: ImageIconProps) => (
     <ImageWrapper
       src={MRT2Brain}
       {...props}
@@ -418,6 +421,7 @@ export const Icons = {
   Code,
   ColorChange,
   Controls,
+  Copy,
   Delete,
   DicomTagBrowser,
   DisplayFillAndOutline,
@@ -430,6 +434,7 @@ export const Icons = {
   Export,
   EyeHidden,
   EyeVisible,
+  FeedbackComplete,
   GearSettings,
   Hide,
   IconMPR,
@@ -647,6 +652,7 @@ export const Icons = {
   'status-alert': (props: IconProps) => Alert(props),
   info: (props: IconProps) => Info(props),
   'notifications-info': (props: IconProps) => NotificationInfo(props),
+  'notificationwarning-diamond': (props: IconProps) => NotificationWarning(props),
   'content-prev': (props: IconProps) => ContentPrev(props),
   'content-next': (props: IconProps) => ContentNext(props),
   'icon-settings': (props: IconProps) => Settings(props),

@@ -42,8 +42,9 @@ const _generateReport = (measurementData, additionalFindingTypes, options = {}) 
 };
 
 const commandsModule = (props: withAppTypes) => {
-  const { servicesManager, extensionManager } = props;
-  const { customizationService, displaySetService, viewportGridService } = servicesManager.services;
+  const { servicesManager, extensionManager, commandsManager } = props;
+  const { customizationService, measurementService, viewportGridService, uiDialogService } =
+    servicesManager.services;
 
   const actions = {
     changeColorMeasurement: ({ uid }) => {

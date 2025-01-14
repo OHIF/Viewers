@@ -2,13 +2,15 @@
  * Returns a filter function which filters for measurements belonging to both
  * the study and series.
  */
-export function filterTracked(trackedStudy: string, trackedSeries) {
-  return measurement => {
-    const result =
-      trackedStudy === measurement.referenceStudyUID &&
-      trackedSeries.includes(measurement.referenceSeriesUID);
-    return result;
-  };
+export function filterMeasurementsBySeriesUID(selectedSeries: string[]) {
+  return measurement => selectedSeries.includes(measurement.referenceSeriesUID);
+}
+
+/**
+ * @returns true for measurements include referencedImageId (coplanar with an image)
+ */
+export function filterPlanarMeasurement(measurement) {
+  return measurement?.referencedImageId;
 }
 
 /** A filter that always returns true */
@@ -46,7 +48,7 @@ export function filterOr(...filters) {
  * Filters for additional findings, that is, measurements with
  * a value of type point, and having a referenced image
  */
-export function filterAdditionalFinding(measurementService) {
+export function filterAdditionalFindings(measurementService) {
   const { POINT } = measurementService.VALUE_TYPES;
   return dm => dm.type === POINT && dm.referencedImageId;
 }

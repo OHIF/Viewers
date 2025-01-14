@@ -6,7 +6,6 @@ import { useMeasurements } from '../hooks/useMeasurements';
 import { StudySummaryFromMetadata } from '../components/StudySummaryFromMetadata';
 
 const { groupByStudy: defaultGroupingFunction } = utils.MeasurementGroupings;
-const { filterAdditionalFinding, filterAny } = utils.MeasurementFilters;
 
 export type withAppAndFilters = withAppTypes & {
   measurementFilter: (item) => boolean;
@@ -20,7 +19,9 @@ export type withAppAndFilters = withAppTypes & {
   title: string;
 };
 
-export default function PanelMeasurementTable({
+const { filterAdditionalFindings, filterAny } = utils.MeasurementFilters;
+
+export default function PanelMeasurement({
   servicesManager,
   commandsManager,
   customHeader,
@@ -58,7 +59,7 @@ export default function PanelMeasurementTable({
   const toggleLockMeasurement = bindCommand('toggleLockMeasurement');
   const toggleVisibilityMeasurement = bindCommand('toggleVisibilityMeasurement');
 
-  const additionalFilter = filterAdditionalFinding(measurementService);
+  const additionalFilter = filterAdditionalFindings(measurementService);
 
   const effectiveGroupingFunction = (groupingFunction ?? defaultGroupingFunction)({
     servicesManager,
@@ -114,7 +115,7 @@ export default function PanelMeasurementTable({
         {items.map(item => {
           return (
             <div key={`${item.study}`}>
-              <StudySummaryFromMetadata studyInstanceUID={item.study} />
+              <StudySummaryFromMetadata StudyInstanceUID={item.study} />
               {item.measurements.length === 0 ? (
                 <></>
               ) : (

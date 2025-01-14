@@ -167,15 +167,16 @@ class MeasurementService extends PubSubService {
   }
 
   /**
-   * Get all measurements.
+   * Gets measurements, optionally filtered by the filter
+   * function.
    *
    * @return {Measurement[]} Array of measurements
    */
   public getMeasurements(filter?: MeasurementFilter) {
-    if (filter) {
-      return [...this.measurements.values()].filter(measurement => filter.call(this, measurement));
-    }
-    return [...this.measurements.values()];
+    const measurements = [...this.measurements.values()];
+    return filter
+      ? measurements.filter(measurement => filter.call(this, measurement))
+      : measurements;
   }
 
   /**
@@ -588,6 +589,11 @@ class MeasurementService extends PubSubService {
     });
   }
 
+  /**
+   * Clears measurements that match the filter, defaulting to all of them.
+   * That allows, for example, clearing all of a single studies measurements
+   * without needing to clear other measurements.
+   */
   public clearMeasurements(filter?: MeasurementFilter) {
     // Make a copy of the measurements
     const toClear = this.getMeasurements(filter);

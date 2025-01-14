@@ -5,17 +5,6 @@ import { StudyItem } from '../StudyItem';
 import { StudyBrowserSort } from '../StudyBrowserSort';
 import { StudyBrowserViewOptions } from '../StudyBrowserViewOptions';
 
-const getTrackedSeries = displaySets => {
-  let trackedSeries = 0;
-  displaySets.forEach(displaySet => {
-    if (displaySet.isTracked) {
-      trackedSeries++;
-    }
-  });
-
-  return trackedSeries;
-};
-
 const noop = () => {};
 
 const StudyBrowser = ({
@@ -31,7 +20,8 @@ const StudyBrowser = ({
   servicesManager,
   showSettings,
   viewPresets,
-  onThumbnailContextMenu,
+  ThumbnailMenuItems,
+  StudyMenuItems,
 }: withAppTypes) => {
   const getTabContent = () => {
     const tabData = tabs.find(tab => tab.name === activeTabName);
@@ -50,18 +40,17 @@ const StudyBrowser = ({
               isExpanded={isExpanded}
               displaySets={displaySets}
               modalities={modalities}
-              trackedSeries={getTrackedSeries(displaySets)}
               isActive={isExpanded}
-              onClick={() => {
-                onClickStudy(studyInstanceUid);
-              }}
+              onClick={() => onClickStudy(studyInstanceUid)}
               onClickThumbnail={onClickThumbnail}
               onDoubleClickThumbnail={onDoubleClickThumbnail}
               onClickUntrack={onClickUntrack}
               activeDisplaySetInstanceUIDs={activeDisplaySetInstanceUIDs}
               data-cy="thumbnail-list"
               viewPreset={viewPreset}
-              onThumbnailContextMenu={onThumbnailContextMenu}
+              ThumbnailMenuItems={ThumbnailMenuItems}
+              StudyMenuItems={StudyMenuItems}
+              StudyInstanceUID={studyInstanceUid}
             />
           </React.Fragment>
         );
@@ -142,6 +131,7 @@ StudyBrowser.propTypes = {
       ).isRequired,
     })
   ),
+  StudyMenuItems: PropTypes.func,
 };
 
 export { StudyBrowser };

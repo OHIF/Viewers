@@ -3,15 +3,14 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import PropTypes from 'prop-types';
 import { utils } from '@ohif/core';
-import { useImageViewer, useViewportGrid, Dialog, ButtonEnums } from '@ohif/ui';
+import { useImageViewer, Dialog, ButtonEnums } from '@ohif/ui';
+import { useViewportGrid, DropdownMenu, DropdownMenuTrigger, Icons, Button } from '@ohif/ui-next';
 import { StudyBrowser } from '@ohif/ui-next';
 
 import { useTrackedMeasurements } from '../../getContextModule';
 import { Separator } from '@ohif/ui-next';
-import { PanelStudyBrowserHeader } from '@ohif/extension-default';
-import { useAppConfig } from '@state';
+import { PanelStudyBrowserHeader, MoreDropdownMenu } from '@ohif/extension-default';
 import { defaultActionIcons, defaultViewPresets } from './constants';
-
 const { formatDate, createStudyBrowserTabs } = utils;
 const thumbnailNoImageModalities = [
   'SR',
@@ -24,6 +23,7 @@ const thumbnailNoImageModalities = [
   'OT',
   'PMAP',
 ];
+
 /**
  *
  * @param {*} param0
@@ -485,10 +485,6 @@ export default function PanelStudyBrowserTracking({
     });
   };
 
-  const onThumbnailContextMenu = (commandName, options) => {
-    commandsManager.runCommand(commandName, options);
-  };
-
   return (
     <>
       <>
@@ -522,7 +518,16 @@ export default function PanelStudyBrowserTracking({
         activeDisplaySetInstanceUIDs={activeViewportDisplaySetInstanceUIDs}
         showSettings={actionIcons.find(icon => icon.id === 'settings').value}
         viewPresets={viewPresets}
-        onThumbnailContextMenu={onThumbnailContextMenu}
+        ThumbnailMenuItems={MoreDropdownMenu({
+          commandsManager,
+          servicesManager,
+          menuItemsKey: 'studyBrowser.thumbnailMenuItems',
+        })}
+        StudyMenuItems={MoreDropdownMenu({
+          commandsManager,
+          servicesManager,
+          menuItemsKey: 'studyBrowser.studyMenuItems',
+        })}
       />
     </>
   );
@@ -592,7 +597,6 @@ function _mapDisplaySets(
     .forEach(ds => {
       const imageSrc = thumbnailImageSrcMap[ds.displaySetInstanceUID];
       const componentType = _getComponentType(ds);
-      const numPanes = viewportGridService.getNumViewportPanes();
 
       const array =
         componentType === 'thumbnailTracked' ? thumbnailDisplaySets : thumbnailNoImageDisplaySets;

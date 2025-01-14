@@ -4,11 +4,11 @@ import { StudySummary } from '@ohif/ui-next';
 
 const { formatDate } = utils;
 
-export function StudySummaryFromMetadata({ studyInstanceUID }) {
-  if (!studyInstanceUID) {
+export function StudySummaryFromMetadata({ StudyInstanceUID }) {
+  if (!StudyInstanceUID) {
     return null;
   }
-  const studyMeta = DicomMetadataStore.getStudy(studyInstanceUID);
+  const studyMeta = DicomMetadataStore.getStudy(StudyInstanceUID);
   if (!studyMeta?.series?.length) {
     return null;
   }

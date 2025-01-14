@@ -1,7 +1,7 @@
 {
   "name": "@externals/devDependencies",
   "description": "External dev dependencies - put dev build dependencies here",
-  "version": "3.10.0-beta.32",
+  "version": "3.10.0-beta.58",
   "license": "MIT",
   "private": true,
   "engines": {
@@ -21,7 +21,11 @@
   },
   "devDependencies": {
     "@pmmmwh/react-refresh-webpack-plugin": "^0.5.15",
+    "@rsbuild/core": "^1.1.13",
+    "@rsbuild/plugin-node-polyfill": "1.2.0",
+    "@rsbuild/plugin-react": "^1.1.0",
     "@svgr/webpack": "^8.1.0",
+    "@swc/helpers": "^0.5.15",
     "@types/jest": "^27.5.0",
     "@typescript-eslint/eslint-plugin": "^6.3.0",
     "@typescript-eslint/parser": "^6.3.0",

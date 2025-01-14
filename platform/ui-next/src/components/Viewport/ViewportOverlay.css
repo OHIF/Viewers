@@ -1,0 +1,22 @@
+.imageViewerViewport.empty ~ .ViewportOverlay {
+  display: none;
+}
+.ViewportOverlay {
+  color: #9ccef9;
+}
+.ViewportOverlay .overlay-element {
+  position: absolute;
+  font-weight: 400;
+  text-shadow: 1px 1px #000;
+  pointer-events: none;
+}
+.overlay-top {
+  top: 28px;
+}
+.overlay-bottom {
+  bottom: 3px;
+}
+
+.overlay-text {
+  text-shadow: 0.8px 0.8px 0.5px rgba(0, 0, 0, 0.75);
+}

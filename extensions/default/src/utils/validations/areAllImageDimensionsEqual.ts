@@ -17,7 +17,7 @@ export default function areAllImageDimensionsEqual(instances: Array<any>): boole
     const instance = instances[i];
     const { Rows, Columns } = instance;
 
-    if (Rows !== firstImageRows || Columns !== firstImageColumns) {
+    if (toNumber(Rows) !== firstImageRows || toNumber(Columns) !== firstImageColumns) {
       return false;
     }
   }

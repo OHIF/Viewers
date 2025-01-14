@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react';
+import React, { ReactElement, useState } from 'react';
 import { AllInOneMenu } from '@ohif/ui';
 import { VolumeRenderingOptionsProps } from '../../types/ViewportPresets';
 import { VolumeRenderingQuality } from './VolumeRenderingQuality';
@@ -11,6 +11,7 @@ export function VolumeRenderingOptions({
   volumeRenderingQualityRange,
   servicesManager,
 }: VolumeRenderingOptionsProps): ReactElement {
+  const [hasShade, setShade] = useState(false);
   return (
     <AllInOneMenu.ItemPanel>
       <VolumeRenderingQuality
@@ -34,12 +35,14 @@ export function VolumeRenderingOptions({
           commandsManager={commandsManager}
           servicesManager={servicesManager}
           viewportId={viewportId}
+          onClickShade={setShade}
         />
       </div>
       <VolumeLighting
         viewportId={viewportId}
         commandsManager={commandsManager}
         servicesManager={servicesManager}
+        hasShade={hasShade}
       />
     </AllInOneMenu.ItemPanel>
   );

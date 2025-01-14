@@ -11,9 +11,11 @@ import {
   Enums,
   utilities as cstUtils,
   ReferenceLinesTool,
+  annotation,
 } from '@cornerstonejs/tools';
 
-import { Types as OhifTypes } from '@ohif/core';
+import { Types as OhifTypes, utils } from '@ohif/core';
+import i18n from '@ohif/i18n';
 import {
   callLabelAutocompleteDialog,
   showLabelAnnotationPopup,
@@ -29,6 +31,7 @@ import { getFirstAnnotationSelected } from './utils/measurementServiceMappings/u
 import getActiveViewportEnabledElement from './utils/getActiveViewportEnabledElement';
 import toggleVOISliceSync from './utils/toggleVOISliceSync';
 import { usePositionPresentationStore, useSegmentationPresentationStore } from './stores';
+import { toolNames } from './initCornerstoneTools';
 
 const toggleSyncFunctions = {
   imageSlice: toggleImageSliceSync,
@@ -217,6 +220,8 @@ function commandsModule({
      *       * CodingSchemeDesignator - the issue of the code value
      *       * CodeMeaning - the text value shown to the user
      *       * ref - a string reference in the form `<designator>:<codeValue>`
+     *       * type - defaulting to 'finding'.  Will replace other codes of same type
+     *       * style - a styling object to use
      *       * Other fields
      *     Note it is a valid option to remove the finding or site values by
      *     supplying null for the code.
@@ -232,7 +237,12 @@ function commandsModule({
      */
     updateMeasurement: props => {
       const { code, uid, textLabel, label } = props;
+      let { style } = props;
       const measurement = measurementService.getMeasurement(uid);
+      if (!measurement) {
+        console.warn('No measurement found to update', uid);
+        return;
+      }
       const updatedMeasurement = {
         ...measurement,
       };
@@ -251,7 +261,6 @@ function commandsModule({
           code.CodingSchemeDesignator = code.ref.substring(0, split);
         }
         updatedMeasurement[measurementKey] = code;
-        // TODO - remove this line once the measurements table customizations are in
         if (measurementKey !== 'finding') {
           if (updatedMeasurement.findingSites) {
             updatedMeasurement.findingSites = updatedMeasurement.findingSites.filter(
@@ -261,6 +270,26 @@ function commandsModule({
           } else {
             updatedMeasurement.findingSites = [code];
           }
+        }
+      }
+
+      style ||= updatedMeasurement.finding?.style;
+      style ||= updatedMeasurement.findingSites?.find(site => site?.style)?.style;
+
+      if (style) {
+        // Reset the selected values to preserve appearance on selection
+        style.lineDashSelected ||= style.lineDash;
+        annotation.config.style.setAnnotationStyles(measurement.uid, style);
+
+        // this is a bit ugly, but given the underlying behavior, this is how it needs to work.
+        switch (measurement.toolName) {
+          case toolNames.PlanarFreehandROI: {
+            const targetAnnotation = annotation.state.getAnnotation(measurement.uid);
+            targetAnnotation.data.isOpenUShapeContour = !!style.isOpenUShapeContour;
+            break;
+          }
+          default:
+            break;
         }
       }
       measurementService.update(updatedMeasurement.uid, updatedMeasurement, true);
@@ -956,7 +985,7 @@ function commandsModule({
           segments: options.createInitialSegment
             ? {
                 1: {
-                  label: 'Segment 1',
+                  label: `${i18n.t('Segment')} 1`,
                   active: true,
                 },
               }
