@@ -8,6 +8,8 @@ import {
 } from '../DropdownMenu/DropdownMenu';
 
 export function StudyBrowserSort({ servicesManager }: withAppTypes) {
+  // Todo: this should not be here, no servicesManager should be in ui-next, only
+  // customization service
   const { customizationService, displaySetService } = servicesManager.services;
   const { values: sortFunctions } = customizationService.get('studyBrowser.sortFunctions');
 

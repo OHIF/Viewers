@@ -1,18 +1,7 @@
 {
   "name": "ohif-docs",
-  "version": "3.10.0-beta.49",
+  "version": "3.10.0-beta.59",
   "private": true,
-  "workspaces": {
-    "nohoist": [
-      "@docusaurus/core/**",
-      "@docusaurus/core",
-      "@docusaurus/preset-classic",
-      "@docusaurus/preset-classic/**",
-      "**/react-router-dom",
-      "**/react-router",
-      "**/history"
-    ]
-  },
   "scripts": {
     "docusaurus": "docusaurus",
     "clean": "shx rm -rf dist",
@@ -43,6 +32,7 @@
   "dependencies": {
     "@docusaurus/core": "3.6.1",
     "@docusaurus/faster": "3.6.1",
+    "@docusaurus/module-type-aliases": "3.0.0",
     "@docusaurus/plugin-client-redirects": "3.6.1",
     "@docusaurus/plugin-google-gtag": "3.6.1",
     "@docusaurus/plugin-ideal-image": "3.6.1",
@@ -51,6 +41,8 @@
     "@docusaurus/remark-plugin-npm2yarn": "3.6.1",
     "@docusaurus/theme-classic": "3.6.1",
     "@docusaurus/theme-live-codeblock": "3.6.1",
+    "@docusaurus/tsconfig": "3.0.0",
+    "@docusaurus/types": "3.0.0",
     "@mdx-js/react": "3.0.1",
     "@radix-ui/react-accordion": "^1.2.0",
     "@radix-ui/react-checkbox": "^1.1.1",
@@ -69,6 +61,7 @@
     "@radix-ui/react-toggle": "^1.1.0",
     "@radix-ui/react-tooltip": "^1.1.2",
     "@svgr/webpack": "^5.5.0",
+    "@types/react": "^18.2.29",
     "autoprefixer": "^10.4.20",
     "class-variance-authority": "^0.7.0",
     "classnames": "^2.3.2",
@@ -84,23 +77,16 @@
     "postcss-import": "^14.0.2",
     "postcss-preset-env": "^7.4.3",
     "prism-react-renderer": "^2.1.0",
+    "react": "^18.3.1",
     "react-day-picker": "^8.10.1",
+    "react-dom": "^18.3.1",
     "react-shepherd": "6.1.1",
     "shepherd.js": "13.0.3",
     "sonner": "^1.4.41",
     "tailwind-merge": "^2.3.0",
     "tailwindcss": "^3.4.13",
+    "tailwindcss-animate": "^1.0.7",
+    "typescript": "~5.2.2",
     "url-loader": "^4.1.1"
-  },
-  "peerDependencies": {
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1"
-  },
-  "devDependencies": {
-    "@docusaurus/module-type-aliases": "3.0.0",
-    "@docusaurus/tsconfig": "3.0.0",
-    "@docusaurus/types": "3.0.0",
-    "@types/react": "^18.2.29",
-    "typescript": "~5.2.2"
   }
 }

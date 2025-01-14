@@ -14,7 +14,7 @@ import {
   annotation,
 } from '@cornerstonejs/tools';
 
-import { Types as OhifTypes } from '@ohif/core';
+import { Types as OhifTypes, utils } from '@ohif/core';
 import i18n from '@ohif/i18n';
 import {
   callLabelAutocompleteDialog,
@@ -293,6 +293,60 @@ function commandsModule({
         }
       }
       measurementService.update(updatedMeasurement.uid, updatedMeasurement, true);
+    },
+
+    /**
+     * Jumps to the specified (by uid) measurement in the active viewport.
+     * Also marks any provided display measurements isActive value
+     */
+    jumpToMeasurement: ({ uid, displayMeasurements = [] }) => {
+      measurementService.jumpToMeasurement(viewportGridService.getActiveViewportId(), uid);
+      for (const measurement of displayMeasurements) {
+        measurement.isActive = measurement.uid === uid;
+      }
+    },
+
+    removeMeasurement: ({ uid }) => {
+      measurementService.remove(uid);
+    },
+
+    renameMeasurement: ({ uid }) => {
+      const labelConfig = customizationService.get('measurementLabels');
+      const measurement = measurementService.getMeasurement(uid);
+      showLabelAnnotationPopup(measurement, uiDialogService, labelConfig).then(val => {
+        measurementService.update(
+          uid,
+          {
+            ...val,
+          },
+          true
+        );
+      });
+    },
+
+    toggleLockMeasurement: ({ uid }) => {
+      measurementService.toggleLockMeasurement(uid);
+    },
+
+    toggleVisibilityMeasurement: ({ uid }) => {
+      measurementService.toggleVisibilityMeasurement(uid);
+    },
+
+    /**
+     * Clear the measurements
+     */
+    clearMeasurements: options => {
+      const { measurementFilter } = options;
+      measurementService.clearMeasurements(
+        measurementFilter ? measurementFilter.bind(options) : null
+      );
+    },
+
+    /**
+     * Download the CSV report for the measurements.
+     */
+    downloadCSVMeasurementsReport: ({ measurementFilter }) => {
+      utils.downloadCSVReport(measurementService.getMeasurements(measurementFilter));
     },
 
     // Retrieve value commands
@@ -1280,6 +1334,27 @@ function commandsModule({
     },
     updateMeasurement: {
       commandFn: actions.updateMeasurement,
+    },
+    clearMeasurements: {
+      commandFn: actions.clearMeasurements,
+    },
+    jumpToMeasurement: {
+      commandFn: actions.jumpToMeasurement,
+    },
+    removeMeasurement: {
+      commandFn: actions.removeMeasurement,
+    },
+    renameMeasurement: {
+      commandFn: actions.renameMeasurement,
+    },
+    toggleLockMeasurement: {
+      commandFn: actions.toggleLockMeasurement,
+    },
+    toggleVisibilityMeasurement: {
+      commandFn: actions.toggleVisibilityMeasurement,
+    },
+    downloadCSVMeasurementsReport: {
+      commandFn: actions.downloadCSVMeasurementsReport,
     },
     setViewportWindowLevel: {
       commandFn: actions.setViewportWindowLevel,

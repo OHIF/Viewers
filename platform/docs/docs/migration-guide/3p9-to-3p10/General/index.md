@@ -13,3 +13,23 @@ window.PUBLIC_URL = '<%= PUBLIC_URL %>';
 ```
 
 Was added before the `<!-- EXTENSIONS -->` comment block.
+
+
+## OHIF Docs
+
+OHIF platform/docs is no longer part of the workspace.
+
+-  Builds are faster for 99.99% of users since only maintainers need to run the docs development.
+
+If you need to run the docs website locally, you must install it first, as it is not installed by default.
+
+Before:
+```bash
+yarn run dev
+```
+
+After:
+```bash
+yarn install
+yarn run dev
+```

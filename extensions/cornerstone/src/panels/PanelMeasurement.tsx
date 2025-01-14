@@ -1,19 +1,24 @@
-import React, { useEffect, useRef } from 'react';
-import { useViewportGrid } from '@ohif/ui-next';
+import React, { useEffect, useRef, useState } from 'react';
+import { utils } from '@ohif/core';
 import { MeasurementTable } from '@ohif/ui-next';
 import debounce from 'lodash.debounce';
 import { useMeasurements } from '../hooks/useMeasurements';
-import { showLabelAnnotationPopup, colorPickerDialog } from '@ohif/extension-default';
 
-export default function PanelMeasurementTable({
+const { filterAdditionalFindings: filterAdditionalFinding, filterAny } = utils.MeasurementFilters;
+
+export type withAppAndFilters = withAppTypes & {
+  measurementFilter: (item) => boolean;
+};
+
+export default function PanelMeasurement({
   servicesManager,
+  commandsManager,
   customHeader,
-  measurementFilter,
-}: withAppTypes): React.ReactNode {
+  measurementFilter = filterAny,
+}: withAppAndFilters): React.ReactNode {
   const measurementsPanelRef = useRef(null);
 
-  const [viewportGrid] = useViewportGrid();
-  const { measurementService, customizationService, uiDialogService } = servicesManager.services;
+  const { measurementService } = servicesManager.services;
 
   const displayMeasurements = useMeasurements(servicesManager, {
     measurementFilter,
@@ -27,74 +32,36 @@ export default function PanelMeasurementTable({
     }
   }, [displayMeasurements.length]);
 
-  const onMeasurementItemClickHandler = (uid: string, isActive: boolean) => {
-    if (isActive) {
-      return;
-    }
-
-    const measurements = [...displayMeasurements];
-    const measurement = measurements.find(m => m.uid === uid);
-
-    measurements.forEach(m => (m.isActive = m.uid !== uid ? false : true));
-    measurement.isActive = true;
-  };
-
-  const jumpToImage = (uid: string) => {
-    measurementService.jumpToMeasurement(viewportGrid.activeViewportId, uid);
-    onMeasurementItemClickHandler(uid, true);
-  };
-
-  const removeMeasurement = (uid: string) => {
-    measurementService.remove(uid);
-  };
-
-  const renameMeasurement = (uid: string) => {
-    jumpToImage(uid);
-    const labelConfig = customizationService.get('measurementLabels');
-    const measurement = measurementService.getMeasurement(uid);
-    showLabelAnnotationPopup(measurement, uiDialogService, labelConfig).then(val => {
-      measurementService.update(
-        uid,
-        {
-          ...val,
-        },
-        true
-      );
-    });
-  };
-
-  const changeColorMeasurement = (uid: string) => {
-    const { color } = measurementService.getMeasurement(uid);
-    const rgbaColor = {
-      r: color[0],
-      g: color[1],
-      b: color[2],
-      a: color[3] / 255.0,
+  const bindCommand = (name: string | string[], options?) => {
+    return (uid: string) => {
+      commandsManager.run(name, { ...options, uid });
     };
-    colorPickerDialog(uiDialogService, rgbaColor, (newRgbaColor, actionId) => {
-      if (actionId === 'cancel') {
-        return;
-      }
-
-      const color = [newRgbaColor.r, newRgbaColor.g, newRgbaColor.b, newRgbaColor.a * 255.0];
-      // segmentationService.setSegmentColor(viewportId, segmentationId, segmentIndex, color);
-    });
   };
 
-  const toggleLockMeasurement = (uid: string) => {
-    measurementService.toggleLockMeasurement(uid);
-  };
+  const jumpToImage = bindCommand('jumpToMeasurement', { displayMeasurements });
+  const removeMeasurement = bindCommand('removeMeasurement');
+  const renameMeasurement = bindCommand(['jumpToMeasurement', 'renameMeasurement'], {
+    displayMeasurements,
+  });
+  const toggleLockMeasurement = bindCommand('toggleLockMeasurement');
+  const toggleVisibilityMeasurement = bindCommand('toggleVisibilityMeasurement');
 
-  const toggleVisibilityMeasurement = (uid: string) => {
-    measurementService.toggleVisibilityMeasurement(uid);
-  };
+  const additionalFilter = filterAdditionalFinding(measurementService);
 
   const measurements = displayMeasurements.filter(
-    dm => dm.measurementType !== measurementService.VALUE_TYPES.POINT && dm.referencedImageId
+    item => !additionalFilter(item) && measurementFilter(item)
   );
   const additionalFindings = displayMeasurements.filter(
-    dm => dm.measurementType === measurementService.VALUE_TYPES.POINT && dm.referencedImageId
+    item => additionalFilter(item) && measurementFilter(item)
   );
+
+  const onArgs = {
+    onClick: jumpToImage,
+    onDelete: removeMeasurement,
+    onToggleVisibility: toggleVisibilityMeasurement,
+    onToggleLocked: toggleLockMeasurement,
+    onRename: renameMeasurement,
+  };
 
   return (
     <>
@@ -104,13 +71,10 @@ export default function PanelMeasurementTable({
         data-cy={'trackedMeasurements-panel'}
       >
         <MeasurementTable
+          key="tracked"
           title="Measurements"
           data={measurements}
-          onClick={jumpToImage}
-          onDelete={removeMeasurement}
-          onToggleVisibility={toggleVisibilityMeasurement}
-          onToggleLocked={toggleLockMeasurement}
-          onRename={renameMeasurement}
+          {...onArgs}
           // onColor={changeColorMeasurement}
         >
           <MeasurementTable.Header>
@@ -129,14 +93,10 @@ export default function PanelMeasurementTable({
         </MeasurementTable>
         {additionalFindings.length > 0 && (
           <MeasurementTable
+            key="additional"
             data={additionalFindings}
             title="Additional Findings"
-            onClick={jumpToImage}
-            onDelete={removeMeasurement}
-            onToggleVisibility={toggleVisibilityMeasurement}
-            onToggleLocked={toggleLockMeasurement}
-            onRename={renameMeasurement}
-            // onColor={changeColorMeasurement}
+            {...onArgs}
           >
             <MeasurementTable.Body />
           </MeasurementTable>
