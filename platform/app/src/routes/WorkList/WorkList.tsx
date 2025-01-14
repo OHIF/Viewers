@@ -525,9 +525,7 @@ function WorkList({
   }
 
   const { customizationService } = servicesManager.services;
-  const { component: DicomUploadComponent } = customizationService.getCustomization(
-    'dicomUploadComponent'
-  ) || { component: null };
+  const DicomUploadComponent = customizationService.getCustomization('dicomUploadComponent');
 
   const uploadProps =
     DicomUploadComponent && dataSource.getConfig()?.dicomUploadEnabled

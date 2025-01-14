@@ -298,12 +298,8 @@ export default class CustomizationService extends PubSubService {
     const sourceCustomization =
       modeCustomization || this._cloneIfNeeded(globCustomization) || defaultCustomization;
 
-    if (!sourceCustomization) {
-      this.modeCustomizations.set(customizationId, customization);
-    } else {
-      const result = this._update(sourceCustomization, customization);
-      this.modeCustomizations.set(customizationId, result);
-    }
+    const result = this._update(sourceCustomization, customization);
+    this.modeCustomizations.set(customizationId, result);
 
     this.transformedCustomizations.clear();
     this._broadcastEvent(this.EVENTS.CUSTOMIZATION_MODIFIED, {
@@ -317,12 +313,7 @@ export default class CustomizationService extends PubSubService {
     const globCustomization = this.globalCustomizations.get(id);
 
     const sourceCustomization = this._cloneIfNeeded(globCustomization) || defaultCustomization;
-
-    if (!sourceCustomization) {
-      this.globalCustomizations.set(id, value);
-    } else {
-      this.globalCustomizations.set(id, this._update(sourceCustomization, value));
-    }
+    this.globalCustomizations.set(id, this._update(sourceCustomization, value));
 
     this.transformedCustomizations.clear();
     this._broadcastEvent(this.EVENTS.DEFAULT_CUSTOMIZATION_MODIFIED, {
@@ -338,12 +329,7 @@ export default class CustomizationService extends PubSubService {
     this.transformedCustomizations.clear();
 
     const sourceCustomization = this.defaultCustomizations.get(id);
-
-    if (!sourceCustomization) {
-      this.defaultCustomizations.set(id, value);
-    } else {
-      this.defaultCustomizations.set(id, this._update(sourceCustomization, value));
-    }
+    this.defaultCustomizations.set(id, this._update(sourceCustomization, value));
 
     this._broadcastEvent(this.EVENTS.DEFAULT_CUSTOMIZATION_MODIFIED, {
       buttons: this.defaultCustomizations,
@@ -366,6 +352,11 @@ export default class CustomizationService extends PubSubService {
     }
 
     // Use immutability-helper to apply the commands
+    // if $ is not part of the value in the json string, then we just return the newValue
+    if (!JSON.stringify(newValue)?.includes('$')) {
+      return newValue;
+    }
+
     const result = update(oldValue, newValue);
     return result;
   }

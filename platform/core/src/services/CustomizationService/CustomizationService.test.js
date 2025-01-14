@@ -18,6 +18,7 @@ function getDefaultCustomizationModule() {
   return {
     // Simple types
     showAddSegment: true,
+    somethingFalse: false,
     onAddSegment: () => 'default add',
     // Array of primitives
     NumbersList: [1, 2, 3, 4],
@@ -107,6 +108,17 @@ describe('CustomizationService - Registration + API Operations', () => {
 
       // Mode/global should override the default.
       expect(result).toBe(false);
+    });
+
+    it('replaces boolean value using $set over the default false', () => {
+      // Update the default value with a new one using $set.
+      customizationService.setCustomizations({
+        somethingFalse: { $set: true },
+      });
+      const result = customizationService.getCustomization('somethingFalse');
+
+      // Mode/global should override the default.
+      expect(result).toBe(true);
     });
 
     it('replaces function value using $set over the default', () => {

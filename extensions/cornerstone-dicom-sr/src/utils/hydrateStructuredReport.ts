@@ -41,20 +41,14 @@ const convertSites = (codingValues, sites) => {
  *
  */
 export default function hydrateStructuredReport(
-  { servicesManager, extensionManager }: withAppTypes,
+  { servicesManager, extensionManager, commandsManager }: withAppTypes,
   displaySetInstanceUID
 ) {
-  const annotationManager = CsAnnotation.state.getAnnotationManager();
   const dataSource = extensionManager.getActiveDataSource()[0];
   const { measurementService, displaySetService, customizationService } = servicesManager.services;
 
-  const codingValues = customizationService.getCustomization('codingValues') || {};
-
-  const { disableEditing } = customizationService.getCustomization(
-    'PanelMeasurement.disableEditing'
-  ) || {
-    disableEditing: false,
-  };
+  const codingValues = customizationService.getCustomization('codingValues');
+  const disableEditing = customizationService.getCustomization('PanelMeasurement.disableEditing');
 
   const displaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
 
@@ -227,8 +221,7 @@ export default function hydrateStructuredReport(
       });
 
       if (disableEditing) {
-        const addedAnnotation = annotationManager.getAnnotation(newAnnotationUID);
-        locking.setAnnotationLocked(addedAnnotation, true);
+        locking.setAnnotationLocked(newAnnotationUID, true);
       }
 
       if (!imageIds.includes(imageId)) {

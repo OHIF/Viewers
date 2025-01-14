@@ -8,13 +8,8 @@ window.config = {
   modes: [],
   customizationService: [
     {
-      'cornerstone.colorbar': {
-        $merge: {
-          width: '20px',
-          colorbarTickPosition: 'right',
-          colorbarContainerPosition: 'left',
-          colorbarInitialColormap: 'NewColormap',
-        },
+      'PanelMeasurement.disableEditing': {
+        $set: true, // Disables editing measurements in the panel
       },
     },
   ],

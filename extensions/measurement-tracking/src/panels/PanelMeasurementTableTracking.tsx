@@ -5,7 +5,7 @@ import { Button, Icons } from '@ohif/ui-next';
 import { PanelMeasurement, StudySummaryFromMetadata } from '@ohif/extension-cornerstone';
 import { useTrackedMeasurements } from '../getContextModule';
 
-const { filterAnd, filterPlanarMeasurement, filterAny, filterMeasurementsBySeriesUID } =
+const { filterAnd, filterPlanarMeasurement, filterMeasurementsBySeriesUID } =
   utils.MeasurementFilters;
 
 function PanelMeasurementTableTracking({
@@ -21,11 +21,7 @@ function PanelMeasurementTableTracking({
     ? filterAnd(filterPlanarMeasurement, filterMeasurementsBySeriesUID(trackedSeries))
     : filterPlanarMeasurement;
 
-  const { disableEditing } = customizationService.getCustomization(
-    'PanelMeasurement.disableEditing'
-  ) || {
-    disableEditing: false,
-  };
+  const disableEditing = customizationService.getCustomization('PanelMeasurement.disableEditing');
 
   return (
     <>

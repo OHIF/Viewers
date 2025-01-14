@@ -159,6 +159,7 @@ function TrackedMeasurementsContextProvider(
     promptHydrateStructuredReport: promptHydrateStructuredReport.bind(null, {
       servicesManager,
       extensionManager,
+      commandsManager,
       appConfig,
     }),
     hydrateStructuredReport: hydrateStructuredReport.bind(null, {

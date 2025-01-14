@@ -120,12 +120,11 @@ const commandsModule = (props: withAppTypes) => {
           throw new Error('Invalid report, no content');
         }
 
-        const onBeforeDicomStore =
-          customizationService.getCustomization('onBeforeDicomStore')?.value;
+        const onBeforeDicomStore = customizationService.getCustomization('onBeforeDicomStore');
 
         let dicomDict;
         if (typeof onBeforeDicomStore === 'function') {
-          dicomDict = onBeforeDicomStore({ measurementData, naturalizedReport });
+          dicomDict = onBeforeDicomStore({ dicomDict, measurementData, naturalizedReport });
         }
 
         await dataSource.store.dicom(naturalizedReport, null, dicomDict);
@@ -153,7 +152,7 @@ const commandsModule = (props: withAppTypes) => {
      */
     loadSRMeasurements: ({ displaySetInstanceUID }) => {
       const { SeriesInstanceUIDs } = hydrateStructuredReport(
-        { servicesManager, extensionManager },
+        { servicesManager, extensionManager, commandsManager },
         displaySetInstanceUID
       );
 

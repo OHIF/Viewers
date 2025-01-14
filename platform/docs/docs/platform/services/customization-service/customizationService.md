@@ -3,7 +3,7 @@ sidebar_label: Introduction
 sidebar_position: 1
 ---
 
-import { customizations } from './customizations';
+import { customizations, TableGenerator } from './customizations';
 import Heading from '@theme/Heading';
 import TOCInline from '@theme/TOCInline';
 
@@ -464,41 +464,4 @@ customizationService.setCustomizations({
 
 Below we are providing the example configuration for global scenario (using the configuration file), however, you can also use the `setCustomizations` method to set the customizations.
 
-{customizations.map(({ id, description, default: defaultValue, configuration, image }) => (
-  <div key={id} style={{ marginBottom: '2rem',  borderRadius: '8px', padding: '1rem' }}>
-    <h3 id={id.toLowerCase().replace(/\./g, '')} style={{ marginBottom: '1rem', fontSize: '1.5rem' }}>{id}</h3>
-    <table style={{ width: '100%', tableLayout: 'fixed' }}>
-      <tbody>
-        <tr>
-          <th style={{ textAlign: 'left', verticalAlign: 'top', width: '20%' }}>ID</th>
-          <td style={{ wordBreak: 'break-word' }}><code>{id}</code></td>
-        </tr>
-        <tr>
-          <th style={{ textAlign: 'left', verticalAlign: 'top', width: '20%' }}>Description</th>
-          <td>
-            <div>{description}</div>
-            {image && (
-              <div>
-                <img src={image} alt={id} style={{ maxWidth: '50%', height: 'auto', marginTop: '10px' }} />
-              </div>
-            )}
-          </td>
-        </tr>
-        <tr>
-          <th style={{ textAlign: 'left', verticalAlign: 'top', width: '20%' }}>Default Value</th>
-          <td style={{ wordBreak: 'break-word' }}><pre>{typeof defaultValue === 'string' ? defaultValue : JSON.stringify(defaultValue, null, 2)}</pre></td>
-        </tr>
-        <tr>
-          <th style={{ textAlign: 'left', verticalAlign: 'top', width: '20%' }}>Example</th>
-          <td style={{ wordBreak: 'break-word' }}>
-            {configuration && (
-              <div>
-                <pre><code>{configuration}</code></pre>
-              </div>
-            )}
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-))}
+{TableGenerator(customizations)}

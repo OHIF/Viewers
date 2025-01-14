@@ -265,7 +265,7 @@ function _checkIfCanAddMeasurementsToDisplaySet(
 
     const onBeforeSRAddMeasurement = customizationService.getCustomization(
       'onBeforeSRAddMeasurement'
-    )?.value;
+    );
 
     if (typeof onBeforeSRAddMeasurement === 'function') {
       measurement = onBeforeSRAddMeasurement({
