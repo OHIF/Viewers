@@ -16,7 +16,6 @@ const combineFrameInstance = (frame, instance) => {
     PerFrameFunctionalGroupsSequence,
     SharedFunctionalGroupsSequence,
     NumberOfFrames,
-    SpacingBetweenSlices,
     ImageType,
   } = instance;
 
@@ -35,8 +34,12 @@ const combineFrameInstance = (frame, instance) => {
     let ImagePositionPatientToUse = instance.ImagePositionPatient;
 
     if (!instance.ImagePositionPatient && instance.DetectorInformationSequence) {
-      const imagePositionPatient = instance.DetectorInformationSequence[0].ImagePositionPatient;
-      const imageOrientationPatient = instance.ImageOrientationPatient;
+      let imagePositionPatient = instance.DetectorInformationSequence[0].ImagePositionPatient;
+      let imageOrientationPatient = instance.ImageOrientationPatient;
+
+      imagePositionPatient = imagePositionPatient.map(it => Number(it));
+      imageOrientationPatient = imageOrientationPatient.map(it => Number(it));
+      const SpacingBetweenSlices = Number(instance.SpacingBetweenSlices);
 
       // Calculate the position for the current frame
       if (imageOrientationPatient && SpacingBetweenSlices) {
@@ -69,9 +72,23 @@ const combineFrameInstance = (frame, instance) => {
       sharedInstance,
       PerFrameFunctionalGroupsSequence?.[frameNumber]
     );
-    newInstance.ImagePositionPatient = ImagePositionPatientToUse ??
-      newInstance.ImagePositionPatient ?? [0, 0, frameNumber];
-    newInstance.frameNumber = frameNumber;
+
+    // Note: do not assign directly to newInstance.ImagePositionPatient
+    // because it will also overwrite the instance.ImagePositionPatient since it
+    // is create via Object.create(parent)
+    Object.defineProperty(newInstance, 'ImagePositionPatient', {
+      value: ImagePositionPatientToUse ?? newInstance.ImagePositionPatient ?? [0, 0, frameNumber],
+      writable: true,
+      enumerable: true,
+      configurable: true,
+    });
+
+    Object.defineProperty(newInstance, 'frameNumber', {
+      value: frameNumber,
+      writable: true,
+      enumerable: true,
+      configurable: true,
+    });
     return newInstance;
   } else {
     return instance;
