@@ -62,67 +62,68 @@ export default function getCustomizationModule({ servicesManager, extensionManag
     {
       name: 'multimonitor',
       value: {
-        customizationType: 'ohif.menuContent',
-        'studyBrowser.studyMenuItems': [
-          {
-            id: 'applyHangingProtocol',
-            label: 'Apply Hanging Protocol',
-            iconName: 'ViewportViews',
-            items: [
-              {
-                id: 'applyDefaultProtocol',
-                label: 'Default',
-                commands: [
-                  'loadStudy',
-                  {
-                    commandName: 'setHangingProtocol',
-                    commandOptions: {
-                      protocolId: 'default',
+        'studyBrowser.studyMenuItems': {
+          $push: [
+            {
+              id: 'applyHangingProtocol',
+              label: 'Apply Hanging Protocol',
+              iconName: 'ViewportViews',
+              items: [
+                {
+                  id: 'applyDefaultProtocol',
+                  label: 'Default',
+                  commands: [
+                    'loadStudy',
+                    {
+                      commandName: 'setHangingProtocol',
+                      commandOptions: {
+                        protocolId: 'default',
+                      },
                     },
-                  },
-                ],
-              },
-              {
-                id: 'applyMPRProtocol',
-                label: '2x2 Grid',
-                commands: [
-                  'loadStudy',
-                  {
-                    commandName: 'setHangingProtocol',
-                    commandOptions: {
-                      protocolId: '@ohif/mnGrid',
+                  ],
+                },
+                {
+                  id: 'applyMPRProtocol',
+                  label: '2x2 Grid',
+                  commands: [
+                    'loadStudy',
+                    {
+                      commandName: 'setHangingProtocol',
+                      commandOptions: {
+                        protocolId: '@ohif/mnGrid',
+                      },
                     },
-                  },
-                ],
-              },
-            ],
-          },
-          {
-            id: 'showInOtherMonitor',
-            label: 'Launch On Second Monitor',
-            iconName: 'DicomTagBrowser',
-            // we should use evaluator for this, as these are basically toolbar buttons
-            selector: ({ servicesManager }) => {
-              const { multiMonitorService } = servicesManager.services;
-              return multiMonitorService.isMultimonitor;
+                  ],
+                },
+              ],
             },
-            commands: {
-              commandName: 'multimonitor',
-              commandOptions: {
-                hashParams: '&hangingProtocolId=@ohif/mnGrid8',
-                commands: [
-                  'loadStudy',
-                  {
-                    commandName: 'setHangingProtocol',
-                    commandOptions: {
-                      protocolId: '@ohif/mnGrid8',
+            {
+              id: 'showInOtherMonitor',
+              label: 'Launch On Second Monitor',
+              iconName: 'DicomTagBrowser',
+              // we should use evaluator for this, as these are basically toolbar buttons
+              selector: ({ servicesManager }) => {
+                const { multiMonitorService } = servicesManager.services;
+                return multiMonitorService.isMultimonitor;
+              },
+              commands: {
+                commandName: 'multimonitor',
+                commandOptions: {
+                  hashParams: '&hangingProtocolId=@ohif/mnGrid8',
+                  commands: [
+                    'loadStudy',
+                    {
+                      commandName: 'setHangingProtocol',
+                      commandOptions: {
+                        protocolId: '@ohif/mnGrid8',
+                      },
                     },
-                  },
-                ],
+                  ],
+                },
               },
             },
-          },
-        ],
+          ],
+        },
       },
     },
     {
@@ -235,53 +236,59 @@ export default function getCustomizationModule({ servicesManager, extensionManag
         ],
         sortingCriteria: sortingCriteria.seriesSortCriteria.seriesInfoSortingCriteria,
         'ohif.menuContent': function (props) {
-          const { item, commandsManager, servicesManager, ...rest } = props;
+          const { item: topLevelItem, commandsManager, servicesManager, ...rest } = props;
+
+          const content = function (subProps) {
+            const { item: subItem } = subProps;
+
+            // Regular menu item
+            const isDisabled = subItem.selector && !subItem.selector({ servicesManager });
+
+            return (
+              <DropdownMenuItem
+                disabled={isDisabled}
+                onSelect={() => {
+                  commandsManager.runAsync(subItem.commands, {
+                    ...subItem.commandOptions,
+                    ...rest,
+                  });
+                }}
+                className="gap-[6px]"
+              >
+                {subItem.iconName && (
+                  <Icons.ByName
+                    name={subItem.iconName}
+                    className="-ml-1"
+                  />
+                )}
+                {subItem.label}
+              </DropdownMenuItem>
+            );
+          };
 
           // If item has sub-items, render a submenu
-          if (item.items) {
+          if (topLevelItem.items) {
             return (
               <DropdownMenuSub>
                 <DropdownMenuSubTrigger className="gap-[6px]">
-                  {item.iconName && (
+                  {topLevelItem.iconName && (
                     <Icons.ByName
-                      name={item.iconName}
+                      name={topLevelItem.iconName}
                       className="-ml-1"
                     />
                   )}
-                  {item.label}
+                  {topLevelItem.label}
                 </DropdownMenuSubTrigger>
                 <DropdownMenuPortal>
                   <DropdownMenuSubContent>
-                    {item.items.map(subItem => this.content({ ...props, item: subItem }))}
+                    {topLevelItem.items.map(subItem => content({ ...props, item: subItem }))}
                   </DropdownMenuSubContent>
                 </DropdownMenuPortal>
               </DropdownMenuSub>
             );
           }
 
-          // Regular menu item
-          const isDisabled = item.selector && !item.selector({ servicesManager });
-
-          return (
-            <DropdownMenuItem
-              disabled={isDisabled}
-              onSelect={() => {
-                commandsManager.runAsync(item.commands, {
-                  ...item.commandOptions,
-                  ...rest,
-                });
-              }}
-              className="gap-[6px]"
-            >
-              {item.iconName && (
-                <Icons.ByName
-                  name={item.iconName}
-                  className="-ml-1"
-                />
-              )}
-              {item.label}
-            </DropdownMenuItem>
-          );
+          return content({ ...props, item: topLevelItem });
         },
       },
     },
