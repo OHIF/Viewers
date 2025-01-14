@@ -1,3 +1,7 @@
+/**
+ * Groups measurements by study in order to allow display and saving by study
+ * @param {Object} servicesManager
+ */
 export const groupByStudy =
   ({ servicesManager }) =>
   (groupedMeasurements, item) => {
