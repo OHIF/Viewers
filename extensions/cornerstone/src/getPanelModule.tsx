@@ -81,7 +81,7 @@ const getPanelModule = ({ commandsManager, servicesManager, extensionManager }: 
       name: 'panelMeasurement',
       iconName: 'tab-linear',
       iconLabel: 'Measure',
-      label: 'All Measurements',
+      label: 'Measurement',
       component: wrappedPanelMeasurement,
     },
     {
