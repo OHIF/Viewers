@@ -462,6 +462,12 @@ class MetadataProvider {
   }
 
   getUIDsFromImageID(imageId) {
+    const frameNumber = this.getFrameInformationFromURL(imageId) || '1';
+    // add &frame=number to imageId if it doesn't already exist.
+    if (!imageId.includes('&frame=')) {
+      imageId = imageId + '&frame=' + frameNumber;
+    }
+
     const cachedUIDs = this.imageUIDsByImageId.get(imageId);
     if (cachedUIDs) {
       return cachedUIDs;
@@ -499,12 +505,7 @@ class MetadataProvider {
       imageURI = imageIdToURI(imageId);
     }
 
-    // remove &frame=number from imageId
-    imageURI = imageURI.split('&frame=')[0];
-
     const uids = this.imageURIToUIDs.get(imageURI);
-    const frameNumber = this.getFrameInformationFromURL(imageId) || '1';
-
     if (uids && frameNumber !== undefined) {
       return { ...uids, frameNumber };
     }
