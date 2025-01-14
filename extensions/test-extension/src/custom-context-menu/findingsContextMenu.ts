@@ -1,5 +1,4 @@
 const findingsContextMenu = {
-  id: 'measurementsContextMenu',
   inheritsFrom: 'ohif.contextMenu',
   menus: [
     {
