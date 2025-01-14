@@ -4,13 +4,13 @@ import { useTranslation } from 'react-i18next';
 import PropTypes from 'prop-types';
 import { utils } from '@ohif/core';
 import { useImageViewer, Dialog, ButtonEnums } from '@ohif/ui';
-import { useViewportGrid, DropdownMenu, DropdownMenuTrigger, Icons, Button } from '@ohif/ui-next';
+import { useViewportGrid } from '@ohif/ui-next';
 import { StudyBrowser } from '@ohif/ui-next';
 
 import { useTrackedMeasurements } from '../../getContextModule';
 import { Separator } from '@ohif/ui-next';
-import { PanelStudyBrowserHeader, MoreDropdownMenu } from '@ohif/extension-default';
-import { defaultActionIcons, defaultViewPresets } from './constants';
+import { PanelStudyBrowserHeader } from '@ohif/extension-default';
+import { defaultActionIcons } from './constants';
 const { formatDate, createStudyBrowserTabs } = utils;
 const thumbnailNoImageModalities = [
   'SR',
@@ -46,11 +46,7 @@ export default function PanelStudyBrowserTracking({
     customizationService,
   } = servicesManager.services;
   const navigate = useNavigate();
-  const { mode: studyMode } = customizationService.getCustomization(
-    'PanelStudyBrowser.studyMode'
-  ) || {
-    mode: 'all',
-  };
+  const studyMode = customizationService.getCustomization('PanelStudyBrowser.studyMode');
 
   const { t } = useTranslation('Common');
 
@@ -74,7 +70,7 @@ export default function PanelStudyBrowserTracking({
   const [jumpToDisplaySet, setJumpToDisplaySet] = useState(null);
 
   const [viewPresets, setViewPresets] = useState(
-    customizationService.getCustomization('studyBrowser.viewPresets')?.value || defaultViewPresets
+    customizationService.getCustomization('studyBrowser.viewPresets')
   );
 
   const [actionIcons, setActionIcons] = useState(defaultActionIcons);

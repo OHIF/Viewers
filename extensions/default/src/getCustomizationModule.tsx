@@ -208,6 +208,7 @@ export default function getCustomizationModule({ servicesManager, extensionManag
           }
           return clonedObject;
         },
+        'PanelStudyBrowser.studyMode': 'all',
         // the generic GUI component to configure a data source using an instance of a BaseDataSourceConfigurationAPI
         'ohif.dataSourceConfigurationComponent': DataSourceConfigurationComponent.bind(null, {
           servicesManager,

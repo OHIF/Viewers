@@ -553,8 +553,9 @@ function WorkList({
         }
       : undefined;
 
-  const { component: dataSourceConfigurationComponent } =
-    customizationService.getCustomization('ohif.dataSourceConfigurationComponent') ?? {};
+  const dataSourceConfigurationComponent = customizationService.getCustomization(
+    'ohif.dataSourceConfigurationComponent'
+  );
 
   return (
     <div className="flex h-screen flex-col bg-black">

@@ -52,7 +52,7 @@ function initContextMenu({
     // only find nearbyToolData if required, for the click (which closes the context menu
     // we don't need to find nearbyToolData)
     let nearbyToolData = null;
-    if (toRun.commands.some(command => command.commandOptions?.requireNearbyToolData)) {
+    if (toRun.some(command => command.commandOptions?.requireNearbyToolData)) {
       nearbyToolData = findNearbyToolData(commandsManager, evt);
     }
 

@@ -8,8 +8,13 @@ window.config = {
   modes: [],
   customizationService: [
     {
-      'PanelMeasurement.disableEditing': {
-        $set: true, // Disables editing measurements in the panel
+      'studyBrowser.sortFunctions': {
+        $push: [
+          {
+            label: 'Series Stuff',
+            sortFunction: (a, b) => Stuff,
+          },
+        ],
       },
     },
   ],

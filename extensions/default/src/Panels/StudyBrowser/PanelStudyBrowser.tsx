@@ -43,7 +43,7 @@ function PanelStudyBrowser({
   const [thumbnailImageSrcMap, setThumbnailImageSrcMap] = useState({});
 
   const [viewPresets, setViewPresets] = useState(
-    customizationService.getCustomization('studyBrowser.viewPresets')?.value || defaultViewPresets
+    customizationService.getCustomization('studyBrowser.viewPresets')
   );
 
   const [actionIcons, setActionIcons] = useState(defaultActionIcons);

@@ -36,43 +36,7 @@ window.config = {
 };
     `,
   },
-  {
-    id: 'studyBrowser.sortFunctions',
-    description: 'Sorting options for study browser items.',
-    image: seriesSortImage,
-    default: [
-      {
-        label: 'Series Number',
-        sortFunction: (a, b) => {
-          return a?.SeriesNumber - b?.SeriesNumber;
-        },
-      },
-      {
-        label: 'Series Date',
-        sortFunction: (a, b) => {
-          const dateA = new Date(formatDate(a?.SeriesDate));
-          const dateB = new Date(formatDate(b?.SeriesDate));
-          return dateB.getTime() - dateA.getTime();
-        },
-      },
-    ],
-    configuration: `
-window.config = {
-  customizationService: [
-    {
-      'studyBrowser.sortFunctions': {
-        $push: [
-          {
-            label: 'Series Stuff',
-            sortFunction: (a, b) => Stuff,
-          },
-        ],
-      },
-    },
-  ],
-};
-    `,
-  },
+
   {
     id: 'cornerstoneViewportClickCommands',
     description: 'Defines the viewport event handlers such as button1, button2, doubleClick, etc.',
@@ -491,6 +455,101 @@ window.config = {
   ],
 };
   `,
+  },
+];
+
+export const studyBrowserCustomizations = [
+  {
+    id: 'PanelStudyBrowser.studyMode',
+    description:
+      'Controls the study browser mode to determine whether to show all studies (including prior studies) or only the current study.',
+    default: `'all'`,
+    configuration: `
+window.config = {
+  customizationService: [
+    {
+      'PanelStudyBrowser.studyMode': {
+         $set: 'primary', // or recent
+      },
+    },
+  ],
+};
+  `,
+  },
+  {
+    id: 'studyBrowser.viewPresets',
+    description: 'Defines the view presets for the study browser, such as list or thumbnail views.',
+    default: [
+      {
+        id: 'list',
+        iconName: 'ListView',
+        selected: false,
+      },
+      {
+        id: 'thumbnails',
+        iconName: 'ThumbnailView',
+        selected: true,
+      },
+    ],
+    configuration: `
+window.config = {
+  customizationService: [
+    {
+      'studyBrowser.viewPresets': {
+        $set: [
+          {
+            id: 'list',
+            iconName: 'ListView',
+            selected: true, // Makes the list view the default selected option
+          },
+          {
+            id: 'thumbnails',
+            iconName: 'ThumbnailView',
+            selected: false,
+          },
+        ],
+      },
+    },
+  ],
+};
+  `,
+  },
+  {
+    id: 'studyBrowser.sortFunctions',
+    description: 'Sorting options for study browser items.',
+    image: seriesSortImage,
+    default: [
+      {
+        label: 'Series Number',
+        sortFunction: (a, b) => {
+          return a?.SeriesNumber - b?.SeriesNumber;
+        },
+      },
+      {
+        label: 'Series Date',
+        sortFunction: (a, b) => {
+          const dateA = new Date(formatDate(a?.SeriesDate));
+          const dateB = new Date(formatDate(b?.SeriesDate));
+          return dateB.getTime() - dateA.getTime();
+        },
+      },
+    ],
+    configuration: `
+window.config = {
+  customizationService: [
+    {
+      'studyBrowser.sortFunctions': {
+        $push: [
+          {
+            label: 'Series Stuff',
+            sortFunction: (a, b) => Stuff,
+          },
+        ],
+      },
+    },
+  ],
+};
+    `,
   },
 ];
 
