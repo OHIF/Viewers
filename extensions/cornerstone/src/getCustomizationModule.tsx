@@ -349,7 +349,7 @@ function getCustomizationModule({ commandsManager, servicesManager }) {
           SplineROI: {
             displayText: [
               {
-                displayName: 'Area',
+                displayName: 'Areas',
                 value: 'area',
                 type: 'value',
               },

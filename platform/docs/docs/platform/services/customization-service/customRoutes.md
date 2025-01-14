@@ -13,31 +13,71 @@ sidebar_position: 2
 
 ### Example
 
+Since custom routes use React, they should be defined as modules inside the extension that is providing them. And cannot be
+in the AppConfig (yet).
+
+
 ```js
-{
-  id: 'customRoutes',
-  routes: [
+export default function getCustomizationModule({ servicesManager, extensionManager }) {
+  return [
     {
-      path: '/myroute',
-      children: MyRouteReactFunction,
-    }
-  ],
-}
+      name: 'helloPage',
+      value: {
+        customRoutes: {
+          routes: {
+            $push: [
+              {
+                path: '/custom',
+                children: () => <h1 style={{ color: 'white' }}>Hello Custom Route</h1>,
+              },
+            ],
+          },
+        },
+      },
+    },
+  ]
 ```
 
-There is a usage of this example commented out in config/default.js that
-looks like the code below.  This example is provided by the default extension,
-again with commented out code.  Uncomment the getCustomizationModule customRoutes
-code in the default module to activate this, and then go to: `http://localhost:3000/custom`
-to see the custom route.
-
-Note the name of this is the customization module name, which usually won't match
-the id, and in fact there can be multiple customization objects defined for a single
-customization module, to allow for customizing sets of related values.
+Then after you define the module, you can add it to the customizationService in the AppConfig and reference it by the name you provided.
 
 ```js
 customizationService: [
     // Shows a custom route -access via http://localhost:3000/custom
     '@ohif/extension-default.customizationModule.helloPage',
+],
+```
+
+You can provide multiple custom routes in the same module, for instance another extension can also push to the routes array.
+
+```js
+export default function getCustomizationModule({ servicesManager, extensionManager }) {
+  return [
+    {
+      name: 'secondPage',
+      value: {
+        customRoutes: {
+          routes: {
+            $push: [
+              {
+                path: '/second',
+                children: () => <h1 style={{ color: 'white' }}>Hello Second Route</h1>,
+              },
+            ],
+          },
+        },
+      },
+    },
+  ]
+}
+```
+
+Then you can add it to the customizationService in the AppConfig and reference it by the name you provided.
+
+```js
+customizationService: [
+    // Shows a custom route -access via http://localhost:3000/custom
+    '@ohif/extension-default.customizationModule.helloPage',
+    // Shows a custom route -access via http://localhost:3000/second
+    '@ohif/extension-default.customizationModule.secondPage',
 ],
 ```

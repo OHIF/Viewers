@@ -145,9 +145,7 @@ function getMappedAnnotations(annotation, displaySetService) {
  * @returns {object} Report's content.
  */
 function getColumnValueReport(annotation, customizationService) {
-  const { SplineROI } = customizationService.getCustomization('cornerstone.measurements') || {
-    SplineROI: {},
-  };
+  const { SplineROI } = customizationService.getCustomization('cornerstone.measurements');
   const { report } = SplineROI;
   const columns = [];
   const values = [];

@@ -142,11 +142,7 @@ function getMappedAnnotations(annotation, displaySetService) {
  * @returns {object} Report's content.
  */
 function getColumnValueReport(annotation, customizationService) {
-  const { PlanarFreehandROI } = customizationService.getCustomization(
-    'cornerstone.measurements'
-  ) || {
-    PlanarFreehandROI: {},
-  };
+  const { PlanarFreehandROI } = customizationService.getCustomization('cornerstone.measurements');
   const { report } = PlanarFreehandROI;
   const columns = [];
   const values = [];

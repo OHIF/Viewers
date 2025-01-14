@@ -52,7 +52,6 @@ export default function getCustomizationModule({ servicesManager, extensionManag
     },
     {
       name: 'multimonitor',
-      merge: 'Append',
       value: {
         customizationType: 'ohif.menuContent',
         'studyBrowser.studyMenuItems': [
