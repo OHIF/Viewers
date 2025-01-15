@@ -73,9 +73,6 @@ const combineFrameInstance = (frame, instance) => {
       PerFrameFunctionalGroupsSequence?.[frameNumber]
     );
 
-    // Note: do not assign directly to newInstance.ImagePositionPatient
-    // because it will also overwrite the instance.ImagePositionPatient since it
-    // is create via Object.create(parent)
     Object.defineProperty(newInstance, 'ImagePositionPatient', {
       value: ImagePositionPatientToUse ?? newInstance.ImagePositionPatient ?? [0, 0, frameNumber],
       writable: true,
