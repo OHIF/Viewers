@@ -34,10 +34,10 @@
     "test:unit:ci": "jest --ci --runInBand --collectCoverage --passWithNoTests"
   },
   "peerDependencies": {
-    "@ohif/core": "3.10.0-beta.59",
-    "@ohif/extension-cornerstone": "3.10.0-beta.59",
-    "@ohif/extension-measurement-tracking": "3.10.0-beta.59",
-    "@ohif/ui": "3.10.0-beta.59",
+    "@ohif/core": "3.10.0-beta.60",
+    "@ohif/extension-cornerstone": "3.10.0-beta.60",
+    "@ohif/extension-measurement-tracking": "3.10.0-beta.60",
+    "@ohif/ui": "3.10.0-beta.60",
     "dcmjs": "*",
     "dicom-parser": "^1.8.9",
     "hammerjs": "^2.0.8",
