@@ -8,7 +8,7 @@ window.config = {
   showLoadingIndicator: true,
   showWarningMessageForCrossOrigin: true,
   showCPUFallbackMessage: true,
-  strictZSpacingForVolumeViewport: true,
+  strictZSpacingForVolumeViewport: false,
   // filterQueryParam: false,
   defaultDataSourceName: 'orthanc',
   dataSources: [
