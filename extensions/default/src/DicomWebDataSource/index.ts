@@ -492,7 +492,7 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
               StudyInstanceUID,
               SeriesInstanceUID,
               SOPInstanceUID,
-              frameNumber: numberOfFrames > 1 ? frameNumber : undefined,
+              frameNumber: numberOfFrames > 1 ? frameNumber : 1,
             });
           }
 
