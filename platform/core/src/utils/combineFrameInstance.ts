@@ -83,7 +83,7 @@ const combineFrameInstance = (frame, instance) => {
     const newInstance = createCombinedValue(
       sharedInstance,
       PerFrameFunctionalGroupsSequence?.[frameNumber - 1],
-      `_shared-${frameNumber}`
+      frameNumber
     );
 
     newInstance.ImagePositionPatient = ImagePositionPatientToUse ??
