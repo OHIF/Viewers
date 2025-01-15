@@ -75,9 +75,11 @@ const combineFrameInstance = (frame, instance) => {
         value: { ...instance },
       });
     }
-    const sharedInstance =
-      instance._shared ||
-      createCombinedValue(instance._parentInstance, SharedFunctionalGroupsSequence?.[0], '_shared');
+    const sharedInstance = createCombinedValue(
+      instance._parentInstance,
+      SharedFunctionalGroupsSequence?.[0],
+      '_shared'
+    );
     const newInstance = createCombinedValue(
       sharedInstance,
       PerFrameFunctionalGroupsSequence?.[frameNumber - 1],
