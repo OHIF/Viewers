@@ -478,7 +478,7 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
           instance.wadoUri = dicomWebConfig.wadoUri;
 
           const { StudyInstanceUID, SeriesInstanceUID, SOPInstanceUID } = instance;
-
+          console.debug('s');
           const numberOfFrames = instance.NumberOfFrames || 1;
           // Process all frames consistently, whether single or multiframe
           for (let i = 0; i < numberOfFrames; i++) {
@@ -492,7 +492,7 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
               StudyInstanceUID,
               SeriesInstanceUID,
               SOPInstanceUID,
-              frameNumber: numberOfFrames > 1 ? frameNumber : 1,
+              frameNumber: numberOfFrames > 1 ? frameNumber : undefined,
             });
           }
 
