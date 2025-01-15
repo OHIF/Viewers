@@ -1,6 +1,11 @@
 import { vec3 } from 'gl-matrix';
 import { dicomSplit } from './dicomSplit';
 
+function cloneProxy(proxy) {
+  const target = Reflect.get(proxy, '__target') || proxy;
+  return new Proxy({ ...target }, {});
+}
+
 /**
  * Combine the Per instance frame data, the shared frame data
  * and the root data objects.
@@ -67,10 +72,13 @@ const combineFrameInstance = (frame, instance) => {
         ImagePositionPatientToUse = [position[0], position[1], position[2]];
       }
     }
-    const sharedInstance = createCombinedValue(instance, SharedFunctionalGroupsSequence?.[0]);
-    const newInstance = createCombinedValue(
+
+    let newInstance = cloneProxy(instance);
+
+    const sharedInstance = createCombinedValue(newInstance, SharedFunctionalGroupsSequence?.[0]);
+    newInstance = createCombinedValue(
       sharedInstance,
-      PerFrameFunctionalGroupsSequence?.[frameNumber]
+      PerFrameFunctionalGroupsSequence?.[frameNumber - 1]
     );
 
     Object.defineProperty(newInstance, 'ImagePositionPatient', {
