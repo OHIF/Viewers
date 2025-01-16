@@ -1,6 +1,7 @@
 import React from 'react';
 import { ButtonGroup, InputDoubleRange } from '../../components';
 import { InputRange } from '@ohif/ui-next';
+import { RowSegmentedControl } from '@ohif/ui-next';
 
 const SETTING_TYPES = {
   RANGE: 'range',
@@ -65,37 +66,49 @@ const renderRangeSetting = option => {
   );
 };
 
+// New implementation of Radio setting
 const renderRadioSetting = option => {
-  const renderButtons = option => {
-    return option.values?.map(({ label, value: optionValue }, index) => (
-      <button
-        onClick={() => {
-          option.commands?.(optionValue);
-        }}
-        key={`button-${option.id}-${index}`}
-      >
-        {label}
-      </button>
-    ));
-  };
-
   return (
-    <div
-      className="flex items-center justify-between text-[13px]"
+    <RowSegmentedControl
       key={option.id}
-    >
-      <span>{option.name}</span>
-      <div className="max-w-1/2">
-        <ButtonGroup
-          className="border-secondary-light rounded-md border"
-          activeIndex={option.values.findIndex(({ value }) => value === option.value) || 0}
-        >
-          {renderButtons(option)}
-        </ButtonGroup>
-      </div>
-    </div>
+      option={option}
+    />
   );
 };
+
+// Previous implementation of Radio setting
+//
+// const renderRadioSetting = option => {
+//   const renderButtons = option => {
+//     return option.values?.map(({ label, value: optionValue }, index) => (
+//       <button
+//         onClick={() => {
+//           option.commands?.(optionValue);
+//         }}
+//         key={`button-${option.id}-${index}`}
+//       >
+//         {label}
+//       </button>
+//     ));
+//   };
+
+//   return (
+//     <div
+//       className="flex items-center justify-between text-[13px]"
+//       key={option.id}
+//     >
+//       <span>{option.name}</span>
+//       <div className="max-w-1/2">
+//         <ButtonGroup
+//           className="border-secondary-light rounded-md border"
+//           activeIndex={option.values.findIndex(({ value }) => value === option.value) || 0}
+//         >
+//           {renderButtons(option)}
+//         </ButtonGroup>
+//       </div>
+//     </div>
+//   );
+// };
 
 const renderDoubleRangeSetting = option => {
   return (

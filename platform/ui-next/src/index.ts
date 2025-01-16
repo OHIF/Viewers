@@ -93,6 +93,7 @@ import {
   ToolButton,
   ToolButtonList,
   InputRange,
+  RowSegmentedControl,
 } from './components';
 import { DataRow } from './components/DataRow';
 
@@ -202,4 +203,5 @@ export {
   ToolButton,
   ToolButtonList,
   InputRange,
+  RowSegmentedControl,
 };

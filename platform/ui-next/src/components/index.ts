@@ -93,6 +93,7 @@ import {
 import { ToolButton } from './ToolButton';
 import { ToolButtonList } from './ToolButton';
 import { InputRange } from './OHIFToolSettings';
+import { RowSegmentedControl } from './OHIFToolSettings';
 
 export {
   ErrorBoundary,
@@ -210,4 +211,5 @@ export {
   ToolButton,
   ToolButtonList,
   InputRange,
+  RowSegmentedControl,
 };
