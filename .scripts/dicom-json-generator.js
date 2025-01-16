@@ -28,10 +28,72 @@ const fs = require('fs').promises;
 const args = process.argv.slice(2);
 const [studyDirectory, urlPrefix, outputPath, scheme = 'dicomweb'] = args;
 
-// Add ignoreErrors option to handle multiple character sets gracefully
-const options = {
-  ignoreErrors: true // This will allow processing to continue with the first character set when multiple are present
-};
+// Helper function to handle multiple character sets according to DICOM standard
+function handleMultipleCharacterSets(buffer) {
+  try {
+    // Validate buffer size
+    if (!buffer || buffer.byteLength < 132) { // 128 byte preamble + 4 byte DICM
+      console.warn('DICOM file too small, using default character set');
+      return {};
+    }
+
+    const view = new DataView(buffer);
+    
+    // Check for DICM magic number
+    const magicStr = String.fromCharCode(
+      view.getUint8(128), view.getUint8(129),
+      view.getUint8(130), view.getUint8(131)
+    );
+    
+    if (magicStr !== 'DICM') {
+      console.warn('Invalid DICOM file (missing DICM magic number), using default character set');
+      return {};
+    }
+
+    let offset = 132; // Start after preamble and magic number
+    
+    // Find SpecificCharacterSet tag (0008,0005)
+    while (offset + 8 <= buffer.byteLength) { // Ensure we can read tag + VR + length
+      const group = view.getUint16(offset, false);
+      const element = view.getUint16(offset + 2, false);
+      
+      if (group === 0x0008 && element === 0x0005) {
+        const vr = String.fromCharCode(view.getUint8(offset + 4), view.getUint8(offset + 5));
+        if (vr !== 'CS') {
+          console.warn('Invalid VR for SpecificCharacterSet, expected CS');
+          return {};
+        }
+
+        const length = view.getUint16(offset + 6, false);
+        if (offset + 8 + length > buffer.byteLength) {
+          console.warn('Invalid length for SpecificCharacterSet');
+          return {};
+        }
+
+        const rawValue = new Uint8Array(buffer, offset + 8, length);
+        const decoder = new TextDecoder('ascii');
+        const charsets = decoder.decode(rawValue).trim().split('\\');
+        
+        console.log(`Detected character sets: ${charsets.join(', ')}`);
+        
+        // Create options based on character sets
+        return {
+          // If ISO_IR 192 (UTF-8) is present, use it exclusively
+          forceCharacterSet: charsets.includes('ISO_IR 192') ? 'ISO_IR 192' : undefined,
+          // Otherwise, handle character set transitions according to ISO 2022
+          characterSets: charsets
+        };
+      }
+      offset += 8; // Move to next tag
+    }
+    
+    console.log('No SpecificCharacterSet found, using default');
+    return {}; // No character set specified, use default
+  } catch (error) {
+    console.warn('Error reading character sets:', error.message);
+    return {}; // Return default on any error
+  }
+}
 
 if (args.length < 3 || args.length > 4) {
   console.error(
@@ -52,7 +114,8 @@ async function convertDICOMToJSON(studyDirectory, urlPrefix, outputPath, scheme)
     for (const file of files) {
       if (!file.includes('.DS_Store') && !file.includes('.xml')) {
         const arrayBuffer = await fs.readFile(file);
-        const dicomDict = dcmjs.data.DicomMessage.readFile(arrayBuffer.buffer, options);
+        const charsetOptions = handleMultipleCharacterSets(arrayBuffer.buffer);
+        const dicomDict = dcmjs.data.DicomMessage.readFile(arrayBuffer.buffer, charsetOptions);
         const instance = dcmjs.data.DicomMetaDictionary.naturalizeDataset(dicomDict.dict);
 
         instance.fileLocation = createImageId(file, urlPrefix, studyDirectory, scheme);
