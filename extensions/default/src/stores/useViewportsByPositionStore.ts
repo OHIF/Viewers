@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
 
 const PRESENTATION_TYPE_ID = 'viewportsByPositionId';
-const DEBUG_STORE = true;
+const DEBUG_STORE = false;
 
 /**
  * Represents the state and actions for managing viewports by position.
