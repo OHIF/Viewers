@@ -28,6 +28,11 @@ const fs = require('fs').promises;
 const args = process.argv.slice(2);
 const [studyDirectory, urlPrefix, outputPath, scheme = 'dicomweb'] = args;
 
+// Add ignoreErrors option to handle multiple character sets gracefully
+const options = {
+  ignoreErrors: true // This will allow processing to continue with the first character set when multiple are present
+};
+
 if (args.length < 3 || args.length > 4) {
   console.error(
     'Usage: node dicom-json-generator.js <studyFolder> <urlPrefix> <outputJSONPath> [scheme]'
@@ -47,7 +52,7 @@ async function convertDICOMToJSON(studyDirectory, urlPrefix, outputPath, scheme)
     for (const file of files) {
       if (!file.includes('.DS_Store') && !file.includes('.xml')) {
         const arrayBuffer = await fs.readFile(file);
-        const dicomDict = dcmjs.data.DicomMessage.readFile(arrayBuffer.buffer);
+        const dicomDict = dcmjs.data.DicomMessage.readFile(arrayBuffer.buffer, options);
         const instance = dcmjs.data.DicomMetaDictionary.naturalizeDataset(dicomDict.dict);
 
         instance.fileLocation = createImageId(file, urlPrefix, studyDirectory, scheme);
