@@ -674,6 +674,7 @@ export const Icons = {
   'layout-common-2x3': (props: IconProps) => LayoutCommon2x3(props),
   pencil: (props: IconProps) => Pencil(props),
   'icon-list-view': (props: IconProps) => ListView(props),
+  'chevron-menu': 'chevron-down',
   clipboard: (props: IconProps) => Clipboard(props),
 
   /** Adds an icon to the set of icons */
