@@ -1,5 +1,6 @@
 import React from 'react';
-import { ButtonGroup, InputDoubleRange, InputRange } from '../../components';
+import { ButtonGroup, InputDoubleRange } from '../../components';
+import { InputRange } from '@ohif/ui-next';
 
 const SETTING_TYPES = {
   RANGE: 'range',

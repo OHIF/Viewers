@@ -110,5 +110,7 @@
     "wadors",
     "wadouri",
     "workerpool"
-  ]
+  ],
+  "editor.fontFamily": "'Berkeley Mono', Menlo, Monaco, 'Courier New', monospace",
+  "editor.fontLigatures": false
 }

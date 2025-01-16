@@ -92,6 +92,7 @@ import {
 } from './Viewport';
 import { ToolButton } from './ToolButton';
 import { ToolButtonList } from './ToolButton';
+import { InputRange } from './OHIFToolSettings';
 
 export {
   ErrorBoundary,
@@ -208,4 +209,5 @@ export {
   Clipboard,
   ToolButton,
   ToolButtonList,
+  InputRange,
 };

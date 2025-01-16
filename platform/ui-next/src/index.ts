@@ -92,6 +92,7 @@ import {
   ViewportGrid,
   ToolButton,
   ToolButtonList,
+  InputRange,
 } from './components';
 import { DataRow } from './components/DataRow';
 
@@ -200,4 +201,5 @@ export {
   ViewportGrid,
   ToolButton,
   ToolButtonList,
+  InputRange,
 };
