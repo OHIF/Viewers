@@ -67,18 +67,27 @@ const combineFrameInstance = (frame, instance) => {
         ImagePositionPatientToUse = [position[0], position[1], position[2]];
       }
     }
-    const sharedInstance = createCombinedValue(instance, SharedFunctionalGroupsSequence?.[0]);
+
+    // Cache the _parentInstance at the top level as a full copy to prevent
+    // setting values hard.
+    if (!instance._parentInstance) {
+      Object.defineProperty(instance, '_parentInstance', {
+        value: { ...instance },
+      });
+    }
+    const sharedInstance = createCombinedValue(
+      instance._parentInstance,
+      SharedFunctionalGroupsSequence?.[0],
+      '_shared'
+    );
     const newInstance = createCombinedValue(
       sharedInstance,
-      PerFrameFunctionalGroupsSequence?.[frameNumber]
+      PerFrameFunctionalGroupsSequence?.[frameNumber - 1],
+      frameNumber
     );
 
-    Object.defineProperty(newInstance, 'ImagePositionPatient', {
-      value: ImagePositionPatientToUse ?? newInstance.ImagePositionPatient ?? [0, 0, frameNumber],
-      writable: true,
-      enumerable: true,
-      configurable: true,
-    });
+    newInstance.ImagePositionPatient = ImagePositionPatientToUse ??
+      newInstance.ImagePositionPatient ?? [0, 0, frameNumber];
 
     Object.defineProperty(newInstance, 'frameNumber', {
       value: frameNumber,
@@ -92,13 +101,24 @@ const combineFrameInstance = (frame, instance) => {
   }
 };
 
-function createCombinedValue(parent, functionalGroups) {
+/**
+ * Creates a combined instance stored in the parent object which
+ * inherits from the parent instance the attributes in the functional groups.
+ * The storage key in the parent is in key
+ */
+function createCombinedValue(parent, functionalGroups, key) {
+  if (parent[key]) {
+    return parent[key];
+  }
+  // Exclude any proxying values
   const newInstance = Object.create(parent);
+  Object.defineProperty(parent, key, {
+    value: newInstance,
+    writable: false,
+    enumerable: false,
+  });
   if (!functionalGroups) {
     return newInstance;
-  }
-  if (functionalGroups._sharedValue) {
-    return functionalGroups._sharedValue;
   }
   const shared = functionalGroups
     ? Object.values(functionalGroups)
@@ -116,11 +136,6 @@ function createCombinedValue(parent, functionalGroups) {
     Object.entries(item).forEach(([key, value]) => {
       newInstance[key] = value;
     });
-  });
-  Object.defineProperty(functionalGroups, '_sharedValue', {
-    value: newInstance,
-    writable: false,
-    enumerable: false,
   });
   return newInstance;
 }
