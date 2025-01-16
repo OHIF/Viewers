@@ -25,7 +25,7 @@ const ContextMenu = ({ items, ...props }) => {
           {item.iconRight && (
             <Icons.ByName
               name={item.iconRight}
-              className="inline"
+              className="inline text-white"
             />
           )}
         </div>
