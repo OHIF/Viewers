@@ -1,7 +1,7 @@
 import React from 'react';
-import { ButtonGroup, InputDoubleRange } from '../../components';
 import { InputRange } from '@ohif/ui-next';
 import { RowSegmentedControl } from '@ohif/ui-next';
+import { RowDoubleRange } from '@ohif/ui-next';
 
 const SETTING_TYPES = {
   RANGE: 'range',
@@ -66,7 +66,6 @@ const renderRangeSetting = option => {
   );
 };
 
-// New implementation of Radio setting
 const renderRadioSetting = option => {
   return (
     <RowSegmentedControl
@@ -76,60 +75,21 @@ const renderRadioSetting = option => {
   );
 };
 
-// Previous implementation of Radio setting
-//
-// const renderRadioSetting = option => {
-//   const renderButtons = option => {
-//     return option.values?.map(({ label, value: optionValue }, index) => (
-//       <button
-//         onClick={() => {
-//           option.commands?.(optionValue);
-//         }}
-//         key={`button-${option.id}-${index}`}
-//       >
-//         {label}
-//       </button>
-//     ));
-//   };
-
-//   return (
-//     <div
-//       className="flex items-center justify-between text-[13px]"
-//       key={option.id}
-//     >
-//       <span>{option.name}</span>
-//       <div className="max-w-1/2">
-//         <ButtonGroup
-//           className="border-secondary-light rounded-md border"
-//           activeIndex={option.values.findIndex(({ value }) => value === option.value) || 0}
-//         >
-//           {renderButtons(option)}
-//         </ButtonGroup>
-//       </div>
-//     </div>
-//   );
-// };
-
-const renderDoubleRangeSetting = option => {
+function renderDoubleRangeSetting(option) {
   return (
-    <div
-      className="flex w-full items-center"
+    <RowDoubleRange
       key={option.id}
-    >
-      <InputDoubleRange
-        values={option.value}
-        onChange={option.commands}
-        minValue={option.min}
-        maxValue={option.max}
-        step={option.step}
-        showLabel={true}
-        allowNumberEdit={true}
-        showAdjustmentArrows={false}
-        containerClassName="w-full"
-      />
-    </div>
+      values={option.value}
+      onChange={option.commands}
+      minValue={option.min}
+      maxValue={option.max}
+      step={option.step}
+      showLabel={false}
+      allowNumberEdit={true}
+      containerClassName="w-full"
+    />
   );
-};
+}
 
 const renderCustomSetting = option => {
   return (
