@@ -473,7 +473,6 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
         const naturalizedInstances = instances.map(addRetrieveBulkData);
 
         // Adding instanceMetadata to OHIF MetadataProvider
-        //
         naturalizedInstances.forEach(instance => {
           instance.wadoRoot = dicomWebConfig.wadoRoot;
           instance.wadoUri = dicomWebConfig.wadoUri;
