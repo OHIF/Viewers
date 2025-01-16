@@ -1,9 +1,10 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { CommandsManager, ServicesManager, utils } from '@ohif/core';
-import { MeasurementTable } from '@ohif/ui-next';
+import { Accordion, AccordionItem, MeasurementTable } from '@ohif/ui-next';
 import debounce from 'lodash.debounce';
 import { useMeasurements } from '../hooks/useMeasurements';
 import { StudySummaryFromMetadata } from '../components/StudySummaryFromMetadata';
+import { CollapsibleStudySummaryFromMetadata } from '../components/CollapsibleStudySummaryFromMetadata';
 
 const { groupByStudy: defaultGroupingFunction } = utils.MeasurementGroupings;
 
@@ -90,6 +91,48 @@ export default function PanelMeasurement({
     };
   });
 
+  const nodes = items =>
+    items.map(item => ({
+      id: item.study,
+      fallback: (
+        <div className="text-primary-light mb-1 flex flex-1 items-center px-2 py-2 text-base">
+          No measurements recursive
+        </div>
+      ),
+      content: ({ children }) => (
+        <CollapsibleStudySummaryFromMetadata StudyInstanceUID={item.study}>
+          {children}
+        </CollapsibleStudySummaryFromMetadata>
+      ),
+      nodes: [
+        {
+          id: 'measurements',
+          content: ({ children }) => (
+            <MeasurementTable
+              title={title ? title : `Measurements`}
+              data={item.measurements}
+              {...onArgs}
+            >
+              <MeasurementTable.Body />
+            </MeasurementTable>
+          ),
+        },
+        {
+          id: 'additionalFindings',
+          content: ({ children }) => (
+            <MeasurementTable
+              key="additional"
+              data={item.additionalFindings}
+              title={`Additional Findings`}
+              {...onArgs}
+            >
+              <MeasurementTable.Body />
+            </MeasurementTable>
+          ),
+        },
+      ],
+    }));
+
   const onArgs = {
     onClick: jumpToImage,
     onDelete: removeMeasurement,
@@ -101,63 +144,53 @@ export default function PanelMeasurement({
   return (
     <>
       <div
-        className="invisible-scrollbar overflow-y-auto overflow-x-hidden"
+        className="invisible-scrollbar w-max overflow-y-auto overflow-x-hidden"
         ref={measurementsPanelRef}
         data-cy={'measurements-panel'}
       >
-        {items.length === 0 ? (
-          <div className="text-primary-light mb-1 flex flex-1 items-center px-2 py-2 text-base">
-            No measurements
-          </div>
-        ) : (
-          <></>
-        )}
-        {items.map(item => {
-          return (
-            <div key={`${item.study}`}>
-              <StudySummaryFromMetadata StudyInstanceUID={item.study} />
-              {item.measurements.length === 0 ? (
-                <></>
-              ) : (
-                <MeasurementTable
-                  title={title ? title : `Measurements`}
-                  data={item.measurements}
-                  {...onArgs}
-                >
-                  <MeasurementTable.Header>
-                    {customHeader && (
-                      <>
-                        {typeof customHeader === 'function'
-                          ? customHeader({
-                              additionalFindings,
-                              measurements,
-                              measurementFilter,
-                              studyInstanceUID: item.study,
-                            })
-                          : customHeader}
-                      </>
-                    )}
-                  </MeasurementTable.Header>
-                  <MeasurementTable.Body />
-                </MeasurementTable>
-              )}
-
-              {item.additionalFindings.length === 0 ? (
-                <></>
-              ) : (
-                <MeasurementTable
-                  key="additional"
-                  data={item.additionalFindings}
-                  title={`Additional Findings`}
-                  {...onArgs}
-                >
-                  <MeasurementTable.Body />
-                </MeasurementTable>
-              )}
-            </div>
-          );
-        })}
+        {nodes(items).map(node => (
+          <ul key={node.id}>
+            <RecursiveStructure node={node} />
+          </ul>
+        ))}
       </div>
     </>
+  );
+}
+
+type Node = {
+  id: string;
+  content: React.JSX.Element;
+  fallback?: React.JSX.Element;
+  nodes?: Node[];
+};
+
+function RecursiveStructure({ node }: { node: Node }) {
+  const hasChildren = Array.isArray(node.nodes);
+
+  if (!hasChildren && node.fallback) {
+    return node.fallback;
+  }
+
+  return (
+    <li
+      key={node.id}
+      className="w-full"
+    >
+      <span className="flex w-full grow items-center gap-1.5 py-1">
+        <node.content>
+          {hasChildren && (
+            <ul className="w-full grow">
+              {node.nodes?.map(node => (
+                <RecursiveStructure
+                  node={node}
+                  key={node.id}
+                />
+              ))}
+            </ul>
+          )}
+        </node.content>
+      </span>
+    </li>
   );
 }

@@ -14,7 +14,7 @@ interface StudySummaryProps {
  */
 const StudySummary: React.FC<StudySummaryProps> = ({ date, description }) => {
   return (
-    <div className="mx-2 my-0">
+    <div className="mx-2 my-0 w-full">
       <div className="text-foreground text-sm">{date}</div>
       <div className="text-muted-foreground pb-1 text-sm">{description}</div>
     </div>
