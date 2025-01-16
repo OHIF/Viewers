@@ -92,9 +92,11 @@ import {
 } from './Viewport';
 import { ToolButton } from './ToolButton';
 import { ToolButtonList } from './ToolButton';
+import { ToolButtonSmall } from './ToolButton';
 import { InputRange } from './OHIFToolSettings';
 import { RowSegmentedControl } from './OHIFToolSettings';
 import { RowDoubleRange } from './OHIFToolSettings';
+
 export {
   ErrorBoundary,
   Button,
@@ -210,6 +212,7 @@ export {
   Clipboard,
   ToolButton,
   ToolButtonList,
+  ToolButtonSmall,
   InputRange,
   RowSegmentedControl,
   RowDoubleRange,
