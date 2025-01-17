@@ -185,7 +185,7 @@ import ArrowLeftBold from './Sources/ArrowLeftBold';
 import Pencil from './Sources/Pencil';
 import NotificationWarning from './Sources/NotificationWarning';
 import ArrowRight from './Sources/ArrowRight';
-//
+import ChevronLeft from './Sources/ChevronLeft';
 //
 //
 type IconProps = React.HTMLAttributes<SVGElement>;
@@ -482,6 +482,23 @@ export const Icons = {
   ViewportViews,
   ChevronClosed,
   ChevronOpen,
+  ChevronRight: (props: IconProps) => {
+    return (
+      <ChevronLeft
+        {...props}
+        className={`${props.className || ''} rotate-180`.trim()}
+      />
+    );
+  },
+  ChevronLeft,
+  ChevronDown: (props: IconProps) => {
+    return (
+      <ChevronLeft
+        {...props}
+        className={`${props.className || ''} -rotate-90`.trim()}
+      />
+    );
+  },
   Alert,
   AlertOutline,
   NotificationInfo,
@@ -502,7 +519,7 @@ export const Icons = {
     return (
       <ArrowLeftBold
         {...props}
-        className="rotate-180"
+        className={`${props.className || ''} rotate-180`.trim()}
       />
     );
   },
@@ -510,7 +527,7 @@ export const Icons = {
     return (
       <ChevronOpen
         {...props}
-        className="rotate-180"
+        className={`${props.className || ''} -rotate-90`.trim()}
       />
     );
   },
