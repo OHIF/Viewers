@@ -47,6 +47,7 @@ function getPTViewports() {
   return [
     {
       viewportOptions: {
+        allowUnmatchedView: true,
         viewportId: 'ptAxial',
         viewportType: 'volume',
         orientation: 'axial',
@@ -78,6 +79,7 @@ function getPTViewports() {
     },
     {
       viewportOptions: {
+        allowUnmatchedView: true,
         viewportId: 'ptSagittal',
         viewportType: 'volume',
         orientation: 'sagittal',
@@ -109,6 +111,7 @@ function getPTViewports() {
     },
     {
       viewportOptions: {
+        allowUnmatchedView: true,
         viewportId: 'ptCoronal',
         viewportType: 'volume',
         orientation: 'coronal',
@@ -156,6 +159,7 @@ function getFusionViewports() {
   return [
     {
       viewportOptions: {
+        allowUnmatchedView: true,
         viewportId: 'fusionAxial',
         viewportType: 'volume',
         orientation: 'axial',
@@ -214,6 +218,7 @@ function getFusionViewports() {
     },
     {
       viewportOptions: {
+        allowUnmatchedView: true,
         viewportId: 'fusionSagittal',
         viewportType: 'volume',
         orientation: 'sagittal',
@@ -272,6 +277,7 @@ function getFusionViewports() {
     },
     {
       viewportOptions: {
+        allowUnmatchedView: true,
         viewportId: 'fusionCoronal',
         viewportType: 'volume',
         orientation: 'coronal',
@@ -334,6 +340,7 @@ function getFusionViewports() {
 function getSeriesChartViewport() {
   return {
     viewportOptions: {
+      allowUnmatchedView: true,
       viewportId: 'seriesChart',
     },
     displaySets: [
@@ -355,6 +362,7 @@ function getCTViewports() {
   return [
     {
       viewportOptions: {
+        allowUnmatchedView: true,
         viewportId: 'ctAxial',
         viewportType: 'volume',
         orientation: 'axial',
@@ -385,6 +393,7 @@ function getCTViewports() {
     },
     {
       viewportOptions: {
+        allowUnmatchedView: true,
         viewportId: 'ctSagittal',
         viewportType: 'volume',
         orientation: 'sagittal',
@@ -415,6 +424,7 @@ function getCTViewports() {
     },
     {
       viewportOptions: {
+        allowUnmatchedView: true,
         viewportId: 'ctCoronal',
         viewportType: 'volume',
         orientation: 'coronal',
