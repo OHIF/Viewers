@@ -1,15 +1,8 @@
+// File: /Users/danrukas/Documents/Github/Viewers/platform/ui-next/src/components/ToolButton/ToolButtonSmall.tsx
 import React from 'react';
-import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from '../Tooltip';
-import { Icons } from '../Icons';
+import ToolButton from './ToolButton';
 import { cn } from '../../lib/utils';
 
-/**
- * ToolButtonSmall
- * ---------------
- * A smaller variation of ToolButton that mirrors the new design.
- * This can be used one-off or inside a "group" to mimic your old ButtonGroup
- * functionality (tracking the active button, etc.).
- */
 interface ToolButtonSmallProps {
   id: string;
   icon?: string;
@@ -17,10 +10,16 @@ interface ToolButtonSmallProps {
   tooltip?: string;
   isActive?: boolean;
   disabled?: boolean;
-  onClick?: () => void;
+  onClick?: () => void; // You can also pass commands directly if desired
   className?: string;
 }
 
+/**
+ * ToolButtonSmall
+ * Wraps our base ToolButton but applies smaller styling,
+ * as well as the primary-dark/primary-light color scheme
+ * that you had in the original code.
+ */
 function ToolButtonSmall(props: ToolButtonSmallProps) {
   const {
     id,
@@ -33,9 +32,7 @@ function ToolButtonSmall(props: ToolButtonSmallProps) {
     className,
   } = props;
 
-  const IconComponent = Icons[icon] || Icons['MissingIcon'];
-  const tooltipText = tooltip || label || id;
-
+  // Combine your original styling classes with the ones from ToolButton
   const baseClasses =
     'relative flex items-center justify-center w-10 h-10 rounded-md transition-colors';
   const defaultClasses =
@@ -43,36 +40,34 @@ function ToolButtonSmall(props: ToolButtonSmallProps) {
   const activeClasses = 'bg-highlight text-background';
   const disabledClasses = 'opacity-40 cursor-not-allowed';
 
-  const buttonClasses = cn(
-    baseClasses,
-    disabled ? disabledClasses : isActive ? activeClasses : defaultClasses,
-    className
-  );
+  let appliedClasses: string;
+  if (disabled) {
+    appliedClasses = cn(baseClasses, disabledClasses, className);
+  } else if (isActive) {
+    appliedClasses = cn(baseClasses, activeClasses, className);
+  } else {
+    appliedClasses = cn(baseClasses, defaultClasses, className);
+  }
 
-  const handleClick = () => {
+  // We'll use onInteraction as the trigger for the click
+  const handleInteraction = () => {
     if (!disabled && onClick) {
       onClick();
     }
   };
 
   return (
-    <TooltipProvider>
-      <Tooltip>
-        <TooltipTrigger>
-          <button
-            id={id}
-            aria-label={tooltipText}
-            aria-pressed={isActive}
-            disabled={disabled}
-            onClick={handleClick}
-            className={buttonClasses}
-          >
-            <IconComponent className="h-5 w-5" />
-          </button>
-        </TooltipTrigger>
-        {tooltipText && <TooltipContent side="bottom">{tooltipText}</TooltipContent>}
-      </Tooltip>
-    </TooltipProvider>
+    <ToolButton
+      id={id}
+      icon={icon}
+      label={label}
+      tooltip={tooltip}
+      isActive={isActive}
+      disabled={disabled}
+      className={appliedClasses}
+      // onInteraction is used by ToolButton
+      onInteraction={() => handleInteraction()}
+    />
   );
 }
 
