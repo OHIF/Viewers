@@ -29,9 +29,9 @@ window.config = {
       configuration: {
         friendlyName: 'dev-didier',
         name: 'dev-didier',
-        wadoUriRoot: 'https://dev-f4c.deemea.com/didier/dicom-web',
-        qidoRoot: 'https://dev-f4c.deemea.com/didier/dicom-web',
-        wadoRoot: 'https://dev-f4c.deemea.com/didier/dicom-web',
+        wadoUriRoot: 'https://dev-f4c.deemea.com/didier',
+        qidoRoot: 'https://dev-f4c.deemea.com/didier',
+        wadoRoot: 'https://dev-f4c.deemea.com/didier',
         qidoSupportsIncludeField: true,
         supportsReject: true,
         imageRendering: 'wadors',
