@@ -3,7 +3,7 @@ import { PanelSection } from '../../components';
 // Migrate this file to the new UI eventually
 import { ToolSettings } from '@ohif/ui';
 import classnames from 'classnames';
-
+import { ToolButtonSmall } from '../ToolButton';
 const ItemsPerRow = 4;
 
 function usePrevious(value) {
@@ -14,9 +14,6 @@ function usePrevious(value) {
   return ref.current;
 }
 
-/**
- * Just refactoring from the toolbox component to make it more readable
- */
 function ToolboxUI(props: withAppTypes) {
   const {
     toolbarButtons,
@@ -56,45 +53,61 @@ function ToolboxUI(props: withAppTypes) {
     return (
       <>
         <div className="flex flex-col bg-black">
-          <div className="bg-primary-dark mt-0.5 flex flex-wrap py-2">
-            {toolbarButtons.map((toolDef, index) => {
+          <div className="bg-muted mt-0.5 flex flex-wrap py-2">
+            {toolbarButtons.map(toolDef => {
               if (!toolDef) {
                 return null;
               }
 
-              const { id, Component, componentProps } = toolDef;
-              const isLastRow = Math.floor(index / ItemsPerRow) + 1 === numRows;
+              const { id, icon, label, componentProps } = toolDef;
+              // Multiple items design
+              if (componentProps?.items?.length) {
+                return (
+                  <div
+                    key={id}
+                    className="bg-popover ml-2 mb-2 inline-flex items-center space-x-2 rounded-md px-2 py-2"
+                  >
+                    {componentProps.items.map(subItem => {
+                      const { id: subId, icon: subIcon, label: subLabel } = subItem;
+                      const isActive = activeTool === subId;
 
-              const toolClasses = `ml-1 ${isLastRow ? '' : 'mb-2'}`;
+                      return (
+                        <ToolButtonSmall
+                          key={subId}
+                          id={subId}
+                          icon={subIcon || 'MissingIcon'}
+                          label={subLabel}
+                          isActive={isActive}
+                          disabled={subItem.disabled}
+                          onClick={() => {
+                            handleToolSelect(subId);
+                            props.onInteraction?.({ itemId: subId, commands: subItem.commands });
+                          }}
+                        />
+                      );
+                    })}
+                  </div>
+                );
+              }
 
-              const onInteraction = ({ itemId, id, commands }) => {
-                const idToUse = itemId || id;
-                handleToolSelect(idToUse);
-                props.onInteraction({
-                  itemId,
-                  commands,
-                });
-              };
-
+              // Single button design
+              const isActive = activeTool === id;
               return (
                 <div
                   key={id}
-                  className={classnames({
-                    [toolClasses]: true,
-                    'border-secondary-light flex flex-col items-center justify-center rounded-md border':
-                      true,
-                  })}
+                  className="ml-2 mb-2"
                 >
-                  <div className="flex rounded-md bg-black">
-                    <Component
-                      {...componentProps}
-                      {...props}
-                      id={id}
-                      servicesManager={servicesManager}
-                      onInteraction={onInteraction}
-                      size="toolbox"
-                    />
-                  </div>
+                  <ToolButtonSmall
+                    id={id}
+                    icon={icon || 'MissingIcon'}
+                    label={label}
+                    isActive={isActive}
+                    disabled={componentProps?.disabled}
+                    onClick={() => {
+                      handleToolSelect(id);
+                      props.onInteraction?.({ itemId: id, commands: toolDef.commands });
+                    }}
+                  />
                 </div>
               );
             })}

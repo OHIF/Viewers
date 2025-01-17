@@ -1,36 +1,60 @@
 import { ToolbarButton, ButtonGroup } from '@ohif/ui';
 import React, { useCallback } from 'react';
-
+import { ToolButtonSmall } from '@ohif/ui';
 function ToolbarButtonGroupWithServices({ groupId, items, onInteraction, size }) {
-  const getSplitButtonItems = useCallback(
-    items =>
-      items.map((item, index) => (
-        <ToolbarButton
-          key={item.id}
-          icon={item.icon}
-          label={item.label}
-          disabled={item.disabled}
-          className={item.className}
-          disabledText={item.disabledText}
-          id={item.id}
-          size={size}
-          onClick={() => {
-            onInteraction({
-              groupId,
-              itemId: item.id,
-              commands: item.commands,
-            });
-          }}
-          // Note: this is necessary since tooltip will add
-          // default styles to the tooltip container which
-          // we don't want for groups
-          toolTipClassName=""
-        />
-      )),
-    [onInteraction, groupId]
+  return (
+    <div className="flex space-x-1">
+      {items.map((item, index) => {
+        // Determine if item is active from your existing logic
+        const isActive = item.isActive;
+        return (
+          <ToolButtonSmall
+            key={item.id}
+            id={item.id}
+            icon={item.icon}
+            label={item.label}
+            isActive={isActive}
+            disabled={item.disabled}
+            onClick={() => {
+              onInteraction({ groupId, itemId: item.id, commands: item.commands });
+            }}
+          />
+        );
+      })}
+    </div>
   );
-
-  return <ButtonGroup>{getSplitButtonItems(items)}</ButtonGroup>;
 }
+
+// function ToolbarButtonGroupWithServices({ groupId, items, onInteraction, size }) {
+//   const getSplitButtonItems = useCallback(
+//     items =>
+//       items.map((item, index) => (
+//         <ToolbarButton
+//           key={item.id}
+//           icon={item.icon}
+//           label={item.label}
+//           disabled={item.disabled}
+//           className={item.className}
+//           disabledText={item.disabledText}
+//           id={item.id}
+//           size={size}
+//           onClick={() => {
+//             onInteraction({
+//               groupId,
+//               itemId: item.id,
+//               commands: item.commands,
+//             });
+//           }}
+//           // Note: this is necessary since tooltip will add
+//           // default styles to the tooltip container which
+//           // we don't want for groups
+//           toolTipClassName=""
+//         />
+//       )),
+//     [onInteraction, groupId]
+//   );
+
+//   return <ButtonGroup>{getSplitButtonItems(items)}</ButtonGroup>;
+// }
 
 export default ToolbarButtonGroupWithServices;
