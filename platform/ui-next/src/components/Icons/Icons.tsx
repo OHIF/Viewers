@@ -675,6 +675,7 @@ export const Icons = {
   pencil: (props: IconProps) => Pencil(props),
   'icon-list-view': (props: IconProps) => ListView(props),
   'chevron-menu': 'chevron-down',
+  'icon-status-alert': (props: IconProps) => Alert(props),
   clipboard: (props: IconProps) => Clipboard(props),
 
   /** Adds an icon to the set of icons */
