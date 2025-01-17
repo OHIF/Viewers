@@ -184,6 +184,7 @@ import LoadingOHIFMark from './Sources/LoadingOHIFMark';
 import ArrowLeftBold from './Sources/ArrowLeftBold';
 import Pencil from './Sources/Pencil';
 import NotificationWarning from './Sources/NotificationWarning';
+import ArrowRight from './Sources/ArrowRight';
 //
 //
 //
@@ -495,14 +496,7 @@ export const Icons = {
   Link,
   LoadingOHIFMark,
   ArrowLeft: ChevronClosed,
-  ArrowRight: (props: IconProps) => {
-    return (
-      <ChevronClosed
-        {...props}
-        className="rotate-180"
-      />
-    );
-  },
+  ArrowRight,
   ArrowLeftBold,
   ArrowRightBold: (props: IconProps) => {
     return (
@@ -676,6 +670,8 @@ export const Icons = {
   'icon-list-view': (props: IconProps) => ListView(props),
   'chevron-menu': 'chevron-down',
   'icon-status-alert': (props: IconProps) => Alert(props),
+  'info-link': (props: IconProps) => InfoLink(props),
+  'launch-info': (props: IconProps) => LaunchInfo(props),
   clipboard: (props: IconProps) => Clipboard(props),
 
   /** Adds an icon to the set of icons */

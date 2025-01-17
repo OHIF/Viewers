@@ -6,6 +6,7 @@ export const LaunchInfo = (props: IconProps) => (
     xmlns="http://www.w3.org/2000/svg"
     width="20"
     height="20"
+    {...props}
     viewBox="0 0 21 22"
   >
     <g fillRule="evenodd">
