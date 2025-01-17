@@ -592,10 +592,15 @@ const commandsModule = ({ servicesManager, commandsManager, extensionManager }: 
           continue;
         }
 
+        const patientName =
+          typeof instance.PatientName === 'string'
+            ? instance.PatientName
+            : instance.PatientName.Alphabetic;
+
         report[id] = {
           ...segReport,
           PatientID: instance.PatientID ?? '000000',
-          PatientName: instance.PatientName.Alphabetic,
+          PatientName: patientName,
           StudyInstanceUID: instance.StudyInstanceUID,
           SeriesInstanceUID: instance.SeriesInstanceUID,
           StudyDate: instance.StudyDate,

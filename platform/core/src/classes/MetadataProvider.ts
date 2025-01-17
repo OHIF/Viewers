@@ -347,7 +347,7 @@ class MetadataProvider {
 
         let patientName;
         if (PatientName) {
-          patientName = PatientName.Alphabetic;
+          patientName = typeof PatientName === 'string' ? PatientName : PatientName.Alphabetic;
         }
 
         metadata = {

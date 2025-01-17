@@ -86,7 +86,10 @@ function _getCommonRowItems(measurement, seriesMetadata) {
 
   return {
     'Patient ID': firstInstance.PatientID, // Patient ID
-    'Patient Name': firstInstance.PatientName?.Alphabetic || '', // Patient Name
+    'Patient Name':
+      typeof firstInstance.PatientName === 'string'
+        ? firstInstance.PatientName
+        : firstInstance.PatientName.Alphabetic, // Patient Name
     StudyInstanceUID: measurement.referenceStudyUID, // StudyInstanceUID
     SeriesInstanceUID: measurement.referenceSeriesUID, // SeriesInstanceUID
     SOPInstanceUID: measurement.SOPInstanceUID, // SOPInstanceUID
