@@ -35,17 +35,15 @@ function createTools(utilityModule) {
         },
       },
       {
-        toolName: 'SphereBrush',
-        parentTool: 'Brush',
+        toolName: 'SphereScissors',
         configuration: {
-          activeStrategy: 'FILL_INSIDE_SPHERE',
+          activeStrategy: 'FILL_INSIDE',
         },
       },
       {
-        toolName: 'SphereEraser',
-        parentTool: 'Brush',
+        toolName: 'SphereScissors',
         configuration: {
-          activeStrategy: 'ERASE_INSIDE_SPHERE',
+          activeStrategy: 'ERASE_INSIDE',
         },
       },
       {
@@ -83,7 +81,12 @@ function createTools(utilityModule) {
       },
       { toolName: toolNames.CircleScissors },
       { toolName: toolNames.RectangleScissors },
-      { toolName: toolNames.SphereScissors },
+      {
+        toolName: toolNames.SphereScissors,
+        configuration: {
+          activeStrategy: 'FILL_INSIDE',
+        },
+      },
       { toolName: toolNames.StackScroll },
       { toolName: toolNames.Magnify },
       { toolName: toolNames.WindowLevelRegion },
