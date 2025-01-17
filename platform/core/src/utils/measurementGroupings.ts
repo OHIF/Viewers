@@ -4,17 +4,23 @@
  */
 export const groupByStudy =
   ({ servicesManager }) =>
-  (groupedMeasurements, item) => {
+  items => {
     const { displaySetService } = servicesManager.services;
-    const displaySet = displaySetService.getDisplaySetByUID(item.displaySetInstanceUID);
-    const key = displaySet.instances[0].StudyInstanceUID;
 
-    if (!groupedMeasurements.has(key)) {
-      groupedMeasurements.set(key, [item]);
-      return groupedMeasurements;
-    }
+    const getItemStudyInstanceUID = item => {
+      const displaySet = displaySetService.getDisplaySetByUID(item.displaySetInstanceUID);
+      return displaySet.instances[0].StudyInstanceUID;
+    };
 
-    const oldValues = groupedMeasurements.get(key);
-    oldValues.push(item);
-    return groupedMeasurements;
+    const studyInstanceUIDsSet = new Set(items.map(getItemStudyInstanceUID));
+    const uniqueStudyInstanceUIDs = Array.from(studyInstanceUIDsSet);
+
+    return uniqueStudyInstanceUIDs.map(studyInstanceUID =>
+      items.filter(item => {
+        const itemStudyInstanceUID = getItemStudyInstanceUID(item);
+        return itemStudyInstanceUID === studyInstanceUID;
+      })
+    );
   };
+
+export const groupIntoSingleGroup = () => items => [items];

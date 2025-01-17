@@ -1,12 +1,12 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { CommandsManager, ServicesManager, utils } from '@ohif/core';
-import { Accordion, AccordionItem, MeasurementTable } from '@ohif/ui-next';
+import { MeasurementTable } from '@ohif/ui-next';
 import debounce from 'lodash.debounce';
 import { useMeasurements } from '../hooks/useMeasurements';
 import { StudySummaryFromMetadata } from '../components/StudySummaryFromMetadata';
-import { CollapsibleStudySummaryFromMetadata } from '../components/CollapsibleStudySummaryFromMetadata';
+import { PanelAccordion } from '../components/CollapsibleStudySummaryFromMetadata';
 
-const { groupByStudy: defaultGroupingFunction } = utils.MeasurementGroupings;
+const { groupByStudy, groupIntoSingleGroup } = utils.MeasurementGroupings;
 
 export type withAppAndFilters = withAppTypes & {
   measurementFilter: (item) => boolean;
@@ -62,76 +62,102 @@ export default function PanelMeasurement({
 
   const additionalFilter = filterAdditionalFindings(measurementService);
 
-  const effectiveGroupingFunction = (groupingFunction ?? defaultGroupingFunction)({
-    servicesManager,
-    commandsManager,
-  });
-
-  const measurements = displayMeasurements
-    .filter(item => !additionalFilter(item) && measurementFilter(item))
-    .reduce(effectiveGroupingFunction, new Map<string, object[]>());
-
-  const additionalFindings = displayMeasurements
-    .filter(item => additionalFilter(item) && measurementFilter(item))
-    .reduce(effectiveGroupingFunction, new Map<string, object[]>());
-
-  const measurementItemKeys = Array.from(measurements).map(([key]) => {
-    return key;
-  });
-
-  const additionalItemKeys = Array.from(additionalFindings).map(([key]) => {
-    return key;
-  });
-
-  const items = Array.from(new Set([...measurementItemKeys, ...additionalItemKeys])).map(study => {
-    return {
-      study,
-      measurements: measurements.get(study) ?? [],
-      additionalFindings: additionalFindings.get(study) ?? [],
-    };
-  });
-
-  const nodes = items =>
-    items.map(item => ({
-      id: item.study,
-      fallback: (
-        <div className="text-primary-light mb-1 flex flex-1 items-center px-2 py-2 text-base">
-          No measurements recursive
-        </div>
-      ),
-      content: ({ children }) => (
-        <CollapsibleStudySummaryFromMetadata StudyInstanceUID={item.study}>
+  const nodeSchema = {
+    id: 'root',
+    groupingFunction: groupByStudy,
+    shouldShowFallback: ({ items }) => items.length === 0,
+    fallback: (
+      <div className="text-primary-light mb-1 flex flex-1 items-center px-2 py-2 text-base">
+        No measurements recursive
+      </div>
+    ),
+    content: ({ items }) => {
+      return ({ children }) => (
+        <PanelAccordion
+          header={<StudySummaryFromMetadata StudyInstanceUID={items?.[0]?.referenceStudyUID} />}
+        >
           {children}
-        </CollapsibleStudySummaryFromMetadata>
-      ),
-      nodes: [
-        {
-          id: 'measurements',
-          content: ({ children }) => (
+        </PanelAccordion>
+      );
+    },
+    nodes: [
+      {
+        id: 'measurements',
+        filterFunction: item => !additionalFilter(item) && measurementFilter(item),
+        shouldShowFallback: ({ filteredItems }) => filteredItems.length === 0,
+        content:
+          ({ filteredItems }) =>
+          () => (
             <MeasurementTable
               title={title ? title : `Measurements`}
-              data={item.measurements}
+              data={filteredItems}
               {...onArgs}
             >
               <MeasurementTable.Body />
             </MeasurementTable>
           ),
-        },
-        {
-          id: 'additionalFindings',
-          content: ({ children }) => (
+      },
+      {
+        id: 'additionalFindings',
+        filterFunction: item => additionalFilter(item) && measurementFilter(item),
+        shouldShowFallback: ({ filteredItems }) => filteredItems.length === 0,
+        fallback: <></>,
+        content:
+          ({ filteredItems }) =>
+          () => (
             <MeasurementTable
               key="additional"
-              data={item.additionalFindings}
+              data={filteredItems}
               title={`Additional Findings`}
               {...onArgs}
             >
               <MeasurementTable.Body />
             </MeasurementTable>
           ),
+      },
+    ],
+  };
+
+  const generateNodes = ({ items, nodeSchema }) => {
+    const filterFunction = nodeSchema.filterFunction ?? filterAny;
+    const groupingFunction = (nodeSchema.groupingFunction ?? groupIntoSingleGroup)({
+      servicesManager,
+    });
+    const filteredItems = items.filter(filterFunction);
+    const groupedItems = groupingFunction(filteredItems);
+
+    if (groupedItems.length === 0) {
+      const { nodes, ...nodeSchemaWithoutChildrenNodes } = nodeSchema;
+      return [
+        {
+          ...nodeSchemaWithoutChildrenNodes,
+          content: nodeSchema.content({ filteredItems, items: [] }),
+          shouldShowFallback: nodeSchema.shouldShowFallback({ filteredItems, items: [] }),
         },
-      ],
-    }));
+      ];
+    }
+
+    return groupedItems.map((arrayOfGroupedAndFilteredItems, i) => {
+      const result = {
+        ...nodeSchema,
+        content: nodeSchema.content({ filteredItems, items: arrayOfGroupedAndFilteredItems }),
+        shouldShowFallback: nodeSchema.shouldShowFallback({
+          filteredItems,
+          items: arrayOfGroupedAndFilteredItems,
+        }),
+        nodes: nodeSchema.nodes?.flatMap(node =>
+          generateNodes({ items: arrayOfGroupedAndFilteredItems, nodeSchema: node })
+        ),
+        id: `${nodeSchema.id}-${i}`,
+      };
+      if (result.nodes === undefined) {
+        delete result.nodes;
+      }
+      return result;
+    });
+  };
+
+  const nodes = generateNodes({ items: displayMeasurements, nodeSchema });
 
   const onArgs = {
     onClick: jumpToImage,
@@ -148,7 +174,7 @@ export default function PanelMeasurement({
         ref={measurementsPanelRef}
         data-cy={'measurements-panel'}
       >
-        {nodes(items).map(node => (
+        {nodes.map(node => (
           <ul key={node.id}>
             <RecursiveStructure node={node} />
           </ul>
@@ -160,15 +186,16 @@ export default function PanelMeasurement({
 
 type Node = {
   id: string;
-  content: React.JSX.Element;
-  fallback?: React.JSX.Element;
+  content: React.ReactNode;
+  shouldShowFallback: boolean;
+  fallback?: React.ReactNode;
   nodes?: Node[];
 };
 
 function RecursiveStructure({ node }: { node: Node }) {
   const hasChildren = Array.isArray(node.nodes);
 
-  if (!hasChildren && node.fallback) {
+  if (node.shouldShowFallback && node.fallback) {
     return node.fallback;
   }
 
