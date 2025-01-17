@@ -6,33 +6,30 @@ import { useMeasurements } from '../hooks/useMeasurements';
 import { StudySummaryFromMetadata } from '../components/StudySummaryFromMetadata';
 import { PanelAccordion } from '../components/CollapsibleStudySummaryFromMetadata';
 
-const { groupByStudy, groupIntoSingleGroup } = utils.MeasurementGroupings;
+type Node = {
+  id: string;
+  content: React.ReactNode;
+  shouldShowFallback: boolean;
+  fallback?: React.ReactNode;
+  nodes?: Node[];
+};
 
 export type withAppAndFilters = withAppTypes & {
   measurementFilter: (item) => boolean;
-  groupingFunction?: ({
-    servicesManager,
-    commandsManager,
-  }: {
-    servicesManager?: ServicesManager;
-    commandsManager?: CommandsManager;
-  }) => (groupedMeasurements: Map<string, object[]>, item) => Map<string, object[]>;
-  title: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  getNodeSchema: ({ onArgs }: any) => any;
 };
 
-const { filterAdditionalFindings, filterAny } = utils.MeasurementFilters;
+const { groupIntoSingleGroup } = utils.MeasurementGroupings;
+const { filterAny } = utils.MeasurementFilters;
 
 export default function PanelMeasurement({
   servicesManager,
   commandsManager,
-  customHeader,
   measurementFilter = filterAny,
-  groupingFunction,
-  title,
+  getNodeSchema,
 }: withAppAndFilters): React.ReactNode {
   const measurementsPanelRef = useRef(null);
-
-  const { measurementService } = servicesManager.services;
 
   const displayMeasurements = useMeasurements(servicesManager, {
     measurementFilter,
@@ -60,63 +57,15 @@ export default function PanelMeasurement({
   const toggleLockMeasurement = bindCommand('toggleLockMeasurement');
   const toggleVisibilityMeasurement = bindCommand('toggleVisibilityMeasurement');
 
-  const additionalFilter = filterAdditionalFindings(measurementService);
-
-  const nodeSchema = {
-    id: 'root',
-    groupingFunction: groupByStudy,
-    shouldShowFallback: ({ items }) => items.length === 0,
-    fallback: (
-      <div className="text-primary-light mb-1 flex flex-1 items-center px-2 py-2 text-base">
-        No measurements recursive
-      </div>
-    ),
-    content: ({ items }) => {
-      return ({ children }) => (
-        <PanelAccordion
-          header={<StudySummaryFromMetadata StudyInstanceUID={items?.[0]?.referenceStudyUID} />}
-        >
-          {children}
-        </PanelAccordion>
-      );
-    },
-    nodes: [
-      {
-        id: 'measurements',
-        filterFunction: item => !additionalFilter(item) && measurementFilter(item),
-        shouldShowFallback: ({ filteredItems }) => filteredItems.length === 0,
-        content:
-          ({ filteredItems }) =>
-          () => (
-            <MeasurementTable
-              title={title ? title : `Measurements`}
-              data={filteredItems}
-              {...onArgs}
-            >
-              <MeasurementTable.Body />
-            </MeasurementTable>
-          ),
-      },
-      {
-        id: 'additionalFindings',
-        filterFunction: item => additionalFilter(item) && measurementFilter(item),
-        shouldShowFallback: ({ filteredItems }) => filteredItems.length === 0,
-        fallback: <></>,
-        content:
-          ({ filteredItems }) =>
-          () => (
-            <MeasurementTable
-              key="additional"
-              data={filteredItems}
-              title={`Additional Findings`}
-              {...onArgs}
-            >
-              <MeasurementTable.Body />
-            </MeasurementTable>
-          ),
-      },
-    ],
+  const onArgs = {
+    onClick: jumpToImage,
+    onDelete: removeMeasurement,
+    onToggleVisibility: toggleVisibilityMeasurement,
+    onToggleLocked: toggleLockMeasurement,
+    onRename: renameMeasurement,
   };
+
+  const nodeSchema = getNodeSchema({ onArgs });
 
   const generateNodes = ({ items, nodeSchema }) => {
     const filterFunction = nodeSchema.filterFunction ?? filterAny;
@@ -159,14 +108,6 @@ export default function PanelMeasurement({
 
   const nodes = generateNodes({ items: displayMeasurements, nodeSchema });
 
-  const onArgs = {
-    onClick: jumpToImage,
-    onDelete: removeMeasurement,
-    onToggleVisibility: toggleVisibilityMeasurement,
-    onToggleLocked: toggleLockMeasurement,
-    onRename: renameMeasurement,
-  };
-
   return (
     <>
       <div
@@ -183,14 +124,6 @@ export default function PanelMeasurement({
     </>
   );
 }
-
-type Node = {
-  id: string;
-  content: React.ReactNode;
-  shouldShowFallback: boolean;
-  fallback?: React.ReactNode;
-  nodes?: Node[];
-};
 
 function RecursiveStructure({ node }: { node: Node }) {
   const hasChildren = Array.isArray(node.nodes);
