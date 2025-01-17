@@ -1,9 +1,6 @@
 // TODO: torn, can either bake this here; or have to create a whole new button type
 // Only ways that you can pass in a custom React component for render :l
-import { ToolbarService } from '@ohif/core';
 import type { Button } from '@ohif/core/types';
-
-const { createButton } = ToolbarService;
 
 export const setToolActiveToolbar = {
   commandName: 'setToolActiveToolbar',
@@ -26,66 +23,53 @@ const toolbarButtons: Button[] = [
     },
   },
   {
-    id: 'MeasurementTools',
-    uiType: 'ohif.splitButton',
+    id: 'Length',
+    uiType: 'ohif.radioGroup',
     props: {
-      groupId: 'MeasurementTools',
-      // group evaluate to determine which item should move to the top
-      evaluate: 'evaluate.group.promoteToPrimaryIfCornerstoneToolNotActiveInTheList',
-      primary: createButton({
-        id: 'Length',
-        icon: 'tool-length',
-        label: 'Length',
-        tooltip: 'Length Tool',
-        commands: setToolActiveToolbar,
-        evaluate: 'evaluate.cornerstoneTool',
-      }),
-      secondary: {
-        icon: 'chevron-down',
-        tooltip: 'More Measure Tools',
-      },
-      items: [
-        createButton({
-          id: 'Length',
-          icon: 'tool-length',
-          label: 'Length',
-          tooltip: 'Length Tool',
-          commands: setToolActiveToolbar,
-          evaluate: 'evaluate.cornerstoneTool',
-        }),
-        createButton({
-          id: 'RectangleROI',
-          icon: 'tool-rectangle',
-          label: 'Rectangle',
-          tooltip: 'Rectangle ROI',
-          commands: setToolActiveToolbar,
-          evaluate: 'evaluate.cornerstoneTool',
-        }),
-        createButton({
-          id: 'Angle',
-          icon: 'tool-angle',
-          label: 'Angle',
-          tooltip: 'Angle',
-          commands: setToolActiveToolbar,
-          evaluate: 'evaluate.cornerstoneTool',
-        }),
-        createButton({
-          id: 'Probe',
-          icon: 'tool-probe',
-          label: 'Probe',
-          tooltip: 'Probe',
-          commands: setToolActiveToolbar,
-          evaluate: 'evaluate.cornerstoneTool',
-        }),
-        createButton({
-          id: 'CalibrationLine',
-          icon: 'tool-calibration',
-          label: 'Calibration',
-          tooltip: 'Calibration Line',
-          commands: setToolActiveToolbar,
-          evaluate: 'evaluate.cornerstoneTool',
-        }),
-      ],
+      icon: 'tool-length',
+      label: 'Length',
+      commands: setToolActiveToolbar,
+      evaluate: 'evaluate.cornerstoneTool',
+    },
+  },
+  {
+    id: 'RectangleROI',
+    uiType: 'ohif.radioGroup',
+    props: {
+      icon: 'tool-rectangle',
+      label: 'Rectangle',
+      commands: setToolActiveToolbar,
+      evaluate: 'evaluate.cornerstoneTool',
+    },
+  },
+  {
+    id: 'Angle',
+    uiType: 'ohif.radioGroup',
+    props: {
+      icon: 'tool-angle',
+      label: 'Angle',
+      commands: setToolActiveToolbar,
+      evaluate: 'evaluate.cornerstoneTool',
+    },
+  },
+  {
+    id: 'Probe',
+    uiType: 'ohif.radioGroup',
+    props: {
+      icon: 'tool-probe',
+      label: 'Probe',
+      commands: setToolActiveToolbar,
+      evaluate: 'evaluate.cornerstoneTool',
+    },
+  },
+  {
+    id: 'CalibrationLine',
+    uiType: 'ohif.radioGroup',
+    props: {
+      icon: 'tool-calibration',
+      label: 'Calibration',
+      commands: setToolActiveToolbar,
+      evaluate: 'evaluate.cornerstoneTool',
     },
   },
   {
@@ -119,16 +103,6 @@ const toolbarButtons: Button[] = [
       label: 'Pan',
       commands: setToolActiveToolbar,
       evaluate: 'evaluate.cornerstoneTool',
-    },
-  },
-  {
-    id: 'Capture',
-    uiType: 'ohif.radioGroup',
-    props: {
-      icon: 'tool-capture',
-      label: 'Capture',
-      commands: 'showDownloadViewportModal',
-      evaluate: 'evaluate.action',
     },
   },
 ];

@@ -66,11 +66,14 @@ function modeFactory({ modeConfiguration }) {
       toolbarService.addButtons(toolbarButtons);
       toolbarService.createButtonSection('primary', [
         'ResetButton',
-        'MeasurementTools',
+        'Length',
+        'RectangleROI',
+        'Angle',
+        'Probe',
+        'CalibrationLine',
         'Zoom',
         'WindowLevel',
         'Pan',
-        'Capture',
         'Layout',
         'MoreTools',
       ]);

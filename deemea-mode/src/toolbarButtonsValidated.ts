@@ -31,96 +31,87 @@ const toolbarButtonsValidated: Button[] = [
     },
   },
   {
-    id: 'MeasurementTools',
-    uiType: 'ohif.splitButton',
+    id: 'Length',
+    uiType: 'ohif.radioGroup',
     props: {
-      groupId: 'MeasurementTools',
-      // group evaluate to determine which item should move to the top
-      // evaluate: 'evaluate.group.promoteToPrimaryIfCornerstoneToolNotActiveInTheList',
+      icon: 'tool-length',
+      label: 'Length',
+      commands: setToolActiveToolbar,
       evaluate: () => {
         return {
           disabled: true,
         };
       },
-      primary: createButton({
-        id: 'Length',
-        icon: 'tool-length',
-        label: 'Length',
-        tooltip: 'Length Tool',
-        commands: setToolActiveToolbar,
-        evaluate: () => {
-          return {
-            disabled: true,
-          };
-        },
-      }),
-      secondary: {
-        icon: 'chevron-down',
-        tooltip: 'More Measure Tools',
-      },
-      items: [
-        createButton({
-          id: 'Length',
-          icon: 'tool-length',
-          label: 'Length',
-          tooltip: 'Length Tool',
+    },
+  },
+  {
+    id: 'RectangleROI',
+    uiType: 'ohif.radioGroup',
+    props: {
+      icon: 'tool-rectangle',
+      label: 'Rectangle',
+      commands: setToolActiveToolbar,
+      evaluate: () => {
+        return {
           disabled: true,
-          commands: setToolActiveToolbar,
-          evaluate: () => {
-            return {
-              disabled: true,
-            };
-          },
-        }),
-        createButton({
-          id: 'RectangleROI',
-          icon: 'tool-rectangle',
-          label: 'Rectangle',
-          tooltip: 'Rectangle ROI',
-          commands: setToolActiveToolbar,
-          evaluate: () => {
-            return {
-              disabled: true,
-            };
-          },
-        }),
-        createButton({
-          id: 'Angle',
-          icon: 'tool-angle',
-          label: 'Angle',
-          tooltip: 'Angle',
-          commands: setToolActiveToolbar,
-          evaluate: () => {
-            return {
-              disabled: true,
-            };
-          },
-        }),
-        createButton({
-          id: 'Probe',
-          icon: 'tool-probe',
-          label: 'Probe',
-          tooltip: 'Probe',
-          commands: setToolActiveToolbar,
-          evaluate: () => {
-            return {
-              disabled: true,
-            };
-          },
-        }),
-        createButton({
-          id: 'CalibrationLine',
-          icon: 'tool-calibration',
-          label: 'Calibration',
-          tooltip: 'Calibration Line',
-          commands: setToolActiveToolbar,
-          evaluate: () => {
-            return {
-              disabled: true,
-            };
-          },
-        }),
-      ],
+        };
+      },
+    },
+  },
+  {
+    id: 'Angle',
+    uiType: 'ohif.radioGroup',
+    props: {
+      icon: 'tool-angle',
+      label: 'Angle',
+      commands: setToolActiveToolbar,
+      evaluate: () => {
+        return {
+          disabled: true,
+        };
+      },
+    },
+  },
+  {
+    id: 'Probe',
+    uiType: 'ohif.radioGroup',
+    props: {
+      icon: 'tool-probe',
+      label: 'Probe',
+      commands: setToolActiveToolbar,
+      evaluate: () => {
+        return {
+          disabled: true,
+        };
+      },
+    },
+  },
+  {
+    id: 'CalibrationLine',
+    uiType: 'ohif.radioGroup',
+    props: {
+      icon: 'tool-calibration',
+      label: 'Calibration',
+      commands: setToolActiveToolbar,
+      evaluate: () => {
+        return {
+          disabled: true,
+        };
+      },
+    },
+  },
+  {
+    id: 'Zoom',
+    uiType: 'ohif.radioGroup',
+    props: {
+      icon: 'tool-zoom',
+      label: 'Zoom',
+      commands: setToolActiveToolbar,
+      evaluate: () => {
+        return {
+          disabled: true,
+        };
+      },
     },
   },
   {
@@ -154,16 +145,6 @@ const toolbarButtonsValidated: Button[] = [
       label: 'Pan',
       commands: setToolActiveToolbar,
       evaluate: 'evaluate.cornerstoneTool',
-    },
-  },
-  {
-    id: 'Capture',
-    uiType: 'ohif.radioGroup',
-    props: {
-      icon: 'tool-capture',
-      label: 'Capture',
-      commands: 'showDownloadViewportModal',
-      evaluate: 'evaluate.action',
     },
   },
 ];
