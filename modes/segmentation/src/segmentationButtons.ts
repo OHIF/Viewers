@@ -172,26 +172,33 @@ const toolbarButtons: Button[] = [
   },
   {
     id: 'Shapes',
-    uiType: 'ohif.radioGroup',
+    uiType: 'ohif.buttonGroup',
     props: {
+      groupId: 'ShapesGroup',
       label: 'Shapes',
       evaluate: {
         name: 'evaluate.cornerstone.segmentation',
         toolNames: ['CircleScissor', 'SphereScissor', 'RectangleScissor'],
       },
-      icon: 'icon-tool-shape',
-      options: [
+      items: [
         {
-          name: 'Shape',
-          type: 'radio',
-          value: 'CircleScissor',
-          id: 'shape-mode',
-          values: [
-            { value: 'CircleScissor', label: 'Circle' },
-            { value: 'SphereScissor', label: 'Sphere' },
-            { value: 'RectangleScissor', label: 'Rectangle' },
+          id: 'Shapes',
+          icon: 'icon-tool-shape',
+          label: 'Shapes',
+          options: [
+            {
+              name: 'Shape',
+              type: 'radio',
+              value: 'CircleScissor',
+              id: 'shape-mode',
+              values: [
+                { value: 'CircleScissor', label: 'Circle' },
+                { value: 'SphereScissor', label: 'Sphere' },
+                { value: 'RectangleScissor', label: 'Rectangle' },
+              ],
+              commands: 'setToolActiveToolbar',
+            },
           ],
-          commands: 'setToolActiveToolbar',
         },
       ],
     },

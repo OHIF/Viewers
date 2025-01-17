@@ -1,4 +1,3 @@
-// File: /Users/danrukas/Documents/Github/Viewers/platform/ui-next/src/components/ToolButton/ToolButtonSmall.tsx
 import React from 'react';
 import ToolButton from './ToolButton';
 import { cn } from '../../lib/utils';
@@ -35,7 +34,7 @@ function ToolButtonSmall(props: ToolButtonSmallProps) {
   // Combine your original styling classes with the ones from ToolButton
   const baseClasses =
     'relative flex items-center justify-center w-9 h-9 rounded-md transition-colors';
-  const defaultClasses = 'bg-transparent';
+  const defaultClasses = 'bg-transparent hover:bg-transparent';
   const activeClasses = 'bg-highlight text-background';
   const disabledClasses = 'opacity-40 cursor-not-allowed';
 
