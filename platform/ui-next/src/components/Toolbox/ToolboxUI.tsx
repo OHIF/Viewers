@@ -65,7 +65,7 @@ function ToolboxUI(props: withAppTypes) {
                 return (
                   <div
                     key={id}
-                    className="bg-popover ml-2 mb-2 inline-flex items-center space-x-2 rounded-md px-2 py-2"
+                    className="bg-popover ml-2 mb-2 inline-flex items-center space-x-0 rounded-md px-0 py-0"
                   >
                     {componentProps.items.map(subItem => {
                       const { id: subId, icon: subIcon, label: subLabel } = subItem;

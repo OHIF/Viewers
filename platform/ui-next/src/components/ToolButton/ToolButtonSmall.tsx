@@ -34,9 +34,8 @@ function ToolButtonSmall(props: ToolButtonSmallProps) {
 
   // Combine your original styling classes with the ones from ToolButton
   const baseClasses =
-    'relative flex items-center justify-center w-10 h-10 rounded-md transition-colors';
-  const defaultClasses =
-    'bg-primary-dark text-primary-active hover:bg-primary-light hover:text-black';
+    'relative flex items-center justify-center w-9 h-9 rounded-md transition-colors';
+  const defaultClasses = 'bg-transparent';
   const activeClasses = 'bg-highlight text-background';
   const disabledClasses = 'opacity-40 cursor-not-allowed';
 
