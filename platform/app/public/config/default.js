@@ -63,9 +63,9 @@ window.config = {
       configuration: {
         friendlyName: 'qa-didier',
         name: 'qa-didier',
-        wadoUriRoot: 'https://qa-f4c.deemea.com/didier/dicom-web',
-        qidoRoot: 'https://qa-f4c.deemea.com/didier/dicom-web',
-        wadoRoot: 'https://qa-f4c.deemea.com/didier/dicom-web',
+        wadoUriRoot: 'https://qa-f4c.deemea.com/didier',
+        qidoRoot: 'https://qa-f4c.deemea.com/didier',
+        wadoRoot: 'https://qa-f4c.deemea.com/didier',
         qidoSupportsIncludeField: true,
         supportsReject: true,
         imageRendering: 'wadors',
