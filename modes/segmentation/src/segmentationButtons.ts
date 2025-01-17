@@ -176,15 +176,16 @@ const toolbarButtons: Button[] = [
     props: {
       groupId: 'ShapesGroup',
       label: 'Shapes',
-      evaluate: {
-        name: 'evaluate.cornerstone.segmentation',
-        toolNames: ['CircleScissor', 'SphereScissor', 'RectangleScissor'],
-      },
       items: [
         {
           id: 'Shapes',
           icon: 'icon-tool-shape',
           label: 'Shapes',
+          evaluate: {
+            name: 'evaluate.cornerstone.segmentation',
+            toolNames: ['CircleScissor', 'SphereScissor', 'RectangleScissor'],
+            disabledText: 'Create new segmentation to enable shapes tool.',
+          },
           options: [
             {
               name: 'Shape',
