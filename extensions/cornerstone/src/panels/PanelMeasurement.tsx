@@ -5,7 +5,7 @@ import debounce from 'lodash.debounce';
 import { useMeasurements } from '../hooks/useMeasurements';
 import { StudySummaryFromMetadata } from '../components/StudySummaryFromMetadata';
 
-const { groupByStudy: defaultGroupingFunction } = utils.MeasurementGroupings;
+const { groupByStudyDeprecated: defaultGroupingFunction } = utils.MeasurementGroupings;
 
 export type withAppAndFilters = withAppTypes & {
   measurementFilter: (item) => boolean;
