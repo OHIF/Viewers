@@ -46,14 +46,10 @@ function usePatientInfo(servicesManager: AppTypes.ServicesManager) {
     if (!instance) {
       return;
     }
-    const patientName =
-      typeof instance.PatientName === 'string'
-        ? instance.PatientName
-        : instance.PatientName.Alphabetic;
 
     setPatientInfo({
       PatientID: instance.PatientID || null,
-      PatientName: instance.PatientName ? formatPN(patientName) : null,
+      PatientName: instance.PatientName ? formatPN(instance.PatientName) : null,
       PatientSex: instance.PatientSex || null,
       PatientDOB: formatDate(instance.PatientBirthDate) || null,
     });

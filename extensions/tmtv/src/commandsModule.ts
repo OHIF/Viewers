@@ -9,8 +9,10 @@ import dicomRTAnnotationExport from './utils/dicomRTAnnotationExport/RTStructure
 
 import { getWebWorkerManager } from '@cornerstonejs/core';
 import { Enums } from '@cornerstonejs/tools';
+import { utils } from '@ohif/core';
 
 const { SegmentationRepresentations } = Enums;
+const { formatPN } = utils;
 
 const metadataProvider = classes.MetadataProvider;
 const ROI_THRESHOLD_MANUAL_TOOL_IDS = [
@@ -592,15 +594,10 @@ const commandsModule = ({ servicesManager, commandsManager, extensionManager }: 
           continue;
         }
 
-        const patientName =
-          typeof instance.PatientName === 'string'
-            ? instance.PatientName
-            : instance.PatientName.Alphabetic;
-
         report[id] = {
           ...segReport,
           PatientID: instance.PatientID ?? '000000',
-          PatientName: patientName,
+          PatientName: formatPN(instance.PatientName),
           StudyInstanceUID: instance.StudyInstanceUID,
           SeriesInstanceUID: instance.SeriesInstanceUID,
           StudyDate: instance.StudyDate,
