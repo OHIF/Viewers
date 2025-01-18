@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useCallback, useLayoutEffect, useRef } from 'react';
+import { getPanelElement, getPanelGroupElement } from 'react-resizable-panels';
 import PropTypes from 'prop-types';
 
 import { LoadingIndicatorProgress, InvestigationalUseDialog } from '@ohif/ui';
@@ -10,6 +11,8 @@ import { Onboarding, ResizablePanelGroup, ResizablePanel, ResizableHandle } from
 
 // Id needed to grab the panel group for converting pixels to percentages
 const viewerLayoutResizablePanelGroupId = 'viewerLayoutResizablePanelGroup';
+const viewerLayoutResizableLeftPanelId = 'viewerLayoutResizableLeftPanel';
+const viewerLayoutResizableRightPanelId = 'viewerLayoutResizableRightPanel';
 
 const sidePanelExpandedDefaultWidth = 280;
 const sidePanelExpandedInsideBorderSize = 4;
@@ -22,6 +25,24 @@ const sidePanelCollapsedOffsetWidth =
   sidePanelCollapsedWidth +
   sidePanelCollapsedInsideBorderSize +
   sidePanelCollapsedOutsideBorderSize;
+
+/**
+ * Set the minimum and maximum css style width attributes for the given element.
+ * The two style attributes are cleared whenever the width
+ * arguments is undefined.
+ * <p>
+ * This utility is used as part of a HACK throughout the ViewerLayout component as
+ * the means of restricting the side panel widths during the resizing of the
+ * browser window. In general, the widths are always set unless the resize
+ * handle for either side panel is being dragged (i.e. a side panel is being resized).
+ *
+ * @param elem the element
+ * @param width the max and min width to set on the element
+ */
+const setMinMaxWidth = (elem, width?) => {
+  elem.style.minWidth = width === undefined ? '' : `${width}px`;
+  elem.style.maxWidth = elem.style.minWidth;
+};
 
 function ViewerLayout({
   // From Extension Module Params
@@ -57,183 +78,230 @@ function ViewerLayout({
   const [rightPanelExpandedWidth, setRightPanelExpandedWidth] = useState(
     sidePanelExpandedDefaultWidth
   );
+
+  // Percentage sizes.
   const [resizablePanelCollapsedSize, setResizablePanelCollapsedSize] = useState(0);
   const [resizablePanelDefaultSize, setResizablePanelDefaultSize] = useState(0);
-  const [resizablePanelGroupElem, setResizablePanelGroupElem] = useState(null);
-  const resizableLeftPanelRef = useRef(null);
-  const resizableRightPanelRef = useRef(null);
+
+  const resizablePanelGroupElemRef = useRef(null);
+  const resizableLeftPanelElemRef = useRef(null);
+  const resizableRightPanelElemRef = useRef(null);
+  const resizableLeftPanelAPIRef = useRef(null);
+  const resizableRightPanelAPIRef = useRef(null);
+  const isResizableHandleDraggingRef = useRef(false);
 
   // This useLayoutEffect is used to...
-  // - Grab a reference to the resizable panel group whose width is needed for
-  //   converting to percentages in various callbacks.
+  // - Grab a reference to the various resizable panel elements needed for
+  //   converting between percentages and pixels in various callbacks.
   // - Expand those panels that are initially expanded.
   useLayoutEffect(() => {
-    const panelGroup = document.querySelector(
-      `[data-panel-group-id="${viewerLayoutResizablePanelGroupId}"]`
-    );
+    const panelGroupElem = getPanelGroupElement(viewerLayoutResizablePanelGroupId);
 
-    setResizablePanelGroupElem(panelGroup);
-    const { width: panelGroupWidth } = panelGroup.getBoundingClientRect();
+    resizablePanelGroupElemRef.current = panelGroupElem;
+    const { width: panelGroupWidth } = panelGroupElem.getBoundingClientRect();
+
+    const leftPanelElem = getPanelElement(viewerLayoutResizableLeftPanelId);
+    resizableLeftPanelElemRef.current = leftPanelElem;
+
+    const rightPanelElem = getPanelElement(viewerLayoutResizableRightPanelId);
+    resizableRightPanelElemRef.current = rightPanelElem;
 
     const resizablePanelExpandedSize =
       (sidePanelExpandedDefaultOffsetWidth / panelGroupWidth) * 100;
 
     // Since both resizable panels are collapsed by default (i.e. their default size is zero),
     // on the very first render check if either/both side panels should be expanded.
-    // If so, then check if there is space to expand either panel and expand them
-    // with the appropriate size.
     if (!leftPanelClosed) {
-      resizableLeftPanelRef?.current?.expand(resizablePanelExpandedSize);
+      resizableLeftPanelAPIRef?.current?.expand(resizablePanelExpandedSize);
+      setMinMaxWidth(leftPanelElem, sidePanelExpandedDefaultOffsetWidth);
     }
 
     if (!rightPanelClosed) {
-      resizableRightPanelRef?.current?.expand(resizablePanelExpandedSize);
+      resizableRightPanelAPIRef?.current?.expand(resizablePanelExpandedSize);
+      setMinMaxWidth(rightPanelElem, sidePanelExpandedDefaultOffsetWidth);
     }
-  }, []); // no dependencies because this useLayoutEffect is only needed on the first render
+  }, []); // no dependencies because this useLayoutEffect is only needed on the very first render
 
   // This useLayoutEffect follows the pattern prescribed by the react-resizable-panels
   // readme for converting between pixel values and percentages. An example of
   // the pattern can be found here:
   // https://github.com/bvaughn/react-resizable-panels/issues/46#issuecomment-1368108416
   // This useLayoutEffect is used to...
+  // - Ensure that the percentage size is up-to-date with the pixel sizes
   // - Add a resize observer to the resizable panel group to reset various state
   //   values whenever the resizable panel group is resized (e.g. whenever the
   //   browser window is resized).
   useLayoutEffect(() => {
-    let isFirstResize = true;
+    const { width: panelGroupWidth } = resizablePanelGroupElemRef.current.getBoundingClientRect();
 
-    const panelGroup = document.querySelector(
-      `[data-panel-group-id="${viewerLayoutResizablePanelGroupId}"]`
-    );
+    // Ensure the side panels' percentage size is in synch with the pixel width of the
+    // expanded side panels. In general the two get out-of-sync during a browser
+    // window resize. Note that this code is here and NOT in the ResizeObserver
+    // because it has to be done AFTER the minimum percentage size for a panel is
+    // updated which occurs only AFTER the render following a resize. And by virtue
+    // of the dependency on the  `resizablePanelDefaultSize` state, this code
+    // is executed on the render following an update of the minimum percentage size
+    // for a panel.
+    if (!resizableLeftPanelAPIRef.current.isCollapsed()) {
+      const leftSize =
+        ((leftPanelExpandedWidth + sidePanelExpandedInsideBorderSize) / panelGroupWidth) * 100;
+      resizableLeftPanelAPIRef.current.resize(leftSize);
+    }
+
+    if (!resizableRightPanelAPIRef.current.isCollapsed()) {
+      const rightSize =
+        ((rightPanelExpandedWidth + sidePanelExpandedInsideBorderSize) / panelGroupWidth) * 100;
+      resizableRightPanelAPIRef.current.resize(rightSize);
+    }
 
     // This observer kicks in when the ViewportLayout resizable panel group
     // component is resized. This typically occurs when the browser window resizes.
     const observer = new ResizeObserver(() => {
-      const { width: panelGroupWidth } = panelGroup.getBoundingClientRect();
+      const { width: panelGroupWidth } = resizablePanelGroupElemRef.current.getBoundingClientRect();
       const defaultSize = (sidePanelExpandedDefaultOffsetWidth / panelGroupWidth) * 100;
 
       // Set the new default and collapsed resizable panel sizes.
       setResizablePanelDefaultSize(Math.min(50, defaultSize));
       setResizablePanelCollapsedSize((sidePanelCollapsedOffsetWidth / panelGroupWidth) * 100);
 
-      if (isFirstResize) {
-        isFirstResize = false;
+      if (
+        resizableLeftPanelAPIRef.current.isCollapsed() &&
+        resizableRightPanelAPIRef.current.isCollapsed()
+      ) {
         return;
       }
 
+      // The code that follows is to handle cases when the group panel is resized to be
+      // too small to display either side panel at its current width.
+
       // Determine the current widths of the two side panels.
-      let leftPanelOffsetWidth = resizableLeftPanelRef.current.isCollapsed()
+      let leftPanelOffsetWidth = resizableLeftPanelAPIRef.current.isCollapsed()
         ? sidePanelCollapsedOffsetWidth
         : leftPanelExpandedWidth + sidePanelExpandedInsideBorderSize;
 
-      let rightPanelOffsetWidth = resizableRightPanelRef.current.isCollapsed()
+      let rightPanelOffsetWidth = resizableRightPanelAPIRef.current.isCollapsed()
         ? sidePanelCollapsedOffsetWidth
         : rightPanelExpandedWidth + sidePanelExpandedInsideBorderSize;
 
-      if (!resizableLeftPanelRef.current.isCollapsed()) {
-        // Check if there is enough space to show both panels at their widths prior to the panel group resize.
-        if (leftPanelOffsetWidth + rightPanelOffsetWidth > panelGroupWidth) {
-          // There is not enough space to show both panels at their pre-resize widths.
-          // Note that at this point, the viewport grid component is zero width.
-          // Reduce the left panel width so that both panels fit.
-          leftPanelOffsetWidth = Math.max(
-            panelGroupWidth - rightPanelOffsetWidth,
-            sidePanelExpandedDefaultOffsetWidth
-          );
-          setLeftPanelExpandedWidth(leftPanelOffsetWidth - sidePanelExpandedInsideBorderSize);
-          resizableLeftPanelRef.current.resize((leftPanelOffsetWidth / panelGroupWidth) * 100);
-        } else {
-          // Maintain the left panel's pre-resize width.
-          const leftSize =
-            ((leftPanelExpandedWidth + sidePanelExpandedInsideBorderSize) / panelGroupWidth) * 100;
-          if (leftSize < resizablePanelDefaultSize) {
-            // We are resizing to something less than the previous min size.
-            // However a new up-to-date min size will be set on the next render, so resize after that.
-            window.setTimeout(() => resizableLeftPanelRef.current.resize(leftSize), 0);
-          } else {
-            resizableLeftPanelRef.current.resize(leftSize);
-          }
-        }
+      if (
+        !resizableLeftPanelAPIRef.current.isCollapsed() &&
+        leftPanelOffsetWidth + rightPanelOffsetWidth > panelGroupWidth
+      ) {
+        // There is not enough space to show both panels at their pre-resize widths.
+        // Note that at this point, the viewport grid component is zero width.
+        // Reduce the left panel width so that both panels might fit.
+        leftPanelOffsetWidth = Math.max(
+          panelGroupWidth - rightPanelOffsetWidth,
+          sidePanelExpandedDefaultOffsetWidth
+        );
+        setLeftPanelExpandedWidth(leftPanelOffsetWidth - sidePanelExpandedInsideBorderSize);
+        setMinMaxWidth(resizableLeftPanelElemRef.current, leftPanelOffsetWidth);
       }
 
-      if (!resizableRightPanelRef.current.isCollapsed()) {
-        // Check if there is enough space to show both panels at their widths prior to the panel group resize.
-        if (rightPanelOffsetWidth + leftPanelOffsetWidth > panelGroupWidth) {
-          // There is not enough space to show both panels at their pre-resize widths.
-          // Note that at this point, the viewport grid component is zero width.
-          // Reduce the right panel width so that both panels fit.
-          rightPanelOffsetWidth = Math.max(
-            panelGroupWidth - leftPanelOffsetWidth,
-            sidePanelExpandedDefaultOffsetWidth
-          );
-          setRightPanelExpandedWidth(rightPanelOffsetWidth - sidePanelExpandedInsideBorderSize);
-          resizableRightPanelRef.current.resize((rightPanelOffsetWidth / panelGroupWidth) * 100);
-        } else {
-          // Maintain the right panel's pre-resize width.
-          const rightSize =
-            ((rightPanelExpandedWidth + sidePanelExpandedInsideBorderSize) / panelGroupWidth) * 100;
-          if (rightSize < resizablePanelDefaultSize) {
-            // We are resizing to something less than the previous min size.
-            // However a new up-to-date min size will be set on the next render, so resize after that.
-            window.setTimeout(() => resizableRightPanelRef.current.resize(rightSize), 0);
-          } else {
-            resizableRightPanelRef.current.resize(rightSize);
-          }
-        }
+      if (
+        !resizableRightPanelAPIRef.current.isCollapsed() &&
+        rightPanelOffsetWidth + leftPanelOffsetWidth > panelGroupWidth
+      ) {
+        // There is not enough space to show both panels at their pre-resize widths.
+        // Note that at this point, the viewport grid component is zero width.
+        // Reduce the right panel width so that both panels might fit.
+        rightPanelOffsetWidth = Math.max(
+          panelGroupWidth - leftPanelOffsetWidth,
+          sidePanelExpandedDefaultOffsetWidth
+        );
+        setRightPanelExpandedWidth(rightPanelOffsetWidth - sidePanelExpandedInsideBorderSize);
+        setMinMaxWidth(resizableRightPanelElemRef.current, rightPanelOffsetWidth);
       }
     });
 
-    observer.observe(panelGroup);
+    observer.observe(resizablePanelGroupElemRef.current);
 
     return () => {
       observer.disconnect();
     };
   }, [leftPanelExpandedWidth, resizablePanelDefaultSize, rightPanelExpandedWidth]);
 
+  /**
+   * Handles dragging of either side panel resize handle.
+   */
+  const onHandleDragging = useCallback(
+    isStartDrag => {
+      if (isStartDrag) {
+        isResizableHandleDraggingRef.current = true;
+
+        setMinMaxWidth(resizableLeftPanelElemRef.current);
+        setMinMaxWidth(resizableRightPanelElemRef.current);
+      } else {
+        isResizableHandleDraggingRef.current = false;
+
+        if (resizableLeftPanelAPIRef?.current?.isExpanded()) {
+          setMinMaxWidth(
+            resizableLeftPanelElemRef.current,
+            leftPanelExpandedWidth + sidePanelExpandedInsideBorderSize
+          );
+        }
+
+        if (resizableRightPanelAPIRef?.current?.isExpanded()) {
+          setMinMaxWidth(
+            resizableRightPanelElemRef.current,
+            rightPanelExpandedWidth + sidePanelExpandedInsideBorderSize
+          );
+        }
+      }
+    },
+    [leftPanelExpandedWidth, rightPanelExpandedWidth]
+  );
+
   const onLeftPanelClose = useCallback(() => {
     setLeftPanelClosed(true);
-    resizableLeftPanelRef?.current?.collapse();
+    setMinMaxWidth(resizableLeftPanelElemRef.current);
+    resizableLeftPanelAPIRef?.current?.collapse();
   }, []);
 
   const onLeftPanelOpen = useCallback(() => {
-    resizableLeftPanelRef?.current?.expand();
+    resizableLeftPanelAPIRef?.current?.expand();
+    if (!isResizableHandleDraggingRef.current) {
+      setMinMaxWidth(
+        resizableLeftPanelElemRef.current,
+        leftPanelExpandedWidth + sidePanelExpandedInsideBorderSize
+      );
+    }
     setLeftPanelClosed(false);
-  }, []);
+  }, [leftPanelExpandedWidth]);
 
-  const onLeftPanelResize = useCallback(
-    size => {
-      if (!resizablePanelGroupElem || resizableLeftPanelRef?.current?.isCollapsed()) {
-        return;
-      }
-      // const size = resizableLeftPanelRef?.current?.getSize();
-      const { width: panelGroupWidth } = resizablePanelGroupElem.getBoundingClientRect();
-      setLeftPanelExpandedWidth((size / 100) * panelGroupWidth - sidePanelExpandedInsideBorderSize);
-    },
-    [resizablePanelGroupElem]
-  );
+  const onLeftPanelResize = useCallback(size => {
+    if (resizableLeftPanelAPIRef.current.isCollapsed()) {
+      return;
+    }
+
+    const { width: panelGroupWidth } = resizablePanelGroupElemRef.current.getBoundingClientRect();
+    setLeftPanelExpandedWidth((size / 100) * panelGroupWidth - sidePanelExpandedInsideBorderSize);
+  }, []);
 
   const onRightPanelClose = useCallback(() => {
     setRightPanelClosed(true);
-    resizableRightPanelRef?.current?.collapse();
+    setMinMaxWidth(resizableRightPanelElemRef.current);
+    resizableRightPanelAPIRef?.current?.collapse();
   }, []);
 
   const onRightPanelOpen = useCallback(() => {
-    resizableRightPanelRef?.current?.expand();
-    setRightPanelClosed(false);
-  }, []);
-
-  const onRightPanelResize = useCallback(
-    size => {
-      if (!resizablePanelGroupElem || resizableRightPanelRef?.current?.isCollapsed()) {
-        return;
-      }
-      const { width: panelGroupWidth } = resizablePanelGroupElem.getBoundingClientRect();
-      setRightPanelExpandedWidth(
-        (size / 100) * panelGroupWidth - sidePanelExpandedInsideBorderSize
+    resizableRightPanelAPIRef?.current?.expand();
+    if (!isResizableHandleDraggingRef.current) {
+      setMinMaxWidth(
+        resizableRightPanelElemRef.current,
+        rightPanelExpandedWidth + sidePanelExpandedInsideBorderSize
       );
-    },
-    [resizablePanelGroupElem]
-  );
+    }
+    setRightPanelClosed(false);
+  }, [rightPanelExpandedWidth]);
+
+  const onRightPanelResize = useCallback(size => {
+    if (resizableRightPanelAPIRef?.current?.isCollapsed()) {
+      return;
+    }
+    const { width: panelGroupWidth } = resizablePanelGroupElemRef.current.getBoundingClientRect();
+    setRightPanelExpandedWidth((size / 100) * panelGroupWidth - sidePanelExpandedInsideBorderSize);
+  }, []);
 
   /**
    * Set body classes (tailwindcss) that don't allow vertical
@@ -339,9 +407,9 @@ function ViewerLayout({
                   collapsedSize={resizablePanelCollapsedSize}
                   onCollapse={() => setLeftPanelClosed(true)}
                   onExpand={() => setLeftPanelClosed(false)}
-                  ref={resizableLeftPanelRef}
+                  ref={resizableLeftPanelAPIRef}
                   order={0}
-                  id={'viewerLayoutResizableLeftPanel'}
+                  id={viewerLayoutResizableLeftPanelId}
                 >
                   <SidePanelWithServices
                     side="left"
@@ -357,6 +425,7 @@ function ViewerLayout({
                   />
                 </ResizablePanel>
                 <ResizableHandle
+                  onDragging={onHandleDragging}
                   disabled={!leftPanelResizable}
                   className="!w-0"
                 />
@@ -380,6 +449,7 @@ function ViewerLayout({
             {hasRightPanels ? (
               <>
                 <ResizableHandle
+                  onDragging={onHandleDragging}
                   disabled={!rightPanelResizable}
                   className="!w-0"
                 />
@@ -391,9 +461,9 @@ function ViewerLayout({
                   collapsedSize={resizablePanelCollapsedSize}
                   onCollapse={() => setRightPanelClosed(true)}
                   onExpand={() => setRightPanelClosed(false)}
-                  ref={resizableRightPanelRef}
+                  ref={resizableRightPanelAPIRef}
                   order={3}
-                  id={'viewerLayoutResizableRightPanel'}
+                  id={viewerLayoutResizableRightPanelId}
                 >
                   <SidePanelWithServices
                     side="right"
