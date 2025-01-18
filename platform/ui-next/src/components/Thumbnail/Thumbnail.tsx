@@ -135,10 +135,15 @@ const Thumbnail = ({
             </div>
           </div>
         </div>
-        <div className="mt-3 flex h-[52px] w-[128px] flex-col">
-          <div className="min-h-[18px] w-[128px] overflow-hidden text-ellipsis pb-0.5 pl-1 text-[12px] font-normal leading-4 text-white">
-            {description}
-          </div>
+        <div className="flex h-[52px] w-[128px] flex-col justify-end">
+          <Tooltip>
+            <TooltipContent>{description}</TooltipContent>
+            <TooltipTrigger>
+              <div className="min-h-[18px] w-[128px] overflow-hidden text-ellipsis whitespace-nowrap pb-0.5 pl-1 text-left text-[12px] font-normal leading-4 text-white">
+                {description}
+              </div>
+            </TooltipTrigger>
+          </Tooltip>
           <div className="flex h-[12px] items-center gap-[7px] overflow-hidden">
             <div className="text-muted-foreground pl-1 text-[11px]"> S:{seriesNumber}</div>
             <div className="text-muted-foreground text-[11px]">
@@ -165,21 +170,25 @@ const Thumbnail = ({
           isActive && 'bg-popover'
         )}
       >
-        <div className="relative flex h-[32px] items-center gap-[8px]">
+        <div className="relative flex h-[32px] w-full items-center gap-[8px] overflow-hidden">
           <div
             className={classnames(
-              'h-[32px] w-[4px] rounded-[2px]',
+              'h-[32px] w-[4px] min-w-[4px] rounded-[2px]',
               isActive || isHydratedForDerivedDisplaySet ? 'bg-highlight' : 'bg-primary/65',
               loadingProgress && loadingProgress < 1 && 'bg-primary/25'
             )}
           ></div>
-          <div className="flex h-full flex-col">
+          <div className="flex h-full w-[calc(100%-12px)] flex-col">
             <div className="flex items-center gap-[7px]">
               <div className="text-[13px] font-semibold text-white">{modality}</div>
-
-              <div className="max-w-[160px] overflow-hidden overflow-ellipsis whitespace-nowrap text-[13px] font-normal text-white">
-                {description}
-              </div>
+              <Tooltip>
+                <TooltipContent>{description}</TooltipContent>
+                <TooltipTrigger className="w-full overflow-hidden">
+                  <div className="max-w-[160px] overflow-hidden overflow-ellipsis whitespace-nowrap text-left text-[13px] font-normal text-white">
+                    {description}
+                  </div>
+                </TooltipTrigger>
+              </Tooltip>
             </div>
 
             <div className="flex h-[12px] items-center gap-[7px] overflow-hidden">
@@ -246,7 +255,7 @@ const Thumbnail = ({
         className,
         'bg-muted hover:bg-primary/30 group flex cursor-pointer select-none flex-col rounded outline-none',
         viewPreset === 'thumbnails' && 'h-[170px] w-[135px]',
-        viewPreset === 'list' && 'col-span-2 h-[40px] w-[275px]'
+        viewPreset === 'list' && 'h-[40px] w-full'
       )}
       id={`thumbnail-${displaySetInstanceUID}`}
       data-cy={

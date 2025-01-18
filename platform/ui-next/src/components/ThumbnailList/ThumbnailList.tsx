@@ -11,7 +11,16 @@ const ThumbnailList = ({
   activeDisplaySetInstanceUIDs = [],
   viewPreset,
   ThumbnailMenuItems,
-}: withAppTypes) => {
+}) => {
+  // Filter thumbnails into list items and thumbnail items
+  const listItems = thumbnails.filter(
+    ({ componentType }) => componentType === 'thumbnailNoImage' || viewPreset === 'list'
+  );
+
+  const thumbnailItems = thumbnails.filter(
+    ({ componentType }) => componentType !== 'thumbnailNoImage' && viewPreset === 'thumbnails'
+  );
+
   return (
     <div
       className="min-h-[350px]"
@@ -19,11 +28,12 @@ const ThumbnailList = ({
         '--radix-accordion-content-height': '350px',
       }}
     >
+      {/* Thumbnail Items */}
       <div
         id="ohif-thumbnail-list"
-        className={`ohif-scrollbar bg-bkg-low grid place-items-center overflow-y-hidden pt-[4px] pr-[2.5px] pl-[2.5px] ${viewPreset === 'thumbnails' ? 'grid-cols-2 gap-[4px] pb-[12px]' : 'grid-cols-1 gap-[2px]'}`}
+        className="ohif-scrollbar bg-bkg-low grid grid-cols-[repeat(auto-fit,_minmax(0,135px))] place-items-start gap-[4px] overflow-y-hidden pt-[4px] pr-[2.5px] pl-[5px]"
       >
-        {thumbnails.map(
+        {thumbnailItems.map(
           ({
             displaySetInstanceUID,
             description,
@@ -59,7 +69,63 @@ const ThumbnailList = ({
                 canReject={canReject}
                 onReject={onReject}
                 modality={modality}
-                viewPreset={componentType === 'thumbnailNoImage' ? 'list' : viewPreset}
+                viewPreset="thumbnails"
+                thumbnailType={componentType}
+                onClick={() => onThumbnailClick(displaySetInstanceUID)}
+                onDoubleClick={() => onThumbnailDoubleClick(displaySetInstanceUID)}
+                isTracked={isTracked}
+                loadingProgress={loadingProgress}
+                onClickUntrack={() => onClickUntrack(displaySetInstanceUID)}
+                isHydratedForDerivedDisplaySet={isHydratedForDerivedDisplaySet}
+                ThumbnailMenuItems={ThumbnailMenuItems}
+              />
+            );
+          }
+        )}
+      </div>
+
+      {/* List Items */}
+      <div
+        id="ohif-thumbnail-list"
+        className="ohif-scrollbar bg-bkg-low grid grid-cols-[repeat(auto-fit,_minmax(0,275px))] place-items-start gap-[2px] overflow-y-hidden pt-[4px] pr-[2.5px] pl-[5px]"
+      >
+        {listItems.map(
+          ({
+            displaySetInstanceUID,
+            description,
+            dragData,
+            seriesNumber,
+            numInstances,
+            loadingProgress,
+            modality,
+            componentType,
+            countIcon,
+            canReject,
+            onReject,
+            isTracked,
+            imageSrc,
+            messages,
+            imageAltText,
+            isHydratedForDerivedDisplaySet,
+          }) => {
+            const isActive = activeDisplaySetInstanceUIDs.includes(displaySetInstanceUID);
+            return (
+              <Thumbnail
+                key={displaySetInstanceUID}
+                displaySetInstanceUID={displaySetInstanceUID}
+                dragData={dragData}
+                description={description}
+                seriesNumber={seriesNumber}
+                numInstances={numInstances || 1}
+                countIcon={countIcon}
+                imageSrc={imageSrc}
+                imageAltText={imageAltText}
+                messages={messages}
+                isActive={isActive}
+                canReject={canReject}
+                onReject={onReject}
+                modality={modality}
+                viewPreset="list"
                 thumbnailType={componentType}
                 onClick={() => onThumbnailClick(displaySetInstanceUID)}
                 onDoubleClick={() => onThumbnailDoubleClick(displaySetInstanceUID)}
@@ -89,15 +155,7 @@ ThumbnailList.propTypes = {
       description: PropTypes.string,
       componentType: PropTypes.any,
       isTracked: PropTypes.bool,
-      /**
-       * Data the thumbnail should expose to a receiving drop target. Use a matching
-       * `dragData.type` to identify which targets can receive this draggable item.
-       * If this is not set, drag-n-drop will be disabled for this thumbnail.
-       *
-       * Ref: https://react-dnd.github.io/react-dnd/docs/api/use-drag#specification-object-members
-       */
       dragData: PropTypes.shape({
-        /** Must match the "type" a dropTarget expects */
         type: PropTypes.string.isRequired,
       }),
     })
