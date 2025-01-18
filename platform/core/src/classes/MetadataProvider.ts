@@ -9,7 +9,6 @@ import combineFrameInstance from '../utils/combineFrameInstance';
 
 class MetadataProvider {
   private readonly imageURIToUIDs: Map<string, any> = new Map();
-  private readonly imageUIDsByImageId: Map<string, any> = new Map();
   // Can be used to store custom metadata for a specific type.
   // For instance, the scaling metadata for PET can be stored here
   // as type "scalingModule"
@@ -25,7 +24,6 @@ class MetadataProvider {
     // An example would be dicom hosted at some random site.
     const imageURI = imageIdToURI(imageId);
     this.imageURIToUIDs.set(imageURI, uids);
-    this.imageUIDsByImageId.set(imageId, uids);
   }
 
   addCustomMetadata(imageId, type, metadata) {
@@ -462,11 +460,6 @@ class MetadataProvider {
   }
 
   getUIDsFromImageID(imageId) {
-    const cachedUIDs = this.imageUIDsByImageId.get(imageId);
-    if (cachedUIDs) {
-      return cachedUIDs;
-    }
-
     if (imageId.startsWith('wadors:')) {
       const strippedImageId = imageId.split('/studies/')[1];
       const splitImageId = strippedImageId.split('/');
@@ -545,6 +538,7 @@ const WADO_IMAGE_LOADER = {
       frameOfReferenceUID: instance.FrameOfReferenceUID,
       rows: toNumber(instance.Rows),
       columns: toNumber(instance.Columns),
+      spacingBetweenSlices: toNumber(instance.SpacingBetweenSlices),
       imageOrientationPatient: toNumber(ImageOrientationPatient) || [0, 1, 0, 0, 0, -1],
       rowCosines: toNumber(rowCosines || [0, 1, 0]),
       isDefaultValueSetForRowCosine: toNumber(rowCosines) ? false : true,

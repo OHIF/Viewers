@@ -3,6 +3,261 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.10.0-beta.63](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.62...v3.10.0-beta.63) (2025-01-17)
+
+**Note:** Version bump only for package @ohif/ui-next
+
+
+
+
+
+# [3.10.0-beta.62](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.61...v3.10.0-beta.62) (2025-01-16)
+
+
+### Bug Fixes
+
+* context menu icon ([#4696](https://github.com/OHIF/Viewers/issues/4696)) ([1993161](https://github.com/OHIF/Viewers/commit/19931614dc53da440718e512d39a87ca9118b96e))
+
+
+
+
+
+# [3.10.0-beta.61](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.60...v3.10.0-beta.61) (2025-01-16)
+
+**Note:** Version bump only for package @ohif/ui-next
+
+
+
+
+
+# [3.10.0-beta.60](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.59...v3.10.0-beta.60) (2025-01-15)
+
+**Note:** Version bump only for package @ohif/ui-next
+
+
+
+
+
+# [3.10.0-beta.59](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.58...v3.10.0-beta.59) (2025-01-14)
+
+**Note:** Version bump only for package @ohif/ui-next
+
+
+
+
+
+# [3.10.0-beta.58](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.57...v3.10.0-beta.58) (2025-01-13)
+
+
+### Features
+
+* **multimonitor:** Add simple multi-monitor support to open another study([#4178](https://github.com/OHIF/Viewers/issues/4178)) ([07c628e](https://github.com/OHIF/Viewers/commit/07c628e689b28f831317a7c28d712509b69c6b13))
+
+
+
+
+
+# [3.10.0-beta.57](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.56...v3.10.0-beta.57) (2025-01-13)
+
+**Note:** Version bump only for package @ohif/ui-next
+
+
+
+
+
+# [3.10.0-beta.56](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.55...v3.10.0-beta.56) (2025-01-13)
+
+**Note:** Version bump only for package @ohif/ui-next
+
+
+
+
+
+# [3.10.0-beta.55](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.54...v3.10.0-beta.55) (2025-01-10)
+
+
+### Features
+
+* **dev:** move to rsbuild for dev - faster ([#4674](https://github.com/OHIF/Viewers/issues/4674)) ([d4a4267](https://github.com/OHIF/Viewers/commit/d4a4267429c02916dd51f6aefb290d96dd1c3b04))
+
+
+
+
+
+# [3.10.0-beta.54](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.53...v3.10.0-beta.54) (2025-01-10)
+
+**Note:** Version bump only for package @ohif/ui-next
+
+
+
+
+
+# [3.10.0-beta.53](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.52...v3.10.0-beta.53) (2025-01-10)
+
+
+### Bug Fixes
+
+* **icons:** icons missing for volume presets and others ([#4671](https://github.com/OHIF/Viewers/issues/4671)) ([01924b8](https://github.com/OHIF/Viewers/commit/01924b8bf27da045d39dfaeb126b73cb4efcdb08))
+
+
+
+
+
+# [3.10.0-beta.52](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.51...v3.10.0-beta.52) (2025-01-10)
+
+**Note:** Version bump only for package @ohif/ui-next
+
+
+
+
+
+# [3.10.0-beta.51](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.50...v3.10.0-beta.51) (2025-01-10)
+
+**Note:** Version bump only for package @ohif/ui-next
+
+
+
+
+
+# [3.10.0-beta.50](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.49...v3.10.0-beta.50) (2025-01-10)
+
+**Note:** Version bump only for package @ohif/ui-next
+
+
+
+
+
+# [3.10.0-beta.49](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.48...v3.10.0-beta.49) (2025-01-09)
+
+**Note:** Version bump only for package @ohif/ui-next
+
+
+
+
+
+# [3.10.0-beta.48](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.47...v3.10.0-beta.48) (2025-01-09)
+
+**Note:** Version bump only for package @ohif/ui-next
+
+
+
+
+
+# [3.10.0-beta.47](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.46...v3.10.0-beta.47) (2025-01-09)
+
+**Note:** Version bump only for package @ohif/ui-next
+
+
+
+
+
+# [3.10.0-beta.46](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.45...v3.10.0-beta.46) (2025-01-08)
+
+**Note:** Version bump only for package @ohif/ui-next
+
+
+
+
+
+# [3.10.0-beta.45](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.44...v3.10.0-beta.45) (2025-01-08)
+
+**Note:** Version bump only for package @ohif/ui-next
+
+
+
+
+
+# [3.10.0-beta.44](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.43...v3.10.0-beta.44) (2025-01-08)
+
+**Note:** Version bump only for package @ohif/ui-next
+
+
+
+
+
+# [3.10.0-beta.43](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.42...v3.10.0-beta.43) (2025-01-08)
+
+**Note:** Version bump only for package @ohif/ui-next
+
+
+
+
+
+# [3.10.0-beta.42](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.41...v3.10.0-beta.42) (2025-01-08)
+
+**Note:** Version bump only for package @ohif/ui-next
+
+
+
+
+
+# [3.10.0-beta.41](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.40...v3.10.0-beta.41) (2025-01-08)
+
+**Note:** Version bump only for package @ohif/ui-next
+
+
+
+
+
+# [3.10.0-beta.40](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.39...v3.10.0-beta.40) (2025-01-08)
+
+**Note:** Version bump only for package @ohif/ui-next
+
+
+
+
+
+# [3.10.0-beta.39](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.38...v3.10.0-beta.39) (2025-01-08)
+
+**Note:** Version bump only for package @ohif/ui-next
+
+
+
+
+
+# [3.10.0-beta.38](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.37...v3.10.0-beta.38) (2025-01-07)
+
+**Note:** Version bump only for package @ohif/ui-next
+
+
+
+
+
+# [3.10.0-beta.37](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.36...v3.10.0-beta.37) (2025-01-06)
+
+
+### Bug Fixes
+
+* year 2025 missing in date picker ([#4647](https://github.com/OHIF/Viewers/issues/4647)) ([4a8e8ca](https://github.com/OHIF/Viewers/commit/4a8e8cacf2fa5a7e2ed2429cba79edcd3f2a6d78))
+
+
+
+
+
+# [3.10.0-beta.36](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.35...v3.10.0-beta.36) (2025-01-03)
+
+**Note:** Version bump only for package @ohif/ui-next
+
+
+
+
+
+# [3.10.0-beta.35](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.34...v3.10.0-beta.35) (2025-01-03)
+
+**Note:** Version bump only for package @ohif/ui-next
+
+
+
+
+
+# [3.10.0-beta.34](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.33...v3.10.0-beta.34) (2025-01-02)
+
+**Note:** Version bump only for package @ohif/ui-next
+
+
+
+
+
 # [3.10.0-beta.33](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.32...v3.10.0-beta.33) (2024-12-20)
 
 **Note:** Version bump only for package @ohif/ui-next

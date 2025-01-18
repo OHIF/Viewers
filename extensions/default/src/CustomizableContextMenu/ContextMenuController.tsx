@@ -47,17 +47,22 @@ export default class ContextMenuController {
     }
 
     const { event, subMenu, menuId, menus, selectorProps } = contextMenuProps;
-
-    const annotationManager = CsAnnotation.state.getAnnotationManager();
-    const { locking } = CsAnnotation;
-    const targetAnnotationId = selectorProps?.nearbyToolData?.annotationUID as string;
-    const isLocked = locking.isAnnotationLocked(
-      annotationManager.getAnnotation(targetAnnotationId)
-    );
-
-    if (isLocked) {
-      console.warn('Annotation is locked.');
+    if (!menus) {
+      console.warn('No menus found for', menuId);
       return;
+    }
+
+    const { locking, visibility } = CsAnnotation;
+    const targetAnnotationId = selectorProps?.nearbyToolData?.annotationUID as string;
+
+    if (targetAnnotationId) {
+      const isLocked = locking.isAnnotationLocked(targetAnnotationId);
+      const isVisible = visibility.isAnnotationVisible(targetAnnotationId);
+
+      if (isLocked || !isVisible) {
+        console.warn(`Annotation is ${isLocked ? 'locked' : 'not visible'}.`);
+        return;
+      }
     }
 
     const items = ContextMenuItemsBuilder.getMenuItems(
@@ -75,7 +80,7 @@ export default class ContextMenuController {
       preventCutOf: true,
       defaultPosition: ContextMenuController._getDefaultPosition(
         defaultPointsPosition,
-        event?.detail,
+        event?.detail || event,
         viewportElement
       ),
       event,
@@ -91,7 +96,7 @@ export default class ContextMenuController {
         menus,
         event,
         subMenu,
-        eventData: event?.detail,
+        eventData: event?.detail || event,
 
         onClose: () => {
           this.services.uiDialogService.dismiss({ id: 'context-menu' });
@@ -138,8 +143,8 @@ export default class ContextMenuController {
   };
 
   static _getEventDefaultPosition = eventDetail => ({
-    x: eventDetail && eventDetail.currentPoints.client[0],
-    y: eventDetail && eventDetail.currentPoints.client[1],
+    x: eventDetail?.currentPoints?.client[0] ?? eventDetail?.pageX,
+    y: eventDetail?.currentPoints?.client[1] ?? eventDetail?.pageY,
   });
 
   static _getElementDefaultPosition = element => {
