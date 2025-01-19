@@ -1,10 +1,6 @@
 import React, { useEffect, useRef } from 'react';
-import { CommandsManager, ServicesManager, utils } from '@ohif/core';
-import { MeasurementTable } from '@ohif/ui-next';
 import debounce from 'lodash.debounce';
 import { useMeasurements } from '../hooks/useMeasurements';
-import { StudySummaryFromMetadata } from '../components/StudySummaryFromMetadata';
-import { PanelAccordion } from '../components/CollapsibleStudySummaryFromMetadata';
 
 type Node = {
   id: string;
