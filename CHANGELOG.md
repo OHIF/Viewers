@@ -3,6 +3,59 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.10.0-beta.63](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.62...v3.10.0-beta.63) (2025-01-17)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.10.0-beta.62](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.61...v3.10.0-beta.62) (2025-01-16)
+
+
+### Bug Fixes
+
+* context menu icon ([#4696](https://github.com/OHIF/Viewers/issues/4696)) ([1993161](https://github.com/OHIF/Viewers/commit/19931614dc53da440718e512d39a87ca9118b96e))
+
+
+
+
+
+# [3.10.0-beta.61](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.60...v3.10.0-beta.61) (2025-01-16)
+
+
+### Bug Fixes
+
+* **multiframe:** handling proxies properly ([#4693](https://github.com/OHIF/Viewers/issues/4693)) ([ec4b5a6](https://github.com/OHIF/Viewers/commit/ec4b5a6876cea77278e5cffaf4108eeeefdc57dc))
+
+
+
+
+
+# [3.10.0-beta.60](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.59...v3.10.0-beta.60) (2025-01-15)
+
+
+### Bug Fixes
+
+* Having sop instance in a per-frame or shared attribute breaks load ([#4560](https://github.com/OHIF/Viewers/issues/4560)) ([cded082](https://github.com/OHIF/Viewers/commit/cded08261788143e0d5be57a55c927fd96aafb22))
+
+
+
+
+
+# [3.10.0-beta.59](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.58...v3.10.0-beta.59) (2025-01-14)
+
+
+### Bug Fixes
+
+* bugs after multimonitor ([#4680](https://github.com/OHIF/Viewers/issues/4680)) ([c901a84](https://github.com/OHIF/Viewers/commit/c901a847af75d356509366c695ea46ff4f4bcdaf))
+* cs dicom sr commands module ([#4683](https://github.com/OHIF/Viewers/issues/4683)) ([2d611d0](https://github.com/OHIF/Viewers/commit/2d611d06ed759bbd1e83ccfac7dceeff9eb6238e))
+
+
+
+
+
 # [3.10.0-beta.58](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.57...v3.10.0-beta.58) (2025-01-13)
 
 
