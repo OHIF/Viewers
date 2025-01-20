@@ -73,10 +73,7 @@ function getRuntimeLoadModesExtensions(modules) {
       dynamicLoad.push(
         `  if( module==="${packageName}") {`,
         `    const imported = await window.browserImportFunction('${module.importPath}');`,
-        '    return ' +
-          (module.globalName
-            ? `window["${module.globalName}"];`
-            : `imported["${module.importName || 'default'}"];`),
+        '    return ' + (module.globalName ? `window["${module.globalName}"];` : `imported["${module.importName || 'default'}"];`),
         '  }'
       );
       return;
@@ -204,6 +201,12 @@ function writePluginImportsFile(SRC_DIR, DIST_DIR) {
     'dist'
   );
 
+  console.warn('copy plugins', [
+    ...copyPluginPublicToDistBuild,
+    ...copyPluginPublicToDistLink,
+    ...copyPluginDistToDistBuild,
+    ...copyPluginDistToDistLink,
+  ]);
   return [
     ...copyPluginPublicToDistBuild,
     ...copyPluginPublicToDistLink,

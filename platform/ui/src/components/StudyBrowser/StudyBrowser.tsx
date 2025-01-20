@@ -23,7 +23,7 @@ const getTrackedSeries = displaySets => {
   return trackedSeries;
 };
 
-const noop = () => {};
+const noop = () => { };
 
 const StudyBrowser = ({
   tabs,
@@ -34,7 +34,6 @@ const StudyBrowser = ({
   onClickThumbnail = noop,
   onDoubleClickThumbnail = noop,
   onClickUntrack = noop,
-  onClickLaunch,
   activeDisplaySetInstanceUIDs,
   servicesManager,
 }: withAppTypes) => {
@@ -61,7 +60,6 @@ const StudyBrowser = ({
               onClick={() => {
                 onClickStudy(studyInstanceUid);
               }}
-              onClickLaunch={onClickLaunch?.bind(null, studyInstanceUid)}
               data-cy="thumbnail-list"
             />
             {isExpanded && displaySets && (

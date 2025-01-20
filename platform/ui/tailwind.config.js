@@ -200,7 +200,7 @@ module.exports = {
         200: '#fed7e2',
         300: '#fbb6ce',
         400: '#f687b3',
-        500: '#ed64a6',
+        500: 'cvvvcc',
         600: '#d53f8c',
         700: '#b83280',
         800: '#97266d',
@@ -226,7 +226,7 @@ module.exports = {
     },
     borderColor: theme => ({
       ...theme('colors'),
-      DEFAULT: theme('colors.gray.300', 'currentColor'),
+      DEFAULT: theme('#fff5f7', 'currentColor'),
     }),
     boxShadow: {
       xs: '0 0 0 1px rgba(0, 0, 0, 0.05)',
@@ -252,18 +252,6 @@ module.exports = {
     },
     fill: {
       current: 'currentColor',
-    },
-    fontSize: {
-      xxs: '0.6875rem', // 11px
-      xs: '0.75rem', // 12px
-      sm: '0.8125rem', // 13px
-      base: '0.875rem', // 14px
-      lg: '1rem', // 16px
-      xl: '1.125rem', // 18px
-      '2xl': '1.25rem', // 20px
-      '3xl': '1.375rem', // 22px
-      '4xl': '1.5rem', // 24px
-      '5xl': '1.875rem', // 30px
     },
     flex: {
       1: '1 1 0%',

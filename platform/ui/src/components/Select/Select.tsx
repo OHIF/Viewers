@@ -2,7 +2,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import ReactSelect, { components } from 'react-select';
-import { Icons } from '@ohif/ui-next';
+
+import Icon from '../Icon';
 
 import './Select.css';
 
@@ -23,9 +24,9 @@ const Option = props => {
       <div className="flex items-center">
         <div className="h-2 w-2">
           {props.isSelected ? (
-            <Icons.ByName name={'checkbox-active'} />
+            <Icon name={'checkbox-active'} />
           ) : (
-            <Icons.ByName name={'checkbox-default'} />
+            <Icon name={'checkbox-default'} />
           )}
         </div>
         <label
@@ -100,9 +101,6 @@ const Select = ({
       }}
       value={value && Array.isArray(value) ? selectedOptions : value}
       onChange={(selectedOptions, { action }) => {
-        if (selectedOptions === null) {
-          return onChange(null, action);
-        }
         const newSelection = !selectedOptions.length
           ? selectedOptions
           : selectedOptions.reduce((acc, curr) => acc.concat([curr.value]), []);

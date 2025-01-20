@@ -3,12 +3,14 @@ import OHIF, { DicomMetadataStore } from '@ohif/core';
 import getLabelFromDCMJSImportedToolData from './getLabelFromDCMJSImportedToolData';
 import { adaptersSR } from '@cornerstonejs/adapters';
 import { annotation as CsAnnotation } from '@cornerstonejs/tools';
-import { Enums as CSExtensionEnums } from '@ohif/extension-cornerstone';
-
 const { locking } = CsAnnotation;
+
 const { guid } = OHIF.utils;
 const { MeasurementReport, CORNERSTONE_3D_TAG } = adaptersSR.Cornerstone3D;
-const { CORNERSTONE_3D_TOOLS_SOURCE_NAME, CORNERSTONE_3D_TOOLS_SOURCE_VERSION } = CSExtensionEnums;
+
+const CORNERSTONE_3D_TOOLS_SOURCE_NAME = 'Cornerstone3DTools';
+const CORNERSTONE_3D_TOOLS_SOURCE_VERSION = '0.1';
+
 const supportedLegacyCornerstoneTags = ['cornerstoneTools@^4.0.0'];
 
 const convertCode = (codingValues, code) => {
@@ -41,23 +43,15 @@ const convertSites = (codingValues, sites) => {
  *
  */
 export default function hydrateStructuredReport(
-  { servicesManager, extensionManager }: withAppTypes,
+  { servicesManager, extensionManager, appConfig }: withAppTypes,
   displaySetInstanceUID
 ) {
   const annotationManager = CsAnnotation.state.getAnnotationManager();
+  const disableEditing = appConfig?.disableEditing;
   const dataSource = extensionManager.getActiveDataSource()[0];
   const { measurementService, displaySetService, customizationService } = servicesManager.services;
 
   const codingValues = customizationService.getCustomization('codingValues', {});
-
-  const { disableEditing } = customizationService.getCustomization(
-    'PanelMeasurement.disableEditing',
-    {
-      id: 'default.disableEditing',
-      disableEditing: false,
-    }
-  );
-
   const displaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
 
   // TODO -> We should define a strict versioning somewhere.
@@ -208,11 +202,7 @@ export default function hydrateStructuredReport(
       annotation.data.label = getLabelFromDCMJSImportedToolData(toolData);
       annotation.data.finding = convertCode(codingValues, toolData.finding?.[0]);
       annotation.data.findingSites = convertSites(codingValues, toolData.findingSites);
-      annotation.data.findingSites?.forEach(site => {
-        if (site.type) {
-          annotation.data[site.type] = site;
-        }
-      });
+      annotation.data.site = annotation.data.findingSites?.[0];
 
       const matchingMapping = mappings.find(m => m.annotationType === annotationType);
 
@@ -223,11 +213,6 @@ export default function hydrateStructuredReport(
         matchingMapping.toMeasurementSchema,
         dataSource
       );
-
-      commandsManager.runCommand('updateMeasurement', {
-        uid: newAnnotationUID,
-        code: annotation.data.finding,
-      });
 
       if (disableEditing) {
         const addedAnnotation = annotationManager.getAnnotation(newAnnotationUID);

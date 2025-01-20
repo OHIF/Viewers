@@ -35,8 +35,8 @@ export const ViewportActionCornersContext = createContext(DEFAULT_STATE);
 export function ViewportActionCornersProvider({ children, service }) {
   const viewportActionCornersReducer = (state, action) => {
     switch (action.type) {
-      case 'ADD_ACTION_COMPONENT': {
-        const { viewportId, id, component, location, indexPriority } = action.payload;
+      case 'SET_ACTION_COMPONENT': {
+        const { viewportId, id, component, location, indexPriority = 0 } = action.payload;
         // Get the components at the specified location of the specified viewport.
         let locationComponents = state?.[viewportId]?.[location]
           ? [...state[viewportId][location]]
@@ -56,48 +56,27 @@ export function ViewportActionCornersProvider({ children, service }) {
         // Insert the component from the payload but
         // do not insert an undefined or null component.
         if (component) {
-          let insertionIndex;
-          const isRightSide =
-            location === ViewportActionCornersLocations.topRight ||
-            location === ViewportActionCornersLocations.bottomRight;
-
-          if (indexPriority === undefined) {
-            // If no indexPriority is provided, add it to the appropriate end
-            insertionIndex = isRightSide ? 0 : locationComponents.length;
-          } else {
-            if (isRightSide) {
-              insertionIndex = locationComponents.findIndex(
-                component => indexPriority > component.indexPriority
-              );
-            } else {
-              insertionIndex = locationComponents.findIndex(
-                component => indexPriority <= component.indexPriority
-              );
-            }
-            if (insertionIndex === -1) {
-              // If no suitable position found, add to the appropriate end
-              insertionIndex = isRightSide ? 0 : locationComponents.length;
-            }
-          }
-
-          const defaultPriority = isRightSide ? Number.MIN_SAFE_INTEGER : Number.MAX_SAFE_INTEGER;
-
+          const insertionIndex = locationComponents.findIndex(
+            component => indexPriority <= component.indexPriority
+          );
           locationComponents = [
             ...locationComponents.slice(0, insertionIndex),
             {
               id,
               component,
-              indexPriority: indexPriority ?? defaultPriority,
+              indexPriority,
             },
-            ...locationComponents.slice(insertionIndex),
+            ...locationComponents.slice(insertionIndex + 1),
           ];
         }
 
         return {
           ...state,
-          [viewportId]: {
-            ...state[viewportId],
-            [location]: locationComponents,
+          ...{
+            [viewportId]: {
+              ...state[viewportId],
+              [location]: locationComponents,
+            },
           },
         };
       }
@@ -121,17 +100,17 @@ export function ViewportActionCornersProvider({ children, service }) {
     return viewportActionCornersState;
   }, [viewportActionCornersState]);
 
-  const addComponent = useCallback(
+  const setComponent = useCallback(
     (actionComponentInfo: ActionComponentInfo) => {
-      dispatch({ type: 'ADD_ACTION_COMPONENT', payload: actionComponentInfo });
+      dispatch({ type: 'SET_ACTION_COMPONENT', payload: actionComponentInfo });
     },
     [dispatch]
   );
 
-  const addComponents = useCallback(
+  const setComponents = useCallback(
     (actionComponentInfos: Array<ActionComponentInfo>) => {
       actionComponentInfos.forEach(actionComponentInfo =>
-        dispatch({ type: 'ADD_ACTION_COMPONENT', payload: actionComponentInfo })
+        dispatch({ type: 'SET_ACTION_COMPONENT', payload: actionComponentInfo })
       );
     },
     [dispatch]
@@ -141,28 +120,28 @@ export function ViewportActionCornersProvider({ children, service }) {
     (viewportId: string) => dispatch({ type: 'CLEAR_ACTION_COMPONENTS', payload: viewportId }),
     [dispatch]
   );
-
   useEffect(() => {
     if (service) {
       service.setServiceImplementation({
         getState,
-        addComponent,
-        addComponents,
+        setComponent,
+        setComponents,
         clear,
       });
     }
-  }, [getState, service, addComponent, addComponents, clear]);
+  }, [getState, service, setComponent, setComponents]);
 
-  const viewportCornerActions = {
+  // run many of the calls through the service itself since we want to publish events
+  const api = {
     getState,
-    addComponent: props => service.addComponent(props),
-    addComponents: props => service.addComponents(props),
+    setComponent: props => service.setComponent(props),
+    setComponents: props => service.setComponents(props),
     clear: props => service.clear(props),
   };
 
   const contextValue = useMemo(
-    () => [viewportActionCornersState, viewportCornerActions],
-    [viewportActionCornersState, viewportCornerActions]
+    () => [viewportActionCornersState, api],
+    [viewportActionCornersState, api]
   );
 
   return (

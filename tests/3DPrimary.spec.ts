@@ -1,11 +1,5 @@
 import { test } from '@playwright/test';
-import {
-  visitStudy,
-  checkForScreenshot,
-  screenShotPaths,
-  reduce3DViewportSize,
-  attemptAction,
-} from './utils';
+import { visitStudy, checkForScreenshot, screenShotPaths, reduce3DViewportSize } from './utils';
 
 test.beforeEach(async ({ page }) => {
   const studyInstanceUID = '1.3.6.1.4.1.14519.5.2.1.1706.8374.643249677828306008300337414785';
@@ -22,7 +16,7 @@ test.describe('3D primary Test', async () => {
       .first()
       .click();
 
-    await attemptAction(() => reduce3DViewportSize(page), 10, 100);
+    await reduce3DViewportSize(page);
     await checkForScreenshot(
       page,
       page,

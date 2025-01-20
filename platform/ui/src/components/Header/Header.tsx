@@ -4,11 +4,15 @@ import { useTranslation } from 'react-i18next';
 import classNames from 'classnames';
 
 import NavBar from '../NavBar';
+import Svg from '../Svg';
+import Icon from '../Icon';
 import IconButton from '../IconButton';
 import Dropdown from '../Dropdown';
 import HeaderPatientInfo from '../HeaderPatientInfo';
 import { PatientInfoVisibility } from '../../types/PatientInfoVisibility';
-import { Icons } from '@ohif/ui-next';
+import TutorialModal from '../TutorialModal';
+import { useModal } from '../../contextProviders';
+
 function Header({
   children,
   menuOptions,
@@ -23,6 +27,7 @@ function Header({
   ...props
 }: withAppTypes): ReactNode {
   const { t } = useTranslation('Header');
+  const { show, hide } = useModal();
 
   // TODO: this should be passed in as a prop instead and the react-router-dom
   // dependency should be dropped
@@ -47,9 +52,14 @@ function Header({
             onClick={onClickReturn}
             data-cy="return-to-work-list"
           >
-            {isReturnEnabled && <Icons.ChevronClosed className="text-primary-active w-8" />}
+            {isReturnEnabled && (
+              <Icon
+                name="chevron-left"
+                className="text-primary-active w-8"
+              />
+            )}
             <div className="ml-1">
-              {WhiteLabeling?.createLogoComponentFn?.(React, props) || <Icons.OHIFLogo />}
+              {WhiteLabeling?.createLogoComponentFn?.(React, props) || <Svg name="logo-ohif" />}
             </div>
           </div>
         </div>
@@ -66,6 +76,23 @@ function Header({
           )}
           <div className="border-primary-dark mx-1.5 h-[25px] border-r"></div>
           <div className="flex-shrink-0">
+            <IconButton
+              id={'tutorial'}
+              variant="text"
+              color="inherit"
+              size="initial"
+              className="text-primary-active hover:bg-primary-dark h-full w-full"
+              onClick={() => {
+                show({
+                  content: TutorialModal,
+                  title: 'TutorialModal:Tutorial',
+                  containerDimensions: 'w-[70%] h-[80%]',
+                });
+              }}
+            >
+              <Icon name="icon-play" />
+            </IconButton>
+            <div className="border-primary-dark mx-1.5 h-[25px] border-r"></div>
             <Dropdown
               id="options"
               showDropdownIcon={false}
@@ -79,7 +106,7 @@ function Header({
                 size="initial"
                 className="text-primary-active hover:bg-primary-dark h-full w-full"
               >
-                <Icons.ByName name="icon-settings" />
+                <Icon name="icon-settings" />
               </IconButton>
             </Dropdown>
           </div>

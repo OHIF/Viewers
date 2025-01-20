@@ -1,7 +1,6 @@
 /** @type {AppTypes.Config} */
 
 window.config = {
-  name: 'config/default.js',
   routerBasename: '/',
   // whiteLabeling: {},
   extensions: [],
@@ -17,6 +16,7 @@ window.config = {
   experimentalStudyBrowserSort: false,
   strictZSpacingForVolumeViewport: true,
   groupEnabledModesFirst: true,
+  useExperimentalUI: false,
   maxNumRequests: {
     interaction: 100,
     thumbnail: 75,
@@ -25,67 +25,6 @@ window.config = {
     prefetch: 25,
   },
   // filterQueryParam: false,
-  // Defines multi-monitor layouts
-  multimonitor: [
-    {
-      id: 'split',
-      test: ({ multimonitor }) => multimonitor === 'split',
-      screens: [
-        {
-          id: 'ohif0',
-          screen: null,
-          location: {
-            screen: 0,
-            width: 0.5,
-            height: 1,
-            left: 0,
-            top: 0,
-          },
-          options: 'location=no,menubar=no,scrollbars=no,status=no,titlebar=no',
-        },
-        {
-          id: 'ohif1',
-          screen: null,
-          location: {
-            width: 0.5,
-            height: 1,
-            left: 0.5,
-            top: 0,
-          },
-          options: 'location=no,menubar=no,scrollbars=no,status=no,titlebar=no',
-        },
-      ],
-    },
-
-    {
-      id: '2',
-      test: ({ multimonitor }) => multimonitor === '2',
-      screens: [
-        {
-          id: 'ohif0',
-          screen: 0,
-          location: {
-            width: 1,
-            height: 1,
-            left: 0,
-            top: 0,
-          },
-          options: 'fullscreen=yes,location=no,menubar=no,scrollbars=no,status=no,titlebar=no',
-        },
-        {
-          id: 'ohif1',
-          screen: 1,
-          location: {
-            width: 1,
-            height: 1,
-            left: 0,
-            top: 0,
-          },
-          options: 'fullscreen=yes,location=no,menubar=no,scrollbars=no,status=no,titlebar=no',
-        },
-      ],
-    },
-  ],
   defaultDataSourceName: 'dicomweb',
   /* Dynamic config allows user to pass "configUrl" query string this allows to load config without recompiling application. The regex will ensure valid configuration source */
   // dangerouslyUseDynamicConfig: {
@@ -205,40 +144,6 @@ window.config = {
         bulkDataURI: {
           enabled: true,
           relativeResolution: 'studies',
-        },
-      },
-    },
-    {
-      namespace: '@ohif/extension-default.dataSourcesModule.dicomweb',
-      sourceName: 'orthanc',
-      configuration: {
-        friendlyName: 'local Orthanc DICOMWeb Server',
-        name: 'DCM4CHEE',
-        wadoUriRoot: 'http://localhost/pacs/dicom-web',
-        qidoRoot: 'http://localhost/pacs/dicom-web',
-        wadoRoot: 'http://localhost/pacs/dicom-web',
-        qidoSupportsIncludeField: true,
-        supportsReject: true,
-        dicomUploadEnabled: true,
-        imageRendering: 'wadors',
-        thumbnailRendering: 'wadors',
-        enableStudyLazyLoad: true,
-        supportsFuzzyMatching: true,
-        supportsWildcard: true,
-        omitQuotationForMultipartRequest: true,
-        bulkDataURI: {
-          enabled: true,
-          // This is an example config that can be used to fix the retrieve URL
-          // where it has the wrong prefix (eg a canned prefix).  It is better to
-          // just use the correct prefix out of the box, but that is sometimes hard
-          // when URLs go through several systems.
-          // Example URLS are:
-          // "BulkDataURI" : "http://localhost/dicom-web/studies/1.2.276.0.7230010.3.1.2.2344313775.14992.1458058363.6979/series/1.2.276.0.7230010.3.1.3.1901948703.36080.1484835349.617/instances/1.2.276.0.7230010.3.1.4.1901948703.36080.1484835349.618/bulk/00420011",
-          // when running on http://localhost:3003 with no server running on localhost.  This can be corrected to:
-          // /orthanc/dicom-web/studies/1.2.276.0.7230010.3.1.2.2344313775.14992.1458058363.6979/series/1.2.276.0.7230010.3.1.3.1901948703.36080.1484835349.617/instances/1.2.276.0.7230010.3.1.4.1901948703.36080.1484835349.618/bulk/00420011
-          // which is a valid relative URL, and will result in using the http://localhost:3003/orthanc/.... path
-          // startsWith: 'http://localhost/',
-          // prefixWith: '/orthanc/',
         },
       },
     },
@@ -386,212 +291,4 @@ window.config = {
       keys: ['9'],
     },
   ],
-  tours: [
-    {
-      id: 'basicViewerTour',
-      route: '/viewer',
-      steps: [
-        {
-          id: 'scroll',
-          title: 'Scrolling Through Images',
-          text: 'You can scroll through the images using the mouse wheel or scrollbar.',
-          attachTo: {
-            element: '.viewport-element',
-            on: 'top',
-          },
-          advanceOn: {
-            selector: '.cornerstone-viewport-element',
-            event: 'CORNERSTONE_TOOLS_MOUSE_WHEEL',
-          },
-          beforeShowPromise: () => waitForElement('.viewport-element'),
-        },
-        {
-          id: 'zoom',
-          title: 'Zooming In and Out',
-          text: 'You can zoom the images using the right click.',
-          attachTo: {
-            element: '.viewport-element',
-            on: 'left',
-          },
-          advanceOn: {
-            selector: '.cornerstone-viewport-element',
-            event: 'CORNERSTONE_TOOLS_MOUSE_UP',
-          },
-          beforeShowPromise: () => waitForElement('.viewport-element'),
-        },
-        {
-          id: 'pan',
-          title: 'Panning the Image',
-          text: 'You can pan the images using the middle click.',
-          attachTo: {
-            element: '.viewport-element',
-            on: 'top',
-          },
-          advanceOn: {
-            selector: '.cornerstone-viewport-element',
-            event: 'CORNERSTONE_TOOLS_MOUSE_UP',
-          },
-          beforeShowPromise: () => waitForElement('.viewport-element'),
-        },
-        {
-          id: 'windowing',
-          title: 'Adjusting Window Level',
-          text: 'You can modify the window level using the left click.',
-          attachTo: {
-            element: '.viewport-element',
-            on: 'left',
-          },
-          advanceOn: {
-            selector: '.cornerstone-viewport-element',
-            event: 'CORNERSTONE_TOOLS_MOUSE_UP',
-          },
-          beforeShowPromise: () => waitForElement('.viewport-element'),
-        },
-        {
-          id: 'length',
-          title: 'Using the Measurement Tools',
-          text: 'You can measure the length of a region using the Length tool.',
-          attachTo: {
-            element: '[data-cy="MeasurementTools-split-button-primary"]',
-            on: 'bottom',
-          },
-          advanceOn: {
-            selector: '[data-cy="MeasurementTools-split-button-primary"]',
-            event: 'click',
-          },
-          beforeShowPromise: () =>
-            waitForElement('[data-cy="MeasurementTools-split-button-primary]'),
-        },
-        {
-          id: 'drawAnnotation',
-          title: 'Drawing Length Annotations',
-          text: 'Use the length tool on the viewport to measure the length of a region.',
-          attachTo: {
-            element: '.viewport-element',
-            on: 'right',
-          },
-          advanceOn: {
-            selector: 'body',
-            event: 'event::measurement_added',
-          },
-          beforeShowPromise: () => waitForElement('.viewport-element'),
-        },
-        {
-          id: 'trackMeasurement',
-          title: 'Tracking Measurements in the Panel',
-          text: 'Click yes to track the measurements in the measurement panel.',
-          attachTo: {
-            element: '[data-cy="prompt-begin-tracking-yes-btn"]',
-            on: 'bottom',
-          },
-          advanceOn: {
-            selector: '[data-cy="prompt-begin-tracking-yes-btn"]',
-            event: 'click',
-          },
-          beforeShowPromise: () => waitForElement('[data-cy="prompt-begin-tracking-yes-btn"]'),
-        },
-        {
-          id: 'openMeasurementPanel',
-          title: 'Opening the Measurements Panel',
-          text: 'Click the measurements button to open the measurements panel.',
-          attachTo: {
-            element: '#trackedMeasurements-btn',
-            on: 'left-start',
-          },
-          advanceOn: {
-            selector: '#trackedMeasurements-btn',
-            event: 'click',
-          },
-          beforeShowPromise: () => waitForElement('#trackedMeasurements-btn'),
-        },
-        {
-          id: 'scrollAwayFromMeasurement',
-          title: 'Scrolling Away from a Measurement',
-          text: 'Scroll the images using the mouse wheel away from the measurement.',
-          attachTo: {
-            element: '.viewport-element',
-            on: 'left',
-          },
-          advanceOn: {
-            selector: '.cornerstone-viewport-element',
-            event: 'CORNERSTONE_TOOLS_MOUSE_WHEEL',
-          },
-          beforeShowPromise: () => waitForElement('.viewport-element'),
-        },
-        {
-          id: 'jumpToMeasurement',
-          title: 'Jumping to Measurements in the Panel',
-          text: 'Click the measurement in the measurement panel to jump to it.',
-          attachTo: {
-            element: '[data-cy="data-row"]',
-            on: 'left-start',
-          },
-          advanceOn: {
-            selector: '[data-cy="data-row"]',
-            event: 'click',
-          },
-          beforeShowPromise: () => waitForElement('[data-cy="data-row"]'),
-        },
-        {
-          id: 'changeLayout',
-          title: 'Changing Layout',
-          text: 'You can change the layout of the viewer using the layout button.',
-          attachTo: {
-            element: '[data-cy="Layout"]',
-            on: 'bottom',
-          },
-          advanceOn: {
-            selector: '[data-cy="Layout"]',
-            event: 'click',
-          },
-          beforeShowPromise: () => waitForElement('[data-cy="Layout"]'),
-        },
-        {
-          id: 'selectLayout',
-          title: 'Selecting the MPR Layout',
-          text: 'Select the MPR layout to view the images in MPR mode.',
-          attachTo: {
-            element: '[data-cy="MPR"]',
-            on: 'left-start',
-          },
-          advanceOn: {
-            selector: '[data-cy="MPR"]',
-            event: 'click',
-          },
-          beforeShowPromise: () => waitForElement('[data-cy="MPR"]'),
-        },
-      ],
-      tourOptions: {
-        useModalOverlay: true,
-        defaultStepOptions: {
-          buttons: [
-            {
-              text: 'Skip all',
-              action() {
-                this.complete();
-              },
-              secondary: true,
-            },
-          ],
-        },
-      },
-    },
-  ],
 };
-
-function waitForElement(selector, maxAttempts = 20, interval = 25) {
-  return new Promise(resolve => {
-    let attempts = 0;
-
-    const checkForElement = setInterval(() => {
-      const element = document.querySelector(selector);
-
-      if (element || attempts >= maxAttempts) {
-        clearInterval(checkForElement);
-        resolve();
-      }
-
-      attempts++;
-    }, interval);
-  });
-}

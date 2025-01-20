@@ -20,7 +20,7 @@ const frameView: Types.HangingProtocol.Protocol = {
         },
         {
           attribute: 'isDisplaySetFromUrl',
-          weight: 20,
+          weight: 10,
           constraint: {
             equals: true,
           },

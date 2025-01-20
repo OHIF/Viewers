@@ -1,21 +1,28 @@
 import React from 'react';
 import { DynamicDataPanel } from './panels';
-import { Toolbox } from '@ohif/ui-next';
-import { PanelSegmentation } from '@ohif/extension-cornerstone';
+import { Toolbox as NewToolbox } from '@ohif/ui-next';
+import { Toolbox as OldToolbox } from '@ohif/ui';
+import { useAppConfig } from '@state';
 import DynamicExport from './panels/DynamicExport';
 
-function getPanelModule({ commandsManager, extensionManager, servicesManager, configuration }) {
-  const wrappedDynamicDataPanel = () => {
+function getPanelModule({ commandsManager, extensionManager, servicesManager }) {
+  const wrappedDynamicDataPanel = ({ renderHeader, getCloseIcon, tab }) => {
     return (
       <DynamicDataPanel
         commandsManager={commandsManager}
         servicesManager={servicesManager}
         extensionManager={extensionManager}
+        renderHeader={renderHeader}
+        getCloseIcon={getCloseIcon}
+        tab={tab}
       />
     );
   };
 
-  const wrappedDynamicSegmentation = () => {
+  const wrappedDynamicToolbox = ({ renderHeader, getCloseIcon, tab }) => {
+    const [appConfig] = useAppConfig();
+
+    const Toolbox = appConfig.useExperimentalUI ? NewToolbox : OldToolbox;
     return (
       <>
         <Toolbox
@@ -24,18 +31,22 @@ function getPanelModule({ commandsManager, extensionManager, servicesManager, co
           extensionManager={extensionManager}
           buttonSectionId="dynamic-toolbox"
           title="Threshold Tools"
+          renderHeader={renderHeader}
+          getCloseIcon={getCloseIcon}
+          tab={tab}
         />
-        <PanelSegmentation
-          servicesManager={servicesManager}
+      </>
+    );
+  };
+
+  const wrappedDynamicExport = () => {
+    return (
+      <>
+        <DynamicExport
           commandsManager={commandsManager}
+          servicesManager={servicesManager}
           extensionManager={extensionManager}
-          configuration={configuration}
-        >
-          <DynamicExport
-            servicesManager={servicesManager}
-            commandsManager={commandsManager}
-          />
-        </PanelSegmentation>
+        />
       </>
     );
   };
@@ -49,11 +60,18 @@ function getPanelModule({ commandsManager, extensionManager, servicesManager, co
       component: wrappedDynamicDataPanel,
     },
     {
-      name: 'dynamic-segmentation',
-      iconName: 'tab-segmentation',
-      iconLabel: 'Segmentation',
-      label: 'Segmentation',
-      component: wrappedDynamicSegmentation,
+      name: 'dynamic-toolbox',
+      iconName: 'tab-4d',
+      iconLabel: '4D Workflow',
+      label: 'Dynamic Toolbox',
+      component: wrappedDynamicToolbox,
+    },
+    {
+      name: 'dynamic-export',
+      iconName: 'tab-4d',
+      iconLabel: '4D Workflow',
+      label: '4D Workflow',
+      component: wrappedDynamicExport,
     },
   ];
 }

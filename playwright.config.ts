@@ -2,21 +2,19 @@ import { defineConfig, devices } from '@playwright/test';
 
 export default defineConfig({
   testDir: './tests',
-  fullyParallel: !!process.env.CI,
+  fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
   workers: process.env.CI ? 1 : undefined,
   snapshotPathTemplate: './tests/screenshots{/projectName}/{testFilePath}/{arg}{ext}',
   outputDir: './tests/test-results',
   reporter: [[process.env.CI ? 'blob' : 'html', { outputFolder: './tests/playwright-report' }]],
-  globalTimeout: 800_000,
-  timeout: 800_000,
+  timeout: 720 * 1000,
   use: {
     baseURL: 'http://localhost:3000',
     trace: 'on-first-retry',
     video: 'on',
     testIdAttribute: 'data-cy',
-    actionTimeout: 10_000,
   },
 
   projects: [
@@ -41,6 +39,6 @@ export default defineConfig({
     command: 'yarn test:e2e:serve',
     url: 'http://localhost:3000',
     reuseExistingServer: !process.env.CI,
-    timeout: 360_000,
+    timeout: 240 * 1000,
   },
 });

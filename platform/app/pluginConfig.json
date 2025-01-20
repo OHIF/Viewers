@@ -65,19 +65,11 @@
   ],
   "modes": [
     {
-      "packageName": "@ohif/mode-longitudinal"
+      "packageName": "@ohif/bmdcalculation",
+      "version": "3.9.0-beta.88"
     },
     {
       "packageName": "@ohif/mode-segmentation"
-    },
-    {
-      "packageName": "@ohif/mode-tmtv"
-    },
-    {
-      "packageName": "@ohif/mode-microscopy"
-    },
-    {
-      "packageName": "@ohif/mode-preclinical-4d"
     },
     {
       "packageName": "@ohif/mode-test",

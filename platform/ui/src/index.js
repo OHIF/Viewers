@@ -96,6 +96,7 @@ export {
   StudyListTable,
   StudyListTableRow,
   StudySummary,
+  Svg,
   SwitchButton,
   SwitchLabelLocation,
   Table,
@@ -115,7 +116,6 @@ export {
   Viewport,
   ViewportActionArrows,
   ViewportActionBar,
-  ViewportActionButton,
   ViewportActionCorners,
   ViewportActionCornersLocations,
   ViewportDownloadForm,
@@ -130,9 +130,9 @@ export {
   HeaderPatientInfo,
   ToolSettings,
   Toolbox,
-  InvestigationalUseDialog,
   LayoutPreset,
   StudyBrowserSort,
+  TutorialModal,
 } from './components';
 
 export { useSessionStorage } from './hooks';

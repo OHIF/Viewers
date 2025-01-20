@@ -8,7 +8,6 @@ import { getSUV } from './getSUV';
 import { getTMTVModalityUnit } from './getTMTVModalityUnit';
 import { clearAllAnnotations } from './clearAllAnnotations';
 import { scrollVolumeViewport } from './scrollVolumeViewport';
-import { attemptAction } from './attemptAction';
 
 export {
   visitStudy,
@@ -22,5 +21,4 @@ export {
   getTMTVModalityUnit,
   clearAllAnnotations,
   scrollVolumeViewport,
-  attemptAction,
 };

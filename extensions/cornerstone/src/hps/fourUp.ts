@@ -11,7 +11,7 @@ export const fourUp = {
   protocolMatchingRules: [],
   imageLoadStrategy: 'interleaveCenter',
   displaySetSelectors: {
-    activeDisplaySet: {
+    mprDisplaySet: {
       seriesMatchingRules: [
         {
           weight: 1,
@@ -60,7 +60,7 @@ export const fourUp = {
           },
           displaySets: [
             {
-              id: 'activeDisplaySet',
+              id: 'mprDisplaySet',
             },
           ],
         },
@@ -75,7 +75,7 @@ export const fourUp = {
           },
           displaySets: [
             {
-              id: 'activeDisplaySet',
+              id: 'mprDisplaySet',
               options: {
                 displayPreset: {
                   CT: 'CT-Bone',
@@ -108,7 +108,7 @@ export const fourUp = {
           },
           displaySets: [
             {
-              id: 'activeDisplaySet',
+              id: 'mprDisplaySet',
             },
           ],
         },
@@ -134,7 +134,7 @@ export const fourUp = {
           },
           displaySets: [
             {
-              id: 'activeDisplaySet',
+              id: 'mprDisplaySet',
             },
           ],
         },

@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import PortalTooltip from '../Tooltip/PortalTooltip';
+import Icon from '../Icon';
 import { useTranslation } from 'react-i18next';
-import { Icons } from '@ohif/ui-next';
+
 /**
  * Displays a tooltip with a list of messages of a displaySet
  * @param param0
@@ -14,7 +15,7 @@ const DisplaySetMessageListTooltip = ({ messages, id }): React.ReactNode => {
   if (messages?.size()) {
     return (
       <>
-        <Icons.ByName
+        <Icon
           id={id}
           onMouseOver={() => setIsOpen(true)}
           onFocus={() => setIsOpen(true)}

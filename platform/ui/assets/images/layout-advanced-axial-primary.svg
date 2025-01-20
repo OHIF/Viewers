@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="29px" height="18px" viewBox="0 0 29 18" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>layout-advanced-axial-primary</title>
+    <g id="Layout-select----FINAL" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="layout-advanced-axial-primary" transform="translate(1, 1)" stroke="currentColor">
+            <path d="M15.4285714,0 L25,0 C26.1045695,-2.02906125e-16 27,0.8954305 27,2 L27,14.2 C27,15.3045695 26.1045695,16.2 25,16.2 L15.4285714,16.2 L15.4285714,16.2 L15.4285714,0 Z" id="Rectangle"></path>
+            <path d="M15.4285714,0 L25,0 C26.1045695,-2.02906125e-16 27,0.8954305 27,2 L27,8.48571429 L27,8.48571429 L15.4285714,8.48571429 L15.4285714,0 Z" id="Rectangle"></path>
+            <path d="M4.54747351e-13,0 L13.7,0 C14.8045695,-2.02906125e-16 15.7,0.8954305 15.7,2 L15.7,14.2 C15.7,15.3045695 14.8045695,16.2 13.7,16.2 L4.54747351e-13,16.2 L4.54747351e-13,16.2 L4.54747351e-13,0 Z" id="Rectangle" transform="translate(7.85, 8.1) scale(-1, 1) translate(-7.85, -8.1)"></path>
+        </g>
+    </g>
+</svg>

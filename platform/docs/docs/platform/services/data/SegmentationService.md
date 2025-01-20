@@ -5,141 +5,51 @@ sidebar_label: Segmentation Service
 
 # Segmentation Service
 
+## Overview
+
+Using Segmentation Service you can create, edit and delete segmentation data, and
+change appearance of the segmentation including color, opacity and visibility.
+
+Segmentations in OHIF are based on the Segmentations in Cornerstone3D. You can
+read more about it in the [Cornerstone Segmentation](https://www.cornerstonejs.org/docs/concepts/cornerstone-tools/segmentation/). OHIF currently only supports
+one representation of the segmentation data.
 
 ## Events
 
-```typescript
-SEGMENTATION_MODIFIED          // When a segmentation is updated
-SEGMENTATION_DATA_MODIFIED     // When segmentation data changes
-SEGMENTATION_ADDED            // When new segmentation is added
-SEGMENTATION_REMOVED          // When segmentation is removed
-SEGMENT_LOADING_COMPLETE      // When segment group adds pixel data to volume
-SEGMENTATION_LOADING_COMPLETE // When full segmentation volume is filled
-```
+There are seven events that get publish in `MeasurementService`:
 
-## Core APIs
+| Event                 | Description                                            |
+| --------------------- | ------------------------------------------------------ |
+| SEGMENTATION_UPDATED   | Fires when a segmentation is updated e.g., segment added, removed etc.|
+| SEGMENTATION_DATA_MODIFIED     | Fires when the segmentation data changes  |
+| SEGMENTATION_ADDED | Fires when a new segmentation is added to OHIF |
+| SEGMENTATION_REMOVED   | Fires when a segmentation is removed from OHIF                 |
+| SEGMENTATION_CONFIGURATION_CHANGED  | Fires when a segmentation configuration is changed                |
+| SEGMENT_LOADING_COMPLETE   | Fires when a segment group adds its pixel data to the volume    |
+| SEGMENTATION_LOADING_COMPLETE   | Fires when the full segmentation volume is filled with its segments   |
 
-### Creation Methods
 
-```typescript
-createLabelmapForDisplaySet(
-  displaySet,
-  {
-    segmentationId?: string,
-    label: string,
-    segments?: {
-      [segmentIndex: number]: Partial<Segment>
-    }
-  }
-)
-```
+## API
 
-### Segmentation Management
+### Segmentation Creation
 
-```typescript
-setActiveSegmentation(viewportId, segmentationId)
-getSegmentations()
-getSegmentation(segmentationId)
-jumpToSegmentCenter(segmentationId, segmentIndex, viewportId)
-highlightSegment(segmentationId, segmentIndex, viewportId)
-```
+- `createSegmentationForDisplaySet`: based on a reference displaySet, create a new segmentation. E.g., create a new segmentation based on a CT series
+- `createSegmentationForSEGDisplaySet`: given a segDisplaySet loaded by a sopClassHandler, create a new segmentation
+- `addSegmentationRepresentationToToolGroup`: given the toolGroupId, add the given segmentationId to the toolGroup.
 
-### Segment Operations
 
-```typescript
-addSegment(segmentationId, {
-  segmentIndex?: number,
-  label?: string,
-  color?: [number, number, number, number], // RGBA
-  visibility?: boolean,
-  isLocked?: boolean,
-  active?: boolean
-})
+### Segmentation Behavior
 
-setSegmentColor(viewportId, segmentationId, segmentIndex, color)
-setSegmentVisibility(viewportId, segmentationId, segmentIndex, visibility)
-```
+- setActiveSegmentationForToolGroup, getSegmentations, getSegmentation, jumpToSegmentCenter, highlightSegment
 
-## Data Structures
 
-### Segmentation Object
+### Segment Behavior
 
-```typescript
-interface Segmentation {
-  segmentationId: string;
-  label: string;
-  segments: {
-    [segmentIndex: number]: {
-      segmentIndex: number;
-      label: string;
-      locked: boolean;
-      cachedStats: { [key: string]: unknown };
-      active: boolean;
-    }
-  };
-  representationData: RepresentationsData;
-}
-```
+- setSegmentLocked, removeSegment, addSegment, setSegmentLocked, setSegmentLabel, setActiveSegment,
+setSegmentRGBAColor
 
-## Code Examples
+### Segmentation Configuration
 
-### Creating a Segmentation
+Setters
 
-```typescript
-const displaySet = displaySetService.getDisplaySetByUID(displaySetUID);
-const segmentationId = await segmentationService.createLabelmapForDisplaySet(
-  displaySet,
-  {
-    label: 'New Segmentation',
-    segments: {
-      1: {
-        label: 'First Segment',
-        active: true
-      }
-    }
-  }
-);
-```
-
-### Managing Active Segmentations
-
-```typescript
-segmentationService.setActiveSegmentation('viewport-1', segmentationId);
-```
-
-### Adding Segments
-
-```typescript
-segmentationService.addSegment(segmentationId, {
-  label: 'Tumor',
-  color: [255, 0, 0, 255], // RGBA format
-  active: true
-});
-```
-
-### Visibility Management
-
-```typescript
-// Set segment visibility
-segmentationService.setSegmentVisibility(
-  'viewport-1',
-  segmentationId,
-  1, // segmentIndex
-  true // visible
-);
-
-// Get viewport IDs with segmentation
-const viewportIds = segmentationService.getViewportIdsWithSegmentation(segmentationId);
-```
-
-### Segment Styling
-
-```typescript
-// Set segment color
-segmentationService.setSegmentColor(
-  'viewport-1',
-  segmentationId,
-  1, // segmentIndex
-  [255, 0, 0, 255] // RGBA
-);
-```
+- setSegmentVisibility, setSegmentColor, setSegmentRGBA, setSegmentOpacity, toggleSegmentationVisibility,

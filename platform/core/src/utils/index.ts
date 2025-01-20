@@ -36,10 +36,10 @@ import {
   sortingCriteria,
   seriesSortCriteria,
 } from './sortStudy';
+import { subscribeToNextViewportGridChange } from './subscribeToNextViewportGridChange';
 import { splitComma, getSplitParam } from './splitComma';
 import { createStudyBrowserTabs } from './createStudyBrowserTabs';
 import { sopClassDictionary } from './sopClassDictionary';
-import * as MeasurementFilters from './measurementFilters';
 
 // Commented out unused functionality.
 // Need to implement new mechanism for derived displaySets using the displaySetManager.
@@ -81,11 +81,11 @@ const utils = {
   debounce,
   roundNumber,
   downloadCSVReport,
+  subscribeToNextViewportGridChange,
   splitComma,
   getSplitParam,
   generateAcceptHeader,
   createStudyBrowserTabs,
-  MeasurementFilters,
 };
 
 export {
@@ -119,7 +119,6 @@ export {
   getSplitParam,
   generateAcceptHeader,
   createStudyBrowserTabs,
-  MeasurementFilters,
 };
 
 export default utils;

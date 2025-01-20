@@ -9,7 +9,7 @@ export const mprAnd3DVolumeViewport = {
   protocolMatchingRules: [],
   imageLoadStrategy: 'interleaveCenter',
   displaySetSelectors: {
-    activeDisplaySet: {
+    mprDisplaySet: {
       seriesMatchingRules: [
         {
           weight: 1,
@@ -67,7 +67,7 @@ export const mprAnd3DVolumeViewport = {
           },
           displaySets: [
             {
-              id: 'activeDisplaySet',
+              id: 'mprDisplaySet',
             },
           ],
         },
@@ -82,7 +82,7 @@ export const mprAnd3DVolumeViewport = {
           },
           displaySets: [
             {
-              id: 'activeDisplaySet',
+              id: 'mprDisplaySet',
               options: {
                 displayPreset: {
                   CT: 'CT-Bone',
@@ -115,7 +115,7 @@ export const mprAnd3DVolumeViewport = {
           },
           displaySets: [
             {
-              id: 'activeDisplaySet',
+              id: 'mprDisplaySet',
             },
           ],
         },
@@ -141,7 +141,7 @@ export const mprAnd3DVolumeViewport = {
           },
           displaySets: [
             {
-              id: 'activeDisplaySet',
+              id: 'mprDisplaySet',
             },
           ],
         },

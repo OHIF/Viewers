@@ -20,17 +20,6 @@ const segProtocol: Types.HangingProtocol.Protocol = {
       viewportType: 'stack',
       toolGroupId: 'default',
       allowUnmatchedView: true,
-      syncGroups: [
-        {
-          type: 'hydrateseg',
-          id: 'sameFORId',
-          source: true,
-          target: true,
-          // options: {
-          //   matchingRules: ['sameFOR'],
-          // },
-        },
-      ],
     },
     displaySets: [
       {
@@ -63,20 +52,7 @@ const segProtocol: Types.HangingProtocol.Protocol = {
       },
       viewports: [
         {
-          viewportOptions: {
-            allowUnmatchedView: true,
-            syncGroups: [
-              {
-                type: 'hydrateseg',
-                id: 'sameFORId',
-                source: true,
-                target: true,
-                // options: {
-                //   matchingRules: ['sameFOR'],
-                // },
-              },
-            ],
-          },
+          viewportOptions: { allowUnmatchedView: true },
           displaySets: [
             {
               id: 'segDisplaySetId',

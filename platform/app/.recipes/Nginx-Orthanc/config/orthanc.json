@@ -3,15 +3,20 @@
   "StorageDirectory": "/var/lib/orthanc/db",
   "IndexDirectory": "/var/lib/orthanc/db",
   "StorageCompression": false,
-  "MaximumStorageSize": 0,
-  "MaximumPatientCount": 0,
+  "MaximumStorageSize": 512000,
+  "MaximumPatientCount": 1000,
   "LuaScripts": [],
   "Plugins": ["/usr/share/orthanc/plugins", "/usr/local/share/orthanc/plugins"],
-  "ConcurrentJobs": 2,
+  "ConcurrentJobs": 8,
   "HttpServerEnabled": true,
+  // "HttpsServerEnabled": true,
+  // "HttpsCertificateFile": "/etc/orthanc/ssl/nginx.crt",
+  // "HttpsCertificateKeyFile": "/etc/orthanc/ssl/nginx.crt",
   "HttpPort": 8042,
+  // "HttpsPort": 443,
   "HttpDescribeErrors": true,
   "HttpCompressionEnabled": true,
+  "RestApiWriteToFileSystemEnabled": true,
   "DicomServerEnabled": true,
   "DicomAet": "ORTHANC",
   "DicomCheckCalledAet": false,
@@ -29,10 +34,12 @@
 
   "RemoteAccessAllowed": true,
   "SslEnabled": false,
-  "SslCertificate": "certificate.pem",
-  "AuthenticationEnabled": false,
+  "AuthenticationEnabled": true,
   "RegisteredUsers": {
-    "test": "test"
+    "bones": "bones123"
+  },
+  "Authorization": {
+    "CheckedLevel": "instances"
   },
   "DicomModalities": {},
   "DicomModalitiesInDatabase": false,
@@ -47,7 +54,7 @@
   "HttpVerbose": true,
 
   "HttpTimeout": 10,
-  "HttpsVerifyPeers": true,
+  "HttpsVerifyPeers": false,
   "HttpsCACertificates": "",
   "UserMetadata": {},
   "UserContentType": {},
@@ -80,7 +87,7 @@
     "Root": "/dicom-web/",
     "EnableWado": true,
     "WadoRoot": "/wado",
-    "Host": "127.0.0.1",
+    "Host": "10.0.10.72",
     "Ssl": false,
     "StowMaxInstances": 10,
     "StowMaxSize": 10,

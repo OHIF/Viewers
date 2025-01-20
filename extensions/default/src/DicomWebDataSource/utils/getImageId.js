@@ -29,10 +29,6 @@ export default function getImageId({ instance, frame, config, thumbnail = false 
     return;
   }
 
-  if (instance.imageId && frame === undefined) {
-    return instance.imageId;
-  }
-
   if (instance.url) {
     return instance.url;
   }

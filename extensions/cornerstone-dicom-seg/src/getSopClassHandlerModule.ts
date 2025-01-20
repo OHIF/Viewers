@@ -1,6 +1,6 @@
 import { utils } from '@ohif/core';
-import { metaData, triggerEvent, eventTarget } from '@cornerstonejs/core';
-import { CONSTANTS, segmentation as cstSegmentation } from '@cornerstonejs/tools';
+import { metaData, cache, triggerEvent, eventTarget } from '@cornerstonejs/core';
+import { CONSTANTS } from '@cornerstonejs/tools';
 import { adaptersSEG, Enums } from '@cornerstonejs/adapters';
 
 import { SOPClassHandlerId } from './id';
@@ -70,32 +70,28 @@ function _getDisplaySetsFromSeries(
 
   displaySet.referencedImages = instance.ReferencedSeriesSequence.ReferencedInstanceSequence;
   displaySet.referencedSeriesInstanceUID = referencedSeries.SeriesInstanceUID;
-  const { displaySetService } = servicesManager.services;
-  const referencedDisplaySets = displaySetService.getDisplaySetsForSeries(
-    displaySet.referencedSeriesInstanceUID
-  );
 
-  const referencedDisplaySet = referencedDisplaySets[0];
-
-  if (!referencedDisplaySet) {
-    // subscribe to display sets added which means at some point it will be available
-    const { unsubscribe } = displaySetService.subscribe(
-      displaySetService.EVENTS.DISPLAY_SETS_ADDED,
-      ({ displaySetsAdded }) => {
-        // here we can also do a little bit of search, since sometimes DICOM SEG
-        // does not contain the referenced display set uid , and we can just
-        // see which of the display sets added is more similar and assign it
-        // to the referencedDisplaySet
-        const addedDisplaySet = displaySetsAdded[0];
-        if (addedDisplaySet.SeriesInstanceUID === displaySet.referencedSeriesInstanceUID) {
-          displaySet.referencedDisplaySetInstanceUID = addedDisplaySet.displaySetInstanceUID;
-          unsubscribe();
-        }
-      }
+  displaySet.getReferenceDisplaySet = () => {
+    const { displaySetService } = servicesManager.services;
+    const referencedDisplaySets = displaySetService.getDisplaySetsForSeries(
+      displaySet.referencedSeriesInstanceUID
     );
-  } else {
+
+    if (!referencedDisplaySets || referencedDisplaySets.length === 0) {
+      throw new Error('Referenced DisplaySet is missing for the SEG');
+    }
+
+    const referencedDisplaySet = referencedDisplaySets[0];
+
     displaySet.referencedDisplaySetInstanceUID = referencedDisplaySet.displaySetInstanceUID;
-  }
+
+    // Todo: this needs to be able to work with other reference volumes (other than streaming) such as nifti, etc.
+    displaySet.referencedVolumeURI = referencedDisplaySet.displaySetInstanceUID;
+    const referencedVolumeId = `cornerstoneStreamingImageVolume:${displaySet.referencedVolumeURI}`;
+    displaySet.referencedVolumeId = referencedVolumeId;
+
+    return referencedDisplaySet;
+  };
 
   displaySet.load = async ({ headers }) =>
     await _load(displaySet, servicesManager, extensionManager, headers);
@@ -115,7 +111,7 @@ function _load(
   if (
     (segDisplaySet.loading || segDisplaySet.isLoaded) &&
     loadPromises[SOPInstanceUID] &&
-    _segmentationExists(segDisplaySet)
+    _segmentationExists(segDisplaySet, segmentationService)
   ) {
     return loadPromises[SOPInstanceUID];
   }
@@ -126,21 +122,17 @@ function _load(
   // and also return the same promise to any other callers.
   loadPromises[SOPInstanceUID] = new Promise(async (resolve, reject) => {
     if (!segDisplaySet.segments || Object.keys(segDisplaySet.segments).length === 0) {
-      try {
-        await _loadSegments({
-          extensionManager,
-          servicesManager,
-          segDisplaySet,
-          headers,
-        });
-      } catch (e) {
-        segDisplaySet.loading = false;
-        return reject(e);
-      }
+      await _loadSegments({
+        extensionManager,
+        servicesManager,
+        segDisplaySet,
+        headers,
+      });
     }
 
+    const suppressEvents = true;
     segmentationService
-      .createSegmentationForSEGDisplaySet(segDisplaySet)
+      .createSegmentationForSEGDisplaySet(segDisplaySet, null, suppressEvents)
       .then(() => {
         segDisplaySet.loading = false;
         resolve();
@@ -169,20 +161,20 @@ async function _loadSegments({
   const { dicomLoaderService } = utilityModule.exports;
   const arrayBuffer = await dicomLoaderService.findDicomDataPromise(segDisplaySet, null, headers);
 
-  const referencedDisplaySet = servicesManager.services.displaySetService.getDisplaySetByUID(
-    segDisplaySet.referencedDisplaySetInstanceUID
-  );
+  const cachedReferencedVolume = cache.getVolume(segDisplaySet.referencedVolumeId);
 
-  if (!referencedDisplaySet) {
-    throw new Error('referencedDisplaySet is missing for SEG');
+  if (!cachedReferencedVolume) {
+    throw new Error(
+      'Referenced Volume is missing for the SEG, and stack viewport SEG is not supported yet'
+    );
   }
 
-  const { instances: images } = referencedDisplaySet;
-  const imageIds = images.map(({ imageId }) => imageId);
+  const { imageIds } = cachedReferencedVolume;
 
   // Todo: what should be defaults here
   const tolerance = 0.001;
   const skipOverlapping = true;
+
   eventTarget.addEventListener(Enums.Events.SEGMENTATION_LOAD_PROGRESS, evt => {
     const { percentComplete } = evt.detail;
     segmentationService._broadcastEvent(segmentationService.EVENTS.SEGMENT_LOADING_COMPLETE, {
@@ -234,8 +226,9 @@ async function _loadSegments({
   Object.assign(segDisplaySet, results);
 }
 
-function _segmentationExists(segDisplaySet) {
-  return cstSegmentation.state.getSegmentation(segDisplaySet.displaySetInstanceUID);
+function _segmentationExists(segDisplaySet, segmentationService: AppTypes.SegmentationService) {
+  // This should be abstracted with the CornerstoneCacheService
+  return segmentationService.getSegmentation(segDisplaySet.displaySetInstanceUID);
 }
 
 function getSopClassHandlerModule({ servicesManager, extensionManager }) {

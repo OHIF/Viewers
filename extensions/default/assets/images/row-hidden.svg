@@ -1,0 +1,11 @@
+<svg width="21" height="21" viewBox="0 0 21 21" xmlns="http://www.w3.org/2000/svg">
+    <g fill="none" fill-rule="evenodd">
+        <path d="M0 0h21v21H0z"/>
+        <path d="M0 0h21v21H0z"/>
+        <path d="M17.29 10.6c-.676-.77-3.378-3.6-6.61-3.6-3.23 0-5.933 2.83-6.609 3.6a.293.293 0 0 0 0 .383c.676.77 3.378 3.6 6.61 3.6 3.23 0 5.933-2.83 6.609-3.6a.293.293 0 0 0 0-.383z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M10.68 8.75c.69 0 1.298.344 1.666.87l-2.84 2.84c-.52-.37-.859-.98-.859-1.668 0-1.128.91-2.042 2.033-2.042zM12.689 10.47a2.038 2.038 0 0 1-2.337 2.337z" fill="currentColor"/>
+        <g stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M16.396 5 5.02 16.375"/>
+        </g>
+    </g>
+</svg>

@@ -7,6 +7,7 @@ import type {
   BaseDataSourceConfigurationAPI,
   BaseDataSourceConfigurationAPIItem,
 } from './DataSourceConfigurationAPI';
+import type DisplaySet from '../services/DisplaySetService/DisplaySet';
 
 export type * from '../services/ViewportGridService';
 export type * from '../services/CustomizationService/types';
@@ -31,4 +32,5 @@ export {
   DataSourceDefinition,
   BaseDataSourceConfigurationAPI,
   BaseDataSourceConfigurationAPIItem,
+  DisplaySet,
 };

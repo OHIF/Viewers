@@ -3,13 +3,14 @@ import classNames from 'classnames';
 import PropTypes from 'prop-types';
 
 import Typography from '../Typography';
-import { Icons } from '@ohif/ui-next';
+import Icon from '../Icon';
 
 const CloseButton = ({ onClick }) => {
   return (
-    <Icons.Close
+    <Icon
       data-cy="close-button"
       onClick={onClick}
+      name="close"
       className="text-primary-active cursor-pointer"
     />
   );

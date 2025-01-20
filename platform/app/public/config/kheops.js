@@ -1,8 +1,8 @@
 /** @type {AppTypes.Config} */
 
 window.config = {
-  name: 'config/kheops.js',
   routerBasename: '/',
+  // whiteLabeling: {},
   extensions: [],
   modes: [],
   customizationService: {},
@@ -24,9 +24,8 @@ window.config = {
     prefetch: 25,
   },
   // filterQueryParam: false,
-  // Uses the ohif datasource as the default - this requires that KHEOPS be
-  // configured with an OHIF path to .../viewer/dicomwebproxy
-  defaultDataSourceName: 'ohif3',
+  // Uses the dicomweb proxy as the default URL
+  defaultDataSourceName: 'dicomwebproxy',
   /* Dynamic config allows user to pass "configUrl" query string this allows to load config without recompiling application. The regex will ensure valid configuration source */
   // dangerouslyUseDynamicConfig: {
   //   enabled: true,

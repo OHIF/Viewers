@@ -69,13 +69,7 @@ const toolbarButtons: Button[] = [
       icon: 'tool-capture',
       label: 'Capture',
       commands: 'showDownloadViewportModal',
-      evaluate: [
-        'evaluate.action',
-        {
-          name: 'evaluate.viewport.supported',
-          unsupportedViewportTypes: ['video', 'wholeSlide'],
-        },
-      ],
+      evaluate: 'evaluate.action',
     },
   },
   {
@@ -148,13 +142,7 @@ const toolbarButtons: Button[] = [
           label: 'Flip Horizontal',
           tooltip: 'Flip Horizontally',
           commands: 'flipViewportHorizontal',
-          evaluate: [
-            'evaluate.viewportProperties.toggle',
-            {
-              name: 'evaluate.viewport.supported',
-              unsupportedViewportTypes: ['volume3d'],
-            },
-          ],
+          evaluate: ['evaluate.viewportProperties.toggle', 'evaluate.not3D'],
         }),
         createButton({
           id: 'ReferenceLines',
@@ -206,13 +194,7 @@ const toolbarButtons: Button[] = [
           label: 'Cine',
           tooltip: 'Cine',
           commands: 'toggleCine',
-          evaluate: [
-            'evaluate.cine',
-            {
-              name: 'evaluate.viewport.supported',
-              unsupportedViewportTypes: ['volume3d'],
-            },
-          ],
+          evaluate: ['evaluate.cine', 'evaluate.not3D'],
         }),
         createButton({
           id: 'Angle',
@@ -227,6 +209,14 @@ const toolbarButtons: Button[] = [
           icon: 'tool-magnify',
           label: 'Zoom-in',
           tooltip: 'Zoom-in',
+          commands: setToolActiveToolbar,
+          evaluate: 'evaluate.cornerstoneTool',
+        }),
+        createButton({
+          id: 'EllipticalROI',
+          icon: 'tool-rectangle',
+          label: 'Elliptical',
+          tooltip: 'Elliptical',
           commands: setToolActiveToolbar,
           evaluate: 'evaluate.cornerstoneTool',
         }),
@@ -267,13 +257,7 @@ const toolbarButtons: Button[] = [
           label: 'Ultrasound Directional',
           tooltip: 'Ultrasound Directional',
           commands: setToolActiveToolbar,
-          evaluate: [
-            'evaluate.cornerstoneTool',
-            {
-              name: 'evaluate.modality.supported',
-              supportedModalities: ['US'],
-            },
-          ],
+          evaluate: ['evaluate.cornerstoneTool', 'evaluate.isUS'],
         }),
         createButton({
           id: 'WindowLevelRegion',

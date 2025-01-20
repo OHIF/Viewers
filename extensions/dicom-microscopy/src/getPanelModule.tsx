@@ -1,6 +1,6 @@
 import React from 'react';
 import type { Types } from '@ohif/core';
-import { useViewportGrid } from '@ohif/ui-next';
+import { useViewportGrid } from '@ohif/ui';
 import MicroscopyPanel from './components/MicroscopyPanel/MicroscopyPanel';
 
 // TODO:
@@ -13,7 +13,7 @@ export default function getPanelModule({
   extensionManager,
   servicesManager,
 }: Types.Extensions.ExtensionParams) {
-  const wrappedMeasurementPanel = ({}) => {
+  const wrappedMeasurementPanel = ({ renderHeader, getCloseIcon, tab }) => {
     const [{ activeViewportId, viewports }] = useViewportGrid();
 
     return (
@@ -25,6 +25,9 @@ export default function getPanelModule({
         commandsManager={commandsManager}
         servicesManager={servicesManager}
         extensionManager={extensionManager}
+        renderHeader={renderHeader}
+        getCloseIcon={getCloseIcon}
+        tab={tab}
       />
     );
   };

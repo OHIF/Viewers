@@ -1,17 +1,14 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
 
-import { ViewportActionArrows } from '@ohif/ui';
-import { useViewportGrid, Icons, Tooltip, TooltipTrigger, TooltipContent } from '@ohif/ui-next';
+import { Tooltip, Icon, ViewportActionArrows, useViewportGrid } from '@ohif/ui';
 
 import { annotation } from '@cornerstonejs/tools';
 import { useTrackedMeasurements } from './../getContextModule';
 import { BaseVolumeViewport, Enums } from '@cornerstonejs/core';
 import { useTranslation } from 'react-i18next';
 
-function TrackedCornerstoneViewport(
-  props: withAppTypes<{ viewportId: string; displaySets: AppTypes.DisplaySet[] }>
-) {
+function TrackedCornerstoneViewport(props: withAppTypes) {
   const { displaySets, viewportId, servicesManager, extensionManager } = props;
 
   const {
@@ -99,9 +96,6 @@ function TrackedCornerstoneViewport(
   useEffect(() => {
     if (isTracked) {
       annotation.config.style.setViewportToolStyles(viewportId, {
-        ReferenceLines: {
-          lineDash: '4,4',
-        },
         global: {
           lineDash: '',
         },
@@ -199,7 +193,7 @@ function TrackedCornerstoneViewport(
       viewportId === activeViewportId
     );
 
-    viewportActionCornersService.addComponents([
+    viewportActionCornersService.setComponents([
       {
         viewportId,
         id: 'viewportStatusComponent',
@@ -235,9 +229,11 @@ function TrackedCornerstoneViewport(
   };
 
   return (
-    <div className="relative flex h-full w-full flex-row overflow-hidden">
-      {getCornerstoneViewport()}
-    </div>
+    <>
+      <div className="relative flex h-full w-full flex-row overflow-hidden">
+        {getCornerstoneViewport()}
+      </div>
+    </>
   );
 }
 
@@ -309,8 +305,8 @@ const _getArrowsComponent = (isTracked, switchMeasurement, isActiveViewport) => 
   return (
     <ViewportActionArrows
       onArrowsClick={direction => switchMeasurement(direction)}
-      className={isActiveViewport ? 'visible' : 'invisible group-hover/pane:visible'}
-    />
+      className={isActiveViewport ? 'visible' : 'invisible group-hover:visible'}
+    ></ViewportActionArrows>
   );
 };
 
@@ -320,23 +316,39 @@ function _getStatusComponent(isTracked, t) {
   }
 
   return (
-    <Tooltip>
-      <TooltipTrigger asChild>
-        <span>
-          <Icons.StatusTracking className="text-aqua-pale" />
-        </span>
-      </TooltipTrigger>
-      <TooltipContent
-        align="start"
-        side="bottom"
+    <div className="relative">
+      <Tooltip
+        position="bottom-left"
+        content={
+          <div className="flex py-2">
+            <div className="flex pt-1">
+              <Icon
+                name="info-link"
+                className="text-primary-main w-4"
+              />
+            </div>
+            <div className="ml-4 flex">
+              <span className="text-common-light text-base">
+                {isTracked ? (
+                  <>{t('Series is tracked and can be viewed in the measurement panel')}</>
+                ) : (
+                  <>
+                    {t(
+                      'Measurements for untracked series will not be shown in the measurements panel'
+                    )}
+                  </>
+                )}
+              </span>
+            </div>
+          </div>
+        }
       >
-        {isTracked ? (
-          <>{t('Series is tracked and can be viewed in the measurement panel')}</>
-        ) : (
-          <>{t('Measurements for untracked series will not be shown in the measurements panel')}</>
-        )}
-      </TooltipContent>
-    </Tooltip>
+        <Icon
+          name={'viewport-status-tracked'}
+          className="text-aqua-pale"
+        />
+      </Tooltip>
+    </div>
   );
 }
 

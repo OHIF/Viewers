@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import SegmentationItem from './SegmentationItem';
-import { Icons } from '@ohif/ui-next';
+
+import Icon from '../Icon';
 
 const SegmentationTable = ({
   title = '',
@@ -50,7 +51,8 @@ const SegmentationTable = ({
         <span className="text-base font-bold uppercase tracking-widest text-white">{title}</span>
         <div className="flex">
           <span className="text-base font-bold text-white">{amount}</span>
-          <Icons.EyeHidden
+          <Icon
+            name="eye-hidden"
             className="ml-2 w-6 cursor-pointer text-white transition duration-300 hover:opacity-80"
             onClick={() => handleToggleAll()}
           />

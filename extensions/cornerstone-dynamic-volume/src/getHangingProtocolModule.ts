@@ -147,8 +147,8 @@ function getFusionViewports() {
       name: DEFAULT_COLORMAP,
       opacity: [
         { value: 0, opacity: 0 },
-        { value: 0.1, opacity: 0.8 },
-        { value: 1, opacity: 0.8 },
+        { value: 0.1, opacity: 0.3 },
+        { value: 1, opacity: 0.3 },
       ],
     },
   };
@@ -189,15 +189,6 @@ function getFusionViewports() {
             target: true,
             options: {
               syncInvertState: false,
-            },
-          },
-          {
-            type: 'hydrateseg',
-            id: 'sameFORId',
-            source: true,
-            target: true,
-            options: {
-              matchingRules: ['sameFOR'],
             },
           },
         ],
@@ -249,15 +240,6 @@ function getFusionViewports() {
               syncInvertState: false,
             },
           },
-          {
-            type: 'hydrateseg',
-            id: 'sameFORId',
-            source: true,
-            target: true,
-            options: {
-              matchingRules: ['sameFOR'],
-            },
-          },
         ],
       },
       displaySets: [
@@ -305,15 +287,6 @@ function getFusionViewports() {
             target: true,
             options: {
               syncInvertState: false,
-            },
-          },
-          {
-            type: 'hydrateseg',
-            id: 'sameFORId',
-            source: true,
-            target: true,
-            options: {
-              matchingRules: ['sameFOR'],
             },
           },
         ],

@@ -17,6 +17,7 @@ window.config = {
   showCPUFallbackMessage: true,
   showLoadingIndicator: true,
   useNorm16Texture: true,
+  useSharedArrayBuffer: 'AUTO',
   maxNumRequests: {
     interaction: 100,
     thumbnail: 75,

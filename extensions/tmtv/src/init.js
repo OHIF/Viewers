@@ -1,14 +1,9 @@
-import {
-  addTool,
-  RectangleROIStartEndThresholdTool,
-  CircleROIStartEndThresholdTool,
-} from '@cornerstonejs/tools';
-import { Enums as CSExtensionEnums } from '@ohif/extension-cornerstone';
+import { addTool, RectangleROIStartEndThresholdTool, CircleROIStartEndThresholdTool } from '@cornerstonejs/tools';
 
 import measurementServiceMappingsFactory from './utils/measurementServiceMappings/measurementServiceMappingsFactory';
 
-const { CORNERSTONE_3D_TOOLS_SOURCE_NAME, CORNERSTONE_3D_TOOLS_SOURCE_VERSION } = CSExtensionEnums;
-
+const CORNERSTONE_3D_TOOLS_SOURCE_NAME = 'Cornerstone3DTools';
+const CORNERSTONE_3D_TOOLS_SOURCE_VERSION = '0.1';
 /**
  *
  * @param {Object} servicesManager
@@ -22,12 +17,11 @@ export default function init({ servicesManager }) {
   addTool(RectangleROIStartEndThresholdTool);
   addTool(CircleROIStartEndThresholdTool);
 
-  const { RectangleROIStartEndThreshold, CircleROIStartEndThreshold } =
-    measurementServiceMappingsFactory(
-      measurementService,
-      displaySetService,
-      cornerstoneViewportService
-    );
+  const { RectangleROIStartEndThreshold, CircleROIStartEndThreshold } = measurementServiceMappingsFactory(
+    measurementService,
+    displaySetService,
+    cornerstoneViewportService
+  );
 
   const csTools3DVer1MeasurementSource = measurementService.getSource(
     CORNERSTONE_3D_TOOLS_SOURCE_NAME,

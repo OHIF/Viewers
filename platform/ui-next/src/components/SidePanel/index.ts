@@ -1,2 +1,2 @@
-import { SidePanel } from './SidePanel';
-export { SidePanel };
+import SidePanel from './SidePanel';
+export default SidePanel;

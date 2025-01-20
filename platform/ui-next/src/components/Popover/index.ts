@@ -1,3 +1,3 @@
-import { Popover, PopoverContent, PopoverTrigger, PopoverAnchor } from './Popover';
+import * as Popover from './Popover';
 
-export { Popover, PopoverContent, PopoverTrigger, PopoverAnchor };
+export default Popover;

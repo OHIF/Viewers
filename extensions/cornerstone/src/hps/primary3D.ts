@@ -11,7 +11,7 @@ export const primary3D = {
   protocolMatchingRules: [],
   imageLoadStrategy: 'interleaveCenter',
   displaySetSelectors: {
-    activeDisplaySet: {
+    mprDisplaySet: {
       seriesMatchingRules: [
         {
           weight: 1,
@@ -75,7 +75,7 @@ export const primary3D = {
           },
           displaySets: [
             {
-              id: 'activeDisplaySet',
+              id: 'mprDisplaySet',
               options: {
                 displayPreset: {
                   CT: 'CT-Bone',
@@ -108,7 +108,7 @@ export const primary3D = {
           },
           displaySets: [
             {
-              id: 'activeDisplaySet',
+              id: 'mprDisplaySet',
             },
           ],
         },
@@ -134,7 +134,7 @@ export const primary3D = {
           },
           displaySets: [
             {
-              id: 'activeDisplaySet',
+              id: 'mprDisplaySet',
             },
           ],
         },
@@ -160,7 +160,7 @@ export const primary3D = {
           },
           displaySets: [
             {
-              id: 'activeDisplaySet',
+              id: 'mprDisplaySet',
             },
           ],
         },

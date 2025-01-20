@@ -1,6 +1,7 @@
 import React, { useCallback, useContext } from 'react';
 import { MenuContext, MenuProps } from './Menu';
-import { Icons } from '@ohif/ui-next';
+import Icon from '../Icon';
+
 export interface SubMenuProps extends MenuProps {
   itemLabel: string;
   onClick?: () => void;
@@ -21,13 +22,15 @@ const SubMenu = (props: SubMenuProps) => {
       onClick={onClickHandler}
     >
       {props.itemIcon && (
-        <Icons.ByName
+        <Icon
           name={props.itemIcon}
+          width="25px"
+          height="25px"
           className="mr-2"
-        ></Icons.ByName>
+        ></Icon>
       )}
       <div className="mr-auto">{props.itemLabel}</div>
-      <Icons.ByName name="content-next"></Icons.ByName>
+      <Icon name="content-next"></Icon>
     </div>
   );
 };

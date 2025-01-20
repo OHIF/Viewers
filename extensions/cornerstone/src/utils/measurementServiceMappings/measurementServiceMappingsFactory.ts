@@ -94,6 +94,7 @@ const measurementServiceMappingsFactory = (
         },
       ],
     },
+
     EllipticalROI: {
       toAnnotation: EllipticalROI.toAnnotation,
       toMeasurement: csToolsAnnotation =>
@@ -110,6 +111,7 @@ const measurementServiceMappingsFactory = (
         },
       ],
     },
+
     CircleROI: {
       toAnnotation: CircleROI.toAnnotation,
       toMeasurement: csToolsAnnotation =>
@@ -126,6 +128,7 @@ const measurementServiceMappingsFactory = (
         },
       ],
     },
+
     RectangleROI: {
       toAnnotation: RectangleROI.toAnnotation,
       toMeasurement: csToolsAnnotation =>
@@ -142,6 +145,7 @@ const measurementServiceMappingsFactory = (
         },
       ],
     },
+
     PlanarFreehandROI: {
       toAnnotation: PlanarFreehandROI.toAnnotation,
       toMeasurement: csToolsAnnotation =>
@@ -158,6 +162,7 @@ const measurementServiceMappingsFactory = (
         },
       ],
     },
+
     SplineROI: {
       toAnnotation: SplineROI.toAnnotation,
       toMeasurement: csToolsAnnotation =>
@@ -174,6 +179,7 @@ const measurementServiceMappingsFactory = (
         },
       ],
     },
+
     LivewireContour: {
       toAnnotation: LivewireContour.toAnnotation,
       toMeasurement: csToolsAnnotation =>
@@ -190,6 +196,7 @@ const measurementServiceMappingsFactory = (
         },
       ],
     },
+
     ArrowAnnotate: {
       toAnnotation: ArrowAnnotate.toAnnotation,
       toMeasurement: csToolsAnnotation =>
@@ -207,6 +214,7 @@ const measurementServiceMappingsFactory = (
         },
       ],
     },
+
     Probe: {
       toAnnotation: Probe.toAnnotation,
       toMeasurement: csToolsAnnotation =>
@@ -224,6 +232,7 @@ const measurementServiceMappingsFactory = (
         },
       ],
     },
+
     CobbAngle: {
       toAnnotation: CobbAngle.toAnnotation,
       toMeasurement: csToolsAnnotation =>
@@ -240,6 +249,7 @@ const measurementServiceMappingsFactory = (
         },
       ],
     },
+
     Angle: {
       toAnnotation: Angle.toAnnotation,
       toMeasurement: csToolsAnnotation =>

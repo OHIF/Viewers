@@ -3,38 +3,31 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import PropTypes from 'prop-types';
 import { utils } from '@ohif/core';
-import { useImageViewer, Dialog, ButtonEnums } from '@ohif/ui';
-import { useViewportGrid, DropdownMenu, DropdownMenuTrigger, Icons, Button } from '@ohif/ui-next';
-import { StudyBrowser } from '@ohif/ui-next';
+import { useImageViewer, useViewportGrid, Dialog, ButtonEnums } from '@ohif/ui';
+import { StudyBrowser as NewStudyBrowser } from '@ohif/ui-next';
+import { StudyBrowser as OldStudyBrowser } from '@ohif/ui';
+import { useAppConfig } from '@state';
 
 import { useTrackedMeasurements } from '../../getContextModule';
 import { Separator } from '@ohif/ui-next';
-import { PanelStudyBrowserHeader, MoreDropdownMenu } from '@ohif/extension-default';
+import { PanelStudyBrowserTrackingHeader } from './PanelStudyBrowserTrackingHeader';
 import { defaultActionIcons, defaultViewPresets } from './constants';
+
 const { formatDate, createStudyBrowserTabs } = utils;
-const thumbnailNoImageModalities = [
-  'SR',
-  'SEG',
-  'SM',
-  'RTSTRUCT',
-  'RTPLAN',
-  'RTDOSE',
-  'DOC',
-  'OT',
-  'PMAP',
-];
 
 /**
  *
  * @param {*} param0
  */
-export default function PanelStudyBrowserTracking({
+function PanelStudyBrowserTracking({
   servicesManager,
   getImageSrc,
   getStudiesForPatientByMRN,
   requestDisplaySetCreationForStudy,
   dataSource,
-  commandsManager,
+  renderHeader,
+  getCloseIcon,
+  tab,
 }: withAppTypes) {
   const {
     displaySetService,
@@ -46,12 +39,9 @@ export default function PanelStudyBrowserTracking({
     customizationService,
   } = servicesManager.services;
   const navigate = useNavigate();
-  const { mode: studyMode } = customizationService.getCustomization('PanelStudyBrowser.studyMode', {
-    id: 'default',
-    mode: 'all',
-  });
 
   const { t } = useTranslation('Common');
+  const [appConfig] = useAppConfig();
 
   // Normally you nest the components so the tree isn't so deep, and the data
   // doesn't have to have such an intense shape. This works well enough for now.
@@ -60,8 +50,7 @@ export default function PanelStudyBrowserTracking({
   const [{ activeViewportId, viewports, isHangingProtocolLayout }, viewportGridService] =
     useViewportGrid();
   const [trackedMeasurements, sendTrackedMeasurementsEvent] = useTrackedMeasurements();
-
-  const [activeTabName, setActiveTabName] = useState(studyMode);
+  const [activeTabName, setActiveTabName] = useState('primary');
   const [expandedStudyInstanceUIDs, setExpandedStudyInstanceUIDs] = useState([
     ...StudyInstanceUIDs,
   ]);
@@ -110,7 +99,7 @@ export default function PanelStudyBrowserTracking({
         title: 'Thumbnail Double Click',
         message:
           'The selected display sets could not be added to the viewport due to a mismatch in the Hanging Protocol rules.',
-        type: 'error',
+        type: 'info',
         duration: 3000,
       });
     }
@@ -122,10 +111,6 @@ export default function PanelStudyBrowserTracking({
     viewports.get(activeViewportId)?.displaySetInstanceUIDs;
 
   const { trackedSeries } = trackedMeasurements.context;
-
-  useEffect(() => {
-    setActiveTabName(studyMode);
-  }, [studyMode]);
 
   // ~~ studyDisplayList
   useEffect(() => {
@@ -191,11 +176,7 @@ export default function PanelStudyBrowserTracking({
       return;
     }
 
-    let currentDisplaySets = displaySetService.activeDisplaySets;
-    // filter non based on the list of modalities that are supported by cornerstone
-    currentDisplaySets = currentDisplaySets.filter(
-      ds => !thumbnailNoImageModalities.includes(ds.Modality)
-    );
+    const currentDisplaySets = displaySetService.activeDisplaySets;
 
     if (!currentDisplaySets.length) {
       return;
@@ -485,22 +466,27 @@ export default function PanelStudyBrowserTracking({
     });
   };
 
+  const StudyBrowser = appConfig.useExperimentalUI ? NewStudyBrowser : OldStudyBrowser;
+
   return (
     <>
-      <>
-        <PanelStudyBrowserHeader
-          viewPresets={viewPresets}
-          updateViewPresetValue={updateViewPresetValue}
-          actionIcons={actionIcons}
-          updateActionIconValue={updateActionIconValue}
-        />
-        <Separator
-          orientation="horizontal"
-          className="bg-black"
-          thickness="2px"
-        />
-      </>
-
+      {renderHeader && (
+        <>
+          <PanelStudyBrowserTrackingHeader
+            tab={tab}
+            getCloseIcon={getCloseIcon}
+            viewPresets={viewPresets}
+            updateViewPresetValue={updateViewPresetValue}
+            actionIcons={actionIcons}
+            updateActionIconValue={updateActionIconValue}
+          />
+          <Separator
+            orientation="horizontal"
+            className="bg-black"
+            thickness="2px"
+          />
+        </>
+      )}
       <StudyBrowser
         tabs={tabs}
         servicesManager={servicesManager}
@@ -518,16 +504,6 @@ export default function PanelStudyBrowserTracking({
         activeDisplaySetInstanceUIDs={activeViewportDisplaySetInstanceUIDs}
         showSettings={actionIcons.find(icon => icon.id === 'settings').value}
         viewPresets={viewPresets}
-        ThumbnailMenuItems={MoreDropdownMenu({
-          commandsManager,
-          servicesManager,
-          menuItemsKey: 'studyBrowser.thumbnailMenuItems',
-        })}
-        StudyMenuItems={MoreDropdownMenu({
-          commandsManager,
-          servicesManager,
-          menuItemsKey: 'studyBrowser.studyMenuItems',
-        })}
       />
     </>
   );
@@ -542,6 +518,8 @@ PanelStudyBrowserTracking.propTypes = {
   getStudiesForPatientByMRN: PropTypes.func.isRequired,
   requestDisplaySetCreationForStudy: PropTypes.func.isRequired,
 };
+
+export default PanelStudyBrowserTracking;
 
 function getImageIdForThumbnail(displaySet: any, imageIds: any) {
   let imageId;
@@ -597,6 +575,7 @@ function _mapDisplaySets(
     .forEach(ds => {
       const imageSrc = thumbnailImageSrcMap[ds.displaySetInstanceUID];
       const componentType = _getComponentType(ds);
+      const numPanes = viewportGridService.getNumViewportPanes();
 
       const array =
         componentType === 'thumbnailTracked' ? thumbnailDisplaySets : thumbnailNoImageDisplaySets;
@@ -702,6 +681,18 @@ function _mapDisplaySets(
 
   return [...thumbnailDisplaySets, ...thumbnailNoImageDisplaySets];
 }
+
+const thumbnailNoImageModalities = [
+  'SR',
+  'SEG',
+  'SM',
+  'RTSTRUCT',
+  'RTPLAN',
+  'RTDOSE',
+  'DOC',
+  'OT',
+  'PMAP',
+];
 
 function _getComponentType(ds) {
   if (thumbnailNoImageModalities.includes(ds.Modality) || ds?.unsupported) {

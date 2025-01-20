@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import classNames from 'classnames';
 
 import IconButton from '../IconButton';
-import { Icons } from '@ohif/ui-next';
+import Icon from '../Icon';
 import Tooltip from '../Tooltip';
 
 const ToolbarButton = ({
@@ -24,11 +24,7 @@ const ToolbarButton = ({
   //
 }) => {
   const shouldShowDropdown = !!dropdownContent;
-  const iconEl = icon ? (
-    <Icons.ByName name={icon} />
-  ) : (
-    <div>{label || 'Missing icon and label'}</div>
-  );
+  const iconEl = icon ? <Icon name={icon} /> : <div>{label || 'Missing icon and label'}</div>;
 
   const sizeToUse = size ?? 'toolbar';
   const toolTipClassNameToUse =

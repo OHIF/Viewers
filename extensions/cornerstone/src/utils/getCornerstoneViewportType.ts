@@ -22,7 +22,7 @@ export default function getCornerstoneViewportType(
     return Enums.ViewportType.VIDEO;
   }
   if (lowerViewportType === WHOLESLIDE) {
-    return Enums.ViewportType.WHOLE_SLIDE;
+    return Enums.ViewportType.WholeSlide;
   }
 
   if (lowerViewportType === VOLUME || lowerViewportType === ORTHOGRAPHIC) {

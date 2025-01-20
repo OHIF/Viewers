@@ -13,7 +13,7 @@ function requestDisplaySetCreationForStudy(
     return;
   }
 
-  return dataSource.retrieve.series.metadata({ StudyInstanceUID, madeInClient });
+  dataSource.retrieve.series.metadata({ StudyInstanceUID, madeInClient });
 }
 
 export default requestDisplaySetCreationForStudy;

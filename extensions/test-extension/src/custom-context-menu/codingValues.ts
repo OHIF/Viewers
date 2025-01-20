@@ -23,44 +23,28 @@ const codingValues = {
   'SCT:69536005': {
     text: 'Head',
     type: 'site',
-    style: {
-      color: 'red',
-    },
   },
   'SCT:45048000': {
     text: 'Neck',
     type: 'site',
-    style: {
-      color: 'blue',
-    },
   },
   'SCT:818981001': {
     text: 'Abdomen',
     type: 'site',
-    style: {
-      color: 'orange',
-    },
   },
   'SCT:816092008': {
     text: 'Pelvis',
     type: 'site',
-    style: {
-      color: 'cyan',
-    },
   },
 
   // Findings
   'SCT:371861004': {
     text: 'Mild intimal coronary irregularities',
-    style: {
-      color: 'green',
-    },
+    color: 'green',
   },
   'SCT:194983005': {
     text: 'Aortic insufficiency',
-    style: {
-      color: 'darkred',
-    },
+    color: 'darkred',
   },
   'SCT:399232001': {
     text: '2-chamber',

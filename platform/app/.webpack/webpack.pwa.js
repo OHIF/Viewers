@@ -18,18 +18,12 @@ const PUBLIC_DIR = path.join(__dirname, '../public');
 const HTML_TEMPLATE = process.env.HTML_TEMPLATE || 'index.html';
 const PUBLIC_URL = process.env.PUBLIC_URL || '/';
 const APP_CONFIG = process.env.APP_CONFIG || 'config/default.js';
-
-// proxy settings
 const PROXY_TARGET = process.env.PROXY_TARGET;
 const PROXY_DOMAIN = process.env.PROXY_DOMAIN;
-const PROXY_PATH_REWRITE_FROM = process.env.PROXY_PATH_REWRITE_FROM;
-const PROXY_PATH_REWRITE_TO = process.env.PROXY_PATH_REWRITE_TO;
-
 const OHIF_PORT = Number(process.env.OHIF_PORT || 3000);
 const ENTRY_TARGET = process.env.ENTRY_TARGET || `${SRC_DIR}/index.js`;
 const Dotenv = require('dotenv-webpack');
 const writePluginImportFile = require('./writePluginImportsFile.js');
-// const MillionLint = require('@million/lint');
 
 const copyPluginFromExtensions = writePluginImportFile(SRC_DIR, DIST_DIR);
 
@@ -78,11 +72,10 @@ module.exports = (env, argv) => {
         // Hoisted Yarn Workspace Modules
         path.resolve(__dirname, '../../../node_modules'),
         SRC_DIR,
+        path.resolve(__dirname, 'D:/QCTWeb-main/modes/BMD-Calculation/node_modules'),
       ],
     },
     plugins: [
-      // For debugging re-renders
-      // MillionLint.webpack(),
       new Dotenv(),
       // Clean output.path
       new CleanWebpackPlugin(),
@@ -112,12 +105,21 @@ module.exports = (env, argv) => {
             to: `${DIST_DIR}/app-config.js`,
           },
           // Copy Dicom Microscopy Viewer build files
+          // This is in pluginCOnfig.json now
+          // {
+          //   from: '../../../node_modules/dicom-microscopy-viewer/dist/dynamic-import',
+          //   to: DIST_DIR,
+          //   globOptions: {
+          //     ignore: ['**/*.min.js.map'],
+          //   },
+          //   // The dicom-microscopy-viewer is optional, so if it doeesn't get
+          //   // installed, it shouldn't cause issues.
+          //   noErrorOnMissing: true,
+          // },
+          // Copy dicom-image-loader build files
           {
-            from: '../../../node_modules/dicom-microscopy-viewer/dist/dynamic-import',
+            from: '../../../node_modules/@cornerstonejs/dicom-image-loader/dist/dynamic-import',
             to: DIST_DIR,
-            globOptions: {
-              ignore: ['**/*.min.js.map'],
-            },
           },
         ],
       }),
@@ -133,6 +135,8 @@ module.exports = (env, argv) => {
       new InjectManifest({
         swDest: 'sw.js',
         swSrc: path.join(SRC_DIR, 'service-worker.js'),
+        // Increase the limit to 4mb:
+        maximumFileSizeToCacheInBytes: 5 * 1024 * 1024,
         // Need to exclude the theme as it is updated independently
         exclude: [/theme/],
         // Cache large files for the manifests to avoid warning messages
@@ -172,23 +176,16 @@ module.exports = (env, argv) => {
         disableDotRule: true,
         index: PUBLIC_URL + 'index.html',
       },
-      devMiddleware: {
-        writeToDisk: true,
+      headers: {
+        'Cross-Origin-Embedder-Policy': 'require-corp',
+        'Cross-Origin-Opener-Policy': 'same-origin',
       },
     },
   });
 
   if (hasProxy) {
     mergedConfig.devServer.proxy = mergedConfig.devServer.proxy || {};
-    mergedConfig.devServer.proxy = {
-      [PROXY_TARGET]: {
-        target: PROXY_DOMAIN,
-        changeOrigin: true,
-        pathRewrite: {
-          [`^${PROXY_PATH_REWRITE_FROM}`]: PROXY_PATH_REWRITE_TO,
-        },
-      },
-    };
+    mergedConfig.devServer.proxy[PROXY_TARGET] = PROXY_DOMAIN;
   }
 
   if (isProdBuild) {
@@ -199,10 +196,6 @@ module.exports = (env, argv) => {
       })
     );
   }
-
-  mergedConfig.watchOptions = {
-    ignored: /node_modules\/@cornerstonejs/,
-  };
 
   return mergedConfig;
 };

@@ -1,6 +1,3 @@
-// https://babeljs.io/docs/en/options#babelrcroots
-const { extendDefaultPlugins } = require('svgo');
-
 module.exports = {
   babelrcRoots: ['./platform/*', './extensions/*', './modes/*'],
   presets: ['@babel/preset-env', '@babel/preset-react', '@babel/preset-typescript'],
@@ -11,11 +8,12 @@ module.exports = {
     ['@babel/plugin-proposal-private-methods', { loose: true }],
     '@babel/plugin-transform-class-static-block',
   ],
+  // 添加这个配置来处理 node_modules 中的特定包
+  ignore: [/node_modules\/(?!(@cornerstonejs)\/).*/],
   env: {
     test: {
       presets: [
         [
-          // TODO: https://babeljs.io/blog/2019/03/19/7.4.0#migration-from-core-js-2
           '@babel/preset-env',
           {
             modules: 'commonjs',
@@ -33,25 +31,39 @@ module.exports = {
         '@babel/plugin-transform-runtime',
         '@babel/plugin-transform-typescript',
         '@babel/plugin-transform-class-static-block',
+        '@babel/plugin-proposal-optional-chaining-assign',
       ],
     },
     production: {
       presets: [
-        // WebPack handles ES6 --> Target Syntax
         ['@babel/preset-env', { modules: false }],
         '@babel/preset-react',
         '@babel/preset-typescript',
       ],
-      ignore: ['**/*.test.jsx', '**/*.test.js', '__snapshots__', '__tests__'],
+      // 修改 ignore 让它处理 cornerstone 包
+      ignore: [
+        '**/*.test.jsx',
+        '**/*.test.js',
+        '__snapshots__',
+        '__tests__',
+        /node_modules\/(?!(@cornerstonejs)\/).*/,
+      ],
     },
     development: {
       presets: [
-        // WebPack handles ES6 --> Target Syntax
         ['@babel/preset-env', { modules: false }],
         '@babel/preset-react',
         '@babel/preset-typescript',
       ],
-      ignore: ['**/*.test.jsx', '**/*.test.js', '__snapshots__', '__tests__'],
+      plugins: ['react-refresh/babel'],
+      // 同样修改 development 环境的 ignore
+      ignore: [
+        '**/*.test.jsx',
+        '**/*.test.js',
+        '__snapshots__',
+        '__tests__',
+        /node_modules\/(?!(@cornerstonejs)\/).*/,
+      ],
     },
   },
 };

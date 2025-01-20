@@ -11,7 +11,7 @@ export const primaryAxial = {
   protocolMatchingRules: [],
   imageLoadStrategy: 'interleaveCenter',
   displaySetSelectors: {
-    activeDisplaySet: {
+    mprDisplaySet: {
       seriesMatchingRules: [
         {
           weight: 1,
@@ -80,7 +80,7 @@ export const primaryAxial = {
           },
           displaySets: [
             {
-              id: 'activeDisplaySet',
+              id: 'mprDisplaySet',
             },
           ],
         },
@@ -106,7 +106,7 @@ export const primaryAxial = {
           },
           displaySets: [
             {
-              id: 'activeDisplaySet',
+              id: 'mprDisplaySet',
             },
           ],
         },
@@ -132,7 +132,7 @@ export const primaryAxial = {
           },
           displaySets: [
             {
-              id: 'activeDisplaySet',
+              id: 'mprDisplaySet',
             },
           ],
         },

@@ -2,8 +2,7 @@ import SUPPORTED_TOOLS from './constants/supportedTools';
 import { getDisplayUnit } from './utils';
 import getSOPInstanceAttributes from './utils/getSOPInstanceAttributes';
 import { utils } from '@ohif/core';
-import { getIsLocked } from './utils/getIsLocked';
-import { getIsVisible } from './utils/getIsVisible';
+
 const Probe = {
   toAnnotation: measurement => {},
 
@@ -20,12 +19,11 @@ const Probe = {
     getValueTypeFromToolType,
     customizationService
   ) => {
-    const { annotation } = csToolsEventDetail;
+    const { annotation, viewportId } = csToolsEventDetail;
     const { metadata, data, annotationUID } = annotation;
-    const isLocked = getIsLocked(annotationUID);
-    const isVisible = getIsVisible(annotationUID);
+
     if (!metadata || !data) {
-      console.warn('Probe tool: Missing metadata or data');
+      console.warn('Length tool: Missing metadata or data');
       return null;
     }
 
@@ -67,8 +65,6 @@ const Probe = {
       FrameOfReferenceUID,
       points,
       metadata,
-      isLocked,
-      isVisible,
       referenceSeriesUID: SeriesInstanceUID,
       referenceStudyUID: StudyInstanceUID,
       referencedImageId,
@@ -159,14 +155,11 @@ function _getReport(mappedAnnotations, points, FrameOfReferenceUID, customizatio
 }
 
 function getDisplayText(mappedAnnotations, displaySet, customizationService) {
-  const displayText = {
-    primary: [],
-    secondary: [],
-  };
-
   if (!mappedAnnotations || !mappedAnnotations.length) {
-    return displayText;
+    return '';
   }
+
+  const displayText = [];
 
   const { value, unit, SeriesNumber, SOPInstanceUID, frameNumber } = mappedAnnotations[0];
 
@@ -179,12 +172,13 @@ function getDisplayText(mappedAnnotations, displaySet, customizationService) {
 
   const instanceText = InstanceNumber ? ` I: ${InstanceNumber}` : '';
   const frameText = displaySet.isMultiFrame ? ` F: ${frameNumber}` : '';
-
-  if (value !== undefined) {
-    const roundedValue = utils.roundNumber(value, 2);
-    displayText.primary.push(`${roundedValue} ${getDisplayUnit(unit)}`);
-    displayText.secondary.push(`S: ${SeriesNumber}${instanceText}${frameText}`);
+  if (value === undefined) {
+    return displayText;
   }
+  const roundedValue = utils.roundNumber(value, 2);
+  displayText.push(
+    `${roundedValue} ${getDisplayUnit(unit)} (S: ${SeriesNumber}${instanceText}${frameText})`
+  );
 
   return displayText;
 }

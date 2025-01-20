@@ -2,10 +2,11 @@ import React, { useState } from 'react';
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
 import { useDrag } from 'react-dnd';
+import Icon from '../Icon';
 import Tooltip from '../Tooltip';
 import Typography from '../Typography';
 import DisplaySetMessageListTooltip from '../DisplaySetMessageListTooltip';
-import { Icons } from '@ohif/ui-next';
+
 const ThumbnailNoImage = ({
   displaySetInstanceUID,
   description,
@@ -62,7 +63,8 @@ const ThumbnailNoImage = ({
       <div ref={drag}>
         <div className="flex flex-1 flex-col">
           <div className="mb-2 flex flex-1 flex-row items-center">
-            <Icons.ListView
+            <Icon
+              name="list-bullets"
               className={classnames(
                 'w-12',
                 isHydratedForDerivedDisplaySet ? 'text-primary-light' : 'text-secondary-light'
@@ -74,7 +76,7 @@ const ThumbnailNoImage = ({
             >
               <div
                 className={classnames(
-                  'rounded-sm px-3 text-lg',
+                  'rounded-sm px-3  text-lg',
                   isHydratedForDerivedDisplaySet
                     ? 'bg-primary-light text-black'
                     : 'bg-primary-main text-white'
@@ -91,7 +93,8 @@ const ThumbnailNoImage = ({
           </div>
           <div className="flex flex-row">
             {canReject && (
-              <Icons.Trash
+              <Icon
+                name="old-trash"
                 style={{ minWidth: '12px' }}
                 className="ml-4 w-3 text-red-500"
                 onClick={onReject}

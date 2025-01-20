@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="28px" height="28px" viewBox="0 0 28 28" version="1.1" xmlns="http://www.w3.org/2000/svg"
+    xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>tool-seg-brush</title>
+    <g id="tool-seg-brush" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <rect id="Rectangle" x="0" y="0" width="28" height="28"></rect>
+        <path
+            d="M3.24640621,21.8286833 C3.09173375,21.7551472 2.99513748,21.5971513 3.00018895,21.4259625 C3.00524042,21.2547737 3.11098486,21.1027485 3.26972426,21.0384606 C5.3260304,20.2059201 4.66362518,17.8620247 5.27421252,16.6088957 C6.02197747,15.1026514 7.84114758,14.4766383 9.35746132,15.2037675 C13.9485253,17.4422999 8.48346644,24.3211232 3.24640621,21.8286833 Z"
+            id="Path" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+        <path
+            d="M21.5968442,2.302022 C21.1256527,1.8826075 20.4094461,1.90228142 19.9619901,2.34693083 L9.69255027,12.5887345 C11.0536437,13.0051578 12.1843437,13.9616637 12.8206229,15.2349008 L21.7410706,3.93687606 C22.1347378,3.44008272 22.0714081,2.72222021 21.5968442,2.302022 Z"
+            id="Path" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+    </g>
+</svg>

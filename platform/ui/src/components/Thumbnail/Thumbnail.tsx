@@ -2,9 +2,9 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import { useDrag } from 'react-dnd';
+import Icon from '../Icon';
 import { StringNumber } from '../../types';
 import DisplaySetMessageListTooltip from '../DisplaySetMessageListTooltip';
-import { Icons } from '@ohif/ui-next';
 
 /**
  * Display a thumbnail for a display set.
@@ -90,17 +90,25 @@ const Thumbnail = ({
             {seriesNumber}
           </div>
           <div className="flex flex-1 flex-row items-center">
-            <Icons.GroupLayers className="mr-2 w-3" />
+            <Icon
+              name={countIcon || 'group-layers'}
+              className="mr-2 w-3"
+            />
             {` ${numInstances}`}
           </div>
           <div className="mr-2 flex last:mr-0">
             {loadingProgress && loadingProgress < 1 && <>{Math.round(loadingProgress * 100)}%</>}
-            {loadingProgress && loadingProgress === 1 && <Icons.Database className="w-3" />}
-          </div>
-          <DisplaySetMessageListTooltip
-            messages={messages}
-            id={`display-set-tooltip-${displaySetInstanceUID}`}
-          />
+            {loadingProgress && loadingProgress === 1 && (
+              <Icon
+                name={'database'}
+              className="w-3"
+            />
+          )}
+        </div>
+        <DisplaySetMessageListTooltip
+          messages={messages}
+          id={`display-set-tooltip-${displaySetInstanceUID}`}
+        />
         </div>
         <div className="break-all text-base text-white">{description}</div>
       </div>

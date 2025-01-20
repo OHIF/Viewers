@@ -6,10 +6,9 @@ import { DicomMetadataStore, MODULE_TYPES } from '@ohif/core';
 import Dropzone from 'react-dropzone';
 import filesToStudies from './filesToStudies';
 
-import { extensionManager } from '../../App';
+import { extensionManager } from '../../App.tsx';
 
-import { Button, LoadingIndicatorProgress } from '@ohif/ui';
-import { Icons } from '@ohif/ui-next';
+import { Icon, Button, LoadingIndicatorProgress } from '@ohif/ui';
 
 const getLoadButton = (onDrop, text, isDir) => {
   return (
@@ -23,7 +22,7 @@ const getLoadButton = (onDrop, text, isDir) => {
             rounded="full"
             variant="contained" // outlined
             disabled={false}
-            endIcon={<Icons.LaunchArrow />}
+            endIcon={<Icon name="launch-arrow" />} // launch-arrow | launch-info
             className={classnames('font-medium', 'ml-2')}
             onClick={() => {}}
           >
@@ -124,10 +123,13 @@ function Local({ modePath }: LocalProps) {
           {...getRootProps()}
           style={{ width: '100%', height: '100%' }}
         >
-          <div className="flex h-screen w-screen items-center justify-center">
+          <div className="flex h-screen w-screen items-center justify-center ">
             <div className="bg-secondary-dark mx-auto space-y-2 rounded-lg py-8 px-8 drop-shadow-md">
               <div className="flex items-center justify-center">
-                <Icons.OHIFLogoColorDarkBackground className="h-28" />
+                <Icon
+                  name="logo-dark-background"
+                  className="h-28"
+                />
               </div>
               <div className="space-y-2 pt-4 text-center">
                 {dropInitiated ? (
@@ -147,7 +149,7 @@ function Local({ modePath }: LocalProps) {
                   </div>
                 )}
               </div>
-              <div className="flex justify-around pt-4">
+              <div className="flex justify-around pt-4 ">
                 {getLoadButton(onDrop, 'Load files', false)}
                 {getLoadButton(onDrop, 'Load folders', true)}
               </div>

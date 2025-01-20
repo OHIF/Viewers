@@ -5,12 +5,12 @@ import dcmjs from 'dcmjs';
 import { adaptersSR } from '@cornerstonejs/adapters';
 
 import getFilteredCornerstoneToolState from './utils/getFilteredCornerstoneToolState';
-import hydrateStructuredReport from './utils/hydrateStructuredReport';
 
 const { MeasurementReport } = adaptersSR.Cornerstone3D;
 const { log } = OHIF;
 
 /**
+ *
  * @param measurementData An array of measurements from the measurements service
  * that you wish to serialize.
  * @param additionalFindingTypes toolTypes that should be stored with labels as Findings
@@ -41,30 +41,9 @@ const _generateReport = (measurementData, additionalFindingTypes, options = {}) 
 };
 
 const commandsModule = (props: withAppTypes) => {
-  const { servicesManager, extensionManager } = props;
-  const { customizationService, viewportGridService, displaySetService } = servicesManager.services;
-
+  const { servicesManager } = props;
+  const { customizationService } = servicesManager.services;
   const actions = {
-    changeColorMeasurement: ({ uid }) => {
-      // When this gets supported, it probably belongs in cornerstone, not sr
-      throw new Error('Unsupported operation: changeColorMeasurement');
-      // const { color } = measurementService.getMeasurement(uid);
-      // const rgbaColor = {
-      //   r: color[0],
-      //   g: color[1],
-      //   b: color[2],
-      //   a: color[3] / 255.0,
-      // };
-      // colorPickerDialog(uiDialogService, rgbaColor, (newRgbaColor, actionId) => {
-      //   if (actionId === 'cancel') {
-      //     return;
-      //   }
-
-      //   const color = [newRgbaColor.r, newRgbaColor.g, newRgbaColor.b, newRgbaColor.a * 255.0];
-      // segmentationService.setSegmentColor(viewportId, segmentationId, segmentIndex, color);
-      // });
-    },
-
     /**
      *
      * @param measurementData An array of measurements from the measurements service
@@ -74,7 +53,7 @@ const commandsModule = (props: withAppTypes) => {
      * that you wish to serialize.
      */
     downloadReport: ({ measurementData, additionalFindingTypes, options = {} }) => {
-      const srDataset = _generateReport(measurementData, additionalFindingTypes, options);
+      const srDataset = actions.generateReport(measurementData, additionalFindingTypes, options);
       const reportBlob = dcmjs.data.datasetToBlob(srDataset);
 
       //Create a URL for the binary.
@@ -144,27 +123,6 @@ const commandsModule = (props: withAppTypes) => {
         throw new Error(error.message || 'Error while saving the measurements.');
       }
     },
-
-    /**
-     * Loads measurements by hydrating and loading the SR for the given display set instance UID
-     * and displays it in the active viewport.
-     */
-    loadSRMeasurements: ({ displaySetInstanceUID }) => {
-      const { SeriesInstanceUIDs } = hydrateStructuredReport(
-        { servicesManager, extensionManager },
-        displaySetInstanceUID
-      );
-
-      const displaySets = displaySetService.getDisplaySetsForSeries(SeriesInstanceUIDs[0]);
-      if (displaySets.length) {
-        viewportGridService.setDisplaySetsForViewports([
-          {
-            viewportId: viewportGridService.getActiveViewportId(),
-            displaySetInstanceUIDs: [displaySets[0].displaySetInstanceUID],
-          },
-        ]);
-      }
-    },
   };
 
   const definitions = {
@@ -173,9 +131,6 @@ const commandsModule = (props: withAppTypes) => {
     },
     storeMeasurements: {
       commandFn: actions.storeMeasurements,
-    },
-    loadSRMeasurements: {
-      commandFn: actions.loadSRMeasurements,
     },
   };
 

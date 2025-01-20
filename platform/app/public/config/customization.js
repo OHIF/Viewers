@@ -63,10 +63,6 @@ window.config = {
     },
   ],
 
-  defaultDataSourceName: 'e2e',
-  investigationalUseDialog: {
-    option: 'never',
-  },
   dataSources: [
     {
       namespace: '@ohif/extension-default.dataSourcesModule.dicomweb',

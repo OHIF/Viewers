@@ -204,7 +204,7 @@ export default class DisplaySetService extends PubSubService {
     }
 
     // If array of instances => One instance.
-    const displaySetsAdded = new Array<DisplaySet>();
+    const displaySetsAdded = [];
 
     if (batch) {
       for (let i = 0; i < input.length; i++) {

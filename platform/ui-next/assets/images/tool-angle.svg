@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="28px" height="28px" viewBox="0 0 28 28" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>tool-angle</title>
+    <g id="tool-angle" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <rect id="Rectangle" x="0" y="0" width="28" height="28"></rect>
+        <g id="Group-6" transform="translate(2.4559, 6)" stroke="currentColor" stroke-linecap="round" stroke-width="1.5">
+            <line x1="2.5" y1="14.5" x2="20.6875" y2="14.4375" id="Line-4"></line>
+            <line x1="1" y1="13.3775095" x2="13.0650095" y2="1.3125" id="Line-4" transform="translate(7.0325, 7.345) rotate(-10) translate(-7.0325, -7.345)"></line>
+        </g>
+        <path d="M19.3390559,17.0930296 C19.4124327,13.0930296 17.4130821,11.0930296 13.3410041,11.0930296" id="Path-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-dasharray="1,2.7" transform="translate(16.341, 14.093) rotate(12) translate(-16.341, -14.093)"></path>
+    </g>
+</svg>

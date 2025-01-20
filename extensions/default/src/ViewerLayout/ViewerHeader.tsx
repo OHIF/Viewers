@@ -1,15 +1,19 @@
 import React from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { useLocation } from 'react-router';
 
-import { UserPreferences, AboutModal, useModal } from '@ohif/ui';
-import { Header } from '@ohif/ui-next';
+import {
+  ErrorBoundary,
+  UserPreferences,
+  AboutModal,
+  Header,
+  useModal,
+  TutorialModal,
+} from '@ohif/ui';
 import i18n from '@ohif/i18n';
 import { hotkeys } from '@ohif/core';
 import { Toolbar } from '../Toolbar/Toolbar';
-import HeaderPatientInfo from './HeaderPatientInfo';
-import { PatientInfoVisibility } from './HeaderPatientInfo/HeaderPatientInfo';
-import { preserveQueryParameters, publicUrl } from '@ohif/app';
 
 const { availableLanguages, defaultLanguage, currentLanguage } = i18n;
 
@@ -18,13 +22,15 @@ function ViewerHeader({
   extensionManager,
   servicesManager,
   appConfig,
-}: withAppTypes<{ appConfig: AppTypes.Config }>) {
+}: withAppTypes) {
   const navigate = useNavigate();
   const location = useLocation();
 
   const onClickReturnButton = () => {
     const { pathname } = location;
     const dataSourceIdx = pathname.indexOf('/', 1);
+    const query = new URLSearchParams(window.location.search);
+    const configUrl = query.get('configUrl');
 
     const dataSourceName = pathname.substring(dataSourceIdx + 1);
     const existingDataSource = extensionManager.getDataSources(dataSourceName);
@@ -33,10 +39,13 @@ function ViewerHeader({
     if (dataSourceIdx !== -1 && existingDataSource) {
       searchQuery.append('datasources', pathname.substring(dataSourceIdx + 1));
     }
-    preserveQueryParameters(searchQuery);
+
+    if (configUrl) {
+      searchQuery.append('configUrl', configUrl);
+    }
 
     navigate({
-      pathname: publicUrl,
+      pathname: '/',
       search: decodeURIComponent(searchQuery.toString()),
     });
   };
@@ -54,10 +63,21 @@ function ViewerHeader({
       onClick: () =>
         show({
           content: AboutModal,
-          title: t('AboutModal:About OHIF Viewer'),
+          title: t('AboutModal:About QCTWeb'),
           contentProps: { versionNumber, commitHash },
           containerDimensions: 'max-w-4xl max-h-4xl',
         }),
+    },
+    {
+      title: t('Tutorial'),
+      icon: 'icon-play',
+      onClick: () => {
+        show({
+          title: t('TutorialModal:Tutorial'),
+          content: TutorialModal,
+          containerDimensions: 'w-[70%] h-[80%]',
+        });
+      },
     },
     {
       title: t('Header:Preferences'),
@@ -108,24 +128,21 @@ function ViewerHeader({
       isReturnEnabled={!!appConfig.showStudyList}
       onClickReturnButton={onClickReturnButton}
       WhiteLabeling={appConfig.whiteLabeling}
+      showPatientInfo={appConfig.showPatientInfo}
+      servicesManager={servicesManager}
       Secondary={
         <Toolbar
           servicesManager={servicesManager}
           buttonSection="secondary"
         />
       }
-      PatientInfo={
-        appConfig.showPatientInfo !== PatientInfoVisibility.DISABLED && (
-          <HeaderPatientInfo
-            servicesManager={servicesManager}
-            appConfig={appConfig}
-          />
-        )
-      }
+      appConfig={appConfig}
     >
-      <div className="relative flex justify-center gap-[4px]">
-        <Toolbar servicesManager={servicesManager} />
-      </div>
+      <ErrorBoundary context="Primary Toolbar">
+        <div className="relative flex justify-center gap-[4px]">
+          <Toolbar servicesManager={servicesManager} />
+        </div>
+      </ErrorBoundary>
     </Header>
   );
 }

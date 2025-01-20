@@ -1,5 +1,5 @@
 import { Types } from '@ohif/core';
-import { cache as cs3DCache, Enums, volumeLoader } from '@cornerstonejs/core';
+import { cache as cs3DCache, Enums, volumeLoader, utilities as utils } from '@cornerstonejs/core';
 
 import getCornerstoneViewportType from '../../utils/getCornerstoneViewportType';
 import { StackViewportData, VolumeViewportData } from '../../types/CornerstoneCacheService';
@@ -33,11 +33,27 @@ class CornerstoneCacheService {
 
   public async createViewportData(
     displaySets: Types.DisplaySet[],
-    viewportOptions: AppTypes.ViewportGrid.GridViewportOptions,
+    viewportOptions: Record<string, unknown>,
     dataSource: unknown,
     initialImageIndex?: number
   ): Promise<StackViewportData | VolumeViewportData> {
-    const viewportType = viewportOptions.viewportType as string;
+    let viewportType = viewportOptions.viewportType as string;
+
+    // Todo: Since Cornerstone 3D currently doesn't support segmentation
+    // on stack viewport, we should check if whether the the displaySets
+    // that are about to be displayed are referenced in a segmentation
+    // as a reference volume, if so, we should hang a volume viewport
+    // instead of a stack viewport
+    if (this._shouldRenderSegmentation(displaySets)) {
+      // if the viewport type is volume 3D, we should let it be as it is
+      // Todo: in future here we should kick start the conversion of the
+      // segmentation to closed surface
+      viewportType =
+        viewportType === Enums.ViewportType.VOLUME_3D ? Enums.ViewportType.VOLUME_3D : 'volume';
+
+      // update viewportOptions to reflect the new viewport type
+      viewportOptions.viewportType = viewportType;
+    }
 
     const cs3DViewportType = getCornerstoneViewportType(viewportType, displaySets);
     let viewportData: StackViewportData | VolumeViewportData;
@@ -70,7 +86,7 @@ class CornerstoneCacheService {
   }
 
   public async invalidateViewportData(
-    viewportData: VolumeViewportData | StackViewportData,
+    viewportData: VolumeViewportData,
     invalidatedDisplaySetInstanceUID: string,
     dataSource,
     displaySetService
@@ -158,62 +174,39 @@ class CornerstoneCacheService {
     initialImageIndex,
     viewportType: Enums.ViewportType
   ): Promise<StackViewportData> {
-    const { uiNotificationService } = this.servicesManager.services;
     const overlayDisplaySets = displaySets.filter(ds => ds.isOverlayDisplaySet);
+    const nonOverlayDisplaySets = displaySets.filter(ds => !ds.isOverlayDisplaySet);
+
+    // load overlays if they are not loaded
     for (const overlayDisplaySet of overlayDisplaySets) {
       if (overlayDisplaySet.load && overlayDisplaySet.load instanceof Function) {
         const { userAuthenticationService } = this.servicesManager.services;
         const headers = userAuthenticationService.getAuthorizationHeader();
-        try {
-          await overlayDisplaySet.load({ headers });
-        } catch (e) {
-          uiNotificationService.show({
-            title: 'Error loading displaySet',
-            message: e.message,
-            type: 'error',
-          });
-          console.error(e);
-        }
+        await overlayDisplaySet.load({ headers });
       }
     }
 
+    const displaySet = nonOverlayDisplaySets[0];
+
+    let stackImageIds = this.stackImageIds.get(displaySet.displaySetInstanceUID);
+
+    if (!stackImageIds) {
+      stackImageIds = this._getCornerstoneStackImageIds(displaySet, dataSource);
+      this.stackImageIds.set(displaySet.displaySetInstanceUID, stackImageIds);
+    }
+
     // Ensuring the first non-overlay `displaySet` is always the primary one
-    const StackViewportData = [];
-    for (const displaySet of displaySets) {
-      const { displaySetInstanceUID, StudyInstanceUID, isCompositeStack } = displaySet;
+    const StackViewportData = [displaySet, ...overlayDisplaySets].map(ds => {
+      const { displaySetInstanceUID, StudyInstanceUID, isCompositeStack } = ds;
 
-      if (displaySet.load && displaySet.load instanceof Function) {
-        const { userAuthenticationService } = this.servicesManager.services;
-        const headers = userAuthenticationService.getAuthorizationHeader();
-        try {
-          await displaySet.load({ headers });
-        } catch (e) {
-          uiNotificationService.show({
-            title: 'Error loading displaySet',
-            message: e.message,
-            type: 'error',
-          });
-          console.error(e);
-        }
-      }
-
-      let stackImageIds = this.stackImageIds.get(displaySet.displaySetInstanceUID);
-
-      if (!stackImageIds) {
-        stackImageIds = this._getCornerstoneStackImageIds(displaySet, dataSource);
-        // assign imageIds to the displaySet
-        displaySet.imageIds = stackImageIds;
-        this.stackImageIds.set(displaySet.displaySetInstanceUID, stackImageIds);
-      }
-
-      StackViewportData.push({
+      return {
         StudyInstanceUID,
         displaySetInstanceUID,
         isCompositeStack,
         imageIds: stackImageIds,
         initialImageIndex,
-      });
-    }
+      };
+    });
 
     return {
       viewportType,
@@ -234,7 +227,6 @@ class CornerstoneCacheService {
     for (const displaySet of displaySets) {
       const { Modality } = displaySet;
       const isParametricMap = Modality === 'PMAP';
-      const isSeg = Modality === 'SEG';
 
       // Don't create volumes for the displaySets that have custom load
       // function (e.g., SEG, RT, since they rely on the reference volumes
@@ -244,18 +236,7 @@ class CornerstoneCacheService {
       if (displaySet.load && displaySet.load instanceof Function) {
         const { userAuthenticationService } = this.servicesManager.services;
         const headers = userAuthenticationService.getAuthorizationHeader();
-
-        try {
-          await displaySet.load({ headers });
-        } catch (e) {
-          const { uiNotificationService } = this.servicesManager.services;
-          uiNotificationService.show({
-            title: 'Error loading displaySet',
-            message: e.message,
-            type: 'error',
-          });
-          console.error(e);
-        }
+        await displaySet.load({ headers });
 
         // Parametric maps have a `load` method but it should not be loaded in the
         // same way as SEG and RTSTRUCT but like a normal volume
@@ -277,7 +258,7 @@ class CornerstoneCacheService {
 
       // Parametric maps do not have image ids but they already have volume data
       // therefore a new volume should not be created.
-      if (!isParametricMap && !isSeg && (!volumeImageIds || !volume)) {
+      if (!isParametricMap && (!volumeImageIds || !volume)) {
         volumeImageIds = this._getCornerstoneVolumeImageIds(displaySet, dataSource);
 
         volume = await volumeLoader.createAndCacheVolume(volumeId, {
@@ -285,9 +266,6 @@ class CornerstoneCacheService {
         });
 
         this.volumeImageIds.set(displaySet.displaySetInstanceUID, volumeImageIds);
-
-        // Add imageIds to the displaySet for volumes
-        displaySet.imageIds = volumeImageIds;
       }
 
       volumeData.push({
@@ -306,15 +284,39 @@ class CornerstoneCacheService {
     };
   }
 
+  private _shouldRenderSegmentation(displaySets) {
+    const { segmentationService, displaySetService } = this.servicesManager.services;
+
+    const viewportDisplaySetInstanceUIDs = displaySets.map(
+      ({ displaySetInstanceUID }) => displaySetInstanceUID
+    );
+
+    // check inside segmentations if any of them are referencing the displaySets
+    // that are about to be displayed
+    const segmentations = segmentationService.getSegmentations();
+
+    for (const segmentation of segmentations) {
+      const segDisplaySetInstanceUID = segmentation.displaySetInstanceUID;
+      const segDisplaySet = displaySetService.getDisplaySetByUID(segDisplaySetInstanceUID);
+
+      const instance = segDisplaySet.instances?.[0] || segDisplaySet.instance;
+
+      const shouldDisplaySeg = segmentationService.shouldRenderSegmentation(
+        viewportDisplaySetInstanceUIDs,
+        instance?.FrameOfReferenceUID || segDisplaySet.FrameOfReferenceUID
+      );
+
+      if (shouldDisplaySeg) {
+        return true;
+      }
+    }
+  }
+
   private _getCornerstoneStackImageIds(displaySet, dataSource): string[] {
     return dataSource.getImageIdsForDisplaySet(displaySet);
   }
 
   private _getCornerstoneVolumeImageIds(displaySet, dataSource): string[] {
-    if (displaySet.imageIds) {
-      return displaySet.imageIds;
-    }
-
     const stackImageIds = this._getCornerstoneStackImageIds(displaySet, dataSource);
 
     return stackImageIds;

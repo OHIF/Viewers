@@ -49,17 +49,6 @@ export default class ColorbarService extends PubSubService {
   }
 
   /**
-   * Gets the volume ID for a given identifier by searching through the viewport's volume IDs.
-   * @param viewport - The viewport instance to search volumes in
-   * @param searchId - The identifier to search for within volume IDs
-   * @returns The matching volume ID if found, null otherwise
-   */
-  private getVolumeIdForIdentifier(viewport, searchId: string): string | null {
-    const volumeIds = viewport.getAllVolumeIds?.() || [];
-    return volumeIds.length > 0 ? volumeIds.find(id => id.includes(searchId)) || null : null;
-  }
-
-  /**
    * Adds a colorbar to a specific viewport identified by `viewportId`, using the provided `displaySetInstanceUIDs` and `options`.
    * This method sets up the colorbar, associates it with the viewport, and applies initial configurations based on the provided options.
    *
@@ -70,18 +59,8 @@ export default class ColorbarService extends PubSubService {
   public addColorbar(viewportId, displaySetInstanceUIDs, options = {} as ColorbarOptions) {
     const renderingEngine = getRenderingEngine(RENDERING_ENGINE_ID);
     const viewport = renderingEngine.getViewport(viewportId);
-
-    if (!viewport) {
-      return;
-    }
-
     const { element } = viewport;
     const actorEntries = viewport.getActors();
-
-    if (!actorEntries || actorEntries.length === 0) {
-      return;
-    }
-
     const { position, width: thickness, activeColormapName, colormaps } = options;
 
     const numContainers = displaySetInstanceUIDs.length;
@@ -95,9 +74,11 @@ export default class ColorbarService extends PubSubService {
     );
 
     displaySetInstanceUIDs.forEach((displaySetInstanceUID, index) => {
-      const volumeId = this.getVolumeIdForIdentifier(viewport, displaySetInstanceUID);
+      const actorEntry = actorEntries.find(entry => entry.uid.includes(displaySetInstanceUID));
+      const volumeId = actorEntry?.uid;
       const properties = viewport?.getProperties(volumeId);
       const colormap = properties?.colormap;
+      // if there's an initial colormap set, and no colormap on the viewport, set it
       if (activeColormapName && !colormap) {
         this.setViewportColormap(
           viewportId,
@@ -215,8 +196,9 @@ export default class ColorbarService extends PubSubService {
       return;
     }
     const setViewportProperties = (viewport, uid) => {
-      const volumeId = this.getVolumeIdForIdentifier(viewport, uid);
-      viewport.setProperties({ colormap }, volumeId);
+      const actorEntry = actorEntries.find(entry => entry.uid.includes(uid));
+      const { actor: volumeActor, uid: volumeId } = actorEntry;
+      viewport.setProperties({ colormap, volumeActor }, volumeId);
     };
 
     if (viewport instanceof StackViewport) {

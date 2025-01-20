@@ -1,5 +1,7 @@
+import DICOMSRDisplayTool from './DICOMSRDisplayTool';
+
 const toolNames = {
-  DICOMSRDisplay: 'DICOMSRDisplay',
+  DICOMSRDisplay: DICOMSRDisplayTool.toolName,
   SRLength: 'SRLength',
   SRBidirectional: 'SRBidirectional',
   SREllipticalROI: 'SREllipticalROI',
@@ -9,7 +11,6 @@ const toolNames = {
   SRCobbAngle: 'SRCobbAngle',
   SRRectangleROI: 'SRRectangleROI',
   SRPlanarFreehandROI: 'SRPlanarFreehandROI',
-  SRSCOORD3DPoint: 'SRSCOORD3DPoint',
 };
 
 export default toolNames;

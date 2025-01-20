@@ -5,14 +5,6 @@ import { ProgressDropdownWithService } from './Components/ProgressDropdownWithSe
 import DataSourceConfigurationComponent from './Components/DataSourceConfigurationComponent';
 import { GoogleCloudDataSourceConfigurationAPI } from './DataSourceConfigurationAPI/GoogleCloudDataSourceConfigurationAPI';
 import { utils } from '@ohif/core';
-import {
-  DropdownMenuSub,
-  DropdownMenuSubTrigger,
-  DropdownMenuPortal,
-  DropdownMenuSubContent,
-  DropdownMenuItem,
-  Icons,
-} from '@ohif/ui-next';
 
 const formatDate = utils.formatDate;
 
@@ -55,74 +47,7 @@ export default function getCustomizationModule({ servicesManager, extensionManag
         ],
       },
     },
-    {
-      name: 'multimonitor',
-      merge: 'Append',
-      value: {
-        id: 'studyBrowser.studyMenuItems',
-        customizationType: 'ohif.menuContent',
-        value: [
-          {
-            id: 'applyHangingProtocol',
-            label: 'Apply Hanging Protocol',
-            iconName: 'ViewportViews',
-            items: [
-              {
-                id: 'applyDefaultProtocol',
-                label: 'Default',
-                commands: [
-                  'loadStudy',
-                  {
-                    commandName: 'setHangingProtocol',
-                    commandOptions: {
-                      protocolId: 'default',
-                    },
-                  },
-                ],
-              },
-              {
-                id: 'applyMPRProtocol',
-                label: '2x2 Grid',
-                commands: [
-                  'loadStudy',
-                  {
-                    commandName: 'setHangingProtocol',
-                    commandOptions: {
-                      protocolId: '@ohif/mnGrid',
-                    },
-                  },
-                ],
-              },
-            ],
-          },
-          {
-            id: 'showInOtherMonitor',
-            label: 'Launch On Second Monitor',
-            iconName: 'DicomTagBrowser',
-            // we should use evaluator for this, as these are basically toolbar buttons
-            selector: ({ servicesManager }) => {
-              const { multiMonitorService } = servicesManager.services;
-              return multiMonitorService.isMultimonitor;
-            },
-            commands: {
-              commandName: 'multimonitor',
-              commandOptions: {
-                hashParams: '&hangingProtocolId=@ohif/mnGrid8',
-                commands: [
-                  'loadStudy',
-                  {
-                    commandName: 'setHangingProtocol',
-                    commandOptions: {
-                      protocolId: '@ohif/mnGrid8',
-                    },
-                  },
-                ],
-              },
-            },
-          },
-        ],
-      },
-    },
+
     {
       name: 'default',
       value: [
@@ -192,6 +117,7 @@ export default function getCustomizationModule({ servicesManager, extensionManag
             );
           },
         },
+
         {
           id: 'ohif.contextMenu',
 
@@ -273,69 +199,6 @@ export default function getCustomizationModule({ servicesManager, extensionManag
               selected: true,
             },
           ],
-        },
-        {
-          id: 'studyBrowser.thumbnailMenuItems',
-          value: [
-            {
-              id: 'tagBrowser',
-              label: 'Tag Browser',
-              iconName: 'DicomTagBrowser',
-              commands: 'openDICOMTagViewer',
-            },
-          ],
-        },
-        {
-          id: 'ohif.menuContent',
-          content: function (props) {
-            const { item, commandsManager, servicesManager, ...rest } = props;
-
-            // If item has sub-items, render a submenu
-            if (item.items) {
-              return (
-                <DropdownMenuSub>
-                  <DropdownMenuSubTrigger className="gap-[6px]">
-                    {item.iconName && (
-                      <Icons.ByName
-                        name={item.iconName}
-                        className="-ml-1"
-                      />
-                    )}
-                    {item.label}
-                  </DropdownMenuSubTrigger>
-                  <DropdownMenuPortal>
-                    <DropdownMenuSubContent>
-                      {item.items.map(subItem => this.content({ ...props, item: subItem }))}
-                    </DropdownMenuSubContent>
-                  </DropdownMenuPortal>
-                </DropdownMenuSub>
-              );
-            }
-
-            // Regular menu item
-            const isDisabled = item.selector && !item.selector({ servicesManager });
-
-            return (
-              <DropdownMenuItem
-                disabled={isDisabled}
-                onSelect={() => {
-                  commandsManager.runAsync(item.commands, {
-                    ...item.commandOptions,
-                    ...rest,
-                  });
-                }}
-                className="gap-[6px]"
-              >
-                {item.iconName && (
-                  <Icons.ByName
-                    name={item.iconName}
-                    className="-ml-1"
-                  />
-                )}
-                {item.label}
-              </DropdownMenuItem>
-            );
-          },
         },
       ],
     },

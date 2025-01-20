@@ -1,6 +1,6 @@
 {
   "name": "@ohif/extension-measurement-tracking",
-  "version": "3.10.0-beta.63",
+  "version": "3.9.0-beta.88",
   "description": "Tracking features and functionality for basic image viewing",
   "author": "OHIF Core Team",
   "license": "MIT",
@@ -32,12 +32,11 @@
     "start": "yarn run dev"
   },
   "peerDependencies": {
-    "@cornerstonejs/core": "^2.15.3",
-    "@cornerstonejs/tools": "^2.15.3",
-    "@ohif/core": "3.10.0-beta.63",
-    "@ohif/extension-cornerstone-dicom-sr": "3.10.0-beta.63",
-    "@ohif/extension-default": "3.10.0-beta.63",
-    "@ohif/ui": "3.10.0-beta.63",
+    "@cornerstonejs/core": "^1.82.0",
+    "@cornerstonejs/tools": "0.0.0-custom#git+https://github.com/czheng39/cornerstone3D_QCTWeb.git#Spine-BMD",
+    "@ohif/core": "3.9.0-beta.88",
+    "@ohif/extension-cornerstone-dicom-sr": "3.9.0-beta.88",
+    "@ohif/ui": "3.9.0-beta.88",
     "classnames": "^2.3.2",
     "dcmjs": "*",
     "lodash.debounce": "^4.0.8",
@@ -49,8 +48,9 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.20.13",
-    "@ohif/ui": "3.10.0-beta.63",
+    "@ohif/ui": "3.9.0-beta.88",
     "@xstate/react": "^3.2.2",
-    "xstate": "^4.10.0"
+    "xstate": "^4.10.0",
+    "jspdf": "^2.5.2"
   }
 }

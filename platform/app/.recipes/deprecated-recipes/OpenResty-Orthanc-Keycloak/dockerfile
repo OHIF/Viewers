@@ -1,0 +1,85 @@
+# docker-compose
+# --------------
+# This dockerfile is used by the `docker-compose.yml` adjacent file. When
+# running `docker-compose build`, this dockerfile helps build the "webapp" image.
+# All paths are relative to the `context`, which is the project root directory.
+#
+# docker build
+# --------------
+# If you would like to use this dockerfile to build and tag an image, make sure
+# you set the context to the project's root directory:
+# https://docs.docker.com/engine/reference/commandline/build/
+#
+#
+# SUMMARY
+# --------------
+# This dockerfile has two stages:
+#
+# 1. Building the React application for production
+# 2. Setting up our Nginx (OpenResty*) image w/ step one's output
+#
+# * OpenResty is functionally identical to Nginx with the addition of Lua out of
+# the box.
+
+
+# Stage 1: Build the application
+FROM node:18.16.1-slim as builder
+
+RUN mkdir /usr/src/app
+WORKDIR /usr/src/app
+
+RUN apt-get update && apt-get install -y build-essential python3
+
+ENV APP_CONFIG=config/docker_openresty-orthanc-keycloak.js
+ENV PATH /usr/src/app/node_modules/.bin:$PATH
+
+# Copy all files from the root of the OHIF source and note
+# that the Docker ignore file at the root (i.e. ./dockerignore) will filter
+# out files and directories that are not needed.
+COPY ./ /usr/src/app/
+
+ADD . /usr/src/app/
+RUN yarn config set workspaces-experimental true
+RUN yarn install
+RUN yarn run build
+
+# Stage 2: Bundle the built application into a Docker container
+# which runs openresty (nginx) using Alpine Linux
+# LINK: https://hub.docker.com/r/openresty/openresty
+FROM openresty/openresty:1.21.4.2-0-bullseye-fat
+
+RUN mkdir /var/log/nginx
+RUN apt-get update && \
+  apt-get install -y openssl libssl-dev git gcc wget unzip make&& \
+  apt-get clean
+
+RUN apt-get install --assume-yes lua5.4 libzmq3-dev lua5.4-dev
+RUN cd /tmp && \
+  wget http://luarocks.org/releases/luarocks-3.9.2.tar.gz && \
+  tar zxpf luarocks-3.9.2.tar.gz && \
+  cd luarocks-3.9.2 && \
+  ./configure && \
+  make && \
+  make install
+
+# !!!
+RUN luarocks install lua-resty-http
+# RUN luarocks install lua-nginx-module
+RUN luarocks install lua-cjson
+RUN luarocks install lua-resty-string
+RUN luarocks install lua-resty-session
+RUN luarocks install lua-resty-jwt
+RUN luarocks install lua-resty-openidc
+
+RUN apt-get clean && rm -rf /var/lib/apt/lists/*
+
+#
+RUN luarocks install lua-resty-http
+# !!!
+RUN luarocks install lua-resty-auto-ssl
+
+
+# Copy build output to image
+COPY --from=builder /usr/src/app/platform/app/dist /var/www/html
+
+ENTRYPOINT ["/usr/local/openresty/nginx/sbin/nginx", "-g", "daemon off;"]

@@ -1,13 +1,14 @@
-import React, { useState, useEffect } from 'react';
-import { useImageViewer } from '@ohif/ui';
-import { useViewportGrid } from '@ohif/ui-next';
-import { StudyBrowser } from '@ohif/ui-next';
+import React, { useState, useEffect, useRef } from 'react';
+import PropTypes from 'prop-types';
+import { useImageViewer, useViewportGrid } from '@ohif/ui';
+import { StudyBrowser as NewStudyBrowser } from '@ohif/ui-next';
+import { StudyBrowser as OldStudyBrowser } from '@ohif/ui';
 import { utils } from '@ohif/core';
+import { useAppConfig } from '@state';
 import { useNavigate } from 'react-router-dom';
 import { Separator } from '@ohif/ui-next';
 import { PanelStudyBrowserHeader } from './PanelStudyBrowserHeader';
 import { defaultActionIcons, defaultViewPresets } from './constants';
-import MoreDropdownMenu from '../../Components/MoreDropdownMenu';
 
 const { sortStudyInstances, formatDate, createStudyBrowserTabs } = utils;
 
@@ -21,11 +22,14 @@ function PanelStudyBrowser({
   getStudiesForPatientByMRN,
   requestDisplaySetCreationForStudy,
   dataSource,
-  commandsManager,
+  renderHeader,
+  getCloseIcon,
+  tab,
 }: withAppTypes) {
   const { hangingProtocolService, displaySetService, uiNotificationService, customizationService } =
     servicesManager.services;
   const navigate = useNavigate();
+  const [appConfig] = useAppConfig();
 
   // Normally you nest the components so the tree isn't so deep, and the data
   // doesn't have to have such an intense shape. This works well enough for now.
@@ -33,7 +37,7 @@ function PanelStudyBrowser({
   const { StudyInstanceUIDs } = useImageViewer();
   const [{ activeViewportId, viewports, isHangingProtocolLayout }, viewportGridService] =
     useViewportGrid();
-  const [activeTabName, setActiveTabName] = useState('all');
+  const [activeTabName, setActiveTabName] = useState('primary');
   const [expandedStudyInstanceUIDs, setExpandedStudyInstanceUIDs] = useState([
     ...StudyInstanceUIDs,
   ]);
@@ -81,7 +85,7 @@ function PanelStudyBrowser({
       uiNotificationService.show({
         title: 'Thumbnail Double Click',
         message: 'The selected display sets could not be added to the viewport.',
-        type: 'error',
+        type: 'info',
         duration: 3000,
       });
     }
@@ -199,7 +203,7 @@ function PanelStudyBrowser({
         // if (!hasLoadedViewports) {
         //   return;
         // }
-        const { displaySetsAdded } = data;
+        const { displaySetsAdded, options } = data;
         displaySetsAdded.forEach(async dSet => {
           const newImageSrcEntry = {};
           const displaySet = displaySetService.getDisplaySetByUID(dSet.displaySetInstanceUID);
@@ -281,50 +285,54 @@ function PanelStudyBrowser({
 
   const activeDisplaySetInstanceUIDs = viewports.get(activeViewportId)?.displaySetInstanceUIDs;
 
+  const StudyBrowser = appConfig?.useExperimentalUI ? NewStudyBrowser : OldStudyBrowser;
+
   return (
     <>
-      <>
-        <PanelStudyBrowserHeader
-          viewPresets={viewPresets}
-          updateViewPresetValue={updateViewPresetValue}
-          actionIcons={actionIcons}
-          updateActionIconValue={updateActionIconValue}
-        />
-        <Separator
-          orientation="horizontal"
-          className="bg-black"
-          thickness="2px"
-        />
-      </>
-
+      {renderHeader && (
+        <>
+          <PanelStudyBrowserHeader
+            tab={tab}
+            getCloseIcon={getCloseIcon}
+            viewPresets={viewPresets}
+            updateViewPresetValue={updateViewPresetValue}
+            actionIcons={actionIcons}
+            updateActionIconValue={updateActionIconValue}
+          />
+          <Separator
+            orientation="horizontal"
+            className="bg-black"
+            thickness="2px"
+          />
+        </>
+      )}
       <StudyBrowser
         tabs={tabs}
         servicesManager={servicesManager}
         activeTabName={activeTabName}
+        onDoubleClickThumbnail={onDoubleClickThumbnailHandler}
+        activeDisplaySetInstanceUIDs={activeDisplaySetInstanceUIDs}
         expandedStudyInstanceUIDs={expandedStudyInstanceUIDs}
         onClickStudy={_handleStudyClick}
         onClickTab={clickedTabName => {
           setActiveTabName(clickedTabName);
         }}
-        onClickThumbnail={() => {}}
-        onDoubleClickThumbnail={onDoubleClickThumbnailHandler}
-        activeDisplaySetInstanceUIDs={activeDisplaySetInstanceUIDs}
         showSettings={actionIcons.find(icon => icon.id === 'settings').value}
         viewPresets={viewPresets}
-        ThumbnailMenuItems={MoreDropdownMenu({
-          commandsManager,
-          servicesManager,
-          menuItemsKey: 'studyBrowser.thumbnailMenuItems',
-        })}
-        StudyMenuItems={MoreDropdownMenu({
-          commandsManager,
-          servicesManager,
-          menuItemsKey: 'studyBrowser.studyMenuItems',
-        })}
       />
     </>
   );
 }
+
+PanelStudyBrowser.propTypes = {
+  servicesManager: PropTypes.object.isRequired,
+  dataSource: PropTypes.shape({
+    getImageIdsForDisplaySet: PropTypes.func.isRequired,
+  }).isRequired,
+  getImageSrc: PropTypes.func.isRequired,
+  getStudiesForPatientByMRN: PropTypes.func.isRequired,
+  requestDisplaySetCreationForStudy: PropTypes.func.isRequired,
+};
 
 export default PanelStudyBrowser;
 

@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import { Thumbnail } from '../Thumbnail';
+import Thumbnail from '../Thumbnail';
 
 const ThumbnailList = ({
   thumbnails,
@@ -10,69 +10,103 @@ const ThumbnailList = ({
   onClickUntrack,
   activeDisplaySetInstanceUIDs = [],
   viewPreset,
-  ThumbnailMenuItems,
-}: withAppTypes) => {
+}) => {
   return (
     <div
-      className="min-h-[350px]"
-      style={{
-        '--radix-accordion-content-height': '350px',
-      }}
+      id="ohif-thumbnail-list"
+      className={`ohif-scrollbar bg-bkg-low grid place-items-center overflow-y-hidden pt-[4px] pr-[2.5px] pl-[2.5px] ${viewPreset === 'thumbnails' ? 'grid-cols-2 gap-[4px] pb-[12px]' : 'grid-cols-1 gap-[2px]'}`}
     >
-      <div
-        id="ohif-thumbnail-list"
-        className={`ohif-scrollbar bg-bkg-low grid place-items-center overflow-y-hidden pt-[4px] pr-[2.5px] pl-[2.5px] ${viewPreset === 'thumbnails' ? 'grid-cols-2 gap-[4px] pb-[12px]' : 'grid-cols-1 gap-[2px]'}`}
-      >
-        {thumbnails.map(
-          ({
-            displaySetInstanceUID,
-            description,
-            dragData,
-            seriesNumber,
-            numInstances,
-            loadingProgress,
-            modality,
-            componentType,
-            countIcon,
-            canReject,
-            onReject,
-            isTracked,
-            imageSrc,
-            messages,
-            imageAltText,
-            isHydratedForDerivedDisplaySet,
-          }) => {
-            const isActive = activeDisplaySetInstanceUIDs.includes(displaySetInstanceUID);
-            return (
-              <Thumbnail
-                key={displaySetInstanceUID}
-                displaySetInstanceUID={displaySetInstanceUID}
-                dragData={dragData}
-                description={description}
-                seriesNumber={seriesNumber}
-                numInstances={numInstances || 1}
-                countIcon={countIcon}
-                imageSrc={imageSrc}
-                imageAltText={imageAltText}
-                messages={messages}
-                isActive={isActive}
-                canReject={canReject}
-                onReject={onReject}
-                modality={modality}
-                viewPreset={componentType === 'thumbnailNoImage' ? 'list' : viewPreset}
-                thumbnailType={componentType}
-                onClick={() => onThumbnailClick(displaySetInstanceUID)}
-                onDoubleClick={() => onThumbnailDoubleClick(displaySetInstanceUID)}
-                isTracked={isTracked}
-                loadingProgress={loadingProgress}
-                onClickUntrack={() => onClickUntrack(displaySetInstanceUID)}
-                isHydratedForDerivedDisplaySet={isHydratedForDerivedDisplaySet}
-                ThumbnailMenuItems={ThumbnailMenuItems}
-              />
-            );
+      {thumbnails.map(
+        ({
+          displaySetInstanceUID,
+          description,
+          dragData,
+          seriesNumber,
+          numInstances,
+          loadingProgress,
+          modality,
+          componentType,
+          seriesDate,
+          countIcon,
+          isTracked,
+          canReject,
+          onReject,
+          imageSrc,
+          messages,
+          imageAltText,
+          isHydratedForDerivedDisplaySet,
+        }) => {
+          const isActive = activeDisplaySetInstanceUIDs.includes(displaySetInstanceUID);
+          switch (componentType) {
+            case 'thumbnail':
+              return (
+                <Thumbnail
+                  key={displaySetInstanceUID}
+                  displaySetInstanceUID={displaySetInstanceUID}
+                  dragData={dragData}
+                  description={description}
+                  seriesNumber={seriesNumber}
+                  numInstances={numInstances || 1}
+                  countIcon={countIcon}
+                  imageSrc={imageSrc}
+                  imageAltText={imageAltText}
+                  messages={messages}
+                  isActive={isActive}
+                  onClick={() => onThumbnailClick(displaySetInstanceUID)}
+                  onDoubleClick={() => onThumbnailDoubleClick(displaySetInstanceUID)}
+                  viewPreset={viewPreset}
+                  modality={modality}
+                />
+              );
+            case 'thumbnailTracked':
+              return (
+                <Thumbnail
+                  key={displaySetInstanceUID}
+                  displaySetInstanceUID={displaySetInstanceUID}
+                  dragData={dragData}
+                  description={description}
+                  seriesNumber={seriesNumber}
+                  numInstances={numInstances}
+                  loadingProgress={loadingProgress}
+                  countIcon={countIcon}
+                  imageSrc={imageSrc}
+                  imageAltText={imageAltText}
+                  messages={messages}
+                  isTracked={isTracked}
+                  isActive={isActive}
+                  onClick={() => onThumbnailClick(displaySetInstanceUID)}
+                  onDoubleClick={() => onThumbnailDoubleClick(displaySetInstanceUID)}
+                  onClickUntrack={() => onClickUntrack(displaySetInstanceUID)}
+                  viewPreset={viewPreset}
+                  modality={modality}
+                />
+              );
+            case 'thumbnailNoImage':
+              return (
+                <Thumbnail
+                  isActive={isActive}
+                  key={displaySetInstanceUID}
+                  displaySetInstanceUID={displaySetInstanceUID}
+                  dragData={dragData}
+                  modality={modality}
+                  messages={messages}
+                  description={description}
+                  onClick={() => onThumbnailClick(displaySetInstanceUID)}
+                  onDoubleClick={() => onThumbnailDoubleClick(displaySetInstanceUID)}
+                  viewPreset={viewPreset}
+                  countIcon={countIcon}
+                  seriesNumber={seriesNumber}
+                  numInstances={numInstances || 1}
+                  isHydratedForDerivedDisplaySet={isHydratedForDerivedDisplaySet}
+                  canReject={canReject}
+                  onReject={onReject}
+                />
+              );
+            default:
+              return <></>;
           }
-        )}
-      </div>
+        }
+      )}
     </div>
   );
 };
@@ -109,4 +143,20 @@ ThumbnailList.propTypes = {
   viewPreset: PropTypes.string,
 };
 
-export { ThumbnailList };
+// TODO: Support "Viewport Identificator"?
+function _getModalityTooltip(modality) {
+  if (_modalityTooltips.hasOwnProperty(modality)) {
+    return _modalityTooltips[modality];
+  }
+
+  return 'Unknown';
+}
+
+const _modalityTooltips = {
+  SR: 'Structured Report',
+  SEG: 'Segmentation',
+  OT: 'Other',
+  RTSTRUCT: 'RT Structure Set',
+};
+
+export default ThumbnailList;

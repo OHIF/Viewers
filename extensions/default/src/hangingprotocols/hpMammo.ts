@@ -7,7 +7,7 @@ import {
   LCCPrior,
   RMLOPrior,
   LMLOPrior,
-} from './utils/mammoDisplaySetSelector';
+} from './mammoDisplaySetSelector';
 
 const rightDisplayArea = {
   storeAsInitialCamera: true,

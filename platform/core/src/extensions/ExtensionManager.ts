@@ -51,7 +51,7 @@ export interface Extension {
   getToolbarModule?: (p: ExtensionParams) => unknown;
   getPanelModule?: (p: ExtensionParams) => unknown;
   onModeEnter?: (p: AppTypes) => void;
-  onModeExit?: (p: AppTypes) => void;
+  onModeExit?: () => void;
 }
 
 export type ExtensionRegister = {
@@ -175,7 +175,6 @@ export default class ExtensionManager extends PubSubService {
           servicesManager: _servicesManager,
           commandsManager: _commandsManager,
           hotkeysManager: _hotkeysManager,
-          extensionManager: this,
         });
       }
     });
@@ -441,7 +440,7 @@ export default class ExtensionManager extends PubSubService {
 
       return extensionModule;
     } catch (ex) {
-      console.error(ex);
+      console.log(ex);
       throw new Error(
         `Exception thrown while trying to call ${getModuleFnName} for the ${extensionId} extension`
       );
@@ -597,10 +596,7 @@ export default class ExtensionManager extends PubSubService {
     }
 
     Object.keys(definitions).forEach(commandName => {
-      let commandDefinition = definitions[commandName];
-      if (typeof commandDefinition === 'function') {
-        commandDefinition = { commandFn: commandDefinition };
-      }
+      const commandDefinition = definitions[commandName];
       const commandHasContextThatDoesNotExist =
         commandDefinition.context && !this._commandsManager.getContext(commandDefinition.context);
 

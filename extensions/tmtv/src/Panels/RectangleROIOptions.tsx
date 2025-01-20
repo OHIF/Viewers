@@ -75,7 +75,7 @@ function RectangleROIOptions({ servicesManager, commandsManager }: withAppTypes)
   }, [selectedSegmentationId, config]);
 
   useEffect(() => {
-    const segmentations = segmentationService.getSegmentationRepresentations();
+    const segmentations = segmentationService.getSegmentations();
 
     if (!segmentations.length) {
       return;
@@ -90,12 +90,13 @@ function RectangleROIOptions({ servicesManager, commandsManager }: withAppTypes)
    */
   useEffect(() => {
     // ~~ Subscription
-    const updated = segmentationService.EVENTS.SEGMENTATION_MODIFIED;
+    const added = segmentationService.EVENTS.SEGMENTATION_ADDED;
+    const updated = segmentationService.EVENTS.SEGMENTATION_UPDATED;
     const subscriptions = [];
 
-    [updated].forEach(evt => {
+    [added, updated].forEach(evt => {
       const { unsubscribe } = segmentationService.subscribe(evt, () => {
-        const segmentations = segmentationService.getSegmentationRepresentations();
+        const segmentations = segmentationService.getSegmentations();
 
         if (!segmentations.length) {
           return;

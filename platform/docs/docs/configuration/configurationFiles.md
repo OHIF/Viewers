@@ -122,7 +122,6 @@ Here are a list of some options available:
   decoding. Defaults to minimum of `navigator.hardwareConcurrency` and
   what is specified by `maxNumberOfWebWorkers`. Some windows machines require smaller values.
 - `acceptHeader` : accept header to request specific dicom transfer syntax ex : [ 'multipart/related; type=image/jls; q=1', 'multipart/related; type=application/octet-stream; q=0.1' ]
-- `investigationalUseDialog`: This should contain an object with `option` value, it can be either `always` which always shows the dialog once per session, `never` which never shows the dialog, or `configure` which shows the dialog once and won't show it again until a set number of days defined by the user, if it's set to configure, you are required to add an additional property `days` which is the number of days to wait before showing the dialog again.
 - `groupEnabledModesFirst`: boolean, if set to true, all valid modes for the study get grouped together first, then the rest of the modes. If false, all modes are shown in the order they are defined in the configuration.
 - `experimentalStudyBrowserSort`: boolean, if set to true, you will get the experimental StudyBrowserSort component in the UI, which displays a list of sort functions that the displaySets can be sorted by, the sort reflects in all part of the app including the thumbnail/study panel. These sort functions are defined in the customizationModule and can be expanded by users.
 - `disableConfirmationPrompts`: boolean, if set to true, it skips confirmation prompts for measurement tracking and hydration.

@@ -3,7 +3,7 @@ import classnames from 'classnames';
 import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
 
-import { Icons } from '@ohif/ui-next';
+import Icon from '../Icon';
 import Tooltip from '../Tooltip';
 
 const classes = {
@@ -40,7 +40,7 @@ function PatientInfo({
           isOpen && (
             <div className="flex py-2">
               <div className="flex pt-1">
-                <Icons.ByName
+                <Icon
                   name="info-link"
                   className="text-primary-main w-4"
                 />
@@ -115,7 +115,10 @@ function PatientInfo({
           )
         }
       >
-        <Icons.Info className="hover:text-primary-light cursor-pointer text-white" />
+        <Icon
+          className="hover:text-primary-light cursor-pointer text-white"
+          name="info-action"
+        />
       </Tooltip>
     </div>
   );

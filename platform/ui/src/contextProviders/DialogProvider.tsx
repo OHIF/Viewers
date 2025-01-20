@@ -1,12 +1,4 @@
-import React, {
-  useState,
-  createContext,
-  useContext,
-  useCallback,
-  useEffect,
-  useRef,
-  useMemo,
-} from 'react';
+import React, { useState, createContext, useContext, useCallback, useEffect, useRef } from 'react';
 
 import PropTypes from 'prop-types';
 import Draggable from 'react-draggable';
@@ -276,13 +268,8 @@ const DialogProvider = ({ children, service = null }) => {
 
   const validCallback = callback => callback && typeof callback === 'function';
 
-  const contextValue = useMemo(
-    () => ({ create, dismiss, dismissAll, isEmpty }),
-    [create, dismiss, dismissAll, isEmpty]
-  );
-
   return (
-    <DialogContext.Provider value={contextValue}>
+    <DialogContext.Provider value={{ create, dismiss, dismissAll, isEmpty }}>
       {!isEmpty() && (
         <div
           className="absolute h-full w-full"

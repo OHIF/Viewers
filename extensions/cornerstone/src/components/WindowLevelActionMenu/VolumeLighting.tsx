@@ -5,7 +5,6 @@ export function VolumeLighting({
   servicesManager,
   commandsManager,
   viewportId,
-  hasShade,
 }: VolumeLightingProps): ReactElement {
   const { cornerstoneViewportService } = servicesManager.services;
   const [ambient, setAmbient] = useState(null);
@@ -39,15 +38,11 @@ export function VolumeLighting({
     setDiffuse(diffuse);
     setSpecular(specular);
   }, [viewportId, cornerstoneViewportService]);
-  const disableOption = hasShade ? '' : 'ohif-disabled !opacity-40';
-  const disableSlider = !hasShade;
   return (
     <>
-      <div
-        className={`all-in-one-menu-item flex w-full flex-row !items-center justify-between gap-[10px] ${disableOption}`}
-      >
+      <div className="all-in-one-menu-item flex  w-full flex-row !items-center justify-between gap-[10px]">
         <label
-          className="block text-white"
+          className="block  text-white"
           htmlFor="ambient"
         >
           Ambient
@@ -61,7 +56,6 @@ export function VolumeLighting({
               onAmbientChange();
             }}
             id="ambient"
-            disabled={disableSlider}
             max={1}
             min={0}
             type="range"
@@ -74,11 +68,9 @@ export function VolumeLighting({
           />
         )}
       </div>
-      <div
-        className={`all-in-one-menu-item flex w-full flex-row !items-center justify-between gap-[10px] ${disableOption}`}
-      >
+      <div className="all-in-one-menu-item flex  w-full flex-row !items-center justify-between gap-[10px]">
         <label
-          className="block text-white"
+          className="block  text-white"
           htmlFor="diffuse"
         >
           Diffuse
@@ -91,7 +83,6 @@ export function VolumeLighting({
               setDiffuse(e.target.value);
               onDiffuseChange();
             }}
-            disabled={disableSlider}
             id="diffuse"
             max={1}
             min={0}
@@ -106,11 +97,9 @@ export function VolumeLighting({
         )}
       </div>
 
-      <div
-        className={`all-in-one-menu-item flex w-full flex-row !items-center justify-between gap-[10px] ${disableOption}`}
-      >
+      <div className="all-in-one-menu-item flex  w-full flex-row !items-center justify-between gap-[10px]">
         <label
-          className="block text-white"
+          className="block  text-white"
           htmlFor="specular"
         >
           Specular
@@ -119,7 +108,6 @@ export function VolumeLighting({
           <input
             className="bg-inputfield-main h-2 w-[120px] cursor-pointer appearance-none rounded-lg"
             value={specular}
-            disabled={disableSlider}
             onChange={e => {
               setSpecular(e.target.value);
               onSpecularChange();

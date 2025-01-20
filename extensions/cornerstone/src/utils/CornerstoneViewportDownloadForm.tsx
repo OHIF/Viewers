@@ -8,6 +8,7 @@ import {
   BaseVolumeViewport,
 } from '@cornerstonejs/core';
 import { ToolGroupManager } from '@cornerstonejs/tools';
+import PropTypes from 'prop-types';
 import { ViewportDownloadForm } from '@ohif/ui';
 
 import { getEnabledElement as OHIFgetEnabledElement } from '../state';
@@ -21,7 +22,7 @@ const CornerstoneViewportDownloadForm = ({
   onClose,
   activeViewportId: activeViewportIdProp,
   cornerstoneViewportService,
-}: withAppTypes) => {
+}) => {
   const enabledElement = OHIFgetEnabledElement(activeViewportIdProp);
   const activeViewportElement = enabledElement?.element;
   const activeViewportEnabledElement = getEnabledElement(activeViewportElement);
@@ -243,6 +244,11 @@ const CornerstoneViewportDownloadForm = ({
       downloadBlob={downloadBlob}
     />
   );
+};
+
+CornerstoneViewportDownloadForm.propTypes = {
+  onClose: PropTypes.func,
+  activeViewportId: PropTypes.string.isRequired,
 };
 
 export default CornerstoneViewportDownloadForm;

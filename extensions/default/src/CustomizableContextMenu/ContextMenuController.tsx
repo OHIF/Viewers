@@ -47,22 +47,17 @@ export default class ContextMenuController {
     }
 
     const { event, subMenu, menuId, menus, selectorProps } = contextMenuProps;
-    if (!menus) {
-      console.warn('No menus found for', menuId);
-      return;
-    }
 
-    const { locking, visibility } = CsAnnotation;
+    const annotationManager = CsAnnotation.state.getAnnotationManager();
+    const { locking } = CsAnnotation;
     const targetAnnotationId = selectorProps?.nearbyToolData?.annotationUID as string;
+    const isLocked = locking.isAnnotationLocked(
+      annotationManager.getAnnotation(targetAnnotationId)
+    );
 
-    if (targetAnnotationId) {
-      const isLocked = locking.isAnnotationLocked(targetAnnotationId);
-      const isVisible = visibility.isAnnotationVisible(targetAnnotationId);
-
-      if (isLocked || !isVisible) {
-        console.warn(`Annotation is ${isLocked ? 'locked' : 'not visible'}.`);
-        return;
-      }
+    if (isLocked) {
+      console.warn('Annotation is locked.');
+      return;
     }
 
     const items = ContextMenuItemsBuilder.getMenuItems(
@@ -80,7 +75,7 @@ export default class ContextMenuController {
       preventCutOf: true,
       defaultPosition: ContextMenuController._getDefaultPosition(
         defaultPointsPosition,
-        event?.detail || event,
+        event?.detail,
         viewportElement
       ),
       event,
@@ -96,7 +91,7 @@ export default class ContextMenuController {
         menus,
         event,
         subMenu,
-        eventData: event?.detail || event,
+        eventData: event?.detail,
 
         onClose: () => {
           this.services.uiDialogService.dismiss({ id: 'context-menu' });
@@ -143,8 +138,8 @@ export default class ContextMenuController {
   };
 
   static _getEventDefaultPosition = eventDetail => ({
-    x: eventDetail?.currentPoints?.client[0] ?? eventDetail?.pageX,
-    y: eventDetail?.currentPoints?.client[1] ?? eventDetail?.pageY,
+    x: eventDetail && eventDetail.currentPoints.client[0],
+    y: eventDetail && eventDetail.currentPoints.client[1],
   });
 
   static _getElementDefaultPosition = element => {

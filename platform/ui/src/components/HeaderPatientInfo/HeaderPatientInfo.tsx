@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
+import { Icon } from '@ohif/ui';
 import { utils } from '@ohif/core';
-import { Icons } from '@ohif/ui-next';
 import { PatientInfoVisibility } from '../../types';
 
 const { formatDate, formatPN } = utils;
@@ -97,7 +97,7 @@ function HeaderPatientInfo({ servicesManager, appConfig }: withAppTypes) {
       className="hover:bg-primary-dark flex cursor-pointer items-center justify-center gap-1 rounded-lg"
       onClick={handleOnClick}
     >
-      <Icons.ByName
+      <Icon
         name={isMixedPatients ? 'icon-multiple-patients' : 'icon-patient'}
         className="text-primary-active"
       />
@@ -120,7 +120,10 @@ function HeaderPatientInfo({ servicesManager, appConfig }: withAppTypes) {
           </div>
         )}
       </div>
-      <Icons.ArrowLeft className={`text-primary-active ${expanded ? 'rotate-180' : ''}`} />
+      <Icon
+        name="icon-chevron-patient"
+        className={`text-primary-active ${expanded ? 'rotate-180' : ''}`}
+      />
     </div>
   );
 }

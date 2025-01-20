@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="28px" height="28px" viewBox="0 0 28 28" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>tool-window-region</title>
+    <g id="tool-window-region" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <rect id="Rectangle" x="0" y="0" width="28" height="28"></rect>
+        <path d="M10.3460449,22 L4,22 C3.44771525,22 3,21.5522847 3,21 L3,4 C3,3.44771525 3.44771525,3 4,3 L21,3 C21.5522847,3 22,3.44771525 22,4 L22,11.3197021" id="Path" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+        <g id="Group" transform="translate(14, 15)" fill="currentColor">
+            <path d="M5.5,-0.75 C8.95177969,-0.75 11.75,2.04822031 11.75,5.5 C11.75,8.95177969 8.95177969,11.75 5.5,11.75 C2.04822031,11.75 -0.75,8.95177969 -0.75,5.5 C-0.75,2.04822031 2.04822031,-0.75 5.5,-0.75 Z M5.5,0.75 C2.87664744,0.75 0.75,2.87664744 0.75,5.5 C0.75,8.12335256 2.87664744,10.25 5.5,10.25 C8.12335256,10.25 10.25,8.12335256 10.25,5.5 C10.25,2.87664744 8.12335256,0.75 5.5,0.75 Z" id="Oval" fill-rule="nonzero"></path>
+            <path d="M9.61552427,1.85128344 C10.4769151,2.82216322 11,4.09999509 11,5.5 C11,8.53756612 8.53756612,11 5.5,11 C4.09999509,11 2.82216322,10.4769151 1.85128344,9.61552427 Z" id="Combined-Shape"></path>
+        </g>
+    </g>
+</svg>

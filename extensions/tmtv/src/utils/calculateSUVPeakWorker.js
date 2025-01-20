@@ -1,11 +1,10 @@
-import { utilities } from '@cornerstonejs/core';
-import { utilities as cstUtils } from '@cornerstonejs/tools';
+import { utilities } from '@cornerstonejs/tools';
 import { vec3 } from 'gl-matrix';
 import vtkImageData from '@kitware/vtk.js/Common/DataModel/ImageData';
 import vtkDataArray from '@kitware/vtk.js/Common/Core/DataArray';
 import { expose } from 'comlink';
 
-const createVolume = ({ dimensions, origin, direction, spacing, metadata, scalarData }) => {
+const createVolume = ({ dimensions, origin, direction, spacing, scalarData, metadata }) => {
   const imageData = vtkImageData.newInstance();
   imageData.setDimensions(dimensions);
   imageData.setOrigin(origin);
@@ -22,21 +21,12 @@ const createVolume = ({ dimensions, origin, direction, spacing, metadata, scalar
 
   imageData.modified();
 
-  const voxelManager = utilities.VoxelManager.createScalarVolumeVoxelManager({
-    scalarData,
-    dimensions,
-    numberOfComponents: 1,
-  });
   return {
     imageData,
-    spacing,
-    origin,
-    direction,
     metadata,
-    voxelManager,
+    getScalarData: () => scalarData,
   };
 };
-
 /**
  * This method calculates the SUV peak on a segmented ROI from a reference PET
  * volume. If a rectangle annotation is provided, the peak is calculated within that
@@ -50,15 +40,22 @@ const createVolume = ({ dimensions, origin, direction, spacing, metadata, scalar
  * @returns
  */
 function calculateSuvPeak({ labelmapProps, referenceVolumeProps, annotations, segmentIndex = 1 }) {
-  const labelmapInfo = createVolume(labelmapProps);
-  const referenceInfo = createVolume(referenceVolumeProps);
+  const labelmap = createVolume(labelmapProps);
+  const referenceVolume = createVolume(referenceVolumeProps);
 
-  if (referenceInfo.metadata.Modality !== 'PT') {
+  if (referenceVolume.metadata.Modality !== 'PT') {
     return;
   }
 
-  const { dimensions, imageData: labelmapImageData } = labelmapInfo;
-  const { imageData: referenceVolumeImageData } = referenceInfo;
+  const labelmapData = labelmap.getScalarData();
+  const referenceVolumeData = referenceVolume.getScalarData();
+
+  if (labelmapData.length !== referenceVolumeData.length) {
+    throw new Error('labelmap and referenceVolume must have the same number of pixels');
+  }
+
+  const { dimensions, imageData: labelmapImageData } = labelmap;
+  const { imageData: referenceVolumeImageData } = referenceVolume;
 
   let boundsIJK;
   // Todo: using the first annotation for now
@@ -72,7 +69,7 @@ function calculateSuvPeak({ labelmapProps, referenceVolumeProps, annotations, se
       return ijk;
     });
 
-    boundsIJK = cstUtils.boundingBox.getBoundingBoxAroundShape(rectangleCornersIJK, dimensions);
+    boundsIJK = utilities.boundingBox.getBoundingBoxAroundShape(rectangleCornersIJK, dimensions);
   }
 
   let max = 0;
@@ -80,13 +77,14 @@ function calculateSuvPeak({ labelmapProps, referenceVolumeProps, annotations, se
   let maxLPS = [0, 0, 0];
 
   const callback = ({ pointIJK, pointLPS }) => {
-    const value = labelmapInfo.voxelManager.getAtIJKPoint(pointIJK);
+    const offset = referenceVolumeImageData.computeOffsetIndex(pointIJK);
+    const value = labelmapData[offset];
 
     if (value !== segmentIndex) {
       return;
     }
 
-    const referenceValue = referenceInfo.voxelManager.getAtIJKPoint(pointIJK);
+    const referenceValue = referenceVolumeData[offset];
 
     if (referenceValue > max) {
       max = referenceValue;
@@ -95,12 +93,7 @@ function calculateSuvPeak({ labelmapProps, referenceVolumeProps, annotations, se
     }
   };
 
-  labelmapInfo.voxelManager.forEach(callback, {
-    boundsIJK,
-    imageData: labelmapImageData,
-    isInObject: () => true,
-    returnPoints: true,
-  });
+  utilities.pointInShapeCallback(labelmapImageData, () => true, callback, boundsIJK);
 
   const direction = labelmapImageData.getDirection().slice(0, 3);
 
@@ -130,7 +123,7 @@ function calculateSuvPeak({ labelmapProps, referenceVolumeProps, annotations, se
     count += 1;
   };
 
-  cstUtils.pointInSurroundingSphereCallback(
+  utilities.pointInSurroundingSphereCallback(
     referenceVolumeImageData,
     suvPeakCirclePoints,
     suvPeakMeanCallback
@@ -146,64 +139,8 @@ function calculateSuvPeak({ labelmapProps, referenceVolumeProps, annotations, se
   };
 }
 
-function calculateTMTV(labelmapProps, segmentIndex = 1) {
-  const labelmaps = labelmapProps.map(props => createVolume(props));
-
-  const mergedLabelmap =
-    labelmaps.length === 1
-      ? labelmaps[0]
-      : cstUtils.segmentation.createMergedLabelmapForIndex(labelmaps);
-
-  const { imageData, spacing } = mergedLabelmap;
-  const values = imageData.getPointData().getScalars().getData();
-
-  // count non-zero values inside the outputData, this would
-  // consider the overlapping regions to be only counted once
-  const numVoxels = values.reduce((acc, curr) => {
-    if (curr > 0) {
-      return acc + 1;
-    }
-    return acc;
-  }, 0);
-
-  return 1e-3 * numVoxels * spacing[0] * spacing[1] * spacing[2];
-}
-
-function getTotalLesionGlycolysis({ labelmapProps, referenceVolumeProps }) {
-  const labelmaps = labelmapProps.map(props => createVolume(props));
-
-  const mergedLabelmap =
-    labelmaps.length === 1
-      ? labelmaps[0]
-      : cstUtils.segmentation.createMergedLabelmapForIndex(labelmaps);
-
-  // grabbing the first labelmap referenceVolume since it will be the same for all
-  const { spacing } = labelmaps[0];
-
-  const ptVolume = createVolume(referenceVolumeProps);
-
-  let suv = 0;
-  let totalLesionVoxelCount = 0;
-  const scalarDataLength = mergedLabelmap.voxelManager.getScalarDataLength();
-  for (let i = 0; i < scalarDataLength; i++) {
-    // if not background
-    if (mergedLabelmap.voxelManager.getAtIndex(i) !== 0) {
-      suv += ptVolume.voxelManager.getAtIndex(i);
-      totalLesionVoxelCount += 1;
-    }
-  }
-
-  // Average SUV for the merged labelmap
-  const averageSuv = suv / totalLesionVoxelCount;
-
-  // total Lesion Glycolysis [suv * ml]
-  return averageSuv * totalLesionVoxelCount * spacing[0] * spacing[1] * spacing[2] * 1e-3;
-}
-
 const obj = {
   calculateSuvPeak,
-  calculateTMTV,
-  getTotalLesionGlycolysis,
 };
 
 expose(obj);

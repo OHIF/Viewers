@@ -1,5 +1,6 @@
 // import { api } from 'dicomweb-client';
 // import DICOMWeb from '../../../DICOMWeb/';
+import { createStudyFromSOPInstanceList } from './studyInstanceHelpers';
 import RetrieveMetadataLoader from './retrieveMetadataLoader';
 
 /**

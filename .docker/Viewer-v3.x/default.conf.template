@@ -1,13 +1,12 @@
 server {
-  gzip_static  always;
-  gzip_proxied expired no-cache no-store private auth;
-  gunzip       on;
   listen ${PORT} default_server;
   listen [::]:${PORT} default_server;
   location / {
     root   /usr/share/nginx/html;
     index  index.html index.htm;
     try_files $uri $uri/ /index.html;
+    add_header Cross-Origin-Opener-Policy same-origin;
+    add_header Cross-Origin-Embedder-Policy require-corp;
     add_header Cross-Origin-Resource-Policy same-origin;
     proxy_set_header Host $host;
     proxy_set_header X-Real-IP $remote_addr;

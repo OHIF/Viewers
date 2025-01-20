@@ -6,7 +6,7 @@ import DicomFileUploader, {
   UploadRejection,
   UploadStatus,
 } from '../../utils/DicomFileUploader';
-import { Icons } from '@ohif/ui-next';
+import { Icon } from '@ohif/ui';
 
 type DicomUploadProgressItemProps = {
   dicomFileUploader: DicomFileUploader;
@@ -54,17 +54,17 @@ const DicomUploadProgressItem = memo(
       switch (dicomFileUploader.getStatus()) {
         case UploadStatus.Success:
           return (
-            <Icons.ByName
+            <Icon
               name="status-tracked"
               className="text-primary-light"
-            />
+            ></Icon>
           );
         case UploadStatus.InProgress:
-          return <Icons.ByName name="icon-transferring" />;
+          return <Icon name="icon-transferring"></Icon>;
         case UploadStatus.Failed:
-          return <Icons.ByName name="icon-alert-small" />;
+          return <Icon name="icon-alert-small"></Icon>;
         case UploadStatus.Cancelled:
-          return <Icons.ByName name="icon-alert-outline" />;
+          return <Icon name="icon-alert-outline"></Icon>;
         default:
           return <></>;
       }
@@ -88,8 +88,9 @@ const DicomUploadProgressItem = memo(
                 <div className="w-10 text-right">{percentComplete}%</div>
               )}
               <div className="ml-auto flex cursor-pointer">
-                <Icons.Close
+                <Icon
                   className="text-primary-active self-center"
+                  name="close"
                   onClick={cancelUpload}
                 />
               </div>

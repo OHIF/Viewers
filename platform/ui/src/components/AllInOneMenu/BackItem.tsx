@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Icons } from '@ohif/ui-next';
+import { Icon } from '@ohif/ui';
 import DividerItem from './DividerItem';
 
 type BackItemProps = {
@@ -15,7 +15,7 @@ const BackItem = ({ backLabel, onBackClick }: BackItemProps) => {
         className="all-in-one-menu-item all-in-one-menu-item-effects"
         onClick={onBackClick}
       >
-        <Icons.ByName name="content-prev"></Icons.ByName>
+        <Icon name="content-prev"></Icon>
 
         <div className="pl-2">{backLabel || 'Back to Display Options'}</div>
       </div>

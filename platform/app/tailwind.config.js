@@ -39,13 +39,11 @@ module.exports = {
       mono: ['Menlo', 'Monaco', 'Consolas', '"Liberation Mono"', '"Courier New"', 'monospace'],
     },
     fontSize: {
-      xxs: '0.625rem', // 10px
-      xs: '0.6875rem', // 11px
-      sm: '0.75rem', // 12px
-      base: '0.8125rem', // 13px
-      lg: '0.875rem', // 14px
-      xl: '1rem', // 16px
-      // 2xl and above will be updated in an upcoming version
+      xs: '0.65rem',
+      sm: '0.75rem',
+      base: '0.8125rem',
+      lg: '0.9275rem',
+      xl: '1.25rem',
       '2xl': '1.5rem',
       '3xl': '1.875rem',
       '4xl': '2.25rem',

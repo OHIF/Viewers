@@ -40,6 +40,7 @@ import StudyListFilter from './StudyListFilter';
 import StudyListPagination from './StudyListPagination';
 import { StudyListTable, StudyListTableRow } from './StudyListTable';
 import StudySummary from './StudySummary';
+import Svg from './Svg';
 import Table from './Table';
 import TableBody from './TableBody';
 import TableCell from './TableCell';
@@ -86,16 +87,15 @@ import LabellingFlow from './Labelling';
 import SwitchButton, { SwitchLabelLocation } from './SwitchButton';
 import * as AllInOneMenu from './AllInOneMenu';
 import ViewportActionArrows from './ViewportActionArrows';
-import ViewportActionButton from './ViewportActionButton';
 import HeaderPatientInfo from './HeaderPatientInfo';
 import LegacySplitButton from './LegacySplitButton';
 import { ToolSettings } from './AdvancedToolbox';
 import { Toolbox } from './Toolbox';
-import InvestigationalUseDialog from './InvestigationalUseDialog';
 import MeasurementItem from './MeasurementTable/MeasurementItem';
 import LayoutPreset from './LayoutPreset';
 import ActionButtons from './ActionButtons';
 import StudyBrowserSort from './StudyBrowserSort';
+import TutorialModal from './TutorialModal';
 
 export {
   ActionButtons,
@@ -162,6 +162,7 @@ export {
   StudyListTable,
   StudyListTableRow,
   StudySummary,
+  Svg,
   SwitchButton,
   SwitchLabelLocation,
   Table,
@@ -181,7 +182,6 @@ export {
   Viewport,
   ViewportActionArrows,
   ViewportActionBar,
-  ViewportActionButton,
   ViewportActionCorners,
   ViewportActionCornersLocations,
   ViewportDownloadForm,
@@ -198,6 +198,6 @@ export {
   LegacySplitButton,
   ToolSettings,
   Toolbox,
-  InvestigationalUseDialog,
   StudyBrowserSort,
+  TutorialModal,
 };

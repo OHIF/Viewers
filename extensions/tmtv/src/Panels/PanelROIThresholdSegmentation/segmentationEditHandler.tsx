@@ -9,10 +9,14 @@ function segmentationItemEditHandler({ id, servicesManager }: withAppTypes) {
   const onSubmitHandler = ({ action, value }) => {
     switch (action.id) {
       case 'save': {
-        segmentationService.addOrUpdateSegmentation({
-          ...segmentation,
-          ...value,
-        });
+        segmentationService.addOrUpdateSegmentation(
+          {
+            ...segmentation,
+            ...value,
+          },
+          false, // don't suppress event
+          true // it should update cornerstone
+        );
       }
     }
     uiDialogService.dismiss({ id: 'enter-annotation' });

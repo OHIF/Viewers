@@ -3,6 +3,7 @@ import { useToolbar } from '@ohif/core';
 import { ToolboxUI } from './';
 // Migrate this file to the new UI eventually
 import { useToolbox } from '@ohif/ui';
+import Separator from '../Separator';
 
 /**
  * A toolbox is a collection of buttons and commands that they invoke, used to provide
@@ -19,6 +20,9 @@ function Toolbox({
   buttonSectionId,
   commandsManager,
   title,
+  renderHeader,
+  getCloseIcon,
+  tab,
   ...props
 }: withAppTypes) {
   const { state: toolboxState, api } = useToolbox(buttonSectionId);
@@ -145,6 +149,24 @@ function Toolbox({
 
   return (
     <>
+      {renderHeader && (
+        <>
+          <div className="bg-primary-dark flex select-none rounded-t pt-1.5 pb-[2px]">
+            <div className="flex h-[24px] w-full cursor-pointer select-none justify-center self-center text-[14px]">
+              <div className="text-primary-active flex grow cursor-pointer select-none justify-center self-center text-[13px]">
+                <span>{tab.label}</span>
+              </div>
+            </div>
+
+            {getCloseIcon()}
+          </div>
+          <Separator
+            orientation="horizontal"
+            className="bg-black"
+            thickness="2px"
+          />
+        </>
+      )}
       <ToolboxUI
         {...props}
         title={title}

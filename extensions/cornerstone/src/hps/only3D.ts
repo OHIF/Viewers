@@ -11,7 +11,7 @@ export const only3D = {
   protocolMatchingRules: [],
   imageLoadStrategy: 'interleaveCenter',
   displaySetSelectors: {
-    activeDisplaySet: {
+    mprDisplaySet: {
       seriesMatchingRules: [
         {
           weight: 1,
@@ -49,7 +49,7 @@ export const only3D = {
           },
           displaySets: [
             {
-              id: 'activeDisplaySet',
+              id: 'mprDisplaySet',
               options: {
                 displayPreset: {
                   CT: 'CT-Bone',

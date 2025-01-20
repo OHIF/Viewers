@@ -1,9 +1,10 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import IconButton from '../IconButton';
+import Icon from '../Icon';
 import './InputNumber.css';
 import Label from '../Label';
 import getMaxDigits from '../../utils/getMaxDigits';
-import { Icons } from '@ohif/ui-next';
+
 const arrowHorizontalClassName =
   'cursor-pointer text-primary-active active:text-primary-light hover:opacity-70 w-4 flex items-center justify-center';
 
@@ -130,7 +131,7 @@ const InputNumber: React.FC<{
               className={arrowHorizontalClassName}
               onClick={() => decrement()}
             >
-              <Icons.ByName name="arrow-left" />
+              <Icon name="arrow-left-small" />
             </div>
           )}
           <input
@@ -148,7 +149,7 @@ const InputNumber: React.FC<{
               className={arrowHorizontalClassName}
               onClick={() => increment()}
             >
-              <Icons.ByName name="arrow-right" />
+              <Icon name="arrow-right-small" />
             </div>
           )}
           {showAdjustmentArrows && arrowsDirection === 'vertical' && (
@@ -177,7 +178,7 @@ const ArrowButton = ({ onClick, rotate = false }: { onClick: () => void; rotate?
     className={`text-[#726f7e] ${rotate ? 'rotate-180 transform' : ''}`}
     onClick={onClick}
   >
-    <Icons.ByName name="arrow-down" />
+    <Icon name="ui-arrow-down" />
   </IconButton>
 );
 

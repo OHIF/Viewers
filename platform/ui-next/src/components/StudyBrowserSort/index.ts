@@ -1,3 +1,3 @@
-import { StudyBrowserSort } from './StudyBrowserSort';
+import StudyBrowserSort from './StudyBrowserSort';
 
-export { StudyBrowserSort };
+export default StudyBrowserSort;

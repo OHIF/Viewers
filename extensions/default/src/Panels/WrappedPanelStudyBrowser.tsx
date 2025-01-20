@@ -13,10 +13,17 @@ import requestDisplaySetCreationForStudy from './requestDisplaySetCreationForStu
  * @param {object} commandsManager
  * @param {object} extensionManager
  */
-function WrappedPanelStudyBrowser({ extensionManager, servicesManager }) {
+function WrappedPanelStudyBrowser({
+  commandsManager,
+  extensionManager,
+  servicesManager,
+  renderHeader,
+  getCloseIcon,
+  tab,
+}) {
   // TODO: This should be made available a different way; route should have
   // already determined our datasource
-  const [dataSource] = extensionManager.getActiveDataSource();
+  const dataSource = extensionManager.getDataSources()[0];
   const _getStudiesForPatientByMRN = getStudiesForPatientByMRN.bind(null, dataSource);
   const _getImageSrcFromImageId = useCallback(
     _createGetImageSrcFromImageIdFn(extensionManager),
@@ -30,11 +37,13 @@ function WrappedPanelStudyBrowser({ extensionManager, servicesManager }) {
   return (
     <PanelStudyBrowser
       servicesManager={servicesManager}
-      commandsManager={commandsManager}
       dataSource={dataSource}
       getImageSrc={_getImageSrcFromImageId}
       getStudiesForPatientByMRN={_getStudiesForPatientByMRN}
       requestDisplaySetCreationForStudy={_requestDisplaySetCreationForStudy}
+      renderHeader={renderHeader}
+      getCloseIcon={getCloseIcon}
+      tab={tab}
     />
   );
 }

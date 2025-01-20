@@ -1,9 +1,9 @@
+import { annotation } from '@cornerstonejs/tools';
+
 import SUPPORTED_TOOLS from './constants/supportedTools';
 import getSOPInstanceAttributes from './utils/getSOPInstanceAttributes';
 import { utils } from '@ohif/core';
 import { getDisplayUnit } from './utils';
-import { getIsLocked } from './utils/getIsLocked';
-import { getIsVisible } from './utils/getIsVisible';
 
 const Bidirectional = {
   toAnnotation: measurement => {},
@@ -14,11 +14,8 @@ const Bidirectional = {
     getValueTypeFromToolType,
     customizationService
   ) => {
-    const { annotation } = csToolsEventDetail;
+    const { annotation, viewportId } = csToolsEventDetail;
     const { metadata, data, annotationUID } = annotation;
-
-    const isLocked = getIsLocked(annotationUID);
-    const isVisible = getIsVisible(annotationUID);
 
     if (!metadata || !data) {
       console.warn('Length tool: Missing metadata or data');
@@ -53,7 +50,7 @@ const Bidirectional = {
 
     const mappedAnnotations = getMappedAnnotations(annotation, displaySetService);
 
-    const displayText = getDisplayText(mappedAnnotations, displaySet);
+    const displayText = getDisplayText(mappedAnnotations, displaySet, customizationService);
     const getReport = () =>
       _getReport(mappedAnnotations, points, FrameOfReferenceUID, customizationService);
 
@@ -63,8 +60,6 @@ const Bidirectional = {
       FrameOfReferenceUID,
       points,
       textBox,
-      isLocked,
-      isVisible,
       metadata,
       referenceSeriesUID: SeriesInstanceUID,
       referenceStudyUID: StudyInstanceUID,
@@ -158,15 +153,12 @@ function _getReport(mappedAnnotations, points, FrameOfReferenceUID, customizatio
   };
 }
 
-function getDisplayText(mappedAnnotations, displaySet) {
-  const displayText = {
-    primary: [],
-    secondary: [],
-  };
-
+function getDisplayText(mappedAnnotations, displaySet, customizationService) {
   if (!mappedAnnotations || !mappedAnnotations.length) {
-    return displayText;
+    return '';
   }
+
+  const displayText = [];
 
   // Area is the same for all series
   const { length, width, unit, SeriesNumber, SOPInstanceUID, frameNumber } = mappedAnnotations[0];
@@ -183,9 +175,10 @@ function getDisplayText(mappedAnnotations, displaySet) {
   const instanceText = InstanceNumber ? ` I: ${InstanceNumber}` : '';
   const frameText = displaySet.isMultiFrame ? ` F: ${frameNumber}` : '';
 
-  displayText.primary.push(`L: ${roundedLength} ${getDisplayUnit(unit)}`);
-  displayText.primary.push(`W: ${roundedWidth} ${getDisplayUnit(unit)}`);
-  displayText.secondary.push(`S: ${SeriesNumber}${instanceText}${frameText}`);
+  displayText.push(
+    `L: ${roundedLength} ${getDisplayUnit(unit)} (S: ${SeriesNumber}${instanceText}${frameText})`
+  );
+  displayText.push(`W: ${roundedWidth} ${getDisplayUnit(unit)}`);
 
   return displayText;
 }

@@ -64,17 +64,22 @@ function _askTrackMeasurements(
       message,
       actions,
       onSubmit,
+      defaultAction: RESPONSE.SET_STUDY_AND_SERIES, // 添加默认选项
       onOutsideClick: () => {
         UIViewportDialogService.hide();
-        resolve(RESPONSE.CANCEL);
+        resolve(RESPONSE.SET_STUDY_AND_SERIES); // 修改为默认选择track measurement
       },
       onKeyPress: event => {
         if (event.key === 'Enter') {
-          const action = actions.find(action => action.value === RESPONSE.SET_STUDY_AND_SERIES);
-          onSubmit(action.value);
+          onSubmit(RESPONSE.SET_STUDY_AND_SERIES); // 直接使用默认值
         }
       },
     });
+
+    // 自动选择 "Yes" 选项
+    setTimeout(() => {
+      onSubmit(RESPONSE.SET_STUDY_AND_SERIES);
+    }, 0);
   });
 }
 

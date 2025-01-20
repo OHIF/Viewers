@@ -1,6 +1,6 @@
 import React from 'react';
-import { Routes, Route, Link } from 'react-router-dom';
-import { ErrorBoundary } from '@ohif/ui-next';
+import { Routes, Route } from 'react-router-dom';
+import { ErrorBoundary } from '@ohif/ui';
 
 // Route Components
 import DataSourceWrapper from './DataSourceWrapper';
@@ -11,7 +11,7 @@ import NotFound from './NotFound';
 import buildModeRoutes from './buildModeRoutes';
 import PrivateRoute from './PrivateRoute';
 import PropTypes from 'prop-types';
-import publicUrl from '../utils/publicUrl';
+import { Link } from 'react-router-dom';
 
 const NotFoundServer = ({
   message = 'Unable to query for studies at this time. Check your data source configuration or network connection',
@@ -55,23 +55,23 @@ NotFoundStudy.propTypes = {
 // TODO: Include "routes" debug route if dev build
 const bakedInRoutes = [
   {
-    path: `${publicUrl}notfoundserver`,
+    path: '/notfoundserver',
     children: NotFoundServer,
   },
   {
-    path: `${publicUrl}notfoundstudy`,
+    path: '/notfoundstudy',
     children: NotFoundStudy,
   },
   {
-    path: `${publicUrl}debug`,
+    path: '/debug',
     children: Debug,
   },
   {
-    path: `${publicUrl}local`,
+    path: '/local',
     children: Local.bind(null, { modePath: '' }), // navigate to the worklist
   },
   {
-    path: `${publicUrl}localbasic`,
+    path: '/localbasic',
     children: Local.bind(null, { modePath: 'viewer/dicomlocal' }),
   },
 ];
@@ -102,7 +102,7 @@ const createRoutes = ({
   const { customizationService } = servicesManager.services;
 
   const WorkListRoute = {
-    path: publicUrl,
+    path: '/',
     children: DataSourceWrapper,
     private: true,
     props: { children: WorkList, servicesManager, extensionManager },
@@ -112,7 +112,6 @@ const createRoutes = ({
   const allRoutes = [
     ...routes,
     ...(showStudyList ? [WorkListRoute] : []),
-    ...(publicUrl !== '/' && showStudyList ? [{ ...WorkListRoute, path: publicUrl }] : []),
     ...(customRoutes?.routes || []),
     ...bakedInRoutes,
     customRoutes?.notFoundRoute || notFoundRoute,
@@ -121,7 +120,10 @@ const createRoutes = ({
   function RouteWithErrorBoundary({ route, ...rest }) {
     // eslint-disable-next-line react/jsx-props-no-spreading
     return (
-      <ErrorBoundary context={`Route ${route.path}`}>
+      <ErrorBoundary
+        context={`Route ${route.path}`}
+        fallbackRoute="/"
+      >
         <route.children
           {...rest}
           {...route.props}

@@ -17,7 +17,7 @@ function createTools(utilityModule) {
       { toolName: toolNames.WindowLevel, bindings: [{ mouseButton: Enums.MouseBindings.Primary }] },
       { toolName: toolNames.Pan, bindings: [{ mouseButton: Enums.MouseBindings.Auxiliary }] },
       { toolName: toolNames.Zoom, bindings: [{ mouseButton: Enums.MouseBindings.Secondary }] },
-      { toolName: toolNames.StackScroll, bindings: [{ mouseButton: Enums.MouseBindings.Wheel }] },
+      { toolName: toolNames.StackScrollMouseWheel, bindings: [] },
     ],
     passive: [
       {
@@ -86,6 +86,7 @@ function createTools(utilityModule) {
       { toolName: toolNames.SphereScissors },
       { toolName: toolNames.StackScroll },
       { toolName: toolNames.Magnify },
+      { toolName: toolNames.SegmentationDisplay },
       { toolName: toolNames.WindowLevelRegion },
 
       { toolName: toolNames.UltrasoundDirectional },

@@ -42,7 +42,6 @@ export function useToolbar({ servicesManager, buttonSection = 'primary' }: withA
     const events = [
       viewportGridService.EVENTS.ACTIVE_VIEWPORT_ID_CHANGED,
       viewportGridService.EVENTS.VIEWPORTS_READY,
-      viewportGridService.EVENTS.LAYOUT_CHANGED,
     ];
 
     const subscriptions = events.map(event => {

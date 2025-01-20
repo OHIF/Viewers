@@ -1,7 +1,8 @@
 import classNames from 'classnames';
 import debounce from 'lodash.debounce';
 import React, { ReactElement, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Icons } from '@ohif/ui-next';
+
+import Icon from '../Icon';
 
 type InputFilterTextProps = {
   className?: string;
@@ -55,25 +56,26 @@ const InputFilterText = ({
   return (
     <label className={classNames('relative', className)}>
       <span className="absolute inset-y-0 left-0 flex items-center pl-2">
-        <Icons.Search />
+        <Icon name="icon-search"></Icon>
       </span>
       <input
         ref={searchInputRef}
         type="text"
-        className="border-inputfield-main focus:border-inputfield-focus disabled:border-inputfield-disabled placeholder:text-inputfield-placeholder block w-full appearance-none rounded-md border bg-black py-2 px-9 text-base leading-tight shadow transition duration-300 focus:outline-none"
+        className="border-inputfield-main focus:border-inputfield-focus disabled:border-inputfield-disabled placeholder:text-inputfield-placeholder block w-full w-full appearance-none rounded-md border bg-black py-2 px-9 text-base leading-tight shadow transition duration-300 focus:outline-none"
         placeholder={placeholder}
         onChange={event => handleFilterTextChanged(event.target.value)}
         autoComplete="off"
         value={filterValue}
       ></input>
       <span className="absolute inset-y-0 right-0 flex items-center pr-2">
-        <Icons.Clear
+        <Icon
+          name="icon-clear-field"
           className={classNames('cursor-pointer', filterValue ? '' : 'hidden')}
           onClick={() => {
             searchInputRef.current.value = '';
             handleFilterTextChanged('');
           }}
-        ></Icons.Clear>
+        ></Icon>
       </span>
     </label>
   );

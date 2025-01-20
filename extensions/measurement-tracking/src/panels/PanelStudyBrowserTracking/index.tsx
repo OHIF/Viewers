@@ -1,9 +1,9 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import PropTypes from 'prop-types';
 //
 import PanelStudyBrowserTracking from './PanelStudyBrowserTracking';
 import getImageSrcFromImageId from './getImageSrcFromImageId';
-import { requestDisplaySetCreationForStudy } from '@ohif/extension-default';
+import requestDisplaySetCreationForStudy from './requestDisplaySetCreationForStudy';
 
 function _getStudyForPatientUtility(extensionManager) {
   const utilityModule = extensionManager.getModuleEntry(
@@ -25,6 +25,9 @@ function WrappedPanelStudyBrowserTracking({
   commandsManager,
   extensionManager,
   servicesManager,
+  renderHeader,
+  getCloseIcon,
+  tab,
 }: withAppTypes) {
   const dataSource = extensionManager.getActiveDataSource()[0];
 
@@ -42,11 +45,13 @@ function WrappedPanelStudyBrowserTracking({
   return (
     <PanelStudyBrowserTracking
       servicesManager={servicesManager}
-      commandsManager={commandsManager}
       dataSource={dataSource}
       getImageSrc={_getImageSrcFromImageId}
       getStudiesForPatientByMRN={_getStudiesForPatientByMRN}
       requestDisplaySetCreationForStudy={_requestDisplaySetCreationForStudy}
+      renderHeader={renderHeader}
+      getCloseIcon={getCloseIcon}
+      tab={tab}
     />
   );
 }

@@ -45,45 +45,52 @@ function promptHydrateStructuredReport({ servicesManager, extensionManager, appC
   });
 }
 
-function _askTrackMeasurements(uiViewportDialogService, viewportId) {
+function _askTrackMeasurements(
+  UIViewportDialogService: AppTypes.UIViewportDialogService,
+  viewportId
+) {
   return new Promise(function (resolve, reject) {
-    const message = 'Do you want to continue tracking measurements for this study?';
+    const message = i18n.t('MeasurementTable:Track measurements for this series?');
     const actions = [
+      { type: 'cancel', text: i18n.t('MeasurementTable:No'), value: RESPONSE.CANCEL },
       {
-        id: 'no-hydrate',
-        type: ButtonEnums.type.secondary,
-        text: 'No',
-        value: RESPONSE.CANCEL,
+        type: 'secondary',
+        text: i18n.t('MeasurementTable:No, do not ask again'),
+        value: RESPONSE.NO_NOT_FOR_SERIES,
       },
       {
-        id: 'yes-hydrate',
-        type: ButtonEnums.type.primary,
-        text: 'Yes',
-        value: RESPONSE.HYDRATE_REPORT,
+        type: 'primary',
+        text: i18n.t('MeasurementTable:Yes'),
+        value: RESPONSE.SET_STUDY_AND_SERIES,
       },
     ];
     const onSubmit = result => {
-      uiViewportDialogService.hide();
+      UIViewportDialogService.hide();
       resolve(result);
     };
 
-    uiViewportDialogService.show({
+    UIViewportDialogService.show({
       viewportId,
       type: 'info',
       message,
       actions,
       onSubmit,
+      defaultAction: RESPONSE.SET_STUDY_AND_SERIES, // 添加默认选项
       onOutsideClick: () => {
-        uiViewportDialogService.hide();
-        resolve(RESPONSE.CANCEL);
+        UIViewportDialogService.hide();
+        resolve(RESPONSE.SET_STUDY_AND_SERIES); // 修改为默认选择track measurement
       },
       onKeyPress: event => {
         if (event.key === 'Enter') {
-          const action = actions.find(action => action.value === RESPONSE.HYDRATE_REPORT);
-          onSubmit(action.value);
+          onSubmit(RESPONSE.SET_STUDY_AND_SERIES); // 直接使用默认值
         }
       },
     });
+
+    // 自动选择 "Yes" 选项
+    setTimeout(() => {
+      onSubmit(RESPONSE.SET_STUDY_AND_SERIES);
+    }, 0);
   });
 }
 

@@ -1,6 +1,7 @@
 import { Component } from 'react';
 import React from 'react';
-import { Icons } from '@ohif/ui-next';
+import Icon from '../Icon';
+
 interface PropType {
   value: string;
   label: string;
@@ -22,9 +23,9 @@ export default class SelectTreeBreadcrumb extends Component<PropType> {
             value={this.props.value}
             onChange={this.props.onSelected}
           />
-          <span className="cursor-pointer whitespace-nowrap">
+          <span className="cursor-pointer whitespace-nowrap	">
             <span className="pr-2.5">
-              <Icons.ByName name="fast-backward" />
+              <Icon name="fast-backward" />
             </span>
             {this.props.label}
           </span>

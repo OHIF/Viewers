@@ -6,7 +6,7 @@ import {
   clearAllAnnotations,
 } from './utils/index';
 
-test.skip('pets where SUV cannot be calculated should show same unit in TMTV as in Basic Viewer.', async ({
+test('pets where SUV cannot be calculated should show same unit in TMTV as in Basic Viewer.', async ({
   page,
 }) => {
   const studyInstanceUID = '1.3.6.1.4.1.14519.5.2.1.7009.2403.871108593056125491804754960339';

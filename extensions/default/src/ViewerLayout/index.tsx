@@ -1,12 +1,11 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import PropTypes from 'prop-types';
 
-import { LoadingIndicatorProgress, InvestigationalUseDialog } from '@ohif/ui';
+import { ErrorBoundary, LoadingIndicatorProgress } from '@ohif/ui';
 import { HangingProtocolService, CommandsManager } from '@ohif/core';
 import { useAppConfig } from '@state';
 import ViewerHeader from './ViewerHeader';
 import SidePanelWithServices from '../Components/SidePanelWithServices';
-import { Onboarding } from '@ohif/ui-next';
 
 function ViewerLayout({
   // From Extension Module Params
@@ -125,33 +124,37 @@ function ViewerLayout({
           {showLoadingIndicator && <LoadingIndicatorProgress className="h-full w-full bg-black" />}
           {/* LEFT SIDEPANELS */}
           {hasLeftPanels ? (
-            <SidePanelWithServices
-              side="left"
-              activeTabIndex={leftPanelClosedState ? null : 0}
-              servicesManager={servicesManager}
-            />
+            <ErrorBoundary context="Left Panel">
+              <SidePanelWithServices
+                side="left"
+                activeTabIndex={leftPanelClosedState ? null : 0}
+                servicesManager={servicesManager}
+              />
+            </ErrorBoundary>
           ) : null}
           {/* TOOLBAR + GRID */}
           <div className="flex h-full flex-1 flex-col">
             <div className="relative flex h-full flex-1 items-center justify-center overflow-hidden bg-black">
-              <ViewportGridComp
-                servicesManager={servicesManager}
-                viewportComponents={viewportComponents}
-                commandsManager={commandsManager}
-              />
+              <ErrorBoundary context="Grid">
+                <ViewportGridComp
+                  servicesManager={servicesManager}
+                  viewportComponents={viewportComponents}
+                  commandsManager={commandsManager}
+                />
+              </ErrorBoundary>
             </div>
           </div>
           {hasRightPanels ? (
-            <SidePanelWithServices
-              side="right"
-              activeTabIndex={rightPanelClosedState ? null : 0}
-              servicesManager={servicesManager}
-            />
+            <ErrorBoundary context="Right Panel">
+              <SidePanelWithServices
+                side="right"
+                activeTabIndex={rightPanelClosedState ? null : 0}
+                servicesManager={servicesManager}
+              />
+            </ErrorBoundary>
           ) : null}
         </React.Fragment>
       </div>
-      <Onboarding />
-      <InvestigationalUseDialog dialogConfiguration={appConfig?.investigationalUseDialog} />
     </div>
   );
 }

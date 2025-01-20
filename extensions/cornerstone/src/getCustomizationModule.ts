@@ -1,5 +1,6 @@
 import { Enums } from '@cornerstonejs/tools';
 import { toolNames } from './initCornerstoneTools';
+import DicomUpload from './components/DicomUpload/DicomUpload';
 import defaultWindowLevelPresets from './components/WindowLevelActionMenu/defaultWindowLevelPresets';
 import { colormaps } from './utils/colormaps';
 import { CONSTANTS } from '@cornerstonejs/core';
@@ -22,12 +23,10 @@ const tools = {
       toolName: toolNames.Zoom,
       bindings: [{ mouseButton: Enums.MouseBindings.Secondary }],
     },
-    {
-      toolName: toolNames.StackScroll,
-      bindings: [{ mouseButton: Enums.MouseBindings.Wheel }],
-    },
+    { toolName: toolNames.StackScrollMouseWheel, bindings: [] },
   ],
   enabled: [
+    { toolName: toolNames.SegmentationDisplay },
     {
       toolName: toolNames.PlanarFreehandContourSegmentation,
       configuration: {
@@ -39,6 +38,13 @@ const tools = {
 
 function getCustomizationModule() {
   return [
+    {
+      name: 'cornerstoneDicomUploadComponent',
+      value: {
+        id: 'dicomUploadComponent',
+        component: DicomUpload,
+      },
+    },
     {
       name: 'default',
       value: [
@@ -90,6 +96,7 @@ function getCustomizationModule() {
             displayText: [],
             report: [],
           },
+
           EllipticalROI: {
             displayText: [],
             report: [],
@@ -114,17 +121,16 @@ function getCustomizationModule() {
                 type: 'value',
               },
               {
-                value: 'areaUnits',
+                value: 'areaUnit',
                 for: ['area'],
                 type: 'unit',
               },
-              /**
+
               {
                 displayName: 'Modality',
                 value: 'Modality',
                 type: 'value',
               },
-              */
             ],
             report: [
               {
@@ -134,7 +140,7 @@ function getCustomizationModule() {
               },
               {
                 displayName: 'Unit',
-                value: 'areaUnits',
+                value: 'areaUnit',
                 type: 'value',
               },
             ],
@@ -164,22 +170,15 @@ function getCustomizationModule() {
                 type: 'value',
               },
               {
-                value: 'pixelValueUnits',
+                value: 'modalityUnit',
                 for: ['mean', 'max' /** 'stdDev **/],
                 type: 'unit',
               },
               {
-                value: 'areaUnits',
+                value: 'areaUnit',
                 for: ['area'],
                 type: 'unit',
               },
-              /**
-              {
-                displayName: 'Std Dev',
-                value: 'stdDev',
-                type: 'value',
-              },
-              */
             ],
             report: [
               {

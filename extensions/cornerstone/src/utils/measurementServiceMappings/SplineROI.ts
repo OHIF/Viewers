@@ -1,32 +1,25 @@
 import SUPPORTED_TOOLS from './constants/supportedTools';
 import getSOPInstanceAttributes from './utils/getSOPInstanceAttributes';
 import { utils } from '@ohif/core';
-import { getIsLocked } from './utils/getIsLocked';
-import { getIsVisible } from './utils/getIsVisible';
-import { getDisplayUnit } from './utils';
-import { getStatisticDisplayString } from './utils/getValueDisplayString';
 
 /**
  * Represents a mapping utility for Spline ROI measurements.
  */
 const SplineROI = {
-  toAnnotation: measurement => {
-    // Implementation for converting measurement to annotation
-  },
+  toAnnotation: measurement => {},
 
   /**
    * Maps cornerstone annotation event data to measurement service format.
    *
-   * @param {Object} csToolsEventDetail - Cornerstone event data
-   * @param {DisplaySetService} displaySetService - Service for managing display sets
-   * @param {CornerstoneViewportService} CornerstoneViewportService - Service for managing viewports
-   * @param {Function} getValueTypeFromToolType - Function to get value type from tool type
-   * @param {CustomizationService} customizationService - Service for customization
-   * @returns {Measurement | null} Measurement instance or null if invalid
+   * @param {Object} csToolsEventDetail Cornerstone event data
+   * @param {DisplaySetService} DisplaySetService Service for managing display sets
+   * @param {CornerstoneViewportService} CornerstoneViewportService Service for managing viewports
+   * @param {Function} getValueTypeFromToolType Function to get value type from tool type
+   * @returns {Measurement} Measurement instance
    */
   toMeasurement: (
     csToolsEventDetail,
-    displaySetService,
+    DisplaySetService,
     CornerstoneViewportService,
     getValueTypeFromToolType,
     customizationService
@@ -34,8 +27,6 @@ const SplineROI = {
     const { annotation } = csToolsEventDetail;
     const { metadata, data, annotationUID } = annotation;
 
-    const isLocked = getIsLocked(annotationUID);
-    const isVisible = getIsVisible(annotationUID);
     if (!metadata || !data) {
       console.warn('SplineROI tool: Missing metadata or data');
       return null;
@@ -48,20 +39,17 @@ const SplineROI = {
     }
 
     const { SOPInstanceUID, SeriesInstanceUID, frameNumber, StudyInstanceUID } =
-      getSOPInstanceAttributes(referencedImageId, displaySetService, annotation);
+      getSOPInstanceAttributes(referencedImageId);
 
     let displaySet;
     if (SOPInstanceUID) {
-      displaySet = displaySetService.getDisplaySetForSOPInstanceUID(
+      displaySet = DisplaySetService.getDisplaySetForSOPInstanceUID(
         SOPInstanceUID,
         SeriesInstanceUID
       );
     } else {
-      displaySet = displaySetService.getDisplaySetsForSeries(SeriesInstanceUID)[0];
+      displaySet = DisplaySetService.getDisplaySetsForSeries(SeriesInstanceUID);
     }
-
-    const mappedAnnotations = getMappedAnnotations(annotation, displaySetService);
-    const displayText = getDisplayText(mappedAnnotations, displaySet);
 
     return {
       uid: annotationUID,
@@ -73,76 +61,24 @@ const SplineROI = {
       frameNumber,
       referenceSeriesUID: SeriesInstanceUID,
       referenceStudyUID: StudyInstanceUID,
-      referencedImageId,
       toolName: metadata.toolName,
       displaySetInstanceUID: displaySet.displaySetInstanceUID,
       label: data.label,
-      displayText: displayText,
+      displayText: getDisplayText(annotation, displaySet, customizationService),
       data: data.cachedStats,
       type: getValueTypeFromToolType(toolName),
       getReport: () => getColumnValueReport(annotation, customizationService),
-      isLocked,
-      isVisible,
     };
   },
 };
 
 /**
- * Maps annotations to a structured format with relevant attributes.
+ * This function is used to convert the measurement data to a
+ * format that is suitable for report generation (e.g. for the csv report).
+ * The report returns a list of columns and corresponding values.
  *
- * @param {Object} annotation - The annotation object.
- * @param {DisplaySetService} displaySetService - Service for managing display sets.
- * @returns {Array} Mapped annotations.
- */
-function getMappedAnnotations(annotation, displaySetService) {
-  const { metadata, data } = annotation;
-  const { cachedStats } = data;
-  const { referencedImageId } = metadata;
-  const targets = Object.keys(cachedStats);
-
-  if (!targets.length) {
-    return [];
-  }
-
-  const annotations = [];
-  Object.keys(cachedStats).forEach(targetId => {
-    const targetStats = cachedStats[targetId];
-
-    const { SOPInstanceUID, SeriesInstanceUID, frameNumber } = getSOPInstanceAttributes(
-      referencedImageId,
-      displaySetService,
-      annotation
-    );
-
-    const displaySet = displaySetService.getDisplaySetsForSeries(SeriesInstanceUID)[0];
-
-    const { SeriesNumber } = displaySet;
-    const { mean, stdDev, max, area, Modality, areaUnit, modalityUnit } = targetStats;
-
-    annotations.push({
-      SeriesInstanceUID,
-      SOPInstanceUID,
-      SeriesNumber,
-      frameNumber,
-      Modality,
-      unit: modalityUnit,
-      mean,
-      stdDev,
-      max,
-      area,
-      areaUnit,
-    });
-  });
-
-  return annotations;
-}
-
-/**
- * Converts the measurement data to a format suitable for report generation.
- *
- * @param {object} annotation - The annotation object.
- * @param {CustomizationService} customizationService - Service for customization.
- * @returns {object} Report's content.
+ * @param {object} annotation
+ * @returns {object} Report's content from this tool
  */
 function getColumnValueReport(annotation, customizationService) {
   const { SplineROI } = customizationService.get('cornerstone.measurements');
@@ -171,6 +107,11 @@ function getColumnValueReport(annotation, customizationService) {
 
   /** Add points */
   if (data.contour.polyline) {
+    /**
+     * Points has the form of [[x1, y1, z1], [x2, y2, z2], ...]
+     * convert it to string of [[x1 y1 z1];[x2 y2 z2];...]
+     * so that it can be used in the CSV report
+     */
     columns.push('points');
     values.push(data.contour.polyline.map(p => p.join(' ')).join(';'));
   }
@@ -181,25 +122,23 @@ function getColumnValueReport(annotation, customizationService) {
 /**
  * Retrieves the display text for an annotation in a display set.
  *
- * @param {Array} mappedAnnotations - The mapped annotations.
+ * @param {Object} annotation - The annotation object.
  * @param {Object} displaySet - The display set object.
- * @returns {Object} Display text with primary and secondary information.
+ * @returns {string[]} - An array of display text.
  */
-function getDisplayText(mappedAnnotations, displaySet) {
-  const displayText = {
-    primary: [],
-    secondary: [],
-  };
+function getDisplayText(annotation, displaySet, customizationService) {
+  const { SplineROI } = customizationService.get('cornerstone.measurements');
+  const { displayText } = SplineROI;
+  const { metadata, data } = annotation;
 
-  if (!mappedAnnotations || !mappedAnnotations.length) {
-    return displayText;
+  if (!data.cachedStats || !data.cachedStats[`imageId:${metadata.referencedImageId}`]) {
+    return [];
   }
+  const { SOPInstanceUID, frameNumber } = getSOPInstanceAttributes(metadata.referencedImageId);
 
-  // Area is the same for all series
-  const { area, SOPInstanceUID, frameNumber, areaUnit } = mappedAnnotations[0];
+  const displayTextArray = [];
 
   const instance = displaySet.instances.find(image => image.SOPInstanceUID === SOPInstanceUID);
-
   let InstanceNumber;
   if (instance) {
     InstanceNumber = instance.InstanceNumber;
@@ -208,20 +147,41 @@ function getDisplayText(mappedAnnotations, displaySet) {
   const instanceText = InstanceNumber ? ` I: ${InstanceNumber}` : '';
   const frameText = displaySet.isMultiFrame ? ` F: ${frameNumber}` : '';
 
-  const roundedArea = utils.roundNumber(area || 0, 2);
-  displayText.primary.push(`${roundedArea} ${getDisplayUnit(areaUnit)}`);
+  const { SeriesNumber } = displaySet;
+  if (SeriesNumber) {
+    displayTextArray.push(`S: ${SeriesNumber}${instanceText}${frameText}`);
+  }
 
-  // we don't have max yet for splines rois
-  // mappedAnnotations.forEach(mappedAnnotation => {
-  //   const { unit, max, SeriesNumber } = mappedAnnotation;
+  const stats = data.cachedStats[`imageId:${metadata.referencedImageId}`];
 
-  //   const maxStr = getStatisticDisplayString(max, unit, 'max');
+  const roundValues = values => {
+    if (Array.isArray(values)) {
+      return values.map(value => {
+        if (isNaN(value)) {
+          return value;
+        }
+        return utils.roundNumber(value);
+      });
+    }
+    return isNaN(values) ? values : utils.roundNumber(values);
+  };
 
-  //   displayText.primary.push(maxStr);
-  //   displayText.secondary.push(`S: ${SeriesNumber}${instanceText}${frameText}`);
-  // });
+  const findUnitForValue = (displayTextItems, value) =>
+    displayTextItems.find(({ type, for: filter }) => type === 'unit' && filter.includes(value))
+      ?.value;
 
-  return displayText;
+  const formatDisplayText = (displayName, result, unit) =>
+    `${displayName}: ${Array.isArray(result) ? roundValues(result).join(', ') : roundValues(result)} ${unit}`;
+
+  displayText.forEach(({ displayName, value, type }) => {
+    if (type === 'value') {
+      const result = stats[value];
+      const unit = stats[findUnitForValue(displayText, value)] || '';
+      displayTextArray.push(formatDisplayText(displayName, result, unit));
+    }
+  });
+
+  return displayTextArray;
 }
 
 export default SplineROI;

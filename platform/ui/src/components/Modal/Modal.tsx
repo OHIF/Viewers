@@ -4,8 +4,7 @@ import ReactModal from 'react-modal';
 import Draggable from 'react-draggable';
 import { useModal } from '../../contextProviders';
 
-import { Icons } from '@ohif/ui-next';
-
+import Icon from '../Icon';
 import Typography from '../Typography';
 
 import './Modal.css';
@@ -44,8 +43,9 @@ const Modal = ({
           {title}
         </Typography>
         {closeButton && (
-          <Icons.Close
+          <Icon
             onClick={onClose}
+            name="close"
             className="text-primary-active cursor-pointer"
           />
         )}

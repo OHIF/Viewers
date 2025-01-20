@@ -154,7 +154,7 @@ export function adaptItem(item: MenuItem, subProps: ContextMenuProps): ContextMe
   };
 
   if (item.actionType === 'ShowSubMenu' && !newItem.iconRight) {
-    newItem.iconRight = 'chevron-down';
+    newItem.iconRight = 'chevron-menu';
   }
   if (!item.action) {
     newItem.action = (itemRef, componentProps) => {

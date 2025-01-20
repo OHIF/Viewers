@@ -1,22 +1,4 @@
-// Common sync group configurations
-const cameraPositionSync = (id: string) => ({
-  type: 'cameraPosition',
-  id,
-  source: true,
-  target: true,
-});
-
-const hydrateSegSync = {
-  type: 'hydrateseg',
-  id: 'sameFORId',
-  source: true,
-  target: true,
-  options: {
-    matchingRules: ['sameFOR'],
-  },
-};
-
-const ctAXIAL: AppTypes.HangingProtocol.Viewport = {
+const ctAXIAL = {
   viewportOptions: {
     viewportId: 'ctAXIAL',
     viewportType: 'volume',
@@ -27,7 +9,12 @@ const ctAXIAL: AppTypes.HangingProtocol.Viewport = {
       preset: 'first', // 'first', 'last', 'middle'
     },
     syncGroups: [
-      cameraPositionSync('axialSync'),
+      {
+        type: 'cameraPosition',
+        id: 'axialSync',
+        source: true,
+        target: true,
+      },
       {
         type: 'voi',
         id: 'ctWLSync',
@@ -37,7 +24,6 @@ const ctAXIAL: AppTypes.HangingProtocol.Viewport = {
           syncColormap: true,
         },
       },
-      hydrateSegSync,
     ],
   },
   displaySets: [
@@ -47,14 +33,19 @@ const ctAXIAL: AppTypes.HangingProtocol.Viewport = {
   ],
 };
 
-const ctSAGITTAL: AppTypes.HangingProtocol.Viewport = {
+const ctSAGITTAL = {
   viewportOptions: {
     viewportId: 'ctSAGITTAL',
     viewportType: 'volume',
     orientation: 'sagittal',
     toolGroupId: 'ctToolGroup',
     syncGroups: [
-      cameraPositionSync('sagittalSync'),
+      {
+        type: 'cameraPosition',
+        id: 'sagittalSync',
+        source: true,
+        target: true,
+      },
       {
         type: 'voi',
         id: 'ctWLSync',
@@ -64,7 +55,6 @@ const ctSAGITTAL: AppTypes.HangingProtocol.Viewport = {
           syncColormap: true,
         },
       },
-      hydrateSegSync,
     ],
   },
   displaySets: [
@@ -73,15 +63,19 @@ const ctSAGITTAL: AppTypes.HangingProtocol.Viewport = {
     },
   ],
 };
-
-const ctCORONAL: AppTypes.HangingProtocol.Viewport = {
+const ctCORONAL = {
   viewportOptions: {
     viewportId: 'ctCORONAL',
     viewportType: 'volume',
     orientation: 'coronal',
     toolGroupId: 'ctToolGroup',
     syncGroups: [
-      cameraPositionSync('coronalSync'),
+      {
+        type: 'cameraPosition',
+        id: 'coronalSync',
+        source: true,
+        target: true,
+      },
       {
         type: 'voi',
         id: 'ctWLSync',
@@ -91,7 +85,6 @@ const ctCORONAL: AppTypes.HangingProtocol.Viewport = {
           syncColormap: true,
         },
       },
-      hydrateSegSync,
     ],
   },
   displaySets: [
@@ -101,7 +94,7 @@ const ctCORONAL: AppTypes.HangingProtocol.Viewport = {
   ],
 };
 
-const ptAXIAL: AppTypes.HangingProtocol.Viewport = {
+const ptAXIAL = {
   viewportOptions: {
     viewportId: 'ptAXIAL',
     viewportType: 'volume',
@@ -113,7 +106,12 @@ const ptAXIAL: AppTypes.HangingProtocol.Viewport = {
       preset: 'first', // 'first', 'last', 'middle'
     },
     syncGroups: [
-      cameraPositionSync('axialSync'),
+      {
+        type: 'cameraPosition',
+        id: 'axialSync',
+        source: true,
+        target: true,
+      },
       {
         type: 'voi',
         id: 'ptWLSync',
@@ -130,10 +128,8 @@ const ptAXIAL: AppTypes.HangingProtocol.Viewport = {
         target: false,
         options: {
           syncColormap: false,
-          syncInvertState: false,
         },
       },
-      hydrateSegSync,
     ],
   },
   displaySets: [
@@ -149,7 +145,7 @@ const ptAXIAL: AppTypes.HangingProtocol.Viewport = {
   ],
 };
 
-const ptSAGITTAL: AppTypes.HangingProtocol.Viewport = {
+const ptSAGITTAL = {
   viewportOptions: {
     viewportId: 'ptSAGITTAL',
     viewportType: 'volume',
@@ -157,7 +153,12 @@ const ptSAGITTAL: AppTypes.HangingProtocol.Viewport = {
     background: [1, 1, 1],
     toolGroupId: 'ptToolGroup',
     syncGroups: [
-      cameraPositionSync('sagittalSync'),
+      {
+        type: 'cameraPosition',
+        id: 'sagittalSync',
+        source: true,
+        target: true,
+      },
       {
         type: 'voi',
         id: 'ptWLSync',
@@ -174,10 +175,8 @@ const ptSAGITTAL: AppTypes.HangingProtocol.Viewport = {
         target: false,
         options: {
           syncColormap: false,
-          syncInvertState: false,
         },
       },
-      hydrateSegSync,
     ],
   },
   displaySets: [
@@ -193,7 +192,7 @@ const ptSAGITTAL: AppTypes.HangingProtocol.Viewport = {
   ],
 };
 
-const ptCORONAL: AppTypes.HangingProtocol.Viewport = {
+const ptCORONAL = {
   viewportOptions: {
     viewportId: 'ptCORONAL',
     viewportType: 'volume',
@@ -201,7 +200,12 @@ const ptCORONAL: AppTypes.HangingProtocol.Viewport = {
     background: [1, 1, 1],
     toolGroupId: 'ptToolGroup',
     syncGroups: [
-      cameraPositionSync('coronalSync'),
+      {
+        type: 'cameraPosition',
+        id: 'coronalSync',
+        source: true,
+        target: true,
+      },
       {
         type: 'voi',
         id: 'ptWLSync',
@@ -218,10 +222,8 @@ const ptCORONAL: AppTypes.HangingProtocol.Viewport = {
         target: false,
         options: {
           syncColormap: false,
-          syncInvertState: false,
         },
       },
-      hydrateSegSync,
     ],
   },
   displaySets: [
@@ -237,7 +239,7 @@ const ptCORONAL: AppTypes.HangingProtocol.Viewport = {
   ],
 };
 
-const fusionAXIAL: AppTypes.HangingProtocol.Viewport = {
+const fusionAXIAL = {
   viewportOptions: {
     viewportId: 'fusionAXIAL',
     viewportType: 'volume',
@@ -248,7 +250,12 @@ const fusionAXIAL: AppTypes.HangingProtocol.Viewport = {
       preset: 'first', // 'first', 'last', 'middle'
     },
     syncGroups: [
-      cameraPositionSync('axialSync'),
+      {
+        type: 'cameraPosition',
+        id: 'axialSync',
+        source: true,
+        target: true,
+      },
       {
         type: 'voi',
         id: 'ctWLSync',
@@ -271,10 +278,8 @@ const fusionAXIAL: AppTypes.HangingProtocol.Viewport = {
         target: true,
         options: {
           syncColormap: false,
-          syncInvertState: false,
         },
       },
-      hydrateSegSync,
     ],
   },
   displaySets: [
@@ -288,8 +293,8 @@ const fusionAXIAL: AppTypes.HangingProtocol.Viewport = {
           name: 'hsv',
           opacity: [
             { value: 0, opacity: 0 },
-            { value: 0.1, opacity: 0.8 },
-            { value: 1, opacity: 0.9 },
+            { value: 0.1, opacity: 0.9 },
+            { value: 1, opacity: 0.95 },
           ],
         },
         voi: {
@@ -311,7 +316,12 @@ const fusionSAGITTAL = {
     //   preset: 'middle', // 'first', 'last', 'middle'
     // },
     syncGroups: [
-      cameraPositionSync('sagittalSync'),
+      {
+        type: 'cameraPosition',
+        id: 'sagittalSync',
+        source: true,
+        target: true,
+      },
       {
         type: 'voi',
         id: 'ctWLSync',
@@ -334,10 +344,8 @@ const fusionSAGITTAL = {
         target: true,
         options: {
           syncColormap: false,
-          syncInvertState: false,
         },
       },
-      hydrateSegSync,
     ],
   },
   displaySets: [
@@ -351,8 +359,8 @@ const fusionSAGITTAL = {
           name: 'hsv',
           opacity: [
             { value: 0, opacity: 0 },
-            { value: 0.1, opacity: 0.8 },
-            { value: 1, opacity: 0.9 },
+            { value: 0.1, opacity: 0.9 },
+            { value: 1, opacity: 0.95 },
           ],
         },
         voi: {
@@ -374,7 +382,12 @@ const fusionCORONAL = {
     //   preset: 'middle', // 'first', 'last', 'middle'
     // },
     syncGroups: [
-      cameraPositionSync('coronalSync'),
+      {
+        type: 'cameraPosition',
+        id: 'coronalSync',
+        source: true,
+        target: true,
+      },
       {
         type: 'voi',
         id: 'ctWLSync',
@@ -397,10 +410,8 @@ const fusionCORONAL = {
         target: true,
         options: {
           syncColormap: false,
-          syncInvertState: false,
         },
       },
-      hydrateSegSync,
     ],
   },
   displaySets: [
@@ -414,8 +425,8 @@ const fusionCORONAL = {
           name: 'hsv',
           opacity: [
             { value: 0, opacity: 0 },
-            { value: 0.1, opacity: 0.8 },
-            { value: 1, opacity: 0.9 },
+            { value: 0.1, opacity: 0.9 },
+            { value: 1, opacity: 0.95 },
           ],
         },
         voi: {
@@ -426,7 +437,7 @@ const fusionCORONAL = {
   ],
 };
 
-const mipSAGITTAL: AppTypes.HangingProtocol.Viewport = {
+const mipSAGITTAL = {
   viewportOptions: {
     viewportId: 'mipSagittal',
     viewportType: 'volume',
@@ -450,10 +461,8 @@ const mipSAGITTAL: AppTypes.HangingProtocol.Viewport = {
         target: false,
         options: {
           syncColormap: false,
-          syncInvertState: false,
         },
       },
-      hydrateSegSync,
     ],
 
     // Custom props can be used to set custom properties which extensions

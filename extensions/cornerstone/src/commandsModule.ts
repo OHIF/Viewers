@@ -11,27 +11,16 @@ import {
   Enums,
   utilities as cstUtils,
   ReferenceLinesTool,
-  annotation,
 } from '@cornerstonejs/tools';
-
-import { Types as OhifTypes, utils } from '@ohif/core';
-import i18n from '@ohif/i18n';
-import {
-  callLabelAutocompleteDialog,
-  showLabelAnnotationPopup,
-  createReportAsync,
-  callInputDialog,
-  colorPickerDialog,
-} from '@ohif/extension-default';
+import { Types as OhifTypes } from '@ohif/core';
 import { vec3, mat4 } from 'gl-matrix';
 
 import CornerstoneViewportDownloadForm from './utils/CornerstoneViewportDownloadForm';
+import { callLabelAutocompleteDialog, showLabelAnnotationPopup } from './utils/callInputDialog';
 import toggleImageSliceSync from './utils/imageSliceSync/toggleImageSliceSync';
 import { getFirstAnnotationSelected } from './utils/measurementServiceMappings/utils/selection';
 import getActiveViewportEnabledElement from './utils/getActiveViewportEnabledElement';
 import toggleVOISliceSync from './utils/toggleVOISliceSync';
-import { usePositionPresentationStore, useSegmentationPresentationStore } from './stores';
-import { toolNames } from './initCornerstoneTools';
 
 const toggleSyncFunctions = {
   imageSlice: toggleImageSliceSync,
@@ -40,7 +29,6 @@ const toggleSyncFunctions = {
 
 function commandsModule({
   servicesManager,
-  extensionManager,
   commandsManager,
 }: OhifTypes.Extensions.ExtensionParams): OhifTypes.Extensions.CommandsModule {
   const {
@@ -113,47 +101,7 @@ function commandsModule({
 
       commandsManager.run(options, optionsToUse);
     },
-    updateStoredSegmentationPresentation: ({ displaySet, type }) => {
-      const { addSegmentationPresentationItem } = useSegmentationPresentationStore.getState();
 
-      const referencedDisplaySetInstanceUID = displaySet.referencedDisplaySetInstanceUID;
-      addSegmentationPresentationItem(referencedDisplaySetInstanceUID, {
-        segmentationId: displaySet.displaySetInstanceUID,
-        hydrated: true,
-        type,
-      });
-    },
-    updateStoredPositionPresentation: ({ viewportId, displaySetInstanceUID }) => {
-      const presentations = cornerstoneViewportService.getPresentations(viewportId);
-      const { positionPresentationStore, setPositionPresentation, getPositionPresentationId } =
-        usePositionPresentationStore.getState();
-
-      // Look inside positionPresentationStore and find the key that includes the displaySetInstanceUID
-      // and the value has viewportId as activeViewportId.
-      const previousReferencedDisplaySetStoreKey = Object.entries(positionPresentationStore).find(
-        ([key, value]) => key.includes(displaySetInstanceUID) && value.viewportId === viewportId
-      )?.[0];
-
-      if (previousReferencedDisplaySetStoreKey) {
-        setPositionPresentation(
-          previousReferencedDisplaySetStoreKey,
-          presentations.positionPresentation
-        );
-
-        return;
-      }
-
-      // if not found means we have not visited that referencedDisplaySetInstanceUID before
-      // so we need to grab the positionPresentationId directly from the store,
-      // Todo: this is really hacky, we should have a better way for this
-
-      const positionPresentationId = getPositionPresentationId({
-        displaySetInstanceUIDs: [displaySetInstanceUID],
-        viewportId,
-      });
-
-      setPositionPresentation(positionPresentationId, presentations.positionPresentation);
-    },
     getNearbyToolData({ nearbyToolData, element, canvasCoordinates }) {
       return nearbyToolData ?? cstUtils.getAnnotationNearPoint(element, canvasCoordinates);
     },
@@ -220,8 +168,6 @@ function commandsModule({
      *       * CodingSchemeDesignator - the issue of the code value
      *       * CodeMeaning - the text value shown to the user
      *       * ref - a string reference in the form `<designator>:<codeValue>`
-     *       * type - defaulting to 'finding'.  Will replace other codes of same type
-     *       * style - a styling object to use
      *       * Other fields
      *     Note it is a valid option to remove the finding or site values by
      *     supplying null for the code.
@@ -237,12 +183,7 @@ function commandsModule({
      */
     updateMeasurement: props => {
       const { code, uid, textLabel, label } = props;
-      let { style } = props;
       const measurement = measurementService.getMeasurement(uid);
-      if (!measurement) {
-        console.warn('No measurement found to update', uid);
-        return;
-      }
       const updatedMeasurement = {
         ...measurement,
       };
@@ -261,6 +202,7 @@ function commandsModule({
           code.CodingSchemeDesignator = code.ref.substring(0, split);
         }
         updatedMeasurement[measurementKey] = code;
+        // TODO - remove this line once the measurements table customizations are in
         if (measurementKey !== 'finding') {
           if (updatedMeasurement.findingSites) {
             updatedMeasurement.findingSites = updatedMeasurement.findingSites.filter(
@@ -272,81 +214,7 @@ function commandsModule({
           }
         }
       }
-
-      style ||= updatedMeasurement.finding?.style;
-      style ||= updatedMeasurement.findingSites?.find(site => site?.style)?.style;
-
-      if (style) {
-        // Reset the selected values to preserve appearance on selection
-        style.lineDashSelected ||= style.lineDash;
-        annotation.config.style.setAnnotationStyles(measurement.uid, style);
-
-        // this is a bit ugly, but given the underlying behavior, this is how it needs to work.
-        switch (measurement.toolName) {
-          case toolNames.PlanarFreehandROI: {
-            const targetAnnotation = annotation.state.getAnnotation(measurement.uid);
-            targetAnnotation.data.isOpenUShapeContour = !!style.isOpenUShapeContour;
-            break;
-          }
-          default:
-            break;
-        }
-      }
       measurementService.update(updatedMeasurement.uid, updatedMeasurement, true);
-    },
-
-    /**
-     * Jumps to the specified (by uid) measurement in the active viewport.
-     * Also marks any provided display measurements isActive value
-     */
-    jumpToMeasurement: ({ uid, displayMeasurements = [] }) => {
-      measurementService.jumpToMeasurement(viewportGridService.getActiveViewportId(), uid);
-      for (const measurement of displayMeasurements) {
-        measurement.isActive = measurement.uid === uid;
-      }
-    },
-
-    removeMeasurement: ({ uid }) => {
-      measurementService.remove(uid);
-    },
-
-    renameMeasurement: ({ uid }) => {
-      const labelConfig = customizationService.get('measurementLabels');
-      const measurement = measurementService.getMeasurement(uid);
-      showLabelAnnotationPopup(measurement, uiDialogService, labelConfig).then(val => {
-        measurementService.update(
-          uid,
-          {
-            ...val,
-          },
-          true
-        );
-      });
-    },
-
-    toggleLockMeasurement: ({ uid }) => {
-      measurementService.toggleLockMeasurement(uid);
-    },
-
-    toggleVisibilityMeasurement: ({ uid }) => {
-      measurementService.toggleVisibilityMeasurement(uid);
-    },
-
-    /**
-     * Clear the measurements
-     */
-    clearMeasurements: options => {
-      const { measurementFilter } = options;
-      measurementService.clearMeasurements(
-        measurementFilter ? measurementFilter.bind(options) : null
-      );
-    },
-
-    /**
-     * Download the CSV report for the measurements.
-     */
-    downloadCSVMeasurementsReport: ({ measurementFilter }) => {
-      utils.downloadCSVReport(measurementService.getMeasurements(measurementFilter));
     },
 
     // Retrieve value commands
@@ -567,10 +435,9 @@ function commandsModule({
         viewport.setCamera({ viewUp: rotatedViewUp as CoreTypes.Point3 });
         viewport.render();
       } else if (viewport.getRotation !== undefined) {
-        const presentation = viewport.getViewPresentation();
-        const { rotation: currentRotation } = presentation;
+        const currentRotation = viewport.getRotation();
         const newRotation = (currentRotation + rotation) % 360;
-        viewport.setViewPresentation({ rotation: newRotation });
+        viewport.setProperties({ rotation: newRotation });
         viewport.render();
       }
     },
@@ -687,7 +554,7 @@ function commandsModule({
 
       // Set slice to last slice
       const options = { imageIndex: jumpIndex };
-      csUtils.jumpToSlice(viewport.element, options);
+      cstUtils.jumpToSlice(viewport.element, options);
     },
     scroll: ({ direction }) => {
       const enabledElement = _getActiveViewportEnabledElement();
@@ -699,7 +566,7 @@ function commandsModule({
       const { viewport } = enabledElement;
       const options = { delta: direction };
 
-      csUtils.scroll(viewport, options);
+      cstUtils.scroll(viewport, options);
     },
     setViewportColormap: ({
       viewportId,
@@ -710,6 +577,7 @@ function commandsModule({
     }) => {
       const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
 
+      const actorEntries = viewport.getActors();
       let hpOpacity;
       // Retrieve active protocol's viewport match details
       const { viewportMatchDetails } = hangingProtocolService.getActiveProtocol();
@@ -728,8 +596,14 @@ function commandsModule({
       // HP takes priority over the default opacity
       colormap = { ...colormap, opacity: hpOpacity || opacity };
 
+      const setViewportProperties = (viewport, uid) => {
+        const actorEntry = actorEntries.find(entry => entry.uid.includes(uid));
+        const { actor: volumeActor, uid: volumeId } = actorEntry;
+        viewport.setProperties({ colormap, volumeActor }, volumeId);
+      };
+
       if (viewport instanceof StackViewport) {
-        viewport.setProperties({ colormap });
+        setViewportProperties(viewport, viewportId);
       }
 
       if (viewport instanceof VolumeViewport) {
@@ -737,9 +611,7 @@ function commandsModule({
           const { viewports } = viewportGridService.getState();
           displaySetInstanceUID = viewports.get(viewportId)?.displaySetInstanceUIDs[0];
         }
-
-        const volumeId = viewport.getVolumeId();
-        viewport.setProperties({ colormap }, volumeId);
+        setViewportProperties(viewport, displaySetInstanceUID);
       }
 
       if (immediate) {
@@ -952,351 +824,8 @@ function commandsModule({
       }
 
       crosshairInstances.forEach(ins => {
-        ins?.computeToolCenter();
+        ins?.resetCrosshairs();
       });
-    },
-    /**
-     * Creates a labelmap for the active viewport
-     */
-    createLabelmapForViewport: async ({ viewportId, options = {} }) => {
-      const { viewportGridService, displaySetService, segmentationService } =
-        servicesManager.services;
-      const { viewports } = viewportGridService.getState();
-      const targetViewportId = viewportId;
-
-      const viewport = viewports.get(targetViewportId);
-
-      // Todo: add support for multiple display sets
-      const displaySetInstanceUID =
-        options.displaySetInstanceUID || viewport.displaySetInstanceUIDs[0];
-
-      const segs = segmentationService.getSegmentations();
-
-      const label = options.label || `Segmentation ${segs.length + 1}`;
-      const segmentationId = options.segmentationId || `${csUtils.uuidv4()}`;
-
-      const displaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
-
-      const generatedSegmentationId = await segmentationService.createLabelmapForDisplaySet(
-        displaySet,
-        {
-          label,
-          segmentationId,
-          segments: options.createInitialSegment
-            ? {
-                1: {
-                  label: `${i18n.t('Segment')} 1`,
-                  active: true,
-                },
-              }
-            : {},
-        }
-      );
-
-      await segmentationService.addSegmentationRepresentation(viewportId, {
-        segmentationId,
-        type: Enums.SegmentationRepresentations.Labelmap,
-      });
-
-      return generatedSegmentationId;
-    },
-
-    /**
-     * Sets the active segmentation for a viewport
-     * @param props.segmentationId - The ID of the segmentation to set as active
-     */
-    setActiveSegmentation: ({ segmentationId }) => {
-      const { viewportGridService, segmentationService } = servicesManager.services;
-      segmentationService.setActiveSegmentation(
-        viewportGridService.getActiveViewportId(),
-        segmentationId
-      );
-    },
-
-    /**
-     * Adds a new segment to a segmentation
-     * @param props.segmentationId - The ID of the segmentation to add the segment to
-     */
-    addSegmentCommand: ({ segmentationId }) => {
-      const { segmentationService } = servicesManager.services;
-      segmentationService.addSegment(segmentationId);
-    },
-
-    /**
-     * Sets the active segment and jumps to its center
-     * @param props.segmentationId - The ID of the segmentation
-     * @param props.segmentIndex - The index of the segment to activate
-     */
-    setActiveSegmentAndCenterCommand: ({ segmentationId, segmentIndex }) => {
-      const { segmentationService } = servicesManager.services;
-      segmentationService.setActiveSegment(segmentationId, segmentIndex);
-      segmentationService.jumpToSegmentCenter(segmentationId, segmentIndex);
-    },
-
-    /**
-     * Toggles the visibility of a segment
-     * @param props.segmentationId - The ID of the segmentation
-     * @param props.segmentIndex - The index of the segment
-     * @param props.type - The type of visibility to toggle
-     */
-    toggleSegmentVisibilityCommand: ({ segmentationId, segmentIndex, type }) => {
-      const { segmentationService, viewportGridService } = servicesManager.services;
-      segmentationService.toggleSegmentVisibility(
-        viewportGridService.getActiveViewportId(),
-        segmentationId,
-        segmentIndex,
-        type
-      );
-    },
-
-    /**
-     * Toggles the lock state of a segment
-     * @param props.segmentationId - The ID of the segmentation
-     * @param props.segmentIndex - The index of the segment
-     */
-    toggleSegmentLockCommand: ({ segmentationId, segmentIndex }) => {
-      const { segmentationService } = servicesManager.services;
-      segmentationService.toggleSegmentLocked(segmentationId, segmentIndex);
-    },
-
-    /**
-     * Toggles the visibility of a segmentation representation
-     * @param props.segmentationId - The ID of the segmentation
-     * @param props.type - The type of representation
-     */
-    toggleSegmentationVisibilityCommand: ({ segmentationId, type }) => {
-      const { segmentationService, viewportGridService } = servicesManager.services;
-      segmentationService.toggleSegmentationRepresentationVisibility(
-        viewportGridService.getActiveViewportId(),
-        { segmentationId, type }
-      );
-    },
-
-    /**
-     * Downloads a segmentation
-     * @param props.segmentationId - The ID of the segmentation to download
-     */
-    downloadSegmentationCommand: ({ segmentationId }) => {
-      const { segmentationService } = servicesManager.services;
-      segmentationService.downloadSegmentation(segmentationId);
-    },
-
-    /**
-     * Stores a segmentation and shows it in the viewport
-     * @param props.segmentationId - The ID of the segmentation to store
-     */
-    storeSegmentationCommand: async ({ segmentationId }) => {
-      const { segmentationService, viewportGridService } = servicesManager.services;
-      const datasources = extensionManager.getActiveDataSource();
-
-      const displaySetInstanceUIDs = await createReportAsync({
-        servicesManager,
-        getReport: () =>
-          commandsManager.runCommand('storeSegmentation', {
-            segmentationId,
-            dataSource: datasources[0],
-          }),
-        reportType: 'Segmentation',
-      });
-
-      if (displaySetInstanceUIDs) {
-        segmentationService.remove(segmentationId);
-        viewportGridService.setDisplaySetsForViewport({
-          viewportId: viewportGridService.getActiveViewportId(),
-          displaySetInstanceUIDs,
-        });
-      }
-    },
-
-    /**
-     * Downloads a segmentation as RTSS
-     * @param props.segmentationId - The ID of the segmentation
-     */
-    downloadRTSSCommand: ({ segmentationId }) => {
-      const { segmentationService } = servicesManager.services;
-      segmentationService.downloadRTSS(segmentationId);
-    },
-
-    /**
-     * Sets the style for a segmentation
-     * @param props.segmentationId - The ID of the segmentation
-     * @param props.type - The type of style
-     * @param props.key - The style key to set
-     * @param props.value - The style value
-     */
-    setSegmentationStyleCommand: ({ type, key, value }) => {
-      const { segmentationService } = servicesManager.services;
-      segmentationService.setStyle({ type }, { [key]: value });
-    },
-
-    /**
-     * Deletes a segment from a segmentation
-     * @param props.segmentationId - The ID of the segmentation
-     * @param props.segmentIndex - The index of the segment to delete
-     */
-    deleteSegmentCommand: ({ segmentationId, segmentIndex }) => {
-      const { segmentationService } = servicesManager.services;
-      segmentationService.removeSegment(segmentationId, segmentIndex);
-    },
-
-    /**
-     * Deletes an entire segmentation
-     * @param props.segmentationId - The ID of the segmentation to delete
-     */
-    deleteSegmentationCommand: ({ segmentationId }) => {
-      const { segmentationService } = servicesManager.services;
-      segmentationService.remove(segmentationId);
-    },
-
-    /**
-     * Removes a segmentation from the viewport
-     * @param props.segmentationId - The ID of the segmentation to remove
-     */
-    removeSegmentationFromViewportCommand: ({ segmentationId }) => {
-      const { segmentationService, viewportGridService } = servicesManager.services;
-      segmentationService.removeSegmentationRepresentations(
-        viewportGridService.getActiveViewportId(),
-        { segmentationId }
-      );
-    },
-
-    /**
-     * Toggles rendering of inactive segmentations
-     */
-    toggleRenderInactiveSegmentationsCommand: () => {
-      const { segmentationService, viewportGridService } = servicesManager.services;
-      const viewportId = viewportGridService.getActiveViewportId();
-      const renderInactive = segmentationService.getRenderInactiveSegmentations(viewportId);
-      segmentationService.setRenderInactiveSegmentations(viewportId, !renderInactive);
-    },
-
-    /**
-     * Sets the fill alpha value for a segmentation type
-     * @param props.type - The type of segmentation
-     * @param props.value - The alpha value to set
-     */
-    setFillAlphaCommand: ({ type, value }) => {
-      const { segmentationService } = servicesManager.services;
-      segmentationService.setStyle({ type }, { fillAlpha: value });
-    },
-
-    /**
-     * Sets the outline width for a segmentation type
-     * @param props.type - The type of segmentation
-     * @param props.value - The width value to set
-     */
-    setOutlineWidthCommand: ({ type, value }) => {
-      const { segmentationService } = servicesManager.services;
-      segmentationService.setStyle({ type }, { outlineWidth: value });
-    },
-
-    /**
-     * Sets whether to render fill for a segmentation type
-     * @param props.type - The type of segmentation
-     * @param props.value - Whether to render fill
-     */
-    setRenderFillCommand: ({ type, value }) => {
-      const { segmentationService } = servicesManager.services;
-      segmentationService.setStyle({ type }, { renderFill: value });
-    },
-
-    /**
-     * Sets whether to render outline for a segmentation type
-     * @param props.type - The type of segmentation
-     * @param props.value - Whether to render outline
-     */
-    setRenderOutlineCommand: ({ type, value }) => {
-      const { segmentationService } = servicesManager.services;
-      segmentationService.setStyle({ type }, { renderOutline: value });
-    },
-
-    /**
-     * Sets the fill alpha for inactive segmentations
-     * @param props.type - The type of segmentation
-     * @param props.value - The alpha value to set
-     */
-    setFillAlphaInactiveCommand: ({ type, value }) => {
-      const { segmentationService } = servicesManager.services;
-      segmentationService.setStyle({ type }, { fillAlphaInactive: value });
-    },
-
-    editSegmentLabel: ({ segmentationId, segmentIndex }) => {
-      const { segmentationService, uiDialogService } = servicesManager.services;
-      const segmentation = segmentationService.getSegmentation(segmentationId);
-
-      if (!segmentation) {
-        return;
-      }
-
-      const segment = segmentation.segments[segmentIndex];
-      const { label } = segment;
-
-      const callback = (label, actionId) => {
-        if (label === '') {
-          return;
-        }
-
-        segmentationService.setSegmentLabel(segmentationId, segmentIndex, label);
-      };
-
-      callInputDialog(uiDialogService, label, callback, false, {
-        dialogTitle: 'Edit Segment Label',
-        inputLabel: 'Enter new label',
-      });
-    },
-
-    editSegmentationLabel: ({ segmentationId }) => {
-      const { segmentationService, uiDialogService } = servicesManager.services;
-      const segmentation = segmentationService.getSegmentation(segmentationId);
-
-      if (!segmentation) {
-        return;
-      }
-
-      const { label } = segmentation;
-
-      const callback = (label, actionId) => {
-        if (label === '') {
-          return;
-        }
-
-        segmentationService.addOrUpdateSegmentation({ segmentationId, label });
-      };
-
-      callInputDialog(uiDialogService, label, callback, false, {
-        dialogTitle: 'Edit Segmentation Label',
-        inputLabel: 'Enter new label',
-      });
-    },
-
-    editSegmentColor: ({ segmentationId, segmentIndex }) => {
-      const { segmentationService, uiDialogService, viewportGridService } =
-        servicesManager.services;
-      const viewportId = viewportGridService.getActiveViewportId();
-      const color = segmentationService.getSegmentColor(viewportId, segmentationId, segmentIndex);
-
-      const rgbaColor = {
-        r: color[0],
-        g: color[1],
-        b: color[2],
-        a: color[3] / 255.0,
-      };
-
-      colorPickerDialog(uiDialogService, rgbaColor, (newRgbaColor, actionId) => {
-        if (actionId === 'cancel') {
-          return;
-        }
-
-        const color = [newRgbaColor.r, newRgbaColor.g, newRgbaColor.b, newRgbaColor.a * 255.0];
-        segmentationService.setSegmentColor(viewportId, segmentationId, segmentIndex, color);
-      });
-    },
-
-    getRenderInactiveSegmentations: () => {
-      const { segmentationService, viewportGridService } = servicesManager.services;
-      return segmentationService.getRenderInactiveSegmentations(
-        viewportGridService.getActiveViewportId()
-      );
     },
   };
 
@@ -1334,27 +863,6 @@ function commandsModule({
     },
     updateMeasurement: {
       commandFn: actions.updateMeasurement,
-    },
-    clearMeasurements: {
-      commandFn: actions.clearMeasurements,
-    },
-    jumpToMeasurement: {
-      commandFn: actions.jumpToMeasurement,
-    },
-    removeMeasurement: {
-      commandFn: actions.removeMeasurement,
-    },
-    renameMeasurement: {
-      commandFn: actions.renameMeasurement,
-    },
-    toggleLockMeasurement: {
-      commandFn: actions.toggleLockMeasurement,
-    },
-    toggleVisibilityMeasurement: {
-      commandFn: actions.toggleVisibilityMeasurement,
-    },
-    downloadCSVMeasurementsReport: {
-      commandFn: actions.downloadCSVMeasurementsReport,
     },
     setViewportWindowLevel: {
       commandFn: actions.setViewportWindowLevel,
@@ -1479,84 +987,6 @@ function commandsModule({
     },
     toggleActiveDisabledToolbar: {
       commandFn: actions.toggleActiveDisabledToolbar,
-    },
-    updateStoredPositionPresentation: {
-      commandFn: actions.updateStoredPositionPresentation,
-    },
-    updateStoredSegmentationPresentation: {
-      commandFn: actions.updateStoredSegmentationPresentation,
-    },
-    createLabelmapForViewport: {
-      commandFn: actions.createLabelmapForViewport,
-    },
-    setActiveSegmentation: {
-      commandFn: actions.setActiveSegmentation,
-    },
-    addSegment: {
-      commandFn: actions.addSegmentCommand,
-    },
-    setActiveSegmentAndCenter: {
-      commandFn: actions.setActiveSegmentAndCenterCommand,
-    },
-    toggleSegmentVisibility: {
-      commandFn: actions.toggleSegmentVisibilityCommand,
-    },
-    toggleSegmentLock: {
-      commandFn: actions.toggleSegmentLockCommand,
-    },
-    toggleSegmentationVisibility: {
-      commandFn: actions.toggleSegmentationVisibilityCommand,
-    },
-    downloadSegmentation: {
-      commandFn: actions.downloadSegmentationCommand,
-    },
-    storeSegmentation: {
-      commandFn: actions.storeSegmentationCommand,
-    },
-    downloadRTSS: {
-      commandFn: actions.downloadRTSSCommand,
-    },
-    setSegmentationStyle: {
-      commandFn: actions.setSegmentationStyleCommand,
-    },
-    deleteSegment: {
-      commandFn: actions.deleteSegmentCommand,
-    },
-    deleteSegmentation: {
-      commandFn: actions.deleteSegmentationCommand,
-    },
-    removeSegmentationFromViewport: {
-      commandFn: actions.removeSegmentationFromViewportCommand,
-    },
-    toggleRenderInactiveSegmentations: {
-      commandFn: actions.toggleRenderInactiveSegmentationsCommand,
-    },
-    setFillAlpha: {
-      commandFn: actions.setFillAlphaCommand,
-    },
-    setOutlineWidth: {
-      commandFn: actions.setOutlineWidthCommand,
-    },
-    setRenderFill: {
-      commandFn: actions.setRenderFillCommand,
-    },
-    setRenderOutline: {
-      commandFn: actions.setRenderOutlineCommand,
-    },
-    setFillAlphaInactive: {
-      commandFn: actions.setFillAlphaInactiveCommand,
-    },
-    editSegmentLabel: {
-      commandFn: actions.editSegmentLabel,
-    },
-    editSegmentationLabel: {
-      commandFn: actions.editSegmentationLabel,
-    },
-    editSegmentColor: {
-      commandFn: actions.editSegmentColor,
-    },
-    getRenderInactiveSegmentations: {
-      commandFn: actions.getRenderInactiveSegmentations,
     },
   };
 

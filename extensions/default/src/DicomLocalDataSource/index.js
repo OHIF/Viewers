@@ -209,14 +209,7 @@ function createDicomLocalApi(dicomLocalConfig) {
       return imageIds;
     },
     getImageIdsForInstance({ instance, frame }) {
-      // Important: Never use instance.imageId because it might be multiframe,
-      // which would make it an invalid imageId.
-      // if (instance.imageId) {
-      //   return instance.imageId;
-      // }
-
-      const { StudyInstanceUID, SeriesInstanceUID } = instance;
-      const SOPInstanceUID = instance.SOPInstanceUID || instance.SopInstanceUID;
+      const { StudyInstanceUID, SeriesInstanceUID, SOPInstanceUID } = instance;
       const storedInstance = DicomMetadataStore.getInstance(
         StudyInstanceUID,
         SeriesInstanceUID,

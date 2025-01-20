@@ -1,6 +1,6 @@
 {
-  "Enter your annotation": "$t(Common:Enter your annotation)",
-  "Cancel": "$t(Common:Cancel)",
-  "Save": "$t(Common:Save)",
+  "Enter your annotation": "输入注释",
+  "Cancel": "取消",
+  "Save": "保存",
   "Provide a name for your report": "输入报告名称"
 }

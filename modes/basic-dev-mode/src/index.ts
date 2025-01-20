@@ -1,4 +1,4 @@
-import toolbarButtons from './toolbarButtons';
+import toolbarButtons from './toolbarButtons.js';
 import { hotkeys } from '@ohif/core';
 import { id } from './id';
 import i18n from 'i18next';
@@ -72,10 +72,7 @@ function modeFactory({ modeConfiguration }) {
             toolName: toolNames.Zoom,
             bindings: [{ mouseButton: Enums.MouseBindings.Secondary }],
           },
-          {
-            toolName: toolNames.StackScroll,
-            bindings: [{ mouseButton: Enums.MouseBindings.Wheel }],
-          },
+          { toolName: toolNames.StackScrollMouseWheel, bindings: [] },
         ],
         passive: [
           { toolName: toolNames.Length },

@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
-import { Icons } from '@ohif/ui-next';
+import Icon from '../Icon/Icon';
 
 function LayoutPreset({
   onSelection = () => {},
@@ -17,9 +17,8 @@ function LayoutPreset({
       onClick={() => {
         onSelection(commandOptions);
       }}
-      data-cy={title}
     >
-      <Icons.ByName
+      <Icon
         name={icon}
         className="group-hover:text-primary-light"
       />

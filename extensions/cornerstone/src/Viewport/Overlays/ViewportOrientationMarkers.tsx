@@ -1,7 +1,14 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import classNames from 'classnames';
-import { metaData, Enums, Types, getEnabledElement } from '@cornerstonejs/core';
+import {
+  metaData,
+  Enums,
+  Types,
+  getEnabledElement,
+  utilities as csUtils,
+} from '@cornerstonejs/core';
 import { utilities } from '@cornerstonejs/tools';
+import PropTypes from 'prop-types';
 import { vec3 } from 'gl-matrix';
 
 import './ViewportOrientationMarkers.css';
@@ -24,9 +31,8 @@ function ViewportOrientationMarkers({
 
   useEffect(() => {
     const cameraModifiedListener = (evt: Types.EventTypes.CameraModifiedEvent) => {
-      const { previousCamera, camera } = evt.detail;
+      const { rotation, previousCamera, camera } = evt.detail;
 
-      const { rotation } = camera;
       if (rotation !== undefined) {
         setRotation(rotation);
       }
@@ -68,12 +74,7 @@ function ViewportOrientationMarkers({
         return false;
       }
 
-      ({
-        rowCosines,
-        columnCosines,
-        isDefaultValueSetForColumnCosine,
-        isDefaultValueSetForColumnCosine,
-      } = metaData.get('imagePlaneModule', imageId) || {});
+      ({ rowCosines, columnCosines, isDefaultValueSetForColumnCosine, isDefaultValueSetForColumnCosine } = metaData.get('imagePlaneModule', imageId) || {});
     } else {
       if (!element || !getEnabledElement(element)) {
         return '';
@@ -89,13 +90,7 @@ function ViewportOrientationMarkers({
       rowCosines = viewRight;
     }
 
-    if (
-      !rowCosines ||
-      !columnCosines ||
-      rotation === undefined ||
-      isDefaultValueSetForRowCosine ||
-      isDefaultValueSetForColumnCosine
-    ) {
+    if (!rowCosines || !columnCosines || rotation === undefined || isDefaultValueSetForRowCosine || isDefaultValueSetForColumnCosine) {
       return '';
     }
 

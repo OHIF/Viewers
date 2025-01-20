@@ -1,7 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { ViewportActionButton } from '@ohif/ui';
-import { Icons, Tooltip, TooltipTrigger, TooltipContent } from '@ohif/ui-next';
+import { Icon, Tooltip } from '@ohif/ui';
 
 export default function _getStatusComponent({ isHydrated, onStatusClick }) {
   let ToolTipMessage = null;
@@ -9,16 +8,18 @@ export default function _getStatusComponent({ isHydrated, onStatusClick }) {
 
   switch (isHydrated) {
     case true:
-      StatusIcon = () => <Icons.ByName name="status-alert" />;
+      StatusIcon = () => <Icon name="status-alert" />;
+
       ToolTipMessage = () => <div>This Segmentation is loaded in the segmentation panel</div>;
       break;
     case false:
       StatusIcon = () => (
-        <Icons.ByName
+        <Icon
           className="text-aqua-pale"
           name="status-untracked"
         />
       );
+
       ToolTipMessage = () => <div>Click LOAD to load segmentation.</div>;
   }
 
@@ -33,7 +34,13 @@ export default function _getStatusComponent({ isHydrated, onStatusClick }) {
           <span className="ml-1">SEG</span>
         </div>
         {!isHydrated && (
-          <ViewportActionButton onInteraction={onStatusClick}>{loadStr}</ViewportActionButton>
+          <div
+            className="bg-primary-main hover:bg-primary-light ml-1 cursor-pointer rounded px-1.5 hover:text-black"
+            // Using onMouseUp here because onClick is not working when the viewport is not active and is styled with pointer-events:none
+            onMouseUp={onStatusClick}
+          >
+            {loadStr}
+          </div>
         )}
       </div>
     );
@@ -42,15 +49,11 @@ export default function _getStatusComponent({ isHydrated, onStatusClick }) {
   return (
     <>
       {ToolTipMessage && (
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <span>
-              <StatusArea />
-            </span>
-          </TooltipTrigger>
-          <TooltipContent side="bottom">
-            <ToolTipMessage />
-          </TooltipContent>
+        <Tooltip
+          content={<ToolTipMessage />}
+          position="bottom-left"
+        >
+          <StatusArea />
         </Tooltip>
       )}
       {!ToolTipMessage && <StatusArea />}

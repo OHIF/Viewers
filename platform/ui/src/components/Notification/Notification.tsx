@@ -3,7 +3,7 @@ import classnames from 'classnames';
 import PropTypes from 'prop-types';
 
 import Button, { ButtonEnums } from '../Button';
-import { Icons } from '@ohif/ui-next';
+import Icon from '../Icon';
 
 const Notification = ({
   id,
@@ -80,7 +80,7 @@ const Notification = ({
       tabIndex={0}
     >
       <div className="flex grow items-center">
-        <Icons.ByName
+        <Icon
           name={icon}
           className={classnames('h-6 w-6', color)}
         />

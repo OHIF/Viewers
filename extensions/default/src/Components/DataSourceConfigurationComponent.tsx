@@ -1,7 +1,6 @@
 import React, { ReactElement, useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useModal } from '@ohif/ui';
-import { Icons } from '@ohif/ui-next';
+import { Icon, useModal } from '@ohif/ui';
 import { Types } from '@ohif/core';
 import DataSourceConfigurationModalComponent from './DataSourceConfigurationModalComponent';
 
@@ -87,10 +86,11 @@ function DataSourceConfigurationComponent({
 
   return configuredItems ? (
     <div className="text-aqua-pale flex items-center overflow-hidden">
-      <Icons.Settings
+      <Icon
+        name="settings"
         className="mr-2.5 h-3.5 w-3.5 shrink-0 cursor-pointer"
         onClick={showConfigurationModal}
-      />
+      ></Icon>
       {configuredItems.map((item, itemIndex) => {
         return (
           <div

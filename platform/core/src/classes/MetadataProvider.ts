@@ -8,17 +8,33 @@ import toNumber from '../utils/toNumber';
 import combineFrameInstance from '../utils/combineFrameInstance';
 
 class MetadataProvider {
-  private readonly imageURIToUIDs: Map<string, any> = new Map();
-  // Can be used to store custom metadata for a specific type.
-  // For instance, the scaling metadata for PET can be stored here
-  // as type "scalingModule"
-  private readonly customMetadata: Map<string, any> = new Map();
+  constructor() {
+    // Define the main "metadataLookup" private property as an immutable property.
+    Object.defineProperty(this, 'studies', {
+      configurable: false,
+      enumerable: false,
+      writable: false,
+      value: new Map(),
+    });
+    Object.defineProperty(this, 'imageURIToUIDs', {
+      configurable: false,
+      enumerable: false,
+      writable: false,
+      value: new Map(),
+    });
+    // Can be used to store custom metadata for a specific type.
+    // For instance, the scaling metadata for PET can be stored here
+    // as type "scalingModule"
+    //
+    Object.defineProperty(this, 'customMetadata', {
+      configurable: false,
+      enumerable: false,
+      writable: false,
+      value: new Map(),
+    });
+  }
 
   addImageIdToUIDs(imageId, uids) {
-    if (!imageId) {
-      throw new Error('MetadataProvider::Empty imageId');
-    }
-
     // This method is a fallback for when you don't have WADO-URI or WADO-RS.
     // You can add instances fetched by any method by calling addInstance, and hook an imageId to point at it here.
     // An example would be dicom hosted at some random site.
@@ -36,10 +52,6 @@ class MetadataProvider {
   }
 
   _getInstance(imageId) {
-    if (!imageId) {
-      throw new Error('MetadataProvider::Empty imageId');
-    }
-
     const uids = this.getUIDsFromImageID(imageId);
 
     if (!uids) {
@@ -198,7 +210,7 @@ class MetadataProvider {
         break;
       case WADO_IMAGE_LOADER_TAGS.VOI_LUT_MODULE:
         const { WindowCenter, WindowWidth, VOILUTFunction } = instance;
-        if (WindowCenter == null || WindowWidth == null) {
+        if (WindowCenter === undefined || WindowWidth === undefined) {
           return;
         }
         const windowCenter = Array.isArray(WindowCenter) ? WindowCenter : [WindowCenter];
@@ -460,6 +472,16 @@ class MetadataProvider {
   }
 
   getUIDsFromImageID(imageId) {
+    if (!imageId) {
+      throw new Error('MetadataProvider::Empty imageId');
+    }
+    // TODO: adding csiv here is not really correct. Probably need to use
+    // metadataProvider.addImageIdToUIDs(imageId, {
+    //   StudyInstanceUID,
+    //   SeriesInstanceUID,
+    //   SOPInstanceUID,
+    // })
+    // somewhere else
     if (imageId.startsWith('wadors:')) {
       const strippedImageId = imageId.split('/studies/')[1];
       const splitImageId = strippedImageId.split('/');
@@ -538,8 +560,7 @@ const WADO_IMAGE_LOADER = {
       frameOfReferenceUID: instance.FrameOfReferenceUID,
       rows: toNumber(instance.Rows),
       columns: toNumber(instance.Columns),
-      spacingBetweenSlices: toNumber(instance.SpacingBetweenSlices),
-      imageOrientationPatient: toNumber(ImageOrientationPatient) || [0, 1, 0, 0, 0, -1],
+      imageOrientationPatient: toNumber(ImageOrientationPatient),
       rowCosines: toNumber(rowCosines || [0, 1, 0]),
       isDefaultValueSetForRowCosine: toNumber(rowCosines) ? false : true,
       columnCosines: toNumber(columnCosines || [0, 0, -1]),

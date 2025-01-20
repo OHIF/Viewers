@@ -5,6 +5,7 @@ import {
   VolumeViewport,
   utilities,
 } from '@cornerstonejs/core';
+import { Types as CoreTypes } from '@ohif/core';
 import { StackViewportData, VolumeViewportData } from '../../types/CornerstoneCacheService';
 import getCornerstoneBlendMode from '../../utils/getCornerstoneBlendMode';
 import getCornerstoneOrientation from '../../utils/getCornerstoneOrientation';
@@ -24,7 +25,7 @@ export type ViewportOptions = {
   toolGroupId: string;
   viewportId: string;
   // Presentation ID to store/load presentation state from
-  presentationIds?: AppTypes.PresentationIds;
+  presentationIds?: CoreTypes.PresentationIds;
   orientation?: Enums.OrientationAxis;
   background?: Types.Point3;
   displayArea?: Types.DisplayArea;
@@ -45,7 +46,7 @@ export type PublicViewportOptions = {
   id?: string;
   viewportType?: string;
   toolGroupId?: string;
-  presentationIds?: string[];
+  presentationIds?: CoreTypes.PresentationIds;
   viewportId?: string;
   orientation?: Enums.OrientationAxis;
   background?: Types.Point3;
@@ -282,7 +283,7 @@ class ViewportInfo {
     return this.viewportOptions;
   }
 
-  public getPresentationIds(): AppTypes.PresentationIds | null {
+  public getPresentationIds(): CoreTypes.PresentationIds {
     const { presentationIds } = this.viewportOptions;
     return presentationIds;
   }

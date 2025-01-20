@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="28px" height="18px" viewBox="0 0 28 18" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>layout-common-1x2</title>
+    <g id="Layout-select----FINAL" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="layout-common-1x2" transform="translate(1, 1)" stroke="currentColor">
+            <rect id="Rectangle" x="0" y="0" width="26" height="15.6" rx="2"></rect>
+            <path d="M0,0 L11,-4.4408921e-16 C12.1045695,-6.46995335e-16 13,0.8954305 13,2 L13,13.6 C13,14.7045695 12.1045695,15.6 11,15.6 L0,15.6 L0,15.6 L0,0 Z" id="Rectangle" transform="translate(6.5, 7.8) scale(-1, 1) translate(-6.5, -7.8)"></path>
+        </g>
+    </g>
+</svg>

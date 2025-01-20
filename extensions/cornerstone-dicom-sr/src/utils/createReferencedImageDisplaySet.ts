@@ -61,11 +61,6 @@ const createReferencedImageDisplaySet = (displaySetService, displaySet) => {
 
   const imageSet = new ImageSet(instances);
   const instance = instances[0];
-
-  if (!instance) {
-    return;
-  }
-
   imageSet.setAttributes({
     displaySetInstanceUID: imageSet.uid, // create a local alias for the imageSet UID
     SeriesDate: instance.SeriesDate,

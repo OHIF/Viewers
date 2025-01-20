@@ -1,12 +1,7 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
-interface StudySummaryProps {
-  date: string;
-  modality: string;
-  description?: string;
-}
-
-const StudySummary: React.FC<StudySummaryProps> = ({ date, modality, description }) => {
+const StudySummary = ({ date, modality, description }) => {
   return (
     <div className="p-2">
       <div className="leading-none">
@@ -20,6 +15,12 @@ const StudySummary: React.FC<StudySummaryProps> = ({ date, modality, description
       </div>
     </div>
   );
+};
+
+StudySummary.propTypes = {
+  date: PropTypes.string.isRequired,
+  modality: PropTypes.string.isRequired,
+  description: PropTypes.string,
 };
 
 export default StudySummary;

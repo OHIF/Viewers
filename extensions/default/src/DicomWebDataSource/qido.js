@@ -154,11 +154,9 @@ function mapParams(params, options = {}) {
     // Add more fields here if you want them in the result
   ].join(',');
 
-  const useWildcard =
-    params?.disableWildcard !== undefined ? !params.disableWildcard : options.supportsWildcard;
-
+  const { supportsWildcard } = options;
   const withWildcard = value => {
-    return useWildcard && value ? `*${value}*` : value;
+    return supportsWildcard && value ? `*${value}*` : value;
   };
 
   const parameters = {

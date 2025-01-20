@@ -1,14 +1,10 @@
 {
   "name": "ohif-monorepo-root",
   "private": true,
+  "packageManager": "yarn@1.22.22",
   "workspaces": {
     "packages": [
-      "platform/app",
-      "platform/cli",
-      "platform/ui-next",
-      "platform/ui",
-      "platform/core",
-      "platform/i18n",
+      "platform/*",
       "extensions/*",
       "modes/*",
       "addOns/externals/*"
@@ -35,8 +31,6 @@
     "build:demo": "lerna run build:viewer:demo --stream",
     "build:package-all": "lerna run build:package --parallel --stream",
     "build:package-all-1": "lerna run build:package-1 --parallel --stream",
-    "dev:fast": "cd platform/app && yarn run dev:fast",
-    "show:config": "echo Config is $APP_CONFIG on $PUBLIC_URL",
     "dev": "lerna run dev:viewer --stream",
     "dev:no:cache": "lerna run dev:no:cache --stream",
     "dev:project": ".scripts/dev.sh",
@@ -44,7 +38,7 @@
     "dev:orthanc:no:cache": "lerna run dev:orthanc:no:cache --stream",
     "dev:dcm4chee": "lerna run dev:dcm4chee --stream",
     "dev:static": "lerna run dev:static --stream",
-    "orthanc:up": "docker compose -f platform/app/.recipes/Nginx-Orthanc/docker-compose.yml up",
+    "orthanc:up": "docker-compose -f platform/app/.recipes/Nginx-Orthanc/docker-compose.yml up",
     "install:dev": "cp -f yarn.lock addOns/yarn.lock && cd addOns && yarn install --modules-folder ../node_modules",
     "preinstall": "node preinstall.js",
     "start": "yarn run dev",
@@ -70,13 +64,17 @@
     "link-list": "npm ls --depth=0 --link=true"
   },
   "dependencies": {
-    "execa": "^8.0.1"
+    "chart.js": "^4.4.7",
+    "chartjs": "^0.3.24",
+    "execa": "^8.0.1",
+    "react-chartjs-2": "^5.2.0",
+    "webpack-cli": "^5.1.4"
   },
   "optionalDependencies": {
     "@percy/cypress": "^3.1.1",
-    "@playwright/test": "^1.48.0",
-    "cypress": "^13.16.1",
-    "cypress-file-upload": "^5.0.8"
+    "@playwright/test": "^1.44.0",
+    "cypress": "13.7.2",
+    "cypress-file-upload": "^3.5.3"
   },
   "devDependencies": {
     "@babel/core": "7.24.7",
@@ -92,8 +90,10 @@
     "@babel/preset-env": "7.24.7",
     "@babel/preset-react": "^7.16.7",
     "@babel/preset-typescript": "^7.13.0",
-    "prettier": "^3.3.3",
-    "prettier-plugin-tailwindcss": "0.6.9"
+    "prettier": "^3.3.2",
+    "prettier-plugin-tailwindcss": "^0.6.5",
+    "typescript": "^4.6.4",
+    "jspdf": "^2.5.2"
   },
   "husky": {
     "hooks": {
@@ -107,6 +107,7 @@
     ]
   },
   "resolutions": {
+    "**/@babel/runtime": "^7.20.13",
     "commander": "8.3.0",
     "dcmjs": ">=0.33.0",
     "dicomweb-client": ">=0.10.4",
@@ -115,9 +116,11 @@
     "glob-parent": "^6.0.2",
     "trim": "^1.0.0",
     "package-json": "^8.1.0",
-    "typescript": "5.5.4",
+    "typescript": "4.6.4",
     "sharp": "^0.32.6",
-    "rollup": "2.79.2",
-    "body-parser": "1.20.3"
+    "ip": "https://registry.npmjs.org/ip-address/-/ip-address-9.0.5.tgz",
+    "@cornerstonejs/tools": "file:./cornerstone3D_QCTWeb/packages/tools/dist/umd",
+    "@cornerstonejs/core": "^1.83.1",
+    "@cornerstonejs/adapters": "^1.83.1"
   }
 }

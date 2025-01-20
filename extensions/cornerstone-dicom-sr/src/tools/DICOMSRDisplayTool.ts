@@ -7,11 +7,10 @@ import {
   Types as cs3DToolsTypes,
 } from '@cornerstonejs/tools';
 import { getTrackingUniqueIdentifiersForElement } from './modules/dicomSRModule';
-import { SCOORDTypes } from '../enums';
-import toolNames from './toolNames';
+import SCOORD_TYPES from '../constants/scoordTypes';
 
 export default class DICOMSRDisplayTool extends AnnotationTool {
-  static toolName = toolNames.DICOMSRDisplay;
+  static toolName = 'DICOMSRDisplay';
 
   constructor(
     toolProps = {},
@@ -113,19 +112,19 @@ export default class DICOMSRDisplayTool extends AnnotationTool {
         let canvasCoordinatesAdapter;
 
         switch (GraphicType) {
-          case SCOORDTypes.POINT:
+          case SCOORD_TYPES.POINT:
             renderMethod = this.renderPoint;
             break;
-          case SCOORDTypes.MULTIPOINT:
+          case SCOORD_TYPES.MULTIPOINT:
             renderMethod = this.renderMultipoint;
             break;
-          case SCOORDTypes.POLYLINE:
+          case SCOORD_TYPES.POLYLINE:
             renderMethod = this.renderPolyLine;
             break;
-          case SCOORDTypes.CIRCLE:
+          case SCOORD_TYPES.CIRCLE:
             renderMethod = this.renderEllipse;
             break;
-          case SCOORDTypes.ELLIPSE:
+          case SCOORD_TYPES.ELLIPSE:
             renderMethod = this.renderEllipse;
             canvasCoordinatesAdapter = utilities.math.ellipse.getCanvasEllipseCorners;
             break;
@@ -230,11 +229,7 @@ export default class DICOMSRDisplayTool extends AnnotationTool {
       // This gives us one point for arrow
       canvasCoordinates.push(viewport.worldToCanvas(point));
 
-      if (data[1] !== undefined) {
-        canvasCoordinates.push(viewport.worldToCanvas(data[1]));
-      }
-      else{
-         // We get the other point for the arrow by using the image size
+      // We get the other point for the arrow by using the image size
       const imagePixelModule = metaData.get('imagePixelModule', referencedImageId);
 
       let xOffset = 10;
@@ -253,9 +248,6 @@ export default class DICOMSRDisplayTool extends AnnotationTool {
       ]);
 
       canvasCoordinates.push(viewport.worldToCanvas(arrowEnd));
-        
-      }
-     
 
       const arrowUID = `${index}`;
 
@@ -343,7 +335,7 @@ export default class DICOMSRDisplayTool extends AnnotationTool {
     }
 
     const { annotationUID, data = {} } = annotation;
-    const { labels } = data;
+    const { label } = data;
     const { color } = options;
 
     let adaptedCanvasCoordinates = canvasCoordinates;
@@ -351,7 +343,7 @@ export default class DICOMSRDisplayTool extends AnnotationTool {
     if (typeof canvasCoordinatesAdapter === 'function') {
       adaptedCanvasCoordinates = canvasCoordinatesAdapter(canvasCoordinates);
     }
-    const textLines = this._getTextBoxLinesFromLabels(labels);
+    const textLines = this._getTextBoxLinesFromLabels(label);
     const canvasTextBoxCoords = utilities.drawing.getTextBoxCoordsCanvas(adaptedCanvasCoordinates);
 
     if (!annotation.data?.handles?.textBox?.worldPosition) {

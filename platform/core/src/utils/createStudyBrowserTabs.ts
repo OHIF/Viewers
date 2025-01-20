@@ -12,12 +12,7 @@
  * @returns tabs - The prop object expected by the StudyBrowser component
  */
 
-export function createStudyBrowserTabs(
-  primaryStudyInstanceUIDs,
-  studyDisplayList,
-  displaySets,
-  recentTimeframeMS = 31536000000
-) {
+export function createStudyBrowserTabs(primaryStudyInstanceUIDs, studyDisplayList, displaySets, recentTimeframeMS = 31536000000) {
   const primaryStudies = [];
   const allStudies = [];
 

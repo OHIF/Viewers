@@ -3,7 +3,8 @@ import PropTypes from 'prop-types';
 import classnames from 'classnames';
 
 import IconButton from '../IconButton';
-import { Icons } from '@ohif/ui-next';
+import Icon from '../Icon';
+
 import './ExpandableToolbarButton.css';
 
 const ExpandableToolbarButton = ({
@@ -54,7 +55,7 @@ const ExpandableToolbarButton = ({
         onClick={onClickHandler}
         key={id}
       >
-        <Icons.ByName name={icon} />
+        <Icon name={icon} />
       </IconButton>
       <div className="absolute z-10 pt-4">
         <div className={classnames('ExpandableToolbarButton__content w-48', className)}>

@@ -20,21 +20,17 @@ function calculateTMTV(labelmaps: Array<Types.IImageVolume>, segmentIndex = 1): 
     volumeId
   );
 
-  const { imageData, spacing, voxelManager } = mergedLabelmap;
+  const { imageData, spacing } = mergedLabelmap;
+  const values = imageData.getPointData().getScalars().getData();
 
   // count non-zero values inside the outputData, this would
   // consider the overlapping regions to be only counted once
-  let numVoxels = 0;
-  const callback = ({ value }) => {
-    if (value > 0) {
-      numVoxels += 1;
+  const numVoxels = values.reduce((acc, curr) => {
+    if (curr > 0) {
+      return acc + 1;
     }
-  };
-
-  voxelManager.forEach(callback, {
-    imageData,
-    isInObject: () => true,
-  });
+    return acc;
+  }, 0);
 
   return 1e-3 * numVoxels * spacing[0] * spacing[1] * spacing[2];
 }
