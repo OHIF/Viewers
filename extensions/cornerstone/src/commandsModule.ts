@@ -34,7 +34,7 @@ import toggleVOISliceSync from './utils/toggleVOISliceSync';
 import { usePositionPresentationStore, useSegmentationPresentationStore } from './stores';
 import { toolNames } from './initCornerstoneTools';
 import addRandomRectangle from './utils/addRandomRectangle';
-import addSegmentationFromLabelmap, { createSphereLabelmap } from './utils/addRandomSegmentation';
+import addSegmentation from './utils/addSegmentation';
 
 const toggleSyncFunctions = {
   imageSlice: toggleImageSliceSync,
@@ -1310,14 +1310,8 @@ function commandsModule({
     },
 
     addRandomSegmentation: async () => {
-      const mockSphereLabelmap = createSphereLabelmap(44, 512, 512);
-      return addSegmentationFromLabelmap({
-        servicesManager,
-        labelmap: mockSphereLabelmap,
-        segmentationLabel: 'Sphere Segmentation',
-        segmentLabel: 'Sphere',
-        segmentColor: [255, 0, 0, 255],
-      });
+      const segmentationId = await addSegmentation(servicesManager);
+      return segmentationId;
     }
   };
 
