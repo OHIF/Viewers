@@ -37,10 +37,10 @@ export default function StudyMeasurements(props): React.ReactNode {
     <AccordionGroup
       grouping={{
         groupingFunction: grouping.groupingFunction || groupByStudy(props),
-        component: ShowItem,
         componentProps: { ...props, ...grouping.componentProps },
       }}
       items={items}
+      component={grouping.component || ShowItem}
     />
   );
 }
