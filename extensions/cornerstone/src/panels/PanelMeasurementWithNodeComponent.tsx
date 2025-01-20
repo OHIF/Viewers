@@ -6,7 +6,7 @@ import { utils } from '@ohif/core';
 import { PanelAccordion } from '../components/CollapsibleStudySummaryFromMetadata';
 import { StudySummaryFromMetadata } from '../components/StudySummaryFromMetadata';
 import NodeComponent from './NodeComponent';
-import { MeasurementTable } from '@ohif/ui-next';
+import { MeasurementTable } from './TableForNodeComponent';
 
 const { groupByStudy } = utils.MeasurementGroupings;
 const { filterAdditionalFindings, filterAny } = utils.MeasurementFilters;
@@ -101,17 +101,19 @@ export default function PanelMeasurement({
             shouldShowFallback: ({ filteredItems }) => filteredItems.length === 0,
             content:
               ({ filteredItems }) =>
-              () => (
+              ({ children }) => (
                 <MeasurementTable
                   title="Measurements"
-                  data={filteredItems}
+                  items={filteredItems}
                   {...onArgs}
                 >
-                  <MeasurementTable.Body />
+                  {children}
                 </MeasurementTable>
               ),
           }}
-        />
+        >
+          <MeasurementTable.Body items={[]} />
+        </NodeComponent>
         <NodeComponent
           servicesManager={servicesManager}
           nodeSchema={{
@@ -121,18 +123,20 @@ export default function PanelMeasurement({
             fallback: <></>,
             content:
               ({ filteredItems }) =>
-              () => (
+              ({ children }) => (
                 <MeasurementTable
                   key="additional"
-                  data={filteredItems}
+                  items={filteredItems}
                   title="Additional Findings"
                   {...onArgs}
                 >
-                  <MeasurementTable.Body />
+                  {children}
                 </MeasurementTable>
               ),
           }}
-        />
+        >
+          <MeasurementTable.Body items={[]} />
+        </NodeComponent>
       </NodeComponent>
     </div>
   );
