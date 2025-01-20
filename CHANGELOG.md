@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.10.0-beta.65](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.64...v3.10.0-beta.65) (2025-01-20)
+
+
+### Bug Fixes
+
+* **rotation:** support cycling rotateViewportCCW ([#4533](https://github.com/OHIF/Viewers/issues/4533)) ([bf58707](https://github.com/OHIF/Viewers/commit/bf587070cccd344f5e8817e9954ba9f2e46b81bb))
+
+
+
+
+
 # [3.10.0-beta.64](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.63...v3.10.0-beta.64) (2025-01-20)
 
 
