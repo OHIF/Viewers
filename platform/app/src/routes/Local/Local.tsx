@@ -6,9 +6,9 @@ import { DicomMetadataStore, MODULE_TYPES } from '@ohif/core';
 import Dropzone from 'react-dropzone';
 import filesToStudies from './filesToStudies';
 
-import { extensionManager } from '../../App.tsx';
+import { extensionManager } from '../../App';
 
-import { Button, Icon, LoadingIndicatorProgress } from '@ohif/ui';
+import { Button, LoadingIndicatorProgress } from '@ohif/ui';
 import { Icons } from '@ohif/ui-next';
 
 const getLoadButton = (onDrop, text, isDir) => {

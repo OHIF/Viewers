@@ -206,7 +206,6 @@
     />
     <link
       href="https://fonts.googleapis.com/css?family=Inter:100,300,400,500,700&display=swap"
-      rel="stylesheet"
       rel="preload"
       as="style"
     />
@@ -214,8 +213,9 @@
       function browserImportFunction(moduleId) {
         return import(moduleId);
       }
-    </script>
 
+      window.PUBLIC_URL = '<%= PUBLIC_URL %>';
+    </script>
 
     <!-- EXTENSIONS -->
     <!-- <script type="text/javascript" src="path/to/some-extension.js"></script>
@@ -236,7 +236,6 @@
   <body>
     <noscript> You need to enable JavaScript to run this app. </noscript>
     <div id="react-portal"></div>
-    <div id="root">
-    </div>
+    <div id="root"></div>
   </body>
 </html>

@@ -1,7 +1,6 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { useLocation } from 'react-router';
 
 import { UserPreferences, AboutModal, useModal } from '@ohif/ui';
 import { Header } from '@ohif/ui-next';
@@ -10,6 +9,7 @@ import { hotkeys } from '@ohif/core';
 import { Toolbar } from '../Toolbar/Toolbar';
 import HeaderPatientInfo from './HeaderPatientInfo';
 import { PatientInfoVisibility } from './HeaderPatientInfo/HeaderPatientInfo';
+import { preserveQueryParameters, publicUrl } from '@ohif/app';
 
 const { availableLanguages, defaultLanguage, currentLanguage } = i18n;
 
@@ -25,8 +25,6 @@ function ViewerHeader({
   const onClickReturnButton = () => {
     const { pathname } = location;
     const dataSourceIdx = pathname.indexOf('/', 1);
-    const query = new URLSearchParams(window.location.search);
-    const configUrl = query.get('configUrl');
 
     const dataSourceName = pathname.substring(dataSourceIdx + 1);
     const existingDataSource = extensionManager.getDataSources(dataSourceName);
@@ -35,13 +33,10 @@ function ViewerHeader({
     if (dataSourceIdx !== -1 && existingDataSource) {
       searchQuery.append('datasources', pathname.substring(dataSourceIdx + 1));
     }
-
-    if (configUrl) {
-      searchQuery.append('configUrl', configUrl);
-    }
+    preserveQueryParameters(searchQuery);
 
     navigate({
-      pathname: '/',
+      pathname: publicUrl,
       search: decodeURIComponent(searchQuery.toString()),
     });
   };

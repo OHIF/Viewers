@@ -24,7 +24,7 @@ import {
   DialogDescription,
 } from './Dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './Select';
-
+import { Clipboard } from './Clipboard';
 import { Combobox } from './Combobox';
 import { Popover, PopoverContent, PopoverTrigger, PopoverAnchor } from './Popover';
 import { Calendar } from './Calendar';
@@ -79,6 +79,17 @@ import { StudySummary } from './StudySummary';
 import { ErrorBoundary } from './Errorboundary';
 import { Header } from './Header';
 import { Card, CardHeader, CardFooter, CardTitle, CardDescription, CardContent } from './Card';
+import {
+  ViewportActionButton,
+  PatientInfo,
+  ViewportActionBar,
+  ViewportActionArrows,
+  ViewportPane,
+  ViewportActionCorners,
+  ViewportActionCornersLocations,
+  ViewportOverlay,
+  ViewportGrid,
+} from './Viewport';
 
 export {
   ErrorBoundary,
@@ -183,4 +194,14 @@ export {
   CardTitle,
   CardDescription,
   CardContent,
+  ViewportActionButton,
+  PatientInfo,
+  ViewportActionBar,
+  ViewportActionArrows,
+  ViewportPane,
+  ViewportActionCorners,
+  ViewportActionCornersLocations,
+  ViewportOverlay,
+  ViewportGrid,
+  Clipboard,
 };
