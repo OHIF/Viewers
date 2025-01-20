@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.10.0-beta.64](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.63...v3.10.0-beta.64) (2025-01-20)
+
+
+### Bug Fixes
+
+* **hp:** Display set should allow remembered updates ([#4707](https://github.com/OHIF/Viewers/issues/4707)) ([464148e](https://github.com/OHIF/Viewers/commit/464148ece66b48b583dc6e998ca4d11c66746f3a))
+
+
+
+
+
 # [3.10.0-beta.63](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.62...v3.10.0-beta.63) (2025-01-17)
 
 **Note:** Version bump only for package ohif-monorepo-root

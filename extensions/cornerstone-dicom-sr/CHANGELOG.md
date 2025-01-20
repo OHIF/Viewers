@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.10.0-beta.64](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.63...v3.10.0-beta.64) (2025-01-20)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone-dicom-sr
+
+
+
+
+
 # [3.10.0-beta.63](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.62...v3.10.0-beta.63) (2025-01-17)
 
 **Note:** Version bump only for package @ohif/extension-cornerstone-dicom-sr
