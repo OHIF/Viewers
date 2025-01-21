@@ -10,7 +10,10 @@ export default function PanelMeasurement(props): React.ReactNode {
     componentProps,
     commandsManager,
     key = 'PanelMeasurementConfigurable',
+    configuration,
   } = props;
+
+  console.log('Panel measurement configurable configuration=', configuration);
 
   const displayMeasurements = useMeasurements(servicesManager, {
     measurementFilter,
@@ -27,6 +30,7 @@ export default function PanelMeasurement(props): React.ReactNode {
       key={key}
       {...childProps}
       {...componentProps}
+      childProps={childProps}
       items={displayMeasurements}
     />
   );

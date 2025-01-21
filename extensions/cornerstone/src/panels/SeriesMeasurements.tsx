@@ -1,50 +1,45 @@
 import React from 'react';
 import AccordionGroup from './AccordionGroup';
-import { StudySummaryFromMetadata } from '../components/StudySummaryFromMetadata';
+import { SeriesSummaryFromMetadata } from '../components/SeriesSummaryFromMetadata';
 import MeasurementsOrAdditionalFindings from './MeasurementsOrAdditionalFindings';
 /**
  * Groups measurements by study in order to allow display and saving by study
  * @param {Object} servicesManager
  */
-export const groupByStudy = (items, grouping, childProps) => {
+export const groupByDisplaySet = (items, grouping, childProps) => {
   const groups = new Map();
   const { displaySetService } = childProps.servicesManager.services;
 
-  const getItemStudyInstanceUID = item => {
-    const displaySet = displaySetService.getDisplaySetByUID(item.displaySetInstanceUID);
-    return displaySet.instances[0].StudyInstanceUID;
-  };
-
   items.forEach(item => {
-    const studyUID = getItemStudyInstanceUID(item);
-    if (!groups.has(studyUID)) {
-      groups.set(studyUID, {
+    const { displaySetInstanceUID } = item;
+    const displaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
+
+    if (!groups.has(displaySetInstanceUID)) {
+      groups.set(displaySetInstanceUID, {
+        header: SeriesSummaryFromMetadata,
         ...grouping,
         items: [],
         headerProps: {
           ...grouping.headerProps,
-          StudyInstanceUID: studyUID,
+          displaySet,
         },
       });
     }
-    groups.get(studyUID).items.push(item);
+    groups.get(displaySetInstanceUID).items.push(item);
   });
 
   return groups;
 };
 
-export default function StudyMeasurements(props): React.ReactNode {
+export default function SeriesMeasurements(props): React.ReactNode {
   const { items, childProps, grouping = {} } = props;
-
-  console.log('study grouping=', grouping);
-  console.log('grouping component', grouping.component);
 
   // Need to merge defaults on the component props to ensure they get passed to hcildren
   return (
     <AccordionGroup
       grouping={{
-        groupingFunction: groupByStudy,
-        header: StudySummaryFromMetadata,
+        groupingFunction: groupByDisplaySet,
+        header: SeriesSummaryFromMetadata,
         ...grouping,
       }}
       childProps={childProps}

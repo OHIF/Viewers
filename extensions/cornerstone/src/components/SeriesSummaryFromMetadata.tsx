@@ -1,24 +1,24 @@
 import React from 'react';
-import { DicomMetadataStore, utils } from '@ohif/core';
+import { utils } from '@ohif/core';
 import { StudySummary } from '@ohif/ui-next';
 
 const { formatDate } = utils;
 
-export function StudySummaryFromMetadata({ StudyInstanceUID, SeriesInstanceUID }) {
-  if (!StudyInstanceUID || !SeriesInstanceUID) {
+export function SeriesSummaryFromMetadata({ displaySet }) {
+  if (!displaySet) {
     return null;
   }
-  const seriesMeta = DicomMetadataStore.getSeries(StudyInstanceUID, SeriesInstanceUID);
-  if (!seriesMeta) {
-    return null;
-  }
+  console.log('displaySet=', displaySet);
 
-  const { SeriesDate, SeriesDescription } = seriesMeta;
+  const { SeriesDate, SeriesDescription, SeriesNumber = 1 } = displaySet;
+  console.log("Showing 'series' summary", SeriesDate, SeriesDescription);
 
   return (
-    <StudySummary
-      date={formatDate(SeriesDate)}
-      description={SeriesDescription}
-    />
+    <div className="mx-2 my-0">
+      <div className="text-foreground pb-1 text-sm">
+        Series #{SeriesNumber} {SeriesDescription}
+      </div>
+      <div className="text-muted-foreground text-sm">{formatDate(SeriesDate)}</div>
+    </div>
   );
 }

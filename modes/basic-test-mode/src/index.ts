@@ -17,6 +17,10 @@ const ohif = {
   thumbnailList: '@ohif/extension-default.panelModule.seriesList',
 };
 
+const testExtension = {
+  measurements: '@ohif/extension-test.panelModule.panelMeasurementSeries',
+};
+
 const tracked = {
   measurements: '@ohif/extension-measurement-tracking.panelModule.trackedMeasurements',
   thumbnailList: '@ohif/extension-measurement-tracking.panelModule.seriesList',
@@ -151,7 +155,7 @@ function modeFactory() {
               // rightPanels: [dicomSeg.panel, ohif.measurements],
               leftPanels: [tracked.thumbnailList],
               // Can use cornerstone.measurements for all measurements
-              rightPanels: [cornerstone.panel, tracked.measurements, cornerstone.measurements],
+              rightPanels: [cornerstone.panel, tracked.measurements, testExtension.measurements],
               // rightPanelClosed: true, // optional prop to start with collapse panels
               viewports: [
                 {
