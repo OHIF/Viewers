@@ -6,19 +6,27 @@ export default function PanelMeasurement(props): React.ReactNode {
   const {
     servicesManager,
     measurementFilter,
-    content: Content = StudyMeasurements,
-    contentProps,
+    component: Component = StudyMeasurements,
+    componentProps,
+    commandsManager,
+    key = 'PanelMeasurementConfigurable',
   } = props;
 
   const displayMeasurements = useMeasurements(servicesManager, {
     measurementFilter,
   });
+  const childProps = {
+    servicesManager,
+    measurementFilter,
+    commandsManager,
+  };
 
   // Need to merge defaults on the content props to ensure they get passed to hcildren
   return (
-    <Content
-      {...props}
-      {...contentProps}
+    <Component
+      key={key}
+      {...childProps}
+      {...componentProps}
       items={displayMeasurements}
     />
   );

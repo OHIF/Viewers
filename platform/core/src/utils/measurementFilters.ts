@@ -1,3 +1,4 @@
+import MeasurementService from '../services/MeasurementService';
 /**
  * Returns a filter function which filters for measurements belonging to both
  * the study and series.
@@ -44,13 +45,14 @@ export function filterOr(...filters) {
   };
 }
 
+const { POINT } = MeasurementService.VALUE_TYPES;
+
 /**
  * Filters for additional findings, that is, measurements with
  * a value of type point, and having a referenced image
  */
-export function filterAdditionalFindings(measurementService) {
-  const { POINT } = measurementService.VALUE_TYPES;
-  return dm => dm.type === POINT && dm.referencedImageId;
+export function filterAdditionalFindings(dm) {
+  return dm.type === POINT && dm.referencedImageId;
 }
 
 /**

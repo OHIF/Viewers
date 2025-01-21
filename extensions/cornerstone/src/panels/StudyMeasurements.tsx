@@ -1,6 +1,7 @@
 import React from 'react';
 import AccordionGroup from './AccordionGroup';
-import ShowItem from './ShowItem';
+import { StudySummaryFromMetadata } from '../components/StudySummaryFromMetadata';
+import MeasurementsOrAdditionalFindings from './MeasurementsOrAdditionalFindings';
 /**
  * Groups measurements by study in order to allow display and saving by study
  * @param {Object} servicesManager
@@ -13,13 +14,18 @@ export const groupByStudy = ({ servicesManager }) => {
     return displaySet.instances[0].StudyInstanceUID;
   };
 
-  return items => {
+  return (items, grouping) => {
     const groups = new Map();
     items.forEach(item => {
       const studyUID = getItemStudyInstanceUID(item);
       if (!groups.has(studyUID)) {
         groups.set(studyUID, {
+          ...grouping,
           items: [],
+          headerProps: {
+            ...grouping.headerProps,
+            StudyInstanceUID: studyUID,
+          },
         });
       }
       groups.get(studyUID).items.push(item);
@@ -30,17 +36,19 @@ export const groupByStudy = ({ servicesManager }) => {
 };
 
 export default function StudyMeasurements(props): React.ReactNode {
-  const { items, title = 'Measurements', grouping = {} } = props;
+  const { items, childProps, grouping = {} } = props;
 
-  // Need to merge defaults on the content props to ensure they get passed to hcildren
+  // Need to merge defaults on the component props to ensure they get passed to hcildren
   return (
     <AccordionGroup
       grouping={{
+        header: StudySummaryFromMetadata,
+        ...grouping,
         groupingFunction: grouping.groupingFunction || groupByStudy(props),
-        componentProps: { ...props, ...grouping.componentProps },
       }}
+      childProps={childProps}
       items={items}
-      component={grouping.component || ShowItem}
+      component={grouping.component || MeasurementsOrAdditionalFindings}
     />
   );
 }
