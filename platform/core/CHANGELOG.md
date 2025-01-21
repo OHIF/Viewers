@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.9.3](https://github.com/OHIF/Viewers/compare/v3.9.2...v3.9.3) (2025-01-21)
+
+
+### Bug Fixes
+
+* **header tools in volume3D:** All header tools are enabled in volume3D viewport  ([#4681](https://github.com/OHIF/Viewers/issues/4681)) ([b19d7af](https://github.com/OHIF/Viewers/commit/b19d7af9ff81beedbcb8f6198ef21783f94782fa))
+* OHIF 3.9 Recovery 3 ([#4697](https://github.com/OHIF/Viewers/issues/4697)) ([5d4f2e2](https://github.com/OHIF/Viewers/commit/5d4f2e2a8e62f8de97d56a4e3f17be6018e9f2eb))
+
+
+
+
+
 ## [3.9.2](https://github.com/OHIF/Viewers/compare/v3.9.1...v3.9.2) (2024-12-03)
 
 

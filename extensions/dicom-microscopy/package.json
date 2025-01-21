@@ -1,6 +1,6 @@
 {
   "name": "@ohif/extension-dicom-microscopy",
-  "version": "3.9.2",
+  "version": "3.9.3",
   "description": "OHIF extension for DICOM microscopy",
   "author": "Bill Wallace, md-prog",
   "license": "MIT",
