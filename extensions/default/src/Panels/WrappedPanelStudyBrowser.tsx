@@ -13,7 +13,7 @@ import requestDisplaySetCreationForStudy from './requestDisplaySetCreationForStu
  * @param {object} commandsManager
  * @param {object} extensionManager
  */
-function WrappedPanelStudyBrowser({ extensionManager, servicesManager }) {
+function WrappedPanelStudyBrowser({ extensionManager, servicesManager, commandsManager }) {
   // TODO: This should be made available a different way; route should have
   // already determined our datasource
   const [dataSource] = extensionManager.getActiveDataSource();

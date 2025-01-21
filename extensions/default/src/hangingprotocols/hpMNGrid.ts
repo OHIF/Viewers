@@ -32,6 +32,7 @@ export const hpMN: Types.HangingProtocol.Protocol = {
   toolGroupIds: ['default'],
   displaySetSelectors: {
     defaultDisplaySetId: {
+      allowUnmatchedView: true,
       seriesMatchingRules: seriesWithImages,
     },
   },
@@ -39,7 +40,6 @@ export const hpMN: Types.HangingProtocol.Protocol = {
     viewportOptions: {
       viewportType: 'stack',
       toolGroupId: 'default',
-      allowUnmatchedView: true,
       syncGroups: [HYDRATE_SEG_SYNC_GROUP],
     },
     displaySets: [
