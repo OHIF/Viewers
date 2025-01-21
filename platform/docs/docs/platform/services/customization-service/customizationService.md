@@ -3,7 +3,7 @@ sidebar_label: Introduction
 sidebar_position: 1
 ---
 
-import { customizations, TableGenerator } from './customizations';
+import { customizations, TableGenerator } from './sampleCustomizations';
 import Heading from '@theme/Heading';
 import TOCInline from '@theme/TOCInline';
 

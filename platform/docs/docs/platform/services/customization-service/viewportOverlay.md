@@ -1,7 +1,7 @@
 ---
 sidebar_position: 1
 ---
-import { viewportOverlayCustomizations , TableGenerator } from './customizations';
+import { viewportOverlayCustomizations , TableGenerator } from './sampleCustomizations';
 
 # Viewport Overlay
 

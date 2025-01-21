@@ -4,6 +4,6 @@ title: Segmentation
 
 
 
-import { segmentationCustomizations, TableGenerator } from './customizations';
+import { segmentationCustomizations, TableGenerator } from './sampleCustomizations';
 
 {TableGenerator(segmentationCustomizations)}

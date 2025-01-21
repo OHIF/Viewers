@@ -4,6 +4,6 @@ title: Measurements
 
 
 
-import { measurementsCustomizations, TableGenerator } from './customizations';
+import { measurementsCustomizations, TableGenerator } from './sampleCustomizations';
 
 {TableGenerator(measurementsCustomizations)}
