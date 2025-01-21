@@ -1,7 +1,7 @@
 import DataSourceSelector from '../Panels/DataSourceSelector';
 
 export default {
-  customRoutes: {
+  'routes.customRoutes': {
     routes: {
       $push: [
         {

@@ -108,7 +108,7 @@ const createRoutes = ({
     props: { children: WorkList, servicesManager, extensionManager },
   };
 
-  const customRoutes = customizationService.getCustomization('customRoutes');
+  const customRoutes = customizationService.getCustomization('routes.customRoutes');
 
   const allRoutes = [
     ...routes,

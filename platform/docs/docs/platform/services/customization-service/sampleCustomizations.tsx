@@ -561,7 +561,7 @@ window.config = {
 
 export const segmentationCustomizations = [
   {
-    id: 'PanelSegmentation.tableMode',
+    id: 'panelSegmentation.tableMode',
     description: 'Defines the mode of the segmentation table.',
     image: [segmentationTableModeImage, segmentationTableModeImage2],
     default: 'collapsed',
@@ -569,7 +569,7 @@ export const segmentationCustomizations = [
 window.config = {
   customizationService: [
     {
-      'PanelSegmentation.tableMode': {
+      'panelSegmentation.tableMode': {
         $set: 'expanded',
       },
     },
@@ -578,7 +578,7 @@ window.config = {
     `,
   },
   {
-    id: 'PanelSegmentation.showAddSegment',
+    id: 'panelSegmentation.showAddSegment',
     description:
       'Controls whether the "Add Segment" button is displayed in the segmentation panel.',
     default: true,
@@ -587,7 +587,7 @@ window.config = {
 window.config = {
   customizationService: [
     {
-      'PanelSegmentation.showAddSegment': {
+      'panelSegmentation.showAddSegment': {
         $set: false, // Set to false to hide the "Add Segment" button
       },
     },
@@ -596,7 +596,7 @@ window.config = {
     `,
   },
   {
-    id: 'PanelSegmentation.readableText',
+    id: 'panelSegmentation.readableText',
     description: 'Defines the readable text labels for segmentation panel statistics and metrics.',
     default: {
       lesionStats: 'Lesion Statistics',
@@ -613,7 +613,7 @@ window.config = {
 window.config = {
   customizationService: [
     {
-      'PanelSegmentation.readableText': {
+      'panelSegmentation.readableText': {
         $merge: {
           lesionStats: 'Lesion Stats',
         },
@@ -624,7 +624,7 @@ window.config = {
   `,
   },
   {
-    id: 'PanelSegmentation.onSegmentationAdd',
+    id: 'panelSegmentation.onSegmentationAdd',
     description: 'Defines the behavior when a new segmentation is added to the segmentation panel.',
     default: `() => {
       // default is to create a labelmap for the active viewport
@@ -636,7 +636,7 @@ window.config = {
 window.config = {
   customizationService: [
     {
-      'PanelSegmentation.onSegmentationAdd': {
+      'panelSegmentation.onSegmentationAdd': {
         $set: () => {
           const { viewportGridService } = servicesManager.services;
           const viewportId = viewportGridService.getState().activeViewportId;
@@ -649,7 +649,7 @@ window.config = {
   `,
   },
   {
-    id: 'PanelSegmentation.disableEditing',
+    id: 'panelSegmentation.disableEditing',
     description: 'Determines whether editing of segmentations in the panel is disabled.',
     default: false,
     image: [segDisplayEditingTrue, segDisplayEditingFalse],
@@ -657,7 +657,7 @@ window.config = {
 window.config = {
   customizationService: [
     {
-      'PanelSegmentation.disableEditing': {
+      'panelSegmentation.disableEditing': {
         $set: true, // Disables editing of segmentations in the panel
       },
     },
@@ -669,7 +669,7 @@ window.config = {
 
 export const measurementsCustomizations = [
   {
-    id: 'PanelMeasurement.disableEditing',
+    id: 'panelMeasurement.disableEditing',
     description:
       'Determines whether editing measurements in the viewport is disabled after SR hydration',
     default: false,
@@ -677,7 +677,7 @@ export const measurementsCustomizations = [
 window.config = {
   customizationService: [
     {
-      'PanelMeasurement.disableEditing': {
+      'panelMeasurement.disableEditing': {
         $set: true, // Disables editing measurements in the panel
       },
     },
@@ -912,7 +912,7 @@ window.config = {
 
 export const studyBrowserCustomizations = [
   {
-    id: 'PanelStudyBrowser.studyMode',
+    id: 'studyBrowser.studyMode',
     description:
       'Controls the study browser mode to determine whether to show all studies (including prior studies) or only the current study.',
     default: `'all'`,
@@ -920,7 +920,7 @@ export const studyBrowserCustomizations = [
 window.config = {
   customizationService: [
     {
-      'PanelStudyBrowser.studyMode': {
+      'studyBrowser.studyMode': {
          $set: 'primary', // or recent
       },
     },

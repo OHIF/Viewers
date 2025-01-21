@@ -13,7 +13,7 @@ import {
 
 export default function getSegmentationPanelCustomization({ commandsManager, servicesManager }) {
   return {
-    'PanelSegmentation.CustomDropdownMenuContent': ({
+    'panelSegmentation.customDropdownMenuContent': ({
       activeSegmentation,
       onSegmentationAdd,
       onSegmentationRemoveFromViewport,
@@ -72,15 +72,15 @@ export default function getSegmentationPanelCustomization({ commandsManager, ser
         </DropdownMenuItem>
       </DropdownMenuContent>
     ),
-    'PanelSegmentation.disableEditing': false,
-    'PanelSegmentation.showAddSegment': true,
-    'PanelSegmentation.onSegmentationAdd': () => {
+    'panelSegmentation.disableEditing': false,
+    'panelSegmentation.showAddSegment': true,
+    'panelSegmentation.onSegmentationAdd': () => {
       const { viewportGridService } = servicesManager.services;
       const viewportId = viewportGridService.getState().activeViewportId;
       commandsManager.run('createLabelmapForViewport', { viewportId });
     },
-    'PanelSegmentation.tableMode': 'collapsed',
-    'PanelSegmentation.readableText': {
+    'panelSegmentation.tableMode': 'collapsed',
+    'panelSegmentation.readableText': {
       lesionStats: 'Lesion Statistics',
       minValue: 'Minimum Value',
       maxValue: 'Maximum Value',

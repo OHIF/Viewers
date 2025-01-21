@@ -21,7 +21,7 @@ function PanelMeasurementTableTracking({
     ? filterAnd(filterPlanarMeasurement, filterMeasurementsBySeriesUID(trackedSeries))
     : filterPlanarMeasurement;
 
-  const disableEditing = customizationService.getCustomization('PanelMeasurement.disableEditing');
+  const disableEditing = customizationService.getCustomization('panelMeasurement.disableEditing');
 
   return (
     <>

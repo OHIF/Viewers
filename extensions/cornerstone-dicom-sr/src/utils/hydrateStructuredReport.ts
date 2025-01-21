@@ -48,7 +48,7 @@ export default function hydrateStructuredReport(
   const { measurementService, displaySetService, customizationService } = servicesManager.services;
 
   const codingValues = customizationService.getCustomization('codingValues');
-  const disableEditing = customizationService.getCustomization('PanelMeasurement.disableEditing');
+  const disableEditing = customizationService.getCustomization('panelMeasurement.disableEditing');
 
   const displaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
 

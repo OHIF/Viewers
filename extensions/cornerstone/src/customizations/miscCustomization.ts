@@ -4,7 +4,7 @@ import DicomUpload from '../components/DicomUpload/DicomUpload';
 export default {
   cinePlayer: CinePlayer,
   autoCineModalities: ['OT', 'US'],
-  'PanelMeasurement.disableEditing': false,
+  'panelMeasurement.disableEditing': false,
   onBeforeSRAddMeasurement: ({ measurement, StudyInstanceUID, SeriesInstanceUID }) => {
     return measurement;
   },

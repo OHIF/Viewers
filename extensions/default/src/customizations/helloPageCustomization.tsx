@@ -1,7 +1,7 @@
 import React from 'react';
 
 export default {
-  customRoutes: {
+  'routes.customRoutes': {
     routes: {
       $push: [
         {

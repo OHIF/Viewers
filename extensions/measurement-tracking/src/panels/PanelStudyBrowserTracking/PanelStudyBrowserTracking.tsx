@@ -47,7 +47,7 @@ export default function PanelStudyBrowserTracking({
     customizationService,
   } = servicesManager.services;
   const navigate = useNavigate();
-  const studyMode = customizationService.getCustomization('PanelStudyBrowser.studyMode');
+  const studyMode = customizationService.getCustomization('studyBrowser.studyMode');
 
   const { t } = useTranslation('Common');
 

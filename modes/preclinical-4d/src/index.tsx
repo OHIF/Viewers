@@ -63,15 +63,15 @@ function modeFactory({ modeConfiguration }) {
       // the primary button section is created in the workflow steps
       // specific to the step
       customizationService.setCustomizations({
-        'PanelSegmentation.tableMode': {
+        'panelSegmentation.tableMode': {
           $set: 'expanded',
         },
-        'PanelSegmentation.onSegmentationAdd': {
+        'panelSegmentation.onSegmentationAdd': {
           $set: () => {
             commandsManager.run('createNewLabelMapForDynamicVolume');
           },
         },
-        'PanelSegmentation.showAddSegment': {
+        'panelSegmentation.showAddSegment': {
           $set: false,
         },
       });

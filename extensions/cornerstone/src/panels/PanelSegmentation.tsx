@@ -110,18 +110,18 @@ export default function PanelSegmentation({
   };
 
   const segmentationTableMode = customizationService.getCustomization(
-    'PanelSegmentation.tableMode'
+    'panelSegmentation.tableMode'
   );
 
   // custom onSegmentationAdd if provided
   const onSegmentationAdd = customizationService.getCustomization(
-    'PanelSegmentation.onSegmentationAdd'
+    'panelSegmentation.onSegmentationAdd'
   );
 
-  const disableEditing = customizationService.getCustomization('PanelSegmentation.disableEditing');
-  const showAddSegment = customizationService.getCustomization('PanelSegmentation.showAddSegment');
+  const disableEditing = customizationService.getCustomization('panelSegmentation.disableEditing');
+  const showAddSegment = customizationService.getCustomization('panelSegmentation.showAddSegment');
   const CustomDropdownMenuContent = customizationService.getCustomization(
-    'PanelSegmentation.CustomDropdownMenuContent'
+    'panelSegmentation.customDropdownMenuContent'
   );
 
   const exportOptions = segmentationsWithRepresentations.map(({ segmentation }) => {

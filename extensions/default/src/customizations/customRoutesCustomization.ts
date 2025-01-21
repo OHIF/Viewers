@@ -1,5 +1,5 @@
 export default {
-  customRoutes: {
+  'routes.customRoutes': {
     routes: [],
     notFoundRoute: null,
   },

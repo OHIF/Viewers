@@ -39,5 +39,5 @@ export default {
       selected: true,
     },
   ],
-  'PanelStudyBrowser.studyMode': 'all',
+  'studyBrowser.studyMode': 'all',
 };

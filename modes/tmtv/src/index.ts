@@ -102,10 +102,10 @@ function modeFactory({ modeConfiguration }) {
       ]);
 
       customizationService.setCustomizations({
-        'PanelSegmentation.tableMode': {
+        'panelSegmentation.tableMode': {
           $set: 'expanded',
         },
-        'PanelSegmentation.onSegmentationAdd': {
+        'panelSegmentation.onSegmentationAdd': {
           $set: () => {
             commandsManager.run('createNewLabelmapFromPT');
           },

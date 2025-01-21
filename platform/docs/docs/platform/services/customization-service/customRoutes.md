@@ -5,7 +5,7 @@ sidebar_position: 2
 
 # customRoutes
 
-* Name: `customRoutes`  global
+* Name: `routes.customRoutes`  global
 * Attributes:
 ** `routes` of type List of route objects (see `route/index.tsx`) is a set of route objects to add.
 ** Should any element of routes match an existing baked in element, the baked in one will be replaced.
@@ -23,7 +23,7 @@ export default function getCustomizationModule({ servicesManager, extensionManag
     {
       name: 'helloPage',
       value: {
-        customRoutes: {
+        'routes.customRoutes': {
           routes: {
             $push: [
               {
