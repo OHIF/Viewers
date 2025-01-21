@@ -13,6 +13,7 @@ import {
   DropdownMenuItem,
   Icons,
 } from '@ohif/ui-next';
+import defaultContextMenu from './CustomizableContextMenu/defaultContextMenu';
 
 const { sortingCriteria } = utils;
 const formatDate = utils.formatDate;
@@ -170,25 +171,27 @@ export default function getCustomizationModule({ servicesManager, extensionManag
             </span>
           );
         },
+        ...defaultContextMenu,
+        'ohif.contextMenu': {
+          transform: function (customizationService: CustomizationService) {
+            /**
+             * Applies the inheritsFrom to all the menu items.
+             * This function clones the object and child objects to prevent
+             * changes to the original customization object.
+             */
+            // Don't modify the children, as those are copied by reference
+            const clonedObject = { ...this };
+            clonedObject.menus = this.menus.map(menu => ({ ...menu }));
 
-        'ohif.contextMenu': function (customizationService: CustomizationService) {
-          /**
-           * Applies the inheritsFrom to all the menu items.
-           * This function clones the object and child objects to prevent
-           * changes to the original customization object.
-           */
-          // Don't modify the children, as those are copied by reference
-          const clonedObject = { ...this };
-          clonedObject.menus = this.menus.map(menu => ({ ...menu }));
-
-          for (const menu of clonedObject.menus) {
-            const { items: originalItems } = menu;
-            menu.items = [];
-            for (const item of originalItems) {
-              menu.items.push(customizationService.transform(item));
+            for (const menu of clonedObject.menus) {
+              const { items: originalItems } = menu;
+              menu.items = [];
+              for (const item of originalItems) {
+                menu.items.push(customizationService.transform(item));
+              }
             }
-          }
-          return clonedObject;
+            return clonedObject;
+          },
         },
         'PanelStudyBrowser.studyMode': 'all',
         // the generic GUI component to configure a data source using an instance of a BaseDataSourceConfigurationAPI

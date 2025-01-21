@@ -18,7 +18,8 @@
   },
   "rules": {
     // Enforce consistent brace style for all control statements for readability
-    "curly": "error"
+    "curly": "error",
+    "import/no-anonymous-default-export": "off"
   },
   "globals": {
     "cy": true,

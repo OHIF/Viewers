@@ -5,15 +5,15 @@ export default function getCustomizationModule() {
     {
       name: 'custom-context-menu',
       value: {
-        codingValues,
-        contextMenuCodeItem,
-        findingsContextMenu,
+        ...codingValues,
+        ...contextMenuCodeItem,
+        ...findingsContextMenu,
       },
     },
     {
       name: 'contextMenuCodeItem',
       value: {
-        contextMenuCodeItem,
+        ...contextMenuCodeItem,
       },
     },
   ];
