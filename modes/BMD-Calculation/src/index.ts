@@ -39,11 +39,11 @@ const dicompdf = {
   viewport: '@ohif/extension-dicom-pdf.viewportModule.dicom-pdf',
 };
 
-const dicomSeg = {
-  sopClassHandler: '@ohif/extension-cornerstone-dicom-seg.sopClassHandlerModule.dicom-seg',
-  viewport: '@ohif/extension-cornerstone-dicom-seg.viewportModule.dicom-seg',
-  panel: '@ohif/extension-cornerstone-dicom-seg.panelModule.panelSegmentation',
-};
+// const dicomSeg = {
+//   sopClassHandler: '@ohif/extension-cornerstone-dicom-seg.sopClassHandlerModule.dicom-seg',
+//   viewport: '@ohif/extension-cornerstone-dicom-seg.viewportModule.dicom-seg',
+//   panel: '@ohif/extension-cornerstone-dicom-seg.panelModule.panelSegmentation',
+// };
 
 const dicomPmap = {
   sopClassHandler: '@ohif/extension-cornerstone-dicom-pmap.sopClassHandlerModule.dicom-pmap',
@@ -56,7 +56,7 @@ const extensionDependencies = {
   '@ohif/extension-cornerstone': '^3.0.0',
   '@ohif/extension-measurement-tracking': '^3.0.0',
   '@ohif/extension-cornerstone-dicom-sr': '^3.0.0',
-  '@ohif/extension-cornerstone-dicom-seg': '^3.0.0',
+  // '@ohif/extension-cornerstone-dicom-seg': '^3.0.0',
   '@ohif/extension-cornerstone-dicom-pmap': '^3.0.0',
   '@ohif/extension-dicom-pdf': '^3.0.1',
   '@ohif/extension-dicom-video': '^3.0.1',
@@ -157,12 +157,9 @@ function modeFactory() {
           return {
             id: ohif.layout,
             props: {
-              // Use the first two for an untracked view
-              // leftPanels: [ohif.thumbnailList],
-              // rightPanels: [dicomSeg.panel, ohif.measurements],
               leftPanels: [tracked.thumbnailList],
-              rightPanels: [dicomSeg.panel, tracked.measurements],
-              // rightPanelClosed: true, // optional prop to start with collapse panels
+              // 从 rightPanels 移除 dicomSeg.panel
+              rightPanels: [tracked.measurements],
               viewports: [
                 {
                   namespace: tracked.viewport,
@@ -176,18 +173,11 @@ function modeFactory() {
                   namespace: dicomsr.viewport,
                   displaySetsToDisplay: [dicomsr.sopClassHandler],
                 },
-                // {
-                //   namespace: dicomvideo.viewport,
-                //   displaySetsToDisplay: [dicomvideo.sopClassHandler],
-                // },
                 {
                   namespace: dicompdf.viewport,
                   displaySetsToDisplay: [dicompdf.sopClassHandler],
                 },
-                {
-                  namespace: dicomSeg.viewport,
-                  displaySetsToDisplay: [dicomSeg.sopClassHandler],
-                },
+                // 移除 dicomSeg viewport 配置
                 {
                   namespace: dicomPmap.viewport,
                   displaySetsToDisplay: [dicomPmap.sopClassHandler],
@@ -207,7 +197,7 @@ function modeFactory() {
     // come first to remove video transfer syntax before ohif uses images
     sopClassHandlers: [
       dicomvideo.sopClassHandler,
-      dicomSeg.sopClassHandler,
+      // dicomSeg.sopClassHandler,
       ohif.wsiSopClassHandler,
       ohif.sopClassHandler,
       dicompdf.sopClassHandler,

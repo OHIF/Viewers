@@ -302,114 +302,12 @@ function PanelMeasurementTableTracking({
     onMeasurementItemClickHandler({ uid, isActive });
   };
 
-  const VertebraSelectionDialog = ({
-    onSubmit,
-    onCancel,
-  }: {
-    onSubmit: (location: string) => void;
-    onCancel: () => void;
-  }) => {
-    const [vertebraLocation, setVertebraLocation] = useState('L1');
-
-    const handleSubmit = () => {
-      onSubmit(vertebraLocation);
-    };
-
-    const commonVertebrae = ['T11', 'T12', 'L1', 'L2', 'L3', 'L4', 'L5'];
-
-    return (
-      <div className="w-[320px] rounded-xl bg-[#1a237e] p-5 shadow-lg">
-        <h3 className="mb-4 text-center text-lg font-medium text-white">请选择当前测量节段</h3>
-
-        <div className="space-y-4">
-          <div className="grid grid-cols-2 gap-3">
-            {commonVertebrae.map(location => (
-              <button
-                key={location}
-                className={`flex h-16 w-[130px] items-center justify-center text-lg font-medium transition-all duration-200 ${
-                  vertebraLocation === location
-                    ? 'border border-blue-400 bg-blue-500 text-white shadow-md'
-                    : 'border border-blue-200/30 bg-blue-800/30 text-white hover:bg-blue-700/40 hover:shadow-sm'
-                }`}
-                style={{
-                  borderRadius: '8px',
-                }}
-                onClick={() => setVertebraLocation(location)}
-              >
-                {location}
-              </button>
-            ))}
-          </div>
-
-          <div className="mt-5 flex justify-end space-x-3">
-            <button
-              className="h-10 w-20 rounded-lg bg-blue-800/30 text-sm font-medium text-white transition-all hover:bg-blue-700/40"
-              onClick={onCancel}
-            >
-              取消
-            </button>
-            <button
-              className="h-10 w-20 rounded-lg bg-blue-500 text-sm font-medium text-white transition-all hover:bg-blue-600"
-              onClick={handleSubmit}
-            >
-              确定
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  };
-
-  // 添加自定义的深蓝色背景
-  const style = document.createElement('style');
-  style.textContent = `
-    .bg-navy-900 {
-      background-color:rgb(24, 30, 94);
-    }
-  `;
-  document.head.appendChild(style);
-
-  const createVertebraSelectionDialog = (
-    resolve: (location: string) => void,
-    reject: (reason: Error) => void
-  ) => {
-    uiDialogService.create({
-      id: 'vertebra-selection-dialog',
-      content: VertebraSelectionDialog,
-      contentProps: {
-        onSubmit: (location: string) => {
-          uiDialogService.dismiss({ id: 'vertebra-selection-dialog' });
-          resolve(location);
-        },
-        onCancel: () => {
-          uiDialogService.dismiss({ id: 'vertebra-selection-dialog' });
-          reject(new Error('User cancelled'));
-        },
-      },
-      defaultPosition: {
-        x: 0,
-        y: 0,
-      },
-      centralize: true,
-      showOverlay: true,
-      isDraggable: true,
-      onStart: () => {},
-      onDrag: () => {},
-      onStop: () => {},
-    });
-  };
-
   const handleCreateReport = async () => {
     try {
       // 1. 检查是否已有BMD计算结果
       if (!bmdResults) {
         throw new Error('请先计算BMD值');
       }
-
-      // 2. 获取椎体位置选择
-      const vertebraLocation = await new Promise<string>((resolve, reject) => {
-        createVertebraSelectionDialog(resolve, reject);
-      });
 
       // 3. 获取研究信息
       const StudyInstanceUID = trackedStudy;
