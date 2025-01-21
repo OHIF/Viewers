@@ -1,9 +1,8 @@
 import { metaData, utilities } from '@cornerstonejs/core';
 
-import OHIF, { DicomMetadataStore, utils } from '@ohif/core';
+import OHIF, { DicomMetadataStore } from '@ohif/core';
 import dcmjs from 'dcmjs';
 import { adaptersSR } from '@cornerstonejs/adapters';
-import { showLabelAnnotationPopup, colorPickerDialog } from '@ohif/extension-default';
 
 import getFilteredCornerstoneToolState from './utils/getFilteredCornerstoneToolState';
 import hydrateStructuredReport from './utils/hydrateStructuredReport';
@@ -42,9 +41,8 @@ const _generateReport = (measurementData, additionalFindingTypes, options = {}) 
 };
 
 const commandsModule = (props: withAppTypes) => {
-  const { servicesManager, extensionManager, commandsManager } = props;
-  const { customizationService, measurementService, viewportGridService, uiDialogService } =
-    servicesManager.services;
+  const { servicesManager, extensionManager } = props;
+  const { customizationService, viewportGridService, displaySetService } = servicesManager.services;
 
   const actions = {
     changeColorMeasurement: ({ uid }) => {
@@ -76,7 +74,7 @@ const commandsModule = (props: withAppTypes) => {
      * that you wish to serialize.
      */
     downloadReport: ({ measurementData, additionalFindingTypes, options = {} }) => {
-      const srDataset = actions.generateReport(measurementData, additionalFindingTypes, options);
+      const srDataset = _generateReport(measurementData, additionalFindingTypes, options);
       const reportBlob = dcmjs.data.datasetToBlob(srDataset);
 
       //Create a URL for the binary.

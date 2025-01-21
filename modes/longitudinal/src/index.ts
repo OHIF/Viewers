@@ -113,21 +113,30 @@ function modeFactory({ modeConfiguration }) {
       // // ActivatePanel event trigger for when a segmentation or measurement is added.
       // // Do not force activation so as to respect the state the user may have left the UI in.
       _activatePanelTriggersSubscriptions = [
-        ...panelService.addActivatePanelTriggers(cornerstone.segmentation, [
-          {
-            sourcePubSubService: segmentationService,
-            sourceEvents: [segmentationService.EVENTS.SEGMENTATION_ADDED],
-          },
-        ]),
-        ...panelService.addActivatePanelTriggers(tracked.measurements, [
-          {
-            sourcePubSubService: measurementService,
-            sourceEvents: [
-              measurementService.EVENTS.MEASUREMENT_ADDED,
-              measurementService.EVENTS.RAW_MEASUREMENT_ADDED,
-            ],
-          },
-        ]),
+        ...panelService.addActivatePanelTriggers(
+          cornerstone.segmentation,
+          [
+            {
+              sourcePubSubService: segmentationService,
+              sourceEvents: [segmentationService.EVENTS.SEGMENTATION_ADDED],
+            },
+          ],
+          true
+        ),
+        ...panelService.addActivatePanelTriggers(
+          tracked.measurements,
+          [
+            {
+              sourcePubSubService: measurementService,
+              sourceEvents: [
+                measurementService.EVENTS.MEASUREMENT_ADDED,
+                measurementService.EVENTS.RAW_MEASUREMENT_ADDED,
+              ],
+            },
+          ],
+          true
+        ),
+        true,
       ];
     },
     onModeExit: ({ servicesManager }: withAppTypes) => {
@@ -177,8 +186,10 @@ function modeFactory({ modeConfiguration }) {
             id: ohif.layout,
             props: {
               leftPanels: [tracked.thumbnailList],
+              leftPanelResizable: true,
               rightPanels: [cornerstone.segmentation, tracked.measurements],
               rightPanelClosed: true,
+              rightPanelResizable: true,
               viewports: [
                 {
                   namespace: tracked.viewport,
