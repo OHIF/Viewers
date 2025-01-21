@@ -2,3 +2,6 @@
 	path = testdata
 	url = https://github.com/OHIF/viewer-testdata-dicomweb.git
 	branch = main
+[submodule "cornerstone3D_QCTWeb"]
+	path = cornerstone3D_QCTWeb
+	url = https://github.com/czheng39/cornerstone3D_QCTWeb.git
