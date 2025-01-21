@@ -218,10 +218,10 @@ function ViewerViewportGrid(props: withAppTypes) {
 
     if (customOnDropHandler) {
       dropHandlerPromise = customOnDropHandler({
+        ...props,
         viewportId,
         displaySetInstanceUID,
         appConfig,
-        ...props,
       });
     }
 
