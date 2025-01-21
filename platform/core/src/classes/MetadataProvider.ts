@@ -6,6 +6,7 @@ import DicomMetadataStore from '../services/DicomMetadataStore';
 import fetchPaletteColorLookupTableData from '../utils/metadataProvider/fetchPaletteColorLookupTableData';
 import toNumber from '../utils/toNumber';
 import combineFrameInstance from '../utils/combineFrameInstance';
+import formatPN from '../utils/formatPN';
 
 class MetadataProvider {
   private readonly imageURIToUIDs: Map<string, any> = new Map();
@@ -345,7 +346,7 @@ class MetadataProvider {
 
         let patientName;
         if (PatientName) {
-          patientName = PatientName.Alphabetic;
+          patientName = formatPN(PatientName);
         }
 
         metadata = {
