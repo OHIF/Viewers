@@ -7,18 +7,213 @@ title: Customization Service
 
 
 
+**Key Changes:**
+
+1. **Unified Customization Getter:**
+   - The `getCustomization` method now uniformly retrieves customizations, prioritizing `global`, then `mode`, and finally `default` customizations.
+   - The `defaultValue` parameter in `getCustomization` is no longer used for setting defaults. It simply returns if no customization is found.
+   - The methods `getModeCustomization` and `getGlobalCustomization` are deprecated.
+
+2. **Simplified Customization Registration:**
+   - The `customizationType` property in customization definitions is renamed to `inheritsFrom`.
+   - The `merge` property in customization definitions is removed. Instead, a customization is merged using the helper methods. The basic update commands are listed in the table below, and you can learn more about the helper methods [here](../../../platform/services/customization-service/customizationService.md).
+
+     | Command  | Description                               | Example                                           |
+     | :------- | :---------------------------------------- | :------------------------------------------------ |
+     | `$set`   | Replace a value entirely                 | Replace a list or object                        |
+     | `$push`  | Append items to an array                 | Add to the end of a list                        |
+     | `$unshift` | Prepend items to an array                | Add to the start of a list                      |
+     | `$splice` | Insert, remove, or replace at specific index | Modify specific indices in a list                 |
+     | `$merge` | Update specific fields in an object      | Change a subset of fields                       |
+     | `$apply` | Compute the new value dynamically        | Apply a function to transform values              |
+     | `$filter` | Find and update specific items in arrays | Target nested structures based on matching criteria |
+
+
+4. **Renamed `CornerstoneOverlay` customizations:**
+   - The `cornerstoneOverlay` customizations (`cornerstoneOverlayTopLeft`, `cornerstoneOverlayTopRight`, `cornerstoneOverlayBottomLeft`, `cornerstoneOverlayBottomRight`) have been renamed to `viewportOverlay.topLeft`, `viewportOverlay.topRight`, `viewportOverlay.bottomLeft`, and `viewportOverlay.bottomRight`. See dedicated page for customizing viewport overlays [here](../../../platform/services/customization-service/viewportOverlay.md).
+
+6. **Renamed `customRoutes`:**
+   - The `customRoutes` customization is renamed to `routes.customRoutes`.
+
+7.  **`contextMenu` customization:**
+    - The `contextMenu` customization now uses the `inheritsFrom` property to inherit from other context menus, previously it was called `customizationType`
+
+5. **New `immutability-helper` dependency:**
+   The `immutability-helper` library is now used for merging customizations. If you encounter an error related to it, you'll need to install it - though OHIF should really handle the installation for you, so this is pretty much just a heads up.
+
+**Migration Steps:**
+
+1. **Replace `getModeCustomization` and `getGlobalCustomization` with `getCustomization`:**
+
+   - **Before:**
+
+     ```javascript
+     const tools = customizationService.getModeCustomization(
+       'cornerstone.overlayViewportTools'
+     )?.tools;
+     const globalValue = customizationService.getGlobalCustomization('someGlobalKey');
+     ```
+
+   - **After:**
+
+     ```javascript
+     const tools = customizationService.getCustomization('cornerstone.overlayViewportTools');
+     const globalValue = customizationService.getCustomization('someGlobalKey');
+     ```
+
+
+     :::note
+     The returned value is the actual customization value, not an object that needs to be broken down.
+     :::
+
+2. **Update Customization Definitions:**
+   - We've moved away from using random items in the customization definition, and now we use the `id` property to identify the customization as a value. Previously, it was referred to as `value`, `values`, and so on, but now an `id` is used to reference the customization. This approach really simplifies things - when you need to grab the customization, you can just use the `id` to get it, and you don't have to bother with destructuring the value from the object.
+
+
+
+
+**Example: Customizing a Panel**
+
+**Before (v3.9):**
+
+```javascript
+// the default value was hardcoded inside the panel itself - bad idea!
+// default was given in the panel itself
+
+// PanelSegmentation.tsx
+
+// Retrieve the onSegmentationAdd customization
+const { onSegmentationAdd } = customizationService.getCustomization(
+  'PanelSegmentation.onSegmentationAdd',
+  {
+    id: 'segmentation.onSegmentationAdd',
+    onSegmentationAdd: handlers.onSegmentationAdd,
+  }
+);
+
+// Retrieve the disableEditing customization
+const { disableEditing } = customizationService.getCustomization(
+  'PanelSegmentation.disableEditing',
+  {
+    id: 'default.disableEditing',
+    disableEditing: false,
+  }
+);
+
+
+
+// mode was customizing it via
+customizationService.addModeCustomizations([
+  {
+    id: 'PanelSegmentation.tableMode',
+    mode: 'expanded',
+  },
+  {
+    id: 'PanelSegmentation.showAddSegment',
+    showAddSegment: false,
+  },
+]);
+
+```
+
+**After (v3.10):**
+
+```javascript
+// cornerstone extension getCustomizationModule
+// centralized customization location for all extensions - good!
+function getCustomizationModule() {
+  return [
+    {
+      name: 'default',
+      value: {
+        'panelSegmentation.disableEditing': false,
+        'panelSegmentation.showAddSegment': true,
+      },
+    },
+  ];
+}
+
+
+// inside panelSegmentation.tsx
+const disableEditing = customizationService.getCustomization('panelSegmentation.disableEditing');
+const showAddSegment = customizationService.getCustomization('panelSegmentation.showAddSegment');
+
+
+// mode can customize it via $ operators for mode customizations
+customizationService.setCustomizations({
+  'panelSegmentation.disableEditing': { $set: true },
+  'panelSegmentation.showAddSegment': { $set: false },
+});
+
+
+//or via configuration for global customizations
+window.config = {
+  // rest of config
+  customizationService: [
+    {
+      'panelSegmentation.disableEditing': {
+        $set: true, // Disables editing of segmentations in the panel
+      },
+    },
+  ],
+  // rest of config
+};
+```
+
+
+
+**Example: Updating a Customization**
+
+Let's say you have a customization in v3.9 that adds a custom overlay item to the top-left corner:
+
+**Before (v3.9):**
+
+```javascript
+// In your mode's onModeEnter
+customizationService.addModeCustomizations([
+  {
+    id: 'cornerstoneOverlayTopLeft',
+    items: [
+      {
+        id: 'myCustomOverlay',
+        customizationType: 'ohif.overlayItem',
+        attribute: 'PatientName',
+        label: 'Patient:',
+      },
+    ],
+  },
+]);
+```
+
+**After (v3.10):**
+
+```javascript
+// In your mode's onModeEnter or elsewhere
+customizationService.setCustomizations({
+  'viewportOverlay.topLeft': {
+    $push: [
+      {
+        id: 'myCustomOverlay',
+        inheritsFrom: 'ohif.overlayItem',
+        attribute: 'PatientName',
+        label: 'Patient:',
+      },
+    ],
+  },
+});
+```
+
+**Note:**
+
+- The `customizationType` is replaced with `inheritsFrom`.
 
 
 
 
 
+## Renaming
 
-
-
-
-## Renamings
-
-We now follow a convention for renamings
+To keep our customization system consistent, you should be aware of a few key renaming conventions. We now follow a straightforward naming convention for customizations: `scopeName.customizationItem`.
 
 
 
@@ -33,3 +228,7 @@ We now follow a convention for renamings
 | `PanelSegmentation.readableText`             | `panelSegmentation.readableText`              | Custom readable text labels for the Segmentation Panel.                       |
 | `PanelStudyBrowser.studyMode`                | `studyBrowser.studyMode`                     | Controls the study mode (all/primary/recent) in the Study Browser Panel.      |
 | `customRoutes`                                | `routes.customRoutes`                         | Defines custom routes for the application.                                  |
+| `cornerstoneOverlayTopLeft`                   | `viewportOverlay.topLeft`                    | Custom overlay items for the top-left corner of the viewport.                  |
+| `cornerstoneOverlayTopRight`                  | `viewportOverlay.topRight`                   | Custom overlay items for the top-right corner of the viewport.                 |
+| `cornerstoneOverlayBottomLeft`                | `viewportOverlay.bottomLeft`                 | Custom overlay items for the bottom-left corner of the viewport.              |
+| `cornerstoneOverlayBottomRight`               | `viewportOverlay.bottomRight`                | Custom overlay items for the bottom-right corner of the viewport.             |
