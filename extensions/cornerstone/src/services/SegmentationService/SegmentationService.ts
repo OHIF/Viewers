@@ -478,13 +478,23 @@ class SegmentationService extends PubSubService {
     // We should parse the segmentation as separate slices to support overlapping segments.
     // This parsing should occur in the CornerstoneJS library adapters.
     // For now, we use the volume returned from the library and chop it here.
+    let firstSegmentedSliceImageId = null;
     for (let i = 0; i < derivedSegmentationImages.length; i++) {
       const voxelManager = derivedSegmentationImages[i]
         .voxelManager as csTypes.IVoxelManager<number>;
       const scalarData = voxelManager.getScalarData();
-      scalarData.set(volumeScalarData.slice(i * scalarData.length, (i + 1) * scalarData.length));
+      const sliceData = volumeScalarData.slice(i * scalarData.length, (i + 1) * scalarData.length);
+      scalarData.set(sliceData);
       voxelManager.setScalarData(scalarData);
+
+      // Check if this slice has any non-zero voxels and we haven't found one yet
+      if (!firstSegmentedSliceImageId && sliceData.some(value => value !== 0)) {
+        firstSegmentedSliceImageId = derivedSegmentationImages[i].referencedImageId;
+      }
     }
+
+    // assign the first non zero voxel image id to the segDisplaySet
+    segDisplaySet.firstSegmentedSliceImageId = firstSegmentedSliceImageId;
 
     this._broadcastEvent(EVENTS.SEGMENTATION_LOADING_COMPLETE, {
       segmentationId,
@@ -542,7 +552,19 @@ class SegmentationService extends PubSubService {
     }
 
     const rtDisplaySetUID = rtDisplaySet.displaySetInstanceUID;
+    const referencedDisplaySet = this.servicesManager.services.displaySetService.getDisplaySetByUID(
+      rtDisplaySet.referencedDisplaySetInstanceUID
+    );
 
+    const referencedImageIdsWithGeometry = Array.from(structureSet.ReferencedSOPInstanceUIDsSet);
+
+    const referencedImageIds = referencedDisplaySet.instances.map(image => image.imageId);
+    // find the first image id that contains a referenced SOP instance UID
+    const firstSegmentedSliceImageId = referencedImageIds.find(imageId =>
+      referencedImageIdsWithGeometry.some(referencedId => imageId.includes(referencedId))
+    );
+
+    rtDisplaySet.firstSegmentedSliceImageId = firstSegmentedSliceImageId;
     // Map ROI contours to RT Struct Data
     const allRTStructData = mapROIContoursToRTStructData(structureSet, rtDisplaySetUID);
 
