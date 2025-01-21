@@ -1,5 +1,5 @@
 {
-  "Name": "Orthanc inside Docker",
+  "Name": "Orthanc-OHIF",
   "StorageDirectory": "/var/lib/orthanc/db",
   "IndexDirectory": "/var/lib/orthanc/db",
   "StorageCompression": false,
@@ -9,13 +9,13 @@
   "Plugins": ["/usr/share/orthanc/plugins", "/usr/local/share/orthanc/plugins"],
   "ConcurrentJobs": 2,
   "HttpServerEnabled": true,
-  "HttpPort": 8042,
+  "HttpPort": 8043,
   "HttpDescribeErrors": true,
   "HttpCompressionEnabled": true,
   "DicomServerEnabled": true,
-  "DicomAet": "ORTHANC",
+  "DicomAet": "ORTHANC-OHIF",
   "DicomCheckCalledAet": false,
-  "DicomPort": 4242,
+  "DicomPort": 4243,
   "DefaultEncoding": "Latin1",
   "DeflatedTransferSyntaxAccepted": true,
   "JpegTransferSyntaxAccepted": true,
@@ -25,8 +25,7 @@
   "Mpeg2TransferSyntaxAccepted": true,
   "RleTransferSyntaxAccepted": true,
   "UnknownSopClassAccepted": false,
-  "DicomScpTimeout": 30,
-
+  "DicomScpTimeout": 150,
   "RemoteAccessAllowed": true,
   "SslEnabled": false,
   "SslCertificate": "certificate.pem",
@@ -34,19 +33,23 @@
   "RegisteredUsers": {
     "test": "test"
   },
-  "DicomModalities": {},
+  "DicomModalities": {
+    "Hospital": ["Orthanc-Hospital", "host.docker.internal", 4242],
+    "AWS": ["Orthanc-Hospital-AWS", "18.214.233.182", 4242]
+  },
   "DicomModalitiesInDatabase": false,
   "DicomAlwaysAllowEcho": true,
   "DicomAlwaysAllowStore": true,
   "DicomCheckModalityHost": false,
-  "DicomScuTimeout": 10,
-  "OrthancPeers": {},
+  "DicomScuTimeout": 150,
+  "OrthancPeers": {
+    "hospital_pacs": ["http://host.docker.internal:8042/", "test", "test"],
+    "aws_pacs": ["http://http://18.214.233.182:8042/", "test", "test"]
+  },
   "OrthancPeersInDatabase": false,
   "HttpProxy": "",
-
   "HttpVerbose": true,
-
-  "HttpTimeout": 10,
+  "HttpTimeout": 150,
   "HttpsVerifyPeers": true,
   "HttpsCACertificates": "",
   "UserMetadata": {},
@@ -74,7 +77,6 @@
   "MediaArchiveSize": 1,
   "StorageAccessOnFind": "Always",
   "MetricsEnabled": true,
-
   "DicomWeb": {
     "Enable": true,
     "Root": "/dicom-web/",
