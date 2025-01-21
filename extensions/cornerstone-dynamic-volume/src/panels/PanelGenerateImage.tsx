@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { useCine } from '@ohif/ui';
 import { useViewportGrid } from '@ohif/ui-next';
 import { utilities as csUtils, volumeLoader, eventTarget, Enums, cache } from '@cornerstonejs/core';
@@ -11,15 +11,15 @@ export default function PanelGenerateImage({ servicesManager, commandsManager }:
   const { cornerstoneViewportService, viewportGridService, displaySetService } =
     servicesManager.services;
 
+  const [frameRate, setFrameRate] = useState(20);
   const [{ isCineEnabled }, cineService] = useCine();
-  const [{ activeViewportId }] = useViewportGrid();
+  const [{ activeViewportId, viewports }] = useViewportGrid();
 
   //
   const [timePointsRange, setTimePointsRange] = useState([0, 0]);
   const [timePointsRangeToUseForGenerate, setTimePointsRangeToUseForGenerate] = useState([0, 0]);
   const [computedDisplaySet, setComputedDisplaySet] = useState(null);
   const [dynamicVolume, setDynamicVolume] = useState(null);
-  const [frameRate, setFrameRate] = useState(20);
   const [isPlaying, setIsPlaying] = useState(isCineEnabled);
   const [timePointRendered, setTimePointRendered] = useState(null);
   const [displayingComputed, setDisplayingComputed] = useState(false);
@@ -28,6 +28,38 @@ export default function PanelGenerateImage({ servicesManager, commandsManager }:
   const uuidComputedVolume = useRef(csUtils.uuidv4());
   const uuidDynamicVolume = useRef(null);
   const computedVolumeId = `cornerstoneStreamingImageVolume:${uuidComputedVolume.current}`;
+
+  const runThis = useCallback(() => {
+    const displaySetUIDs = viewportGridService.getDisplaySetsUIDsForViewport(activeViewportId);
+
+    if (!displaySetUIDs?.length) {
+      return;
+    }
+
+    const displaySets = displaySetUIDs.map(displaySetService.getDisplaySetByUID);
+    const dynamicVolumeDisplaySet = displaySets.find(displaySet => displaySet.isDynamicVolume);
+
+    if (!dynamicVolumeDisplaySet) {
+      setDisplayingComputed(true);
+      return;
+    }
+
+    setDisplayingComputed(false);
+
+    const dynamicVolume = cache
+      .getVolumes()
+      .find(volume => volume.volumeId.includes(dynamicVolumeDisplaySet.displaySetInstanceUID));
+
+    if (!dynamicVolume) {
+      return;
+    }
+
+    setDynamicVolume(dynamicVolume);
+    uuidDynamicVolume.current = dynamicVolumeDisplaySet.displaySetInstanceUID;
+    const newRange = [0, dynamicVolume.numTimePoints - 1];
+    setTimePointsRange(newRange);
+    setTimePointsRangeToUseForGenerate(newRange);
+  }, [activeViewportId, viewportGridService, displaySetService]);
 
   useEffect(() => {
     const viewportDataChangedEvt = cornerstoneViewportService.EVENTS.VIEWPORT_DATA_CHANGED;
@@ -38,7 +70,7 @@ export default function PanelGenerateImage({ servicesManager, commandsManager }:
         if (volumeData.volume?.isDynamicVolume()) {
           setDynamicVolume(volumeData.volume);
           uuidDynamicVolume.current = volumeData.displaySetInstanceUID;
-          const newRange = [1, volumeData.volume.numTimePoints];
+          const newRange = [0, volumeData.volume.numTimePoints - 1];
           setTimePointsRange(newRange);
           setTimePointsRangeToUseForGenerate(newRange);
         }
@@ -79,46 +111,13 @@ export default function PanelGenerateImage({ servicesManager, commandsManager }:
   }, [cornerstoneViewportService]);
 
   useEffect(() => {
-    const displaySetUIDs = viewportGridService.getDisplaySetsUIDsForViewport(activeViewportId);
-
-    if (!displaySetUIDs?.length) {
-      return;
-    }
-
-    const displaySets = displaySetUIDs.map(displaySetService.getDisplaySetByUID);
-    const dynamicVolumeDisplaySet = displaySets.find(displaySet => displaySet.isDynamicVolume);
-
-    if (!dynamicVolumeDisplaySet) {
-      return;
-    }
-
-    const dynamicVolume = cache
-      .getVolumes()
-      .find(volume => volume.volumeId.includes(dynamicVolumeDisplaySet.displaySetInstanceUID));
-
-    if (!dynamicVolume) {
-      return;
-    }
-
-    setDynamicVolume(dynamicVolume);
-    uuidDynamicVolume.current = dynamicVolumeDisplaySet.displaySetInstanceUID;
-    const newRange = [1, dynamicVolume.numTimePoints];
-    setTimePointsRange(newRange);
-    setTimePointsRangeToUseForGenerate(newRange);
-  }, [
-    activeViewportId,
-    viewportGridService,
-    displaySetService,
-    cornerstoneViewportService,
-    cineService,
-  ]);
+    runThis();
+  }, [viewports, activeViewportId]);
 
   function renderGeneratedImage(displaySet) {
     commandsManager.runCommand('swapDynamicWithComputedDisplaySet', {
       displaySet,
     });
-
-    setDisplayingComputed(true);
   }
 
   function renderDynamicImage(displaySet) {
@@ -142,7 +141,7 @@ export default function PanelGenerateImage({ servicesManager, commandsManager }:
       });
     }
     const [start, end] = timePointsRangeToUseForGenerate;
-    const frameNumbers = Array.from({ length: end - start + 1 }, (_, i) => i + start - 1);
+    const frameNumbers = Array.from({ length: end - start + 1 }, (_, i) => i + start);
 
     const options = {
       frameNumbers: operationName === 'SUBTRACT' ? [start, end - 1] : frameNumbers,
@@ -166,6 +165,8 @@ export default function PanelGenerateImage({ servicesManager, commandsManager }:
         madeInClient: true,
         FrameOfReferenceUID: dynamicVolume.metadata.FrameOfReferenceUID,
         isDerived: true,
+        operationName: operationName,
+        frameNumbers: frameNumbers,
         imageIds: computedVolume.imageIds,
       };
       setComputedDisplaySet(displaySet);
@@ -220,21 +221,27 @@ export default function PanelGenerateImage({ servicesManager, commandsManager }:
 
   return (
     <DynamicVolumeControls
+      // fps stuff
       fps={frameRate}
-      isPlaying={isPlaying}
-      onPlayPauseChange={onPlayPauseChange}
       minFps={1}
       maxFps={50}
-      currentFrameIndex={timePointRendered}
       onFpsChange={handleSetFrameRate}
+      // play/pause stuff
+      isPlaying={isPlaying}
+      onPlayPauseChange={onPlayPauseChange}
+      // frame stuff
       framesLength={timePointsRange[1]}
+      currentFrameIndex={timePointRendered}
       onFrameChange={timePointIndex => {
         dynamicVolume.timePointIndex = timePointIndex;
       }}
+      //
+      displayingComputed={displayingComputed}
+      computedDisplaySet={computedDisplaySet}
       onGenerate={onGenerateImage}
+      onComputedClick={computedDisplaySet ? () => renderGeneratedImage(computedDisplaySet) : null}
       onDynamicClick={displayingComputed ? () => renderDynamicImage(computedDisplaySet) : null}
       onDoubleRangeChange={handleSliderChange}
-      initialRangeValues={timePointsRangeToUseForGenerate}
     />
   );
 }

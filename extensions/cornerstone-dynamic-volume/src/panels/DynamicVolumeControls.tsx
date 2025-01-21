@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button, PanelSection, ButtonGroup, IconButton, InputNumber } from '@ohif/ui';
 import { DoubleSlider, Icons, Tooltip, TooltipTrigger, TooltipContent } from '@ohif/ui-next';
 import { Enums } from '@cornerstonejs/core';
@@ -20,7 +20,10 @@ const Header = ({ title, tooltip }) => (
           />
         </span>
       </TooltipTrigger>
-      <TooltipContent sideOffset={4} className="max-w-xs p-2 bg-primary-dark text-white">
+      <TooltipContent
+        sideOffset={4}
+        className="bg-primary-dark max-w-xs p-2 text-white"
+      >
         <div>{tooltip}</div>
       </TooltipContent>
     </Tooltip>
@@ -32,6 +35,8 @@ const DynamicVolumeControls = ({
   isPlaying,
   onPlayPauseChange,
   // fps
+  displayingComputed,
+  computedDisplaySet,
   fps,
   onFpsChange,
   minFps,
@@ -43,10 +48,18 @@ const DynamicVolumeControls = ({
   onGenerate,
   onDoubleRangeChange,
   onDynamicClick,
+  onComputedClick,
 }) => {
-  const [computedView, setComputedView] = useState(false);
-  const [computeViewMode, setComputeViewMode] = useState(Enums.DynamicOperatorType.SUM);
-  const [sliderRangeValues, setSliderRangeValues] = useState([0, framesLength - 1]);
+  const [computedView, setComputedView] = useState(displayingComputed);
+  const [computeViewMode, setComputeViewMode] = useState(
+    computedDisplaySet?.operationName || Enums.DynamicOperatorType.SUM
+  );
+
+  const [sliderRangeValues, setSliderRangeValues] = useState(
+    computedDisplaySet
+      ? [computedDisplaySet.frameNumbers[0], computedDisplaySet.frameNumbers[1]]
+      : [0, framesLength - 1]
+  );
 
   const handleSliderChange = newValues => {
     onDoubleRangeChange(newValues);
@@ -54,6 +67,14 @@ const DynamicVolumeControls = ({
   };
 
   const formatLabel = value => Math.round(value);
+
+  useEffect(() => {
+    setSliderRangeValues([0, framesLength - 1]);
+  }, [framesLength]);
+
+  useEffect(() => {
+    setComputedView(displayingComputed);
+  }, [displayingComputed]);
 
   return (
     <div className="flex select-none flex-col">
@@ -82,6 +103,7 @@ const DynamicVolumeControls = ({
               className="w-1/2"
               onClick={() => {
                 setComputedView(true);
+                onComputedClick?.();
               }}
             >
               Computed
@@ -113,7 +135,8 @@ const DynamicVolumeControls = ({
                 applied to the data set.
                 <br /> Range Slider: Choose the numeric range within which the operation will be
                 performed.
-                <br />Generate Button: Execute the chosen operation on the specified range of data.
+                <br />
+                Generate Button: Execute the chosen operation on the specified range of data.
               </div>
             }
           />
