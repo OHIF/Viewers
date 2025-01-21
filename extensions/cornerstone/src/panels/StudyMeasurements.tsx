@@ -36,9 +36,6 @@ export const groupByStudy = (items, grouping, childProps) => {
 export default function StudyMeasurements(props): React.ReactNode {
   const { items, childProps, grouping = {} } = props;
 
-  console.log('study grouping=', grouping);
-  console.log('grouping component', grouping.component);
-
   // Need to merge defaults on the component props to ensure they get passed to hcildren
   return (
     <AccordionGroup

@@ -10,10 +10,7 @@ export default function PanelMeasurement(props): React.ReactNode {
     componentProps,
     commandsManager,
     key = 'PanelMeasurementConfigurable',
-    configuration,
   } = props;
-
-  console.log('Panel measurement configurable configuration=', configuration);
 
   const displayMeasurements = useMeasurements(servicesManager, {
     measurementFilter,
