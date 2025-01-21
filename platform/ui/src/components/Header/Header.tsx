@@ -75,24 +75,24 @@ function Header({
             />
           )}
           <div className="border-primary-dark mx-1.5 h-[25px] border-r"></div>
+          <IconButton
+            id={'tutorial'}
+            variant="text"
+            color="inherit"
+            size="initial"
+            className="text-primary-active hover:bg-primary-dark h-full w-full"
+            onClick={() => {
+              show({
+                content: TutorialModal,
+                title: 'TutorialModal:Tutorial',
+                containerDimensions: 'w-[70%] h-[80%]',
+              });
+            }}
+          >
+            <Icon name="icon-play" />
+          </IconButton>
+          <div className="border-primary-dark mx-1.5 h-[25px] border-r"></div>
           <div className="flex-shrink-0">
-            <IconButton
-              id={'tutorial'}
-              variant="text"
-              color="inherit"
-              size="initial"
-              className="text-primary-active hover:bg-primary-dark h-full w-full"
-              onClick={() => {
-                show({
-                  content: TutorialModal,
-                  title: 'TutorialModal:Tutorial',
-                  containerDimensions: 'w-[70%] h-[80%]',
-                });
-              }}
-            >
-              <Icon name="icon-play" />
-            </IconButton>
-            <div className="border-primary-dark mx-1.5 h-[25px] border-r"></div>
             <Dropdown
               id="options"
               showDropdownIcon={false}
