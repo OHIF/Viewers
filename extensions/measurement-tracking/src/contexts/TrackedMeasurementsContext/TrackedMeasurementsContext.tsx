@@ -174,9 +174,12 @@ function TrackedMeasurementsContextProvider(
     }),
   });
   machineOptions.guards = Object.assign({}, machineOptions.guards, {
-    isLabelOnMeasure: (ctx, evt, condMeta) => {
+    isLabelOnMeasureAndNotArrowAnnotate: (ctx, evt, condMeta) => {
       const labelConfig = customizationService.getCustomization('measurementLabels');
-      return labelConfig?.labelOnMeasure;
+      return labelConfig?.labelOnMeasure && evt.toolName !== 'ArrowAnnotate';
+    },
+    notArrowAnnotate: (ctx, evt, condMeta) => {
+      return evt.toolName !== 'ArrowAnnotate';
     },
     isLabelOnMeasureAndShouldKillMachine: (ctx, evt, condMeta) => {
       const labelConfig = customizationService.getCustomization('measurementLabels');
