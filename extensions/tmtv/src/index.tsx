@@ -4,6 +4,7 @@ import getPanelModule from './getPanelModule';
 import init from './init';
 import commandsModule from './commandsModule';
 import getToolbarModule from './getToolbarModule';
+import { handleROIThresholding } from './utils/handleROIThresholding';
 
 /**
  *
@@ -25,6 +26,16 @@ const tmtvExtension = {
       commandsManager,
       extensionManager,
     });
+  },
+  getUtilityModule() {
+    return [
+      {
+        name: 'common',
+        exports: {
+          handleROIThresholding,
+        },
+      },
+    ];
   },
 };
 
