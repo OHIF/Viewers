@@ -1,3 +1,4 @@
+import defaultContextMenuCustomization from './customizations/defaultContextMenuCustomization';
 import helloPageCustomization from './customizations/helloPageCustomization';
 import datasourcesCustomization from './customizations/datasourcesCustomization';
 import multimonitorCustomization from './customizations/multimonitorCustomization';
@@ -44,6 +45,7 @@ export default function getCustomizationModule({ servicesManager, extensionManag
         ...getDataSourceConfigurationCustomization({ servicesManager, extensionManager }),
         ...progressDropdownCustomization,
         ...sortingCriteriaCustomization,
+        ...defaultContextMenuCustomization,
       },
     },
   ];
