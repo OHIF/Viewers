@@ -61,6 +61,14 @@ const reuseCachedLayout = (state, hangingProtocolService: HangingProtocolService
       if (viewportId === activeViewportId && i === 0) {
         setDisplaySetSelector(`${activeStudyUID}:activeDisplaySet:0`, displaySetUID);
       }
+      if (displaySetOptions[i]?.id) {
+        setDisplaySetSelector(
+          `${activeStudyUID}:${displaySetOptions[i].id}:${
+            displaySetOptions[i].matchedDisplaySetsIndex || 0
+          }`,
+          displaySetUID
+        );
+      }
     }
   });
 
