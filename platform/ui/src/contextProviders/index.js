@@ -16,6 +16,8 @@ export { ViewportGridContext, ViewportGridProvider, useViewportGrid } from './Vi
 
 export { useToolbox, ToolboxProvider } from './Toolbox/ToolboxContext';
 
+export { useServices, ServicesProvider } from './ServicesProvider';
+
 export {
   UserAuthenticationContext,
   UserAuthenticationProvider,

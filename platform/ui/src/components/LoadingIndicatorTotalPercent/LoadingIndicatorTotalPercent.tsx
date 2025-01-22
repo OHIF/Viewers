@@ -1,5 +1,5 @@
 import React from 'react';
-
+import CustomizableRenderComponent from '../../utils/CustomizableRenderComponent';
 import LoadingIndicatorProgress from '../LoadingIndicatorProgress';
 
 interface Props {
@@ -15,6 +15,24 @@ interface Props {
  * and percentComplete to display a more detailed message.
  */
 function LoadingIndicatorTotalPercent({
+  className,
+  totalNumbers,
+  percentComplete,
+  loadingText,
+  targetText,
+}: Props) {
+  return CustomizableRenderComponent({
+    customizationId: 'ui.LoadingIndicatorTotalPercent',
+    FallbackComponent: FallbackLoadingIndicatorTotalPercent,
+    className,
+    totalNumbers,
+    percentComplete,
+    loadingText,
+    targetText,
+  });
+}
+
+function FallbackLoadingIndicatorTotalPercent({
   className,
   totalNumbers,
   percentComplete,

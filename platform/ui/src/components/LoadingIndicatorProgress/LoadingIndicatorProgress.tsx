@@ -1,15 +1,27 @@
 import React from 'react';
 import classNames from 'classnames';
 
+import Icon from '../Icon';
 import ProgressLoadingBar from '../ProgressLoadingBar';
-import { Icons } from '@ohif/ui-next';
+import CustomizableRenderComponent from '../../utils/CustomizableRenderComponent';
+
 /**
  *  A React component that renders a loading indicator.
  * if progress is not provided, it will render an infinite loading indicator
  * if progress is provided, it will render a progress bar
  * Optionally a textBlock can be provided to display a message
  */
+
 function LoadingIndicatorProgress({ className, textBlock, progress }) {
+  return CustomizableRenderComponent({
+    customizationId: 'ui.LoadingIndicatorProgress',
+    FallbackComponent: FallbackLoadingIndicatorProgress,
+    className,
+    textBlock,
+    progress,
+  });
+}
+function FallbackLoadingIndicatorProgress({ className, textBlock, progress }) {
   return (
     <div
       className={classNames(
@@ -17,7 +29,10 @@ function LoadingIndicatorProgress({ className, textBlock, progress }) {
         className
       )}
     >
-      <Icons.LoadingOHIFMark className="h-12 w-12 text-white" />
+      <Icon
+        name="loading-ohif-mark"
+        className="h-12 w-12 text-white"
+      />
       <div className="w-48">
         <ProgressLoadingBar progress={progress} />
       </div>
