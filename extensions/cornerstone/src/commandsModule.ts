@@ -1467,7 +1467,7 @@ function commandsModule({
     getRenderInactiveSegmentations: {
       commandFn: actions.getRenderInactiveSegmentations,
     },
-    deleteAnnotation: {
+    deleteActiveAnnotation: {
       commandFn: actions.deleteActiveAnnotation,
     },
   };

@@ -175,7 +175,7 @@ const bindings = [
   },
   {
     commandName: 'deleteActiveAnnotation',
-    keys: ['backspace', 'del'],
+    keys: ['backspace'],
   },
   // These don't exist, so don't try applying them....
   // {
