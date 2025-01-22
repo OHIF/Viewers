@@ -1393,10 +1393,10 @@
   resolved "https://registry.yarnpkg.com/@colors/colors/-/colors-1.5.0.tgz#bb504579c1cae923e6576a4f5da43d25f97bdbd9"
   integrity sha512-ooWCrlZP11i8GImSjTHYHLkvFDP48nS4+204nGb1RiX/WXYHmJA2III9/e2DWVabCESdW7hBAEzHRqUn9OUVvQ==
 
-"@cornerstonejs/adapters@^2.14.7":
-  version "2.14.7"
-  resolved "https://registry.yarnpkg.com/@cornerstonejs/adapters/-/adapters-2.14.7.tgz#ecdcbc9701b26ce5c0336a6252ed44b876b51d87"
-  integrity sha512-3vbWSfo6k68UzwLQ9ZVgL8DmTJA4mOEXBkETAk2M3+5Jky1EBT5X84UFKVIRzByk/76pG08D/NmPk2/QaO+FUA==
+"@cornerstonejs/adapters@^2.15.3":
+  version "2.15.5"
+  resolved "https://registry.yarnpkg.com/@cornerstonejs/adapters/-/adapters-2.15.5.tgz#2fce5e7ad5a3e7b5f229c5a1f4e07d6c91f9836c"
+  integrity sha512-ohdp8waX52ZpPhnrJJnM64Dlc2+X+DCL8HvYB/SjvE/H1YsHk1Pa5trd5taEKq1GJks3LX19XIuWTpKj/wXTUA==
   dependencies:
     "@babel/runtime-corejs2" "^7.17.8"
     buffer "^6.0.3"
@@ -1429,19 +1429,19 @@
   resolved "https://registry.yarnpkg.com/@cornerstonejs/codec-openjph/-/codec-openjph-2.4.5.tgz#8690b61a86fa53ef38a70eee9d665a79229517c0"
   integrity sha512-MZCUy8VG0VG5Nl1l58+g+kH3LujAzLYTfJqkwpWI2gjSrGXnP6lgwyy4GmPRZWVoS40/B1LDNALK905cNWm+sg==
 
-"@cornerstonejs/core@^2.14.7":
-  version "2.14.7"
-  resolved "https://registry.yarnpkg.com/@cornerstonejs/core/-/core-2.14.7.tgz#7092f5038ecd2b88ce1417a86885cd5711d04709"
-  integrity sha512-92gTKuY+Ea0xsEJB1niC7FiNsaWDK7R274ZEEcu+4vb0u6P3eIQOKCut8aKVV5JpVk3C7kJ5QjCMWdG/RNp/eg==
+"@cornerstonejs/core@^2.15.3":
+  version "2.15.5"
+  resolved "https://registry.yarnpkg.com/@cornerstonejs/core/-/core-2.15.5.tgz#2c81bf28a1e15dfbe25215a7df6ae29b70e7d621"
+  integrity sha512-P+Dzsdgp9uSqcIBRECHI0Kj1G2//2UacstRmsRc3uxXgJ0lJ7AaLS31F4xVNOf+5mHMsB8BUsxdDg6iujX9lQA==
   dependencies:
-    "@kitware/vtk.js" "32.1.1"
+    "@kitware/vtk.js" "32.9.0"
     comlink "^4.4.1"
     gl-matrix "^3.4.3"
 
-"@cornerstonejs/dicom-image-loader@^2.14.7":
-  version "2.14.7"
-  resolved "https://registry.yarnpkg.com/@cornerstonejs/dicom-image-loader/-/dicom-image-loader-2.14.7.tgz#9de7a5b6fd7dee030f7da5d705de4341af318bb5"
-  integrity sha512-l/Vbz+5Vd076N+3xFr55aqkHxItqWe4HXjuvLBqm4orb3jWULIoM/34RJg0vGqgXj/UrB4OXxZfwDcuYBDAgEg==
+"@cornerstonejs/dicom-image-loader@^2.15.3":
+  version "2.15.5"
+  resolved "https://registry.yarnpkg.com/@cornerstonejs/dicom-image-loader/-/dicom-image-loader-2.15.5.tgz#867636c95321dc03d5eb960266af300609f28d54"
+  integrity sha512-XbWHlfNe6/+W6xFYSSBcOQNTJfCg0FRduh+AXfMxES96xTSdK/1LObeOOtVq5QCslUU90ERHuUYSY8wDNiys7w==
   dependencies:
     "@cornerstonejs/codec-charls" "^1.2.3"
     "@cornerstonejs/codec-libjpeg-turbo-8bit" "^1.2.2"
@@ -1452,10 +1452,10 @@
     pako "^2.0.4"
     uuid "^9.0.0"
 
-"@cornerstonejs/tools@^2.14.7":
-  version "2.14.7"
-  resolved "https://registry.yarnpkg.com/@cornerstonejs/tools/-/tools-2.14.7.tgz#da0b4485aff8aa72cd88a74ad30d0a12d762f107"
-  integrity sha512-8IorarVROvevrWfkKRFGjfDONa14i9V3auWsZTAyi8J0YQ2PKrLx2MLoXWsFYQS4AHhaWRAuVl3GsKR+V/QbzQ==
+"@cornerstonejs/tools@^2.15.3":
+  version "2.15.5"
+  resolved "https://registry.yarnpkg.com/@cornerstonejs/tools/-/tools-2.15.5.tgz#e38ff0e5a7158f073f361068ff0bbc2fe337fe7b"
+  integrity sha512-uOphCv2ulmRijy72emPUkXYw1JXYYygTPKWNmaEA6PX17fE6NlQfYdJc4GHVkXiqj2YJCDzN1PwukI1dWfL9Vg==
   dependencies:
     "@types/offscreencanvas" "2019.7.3"
     comlink "^4.4.1"
@@ -2221,6 +2221,29 @@
     shelljs "0.8.5"
     spark-md5 "3.0.2"
     stream-browserify "3.0.0"
+    webworker-promise "0.5.0"
+    worker-loader "3.0.8"
+    xmlbuilder2 "3.0.2"
+
+"@kitware/vtk.js@32.9.0":
+  version "32.9.0"
+  resolved "https://registry.yarnpkg.com/@kitware/vtk.js/-/vtk.js-32.9.0.tgz#c905c92f50a1236d771e7d3c637d0c49127a48c5"
+  integrity sha512-Tk9O++q6J4Z47DQnYXMnSeTmSRTQeK0Wa3447iGivCt162swOkIFCHBRtiwwHjWbe8tKCS8N/7d+eHCxkK7JtA==
+  dependencies:
+    "@babel/runtime" "7.22.11"
+    "@types/webxr" "^0.5.5"
+    commander "9.2.0"
+    d3-scale "4.0.2"
+    fast-deep-equal "^3.1.3"
+    fflate "0.7.3"
+    gl-matrix "3.4.3"
+    globalthis "1.0.3"
+    seedrandom "3.0.5"
+    shader-loader "1.3.1"
+    shelljs "0.8.5"
+    spark-md5 "3.0.2"
+    stream-browserify "3.0.0"
+    utif "3.1.0"
     webworker-promise "0.5.0"
     worker-loader "3.0.8"
     xmlbuilder2 "3.0.2"
@@ -10214,13 +10237,6 @@ fast-uri@^3.0.1:
   resolved "https://registry.yarnpkg.com/fast-uri/-/fast-uri-3.0.2.tgz#d78b298cf70fd3b752fd951175a3da6a7b48f024"
   integrity sha512-GR6f0hD7XXyNJa25Tb9BuIdN0tdr+0BMi6/CJPH3wJO1JjNG3n/VsSw38AwRdKZABm8lGbPfakLRkYzx2V9row==
 
-fast-url-parser@1.1.3:
-  version "1.1.3"
-  resolved "https://registry.yarnpkg.com/fast-url-parser/-/fast-url-parser-1.1.3.tgz#f4af3ea9f34d8a271cf58ad2b3759f431f0b318d"
-  integrity sha512-5jOCVXADYNuRkKFzNJ0dCCewsZiYo0dz8QNYljkOpFC6r2U4OBmKtvm/Tsuh4w1YYdDqDb31a8TVhBJ2OJKdqQ==
-  dependencies:
-    punycode "^1.3.2"
-
 fastest-levenshtein@^1.0.12:
   version "1.0.16"
   resolved "https://registry.yarnpkg.com/fastest-levenshtein/-/fastest-levenshtein-1.0.16.tgz#210e61b6ff181de91ea9b3d1b84fdedd47e034e5"
@@ -15474,6 +15490,11 @@ pacote@^15.2.0:
     ssri "^10.0.0"
     tar "^6.1.11"
 
+pako@^1.0.5, pako@~1.0.5:
+  version "1.0.11"
+  resolved "https://registry.yarnpkg.com/pako/-/pako-1.0.11.tgz#6c9599d340d54dfd3946380252a35705a6b992bf"
+  integrity sha512-4hLB8Py4zZce5s4yd9XzopqwVv/yGNhV1Bl8NTmCq1763HeK2+EwVTv+leGeL13Dnh2wfbqowVPXCIO0z4taYw==
+
 pako@^2.0.4:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/pako/-/pako-2.1.0.tgz#266cc37f98c7d883545d11335c00fbd4062c9a86"
@@ -15483,11 +15504,6 @@ pako@~0.2.0:
   version "0.2.9"
   resolved "https://registry.yarnpkg.com/pako/-/pako-0.2.9.tgz#f3f7522f4ef782348da8161bad9ecfd51bf83a75"
   integrity sha512-NUcwaKxUxWrZLpDG+z/xZaCgQITkA/Dv4V/T6bw7VON6l1Xz/VnrBqrYjZQ12TamKHzITTfOEIYUj48y2KXImA==
-
-pako@~1.0.5:
-  version "1.0.11"
-  resolved "https://registry.yarnpkg.com/pako/-/pako-1.0.11.tgz#6c9599d340d54dfd3946380252a35705a6b992bf"
-  integrity sha512-4hLB8Py4zZce5s4yd9XzopqwVv/yGNhV1Bl8NTmCq1763HeK2+EwVTv+leGeL13Dnh2wfbqowVPXCIO0z4taYw==
 
 param-case@^3.0.4:
   version "3.0.4"
@@ -15643,10 +15659,10 @@ path-to-regexp@0.1.10:
   resolved "https://registry.yarnpkg.com/path-to-regexp/-/path-to-regexp-0.1.10.tgz#67e9108c5c0551b9e5326064387de4763c4d5f8b"
   integrity sha512-7lf7qcQidTku0Gu3YDPc8DJ1q7OOucfa/BSsIwjuh56VU7katFvuM8hULfkwB3Fns/rsVF7PwPKVw1sl5KQS9w==
 
-path-to-regexp@2.2.1:
-  version "2.2.1"
-  resolved "https://registry.yarnpkg.com/path-to-regexp/-/path-to-regexp-2.2.1.tgz#90b617025a16381a879bc82a38d4e8bdeb2bcf45"
-  integrity sha512-gu9bD6Ta5bwGrrU8muHzVOBFFREpp2iRkVfhBJahwJ6p6Xw20SjT0MxLnwkjOibQmGSYhiUnf2FLe7k+jcFmGQ==
+path-to-regexp@3.3.0:
+  version "3.3.0"
+  resolved "https://registry.yarnpkg.com/path-to-regexp/-/path-to-regexp-3.3.0.tgz#f7f31d32e8518c2660862b644414b6d5c63a611b"
+  integrity sha512-qyCH421YQPS2WFDxDjftfc1ZR5WKQzVzqsp4n9M2kQhVOo/ByahFoUNJfl58kOcEGfQ//7weFTDhm+ss8Ecxgw==
 
 path-type@^3.0.0:
   version "3.0.0"
@@ -16679,7 +16695,7 @@ pumpify@^1.3.3:
     inherits "^2.0.3"
     pump "^2.0.0"
 
-punycode@^1.3.2, punycode@^1.4.1:
+punycode@^1.4.1:
   version "1.4.1"
   resolved "https://registry.yarnpkg.com/punycode/-/punycode-1.4.1.tgz#c0d5a63b2718800ad8e1eb0fa5269c84dd41845e"
   integrity sha512-jmYNElW7yvO7TV33CjSmvSiE2yco3bV2czu/OzDKdMNVZQWfxCblURLhf+47syQRBntjfLdd/H0egrzIG+oaFQ==
@@ -17961,18 +17977,17 @@ serialize-javascript@^6.0.0, serialize-javascript@^6.0.1:
   dependencies:
     randombytes "^2.1.0"
 
-serve-handler@6.1.5:
-  version "6.1.5"
-  resolved "https://registry.yarnpkg.com/serve-handler/-/serve-handler-6.1.5.tgz#a4a0964f5c55c7e37a02a633232b6f0d6f068375"
-  integrity sha512-ijPFle6Hwe8zfmBxJdE+5fta53fdIY0lHISJvuikXB3VYFafRjMRpOffSPvCYsbKyBA7pvy9oYr/BT1O3EArlg==
+serve-handler@6.1.6:
+  version "6.1.6"
+  resolved "https://registry.yarnpkg.com/serve-handler/-/serve-handler-6.1.6.tgz#50803c1d3e947cd4a341d617f8209b22bd76cfa1"
+  integrity sha512-x5RL9Y2p5+Sh3D38Fh9i/iQ5ZK+e4xuXRd/pGbM4D13tgo/MGwbttUk8emytcr1YYzBYs+apnUngBDFYfpjPuQ==
   dependencies:
     bytes "3.0.0"
     content-disposition "0.5.2"
-    fast-url-parser "1.1.3"
     mime-types "2.1.18"
     minimatch "3.1.2"
     path-is-inside "1.0.2"
-    path-to-regexp "2.2.1"
+    path-to-regexp "3.3.0"
     range-parser "1.2.0"
 
 serve-index@^1.9.1:
@@ -17998,10 +18013,10 @@ serve-static@1.16.2:
     parseurl "~1.3.3"
     send "0.19.0"
 
-serve@^14.2.0:
-  version "14.2.3"
-  resolved "https://registry.yarnpkg.com/serve/-/serve-14.2.3.tgz#047ba2b349354255bc09e0332cd41a92787836c9"
-  integrity sha512-VqUFMC7K3LDGeGnJM9h56D3XGKb6KGgOw0cVNtA26yYXHCcpxf3xwCTUaQoWlVS7i8Jdh3GjQkOB23qsXyjoyQ==
+serve@^14.2.4:
+  version "14.2.4"
+  resolved "https://registry.yarnpkg.com/serve/-/serve-14.2.4.tgz#ba4c425c3c965f496703762e808f34b913f42fb0"
+  integrity sha512-qy1S34PJ/fcY8gjVGszDB3EXiPSk5FKhUa7tQe0UPRddxRidc2V6cNHPNewbE1D7MAkgLuWEt3Vw56vYy73tzQ==
   dependencies:
     "@zeit/schemas" "2.36.0"
     ajv "8.12.0"
@@ -18012,7 +18027,7 @@ serve@^14.2.0:
     clipboardy "3.0.0"
     compression "1.7.4"
     is-port-reachable "4.0.0"
-    serve-handler "6.1.5"
+    serve-handler "6.1.6"
     update-check "1.5.4"
 
 set-blocking@^2.0.0:
@@ -19856,6 +19871,13 @@ use-sync-external-store@1.2.2, use-sync-external-store@^1.0.0:
   version "1.2.2"
   resolved "https://registry.yarnpkg.com/use-sync-external-store/-/use-sync-external-store-1.2.2.tgz#c3b6390f3a30eba13200d2302dcdf1e7b57b2ef9"
   integrity sha512-PElTlVMwpblvbNqQ82d2n6RjStvdSoNe9FG28kNfz3WiXilJm4DdNkEzRhCZuIDwY8U08WVihhGR5iRqAwfDiw==
+
+utif@3.1.0:
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/utif/-/utif-3.1.0.tgz#4abec2f5d9cafe7813c0191e007927c125401f1c"
+  integrity sha512-WEo4D/xOvFW53K5f5QTaTbbiORcm2/pCL9P6qmJnup+17eYfKaEhDeX9PeQkuyEoIxlbGklDuGl8xwuXYMrrXQ==
+  dependencies:
+    pako "^1.0.5"
 
 util-deprecate@^1.0.1, util-deprecate@^1.0.2, util-deprecate@~1.0.1:
   version "1.0.2"

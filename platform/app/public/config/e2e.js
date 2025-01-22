@@ -1,3 +1,20 @@
+// This is example code that dynamically sets the initial search conditions to
+// search for today
+if (window.location.search === '?today') {
+  const now = new Date();
+  const month = now.getMonth() + 1;
+  const day = now.getDate();
+  window.sessionStorage.setItem(
+    'queryFilterValues',
+    JSON.stringify({
+      studyDate: {
+        startDate: `${now.getFullYear()}${month < 10 ? '0' + month : month}${day < 10 ? '0' + day : day}`,
+        endDate: null,
+      },
+    })
+  );
+}
+
 /** @type {AppTypes.Config} */
 window.config = {
   routerBasename: '/',

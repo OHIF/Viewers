@@ -680,7 +680,7 @@ export default class HangingProtocolService extends PubSubService {
     }
 
     // If the viewport options says to allow any instance, then we can assume
-    // it just updates this viewport
+    // it just updates this viewport.  This is deprecated and will be removed
     if (protocolViewport.viewportOptions.allowUnmatchedView) {
       return defaultReturn;
     }
@@ -692,7 +692,8 @@ export default class HangingProtocolService extends PubSubService {
       protocolViewport.displaySets[0];
     const displaySetSelector = protocol.displaySetSelectors[displaySetSelectorId];
 
-    if (!displaySetSelector) {
+    // The display set can allow any view
+    if (!displaySetSelector || displaySetSelector.allowUnmatchedView) {
       return defaultReturn;
     }
 
@@ -1352,9 +1353,7 @@ export default class HangingProtocolService extends PubSubService {
 
       // Use the display set provided instead
       if (reuseDisplaySetUID) {
-        if (viewportOptions.allowUnmatchedView !== true) {
-          this.validateDisplaySetSelectMatch(viewportDisplaySet, id, reuseDisplaySetUID);
-        }
+        // This display set should have already been validated
         const displaySetInfo: HangingProtocol.DisplaySetInfo = {
           displaySetInstanceUID: reuseDisplaySetUID,
           displaySetOptions,
