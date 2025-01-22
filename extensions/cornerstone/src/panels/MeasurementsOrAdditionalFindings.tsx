@@ -27,23 +27,29 @@ export const groupByNamedSets = (items, grouping) => {
   const groups = new Map();
   const { namedSets } = grouping;
 
+  for (const namedSet of namedSets) {
+    const name = namedSet.id || namedSet.title;
+    groups.set(name, {
+      ...grouping,
+      ...namedSet,
+      items: [],
+    });
+  }
   items.forEach(item => {
     for (const namedSet of namedSets) {
       if (namedSet.filter(item)) {
         const name = namedSet.id || namedSet.title;
-        console.log('Found item', name, item);
-        if (!groups.has(name)) {
-          groups.set(name, {
-            ...grouping,
-            ...namedSet,
-            items: [],
-          });
-        }
         groups.get(name).items.push(item);
         return;
       }
     }
   });
+  for (const namedSet of namedSets) {
+    const name = namedSet.id || namedSet.title;
+    if (!groups.get(name).items.length) {
+      groups.delete(name);
+    }
+  }
 
   return groups;
 };

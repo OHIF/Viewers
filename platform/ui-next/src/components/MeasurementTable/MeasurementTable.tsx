@@ -24,7 +24,6 @@ const MeasurementTable = ({
   children,
   disableEditing = false,
 }: MeasurementDataProps) => {
-  console.log('measurement table onAction=', onAction);
   const { t } = useTranslation('MeasurementTable');
   const amount = data.length;
 
