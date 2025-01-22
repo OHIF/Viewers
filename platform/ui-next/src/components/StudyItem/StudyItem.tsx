@@ -4,6 +4,8 @@ import classnames from 'classnames';
 import { ThumbnailList } from '../ThumbnailList';
 
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../Accordion';
+import { Tooltip, TooltipContent } from '../Tooltip';
+import { TooltipTrigger } from '@radix-ui/react-tooltip';
 
 const StudyItem = ({
   date,
@@ -34,16 +36,28 @@ const StudyItem = ({
       defaultValue={isActive ? 'study-item' : undefined}
     >
       <AccordionItem value="study-item">
-        <AccordionTrigger className={classnames('hover:bg-accent bg-popover group rounded')}>
-          <div className="flex h-[40px] flex-1 flex-row">
-            <div className="flex w-full flex-row items-center">
-              <div className="flex flex-col items-start text-[13px]">
-                <div className="text-white">{date}</div>
-                <div className="text-muted-foreground h-[18px] max-w-[160px] overflow-hidden truncate whitespace-nowrap">
-                  {description}
-                </div>
+        <AccordionTrigger className={classnames('hover:bg-accent bg-popover group w-full rounded')}>
+          <div className="flex h-[40px] w-full flex-row overflow-hidden">
+            <div className="flex w-full flex-row items-center justify-between">
+              <div className="flex min-w-0 flex-col items-start text-[13px]">
+                <Tooltip>
+                  <TooltipContent>{date}</TooltipContent>
+                  <TooltipTrigger className="w-full">
+                    <div className="h-[18px] w-full max-w-[160px] overflow-hidden truncate whitespace-nowrap text-left text-white">
+                      {date}
+                    </div>
+                  </TooltipTrigger>
+                </Tooltip>
+                <Tooltip>
+                  <TooltipContent>{description}</TooltipContent>
+                  <TooltipTrigger className="w-full">
+                    <div className="text-muted-foreground h-[18px] w-full max-w-[160px] overflow-hidden truncate whitespace-nowrap text-left">
+                      {description}
+                    </div>
+                  </TooltipTrigger>
+                </Tooltip>
               </div>
-              <div className="text-muted-foreground ml-auto flex flex-col items-end text-[12px]">
+              <div className="text-muted-foreground flex flex-col items-end text-[12px]">
                 <div className="max-w-[150px] overflow-hidden text-ellipsis">{modalities}</div>
                 <div>{numInstances}</div>
               </div>
