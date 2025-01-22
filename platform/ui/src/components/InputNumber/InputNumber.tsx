@@ -130,7 +130,7 @@ const InputNumber: React.FC<{
               className={arrowHorizontalClassName}
               onClick={() => decrement()}
             >
-              <Icons.ByName name="arrow-left" />
+              <Icons.ChevronLeft />
             </div>
           )}
           <input
@@ -148,7 +148,7 @@ const InputNumber: React.FC<{
               className={arrowHorizontalClassName}
               onClick={() => increment()}
             >
-              <Icons.ByName name="arrow-right" />
+              <Icons.ChevronRight />
             </div>
           )}
           {showAdjustmentArrows && arrowsDirection === 'vertical' && (

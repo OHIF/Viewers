@@ -53,31 +53,6 @@ export function formatDICOMTime(time, strFormat = 'HH:mm:ss') {
 }
 
 /**
- * Formats a patient name for display purposes
- *
- * @param {string} name
- * @returns {string} formatted name.
- */
-export function formatPN(name) {
-  if (!name) {
-    return '';
-  }
-  if (typeof name === 'object') {
-    name = name.Alphabetic;
-    if (!name) {
-      return '';
-    }
-  }
-
-  const cleaned = name
-    .split('^')
-    .filter(s => !!s)
-    .join(', ')
-    .trim();
-  return cleaned === ',' || cleaned === '' ? '' : cleaned;
-}
-
-/**
  * Gets compression type
  *
  * @param {number} imageId
