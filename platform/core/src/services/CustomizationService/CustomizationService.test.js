@@ -421,4 +421,77 @@ describe('CustomizationService - Registration + API Operations', () => {
       expect(result).toEqual([1, 2, 3, 4, 5]);
     });
   });
+
+  describe('CustomizationService - Inheritance (`inheritsFrom`)', () => {
+    it('inherits properties from the parent customization', () => {
+      // Register a parent customization
+      customizationService.setCustomizations(
+        {
+          'test.overlayItem': {
+            label: 'Default Label',
+            color: 'blue',
+          },
+        },
+        CustomizationScope.Default
+      );
+
+      // Register a child customization with `inheritsFrom`
+      customizationService.setCustomizations({
+        'viewportOverlay.topLeft.StudyDate': {
+          $set: {
+            inheritsFrom: 'test.overlayItem',
+            label: 'Study Date',
+            title: ' date',
+          },
+        },
+      });
+
+      const customization = customizationService.getCustomization(
+        'viewportOverlay.topLeft.StudyDate'
+      );
+
+      // Check that the inherited and overridden properties exist
+      expect(customization.label).toBe('Study Date'); // Overridden
+      expect(customization.color).toBe('blue'); // Inherited
+    });
+
+    it('executes transform methods from the parent customization', () => {
+      // Register a parent customization
+      customizationService.setCustomizations(
+        {
+          'test.overlayItem': {
+            $set: {
+              transform: function () {
+                return {
+                  label: this.label,
+                  additionalKey: 'transformedValue',
+                };
+              },
+            },
+          },
+        },
+        CustomizationScope.Default
+      );
+
+      // Register a child customization with `inheritsFrom`
+      customizationService.setCustomizations({
+        'viewportOverlay.bottomRight.InstanceNumber': {
+          $set: {
+            inheritsFrom: 'test.overlayItem',
+            label: 'Instance Number',
+            title: 'Instance Title',
+          },
+        },
+      });
+
+      const customization = customizationService.getCustomization(
+        'viewportOverlay.bottomRight.InstanceNumber'
+      );
+
+      // Verify that the transform function from the parent is executed
+      expect(customization.additionalKey).toBe('transformedValue');
+      expect(customization.label).toBe('Instance Number');
+      expect(customization.title).toBe(undefined);
+    });
+  });
 });
