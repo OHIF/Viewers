@@ -361,10 +361,26 @@ export default class CustomizationService extends PubSubService {
   }
 
   /**
+   * Registers a custom command to be used in customization updates.
+   * @param commandName - The name of the command (without the $ prefix)
+   *   it will be prefixed with $
+   * @param handler - Function that handles the command it receives the value and the original value
+   */
+  public registerCustomUpdateCommand(
+    commandName: string,
+    handler: (value: Customization, original: Customization) => Customization
+  ): void {
+    if (!commandName.startsWith('$')) {
+      commandName = '$' + commandName;
+    }
+    extend(commandName, handler);
+  }
+
+  /**
    * Uses immutability-helper to apply the user's commands (e.g. $set, $push, $apply, etc.)
    * Takes into account the 'mergeType' if it's explicitly 'Replace'; otherwise does a normal update.
    */
-  private _update(oldValue: any, newValue: any) {
+  private _update(oldValue: Customization | undefined, newValue: Customization): Customization {
     if (!oldValue) {
       oldValue = undefined;
     }
