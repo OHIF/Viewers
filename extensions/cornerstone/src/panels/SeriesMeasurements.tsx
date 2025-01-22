@@ -1,7 +1,7 @@
 import React from 'react';
 import AccordionGroup from './AccordionGroup';
-import { SeriesSummaryFromMetadata } from '../components/SeriesSummaryFromMetadata';
-import MeasurementsOrAdditionalFindings from './MeasurementsOrAdditionalFindings';
+import ShowItem from './ShowItem';
+
 /**
  * Groups measurements by study in order to allow display and saving by study
  * @param {Object} servicesManager
@@ -12,16 +12,15 @@ export const groupByDisplaySet = (items, grouping, childProps) => {
 
   items.forEach(item => {
     const { displaySetInstanceUID } = item;
-    const displaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
 
     if (!groups.has(displaySetInstanceUID)) {
+      const displaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
       groups.set(displaySetInstanceUID, {
-        header: SeriesSummaryFromMetadata,
+        header: null,
         ...grouping,
         items: [],
-        headerProps: {
-          ...grouping.headerProps,
-          displaySet,
+        componentProps: {
+          title: displaySet.SeriesDescription,
         },
       });
     }
@@ -39,12 +38,11 @@ export default function SeriesMeasurements(props): React.ReactNode {
     <AccordionGroup
       grouping={{
         groupingFunction: groupByDisplaySet,
-        header: SeriesSummaryFromMetadata,
         ...grouping,
       }}
       childProps={childProps}
       items={items}
-      component={grouping.component || MeasurementsOrAdditionalFindings}
+      component={grouping.component || ShowItem}
     />
   );
 }

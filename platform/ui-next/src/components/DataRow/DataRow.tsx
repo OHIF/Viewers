@@ -65,18 +65,13 @@ interface DataRowProps {
   onSelect?: () => void;
   //
   isVisible: boolean;
-  onToggleVisibility: () => void;
   //
   isLocked: boolean;
-  onToggleLocked: () => void;
   //
   title: string;
-  onRename: () => void;
-  //
-  onDelete: () => void;
   //
   colorHex?: string;
-  onColor: () => void;
+  onAction?: (e, command) => void;
 }
 
 const DataRow: React.FC<DataRowProps> = ({
@@ -86,35 +81,13 @@ const DataRow: React.FC<DataRowProps> = ({
   details,
   onSelect,
   isLocked,
-  onToggleVisibility,
-  onToggleLocked,
-  onRename,
-  onDelete,
-  onColor,
+  onAction,
   isSelected = false,
   isVisible = true,
   disableEditing = false,
 }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const isTitleLong = title?.length > 25;
-
-  const handleAction = (action: string, e: React.MouseEvent) => {
-    e.stopPropagation();
-    switch (action) {
-      case 'Rename':
-        onRename();
-        break;
-      case 'Lock':
-        onToggleLocked();
-        break;
-      case 'Delete':
-        onDelete();
-        break;
-      case 'Color':
-        onColor();
-        break;
-    }
-  };
 
   const decodeHTML = (html: string) => {
     const txt = document.createElement('textarea');
@@ -186,7 +159,7 @@ const DataRow: React.FC<DataRowProps> = ({
         className={`flex items-center ${
           isSelected ? 'bg-popover' : 'bg-muted'
         } group relative cursor-pointer`}
-        onClick={onSelect}
+        onClick={e => onAction(e, 'jumpToMeasurement')}
         data-cy="data-row"
       >
         {/* Hover Overlay */}
@@ -254,7 +227,7 @@ const DataRow: React.FC<DataRowProps> = ({
             aria-label={isVisible ? 'Hide' : 'Show'}
             onClick={e => {
               e.stopPropagation();
-              onToggleVisibility();
+              onAction(e, 'toggleVisibilityMeasurement');
             }}
           >
             {isVisible ? <Icons.Hide className="h-6 w-6" /> : <Icons.Show className="h-6 w-6" />}
@@ -281,23 +254,19 @@ const DataRow: React.FC<DataRowProps> = ({
             <DropdownMenuContent align="end">
               {!disableEditing && (
                 <>
-                  <DropdownMenuItem onClick={e => handleAction('Rename', e)}>
+                  <DropdownMenuItem
+                    onClick={e => onAction(e, ['jumpToMeasurement', 'renameMeasurement'])}
+                  >
                     <Icons.Rename className="text-foreground" />
                     <span className="pl-2">Rename</span>
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={e => handleAction('Delete', e)}>
+                  <DropdownMenuItem onClick={e => onAction(e, 'removeMeasurement')}>
                     <Icons.Delete className="text-foreground" />
                     <span className="pl-2">Delete</span>
                   </DropdownMenuItem>
-                  {onColor && (
-                    <DropdownMenuItem onClick={e => handleAction('Color', e)}>
-                      <Icons.ColorChange className="text-foreground" />
-                      <span className="pl-2">Change Color</span>
-                    </DropdownMenuItem>
-                  )}
                 </>
               )}
-              <DropdownMenuItem onClick={e => handleAction('Lock', e)}>
+              <DropdownMenuItem onClick={e => onAction(e, 'toggleLockMeasurement')}>
                 <Icons.Lock className="text-foreground" />
                 <span className="pl-2">{isLocked ? 'Unlock' : 'Lock'}</span>
               </DropdownMenuItem>

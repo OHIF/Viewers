@@ -333,16 +333,6 @@ function commandsModule({
     },
 
     /**
-     * Clear the measurements
-     */
-    clearMeasurements: options => {
-      const { measurementFilter } = options;
-      measurementService.clearMeasurements(
-        measurementFilter ? measurementFilter.bind(options) : null
-      );
-    },
-
-    /**
      * Download the CSV report for the measurements.
      */
     downloadCSVMeasurementsReport: ({ measurementFilter }) => {
@@ -1334,9 +1324,6 @@ function commandsModule({
     },
     updateMeasurement: {
       commandFn: actions.updateMeasurement,
-    },
-    clearMeasurements: {
-      commandFn: actions.clearMeasurements,
     },
     jumpToMeasurement: {
       commandFn: actions.jumpToMeasurement,

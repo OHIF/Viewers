@@ -7,6 +7,10 @@ export function filterMeasurementsBySeriesUID(selectedSeries: string[]) {
   return measurement => selectedSeries.includes(measurement.referenceSeriesUID);
 }
 
+export function filterMeasurementsByStudyUID(studyUID) {
+  return measurement => measurement.referenceStudyUID == studyUID;
+}
+
 /**
  * @returns true for measurements include referencedImageId (coplanar with an image)
  */

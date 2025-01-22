@@ -15,10 +15,20 @@ export default function PanelMeasurement(props): React.ReactNode {
   const displayMeasurements = useMeasurements(servicesManager, {
     measurementFilter,
   });
+
+  const bindCommand = (name: string | string[], options?) => {
+    return (uid: string) => {
+      commandsManager.run(name, { ...options, uid });
+    };
+  };
+
+  const jumpToImage = bindCommand('jumpToMeasurement', { displayMeasurements });
+
   const childProps = {
     servicesManager,
     measurementFilter,
     commandsManager,
+    onClick: jumpToImage,
   };
 
   // Need to merge defaults on the content props to ensure they get passed to hcildren

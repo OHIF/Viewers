@@ -143,8 +143,9 @@ const commandsModule = ({
         type: type,
       });
     },
-    clearMeasurements: () => {
-      measurementService.clearMeasurements();
+
+    clearMeasurements: options => {
+      measurementService.clearMeasurements(options.measurementFilter);
     },
 
     /**

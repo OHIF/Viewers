@@ -5,12 +5,7 @@ import { createContext } from '../../lib/createContext';
 
 interface MeasurementTableContext {
   data?: any[];
-  onClick?: (uid: string) => void;
-  onDelete?: (uid: string) => void;
-  onToggleVisibility?: (uid: string) => void;
-  onToggleLocked?: (uid: string) => void;
-  onRename?: (uid: string) => void;
-  onColor?: (uid: string) => void;
+  onAction?: (e, command: string | string[], uid: string) => void;
   disableEditing?: boolean;
 }
 
@@ -24,28 +19,19 @@ interface MeasurementDataProps extends MeasurementTableContext {
 
 const MeasurementTable = ({
   data = [],
-  onClick,
-  onDelete,
-  onToggleVisibility,
-  onToggleLocked,
-  onRename,
-  onColor,
+  onAction,
   title,
   children,
   disableEditing = false,
 }: MeasurementDataProps) => {
+  console.log('measurement table onAction=', onAction);
   const { t } = useTranslation('MeasurementTable');
   const amount = data.length;
 
   return (
     <MeasurementTableProvider
       data={data}
-      onClick={onClick}
-      onDelete={onDelete}
-      onToggleVisibility={onToggleVisibility}
-      onToggleLocked={onToggleLocked}
-      onRename={onRename}
-      onColor={onColor}
+      onAction={onAction}
       disableEditing={disableEditing}
     >
       <PanelSection defaultOpen={true}>
@@ -107,15 +93,7 @@ interface RowProps {
 }
 
 const Row = ({ item, index }: RowProps) => {
-  const {
-    onClick,
-    onDelete,
-    onToggleVisibility,
-    onToggleLocked,
-    onRename,
-    onColor,
-    disableEditing,
-  } = useMeasurementTableContext('MeasurementTable.Row');
+  const { onClick, onAction, disableEditing } = useMeasurementTableContext('MeasurementTable.Row');
 
   return (
     <DataRow
@@ -127,13 +105,10 @@ const Row = ({ item, index }: RowProps) => {
       isSelected={item.isSelected}
       details={item.displayText}
       onSelect={() => onClick(item.uid)}
-      onDelete={() => onDelete(item.uid)}
+      onAction={(e, command) => onAction(e, command, item.uid)}
       disableEditing={disableEditing}
       isVisible={item.isVisible}
       isLocked={item.isLocked}
-      onToggleVisibility={() => onToggleVisibility(item.uid)}
-      onToggleLocked={() => onToggleLocked(item.uid)}
-      onRename={() => onRename(item.uid)}
       // onColor={() => onColor(item.uid)}
     />
   );

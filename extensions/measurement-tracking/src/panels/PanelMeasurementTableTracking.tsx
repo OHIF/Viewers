@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from 'react';
-import { DicomMetadataStore, utils } from '@ohif/core';
+import React from 'react';
+import { utils } from '@ohif/core';
 import { useViewportGrid } from '@ohif/ui-next';
 import { Button, Icons } from '@ohif/ui-next';
 import { PanelMeasurement, StudySummaryFromMetadata } from '@ohif/extension-cornerstone';
 import { useTrackedMeasurements } from '../getContextModule';
 
-const { filterAnd, filterPlanarMeasurement, filterAny, filterMeasurementsBySeriesUID } =
+const { filterAnd, filterPlanarMeasurement, filterMeasurementsBySeriesUID } =
   utils.MeasurementFilters;
 
 function PanelMeasurementTableTracking({
@@ -29,13 +29,12 @@ function PanelMeasurementTableTracking({
     }
   );
 
-  function CustomMenu({ items, StudyInstanceUID }) {
-    console.log('CustomMenu', items, StudyInstanceUID);
-    // const disabled = additionalFindings.length === 0 && measurements.length === 0;
+  function CustomMenu({ items, StudyInstanceUID, measurementFilter }) {
+    const disabled = !items?.length;
 
-    // if (disableEditing || disabled) {
-    //   return null;
-    // }
+    if (disableEditing || disabled) {
+      return null;
+    }
 
     return (
       <div className="bg-background flex h-9 w-full items-center rounded pr-0.5">
@@ -61,6 +60,8 @@ function PanelMeasurementTableTracking({
               sendTrackedMeasurementsEvent('SAVE_REPORT', {
                 viewportId: viewportGrid.activeViewportId,
                 isBackupSave: true,
+                StudyInstanceUID,
+                measurementFilter,
               });
             }}
           >
@@ -72,7 +73,9 @@ function PanelMeasurementTableTracking({
             variant="ghost"
             className="pl-0.5"
             onClick={() => {
-              commandsManager.runCommand('clearMeasurements', { measurementFilter });
+              commandsManager.runCommand('clearMeasurements', {
+                measurementFilter,
+              });
             }}
           >
             <Icons.Delete />
