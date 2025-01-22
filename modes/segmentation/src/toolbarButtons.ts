@@ -20,7 +20,7 @@ export const setToolActiveToolbar = {
 const toolbarButtons: Button[] = [
   {
     id: 'Zoom',
-    uiType: 'ohif.radioGroup',
+    uiType: 'ohif.toolButton',
     props: {
       icon: 'tool-zoom',
       label: 'Zoom',
@@ -30,7 +30,7 @@ const toolbarButtons: Button[] = [
   },
   {
     id: 'WindowLevel',
-    uiType: 'ohif.radioGroup',
+    uiType: 'ohif.toolButton',
     props: {
       icon: 'tool-window-level',
       label: 'Window Level',
@@ -40,7 +40,7 @@ const toolbarButtons: Button[] = [
   },
   {
     id: 'Pan',
-    uiType: 'ohif.radioGroup',
+    uiType: 'ohif.toolButton',
     props: {
       icon: 'tool-move',
       label: 'Pan',
@@ -50,7 +50,7 @@ const toolbarButtons: Button[] = [
   },
   {
     id: 'TrackballRotate',
-    uiType: 'ohif.radioGroup',
+    uiType: 'ohif.toolButton',
     props: {
       type: 'tool',
       icon: 'tool-3d-rotate',
@@ -64,7 +64,7 @@ const toolbarButtons: Button[] = [
   },
   {
     id: 'Capture',
-    uiType: 'ohif.radioGroup',
+    uiType: 'ohif.toolButton',
     props: {
       icon: 'tool-capture',
       label: 'Capture',
@@ -90,7 +90,7 @@ const toolbarButtons: Button[] = [
   },
   {
     id: 'Crosshairs',
-    uiType: 'ohif.radioGroup',
+    uiType: 'ohif.toolButton',
     props: {
       icon: 'tool-crosshair',
       label: 'Crosshairs',
