@@ -2,7 +2,7 @@ import React from 'react';
 import { utils } from '@ohif/core';
 
 import AccordionGroup from './AccordionGroup';
-import { StudySummaryFromMetadata } from '../components/StudySummaryFromMetadata';
+import StudySummaryMenu from './StudySummaryMenu';
 import MeasurementsOrAdditionalFindings from './MeasurementsOrAdditionalFindings';
 
 const { filterMeasurementsByStudyUID, filterAnd } = utils.MeasurementFilters;
@@ -59,7 +59,7 @@ export default function StudyMeasurements(props): React.ReactNode {
     <AccordionGroup
       grouping={{
         groupingFunction: groupByStudy,
-        header: StudySummaryFromMetadata,
+        header: StudySummaryMenu,
         ...grouping,
       }}
       childProps={childProps}
