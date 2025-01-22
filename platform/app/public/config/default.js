@@ -82,6 +82,29 @@ window.config = {
     },
     {
       namespace: '@ohif/extension-default.dataSourcesModule.dicomweb',
+      sourceName: 'QA_SMALL_F4C',
+      configuration: {
+        friendlyName: 'qa-didier',
+        name: 'qa-didier',
+        wadoUriRoot: 'https://qa-small-f4c.deemea.com/didier',
+        qidoRoot: 'https://qa-small-f4c.deemea.com/didier',
+        wadoRoot: 'https://qa-small-f4c.deemea.com/didier',
+        qidoSupportsIncludeField: true,
+        supportsReject: true,
+        imageRendering: 'wadors',
+        thumbnailRendering: 'wadors',
+        enableStudyLazyLoad: true,
+        supportsFuzzyMatching: true,
+        supportsWildcard: true,
+        dicomUploadEnabled: true,
+        omitQuotationForMultipartRequest: true,
+        bulkDataURI: {
+          enabled: true,
+        },
+      },
+    },
+    {
+      namespace: '@ohif/extension-default.dataSourcesModule.dicomweb',
       sourceName: 'SANDBOX',
       configuration: {
         friendlyName: 'sandbox-didier',
