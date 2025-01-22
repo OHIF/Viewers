@@ -1,4 +1,5 @@
 import { ButtonEnums } from '@ohif/ui';
+import { measurementTrackingMode } from './promptBeginTracking';
 
 const RESPONSE = {
   NO_NEVER: -1,
@@ -16,7 +17,12 @@ function promptTrackNewSeries({ servicesManager, extensionManager }, ctx, evt) {
   const { viewportId, StudyInstanceUID, SeriesInstanceUID } = evt.data || evt;
 
   return new Promise(async function (resolve, reject) {
-    let promptResult = await _askShouldAddMeasurements(UIViewportDialogService, viewportId);
+    const appConfig = extensionManager._appConfig;
+
+    const showPrompt = appConfig?.measurementTrackingMode === measurementTrackingMode.STANDARD;
+    let promptResult = showPrompt
+      ? await _askShouldAddMeasurements(UIViewportDialogService, viewportId)
+      : RESPONSE.ADD_SERIES;
 
     if (promptResult === RESPONSE.CREATE_REPORT) {
       promptResult = ctx.isDirty

@@ -9,6 +9,12 @@ const RESPONSE = {
   SET_STUDY_AND_SERIES: 3,
 };
 
+export const measurementTrackingMode = {
+  STANDARD: 'standard',
+  SIMPLIFIED: 'simplified',
+  NONE: 'none',
+};
+
 function promptBeginTracking({ servicesManager, extensionManager }, ctx, evt) {
   const { uiViewportDialogService } = servicesManager.services;
   const appConfig = extensionManager._appConfig;
@@ -17,9 +23,15 @@ function promptBeginTracking({ servicesManager, extensionManager }, ctx, evt) {
   const { viewportId, StudyInstanceUID, SeriesInstanceUID } = evt.data || evt;
 
   return new Promise(async function (resolve, reject) {
-    let promptResult = appConfig?.disableConfirmationPrompts
-      ? RESPONSE.SET_STUDY_AND_SERIES
-      : await _askTrackMeasurements(uiViewportDialogService, viewportId);
+    const standardMode = appConfig?.measurementTrackingMode === measurementTrackingMode.STANDARD;
+    const noTrackingMode = appConfig?.measurementTrackingMode === measurementTrackingMode.NONE;
+    let promptResult;
+
+    promptResult = noTrackingMode
+      ? RESPONSE.NO_NEVER
+      : standardMode
+        ? await _askTrackMeasurements(uiViewportDialogService, viewportId)
+        : RESPONSE.SET_STUDY_AND_SERIES;
 
     resolve({
       userResponse: promptResult,

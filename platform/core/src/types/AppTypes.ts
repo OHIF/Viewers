@@ -114,7 +114,8 @@ declare global {
         days?: number;
       };
       groupEnabledModesFirst?: boolean;
-      disableConfirmationPrompts?: boolean;
+      measurementTrackingMode?: 'standard' | 'simplified' | 'none';
+      disableSegmentationPrompts?: boolean;
       showPatientInfo?: 'visible' | 'visibleCollapsed' | 'disabled' | 'visibleReadOnly';
       requestTransferSyntaxUID?: string;
       omitQuotationForMultipartRequest?: boolean;

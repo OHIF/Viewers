@@ -1,4 +1,5 @@
 import i18n from 'i18next';
+import { measurementTrackingMode } from './promptBeginTracking';
 
 const RESPONSE = {
   NO_NEVER: -1,
@@ -16,12 +17,20 @@ function promptTrackNewStudy({ servicesManager, extensionManager }: withAppTypes
   const { viewportId, StudyInstanceUID, SeriesInstanceUID } = evt.data || evt;
 
   return new Promise(async function (resolve, reject) {
-    let promptResult = await _askTrackMeasurements(uiViewportDialogService, viewportId);
+    const appConfig = extensionManager._appConfig;
+
+    const standardMode = appConfig?.measurementTrackingMode === measurementTrackingMode.STANDARD;
+    const simplifiedMode =
+      appConfig?.measurementTrackingMode === measurementTrackingMode.SIMPLIFIED;
+    let promptResult = standardMode
+      ? await _askTrackMeasurements(uiViewportDialogService, viewportId)
+      : RESPONSE.SET_STUDY_AND_SERIES;
 
     if (promptResult === RESPONSE.SET_STUDY_AND_SERIES) {
-      promptResult = ctx.isDirty
-        ? await _askSaveDiscardOrCancel(uiViewportDialogService, viewportId)
-        : RESPONSE.SET_STUDY_AND_SERIES;
+      promptResult =
+        ctx.isDirty && (standardMode || simplifiedMode)
+          ? await _askSaveDiscardOrCancel(uiViewportDialogService, viewportId)
+          : RESPONSE.SET_STUDY_AND_SERIES;
     }
 
     resolve({
