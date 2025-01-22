@@ -295,7 +295,7 @@ export default class CustomizationService extends PubSubService {
     const parent = this.getCustomization(inheritsFrom);
     const result = parent ? Object.assign({}, parent, customization) : customization;
     // Execute an nested type information
-    return result.transform?.(this) || result;
+    return result.$transform?.(this) || result;
   }
 
   /**

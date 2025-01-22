@@ -52,7 +52,7 @@ Specifies a function that can modify or enhance the customization object at runt
 ```js
 export default {
   '@ohif/contextMenuAnnotationCode': {
-    transform: function (customizationService) {
+    $transform: function (customizationService) {
       const { code: codeRef } = this;
       if (!codeRef) {
         throw new Error(`item ${this} has no code ref`);

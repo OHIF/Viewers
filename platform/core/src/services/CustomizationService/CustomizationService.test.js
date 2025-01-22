@@ -461,7 +461,7 @@ describe('CustomizationService - Registration + API Operations', () => {
         {
           'test.overlayItem': {
             $set: {
-              transform: function () {
+              $transform: function () {
                 return {
                   label: this.label,
                   additionalKey: 'transformedValue',

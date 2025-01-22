@@ -470,7 +470,7 @@ customizationService.setCustomizations({
 | `$merge`    | Update specific fields in an object          | Change a subset of fields            |
 | `$apply`    | Compute the new value dynamically            | Apply a function to transform values |
 | `$filter`   | Find and update specific items in arrays     | Target nested structures             |
-
+| `$transform`| Apply a function to transform the customization | Apply a function to transform values |
 
 ## Building Customizations Across Multiple Extensions
 

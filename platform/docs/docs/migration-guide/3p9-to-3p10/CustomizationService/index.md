@@ -9,6 +9,7 @@ title: Customization Service
 
 **Key Changes:**
 
+
 1. **Unified Customization Getter:**
    - The `getCustomization` method now uniformly retrieves customizations, prioritizing `global`, then `mode`, and finally `default` customizations.
    - The `defaultValue` parameter in `getCustomization` is no longer used for setting defaults. It simply returns if no customization is found.
@@ -29,7 +30,11 @@ title: Customization Service
      | `$filter` | Find and update specific items in arrays | Target nested structures based on matching criteria |
 
 
-4. **Renamed `CornerstoneOverlay` customizations:**
+3. **New `$transform` command:**
+   - If you were using the `transform` command, you should now use the `$transform` command. Just a simple rename to make it more consistent with the other commands.
+
+
+5. **Renamed `CornerstoneOverlay` customizations:**
    - The `cornerstoneOverlay` customizations (`cornerstoneOverlayTopLeft`, `cornerstoneOverlayTopRight`, `cornerstoneOverlayBottomLeft`, `cornerstoneOverlayBottomRight`) have been renamed to `viewportOverlay.topLeft`, `viewportOverlay.topRight`, `viewportOverlay.bottomLeft`, and `viewportOverlay.bottomRight`. See dedicated page for customizing viewport overlays [here](../../../platform/services/customization-service/viewportOverlay.md).
 
 6. **Renamed `customRoutes`:**
@@ -38,7 +43,7 @@ title: Customization Service
 7.  **`contextMenu` customization:**
     - The `contextMenu` customization now uses the `inheritsFrom` property to inherit from other context menus, previously it was called `customizationType`
 
-5. **New `immutability-helper` dependency:**
+8. **New `immutability-helper` dependency:**
    The `immutability-helper` library is now used for merging customizations. If you encounter an error related to it, you'll need to install it - though OHIF should really handle the installation for you, so this is pretty much just a heads up.
 
 **Migration Steps:**

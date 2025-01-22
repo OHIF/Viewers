@@ -2,7 +2,7 @@ import { CustomizationService } from '@ohif/core';
 
 export default {
   'ohif.contextMenu': {
-    transform: function (customizationService: CustomizationService) {
+    $transform: function (customizationService: CustomizationService) {
       /**
        * Applies the inheritsFrom to all the menu items.
        * This function clones the object and child objects to prevent
