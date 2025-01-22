@@ -12,6 +12,7 @@ import {
   utilities as cstUtils,
   ReferenceLinesTool,
 } from '@cornerstonejs/tools';
+import * as cornerstoneTools from '@cornerstonejs/tools';
 
 import { Types as OhifTypes } from '@ohif/core';
 import i18n from '@ohif/i18n';
@@ -1216,6 +1217,17 @@ function commandsModule({
         viewportGridService.getActiveViewportId()
       );
     },
+    deleteActiveAnnotation: () => {
+      const activeAnnotationsUID = cornerstoneTools.annotation.selection.getAnnotationsSelected();
+      const hasMoreThanOneAnnotationSelected = activeAnnotationsUID.length > 1;
+
+      if (hasMoreThanOneAnnotationSelected) {
+        return;
+      }
+
+      const activeAnnotationUID = activeAnnotationsUID[0];
+      cornerstoneTools.annotation.state.removeAnnotation(activeAnnotationUID);
+    },
   };
 
   const definitions = {
@@ -1454,6 +1466,9 @@ function commandsModule({
     },
     getRenderInactiveSegmentations: {
       commandFn: actions.getRenderInactiveSegmentations,
+    },
+    deleteAnnotation: {
+      commandFn: actions.deleteAnnotation,
     },
   };
 
