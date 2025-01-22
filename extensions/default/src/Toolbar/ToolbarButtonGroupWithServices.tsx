@@ -1,6 +1,6 @@
 import { ToolbarButton, ButtonGroup } from '@ohif/ui';
 import React, { useCallback } from 'react';
-import { ToolButtonSmall } from '@ohif/ui';
+import { ToolButtonSmall } from '@ohif/ui-next';
 function ToolbarButtonGroupWithServices({ groupId, items, onInteraction, size }) {
   return (
     <div className="flex space-x-1">
