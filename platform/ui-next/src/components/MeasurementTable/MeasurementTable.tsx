@@ -7,6 +7,7 @@ interface MeasurementTableContext {
   data?: any[];
   onAction?: (e, command: string | string[], uid: string) => void;
   disableEditing?: boolean;
+  isExpanded: boolean;
 }
 
 const [MeasurementTableProvider, useMeasurementTableContext] =
@@ -20,6 +21,7 @@ interface MeasurementDataProps extends MeasurementTableContext {
 const MeasurementTable = ({
   data = [],
   onAction,
+  isExpanded = true,
   title,
   children,
   disableEditing = false,
@@ -31,6 +33,7 @@ const MeasurementTable = ({
     <MeasurementTableProvider
       data={data}
       onAction={onAction}
+      isExpanded={isExpanded}
       disableEditing={disableEditing}
     >
       <PanelSection defaultOpen={true}>
@@ -84,6 +87,7 @@ interface MeasurementItem {
   isVisible: boolean;
   isLocked: boolean;
   toolName: string;
+  isExpanded: boolean;
 }
 
 interface RowProps {
@@ -92,7 +96,8 @@ interface RowProps {
 }
 
 const Row = ({ item, index }: RowProps) => {
-  const { onClick, onAction, disableEditing } = useMeasurementTableContext('MeasurementTable.Row');
+  const { onAction, isExpanded, disableEditing } =
+    useMeasurementTableContext('MeasurementTable.Row');
 
   return (
     <DataRow
@@ -103,12 +108,11 @@ const Row = ({ item, index }: RowProps) => {
       colorHex={item.colorHex}
       isSelected={item.isSelected}
       details={item.displayText}
-      onSelect={() => onClick(item.uid)}
       onAction={(e, command) => onAction(e, command, item.uid)}
       disableEditing={disableEditing}
+      isExpanded={isExpanded}
       isVisible={item.isVisible}
       isLocked={item.isLocked}
-      // onColor={() => onColor(item.uid)}
     />
   );
 };

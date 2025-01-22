@@ -17,11 +17,10 @@ export const groupByDisplaySet = (items, grouping, childProps) => {
       const displaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
       groups.set(displaySetInstanceUID, {
         header: null,
+        isExpanded: false,
         ...grouping,
         items: [],
-        componentProps: {
-          title: displaySet.SeriesDescription,
-        },
+        title: displaySet.SeriesDescription,
       });
     }
     groups.get(displaySetInstanceUID).items.push(item);

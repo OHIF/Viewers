@@ -72,6 +72,8 @@ interface DataRowProps {
   //
   colorHex?: string;
   onAction?: (e, command) => void;
+  // Expand the row to show details
+  isExpanded?: boolean;
 }
 
 const DataRow: React.FC<DataRowProps> = ({
@@ -79,8 +81,8 @@ const DataRow: React.FC<DataRowProps> = ({
   title,
   colorHex,
   details,
-  onSelect,
   isLocked,
+  isExpanded,
   onAction,
   isSelected = false,
   isVisible = true,
@@ -126,9 +128,7 @@ const DataRow: React.FC<DataRowProps> = ({
         <TooltipTrigger asChild>
           <div className="cursor-help">
             <div className="flex flex-col space-y-1">
-              {visibleLines.map((line, lineIndex) =>
-                renderDetailText(line, line.startsWith('  ') ? 1 : 0)
-              )}
+              {visibleLines.map(line => renderDetailText(line, line.startsWith('  ') ? 1 : 0))}
             </div>
             {hiddenLines.length > 0 && (
               <div className="text-muted-foreground mt-1 flex items-center text-sm">
@@ -144,9 +144,7 @@ const DataRow: React.FC<DataRowProps> = ({
           className="max-w-md"
         >
           <div className="text-secondary-foreground flex flex-col space-y-1 text-sm leading-normal">
-            {details.map((line, lineIndex) =>
-              renderDetailText(line, line.startsWith('  ') ? 1 : 0)
-            )}
+            {details.map(line => renderDetailText(line, line.startsWith('  ') ? 1 : 0))}
           </div>
         </TooltipContent>
       </Tooltip>
@@ -276,7 +274,7 @@ const DataRow: React.FC<DataRowProps> = ({
       </div>
 
       {/* Details Section */}
-      {details && (details.primary?.length > 0 || details.secondary?.length > 0) && (
+      {isExpanded && details && (details.primary?.length > 0 || details.secondary?.length > 0) && (
         <div className="ml-7 px-2 py-2">
           <div className="text-secondary-foreground flex items-center gap-1 text-base leading-normal">
             {details.primary?.length > 0 && renderDetails(details.primary)}

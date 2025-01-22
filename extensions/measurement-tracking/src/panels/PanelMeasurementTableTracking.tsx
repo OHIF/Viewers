@@ -1,7 +1,6 @@
 import React from 'react';
 import { utils } from '@ohif/core';
-import { useViewportGrid } from '@ohif/ui-next';
-import { Button, Icons } from '@ohif/ui-next';
+import { useViewportGrid, Button, Icons, MeasurementTable } from '@ohif/ui-next';
 import { PanelMeasurement, StudySummaryFromMetadata } from '@ohif/extension-cornerstone';
 import { useTrackedMeasurements } from '../getContextModule';
 
@@ -86,6 +85,12 @@ function PanelMeasurementTableTracking({
     );
   }
 
+  const EmptyComponent = () => (
+    <MeasurementTable title="Measurements">
+      <MeasurementTable.Body />
+    </MeasurementTable>
+  );
+
   return (
     <>
       <PanelMeasurement
@@ -93,6 +98,7 @@ function PanelMeasurementTableTracking({
         extensionManager={extensionManager}
         commandsManager={commandsManager}
         measurementFilter={measurementFilter}
+        emptyComponent={EmptyComponent}
         componentProps={{
           grouping: {
             header: props => (

@@ -9,6 +9,7 @@ export default function PanelMeasurement(props): React.ReactNode {
     component: Component = StudyMeasurements,
     componentProps,
     commandsManager,
+    emptyComponent: EmptyComponent,
     key = 'PanelMeasurement',
   } = props;
 
@@ -21,6 +22,14 @@ export default function PanelMeasurement(props): React.ReactNode {
     measurementFilter,
     commandsManager,
   };
+
+  if (!displayMeasurements.length) {
+    return EmptyComponent ? (
+      <EmptyComponent />
+    ) : (
+      <span className="text-white">No Measurements</span>
+    );
+  }
 
   // Need to merge defaults on the content props to ensure they get passed to children
   return (
