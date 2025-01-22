@@ -1,6 +1,6 @@
 import React from 'react';
 import AccordionGroup from './AccordionGroup';
-import ShowItem from './ShowItem';
+import MeasurementTableNested from './MeasurementTableNested';
 
 /**
  * Groups measurements by study in order to allow display and saving by study
@@ -42,7 +42,7 @@ export default function SeriesMeasurements(props): React.ReactNode {
       }}
       childProps={childProps}
       items={items}
-      component={grouping.component || ShowItem}
+      component={grouping.component || MeasurementTableNested}
     />
   );
 }

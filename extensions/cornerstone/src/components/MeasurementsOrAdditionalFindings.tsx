@@ -1,7 +1,7 @@
 import React from 'react';
 import AccordionGroup from './AccordionGroup';
 import { utils } from '@ohif/core';
-import ShowItem from './ShowItem';
+import MeasurementTableNested from './MeasurementTableNested';
 import { StudySummaryFromMetadata } from '../components/StudySummaryFromMetadata';
 
 const { filterNot, filterAdditionalFindings } = utils.MeasurementFilters;
@@ -9,12 +9,12 @@ const { filterNot, filterAdditionalFindings } = utils.MeasurementFilters;
 export const MeasurementOrAdditionalFindingSets = [
   {
     title: 'Measurements',
-    component: ShowItem,
+    component: MeasurementTableNested,
     filter: filterNot(filterAdditionalFindings),
   },
   {
     title: 'Additional Findings',
-    component: ShowItem,
+    component: MeasurementTableNested,
     filter: filterAdditionalFindings,
   },
 ];
@@ -67,7 +67,7 @@ export default function StudyMeasurements(props): React.ReactNode {
       }}
       childProps={childProps}
       items={items}
-      component={grouping.component || ShowItem}
+      component={grouping.component || MeasurementTableNested}
     />
   );
 }

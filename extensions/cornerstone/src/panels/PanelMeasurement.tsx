@@ -1,6 +1,6 @@
 import React from 'react';
 import { useMeasurements } from '../hooks/useMeasurements';
-import StudyMeasurements from './StudyMeasurements';
+import StudyMeasurements from '../components/StudyMeasurements';
 
 export default function PanelMeasurement(props): React.ReactNode {
   const {
@@ -22,7 +22,7 @@ export default function PanelMeasurement(props): React.ReactNode {
     commandsManager,
   };
 
-  // Need to merge defaults on the content props to ensure they get passed to hcildren
+  // Need to merge defaults on the content props to ensure they get passed to children
   return (
     <Component
       key={key}
