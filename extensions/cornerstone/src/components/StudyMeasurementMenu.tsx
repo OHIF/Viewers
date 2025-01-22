@@ -35,7 +35,6 @@ export default function StudyMeasurementMenu({
           variant="ghost"
           className="pl-0.5"
           onClick={() => {
-            console.log('Clear measurements', StudyInstanceUID, measurementFilter);
             commandsManager.runCommand('clearMeasurements', {
               measurementFilter,
             });

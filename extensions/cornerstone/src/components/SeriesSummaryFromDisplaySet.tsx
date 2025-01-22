@@ -1,17 +1,14 @@
 import React from 'react';
 import { utils } from '@ohif/core';
-import { StudySummary } from '@ohif/ui-next';
 
 const { formatDate } = utils;
 
-export function SeriesSummaryFromMetadata({ displaySet }) {
+export function SeriesSummaryFromDisplaySet({ displaySet }) {
   if (!displaySet) {
     return null;
   }
-  console.log('displaySet=', displaySet);
 
   const { SeriesDate, SeriesDescription, SeriesNumber = 1 } = displaySet;
-  console.log("Showing 'series' summary", SeriesDate, SeriesDescription);
 
   return (
     <div className="mx-2 my-0">

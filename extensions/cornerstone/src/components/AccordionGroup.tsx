@@ -12,8 +12,11 @@ export default function AccordionGroup(props) {
       <>
         <Header
           {...childProps}
-          childProps={childProps}
+          {...group}
           {...group.headerProps}
+          childProps={childProps}
+          items={group.items}
+          key="accordion-header-{key}"
           group={group}
         />
         <Component
