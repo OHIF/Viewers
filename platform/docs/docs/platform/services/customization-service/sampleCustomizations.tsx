@@ -22,6 +22,7 @@ export const viewportOverlayCustomizations = [
     default: [],
     configuration: `
 window.config = {
+  // rest of window config
   customizationService: [
     {
       'viewportOverlay.topRight': {
@@ -60,6 +61,7 @@ window.config = {
     ],
     configuration: `
 window.config = {
+  // rest of window config
   customizationService: [
     {
       'viewportOverlay.topLeft': {
@@ -93,6 +95,7 @@ window.config = {
 
     // the following will push a yellow PatientNameOverlay to the bottomLeft overlay
 window.config = {
+  // rest of window config
   customizationService: [
     {
       'viewportOverlay.bottomLeft': {
@@ -143,6 +146,7 @@ export const customizations = [
     default: [],
     configuration: `
 window.config = {
+  // rest of window config
   customizationService: [
     {
       measurementLabels: {
@@ -192,6 +196,7 @@ window.config = {
     },
     configuration: `
 window.config = {
+  // rest of window config
   customizationService: [
     {
       cornerstoneViewportClickCommands: {
@@ -239,6 +244,7 @@ window.config = {
     },
     configuration: `
 window.config = {
+  // rest of window config
   customizationService: [
     {
       'cornerstone.windowLevelPresets': {
@@ -270,6 +276,7 @@ window.config = {
     `,
     configuration: `
 window.config = {
+  // rest of window config
   customizationService: [
     {
       'cornerstone.colorbar': {
@@ -297,6 +304,7 @@ window.config = {
     }`,
     configuration: `
 window.config = {
+  // rest of window config
   customizationService: [
     {
       'cornerstone.3dVolumeRendering': {
@@ -319,6 +327,7 @@ window.config = {
     default: ['OT', 'US'],
     configuration: `
 window.config = {
+  // rest of window config
   customizationService: [
     {
       'autoCineModalities': {
@@ -399,6 +408,7 @@ window.config = {
     ],
     configuration: `
 window.config = {
+  // rest of window config
   customizationService: [
     {
       'layoutSelector.commonPresets': {
@@ -443,6 +453,7 @@ window.config = {
     }`,
     configuration: `
 window.config = {
+  // rest of window config
   customizationService: [
     {
       'layoutSelector.advancedPresetGenerator': {
@@ -483,6 +494,7 @@ window.config = {
     },
     configuration: `
 window.config = {
+  // rest of window config
   customizationService: [
     {
       onBeforeSRAddMeasurement: {
@@ -507,6 +519,7 @@ window.config = {
     },
     configuration: `
 window.config = {
+  // rest of window config
   customizationService: [
     {
       'onBeforeDicomStore': {
@@ -544,6 +557,7 @@ window.config = {
     }`,
     configuration: `
 window.config = {
+  // rest of window config
   customizationService: [
     {
       'sortingCriteria': {
@@ -567,6 +581,7 @@ export const segmentationCustomizations = [
     default: 'collapsed',
     configuration: `
 window.config = {
+  // rest of window config
   customizationService: [
     {
       'panelSegmentation.tableMode': {
@@ -585,6 +600,7 @@ window.config = {
     image: segmentationShowAddSegmentImage,
     configuration: `
 window.config = {
+  // rest of window config
   customizationService: [
     {
       'panelSegmentation.showAddSegment': {
@@ -611,6 +627,7 @@ window.config = {
     },
     configuration: `
 window.config = {
+  // rest of window config
   customizationService: [
     {
       'panelSegmentation.readableText': {
@@ -634,6 +651,7 @@ window.config = {
     }`,
     configuration: `
 window.config = {
+  // rest of window config
   customizationService: [
     {
       'panelSegmentation.onSegmentationAdd': {
@@ -655,6 +673,7 @@ window.config = {
     image: [segDisplayEditingTrue, segDisplayEditingFalse],
     configuration: `
 window.config = {
+  // rest of window config
   customizationService: [
     {
       'panelSegmentation.disableEditing': {
@@ -675,6 +694,7 @@ export const measurementsCustomizations = [
     default: false,
     configuration: `
 window.config = {
+  // rest of window config
   customizationService: [
     {
       'panelMeasurement.disableEditing': {
@@ -813,6 +833,7 @@ window.config = {
     },
     configuration: `
 window.config = {
+  // rest of window config
   customizationService: [
     {
       'cornerstone.measurements': {
@@ -918,6 +939,7 @@ export const studyBrowserCustomizations = [
     default: `'all'`,
     configuration: `
 window.config = {
+  // rest of window config
   customizationService: [
     {
       'studyBrowser.studyMode': {
@@ -945,6 +967,7 @@ window.config = {
     ],
     configuration: `
 window.config = {
+  // rest of window config
   customizationService: [
     {
       'studyBrowser.viewPresets': {
@@ -988,6 +1011,7 @@ window.config = {
     ],
     configuration: `
 window.config = {
+  // rest of window config
   customizationService: [
     {
       'studyBrowser.sortFunctions': {
@@ -1018,6 +1042,7 @@ window.config = {
     ],
     configuration: `
 window.config = {
+  // rest of window config
   customizationService: [
     {
       'studyBrowser.thumbnailMenuItems': {
@@ -1053,6 +1078,7 @@ window.config = {
     default: [],
     configuration: `
 window.config = {
+  // rest of window config
   customizationService: [
     {
       'studyBrowser.studyMenuItems': {

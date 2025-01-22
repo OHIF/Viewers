@@ -57,6 +57,18 @@ Below is a high-level example of how you might define a default customization an
 
    By naming it `default`, it is automatically registered.
 
+   :::info
+   You might want to have customizations ready to use in your application without actually applying them. In such cases, you can name them something other than `default`. For example, in your mode, you can do this:
+
+    ```js
+    customizationService.setCustomizations([
+     '@ohif/extension-cornerstone-dicom-seg.customizationModule.dicom-seg-sorts',
+    ]);
+    ```
+
+    This is really useful when you want to apply a set of customizations as a pack, kind of like a bundle.
+   :::
+
 3. **Retrieving the Default Customization**
    In the panel or component (or whatever) that needs the list, you retrieve it using `getCustomization`:
 
