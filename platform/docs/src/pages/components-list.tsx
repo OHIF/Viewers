@@ -37,6 +37,8 @@ import {
   CardDescription,
   CardContent,
 } from '../../../ui-next/src/components/Card';
+import ToolButton from '../../../ui-next/src/components/ToolButton/ToolButton';
+import ToolButtonList from '../../../ui-next/src/components/ToolButton/ToolButtonList';
 
 interface ShowcaseRowProps {
   title: string;
@@ -579,6 +581,52 @@ Example code coming soon.
             </div>
             {/* Render the Toaster component */}
             <Toaster />
+          </ShowcaseRow>
+
+          <ShowcaseRow
+            title="ToolButton"
+            description="Used to activate tools or perform single actions"
+            code={`
+// Example usage:
+<ToolButton
+  id="Zoom"
+  icon="zoom" // must exist in your Icons or fallback to 'MissingIcon'
+  label="Zoom"
+  tooltip="Zoom Tool"
+  isActive={false}
+  onInteraction={({ itemId }) => console.log(\`Clicked \${itemId}\`)}
+/>
+  `}
+          >
+            <div className="bg-popover flex h-11 w-[450px] items-center justify-center rounded">
+              <ToolButton
+                id="Zoom"
+                icon="ToolZoom"
+                label="Zoom"
+                tooltip="Zoom"
+                isActive={false}
+                className="bg-primary-dark text-primary-light hover:bg-background hover:text-highlight"
+                onInteraction={({ itemId }) => console.log(`Clicked ${itemId}`)}
+              />
+              <ToolButton
+                id="Zoom"
+                icon="ToolMove"
+                label="Pan"
+                tooltip="Pan"
+                isActive={false}
+                className="bg-primary-dark text-primary-light hover:bg-background hover:text-highlight"
+                onInteraction={({ itemId }) => console.log(`Clicked ${itemId}`)}
+              />
+              <ToolButton
+                id="Zoom"
+                icon="ToolWindowLevel"
+                label="Window Level"
+                tooltip="Window Level"
+                isActive={false}
+                className="bg-primary-dark text-primary-light hover:bg-background hover:text-highlight"
+                onInteraction={({ itemId }) => console.log(`Clicked ${itemId}`)}
+              />
+            </div>
           </ShowcaseRow>
         </div>
       </div>
