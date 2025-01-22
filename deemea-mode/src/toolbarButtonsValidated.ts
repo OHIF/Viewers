@@ -107,20 +107,6 @@ const toolbarButtonsValidated: Button[] = [
       icon: 'tool-zoom',
       label: 'Zoom',
       commands: setToolActiveToolbar,
-      evaluate: () => {
-        return {
-          disabled: true,
-        };
-      },
-    },
-  },
-  {
-    id: 'Zoom',
-    uiType: 'ohif.radioGroup',
-    props: {
-      icon: 'tool-zoom',
-      label: 'Zoom',
-      commands: setToolActiveToolbar,
       evaluate: 'evaluate.cornerstoneTool',
     },
   },

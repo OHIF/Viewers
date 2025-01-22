@@ -16,9 +16,9 @@ window.config = {
   experimentalStudyBrowserSort: false,
   strictZSpacingForVolumeViewport: true,
   studyPrefetcher: {
-    enabled: true,
-    displaySetsCount: 2,
-    maxNumPrefetchRequests: 10,
+    enabled: false,
+    displaySetsCount: 1,
+    maxNumPrefetchRequests: 1,
     order: 'closest',
   },
   defaultDataSourceName: 'orthanc',
