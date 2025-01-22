@@ -63,11 +63,13 @@ describe('CustomizationService - Registration + API Operations', () => {
 
   beforeEach(() => {
     customizationService = new CustomizationService({ commandsManager, configuration: {} });
-    // Clear any internal maps if needed
-    customizationService.onModeEnter();
 
     // Simulate default registrations.
     customizationService.addReferences(getDefaultCustomizationModule(), CustomizationScope.Default);
+  });
+
+  afterEach(() => {
+    customizationService.onModeExit();
   });
 
   // Check that defaults are registered
@@ -394,6 +396,29 @@ describe('CustomizationService - Registration + API Operations', () => {
 
       expect(result.functions.length).toBe(1);
       expect(result.functions[0].viewFunctions[2].label).toBe('Axial (via $filter)');
+    });
+  });
+
+  // 6. Multiple Default Registrations
+  describe('Multiple Default Registrations', () => {
+    it('allows subsequent default registrations to enhance previous ones', () => {
+      customizationService = new CustomizationService({ commandsManager, configuration: {} });
+
+      // First extension registers its defaults
+      const firstExtensionDefaults = {
+        simpleList: [1, 2, 3],
+      };
+      customizationService.addReferences(firstExtensionDefaults, CustomizationScope.Default);
+
+      // Second extension enhances the first one's defaults
+      const secondExtensionDefaults = {
+        simpleList: { $push: [4, 5] },
+      };
+      customizationService.addReferences(secondExtensionDefaults, CustomizationScope.Default);
+
+      // Verify the final state combines both extensions' contributions
+      const result = customizationService.getCustomization('simpleList');
+      expect(result).toEqual([1, 2, 3, 4, 5]);
     });
   });
 });

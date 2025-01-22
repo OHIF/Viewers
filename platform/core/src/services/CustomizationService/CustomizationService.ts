@@ -135,6 +135,16 @@ export default class CustomizationService extends PubSubService {
   }
 
   public onModeEnter(): void {
+    this.clearTransformedCustomizations();
+
+    this.init(this.extensionManager);
+  }
+
+  public onModeExit(): void {
+    this.clearTransformedCustomizations();
+  }
+
+  private clearTransformedCustomizations(): void {
     super.reset();
 
     const modeCustomizationKeys = Array.from(this.modeCustomizations.keys());
@@ -143,12 +153,6 @@ export default class CustomizationService extends PubSubService {
     }
 
     this.modeCustomizations.clear();
-
-    this.init(this.extensionManager);
-  }
-
-  public onModeExit(): void {
-    this.onModeEnter();
   }
 
   /**
