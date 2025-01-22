@@ -143,6 +143,8 @@ export default class CustomizationService extends PubSubService {
     }
 
     this.modeCustomizations.clear();
+
+    this.init(this.extensionManager);
   }
 
   public onModeExit(): void {
@@ -182,14 +184,26 @@ export default class CustomizationService extends PubSubService {
    *     showAddSegment: { $set: false },
    *     NumbersList: { $push: [99] },
    *   }, CustomizationScope.Mode)
+   *
+   * Or you can simply apply a list of strings that are customization module items in the
+   * extension.
+   *
+   * Example:
+   *   customizationService.setCustomizations(['@ohif/extension-cornerstone-dicom-seg.customizationModule.dicom-seg-sorts'], CustomizationScope.Mode)
    */
   public setCustomizations(
-    customizations: Record<string, Customization>,
+    customizations: string[] | Record<string, Customization>,
     scope: CustomizationScope = CustomizationScope.Mode
   ): void {
-    Object.entries(customizations).forEach(([key, value]) => {
-      this._setCustomization(key, value, scope);
-    });
+    if (Array.isArray(customizations)) {
+      customizations.forEach(customization => {
+        this._addReference(customization, scope);
+      });
+    } else {
+      Object.entries(customizations).forEach(([key, value]) => {
+        this._setCustomization(key, value, scope);
+      });
+    }
   }
 
   /**
@@ -324,7 +338,7 @@ export default class CustomizationService extends PubSubService {
 
   private setDefaultCustomization(id: string, value: Customization): void {
     if (this.defaultCustomizations.has(id)) {
-      throw new Error(`Trying to update existing default for customization ${id}`);
+      console.warn(`Trying to update existing default for customization ${id}`);
     }
     this.transformedCustomizations.clear();
 

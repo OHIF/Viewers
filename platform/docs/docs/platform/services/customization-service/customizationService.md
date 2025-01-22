@@ -460,6 +460,71 @@ customizationService.setCustomizations({
 | `$filter`   | Find and update specific items in arrays     | Target nested structures             |
 
 
+## Building Customizations Across Multiple Extensions
+
+Sometimes it is useful to build customizations across multiple extensions. For example, you may want to build a default list of tools inside a vieweport. But then each extension may want to add their own tools to the list.
+
+Lets say i have one default sorting function in my default extension.
+
+```js
+function getCustomizationModule() {
+  return [
+    {
+      name: 'default',
+      value: {
+        'studyBrowser.sortFunctions': [
+          {
+            label: 'Series Number',
+            sortFunction: (a, b) => {
+              return a?.SeriesNumber - b?.SeriesNumber;
+            },
+          },
+        ],
+      },
+    },
+  ];
+}
+```
+
+This will result in having only series number as the default sorting function.
+
+but now in another extension let's say dicom-seg extension we can add another sorting function.
+
+```js
+function getCustomizationModule() {
+  return [
+    {
+      name: "dicom-seg-sorts",
+      value: {
+        "studyBrowser.sortFunctions": {
+          $push: [
+            {
+              label: "Series Date",
+              sortFunction: (a, b) => {
+                return a?.SeriesDate - b?.SeriesDate;
+              },
+            },
+          ],
+        },
+      },
+    },
+  ];
+}
+```
+
+But since the module is not `default` it will not get applied, but in my segmentation mode i can do
+
+
+```js
+onModeEnter() {
+  customizationService.setCustomizations([
+    '@ohif/extension-cornerstone-dicom-seg.customizationModule.dicom-seg-sorts',
+  ]);
+}
+```
+
+needless to say if you opted to choose `name: default` in the `getCustomizationModule` it was applied globally.
+
 ## Customizable Parts of OHIF
 
 Below we are providing the example configuration for global scenario (using the configuration file), however, you can also use the `setCustomizations` method to set the customizations.
