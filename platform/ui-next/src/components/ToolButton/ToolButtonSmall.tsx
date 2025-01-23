@@ -9,16 +9,10 @@ interface ToolButtonSmallProps {
   tooltip?: string;
   isActive?: boolean;
   disabled?: boolean;
-  onClick?: () => void; // You can also pass commands directly if desired
+  onClick?: () => void;
   className?: string;
 }
 
-/**
- * ToolButtonSmall
- * Wraps our base ToolButton but applies smaller styling,
- * as well as the primary-dark/primary-light color scheme
- * that you had in the original code.
- */
 function ToolButtonSmall(props: ToolButtonSmallProps) {
   const {
     id,
@@ -33,7 +27,6 @@ function ToolButtonSmall(props: ToolButtonSmallProps) {
     className,
   } = props;
 
-  // Combine your original styling classes with the ones from ToolButton
   const baseClasses = 'relative flex items-center justify-center rounded-md transition-colors';
   const defaultClasses = 'bg-transparent hover:bg-transparent';
   const activeClasses = 'bg-highlight text-background';
@@ -48,7 +41,6 @@ function ToolButtonSmall(props: ToolButtonSmallProps) {
     appliedClasses = cn(baseClasses, defaultClasses, className);
   }
 
-  // We'll use onInteraction as the trigger for the click
   const handleInteraction = () => {
     if (!disabled && onClick) {
       onClick();
@@ -64,7 +56,6 @@ function ToolButtonSmall(props: ToolButtonSmallProps) {
       isActive={isActive}
       disabled={disabled}
       className={appliedClasses}
-      // onInteraction is used by ToolButton
       onInteraction={() => handleInteraction()}
       buttonSizeClass={buttonSizeClass}
       iconSizeClass={iconSizeClass}

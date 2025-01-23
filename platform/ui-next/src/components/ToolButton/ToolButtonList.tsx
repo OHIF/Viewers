@@ -15,7 +15,6 @@ import { cn } from '../../lib/utils';
 function ToolButtonList({ groupId, primary, items = [], onInteraction, servicesManager }) {
   const { toolbarService } = servicesManager?.services || {};
 
-  // Handle clicking on a secondary tool from the dropdown.
   const handleItemClick = useCallback(
     item => {
       onInteraction?.({
@@ -31,10 +30,6 @@ function ToolButtonList({ groupId, primary, items = [], onInteraction, servicesM
 
   return (
     <div className="flex items-center space-x-1">
-      {/**
-       *    Note: pass along the props that ToolButton needs (including `id`, `icon`,
-       *    `label`, `tooltip`, `isActive`, `commands`, and a callback for `onInteraction`).
-       */}
       <ToolButton
         id={primary?.id}
         icon={primary?.icon}
@@ -50,7 +45,6 @@ function ToolButtonList({ groupId, primary, items = [], onInteraction, servicesM
           });
         }}
       />
-
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button
@@ -65,7 +59,6 @@ function ToolButtonList({ groupId, primary, items = [], onInteraction, servicesM
             />
           </Button>
         </DropdownMenuTrigger>
-
         <DropdownMenuContent
           side="bottom"
           align="end"

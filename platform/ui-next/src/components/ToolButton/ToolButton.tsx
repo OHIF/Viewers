@@ -1,4 +1,3 @@
-// File: /Users/danrukas/Documents/Github/Viewers/platform/ui-next/src/components/ToolButton/ToolButton.tsx
 import React from 'react';
 import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from '../Tooltip';
 import { Icons } from '../Icons';
@@ -13,7 +12,6 @@ interface ToolButtonProps {
   buttonSizeClass?: string;
   iconSizeClass?: string;
   isActive?: boolean;
-  /** Add a disabled prop: */
   disabled?: boolean;
   commands?: any;
   onInteraction?: (details: { itemId: string; commands?: any }) => void;
@@ -35,10 +33,6 @@ function ToolButton(props: ToolButtonProps) {
     className,
   } = props;
 
-  /**
-   * We preserve the styling logic that was here before,
-   * but also add disabled styling:
-   */
   const baseClasses = '!rounded-lg inline-flex items-center justify-center';
   const defaultClasses =
     'bg-transparent text-foreground/80 hover:bg-background hover:text-highlight';
@@ -54,7 +48,6 @@ function ToolButton(props: ToolButtonProps) {
     buttonClasses = cn(baseClasses, defaultClasses, buttonSizeClass, className);
   }
 
-  // Pass disabled to Button so it doesn't trigger clicks
   const handleClick = () => {
     if (!disabled) {
       onInteraction?.({ itemId: id, commands });
@@ -82,8 +75,6 @@ function ToolButton(props: ToolButtonProps) {
             />
           </Button>
         </TooltipTrigger>
-
-        {/* Only render if we have text */}
         {tooltipText && <TooltipContent side="bottom">{tooltipText}</TooltipContent>}
       </Tooltip>
     </TooltipProvider>
