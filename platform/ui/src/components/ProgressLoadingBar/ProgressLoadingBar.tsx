@@ -21,15 +21,15 @@ function ProgressLoadingBar({ progress }) {
 }
 function FallbackProgressLoadingBar({ progress }: ProgressLoadingBarProps): ReactElement {
   return (
-    <div className="loading border-fwdark-borderblue border">
+    <div className="loading">
       {progress === undefined || progress === null ? (
-        <div className="infinite-loading-bar bg-fwdark-malibublue !mx-[1px] !h-[4px]"></div>
+        <div className="infinite-loading-bar bg-primary-light"></div>
       ) : (
         <div
-          className="bg-fwdark-malibublue m-[1px] rounded border border-transparent"
+          className="bg-primary-light"
           style={{
             width: `${progress}%`,
-            height: '4px',
+            height: '8px',
           }}
         ></div>
       )}
