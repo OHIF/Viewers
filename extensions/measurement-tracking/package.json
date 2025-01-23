@@ -33,7 +33,7 @@
   },
   "peerDependencies": {
     "@cornerstonejs/core": "^1.82.0",
-    "@cornerstonejs/tools": "0.0.0-custom#git+https://github.com/czheng39/cornerstone3D_QCTWeb.git#Spine-BMD",
+    "@cornerstonejs/tools": "^1.83.1",
     "@ohif/core": "3.9.0-beta.88",
     "@ohif/extension-cornerstone-dicom-sr": "3.9.0-beta.88",
     "@ohif/ui": "3.9.0-beta.88",
@@ -51,6 +51,7 @@
     "@ohif/ui": "3.9.0-beta.88",
     "@xstate/react": "^3.2.2",
     "xstate": "^4.10.0",
-    "jspdf": "^2.5.2"
+    "jspdf": "^2.5.2",
+    "recharts": "^2.0.0"
   }
 }
