@@ -33,55 +33,25 @@ const ThumbnailList = ({
         id="ohif-thumbnail-list"
         className="ohif-scrollbar bg-bkg-low grid grid-cols-[repeat(auto-fit,_minmax(0,135px))] place-items-start gap-[4px] overflow-y-hidden pt-[4px] pr-[2.5px] pl-[5px]"
       >
-        {thumbnailItems.map(
-          ({
-            displaySetInstanceUID,
-            description,
-            dragData,
-            seriesNumber,
-            numInstances,
-            loadingProgress,
-            modality,
-            componentType,
-            countIcon,
-            canReject,
-            onReject,
-            isTracked,
-            imageSrc,
-            messages,
-            imageAltText,
-            isHydratedForDerivedDisplaySet,
-          }) => {
-            const isActive = activeDisplaySetInstanceUIDs.includes(displaySetInstanceUID);
-            return (
-              <Thumbnail
-                key={displaySetInstanceUID}
-                displaySetInstanceUID={displaySetInstanceUID}
-                dragData={dragData}
-                description={description}
-                seriesNumber={seriesNumber}
-                numInstances={numInstances || 1}
-                countIcon={countIcon}
-                imageSrc={imageSrc}
-                imageAltText={imageAltText}
-                messages={messages}
-                isActive={isActive}
-                canReject={canReject}
-                onReject={onReject}
-                modality={modality}
-                viewPreset="thumbnails"
-                thumbnailType={componentType}
-                onClick={() => onThumbnailClick(displaySetInstanceUID)}
-                onDoubleClick={() => onThumbnailDoubleClick(displaySetInstanceUID)}
-                isTracked={isTracked}
-                loadingProgress={loadingProgress}
-                onClickUntrack={() => onClickUntrack(displaySetInstanceUID)}
-                isHydratedForDerivedDisplaySet={isHydratedForDerivedDisplaySet}
-                ThumbnailMenuItems={ThumbnailMenuItems}
-              />
-            );
-          }
-        )}
+        {thumbnailItems.map(item => {
+          const { displaySetInstanceUID, numInstances, ...rest } = item;
+
+          const isActive = activeDisplaySetInstanceUIDs.includes(displaySetInstanceUID);
+          return (
+            <Thumbnail
+              key={displaySetInstanceUID}
+              {...rest}
+              displaySetInstanceUID={displaySetInstanceUID}
+              numInstances={numInstances || 1}
+              isActive={isActive}
+              viewPreset="thumbnails"
+              onClick={onThumbnailClick.bind(null, displaySetInstanceUID)}
+              onDoubleClick={onThumbnailDoubleClick.bind(null, displaySetInstanceUID)}
+              onClickUntrack={onClickUntrack.bind(null, displaySetInstanceUID)}
+              ThumbnailMenuItems={ThumbnailMenuItems}
+            />
+          );
+        })}
       </div>
 
       {/* List Items */}
@@ -89,55 +59,24 @@ const ThumbnailList = ({
         id="ohif-thumbnail-list"
         className="ohif-scrollbar bg-bkg-low grid grid-cols-[repeat(auto-fit,_minmax(0,275px))] place-items-start gap-[2px] overflow-y-hidden pt-[4px] pr-[2.5px] pl-[5px]"
       >
-        {listItems.map(
-          ({
-            displaySetInstanceUID,
-            description,
-            dragData,
-            seriesNumber,
-            numInstances,
-            loadingProgress,
-            modality,
-            componentType,
-            countIcon,
-            canReject,
-            onReject,
-            isTracked,
-            imageSrc,
-            messages,
-            imageAltText,
-            isHydratedForDerivedDisplaySet,
-          }) => {
-            const isActive = activeDisplaySetInstanceUIDs.includes(displaySetInstanceUID);
-            return (
-              <Thumbnail
-                key={displaySetInstanceUID}
-                displaySetInstanceUID={displaySetInstanceUID}
-                dragData={dragData}
-                description={description}
-                seriesNumber={seriesNumber}
-                numInstances={numInstances || 1}
-                countIcon={countIcon}
-                imageSrc={imageSrc}
-                imageAltText={imageAltText}
-                messages={messages}
-                isActive={isActive}
-                canReject={canReject}
-                onReject={onReject}
-                modality={modality}
-                viewPreset="list"
-                thumbnailType={componentType}
-                onClick={() => onThumbnailClick(displaySetInstanceUID)}
-                onDoubleClick={() => onThumbnailDoubleClick(displaySetInstanceUID)}
-                isTracked={isTracked}
-                loadingProgress={loadingProgress}
-                onClickUntrack={() => onClickUntrack(displaySetInstanceUID)}
-                isHydratedForDerivedDisplaySet={isHydratedForDerivedDisplaySet}
-                ThumbnailMenuItems={ThumbnailMenuItems}
-              />
-            );
-          }
-        )}
+        {listItems.map(item => {
+          const { displaySetInstanceUID, numInstances, ...rest } = item;
+          const isActive = activeDisplaySetInstanceUIDs.includes(displaySetInstanceUID);
+          return (
+            <Thumbnail
+              key={displaySetInstanceUID}
+              {...rest}
+              displaySetInstanceUID={displaySetInstanceUID}
+              numInstances={numInstances || 1}
+              isActive={isActive}
+              viewPreset="list"
+              onClick={onThumbnailClick.bind(null, displaySetInstanceUID)}
+              onDoubleClick={onThumbnailDoubleClick.bind(null, displaySetInstanceUID)}
+              onClickUntrack={onClickUntrack.bind(null, displaySetInstanceUID)}
+              ThumbnailMenuItems={ThumbnailMenuItems}
+            />
+          );
+        })}
       </div>
     </div>
   );
@@ -165,6 +104,7 @@ ThumbnailList.propTypes = {
   onThumbnailDoubleClick: PropTypes.func.isRequired,
   onClickUntrack: PropTypes.func.isRequired,
   viewPreset: PropTypes.string,
+  ThumbnailMenuItems: PropTypes.any,
 };
 
 export { ThumbnailList };

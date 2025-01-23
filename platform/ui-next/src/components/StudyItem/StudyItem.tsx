@@ -51,13 +51,13 @@ const StudyItem = ({
                 <Tooltip>
                   <TooltipContent>{description}</TooltipContent>
                   <TooltipTrigger className="w-full">
-                    <div className="text-muted-foreground h-[18px] w-full max-w-[160px] overflow-hidden truncate whitespace-nowrap text-left">
+                    <div className="text-muted-foreground h-[18px] w-full overflow-hidden truncate whitespace-nowrap text-left">
                       {description}
                     </div>
                   </TooltipTrigger>
                 </Tooltip>
               </div>
-              <div className="text-muted-foreground flex flex-col items-end text-[12px]">
+              <div className="text-muted-foreground flex flex-col items-end pl-[10px] text-[12px]">
                 <div className="max-w-[150px] overflow-hidden text-ellipsis">{modalities}</div>
                 <div>{numInstances}</div>
               </div>
