@@ -82,7 +82,7 @@ function ToolButtonList({ groupId, primary, items = [], onInteraction, servicesM
             >
               <Icons.ByName
                 name={item.icon || 'MissingIcon'}
-                className="h-5 w-5"
+                className="h-6 w-6"
               />
               <span>{item.label || item.tooltip || item.id}</span>
             </DropdownMenuItem>
