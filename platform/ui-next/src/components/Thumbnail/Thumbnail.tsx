@@ -23,7 +23,7 @@ const Thumbnail = ({
   isActive,
   onClick,
   onDoubleClick,
-  componentType,
+  thumbnailType,
   modality,
   viewPreset = 'thumbnails',
   isHydratedForDerivedDisplaySet = false,
@@ -259,7 +259,7 @@ const Thumbnail = ({
       )}
       id={`thumbnail-${displaySetInstanceUID}`}
       data-cy={
-        componentType === 'thumbnailNoImage'
+        thumbnailType === 'thumbnailNoImage'
           ? 'study-browser-thumbnail-no-image'
           : 'study-browser-thumbnail'
       }
@@ -310,6 +310,7 @@ Thumbnail.propTypes = {
   isTracked: PropTypes.bool,
   onClickUntrack: PropTypes.func,
   countIcon: PropTypes.string,
+  thumbnailType: PropTypes.oneOf(['thumbnail', 'thumbnailTracked', 'thumbnailNoImage']),
 };
 
 export { Thumbnail };

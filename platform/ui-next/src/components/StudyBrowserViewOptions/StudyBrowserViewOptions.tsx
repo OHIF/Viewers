@@ -5,8 +5,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
 } from '../DropdownMenu/DropdownMenu';
-import { Tooltip, TooltipContent } from '../Tooltip';
-import { TooltipTrigger } from '@radix-ui/react-tooltip';
+import { Tooltip, TooltipContent, TooltipTrigger } from '../Tooltip';
 
 export function StudyBrowserViewOptions({ tabs, onSelectTab, activeTabName }: withAppTypes) {
   const handleTabChange = (tabName: string) => {

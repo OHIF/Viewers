@@ -4,8 +4,7 @@ import classnames from 'classnames';
 import { ThumbnailList } from '../ThumbnailList';
 
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../Accordion';
-import { Tooltip, TooltipContent } from '../Tooltip';
-import { TooltipTrigger } from '@radix-ui/react-tooltip';
+import { Tooltip, TooltipContent, TooltipTrigger } from '../Tooltip';
 
 const StudyItem = ({
   date,

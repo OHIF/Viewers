@@ -13,11 +13,11 @@ const ThumbnailList = ({
   ThumbnailMenuItems,
 }) => {
   // Filter thumbnails into list items and thumbnail items
-  const listItems = thumbnails.filter(
+  const listItems = thumbnails?.filter(
     ({ componentType }) => componentType === 'thumbnailNoImage' || viewPreset === 'list'
   );
 
-  const thumbnailItems = thumbnails.filter(
+  const thumbnailItems = thumbnails?.filter(
     ({ componentType }) => componentType !== 'thumbnailNoImage' && viewPreset === 'thumbnails'
   );
 
@@ -30,7 +30,7 @@ const ThumbnailList = ({
           className="ohif-scrollbar bg-bkg-low grid grid-cols-[repeat(auto-fit,_minmax(0,135px))] place-items-start gap-[4px] overflow-y-hidden"
         >
           {thumbnailItems.map(item => {
-            const { displaySetInstanceUID, numInstances, ...rest } = item;
+            const { displaySetInstanceUID, componentType, numInstances, ...rest } = item;
 
             const isActive = activeDisplaySetInstanceUIDs.includes(displaySetInstanceUID);
             return (
@@ -40,6 +40,7 @@ const ThumbnailList = ({
                 displaySetInstanceUID={displaySetInstanceUID}
                 numInstances={numInstances || 1}
                 isActive={isActive}
+                thumbnailType={componentType}
                 viewPreset="thumbnails"
                 onClick={onThumbnailClick.bind(null, displaySetInstanceUID)}
                 onDoubleClick={onThumbnailDoubleClick.bind(null, displaySetInstanceUID)}
@@ -57,7 +58,7 @@ const ThumbnailList = ({
           className="ohif-scrollbar bg-bkg-low grid grid-cols-[repeat(auto-fit,_minmax(0,275px))] place-items-start gap-[2px] overflow-y-hidden"
         >
           {listItems.map(item => {
-            const { displaySetInstanceUID, numInstances, ...rest } = item;
+            const { displaySetInstanceUID, componentType, numInstances, ...rest } = item;
             const isActive = activeDisplaySetInstanceUIDs.includes(displaySetInstanceUID);
             return (
               <Thumbnail
@@ -66,6 +67,7 @@ const ThumbnailList = ({
                 displaySetInstanceUID={displaySetInstanceUID}
                 numInstances={numInstances || 1}
                 isActive={isActive}
+                thumbnailType={componentType}
                 viewPreset="list"
                 onClick={onThumbnailClick.bind(null, displaySetInstanceUID)}
                 onDoubleClick={onThumbnailDoubleClick.bind(null, displaySetInstanceUID)}
@@ -92,7 +94,15 @@ ThumbnailList.propTypes = {
       description: PropTypes.string,
       componentType: PropTypes.any,
       isTracked: PropTypes.bool,
+      /**
+       * Data the thumbnail should expose to a receiving drop target. Use a matching
+       * `dragData.type` to identify which targets can receive this draggable item.
+       * If this is not set, drag-n-drop will be disabled for this thumbnail.
+       *
+       * Ref: https://react-dnd.github.io/react-dnd/docs/api/use-drag#specification-object-members
+       */
       dragData: PropTypes.shape({
+        /** Must match the "type" a dropTarget expects */
         type: PropTypes.string.isRequired,
       }),
     })
