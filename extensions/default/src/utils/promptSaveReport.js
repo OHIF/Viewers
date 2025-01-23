@@ -20,7 +20,6 @@ async function promptSaveReport({ servicesManager, commandsManager, extensionMan
   const StudyInstanceUID = evt?.data?.StudyInstanceUID || ctx.trackedStudy;
   const SeriesInstanceUID = evt?.data?.SeriesInstanceUID;
 
-  debugger;
   const {
     trackedSeries,
     measurementFilter = filterAnd(
