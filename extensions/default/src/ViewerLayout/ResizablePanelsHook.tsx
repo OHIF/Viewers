@@ -34,7 +34,7 @@ const useResizablePanels = (
   );
   const [leftResizablePanelMinimumSize, setLeftResizablePanelMinimumSize] = useState(0);
   const [rightResizablePanelMinimumSize, setRightResizablePanelMinimumSize] = useState(0);
-  const [leftRizeablePanelCollapsedSize, setLeftResizePanelCollapsedSize] = useState(0);
+  const [leftResizeablePanelCollapsedSize, setLeftResizePanelCollapsedSize] = useState(0);
   const [rightResizePanelCollapsedSize, setRightResizePanelCollapsedSize] = useState(0);
 
   const resizablePanelGroupElemRef = useRef(null);
@@ -311,7 +311,7 @@ const useResizablePanels = (
       minSize: leftResizablePanelMinimumSize,
       onResize: onLeftPanelResize,
       collapsible: true,
-      collapsedSize: leftRizeablePanelCollapsedSize,
+      collapsedSize: leftResizeablePanelCollapsedSize,
       onCollapse: () => setLeftPanelClosed(true),
       onExpand: () => setLeftPanelClosed(false),
       ref: resizableLeftPanelAPIRef,
