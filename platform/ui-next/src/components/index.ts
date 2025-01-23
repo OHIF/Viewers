@@ -91,9 +91,14 @@ import {
   ViewportOverlay,
   ViewportGrid,
 } from './Viewport';
-import { ToolButton } from './ToolButton';
-import { ToolButtonGroup } from './ToolButton';
-import { ToolButtonList } from './ToolButton';
+import {
+  ToolButton,
+  ToolButtonList,
+  ToolButtonListDefault,
+  ToolButtonListDropDown,
+  ToolButtonListItem,
+  ToolButtonGroup,
+} from './ToolButton';
 import { RowInputRange } from './OHIFToolSettings';
 import { RowSegmentedControl } from './OHIFToolSettings';
 import { RowDoubleRange } from './OHIFToolSettings';
@@ -214,8 +219,11 @@ export {
   ViewportGrid,
   Clipboard,
   ToolButton,
-  ToolButtonGroup,
   ToolButtonList,
+  ToolButtonListDefault,
+  ToolButtonListDropDown,
+  ToolButtonListItem,
+  ToolButtonGroup,
   RowInputRange,
   RowSegmentedControl,
   RowDoubleRange,
