@@ -238,21 +238,12 @@ const useResizablePanels = (
   }, [setLeftPanelClosed]);
 
   const onLeftPanelOpen = useCallback(() => {
-    const panelGroupElem = resizablePanelGroupElemRef.current;
-    const { width: panelGroupWidth } = panelGroupElem.getBoundingClientRect();
-
-    const expandedSize = Math.max(
-      leftPanelExpandedWidth + panelGroupDefinition.shared.expandedInsideBorderSize,
-      panelGroupDefinition.left.minimumExpandedOffsetWidth
+    const { width: panelGroupWidth } = resizablePanelGroupElemRef.current.getBoundingClientRect();
+    resizableLeftPanelAPIRef?.current?.expand(
+      (panelGroupDefinition.left.initialExpandedOffsetWidth / panelGroupWidth) * 100
     );
-
-    const expandedPercentage = (expandedSize / panelGroupWidth) * 100;
-
-    resizableLeftPanelAPIRef?.current?.expand(expandedPercentage);
-    setMinMaxWidth(resizableLeftPanelElemRef.current, expandedSize);
-
     setLeftPanelClosed(false);
-  }, [leftPanelExpandedWidth, setLeftPanelClosed]);
+  }, [setLeftPanelClosed]);
 
   const onLeftPanelResize = useCallback(size => {
     if (resizableLeftPanelAPIRef.current.isCollapsed()) {
@@ -264,10 +255,6 @@ const useResizablePanels = (
       (size / 100) * panelGroupWidth - panelGroupDefinition.shared.expandedInsideBorderSize;
 
     setLeftPanelExpandedWidth(newExpandedWidth);
-
-    if (isResizableHandleDraggingRef.current) {
-      setMinMaxWidth(resizableLeftPanelElemRef.current, newExpandedWidth);
-    }
   }, []);
 
   const onRightPanelClose = useCallback(() => {
@@ -277,21 +264,12 @@ const useResizablePanels = (
   }, [setRightPanelClosed]);
 
   const onRightPanelOpen = useCallback(() => {
-    const panelGroupElem = resizablePanelGroupElemRef.current;
-    const { width: panelGroupWidth } = panelGroupElem.getBoundingClientRect();
-
-    const expandedSize = Math.max(
-      rightPanelExpandedWidth + panelGroupDefinition.shared.expandedInsideBorderSize,
-      panelGroupDefinition.right.minimumExpandedOffsetWidth
+    const { width: panelGroupWidth } = resizablePanelGroupElemRef.current.getBoundingClientRect();
+    resizableRightPanelAPIRef?.current?.expand(
+      (panelGroupDefinition.right.initialExpandedOffsetWidth / panelGroupWidth) * 100
     );
-
-    const expandedPercentage = (expandedSize / panelGroupWidth) * 100;
-
-    resizableRightPanelAPIRef?.current?.expand(expandedPercentage);
-    setMinMaxWidth(resizableRightPanelElemRef.current, expandedSize);
-
     setRightPanelClosed(false);
-  }, [rightPanelExpandedWidth, setRightPanelClosed]);
+  }, [setRightPanelClosed]);
 
   const onRightPanelResize = useCallback(size => {
     if (resizableRightPanelAPIRef?.current?.isCollapsed()) {
@@ -303,10 +281,6 @@ const useResizablePanels = (
       (size / 100) * panelGroupWidth - panelGroupDefinition.shared.expandedInsideBorderSize;
 
     setRightPanelExpandedWidth(newExpandedWidth);
-
-    if (isResizableHandleDraggingRef.current) {
-      setMinMaxWidth(resizableRightPanelElemRef.current, newExpandedWidth);
-    }
   }, []);
 
   return [
