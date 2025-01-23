@@ -1,6 +1,4 @@
 import React from 'react';
-import { Tooltip } from '@ohif/ui';
-import classnames from 'classnames';
 import { useToolbar } from '@ohif/core';
 
 export function Toolbar({ servicesManager, buttonSection = 'primary' }) {

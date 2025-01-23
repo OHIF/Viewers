@@ -119,7 +119,7 @@ const toolbarButtons = [
   },
   {
     id: 'BrushTools',
-    uiType: 'ohif.buttonGroup',
+    uiType: 'ohif.toolButtonGroup',
     props: {
       groupId: 'BrushTools',
       items: [

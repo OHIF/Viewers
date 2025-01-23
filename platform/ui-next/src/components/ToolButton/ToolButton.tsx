@@ -4,6 +4,10 @@ import { Icons } from '../Icons';
 import { Button } from '../Button';
 import { cn } from '../../lib/utils';
 
+const baseClasses = '!rounded-lg inline-flex items-center justify-center';
+const defaultClasses =
+  'bg-transparent text-foreground/80 hover:!bg-highlight/80 hover:text-highlight';
+
 interface ToolButtonProps {
   id: string;
   icon?: string;
@@ -13,8 +17,9 @@ interface ToolButtonProps {
   iconSizeClass?: string;
   isActive?: boolean;
   disabled?: boolean;
-  commands?: any;
-  onInteraction?: (details: { itemId: string; commands?: any }) => void;
+  disabledText?: string;
+  commands?: Record<string, unknown>;
+  onInteraction?: (details: { itemId: string; commands?: Record<string, unknown> }) => void;
   className?: string;
 }
 
@@ -26,35 +31,18 @@ function ToolButton(props: ToolButtonProps) {
     tooltip,
     buttonSizeClass = 'w-10 h-10',
     iconSizeClass = 'h-7 w-7',
-    isActive = false,
     disabled = false,
+    disabledText,
     commands,
     onInteraction,
     className,
   } = props;
 
-  const baseClasses = '!rounded-lg inline-flex items-center justify-center';
-  const defaultClasses =
-    'bg-transparent text-foreground/80 hover:bg-background hover:text-highlight';
-  const activeClasses = 'bg-highlight text-background hover:!bg-highlight/80';
-  const disabledClasses = 'opacity-40 cursor-not-allowed';
+  const buttonClasses = cn(baseClasses, defaultClasses, buttonSizeClass, className);
 
-  let buttonClasses = '';
-  if (disabled) {
-    buttonClasses = cn(baseClasses, disabledClasses, buttonSizeClass, className);
-  } else if (isActive) {
-    buttonClasses = cn(baseClasses, activeClasses, buttonSizeClass, className);
-  } else {
-    buttonClasses = cn(baseClasses, defaultClasses, buttonSizeClass, className);
-  }
-
-  const handleClick = () => {
-    if (!disabled) {
-      onInteraction?.({ itemId: id, commands });
-    }
-  };
-
-  const tooltipText = tooltip || label || id;
+  const defaultTooltip = tooltip || label;
+  const disabledTooltip = disabled && disabledText ? disabledText : null;
+  const hasTooltip = defaultTooltip || disabledTooltip;
 
   return (
     <TooltipProvider>
@@ -62,11 +50,14 @@ function ToolButton(props: ToolButtonProps) {
         <TooltipTrigger>
           <Button
             className={buttonClasses}
-            onClick={handleClick}
+            onClick={() => {
+              if (!disabled) {
+                onInteraction?.({ itemId: id, commands });
+              }
+            }}
             variant="ghost"
             size="icon"
-            aria-pressed={isActive}
-            aria-label={tooltipText || id}
+            aria-label={hasTooltip ? defaultTooltip : undefined}
             disabled={disabled}
           >
             <Icons.ByName
@@ -75,7 +66,12 @@ function ToolButton(props: ToolButtonProps) {
             />
           </Button>
         </TooltipTrigger>
-        {tooltipText && <TooltipContent side="bottom">{tooltipText}</TooltipContent>}
+        {hasTooltip && (
+          <TooltipContent side="bottom">
+            <div>{defaultTooltip}</div>
+            {disabledTooltip && <div className="text-muted-foreground">{disabledTooltip}</div>}
+          </TooltipContent>
+        )}
       </Tooltip>
     </TooltipProvider>
   );

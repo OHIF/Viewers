@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { PanelSection } from '../../components';
 import { ToolSettings } from '../OHIFToolSettings';
-import { ToolButtonSmall } from '../ToolButton';
+import { ToolButtonGroup } from '../ToolButton';
 
 /** usePrevious hook to track previous values */
 function usePrevious<T>(value: T) {
@@ -18,14 +18,7 @@ function usePrevious<T>(value: T) {
  * and, if there is an active tool, displays its tool options below.
  */
 function ToolboxUI(props: withAppTypes) {
-  const {
-    toolbarButtons,
-    handleToolSelect,
-    toolboxState,
-    servicesManager,
-    title,
-    useCollapsedPanel = true,
-  } = props;
+  const { toolbarButtons, handleToolSelect, toolboxState, title, useCollapsedPanel = true } = props;
 
   const { activeTool, toolOptions, selectedEvent } = toolboxState;
   const activeToolOptions = toolOptions?.[activeTool];
@@ -82,7 +75,7 @@ function ToolboxUI(props: withAppTypes) {
                       const subIsActive = subItem.isActive ?? false;
 
                       return (
-                        <ToolButtonSmall
+                        <ToolButtonGroup
                           key={subItem.id}
                           id={subItem.id}
                           icon={subItem.icon || 'MissingIcon'}
@@ -109,7 +102,7 @@ function ToolboxUI(props: withAppTypes) {
                   key={id}
                   className="ml-2 mb-2"
                 >
-                  <ToolButtonSmall
+                  <ToolButtonGroup
                     id={id}
                     icon={icon || 'MissingIcon'}
                     label={label}

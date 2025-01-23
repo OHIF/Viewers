@@ -9,12 +9,9 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
 } from '../DropdownMenu';
-import { TooltipProvider, Tooltip, TooltipTrigger, TooltipContent } from '../Tooltip';
 import { cn } from '../../lib/utils';
 
-function ToolButtonList({ groupId, primary, items = [], onInteraction, servicesManager }) {
-  const { toolbarService } = servicesManager?.services || {};
-
+function ToolButtonList({ groupId, primary, items = [], onInteraction }) {
   const handleItemClick = useCallback(
     item => {
       onInteraction?.({
@@ -66,7 +63,7 @@ function ToolButtonList({ groupId, primary, items = [], onInteraction, servicesM
         </DropdownMenuTrigger>
         <DropdownMenuContent
           side="bottom"
-          align="end"
+          align="start"
         >
           {items.map(item => (
             <DropdownMenuItem

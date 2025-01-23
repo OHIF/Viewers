@@ -1,13 +1,21 @@
-import React, { useCallback } from 'react';
-import { ToolButtonSmall } from '@ohif/ui-next';
-function ToolbarButtonGroupWithServices({ groupId, items, onInteraction, size }) {
+import React from 'react';
+import { ToolButtonGroup } from '@ohif/ui-next';
+
+function ToolbarButtonGroupWithServices({
+  groupId,
+  items,
+  onInteraction,
+}: {
+  groupId: string;
+  items: any[];
+  onInteraction: any;
+}) {
   return (
     <div className="flex space-x-1">
-      {items.map((item, index) => {
-        // Determine if item is active from your existing logic
+      {items?.map((item, index) => {
         const isActive = item.isActive;
         return (
-          <ToolButtonSmall
+          <ToolButtonGroup
             key={item.id}
             id={item.id}
             icon={item.icon}

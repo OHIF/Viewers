@@ -1,10 +1,11 @@
+import { ToolbarButton as ToolbarButtonLegacy } from '@ohif/ui';
+import { ToolButton } from '@ohif/ui-next';
+import { ToolButtonList } from '@ohif/ui-next';
+
 import ToolbarDivider from './Toolbar/ToolbarDivider';
 import ToolbarLayoutSelectorWithServices from './Toolbar/ToolbarLayoutSelector';
 import ToolbarSplitButtonWithServices from './Toolbar/ToolbarSplitButtonWithServices';
 import ToolbarButtonGroupWithServices from './Toolbar/ToolbarButtonGroupWithServices';
-import { ToolbarButton } from '@ohif/ui';
-import { ToolButton } from '@ohif/ui-next';
-import { ToolButtonList } from '@ohif/ui-next';
 import { ProgressDropdownWithService } from './Components/ProgressDropdownWithService';
 
 const getClassName = isToggled => {
@@ -18,10 +19,7 @@ const getClassName = isToggled => {
 export default function getToolbarModule({ commandsManager, servicesManager }: withAppTypes) {
   const { cineService } = servicesManager.services;
   return [
-    {
-      name: 'ohif.radioGroup',
-      defaultComponent: ToolbarButton,
-    },
+    // new
     {
       name: 'ohif.toolButton',
       defaultComponent: ToolButton,
@@ -30,6 +28,16 @@ export default function getToolbarModule({ commandsManager, servicesManager }: w
       name: 'ohif.toolButtonList',
       defaultComponent: ToolButtonList,
     },
+    {
+      name: 'ohif.toolButtonGroup',
+      defaultComponent: ToolbarButtonGroupWithServices,
+    },
+    // legacy
+    {
+      name: 'ohif.radioGroup',
+      defaultComponent: ToolbarButtonLegacy,
+    },
+
     {
       name: 'ohif.divider',
       defaultComponent: ToolbarDivider,
@@ -42,10 +50,6 @@ export default function getToolbarModule({ commandsManager, servicesManager }: w
       name: 'ohif.layoutSelector',
       defaultComponent: props =>
         ToolbarLayoutSelectorWithServices({ ...props, commandsManager, servicesManager }),
-    },
-    {
-      name: 'ohif.buttonGroup',
-      defaultComponent: ToolbarButtonGroupWithServices,
     },
     {
       name: 'ohif.progressDropdown',

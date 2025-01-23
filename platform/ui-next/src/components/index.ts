@@ -92,7 +92,7 @@ import {
   ViewportGrid,
 } from './Viewport';
 import { ToolButton } from './ToolButton';
-import { ToolButtonSmall } from './ToolButton';
+import { ToolButtonGroup } from './ToolButton';
 import { ToolButtonList } from './ToolButton';
 import { RowInputRange } from './OHIFToolSettings';
 import { RowSegmentedControl } from './OHIFToolSettings';
@@ -214,7 +214,7 @@ export {
   ViewportGrid,
   Clipboard,
   ToolButton,
-  ToolButtonSmall,
+  ToolButtonGroup,
   ToolButtonList,
   RowInputRange,
   RowSegmentedControl,

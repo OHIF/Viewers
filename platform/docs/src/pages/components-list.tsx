@@ -29,14 +29,7 @@ import { Icons } from '../../../ui-next/src/components/Icons';
 import { Toaster, toast } from '../../../ui-next/src/components/Sonner';
 import { DataRow } from '../../../ui-next/src/components/DataRow';
 import DataRowExample from './patterns/DataRowExample';
-import {
-  Card,
-  CardHeader,
-  CardFooter,
-  CardTitle,
-  CardDescription,
-  CardContent,
-} from '../../../ui-next/src/components/Card';
+import { Card, CardHeader, CardTitle, CardDescription } from '../../../ui-next/src/components/Card';
 import ToolButton from '../../../ui-next/src/components/ToolButton/ToolButton';
 import ToolButtonList from '../../../ui-next/src/components/ToolButton/ToolButtonList';
 
@@ -604,8 +597,6 @@ Example code coming soon.
                 icon="ToolZoom"
                 label="Zoom"
                 tooltip="Zoom"
-                isActive={false}
-                className="bg-primary-dark text-primary-light hover:bg-background hover:text-highlight"
                 onInteraction={({ itemId }) => console.log(`Clicked ${itemId}`)}
               />
               <ToolButton
@@ -613,8 +604,6 @@ Example code coming soon.
                 icon="ToolMove"
                 label="Pan"
                 tooltip="Pan"
-                isActive={false}
-                className="bg-primary-dark text-primary-light hover:bg-background hover:text-highlight"
                 onInteraction={({ itemId }) => console.log(`Clicked ${itemId}`)}
               />
               <ToolButton
@@ -622,9 +611,71 @@ Example code coming soon.
                 icon="ToolWindowLevel"
                 label="Window Level"
                 tooltip="Window Level"
-                isActive={false}
-                className="bg-primary-dark text-primary-light hover:bg-background hover:text-highlight"
                 onInteraction={({ itemId }) => console.log(`Clicked ${itemId}`)}
+              />
+            </div>
+          </ShowcaseRow>
+
+          <ShowcaseRow
+            title="ToolButtonList"
+            description="A compound component that combines a primary ToolButton with a dropdown menu of additional related tools"
+            code={`
+<ToolButtonList
+  groupId="WindowLevel"
+  primary={{
+    id: "WindowLevel",
+    icon: "ToolWindowLevel",
+    label: "Window Level",
+    tooltip: "Window Level",
+    isActive: false,
+  }}
+  items={[
+    {
+      id: "Reset",
+      icon: "Reset",
+      label: "Reset Window Level",
+      tooltip: "Reset Window Level",
+    },
+    {
+      id: "Auto",
+      icon: "Contrast",
+      label: "Auto Window Level",
+      tooltip: "Auto Window Level",
+    },
+  ]}
+  onInteraction={({ groupId, itemId }) =>
+    console.debug(\`Group: \${groupId}, Item: \${itemId}\`)
+  }
+/>
+`}
+          >
+            <div className="bg-popover flex h-11 w-[450px] items-center justify-center rounded">
+              <ToolButtonList
+                groupId="WindowLevel"
+                primary={{
+                  id: 'WindowLevel',
+                  icon: 'tool-window-level',
+                  label: 'Window Level',
+                  tooltip: 'Window Level',
+                  isActive: false,
+                }}
+                items={[
+                  {
+                    id: 'Reset',
+                    icon: 'tool-reset',
+                    label: 'Reset',
+                    tooltip: 'Reset Window Level',
+                  },
+                  {
+                    id: 'Auto',
+                    icon: 'tool-cine',
+                    label: 'Cine',
+                    tooltip: 'Cine',
+                  },
+                ]}
+                onInteraction={({ groupId, itemId }) =>
+                  console.debug(`Group: ${groupId}, Item: ${itemId}`)
+                }
               />
             </div>
           </ShowcaseRow>

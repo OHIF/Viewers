@@ -8,7 +8,7 @@ const getToggledClassName = (isToggled: boolean) => {
 
 const getDisabledState = (disabledText?: string) => ({
   disabled: true,
-  className: '!text-common-bright ohif-disabled',
+  className: 'opacity-40 cursor-not-allowed',
   disabledText: disabledText ?? 'Not available on the current viewport',
 });
 
