@@ -307,7 +307,7 @@ const useResizablePanels = (
     },
     { direction: 'horizontal', id: panelGroupDefinition.groupId },
     {
-      defaultSize: 0,
+      defaultSize: leftResizablePanelMinimumSize,
       minSize: leftResizablePanelMinimumSize,
       onResize: onLeftPanelResize,
       collapsible: true,
@@ -320,7 +320,7 @@ const useResizablePanels = (
     },
     { order: 1, id: 'viewerLayoutResizableViewportGridPanel' },
     {
-      defaultSize: 0,
+      defaultSize: rightResizablePanelMinimumSize,
       minSize: rightResizablePanelMinimumSize,
       onResize: onRightPanelResize,
       collapsible: true,
