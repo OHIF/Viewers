@@ -50,7 +50,7 @@ function ToolButtonList({ groupId, primary, items = [], onInteraction, servicesM
           <Button
             variant="ghost"
             size="icon"
-            className="text-primary-foreground hover:bg-primary-dark hover:text-primary-light border-primary inline-flex h-10 w-5 items-center justify-center !rounded-tr-lg !rounded-br-lg !rounded-tl-none !rounded-bl-none border-l bg-transparent"
+            className="text-foreground/80 hover:bg-background hover:text-highlight border-primary inline-flex h-10 w-5 items-center justify-center !rounded-tr-lg !rounded-br-lg !rounded-tl-none !rounded-bl-none border-l bg-transparent"
             aria-label="Open tool list"
           >
             <Icons.ByName
@@ -66,8 +66,14 @@ function ToolButtonList({ groupId, primary, items = [], onInteraction, servicesM
           {items.map(item => (
             <DropdownMenuItem
               key={item.id}
-              onSelect={() => handleItemClick(item)}
-              className="flex items-center space-x-2"
+              // Only invoke handleItemClick if not disabled
+              onSelect={() => !item.disabled && handleItemClick(item)}
+              disabled={item.disabled}
+              className={
+                item.disabled
+                  ? 'flex cursor-not-allowed items-center space-x-2 opacity-50'
+                  : 'flex items-center space-x-2'
+              }
             >
               <Icons.ByName
                 name={item.icon || 'MissingIcon'}
