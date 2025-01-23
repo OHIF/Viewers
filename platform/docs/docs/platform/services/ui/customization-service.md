@@ -501,6 +501,17 @@ customizationService.setGlobalCustomization('measurement.labellingComponent', {
 
 ```
 
+## Customizable WindowLevelActionMenu component.
+
+The WindowLevelActionMenu Component can be customized using the ID `cornerstone.windowLevelActionMenu`. This allows users to replace the default `WindowLevelActionMenu` component with a custom component of their choice. Below is a sample for customization implementation:
+
+```
+customizationService.setGlobalCustomization('cornerstone.windowLevelActionMenu', {
+    content: AnnotationLabel,
+});
+
+
+```
 
 ## Please add additional customizations above this section
 > 3rd Party implementers may be added to this table via pull requests.
