@@ -238,13 +238,19 @@ const useResizablePanels = (
   }, [setLeftPanelClosed]);
 
   const onLeftPanelOpen = useCallback(() => {
-    resizableLeftPanelAPIRef?.current?.expand();
-    if (!isResizableHandleDraggingRef.current) {
-      setMinMaxWidth(
-        resizableLeftPanelElemRef.current,
-        leftPanelExpandedWidth + panelGroupDefinition.shared.expandedInsideBorderSize
-      );
-    }
+    const panelGroupElem = resizablePanelGroupElemRef.current;
+    const { width: panelGroupWidth } = panelGroupElem.getBoundingClientRect();
+
+    const expandedSize = Math.max(
+      leftPanelExpandedWidth + panelGroupDefinition.shared.expandedInsideBorderSize,
+      panelGroupDefinition.left.minimumExpandedOffsetWidth
+    );
+
+    const expandedPercentage = (expandedSize / panelGroupWidth) * 100;
+
+    resizableLeftPanelAPIRef?.current?.expand(expandedPercentage);
+    setMinMaxWidth(resizableLeftPanelElemRef.current, expandedSize);
+
     setLeftPanelClosed(false);
   }, [leftPanelExpandedWidth, setLeftPanelClosed]);
 
@@ -254,9 +260,14 @@ const useResizablePanels = (
     }
 
     const { width: panelGroupWidth } = resizablePanelGroupElemRef.current.getBoundingClientRect();
-    setLeftPanelExpandedWidth(
-      (size / 100) * panelGroupWidth - panelGroupDefinition.shared.expandedInsideBorderSize
-    );
+    const newExpandedWidth =
+      (size / 100) * panelGroupWidth - panelGroupDefinition.shared.expandedInsideBorderSize;
+
+    setLeftPanelExpandedWidth(newExpandedWidth);
+
+    if (isResizableHandleDraggingRef.current) {
+      setMinMaxWidth(resizableLeftPanelElemRef.current, newExpandedWidth);
+    }
   }, []);
 
   const onRightPanelClose = useCallback(() => {
@@ -266,13 +277,19 @@ const useResizablePanels = (
   }, [setRightPanelClosed]);
 
   const onRightPanelOpen = useCallback(() => {
-    resizableRightPanelAPIRef?.current?.expand();
-    if (!isResizableHandleDraggingRef.current) {
-      setMinMaxWidth(
-        resizableRightPanelElemRef.current,
-        rightPanelExpandedWidth + panelGroupDefinition.shared.expandedInsideBorderSize
-      );
-    }
+    const panelGroupElem = resizablePanelGroupElemRef.current;
+    const { width: panelGroupWidth } = panelGroupElem.getBoundingClientRect();
+
+    const expandedSize = Math.max(
+      rightPanelExpandedWidth + panelGroupDefinition.shared.expandedInsideBorderSize,
+      panelGroupDefinition.right.minimumExpandedOffsetWidth
+    );
+
+    const expandedPercentage = (expandedSize / panelGroupWidth) * 100;
+
+    resizableRightPanelAPIRef?.current?.expand(expandedPercentage);
+    setMinMaxWidth(resizableRightPanelElemRef.current, expandedSize);
+
     setRightPanelClosed(false);
   }, [rightPanelExpandedWidth, setRightPanelClosed]);
 
@@ -280,10 +297,16 @@ const useResizablePanels = (
     if (resizableRightPanelAPIRef?.current?.isCollapsed()) {
       return;
     }
+
     const { width: panelGroupWidth } = resizablePanelGroupElemRef.current.getBoundingClientRect();
-    setRightPanelExpandedWidth(
-      (size / 100) * panelGroupWidth - panelGroupDefinition.shared.expandedInsideBorderSize
-    );
+    const newExpandedWidth =
+      (size / 100) * panelGroupWidth - panelGroupDefinition.shared.expandedInsideBorderSize;
+
+    setRightPanelExpandedWidth(newExpandedWidth);
+
+    if (isResizableHandleDraggingRef.current) {
+      setMinMaxWidth(resizableRightPanelElemRef.current, newExpandedWidth);
+    }
   }, []);
 
   return [
