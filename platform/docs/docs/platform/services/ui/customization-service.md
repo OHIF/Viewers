@@ -500,18 +500,6 @@ customizationService.setGlobalCustomization('measurement.labellingComponent', {
 
 ```
 
-## Customizable WindowLevelActionMenu component.
-
-The WindowLevelActionMenu Component can be customized using the ID `cornerstone.windowLevelActionMenu`. This allows users to replace the default `WindowLevelActionMenu` component with a custom component of their choice. Below is a sample for customization implementation:
-
-```
-customizationService.setGlobalCustomization('cornerstone.windowLevelActionMenu', {
-    content: AnnotationLabel,
-});
-
-
-```
-
 ## Customizable Render component.
 
 The CustomizableRenderComponent dynamically renders a custom component based on a customizationId. If a component for the given ID is found, it is rendered with the provided props; otherwise, a fallback component is rendered. To set a custom component for a specific customizationId, you must register it using the customizationService, where the custom component is added within an object under the component key. If no component is found for the specified customizationId, the FallbackComponent will be rendered instead.
