@@ -23,7 +23,6 @@ interface StateType {
 export interface LabelInfo {
   label: string;
   value: string;
-  searchItem: boolean;
 }
 
 class LabellingFlow extends Component<PropType> {
