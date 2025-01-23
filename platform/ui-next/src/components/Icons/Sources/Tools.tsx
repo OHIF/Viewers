@@ -3006,10 +3006,11 @@ export const ToolWindowLevel = (props: IconProps) => (
 
 export const ToolWindowRegion = (props: IconProps) => (
   <svg
-    width="28px"
-    height="28px"
-    viewBox="0 0 28 28"
+    width="24px"
+    height="24px"
+    viewBox="0 0 24 24"
     version="1.1"
+    {...props}
     xmlns="http://www.w3.org/2000/svg"
   >
     <g
@@ -3023,8 +3024,8 @@ export const ToolWindowRegion = (props: IconProps) => (
         id="Rectangle"
         x="0"
         y="0"
-        width="28"
-        height="28"
+        width="24"
+        height="24"
       ></rect>
       <path
         d="M10.3460449,22 L4,22 C3.44771525,22 3,21.5522847 3,21 L3,4 C3,3.44771525 3.44771525,3 4,3 L21,3 C21.5522847,3 22,3.44771525 22,4 L22,11.3197021"

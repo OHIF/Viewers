@@ -3,7 +3,7 @@ import type { Button } from '@ohif/core/types';
 const toolbarButtons: Button[] = [
   {
     id: 'BrushTools',
-    uiType: 'ohif.toolButtonGroup',
+    uiType: 'ohif.toolButton',
     props: {
       groupId: 'BrushTools',
       items: [
@@ -134,7 +134,7 @@ const toolbarButtons: Button[] = [
   },
   {
     id: 'Shapes',
-    uiType: 'ohif.radioGroup',
+    uiType: 'ohif.toolButton',
     props: {
       label: 'Shapes',
       evaluate: {

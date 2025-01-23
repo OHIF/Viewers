@@ -1,12 +1,17 @@
 import { ToolbarButton as ToolbarButtonLegacy } from '@ohif/ui';
 import { ToolButton } from '@ohif/ui-next';
 
-import ToolbarDivider from './Toolbar/ToolbarDivider';
 import ToolbarLayoutSelectorWithServices from './Toolbar/ToolbarLayoutSelector';
-import ToolbarSplitButtonWithServices from './Toolbar/ToolbarSplitButtonWithServices';
-import ToolbarButtonGroupWithServices from './Toolbar/ToolbarButtonGroupWithServices';
+
+// legacy
+import ToolbarDividerLegacy from './Toolbar/ToolbarDivider';
+import ToolbarSplitButtonWithServicesLegacy from './Toolbar/ToolbarSplitButtonWithServices';
+import ToolbarButtonGroupWithServicesLegacy from './Toolbar/ToolbarButtonGroupWithServices';
 import { ProgressDropdownWithService } from './Components/ProgressDropdownWithService';
+
+// new
 import ToolButtonListWrapper from './Toolbar/ToolButtonListWrapper';
+import { ToolBoxButtonGroupWrapper, ToolBoxButtonWrapper } from './Toolbar/ToolBoxWrapper';
 
 const getClassName = isToggled => {
   return {
@@ -29,23 +34,31 @@ export default function getToolbarModule({ commandsManager, servicesManager }: w
       defaultComponent: ToolButtonListWrapper,
     },
     {
-      name: 'ohif.toolButtonGroup',
-      defaultComponent: ToolbarButtonGroupWithServices,
+      name: 'ohif.toolBoxButtonGroup',
+      defaultComponent: ToolBoxButtonGroupWrapper,
+    },
+    {
+      name: 'ohif.toolBoxButton',
+      defaultComponent: ToolBoxButtonWrapper,
     },
     // legacy
     {
       name: 'ohif.radioGroup',
       defaultComponent: ToolbarButtonLegacy,
     },
-
+    {
+      name: 'ohif.buttonGroup',
+      defaultComponent: ToolbarButtonGroupWithServicesLegacy,
+    },
     {
       name: 'ohif.divider',
-      defaultComponent: ToolbarDivider,
+      defaultComponent: ToolbarDividerLegacy,
     },
     {
       name: 'ohif.splitButton',
-      defaultComponent: ToolbarSplitButtonWithServices,
+      defaultComponent: ToolbarSplitButtonWithServicesLegacy,
     },
+    // others
     {
       name: 'ohif.layoutSelector',
       defaultComponent: props =>

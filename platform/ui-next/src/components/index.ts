@@ -52,7 +52,7 @@ import { ThumbnailList } from './ThumbnailList';
 import { PanelSection } from './PanelSection';
 import { DisplaySetMessageListTooltip } from './DisplaySetMessageListTooltip';
 import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from './Tooltip';
-import { Toolbox, ToolboxUI } from './OHIFToolbox';
+import { ToolboxUI } from './OHIFToolbox';
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -97,7 +97,7 @@ import {
   ToolButtonListDefault,
   ToolButtonListDropDown,
   ToolButtonListItem,
-  ToolButtonGroup,
+  ToolButtonListDivider,
 } from './ToolButton';
 import { RowInputRange } from './OHIFToolSettings';
 import { RowSegmentedControl } from './OHIFToolSettings';
@@ -167,7 +167,6 @@ export {
   ThumbnailList,
   PanelSection,
   DisplaySetMessageListTooltip,
-  Toolbox,
   ToolboxUI,
   DropdownMenu,
   DropdownMenuTrigger,
@@ -223,7 +222,7 @@ export {
   ToolButtonListDefault,
   ToolButtonListDropDown,
   ToolButtonListItem,
-  ToolButtonGroup,
+  ToolButtonListDivider,
   RowInputRange,
   RowSegmentedControl,
   RowDoubleRange,

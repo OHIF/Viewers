@@ -32,7 +32,6 @@ import {
   ThumbnailList,
   PanelSection,
   DisplaySetMessageListTooltip,
-  Toolbox,
   ToolboxUI,
   DoubleSlider,
   Label,
@@ -94,18 +93,23 @@ import {
   ViewportOverlay,
   ViewportGrid,
   ToolButton,
-  ToolButtonGroup,
   ToolButtonList,
   ToolButtonListDefault,
   ToolButtonListDropDown,
   ToolButtonListItem,
+  ToolButtonListDivider,
   RowInputRange,
   RowSegmentedControl,
   RowDoubleRange,
 } from './components';
 import { DataRow } from './components/DataRow';
 
-import { useNotification, NotificationProvider } from './contextProviders';
+import {
+  useNotification,
+  NotificationProvider,
+  useToolbox,
+  ToolboxProvider,
+} from './contextProviders';
 import { ViewportGridContext, ViewportGridProvider, useViewportGrid } from './contextProviders';
 
 export {
@@ -152,7 +156,6 @@ export {
   ThumbnailList,
   PanelSection,
   DisplaySetMessageListTooltip,
-  Toolbox,
   ToolboxUI,
   Label,
   Slider,
@@ -219,5 +222,7 @@ export {
   ToolButtonListDefault,
   ToolButtonListDropDown,
   ToolButtonListItem,
-  ToolButtonGroup,
+  ToolButtonListDivider,
+  ToolboxProvider,
+  useToolbox,
 };

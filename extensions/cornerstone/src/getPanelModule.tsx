@@ -1,9 +1,10 @@
 import React from 'react';
 
-import { Toolbox } from '@ohif/ui-next';
+import { Toolbox } from '@ohif/extension-default';
 import PanelSegmentation from './panels/PanelSegmentation';
 import ActiveViewportWindowLevel from './components/ActiveViewportWindowLevel';
 import PanelMeasurement from './panels/PanelMeasurement';
+import { useToolbar } from '@ohif/core';
 
 const getPanelModule = ({ commandsManager, servicesManager, extensionManager }: withAppTypes) => {
   const wrappedPanelSegmentation = ({ configuration }) => {
@@ -32,7 +33,7 @@ const getPanelModule = ({ commandsManager, servicesManager, extensionManager }: 
     );
   };
 
-  const wrappedPanelSegmentationWithTools = ({ configuration }) => {
+  const WrappedPanelSegmentationWithTools = ({ configuration }) => {
     return (
       <>
         <Toolbox
@@ -103,7 +104,7 @@ const getPanelModule = ({ commandsManager, servicesManager, extensionManager }: 
       iconName: 'tab-segmentation',
       iconLabel: 'Segmentation',
       label: 'Segmentation',
-      component: wrappedPanelSegmentationWithTools,
+      component: WrappedPanelSegmentationWithTools,
     },
   ];
 };

@@ -689,6 +689,7 @@ export const Icons = {
   'icon-status-alert': (props: IconProps) => Alert(props),
   'info-link': (props: IconProps) => InfoLink(props),
   'launch-info': (props: IconProps) => LaunchInfo(props),
+  'old-trash': (props: IconProps) => Trash(props),
   clipboard: (props: IconProps) => Clipboard(props),
 
   /** Adds an icon to the set of icons */

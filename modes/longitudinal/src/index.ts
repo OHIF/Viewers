@@ -112,32 +112,32 @@ function modeFactory({ modeConfiguration }) {
 
       // // ActivatePanel event trigger for when a segmentation or measurement is added.
       // // Do not force activation so as to respect the state the user may have left the UI in.
-      _activatePanelTriggersSubscriptions = [
-        ...panelService.addActivatePanelTriggers(
-          cornerstone.segmentation,
-          [
-            {
-              sourcePubSubService: segmentationService,
-              sourceEvents: [segmentationService.EVENTS.SEGMENTATION_ADDED],
-            },
-          ],
-          true
-        ),
-        ...panelService.addActivatePanelTriggers(
-          tracked.measurements,
-          [
-            {
-              sourcePubSubService: measurementService,
-              sourceEvents: [
-                measurementService.EVENTS.MEASUREMENT_ADDED,
-                measurementService.EVENTS.RAW_MEASUREMENT_ADDED,
-              ],
-            },
-          ],
-          true
-        ),
-        true,
-      ];
+      // _activatePanelTriggersSubscriptions = [
+      //   ...panelService.addActivatePanelTriggers(
+      //     cornerstone.segmentation,
+      //     [
+      //       {
+      //         sourcePubSubService: segmentationService,
+      //         sourceEvents: [segmentationService.EVENTS.SEGMENTATION_ADDED],
+      //       },
+      //     ],
+      //     true
+      //   ),
+      //   ...panelService.addActivatePanelTriggers(
+      //     tracked.measurements,
+      //     [
+      //       {
+      //         sourcePubSubService: measurementService,
+      //         sourceEvents: [
+      //           measurementService.EVENTS.MEASUREMENT_ADDED,
+      //           measurementService.EVENTS.RAW_MEASUREMENT_ADDED,
+      //         ],
+      //       },
+      //     ],
+      //     true
+      //   ),
+      //   true,
+      // ];
     },
     onModeExit: ({ servicesManager }: withAppTypes) => {
       const {

@@ -39,7 +39,7 @@ import { PanelStudyBrowserHeader } from './Panels/StudyBrowser/PanelStudyBrowser
 import * as utils from './utils';
 import MoreDropdownMenu from './Components/MoreDropdownMenu';
 import requestDisplaySetCreationForStudy from './Panels/requestDisplaySetCreationForStudy';
-
+import Toolbox from './utils/Toolbox';
 const defaultExtension: Types.Extensions.Extension = {
   /**
    * Only required property. Should be a unique value across all extensions.
@@ -106,4 +106,5 @@ export {
   utils,
   MoreDropdownMenu,
   requestDisplaySetCreationForStudy,
+  Toolbox,
 };

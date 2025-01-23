@@ -323,7 +323,7 @@ function _getStatusComponent(isTracked, t) {
     <Tooltip>
       <TooltipTrigger asChild>
         <span>
-          <Icons.StatusTracking className="text-aqua-pale" />
+          <Icons.StatusTracking className="text-muted-foreground" />
         </span>
       </TooltipTrigger>
       <TooltipContent

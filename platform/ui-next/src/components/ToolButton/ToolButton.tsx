@@ -1,20 +1,32 @@
 import React from 'react';
-import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from '../Tooltip';
+import { Tooltip, TooltipTrigger, TooltipContent } from '../Tooltip';
 import { Icons } from '../Icons';
 import { Button } from '../Button';
 import { cn } from '../../lib/utils';
 
 const baseClasses = '!rounded-lg inline-flex items-center justify-center';
-const defaultClasses =
-  'bg-transparent text-foreground/80 hover:!bg-highlight/80 hover:text-highlight';
+const defaultClasses = 'bg-transparent text-foreground/80 hover:bg-background hover:text-highlight';
+const activeClasses = 'bg-highlight text-background hover:!bg-highlight/80';
+const disabledClasses =
+  'text-common-bright hover:bg-primary-dark hover:text-primary-light opacity-40 cursor-not-allowed';
+
+const sizeClasses = {
+  default: {
+    buttonSizeClass: 'w-10 h-10',
+    iconSizeClass: 'h-7 w-7',
+  },
+  small: {
+    buttonSizeClass: 'w-8 h-8',
+    iconSizeClass: 'h-6 w-6',
+  },
+};
 
 interface ToolButtonProps {
   id: string;
   icon?: string;
   label?: string;
   tooltip?: string;
-  buttonSizeClass?: string;
-  iconSizeClass?: string;
+  size?: 'default' | 'small';
   isActive?: boolean;
   disabled?: boolean;
   disabledText?: string;
@@ -29,25 +41,37 @@ function ToolButton(props: ToolButtonProps) {
     icon = 'MissingIcon',
     label,
     tooltip,
-    buttonSizeClass = 'w-10 h-10',
-    iconSizeClass = 'h-7 w-7',
+    size = 'default',
     disabled = false,
+    isActive = false,
     disabledText,
     commands,
     onInteraction,
     className,
   } = props;
 
-  const buttonClasses = cn(baseClasses, defaultClasses, buttonSizeClass, className);
+  const { buttonSizeClass, iconSizeClass } = sizeClasses[size];
+
+  const buttonClasses = cn(
+    baseClasses,
+    buttonSizeClass,
+    disabled ? disabledClasses : isActive ? activeClasses : defaultClasses,
+    className
+  );
 
   const defaultTooltip = tooltip || label;
   const disabledTooltip = disabled && disabledText ? disabledText : null;
   const hasTooltip = defaultTooltip || disabledTooltip;
 
   return (
-    <TooltipProvider>
-      <Tooltip>
-        <TooltipTrigger>
+    <Tooltip>
+      <TooltipTrigger
+        asChild
+        className={cn(disabled && 'cursor-not-allowed')}
+      >
+        {/* TooltipTrigger is a span since a disabled button does not fire events and the tooltip
+        will not show. */}
+        <span>
           <Button
             className={buttonClasses}
             onClick={() => {
@@ -65,15 +89,17 @@ function ToolButton(props: ToolButtonProps) {
               className={iconSizeClass}
             />
           </Button>
-        </TooltipTrigger>
+        </span>
+      </TooltipTrigger>
+      <TooltipContent side="bottom">
         {hasTooltip && (
-          <TooltipContent side="bottom">
+          <>
             <div>{defaultTooltip}</div>
             {disabledTooltip && <div className="text-muted-foreground">{disabledTooltip}</div>}
-          </TooltipContent>
+          </>
         )}
-      </Tooltip>
-    </TooltipProvider>
+      </TooltipContent>
+    </Tooltip>
   );
 }
 

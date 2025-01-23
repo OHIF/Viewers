@@ -276,7 +276,8 @@ export default class ToolbarService extends PubSubService {
         // item in the group
         buttonProps = {
           ...buttonProps,
-          primary: groupEvaluated?.primary || buttonProps.primary,
+          primary: groupEvaluated?.primary ?? buttonProps.primary,
+          disabled: groupEvaluated?.disabled ?? buttonProps.disabled,
         };
 
         const { primary, items } = buttonProps;

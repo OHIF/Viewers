@@ -5,6 +5,7 @@ import {
   ToolButtonListDefault,
   ToolButtonListDropDown,
   ToolButtonListItem,
+  ToolButtonListDivider,
 } from '@ohif/ui-next';
 
 interface ButtonItem {
@@ -14,6 +15,7 @@ interface ButtonItem {
   tooltip?: string;
   commands?: Record<string, unknown>;
   disabled?: boolean;
+  className?: string;
 }
 
 interface ToolButtonListWrapperProps {
@@ -38,14 +40,6 @@ export default function ToolButtonListWrapper({
   items,
   onInteraction,
 }: ToolButtonListWrapperProps) {
-  const handleInteraction = (itemId: string, commands?: Record<string, unknown>) => {
-    onInteraction?.({
-      groupId,
-      itemId,
-      commands,
-    });
-  };
-
   return (
     <ToolButtonList>
       <ToolButtonListDefault>
@@ -55,18 +49,23 @@ export default function ToolButtonListWrapper({
           label={primary.label}
           tooltip={primary.tooltip}
           disabled={primary.disabled}
-          onInteraction={({ itemId }) => handleInteraction(itemId, primary.commands)}
+          onInteraction={({ itemId }) =>
+            onInteraction?.({ groupId, itemId, commands: primary.commands })
+          }
+          className={primary.className}
         />
       </ToolButtonListDefault>
+      <ToolButtonListDivider />
       <ToolButtonListDropDown>
         {items.map(item => (
           <ToolButtonListItem
             key={item.id}
             icon={item.icon}
             disabled={item.disabled}
-            onSelect={() => handleInteraction(item.id, item.commands)}
+            onSelect={() => onInteraction?.({ groupId, itemId: item.id, commands: item.commands })}
+            className={item.className}
           >
-            {item.label || item.tooltip || item.id}
+            <span className="pl-1">{item.label || item.tooltip || item.id}</span>
           </ToolButtonListItem>
         ))}
       </ToolButtonListDropDown>

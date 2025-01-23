@@ -3,9 +3,10 @@ import type { Button } from '@ohif/core/types';
 const toolbarButtons: Button[] = [
   {
     id: 'BrushTools',
-    uiType: 'ohif.toolButtonGroup',
+    uiType: 'ohif.toolBoxButtonGroup',
     props: {
       groupId: 'BrushTools',
+      evaluate: 'evaluate.cornerstone.hasSegmentation',
       items: [
         {
           id: 'Brush',
@@ -172,34 +173,28 @@ const toolbarButtons: Button[] = [
   },
   {
     id: 'Shapes',
-    uiType: 'ohif.toolButtonGroup',
+    uiType: 'ohif.toolBoxButton',
     props: {
-      groupId: 'ShapesGroup',
+      id: 'Shapes',
+      icon: 'icon-tool-shape',
       label: 'Shapes',
-      items: [
+      evaluate: {
+        name: 'evaluate.cornerstone.segmentation',
+        toolNames: ['CircleScissor', 'SphereScissor', 'RectangleScissor'],
+        disabledText: 'Create new segmentation to enable shapes tool.',
+      },
+      options: [
         {
-          id: 'Shapes',
-          icon: 'icon-tool-shape',
-          label: 'Shapes',
-          evaluate: {
-            name: 'evaluate.cornerstone.segmentation',
-            toolNames: ['CircleScissor', 'SphereScissor', 'RectangleScissor'],
-            disabledText: 'Create new segmentation to enable shapes tool.',
-          },
-          options: [
-            {
-              name: 'Shape',
-              type: 'radio',
-              value: 'CircleScissor',
-              id: 'shape-mode',
-              values: [
-                { value: 'CircleScissor', label: 'Circle' },
-                { value: 'SphereScissor', label: 'Sphere' },
-                { value: 'RectangleScissor', label: 'Rectangle' },
-              ],
-              commands: 'setToolActiveToolbar',
-            },
+          name: 'Shape',
+          type: 'radio',
+          value: 'CircleScissor',
+          id: 'shape-mode',
+          values: [
+            { value: 'CircleScissor', label: 'Circle' },
+            { value: 'SphereScissor', label: 'Sphere' },
+            { value: 'RectangleScissor', label: 'Rectangle' },
           ],
+          commands: 'setToolActiveToolbar',
         },
       ],
     },

@@ -78,7 +78,8 @@ const ToolButtonListDropDown = React.forwardRef<HTMLDivElement, ToolButtonListDr
             'text-foreground/80 hover:bg-background hover:text-highlight border-primary',
             'inline-flex h-10 w-5 items-center justify-center',
             '!rounded-tr-lg !rounded-br-lg !rounded-tl-none !rounded-bl-none',
-            'bg-transparent'
+            'bg-transparent',
+            className
           )}
         >
           <Icons.ByName
@@ -90,7 +91,7 @@ const ToolButtonListDropDown = React.forwardRef<HTMLDivElement, ToolButtonListDr
       <DropdownMenuContent
         ref={ref}
         side="bottom"
-        align="start"
+        align="center"
       >
         {children}
       </DropdownMenuContent>
@@ -121,7 +122,7 @@ const ToolButtonListItem = React.forwardRef<
   >
     {icon && (
       <Icons.ByName
-        name={icon}
+        name={icon || 'MissingIcon'}
         className="h-6 w-6"
       />
     )}
@@ -130,4 +131,27 @@ const ToolButtonListItem = React.forwardRef<
 ));
 ToolButtonListItem.displayName = 'ToolButtonListItem';
 
-export { ToolButtonList, ToolButtonListDefault, ToolButtonListDropDown, ToolButtonListItem };
+/**
+ * ToolButtonListDivider Component
+ * Divider between items in the dropdown menu
+ * -----------------------------------------------
+ */
+const ToolButtonListDivider = React.forwardRef<
+  HTMLDivElement,
+  React.HTMLAttributes<HTMLDivElement>
+>(({ className, ...props }, ref) => (
+  <div
+    ref={ref}
+    className={cn('bg-primary h-5 w-px self-center', className)}
+    {...props}
+  />
+));
+ToolButtonListDivider.displayName = 'ToolButtonListDivider';
+
+export {
+  ToolButtonList,
+  ToolButtonListDefault,
+  ToolButtonListDropDown,
+  ToolButtonListItem,
+  ToolButtonListDivider,
+};

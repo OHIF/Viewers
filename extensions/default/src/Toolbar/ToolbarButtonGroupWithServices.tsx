@@ -1,35 +1,36 @@
-import React from 'react';
-import { ToolButtonGroup } from '@ohif/ui-next';
+import React, { useCallback } from 'react';
+import { ToolbarButton, ButtonGroup } from '@ohif/ui';
 
-function ToolbarButtonGroupWithServices({
-  groupId,
-  items,
-  onInteraction,
-}: {
-  groupId: string;
-  items: any[];
-  onInteraction: any;
-}) {
-  return (
-    <div className="flex space-x-1">
-      {items?.map((item, index) => {
-        const isActive = item.isActive;
-        return (
-          <ToolButtonGroup
-            key={item.id}
-            id={item.id}
-            icon={item.icon}
-            label={item.label}
-            isActive={isActive}
-            disabled={item.disabled}
-            onClick={() => {
-              onInteraction({ groupId, itemId: item.id, commands: item.commands });
-            }}
-          />
-        );
-      })}
-    </div>
+function ToolbarButtonGroupWithServices({ groupId, items, onInteraction, size }) {
+  const getSplitButtonItems = useCallback(
+    items =>
+      items.map((item, index) => (
+        <ToolbarButton
+          key={item.id}
+          icon={item.icon}
+          label={item.label}
+          disabled={item.disabled}
+          className={item.className}
+          disabledText={item.disabledText}
+          id={item.id}
+          size={size}
+          onClick={() => {
+            onInteraction({
+              groupId,
+              itemId: item.id,
+              commands: item.commands,
+            });
+          }}
+          // Note: this is necessary since tooltip will add
+          // default styles to the tooltip container which
+          // we don't want for groups
+          toolTipClassName=""
+        />
+      )),
+    [onInteraction, groupId]
   );
+
+  return <ButtonGroup>{getSplitButtonItems(items)}</ButtonGroup>;
 }
 
 export default ToolbarButtonGroupWithServices;

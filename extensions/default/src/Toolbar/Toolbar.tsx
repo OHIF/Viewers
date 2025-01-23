@@ -13,7 +13,7 @@ export function Toolbar({ servicesManager, buttonSection = 'primary' }) {
 
   return (
     <>
-      {toolbarButtons.map(toolDef => {
+      {toolbarButtons?.map(toolDef => {
         if (!toolDef) {
           return null;
         }
