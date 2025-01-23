@@ -29,7 +29,7 @@ function ToolButtonList({ groupId, primary, items = [], onInteraction, servicesM
   const isActive = !!primary?.isActive;
 
   return (
-    <div className="flex items-center space-x-1">
+    <div className="flex items-center">
       <ToolButton
         id={primary?.id}
         icon={primary?.icon}
@@ -45,12 +45,17 @@ function ToolButtonList({ groupId, primary, items = [], onInteraction, servicesM
           });
         }}
       />
+
+      <div
+        className={cn('self-center', 'w-px', 'h-5', isActive ? 'bg-transparent' : 'bg-primary')}
+      />
+
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button
             variant="ghost"
             size="icon"
-            className="text-foreground/80 hover:bg-background hover:text-highlight border-primary inline-flex h-10 w-5 items-center justify-center !rounded-tr-lg !rounded-br-lg !rounded-tl-none !rounded-bl-none border-l bg-transparent"
+            className="text-foreground/80 hover:bg-background hover:text-highlight border-primary inline-flex h-10 w-5 items-center justify-center !rounded-tr-lg !rounded-br-lg !rounded-tl-none !rounded-bl-none bg-transparent"
             aria-label="Open tool list"
           >
             <Icons.ByName
