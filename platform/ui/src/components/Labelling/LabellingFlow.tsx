@@ -10,7 +10,6 @@ interface PropType {
   labelData: any;
   exclusive: boolean;
   componentClassName: any;
-  customizationService: any;
 }
 
 interface StateType {
@@ -100,7 +99,7 @@ class LabellingFlow extends Component<PropType> {
         measurementData={this.props.measurementData}
         items={this.currentItems}
         exclusive={this.props.exclusive}
-        selectTreeFirstTitle={'Select Label'}
+        selectTreeFirstTitle={'Annotation'}
       />
     );
   };

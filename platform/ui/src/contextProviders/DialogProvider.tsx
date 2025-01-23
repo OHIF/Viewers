@@ -25,8 +25,7 @@ const DialogContext = createContext(null);
 
 export const useDialog = () => useContext(DialogContext);
 
-const DialogProvider = ({ children, services = null }) => {
-  const { uiDialogService, customizationService } = services;
+const DialogProvider = ({ children, service }) => {
   const [isDragging, setIsDragging] = useState(false);
   const [dialogs, setDialogs] = useState([]);
   const [lastDialogId, setLastDialogId] = useState(null);
@@ -138,10 +137,10 @@ const DialogProvider = ({ children, services = null }) => {
    * @returns void
    */
   useEffect(() => {
-    if (uiDialogService) {
-      uiDialogService.setServiceImplementation({ create, dismiss, dismissAll });
+    if (service) {
+      service.setServiceImplementation({ create, dismiss, dismissAll });
     }
-  }, [create, dismiss, uiDialogService]);
+  }, [create, dismiss, service]);
 
   useEffect(() => _bringToFront(lastDialogId), [_bringToFront, lastDialogId]);
 
@@ -216,7 +215,6 @@ const DialogProvider = ({ children, services = null }) => {
             <DialogContent
               {...dialog}
               {...contentProps}
-              customizationService={customizationService}
             />
           </div>
         </Draggable>
@@ -318,10 +316,7 @@ export const withDialog = Component => {
 DialogProvider.propTypes = {
   children: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.node), PropTypes.node, PropTypes.func])
     .isRequired,
-  services: PropTypes.shape({
-    uiDialogService: PropTypes.shape({ setServiceImplementation: PropTypes.func }),
-    customizationService: PropTypes.instanceOf(CustomizationService),
-  }),
+  service: PropTypes.shape({ setServiceImplementation: PropTypes.func }),
 };
 
 export default DialogProvider;

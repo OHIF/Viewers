@@ -122,7 +122,7 @@ function App({
     [CineProvider, { service: cineService }],
     [NotificationProvider, { service: uiNotificationService }],
     [TooltipProvider],
-    [DialogProvider, { services: { uiDialogService, customizationService } }],
+    [DialogProvider, { service: uiDialogService }],
     [ModalProvider, { service: uiModalService, modal: Modal }],
     [ShepherdJourneyProvider],
   ];
