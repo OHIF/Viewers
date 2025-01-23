@@ -108,7 +108,7 @@ const toolbarButtons: Button[] = [
   },
   {
     id: 'MoreTools',
-    uiType: 'ohif.splitButton',
+    uiType: 'ohif.toolButtonList',
     props: {
       groupId: 'MoreTools',
       evaluate: 'evaluate.group.promoteToPrimaryIfCornerstoneToolNotActiveInTheList',

@@ -14,7 +14,7 @@ const ReferenceLinesListeners: RunCommand = [
 const moreTools = [
   {
     id: 'MoreTools',
-    uiType: 'ohif.splitButton',
+    uiType: 'ohif.toolButtonList',
     props: {
       groupId: 'MoreTools',
       evaluate: 'evaluate.group.promoteToPrimaryIfCornerstoneToolNotActiveInTheList',

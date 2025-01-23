@@ -11,7 +11,7 @@ const setToolActiveToolbar = {
 const toolbarButtons = [
   {
     id: 'MeasurementTools',
-    uiType: 'ohif.splitButton',
+    uiType: 'ohif.toolButtonList',
     props: {
       groupId: 'MeasurementTools',
       primary: ToolbarService.createButton({
