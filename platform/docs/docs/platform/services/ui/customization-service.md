@@ -509,9 +509,7 @@ customizationService.setGlobalCustomization('customizationId', {
     component: CustomizedComponent,
 });
 
-
 ```
-
 
 ## Please add additional customizations above this section
 > 3rd Party implementers may be added to this table via pull requests.
