@@ -194,7 +194,7 @@ function commandsModule({
      * on the measurement with a response if not cancelled.
      */
     setMeasurementLabel: ({ uid }) => {
-      const labelConfig = customizationService.get('measurementLabels');
+      const labelConfig = customizationService.getCustomization('measurementLabels');
       const measurement = measurementService.getMeasurement(uid);
       showLabelAnnotationPopup(measurement, uiDialogService, labelConfig).then(
         (val: Map<any, any>) => {
@@ -311,7 +311,7 @@ function commandsModule({
     },
 
     renameMeasurement: ({ uid }) => {
-      const labelConfig = customizationService.get('measurementLabels');
+      const labelConfig = customizationService.getCustomization('measurementLabels');
       const measurement = measurementService.getMeasurement(uid);
       showLabelAnnotationPopup(measurement, uiDialogService, labelConfig).then(val => {
         measurementService.update(
@@ -362,7 +362,7 @@ function commandsModule({
       viewportGridService.setActiveViewportId(viewportId);
     },
     arrowTextCallback: ({ callback, data, uid }) => {
-      const labelConfig = customizationService.get('measurementLabels');
+      const labelConfig = customizationService.getCustomization('measurementLabels');
       callLabelAutocompleteDialog(uiDialogService, callback, {}, labelConfig);
     },
     toggleCine: () => {

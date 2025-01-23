@@ -56,9 +56,9 @@ export default function MoreDropdownMenu(bindProps) {
   } = bindProps;
   const { customizationService } = servicesManager.services;
 
-  const items = customizationService.getCustomization(menuItemsKey)?.value;
+  const items = customizationService.getCustomization(menuItemsKey);
 
-  if (!items) {
+  if (!items?.length) {
     return null;
   }
 

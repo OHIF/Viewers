@@ -160,11 +160,9 @@ const cornerstoneExtension: Types.Extensions.Extension = {
       ViewportActionCornersProvider
     );
 
-    const { syncGroupService } = servicesManager.services;
+    const { syncGroupService, customizationService } = servicesManager.services;
     syncGroupService.registerCustomSynchronizer('frameview', createFrameViewSynchronizer);
-    servicesManager.services.customizationService.setGlobalCustomization('dicomUploadComponent', {
-      component: props => <DicomUpload {...props} />,
-    });
+
     return init.call(this, props);
   },
   getToolbarModule,

@@ -48,6 +48,7 @@
     "dicomweb-client": "^0.10.4",
     "gl-matrix": "^3.4.3",
     "isomorphic-base64": "^1.0.2",
+    "immutability-helper": "^3.1.1",
     "lodash.clonedeep": "^4.5.0",
     "lodash.merge": "^4.6.2",
     "lodash.mergewith": "^4.6.2",

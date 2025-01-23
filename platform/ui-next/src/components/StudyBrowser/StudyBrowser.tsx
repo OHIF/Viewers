@@ -28,7 +28,7 @@ const StudyBrowser = ({
     const viewPreset = viewPresets
       ? viewPresets.filter(preset => preset.selected)[0]?.id
       : 'thumbnails';
-    return tabData.studies.map(
+    return tabData?.studies?.map(
       ({ studyInstanceUid, date, description, numInstances, modalities, displaySets }) => {
         const isExpanded = expandedStudyInstanceUIDs.includes(studyInstanceUid);
         return (

@@ -62,36 +62,19 @@ function modeFactory({ modeConfiguration }) {
 
       // the primary button section is created in the workflow steps
       // specific to the step
-      customizationService.addModeCustomizations([
-        {
-          id: 'PanelSegmentation.tableMode',
-          mode: 'expanded',
+      customizationService.setCustomizations({
+        'panelSegmentation.tableMode': {
+          $set: 'expanded',
         },
-        {
-          id: 'PanelSegmentation.onSegmentationAdd',
-          onSegmentationAdd: () => {
+        'panelSegmentation.onSegmentationAdd': {
+          $set: () => {
             commandsManager.run('createNewLabelMapForDynamicVolume');
           },
         },
-        {
-          id: 'PanelSegmentation.showAddSegment',
-          showAddSegment: false,
+        'panelSegmentation.showAddSegment': {
+          $set: false,
         },
-        {
-          id: 'PanelSegmentation.readableText',
-          // remove following if you are not interested in that stats
-          readableText: {
-            lesionStats: 'Lesion Statistics',
-            minValue: 'Minimum Value',
-            maxValue: 'Maximum Value',
-            meanValue: 'Mean Value (ml)',
-            volume: 'Volume',
-            suvPeak: 'SUV Peak',
-            suvMax: 'Maximum SUV',
-            suvMaxIJK: 'SUV Max IJK',
-          },
-        },
-      ]);
+      });
 
       // Auto play the clip initially when the volumes are loaded
       const { unsubscribe } = cornerstoneViewportService.subscribe(

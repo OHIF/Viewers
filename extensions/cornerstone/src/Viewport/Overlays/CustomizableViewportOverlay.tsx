@@ -47,80 +47,6 @@ const OverlayItemComponents = {
   'ohif.overlayItem.instanceNumber': InstanceNumberOverlayItem,
 };
 
-const studyDateItem = {
-  id: 'StudyDate',
-  customizationType: 'ohif.overlayItem',
-  label: '',
-  title: 'Study date',
-  condition: ({ referenceInstance }) => referenceInstance?.StudyDate,
-  contentF: ({ referenceInstance, formatters: { formatDate } }) =>
-    formatDate(referenceInstance.StudyDate),
-};
-
-const seriesDescriptionItem = {
-  id: 'SeriesDescription',
-  customizationType: 'ohif.overlayItem',
-  label: '',
-  title: 'Series description',
-  condition: ({ referenceInstance }) => {
-    return referenceInstance && referenceInstance.SeriesDescription;
-  },
-  contentF: ({ referenceInstance }) => referenceInstance.SeriesDescription,
-};
-
-const topLeftItems = {
-  id: 'cornerstoneOverlayTopLeft',
-  items: [studyDateItem, seriesDescriptionItem],
-};
-
-const topRightItems = { id: 'cornerstoneOverlayTopRight', items: [] };
-
-const bottomLeftItems = {
-  id: 'cornerstoneOverlayBottomLeft',
-  items: [
-    {
-      id: 'WindowLevel',
-      customizationType: 'ohif.overlayItem.windowLevel',
-    },
-    {
-      id: 'ZoomLevel',
-      customizationType: 'ohif.overlayItem.zoomLevel',
-      condition: props => {
-        const activeToolName = props.toolGroupService.getActiveToolForViewport(props.viewportId);
-        return activeToolName === 'Zoom';
-      },
-    },
-  ],
-};
-
-const bottomRightItems = {
-  id: 'cornerstoneOverlayBottomRight',
-  items: [
-    {
-      id: 'InstanceNumber',
-      customizationType: 'ohif.overlayItem.instanceNumber',
-    },
-  ],
-};
-
-/**
- * The @ohif/cornerstoneOverlay is a default value for a customization
- * for the cornerstone overlays.  The intent is to allow it to be extended
- * without needing to re-write the individual overlays by using the append
- * mechanism.  Individual attributes can be modified individually without
- * affecting the other items by using the append as well, with position
- * based replacement.
- * This is used as a default in the getCustomizationModule so that it
- * is available early for additional customization extensions.
- */
-const CornerstoneOverlay = {
-  id: '@ohif/cornerstoneOverlay',
-  topLeftItems,
-  topRightItems,
-  bottomLeftItems,
-  bottomRightItems,
-};
-
 /**
  * Customizable Viewport Overlay
  */
@@ -143,26 +69,18 @@ function CustomizableViewportOverlay({
   const [scale, setScale] = useState(1);
   const { imageIndex } = imageSliceData;
 
-  // The new customization is 'cornerstoneOverlay', with an append or replace
-  // on the individual items rather than defining individual items.
-  const cornerstoneOverlay = customizationService.getCustomization('@ohif/cornerstoneOverlay');
-
   // Historical usage defined the overlays as separate items due to lack of
   // append functionality.  This code enables the historical usage, but
   // the recommended functionality is to append to the default values in
   // cornerstoneOverlay rather than defining individual items.
-  const topLeftCustomization =
-    customizationService.getCustomization('cornerstoneOverlayTopLeft') ||
-    cornerstoneOverlay?.topLeftItems;
-  const topRightCustomization =
-    customizationService.getCustomization('cornerstoneOverlayTopRight') ||
-    cornerstoneOverlay?.topRightItems;
-  const bottomLeftCustomization =
-    customizationService.getCustomization('cornerstoneOverlayBottomLeft') ||
-    cornerstoneOverlay?.bottomLeftItems;
-  const bottomRightCustomization =
-    customizationService.getCustomization('cornerstoneOverlayBottomRight') ||
-    cornerstoneOverlay?.bottomRightItems;
+  const topLeftCustomization = customizationService.getCustomization('viewportOverlay.topLeft');
+  const topRightCustomization = customizationService.getCustomization('viewportOverlay.topRight');
+  const bottomLeftCustomization = customizationService.getCustomization(
+    'viewportOverlay.bottomLeft'
+  );
+  const bottomRightCustomization = customizationService.getCustomization(
+    'viewportOverlay.bottomRight'
+  );
 
   const instanceNumber = useMemo(
     () =>
@@ -264,8 +182,8 @@ function CustomizableViewportOverlay({
         return null;
       }
 
-      const { customizationType } = item;
-      const OverlayItemComponent = OverlayItemComponents[customizationType];
+      const { inheritsFrom } = item;
+      const OverlayItemComponent = OverlayItemComponents[inheritsFrom];
 
       if (OverlayItemComponent) {
         return <OverlayItemComponent {...overlayItemProps} />;
@@ -293,10 +211,6 @@ function CustomizableViewportOverlay({
 
   const getContent = useCallback(
     (customization, keyPrefix) => {
-      if (!customization?.items) {
-        return null;
-      }
-      const { items } = customization;
       const props = {
         ...displaySetProps,
         formatters: { formatDate: formatDICOMDate },
@@ -309,7 +223,7 @@ function CustomizableViewportOverlay({
 
       return (
         <>
-          {items.map((item, index) => (
+          {customization.map((item, index) => (
             <div key={`${keyPrefix}_${index}`}>
               {((!item?.condition || item.condition(props)) && _renderOverlayItem(item, props)) ||
                 null}
@@ -533,4 +447,4 @@ CustomizableViewportOverlay.propTypes = {
 
 export default CustomizableViewportOverlay;
 
-export { CustomizableViewportOverlay, CornerstoneOverlay };
+export { CustomizableViewportOverlay };

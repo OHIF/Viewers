@@ -3,7 +3,7 @@ import { Icons } from '@ohif/ui-next';
 
 export default function StudyBrowserSort({ servicesManager }: withAppTypes) {
   const { customizationService, displaySetService } = servicesManager.services;
-  const { values: sortFunctions } = customizationService.get('studyBrowser.sortFunctions');
+  const sortFunctions = customizationService.getCustomization('studyBrowser.sortFunctions');
 
   const [selectedSort, setSelectedSort] = useState(sortFunctions[0]);
   const [sortDirection, setSortDirection] = useState('ascending');

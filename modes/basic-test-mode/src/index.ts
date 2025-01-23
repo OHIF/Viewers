@@ -86,7 +86,7 @@ function modeFactory() {
       initToolGroups(extensionManager, toolGroupService, commandsManager);
 
       // init customizations
-      customizationService.addModeCustomizations([
+      customizationService.setCustomizations([
         '@ohif/extension-test.customizationModule.custom-context-menu',
       ]);
 
