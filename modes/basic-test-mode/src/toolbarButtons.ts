@@ -130,7 +130,7 @@ const toolbarButtons: Button[] = [
   },
   {
     id: 'Zoom',
-    uiType: 'ohif.radioGroup',
+    uiType: 'ohif.toolButton',
     props: {
       icon: 'tool-zoom',
       label: 'Zoom',
@@ -181,7 +181,7 @@ const toolbarButtons: Button[] = [
   },
   {
     id: 'MPR',
-    uiType: 'ohif.radioGroup',
+    uiType: 'ohif.toolButton',
     props: {
       icon: 'icon-mpr',
       label: 'MPR',
@@ -198,7 +198,7 @@ const toolbarButtons: Button[] = [
   },
   {
     id: 'TrackBallRotate',
-    type: 'ohif.radioGroup',
+    type: 'ohif.toolButton',
     props: {
       type: 'tool',
       icon: 'tool-3d-rotate',
@@ -208,7 +208,7 @@ const toolbarButtons: Button[] = [
   },
   {
     id: 'Capture',
-    uiType: 'ohif.radioGroup',
+    uiType: 'ohif.toolButton',
     props: {
       icon: 'tool-capture',
       label: 'Capture',
@@ -234,7 +234,7 @@ const toolbarButtons: Button[] = [
   },
   {
     id: 'Crosshairs',
-    uiType: 'ohif.radioGroup',
+    uiType: 'ohif.toolButton',
     props: {
       type: 'tool',
       icon: 'tool-crosshair',

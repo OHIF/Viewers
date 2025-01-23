@@ -67,7 +67,7 @@ const toolbarButtons = [
   },
   {
     id: 'Zoom',
-    uiType: 'ohif.radioGroup',
+    uiType: 'ohif.toolButton',
     props: {
       icon: 'tool-zoom',
       label: 'Zoom',
@@ -77,7 +77,7 @@ const toolbarButtons = [
   },
   {
     id: 'WindowLevel',
-    uiType: 'ohif.radioGroup',
+    uiType: 'ohif.toolButton',
     props: {
       icon: 'tool-window-level',
       label: 'Window Level',
@@ -87,7 +87,7 @@ const toolbarButtons = [
   },
   {
     id: 'Pan',
-    uiType: 'ohif.radioGroup',
+    uiType: 'ohif.toolButton',
     props: {
       type: 'tool',
       icon: 'tool-move',
@@ -98,7 +98,7 @@ const toolbarButtons = [
   },
   {
     id: 'TrackballRotate',
-    uiType: 'ohif.radioGroup',
+    uiType: 'ohif.toolButton',
     props: {
       type: 'tool',
       icon: 'tool-3d-rotate',
@@ -134,7 +134,7 @@ const toolbarButtons = [
   },
   {
     id: 'Crosshairs',
-    uiType: 'ohif.radioGroup',
+    uiType: 'ohif.toolButton',
     props: {
       type: 'tool',
       icon: 'tool-crosshair',
