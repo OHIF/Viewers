@@ -73,7 +73,7 @@ function ToolButtonList({ groupId, primary, items = [], onInteraction, servicesM
                 name={item.icon || 'MissingIcon'}
                 className="h-5 w-5"
               />
-              <span>{item.tooltip || item.label || item.id}</span>
+              <span>{item.label || item.tooltip || item.id}</span>
             </DropdownMenuItem>
           ))}
         </DropdownMenuContent>
