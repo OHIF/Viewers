@@ -20,17 +20,17 @@ const Thumbnail = ({
   loadingProgress,
   countIcon,
   messages,
-  dragData = {},
   isActive,
   onClick,
   onDoubleClick,
-  viewPreset = 'thumbnails',
+  componentType,
   modality,
+  viewPreset = 'thumbnails',
   isHydratedForDerivedDisplaySet = false,
   isTracked = false,
   canReject = false,
+  dragData = {},
   onReject = () => {},
-  thumbnailType = 'thumbnail',
   onClickUntrack = () => {},
   ThumbnailMenuItems = () => {},
 }: withAppTypes): React.ReactNode => {
@@ -259,7 +259,7 @@ const Thumbnail = ({
       )}
       id={`thumbnail-${displaySetInstanceUID}`}
       data-cy={
-        thumbnailType === 'thumbnailNoImage'
+        componentType === 'thumbnailNoImage'
           ? 'study-browser-thumbnail-no-image'
           : 'study-browser-thumbnail'
       }
@@ -310,7 +310,6 @@ Thumbnail.propTypes = {
   isTracked: PropTypes.bool,
   onClickUntrack: PropTypes.func,
   countIcon: PropTypes.string,
-  thumbnailType: PropTypes.oneOf(['thumbnail', 'thumbnailTracked', 'thumbnailNoImage']),
 };
 
 export { Thumbnail };
