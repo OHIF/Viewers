@@ -60,20 +60,20 @@ const useResizablePanels = (
     const rightPanelElem = getPanelElement(panelGroupDefinition.right.panelId);
     resizableRightPanelElemRef.current = rightPanelElem;
 
-    // we use the initialExpandedOffsetWidth on the first render incase the panel has min width but we want the initial state to be larger than that
-    const leftResizablePanelExpandedSize =
-      (panelGroupDefinition.left.initialExpandedOffsetWidth / panelGroupWidth) * 100;
-    const rightResizablePanelExpandedSize =
-      (panelGroupDefinition.right.initialExpandedOffsetWidth / panelGroupWidth) * 100;
-
     // Since both resizable panels are collapsed by default (i.e. their default size is zero),
     // on the very first render check if either/both side panels should be expanded.
+    // we use the initialExpandedOffsetWidth on the first render incase the panel has min width but we want the initial state to be larger than that
+
     if (!leftPanelClosed) {
+      const leftResizablePanelExpandedSize =
+        (panelGroupDefinition.left.initialExpandedOffsetWidth / panelGroupWidth) * 100;
       resizableLeftPanelAPIRef?.current?.expand(leftResizablePanelExpandedSize);
       setMinMaxWidth(leftPanelElem, panelGroupDefinition.left.initialExpandedOffsetWidth);
     }
 
     if (!rightPanelClosed) {
+      const rightResizablePanelExpandedSize =
+        (panelGroupDefinition.right.initialExpandedOffsetWidth / panelGroupWidth) * 100;
       resizableRightPanelAPIRef?.current?.expand(rightResizablePanelExpandedSize);
       setMinMaxWidth(rightPanelElem, panelGroupDefinition.right.initialExpandedOffsetWidth);
     }
