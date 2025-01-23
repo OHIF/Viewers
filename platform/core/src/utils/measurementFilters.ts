@@ -104,7 +104,7 @@ export function filterAnd(...filters) {
  */
 export function filterNot(...filters) {
   if (filters.length !== 1) {
-    return filterAnd.apply(null, filters.map(filterNot));
+    return filterAnd(...filters.map(filter => filterNot(filter)));
   }
   const [filter] = filters;
   if (isString(filter)) {

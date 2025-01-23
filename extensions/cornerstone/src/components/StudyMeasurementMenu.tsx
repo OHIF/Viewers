@@ -21,7 +21,7 @@ export default function StudyMeasurementMenu({
           variant="ghost"
           className="pl-0.5"
           onClick={() => {
-            commandsManager.run('storeMeasurements', {
+            commandsManager.run('promptSaveReport', {
               StudyInstanceUID,
               measurementFilter,
             });

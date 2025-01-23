@@ -17,6 +17,7 @@ import { useToggleHangingProtocolStore } from './stores/useToggleHangingProtocol
 import { useViewportsByPositionStore } from './stores/useViewportsByPositionStore';
 import { useToggleOneUpViewportGridStore } from './stores/useToggleOneUpViewportGridStore';
 import requestDisplaySetCreationForStudy from './Panels/requestDisplaySetCreationForStudy';
+import promptSaveReport from './utils/promptSaveReport';
 
 export type HangingProtocolParams = {
   protocolId?: string;
@@ -73,6 +74,14 @@ const commandsModule = ({
           multiMonitorService.run(screenDelta, commands, options);
         }, 1000);
       }
+    },
+
+    /** Displays a prompt and then save the report if relevant */
+    promptSaveReport: props => {
+      const { StudyInstanceUID } = props;
+      promptSaveReport({ servicesManager, commandsManager, extensionManager }, props, {
+        data: { StudyInstanceUID },
+      });
     },
 
     /**
@@ -344,7 +353,6 @@ const commandsModule = ({
       const { protocol } = hangingProtocolService.getActiveProtocol();
       const onLayoutChange = protocol.callbacks?.onLayoutChange;
       if (commandsManager.run(onLayoutChange, { numRows, numCols }) === false) {
-        console.log('setViewportGridLayout running', onLayoutChange, numRows, numCols);
         // Don't apply the layout if the run command returns false
         return;
       }
@@ -626,6 +634,7 @@ const commandsModule = ({
 
   const definitions = {
     multimonitor: actions.multimonitor,
+    promptSaveReport: actions.promptSaveReport,
     loadStudy: actions.loadStudy,
     showContextMenu: actions.showContextMenu,
     closeContextMenu: actions.closeContextMenu,
