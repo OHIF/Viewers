@@ -7,10 +7,7 @@ function mapSegmentationToDisplay(segmentation, customizationService) {
   const { label, segments } = segmentation;
 
   // Get the readable text mapping once
-  const { readableText: readableTextMap } = customizationService.getCustomization(
-    'PanelSegmentation.readableText',
-    {}
-  );
+  const readableTextMap = customizationService.getCustomization('panelSegmentation.readableText');
 
   // Helper function to recursively map cachedStats to readable display text
   function mapStatsToDisplay(stats, indent = 0) {

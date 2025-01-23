@@ -2,87 +2,6 @@ import React, { useEffect, useState, useCallback, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { LayoutSelector as OHIFLayoutSelector, ToolbarButton, LayoutPreset } from '@ohif/ui';
 
-const defaultCommonPresets = [
-  {
-    icon: 'layout-common-1x1',
-    commandOptions: {
-      numRows: 1,
-      numCols: 1,
-    },
-  },
-  {
-    icon: 'layout-common-1x2',
-    commandOptions: {
-      numRows: 1,
-      numCols: 2,
-    },
-  },
-  {
-    icon: 'layout-common-2x2',
-    commandOptions: {
-      numRows: 2,
-      numCols: 2,
-    },
-  },
-  {
-    icon: 'layout-common-2x3',
-    commandOptions: {
-      numRows: 2,
-      numCols: 3,
-    },
-  },
-];
-
-const _areSelectorsValid = (hp, displaySets, hangingProtocolService) => {
-  if (!hp.displaySetSelectors || Object.values(hp.displaySetSelectors).length === 0) {
-    return true;
-  }
-
-  return hangingProtocolService.areRequiredSelectorsValid(
-    Object.values(hp.displaySetSelectors),
-    displaySets[0]
-  );
-};
-
-const generateAdvancedPresets = ({ servicesManager }: withAppTypes) => {
-  const { hangingProtocolService, viewportGridService, displaySetService } =
-    servicesManager.services;
-
-  const hangingProtocols = Array.from(hangingProtocolService.protocols.values());
-
-  const viewportId = viewportGridService.getActiveViewportId();
-
-  if (!viewportId) {
-    return [];
-  }
-  const displaySetInsaneUIDs = viewportGridService.getDisplaySetsUIDsForViewport(viewportId);
-
-  if (!displaySetInsaneUIDs) {
-    return [];
-  }
-
-  const displaySets = displaySetInsaneUIDs.map(uid => displaySetService.getDisplaySetByUID(uid));
-
-  return hangingProtocols
-    .map(hp => {
-      if (!hp.isPreset) {
-        return null;
-      }
-
-      const areValid = _areSelectorsValid(hp, displaySets, hangingProtocolService);
-
-      return {
-        icon: hp.icon,
-        title: hp.name,
-        commandOptions: {
-          protocolId: hp.id,
-        },
-        disabled: !areValid,
-      };
-    })
-    .filter(preset => preset !== null);
-};
-
 function ToolbarLayoutSelectorWithServices({
   commandsManager,
   servicesManager,
@@ -138,9 +57,13 @@ function LayoutSelector({
   const dropdownRef = useRef(null);
 
   const { customizationService } = servicesManager.services;
-  const commonPresets = customizationService.get('commonPresets') || defaultCommonPresets;
-  const advancedPresets =
-    customizationService.get('advancedPresets') || generateAdvancedPresets({ servicesManager });
+
+  const commonPresets = customizationService.getCustomization('layoutSelector.commonPresets');
+  const advancedPresetsGenerator = customizationService.getCustomization(
+    'layoutSelector.advancedPresetGenerator'
+  );
+
+  const advancedPresets = advancedPresetsGenerator({ servicesManager });
 
   const closeOnOutsideClick = event => {
     if (isOpen && dropdownRef.current) {
@@ -216,7 +139,7 @@ function LayoutSelector({
               </div>
             </div>
 
-            <div className="bg-primary-dark flex flex-col gap-2.5 border-l-2 border-solid border-black  p-2">
+            <div className="bg-primary-dark flex flex-col gap-2.5 border-l-2 border-solid border-black p-2">
               <div className="text-aqua-pale text-xs">Custom</div>
               <DropdownContent
                 rows={rows}

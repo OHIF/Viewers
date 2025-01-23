@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.10.0-beta.71](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.70...v3.10.0-beta.71) (2025-01-23)
+
+**Note:** Version bump only for package @ohif/mode-segmentation
+
+
+
+
+
+# [3.10.0-beta.70](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.69...v3.10.0-beta.70) (2025-01-23)
+
+
+### Features
+
+* **panels:** responsive thumbnails based on panel size  ([#4723](https://github.com/OHIF/Viewers/issues/4723)) ([d9abc3d](https://github.com/OHIF/Viewers/commit/d9abc3da8d94d6c5ab0cc5af25a5f61849905a35))
+
+
+
+
+
 # [3.10.0-beta.69](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.68...v3.10.0-beta.69) (2025-01-22)
 
 **Note:** Version bump only for package @ohif/mode-segmentation

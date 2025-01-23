@@ -11,7 +11,11 @@ const RESPONSE = {
   HYDRATE_REPORT: 5,
 };
 
-function promptHydrateStructuredReport({ servicesManager, extensionManager, appConfig }, ctx, evt) {
+function promptHydrateStructuredReport(
+  { servicesManager, extensionManager, commandsManager, appConfig },
+  ctx,
+  evt
+) {
   const { uiViewportDialogService, displaySetService } = servicesManager.services;
   const { viewportId, displaySetInstanceUID } = evt;
   const srDisplaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
@@ -26,7 +30,7 @@ function promptHydrateStructuredReport({ servicesManager, extensionManager, appC
     if (promptResult === RESPONSE.HYDRATE_REPORT) {
       console.warn('!! HYDRATING STRUCTURED REPORT');
       const hydrationResult = hydrateStructuredReport(
-        { servicesManager, extensionManager, appConfig },
+        { servicesManager, extensionManager, commandsManager, appConfig },
         displaySetInstanceUID
       );
 

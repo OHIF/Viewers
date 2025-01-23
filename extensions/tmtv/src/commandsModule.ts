@@ -420,7 +420,13 @@ const commandsModule = ({ servicesManager, commandsManager, extensionManager }: 
         return;
       }
 
-      return await workerManager.executeTask('suv-peak-worker', 'calculateTMTV', labelmapProps);
+      const tmtv = await workerManager.executeTask(
+        'suv-peak-worker',
+        'calculateTMTV',
+        labelmapProps
+      );
+
+      return tmtv;
     },
     exportTMTVReportCSV: async ({ segmentations, tmtv, config, options }) => {
       const segReport = commandsManager.runCommand('getSegmentationCSVReport', {

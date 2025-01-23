@@ -159,6 +159,7 @@ function TrackedMeasurementsContextProvider(
     promptHydrateStructuredReport: promptHydrateStructuredReport.bind(null, {
       servicesManager,
       extensionManager,
+      commandsManager,
       appConfig,
     }),
     hydrateStructuredReport: hydrateStructuredReport.bind(null, {
@@ -173,11 +174,11 @@ function TrackedMeasurementsContextProvider(
   });
   machineOptions.guards = Object.assign({}, machineOptions.guards, {
     isLabelOnMeasure: (ctx, evt, condMeta) => {
-      const labelConfig = customizationService.get('measurementLabels');
+      const labelConfig = customizationService.getCustomization('measurementLabels');
       return labelConfig?.labelOnMeasure;
     },
     isLabelOnMeasureAndShouldKillMachine: (ctx, evt, condMeta) => {
-      const labelConfig = customizationService.get('measurementLabels');
+      const labelConfig = customizationService.getCustomization('measurementLabels');
       return evt.data && evt.data.userResponse === RESPONSE.NO_NEVER && labelConfig?.labelOnMeasure;
     },
   });

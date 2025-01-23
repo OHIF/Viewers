@@ -132,7 +132,9 @@ function modeFactory({ modeConfiguration }) {
             id: ohif.layout,
             props: {
               leftPanels: [ohif.leftPanel],
+              leftPanelResizable: true,
               rightPanels: [cornerstone.panelTool],
+              rightPanelResizable: true,
               // leftPanelClosed: true,
               viewports: [
                 {
