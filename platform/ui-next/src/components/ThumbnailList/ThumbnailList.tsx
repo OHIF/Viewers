@@ -22,62 +22,60 @@ const ThumbnailList = ({
   );
 
   return (
-    <div
-      className="min-h-[350px]"
-      style={{
-        '--radix-accordion-content-height': '350px',
-      }}
-    >
+    <div>
       {/* Thumbnail Items */}
-      <div
-        id="ohif-thumbnail-list"
-        className="ohif-scrollbar bg-bkg-low grid grid-cols-[repeat(auto-fit,_minmax(0,135px))] place-items-start gap-[4px] overflow-y-hidden pt-[4px] pr-[2.5px] pl-[5px]"
-      >
-        {thumbnailItems.map(item => {
-          const { displaySetInstanceUID, numInstances, ...rest } = item;
+      {thumbnailItems.length > 0 && (
+        <div
+          id="ohif-thumbnail-list"
+          className="ohif-scrollbar bg-bkg-low grid grid-cols-[repeat(auto-fit,_minmax(0,135px))] place-items-start gap-[4px] overflow-y-hidden pt-[4px] pr-[2.5px] pl-[5px] pb-[4px]"
+        >
+          {thumbnailItems.map(item => {
+            const { displaySetInstanceUID, numInstances, ...rest } = item;
 
-          const isActive = activeDisplaySetInstanceUIDs.includes(displaySetInstanceUID);
-          return (
-            <Thumbnail
-              key={displaySetInstanceUID}
-              {...rest}
-              displaySetInstanceUID={displaySetInstanceUID}
-              numInstances={numInstances || 1}
-              isActive={isActive}
-              viewPreset="thumbnails"
-              onClick={onThumbnailClick.bind(null, displaySetInstanceUID)}
-              onDoubleClick={onThumbnailDoubleClick.bind(null, displaySetInstanceUID)}
-              onClickUntrack={onClickUntrack.bind(null, displaySetInstanceUID)}
-              ThumbnailMenuItems={ThumbnailMenuItems}
-            />
-          );
-        })}
-      </div>
-
+            const isActive = activeDisplaySetInstanceUIDs.includes(displaySetInstanceUID);
+            return (
+              <Thumbnail
+                key={displaySetInstanceUID}
+                {...rest}
+                displaySetInstanceUID={displaySetInstanceUID}
+                numInstances={numInstances || 1}
+                isActive={isActive}
+                viewPreset="thumbnails"
+                onClick={onThumbnailClick.bind(null, displaySetInstanceUID)}
+                onDoubleClick={onThumbnailDoubleClick.bind(null, displaySetInstanceUID)}
+                onClickUntrack={onClickUntrack.bind(null, displaySetInstanceUID)}
+                ThumbnailMenuItems={ThumbnailMenuItems}
+              />
+            );
+          })}
+        </div>
+      )}
       {/* List Items */}
-      <div
-        id="ohif-thumbnail-list"
-        className="ohif-scrollbar bg-bkg-low grid grid-cols-[repeat(auto-fit,_minmax(0,275px))] place-items-start gap-[2px] overflow-y-hidden pt-[4px] pr-[2.5px] pl-[5px]"
-      >
-        {listItems.map(item => {
-          const { displaySetInstanceUID, numInstances, ...rest } = item;
-          const isActive = activeDisplaySetInstanceUIDs.includes(displaySetInstanceUID);
-          return (
-            <Thumbnail
-              key={displaySetInstanceUID}
-              {...rest}
-              displaySetInstanceUID={displaySetInstanceUID}
-              numInstances={numInstances || 1}
-              isActive={isActive}
-              viewPreset="list"
-              onClick={onThumbnailClick.bind(null, displaySetInstanceUID)}
-              onDoubleClick={onThumbnailDoubleClick.bind(null, displaySetInstanceUID)}
-              onClickUntrack={onClickUntrack.bind(null, displaySetInstanceUID)}
-              ThumbnailMenuItems={ThumbnailMenuItems}
-            />
-          );
-        })}
-      </div>
+      {listItems.length > 0 && (
+        <div
+          id="ohif-thumbnail-list"
+          className="ohif-scrollbar bg-bkg-low grid grid-cols-[repeat(auto-fit,_minmax(0,275px))] place-items-start gap-[2px] overflow-y-hidden pt-[4px] pr-[2.5px] pl-[5px] pb-[4px]"
+        >
+          {listItems.map(item => {
+            const { displaySetInstanceUID, numInstances, ...rest } = item;
+            const isActive = activeDisplaySetInstanceUIDs.includes(displaySetInstanceUID);
+            return (
+              <Thumbnail
+                key={displaySetInstanceUID}
+                {...rest}
+                displaySetInstanceUID={displaySetInstanceUID}
+                numInstances={numInstances || 1}
+                isActive={isActive}
+                viewPreset="list"
+                onClick={onThumbnailClick.bind(null, displaySetInstanceUID)}
+                onDoubleClick={onThumbnailDoubleClick.bind(null, displaySetInstanceUID)}
+                onClickUntrack={onClickUntrack.bind(null, displaySetInstanceUID)}
+                ThumbnailMenuItems={ThumbnailMenuItems}
+              />
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 };
