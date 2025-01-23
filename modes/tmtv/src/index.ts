@@ -215,8 +215,10 @@ function modeFactory({ modeConfiguration }) {
             id: ohif.layout,
             props: {
               leftPanels: [ohif.thumbnailList],
+              leftPanelResizable: true,
               leftPanelClosed: true,
               rightPanels: [tmtv.tmtv, tmtv.petSUV],
+              rightPanelResizable: true,
               viewports: [
                 {
                   namespace: cs3d.viewport,

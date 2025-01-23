@@ -158,7 +158,9 @@ function modeFactory({ modeConfiguration }) {
             id: ohif.layout,
             props: {
               leftPanels: [[dynamicVolume.leftPanel, cornerstone.activeViewportWindowLevel]],
+              leftPanelResizable: true,
               rightPanels: [],
+              rightPanelResizable: true,
               rightPanelClosed: true,
               viewports: [
                 {

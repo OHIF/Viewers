@@ -141,7 +141,9 @@ function modeFactory({ modeConfiguration }) {
             props: {
               // TODO: Should be optional, or required to pass empty array for slots?
               leftPanels: [ohif.thumbnailList],
+              leftPanelResizable: true,
               rightPanels: [ohif.measurements],
+              rightPanelResizable: true,
               viewports: [
                 {
                   namespace: cs3d.viewport,

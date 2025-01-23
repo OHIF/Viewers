@@ -11,68 +11,73 @@ const ThumbnailList = ({
   activeDisplaySetInstanceUIDs = [],
   viewPreset,
   ThumbnailMenuItems,
-}: withAppTypes) => {
+}) => {
+  // Filter thumbnails into list items and thumbnail items
+  const listItems = thumbnails?.filter(
+    ({ componentType }) => componentType === 'thumbnailNoImage' || viewPreset === 'list'
+  );
+
+  const thumbnailItems = thumbnails?.filter(
+    ({ componentType }) => componentType !== 'thumbnailNoImage' && viewPreset === 'thumbnails'
+  );
+
   return (
-    <div
-      className="min-h-[350px]"
-      style={{
-        '--radix-accordion-content-height': '350px',
-      }}
-    >
-      <div
-        id="ohif-thumbnail-list"
-        className={`ohif-scrollbar bg-bkg-low grid place-items-center overflow-y-hidden pt-[4px] pr-[2.5px] pl-[2.5px] ${viewPreset === 'thumbnails' ? 'grid-cols-2 gap-[4px] pb-[12px]' : 'grid-cols-1 gap-[2px]'}`}
-      >
-        {thumbnails.map(
-          ({
-            displaySetInstanceUID,
-            description,
-            dragData,
-            seriesNumber,
-            numInstances,
-            loadingProgress,
-            modality,
-            componentType,
-            countIcon,
-            canReject,
-            onReject,
-            isTracked,
-            imageSrc,
-            messages,
-            imageAltText,
-            isHydratedForDerivedDisplaySet,
-          }) => {
+    <div className="flex flex-col gap-[4px] pt-[4px] pr-[2.5px] pl-[5px] pb-[4px]">
+      {/* Thumbnail Items */}
+      {thumbnailItems.length > 0 && (
+        <div
+          id="ohif-thumbnail-list"
+          className="ohif-scrollbar bg-bkg-low grid grid-cols-[repeat(auto-fit,_minmax(0,135px))] place-items-start gap-[4px] overflow-y-hidden"
+        >
+          {thumbnailItems.map(item => {
+            const { displaySetInstanceUID, componentType, numInstances, ...rest } = item;
+
             const isActive = activeDisplaySetInstanceUIDs.includes(displaySetInstanceUID);
             return (
               <Thumbnail
                 key={displaySetInstanceUID}
+                {...rest}
                 displaySetInstanceUID={displaySetInstanceUID}
-                dragData={dragData}
-                description={description}
-                seriesNumber={seriesNumber}
                 numInstances={numInstances || 1}
-                countIcon={countIcon}
-                imageSrc={imageSrc}
-                imageAltText={imageAltText}
-                messages={messages}
                 isActive={isActive}
-                canReject={canReject}
-                onReject={onReject}
-                modality={modality}
-                viewPreset={componentType === 'thumbnailNoImage' ? 'list' : viewPreset}
                 thumbnailType={componentType}
-                onClick={() => onThumbnailClick(displaySetInstanceUID)}
-                onDoubleClick={() => onThumbnailDoubleClick(displaySetInstanceUID)}
-                isTracked={isTracked}
-                loadingProgress={loadingProgress}
-                onClickUntrack={() => onClickUntrack(displaySetInstanceUID)}
-                isHydratedForDerivedDisplaySet={isHydratedForDerivedDisplaySet}
+                viewPreset="thumbnails"
+                onClick={onThumbnailClick.bind(null, displaySetInstanceUID)}
+                onDoubleClick={onThumbnailDoubleClick.bind(null, displaySetInstanceUID)}
+                onClickUntrack={onClickUntrack.bind(null, displaySetInstanceUID)}
                 ThumbnailMenuItems={ThumbnailMenuItems}
               />
             );
-          }
-        )}
-      </div>
+          })}
+        </div>
+      )}
+      {/* List Items */}
+      {listItems.length > 0 && (
+        <div
+          id="ohif-thumbnail-list"
+          className="ohif-scrollbar bg-bkg-low grid grid-cols-[repeat(auto-fit,_minmax(0,275px))] place-items-start gap-[2px] overflow-y-hidden"
+        >
+          {listItems.map(item => {
+            const { displaySetInstanceUID, componentType, numInstances, ...rest } = item;
+            const isActive = activeDisplaySetInstanceUIDs.includes(displaySetInstanceUID);
+            return (
+              <Thumbnail
+                key={displaySetInstanceUID}
+                {...rest}
+                displaySetInstanceUID={displaySetInstanceUID}
+                numInstances={numInstances || 1}
+                isActive={isActive}
+                thumbnailType={componentType}
+                viewPreset="list"
+                onClick={onThumbnailClick.bind(null, displaySetInstanceUID)}
+                onDoubleClick={onThumbnailDoubleClick.bind(null, displaySetInstanceUID)}
+                onClickUntrack={onClickUntrack.bind(null, displaySetInstanceUID)}
+                ThumbnailMenuItems={ThumbnailMenuItems}
+              />
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 };
@@ -107,6 +112,7 @@ ThumbnailList.propTypes = {
   onThumbnailDoubleClick: PropTypes.func.isRequired,
   onClickUntrack: PropTypes.func.isRequired,
   viewPreset: PropTypes.string,
+  ThumbnailMenuItems: PropTypes.any,
 };
 
 export { ThumbnailList };

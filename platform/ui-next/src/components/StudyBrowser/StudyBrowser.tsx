@@ -63,7 +63,7 @@ const StudyBrowser = ({
       className="ohif-scrollbar invisible-scrollbar bg-bkg-low flex flex-1 flex-col gap-[4px] overflow-auto"
       data-cy={'studyBrowser-panel'}
     >
-      <div>
+      <div className="flex flex-col gap-[4px]">
         {showSettings && (
           <div className="w-100 bg-bkg-low flex h-[48px] items-center justify-center gap-[10px] px-[8px] py-[10px]">
             <>
