@@ -527,7 +527,7 @@ function hasDollarKey(value) {
     }
   } else if (value && typeof value === 'object') {
     for (const key of Object.keys(value)) {
-      if (key.startsWith('$')) {
+      if (key.startsWith('$') && key !== '$transform') {
         return true;
       }
       if (hasDollarKey(value[key])) {
