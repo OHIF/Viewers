@@ -1,4 +1,6 @@
 import React from 'react';
+import Image from '@theme/IdealImage';
+
 import measurementLabelsImage from '../../../assets/img/measurement-labels-auto.png';
 import seriesSortImage from '../../../assets/img/seriesSort.png';
 import windowLevelPresetsImage from '../../../assets/img/windowLevelPresets.png';
@@ -8,10 +10,8 @@ import segmentationTableModeImage2 from '../../../assets/img/segmentationTableMo
 import segmentationShowAddSegmentImage from '../../../assets/img/segmentationShowAddSegmentImage.png';
 import layoutSelectorCommonPresetsImage from '../../../assets/img/layoutSelectorCommonPresetsImage.png';
 import layoutSelectorAdvancedPresetGeneratorImage from '../../../assets/img/layoutSelectorAdvancedPresetGeneratorImage.png';
-
 import segDisplayEditingTrue from '../../../assets/img/segDisplayEditingTrue.png';
 import segDisplayEditingFalse from '../../../assets/img/segDisplayEditingFalse.png';
-
 import thumbnailMenuItemsImage from '../../../assets/img/thumbnailMenuItemsImage.png';
 import studyMenuItemsImage from '../../../assets/img/studyMenuItemsImage.png';
 
@@ -1128,23 +1128,18 @@ export const TableGenerator = (customizations: any[]) => {
                 <div>
                   {Array.isArray(image) ? (
                     image.map((img, index) => (
-                      <img
+                      <Image
                         key={index}
-                        src={img}
+                        img={img}
                         alt={`${id}-${index + 1}`}
-                        style={{
-                          maxWidth: '50%',
-                          height: 'auto',
-                          marginTop: '10px',
-                          marginRight: '10px',
-                        }}
+                        style={{ width: '400px' }}
                       />
                     ))
                   ) : (
-                    <img
-                      src={image}
+                    <Image
+                      img={image}
                       alt={id}
-                      style={{ maxWidth: '50%', height: 'auto', marginTop: '10px' }}
+                      style={{ width: '400px' }}
                     />
                   )}
                 </div>
