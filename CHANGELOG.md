@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.10.0-beta.73](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.72...v3.10.0-beta.73) (2025-01-24)
+
+
+### Bug Fixes
+
+* **docs:** image in customization ([#4735](https://github.com/OHIF/Viewers/issues/4735)) ([28fb921](https://github.com/OHIF/Viewers/commit/28fb92108988c3304344690792947c847bad72a6))
+
+
+
+
+
 # [3.10.0-beta.72](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.71...v3.10.0-beta.72) (2025-01-24)
 
 
