@@ -1219,14 +1219,9 @@ function commandsModule({
     },
     deleteActiveAnnotation: () => {
       const activeAnnotationsUID = cornerstoneTools.annotation.selection.getAnnotationsSelected();
-      const hasMoreThanOneAnnotationSelected = activeAnnotationsUID.length > 1;
-
-      if (hasMoreThanOneAnnotationSelected) {
-        return;
-      }
-
-      const activeAnnotationUID = activeAnnotationsUID[0];
-      cornerstoneTools.annotation.state.removeAnnotation(activeAnnotationUID);
+      activeAnnotationsUID.forEach(activeAnnotationUID => {
+        measurementService.remove(activeAnnotationUID);
+      });
     },
   };
 
