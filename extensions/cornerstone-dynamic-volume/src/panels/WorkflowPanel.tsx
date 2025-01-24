@@ -5,7 +5,7 @@ function WorkflowPanel({ servicesManager }: { servicesManager: ServicesManager }
   const ProgressDropdownWithService =
     servicesManager.services.customizationService.getCustomization(
       'progressDropdownWithServiceComponent'
-    ).component;
+    );
 
   return (
     <div

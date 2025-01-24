@@ -92,6 +92,8 @@ const VALUE_TYPES = {
   ROI_THRESHOLD_MANUAL: 'value_type::roiThresholdManual',
 };
 
+export type MeasurementFilter = (measurement) => boolean;
+
 /**
  * MeasurementService class that supports source management and measurement management.
  * Sources can be any library that can provide "annotations" (e.g. cornerstone-tools, cornerstone, etc.)
@@ -108,7 +110,7 @@ class MeasurementService extends PubSubService {
   public static REGISTRATION = {
     name: 'measurementService',
     altName: 'MeasurementService',
-    create: ({ configuration = {} }) => {
+    create: _options => {
       return new MeasurementService();
     },
   };
@@ -120,10 +122,11 @@ class MeasurementService extends PubSubService {
   private measurements = new Map();
   private unmappedMeasurements = new Map();
 
+  private sources = {};
+  private mappings = {};
+
   constructor() {
     super(EVENTS);
-    this.sources = {};
-    this.mappings = {};
   }
 
   /**
@@ -164,12 +167,16 @@ class MeasurementService extends PubSubService {
   }
 
   /**
-   * Get all measurements.
+   * Gets measurements, optionally filtered by the filter
+   * function.
    *
    * @return {Measurement[]} Array of measurements
    */
-  getMeasurements() {
-    return [...this.measurements.values()];
+  public getMeasurements(filter?: MeasurementFilter) {
+    const measurements = [...this.measurements.values()];
+    return filter
+      ? measurements.filter(measurement => filter.call(this, measurement))
+      : measurements;
   }
 
   /**
@@ -582,11 +589,20 @@ class MeasurementService extends PubSubService {
     });
   }
 
-  clearMeasurements() {
+  /**
+   * Clears measurements that match the filter, defaulting to all of them.
+   * That allows, for example, clearing all of a single studies measurements
+   * without needing to clear other measurements.
+   */
+  public clearMeasurements(filter?: MeasurementFilter) {
     // Make a copy of the measurements
-    const measurements = [...this.measurements.values(), ...this.unmappedMeasurements.values()];
-    this.unmappedMeasurements.clear();
-    this.measurements.clear();
+    const toClear = this.getMeasurements(filter);
+    const unmappedClear = filter
+      ? [...this.unmappedMeasurements.values()].filter(filter)
+      : this.unmappedMeasurements;
+    const measurements = [...toClear, ...unmappedClear];
+    unmappedClear.forEach(measurement => this.unmappedMeasurements.delete(measurement.uid));
+    toClear.forEach(measurement => this.measurements.delete(measurement.uid));
     this._broadcastEvent(this.EVENTS.MEASUREMENTS_CLEARED, { measurements });
   }
 

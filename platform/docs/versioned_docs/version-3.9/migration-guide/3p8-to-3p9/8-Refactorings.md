@@ -67,7 +67,7 @@ customizationService.addModeCustomizations([
 customizationService.addModeCustomizations([
     // To disable editing in the SegmentationTable
     {
-      id: 'PanelSegmentation.disableEditing',
+      id: 'panelSegmentation.disableEditing',
       disableEditing: true,
     },
     // To disable editing in the MeasurementTable
@@ -106,11 +106,11 @@ customizationService.addModeCustomizations([
 ```js
 customizationService.addModeCustomizations([
   {
-    id: 'PanelSegmentation.tableMode',
+    id: 'panelSegmentation.tableMode',
     mode: 'expanded',
   },
   {
-    id: 'PanelSegmentation.onSegmentationAdd',
+    id: 'panelSegmentation.onSegmentationAdd',
     onSegmentationAdd: () => {
       commandsManager.run('createNewLabelmapFromPT');
     },

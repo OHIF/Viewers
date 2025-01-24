@@ -10,8 +10,10 @@ import dicomRTAnnotationExport from './utils/dicomRTAnnotationExport/RTStructure
 
 import { getWebWorkerManager } from '@cornerstonejs/core';
 import { Enums } from '@cornerstonejs/tools';
+import { utils } from '@ohif/core';
 
 const { SegmentationRepresentations } = Enums;
+const { formatPN } = utils;
 
 const metadataProvider = classes.MetadataProvider;
 const ROI_THRESHOLD_MANUAL_TOOL_IDS = [
@@ -418,7 +420,13 @@ const commandsModule = ({ servicesManager, commandsManager, extensionManager }: 
         return;
       }
 
-      return await workerManager.executeTask('suv-peak-worker', 'calculateTMTV', labelmapProps);
+      const tmtv = await workerManager.executeTask(
+        'suv-peak-worker',
+        'calculateTMTV',
+        labelmapProps
+      );
+
+      return tmtv;
     },
     exportTMTVReportCSV: async ({ segmentations, tmtv, config, options }) => {
       const segReport = commandsManager.runCommand('getSegmentationCSVReport', {
@@ -596,7 +604,7 @@ const commandsModule = ({ servicesManager, commandsManager, extensionManager }: 
         report[id] = {
           ...segReport,
           PatientID: instance.PatientID ?? '000000',
-          PatientName: instance.PatientName.Alphabetic,
+          PatientName: formatPN(instance.PatientName),
           StudyInstanceUID: instance.StudyInstanceUID,
           SeriesInstanceUID: instance.SeriesInstanceUID,
           StudyDate: instance.StudyDate,

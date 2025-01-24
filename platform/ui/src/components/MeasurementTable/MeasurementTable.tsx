@@ -17,11 +17,7 @@ const MeasurementTable = ({
   const { t } = useTranslation('MeasurementTable');
   const amount = data.length;
 
-  const itemCustomization = customizationService.getCustomization('MeasurementItem', {
-    id: 'MeasurementItem',
-    content: MeasurementItem,
-    contentProps: {},
-  }) as Types.Customization;
+  const itemCustomization = customizationService.getCustomization('MeasurementItem');
 
   const CustomMeasurementItem = itemCustomization.content;
 

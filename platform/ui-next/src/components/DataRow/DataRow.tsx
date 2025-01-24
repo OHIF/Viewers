@@ -261,25 +261,28 @@ const DataRow: React.FC<DataRowProps> = ({
           </Button>
 
           {/* Lock Icon (if needed) */}
-          {isLocked && <Icons.Lock className="text-muted-foreground h-6 w-6" />}
+          {isLocked && !disableEditing && <Icons.Lock className="text-muted-foreground h-6 w-6" />}
 
           {/* Actions Dropdown Menu */}
-          <DropdownMenu onOpenChange={open => setIsDropdownOpen(open)}>
-            <DropdownMenuTrigger asChild>
-              <Button
-                size="icon"
-                variant="ghost"
-                className={`h-6 w-6 transition-opacity ${
-                  isSelected || isDropdownOpen ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
-                }`}
-                aria-label="Actions"
-                onClick={e => e.stopPropagation()} // Prevent row selection on button click
-              >
-                <Icons.More className="h-6 w-6" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              {!disableEditing && (
+          {disableEditing && <div className="h-6 w-6"></div>}
+          {!disableEditing && (
+            <DropdownMenu onOpenChange={open => setIsDropdownOpen(open)}>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  className={`h-6 w-6 transition-opacity ${
+                    isSelected || isDropdownOpen
+                      ? 'opacity-100'
+                      : 'opacity-0 group-hover:opacity-100'
+                  }`}
+                  aria-label="Actions"
+                  onClick={e => e.stopPropagation()} // Prevent row selection on button click
+                >
+                  <Icons.More className="h-6 w-6" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
                 <>
                   <DropdownMenuItem onClick={e => handleAction('Rename', e)}>
                     <Icons.Rename className="text-foreground" />
@@ -295,14 +298,14 @@ const DataRow: React.FC<DataRowProps> = ({
                       <span className="pl-2">Change Color</span>
                     </DropdownMenuItem>
                   )}
+                  <DropdownMenuItem onClick={e => handleAction('Lock', e)}>
+                    <Icons.Lock className="text-foreground" />
+                    <span className="pl-2">{isLocked ? 'Unlock' : 'Lock'}</span>
+                  </DropdownMenuItem>
                 </>
-              )}
-              <DropdownMenuItem onClick={e => handleAction('Lock', e)}>
-                <Icons.Lock className="text-foreground" />
-                <span className="pl-2">{isLocked ? 'Unlock' : 'Lock'}</span>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
         </div>
       </div>
 

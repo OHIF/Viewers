@@ -14,13 +14,11 @@ import { utils, hotkeys } from '@ohif/core';
 import publicUrl from '../../utils/publicUrl';
 
 import {
-  Icon,
   StudyListExpandedRow,
   EmptyStudies,
   StudyListTable,
   StudyListPagination,
   StudyListFilter,
-  TooltipClipboard,
   useModal,
   AboutModal,
   UserPreferences,
@@ -31,12 +29,21 @@ import {
   ButtonEnums,
 } from '@ohif/ui';
 
-import { Header, Icons } from '@ohif/ui-next';
+import {
+  Header,
+  Icons,
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+  Clipboard,
+  Onboarding,
+  ScrollArea,
+} from '@ohif/ui-next';
 
 import { Types } from '@ohif/ui';
 
 import i18n from '@ohif/i18n';
-import { Onboarding, ScrollArea } from '@ohif/ui-next';
+import { preserveQueryParameters, preserveQueryStrings } from '../../utils/preserveQueryParameters';
 
 const PatientInfoVisibility = Types.PatientInfoVisibility;
 
@@ -200,11 +207,12 @@ function WorkList({
       }
     });
 
+    preserveQueryStrings(queryString);
+
     const search = qs.stringify(queryString, {
       skipNull: true,
       skipEmptyString: true,
     });
-
     navigate({
       pathname: publicUrl,
       search: search ? `?${search}` : undefined,
@@ -274,22 +282,37 @@ function WorkList({
         t('Common:localTimeFormat', 'hh:mm A')
       );
 
+    const makeCopyTooltipCell = textValue => {
+      if (!textValue) {
+        return '';
+      }
+      return (
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <span className="cursor-pointer truncate">{textValue}</span>
+          </TooltipTrigger>
+          <TooltipContent side="bottom">
+            <div className="flex items-center justify-between gap-2">
+              {textValue}
+              <Clipboard>{textValue}</Clipboard>
+            </div>
+          </TooltipContent>
+        </Tooltip>
+      );
+    };
+
     return {
       dataCY: `studyRow-${studyInstanceUid}`,
       clickableCY: studyInstanceUid,
       row: [
         {
           key: 'patientName',
-          content: patientName ? (
-            <TooltipClipboard>{patientName}</TooltipClipboard>
-          ) : (
-            <span className="text-gray-700">(Empty)</span>
-          ),
+          content: patientName ? makeCopyTooltipCell(patientName) : null,
           gridCol: 4,
         },
         {
           key: 'mrn',
-          content: <TooltipClipboard>{mrn}</TooltipClipboard>,
+          content: makeCopyTooltipCell(mrn),
           gridCol: 3,
         },
         {
@@ -305,7 +328,7 @@ function WorkList({
         },
         {
           key: 'description',
-          content: <TooltipClipboard>{description}</TooltipClipboard>,
+          content: makeCopyTooltipCell(description),
           gridCol: 4,
         },
         {
@@ -316,7 +339,7 @@ function WorkList({
         },
         {
           key: 'accession',
-          content: <TooltipClipboard>{accession}</TooltipClipboard>,
+          content: makeCopyTooltipCell(accession),
           gridCol: 3,
         },
         {
@@ -392,6 +415,8 @@ function WorkList({
                 query.append('configUrl', filterValues.configUrl);
               }
               query.append('StudyInstanceUIDs', studyInstanceUid);
+              preserveQueryParameters(query);
+
               return (
                 mode.displayName && (
                   <Link
@@ -500,8 +525,7 @@ function WorkList({
   }
 
   const { customizationService } = servicesManager.services;
-  const { component: DicomUploadComponent } =
-    customizationService.getCustomization('dicomUploadComponent') || {};
+  const DicomUploadComponent = customizationService.getCustomization('dicomUploadComponent');
 
   const uploadProps =
     DicomUploadComponent && dataSource.getConfig()?.dicomUploadEnabled
@@ -529,8 +553,9 @@ function WorkList({
         }
       : undefined;
 
-  const { component: dataSourceConfigurationComponent } =
-    customizationService.get('ohif.dataSourceConfigurationComponent') ?? {};
+  const dataSourceConfigurationComponent = customizationService.getCustomization(
+    'ohif.dataSourceConfigurationComponent'
+  );
 
   return (
     <div className="flex h-screen flex-col bg-black">
@@ -618,7 +643,6 @@ const defaultFilterValues = {
   pageNumber: 1,
   resultsPerPage: 25,
   datasources: '',
-  configUrl: null,
 };
 
 function _tryParseInt(str, defaultValue) {
