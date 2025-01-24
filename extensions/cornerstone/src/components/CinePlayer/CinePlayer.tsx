@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState, useRef } from 'react';
-import { CinePlayer, useCine } from '@ohif/ui';
+import { useCine } from '@ohif/ui';
 import { Enums, eventTarget, cache } from '@cornerstonejs/core';
 import { useAppConfig } from '@state';
 
@@ -160,8 +160,7 @@ function RenderCinePlayer({
   dynamicInfo: dynamicInfoProp,
   customizationService,
 }) {
-  const { component: CinePlayerComponent = CinePlayer } =
-    customizationService.get('cinePlayer') ?? {};
+  const CinePlayerComponent = customizationService.getCustomization('cinePlayer');
 
   const [dynamicInfo, setDynamicInfo] = useState(dynamicInfoProp);
 

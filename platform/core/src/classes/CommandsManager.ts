@@ -94,8 +94,17 @@ export class CommandsManager {
    * @param {CommandDefinition} definition - {@link CommandDefinition}
    */
   registerCommand(contextName, commandName, definition) {
-    if (typeof definition !== 'object') {
+    if (typeof definition !== 'object' && typeof definition !== 'function') {
       return;
+    }
+
+    // Validate and restrict keys to prevent prototype pollution
+    const isSafeKey = key => {
+      return key !== '__proto__' && key !== 'constructor' && key !== 'prototype';
+    };
+
+    if (!isSafeKey(contextName) || !isSafeKey(commandName)) {
+      throw new Error('Invalid key name to prevent prototype pollution');
     }
 
     const context = this.getContext(contextName);
@@ -103,7 +112,11 @@ export class CommandsManager {
       return;
     }
 
-    context[commandName] = definition;
+    if (typeof definition === 'function') {
+      context[commandName] = { commandFn: definition, options: {} };
+    } else {
+      context[commandName] = definition;
+    }
   }
 
   /**
@@ -138,6 +151,11 @@ export class CommandsManager {
    * @param {String} [contextName]
    */
   public runCommand(commandName: string, options = {}, contextName?: string | string[]) {
+    if (typeof commandName === 'function') {
+      // If commandName is a function, run it directly
+      return commandName(options);
+    }
+
     const definition = this.getCommand(commandName, contextName);
     if (!definition) {
       log.warn(`Command "${commandName}" not found in current context`);
@@ -147,7 +165,7 @@ export class CommandsManager {
     const { commandFn } = definition;
     const commandParams = Object.assign(
       {},
-      definition.options, // "Command configuration"
+      definition.options || {}, // "Command configuration"
       options // "Time of call" info
     );
 
@@ -159,12 +177,15 @@ export class CommandsManager {
     }
   }
 
-  public static convertCommands(toRun: Command | Commands | Command[] | string) {
+  public static convertCommands(toRun: Command | Commands | Command[] | string | Function) {
     if (typeof toRun === 'string') {
       return [{ commandName: toRun }];
     }
     if ('commandName' in toRun) {
       return [toRun as ComplexCommand];
+    }
+    if (typeof toRun === 'function') {
+      return [{ commandName: toRun }];
     }
     if ('commands' in toRun) {
       const commandsInput = (toRun as Commands).commands;
@@ -203,7 +224,7 @@ export class CommandsManager {
    *
    * Example commands to run are:
    * * 'updateMeasurement'
-   * * `{commandName: 'displayWhatever'}`
+   * * `{ commandName: 'displayWhatever'}`
    * * `['updateMeasurement', {commandName: 'displayWhatever'}]`
    * * `{ commands: 'updateMeasurement' }`
    * * `{ commands: ['updateMeasurement', {commandName: 'displayWhatever'}]}`

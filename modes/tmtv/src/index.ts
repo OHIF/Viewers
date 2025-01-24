@@ -101,33 +101,16 @@ function modeFactory({ modeConfiguration }) {
         'BrushTools',
       ]);
 
-      customizationService.addModeCustomizations([
-        {
-          id: 'PanelSegmentation.tableMode',
-          mode: 'expanded',
+      customizationService.setCustomizations({
+        'panelSegmentation.tableMode': {
+          $set: 'expanded',
         },
-        {
-          id: 'PanelSegmentation.onSegmentationAdd',
-          onSegmentationAdd: () => {
+        'panelSegmentation.onSegmentationAdd': {
+          $set: () => {
             commandsManager.run('createNewLabelmapFromPT');
           },
         },
-        {
-          id: 'PanelSegmentation.readableText',
-          // remove following if you are not interested in that stats
-          readableText: {
-            lesionStats: 'Lesion Statistics',
-            minValue: 'Minimum Value',
-            maxValue: 'Maximum Value',
-            meanValue: 'Mean Value',
-            volume: 'Volume (ml)',
-            suvPeak: 'SUV Peak',
-            suvMax: 'Maximum SUV',
-            suvMaxIJK: 'SUV Max IJK',
-            lesionGlyoclysisStats: 'Lesion Glycolysis',
-          },
-        },
-      ]);
+      });
 
       // For the hanging protocol we need to decide on the window level
       // based on whether the SUV is corrected or not, hence we can't hard
