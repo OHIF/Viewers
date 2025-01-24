@@ -99,9 +99,18 @@ function TrackedMeasurementsContextProvider(
         displaySetInstanceUID: referencedDisplaySetUID,
       });
 
+      const referencedDisplaySetImageIds =
+        displaySetService.getDisplaySetByUID(referencedDisplaySetUID)?.imageIds;
+      const imageIndex = referencedDisplaySetImageIds.indexOf(trackedMeasurement.referencedImageId);
+
       viewportGridService.setDisplaySetsForViewport({
         viewportId: activeViewportId,
         displaySetInstanceUIDs: [referencedDisplaySetUID],
+        viewportOptions: {
+          initialImageOptions: {
+            index: imageIndex,
+          },
+        },
       });
     },
     showStructuredReportDisplaySetInActiveViewport: (ctx, evt) => {
