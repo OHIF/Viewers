@@ -489,6 +489,28 @@ context menus.  Currently it supports buttons 1-3, as well as modifier keys
 by associating a commands list with the button to click.  See `initContextMenu`
 for more details.
 
+## Customizable Annotation Labelling component.
+
+The Annotation Labelling Component can be customized using the ID `measurement.labellingComponent`. This allows users to replace the default `SelectTree` component with a custom component of their choice. Below is a sample for customization implementation:
+
+```
+customizationService.setGlobalCustomization('measurement.labellingComponent', {
+    component: AnnotationLabel,
+});
+
+```
+
+## Customizable Render component.
+
+The CustomizableRenderComponent dynamically renders a custom component based on a customizationId. If a component for the given ID is found, it is rendered with the provided props; otherwise, a fallback component is rendered. To set a custom component for a specific customizationId, you must register it using the customizationService, where the custom component is added within an object under the component key. If no component is found for the specified customizationId, the FallbackComponent will be rendered instead.
+
+```
+customizationService.setGlobalCustomization('customizationId', {
+    component: CustomizedComponent,
+});
+
+```
+
 ## Please add additional customizations above this section
 > 3rd Party implementers may be added to this table via pull requests.
 

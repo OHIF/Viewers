@@ -10,7 +10,6 @@ interface ICustomizableRenderComponent {
 export default function CustomizableRenderComponent(props: ICustomizableRenderComponent) {
   const { customizationId, FallbackComponent, ...rest } = props;
   const { services } = useServices();
-  const CustomizedComponent =
-    services.customizationService.getCustomization(customizationId)?.component;
+  const CustomizedComponent = services.customizationService.getCustomization(customizationId);
   return CustomizedComponent ? <CustomizedComponent {...rest} /> : <FallbackComponent {...rest} />;
 }
