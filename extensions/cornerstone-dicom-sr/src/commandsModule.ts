@@ -6,7 +6,6 @@ import { adaptersSR } from '@cornerstonejs/adapters';
 
 import getFilteredCornerstoneToolState from './utils/getFilteredCornerstoneToolState';
 import hydrateStructuredReport from './utils/hydrateStructuredReport';
-import { commandsManager } from 'platform/app/src/App';
 
 const { MeasurementReport } = adaptersSR.Cornerstone3D;
 const { log } = OHIF;
