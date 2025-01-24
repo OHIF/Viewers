@@ -1,0 +1,27 @@
+name: Integration Tests
+
+on: pull_request
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  integration_tests:
+    name: Integration tests
+    uses: uc-cdis/.github/.github/workflows/integration_tests.yaml@master
+    with:
+      SERVICE_TO_TEST: dicom_viewer
+    secrets:
+      CI_AWS_ACCESS_KEY_ID: ${{ secrets.CI_AWS_ACCESS_KEY_ID }}
+      CI_AWS_SECRET_ACCESS_KEY: ${{ secrets.CI_AWS_SECRET_ACCESS_KEY }}
+      JENKINS_API_TOKEN: ${{ secrets.JENKINS_API_TOKEN }}
+      QA_DASHBOARD_S3_PATH: ${{ secrets.QA_DASHBOARD_S3_PATH }}
+      CI_TEST_ORCID_USERID: ${{ secrets.CI_TEST_ORCID_USERID }}
+      CI_TEST_ORCID_PASSWORD: ${{ secrets.CI_TEST_ORCID_PASSWORD }}
+      CI_TEST_RAS_USERID: ${{ secrets.CI_TEST_RAS_USERID }}
+      CI_TEST_RAS_PASSWORD: ${{ secrets.CI_TEST_RAS_PASSWORD }}
+      CI_TEST_RAS_2_USERID: ${{ secrets.CI_TEST_RAS_2_USERID }}
+      CI_TEST_RAS_2_PASSWORD: ${{ secrets.CI_TEST_RAS_2_PASSWORD }}
+      CI_SLACK_BOT_TOKEN: ${{ secrets.CI_SLACK_BOT_TOKEN }}
+      CI_SLACK_CHANNEL_ID: ${{ secrets.CI_SLACK_CHANNEL_ID }}
