@@ -87,9 +87,6 @@ export default function getToolbarModule({ commandsManager, servicesManager }: w
 
         return {
           disabled: false,
-          // className: isPrimaryActive
-          //   ? '!text-black bg-primary-light rounded'
-          //   : '!text-common-bright hover:!bg-primary-dark hover:!text-primary-light rounded',
           // Todo: isActive right now is used for nested buttons where the primary
           // button needs to be fully rounded (vs partial rounded) when active
           // otherwise it does not have any other use
@@ -233,7 +230,6 @@ export default function getToolbarModule({ commandsManager, servicesManager }: w
         if (!prop) {
           return {
             disabled: false,
-            // className: '!text-common-bright hover:!bg-primary-dark hover:text-primary-light',
           };
         }
 

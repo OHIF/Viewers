@@ -100,7 +100,7 @@ const toolbarButtons = [
   // Rectangle ROI Start End Threshold Button
   {
     id: 'RectangleROIStartEndThreshold',
-    uiType: 'ohif.toolButton',
+    uiType: 'ohif.toolBoxButton',
     props: {
       icon: 'tool-create-threshold',
       label: 'Rectangle ROI Threshold',
@@ -119,9 +119,10 @@ const toolbarButtons = [
   },
   {
     id: 'BrushTools',
-    uiType: 'ohif.toolButton',
+    uiType: 'ohif.toolBoxButtonGroup',
     props: {
       groupId: 'BrushTools',
+      evaluate: 'evaluate.cornerstone.hasSegmentation',
       items: [
         {
           id: 'Brush',

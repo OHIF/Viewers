@@ -89,7 +89,7 @@ function ToolboxUI(props: withAppTypes) {
                     id={id}
                     servicesManager={servicesManager}
                     onInteraction={onInteraction}
-                    size="small"
+                    size="toolbox"
                   />
                 </div>
               );
