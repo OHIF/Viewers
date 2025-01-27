@@ -171,7 +171,15 @@ export default class StaticWadoClient extends api.DICOMwebClient {
     }
 
     if (fuzzyMatching && typeof actual === 'string' && typeof desired === 'string') {
-      const normalizeValue = str => str.replace(/^\*+|\*+$/g, '').toLowerCase();
+      const normalizeValue = str => {
+        if (str.startsWith('*')) {
+          str = str.slice(1);
+        }
+        if (str.endsWith('*')) {
+          str = str.slice(0, -1);
+        }
+        return str.toLowerCase();
+      };
 
       const normalizedDesired = normalizeValue(desired);
       const normalizedActual = normalizeValue(actual);
