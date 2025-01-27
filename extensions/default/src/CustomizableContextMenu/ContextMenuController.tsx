@@ -72,6 +72,13 @@ export default class ContextMenuController {
       menuId
     );
 
+    const menu = ContextMenuItemsBuilder.findMenu(
+      menus,
+      { selectorProps: selectorProps || contextMenuProps, event },
+      menuId
+    );
+    const customClassName = menu?.customClassName || '';
+
     this.services.uiDialogService.dismiss({ id: 'context-menu' });
     this.services.uiDialogService.create({
       id: 'context-menu',
@@ -96,6 +103,7 @@ export default class ContextMenuController {
         menus,
         event,
         subMenu,
+        customClassName,
         eventData: event?.detail || event,
 
         onClose: () => {

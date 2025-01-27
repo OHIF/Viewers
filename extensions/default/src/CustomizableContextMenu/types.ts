@@ -98,6 +98,7 @@ export interface Menu {
   selector?: Types.Predicate;
 
   items: MenuItem[];
+  customClassName: string;
 }
 
 export type Point = {
