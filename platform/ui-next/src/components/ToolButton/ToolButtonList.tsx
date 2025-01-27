@@ -114,7 +114,7 @@ const ToolButtonListDropDown = React.forwardRef<HTMLDivElement, ToolButtonListDr
         ref={ref}
         side="bottom"
         align="start"
-        alignOffset={-35}
+        alignOffset={-40}
       >
         {children}
       </DropdownMenuContent>

@@ -54,7 +54,7 @@ export default function ToolButtonListWrapper({
           className={primary.className}
         />
       </ToolButtonListDefault>
-      <ToolButtonListDivider />
+      <ToolButtonListDivider className={primary.isActive ? 'opacity-0' : 'opacity-100'} />
       <ToolButtonListDropDown>
         {items.map(item => (
           <ToolButtonListItem
