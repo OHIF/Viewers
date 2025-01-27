@@ -10,6 +10,9 @@ import segmentationTableModeImage2 from '../../../assets/img/segmentationTableMo
 import segmentationShowAddSegmentImage from '../../../assets/img/segmentationShowAddSegmentImage.png';
 import layoutSelectorCommonPresetsImage from '../../../assets/img/layoutSelectorCommonPresetsImage.png';
 import layoutSelectorAdvancedPresetGeneratorImage from '../../../assets/img/layoutSelectorAdvancedPresetGeneratorImage.png';
+import labellingFLow from '../../../assets/img/labelling-flow.png';
+import loadingIndicator from '../../../assets/img/Loading-Indicator.png';
+
 import segDisplayEditingTrue from '../../../assets/img/segDisplayEditingTrue.png';
 import segDisplayEditingFalse from '../../../assets/img/segDisplayEditingFalse.png';
 import thumbnailMenuItemsImage from '../../../assets/img/thumbnailMenuItemsImage.png';
@@ -610,6 +613,58 @@ window.config = {
 };
     `,
   },
+  {
+    id: 'ui.LoadingIndicatorTotalPercent',
+    description: 'Customizes the LoadingIndicatorTotalPercent component.',
+    image: loadingIndicator,
+    default: null,
+    configuration: `
+      window.config = {
+        // rest of window config
+        customizationService: [
+          {
+            'ui.LoadingIndicatorTotalPercent': {
+                $set: CustomizedComponent,
+            },
+          },
+        ],
+      };
+        `,
+  },
+  {
+    id: 'ui.LoadingIndicatorProgress',
+    description: 'Customizes the LoadingIndicatorProgress component.',
+    default: null,
+    configuration: `
+      window.config = {
+        // rest of window config
+        customizationService: [
+          {
+            'ui.LoadingIndicatorProgress': {
+                $set: CustomizedComponent,
+            },
+          },
+        ],
+      };
+        `,
+  },
+  {
+    id: 'ui.ProgressLoadingBar',
+    description: 'Customizes the ProgressLoadingBar component.',
+    default: null,
+    configuration: `
+      window.config = {
+        // rest of window config
+        customizationService: [
+          {
+            'ui.ProgressLoadingBar': {
+                $set: CustomizedComponent,
+            },
+          },
+        ],
+      };
+        `,
+  },
 ];
 
 export const segmentationCustomizations = [
@@ -967,6 +1022,24 @@ window.config = {
   ],
 };
   `,
+  },
+  {
+    id: 'measurement.labellingComponent',
+    description: 'Customizes the labelling flow component.',
+    image: labellingFLow,
+    default: null,
+    configuration: `
+      window.config = {
+        // rest of window config
+        customizationService: [
+          {
+            'measurement.labellingComponent': {
+                $set: CustomizedComponent,
+            },
+          },
+        ],
+      };
+        `,
   },
 ];
 
