@@ -159,7 +159,10 @@ const ToolButtonListItem = React.forwardRef<
     </DropdownMenuItem>
   );
 
-  if (!hasTooltip) {
+  // Todo: there is a weird issue where i can't control the duration of the delay
+  // for the items in this list, causing the tooltip to show up too early in the
+  // dropdown menu. So i'm just removing the tooltip for list items unless the disabledText is set.
+  if (!disabled) {
     return menuItem;
   }
 
