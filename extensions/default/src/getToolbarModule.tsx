@@ -85,7 +85,9 @@ export default function getToolbarModule({ commandsManager, servicesManager }: w
       name: 'evaluate.cine',
       evaluate: () => {
         const isToggled = cineService.getState().isCineEnabled;
-        return utils.getToggledClassName(isToggled);
+        return {
+          className: utils.getToggledClassName(isToggled),
+        };
       },
     },
   ];
