@@ -156,15 +156,17 @@ export default class StaticWadoClient extends api.DICOMwebClient {
    *
    * @param {*} desired
    * @param {*} actual
-   * @param {*} fuzzyMatching - if true, then do a sub-string match on the values
+   * @param {*} options - fuzzyMatching: if true, then do a sub-string match
    * @returns true if the values match
    */
-  compareValues(desired, actual, fuzzyMatching) {
+  compareValues(desired, actual, options) {
+    const { fuzzyMatching } = options;
+
     if (Array.isArray(desired)) {
-      return desired.find(item => this.compareValues(item, actual, fuzzyMatching));
+      return desired.find(item => this.compareValues(item, actual, options));
     }
     if (Array.isArray(actual)) {
-      return actual.find(actualItem => this.compareValues(desired, actualItem, fuzzyMatching));
+      return actual.find(actualItem => this.compareValues(desired, actualItem, options));
     }
     if (actual?.Alphabetic) {
       actual = actual.Alphabetic;
@@ -214,7 +216,7 @@ export default class StaticWadoClient extends api.DICOMwebClient {
     }
     const dash = range.indexOf('-');
     if (dash === -1) {
-      return this.compareValues(range, value);
+      return this.compareValues(range, value, {});
     }
     const start = range.substring(0, dash);
     const end = range.substring(dash + 1);
@@ -231,8 +233,13 @@ export default class StaticWadoClient extends api.DICOMwebClient {
    * @returns
    */
   filterItem(key: string, queryParams, study, sourceFilterMap) {
+    const isName = (key: string) => key.indexOf('name') !== -1;
+
     const { supportsFuzzyMatching = false } = this.config;
-    const isPatientName = key.indexOf('name') !== -1;
+
+    const options = {
+      fuzzyMatching: isName(key) && supportsFuzzyMatching,
+    };
 
     const altKey = sourceFilterMap[key] || key;
     if (!queryParams) {
@@ -251,7 +258,7 @@ export default class StaticWadoClient extends api.DICOMwebClient {
     }
     const value = valueElem.Value;
 
-    return this.compareValues(testValue, value, supportsFuzzyMatching && isPatientName);
+    return this.compareValues(testValue, value, options);
   }
 
   /** Converts the query parameters to lower case query parameters */
