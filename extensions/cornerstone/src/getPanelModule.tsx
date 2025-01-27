@@ -32,7 +32,7 @@ const getPanelModule = ({ commandsManager, servicesManager, extensionManager }: 
     );
   };
 
-  const WrappedPanelSegmentationWithTools = ({ configuration }) => {
+  const wrappedPanelSegmentationWithTools = ({ configuration }) => {
     return (
       <>
         <Toolbox
@@ -103,7 +103,7 @@ const getPanelModule = ({ commandsManager, servicesManager, extensionManager }: 
       iconName: 'tab-segmentation',
       iconLabel: 'Segmentation',
       label: 'Segmentation',
-      component: WrappedPanelSegmentationWithTools,
+      component: wrappedPanelSegmentationWithTools,
     },
   ];
 };
