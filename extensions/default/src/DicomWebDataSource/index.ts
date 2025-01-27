@@ -151,6 +151,7 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
         singlepart: dicomWebConfig.singlepart,
         headers: userAuthenticationService.getAuthorizationHeader(),
         errorInterceptor: errorHandler.getHTTPErrorHandler(),
+        supportsFuzzyMatching: dicomWebConfig.supportsFuzzyMatching,
       };
 
       wadoConfig = {
@@ -159,6 +160,7 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
         singlepart: dicomWebConfig.singlepart,
         headers: userAuthenticationService.getAuthorizationHeader(),
         errorInterceptor: errorHandler.getHTTPErrorHandler(),
+        supportsFuzzyMatching: dicomWebConfig.supportsFuzzyMatching,
       };
 
       // TODO -> Two clients sucks, but its better than 1000.

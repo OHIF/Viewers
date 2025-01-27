@@ -156,17 +156,34 @@ export default class StaticWadoClient extends api.DICOMwebClient {
    *
    * @param {*} desired
    * @param {*} actual
+   * @param {*} fuzzyMatching - if true, then do a sub-string match on the values
    * @returns true if the values match
    */
-  compareValues(desired, actual, caseSensitive = true) {
+  compareValues(desired, actual, fuzzyMatching) {
     if (Array.isArray(desired)) {
-      return desired.find(item => this.compareValues(item, actual));
+      return desired.find(item => this.compareValues(item, actual, fuzzyMatching));
     }
     if (Array.isArray(actual)) {
-      return actual.find(actualItem => this.compareValues(desired, actualItem));
+      return actual.find(actualItem => this.compareValues(desired, actualItem, fuzzyMatching));
     }
     if (actual?.Alphabetic) {
       actual = actual.Alphabetic;
+    }
+
+    if (fuzzyMatching && typeof actual === 'string' && typeof desired === 'string') {
+      const normalizeValue = str => str.replace(/^\*+|\*+$/g, '').toLowerCase();
+
+      const normalizedDesired = normalizeValue(desired);
+      const normalizedActual = normalizeValue(actual);
+
+      const tokenizeAndNormalize = str => str.replace(/\^/g, ' ').split(/\s+/).filter(Boolean);
+
+      const desiredTokens = tokenizeAndNormalize(normalizedDesired);
+      const actualTokens = tokenizeAndNormalize(normalizedActual);
+
+      return desiredTokens.some(desiredToken =>
+        actualTokens.some(actualToken => actualToken.startsWith(desiredToken))
+      );
     }
 
     if (typeof actual == 'string') {
@@ -212,6 +229,9 @@ export default class StaticWadoClient extends api.DICOMwebClient {
    * @returns
    */
   filterItem(key: string, queryParams, study, sourceFilterMap) {
+    const { supportsFuzzyMatching = false } = this.config;
+    const isPatientName = key === 'patientname';
+
     const altKey = sourceFilterMap[key] || key;
     if (!queryParams) {
       return true;
@@ -229,7 +249,7 @@ export default class StaticWadoClient extends api.DICOMwebClient {
     }
     const value = valueElem.Value;
 
-    return this.compareValues(testValue, value);
+    return this.compareValues(testValue, value, supportsFuzzyMatching && isPatientName);
   }
 
   /** Converts the query parameters to lower case query parameters */
