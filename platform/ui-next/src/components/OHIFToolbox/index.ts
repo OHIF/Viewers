@@ -1,2 +1,3 @@
 import { ToolboxUI } from './ToolboxUI';
-export { ToolboxUI };
+import Toolbox from './Toolbox';
+export { ToolboxUI, Toolbox };

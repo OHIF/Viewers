@@ -1,6 +1,6 @@
 import React from 'react';
 import { DynamicDataPanel } from './panels';
-import { Toolbox } from '@ohif/extension-default';
+import { Toolbox } from '@ohif/ui-next';
 import { PanelSegmentation } from '@ohif/extension-cornerstone';
 import DynamicExport from './panels/DynamicExport';
 

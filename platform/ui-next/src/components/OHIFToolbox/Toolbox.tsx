@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react';
-import { ToolboxUI, useToolbox } from '@ohif/ui-next';
+import { ToolboxUI, useToolbox } from '../../';
 import { useToolbar } from '@ohif/core';
+
 /**
  * A toolbox is a collection of buttons and commands that they invoke, used to provide
  * custom control panels to users. This component is a generic UI component that

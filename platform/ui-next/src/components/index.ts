@@ -52,7 +52,8 @@ import { ThumbnailList } from './ThumbnailList';
 import { PanelSection } from './PanelSection';
 import { DisplaySetMessageListTooltip } from './DisplaySetMessageListTooltip';
 import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from './Tooltip';
-import { ToolboxUI } from './OHIFToolbox';
+import { ToolboxUI, Toolbox } from './OHIFToolbox';
+
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -102,6 +103,7 @@ import {
 import { RowInputRange } from './OHIFToolSettings';
 import { RowSegmentedControl } from './OHIFToolSettings';
 import { RowDoubleRange } from './OHIFToolSettings';
+
 export {
   ErrorBoundary,
   Button,
@@ -168,6 +170,7 @@ export {
   PanelSection,
   DisplaySetMessageListTooltip,
   ToolboxUI,
+  Toolbox,
   DropdownMenu,
   DropdownMenuTrigger,
   DropdownMenuContent,

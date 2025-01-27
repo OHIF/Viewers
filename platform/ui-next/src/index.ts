@@ -101,6 +101,7 @@ import {
   RowInputRange,
   RowSegmentedControl,
   RowDoubleRange,
+  Toolbox,
 } from './components';
 import { DataRow } from './components/DataRow';
 
@@ -225,6 +226,7 @@ export {
   ToolButtonListItem,
   ToolButtonListDivider,
   ToolboxProvider,
+  Toolbox,
   useToolbox,
   utils,
 };

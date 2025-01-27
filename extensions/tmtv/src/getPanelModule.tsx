@@ -1,6 +1,6 @@
 import React from 'react';
 import { PanelPetSUV, PanelROIThresholdExport } from './Panels';
-import { Toolbox } from '@ohif/extension-default';
+import { Toolbox } from '@ohif/ui-next';
 import PanelTMTV from './Panels/PanelTMTV';
 
 function getPanelModule({ commandsManager, extensionManager, servicesManager }) {
