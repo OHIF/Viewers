@@ -665,6 +665,23 @@ window.config = {
       };
         `,
   },
+  {
+    id: 'ui.ContextMenuItem',
+    description: 'Customizes the Context menu item component.',
+    default: null,
+    configuration: `
+      window.config = {
+        // rest of window config
+        customizationService: [
+          {
+            'ui.ContextMenuItem': {
+                $set: CustomizedComponent,
+            },
+          },
+        ],
+      };
+        `,
+  },
 ];
 
 export const segmentationCustomizations = [
