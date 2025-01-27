@@ -308,6 +308,44 @@ reasons:
 However, if you would like to get compressed data in a specific transfer syntax, you can modify the `acceptHeader` configuration or
 `requestTransferSyntaxUID` configuration.
 
+## Default Initial Query
+The default initial query for the worklist can be set as a session key in the configuration file.
+For example, the following configuration automatically searches for patient names containing `Test`.
+
+```javascript
+if (!window.location.search) {
+  window.sessionStorage.setItem(
+    'queryFilterValues',
+    JSON.stringify({
+      patientName: 'Test',
+    })
+  );
+}
+```
+
+### Query For Studies From Today
+Querying for a computed date range can be done by computing the date range
+in the config file, see e2e.js for an example, reproduced below.  To use this,
+enter the query criteria '?today' as the full search criteria.
+
+```javascript
+if (window.location.search === '?today') {
+  const now = new Date();
+  const month = now.getMonth() + 1;
+  const day = now.getDate();
+  window.sessionStorage.setItem(
+    'queryFilterValues',
+    JSON.stringify({
+      studyDate: {
+        startDate: `${now.getFullYear()}${month < 10 ? '0' + month : month}${day < 10 ? '0' + day : day}`,
+        endDate: null,
+      },
+    })
+  );
+}
+```
+
+
 ## Environment Variables
 
 We use environment variables at build and dev time to change the Viewer's

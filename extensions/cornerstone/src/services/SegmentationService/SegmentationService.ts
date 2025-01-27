@@ -15,6 +15,7 @@ import {
   Types as cstTypes,
 } from '@cornerstonejs/tools';
 import { PubSubService, Types as OHIFTypes } from '@ohif/core';
+import i18n from '@ohif/i18n';
 import { easeInOutBell, reverseEaseInOutBell } from '../../utils/transitions';
 import { mapROIContoursToRTStructData } from './RTSTRUCT/mapROIContoursToRTStructData';
 import { SegmentationRepresentations } from '@cornerstonejs/tools/enums';
@@ -361,11 +362,11 @@ class SegmentationService extends PubSubService {
           options.segments && Object.keys(options.segments).length > 0
             ? options.segments
             : {
-              1: {
-                label: 'Segment 1',
-                active: true,
+                1: {
+                  label: `${i18n.t('Segment')} 1`,
+                  active: true,
+                },
               },
-            },
         cachedStats: {
           info: `S${displaySet.SeriesNumber}: ${displaySet.SeriesDescription}`,
         },
@@ -382,8 +383,8 @@ class SegmentationService extends PubSubService {
       segmentationId?: string;
       type: SegmentationRepresentations;
     } = {
-        type: LABELMAP,
-      }
+      type: LABELMAP,
+    }
   ): Promise<string> {
     const { type } = options;
     let { segmentationId } = options;
@@ -535,8 +536,8 @@ class SegmentationService extends PubSubService {
       segmentationId?: string;
       type: SegmentationRepresentations;
     } = {
-        type: CONTOUR,
-      }
+      type: CONTOUR,
+    }
   ): Promise<string> {
     const { type } = options;
     let { segmentationId } = options;
@@ -799,7 +800,7 @@ class SegmentationService extends PubSubService {
     } = {}
   ): void {
     if (config?.segmentIndex === 0) {
-      throw new Error('Segment index 0 is reserved for "no label"');
+      throw new Error(i18n.t('Segment') + ' index 0 is reserved for "no label"');
     }
 
     const csSegmentation = this.getCornerstoneSegmentation(segmentationId);
@@ -813,7 +814,7 @@ class SegmentationService extends PubSubService {
 
     // update the segmentation
     if (!config.label) {
-      config.label = `Segment ${segmentIndex}`;
+      config.label = `${i18n.t('Segment')} ${segmentIndex}`;
     }
 
     const currentSegments = csSegmentation.segments;

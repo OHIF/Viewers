@@ -4,7 +4,7 @@ import getPanelModule from './getPanelModule';
 import getCommandsModule from './getCommandsModule';
 import { Types } from '@ohif/core';
 
-import { useViewportGrid } from '@ohif/ui';
+import { useViewportGrid } from '@ohif/ui-next';
 import getDicomMicroscopySRSopClassHandler from './DicomMicroscopySRSopClassHandler';
 import MicroscopyService from './services/MicroscopyService';
 import { useResizeDetector } from 'react-resize-detector';
@@ -43,7 +43,6 @@ const extension: Types.Extensions.Extension = {
    * that is provided by the Cornerstone extension in OHIF.
    */
   getViewportModule({ servicesManager, extensionManager, commandsManager }) {
-
     /**
      *
      * @param props {*}

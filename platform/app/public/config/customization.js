@@ -15,52 +15,6 @@ window.config = {
   customizationService: [
     '@ohif/extension-default.customizationModule.datasources',
     '@ohif/extension-default.customizationModule.helloPage',
-
-    {
-      id: '@ohif/cornerstoneOverlay',
-      // Append recursively, rather than replacing
-      merge: 'Append',
-      topRightItems: {
-        id: 'cornerstoneOverlayTopRight',
-        items: [
-          {
-            id: 'PatientNameOverlay',
-            // Note below that here we are using the customization prototype of
-            // `ohif.overlayItem` which was registered to the customization module in
-            // `ohif/extension-default` extension.
-            customizationType: 'ohif.overlayItem',
-            // the following props are passed to the `ohif.overlayItem` prototype
-            // which is used to render the overlay item based on the label, color,
-            // conditions, etc.
-            attribute: 'PatientName',
-            label: 'PN:',
-            title: 'Patient Name',
-            color: 'yellow',
-            condition: ({ instance }) => instance?.PatientName,
-            contentF: ({ instance, formatters: { formatPN } }) =>
-              formatPN(instance.PatientName) +
-              (instance.PatientSex ? ' (' + instance.PatientSex + ')' : ''),
-          },
-        ],
-      },
-
-      topLeftItems: {
-        items: {
-          // Note the -10000 means -10000 + length of existing list, which is
-          // much before the start of hte list, so put the new value at the start.
-          '-10000': {
-            id: 'Species',
-            customizationType: 'ohif.overlayItem',
-            label: 'Species:',
-            color: 'red',
-            background: 'green',
-            condition: ({ instance }) => instance?.PatientSpeciesDescription,
-            contentF: ({ instance }) =>
-              instance.PatientSpeciesDescription + '/' + instance.PatientBreedDescription,
-          },
-        },
-      },
-    },
   ],
 
   defaultDataSourceName: 'e2e',

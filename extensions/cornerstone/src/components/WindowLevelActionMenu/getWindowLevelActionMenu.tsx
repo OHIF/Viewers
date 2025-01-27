@@ -16,11 +16,10 @@ export function getWindowLevelActionMenu({
 }>): ReactNode {
   const { customizationService } = servicesManager.services;
 
-  const { presets } = customizationService.get('cornerstone.windowLevelPresets');
-  const colorbarProperties = customizationService.get('cornerstone.colorbar');
-  const { volumeRenderingPresets, volumeRenderingQualityRange } = customizationService.get(
-    'cornerstone.3dVolumeRendering'
-  );
+  const presets = customizationService.getCustomization('cornerstone.windowLevelPresets');
+  const colorbarProperties = customizationService.getCustomization('cornerstone.colorbar');
+  const { volumeRenderingPresets, volumeRenderingQualityRange } =
+    customizationService.getCustomization('cornerstone.3dVolumeRendering');
 
   const displaySetPresets = displaySets
     .filter(displaySet => presets[displaySet.Modality])

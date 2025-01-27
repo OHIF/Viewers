@@ -6,6 +6,7 @@ export function VolumeShade({
   commandsManager,
   viewportId,
   servicesManager,
+  onClickShade = bool => {},
 }: VolumeShadeProps): ReactElement {
   const { cornerstoneViewportService } = servicesManager.services;
   const [shade, setShade] = useState(true);
@@ -22,6 +23,7 @@ export function VolumeShade({
     const { actor } = viewport.getActors()[0];
     const shade = actor.getProperty().getShade();
     setShade(shade);
+    onClickShade(shade);
     setKey(key + 1);
   }, [viewportId, cornerstoneViewportService]);
 
@@ -32,6 +34,7 @@ export function VolumeShade({
       checked={shade}
       onChange={() => {
         setShade(!shade);
+        onClickShade(!shade);
         onShadeChange(!shade);
       }}
     />
