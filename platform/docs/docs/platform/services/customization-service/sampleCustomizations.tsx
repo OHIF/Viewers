@@ -571,6 +571,26 @@ window.config = {
 };
   `,
   },
+  {
+    id: 'customOnDropHandler ',
+    description:
+      'CustomOnDropHandler in the viewport grid enables users to handle additional functionalities during the onDrop event in the viewport.',
+    default: props => {
+      return Promise.resolve({ handled: false });
+    },
+    configuration: `
+window.config = {
+  // rest of window config
+  customizationService: [
+    {
+      customOnDropHandler: {
+        $set: customOnDropHandler
+      },
+    },
+  ],
+};
+    `,
+  },
 ];
 
 export const segmentationCustomizations = [

@@ -213,17 +213,13 @@ function ViewerViewportGrid(props: withAppTypes) {
   }, [viewports]);
 
   const onDropHandler = (viewportId, { displaySetInstanceUID }) => {
-    let dropHandlerPromise = Promise.resolve({ handled: false });
     const customOnDropHandler = customizationService.getCustomization('customOnDropHandler');
-
-    if (customOnDropHandler) {
-      dropHandlerPromise = customOnDropHandler({
-        ...props,
-        viewportId,
-        displaySetInstanceUID,
-        appConfig,
-      });
-    }
+    const dropHandlerPromise = customOnDropHandler({
+      ...props,
+      viewportId,
+      displaySetInstanceUID,
+      appConfig,
+    });
 
     dropHandlerPromise.then(({ handled }) => {
       if (!handled) {
