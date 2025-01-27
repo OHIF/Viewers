@@ -19,6 +19,8 @@ function Toolbox({
   title,
   ...props
 }: withAppTypes) {
+  // We should move these outside of the platform/ui-next, no file here
+  // should rely on the managers and services
   const { state: toolboxState, api } = useToolbox(buttonSectionId);
   const { onInteraction, toolbarButtons } = useToolbar({
     servicesManager,
