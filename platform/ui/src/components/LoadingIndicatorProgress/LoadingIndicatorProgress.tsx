@@ -1,7 +1,7 @@
 import React from 'react';
 import classNames from 'classnames';
 
-import Icon from '../Icon';
+import { Icons } from '@ohif/ui-next';
 import ProgressLoadingBar from '../ProgressLoadingBar';
 import CustomizableRenderComponent from '../../utils/CustomizableRenderComponent';
 
@@ -29,10 +29,7 @@ function FallbackLoadingIndicatorProgress({ className, textBlock, progress }) {
         className
       )}
     >
-      <Icon
-        name="loading-ohif-mark"
-        className="h-12 w-12 text-white"
-      />
+      <Icons.LoadingOHIFMark className="h-12 w-12 text-white" />
       <div className="w-48">
         <ProgressLoadingBar progress={progress} />
       </div>
