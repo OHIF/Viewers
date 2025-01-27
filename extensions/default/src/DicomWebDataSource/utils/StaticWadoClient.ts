@@ -170,11 +170,6 @@ export default class StaticWadoClient extends api.DICOMwebClient {
     }
 
     if (typeof actual == 'string') {
-      desired = desired.toLowerCase();
-      actual = actual.toLowerCase();
-    }
-
-    if (typeof actual == 'string') {
       if (actual.length === 0) {
         return true;
       }

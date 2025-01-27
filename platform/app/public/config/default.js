@@ -50,15 +50,9 @@ window.config = {
         imageRendering: 'wadors',
         thumbnailRendering: 'wadors',
         enableStudyLazyLoad: true,
-        supportsFuzzyMatching: false,
+        supportsFuzzyMatching: true,
         supportsWildcard: true,
         staticWado: true,
-        caseSensitive: {
-          patientname: false,
-          studydescription: false,
-          accessionnumber: false,
-          '00100020': false,
-        },
         singlepart: 'bulkdata,video',
         // whether the data source should use retrieveBulkData to grab metadata,
         // and in case of relative path, what would it be relative to, options
