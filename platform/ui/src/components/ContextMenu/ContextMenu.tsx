@@ -5,11 +5,6 @@ import { Icons } from '@ohif/ui-next';
 
 const ContextMenu = ({ items, ...props }) => {
   const contextMenuRef = useRef<HTMLDivElement>(null);
-
-  if (!items) {
-    return null;
-  }
-
   useEffect(() => {
     if(!contextMenuRef?.current) {
       return;
@@ -25,6 +20,10 @@ const ContextMenu = ({ items, ...props }) => {
       props.defaultPosition.x = props.defaultPosition.x - boundingClientRect.width;
     }
   }, [props.defaultPosition]);
+
+  if (!items) {
+    return null;
+  }
 
   return (
     <div
