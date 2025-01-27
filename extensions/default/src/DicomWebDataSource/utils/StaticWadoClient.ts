@@ -232,7 +232,7 @@ export default class StaticWadoClient extends api.DICOMwebClient {
    */
   filterItem(key: string, queryParams, study, sourceFilterMap) {
     const { supportsFuzzyMatching = false } = this.config;
-    const isPatientName = key === 'patientname';
+    const isPatientName = key.indexOf('name') !== -1;
 
     const altKey = sourceFilterMap[key] || key;
     if (!queryParams) {
