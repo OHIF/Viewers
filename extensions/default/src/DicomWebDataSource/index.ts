@@ -67,8 +67,6 @@ export type DicomWebConfig = {
   staticWado?: boolean;
   /** User authentication service */
   userAuthenticationService: Record<string, unknown>;
-  /** Case sensitivity configuration */
-  caseSensitive?: Record<string, boolean>;
 };
 
 export type BulkDataURIConfig = {
@@ -149,7 +147,6 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
 
       qidoConfig = {
         url: dicomWebConfig.qidoRoot,
-        caseSensitive: dicomWebConfig.caseSensitive || {},
         staticWado: dicomWebConfig.staticWado,
         singlepart: dicomWebConfig.singlepart,
         headers: userAuthenticationService.getAuthorizationHeader(),
@@ -158,7 +155,6 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
 
       wadoConfig = {
         url: dicomWebConfig.wadoRoot,
-        caseSensitive: dicomWebConfig.caseSensitive || {},
         staticWado: dicomWebConfig.staticWado,
         singlepart: dicomWebConfig.singlepart,
         headers: userAuthenticationService.getAuthorizationHeader(),
