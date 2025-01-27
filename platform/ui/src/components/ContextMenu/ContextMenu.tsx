@@ -4,18 +4,18 @@ import Typography from '../Typography';
 import { Icons } from '@ohif/ui-next';
 
 const ContextMenu = ({ items, ...props }) => {
-  const contextMenuElemRef = useRef<HTMLDivElement>(null);
+  const contextMenuRef = useRef<HTMLDivElement>(null);
 
   if (!items) {
     return null;
   }
 
   useEffect(() => {
-    if(!contextMenuElemRef?.current) {
+    if(!contextMenuRef?.current) {
       return;
     }
 
-    const contextMenu = contextMenuElemRef.current;
+    const contextMenu = contextMenuRef.current;
 
     const boundingClientRect = contextMenu.getBoundingClientRect();
     if (boundingClientRect.bottom + boundingClientRect.height > window.innerHeight) {
@@ -28,7 +28,7 @@ const ContextMenu = ({ items, ...props }) => {
 
   return (
     <div
-      ref={contextMenuElemRef}
+      ref={contextMenuRef}
       data-cy="context-menu"
       className="bg-secondary-dark relative z-50 block w-48 rounded"
       onContextMenu={e => e.preventDefault()}
