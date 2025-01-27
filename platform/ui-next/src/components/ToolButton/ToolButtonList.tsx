@@ -8,6 +8,7 @@ import {
   DropdownMenuTrigger,
 } from '../DropdownMenu';
 import { cn } from '../../lib/utils';
+import { Tooltip, TooltipTrigger, TooltipContent } from '../Tooltip';
 
 /**
  * ToolButtonList Component
@@ -40,11 +41,16 @@ ToolButtonList.displayName = 'ToolButtonList';
  */
 interface ToolButtonListDefaultProps extends React.HTMLAttributes<HTMLDivElement> {
   children?: React.ReactNode;
+  tooltip?: string;
+  disabledText?: string;
+  disabled?: boolean;
 }
 
 const ToolButtonListDefault = React.forwardRef<HTMLDivElement, ToolButtonListDefaultProps>(
-  ({ className, children, ...props }, ref) => {
-    return (
+  ({ className, children, tooltip, disabledText, disabled, ...props }, ref) => {
+    const hasTooltip = tooltip || disabledText;
+
+    const defaultContent = (
       <div
         ref={ref}
         className={cn('flex items-center', className)}
@@ -52,6 +58,22 @@ const ToolButtonListDefault = React.forwardRef<HTMLDivElement, ToolButtonListDef
       >
         {children}
       </div>
+    );
+
+    if (!hasTooltip) {
+      return defaultContent;
+    }
+
+    return (
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <span>{defaultContent}</span>
+        </TooltipTrigger>
+        <TooltipContent side="bottom">
+          {tooltip && <div>{tooltip}</div>}
+          {disabledText && disabled && <div className="text-muted-foreground">{disabledText}</div>}
+        </TooltipContent>
+      </Tooltip>
     );
   }
 );
@@ -109,26 +131,50 @@ interface ToolButtonListItemProps extends React.ComponentProps<typeof DropdownMe
   icon?: string;
   children?: React.ReactNode;
   className?: string;
+  disabledText?: string;
+  tooltip?: string;
 }
 
 const ToolButtonListItem = React.forwardRef<
   React.ElementRef<typeof DropdownMenuItem>,
   ToolButtonListItemProps
->(({ className, children, icon, ...props }, ref) => (
-  <DropdownMenuItem
-    ref={ref}
-    className={cn('flex items-center space-x-2', className)}
-    {...props}
-  >
-    {icon && (
-      <Icons.ByName
-        name={icon || 'MissingIcon'}
-        className="h-6 w-6"
-      />
-    )}
-    {children}
-  </DropdownMenuItem>
-));
+>(({ className, children, icon, disabledText, tooltip, disabled, ...props }, ref) => {
+  const defaultTooltip = tooltip || (typeof children === 'string' ? children : undefined);
+  const hasTooltip = defaultTooltip || disabledText;
+
+  const menuItem = (
+    <DropdownMenuItem
+      ref={ref}
+      className={cn('flex items-center space-x-2', className)}
+      disabled={disabled}
+      {...props}
+    >
+      {icon && (
+        <Icons.ByName
+          name={icon || 'MissingIcon'}
+          className="h-6 w-6"
+        />
+      )}
+      {children}
+    </DropdownMenuItem>
+  );
+
+  if (!hasTooltip) {
+    return menuItem;
+  }
+
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <span>{menuItem}</span>
+      </TooltipTrigger>
+      <TooltipContent side="bottom">
+        {defaultTooltip && <div>{defaultTooltip}</div>}
+        {disabledText && disabled && <div className="text-muted-foreground">{disabledText}</div>}
+      </TooltipContent>
+    </Tooltip>
+  );
+});
 ToolButtonListItem.displayName = 'ToolButtonListItem';
 
 /**

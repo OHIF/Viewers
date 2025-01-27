@@ -14,6 +14,7 @@ interface ButtonItem {
   label?: string;
   tooltip?: string;
   isActive?: boolean;
+  disabledText?: string;
   commands?: Record<string, unknown>;
   disabled?: boolean;
   className?: string;
@@ -41,18 +42,12 @@ export default function ToolButtonListWrapper({
   primary,
   items,
   onInteraction,
-  ...rest
 }: ToolButtonListWrapperProps) {
   return (
     <ToolButtonList>
       <ToolButtonListDefault>
         <ToolButton
-          id={primary.id}
-          icon={primary.icon}
-          isActive={primary.isActive}
-          label={primary.label}
-          tooltip={primary.tooltip}
-          disabled={primary.disabled}
+          {...primary}
           onInteraction={({ itemId }) =>
             onInteraction?.({ groupId, itemId, commands: primary.commands })
           }
@@ -64,10 +59,8 @@ export default function ToolButtonListWrapper({
         {items.map(item => (
           <ToolButtonListItem
             key={item.id}
-            icon={item.icon}
-            disabled={item.disabled}
+            {...item}
             onSelect={() => onInteraction?.({ groupId, itemId: item.id, commands: item.commands })}
-            className={item.className}
           >
             <span className="pl-1">{item.label || item.tooltip || item.id}</span>
           </ToolButtonListItem>
