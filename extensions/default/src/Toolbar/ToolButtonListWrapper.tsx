@@ -33,6 +33,7 @@ interface ToolButtonListWrapperProps {
  * Wraps the ToolButtonList component to handle the OHIF toolbar button structure
  * @param props - Component props
  * @returns Component
+ * // test
  */
 export default function ToolButtonListWrapper({
   groupId,
