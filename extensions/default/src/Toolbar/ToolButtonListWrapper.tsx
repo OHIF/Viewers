@@ -13,6 +13,7 @@ interface ButtonItem {
   icon?: string;
   label?: string;
   tooltip?: string;
+  isActive?: boolean;
   commands?: Record<string, unknown>;
   disabled?: boolean;
   className?: string;
@@ -40,6 +41,7 @@ export default function ToolButtonListWrapper({
   primary,
   items,
   onInteraction,
+  ...rest
 }: ToolButtonListWrapperProps) {
   return (
     <ToolButtonList>
@@ -47,6 +49,7 @@ export default function ToolButtonListWrapper({
         <ToolButton
           id={primary.id}
           icon={primary.icon}
+          isActive={primary.isActive}
           label={primary.label}
           tooltip={primary.tooltip}
           disabled={primary.disabled}

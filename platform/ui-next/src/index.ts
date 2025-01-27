@@ -111,6 +111,7 @@ import {
   ToolboxProvider,
 } from './contextProviders';
 import { ViewportGridContext, ViewportGridProvider, useViewportGrid } from './contextProviders';
+import * as utils from './utils';
 
 export {
   ErrorBoundary,
@@ -225,4 +226,5 @@ export {
   ToolButtonListDivider,
   ToolboxProvider,
   useToolbox,
+  utils,
 };

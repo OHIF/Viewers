@@ -1,5 +1,5 @@
 import { ToolbarButton as ToolbarButtonLegacy } from '@ohif/ui';
-import { ToolButton } from '@ohif/ui-next';
+import { ToolButton, utils } from '@ohif/ui-next';
 
 import ToolbarLayoutSelectorWithServices from './Toolbar/ToolbarLayoutSelector';
 
@@ -12,14 +12,6 @@ import { ProgressDropdownWithService } from './Components/ProgressDropdownWithSe
 // new
 import ToolButtonListWrapper from './Toolbar/ToolButtonListWrapper';
 import { ToolBoxButtonGroupWrapper, ToolBoxButtonWrapper } from './Toolbar/ToolBoxWrapper';
-
-const getClassName = isToggled => {
-  return {
-    className: isToggled
-      ? '!text-primary-active'
-      : '!text-common-bright hover:!bg-primary-dark hover:text-primary-light',
-  };
-};
 
 export default function getToolbarModule({ commandsManager, servicesManager }: withAppTypes) {
   const { cineService } = servicesManager.services;
@@ -93,7 +85,7 @@ export default function getToolbarModule({ commandsManager, servicesManager }: w
       name: 'evaluate.cine',
       evaluate: () => {
         const isToggled = cineService.getState().isCineEnabled;
-        return getClassName(isToggled);
+        return utils.getToggledClassName(isToggled);
       },
     },
   ];

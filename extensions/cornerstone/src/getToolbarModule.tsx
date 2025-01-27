@@ -1,10 +1,5 @@
 import { Enums } from '@cornerstonejs/tools';
-
-const getToggledClassName = (isToggled: boolean) => {
-  return isToggled
-    ? '!text-primary-active'
-    : '!text-common-bright hover:!bg-primary-dark hover:text-primary-light';
-};
+import { utils } from '@ohif/ui-next';
 
 const getDisabledState = (disabledText?: string) => ({
   disabled: true,
@@ -189,7 +184,7 @@ export default function getToolbarModule({ commandsManager, servicesManager }: w
 
         if (!synchronizers?.length) {
           return {
-            className: getToggledClassName(false),
+            className: utils.getToggledClassName(false),
           };
         }
 
@@ -203,7 +198,7 @@ export default function getToolbarModule({ commandsManager, servicesManager }: w
 
         if (!synchronizers?.length) {
           return {
-            className: getToggledClassName(false),
+            className: utils.getToggledClassName(false),
           };
         }
 
@@ -215,7 +210,7 @@ export default function getToolbarModule({ commandsManager, servicesManager }: w
         const isEnabled = synchronizer?._enabled;
 
         return {
-          className: getToggledClassName(isEnabled),
+          className: utils.getToggledClassName(isEnabled),
         };
       },
     },
@@ -245,7 +240,7 @@ export default function getToolbarModule({ commandsManager, servicesManager }: w
         const isToggled = prop;
 
         return {
-          className: getToggledClassName(isToggled),
+          className: utils.getToggledClassName(isToggled),
         };
       },
     },
@@ -274,7 +269,7 @@ export default function getToolbarModule({ commandsManager, servicesManager }: w
 
         return {
           disabled: false,
-          className: getToggledClassName(isMpr),
+          className: utils.getToggledClassName(isMpr),
         };
       },
     },
@@ -303,6 +298,6 @@ function _evaluateToggle({
   const isOff = offModes.includes(toolGroup.getToolOptions(toolName).mode);
 
   return {
-    className: getToggledClassName(!isOff),
+    className: utils.getToggledClassName(!isOff),
   };
 }
