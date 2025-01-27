@@ -1,14 +1,33 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import Typography from '../Typography';
 import { Icons } from '@ohif/ui-next';
 
 const ContextMenu = ({ items, ...props }) => {
+  const contextMenuRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if(!contextMenuRef?.current) {
+      return;
+    }
+
+    const contextMenu = contextMenuRef.current;
+
+    const boundingClientRect = contextMenu.getBoundingClientRect();
+    if (boundingClientRect.bottom + boundingClientRect.height > window.innerHeight) {
+      props.defaultPosition.y = props.defaultPosition.y - boundingClientRect.height;
+    }
+    if (boundingClientRect.right + boundingClientRect.width > window.innerWidth) {
+      props.defaultPosition.x = props.defaultPosition.x - boundingClientRect.width;
+    }
+  }, [props.defaultPosition]);
+
   if (!items) {
     return null;
   }
+
   return (
     <div
+      ref={contextMenuRef}
       data-cy="context-menu"
       className="bg-secondary-dark relative z-50 block w-48 rounded"
       onContextMenu={e => e.preventDefault()}
@@ -35,6 +54,10 @@ const ContextMenu = ({ items, ...props }) => {
 };
 
 ContextMenu.propTypes = {
+  defaultPosition: PropTypes.shape({
+    x: PropTypes.number,
+    y: PropTypes.number,
+  }),
   items: PropTypes.arrayOf(
     PropTypes.shape({
       label: PropTypes.string.isRequired,
