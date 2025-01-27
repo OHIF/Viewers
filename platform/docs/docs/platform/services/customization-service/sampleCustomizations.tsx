@@ -615,6 +615,23 @@ window.config = {
     },
   ],
 };
+  `,
+  },
+  {
+    id: 'ui.notificationComponent',
+    description: 'Define the component which is used to render viewport notifications',
+    default: 'Default Notification component in viewport',
+    configuration: `
+window.config = {
+  // rest of window config
+  customizationService: [
+    {
+      'ui.notificationComponent': {
+          $set: CustomizedComponent,
+      },
+    },
+  ],
+  };
     `,
   },
   {

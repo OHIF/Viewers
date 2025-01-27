@@ -374,7 +374,9 @@ const OHIFCornerstoneViewport = React.memo(
       onResize,
     });
 
-    const customNotificationComponent = customizationService.get('notificationComponent')?.content;
+    const customNotificationComponent = customizationService.getCustomization(
+      'ui.notificationComponent'
+    )?.content;
     const NotificationComponent = customNotificationComponent
       ? customNotificationComponent
       : Notification;
