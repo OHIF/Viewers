@@ -489,6 +489,17 @@ context menus.  Currently it supports buttons 1-3, as well as modifier keys
 by associating a commands list with the button to click.  See `initContextMenu`
 for more details.
 
+## Customizable Render component
+
+The CustomizableRenderComponent renders a component based on the customizationId received through props. When the customizationId is provided, the component will attempt to fetch and render the corresponding available component. This approach helps eliminate the dependency on the customization service in UI components.
+
+```jsx
+CustomizableRenderComponent({
+    customizationId: 'customization-id',
+    props
+  });
+```
+
 ## Please add additional customizations above this section
 > 3rd Party implementers may be added to this table via pull requests.
 
