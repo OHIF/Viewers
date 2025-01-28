@@ -136,7 +136,7 @@ const createStyleMap = (
   collapsedInsideBorderSize: number,
   collapsedOutsideBorderSize: number
 ): StyleMap => {
-  const collapsedHideWidth = expandedWidth - collapsedWidth - collapsedInsideBorderSize;
+  const collapsedHideWidth = expandedWidth - collapsedWidth - collapsedOutsideBorderSize;
 
   return {
     open: {
@@ -146,11 +146,11 @@ const createStyleMap = (
     closed: {
       left: {
         marginLeft: `-${collapsedHideWidth}px`,
-        marginRight: `${collapsedOutsideBorderSize}px`,
+        marginRight: `${collapsedInsideBorderSize}px`,
         alignItems: `flex-end`,
       },
       right: {
-        marginLeft: `${collapsedOutsideBorderSize}px`,
+        marginLeft: `${collapsedInsideBorderSize}px`,
         marginRight: `-${collapsedHideWidth}px`,
         alignItems: `flex-start`,
       },
