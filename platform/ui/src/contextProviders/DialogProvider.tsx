@@ -18,7 +18,6 @@ import classNames from 'classnames';
  * we import to instantiate cornerstone
  */
 import guid from './../../../core/src/utils/guid';
-import { CustomizationService } from '@ohif/core';
 import './DialogProvider.css';
 
 const DialogContext = createContext(null);
