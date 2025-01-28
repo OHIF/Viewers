@@ -1,4 +1,4 @@
-import { useServices } from '../../contextProviders';
+import CustomizableRenderComponent from '../../utils/CustomizableRenderComponent';
 
 export interface LoadingIndicatorTotalPercentProps {
   className?: string;
@@ -19,11 +19,8 @@ function LoadingIndicatorTotalPercent({
   loadingText,
   targetText,
 }: LoadingIndicatorTotalPercentProps) {
-  const { services } = useServices();
-  const Component = services.customizationService.getCustomization(
-    'ui.LoadingIndicatorTotalPercent'
-  );
-  return Component({
+  return CustomizableRenderComponent({
+    customizationId: 'ui.LoadingIndicatorTotalPercent',
     className,
     totalNumbers,
     percentComplete,

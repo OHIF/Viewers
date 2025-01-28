@@ -1,4 +1,4 @@
-import { useServices } from '@ohif/ui';
+import CustomizableRenderComponent from '../../utils/CustomizableRenderComponent';
 
 /**
  *  A React component that renders a loading indicator.
@@ -8,9 +8,8 @@ import { useServices } from '@ohif/ui';
  */
 
 function LoadingIndicatorProgress({ className, textBlock, progress }) {
-  const { services } = useServices();
-  const Component = services.customizationService.getCustomization('ui.LoadingIndicatorProgress');
-  return Component({
+  return CustomizableRenderComponent({
+    customizationId: 'ui.LoadingIndicatorProgress',
     className,
     textBlock,
     progress,

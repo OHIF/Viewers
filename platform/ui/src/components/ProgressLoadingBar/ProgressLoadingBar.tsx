@@ -1,4 +1,4 @@
-import { useServices } from '@ohif/ui';
+import CustomizableRenderComponent from '../../utils/CustomizableRenderComponent';
 
 export type ProgressLoadingBarProps = {
   progress?: number;
@@ -11,9 +11,8 @@ export type ProgressLoadingBarProps = {
  */
 
 function ProgressLoadingBar({ progress }) {
-  const { services } = useServices();
-  const Component = services.customizationService.getCustomization('ui.ProgressLoadingBar');
-  return Component({
+  return CustomizableRenderComponent({
+    customizationId: 'ui.ProgressLoadingBar',
     progress,
   });
 }
