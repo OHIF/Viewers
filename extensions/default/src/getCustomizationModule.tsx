@@ -15,6 +15,7 @@ import loadingIndicatorProgressCustomization from './customizations/loadingIndic
 import loadingIndicatorTotalPercentCustomization from './customizations/loadingIndicatorTotalPercentCustomization';
 import progressLoadingBarCustomization from './customizations/progressLoadingBarCustomization';
 import contextMenuItemCustomization from './customizations/contextMenuItemCustomization';
+import viewportActionCornersCustomization from './customizations/viewportActionCornersCustomization';
 
 /**
  *
@@ -56,6 +57,7 @@ export default function getCustomizationModule({ servicesManager, extensionManag
         ...loadingIndicatorTotalPercentCustomization,
         ...progressLoadingBarCustomization,
         ...contextMenuItemCustomization,
+        ...viewportActionCornersCustomization,
       },
     },
   ];
