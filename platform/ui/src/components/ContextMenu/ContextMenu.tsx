@@ -31,7 +31,7 @@ const ContextMenu = ({ items, ...props }) => {
       ref={contextMenuRef}
       data-cy="context-menu"
       className={
-        'bg-secondary-dark relative z-50 block w-48 rounded ' + props?.contentProps?.customClassName
+        'bg-secondary-dark relative z-50 block w-48 rounded ' + props?.contentProps?.className
       }
       onContextMenu={e => e.preventDefault()}
     >
