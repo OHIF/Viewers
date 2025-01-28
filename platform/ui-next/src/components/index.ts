@@ -54,7 +54,6 @@ import { DisplaySetMessageListTooltip } from './DisplaySetMessageListTooltip';
 import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from './Tooltip';
 import { ToolboxUI, Toolbox } from './OHIFToolbox';
 import Numeric from './Numeric';
-import TextMeta from './TextMeta';
 
 import {
   DropdownMenu,
@@ -102,13 +101,9 @@ import {
   ToolButtonListItem,
   ToolButtonListDivider,
 } from './ToolButton';
-import { RowInputRange } from './OHIFToolSettings';
-import { RowSegmentedControl } from './OHIFToolSettings';
-import { RowDoubleRange } from './OHIFToolSettings';
 
 export {
   Numeric,
-  TextMeta,
   ErrorBoundary,
   Button,
   buttonVariants,
@@ -230,7 +225,4 @@ export {
   ToolButtonListDropDown,
   ToolButtonListItem,
   ToolButtonListDivider,
-  RowInputRange,
-  RowSegmentedControl,
-  RowDoubleRange,
 };

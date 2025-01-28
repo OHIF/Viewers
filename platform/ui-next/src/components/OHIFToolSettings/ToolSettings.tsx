@@ -1,6 +1,6 @@
 import React from 'react';
-import { RowInputRange } from './RowInputRange';
-import { RowSegmentedControl } from './RowSegmentedControl';
+import RowInputRange from './RowInputRange';
+import RowSegmentedControl from './RowSegmentedControl';
 import RowDoubleRange from './RowDoubleRange';
 
 const SETTING_TYPES = {
@@ -58,7 +58,6 @@ const renderRangeSetting = option => {
           value={option.value}
           onChange={value => option.commands?.(value)}
           allowNumberEdit={true}
-          showAdjustmentArrows={false}
           inputClassName="ml-1 w-4/5 cursor-pointer"
         />
       </div>
@@ -85,8 +84,6 @@ function renderDoubleRangeSetting(option) {
       maxValue={option.max}
       step={option.step}
       showLabel={false}
-      allowNumberEdit={true}
-      containerClassName="w-full"
     />
   );
 }

@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from 'react';
-import { DoubleSlider } from '@ohif/ui-next';
+import React from 'react';
+import Numeric from '../Numeric';
+import { cn } from '../../lib/utils';
 
 interface RowDoubleRangeProps {
   values: [number, number];
@@ -8,7 +9,8 @@ interface RowDoubleRangeProps {
   maxValue: number;
   step: number;
   showLabel?: boolean;
-  [key: string]: any;
+  label?: string;
+  className?: string;
 }
 
 const RowDoubleRange: React.FC<RowDoubleRangeProps> = ({
@@ -18,40 +20,22 @@ const RowDoubleRange: React.FC<RowDoubleRangeProps> = ({
   maxValue,
   step,
   showLabel = false,
-  ...rest
+  label = '',
+  className,
 }) => {
-  const [currentValues, setCurrentValues] = useState<[number, number]>(values);
-
-  useEffect(() => {
-    setCurrentValues(values);
-  }, [values]);
-
-  const handleSliderChange = (newValues: [number, number]) => {
-    setCurrentValues(newValues);
-    if (typeof onChange === 'function') {
-      onChange(newValues);
-    }
-  };
-
   return (
-    <div
-      className="flex w-full flex-col space-y-2 py-2"
-      {...rest}
+    <Numeric.Container
+      mode="doubleRange"
+      values={values}
+      onChange={onChange}
+      min={minValue}
+      max={maxValue}
+      step={step}
+      className={cn('flex flex-col space-y-2', className)}
     >
-      {showLabel ? (
-        <div className="text-sm text-white">
-          <span>{currentValues[0]}</span> &mdash; <span>{currentValues[1]}</span>
-        </div>
-      ) : null}
-
-      <DoubleSlider
-        min={minValue}
-        max={maxValue}
-        step={step}
-        defaultValue={currentValues}
-        onValueChange={handleSliderChange}
-      />
-    </div>
+      {showLabel && <Numeric.Label showValue>{label}</Numeric.Label>}
+      <Numeric.DoubleRange showNumberInputs />
+    </Numeric.Container>
   );
 };
 

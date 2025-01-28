@@ -17,9 +17,7 @@ import TabsShowcase from './components/TabsShowcase';
 import ToastShowcase from './components/ToastShowcase';
 import ToolButtonShowcase from './components/ToolButtonShowcase';
 import ToolButtonListShowcase from './components/ToolButtonListShowcase';
-import RowInputRangeShowcase from './components/RowInputRangeShowcase';
 import NumericMetaShowcase from './components/NumericMetaShowcase';
-import TextMetaShowcase from './components/TextMetaShowcase';
 /**
  * Components List page that displays all available UI components
  */
@@ -35,9 +33,9 @@ export default function ComponentsList() {
             <div className="ml-6 mb-6 text-base">
               <h1 className="text-foreground mb-3 text-5xl">Components</h1>
             </div>
+            <TabsShowcase />
 
-            {/* Alphabetically Sorted ShowcaseRows */}
-            {/* <ButtonShowcase />
+            <ButtonShowcase />
             <CheckboxShowcase />
             <DataRowShowcase />
             <DropdownMenuShowcase />
@@ -50,9 +48,7 @@ export default function ComponentsList() {
             <ToastShowcase />
             <ToolButtonShowcase />
             <ToolButtonListShowcase />
-            <RowInputRangeShowcase /> */}
             <NumericMetaShowcase />
-            {/* <TextMetaShowcase /> */}
           </div>
         </div>
       </TooltipProvider>
