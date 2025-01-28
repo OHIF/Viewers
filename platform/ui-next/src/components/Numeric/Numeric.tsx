@@ -47,15 +47,9 @@ function NumericMetaContainer({
   const [internalSingleValue, setInternalSingleValue] = useState<number>(value);
   const [internalDoubleValue, setInternalDoubleValue] = useState<[number, number]>(values);
 
-  // Use the controlled value if provided, otherwise use internal state
-  const singleValue = onChange ? value : internalSingleValue;
-  const doubleValue = onChange ? values : internalDoubleValue;
-
   const handleSingleChange = useCallback(
     (newVal: number) => {
-      // Update internal state
       setInternalSingleValue(newVal);
-      // Notify parent if onChange is provided
       onChange?.(newVal);
     },
     [onChange]
@@ -75,8 +69,8 @@ function NumericMetaContainer({
     <NumericMetaContext.Provider
       value={{
         mode,
-        singleValue,
-        doubleValue,
+        singleValue: internalSingleValue,
+        doubleValue: internalDoubleValue,
         setSingleValue: handleSingleChange,
         setDoubleValue: handleDoubleChange,
         min,
@@ -105,18 +99,23 @@ function NumericMetaLabel({ children, showValue, className }: NumericMetaLabelPr
   }
 
   const { mode, singleValue, doubleValue } = ctx;
+  console.debug('🚀 ~ doubleValue:', doubleValue);
 
   let displayedValue = '';
+  let valueClasses = '';
   if (mode === 'number' || mode === 'singleRange') {
     displayedValue = singleValue.toString();
+    valueClasses = 'w-10';
   } else if (mode === 'doubleRange') {
-    displayedValue = `[${doubleValue[0]}, ${doubleValue[1]}]`;
+    displayedValue = `[${doubleValue[0]} - ${doubleValue[1]}]`;
   }
 
   return (
     <div className={cn('text-foreground text-sm', className)}>
       {children}
-      {showValue && <span className="inline-block w-10">{`: ${displayedValue}`}</span>}
+      {showValue && (
+        <span className={cn('inline-block', valueClasses)}>{`: ${displayedValue}`}</span>
+      )}
     </div>
   );
 }
@@ -213,13 +212,14 @@ function DoubleRange({ showNumberInputs, className }: DoubleRangeProps) {
   }
 
   return (
-    <div className={cn('flex items-center', className)}>
+    <div className={cn('min-w-0 flex-1', className)}>
       <DoubleSlider
         min={min}
         max={max}
         step={step}
         defaultValue={doubleValue}
         onValueChange={handleSliderChange}
+        showNumberInputs={showNumberInputs}
       />
     </div>
   );

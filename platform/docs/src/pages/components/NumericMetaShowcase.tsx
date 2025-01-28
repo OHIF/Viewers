@@ -32,6 +32,7 @@ export default function NumericShowcase() {
             mode="number"
             min={0}
             max={10}
+            onChange={val => console.debug('Value changed:', val)}
           >
             <div className="flex flex-row items-center space-x-2">
               <Numeric.Label>Width</Numeric.Label>
@@ -43,6 +44,7 @@ export default function NumericShowcase() {
             mode="number"
             min={0}
             max={100}
+            onChange={val => console.debug('Value changed:', val)}
           >
             <Numeric.Label className="text-secondary-foreground text-sm font-bold">
               Bolder
@@ -53,6 +55,7 @@ export default function NumericShowcase() {
           <Numeric.Container
             mode="number"
             className="flex flex-row items-center justify-between"
+            onChange={val => console.debug('Value changed:', val)}
           >
             <Numeric.Label className="flex flex-row items-center">
               <Icons.Add />
@@ -89,6 +92,7 @@ export default function NumericShowcase() {
             max={100}
             step={1}
             value={50}
+            onChange={val => console.debug('Value changed:', val)}
           >
             <Numeric.Label>Brightness</Numeric.Label>
             <Numeric.SingleRange showNumberInput />
@@ -101,9 +105,23 @@ export default function NumericShowcase() {
             step={1}
             value={0}
             className="flex flex-row items-center"
+            onChange={val => console.debug('Value changed:', val)}
           >
             <Numeric.Label showValue>Contrast</Numeric.Label>
             <Numeric.SingleRange />
+          </Numeric.Container>
+
+          <Numeric.Container
+            mode="singleRange"
+            min={0}
+            max={100}
+            step={1}
+            value={50}
+            className="flex flex-row items-center space-x-2"
+            onChange={val => console.debug('Value changed:', val)}
+          >
+            <Numeric.Label>Something Else </Numeric.Label>
+            <Numeric.SingleRange showNumberInput />
           </Numeric.Container>
         </div>
       </ShowcaseRow>
@@ -134,19 +152,33 @@ export default function NumericShowcase() {
             max={100}
             step={1}
             values={[30, 70]}
+            onChange={vals => console.debug('Values changed:', vals)}
           >
             <Numeric.Label showValue>Window Width/Level</Numeric.Label>
+            <Numeric.DoubleRange />
+          </Numeric.Container>
+
+          <Numeric.Container
+            mode="doubleRange"
+            min={0}
+            max={100}
+            step={1}
+            values={[30, 70]}
+          >
+            <Numeric.Label>Window Width/Level</Numeric.Label>
             <Numeric.DoubleRange showNumberInputs />
           </Numeric.Container>
 
           <Numeric.Container
             mode="doubleRange"
-            min={-1000}
-            max={1000}
-            step={10}
-            values={[-500, 500]}
+            min={0}
+            max={100}
+            step={1}
+            values={[30, 70]}
+            className="flex flex-row items-center space-x-2"
+            onChange={vals => console.debug('Values changed:', vals)}
           >
-            <Numeric.Label showValue>Hounsfield Units</Numeric.Label>
+            <Numeric.Label>Inline double slider</Numeric.Label>
             <Numeric.DoubleRange />
           </Numeric.Container>
         </div>
