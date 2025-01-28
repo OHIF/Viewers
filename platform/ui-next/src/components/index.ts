@@ -53,6 +53,8 @@ import { PanelSection } from './PanelSection';
 import { DisplaySetMessageListTooltip } from './DisplaySetMessageListTooltip';
 import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from './Tooltip';
 import { ToolboxUI, Toolbox } from './OHIFToolbox';
+import NumericMeta from './NumericMeta';
+import TextMeta from './TextMeta';
 
 import {
   DropdownMenu,
@@ -105,6 +107,8 @@ import { RowSegmentedControl } from './OHIFToolSettings';
 import { RowDoubleRange } from './OHIFToolSettings';
 
 export {
+  NumericMeta,
+  TextMeta,
   ErrorBoundary,
   Button,
   buttonVariants,
