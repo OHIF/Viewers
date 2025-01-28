@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.10.0-beta.78](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.77...v3.10.0-beta.78) (2025-01-28)
+
+
+### Features
+
+* **side-panels:** Added resize handle interactive feedback for side panels ([#4734](https://github.com/OHIF/Viewers/issues/4734)) ([6abb095](https://github.com/OHIF/Viewers/commit/6abb095b8a39c5ae4f8df8852b3ddb3249ec463f))
+
+
+
+
+
 # [3.10.0-beta.77](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.76...v3.10.0-beta.77) (2025-01-28)
 
 **Note:** Version bump only for package @ohif/ui-next
