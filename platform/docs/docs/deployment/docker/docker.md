@@ -35,7 +35,7 @@ Building a Docker image comes in handy when OHIF has been customized (e.g. with 
 
 ### Prerequisites
 The machine on which to build and run the Docker container must have:
-1. All of the [requirements](./build-for-production.md#build-for-production) for building a production version of OHIF.
+1. All of the [requirements](../build-for-production.md#build-for-production) for building a production version of OHIF.
 2. A checked out branch of the OHIF Viewer.
 3. [Docker](https://docs.docker.com/get-docker/) installed.
 

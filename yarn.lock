@@ -8265,10 +8265,10 @@ cypress-file-upload@^5.0.8:
   resolved "https://registry.yarnpkg.com/cypress-file-upload/-/cypress-file-upload-5.0.8.tgz#d8824cbeaab798e44be8009769f9a6c9daa1b4a1"
   integrity sha512-+8VzNabRk3zG6x8f8BWArF/xA/W0VK4IZNx3MV0jFWrJS/qKn8eHfa5nU73P9fOQAgwHFJx7zjg4lwOnljMO8g==
 
-cypress@^13.16.1:
-  version "13.16.1"
-  resolved "https://registry.yarnpkg.com/cypress/-/cypress-13.16.1.tgz#82e776f6ad2037ccce6b6feabed768615c476258"
-  integrity sha512-17FtCaz0cx7ssWYKXzGB0Vub8xHwpVPr+iPt2fHhLMDhVAPVrplD+rTQsZUsfb19LVBn5iwkEUFjQ1yVVJXsLA==
+cypress@^14.0.0:
+  version "14.0.0"
+  resolved "https://registry.yarnpkg.com/cypress/-/cypress-14.0.0.tgz#a71cb0a243a0bfeb97b6973ab9c5291ca5288e93"
+  integrity sha512-kEGqQr23so5IpKeg/dp6GVi7RlHx1NmW66o2a2Q4wk9gRaAblLZQSiZJuDI8UMC4LlG5OJ7Q6joAiqTrfRNbTw==
   dependencies:
     "@cypress/request" "^3.0.6"
     "@cypress/xvfb" "^1.2.4"
@@ -8516,10 +8516,10 @@ dayjs@^1.10.4:
   resolved "https://registry.yarnpkg.com/dayjs/-/dayjs-1.11.13.tgz#92430b0139055c3ebb60150aa13e860a4b5a366c"
   integrity sha512-oaMBel6gjolK862uaPQOVTA7q3TZhuSvuMQAAglQDOWYO9A91IrAOUJEyKVlqJlHE0vq5p5UXxzdPfMH/x6xNg==
 
-dcmjs@*, dcmjs@>=0.33.0, dcmjs@^0.29.8:
-  version "0.34.5"
-  resolved "https://registry.yarnpkg.com/dcmjs/-/dcmjs-0.34.5.tgz#13fe2b4ff34145ea6efeb62e53967e76d867b8f8"
-  integrity sha512-a2m9lnvdQuKA0YllwymDiOOv7LEv43Vno9QyIP78QWKRc0azoMKxFpti9ynFy2zf2bcapEwaD9OzYes39FukVQ==
+dcmjs@*, dcmjs@0.38.0, dcmjs@^0.29.8:
+  version "0.38.0"
+  resolved "https://registry.yarnpkg.com/dcmjs/-/dcmjs-0.38.0.tgz#34cb1b08b5a8159801fc647537d6f8e903cc78cf"
+  integrity sha512-fsVASGco1aDaq9g683/masbhc7jeGRT1breGsMuiCgCWtOGe7oJFeDDzPcmLTxM1fFt6daHPCk0FnQZTxpr8Ew==
   dependencies:
     "@babel/runtime-corejs3" "^7.22.5"
     adm-zip "^0.5.10"
