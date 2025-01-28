@@ -1,6 +1,4 @@
-import React, { ReactElement } from 'react';
-import CustomizableRenderComponent from '../../utils/CustomizableRenderComponent';
-import './ProgressLoadingBar.css';
+import { useServices } from '@ohif/ui';
 
 export type ProgressLoadingBarProps = {
   progress?: number;
@@ -13,28 +11,11 @@ export type ProgressLoadingBarProps = {
  */
 
 function ProgressLoadingBar({ progress }) {
-  return CustomizableRenderComponent({
-    customizationId: 'ui.ProgressLoadingBar',
-    FallbackComponent: FallbackProgressLoadingBar,
+  const { services } = useServices();
+  const Component = services.customizationService.getCustomization('ui.ProgressLoadingBar');
+  return Component({
     progress,
   });
-}
-function FallbackProgressLoadingBar({ progress }: ProgressLoadingBarProps): ReactElement {
-  return (
-    <div className="loading">
-      {progress === undefined || progress === null ? (
-        <div className="infinite-loading-bar bg-primary-light"></div>
-      ) : (
-        <div
-          className="bg-primary-light"
-          style={{
-            width: `${progress}%`,
-            height: '8px',
-          }}
-        ></div>
-      )}
-    </div>
-  );
 }
 
 export default ProgressLoadingBar;

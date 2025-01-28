@@ -11,6 +11,9 @@ import getDataSourceConfigurationCustomization from './customizations/dataSource
 import progressDropdownCustomization from './customizations/progressDropdownCustomization';
 import sortingCriteriaCustomization from './customizations/sortingCriteriaCustomization';
 import onDropHandlerCustomization from './customizations/onDropHandlerCustomization';
+import loadingIndicatorProgressCustomization from './customizations/loadingIndicatorProgressCustomization';
+import loadingIndicatorTotalPercentCustomization from './customizations/loadingIndicatorTotalPercentCustomization';
+import progressLoadingBarCustomization from './customizations/progressLoadingBarCustomization';
 
 /**
  *
@@ -48,6 +51,9 @@ export default function getCustomizationModule({ servicesManager, extensionManag
         ...sortingCriteriaCustomization,
         ...defaultContextMenuCustomization,
         ...onDropHandlerCustomization,
+        ...loadingIndicatorProgressCustomization,
+        ...loadingIndicatorTotalPercentCustomization,
+        ...progressLoadingBarCustomization,
       },
     },
   ];

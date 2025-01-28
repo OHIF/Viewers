@@ -1,9 +1,5 @@
-export default {
-  'ui.ProgressLoadingBar': {
-    $set: CustomProgressLoadingBar,
-  },
-};
+import ProgressLoadingBar from '../Components/ProgressLoadingBar';
 
-function CustomProgressLoadingBar() {
-  return null;
-}
+export default {
+  'ui.ProgressLoadingBar': ProgressLoadingBar,
+};

@@ -1,9 +1,5 @@
-export default {
-  'ui.LoadingIndicatorTotalPercent': {
-    $set: CustomLoadingIndicatorTotalPercent,
-  },
-};
+import LoadingIndicatorTotalPercent from '../Components/LoadingIndicatorTotalPercent';
 
-function CustomLoadingIndicatorTotalPercent() {
-  return null;
-}
+export default {
+  'ui.LoadingIndicatorTotalPercent': LoadingIndicatorTotalPercent,
+};

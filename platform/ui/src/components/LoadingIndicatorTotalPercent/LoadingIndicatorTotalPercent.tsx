@@ -1,6 +1,4 @@
-import React from 'react';
-import CustomizableRenderComponent from '../../utils/CustomizableRenderComponent';
-import LoadingIndicatorProgress from '../LoadingIndicatorProgress';
+import { useServices } from '../../contextProviders';
 
 interface Props {
   className?: string;
@@ -21,47 +19,17 @@ function LoadingIndicatorTotalPercent({
   loadingText,
   targetText,
 }: Props) {
-  return CustomizableRenderComponent({
-    customizationId: 'ui.LoadingIndicatorTotalPercent',
-    FallbackComponent: FallbackLoadingIndicatorTotalPercent,
+  const { services } = useServices();
+  const Component = services.customizationService.getCustomization(
+    'ui.LoadingIndicatorTotalPercent'
+  );
+  return Component({
     className,
     totalNumbers,
     percentComplete,
     loadingText,
     targetText,
   });
-}
-
-function FallbackLoadingIndicatorTotalPercent({
-  className,
-  totalNumbers,
-  percentComplete,
-  loadingText = 'Loading...',
-  targetText = 'segments',
-}: Props): JSX.Element {
-  const progress = percentComplete;
-  const totalNumbersText = totalNumbers !== null ? `${totalNumbers}` : '';
-  const numTargetsLoadedText =
-    percentComplete !== null ? Math.floor((percentComplete * totalNumbers) / 100) : '';
-
-  const textBlock =
-    !totalNumbers && percentComplete === null ? (
-      <div className="text-sm text-white">{loadingText}</div>
-    ) : !totalNumbers && percentComplete !== null ? (
-      <div className="text-sm text-white">Loaded {percentComplete}%</div>
-    ) : (
-      <div className="text-sm text-white">
-        Loaded {numTargetsLoadedText} of {totalNumbersText} {targetText}
-      </div>
-    );
-
-  return (
-    <LoadingIndicatorProgress
-      className={className}
-      progress={progress}
-      textBlock={textBlock}
-    />
-  );
 }
 
 export default LoadingIndicatorTotalPercent;

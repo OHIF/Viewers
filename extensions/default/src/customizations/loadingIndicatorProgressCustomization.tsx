@@ -1,9 +1,5 @@
-export default {
-  'ui.LoadingIndicatorProgress': {
-    $set: CustomLoadingIndicatorProgress,
-  },
-};
+import LoadingIndicatorProgress from '../Components/LoadingIndicatorProgress';
 
-function CustomLoadingIndicatorProgress() {
-  return null;
-}
+export default {
+  'ui.LoadingIndicatorProgress': LoadingIndicatorProgress,
+};
