@@ -51,7 +51,7 @@ export function WindowLevelActionMenu({
   const { colorbarService, cornerstoneViewportService } = servicesManager.services;
   const viewportInfo = cornerstoneViewportService.getViewportInfo(viewportId);
   const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
-  const backgroundColor = viewportInfo.getViewportOptions().background;
+  const backgroundColor = viewportInfo?.getViewportOptions().background;
   const isLight = backgroundColor ? utilities.isEqual(backgroundColor, [1, 1, 1]) : false;
 
   const { t } = useTranslation('WindowLevelActionMenu');
