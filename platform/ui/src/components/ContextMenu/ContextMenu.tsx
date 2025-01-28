@@ -1,9 +1,8 @@
 import React, { useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
-import { useServices } from '@ohif/ui';
+import CustomizableRenderComponent from '../../utils/CustomizableRenderComponent';
 
 const ContextMenu = ({ items, ...props }) => {
-  const { services } = useServices();
   const contextMenuRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     if (!contextMenuRef?.current) {
@@ -35,7 +34,8 @@ const ContextMenu = ({ items, ...props }) => {
       onContextMenu={e => e.preventDefault()}
     >
       {items.map((item, index) => {
-        return services.customizationService.getCustomization('ui.ContextMenuItem')({
+        return CustomizableRenderComponent({
+          customizationId: 'ui.ContextMenuItem',
           item,
           index,
           ...props,
