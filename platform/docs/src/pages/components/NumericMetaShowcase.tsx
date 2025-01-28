@@ -1,5 +1,5 @@
 import React from 'react';
-import NumericMeta from '../../../../ui-next/src/components/NumericMeta';
+import NumericMeta from '../../../../ui-next/src/components/Numeric';
 import ShowcaseRow from './ShowcaseRow';
 
 /**
@@ -15,28 +15,33 @@ export default function NumericMetaShowcase() {
         code={`
 // Basic number input
 <NumericMeta.Container mode="number" min={0} max={100} step={1}>
-  <NumericMeta.Label text="Volume" showValue />
-  <NumericMeta.NumberOnlyInput />
+  <NumericMeta.Label showValue>Volume</NumericMeta.Label>
+  <NumericMeta.NumberInput />
 </NumericMeta.Container>
         `}
       >
-        <div className="bg-popover flex w-[300px] rounded p-4">
+        <div className="bg-popover flex flex-row p-4">
+          <NumericMeta.Container
+            mode="number"
+            min={0}
+            max={100}
+          >
+            <div className="flex flex-row items-center space-x-2">
+              <NumericMeta.Label>Width</NumericMeta.Label>
+              <NumericMeta.NumberInput />
+            </div>
+          </NumericMeta.Container>
+        </div>
+
+        <div className="bg-popover flex flex-row p-4">
           <NumericMeta.Container
             mode="number"
             min={0}
             max={100}
             step={1}
-            // onChange={v => {
-            //   console.debug('Value changed:', v);
-            // }}
           >
-            <div className="flex items-center justify-between space-x-2">
-              <NumericMeta.Label
-                text="Volume"
-                showValue
-              />
-              <NumericMeta.NumberOnlyInput />
-            </div>
+            <NumericMeta.Label className="text-red-50">Height</NumericMeta.Label>
+            <NumericMeta.NumberInput className="w-12" />
           </NumericMeta.Container>
         </div>
       </ShowcaseRow>
@@ -55,7 +60,7 @@ export default function NumericMetaShowcase() {
   value={50}
   onChange={(val) => console.debug('Value changed:', val)}
 >
-  <NumericMeta.Label text="Brightness" showValue />
+  <NumericMeta.Label showValue>Brightness</NumericMeta.Label>
   <NumericMeta.SingleRange showNumberInput />
 </NumericMeta.Container>
         `}
@@ -68,10 +73,7 @@ export default function NumericMetaShowcase() {
             step={1}
             value={50}
           >
-            <NumericMeta.Label
-              text="Brightness"
-              showValue
-            />
+            <NumericMeta.Label showValue>Brightness</NumericMeta.Label>
             <NumericMeta.SingleRange showNumberInput />
           </NumericMeta.Container>
 
@@ -82,10 +84,7 @@ export default function NumericMetaShowcase() {
             step={0.1}
             value={0}
           >
-            <NumericMeta.Label
-              text="Contrast"
-              showValue
-            />
+            <NumericMeta.Label showValue>Contrast</NumericMeta.Label>
             <NumericMeta.SingleRange />
           </NumericMeta.Container>
         </div>
@@ -105,7 +104,7 @@ export default function NumericMetaShowcase() {
   values={[30, 70]}
   onChange={(vals) => console.debug('Values changed:', vals)}
 >
-  <NumericMeta.Label text="Window Width/Level" showValue />
+  <NumericMeta.Label showValue>Window Width/Level</NumericMeta.Label>
   <NumericMeta.DoubleRange showNumberInputs />
 </NumericMeta.Container>
         `}
@@ -118,10 +117,7 @@ export default function NumericMetaShowcase() {
             step={1}
             values={[30, 70]}
           >
-            <NumericMeta.Label
-              text="Window Width/Level"
-              showValue
-            />
+            <NumericMeta.Label showValue>Window Width/Level</NumericMeta.Label>
             <NumericMeta.DoubleRange showNumberInputs />
           </NumericMeta.Container>
 
@@ -132,10 +128,7 @@ export default function NumericMetaShowcase() {
             step={10}
             values={[-500, 500]}
           >
-            <NumericMeta.Label
-              text="Hounsfield Units"
-              showValue
-            />
+            <NumericMeta.Label showValue>Hounsfield Units</NumericMeta.Label>
             <NumericMeta.DoubleRange />
           </NumericMeta.Container>
         </div>
@@ -149,17 +142,17 @@ export default function NumericMetaShowcase() {
 // Multiple NumericMeta components with different configurations
 <div className="space-y-4">
   <NumericMeta.Container mode="number" min={0} max={10} step={0.1}>
-    <NumericMeta.Label text="Zoom Factor" />
-    <NumericMeta.NumberOnlyInput />
+    <NumericMeta.Label>Zoom Factor</NumericMeta.Label>
+    <NumericMeta.NumberInput />
   </NumericMeta.Container>
 
   <NumericMeta.Container mode="singleRange" min={0} max={360} step={1}>
-    <NumericMeta.Label text="Rotation" showValue />
+    <NumericMeta.Label showValue>Rotation</NumericMeta.Label>
     <NumericMeta.SingleRange showNumberInput />
   </NumericMeta.Container>
 
   <NumericMeta.Container mode="doubleRange" min={-1000} max={3000} step={10}>
-    <NumericMeta.Label text="CT Window" showValue />
+    <NumericMeta.Label showValue>CT Window</NumericMeta.Label>
     <NumericMeta.DoubleRange showNumberInputs />
   </NumericMeta.Container>
 </div>
@@ -172,8 +165,8 @@ export default function NumericMetaShowcase() {
             max={10}
             step={0.1}
           >
-            <NumericMeta.Label text="Zoom Factor" />
-            <NumericMeta.NumberOnlyInput />
+            <NumericMeta.Label>Zoom Factor</NumericMeta.Label>
+            <NumericMeta.NumberInput />
           </NumericMeta.Container>
 
           <NumericMeta.Container
@@ -182,10 +175,7 @@ export default function NumericMetaShowcase() {
             max={360}
             step={1}
           >
-            <NumericMeta.Label
-              text="Rotation"
-              showValue
-            />
+            <NumericMeta.Label showValue>Rotation</NumericMeta.Label>
             <NumericMeta.SingleRange showNumberInput />
           </NumericMeta.Container>
 
@@ -195,10 +185,7 @@ export default function NumericMetaShowcase() {
             max={3000}
             step={10}
           >
-            <NumericMeta.Label
-              text="CT Window"
-              showValue
-            />
+            <NumericMeta.Label showValue>CT Window</NumericMeta.Label>
             <NumericMeta.DoubleRange showNumberInputs />
           </NumericMeta.Container>
         </div>

@@ -1,4 +1,4 @@
-// NumericMeta.tsx
+// Numeric.tsx
 import React, {
   createContext,
   useContext,
@@ -12,9 +12,6 @@ import { Input } from '../Input/Input';
 import { Slider } from '../Slider/Slider';
 import { DoubleSlider } from '../DoubleSlider/DoubleSlider';
 
-/* -------------------------------------------------------------------------
-   1) Context shape
----------------------------------------------------------------------------*/
 interface NumericMetaContextValue {
   mode: 'number' | 'singleRange' | 'doubleRange';
   singleValue: number;
@@ -29,9 +26,7 @@ interface NumericMetaContextValue {
 const NumericMetaContext = createContext<NumericMetaContextValue | null>(null);
 
 /* -------------------------------------------------------------------------
-   2) Container
-      Maintains either a singleValue or doubleValue in state,
-      depending on the mode.
+   1) Container
 ---------------------------------------------------------------------------*/
 interface NumericMetaContainerProps {
   mode: 'number' | 'singleRange' | 'doubleRange';
@@ -101,18 +96,18 @@ function NumericMetaContainer({
 }
 
 /* -------------------------------------------------------------------------
-   3) Label sub-component
+   2) Label sub-component
 ---------------------------------------------------------------------------*/
 interface NumericMetaLabelProps {
-  text: string;
   showValue?: boolean; // optionally show the current numeric value(s)
   className?: string;
+  children: React.ReactNode;
 }
 
-function NumericMetaLabel({ text, showValue, className }: NumericMetaLabelProps) {
+function NumericMetaLabel({ children, showValue, className }: NumericMetaLabelProps) {
   const ctx = useContext(NumericMetaContext);
   if (!ctx) {
-    throw new Error('NumericMetaLabel must be used inside <NumericMeta.Container>.');
+    throw new Error('NumericMetaLabel must be used inside <Numeric.Container>.');
   }
 
   const { mode, singleValue, doubleValue } = ctx;
@@ -126,16 +121,14 @@ function NumericMetaLabel({ text, showValue, className }: NumericMetaLabelProps)
 
   return (
     <div className={cn('text-sm text-white', className)}>
-      {text}
+      {children}
       {showValue && `: ${displayedValue}`}
     </div>
   );
 }
 
 /* -------------------------------------------------------------------------
-   4) SingleRange sub-component
-      Renders a slider and optional number input
-      (Implementation is new but borrows styling approach.)
+   3) SingleRange sub-component
 ---------------------------------------------------------------------------*/
 
 interface SingleRangeProps {
@@ -147,7 +140,7 @@ interface SingleRangeProps {
 function SingleRange({ showNumberInput, sliderClassName, numberInputClassName }: SingleRangeProps) {
   const ctx = useContext(NumericMetaContext);
   if (!ctx) {
-    throw new Error('SingleRange must be used inside <NumericMeta.Container>.');
+    throw new Error('SingleRange must be used inside <Numeric.Container>.');
   }
 
   const { mode, singleValue, setSingleValue, min, max, step } = ctx;
@@ -199,8 +192,7 @@ function SingleRange({ showNumberInput, sliderClassName, numberInputClassName }:
 }
 
 /* -------------------------------------------------------------------------
-   5) DoubleRange sub-component
-      Renders a pair of slider thumbs and optional numeric boxes
+   4) DoubleRange sub-component
 ---------------------------------------------------------------------------*/
 interface DoubleRangeProps {
   showNumberInputs?: boolean;
@@ -210,7 +202,7 @@ interface DoubleRangeProps {
 function DoubleRange({ showNumberInputs, className }: DoubleRangeProps) {
   const ctx = useContext(NumericMetaContext);
   if (!ctx) {
-    throw new Error('DoubleRange must be used inside <NumericMeta.Container>.');
+    throw new Error('DoubleRange must be used inside <Numeric.Container>.');
   }
 
   const { mode, doubleValue, setDoubleValue, min, max, step } = ctx;
@@ -240,17 +232,16 @@ function DoubleRange({ showNumberInputs, className }: DoubleRangeProps) {
 }
 
 /* -------------------------------------------------------------------------
-   6) Basic NumberInput sub-component
-      (mode = "number")
+   5) Basic NumberInput sub-component
 ---------------------------------------------------------------------------*/
-interface NumberOnlyInputProps {
+interface NumberInputProps {
   className?: string;
 }
 
-function NumberOnlyInput({ className }: NumberOnlyInputProps) {
+function NumberInput({ className }: NumberInputProps) {
   const ctx = useContext(NumericMetaContext);
   if (!ctx) {
-    throw new Error('NumberOnlyInput must be used inside <NumericMeta.Container>.');
+    throw new Error('NumberInput must be used inside <Numeric.Container>.');
   }
 
   const { mode, singleValue, setSingleValue, min, max, step } = ctx;
@@ -278,15 +269,12 @@ function NumberOnlyInput({ className }: NumberOnlyInputProps) {
   );
 }
 
-/* -------------------------------------------------------------------------
-   7) Export everything
----------------------------------------------------------------------------*/
-export const NumericMeta = {
+export const Numeric = {
   Container: NumericMetaContainer,
   Label: NumericMetaLabel,
   SingleRange,
   DoubleRange,
-  NumberOnlyInput,
+  NumberInput,
 };
 
-export default NumericMeta;
+export default Numeric;
