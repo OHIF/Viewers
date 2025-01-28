@@ -1,12 +1,5 @@
 // Numeric.tsx
-import React, {
-  createContext,
-  useContext,
-  useState,
-  useEffect,
-  useCallback,
-  PropsWithChildren,
-} from 'react';
+import React, { createContext, useContext, useState, useCallback, PropsWithChildren } from 'react';
 import { cn } from '../../lib/utils';
 import { Input } from '../Input/Input';
 import { Slider } from '../Slider/Slider';
@@ -36,7 +29,7 @@ interface NumericMetaContainerProps {
   min?: number;
   max?: number;
   step?: number;
-  containerClassName?: string;
+  className?: string;
 }
 
 function NumericMetaContainer({
@@ -47,23 +40,22 @@ function NumericMetaContainer({
   min = 0,
   max = 100,
   step = 1,
-  containerClassName,
+  className,
   children,
 }: PropsWithChildren<NumericMetaContainerProps>) {
-  const [singleValue, setSingleValue] = useState<number>(value);
-  const [doubleValue, setDoubleValue] = useState<[number, number]>(values);
+  // Initialize state with props but don't update automatically
+  const [internalSingleValue, setInternalSingleValue] = useState<number>(value);
+  const [internalDoubleValue, setInternalDoubleValue] = useState<[number, number]>(values);
 
-  useEffect(() => {
-    setSingleValue(value);
-  }, [value]);
-
-  useEffect(() => {
-    setDoubleValue(values);
-  }, [values]);
+  // Use the controlled value if provided, otherwise use internal state
+  const singleValue = onChange ? value : internalSingleValue;
+  const doubleValue = onChange ? values : internalDoubleValue;
 
   const handleSingleChange = useCallback(
     (newVal: number) => {
-      setSingleValue(newVal);
+      // Update internal state
+      setInternalSingleValue(newVal);
+      // Notify parent if onChange is provided
       onChange?.(newVal);
     },
     [onChange]
@@ -71,7 +63,9 @@ function NumericMetaContainer({
 
   const handleDoubleChange = useCallback(
     (newVals: [number, number]) => {
-      setDoubleValue(newVals);
+      // Update internal state
+      setInternalDoubleValue(newVals);
+      // Notify parent if onChange is provided
       onChange?.(newVals);
     },
     [onChange]
@@ -90,7 +84,7 @@ function NumericMetaContainer({
         step,
       }}
     >
-      <div className={cn('flex flex-col space-y-2', containerClassName)}>{children}</div>
+      <div className={cn('flex flex-col', className)}>{children}</div>
     </NumericMetaContext.Provider>
   );
 }
@@ -120,7 +114,7 @@ function NumericMetaLabel({ children, showValue, className }: NumericMetaLabelPr
   }
 
   return (
-    <div className={cn('text-sm text-white', className)}>
+    <div className={cn('text-foreground text-sm', className)}>
       {children}
       {showValue && `: ${displayedValue}`}
     </div>
@@ -256,6 +250,10 @@ function NumberInput({ className }: NumberInputProps) {
     }
   };
 
+  // Calculate width based on max value's length, with a minimum of 3 characters
+  const maxLength = Math.max(3, max?.toString().length ?? 3);
+  const calculatedWidth = `${maxLength + 1.5}ch`;
+
   return (
     <Input
       type="number"
@@ -264,7 +262,7 @@ function NumberInput({ className }: NumberInputProps) {
       min={min}
       max={max}
       onChange={handleChange}
-      className={cn('w-[60px]', className)}
+      className={cn('min-w-[60px]', `w-[${calculatedWidth}]`, className)}
     />
   );
 }
