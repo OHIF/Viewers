@@ -1,9 +1,5 @@
-export default {
-  'measurement.labellingComponent': {
-    $set: CustomLabellingFlow,
-  },
-};
+import LabellingFlow from '../Components/LabellingFlow';
 
-function CustomLabellingFlow() {
-  return null;
-}
+export default {
+  'measurement.labellingComponent': LabellingFlow,
+};

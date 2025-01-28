@@ -1,8 +1,7 @@
-import SelectTree from '../SelectTree';
+import { useServices } from '@ohif/ui';
 import React, { Component } from 'react';
 import LabellingTransition from './LabellingTransition';
 import cloneDeep from 'lodash.clonedeep';
-import CustomizableRenderComponent from '../../utils/CustomizableRenderComponent';
 
 interface PropType {
   labellingDoneCallback: (label: string) => void;
@@ -88,17 +87,20 @@ class LabellingFlow extends Component<PropType> {
   };
 
   labellingStateFragment = () => {
+    const { services } = useServices();
+    const Component = services.customizationService.getCustomization(
+      'measurement.labellingComponent'
+    );
     return (
-      <CustomizableRenderComponent
-        customizationId={'measurement.labellingComponent'}
-        FallbackComponent={SelectTree}
-        selectTreeSelectCalback={this.selectTreeSelectCalback}
-        closePopup={this.closePopup}
-        label={this.state.label}
-        measurementData={this.props.measurementData}
+      <Component
         items={this.currentItems}
-        exclusive={this.props.exclusive}
+        columns={1}
+        onSelected={this.selectTreeSelectCalback}
+        closePopup={this.closePopup}
         selectTreeFirstTitle={'Annotation'}
+        measurementData={this.props.measurementData}
+        label={this.state.label}
+        exclusive={this.props.exclusive}
       />
     );
   };

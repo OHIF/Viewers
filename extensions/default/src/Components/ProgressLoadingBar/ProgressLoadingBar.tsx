@@ -1,9 +1,7 @@
 import React, { ReactElement } from 'react';
+import { ProgressLoadingBarProps } from '@ohif/ui/src/components/ProgressLoadingBar/ProgressLoadingBar';
 import './ProgressLoadingBar.css';
 
-export type ProgressLoadingBarProps = {
-  progress?: number;
-};
 /**
  * A React component that renders a loading progress bar.
  * If progress is not provided, it will render an infinite loading bar

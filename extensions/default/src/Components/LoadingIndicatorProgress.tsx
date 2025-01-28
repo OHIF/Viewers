@@ -2,7 +2,7 @@ import React from 'react';
 import classNames from 'classnames';
 
 import { Icons } from '@ohif/ui-next';
-import ProgressLoadingBar from '../ProgressLoadingBar';
+import ProgressLoadingBar from './ProgressLoadingBar';
 
 /**
  *  A React component that renders a loading indicator.

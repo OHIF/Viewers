@@ -1,6 +1,6 @@
 import { useServices } from '../../contextProviders';
 
-interface Props {
+export interface LoadingIndicatorTotalPercentProps {
   className?: string;
   totalNumbers: number | null;
   percentComplete: number | null;
@@ -18,7 +18,7 @@ function LoadingIndicatorTotalPercent({
   percentComplete,
   loadingText,
   targetText,
-}: Props) {
+}: LoadingIndicatorTotalPercentProps) {
   const { services } = useServices();
   const Component = services.customizationService.getCustomization(
     'ui.LoadingIndicatorTotalPercent'

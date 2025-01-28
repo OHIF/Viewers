@@ -1,13 +1,6 @@
 import React from 'react';
-import LoadingIndicatorProgress from '../LoadingIndicatorProgress';
-
-interface Props {
-  className?: string;
-  totalNumbers: number | null;
-  percentComplete: number | null;
-  loadingText?: string;
-  targetText?: string;
-}
+import { LoadingIndicatorTotalPercentProps } from '@ohif/ui/src/components/LoadingIndicatorTotalPercent/LoadingIndicatorTotalPercent';
+import LoadingIndicatorProgress from './LoadingIndicatorProgress';
 
 /**
  *  A React component that renders a loading indicator but accepts a totalNumbers
@@ -17,9 +10,9 @@ function LoadingIndicatorTotalPercent({
   className,
   totalNumbers,
   percentComplete,
-  loadingText = 'Loading...',
-  targetText = 'segments',
-}: Props): JSX.Element {
+  loadingText,
+  targetText,
+}: LoadingIndicatorTotalPercentProps): JSX.Element {
   const progress = percentComplete;
   const totalNumbersText = totalNumbers !== null ? `${totalNumbers}` : '';
   const numTargetsLoadedText =
