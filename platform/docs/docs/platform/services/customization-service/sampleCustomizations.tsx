@@ -231,9 +231,7 @@ window.config = {
         customizationService: [
           {
             'cornerstone.windowLevelActionMenu': {
-                $set: {
-                  content:CustomizedComponent
-                },
+                $set: CustomizedComponent,
             },
           },
         ],

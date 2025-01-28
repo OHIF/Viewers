@@ -8,6 +8,7 @@ import volumeRenderingCustomization from './customizations/volumeRenderingCustom
 import colorbarCustomization from './customizations/colorbarCustomization';
 import windowLevelPresetsCustomization from './customizations/windowLevelPresetsCustomization';
 import miscCustomization from './customizations/miscCustomization';
+import windowLevelActionMenuCustomization from './customizations/windowLevelActionMenuCustomization';
 
 function getCustomizationModule({ commandsManager, servicesManager }) {
   return [
@@ -24,6 +25,7 @@ function getCustomizationModule({ commandsManager, servicesManager }) {
         ...colorbarCustomization,
         ...windowLevelPresetsCustomization,
         ...miscCustomization,
+        ...windowLevelActionMenuCustomization,
       },
     },
   ];
