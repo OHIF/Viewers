@@ -9,6 +9,8 @@ import React, {
 } from 'react';
 import { cn } from '../../lib/utils';
 import { Input } from '../Input/Input';
+import { Slider } from '../Slider/Slider';
+import { DoubleSlider } from '../DoubleSlider/DoubleSlider';
 
 /* -------------------------------------------------------------------------
    1) Context shape
@@ -150,10 +152,9 @@ function SingleRange({ showNumberInput, sliderClassName, numberInputClassName }:
 
   const { mode, singleValue, setSingleValue, min, max, step } = ctx;
 
-  // Move hooks before the conditional return
   const handleSliderChange = useCallback(
-    (val: number) => {
-      setSingleValue(val);
+    (val: number[]) => {
+      setSingleValue(val[0]);
     },
     [setSingleValue]
   );
@@ -169,52 +170,19 @@ function SingleRange({ showNumberInput, sliderClassName, numberInputClassName }:
   );
 
   if (mode !== 'singleRange') {
-    return null; // Skip rendering if in the wrong mode
+    return null;
   }
-
-  // The slider range is from min to max, storing one value
-  const sliderPercent = ((singleValue - min) / (max - min)) * 100 || 0;
 
   return (
     <div className="flex items-center space-x-2">
-      <div className={cn('relative flex h-2 w-full items-center', sliderClassName)}>
-        <div className="absolute h-[3px] w-full rounded-lg bg-gray-500" />
-        <div
-          className="absolute h-[3px] rounded-lg bg-cyan-400"
-          style={{
-            width: `${sliderPercent}%`,
-          }}
-        />
-        {/* Slider Thumb */}
-        <div
-          className="absolute h-3 w-3 cursor-pointer rounded-full bg-white shadow"
-          style={{
-            left: `calc(${sliderPercent}% - 6px)`,
-          }}
-          onMouseDown={evt => {
-            // Basic pointer drag logic
-            evt.preventDefault();
-            const initialX = evt.clientX;
-            const handleMouseMove = (moveEvt: MouseEvent) => {
-              moveEvt.preventDefault();
-              const dx = moveEvt.clientX - initialX;
-              const sliderRect = (evt.target as HTMLElement).parentElement?.getBoundingClientRect();
-              if (!sliderRect) {
-                return;
-              }
-              const fraction = dx / sliderRect.width;
-              const newVal = singleValue + fraction * (max - min);
-              handleSliderChange(parseFloat(newVal.toFixed(3)));
-            };
-            const handleMouseUp = () => {
-              document.removeEventListener('mousemove', handleMouseMove);
-              document.removeEventListener('mouseup', handleMouseUp);
-            };
-            document.addEventListener('mousemove', handleMouseMove);
-            document.addEventListener('mouseup', handleMouseUp);
-          }}
-        />
-      </div>
+      <Slider
+        className={cn('w-full', sliderClassName)}
+        value={[singleValue]}
+        min={min}
+        max={max}
+        step={step}
+        onValueChange={handleSliderChange}
+      />
       {showNumberInput && (
         <Input
           type="number"
@@ -246,119 +214,27 @@ function DoubleRange({ showNumberInputs, className }: DoubleRangeProps) {
   }
 
   const { mode, doubleValue, setDoubleValue, min, max, step } = ctx;
+
+  const handleSliderChange = useCallback(
+    (values: [number, number]) => {
+      setDoubleValue(values);
+    },
+    [setDoubleValue]
+  );
+
   if (mode !== 'doubleRange') {
     return null;
   }
 
-  const [startVal, endVal] = doubleValue;
-
-  const toPercent = (val: number) => ((val - min) / (max - min)) * 100;
-
-  const handleStartChange = (newVal: number) => {
-    const clamped = Math.min(Math.max(newVal, min), endVal);
-    setDoubleValue([clamped, endVal]);
-  };
-
-  const handleEndChange = (newVal: number) => {
-    const clamped = Math.max(Math.min(newVal, max), startVal);
-    setDoubleValue([startVal, clamped]);
-  };
-
-  // Each thumb is draggable
-  const dragThumb = (thumb: 'start' | 'end', evt: React.MouseEvent) => {
-    evt.preventDefault();
-    const initialX = evt.clientX;
-    const initialStart = startVal;
-    const initialEnd = endVal;
-    const parentRect = (evt.target as HTMLElement).parentElement?.getBoundingClientRect();
-    if (!parentRect) {
-      return;
-    }
-
-    function handleMouseMove(moveEvt: MouseEvent) {
-      moveEvt.preventDefault();
-      const dx = moveEvt.clientX - initialX;
-      const fraction = dx / parentRect.width;
-      const rangeSize = max - min;
-      const delta = fraction * rangeSize;
-      if (thumb === 'start') {
-        handleStartChange(parseFloat((initialStart + delta).toFixed(3)));
-      } else {
-        handleEndChange(parseFloat((initialEnd + delta).toFixed(3)));
-      }
-    }
-
-    function handleMouseUp() {
-      document.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('mouseup', handleMouseUp);
-    }
-
-    document.addEventListener('mousemove', handleMouseMove);
-    document.addEventListener('mouseup', handleMouseUp);
-  };
-
-  // Number input changes
-  const handleNumberChange = (index: 0 | 1) => (evt: React.ChangeEvent<HTMLInputElement>) => {
-    const val = parseFloat(evt.target.value);
-    if (isNaN(val)) {
-      return;
-    }
-    if (index === 0) {
-      handleStartChange(val);
-    } else {
-      handleEndChange(val);
-    }
-  };
-
-  const leftPercent = toPercent(startVal);
-  const rightPercent = toPercent(endVal);
-
   return (
-    <div className={cn('flex items-center space-x-2', className)}>
-      {showNumberInputs && (
-        <Input
-          type="number"
-          step={step}
-          min={min}
-          max={max}
-          value={startVal}
-          onChange={handleNumberChange(0)}
-          className="w-[50px]"
-        />
-      )}
-      <div className="relative flex h-2 w-full items-center">
-        <div className="absolute h-[3px] w-full rounded-lg bg-gray-500" />
-        <div
-          className="absolute h-[3px] rounded-lg bg-cyan-400"
-          style={{
-            left: `${leftPercent}%`,
-            width: `${rightPercent - leftPercent}%`,
-          }}
-        />
-        {/* Start Thumb */}
-        <div
-          className="absolute h-3 w-3 cursor-pointer rounded-full bg-white shadow"
-          style={{ left: `calc(${leftPercent}% - 6px)` }}
-          onMouseDown={evt => dragThumb('start', evt)}
-        />
-        {/* End Thumb */}
-        <div
-          className="absolute h-3 w-3 cursor-pointer rounded-full bg-white shadow"
-          style={{ left: `calc(${rightPercent}% - 6px)` }}
-          onMouseDown={evt => dragThumb('end', evt)}
-        />
-      </div>
-      {showNumberInputs && (
-        <Input
-          type="number"
-          step={step}
-          min={min}
-          max={max}
-          value={endVal}
-          onChange={handleNumberChange(1)}
-          className="w-[50px]"
-        />
-      )}
+    <div className={cn('flex items-center', className)}>
+      <DoubleSlider
+        min={min}
+        max={max}
+        step={step}
+        defaultValue={doubleValue}
+        onValueChange={handleSliderChange}
+      />
     </div>
   );
 }
