@@ -117,7 +117,7 @@ with the labels returned from `getItemLabels`.
 ## Creation via Customization Module
 
 The generic UI (i.e. `DataSourceConfigurationComponent`) uses the
-[OHIF UI customization service](../../platform/services/ui/customization-service.md) to
+[OHIF UI customization service](../../platform/services/customization-service/customizationService.md) to
 instantiate the `BaseDataSourceConfigurationAPI` instance to configure a data source.
 
 A UI configurable data source should have a `configurationAPI` field as part of

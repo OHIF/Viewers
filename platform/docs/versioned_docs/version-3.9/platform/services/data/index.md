@@ -20,7 +20,7 @@ We maintain the following non-ui Services:
 - [Toolbar Service](./ToolbarService.md)
 - [Measurement Service](../data/MeasurementService.md)
 - [Customization Service](./../ui/customization-service.md)
-- [State Sync Service](../data/StateSyncService.md)
+- [State Sync Service](../../../migration-guide/3p8-to-3p9/5-StateSyncService.md)
 - [Panel Service](../data/PanelService.md)
 
 ## Service Architecture
