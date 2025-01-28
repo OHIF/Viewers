@@ -116,7 +116,7 @@ function NumericMetaLabel({ children, showValue, className }: NumericMetaLabelPr
   return (
     <div className={cn('text-foreground text-sm', className)}>
       {children}
-      {showValue && `: ${displayedValue}`}
+      {showValue && <span className="inline-block w-10">{`: ${displayedValue}`}</span>}
     </div>
   );
 }
@@ -161,9 +161,9 @@ function SingleRange({ showNumberInput, sliderClassName, numberInputClassName }:
   }
 
   return (
-    <div className="flex items-center space-x-2">
+    <div className="flex flex-1 items-center space-x-2">
       <Slider
-        className={cn('w-full', sliderClassName)}
+        className={cn('flex-1', sliderClassName)}
         value={[singleValue]}
         min={min}
         max={max}
@@ -173,7 +173,7 @@ function SingleRange({ showNumberInput, sliderClassName, numberInputClassName }:
       {showNumberInput && (
         <Input
           type="number"
-          className={cn('w-[50px]', numberInputClassName)}
+          className={cn('w-[50px] shrink-0', numberInputClassName)}
           value={singleValue}
           step={step}
           min={min}

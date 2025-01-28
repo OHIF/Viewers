@@ -90,7 +90,7 @@ export default function NumericShowcase() {
             step={1}
             value={50}
           >
-            <Numeric.Label showValue>Brightness</Numeric.Label>
+            <Numeric.Label>Brightness</Numeric.Label>
             <Numeric.SingleRange showNumberInput />
           </Numeric.Container>
 
@@ -98,8 +98,9 @@ export default function NumericShowcase() {
             mode="singleRange"
             min={-50}
             max={50}
-            step={0.1}
+            step={1}
             value={0}
+            className="flex flex-row items-center"
           >
             <Numeric.Label showValue>Contrast</Numeric.Label>
             <Numeric.SingleRange />
