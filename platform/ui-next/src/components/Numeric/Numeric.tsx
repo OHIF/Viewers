@@ -99,7 +99,6 @@ function NumericMetaLabel({ children, showValue, className }: NumericMetaLabelPr
   }
 
   const { mode, singleValue, doubleValue } = ctx;
-  console.debug('🚀 ~ doubleValue:', doubleValue);
 
   let displayedValue = '';
   let valueClasses = '';
