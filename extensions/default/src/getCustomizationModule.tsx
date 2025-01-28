@@ -14,6 +14,7 @@ import onDropHandlerCustomization from './customizations/onDropHandlerCustomizat
 import loadingIndicatorProgressCustomization from './customizations/loadingIndicatorProgressCustomization';
 import loadingIndicatorTotalPercentCustomization from './customizations/loadingIndicatorTotalPercentCustomization';
 import progressLoadingBarCustomization from './customizations/progressLoadingBarCustomization';
+import contextMenuItemCustomization from './customizations/contextMenuItemCustomization';
 
 /**
  *
@@ -54,6 +55,7 @@ export default function getCustomizationModule({ servicesManager, extensionManag
         ...loadingIndicatorProgressCustomization,
         ...loadingIndicatorTotalPercentCustomization,
         ...progressLoadingBarCustomization,
+        ...contextMenuItemCustomization,
       },
     },
   ];

@@ -1,9 +1,5 @@
-export default {
-  'ui.ContextMenuItem': {
-    $set: CustomContextMenuItem,
-  },
-};
+import ContextMenuItemComponent from '../Components/ContextMenuItemComponent';
 
-function CustomContextMenuItem() {
-  return null;
-}
+export default {
+  'ui.ContextMenuItem': ContextMenuItemComponent,
+};
