@@ -3,11 +3,28 @@ sidebar_position: 11
 sidebar_label: Playwright Testing
 ---
 
+```bash
+# run the viewer locally based on the default config
+yarn run dev
+
+# run the tests
+yarn test:e2e:ui
+```
+
+
+:::note
+You might need to run the `yarn playwright install ` for the first time if you have not
+:::
+
+
+
 # Writing PlayWright Tests
 
 Our Playwright tests are written using the Playwright test framework. We use these tests to test our OHIF Viewer and ensure that it is working as expected.
 
 In this guide, we will show you how to write Playwright tests for the OHIF Viewer.
+
+
 
 ## Using a specific study and mode
 

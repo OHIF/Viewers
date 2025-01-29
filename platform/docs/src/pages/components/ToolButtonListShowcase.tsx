@@ -7,6 +7,8 @@ import {
   ToolButtonListItem,
   ToolButtonListDivider,
 } from '../../../../ui-next/src/components/ToolButton';
+import { TooltipProvider } from '../../../../ui-next/src/components/Tooltip';
+
 import ShowcaseRow from './ShowcaseRow';
 
 /**
@@ -48,38 +50,40 @@ export default function ToolButtonListShowcase() {
       `}
     >
       <div className="bg-popover flex h-11 w-[450px] items-center justify-start rounded p-2">
-        <ToolButtonList>
-          <ToolButtonListDefault>
-            <ToolButton
-              id="Length"
-              icon="ToolLength"
-              label="Length"
-              tooltip="Length Tool"
-              onInteraction={({ itemId }) => console.debug(`Clicked ${itemId}`)}
-            />
-          </ToolButtonListDefault>
-          <ToolButtonListDivider />
-          <ToolButtonListDropDown>
-            <ToolButtonListItem
-              icon="ToolLength"
-              onSelect={() => console.debug('Selected Length')}
-            >
-              <span className="pl-1">Length</span>
-            </ToolButtonListItem>
-            <ToolButtonListItem
-              icon="ToolBidirectional"
-              onSelect={() => console.debug('Selected Bidirectional')}
-            >
-              <span className="pl-1">Bidirectional</span>
-            </ToolButtonListItem>
-            <ToolButtonListItem
-              icon="ToolAnnotate"
-              onSelect={() => console.debug('Selected Annotation')}
-            >
-              <span className="pl-1">Annotation</span>
-            </ToolButtonListItem>
-          </ToolButtonListDropDown>
-        </ToolButtonList>
+        <TooltipProvider>
+          <ToolButtonList>
+            <ToolButtonListDefault>
+              <ToolButton
+                id="Length"
+                icon="ToolLength"
+                label="Length"
+                tooltip="Length Tool"
+                onInteraction={({ itemId }) => console.debug(`Clicked ${itemId}`)}
+              />
+            </ToolButtonListDefault>
+            <ToolButtonListDivider />
+            <ToolButtonListDropDown>
+              <ToolButtonListItem
+                icon="ToolLength"
+                onSelect={() => console.debug('Selected Length')}
+              >
+                <span className="pl-1">Length</span>
+              </ToolButtonListItem>
+              <ToolButtonListItem
+                icon="ToolBidirectional"
+                onSelect={() => console.debug('Selected Bidirectional')}
+              >
+                <span className="pl-1">Bidirectional</span>
+              </ToolButtonListItem>
+              <ToolButtonListItem
+                icon="ToolAnnotate"
+                onSelect={() => console.debug('Selected Annotation')}
+              >
+                <span className="pl-1">Annotation</span>
+              </ToolButtonListItem>
+            </ToolButtonListDropDown>
+          </ToolButtonList>
+        </TooltipProvider>
       </div>
     </ShowcaseRow>
   );

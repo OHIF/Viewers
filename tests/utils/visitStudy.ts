@@ -15,9 +15,10 @@ export async function visitStudy(
   delay: number = 0,
   datasources = 'ohif'
 ) {
-  await page.goto(`/?resultsPerPage=100&datasources=${datasources}`);
-  await page.getByTestId(studyInstanceUID).click();
-  await page.getByRole('button', { name: mode }).click();
+  // await page.goto(`/?resultsPerPage=100&datasources=${datasources}`);
+  // await page.getByTestId(studyInstanceUID).click();
+  // await page.getByRole('button', { name: mode }).click();
+  await page.goto(`/${mode}?StudyInstanceUIDs=${studyInstanceUID}`);
   await page.waitForLoadState('domcontentloaded');
   await page.waitForLoadState('networkidle');
   await page.waitForTimeout(delay);

@@ -90,8 +90,8 @@ interface ToolButtonListDropDownProps {
 }
 
 const ToolButtonListDropDown = React.forwardRef<HTMLDivElement, ToolButtonListDropDownProps>(
-  ({ children, className }, ref) => (
-    <DropdownMenu>
+  ({ children, className, ...props }, ref) => (
+    <DropdownMenu {...props}>
       <DropdownMenuTrigger asChild>
         <Button
           variant="ghost"

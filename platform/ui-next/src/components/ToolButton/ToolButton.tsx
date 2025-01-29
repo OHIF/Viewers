@@ -71,7 +71,7 @@ function ToolButton(props: ToolButtonProps) {
       >
         {/* TooltipTrigger is a span since a disabled button does not fire events and the tooltip
         will not show. */}
-        <span>
+        <span data-cy={id}>
           <Button
             className={buttonClasses}
             onClick={() => {

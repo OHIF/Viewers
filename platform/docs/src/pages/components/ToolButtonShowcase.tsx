@@ -1,4 +1,5 @@
 import React from 'react';
+import { TooltipProvider } from '../../../../ui-next/src/components/Tooltip';
 import ToolButton from '../../../../ui-next/src/components/ToolButton/ToolButton';
 import ShowcaseRow from './ShowcaseRow';
 
@@ -23,28 +24,30 @@ export default function ToolButtonShowcase() {
       `}
     >
       <div className="bg-popover flex h-11 w-[450px] items-center justify-center rounded">
-        <ToolButton
-          id="Zoom"
-          icon="ToolZoom"
-          isActive={true}
-          label="Zoom"
-          tooltip="Zoom"
-          onInteraction={({ itemId }) => console.debug(`Clicked ${itemId}`)}
-        />
-        <ToolButton
-          id="Zoom"
-          icon="ToolMove"
-          label="Pan"
-          tooltip="Pan"
-          onInteraction={({ itemId }) => console.debug(`Clicked ${itemId}`)}
-        />
-        <ToolButton
-          id="Zoom"
-          icon="ToolWindowLevel"
-          label="Window Level"
-          tooltip="Window Level"
-          onInteraction={({ itemId }) => console.debug(`Clicked ${itemId}`)}
-        />
+        <TooltipProvider>
+          <ToolButton
+            id="Zoom"
+            icon="ToolZoom"
+            isActive={true}
+            label="Zoom"
+            tooltip="Zoom"
+            onInteraction={({ itemId }) => console.debug(`Clicked ${itemId}`)}
+          />
+          <ToolButton
+            id="Zoom"
+            icon="ToolMove"
+            label="Pan"
+            tooltip="Pan"
+            onInteraction={({ itemId }) => console.debug(`Clicked ${itemId}`)}
+          />
+          <ToolButton
+            id="Zoom"
+            icon="ToolWindowLevel"
+            label="Window Level"
+            tooltip="Window Level"
+            onInteraction={({ itemId }) => console.debug(`Clicked ${itemId}`)}
+          />
+        </TooltipProvider>
       </div>
     </ShowcaseRow>
   );

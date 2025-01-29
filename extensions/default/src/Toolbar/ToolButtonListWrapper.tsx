@@ -46,26 +46,33 @@ export default function ToolButtonListWrapper({
   return (
     <ToolButtonList>
       <ToolButtonListDefault>
-        <ToolButton
-          {...primary}
-          onInteraction={({ itemId }) =>
-            onInteraction?.({ groupId, itemId, commands: primary.commands })
-          }
-          className={primary.className}
-        />
+        <div data-cy={`${groupId}-split-button-primary`}>
+          <ToolButton
+            {...primary}
+            onInteraction={({ itemId }) =>
+              onInteraction?.({ groupId, itemId, commands: primary.commands })
+            }
+            className={primary.className}
+          />
+        </div>
       </ToolButtonListDefault>
       <ToolButtonListDivider className={primary.isActive ? 'opacity-0' : 'opacity-100'} />
-      <ToolButtonListDropDown>
-        {items.map(item => (
-          <ToolButtonListItem
-            key={item.id}
-            {...item}
-            onSelect={() => onInteraction?.({ groupId, itemId: item.id, commands: item.commands })}
-          >
-            <span className="pl-1">{item.label || item.tooltip || item.id}</span>
-          </ToolButtonListItem>
-        ))}
-      </ToolButtonListDropDown>
+      <div data-cy={`${groupId}-split-button-secondary`}>
+        <ToolButtonListDropDown>
+          {items.map(item => (
+            <ToolButtonListItem
+              key={item.id}
+              {...item}
+              data-cy={item.id}
+              onSelect={() =>
+                onInteraction?.({ groupId, itemId: item.id, commands: item.commands })
+              }
+            >
+              <span className="pl-1">{item.label || item.tooltip || item.id}</span>
+            </ToolButtonListItem>
+          ))}
+        </ToolButtonListDropDown>
+      </div>
     </ToolButtonList>
   );
 }
