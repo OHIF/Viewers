@@ -34,7 +34,7 @@ export default function NumericShowcase() {
   <Numeric.NumberInput className="w-32 text-center" />
 </Numeric.Container>`}
       >
-        <div className="bg-popover flex w-[300px] flex-col rounded p-4">
+        <div className="bg-popover flex w-[300px] flex-col space-y-3 rounded p-4">
           <Numeric.Container
             mode="number"
             min={0}
@@ -96,7 +96,7 @@ export default function NumericShowcase() {
   <Numeric.SingleRange showNumberInput />
 </Numeric.Container>`}
       >
-        <div className="bg-popover flex w-[300px] flex-col rounded p-4">
+        <div className="bg-popover flex w-[300px] flex-col space-y-3 rounded p-4">
           <Numeric.Container
             mode="singleRange"
             min={0}
@@ -157,13 +157,14 @@ export default function NumericShowcase() {
   <Numeric.DoubleRange />
 </Numeric.Container>`}
       >
-        <div className="bg-popover flex w-[300px] flex-col rounded p-4">
+        <div className="bg-popover flex w-[300px] flex-col space-y-3 rounded p-4">
           <Numeric.Container
             mode="doubleRange"
             min={0}
             max={100}
             step={1}
             values={[30, 70]}
+            className="space-y-2"
             onChange={vals => console.debug('Values changed:', vals)}
           >
             <Numeric.Label showValue>Window Width/Level</Numeric.Label>
@@ -216,7 +217,7 @@ export default function NumericShowcase() {
   <Numeric.DoubleRange showNumberInputs />
 </Numeric.Container>`}
       >
-        <div className="bg-popover flex w-[300px] flex-col rounded p-4">
+        <div className="bg-popover flex w-[300px] flex-col space-y-3 rounded p-4">
           <Numeric.Container
             mode="number"
             min={0}
