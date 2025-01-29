@@ -107,18 +107,18 @@ const useResizablePanels = (
     // And by virtue of the dependency on the minimum size state variables, this code
     // is executed on the render following an update of the minimum percentage sizes
     // for a panel.
-    if (!resizableLeftPanelAPIRef.current.isCollapsed()) {
+    if (!resizableLeftPanelAPIRef.current?.isCollapsed()) {
       const leftSize = getPercentageSize(
         leftPanelExpandedWidth + panelGroupDefinition.shared.expandedInsideBorderSize
       );
-      resizableLeftPanelAPIRef.current.resize(leftSize);
+      resizableLeftPanelAPIRef.current?.resize(leftSize);
     }
 
-    if (!resizableRightPanelAPIRef.current.isCollapsed()) {
+    if (!resizableRightPanelAPIRef?.current?.isCollapsed()) {
       const rightSize = getPercentageSize(
         rightPanelExpandedWidth + panelGroupDefinition.shared.expandedInsideBorderSize
       );
-      resizableRightPanelAPIRef.current.resize(rightSize);
+      resizableRightPanelAPIRef?.current?.resize(rightSize);
     }
 
     // This observer kicks in when the ViewportLayout resizable panel group
@@ -199,7 +199,7 @@ const useResizablePanels = (
   }, [setLeftPanelClosed]);
 
   const onLeftPanelResize = useCallback(size => {
-    if (!resizablePanelGroupElemRef?.current || resizableLeftPanelAPIRef.current.isCollapsed()) {
+    if (!resizablePanelGroupElemRef?.current || resizableLeftPanelAPIRef.current?.isCollapsed()) {
       return;
     }
 
@@ -228,7 +228,7 @@ const useResizablePanels = (
   }, [setRightPanelClosed]);
 
   const onRightPanelResize = useCallback(size => {
-    if (!resizablePanelGroupElemRef?.current || resizableRightPanelAPIRef.current.isCollapsed()) {
+    if (!resizablePanelGroupElemRef?.current || resizableRightPanelAPIRef?.current?.isCollapsed()) {
       return;
     }
 
@@ -248,7 +248,7 @@ const useResizablePanels = (
    * Note that the width attributed to the handles must be taken into account.
    */
   const getPercentageSize = pixelSize => {
-    const { width: panelGroupWidth } = resizablePanelGroupElemRef.current.getBoundingClientRect();
+    const { width: panelGroupWidth } = resizablePanelGroupElemRef.current?.getBoundingClientRect();
     return (pixelSize / (panelGroupWidth - resizableHandlesWidth.current)) * 100;
   };
 
@@ -257,7 +257,7 @@ const useResizablePanels = (
    * Note that the width attributed to the handles must be taken into account.
    */
   const getExpandedPixelWidth = percentageSize => {
-    const { width: panelGroupWidth } = resizablePanelGroupElemRef.current.getBoundingClientRect();
+    const { width: panelGroupWidth } = resizablePanelGroupElemRef.current?.getBoundingClientRect();
     const expandedWidth =
       (percentageSize / 100) * (panelGroupWidth - resizableHandlesWidth.current) -
       panelGroupDefinition.shared.expandedInsideBorderSize;

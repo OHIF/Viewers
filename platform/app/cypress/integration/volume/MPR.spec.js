@@ -7,7 +7,7 @@ describe('OHIF MPR', () => {
   });
 
   it('should not go MPR for non reconstructible displaySets', () => {
-    cy.get('[data-cy="MPR"]').should('have.class', 'ohif-disabled');
+    cy.get('[data-cy="MPR"]').should('have.class', 'cursor-not-allowed');
   });
 
   it('should go MPR for reconstructible displaySets and come back', () => {

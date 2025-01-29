@@ -1,8 +1,8 @@
 import React, { useEffect, useRef } from 'react';
-import { PanelSection } from '../../components';
-// Migrate this file to the new UI eventually
-import { ToolSettings } from '@ohif/ui';
 import classnames from 'classnames';
+
+import { PanelSection } from '../../components';
+import { ToolSettings } from '../OHIFToolSettings';
 
 const ItemsPerRow = 4;
 
@@ -55,8 +55,8 @@ function ToolboxUI(props: withAppTypes) {
   const render = () => {
     return (
       <>
-        <div className="flex flex-col bg-black">
-          <div className="bg-primary-dark mt-0.5 flex flex-wrap py-2">
+        <div className="flex flex-col">
+          <div className="bg-muted mt-0.5 flex flex-wrap space-x-2 py-2 px-1">
             {toolbarButtons.map((toolDef, index) => {
               if (!toolDef) {
                 return null;
@@ -81,20 +81,16 @@ function ToolboxUI(props: withAppTypes) {
                   key={id}
                   className={classnames({
                     [toolClasses]: true,
-                    'border-secondary-light flex flex-col items-center justify-center rounded-md border':
-                      true,
                   })}
                 >
-                  <div className="flex rounded-md bg-black">
-                    <Component
-                      {...componentProps}
-                      {...props}
-                      id={id}
-                      servicesManager={servicesManager}
-                      onInteraction={onInteraction}
-                      size="toolbox"
-                    />
-                  </div>
+                  <Component
+                    {...componentProps}
+                    {...props}
+                    id={id}
+                    servicesManager={servicesManager}
+                    onInteraction={onInteraction}
+                    size="toolbox"
+                  />
                 </div>
               );
             })}
