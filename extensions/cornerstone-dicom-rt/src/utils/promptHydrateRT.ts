@@ -39,7 +39,7 @@ function promptHydrateRT({
 
 function _askHydrate(uiViewportDialogService: AppTypes.UIViewportDialogService, viewportId) {
   return new Promise(function (resolve, reject) {
-    const content = 'Do you want to open this Segmentation?';
+    const message = 'Do you want to open this Segmentation?';
     const actions = [
       {
         id: 'no-hydrate',
@@ -63,7 +63,7 @@ function _askHydrate(uiViewportDialogService: AppTypes.UIViewportDialogService, 
       id: 'promptHydrateRT',
       viewportId,
       type: 'info',
-      content,
+      message,
       actions,
       onSubmit,
       onOutsideClick: () => {

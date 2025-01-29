@@ -8,7 +8,7 @@ import { Icons } from '@ohif/ui-next';
 const Notification = ({
   id,
   type = 'info',
-  content,
+  message,
   actions,
   onSubmit,
   onOutsideClick = () => {},
@@ -84,7 +84,7 @@ const Notification = ({
           name={icon}
           className={classnames('h-6 w-6', color)}
         />
-        <span className="ml-2 text-[13px] text-black">{content}</span>
+        <span className="ml-2 text-[13px] text-black">{message}</span>
       </div>
       <div className="mt-2 flex flex-wrap justify-end gap-2">
         {actions?.map((action, index) => {

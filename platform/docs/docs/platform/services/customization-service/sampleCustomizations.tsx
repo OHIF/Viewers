@@ -22,6 +22,7 @@ import segDisplayEditingFalse from '../../../assets/img/segDisplayEditingFalse.p
 import thumbnailMenuItemsImage from '../../../assets/img/thumbnailMenuItemsImage.png';
 import studyMenuItemsImage from '../../../assets/img/studyMenuItemsImage.png';
 import windowLevelActionMenu from '../../../assets/img/windowLevelActionMenu.png';
+import viewPortNotificationImage from '../../../assets/img/viewport-notification.png';
 
 export const viewportOverlayCustomizations = [
   {
@@ -621,6 +622,7 @@ window.config = {
     id: 'ui.notificationComponent',
     description: 'Define the component which is used to render viewport notifications',
     default: 'Default Notification component in viewport',
+    image: [viewPortNotificationImage],
     configuration: `
 window.config = {
   // rest of window config

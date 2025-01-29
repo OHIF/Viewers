@@ -32,7 +32,7 @@ function promptBeginTracking({ servicesManager, extensionManager }, ctx, evt) {
 
 function _askTrackMeasurements(uiViewportDialogService, viewportId) {
   return new Promise(function (resolve, reject) {
-    const content = i18n.t('MeasurementTable:Track measurements for this series?');
+    const message = i18n.t('MeasurementTable:Track measurements for this series?');
     const actions = [
       {
         id: 'prompt-begin-tracking-cancel',
@@ -62,7 +62,7 @@ function _askTrackMeasurements(uiViewportDialogService, viewportId) {
       viewportId,
       id: 'measurement-tracking-prompt-begin-tracking',
       type: 'info',
-      content,
+      message,
       actions,
       onSubmit,
       onOutsideClick: () => {
