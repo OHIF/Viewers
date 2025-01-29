@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.10.0-beta.80](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.79...v3.10.0-beta.80) (2025-01-29)
+
+
+### Features
+
+* **customization:** enable custom onDropHandler for viewportGrid ([#4641](https://github.com/OHIF/Viewers/issues/4641)) ([054b262](https://github.com/OHIF/Viewers/commit/054b262e9cbeb0f44de65d05641efe1e8944a4f5))
+
+
+
+
+
 # [3.10.0-beta.79](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.78...v3.10.0-beta.79) (2025-01-28)
 
 **Note:** Version bump only for package @ohif/app
