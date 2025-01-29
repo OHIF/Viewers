@@ -1,5 +1,5 @@
 ---
-title: Migration Guide - Toolbar
+title: Toolbar
 ---
 
 # Toolbar
