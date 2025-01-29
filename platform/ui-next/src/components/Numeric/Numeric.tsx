@@ -110,7 +110,7 @@ function NumericMetaLabel({ children, showValue, className }: NumericMetaLabelPr
   }
 
   return (
-    <div className={cn('text-foreground flex items-center text-base', className)}>
+    <div className={cn('text-foreground flex text-base', className)}>
       {children}
       {showValue && (
         <span className={cn('inline-block', valueClasses)}>{`: ${displayedValue}`}</span>

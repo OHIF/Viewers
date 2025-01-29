@@ -34,7 +34,7 @@ export default function NumericShowcase() {
   <Numeric.NumberInput className="w-32 text-center" />
 </Numeric.Container>`}
       >
-        <div className="bg-popover flex w-[300px] flex-col space-y-3 rounded p-4">
+        <div className="bg-popover flex w-[300px] flex-col space-y-4 rounded p-4">
           <Numeric.Container
             mode="number"
             min={0}
@@ -49,11 +49,12 @@ export default function NumericShowcase() {
 
           <Numeric.Container
             mode="number"
+            className="space-y-1"
             min={0}
             max={100}
             onChange={val => console.debug('Value changed:', val)}
           >
-            <Numeric.Label className="text-secondary-foreground text-sm font-bold">
+            <Numeric.Label className="text-muted-foreground text-sm font-bold">
               Bolder
             </Numeric.Label>
             <Numeric.NumberInput className="w-12" />
@@ -96,7 +97,7 @@ export default function NumericShowcase() {
   <Numeric.SingleRange showNumberInput />
 </Numeric.Container>`}
       >
-        <div className="bg-popover flex w-[300px] flex-col space-y-3 rounded p-4">
+        <div className="bg-popover flex w-[300px] flex-col space-y-4 rounded p-4">
           <Numeric.Container
             mode="singleRange"
             min={0}
@@ -157,14 +158,14 @@ export default function NumericShowcase() {
   <Numeric.DoubleRange />
 </Numeric.Container>`}
       >
-        <div className="bg-popover flex w-[300px] flex-col space-y-3 rounded p-4">
+        <div className="bg-popover flex w-[300px] flex-col space-y-4 rounded p-4">
           <Numeric.Container
             mode="doubleRange"
             min={0}
             max={100}
             step={1}
             values={[30, 70]}
-            className="space-y-2"
+            className="space-y-1"
             onChange={vals => console.debug('Values changed:', vals)}
           >
             <Numeric.Label showValue>Window Width/Level</Numeric.Label>
@@ -177,6 +178,7 @@ export default function NumericShowcase() {
             max={100}
             step={1}
             values={[30, 70]}
+            className="space-y-1"
           >
             <Numeric.Label>Window Width/Level</Numeric.Label>
             <Numeric.DoubleRange showNumberInputs />
@@ -217,12 +219,13 @@ export default function NumericShowcase() {
   <Numeric.DoubleRange showNumberInputs />
 </Numeric.Container>`}
       >
-        <div className="bg-popover flex w-[300px] flex-col space-y-3 rounded p-4">
+        <div className="bg-popover flex w-[300px] flex-col space-y-4 rounded p-4">
           <Numeric.Container
             mode="number"
             min={0}
             max={10}
             step={0.1}
+            className="space-y-1"
           >
             <Numeric.Label>Zoom Factor</Numeric.Label>
             <Numeric.NumberInput />
@@ -233,6 +236,7 @@ export default function NumericShowcase() {
             min={0}
             max={360}
             step={1}
+            className="space-y-1"
           >
             <Numeric.Label showValue>Rotation</Numeric.Label>
             <Numeric.SingleRange showNumberInput />
@@ -244,6 +248,7 @@ export default function NumericShowcase() {
             max={3000}
             values={[1000, 2000]}
             step={10}
+            className="space-y-1"
           >
             <Numeric.Label showValue>CT Window</Numeric.Label>
             <Numeric.DoubleRange showNumberInputs />
