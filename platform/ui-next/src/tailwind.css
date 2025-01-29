@@ -228,3 +228,8 @@ h3.section-header {
 .TooltipContent[data-side='bottom'] {
   animation-name: slideDown;
 }
+
+#svg-layer-default circle {
+  stroke-width: 4 !important;
+  r: 1 !important;
+}
