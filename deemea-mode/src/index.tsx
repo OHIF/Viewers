@@ -75,7 +75,7 @@ function modeFactory({ modeConfiguration }) {
         'WindowLevel',
         'Pan',
         'Layout',
-        'MoreTools',
+        'Reset',
       ]);
     },
     onModeExit: ({ servicesManager }: withAppTypes) => {
