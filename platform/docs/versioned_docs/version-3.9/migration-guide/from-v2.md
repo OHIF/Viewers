@@ -66,7 +66,7 @@ are configuration objects that will be used by the viewer to load the modules. T
 - cornerstone-core and cornerstone-tools are removed and OHIF v3 is using the new Cornerstone3D rendering library and tools. Moving to Cornerstone3D has enabled us to provide a more robust and stable foundation
   for 3D rendering and 3D annotations and measurements. In addition, Cornerstone3D provides APIs to load
   and stream data into a volume which has huge performance benefits.
-- A new CLI tool to help you create extensions and modes (more [here]((./development/ohif-cli.md)))
+- A new CLI tool to help you create extensions and modes (more [here](../development/ohif-cli.md))
 - redux store has been removed and replaced with a simpler state management system via React Context API.
 
 New significant additions that might be useful for you that weren't available in OHIF v2:

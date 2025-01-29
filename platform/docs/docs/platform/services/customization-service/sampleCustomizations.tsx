@@ -14,6 +14,7 @@ import segDisplayEditingTrue from '../../../assets/img/segDisplayEditingTrue.png
 import segDisplayEditingFalse from '../../../assets/img/segDisplayEditingFalse.png';
 import thumbnailMenuItemsImage from '../../../assets/img/thumbnailMenuItemsImage.png';
 import studyMenuItemsImage from '../../../assets/img/studyMenuItemsImage.png';
+import windowLevelActionMenu from '../../../assets/img/windowLevelActionMenu.png';
 
 export const viewportOverlayCustomizations = [
   {
@@ -218,6 +219,24 @@ window.config = {
     description: 'Customizes the cine player component.',
     default: 'The CinePlayer component in the UI',
     configuration: null,
+  },
+  {
+    id: 'cornerstone.windowLevelActionMenu',
+    description: 'Window level action menu for the cornerstone viewport.',
+    image: windowLevelActionMenu,
+    default: null,
+    configuration: `
+      window.config = {
+        // rest of window config
+        customizationService: [
+          {
+            'cornerstone.windowLevelActionMenu': {
+                $set: CustomizedComponent,
+            },
+          },
+        ],
+      };
+    `,
   },
   {
     id: 'cornerstone.windowLevelPresets',
@@ -570,6 +589,26 @@ window.config = {
   ],
 };
   `,
+  },
+  {
+    id: 'customOnDropHandler ',
+    description:
+      'CustomOnDropHandler in the viewport grid enables users to handle additional functionalities during the onDrop event in the viewport.',
+    default: props => {
+      return Promise.resolve({ handled: false });
+    },
+    configuration: `
+window.config = {
+  // rest of window config
+  customizationService: [
+    {
+      customOnDropHandler: {
+        $set: customOnDropHandler
+      },
+    },
+  ],
+};
+    `,
   },
 ];
 

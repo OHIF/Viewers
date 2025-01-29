@@ -10,6 +10,7 @@ import menuContentCustomization from './customizations/menuContentCustomization'
 import getDataSourceConfigurationCustomization from './customizations/dataSourceConfigurationCustomization';
 import progressDropdownCustomization from './customizations/progressDropdownCustomization';
 import sortingCriteriaCustomization from './customizations/sortingCriteriaCustomization';
+import onDropHandlerCustomization from './customizations/onDropHandlerCustomization';
 
 /**
  *
@@ -46,6 +47,7 @@ export default function getCustomizationModule({ servicesManager, extensionManag
         ...progressDropdownCustomization,
         ...sortingCriteriaCustomization,
         ...defaultContextMenuCustomization,
+        ...onDropHandlerCustomization,
       },
     },
   ];
