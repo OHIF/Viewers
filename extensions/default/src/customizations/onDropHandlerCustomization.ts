@@ -1,7 +1,5 @@
 export default {
-  customOnDropHandler: {
-    $set: props => {
-      return Promise.resolve({ handled: false });
-    },
+  customOnDropHandler: () => {
+    return Promise.resolve({ handled: false });
   },
 };
