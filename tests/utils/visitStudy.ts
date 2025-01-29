@@ -18,7 +18,7 @@ export async function visitStudy(
   // await page.goto(`/?resultsPerPage=100&datasources=${datasources}`);
   // await page.getByTestId(studyInstanceUID).click();
   // await page.getByRole('button', { name: mode }).click();
-  await page.goto(`/${mode}?StudyInstanceUIDs=${studyInstanceUID}`);
+  await page.goto(`/${mode}/${datasources}?StudyInstanceUIDs=${studyInstanceUID}`);
   await page.waitForLoadState('domcontentloaded');
   await page.waitForLoadState('networkidle');
   await page.waitForTimeout(delay);
