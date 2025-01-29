@@ -153,10 +153,12 @@ You now have more control over the position of the label and the slider. You can
 
 Using `Numeric.SingleRange` and `showNumberInput`
 
+```tsx
 <Numeric.Container mode="singleRange" value={value} onChange={setValue} min={0} max={100} step={1}>
   <Numeric.Label showValue>Range</Numeric.Label>
   <Numeric.SingleRange showNumberInput />
 </Numeric.Container>
+```
 
 
 ## `InputDoubleRange` > `Numeric.DoubleRange`
