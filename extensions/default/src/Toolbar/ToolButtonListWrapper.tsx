@@ -46,7 +46,11 @@ export default function ToolButtonListWrapper({
   return (
     <ToolButtonList>
       <ToolButtonListDefault>
-        <div data-cy={`${groupId}-split-button-primary`}>
+        <div
+          data-cy={`${groupId}-split-button-primary`}
+          data-tool={primary.id}
+          data-active={primary.isActive}
+        >
           <ToolButton
             {...primary}
             onInteraction={({ itemId }) =>
@@ -64,6 +68,8 @@ export default function ToolButtonListWrapper({
               key={item.id}
               {...item}
               data-cy={item.id}
+              data-tool={item.id}
+              data-active={item.isActive}
               onSelect={() =>
                 onInteraction?.({ groupId, itemId: item.id, commands: item.commands })
               }
