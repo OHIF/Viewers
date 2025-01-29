@@ -78,7 +78,7 @@ function NumericMetaContainer({
         step,
       }}
     >
-      <div className={cn('flex flex-col', className)}>{children}</div>
+      <div className={cn('my-1.5 flex flex-col', className)}>{children}</div>
     </NumericMetaContext.Provider>
   );
 }
