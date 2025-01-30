@@ -6,7 +6,7 @@ import { Icons } from '@ohif/ui-next';
 const ContextMenu = ({ items, ...props }) => {
   const contextMenuRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
-    if (!contextMenuRef?.current) {
+    if(!contextMenuRef?.current) {
       return;
     }
 
