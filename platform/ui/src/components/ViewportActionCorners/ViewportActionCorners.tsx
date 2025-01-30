@@ -1,5 +1,7 @@
-import { useServices } from '@ohif/ui';
+import classNames from 'classnames';
+import React from 'react';
 import { ViewportActionCornersComponentInfo } from '../../types/ViewportActionCornersTypes';
+import CustomizableRenderComponent from '../../utils/CustomizableRenderComponent';
 
 export enum ViewportActionCornersLocations {
   topLeft,
@@ -15,6 +17,26 @@ export type ViewportActionCornersProps = {
   >;
 };
 
+const commonClasses = 'pointer-events-auto flex items-center gap-1';
+const classes = {
+  [ViewportActionCornersLocations.topLeft]: classNames(
+    commonClasses,
+    'absolute top-[4px] left-[0px] pl-[4px]'
+  ),
+  [ViewportActionCornersLocations.topRight]: classNames(
+    commonClasses,
+    'absolute top-[4px] right-[4px] right-viewport-scrollbar'
+  ),
+  [ViewportActionCornersLocations.bottomLeft]: classNames(
+    commonClasses,
+    'absolute bottom-[4px] left-[0px] pl-[4px]'
+  ),
+  [ViewportActionCornersLocations.bottomRight]: classNames(
+    commonClasses,
+    'absolute bottom-[4px] right-[0px] right-viewport-scrollbar'
+  ),
+};
+
 /**
  * A component that renders various action items/components to each corner of a viewport.
  * The position of each corner's components is such that a single row of components are
@@ -24,15 +46,40 @@ export type ViewportActionCornersProps = {
  * rendered from left to right in the order that they appear in the array.
  */
 function ViewportActionCorners({ cornerComponents }: ViewportActionCornersProps) {
-  const { services } = useServices();
+  return CustomizableRenderComponent({
+    customizationId: 'ui.ViewportActionCorner',
+    FallbackComponent: FallbackViewportActionCorners,
+    cornerComponents,
+  });
+}
+
+function FallbackViewportActionCorners({ cornerComponents }: ViewportActionCornersProps) {
   if (!cornerComponents) {
     return null;
   }
 
-  const Component = services.customizationService.getCustomization('ui.ViewportActionCorner');
-  return Component({
-    cornerComponents,
-  });
+  return (
+    <div
+      className="pointer-events-none absolute h-full w-full select-none"
+      onDoubleClick={event => {
+        event.preventDefault();
+        event.stopPropagation();
+      }}
+    >
+      {Object.entries(cornerComponents).map(([location, locationComponents]) => {
+        return (
+          <div
+            key={location}
+            className={classNames(classes[location])}
+          >
+            {locationComponents.map(componentInfo => {
+              return <div key={componentInfo.id}>{componentInfo.component}</div>;
+            })}
+          </div>
+        );
+      })}
+    </div>
+  );
 }
 
 export default ViewportActionCorners;

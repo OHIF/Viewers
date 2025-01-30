@@ -1,4 +1,4 @@
-import LoadingIndicatorTotalPercent from '../Components/LoadingIndicatorTotalPercent';
+import { LoadingIndicatorTotalPercent } from '@ohif/ui';
 
 export default {
   'ui.LoadingIndicatorTotalPercent': LoadingIndicatorTotalPercent,

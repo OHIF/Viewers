@@ -1,7 +1,7 @@
+import SelectTree from '../SelectTree';
 import React, { Component } from 'react';
 import LabellingTransition from './LabellingTransition';
 import cloneDeep from 'lodash.clonedeep';
-import CustomizableRenderComponent from '../../utils/CustomizableRenderComponent';
 
 interface PropType {
   labellingDoneCallback: (label: string) => void;
@@ -81,22 +81,23 @@ class LabellingFlow extends Component<PropType> {
   };
 
   selectTreeSelectCalback = (event, itemSelected) => {
-    const label = itemSelected.label || itemSelected.value;
+    const label = itemSelected.value;
     this.closePopup();
     return this.props.labellingDoneCallback(label);
   };
 
   labellingStateFragment = () => {
-    return CustomizableRenderComponent({
-      customizationId: 'measurement.labellingComponent',
-      items: this.currentItems,
-      onSelected: this.selectTreeSelectCalback,
-      closePopup: this.closePopup,
-      selectTreeFirstTitle: 'Annotation',
-      measurementData: this.props.measurementData,
-      label: this.state.label,
-      exclusive: this.props.exclusive,
-    });
+    return (
+      <SelectTree
+        items={this.currentItems}
+        columns={1}
+        onSelected={this.selectTreeSelectCalback}
+        closePopup={this.closePopup}
+        selectTreeFirstTitle="Annotation"
+        exclusive={this.props.exclusive}
+        label={this.state.label}
+      />
+    );
   };
 }
 

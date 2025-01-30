@@ -1,4 +1,4 @@
-import LabellingFlow from '../Components/LabellingFlow';
+import { LabellingFlow } from '@ohif/ui';
 
 export default {
   'measurement.labellingComponent': LabellingFlow,
