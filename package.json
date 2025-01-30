@@ -59,6 +59,8 @@
     "test:e2e:headed": "npx playwright test --headed",
     "test:e2e:dist": "lerna run test:e2e:dist --stream",
     "test:e2e:serve": "yarn test:data && lerna run test:e2e:serve --stream",
+    "test:e2e:fast": "lerna run test:e2e:fast --stream",
+    "test:data:serve": "yarn test:data && cd testdata && dicomwebserver -c ./static-dicomweb.json5 -p 3030",
     "see-changed": "lerna changed",
     "docs:preview": "lerna run docs:preview --stream",
     "docs:publish": "chmod +x ./build-and-publish-docs.sh && ./build-and-publish-docs.sh",

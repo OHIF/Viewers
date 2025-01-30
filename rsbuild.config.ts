@@ -25,23 +25,6 @@ const PROXY_PATH_REWRITE_TO = process.env.PROXY_PATH_REWRITE_TO;
 // Add port constant
 const OHIF_PORT = Number(process.env.OHIF_PORT || 3000);
 
-const setHeaders = (res, path) => {
-  if (path.indexOf('.gz') !== -1) {
-    res.setHeader('Content-Encoding', 'gzip');
-  } else if (path.indexOf('.br') !== -1) {
-    res.setHeader('Content-Encoding', 'br');
-  }
-  if (path.indexOf('.pdf') !== -1) {
-    res.setHeader('Content-Type', 'application/pdf');
-  } else if (path.indexOf('mp4') !== -1) {
-    res.setHeader('Content-Type', 'video/mp4');
-  } else if (path.indexOf('frames') !== -1) {
-    res.setHeader('Content-Type', 'multipart/related');
-  } else {
-    res.setHeader('Content-Type', 'application/json');
-  }
-};
-
 export default defineConfig({
   source: {
     entry: {
@@ -159,8 +142,13 @@ export default defineConfig({
       '/dicomweb': {
         target: 'http://localhost:5000',
       },
+      // Relies on having a copy of the testdata on the local dicomweb server
       '/viewer-testdata': {
-        target: 'file:./testdata',
+        target: 'http://localhost:3030',
+        pathRewrite: {
+          '/viewer-testdata': '/dicomweb',
+        },
+        changeOrigin: true,
       },
       // Add conditional proxy based on env vars
       ...(PROXY_TARGET && PROXY_DOMAIN
