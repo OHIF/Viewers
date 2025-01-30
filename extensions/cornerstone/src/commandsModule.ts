@@ -740,10 +740,11 @@ function commandsModule({
         }
 
         // ToDo: Find a better way of obtaining the volumeId that corresponds to the displaySetInstanceUID
-        const volumeIds = viewport
-          .getAllVolumeIds()
-          .filter((_volumeId: string) => _volumeId.includes(displaySetInstanceUID));
-        const volumeId = volumeIds.length > 0 ? volumeIds[0] : viewport.getVolumeId();
+        const volumeId =
+          viewport
+            .getAllVolumeIds()
+            .find((_volumeId: string) => _volumeId.includes(displaySetInstanceUID)) ??
+          viewport.getVolumeId();
         viewport.setProperties({ colormap }, volumeId);
       }
 
