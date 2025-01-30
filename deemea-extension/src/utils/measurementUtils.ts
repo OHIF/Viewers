@@ -73,8 +73,8 @@ async function matchNameWithAxis(
 ): Promise<{ color: string; highlighted: string; dotted?: boolean } | null> {
   const matchedAxis = axis.find(
     axe =>
-      ((pointName1 === axe.head || pointName1 === axe.tail) && pointName2 === axe.head) ||
-      pointName2 === axe.tail
+      (pointName1 === axe.head && pointName2 === axe.tail) ||
+      (pointName2 === axe.head && pointName1 === axe.tail)
   );
 
   return matchedAxis ? matchedAxis : null;
@@ -198,50 +198,9 @@ export function createRectangleROI(viewport, imageMetadata, imageId, data, image
           points: normalizedPoints,
           type: 'rectangle',
           activeHandleIndex: null,
-          cachedStats: {
-            [`imageId:${imageId}`]: {
-              modality: 'CT',
-              area: 0,
-              modalityUnit: 'HU',
-              max: 0,
-              mean: 0,
-              stdDev: 0,
-              statsArray: [
-                {
-                  name: 'max',
-                  label: 'Max Pixel',
-                  value: 988,
-                  unit: null,
-                },
-                {
-                  name: 'mean',
-                  label: 'Mean Pixel',
-                  value: -170.3221583652618,
-                  unit: null,
-                },
-                {
-                  name: 'stdDev',
-                  label: 'Standard Deviation',
-                  value: 456.7336608514075,
-                  unit: null,
-                },
-                {
-                  name: 'stdDev',
-                  label: 'Standard Deviation',
-                  value: 456.7336608514075,
-                  unit: null,
-                },
-                {
-                  name: 'count',
-                  label: 'Pixel Count',
-                  value: 6264,
-                  unit: null,
-                },
-              ],
-            },
-          },
         },
       },
+
       isVisible: !data.hide,
       isLocked: imageStatus,
     });

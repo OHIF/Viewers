@@ -1,7 +1,6 @@
 import { Palette } from './palette';
 
 export const axis = [
-  // BIANKA
   {
     // Frontal & Lateral
     tail: 'femur_medullar_canal_center',
@@ -100,8 +99,6 @@ export const axis = [
     color: Palette.Turquoise,
     highlighted: Palette.DarkTurquoise,
   },
-
-  // LILIA
   {
     tail: 'hip_rotation_center_left',
     head: 'femur_neck_femoral_anatomical_axis_intersection_left',
@@ -192,26 +189,11 @@ export const axis = [
     color: Palette.Red,
     highlighted: Palette.DarkRed,
   },
-
-  // HIPPOLYNE
   {
     tail: 'pelvis_distal_left',
     head: 'pelvis_distal_right',
     color: Palette.Yellow,
     highlighted: Palette.DarkYellow,
-  },
-  // Femur : col
-  {
-    tail: 'hip_rotation_center_left',
-    head: 'femur_neck_femoral_anatomical_axis_intersection_left',
-    color: Palette.LightBlue,
-    highlighted: Palette.DarkLightBlue,
-  },
-  {
-    tail: 'hip_rotation_center_right',
-    head: 'femur_neck_femoral_anatomical_axis_intersection_right',
-    color: Palette.LightBlue,
-    highlighted: Palette.DarkLightBlue,
   },
   // Femur anatomical axis
   {
@@ -251,9 +233,6 @@ export const axis = [
     color: Palette.Purple,
     highlighted: Palette.DarkPurple,
   },
-
-  // AMELYA
-
   {
     tail: 'pelvis_distal_left',
     head: 'pelvis_distal_right',
