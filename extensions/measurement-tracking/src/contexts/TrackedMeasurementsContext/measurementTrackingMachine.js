@@ -36,7 +36,9 @@ const machineConfiguration = {
           {
             target: 'promptLabelAnnotation',
             actions: ['setPreviousState'],
-            cond: 'notArrowAnnotate',
+          },
+          {
+            target: 'off',
           },
         ],
       },
@@ -47,7 +49,7 @@ const machineConfiguration = {
         TRACK_SERIES: [
           {
             target: 'promptLabelAnnotation',
-            cond: 'isLabelOnMeasureAndNotArrowAnnotate',
+            cond: 'isLabelOnMeasure',
             actions: ['setPreviousState'],
           },
           {
@@ -106,7 +108,7 @@ const machineConfiguration = {
         TRACK_SERIES: [
           {
             target: 'promptLabelAnnotation',
-            cond: 'isLabelOnMeasureAndNotArrowAnnotate',
+            cond: 'isLabelOnMeasure',
             actions: ['setPreviousState'],
           },
           {

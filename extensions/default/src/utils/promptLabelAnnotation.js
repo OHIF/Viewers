@@ -7,6 +7,13 @@ function promptLabelAnnotation({ servicesManager }, ctx, evt) {
     const labelConfig = customizationService.getCustomization('measurementLabels');
     const renderContent = customizationService.getCustomization('ui.labellingComponent');
     const measurement = measurementService.getMeasurement(measurementId);
+    if(measurement.label) {
+      resolve({
+        StudyInstanceUID,
+        SeriesInstanceUID,
+        viewportId,
+      })
+    }
     const value = await showLabelAnnotationPopup(
       measurement,
       servicesManager.services.uiDialogService,
