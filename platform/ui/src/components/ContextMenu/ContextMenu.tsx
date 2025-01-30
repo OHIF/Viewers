@@ -1,29 +1,69 @@
-import React from 'react';
-import classNames from 'classnames';
-
-import ProgressLoadingBar from '../ProgressLoadingBar';
+import React, { useEffect, useRef } from 'react';
+import PropTypes from 'prop-types';
+import Typography from '../Typography';
 import { Icons } from '@ohif/ui-next';
-/**
- *  A React component that renders a loading indicator.
- * if progress is not provided, it will render an infinite loading indicator
- * if progress is provided, it will render a progress bar
- * Optionally a textBlock can be provided to display a message
- */
-function LoadingIndicatorProgress({ className, textBlock, progress }) {
+
+const ContextMenu = ({ items, ...props }) => {
+  const contextMenuRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!contextMenuRef?.current) {
+      return;
+    }
+
+    const contextMenu = contextMenuRef.current;
+
+    const boundingClientRect = contextMenu.getBoundingClientRect();
+    if (boundingClientRect.bottom + boundingClientRect.height > window.innerHeight) {
+      props.defaultPosition.y = props.defaultPosition.y - boundingClientRect.height;
+    }
+    if (boundingClientRect.right + boundingClientRect.width > window.innerWidth) {
+      props.defaultPosition.x = props.defaultPosition.x - boundingClientRect.width;
+    }
+  }, [props.defaultPosition]);
+
+  if (!items) {
+    return null;
+  }
+
   return (
     <div
-      className={classNames(
-        'absolute top-0 left-0 z-50 flex flex-col items-center justify-center space-y-5',
-        className
-      )}
+      ref={contextMenuRef}
+      data-cy="context-menu"
+      className="bg-secondary-dark relative z-50 block w-48 rounded"
+      onContextMenu={e => e.preventDefault()}
     >
-      <Icons.LoadingOHIFMark className="h-12 w-12 text-white" />
-      <div className="w-48">
-        <ProgressLoadingBar progress={progress} />
-      </div>
-      {textBlock}
+      {items.map((item, index) => (
+        <div
+          key={index}
+          data-cy="context-menu-item"
+          onClick={() => item.action(item, props)}
+          style={{ justifyContent: 'space-between' }}
+          className="hover:bg-primary-dark border-primary-dark flex cursor-pointer items-center border-b px-4 py-3 transition duration-300 last:border-b-0"
+        >
+          <Typography>{item.label}</Typography>
+          {item.iconRight && (
+            <Icons.ByName
+              name={item.iconRight}
+              className="inline text-white"
+            />
+          )}
+        </div>
+      ))}
     </div>
   );
-}
+};
 
-export default LoadingIndicatorProgress;
+ContextMenu.propTypes = {
+  defaultPosition: PropTypes.shape({
+    x: PropTypes.number,
+    y: PropTypes.number,
+  }),
+  items: PropTypes.arrayOf(
+    PropTypes.shape({
+      label: PropTypes.string.isRequired,
+      action: PropTypes.func.isRequired,
+    })
+  ),
+};
+
+export default ContextMenu;
