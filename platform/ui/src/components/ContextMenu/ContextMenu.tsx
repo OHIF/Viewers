@@ -1,46 +1,29 @@
 import React from 'react';
-import PropTypes from 'prop-types';
-import Typography from '../Typography';
-import Icon from '../Icon';
+import classNames from 'classnames';
 
-const ContextMenu = ({ items, ...props }) => {
-  if (!items) {
-    return null;
-  }
+import ProgressLoadingBar from '../ProgressLoadingBar';
+import { Icons } from '@ohif/ui-next';
+/**
+ *  A React component that renders a loading indicator.
+ * if progress is not provided, it will render an infinite loading indicator
+ * if progress is provided, it will render a progress bar
+ * Optionally a textBlock can be provided to display a message
+ */
+function LoadingIndicatorProgress({ className, textBlock, progress }) {
   return (
     <div
-      data-cy="context-menu"
-      className="bg-secondary-dark relative z-50 block w-48 rounded"
-      onContextMenu={e => e.preventDefault()}
+      className={classNames(
+        'absolute top-0 left-0 z-50 flex flex-col items-center justify-center space-y-5',
+        className
+      )}
     >
-      {items.map((item, index) => (
-        <div
-          key={index}
-          data-cy="context-menu-item"
-          onClick={() => item.action(item, props)}
-          style={{ justifyContent: 'space-between' }}
-          className="hover:bg-primary-dark border-primary-dark flex cursor-pointer items-center border-b px-4 py-3 transition duration-300 last:border-b-0"
-        >
-          <Typography>{item.label}</Typography>
-          {item.iconRight && (
-            <Icon
-              name={item.iconRight}
-              className="inline"
-            />
-          )}
-        </div>
-      ))}
+      <Icons.LoadingOHIFMark className="h-12 w-12 text-white" />
+      <div className="w-48">
+        <ProgressLoadingBar progress={progress} />
+      </div>
+      {textBlock}
     </div>
   );
-};
+}
 
-ContextMenu.propTypes = {
-  items: PropTypes.arrayOf(
-    PropTypes.shape({
-      label: PropTypes.string.isRequired,
-      action: PropTypes.func.isRequired,
-    })
-  ),
-};
-
-export default ContextMenu;
+export default LoadingIndicatorProgress;

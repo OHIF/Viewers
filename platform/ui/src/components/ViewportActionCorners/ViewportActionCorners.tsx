@@ -1,7 +1,6 @@
 import classNames from 'classnames';
 import React from 'react';
 import { ViewportActionCornersComponentInfo } from '../../types/ViewportActionCornersTypes';
-import CustomizableRenderComponent from '../../utils/CustomizableRenderComponent';
 
 export enum ViewportActionCornersLocations {
   topLeft,
@@ -46,14 +45,6 @@ const classes = {
  * rendered from left to right in the order that they appear in the array.
  */
 function ViewportActionCorners({ cornerComponents }: ViewportActionCornersProps) {
-  return CustomizableRenderComponent({
-    customizationId: 'ui.ViewportActionCorner',
-    FallbackComponent: FallbackViewportActionCorners,
-    cornerComponents,
-  });
-}
-
-function FallbackViewportActionCorners({ cornerComponents }: ViewportActionCornersProps) {
   if (!cornerComponents) {
     return null;
   }
