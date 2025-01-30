@@ -1,7 +1,7 @@
 {
   "name": "@externals/devDependencies",
   "description": "External dev dependencies - put dev build dependencies here",
-  "version": "3.10.0-beta.38",
+  "version": "3.10.0-beta.81",
   "license": "MIT",
   "private": true,
   "engines": {
@@ -21,7 +21,11 @@
   },
   "devDependencies": {
     "@pmmmwh/react-refresh-webpack-plugin": "^0.5.15",
+    "@rsbuild/core": "^1.1.13",
+    "@rsbuild/plugin-node-polyfill": "1.2.0",
+    "@rsbuild/plugin-react": "^1.1.0",
     "@svgr/webpack": "^8.1.0",
+    "@swc/helpers": "^0.5.15",
     "@types/jest": "^27.5.0",
     "@typescript-eslint/eslint-plugin": "^6.3.0",
     "@typescript-eslint/parser": "^6.3.0",
@@ -68,7 +72,7 @@
     "prettier-plugin-tailwindcss": "^0.5.4",
     "react-refresh": "^0.14.2",
     "semver": "^7.5.1",
-    "serve": "^14.2.0",
+    "serve": "^14.2.4",
     "shader-loader": "^1.3.1",
     "shx": "^0.3.3",
     "source-map-loader": "^4.0.1",

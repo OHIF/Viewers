@@ -95,7 +95,7 @@ yarn run dev:orthanc
 #### Configuration: Learn More
 
 > For more configuration fun, check out the
-> [Essentials Configuration](../index.md) guide.
+> [Essentials Configuration](../configurationFiles.md) guide.
 
 Let's take a look at what's going on under the hood here. `yarn run dev:orthanc`
 is running the `dev:orthanc` script in our project's `package.json` (inside
@@ -183,7 +183,7 @@ A comma delimited string specifying which payloads the data source responds with
 For DICOM video and PDF it has been found that Orthanc delivers multipart, while DCM4CHEE delivers single part. Consult the DICOM conformance statement for your particular data source to determine which payload types it delivers.
 
 To learn more about how you can configure the OHIF Viewer, check out our
-[Configuration Guide](../index.md).
+[Configuration Guide](../configurationFiles.md).
 
 
 ### DICOM PDF

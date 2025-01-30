@@ -3,7 +3,12 @@
   "private": true,
   "workspaces": {
     "packages": [
-      "platform/*",
+      "platform/app",
+      "platform/cli",
+      "platform/ui-next",
+      "platform/ui",
+      "platform/core",
+      "platform/i18n",
       "extensions/*",
       "modes/*",
       "addOns/externals/*"
@@ -30,6 +35,7 @@
     "build:demo": "lerna run build:viewer:demo --stream",
     "build:package-all": "lerna run build:package --parallel --stream",
     "build:package-all-1": "lerna run build:package-1 --parallel --stream",
+    "dev:fast": "cd platform/app && yarn run dev:fast",
     "show:config": "echo Config is $APP_CONFIG on $PUBLIC_URL",
     "dev": "lerna run dev:viewer --stream",
     "dev:no:cache": "lerna run dev:no:cache --stream",
@@ -69,7 +75,7 @@
   "optionalDependencies": {
     "@percy/cypress": "^3.1.1",
     "@playwright/test": "^1.48.0",
-    "cypress": "^13.16.1",
+    "cypress": "^14.0.0",
     "cypress-file-upload": "^5.0.8"
   },
   "devDependencies": {
@@ -101,9 +107,8 @@
     ]
   },
   "resolutions": {
-    "**/@babel/runtime": "^7.20.13",
     "commander": "8.3.0",
-    "dcmjs": ">=0.33.0",
+    "dcmjs": "0.38.0",
     "dicomweb-client": ">=0.10.4",
     "nth-check": "^2.1.1",
     "trim-newlines": "^5.0.0",
@@ -112,10 +117,6 @@
     "package-json": "^8.1.0",
     "typescript": "5.5.4",
     "sharp": "^0.32.6",
-    "**/express/path-to-regexp": "0.1.10",
-    "**/serve/serve-handler/path-to-regexp": "3.3.0",
-    "**/@docusaurus/core/serve-handler/path-to-regexp": "3.3.0",
-    "**/react-router/**/path-to-regexp": "1.9.0",
     "rollup": "2.79.2",
     "body-parser": "1.20.3"
   }

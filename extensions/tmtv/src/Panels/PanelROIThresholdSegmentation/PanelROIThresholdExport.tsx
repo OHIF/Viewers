@@ -67,7 +67,7 @@ export default function PanelRoiThresholdSegmentation({
             <span className="text-base font-bold uppercase tracking-widest text-white">
               {'TMTV:'}
             </span>
-            <div className="text-white">{`${tmtvValue.toFixed(3)} mL`}</div>
+            <div className="text-white">{`${tmtvValue?.toFixed(3)} mL`}</div>
           </div>
         ) : null}
       </div>

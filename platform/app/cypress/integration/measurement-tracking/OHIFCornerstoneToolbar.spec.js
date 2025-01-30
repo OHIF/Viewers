@@ -72,7 +72,7 @@ describe('OHIF Cornerstone Toolbar', () => {
     // Assign an alias to the button element
     cy.get('@wwwcBtnPrimary').as('wwwcButton');
     cy.get('@wwwcButton').click();
-    cy.get('@wwwcButton').should('have.class', 'bg-primary-light');
+    cy.get('@wwwcButton').should('have.attr', 'data-active', 'true');
 
     //drags the mouse inside the viewport to be able to interact with series
     cy.get('@viewport')
@@ -97,7 +97,7 @@ describe('OHIF Cornerstone Toolbar', () => {
     cy.get('@panButton').click();
 
     // Assert that the button has the 'active' class
-    cy.get('@panButton').should('have.class', 'bg-primary-light');
+    cy.get('@panButton').should('have.attr', 'data-active', 'true');
 
     // Trigger the pan actions on the viewport
     cy.get('@viewport')

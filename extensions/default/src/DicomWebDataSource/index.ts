@@ -151,6 +151,7 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
         singlepart: dicomWebConfig.singlepart,
         headers: userAuthenticationService.getAuthorizationHeader(),
         errorInterceptor: errorHandler.getHTTPErrorHandler(),
+        supportsFuzzyMatching: dicomWebConfig.supportsFuzzyMatching,
       };
 
       wadoConfig = {
@@ -159,6 +160,7 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
         singlepart: dicomWebConfig.singlepart,
         headers: userAuthenticationService.getAuthorizationHeader(),
         errorInterceptor: errorHandler.getHTTPErrorHandler(),
+        supportsFuzzyMatching: dicomWebConfig.supportsFuzzyMatching,
       };
 
       // TODO -> Two clients sucks, but its better than 1000.
@@ -478,7 +480,6 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
           instance.wadoUri = dicomWebConfig.wadoUri;
 
           const { StudyInstanceUID, SeriesInstanceUID, SOPInstanceUID } = instance;
-
           const numberOfFrames = instance.NumberOfFrames || 1;
           // Process all frames consistently, whether single or multiframe
           for (let i = 0; i < numberOfFrames; i++) {
@@ -583,8 +584,11 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
       return dicomWebConfigCopy;
     },
     getStudyInstanceUIDs({ params, query }) {
-      const { StudyInstanceUIDs: paramsStudyInstanceUIDs } = params;
-      const queryStudyInstanceUIDs = utils.splitComma(query.getAll('StudyInstanceUIDs'));
+      const paramsStudyInstanceUIDs = params.StudyInstanceUIDs || params.studyInstanceUIDs;
+
+      const queryStudyInstanceUIDs = utils.splitComma(
+        query.getAll('StudyInstanceUIDs').concat(query.getAll('studyInstanceUIDs'))
+      );
 
       const StudyInstanceUIDs =
         (queryStudyInstanceUIDs.length && queryStudyInstanceUIDs) || paramsStudyInstanceUIDs;

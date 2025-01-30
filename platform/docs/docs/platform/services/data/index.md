@@ -19,8 +19,8 @@ We maintain the following non-ui Services:
 - [Hanging Protocol Service](../data/HangingProtocolService.md)
 - [Toolbar Service](./ToolbarService.md)
 - [Measurement Service](../data/MeasurementService.md)
-- [Customization Service](./../ui/customization-service.md)
-- [State Sync Service](../data/StateSyncService.md)
+- [Customization Service](./../customization-service/customizationService.md)
+- [State Sync Service](../../../../versioned_docs/version-3.9/migration-guide/3p8-to-3p9/5-StateSyncService.md)
 - [Panel Service](../data/PanelService.md)
 
 ## Service Architecture

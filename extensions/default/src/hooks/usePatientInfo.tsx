@@ -13,9 +13,8 @@ function usePatientInfo(servicesManager: AppTypes.ServicesManager) {
     PatientDOB: '',
   });
   const [isMixedPatients, setIsMixedPatients] = useState(false);
-  const displaySets = displaySetService.getActiveDisplaySets();
 
-  const checkMixedPatients = PatientID => {
+  const checkMixedPatients = (PatientID: string) => {
     const displaySets = displaySetService.getActiveDisplaySets();
     let isMixedPatients = false;
     displaySets.forEach(displaySet => {
@@ -30,15 +29,19 @@ function usePatientInfo(servicesManager: AppTypes.ServicesManager) {
     setIsMixedPatients(isMixedPatients);
   };
 
-  const updatePatientInfo = () => {
-    const displaySet = displaySets[0];
+  const updatePatientInfo = ({ displaySetsAdded }) => {
+    if (!displaySetsAdded.length) {
+      return;
+    }
+    const displaySet = displaySetsAdded[0];
     const instance = displaySet?.instances?.[0] || displaySet?.instance;
     if (!instance) {
       return;
     }
+
     setPatientInfo({
       PatientID: instance.PatientID || null,
-      PatientName: instance.PatientName ? formatPN(instance.PatientName.Alphabetic) : null,
+      PatientName: instance.PatientName ? formatPN(instance.PatientName) : null,
       PatientSex: instance.PatientSex || null,
       PatientDOB: formatDate(instance.PatientBirthDate) || null,
     });
@@ -48,14 +51,10 @@ function usePatientInfo(servicesManager: AppTypes.ServicesManager) {
   useEffect(() => {
     const subscription = displaySetService.subscribe(
       displaySetService.EVENTS.DISPLAY_SETS_ADDED,
-      () => updatePatientInfo()
+      props => updatePatientInfo(props)
     );
     return () => subscription.unsubscribe();
   }, []);
-
-  useEffect(() => {
-    updatePatientInfo();
-  }, [displaySets]);
 
   return { patientInfo, isMixedPatients };
 }

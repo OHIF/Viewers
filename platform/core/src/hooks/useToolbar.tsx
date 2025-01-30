@@ -5,7 +5,7 @@ export function useToolbar({ servicesManager, buttonSection = 'primary' }: withA
   const { EVENTS } = toolbarService;
 
   const [toolbarButtons, setToolbarButtons] = useState(
-    toolbarService.getButtonSection(buttonSection)
+    toolbarService.getButtonSection(buttonSection as string)
   );
 
   // Callback function for handling toolbar interactions
@@ -25,7 +25,7 @@ export function useToolbar({ servicesManager, buttonSection = 'primary' }: withA
   // Effect to handle toolbar modification events
   useEffect(() => {
     const handleToolbarModified = () => {
-      setToolbarButtons(toolbarService.getButtonSection(buttonSection));
+      setToolbarButtons(toolbarService.getButtonSection(buttonSection as string)?.filter(Boolean));
     };
 
     const subs = [EVENTS.TOOL_BAR_MODIFIED, EVENTS.TOOL_BAR_STATE_MODIFIED].map(event => {
@@ -42,6 +42,7 @@ export function useToolbar({ servicesManager, buttonSection = 'primary' }: withA
     const events = [
       viewportGridService.EVENTS.ACTIVE_VIEWPORT_ID_CHANGED,
       viewportGridService.EVENTS.VIEWPORTS_READY,
+      viewportGridService.EVENTS.LAYOUT_CHANGED,
     ];
 
     const subscriptions = events.map(event => {

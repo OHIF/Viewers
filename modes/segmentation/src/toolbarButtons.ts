@@ -20,7 +20,7 @@ export const setToolActiveToolbar = {
 const toolbarButtons: Button[] = [
   {
     id: 'Zoom',
-    uiType: 'ohif.radioGroup',
+    uiType: 'ohif.toolButton',
     props: {
       icon: 'tool-zoom',
       label: 'Zoom',
@@ -30,7 +30,7 @@ const toolbarButtons: Button[] = [
   },
   {
     id: 'WindowLevel',
-    uiType: 'ohif.radioGroup',
+    uiType: 'ohif.toolButton',
     props: {
       icon: 'tool-window-level',
       label: 'Window Level',
@@ -40,7 +40,7 @@ const toolbarButtons: Button[] = [
   },
   {
     id: 'Pan',
-    uiType: 'ohif.radioGroup',
+    uiType: 'ohif.toolButton',
     props: {
       icon: 'tool-move',
       label: 'Pan',
@@ -50,7 +50,7 @@ const toolbarButtons: Button[] = [
   },
   {
     id: 'TrackballRotate',
-    uiType: 'ohif.radioGroup',
+    uiType: 'ohif.toolButton',
     props: {
       type: 'tool',
       icon: 'tool-3d-rotate',
@@ -64,7 +64,7 @@ const toolbarButtons: Button[] = [
   },
   {
     id: 'Capture',
-    uiType: 'ohif.radioGroup',
+    uiType: 'ohif.toolButton',
     props: {
       icon: 'tool-capture',
       label: 'Capture',
@@ -90,7 +90,7 @@ const toolbarButtons: Button[] = [
   },
   {
     id: 'Crosshairs',
-    uiType: 'ohif.radioGroup',
+    uiType: 'ohif.toolButton',
     props: {
       icon: 'tool-crosshair',
       label: 'Crosshairs',
@@ -108,7 +108,7 @@ const toolbarButtons: Button[] = [
   },
   {
     id: 'MoreTools',
-    uiType: 'ohif.splitButton',
+    uiType: 'ohif.toolButtonList',
     props: {
       groupId: 'MoreTools',
       evaluate: 'evaluate.group.promoteToPrimaryIfCornerstoneToolNotActiveInTheList',
@@ -193,14 +193,6 @@ const toolbarButtons: Button[] = [
           evaluate: 'evaluate.viewportProperties.toggle',
         }),
         createButton({
-          id: 'Probe',
-          icon: 'tool-probe',
-          label: 'Probe',
-          tooltip: 'Probe',
-          commands: setToolActiveToolbar,
-          evaluate: 'evaluate.cornerstoneTool',
-        }),
-        createButton({
           id: 'Cine',
           icon: 'tool-cine',
           label: 'Cine',
@@ -215,34 +207,10 @@ const toolbarButtons: Button[] = [
           ],
         }),
         createButton({
-          id: 'Angle',
-          icon: 'tool-angle',
-          label: 'Angle',
-          tooltip: 'Angle',
-          commands: setToolActiveToolbar,
-          evaluate: 'evaluate.cornerstoneTool',
-        }),
-        createButton({
           id: 'Magnify',
           icon: 'tool-magnify',
           label: 'Zoom-in',
           tooltip: 'Zoom-in',
-          commands: setToolActiveToolbar,
-          evaluate: 'evaluate.cornerstoneTool',
-        }),
-        createButton({
-          id: 'RectangleROI',
-          icon: 'tool-rectangle',
-          label: 'Rectangle',
-          tooltip: 'Rectangle',
-          commands: setToolActiveToolbar,
-          evaluate: 'evaluate.cornerstoneTool',
-        }),
-        createButton({
-          id: 'CalibrationLine',
-          icon: 'tool-calibration',
-          label: 'Calibration',
-          tooltip: 'Calibration Line',
           commands: setToolActiveToolbar,
           evaluate: 'evaluate.cornerstoneTool',
         }),

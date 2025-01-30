@@ -11,7 +11,7 @@ const setToolActiveToolbar = {
 const toolbarButtons = [
   {
     id: 'MeasurementTools',
-    uiType: 'ohif.splitButton',
+    uiType: 'ohif.toolButtonList',
     props: {
       groupId: 'MeasurementTools',
       primary: ToolbarService.createButton({
@@ -56,7 +56,7 @@ const toolbarButtons = [
   },
   {
     id: 'Zoom',
-    uiType: 'ohif.radioGroup',
+    uiType: 'ohif.toolButton',
     props: {
       icon: 'tool-zoom',
       label: 'Zoom',
@@ -67,7 +67,7 @@ const toolbarButtons = [
   // Window Level + Presets
   {
     id: 'WindowLevel',
-    uiType: 'ohif.radioGroup',
+    uiType: 'ohif.toolButton',
     props: {
       icon: 'tool-window-level',
       label: 'Window Level',
@@ -78,7 +78,7 @@ const toolbarButtons = [
   // Crosshairs Button
   {
     id: 'Crosshairs',
-    uiType: 'ohif.radioGroup',
+    uiType: 'ohif.toolButton',
     props: {
       icon: 'tool-crosshair',
       label: 'Crosshairs',
@@ -89,7 +89,7 @@ const toolbarButtons = [
   // Pan Button
   {
     id: 'Pan',
-    uiType: 'ohif.radioGroup',
+    uiType: 'ohif.toolButton',
     props: {
       icon: 'tool-move',
       label: 'Pan',
@@ -100,7 +100,7 @@ const toolbarButtons = [
   // Rectangle ROI Start End Threshold Button
   {
     id: 'RectangleROIStartEndThreshold',
-    uiType: 'ohif.radioGroup',
+    uiType: 'ohif.toolBoxButton',
     props: {
       icon: 'tool-create-threshold',
       label: 'Rectangle ROI Threshold',
@@ -119,9 +119,10 @@ const toolbarButtons = [
   },
   {
     id: 'BrushTools',
-    uiType: 'ohif.buttonGroup',
+    uiType: 'ohif.toolBoxButtonGroup',
     props: {
       groupId: 'BrushTools',
+      evaluate: 'evaluate.cornerstone.hasSegmentation',
       items: [
         {
           id: 'Brush',

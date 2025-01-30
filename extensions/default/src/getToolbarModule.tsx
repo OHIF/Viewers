@@ -1,41 +1,60 @@
-import ToolbarDivider from './Toolbar/ToolbarDivider';
+import { ToolbarButton as ToolbarButtonLegacy } from '@ohif/ui';
+import { ToolButton, utils } from '@ohif/ui-next';
+
 import ToolbarLayoutSelectorWithServices from './Toolbar/ToolbarLayoutSelector';
-import ToolbarSplitButtonWithServices from './Toolbar/ToolbarSplitButtonWithServices';
-import ToolbarButtonGroupWithServices from './Toolbar/ToolbarButtonGroupWithServices';
-import { ToolbarButton } from '@ohif/ui';
+
+// legacy
+import ToolbarDividerLegacy from './Toolbar/ToolbarDivider';
+import ToolbarSplitButtonWithServicesLegacy from './Toolbar/ToolbarSplitButtonWithServices';
+import ToolbarButtonGroupWithServicesLegacy from './Toolbar/ToolbarButtonGroupWithServices';
 import { ProgressDropdownWithService } from './Components/ProgressDropdownWithService';
 
-const getClassName = isToggled => {
-  return {
-    className: isToggled
-      ? '!text-primary-active'
-      : '!text-common-bright hover:!bg-primary-dark hover:text-primary-light',
-  };
-};
+// new
+import ToolButtonListWrapper from './Toolbar/ToolButtonListWrapper';
+import { ToolBoxButtonGroupWrapper, ToolBoxButtonWrapper } from './Toolbar/ToolBoxWrapper';
 
 export default function getToolbarModule({ commandsManager, servicesManager }: withAppTypes) {
   const { cineService } = servicesManager.services;
   return [
+    // new
+    {
+      name: 'ohif.toolButton',
+      defaultComponent: ToolButton,
+    },
+    {
+      name: 'ohif.toolButtonList',
+      defaultComponent: ToolButtonListWrapper,
+    },
+    {
+      name: 'ohif.toolBoxButtonGroup',
+      defaultComponent: ToolBoxButtonGroupWrapper,
+    },
+    {
+      name: 'ohif.toolBoxButton',
+      defaultComponent: ToolBoxButtonWrapper,
+    },
+    // legacy
     {
       name: 'ohif.radioGroup',
-      defaultComponent: ToolbarButton,
+      defaultComponent: ToolbarButtonLegacy,
+    },
+    {
+      name: 'ohif.buttonGroup',
+      defaultComponent: ToolbarButtonGroupWithServicesLegacy,
     },
     {
       name: 'ohif.divider',
-      defaultComponent: ToolbarDivider,
+      defaultComponent: ToolbarDividerLegacy,
     },
     {
       name: 'ohif.splitButton',
-      defaultComponent: ToolbarSplitButtonWithServices,
+      defaultComponent: ToolbarSplitButtonWithServicesLegacy,
     },
+    // others
     {
       name: 'ohif.layoutSelector',
       defaultComponent: props =>
         ToolbarLayoutSelectorWithServices({ ...props, commandsManager, servicesManager }),
-    },
-    {
-      name: 'ohif.buttonGroup',
-      defaultComponent: ToolbarButtonGroupWithServices,
     },
     {
       name: 'ohif.progressDropdown',
@@ -66,7 +85,9 @@ export default function getToolbarModule({ commandsManager, servicesManager }: w
       name: 'evaluate.cine',
       evaluate: () => {
         const isToggled = cineService.getState().isCineEnabled;
-        return getClassName(isToggled);
+        return {
+          className: utils.getToggledClassName(isToggled),
+        };
       },
     },
   ];
