@@ -383,7 +383,7 @@ class MetadataProvider {
         };
 
         break;
-      case WADO_IMAGE_LOADER_TAGS.PER_SERIES_MODULE:
+      case WADO_IMAGE_LOADER_TAGS.PET_SERIES_MODULE:
         metadata = {
           correctedImage: instance.CorrectedImage,
           units: instance.Units,
@@ -570,7 +570,7 @@ const WADO_IMAGE_LOADER_TAGS = {
   SOP_COMMON_MODULE: 'sopCommonModule',
   PET_IMAGE_MODULE: 'petImageModule',
   PET_ISOTOPE_MODULE: 'petIsotopeModule',
-  PER_SERIES_MODULE: 'petSeriesModule',
+  PET_SERIES_MODULE: 'petSeriesModule',
   OVERLAY_PLANE_MODULE: 'overlayPlaneModule',
   PATIENT_DEMOGRAPHIC_MODULE: 'patientDemographicModule',
 
