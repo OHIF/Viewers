@@ -4,7 +4,24 @@ const defaultContextMenu = {
   menus: [
     // Get the items from the UI Customization for the menu name (and have a custom name)
     {
-      id: 'forExistingMeasurement',
+      id: 'forCustomMeasurement',
+      selector: ({ value, nearbyToolData }) =>
+        !!nearbyToolData &&
+        !value.data.handles.headName?.includes('custom_point') &&
+        value.data.handles.headName,
+      items: [
+        {
+          label: 'Delete measurement',
+          commands: [
+            {
+              commandName: 'deleteMeasurement',
+            },
+          ],
+        },
+      ],
+    },
+    {
+      id: 'forPredictedMeasurement',
       selector: ({ nearbyToolData }) => !!nearbyToolData,
       items: [
         {
