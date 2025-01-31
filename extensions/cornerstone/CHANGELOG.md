@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.10.0-beta.83](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.82...v3.10.0-beta.83) (2025-01-31)
+
+
+### Bug Fixes
+
+* publish dependency ([#4753](https://github.com/OHIF/Viewers/issues/4753)) ([0cb6106](https://github.com/OHIF/Viewers/commit/0cb6106d0fa576348ca3324685d5768b6ec80572))
+
+
+
+
+
 # [3.10.0-beta.82](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.81...v3.10.0-beta.82) (2025-01-31)
 
 **Note:** Version bump only for package @ohif/extension-cornerstone
