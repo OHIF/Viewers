@@ -1,7 +1,7 @@
 window.config = {
   routerBasename: '/v3',
   whiteLabeling: {
-    createLogoComponentFn: function(React) {
+    createLogoComponentFn: function (React) {
       return React.createElement(
         'a',
         {
@@ -24,6 +24,8 @@ window.config = {
   modes: [],
   customizationService: {},
   showStudyList: false,
+  disableConfirmationPrompts: true,
+  disableEditing: true,
   // some windows systems have issues with more than 3 web workers
   maxNumberOfWebWorkers: 3,
   // below flag is for performance reasons, but it might not work for all servers
@@ -176,4 +178,3 @@ window.config = {
     },
   ],
 };
-
