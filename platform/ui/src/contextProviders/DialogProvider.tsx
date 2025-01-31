@@ -316,7 +316,9 @@ export const withDialog = Component => {
 DialogProvider.propTypes = {
   children: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.node), PropTypes.node, PropTypes.func])
     .isRequired,
-  service: PropTypes.shape({ setServiceImplementation: PropTypes.func }),
+  service: PropTypes.shape({
+    setServiceImplementation: PropTypes.func,
+  }),
 };
 
 export default DialogProvider;
