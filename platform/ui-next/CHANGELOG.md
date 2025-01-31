@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.10.0-beta.84](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.83...v3.10.0-beta.84) (2025-01-31)
+
+
+### Bug Fixes
+
+* Remove non-functional Tailwind class for SegmentationPanel ([#4745](https://github.com/OHIF/Viewers/issues/4745)) ([32017d1](https://github.com/OHIF/Viewers/commit/32017d15a4c11e0cb7717c13da022a01ee152ba5))
+
+
+
+
+
 # [3.10.0-beta.83](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.82...v3.10.0-beta.83) (2025-01-31)
 
 **Note:** Version bump only for package @ohif/ui-next
