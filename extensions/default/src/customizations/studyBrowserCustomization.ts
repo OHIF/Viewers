@@ -8,7 +8,13 @@ export default {
       id: 'tagBrowser',
       label: 'Tag Browser',
       iconName: 'DicomTagBrowser',
-      commands: 'openDICOMTagViewer',
+      // it makes sense to have displaySetInstanceUID as a paramter always passed here because this is a thumbnail item (linked to a display set)
+      // theres not an easy way to know what thumbnail was clicked if we don't pass this
+      onClick: ({ servicesManager, commandsManager, displaySetInstanceUID }: withAppTypes) => {
+        commandsManager.runCommand('openDICOMTagViewer', {
+          displaySetInstanceUID,
+        });
+      },
     },
   ],
   'studyBrowser.sortFunctions': [

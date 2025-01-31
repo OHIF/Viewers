@@ -34,15 +34,15 @@ const getMenuItemsDefault = ({
       id: string;
       label: string;
       iconName: string;
-      commands: string;
+      onClick: ({
+        servicesManager,
+        commandsManager,
+        displaySetInstanceUID,
+      }: withAppTypes) => () => void;
     };
   }) => (
     <DropdownMenuItem
-      onClick={() =>
-        commandsManager.runCommand(item.commands, {
-          displaySetInstanceUID,
-        })
-      }
+      onClick={() => item.onClick({ servicesManager, commandsManager, displaySetInstanceUID })}
     >
       <div className="flex items-center gap-2">
         <Icons.ByName name={item.iconName} />
