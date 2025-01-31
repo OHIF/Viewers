@@ -33,7 +33,7 @@ const getMenuItemsDefault = ({
       id: string;
       label: string;
       iconName: string;
-      onClick: ({ servicesManager, commandsManager, ...props }: withAppTypes) => () => void;
+      onClick: ({ ...props }: withAppTypes) => () => void;
     };
   }) => (
     <DropdownMenuItem onClick={() => item.onClick({ ...props })}>
