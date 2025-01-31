@@ -1,9 +1,9 @@
 const log = {
-  error: null,
-  warn: null,
-  info: null,
-  trace: null,
-  debug: null,
+  error: () => {},
+  warn: () => {},
+  info: () => {},
+  trace: () => {},
+  debug: () => {},
   time: key => {
     log.timingKeys[key] = true;
   },
