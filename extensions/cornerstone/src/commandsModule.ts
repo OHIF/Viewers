@@ -208,9 +208,9 @@ function commandsModule({
      */
     setMeasurementLabel: ({ uid }) => {
       const labelConfig = customizationService.getCustomization('measurementLabels');
-      const LabellingFlow = customizationService.getCustomization('ui.labellingComponent');
+      const labelSelector = customizationService.getCustomization('ui.labellingComponent');
       const measurement = measurementService.getMeasurement(uid);
-      showLabelAnnotationPopup(measurement, uiDialogService, labelConfig, LabellingFlow).then(
+      showLabelAnnotationPopup(measurement, uiDialogService, labelConfig, labelSelector).then(
         (val: Map<any, any>) => {
           measurementService.update(
             uid,
@@ -326,9 +326,9 @@ function commandsModule({
 
     renameMeasurement: ({ uid }) => {
       const labelConfig = customizationService.getCustomization('measurementLabels');
-      const LabellingFlow = customizationService.getCustomization('ui.labellingComponent');
+      const labelSelector = customizationService.getCustomization('ui.labellingComponent');
       const measurement = measurementService.getMeasurement(uid);
-      showLabelAnnotationPopup(measurement, uiDialogService, labelConfig, LabellingFlow).then(
+      showLabelAnnotationPopup(measurement, uiDialogService, labelConfig, labelSelector).then(
         val => {
           measurementService.update(
             uid,
@@ -380,8 +380,8 @@ function commandsModule({
     },
     arrowTextCallback: ({ callback, data, uid }) => {
       const labelConfig = customizationService.getCustomization('measurementLabels');
-      const LabellingFlow = customizationService.getCustomization('ui.labellingComponent');
-      callLabelAutocompleteDialog(uiDialogService, callback, {}, labelConfig, LabellingFlow);
+      const labelSelector = customizationService.getCustomization('ui.labellingComponent');
+      callLabelAutocompleteDialog(uiDialogService, callback, {}, labelConfig, labelSelector);
     },
     toggleCine: () => {
       const { viewports } = viewportGridService.getState();

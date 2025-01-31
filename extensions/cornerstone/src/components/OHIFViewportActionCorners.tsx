@@ -7,10 +7,10 @@ export type OHIFViewportActionCornersProps = {
 };
 
 function OHIFViewportActionCorners({ viewportId }: OHIFViewportActionCornersProps) {
-  const { services } = useSystem();
+  const { servicesManager } = useSystem();
   const [viewportActionCornersState] = useViewportActionCornersContext();
   const ViewportActionCorners =
-    services.customizationService.getCustomization('ui.viewportActionCorner');
+    servicesManager.services.customizationService.getCustomization('ui.viewportActionCorner');
   if (!viewportActionCornersState[viewportId]) {
     return null;
   }

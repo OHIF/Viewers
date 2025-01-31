@@ -1,5 +1,5 @@
 import React from 'react';
-import { Input, Dialog, ButtonEnums, LabellingFlow } from '@ohif/ui';
+import { Input, Dialog, ButtonEnums } from '@ohif/ui';
 
 /**
  *
@@ -94,7 +94,7 @@ export function callLabelAutocompleteDialog(
   callback,
   dialogConfig,
   labelConfig,
-  LabellingFlow
+  labelSelector
 ) {
   const exclusive = labelConfig ? labelConfig.exclusive : false;
   const dropDownItems = labelConfig ? labelConfig.items : [];
@@ -118,7 +118,7 @@ export function callLabelAutocompleteDialog(
     centralize: true,
     isDraggable: false,
     showOverlay: true,
-    content: LabellingFlow,
+    content: labelSelector,
     contentProps: {
       labellingDoneCallback: labellingDoneCallback,
       measurementData: { label: '' },
@@ -129,7 +129,7 @@ export function callLabelAutocompleteDialog(
   });
 }
 
-export function showLabelAnnotationPopup(measurement, uiDialogService, labelConfig, LabellingFlow) {
+export function showLabelAnnotationPopup(measurement, uiDialogService, labelConfig, labelSelector) {
   const exclusive = labelConfig ? labelConfig.exclusive : false;
   const dropDownItems = labelConfig ? labelConfig.items : [];
   return new Promise<Map<any, any>>((resolve, reject) => {
@@ -145,7 +145,7 @@ export function showLabelAnnotationPopup(measurement, uiDialogService, labelConf
       id: 'select-annotation',
       isDraggable: false,
       showOverlay: true,
-      content: LabellingFlow,
+      content: labelSelector,
       defaultPosition: {
         x: window.innerWidth / 2,
         y: window.innerHeight / 2,

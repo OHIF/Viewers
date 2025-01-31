@@ -17,7 +17,7 @@ function ItemListComponent({
   itemList,
   onItemClicked,
 }: ItemListComponentProps): ReactElement {
-  const { services } = useSystem();
+  const { servicesManager } = useSystem();
   const { t } = useTranslation('DataSourceConfiguration');
   const [filterValue, setFilterValue] = useState('');
 
@@ -25,7 +25,7 @@ function ItemListComponent({
     setFilterValue('');
   }, [itemList]);
 
-  const LoadingIndicatorProgress = services.customizationService.getCustomization(
+  const LoadingIndicatorProgress = servicesManager.services.customizationService.getCustomization(
     'ui.loadingIndicatorProgress'
   );
 

@@ -117,7 +117,7 @@ function App({
     [ThemeWrapper],
     [
       SystemContextProvider,
-      { commandsManager, extensionManager, hotkeysManager, services: servicesManager.services },
+      { commandsManager, extensionManager, hotkeysManager, services: servicesManager },
     ],
     [ToolboxProvider],
     [ViewportGridProvider, { service: viewportGridService }],

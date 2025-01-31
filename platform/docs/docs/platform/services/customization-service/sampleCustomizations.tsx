@@ -11,7 +11,10 @@ import segmentationShowAddSegmentImage from '../../../assets/img/segmentationSho
 import layoutSelectorCommonPresetsImage from '../../../assets/img/layoutSelectorCommonPresetsImage.png';
 import layoutSelectorAdvancedPresetGeneratorImage from '../../../assets/img/layoutSelectorAdvancedPresetGeneratorImage.png';
 import labellingFLow from '../../../assets/img/labelling-flow.png';
-import loadingIndicator from '../../../assets/img/Loading-Indicator.png';
+import progressLoading from '../../../assets/img/Loading-Indicator.png';
+import loadingIndicatorProgress from '../../../assets/img/loading-indicator-icon.png';
+import loadingIndicatorPercent from '../../../assets/img/loading-indicator-percent.png';
+import viewportActionCorners from '../../../assets/img/viewport-action-corners.png';
 import contextMenu from '../../../assets/img/context-menu.jpg';
 
 import segDisplayEditingTrue from '../../../assets/img/segDisplayEditingTrue.png';
@@ -617,8 +620,8 @@ window.config = {
   {
     id: 'ui.loadingIndicatorTotalPercent',
     description: 'Customizes the LoadingIndicatorTotalPercent component.',
-    image: loadingIndicator,
-    default: null,
+    image: loadingIndicatorPercent,
+    default: null, //use platform/ui component as default
     configuration: `
       window.config = {
         // rest of window config
@@ -635,7 +638,8 @@ window.config = {
   {
     id: 'ui.loadingIndicatorProgress',
     description: 'Customizes the LoadingIndicatorProgress component.',
-    default: null,
+    image: loadingIndicatorProgress,
+    default: null, //use platform/ui component as default
     configuration: `
       window.config = {
         // rest of window config
@@ -652,7 +656,8 @@ window.config = {
   {
     id: 'ui.progressLoadingBar',
     description: 'Customizes the ProgressLoadingBar component.',
-    default: null,
+    image: progressLoading,
+    default: null, //use platform/ui component as default
     configuration: `
       window.config = {
         // rest of window config
@@ -669,7 +674,8 @@ window.config = {
   {
     id: 'ui.viewportActionCorner',
     description: 'Customizes the viewportActionCorner component.',
-    default: null,
+    iamge: viewportActionCorners,
+    default: null, //use platform/ui component as default
     configuration: `
       window.config = {
         // rest of window config
@@ -687,13 +693,31 @@ window.config = {
     id: 'ui.contextMenu',
     description: 'Customizes the Context menu component.',
     image: contextMenu,
-    default: null,
+    default: null, //use platform/ui component as default
     configuration: `
       window.config = {
         // rest of window config
         customizationService: [
           {
             'ui.contextMenu': {
+                $set: CustomizedComponent,
+            },
+          },
+        ],
+      };
+        `,
+  },
+  {
+    id: 'ui.labellingComponent',
+    description: 'Customizes the labelling flow component.',
+    image: labellingFLow,
+    default: null,
+    configuration: `
+      window.config = {
+        // rest of window config
+        customizationService: [
+          {
+            'ui.labellingComponent': {
                 $set: CustomizedComponent,
             },
           },
@@ -1058,24 +1082,6 @@ window.config = {
   ],
 };
   `,
-  },
-  {
-    id: 'ui.labellingComponent',
-    description: 'Customizes the labelling flow component.',
-    image: labellingFLow,
-    default: null,
-    configuration: `
-      window.config = {
-        // rest of window config
-        customizationService: [
-          {
-            'ui.labellingComponent': {
-                $set: CustomizedComponent,
-            },
-          },
-        ],
-      };
-        `,
   },
 ];
 

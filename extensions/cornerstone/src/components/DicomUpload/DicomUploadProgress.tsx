@@ -41,10 +41,10 @@ function DicomUploadProgress({
   dicomFileUploaderArr,
   onComplete,
 }: DicomUploadProgressProps): ReactElement {
-  const { services } = useSystem();
+  const { servicesManager } = useSystem();
 
   const ProgressLoadingBar =
-    services.customizationService.getCustomization('ui.progressLoadingBar');
+    servicesManager.services.customizationService.getCustomization('ui.progressLoadingBar');
 
   const [totalUploadSize] = useState(
     dicomFileUploaderArr.reduce((acc, fileUploader) => acc + fileUploader.getFileSize(), 0)

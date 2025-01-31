@@ -1,10 +1,11 @@
 import React, { createContext, useContext } from 'react';
 import { CommandsManager, HotkeysManager } from '../classes';
 import { ExtensionManager } from '../extensions';
+import { ServicesManager } from '../services';
 
 interface SystemContextProviderProps {
   children: React.ReactNode | React.ReactNode[] | ((...args: any[]) => React.ReactNode);
-  services: AppTypes.Services;
+  servicesManager: ServicesManager;
   commandsManager: CommandsManager;
   extensionManager: ExtensionManager;
   hotkeysManager: HotkeysManager;
@@ -17,13 +18,13 @@ export const useSystem = () => useContext(systemContext);
 
 export function SystemContextProvider({
   children,
-  services,
+  servicesManager,
   commandsManager,
   extensionManager,
   hotkeysManager,
 }: SystemContextProviderProps) {
   return (
-    <Provider value={{ services, commandsManager, extensionManager, hotkeysManager }}>
+    <Provider value={{ servicesManager, commandsManager, extensionManager, hotkeysManager }}>
       {children}
     </Provider>
   );
