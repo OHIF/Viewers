@@ -12,7 +12,13 @@ import {
  * The default sub-menu appearance and setup is defined here, but this can be
  * replaced by
  */
-const getMenuItemsDefault = ({ commandsManager, items, servicesManager, ...props }) => {
+const getMenuItemsDefault = ({
+  commandsManager,
+  items,
+  servicesManager,
+  displaySetInstanceUID,
+  ...props
+}: withAppTypes) => {
   const { customizationService } = servicesManager.services;
 
   // This allows replacing the default child item for menus, whereas the entire
@@ -20,8 +26,29 @@ const getMenuItemsDefault = ({ commandsManager, items, servicesManager, ...props
   const menuContent = customizationService.getCustomization('ohif.menuContent');
 
   // Default menu item component if none is provided through customization
-  const DefaultMenuItem = ({ item }) => (
-    <DropdownMenuItem onClick={item.onClick}>{item.label || item.title}</DropdownMenuItem>
+
+  const DefaultMenuItem = ({
+    item,
+  }: {
+    item: {
+      id: string;
+      label: string;
+      iconName: string;
+      commands: string;
+    };
+  }) => (
+    <DropdownMenuItem
+      onClick={() =>
+        commandsManager.runCommand(item.commands, {
+          displaySetInstanceUID,
+        })
+      }
+    >
+      <div className="flex items-center gap-2">
+        <Icons.ByName name={item.iconName} />
+        <span>{item.label}</span>
+      </div>
+    </DropdownMenuItem>
   );
 
   const MenuItemComponent = menuContent?.content || DefaultMenuItem;
