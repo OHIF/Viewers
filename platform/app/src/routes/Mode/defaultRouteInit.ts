@@ -74,9 +74,6 @@ export async function defaultRouteInit(
 
   unsubscriptions.push(instanceAddedUnsubscribe);
 
-  log.time(Enums.TimingEnum.STUDY_TO_DISPLAY_SETS);
-  log.time(Enums.TimingEnum.STUDY_TO_FIRST_IMAGE);
-
   const allRetrieves = studyInstanceUIDs.map(StudyInstanceUID =>
     dataSource.retrieve.series.metadata({
       StudyInstanceUID,

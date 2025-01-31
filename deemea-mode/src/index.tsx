@@ -2,8 +2,6 @@ import { hotkeys } from '@ohif/core';
 import initToolGroups from '../src/initToolGroups';
 import toolbarButtons from '../src/toolbarButtons';
 import { id } from './id';
-// Importez l'ID de votre extension Deemea
-import { id as deemeaExtensionId } from 'deemea-extension/src/id';
 
 const ohif = {
   layout: '@ohif/extension-default.layoutTemplateModule.viewerLayout',
@@ -15,11 +13,6 @@ const ohif = {
 
 const cornerstone = {
   viewport: '@ohif/extension-cornerstone.viewportModule.cornerstone',
-};
-
-// Ajoutez cette ligne pour définir le panneau Deemea
-const deemea = {
-  rightPanel: `${deemeaExtensionId}.panelModule.deemea-panel`,
 };
 
 /**

@@ -1,6 +1,4 @@
 import commandsModule from './commandsModule';
-import getPanelModule from './components/getPanelModule';
-import getToolBarModule from './components/getToolBarModule';
 let onModeInit = false;
 
 const extension = {
@@ -11,8 +9,6 @@ const extension = {
   },
 
   onModeEnter: ({ extensionManager, servicesManager, commandsManager }) => {
-    console.log('onModeEnter', servicesManager);
-
     const { measurementService } = servicesManager.services;
     commandsManager.runCommand('demonstrateMeasurementService');
 
@@ -32,10 +28,6 @@ const extension = {
   getCommandsModule({ servicesManager }) {
     return commandsModule({ servicesManager });
   },
-
-  getPanelModule,
-
-  getToolBarModule,
 };
 
 export default extension;
