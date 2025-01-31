@@ -1,5 +1,4 @@
 import * as ContextMenuItemsBuilder from './ContextMenuItemsBuilder';
-import ContextMenu from '../../../../platform/ui/src/components/ContextMenu/ContextMenu';
 import { CommandsManager } from '@ohif/core';
 import { annotation as CsAnnotation } from '@cornerstonejs/tools';
 import { Menu, MenuItem, Point, ContextMenuProps } from './types';
@@ -72,12 +71,7 @@ export default class ContextMenuController {
       menuId
     );
 
-    const menu = ContextMenuItemsBuilder.findMenu(
-      menus,
-      { selectorProps: selectorProps || contextMenuProps, event },
-      menuId
-    );
-    const className = menu?.className || '';
+    const ContextMenu = this.services.customizationService.getCustomization('ui.contextMenu');
 
     this.services.uiDialogService.dismiss({ id: 'context-menu' });
     this.services.uiDialogService.create({
@@ -103,7 +97,6 @@ export default class ContextMenuController {
         menus,
         event,
         subMenu,
-        className,
         eventData: event?.detail || event,
 
         onClose: () => {

@@ -1,7 +1,7 @@
 import classNames from 'classnames';
 import React, { ReactElement, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Button, InputFilterText, LoadingIndicatorProgress } from '@ohif/ui';
+import { Button, InputFilterText, useServices } from '@ohif/ui';
 import { Icons } from '@ohif/ui-next';
 import { Types } from '@ohif/core';
 
@@ -16,12 +16,17 @@ function ItemListComponent({
   itemList,
   onItemClicked,
 }: ItemListComponentProps): ReactElement {
+  const { customizationService } = useServices();
   const { t } = useTranslation('DataSourceConfiguration');
   const [filterValue, setFilterValue] = useState('');
 
   useEffect(() => {
     setFilterValue('');
   }, [itemList]);
+
+  const LoadingIndicatorProgress = customizationService.getCustomization(
+    'ui.loadingIndicatorProgress'
+  );
 
   return (
     <div className="flex min-h-[1px] grow flex-col gap-4">

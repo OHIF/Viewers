@@ -6,9 +6,9 @@ import { DicomMetadataStore, MODULE_TYPES } from '@ohif/core';
 import Dropzone from 'react-dropzone';
 import filesToStudies from './filesToStudies';
 
-import { extensionManager } from '../../App';
+import { extensionManager, servicesManager } from '../../App';
 
-import { Button, LoadingIndicatorProgress } from '@ohif/ui';
+import { Button } from '@ohif/ui';
 import { Icons } from '@ohif/ui-next';
 
 const getLoadButton = (onDrop, text, isDir) => {
@@ -49,9 +49,14 @@ type LocalProps = {
 };
 
 function Local({ modePath }: LocalProps) {
+  const { customizationService } = servicesManager.services;
   const navigate = useNavigate();
   const dropzoneRef = useRef();
   const [dropInitiated, setDropInitiated] = React.useState(false);
+
+  const LoadingIndicatorProgress = customizationService.getCustomization(
+    'ui.loadingIndicatorProgress'
+  );
 
   // Initializing the dicom local dataSource
   const dataSourceModules = extensionManager.modules[MODULE_TYPES.DATA_SOURCE];

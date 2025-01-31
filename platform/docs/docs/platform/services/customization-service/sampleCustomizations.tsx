@@ -614,7 +614,7 @@ window.config = {
     `,
   },
   {
-    id: 'ui.LoadingIndicatorTotalPercent',
+    id: 'ui.loadingIndicatorTotalPercent',
     description: 'Customizes the LoadingIndicatorTotalPercent component.',
     image: loadingIndicator,
     default: null,
@@ -623,7 +623,7 @@ window.config = {
         // rest of window config
         customizationService: [
           {
-            'ui.LoadingIndicatorTotalPercent': {
+            'ui.loadingIndicatorTotalPercent': {
                 $set: CustomizedComponent,
             },
           },
@@ -632,7 +632,7 @@ window.config = {
         `,
   },
   {
-    id: 'ui.LoadingIndicatorProgress',
+    id: 'ui.loadingIndicatorProgress',
     description: 'Customizes the LoadingIndicatorProgress component.',
     default: null,
     configuration: `
@@ -640,7 +640,7 @@ window.config = {
         // rest of window config
         customizationService: [
           {
-            'ui.LoadingIndicatorProgress': {
+            'ui.loadingIndicatorProgress': {
                 $set: CustomizedComponent,
             },
           },
@@ -649,7 +649,7 @@ window.config = {
         `,
   },
   {
-    id: 'ui.ProgressLoadingBar',
+    id: 'ui.progressLoadingBar',
     description: 'Customizes the ProgressLoadingBar component.',
     default: null,
     configuration: `
@@ -657,7 +657,7 @@ window.config = {
         // rest of window config
         customizationService: [
           {
-            'ui.ProgressLoadingBar': {
+            'ui.progressLoadingBar': {
                 $set: CustomizedComponent,
             },
           },
@@ -666,15 +666,32 @@ window.config = {
         `,
   },
   {
-    id: 'ui.ContextMenuItem',
-    description: 'Customizes the Context menu item component.',
+    id: 'ui.viewportActionCorner',
+    description: 'Customizes the viewportActionCorner component.',
     default: null,
     configuration: `
       window.config = {
         // rest of window config
         customizationService: [
           {
-            'ui.ContextMenuItem': {
+            'ui.viewportActionCorner': {
+                $set: CustomizedComponent,
+            },
+          },
+        ],
+      };
+        `,
+  },
+  {
+    id: 'ui.contextMenu',
+    description: 'Customizes the Context menu component.',
+    default: null,
+    configuration: `
+      window.config = {
+        // rest of window config
+        customizationService: [
+          {
+            'ui.contextMenu': {
                 $set: CustomizedComponent,
             },
           },
