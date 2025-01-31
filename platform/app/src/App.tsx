@@ -12,6 +12,7 @@ import {
   CommandsManager,
   HotkeysManager,
   ServiceProvidersManager,
+  SystemContextProvider,
 } from '@ohif/core';
 import {
   DialogProvider,
@@ -21,7 +22,6 @@ import {
   ViewportDialogProvider,
   CineProvider,
   UserAuthenticationProvider,
-  ServicesProvider,
 } from '@ohif/ui';
 import {
   ThemeWrapper as ThemeWrapperNext,
@@ -115,7 +115,10 @@ function App({
     [I18nextProvider, { i18n }],
     [ThemeWrapperNext],
     [ThemeWrapper],
-    [ServicesProvider, { services: servicesManager.services }],
+    [
+      SystemContextProvider,
+      { commandsManager, extensionManager, hotkeysManager, services: servicesManager.services },
+    ],
     [ToolboxProvider],
     [ViewportGridProvider, { service: viewportGridService }],
     [ViewportDialogProvider, { service: uiViewportDialogService }],

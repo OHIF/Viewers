@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState, ReactElement } from 'react';
 import PropTypes from 'prop-types';
-import { Button, useServices } from '@ohif/ui';
+import { useSystem } from '@ohif/core';
+import { Button } from '@ohif/ui';
 import { Icons } from '@ohif/ui-next';
 import DicomFileUploader, {
   EVENTS,
@@ -40,9 +41,10 @@ function DicomUploadProgress({
   dicomFileUploaderArr,
   onComplete,
 }: DicomUploadProgressProps): ReactElement {
-  const { customizationService } = useServices();
+  const { services } = useSystem();
 
-  const ProgressLoadingBar = customizationService.getCustomization('ui.progressLoadingBar');
+  const ProgressLoadingBar =
+    services.customizationService.getCustomization('ui.progressLoadingBar');
 
   const [totalUploadSize] = useState(
     dicomFileUploaderArr.reduce((acc, fileUploader) => acc + fileUploader.getFileSize(), 0)

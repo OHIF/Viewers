@@ -208,8 +208,9 @@ function commandsModule({
      */
     setMeasurementLabel: ({ uid }) => {
       const labelConfig = customizationService.getCustomization('measurementLabels');
+      const LabellingFlow = customizationService.getCustomization('ui.labellingComponent');
       const measurement = measurementService.getMeasurement(uid);
-      showLabelAnnotationPopup(measurement, uiDialogService, labelConfig).then(
+      showLabelAnnotationPopup(measurement, uiDialogService, labelConfig, LabellingFlow).then(
         (val: Map<any, any>) => {
           measurementService.update(
             uid,
@@ -325,16 +326,19 @@ function commandsModule({
 
     renameMeasurement: ({ uid }) => {
       const labelConfig = customizationService.getCustomization('measurementLabels');
+      const LabellingFlow = customizationService.getCustomization('ui.labellingComponent');
       const measurement = measurementService.getMeasurement(uid);
-      showLabelAnnotationPopup(measurement, uiDialogService, labelConfig).then(val => {
-        measurementService.update(
-          uid,
-          {
-            ...val,
-          },
-          true
-        );
-      });
+      showLabelAnnotationPopup(measurement, uiDialogService, labelConfig, LabellingFlow).then(
+        val => {
+          measurementService.update(
+            uid,
+            {
+              ...val,
+            },
+            true
+          );
+        }
+      );
     },
 
     toggleLockMeasurement: ({ uid }) => {
@@ -376,7 +380,8 @@ function commandsModule({
     },
     arrowTextCallback: ({ callback, data, uid }) => {
       const labelConfig = customizationService.getCustomization('measurementLabels');
-      callLabelAutocompleteDialog(uiDialogService, callback, {}, labelConfig);
+      const LabellingFlow = customizationService.getCustomization('ui.labellingComponent');
+      callLabelAutocompleteDialog(uiDialogService, callback, {}, labelConfig, LabellingFlow);
     },
     toggleCine: () => {
       const { viewports } = viewportGridService.getState();

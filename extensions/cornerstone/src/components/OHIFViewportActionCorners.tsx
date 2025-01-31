@@ -1,15 +1,16 @@
 import React from 'react';
 import { useViewportActionCornersContext } from '../contextProviders/ViewportActionCornersProvider';
-import { useServices } from '@ohif/ui';
+import { useSystem } from '@ohif/core';
 
 export type OHIFViewportActionCornersProps = {
   viewportId: string;
 };
 
 function OHIFViewportActionCorners({ viewportId }: OHIFViewportActionCornersProps) {
-  const { customizationService } = useServices();
+  const { services } = useSystem();
   const [viewportActionCornersState] = useViewportActionCornersContext();
-  const ViewportActionCorners = customizationService.getCustomization('ui.viewportActionCorner');
+  const ViewportActionCorners =
+    services.customizationService.getCustomization('ui.viewportActionCorner');
   if (!viewportActionCornersState[viewportId]) {
     return null;
   }

@@ -89,7 +89,13 @@ export function callInputDialog(
   }
 }
 
-export function callLabelAutocompleteDialog(uiDialogService, callback, dialogConfig, labelConfig) {
+export function callLabelAutocompleteDialog(
+  uiDialogService,
+  callback,
+  dialogConfig,
+  labelConfig,
+  LabellingFlow
+) {
   const exclusive = labelConfig ? labelConfig.exclusive : false;
   const dropDownItems = labelConfig ? labelConfig.items : [];
 
@@ -123,7 +129,7 @@ export function callLabelAutocompleteDialog(uiDialogService, callback, dialogCon
   });
 }
 
-export function showLabelAnnotationPopup(measurement, uiDialogService, labelConfig) {
+export function showLabelAnnotationPopup(measurement, uiDialogService, labelConfig, LabellingFlow) {
   const exclusive = labelConfig ? labelConfig.exclusive : false;
   const dropDownItems = labelConfig ? labelConfig.items : [];
   return new Promise<Map<any, any>>((resolve, reject) => {

@@ -10,7 +10,6 @@ export {
   ModalProvider,
   ModalConsumer,
   useModal,
-  useServices,
   withModal,
   ImageViewerContext,
   ImageViewerProvider,
@@ -28,7 +27,6 @@ export {
   useUserAuthentication,
   useToolbox,
   ToolboxProvider,
-  ServicesProvider,
 } from './contextProviders';
 
 /** COMPONENTS */
