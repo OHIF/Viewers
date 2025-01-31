@@ -16,6 +16,7 @@ const name = 'uiModalService';
 const serviceImplementation = {
   _hide: () => console.warn('hide() NOT IMPLEMENTED'),
   _show: () => console.warn('show() NOT IMPLEMENTED'),
+  _component: null,
 };
 
 class UIModalService {
@@ -45,6 +46,8 @@ class UIModalService {
     movable = false,
     containerDimensions = null,
     contentDimensions = null,
+    shouldCloseOnOverlayClick = true,
+    shouldCloseImmediately = false,
   }) {
     return serviceImplementation._show({
       content,
@@ -57,6 +60,8 @@ class UIModalService {
       movable,
       containerDimensions,
       contentDimensions,
+      shouldCloseOnOverlayClick = true,
+      shouldCloseImmediately = false,
     });
   }
 
@@ -70,6 +75,15 @@ class UIModalService {
   }
 
   /**
+   * This provides flexibility in customizing the Modal's default component
+   *
+   * @returns {React.Component}
+   */
+  component() {
+    return serviceImplementation._component;
+  }
+
+  /**
    *
    *
    * @param {*} {
@@ -77,12 +91,19 @@ class UIModalService {
    *   show: showImplementation,
    * }
    */
-  setServiceImplementation({ hide: hideImplementation, show: showImplementation }) {
+  setServiceImplementation({
+    hide: hideImplementation,
+    show: showImplementation,
+    component: componentImplementation,
+  }) {
     if (hideImplementation) {
       serviceImplementation._hide = hideImplementation;
     }
     if (showImplementation) {
       serviceImplementation._show = showImplementation;
+    }
+    if (componentImplementation) {
+      serviceImplementation._component = componentImplementation;
     }
   }
 }

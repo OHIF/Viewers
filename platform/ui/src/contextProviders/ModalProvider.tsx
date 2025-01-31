@@ -39,6 +39,8 @@ const ModalProvider = ({ children, modal: Modal, service = null }) => {
 
   const [options, setOptions] = useState(DEFAULT_OPTIONS);
 
+  const CustomModal = service.component();
+
   /**
    * Show the modal and override its configuration props.
    *
@@ -81,10 +83,12 @@ const ModalProvider = ({ children, modal: Modal, service = null }) => {
     contentDimensions,
   } = options;
 
+  const ModalComp = CustomModal ? CustomModal : Modal;
+
   return (
     <Provider value={{ show, hide }}>
       {ModalContent && (
-        <Modal
+        <ModalComp
           className={classNames(customClassName, ModalContent.className)}
           shouldCloseOnEsc={shouldCloseOnEsc}
           isOpen={isOpen}
@@ -101,7 +105,7 @@ const ModalProvider = ({ children, modal: Modal, service = null }) => {
             show={show}
             hide={hide}
           />
-        </Modal>
+        </ModalComp>
       )}
       {children}
     </Provider>
