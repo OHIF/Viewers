@@ -12,6 +12,7 @@ import layoutSelectorCommonPresetsImage from '../../../assets/img/layoutSelector
 import layoutSelectorAdvancedPresetGeneratorImage from '../../../assets/img/layoutSelectorAdvancedPresetGeneratorImage.png';
 import labellingFLow from '../../../assets/img/labelling-flow.png';
 import loadingIndicator from '../../../assets/img/Loading-Indicator.png';
+import contextMenu from '../../../assets/img/context-menu.jpg';
 
 import segDisplayEditingTrue from '../../../assets/img/segDisplayEditingTrue.png';
 import segDisplayEditingFalse from '../../../assets/img/segDisplayEditingFalse.png';
@@ -685,6 +686,7 @@ window.config = {
   {
     id: 'ui.contextMenu',
     description: 'Customizes the Context menu component.',
+    image: contextMenu,
     default: null,
     configuration: `
       window.config = {
@@ -1058,7 +1060,7 @@ window.config = {
   `,
   },
   {
-    id: 'measurement.labellingComponent',
+    id: 'ui.labellingComponent',
     description: 'Customizes the labelling flow component.',
     image: labellingFLow,
     default: null,
@@ -1067,7 +1069,7 @@ window.config = {
         // rest of window config
         customizationService: [
           {
-            'measurement.labellingComponent': {
+            'ui.labellingComponent': {
                 $set: CustomizedComponent,
             },
           },
