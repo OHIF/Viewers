@@ -6,6 +6,7 @@ import customRoutesCustomization from './customizations/customRoutesCustomizatio
 import studyBrowserCustomization from './customizations/studyBrowserCustomization';
 import overlayItemCustomization from './customizations/overlayItemCustomization';
 import contextMenuCustomization from './customizations/contextMenuCustomization';
+import contextMenuUICustomization from './customizations/contextMenuUICustomization';
 import menuContentCustomization from './customizations/menuContentCustomization';
 import getDataSourceConfigurationCustomization from './customizations/dataSourceConfigurationCustomization';
 import progressDropdownCustomization from './customizations/progressDropdownCustomization';
@@ -58,6 +59,7 @@ export default function getCustomizationModule({ servicesManager, extensionManag
         ...progressLoadingBarCustomization,
         ...viewportActionCornersCustomization,
         ...labellingFlowCustomization,
+        ...contextMenuUICustomization,
       },
     },
   ];
