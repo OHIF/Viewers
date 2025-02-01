@@ -38,7 +38,7 @@ const getMenuItemsDefault = ({
   }) => (
     <DropdownMenuItem onClick={() => item.onClick({ ...props })}>
       <div className="flex items-center gap-2">
-        <Icons.ByName name={item.iconName} />
+        {item.iconName && <Icons.ByName name={item.iconName} />}
         <span>{item.label}</span>
       </div>
     </DropdownMenuItem>

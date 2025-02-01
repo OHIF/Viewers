@@ -8,7 +8,7 @@ export default {
       id: 'tagBrowser',
       label: 'Tag Browser',
       iconName: 'DicomTagBrowser',
-      onClick: ({ servicesManager, commandsManager, displaySetInstanceUID }: withAppTypes) => {
+      onClick: ({ commandsManager, displaySetInstanceUID }: withAppTypes) => {
         commandsManager.runCommand('openDICOMTagViewer', {
           displaySetInstanceUID,
         });
