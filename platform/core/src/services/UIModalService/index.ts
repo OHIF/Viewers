@@ -60,8 +60,8 @@ class UIModalService {
       movable,
       containerDimensions,
       contentDimensions,
-      shouldCloseOnOverlayClick = true,
-      shouldCloseImmediately = false,
+      shouldCloseOnOverlayClick,
+      shouldCloseImmediately,
     });
   }
 
