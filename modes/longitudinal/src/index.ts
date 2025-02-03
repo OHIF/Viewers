@@ -89,7 +89,7 @@ function modeFactory({ modeConfiguration }) {
       measurementService.clearMeasurements();
 
       // Init Default and SR ToolGroups
-      initToolGroups(extensionManager, toolGroupService, commandsManager, this.labelConfig);
+      initToolGroups(extensionManager, toolGroupService, commandsManager);
 
       toolbarService.addButtons([...toolbarButtons, ...moreTools]);
       toolbarService.createButtonSection('primary', [
