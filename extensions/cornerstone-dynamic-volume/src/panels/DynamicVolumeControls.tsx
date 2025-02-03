@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Button, PanelSection, ButtonGroup, IconButton, InputNumber } from '@ohif/ui';
-import { DoubleSlider, Icons, Tooltip, TooltipTrigger, TooltipContent } from '@ohif/ui-next';
+import { Icons, Tooltip, TooltipTrigger, TooltipContent, Numeric } from '@ohif/ui-next';
 import { Enums } from '@cornerstonejs/core';
 
 const controlClassNames = {
@@ -20,7 +20,10 @@ const Header = ({ title, tooltip }) => (
           />
         </span>
       </TooltipTrigger>
-      <TooltipContent sideOffset={4} className="max-w-xs p-2 bg-primary-dark text-white">
+      <TooltipContent
+        sideOffset={4}
+        className="bg-primary-dark max-w-xs p-2 text-white"
+      >
         <div>{tooltip}</div>
       </TooltipContent>
     </Tooltip>
@@ -37,23 +40,15 @@ const DynamicVolumeControls = ({
   minFps,
   maxFps,
   // Frames
-  currentFrameIndex,
-  onFrameChange,
-  framesLength,
+  currentDimensionGroupNumber,
+  onDimensionGroupChange,
+  numDimensionGroups,
   onGenerate,
   onDoubleRangeChange,
   onDynamicClick,
 }) => {
   const [computedView, setComputedView] = useState(false);
   const [computeViewMode, setComputeViewMode] = useState(Enums.DynamicOperatorType.SUM);
-  const [sliderRangeValues, setSliderRangeValues] = useState([0, framesLength - 1]);
-
-  const handleSliderChange = newValues => {
-    onDoubleRangeChange(newValues);
-    setSliderRangeValues(newValues);
-  };
-
-  const formatLabel = value => Math.round(value);
 
   return (
     <div className="flex select-none flex-col">
@@ -89,7 +84,7 @@ const DynamicVolumeControls = ({
           </ButtonGroup>
         </div>
         <div>
-          <FrameControls
+          <DimensionGroupControls
             onPlayPauseChange={onPlayPauseChange}
             isPlaying={isPlaying}
             computedView={computedView}
@@ -99,9 +94,9 @@ const DynamicVolumeControls = ({
             minFps={minFps}
             maxFps={maxFps}
             //
-            framesLength={framesLength}
-            onFrameChange={onFrameChange}
-            currentFrameIndex={currentFrameIndex}
+            numDimensionGroups={numDimensionGroups}
+            onDimensionGroupChange={onDimensionGroupChange}
+            currentDimensionGroupNumber={currentDimensionGroupNumber}
           />
         </div>
         <div className={`mt-6 flex flex-col ${computedView ? '' : 'ohif-disabled'}`}>
@@ -111,9 +106,10 @@ const DynamicVolumeControls = ({
               <div>
                 Operation Buttons (SUM, AVERAGE, SUBTRACT): Select the mathematical operation to be
                 applied to the data set.
-                <br /> Range Slider: Choose the numeric range within which the operation will be
-                performed.
-                <br />Generate Button: Execute the chosen operation on the specified range of data.
+                <br /> Range Slider: Choose the numeric range of dimension groups within which the
+                operation will be performed.
+                <br />
+                Generate Button: Execute the chosen operation on the specified range of data.
               </div>
             }
           />
@@ -141,15 +137,16 @@ const DynamicVolumeControls = ({
             </button>
           </ButtonGroup>
           <div className="mt-2 w-full">
-            <DoubleSlider
-              min={0}
-              max={framesLength - 1}
+            <Numeric.Container
+              mode="doubleRange"
+              min={1}
+              max={numDimensionGroups}
               step={1}
-              defaultValue={sliderRangeValues}
-              onValueChange={handleSliderChange}
-              formatLabel={formatLabel}
-              className="w-full"
-            />
+              values={[1, numDimensionGroups]}
+              onChange={onDoubleRangeChange}
+            >
+              <Numeric.DoubleRange />
+            </Numeric.Container>
           </div>
           <Button
             className="mt-2 !h-[26px] !w-[115px] self-start !p-0"
@@ -167,16 +164,16 @@ const DynamicVolumeControls = ({
 
 export default DynamicVolumeControls;
 
-function FrameControls({
+function DimensionGroupControls({
   isPlaying,
   onPlayPauseChange,
   fps,
   minFps,
   maxFps,
   onFpsChange,
-  framesLength,
-  onFrameChange,
-  currentFrameIndex,
+  numDimensionGroups,
+  onDimensionGroupChange,
+  currentDimensionGroupNumber,
   computedView,
 }) {
   const getPlayPauseIconName = () => (isPlaying ? 'icon-pause' : 'icon-play');
@@ -187,14 +184,16 @@ function FrameControls({
         title="4D Controls"
         tooltip={
           <div>
-            Play/Pause Button: Begin or pause the animation of the 4D visualization. <br /> Frame
-            Selector: Navigate through individual frames of the 4D data. <br /> FPS (Frames Per
-            Second) Selector: Adjust the playback speed of the animation.
+            Play/Pause Button: Begin or pause the animation of the 4D visualization. <br />
+            Dimension Group Selector: Navigate through individual dimension groups of the 4D data.{' '}
+            <br />
+            FPS (Frames Per Second) Selector: Adjust the playback speed of the animation.
           </div>
         }
       />
       <div className="mt-3 flex justify-between">
         <IconButton
+          id="play-pause-button"
           className="bg-customblue-30 h-[26px] w-[58px] rounded-[4px]"
           onClick={() => onPlayPauseChange(!isPlaying)}
         >
@@ -204,11 +203,11 @@ function FrameControls({
           />
         </IconButton>
         <InputNumber
-          value={currentFrameIndex}
-          onChange={onFrameChange}
-          minValue={0}
-          maxValue={framesLength - 1}
-          label="Frame"
+          value={currentDimensionGroupNumber}
+          onChange={onDimensionGroupChange}
+          minValue={1}
+          maxValue={numDimensionGroups}
+          label="Group"
           {...controlClassNames}
         />
         <InputNumber

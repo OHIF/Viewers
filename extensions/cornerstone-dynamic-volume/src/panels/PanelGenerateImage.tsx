@@ -21,7 +21,7 @@ export default function PanelGenerateImage({ servicesManager, commandsManager }:
   const [dynamicVolume, setDynamicVolume] = useState(null);
   const [frameRate, setFrameRate] = useState(20);
   const [isPlaying, setIsPlaying] = useState(isCineEnabled);
-  const [timePointRendered, setTimePointRendered] = useState(null);
+  const [dimensionGroupRendered, setDimensionGroupRendered] = useState(null);
   const [displayingComputed, setDisplayingComputed] = useState(false);
 
   //
@@ -38,7 +38,7 @@ export default function PanelGenerateImage({ servicesManager, commandsManager }:
         if (volumeData.volume?.isDynamicVolume()) {
           setDynamicVolume(volumeData.volume);
           uuidDynamicVolume.current = volumeData.displaySetInstanceUID;
-          const newRange = [1, volumeData.volume.numTimePoints];
+          const newRange = [1, volumeData.volume.numDimensionGroups];
           setTimePointsRange(newRange);
           setTimePointsRangeToUseForGenerate(newRange);
         }
@@ -65,10 +65,10 @@ export default function PanelGenerateImage({ servicesManager, commandsManager }:
   }, [cornerstoneViewportService, cineService, servicesManager.services.cineService]);
 
   useEffect(() => {
-    const evt = Enums.Events.DYNAMIC_VOLUME_TIME_POINT_INDEX_CHANGED;
+    const evt = Enums.Events.DYNAMIC_VOLUME_DIMENSION_GROUP_CHANGED;
 
     const callback = evt => {
-      setTimePointRendered(evt.detail.timePointIndex);
+      setDimensionGroupRendered(evt.detail.dimensionGroupNumber);
     };
 
     eventTarget.addEventListener(evt, callback);
@@ -102,7 +102,7 @@ export default function PanelGenerateImage({ servicesManager, commandsManager }:
 
     setDynamicVolume(dynamicVolume);
     uuidDynamicVolume.current = dynamicVolumeDisplaySet.displaySetInstanceUID;
-    const newRange = [1, dynamicVolume.numTimePoints];
+    const newRange = [1, dynamicVolume.numDimensionGroups];
     setTimePointsRange(newRange);
     setTimePointsRangeToUseForGenerate(newRange);
   }, [
@@ -142,10 +142,10 @@ export default function PanelGenerateImage({ servicesManager, commandsManager }:
       });
     }
     const [start, end] = timePointsRangeToUseForGenerate;
-    const frameNumbers = Array.from({ length: end - start + 1 }, (_, i) => i + start - 1);
+    const frameNumbers = Array.from({ length: end - start + 1 }, (_, i) => i + 1);
 
     const options = {
-      frameNumbers: operationName === 'SUBTRACT' ? [start, end - 1] : frameNumbers,
+      dimensionGroupNumbers: operationName === 'SUBTRACT' ? [start, end - 1] : frameNumbers,
       targetVolume: computedVolume,
     };
 
@@ -225,11 +225,11 @@ export default function PanelGenerateImage({ servicesManager, commandsManager }:
       onPlayPauseChange={onPlayPauseChange}
       minFps={1}
       maxFps={50}
-      currentFrameIndex={timePointRendered}
       onFpsChange={handleSetFrameRate}
-      framesLength={timePointsRange[1]}
-      onFrameChange={timePointIndex => {
-        dynamicVolume.timePointIndex = timePointIndex;
+      currentDimensionGroupNumber={dimensionGroupRendered}
+      numDimensionGroups={timePointsRange[1]}
+      onDimensionGroupChange={dimensionGroupNumber => {
+        dynamicVolume.dimensionGroupNumber = dimensionGroupNumber;
       }}
       onGenerate={onGenerateImage}
       onDynamicClick={displayingComputed ? () => renderDynamicImage(computedDisplaySet) : null}
