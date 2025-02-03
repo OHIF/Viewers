@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { LoadingIndicatorProgress } from '@ohif/ui';
 import { cleanDenaturalizedDataset } from '@ohif/extension-default';
 
 import './DicomMicroscopyViewport.css';
@@ -8,6 +7,7 @@ import ViewportOverlay from './components/ViewportOverlay';
 import getDicomWebClient from './utils/dicomWebClient';
 import dcmjs from 'dcmjs';
 import MicroscopyService from './services/MicroscopyService';
+import { CustomizationService } from '@ohif/core';
 
 class DicomMicroscopyViewport extends Component {
   state = {
@@ -16,6 +16,7 @@ class DicomMicroscopyViewport extends Component {
   };
 
   microscopyService: MicroscopyService;
+  customizationService: CustomizationService;
   viewer: any = null; // dicom-microscopy-viewer instance
   managedViewer: any = null; // managed wrapper of microscopy-dicom extension
 
@@ -25,8 +26,9 @@ class DicomMicroscopyViewport extends Component {
   constructor(props: any) {
     super(props);
 
-    const { microscopyService } = this.props.servicesManager.services;
+    const { microscopyService, customizationService } = this.props.servicesManager.services;
     this.microscopyService = microscopyService;
+    this.customizationService = customizationService;
   }
 
   static propTypes = {
@@ -48,7 +50,6 @@ class DicomMicroscopyViewport extends Component {
     commandsManager: PropTypes.object,
     resizeRef: PropTypes.oneOfType([PropTypes.func, PropTypes.shape({ current: PropTypes.any })]),
   };
-
 
   /**
    * Get the nearest ROI from the mouse click point
@@ -272,6 +273,9 @@ class DicomMicroscopyViewport extends Component {
     const style = { width: '100%', height: '100%' };
     const displaySet = this.props.displaySets[0];
     const firstInstance = displaySet.firstInstance || displaySet.instance;
+    const LoadingIndicatorProgress = this.customizationService.getCustomization(
+      'ui.loadingIndicatorProgress'
+    );
 
     return (
       <div
