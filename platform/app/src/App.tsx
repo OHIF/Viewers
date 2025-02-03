@@ -115,10 +115,7 @@ function App({
     [I18nextProvider, { i18n }],
     [ThemeWrapperNext],
     [ThemeWrapper],
-    [
-      SystemContextProvider,
-      { commandsManager, extensionManager, hotkeysManager, services: servicesManager },
-    ],
+    [SystemContextProvider, { commandsManager, extensionManager, hotkeysManager, servicesManager }],
     [ToolboxProvider],
     [ViewportGridProvider, { service: viewportGridService }],
     [ViewportDialogProvider, { service: uiViewportDialogService }],
