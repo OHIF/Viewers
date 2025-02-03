@@ -90,6 +90,8 @@ export default async function init({
     cornerstoneViewportService,
     hangingProtocolService,
     viewportGridService,
+    toolbarService,
+    segmentationService,
   } = servicesManager.services;
 
   window.services = servicesManager.services;
@@ -270,6 +272,45 @@ export default async function init({
     },
     100
   );
+
+  const subscribeToEvents = listeners => {
+    Object.entries(listeners).forEach(([event, commands]) => {
+      const supportedEvents = [
+        segmentationService?.EVENTS.ACTIVE_SEGMENTATION_CHANGED,
+        segmentationService?.EVENTS.SEGMENTATION_ADDED,
+        segmentationService?.EVENTS.SEGMENT_REMOVED,
+      ];
+
+      if (supportedEvents.includes(event)) {
+        segmentationService.subscribe(event, eventData => {
+          const segmentationId = eventData?.segmentationId;
+
+          commandsManager.run(commands, { segmentationId });
+        });
+      }
+    });
+  };
+
+  toolbarService.subscribe(toolbarService.EVENTS.TOOL_BAR_MODIFIED, state => {
+    const { buttons } = state;
+    for (const [id, button] of Object.entries(buttons)) {
+      const { groupId, items, listeners } = button.props || {};
+
+      // Handle group items' listeners
+      if (groupId && items) {
+        items.forEach(item => {
+          if (item.listeners) {
+            subscribeToEvents(item.listeners);
+          }
+        });
+      }
+
+      // Handle button listeners
+      if (listeners) {
+        subscribeToEvents(listeners);
+      }
+    }
+  });
 
   // Call this function when initializing
   initializeWebWorkerProgressHandler(servicesManager.services.uiNotificationService);

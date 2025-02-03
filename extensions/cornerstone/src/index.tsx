@@ -255,5 +255,6 @@ export {
   PanelMeasurement,
   DicomUpload,
   StudySummaryFromMetadata,
+  SegmentationService,
 };
 export default cornerstoneExtension;

@@ -33,6 +33,7 @@ import getActiveViewportEnabledElement from './utils/getActiveViewportEnabledEle
 import toggleVOISliceSync from './utils/toggleVOISliceSync';
 import { usePositionPresentationStore, useSegmentationPresentationStore } from './stores';
 import { toolNames } from './initCornerstoneTools';
+import setToolModeForToolGroups from './utils/setToolModeForToolGroups';
 
 const toggleSyncFunctions = {
   imageSlice: toggleImageSliceSync,
@@ -56,6 +57,7 @@ function commandsModule({
     colorbarService,
     hangingProtocolService,
     syncGroupService,
+    segmentationService,
   } = servicesManager.services;
 
   const { measurementServiceSource } = this;
@@ -1327,6 +1329,18 @@ function commandsModule({
         measurementService.remove(activeAnnotationUID);
       });
     },
+    toggleToolModeBasedOnSegmentAction: ({ segmentationId }) => {
+      const segmentation = segmentationService.getSegmentation(segmentationId);
+      const segments = segmentation.segments;
+
+      // Set the tool mode based on the presence of segments
+      const toolMode = Object.keys(segments).length
+        ? Enums.ToolModes.Active
+        : Enums.ToolModes.Passive;
+
+      // Set the tool mode for the tool group
+      setToolModeForToolGroups(toolGroupService, toolMode);
+    },
   };
 
   const definitions = {
@@ -1589,6 +1603,9 @@ function commandsModule({
     },
     deleteActiveAnnotation: {
       commandFn: actions.deleteActiveAnnotation,
+    },
+    toggleToolModeBasedOnSegmentAction: {
+      commandFn: actions.toggleToolModeBasedOnSegmentAction,
     },
   };
 

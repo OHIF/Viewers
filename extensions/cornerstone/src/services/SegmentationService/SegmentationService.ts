@@ -29,7 +29,6 @@ import { updateLabelmapSegmentationImageReferences } from '@cornerstonejs/tools/
 import { triggerSegmentationRepresentationModified } from '@cornerstonejs/tools/segmentation/triggerSegmentationEvents';
 import { convertStackToVolumeLabelmap } from '@cornerstonejs/tools/segmentation/helpers/convertStackToVolumeLabelmap';
 import { getLabelmapImageIds } from '@cornerstonejs/tools/segmentation';
-import setSegToolModeForToolGroups from '../../utils/setSegToolModeForToolGroups';
 
 const LABELMAP = csToolsEnums.SegmentationRepresentations.Labelmap;
 const CONTOUR = csToolsEnums.SegmentationRepresentations.Contour;
@@ -79,6 +78,8 @@ const EVENTS = {
   SEGMENT_LOADING_COMPLETE: 'event::segment_loading_complete',
   // loading completed for all segments
   SEGMENTATION_LOADING_COMPLETE: 'event::segmentation_loading_complete',
+  // fired when the segment is removed
+  SEGMENT_REMOVED: 'event::segment_removed',
 };
 
 const VALUE_TYPES = {};
@@ -97,7 +98,7 @@ class SegmentationService extends PubSubService {
   private _segmentationIdToColorLUTIndexMap: Map<string, number>;
   readonly servicesManager: AppTypes.ServicesManager;
   highlightIntervalId = null;
-  readonly EVENTS = EVENTS;
+  public static readonly EVENTS = EVENTS;
 
   constructor({ servicesManager }) {
     super(EVENTS);
@@ -691,24 +692,10 @@ class SegmentationService extends PubSubService {
       // Add a new segmentation
       this.addSegmentationToSource(data as cstTypes.SegmentationPublicInput);
     }
-    const { toolGroupService } = this.servicesManager.services;
-    setSegToolModeForToolGroups(toolGroupService, csToolsEnums.ToolModes.Active);
   }
 
   public setActiveSegmentation(viewportId: string, segmentationId: string): void {
-    const segmentation = this.getSegmentation(segmentationId);
-    const segments = segmentation.segments;
-    const { toolGroupService } = this.servicesManager.services;
-
-    // Set the tool mode based on the presence of segments
-    const toolMode = Object.keys(segments).length
-      ? csToolsEnums.ToolModes.Active
-      : csToolsEnums.ToolModes.Passive;
-
     cstSegmentation.activeSegmentation.setActiveSegmentation(viewportId, segmentationId);
-
-    // Set the tool mode for the tool group
-    setSegToolModeForToolGroups(toolGroupService, toolMode);
 
     this._broadcastEvent(EVENTS.ACTIVE_SEGMENTATION_CHANGED, {
       segmentationId,
@@ -896,15 +883,9 @@ class SegmentationService extends PubSubService {
    */
   public removeSegment(segmentationId: string, segmentIndex: number): void {
     cstSegmentation.removeSegment(segmentationId, segmentIndex);
-    const segmentation = this.getSegmentation(segmentationId);
-    const segments = segmentation.segments;
-
-    // Set the tool to passive mode if there are no segments in the active segmentation.
-    if (!Object.keys(segments).length) {
-      const { toolGroupService } = this.servicesManager.services;
-
-      setSegToolModeForToolGroups(toolGroupService, csToolsEnums.ToolModes.Passive);
-    }
+    this._broadcastEvent(EVENTS.SEGMENT_REMOVED, {
+      segmentationId,
+    });
   }
 
   public setSegmentVisibility(
@@ -1735,17 +1716,9 @@ class SegmentationService extends PubSubService {
   };
 
   private _setActiveSegment(segmentationId: string, segmentIndex: number) {
-    const segmentation = this.getSegmentation(segmentationId);
-    const segments = segmentation.segments;
 
     cstSegmentation.segmentIndex.setActiveSegmentIndex(segmentationId, segmentIndex);
 
-    // Set the tool to active mode if there is at least one segment in the active segmentation.
-    if (Object.keys(segments).length) {
-      const { toolGroupService } = this.servicesManager.services;
-
-      setSegToolModeForToolGroups(toolGroupService, csToolsEnums.ToolModes.Active);
-    }
   }
 
   private _getVolumeIdForDisplaySet(displaySet) {
