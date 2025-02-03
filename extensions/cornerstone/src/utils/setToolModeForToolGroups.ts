@@ -2,7 +2,7 @@ import { Enums } from '@cornerstonejs/tools';
 import ToolGroupService from '../services/ToolGroupService';
 
 /**
- * Sets the mode for segmentation tools in all tool groups managed by the tool group service.
+ * Sets the mode for tools in all tool groups managed by the tool group service.
  *
  * @param toolGroupService - The service managing the tool groups.
  * @param mode - The mode to set for the tools (e.g., Active, Enabled, Passive, Disabled).
@@ -15,9 +15,6 @@ const setToolModeForToolGroups = (toolGroupService: ToolGroupService, mode: Enum
       return;
     }
     const toolName = toolGroup.currentActivePrimaryToolName;
-    if (!toolName || !toolGroup.hasTool(toolName)) {
-      return;
-    }
     let options;
 
     if (mode === Enums.ToolModes.Active) {

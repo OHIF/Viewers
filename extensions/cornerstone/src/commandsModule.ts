@@ -1329,11 +1329,14 @@ function commandsModule({
         measurementService.remove(activeAnnotationUID);
       });
     },
-    toggleToolModeBasedOnSegmentAction: ({ segmentationId }) => {
+    /** Set the tool mode based on the presence of segments
+     * Downloads a segmentation as RTSS
+     * @param props.segmentationId - The ID of the segmentation
+     */
+    toggleToolModeBasedOnSegmentActions: ({ segmentationId }) => {
       const segmentation = segmentationService.getSegmentation(segmentationId);
       const segments = segmentation.segments;
 
-      // Set the tool mode based on the presence of segments
       const toolMode = Object.keys(segments).length
         ? Enums.ToolModes.Active
         : Enums.ToolModes.Passive;
@@ -1604,8 +1607,8 @@ function commandsModule({
     deleteActiveAnnotation: {
       commandFn: actions.deleteActiveAnnotation,
     },
-    toggleToolModeBasedOnSegmentAction: {
-      commandFn: actions.toggleToolModeBasedOnSegmentAction,
+    toggleToolModeBasedOnSegmentActions: {
+      commandFn: actions.toggleToolModeBasedOnSegmentActions,
     },
   };
 
