@@ -22,7 +22,7 @@ export const HYDRATE_SEG_SYNC_GROUP = {
 
 export const mpr: Types.HangingProtocol.Protocol = {
   id: 'mpr',
-  name: 'MPR',
+  name: 'multi planar reconstruction with Axial, Sagittal and Coronal views',
   locked: true,
   icon: 'layout-advanced-mpr',
   isPreset: true,
