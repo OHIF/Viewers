@@ -276,9 +276,9 @@ export default async function init({
   const subscribeToEvents = listeners => {
     Object.entries(listeners).forEach(([event, commands]) => {
       const supportedEvents = [
-        segmentationService?.EVENTS.ACTIVE_SEGMENTATION_CHANGED,
-        segmentationService?.EVENTS.SEGMENTATION_ADDED,
-        segmentationService?.EVENTS.SEGMENT_REMOVED,
+        segmentationService.EVENTS.ACTIVE_SEGMENTATION_CHANGED,
+        segmentationService.EVENTS.SEGMENTATION_ADDED,
+        segmentationService.EVENTS.SEGMENT_REMOVED,
       ];
 
       if (supportedEvents.includes(event)) {

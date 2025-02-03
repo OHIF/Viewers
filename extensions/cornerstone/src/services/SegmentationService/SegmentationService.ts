@@ -1716,9 +1716,7 @@ class SegmentationService extends PubSubService {
   };
 
   private _setActiveSegment(segmentationId: string, segmentIndex: number) {
-
     cstSegmentation.segmentIndex.setActiveSegmentIndex(segmentationId, segmentIndex);
-
   }
 
   private _getVolumeIdForDisplaySet(displaySet) {
