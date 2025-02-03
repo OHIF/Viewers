@@ -1,14 +1,24 @@
 import React, { useState } from 'react';
 import { Button } from '../../../../ui-next/src/components/Button';
 import { UserPreferencesDialog } from '../../../../ui-next/src/components/OHIFDialogs/UserPreferencesDialog';
+import { AboutDialog } from '../../../../ui-next/src/components/OHIFDialogs/AboutDialog';
 
 export default function SettingsPage() {
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [aboutOpen, setAboutOpen] = useState(false);
 
   return (
     <>
       {/* Button on the page that triggers the dialog */}
       <Button onClick={() => setDialogOpen(true)}>Open Preferences</Button>
+
+      {/* Button to open the About dialog */}
+      <Button
+        onClick={() => setAboutOpen(true)}
+        className="ml-2"
+      >
+        Open About
+      </Button>
 
       <UserPreferencesDialog
         open={dialogOpen}
@@ -115,6 +125,51 @@ export default function SettingsPage() {
           </div>
         </div>
       </UserPreferencesDialog>
+
+      {/* New AboutDialog usage */}
+      <AboutDialog
+        open={aboutOpen}
+        onOpenChange={setAboutOpen}
+      >
+        <AboutDialog.ProductName>OHIF Viewer</AboutDialog.ProductName>
+        <AboutDialog.ProductVersion>3.10</AboutDialog.ProductVersion>
+        <AboutDialog.ProductBeta>beta.75</AboutDialog.ProductBeta>
+
+        <AboutDialog.Body>
+          <AboutDialog.DetailTitle>Commit Hash</AboutDialog.DetailTitle>
+          <AboutDialog.Detail>ac6е674b4d094f942556d045178011bbf3f81796</AboutDialog.Detail>
+
+          <AboutDialog.DetailTitle>Current Browser &amp; OS</AboutDialog.DetailTitle>
+          <AboutDialog.Detail>Safari 18.2.0, macOS 10.15.7</AboutDialog.Detail>
+
+          <div className="mt-4 flex items-center space-x-2">
+            <AboutDialog.SocialIcon>
+              {/* Replace with your SVG or icon for GitHub */}
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="18"
+                height="18"
+                fill="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path d="M12 .5C5.37.5 0 5.87 0 12.5... (GitHub icon path data)" />
+              </svg>
+            </AboutDialog.SocialIcon>
+            <AboutDialog.SocialLink href="https://github.com/OHIF/Viewers">
+              GitHub
+            </AboutDialog.SocialLink>
+          </div>
+        </AboutDialog.Body>
+
+        <AboutDialog.Footer>
+          <Button
+            variant="default"
+            onClick={() => setAboutOpen(false)}
+          >
+            Close
+          </Button>
+        </AboutDialog.Footer>
+      </AboutDialog>
     </>
   );
 }
