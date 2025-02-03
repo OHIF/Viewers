@@ -711,7 +711,7 @@ window.config = {
     id: 'ui.labellingComponent',
     description: 'Customizes the labelling flow component.',
     image: labellingFLow,
-    default: null,
+    default: null, //use platform/ui component as default
     configuration: `
       window.config = {
         // rest of window config
