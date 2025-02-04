@@ -6,11 +6,17 @@ import customRoutesCustomization from './customizations/customRoutesCustomizatio
 import studyBrowserCustomization from './customizations/studyBrowserCustomization';
 import overlayItemCustomization from './customizations/overlayItemCustomization';
 import contextMenuCustomization from './customizations/contextMenuCustomization';
+import contextMenuUICustomization from './customizations/contextMenuUICustomization';
 import menuContentCustomization from './customizations/menuContentCustomization';
 import getDataSourceConfigurationCustomization from './customizations/dataSourceConfigurationCustomization';
 import progressDropdownCustomization from './customizations/progressDropdownCustomization';
 import sortingCriteriaCustomization from './customizations/sortingCriteriaCustomization';
 import onDropHandlerCustomization from './customizations/onDropHandlerCustomization';
+import loadingIndicatorProgressCustomization from './customizations/loadingIndicatorProgressCustomization';
+import loadingIndicatorTotalPercentCustomization from './customizations/loadingIndicatorTotalPercentCustomization';
+import progressLoadingBarCustomization from './customizations/progressLoadingBarCustomization';
+import viewportActionCornersCustomization from './customizations/viewportActionCornersCustomization';
+import labellingFlowCustomization from './customizations/labellingFlowCustomization';
 
 /**
  *
@@ -48,6 +54,12 @@ export default function getCustomizationModule({ servicesManager, extensionManag
         ...sortingCriteriaCustomization,
         ...defaultContextMenuCustomization,
         ...onDropHandlerCustomization,
+        ...loadingIndicatorProgressCustomization,
+        ...loadingIndicatorTotalPercentCustomization,
+        ...progressLoadingBarCustomization,
+        ...viewportActionCornersCustomization,
+        ...labellingFlowCustomization,
+        ...contextMenuUICustomization,
       },
     },
   ];

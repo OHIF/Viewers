@@ -150,6 +150,7 @@ function TrackedCornerstoneViewport(
               referenceStudyUID: StudyInstanceUID,
               referenceSeriesUID: SeriesInstanceUID,
               uid: measurementId,
+              toolName,
             } = measurement;
 
             sendTrackedMeasurementsEvent('SET_DIRTY', { SeriesInstanceUID });
@@ -158,6 +159,7 @@ function TrackedCornerstoneViewport(
               StudyInstanceUID,
               SeriesInstanceUID,
               measurementId,
+              toolName,
             });
           }
         }).unsubscribe

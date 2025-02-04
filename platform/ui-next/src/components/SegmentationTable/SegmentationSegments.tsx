@@ -33,12 +33,9 @@ export const SegmentationSegments: React.FC<{
     return null;
   }
 
-  const segmentCount = Object.keys(representationToUse.segments).length;
-  const height = mode === 'collapsed' ? 'h-[900px]' : `h-[${segmentCount * 200}px]`;
-
   return (
     <ScrollArea
-      className={`ohif-scrollbar invisible-scrollbar bg-bkg-low space-y-px ${height}`}
+      className={`ohif-scrollbar invisible-scrollbar bg-bkg-low space-y-px h-[900px]`}
       showArrows={true}
     >
       {Object.values(representationToUse.segments).map(segment => {
