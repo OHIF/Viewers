@@ -36,6 +36,7 @@ is expected to support, [check out it's interface in `@ohif/core`][interface]
 | Implementation                     | Consumer  |
 | ---------------------------------- | --------- |
 | [Modal Provider][modal-provider]\* | Modal.jsx |
+| customComponent | setServiceImplementation({customComponent: Modal}) |
 
 `*` - Denotes maintained by OHIF
 
