@@ -15,8 +15,8 @@ export default function PanelGenerateImage({ servicesManager, commandsManager }:
   const [{ activeViewportId }] = useViewportGrid();
 
   //
-  const [timePointsRange, setTimePointsRange] = useState([0, 0]);
-  const [timePointsRangeToUseForGenerate, setTimePointsRangeToUseForGenerate] = useState([0, 0]);
+  const [timePointsRange, setTimePointsRange] = useState([1, 1]);
+  const [timePointsRangeToUseForGenerate, setTimePointsRangeToUseForGenerate] = useState([1, 1]);
   const [computedDisplaySet, setComputedDisplaySet] = useState(null);
   const [dynamicVolume, setDynamicVolume] = useState(null);
   const [frameRate, setFrameRate] = useState(20);

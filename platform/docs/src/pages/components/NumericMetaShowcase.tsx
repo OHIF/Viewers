@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Numeric from '../../../../ui-next/src/components/Numeric';
 import Icons from '../../../../ui-next/src/components/Icons';
 import ShowcaseRow from './ShowcaseRow';
@@ -7,6 +7,9 @@ import ShowcaseRow from './ShowcaseRow';
  * NumericShowcase component displays Numeric variants and examples
  */
 export default function NumericShowcase() {
+  const [controlledValue, setControlledValue] = useState(0);
+  const [controlledValues, setControlledValues] = useState([0, 100] as [number, number]);
+
   return (
     <div className="space-y-8">
       {/* Basic Number Input */}
@@ -102,8 +105,6 @@ export default function NumericShowcase() {
             mode="singleRange"
             min={0}
             max={100}
-            step={1}
-            value={50}
             onChange={val => console.debug('Value changed:', val)}
           >
             <Numeric.Label>Brightness</Numeric.Label>
@@ -115,7 +116,7 @@ export default function NumericShowcase() {
             min={-50}
             max={50}
             step={1}
-            value={0}
+            defaultValue={0}
             className="flex flex-row items-center"
             onChange={val => console.debug('Value changed:', val)}
           >
@@ -128,11 +129,11 @@ export default function NumericShowcase() {
             min={0}
             max={100}
             step={1}
-            value={50}
+            value={controlledValue}
             className="flex flex-row items-center space-x-2"
-            onChange={val => console.debug('Value changed:', val)}
+            onChange={val => setControlledValue(val as number)}
           >
-            <Numeric.Label>Something Else </Numeric.Label>
+            <Numeric.Label>Controlled State (Parent) </Numeric.Label>
             <Numeric.SingleRange showNumberInput />
           </Numeric.Container>
         </div>
@@ -164,7 +165,6 @@ export default function NumericShowcase() {
             min={0}
             max={100}
             step={1}
-            values={[30, 70]}
             className="space-y-1"
             onChange={vals => console.debug('Values changed:', vals)}
           >
@@ -177,8 +177,9 @@ export default function NumericShowcase() {
             min={0}
             max={100}
             step={1}
-            values={[30, 70]}
+            defaultValues={[30, 70]}
             className="space-y-1"
+            onChange={vals => console.debug('Values changed:', vals)}
           >
             <Numeric.Label>Window Width/Level</Numeric.Label>
             <Numeric.DoubleRange showNumberInputs />
@@ -189,11 +190,11 @@ export default function NumericShowcase() {
             min={0}
             max={100}
             step={1}
-            values={[30, 70]}
+            values={controlledValues}
             className="flex flex-row items-center space-x-2"
-            onChange={vals => console.debug('Values changed:', vals)}
+            onChange={vals => setControlledValues(vals as [number, number])}
           >
-            <Numeric.Label>Inline double slider</Numeric.Label>
+            <Numeric.Label>Controlled State (Parent) </Numeric.Label>
             <Numeric.DoubleRange />
           </Numeric.Container>
         </div>
@@ -246,7 +247,6 @@ export default function NumericShowcase() {
             mode="doubleRange"
             min={-1000}
             max={3000}
-            values={[1000, 2000]}
             step={10}
             className="space-y-1"
           >

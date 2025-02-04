@@ -99,6 +99,7 @@ import {
   ToolButtonListItem,
   ToolButtonListDivider,
   Toolbox,
+  Numeric,
 } from './components';
 import { DataRow } from './components/DataRow';
 
@@ -223,4 +224,5 @@ export {
   Toolbox,
   useToolbox,
   utils,
+  Numeric,
 };
