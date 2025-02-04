@@ -15,7 +15,6 @@ be centered, and not draggable. They're commonly used when:
 If you're curious about the DOs and DON'Ts of dialogs and modals, check out this
 article: ["Best Practices for Modals / Overlays / Dialog Windows"][ux-article]
 
-customComponent: The modal service allows users to provide their own Modal UI using the customComponents.
 
 
 <div style={{padding:"56.25% 0 0 0", position:"relative"}}>
@@ -38,12 +37,17 @@ is expected to support, [check out it's interface in `@ohif/core`][interface]
 | Implementation                     | Consumer  |
 | ---------------------------------- | --------- |
 | [Modal Provider][modal-provider]\* | Modal.jsx |
-| customComponent | user extensions via setServiceImplementation({customComponent: Modal}) |
-
-`*` - Denotes maintained by OHIF
+| customComponent | user extensions via `setServiceImplementation({customComponent: Modal})` |
 
 
 
+### Custom Component
+If you would like to customize the modal component that OHIF uses, you can register your own
+component with the `customComponent` property.
+
+```js
+setServiceImplementation({customComponent: Modal})
+```
 
 
 > 3rd Party implementers may be added to this table via pull requests.
