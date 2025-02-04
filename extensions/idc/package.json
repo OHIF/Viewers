@@ -2,7 +2,7 @@
   "name": "@ohif/extension-idc",
   "version": "0.0.1",
   "description": "OHIF Extension for IDC",
-  "author": "Pedro Kohler",
+  "author": "Imaging Data Commons",
   "license": "MIT",
   "main": "dist/umd/ohif-idc-extension/index.umd.js",
   "files": [

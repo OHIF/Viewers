@@ -63,12 +63,10 @@
       "version": "3.0.0"
     },
     {
-      "packageName": "ohif-gcp-extension",
-      "version": "0.0.1"
+      "packageName": "ohif-gcp-extension"
     },
     {
-      "packageName": "@ohif/extension-idc",
-      "version": "0.0.1"
+      "packageName": "@ohif/extension-idc"
     }
   ],
   "modes": [
@@ -98,8 +96,7 @@
       "version": "3.0.0"
     },
     {
-      "packageName": "ohif-gcp-mode",
-      "version": "0.0.1"
+      "packageName": "ohif-gcp-mode"
     }
   ],
   "public": [
