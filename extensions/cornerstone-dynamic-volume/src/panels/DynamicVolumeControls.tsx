@@ -45,6 +45,7 @@ const DynamicVolumeControls = ({
   numDimensionGroups,
   onGenerate,
   onDoubleRangeChange,
+  rangeValues,
   onDynamicClick,
 }) => {
   const [computedView, setComputedView] = useState(false);
@@ -141,11 +142,10 @@ const DynamicVolumeControls = ({
               mode="doubleRange"
               min={1}
               max={numDimensionGroups}
-              step={1}
-              values={[1, numDimensionGroups]}
+              values={rangeValues}
               onChange={onDoubleRangeChange}
             >
-              <Numeric.DoubleRange />
+              <Numeric.DoubleRange showNumberInputs />
             </Numeric.Container>
           </div>
           <Button

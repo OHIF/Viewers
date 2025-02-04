@@ -15,13 +15,12 @@ export default function PanelGenerateImage({ servicesManager, commandsManager }:
   const [{ activeViewportId }] = useViewportGrid();
 
   //
-  const [timePointsRange, setTimePointsRange] = useState([1, 1]);
-  const [timePointsRangeToUseForGenerate, setTimePointsRangeToUseForGenerate] = useState([1, 1]);
+  const [dimensionGroupRange, setDimensionGroupRange] = useState([1, 1]);
   const [computedDisplaySet, setComputedDisplaySet] = useState(null);
   const [dynamicVolume, setDynamicVolume] = useState(null);
   const [frameRate, setFrameRate] = useState(20);
   const [isPlaying, setIsPlaying] = useState(isCineEnabled);
-  const [dimensionGroupRendered, setDimensionGroupRendered] = useState(null);
+  const [dimensionGroupNumberRendered, setDimensionGroupNumberRendered] = useState(null);
   const [displayingComputed, setDisplayingComputed] = useState(false);
 
   //
@@ -39,8 +38,7 @@ export default function PanelGenerateImage({ servicesManager, commandsManager }:
           setDynamicVolume(volumeData.volume);
           uuidDynamicVolume.current = volumeData.displaySetInstanceUID;
           const newRange = [1, volumeData.volume.numDimensionGroups];
-          setTimePointsRange(newRange);
-          setTimePointsRangeToUseForGenerate(newRange);
+          setDimensionGroupRange(newRange);
         }
       });
     };
@@ -68,7 +66,7 @@ export default function PanelGenerateImage({ servicesManager, commandsManager }:
     const evt = Enums.Events.DYNAMIC_VOLUME_DIMENSION_GROUP_CHANGED;
 
     const callback = evt => {
-      setDimensionGroupRendered(evt.detail.dimensionGroupNumber);
+      setDimensionGroupNumberRendered(evt.detail.dimensionGroupNumber);
     };
 
     eventTarget.addEventListener(evt, callback);
@@ -76,7 +74,7 @@ export default function PanelGenerateImage({ servicesManager, commandsManager }:
     return () => {
       eventTarget.removeEventListener(evt, callback);
     };
-  }, [cornerstoneViewportService]);
+  }, []);
 
   useEffect(() => {
     const displaySetUIDs = viewportGridService.getDisplaySetsUIDsForViewport(activeViewportId);
@@ -102,9 +100,7 @@ export default function PanelGenerateImage({ servicesManager, commandsManager }:
 
     setDynamicVolume(dynamicVolume);
     uuidDynamicVolume.current = dynamicVolumeDisplaySet.displaySetInstanceUID;
-    const newRange = [1, dynamicVolume.numDimensionGroups];
-    setTimePointsRange(newRange);
-    setTimePointsRangeToUseForGenerate(newRange);
+    setDimensionGroupRange([1, dynamicVolume.numDimensionGroups]);
   }, [
     activeViewportId,
     viewportGridService,
@@ -141,11 +137,12 @@ export default function PanelGenerateImage({ servicesManager, commandsManager }:
         volumeId: computedVolumeId,
       });
     }
-    const [start, end] = timePointsRangeToUseForGenerate;
-    const frameNumbers = Array.from({ length: end - start + 1 }, (_, i) => i + 1);
+    const [start, end] = dimensionGroupRange;
+    // from start to end, with steps of 1
+    const frameNumbers = Array.from({ length: end - start + 1 }, (_, i) => start + i);
 
     const options = {
-      dimensionGroupNumbers: operationName === 'SUBTRACT' ? [start, end - 1] : frameNumbers,
+      dimensionGroupNumbers: operationName === 'SUBTRACT' ? [start, end] : frameNumbers,
       targetVolume: computedVolume,
     };
 
@@ -207,16 +204,7 @@ export default function PanelGenerateImage({ servicesManager, commandsManager }:
     handlePlay();
   };
 
-  function handleSliderChange(newValues) {
-    if (
-      newValues[0] === timePointsRangeToUseForGenerate[0] &&
-      newValues[1] === timePointsRangeToUseForGenerate[1]
-    ) {
-      return;
-    }
-
-    setTimePointsRangeToUseForGenerate(newValues);
-  }
+  console.debug('dimensionGroupRange', dimensionGroupRange);
 
   return (
     <DynamicVolumeControls
@@ -226,15 +214,15 @@ export default function PanelGenerateImage({ servicesManager, commandsManager }:
       minFps={1}
       maxFps={50}
       onFpsChange={handleSetFrameRate}
-      currentDimensionGroupNumber={dimensionGroupRendered}
-      numDimensionGroups={timePointsRange[1]}
+      currentDimensionGroupNumber={dimensionGroupNumberRendered}
+      numDimensionGroups={dynamicVolume?.numDimensionGroups || 1}
       onDimensionGroupChange={dimensionGroupNumber => {
         dynamicVolume.dimensionGroupNumber = dimensionGroupNumber;
       }}
       onGenerate={onGenerateImage}
       onDynamicClick={displayingComputed ? () => renderDynamicImage(computedDisplaySet) : null}
-      onDoubleRangeChange={handleSliderChange}
-      initialRangeValues={timePointsRangeToUseForGenerate}
+      onDoubleRangeChange={setDimensionGroupRange}
+      rangeValues={dimensionGroupRange}
     />
   );
 }
