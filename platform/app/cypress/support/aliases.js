@@ -1,6 +1,8 @@
 //Creating aliases for Cornerstone tools buttons
 export function initCornerstoneToolsAliases() {
-  cy.get('[data-cy="StackScroll"]').as('stackScrollBtn');
+  // Note: stack scroll is not in the DOM when the study is loaded
+  // cy.get('[data-cy="StackScroll"]').as('stackScrollBtn');
+
   cy.get('[data-cy="Zoom"]').as('zoomBtn');
   cy.get('[data-cy="WindowLevel-split-button-primary"]').as('wwwcBtnPrimary');
   cy.get('[data-cy="WindowLevel-split-button-secondary"]').as('wwwcBtnSecondary');
@@ -34,7 +36,6 @@ export function initCommonElementsAliases(skipMarkers) {
   cy.get('[data-cy="viewport-overlay-bottom-right"]').as('viewportInfoBottomRight');
   cy.get('[data-cy="viewport-overlay-bottom-left"]').as('viewportInfoBottomLeft');
 
-  console.debug('🚀 ~ skipMarkers:', skipMarkers);
   if (skipMarkers) {
     return;
   }

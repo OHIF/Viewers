@@ -1,5 +1,5 @@
-import { ToolbarButton, ButtonGroup } from '@ohif/ui';
 import React, { useCallback } from 'react';
+import { ToolbarButton, ButtonGroup } from '@ohif/ui';
 
 function ToolbarButtonGroupWithServices({ groupId, items, onInteraction, size }) {
   const getSplitButtonItems = useCallback(

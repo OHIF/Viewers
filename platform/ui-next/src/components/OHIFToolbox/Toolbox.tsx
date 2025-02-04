@@ -1,8 +1,6 @@
 import React, { useEffect, useRef } from 'react';
+import { ToolboxUI, useToolbox } from '../../';
 import { useToolbar } from '@ohif/core';
-import { ToolboxUI } from './';
-// Migrate this file to the new UI eventually
-import { useToolbox } from '@ohif/ui';
 
 /**
  * A toolbox is a collection of buttons and commands that they invoke, used to provide
@@ -21,6 +19,8 @@ function Toolbox({
   title,
   ...props
 }: withAppTypes) {
+  // We should move these outside of the platform/ui-next, no file here
+  // should rely on the managers and services
   const { state: toolboxState, api } = useToolbox(buttonSectionId);
   const { onInteraction, toolbarButtons } = useToolbar({
     servicesManager,
@@ -117,6 +117,9 @@ function Toolbox({
 
         if (items?.length) {
           items.forEach(({ options, id }) => {
+            if (!options) {
+              return;
+            }
             accumulator[id] = createEnhancedOptions(options, id);
           });
         } else if (options?.length) {
@@ -144,17 +147,15 @@ function Toolbox({
   }, []);
 
   return (
-    <>
-      <ToolboxUI
-        {...props}
-        title={title}
-        toolbarButtons={toolbarButtons}
-        toolboxState={toolboxState}
-        handleToolSelect={id => api.handleToolSelect(id)}
-        handleToolOptionChange={handleToolOptionChange}
-        onInteraction={onInteraction}
-      />
-    </>
+    <ToolboxUI
+      {...props}
+      title={title}
+      toolbarButtons={toolbarButtons}
+      toolboxState={toolboxState}
+      handleToolSelect={id => api.handleToolSelect(id)}
+      handleToolOptionChange={handleToolOptionChange}
+      onInteraction={onInteraction}
+    />
   );
 }
 

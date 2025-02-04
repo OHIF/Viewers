@@ -3,6 +3,187 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.10.0-beta.90](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.89...v3.10.0-beta.90) (2025-02-04)
+
+
+### Features
+
+* **ui:** Add support for Custom Modal component in Modal Service ([#4752](https://github.com/OHIF/Viewers/issues/4752)) ([2c183aa](https://github.com/OHIF/Viewers/commit/2c183aa4a777d7b5a0417ebcc8576a0fc2631ad2))
+
+
+
+
+
+# [3.10.0-beta.89](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.88...v3.10.0-beta.89) (2025-02-04)
+
+
+### Features
+
+* **ui:** customization option for viewport notification ([#4638](https://github.com/OHIF/Viewers/issues/4638)) ([8acbd76](https://github.com/OHIF/Viewers/commit/8acbd760d801dcaf624c5d9fb636a029201b91e1))
+
+
+
+
+
+# [3.10.0-beta.88](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.87...v3.10.0-beta.88) (2025-02-04)
+
+
+### Bug Fixes
+
+* **context-menu:**  Fixing regression introduced by PR [#4727](https://github.com/OHIF/Viewers/issues/4727) ([#4760](https://github.com/OHIF/Viewers/issues/4760)) ([12d3db2](https://github.com/OHIF/Viewers/commit/12d3db2dbc80438df60139c67e9bcf0a610532d6))
+
+
+
+
+
+# [3.10.0-beta.87](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.86...v3.10.0-beta.87) (2025-02-03)
+
+
+### Bug Fixes
+
+* **measurement label auto-completion:** Customization of measurement label auto-completion fails for measurements following arrow annotations. ([#4739](https://github.com/OHIF/Viewers/issues/4739)) ([e035ef1](https://github.com/OHIF/Viewers/commit/e035ef1dcc72ecbe2a757e3b814551d768d7e610))
+
+
+
+
+
+# [3.10.0-beta.86](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.85...v3.10.0-beta.86) (2025-02-03)
+
+
+### Bug Fixes
+
+* **store-segmentation:** storing segmentations was hitting the wrong command resulting in an undefined datasource ([#4755](https://github.com/OHIF/Viewers/issues/4755)) ([9b8e5cf](https://github.com/OHIF/Viewers/commit/9b8e5cfd1a6121a58991c0f75660a2fd9913a4e7))
+
+
+
+
+
+# [3.10.0-beta.85](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.84...v3.10.0-beta.85) (2025-02-03)
+
+
+### Features
+
+* Add customization support for more UI components  ([#4634](https://github.com/OHIF/Viewers/issues/4634)) ([f15eb44](https://github.com/OHIF/Viewers/commit/f15eb44b4cf49de1b73a22512571cec02effaef3))
+
+
+
+
+
+# [3.10.0-beta.84](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.83...v3.10.0-beta.84) (2025-01-31)
+
+
+### Bug Fixes
+
+* Remove non-functional Tailwind class for SegmentationPanel ([#4745](https://github.com/OHIF/Viewers/issues/4745)) ([32017d1](https://github.com/OHIF/Viewers/commit/32017d15a4c11e0cb7717c13da022a01ee152ba5))
+
+
+
+
+
+# [3.10.0-beta.83](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.82...v3.10.0-beta.83) (2025-01-31)
+
+
+### Bug Fixes
+
+* publish dependency ([#4753](https://github.com/OHIF/Viewers/issues/4753)) ([0cb6106](https://github.com/OHIF/Viewers/commit/0cb6106d0fa576348ca3324685d5768b6ec80572))
+
+
+
+
+
+# [3.10.0-beta.82](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.81...v3.10.0-beta.82) (2025-01-31)
+
+
+### Bug Fixes
+
+* typo in pet_series_module ([#4748](https://github.com/OHIF/Viewers/issues/4748)) ([f10683c](https://github.com/OHIF/Viewers/commit/f10683c667ea8f20c8d3e99ee0fb206522757b71))
+
+
+
+
+
+# [3.10.0-beta.81](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.80...v3.10.0-beta.81) (2025-01-29)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.10.0-beta.80](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.79...v3.10.0-beta.80) (2025-01-29)
+
+
+### Features
+
+* **customization:** enable custom onDropHandler for viewportGrid ([#4641](https://github.com/OHIF/Viewers/issues/4641)) ([054b262](https://github.com/OHIF/Viewers/commit/054b262e9cbeb0f44de65d05641efe1e8944a4f5))
+
+
+
+
+
+# [3.10.0-beta.79](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.78...v3.10.0-beta.79) (2025-01-28)
+
+
+### Bug Fixes
+
+* **dependencies:** Update dcmjs library and improve documentation links ([#4741](https://github.com/OHIF/Viewers/issues/4741)) ([d554f02](https://github.com/OHIF/Viewers/commit/d554f02f7cdb876e4132fb94e3b3df8d11b7bb5c))
+
+
+
+
+
+# [3.10.0-beta.78](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.77...v3.10.0-beta.78) (2025-01-28)
+
+
+### Features
+
+* **side-panels:** Added resize handle interactive feedback for side panels ([#4734](https://github.com/OHIF/Viewers/issues/4734)) ([6abb095](https://github.com/OHIF/Viewers/commit/6abb095b8a39c5ae4f8df8852b3ddb3249ec463f))
+
+
+
+
+
+# [3.10.0-beta.77](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.76...v3.10.0-beta.77) (2025-01-28)
+
+
+### Bug Fixes
+
+* for initialImageIndex mismatch issue for loading SR after disabling prompts ([#4732](https://github.com/OHIF/Viewers/issues/4732)) ([8e3e208](https://github.com/OHIF/Viewers/commit/8e3e2085d45eba230d0210849b65a6e609c9d81a))
+
+
+
+
+
+# [3.10.0-beta.76](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.75...v3.10.0-beta.76) (2025-01-27)
+
+
+### Bug Fixes
+
+* **context menu:** Context menus for edge-proximate measurements are partially obscured. ([#4727](https://github.com/OHIF/Viewers/issues/4727)) ([61699d0](https://github.com/OHIF/Viewers/commit/61699d00b6ce1e53631fd8c01e783701e01a7373))
+
+
+
+
+
+# [3.10.0-beta.75](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.74...v3.10.0-beta.75) (2025-01-27)
+
+
+### Features
+
+* **static-wado:** add support for case-insensitive searching ([#4603](https://github.com/OHIF/Viewers/issues/4603)) ([ac6e674](https://github.com/OHIF/Viewers/commit/ac6e674b4d094f942556d045178011bbf3f81796))
+
+
+
+
+
+# [3.10.0-beta.74](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.73...v3.10.0-beta.74) (2025-01-27)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
 # [3.10.0-beta.73](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.72...v3.10.0-beta.73) (2025-01-24)
 
 

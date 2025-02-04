@@ -76,6 +76,7 @@ ToolbarButton.propTypes = {
   commands: PropTypes.oneOfType([PropTypes.array, PropTypes.object, PropTypes.string]),
   onInteraction: PropTypes.func,
   icon: PropTypes.string.isRequired,
+  disabledText: PropTypes.string,
   label: PropTypes.string.isRequired,
   /** Tooltip content can be replaced for a customized content by passing a node to this value. */
   dropdownContent: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),

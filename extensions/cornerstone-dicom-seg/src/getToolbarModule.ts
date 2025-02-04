@@ -2,6 +2,15 @@ export function getToolbarModule({ servicesManager }: withAppTypes) {
   const { segmentationService, toolbarService, toolGroupService } = servicesManager.services;
   return [
     {
+      name: 'evaluate.cornerstone.hasSegmentation',
+      evaluate: ({ viewportId }) => {
+        const segmentations = segmentationService.getSegmentationRepresentations(viewportId);
+        return {
+          disabled: !segmentations?.length,
+        };
+      },
+    },
+    {
       name: 'evaluate.cornerstone.segmentation',
       evaluate: ({ viewportId, button, toolNames, disabledText }) => {
         // Todo: we need to pass in the button section Id since we are kind of
@@ -12,7 +21,6 @@ export function getToolbarModule({ servicesManager }: withAppTypes) {
         if (!segmentations?.length) {
           return {
             disabled: true,
-            className: '!text-common-bright !bg-black opacity-50',
             disabledText: disabledText ?? 'No segmentations available',
           };
         }
@@ -22,7 +30,6 @@ export function getToolbarModule({ servicesManager }: withAppTypes) {
         if (!toolGroup) {
           return {
             disabled: true,
-            className: '!text-common-bright ohif-disabled',
             disabledText: disabledText ?? 'Not available on the current viewport',
           };
         }
@@ -32,7 +39,6 @@ export function getToolbarModule({ servicesManager }: withAppTypes) {
         if (!toolGroup.hasTool(toolName) && !toolNames) {
           return {
             disabled: true,
-            className: '!text-common-bright ohif-disabled',
             disabledText: disabledText ?? 'Not available on the current viewport',
           };
         }
@@ -43,12 +49,6 @@ export function getToolbarModule({ servicesManager }: withAppTypes) {
 
         return {
           disabled: false,
-          className: isPrimaryActive
-            ? '!text-black !bg-primary-light hover:bg-primary-light hover-text-black hover:cursor-pointer'
-            : '!text-common-bright !bg-black hover:bg-primary-light hover:cursor-pointer hover:text-black',
-          // Todo: isActive right now is used for nested buttons where the primary
-          // button needs to be fully rounded (vs partial rounded) when active
-          // otherwise it does not have any other use
           isActive: isPrimaryActive,
         };
       },

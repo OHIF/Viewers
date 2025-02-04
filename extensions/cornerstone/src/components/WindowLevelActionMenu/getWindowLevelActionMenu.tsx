@@ -1,5 +1,5 @@
 import React, { ReactNode } from 'react';
-import { nonWLModalities, WindowLevelActionMenu } from './WindowLevelActionMenu';
+import { nonWLModalities } from './WindowLevelActionMenu';
 
 export function getWindowLevelActionMenu({
   viewportId,
@@ -20,7 +20,9 @@ export function getWindowLevelActionMenu({
   const colorbarProperties = customizationService.getCustomization('cornerstone.colorbar');
   const { volumeRenderingPresets, volumeRenderingQualityRange } =
     customizationService.getCustomization('cornerstone.3dVolumeRendering');
-
+  const WindowLevelActionMenu = customizationService.getCustomization(
+    'cornerstone.windowLevelActionMenu'
+  );
   const displaySetPresets = displaySets
     .filter(displaySet => presets[displaySet.Modality])
     .map(displaySet => {

@@ -89,7 +89,13 @@ export function callInputDialog(
   }
 }
 
-export function callLabelAutocompleteDialog(uiDialogService, callback, dialogConfig, labelConfig) {
+export function callLabelAutocompleteDialog(
+  uiDialogService,
+  callback,
+  dialogConfig,
+  labelConfig,
+  renderContent = LabellingFlow
+) {
   const exclusive = labelConfig ? labelConfig.exclusive : false;
   const dropDownItems = labelConfig ? labelConfig.items : [];
 
@@ -112,7 +118,7 @@ export function callLabelAutocompleteDialog(uiDialogService, callback, dialogCon
     centralize: true,
     isDraggable: false,
     showOverlay: true,
-    content: LabellingFlow,
+    content: renderContent,
     contentProps: {
       labellingDoneCallback: labellingDoneCallback,
       measurementData: { label: '' },
@@ -123,7 +129,12 @@ export function callLabelAutocompleteDialog(uiDialogService, callback, dialogCon
   });
 }
 
-export function showLabelAnnotationPopup(measurement, uiDialogService, labelConfig) {
+export function showLabelAnnotationPopup(
+  measurement,
+  uiDialogService,
+  labelConfig,
+  renderContent = LabellingFlow
+) {
   const exclusive = labelConfig ? labelConfig.exclusive : false;
   const dropDownItems = labelConfig ? labelConfig.items : [];
   return new Promise<Map<any, any>>((resolve, reject) => {
@@ -139,7 +150,7 @@ export function showLabelAnnotationPopup(measurement, uiDialogService, labelConf
       id: 'select-annotation',
       isDraggable: false,
       showOverlay: true,
-      content: LabellingFlow,
+      content: renderContent,
       defaultPosition: {
         x: window.innerWidth / 2,
         y: window.innerHeight / 2,
