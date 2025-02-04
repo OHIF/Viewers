@@ -130,9 +130,9 @@
       "version": "3.10.0-beta.91",
       "dependencies": {
         "@babel/runtime": "^7.20.13",
-        "@cornerstonejs/adapters": "^2.19.2",
-        "@cornerstonejs/core": "^2.19.2",
-        "@cornerstonejs/tools": "^2.19.2",
+        "@cornerstonejs/adapters": "^2.19.3",
+        "@cornerstonejs/core": "^2.19.3",
+        "@cornerstonejs/tools": "^2.19.3",
         "@icr/polyseg-wasm": "^0.4.0",
         "@itk-wasm/morphological-contour-interpolation": "1.1.0",
         "@kitware/vtk.js": "32.1.1",
@@ -150,7 +150,7 @@
         "@cornerstonejs/codec-libjpeg-turbo-8bit": "^1.2.2",
         "@cornerstonejs/codec-openjpeg": "^1.2.4",
         "@cornerstonejs/codec-openjph": "^2.4.5",
-        "@cornerstonejs/dicom-image-loader": "^2.19.2",
+        "@cornerstonejs/dicom-image-loader": "^2.19.3",
         "@ohif/core": "3.10.0-beta.91",
         "@ohif/ui": "3.10.0-beta.91",
         "dcmjs": "*",
@@ -167,8 +167,8 @@
       "version": "3.10.0-beta.91",
       "dependencies": {
         "@babel/runtime": "^7.20.13",
-        "@cornerstonejs/adapters": "^2.19.2",
-        "@cornerstonejs/core": "^2.19.2",
+        "@cornerstonejs/adapters": "^2.19.3",
+        "@cornerstonejs/core": "^2.19.3",
         "@kitware/vtk.js": "32.1.1",
         "react-color": "^2.19.3",
       },
@@ -210,8 +210,8 @@
       "version": "3.10.0-beta.91",
       "dependencies": {
         "@babel/runtime": "^7.20.13",
-        "@cornerstonejs/adapters": "^2.19.2",
-        "@cornerstonejs/core": "^2.19.2",
+        "@cornerstonejs/adapters": "^2.19.3",
+        "@cornerstonejs/core": "^2.19.3",
         "@kitware/vtk.js": "32.1.1",
         "react-color": "^2.19.3",
       },
@@ -233,9 +233,9 @@
       "version": "3.10.0-beta.91",
       "dependencies": {
         "@babel/runtime": "^7.20.13",
-        "@cornerstonejs/adapters": "^2.19.2",
-        "@cornerstonejs/core": "^2.19.2",
-        "@cornerstonejs/tools": "^2.19.2",
+        "@cornerstonejs/adapters": "^2.19.3",
+        "@cornerstonejs/core": "^2.19.3",
+        "@cornerstonejs/tools": "^2.19.3",
         "classnames": "^2.3.2",
       },
       "peerDependencies": {
@@ -255,8 +255,8 @@
       "version": "3.10.0-beta.91",
       "dependencies": {
         "@babel/runtime": "^7.20.13",
-        "@cornerstonejs/core": "^2.19.2",
-        "@cornerstonejs/tools": "^2.19.2",
+        "@cornerstonejs/core": "^2.19.3",
+        "@cornerstonejs/tools": "^2.19.3",
         "classnames": "^2.3.2",
       },
       "peerDependencies": {
@@ -361,8 +361,8 @@
         "xstate": "^4.10.0",
       },
       "peerDependencies": {
-        "@cornerstonejs/core": "^2.19.2",
-        "@cornerstonejs/tools": "^2.19.2",
+        "@cornerstonejs/core": "^2.19.3",
+        "@cornerstonejs/tools": "^2.19.3",
         "@ohif/core": "3.10.0-beta.91",
         "@ohif/extension-cornerstone-dicom-sr": "3.10.0-beta.91",
         "@ohif/extension-default": "3.10.0-beta.91",
@@ -581,7 +581,7 @@
         "@cornerstonejs/codec-libjpeg-turbo-8bit": "^1.2.2",
         "@cornerstonejs/codec-openjpeg": "^1.2.4",
         "@cornerstonejs/codec-openjph": "^2.4.5",
-        "@cornerstonejs/dicom-image-loader": "^2.19.2",
+        "@cornerstonejs/dicom-image-loader": "^2.19.3",
         "@emotion/serialize": "^1.1.3",
         "@ohif/core": "3.10.0-beta.91",
         "@ohif/extension-cornerstone": "3.10.0-beta.91",
@@ -691,7 +691,7 @@
         "@cornerstonejs/codec-libjpeg-turbo-8bit": "^1.2.2",
         "@cornerstonejs/codec-openjpeg": "^1.2.4",
         "@cornerstonejs/codec-openjph": "^2.4.5",
-        "@cornerstonejs/dicom-image-loader": "^2.19.2",
+        "@cornerstonejs/dicom-image-loader": "^2.19.3",
         "@ohif/ui": "3.10.0-beta.91",
         "cornerstone-math": "0.1.9",
         "dicom-parser": "^1.8.21",
@@ -1091,7 +1091,7 @@
 
     "@colors/colors": ["@colors/colors@1.5.0", "", {}, "sha512-ooWCrlZP11i8GImSjTHYHLkvFDP48nS4+204nGb1RiX/WXYHmJA2III9/e2DWVabCESdW7hBAEzHRqUn9OUVvQ=="],
 
-    "@cornerstonejs/adapters": ["@cornerstonejs/adapters@2.19.2", "", { "dependencies": { "@babel/runtime-corejs2": "^7.17.8", "buffer": "^6.0.3", "dcmjs": "^0.29.8", "gl-matrix": "^3.4.3", "ndarray": "^1.0.19" }, "peerDependencies": { "@cornerstonejs/core": "^2.19.2", "@cornerstonejs/tools": "^2.19.2" } }, "sha512-RmX3Yc2zsWQJA2fDRWLyLyqEyPkgfMHBBLqOmRrrdFoXSzNqWEE53tfh+5A9bm0zy+iR42ABGmNzR/6mXtznAA=="],
+    "@cornerstonejs/adapters": ["@cornerstonejs/adapters@2.19.3", "", { "dependencies": { "@babel/runtime-corejs2": "^7.17.8", "buffer": "^6.0.3", "dcmjs": "^0.29.8", "gl-matrix": "^3.4.3", "ndarray": "^1.0.19" }, "peerDependencies": { "@cornerstonejs/core": "^2.19.3", "@cornerstonejs/tools": "^2.19.3" } }, "sha512-QuugcUCelTW9bxhO1yewuuf6UHbIufiWMU+plNp40RwR92hgWi1SB9K/gFhtSRxVBqnkbG3Sh6mZRSuS3KcP1A=="],
 
     "@cornerstonejs/calculate-suv": ["@cornerstonejs/calculate-suv@1.1.0", "", {}, "sha512-Q9XraiDJif9aMFArD2iEuDO/HXbcRVCqB7KfaHgDrdTTjgDFovS91Psbdim7crypRSvE6dh/+HKeFNHdvNkA6w=="],
 
@@ -1103,11 +1103,11 @@
 
     "@cornerstonejs/codec-openjph": ["@cornerstonejs/codec-openjph@2.4.7", "", {}, "sha512-qvP4q4JDib7mi9r7LqKOwqz7YZ8gjtDX4ZCezeYf8+eb7MBXCz5uXAMeVF3yz9Axw4XiIMdB/pqXkm8tqCl13w=="],
 
-    "@cornerstonejs/core": ["@cornerstonejs/core@2.19.2", "", { "dependencies": { "@kitware/vtk.js": "32.9.0", "comlink": "^4.4.1", "gl-matrix": "^3.4.3" } }, "sha512-aWKH8KgDwLU3vhejrO+yj/9PgaCXWDFY53u1648JsrF84LF+yor7PAN7vqdijG5E7IIITG7NXCMuy3Q2OYReyw=="],
+    "@cornerstonejs/core": ["@cornerstonejs/core@2.19.3", "", { "dependencies": { "@kitware/vtk.js": "32.9.0", "comlink": "^4.4.1", "gl-matrix": "^3.4.3" } }, "sha512-yqPFpfzKCNj9U94q1do8oE3adg7+/t+bc4uBHrNPCvbUyOqaWZzentw5+79cj5hhHif2OG0jVNRSPr+kbBBk2Q=="],
 
-    "@cornerstonejs/dicom-image-loader": ["@cornerstonejs/dicom-image-loader@2.19.2", "", { "dependencies": { "@cornerstonejs/codec-charls": "^1.2.3", "@cornerstonejs/codec-libjpeg-turbo-8bit": "^1.2.2", "@cornerstonejs/codec-openjpeg": "^1.2.2", "@cornerstonejs/codec-openjph": "^2.4.5", "comlink": "^4.4.1", "jpeg-lossless-decoder-js": "^2.1.0", "pako": "^2.0.4", "uuid": "^9.0.0" }, "peerDependencies": { "@cornerstonejs/core": "^2.19.2", "dicom-parser": "^1.8.9" } }, "sha512-uf5i1p4uny5SCsMHZ75vnSygLhBEpavWHHE+qk7/eg3lZHM79AtxefeoXuFEed9iprqylL3fxfXz1czHeWHhJA=="],
+    "@cornerstonejs/dicom-image-loader": ["@cornerstonejs/dicom-image-loader@2.19.3", "", { "dependencies": { "@cornerstonejs/codec-charls": "^1.2.3", "@cornerstonejs/codec-libjpeg-turbo-8bit": "^1.2.2", "@cornerstonejs/codec-openjpeg": "^1.2.2", "@cornerstonejs/codec-openjph": "^2.4.5", "comlink": "^4.4.1", "jpeg-lossless-decoder-js": "^2.1.0", "pako": "^2.0.4", "uuid": "^9.0.0" }, "peerDependencies": { "@cornerstonejs/core": "^2.19.3", "dicom-parser": "^1.8.9" } }, "sha512-/VTmaDabIqF8lBzPq0yK3yF6TIb3vTEoMeyvXTQWpPG1wjiTRAaYql5uQjCgE1p/xCXVA3Iq+h2rk90HWFu6nA=="],
 
-    "@cornerstonejs/tools": ["@cornerstonejs/tools@2.19.2", "", { "dependencies": { "@types/offscreencanvas": "2019.7.3", "comlink": "^4.4.1", "lodash.get": "^4.4.2" }, "peerDependencies": { "@cornerstonejs/core": "^2.19.2", "@kitware/vtk.js": "32.9.0", "@types/d3-array": "^3.0.4", "@types/d3-interpolate": "^3.0.1", "d3-array": "^3.2.3", "d3-interpolate": "^3.0.1", "gl-matrix": "^3.4.3" } }, "sha512-Q8qdRYIGCE6+KMlfO0So8R0h+UJ8lROAZhOZFuKd7JQt+zpMGl1lqPP+/Xpn+Yjj9JVI5bCh7xWo3NbqRXOmlg=="],
+    "@cornerstonejs/tools": ["@cornerstonejs/tools@2.19.3", "", { "dependencies": { "@types/offscreencanvas": "2019.7.3", "comlink": "^4.4.1", "lodash.get": "^4.4.2" }, "peerDependencies": { "@cornerstonejs/core": "^2.19.3", "@kitware/vtk.js": "32.9.0", "@types/d3-array": "^3.0.4", "@types/d3-interpolate": "^3.0.1", "d3-array": "^3.2.3", "d3-interpolate": "^3.0.1", "gl-matrix": "^3.4.3" } }, "sha512-bJFhE2b1B2k8enZT9vZqspLXmSHqCLAOFwib5FWi4/9AtNydVaDBIafAYq/gCXTcF8YcbsUhBhWQL1LU7ejkWg=="],
 
     "@csstools/postcss-cascade-layers": ["@csstools/postcss-cascade-layers@1.1.1", "", { "dependencies": { "@csstools/selector-specificity": "^2.0.2", "postcss-selector-parser": "^6.0.10" }, "peerDependencies": { "postcss": "^8.2" } }, "sha512-+KdYrpKC5TgomQr2DlZF4lDEpHcoxnj5IGddYYfBWJAKfj1JtuHUIqMa+E1pJJ+z3kvDViWMqyqPlG4Ja7amQA=="],
 
