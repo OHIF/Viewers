@@ -29,6 +29,7 @@ is expected to support, [check out it's interface in `@ohif/core`][interface]
 | ---------- | ------------------------------------- |
 | `hide()`   | Hides the open modal                  |
 | `show()`   | Shows the provided content in a modal |
+| `customComponent()` | Overrides the default Modal component |
 
 ## Implementations
 
