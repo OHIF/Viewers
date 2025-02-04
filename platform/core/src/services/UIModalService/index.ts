@@ -16,7 +16,7 @@ const name = 'uiModalService';
 const serviceImplementation = {
   _hide: () => console.warn('hide() NOT IMPLEMENTED'),
   _show: () => console.warn('show() NOT IMPLEMENTED'),
-  _component: null,
+  _customComponent: null,
 };
 
 class UIModalService {
@@ -79,8 +79,8 @@ class UIModalService {
    *
    * @returns {React.Component}
    */
-  component() {
-    return serviceImplementation._component;
+  getCustomComponent() {
+    return serviceImplementation._customComponent;
   }
 
   /**
@@ -94,7 +94,7 @@ class UIModalService {
   setServiceImplementation({
     hide: hideImplementation,
     show: showImplementation,
-    component: componentImplementation,
+    customComponent: customComponentImplementation,
   }) {
     if (hideImplementation) {
       serviceImplementation._hide = hideImplementation;
@@ -102,8 +102,8 @@ class UIModalService {
     if (showImplementation) {
       serviceImplementation._show = showImplementation;
     }
-    if (componentImplementation) {
-      serviceImplementation._component = componentImplementation;
+    if (customComponentImplementation) {
+      serviceImplementation._customComponent = customComponentImplementation;
     }
   }
 }

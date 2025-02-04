@@ -39,7 +39,7 @@ const ModalProvider = ({ children, modal: Modal, service = null }) => {
 
   const [options, setOptions] = useState(DEFAULT_OPTIONS);
 
-  const CustomModal = service.component();
+  const CustomModal = service.getCustomComponent();
 
   /**
    * Show the modal and override its configuration props.
