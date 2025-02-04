@@ -230,6 +230,6 @@ h3.section-header {
 }
 
 #svg-layer-default circle {
-  stroke-width: 4 !important;
-  r: 1 !important;
+  stroke-width: 4px !important;
+  r: 2px !important;
 }
