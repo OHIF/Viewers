@@ -96,7 +96,6 @@ function modeFactory({ modeConfiguration }) {
       //   },
       // ]);
 
-
       // Init Default and SR ToolGroups
       initToolGroups(extensionManager, toolGroupService, commandsManager, this.labelConfig);
 

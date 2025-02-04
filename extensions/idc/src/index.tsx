@@ -1,4 +1,5 @@
 import { addIcon } from '@ohif/ui';
+
 import DownloadStudySeriesDialog from './DownloadStudySeriesDialog';
 import { ReactComponent as downloadIcon } from '../assets/icons/download.svg';
 
