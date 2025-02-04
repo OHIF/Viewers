@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.10.0-beta.88](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.87...v3.10.0-beta.88) (2025-02-04)
+
+
+### Bug Fixes
+
+* **context-menu:**  Fixing regression introduced by PR [#4727](https://github.com/OHIF/Viewers/issues/4727) ([#4760](https://github.com/OHIF/Viewers/issues/4760)) ([12d3db2](https://github.com/OHIF/Viewers/commit/12d3db2dbc80438df60139c67e9bcf0a610532d6))
+
+
+
+
+
 # [3.10.0-beta.87](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.86...v3.10.0-beta.87) (2025-02-03)
 
 
