@@ -1,22 +1,18 @@
-import { useEffect, useState, memo } from 'react';
+import { useEffect, useState, memo, useCallback } from 'react';
 
 const ActiveViewportBehavior = memo(
   ({ servicesManager, viewportId }: withAppTypes<{ viewportId: string }>) => {
-    const { displaySetService, cineService, viewportGridService, customizationService } =
-      servicesManager.services;
+    const {
+      displaySetService,
+      cineService,
+      viewportGridService,
+      customizationService,
+      cornerstoneViewportService,
+    } = servicesManager.services;
 
     const [activeViewportId, setActiveViewportId] = useState(viewportId);
 
-    useEffect(() => {
-      const subscription = viewportGridService.subscribe(
-        viewportGridService.EVENTS.ACTIVE_VIEWPORT_ID_CHANGED,
-        ({ viewportId }) => setActiveViewportId(viewportId)
-      );
-
-      return () => subscription.unsubscribe();
-    }, [viewportId, viewportGridService]);
-
-    useEffect(() => {
+    const handleCineEnable = useCallback(() => {
       if (cineService.isViewportCineClosed(activeViewportId)) {
         return;
       }
@@ -53,6 +49,32 @@ const ActiveViewportBehavior = memo(
       displaySetService,
       customizationService,
     ]);
+
+    useEffect(() => {
+      const subscription = viewportGridService.subscribe(
+        viewportGridService.EVENTS.ACTIVE_VIEWPORT_ID_CHANGED,
+        ({ viewportId }) => setActiveViewportId(viewportId)
+      );
+
+      return () => subscription.unsubscribe();
+    }, [viewportId, viewportGridService]);
+
+    useEffect(() => {
+      const subscription = cornerstoneViewportService.subscribe(
+        cornerstoneViewportService.EVENTS.VIEWPORT_DATA_CHANGED,
+        () => {
+          const activeViewportId = viewportGridService.getActiveViewportId();
+          setActiveViewportId(activeViewportId);
+          handleCineEnable();
+        }
+      );
+
+      return () => subscription.unsubscribe();
+    }, [viewportId, cornerstoneViewportService, viewportGridService, handleCineEnable]);
+
+    useEffect(() => {
+      handleCineEnable();
+    }, [handleCineEnable]);
 
     return null;
   },
