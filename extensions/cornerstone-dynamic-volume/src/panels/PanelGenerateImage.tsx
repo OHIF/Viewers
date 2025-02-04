@@ -204,8 +204,6 @@ export default function PanelGenerateImage({ servicesManager, commandsManager }:
     handlePlay();
   };
 
-  console.debug('dimensionGroupRange', dimensionGroupRange);
-
   return (
     <DynamicVolumeControls
       fps={frameRate}
