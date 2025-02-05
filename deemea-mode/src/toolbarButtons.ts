@@ -72,16 +72,6 @@ const toolbarButtons: Button[] = [
       evaluate: 'evaluate.cornerstoneTool',
     },
   },
-  {
-    id: 'Zoom',
-    uiType: 'ohif.radioGroup',
-    props: {
-      icon: 'tool-zoom',
-      label: 'Zoom',
-      commands: setToolActiveToolbar,
-      evaluate: 'evaluate.cornerstoneTool',
-    },
-  },
   // Window Level
   {
     id: 'WindowLevel',
@@ -101,6 +91,16 @@ const toolbarButtons: Button[] = [
       type: 'tool',
       icon: 'tool-move',
       label: 'Pan',
+      commands: setToolActiveToolbar,
+      evaluate: 'evaluate.cornerstoneTool',
+    },
+  },
+  {
+    id: 'Zoom',
+    uiType: 'ohif.radioGroup',
+    props: {
+      icon: 'tool-zoom',
+      label: 'Zoom',
       commands: setToolActiveToolbar,
       evaluate: 'evaluate.cornerstoneTool',
     },
