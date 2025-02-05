@@ -3,9 +3,10 @@ import type { Button } from '@ohif/core/types';
 const toolbarButtons: Button[] = [
   {
     id: 'BrushTools',
-    uiType: 'ohif.buttonGroup',
+    uiType: 'ohif.toolBoxButtonGroup',
     props: {
       groupId: 'BrushTools',
+      evaluate: 'evaluate.cornerstone.hasSegmentation',
       items: [
         {
           id: 'Brush',
@@ -134,7 +135,7 @@ const toolbarButtons: Button[] = [
   },
   {
     id: 'Shapes',
-    uiType: 'ohif.radioGroup',
+    uiType: 'ohif.toolBoxButton',
     props: {
       label: 'Shapes',
       evaluate: {

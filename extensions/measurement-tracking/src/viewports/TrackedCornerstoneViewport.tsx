@@ -150,6 +150,7 @@ function TrackedCornerstoneViewport(
               referenceStudyUID: StudyInstanceUID,
               referenceSeriesUID: SeriesInstanceUID,
               uid: measurementId,
+              toolName,
             } = measurement;
 
             sendTrackedMeasurementsEvent('SET_DIRTY', { SeriesInstanceUID });
@@ -158,6 +159,7 @@ function TrackedCornerstoneViewport(
               StudyInstanceUID,
               SeriesInstanceUID,
               measurementId,
+              toolName,
             });
           }
         }).unsubscribe
@@ -323,7 +325,7 @@ function _getStatusComponent(isTracked, t) {
     <Tooltip>
       <TooltipTrigger asChild>
         <span>
-          <Icons.StatusTracking className="text-aqua-pale" />
+          <Icons.StatusTracking className="text-muted-foreground" />
         </span>
       </TooltipTrigger>
       <TooltipContent

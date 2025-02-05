@@ -2,6 +2,7 @@ import { id } from './id';
 import React, { Suspense, useMemo } from 'react';
 import getPanelModule from './getPanelModule';
 import getCommandsModule from './getCommandsModule';
+import getCustomizationModule from './getCustomizationModule';
 import { Types } from '@ohif/core';
 
 import { useViewportGrid } from '@ohif/ui-next';
@@ -158,6 +159,8 @@ const extension: Types.Extensions.Extension = {
   getPanelModule,
 
   getCommandsModule,
+
+  getCustomizationModule,
 };
 
 export default extension;

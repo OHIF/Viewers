@@ -208,8 +208,9 @@ function commandsModule({
      */
     setMeasurementLabel: ({ uid }) => {
       const labelConfig = customizationService.getCustomization('measurementLabels');
+      const renderContent = customizationService.getCustomization('ui.labellingComponent');
       const measurement = measurementService.getMeasurement(uid);
-      showLabelAnnotationPopup(measurement, uiDialogService, labelConfig).then(
+      showLabelAnnotationPopup(measurement, uiDialogService, labelConfig, renderContent).then(
         (val: Map<any, any>) => {
           measurementService.update(
             uid,
@@ -325,16 +326,19 @@ function commandsModule({
 
     renameMeasurement: ({ uid }) => {
       const labelConfig = customizationService.getCustomization('measurementLabels');
+      const renderContent = customizationService.getCustomization('ui.labellingComponent');
       const measurement = measurementService.getMeasurement(uid);
-      showLabelAnnotationPopup(measurement, uiDialogService, labelConfig).then(val => {
-        measurementService.update(
-          uid,
-          {
-            ...val,
-          },
-          true
-        );
-      });
+      showLabelAnnotationPopup(measurement, uiDialogService, labelConfig, renderContent).then(
+        val => {
+          measurementService.update(
+            uid,
+            {
+              ...val,
+            },
+            true
+          );
+        }
+      );
     },
 
     toggleLockMeasurement: ({ uid }) => {
@@ -376,7 +380,8 @@ function commandsModule({
     },
     arrowTextCallback: ({ callback, data, uid }) => {
       const labelConfig = customizationService.getCustomization('measurementLabels');
-      callLabelAutocompleteDialog(uiDialogService, callback, {}, labelConfig);
+      const renderContent = customizationService.getCustomization('ui.labellingComponent');
+      callLabelAutocompleteDialog(uiDialogService, callback, {}, labelConfig, renderContent);
     },
     toggleCine: () => {
       const { viewports } = viewportGridService.getState();
@@ -751,7 +756,12 @@ function commandsModule({
           displaySetInstanceUID = viewports.get(viewportId)?.displaySetInstanceUIDs[0];
         }
 
-        const volumeId = viewport.getVolumeId();
+        // ToDo: Find a better way of obtaining the volumeId that corresponds to the displaySetInstanceUID
+        const volumeId =
+          viewport
+            .getAllVolumeIds()
+            .find((_volumeId: string) => _volumeId.includes(displaySetInstanceUID)) ??
+          viewport.getVolumeId();
         viewport.setProperties({ colormap }, volumeId);
       }
 

@@ -1,11 +1,28 @@
 import React, { useEffect, useRef } from 'react';
 import classnames from 'classnames';
-import PropTypes from 'prop-types';
 
 import Button, { ButtonEnums } from '../Button';
 import { Icons } from '@ohif/ui-next';
 
-const Notification = ({
+type NotificationAction = {
+  id: string;
+  text: string;
+  value: any;
+  type: ButtonEnums.type.primary | ButtonEnums.type.secondary;
+  size?: ButtonEnums.size.small | ButtonEnums.size.medium;
+};
+
+export type NotificationProps = {
+  id: string;
+  type: 'error' | 'warning' | 'info' | 'success';
+  message: string | React.ReactNode;
+  actions: NotificationAction[];
+  onSubmit: (e: any) => void;
+  onOutsideClick?: () => void;
+  onKeyPress?: (e: React.KeyboardEvent) => void;
+};
+
+const Notification: React.FC<NotificationProps> = ({
   id,
   type = 'info',
   message,
@@ -105,23 +122,6 @@ const Notification = ({
       </div>
     </div>
   );
-};
-
-Notification.propTypes = {
-  type: PropTypes.oneOf(['error', 'warning', 'info', 'success']),
-  message: PropTypes.string.isRequired,
-  actions: PropTypes.arrayOf(
-    PropTypes.shape({
-      text: PropTypes.string.isRequired,
-      value: PropTypes.any.isRequired,
-      type: PropTypes.oneOf([ButtonEnums.type.primary, ButtonEnums.type.secondary]).isRequired,
-      size: PropTypes.oneOf([ButtonEnums.size.small, ButtonEnums.size.medium]),
-    })
-  ).isRequired,
-  onSubmit: PropTypes.func.isRequired,
-  /** Can be used as a callback to dismiss the notification for clicks that occur outside of it */
-  onOutsideClick: PropTypes.func,
-  onKeyPress: PropTypes.func,
 };
 
 export default Notification;

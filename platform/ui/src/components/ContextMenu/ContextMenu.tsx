@@ -6,17 +6,17 @@ import { Icons } from '@ohif/ui-next';
 const ContextMenu = ({ items, ...props }) => {
   const contextMenuRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
-    if(!contextMenuRef?.current) {
+    if (!contextMenuRef?.current) {
       return;
     }
 
     const contextMenu = contextMenuRef.current;
 
     const boundingClientRect = contextMenu.getBoundingClientRect();
-    if (boundingClientRect.bottom + boundingClientRect.height > window.innerHeight) {
+    if (boundingClientRect.bottom > window.innerHeight) {
       props.defaultPosition.y = props.defaultPosition.y - boundingClientRect.height;
     }
-    if (boundingClientRect.right + boundingClientRect.width > window.innerWidth) {
+    if (boundingClientRect.right > window.innerWidth) {
       props.defaultPosition.x = props.defaultPosition.x - boundingClientRect.width;
     }
   }, [props.defaultPosition]);
