@@ -18,38 +18,41 @@ export default function SettingsPage() {
 
   return (
     <>
-      {/* Buttons to open each dialog */}
-      <Button onClick={() => setDialogOpen(true)}>Open Preferences</Button>
-      <Button
-        onClick={() => setAboutOpen(true)}
-        className="ml-2"
-      >
-        Open About
-      </Button>
-      <Button
-        onClick={() => setInputDialogOpen(true)}
-        className="ml-2"
-      >
-        Open InputDialog
-      </Button>
-      <Button
-        onClick={() => setSecondInputDialogOpen(true)}
-        className="ml-2"
-      >
-        Open Second InputDialog
-      </Button>
-      <Button
-        onClick={() => setPresetDialogOpen(true)}
-        className="ml-2"
-      >
-        Open PresetDialog
-      </Button>
-      <Button
-        onClick={() => setImageDialogOpen(true)}
-        className="ml-2"
-      >
-        Open ImageDialog
-      </Button>
+      <div className="flex min-h-screen items-center justify-center">
+        <div className="flex space-x-2">
+          <Button onClick={() => setDialogOpen(true)}>Open Preferences</Button>
+          <Button
+            onClick={() => setAboutOpen(true)}
+            className="ml-2"
+          >
+            Open About
+          </Button>
+          <Button
+            onClick={() => setInputDialogOpen(true)}
+            className="ml-2"
+          >
+            Open InputDialog
+          </Button>
+          <Button
+            onClick={() => setSecondInputDialogOpen(true)}
+            className="ml-2"
+          >
+            Open Second InputDialog
+          </Button>
+          <Button
+            onClick={() => setPresetDialogOpen(true)}
+            className="ml-2"
+          >
+            Open PresetDialog
+          </Button>
+          <Button
+            onClick={() => setImageDialogOpen(true)}
+            className="ml-2"
+          >
+            Open ImageDialog
+          </Button>
+        </div>
+      </div>
 
       <UserPreferencesDialog
         open={dialogOpen}
@@ -273,7 +276,7 @@ export default function SettingsPage() {
       >
         <ImageDialog.ImageTitle>Download High Quality Image</ImageDialog.ImageTitle>
 
-        <div className="flex flex-col sm:flex-row">
+        <ImageDialog.Body>
           <ImageDialog.ImageVisual
             src="https://dummyimage.com/512x512/242424/7BB2CE.png"
             alt="Preview"
@@ -302,7 +305,7 @@ export default function SettingsPage() {
               onSave={() => setImageDialogOpen(false)}
             />
           </ImageDialog.ImageOptions>
-        </div>
+        </ImageDialog.Body>
       </ImageDialog>
     </>
   );
