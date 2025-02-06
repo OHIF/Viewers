@@ -3,7 +3,6 @@ import { Dialog, DialogContent, DialogHeader, DialogFooter, DialogTitle } from '
 import { Button } from '../Button';
 import { Label } from '../Label';
 import { Input } from '../Input';
-
 import { cn } from '../../lib/utils';
 
 interface UserPreferencesDialogProps {
@@ -24,8 +23,9 @@ export function UserPreferencesDialog({
       open={open}
       onOpenChange={onOpenChange}
     >
-      {/* Everything goes in DialogContent so it appears in the modal */}
-      <DialogContent className={cn('max-w-3xl', className)}>{children}</DialogContent>
+      <DialogContent className={cn('flex max-h-[80vh] max-w-3xl flex-col', className)}>
+        {children}
+      </DialogContent>
     </Dialog>
   );
 }
@@ -43,16 +43,22 @@ function Title({ children, className }: TitleProps) {
   );
 }
 
-/** Body */
+/** Body
+ *  Automatically wraps content in a scrollable area.
+ */
 interface BodyProps {
   children: React.ReactNode;
   className?: string;
 }
 function Body({ children, className }: BodyProps) {
-  return <div className={cn('flex flex-col space-y-4', className)}>{children}</div>;
+  return (
+    <div className="flex-1 overflow-y-auto">
+      <div className={cn('mt-4 mb-4 flex flex-col space-y-4', className)}>{children}</div>
+    </div>
+  );
 }
 
-/** Responsive 3-column grid for hotkeys, down to 2 on smaller screens, and 1 on extra small */
+/** Responsive 3-column grid for hotkeys, etc. */
 interface HotkeysGridProps {
   children: React.ReactNode;
   className?: string;
@@ -74,9 +80,7 @@ interface HotkeyProps {
 function Hotkey({ label, placeholder, className }: HotkeyProps) {
   return (
     <div className={cn('flex items-center justify-between space-x-2', className)}>
-      {/* Force the label text to stay on one line or wrap, as desired */}
       <Label className="whitespace-nowrap">{label}</Label>
-      {/* Keep the input from expanding too far */}
       <Input
         className="w-16 text-center"
         placeholder={placeholder}
@@ -85,7 +89,9 @@ function Hotkey({ label, placeholder, className }: HotkeyProps) {
   );
 }
 
-/** Footer with "Restore Defaults" (left), "Cancel"/"Save" (right) */
+/** Footer with "Restore Defaults", "Cancel", "Save".
+ *  Placed outside the scrollable region for consistent positioning.
+ */
 interface FooterProps {
   onRestoreDefaults?: () => void;
   onCancel?: () => void;
@@ -94,36 +100,38 @@ interface FooterProps {
 }
 function Footer({ onRestoreDefaults, onCancel, onSave, className }: FooterProps) {
   return (
-    <DialogFooter className={cn(className)}>
-      <div className="flex w-full items-center justify-between">
-        <Button
-          variant="ghost"
-          onClick={onRestoreDefaults}
-        >
-          Restore Defaults
-        </Button>
-        <div className="flex space-x-2">
+    <div className="flex-shrink-0">
+      <DialogFooter className={cn(className)}>
+        <div className="flex w-full items-center justify-between">
           <Button
-            variant="secondary"
-            onClick={onCancel}
-            className="min-w-[80px]"
+            variant="ghost"
+            onClick={onRestoreDefaults}
           >
-            Cancel
+            Restore Defaults
           </Button>
-          <Button
-            variant="default"
-            onClick={onSave}
-            className="min-w-[80px]"
-          >
-            Save
-          </Button>
+          <div className="flex space-x-2">
+            <Button
+              variant="secondary"
+              onClick={onCancel}
+              className="min-w-[80px]"
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="default"
+              onClick={onSave}
+              className="min-w-[80px]"
+            >
+              Save
+            </Button>
+          </div>
         </div>
-      </div>
-    </DialogFooter>
+      </DialogFooter>
+    </div>
   );
 }
 
-/** Attach all subcomponents */
+/** Attach subcomponents as static properties for a nicer API */
 UserPreferencesDialog.Title = Title;
 UserPreferencesDialog.Body = Body;
 UserPreferencesDialog.HotkeysGrid = HotkeysGrid;
