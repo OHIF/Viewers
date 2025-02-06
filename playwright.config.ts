@@ -38,7 +38,7 @@ export default defineConfig({
     //},
   ],
   webServer: {
-    command: 'cross-env APP_CONFIG=config/e2e.js yarn start',
+    command: 'cross-env APP_CONFIG=config/e2e.js pnpm start',
     url: 'http://localhost:3000',
     reuseExistingServer: !process.env.CI,
     timeout: 360_000,

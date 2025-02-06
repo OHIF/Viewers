@@ -76,9 +76,9 @@ function _createPackage(packageType) {
   askPathQuestions();
 }
 
-// for now ohif-cli is ran through yarn only.
+// for now ohif-cli is ran through pnpm only.
 // see ohif-cli.md section # OHIF Command Line Interface for reference.
-const program = new Command('yarn run cli');
+const program = new Command('pnpm run cli');
 // Todo: inject with webpack
 program
   .version('2.0.7')
@@ -156,7 +156,7 @@ program
     unlinkExtension(extensionName, { viewerDirectory });
     console.log(
       chalk.green(
-        `Successfully unlinked Extension ${extensionName} from the Viewer, don't forget to run yarn install --force`
+        `Successfully unlinked Extension ${extensionName} from the Viewer, don't forget to run pnpm install --force`
       )
     );
   });
@@ -179,7 +179,7 @@ program
     unlinkMode(modeName, { viewerDirectory });
     console.log(
       chalk.green(
-        `Successfully unlinked Mode ${modeName} from the Viewer, don't forget to run yarn install --force`
+        `Successfully unlinked Mode ${modeName} from the Viewer, don't forget to run pnpm install --force`
       )
     );
   });

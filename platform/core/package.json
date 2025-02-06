@@ -18,17 +18,16 @@
   ],
   "engines": {
     "node": ">=14",
-    "npm": ">=6",
-    "yarn": ">=1.16.0"
+    "npm": ">=6"
   },
   "scripts": {
     "clean": "shx rm -rf dist",
-    "clean:deep": "yarn run clean && shx rm -rf node_modules",
+    "clean:deep": "pnpm run clean && shx rm -rf node_modules",
     "dev": "jest --watchAll",
-    "dev:core": "yarn run dev",
+    "dev:core": "pnpm run dev",
     "build": "cross-env NODE_ENV=production webpack --config .webpack/webpack.prod.js",
-    "build:package": "yarn run build",
-    "start": "yarn run dev",
+    "build:package": "pnpm run build",
+    "start": "pnpm run dev",
     "test:unit": "jest --watchAll",
     "test:unit:ci": "jest --ci --runInBand --collectCoverage"
   },
@@ -60,6 +59,7 @@
     "validate.js": "^0.12.0"
   },
   "devDependencies": {
-    "webpack-merge": "*"
+    "webpack-merge": "*",
+    "cross-env": "^5.2.0"
   }
 }

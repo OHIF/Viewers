@@ -4,15 +4,14 @@
   "module": "src/index.tsx",
   "engines": {
     "node": ">=14",
-    "npm": ">=6",
-    "yarn": ">=1.18.0"
+    "npm": ">=6"
   },
   "scripts": {
     "dev": "cross-env NODE_ENV=development webpack --config .webpack/webpack.dev.js --watch --output-pathinfo",
-    "dev:my-extension": "yarn run dev",
+    "dev:my-extension": "pnpm run dev",
     "build": "cross-env NODE_ENV=production webpack --config .webpack/webpack.prod.js",
-    "build:package": "yarn run build",
-    "start": "yarn run dev"
+    "build:package": "pnpm run build",
+    "start": "pnpm run dev"
   },
   "peerDependencies": {
     "@ohif/core": "^{LATEST_OHIF_VERSION}",

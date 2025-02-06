@@ -9,8 +9,7 @@
   "module": "src/index.js",
   "engines": {
     "node": ">=14",
-    "npm": ">=6",
-    "yarn": ">=1.16.0"
+    "npm": ">=6"
   },
   "files": [
     "dist",
@@ -21,11 +20,11 @@
   },
   "scripts": {
     "clean": "shx rm -rf dist",
-    "clean:deep": "yarn run clean && shx rm -rf node_modules",
+    "clean:deep": "pnpm run clean && shx rm -rf node_modules",
     "dev": "cross-env NODE_ENV=development webpack --config .webpack/webpack.dev.js --watch --output-pathinfo",
-    "dev:i18n": "yarn run dev",
+    "dev:i18n": "pnpm run dev",
     "build": "cross-env NODE_ENV=production webpack --config .webpack/webpack.prod.js",
-    "build:package": "yarn run build",
+    "build:package": "pnpm run build",
     "pullTranslations": "./pullTranslations.sh",
     "test:unit": "echo 'platform/i18n: missing unit tests'",
     "test:unit:ci": "echo 'platform/i18n: missing unit tests'"

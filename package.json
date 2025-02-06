@@ -1,26 +1,9 @@
 {
   "name": "ohif-monorepo-root",
   "private": true,
-  "workspaces": {
-    "packages": [
-      "platform/app",
-      "platform/cli",
-      "platform/ui-next",
-      "platform/ui",
-      "platform/core",
-      "platform/i18n",
-      "extensions/*",
-      "modes/*",
-      "addOns/externals/*"
-    ],
-    "nohoist": [
-      "**/html-minifier-terser"
-    ]
-  },
   "engines": {
     "node": ">=18",
-    "npm": ">=6",
-    "yarn": ">=1.20.0"
+    "npm": ">=6"
   },
   "scripts": {
     "cm": "npx git-cz",
@@ -35,7 +18,7 @@
     "build:demo": "lerna run build:viewer:demo --stream",
     "build:package-all": "lerna run build:package --parallel --stream",
     "build:package-all-1": "lerna run build:package-1 --parallel --stream",
-    "dev:fast": "cd platform/app && yarn run dev:fast",
+    "dev:fast": "cd platform/app && pnpm run dev:fast",
     "show:config": "echo Config is $APP_CONFIG on $PUBLIC_URL",
     "dev": "lerna run dev:viewer --stream",
     "dev:no:cache": "lerna run dev:no:cache --stream",
@@ -45,10 +28,10 @@
     "dev:dcm4chee": "lerna run dev:dcm4chee --stream",
     "dev:static": "lerna run dev:static --stream",
     "orthanc:up": "docker compose -f platform/app/.recipes/Nginx-Orthanc/docker-compose.yml up",
-    "install:dev": "cp -f yarn.lock addOns/yarn.lock && cd addOns && yarn install --modules-folder ../node_modules",
-    "preinstall": "node preinstall.js",
-    "start": "yarn run dev",
-    "test": "yarn run test:unit",
+    "install:dev": "cp -f yarn.lock addOns/yarn.lock && cd addOns && pnpm install --modules-folder ../node_modules",
+    "preinstall": "node preinstall.js && npx only-allow pnpm",
+    "start": "pnpm run dev",
+    "test": "pnpm run test:unit",
     "test:data": "git submodule update --init -f testdata",
     "test-watch": "jest --collectCoverage --watchAll",
     "test:unit": "jest --collectCoverage",
@@ -58,11 +41,11 @@
     "test:e2e:ui": "npx playwright test --ui",
     "test:e2e:headed": "npx playwright test --headed",
     "test:e2e:dist": "lerna run test:e2e:dist --stream",
-    "test:e2e:serve": "yarn test:data && lerna run test:e2e:serve --stream",
+    "test:e2e:serve": "pnpm test:data && lerna run test:e2e:serve --stream",
     "see-changed": "lerna changed",
     "docs:preview": "lerna run docs:preview --stream",
     "docs:publish": "chmod +x ./build-and-publish-docs.sh && ./build-and-publish-docs.sh",
-    "release": "yarn run lerna:version && yarn run lerna:publish",
+    "release": "pnpm run lerna:version && pnpm run lerna:publish",
     "lerna:clean": "lerna clean",
     "lerna:cache": "./netlify-lerna-cache.sh",
     "lerna:restore": "./netlify-lerna-restore.sh",

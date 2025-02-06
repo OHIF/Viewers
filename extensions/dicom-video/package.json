@@ -9,8 +9,7 @@
   "module": "src/index.tsx",
   "engines": {
     "node": ">=14",
-    "npm": ">=6",
-    "yarn": ">=1.16.0"
+    "npm": ">=6"
   },
   "files": [
     "dist",
@@ -21,11 +20,11 @@
   },
   "scripts": {
     "clean": "shx rm -rf dist",
-    "clean:deep": "yarn run clean && shx rm -rf node_modules",
+    "clean:deep": "pnpm run clean && shx rm -rf node_modules",
     "dev": "cross-env NODE_ENV=development webpack --config .webpack/webpack.dev.js --watch --output-pathinfo",
     "build": "cross-env NODE_ENV=production webpack --config .webpack/webpack.prod.js",
-    "build:package-1": "yarn run build",
-    "start": "yarn run dev",
+    "build:package-1": "pnpm run build",
+    "start": "pnpm run dev",
     "test:unit": "jest --watchAll",
     "test:unit:ci": "jest --ci --runInBand --collectCoverage --passWithNoTests"
   },

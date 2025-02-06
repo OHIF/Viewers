@@ -6,21 +6,21 @@ cd "$(dirname "$0")"
 cd .. # Up to project root
 
 # Helpful to verify which versions we're using
-echo 'My yarn version is... '
+echo 'My pnpm version is... '
 
-yarn -v
+pnpm -v
 node -v
 
 # Build && Move PWA Output
-yarn run build:ci
+pnpm run build:ci
 mkdir -p ./.netlify/www/pwa
 mv platform/app/dist/* .netlify/www/pwa -v
 echo 'Web application built and copied'
 
 # Build && Move Docusaurus Output (for the docs themselves)
 cd platform/docs
-yarn install
-yarn run build
+pnpm install
+pnpm run build
 cd ../..
 mkdir -p ./.netlify/www/docs
 mv platform/docs/build/* .netlify/www/docs -v
@@ -28,5 +28,5 @@ echo 'Docs built (docusaurus) and copied'
 
 # Cache all of the node_module dependencies in
 # extensions, modules, and platform packages
-yarn run lerna:cache
+pnpm run lerna:cache
 echo 'Nothing left to see here. Go home, folks.'

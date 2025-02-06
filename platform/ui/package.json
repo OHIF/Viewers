@@ -11,8 +11,7 @@
   },
   "engines": {
     "node": ">=14",
-    "npm": ">=6",
-    "yarn": ">=1.16.0"
+    "npm": ">=6"
   },
   "files": [
     "dist",
@@ -20,10 +19,10 @@
   ],
   "scripts": {
     "clean": "rm -rf node_modules/.cache/storybook && shx rm -rf dist",
-    "clean:deep": "yarn run clean && shx rm -rf node_modules",
-    "start": "yarn run build --watch",
+    "clean:deep": "pnpm run clean && shx rm -rf node_modules",
+    "start": "pnpm run build --watch",
     "build": "cross-env NODE_ENV=production webpack --config .webpack/webpack.prod.js",
-    "build:package": "yarn run build",
+    "build:package": "pnpm run build",
     "storybook": "storybook dev -p 6006",
     "dev": "storybook dev -p 6006",
     "build-storybook": "storybook build"

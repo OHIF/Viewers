@@ -10,7 +10,7 @@
 
 [build]
   base = ""
-  build = "yarn run build:viewer:ci"
+  build = "pnpm run build:viewer:ci"
   publish = "dist"
 
 

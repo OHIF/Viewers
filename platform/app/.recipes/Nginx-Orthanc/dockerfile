@@ -15,8 +15,8 @@ RUN apt-get update && apt-get install -y build-essential python3
 COPY ./ /usr/src/app/
 
 # Install node dependencies
-RUN yarn config set workspaces-experimental true
-RUN yarn install
+RUN pnpm config set workspaces-experimental true
+RUN pnpm install
 
 # Copy the rest of the application code
 
@@ -24,7 +24,7 @@ RUN yarn install
 ENV APP_CONFIG=config/docker-nginx-orthanc.js
 
 # Build the application
-RUN yarn run build
+RUN pnpm run build
 
 # # Stage 2: Bundle the built application into a Docker container which runs NGINX using Alpine Linux
 FROM nginx:alpine

@@ -353,7 +353,7 @@ jobs:
       - cypress/install:
           install-browsers: true
           install-command: bun install --no-save
-          package-manager: yarn
+          package-manager: pnpm
       - cypress/run-tests:
           cypress-command:
             npx wait-on@latest http://localhost:3000 && cd platform/app &&  npx cypress run --record

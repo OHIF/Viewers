@@ -13,20 +13,19 @@
   },
   "engines": {
     "node": ">=14",
-    "npm": ">=6",
-    "yarn": ">=1.16.0"
+    "npm": ">=6"
   },
   "proxy": "http://localhost:8042",
   "scripts": {
-    "build:viewer": "cross-env NODE_ENV=production yarn run build",
-    "build:dev": "cross-env NODE_ENV=development yarn run build",
-    "build:aws": "cross-env NODE_ENV=development APP_CONFIG=config/aws_static.js yarn run build && gzip -9 -r dist",
-    "build:viewer:ci": "cross-env NODE_ENV=production PUBLIC_URL=/ APP_CONFIG=config/netlify.js QUICK_BUILD=false yarn run build",
-    "build:viewer:qa": "cross-env NODE_ENV=production APP_CONFIG=config/google.js yarn run build",
-    "build:viewer:demo": "cross-env NODE_ENV=production APP_CONFIG=config/demo.js HTML_TEMPLATE=rollbar.html QUICK_BUILD=false yarn run build",
+    "build:viewer": "cross-env NODE_ENV=production pnpm run build",
+    "build:dev": "cross-env NODE_ENV=development pnpm run build",
+    "build:aws": "cross-env NODE_ENV=development APP_CONFIG=config/aws_static.js pnpm run build && gzip -9 -r dist",
+    "build:viewer:ci": "cross-env NODE_ENV=production PUBLIC_URL=/ APP_CONFIG=config/netlify.js QUICK_BUILD=false pnpm run build",
+    "build:viewer:qa": "cross-env NODE_ENV=production APP_CONFIG=config/google.js pnpm run build",
+    "build:viewer:demo": "cross-env NODE_ENV=production APP_CONFIG=config/demo.js HTML_TEMPLATE=rollbar.html QUICK_BUILD=false pnpm run build",
     "build": "node --max_old_space_size=8096 ./../../node_modules/webpack/bin/webpack.js --progress --config .webpack/webpack.pwa.js",
     "clean": "shx rm -rf dist",
-    "clean:deep": "yarn run clean && shx rm -rf node_modules",
+    "clean:deep": "pnpm run clean && shx rm -rf node_modules",
     "dev:fast": "rsbuild dev --config ../../rsbuild.config.ts",
     "dev": "cross-env NODE_ENV=development webpack serve --config .webpack/webpack.pwa.js",
     "dev:no:cache": "cross-env NODE_ENV=development webpack serve --no-cache --config .webpack/webpack.pwa.js",
@@ -34,12 +33,12 @@
     "dev:orthanc:no:cache": "cross-env NODE_ENV=development PROXY_TARGET=http://localhost:3000/pacs/dicom-web PROXY_DOMAIN=http://localhost:8042 PROXY_PATH_REWRITE_FROM=/pacs/dicom-web PROXY_PATH_REWRITE_TO=/dicom-web APP_CONFIG=config/docker-nginx-orthanc.js webpack serve --no-cache --config .webpack/webpack.pwa.js",
     "dev:dcm4chee": "cross-env NODE_ENV=development APP_CONFIG=config/local_dcm4chee.js webpack serve --config .webpack/webpack.pwa.js",
     "dev:static": "cross-env NODE_ENV=development APP_CONFIG=config/local_static.js webpack serve --config .webpack/webpack.pwa.js",
-    "dev:viewer": "yarn run dev",
-    "start": "yarn run dev",
+    "dev:viewer": "pnpm run dev",
+    "start": "pnpm run dev",
     "test:e2e": "cypress open",
     "test:e2e:local": "cypress run --config video=false --browser chrome --spec 'cypress/integration/common/**/*,cypress/integration/pwa/**/*'",
     "test:e2e:dist": "start-server-and-test test:e2e:serve http://localhost:3000 test:e2e:ci",
-    "test:e2e:serve": "cross-env APP_CONFIG=config/e2e.js yarn start",
+    "test:e2e:serve": "cross-env APP_CONFIG=config/e2e.js pnpm start",
     "test:unit": "jest --watchAll",
     "test:unit:ci": "jest --ci --runInBand --collectCoverage",
     "ci:generateSuccessVersion": "node -p -e \"require('./package.json').version\" > success_version.txt"
@@ -109,6 +108,7 @@
     "@types/node": "^20.12.12",
     "identity-obj-proxy": "3.0.x",
     "lodash": "^4.17.21",
-    "tailwindcss": "3.2.4"
+    "tailwindcss": "3.2.4",
+    "cross-env": "^5.2.0"
   }
 }

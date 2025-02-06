@@ -1,0 +1,10 @@
+packages:
+    - "platform/app"
+    - "platform/cli"
+    - "platform/ui-next"
+    - "platform/ui"
+    - "platform/core"
+    - "platform/i18n"
+    - "extensions/*"
+    - "modes/*"
+    - "addOns/externals/*"
