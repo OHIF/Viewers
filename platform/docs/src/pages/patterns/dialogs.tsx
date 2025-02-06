@@ -312,14 +312,12 @@ export default function SettingsPage() {
       >
         <ImageDialog.ImageTitle>Download High Quality Image</ImageDialog.ImageTitle>
 
-        {/* Responsive split layout: image on top for mobile, side-by-side for larger screens */}
         <div className="flex flex-col sm:flex-row">
           <ImageDialog.ImageVisual
-            src="https://dummyimage.com/512x512/242424/7BB2CE.png" // replace with your own image
+            src="https://dummyimage.com/512x512/242424/7BB2CE.png"
             alt="Preview"
           />
           <ImageDialog.ImageOptions>
-            {/* Filename & Filetype on the same row */}
             <div className="flex items-center space-x-2">
               <ImageDialog.Filename
                 value={fileName}
@@ -331,23 +329,30 @@ export default function SettingsPage() {
               />
             </div>
 
+            {/* CHANGED: Provide the label text as children */}
             <ImageDialog.ImageSize
               width={width}
               height={height}
               onWidthChange={e => setWidth(e.target.value)}
               onHeightChange={e => setHeight(e.target.value)}
-            />
+            >
+              Image size <span className="text-muted-foreground">px</span>
+            </ImageDialog.ImageSize>
 
+            {/* CHANGED: Provide the text as children instead of `label` prop */}
             <ImageDialog.SwitchOption
-              label="Include annotations"
               checked={includeAnnotations}
               onCheckedChange={val => setIncludeAnnotations(val)}
-            />
+            >
+              Include annotations
+            </ImageDialog.SwitchOption>
+
             <ImageDialog.SwitchOption
-              label="Include warning message"
               checked={includeWarning}
               onCheckedChange={val => setIncludeWarning(val)}
-            />
+            >
+              Include warning message
+            </ImageDialog.SwitchOption>
 
             <ImageDialog.Actions
               onCancel={() => setImageDialogOpen(false)}

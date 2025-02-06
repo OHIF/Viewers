@@ -30,7 +30,7 @@ function ImageDialog({ open, onOpenChange, children, className }: ImageDialogPro
 }
 
 /* -------------------------------------------------------------------------- */
-/* Title subcomponent: same pattern as your other dialogs. */
+/* Title subcomponent */
 
 interface ImageTitleProps {
   children: React.ReactNode;
@@ -51,10 +51,6 @@ interface ImageBodyProps {
   children: React.ReactNode;
   className?: string;
 }
-/**
- * By default, "flex flex-col sm:flex-row" so that on smaller screens
- * the image and controls stack, and on sm+ screens they go side by side.
- */
 function ImageBody({ children, className }: ImageBodyProps) {
   return <div className={cn('flex flex-col sm:flex-row', className)}>{children}</div>;
 }
@@ -71,7 +67,7 @@ function ImageVisual({ src, alt = '', className }: ImageVisualProps) {
   return (
     <div
       className={cn(
-        'flex-1 items-center justify-center bg-black/80 p-4 sm:flex-[6]',
+        'flex-1 items-center justify-center rounded-2xl bg-black/80 p-4 sm:flex-[6]',
         'flex', // ensure the container is a flex box
         className
       )}
@@ -93,7 +89,7 @@ interface ImageOptionsProps {
   className?: string;
 }
 function ImageOptions({ children, className }: ImageOptionsProps) {
-  return <div className={cn('flex-1 space-y-4 p-4 sm:flex-[4]', className)}>{children}</div>;
+  return <div className={cn('flex-1 space-y-5 p-4 sm:flex-[4]', className)}>{children}</div>;
 }
 
 /* -------------------------------------------------------------------------- */
@@ -140,10 +136,11 @@ function Filetype({ selected, onSelect, className }: FiletypeProps) {
 }
 
 /* -------------------------------------------------------------------------- */
-/* ImageSize subcomponent */
+/* ImageSize subcomponent
+   - Replaced `label?` with `children: React.ReactNode` */
 
 interface ImageSizeProps {
-  label?: string;
+  children: React.ReactNode;
   width: string;
   height: string;
   onWidthChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
@@ -151,7 +148,7 @@ interface ImageSizeProps {
   className?: string;
 }
 function ImageSize({
-  label = 'Image size px',
+  children,
   width,
   height,
   onWidthChange,
@@ -160,7 +157,7 @@ function ImageSize({
 }: ImageSizeProps) {
   return (
     <div className={cn('space-y-1', className)}>
-      <label className="block text-sm font-semibold">{label}</label>
+      <label className="block text-base">{children}</label>
       <div className="flex items-center space-x-2">
         <Input
           value={width}
@@ -180,22 +177,23 @@ function ImageSize({
 }
 
 /* -------------------------------------------------------------------------- */
-/* SwitchOption subcomponent */
+/* SwitchOption subcomponent
+   - Replaced `label: string` with `children: React.ReactNode` */
 
 interface SwitchOptionProps {
-  label: string;
+  children: React.ReactNode;
   checked: boolean;
   onCheckedChange: (checked: boolean) => void;
   className?: string;
 }
-function SwitchOption({ label, checked, onCheckedChange, className }: SwitchOptionProps) {
+function SwitchOption({ children, checked, onCheckedChange, className }: SwitchOptionProps) {
   return (
     <div className={cn('flex items-center space-x-2', className)}>
       <Switch
         checked={checked}
         onCheckedChange={onCheckedChange}
       />
-      <span className="text-sm">{label}</span>
+      <span className="text-base">{children}</span>
     </div>
   );
 }
