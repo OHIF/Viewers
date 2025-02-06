@@ -49,7 +49,7 @@ interface BodyProps {
   className?: string;
 }
 function Body({ children, className }: BodyProps) {
-  return <div className={cn("flex flex-col space-y-4", className)}>{children}</div>;
+  return <div className={cn('flex flex-col space-y-4', className)}>{children}</div>;
 }
 
 /** Responsive 3-column grid for hotkeys, down to 2 on smaller screens, and 1 on extra small */
@@ -59,7 +59,7 @@ interface HotkeysGridProps {
 }
 function HotkeysGrid({ children, className }: HotkeysGridProps) {
   return (
-    <div className={cn("grid grid-cols-1 gap-3 gap-x-16 md:grid-cols-2 lg:grid-cols-3", className)}>
+    <div className={cn('grid grid-cols-1 gap-3 gap-x-16 md:grid-cols-2 lg:grid-cols-3', className)}>
       {children}
     </div>
   );
@@ -73,7 +73,7 @@ interface HotkeyProps {
 }
 function Hotkey({ label, placeholder, className }: HotkeyProps) {
   return (
-    <div className={cn("flex items-center justify-between space-x-2", className)}>
+    <div className={cn('flex items-center justify-between space-x-2', className)}>
       {/* Force the label text to stay on one line or wrap, as desired */}
       <Label className="whitespace-nowrap">{label}</Label>
       {/* Keep the input from expanding too far */}

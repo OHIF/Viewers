@@ -2,10 +2,25 @@ import React, { useState } from 'react';
 import { Button } from '../../../../ui-next/src/components/Button';
 import { UserPreferencesDialog } from '../../../../ui-next/src/components/OHIFDialogs/UserPreferencesDialog';
 import { AboutDialog } from '../../../../ui-next/src/components/OHIFDialogs/AboutDialog';
+import { InputDialog } from '../../../../ui-next/src/components/OHIFDialogs/InputDialog';
+import { PresetDialog } from '../../../../ui-next/src/components/OHIFDialogs/PresetDialog';
+import { ImageDialog } from '../../../../ui-next/src/components/OHIFDialogs/ImageDialog';
 
 export default function SettingsPage() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [aboutOpen, setAboutOpen] = useState(false);
+  const [inputDialogOpen, setInputDialogOpen] = useState(false);
+  const [secondInputDialogOpen, setSecondInputDialogOpen] = useState(false);
+  const [presetDialogOpen, setPresetDialogOpen] = useState(false);
+  const [imageDialogOpen, setImageDialogOpen] = useState(false);
+
+  // For demonstration: state to manage the form fields
+  const [fileName, setFileName] = useState('Image');
+  const [fileType, setFileType] = useState('JPG');
+  const [width, setWidth] = useState('512');
+  const [height, setHeight] = useState('512');
+  const [includeAnnotations, setIncludeAnnotations] = useState(true);
+  const [includeWarning, setIncludeWarning] = useState(true);
 
   return (
     <>
@@ -18,6 +33,35 @@ export default function SettingsPage() {
         className="ml-2"
       >
         Open About
+      </Button>
+
+      {/* New button to open the InputDialog */}
+      <Button
+        onClick={() => setInputDialogOpen(true)}
+        className="ml-2"
+      >
+        Open InputDialog
+      </Button>
+
+      <Button
+        onClick={() => setSecondInputDialogOpen(true)}
+        className="ml-2"
+      >
+        Open Second InputDialog
+      </Button>
+
+      <Button
+        onClick={() => setPresetDialogOpen(true)}
+        className="ml-2"
+      >
+        Open PresetDialog
+      </Button>
+
+      <Button
+        onClick={() => setImageDialogOpen(true)}
+        className="ml-2"
+      >
+        Open ImageDialog
       </Button>
 
       <UserPreferencesDialog
@@ -170,6 +214,158 @@ export default function SettingsPage() {
           </Button>
         </AboutDialog.Footer>
       </AboutDialog>
+
+      <InputDialog
+        open={inputDialogOpen}
+        onOpenChange={setInputDialogOpen}
+      >
+        <InputDialog.InputTitle>Segment Label</InputDialog.InputTitle>
+        <InputDialog.InputPlaceholder
+          placeholder="Label"
+          // Optionally include onChange, value, etc.
+        />
+        <InputDialog.InputActions
+          onCancel={() => setInputDialogOpen(false)}
+          onSave={() => {
+            console.log('Saved!');
+            setInputDialogOpen(false);
+          }}
+        />
+      </InputDialog>
+
+      <InputDialog
+        open={secondInputDialogOpen}
+        onOpenChange={setSecondInputDialogOpen}
+      >
+        <InputDialog.InputTitle>Another Example</InputDialog.InputTitle>
+        <InputDialog.InputPlaceholder
+          placeholder="Second Label"
+          // onChange, value, etc.
+        />
+        <InputDialog.InputActions
+          onCancel={() => setSecondInputDialogOpen(false)}
+          onSave={() => {
+            console.log('Second dialog saved!');
+            setSecondInputDialogOpen(false);
+          }}
+        />
+      </InputDialog>
+
+      <PresetDialog
+        open={presetDialogOpen}
+        onOpenChange={setPresetDialogOpen}
+      >
+        <PresetDialog.PresetTitle>Rendering Presets</PresetDialog.PresetTitle>
+        <PresetDialog.PresetBody>
+          <PresetDialog.PresetFilter>
+            <PresetDialog.PresetSearch placeholder="Search all" />
+          </PresetDialog.PresetFilter>
+
+          <PresetDialog.PresetGrid maxHeight="max-h-80">
+            {/* Each Option is a separate component instance */}
+            <PresetDialog.PresetOption label="Option 1" />
+            <PresetDialog.PresetOption label="Option 2" />
+            <PresetDialog.PresetOption label="Option 3" />
+            <PresetDialog.PresetOption label="Option 4" />
+            <PresetDialog.PresetOption label="Option 5" />
+            <PresetDialog.PresetOption label="Option 6" />
+            <PresetDialog.PresetOption label="Option 7" />
+            <PresetDialog.PresetOption label="Option 8" />
+            <PresetDialog.PresetOption label="Option 1" />
+            <PresetDialog.PresetOption label="Option 2" />
+            <PresetDialog.PresetOption label="Option 3" />
+            <PresetDialog.PresetOption label="Option 4" />
+            <PresetDialog.PresetOption label="Option 5" />
+            <PresetDialog.PresetOption label="Option 6" />
+            <PresetDialog.PresetOption label="Option 7" />
+            <PresetDialog.PresetOption label="Option 8" />
+            <PresetDialog.PresetOption label="Option 1" />
+            <PresetDialog.PresetOption label="Option 2" />
+            <PresetDialog.PresetOption label="Option 3" />
+            <PresetDialog.PresetOption label="Option 4" />
+            <PresetDialog.PresetOption label="Option 5" />
+            <PresetDialog.PresetOption label="Option 6" />
+            <PresetDialog.PresetOption label="Option 7" />
+            <PresetDialog.PresetOption label="Option 8" />
+            <PresetDialog.PresetOption label="Option 1" />
+            <PresetDialog.PresetOption label="Option 2" />
+            <PresetDialog.PresetOption label="Option 3" />
+            <PresetDialog.PresetOption label="Option 4" />
+            <PresetDialog.PresetOption label="Option 5" />
+            <PresetDialog.PresetOption label="Option 6" />
+            <PresetDialog.PresetOption label="Option 7" />
+            <PresetDialog.PresetOption label="Option 8" />
+          </PresetDialog.PresetGrid>
+        </PresetDialog.PresetBody>
+
+        <PresetDialog.PresetActions
+          onCancel={() => setPresetDialogOpen(false)}
+          onSave={() => {
+            console.log('Saved Preset!');
+            setPresetDialogOpen(false);
+          }}
+        />
+      </PresetDialog>
+      <ImageDialog
+        open={imageDialogOpen}
+        onOpenChange={setImageDialogOpen}
+      >
+        <ImageDialog.ImageTitle>Download High Quality Image</ImageDialog.ImageTitle>
+
+        {/* Responsive split layout: image on top for mobile, side-by-side for larger screens */}
+        <div className="flex flex-col sm:flex-row">
+          <ImageDialog.ImageVisual
+            src="https://dummyimage.com/512x512/242424/7BB2CE.png" // replace with your own image
+            alt="Preview"
+          />
+          <ImageDialog.ImageOptions>
+            {/* Filename & Filetype on the same row */}
+            <div className="flex items-center space-x-2">
+              <ImageDialog.Filename
+                value={fileName}
+                onChange={e => setFileName(e.target.value)}
+              />
+              <ImageDialog.Filetype
+                selected={fileType}
+                onSelect={val => setFileType(val)}
+              />
+            </div>
+
+            <ImageDialog.ImageSize
+              width={width}
+              height={height}
+              onWidthChange={e => setWidth(e.target.value)}
+              onHeightChange={e => setHeight(e.target.value)}
+            />
+
+            <ImageDialog.SwitchOption
+              label="Include annotations"
+              checked={includeAnnotations}
+              onCheckedChange={val => setIncludeAnnotations(val)}
+            />
+            <ImageDialog.SwitchOption
+              label="Include warning message"
+              checked={includeWarning}
+              onCheckedChange={val => setIncludeWarning(val)}
+            />
+
+            <ImageDialog.Actions
+              onCancel={() => setImageDialogOpen(false)}
+              onSave={() => {
+                console.log('Saving with settings:', {
+                  fileName,
+                  fileType,
+                  width,
+                  height,
+                  includeAnnotations,
+                  includeWarning,
+                });
+                setImageDialogOpen(false);
+              }}
+            />
+          </ImageDialog.ImageOptions>
+        </div>
+      </ImageDialog>
     </>
   );
 }
