@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { VariableSizeList as List } from 'react-window';
 import classNames from 'classnames';
 import debounce from 'lodash.debounce';
+import { Row } from './DicomTagBrowser';
 
 const lineHeightPx = 20;
 const lineHeightClassName = `leading-[${lineHeightPx}px]`;
@@ -11,6 +12,42 @@ const rowVerticalPaddingStyle = { padding: `${rowVerticalPaddingPx}px 0` };
 const rowStyle = {
   borderBottomWidth: `${rowBottomBorderPx}px`,
   ...rowVerticalPaddingStyle,
+};
+
+const RowComponent = ({ row, style, keyPrefix }: { row: Row; style: any; keyPrefix: string }) => {
+  const { children, ...restOfRow } = row;
+  if (children) {
+    // @TODO: essas partes estão aparecendo na tela, porém ficam invisíveis, porque ficam debaixo de outras partes... tem que dar um outro jeito de resolver essa parada
+    console.log('🚀 ~ RowComponent ~ children:', children);
+    return (
+      <>
+        {[restOfRow, ...children].map((row, i) => (
+          <RowComponent
+            row={row}
+            style={style}
+            keyPrefix={`${keyPrefix}-${i}`}
+            key={`${keyPrefix}-${i}`}
+          />
+        ))}
+      </>
+    );
+  }
+
+  return (
+    <div
+      style={{ ...style, ...rowStyle }}
+      className={classNames(
+        'hover:bg-secondary-main border-secondary-light flex w-full flex-row items-center break-all bg-black text-base transition duration-300',
+        lineHeightClassName
+      )}
+      key={keyPrefix}
+    >
+      <div className={`w-4/24 px-3`}>{row.tag}</div>
+      <div className="w-2/24 px-3">{row.valueRepresentation}</div>
+      <div className="w-6/24 px-3">{row.keyword}</div>
+      <div className="w-5/24 grow px-3">{row.value}</div>
+    </div>
+  );
 };
 
 function ColumnHeaders({ tagRef, vrRef, keywordRef, valueRef }) {
@@ -56,8 +93,7 @@ function ColumnHeaders({ tagRef, vrRef, keywordRef, valueRef }) {
     </div>
   );
 }
-
-function DicomTagTable({ rows }) {
+function DicomTagTable({ rows }: { rows: Row[] }) {
   const listRef = useRef();
   const canvasRef = useRef();
 
@@ -116,42 +152,13 @@ function DicomTagTable({ rows }) {
     };
   }, []);
 
-  const Row = useCallback(
-    ({ index, style }) => {
-      const row = rows[index];
-
-      return (
-        <div
-          style={{ ...style, ...rowStyle }}
-          className={classNames(
-            'hover:bg-secondary-main border-secondary-light flex w-full flex-row items-center break-all bg-black text-base transition duration-300',
-            lineHeightClassName
-          )}
-          key={`DICOMTagRow-${index}`}
-        >
-          <div className="w-4/24 px-3">{row[0]}</div>
-          <div className="w-2/24 px-3">{row[1]}</div>
-          <div className="w-6/24 px-3">{row[2]}</div>
-          <div className="w-5/24 grow px-3">{row[3]}</div>
-        </div>
-      );
-    },
-    [rows]
-  );
-
-  /**
-   * Whenever any one of the column headers is set, then the header is rendered.
-   * Here we chose the tag header.
-   */
-  const isHeaderRendered = useCallback(() => tagHeaderElem !== null, [tagHeaderElem]);
-
   /**
    * Get the item/row size. We use the header column widths to calculate the various row heights.
    * @param index the row index
    * @returns the row height
    */
   const getItemSize = useCallback(
-    index => {
+    rows => index => {
       const headerWidths = [
         tagHeaderElem.offsetWidth,
         vrHeaderElem.offsetWidth,
@@ -162,8 +169,11 @@ function DicomTagTable({ rows }) {
       const context = canvasRef.current.getContext('2d');
       context.font = getComputedStyle(canvasRef.current).font;
 
-      return rows[index]
+      return Object.values(rows[index])
         .map((colText, index) => {
+          if (Array.isArray(colText)) {
+            return 0;
+          }
           const colOneLineWidth = context.measureText(colText).width;
           const numLines = Math.ceil(colOneLineWidth / headerWidths[index]);
           return numLines * lineHeightPx + 2 * rowVerticalPaddingPx + rowBottomBorderPx;
@@ -172,6 +182,69 @@ function DicomTagTable({ rows }) {
     },
     [rows, keywordHeaderElem, tagHeaderElem, valueHeaderElem, vrHeaderElem]
   );
+
+  const getRowComponent = useCallback(
+    ({ rows }: { rows: Row[] }) =>
+      function RowList({ index, style }) {
+        const row = rows[index];
+        return (
+          <RowComponent
+            style={style}
+            row={row}
+            keyPrefix={`DICOMTagRow-${index}`}
+          />
+        );
+      },
+    []
+  );
+
+  // const getRowComponent = useCallback(
+  //   ({ rows }: { rows: Row[] }) =>
+  //     function RowComponent({ index, style }) {
+  //       const row = rows[index];
+  //       if (!row) {
+  //         return <div style={style}>Faiô</div>;
+  //       }
+  //       const children = row.children?.length > 0 ? getRowComponent({ rows: row.children }) : <></>;
+
+  //       if (row.children) {
+  //         return (
+  //           <List
+  //             style={{ ...style }}
+  //             height={500}
+  //             itemCount={row.children.length}
+  //             itemSize={index => 50}
+  //             width={'100%'}
+  //             className="ohif-scrollbar"
+  //           >
+  //             {children}
+  //           </List>
+  //         );
+  //       }
+  //       return (
+  //         <div
+  //           style={{ ...style, ...rowStyle }}
+  //           className={classNames(
+  //             'hover:bg-secondary-main border-secondary-light flex w-full flex-row items-center break-all bg-black text-base transition duration-300',
+  //             lineHeightClassName
+  //           )}
+  //           key={`DICOMTagRow-${index}`}
+  //         >
+  //           <div className={`w-4/24 px-3`}>{row.tag}</div>
+  //           <div className="w-2/24 px-3">{row.valueRepresentation}</div>
+  //           <div className="w-6/24 px-3">{row.keyword}</div>
+  //           <div className="w-5/24 grow px-3">{row.value}</div>
+  //         </div>
+  //       );
+  //     },
+  //   []
+  // );
+
+  /**
+   * Whenever any one of the column headers is set, then the header is rendered.
+   * Here we chose the tag header.
+   */
+  const isHeaderRendered = useCallback(() => tagHeaderElem !== null, [tagHeaderElem]);
 
   return (
     <div>
@@ -195,11 +268,11 @@ function DicomTagTable({ rows }) {
             ref={listRef}
             height={500}
             itemCount={rows.length}
-            itemSize={getItemSize}
+            itemSize={getItemSize(rows)}
             width={'100%'}
             className="ohif-scrollbar"
           >
-            {Row}
+            {getRowComponent({ rows })}
           </List>
         )}
       </div>

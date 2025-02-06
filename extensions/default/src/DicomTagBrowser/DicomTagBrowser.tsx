@@ -1,7 +1,7 @@
 import dcmjs from 'dcmjs';
 import moment from 'moment';
-import React, { useState, useMemo, useEffect } from 'react';
-import { classes } from '@ohif/core';
+import React, { useState, useMemo, useEffect, useCallback } from 'react';
+import { classes, Types } from '@ohif/core';
 import { InputFilterText } from '@ohif/ui';
 import debounce from 'lodash.debounce';
 import { Select, SelectTrigger, SelectContent, SelectItem, Slider } from '@ohif/ui-next';
@@ -9,22 +9,29 @@ import { Select, SelectTrigger, SelectContent, SelectItem, Slider } from '@ohif/
 import DicomTagTable from './DicomTagTable';
 import './DicomTagBrowser.css';
 
+export type Row = {
+  tag: string;
+  valueRepresentation: string;
+  keyword: string;
+  value: string;
+  children?: Row[];
+};
+
 const { ImageSet } = classes;
 const { DicomMetaDictionary } = dcmjs.data;
 const { nameMap } = DicomMetaDictionary;
 
-const DicomTagBrowser = ({ displaySets, displaySetInstanceUID }) => {
-  // The column indices that are to be excluded during a filter of the table.
-  // At present the column indices are:
-  // 0: DICOM tag
-  // 1: VR
-  // 2: Keyword
-  // 3: Value
-  const excludedColumnIndicesForFilter: Set<number> = new Set([1]);
-
+const DicomTagBrowser = ({
+  displaySets,
+  displaySetInstanceUID,
+}: {
+  displaySets: Types.DisplaySet[];
+  displaySetInstanceUID: string;
+}) => {
   const [selectedDisplaySetInstanceUID, setSelectedDisplaySetInstanceUID] =
     useState(displaySetInstanceUID);
   const [instanceNumber, setInstanceNumber] = useState(1);
+  const [shouldShowInstanceList, setShouldShowInstanceList] = useState(false);
   const [filterValue, setFilterValue] = useState('');
 
   const onSelectChange = value => {
@@ -35,9 +42,6 @@ const DicomTagBrowser = ({ displaySets, displaySetInstanceUID }) => {
   const activeDisplaySet = displaySets.find(
     ds => ds.displaySetInstanceUID === selectedDisplaySetInstanceUID
   );
-
-  const isImageStack = _isImageStack(activeDisplaySet);
-  const showInstanceList = isImageStack && activeDisplaySet.images.length > 1;
 
   const displaySetList = useMemo(() => {
     displaySets.sort((a, b) => a.SeriesNumber - b.SeriesNumber);
@@ -64,48 +68,24 @@ const DicomTagBrowser = ({ displaySets, displaySetInstanceUID }) => {
     });
   }, [displaySets]);
 
+  const getMetadata = useCallback(
+    isImageStack => {
+      if (isImageStack) {
+        return activeDisplaySet.images[instanceNumber - 1];
+      }
+      return activeDisplaySet.instance || activeDisplaySet;
+    },
+    [activeDisplaySet, instanceNumber]
+  );
+
   const rows = useMemo(() => {
-    let metadata;
-    if (isImageStack) {
-      metadata = activeDisplaySet.images[instanceNumber - 1];
-    } else {
-      metadata = activeDisplaySet.instance || activeDisplaySet;
-    }
+    const isImageStack = activeDisplaySet instanceof ImageSet;
+    const metadata = getMetadata(isImageStack);
+
+    setShouldShowInstanceList(isImageStack && activeDisplaySet.images.length > 1);
     const tags = getSortedTags(metadata);
     return getFormattedRowsFromTags(tags, metadata);
-  }, [instanceNumber, selectedDisplaySetInstanceUID]);
-
-  const filteredRows = useMemo(() => {
-    if (!filterValue) {
-      return rows;
-    }
-
-    const filterValueLowerCase = filterValue.toLowerCase();
-    return rows.filter(row => {
-      return row.reduce((keepRow, col, colIndex) => {
-        if (keepRow) {
-          // We are already keeping the row, why do more work so return now.
-          return keepRow;
-        }
-
-        if (excludedColumnIndicesForFilter.has(colIndex)) {
-          return keepRow;
-        }
-
-        return keepRow || col.toLowerCase().includes(filterValueLowerCase);
-      }, false);
-    });
-  }, [rows, filterValue]);
-
-  const debouncedSetFilterValue = useMemo(() => {
-    return debounce(setFilterValue, 200);
-  }, []);
-
-  useEffect(() => {
-    return () => {
-      debouncedSetFilterValue?.cancel();
-    };
-  }, []);
+  }, [getMetadata, activeDisplaySet]);
 
   return (
     <div className="dicom-tag-browser-content bg-muted">
@@ -136,7 +116,7 @@ const DicomTagBrowser = ({ displaySets, displaySetInstanceUID }) => {
               </SelectContent>
             </Select>
           </div>
-          {showInstanceList && (
+          {shouldShowInstanceList && (
             <div className="mx-auto flex w-1/5 flex-col">
               <span className="text-muted-foreground flex h-6 items-center text-xs">
                 Instance Number ({instanceNumber} of {activeDisplaySet.images.length})
@@ -164,27 +144,24 @@ const DicomTagBrowser = ({ displaySets, displaySetInstanceUID }) => {
           </div>
         </div>
       </div>
-      <DicomTagTable rows={filteredRows} />
+      <DicomTagTable rows={rows} />
     </div>
   );
 };
 
 function getFormattedRowsFromTags(tags, metadata) {
-  const rows = [];
+  const rows: Row[] = [];
 
   tags.forEach(tagInfo => {
     if (tagInfo.vr === 'SQ') {
-      rows.push([`${tagInfo.tagIndent}${tagInfo.tag}`, tagInfo.vr, tagInfo.keyword, '']);
-
-      const { values } = tagInfo;
-
-      values.forEach((item, index) => {
-        const formatedRowsFromTags = getFormattedRowsFromTags(item, metadata);
-
-        rows.push([`${item[0].tagIndent}(FFFE,E000)`, '', `Item #${index}`, '']);
-
-        rows.push(...formatedRowsFromTags);
-      });
+      const row: Row = {
+        tag: tagInfo.tag,
+        valueRepresentation: tagInfo.vr,
+        keyword: tagInfo.keyword,
+        value: '',
+        children: tagInfo.values.flatMap(value => getFormattedRowsFromTags(value, metadata)),
+      };
+      rows.push(row);
     } else {
       if (tagInfo.vr === 'xs') {
         try {
@@ -192,10 +169,16 @@ function getFormattedRowsFromTags(tags, metadata) {
           const originalTagInfo = metadata[tag];
           tagInfo.vr = originalTagInfo.vr;
         } catch (error) {
-          console.error(`Failed to parse value representation for tag '${tagInfo.keyword}'`);
+          console.warn(`Failed to parse value representation for tag '${tagInfo.keyword}'`);
         }
       }
-      rows.push([`${tagInfo.tagIndent}${tagInfo.tag}`, tagInfo.vr, tagInfo.keyword, tagInfo.value]);
+      const row: Row = {
+        tag: tagInfo.tag,
+        valueRepresentation: tagInfo.vr,
+        keyword: tagInfo.keyword,
+        value: tagInfo.value,
+      };
+      rows.push(row);
     }
   });
 
@@ -216,16 +199,6 @@ function getRows(metadata, depth = 0) {
 
   const keywords = Object.keys(metadata);
 
-  let tagIndent = '';
-
-  for (let i = 0; i < depth; i++) {
-    tagIndent += '>';
-  }
-
-  if (depth > 0) {
-    tagIndent += ' '; // If indented, add a space after the indents.
-  }
-
   const rows = [];
   for (let i = 0; i < keywords.length; i++) {
     let keyword = keywords[i];
@@ -245,7 +218,6 @@ function getRows(metadata, depth = 0) {
 
       const sequence = {
         tag: tagInfo.tag,
-        tagIndent,
         vr: tagInfo.vr,
         keyword,
         values: [],
@@ -311,7 +283,6 @@ function getRows(metadata, depth = 0) {
     if (tagInfo) {
       rows.push({
         tag: tagInfo.tag,
-        tagIndent,
         vr: tagInfo.vr,
         keyword,
         value,
@@ -323,7 +294,6 @@ function getRows(metadata, depth = 0) {
         const tag = `(${keyword.substring(0, 4)},${keyword.substring(4, 8)})`;
         rows.push({
           tag,
-          tagIndent,
           vr: '',
           keyword: 'Private Tag',
           value,
@@ -333,10 +303,6 @@ function getRows(metadata, depth = 0) {
   }
 
   return rows;
-}
-
-function _isImageStack(displaySet) {
-  return displaySet instanceof ImageSet;
 }
 
 function toArray(objectOrArray) {
