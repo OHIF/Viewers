@@ -1,7 +1,7 @@
 {
   "name": "ohif-monorepo-root",
   "private": true,
-  "packageManager": "yarn@1.22.22",
+  "packageManager": "yarn@4.6.0",
   "workspaces": {
     "packages": [
       "../platform/i18n",
