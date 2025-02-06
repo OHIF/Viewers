@@ -52,8 +52,8 @@ services:
       KC_DB_SCHEMA: public
       KC_DB_USERNAME: keycloak
       KC_DB_PASSWORD: password
-      KC_HOSTNAME_ADMIN_URL: http://YOUR_DOMAIN/keycloak/
-      KC_HOSTNAME_URL: http://YOUR_DOMAIN/keycloak/
+      KC_HOSTNAME_ADMIN_URL: http://127.0.0.1/keycloak/
+      KC_HOSTNAME_URL: http://127.0.0.1/keycloak/
       KC_HOSTNAME_STRICT_BACKCHANNEL: true
       KC_HOSTNAME_STRICT_HTTPS: false
       KC_HTTP_ENABLED: true
@@ -80,7 +80,7 @@ services:
     healthcheck:
       test: [
           'CMD-SHELL',
-          "exec 3<>/dev/tcp/YOUR_DOMAIN/8080;echo -e \"GET /health/ready HTTP/1.1\r
+          "exec 3<>/dev/tcp/127.0.0.1/8080;echo -e \"GET /health/ready HTTP/1.1\r
 
           host: http://localhost\r
 
@@ -117,6 +117,7 @@ services:
       - ./config/certbot:/var/www/certbot
     entrypoint:
       /bin/sh -c "trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;"
+
 volumes:
   postgres_data:
     driver: local
