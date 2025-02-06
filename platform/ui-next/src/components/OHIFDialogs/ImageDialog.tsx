@@ -45,7 +45,7 @@ function ImageTitle({ children, className }: ImageTitleProps) {
 }
 
 /* -------------------------------------------------------------------------- */
-/* Body subcomponent: sets up a flex row (or column on small screens). */
+/* Body subcomponent */
 
 interface ImageBodyProps {
   children: React.ReactNode;
@@ -56,7 +56,7 @@ function ImageBody({ children, className }: ImageBodyProps) {
 }
 
 /* -------------------------------------------------------------------------- */
-/* ImageVisual subcomponent: default 70% at sm+ */
+/* ImageVisual subcomponent */
 
 interface ImageVisualProps {
   src: string;
@@ -82,7 +82,7 @@ function ImageVisual({ src, alt = '', className }: ImageVisualProps) {
 }
 
 /* -------------------------------------------------------------------------- */
-/* ImageOptions subcomponent: default 30% at sm+ */
+/* ImageOptions subcomponent */
 
 interface ImageOptionsProps {
   children: React.ReactNode;
@@ -95,31 +95,42 @@ function ImageOptions({ children, className }: ImageOptionsProps) {
 /* -------------------------------------------------------------------------- */
 /* Filename subcomponent */
 
-interface FilenameProps extends React.InputHTMLAttributes<HTMLInputElement> {
+interface FilenameProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'children'> {
+  children: React.ReactNode;
   className?: string;
+  /** Handler is optional. If not provided, default to a no‐op. */
+  onChange?: React.ChangeEventHandler<HTMLInputElement>;
 }
-function Filename({ className, ...props }: FilenameProps) {
+
+function Filename({ children, className, value, onChange, ...props }: FilenameProps) {
   return (
-    <Input
-      {...props}
-      className={cn('w-full', className)}
-    />
+    <div className={cn('space-y-1', className)}>
+      <label className="block text-base">{children}</label>
+      <Input
+        {...props}
+        className={cn('w-full', className)}
+        value={value}
+        onChange={onChange ?? (() => {})}
+      />
+    </div>
   );
 }
 
 /* -------------------------------------------------------------------------- */
-/* Filetype subcomponent: uses Select */
+/* Filetype subcomponent */
 
 interface FiletypeProps {
   selected: string;
-  onSelect: (val: string) => void;
+  /** Handler is optional. If not provided, we do nothing. */
+  onSelect?: (val: string) => void;
   className?: string;
 }
+
 function Filetype({ selected, onSelect, className }: FiletypeProps) {
   return (
     <Select
       value={selected}
-      onValueChange={onSelect}
+      onValueChange={val => onSelect?.(val)}
     >
       <SelectTrigger
         aria-label="File type"
@@ -136,17 +147,18 @@ function Filetype({ selected, onSelect, className }: FiletypeProps) {
 }
 
 /* -------------------------------------------------------------------------- */
-/* ImageSize subcomponent
-   - Replaced `label?` with `children: React.ReactNode` */
+/* ImageSize subcomponent */
 
 interface ImageSizeProps {
   children: React.ReactNode;
   width: string;
   height: string;
-  onWidthChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  onHeightChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  /** Handlers optional. If not provided, default no‐op. */
+  onWidthChange?: React.ChangeEventHandler<HTMLInputElement>;
+  onHeightChange?: React.ChangeEventHandler<HTMLInputElement>;
   className?: string;
 }
+
 function ImageSize({
   children,
   width,
@@ -161,13 +173,13 @@ function ImageSize({
       <div className="flex items-center space-x-2">
         <Input
           value={width}
-          onChange={onWidthChange}
+          onChange={onWidthChange ?? (() => {})}
           placeholder="Width"
           className="w-20"
         />
         <Input
           value={height}
-          onChange={onHeightChange}
+          onChange={onHeightChange ?? (() => {})}
           placeholder="Height"
           className="w-20"
         />
@@ -177,21 +189,22 @@ function ImageSize({
 }
 
 /* -------------------------------------------------------------------------- */
-/* SwitchOption subcomponent
-   - Replaced `label: string` with `children: React.ReactNode` */
+/* SwitchOption subcomponent */
 
 interface SwitchOptionProps {
   children: React.ReactNode;
   checked: boolean;
-  onCheckedChange: (checked: boolean) => void;
+  /** Handler optional. If not provided, no‐op. */
+  onCheckedChange?: (checked: boolean) => void;
   className?: string;
 }
+
 function SwitchOption({ children, checked, onCheckedChange, className }: SwitchOptionProps) {
   return (
     <div className={cn('flex items-center space-x-2', className)}>
       <Switch
         checked={checked}
-        onCheckedChange={onCheckedChange}
+        onCheckedChange={val => onCheckedChange?.(val)}
       />
       <span className="text-base">{children}</span>
     </div>
@@ -208,6 +221,7 @@ interface ActionsProps {
   saveText?: string;
   className?: string;
 }
+
 function Actions({
   onCancel,
   onSave,

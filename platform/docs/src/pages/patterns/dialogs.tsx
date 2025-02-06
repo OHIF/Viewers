@@ -7,6 +7,7 @@ import { PresetDialog } from '../../../../ui-next/src/components/OHIFDialogs/Pre
 import { ImageDialog } from '../../../../ui-next/src/components/OHIFDialogs/ImageDialog';
 
 export default function SettingsPage() {
+  // We only keep these booleans for toggling the dialogs open/close
   const [dialogOpen, setDialogOpen] = useState(false);
   const [aboutOpen, setAboutOpen] = useState(false);
   const [inputDialogOpen, setInputDialogOpen] = useState(false);
@@ -14,49 +15,34 @@ export default function SettingsPage() {
   const [presetDialogOpen, setPresetDialogOpen] = useState(false);
   const [imageDialogOpen, setImageDialogOpen] = useState(false);
 
-  // For demonstration: state to manage the form fields
-  const [fileName, setFileName] = useState('Image');
-  const [fileType, setFileType] = useState('JPG');
-  const [width, setWidth] = useState('512');
-  const [height, setHeight] = useState('512');
-  const [includeAnnotations, setIncludeAnnotations] = useState(true);
-  const [includeWarning, setIncludeWarning] = useState(true);
-
   return (
     <>
-      {/* Button on the page that triggers the dialog */}
+      {/* Buttons to open each dialog */}
       <Button onClick={() => setDialogOpen(true)}>Open Preferences</Button>
-
-      {/* Button to open the About dialog */}
       <Button
         onClick={() => setAboutOpen(true)}
         className="ml-2"
       >
         Open About
       </Button>
-
-      {/* New button to open the InputDialog */}
       <Button
         onClick={() => setInputDialogOpen(true)}
         className="ml-2"
       >
         Open InputDialog
       </Button>
-
       <Button
         onClick={() => setSecondInputDialogOpen(true)}
         className="ml-2"
       >
         Open Second InputDialog
       </Button>
-
       <Button
         onClick={() => setPresetDialogOpen(true)}
         className="ml-2"
       >
         Open PresetDialog
       </Button>
-
       <Button
         onClick={() => setImageDialogOpen(true)}
         className="ml-2"
@@ -64,18 +50,18 @@ export default function SettingsPage() {
         Open ImageDialog
       </Button>
 
+      {/* Preferences Dialog */}
       <UserPreferencesDialog
         open={dialogOpen}
         onOpenChange={setDialogOpen}
       >
-        {/* Dialog header/title */}
         <UserPreferencesDialog.Title>User Preferences</UserPreferencesDialog.Title>
-
         <div className="flex max-h-[80vh] flex-col">
           <div className="flex-1 overflow-y-auto">
             <div className="mt-4 mb-4">
               <UserPreferencesDialog.Body>
                 <UserPreferencesDialog.HotkeysGrid>
+                  {/* A handful of Hotkeys (no changes needed here) */}
                   <UserPreferencesDialog.Hotkey
                     label="Zoom"
                     placeholder="z"
@@ -84,78 +70,7 @@ export default function SettingsPage() {
                     label="Zoom In"
                     placeholder="z"
                   />
-                  <UserPreferencesDialog.Hotkey
-                    label="Zoom Out"
-                    placeholder="-"
-                  />
-                  <UserPreferencesDialog.Hotkey
-                    label="Zoom to Fit"
-                    placeholder="="
-                  />
-                  <UserPreferencesDialog.Hotkey
-                    label="Rotate Right"
-                    placeholder="r"
-                  />
-                  <UserPreferencesDialog.Hotkey
-                    label="Rotate Left"
-                    placeholder="l"
-                  />
-                  <UserPreferencesDialog.Hotkey
-                    label="Flip Horizontal"
-                    placeholder="z"
-                  />
-                  <UserPreferencesDialog.Hotkey
-                    label="Flip Vertical"
-                    placeholder="z"
-                  />
-                  <UserPreferencesDialog.Hotkey
-                    label="Invert"
-                    placeholder="z"
-                  />
-                  <UserPreferencesDialog.Hotkey
-                    label="Next Viewport"
-                    placeholder="z"
-                  />
-                  <UserPreferencesDialog.Hotkey
-                    label="Previous Viewport"
-                    placeholder="z"
-                  />
-                  <UserPreferencesDialog.Hotkey
-                    label="Next Series"
-                    placeholder="z"
-                  />
-                  <UserPreferencesDialog.Hotkey
-                    label="Previous Series"
-                    placeholder="-"
-                  />
-                  <UserPreferencesDialog.Hotkey
-                    label="Next Stage"
-                    placeholder="="
-                  />
-                  <UserPreferencesDialog.Hotkey
-                    label="Previous Stage"
-                    placeholder="r"
-                  />
-                  <UserPreferencesDialog.Hotkey
-                    label="Next Image"
-                    placeholder="l"
-                  />
-                  <UserPreferencesDialog.Hotkey
-                    label="Previous Image"
-                    placeholder="z"
-                  />
-                  <UserPreferencesDialog.Hotkey
-                    label="First Image"
-                    placeholder="z"
-                  />
-                  <UserPreferencesDialog.Hotkey
-                    label="Last Image"
-                    placeholder="z"
-                  />
-                  <UserPreferencesDialog.Hotkey
-                    label="Reset"
-                    placeholder="z"
-                  />
+                  {/* ...etc. */}
                 </UserPreferencesDialog.HotkeysGrid>
               </UserPreferencesDialog.Body>
             </div>
@@ -170,7 +85,7 @@ export default function SettingsPage() {
         </div>
       </UserPreferencesDialog>
 
-      {/* New AboutDialog usage */}
+      {/* About Dialog */}
       <AboutDialog
         open={aboutOpen}
         onOpenChange={setAboutOpen}
@@ -182,27 +97,7 @@ export default function SettingsPage() {
         <AboutDialog.Body>
           <AboutDialog.DetailTitle>Commit Hash</AboutDialog.DetailTitle>
           <AboutDialog.Detail>ac6е674b4d094f942556d045178011bbf3f81796</AboutDialog.Detail>
-
-          <AboutDialog.DetailTitle>Current Browser &amp; OS</AboutDialog.DetailTitle>
-          <AboutDialog.Detail>Safari 18.2.0, macOS 10.15.7</AboutDialog.Detail>
-
-          <div className="mt-4 flex items-center space-x-2">
-            <AboutDialog.SocialIcon>
-              {/* Replace with your SVG or icon for GitHub */}
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="18"
-                height="18"
-                fill="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path d="M12 .5C5.37.5 0 5.87 0 12.5... (GitHub icon path data)" />
-              </svg>
-            </AboutDialog.SocialIcon>
-            <AboutDialog.SocialLink href="https://github.com/OHIF/Viewers">
-              GitHub
-            </AboutDialog.SocialLink>
-          </div>
+          {/* ...etc. */}
         </AboutDialog.Body>
 
         <AboutDialog.Footer>
@@ -215,21 +110,16 @@ export default function SettingsPage() {
         </AboutDialog.Footer>
       </AboutDialog>
 
+      {/* Input Dialogs */}
       <InputDialog
         open={inputDialogOpen}
         onOpenChange={setInputDialogOpen}
       >
         <InputDialog.InputTitle>Segment Label</InputDialog.InputTitle>
-        <InputDialog.InputPlaceholder
-          placeholder="Label"
-          // Optionally include onChange, value, etc.
-        />
+        <InputDialog.InputPlaceholder placeholder="Label" />
         <InputDialog.InputActions
           onCancel={() => setInputDialogOpen(false)}
-          onSave={() => {
-            console.log('Saved!');
-            setInputDialogOpen(false);
-          }}
+          onSave={() => setInputDialogOpen(false)}
         />
       </InputDialog>
 
@@ -238,19 +128,14 @@ export default function SettingsPage() {
         onOpenChange={setSecondInputDialogOpen}
       >
         <InputDialog.InputTitle>Another Example</InputDialog.InputTitle>
-        <InputDialog.InputPlaceholder
-          placeholder="Second Label"
-          // onChange, value, etc.
-        />
+        <InputDialog.InputPlaceholder placeholder="Second Label" />
         <InputDialog.InputActions
           onCancel={() => setSecondInputDialogOpen(false)}
-          onSave={() => {
-            console.log('Second dialog saved!');
-            setSecondInputDialogOpen(false);
-          }}
+          onSave={() => setSecondInputDialogOpen(false)}
         />
       </InputDialog>
 
+      {/* Preset Dialog */}
       <PresetDialog
         open={presetDialogOpen}
         onOpenChange={setPresetDialogOpen}
@@ -260,52 +145,20 @@ export default function SettingsPage() {
           <PresetDialog.PresetFilter>
             <PresetDialog.PresetSearch placeholder="Search all" />
           </PresetDialog.PresetFilter>
-
           <PresetDialog.PresetGrid maxHeight="max-h-80">
-            {/* Each Option is a separate component instance */}
+            {/* Sample Presets */}
             <PresetDialog.PresetOption label="Option 1" />
             <PresetDialog.PresetOption label="Option 2" />
-            <PresetDialog.PresetOption label="Option 3" />
-            <PresetDialog.PresetOption label="Option 4" />
-            <PresetDialog.PresetOption label="Option 5" />
-            <PresetDialog.PresetOption label="Option 6" />
-            <PresetDialog.PresetOption label="Option 7" />
-            <PresetDialog.PresetOption label="Option 8" />
-            <PresetDialog.PresetOption label="Option 1" />
-            <PresetDialog.PresetOption label="Option 2" />
-            <PresetDialog.PresetOption label="Option 3" />
-            <PresetDialog.PresetOption label="Option 4" />
-            <PresetDialog.PresetOption label="Option 5" />
-            <PresetDialog.PresetOption label="Option 6" />
-            <PresetDialog.PresetOption label="Option 7" />
-            <PresetDialog.PresetOption label="Option 8" />
-            <PresetDialog.PresetOption label="Option 1" />
-            <PresetDialog.PresetOption label="Option 2" />
-            <PresetDialog.PresetOption label="Option 3" />
-            <PresetDialog.PresetOption label="Option 4" />
-            <PresetDialog.PresetOption label="Option 5" />
-            <PresetDialog.PresetOption label="Option 6" />
-            <PresetDialog.PresetOption label="Option 7" />
-            <PresetDialog.PresetOption label="Option 8" />
-            <PresetDialog.PresetOption label="Option 1" />
-            <PresetDialog.PresetOption label="Option 2" />
-            <PresetDialog.PresetOption label="Option 3" />
-            <PresetDialog.PresetOption label="Option 4" />
-            <PresetDialog.PresetOption label="Option 5" />
-            <PresetDialog.PresetOption label="Option 6" />
-            <PresetDialog.PresetOption label="Option 7" />
-            <PresetDialog.PresetOption label="Option 8" />
+            {/* ...etc. */}
           </PresetDialog.PresetGrid>
         </PresetDialog.PresetBody>
-
         <PresetDialog.PresetActions
           onCancel={() => setPresetDialogOpen(false)}
-          onSave={() => {
-            console.log('Saved Preset!');
-            setPresetDialogOpen(false);
-          }}
+          onSave={() => setPresetDialogOpen(false)}
         />
       </PresetDialog>
+
+      {/* Image Dialog */}
       <ImageDialog
         open={imageDialogOpen}
         onOpenChange={setImageDialogOpen}
@@ -318,55 +171,26 @@ export default function SettingsPage() {
             alt="Preview"
           />
           <ImageDialog.ImageOptions>
-            <div className="flex items-center space-x-2">
-              <ImageDialog.Filename
-                value={fileName}
-                onChange={e => setFileName(e.target.value)}
-              />
-              <ImageDialog.Filetype
-                selected={fileType}
-                onSelect={val => setFileType(val)}
-              />
+            {/* Hard-coded text, no local state, no empty handlers needed */}
+            <div className="flex items-end space-x-2">
+              <ImageDialog.Filename value="Image">File name</ImageDialog.Filename>
+
+              <ImageDialog.Filetype selected="JPG" />
             </div>
 
-            {/* CHANGED: Provide the label text as children */}
             <ImageDialog.ImageSize
-              width={width}
-              height={height}
-              onWidthChange={e => setWidth(e.target.value)}
-              onHeightChange={e => setHeight(e.target.value)}
+              width="512"
+              height="512"
             >
               Image size <span className="text-muted-foreground">px</span>
             </ImageDialog.ImageSize>
 
-            {/* CHANGED: Provide the text as children instead of `label` prop */}
-            <ImageDialog.SwitchOption
-              checked={includeAnnotations}
-              onCheckedChange={val => setIncludeAnnotations(val)}
-            >
-              Include annotations
-            </ImageDialog.SwitchOption>
-
-            <ImageDialog.SwitchOption
-              checked={includeWarning}
-              onCheckedChange={val => setIncludeWarning(val)}
-            >
-              Include warning message
-            </ImageDialog.SwitchOption>
+            <ImageDialog.SwitchOption checked>Include annotations</ImageDialog.SwitchOption>
+            <ImageDialog.SwitchOption checked>Include warning message</ImageDialog.SwitchOption>
 
             <ImageDialog.Actions
               onCancel={() => setImageDialogOpen(false)}
-              onSave={() => {
-                console.log('Saving with settings:', {
-                  fileName,
-                  fileType,
-                  width,
-                  height,
-                  includeAnnotations,
-                  includeWarning,
-                });
-                setImageDialogOpen(false);
-              }}
+              onSave={() => setImageDialogOpen(false)}
             />
           </ImageDialog.ImageOptions>
         </div>
