@@ -26,7 +26,7 @@ interface ProductNameProps {
   className?: string;
 }
 function ProductName({ children, className }: ProductNameProps) {
-  return <div className={cn('text-xl font-semibold', className)}>{children}</div>;
+  return <div className={cn('text-2xl font-semibold leading-none', className)}>{children}</div>;
 }
 
 /** Subcomponent: Product Version */
@@ -35,7 +35,9 @@ interface ProductVersionProps {
   className?: string;
 }
 function ProductVersion({ children, className }: ProductVersionProps) {
-  return <div className={cn('text-muted-foreground text-sm', className)}>{children}</div>;
+  return (
+    <div className={cn('text-muted-foreground text-2xl leading-none', className)}>{children}</div>
+  );
 }
 
 /** Subcomponent: Product Beta */
@@ -44,7 +46,7 @@ interface ProductBetaProps {
   className?: string;
 }
 function ProductBeta({ children, className }: ProductBetaProps) {
-  return <div className={cn('text-accent-foreground text-sm', className)}>{children}</div>;
+  return <div className={cn('text-muted-foreground text-xl', className)}>{children}</div>;
 }
 
 /** Subcomponent: Body (wraps all detail items) */
@@ -54,7 +56,7 @@ interface BodyProps {
 }
 function Body({ children, className }: BodyProps) {
   return (
-    <div className={cn('mt-4 flex flex-col items-center space-y-3', className)}>{children}</div>
+    <div className={cn('mt-0 flex flex-col items-center space-y-0', className)}>{children}</div>
   );
 }
 
@@ -65,7 +67,7 @@ interface DetailTitleProps {
 }
 function DetailTitle({ children, className }: DetailTitleProps) {
   return (
-    <div className={cn('mt-2 text-sm font-semibold uppercase tracking-wide', className)}>
+    <div className={cn('mt-0 text-sm font-semibold uppercase tracking-wide', className)}>
       {children}
     </div>
   );

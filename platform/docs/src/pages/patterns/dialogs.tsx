@@ -50,18 +50,18 @@ export default function SettingsPage() {
         Open ImageDialog
       </Button>
 
-      {/* Preferences Dialog */}
       <UserPreferencesDialog
         open={dialogOpen}
         onOpenChange={setDialogOpen}
       >
+        {/* Dialog header/title */}
         <UserPreferencesDialog.Title>User Preferences</UserPreferencesDialog.Title>
+
         <div className="flex max-h-[80vh] flex-col">
           <div className="flex-1 overflow-y-auto">
             <div className="mt-4 mb-4">
               <UserPreferencesDialog.Body>
                 <UserPreferencesDialog.HotkeysGrid>
-                  {/* A handful of Hotkeys (no changes needed here) */}
                   <UserPreferencesDialog.Hotkey
                     label="Zoom"
                     placeholder="z"
@@ -70,7 +70,78 @@ export default function SettingsPage() {
                     label="Zoom In"
                     placeholder="z"
                   />
-                  {/* ...etc. */}
+                  <UserPreferencesDialog.Hotkey
+                    label="Zoom Out"
+                    placeholder="-"
+                  />
+                  <UserPreferencesDialog.Hotkey
+                    label="Zoom to Fit"
+                    placeholder="="
+                  />
+                  <UserPreferencesDialog.Hotkey
+                    label="Rotate Right"
+                    placeholder="r"
+                  />
+                  <UserPreferencesDialog.Hotkey
+                    label="Rotate Left"
+                    placeholder="l"
+                  />
+                  <UserPreferencesDialog.Hotkey
+                    label="Flip Horizontal"
+                    placeholder="z"
+                  />
+                  <UserPreferencesDialog.Hotkey
+                    label="Flip Vertical"
+                    placeholder="z"
+                  />
+                  <UserPreferencesDialog.Hotkey
+                    label="Invert"
+                    placeholder="z"
+                  />
+                  <UserPreferencesDialog.Hotkey
+                    label="Next Viewport"
+                    placeholder="z"
+                  />
+                  <UserPreferencesDialog.Hotkey
+                    label="Previous Viewport"
+                    placeholder="z"
+                  />
+                  <UserPreferencesDialog.Hotkey
+                    label="Next Series"
+                    placeholder="z"
+                  />
+                  <UserPreferencesDialog.Hotkey
+                    label="Previous Series"
+                    placeholder="-"
+                  />
+                  <UserPreferencesDialog.Hotkey
+                    label="Next Stage"
+                    placeholder="="
+                  />
+                  <UserPreferencesDialog.Hotkey
+                    label="Previous Stage"
+                    placeholder="r"
+                  />
+                  <UserPreferencesDialog.Hotkey
+                    label="Next Image"
+                    placeholder="l"
+                  />
+                  <UserPreferencesDialog.Hotkey
+                    label="Previous Image"
+                    placeholder="z"
+                  />
+                  <UserPreferencesDialog.Hotkey
+                    label="First Image"
+                    placeholder="z"
+                  />
+                  <UserPreferencesDialog.Hotkey
+                    label="Last Image"
+                    placeholder="z"
+                  />
+                  <UserPreferencesDialog.Hotkey
+                    label="Reset"
+                    placeholder="z"
+                  />
                 </UserPreferencesDialog.HotkeysGrid>
               </UserPreferencesDialog.Body>
             </div>
