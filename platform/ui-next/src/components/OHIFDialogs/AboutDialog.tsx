@@ -26,7 +26,9 @@ interface ProductNameProps {
   className?: string;
 }
 function ProductName({ children, className }: ProductNameProps) {
-  return <div className={cn('text-2xl font-semibold leading-none', className)}>{children}</div>;
+  return (
+    <div className={cn('border text-2xl font-semibold leading-none', className)}>{children}</div>
+  );
 }
 
 /** Subcomponent: Product Version */

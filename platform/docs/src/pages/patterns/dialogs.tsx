@@ -168,7 +168,27 @@ export default function SettingsPage() {
         <AboutDialog.Body>
           <AboutDialog.DetailTitle>Commit Hash</AboutDialog.DetailTitle>
           <AboutDialog.Detail>ac6е674b4d094f942556d045178011bbf3f81796</AboutDialog.Detail>
-          {/* ...etc. */}
+
+          <AboutDialog.DetailTitle>Current Browser &amp; OS</AboutDialog.DetailTitle>
+          <AboutDialog.Detail>Safari 18.2.0, macOS 10.15.7</AboutDialog.Detail>
+
+          <div className="mt-4 flex items-center space-x-2">
+            <AboutDialog.SocialIcon>
+              {/* Replace with your SVG or icon for GitHub */}
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="18"
+                height="18"
+                fill="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path d="M12 .5C5.37.5 0 5.87 0 12.5... (GitHub icon path data)" />
+              </svg>
+            </AboutDialog.SocialIcon>
+            <AboutDialog.SocialLink href="https://github.com/OHIF/Viewers">
+              GitHub
+            </AboutDialog.SocialLink>
+          </div>
         </AboutDialog.Body>
 
         <AboutDialog.Footer>
@@ -216,16 +236,49 @@ export default function SettingsPage() {
           <PresetDialog.PresetFilter>
             <PresetDialog.PresetSearch placeholder="Search all" />
           </PresetDialog.PresetFilter>
+
           <PresetDialog.PresetGrid maxHeight="max-h-80">
-            {/* Sample Presets */}
             <PresetDialog.PresetOption label="Option 1" />
             <PresetDialog.PresetOption label="Option 2" />
-            {/* ...etc. */}
+            <PresetDialog.PresetOption label="Option 3" />
+            <PresetDialog.PresetOption label="Option 4" />
+            <PresetDialog.PresetOption label="Option 5" />
+            <PresetDialog.PresetOption label="Option 6" />
+            <PresetDialog.PresetOption label="Option 7" />
+            <PresetDialog.PresetOption label="Option 8" />
+            <PresetDialog.PresetOption label="Option 1" />
+            <PresetDialog.PresetOption label="Option 2" />
+            <PresetDialog.PresetOption label="Option 3" />
+            <PresetDialog.PresetOption label="Option 4" />
+            <PresetDialog.PresetOption label="Option 5" />
+            <PresetDialog.PresetOption label="Option 6" />
+            <PresetDialog.PresetOption label="Option 7" />
+            <PresetDialog.PresetOption label="Option 8" />
+            <PresetDialog.PresetOption label="Option 1" />
+            <PresetDialog.PresetOption label="Option 2" />
+            <PresetDialog.PresetOption label="Option 3" />
+            <PresetDialog.PresetOption label="Option 4" />
+            <PresetDialog.PresetOption label="Option 5" />
+            <PresetDialog.PresetOption label="Option 6" />
+            <PresetDialog.PresetOption label="Option 7" />
+            <PresetDialog.PresetOption label="Option 8" />
+            <PresetDialog.PresetOption label="Option 1" />
+            <PresetDialog.PresetOption label="Option 2" />
+            <PresetDialog.PresetOption label="Option 3" />
+            <PresetDialog.PresetOption label="Option 4" />
+            <PresetDialog.PresetOption label="Option 5" />
+            <PresetDialog.PresetOption label="Option 6" />
+            <PresetDialog.PresetOption label="Option 7" />
+            <PresetDialog.PresetOption label="Option 8" />
           </PresetDialog.PresetGrid>
         </PresetDialog.PresetBody>
+
         <PresetDialog.PresetActions
           onCancel={() => setPresetDialogOpen(false)}
-          onSave={() => setPresetDialogOpen(false)}
+          onSave={() => {
+            console.log('Saved Preset!');
+            setPresetDialogOpen(false);
+          }}
         />
       </PresetDialog>
 
@@ -242,7 +295,6 @@ export default function SettingsPage() {
             alt="Preview"
           />
           <ImageDialog.ImageOptions>
-            {/* Hard-coded text, no local state, no empty handlers needed */}
             <div className="flex items-end space-x-2">
               <ImageDialog.Filename value="Image">File name</ImageDialog.Filename>
 
