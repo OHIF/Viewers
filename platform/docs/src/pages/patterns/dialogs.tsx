@@ -5,6 +5,13 @@ import { AboutDialog } from '../../../../ui-next/src/components/OHIFDialogs/Abou
 import { InputDialog } from '../../../../ui-next/src/components/OHIFDialogs/InputDialog';
 import { PresetDialog } from '../../../../ui-next/src/components/OHIFDialogs/PresetDialog';
 import { ImageDialog } from '../../../../ui-next/src/components/OHIFDialogs/ImageDialog';
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from '../../../../ui-next/src/components/Select/Select';
 import { Icons } from '../../../../ui-next/src/components/Icons';
 
 export default function SettingsPage() {
@@ -61,6 +68,26 @@ export default function SettingsPage() {
         <UserPreferencesDialog.Title>User Preferences</UserPreferencesDialog.Title>
 
         <UserPreferencesDialog.Body>
+          {/* Language Section */}
+          <div className="mb-3 flex items-center space-x-14">
+            <UserPreferencesDialog.SubHeading>Language</UserPreferencesDialog.SubHeading>
+            <Select defaultValue="English">
+              <SelectTrigger
+                className="w-60"
+                aria-label="Language"
+              >
+                <SelectValue placeholder="Select language" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="English">English</SelectItem>
+                <SelectItem value="Spanish">Spanish</SelectItem>
+                <SelectItem value="French">French</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Hotkeys Section */}
+          <UserPreferencesDialog.SubHeading>Hotkeys</UserPreferencesDialog.SubHeading>
           <UserPreferencesDialog.HotkeysGrid>
             <UserPreferencesDialog.Hotkey
               label="Zoom"

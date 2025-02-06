@@ -58,6 +58,17 @@ function Body({ children, className }: BodyProps) {
   );
 }
 
+/** Subheading
+ *  Section labels
+ */
+interface SubHeadingProps {
+  children: React.ReactNode;
+  className?: string;
+}
+function SubHeading({ children, className }: SubHeadingProps) {
+  return <span className={cn('text-muted-foreground text-lg', className)}>{children}</span>;
+}
+
 /** Responsive 3-column grid for hotkeys, etc. */
 interface HotkeysGridProps {
   children: React.ReactNode;
@@ -137,3 +148,4 @@ UserPreferencesDialog.Body = Body;
 UserPreferencesDialog.HotkeysGrid = HotkeysGrid;
 UserPreferencesDialog.Hotkey = Hotkey;
 UserPreferencesDialog.Footer = Footer;
+UserPreferencesDialog.SubHeading = SubHeading;
