@@ -13,20 +13,24 @@ interface ImageDialogProps {
   className?: string;
 }
 
+/**
+ * Main ImageDialog container. By default, we do not force any
+ * layout here. We'll use a "Body" subcomponent for the main area
+ * that sets up a flex row with a 70/30 split.
+ */
 function ImageDialog({ open, onOpenChange, children, className }: ImageDialogProps) {
   return (
     <Dialog
       open={open}
       onOpenChange={onOpenChange}
     >
-      {/* Match UserPreferencesDialog by removing p-0 and using max-w-3xl */}
       <DialogContent className={cn('max-w-3xl', className)}>{children}</DialogContent>
     </Dialog>
   );
 }
 
-/* ---------------------------------------------------------------------------------- */
-/* Title subcomponent: same pattern as UserPreferencesDialog.Title */
+/* -------------------------------------------------------------------------- */
+/* Title subcomponent: same pattern as your other dialogs. */
 
 interface ImageTitleProps {
   children: React.ReactNode;
@@ -40,17 +44,38 @@ function ImageTitle({ children, className }: ImageTitleProps) {
   );
 }
 
-/* ---------------------------------------------------------------------------------- */
-/* ImageVisual subcomponent: just a container + image */
+/* -------------------------------------------------------------------------- */
+/* Body subcomponent: sets up a flex row (or column on small screens). */
+
+interface ImageBodyProps {
+  children: React.ReactNode;
+  className?: string;
+}
+/**
+ * By default, "flex flex-col sm:flex-row" so that on smaller screens
+ * the image and controls stack, and on sm+ screens they go side by side.
+ */
+function ImageBody({ children, className }: ImageBodyProps) {
+  return <div className={cn('flex flex-col sm:flex-row', className)}>{children}</div>;
+}
+
+/* -------------------------------------------------------------------------- */
+/* ImageVisual subcomponent: default 70% at sm+ */
 
 interface ImageVisualProps {
   src: string;
   alt?: string;
   className?: string;
 }
-function ImageVisual({ src, alt, className }: ImageVisualProps) {
+function ImageVisual({ src, alt = '', className }: ImageVisualProps) {
   return (
-    <div className={cn('flex flex-1 items-center justify-center bg-black/80 p-4', className)}>
+    <div
+      className={cn(
+        'flex-1 items-center justify-center bg-black/80 p-4 sm:flex-[6]',
+        'flex', // ensure the container is a flex box
+        className
+      )}
+    >
       <img
         src={src}
         alt={alt}
@@ -60,19 +85,19 @@ function ImageVisual({ src, alt, className }: ImageVisualProps) {
   );
 }
 
-/* ---------------------------------------------------------------------------------- */
-/* ImageOptions container */
+/* -------------------------------------------------------------------------- */
+/* ImageOptions subcomponent: default 30% at sm+ */
 
 interface ImageOptionsProps {
   children: React.ReactNode;
   className?: string;
 }
 function ImageOptions({ children, className }: ImageOptionsProps) {
-  return <div className={cn('flex-1 space-y-4 p-4', className)}>{children}</div>;
+  return <div className={cn('flex-1 space-y-4 p-4 sm:flex-[4]', className)}>{children}</div>;
 }
 
-/* ---------------------------------------------------------------------------------- */
-/* Filename: simple Input */
+/* -------------------------------------------------------------------------- */
+/* Filename subcomponent */
 
 interface FilenameProps extends React.InputHTMLAttributes<HTMLInputElement> {
   className?: string;
@@ -86,8 +111,8 @@ function Filename({ className, ...props }: FilenameProps) {
   );
 }
 
-/* ---------------------------------------------------------------------------------- */
-/* Filetype: uses Select */
+/* -------------------------------------------------------------------------- */
+/* Filetype subcomponent: uses Select */
 
 interface FiletypeProps {
   selected: string;
@@ -114,8 +139,8 @@ function Filetype({ selected, onSelect, className }: FiletypeProps) {
   );
 }
 
-/* ---------------------------------------------------------------------------------- */
-/* ImageSize: label + two Inputs */
+/* -------------------------------------------------------------------------- */
+/* ImageSize subcomponent */
 
 interface ImageSizeProps {
   label?: string;
@@ -154,8 +179,8 @@ function ImageSize({
   );
 }
 
-/* ---------------------------------------------------------------------------------- */
-/* SwitchOption: label + Switch */
+/* -------------------------------------------------------------------------- */
+/* SwitchOption subcomponent */
 
 interface SwitchOptionProps {
   label: string;
@@ -175,8 +200,8 @@ function SwitchOption({ label, checked, onCheckedChange, className }: SwitchOpti
   );
 }
 
-/* ---------------------------------------------------------------------------------- */
-/* Actions: Cancel + Save */
+/* -------------------------------------------------------------------------- */
+/* Actions subcomponent */
 
 interface ActionsProps {
   onCancel: () => void;
@@ -210,10 +235,11 @@ function Actions({
   );
 }
 
-/* ---------------------------------------------------------------------------------- */
-/* Compound pattern: attach everything to ImageDialog */
+/* -------------------------------------------------------------------------- */
+/* Attach subcomponents onto the main ImageDialog function. */
 
 ImageDialog.ImageTitle = ImageTitle;
+ImageDialog.Body = ImageBody;
 ImageDialog.ImageVisual = ImageVisual;
 ImageDialog.ImageOptions = ImageOptions;
 ImageDialog.Filename = Filename;
