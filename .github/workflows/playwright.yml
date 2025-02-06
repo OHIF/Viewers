@@ -23,6 +23,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
+      - name: Enable corepack
+        run: corepack enable
       - name: Install dependencies
         run: bun install --frozen-lockfile
       - name: Set up Git safe directory
