@@ -193,17 +193,24 @@ function ImageSize({
 
 interface SwitchOptionProps {
   children: React.ReactNode;
-  checked: boolean;
-  /** Handler optional. If not provided, no‐op. */
+  checked?: boolean;
+  defaultChecked?: boolean;
   onCheckedChange?: (checked: boolean) => void;
   className?: string;
 }
 
-function SwitchOption({ children, checked, onCheckedChange, className }: SwitchOptionProps) {
+function SwitchOption({
+  children,
+  checked,
+  defaultChecked,
+  onCheckedChange,
+  className,
+}: SwitchOptionProps) {
   return (
     <div className={cn('flex items-center space-x-2', className)}>
       <Switch
         checked={checked}
+        defaultChecked={defaultChecked}
         onCheckedChange={val => onCheckedChange?.(val)}
       />
       <span className="text-base">{children}</span>

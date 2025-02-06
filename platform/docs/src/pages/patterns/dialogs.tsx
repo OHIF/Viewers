@@ -185,8 +185,10 @@ export default function SettingsPage() {
               Image size <span className="text-muted-foreground">px</span>
             </ImageDialog.ImageSize>
 
-            <ImageDialog.SwitchOption checked>Include annotations</ImageDialog.SwitchOption>
-            <ImageDialog.SwitchOption checked>Include warning message</ImageDialog.SwitchOption>
+            <ImageDialog.SwitchOption defaultChecked>Include annotations</ImageDialog.SwitchOption>
+            <ImageDialog.SwitchOption defaultChecked>
+              Include warning message
+            </ImageDialog.SwitchOption>
 
             <ImageDialog.Actions
               onCancel={() => setImageDialogOpen(false)}
