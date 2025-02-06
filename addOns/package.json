@@ -12,9 +12,6 @@
       "../extensions/*",
       "../modes/*",
       "../addOns/externals/*"
-    ],
-    "nohoist": [
-      "**/html-minifier-terser"
     ]
   },
   "scripts": {
