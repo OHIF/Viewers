@@ -5,6 +5,7 @@ import { AboutDialog } from '../../../../ui-next/src/components/OHIFDialogs/Abou
 import { InputDialog } from '../../../../ui-next/src/components/OHIFDialogs/InputDialog';
 import { PresetDialog } from '../../../../ui-next/src/components/OHIFDialogs/PresetDialog';
 import { ImageDialog } from '../../../../ui-next/src/components/OHIFDialogs/ImageDialog';
+import { Icons } from '../../../../ui-next/src/components/Icons';
 
 export default function SettingsPage() {
   // We only keep these booleans for toggling the dialogs open/close
@@ -161,6 +162,7 @@ export default function SettingsPage() {
         open={aboutOpen}
         onOpenChange={setAboutOpen}
       >
+        <AboutDialog.Title>About OHIF Viewer</AboutDialog.Title>
         <AboutDialog.ProductName>OHIF Viewer</AboutDialog.ProductName>
         <AboutDialog.ProductVersion>3.10</AboutDialog.ProductVersion>
         <AboutDialog.ProductBeta>beta.75</AboutDialog.ProductBeta>
@@ -174,31 +176,13 @@ export default function SettingsPage() {
 
           <div className="mt-4 flex items-center space-x-2">
             <AboutDialog.SocialIcon>
-              {/* Replace with your SVG or icon for GitHub */}
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="18"
-                height="18"
-                fill="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path d="M12 .5C5.37.5 0 5.87 0 12.5... (GitHub icon path data)" />
-              </svg>
+              <Icons.ByName name="SocialGithub" />
             </AboutDialog.SocialIcon>
             <AboutDialog.SocialLink href="https://github.com/OHIF/Viewers">
-              GitHub
+              github.com/OHIF/Viewers
             </AboutDialog.SocialLink>
           </div>
         </AboutDialog.Body>
-
-        <AboutDialog.Footer>
-          <Button
-            variant="default"
-            onClick={() => setAboutOpen(false)}
-          >
-            Close
-          </Button>
-        </AboutDialog.Footer>
       </AboutDialog>
 
       {/* Input Dialogs */}

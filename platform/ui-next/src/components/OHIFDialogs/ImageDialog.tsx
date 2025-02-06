@@ -170,19 +170,30 @@ function ImageSize({
   return (
     <div className={cn('space-y-1', className)}>
       <label className="block text-base">{children}</label>
-      <div className="flex items-center space-x-2">
-        <Input
-          value={width}
-          onChange={onWidthChange ?? (() => {})}
-          placeholder="Width"
-          className="w-20"
-        />
-        <Input
-          value={height}
-          onChange={onHeightChange ?? (() => {})}
-          placeholder="Height"
-          className="w-20"
-        />
+
+      {/* Flex container for width/height inputs */}
+      <div className="flex items-center space-x-4">
+        {/* Width group */}
+        <div className="flex items-center space-x-2">
+          <span className="text-foreground text-base">W</span>
+          <Input
+            value={width}
+            onChange={onWidthChange ?? (() => {})}
+            placeholder="Width"
+            className="w-20"
+          />
+        </div>
+
+        {/* Height group */}
+        <div className="text-foreground flex items-center space-x-2 text-base">
+          <span className="text-foreground text-base">H</span>
+          <Input
+            value={height}
+            onChange={onHeightChange ?? (() => {})}
+            placeholder="Height"
+            className="w-20"
+          />
+        </div>
       </div>
     </div>
   );

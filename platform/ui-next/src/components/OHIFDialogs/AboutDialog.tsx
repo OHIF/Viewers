@@ -1,6 +1,7 @@
 import * as React from 'react';
-import { Dialog, DialogContent, DialogFooter } from '../Dialog';
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '../Dialog';
 import { cn } from '../../lib/utils';
+import { Button } from '../Button';
 
 interface AboutDialogProps {
   open: boolean;
@@ -15,7 +16,9 @@ export function AboutDialog({ open, onOpenChange, children, className }: AboutDi
       open={open}
       onOpenChange={onOpenChange}
     >
-      <DialogContent className={cn('max-w-md text-center', className)}>{children}</DialogContent>
+      <DialogContent className={cn('max-w-md gap-1 text-center', className)}>
+        {children}
+      </DialogContent>
     </Dialog>
   );
 }
@@ -27,7 +30,7 @@ interface ProductNameProps {
 }
 function ProductName({ children, className }: ProductNameProps) {
   return (
-    <div className={cn('border text-2xl font-semibold leading-none', className)}>{children}</div>
+    <div className={cn('pt-3 text-2xl font-semibold leading-none', className)}>{children}</div>
   );
 }
 
@@ -58,7 +61,7 @@ interface BodyProps {
 }
 function Body({ children, className }: BodyProps) {
   return (
-    <div className={cn('mt-0 flex flex-col items-center space-y-0', className)}>{children}</div>
+    <div className={cn('my-3 flex flex-col items-center space-y-0', className)}>{children}</div>
   );
 }
 
@@ -69,7 +72,9 @@ interface DetailTitleProps {
 }
 function DetailTitle({ children, className }: DetailTitleProps) {
   return (
-    <div className={cn('mt-0 text-sm font-semibold uppercase tracking-wide', className)}>
+    <div
+      className={cn('text-muted-foreground pt-2 text-sm font-semibold tracking-wide', className)}
+    >
       {children}
     </div>
   );
@@ -81,7 +86,7 @@ interface DetailProps {
   className?: string;
 }
 function Detail({ children, className }: DetailProps) {
-  return <div className={cn('text-sm', className)}>{children}</div>;
+  return <div className={cn('text-muted-foreground text-sm', className)}>{children}</div>;
 }
 
 /** Subcomponent: Social Icon (e.g. GitHub logo) */
@@ -100,14 +105,19 @@ interface SocialLinkProps extends React.AnchorHTMLAttributes<HTMLAnchorElement> 
 }
 function SocialLink({ children, className, ...props }: SocialLinkProps) {
   return (
-    <a
-      className={cn('text-primary text-sm underline', className)}
-      target="_blank"
-      rel="noopener noreferrer"
-      {...props}
+    <Button
+      asChild
+      variant="link"
+      className={cn('py-6 text-lg', className)}
     >
-      {children}
-    </a>
+      <a
+        target="_blank"
+        rel="noopener noreferrer"
+        {...props}
+      >
+        {children}
+      </a>
+    </Button>
   );
 }
 
@@ -122,7 +132,17 @@ function Footer({ children, className }: FooterProps) {
   );
 }
 
+/** Subcomponent: Title */
+function Title({ children, className }: { children: React.ReactNode; className?: string }) {
+  return (
+    <DialogHeader className={cn('mb-4 text-2xl font-semibold leading-none', className)}>
+      <DialogTitle>{children}</DialogTitle>
+    </DialogHeader>
+  );
+}
+
 /** Attach subcomponents to AboutDialog as static properties */
+AboutDialog.Title = Title;
 AboutDialog.ProductName = ProductName;
 AboutDialog.ProductVersion = ProductVersion;
 AboutDialog.ProductBeta = ProductBeta;

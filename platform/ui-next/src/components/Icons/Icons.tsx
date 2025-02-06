@@ -46,6 +46,7 @@ import Show from './Sources/Show';
 import SidePanelCloseLeft from './Sources/SidePanelCloseLeft';
 import SidePanelCloseRight from './Sources/SidePanelCloseRight';
 import SortingAscending from './Sources/SortingAscending';
+import SocialGithub from './Sources/SocialGithub';
 import SortingDescending from './Sources/SortingDescending';
 import StatusError from './Sources/StatusError';
 import StatusSuccess from './Sources/StatusSuccess';
@@ -463,6 +464,7 @@ export const Icons = {
   Show,
   SidePanelCloseLeft,
   SidePanelCloseRight,
+  SocialGithub,
   SortingAscending,
   SortingDescending,
   Sorting,
