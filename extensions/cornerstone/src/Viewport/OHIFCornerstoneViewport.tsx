@@ -264,7 +264,6 @@ const OHIFCornerstoneViewport = React.memo(
           measurement = cacheJumpToMeasurementEvent.measurement;
           // Delete the position presentation so that viewport navigates direct
           presentations.positionPresentation = null;
-          cacheJumpToMeasurementEvent = null;
         }
 
         // Note: This is a hack to get the grid to re-render the OHIFCornerstoneViewport component
@@ -286,7 +285,13 @@ const OHIFCornerstoneViewport = React.memo(
         );
 
         if (measurement) {
-          cs3DTools.annotation.selection.setAnnotationSelected(measurement.uid);
+          _checkForCachedJumpToMeasurementEvents(
+            elementRef,
+            viewportId,
+            displaySets,
+            servicesManager
+          );
+          cacheJumpToMeasurementEvent = null;
         }
       };
 
@@ -313,8 +318,6 @@ const OHIFCornerstoneViewport = React.memo(
         viewportId,
         servicesManager
       );
-
-      _checkForCachedJumpToMeasurementEvents(elementRef, viewportId, displaySets, servicesManager);
 
       return () => {
         unsubscribeFromJumpToMeasurementEvents();
@@ -429,7 +432,8 @@ const OHIFCornerstoneViewport = React.memo(
 );
 
 function _subscribeToJumpToMeasurementEvents(elementRef, viewportId, servicesManager) {
-  const { measurementService, cornerstoneViewportService } = servicesManager.services;
+  const { measurementService, cornerstoneViewportService, displaySetService } =
+    servicesManager.services;
 
   const { unsubscribe } = measurementService.subscribe(
     MeasurementService.EVENTS.JUMP_TO_MEASUREMENT_VIEWPORT,
@@ -440,6 +444,31 @@ function _subscribeToJumpToMeasurementEvents(elementRef, viewportId, servicesMan
         return;
       }
       if (cacheJumpToMeasurementEvent.cornerstoneViewport === undefined) {
+        if (
+          displaySetService.activeDisplaySets.find(
+            displaySet => displaySet.displaySetInstanceUID === measurement.displaySetInstanceUID
+          )
+        ) {
+          const viewportInfo = cornerstoneViewportService.getViewportInfo(jumpId);
+          if (
+            viewportInfo?.contains(
+              measurement.displaySetInstanceUID,
+              measurement.referencedImageId || measurement.metadata?.referencedImageId
+            )
+          ) {
+            return jumpId;
+          }
+
+          return (
+            [...cornerstoneViewportService.viewportsById.values()].find(viewportInfo =>
+              viewportInfo.contains(
+                measurement.displaySetInstanceUID,
+                measurement.referencedImageId || measurement.metadata?.referencedImageId
+              )
+            )?.viewportId ?? null
+          );
+        }
+
         // Decide on which viewport should handle this
         cacheJumpToMeasurementEvent.cornerstoneViewport =
           cornerstoneViewportService.getViewportIdToJump(jumpId, {
