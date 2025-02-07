@@ -24,7 +24,7 @@ export function InputDialog({ open, onOpenChange, children, className }: InputDi
       open={open}
       onOpenChange={onOpenChange}
     >
-      <DialogContent className={cn('max-w-md', className)}>{children}</DialogContent>
+      <DialogContent className={cn('max-w-md p-4', className)}>{children}</DialogContent>
     </Dialog>
   );
 }
@@ -69,12 +69,14 @@ function InputActions({ onCancel, onSave, className }: InputActionsProps) {
       <div className="flex w-full items-center justify-end space-x-2">
         <Button
           variant="secondary"
+          className="min-w-[80px]"
           onClick={onCancel}
         >
           Cancel
         </Button>
         <Button
           variant="default"
+          className="min-w-[80px]"
           onClick={onSave}
         >
           Save

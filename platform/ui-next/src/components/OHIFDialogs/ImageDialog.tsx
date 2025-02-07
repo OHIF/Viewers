@@ -24,7 +24,7 @@ function ImageDialog({ open, onOpenChange, children, className }: ImageDialogPro
       open={open}
       onOpenChange={onOpenChange}
     >
-      <DialogContent className={cn('max-w-3xl', className)}>{children}</DialogContent>
+      <DialogContent className={cn('max-w-4xl p-4', className)}>{children}</DialogContent>
     </Dialog>
   );
 }
