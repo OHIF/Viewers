@@ -16,6 +16,7 @@ If you're curious about the DOs and DON'Ts of dialogs and modals, check out this
 article: ["Best Practices for Modals / Overlays / Dialog Windows"][ux-article]
 
 
+
 <div style={{padding:"56.25% 0 0 0", position:"relative"}}>
     <iframe src="https://player.vimeo.com/video/843233754?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479"  frameBorder="0" allow="autoplay; fullscreen; picture-in-picture" allowFullScreen style= {{ position:"absolute",top:0,left:0,width:"100%",height:"100%"}} title="measurement-report"></iframe>
 </div>
@@ -29,17 +30,24 @@ is expected to support, [check out it's interface in `@ohif/core`][interface]
 | ---------- | ------------------------------------- |
 | `hide()`   | Hides the open modal                  |
 | `show()`   | Shows the provided content in a modal |
+| `customComponent()` | Overrides the default Modal component |
 
 ## Implementations
 
 | Implementation                     | Consumer  |
 | ---------------------------------- | --------- |
 | [Modal Provider][modal-provider]\* | Modal.jsx |
-
-`*` - Denotes maintained by OHIF
-
+| customComponent | user extensions via `setServiceImplementation({customComponent: Modal})` |
 
 
+
+### Custom Component
+If you would like to customize the modal component that OHIF uses, you can register your own
+component with the `customComponent` property.
+
+```js
+setServiceImplementation({customComponent: Modal})
+```
 
 
 > 3rd Party implementers may be added to this table via pull requests.

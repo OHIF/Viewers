@@ -9,7 +9,7 @@ export const useAppConfig = () => useContext(appConfigContext);
 export function AppConfigProvider({ children, value: initAppConfig }) {
   const [appConfig, setAppConfig] = useState(initAppConfig);
 
-  return <Provider value={[appConfig]}>{children}</Provider>;
+  return <Provider value={[appConfig, setAppConfig]}>{children}</Provider>;
 }
 
 AppConfigProvider.propTypes = {
