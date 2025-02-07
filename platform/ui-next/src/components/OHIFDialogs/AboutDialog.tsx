@@ -95,7 +95,7 @@ interface SocialIconProps {
   className?: string;
 }
 function SocialIcon({ children, className }: SocialIconProps) {
-  return <div className={cn('mr-2 inline-block', className)}>{children}</div>;
+  return <div className={cn('inline-block', className)}>{children}</div>;
 }
 
 /** Subcomponent: Social Link */

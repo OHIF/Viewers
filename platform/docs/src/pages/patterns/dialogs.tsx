@@ -184,7 +184,6 @@ export default function SettingsPage() {
         open={aboutOpen}
         onOpenChange={setAboutOpen}
       >
-        <AboutDialog.Title>About OHIF Viewer</AboutDialog.Title>
         <AboutDialog.ProductName>OHIF Viewer</AboutDialog.ProductName>
         <AboutDialog.ProductVersion>3.10</AboutDialog.ProductVersion>
         <AboutDialog.ProductBeta>beta.75</AboutDialog.ProductBeta>
@@ -196,7 +195,7 @@ export default function SettingsPage() {
           <AboutDialog.DetailTitle>Current Browser &amp; OS</AboutDialog.DetailTitle>
           <AboutDialog.Detail>Safari 18.2.0, macOS 10.15.7</AboutDialog.Detail>
 
-          <div className="mt-4 flex items-center space-x-2">
+          <div className="flex items-center">
             <AboutDialog.SocialIcon>
               <Icons.ByName name="SocialGithub" />
             </AboutDialog.SocialIcon>
@@ -303,7 +302,6 @@ export default function SettingsPage() {
           <ImageDialog.ImageOptions>
             <div className="flex items-end space-x-2">
               <ImageDialog.Filename value="Image">File name</ImageDialog.Filename>
-
               <ImageDialog.Filetype selected="JPG" />
             </div>
 
