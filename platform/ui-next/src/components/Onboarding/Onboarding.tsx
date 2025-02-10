@@ -19,6 +19,7 @@ const Onboarding = ({
 }) => {
   const Shepherd = useShepherd();
   const location = useLocation();
+  debugger;
 
   /**
    * Show the tour if it hasn't been shown yet based on the current route.

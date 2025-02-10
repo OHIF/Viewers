@@ -222,12 +222,7 @@ export default function ModeRoute({
 
       // Move hotkeys setup here, after onModeEnter
       const hotkeys = customizationService.getCustomization('ohif.hotkeyBindings');
-      const hotkeyName = mode.hotkeys?.name || 'hotkey-definitions';
-
-      if (hotkeys) {
-        hotkeysManager.setDefaultHotKeys(hotkeys);
-        hotkeysManager.setUserPreferredHotkeys(hotkeys, hotkeyName);
-      }
+      hotkeysManager.setDefaultHotKeys(hotkeys);
 
       /**
        * The next line should get all the query parameters provided by the URL

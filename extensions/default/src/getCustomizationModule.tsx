@@ -19,7 +19,7 @@ import viewportActionCornersCustomization from './customizations/viewportActionC
 import labellingFlowCustomization from './customizations/labellingFlowCustomization';
 import viewportNotificationCustomization from './customizations/notificationCustomization';
 import hotkeyBindingsCustomization from './customizations/hotkeyBindingsCustomization';
-import tourCustomization from './customizations/tourCustomization';
+import onboardingCustomization from './customizations/onboardingCustomization';
 /**
  *
  * Note: this is an example of how the customization module can be used
@@ -64,7 +64,7 @@ export default function getCustomizationModule({ servicesManager, extensionManag
         ...contextMenuUICustomization,
         ...viewportNotificationCustomization,
         ...hotkeyBindingsCustomization,
-        ...tourCustomization,
+        ...onboardingCustomization,
       },
     },
   ];

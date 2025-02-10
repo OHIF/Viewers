@@ -191,6 +191,20 @@ export default {
           beforeShowPromise: () => waitForElement('[data-cy="MPR"]'),
         },
       ],
+      tourOptions: {
+        useModalOverlay: true,
+        defaultStepOptions: {
+          buttons: [
+            {
+              text: 'Skip all',
+              action() {
+                this.complete();
+              },
+              secondary: true,
+            },
+          ],
+        },
+      },
     },
   ],
 };

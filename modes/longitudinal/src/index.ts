@@ -111,11 +111,6 @@ function modeFactory({ modeConfiguration }) {
         'ohif.hotkeyBindings': {
           $set: [
             {
-              commandName: 'deleteActiveAnnotation',
-              label: 'Delete Annotation',
-              keys: ['backspace'],
-            },
-            {
               commandName: 'undo',
               label: 'Undo',
               keys: ['ctrl+z'],
