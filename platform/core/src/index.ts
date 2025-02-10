@@ -44,7 +44,6 @@ import useActiveViewportDisplaySets from './hooks/useActiveViewportDisplaySets';
 
 const hotkeys = {
   ...utils.hotkeys,
-  defaults: { hotkeyBindings: defaults.hotkeyBindings },
 };
 
 const OHIF = {

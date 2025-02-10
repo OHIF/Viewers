@@ -25,7 +25,6 @@ import {
   colorPickerDialog,
 } from '@ohif/extension-default';
 import { vec3, mat4 } from 'gl-matrix';
-
 import CornerstoneViewportDownloadForm from './utils/CornerstoneViewportDownloadForm';
 import toggleImageSliceSync from './utils/imageSliceSync/toggleImageSliceSync';
 import { getFirstAnnotationSelected } from './utils/measurementServiceMappings/utils/selection';
@@ -430,6 +429,37 @@ function commandsModule({
       }
 
       actions.setViewportWindowLevel({ ...props, viewportId });
+    },
+    setWindowLevelPreset: ({ presetName, presetIndex }) => {
+      const windowLevelPresets = customizationService.getCustomization(
+        'cornerstone.windowLevelPresets'
+      );
+
+      const activeViewport = viewportGridService.getActiveViewportId();
+      const viewport = cornerstoneViewportService.getCornerstoneViewport(activeViewport);
+      const metadata = viewport.getImageData().metadata;
+
+      const modality = metadata.Modality;
+
+      if (!modality) {
+        return;
+      }
+
+      const windowLevelPresetForModality = windowLevelPresets[modality];
+
+      if (!windowLevelPresetForModality) {
+        return;
+      }
+
+      const windowLevelPreset =
+        windowLevelPresetForModality[presetName] ??
+        Object.values(windowLevelPresetForModality)[presetIndex];
+
+      actions.setViewportWindowLevel({
+        viewportId: activeViewport,
+        window: windowLevelPreset.window,
+        level: windowLevelPreset.level,
+      });
     },
     setToolEnabled: ({ toolName, toggle, toolGroupId }) => {
       const { viewports } = viewportGridService.getState();
@@ -1397,6 +1427,9 @@ function commandsModule({
     },
     setWindowLevel: {
       commandFn: actions.setWindowLevel,
+    },
+    setWindowLevelPreset: {
+      commandFn: actions.setWindowLevelPreset,
     },
     setToolActive: {
       commandFn: actions.setToolActive,

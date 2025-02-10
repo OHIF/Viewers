@@ -80,6 +80,30 @@ export class HotkeysManager {
     mouseTrapAPI.reset();
   }
 
+  generateHash(hotkeyDefinitions) {
+    return objectHash(
+      hotkeyDefinitions.map(definition => ({
+        commandName: definition.commandName,
+        commandOptions: definition.commandOptions,
+      }))
+    );
+  }
+
+  setUserPreferredHotkeys(hotkeys, hotkeyName) {
+    const userPreferredHotkeys = JSON.parse(localStorage.getItem(hotkeyName));
+    const userPreferredDefinitions = this.getValidDefinitions(userPreferredHotkeys);
+    const hotkeyDefinitions = this.getValidDefinitions(hotkeys);
+
+    // if the hashes are not equal means we cannot use the user preferred hotkeys
+    // and should set the new override hotkeys
+    if (this.generateHash(userPreferredDefinitions) !== this.generateHash(hotkeyDefinitions)) {
+      this.setHotkeys(hotkeys, hotkeyName);
+      return;
+    }
+
+    this.setHotkeys(userPreferredDefinitions, hotkeyName);
+  }
+
   /**
    * Registers a list of hotkey definitions.
    *
@@ -89,7 +113,7 @@ export class HotkeysManager {
     try {
       const definitions = this.getValidDefinitions(hotkeyDefinitions);
       if (isequal(definitions, this.hotkeyDefaults)) {
-        console.debug('equal');
+        console.debug('same');
         localStorage.removeItem(name);
       } else {
         localStorage.setItem(name, JSON.stringify(definitions));
@@ -126,6 +150,13 @@ export class HotkeysManager {
     const definitions = Array.isArray(hotkeyDefinitions)
       ? [...hotkeyDefinitions]
       : this._parseToArrayLike(hotkeyDefinitions);
+
+    // make sure isEditable is true for all definitions if not provided
+    definitions.forEach(definition => {
+      if (definition.isEditable === undefined) {
+        definition.isEditable = true;
+      }
+    });
 
     return definitions;
   }

@@ -84,7 +84,8 @@ function modeFactory({ modeConfiguration }) {
      * Lifecycle hooks
      */
     onModeEnter: function ({ servicesManager, extensionManager, commandsManager }: withAppTypes) {
-      const { measurementService, toolbarService, toolGroupService } = servicesManager.services;
+      const { measurementService, toolbarService, toolGroupService, customizationService } =
+        servicesManager.services;
 
       measurementService.clearMeasurements();
 
@@ -105,6 +106,24 @@ function modeFactory({ modeConfiguration }) {
         'Undo',
         'Redo',
       ]);
+
+      customizationService.setCustomizations({
+        'ohif.hotkeyBindings': {
+          $set: [
+            {
+              commandName: 'deleteActiveAnnotation',
+              label: 'Delete Annotation',
+              keys: ['backspace'],
+            },
+            {
+              commandName: 'undo',
+              label: 'Undo',
+              keys: ['ctrl+z'],
+              isEditable: true,
+            },
+          ],
+        },
+      });
 
       // // ActivatePanel event trigger for when a segmentation or measurement is added.
       // // Do not force activation so as to respect the state the user may have left the UI in.
@@ -240,7 +259,6 @@ function modeFactory({ modeConfiguration }) {
       dicomsr.sopClassHandler,
       dicomRT.sopClassHandler,
     ],
-    hotkeys: [...hotkeys.defaults.hotkeyBindings],
     ...modeConfiguration,
   };
 }
