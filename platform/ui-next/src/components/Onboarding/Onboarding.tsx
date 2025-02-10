@@ -7,15 +7,18 @@ import './Onboarding.css';
 
 import { hasTourBeenShown, markTourAsShown, defaultShowHandler, middleware } from './utilities';
 
-const Onboarding = () => {
-  const Shepherd = useShepherd();
-  const location = useLocation();
-  const tours = window.config.tours as Array<{
+const Onboarding = ({
+  tours,
+}: {
+  tours: Array<{
     id: string;
     route: string;
     tourOptions: TourOptions;
     steps: StepOptions[];
   }>;
+}) => {
+  const Shepherd = useShepherd();
+  const location = useLocation();
 
   /**
    * Show the tour if it hasn't been shown yet based on the current route.
