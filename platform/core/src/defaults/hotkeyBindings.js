@@ -177,6 +177,18 @@ const bindings = [
     commandName: 'deleteActiveAnnotation',
     keys: ['backspace'],
   },
+  {
+    commandName: 'undo',
+    label: 'Undo',
+    keys: ['ctrl+z'],
+    isEditable: true,
+  },
+  {
+    commandName: 'redo',
+    label: 'Redo',
+    keys: ['ctrl+y'],
+    isEditable: true,
+  },
   // These don't exist, so don't try applying them....
   // {
   //   commandName: 'setWindowLevel',

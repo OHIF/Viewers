@@ -34,6 +34,7 @@ import toggleVOISliceSync from './utils/toggleVOISliceSync';
 import { usePositionPresentationStore, useSegmentationPresentationStore } from './stores';
 import { toolNames } from './initCornerstoneTools';
 
+const { DefaultHistoryMemo } = csUtils.HistoryMemo;
 const toggleSyncFunctions = {
   imageSlice: toggleImageSliceSync,
   voi: toggleVOISliceSync,
@@ -1327,6 +1328,12 @@ function commandsModule({
         measurementService.remove(activeAnnotationUID);
       });
     },
+    undo: () => {
+      DefaultHistoryMemo.undo();
+    },
+    redo: () => {
+      DefaultHistoryMemo.redo();
+    },
   };
 
   const definitions = {
@@ -1590,6 +1597,8 @@ function commandsModule({
     deleteActiveAnnotation: {
       commandFn: actions.deleteActiveAnnotation,
     },
+    undo: actions.undo,
+    redo: actions.redo,
   };
 
   return {

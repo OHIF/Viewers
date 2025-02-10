@@ -102,6 +102,8 @@ function modeFactory({ modeConfiguration }) {
         'Layout',
         'Crosshairs',
         'MoreTools',
+        'Undo',
+        'Redo',
       ]);
 
       // // ActivatePanel event trigger for when a segmentation or measurement is added.

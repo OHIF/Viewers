@@ -40,6 +40,7 @@ import { splitComma, getSplitParam } from './splitComma';
 import { createStudyBrowserTabs } from './createStudyBrowserTabs';
 import { sopClassDictionary } from './sopClassDictionary';
 import * as MeasurementFilters from './measurementFilters';
+import { generateHash, fnv1aHash } from './generateHash';
 
 // Commented out unused functionality.
 // Need to implement new mechanism for derived displaySets using the displaySetManager.
@@ -86,6 +87,8 @@ const utils = {
   generateAcceptHeader,
   createStudyBrowserTabs,
   MeasurementFilters,
+  generateHash,
+  fnv1aHash,
 };
 
 export {
@@ -120,6 +123,8 @@ export {
   generateAcceptHeader,
   createStudyBrowserTabs,
   MeasurementFilters,
+  generateHash,
+  fnv1aHash,
 };
 
 export default utils;

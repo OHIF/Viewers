@@ -1,5 +1,5 @@
 import objectHash from 'object-hash';
-import { hotkeys } from '../utils';
+import { hotkeys as mouseTrapAPI } from '../utils';
 import isequal from 'lodash.isequal';
 import Hotkey from './Hotkey';
 
@@ -15,17 +15,15 @@ import Hotkey from './Hotkey';
 
 export class HotkeysManager {
   private _servicesManager: AppTypes.ServicesManager;
+  private _commandsManager: AppTypes.CommandsManager;
+  private isEnabled: boolean = true;
 
-  constructor(commandsManager, servicesManager: AppTypes.ServicesManager) {
+  constructor(
+    commandsManager: AppTypes.CommandsManager,
+    servicesManager: AppTypes.ServicesManager
+  ) {
     this.hotkeyDefinitions = {};
     this.hotkeyDefaults = [];
-    this.isEnabled = true;
-
-    if (!commandsManager) {
-      throw new Error(
-        'HotkeysManager instantiated without a commandsManager. Hotkeys will be unable to find and run commands.'
-      );
-    }
 
     this._servicesManager = servicesManager;
     this._commandsManager = commandsManager;
@@ -37,7 +35,12 @@ export class HotkeysManager {
    * @param {*} event
    */
   record(event) {
-    return hotkeys.record(event);
+    return mouseTrapAPI.record(event);
+  }
+
+  cancel() {
+    mouseTrapAPI.stopRecord();
+    mouseTrapAPI.unpause();
   }
 
   /**
@@ -46,7 +49,7 @@ export class HotkeysManager {
    */
   disable() {
     this.isEnabled = false;
-    hotkeys.pause();
+    mouseTrapAPI.pause();
   }
 
   /**
@@ -54,7 +57,7 @@ export class HotkeysManager {
    */
   enable() {
     this.isEnabled = true;
-    hotkeys.unpause();
+    mouseTrapAPI.unpause();
   }
 
   /**
@@ -221,7 +224,7 @@ export class HotkeysManager {
   destroy() {
     this.hotkeyDefaults = [];
     this.hotkeyDefinitions = {};
-    hotkeys.reset();
+    mouseTrapAPI.reset();
   }
 
   /**
@@ -241,7 +244,7 @@ export class HotkeysManager {
     const isKeyArray = keys instanceof Array;
     const combinedKeys = isKeyArray ? keys.join('+') : keys;
 
-    hotkeys.bind(combinedKeys, evt => {
+    mouseTrapAPI.bind(combinedKeys, evt => {
       evt.preventDefault();
       evt.stopPropagation();
       this._commandsManager.runCommand(commandName, { evt, ...commandOptions }, context);
@@ -269,7 +272,7 @@ export class HotkeysManager {
       return;
     }
 
-    hotkeys.unbind(keys);
+    mouseTrapAPI.unbind(keys);
   }
 }
 
