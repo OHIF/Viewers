@@ -24,7 +24,7 @@ interface OverlayItem {
  * @param {*} extensionManager is used to load the image data.
  * @returns
  */
-export const generateFromConfig = ({ config, ...props }) => {
+export const generateFromConfig = ({ config, overlayData, ...props }) => {
   const {
     topLeft = [],
     topRight = [],
@@ -35,7 +35,7 @@ export const generateFromConfig = ({ config, ...props }) => {
     topRight?: OverlayItem[];
     bottomLeft?: OverlayItem[];
     bottomRight?: OverlayItem[];
-  } = config['MicroscopyViewportOverlay'] ?? {};
+  } = overlayData ?? {};
   const topLeftClass = 'top-viewport left-viewport text-primary-light';
   const topRightClass = 'top-viewport right-viewport-scrollbar text-primary-light';
   const bottomRightClass = 'bottom-viewport right-viewport-scrollbar text-primary-light';

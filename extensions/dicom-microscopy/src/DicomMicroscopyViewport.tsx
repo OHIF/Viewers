@@ -5,7 +5,7 @@ import './DicomMicroscopyViewport.css';
 import ViewportOverlay from './components/ViewportOverlay';
 import getDicomWebClient from './utils/dicomWebClient';
 import dcmjs from 'dcmjs';
-import { useAppConfig } from '@state';
+import { useSystem } from '@ohif/core';
 
 function DicomMicroscopyViewport({
   activeViewportId,
@@ -13,8 +13,6 @@ function DicomMicroscopyViewport({
   displaySets,
   viewportId,
   dataSource,
-  servicesManager,
-  extensionManager,
   resizeRef,
 }: {
   activeViewportId: string;
@@ -22,17 +20,17 @@ function DicomMicroscopyViewport({
   displaySets: any[];
   viewportId: string;
   dataSource: any;
-  servicesManager: any;
-  extensionManager: any;
   resizeRef: any;
 }) {
-  const [appConfig] = useAppConfig();
+  const { servicesManager, extensionManager } = useSystem();
   const [isLoaded, setIsLoaded] = useState(false);
   const [viewer, setViewer] = useState(null);
   const [managedViewer, setManagedViewer] = useState(null);
   const overlayElement = useRef();
   const container = useRef();
   const { microscopyService, customizationService } = servicesManager.services;
+
+  const overlayData = customizationService.getCustomization('microscopyViewport.overlay');
 
   // install the microscopy renderer into the web page.
   // you should only do this once.
@@ -45,12 +43,53 @@ function DicomMicroscopyViewport({
         const microscopyViewer = DicomMicroscopyViewer.VolumeImageViewer;
 
         const client = getDicomWebClient({
-          extensionManager: extensionManager,
-          servicesManager: servicesManager,
+          extensionManager,
+          servicesManager,
         });
 
         // Parse, format, and filter metadata
         const volumeImages: any[] = [];
+
+        /**
+         * This block of code is the original way of loading DICOM into dicom-microscopy-viewer
+         * as in their documentation.
+         * But we have the metadata already loaded by our loaders.
+         * As the metadata for microscopy DIOM files tends to be big and we don't
+         * want to double load it, below we have the mechanism to reconstruct the
+         * DICOM JSON structure (denaturalized) from naturalized metadata.
+         * (NOTE: Our loaders cache only naturalized metadata, not the denaturalized.)
+         */
+        // {
+        //   const retrieveOptions = {
+        //     studyInstanceUID: metadata[0].StudyInstanceUID,
+        //     seriesInstanceUID: metadata[0].SeriesInstanceUID,
+        //   };
+        //   metadata = await client.retrieveSeriesMetadata(retrieveOptions);
+        //   // Parse, format, and filter metadata
+        //   metadata.forEach(m => {
+        //     if (
+        //       volumeImages.length > 0 &&
+        //       m['00200052'].Value[0] != volumeImages[0].FrameOfReferenceUID
+        //     ) {
+        //       console.warn(
+        //         'Expected FrameOfReferenceUID of difference instances within a series to be the same, found multiple different values',
+        //         m['00200052'].Value[0]
+        //       );
+        //       m['00200052'].Value[0] = volumeImages[0].FrameOfReferenceUID;
+        //     }
+        //     NOTE: depending on different data source, image.ImageType sometimes
+        //     is a string, not a string array.
+        //     m['00080008'] = transformImageTypeUnnaturalized(m['00080008']);
+
+        //     const image = new metadataUtils.VLWholeSlideMicroscopyImage({
+        //       metadata: m,
+        //     });
+        //     const imageFlavor = image.ImageType[2];
+        //     if (imageFlavor === 'VOLUME' || imageFlavor === 'THUMBNAIL') {
+        //       volumeImages.push(image);
+        //     }
+        //   });
+        // }
 
         metadata.forEach(m => {
           // NOTE: depending on different data source, image.ImageType sometimes
@@ -173,12 +212,6 @@ function DicomMicroscopyViewport({
     }
   }, [managedViewer, displaySets, microscopyService]);
 
-  function setViewportActiveHandler() {
-    if (viewportId !== activeViewportId) {
-      setViewportActive(viewportId);
-    }
-  }
-
   const style = { width: '100%', height: '100%' };
   const displaySet = displaySets[0];
   const firstInstance = displaySet.firstInstance || displaySet.instance;
@@ -187,13 +220,21 @@ function DicomMicroscopyViewport({
   );
 
   return (
-    <div className={'DicomMicroscopyViewer'} style={style} onClick={setViewportActiveHandler}>
+    <div
+      className={'DicomMicroscopyViewer'}
+      style={style}
+      onClick={() => {
+        if (viewportId !== activeViewportId) {
+          setViewportActive(viewportId);
+        }
+      }}
+    >
       <div style={{ ...style, display: 'none' }}>
         <div style={{ ...style }} ref={overlayElement}>
           <div style={{ position: 'relative', height: '100%', width: '100%' }}>
             {displaySet && firstInstance.imageId && (
               <ViewportOverlay
-                config={appConfig}
+                overlayData={overlayData}
                 displaySet={displaySet}
                 instance={displaySet.instance}
                 metadata={displaySet.metadata}
