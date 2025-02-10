@@ -63,7 +63,7 @@ export default function ModeRoute({
   const { displaySetService, panelService, hangingProtocolService, userAuthenticationService } =
     servicesManager.services;
 
-  const { extensions, sopClassHandlers, hotkeys: hotkeyObj, hangingProtocol } = mode;
+  const { extensions, sopClassHandlers, hangingProtocol } = mode;
 
   const runTimeHangingProtocolId = lowerCaseSearchParams.get('hangingprotocolid');
   const runTimeStageId = lowerCaseSearchParams.get('stageid');
@@ -73,9 +73,12 @@ export default function ModeRoute({
     updateAuthServiceAndCleanUrl(token, location, userAuthenticationService);
   }
 
-  // Preserve the old array interface for hotkeys
-  const hotkeys = Array.isArray(hotkeyObj) ? hotkeyObj : hotkeyObj?.hotkeys;
-  const hotkeyName = hotkeyObj?.name || 'hotkey-definitions';
+  // The order we check for hotkeys is:
+  // 1. appConfig.hotkeys - global hotkeys
+  // 2. mode.hotkeys - mode specific hotkeys
+  // 3. hotkeys.defaults.hotkeyBindings - default hotkeys
+  const hotkeys = appConfig.hotkeys ? appConfig.hotkeys : mode.hotkeys ? mode.hotkeys : [];
+  const hotkeyName = mode.hotkeys?.name || 'hotkey-definitions';
 
   // An undefined dataSourceName implies that the active data source that is already set in the ExtensionManager should be used.
   if (dataSourceName !== undefined) {
@@ -175,7 +178,7 @@ export default function ModeRoute({
     hotkeysManager.setDefaultHotKeys(hotkeys);
 
     const userPreferredHotkeys = JSON.parse(localStorage.getItem(hotkeyName));
-
+    debugger;
     if (userPreferredHotkeys?.length) {
       hotkeysManager.setHotkeys(userPreferredHotkeys, hotkeyName);
     } else {

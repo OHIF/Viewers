@@ -17,6 +17,8 @@ export class HotkeysManager {
   private _servicesManager: AppTypes.ServicesManager;
   private _commandsManager: AppTypes.CommandsManager;
   private isEnabled: boolean = true;
+  public hotkeyDefinitions: Record<string, any>;
+  public hotkeyDefaults: any[];
 
   constructor(
     commandsManager: AppTypes.CommandsManager,
@@ -61,7 +63,25 @@ export class HotkeysManager {
   }
 
   /**
-   * Registers a list of hotkeydefinitions.
+   * Uses most recent
+   *
+   * @returns {undefined}
+   */
+  restoreDefaultBindings() {
+    this.setHotkeys(this.hotkeyDefaults);
+  }
+
+  /**
+   *
+   */
+  destroy() {
+    this.hotkeyDefaults = [];
+    this.hotkeyDefinitions = {};
+    mouseTrapAPI.reset();
+  }
+
+  /**
+   * Registers a list of hotkey definitions.
    *
    * @param {HotkeyDefinition[] | Object} [hotkeyDefinitions=[]] Contains hotkeys definitions
    */
@@ -69,6 +89,7 @@ export class HotkeysManager {
     try {
       const definitions = this.getValidDefinitions(hotkeyDefinitions);
       if (isequal(definitions, this.hotkeyDefaults)) {
+        console.debug('equal');
         localStorage.removeItem(name);
       } else {
         localStorage.setItem(name, JSON.stringify(definitions));
@@ -145,18 +166,6 @@ export class HotkeysManager {
    * Return HotkeyDefinition object like based on given property name and property value
    * @param {string} propertyName property name of hotkey definition object
    * @param {object} propertyValue property value of hotkey definition object
-   *
-   * @example
-   *
-   * const hotKeyObj = {hotKeyDefA: {keys:[],....}}
-   *
-   * const parsed = _parseToHotKeyObj(Object.keys(hotKeyDefA)[0], hotKeyObj[hotKeyDefA]);
-   *  {
-   *   commandName: hotKeyDefA,
-   *   keys: [],
-   *   ....
-   *  }
-   *
    */
   _parseToHotKeyObj(propertyName, propertyValue) {
     return {
@@ -174,24 +183,17 @@ export class HotkeysManager {
    * @param {String} extension
    * @returns {undefined}
    */
-  registerHotkeys(
-    { commandName, commandOptions = {}, context, keys, label, isEditable }: Hotkey = {},
-    extension
-  ) {
+  registerHotkeys({ commandName, commandOptions = {}, context, keys, label, isEditable }: Hotkey) {
     if (!commandName) {
       throw new Error(`No command was defined for hotkey "${keys}"`);
     }
 
     const commandHash = objectHash({ commandName, commandOptions });
-    const options = Object.keys(commandOptions).length ? JSON.stringify(commandOptions) : 'no';
     const previouslyRegisteredDefinition = this.hotkeyDefinitions[commandHash];
 
     if (previouslyRegisteredDefinition) {
       const previouslyRegisteredKeys = previouslyRegisteredDefinition.keys;
       this._unbindHotkeys(commandName, previouslyRegisteredKeys);
-      // log.info(
-      //   `[hotkeys] Unbinding ${commandName} with ${options} options from ${previouslyRegisteredKeys}`
-      // );
     }
 
     // Set definition & bind
@@ -203,28 +205,6 @@ export class HotkeysManager {
       isEditable,
     };
     this._bindHotkeys(commandName, commandOptions, context, keys);
-    // log.info(
-    //   `[hotkeys] Binding ${commandName} with ${options} from ${context ||
-    //   'default'} options to ${keys}`
-    // );
-  }
-
-  /**
-   * Uses most recent
-   *
-   * @returns {undefined}
-   */
-  restoreDefaultBindings() {
-    this.setHotkeys(this.hotkeyDefaults);
-  }
-
-  /**
-   *
-   */
-  destroy() {
-    this.hotkeyDefaults = [];
-    this.hotkeyDefinitions = {};
-    mouseTrapAPI.reset();
   }
 
   /**
