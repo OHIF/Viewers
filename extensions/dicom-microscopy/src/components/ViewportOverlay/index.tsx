@@ -24,72 +24,66 @@ interface OverlayItem {
  * @param {*} extensionManager is used to load the image data.
  * @returns
  */
-export const generateFromConfig = ({
-  topLeft = [],
-  topRight = [],
-  bottomLeft = [],
-  bottomRight = [],
-  itemGenerator = () => {},
-}: {
-  topLeft?: OverlayItem[];
-  topRight?: OverlayItem[];
-  bottomLeft?: OverlayItem[];
-  bottomRight?: OverlayItem[];
-  itemGenerator?: (props: any) => any;
-}) => {
-  return (props: any) => {
-    const topLeftClass = 'top-viewport left-viewport text-primary-light';
-    const topRightClass = 'top-viewport right-viewport-scrollbar text-primary-light';
-    const bottomRightClass = 'bottom-viewport right-viewport-scrollbar text-primary-light';
-    const bottomLeftClass = 'bottom-viewport left-viewport text-primary-light';
-    const overlay = 'absolute pointer-events-none microscopy-viewport-overlay';
+export const generateFromConfig = ({ config, ...props }) => {
+  const {
+    topLeft = [],
+    topRight = [],
+    bottomLeft = [],
+    bottomRight = [],
+  }: {
+    topLeft?: OverlayItem[];
+    topRight?: OverlayItem[];
+    bottomLeft?: OverlayItem[];
+    bottomRight?: OverlayItem[];
+  } = config['MicroscopyViewportOverlay'] ?? {};
+  const topLeftClass = 'top-viewport left-viewport text-primary-light';
+  const topRightClass = 'top-viewport right-viewport-scrollbar text-primary-light';
+  const bottomRightClass = 'bottom-viewport right-viewport-scrollbar text-primary-light';
+  const bottomLeftClass = 'bottom-viewport left-viewport text-primary-light';
+  const overlay = 'absolute pointer-events-none microscopy-viewport-overlay';
 
-    return (
-      <>
-        {topLeft && topLeft.length > 0 && (
-          <div data-cy={'viewport-overlay-top-left'} className={classnames(overlay, topLeftClass)}>
-            {listComponentGenerator({ ...props, list: topLeft, itemGenerator })}
-          </div>
-        )}
-        {topRight && topRight.length > 0 && (
-          <div
-            data-cy={'viewport-overlay-top-right'}
-            className={classnames(overlay, topRightClass)}
-          >
-            {listComponentGenerator({
-              ...props,
-              list: topRight,
-              itemGenerator,
-            })}
-          </div>
-        )}
-        {bottomRight && bottomRight.length > 0 && (
-          <div
-            data-cy={'viewport-overlay-bottom-right'}
-            className={classnames(overlay, bottomRightClass)}
-          >
-            {listComponentGenerator({
-              ...props,
-              list: bottomRight,
-              itemGenerator,
-            })}
-          </div>
-        )}
-        {bottomLeft && bottomLeft.length > 0 && (
-          <div
-            data-cy={'viewport-overlay-bottom-left'}
-            className={classnames(overlay, bottomLeftClass)}
-          >
-            {listComponentGenerator({
-              ...props,
-              list: bottomLeft,
-              itemGenerator,
-            })}
-          </div>
-        )}
-      </>
-    );
-  };
+  return (
+    <>
+      {topLeft && topLeft.length > 0 && (
+        <div data-cy={'viewport-overlay-top-left'} className={classnames(overlay, topLeftClass)}>
+          {listComponentGenerator({ ...props, list: topLeft, itemGenerator })}
+        </div>
+      )}
+      {topRight && topRight.length > 0 && (
+        <div data-cy={'viewport-overlay-top-right'} className={classnames(overlay, topRightClass)}>
+          {listComponentGenerator({
+            ...props,
+            list: topRight,
+            itemGenerator,
+          })}
+        </div>
+      )}
+      {bottomRight && bottomRight.length > 0 && (
+        <div
+          data-cy={'viewport-overlay-bottom-right'}
+          className={classnames(overlay, bottomRightClass)}
+        >
+          {listComponentGenerator({
+            ...props,
+            list: bottomRight,
+            itemGenerator,
+          })}
+        </div>
+      )}
+      {bottomLeft && bottomLeft.length > 0 && (
+        <div
+          data-cy={'viewport-overlay-bottom-left'}
+          className={classnames(overlay, bottomLeftClass)}
+        >
+          {listComponentGenerator({
+            ...props,
+            list: bottomLeft,
+            itemGenerator,
+          })}
+        </div>
+      )}
+    </>
+  );
 };
 
 const itemGenerator = (props: any) => {
@@ -123,4 +117,4 @@ const itemGenerator = (props: any) => {
   );
 };
 
-export default generateFromConfig({});
+export default generateFromConfig;
