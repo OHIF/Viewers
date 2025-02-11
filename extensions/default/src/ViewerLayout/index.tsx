@@ -1,13 +1,15 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import PropTypes from 'prop-types';
 
-import { LoadingIndicatorProgress, InvestigationalUseDialog } from '@ohif/ui';
+import { InvestigationalUseDialog } from '@ohif/ui';
 import { HangingProtocolService, CommandsManager } from '@ohif/core';
 import { useAppConfig } from '@state';
 import ViewerHeader from './ViewerHeader';
 import SidePanelWithServices from '../Components/SidePanelWithServices';
 import { Onboarding, ResizablePanelGroup, ResizablePanel, ResizableHandle } from '@ohif/ui-next';
 import useResizablePanels from './ResizablePanelsHook';
+
+const resizableHandleClassName = 'mt-[1px] bg-black';
 
 function ViewerLayout({
   // From Extension Module Params
@@ -25,7 +27,7 @@ function ViewerLayout({
 }: withAppTypes): React.FunctionComponent {
   const [appConfig] = useAppConfig();
 
-  const { panelService, hangingProtocolService } = servicesManager.services;
+  const { panelService, hangingProtocolService, customizationService } = servicesManager.services;
   const [showLoadingIndicator, setShowLoadingIndicator] = useState(appConfig.showLoadingIndicator);
 
   const hasPanels = useCallback(
@@ -51,6 +53,10 @@ function ViewerLayout({
     setLeftPanelClosed,
     rightPanelClosed,
     setRightPanelClosed
+  );
+
+  const LoadingIndicatorProgress = customizationService.getCustomization(
+    'ui.loadingIndicatorProgress'
   );
 
   /**
@@ -157,7 +163,7 @@ function ViewerLayout({
                 <ResizableHandle
                   onDragging={onHandleDragging}
                   disabled={!leftPanelResizable}
-                  className="!w-0"
+                  className={resizableHandleClassName}
                 />
               </>
             ) : null}
@@ -178,7 +184,7 @@ function ViewerLayout({
                 <ResizableHandle
                   onDragging={onHandleDragging}
                   disabled={!rightPanelResizable}
-                  className="!w-0"
+                  className={resizableHandleClassName}
                 />
                 <ResizablePanel {...resizableRightPanelProps}>
                   <SidePanelWithServices

@@ -152,5 +152,5 @@ addressed and a Stable version is released.
 [ohif-prod]: https://viewer.ohif.org
 [gh-board]: https://github.com/OHIF/Viewers/projects/4
 [label-grabs]: https://github.com/OHIF/Viewers/issues?q=is%3Aissue+is%3Aopen+label%3A%22Up+For+Grabs+%3Araising_hand_woman%3A%22
-[contributing-docs]: ./development/contributing.md
+[contributing-docs]: ./contributing.md
 <!-- prettier-ignore-end -->

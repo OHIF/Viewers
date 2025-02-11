@@ -22,7 +22,6 @@ import {
   useModal,
   AboutModal,
   UserPreferences,
-  LoadingIndicatorProgress,
   useSessionStorage,
   InvestigationalUseDialog,
   Button,
@@ -525,6 +524,9 @@ function WorkList({
   }
 
   const { customizationService } = servicesManager.services;
+  const LoadingIndicatorProgress = customizationService.getCustomization(
+    'ui.loadingIndicatorProgress'
+  );
   const DicomUploadComponent = customizationService.getCustomization('dicomUploadComponent');
 
   const uploadProps =

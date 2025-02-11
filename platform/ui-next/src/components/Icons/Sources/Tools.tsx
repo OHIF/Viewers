@@ -2447,8 +2447,6 @@ export const ToolSegBrush = (props: IconProps) => (
     width="24px"
     height="24px"
     viewBox="0 0 24 24"
-    version="1.1"
-    xmlns="http://www.w3.org/2000/svg"
     {...props}
   >
     <g
@@ -2490,8 +2488,6 @@ export const ToolSegEraser = (props: IconProps) => (
     width="24px"
     height="24px"
     viewBox="0 0 24 24"
-    version="1.1"
-    xmlns="http://www.w3.org/2000/svg"
     {...props}
   >
     <g
@@ -2592,8 +2588,6 @@ export const ToolSegThreshold = (props: IconProps) => (
     width="24px"
     height="24px"
     viewBox="0 0 24 24"
-    version="1.1"
-    xmlns="http://www.w3.org/2000/svg"
     {...props}
   >
     <g
@@ -3012,10 +3006,11 @@ export const ToolWindowLevel = (props: IconProps) => (
 
 export const ToolWindowRegion = (props: IconProps) => (
   <svg
-    width="28px"
-    height="28px"
-    viewBox="0 0 28 28"
+    width="24px"
+    height="24px"
+    viewBox="0 0 24 24"
     version="1.1"
+    {...props}
     xmlns="http://www.w3.org/2000/svg"
   >
     <g
@@ -3029,8 +3024,8 @@ export const ToolWindowRegion = (props: IconProps) => (
         id="Rectangle"
         x="0"
         y="0"
-        width="28"
-        height="28"
+        width="24"
+        height="24"
       ></rect>
       <path
         d="M10.3460449,22 L4,22 C3.44771525,22 3,21.5522847 3,21 L3,4 C3,3.44771525 3.44771525,3 4,3 L21,3 C21.5522847,3 22,3.44771525 22,4 L22,11.3197021"
@@ -3110,11 +3105,9 @@ export const ToolZoom = (props: IconProps) => (
 
 export const ToolBrush = (props: IconProps) => (
   <svg
-    width="28px"
-    height="28px"
-    viewBox="0 0 28 28"
-    version="1.1"
-    xmlns="http://www.w3.org/2000/svg"
+    width="24px"
+    height="24px"
+    viewBox="0 0 24 24"
     {...props}
   >
     <g
@@ -3128,8 +3121,8 @@ export const ToolBrush = (props: IconProps) => (
         id="Rectangle"
         x="0"
         y="0"
-        width="28"
-        height="28"
+        width="24"
+        height="24"
       ></rect>
       <path
         d="M3.24640621,21.8286833 C3.09173375,21.7551472 2.99513748,21.5971513 3.00018895,21.4259625 C3.00524042,21.2547737 3.11098486,21.1027485 3.26972426,21.0384606 C5.3260304,20.2059201 4.66362518,17.8620247 5.27421252,16.6088957 C6.02197747,15.1026514 7.84114758,14.4766383 9.35746132,15.2037675 C13.9485253,17.4422999 8.48346644,24.3211232 3.24640621,21.8286833 Z"
@@ -3153,11 +3146,9 @@ export const ToolBrush = (props: IconProps) => (
 
 export const ToolEraser = (props: IconProps) => (
   <svg
-    width="28px"
-    height="28px"
-    viewBox="0 0 28 28"
-    version="1.1"
-    xmlns="http://www.w3.org/2000/svg"
+    width="24px"
+    height="24px"
+    viewBox="0 0 24 24"
     {...props}
   >
     <g
@@ -3171,8 +3162,8 @@ export const ToolEraser = (props: IconProps) => (
         id="Rectangle"
         x="0"
         y="0"
-        width="28"
-        height="28"
+        width="24"
+        height="24"
       ></rect>
       <path
         d="M8.47826087,18.0030772 C7.48731947,17.9495317 6.54439458,17.5591084 5.80565217,16.8964685 L4.1066087,15.1958598 C3.49763625,14.5834856 3.49763625,13.5942339 4.1066087,12.9818598 L13.6317391,3.45672934 C14.2441133,2.84775689 15.233365,2.84775689 15.8457391,3.45672934 L19.8926087,7.5035989 C20.5015811,8.11597307 20.5015811,9.10522473 19.8926087,9.7175989 L12.7153043,16.8949033 C11.9769855,17.5579476 11.0343414,17.9489213 10.0434783,18.0030772 L8.47826087,18.0030772 Z"
@@ -3210,11 +3201,9 @@ export const ToolEraser = (props: IconProps) => (
 
 export const ToolThreshold = (props: IconProps) => (
   <svg
-    width="28px"
-    height="28px"
-    viewBox="0 0 28 28"
-    version="1.1"
-    xmlns="http://www.w3.org/2000/svg"
+    width="24px"
+    height="24px"
+    viewBox="0 0 24 24"
     {...props}
   >
     <g
@@ -3228,8 +3217,8 @@ export const ToolThreshold = (props: IconProps) => (
         id="Rectangle"
         x="0"
         y="0"
-        width="28"
-        height="28"
+        width="24"
+        height="24"
       ></rect>
       <g
         id="Group"
@@ -3295,11 +3284,9 @@ export const ToolThreshold = (props: IconProps) => (
 
 export const ToolShape = (props: IconProps) => (
   <svg
-    width="28px"
-    height="28px"
-    viewBox="0 0 28 28"
-    version="1.1"
-    xmlns="http://www.w3.org/2000/svg"
+    width="24px"
+    height="24px"
+    viewBox="0 0 24 24"
     {...props}
   >
     <g
@@ -3313,8 +3300,8 @@ export const ToolShape = (props: IconProps) => (
         id="Rectangle"
         x="0"
         y="0"
-        width="28"
-        height="28"
+        width="24"
+        height="24"
       ></rect>
       <circle
         id="Oval"

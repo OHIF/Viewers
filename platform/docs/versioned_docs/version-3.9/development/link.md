@@ -39,7 +39,7 @@ Below we demonstrate how to link Cornerstone3D to OHIF Viewer. This is useful fo
     <iframe src="https://player.vimeo.com/video/849096279?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479" frameBorder="0" allow="autoplay; fullscreen; picture-in-picture" allowFullScreen style= {{ position:"absolute",top:0,left:0,width:"100%",height:"100%"}} title="measurement-report"></iframe>
 </div>
 
-::tip
+:::tip
 Since `@cornerstonejs/tools` depends on `@cornerstonejs/core`, if you need the changes
 you made in `@cornerstonejs/core` to be reflected in `@cornerstonejs/tools`, you need to
 also link `@cornerstonejs/core` to `@cornerstonejs/tools`.
@@ -60,3 +60,4 @@ cd /path/to/OHIFViewer
 yarn link "@cornerstonejs/core"
 yarn link "@cornerstonejs/tools"
 ```
+:::

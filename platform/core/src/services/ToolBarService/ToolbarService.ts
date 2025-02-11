@@ -236,8 +236,8 @@ export default class ToolbarService extends PubSubService {
 
     const evaluateButtonProps = (button, props, refreshProps) => {
       if (evaluationResults.has(button.id)) {
-        const { disabled, className, isActive } = evaluationResults.get(button.id);
-        return { ...props, disabled, className, isActive };
+        const { disabled, disabledText, className, isActive } = evaluationResults.get(button.id);
+        return { ...props, disabled, disabledText, className, isActive };
       } else {
         const evaluated = props.evaluate?.({ ...refreshProps, button });
         const updatedProps = {
@@ -276,7 +276,9 @@ export default class ToolbarService extends PubSubService {
         // item in the group
         buttonProps = {
           ...buttonProps,
-          primary: groupEvaluated?.primary || buttonProps.primary,
+          primary: groupEvaluated?.primary ?? buttonProps.primary,
+          disabled: groupEvaluated?.disabled ?? buttonProps.disabled,
+          disabledText: groupEvaluated?.disabledText ?? buttonProps.disabledText,
         };
 
         const { primary, items } = buttonProps;

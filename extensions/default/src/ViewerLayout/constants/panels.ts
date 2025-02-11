@@ -1,6 +1,6 @@
-const expandedInsideBorderSize = 4;
+const expandedInsideBorderSize = 0;
 const collapsedInsideBorderSize = 4;
-const collapsedOutsideBorderSize = 8;
+const collapsedOutsideBorderSize = 4;
 const collapsedWidth = 25;
 
 const rightPanelInitialExpandedWidth = 280;

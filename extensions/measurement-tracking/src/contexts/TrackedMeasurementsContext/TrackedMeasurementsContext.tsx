@@ -97,6 +97,7 @@ function TrackedMeasurementsContextProvider(
       commandsManager.runCommand('updateStoredPositionPresentation', {
         viewportId: activeViewportId,
         displaySetInstanceUID: referencedDisplaySetUID,
+        referencedImageId: trackedMeasurement.referencedImageId,
       });
 
       viewportGridService.setDisplaySetsForViewport({
