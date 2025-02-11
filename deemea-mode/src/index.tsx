@@ -64,10 +64,10 @@ function modeFactory({ modeConfiguration }) {
         'Angle',
         'Probe',
         'CalibrationLine',
-        'Zoom',
         'WindowLevel',
         'Pan',
         'Layout',
+        'Zoom',
         'Reset',
       ]);
     },
