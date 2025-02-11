@@ -49,7 +49,7 @@ function ViewerHeader({
   const commitHash = process.env.COMMIT_HASH;
 
   const AboutModal = customizationService.getCustomization('ohif.aboutModal');
-
+  const UserPreferencesModal = customizationService.getCustomization('ohif.userPreferencesModal');
   const menuOptions = [
     {
       title: t('Header:About'),
@@ -67,8 +67,8 @@ function ViewerHeader({
       icon: 'settings',
       onClick: () =>
         show({
+          content: UserPreferencesModal,
           title: t('UserPreferencesModal:User preferences'),
-          content: UserPreferences,
           containerClassName: 'w-[70%] max-w-[900px]',
           contentProps: {
             hotkeyDefaults: hotkeysManager.getValidHotkeyDefinitions(hotkeyDefaults),

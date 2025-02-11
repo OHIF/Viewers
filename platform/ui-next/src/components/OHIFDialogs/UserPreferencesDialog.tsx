@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { DialogContent, DialogHeader, DialogFooter, DialogTitle } from '../Dialog';
 import { Button } from '../Button';
 import { Label } from '../Label';
 import { Input } from '../Input';
@@ -11,24 +10,7 @@ interface UserPreferencesDialogProps {
 }
 
 export function UserPreferencesDialog({ children, className }: UserPreferencesDialogProps) {
-  return (
-    <DialogContent className={cn('flex max-h-[80vh] max-w-3xl flex-col', className)}>
-      {children}
-    </DialogContent>
-  );
-}
-
-/** Title */
-interface TitleProps {
-  children: React.ReactNode;
-  className?: string;
-}
-function Title({ children, className }: TitleProps) {
-  return (
-    <DialogHeader>
-      <DialogTitle className={cn(className)}>{children}</DialogTitle>
-    </DialogHeader>
-  );
+  return <div className={cn(className)}>{children}</div>;
 }
 
 /** Body
@@ -88,52 +70,8 @@ function Hotkey({ label, placeholder, className }: HotkeyProps) {
   );
 }
 
-/** Footer with "Restore Defaults", "Cancel", "Save".
- *  Placed outside the scrollable region for consistent positioning.
- */
-interface FooterProps {
-  onRestoreDefaults?: () => void;
-  onCancel?: () => void;
-  onSave?: () => void;
-  className?: string;
-}
-function Footer({ onRestoreDefaults, onCancel, onSave, className }: FooterProps) {
-  return (
-    <div className="flex-shrink-0">
-      <DialogFooter className={cn(className)}>
-        <div className="flex w-full items-center justify-between">
-          <Button
-            variant="ghost"
-            onClick={onRestoreDefaults}
-          >
-            Restore Defaults
-          </Button>
-          <div className="flex space-x-2">
-            <Button
-              variant="secondary"
-              onClick={onCancel}
-              className="min-w-[80px]"
-            >
-              Cancel
-            </Button>
-            <Button
-              variant="default"
-              onClick={onSave}
-              className="min-w-[80px]"
-            >
-              Save
-            </Button>
-          </div>
-        </div>
-      </DialogFooter>
-    </div>
-  );
-}
-
 /** Attach subcomponents as static properties for a nicer API */
-UserPreferencesDialog.Title = Title;
 UserPreferencesDialog.Body = Body;
 UserPreferencesDialog.HotkeysGrid = HotkeysGrid;
 UserPreferencesDialog.Hotkey = Hotkey;
-UserPreferencesDialog.Footer = Footer;
 UserPreferencesDialog.SubHeading = SubHeading;

@@ -19,6 +19,8 @@ import viewportActionCornersCustomization from './customizations/viewportActionC
 import labellingFlowCustomization from './customizations/labellingFlowCustomization';
 import viewportNotificationCustomization from './customizations/notificationCustomization';
 import aboutModalCustomization from './customizations/aboutModalCustomization';
+import userPreferencesCustomization from './customizations/userPreferencesCustomization';
+
 /**
  *
  * Note: this is an example of how the customization module can be used
@@ -63,6 +65,7 @@ export default function getCustomizationModule({ servicesManager, extensionManag
         ...contextMenuUICustomization,
         ...viewportNotificationCustomization,
         ...aboutModalCustomization,
+        ...userPreferencesCustomization,
       },
     },
   ];

@@ -62,9 +62,10 @@ const PreferencesButton = () => {
     <Button
       onClick={() =>
         show({
-          content: () => (
+          title: 'User Preferences',
+          containerClassName: 'w-[70%] max-w-[900px]',
+          content: ({ hide }) => (
             <UserPreferencesDialog>
-              <UserPreferencesDialog.Title>User Preferences</UserPreferencesDialog.Title>
               <UserPreferencesDialog.Body>
                 {/* Language Section */}
                 <div className="mb-3 flex items-center space-x-14">
@@ -84,100 +85,72 @@ const PreferencesButton = () => {
                   </Select>
                 </div>
 
-                {/* Hotkeys Section */}
                 <UserPreferencesDialog.SubHeading>Hotkeys</UserPreferencesDialog.SubHeading>
                 <UserPreferencesDialog.HotkeysGrid>
-                  <UserPreferencesDialog.Hotkey
-                    label="Zoom"
-                    placeholder="z"
-                  />
-                  <UserPreferencesDialog.Hotkey
-                    label="Zoom In"
-                    placeholder="z"
-                  />
-                  <UserPreferencesDialog.Hotkey
-                    label="Zoom Out"
-                    placeholder="-"
-                  />
-                  <UserPreferencesDialog.Hotkey
-                    label="Zoom to Fit"
-                    placeholder="="
-                  />
-                  <UserPreferencesDialog.Hotkey
-                    label="Rotate Right"
-                    placeholder="r"
-                  />
-                  <UserPreferencesDialog.Hotkey
-                    label="Rotate Left"
-                    placeholder="l"
-                  />
-                  <UserPreferencesDialog.Hotkey
-                    label="Flip Horizontal"
-                    placeholder="z"
-                  />
-                  <UserPreferencesDialog.Hotkey
-                    label="Flip Vertical"
-                    placeholder="z"
-                  />
-                  <UserPreferencesDialog.Hotkey
-                    label="Invert"
-                    placeholder="z"
-                  />
-                  <UserPreferencesDialog.Hotkey
-                    label="Next Viewport"
-                    placeholder="z"
-                  />
-                  <UserPreferencesDialog.Hotkey
-                    label="Previous Viewport"
-                    placeholder="z"
-                  />
-                  <UserPreferencesDialog.Hotkey
-                    label="Next Series"
-                    placeholder="z"
-                  />
-                  <UserPreferencesDialog.Hotkey
-                    label="Previous Series"
-                    placeholder="-"
-                  />
-                  <UserPreferencesDialog.Hotkey
-                    label="Next Stage"
-                    placeholder="="
-                  />
-                  <UserPreferencesDialog.Hotkey
-                    label="Previous Stage"
-                    placeholder="r"
-                  />
-                  <UserPreferencesDialog.Hotkey
-                    label="Next Image"
-                    placeholder="l"
-                  />
-                  <UserPreferencesDialog.Hotkey
-                    label="Previous Image"
-                    placeholder="z"
-                  />
-                  <UserPreferencesDialog.Hotkey
-                    label="First Image"
-                    placeholder="z"
-                  />
-                  <UserPreferencesDialog.Hotkey
-                    label="Last Image"
-                    placeholder="z"
-                  />
-                  <UserPreferencesDialog.Hotkey
-                    label="Reset"
-                    placeholder="z"
-                  />
+                  {[
+                    { label: 'Zoom', placeholder: 'z' },
+                    { label: 'Zoom In', placeholder: 'z' },
+                    { label: 'Zoom Out', placeholder: '-' },
+                    { label: 'Zoom to Fit', placeholder: '=' },
+                    { label: 'Rotate Right', placeholder: 'r' },
+                    { label: 'Rotate Left', placeholder: 'l' },
+                    { label: 'Flip Horizontal', placeholder: 'z' },
+                    { label: 'Flip Vertical', placeholder: 'z' },
+                    { label: 'Invert', placeholder: 'z' },
+                    { label: 'Next Viewport', placeholder: 'z' },
+                    { label: 'Previous Viewport', placeholder: 'z' },
+                    { label: 'Next Series', placeholder: 'z' },
+                    { label: 'Previous Series', placeholder: '-' },
+                    { label: 'Next Stage', placeholder: '=' },
+                    { label: 'Previous Stage', placeholder: 'r' },
+                    { label: 'Next Image', placeholder: 'l' },
+                    { label: 'Previous Image', placeholder: 'z' },
+                    { label: 'First Image', placeholder: 'z' },
+                    { label: 'Last Image', placeholder: 'z' },
+                    { label: 'Reset', placeholder: 'z' },
+                  ].map(hotkey => (
+                    <UserPreferencesDialog.Hotkey
+                      key={hotkey.label}
+                      label={hotkey.label}
+                      placeholder={hotkey.placeholder}
+                    />
+                  ))}
                 </UserPreferencesDialog.HotkeysGrid>
               </UserPreferencesDialog.Body>
-              <UserPreferencesDialog.Footer
-                onRestoreDefaults={() => console.debug('Restore Defaults clicked')}
-                onCancel={() => show({})}
-                onSave={() => console.debug('Save clicked')}
-              />
+              <div>
+                <div className="flex-shrink-0">
+                  <div className="flex w-full items-center justify-between">
+                    <Button
+                      variant="ghost"
+                      onClick={() => {}}
+                    >
+                      Restore Defaults
+                    </Button>
+                    <div className="flex space-x-2">
+                      <Button
+                        variant="secondary"
+                        onClick={() => {
+                          hide();
+                        }}
+                        className="min-w-[80px]"
+                      >
+                        Cancel
+                      </Button>
+                      <Button
+                        variant="default"
+                        onClick={() => {
+                          hide();
+                        }}
+                        className="min-w-[80px]"
+                      >
+                        Save
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </UserPreferencesDialog>
           ),
-          title: 'User Preferences',
-          containerClassName: 'w-[70%] max-w-[900px]',
         })
       }
     >

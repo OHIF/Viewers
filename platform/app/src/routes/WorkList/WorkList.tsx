@@ -474,7 +474,7 @@ function WorkList({
   const commitHash = process.env.COMMIT_HASH;
 
   const AboutModal = customizationService.getCustomization('ohif.aboutModal');
-
+  const UserPreferencesModal = customizationService.getCustomization('ohif.userPreferencesModal');
   const menuOptions = [
     {
       title: t('Header:About'),
@@ -493,7 +493,7 @@ function WorkList({
       onClick: () =>
         show({
           title: t('UserPreferencesModal:User preferences'),
-          content: UserPreferences,
+          content: UserPreferencesModal,
           contentProps: {
             hotkeyDefaults: hotkeysManager.getValidHotkeyDefinitions(hotkeyDefaults),
             hotkeyDefinitions,
