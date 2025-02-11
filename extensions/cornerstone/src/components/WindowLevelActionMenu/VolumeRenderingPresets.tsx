@@ -17,7 +17,6 @@ export function VolumeRenderingPresets({
       content: VolumeRenderingPresetsContent,
       title: 'Rendering Presets',
       movable: true,
-      noOverlay: true,
       contentProps: {
         onClose: uiModalService.hide,
         presets: volumeRenderingPresets,

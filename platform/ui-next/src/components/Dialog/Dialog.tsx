@@ -7,35 +7,29 @@ import { useDraggable } from './useDraggable';
 
 interface DialogContextValue {
   movable?: boolean;
-  noOverlay?: boolean;
   shouldCloseOnEsc?: boolean;
   shouldCloseOnOverlayClick?: boolean;
 }
 
 const DialogContext = React.createContext<DialogContextValue>({
   movable: false,
-  noOverlay: false,
   shouldCloseOnEsc: true,
   shouldCloseOnOverlayClick: true,
 });
 
 interface DialogRootProps extends DialogPrimitive.DialogProps {
   movable?: boolean;
-  noOverlay?: boolean;
   shouldCloseOnEsc?: boolean;
   shouldCloseOnOverlayClick?: boolean;
 }
 
 const Dialog = ({
   movable,
-  noOverlay,
   shouldCloseOnEsc = true,
   shouldCloseOnOverlayClick = true,
   ...props
 }: DialogRootProps) => (
-  <DialogContext.Provider
-    value={{ movable, noOverlay, shouldCloseOnEsc, shouldCloseOnOverlayClick }}
-  >
+  <DialogContext.Provider value={{ movable, shouldCloseOnEsc, shouldCloseOnOverlayClick }}>
     <DialogPrimitive.Root {...props} />
   </DialogContext.Provider>
 );
@@ -72,8 +66,7 @@ const DialogContent = React.forwardRef<
     children?: React.ReactNode;
   }
 >(({ className, children, ...props }, ref) => {
-  const { movable, noOverlay, shouldCloseOnEsc, shouldCloseOnOverlayClick } =
-    React.useContext(DialogContext);
+  const { movable, shouldCloseOnEsc, shouldCloseOnOverlayClick } = React.useContext(DialogContext);
 
   const { handlePointerDown, setRefs, initialTransform } = useDraggable(
     {
@@ -120,7 +113,7 @@ const DialogContent = React.forwardRef<
 
   return (
     <DialogPortal>
-      {!noOverlay && <DialogOverlay />}
+      {!movable && <DialogOverlay />}
       {content}
     </DialogPortal>
   );

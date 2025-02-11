@@ -13,7 +13,6 @@ interface ModalOptions {
   content?: React.ComponentType<ModalContentProps>;
   contentProps?: Record<string, unknown>;
   movable?: boolean;
-  noOverlay?: boolean;
   containerClassName?: string;
   contentClassName?: string;
 }
@@ -29,7 +28,6 @@ interface ModalComponentProps {
   title?: string;
   children: React.ReactNode;
   movable?: boolean;
-  noOverlay?: boolean;
   containerClassName?: string;
   contentClassName?: string;
 }
@@ -48,7 +46,6 @@ const DEFAULT_OPTIONS: ModalOptions = {
   title: '',
   shouldCloseOnEsc: true,
   movable: false,
-  noOverlay: false,
 };
 
 interface ModalService {

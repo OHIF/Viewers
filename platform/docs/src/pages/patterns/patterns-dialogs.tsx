@@ -62,6 +62,7 @@ const PreferencesButton = () => {
     <Button
       onClick={() =>
         show({
+          movable: true,
           title: 'User Preferences',
           containerClassName: 'w-[70%] max-w-[900px]',
           content: ({ hide }) => (

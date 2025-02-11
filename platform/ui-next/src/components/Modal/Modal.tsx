@@ -8,7 +8,6 @@ export interface ModalProps {
   title?: string;
   children: React.ReactNode;
   movable?: boolean;
-  noOverlay?: boolean;
   containerClassName?: string;
   contentClassName?: string;
   shouldCloseOnEsc?: boolean;
@@ -21,7 +20,6 @@ const Modal: React.FC<ModalProps> = ({
   title,
   children,
   movable = false,
-  noOverlay = false,
   shouldCloseOnEsc = true,
   shouldCloseOnOverlayClick = true,
   containerClassName,
@@ -32,7 +30,6 @@ const Modal: React.FC<ModalProps> = ({
       open={isOpen}
       onOpenChange={open => !open && onClose()}
       movable={movable}
-      noOverlay={noOverlay}
       shouldCloseOnEsc={shouldCloseOnEsc}
       shouldCloseOnOverlayClick={shouldCloseOnOverlayClick}
     >
