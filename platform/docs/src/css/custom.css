@@ -233,11 +233,6 @@ input[type='number'] {
   -moz-appearance: textfield; /* For Firefox */
 }
 
-.navbar__item {
-  display: flex;
-  align-items: center;
-}
-
 .navbar__item svg {
   margin-right: 5px;
   display: inline-block;
