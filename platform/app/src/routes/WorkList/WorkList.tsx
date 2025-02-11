@@ -19,7 +19,6 @@ import {
   StudyListTable,
   StudyListPagination,
   StudyListFilter,
-  AboutModal,
   UserPreferences,
   useSessionStorage,
   InvestigationalUseDialog,
@@ -102,6 +101,7 @@ function WorkList({
   const sortModifier = sortDirection === 'descending' ? 1 : -1;
   const defaultSortValues =
     shouldUseDefaultSort && canSort ? { sortBy: 'studyDate', sortDirection: 'ascending' } : {};
+  const { customizationService } = servicesManager.services;
 
   const sortedStudies = useMemo(() => {
     if (!canSort) {
@@ -473,6 +473,8 @@ function WorkList({
   const versionNumber = process.env.VERSION_NUMBER;
   const commitHash = process.env.COMMIT_HASH;
 
+  const AboutModal = customizationService.getCustomization('ohif.aboutModal');
+
   const menuOptions = [
     {
       title: t('Header:About'),
@@ -482,7 +484,7 @@ function WorkList({
           content: AboutModal,
           title: t('AboutModal:About OHIF Viewer'),
           contentProps: { versionNumber, commitHash },
-          containerClassName: 'max-w-4xl max-h-4xl',
+          containerClassName: 'max-w-[400px]',
         }),
     },
     {
@@ -523,7 +525,6 @@ function WorkList({
     });
   }
 
-  const { customizationService } = servicesManager.services;
   const LoadingIndicatorProgress = customizationService.getCustomization(
     'ui.loadingIndicatorProgress'
   );

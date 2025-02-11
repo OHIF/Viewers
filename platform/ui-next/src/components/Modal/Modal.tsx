@@ -24,8 +24,8 @@ const Modal: React.FC<ModalProps> = ({
   noOverlay = false,
   shouldCloseOnEsc = true,
   shouldCloseOnOverlayClick = true,
-  containerClassName = '',
-  contentClassName = '',
+  containerClassName,
+  contentClassName,
 }) => {
   return (
     <Dialog

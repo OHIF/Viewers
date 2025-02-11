@@ -98,6 +98,8 @@ const ModalProvider: React.FC<ModalProviderProps> = ({
           isOpen={true}
           onClose={hide}
           title={t(title)}
+          containerClassName={ModalContent.ContainerClassName}
+          contentClassName={ModalContent.ContentClassName}
           {...options}
         >
           <ModalContent
