@@ -564,7 +564,7 @@ function commandsModule({
             onClose: uiModalService.hide,
             cornerstoneViewportService,
           },
-          containerDimensions: 'w-[70%] max-w-[900px]',
+          containerClassName: 'w-[70%] max-w-[900px]',
         });
       }
     },

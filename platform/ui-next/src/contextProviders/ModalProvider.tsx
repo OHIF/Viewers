@@ -1,4 +1,3 @@
-// ModalProvider.tsx
 import React, { useState, createContext, useContext, useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 

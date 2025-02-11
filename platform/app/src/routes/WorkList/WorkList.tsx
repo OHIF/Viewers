@@ -482,7 +482,7 @@ function WorkList({
           content: AboutModal,
           title: t('AboutModal:About OHIF Viewer'),
           contentProps: { versionNumber, commitHash },
-          containerDimensions: 'max-w-4xl max-h-4xl',
+          containerClassName: 'max-w-4xl max-h-4xl',
         }),
     },
     {

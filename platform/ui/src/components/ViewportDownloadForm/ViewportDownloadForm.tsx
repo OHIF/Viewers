@@ -268,6 +268,7 @@ const ViewportDownloadForm = ({
       <div className="mt-6 flex flex-col">
         <div className="mb-4 w-full">
           <Input
+            className=""
             data-cy="file-name"
             value={filename}
             onChange={evt => setFilename(evt.target.value)}
