@@ -3,7 +3,7 @@ import { AboutDialog } from '@ohif/ui-next';
 
 function AboutModal() {
   return (
-    <AboutDialog className="max-w-[400px]">
+    <AboutDialog>
       <AboutDialog.ProductName>OHIF Viewer</AboutDialog.ProductName>
       <AboutDialog.ProductVersion>3.10</AboutDialog.ProductVersion>
       <AboutDialog.ProductBeta>beta.75</AboutDialog.ProductBeta>

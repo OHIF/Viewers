@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { DialogFooter } from '../Dialog';
 import { cn } from '../../lib/utils';
 import { Button } from '../Button';
 import { Icons } from '../Icons';
@@ -102,17 +101,6 @@ function SocialItem({ icon, url, text, className }: SocialItemProps) {
   );
 }
 
-/** Sub-component: Footer */
-interface FooterProps {
-  children: React.ReactNode;
-  className?: string;
-}
-function Footer({ children, className }: FooterProps) {
-  return (
-    <DialogFooter className={cn('flex justify-center pt-4', className)}>{children}</DialogFooter>
-  );
-}
-
 /** Attach sub-components to AboutDialog as static properties */
 AboutDialog.ProductName = ProductName;
 AboutDialog.ProductVersion = ProductVersion;
@@ -120,4 +108,3 @@ AboutDialog.ProductBeta = ProductBeta;
 AboutDialog.Body = Body;
 AboutDialog.DetailItem = DetailItem;
 AboutDialog.SocialItem = SocialItem;
-AboutDialog.Footer = Footer;
