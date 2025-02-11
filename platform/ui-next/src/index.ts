@@ -100,6 +100,12 @@ import {
   ToolButtonListDivider,
   Toolbox,
   Numeric,
+  AboutDialog,
+  ImageDialog,
+  InputDialog,
+  PresetDialog,
+  UserPreferencesDialog,
+  Modal,
 } from './components';
 import { DataRow } from './components/DataRow';
 
@@ -108,6 +114,8 @@ import {
   NotificationProvider,
   useToolbox,
   ToolboxProvider,
+  useModal,
+  ModalProvider,
 } from './contextProviders';
 import { ViewportGridContext, ViewportGridProvider, useViewportGrid } from './contextProviders';
 import * as utils from './utils';
@@ -225,4 +233,12 @@ export {
   useToolbox,
   utils,
   Numeric,
+  AboutDialog,
+  ImageDialog,
+  InputDialog,
+  PresetDialog,
+  UserPreferencesDialog,
+  Modal,
+  useModal,
+  ModalProvider,
 };

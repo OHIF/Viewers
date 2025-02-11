@@ -2,6 +2,7 @@ import * as React from 'react';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '../Dialog';
 import { cn } from '../../lib/utils';
 import { Button } from '../Button';
+import { Icons } from '../Icons';
 
 interface AboutDialogProps {
   open: boolean;
@@ -23,7 +24,7 @@ export function AboutDialog({ open, onOpenChange, children, className }: AboutDi
   );
 }
 
-/** Subcomponent: Product Name */
+/** Sub component: Product Name */
 interface ProductNameProps {
   children: React.ReactNode;
   className?: string;
@@ -65,59 +66,48 @@ function Body({ children, className }: BodyProps) {
   );
 }
 
-/** Subcomponent: Detail Title */
-interface DetailTitleProps {
-  children: React.ReactNode;
+/** Subcomponent: Detail Item */
+interface DetailItemProps {
+  label: string;
+  value: string;
   className?: string;
 }
-function DetailTitle({ children, className }: DetailTitleProps) {
+function DetailItem({ label, value, className }: DetailItemProps) {
   return (
-    <div
-      className={cn('text-muted-foreground pt-2 text-sm font-semibold tracking-wide', className)}
-    >
-      {children}
+    <div className={cn('flex flex-col items-center', className)}>
+      <div className="text-muted-foreground pt-2 text-sm font-semibold tracking-wide">{label}</div>
+      <div className="text-muted-foreground text-sm">{value}</div>
     </div>
   );
 }
 
-/** Subcomponent: Detail Text */
-interface DetailProps {
-  children: React.ReactNode;
+/** Subcomponent: Social Item */
+interface SocialItemProps {
+  icon: string;
+  url: string;
+  text: string;
   className?: string;
 }
-function Detail({ children, className }: DetailProps) {
-  return <div className={cn('text-muted-foreground text-sm', className)}>{children}</div>;
-}
-
-/** Subcomponent: Social Icon (e.g. GitHub logo) */
-interface SocialIconProps {
-  children: React.ReactNode;
-  className?: string;
-}
-function SocialIcon({ children, className }: SocialIconProps) {
-  return <div className={cn('mr-2 inline-block', className)}>{children}</div>;
-}
-
-/** Subcomponent: Social Link */
-interface SocialLinkProps extends React.AnchorHTMLAttributes<HTMLAnchorElement> {
-  children: React.ReactNode;
-  className?: string;
-}
-function SocialLink({ children, className, ...props }: SocialLinkProps) {
+function SocialItem({ icon, url, text, className }: SocialItemProps) {
   return (
-    <Button
-      asChild
-      variant="link"
-      className={cn('py-6 text-lg', className)}
-    >
-      <a
-        target="_blank"
-        rel="noopener noreferrer"
-        {...props}
+    <div className={cn('mt-4 flex items-center space-x-2', className)}>
+      <div className="mr-2 inline-block">
+        <Icons.ByName name={icon} />
+      </div>
+      <Button
+        asChild
+        variant="link"
+        className="py-6 text-lg"
       >
-        {children}
-      </a>
-    </Button>
+        <a
+          href={`https://github.com/${url}`}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          {text}
+        </a>
+      </Button>
+    </div>
   );
 }
 
@@ -147,8 +137,6 @@ AboutDialog.ProductName = ProductName;
 AboutDialog.ProductVersion = ProductVersion;
 AboutDialog.ProductBeta = ProductBeta;
 AboutDialog.Body = Body;
-AboutDialog.DetailTitle = DetailTitle;
-AboutDialog.Detail = Detail;
-AboutDialog.SocialIcon = SocialIcon;
-AboutDialog.SocialLink = SocialLink;
+AboutDialog.DetailItem = DetailItem;
+AboutDialog.SocialItem = SocialItem;
 AboutDialog.Footer = Footer;

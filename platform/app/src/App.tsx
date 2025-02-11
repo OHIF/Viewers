@@ -16,8 +16,6 @@ import {
 } from '@ohif/core';
 import {
   DialogProvider,
-  Modal,
-  ModalProvider,
   ThemeWrapper,
   ViewportDialogProvider,
   CineProvider,
@@ -29,6 +27,8 @@ import {
   ViewportGridProvider,
   TooltipProvider,
   ToolboxProvider,
+  Modal as ModalNext,
+  ModalProvider as ModalProviderNext,
 } from '@ohif/ui-next';
 // Viewer Project
 // TODO: Should this influence study list?
@@ -123,7 +123,7 @@ function App({
     [NotificationProvider, { service: uiNotificationService }],
     [TooltipProvider],
     [DialogProvider, { service: uiDialogService }],
-    [ModalProvider, { service: uiModalService, modal: Modal }],
+    [ModalProviderNext, { service: uiModalService, modal: ModalNext }],
     [ShepherdJourneyProvider],
   ];
 

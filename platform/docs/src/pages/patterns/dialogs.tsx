@@ -190,20 +190,19 @@ export default function SettingsPage() {
         <AboutDialog.ProductBeta>beta.75</AboutDialog.ProductBeta>
 
         <AboutDialog.Body>
-          <AboutDialog.DetailTitle>Commit Hash</AboutDialog.DetailTitle>
-          <AboutDialog.Detail>ac6е674b4d094f942556d045178011bbf3f81796</AboutDialog.Detail>
-
-          <AboutDialog.DetailTitle>Current Browser &amp; OS</AboutDialog.DetailTitle>
-          <AboutDialog.Detail>Safari 18.2.0, macOS 10.15.7</AboutDialog.Detail>
-
-          <div className="mt-4 flex items-center space-x-2">
-            <AboutDialog.SocialIcon>
-              <Icons.ByName name="SocialGithub" />
-            </AboutDialog.SocialIcon>
-            <AboutDialog.SocialLink href="https://github.com/OHIF/Viewers">
-              github.com/OHIF/Viewers
-            </AboutDialog.SocialLink>
-          </div>
+          <AboutDialog.DetailItem
+            label="Commit Hash"
+            value="ac6е674b4d094f942556d045178011bbf3f81796"
+          />
+          <AboutDialog.DetailItem
+            label="Current Browser & OS"
+            value="Safari 18.2.0, macOS 10.15.7"
+          />
+          <AboutDialog.SocialItem
+            icon="SocialGithub"
+            url="OHIF/Viewers"
+            text="github.com/OHIF/Viewers"
+          />
         </AboutDialog.Body>
       </AboutDialog>
 
