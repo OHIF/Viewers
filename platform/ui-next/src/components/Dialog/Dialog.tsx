@@ -3,6 +3,7 @@ import * as DialogPrimitive from '@radix-ui/react-dialog';
 import { Cross2Icon } from '@radix-ui/react-icons';
 
 import { cn } from '../../lib/utils';
+import { useDraggable } from './useDraggable';
 
 interface DialogContextValue {
   movable?: boolean;
@@ -70,69 +71,12 @@ const DialogContent = React.forwardRef<
   const { movable, noOverlay, shouldCloseOnEsc, shouldCloseOnOverlayClick } =
     React.useContext(DialogContext);
 
-  const offsetRef = React.useRef({ x: 0, y: 0 });
-
-  const dragState = React.useRef<{
-    startX: number;
-    startY: number;
-    initialOffset: { x: number; y: number };
-  } | null>(null);
-
-  const internalRef = React.useRef<HTMLDivElement>(null);
-  const setRefs = (node: HTMLDivElement) => {
-    internalRef.current = node;
-    if (typeof ref === 'function') {
-      ref(node);
-    } else if (ref) {
-      (ref as React.MutableRefObject<HTMLDivElement | null>).current = node;
-    }
-  };
-
-  const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
-    const target = e.target as HTMLElement;
-    if (!target.closest('.drag-handle')) {
-      return;
-    }
-
-    if (internalRef.current) {
-      internalRef.current.style.transition = 'none';
-    }
-    dragState.current = {
-      startX: e.clientX,
-      startY: e.clientY,
-      initialOffset: { ...offsetRef.current },
-    };
-
-    window.addEventListener('pointermove', handlePointerMove);
-    window.addEventListener('pointerup', handlePointerUp);
-  };
-
-  const handlePointerMove = (e: PointerEvent) => {
-    if (!dragState.current) {
-      return;
-    }
-
-    const deltaX = e.clientX - dragState.current.startX;
-    const deltaY = e.clientY - dragState.current.startY;
-    const newOffset = {
-      x: dragState.current.initialOffset.x + deltaX,
-      y: dragState.current.initialOffset.y + deltaY,
-    };
-
-    offsetRef.current = newOffset;
-    if (internalRef.current) {
-      internalRef.current.style.transform = `translate(-50%, -50%) translate(${newOffset.x}px, ${newOffset.y}px)`;
-    }
-  };
-
-  const handlePointerUp = () => {
-    if (internalRef.current) {
-      internalRef.current.style.transition = '';
-    }
-    window.removeEventListener('pointermove', handlePointerMove);
-    window.removeEventListener('pointerup', handlePointerUp);
-    dragState.current = null;
-  };
+  const { handlePointerDown, setRefs, initialTransform } = useDraggable(
+    {
+      enabled: movable,
+    },
+    ref
+  );
 
   // When not movable, Tailwind centers the dialog.
   // When movable, we remove the built‑in centering so our inline transform takes over.
@@ -142,9 +86,6 @@ const DialogContent = React.forwardRef<
     className
   );
 
-  const initialTransform = movable
-    ? `translate(-50%, -50%) translate(${offsetRef.current.x}px, ${offsetRef.current.y}px)`
-    : undefined;
   const style = movable ? { ...props.style, transform: initialTransform } : props.style;
 
   const content = (
