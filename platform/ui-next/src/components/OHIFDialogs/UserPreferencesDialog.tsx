@@ -1,32 +1,20 @@
 import * as React from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogFooter, DialogTitle } from '../Dialog';
+import { DialogContent, DialogHeader, DialogFooter, DialogTitle } from '../Dialog';
 import { Button } from '../Button';
 import { Label } from '../Label';
 import { Input } from '../Input';
 import { cn } from '../../lib/utils';
 
 interface UserPreferencesDialogProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
   children: React.ReactNode;
   className?: string;
 }
 
-export function UserPreferencesDialog({
-  open,
-  onOpenChange,
-  children,
-  className,
-}: UserPreferencesDialogProps) {
+export function UserPreferencesDialog({ children, className }: UserPreferencesDialogProps) {
   return (
-    <Dialog
-      open={open}
-      onOpenChange={onOpenChange}
-    >
-      <DialogContent className={cn('flex max-h-[80vh] max-w-3xl flex-col', className)}>
-        {children}
-      </DialogContent>
-    </Dialog>
+    <DialogContent className={cn('flex max-h-[80vh] max-w-3xl flex-col', className)}>
+      {children}
+    </DialogContent>
   );
 }
 

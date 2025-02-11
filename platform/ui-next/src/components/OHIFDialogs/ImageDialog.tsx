@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../Dialog/Dialog';
+import { DialogContent, DialogHeader, DialogTitle } from '../Dialog/Dialog';
 import { Button } from '../Button/Button';
 import { Input } from '../Input/Input';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '../Select/Select';
@@ -7,8 +7,6 @@ import { Switch } from '../Switch/Switch';
 import { cn } from '../../lib/utils';
 
 interface ImageDialogProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
   children: React.ReactNode;
   className?: string;
 }
@@ -18,15 +16,8 @@ interface ImageDialogProps {
  * layout here. We'll use a "Body" subcomponent for the main area
  * that sets up a flex row with a 70/30 split.
  */
-function ImageDialog({ open, onOpenChange, children, className }: ImageDialogProps) {
-  return (
-    <Dialog
-      open={open}
-      onOpenChange={onOpenChange}
-    >
-      <DialogContent className={cn('max-w-3xl', className)}>{children}</DialogContent>
-    </Dialog>
-  );
+export function ImageDialog({ children, className }: ImageDialogProps) {
+  return <DialogContent className={cn('max-w-3xl', className)}>{children}</DialogContent>;
 }
 
 /* -------------------------------------------------------------------------- */
@@ -277,5 +268,3 @@ ImageDialog.Filetype = Filetype;
 ImageDialog.ImageSize = ImageSize;
 ImageDialog.SwitchOption = SwitchOption;
 ImageDialog.Actions = Actions;
-
-export { ImageDialog };

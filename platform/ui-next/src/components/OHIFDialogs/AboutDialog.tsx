@@ -1,26 +1,19 @@
 import * as React from 'react';
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '../Dialog';
+import { DialogContent, DialogFooter, DialogHeader, DialogTitle } from '../Dialog';
 import { cn } from '../../lib/utils';
 import { Button } from '../Button';
 import { Icons } from '../Icons';
 
 interface AboutDialogProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
   children: React.ReactNode;
   className?: string;
 }
 
-export function AboutDialog({ open, onOpenChange, children, className }: AboutDialogProps) {
+export function AboutDialog({ children, className }: AboutDialogProps) {
   return (
-    <Dialog
-      open={open}
-      onOpenChange={onOpenChange}
-    >
-      <DialogContent className={cn('max-w-md gap-1 text-center', className)}>
-        {children}
-      </DialogContent>
-    </Dialog>
+    <DialogContent className={cn('max-w-md gap-1 text-center', className)}>
+      {children}
+    </DialogContent>
   );
 }
 

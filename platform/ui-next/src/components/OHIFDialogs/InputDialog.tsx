@@ -1,14 +1,10 @@
 import * as React from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogFooter, DialogTitle } from '../Dialog';
+import { DialogContent, DialogHeader, DialogFooter, DialogTitle } from '../Dialog';
 import { Button } from '../Button';
 import { Input } from '../Input';
 import { cn } from '../../lib/utils';
 
 interface InputDialogProps {
-  /** Whether the dialog is open or not. */
-  open: boolean;
-  /** Called when the dialog should open/close. */
-  onOpenChange: (open: boolean) => void;
   /** All subcomponents (`InputTitle`, `InputPlaceholder`, `InputActions`) go here. */
   children: React.ReactNode;
   className?: string;
@@ -18,15 +14,8 @@ interface InputDialogProps {
  * A small dialog that contains a title, one or more inputs (via `InputPlaceholder`),
  * and a set of actions (via `InputActions`).
  */
-export function InputDialog({ open, onOpenChange, children, className }: InputDialogProps) {
-  return (
-    <Dialog
-      open={open}
-      onOpenChange={onOpenChange}
-    >
-      <DialogContent className={cn('max-w-md', className)}>{children}</DialogContent>
-    </Dialog>
-  );
+export function InputDialog({ children, className }: InputDialogProps) {
+  return <DialogContent className={cn('max-w-md', className)}>{children}</DialogContent>;
 }
 
 /** Title area for your dialog (e.g., "Segment Label"). */

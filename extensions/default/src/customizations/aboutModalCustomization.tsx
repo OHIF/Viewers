@@ -1,12 +1,9 @@
 import React from 'react';
 import { AboutDialog } from '@ohif/ui-next';
 
-function AboutModal({ onOpenChange, open }) {
+function AboutModal() {
   return (
-    <AboutDialog
-      open={open}
-      onOpenChange={onOpenChange}
-    >
+    <AboutDialog>
       <AboutDialog.Title>About OHIF Viewer</AboutDialog.Title>
       <AboutDialog.ProductName>OHIF Viewer</AboutDialog.ProductName>
       <AboutDialog.ProductVersion>3.10</AboutDialog.ProductVersion>

@@ -1,26 +1,17 @@
 import * as React from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogFooter, DialogTitle } from '../Dialog';
+import { DialogContent, DialogHeader, DialogFooter, DialogTitle } from '../Dialog';
 import { Button } from '../Button';
 import { Input } from '../Input';
 import { ScrollArea } from '../ScrollArea';
 import { cn } from '../../lib/utils';
 
 interface PresetDialogProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
   children: React.ReactNode;
   className?: string;
 }
 
-export function PresetDialog({ open, onOpenChange, children, className }: PresetDialogProps) {
-  return (
-    <Dialog
-      open={open}
-      onOpenChange={onOpenChange}
-    >
-      <DialogContent className={cn('max-w-lg', className)}>{children}</DialogContent>
-    </Dialog>
-  );
+export function PresetDialog({ children, className }: PresetDialogProps) {
+  return <DialogContent className={cn('max-w-lg', className)}>{children}</DialogContent>;
 }
 
 /**

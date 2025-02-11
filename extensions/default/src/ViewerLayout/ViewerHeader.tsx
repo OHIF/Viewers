@@ -2,7 +2,7 @@ import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
-import { UserPreferences, AboutModal } from '@ohif/ui';
+import { UserPreferences } from '@ohif/ui';
 import { Header, useModal } from '@ohif/ui-next';
 import i18n from '@ohif/i18n';
 import { hotkeys } from '@ohif/core';
@@ -19,6 +19,7 @@ function ViewerHeader({
   servicesManager,
   appConfig,
 }: withAppTypes<{ appConfig: AppTypes.Config }>) {
+  const { customizationService } = servicesManager.services;
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -46,6 +47,8 @@ function ViewerHeader({
   const { hotkeyDefinitions, hotkeyDefaults } = hotkeysManager;
   const versionNumber = process.env.VERSION_NUMBER;
   const commitHash = process.env.COMMIT_HASH;
+
+  const AboutModal = customizationService.getCustomization('ohif.aboutModal');
 
   const menuOptions = [
     {

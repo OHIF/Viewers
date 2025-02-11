@@ -14,6 +14,8 @@ interface ModalOptions {
   contentProps?: Record<string, unknown>;
   movable?: boolean;
   noOverlay?: boolean;
+  containerClassName?: string;
+  contentClassName?: string;
 }
 
 interface ModalContextType {
@@ -28,6 +30,8 @@ interface ModalComponentProps {
   children: React.ReactNode;
   movable?: boolean;
   noOverlay?: boolean;
+  containerClassName?: string;
+  contentClassName?: string;
 }
 
 const ModalContext = createContext<ModalContextType | null>(null);
