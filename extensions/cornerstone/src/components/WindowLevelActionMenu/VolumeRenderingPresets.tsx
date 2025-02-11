@@ -17,14 +17,14 @@ export function VolumeRenderingPresets({
       content: VolumeRenderingPresetsContent,
       title: 'Rendering Presets',
       movable: true,
+      noOverlay: true,
       contentProps: {
         onClose: uiModalService.hide,
         presets: volumeRenderingPresets,
         viewportId,
         commandsManager,
       },
-      containerDimensions: 'h-[543px] w-[460px]',
-      contentDimensions: 'h-[493px] w-[460px]  pl-[12px] pr-[12px]',
+      containerClassName: 'h-[543px] w-[460px]',
     });
   };
 

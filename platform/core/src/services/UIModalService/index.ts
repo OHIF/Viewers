@@ -42,12 +42,13 @@ class UIModalService {
     isOpen = true,
     closeButton = true,
     title = null,
-    customClassName = null,
+    className = null,
     movable = false,
-    containerDimensions = null,
-    contentDimensions = null,
+    containerClassName = null,
+    contentClassName = null,
     shouldCloseOnOverlayClick = true,
     shouldCloseImmediately = false,
+    noOverlay = false,
   }) {
     return serviceImplementation._show({
       content,
@@ -56,12 +57,13 @@ class UIModalService {
       isOpen,
       closeButton,
       title,
-      customClassName,
+      className,
       movable,
-      containerDimensions,
-      contentDimensions,
+      containerClassName,
+      contentClassName,
       shouldCloseOnOverlayClick,
       shouldCloseImmediately,
+      noOverlay,
     });
   }
 

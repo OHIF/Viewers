@@ -1,5 +1,4 @@
 import React from 'react';
-import Draggable from 'react-draggable';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../Dialog';
 import { cn } from '../../lib/utils';
 
@@ -9,46 +8,46 @@ export interface ModalProps {
   title?: string;
   children: React.ReactNode;
   movable?: boolean;
+  noOverlay?: boolean;
   containerClassName?: string;
   contentClassName?: string;
+  shouldCloseOnEsc?: boolean;
+  shouldCloseOnOverlayClick?: boolean;
 }
 
-const NewModal: React.FC<ModalProps> = ({
+const Modal: React.FC<ModalProps> = ({
   isOpen,
   onClose,
   title,
   children,
   movable = false,
+  noOverlay = false,
+  shouldCloseOnEsc = true,
+  shouldCloseOnOverlayClick = true,
   containerClassName = '',
   contentClassName = '',
 }) => {
-  const modalBody = (
-    <>
-      {title && (
-        <DialogHeader className={cn('mb-4 text-2xl font-semibold leading-none')}>
-          <DialogTitle>{title}</DialogTitle>
-        </DialogHeader>
-      )}
-      <div className="flex-1 overflow-y-auto p-4">{children}</div>
-    </>
-  );
-
   return (
     <Dialog
       open={isOpen}
       onOpenChange={open => !open && onClose()}
+      movable={movable}
+      noOverlay={noOverlay}
+      shouldCloseOnEsc={shouldCloseOnEsc}
+      shouldCloseOnOverlayClick={shouldCloseOnOverlayClick}
     >
       <DialogContent className={cn('flex max-h-[80vh] flex-col', 'max-w-3xl', containerClassName)}>
-        {movable ? (
-          <Draggable handle=".drag-handle">
-            <div className={cn('flex flex-1 flex-col', contentClassName)}>{modalBody}</div>
-          </Draggable>
-        ) : (
-          <div className={cn('flex flex-1 flex-col', contentClassName)}>{modalBody}</div>
-        )}
+        <div className={cn('flex flex-1 flex-col', contentClassName)}>
+          {title && (
+            <DialogHeader className={cn('mb-4 text-2xl font-semibold leading-none')}>
+              <DialogTitle>{title}</DialogTitle>
+            </DialogHeader>
+          )}
+          {children}
+        </div>
       </DialogContent>
     </Dialog>
   );
 };
 
-export default NewModal;
+export default Modal;

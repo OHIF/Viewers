@@ -13,6 +13,8 @@ interface ModalOptions {
   shouldCloseOnEsc?: boolean;
   content?: React.ComponentType<ModalContentProps>;
   contentProps?: Record<string, unknown>;
+  movable?: boolean;
+  noOverlay?: boolean;
 }
 
 interface ModalContextType {
@@ -25,6 +27,8 @@ interface ModalComponentProps {
   onClose: () => void;
   title?: string;
   children: React.ReactNode;
+  movable?: boolean;
+  noOverlay?: boolean;
 }
 
 const ModalContext = createContext<ModalContextType | null>(null);
@@ -40,6 +44,8 @@ export const useModal = () => {
 const DEFAULT_OPTIONS: ModalOptions = {
   title: '',
   shouldCloseOnEsc: true,
+  movable: false,
+  noOverlay: false,
 };
 
 interface ModalService {
@@ -89,6 +95,7 @@ const ModalProvider: React.FC<ModalProviderProps> = ({
           isOpen={true}
           onClose={hide}
           title={t(title)}
+          {...options}
         >
           <ModalContent
             {...options.contentProps}
