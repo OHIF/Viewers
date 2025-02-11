@@ -15,7 +15,7 @@ interface InputDialogProps {
  * and a set of actions (via `InputActions`).
  */
 export function InputDialog({ children, className }: InputDialogProps) {
-  return <DialogContent className={cn('max-w-md', className)}>{children}</DialogContent>;
+  return <DialogContent className={cn('max-w-md p-4', className)}>{children}</DialogContent>;
 }
 
 /** Title area for your dialog (e.g., "Segment Label"). */
@@ -58,12 +58,14 @@ function InputActions({ onCancel, onSave, className }: InputActionsProps) {
       <div className="flex w-full items-center justify-end space-x-2">
         <Button
           variant="secondary"
+          className="min-w-[80px]"
           onClick={onCancel}
         >
           Cancel
         </Button>
         <Button
           variant="default"
+          className="min-w-[80px]"
           onClick={onSave}
         >
           Save

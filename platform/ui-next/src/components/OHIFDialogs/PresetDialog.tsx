@@ -11,7 +11,7 @@ interface PresetDialogProps {
 }
 
 export function PresetDialog({ children, className }: PresetDialogProps) {
-  return <DialogContent className={cn('max-w-lg', className)}>{children}</DialogContent>;
+  return <DialogContent className={cn('max-w-lg p-4', className)}>{children}</DialogContent>;
 }
 
 /**
@@ -24,7 +24,7 @@ interface PresetTitleProps {
 function PresetTitle({ children, className }: PresetTitleProps) {
   return (
     <DialogHeader>
-      <DialogTitle className={cn('text-xl font-normal', className)}>{children}</DialogTitle>
+      <DialogTitle className={cn('font-normal', className)}>{children}</DialogTitle>
     </DialogHeader>
   );
 }
@@ -133,6 +133,7 @@ function PresetActions({
       {!disableCancel && (
         <Button
           variant="secondary"
+          className="min-w-[80px]"
           onClick={onCancel}
         >
           Cancel
@@ -141,6 +142,7 @@ function PresetActions({
       {!disableSave && (
         <Button
           variant="default"
+          className="min-w-[80px]"
           onClick={onSave}
         >
           Save

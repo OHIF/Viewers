@@ -17,7 +17,7 @@ interface ImageDialogProps {
  * that sets up a flex row with a 70/30 split.
  */
 export function ImageDialog({ children, className }: ImageDialogProps) {
-  return <DialogContent className={cn('max-w-3xl', className)}>{children}</DialogContent>;
+  return <DialogContent className={cn('max-w-3xl p-4', className)}>{children}</DialogContent>;
 }
 
 /* -------------------------------------------------------------------------- */
@@ -58,7 +58,7 @@ function ImageVisual({ src, alt = '', className }: ImageVisualProps) {
   return (
     <div
       className={cn(
-        'flex-1 items-center justify-center rounded-2xl bg-black/80 p-4 sm:flex-[6]',
+        'flex-1 items-center justify-center rounded-2xl bg-black/80 p-4 sm:flex-[7]',
         'flex', // ensure the container is a flex box
         className
       )}
@@ -80,7 +80,7 @@ interface ImageOptionsProps {
   className?: string;
 }
 function ImageOptions({ children, className }: ImageOptionsProps) {
-  return <div className={cn('flex-1 space-y-5 p-4 sm:flex-[4]', className)}>{children}</div>;
+  return <div className={cn('flex-1 space-y-5 p-4 sm:flex-[3]', className)}>{children}</div>;
 }
 
 /* -------------------------------------------------------------------------- */
@@ -239,15 +239,17 @@ function Actions({
   className,
 }: ActionsProps) {
   return (
-    <div className={cn('flex justify-end space-x-2 pt-2', className)}>
+    <div className={cn('mt-5 flex justify-start space-x-2 pt-2', className)}>
       <Button
         variant="secondary"
+        className="min-w-[80px]"
         onClick={onCancel}
       >
         {cancelText}
       </Button>
       <Button
         variant="default"
+        className="min-w-[80px]"
         onClick={onSave}
       >
         {saveText}
