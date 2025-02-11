@@ -37,14 +37,10 @@ const Modal: React.FC<ModalProps> = ({
       shouldCloseOnOverlayClick={shouldCloseOnOverlayClick}
     >
       <DialogContent className={cn('flex max-h-[80vh] flex-col', 'max-w-3xl', containerClassName)}>
-        <div className={cn('flex flex-1 flex-col', contentClassName)}>
-          {title && (
-            <DialogHeader className={cn('mb-4 text-2xl font-semibold leading-none')}>
-              <DialogTitle>{title}</DialogTitle>
-            </DialogHeader>
-          )}
-          {children}
-        </div>
+        <DialogHeader>
+          <DialogTitle>{title}</DialogTitle>
+        </DialogHeader>
+        <div className={cn('mt-2', contentClassName)}>{children}</div>
       </DialogContent>
     </Dialog>
   );

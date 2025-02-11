@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { DialogContent, DialogFooter, DialogHeader, DialogTitle } from '../Dialog';
+import { DialogFooter } from '../Dialog';
 import { cn } from '../../lib/utils';
 import { Button } from '../Button';
 import { Icons } from '../Icons';
@@ -10,11 +10,7 @@ interface AboutDialogProps {
 }
 
 export function AboutDialog({ children, className }: AboutDialogProps) {
-  return (
-    <DialogContent className={cn('max-w-md gap-1 text-center', className)}>
-      {children}
-    </DialogContent>
-  );
+  return <div className={cn('text-center', className)}>{children}</div>;
 }
 
 /** Sub component: Product Name */
@@ -24,11 +20,13 @@ interface ProductNameProps {
 }
 function ProductName({ children, className }: ProductNameProps) {
   return (
-    <div className={cn('pt-3 text-2xl font-semibold leading-none', className)}>{children}</div>
+    <div className={cn('text-foreground pt-3 text-2xl font-semibold leading-none', className)}>
+      {children}
+    </div>
   );
 }
 
-/** Subcomponent: Product Version */
+/** Sub-component: Product Version */
 interface ProductVersionProps {
   children: React.ReactNode;
   className?: string;
@@ -39,7 +37,7 @@ function ProductVersion({ children, className }: ProductVersionProps) {
   );
 }
 
-/** Subcomponent: Product Beta */
+/** Sub-component: Product Beta */
 interface ProductBetaProps {
   children: React.ReactNode;
   className?: string;
@@ -48,7 +46,7 @@ function ProductBeta({ children, className }: ProductBetaProps) {
   return <div className={cn('text-muted-foreground text-xl', className)}>{children}</div>;
 }
 
-/** Subcomponent: Body (wraps all detail items) */
+/** Sub-component: Body (wraps all detail items) */
 interface BodyProps {
   children: React.ReactNode;
   className?: string;
@@ -59,7 +57,7 @@ function Body({ children, className }: BodyProps) {
   );
 }
 
-/** Subcomponent: Detail Item */
+/** Sub-component: Detail Item */
 interface DetailItemProps {
   label: string;
   value: string;
@@ -74,7 +72,7 @@ function DetailItem({ label, value, className }: DetailItemProps) {
   );
 }
 
-/** Subcomponent: Social Item */
+/** Sub-component: Social Item */
 interface SocialItemProps {
   icon: string;
   url: string;
@@ -83,7 +81,7 @@ interface SocialItemProps {
 }
 function SocialItem({ icon, url, text, className }: SocialItemProps) {
   return (
-    <div className={cn('mt-4 flex items-center space-x-2', className)}>
+    <div className={cn('text-foreground mt-4 flex items-center space-x-2', className)}>
       <div className="mr-2 inline-block">
         <Icons.ByName name={icon} />
       </div>
@@ -104,7 +102,7 @@ function SocialItem({ icon, url, text, className }: SocialItemProps) {
   );
 }
 
-/** Subcomponent: Footer */
+/** Sub-component: Footer */
 interface FooterProps {
   children: React.ReactNode;
   className?: string;
@@ -115,17 +113,7 @@ function Footer({ children, className }: FooterProps) {
   );
 }
 
-/** Subcomponent: Title */
-function Title({ children, className }: { children: React.ReactNode; className?: string }) {
-  return (
-    <DialogHeader className={cn('mb-4 text-2xl font-semibold leading-none', className)}>
-      <DialogTitle>{children}</DialogTitle>
-    </DialogHeader>
-  );
-}
-
-/** Attach subcomponents to AboutDialog as static properties */
-AboutDialog.Title = Title;
+/** Attach sub-components to AboutDialog as static properties */
 AboutDialog.ProductName = ProductName;
 AboutDialog.ProductVersion = ProductVersion;
 AboutDialog.ProductBeta = ProductBeta;
