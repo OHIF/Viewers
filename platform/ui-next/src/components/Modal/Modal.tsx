@@ -1,7 +1,7 @@
 import React from 'react';
 import Draggable from 'react-draggable';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogClose } from '../Dialog';
-import { X } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../Dialog';
+import { cn } from '../../lib/utils';
 
 export interface ModalProps {
   isOpen: boolean;
@@ -25,18 +25,11 @@ const NewModal: React.FC<ModalProps> = ({
   const modalBody = (
     <>
       {title && (
-        <DialogHeader className="drag-handle flex items-center justify-between border-b p-4">
-          <DialogTitle className="text-lg font-semibold">{title}</DialogTitle>
-          <DialogClose
-            onClick={onClose}
-            className="cursor-pointer rounded p-2 hover:bg-gray-200"
-          >
-            <X className="h-4 w-4" />
-            <span className="sr-only">Close</span>
-          </DialogClose>
+        <DialogHeader className={cn('mb-4 text-2xl font-semibold leading-none')}>
+          <DialogTitle>{title}</DialogTitle>
         </DialogHeader>
       )}
-      <div className="p-4">{children}</div>
+      <div className="flex-1 overflow-y-auto p-4">{children}</div>
     </>
   );
 
@@ -45,13 +38,13 @@ const NewModal: React.FC<ModalProps> = ({
       open={isOpen}
       onOpenChange={open => !open && onClose()}
     >
-      <DialogContent className={containerClassName}>
+      <DialogContent className={cn('flex max-h-[80vh] flex-col', 'max-w-3xl', containerClassName)}>
         {movable ? (
           <Draggable handle=".drag-handle">
-            <div className={contentClassName}>{modalBody}</div>
+            <div className={cn('flex flex-1 flex-col', contentClassName)}>{modalBody}</div>
           </Draggable>
         ) : (
-          <div className={contentClassName}>{modalBody}</div>
+          <div className={cn('flex flex-1 flex-col', contentClassName)}>{modalBody}</div>
         )}
       </DialogContent>
     </Dialog>

@@ -2,8 +2,8 @@ import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
-import { UserPreferences, AboutModal, useModal } from '@ohif/ui';
-import { Header } from '@ohif/ui-next';
+import { UserPreferences, AboutModal } from '@ohif/ui';
+import { Header, useModal } from '@ohif/ui-next';
 import i18n from '@ohif/i18n';
 import { hotkeys } from '@ohif/core';
 import { Toolbar } from '../Toolbar/Toolbar';

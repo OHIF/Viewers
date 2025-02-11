@@ -19,7 +19,6 @@ import {
   StudyListTable,
   StudyListPagination,
   StudyListFilter,
-  useModal,
   AboutModal,
   UserPreferences,
   useSessionStorage,
@@ -35,6 +34,7 @@ import {
   TooltipTrigger,
   TooltipContent,
   Clipboard,
+  useModal,
   Onboarding,
   ScrollArea,
 } from '@ohif/ui-next';

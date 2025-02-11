@@ -216,6 +216,16 @@
   }
 }
 
+h1,
+h2,
+h3,
+h4,
+h5 {
+  color: var(--ifm-color-primary);
+  font-weight: 400;
+  font-family: 'Inter', sans-serif;
+}
+
 h2.section-header {
   @apply py-4 text-2xl font-normal text-white;
 }

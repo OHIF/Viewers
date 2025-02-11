@@ -61,6 +61,7 @@ import {
   PresetDialog,
   UserPreferencesDialog,
 } from './OHIFDialogs';
+import Modal from './Modal/Modal';
 
 import {
   DropdownMenu,
@@ -237,4 +238,5 @@ export {
   InputDialog,
   PresetDialog,
   UserPreferencesDialog,
+  Modal,
 };
