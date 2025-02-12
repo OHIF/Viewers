@@ -432,8 +432,7 @@ const OHIFCornerstoneViewport = React.memo(
 );
 
 function _subscribeToJumpToMeasurementEvents(elementRef, viewportId, servicesManager) {
-  const { measurementService, cornerstoneViewportService, displaySetService } =
-    servicesManager.services;
+  const { measurementService, cornerstoneViewportService } = servicesManager.services;
 
   const { unsubscribe } = measurementService.subscribe(
     MeasurementService.EVENTS.JUMP_TO_MEASUREMENT_VIEWPORT,
@@ -444,31 +443,6 @@ function _subscribeToJumpToMeasurementEvents(elementRef, viewportId, servicesMan
         return;
       }
       if (cacheJumpToMeasurementEvent.cornerstoneViewport === undefined) {
-        if (
-          displaySetService.activeDisplaySets.find(
-            displaySet => displaySet.displaySetInstanceUID === measurement.displaySetInstanceUID
-          )
-        ) {
-          const viewportInfo = cornerstoneViewportService.getViewportInfo(jumpId);
-          if (
-            viewportInfo?.contains(
-              measurement.displaySetInstanceUID,
-              measurement.referencedImageId || measurement.metadata?.referencedImageId
-            )
-          ) {
-            return jumpId;
-          }
-
-          return (
-            [...cornerstoneViewportService.viewportsById.values()].find(viewportInfo =>
-              viewportInfo.contains(
-                measurement.displaySetInstanceUID,
-                measurement.referencedImageId || measurement.metadata?.referencedImageId
-              )
-            )?.viewportId ?? null
-          );
-        }
-
         // Decide on which viewport should handle this
         cacheJumpToMeasurementEvent.cornerstoneViewport =
           cornerstoneViewportService.getViewportIdToJump(jumpId, {
@@ -479,6 +453,15 @@ function _subscribeToJumpToMeasurementEvents(elementRef, viewportId, servicesMan
           });
       }
       if (cacheJumpToMeasurementEvent.cornerstoneViewport !== viewportId) {
+        return;
+      }
+      const viewportInfo = cornerstoneViewportService.getViewportInfo(viewportId);
+      if (
+        !viewportInfo?.contains(
+          measurement.displaySetInstanceUID,
+          measurement.referencedImageId || measurement.metadata?.referencedImageId
+        )
+      ) {
         return;
       }
       _jumpToMeasurement(measurement, elementRef, viewportId, servicesManager);
