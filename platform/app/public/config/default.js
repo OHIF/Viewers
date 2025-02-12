@@ -151,7 +151,7 @@ window.config = {
     },
     {
       namespace: '@ohif/extension-default.dataSourcesModule.dicomweb',
-      sourceName: 'F4C',
+      sourceName: 'PROD_F4C',
       configuration: {
         friendlyName: 'f4C-didier',
         name: 'f4C-didier',
