@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { UserPreferencesDialog } from '@ohif/ui-next';
+import { UserPreferencesModal } from '@ohif/ui-next';
 import { useTranslation } from 'react-i18next';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@ohif/ui-next';
 
@@ -32,7 +32,7 @@ interface UserPreferencesModalProps {
   };
 }
 
-function UserPreferencesModal({
+function UserPreferencesModalDefault({
   availableLanguages = [{ value: 'en-US', label: 'English' }],
   defaultLanguage = 'en-US',
   currentLanguage = 'en-US',
@@ -72,11 +72,11 @@ function UserPreferencesModal({
   };
 
   return (
-    <UserPreferencesDialog>
-      <UserPreferencesDialog.Body>
+    <UserPreferencesModal className="w-[900px]">
+      <UserPreferencesModal.Body>
         {/* Language Section */}
         <div className="mb-3 flex items-center space-x-14">
-          <UserPreferencesDialog.SubHeading>{t('Language')}</UserPreferencesDialog.SubHeading>
+          <UserPreferencesModal.SubHeading>{t('Language')}</UserPreferencesModal.SubHeading>
           <Select defaultValue={state.language}>
             <SelectTrigger
               className="w-60"
@@ -98,20 +98,20 @@ function UserPreferencesModal({
           </Select>
         </div>
 
-        <UserPreferencesDialog.SubHeading>{t('Hotkeys')}</UserPreferencesDialog.SubHeading>
-        <UserPreferencesDialog.HotkeysGrid>
+        <UserPreferencesModal.SubHeading>{t('Hotkeys')}</UserPreferencesModal.SubHeading>
+        <UserPreferencesModal.HotkeysGrid>
           {Object.entries(hotkeyDefinitions).map(([id, definition]) => (
-            <UserPreferencesDialog.Hotkey
+            <UserPreferencesModal.Hotkey
               key={id}
               label={t(definition.label)}
               placeholder={definition.keys}
             />
           ))}
-        </UserPreferencesDialog.HotkeysGrid>
-      </UserPreferencesDialog.Body>
+        </UserPreferencesModal.HotkeysGrid>
+      </UserPreferencesModal.Body>
       <div>
         <div className="flex-shrink-0">
-          <div className="flex w-full items-center justify-between">
+          <div className="flex items-center justify-between">
             <button
               className="text-primary-600 hover:text-primary-500"
               onClick={onResetHandler}
@@ -137,10 +137,10 @@ function UserPreferencesModal({
           </div>
         </div>
       </div>
-    </UserPreferencesDialog>
+    </UserPreferencesModal>
   );
 }
 
 export default {
-  'ohif.userPreferencesModal': UserPreferencesModal,
+  'ohif.userPreferencesModal': UserPreferencesModalDefault,
 };

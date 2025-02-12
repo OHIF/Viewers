@@ -140,7 +140,7 @@ const bindings = [
   },
   {
     commandName: 'cancelMeasurement',
-    label: 'Cancel Cornerstone Measurement',
+    label: 'Cancel Measurement',
     keys: ['esc'],
   },
   {

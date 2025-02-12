@@ -64,9 +64,8 @@ const PreferencesButton = () => {
       onClick={() =>
         show({
           title: 'User Preferences',
-          containerClassName: 'w-[70%] max-w-[900px]',
           content: ({ hide }) => (
-            <UserPreferencesModal>
+            <UserPreferencesModal className="max-w-[900px]">
               <UserPreferencesModal.Body>
                 {/* Language Section */}
                 <div className="mb-3 flex items-center space-x-14">

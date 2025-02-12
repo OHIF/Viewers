@@ -2,7 +2,6 @@ import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
-import { UserPreferences } from '@ohif/ui';
 import { Header, useModal } from '@ohif/ui-next';
 import i18n from '@ohif/i18n';
 import { hotkeys } from '@ohif/core';
@@ -50,6 +49,7 @@ function ViewerHeader({
 
   const AboutModal = customizationService.getCustomization('ohif.aboutModal');
   const UserPreferencesModal = customizationService.getCustomization('ohif.userPreferencesModal');
+
   const menuOptions = [
     {
       title: t('Header:About'),
@@ -59,7 +59,6 @@ function ViewerHeader({
           content: AboutModal,
           title: t('AboutModal:About OHIF Viewer'),
           contentProps: { versionNumber, commitHash },
-          // containerClassName: 'max-w-[400px]',
         }),
     },
     {
@@ -69,7 +68,6 @@ function ViewerHeader({
         show({
           content: UserPreferencesModal,
           title: t('UserPreferencesModal:User preferences'),
-          // containerClassName: 'w-[70%] max-w-[900px]',
           contentProps: {
             hotkeyDefaults: hotkeysManager.getValidHotkeyDefinitions(hotkeyDefaults),
             hotkeyDefinitions,
