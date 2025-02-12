@@ -1,12 +1,6 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import html2canvas from 'html2canvas';
-import {
-  Enums,
-  getEnabledElement,
-  getOrCreateCanvas,
-  StackViewport,
-  BaseVolumeViewport,
-} from '@cornerstonejs/core';
+import { getEnabledElement, StackViewport, BaseVolumeViewport } from '@cornerstonejs/core';
 import { ToolGroupManager } from '@cornerstonejs/tools';
 import { ImageModal, FooterAction } from '@ohif/ui-next';
 import { getEnabledElement as OHIFgetEnabledElement } from '../state';
@@ -27,10 +21,6 @@ const FILE_TYPE_OPTIONS = [
   },
 ];
 
-const getDownloadViewportElement = () => {
-  return document.querySelector(`div[data-viewport-uid="${VIEWPORT_ID}"]`) as HTMLDivElement;
-};
-
 const CornerstoneViewportDownloadForm = ({
   hide,
   activeViewportId: activeViewportIdProp,
@@ -38,11 +28,8 @@ const CornerstoneViewportDownloadForm = ({
 }: withAppTypes) => {
   const refViewportEnabledElementOHIF = OHIFgetEnabledElement(activeViewportIdProp);
   const activeViewportElement = refViewportEnabledElementOHIF?.element;
-  const {
-    viewportId: activeViewportId,
-    renderingEngineId,
-    viewport: activeViewport,
-  } = getEnabledElement(activeViewportElement);
+  const { viewportId: activeViewportId, renderingEngineId } =
+    getEnabledElement(activeViewportElement);
 
   const renderingEngine = cornerstoneViewportService.getRenderingEngine();
 
@@ -179,7 +166,6 @@ const CornerstoneViewportDownloadForm = ({
     <ViewportDownloadFormNew
       onClose={hide}
       defaultSize={DEFAULT_SIZE}
-      //
       enableViewport={enableViewport}
       disableViewport={disableViewport}
       loadImage={loadImage}
@@ -204,7 +190,7 @@ function ViewportDownloadFormNew({
     height: defaultSize,
   });
   const [showAnnotations, setShowAnnotations] = useState(true);
-
+  const [showWarningMessage, setShowWarningMessage] = useState(true);
   const [filename, setFilename] = useState(DEFAULT_FILENAME);
   const [fileType, setFileType] = useState('jpg');
 
@@ -224,11 +210,7 @@ function ViewportDownloadFormNew({
 
   useEffect(() => {
     setTimeout(() => {
-      const dimensions = loadImage(
-        viewportElementDimensions.width,
-        viewportElementDimensions.height
-      );
-
+      loadImage(viewportElementDimensions.width, viewportElementDimensions.height);
       toggleAnnotations(showAnnotations);
     }, 100);
   }, [
@@ -266,10 +248,32 @@ function ViewportDownloadFormNew({
             style={{
               height: viewportElementDimensions.height,
               width: viewportElementDimensions.width,
+              position: 'relative',
             }}
             data-viewport-uid={VIEWPORT_ID}
             ref={setViewportElement}
-          ></div>
+          >
+            {showWarningMessage && (
+              <div
+                style={{
+                  position: 'absolute',
+                  bottom: '10px',
+                  left: '50%',
+                  transform: 'translateX(-50%)',
+                  backgroundColor: 'rgba(0, 0, 0, 0.7)',
+                  color: 'white',
+                  padding: '4px 8px',
+                  borderRadius: '4px',
+                  fontSize: '14px',
+                  fontWeight: 'bold',
+                  zIndex: 1000,
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                NOT FOR DIAGNOSTIC USE
+              </div>
+            )}
+          </div>
         </ImageModal.ImageVisual>
 
         <ImageModal.ImageOptions>
@@ -318,7 +322,13 @@ function ViewportDownloadFormNew({
           >
             Include annotations
           </ImageModal.SwitchOption>
-          <ImageModal.SwitchOption defaultChecked>Include warning message</ImageModal.SwitchOption>
+          <ImageModal.SwitchOption
+            defaultChecked={showWarningMessage}
+            checked={showWarningMessage}
+            onCheckedChange={setShowWarningMessage}
+          >
+            Include warning message
+          </ImageModal.SwitchOption>
           <FooterAction className="mt-2">
             <FooterAction.Right>
               <FooterAction.Secondary onClick={() => onClose()}>Cancel</FooterAction.Secondary>
