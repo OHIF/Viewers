@@ -7,7 +7,6 @@ export interface ModalProps {
   onClose: () => void;
   title?: string;
   children: React.ReactNode;
-  movable?: boolean;
   containerClassName?: string;
   contentClassName?: string;
   shouldCloseOnEsc?: boolean;
@@ -19,7 +18,6 @@ const Modal: React.FC<ModalProps> = ({
   onClose,
   title,
   children,
-  movable = false,
   shouldCloseOnEsc = true,
   shouldCloseOnOverlayClick = true,
   containerClassName,
@@ -29,7 +27,6 @@ const Modal: React.FC<ModalProps> = ({
     <Dialog
       open={isOpen}
       onOpenChange={open => !open && onClose()}
-      movable={movable}
       shouldCloseOnEsc={shouldCloseOnEsc}
       shouldCloseOnOverlayClick={shouldCloseOnOverlayClick}
     >

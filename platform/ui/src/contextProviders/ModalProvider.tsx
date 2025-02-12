@@ -31,7 +31,6 @@ const ModalProvider = ({ children, modal: Modal, service = null }) => {
     closeButton: true,
     title: null,
     customClassName: '',
-    movable: false,
     containerDimensions: null,
     contentDimensions: null,
   };
@@ -78,7 +77,6 @@ const ModalProvider = ({ children, modal: Modal, service = null }) => {
     shouldCloseOnEsc,
     closeButton,
     shouldCloseOnOverlayClick,
-    movable,
     containerDimensions,
     contentDimensions,
   } = options;
@@ -96,7 +94,6 @@ const ModalProvider = ({ children, modal: Modal, service = null }) => {
           closeButton={closeButton}
           onClose={hide}
           shouldCloseOnOverlayClick={shouldCloseOnOverlayClick}
-          movable={movable}
           containerDimensions={containerDimensions}
           contentDimensions={contentDimensions}
         >

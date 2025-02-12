@@ -12,7 +12,6 @@ interface ModalOptions {
   shouldCloseOnEsc?: boolean;
   content?: React.ComponentType<ModalContentProps>;
   contentProps?: Record<string, unknown>;
-  movable?: boolean;
   containerClassName?: string;
   contentClassName?: string;
 }
@@ -27,7 +26,6 @@ interface ModalComponentProps {
   onClose: () => void;
   title?: string;
   children: React.ReactNode;
-  movable?: boolean;
   containerClassName?: string;
   contentClassName?: string;
 }
@@ -45,7 +43,6 @@ export const useModal = () => {
 const DEFAULT_OPTIONS: ModalOptions = {
   title: '',
   shouldCloseOnEsc: true,
-  movable: false,
 };
 
 interface ModalService {
