@@ -182,7 +182,7 @@ async function _loadSegments({
 
   // Todo: what should be defaults here
   const tolerance = 0.001;
-  const skipOverlapping = true;
+  const skipOverlapping = false;
   eventTarget.addEventListener(Enums.Events.SEGMENTATION_LOAD_PROGRESS, evt => {
     const { percentComplete } = evt.detail;
     segmentationService._broadcastEvent(segmentationService.EVENTS.SEGMENT_LOADING_COMPLETE, {
@@ -190,11 +190,10 @@ async function _loadSegments({
     });
   });
 
-  const results = await adaptersSEG.Cornerstone3D.Segmentation.generateToolState(
+  const results = await adaptersSEG.Cornerstone3D.Segmentation.createFromDICOMSegBuffer(
     imageIds,
     arrayBuffer,
-    metaData,
-    { skipOverlapping, tolerance, eventTarget, triggerEvent }
+    { metadataProvider: metaData, skipOverlapping, tolerance }
   );
 
   let usedRecommendedDisplayCIELabValue = true;
