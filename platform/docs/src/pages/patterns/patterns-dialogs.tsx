@@ -6,6 +6,7 @@ import { PresetDialog } from '../../../../ui-next/src/components/OHIFDialogs/Pre
 import { ImageModal } from '../../../../ui-next/src/components/OHIFModals/ImageModal';
 import { UserPreferencesModal } from '../../../../ui-next/src/components/OHIFModals/UserPreferencesModal';
 import Modal from '../../../../ui-next/src/components/Modal/Modal';
+import { FooterAction } from '../../../../ui-next/src/components/FooterAction';
 import {
   Select,
   SelectTrigger,
@@ -103,8 +104,7 @@ const PreferencesButton = () => {
                     { label: 'Previous Series', placeholder: '-' },
                     { label: 'Next Stage', placeholder: '=' },
                     { label: 'Previous Stage', placeholder: 'r' },
-                    { label: 'Next Image', placeholder: 'l' },
-                    { label: 'Previous Image', placeholder: 'z' },
+                    { label: 'Previous Image', placeholder: 'l' },
                     { label: 'First Image', placeholder: 'z' },
                     { label: 'Last Image', placeholder: 'z' },
                     { label: 'Reset', placeholder: 'z' },
@@ -117,38 +117,17 @@ const PreferencesButton = () => {
                   ))}
                 </UserPreferencesModal.HotkeysGrid>
               </UserPreferencesModal.Body>
-              <div>
-                <div className="flex-shrink-0">
-                  <div className="flex w-full items-center justify-between">
-                    <Button
-                      variant="ghost"
-                      onClick={() => {}}
-                    >
-                      Restore Defaults
-                    </Button>
-                    <div className="flex space-x-2">
-                      <Button
-                        variant="secondary"
-                        onClick={() => {
-                          hide();
-                        }}
-                        className="min-w-[80px]"
-                      >
-                        Cancel
-                      </Button>
-                      <Button
-                        variant="default"
-                        onClick={() => {
-                          hide();
-                        }}
-                        className="min-w-[80px]"
-                      >
-                        Save
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-              </div>
+              <FooterAction>
+                <FooterAction.Left>
+                  <FooterAction.Auxiliary onClick={() => {}}>
+                    Restore Defaults
+                  </FooterAction.Auxiliary>
+                </FooterAction.Left>
+                <FooterAction.Right>
+                  <FooterAction.Secondary onClick={() => hide()}>Cancel</FooterAction.Secondary>
+                  <FooterAction.Primary onClick={() => hide()}>Save</FooterAction.Primary>
+                </FooterAction.Right>
+              </FooterAction>
             </UserPreferencesModal>
           ),
         })

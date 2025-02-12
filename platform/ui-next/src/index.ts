@@ -106,6 +106,7 @@ import {
   AboutModal,
   ImageModal,
   UserPreferencesModal,
+  FooterAction,
 } from './components';
 import { DataRow } from './components/DataRow';
 
@@ -241,4 +242,5 @@ export {
   Modal,
   useModal,
   ModalProvider,
+  FooterAction,
 };

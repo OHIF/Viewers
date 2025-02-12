@@ -57,6 +57,7 @@ import Numeric from './Numeric';
 import { InputDialog, PresetDialog } from './OHIFDialogs';
 import { AboutModal, ImageModal, UserPreferencesModal } from './OHIFModals';
 import Modal from './Modal/Modal';
+import { FooterAction } from './FooterAction';
 
 import {
   DropdownMenu,
@@ -234,4 +235,5 @@ export {
   AboutModal,
   ImageModal,
   UserPreferencesModal,
+  FooterAction,
 };
