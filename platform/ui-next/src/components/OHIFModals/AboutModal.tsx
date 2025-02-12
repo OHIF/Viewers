@@ -3,12 +3,12 @@ import { cn } from '../../lib/utils';
 import { Button } from '../Button';
 import { Icons } from '../Icons';
 
-interface AboutDialogProps {
+interface AboutModalProps {
   children: React.ReactNode;
   className?: string;
 }
 
-export function AboutDialog({ children, className }: AboutDialogProps) {
+export function AboutModal({ children, className }: AboutModalProps) {
   return <div className={cn('text-center', className)}>{children}</div>;
 }
 
@@ -101,10 +101,10 @@ function SocialItem({ icon, url, text, className }: SocialItemProps) {
   );
 }
 
-/** Attach sub-components to AboutDialog as static properties */
-AboutDialog.ProductName = ProductName;
-AboutDialog.ProductVersion = ProductVersion;
-AboutDialog.ProductBeta = ProductBeta;
-AboutDialog.Body = Body;
-AboutDialog.DetailItem = DetailItem;
-AboutDialog.SocialItem = SocialItem;
+/** Attach sub-components to AboutModal as static properties */
+AboutModal.ProductName = ProductName;
+AboutModal.ProductVersion = ProductVersion;
+AboutModal.ProductBeta = ProductBeta;
+AboutModal.Body = Body;
+AboutModal.DetailItem = DetailItem;
+AboutModal.SocialItem = SocialItem;

@@ -1,15 +1,14 @@
 import * as React from 'react';
-import { Button } from '../Button';
 import { Label } from '../Label';
 import { Input } from '../Input';
 import { cn } from '../../lib/utils';
 
-interface UserPreferencesDialogProps {
+interface UserPreferencesModalProps {
   children: React.ReactNode;
   className?: string;
 }
 
-export function UserPreferencesDialog({ children, className }: UserPreferencesDialogProps) {
+export function UserPreferencesModal({ children, className }: UserPreferencesModalProps) {
   return <div className={cn(className)}>{children}</div>;
 }
 
@@ -71,7 +70,7 @@ function Hotkey({ label, placeholder, className }: HotkeyProps) {
 }
 
 /** Attach subcomponents as static properties for a nicer API */
-UserPreferencesDialog.Body = Body;
-UserPreferencesDialog.HotkeysGrid = HotkeysGrid;
-UserPreferencesDialog.Hotkey = Hotkey;
-UserPreferencesDialog.SubHeading = SubHeading;
+UserPreferencesModal.Body = Body;
+UserPreferencesModal.HotkeysGrid = HotkeysGrid;
+UserPreferencesModal.Hotkey = Hotkey;
+UserPreferencesModal.SubHeading = SubHeading;

@@ -54,13 +54,8 @@ import { DisplaySetMessageListTooltip } from './DisplaySetMessageListTooltip';
 import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from './Tooltip';
 import { ToolboxUI, Toolbox } from './OHIFToolbox';
 import Numeric from './Numeric';
-import {
-  AboutDialog,
-  ImageDialog,
-  InputDialog,
-  PresetDialog,
-  UserPreferencesDialog,
-} from './OHIFDialogs';
+import { InputDialog, PresetDialog } from './OHIFDialogs';
+import { AboutModal, ImageModal, UserPreferencesModal } from './OHIFModals';
 import Modal from './Modal/Modal';
 
 import {
@@ -233,10 +228,10 @@ export {
   ToolButtonListDropDown,
   ToolButtonListItem,
   ToolButtonListDivider,
-  AboutDialog,
-  ImageDialog,
   InputDialog,
   PresetDialog,
-  UserPreferencesDialog,
   Modal,
+  AboutModal,
+  ImageModal,
+  UserPreferencesModal,
 };

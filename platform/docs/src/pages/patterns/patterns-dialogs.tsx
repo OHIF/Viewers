@@ -1,10 +1,10 @@
 import React from 'react';
 import { Button } from '../../../../ui-next/src/components/Button';
-import { UserPreferencesDialog } from '../../../../ui-next/src/components/OHIFDialogs/UserPreferencesDialog';
-import { AboutDialog } from '../../../../ui-next/src/components/OHIFDialogs/AboutDialog';
+import { AboutModal } from '../../../../ui-next/src/components/OHIFModals/AboutModal';
 import { InputDialog } from '../../../../ui-next/src/components/OHIFDialogs/InputDialog';
 import { PresetDialog } from '../../../../ui-next/src/components/OHIFDialogs/PresetDialog';
-import { ImageDialog } from '../../../../ui-next/src/components/OHIFDialogs/ImageDialog';
+import { ImageModal } from '../../../../ui-next/src/components/OHIFModals/ImageModal';
+import { UserPreferencesModal } from '../../../../ui-next/src/components/OHIFModals/UserPreferencesModal';
 import Modal from '../../../../ui-next/src/components/Modal/Modal';
 import {
   Select,
@@ -14,6 +14,8 @@ import {
   SelectItem,
 } from '../../../../ui-next/src/components/Select/Select';
 import { ModalProvider, useModal } from '../../../../ui-next/src/contextProviders/ModalProvider';
+
+// ===== Modal Components =====
 
 const AboutButton = () => {
   const { show } = useModal();
@@ -25,27 +27,27 @@ const AboutButton = () => {
           containerClassName: 'max-w-[400px]',
           content: () => {
             return (
-              <AboutDialog>
-                <AboutDialog.ProductName>OHIF Viewer</AboutDialog.ProductName>
-                <AboutDialog.ProductVersion>3.10</AboutDialog.ProductVersion>
-                <AboutDialog.ProductBeta>beta.75</AboutDialog.ProductBeta>
+              <AboutModal>
+                <AboutModal.ProductName>OHIF Viewer</AboutModal.ProductName>
+                <AboutModal.ProductVersion>3.10</AboutModal.ProductVersion>
+                <AboutModal.ProductBeta>beta.75</AboutModal.ProductBeta>
 
-                <AboutDialog.Body>
-                  <AboutDialog.DetailItem
+                <AboutModal.Body>
+                  <AboutModal.DetailItem
                     label="Commit Hash"
                     value="ac6е674b4d094f942556d045178011bbf3f81796"
                   />
-                  <AboutDialog.DetailItem
+                  <AboutModal.DetailItem
                     label="Current Browser & OS"
                     value="Safari 18.2.0, macOS 10.15.7"
                   />
-                  <AboutDialog.SocialItem
+                  <AboutModal.SocialItem
                     icon="SocialGithub"
                     url="OHIF/Viewers"
                     text="github.com/OHIF/Viewers"
                   />
-                </AboutDialog.Body>
-              </AboutDialog>
+                </AboutModal.Body>
+              </AboutModal>
             );
           },
         })
@@ -62,15 +64,14 @@ const PreferencesButton = () => {
     <Button
       onClick={() =>
         show({
-          movable: true,
           title: 'User Preferences',
           containerClassName: 'w-[70%] max-w-[900px]',
           content: ({ hide }) => (
-            <UserPreferencesDialog>
-              <UserPreferencesDialog.Body>
+            <UserPreferencesModal>
+              <UserPreferencesModal.Body>
                 {/* Language Section */}
                 <div className="mb-3 flex items-center space-x-14">
-                  <UserPreferencesDialog.SubHeading>Language</UserPreferencesDialog.SubHeading>
+                  <UserPreferencesModal.SubHeading>Language</UserPreferencesModal.SubHeading>
                   <Select defaultValue="English">
                     <SelectTrigger
                       className="w-60"
@@ -86,8 +87,8 @@ const PreferencesButton = () => {
                   </Select>
                 </div>
 
-                <UserPreferencesDialog.SubHeading>Hotkeys</UserPreferencesDialog.SubHeading>
-                <UserPreferencesDialog.HotkeysGrid>
+                <UserPreferencesModal.SubHeading>Hotkeys</UserPreferencesModal.SubHeading>
+                <UserPreferencesModal.HotkeysGrid>
                   {[
                     { label: 'Zoom', placeholder: 'z' },
                     { label: 'Zoom In', placeholder: 'z' },
@@ -110,14 +111,14 @@ const PreferencesButton = () => {
                     { label: 'Last Image', placeholder: 'z' },
                     { label: 'Reset', placeholder: 'z' },
                   ].map(hotkey => (
-                    <UserPreferencesDialog.Hotkey
+                    <UserPreferencesModal.Hotkey
                       key={hotkey.label}
                       label={hotkey.label}
                       placeholder={hotkey.placeholder}
                     />
                   ))}
-                </UserPreferencesDialog.HotkeysGrid>
-              </UserPreferencesDialog.Body>
+                </UserPreferencesModal.HotkeysGrid>
+              </UserPreferencesModal.Body>
               <div>
                 <div className="flex-shrink-0">
                   <div className="flex w-full items-center justify-between">
@@ -150,7 +151,7 @@ const PreferencesButton = () => {
                   </div>
                 </div>
               </div>
-            </UserPreferencesDialog>
+            </UserPreferencesModal>
           ),
         })
       }
@@ -159,6 +160,53 @@ const PreferencesButton = () => {
     </Button>
   );
 };
+
+const ImageButton = () => {
+  const { show } = useModal();
+  return (
+    <Button
+      onClick={() =>
+        show({
+          content: () => (
+            <ImageModal>
+              <ImageModal.Body>
+                <ImageModal.ImageVisual
+                  src="https://dummyimage.com/512x512/242424/7BB2CE.png"
+                  alt="Preview"
+                />
+                <ImageModal.ImageOptions>
+                  <div className="flex items-end space-x-2">
+                    <ImageModal.Filename value="Image">File name</ImageModal.Filename>
+                    <ImageModal.Filetype selected="JPG" />
+                  </div>
+
+                  <ImageModal.ImageSize
+                    width="512"
+                    height="512"
+                  >
+                    Image size <span className="text-muted-foreground">px</span>
+                  </ImageModal.ImageSize>
+
+                  <ImageModal.SwitchOption defaultChecked>
+                    Include annotations
+                  </ImageModal.SwitchOption>
+                  <ImageModal.SwitchOption defaultChecked>
+                    Include warning message
+                  </ImageModal.SwitchOption>
+                </ImageModal.ImageOptions>
+              </ImageModal.Body>
+            </ImageModal>
+          ),
+          title: 'Image Dialog',
+        })
+      }
+    >
+      Open Image
+    </Button>
+  );
+};
+
+// ===== Dialog Components =====
 
 const InputButton = () => {
   const { show } = useModal();
@@ -228,67 +276,26 @@ const PresetButton = () => {
   );
 };
 
-const ImageButton = () => {
-  const { show } = useModal();
-  return (
-    <Button
-      onClick={() =>
-        show({
-          content: () => (
-            <ImageDialog>
-              <ImageDialog.ImageTitle>Download High Quality Image</ImageDialog.ImageTitle>
-              <ImageDialog.Body>
-                <ImageDialog.ImageVisual
-                  src="https://dummyimage.com/512x512/242424/7BB2CE.png"
-                  alt="Preview"
-                />
-                <ImageDialog.ImageOptions>
-                  <div className="flex items-end space-x-2">
-                    <ImageDialog.Filename value="Image">File name</ImageDialog.Filename>
-                    <ImageDialog.Filetype selected="JPG" />
-                  </div>
-
-                  <ImageDialog.ImageSize
-                    width="512"
-                    height="512"
-                  >
-                    Image size <span className="text-muted-foreground">px</span>
-                  </ImageDialog.ImageSize>
-
-                  <ImageDialog.SwitchOption defaultChecked>
-                    Include annotations
-                  </ImageDialog.SwitchOption>
-                  <ImageDialog.SwitchOption defaultChecked>
-                    Include warning message
-                  </ImageDialog.SwitchOption>
-
-                  <ImageDialog.Actions
-                    onCancel={() => show({})}
-                    onSave={() => show({})}
-                  />
-                </ImageDialog.ImageOptions>
-              </ImageDialog.Body>
-            </ImageDialog>
-          ),
-          title: 'Image Dialog',
-        })
-      }
-    >
-      Open Image
-    </Button>
-  );
-};
-
 export default function SettingsPage() {
   return (
     <ModalProvider modal={Modal}>
       <div className="flex min-h-screen items-center justify-center">
-        <div className="flex space-x-2">
-          <AboutButton />
-          <PreferencesButton />
-          <InputButton />
-          <PresetButton />
-          <ImageButton />
+        <div className="flex flex-col space-y-8">
+          <div>
+            <h2 className="mb-4 text-lg font-semibold">Modals</h2>
+            <div className="flex space-x-2">
+              <AboutButton />
+              <PreferencesButton />
+              <ImageButton />
+            </div>
+          </div>
+          <div>
+            <h2 className="mb-4 text-lg font-semibold">Dialogs</h2>
+            <div className="flex space-x-2">
+              <InputButton />
+              <PresetButton />
+            </div>
+          </div>
         </div>
       </div>
     </ModalProvider>

@@ -1,31 +1,36 @@
 import React from 'react';
-import { AboutDialog } from '@ohif/ui-next';
+import { AboutModal } from '@ohif/ui-next';
 
-function AboutModal({ versionNumber, commitHash }: { versionNumber: string; commitHash: string }) {
+type AboutModalDefaultProps = {
+  versionNumber: string;
+  commitHash: string;
+};
+
+function AboutModalDefault({ versionNumber, commitHash }: AboutModalDefaultProps) {
   return (
-    <AboutDialog>
-      <AboutDialog.ProductName>OHIF Viewer</AboutDialog.ProductName>
-      <AboutDialog.ProductVersion>{versionNumber}</AboutDialog.ProductVersion>
+    <AboutModal>
+      <AboutModal.ProductName>OHIF Viewer</AboutModal.ProductName>
+      <AboutModal.ProductVersion>{versionNumber}</AboutModal.ProductVersion>
 
-      <AboutDialog.Body>
-        <AboutDialog.DetailItem
+      <AboutModal.Body>
+        <AboutModal.DetailItem
           label="Commit Hash"
           value={commitHash}
         />
-        <AboutDialog.DetailItem
+        <AboutModal.DetailItem
           label="Current Browser & OS"
           value="Safari 18.2.0, macOS 10.15.7"
         />
-        <AboutDialog.SocialItem
+        <AboutModal.SocialItem
           icon="SocialGithub"
           url="OHIF/Viewers"
           text="github.com/OHIF/Viewers"
         />
-      </AboutDialog.Body>
-    </AboutDialog>
+      </AboutModal.Body>
+    </AboutModal>
   );
 }
 
 export default {
-  'ohif.aboutModal': AboutModal,
+  'ohif.aboutModal': AboutModalDefault,
 };

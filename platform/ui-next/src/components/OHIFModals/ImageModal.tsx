@@ -1,38 +1,21 @@
 import * as React from 'react';
-import { DialogContent, DialogHeader, DialogTitle } from '../Dialog/Dialog';
-import { Button } from '../Button/Button';
 import { Input } from '../Input/Input';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '../Select/Select';
 import { Switch } from '../Switch/Switch';
 import { cn } from '../../lib/utils';
 
-interface ImageDialogProps {
+interface ImageModalProps {
   children: React.ReactNode;
   className?: string;
 }
 
 /**
- * Main ImageDialog container. By default, we do not force any
+ * Main ImageModal container. By default, we do not force any
  * layout here. We'll use a "Body" subcomponent for the main area
  * that sets up a flex row with a 70/30 split.
  */
-export function ImageDialog({ children, className }: ImageDialogProps) {
-  return <DialogContent className={cn('max-w-3xl p-4', className)}>{children}</DialogContent>;
-}
-
-/* -------------------------------------------------------------------------- */
-/* Title subcomponent */
-
-interface ImageTitleProps {
-  children: React.ReactNode;
-  className?: string;
-}
-function ImageTitle({ children, className }: ImageTitleProps) {
-  return (
-    <DialogHeader>
-      <DialogTitle className={cn(className)}>{children}</DialogTitle>
-    </DialogHeader>
-  );
+export function ImageModal({ children, className }: ImageModalProps) {
+  return <div className={cn('max-w-3xl p-4', className)}>{children}</div>;
 }
 
 /* -------------------------------------------------------------------------- */
@@ -221,52 +204,12 @@ function SwitchOption({
 }
 
 /* -------------------------------------------------------------------------- */
-/* Actions subcomponent */
+/* Attach subcomponents onto the main ImageModal function. */
 
-interface ActionsProps {
-  onCancel: () => void;
-  onSave: () => void;
-  cancelText?: string;
-  saveText?: string;
-  className?: string;
-}
-
-function Actions({
-  onCancel,
-  onSave,
-  cancelText = 'Cancel',
-  saveText = 'Save',
-  className,
-}: ActionsProps) {
-  return (
-    <div className={cn('mt-5 flex justify-start space-x-2 pt-2', className)}>
-      <Button
-        variant="secondary"
-        className="min-w-[80px]"
-        onClick={onCancel}
-      >
-        {cancelText}
-      </Button>
-      <Button
-        variant="default"
-        className="min-w-[80px]"
-        onClick={onSave}
-      >
-        {saveText}
-      </Button>
-    </div>
-  );
-}
-
-/* -------------------------------------------------------------------------- */
-/* Attach subcomponents onto the main ImageDialog function. */
-
-ImageDialog.ImageTitle = ImageTitle;
-ImageDialog.Body = ImageBody;
-ImageDialog.ImageVisual = ImageVisual;
-ImageDialog.ImageOptions = ImageOptions;
-ImageDialog.Filename = Filename;
-ImageDialog.Filetype = Filetype;
-ImageDialog.ImageSize = ImageSize;
-ImageDialog.SwitchOption = SwitchOption;
-ImageDialog.Actions = Actions;
+ImageModal.Body = ImageBody;
+ImageModal.ImageVisual = ImageVisual;
+ImageModal.ImageOptions = ImageOptions;
+ImageModal.Filename = Filename;
+ImageModal.Filetype = Filetype;
+ImageModal.ImageSize = ImageSize;
+ImageModal.SwitchOption = SwitchOption;
