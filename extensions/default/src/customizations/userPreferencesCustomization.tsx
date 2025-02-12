@@ -71,13 +71,6 @@ function UserPreferencesModal({
     onSubmit(state);
   };
 
-  const visibleHotkeys = Object.keys(hotkeyDefinitions)
-    .filter(key => hotkeyDefinitions[key].isEditable)
-    .reduce((obj, key) => {
-      obj[key] = hotkeyDefinitions[key];
-      return obj;
-    }, {});
-
   return (
     <UserPreferencesDialog>
       <UserPreferencesDialog.Body>

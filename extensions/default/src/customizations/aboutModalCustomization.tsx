@@ -1,17 +1,16 @@
 import React from 'react';
 import { AboutDialog } from '@ohif/ui-next';
 
-function AboutModal() {
+function AboutModal({ versionNumber, commitHash }: { versionNumber: string; commitHash: string }) {
   return (
     <AboutDialog>
       <AboutDialog.ProductName>OHIF Viewer</AboutDialog.ProductName>
-      <AboutDialog.ProductVersion>3.10</AboutDialog.ProductVersion>
-      <AboutDialog.ProductBeta>beta.75</AboutDialog.ProductBeta>
+      <AboutDialog.ProductVersion>{versionNumber}</AboutDialog.ProductVersion>
 
       <AboutDialog.Body>
         <AboutDialog.DetailItem
           label="Commit Hash"
-          value="ac6е674b4d094f942556d045178011bbf3f81796"
+          value={commitHash}
         />
         <AboutDialog.DetailItem
           label="Current Browser & OS"
