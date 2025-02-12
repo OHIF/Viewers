@@ -10,7 +10,7 @@ import { useTranslation } from 'react-i18next';
 import filtersMeta from './filtersMeta.js';
 import { useAppConfig } from '@state';
 import { useDebounce, useSearchParams } from '@hooks';
-import { utils, hotkeys } from '@ohif/core';
+import { utils } from '@ohif/core';
 import publicUrl from '../../utils/publicUrl';
 
 import {
@@ -19,7 +19,6 @@ import {
   StudyListTable,
   StudyListPagination,
   StudyListFilter,
-  UserPreferences,
   useSessionStorage,
   InvestigationalUseDialog,
   Button,
@@ -40,14 +39,11 @@ import {
 
 import { Types } from '@ohif/ui';
 
-import i18n from '@ohif/i18n';
 import { preserveQueryParameters, preserveQueryStrings } from '../../utils/preserveQueryParameters';
 
 const PatientInfoVisibility = Types.PatientInfoVisibility;
 
 const { sortBySeriesDate } = utils;
-
-const { availableLanguages, defaultLanguage, currentLanguage } = i18n;
 
 const seriesInStudiesMap = new Map();
 
@@ -470,21 +466,18 @@ function WorkList({
   });
 
   const hasStudies = numOfStudies > 0;
-  const versionNumber = process.env.VERSION_NUMBER;
-  const commitHash = process.env.COMMIT_HASH;
 
   const AboutModal = customizationService.getCustomization('ohif.aboutModal');
   const UserPreferencesModal = customizationService.getCustomization('ohif.userPreferencesModal');
+
   const menuOptions = [
     {
       title: t('Header:About'),
       icon: 'info',
       onClick: () =>
         show({
-          content: AboutModal,
+          content: AboutModal as React.ComponentType,
           title: t('AboutModal:About OHIF Viewer'),
-          contentProps: { versionNumber, commitHash },
-          containerClassName: 'max-w-[400px]',
         }),
     },
     {
@@ -493,24 +486,7 @@ function WorkList({
       onClick: () =>
         show({
           title: t('UserPreferencesModal:User preferences'),
-          content: UserPreferencesModal,
-          contentProps: {
-            hotkeyDefaults: hotkeysManager.getValidHotkeyDefinitions(hotkeyDefaults),
-            hotkeyDefinitions,
-            onCancel: hide,
-            currentLanguage: currentLanguage(),
-            availableLanguages,
-            defaultLanguage,
-            onSubmit: state => {
-              if (state.language.value !== currentLanguage().value) {
-                i18n.changeLanguage(state.language.value);
-              }
-              hotkeysManager.setHotkeys(state.hotkeyDefinitions);
-              hide();
-            },
-            onReset: () => hotkeysManager.restoreDefaultBindings(),
-            hotkeysModule: hotkeys,
-          },
+          content: UserPreferencesModal as React.ComponentType,
         }),
     },
   ];

@@ -1,16 +1,10 @@
 import React, { useState, createContext, useContext, useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
-interface ModalContentProps {
-  show: (options: Partial<ModalOptions>) => void;
-  hide: () => void;
-  [key: string]: unknown;
-}
-
 interface ModalOptions {
   title?: string;
   shouldCloseOnEsc?: boolean;
-  content?: React.ComponentType<ModalContentProps>;
+  content?: React.ComponentType;
   contentProps?: Record<string, unknown>;
 }
 

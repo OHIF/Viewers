@@ -2,14 +2,12 @@ import React from 'react';
 import { AboutModal } from '@ohif/ui-next';
 import detect from 'browser-detect';
 
-type AboutModalDefaultProps = {
-  versionNumber: string;
-  commitHash: string;
-};
-
-function AboutModalDefault({ versionNumber, commitHash }: AboutModalDefaultProps) {
+function AboutModalDefault() {
   const { os, version, name } = detect();
   const browser = `${name[0].toUpperCase()}${name.substr(1)} ${version}`;
+  const versionNumber = process.env.VERSION_NUMBER;
+  const commitHash = process.env.COMMIT_HASH;
+
   const [main, beta] = versionNumber.split('-');
 
   return (

@@ -1,74 +1,38 @@
 import React, { useState } from 'react';
+import { useSystem, hotkeys as hotkeysModule } from '@ohif/core';
 import { UserPreferencesModal } from '@ohif/ui-next';
 import { useTranslation } from 'react-i18next';
+import i18n from '@ohif/i18n';
+
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@ohif/ui-next';
 
-interface HotkeyDefinition {
-  command: string;
-  keys: string;
-}
+const { availableLanguages, defaultLanguage, currentLanguage: currentLanguageFn } = i18n;
 
-interface UserPreferencesModalProps {
-  availableLanguages?: Array<{ value: string; label: string }>;
-  defaultLanguage?: string;
-  currentLanguage?: string;
-  disabled?: boolean;
-  hotkeyDefinitions?: Record<string, HotkeyDefinition>;
-  hotkeyDefaults?: Record<string, HotkeyDefinition>;
-  onCancel?: () => void;
-  onSubmit?: (state: {
-    isDisabled: boolean;
-    hotkeyErrors: Record<string, string>;
-    hotkeyDefinitions: Record<string, HotkeyDefinition>;
-    language: string;
-  }) => void;
-  onReset?: () => void;
-  hotkeysModule?: {
-    initialize: () => void;
-    pause: () => void;
-    unpause: () => void;
-    startRecording: () => void;
-    record: () => void;
-  };
-}
-
-function UserPreferencesModalDefault({
-  availableLanguages = [{ value: 'en-US', label: 'English' }],
-  defaultLanguage = 'en-US',
-  currentLanguage = 'en-US',
-  disabled = false,
-  hotkeyDefinitions = {},
-  hotkeyDefaults = {},
-  onCancel = () => {},
-  onSubmit = () => {},
-  onReset = () => {},
-  hotkeysModule,
-}: UserPreferencesModalProps) {
+function UserPreferencesModalDefault({ hide }) {
+  const { hotkeysManager } = useSystem();
   const { t } = useTranslation('UserPreferencesModal');
+
+  const { hotkeyDefinitions = {}, hotkeyDefaults = {} } = hotkeysManager;
+
+  const currentLanguage = currentLanguageFn();
+
   const [state, setState] = useState({
-    isDisabled: disabled,
-    hotkeyErrors: {} as Record<string, string>,
     hotkeyDefinitions,
-    language: currentLanguage,
+    languageValue: currentLanguage.value,
   });
 
-  const onLanguageChangeHandler = (value: string) => {
-    setState(state => ({ ...state, language: value }));
+  const onLanguageChangeHandler = value => {
+    setState(state => ({ ...state, languageValue: value }));
   };
 
   const onResetHandler = () => {
     setState(state => ({
       ...state,
-      language: defaultLanguage,
+      languageValue: defaultLanguage.value,
       hotkeyDefinitions: hotkeyDefaults,
-      hotkeyErrors: {},
-      isDisabled: disabled,
     }));
-    onReset();
-  };
 
-  const onSubmitHandler = () => {
-    onSubmit(state);
+    hotkeysManager.restoreDefaultBindings();
   };
 
   return (
@@ -77,7 +41,10 @@ function UserPreferencesModalDefault({
         {/* Language Section */}
         <div className="mb-3 flex items-center space-x-14">
           <UserPreferencesModal.SubHeading>{t('Language')}</UserPreferencesModal.SubHeading>
-          <Select defaultValue={state.language}>
+          <Select
+            defaultValue={state.languageValue}
+            onValueChange={onLanguageChangeHandler}
+          >
             <SelectTrigger
               className="w-60"
               aria-label="Language"
@@ -89,7 +56,6 @@ function UserPreferencesModalDefault({
                 <SelectItem
                   key={lang.value}
                   value={lang.value}
-                  onClick={() => onLanguageChangeHandler(lang.value)}
                 >
                   {lang.label}
                 </SelectItem>
@@ -115,21 +81,29 @@ function UserPreferencesModalDefault({
             <button
               className="text-primary-600 hover:text-primary-500"
               onClick={onResetHandler}
-              disabled={disabled}
             >
               {t('Reset to defaults')}
             </button>
             <div className="flex space-x-2">
               <button
                 className="rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
-                onClick={onCancel}
+                onClick={() => {
+                  hotkeysModule.stopRecord();
+                  hotkeysModule.unpause();
+                  hide();
+                }}
               >
                 {t('Cancel')}
               </button>
               <button
                 className="bg-primary-600 hover:bg-primary-500 focus-visible:outline-primary-600 rounded-md px-3 py-2 text-sm font-semibold text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
-                onClick={onSubmitHandler}
-                disabled={state.isDisabled}
+                onClick={() => {
+                  if (state.languageValue !== currentLanguage.value) {
+                    i18n.changeLanguage(state.languageValue);
+                  }
+                  hotkeysManager.setHotkeys(hotkeyDefinitions);
+                  hide();
+                }}
               >
                 {t('Save')}
               </button>

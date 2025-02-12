@@ -3,22 +3,16 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
 import { Header, useModal } from '@ohif/ui-next';
-import i18n from '@ohif/i18n';
-import { hotkeys } from '@ohif/core';
+import { useSystem } from '@ohif/core';
 import { Toolbar } from '../Toolbar/Toolbar';
 import HeaderPatientInfo from './HeaderPatientInfo';
 import { PatientInfoVisibility } from './HeaderPatientInfo/HeaderPatientInfo';
 import { preserveQueryParameters, publicUrl } from '@ohif/app';
 
-const { availableLanguages, defaultLanguage, currentLanguage } = i18n;
-
-function ViewerHeader({
-  hotkeysManager,
-  extensionManager,
-  servicesManager,
-  appConfig,
-}: withAppTypes<{ appConfig: AppTypes.Config }>) {
+function ViewerHeader({ appConfig }: withAppTypes<{ appConfig: AppTypes.Config }>) {
+  const { servicesManager, extensionManager } = useSystem();
   const { customizationService } = servicesManager.services;
+
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -42,10 +36,7 @@ function ViewerHeader({
   };
 
   const { t } = useTranslation();
-  const { show, hide } = useModal();
-  const { hotkeyDefinitions, hotkeyDefaults } = hotkeysManager;
-  const versionNumber = process.env.VERSION_NUMBER;
-  const commitHash = process.env.COMMIT_HASH;
+  const { show } = useModal();
 
   const AboutModal = customizationService.getCustomization('ohif.aboutModal');
   const UserPreferencesModal = customizationService.getCustomization('ohif.userPreferencesModal');
@@ -58,7 +49,6 @@ function ViewerHeader({
         show({
           content: AboutModal,
           title: t('AboutModal:About OHIF Viewer'),
-          contentProps: { versionNumber, commitHash },
         }),
     },
     {
@@ -68,27 +58,6 @@ function ViewerHeader({
         show({
           content: UserPreferencesModal,
           title: t('UserPreferencesModal:User preferences'),
-          contentProps: {
-            hotkeyDefaults: hotkeysManager.getValidHotkeyDefinitions(hotkeyDefaults),
-            hotkeyDefinitions,
-            currentLanguage: currentLanguage(),
-            availableLanguages,
-            defaultLanguage,
-            onCancel: () => {
-              hotkeys.stopRecord();
-              hotkeys.unpause();
-              hide();
-            },
-            onSubmit: ({ hotkeyDefinitions, language }) => {
-              if (language.value !== currentLanguage().value) {
-                i18n.changeLanguage(language.value);
-              }
-              hotkeysManager.setHotkeys(hotkeyDefinitions);
-              hide();
-            },
-            onReset: () => hotkeysManager.restoreDefaultBindings(),
-            hotkeysModule: hotkeys,
-          },
         }),
     },
   ];
