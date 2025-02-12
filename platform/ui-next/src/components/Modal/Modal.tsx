@@ -20,8 +20,6 @@ const Modal: React.FC<ModalProps> = ({
   children,
   shouldCloseOnEsc = true,
   shouldCloseOnOverlayClick = true,
-  containerClassName,
-  contentClassName,
 }) => {
   return (
     <Dialog
@@ -30,11 +28,11 @@ const Modal: React.FC<ModalProps> = ({
       shouldCloseOnEsc={shouldCloseOnEsc}
       shouldCloseOnOverlayClick={shouldCloseOnOverlayClick}
     >
-      <DialogContent className={cn('flex max-h-[80vh] flex-col', 'max-w-3xl', containerClassName)}>
+      <DialogContent className={cn('flex max-h-[80vh] flex-col')}>
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
         </DialogHeader>
-        <div className={cn('mt-2', contentClassName)}>{children}</div>
+        <div className={cn('mt-2')}>{children}</div>
       </DialogContent>
     </Dialog>
   );

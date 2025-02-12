@@ -59,7 +59,7 @@ function ViewerHeader({
           content: AboutModal,
           title: t('AboutModal:About OHIF Viewer'),
           contentProps: { versionNumber, commitHash },
-          containerClassName: 'max-w-[400px]',
+          // containerClassName: 'max-w-[400px]',
         }),
     },
     {
@@ -69,7 +69,7 @@ function ViewerHeader({
         show({
           content: UserPreferencesModal,
           title: t('UserPreferencesModal:User preferences'),
-          containerClassName: 'w-[70%] max-w-[900px]',
+          // containerClassName: 'w-[70%] max-w-[900px]',
           contentProps: {
             hotkeyDefaults: hotkeysManager.getValidHotkeyDefinitions(hotkeyDefaults),
             hotkeyDefinitions,

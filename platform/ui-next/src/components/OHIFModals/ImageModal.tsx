@@ -15,7 +15,7 @@ interface ImageModalProps {
  * that sets up a flex row with a 70/30 split.
  */
 export function ImageModal({ children, className }: ImageModalProps) {
-  return <div className={cn('max-w-3xl p-4', className)}>{children}</div>;
+  return <div className={cn('p-4', className)}>{children}</div>;
 }
 
 /* -------------------------------------------------------------------------- */

@@ -1,5 +1,6 @@
 import React from 'react';
 import { AboutModal } from '@ohif/ui-next';
+import detect from 'browser-detect';
 
 type AboutModalDefaultProps = {
   versionNumber: string;
@@ -7,10 +8,15 @@ type AboutModalDefaultProps = {
 };
 
 function AboutModalDefault({ versionNumber, commitHash }: AboutModalDefaultProps) {
+  const { os, version, name } = detect();
+  const browser = `${name[0].toUpperCase()}${name.substr(1)} ${version}`;
+  const [main, beta] = versionNumber.split('-');
+
   return (
-    <AboutModal>
+    <AboutModal className="w-[400px]">
       <AboutModal.ProductName>OHIF Viewer</AboutModal.ProductName>
-      <AboutModal.ProductVersion>{versionNumber}</AboutModal.ProductVersion>
+      <AboutModal.ProductVersion>{main}</AboutModal.ProductVersion>
+      {beta && <AboutModal.ProductBeta>{beta}</AboutModal.ProductBeta>}
 
       <AboutModal.Body>
         <AboutModal.DetailItem
@@ -19,7 +25,7 @@ function AboutModalDefault({ versionNumber, commitHash }: AboutModalDefaultProps
         />
         <AboutModal.DetailItem
           label="Current Browser & OS"
-          value="Safari 18.2.0, macOS 10.15.7"
+          value={`${browser}, ${os}`}
         />
         <AboutModal.SocialItem
           icon="SocialGithub"

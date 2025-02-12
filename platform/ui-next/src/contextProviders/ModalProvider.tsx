@@ -12,8 +12,6 @@ interface ModalOptions {
   shouldCloseOnEsc?: boolean;
   content?: React.ComponentType<ModalContentProps>;
   contentProps?: Record<string, unknown>;
-  containerClassName?: string;
-  contentClassName?: string;
 }
 
 interface ModalContextType {
@@ -26,8 +24,6 @@ interface ModalComponentProps {
   onClose: () => void;
   title?: string;
   children: React.ReactNode;
-  containerClassName?: string;
-  contentClassName?: string;
 }
 
 const ModalContext = createContext<ModalContextType | null>(null);
@@ -92,8 +88,6 @@ const ModalProvider: React.FC<ModalProviderProps> = ({
           isOpen={true}
           onClose={hide}
           title={t(title)}
-          containerClassName={ModalContent.ContainerClassName}
-          contentClassName={ModalContent.ContentClassName}
           {...options}
         >
           <ModalContent

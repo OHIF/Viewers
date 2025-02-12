@@ -24,10 +24,9 @@ const AboutButton = () => {
       onClick={() =>
         show({
           title: 'About OHIF Viewer',
-          containerClassName: 'max-w-[400px]',
           content: () => {
             return (
-              <AboutModal>
+              <AboutModal className="w-[900px]">
                 <AboutModal.ProductName>OHIF Viewer</AboutModal.ProductName>
                 <AboutModal.ProductVersion>3.10</AboutModal.ProductVersion>
                 <AboutModal.ProductBeta>beta.75</AboutModal.ProductBeta>
