@@ -61,7 +61,7 @@ services:
       context: ./../../../../
       dockerfile: ./platform/app/.recipes/Nginx-Dcm4chee-Keycloak/dockerfile
     image: webapp:latest
-    container_name: webapp-dcm4chee
+    container_name: webapp
     ports:
       - '443:443' # SSL
       - '80:80' # Web
@@ -85,7 +85,7 @@ services:
     image: quay.io/keycloak/keycloak:24.0.5
     command: 'start-dev --import-realm'
     hostname: keycloak
-    container_name: keycloak-dcm4chee
+    container_name: keycloak
     volumes:
       - ./config/ohif-keycloak-realm.json:/opt/keycloak/data/import/ohif-keycloak-realm.json
     environment:
@@ -134,7 +134,7 @@ services:
   postgres:
     image: postgres:15
     hostname: postgres
-    container_name: postgres-dcm4chee
+    container_name: postgres
     volumes:
       - postgres_data:/var/lib/postgresql/data
     environment:
@@ -147,7 +147,7 @@ services:
 
   certbot:
     image: certbot/certbot
-    container_name: certbot-dcm4chee
+    container_name: certbot
     volumes:
       - ./config/letsencrypt:/etc/letsencrypt
       - ./config/certbot:/var/www/certbot
