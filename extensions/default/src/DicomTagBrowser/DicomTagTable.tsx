@@ -14,21 +14,42 @@ const rowStyle = {
   ...rowVerticalPaddingStyle,
 };
 
-const RowComponent = ({ row, style, keyPrefix }: { row: Row; style: any; keyPrefix: string }) => {
+const RowComponent = ({
+  row,
+  style,
+  keyPrefix,
+  getMultipleRowsHeight,
+}: {
+  row: Row;
+  style: any;
+  keyPrefix: string;
+  getMultipleRowsHeight: any;
+}) => {
   const { children, ...restOfRow } = row;
   if (children) {
-    // @TODO: essas partes estão aparecendo na tela, porém ficam invisíveis, porque ficam debaixo de outras partes... tem que dar um outro jeito de resolver essa parada
-    console.log('🚀 ~ RowComponent ~ children:', children);
+    // @TODO: essas partes estão aparecendo na tela, porém ficam invisíveis,
+    // porque ficam debaixo de outras partes... tem que dar um outro jeito de resolver essa parada
+    let accumulatedHeight = 0;
     return (
       <>
-        {[restOfRow, ...children].map((row, i) => (
-          <RowComponent
-            row={row}
-            style={style}
-            keyPrefix={`${keyPrefix}-${i}`}
-            key={`${keyPrefix}-${i}`}
-          />
-        ))}
+        {[restOfRow, ...children].map((row, i) => {
+          const rowHeight = getMultipleRowsHeight(row);
+          const topOffset = accumulatedHeight;
+          accumulatedHeight += rowHeight;
+          return (
+            <RowComponent
+              row={row}
+              style={{
+                ...style,
+                height: rowHeight,
+                top: style.top + topOffset,
+              }}
+              keyPrefix={`${keyPrefix}-${i}`}
+              key={`${keyPrefix}-${i}`}
+              getMultipleRowsHeight={getMultipleRowsHeight}
+            />
+          );
+        })}
       </>
     );
   }
@@ -152,13 +173,8 @@ function DicomTagTable({ rows }: { rows: Row[] }) {
     };
   }, []);
 
-  /**
-   * Get the item/row size. We use the header column widths to calculate the various row heights.
-   * @param index the row index
-   * @returns the row height
-   */
-  const getItemSize = useCallback(
-    rows => index => {
+  const getOneRowHeight = useCallback(
+    row => {
       const headerWidths = [
         tagHeaderElem.offsetWidth,
         vrHeaderElem.offsetWidth,
@@ -169,18 +185,41 @@ function DicomTagTable({ rows }: { rows: Row[] }) {
       const context = canvasRef.current.getContext('2d');
       context.font = getComputedStyle(canvasRef.current).font;
 
-      return Object.values(rows[index])
+      return Object.values(row)
         .map((colText, index) => {
-          if (Array.isArray(colText)) {
-            return 0;
-          }
           const colOneLineWidth = context.measureText(colText).width;
           const numLines = Math.ceil(colOneLineWidth / headerWidths[index]);
           return numLines * lineHeightPx + 2 * rowVerticalPaddingPx + rowBottomBorderPx;
         })
-        .reduce((maxHeight, colHeight) => Math.max(maxHeight, colHeight));
+        .reduce((maxHeight, colHeight) => Math.max(maxHeight, colHeight), 0);
     },
-    [rows, keywordHeaderElem, tagHeaderElem, valueHeaderElem, vrHeaderElem]
+    [keywordHeaderElem, tagHeaderElem, valueHeaderElem, vrHeaderElem]
+  );
+
+  const getMultipleRowsHeight = useCallback(
+    row => {
+      const { children, ...restOfRow } = row;
+      const parentHeight = getOneRowHeight(restOfRow);
+      const childrenHeight = !Array.isArray(children)
+        ? 0
+        : children.reduce((sum, childRow) => sum + getMultipleRowsHeight(childRow), 0);
+
+      return parentHeight + childrenHeight;
+    },
+    [getOneRowHeight]
+  );
+
+  /**
+   * Get the item/row size. We use the header column widths to calculate the various row heights.
+   * @param index the row index
+   * @returns the row height
+   */
+  const getItemSize = useCallback(
+    rows => index => {
+      const row = rows[index];
+      return getMultipleRowsHeight(row);
+    },
+    [getMultipleRowsHeight]
   );
 
   const getRowComponent = useCallback(
@@ -192,10 +231,11 @@ function DicomTagTable({ rows }: { rows: Row[] }) {
             style={style}
             row={row}
             keyPrefix={`DICOMTagRow-${index}`}
+            getMultipleRowsHeight={getMultipleRowsHeight}
           />
         );
       },
-    []
+    [getMultipleRowsHeight]
   );
 
   // const getRowComponent = useCallback(
