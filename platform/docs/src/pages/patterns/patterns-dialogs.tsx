@@ -26,7 +26,7 @@ const AboutButton = () => {
           title: 'About OHIF Viewer',
           content: () => {
             return (
-              <AboutModal className="w-[900px]">
+              <AboutModal className="w-[400px]">
                 <AboutModal.ProductName>OHIF Viewer</AboutModal.ProductName>
                 <AboutModal.ProductVersion>3.10</AboutModal.ProductVersion>
                 <AboutModal.ProductBeta>beta.75</AboutModal.ProductBeta>
