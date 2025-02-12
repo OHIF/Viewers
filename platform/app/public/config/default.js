@@ -153,8 +153,8 @@ window.config = {
       namespace: '@ohif/extension-default.dataSourcesModule.dicomweb',
       sourceName: 'PROD_F4C',
       configuration: {
-        friendlyName: 'f4C-didier',
-        name: 'f4C-didier',
+        friendlyName: 'f4c-didier',
+        name: 'f4c-didier',
         wadoUriRoot: 'https://f4c.deemea.com/didier',
         qidoRoot: 'https://f4c.deemea.com/didier',
         wadoRoot: 'https://f4c.deemea.com/didier',
