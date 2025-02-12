@@ -33,11 +33,10 @@ function ImageBody({ children, className }: ImageBodyProps) {
 /* ImageVisual subcomponent */
 
 interface ImageVisualProps {
-  src: string;
-  alt?: string;
   className?: string;
+  children: React.ReactNode;
 }
-function ImageVisual({ src, alt = '', className }: ImageVisualProps) {
+function ImageVisual({ children, className }: ImageVisualProps) {
   return (
     <div
       className={cn(
@@ -46,11 +45,7 @@ function ImageVisual({ src, alt = '', className }: ImageVisualProps) {
         className
       )}
     >
-      <img
-        src={src}
-        alt={alt}
-        className="h-auto max-w-full rounded"
-      />
+      <div className="h-[512px] w-[512px] overflow-auto">{children}</div>
     </div>
   );
 }
@@ -78,7 +73,7 @@ interface FilenameProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>
 
 function Filename({ children, className, value, onChange, ...props }: FilenameProps) {
   return (
-    <div className={cn('space-y-1', className)}>
+    <div className={cn('text-foreground space-y-1', className)}>
       <label className="block text-base">{children}</label>
       <Input
         {...props}
@@ -98,9 +93,18 @@ interface FiletypeProps {
   /** Handler is optional. If not provided, we do nothing. */
   onSelect?: (val: string) => void;
   className?: string;
+  /** Array of file type options */
+  options?: Array<{ value: string; label: string }>;
 }
 
-function Filetype({ selected, onSelect, className }: FiletypeProps) {
+function Filetype({ selected, onSelect, className, options = [] }: FiletypeProps) {
+  const defaultOptions = [
+    { value: 'jpg', label: 'JPG' },
+    { value: 'png', label: 'PNG' },
+  ];
+
+  const fileTypeOptions = options.length ? options : defaultOptions;
+
   return (
     <Select
       value={selected}
@@ -113,8 +117,14 @@ function Filetype({ selected, onSelect, className }: FiletypeProps) {
         <SelectValue />
       </SelectTrigger>
       <SelectContent>
-        <SelectItem value="JPG">JPG</SelectItem>
-        <SelectItem value="PNG">PNG</SelectItem>
+        {fileTypeOptions.map(option => (
+          <SelectItem
+            key={option.value}
+            value={option.value}
+          >
+            {option.label}
+          </SelectItem>
+        ))}
       </SelectContent>
     </Select>
   );
@@ -131,6 +141,8 @@ interface ImageSizeProps {
   onWidthChange?: React.ChangeEventHandler<HTMLInputElement>;
   onHeightChange?: React.ChangeEventHandler<HTMLInputElement>;
   className?: string;
+  maxWidth?: string;
+  maxHeight?: string;
 }
 
 function ImageSize({
@@ -140,9 +152,11 @@ function ImageSize({
   onWidthChange,
   onHeightChange,
   className,
+  maxWidth,
+  maxHeight,
 }: ImageSizeProps) {
   return (
-    <div className={cn('space-y-1', className)}>
+    <div className={cn('text-foreground space-y-1', className)}>
       <label className="block text-base">{children}</label>
 
       {/* Flex container for width/height inputs */}
@@ -155,6 +169,7 @@ function ImageSize({
             onChange={onWidthChange ?? (() => {})}
             placeholder="Width"
             className="w-20"
+            max={maxWidth}
           />
         </div>
 
@@ -166,6 +181,7 @@ function ImageSize({
             onChange={onHeightChange ?? (() => {})}
             placeholder="Height"
             className="w-20"
+            max={maxHeight}
           />
         </div>
       </div>
@@ -192,7 +208,7 @@ function SwitchOption({
   className,
 }: SwitchOptionProps) {
   return (
-    <div className={cn('flex items-center space-x-2', className)}>
+    <div className={cn('text-foreground flex items-center space-x-2', className)}>
       <Switch
         checked={checked}
         defaultChecked={defaultChecked}

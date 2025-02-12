@@ -26,7 +26,6 @@ import {
 } from '@ohif/extension-default';
 import { vec3, mat4 } from 'gl-matrix';
 
-import CornerstoneViewportDownloadForm from './utils/CornerstoneViewportDownloadForm';
 import toggleImageSliceSync from './utils/imageSliceSync/toggleImageSliceSync';
 import { getFirstAnnotationSelected } from './utils/measurementServiceMappings/utils/selection';
 import getActiveViewportEnabledElement from './utils/getActiveViewportEnabledElement';
@@ -540,6 +539,7 @@ function commandsModule({
         ],
       });
     },
+    // capture
     showDownloadViewportModal: () => {
       const { activeViewportId } = viewportGridService.getState();
 
@@ -555,16 +555,18 @@ function commandsModule({
 
       const { uiModalService } = servicesManager.services;
 
+      const CornerstoneViewportDownloadForm = customizationService.getCustomization(
+        'ohif.captureViewportModal'
+      );
+
       if (uiModalService) {
         uiModalService.show({
           content: CornerstoneViewportDownloadForm,
           title: 'Download High Quality Image',
           contentProps: {
             activeViewportId,
-            onClose: uiModalService.hide,
             cornerstoneViewportService,
           },
-          containerClassName: 'w-[70%] max-w-[900px]',
         });
       }
     },
