@@ -1,5 +1,6 @@
 // Numeric.tsx
-import React, { createContext, useContext, useState, useCallback, PropsWithChildren } from 'react';
+import React, { createContext, useContext, useCallback, PropsWithChildren } from 'react';
+import { useControllableState } from '@radix-ui/react-use-controllable-state';
 import { cn } from '../../lib/utils';
 import { Input } from '../Input/Input';
 import { Slider } from '../Slider/Slider';
@@ -23,8 +24,10 @@ const NumericMetaContext = createContext<NumericMetaContextValue | null>(null);
 ---------------------------------------------------------------------------*/
 interface NumericMetaContainerProps {
   mode: 'number' | 'singleRange' | 'doubleRange';
-  value?: number; // for single-value usage
-  values?: [number, number]; // for double-range usage
+  value?: number; // for controlled single-value usage from parent
+  defaultValue?: number; // for uncontrolled single-value usage
+  values?: [number, number]; // for controlled double-range usage from parent
+  defaultValues?: [number, number]; // for uncontrolled double-range usage
   onChange?: (val: number | [number, number]) => void;
   min?: number;
   max?: number;
@@ -34,8 +37,10 @@ interface NumericMetaContainerProps {
 
 function NumericMetaContainer({
   mode,
-  value = 0,
-  values = [0, 100],
+  value,
+  defaultValue,
+  values,
+  defaultValues,
   onChange,
   min = 0,
   max = 100,
@@ -43,26 +48,46 @@ function NumericMetaContainer({
   className,
   children,
 }: PropsWithChildren<NumericMetaContainerProps>) {
-  // Initialize state with props but don't update automatically
-  const [internalSingleValue, setInternalSingleValue] = useState<number>(value);
-  const [internalDoubleValue, setInternalDoubleValue] = useState<[number, number]>(values);
+  // Calculate default values based on min and max
+  const calculatedDefaultValue = defaultValue ?? min + (max - min) / 2;
+  const calculatedDefaultValues = defaultValues ?? [
+    min + (max - min) * 0.3,
+    min + (max - min) * 0.7,
+  ];
+
+  // Use useControllableState for both single and double values
+  const [internalSingleValue, setInternalSingleValue] = useControllableState({
+    prop: mode === 'number' || mode === 'singleRange' ? value : undefined,
+    defaultProp: calculatedDefaultValue,
+    onChange: newVal => {
+      if (mode === 'number' || mode === 'singleRange') {
+        onChange?.(newVal);
+      }
+    },
+  });
+
+  const [internalDoubleValue, setInternalDoubleValue] = useControllableState({
+    prop: mode === 'doubleRange' ? values : undefined,
+    defaultProp: calculatedDefaultValues,
+    onChange: newVals => {
+      if (mode === 'doubleRange') {
+        onChange?.(newVals);
+      }
+    },
+  });
 
   const handleSingleChange = useCallback(
     (newVal: number) => {
       setInternalSingleValue(newVal);
-      onChange?.(newVal);
     },
-    [onChange]
+    [setInternalSingleValue]
   );
 
   const handleDoubleChange = useCallback(
     (newVals: [number, number]) => {
-      // Update internal state
       setInternalDoubleValue(newVals);
-      // Notify parent if onChange is provided
-      onChange?.(newVals);
     },
-    [onChange]
+    [setInternalDoubleValue]
   );
 
   return (
