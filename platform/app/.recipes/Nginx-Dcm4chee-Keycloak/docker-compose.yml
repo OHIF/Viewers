@@ -6,9 +6,9 @@ services:
     logging:
       driver: json-file
       options:
-        max-size: '10m'
+        max-size: "10m"
     ports:
-      - '389:389'
+      - "389:389"
     env_file: docker-compose.env
     volumes:
       - ~/dcm4chee-arc/ldap:/var/lib/ldap
@@ -19,9 +19,9 @@ services:
     logging:
       driver: json-file
       options:
-        max-size: '10m'
+        max-size: "10m"
     ports:
-      - '5432:5432'
+      - "5432:5432"
     env_file: docker-compose.env
     volumes:
       - /etc/localtime:/etc/localtime:ro
@@ -33,16 +33,16 @@ services:
     logging:
       driver: json-file
       options:
-        max-size: '10m'
+        max-size: "10m"
     ports:
-      - '8080:8080'
-      - '8443:8443'
-      - '9990:9990'
-      - '9993:9993'
-      - '11112:11112'
-      - '2762:2762'
-      - '2575:2575'
-      - '12575:12575'
+      - "8080:8080"
+      - "8443:8443"
+      - "9990:9990"
+      - "9993:9993"
+      - "11112:11112"
+      - "2762:2762"
+      - "2575:2575"
+      - "12575:12575"
     env_file: docker-compose.env
     environment:
       WILDFLY_CHOWN: /opt/wildfly/standalone /storage
