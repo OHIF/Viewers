@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.10.0-beta.94](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.93...v3.10.0-beta.94) (2025-02-11)
+
+
+### Features
+
+* add viewport overlays to microscopy mode ([#4776](https://github.com/OHIF/Viewers/issues/4776)) ([084a10f](https://github.com/OHIF/Viewers/commit/084a10f7835acab6a851922850c474bc9c7b864b))
+
+
+
+
+
 # [3.10.0-beta.93](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.92...v3.10.0-beta.93) (2025-02-04)
 
 
