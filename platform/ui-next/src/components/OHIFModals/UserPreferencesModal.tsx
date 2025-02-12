@@ -56,14 +56,54 @@ interface HotkeyProps {
   label: string;
   placeholder?: string;
   className?: string;
+  value?: string;
+  onChange?: (value: string) => void;
+  hotkeys?: {
+    record: (callback: (sequence: string[]) => void) => void;
+    pause: () => void;
+    unpause: () => void;
+    startRecording: () => void;
+  };
 }
-function Hotkey({ label, placeholder, className }: HotkeyProps) {
+
+function Hotkey({ label, placeholder, className, value, onChange, hotkeys }: HotkeyProps) {
+  const [isRecording, setIsRecording] = React.useState(false);
+
+  const onInputKeyDown = (event: React.KeyboardEvent) => {
+    event.preventDefault();
+    hotkeys?.record((sequence: string[]) => {
+      const keys = sequence.join('+');
+      hotkeys?.unpause();
+      setIsRecording(false);
+      onChange?.(keys);
+    });
+  };
+
+  const onFocus = () => {
+    setIsRecording(true);
+    hotkeys?.pause();
+    hotkeys?.startRecording();
+  };
+
+  const onBlur = () => {
+    setIsRecording(false);
+    hotkeys?.unpause();
+  };
+
   return (
     <div className={cn('flex items-center justify-between space-x-2', className)}>
       <Label className="whitespace-nowrap">{label}</Label>
       <Input
-        className="w-16 text-center"
-        placeholder={placeholder}
+        className={cn(
+          'w-16 text-center transition-colors',
+          isRecording && 'bg-accent text-accent-foreground caret-accent-foreground'
+        )}
+        placeholder={isRecording ? 'Press keys...' : placeholder}
+        value={value}
+        onKeyDown={onInputKeyDown}
+        onFocus={onFocus}
+        onBlur={onBlur}
+        readOnly={!isRecording}
       />
     </div>
   );

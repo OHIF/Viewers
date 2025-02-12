@@ -8,7 +8,16 @@ import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@
 
 const { availableLanguages, defaultLanguage, currentLanguage: currentLanguageFn } = i18n;
 
-function UserPreferencesModalDefault({ hide }) {
+interface HotkeyDefinition {
+  keys: string;
+  label: string;
+}
+
+interface HotkeyDefinitions {
+  [key: string]: HotkeyDefinition;
+}
+
+function UserPreferencesModalDefault({ hide }: { hide: () => void }) {
   const { hotkeysManager } = useSystem();
   const { t } = useTranslation('UserPreferencesModal');
 
@@ -17,19 +26,32 @@ function UserPreferencesModalDefault({ hide }) {
   const currentLanguage = currentLanguageFn();
 
   const [state, setState] = useState({
-    hotkeyDefinitions,
+    hotkeyDefinitions: hotkeyDefinitions as HotkeyDefinitions,
     languageValue: currentLanguage.value,
   });
 
-  const onLanguageChangeHandler = value => {
+  const onLanguageChangeHandler = (value: string) => {
     setState(state => ({ ...state, languageValue: value }));
+  };
+
+  const onHotkeyChangeHandler = (id: string, newKeys: string) => {
+    setState(state => ({
+      ...state,
+      hotkeyDefinitions: {
+        ...state.hotkeyDefinitions,
+        [id]: {
+          ...state.hotkeyDefinitions[id],
+          keys: newKeys,
+        },
+      },
+    }));
   };
 
   const onResetHandler = () => {
     setState(state => ({
       ...state,
       languageValue: defaultLanguage.value,
-      hotkeyDefinitions: hotkeyDefaults,
+      hotkeyDefinitions: hotkeyDefaults as HotkeyDefinitions,
     }));
 
     hotkeysManager.restoreDefaultBindings();
@@ -66,11 +88,14 @@ function UserPreferencesModalDefault({ hide }) {
 
         <UserPreferencesModal.SubHeading>{t('Hotkeys')}</UserPreferencesModal.SubHeading>
         <UserPreferencesModal.HotkeysGrid>
-          {Object.entries(hotkeyDefinitions).map(([id, definition]) => (
+          {Object.entries(state.hotkeyDefinitions).map(([id, definition]) => (
             <UserPreferencesModal.Hotkey
               key={id}
               label={t(definition.label)}
+              value={definition.keys}
+              onChange={newKeys => onHotkeyChangeHandler(id, newKeys)}
               placeholder={definition.keys}
+              hotkeys={hotkeysModule}
             />
           ))}
         </UserPreferencesModal.HotkeysGrid>
@@ -96,7 +121,9 @@ function UserPreferencesModalDefault({ hide }) {
               if (state.languageValue !== currentLanguage.value) {
                 i18n.changeLanguage(state.languageValue);
               }
-              hotkeysManager.setHotkeys(hotkeyDefinitions);
+              hotkeysManager.setHotkeys(state.hotkeyDefinitions);
+              hotkeysModule.stopRecord();
+              hotkeysModule.unpause();
               hide();
             }}
           >

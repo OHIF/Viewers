@@ -1,8 +1,10 @@
 import React from 'react';
 import { Button } from '../Button/Button';
+import { cn } from '../../lib/utils';
 
 interface FooterActionProps {
   children: React.ReactNode;
+  className?: string;
 }
 
 interface ActionProps extends FooterActionProps {
@@ -18,8 +20,10 @@ type FooterActionComponent = React.FC<FooterActionProps> & {
   Auxiliary: React.FC<ActionProps>;
 };
 
-export const FooterAction: FooterActionComponent = ({ children }: FooterActionProps) => {
-  return <div className="flex w-full items-center justify-between">{children}</div>;
+export const FooterAction: FooterActionComponent = ({ children, className }: FooterActionProps) => {
+  return (
+    <div className={cn('flex w-full items-center justify-between', className)}>{children}</div>
+  );
 };
 FooterAction.displayName = 'FooterAction';
 

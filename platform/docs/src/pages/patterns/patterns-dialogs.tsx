@@ -144,8 +144,8 @@ const ImageButton = () => {
     <Button
       onClick={() =>
         show({
-          content: () => (
-            <ImageModal>
+          content: ({ hide }) => (
+            <ImageModal className="max-w-[750px]">
               <ImageModal.Body>
                 <ImageModal.ImageVisual
                   src="https://dummyimage.com/512x512/242424/7BB2CE.png"
@@ -170,6 +170,12 @@ const ImageButton = () => {
                   <ImageModal.SwitchOption defaultChecked>
                     Include warning message
                   </ImageModal.SwitchOption>
+                  <FooterAction className="mt-2">
+                    <FooterAction.Right>
+                      <FooterAction.Secondary onClick={() => hide()}>Cancel</FooterAction.Secondary>
+                      <FooterAction.Primary onClick={() => hide()}>Save</FooterAction.Primary>
+                    </FooterAction.Right>
+                  </FooterAction>
                 </ImageModal.ImageOptions>
               </ImageModal.Body>
             </ImageModal>
