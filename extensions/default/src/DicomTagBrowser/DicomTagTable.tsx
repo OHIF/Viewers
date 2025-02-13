@@ -13,26 +13,29 @@ const rowStyle = {
   borderBottomWidth: `${rowBottomBorderPx}px`,
   ...rowVerticalPaddingStyle,
 };
+const indentationPadding = 8;
 
 const RowComponent = ({
   row,
   style,
   keyPrefix,
   getMultipleRowsHeight,
+  firstColumnPadding = indentationPadding,
 }: {
   row: Row;
   style: any;
   keyPrefix: string;
   getMultipleRowsHeight: any;
+  firstColumnPadding?: number;
 }) => {
   const { children, ...restOfRow } = row;
+
   if (children) {
-    // @TODO: essas partes estão aparecendo na tela, porém ficam invisíveis,
-    // porque ficam debaixo de outras partes... tem que dar um outro jeito de resolver essa parada
     let accumulatedHeight = 0;
     return (
       <>
         {[restOfRow, ...children].map((row, i) => {
+          const isParentRow = i === 0;
           const rowHeight = getMultipleRowsHeight(row);
           const topOffset = accumulatedHeight;
           accumulatedHeight += rowHeight;
@@ -47,6 +50,9 @@ const RowComponent = ({
               keyPrefix={`${keyPrefix}-${i}`}
               key={`${keyPrefix}-${i}`}
               getMultipleRowsHeight={getMultipleRowsHeight}
+              firstColumnPadding={
+                isParentRow ? firstColumnPadding : firstColumnPadding + indentationPadding
+              }
             />
           );
         })}
@@ -63,7 +69,12 @@ const RowComponent = ({
       )}
       key={keyPrefix}
     >
-      <div className={`w-4/24 px-3`}>{row.tag}</div>
+      <div
+        className="w-4/24 px-3"
+        style={{ paddingLeft: `${firstColumnPadding}px` }}
+      >
+        {row.tag}
+      </div>
       <div className="w-2/24 px-3">{row.valueRepresentation}</div>
       <div className="w-6/24 px-3">{row.keyword}</div>
       <div className="w-5/24 grow px-3">{row.value}</div>
@@ -237,48 +248,6 @@ function DicomTagTable({ rows }: { rows: Row[] }) {
       },
     [getMultipleRowsHeight]
   );
-
-  // const getRowComponent = useCallback(
-  //   ({ rows }: { rows: Row[] }) =>
-  //     function RowComponent({ index, style }) {
-  //       const row = rows[index];
-  //       if (!row) {
-  //         return <div style={style}>Faiô</div>;
-  //       }
-  //       const children = row.children?.length > 0 ? getRowComponent({ rows: row.children }) : <></>;
-
-  //       if (row.children) {
-  //         return (
-  //           <List
-  //             style={{ ...style }}
-  //             height={500}
-  //             itemCount={row.children.length}
-  //             itemSize={index => 50}
-  //             width={'100%'}
-  //             className="ohif-scrollbar"
-  //           >
-  //             {children}
-  //           </List>
-  //         );
-  //       }
-  //       return (
-  //         <div
-  //           style={{ ...style, ...rowStyle }}
-  //           className={classNames(
-  //             'hover:bg-secondary-main border-secondary-light flex w-full flex-row items-center break-all bg-black text-base transition duration-300',
-  //             lineHeightClassName
-  //           )}
-  //           key={`DICOMTagRow-${index}`}
-  //         >
-  //           <div className={`w-4/24 px-3`}>{row.tag}</div>
-  //           <div className="w-2/24 px-3">{row.valueRepresentation}</div>
-  //           <div className="w-6/24 px-3">{row.keyword}</div>
-  //           <div className="w-5/24 grow px-3">{row.value}</div>
-  //         </div>
-  //       );
-  //     },
-  //   []
-  // );
 
   /**
    * Whenever any one of the column headers is set, then the header is rendered.

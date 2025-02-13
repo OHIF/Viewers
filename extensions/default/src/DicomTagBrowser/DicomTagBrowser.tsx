@@ -1,9 +1,8 @@
 import dcmjs from 'dcmjs';
 import moment from 'moment';
-import React, { useState, useMemo, useEffect, useCallback } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import { classes, Types } from '@ohif/core';
 import { InputFilterText } from '@ohif/ui';
-import debounce from 'lodash.debounce';
 import { Select, SelectTrigger, SelectContent, SelectItem, Slider } from '@ohif/ui-next';
 
 import DicomTagTable from './DicomTagTable';
