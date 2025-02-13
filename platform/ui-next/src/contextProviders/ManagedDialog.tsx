@@ -61,7 +61,7 @@ const ManagedDialog: React.FC<ManagedDialogProps> = ({
         )}
         <DialogContentComponent
           {...contentProps}
-          onDismiss={() => onClose(id)}
+          hide={() => onClose(id)}
         />
       </DialogContent>
     </Dialog>

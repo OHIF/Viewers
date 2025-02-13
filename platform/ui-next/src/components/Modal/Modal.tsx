@@ -29,9 +29,11 @@ const Modal: React.FC<ModalProps> = ({
       shouldCloseOnOverlayClick={shouldCloseOnOverlayClick}
     >
       <DialogContent className={cn('flex max-h-[80vh] flex-col')}>
-        <DialogHeader>
-          <DialogTitle>{title}</DialogTitle>
-        </DialogHeader>
+        {title && (
+          <DialogHeader>
+            <DialogTitle>{title}</DialogTitle>
+          </DialogHeader>
+        )}
         <div className={cn('mt-2')}>{children}</div>
       </DialogContent>
     </Dialog>

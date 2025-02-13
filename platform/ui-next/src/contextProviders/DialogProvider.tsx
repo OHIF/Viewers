@@ -36,22 +36,19 @@ const DialogProvider: React.FC<DialogProviderProps> = ({
   dialog: DialogComponent = ManagedDialog,
   service = null,
 }) => {
-  const [dialogs, setDialogs] = useState<(DialogOptions & { id: string })[]>([]);
+  const [dialogs, setDialogs] = useState<(ManagedDialogProps & { id: string })[]>([]);
 
-  const show = useCallback((options: DialogOptions) => {
+  const show = useCallback((options: ManagedDialogProps) => {
     const id = generateId();
-    console.debug('Showing dialog with id:', id);
     setDialogs(prev => [...prev, { ...options, id }]);
     return id;
   }, []);
 
   const hide = useCallback((id: string) => {
-    console.debug('Hiding dialog with id:', id);
     setDialogs(prev => prev.filter(dialog => dialog.id !== id));
   }, []);
 
   const hideAll = useCallback(() => {
-    console.debug('Hiding all dialogs');
     setDialogs([]);
   }, []);
 
@@ -73,16 +70,17 @@ const DialogProvider: React.FC<DialogProviderProps> = ({
     }
   }, [service, contextValue]);
 
-  const CustomDialog = service?.getCustomComponent?.() || DialogComponent;
+  const CustomDialog = service?.getCustomComponent();
+  const RenderedDialog = CustomDialog || DialogComponent;
 
   return (
     <DialogContext.Provider value={contextValue}>
       {dialogs.map(dialog => (
-        <CustomDialog
+        <RenderedDialog
           key={dialog.id}
-          {...dialog}
-          isOpen={true}
           onClose={hide}
+          isOpen={true}
+          {...dialog}
         />
       ))}
       {children}
