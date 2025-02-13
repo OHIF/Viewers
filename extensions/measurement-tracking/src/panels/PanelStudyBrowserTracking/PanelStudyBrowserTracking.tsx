@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import PropTypes from 'prop-types';
-import { utils } from '@ohif/core';
+import { useSystem, utils } from '@ohif/core';
 import { useImageViewer, Dialog, ButtonEnums } from '@ohif/ui';
 import { useViewportGrid } from '@ohif/ui-next';
 import { StudyBrowser } from '@ohif/ui-next';
@@ -30,13 +30,12 @@ const thumbnailNoImageModalities = [
  * @param {*} param0
  */
 export default function PanelStudyBrowserTracking({
-  servicesManager,
   getImageSrc,
   getStudiesForPatientByMRN,
   requestDisplaySetCreationForStudy,
   dataSource,
-  commandsManager,
-}: withAppTypes) {
+}) {
+  const { servicesManager, commandsManager } = useSystem();
   const {
     displaySetService,
     uiDialogService,
@@ -183,7 +182,7 @@ export default function PanelStudyBrowserTracking({
         // so wait a bit of time to allow the viewports preferential loading
         // which improves user experience of responsiveness significantly on slower
         // systems.
-        window.setTimeout(() => setHasLoadedViewports(true), 250);
+        window.setTimeout(() => setHasLoadedViewports(true), 1000);
       }
 
       return;
@@ -540,7 +539,6 @@ export default function PanelStudyBrowserTracking({
 }
 
 PanelStudyBrowserTracking.propTypes = {
-  servicesManager: PropTypes.object.isRequired,
   dataSource: PropTypes.shape({
     getImageIdsForDisplaySet: PropTypes.func.isRequired,
   }).isRequired,
@@ -621,7 +619,7 @@ function _mapDisplaySets(
         messages: ds.messages,
         StudyInstanceUID: ds.StudyInstanceUID,
         componentType,
-        imageSrc: thumbnailSrc ||  thumbnailImageSrcMap[displaySetInstanceUID],
+        imageSrc: thumbnailSrc || thumbnailImageSrcMap[displaySetInstanceUID],
         dragData: {
           type: 'displayset',
           displaySetInstanceUID,

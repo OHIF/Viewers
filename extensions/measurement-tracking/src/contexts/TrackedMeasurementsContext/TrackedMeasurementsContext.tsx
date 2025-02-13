@@ -293,9 +293,6 @@ function TrackedMeasurementsContextProvider(
 
 TrackedMeasurementsContextProvider.propTypes = {
   children: PropTypes.oneOf([PropTypes.func, PropTypes.node]),
-  servicesManager: PropTypes.object.isRequired,
-  commandsManager: PropTypes.object.isRequired,
-  extensionManager: PropTypes.object.isRequired,
   appConfig: PropTypes.object,
 };
 
