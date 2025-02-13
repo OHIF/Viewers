@@ -87,6 +87,29 @@ const DicomTagBrowser = ({
     return getFormattedRowsFromTags(tags, metadata);
   }, [getMetadata, activeDisplaySet]);
 
+  const filteredRows = useMemo(() => {
+    if (!filterValue) {
+      return rows;
+    }
+
+    const propertiesToCheck = ['tag', 'valueRepresentation', 'keyword', 'value'];
+
+    const filterDeep = row => {
+      const isDirectMatch = propertiesToCheck.some(propertyName =>
+        row[propertyName]?.toLowerCase().includes(filterValueLowerCase)
+      );
+      if (isDirectMatch) {
+        return true;
+      }
+      const isIndirectMatch =
+        row.children && row.children.length ? row.children.some(filterDeep) : false;
+      return isIndirectMatch;
+    };
+
+    const filterValueLowerCase = filterValue.toLowerCase();
+    return rows.filter(filterDeep);
+  }, [rows, filterValue]);
+
   return (
     <div className="dicom-tag-browser-content bg-muted">
       <div className="mb-6 flex flex-row items-start pl-1">
@@ -144,7 +167,7 @@ const DicomTagBrowser = ({
           </div>
         </div>
       </div>
-      <DicomTagTable rows={rows} />
+      <DicomTagTable rows={filteredRows} />
     </div>
   );
 };
