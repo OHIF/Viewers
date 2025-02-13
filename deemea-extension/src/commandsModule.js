@@ -40,6 +40,27 @@ const commandsModule = ({ servicesManager }) => {
             toolbarService?.refreshToolbarState();
           }
         }
+        if (event.data.type === OHIFMessageType.UPDATE_TOOLBAR) {
+          const CalibrationLineButton = document.querySelector('[data-cy="CalibrationLine"]');
+          const ResetButton = document.querySelector('[data-cy="ResetButton"]');
+          if (CalibrationLineButton) {
+            if (event?.data.message.calibration) {
+              CalibrationLineButton.style.backgroundColor = 'orange';
+              CalibrationLineButton.style.color = 'white !important';
+            } else {
+              CalibrationLineButton.style.backgroundColor = '';
+              CalibrationLineButton.style.color = 'white !important';
+            }
+          }
+
+          if (ResetButton) {
+            if (event.data.message.reset) {
+              ResetButton.style.backgroundColor = 'orange';
+            } else {
+              ResetButton.style.backgroundColor = '';
+            }
+          }
+        }
         if (event.data.type === OHIFMessageType.SEND_MEASURE) {
           measurementService.clearMeasurements();
           const relatedPoints = event.data.message.measures;

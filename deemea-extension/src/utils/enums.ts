@@ -8,4 +8,5 @@ export enum OHIFMessageType {
   SEND_MEASURE = 'send_measure',
   RESET_POINTS = 'reset_points',
   IMAGE_STATUS = 'image_status',
+  UPDATE_TOOLBAR = 'update_toolbar',
 }
