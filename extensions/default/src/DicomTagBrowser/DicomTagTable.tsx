@@ -14,10 +14,12 @@ const rowStyle = {
   borderBottomWidth: `${rowBottomBorderPx}px`,
   ...rowVerticalPaddingStyle,
 };
-const indentationPadding = 4;
+const indentationPadding = 8;
 
 const RowComponent = ({
   row,
+  index,
+  listRef,
   style,
   keyPrefix,
   getMultipleRowsHeight,
@@ -26,6 +28,8 @@ const RowComponent = ({
   parentsAreChildrenVisible,
 }: {
   row: Row;
+  index: number;
+  listRef: any;
   style: any;
   keyPrefix: string;
   getMultipleRowsHeight: any;
@@ -33,14 +37,18 @@ const RowComponent = ({
   onToggle?: () => void;
   parentsAreChildrenVisible?: boolean;
 }) => {
-  const [areChildrenVisible, setAreChildrenVisible] = useState(true);
+  const [areChildrenVisible, setAreChildrenVisible] = useState(row.areChildrenVisible);
   const { children, ...restOfRow } = row;
+
+  useEffect(() => {
+    listRef.current.resetAfterIndex(index);
+  }, [index, listRef, row.areChildrenVisible]);
 
   if (children) {
     const toggleChildren = () => {
       setAreChildrenVisible(prev => {
         const newState = !prev;
-        restOfRow.areChildrenVisible = newState;
+        row.areChildrenVisible = newState;
         return newState;
       });
     };
@@ -62,6 +70,8 @@ const RowComponent = ({
             return (
               <RowComponent
                 row={row}
+                index={index}
+                listRef={listRef}
                 style={{
                   ...style,
                   height: rowHeight,
@@ -71,7 +81,7 @@ const RowComponent = ({
                 key={`${keyPrefix}-${i}`}
                 getMultipleRowsHeight={getMultipleRowsHeight}
                 firstColumnPadding={
-                  isParentRow ? firstColumnPadding : firstColumnPadding + indentationPadding
+                  isParentRow ? firstColumnPadding : firstColumnPadding + indentationPadding * 2
                 }
                 onToggle={isParentRow ? toggleChildren : undefined}
                 parentsAreChildrenVisible={areChildrenVisible}
@@ -82,6 +92,8 @@ const RowComponent = ({
     );
   }
 
+  const isChildOrParent = typeof parentsAreChildrenVisible === 'boolean';
+
   return (
     <div
       style={{ ...style, ...rowStyle }}
@@ -91,17 +103,21 @@ const RowComponent = ({
       )}
       key={keyPrefix}
     >
-      <div style={{ paddingLeft: `${firstColumnPadding}px` }}>
-        {onToggle ? (
-          parentsAreChildrenVisible ? (
-            <Icons.ArrowDown onClick={onToggle} />
+      {isChildOrParent && (
+        <div style={{ paddingLeft: `${firstColumnPadding}px`, opacity: onToggle ? 1 : 0 }}>
+          {parentsAreChildrenVisible ? (
+            <Icons.ChevronOpen
+              style={{ margin: '0 -8px' }}
+              onClick={onToggle}
+            />
           ) : (
-            <Icons.ArrowRight onClick={onToggle} />
-          )
-        ) : (
-          <></>
-        )}
-      </div>
+            <Icons.ChevronClosed
+              style={{ margin: '0 -8px' }}
+              onClick={onToggle}
+            />
+          )}
+        </div>
+      )}
       <div className="w-4/24 px-3">{row.tag}</div>
       <div className="w-2/24 px-3">{row.valueRepresentation}</div>
       <div className="w-6/24 px-3">{row.keyword}</div>
@@ -269,6 +285,8 @@ function DicomTagTable({ rows }: { rows: Row[] }) {
         return (
           <RowComponent
             style={style}
+            index={index}
+            listRef={listRef}
             row={row}
             keyPrefix={`DICOMTagRow-${index}`}
             getMultipleRowsHeight={getMultipleRowsHeight}
