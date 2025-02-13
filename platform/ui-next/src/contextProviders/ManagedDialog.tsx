@@ -7,13 +7,6 @@ import {
   DialogDescription,
 } from '../components/Dialog/Dialog';
 
-let globalZIndex = 50;
-
-export const getNextZIndex = () => {
-  globalZIndex += 1;
-  return globalZIndex;
-};
-
 export interface ManagedDialogProps {
   id: string;
   isOpen?: boolean;
@@ -41,12 +34,6 @@ const ManagedDialog: React.FC<ManagedDialogProps> = ({
   initialPosition,
   onClose,
 }) => {
-  const [zIndex, setZIndex] = useState(getNextZIndex());
-
-  const bringToFront = () => {
-    setZIndex(getNextZIndex());
-  };
-
   return (
     <Dialog
       open={isOpen}
@@ -61,7 +48,6 @@ const ManagedDialog: React.FC<ManagedDialogProps> = ({
       shouldCloseOnOverlayClick={shouldCloseOnOverlayClick}
     >
       <DialogContent
-        // Combine initial position with dynamic z-index.
         style={{
           ...(initialPosition
             ? {
@@ -70,10 +56,7 @@ const ManagedDialog: React.FC<ManagedDialogProps> = ({
                 top: `${initialPosition.y}px`,
               }
             : {}),
-          zIndex, // apply our dynamic z-index
         }}
-        // We'll pass our bringToFront function as a pointer down handler.
-        onPointerDown={bringToFront}
       >
         {title && (
           <DialogHeader>
