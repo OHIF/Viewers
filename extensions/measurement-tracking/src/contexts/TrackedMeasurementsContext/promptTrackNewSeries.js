@@ -11,7 +11,7 @@ const RESPONSE = {
 };
 
 function promptTrackNewSeries({ servicesManager, extensionManager }, ctx, evt) {
-  const { UIViewportDialogService } = servicesManager.services;
+  const { UIViewportDialogService, customizationService } = servicesManager.services;
   // When the state change happens after a promise, the state machine sends the retult in evt.data;
   // In case of direct transition to the state, the state machine sends the data in evt;
   const { viewportId, StudyInstanceUID, SeriesInstanceUID } = evt.data || evt;
@@ -21,12 +21,12 @@ function promptTrackNewSeries({ servicesManager, extensionManager }, ctx, evt) {
 
     const showPrompt = appConfig?.measurementTrackingMode === measurementTrackingMode.STANDARD;
     let promptResult = showPrompt
-      ? await _askShouldAddMeasurements(UIViewportDialogService, viewportId)
+      ? await _askShouldAddMeasurements(UIViewportDialogService, customizationService, viewportId)
       : RESPONSE.ADD_SERIES;
 
     if (promptResult === RESPONSE.CREATE_REPORT) {
       promptResult = ctx.isDirty
-        ? await _askSaveDiscardOrCancel(UIViewportDialogService, viewportId)
+        ? await _askSaveDiscardOrCancel(UIViewportDialogService, customizationService, viewportId)
         : RESPONSE.SET_STUDY_AND_SERIES;
     }
 
@@ -40,9 +40,11 @@ function promptTrackNewSeries({ servicesManager, extensionManager }, ctx, evt) {
   });
 }
 
-function _askShouldAddMeasurements(uiViewportDialogService, viewportId) {
+function _askShouldAddMeasurements(uiViewportDialogService, customizationService, viewportId) {
   return new Promise(function (resolve, reject) {
-    const message = 'Do you want to add this measurement to the existing report?';
+    const message = customizationService.getCustomization(
+      'viewportNotification.trackNewSeriesMessage'
+    );
     const actions = [
       {
         type: ButtonEnums.type.secondary,
@@ -79,10 +81,12 @@ function _askShouldAddMeasurements(uiViewportDialogService, viewportId) {
   });
 }
 
-function _askSaveDiscardOrCancel(UIViewportDialogService, viewportId) {
+function _askSaveDiscardOrCancel(UIViewportDialogService, customizationService, viewportId) {
   return new Promise(function (resolve, reject) {
-    const message =
-      'You have existing tracked measurements. What would you like to do with your existing tracked measurements?';
+    const message = customizationService.getCustomization(
+      'viewportNotification.discardSeriesMessage'
+    );
+
     const actions = [
       { type: 'cancel', text: 'Cancel', value: RESPONSE.CANCEL },
       {

@@ -13,13 +13,13 @@ function promptHydrateRT({
   preHydrateCallbacks,
   hydrateRTDisplaySet,
 }: withAppTypes) {
-  const { uiViewportDialogService } = servicesManager.services;
+  const { uiViewportDialogService, customizationService } = servicesManager.services;
   const extensionManager = servicesManager._extensionManager;
   const appConfig = extensionManager._appConfig;
   return new Promise(async function (resolve, reject) {
     const promptResult = appConfig?.disableSegmentationPrompts
       ? RESPONSE.HYDRATE_SEG
-      : await _askHydrate(uiViewportDialogService, viewportId);
+      : await _askHydrate(uiViewportDialogService, customizationService, viewportId);
 
     if (promptResult === RESPONSE.HYDRATE_SEG) {
       preHydrateCallbacks?.forEach(callback => {
@@ -37,9 +37,13 @@ function promptHydrateRT({
   });
 }
 
-function _askHydrate(uiViewportDialogService: AppTypes.UIViewportDialogService, viewportId) {
+function _askHydrate(
+  uiViewportDialogService: AppTypes.UIViewportDialogService,
+  customizationService: AppTypes.CustomizationService,
+  viewportId
+) {
   return new Promise(function (resolve, reject) {
-    const message = 'Do you want to open this Segmentation?';
+    const message = customizationService.getCustomization('viewportNotification.hydrateRTMessage');
     const actions = [
       {
         id: 'no-hydrate',

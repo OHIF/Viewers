@@ -11,7 +11,7 @@ const RESPONSE = {
 };
 
 function promptTrackNewStudy({ servicesManager, extensionManager }: withAppTypes, ctx, evt) {
-  const { uiViewportDialogService } = servicesManager.services;
+  const { uiViewportDialogService, customizationService } = servicesManager.services;
   // When the state change happens after a promise, the state machine sends the retult in evt.data;
   // In case of direct transition to the state, the state machine sends the data in evt;
   const { viewportId, StudyInstanceUID, SeriesInstanceUID } = evt.data || evt;
@@ -23,13 +23,13 @@ function promptTrackNewStudy({ servicesManager, extensionManager }: withAppTypes
     const simplifiedMode =
       appConfig?.measurementTrackingMode === measurementTrackingMode.SIMPLIFIED;
     let promptResult = standardMode
-      ? await _askTrackMeasurements(uiViewportDialogService, viewportId)
+      ? await _askTrackMeasurements(uiViewportDialogService, customizationService, viewportId)
       : RESPONSE.SET_STUDY_AND_SERIES;
 
     if (promptResult === RESPONSE.SET_STUDY_AND_SERIES) {
       promptResult =
         ctx.isDirty && (standardMode || simplifiedMode)
-          ? await _askSaveDiscardOrCancel(uiViewportDialogService, viewportId)
+          ? await _askSaveDiscardOrCancel(uiViewportDialogService, customizationService, viewportId)
           : RESPONSE.SET_STUDY_AND_SERIES;
     }
 
@@ -45,10 +45,13 @@ function promptTrackNewStudy({ servicesManager, extensionManager }: withAppTypes
 
 function _askTrackMeasurements(
   UIViewportDialogService: AppTypes.UIViewportDialogService,
+  customizationService: AppTypes.CustomizationService,
   viewportId
 ) {
   return new Promise(function (resolve, reject) {
-    const message = i18n.t('MeasurementTable:Track measurements for this series?');
+    const message = customizationService.getCustomization(
+      'viewportNotification.trackNewStudyMessage'
+    );
     const actions = [
       { type: 'cancel', text: i18n.t('MeasurementTable:No'), value: RESPONSE.CANCEL },
       {
@@ -89,11 +92,13 @@ function _askTrackMeasurements(
 
 function _askSaveDiscardOrCancel(
   UIViewportDialogService: AppTypes.UIViewportDialogService,
+  customizationService: AppTypes.CustomizationService,
   viewportId
 ) {
   return new Promise(function (resolve, reject) {
-    const message =
-      'Measurements cannot span across multiple studies. Do you want to save your tracked measurements?';
+    const message = customizationService.getCustomization(
+      'viewportNotification.discardStudyMessage'
+    );
     const actions = [
       { type: 'cancel', text: 'Cancel', value: RESPONSE.CANCEL },
       {

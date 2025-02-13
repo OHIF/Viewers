@@ -16,7 +16,7 @@ export const measurementTrackingMode = {
 };
 
 function promptBeginTracking({ servicesManager, extensionManager }, ctx, evt) {
-  const { uiViewportDialogService } = servicesManager.services;
+  const { uiViewportDialogService, customizationService } = servicesManager.services;
   const appConfig = extensionManager._appConfig;
   // When the state change happens after a promise, the state machine sends the retult in evt.data;
   // In case of direct transition to the state, the state machine sends the data in evt;
@@ -30,7 +30,7 @@ function promptBeginTracking({ servicesManager, extensionManager }, ctx, evt) {
     promptResult = noTrackingMode
       ? RESPONSE.NO_NEVER
       : standardMode
-        ? await _askTrackMeasurements(uiViewportDialogService, viewportId)
+        ? await _askTrackMeasurements(uiViewportDialogService, customizationService, viewportId)
         : RESPONSE.SET_STUDY_AND_SERIES;
 
     resolve({
@@ -42,9 +42,11 @@ function promptBeginTracking({ servicesManager, extensionManager }, ctx, evt) {
   });
 }
 
-function _askTrackMeasurements(uiViewportDialogService, viewportId) {
+function _askTrackMeasurements(uiViewportDialogService, customizationService, viewportId) {
   return new Promise(function (resolve, reject) {
-    const message = i18n.t('MeasurementTable:Track measurements for this series?');
+    const message = customizationService.getCustomization(
+      'viewportNotification.beginTrackingMessage'
+    );
     const actions = [
       {
         id: 'prompt-begin-tracking-cancel',
