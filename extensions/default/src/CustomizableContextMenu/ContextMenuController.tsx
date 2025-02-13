@@ -71,6 +71,10 @@ export default class ContextMenuController {
       menuId
     );
 
+    if (!items) {
+      return;
+    }
+
     const ContextMenu = this.services.customizationService.getCustomization('ui.contextMenu');
 
     this.services.uiDialogService.hide('context-menu');
@@ -81,9 +85,10 @@ export default class ContextMenuController {
         event?.detail || event,
         viewportElement
       ),
-      event,
       content: ContextMenu,
-
+      shouldCloseOnEsc: true,
+      shouldCloseOnOverlayClick: true,
+      unstyled: true,
       contentProps: {
         items,
         selectorProps,

@@ -25,7 +25,6 @@ const ManagedDialog: React.FC<ManagedDialogProps> = ({
   id,
   isOpen,
   title,
-  description,
   content: DialogContentComponent,
   contentProps,
   movable,
@@ -33,7 +32,10 @@ const ManagedDialog: React.FC<ManagedDialogProps> = ({
   shouldCloseOnOverlayClick = false,
   defaultPosition,
   onClose,
+  unstyled,
 }) => {
+  console.debug('🚀 ~ DialogContentComponent;:', DialogContentComponent);
+
   return (
     <Dialog
       open={isOpen}
@@ -48,17 +50,21 @@ const ManagedDialog: React.FC<ManagedDialogProps> = ({
       shouldCloseOnOverlayClick={shouldCloseOnOverlayClick}
     >
       <DialogContent
+        className={unstyled ? 'p-0' : ''}
         style={{
           ...(defaultPosition
             ? {
                 position: 'fixed',
                 left: `${defaultPosition.x}px`,
                 top: `${defaultPosition.y}px`,
+                transform: 'translate(0, 0)',
+                margin: 0,
+                animation: 'none',
               }
             : {}),
         }}
       >
-        <DialogHeader>{title && <DialogTitle>{title}</DialogTitle>}</DialogHeader>
+        {!unstyled && <DialogHeader>{title && <DialogTitle>{title}</DialogTitle>}</DialogHeader>}
         <DialogContentComponent
           {...contentProps}
           hide={() => onClose(id)}
