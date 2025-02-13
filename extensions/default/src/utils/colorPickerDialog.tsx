@@ -1,58 +1,39 @@
-import React from 'react';
-import { Dialog } from '@ohif/ui';
+import React, { useState } from 'react';
 import { ChromePicker } from 'react-color';
+import { FooterAction } from '@ohif/ui-next';
 
 import './colorPickerDialog.css';
 
-function colorPickerDialog(uiDialogService, rgbaColor, callback) {
-  const dialogId = 'pick-color';
+function ColorPickerDialog({ value, hide, onSave }) {
+  const [color, setColor] = useState(value);
 
-  const onSubmitHandler = ({ action, value }) => {
-    switch (action.id) {
-      case 'save':
-        callback(value.rgbaColor, action.id);
-        break;
-      case 'cancel':
-        callback('', action.id);
-        break;
-    }
-    uiDialogService.hide(dialogId);
+  const handleChange = color => {
+    setColor(color.rgb);
   };
 
-  if (uiDialogService) {
-    uiDialogService.show({
-      id: dialogId,
-      centralize: true,
-      isDraggable: false,
-      showOverlay: true,
-      content: Dialog,
-      contentProps: {
-        title: 'Segment Color',
-        value: { rgbaColor },
-        noCloseButton: true,
-        onClose: () => uiDialogService.hide(dialogId),
-        actions: [
-          { id: 'cancel', text: 'Cancel', type: 'primary' },
-          { id: 'save', text: 'Save', type: 'secondary' },
-        ],
-        onSubmit: onSubmitHandler,
-        body: ({ value, setValue }) => {
-          const handleChange = color => {
-            setValue({ rgbaColor: color.rgb });
-          };
-
-          return (
-            <ChromePicker
-              color={value.rgbaColor}
-              onChange={handleChange}
-              presetColors={[]}
-              width={300}
-            />
-          );
-        },
-      },
-    });
-  }
+  return (
+    <div>
+      <ChromePicker
+        color={color}
+        onChange={handleChange}
+        presetColors={[]}
+        width={300}
+      />
+      <FooterAction>
+        <FooterAction.Right>
+          <FooterAction.Secondary onClick={hide}>Cancel</FooterAction.Secondary>
+          <FooterAction.Primary
+            onClick={() => {
+              hide();
+              onSave(color);
+            }}
+          >
+            Save
+          </FooterAction.Primary>
+        </FooterAction.Right>
+      </FooterAction>
+    </div>
+  );
 }
 
-export default colorPickerDialog;
+export default ColorPickerDialog;

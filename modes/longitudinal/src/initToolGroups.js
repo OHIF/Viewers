@@ -12,12 +12,7 @@ const colorsByOrientation = {
   coronal: 'rgb(0, 200, 0)',
 };
 
-function initDefaultToolGroup(
-  extensionManager,
-  toolGroupService,
-  commandsManager,
-  toolGroupId
-) {
+function initDefaultToolGroup(extensionManager, toolGroupService, commandsManager, toolGroupId) {
   const utilityModule = extensionManager.getModuleEntry(
     '@ohif/extension-cornerstone.utilityModule.tools'
   );
@@ -27,7 +22,7 @@ function initDefaultToolGroup(
   const tools = {
     active: [
       {
-        toolName: toolNames.WindowLevel,
+        toolName: toolNames.Length,
         bindings: [{ mouseButton: Enums.MouseBindings.Primary }],
       },
       {
@@ -44,7 +39,7 @@ function initDefaultToolGroup(
       },
     ],
     passive: [
-      { toolName: toolNames.Length },
+      // { toolName: toolNames.Length },
       {
         toolName: toolNames.ArrowAnnotate,
         configuration: {
@@ -308,12 +303,7 @@ function initVolume3DToolGroup(extensionManager, toolGroupService) {
 }
 
 function initToolGroups(extensionManager, toolGroupService, commandsManager) {
-  initDefaultToolGroup(
-    extensionManager,
-    toolGroupService,
-    commandsManager,
-    'default'
-  );
+  initDefaultToolGroup(extensionManager, toolGroupService, commandsManager, 'default');
   initSRToolGroup(extensionManager, toolGroupService);
   initMPRToolGroup(extensionManager, toolGroupService, commandsManager);
   initVolume3DToolGroup(extensionManager, toolGroupService);

@@ -14,7 +14,6 @@ import { id } from './id';
 import preRegistration from './init';
 import { ContextMenuController, CustomizableContextMenuTypes } from './CustomizableContextMenu';
 import * as dicomWebUtils from './DicomWebDataSource/utils';
-import { createReportDialogPrompt } from './Panels';
 import createReportAsync from './Actions/createReportAsync';
 import StaticWadoClient from './DicomWebDataSource/utils/StaticWadoClient';
 import { cleanDenaturalizedDataset } from './DicomWebDataSource/utils';
@@ -82,7 +81,6 @@ export {
   CustomizableContextMenuTypes,
   getStudiesForPatientByMRN,
   dicomWebUtils,
-  createReportDialogPrompt,
   createReportAsync,
   StaticWadoClient,
   cleanDenaturalizedDataset,

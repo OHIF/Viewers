@@ -68,7 +68,7 @@ const DialogProvider: React.FC<DialogProviderProps> = ({
     }
   }, [service, contextValue]);
 
-  const CustomDialog = service?.getCustomComponent();
+  const CustomDialog = service?.getCustomComponent?.();
   const RenderedDialog = CustomDialog || DialogComponent;
 
   return (

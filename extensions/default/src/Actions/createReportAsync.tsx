@@ -11,13 +11,6 @@ async function createReportAsync({
   reportType = 'measurement',
 }: withAppTypes) {
   const { displaySetService, uiNotificationService, uiDialogService } = servicesManager.services;
-  uiDialogService.show({
-    id: 'loading-dialog',
-    showOverlay: true,
-    isDraggable: false,
-    centralize: true,
-    content: Loading,
-  });
 
   try {
     const naturalizedReport = await getReport();
@@ -52,10 +45,6 @@ async function createReportAsync({
   } finally {
     uiDialogService.hide('loading-dialog');
   }
-}
-
-function Loading() {
-  return <div className="text-primary-active">Loading...</div>;
 }
 
 export default createReportAsync;

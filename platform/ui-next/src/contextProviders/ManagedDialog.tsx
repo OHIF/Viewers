@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   Dialog,
   DialogContent,
@@ -17,7 +17,7 @@ export interface ManagedDialogProps {
   movable?: boolean;
   shouldCloseOnEsc?: boolean;
   shouldCloseOnOverlayClick?: boolean;
-  initialPosition?: { x: number; y: number };
+  defaultPosition?: { x: number; y: number };
   onClose?: (id: string) => void;
 }
 
@@ -31,7 +31,7 @@ const ManagedDialog: React.FC<ManagedDialogProps> = ({
   movable,
   shouldCloseOnEsc = false,
   shouldCloseOnOverlayClick = false,
-  initialPosition,
+  defaultPosition,
   onClose,
 }) => {
   return (
@@ -49,21 +49,16 @@ const ManagedDialog: React.FC<ManagedDialogProps> = ({
     >
       <DialogContent
         style={{
-          ...(initialPosition
+          ...(defaultPosition
             ? {
                 position: 'fixed',
-                left: `${initialPosition.x}px`,
-                top: `${initialPosition.y}px`,
+                left: `${defaultPosition.x}px`,
+                top: `${defaultPosition.y}px`,
               }
             : {}),
         }}
       >
-        {title && (
-          <DialogHeader>
-            <DialogTitle>{title}</DialogTitle>
-            {description && <DialogDescription>{description}</DialogDescription>}
-          </DialogHeader>
-        )}
+        <DialogHeader>{title && <DialogTitle>{title}</DialogTitle>}</DialogHeader>
         <DialogContentComponent
           {...contentProps}
           hide={() => onClose(id)}

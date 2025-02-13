@@ -51,6 +51,7 @@ const commandsModule = ({
     displaySetService,
     viewportGridService,
     toolGroupService,
+    customizationService,
   } = servicesManager.services as AppTypes.Services;
 
   const actions = {
@@ -226,14 +227,6 @@ const commandsModule = ({
      * otherwise throws an error.
      */
     storeSegmentation: async ({ segmentationId, dataSource }) => {
-      const promptResult = await createReportDialogPrompt(uiDialogService, {
-        extensionManager,
-      });
-
-      if (promptResult.action !== 1 && !promptResult.value) {
-        return;
-      }
-
       const segmentation = segmentationService.getSegmentation(segmentationId);
 
       if (!segmentation) {
@@ -241,33 +234,50 @@ const commandsModule = ({
       }
 
       const { label } = segmentation;
-      const SeriesDescription = promptResult.value || label || 'Research Derived Series';
+      const defaultDataSource = dataSource ?? extensionManager.getActiveDataSource();
+      const ReportDialog = customizationService.getCustomization('ohif.createReportDialog');
+      const dataSourcesList = extensionManager.getDataSourcesForUI();
 
-      const generatedData = actions.generateSegmentation({
-        segmentationId,
-        options: {
-          SeriesDescription,
-        },
+      return new Promise((resolve, reject) => {
+        uiDialogService.show({
+          id: 'report-dialog',
+          title: 'Create Report',
+          content: ReportDialog,
+          contentProps: {
+            dataSources: dataSourcesList,
+            onSave: async ({ reportName, dataSource: selectedDataSource }) => {
+              try {
+                const selectedDataSourceConfig = selectedDataSource ?? defaultDataSource;
+
+                const generatedData = actions.generateSegmentation({
+                  segmentationId,
+                  options: {
+                    SeriesDescription: reportName || label || 'Research Derived Series',
+                  },
+                });
+
+                if (!generatedData || !generatedData.dataset) {
+                  throw new Error('Error during segmentation generation');
+                }
+
+                const { dataset: naturalizedReport } = generatedData;
+
+                await selectedDataSourceConfig.store.dicom(naturalizedReport);
+
+                // add the information for where we stored it to the instance as well
+                naturalizedReport.wadoRoot = selectedDataSourceConfig.getConfig().wadoRoot;
+
+                DicomMetadataStore.addInstances([naturalizedReport], true);
+
+                resolve(naturalizedReport);
+              } catch (error) {
+                console.debug('Error storing segmentation:', error);
+                reject(error);
+              }
+            },
+          },
+        });
       });
-
-      if (!generatedData || !generatedData.dataset) {
-        throw new Error('Error during segmentation generation');
-      }
-
-      const { dataset: naturalizedReport } = generatedData;
-
-      await dataSource.store.dicom(naturalizedReport);
-
-      // The "Mode" route listens for DicomMetadataStore changes
-      // When a new instance is added, it listens and
-      // automatically calls makeDisplaySets
-
-      // add the information for where we stored it to the instance as well
-      naturalizedReport.wadoRoot = dataSource.getConfig().wadoRoot;
-
-      DicomMetadataStore.addInstances([naturalizedReport], true);
-
-      return naturalizedReport;
     },
     /**
      * Converts segmentations into RTSS for download.

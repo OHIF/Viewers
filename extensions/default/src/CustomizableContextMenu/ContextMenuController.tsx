@@ -76,9 +76,6 @@ export default class ContextMenuController {
     this.services.uiDialogService.hide('context-menu');
     this.services.uiDialogService.show({
       id: 'context-menu',
-      isDraggable: false,
-      preservePosition: false,
-      preventCutOf: true,
       defaultPosition: ContextMenuController._getDefaultPosition(
         defaultPointsPosition,
         event?.detail || event,
@@ -86,10 +83,6 @@ export default class ContextMenuController {
       ),
       event,
       content: ContextMenu,
-
-      // This naming is part of the uiDialogService convention
-      // Clicking outside simply closes the dialog box.
-      onClickOutside: () => this.services.uiDialogService.hide('context-menu'),
 
       contentProps: {
         items,

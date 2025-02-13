@@ -410,6 +410,29 @@ export default class ExtensionManager extends PubSubService {
   };
 
   /**
+   * Gets a formatted list of data sources suitable for UI display/selection.
+   * Only returns data sources that support STOW or have a WADO root.
+   * @returns Array of data source options with value, label, and placeholder
+   */
+  getDataSourcesForUI = () => {
+    // If multi-select export is not allowed, return empty list
+    if (this._appConfig?.allowMultiSelectExport === false) {
+      return [];
+    }
+
+    return Object.keys(this.dataSourceMap)
+      .filter(ds => {
+        const configuration = this.dataSourceDefs[ds]?.configuration;
+        return configuration?.supportsStow ?? configuration?.wadoRoot;
+      })
+      .map(ds => ({
+        value: ds,
+        label: ds,
+        placeHolder: ds,
+      }));
+  };
+
+  /**
    * @private
    * @param {string} moduleType
    * @param {Object} extension

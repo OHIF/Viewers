@@ -377,7 +377,7 @@ function commandsModule({
 
       viewportGridService.setActiveViewportId(viewportId);
     },
-    arrowTextCallback: ({ callback, data, uid }) => {
+    arrowTextCallback: ({ callback }) => {
       const labelConfig = customizationService.getCustomization('measurementLabels');
       const renderContent = customizationService.getCustomization('ui.labellingComponent');
       callLabelAutocompleteDialog(uiDialogService, callback, {}, labelConfig, renderContent);
@@ -1112,14 +1112,12 @@ function commandsModule({
      */
     storeSegmentationCommand: async ({ segmentationId }) => {
       const { segmentationService, viewportGridService } = servicesManager.services;
-      const datasources = extensionManager.getActiveDataSource();
 
       const displaySetInstanceUIDs = await createReportAsync({
         servicesManager,
         getReport: () =>
           commandsManager.runCommand('storeSegmentation', {
             segmentationId,
-            dataSource: datasources[0],
           }),
         reportType: 'Segmentation',
       });
@@ -1307,13 +1305,16 @@ function commandsModule({
         a: color[3] / 255.0,
       };
 
-      colorPickerDialog(uiDialogService, rgbaColor, (newRgbaColor, actionId) => {
-        if (actionId === 'cancel') {
-          return;
-        }
-
-        const color = [newRgbaColor.r, newRgbaColor.g, newRgbaColor.b, newRgbaColor.a * 255.0];
-        segmentationService.setSegmentColor(viewportId, segmentationId, segmentIndex, color);
+      uiDialogService.show({
+        content: colorPickerDialog,
+        title: 'Segment Color',
+        contentProps: {
+          value: rgbaColor,
+          onSave: newRgbaColor => {
+            const color = [newRgbaColor.r, newRgbaColor.g, newRgbaColor.b, newRgbaColor.a * 255.0];
+            segmentationService.setSegmentColor(viewportId, segmentationId, segmentIndex, color);
+          },
+        },
       });
     },
 

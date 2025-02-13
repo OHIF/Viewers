@@ -21,10 +21,28 @@ type FooterActionComponent = React.FC<FooterActionProps> & {
 };
 
 export const FooterAction: FooterActionComponent = ({ children, className }: FooterActionProps) => {
-  return (
-    <div className={cn('flex w-full items-center justify-between', className)}>{children}</div>
+  // Convert children to array for easier inspection
+  const arrayChildren = React.Children.toArray(children);
+
+  // Check if we have a <FooterAction.Left> or <FooterAction.Right> among children
+  const hasLeft = arrayChildren.some(
+    (child: any) => child.type?.displayName === 'FooterAction.Left'
   );
+  const hasRight = arrayChildren.some(
+    (child: any) => child.type?.displayName === 'FooterAction.Right'
+  );
+
+  // Decide on the justification class based on presence of Left/Right
+  let justifyClass = 'justify-between'; // default
+  if (hasLeft && !hasRight) {
+    justifyClass = 'justify-start';
+  } else if (!hasLeft && hasRight) {
+    justifyClass = 'justify-end';
+  }
+  // If both or neither are present, keep justify-between (or adjust if you like)
+  return <div className={cn('flex w-full items-center', justifyClass, className)}>{children}</div>;
 };
+
 FooterAction.displayName = 'FooterAction';
 
 FooterAction.Left = ({ children }: FooterActionProps) => {

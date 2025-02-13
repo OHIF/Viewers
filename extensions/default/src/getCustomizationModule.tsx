@@ -20,6 +20,7 @@ import labellingFlowCustomization from './customizations/labellingFlowCustomizat
 import viewportNotificationCustomization from './customizations/notificationCustomization';
 import aboutModalCustomization from './customizations/aboutModalCustomization';
 import userPreferencesCustomization from './customizations/userPreferencesCustomization';
+import reportDialogCustomization from './customizations/reportDialogCustomization';
 
 /**
  *
@@ -66,6 +67,7 @@ export default function getCustomizationModule({ servicesManager, extensionManag
         ...viewportNotificationCustomization,
         ...aboutModalCustomization,
         ...userPreferencesCustomization,
+        ...reportDialogCustomization,
       },
     },
   ];

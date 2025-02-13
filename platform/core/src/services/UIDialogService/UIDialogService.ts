@@ -1,8 +1,3 @@
-import type {
-  DialogContextType,
-  DialogOptions,
-} from '../../../../ui-next/src/contextProviders/DialogProvider';
-
 const name = 'uiDialogService';
 
 const serviceImplementation = {
@@ -16,6 +11,7 @@ const serviceImplementation = {
     console.warn('isEmpty() NOT IMPLEMENTED');
     return true;
   },
+  _customComponent: null,
 };
 
 class UIDialogService {
@@ -65,9 +61,18 @@ class UIDialogService {
   }
 
   /**
+   * This provides flexibility in customizing the Modal's default component
+   *
+   * @returns {React.Component}
+   */
+  getCustomComponent() {
+    return serviceImplementation._customComponent;
+  }
+
+  /**
    * Set the service implementation
    */
-  setServiceImplementation({ show, hide, hideAll, isEmpty }: DialogContextType): void {
+  setServiceImplementation({ show, hide, hideAll, isEmpty, customComponent }): void {
     if (show) {
       serviceImplementation._show = show;
     }
@@ -79,6 +84,9 @@ class UIDialogService {
     }
     if (isEmpty) {
       serviceImplementation._isEmpty = isEmpty;
+    }
+    if (customComponent) {
+      serviceImplementation._customComponent = customComponent;
     }
   }
 }

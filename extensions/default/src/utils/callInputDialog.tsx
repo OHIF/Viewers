@@ -21,7 +21,6 @@ export function callInputDialog(
   isArrowAnnotateInputDialog = true,
   dialogConfig: any = {}
 ) {
-  console.debug('callInputDialog');
   const dialogId = 'dialog-enter-annotation';
   const label = data ? (isArrowAnnotateInputDialog ? data.text : data.label) : '';
   const {
@@ -97,7 +96,6 @@ export function callLabelAutocompleteDialog(
   labelConfig,
   renderContent = LabellingFlow
 ) {
-  console.debug('callLabelAutocompleteDialog');
   const exclusive = labelConfig ? labelConfig.exclusive : false;
   const dropDownItems = labelConfig ? labelConfig.items : [];
 
@@ -137,7 +135,6 @@ export function showLabelAnnotationPopup(
   labelConfig,
   renderContent = LabellingFlow
 ) {
-  console.debug('showLabelAnnotationPopup');
   const exclusive = labelConfig ? labelConfig.exclusive : false;
   const dropDownItems = labelConfig ? labelConfig.items : [];
   return new Promise<Map<any, any>>((resolve, reject) => {
@@ -151,13 +148,7 @@ export function showLabelAnnotationPopup(
 
     uiDialogService.show({
       id: 'select-annotation',
-      isDraggable: false,
-      showOverlay: true,
       content: renderContent,
-      defaultPosition: {
-        x: window.innerWidth / 2,
-        y: window.innerHeight / 2,
-      },
       contentProps: {
         labellingDoneCallback: labellingDoneCallback,
         measurementData: measurement,

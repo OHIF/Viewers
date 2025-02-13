@@ -120,11 +120,6 @@ const PreferencesButton = () => {
                 </UserPreferencesModal.HotkeysGrid>
               </UserPreferencesModal.Body>
               <FooterAction>
-                <FooterAction.Left>
-                  <FooterAction.Auxiliary onClick={() => {}}>
-                    Restore Defaults
-                  </FooterAction.Auxiliary>
-                </FooterAction.Left>
                 <FooterAction.Right>
                   <FooterAction.Secondary onClick={() => hide()}>Cancel</FooterAction.Secondary>
                   <FooterAction.Primary onClick={() => hide()}>Save</FooterAction.Primary>
@@ -219,7 +214,7 @@ const InputButton = () => {
               </InputDialog>
             ),
             title: 'Input Dialog 1',
-            initialPosition: { x: 200, y: 200 },
+            defaultPosition: { x: 200, y: 200 },
           });
           // second dialog
           show({
@@ -241,7 +236,7 @@ const InputButton = () => {
               </InputDialog>
             ),
             title: 'Input Dialog 2',
-            initialPosition: { x: 400, y: 400 },
+            defaultPosition: { x: 400, y: 400 },
           });
         }}
       >

@@ -113,7 +113,7 @@ function App({
   const providers = [
     [AppConfigProvider, { value: appConfigState }],
     [UserAuthenticationProvider, { service: userAuthenticationService }],
-    ManagedDialog[(I18nextProvider, { i18n })],
+    [I18nextProvider, { i18n }],
     [ThemeWrapperNext],
     [ThemeWrapper],
     [SystemContextProvider, { commandsManager, extensionManager, hotkeysManager, servicesManager }],
