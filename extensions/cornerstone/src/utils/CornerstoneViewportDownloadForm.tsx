@@ -4,6 +4,7 @@ import { getEnabledElement, StackViewport, BaseVolumeViewport } from '@cornersto
 import { ToolGroupManager } from '@cornerstonejs/tools';
 import { ImageModal, FooterAction } from '@ohif/ui-next';
 import { getEnabledElement as OHIFgetEnabledElement } from '../state';
+import { useSystem } from '@ohif/core/src';
 
 const DEFAULT_SIZE = 512;
 const MAX_TEXTURE_SIZE = 10000;
@@ -21,18 +22,34 @@ const FILE_TYPE_OPTIONS = [
   },
 ];
 
+type ViewportDownloadFormProps = {
+  hide: () => void;
+  activeViewportId: string;
+};
+
 const CornerstoneViewportDownloadForm = ({
   hide,
   activeViewportId: activeViewportIdProp,
-  cornerstoneViewportService,
-}: withAppTypes) => {
+}: ViewportDownloadFormProps) => {
+  const { servicesManager } = useSystem();
+  const { customizationService, cornerstoneViewportService } = servicesManager.services;
+  const [showAnnotations, setShowAnnotations] = useState(true);
+  const [viewportDimensions, setViewportDimensions] = useState({
+    width: DEFAULT_SIZE,
+    height: DEFAULT_SIZE,
+  });
+
+  const warningState = customizationService.getCustomization('viewportDownload.warningMessage') as {
+    enabled: boolean;
+    value: string;
+  };
+
   const refViewportEnabledElementOHIF = OHIFgetEnabledElement(activeViewportIdProp);
   const activeViewportElement = refViewportEnabledElementOHIF?.element;
   const { viewportId: activeViewportId, renderingEngineId } =
     getEnabledElement(activeViewportElement);
 
   const renderingEngine = cornerstoneViewportService.getRenderingEngine();
-
   const toolGroup = ToolGroupManager.getToolGroupForViewport(activeViewportId, renderingEngineId);
 
   useEffect(() => {
@@ -42,10 +59,7 @@ const CornerstoneViewportDownloadForm = ({
 
       return {
         ...acc,
-        [toolName]: {
-          mode,
-          bindings,
-        },
+        [toolName]: { mode, bindings },
       };
     }, {});
 
@@ -57,7 +71,7 @@ const CornerstoneViewportDownloadForm = ({
     };
   }, []);
 
-  const enableViewport = viewportElement => {
+  const handleEnableViewport = (viewportElement: HTMLElement) => {
     if (!viewportElement) {
       return;
     }
@@ -77,19 +91,16 @@ const CornerstoneViewportDownloadForm = ({
     renderingEngine.enableElement(viewportInput);
   };
 
-  const disableViewport = viewportElement => {
-    return new Promise(() => {
-      renderingEngine.disableElement(VIEWPORT_ID);
-    });
+  const handleDisableViewport = async () => {
+    renderingEngine.disableElement(VIEWPORT_ID);
   };
 
-  const loadImage = async (width, height) => {
+  const handleLoadImage = async (width: number, height: number) => {
     if (!activeViewportElement) {
       return;
     }
 
     const activeViewportEnabledElement = getEnabledElement(activeViewportElement);
-
     if (!activeViewportEnabledElement) {
       return;
     }
@@ -97,45 +108,39 @@ const CornerstoneViewportDownloadForm = ({
     const { viewport } = activeViewportEnabledElement;
     const downloadViewport = renderingEngine.getViewport(VIEWPORT_ID);
 
-    if (downloadViewport instanceof StackViewport) {
-      const imageId = viewport.getCurrentImageId();
-      const properties = viewport.getProperties();
+    try {
+      if (downloadViewport instanceof StackViewport) {
+        const imageId = viewport.getCurrentImageId();
+        const properties = viewport.getProperties();
 
-      try {
         await downloadViewport.setStack([imageId]);
         downloadViewport.setProperties(properties);
-        const newWidth = Math.min(width || image.width, MAX_TEXTURE_SIZE);
-        const newHeight = Math.min(height || image.height, MAX_TEXTURE_SIZE);
 
-        return { width: newWidth, height: newHeight };
-      } catch (e) {
-        // Happens on clicking the cancel button
-        console.warn('Unable to set properties', e);
+        return {
+          width: Math.min(width || DEFAULT_SIZE, MAX_TEXTURE_SIZE),
+          height: Math.min(height || DEFAULT_SIZE, MAX_TEXTURE_SIZE),
+        };
+      } else if (downloadViewport instanceof BaseVolumeViewport) {
+        const volumeIds = viewport.getAllVolumeIds();
+        downloadViewport.setVolumes([{ volumeId: volumeIds[0] }]);
+
+        return {
+          width: Math.min(width || DEFAULT_SIZE, MAX_TEXTURE_SIZE),
+          height: Math.min(height || DEFAULT_SIZE, MAX_TEXTURE_SIZE),
+        };
       }
-    } else if (downloadViewport instanceof BaseVolumeViewport) {
-      const volumeIds = viewport.getAllVolumeIds();
-      downloadViewport.setVolumes([
-        {
-          volumeId: volumeIds[0],
-        },
-      ]);
-
-      const newWidth = Math.min(width || image.width, MAX_TEXTURE_SIZE);
-      const newHeight = Math.min(height || image.height, MAX_TEXTURE_SIZE);
-
-      return { width: newWidth, height: newHeight };
+    } catch (error) {
+      console.error('Error loading image:', error);
     }
   };
 
-  const toggleAnnotations = toggle => {
+  const handleToggleAnnotations = (show: boolean) => {
     const activeViewportEnabledElement = getEnabledElement(activeViewportElement);
-
     if (!activeViewportEnabledElement) {
       return;
     }
 
     const downloadViewport = renderingEngine.getViewport(VIEWPORT_ID);
-
     if (!downloadViewport) {
       return;
     }
@@ -144,17 +149,14 @@ const CornerstoneViewportDownloadForm = ({
     const { id: downloadViewportId } = downloadViewport;
 
     const toolGroup = ToolGroupManager.getToolGroupForViewport(activeViewportId, renderingEngineId);
-
     toolGroup.addViewport(downloadViewportId, renderingEngineId);
 
     Object.keys(toolGroup.getToolInstances()).forEach(toolName => {
-      // make all tools Enabled so that they can not be interacted with
-      // in the download viewport
-      if (toggle && toolName !== 'Crosshairs') {
+      if (show && toolName !== 'Crosshairs') {
         try {
           toolGroup.setToolEnabled(toolName);
-        } catch (e) {
-          console.log(e);
+        } catch (error) {
+          console.debug('Error enabling tool:', error);
         }
       } else {
         toolGroup.setToolDisabled(toolName);
@@ -162,67 +164,16 @@ const CornerstoneViewportDownloadForm = ({
     });
   };
 
-  return (
-    <ViewportDownloadFormNew
-      onClose={hide}
-      defaultSize={DEFAULT_SIZE}
-      enableViewport={enableViewport}
-      disableViewport={disableViewport}
-      loadImage={loadImage}
-      toggleAnnotations={toggleAnnotations}
-      fileTypeOptions={FILE_TYPE_OPTIONS}
-    />
-  );
-};
-
-function ViewportDownloadFormNew({
-  onClose,
-  defaultSize,
-  loadImage,
-  enableViewport,
-  disableViewport,
-  fileTypeOptions,
-  toggleAnnotations,
-}) {
-  const [viewportElement, setViewportElement] = useState(null);
-  const [viewportElementDimensions, setViewportElementDimensions] = useState({
-    width: defaultSize,
-    height: defaultSize,
-  });
-  const [showAnnotations, setShowAnnotations] = useState(true);
-  const [showWarningMessage, setShowWarningMessage] = useState(true);
-  const [filename, setFilename] = useState(DEFAULT_FILENAME);
-  const [fileType, setFileType] = useState('jpg');
-
   useEffect(() => {
-    if (!viewportElement) {
-      return;
+    if (viewportDimensions.width && viewportDimensions.height) {
+      setTimeout(() => {
+        handleLoadImage(viewportDimensions.width, viewportDimensions.height);
+        handleToggleAnnotations(showAnnotations);
+      }, 100);
     }
+  }, [viewportDimensions, showAnnotations]);
 
-    console.debug('enableViewport');
-    enableViewport(viewportElement);
-
-    return () => {
-      console.debug('disableViewport');
-      disableViewport(viewportElement);
-    };
-  }, [disableViewport, enableViewport, viewportElement]);
-
-  useEffect(() => {
-    setTimeout(() => {
-      loadImage(viewportElementDimensions.width, viewportElementDimensions.height);
-      toggleAnnotations(showAnnotations);
-    }, 100);
-  }, [
-    loadImage,
-    toggleAnnotations,
-    viewportElementDimensions.width,
-    viewportElementDimensions.height,
-    showAnnotations,
-  ]);
-
-  const downloadBlob = (filename, fileType) => {
-    const file = `${filename}.${fileType}`;
+  const handleDownload = async (filename: string, fileType: string) => {
     const divForDownloadViewport = document.querySelector(
       `div[data-viewport-uid="${VIEWPORT_ID}"]`
     );
@@ -232,13 +183,76 @@ function ViewportDownloadFormNew({
       return;
     }
 
-    html2canvas(divForDownloadViewport as HTMLElement).then(canvas => {
-      const link = document.createElement('a');
-      link.download = file;
-      link.href = canvas.toDataURL(fileType, 1.0);
-      link.click();
-    });
+    const canvas = await html2canvas(divForDownloadViewport as HTMLElement);
+    const link = document.createElement('a');
+    link.download = `${filename}.${fileType}`;
+    link.href = canvas.toDataURL(`image/${fileType}`, 1.0);
+    link.click();
   };
+
+  return (
+    <ViewportDownloadFormNew
+      onClose={hide}
+      defaultSize={DEFAULT_SIZE}
+      fileTypeOptions={FILE_TYPE_OPTIONS}
+      viewportId={VIEWPORT_ID}
+      showAnnotations={showAnnotations}
+      onAnnotationsChange={setShowAnnotations}
+      dimensions={viewportDimensions}
+      onDimensionsChange={setViewportDimensions}
+      onEnableViewport={handleEnableViewport}
+      onDisableViewport={handleDisableViewport}
+      onDownload={handleDownload}
+      warningState={warningState}
+    />
+  );
+};
+
+interface ViewportDownloadFormNewProps {
+  onClose: () => void;
+  defaultSize: number;
+  fileTypeOptions: Array<{ value: string; label: string }>;
+  viewportId: string;
+  showAnnotations: boolean;
+  onAnnotationsChange: (show: boolean) => void;
+  dimensions: { width: number; height: number };
+  onDimensionsChange: (dimensions: { width: number; height: number }) => void;
+  onEnableViewport: (element: HTMLElement) => void;
+  onDisableViewport: () => void;
+  onDownload: (filename: string, fileType: string) => void;
+  warningState: { enabled: boolean; value: string };
+}
+
+function ViewportDownloadFormNew({
+  onClose,
+  defaultSize,
+  fileTypeOptions,
+  viewportId,
+  showAnnotations,
+  onAnnotationsChange,
+  dimensions,
+  warningState,
+  onDimensionsChange,
+  onEnableViewport,
+  onDisableViewport,
+  onDownload,
+}: ViewportDownloadFormNewProps) {
+  const [viewportElement, setViewportElement] = useState<HTMLElement | null>(null);
+  const [showWarningMessage, setShowWarningMessage] = useState(true);
+  const [filename, setFilename] = useState(DEFAULT_FILENAME);
+  const [fileType, setFileType] = useState('jpg');
+
+  useEffect(() => {
+    if (!viewportElement) {
+      return;
+    }
+
+    onEnableViewport(viewportElement);
+
+    return () => {
+      onDisableViewport();
+    };
+  }, [onDisableViewport, onEnableViewport, viewportElement]);
 
   return (
     <ImageModal className="max-w-[850px]">
@@ -246,31 +260,21 @@ function ViewportDownloadFormNew({
         <ImageModal.ImageVisual>
           <div
             style={{
-              height: viewportElementDimensions.height,
-              width: viewportElementDimensions.width,
+              height: dimensions.height,
+              width: dimensions.width,
               position: 'relative',
             }}
-            data-viewport-uid={VIEWPORT_ID}
+            data-viewport-uid={viewportId}
             ref={setViewportElement}
           >
-            {showWarningMessage && (
+            {warningState.enabled && showWarningMessage && (
               <div
+                className="text-foreground absolute left-1/2 bottom-[5px] z-[1000] -translate-x-1/2 whitespace-nowrap rounded bg-black p-3 text-xs font-bold"
                 style={{
-                  position: 'absolute',
-                  bottom: '10px',
-                  left: '50%',
-                  transform: 'translateX(-50%)',
-                  backgroundColor: 'rgba(0, 0, 0, 0.7)',
-                  color: 'white',
-                  padding: '4px 8px',
-                  borderRadius: '4px',
-                  fontSize: '14px',
-                  fontWeight: 'bold',
-                  zIndex: 1000,
-                  whiteSpace: 'nowrap',
+                  fontSize: '12px',
                 }}
               >
-                NOT FOR DIAGNOSTIC USE
+                {warningState.value}
               </div>
             )}
           </div>
@@ -292,19 +296,19 @@ function ViewportDownloadFormNew({
           </div>
 
           <ImageModal.ImageSize
-            width={viewportElementDimensions.width.toString()}
-            height={viewportElementDimensions.height.toString()}
+            width={dimensions.width.toString()}
+            height={dimensions.height.toString()}
             onWidthChange={e => {
-              setViewportElementDimensions(prev => ({
-                ...prev,
+              onDimensionsChange({
+                ...dimensions,
                 width: parseInt(e.target.value) || defaultSize,
-              }));
+              });
             }}
             onHeightChange={e => {
-              setViewportElementDimensions(prev => ({
-                ...prev,
+              onDimensionsChange({
+                ...dimensions,
                 height: parseInt(e.target.value) || defaultSize,
-              }));
+              });
             }}
             maxWidth={MAX_TEXTURE_SIZE.toString()}
             maxHeight={MAX_TEXTURE_SIZE.toString()}
@@ -315,26 +319,25 @@ function ViewportDownloadFormNew({
           <ImageModal.SwitchOption
             defaultChecked={showAnnotations}
             checked={showAnnotations}
-            onCheckedChange={checked => {
-              setShowAnnotations(checked);
-              toggleAnnotations(checked);
-            }}
+            onCheckedChange={onAnnotationsChange}
           >
             Include annotations
           </ImageModal.SwitchOption>
-          <ImageModal.SwitchOption
-            defaultChecked={showWarningMessage}
-            checked={showWarningMessage}
-            onCheckedChange={setShowWarningMessage}
-          >
-            Include warning message
-          </ImageModal.SwitchOption>
+          {warningState.enabled && (
+            <ImageModal.SwitchOption
+              defaultChecked={showWarningMessage}
+              checked={showWarningMessage}
+              onCheckedChange={setShowWarningMessage}
+            >
+              Include warning message
+            </ImageModal.SwitchOption>
+          )}
           <FooterAction className="mt-2">
             <FooterAction.Right>
-              <FooterAction.Secondary onClick={() => onClose()}>Cancel</FooterAction.Secondary>
+              <FooterAction.Secondary onClick={onClose}>Cancel</FooterAction.Secondary>
               <FooterAction.Primary
                 onClick={() => {
-                  downloadBlob(filename || DEFAULT_FILENAME, fileType);
+                  onDownload(filename || DEFAULT_FILENAME, fileType);
                   onClose();
                 }}
               >

@@ -6,7 +6,16 @@ window.config = {
   // whiteLabeling: {},
   extensions: [],
   modes: [],
-  customizationService: {},
+  customizationService: [
+    {
+      'viewportDownload.warningMessage': {
+        $set: {
+          enabled: false,
+          value: 'Abbas gholi',
+        },
+      },
+    },
+  ],
   showStudyList: true,
   // some windows systems have issues with more than 3 web workers
   maxNumberOfWebWorkers: 3,
