@@ -20,7 +20,7 @@ function colorPickerDialog(uiDialogService, rgbaColor, callback) {
   };
 
   if (uiDialogService) {
-    uiDialogService.create({
+    uiDialogService.show({
       id: dialogId,
       centralize: true,
       isDraggable: false,

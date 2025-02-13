@@ -13,6 +13,11 @@ import { MoreDropdownMenu, PanelStudyBrowserHeader } from '@ohif/extension-defau
 import { defaultActionIcons } from './constants';
 const { formatDate, createStudyBrowserTabs } = utils;
 
+const DIALOG_ID = {
+  UNTRACK_SERIES: 'untrack-series',
+  REJECT_REPORT: 'ds-reject-sr',
+};
+
 const thumbnailNoImageModalities = [
   'SR',
   'SEG',
@@ -438,8 +443,8 @@ export default function PanelStudyBrowserTracking({
       });
     };
 
-    uiDialogService.create({
-      id: 'untrack-series',
+    uiDialogService.show({
+      id: DIALOG_ID.UNTRACK_SERIES,
       centralize: true,
       isDraggable: false,
       showOverlay: true,
@@ -467,15 +472,15 @@ export default function PanelStudyBrowserTracking({
             classes: ['untrack-yes-button'],
           },
         ],
-        onClose: () => uiDialogService.hide('untrack-series'),
+        onClose: () => uiDialogService.hide(DIALOG_ID.UNTRACK_SERIES),
         onSubmit: async ({ action }) => {
           switch (action.id) {
             case 'yes':
               onConfirm();
-              uiDialogService.hide('untrack-series');
+              uiDialogService.hide(DIALOG_ID.UNTRACK_SERIES);
               break;
             case 'cancel':
-              uiDialogService.hide('untrack-series');
+              uiDialogService.hide(DIALOG_ID.UNTRACK_SERIES);
               break;
           }
         },
@@ -628,8 +633,8 @@ function _mapDisplaySets(
         if (dataSource.reject && dataSource.reject.series) {
           thumbnailProps.canReject = !ds?.unsupported;
           thumbnailProps.onReject = () => {
-            uiDialogService.create({
-              id: 'ds-reject-sr',
+            uiDialogService.show({
+              id: DIALOG_ID.REJECT_REPORT,
               centralize: true,
               isDraggable: false,
               showOverlay: true,
@@ -655,7 +660,7 @@ function _mapDisplaySets(
                     classes: ['reject-yes-button'],
                   },
                 ],
-                onClose: () => uiDialogService.hide('ds-reject-sr'),
+                onClose: () => uiDialogService.hide(DIALOG_ID.REJECT_REPORT),
                 onShow: () => {
                   const yesButton = document.querySelector('.reject-yes-button');
 
@@ -667,14 +672,14 @@ function _mapDisplaySets(
                       try {
                         await dataSource.reject.series(ds.StudyInstanceUID, ds.SeriesInstanceUID);
                         displaySetService.deleteDisplaySet(displaySetInstanceUID);
-                        uiDialogService.hide('ds-reject-sr');
+                        uiDialogService.hide(DIALOG_ID.REJECT_REPORT);
                         uiNotificationService.show({
                           title: 'Delete Report',
                           message: 'Report deleted successfully',
                           type: 'success',
                         });
                       } catch (error) {
-                        uiDialogService.hide('ds-reject-sr');
+                        uiDialogService.hide(DIALOG_ID.REJECT_REPORT);
                         uiNotificationService.show({
                           title: 'Delete Report',
                           message: 'Failed to delete report',
@@ -683,7 +688,7 @@ function _mapDisplaySets(
                       }
                       break;
                     case 'cancel':
-                      uiDialogService.hide('ds-reject-sr');
+                      uiDialogService.hide(DIALOG_ID.REJECT_REPORT);
                       break;
                   }
                 },

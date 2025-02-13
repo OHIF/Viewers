@@ -3,13 +3,13 @@ import React from 'react';
 import { ButtonEnums, Dialog, Input, Select } from '@ohif/ui';
 import PROMPT_RESPONSES from '../utils/_shared/PROMPT_RESPONSES';
 
+const DIALOG_ID = 'create-report-dialog';
+
 export default function CreateReportDialogPrompt(uiDialogService, { extensionManager }) {
   return new Promise(function (resolve, reject) {
-    let dialogId = undefined;
-
     const _handleClose = () => {
       // Dismiss dialog
-      uiDialogService.hide(dialogId);
+      uiDialogService.hide(DIALOG_ID);
       // Notify of cancel action
       resolve({
         action: PROMPT_RESPONSES.CANCEL,
@@ -24,7 +24,7 @@ export default function CreateReportDialogPrompt(uiDialogService, { extensionMan
      * @param {string} param0.value - value from input field
      */
     const _handleFormSubmit = ({ action, value }) => {
-      uiDialogService.hide(dialogId);
+      uiDialogService.hide(DIALOG_ID);
       switch (action.id) {
         case 'save':
           resolve({
@@ -57,7 +57,8 @@ export default function CreateReportDialogPrompt(uiDialogService, { extensionMan
         };
       });
 
-    dialogId = uiDialogService.create({
+    uiDialogService.show({
+      id: DIALOG_ID,
       centralize: true,
       isDraggable: false,
       content: Dialog,
@@ -84,7 +85,7 @@ export default function CreateReportDialogPrompt(uiDialogService, { extensionMan
           };
           const onKeyPressHandler = event => {
             if (event.key === 'Enter') {
-              uiDialogService.hide(dialogId);
+              uiDialogService.hide(DIALOG_ID);
               resolve({
                 action: PROMPT_RESPONSES.CREATE_REPORT,
                 value: value.label,

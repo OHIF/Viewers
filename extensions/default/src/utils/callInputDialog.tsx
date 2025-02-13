@@ -47,7 +47,7 @@ export function callInputDialog(
   };
 
   if (uiDialogService) {
-    uiDialogService.create({
+    uiDialogService.show({
       id: dialogId,
       centralize: true,
       isDraggable: false,
@@ -115,7 +115,7 @@ export function callLabelAutocompleteDialog(
     uiDialogService.hide('select-annotation');
   };
 
-  uiDialogService.create({
+  uiDialogService.show({
     id: 'select-annotation',
     centralize: true,
     isDraggable: false,
@@ -149,7 +149,7 @@ export function showLabelAnnotationPopup(
       resolve(measurement);
     };
 
-    uiDialogService.create({
+    uiDialogService.show({
       id: 'select-annotation',
       isDraggable: false,
       showOverlay: true,

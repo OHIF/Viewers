@@ -11,7 +11,8 @@ async function createReportAsync({
   reportType = 'measurement',
 }: withAppTypes) {
   const { displaySetService, uiNotificationService, uiDialogService } = servicesManager.services;
-  const loadingDialogId = uiDialogService.create({
+  uiDialogService.show({
+    id: 'loading-dialog',
     showOverlay: true,
     isDraggable: false,
     centralize: true,
@@ -49,7 +50,7 @@ async function createReportAsync({
     });
     throw new Error(`Failed to store ${reportType}. Error: ${error.message || 'Unknown error'}`);
   } finally {
-    uiDialogService.hide(loadingDialogId);
+    uiDialogService.hide('loading-dialog');
   }
 }
 
