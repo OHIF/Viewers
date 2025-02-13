@@ -274,7 +274,7 @@ export default async function init({
   );
 
   const subscribeToEvents = listeners => {
-    Object.entries(listeners).forEach(([event, commands]) => {
+    Object.entries(listeners).forEach(([event, listener]) => {
       const supportedEvents = [
         segmentationService.EVENTS.ACTIVE_SEGMENTATION_CHANGED,
         segmentationService.EVENTS.SEGMENTATION_ADDED,
@@ -284,12 +284,17 @@ export default async function init({
       if (!supportedEvents.includes(event)) {
         return;
       }
-      
-      segmentationService.subscribe(event, eventData => {
+
+      if (listener.unsubscribe) {
+        listener.unsubscribe();
+      }
+
+      const { unsubscribe } = segmentationService.subscribe(event, eventData => {
         const segmentationId = eventData?.segmentationId;
 
-        commandsManager.run(commands, { segmentationId });
+        commandsManager.run(listener.commands, { segmentationId });
       });
+      listener.unsubscribe = unsubscribe;
     });
   };
 

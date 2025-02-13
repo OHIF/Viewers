@@ -21,9 +21,15 @@ const toolbarButtons: Button[] = [
           icon: 'icon-tool-brush',
           label: 'Brush',
           listeners: {
-            [SegmentationService.EVENTS.ACTIVE_SEGMENTATION_CHANGED]: SegmentToolListeners,
-            [SegmentationService.EVENTS.SEGMENTATION_ADDED]: SegmentToolListeners,
-            [SegmentationService.EVENTS.SEGMENT_REMOVED]: SegmentToolListeners,
+            [SegmentationService.EVENTS.ACTIVE_SEGMENTATION_CHANGED]: {
+              commands: SegmentToolListeners,
+            },
+            [SegmentationService.EVENTS.SEGMENTATION_ADDED]: {
+              commands: SegmentToolListeners,
+            },
+            [SegmentationService.EVENTS.SEGMENT_REMOVED]: {
+              commands: SegmentToolListeners,
+            },
           },
           evaluate: {
             name: 'evaluate.cornerstone.segmentation',
@@ -62,9 +68,15 @@ const toolbarButtons: Button[] = [
           icon: 'icon-tool-eraser',
           label: 'Eraser',
           listeners: {
-            [SegmentationService.EVENTS.ACTIVE_SEGMENTATION_CHANGED]: SegmentToolListeners,
-            [SegmentationService.EVENTS.SEGMENTATION_ADDED]: SegmentToolListeners,
-            [SegmentationService.EVENTS.SEGMENT_REMOVED]: SegmentToolListeners,
+            [SegmentationService.EVENTS.ACTIVE_SEGMENTATION_CHANGED]: {
+              commands: SegmentToolListeners,
+            },
+            [SegmentationService.EVENTS.SEGMENTATION_ADDED]: {
+              commands: SegmentToolListeners,
+            },
+            [SegmentationService.EVENTS.SEGMENT_REMOVED]: {
+              commands: SegmentToolListeners,
+            },
           },
           evaluate: {
             name: 'evaluate.cornerstone.segmentation',
@@ -102,9 +114,15 @@ const toolbarButtons: Button[] = [
           icon: 'icon-tool-threshold',
           label: 'Threshold Tool',
           listeners: {
-            [SegmentationService.EVENTS.ACTIVE_SEGMENTATION_CHANGED]: SegmentToolListeners,
-            [SegmentationService.EVENTS.SEGMENTATION_ADDED]: SegmentToolListeners,
-            [SegmentationService.EVENTS.SEGMENT_REMOVED]: SegmentToolListeners,
+            [SegmentationService.EVENTS.ACTIVE_SEGMENTATION_CHANGED]: {
+              commands: SegmentToolListeners,
+            },
+            [SegmentationService.EVENTS.SEGMENTATION_ADDED]: {
+              commands: SegmentToolListeners,
+            },
+            [SegmentationService.EVENTS.SEGMENT_REMOVED]: {
+              commands: SegmentToolListeners,
+            },
           },
           evaluate: {
             name: 'evaluate.cornerstone.segmentation',
@@ -202,9 +220,15 @@ const toolbarButtons: Button[] = [
       icon: 'icon-tool-shape',
       label: 'Shapes',
       listeners: {
-        [SegmentationService.EVENTS.ACTIVE_SEGMENTATION_CHANGED]: SegmentToolListeners,
-        [SegmentationService.EVENTS.SEGMENTATION_ADDED]: SegmentToolListeners,
-        [SegmentationService.EVENTS.SEGMENT_REMOVED]: SegmentToolListeners,
+        [SegmentationService.EVENTS.ACTIVE_SEGMENTATION_CHANGED]: {
+          commands: SegmentToolListeners,
+        },
+        [SegmentationService.EVENTS.SEGMENTATION_ADDED]: {
+          commands: SegmentToolListeners,
+        },
+        [SegmentationService.EVENTS.SEGMENT_REMOVED]: {
+          commands: SegmentToolListeners,
+        },
       },
       evaluate: {
         name: 'evaluate.cornerstone.segmentation',
