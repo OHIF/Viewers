@@ -197,6 +197,7 @@ export function createRectangleROI(viewport, imageMetadata, imageId, data, image
         handles: {
           points: normalizedPoints,
           type: 'rectangle',
+          name: data.points[0].name,
           activeHandleIndex: null,
         },
       },
@@ -241,6 +242,7 @@ export function createPoint(viewport, imageMetadata, imageId, data, imageStatus)
         handles: {
           points: [dicomCoords],
           type: 'probe',
+          name: data.points[0].name,
         },
         label: {
           measurementId: data?.measurementId,
@@ -316,6 +318,7 @@ export function createLength(viewport, imageMetadata, imageId, data, imageStatus
           points: [dicomCoords, dicomCoords2],
           headName: data.points[0].name,
           tailName: data.points[1].name,
+          name: data.points[0].name,
         },
         label: {
           measurementId: data?.measurementId,
@@ -373,6 +376,7 @@ export function createAngleROI(viewport, imageMetadata, imageId, data, imageStat
           points: normalizedPoints,
           headName: data.points[0].name,
           tailName: data.points[1].name,
+          name: data.points[0].name,
         },
         label: {
           measurementId: data?.measurementId,
