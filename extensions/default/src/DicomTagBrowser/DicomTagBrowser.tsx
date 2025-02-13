@@ -142,7 +142,7 @@ const DicomTagBrowser = ({
           {shouldShowInstanceList && (
             <div className="mx-auto flex w-1/5 flex-col">
               <span className="text-muted-foreground flex h-6 items-center text-xs">
-                Instance Number ({instanceNumber} of {activeDisplaySet.images.length})
+                Instance Number ({instanceNumber} of {activeDisplaySet?.images?.length})
               </span>
               <Slider
                 value={[instanceNumber]}
@@ -150,7 +150,7 @@ const DicomTagBrowser = ({
                   setInstanceNumber(value);
                 }}
                 min={1}
-                max={activeDisplaySet.images.length}
+                max={activeDisplaySet?.images?.length}
                 step={1}
                 className="pt-4"
               />

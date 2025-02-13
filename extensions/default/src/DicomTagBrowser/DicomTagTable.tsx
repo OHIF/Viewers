@@ -106,15 +106,9 @@ const RowComponent = ({
       {isChildOrParent && (
         <div style={{ paddingLeft: `${firstColumnPadding}px`, opacity: onToggle ? 1 : 0 }}>
           {parentsAreChildrenVisible ? (
-            <Icons.ChevronOpen
-              style={{ margin: '0 -8px' }}
-              onClick={onToggle}
-            />
+            <Icons.ChevronDown onClick={onToggle} />
           ) : (
-            <Icons.ChevronClosed
-              style={{ margin: '0 -8px' }}
-              onClick={onToggle}
-            />
+            <Icons.ChevronRight onClick={onToggle} />
           )}
         </div>
       )}
