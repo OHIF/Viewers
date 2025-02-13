@@ -20,13 +20,7 @@ function PanelMeasurementTableTracking({
     ? filterAnd(filterPlanarMeasurement, filterMeasurementsBySeriesUID(trackedSeries))
     : filterPlanarMeasurement;
 
-  const { disableEditing } = customizationService.getCustomization(
-    'PanelMeasurement.disableEditing',
-    {
-      id: 'default.disableEditing',
-      disableEditing: false,
-    }
-  );
+  const disableEditing = customizationService.getCustomization('panelMeasurement.disableEditing');
 
   function CustomMenu({ items, StudyInstanceUID, measurementFilter }) {
     const disabled = !items?.length;

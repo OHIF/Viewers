@@ -1,5 +1,5 @@
 import React from 'react';
-import { MeasurementTable } from '@ohif/ui-next';
+import { MeasurementTable, DataRow } from '@ohif/ui-next';
 
 /**
  * This is a measurement table that is designed to be nested inside
@@ -12,7 +12,7 @@ export default function MeasurementTableNested(props) {
     commandsManager.run(command, { uid, annotationUID: uid, displayMeasurements });
   };
 
-  console.log('MesaurementTableNested=', group);
+  console.log('MeasurementTableNested=', group);
   return (
     <MeasurementTable
       title={title ? title : `Measurements`}
@@ -21,7 +21,9 @@ export default function MeasurementTableNested(props) {
       {...childProps}
       {...group}
     >
-      <MeasurementTable.Body />
+      <MeasurementTable.Body>
+        <DataRow />
+      </MeasurementTable.Body>
     </MeasurementTable>
   );
 }

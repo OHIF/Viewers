@@ -4,7 +4,6 @@ import { id } from './id';
 import initToolGroups from './initToolGroups';
 import toolbarButtons from './toolbarButtons';
 import moreTools from './moreTools';
-import { performCustomizations } from './customizations';
 
 // Allow this mode by excluding non-imaging modalities such as SR, SEG
 // Also, SM is not a simple imaging modalities, so exclude it.
@@ -85,18 +84,9 @@ function modeFactory({ modeConfiguration }) {
      * Lifecycle hooks
      */
     onModeEnter: function ({ servicesManager, extensionManager, commandsManager }: withAppTypes) {
-      const {
-        measurementService,
-        toolbarService,
-        toolGroupService,
-        customizationService,
-        panelService,
-        segmentationService,
-      } = servicesManager.services;
+      const { measurementService, toolbarService, toolGroupService } = servicesManager.services;
 
       measurementService.clearMeasurements();
-
-      performCustomizations(customizationService);
 
       // Init Default and SR ToolGroups
       initToolGroups(extensionManager, toolGroupService, commandsManager, this.labelConfig);
@@ -116,32 +106,32 @@ function modeFactory({ modeConfiguration }) {
 
       // // ActivatePanel event trigger for when a segmentation or measurement is added.
       // // Do not force activation so as to respect the state the user may have left the UI in.
-      _activatePanelTriggersSubscriptions = [
-        ...panelService.addActivatePanelTriggers(
-          cornerstone.segmentation,
-          [
-            {
-              sourcePubSubService: segmentationService,
-              sourceEvents: [segmentationService.EVENTS.SEGMENTATION_ADDED],
-            },
-          ],
-          true
-        ),
-        ...panelService.addActivatePanelTriggers(
-          tracked.measurements,
-          [
-            {
-              sourcePubSubService: measurementService,
-              sourceEvents: [
-                measurementService.EVENTS.MEASUREMENT_ADDED,
-                measurementService.EVENTS.RAW_MEASUREMENT_ADDED,
-              ],
-            },
-          ],
-          true
-        ),
-        true,
-      ];
+      // _activatePanelTriggersSubscriptions = [
+      //   ...panelService.addActivatePanelTriggers(
+      //     cornerstone.segmentation,
+      //     [
+      //       {
+      //         sourcePubSubService: segmentationService,
+      //         sourceEvents: [segmentationService.EVENTS.SEGMENTATION_ADDED],
+      //       },
+      //     ],
+      //     true
+      //   ),
+      //   ...panelService.addActivatePanelTriggers(
+      //     tracked.measurements,
+      //     [
+      //       {
+      //         sourcePubSubService: measurementService,
+      //         sourceEvents: [
+      //           measurementService.EVENTS.MEASUREMENT_ADDED,
+      //           measurementService.EVENTS.RAW_MEASUREMENT_ADDED,
+      //         ],
+      //       },
+      //     ],
+      //     true
+      //   ),
+      //   true,
+      // ];
     },
     onModeExit: ({ servicesManager }: withAppTypes) => {
       const {

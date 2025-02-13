@@ -13,6 +13,7 @@ import {
   ReferenceLinesTool,
   annotation,
 } from '@cornerstonejs/tools';
+import * as cornerstoneTools from '@cornerstonejs/tools';
 
 import { Types as OhifTypes, utils } from '@ohif/core';
 import i18n from '@ohif/i18n';
@@ -123,7 +124,11 @@ function commandsModule({
         type,
       });
     },
-    updateStoredPositionPresentation: ({ viewportId, displaySetInstanceUID }) => {
+    updateStoredPositionPresentation: ({
+      viewportId,
+      displaySetInstanceUID,
+      referencedImageId,
+    }) => {
       const presentations = cornerstoneViewportService.getPresentations(viewportId);
       const { positionPresentationStore, setPositionPresentation, getPositionPresentationId } =
         usePositionPresentationStore.getState();
@@ -135,10 +140,18 @@ function commandsModule({
       )?.[0];
 
       if (previousReferencedDisplaySetStoreKey) {
-        setPositionPresentation(
-          previousReferencedDisplaySetStoreKey,
-          presentations.positionPresentation
-        );
+        if (referencedImageId) {
+          setPositionPresentation(previousReferencedDisplaySetStoreKey, {
+            viewReference: {
+              referencedImageId,
+            },
+          });
+        } else {
+          setPositionPresentation(
+            previousReferencedDisplaySetStoreKey,
+            presentations.positionPresentation
+          );
+        }
 
         return;
       }
@@ -194,7 +207,7 @@ function commandsModule({
      * on the measurement with a response if not cancelled.
      */
     setMeasurementLabel: ({ uid }) => {
-      const labelConfig = customizationService.get('measurementLabels');
+      const labelConfig = customizationService.getCustomization('measurementLabels');
       const measurement = measurementService.getMeasurement(uid);
       showLabelAnnotationPopup(measurement, uiDialogService, labelConfig).then(
         (val: Map<any, any>) => {
@@ -311,7 +324,7 @@ function commandsModule({
     },
 
     renameMeasurement: ({ uid }) => {
-      const labelConfig = customizationService.get('measurementLabels');
+      const labelConfig = customizationService.getCustomization('measurementLabels');
       const measurement = measurementService.getMeasurement(uid);
       showLabelAnnotationPopup(measurement, uiDialogService, labelConfig).then(val => {
         measurementService.update(
@@ -352,7 +365,7 @@ function commandsModule({
       viewportGridService.setActiveViewportId(viewportId);
     },
     arrowTextCallback: ({ callback, data, uid }) => {
-      const labelConfig = customizationService.get('measurementLabels');
+      const labelConfig = customizationService.getCustomization('measurementLabels');
       callLabelAutocompleteDialog(uiDialogService, callback, {}, labelConfig);
     },
     toggleCine: () => {
@@ -1288,6 +1301,12 @@ function commandsModule({
         viewportGridService.getActiveViewportId()
       );
     },
+    deleteActiveAnnotation: () => {
+      const activeAnnotationsUID = cornerstoneTools.annotation.selection.getAnnotationsSelected();
+      activeAnnotationsUID.forEach(activeAnnotationUID => {
+        measurementService.remove(activeAnnotationUID);
+      });
+    },
   };
 
   const definitions = {
@@ -1544,6 +1563,9 @@ function commandsModule({
     },
     getRenderInactiveSegmentations: {
       commandFn: actions.getRenderInactiveSegmentations,
+    },
+    deleteActiveAnnotation: {
+      commandFn: actions.deleteActiveAnnotation,
     },
   };
 

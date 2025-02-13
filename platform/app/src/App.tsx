@@ -21,13 +21,13 @@ import {
   ViewportDialogProvider,
   CineProvider,
   UserAuthenticationProvider,
-  ToolboxProvider,
 } from '@ohif/ui';
 import {
   ThemeWrapper as ThemeWrapperNext,
   NotificationProvider,
   ViewportGridProvider,
   TooltipProvider,
+  ToolboxProvider,
 } from '@ohif/ui-next';
 // Viewer Project
 // TODO: Should this influence study list?

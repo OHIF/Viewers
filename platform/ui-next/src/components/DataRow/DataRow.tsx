@@ -232,9 +232,11 @@ const DataRow: React.FC<DataRowProps> = ({
           </Button>
 
           {/* Lock Icon (if needed) */}
-          {isLocked && <Icons.Lock className="text-muted-foreground h-6 w-6" />}
+          {isLocked && !disableEditing &&  <Icons.Lock className="text-muted-foreground h-6 w-6" />}
 
           {/* Actions Dropdown Menu */}
+          {disableEditing && <div className="h-6 w-6"></div>}
+          {!disableEditing && (
           <DropdownMenu onOpenChange={open => setIsDropdownOpen(open)}>
             <DropdownMenuTrigger asChild>
               <Button
@@ -270,6 +272,7 @@ const DataRow: React.FC<DataRowProps> = ({
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
+)}
         </div>
       </div>
 

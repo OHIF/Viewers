@@ -434,7 +434,9 @@ export default class HangingProtocolService extends PubSubService {
       this._setProtocol(matchedProtocol);
     }
 
-    this._commandsManager.run(this.protocol?.callbacks?.onProtocolEnter);
+    if (this.protocol?.callbacks?.onProtocolEnter) {
+      this._commandsManager.run(this.protocol?.callbacks?.onProtocolEnter);
+    }
   }
 
   /**
@@ -1028,7 +1030,9 @@ export default class HangingProtocolService extends PubSubService {
         // before reassigning the protocol, we need to check if there is a callback
         // on the old protocol that needs to be called
         // Send the notification about updating the state
-        this._commandsManager.run(this.protocol?.callbacks?.onProtocolExit);
+        if (this.protocol?.callbacks?.onProtocolExit) {
+          this._commandsManager.run(this.protocol.callbacks.onProtocolExit);
+        }
 
         this.protocol = protocol;
 

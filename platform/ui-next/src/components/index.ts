@@ -52,7 +52,9 @@ import { ThumbnailList } from './ThumbnailList';
 import { PanelSection } from './PanelSection';
 import { DisplaySetMessageListTooltip } from './DisplaySetMessageListTooltip';
 import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from './Tooltip';
-import { Toolbox, ToolboxUI } from './Toolbox';
+import { ToolboxUI, Toolbox } from './OHIFToolbox';
+import Numeric from './Numeric';
+
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -91,8 +93,17 @@ import {
   ViewportOverlay,
   ViewportGrid,
 } from './Viewport';
+import {
+  ToolButton,
+  ToolButtonList,
+  ToolButtonListDefault,
+  ToolButtonListDropDown,
+  ToolButtonListItem,
+  ToolButtonListDivider,
+} from './ToolButton';
 
 export {
+  Numeric,
   ErrorBoundary,
   Button,
   buttonVariants,
@@ -157,8 +168,8 @@ export {
   ThumbnailList,
   PanelSection,
   DisplaySetMessageListTooltip,
-  Toolbox,
   ToolboxUI,
+  Toolbox,
   DropdownMenu,
   DropdownMenuTrigger,
   DropdownMenuContent,
@@ -208,4 +219,10 @@ export {
   ViewportOverlay,
   ViewportGrid,
   Clipboard,
+  ToolButton,
+  ToolButtonList,
+  ToolButtonListDefault,
+  ToolButtonListDropDown,
+  ToolButtonListItem,
+  ToolButtonListDivider,
 };

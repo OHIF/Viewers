@@ -41,22 +41,14 @@ const convertSites = (codingValues, sites) => {
  *
  */
 export default function hydrateStructuredReport(
-  { servicesManager, extensionManager }: withAppTypes,
+  { servicesManager, extensionManager, commandsManager }: withAppTypes,
   displaySetInstanceUID
 ) {
-  const annotationManager = CsAnnotation.state.getAnnotationManager();
   const dataSource = extensionManager.getActiveDataSource()[0];
   const { measurementService, displaySetService, customizationService } = servicesManager.services;
 
-  const codingValues = customizationService.getCustomization('codingValues', {});
-
-  const { disableEditing } = customizationService.getCustomization(
-    'PanelMeasurement.disableEditing',
-    {
-      id: 'default.disableEditing',
-      disableEditing: false,
-    }
-  );
+  const codingValues = customizationService.getCustomization('codingValues');
+  const disableEditing = customizationService.getCustomization('panelMeasurement.disableEditing');
 
   const displaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
 
@@ -107,8 +99,7 @@ export default function hydrateStructuredReport(
     metaData
   );
 
-  const onBeforeSRHydration =
-    customizationService.getModeCustomization('onBeforeSRHydration')?.value;
+  const onBeforeSRHydration = customizationService.getCustomization('onBeforeSRHydration')?.value;
 
   if (typeof onBeforeSRHydration === 'function') {
     storedMeasurementByAnnotationType = onBeforeSRHydration({
@@ -230,8 +221,7 @@ export default function hydrateStructuredReport(
       });
 
       if (disableEditing) {
-        const addedAnnotation = annotationManager.getAnnotation(newAnnotationUID);
-        locking.setAnnotationLocked(addedAnnotation, true);
+        locking.setAnnotationLocked(newAnnotationUID, true);
       }
 
       if (!imageIds.includes(imageId)) {

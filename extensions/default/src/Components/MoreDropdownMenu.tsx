@@ -3,6 +3,7 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuTrigger,
+  DropdownMenuItem,
   Icons,
   Button,
 } from '@ohif/ui-next';
@@ -18,6 +19,13 @@ const getMenuItemsDefault = ({ commandsManager, items, servicesManager, ...props
   // getMenuItems can also be replaced by providing it to the MoreDropdownMenu
   const menuContent = customizationService.getCustomization('ohif.menuContent');
 
+  // Default menu item component if none is provided through customization
+  const DefaultMenuItem = ({ item }) => (
+    <DropdownMenuItem onClick={item.onClick}>{item.label || item.title}</DropdownMenuItem>
+  );
+
+  const MenuItemComponent = menuContent?.content || DefaultMenuItem;
+
   return (
     <DropdownMenuContent
       hideWhenDetached
@@ -27,15 +35,15 @@ const getMenuItemsDefault = ({ commandsManager, items, servicesManager, ...props
         e.preventDefault();
       }}
     >
-      {items?.map(item =>
-        menuContent.content({
-          key: item.id,
-          item,
-          commandsManager,
-          servicesManager,
-          ...props,
-        })
-      )}
+      {items?.map((item, index) => (
+        <MenuItemComponent
+          key={item.id || `menu-item-${index}`}
+          item={item}
+          commandsManager={commandsManager}
+          servicesManager={servicesManager}
+          {...props}
+        />
+      ))}
     </DropdownMenuContent>
   );
 };
@@ -56,9 +64,9 @@ export default function MoreDropdownMenu(bindProps) {
   } = bindProps;
   const { customizationService } = servicesManager.services;
 
-  const items = customizationService.getCustomization(menuItemsKey)?.value;
+  const items = customizationService.getCustomization(menuItemsKey);
 
-  if (!items) {
+  if (!items?.length) {
     return null;
   }
 

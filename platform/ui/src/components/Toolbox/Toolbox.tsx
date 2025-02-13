@@ -31,7 +31,7 @@ function Toolbox({
 
   useEffect(() => {
     const currentButtonIdsStr = JSON.stringify(
-      toolbarButtons.map(button => {
+      toolbarButtons?.map(button => {
         const { id, componentProps } = button;
         if (componentProps.items?.length) {
           return componentProps.items.map(item => `${item.id}-${item.disabled}`);
