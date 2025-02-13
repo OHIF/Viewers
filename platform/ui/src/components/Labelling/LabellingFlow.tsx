@@ -37,6 +37,7 @@ class LabellingFlow extends Component<PropType> {
     this.state = {
       location,
       label,
+      hide: props.hide,
       componentClassName: className,
       confirmationState: false,
       displayComponent: true,
@@ -56,33 +57,19 @@ class LabellingFlow extends Component<PropType> {
         displayComponent={this.state.displayComponent}
         onTransitionExit={this.props.labellingDoneCallback}
       >
-        <>
-          <div
-            className={className}
-            ref={this.mainElement}
-          >
-            {this.labellingStateFragment()}
-          </div>
-        </>
+        <div
+          className={className}
+          ref={this.mainElement}
+        >
+          {this.labellingStateFragment()}
+        </div>
       </LabellingTransition>
     );
   }
 
-  closePopup = () => {
-    this.setState({
-      displayComponent: false,
-    });
-
-    setTimeout(() => {
-      this.setState({
-        displayComponent: false,
-      });
-    }, 2000);
-  };
-
   selectTreeSelectCalback = (event, itemSelected) => {
     const label = itemSelected.value;
-    this.closePopup();
+    this.props.hide();
     return this.props.labellingDoneCallback(label);
   };
 
@@ -92,7 +79,7 @@ class LabellingFlow extends Component<PropType> {
         items={this.currentItems}
         columns={1}
         onSelected={this.selectTreeSelectCalback}
-        closePopup={this.closePopup}
+        closePopup={this.props.hide}
         selectTreeFirstTitle="Annotation"
         exclusive={this.props.exclusive}
         label={this.state.label}

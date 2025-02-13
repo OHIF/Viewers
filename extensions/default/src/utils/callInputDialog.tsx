@@ -100,6 +100,7 @@ export async function callInputDialogAutoComplete({
 
     uiDialogService.show({
       id: 'select-annotation',
+      title: 'Annotation',
       content: renderContent,
       contentProps: {
         labellingDoneCallback: labellingDoneCallback,
