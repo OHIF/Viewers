@@ -467,15 +467,15 @@ export default function PanelStudyBrowserTracking({
             classes: ['untrack-yes-button'],
           },
         ],
-        onClose: () => uiDialogService.dismiss({ id: 'untrack-series' }),
+        onClose: () => uiDialogService.hide('untrack-series'),
         onSubmit: async ({ action }) => {
           switch (action.id) {
             case 'yes':
               onConfirm();
-              uiDialogService.dismiss({ id: 'untrack-series' });
+              uiDialogService.hide('untrack-series');
               break;
             case 'cancel':
-              uiDialogService.dismiss({ id: 'untrack-series' });
+              uiDialogService.hide('untrack-series');
               break;
           }
         },
@@ -655,7 +655,7 @@ function _mapDisplaySets(
                     classes: ['reject-yes-button'],
                   },
                 ],
-                onClose: () => uiDialogService.dismiss({ id: 'ds-reject-sr' }),
+                onClose: () => uiDialogService.hide('ds-reject-sr'),
                 onShow: () => {
                   const yesButton = document.querySelector('.reject-yes-button');
 
@@ -667,14 +667,14 @@ function _mapDisplaySets(
                       try {
                         await dataSource.reject.series(ds.StudyInstanceUID, ds.SeriesInstanceUID);
                         displaySetService.deleteDisplaySet(displaySetInstanceUID);
-                        uiDialogService.dismiss({ id: 'ds-reject-sr' });
+                        uiDialogService.hide('ds-reject-sr');
                         uiNotificationService.show({
                           title: 'Delete Report',
                           message: 'Report deleted successfully',
                           type: 'success',
                         });
                       } catch (error) {
-                        uiDialogService.dismiss({ id: 'ds-reject-sr' });
+                        uiDialogService.hide('ds-reject-sr');
                         uiNotificationService.show({
                           title: 'Delete Report',
                           message: 'Failed to delete report',
@@ -683,7 +683,7 @@ function _mapDisplaySets(
                       }
                       break;
                     case 'cancel':
-                      uiDialogService.dismiss({ id: 'ds-reject-sr' });
+                      uiDialogService.hide('ds-reject-sr');
                       break;
                   }
                 },

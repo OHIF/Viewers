@@ -15,10 +15,10 @@ function segmentationItemEditHandler({ id, servicesManager }: withAppTypes) {
         });
       }
     }
-    uiDialogService.dismiss({ id: 'enter-annotation' });
+    uiDialogService.hide('enter-annotation');
   };
 
-  uiDialogService.create({
+  uiDialogService.show({
     id: 'enter-annotation',
     centralize: true,
     isDraggable: false,

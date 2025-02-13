@@ -43,7 +43,7 @@ export function callInputDialog(
         callback('', action.id);
         break;
     }
-    uiDialogService.dismiss({ id: dialogId });
+    uiDialogService.hide(dialogId);
   };
 
   if (uiDialogService) {
@@ -57,7 +57,7 @@ export function callInputDialog(
         title: dialogTitle,
         value: { label },
         noCloseButton: true,
-        onClose: () => uiDialogService.dismiss({ id: dialogId }),
+        onClose: () => uiDialogService.hide(dialogId),
         actions: [
           { id: 'cancel', text: 'Cancel', type: ButtonEnums.type.secondary },
           { id: 'save', text: 'Save', type: ButtonEnums.type.primary },
@@ -112,7 +112,7 @@ export function callLabelAutocompleteDialog(
     } else {
       callback('', 'cancel');
     }
-    uiDialogService.dismiss({ id: 'select-annotation' });
+    uiDialogService.hide('select-annotation');
   };
 
   uiDialogService.create({
@@ -142,7 +142,7 @@ export function showLabelAnnotationPopup(
   const dropDownItems = labelConfig ? labelConfig.items : [];
   return new Promise<Map<any, any>>((resolve, reject) => {
     const labellingDoneCallback = value => {
-      uiDialogService.dismiss({ id: 'select-annotation' });
+      uiDialogService.hide('select-annotation');
       if (typeof value === 'string') {
         measurement.label = value;
       }

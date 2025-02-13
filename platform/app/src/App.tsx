@@ -15,7 +15,6 @@ import {
   SystemContextProvider,
 } from '@ohif/core';
 import {
-  DialogProvider,
   ThemeWrapper,
   ViewportDialogProvider,
   CineProvider,
@@ -25,9 +24,11 @@ import {
   ThemeWrapper as ThemeWrapperNext,
   NotificationProvider,
   ViewportGridProvider,
+  DialogProvider,
   TooltipProvider,
   ToolboxProvider,
   Modal as ModalNext,
+  ManagedDialog,
   ModalProvider as ModalProviderNext,
 } from '@ohif/ui-next';
 // Viewer Project
@@ -122,7 +123,7 @@ function App({
     [CineProvider, { service: cineService }],
     [NotificationProvider, { service: uiNotificationService }],
     [TooltipProvider],
-    [DialogProvider, { service: uiDialogService }],
+    [DialogProvider, { service: uiDialogService, dialog: ManagedDialog }],
     [ModalProviderNext, { service: uiModalService, modal: ModalNext }],
     [ShepherdJourneyProvider],
   ];

@@ -9,7 +9,7 @@ export default function CreateReportDialogPrompt(uiDialogService, { extensionMan
 
     const _handleClose = () => {
       // Dismiss dialog
-      uiDialogService.dismiss({ id: dialogId });
+      uiDialogService.hide(dialogId);
       // Notify of cancel action
       resolve({
         action: PROMPT_RESPONSES.CANCEL,
@@ -24,7 +24,7 @@ export default function CreateReportDialogPrompt(uiDialogService, { extensionMan
      * @param {string} param0.value - value from input field
      */
     const _handleFormSubmit = ({ action, value }) => {
-      uiDialogService.dismiss({ id: dialogId });
+      uiDialogService.hide(dialogId);
       switch (action.id) {
         case 'save':
           resolve({
@@ -84,7 +84,7 @@ export default function CreateReportDialogPrompt(uiDialogService, { extensionMan
           };
           const onKeyPressHandler = event => {
             if (event.key === 'Enter') {
-              uiDialogService.dismiss({ id: dialogId });
+              uiDialogService.hide(dialogId);
               resolve({
                 action: PROMPT_RESPONSES.CREATE_REPORT,
                 value: value.label,

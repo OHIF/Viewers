@@ -15,6 +15,7 @@ import {
   SelectItem,
 } from '../../../../ui-next/src/components/Select/Select';
 import { ModalProvider, useModal } from '../../../../ui-next/src/contextProviders/ModalProvider';
+import { DialogProvider, useDialog } from '../../../../ui-next/src/contextProviders/DialogProvider';
 
 // ===== Modal Components =====
 
@@ -261,26 +262,28 @@ const PresetButton = () => {
 
 export default function SettingsPage() {
   return (
-    <ModalProvider modal={Modal}>
-      <div className="flex min-h-screen items-center justify-center">
-        <div className="flex flex-col space-y-8">
-          <div>
-            <h2 className="mb-4 text-lg font-semibold">Modals</h2>
-            <div className="flex space-x-2">
-              <AboutButton />
-              <PreferencesButton />
-              <ImageButton />
+    <DialogProvider>
+      <ModalProvider modal={Modal}>
+        <div className="flex min-h-screen items-center justify-center">
+          <div className="flex flex-col space-y-8">
+            <div>
+              <h2 className="mb-4 text-lg font-semibold">Modals</h2>
+              <div className="flex space-x-2">
+                <AboutButton />
+                <PreferencesButton />
+                <ImageButton />
+              </div>
             </div>
-          </div>
-          <div>
-            <h2 className="mb-4 text-lg font-semibold">Dialogs</h2>
-            <div className="flex space-x-2">
-              <InputButton />
-              <PresetButton />
+            <div>
+              <h2 className="mb-4 text-lg font-semibold">Dialogs</h2>
+              <div className="flex space-x-2">
+                <InputButton />
+                <PresetButton />
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    </ModalProvider>
+      </ModalProvider>
+    </DialogProvider>
   );
 }

@@ -1,16 +1,3 @@
-/**
- * UI Modal
- *
- * @typedef {Object} ModalProps
- * @property {ReactElement|HTMLElement} [content=null] Modal content.
- * @property {Object} [contentProps=null] Modal content props.
- * @property {boolean} [shouldCloseOnEsc=false] Modal is dismissible via the esc key.
- * @property {boolean} [isOpen=true] Make the Modal visible or hidden.
- * @property {boolean} [closeButton=true] Should the modal body render the close button.
- * @property {string} [title=null] Should the modal render the title independently of the body content.
- * @property {string} [customClassName=null] The custom class to style the modal.
- */
-
 const name = 'uiModalService';
 
 const serviceImplementation = {
@@ -38,28 +25,18 @@ class UIModalService {
   show({
     content = null,
     contentProps = null,
-    shouldCloseOnEsc = true,
-    isOpen = true,
-    closeButton = true,
     title = null,
     className = null,
-    containerClassName = null,
-    contentClassName = null,
+    shouldCloseOnEsc = true,
     shouldCloseOnOverlayClick = true,
-    shouldCloseImmediately = false,
   }) {
     return serviceImplementation._show({
       content,
       contentProps,
       shouldCloseOnEsc,
-      isOpen,
-      closeButton,
       title,
       className,
-      containerClassName,
-      contentClassName,
       shouldCloseOnOverlayClick,
-      shouldCloseImmediately,
     });
   }
 

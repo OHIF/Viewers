@@ -25,7 +25,7 @@ export default class ContextMenuController {
   }
 
   closeContextMenu() {
-    this.services.uiDialogService.dismiss({ id: 'context-menu' });
+    this.services.uiDialogService.hide('context-menu');
   }
 
   /**
@@ -73,8 +73,8 @@ export default class ContextMenuController {
 
     const ContextMenu = this.services.customizationService.getCustomization('ui.contextMenu');
 
-    this.services.uiDialogService.dismiss({ id: 'context-menu' });
-    this.services.uiDialogService.create({
+    this.services.uiDialogService.hide('context-menu');
+    this.services.uiDialogService.show({
       id: 'context-menu',
       isDraggable: false,
       preservePosition: false,
@@ -89,7 +89,7 @@ export default class ContextMenuController {
 
       // This naming is part of the uiDialogService convention
       // Clicking outside simply closes the dialog box.
-      onClickOutside: () => this.services.uiDialogService.dismiss({ id: 'context-menu' }),
+      onClickOutside: () => this.services.uiDialogService.hide('context-menu'),
 
       contentProps: {
         items,
@@ -100,7 +100,7 @@ export default class ContextMenuController {
         eventData: event?.detail || event,
 
         onClose: () => {
-          this.services.uiDialogService.dismiss({ id: 'context-menu' });
+          this.services.uiDialogService.hide('context-menu');
         },
 
         /**
