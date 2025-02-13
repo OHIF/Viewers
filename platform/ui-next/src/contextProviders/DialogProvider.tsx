@@ -29,8 +29,6 @@ export const useDialog = () => {
   return context;
 };
 
-const generateId = () => Math.random().toString(36).substring(2, 9);
-
 const DialogProvider: React.FC<DialogProviderProps> = ({
   children,
   dialog: DialogComponent = ManagedDialog,
@@ -39,7 +37,7 @@ const DialogProvider: React.FC<DialogProviderProps> = ({
   const [dialogs, setDialogs] = useState<(ManagedDialogProps & { id: string })[]>([]);
 
   const show = useCallback((options: ManagedDialogProps) => {
-    const id = generateId();
+    const id = options.id;
     setDialogs(prev => [...prev, { ...options, id }]);
     return id;
   }, []);

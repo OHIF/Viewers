@@ -16,7 +16,7 @@ import {
 } from '../../../../ui-next/src/components/Select/Select';
 import { ModalProvider, useModal } from '../../../../ui-next/src/contextProviders/ModalProvider';
 import { DialogProvider, useDialog } from '../../../../ui-next/src/contextProviders/DialogProvider';
-import { ManagedDialog } from '../../../../ui-next/src/contextProviders/ManagedDialog';
+import { ManagedDialog } from '../../../../ui-next/src/contextProviders';
 
 // ===== Modal Components =====
 
@@ -196,47 +196,66 @@ const ImageButton = () => {
 const InputButton = () => {
   const { show, hide } = useDialog();
   return (
-    <Button
-      onClick={() => {
-        // first dialog
-        show({
-          movable: true,
-          content: () => (
-            <InputDialog>
-              <InputDialog.InputPlaceholder placeholder="Label" />
-              <FooterAction>
-                <FooterAction.Right>
-                  <FooterAction.Secondary onClick={() => hide()}>Cancel</FooterAction.Secondary>
-                  <FooterAction.Primary onClick={() => hide()}>Save</FooterAction.Primary>
-                </FooterAction.Right>
-              </FooterAction>
-            </InputDialog>
-          ),
-          title: 'Input Dialog 1',
-          initialPosition: { x: 200, y: 200 },
-        });
-
-        // second dialog
-        show({
-          movable: true,
-          content: () => (
-            <InputDialog>
-              <InputDialog.InputPlaceholder placeholder="Label" />
-              <FooterAction>
-                <FooterAction.Right>
-                  <FooterAction.Secondary onClick={() => hide()}>Cancel</FooterAction.Secondary>
-                  <FooterAction.Primary onClick={() => hide()}>Save</FooterAction.Primary>
-                </FooterAction.Right>
-              </FooterAction>
-            </InputDialog>
-          ),
-          title: 'Input Dialog 2',
-          initialPosition: { x: 400, y: 400 },
-        });
-      }}
-    >
-      Open Input
-    </Button>
+    <div>
+      <Button
+        onClick={() => {
+          // first dialog
+          show({
+            id: 'input-dialog-1',
+            movable: true,
+            content: () => (
+              <InputDialog>
+                <InputDialog.InputPlaceholder placeholder="Label" />
+                <FooterAction>
+                  <FooterAction.Right>
+                    <FooterAction.Secondary onClick={() => hide('input-dialog-1')}>
+                      Cancel
+                    </FooterAction.Secondary>
+                    <FooterAction.Primary onClick={() => hide('input-dialog-1')}>
+                      Save
+                    </FooterAction.Primary>
+                  </FooterAction.Right>
+                </FooterAction>
+              </InputDialog>
+            ),
+            title: 'Input Dialog 1',
+            initialPosition: { x: 200, y: 200 },
+          });
+          // second dialog
+          show({
+            id: 'input-dialog-2',
+            movable: true,
+            content: () => (
+              <InputDialog>
+                <InputDialog.InputPlaceholder placeholder="Label" />
+                <FooterAction>
+                  <FooterAction.Right>
+                    <FooterAction.Secondary onClick={() => hide('input-dialog-2')}>
+                      Cancel
+                    </FooterAction.Secondary>
+                    <FooterAction.Primary onClick={() => hide('input-dialog-2')}>
+                      Save
+                    </FooterAction.Primary>
+                  </FooterAction.Right>
+                </FooterAction>
+              </InputDialog>
+            ),
+            title: 'Input Dialog 2',
+            initialPosition: { x: 400, y: 400 },
+          });
+        }}
+      >
+        Open Input
+      </Button>
+      <Button
+        onClick={() => {
+          // hide('input-dialog-1');
+          hide('input-dialog-2');
+        }}
+      >
+        Hide Input
+      </Button>
+    </div>
   );
 };
 
