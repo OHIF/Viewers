@@ -89,10 +89,9 @@ export function onCompletedCalibrationLine(
       title: 'Calibration',
       placeholder: 'Actual Physical distance (mm)',
       defaultValue: `${length}`,
-      onSave: newValue => {
-        adjustCalibration(Number.parseFloat(newValue));
-        resolve(true);
-      },
+    }).then(newValue => {
+      adjustCalibration(Number.parseFloat(newValue));
+      resolve(true);
     });
   });
 }

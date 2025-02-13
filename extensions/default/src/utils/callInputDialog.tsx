@@ -44,20 +44,16 @@ function InputDialogDefault({
 }
 
 /**
- *
- * @param {*} data
- * @param {*} data.text
- * @param {*} data.label
- * @param {*} event
- * @param {*} callback
- * @param {*} isArrowAnnotateInputDialog
- * @param {*} dialogConfig
- * @param {string?} dialogConfig.dialogTitle - title of the input dialog
- * @param {string?} dialogConfig.inputLabel - show label above the input
+ * Shows an input dialog for entering text with customizable options
+ * @param uiDialogService - Service for showing UI dialogs
+ * @param onSave - Callback function called when save button is clicked with entered value
+ * @param defaultValue - Initial value to show in input field
+ * @param title - Title text to show in dialog header
+ * @param placeholder - Placeholder text for input field
+ * @param submitOnEnter - Whether to submit dialog when Enter key is pressed
  */
-export function callInputDialog({
+export async function callInputDialog({
   uiDialogService,
-  onSave,
   defaultValue = '',
   title = 'Annotation',
   placeholder = '',
@@ -65,68 +61,35 @@ export function callInputDialog({
 }) {
   const dialogId = 'dialog-enter-annotation';
 
-  uiDialogService.show({
-    id: dialogId,
-    content: InputDialogDefault,
-    title: title,
-    contentProps: {
-      onSave,
-      placeholder,
-      defaultValue,
-      submitOnEnter,
-    },
+  const value = await new Promise<string>(resolve => {
+    uiDialogService.show({
+      id: dialogId,
+      content: InputDialogDefault,
+      title: title,
+      contentProps: {
+        onSave: value => {
+          resolve(value);
+        },
+        placeholder,
+        defaultValue,
+        submitOnEnter,
+      },
+    });
   });
+
+  return value;
 }
 
-export function callLabelAutocompleteDialog(
-  uiDialogService,
-  callback,
-  dialogConfig,
-  labelConfig,
-  renderContent = LabellingFlow
-) {
-  const exclusive = labelConfig ? labelConfig.exclusive : false;
-  const dropDownItems = labelConfig ? labelConfig.items : [];
-
-  const { validateFunc = value => true } = dialogConfig;
-
-  const labellingDoneCallback = value => {
-    if (typeof value === 'string') {
-      if (typeof validateFunc === 'function' && !validateFunc(value)) {
-        return;
-      }
-      callback(value, 'save');
-    } else {
-      callback('', 'cancel');
-    }
-    uiDialogService.hide('select-annotation');
-  };
-
-  uiDialogService.show({
-    id: 'select-annotation',
-    centralize: true,
-    isDraggable: false,
-    showOverlay: true,
-    content: renderContent,
-    contentProps: {
-      labellingDoneCallback: labellingDoneCallback,
-      measurementData: { label: '' },
-      componentClassName: {},
-      labelData: dropDownItems,
-      exclusive: exclusive,
-    },
-  });
-}
-
-export function showLabelAnnotationPopup(
+export async function callInputDialogAutoComplete({
   measurement,
   uiDialogService,
   labelConfig,
-  renderContent = LabellingFlow
-) {
+  renderContent = LabellingFlow,
+}) {
   const exclusive = labelConfig ? labelConfig.exclusive : false;
   const dropDownItems = labelConfig ? labelConfig.items : [];
-  return new Promise<Map<any, any>>((resolve, reject) => {
+
+  const value = await new Promise<Map<string, string>>((resolve, reject) => {
     const labellingDoneCallback = value => {
       uiDialogService.hide('select-annotation');
       if (typeof value === 'string') {
@@ -147,6 +110,8 @@ export function showLabelAnnotationPopup(
       },
     });
   });
+
+  return value;
 }
 
 export default callInputDialog;

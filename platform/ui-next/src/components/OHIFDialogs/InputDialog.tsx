@@ -84,6 +84,8 @@ export interface InputDialogInputProps
   className?: string;
   /** Save handler */
   onSave?: (value: string) => void;
+  /** Placeholder text for the input field */
+  placeholder?: string;
 }
 
 const InputDialogInput = React.forwardRef<HTMLInputElement, InputDialogInputProps>(

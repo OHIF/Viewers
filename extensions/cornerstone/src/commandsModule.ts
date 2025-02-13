@@ -18,8 +18,7 @@ import * as cornerstoneTools from '@cornerstonejs/tools';
 import { Types as OhifTypes, utils } from '@ohif/core';
 import i18n from '@ohif/i18n';
 import {
-  callLabelAutocompleteDialog,
-  showLabelAnnotationPopup,
+  callInputDialogAutoComplete,
   createReportAsync,
   colorPickerDialog,
   callInputDialog,
@@ -202,26 +201,55 @@ function commandsModule({
       }
     },
     /**
-     * Show the measurement labelling input dialog and update the label
-     * on the measurement with a response if not cancelled.
+     * Common logic for handling measurement label updates through dialog
+     * @param uid - measurement uid
+     * @returns Promise that resolves when the label is updated
      */
-    setMeasurementLabel: ({ uid }) => {
+    _handleMeasurementLabelDialog: async uid => {
       const labelConfig = customizationService.getCustomization('measurementLabels');
       const renderContent = customizationService.getCustomization('ui.labellingComponent');
       const measurement = measurementService.getMeasurement(uid);
-      showLabelAnnotationPopup(measurement, uiDialogService, labelConfig, renderContent).then(
-        (val: Map<any, any>) => {
-          measurementService.update(
-            uid,
-            {
-              ...val,
-            },
-            true
-          );
-        }
-      );
-    },
 
+      if (!measurement) {
+        console.debug('No measurement found for label editing');
+        return;
+      }
+
+      if (!labelConfig) {
+        const label = await callInputDialog({
+          uiDialogService,
+          title: 'Edit Measurement Label',
+          placeholder: measurement.label || 'Enter new label',
+          defaultValue: measurement.label,
+        });
+
+        if (label !== undefined && label !== null) {
+          measurementService.update(uid, { ...measurement, label }, true);
+        }
+        return;
+      }
+
+      const val = await callInputDialogAutoComplete({
+        measurement,
+        uiDialogService,
+        labelConfig,
+        renderContent,
+      });
+
+      if (val !== undefined && val !== null) {
+        measurementService.update(uid, { ...val }, true);
+      }
+    },
+    /**
+     * Show the measurement labelling input dialog and update the label
+     * on the measurement with a response if not cancelled.
+     */
+    setMeasurementLabel: async ({ uid }) => {
+      await actions._handleMeasurementLabelDialog(uid);
+    },
+    renameMeasurement: async ({ uid }) => {
+      await actions._handleMeasurementLabelDialog(uid);
+    },
     /**
      *
      * @param props - containing the updates to apply
@@ -323,23 +351,6 @@ function commandsModule({
       measurementService.remove(uid);
     },
 
-    renameMeasurement: ({ uid }) => {
-      const labelConfig = customizationService.getCustomization('measurementLabels');
-      const renderContent = customizationService.getCustomization('ui.labellingComponent');
-      const measurement = measurementService.getMeasurement(uid);
-      showLabelAnnotationPopup(measurement, uiDialogService, labelConfig, renderContent).then(
-        val => {
-          measurementService.update(
-            uid,
-            {
-              ...val,
-            },
-            true
-          );
-        }
-      );
-    },
-
     toggleLockMeasurement: ({ uid }) => {
       measurementService.toggleLockMeasurement(uid);
     },
@@ -380,7 +391,7 @@ function commandsModule({
     arrowTextCallback: ({ callback }) => {
       const labelConfig = customizationService.getCustomization('measurementLabels');
       const renderContent = customizationService.getCustomization('ui.labellingComponent');
-      callLabelAutocompleteDialog(uiDialogService, callback, {}, labelConfig, renderContent);
+      callInputDialogAutoComplete(uiDialogService, callback, {}, labelConfig, renderContent);
     },
     toggleCine: () => {
       const { viewports } = viewportGridService.getState();
@@ -1243,7 +1254,7 @@ function commandsModule({
       segmentationService.setStyle({ type }, { fillAlphaInactive: value });
     },
 
-    editSegmentLabel: ({ segmentationId, segmentIndex }) => {
+    editSegmentLabel: async ({ segmentationId, segmentIndex }) => {
       const { segmentationService, uiDialogService } = servicesManager.services;
       const segmentation = segmentationService.getSegmentation(segmentationId);
 
@@ -1258,9 +1269,8 @@ function commandsModule({
         title: 'Edit Segment Label',
         placeholder: 'Enter new label',
         defaultValue: segment.label,
-        onSave: newValue => {
-          segmentationService.setSegmentLabel(segmentationId, segmentIndex, newValue);
-        },
+      }).then(label => {
+        segmentationService.setSegmentLabel(segmentationId, segmentIndex, label);
       });
     },
 
@@ -1279,9 +1289,8 @@ function commandsModule({
         title: 'Edit Segmentation Label',
         placeholder: 'Enter new label',
         defaultValue: label,
-        onSave: newValue => {
-          segmentationService.addOrUpdateSegmentation({ segmentationId, label: newValue });
-        },
+      }).then(label => {
+        segmentationService.addOrUpdateSegmentation({ segmentationId, label });
       });
     },
 
@@ -1357,6 +1366,9 @@ function commandsModule({
     setMeasurementLabel: {
       commandFn: actions.setMeasurementLabel,
     },
+    renameMeasurement: {
+      commandFn: actions.renameMeasurement,
+    },
     updateMeasurement: {
       commandFn: actions.updateMeasurement,
     },
@@ -1368,9 +1380,6 @@ function commandsModule({
     },
     removeMeasurement: {
       commandFn: actions.removeMeasurement,
-    },
-    renameMeasurement: {
-      commandFn: actions.renameMeasurement,
     },
     toggleLockMeasurement: {
       commandFn: actions.toggleLockMeasurement,

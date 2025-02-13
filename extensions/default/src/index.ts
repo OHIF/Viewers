@@ -24,11 +24,7 @@ import { useDisplaySetSelectorStore } from './stores/useDisplaySetSelectorStore'
 import { useHangingProtocolStageIndexStore } from './stores/useHangingProtocolStageIndexStore';
 import { useToggleHangingProtocolStore } from './stores/useToggleHangingProtocolStore';
 import { useToggleOneUpViewportGridStore } from './stores/useToggleOneUpViewportGridStore';
-import {
-  callLabelAutocompleteDialog,
-  showLabelAnnotationPopup,
-  callInputDialog,
-} from './utils/callInputDialog';
+import { callInputDialogAutoComplete, callInputDialog } from './utils/callInputDialog';
 import colorPickerDialog from './utils/colorPickerDialog';
 
 import promptSaveReport from './utils/promptSaveReport';
@@ -92,8 +88,7 @@ export {
   useUIStateStore,
   useViewportGridStore,
   useViewportsByPositionStore,
-  showLabelAnnotationPopup,
-  callLabelAutocompleteDialog,
+  callInputDialogAutoComplete,
   promptSaveReport,
   promptLabelAnnotation,
   colorPickerDialog,
