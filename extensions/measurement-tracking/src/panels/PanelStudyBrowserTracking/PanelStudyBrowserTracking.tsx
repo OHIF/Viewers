@@ -211,7 +211,15 @@ export default function PanelStudyBrowserTracking({
         return;
       }
       // When the image arrives, render it and store the result in the thumbnailImgSrcMap
-      newImageSrcEntry[dSet.displaySetInstanceUID] = await getImageSrc(imageId);
+      let { thumbnailSrc } = displaySet;
+      if (!thumbnailSrc && displaySet.getThumbnailSrc) {
+        thumbnailSrc = await displaySet.getThumbnailSrc();
+      }
+      if (!thumbnailSrc) {
+        let thumbnailSrc = await getImageSrc(imageId);
+        displaySet.thumbnailSrc = thumbnailSrc;
+      }
+      newImageSrcEntry[dSet.displaySetInstanceUID] = thumbnailSrc;
 
       setThumbnailImageSrcMap(prevState => {
         return { ...prevState, ...newImageSrcEntry };
@@ -593,13 +601,12 @@ function _mapDisplaySets(
   displaySets
     .filter(ds => !ds.excludeFromThumbnailBrowser)
     .forEach(ds => {
-      const imageSrc = thumbnailImageSrcMap[ds.displaySetInstanceUID];
+      const { thumbnailSrc, displaySetInstanceUID } = ds; // thumbnailImageSrcMap[ds.displaySetInstanceUID];
       const componentType = _getComponentType(ds);
 
       const array =
         componentType === 'thumbnailTracked' ? thumbnailDisplaySets : thumbnailNoImageDisplaySets;
 
-      const { displaySetInstanceUID } = ds;
       const loadingProgress = displaySetLoadingState?.[displaySetInstanceUID];
 
       const thumbnailProps = {
@@ -614,7 +621,7 @@ function _mapDisplaySets(
         messages: ds.messages,
         StudyInstanceUID: ds.StudyInstanceUID,
         componentType,
-        imageSrc,
+        imageSrc: thumbnailSrc ||  thumbnailImageSrcMap[displaySetInstanceUID],
         dragData: {
           type: 'displayset',
           displaySetInstanceUID,
