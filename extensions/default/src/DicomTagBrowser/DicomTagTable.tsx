@@ -3,6 +3,7 @@ import { VariableSizeList as List } from 'react-window';
 import classNames from 'classnames';
 import debounce from 'lodash.debounce';
 import { Row } from './DicomTagBrowser';
+import { Icons } from '@ohif/ui-next';
 
 const lineHeightPx = 20;
 const lineHeightClassName = `leading-[${lineHeightPx}px]`;
@@ -13,7 +14,7 @@ const rowStyle = {
   borderBottomWidth: `${rowBottomBorderPx}px`,
   ...rowVerticalPaddingStyle,
 };
-const indentationPadding = 8;
+const indentationPadding = 4;
 
 const RowComponent = ({
   row,
@@ -21,41 +22,62 @@ const RowComponent = ({
   keyPrefix,
   getMultipleRowsHeight,
   firstColumnPadding = indentationPadding,
+  onToggle,
+  parentsAreChildrenVisible,
 }: {
   row: Row;
   style: any;
   keyPrefix: string;
   getMultipleRowsHeight: any;
   firstColumnPadding?: number;
+  onToggle?: () => void;
+  parentsAreChildrenVisible?: boolean;
 }) => {
+  const [areChildrenVisible, setAreChildrenVisible] = useState(true);
   const { children, ...restOfRow } = row;
 
   if (children) {
+    const toggleChildren = () => {
+      setAreChildrenVisible(prev => {
+        const newState = !prev;
+        restOfRow.areChildrenVisible = newState;
+        return newState;
+      });
+    };
     let accumulatedHeight = 0;
     return (
       <>
-        {[restOfRow, ...children].map((row, i) => {
-          const isParentRow = i === 0;
-          const rowHeight = getMultipleRowsHeight(row);
-          const topOffset = accumulatedHeight;
-          accumulatedHeight += rowHeight;
-          return (
-            <RowComponent
-              row={row}
-              style={{
-                ...style,
-                height: rowHeight,
-                top: style.top + topOffset,
-              }}
-              keyPrefix={`${keyPrefix}-${i}`}
-              key={`${keyPrefix}-${i}`}
-              getMultipleRowsHeight={getMultipleRowsHeight}
-              firstColumnPadding={
-                isParentRow ? firstColumnPadding : firstColumnPadding + indentationPadding
-              }
-            />
-          );
-        })}
+        {[restOfRow, ...children]
+          .filter((_, j) => {
+            if (areChildrenVisible) {
+              return true;
+            }
+            return j === 0;
+          })
+          .map((row, i) => {
+            const isParentRow = i === 0;
+            const rowHeight = getMultipleRowsHeight(row);
+            const topOffset = accumulatedHeight;
+            accumulatedHeight += rowHeight;
+            return (
+              <RowComponent
+                row={row}
+                style={{
+                  ...style,
+                  height: rowHeight,
+                  top: style.top + topOffset,
+                }}
+                keyPrefix={`${keyPrefix}-${i}`}
+                key={`${keyPrefix}-${i}`}
+                getMultipleRowsHeight={getMultipleRowsHeight}
+                firstColumnPadding={
+                  isParentRow ? firstColumnPadding : firstColumnPadding + indentationPadding
+                }
+                onToggle={isParentRow ? toggleChildren : undefined}
+                parentsAreChildrenVisible={areChildrenVisible}
+              />
+            );
+          })}
       </>
     );
   }
@@ -69,12 +91,18 @@ const RowComponent = ({
       )}
       key={keyPrefix}
     >
-      <div
-        className="w-4/24 px-3"
-        style={{ paddingLeft: `${firstColumnPadding}px` }}
-      >
-        {row.tag}
+      <div style={{ paddingLeft: `${firstColumnPadding}px` }}>
+        {onToggle ? (
+          parentsAreChildrenVisible ? (
+            <Icons.ArrowDown onClick={onToggle} />
+          ) : (
+            <Icons.ArrowRight onClick={onToggle} />
+          )
+        ) : (
+          <></>
+        )}
       </div>
+      <div className="w-4/24 px-3">{row.tag}</div>
       <div className="w-2/24 px-3">{row.valueRepresentation}</div>
       <div className="w-6/24 px-3">{row.keyword}</div>
       <div className="w-5/24 grow px-3">{row.value}</div>
@@ -209,11 +237,12 @@ function DicomTagTable({ rows }: { rows: Row[] }) {
 
   const getMultipleRowsHeight = useCallback(
     row => {
-      const { children, ...restOfRow } = row;
+      const { children, areChildrenVisible, ...restOfRow } = row;
       const parentHeight = getOneRowHeight(restOfRow);
-      const childrenHeight = !Array.isArray(children)
-        ? 0
-        : children.reduce((sum, childRow) => sum + getMultipleRowsHeight(childRow), 0);
+      const childrenHeight =
+        !Array.isArray(children) || !areChildrenVisible
+          ? 0
+          : children.reduce((sum, childRow) => sum + getMultipleRowsHeight(childRow), 0);
 
       return parentHeight + childrenHeight;
     },

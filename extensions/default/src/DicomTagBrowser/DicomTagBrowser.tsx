@@ -14,6 +14,7 @@ export type Row = {
   keyword: string;
   value: string;
   children?: Row[];
+  areChildrenVisible?: boolean;
 };
 
 const { ImageSet } = classes;
@@ -159,6 +160,7 @@ function getFormattedRowsFromTags(tags, metadata) {
         keyword: tagInfo.keyword,
         value: '',
         children: tagInfo.values.flatMap(value => getFormattedRowsFromTags(value, metadata)),
+        areChildrenVisible: true,
       };
       rows.push(row);
     } else {
