@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -6,6 +6,13 @@ import {
   DialogTitle,
   DialogDescription,
 } from '../components/Dialog/Dialog';
+
+let globalZIndex = 50;
+
+export const getNextZIndex = () => {
+  globalZIndex += 1;
+  return globalZIndex;
+};
 
 export interface ManagedDialogProps {
   id: string;
@@ -29,29 +36,44 @@ const ManagedDialog: React.FC<ManagedDialogProps> = ({
   content: DialogContentComponent,
   contentProps,
   movable,
-  shouldCloseOnEsc = true,
-  shouldCloseOnOverlayClick = true,
+  shouldCloseOnEsc = false,
+  shouldCloseOnOverlayClick = false,
   initialPosition,
   onClose,
 }) => {
+  const [zIndex, setZIndex] = useState(getNextZIndex());
+
+  const bringToFront = () => {
+    setZIndex(getNextZIndex());
+  };
+
   return (
     <Dialog
       open={isOpen}
-      onOpenChange={() => onClose(id)}
+      modal={false} // keep modal behavior off for independent windows
+      onOpenChange={open => {
+        if (!open) {
+          onClose(id);
+        }
+      }}
       movable={movable}
       shouldCloseOnEsc={shouldCloseOnEsc}
       shouldCloseOnOverlayClick={shouldCloseOnOverlayClick}
     >
       <DialogContent
-        style={
-          initialPosition
+        // Combine initial position with dynamic z-index.
+        style={{
+          ...(initialPosition
             ? {
                 position: 'fixed',
                 left: `${initialPosition.x}px`,
                 top: `${initialPosition.y}px`,
               }
-            : undefined
-        }
+            : {}),
+          zIndex, // apply our dynamic z-index
+        }}
+        // We'll pass our bringToFront function as a pointer down handler.
+        onPointerDown={bringToFront}
       >
         {title && (
           <DialogHeader>
