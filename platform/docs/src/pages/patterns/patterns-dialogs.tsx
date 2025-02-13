@@ -1,7 +1,6 @@
 import React from 'react';
 import { Button } from '../../../../ui-next/src/components/Button';
 import { AboutModal } from '../../../../ui-next/src/components/OHIFModals/AboutModal';
-import { InputDialog } from '../../../../ui-next/src/components/OHIFDialogs/InputDialog';
 import { PresetDialog } from '../../../../ui-next/src/components/OHIFDialogs/PresetDialog';
 import { ImageModal } from '../../../../ui-next/src/components/OHIFModals/ImageModal';
 import { UserPreferencesModal } from '../../../../ui-next/src/components/OHIFModals/UserPreferencesModal';
@@ -17,6 +16,7 @@ import {
 import { ModalProvider, useModal } from '../../../../ui-next/src/contextProviders/ModalProvider';
 import { DialogProvider, useDialog } from '../../../../ui-next/src/contextProviders/DialogProvider';
 import { ManagedDialog } from '../../../../ui-next/src/contextProviders';
+import { InputDialog } from '../../../../ui-next/src/components/OHIFDialogs/InputDialog';
 
 // ===== Modal Components =====
 
@@ -190,6 +190,26 @@ const ImageButton = () => {
 
 const InputButton = () => {
   const { show, hide } = useDialog();
+  const handleDialog1Save = () => {
+    console.debug('Dialog 1 saved');
+    hide('input-dialog-1');
+  };
+
+  const handleDialog1Cancel = () => {
+    console.debug('Dialog 1 cancelled');
+    hide('input-dialog-1');
+  };
+
+  const handleDialog2Save = () => {
+    console.debug('Dialog 2 saved');
+    hide('input-dialog-2');
+  };
+
+  const handleDialog2Cancel = () => {
+    console.debug('Dialog 2 cancelled');
+    hide('input-dialog-2');
+  };
+
   return (
     <div>
       <Button
@@ -200,17 +220,18 @@ const InputButton = () => {
             movable: true,
             content: () => (
               <InputDialog>
-                <InputDialog.InputPlaceholder placeholder="Label" />
-                <FooterAction>
-                  <FooterAction.Right>
-                    <FooterAction.Secondary onClick={() => hide('input-dialog-1')}>
-                      Cancel
-                    </FooterAction.Secondary>
-                    <FooterAction.Primary onClick={() => hide('input-dialog-1')}>
-                      Save
-                    </FooterAction.Primary>
-                  </FooterAction.Right>
-                </FooterAction>
+                <InputDialog.Field>
+                  {/* <InputDialog.Label>Label</InputDialog.Label> */}
+                  <InputDialog.Input placeholder="Enter value" />
+                </InputDialog.Field>
+                <InputDialog.Actions>
+                  <InputDialog.ActionsSecondary onClick={handleDialog1Cancel}>
+                    Cancel
+                  </InputDialog.ActionsSecondary>
+                  <InputDialog.ActionsPrimary onClick={handleDialog1Save}>
+                    Save
+                  </InputDialog.ActionsPrimary>
+                </InputDialog.Actions>
               </InputDialog>
             ),
             title: 'Input Dialog 1',
@@ -222,17 +243,18 @@ const InputButton = () => {
             movable: true,
             content: () => (
               <InputDialog>
-                <InputDialog.InputPlaceholder placeholder="Label" />
-                <FooterAction>
-                  <FooterAction.Right>
-                    <FooterAction.Secondary onClick={() => hide('input-dialog-2')}>
-                      Cancel
-                    </FooterAction.Secondary>
-                    <FooterAction.Primary onClick={() => hide('input-dialog-2')}>
-                      Save
-                    </FooterAction.Primary>
-                  </FooterAction.Right>
-                </FooterAction>
+                <InputDialog.Field>
+                  <InputDialog.Label>Another Label</InputDialog.Label>
+                  <InputDialog.Input placeholder="Enter another value" />
+                </InputDialog.Field>
+                <InputDialog.Actions>
+                  <InputDialog.ActionsSecondary onClick={handleDialog2Cancel}>
+                    Close
+                  </InputDialog.ActionsSecondary>
+                  <InputDialog.ActionsPrimary onClick={handleDialog2Save}>
+                    Apply
+                  </InputDialog.ActionsPrimary>
+                </InputDialog.Actions>
               </InputDialog>
             ),
             title: 'Input Dialog 2',
@@ -244,7 +266,7 @@ const InputButton = () => {
       </Button>
       <Button
         onClick={() => {
-          // hide('input-dialog-1');
+          hide('input-dialog-1');
           hide('input-dialog-2');
         }}
       >

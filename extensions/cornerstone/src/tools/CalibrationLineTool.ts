@@ -84,35 +84,15 @@ export function onCompletedCalibrationLine(
       return;
     }
 
-    callInputDialog(
+    callInputDialog({
       uiDialogService,
-      {
-        text: '',
-        label: `${length}`,
+      title: 'Calibration',
+      placeholder: 'Actual Physical distance (mm)',
+      defaultValue: `${length}`,
+      onSave: newValue => {
+        adjustCalibration(Number.parseFloat(newValue));
+        resolve(true);
       },
-      (value, id) => {
-        if (id === 'save') {
-          adjustCalibration(Number.parseFloat(value));
-          resolve(true);
-        } else {
-          reject('cancel');
-        }
-      },
-      false,
-      {
-        dialogTitle: 'Calibration',
-        inputLabel: 'Actual Physical distance (mm)',
-
-        // the input value must be a number
-        validateFunc: val => {
-          try {
-            const v = Number.parseFloat(val);
-            return !isNaN(v) && v !== 0.0;
-          } catch {
-            return false;
-          }
-        },
-      }
-    );
+    });
   });
 }

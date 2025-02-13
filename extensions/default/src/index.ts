@@ -94,7 +94,6 @@ export {
   useViewportsByPositionStore,
   showLabelAnnotationPopup,
   callLabelAutocompleteDialog,
-  callInputDialog,
   promptSaveReport,
   promptLabelAnnotation,
   colorPickerDialog,
@@ -103,4 +102,5 @@ export {
   utils,
   MoreDropdownMenu,
   requestDisplaySetCreationForStudy,
+  callInputDialog,
 };

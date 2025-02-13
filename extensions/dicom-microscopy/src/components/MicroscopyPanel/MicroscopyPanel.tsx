@@ -1,14 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
+import { callInputDialog } from '@ohif/extension-default';
 import { ExtensionManager, CommandsManager, DicomMetadataStore } from '@ohif/core';
 import { MeasurementTable } from '@ohif/ui';
 import { withTranslation, WithTranslation } from 'react-i18next';
 import { EVENTS as MicroscopyEvents } from '../../services/MicroscopyService';
 import dcmjs from 'dcmjs';
-import { callInputDialog } from '@ohif/extension-default';
 import constructSR from '../../utils/constructSR';
 import { saveByteArray } from '../../utils/saveByteArray';
-import { Separator } from '@ohif/ui-next';
 
 let saving = false;
 const { datasetToBuffer } = dcmjs.data;
@@ -140,12 +139,8 @@ function MicroscopyPanel(props: IMicroscopyPanelProps) {
       uiDialogService,
       title: 'Enter description of the Series',
       defaultValue: '',
-      callback: (value: string, action: string) => {
-        switch (action) {
-          case 'save': {
-            saveFunction(value);
-          }
-        }
+      onSave: (value: string) => {
+        saveFunction(value);
       },
     });
   };

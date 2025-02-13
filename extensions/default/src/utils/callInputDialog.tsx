@@ -1,5 +1,47 @@
 import React from 'react';
-import { Input, Dialog, ButtonEnums, LabellingFlow } from '@ohif/ui';
+import { LabellingFlow } from '@ohif/ui';
+import { InputDialog } from '@ohif/ui-next';
+
+interface InputDialogDefaultProps {
+  hide: () => void;
+  onSave: (value: string) => void;
+  placeholder: string;
+  defaultValue: string;
+  submitOnEnter: boolean;
+}
+
+function InputDialogDefault({
+  hide,
+  onSave,
+  placeholder = 'Enter value',
+  defaultValue = '',
+  submitOnEnter,
+}: InputDialogDefaultProps) {
+  return (
+    <InputDialog
+      className="min-w-[300px] max-w-md"
+      submitOnEnter={submitOnEnter}
+    >
+      <InputDialog.Field>
+        <InputDialog.Input
+          placeholder={placeholder}
+          defaultValue={defaultValue}
+        />
+      </InputDialog.Field>
+      <InputDialog.Actions>
+        <InputDialog.ActionsSecondary onClick={hide}>Cancel</InputDialog.ActionsSecondary>
+        <InputDialog.ActionsPrimary
+          onClick={value => {
+            onSave(value);
+            hide();
+          }}
+        >
+          Save
+        </InputDialog.ActionsPrimary>
+      </InputDialog.Actions>
+    </InputDialog>
+  );
+}
 
 /**
  *
@@ -13,80 +55,27 @@ import { Input, Dialog, ButtonEnums, LabellingFlow } from '@ohif/ui';
  * @param {string?} dialogConfig.dialogTitle - title of the input dialog
  * @param {string?} dialogConfig.inputLabel - show label above the input
  */
-
-export function callInputDialog(
+export function callInputDialog({
   uiDialogService,
-  data,
-  callback,
-  isArrowAnnotateInputDialog = true,
-  dialogConfig: any = {}
-) {
+  onSave,
+  defaultValue = '',
+  title = 'Annotation',
+  placeholder = '',
+  submitOnEnter = true,
+}) {
   const dialogId = 'dialog-enter-annotation';
-  const label = data ? (isArrowAnnotateInputDialog ? data.text : data.label) : '';
-  const {
-    dialogTitle = 'Annotation',
-    inputLabel = 'Enter your annotation',
-    validateFunc = value => true,
-  } = dialogConfig;
 
-  const onSubmitHandler = ({ action, value }) => {
-    switch (action.id) {
-      case 'save':
-        if (typeof validateFunc === 'function' && !validateFunc(value.label)) {
-          return;
-        }
-
-        callback(value.label, action.id);
-        break;
-      case 'cancel':
-        callback('', action.id);
-        break;
-    }
-    uiDialogService.hide(dialogId);
-  };
-
-  if (uiDialogService) {
-    uiDialogService.show({
-      id: dialogId,
-      centralize: true,
-      isDraggable: false,
-      showOverlay: true,
-      content: Dialog,
-      contentProps: {
-        title: dialogTitle,
-        value: { label },
-        noCloseButton: true,
-        onClose: () => uiDialogService.hide(dialogId),
-        actions: [
-          { id: 'cancel', text: 'Cancel', type: ButtonEnums.type.secondary },
-          { id: 'save', text: 'Save', type: ButtonEnums.type.primary },
-        ],
-        onSubmit: onSubmitHandler,
-        body: ({ value, setValue }) => {
-          return (
-            <Input
-              autoFocus
-              className="border-primary-main bg-black"
-              type="text"
-              id="annotation"
-              label={inputLabel}
-              labelClassName="text-white text-[14px] leading-[1.2]"
-              value={value.label}
-              onChange={event => {
-                event.persist();
-                setValue(value => ({ ...value, label: event.target.value }));
-              }}
-              onKeyPress={event => {
-                if (event.key === 'Enter') {
-                  onSubmitHandler({ value, action: { id: 'save' } });
-                }
-              }}
-            />
-          );
-        },
-      },
-    });
-  }
+  uiDialogService.show({
+    id: dialogId,
+    content: InputDialogDefault,
+    title: title,
+    contentProps: {
+      onSave,
+      placeholder,
+      defaultValue,
+      submitOnEnter,
+    },
+  });
 }
 
 export function callLabelAutocompleteDialog(

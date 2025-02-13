@@ -21,8 +21,8 @@ import {
   callLabelAutocompleteDialog,
   showLabelAnnotationPopup,
   createReportAsync,
-  callInputDialog,
   colorPickerDialog,
+  callInputDialog,
 } from '@ohif/extension-default';
 import { vec3, mat4 } from 'gl-matrix';
 
@@ -1252,19 +1252,15 @@ function commandsModule({
       }
 
       const segment = segmentation.segments[segmentIndex];
-      const { label } = segment;
 
-      const callback = (label, actionId) => {
-        if (label === '') {
-          return;
-        }
-
-        segmentationService.setSegmentLabel(segmentationId, segmentIndex, label);
-      };
-
-      callInputDialog(uiDialogService, label, callback, false, {
-        dialogTitle: 'Edit Segment Label',
-        inputLabel: 'Enter new label',
+      callInputDialog({
+        uiDialogService,
+        title: 'Edit Segment Label',
+        placeholder: 'Enter new label',
+        defaultValue: segment.label,
+        onSave: newValue => {
+          segmentationService.setSegmentLabel(segmentationId, segmentIndex, newValue);
+        },
       });
     },
 
@@ -1278,17 +1274,14 @@ function commandsModule({
 
       const { label } = segmentation;
 
-      const callback = (label, actionId) => {
-        if (label === '') {
-          return;
-        }
-
-        segmentationService.addOrUpdateSegmentation({ segmentationId, label });
-      };
-
-      callInputDialog(uiDialogService, label, callback, false, {
-        dialogTitle: 'Edit Segmentation Label',
-        inputLabel: 'Enter new label',
+      callInputDialog({
+        uiDialogService,
+        title: 'Edit Segmentation Label',
+        placeholder: 'Enter new label',
+        defaultValue: label,
+        onSave: newValue => {
+          segmentationService.addOrUpdateSegmentation({ segmentationId, label: newValue });
+        },
       });
     },
 

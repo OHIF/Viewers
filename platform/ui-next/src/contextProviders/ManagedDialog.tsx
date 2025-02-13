@@ -1,11 +1,5 @@
 import React from 'react';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-} from '../components/Dialog/Dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../components/Dialog/Dialog';
 
 export interface ManagedDialogProps {
   id: string;
@@ -19,6 +13,7 @@ export interface ManagedDialogProps {
   shouldCloseOnOverlayClick?: boolean;
   defaultPosition?: { x: number; y: number };
   onClose?: (id: string) => void;
+  unstyled?: boolean;
 }
 
 const ManagedDialog: React.FC<ManagedDialogProps> = ({
@@ -34,8 +29,6 @@ const ManagedDialog: React.FC<ManagedDialogProps> = ({
   onClose,
   unstyled,
 }) => {
-  console.debug('🚀 ~ DialogContentComponent;:', DialogContentComponent);
-
   return (
     <Dialog
       open={isOpen}
