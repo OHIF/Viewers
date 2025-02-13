@@ -281,13 +281,15 @@ export default async function init({
         segmentationService.EVENTS.SEGMENT_REMOVED,
       ];
 
-      if (supportedEvents.includes(event)) {
-        segmentationService.subscribe(event, eventData => {
-          const segmentationId = eventData?.segmentationId;
-
-          commandsManager.run(commands, { segmentationId });
-        });
+      if (!supportedEvents.includes(event)) {
+        return;
       }
+      
+      segmentationService.subscribe(event, eventData => {
+        const segmentationId = eventData?.segmentationId;
+
+        commandsManager.run(commands, { segmentationId });
+      });
     });
   };
 

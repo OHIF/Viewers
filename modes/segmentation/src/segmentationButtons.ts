@@ -3,7 +3,7 @@ import { SegmentationService } from '@ohif/extension-cornerstone';
 
 const SegmentToolListeners = [
   {
-    commandName: 'toggleToolModeBasedOnSegmentAction',
+    commandName: 'toggleToolModeBasedOnSegmentActions',
     context: 'CORNERSTONE',
   },
 ];
@@ -201,6 +201,11 @@ const toolbarButtons: Button[] = [
       id: 'Shapes',
       icon: 'icon-tool-shape',
       label: 'Shapes',
+      listeners: {
+        [SegmentationService.EVENTS.ACTIVE_SEGMENTATION_CHANGED]: SegmentToolListeners,
+        [SegmentationService.EVENTS.SEGMENTATION_ADDED]: SegmentToolListeners,
+        [SegmentationService.EVENTS.SEGMENT_REMOVED]: SegmentToolListeners,
+      },
       evaluate: {
         name: 'evaluate.cornerstone.segmentation',
         toolNames: ['CircleScissor', 'SphereScissor', 'RectangleScissor'],
