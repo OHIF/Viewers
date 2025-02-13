@@ -2,7 +2,7 @@ version: 2.1
 
 orbs:
   codecov: codecov/codecov@1.0.5
-  cypress: cypress-io/cypress@3.3.1
+  cypress: cypress-io/cypress@3.4.2
 
 defaults: &defaults
   docker:

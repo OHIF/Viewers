@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
-import { LoadingIndicatorTotalPercent, ViewportActionArrows } from '@ohif/ui';
+import { ViewportActionArrows } from '@ohif/ui';
 import { useViewportGrid } from '@ohif/ui-next';
 
 import promptHydrateRT from '../utils/promptHydrateRT';
@@ -38,6 +38,10 @@ function OHIFCornerstoneRTViewport(props: withAppTypes) {
   if (displaySets.length > 1) {
     throw new Error('RT viewport should only have a single display set');
   }
+
+  const LoadingIndicatorTotalPercent = customizationService.getCustomization(
+    'ui.loadingIndicatorTotalPercent'
+  );
 
   const rtDisplaySet = displaySets[0];
 

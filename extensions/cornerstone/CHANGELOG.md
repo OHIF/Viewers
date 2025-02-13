@@ -3,6 +3,101 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.10.0-beta.94](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.93...v3.10.0-beta.94) (2025-02-11)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone
+
+
+
+
+
+# [3.10.0-beta.93](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.92...v3.10.0-beta.93) (2025-02-04)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone
+
+
+
+
+
+# [3.10.0-beta.92](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.91...v3.10.0-beta.92) (2025-02-04)
+
+
+### Bug Fixes
+
+* **core:** Address 3D reconstruction and Android compatibility issues and clean up 4D data mode ([#4762](https://github.com/OHIF/Viewers/issues/4762)) ([149d6d0](https://github.com/OHIF/Viewers/commit/149d6d049cd333b9e5846576b403ff387558a66f))
+
+
+
+
+
+# [3.10.0-beta.91](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.90...v3.10.0-beta.91) (2025-02-04)
+
+
+### Bug Fixes
+
+* changing colormap for second volume in fusion viewport ([#4746](https://github.com/OHIF/Viewers/issues/4746)) ([8996df8](https://github.com/OHIF/Viewers/commit/8996df80e45c97ad5847ebbd19291cd772a2163d))
+
+
+
+
+
+# [3.10.0-beta.90](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.89...v3.10.0-beta.90) (2025-02-04)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone
+
+
+
+
+
+# [3.10.0-beta.89](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.88...v3.10.0-beta.89) (2025-02-04)
+
+
+### Features
+
+* **ui:** customization option for viewport notification ([#4638](https://github.com/OHIF/Viewers/issues/4638)) ([8acbd76](https://github.com/OHIF/Viewers/commit/8acbd760d801dcaf624c5d9fb636a029201b91e1))
+
+
+
+
+
+# [3.10.0-beta.88](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.87...v3.10.0-beta.88) (2025-02-04)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone
+
+
+
+
+
+# [3.10.0-beta.87](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.86...v3.10.0-beta.87) (2025-02-03)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone
+
+
+
+
+
+# [3.10.0-beta.86](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.85...v3.10.0-beta.86) (2025-02-03)
+
+
+### Bug Fixes
+
+* **store-segmentation:** storing segmentations was hitting the wrong command resulting in an undefined datasource ([#4755](https://github.com/OHIF/Viewers/issues/4755)) ([9b8e5cf](https://github.com/OHIF/Viewers/commit/9b8e5cfd1a6121a58991c0f75660a2fd9913a4e7))
+
+
+
+
+
+# [3.10.0-beta.85](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.84...v3.10.0-beta.85) (2025-02-03)
+
+
+### Features
+
+* Add customization support for more UI components  ([#4634](https://github.com/OHIF/Viewers/issues/4634)) ([f15eb44](https://github.com/OHIF/Viewers/commit/f15eb44b4cf49de1b73a22512571cec02effaef3))
+
+
+
+
+
 # [3.10.0-beta.84](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.83...v3.10.0-beta.84) (2025-01-31)
 
 **Note:** Version bump only for package @ohif/extension-cornerstone

@@ -12,6 +12,7 @@ import {
   CommandsManager,
   HotkeysManager,
   ServiceProvidersManager,
+  SystemContextProvider,
 } from '@ohif/core';
 import {
   DialogProvider,
@@ -114,6 +115,7 @@ function App({
     [I18nextProvider, { i18n }],
     [ThemeWrapperNext],
     [ThemeWrapper],
+    [SystemContextProvider, { commandsManager, extensionManager, hotkeysManager, servicesManager }],
     [ToolboxProvider],
     [ViewportGridProvider, { service: viewportGridService }],
     [ViewportDialogProvider, { service: uiViewportDialogService }],

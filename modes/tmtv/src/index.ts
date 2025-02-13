@@ -61,7 +61,7 @@ function modeFactory({ modeConfiguration }) {
       const { toolNames, Enums } = utilityModule.exports;
 
       // Init Default and SR ToolGroups
-      initToolGroups(toolNames, Enums, toolGroupService, commandsManager, null, servicesManager);
+      initToolGroups(toolNames, Enums, toolGroupService, commandsManager);
 
       const { unsubscribe } = toolGroupService.subscribe(
         toolGroupService.EVENTS.VIEWPORT_ADDED,

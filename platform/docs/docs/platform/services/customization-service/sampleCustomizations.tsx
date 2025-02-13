@@ -10,11 +10,19 @@ import segmentationTableModeImage2 from '../../../assets/img/segmentationTableMo
 import segmentationShowAddSegmentImage from '../../../assets/img/segmentationShowAddSegmentImage.png';
 import layoutSelectorCommonPresetsImage from '../../../assets/img/layoutSelectorCommonPresetsImage.png';
 import layoutSelectorAdvancedPresetGeneratorImage from '../../../assets/img/layoutSelectorAdvancedPresetGeneratorImage.png';
+import labellingFLow from '../../../assets/img/labelling-flow.png';
+import progressLoading from '../../../assets/img/Loading-Indicator.png';
+import loadingIndicatorProgress from '../../../assets/img/loading-indicator-icon.png';
+import loadingIndicatorPercent from '../../../assets/img/loading-indicator-percent.png';
+import viewportActionCorners from '../../../assets/img/viewport-action-corners.png';
+import contextMenu from '../../../assets/img/context-menu.jpg';
+
 import segDisplayEditingTrue from '../../../assets/img/segDisplayEditingTrue.png';
 import segDisplayEditingFalse from '../../../assets/img/segDisplayEditingFalse.png';
 import thumbnailMenuItemsImage from '../../../assets/img/thumbnailMenuItemsImage.png';
 import studyMenuItemsImage from '../../../assets/img/studyMenuItemsImage.png';
 import windowLevelActionMenu from '../../../assets/img/windowLevelActionMenu.png';
+import viewPortNotificationImage from '../../../assets/img/viewport-notification.png';
 
 export const viewportOverlayCustomizations = [
   {
@@ -608,7 +616,133 @@ window.config = {
     },
   ],
 };
+  `,
+  },
+  {
+    id: 'ui.notificationComponent',
+    description: 'Define the component which is used to render viewport notifications',
+    default: 'Default Notification component in viewport',
+    image: [viewPortNotificationImage],
+    configuration: `
+window.config = {
+  // rest of window config
+  customizationService: [
+    {
+      'ui.notificationComponent': {
+          $set: CustomizedComponent,
+      },
+    },
+  ],
+};
     `,
+  },
+  {
+    id: 'ui.loadingIndicatorTotalPercent',
+    description: 'Customizes the LoadingIndicatorTotalPercent component.',
+    image: loadingIndicatorPercent,
+    default: null, //use platform/ui component as default
+    configuration: `
+      window.config = {
+        // rest of window config
+        customizationService: [
+          {
+            'ui.loadingIndicatorTotalPercent': {
+                $set: CustomizedComponent,
+            },
+          },
+        ],
+      };
+        `,
+  },
+  {
+    id: 'ui.loadingIndicatorProgress',
+    description: 'Customizes the LoadingIndicatorProgress component.',
+    image: loadingIndicatorProgress,
+    default: null, //use platform/ui component as default
+    configuration: `
+      window.config = {
+        // rest of window config
+        customizationService: [
+          {
+            'ui.loadingIndicatorProgress': {
+                $set: CustomizedComponent,
+            },
+          },
+        ],
+      };
+        `,
+  },
+  {
+    id: 'ui.progressLoadingBar',
+    description: 'Customizes the ProgressLoadingBar component.',
+    image: progressLoading,
+    default: null, //use platform/ui component as default
+    configuration: `
+      window.config = {
+        // rest of window config
+        customizationService: [
+          {
+            'ui.progressLoadingBar': {
+                $set: CustomizedComponent,
+            },
+          },
+        ],
+      };
+        `,
+  },
+  {
+    id: 'ui.viewportActionCorner',
+    description: 'Customizes the viewportActionCorner component.',
+    iamge: viewportActionCorners,
+    default: null, //use platform/ui component as default
+    configuration: `
+      window.config = {
+        // rest of window config
+        customizationService: [
+          {
+            'ui.viewportActionCorner': {
+                $set: CustomizedComponent,
+            },
+          },
+        ],
+      };
+        `,
+  },
+  {
+    id: 'ui.contextMenu',
+    description: 'Customizes the Context menu component.',
+    image: contextMenu,
+    default: null, //use platform/ui component as default
+    configuration: `
+      window.config = {
+        // rest of window config
+        customizationService: [
+          {
+            'ui.contextMenu': {
+                $set: CustomizedComponent,
+            },
+          },
+        ],
+      };
+        `,
+  },
+  {
+    id: 'ui.labellingComponent',
+    description: 'Customizes the labelling flow component.',
+    image: labellingFLow,
+    default: null, //use platform/ui component as default
+    configuration: `
+      window.config = {
+        // rest of window config
+        customizationService: [
+          {
+            'ui.labellingComponent': {
+                $set: CustomizedComponent,
+            },
+          },
+        ],
+      };
+        `,
   },
 ];
 
