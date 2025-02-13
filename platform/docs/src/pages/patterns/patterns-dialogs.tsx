@@ -194,26 +194,46 @@ const ImageButton = () => {
 // ===== Dialog Components =====
 
 const InputButton = () => {
-  const { show } = useDialog();
+  const { show, hide } = useDialog();
   return (
     <Button
-      onClick={() =>
+      onClick={() => {
+        // first dialog
         show({
           movable: true,
-          id: 'input-dialog',
           content: () => (
             <InputDialog>
-              <InputDialog.InputTitle>Segment Label</InputDialog.InputTitle>
               <InputDialog.InputPlaceholder placeholder="Label" />
-              <InputDialog.InputActions
-                onCancel={() => show({})}
-                onSave={() => show({})}
-              />
+              <FooterAction>
+                <FooterAction.Right>
+                  <FooterAction.Secondary onClick={() => hide()}>Cancel</FooterAction.Secondary>
+                  <FooterAction.Primary onClick={() => hide()}>Save</FooterAction.Primary>
+                </FooterAction.Right>
+              </FooterAction>
             </InputDialog>
           ),
-          title: 'Input Dialog',
-        })
-      }
+          title: 'Input Dialog 1',
+          initialPosition: { x: 200, y: 200 },
+        });
+
+        // second dialog
+        show({
+          movable: true,
+          content: () => (
+            <InputDialog>
+              <InputDialog.InputPlaceholder placeholder="Label" />
+              <FooterAction>
+                <FooterAction.Right>
+                  <FooterAction.Secondary onClick={() => hide()}>Cancel</FooterAction.Secondary>
+                  <FooterAction.Primary onClick={() => hide()}>Save</FooterAction.Primary>
+                </FooterAction.Right>
+              </FooterAction>
+            </InputDialog>
+          ),
+          title: 'Input Dialog 2',
+          initialPosition: { x: 400, y: 400 },
+        });
+      }}
     >
       Open Input
     </Button>
