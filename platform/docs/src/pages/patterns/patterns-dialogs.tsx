@@ -16,6 +16,7 @@ import {
 } from '../../../../ui-next/src/components/Select/Select';
 import { ModalProvider, useModal } from '../../../../ui-next/src/contextProviders/ModalProvider';
 import { DialogProvider, useDialog } from '../../../../ui-next/src/contextProviders/DialogProvider';
+import { ManagedDialog } from '../../../../ui-next/src/contextProviders/ManagedDialog';
 
 // ===== Modal Components =====
 
@@ -193,11 +194,13 @@ const ImageButton = () => {
 // ===== Dialog Components =====
 
 const InputButton = () => {
-  const { show } = useModal();
+  const { show } = useDialog();
   return (
     <Button
       onClick={() =>
         show({
+          movable: true,
+          id: 'input-dialog',
           content: () => (
             <InputDialog>
               <InputDialog.InputTitle>Segment Label</InputDialog.InputTitle>
@@ -262,28 +265,30 @@ const PresetButton = () => {
 
 export default function SettingsPage() {
   return (
-    <DialogProvider>
-      <ModalProvider modal={Modal}>
-        <div className="flex min-h-screen items-center justify-center">
-          <div className="flex flex-col space-y-8">
-            <div>
-              <h2 className="mb-4 text-lg font-semibold">Modals</h2>
-              <div className="flex space-x-2">
-                <AboutButton />
-                <PreferencesButton />
-                <ImageButton />
+    <div className="bg-black">
+      <DialogProvider dialog={ManagedDialog}>
+        <ModalProvider modal={Modal}>
+          <div className="flex min-h-screen items-center justify-center">
+            <div className="flex flex-col space-y-8">
+              <div>
+                <h2 className="mb-4 text-lg font-semibold">Modals</h2>
+                <div className="flex space-x-2">
+                  <AboutButton />
+                  <PreferencesButton />
+                  <ImageButton />
+                </div>
               </div>
-            </div>
-            <div>
-              <h2 className="mb-4 text-lg font-semibold">Dialogs</h2>
-              <div className="flex space-x-2">
-                <InputButton />
-                <PresetButton />
+              <div>
+                <h2 className="mb-4 text-lg font-semibold">Dialogs</h2>
+                <div className="flex space-x-2">
+                  <InputButton />
+                  <PresetButton />
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      </ModalProvider>
-    </DialogProvider>
+        </ModalProvider>
+      </DialogProvider>
+    </div>
   );
 }

@@ -29,7 +29,7 @@ import {
   ToolboxProvider,
   Modal as ModalNext,
   ManagedDialog,
-  ModalProvider as ModalProviderNext,
+  ModalProvider,
 } from '@ohif/ui-next';
 // Viewer Project
 // TODO: Should this influence study list?
@@ -113,7 +113,7 @@ function App({
   const providers = [
     [AppConfigProvider, { value: appConfigState }],
     [UserAuthenticationProvider, { service: userAuthenticationService }],
-    [I18nextProvider, { i18n }],
+    ManagedDialog[(I18nextProvider, { i18n })],
     [ThemeWrapperNext],
     [ThemeWrapper],
     [SystemContextProvider, { commandsManager, extensionManager, hotkeysManager, servicesManager }],
@@ -124,7 +124,7 @@ function App({
     [NotificationProvider, { service: uiNotificationService }],
     [TooltipProvider],
     [DialogProvider, { service: uiDialogService, dialog: ManagedDialog }],
-    [ModalProviderNext, { service: uiModalService, modal: ModalNext }],
+    [ModalProvider, { service: uiModalService, modal: ModalNext }],
     [ShepherdJourneyProvider],
   ];
 

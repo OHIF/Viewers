@@ -119,6 +119,7 @@ import {
   ModalProvider,
   DialogProvider,
   useDialog,
+  ManagedDialog,
 } from './contextProviders';
 import { ViewportGridContext, ViewportGridProvider, useViewportGrid } from './contextProviders';
 import * as utils from './utils';
@@ -247,4 +248,5 @@ export {
   FooterAction,
   DialogProvider,
   useDialog,
+  ManagedDialog,
 };

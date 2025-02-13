@@ -1,27 +1,8 @@
 import React, { useState, createContext, useContext, useCallback, useEffect, useMemo } from 'react';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-} from '../components/Dialog/Dialog';
-
-interface DialogOptions {
-  id?: string;
-  title?: string;
-  content: React.ComponentType<any>;
-  contentProps?: Record<string, unknown>;
-  description?: string;
-  movable?: boolean;
-  showOverlay?: boolean;
-  shouldCloseOnEsc?: boolean;
-  shouldCloseOnOverlayClick?: boolean;
-  initialPosition?: { x: number; y: number };
-}
+import ManagedDialog, { ManagedDialogProps } from './ManagedDialog';
 
 interface DialogContextType {
-  show: (options: DialogOptions) => string;
+  show: (options: ManagedDialogProps) => string;
   hide: (id: string) => void;
   hideAll: () => void;
   isEmpty: () => boolean;
@@ -29,10 +10,12 @@ interface DialogContextType {
 
 interface DialogService {
   setServiceImplementation: (implementation: DialogContextType) => void;
+  getCustomComponent?: () => React.ComponentType<ManagedDialogProps> | null;
 }
 
 interface DialogProviderProps {
   children: React.ReactNode;
+  dialog?: React.ComponentType<ManagedDialogProps>;
   service?: DialogService | null;
 }
 
@@ -48,11 +31,15 @@ export const useDialog = () => {
 
 const generateId = () => Math.random().toString(36).substring(2, 9);
 
-const DialogProvider: React.FC<DialogProviderProps> = ({ children, service = null }) => {
+const DialogProvider: React.FC<DialogProviderProps> = ({
+  children,
+  dialog: DialogComponent = ManagedDialog,
+  service = null,
+}) => {
   const [dialogs, setDialogs] = useState<(DialogOptions & { id: string })[]>([]);
 
   const show = useCallback((options: DialogOptions) => {
-    const id = options.id || generateId();
+    const id = generateId();
     console.debug('Showing dialog with id:', id);
     setDialogs(prev => [...prev, { ...options, id }]);
     return id;
@@ -86,64 +73,21 @@ const DialogProvider: React.FC<DialogProviderProps> = ({ children, service = nul
     }
   }, [service, contextValue]);
 
+  const CustomDialog = service?.getCustomComponent?.() || DialogComponent;
+
   return (
     <DialogContext.Provider value={contextValue}>
-      {dialogs.map(dialog => {
-        const DialogContentComponent = dialog.content;
-        return (
-          <Dialog
-            key={dialog.id}
-            open={true}
-            onOpenChange={() => hide(dialog.id)}
-            movable={dialog.movable}
-            shouldCloseOnEsc={dialog.shouldCloseOnEsc}
-            shouldCloseOnOverlayClick={dialog.shouldCloseOnOverlayClick}
-          >
-            <DialogContent
-              style={
-                dialog.initialPosition
-                  ? {
-                      position: 'fixed',
-                      left: `${dialog.initialPosition.x}px`,
-                      top: `${dialog.initialPosition.y}px`,
-                    }
-                  : undefined
-              }
-            >
-              {dialog.title && (
-                <DialogHeader>
-                  <DialogTitle>{dialog.title}</DialogTitle>
-                  {dialog.description && (
-                    <DialogDescription>{dialog.description}</DialogDescription>
-                  )}
-                </DialogHeader>
-              )}
-              <DialogContentComponent
-                {...dialog.contentProps}
-                onDismiss={() => hide(dialog.id)}
-              />
-            </DialogContent>
-          </Dialog>
-        );
-      })}
+      {dialogs.map(dialog => (
+        <CustomDialog
+          key={dialog.id}
+          {...dialog}
+          isOpen={true}
+          onClose={hide}
+        />
+      ))}
       {children}
     </DialogContext.Provider>
   );
 };
 
-export default DialogProvider;
-
-// HOC for class components
-export const withDialog = <P extends object>(
-  Component: React.ComponentType<P & { dialog: DialogContextType }>
-) => {
-  return function WrappedComponent(props: P) {
-    const dialog = useDialog();
-    return (
-      <Component
-        {...props}
-        dialog={dialog}
-      />
-    );
-  };
-};
+export { DialogProvider };
