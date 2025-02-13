@@ -382,6 +382,10 @@ export default class ExtensionManager extends PubSubService {
     return this.dataSourceMap[dataSourceName];
   };
 
+  getDataSourceInstance = dataSourceName => {
+    return this.dataSourceMap[dataSourceName][0];
+  };
+
   getActiveDataSource = () => {
     return this.dataSourceMap[this.activeDataSource];
   };

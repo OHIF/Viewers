@@ -238,45 +238,45 @@ const commandsModule = ({
       const ReportDialog = customizationService.getCustomization('ohif.createReportDialog');
       const dataSourcesList = extensionManager.getDataSourcesForUI();
 
-      return new Promise((resolve, reject) => {
-        uiDialogService.show({
-          id: 'report-dialog',
-          title: 'Create Report',
-          content: ReportDialog,
-          contentProps: {
-            dataSources: dataSourcesList,
-            onSave: async ({ reportName, dataSource: selectedDataSource }) => {
-              try {
-                const selectedDataSourceConfig = selectedDataSource ?? defaultDataSource;
+      uiDialogService.show({
+        id: 'report-dialog',
+        title: 'Create Report',
+        content: ReportDialog,
+        contentProps: {
+          dataSources: dataSourcesList,
+          onSave: async ({ reportName, dataSource: selectedDataSource }) => {
+            try {
+              const selectedDataSourceConfig = selectedDataSource
+                ? extensionManager.getDataSources(selectedDataSource)[0]
+                : defaultDataSource;
 
-                const generatedData = actions.generateSegmentation({
-                  segmentationId,
-                  options: {
-                    SeriesDescription: reportName || label || 'Research Derived Series',
-                  },
-                });
+              const generatedData = actions.generateSegmentation({
+                segmentationId,
+                options: {
+                  SeriesDescription: reportName || label || 'Research Derived Series',
+                },
+              });
 
-                if (!generatedData || !generatedData.dataset) {
-                  throw new Error('Error during segmentation generation');
-                }
-
-                const { dataset: naturalizedReport } = generatedData;
-
-                await selectedDataSourceConfig.store.dicom(naturalizedReport);
-
-                // add the information for where we stored it to the instance as well
-                naturalizedReport.wadoRoot = selectedDataSourceConfig.getConfig().wadoRoot;
-
-                DicomMetadataStore.addInstances([naturalizedReport], true);
-
-                resolve(naturalizedReport);
-              } catch (error) {
-                console.debug('Error storing segmentation:', error);
-                reject(error);
+              if (!generatedData || !generatedData.dataset) {
+                throw new Error('Error during segmentation generation');
               }
-            },
+
+              const { dataset: naturalizedReport } = generatedData;
+
+              await selectedDataSourceConfig.store.dicom(naturalizedReport);
+
+              // add the information for where we stored it to the instance as well
+              naturalizedReport.wadoRoot = selectedDataSourceConfig.getConfig().wadoRoot;
+
+              DicomMetadataStore.addInstances([naturalizedReport], true);
+
+              return naturalizedReport;
+            } catch (error) {
+              console.debug('Error storing segmentation:', error);
+              throw error;
+            }
           },
-        });
+        },
       });
     },
     /**
