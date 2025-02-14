@@ -1,0 +1,53 @@
+.dicom-tag-browser-table {
+  margin-right: auto;
+  margin-left: auto;
+}
+
+.dicom-tag-browser-table-wrapper {
+  /*  height: 500px;*/
+  /*overflow-y: scroll;*/
+  overflow-x: scroll;
+}
+
+.dicom-tag-browser-table tr {
+  padding-left: 10px;
+  padding-right: 10px;
+  color: #ffffff;
+  border-top: 1px solid #ddd;
+  white-space: nowrap;
+}
+
+.stick {
+  position: sticky;
+  overflow: clip;
+}
+
+.dicom-tag-browser-content {
+  overflow: hidden;
+  width: 100%;
+  padding-bottom: 50px;
+  /*height: 500px;*/
+}
+
+.dicom-tag-browser-instance-range .range {
+  height: 20px;
+}
+
+.dicom-tag-browser-instance-range {
+  padding: 20px 0 20px 0;
+}
+
+.dicom-tag-browser-table td.dicom-tag-browser-table-center {
+  text-align: center;
+}
+
+.dicom-tag-browser-table th {
+  padding-left: 10px;
+  padding-right: 10px;
+  text-align: center;
+  color: '#20A5D6';
+}
+
+.dicom-tag-browser-table th.dicom-tag-browser-table-left {
+  text-align: left;
+}

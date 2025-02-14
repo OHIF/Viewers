@@ -1,0 +1,21 @@
+#viewer {
+  height: calc(100% - var(--top-bar-height));
+}
+
+#viewer > .loadingTextDiv {
+  color: var(--text-secondary-color);
+  font-size: 30px;
+  height: 100%;
+  line-height: calc(100% - var(--top-bar-height));
+}
+
+.ViewerMain {
+  width: 100%;
+  height: 100%;
+  transition: all 0.3s ease;
+}
+
+.ViewerMain > div {
+  width: 100%;
+  height: 100%;
+}

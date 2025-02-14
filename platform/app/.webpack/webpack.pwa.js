@@ -62,7 +62,7 @@ module.exports = (env, argv) => {
     output: {
       path: DIST_DIR,
       filename: isProdBuild ? '[name].bundle.[chunkhash].js' : '[name].js',
-      publicPath: PUBLIC_URL, // Used by HtmlWebPackPlugin for asset prefix
+      publicPath: '/VIEWER/', // Used by HtmlWebPackPlugin for asset prefix
       devtoolModuleFilenameTemplate: function (info) {
         if (isProdBuild) {
           return `webpack:///${info.resourcePath}`;
@@ -78,6 +78,14 @@ module.exports = (env, argv) => {
         // Hoisted Yarn Workspace Modules
         path.resolve(__dirname, '../../../node_modules'),
         SRC_DIR,
+        path.resolve(
+          __dirname,
+          '/Users/zpick/ohif-viewer-xnat-plugin/ohifviewerxnat/extensions/xnat/node_modules'
+        ),
+        path.resolve(
+          __dirname,
+          '/Users/zpick/ohif-viewer-xnat-plugin/ohifviewerxnat/modes/xnat/node_modules'
+        ),
       ],
     },
     plugins: [

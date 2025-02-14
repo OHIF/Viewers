@@ -4,7 +4,8 @@ import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import i18n from '@ohif/i18n';
 import { I18nextProvider } from 'react-i18next';
-import { BrowserRouter } from 'react-router-dom';
+import { Router } from 'react-router-dom';
+import { createBrowserHistory } from 'history';
 
 import Compose from './routes/Mode/Compose';
 import {
@@ -63,9 +64,11 @@ function App({
     extensions: [],
   },
   defaultExtensions = [],
-  defaultModes = [],
+  defaultModes = ['@ohif/mode-xnat'],
 }) {
   const [init, setInit] = useState(null);
+  const history = createBrowserHistory();
+  console.log(config);
   useEffect(() => {
     const run = async () => {
       appInit(config, defaultExtensions, defaultModes).then(setInit).catch(console.error);
@@ -166,10 +169,10 @@ function App({
 
   return (
     <CombinedProviders>
-      <BrowserRouter basename={routerBasename}>
+      <Router location={history.location} navigator={history}>
         {authRoutes}
         {appRoutes}
-      </BrowserRouter>
+      </Router>
     </CombinedProviders>
   );
 }

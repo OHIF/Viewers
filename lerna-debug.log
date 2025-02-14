@@ -1,0 +1,25 @@
+0 silly argv {
+0 silly argv   _: [ 'run' ],
+0 silly argv   stream: true,
+0 silly argv   lernaVersion: '7.4.2',
+0 silly argv   '$0': '/Users/zpick/ohif-viewer-xnat-plugin/ohifviewerxnat/node_modules/.bin/lerna',
+0 silly argv   script: 'build:viewer:xnat'
+0 silly argv }
+1 notice cli v7.4.2
+2 verbose packageConfigs Explicit "packages" configuration found in lerna.json. Resolving packages using the configured glob(s): ["extensions/*","platform/*","modes/*","addOns/externals/*"]
+3 verbose rootPath /Users/zpick/ohif-viewer-xnat-plugin/ohifviewerxnat
+4 error Error: The following projects are defined in multiple locations:
+4 error - xnat:
+4 error   - extensions/xnat
+4 error   - modes/xnat
+4 error
+4 error To fix this, set a unique name for each project in a project.json inside the project's root. If the project does not currently have a project.json, you can create one that contains only a name.
+4 error     at readProjectConfigurationsFromRootMap (/Users/zpick/ohif-viewer-xnat-plugin/ohifviewerxnat/node_modules/nx/src/project-graph/utils/project-configuration-utils.js:108:15)
+4 error     at buildProjectsConfigurationsFromProjectPathsAndPlugins (/Users/zpick/ohif-viewer-xnat-plugin/ohifviewerxnat/node_modules/nx/src/project-graph/utils/project-configuration-utils.js:81:19)
+4 error     at createProjectConfigurations (/Users/zpick/ohif-viewer-xnat-plugin/ohifviewerxnat/node_modules/nx/src/project-graph/utils/retrieve-workspace-files.js:131:129)
+4 error     at WorkspaceContext.<anonymous> (/Users/zpick/ohif-viewer-xnat-plugin/ohifviewerxnat/node_modules/nx/src/project-graph/utils/retrieve-workspace-files.js:82:39)
+4 error     at getProjectConfigurationsFromContext (/Users/zpick/ohif-viewer-xnat-plugin/ohifviewerxnat/node_modules/nx/src/utils/workspace-context.js:26:29)
+4 error     at _retrieveProjectConfigurations (/Users/zpick/ohif-viewer-xnat-plugin/ohifviewerxnat/node_modules/nx/src/project-graph/utils/retrieve-workspace-files.js:81:72)
+4 error     at retrieveProjectConfigurations (/Users/zpick/ohif-viewer-xnat-plugin/ohifviewerxnat/node_modules/nx/src/project-graph/utils/retrieve-workspace-files.js:58:12)
+4 error     at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+4 error     at async processCollectedUpdatedAndDeletedFiles (/Users/zpick/ohif-viewer-xnat-plugin/ohifviewerxnat/node_modules/nx/src/daemon/server/project-graph-incremental-recomputation.js:129:34)
