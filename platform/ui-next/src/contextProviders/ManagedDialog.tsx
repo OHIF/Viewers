@@ -8,7 +8,7 @@ export interface ManagedDialogProps {
   description?: string;
   content: React.ComponentType<{ onDismiss?: () => void }>;
   contentProps?: Record<string, unknown>;
-  movable?: boolean;
+  isDraggable?: boolean;
   shouldCloseOnEsc?: boolean;
   shouldCloseOnOverlayClick?: boolean;
   defaultPosition?: { x: number; y: number };
@@ -22,7 +22,7 @@ const ManagedDialog: React.FC<ManagedDialogProps> = ({
   title,
   content: DialogContentComponent,
   contentProps,
-  movable,
+  isDraggable,
   shouldCloseOnEsc = false,
   shouldCloseOnOverlayClick = false,
   defaultPosition,
@@ -38,7 +38,7 @@ const ManagedDialog: React.FC<ManagedDialogProps> = ({
           onClose(id);
         }
       }}
-      movable={movable}
+      isDraggable={isDraggable}
       shouldCloseOnEsc={shouldCloseOnEsc}
       shouldCloseOnOverlayClick={shouldCloseOnOverlayClick}
     >

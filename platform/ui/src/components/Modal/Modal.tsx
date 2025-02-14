@@ -22,7 +22,7 @@ const Modal = ({
   onClose,
   children,
   shouldCloseOnOverlayClick = true,
-  movable = false,
+  isDraggable = false,
   containerDimensions = null,
   contentDimensions = null,
 }) => {
@@ -75,7 +75,7 @@ const Modal = ({
           : 'relative max-h-full w-11/12 text-white outline-none lg:w-10/12 xl:w-9/12'
       }
       overlayClassName={
-        movable
+        isDraggable
           ? 'fixed top-0 left-0 right-0 bottom-0 z-50 flex items-center justify-center py-16 pointer-events-none'
           : 'fixed top-0 left-0 right-0 bottom-0 z-50 bg-overlay flex items-center justify-center py-16'
       }
@@ -85,7 +85,7 @@ const Modal = ({
       title={title}
       shouldCloseOnOverlayClick={shouldCloseOnOverlayClick}
     >
-      {movable ? (
+      {isDraggable ? (
         <Draggable
           handle=".drag-handle"
           defaultClassName="bg-primary-dark pointer-events-auto"
@@ -107,7 +107,7 @@ Modal.propTypes = {
   onClose: PropTypes.func,
   children: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.node), PropTypes.node]).isRequired,
   shouldCloseOnOverlayClick: PropTypes.bool,
-  movable: PropTypes.bool,
+  isDraggable: PropTypes.bool,
   containerDimensions: PropTypes.string,
   contentDimensions: PropTypes.string,
 };

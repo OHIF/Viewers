@@ -17,7 +17,7 @@ export function VolumeRenderingPresets({
       id: 'volume-rendering-presets',
       content: VolumeRenderingPresetsContent,
       title: 'Rendering Presets',
-      movable: true,
+      isDraggable: true,
       contentProps: {
         presets: volumeRenderingPresets,
         viewportId,

@@ -6,30 +6,30 @@ import { cn } from '../../lib/utils';
 import { useDraggable } from './useDraggable';
 
 interface DialogContextValue {
-  movable?: boolean;
+  isDraggable?: boolean;
   shouldCloseOnEsc?: boolean;
   shouldCloseOnOverlayClick?: boolean;
 }
 
 const DialogContext = React.createContext<DialogContextValue>({
-  movable: false,
+  isDraggable: false,
   shouldCloseOnEsc: true,
   shouldCloseOnOverlayClick: true,
 });
 
 interface DialogRootProps extends DialogPrimitive.DialogProps {
-  movable?: boolean;
+  isDraggable?: boolean;
   shouldCloseOnEsc?: boolean;
   shouldCloseOnOverlayClick?: boolean;
 }
 
 const Dialog = ({
-  movable,
+  isDraggable,
   shouldCloseOnEsc = true,
   shouldCloseOnOverlayClick = true,
   ...props
 }: DialogRootProps) => (
-  <DialogContext.Provider value={{ movable, shouldCloseOnEsc, shouldCloseOnOverlayClick }}>
+  <DialogContext.Provider value={{ isDraggable, shouldCloseOnEsc, shouldCloseOnOverlayClick }}>
     <DialogPrimitive.Root {...props} />
   </DialogContext.Provider>
 );
@@ -66,24 +66,25 @@ const DialogContent = React.forwardRef<
     children?: React.ReactNode;
   }
 >(({ className, children, ...props }, ref) => {
-  const { movable, shouldCloseOnEsc, shouldCloseOnOverlayClick } = React.useContext(DialogContext);
+  const { isDraggable, shouldCloseOnEsc, shouldCloseOnOverlayClick } =
+    React.useContext(DialogContext);
 
   const { handlePointerDown, setRefs, initialTransform } = useDraggable(
     {
-      enabled: movable,
+      enabled: isDraggable,
     },
     ref
   );
 
-  // When not movable, Tailwind centers the dialog.
-  // When movable, we remove the built‑in centering so our inline transform takes over.
+  // When not isDraggable, Tailwind centers the dialog.
+  // When isDraggable, we remove the built‑in centering so our inline transform takes over.
   const contentClassName = cn(
     'bg-muted data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%] fixed left-[50%] top-[50%] z-50 grid gap-4 p-4 shadow-lg duration-200 sm:rounded-lg',
-    !movable ? 'translate-x-[-50%] translate-y-[-50%]' : '',
+    !isDraggable ? 'translate-x-[-50%] translate-y-[-50%]' : '',
     className
   );
 
-  const style = movable ? { ...props.style, transform: initialTransform } : props.style;
+  const style = isDraggable ? { ...props.style, transform: initialTransform } : props.style;
 
   const content = (
     <DialogPrimitive.Content
@@ -91,7 +92,7 @@ const DialogContent = React.forwardRef<
       className={contentClassName}
       {...props}
       style={style}
-      onPointerDown={movable ? handlePointerDown : props.onPointerDown}
+      onPointerDown={isDraggable ? handlePointerDown : props.onPointerDown}
       onEscapeKeyDown={event => {
         if (!shouldCloseOnEsc) {
           event.preventDefault();
@@ -113,7 +114,7 @@ const DialogContent = React.forwardRef<
 
   return (
     <DialogPortal>
-      {!movable && <DialogOverlay />}
+      {!isDraggable && <DialogOverlay />}
       {content}
     </DialogPortal>
   );

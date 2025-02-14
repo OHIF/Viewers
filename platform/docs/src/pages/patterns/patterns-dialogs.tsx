@@ -217,7 +217,7 @@ const InputButton = () => {
           // first dialog
           show({
             id: 'input-dialog-1',
-            movable: true,
+            isDraggable: true,
             content: () => (
               <InputDialog>
                 <InputDialog.Field>
@@ -240,7 +240,7 @@ const InputButton = () => {
           // second dialog
           show({
             id: 'input-dialog-2',
-            movable: true,
+            isDraggable: true,
             content: () => (
               <InputDialog>
                 <InputDialog.Field>
