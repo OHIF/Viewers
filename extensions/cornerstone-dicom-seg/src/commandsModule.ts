@@ -239,9 +239,10 @@ const commandsModule = ({
 
       const {
         value: reportName,
-        dataSource: selectedDataSource,
+        dataSourceName: selectedDataSource,
         action,
-      } = await createReportDialogPrompt(uiDialogService, {
+      } = await createReportDialogPrompt({
+        servicesManager,
         extensionManager,
         title: 'Store Segmentation',
       });
