@@ -199,7 +199,6 @@ function DataSourceWrapper(props: withAppTypes) {
 
           servicesManager.services.uiModalService.show({
             title: 'Data Source Connection Error',
-            containerClassName: 'w-1/2',
             content: () => {
               return (
                 <div>

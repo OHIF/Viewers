@@ -50,6 +50,11 @@ if ('function' === typeof importScripts) {
       // listener in your service worker. See below.
       wb.messageSW({ type: 'SKIP_WAITING' });
       // },
+
+      // onReject: () => {
+      //   prompt.dismiss();
+      // },
+      // });
     });
 
     wb.register();

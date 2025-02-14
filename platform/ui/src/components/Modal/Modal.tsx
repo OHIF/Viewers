@@ -15,15 +15,14 @@ if (typeof document !== 'undefined') {
 }
 
 const Modal = ({
-  isOpen,
-  onClose,
-  title,
-  children,
-  movable = false,
-  //
   closeButton,
   shouldCloseOnEsc = true,
+  isOpen,
+  title,
+  onClose,
+  children,
   shouldCloseOnOverlayClick = true,
+  movable = false,
   containerDimensions = null,
   contentDimensions = null,
 }) => {
