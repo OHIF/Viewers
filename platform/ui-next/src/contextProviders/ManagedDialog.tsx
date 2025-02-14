@@ -14,6 +14,7 @@ export interface ManagedDialogProps {
   defaultPosition?: { x: number; y: number };
   onClose?: (id: string) => void;
   unstyled?: boolean;
+  showOverlay?: boolean;
 }
 
 const ManagedDialog: React.FC<ManagedDialogProps> = ({
@@ -25,6 +26,7 @@ const ManagedDialog: React.FC<ManagedDialogProps> = ({
   isDraggable,
   shouldCloseOnEsc = false,
   shouldCloseOnOverlayClick = false,
+  showOverlay = true,
   defaultPosition,
   onClose,
   unstyled,
@@ -41,6 +43,7 @@ const ManagedDialog: React.FC<ManagedDialogProps> = ({
       isDraggable={isDraggable}
       shouldCloseOnEsc={shouldCloseOnEsc}
       shouldCloseOnOverlayClick={shouldCloseOnOverlayClick}
+      showOverlay={showOverlay}
     >
       <DialogContent
         className={unstyled ? 'p-0' : ''}
@@ -60,7 +63,7 @@ const ManagedDialog: React.FC<ManagedDialogProps> = ({
         {!unstyled && <DialogHeader>{title && <DialogTitle>{title}</DialogTitle>}</DialogHeader>}
         <DialogContentComponent
           {...contentProps}
-          hide={() => onClose(id)}
+          onDismiss={() => onClose(id)}
         />
       </DialogContent>
     </Dialog>

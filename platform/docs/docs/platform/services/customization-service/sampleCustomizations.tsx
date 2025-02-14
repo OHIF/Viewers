@@ -24,6 +24,8 @@ import thumbnailMenuItemsImage from '../../../assets/img/thumbnailMenuItemsImage
 import studyMenuItemsImage from '../../../assets/img/studyMenuItemsImage.png';
 import windowLevelActionMenu from '../../../assets/img/windowLevelActionMenu.png';
 import viewPortNotificationImage from '../../../assets/img/viewport-notification.png';
+import captureViewportModal from '../../../assets/img/captureViewportModal.png';
+import aboutModal from '../../../assets/img/aboutModal.png';
 
 export const viewportOverlayCustomizations = [
   {
@@ -763,6 +765,48 @@ window.config = {
                 enabled: true,
                 value: 'Careful! This is not for diagnostic use.',
               },
+            },
+          },
+        ],
+      };
+        `,
+  },
+  {
+    id: 'ohif.captureViewportModal',
+    description: 'The modal for capturing the viewport image.',
+    image: captureViewportModal,
+    default: 'Our own default component',
+    configuration: `
+      window.config = {
+        // rest of window config
+
+        // You can use the component from ImageModal and FooterAction
+        // to build your own custom component
+        customizationService: [
+          {
+            'ohif.captureViewportModal': {
+              $set: CustomizedComponent,
+            },
+          },
+        ],
+      };
+        `,
+  },
+  {
+    id: 'ohif.aboutModal',
+    description: 'The About modal',
+    image: aboutModal,
+    default: 'Our own default component',
+    configuration: `
+      window.config = {
+        // rest of window config
+
+        // You can use the component from AboutModal
+        // to build your own custom component
+        customizationService: [
+          {
+            'ohif.aboutModal': {
+              $set: CustomizedComponent,
             },
           },
         ],

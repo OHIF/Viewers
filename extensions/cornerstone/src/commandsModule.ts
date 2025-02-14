@@ -31,7 +31,7 @@ import getActiveViewportEnabledElement from './utils/getActiveViewportEnabledEle
 import toggleVOISliceSync from './utils/toggleVOISliceSync';
 import { usePositionPresentationStore, useSegmentationPresentationStore } from './stores';
 import { toolNames } from './initCornerstoneTools';
-
+import CornerstoneViewportDownloadForm from './utils/CornerstoneViewportDownloadForm';
 const toggleSyncFunctions = {
   imageSlice: toggleImageSliceSync,
   voi: toggleVOISliceSync,
@@ -565,10 +565,6 @@ function commandsModule({
       }
 
       const { uiModalService } = servicesManager.services;
-
-      const CornerstoneViewportDownloadForm = customizationService.getCustomization(
-        'ohif.captureViewportModal'
-      );
 
       if (uiModalService) {
         uiModalService.show({

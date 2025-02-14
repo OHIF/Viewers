@@ -1,3 +1,6 @@
+import type { ManagedDialogProps } from 'platform/ui-next/src/contextProviders/ManagedDialog';
+type DialogOptions = ManagedDialogProps;
+
 const name = 'uiDialogService';
 
 const serviceImplementation = {
@@ -72,7 +75,7 @@ class UIDialogService {
   /**
    * Set the service implementation
    */
-  setServiceImplementation({ show, hide, hideAll, isEmpty, customComponent }): void {
+  setServiceImplementation({ show, hide, hideAll, isEmpty, customComponent }: any): void {
     if (show) {
       serviceImplementation._show = show;
     }

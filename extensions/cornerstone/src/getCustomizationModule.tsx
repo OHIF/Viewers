@@ -12,7 +12,6 @@ import windowLevelActionMenuCustomization from './customizations/windowLevelActi
 import captureViewportModalCustomization from './customizations/captureViewportModalCustomization';
 import viewportDownloadWarningCustomization from './customizations/viewportDownloadWarningCustomization';
 
-//
 function getCustomizationModule({ commandsManager, servicesManager }) {
   return [
     {

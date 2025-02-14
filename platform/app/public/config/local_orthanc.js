@@ -11,7 +11,6 @@ window.config = {
   strictZSpacingForVolumeViewport: true,
   // filterQueryParam: false,
   defaultDataSourceName: 'orthanc',
-  allowMultiSelectExport: true,
   dataSources: [
     {
       namespace: '@ohif/extension-default.dataSourcesModule.dicomweb',

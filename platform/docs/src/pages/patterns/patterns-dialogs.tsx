@@ -217,7 +217,7 @@ const InputButton = () => {
           // first dialog
           show({
             id: 'input-dialog-1',
-            isDraggable: true,
+            showOverlay: false,
             content: () => (
               <InputDialog>
                 <InputDialog.Field>
@@ -238,28 +238,27 @@ const InputButton = () => {
             defaultPosition: { x: 200, y: 200 },
           });
           // second dialog
-          show({
-            id: 'input-dialog-2',
-            isDraggable: true,
-            content: () => (
-              <InputDialog>
-                <InputDialog.Field>
-                  <InputDialog.Label>Another Label</InputDialog.Label>
-                  <InputDialog.Input placeholder="Enter another value" />
-                </InputDialog.Field>
-                <InputDialog.Actions>
-                  <InputDialog.ActionsSecondary onClick={handleDialog2Cancel}>
-                    Close
-                  </InputDialog.ActionsSecondary>
-                  <InputDialog.ActionsPrimary onClick={handleDialog2Save}>
-                    Apply
-                  </InputDialog.ActionsPrimary>
-                </InputDialog.Actions>
-              </InputDialog>
-            ),
-            title: 'Input Dialog 2',
-            defaultPosition: { x: 400, y: 400 },
-          });
+          // show({
+          //   id: 'input-dialog-2',
+          //   content: () => (
+          //     <InputDialog>
+          //       <InputDialog.Field>
+          //         <InputDialog.Label>Another Label</InputDialog.Label>
+          //         <InputDialog.Input placeholder="Enter another value" />
+          //       </InputDialog.Field>
+          //       <InputDialog.Actions>
+          //         <InputDialog.ActionsSecondary onClick={handleDialog2Cancel}>
+          //           Close
+          //         </InputDialog.ActionsSecondary>
+          //         <InputDialog.ActionsPrimary onClick={handleDialog2Save}>
+          //           Apply
+          //         </InputDialog.ActionsPrimary>
+          //       </InputDialog.Actions>
+          //     </InputDialog>
+          //   ),
+          //   title: 'Input Dialog 2',
+          //   defaultPosition: { x: 400, y: 400 },
+          // });
         }}
       >
         Open Input
@@ -284,7 +283,6 @@ const PresetButton = () => {
         show({
           content: () => (
             <PresetDialog>
-              <PresetDialog.PresetTitle>Rendering Presets</PresetDialog.PresetTitle>
               <PresetDialog.PresetBody>
                 <PresetDialog.PresetFilter>
                   <PresetDialog.PresetSearch placeholder="Search all" />
@@ -301,13 +299,6 @@ const PresetButton = () => {
                   <PresetDialog.PresetOption label="Option 8" />
                 </PresetDialog.PresetGrid>
               </PresetDialog.PresetBody>
-              <PresetDialog.PresetActions
-                onCancel={() => show({})}
-                onSave={() => {
-                  console.debug('Saved Preset!');
-                  show({});
-                }}
-              />
             </PresetDialog>
           ),
           title: 'Preset Dialog',
@@ -321,7 +312,7 @@ const PresetButton = () => {
 
 export default function SettingsPage() {
   return (
-    <div className="bg-black">
+    <div className="bg-red-500">
       <DialogProvider dialog={ManagedDialog}>
         <ModalProvider modal={Modal}>
           <div className="flex min-h-screen items-center justify-center">

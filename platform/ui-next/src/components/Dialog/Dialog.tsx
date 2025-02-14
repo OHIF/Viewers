@@ -9,6 +9,7 @@ interface DialogContextValue {
   isDraggable?: boolean;
   shouldCloseOnEsc?: boolean;
   shouldCloseOnOverlayClick?: boolean;
+  showOverlay?: boolean;
 }
 
 const DialogContext = React.createContext<DialogContextValue>({
@@ -21,15 +22,19 @@ interface DialogRootProps extends DialogPrimitive.DialogProps {
   isDraggable?: boolean;
   shouldCloseOnEsc?: boolean;
   shouldCloseOnOverlayClick?: boolean;
+  showOverlay?: boolean;
 }
 
 const Dialog = ({
   isDraggable,
   shouldCloseOnEsc = true,
   shouldCloseOnOverlayClick = true,
+  showOverlay = true,
   ...props
 }: DialogRootProps) => (
-  <DialogContext.Provider value={{ isDraggable, shouldCloseOnEsc, shouldCloseOnOverlayClick }}>
+  <DialogContext.Provider
+    value={{ isDraggable, shouldCloseOnEsc, shouldCloseOnOverlayClick, showOverlay }}
+  >
     <DialogPrimitive.Root {...props} />
   </DialogContext.Provider>
 );
@@ -46,10 +51,10 @@ const DialogOverlay = React.forwardRef<
     className?: string;
   }
 >(({ className, ...props }, ref) => (
-  <DialogPrimitive.Overlay
+  <div
     ref={ref}
     className={cn(
-      'data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed inset-0 z-50 bg-black/80',
+      'data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed inset-0 z-40 bg-black/60',
       className
     )}
     {...props}
@@ -66,7 +71,7 @@ const DialogContent = React.forwardRef<
     children?: React.ReactNode;
   }
 >(({ className, children, ...props }, ref) => {
-  const { isDraggable, shouldCloseOnEsc, shouldCloseOnOverlayClick } =
+  const { isDraggable, shouldCloseOnEsc, shouldCloseOnOverlayClick, showOverlay } =
     React.useContext(DialogContext);
 
   const { handlePointerDown, setRefs, initialTransform } = useDraggable(
@@ -114,7 +119,7 @@ const DialogContent = React.forwardRef<
 
   return (
     <DialogPortal>
-      {!isDraggable && <DialogOverlay />}
+      {showOverlay && !isDraggable && <DialogOverlay />}
       {content}
     </DialogPortal>
   );
