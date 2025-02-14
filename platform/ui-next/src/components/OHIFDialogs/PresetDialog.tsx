@@ -1,6 +1,4 @@
 import * as React from 'react';
-import { DialogContent, DialogHeader, DialogFooter, DialogTitle } from '../Dialog';
-import { Button } from '../Button';
 import { Input } from '../Input';
 import { ScrollArea } from '../ScrollArea';
 import { cn } from '../../lib/utils';
@@ -11,22 +9,7 @@ interface PresetDialogProps {
 }
 
 export function PresetDialog({ children, className }: PresetDialogProps) {
-  return <DialogContent className={cn('max-w-lg p-4', className)}>{children}</DialogContent>;
-}
-
-/**
- * Subcomponent: PresetTitle
- */
-interface PresetTitleProps {
-  children: React.ReactNode;
-  className?: string;
-}
-function PresetTitle({ children, className }: PresetTitleProps) {
-  return (
-    <DialogHeader>
-      <DialogTitle className={cn('font-normal', className)}>{children}</DialogTitle>
-    </DialogHeader>
-  );
+  return <div className={cn('flex h-[500px] max-w-lg flex-col', className)}>{children}</div>;
 }
 
 /**
@@ -43,7 +26,7 @@ function PresetBody({ children, className }: PresetBodyProps) {
     <div
       className={cn(
         // Adjust these classes for your desired look
-        'rounded-md border border-white/10 bg-black p-2',
+        'flex min-h-0 flex-1 flex-col rounded-md border border-white/10 bg-black p-2',
         className
       )}
     >
@@ -60,7 +43,11 @@ interface PresetFilterProps {
   className?: string;
 }
 function PresetFilter({ children, className }: PresetFilterProps) {
-  return <div className={cn('mb-2 flex w-full items-center space-x-2', className)}>{children}</div>;
+  return (
+    <div className={cn('mb-2 flex w-full flex-shrink-0 items-center space-x-2', className)}>
+      {children}
+    </div>
+  );
 }
 
 /**
@@ -86,10 +73,10 @@ interface PresetGridProps {
   maxHeight?: string;
   className?: string;
 }
-function PresetGrid({ children, maxHeight = 'max-h-64 pr-3', className }: PresetGridProps) {
+function PresetGrid({ children, maxHeight = 'flex-1', className }: PresetGridProps) {
   return (
-    <ScrollArea className={cn(maxHeight, className)}>
-      <div className="grid grid-cols-4 gap-2">{children}</div>
+    <ScrollArea className={cn('min-h-0 flex-1', className)}>
+      <div className="grid grid-cols-4 gap-2 pr-2">{children}</div>
     </ScrollArea>
   );
 }
@@ -111,52 +98,9 @@ function PresetOption({ label = 'Label', className }: PresetOptionProps) {
   );
 }
 
-/**
- * Subcomponent: PresetActions
- */
-interface PresetActionsProps {
-  onCancel?: () => void;
-  onSave?: () => void;
-  disableCancel?: boolean;
-  disableSave?: boolean;
-  className?: string;
-}
-function PresetActions({
-  onCancel,
-  onSave,
-  disableCancel,
-  disableSave,
-  className,
-}: PresetActionsProps) {
-  return (
-    <DialogFooter className={cn('flex justify-end space-x-2', className)}>
-      {!disableCancel && (
-        <Button
-          variant="secondary"
-          className="min-w-[80px]"
-          onClick={onCancel}
-        >
-          Cancel
-        </Button>
-      )}
-      {!disableSave && (
-        <Button
-          variant="default"
-          className="min-w-[80px]"
-          onClick={onSave}
-        >
-          Save
-        </Button>
-      )}
-    </DialogFooter>
-  );
-}
-
 /* Attach subcomponents to PresetDialog as static properties */
-PresetDialog.PresetTitle = PresetTitle;
-PresetDialog.PresetBody = PresetBody; // <-- NEW subcomponent
+PresetDialog.PresetBody = PresetBody;
 PresetDialog.PresetFilter = PresetFilter;
 PresetDialog.PresetSearch = PresetSearch;
 PresetDialog.PresetGrid = PresetGrid;
 PresetDialog.PresetOption = PresetOption;
-PresetDialog.PresetActions = PresetActions;
