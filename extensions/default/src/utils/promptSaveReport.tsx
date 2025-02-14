@@ -1,6 +1,7 @@
 import createReportAsync from '../Actions/createReportAsync';
 import getNextSRSeriesNumber from './getNextSRSeriesNumber';
 import PROMPT_RESPONSES from './_shared/PROMPT_RESPONSES';
+import createReportDialogPrompt from '../Panels/createReportDialogPrompt';
 
 /**
  * Prompts the user to save a report and handles the report creation process
@@ -11,8 +12,7 @@ import PROMPT_RESPONSES from './_shared/PROMPT_RESPONSES';
 async function promptSaveReport(services, ctx, evt) {
   const { servicesManager, extensionManager, commandsManager } = services;
 
-  const { uiDialogService, measurementService, displaySetService, customizationService } =
-    servicesManager.services;
+  const { measurementService, displaySetService } = servicesManager.services;
 
   const viewportId = evt.viewportId ?? evt.data?.viewportId;
   const isBackupSave = evt.isBackupSave ?? evt.data?.isBackupSave;
@@ -20,45 +20,48 @@ async function promptSaveReport(services, ctx, evt) {
 
   const { trackedStudy, trackedSeries } = ctx;
   const dataSources = extensionManager.getDataSources();
-  const ReportDialog = customizationService.getCustomization('ohif.createReportDialog');
 
-  const dataSourcesList = extensionManager.getDataSourcesForUI();
-
-  uiDialogService.show({
-    id: 'report-dialog',
-    title: 'Create Report',
-    content: ReportDialog,
-    contentProps: {
-      dataSources: dataSourcesList,
-      onSave: async ({ reportName, dataSource }) => {
-        const selectedDataSource = dataSource ?? dataSources[0];
-        const trackedMeasurements = getTrackedMeasurements(
-          measurementService,
-          trackedStudy,
-          trackedSeries
-        );
-
-        const SeriesNumber = getNextSRSeriesNumber(displaySetService);
-        const displaySetInstanceUIDs = await handleReportCreation({
-          servicesManager,
-          commandsManager,
-          trackedMeasurements,
-          selectedDataSource,
-          reportName,
-          SeriesNumber,
-        });
-
-        return {
-          userResponse: PROMPT_RESPONSES.CREATE_REPORT,
-          createdDisplaySetInstanceUIDs: displaySetInstanceUIDs,
-          StudyInstanceUID,
-          SeriesInstanceUID,
-          viewportId,
-          isBackupSave,
-        };
-      },
-    },
+  const {
+    value: reportName,
+    dataSourceName: dataSource,
+    action,
+  } = await createReportDialogPrompt({
+    servicesManager,
+    extensionManager,
   });
+  let displaySetInstanceUIDs;
+
+  try {
+    if (action === PROMPT_RESPONSES.CREATE_REPORT) {
+      const selectedDataSource = dataSource ?? dataSources[0];
+      const trackedMeasurements = getTrackedMeasurements(
+        measurementService,
+        trackedStudy,
+        trackedSeries
+      );
+
+      const SeriesNumber = getNextSRSeriesNumber(displaySetService);
+      displaySetInstanceUIDs = await handleReportCreation({
+        servicesManager,
+        commandsManager,
+        trackedMeasurements,
+        selectedDataSource,
+        reportName,
+        SeriesNumber,
+      });
+    }
+
+    return {
+      userResponse: action,
+      createdDisplaySetInstanceUIDs: displaySetInstanceUIDs,
+      StudyInstanceUID,
+      SeriesInstanceUID,
+      viewportId,
+      isBackupSave,
+    };
+  } catch (error) {
+    return null;
+  }
 }
 
 /**

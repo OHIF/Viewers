@@ -7,7 +7,6 @@ export interface ModalProps {
   onClose: () => void;
   title?: string;
   children: React.ReactNode;
-  containerClassName?: string;
   contentClassName?: string;
   shouldCloseOnEsc?: boolean;
   shouldCloseOnOverlayClick?: boolean;

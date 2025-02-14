@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { InputDialog, Label } from '@ohif/ui-next';
+import { InputDialog } from '@ohif/ui-next';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@ohif/ui-next';
 
 type DataSource = {
@@ -12,11 +12,12 @@ type ReportDialogProps = {
   dataSources: DataSource[];
   hide: () => void;
   onSave: (data: { reportName: string; dataSource: string | null }) => void;
+  onCancel: () => void;
 };
 
-function ReportDialog({ dataSources, hide, onSave }: ReportDialogProps) {
+function ReportDialog({ dataSources, hide, onSave, onCancel }: ReportDialogProps) {
   const [selectedDataSource, setSelectedDataSource] = useState<string | null>(
-    dataSources[0]?.value || null
+    dataSources?.[0]?.value ?? null
   );
 
   const handleSave = (reportName: string) => {
@@ -27,41 +28,58 @@ function ReportDialog({ dataSources, hide, onSave }: ReportDialogProps) {
     hide();
   };
 
+  const handleCancel = () => {
+    onCancel();
+    hide();
+  };
+
+  const showDataSourceSelect = dataSources?.length > 1;
+
   return (
-    <div className="text-foreground mt-2 flex min-w-[300px] max-w-md flex-col gap-4">
+    <div className="text-foreground mt-2 flex min-w-[400px] max-w-md flex-col gap-4">
       <div className="flex flex-col gap-3">
-        {dataSources.length > 0 && (
-          <div className="flex flex-col gap-2">
-            <Label htmlFor="data-source">Data Source</Label>
-            <Select
-              value={selectedDataSource}
-              onValueChange={setSelectedDataSource}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Select a data source" />
-              </SelectTrigger>
-              <SelectContent>
-                {dataSources.map(source => (
-                  <SelectItem
-                    key={source.value}
-                    value={source.value}
-                  >
-                    {source.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+        <div className={showDataSourceSelect ? 'flex gap-4' : ''}>
+          {showDataSourceSelect && (
+            <div className="mt-1 w-1/3">
+              <Select
+                value={selectedDataSource}
+                onValueChange={setSelectedDataSource}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select a data source" />
+                </SelectTrigger>
+                <SelectContent>
+                  {dataSources.map(source => (
+                    <SelectItem
+                      key={source.value}
+                      value={source.value}
+                    >
+                      {source.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
+          <div className={showDataSourceSelect ? 'mt-1 w-2/3' : 'w-full'}>
+            <InputDialog>
+              <InputDialog.Field>
+                <InputDialog.Input placeholder="Report name" />
+              </InputDialog.Field>
+            </InputDialog>
           </div>
-        )}
-        <InputDialog>
-          <InputDialog.Field>
-            <InputDialog.Input placeholder="Enter report name" />
-          </InputDialog.Field>
-          <InputDialog.Actions>
-            <InputDialog.ActionsSecondary onClick={hide}>Cancel</InputDialog.ActionsSecondary>
-            <InputDialog.ActionsPrimary onClick={handleSave}>Save</InputDialog.ActionsPrimary>
-          </InputDialog.Actions>
-        </InputDialog>
+        </div>
+
+        <div className="flex justify-end gap-2">
+          <InputDialog>
+            <InputDialog.Actions>
+              <InputDialog.ActionsSecondary onClick={handleCancel}>
+                Cancel
+              </InputDialog.ActionsSecondary>
+              <InputDialog.ActionsPrimary onClick={handleSave}>Save</InputDialog.ActionsPrimary>
+            </InputDialog.Actions>
+          </InputDialog>
+        </div>
       </div>
     </div>
   );

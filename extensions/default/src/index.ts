@@ -12,6 +12,8 @@ import getCustomizationModule from './getCustomizationModule';
 import getViewportModule from './getViewportModule';
 import { id } from './id';
 import preRegistration from './init';
+import { createReportDialogPrompt } from './Panels';
+
 import { ContextMenuController, CustomizableContextMenuTypes } from './CustomizableContextMenu';
 import * as dicomWebUtils from './DicomWebDataSource/utils';
 import createReportAsync from './Actions/createReportAsync';
@@ -98,4 +100,5 @@ export {
   MoreDropdownMenu,
   requestDisplaySetCreationForStudy,
   callInputDialog,
+  createReportDialogPrompt,
 };

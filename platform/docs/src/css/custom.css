@@ -637,6 +637,7 @@ html[data-theme='dark'] .markdown hr {
 /* Markdown code block styling */
 .markdown pre {
   font-size: 0.9rem;
+  margin-top: 1em;
 }
 
 .theme-code-block {
@@ -719,4 +720,8 @@ a.dropdown__link[href='/3.9/migration-guide/3p8-to-3p9/']::after {
   color: var(--badge-latest-stable-color);
   font-size: 0.9em;
   margin-left: 4px;
+}
+
+li:first-child {
+  margin-top: 0.5em; /* Adjust '1em' to your desired spacing */
 }

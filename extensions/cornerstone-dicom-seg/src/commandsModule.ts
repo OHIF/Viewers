@@ -1,5 +1,4 @@
 import dcmjs from 'dcmjs';
-import { createReportDialogPrompt } from '@ohif/extension-default';
 import { Types } from '@ohif/core';
 import { cache, metaData } from '@cornerstonejs/core';
 import {
@@ -8,11 +7,13 @@ import {
   utilities,
 } from '@cornerstonejs/tools';
 import { adaptersRT, helpers, adaptersSEG } from '@cornerstonejs/adapters';
+import { createReportDialogPrompt } from '@ohif/extension-default';
 import { classes, DicomMetadataStore } from '@ohif/core';
 
 import vtkImageMarchingSquares from '@kitware/vtk.js/Filters/General/ImageMarchingSquares';
 import vtkDataArray from '@kitware/vtk.js/Common/Core/DataArray';
 import vtkImageData from '@kitware/vtk.js/Common/DataModel/ImageData';
+import PROMPT_RESPONSES from '../../default/src/utils/_shared/PROMPT_RESPONSES';
 
 const { segmentation: segmentationUtils } = utilities;
 
@@ -235,49 +236,48 @@ const commandsModule = ({
 
       const { label } = segmentation;
       const defaultDataSource = dataSource ?? extensionManager.getActiveDataSource();
-      const ReportDialog = customizationService.getCustomization('ohif.createReportDialog');
-      const dataSourcesList = extensionManager.getDataSourcesForUI();
 
-      uiDialogService.show({
-        id: 'report-dialog',
-        title: 'Create Report',
-        content: ReportDialog,
-        contentProps: {
-          dataSources: dataSourcesList,
-          onSave: async ({ reportName, dataSource: selectedDataSource }) => {
-            try {
-              const selectedDataSourceConfig = selectedDataSource
-                ? extensionManager.getDataSources(selectedDataSource)[0]
-                : defaultDataSource;
-
-              const generatedData = actions.generateSegmentation({
-                segmentationId,
-                options: {
-                  SeriesDescription: reportName || label || 'Research Derived Series',
-                },
-              });
-
-              if (!generatedData || !generatedData.dataset) {
-                throw new Error('Error during segmentation generation');
-              }
-
-              const { dataset: naturalizedReport } = generatedData;
-
-              await selectedDataSourceConfig.store.dicom(naturalizedReport);
-
-              // add the information for where we stored it to the instance as well
-              naturalizedReport.wadoRoot = selectedDataSourceConfig.getConfig().wadoRoot;
-
-              DicomMetadataStore.addInstances([naturalizedReport], true);
-
-              return naturalizedReport;
-            } catch (error) {
-              console.debug('Error storing segmentation:', error);
-              throw error;
-            }
-          },
-        },
+      const {
+        value: reportName,
+        dataSource: selectedDataSource,
+        action,
+      } = await createReportDialogPrompt(uiDialogService, {
+        extensionManager,
+        title: 'Store Segmentation',
       });
+
+      if (action === PROMPT_RESPONSES.CREATE_REPORT) {
+        try {
+          const selectedDataSourceConfig = selectedDataSource
+            ? extensionManager.getDataSources(selectedDataSource)[0]
+            : defaultDataSource;
+
+          const generatedData = actions.generateSegmentation({
+            segmentationId,
+            options: {
+              SeriesDescription: reportName || label || 'Research Derived Series',
+            },
+          });
+
+          if (!generatedData || !generatedData.dataset) {
+            throw new Error('Error during segmentation generation');
+          }
+
+          const { dataset: naturalizedReport } = generatedData;
+
+          await selectedDataSourceConfig.store.dicom(naturalizedReport);
+
+          // add the information for where we stored it to the instance as well
+          naturalizedReport.wadoRoot = selectedDataSourceConfig.getConfig().wadoRoot;
+
+          DicomMetadataStore.addInstances([naturalizedReport], true);
+
+          return naturalizedReport;
+        } catch (error) {
+          console.debug('Error storing segmentation:', error);
+          throw error;
+        }
+      }
     },
     /**
      * Converts segmentations into RTSS for download.
