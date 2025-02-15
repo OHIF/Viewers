@@ -1,7 +1,7 @@
 import dcmjs from 'dcmjs';
 import moment from 'moment';
 import React, { useState, useMemo, useCallback } from 'react';
-import { classes, Types } from '@ohif/core';
+import { classes, Types, utils } from '@ohif/core';
 import { InputFilterText } from '@ohif/ui';
 import { Select, SelectTrigger, SelectContent, SelectItem, Slider } from '@ohif/ui-next';
 
@@ -9,12 +9,16 @@ import DicomTagTable from './DicomTagTable';
 import './DicomTagBrowser.css';
 
 export type Row = {
+  uid: string;
   tag: string;
   valueRepresentation: string;
   keyword: string;
   value: string;
-  children?: Row[];
-  areChildrenVisible?: boolean;
+  isVisible: boolean;
+  depth: number;
+  parents?: string[];
+  children?: string[];
+  areChildrenVisible?: true;
 };
 
 const { ImageSet } = classes;
@@ -84,7 +88,8 @@ const DicomTagBrowser = ({
 
     setShouldShowInstanceList(isImageStack && activeDisplaySet.images.length > 1);
     const tags = getSortedTags(metadata);
-    return getFormattedRowsFromTags(tags, metadata);
+    const rows = getFormattedRowsFromTags({ tags, metadata, depth: 0 });
+    return rows;
   }, [getMetadata, activeDisplaySet]);
 
   const filteredRows = useMemo(() => {
@@ -92,22 +97,27 @@ const DicomTagBrowser = ({
       return rows;
     }
 
+    const matchedRowIds = new Set();
+
     const propertiesToCheck = ['tag', 'valueRepresentation', 'keyword', 'value'];
 
-    const filterDeep = row => {
+    const setIsMatched = row => {
       const isDirectMatch = propertiesToCheck.some(propertyName =>
         row[propertyName]?.toLowerCase().includes(filterValueLowerCase)
       );
-      if (isDirectMatch) {
-        return true;
+
+      if (!isDirectMatch) {
+        return;
       }
-      const isIndirectMatch =
-        row.children && row.children.length ? row.children.some(filterDeep) : false;
-      return isIndirectMatch;
+
+      matchedRowIds.add(row.uid);
+
+      [...(row.parents ?? []), ...(row.children ?? [])].forEach(uid => matchedRowIds.add(uid));
     };
 
     const filterValueLowerCase = filterValue.toLowerCase();
-    return rows.filter(filterDeep);
+    rows.forEach(setIsMatched);
+    return rows.filter(row => matchedRowIds.has(row.uid));
   }, [rows, filterValue]);
 
   return (
@@ -172,20 +182,33 @@ const DicomTagBrowser = ({
   );
 };
 
-function getFormattedRowsFromTags(tags, metadata) {
+function getFormattedRowsFromTags({ tags, metadata, depth, parents }) {
   const rows: Row[] = [];
 
   tags.forEach(tagInfo => {
+    const uid = utils.uuidv4();
     if (tagInfo.vr === 'SQ') {
+      const children = tagInfo.values.flatMap(value =>
+        getFormattedRowsFromTags({
+          tags: value,
+          metadata,
+          depth: depth + 1,
+          parents: parents ? [...parents, uid] : [uid],
+        })
+      );
       const row: Row = {
+        uid,
         tag: tagInfo.tag,
         valueRepresentation: tagInfo.vr,
         keyword: tagInfo.keyword,
         value: '',
-        children: tagInfo.values.flatMap(value => getFormattedRowsFromTags(value, metadata)),
+        depth,
+        isVisible: true,
         areChildrenVisible: true,
+        children: children.map(child => child.uid),
+        parents,
       };
-      rows.push(row);
+      rows.push(row, ...children);
     } else {
       if (tagInfo.vr === 'xs') {
         try {
@@ -197,10 +220,14 @@ function getFormattedRowsFromTags(tags, metadata) {
         }
       }
       const row: Row = {
+        uid,
         tag: tagInfo.tag,
         valueRepresentation: tagInfo.vr,
         keyword: tagInfo.keyword,
         value: tagInfo.value,
+        depth,
+        isVisible: true,
+        parents,
       };
       rows.push(row);
     }

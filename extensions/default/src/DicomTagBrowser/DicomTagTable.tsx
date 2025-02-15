@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { VariableSizeList as List } from 'react-window';
 import classNames from 'classnames';
 import debounce from 'lodash.debounce';
@@ -18,81 +18,22 @@ const indentationPadding = 8;
 
 const RowComponent = ({
   row,
-  index,
-  listRef,
   style,
   keyPrefix,
-  getMultipleRowsHeight,
-  firstColumnPadding = indentationPadding,
   onToggle,
-  parentsAreChildrenVisible,
 }: {
   row: Row;
-  index: number;
-  listRef: any;
   style: any;
   keyPrefix: string;
-  getMultipleRowsHeight: any;
-  firstColumnPadding?: number;
-  onToggle?: () => void;
-  parentsAreChildrenVisible?: boolean;
+  onToggle?: (areChildrenVisible: boolean) => void;
 }) => {
-  const [areChildrenVisible, setAreChildrenVisible] = useState(row.areChildrenVisible);
-  const { children, ...restOfRow } = row;
+  const handleToggle = useCallback(() => {
+    onToggle(!row.areChildrenVisible);
+  }, [row.areChildrenVisible, onToggle]);
 
-  useEffect(() => {
-    listRef.current.resetAfterIndex(index);
-  }, [index, listRef, row.areChildrenVisible]);
-
-  if (children) {
-    const toggleChildren = () => {
-      setAreChildrenVisible(prev => {
-        const newState = !prev;
-        row.areChildrenVisible = newState;
-        return newState;
-      });
-    };
-    let accumulatedHeight = 0;
-    return (
-      <>
-        {[restOfRow, ...children]
-          .filter((_, j) => {
-            if (areChildrenVisible) {
-              return true;
-            }
-            return j === 0;
-          })
-          .map((row, i) => {
-            const isParentRow = i === 0;
-            const rowHeight = getMultipleRowsHeight(row);
-            const topOffset = accumulatedHeight;
-            accumulatedHeight += rowHeight;
-            return (
-              <RowComponent
-                row={row}
-                index={index}
-                listRef={listRef}
-                style={{
-                  ...style,
-                  height: rowHeight,
-                  top: style.top + topOffset,
-                }}
-                keyPrefix={`${keyPrefix}-${i}`}
-                key={`${keyPrefix}-${i}`}
-                getMultipleRowsHeight={getMultipleRowsHeight}
-                firstColumnPadding={
-                  isParentRow ? firstColumnPadding : firstColumnPadding + indentationPadding * 2
-                }
-                onToggle={isParentRow ? toggleChildren : undefined}
-                parentsAreChildrenVisible={areChildrenVisible}
-              />
-            );
-          })}
-      </>
-    );
-  }
-
-  const isChildOrParent = typeof parentsAreChildrenVisible === 'boolean';
+  const hasChildren = row.children && row.children.length > 0;
+  const isChildOrParent = hasChildren || row.depth > 0;
+  const padding = indentationPadding * (1 + 2 * row.depth);
 
   return (
     <div
@@ -104,11 +45,11 @@ const RowComponent = ({
       key={keyPrefix}
     >
       {isChildOrParent && (
-        <div style={{ paddingLeft: `${firstColumnPadding}px`, opacity: onToggle ? 1 : 0 }}>
-          {parentsAreChildrenVisible ? (
-            <Icons.ChevronDown onClick={onToggle} />
+        <div style={{ paddingLeft: `${padding}px`, opacity: onToggle ? 1 : 0 }}>
+          {row.areChildrenVisible ? (
+            <Icons.ChevronDown onClick={handleToggle} />
           ) : (
-            <Icons.ChevronRight onClick={onToggle} />
+            <Icons.ChevronRight onClick={handleToggle} />
           )}
         </div>
       )}
@@ -171,6 +112,7 @@ function DicomTagTable({ rows }: { rows: Row[] }) {
   const [vrHeaderElem, setVrHeaderElem] = useState(null);
   const [keywordHeaderElem, setKeywordHeaderElem] = useState(null);
   const [valueHeaderElem, setValueHeaderElem] = useState(null);
+  const [internalRows, setInternalRows] = useState(rows);
 
   // Here the refs are inturn stored in state to trigger a render of the table.
   // This virtualized table does NOT render until the header is rendered because the header column widths are used to determine the row heights in the table.
@@ -195,6 +137,14 @@ function DicomTagTable({ rows }: { rows: Row[] }) {
       setValueHeaderElem(elem);
     }
   };
+
+  useEffect(() => {
+    setInternalRows(rows);
+  }, [rows]);
+
+  const visibleRows = useMemo(() => {
+    return internalRows.filter(row => row.isVisible);
+  }, [internalRows]);
 
   /**
    * When new rows are set, scroll to the top and reset the virtualization.
@@ -234,8 +184,11 @@ function DicomTagTable({ rows }: { rows: Row[] }) {
       const context = canvasRef.current.getContext('2d');
       context.font = getComputedStyle(canvasRef.current).font;
 
-      return Object.values(row)
-        .map((colText, index) => {
+      const propertiesToCheck = ['tag', 'valueRepresentation', 'keyword', 'value'];
+
+      return Object.entries(row)
+        .filter(([key]) => propertiesToCheck.includes(key))
+        .map(([, colText], index) => {
           const colOneLineWidth = context.measureText(colText).width;
           const numLines = Math.ceil(colOneLineWidth / headerWidths[index]);
           return numLines * lineHeightPx + 2 * rowVerticalPaddingPx + rowBottomBorderPx;
@@ -243,20 +196,6 @@ function DicomTagTable({ rows }: { rows: Row[] }) {
         .reduce((maxHeight, colHeight) => Math.max(maxHeight, colHeight), 0);
     },
     [keywordHeaderElem, tagHeaderElem, valueHeaderElem, vrHeaderElem]
-  );
-
-  const getMultipleRowsHeight = useCallback(
-    row => {
-      const { children, areChildrenVisible, ...restOfRow } = row;
-      const parentHeight = getOneRowHeight(restOfRow);
-      const childrenHeight =
-        !Array.isArray(children) || !areChildrenVisible
-          ? 0
-          : children.reduce((sum, childRow) => sum + getMultipleRowsHeight(childRow), 0);
-
-      return parentHeight + childrenHeight;
-    },
-    [getOneRowHeight]
   );
 
   /**
@@ -267,27 +206,49 @@ function DicomTagTable({ rows }: { rows: Row[] }) {
   const getItemSize = useCallback(
     rows => index => {
       const row = rows[index];
-      return getMultipleRowsHeight(row);
+      const height = getOneRowHeight(row);
+      return height;
     },
-    [getMultipleRowsHeight]
+    [getOneRowHeight]
+  );
+
+  const onToggle = useCallback(
+    sourceRow => {
+      if (!sourceRow.children) {
+        return undefined;
+      }
+
+      return areChildrenVisible => {
+        const newInternalRows = internalRows.map(internalRow => {
+          if (sourceRow.uid === internalRow.uid) {
+            return { ...internalRow, areChildrenVisible };
+          }
+          if (sourceRow.children.includes(internalRow.uid)) {
+            return { ...internalRow, isVisible: areChildrenVisible, areChildrenVisible };
+          }
+          return internalRow;
+        });
+        setInternalRows(newInternalRows);
+      };
+    },
+    [internalRows]
   );
 
   const getRowComponent = useCallback(
     ({ rows }: { rows: Row[] }) =>
       function RowList({ index, style }) {
-        const row = rows[index];
+        const row = useMemo(() => rows[index], [index]);
+
         return (
           <RowComponent
             style={style}
-            index={index}
-            listRef={listRef}
             row={row}
             keyPrefix={`DICOMTagRow-${index}`}
-            getMultipleRowsHeight={getMultipleRowsHeight}
+            onToggle={onToggle(row)}
           />
         );
       },
-    [getMultipleRowsHeight]
+    [onToggle]
   );
 
   /**
@@ -317,12 +278,12 @@ function DicomTagTable({ rows }: { rows: Row[] }) {
           <List
             ref={listRef}
             height={500}
-            itemCount={rows.length}
-            itemSize={getItemSize(rows)}
+            itemCount={visibleRows.length}
+            itemSize={getItemSize(visibleRows)}
             width={'100%'}
             className="ohif-scrollbar"
           >
-            {getRowComponent({ rows })}
+            {getRowComponent({ rows: visibleRows })}
           </List>
         )}
       </div>
@@ -330,4 +291,4 @@ function DicomTagTable({ rows }: { rows: Row[] }) {
   );
 }
 
-export default DicomTagTable;
+export default React.memo(DicomTagTable);
