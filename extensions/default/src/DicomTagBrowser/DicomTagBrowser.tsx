@@ -1,7 +1,7 @@
 import dcmjs from 'dcmjs';
 import moment from 'moment';
 import React, { useState, useMemo, useCallback } from 'react';
-import { classes, Types, utils } from '@ohif/core';
+import { classes, Types } from '@ohif/core';
 import { InputFilterText } from '@ohif/ui';
 import { Select, SelectTrigger, SelectContent, SelectItem, Slider } from '@ohif/ui-next';
 
@@ -20,6 +20,9 @@ export type Row = {
   children?: string[];
   areChildrenVisible?: true;
 };
+
+let rowCounter = 0;
+const generateRowId = () => `row_${++rowCounter}`;
 
 const { ImageSet } = classes;
 const { DicomMetaDictionary } = dcmjs.data;
@@ -186,7 +189,7 @@ function getFormattedRowsFromTags({ tags, metadata, depth, parents }) {
   const rows: Row[] = [];
 
   tags.forEach(tagInfo => {
-    const uid = utils.uuidv4();
+    const uid = generateRowId();
     if (tagInfo.vr === 'SQ') {
       const children = tagInfo.values.flatMap(value =>
         getFormattedRowsFromTags({
