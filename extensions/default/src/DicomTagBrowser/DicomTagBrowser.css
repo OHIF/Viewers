@@ -24,8 +24,6 @@
 
 .dicom-tag-browser-content {
   overflow: hidden;
-  width: 100%;
-  padding-bottom: 50px;
   /*height: 500px;*/
 }
 

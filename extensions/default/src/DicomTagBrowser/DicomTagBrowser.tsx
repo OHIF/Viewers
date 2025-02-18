@@ -124,7 +124,7 @@ const DicomTagBrowser = ({
   }, [rows, filterValue]);
 
   return (
-    <div className="dicom-tag-browser-content bg-muted">
+    <div className="dicom-tag-browser-content bg-muted w-[900px]">
       <div className="mb-6 flex flex-row items-start pl-1">
         <div className="flex w-full flex-row items-start gap-4">
           <div className="flex w-1/3 flex-col">
@@ -176,6 +176,7 @@ const DicomTagBrowser = ({
             <InputFilterText
               placeholder="Search metadata..."
               onDebounceChange={setFilterValue}
+              className="text-foreground"
             />
           </div>
         </div>
