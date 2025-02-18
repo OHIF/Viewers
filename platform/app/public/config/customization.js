@@ -1,6 +1,6 @@
 /** @type {AppTypes.Config} */
 window.config = {
-  routerBasename: '/',
+  routerBasename: '/VIEWER',
   extensions: [],
   modes: ['@ohif/mode-test'],
   showStudyList: true,

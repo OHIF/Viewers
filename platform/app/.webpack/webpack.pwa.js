@@ -114,11 +114,6 @@ module.exports = (env, argv) => {
             from: `${PUBLIC_DIR}/config/google.js`,
             to: `${DIST_DIR}/google.js`,
           },
-          // Copy over and rename our target app config file
-          {
-            from: `${PUBLIC_DIR}/${APP_CONFIG}`,
-            to: `${DIST_DIR}/app-config.js`,
-          },
           // Copy Dicom Microscopy Viewer build files
           {
             from: '../../../node_modules/dicom-microscopy-viewer/dist/dynamic-import',
@@ -127,6 +122,10 @@ module.exports = (env, argv) => {
               ignore: ['**/*.min.js.map'],
             },
           },
+          {
+            from: path.join(PUBLIC_DIR, 'config/xnat.js'),
+            to: path.join(DIST_DIR, 'app-config.js'),
+          },
         ],
       }),
       // Generate "index.html" w/ correct includes/imports
@@ -134,7 +133,7 @@ module.exports = (env, argv) => {
         template: `${PUBLIC_DIR}/html-templates/${HTML_TEMPLATE}`,
         filename: 'index.html',
         templateParameters: {
-          PUBLIC_URL: PUBLIC_URL,
+          PUBLIC_URL: '/VIEWER/',
         },
       }),
       // Generate a service worker for fast local loads

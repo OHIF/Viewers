@@ -3,13 +3,12 @@
 window.config = {
   name: 'config/xnat.js',
   routerBasename: '/VIEWER',
-  publicPath: '/VIEWER/',  // Add this line
 
   // whiteLabeling: {},
   extensions: [],
   modes: ['@ohif/mode-xnat'],
   customizationService: {},
-  showStudyList: true,
+  showStudyList: false,
   // some windows systems have issues with more than 3 web workers
   maxNumberOfWebWorkers: 3,
   // below flag is for performance reasons, but it might not work for all servers
@@ -106,9 +105,9 @@ window.config = {
       configuration: {
         friendlyName: 'XNAT Viewer',
         name: 'xnat',
-        wadoUriRoot: '/xapi/viewer/projects/${project}/subjects/${subject}/experiments/${experiment}/scans/${scan}/files',
-        qidoRoot: '/xapi/viewer/projects/${project}/subjects/${subject}/experiments/${experiment}/scans/${scan}/files',
-        wadoRoot: '/xapi/viewer/projects/${project}/subjects/${subject}/experiments/${experiment}/scans/${scan}/files',
+        wadoUriRoot: '/xapi/viewerDicomweb/aets',
+        qidoRoot: '/xapi/viewerDicomweb/aets',
+        wadoRoot: '/xapi/viewerDicomweb/aets',
         qidoSupportsIncludeField: false,
         imageRendering: 'wadors',
         thumbnailRendering: 'wadors',
@@ -117,32 +116,9 @@ window.config = {
         supportsWildcard: false,
         staticWado: true,
         singlepart: 'bulkdata,video',
-        omitQuotationForMultipartRequest: true,
-      },
-    },
-    {
-      namespace: '@ohif/extension-default.dataSourcesModule.dicomwebproxy',
-      sourceName: 'dicomwebproxy',
-      configuration: {
-        friendlyName: 'dicomweb delegating proxy',
-        name: 'dicomwebproxy',
-      },
-    },
-    {
-      namespace: '@ohif/extension-default.dataSourcesModule.dicomjson',
-      sourceName: 'dicomjson',
-      configuration: {
-        friendlyName: 'dicom json',
-        name: 'json',
-      },
-    },
-    {
-      namespace: '@ohif/extension-default.dataSourcesModule.dicomlocal',
-      sourceName: 'dicomlocal',
-      configuration: {
-        friendlyName: 'dicom local',
-      },
-    },
+        omitQuotationForMultipartRequest: true
+      }
+    }
   ],
   httpErrorHandler: error => {
     // This is 429 when rejected from the public idc sandbox too often.
@@ -454,6 +430,10 @@ window.config = {
       },
     },
   ],
+  whiteLabeling: {
+    createLogoPath: '/VIEWER',
+    logoPath: '/VIEWER'
+  }
 };
 
 function waitForElement(selector, maxAttempts = 20, interval = 25) {

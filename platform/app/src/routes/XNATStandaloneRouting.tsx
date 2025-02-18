@@ -2,17 +2,17 @@ import React, { useEffect, useState } from 'react';
 import * as cornerstone from '@cornerstonejs/core';
 import { useNavigate } from 'react-router-dom';
 import PropTypes from 'prop-types';
-
+import { CommandsManager } from '@ohif/core';
 // OHIF Modules
-import { DicomMetadataStore, utils, ServicesManager } from '@ohif/core';
-import { useViewportGrid, useServices } from '@ohif/ui';
+import { log, utils } from '@ohif/core';
+import metadata from '@ohif/core/src/classes'; // Fixed import statement
+// Removed useServices import as it is not exported from '@ohif/ui'
 
 // Local imports
 import { isLoggedIn, xnatAuthenticate } from '../../../../extensions/xnat/src/index';
-import retrieveDicomWebMetadata from '../lib/xnatDicomWeb/retrieveDicomWebMetadata.js';
+import retrieveDicomWebMetadata from '../lib/xnatDicomWeb/retrieveDicomWebMetadata';
+import { ViewportGrid } from '@ohif/ui';
 
-const { log, metadata, utils: OHIFUtils } = OHIF;
-const { studyMetadataManager, metadataUtils } = OHIFUtils;
 const { OHIFStudyMetadata } = metadata;
 
 const VALID_BACKGROUND_MODALITIES = ['MR', 'CT'];
@@ -24,15 +24,13 @@ function XNATStandaloneRouting({ location }) {
   const [loading, setLoading] = useState(true);
   
   const navigate = useNavigate();
-  const services = useServices();
-  const viewportGridService = services.viewportGridService;
-  
+  const { viewportGridService } = this.servicesManager.services;
   const parseQueryAndRetrieveDICOMWebData = async (rootUrl, query) => {
     const { projectId, subjectId, experimentId } = query;
     
     try {
-      const { commandsManager } = services;
-      
+      const commandsManager = new CommandsManager();
+
       await commandsManager.runCommand('xnatSetRootUrl', {
         url: rootUrl,
       });
@@ -81,9 +79,15 @@ function XNATStandaloneRouting({ location }) {
   }
 
   return studies ? (
-    <div>
-      {/* Your viewer component here */}
-      {/* Use viewportGridService instead of Redux state */}
+    <div className="viewport-container">
+      <ViewportGrid
+        studies={studies}
+        viewportOptions={{
+          background: VALID_BACKGROUND_MODALITIES,
+          overlay: VALID_OVERLAY_MODALITIES,
+        }}
+        viewportGridService={viewportGridService}
+      />
     </div>
   ) : null;
 }
