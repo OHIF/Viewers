@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import PanelStudyBrowserTracking from './PanelStudyBrowserTracking';
 import getImageSrcFromImageId from './getImageSrcFromImageId';
 import { requestDisplaySetCreationForStudy } from '@ohif/extension-default';
+import { useSystem } from '@ohif/core';
 
 function _getStudyForPatientUtility(extensionManager) {
   const utilityModule = extensionManager.getModuleEntry(
@@ -21,11 +22,8 @@ function _getStudyForPatientUtility(extensionManager) {
  * @param {object} commandsManager
  * @param {object} extensionManager
  */
-function WrappedPanelStudyBrowserTracking({
-  commandsManager,
-  extensionManager,
-  servicesManager,
-}: withAppTypes) {
+function WrappedPanelStudyBrowserTracking() {
+  const { extensionManager } = useSystem();
   const dataSource = extensionManager.getActiveDataSource()[0];
 
   const getStudiesForPatientByMRN = _getStudyForPatientUtility(extensionManager);
@@ -41,8 +39,6 @@ function WrappedPanelStudyBrowserTracking({
 
   return (
     <PanelStudyBrowserTracking
-      servicesManager={servicesManager}
-      commandsManager={commandsManager}
       dataSource={dataSource}
       getImageSrc={_getImageSrcFromImageId}
       getStudiesForPatientByMRN={_getStudiesForPatientByMRN}
@@ -72,11 +68,5 @@ function _createGetImageSrcFromImageIdFn(extensionManager) {
     throw new Error('Required command not found');
   }
 }
-
-WrappedPanelStudyBrowserTracking.propTypes = {
-  commandsManager: PropTypes.object.isRequired,
-  extensionManager: PropTypes.object.isRequired,
-  servicesManager: PropTypes.object.isRequired,
-};
 
 export default WrappedPanelStudyBrowserTracking;
