@@ -1,6 +1,6 @@
 import { DicomMetadataStore, IWebApiDataSource } from '@ohif/core';
 import get from 'lodash.get';
-import uniqBy from 'lodash.uniqBy';
+import uniqBy from 'lodash.uniqby';
 import {
   MergeConfig,
   CallForAllDataSourcesAsyncOptions,
