@@ -1,6 +1,6 @@
 import objectHash from 'object-hash';
+import isEqual from 'lodash.isequal';
 import { hotkeys } from '../utils';
-import { isEqual } from 'lodash';
 import Hotkey from './Hotkey';
 
 /**

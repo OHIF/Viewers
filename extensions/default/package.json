@@ -47,6 +47,7 @@
   "dependencies": {
     "@babel/runtime": "^7.20.13",
     "@cornerstonejs/calculate-suv": "^1.1.0",
-    "lodash": "^4.17.21"
+    "lodash.get": "^4.4.2",
+    "lodash.uniqby": "^4.7.0"
   }
 }
