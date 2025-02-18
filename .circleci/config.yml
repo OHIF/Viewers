@@ -351,13 +351,12 @@ jobs:
           name: Export Display Variable
           command: export DISPLAY=:99
       - cypress/install:
-          install-browsers: true
+          # install-browsers: true
           install-command: bun install --no-save
           package-manager: yarn
       - cypress/run-tests:
-          cypress-command:
-            npx wait-on@latest http://localhost:3000 && cd platform/app &&  npx cypress run --record
-            --browser chrome --parallel
+          cypress-command: |
+            npx wait-on@latest http://localhost:3000 && cd platform/app && npx cypress run --record --parallel
           start-command: bun run test:data && bun run test:e2e:serve
 
   DOCKER_MULTIARCH_MANIFEST:
