@@ -318,20 +318,48 @@ const commandsModule = ({
     },
     setThresholdRange: ({
       value,
-      toolNames = ['ThresholdCircularBrush', 'ThresholdSphereBrush'],
+      toolNames = [
+        'ThresholdCircularBrush',
+        'ThresholdSphereBrush',
+        'ThresholdCircularBrushDynamic',
+        'ThresholdSphereBrushDynamic',
+      ],
     }) => {
-      toolGroupService.getToolGroupIds()?.forEach(toolGroupId => {
+      const toolGroupIds = toolGroupService.getToolGroupIds();
+      if (!toolGroupIds?.length) {
+        return;
+      }
+
+      for (const toolGroupId of toolGroupIds) {
         const toolGroup = toolGroupService.getToolGroup(toolGroupId);
-        toolNames?.forEach(toolName => {
-          toolGroup.setToolConfiguration(toolName, {
+        if (!toolGroup) {
+          continue;
+        }
+
+        for (const toolName of toolNames) {
+          const toolInstance = toolGroup.getToolInstance(toolName);
+          if (!toolInstance) {
+            continue;
+          }
+
+          const toolConfig = toolGroup.getToolConfiguration(toolName) || {};
+          const activeStrategy = toolConfig.activeStrategy;
+
+          // Update configuration with new threshold value
+          const updatedConfig = {
+            ...toolConfig,
             strategySpecificConfiguration: {
-              THRESHOLD: {
+              ...toolConfig.strategySpecificConfiguration,
+              [activeStrategy]: {
+                ...(toolConfig.strategySpecificConfiguration?.[activeStrategy] ?? {}),
                 threshold: value,
               },
             },
-          });
-        });
-      });
+          };
+
+          toolGroup.setToolConfiguration(toolName, updatedConfig);
+        }
+      }
     },
   };
 

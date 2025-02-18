@@ -41,7 +41,10 @@ const StudyItem = ({
               <div className="flex min-w-0 flex-col items-start text-[13px]">
                 <Tooltip>
                   <TooltipContent>{date}</TooltipContent>
-                  <TooltipTrigger className="w-full">
+                  <TooltipTrigger
+                    className="w-full"
+                    asChild
+                  >
                     <div className="h-[18px] w-full max-w-[160px] overflow-hidden truncate whitespace-nowrap text-left text-white">
                       {date}
                     </div>
@@ -49,7 +52,10 @@ const StudyItem = ({
                 </Tooltip>
                 <Tooltip>
                   <TooltipContent>{description}</TooltipContent>
-                  <TooltipTrigger className="w-full">
+                  <TooltipTrigger
+                    className="w-full"
+                    asChild
+                  >
                     <div className="text-muted-foreground h-[18px] w-full overflow-hidden truncate whitespace-nowrap text-left">
                       {description}
                     </div>

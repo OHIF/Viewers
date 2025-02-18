@@ -67,14 +67,29 @@ function createTools(utilityModule) {
         parentTool: 'Brush',
         configuration: {
           activeStrategy: 'THRESHOLD_INSIDE_CIRCLE',
-          // preview: {
-          //   enabled: true,
-          // },
+          preview: {
+            enabled: true,
+          },
           strategySpecificConfiguration: {
-            // to use the use the center segment index to determine
-            // if inside -> same segment, if outside -> eraser
-            // useCenterSegmentIndex: true,
-            THRESHOLD: {
+            useCenterSegmentIndex: true,
+            THRESHOLD_INSIDE_CIRCLE: {
+              isDynamic: true,
+              dynamicRadius: 3,
+            },
+          },
+        },
+      },
+      {
+        toolName: 'ThresholdSphereBrushDynamic',
+        parentTool: 'Brush',
+        configuration: {
+          activeStrategy: 'THRESHOLD_INSIDE_SPHERE_WITH_ISLAND_REMOVAL',
+          preview: {
+            enabled: true,
+          },
+          strategySpecificConfiguration: {
+            useCenterSegmentIndex: true,
+            THRESHOLD_INSIDE_SPHERE_WITH_ISLAND_REMOVAL: {
               isDynamic: true,
               dynamicRadius: 3,
             },
