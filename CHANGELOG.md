@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.10.0-beta.96](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.95...v3.10.0-beta.96) (2025-02-18)
+
+
+### Bug Fixes
+
+* depandabot ([#4786](https://github.com/OHIF/Viewers/issues/4786)) ([d8a6e79](https://github.com/OHIF/Viewers/commit/d8a6e79df008139f7f2f45054b73baf8cd52fb40))
+* right panel for the create mode cli command ([#4788](https://github.com/OHIF/Viewers/issues/4788)) ([5712e91](https://github.com/OHIF/Viewers/commit/5712e91ca1d939ff3c36615d3cf1a1f6f0051c4f))
+
+
+
+
+
 # [3.10.0-beta.95](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.94...v3.10.0-beta.95) (2025-02-13)
 
 **Note:** Version bump only for package ohif-monorepo-root
