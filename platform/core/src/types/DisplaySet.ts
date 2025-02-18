@@ -18,6 +18,9 @@ export type DisplaySet = {
   thumbnailSrc?: string;
   /** A fetch method to get the thumbnail */
   getThumbnailSrc?(imageId?: string): Promise<string>;
+  SeriesDate?: string;
+  SeriesTime?: string;
+  instance?: InstanceMetadata;
 };
 
 export type DisplaySetSeriesMetadataInvalidatedEvent = {

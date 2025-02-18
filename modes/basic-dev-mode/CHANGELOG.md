@@ -3,6 +3,33 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.10.0-beta.98](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.97...v3.10.0-beta.98) (2025-02-18)
+
+**Note:** Version bump only for package @ohif/mode-basic-dev-mode
+
+
+
+
+
+# [3.10.0-beta.97](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.96...v3.10.0-beta.97) (2025-02-18)
+
+**Note:** Version bump only for package @ohif/mode-basic-dev-mode
+
+
+
+
+
+# [3.10.0-beta.96](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.95...v3.10.0-beta.96) (2025-02-18)
+
+
+### Bug Fixes
+
+* right panel for the create mode cli command ([#4788](https://github.com/OHIF/Viewers/issues/4788)) ([5712e91](https://github.com/OHIF/Viewers/commit/5712e91ca1d939ff3c36615d3cf1a1f6f0051c4f))
+
+
+
+
+
 # [3.10.0-beta.95](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.94...v3.10.0-beta.95) (2025-02-13)
 
 **Note:** Version bump only for package @ohif/mode-basic-dev-mode
