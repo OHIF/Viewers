@@ -344,7 +344,7 @@ jobs:
           name: Install System Dependencies
           command: |
             sudo apt-get update
-            sudo apt-get install -y xvfb libnspr4 libnss3 libnss3-nssdb libnss3-tools
+            sudo apt-get install -y xvfb libgtk2.0-0 libgtk-3-0 libgbm-dev libnotify-dev libgconf-2-4 libnss3 libxss1 libasound2 libxtst6
       - run:
           name: Start Xvfb
           command: Xvfb :99 -screen 0 1920x1080x24 &
