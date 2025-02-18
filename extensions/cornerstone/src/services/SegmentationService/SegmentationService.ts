@@ -65,6 +65,8 @@ const EVENTS = {
   SEGMENTATION_DATA_MODIFIED: 'event::segmentation_data_modified',
   // fired when the segmentation is removed
   SEGMENTATION_REMOVED: 'event::segmentation_removed',
+  // fired when the active segmentation is changed
+  ACTIVE_SEGMENTATION_CHANGED: 'event::active_segmentation_changed',
   //
   // fired when segmentation representation is added
   SEGMENTATION_REPRESENTATION_MODIFIED: 'event::segmentation_representation_modified',
@@ -76,6 +78,8 @@ const EVENTS = {
   SEGMENT_LOADING_COMPLETE: 'event::segment_loading_complete',
   // loading completed for all segments
   SEGMENTATION_LOADING_COMPLETE: 'event::segmentation_loading_complete',
+  // fired when the segment is removed
+  SEGMENT_REMOVED: 'event::segment_removed',
 };
 
 const VALUE_TYPES = {};
@@ -94,7 +98,7 @@ class SegmentationService extends PubSubService {
   private _segmentationIdToColorLUTIndexMap: Map<string, number>;
   readonly servicesManager: AppTypes.ServicesManager;
   highlightIntervalId = null;
-  readonly EVENTS = EVENTS;
+  public static readonly EVENTS = EVENTS;
 
   constructor({ servicesManager }) {
     super(EVENTS);
@@ -692,6 +696,10 @@ class SegmentationService extends PubSubService {
 
   public setActiveSegmentation(viewportId: string, segmentationId: string): void {
     cstSegmentation.activeSegmentation.setActiveSegmentation(viewportId, segmentationId);
+
+    this._broadcastEvent(EVENTS.ACTIVE_SEGMENTATION_CHANGED, {
+      segmentationId,
+    });
   }
 
   /**
@@ -809,7 +817,7 @@ class SegmentationService extends PubSubService {
     if (!segmentIndex) {
       // grab the next available segment index based on the object keys,
       // so basically get the highest segment index value + 1
-      segmentIndex = Math.max(...Object.keys(csSegmentation.segments).map(Number)) + 1;
+      segmentIndex = Math.max(0, ...Object.keys(csSegmentation.segments).map(Number)) + 1;
     }
 
     // update the segmentation
@@ -875,6 +883,9 @@ class SegmentationService extends PubSubService {
    */
   public removeSegment(segmentationId: string, segmentIndex: number): void {
     cstSegmentation.removeSegment(segmentationId, segmentIndex);
+    this._broadcastEvent(EVENTS.SEGMENT_REMOVED, {
+      segmentationId,
+    });
   }
 
   public setSegmentVisibility(

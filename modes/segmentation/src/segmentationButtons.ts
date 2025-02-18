@@ -1,4 +1,12 @@
 import type { Button } from '@ohif/core/types';
+import { SegmentationService } from '@ohif/extension-cornerstone';
+
+const SegmentToolListeners = [
+  {
+    commandName: 'toggleToolModeBasedOnSegmentActions',
+    context: 'CORNERSTONE',
+  },
+];
 
 const toolbarButtons: Button[] = [
   {
@@ -12,6 +20,17 @@ const toolbarButtons: Button[] = [
           id: 'Brush',
           icon: 'icon-tool-brush',
           label: 'Brush',
+          listeners: {
+            [SegmentationService.EVENTS.ACTIVE_SEGMENTATION_CHANGED]: {
+              commands: SegmentToolListeners,
+            },
+            [SegmentationService.EVENTS.SEGMENTATION_ADDED]: {
+              commands: SegmentToolListeners,
+            },
+            [SegmentationService.EVENTS.SEGMENT_REMOVED]: {
+              commands: SegmentToolListeners,
+            },
+          },
           evaluate: {
             name: 'evaluate.cornerstone.segmentation',
             toolNames: ['CircularBrush', 'SphereBrush'],
@@ -48,6 +67,17 @@ const toolbarButtons: Button[] = [
           id: 'Eraser',
           icon: 'icon-tool-eraser',
           label: 'Eraser',
+          listeners: {
+            [SegmentationService.EVENTS.ACTIVE_SEGMENTATION_CHANGED]: {
+              commands: SegmentToolListeners,
+            },
+            [SegmentationService.EVENTS.SEGMENTATION_ADDED]: {
+              commands: SegmentToolListeners,
+            },
+            [SegmentationService.EVENTS.SEGMENT_REMOVED]: {
+              commands: SegmentToolListeners,
+            },
+          },
           evaluate: {
             name: 'evaluate.cornerstone.segmentation',
             toolNames: ['CircularEraser', 'SphereEraser'],
@@ -83,6 +113,17 @@ const toolbarButtons: Button[] = [
           id: 'Threshold',
           icon: 'icon-tool-threshold',
           label: 'Threshold Tool',
+          listeners: {
+            [SegmentationService.EVENTS.ACTIVE_SEGMENTATION_CHANGED]: {
+              commands: SegmentToolListeners,
+            },
+            [SegmentationService.EVENTS.SEGMENTATION_ADDED]: {
+              commands: SegmentToolListeners,
+            },
+            [SegmentationService.EVENTS.SEGMENT_REMOVED]: {
+              commands: SegmentToolListeners,
+            },
+          },
           evaluate: {
             name: 'evaluate.cornerstone.segmentation',
             toolNames: ['ThresholdCircularBrush', 'ThresholdSphereBrush'],
@@ -178,6 +219,17 @@ const toolbarButtons: Button[] = [
       id: 'Shapes',
       icon: 'icon-tool-shape',
       label: 'Shapes',
+      listeners: {
+        [SegmentationService.EVENTS.ACTIVE_SEGMENTATION_CHANGED]: {
+          commands: SegmentToolListeners,
+        },
+        [SegmentationService.EVENTS.SEGMENTATION_ADDED]: {
+          commands: SegmentToolListeners,
+        },
+        [SegmentationService.EVENTS.SEGMENT_REMOVED]: {
+          commands: SegmentToolListeners,
+        },
+      },
       evaluate: {
         name: 'evaluate.cornerstone.segmentation',
         toolNames: ['CircleScissor', 'SphereScissor', 'RectangleScissor'],

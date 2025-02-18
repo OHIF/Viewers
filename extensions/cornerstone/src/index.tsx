@@ -97,6 +97,7 @@ const cornerstoneExtension: Types.Extensions.Extension = {
     toolbarService.registerEventForToolbarUpdate(segmentationService, [
       segmentationService.EVENTS.SEGMENTATION_REMOVED,
       segmentationService.EVENTS.SEGMENTATION_MODIFIED,
+      segmentationService.EVENTS.ACTIVE_SEGMENTATION_CHANGED,
     ]);
 
     toolbarService.registerEventForToolbarUpdate(cornerstone.eventTarget, [
@@ -254,5 +255,6 @@ export {
   PanelMeasurement,
   DicomUpload,
   StudySummaryFromMetadata,
+  SegmentationService,
 };
 export default cornerstoneExtension;
