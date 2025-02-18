@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import { Link, useNavigate } from 'react-router-dom';
 import moment from 'moment';
 import qs from 'query-string';
-import isEqual from 'lodash.isequal';
+import { isEqual } from 'lodash';
 import { useTranslation } from 'react-i18next';
 //
 import filtersMeta from './filtersMeta.js';

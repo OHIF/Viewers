@@ -47,6 +47,7 @@
     "@cornerstonejs/codec-libjpeg-turbo-8bit": "^1.2.2",
     "@cornerstonejs/codec-openjpeg": "^1.2.4",
     "colormap": "^2.3",
-    "mathjs": "^12.4.2"
+    "mathjs": "^12.4.2",
+    "lodash.debounce": "^4.0.8"
   }
 }

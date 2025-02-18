@@ -1,6 +1,6 @@
 import objectHash from 'object-hash';
 import { hotkeys } from '../utils';
-import isequal from 'lodash.isequal';
+import { isEqual } from 'lodash';
 import Hotkey from './Hotkey';
 
 /**
@@ -65,7 +65,7 @@ export class HotkeysManager {
   setHotkeys(hotkeyDefinitions = [], name = 'hotkey-definitions') {
     try {
       const definitions = this.getValidDefinitions(hotkeyDefinitions);
-      if (isequal(definitions, this.hotkeyDefaults)) {
+      if (isEqual(definitions, this.hotkeyDefaults)) {
         localStorage.removeItem(name);
       } else {
         localStorage.setItem(name, JSON.stringify(definitions));
