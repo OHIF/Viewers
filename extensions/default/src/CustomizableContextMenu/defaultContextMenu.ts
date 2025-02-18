@@ -8,6 +8,7 @@ const defaultContextMenu = {
       selector: ({ value, nearbyToolData }) =>
         !!nearbyToolData &&
         value.data.handles.points.length !== 4 &&
+        value.data.handles.name &&
         !value.data.handles.name?.includes('custom_point'),
       items: [
         {
