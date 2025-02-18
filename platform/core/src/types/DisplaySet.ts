@@ -12,6 +12,9 @@ export type DisplaySet = {
   Modality?: string;
   imageIds?: string[];
   images?: unknown[];
+  SeriesDate?: string;
+  SeriesTime?: string;
+  instance?: InstanceMetadata;
 };
 
 export type DisplaySetSeriesMetadataInvalidatedEvent = {
