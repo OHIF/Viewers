@@ -6,7 +6,7 @@ export interface ManagedDialogProps {
   isOpen?: boolean;
   title?: string;
   description?: string;
-  content: React.ComponentType<{ onDismiss?: () => void }>;
+  content: React.ComponentType<{ hide?: () => void }>;
   contentProps?: Record<string, unknown>;
   isDraggable?: boolean;
   shouldCloseOnEsc?: boolean;
@@ -63,7 +63,7 @@ const ManagedDialog: React.FC<ManagedDialogProps> = ({
         {!unstyled && <DialogHeader>{title && <DialogTitle>{title}</DialogTitle>}</DialogHeader>}
         <DialogContentComponent
           {...contentProps}
-          onDismiss={() => onClose(id)}
+          hide={() => onClose(id)}
         />
       </DialogContent>
     </Dialog>
