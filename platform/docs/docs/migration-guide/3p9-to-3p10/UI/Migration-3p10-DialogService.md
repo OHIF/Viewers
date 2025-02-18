@@ -166,14 +166,134 @@ const showAlert = (message) => {
     -   extensionManager,
     - });
 
-    + const {
-    +  value: reportName,
-    +  dataSourceName: selectedDataSource,
-    +  action,
-    + } = await createReportDialogPrompt({
+    + const promptResult = await createReportDialogPrompt({
     +   servicesManager,
     +   extensionManager,
     +   title: 'Store Segmentation', // Optional title
     + });
 
     ```
+
+### promptSaveReport
+
+Not changed, just a javascript to typescript migration.
+
+### callLabelAutocompleteDialog
+
+`callLabelAutocompleteDialog` is deprecated and has been replaced by `callInputDialogAutoComplete`. This new function simplifies the asynchronous handling of user input by using `uiDialogService.show()` and returning a promise.
+
+
+
+### showLabelAnnotationPopup
+
+`showLabelAnnotationPopup` has been replaced with `callInputDialogAutoComplete`. This update also uses `uiDialogService.show()` and promises, and it removes the callback function.
+
+- The function now expects an object with `measurement`, `uiDialogService`, `labelConfig`, and `renderContent`.
+
+```diff
+- const value = await showLabelAnnotationPopup(
+-   measurement,
+-   servicesManager.services.uiDialogService,
+-   labelConfig,
+-   renderContent
+- );
++ const value = await callInputDialogAutoComplete({
++   measurement,
++   uiDialogService,
++   labelConfig,
++   renderContent,
++ });
+```
+
+### callInputDialog
+
+- expects an objects now and returns the value of the input which you can then use for actions
+
+
+```diff
+
+- callInputDialog(
+-   uiDialogService,
+-   {
+-     text: '',
+-     label: `${length}`,
+-   },
+-   (value, id) => {
+-     if (id === 'save') {
+-       adjustCalibration(Number.parseFloat(value));
+-       resolve(true);
+-     } else {
+-       reject('cancel');
+-     }
+-   },
+-   false,
+-   {
+-     dialogTitle: 'Calibration',
+-     inputLabel: 'Actual Physical distance (mm)',
+-     validateFunc: val => {
+-       const v = Number.parseFloat(val);
+-       return !isNaN(v) && v !== 0.0;
+-     },
+-   }
+- );
++ callInputDialog({
++   uiDialogService,
++   title: 'Calibration',
++   placeholder: 'Actual Physical distance (mm)',
++   defaultValue: `${length}`,
++ }).then(newValue => {
++   adjustCalibration(Number.parseFloat(newValue));
++   resolve(true);
++ });
+```
+
+or another one
+
+```diff
+- callInputDialog(
+-   uiDialogService,
+-   { text: '', label: 'Enter description' },
+-   (value, action) => {
+-     if (action === 'save') {
+-       saveFunction(value);
+-     }
+-   }
+- );
++ callInputDialog({
++   uiDialogService,
++   title: 'Enter description of the Series',
++   defaultValue: '',
++ }).then(value => {
++   saveFunction(value);
++ });
+```
+
+
+### colorPickerDialog
+
+Instead of calling `colorPickerDialog(uiDialogService, rgbaColor, callback)`, use `uiDialogService.show()` with `ColorPickerDialog` as the content.
+
+
+```diff
+- colorPickerDialog(uiDialogService, rgbaColor, (newRgbaColor, actionId) => {
+-   if (actionId === 'cancel') {
+-     return;
+-   }
+-   const color = [newRgbaColor.r, newRgbaColor.g, newRgbaColor.b, newRgbaColor.a * 255.0];
+-   segmentationService.setSegmentColor(viewportId, segmentationId, segmentIndex, color);
+- });
+
+// after
+
++ uiDialogService.show({
++   content: ColorPickerDialog,
++   title: 'Segment Color',
++   contentProps: {
++     value: rgbaColor,
++     onSave: newRgbaColor => {
++       const color = [newRgbaColor.r, newRgbaColor.g, newRgbaColor.b, newRgbaColor.a * 255.0];
++       segmentationService.setSegmentColor(viewportId, segmentationId, segmentIndex, color);
++     },
++   },
++ });
+```

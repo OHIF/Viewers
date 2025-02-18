@@ -505,7 +505,6 @@ const commandsModule = ({
         contentProps: {
           displaySets,
           displaySetInstanceUID: defaultDisplaySetInstanceUID,
-          onClose: UIModalService.hide,
         },
         title: 'DICOM Tag Browser',
       });
