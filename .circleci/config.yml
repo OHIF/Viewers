@@ -341,8 +341,10 @@ jobs:
     steps:
       - install_bun
       - run:
-          name: Install Xvfb
-          command: sudo apt-get update && sudo apt-get install -y xvfb
+          name: Install System Dependencies
+          command: |
+            sudo apt-get update
+            sudo apt-get install -y xvfb libnspr4 libnss3 libnss3-nssdb libnss3-tools
       - run:
           name: Start Xvfb
           command: Xvfb :99 -screen 0 1920x1080x24 &
@@ -351,7 +353,6 @@ jobs:
           name: Export Display Variable
           command: export DISPLAY=:99
       - cypress/install:
-          # install-browsers: true
           install-command: bun install --no-save
           package-manager: yarn
       - cypress/run-tests:
