@@ -578,6 +578,16 @@ ul li {
   margin-bottom: 0.5rem;
 }
 
+ol {
+  list-style-type: decimal;
+  padding-left: 1.5rem;
+  margin: 1rem 0;
+}
+
+ol li {
+  margin-bottom: 0.5rem;
+}
+
 /* Nested bullet points */
 ul ul {
   list-style-type: circle;

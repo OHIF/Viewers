@@ -11,9 +11,12 @@ import {
   Enums,
   utilities as cstUtils,
   ReferenceLinesTool,
+  annotation,
 } from '@cornerstonejs/tools';
+import * as cornerstoneTools from '@cornerstonejs/tools';
 
-import { Types as OhifTypes } from '@ohif/core';
+import { Types as OhifTypes, utils } from '@ohif/core';
+import i18n from '@ohif/i18n';
 import {
   callLabelAutocompleteDialog,
   showLabelAnnotationPopup,
@@ -29,6 +32,7 @@ import { getFirstAnnotationSelected } from './utils/measurementServiceMappings/u
 import getActiveViewportEnabledElement from './utils/getActiveViewportEnabledElement';
 import toggleVOISliceSync from './utils/toggleVOISliceSync';
 import { usePositionPresentationStore, useSegmentationPresentationStore } from './stores';
+import { toolNames } from './initCornerstoneTools';
 
 const toggleSyncFunctions = {
   imageSlice: toggleImageSliceSync,
@@ -120,7 +124,11 @@ function commandsModule({
         type,
       });
     },
-    updateStoredPositionPresentation: ({ viewportId, displaySetInstanceUID }) => {
+    updateStoredPositionPresentation: ({
+      viewportId,
+      displaySetInstanceUID,
+      referencedImageId,
+    }) => {
       const presentations = cornerstoneViewportService.getPresentations(viewportId);
       const { positionPresentationStore, setPositionPresentation, getPositionPresentationId } =
         usePositionPresentationStore.getState();
@@ -132,10 +140,18 @@ function commandsModule({
       )?.[0];
 
       if (previousReferencedDisplaySetStoreKey) {
-        setPositionPresentation(
-          previousReferencedDisplaySetStoreKey,
-          presentations.positionPresentation
-        );
+        if (referencedImageId) {
+          setPositionPresentation(previousReferencedDisplaySetStoreKey, {
+            viewReference: {
+              referencedImageId,
+            },
+          });
+        } else {
+          setPositionPresentation(
+            previousReferencedDisplaySetStoreKey,
+            presentations.positionPresentation
+          );
+        }
 
         return;
       }
@@ -191,9 +207,10 @@ function commandsModule({
      * on the measurement with a response if not cancelled.
      */
     setMeasurementLabel: ({ uid }) => {
-      const labelConfig = customizationService.get('measurementLabels');
+      const labelConfig = customizationService.getCustomization('measurementLabels');
+      const renderContent = customizationService.getCustomization('ui.labellingComponent');
       const measurement = measurementService.getMeasurement(uid);
-      showLabelAnnotationPopup(measurement, uiDialogService, labelConfig).then(
+      showLabelAnnotationPopup(measurement, uiDialogService, labelConfig, renderContent).then(
         (val: Map<any, any>) => {
           measurementService.update(
             uid,
@@ -217,6 +234,8 @@ function commandsModule({
      *       * CodingSchemeDesignator - the issue of the code value
      *       * CodeMeaning - the text value shown to the user
      *       * ref - a string reference in the form `<designator>:<codeValue>`
+     *       * type - defaulting to 'finding'.  Will replace other codes of same type
+     *       * style - a styling object to use
      *       * Other fields
      *     Note it is a valid option to remove the finding or site values by
      *     supplying null for the code.
@@ -232,7 +251,12 @@ function commandsModule({
      */
     updateMeasurement: props => {
       const { code, uid, textLabel, label } = props;
+      let { style } = props;
       const measurement = measurementService.getMeasurement(uid);
+      if (!measurement) {
+        console.warn('No measurement found to update', uid);
+        return;
+      }
       const updatedMeasurement = {
         ...measurement,
       };
@@ -251,7 +275,6 @@ function commandsModule({
           code.CodingSchemeDesignator = code.ref.substring(0, split);
         }
         updatedMeasurement[measurementKey] = code;
-        // TODO - remove this line once the measurements table customizations are in
         if (measurementKey !== 'finding') {
           if (updatedMeasurement.findingSites) {
             updatedMeasurement.findingSites = updatedMeasurement.findingSites.filter(
@@ -263,7 +286,84 @@ function commandsModule({
           }
         }
       }
+
+      style ||= updatedMeasurement.finding?.style;
+      style ||= updatedMeasurement.findingSites?.find(site => site?.style)?.style;
+
+      if (style) {
+        // Reset the selected values to preserve appearance on selection
+        style.lineDashSelected ||= style.lineDash;
+        annotation.config.style.setAnnotationStyles(measurement.uid, style);
+
+        // this is a bit ugly, but given the underlying behavior, this is how it needs to work.
+        switch (measurement.toolName) {
+          case toolNames.PlanarFreehandROI: {
+            const targetAnnotation = annotation.state.getAnnotation(measurement.uid);
+            targetAnnotation.data.isOpenUShapeContour = !!style.isOpenUShapeContour;
+            break;
+          }
+          default:
+            break;
+        }
+      }
       measurementService.update(updatedMeasurement.uid, updatedMeasurement, true);
+    },
+
+    /**
+     * Jumps to the specified (by uid) measurement in the active viewport.
+     * Also marks any provided display measurements isActive value
+     */
+    jumpToMeasurement: ({ uid, displayMeasurements = [] }) => {
+      measurementService.jumpToMeasurement(viewportGridService.getActiveViewportId(), uid);
+      for (const measurement of displayMeasurements) {
+        measurement.isActive = measurement.uid === uid;
+      }
+    },
+
+    removeMeasurement: ({ uid }) => {
+      measurementService.remove(uid);
+    },
+
+    renameMeasurement: ({ uid }) => {
+      const labelConfig = customizationService.getCustomization('measurementLabels');
+      const renderContent = customizationService.getCustomization('ui.labellingComponent');
+      const measurement = measurementService.getMeasurement(uid);
+      showLabelAnnotationPopup(measurement, uiDialogService, labelConfig, renderContent).then(
+        val => {
+          measurementService.update(
+            uid,
+            {
+              ...val,
+            },
+            true
+          );
+        }
+      );
+    },
+
+    toggleLockMeasurement: ({ uid }) => {
+      measurementService.toggleLockMeasurement(uid);
+    },
+
+    toggleVisibilityMeasurement: ({ uid }) => {
+      measurementService.toggleVisibilityMeasurement(uid);
+    },
+
+    /**
+     * Clear the measurements
+     */
+    clearMeasurements: options => {
+      const { measurementFilter } = options;
+      measurementService.clearMeasurements(
+        measurementFilter ? measurementFilter.bind(options) : null
+      );
+    },
+
+    /**
+     * Download the CSV report for the measurements.
+     */
+    downloadCSVMeasurementsReport: ({ measurementFilter }) => {
+      utils.downloadCSVReport(measurementService.getMeasurements(measurementFilter));
     },
 
     // Retrieve value commands
@@ -279,8 +379,9 @@ function commandsModule({
       viewportGridService.setActiveViewportId(viewportId);
     },
     arrowTextCallback: ({ callback, data, uid }) => {
-      const labelConfig = customizationService.get('measurementLabels');
-      callLabelAutocompleteDialog(uiDialogService, callback, {}, labelConfig);
+      const labelConfig = customizationService.getCustomization('measurementLabels');
+      const renderContent = customizationService.getCustomization('ui.labellingComponent');
+      callLabelAutocompleteDialog(uiDialogService, callback, {}, labelConfig, renderContent);
     },
     toggleCine: () => {
       const { viewports } = viewportGridService.getState();
@@ -486,7 +587,7 @@ function commandsModule({
       } else if (viewport.getRotation !== undefined) {
         const presentation = viewport.getViewPresentation();
         const { rotation: currentRotation } = presentation;
-        const newRotation = (currentRotation + rotation) % 360;
+        const newRotation = (currentRotation + rotation + 360) % 360;
         viewport.setViewPresentation({ rotation: newRotation });
         viewport.render();
       }
@@ -655,7 +756,12 @@ function commandsModule({
           displaySetInstanceUID = viewports.get(viewportId)?.displaySetInstanceUIDs[0];
         }
 
-        const volumeId = viewport.getVolumeId();
+        // ToDo: Find a better way of obtaining the volumeId that corresponds to the displaySetInstanceUID
+        const volumeId =
+          viewport
+            .getAllVolumeIds()
+            .find((_volumeId: string) => _volumeId.includes(displaySetInstanceUID)) ??
+          viewport.getVolumeId();
         viewport.setProperties({ colormap }, volumeId);
       }
 
@@ -902,7 +1008,7 @@ function commandsModule({
           segments: options.createInitialSegment
             ? {
                 1: {
-                  label: 'Segment 1',
+                  label: `${i18n.t('Segment')} 1`,
                   active: true,
                 },
               }
@@ -1215,6 +1321,12 @@ function commandsModule({
         viewportGridService.getActiveViewportId()
       );
     },
+    deleteActiveAnnotation: () => {
+      const activeAnnotationsUID = cornerstoneTools.annotation.selection.getAnnotationsSelected();
+      activeAnnotationsUID.forEach(activeAnnotationUID => {
+        measurementService.remove(activeAnnotationUID);
+      });
+    },
   };
 
   const definitions = {
@@ -1251,6 +1363,27 @@ function commandsModule({
     },
     updateMeasurement: {
       commandFn: actions.updateMeasurement,
+    },
+    clearMeasurements: {
+      commandFn: actions.clearMeasurements,
+    },
+    jumpToMeasurement: {
+      commandFn: actions.jumpToMeasurement,
+    },
+    removeMeasurement: {
+      commandFn: actions.removeMeasurement,
+    },
+    renameMeasurement: {
+      commandFn: actions.renameMeasurement,
+    },
+    toggleLockMeasurement: {
+      commandFn: actions.toggleLockMeasurement,
+    },
+    toggleVisibilityMeasurement: {
+      commandFn: actions.toggleVisibilityMeasurement,
+    },
+    downloadCSVMeasurementsReport: {
+      commandFn: actions.downloadCSVMeasurementsReport,
     },
     setViewportWindowLevel: {
       commandFn: actions.setViewportWindowLevel,
@@ -1453,6 +1586,9 @@ function commandsModule({
     },
     getRenderInactiveSegmentations: {
       commandFn: actions.getRenderInactiveSegmentations,
+    },
+    deleteActiveAnnotation: {
+      commandFn: actions.deleteActiveAnnotation,
     },
   };
 

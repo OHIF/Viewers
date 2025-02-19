@@ -7,7 +7,7 @@ describe('OHIF MPR', () => {
   });
 
   it('should not go MPR for non reconstructible displaySets', () => {
-    cy.get('[data-cy="MPR"]').should('have.class', 'ohif-disabled');
+    cy.get('[data-cy="MPR"]').should('have.class', 'cursor-not-allowed');
   });
 
   it('should go MPR for reconstructible displaySets and come back', () => {
@@ -39,7 +39,6 @@ describe('OHIF MPR', () => {
       .its('cornerstone')
       .then(cornerstone => {
         const viewports = cornerstone.getRenderingEngines()[0].getViewports();
-
         // The stack viewport still exists after the changes to viewportId and inde
         const imageData1 = viewports[0].getImageData();
         const imageData2 = viewports[1].getImageData();

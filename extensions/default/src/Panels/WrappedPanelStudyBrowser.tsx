@@ -5,6 +5,7 @@ import PanelStudyBrowser from './StudyBrowser/PanelStudyBrowser';
 import getImageSrcFromImageId from './getImageSrcFromImageId';
 import getStudiesForPatientByMRN from './getStudiesForPatientByMRN';
 import requestDisplaySetCreationForStudy from './requestDisplaySetCreationForStudy';
+import { useSystem } from '@ohif/core';
 
 /**
  * Wraps the PanelStudyBrowser and provides features afforded by managers/services
@@ -13,10 +14,11 @@ import requestDisplaySetCreationForStudy from './requestDisplaySetCreationForStu
  * @param {object} commandsManager
  * @param {object} extensionManager
  */
-function WrappedPanelStudyBrowser({ commandsManager, extensionManager, servicesManager }) {
+function WrappedPanelStudyBrowser() {
+  const { extensionManager } = useSystem();
   // TODO: This should be made available a different way; route should have
   // already determined our datasource
-  const dataSource = extensionManager.getDataSources()[0];
+  const [dataSource] = extensionManager.getActiveDataSource();
   const _getStudiesForPatientByMRN = getStudiesForPatientByMRN.bind(null, dataSource);
   const _getImageSrcFromImageId = useCallback(
     _createGetImageSrcFromImageIdFn(extensionManager),
@@ -29,8 +31,6 @@ function WrappedPanelStudyBrowser({ commandsManager, extensionManager, servicesM
 
   return (
     <PanelStudyBrowser
-      servicesManager={servicesManager}
-      commandsManager={commandsManager}
       dataSource={dataSource}
       getImageSrc={_getImageSrcFromImageId}
       getStudiesForPatientByMRN={_getStudiesForPatientByMRN}
@@ -60,11 +60,5 @@ function _createGetImageSrcFromImageIdFn(extensionManager) {
     throw new Error('Required command not found');
   }
 }
-
-WrappedPanelStudyBrowser.propTypes = {
-  commandsManager: PropTypes.object.isRequired,
-  extensionManager: PropTypes.object.isRequired,
-  servicesManager: PropTypes.object.isRequired,
-};
 
 export default WrappedPanelStudyBrowser;

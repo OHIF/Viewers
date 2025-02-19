@@ -1,6 +1,7 @@
 import { ExtensionManager, MODULE_TYPES } from './extensions';
 import { ServiceProvidersManager, ServicesManager } from './services';
 import classes, { CommandsManager, HotkeysManager } from './classes';
+import { SystemContextProvider, useSystem } from './contextProviders/SystemProvider';
 
 import DICOMWeb from './DICOMWeb';
 import errorHandler from './errorHandler.js';
@@ -33,6 +34,7 @@ import {
   PanelService,
   WorkflowStepsService,
   StudyPrefetcherService,
+  MultiMonitorService,
 } from './services';
 
 import { DisplaySetMessage, DisplaySetMessageList } from './services/DisplaySetService';
@@ -78,6 +80,7 @@ const OHIF = {
   ViewportGridService,
   HangingProtocolService,
   UserAuthenticationService,
+  MultiMonitorService,
   IWebApiDataSource,
   DicomMetadataStore,
   pubSubServiceInterface,
@@ -97,6 +100,7 @@ export {
   HotkeysManager,
   ServicesManager,
   ServiceProvidersManager,
+  SystemContextProvider,
   //
   defaults,
   utils,
@@ -119,6 +123,7 @@ export {
   DisplaySetMessage,
   DisplaySetMessageList,
   MeasurementService,
+  MultiMonitorService,
   ToolbarService,
   ViewportGridService,
   HangingProtocolService,
@@ -131,6 +136,7 @@ export {
   PanelService,
   WorkflowStepsService,
   StudyPrefetcherService,
+  useSystem,
   useToolbar,
   useActiveViewportDisplaySets,
 };

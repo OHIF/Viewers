@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { LoadingIndicatorTotalPercent, useViewportGrid, ViewportActionArrows } from '@ohif/ui';
+import { ViewportActionArrows } from '@ohif/ui';
+import { useViewportGrid } from '@ohif/ui-next';
 import createSEGToolGroupAndAddTools from '../utils/initSEGToolGroup';
 import promptHydrateSEG from '../utils/promptHydrateSEG';
 import _getStatusComponent from './_getStatusComponent';
@@ -29,6 +30,10 @@ function OHIFCornerstoneSEGViewport(props: withAppTypes) {
     customizationService,
     viewportActionCornersService,
   } = servicesManager.services;
+
+  const LoadingIndicatorTotalPercent = customizationService.getCustomization(
+    'ui.loadingIndicatorTotalPercent'
+  );
 
   const toolGroupId = `${SEG_TOOLGROUP_BASE_NAME}-${viewportId}`;
 

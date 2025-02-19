@@ -1,7 +1,8 @@
 import React, { useEffect, useCallback, useRef } from 'react';
 import { useResizeDetector } from 'react-resize-detector';
 import { Types, MeasurementService } from '@ohif/core';
-import { ViewportGrid, ViewportPane, useViewportGrid } from '@ohif/ui';
+import { ViewportGrid, ViewportPane } from '@ohif/ui';
+import { useViewportGrid } from '@ohif/ui-next';
 import EmptyViewport from './EmptyViewport';
 import classNames from 'classnames';
 import { useAppConfig } from '@state';
@@ -23,8 +24,13 @@ function ViewerViewportGrid(props: withAppTypes) {
   });
   const layoutHash = useRef(null);
 
-  const { displaySetService, measurementService, hangingProtocolService, uiNotificationService } =
-    servicesManager.services;
+  const {
+    displaySetService,
+    measurementService,
+    hangingProtocolService,
+    uiNotificationService,
+    customizationService,
+  } = servicesManager.services;
 
   const generateLayoutHash = () => `${numCols}-${numRows}`;
 
@@ -207,8 +213,20 @@ function ViewerViewportGrid(props: withAppTypes) {
   }, [viewports]);
 
   const onDropHandler = (viewportId, { displaySetInstanceUID }) => {
-    const updatedViewports = _getUpdatedViewports(viewportId, displaySetInstanceUID);
-    viewportGridService.setDisplaySetsForViewports(updatedViewports);
+    const customOnDropHandler = customizationService.getCustomization('customOnDropHandler');
+    const dropHandlerPromise = customOnDropHandler({
+      ...props,
+      viewportId,
+      displaySetInstanceUID,
+      appConfig,
+    });
+
+    dropHandlerPromise.then(({ handled }) => {
+      if (!handled) {
+        const updatedViewports = _getUpdatedViewports(viewportId, displaySetInstanceUID);
+        viewportGridService.setDisplaySetsForViewports(updatedViewports);
+      }
+    });
   };
 
   const getViewportPanes = useCallback(() => {

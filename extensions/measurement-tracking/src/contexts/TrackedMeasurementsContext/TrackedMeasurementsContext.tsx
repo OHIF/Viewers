@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { Machine } from 'xstate';
 import { useMachine } from '@xstate/react';
-import { useViewportGrid } from '@ohif/ui';
+import { useViewportGrid } from '@ohif/ui-next';
 import { promptLabelAnnotation, promptSaveReport } from '@ohif/extension-default';
 import { machineConfiguration, defaultOptions, RESPONSE } from './measurementTrackingMachine';
 import promptBeginTracking from './promptBeginTracking';
@@ -97,6 +97,7 @@ function TrackedMeasurementsContextProvider(
       commandsManager.runCommand('updateStoredPositionPresentation', {
         viewportId: activeViewportId,
         displaySetInstanceUID: referencedDisplaySetUID,
+        referencedImageId: trackedMeasurement.referencedImageId,
       });
 
       viewportGridService.setDisplaySetsForViewport({
@@ -159,6 +160,7 @@ function TrackedMeasurementsContextProvider(
     promptHydrateStructuredReport: promptHydrateStructuredReport.bind(null, {
       servicesManager,
       extensionManager,
+      commandsManager,
       appConfig,
     }),
     hydrateStructuredReport: hydrateStructuredReport.bind(null, {
@@ -173,11 +175,11 @@ function TrackedMeasurementsContextProvider(
   });
   machineOptions.guards = Object.assign({}, machineOptions.guards, {
     isLabelOnMeasure: (ctx, evt, condMeta) => {
-      const labelConfig = customizationService.get('measurementLabels');
+      const labelConfig = customizationService.getCustomization('measurementLabels');
       return labelConfig?.labelOnMeasure;
     },
     isLabelOnMeasureAndShouldKillMachine: (ctx, evt, condMeta) => {
-      const labelConfig = customizationService.get('measurementLabels');
+      const labelConfig = customizationService.getCustomization('measurementLabels');
       return evt.data && evt.data.userResponse === RESPONSE.NO_NEVER && labelConfig?.labelOnMeasure;
     },
   });
@@ -291,9 +293,6 @@ function TrackedMeasurementsContextProvider(
 
 TrackedMeasurementsContextProvider.propTypes = {
   children: PropTypes.oneOf([PropTypes.func, PropTypes.node]),
-  servicesManager: PropTypes.object.isRequired,
-  commandsManager: PropTypes.object.isRequired,
-  extensionManager: PropTypes.object.isRequired,
   appConfig: PropTypes.object,
 };
 

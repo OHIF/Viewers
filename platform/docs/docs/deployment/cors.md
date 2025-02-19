@@ -43,7 +43,7 @@ The best alternative is to host OHIF over HTTPS.
 OHIF can be served over HTTPS in a variety of ways (these are just some examples).
 - Website hosting services that offer HTTPS deployment (e.g,. Netlify) or offer HTTPS load balancers (AWS, Google Cloud etc.)
 - Setting up a reverse proxy (e.g. `nginx`) with a self-signed certificate that forwards requests to the OHIF server
-    - [An OHIF Docker image can be set up this way](./docker.md#ssl).
+    - [An OHIF Docker image can be set up this way](./docker/docker.md#ssl).
 :::
 
 ## Origin Definition

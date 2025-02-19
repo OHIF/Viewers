@@ -9,7 +9,7 @@ const ohif = {
   sopClassHandler: '@ohif/extension-default.sopClassHandlerModule.stack',
   hangingProtocols: '@ohif/extension-default.hangingProtocolModule.default',
   leftPanel: '@ohif/extension-default.panelModule.seriesList',
-  rightPanel: '@ohif/extension-default.panelModule.measure',
+  rightPanel: '@ohif/extension-dicom-microscopy.panelModule.measure',
 };
 
 export const cornerstone = {
@@ -87,9 +87,11 @@ function modeFactory({ modeConfiguration }) {
             id: ohif.layout,
             props: {
               leftPanels: [ohif.leftPanel],
+              leftPanelResizable: true,
               leftPanelClosed: true, // we have problem with rendering thumbnails for microscopy images
               rightPanelClosed: true, // we do not have the save microscopy measurements yet
-              rightPanels: ['@ohif/extension-dicom-microscopy.panelModule.measure'],
+              rightPanels: [ohif.rightPanel],
+              rightPanelResizable: true,
               viewports: [
                 {
                   namespace: '@ohif/extension-dicom-microscopy.viewportModule.microscopy-dicom',

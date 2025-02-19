@@ -2,17 +2,17 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import PropTypes from 'prop-types';
-import { utils } from '@ohif/core';
-import { useImageViewer, useViewportGrid, Dialog, ButtonEnums } from '@ohif/ui';
+import { useSystem, utils } from '@ohif/core';
+import { useImageViewer, Dialog, ButtonEnums } from '@ohif/ui';
+import { useViewportGrid } from '@ohif/ui-next';
 import { StudyBrowser } from '@ohif/ui-next';
 
 import { useTrackedMeasurements } from '../../getContextModule';
 import { Separator } from '@ohif/ui-next';
-import { PanelStudyBrowserHeader } from '@ohif/extension-default';
-import { useAppConfig } from '@state';
-import { defaultActionIcons, defaultViewPresets } from './constants';
-
+import { MoreDropdownMenu, PanelStudyBrowserHeader } from '@ohif/extension-default';
+import { defaultActionIcons } from './constants';
 const { formatDate, createStudyBrowserTabs } = utils;
+
 const thumbnailNoImageModalities = [
   'SR',
   'SEG',
@@ -24,18 +24,18 @@ const thumbnailNoImageModalities = [
   'OT',
   'PMAP',
 ];
+
 /**
  *
  * @param {*} param0
  */
 export default function PanelStudyBrowserTracking({
-  servicesManager,
   getImageSrc,
   getStudiesForPatientByMRN,
   requestDisplaySetCreationForStudy,
   dataSource,
-  commandsManager,
-}: withAppTypes) {
+}) {
+  const { servicesManager, commandsManager } = useSystem();
   const {
     displaySetService,
     uiDialogService,
@@ -46,10 +46,7 @@ export default function PanelStudyBrowserTracking({
     customizationService,
   } = servicesManager.services;
   const navigate = useNavigate();
-  const { mode: studyMode } = customizationService.getCustomization('PanelStudyBrowser.studyMode', {
-    id: 'default',
-    mode: 'all',
-  });
+  const studyMode = customizationService.getCustomization('studyBrowser.studyMode');
 
   const { t } = useTranslation('Common');
 
@@ -73,7 +70,7 @@ export default function PanelStudyBrowserTracking({
   const [jumpToDisplaySet, setJumpToDisplaySet] = useState(null);
 
   const [viewPresets, setViewPresets] = useState(
-    customizationService.getCustomization('studyBrowser.viewPresets')?.value || defaultViewPresets
+    customizationService.getCustomization('studyBrowser.viewPresets')
   );
 
   const [actionIcons, setActionIcons] = useState(defaultActionIcons);
@@ -185,7 +182,7 @@ export default function PanelStudyBrowserTracking({
         // so wait a bit of time to allow the viewports preferential loading
         // which improves user experience of responsiveness significantly on slower
         // systems.
-        window.setTimeout(() => setHasLoadedViewports(true), 250);
+        window.setTimeout(() => setHasLoadedViewports(true), 1000);
       }
 
       return;
@@ -213,7 +210,15 @@ export default function PanelStudyBrowserTracking({
         return;
       }
       // When the image arrives, render it and store the result in the thumbnailImgSrcMap
-      newImageSrcEntry[dSet.displaySetInstanceUID] = await getImageSrc(imageId);
+      let { thumbnailSrc } = displaySet;
+      if (!thumbnailSrc && displaySet.getThumbnailSrc) {
+        thumbnailSrc = await displaySet.getThumbnailSrc();
+      }
+      if (!thumbnailSrc) {
+        let thumbnailSrc = await getImageSrc(imageId);
+        displaySet.thumbnailSrc = thumbnailSrc;
+      }
+      newImageSrcEntry[dSet.displaySetInstanceUID] = thumbnailSrc;
 
       setThumbnailImageSrcMap(prevState => {
         return { ...prevState, ...newImageSrcEntry };
@@ -485,10 +490,6 @@ export default function PanelStudyBrowserTracking({
     });
   };
 
-  const onThumbnailContextMenu = (commandName, options) => {
-    commandsManager.runCommand(commandName, options);
-  };
-
   return (
     <>
       <>
@@ -522,14 +523,22 @@ export default function PanelStudyBrowserTracking({
         activeDisplaySetInstanceUIDs={activeViewportDisplaySetInstanceUIDs}
         showSettings={actionIcons.find(icon => icon.id === 'settings').value}
         viewPresets={viewPresets}
-        onThumbnailContextMenu={onThumbnailContextMenu}
+        ThumbnailMenuItems={MoreDropdownMenu({
+          commandsManager,
+          servicesManager,
+          menuItemsKey: 'studyBrowser.thumbnailMenuItems',
+        })}
+        StudyMenuItems={MoreDropdownMenu({
+          commandsManager,
+          servicesManager,
+          menuItemsKey: 'studyBrowser.studyMenuItems',
+        })}
       />
     </>
   );
 }
 
 PanelStudyBrowserTracking.propTypes = {
-  servicesManager: PropTypes.object.isRequired,
   dataSource: PropTypes.shape({
     getImageIdsForDisplaySet: PropTypes.func.isRequired,
   }).isRequired,
@@ -590,14 +599,12 @@ function _mapDisplaySets(
   displaySets
     .filter(ds => !ds.excludeFromThumbnailBrowser)
     .forEach(ds => {
-      const imageSrc = thumbnailImageSrcMap[ds.displaySetInstanceUID];
+      const { thumbnailSrc, displaySetInstanceUID } = ds; // thumbnailImageSrcMap[ds.displaySetInstanceUID];
       const componentType = _getComponentType(ds);
-      const numPanes = viewportGridService.getNumViewportPanes();
 
       const array =
         componentType === 'thumbnailTracked' ? thumbnailDisplaySets : thumbnailNoImageDisplaySets;
 
-      const { displaySetInstanceUID } = ds;
       const loadingProgress = displaySetLoadingState?.[displaySetInstanceUID];
 
       const thumbnailProps = {
@@ -612,7 +619,7 @@ function _mapDisplaySets(
         messages: ds.messages,
         StudyInstanceUID: ds.StudyInstanceUID,
         componentType,
-        imageSrc,
+        imageSrc: thumbnailSrc || thumbnailImageSrcMap[displaySetInstanceUID],
         dragData: {
           type: 'displayset',
           displaySetInstanceUID,

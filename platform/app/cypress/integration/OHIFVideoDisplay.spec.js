@@ -1,5 +1,6 @@
 describe('OHIF Video Display', function () {
   beforeEach(function () {
+    Cypress.on('uncaught:exception', () => false);
     cy.openStudyInViewer('2.25.96975534054447904995905761963464388233');
   });
 

@@ -1,7 +1,8 @@
 import React, { ReactElement, useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import classNames from 'classnames';
-import { AllInOneMenu, useViewportGrid } from '@ohif/ui';
+import { AllInOneMenu } from '@ohif/ui';
+import { useViewportGrid } from '@ohif/ui-next';
 import { Colormap } from './Colormap';
 import { Colorbar } from './Colorbar';
 import { setViewportColorbar } from './Colorbar';
@@ -50,7 +51,7 @@ export function WindowLevelActionMenu({
   const { colorbarService, cornerstoneViewportService } = servicesManager.services;
   const viewportInfo = cornerstoneViewportService.getViewportInfo(viewportId);
   const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
-  const backgroundColor = viewportInfo.getViewportOptions().background;
+  const backgroundColor = viewportInfo?.getViewportOptions().background;
   const isLight = backgroundColor ? utilities.isEqual(backgroundColor, [1, 1, 1]) : false;
 
   const { t } = useTranslation('WindowLevelActionMenu');

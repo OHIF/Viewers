@@ -1,6 +1,6 @@
 import React, { ReactElement } from 'react';
 import PropTypes from 'prop-types';
-import { useViewportGrid } from '@ohif/ui';
+import { useViewportGrid } from '@ohif/ui-next';
 import ViewportWindowLevel from '../ViewportWindowLevel/ViewportWindowLevel';
 
 const ActiveViewportWindowLevel = ({ servicesManager }: withAppTypes): ReactElement => {

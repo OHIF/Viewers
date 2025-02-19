@@ -9,7 +9,6 @@ const ohif = {
   sopClassHandler: '@ohif/extension-default.sopClassHandlerModule.stack',
   hangingProtocol: '@ohif/extension-default.hangingProtocolModule.default',
   leftPanel: '@ohif/extension-default.panelModule.seriesList',
-  rightPanel: '@ohif/extension-default.panelModule.measure',
 };
 
 const cornerstone = {
@@ -132,7 +131,9 @@ function modeFactory({ modeConfiguration }) {
             id: ohif.layout,
             props: {
               leftPanels: [ohif.leftPanel],
+              leftPanelResizable: true,
               rightPanels: [cornerstone.panelTool],
+              rightPanelResizable: true,
               // leftPanelClosed: true,
               viewports: [
                 {

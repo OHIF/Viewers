@@ -12,6 +12,7 @@ import {
   CommandsManager,
   HotkeysManager,
   ServiceProvidersManager,
+  SystemContextProvider,
 } from '@ohif/core';
 import {
   DialogProvider,
@@ -19,15 +20,15 @@ import {
   ModalProvider,
   ThemeWrapper,
   ViewportDialogProvider,
-  ViewportGridProvider,
   CineProvider,
   UserAuthenticationProvider,
-  ToolboxProvider,
 } from '@ohif/ui';
 import {
   ThemeWrapper as ThemeWrapperNext,
   NotificationProvider,
+  ViewportGridProvider,
   TooltipProvider,
+  ToolboxProvider,
 } from '@ohif/ui-next';
 // Viewer Project
 // TODO: Should this influence study list?
@@ -114,6 +115,7 @@ function App({
     [I18nextProvider, { i18n }],
     [ThemeWrapperNext],
     [ThemeWrapper],
+    [SystemContextProvider, { commandsManager, extensionManager, hotkeysManager, servicesManager }],
     [ToolboxProvider],
     [ViewportGridProvider, { service: viewportGridService }],
     [ViewportDialogProvider, { service: uiViewportDialogService }],

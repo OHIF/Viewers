@@ -151,13 +151,7 @@ export default class PanelService extends PubSubService {
     panelsIds.forEach(panelId => this.addPanel(position, panelId, options));
   }
 
-  public setPanels(
-    panels: { [key in PanelPosition]: string[] },
-    options: {
-      rightPanelClosed?: boolean;
-      leftPanelClosed?: boolean;
-    }
-  ): void {
+  public setPanels(panels: { [key in PanelPosition]: string[] }, options): void {
     this.reset();
 
     Object.keys(panels).forEach((position: PanelPosition) => {

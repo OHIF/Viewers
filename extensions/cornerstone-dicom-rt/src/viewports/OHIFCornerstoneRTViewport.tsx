@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
-import { useViewportGrid, LoadingIndicatorTotalPercent, ViewportActionArrows } from '@ohif/ui';
+import { ViewportActionArrows } from '@ohif/ui';
+import { useViewportGrid } from '@ohif/ui-next';
 
 import promptHydrateRT from '../utils/promptHydrateRT';
 import _getStatusComponent from './_getStatusComponent';
@@ -38,12 +39,16 @@ function OHIFCornerstoneRTViewport(props: withAppTypes) {
     throw new Error('RT viewport should only have a single display set');
   }
 
+  const LoadingIndicatorTotalPercent = customizationService.getCustomization(
+    'ui.loadingIndicatorTotalPercent'
+  );
+
   const rtDisplaySet = displaySets[0];
 
   const [viewportGrid, viewportGridService] = useViewportGrid();
 
   // States
-  const [selectedSegment, setSelectedSegment] = useState(1);
+  let selectedSegmentObjectIndex: number = 0;
   const { setPositionPresentation } = usePositionPresentationStore();
 
   // Hydration means that the RT is opened and segments are loaded into the
@@ -142,20 +147,32 @@ function OHIFCornerstoneRTViewport(props: withAppTypes) {
       const { segments } = segmentation;
 
       const numberOfSegments = Object.keys(segments).length;
+      //Get activeSegment each time because the user can select any segment from the list and thus the index should be updated
+      const activeSegment = segmentationService.getActiveSegment(viewportId);
+      if (activeSegment) {
+        const activeSegmentIndex = Object.values(segments).findIndex(
+          segment => segment.segmentIndex === activeSegment.segmentIndex
+        );
+        //from the activeSegment get the actual obeject array index to be used
+        selectedSegmentObjectIndex = activeSegmentIndex;
+      }
+      let newSelectedSegmentIndex = selectedSegmentObjectIndex + direction;
 
-      let newSelectedSegmentIndex = selectedSegment + direction;
-
-      // Segment 0 is always background
-      if (newSelectedSegmentIndex >= numberOfSegments - 1) {
-        newSelectedSegmentIndex = 1;
-      } else if (newSelectedSegmentIndex === 0) {
+      //Handle looping through list of segments
+      if (newSelectedSegmentIndex > numberOfSegments - 1) {
+        newSelectedSegmentIndex = 0;
+      } else if (newSelectedSegmentIndex < 0) {
         newSelectedSegmentIndex = numberOfSegments - 1;
       }
 
-      segmentationService.jumpToSegmentCenter(segmentationId, newSelectedSegmentIndex, viewportId);
-      setSelectedSegment(newSelectedSegmentIndex);
+      //convert segmentationId from object array index to property value of type Segment
+      //Functions below uses the segmentIndex object attribute so we have to do the conversion
+      const keyIndex = Object.values(segments)[newSelectedSegmentIndex]?.segmentIndex;
+      segmentationService.setActiveSegment(segmentationId, keyIndex);
+      segmentationService.jumpToSegmentCenter(segmentationId, keyIndex, viewportId);
+      selectedSegmentObjectIndex = newSelectedSegmentIndex;
     },
-    [selectedSegment, segmentationService]
+    [selectedSegmentObjectIndex, segmentationService]
   );
 
   useEffect(() => {

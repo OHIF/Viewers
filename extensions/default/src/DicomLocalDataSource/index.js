@@ -142,7 +142,9 @@ function createDicomLocalApi(dicomLocalConfig) {
           study.series.forEach(aSeries => {
             const { SeriesInstanceUID } = aSeries;
 
-            aSeries.instances.forEach(instance => {
+            const isMultiframe = aSeries.instances[0].NumberOfFrames > 1;
+
+            aSeries.instances.forEach((instance, index) => {
               const {
                 url: imageId,
                 StudyInstanceUID,
@@ -151,22 +153,14 @@ function createDicomLocalApi(dicomLocalConfig) {
               } = instance;
 
               instance.imageId = imageId;
-              const numberOfFrames = instance.NumberOfFrames || 1;
-              // Process all frames consistently, whether single or multiframe
-              for (let i = 0; i < numberOfFrames; i++) {
-                const frameNumber = i + 1;
-                const frameImageId = implementation.getImageIdsForInstance({
-                  instance,
-                  frame: frameNumber,
-                });
-                // Add imageId specific mapping to this data as the URL isn't necessarily WADO-URI.
-                metadataProvider.addImageIdToUIDs(frameImageId, {
-                  StudyInstanceUID,
-                  SeriesInstanceUID,
-                  SOPInstanceUID,
-                  frameNumber: numberOfFrames > 1 ? frameNumber : undefined,
-                });
-              }
+
+              // Add imageId specific mapping to this data as the URL isn't necessarily WADO-URI.
+              metadataProvider.addImageIdToUIDs(imageId, {
+                StudyInstanceUID,
+                SeriesInstanceUID,
+                SOPInstanceUID,
+                frameIndex: isMultiframe ? index : 1,
+              });
             });
 
             DicomMetadataStore._broadcastEvent(EVENTS.INSTANCES_ADDED, {
@@ -221,7 +215,8 @@ function createDicomLocalApi(dicomLocalConfig) {
       //   return instance.imageId;
       // }
 
-      const { StudyInstanceUID, SeriesInstanceUID, SOPInstanceUID } = instance;
+      const { StudyInstanceUID, SeriesInstanceUID } = instance;
+      const SOPInstanceUID = instance.SOPInstanceUID || instance.SopInstanceUID;
       const storedInstance = DicomMetadataStore.getInstance(
         StudyInstanceUID,
         SeriesInstanceUID,

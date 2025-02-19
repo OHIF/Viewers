@@ -57,10 +57,12 @@ export type VolumeShadeProps = {
   viewportId: string;
   commandsManager: CommandsManager;
   servicesManager: AppTypes.ServicesManager;
+  onClickShade?: (bool: boolean) => void;
 };
 
 export type VolumeLightingProps = {
   viewportId: string;
   commandsManager: CommandsManager;
   servicesManager: AppTypes.ServicesManager;
+  hasShade: boolean;
 };
