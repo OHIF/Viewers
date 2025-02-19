@@ -809,7 +809,8 @@ class SegmentationService extends PubSubService {
     if (!segmentIndex) {
       // grab the next available segment index based on the object keys,
       // so basically get the highest segment index value + 1
-      segmentIndex = Math.max(...Object.keys(csSegmentation.segments).map(Number)) + 1;
+      const segmentKeys = Object.keys(csSegmentation.segments);
+      segmentIndex = segmentKeys.length === 0 ? 1 : Math.max(...segmentKeys.map(Number)) + 1;
     }
 
     // update the segmentation

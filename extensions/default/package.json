@@ -1,6 +1,6 @@
 {
   "name": "@ohif/extension-default",
-  "version": "3.10.0-beta.94",
+  "version": "3.10.0-beta.99",
   "description": "Common/default features and functionality for basic image viewing",
   "author": "OHIF Core Team",
   "license": "MIT",
@@ -32,8 +32,8 @@
     "start": "yarn run dev"
   },
   "peerDependencies": {
-    "@ohif/core": "3.10.0-beta.94",
-    "@ohif/i18n": "3.10.0-beta.94",
+    "@ohif/core": "3.10.0-beta.99",
+    "@ohif/i18n": "3.10.0-beta.99",
     "dcmjs": "*",
     "dicomweb-client": "^0.10.4",
     "prop-types": "^15.6.2",
@@ -46,6 +46,8 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.20.13",
-    "@cornerstonejs/calculate-suv": "^1.1.0"
+    "@cornerstonejs/calculate-suv": "^1.1.0",
+    "lodash.get": "^4.4.2",
+    "lodash.uniqby": "^4.7.0"
   }
 }
