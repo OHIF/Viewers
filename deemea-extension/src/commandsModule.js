@@ -177,13 +177,14 @@ const commandsModule = ({ servicesManager }) => {
       }
     },
     resetPoints: () => {
-      const { measurementService } = servicesManager.services;
+      const { measurementService, uiDialogService } = servicesManager.services;
       window.parent.postMessage(
         {
           type: OHIFMessageType.RESET_POINTS,
         },
         '*'
       );
+      uiDialogService.dismiss({ id: 'context-menu' });
       measurementService.clearMeasurements();
     },
   };
