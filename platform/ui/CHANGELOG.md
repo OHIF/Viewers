@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.10.0-beta.101](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.100...v3.10.0-beta.101) (2025-02-20)
+
+
+### Bug Fixes
+
+* icon is not defined ([#4794](https://github.com/OHIF/Viewers/issues/4794)) ([b7cd0c6](https://github.com/OHIF/Viewers/commit/b7cd0c6027debcbfa573bc8068bc2e87928af9a5))
+
+
+
+
+
 # [3.10.0-beta.100](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.99...v3.10.0-beta.100) (2025-02-19)
 
 **Note:** Version bump only for package @ohif/ui
