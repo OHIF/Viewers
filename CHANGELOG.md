@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.10.0-beta.102](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.101...v3.10.0-beta.102) (2025-02-20)
+
+
+### Bug Fixes
+
+* combine frame instance ([#4792](https://github.com/OHIF/Viewers/issues/4792)) ([55f0b54](https://github.com/OHIF/Viewers/commit/55f0b54db1e81a99f9e2d92b1d6d78dfb02762f0))
+
+
+
+
+
 # [3.10.0-beta.101](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.100...v3.10.0-beta.101) (2025-02-20)
 
 
