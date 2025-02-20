@@ -46,7 +46,7 @@ function OHIFCornerstoneSEGViewport(props: withAppTypes) {
   const [viewportGrid, viewportGridService] = useViewportGrid();
 
   // States
-  const [selectedSegment, setSelectedSegment] = useState(1);
+  let selectedSegmentObjectIndex: number = 0;
   const { setPositionPresentation } = usePositionPresentationStore();
 
   // Hydration means that the SEG is opened and segments are loaded into the
@@ -138,20 +138,33 @@ function OHIFCornerstoneSEGViewport(props: withAppTypes) {
 
       const numberOfSegments = Object.keys(segments).length;
 
-      let newSelectedSegmentIndex = selectedSegment + direction;
+      //Get activeSegment each time because the user can select any segment from the list and thus the index should be updated
+      const activeSegment = segmentationService.getActiveSegment(viewportId);
+      if (activeSegment) {
+        const activeSegmentIndex = Object.values(segments).findIndex(
+          segment => segment.segmentIndex === activeSegment.segmentIndex
+        );
+        //from the activeSegment get the actual obeject array index to be used
+        selectedSegmentObjectIndex = activeSegmentIndex;
+      }
+      let newSelectedSegmentIndex = selectedSegmentObjectIndex + direction;
 
-      // Segment 0 is always background
-
+      //Handle looping through list of segments
       if (newSelectedSegmentIndex > numberOfSegments - 1) {
-        newSelectedSegmentIndex = 1;
-      } else if (newSelectedSegmentIndex === 0) {
+        newSelectedSegmentIndex = 0;
+      } else if (newSelectedSegmentIndex < 0) {
         newSelectedSegmentIndex = numberOfSegments - 1;
       }
 
-      segmentationService.jumpToSegmentCenter(segmentationId, newSelectedSegmentIndex, viewportId);
-      setSelectedSegment(newSelectedSegmentIndex);
+      //convert segmentationId from object array index to property value of type Segment
+      //Functions below uses the segmentIndex object attribute so we have to do the conversion
+      const segmentIndex = Object.values(segments)[newSelectedSegmentIndex]?.segmentIndex;
+
+      segmentationService.setActiveSegment(segmentationId, segmentIndex);
+      segmentationService.jumpToSegmentCenter(segmentationId, segmentIndex, viewportId);
+      selectedSegmentObjectIndex = newSelectedSegmentIndex;
     },
-    [selectedSegment]
+    [selectedSegmentObjectIndex]
   );
 
   const hydrateSEG = useCallback(() => {
