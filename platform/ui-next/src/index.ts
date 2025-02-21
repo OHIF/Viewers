@@ -32,7 +32,6 @@ import {
   ThumbnailList,
   PanelSection,
   DisplaySetMessageListTooltip,
-  Toolbox,
   ToolboxUI,
   DoubleSlider,
   Label,
@@ -44,6 +43,9 @@ import {
   PopoverAnchor,
   PopoverContent,
   PopoverTrigger,
+  ResizablePanelGroup,
+  ResizablePanel,
+  ResizableHandle,
   Select,
   SelectTrigger,
   SelectContent,
@@ -90,11 +92,25 @@ import {
   ViewportActionCornersLocations,
   ViewportOverlay,
   ViewportGrid,
+  ToolButton,
+  ToolButtonList,
+  ToolButtonListDefault,
+  ToolButtonListDropDown,
+  ToolButtonListItem,
+  ToolButtonListDivider,
+  Toolbox,
+  Numeric,
 } from './components';
 import { DataRow } from './components/DataRow';
 
-import { useNotification, NotificationProvider } from './contextProviders';
+import {
+  useNotification,
+  NotificationProvider,
+  useToolbox,
+  ToolboxProvider,
+} from './contextProviders';
 import { ViewportGridContext, ViewportGridProvider, useViewportGrid } from './contextProviders';
+import * as utils from './utils';
 
 export {
   ErrorBoundary,
@@ -140,7 +156,6 @@ export {
   ThumbnailList,
   PanelSection,
   DisplaySetMessageListTooltip,
-  Toolbox,
   ToolboxUI,
   Label,
   Slider,
@@ -150,6 +165,9 @@ export {
   PopoverAnchor,
   PopoverContent,
   PopoverTrigger,
+  ResizablePanelGroup,
+  ResizablePanel,
+  ResizableHandle,
   Select,
   SelectTrigger,
   SelectContent,
@@ -196,4 +214,15 @@ export {
   ViewportActionCornersLocations,
   ViewportOverlay,
   ViewportGrid,
+  ToolButton,
+  ToolButtonList,
+  ToolButtonListDefault,
+  ToolButtonListDropDown,
+  ToolButtonListItem,
+  ToolButtonListDivider,
+  ToolboxProvider,
+  Toolbox,
+  useToolbox,
+  utils,
+  Numeric,
 };

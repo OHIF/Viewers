@@ -86,7 +86,7 @@ function modeFactory() {
       initToolGroups(extensionManager, toolGroupService, commandsManager);
 
       // init customizations
-      customizationService.addModeCustomizations([
+      customizationService.setCustomizations([
         '@ohif/extension-test.customizationModule.custom-context-menu',
       ]);
 
@@ -150,8 +150,10 @@ function modeFactory() {
               // leftPanels: [ohif.thumbnailList],
               // rightPanels: [dicomSeg.panel, ohif.measurements],
               leftPanels: [tracked.thumbnailList],
+              leftPanelResizable: true,
               // Can use cornerstone.measurements for all measurements
               rightPanels: [cornerstone.panel, tracked.measurements, cornerstone.measurements],
+              rightPanelResizable: true,
               // rightPanelClosed: true, // optional prop to start with collapse panels
               viewports: [
                 {

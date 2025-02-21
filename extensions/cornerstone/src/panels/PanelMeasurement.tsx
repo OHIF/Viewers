@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { utils } from '@ohif/core';
 import { MeasurementTable } from '@ohif/ui-next';
 import debounce from 'lodash.debounce';

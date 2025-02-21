@@ -3,7 +3,7 @@ import { useResizeDetector } from 'react-resize-detector';
 import * as cs3DTools from '@cornerstonejs/tools';
 import { Enums, eventTarget, getEnabledElement } from '@cornerstonejs/core';
 import { MeasurementService } from '@ohif/core';
-import { AllInOneMenu, Notification, useViewportDialog } from '@ohif/ui';
+import { AllInOneMenu, useViewportDialog } from '@ohif/ui';
 import type { Types as csTypes } from '@cornerstonejs/core';
 
 import { setEnabledElement } from '../state';
@@ -100,6 +100,7 @@ const OHIFCornerstoneViewport = React.memo(
       segmentationService,
       cornerstoneCacheService,
       viewportActionCornersService,
+      customizationService,
     } = servicesManager.services;
 
     const [viewportDialogState] = useViewportDialog();
@@ -373,6 +374,8 @@ const OHIFCornerstoneViewport = React.memo(
     const { ref: resizeRef } = useResizeDetector({
       onResize,
     });
+
+    const Notification = customizationService.getCustomization('ui.notificationComponent');
 
     return (
       <React.Fragment>

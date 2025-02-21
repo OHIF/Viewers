@@ -75,7 +75,7 @@
   "optionalDependencies": {
     "@percy/cypress": "^3.1.1",
     "@playwright/test": "^1.48.0",
-    "cypress": "^13.16.1",
+    "cypress": "^14.0.0",
     "cypress-file-upload": "^5.0.8"
   },
   "devDependencies": {
@@ -108,14 +108,12 @@
   },
   "resolutions": {
     "commander": "8.3.0",
-    "dcmjs": ">=0.33.0",
-    "dicomweb-client": ">=0.10.4",
+    "path-to-regexp": "0.1.12",
     "nth-check": "^2.1.1",
     "trim-newlines": "^5.0.0",
     "glob-parent": "^6.0.2",
     "trim": "^1.0.0",
     "package-json": "^8.1.0",
-    "typescript": "5.5.4",
     "sharp": "^0.32.6",
     "rollup": "2.79.2",
     "body-parser": "1.20.3"

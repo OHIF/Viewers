@@ -45,6 +45,10 @@ export default function areAllImagePositionsEqual(instances: Array<any>): boolea
   const firstImagePositionPatient = toNumber(instances[0].ImagePositionPatient);
   const lastIpp = toNumber(instances[instances.length - 1].ImagePositionPatient);
 
+  if (!firstImagePositionPatient || !lastIpp) {
+    return false;
+  }
+
   const averageSpacingBetweenFrames =
     _getPerpendicularDistance(firstImagePositionPatient, lastIpp) / (instances.length - 1);
 

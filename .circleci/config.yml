@@ -2,7 +2,7 @@ version: 2.1
 
 orbs:
   codecov: codecov/codecov@1.0.5
-  cypress: cypress-io/cypress@3.3.1
+  cypress: cypress-io/cypress@3.4.2
 
 defaults: &defaults
   docker:
@@ -341,8 +341,10 @@ jobs:
     steps:
       - install_bun
       - run:
-          name: Install Xvfb
-          command: sudo apt-get update && sudo apt-get install -y xvfb
+          name: Install System Dependencies
+          command: |
+            sudo apt-get update
+            sudo apt-get install -y xvfb libgtk2.0-0 libgtk-3-0 libgbm-dev libnotify-dev libgconf-2-4 libnss3 libxss1 libasound2 libxtst6
       - run:
           name: Start Xvfb
           command: Xvfb :99 -screen 0 1920x1080x24 &
@@ -351,13 +353,11 @@ jobs:
           name: Export Display Variable
           command: export DISPLAY=:99
       - cypress/install:
-          install-browsers: true
           install-command: bun install --no-save
           package-manager: yarn
       - cypress/run-tests:
-          cypress-command:
-            npx wait-on@latest http://localhost:3000 && cd platform/app &&  npx cypress run --record
-            --browser chrome --parallel
+          cypress-command: |
+            npx wait-on@latest http://localhost:3000 && cd platform/app && npx cypress run --record --parallel
           start-command: bun run test:data && bun run test:e2e:serve
 
   DOCKER_MULTIARCH_MANIFEST:

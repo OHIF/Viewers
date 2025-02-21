@@ -3,6 +3,405 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.10.0-beta.102](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.101...v3.10.0-beta.102) (2025-02-20)
+
+**Note:** Version bump only for package @ohif/extension-default
+
+
+
+
+
+# [3.10.0-beta.101](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.100...v3.10.0-beta.101) (2025-02-20)
+
+**Note:** Version bump only for package @ohif/extension-default
+
+
+
+
+
+# [3.10.0-beta.100](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.99...v3.10.0-beta.100) (2025-02-19)
+
+**Note:** Version bump only for package @ohif/extension-default
+
+
+
+
+
+# [3.10.0-beta.99](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.98...v3.10.0-beta.99) (2025-02-18)
+
+
+### Bug Fixes
+
+* cache thumbnail in display set ([#4782](https://github.com/OHIF/Viewers/issues/4782)) ([2410c6a](https://github.com/OHIF/Viewers/commit/2410c6a50904c1235993900e837876cc26af019b))
+
+
+
+
+
+# [3.10.0-beta.98](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.97...v3.10.0-beta.98) (2025-02-18)
+
+
+### Bug Fixes
+
+* lodash dependencies ([#4791](https://github.com/OHIF/Viewers/issues/4791)) ([4e16099](https://github.com/OHIF/Viewers/commit/4e16099ad3ab777b09f6ac8f181025cfd656ab6b))
+
+
+
+
+
+# [3.10.0-beta.97](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.96...v3.10.0-beta.97) (2025-02-18)
+
+
+### Features
+
+* improve dicom tag browser with nested rows ([#4451](https://github.com/OHIF/Viewers/issues/4451)) ([0b5836c](https://github.com/OHIF/Viewers/commit/0b5836ca1a908e152336752672b196f0d533f4f9))
+
+
+
+
+
+# [3.10.0-beta.96](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.95...v3.10.0-beta.96) (2025-02-18)
+
+**Note:** Version bump only for package @ohif/extension-default
+
+
+
+
+
+# [3.10.0-beta.95](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.94...v3.10.0-beta.95) (2025-02-13)
+
+**Note:** Version bump only for package @ohif/extension-default
+
+
+
+
+
+# [3.10.0-beta.94](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.93...v3.10.0-beta.94) (2025-02-11)
+
+**Note:** Version bump only for package @ohif/extension-default
+
+
+
+
+
+# [3.10.0-beta.93](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.92...v3.10.0-beta.93) (2025-02-04)
+
+
+### Bug Fixes
+
+* add commandsManager to MoreDropdownMenu onClick props ([#4765](https://github.com/OHIF/Viewers/issues/4765)) ([bbf1a19](https://github.com/OHIF/Viewers/commit/bbf1a19676b2b345a0f911dde319e5ffefe29fa6))
+
+
+
+
+
+# [3.10.0-beta.92](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.91...v3.10.0-beta.92) (2025-02-04)
+
+**Note:** Version bump only for package @ohif/extension-default
+
+
+
+
+
+# [3.10.0-beta.91](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.90...v3.10.0-beta.91) (2025-02-04)
+
+**Note:** Version bump only for package @ohif/extension-default
+
+
+
+
+
+# [3.10.0-beta.90](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.89...v3.10.0-beta.90) (2025-02-04)
+
+**Note:** Version bump only for package @ohif/extension-default
+
+
+
+
+
+# [3.10.0-beta.89](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.88...v3.10.0-beta.89) (2025-02-04)
+
+
+### Features
+
+* **ui:** customization option for viewport notification ([#4638](https://github.com/OHIF/Viewers/issues/4638)) ([8acbd76](https://github.com/OHIF/Viewers/commit/8acbd760d801dcaf624c5d9fb636a029201b91e1))
+
+
+
+
+
+# [3.10.0-beta.88](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.87...v3.10.0-beta.88) (2025-02-04)
+
+**Note:** Version bump only for package @ohif/extension-default
+
+
+
+
+
+# [3.10.0-beta.87](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.86...v3.10.0-beta.87) (2025-02-03)
+
+
+### Bug Fixes
+
+* **measurement label auto-completion:** Customization of measurement label auto-completion fails for measurements following arrow annotations. ([#4739](https://github.com/OHIF/Viewers/issues/4739)) ([e035ef1](https://github.com/OHIF/Viewers/commit/e035ef1dcc72ecbe2a757e3b814551d768d7e610))
+
+
+
+
+
+# [3.10.0-beta.86](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.85...v3.10.0-beta.86) (2025-02-03)
+
+
+### Bug Fixes
+
+* **store-segmentation:** storing segmentations was hitting the wrong command resulting in an undefined datasource ([#4755](https://github.com/OHIF/Viewers/issues/4755)) ([9b8e5cf](https://github.com/OHIF/Viewers/commit/9b8e5cfd1a6121a58991c0f75660a2fd9913a4e7))
+
+
+
+
+
+# [3.10.0-beta.85](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.84...v3.10.0-beta.85) (2025-02-03)
+
+
+### Features
+
+* Add customization support for more UI components  ([#4634](https://github.com/OHIF/Viewers/issues/4634)) ([f15eb44](https://github.com/OHIF/Viewers/commit/f15eb44b4cf49de1b73a22512571cec02effaef3))
+
+
+
+
+
+# [3.10.0-beta.84](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.83...v3.10.0-beta.84) (2025-01-31)
+
+**Note:** Version bump only for package @ohif/extension-default
+
+
+
+
+
+# [3.10.0-beta.83](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.82...v3.10.0-beta.83) (2025-01-31)
+
+**Note:** Version bump only for package @ohif/extension-default
+
+
+
+
+
+# [3.10.0-beta.82](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.81...v3.10.0-beta.82) (2025-01-31)
+
+**Note:** Version bump only for package @ohif/extension-default
+
+
+
+
+
+# [3.10.0-beta.81](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.80...v3.10.0-beta.81) (2025-01-29)
+
+**Note:** Version bump only for package @ohif/extension-default
+
+
+
+
+
+# [3.10.0-beta.80](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.79...v3.10.0-beta.80) (2025-01-29)
+
+
+### Features
+
+* **customization:** enable custom onDropHandler for viewportGrid ([#4641](https://github.com/OHIF/Viewers/issues/4641)) ([054b262](https://github.com/OHIF/Viewers/commit/054b262e9cbeb0f44de65d05641efe1e8944a4f5))
+
+
+
+
+
+# [3.10.0-beta.79](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.78...v3.10.0-beta.79) (2025-01-28)
+
+
+### Bug Fixes
+
+* **dependencies:** Update dcmjs library and improve documentation links ([#4741](https://github.com/OHIF/Viewers/issues/4741)) ([d554f02](https://github.com/OHIF/Viewers/commit/d554f02f7cdb876e4132fb94e3b3df8d11b7bb5c))
+
+
+
+
+
+# [3.10.0-beta.78](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.77...v3.10.0-beta.78) (2025-01-28)
+
+
+### Features
+
+* **side-panels:** Added resize handle interactive feedback for side panels ([#4734](https://github.com/OHIF/Viewers/issues/4734)) ([6abb095](https://github.com/OHIF/Viewers/commit/6abb095b8a39c5ae4f8df8852b3ddb3249ec463f))
+
+
+
+
+
+# [3.10.0-beta.77](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.76...v3.10.0-beta.77) (2025-01-28)
+
+**Note:** Version bump only for package @ohif/extension-default
+
+
+
+
+
+# [3.10.0-beta.76](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.75...v3.10.0-beta.76) (2025-01-27)
+
+**Note:** Version bump only for package @ohif/extension-default
+
+
+
+
+
+# [3.10.0-beta.75](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.74...v3.10.0-beta.75) (2025-01-27)
+
+
+### Features
+
+* **static-wado:** add support for case-insensitive searching ([#4603](https://github.com/OHIF/Viewers/issues/4603)) ([ac6e674](https://github.com/OHIF/Viewers/commit/ac6e674b4d094f942556d045178011bbf3f81796))
+
+
+
+
+
+# [3.10.0-beta.74](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.73...v3.10.0-beta.74) (2025-01-27)
+
+**Note:** Version bump only for package @ohif/extension-default
+
+
+
+
+
+# [3.10.0-beta.73](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.72...v3.10.0-beta.73) (2025-01-24)
+
+**Note:** Version bump only for package @ohif/extension-default
+
+
+
+
+
+# [3.10.0-beta.72](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.71...v3.10.0-beta.72) (2025-01-24)
+
+**Note:** Version bump only for package @ohif/extension-default
+
+
+
+
+
+# [3.10.0-beta.71](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.70...v3.10.0-beta.71) (2025-01-23)
+
+
+### Features
+
+* **customization:** new customization service api ([#4688](https://github.com/OHIF/Viewers/issues/4688)) ([55ad8ef](https://github.com/OHIF/Viewers/commit/55ad8efbabc3fabd8031fc08927b2f92ae5aec69))
+
+
+
+
+
+# [3.10.0-beta.70](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.69...v3.10.0-beta.70) (2025-01-23)
+
+
+### Features
+
+* **panels:** responsive thumbnails based on panel size  ([#4723](https://github.com/OHIF/Viewers/issues/4723)) ([d9abc3d](https://github.com/OHIF/Viewers/commit/d9abc3da8d94d6c5ab0cc5af25a5f61849905a35))
+
+
+
+
+
+# [3.10.0-beta.69](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.68...v3.10.0-beta.69) (2025-01-22)
+
+
+### Bug Fixes
+
+* **seg:** sphere scissor on stack and cpu rendering reset properties was broken ([#4721](https://github.com/OHIF/Viewers/issues/4721)) ([f00d182](https://github.com/OHIF/Viewers/commit/f00d18292f02e8910215d913edfc994850a68d88))
+
+
+
+
+
+# [3.10.0-beta.68](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.67...v3.10.0-beta.68) (2025-01-21)
+
+
+### Features
+
+* **resizable-side-panels:** Make the left and right side panels (optionally) resizable. ([#4672](https://github.com/OHIF/Viewers/issues/4672)) ([d90a4cf](https://github.com/OHIF/Viewers/commit/d90a4cfb16cc0daed9b905de9780f44cca1323f9))
+
+
+
+
+
+# [3.10.0-beta.67](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.66...v3.10.0-beta.67) (2025-01-21)
+
+
+### Bug Fixes
+
+* **ui:** Update dependencies and add missing icons ([#4699](https://github.com/OHIF/Viewers/issues/4699)) ([cf97fa9](https://github.com/OHIF/Viewers/commit/cf97fa9b7b9687a9b73c1cf6926bc9fbc39b6512))
+
+
+
+
+
+# [3.10.0-beta.66](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.65...v3.10.0-beta.66) (2025-01-21)
+
+
+### Bug Fixes
+
+* Inconsistent Handling of Patient Name Tag ([#4703](https://github.com/OHIF/Viewers/issues/4703)) ([8aedb2e](https://github.com/OHIF/Viewers/commit/8aedb2ec54a0ccf2550f745fed6f0b8aa184a860))
+
+
+
+
+
+# [3.10.0-beta.65](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.64...v3.10.0-beta.65) (2025-01-20)
+
+**Note:** Version bump only for package @ohif/extension-default
+
+
+
+
+
+# [3.10.0-beta.64](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.63...v3.10.0-beta.64) (2025-01-20)
+
+
+### Bug Fixes
+
+* **hp:** Display set should allow remembered updates ([#4707](https://github.com/OHIF/Viewers/issues/4707)) ([464148e](https://github.com/OHIF/Viewers/commit/464148ece66b48b583dc6e998ca4d11c66746f3a))
+
+
+
+
+
+# [3.10.0-beta.63](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.62...v3.10.0-beta.63) (2025-01-17)
+
+**Note:** Version bump only for package @ohif/extension-default
+
+
+
+
+
+# [3.10.0-beta.62](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.61...v3.10.0-beta.62) (2025-01-16)
+
+
+### Bug Fixes
+
+* context menu icon ([#4696](https://github.com/OHIF/Viewers/issues/4696)) ([1993161](https://github.com/OHIF/Viewers/commit/19931614dc53da440718e512d39a87ca9118b96e))
+
+
+
+
+
+# [3.10.0-beta.61](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.60...v3.10.0-beta.61) (2025-01-16)
+
+
+### Bug Fixes
+
+* **multiframe:** handling proxies properly ([#4693](https://github.com/OHIF/Viewers/issues/4693)) ([ec4b5a6](https://github.com/OHIF/Viewers/commit/ec4b5a6876cea77278e5cffaf4108eeeefdc57dc))
+
+
+
+
+
 # [3.10.0-beta.60](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.59...v3.10.0-beta.60) (2025-01-15)
 
 **Note:** Version bump only for package @ohif/extension-default

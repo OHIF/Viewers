@@ -186,7 +186,7 @@ export class SelectTree extends Component<PropType> {
           <div className="flex w-full flex-col">
             {this.props.items.length > 0 && (
               <div className="absolute mt-2 mr-2.5 mb-3 ml-3 h-4 w-4">
-                <Icons.Magnifier fill="#a3a3a3" />
+                <Icons.Search fill="#a3a3a3" />
               </div>
             )}
             <input

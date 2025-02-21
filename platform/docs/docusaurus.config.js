@@ -47,8 +47,8 @@ module.exports = {
     defaultLocale: 'en',
     locales: ['en'],
   },
-  onBrokenLinks: 'warn',
-  onBrokenMarkdownLinks: 'warn',
+  onBrokenLinks: 'throw',
+  onBrokenMarkdownLinks: 'throw',
   favicon: 'img/favicon.ico',
   themes: ['@docusaurus/theme-live-codeblock'],
   plugins: [

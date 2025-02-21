@@ -3,7 +3,7 @@ import { ToolbarService } from '@ohif/core';
 const toolbarButtons = [
   {
     id: 'MeasurementTools',
-    uiType: 'ohif.splitButton',
+    uiType: 'ohif.toolButtonList',
     props: {
       groupId: 'MeasurementTools',
       // group evaluate to determine which item should move to the top
@@ -131,7 +131,7 @@ const toolbarButtons = [
   },
   {
     id: 'dragPan',
-    uiType: 'ohif.radioGroup',
+    uiType: 'ohif.toolButton',
     props: {
       icon: 'tool-move',
       label: 'Pan',
@@ -147,7 +147,7 @@ const toolbarButtons = [
   },
   {
     id: 'TagBrowser',
-    uiType: 'ohif.radioGroup',
+    uiType: 'ohif.toolButton',
     props: {
       icon: 'dicom-tag-browser',
       label: 'Dicom Tag Browser',

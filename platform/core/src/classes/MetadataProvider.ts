@@ -6,10 +6,10 @@ import DicomMetadataStore from '../services/DicomMetadataStore';
 import fetchPaletteColorLookupTableData from '../utils/metadataProvider/fetchPaletteColorLookupTableData';
 import toNumber from '../utils/toNumber';
 import combineFrameInstance from '../utils/combineFrameInstance';
+import formatPN from '../utils/formatPN';
 
 class MetadataProvider {
   private readonly imageURIToUIDs: Map<string, any> = new Map();
-  private readonly imageUIDsByImageId: Map<string, any> = new Map();
   // Can be used to store custom metadata for a specific type.
   // For instance, the scaling metadata for PET can be stored here
   // as type "scalingModule"
@@ -25,7 +25,6 @@ class MetadataProvider {
     // An example would be dicom hosted at some random site.
     const imageURI = imageIdToURI(imageId);
     this.imageURIToUIDs.set(imageURI, uids);
-    this.imageUIDsByImageId.set(imageId, uids);
   }
 
   addCustomMetadata(imageId, type, metadata) {
@@ -347,7 +346,7 @@ class MetadataProvider {
 
         let patientName;
         if (PatientName) {
-          patientName = PatientName.Alphabetic;
+          patientName = formatPN(PatientName);
         }
 
         metadata = {
@@ -383,7 +382,7 @@ class MetadataProvider {
         };
 
         break;
-      case WADO_IMAGE_LOADER_TAGS.PER_SERIES_MODULE:
+      case WADO_IMAGE_LOADER_TAGS.PET_SERIES_MODULE:
         metadata = {
           correctedImage: instance.CorrectedImage,
           units: instance.Units,
@@ -462,11 +461,6 @@ class MetadataProvider {
   }
 
   getUIDsFromImageID(imageId) {
-    const cachedUIDs = this.imageUIDsByImageId.get(imageId);
-    if (cachedUIDs) {
-      return cachedUIDs;
-    }
-
     if (imageId.startsWith('wadors:')) {
       const strippedImageId = imageId.split('/studies/')[1];
       const splitImageId = strippedImageId.split('/');
@@ -571,7 +565,7 @@ const WADO_IMAGE_LOADER_TAGS = {
   SOP_COMMON_MODULE: 'sopCommonModule',
   PET_IMAGE_MODULE: 'petImageModule',
   PET_ISOTOPE_MODULE: 'petIsotopeModule',
-  PER_SERIES_MODULE: 'petSeriesModule',
+  PET_SERIES_MODULE: 'petSeriesModule',
   OVERLAY_PLANE_MODULE: 'overlayPlaneModule',
   PATIENT_DEMOGRAPHIC_MODULE: 'patientDemographicModule',
 
