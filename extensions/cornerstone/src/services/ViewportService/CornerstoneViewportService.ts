@@ -534,7 +534,6 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     // First check if the active viewport can just be navigated to show the given item
     const activeViewport = this.getCornerstoneViewport(activeViewportId);
     if (activeViewport.isReferenceViewable(metadata, { withNavigation: true })) {
-      console.log('Reference is viewable directly in', activeViewport.id, metadata);
       return activeViewportId;
     }
 
@@ -543,7 +542,6 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     for (const id of this.viewportsById.keys()) {
       const viewport = this.getCornerstoneViewport(id);
       if (viewport?.isReferenceViewable(metadata, { withNavigation: true })) {
-        console.log('Reference is viewable directly non-active viewport', viewport.id, metadata);
         return id;
       }
     }
@@ -553,11 +551,6 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     if (
       activeViewport.isReferenceViewable(metadata, { withNavigation: true, withOrientation: true })
     ) {
-      console.log(
-        'Reference is viewable with orientation change on active viewport',
-        activeViewport.id,
-        metadata
-      );
       return activeViewportId;
     }
 
@@ -567,11 +560,6 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
       if (
         viewport?.isReferenceViewable(metadata, { withNavigation: true, withOrientation: true })
       ) {
-        console.log(
-          'Reference is viewable with orientation change on non-active viewport',
-          id,
-          metadata
-        );
         return id;
       }
     }
