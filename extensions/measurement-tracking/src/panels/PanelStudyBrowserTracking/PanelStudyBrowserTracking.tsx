@@ -63,7 +63,6 @@ export default function PanelStudyBrowserTracking({
     ...StudyInstanceUIDs,
   ]);
   const [studyDisplayList, setStudyDisplayList] = useState([]);
-  const [hasLoadedViewports, setHasLoadedViewports] = useState(false);
   const [displaySets, setDisplaySets] = useState([]);
   const [displaySetsLoadingState, setDisplaySetsLoadingState] = useState({});
   const [thumbnailImageSrcMap, setThumbnailImageSrcMap] = useState({});
@@ -176,18 +175,6 @@ export default function PanelStudyBrowserTracking({
 
   // ~~ Initial Thumbnails
   useEffect(() => {
-    if (!hasLoadedViewports) {
-      if (activeViewportId) {
-        // Once there is an active viewport id, it means the layout is ready
-        // so wait a bit of time to allow the viewports preferential loading
-        // which improves user experience of responsiveness significantly on slower
-        // systems.
-        window.setTimeout(() => setHasLoadedViewports(true), 1000);
-      }
-
-      return;
-    }
-
     let currentDisplaySets = displaySetService.activeDisplaySets;
     // filter non based on the list of modalities that are supported by cornerstone
     currentDisplaySets = currentDisplaySets.filter(
@@ -215,7 +202,7 @@ export default function PanelStudyBrowserTracking({
         thumbnailSrc = await displaySet.getThumbnailSrc();
       }
       if (!thumbnailSrc) {
-        let thumbnailSrc = await getImageSrc(imageId);
+        const thumbnailSrc = await getImageSrc(imageId);
         displaySet.thumbnailSrc = thumbnailSrc;
       }
       newImageSrcEntry[dSet.displaySetInstanceUID] = thumbnailSrc;
@@ -224,7 +211,7 @@ export default function PanelStudyBrowserTracking({
         return { ...prevState, ...newImageSrcEntry };
       });
     });
-  }, [displaySetService, dataSource, getImageSrc, activeViewportId, hasLoadedViewports]);
+  }, [displaySetService, dataSource, getImageSrc, activeViewportId]);
 
   // ~~ displaySets
   useEffect(() => {
@@ -281,9 +268,6 @@ export default function PanelStudyBrowserTracking({
     const SubscriptionDisplaySetsAdded = displaySetService.subscribe(
       displaySetService.EVENTS.DISPLAY_SETS_ADDED,
       data => {
-        if (!hasLoadedViewports) {
-          return;
-        }
         const { displaySetsAdded, options } = data;
         displaySetsAdded.forEach(async dSet => {
           const displaySetInstanceUID = dSet.displaySetInstanceUID;
