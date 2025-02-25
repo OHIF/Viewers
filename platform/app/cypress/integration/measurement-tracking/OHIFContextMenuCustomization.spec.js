@@ -12,7 +12,7 @@ describe('OHIF Context Menu', function () {
     // Add length measurement
     cy.addLengthMeasurement();
     cy.get('[data-cy="prompt-begin-tracking-yes-btn"]').as('yesBtn').click();
-    cy.get('[data-cy="measurement-item"]').as('measurementItem').click();
+    cy.get('[data-cy="data-row"]').as('measurementItem').click();
 
     const [x1, y1] = [150, 100];
     cy.get('@viewport')
@@ -30,6 +30,6 @@ describe('OHIF Context Menu', function () {
 
     // Click "Finding" subMenu
     cy.get('[data-cy="context-menu-item"]').as('item').contains('Aortic insufficiency').click();
-    cy.get('[data-cy="measurement-item"]').as('measure-item').contains('Aortic insufficiency');
+    cy.get('[data-cy="data-row"]').as('measure-item').contains('Aortic insufficiency');
   });
 });

@@ -1,35 +1,69 @@
 // External
+
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import i18n from '@ohif/i18n';
 import { I18nextProvider } from 'react-i18next';
 import { BrowserRouter } from 'react-router-dom';
+
 import Compose from './routes/Mode/Compose';
-import { ServicesManager, ExtensionManager, CommandsManager, HotkeysManager } from '@ohif/core';
+import {
+  ExtensionManager,
+  CommandsManager,
+  HotkeysManager,
+  ServiceProvidersManager,
+} from '@ohif/core';
 import {
   DialogProvider,
   Modal,
   ModalProvider,
-  SnackbarProvider,
   ThemeWrapper,
   ViewportDialogProvider,
   ViewportGridProvider,
   CineProvider,
   UserAuthenticationProvider,
+  ToolboxProvider,
 } from '@ohif/ui';
+import {
+  ThemeWrapper as ThemeWrapperNext,
+  NotificationProvider,
+  TooltipProvider,
+} from '@ohif/ui-next';
 // Viewer Project
 // TODO: Should this influence study list?
 import { AppConfigProvider } from '@state';
 import createRoutes from './routes';
 import appInit from './appInit.js';
 import OpenIdConnectRoutes from './utils/OpenIdConnectRoutes';
+import { ShepherdJourneyProvider } from 'react-shepherd';
 
 let commandsManager: CommandsManager,
   extensionManager: ExtensionManager,
-  servicesManager: ServicesManager,
+  servicesManager: AppTypes.ServicesManager,
+  serviceProvidersManager: ServiceProvidersManager,
   hotkeysManager: HotkeysManager;
 
-function App({ config, defaultExtensions, defaultModes }) {
+function App({
+  config = {
+    /**
+     * Relative route from domain root that OHIF instance is installed at.
+     * For example:
+     *
+     * Hosted at: https://ohif.org/where-i-host-the/viewer/
+     * Value: `/where-i-host-the/viewer/`
+     * */
+    routerBaseName: '/',
+    /**
+     *
+     */
+    showLoadingIndicator: true,
+    showStudyList: true,
+    oidc: [],
+    extensions: [],
+  },
+  defaultExtensions = [],
+  defaultModes = [],
+}) {
   const [init, setInit] = useState(null);
   useEffect(() => {
     const run = async () => {
@@ -47,20 +81,30 @@ function App({ config, defaultExtensions, defaultModes }) {
   commandsManager = init.commandsManager;
   extensionManager = init.extensionManager;
   servicesManager = init.servicesManager;
+  serviceProvidersManager = init.serviceProvidersManager;
   hotkeysManager = init.hotkeysManager;
 
   // Set appConfig
   const appConfigState = init.appConfig;
   const { routerBasename, modes, dataSources, oidc, showStudyList } = appConfigState;
 
+  // get the maximum 3D texture size
+  const canvas = document.createElement('canvas');
+  const gl = canvas.getContext('webgl2');
+
+  if (gl) {
+    const max3DTextureSize = gl.getParameter(gl.MAX_3D_TEXTURE_SIZE);
+    appConfigState.max3DTextureSize = max3DTextureSize;
+  }
+
   const {
     uiDialogService,
     uiModalService,
-    uiNotificationService,
     uiViewportDialogService,
     viewportGridService,
     cineService,
     userAuthenticationService,
+    uiNotificationService,
     customizationService,
   } = servicesManager.services;
 
@@ -68,14 +112,27 @@ function App({ config, defaultExtensions, defaultModes }) {
     [AppConfigProvider, { value: appConfigState }],
     [UserAuthenticationProvider, { service: userAuthenticationService }],
     [I18nextProvider, { i18n }],
+    [ThemeWrapperNext],
     [ThemeWrapper],
+    [ToolboxProvider],
     [ViewportGridProvider, { service: viewportGridService }],
     [ViewportDialogProvider, { service: uiViewportDialogService }],
     [CineProvider, { service: cineService }],
-    [SnackbarProvider, { service: uiNotificationService }],
+    [NotificationProvider, { service: uiNotificationService }],
+    [TooltipProvider],
     [DialogProvider, { service: uiDialogService }],
     [ModalProvider, { service: uiModalService, modal: Modal }],
+    [ShepherdJourneyProvider],
   ];
+
+  // Loop through and register each of the service providers registered with the ServiceProvidersManager.
+  const providersFromManager = Object.entries(serviceProvidersManager.providers);
+  if (providersFromManager.length > 0) {
+    providersFromManager.forEach(([serviceName, provider]) => {
+      providers.push([provider, { service: servicesManager.services[serviceName] }]);
+    });
+  }
+
   const CombinedProviders = ({ children }) => Compose({ components: providers, children });
 
   let authRoutes = null;
@@ -128,27 +185,9 @@ App.propTypes = {
   /* Extensions that are "bundled" or "baked-in" to the application.
    * These would be provided at build time as part of they entry point. */
   defaultExtensions: PropTypes.array,
-};
-
-App.defaultProps = {
-  config: {
-    /**
-     * Relative route from domain root that OHIF instance is installed at.
-     * For example:
-     *
-     * Hosted at: https://ohif.org/where-i-host-the/viewer/
-     * Value: `/where-i-host-the/viewer/`
-     * */
-    routerBaseName: '/',
-    /**
-     *
-     */
-    showLoadingIndicator: true,
-    showStudyList: true,
-    oidc: [],
-    extensions: [],
-  },
-  defaultExtensions: [],
+  /* Modes that are "bundled" or "baked-in" to the application.
+   * These would be provided at build time as part of they entry point. */
+  defaultModes: PropTypes.array,
 };
 
 export default App;

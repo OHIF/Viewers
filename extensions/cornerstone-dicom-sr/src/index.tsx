@@ -1,6 +1,6 @@
 import React from 'react';
 import getSopClassHandlerModule from './getSopClassHandlerModule';
-import getHangingProtocolModule, { srProtocol } from './getHangingProtocolModule';
+import { srProtocol } from './getHangingProtocolModule';
 import onModeEnter from './onModeEnter';
 import getCommandsModule from './commandsModule';
 import preRegistration from './init';
@@ -8,9 +8,10 @@ import { id } from './id.js';
 import toolNames from './tools/toolNames';
 import hydrateStructuredReport from './utils/hydrateStructuredReport';
 import createReferencedImageDisplaySet from './utils/createReferencedImageDisplaySet';
+import Enums from './enums';
 
 const Component = React.lazy(() => {
-  return import(/* webpackPrefetch: true */ './viewports/OHIFCornerstoneSRViewport');
+  return import(/* webpackPrefetch: true */ './components/OHIFCornerstoneSRViewport');
 });
 
 const OHIFCornerstoneSRViewport = props => {
@@ -70,4 +71,4 @@ const dicomSRExtension = {
 export default dicomSRExtension;
 
 // Put static exports here so they can be type checked
-export { hydrateStructuredReport, createReferencedImageDisplaySet, srProtocol };
+export { hydrateStructuredReport, createReferencedImageDisplaySet, srProtocol, Enums, toolNames };

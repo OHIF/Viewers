@@ -7,18 +7,20 @@ const fs = require('fs');
 const webpack = require('webpack');
 
 // ~~ PLUGINS
-const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+// const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 const TerserJSPlugin = require('terser-webpack-plugin');
 
 // ~~ PackageJSON
 // const vtkRules = require('vtk.js/Utilities/config/dependency.js').webpack.core
 //   .rules;
 // ~~ RULES
-const loadShadersRule = require('./rules/loadShaders.js');
+// const loadShadersRule = require('./rules/loadShaders.js');
 const loadWebWorkersRule = require('./rules/loadWebWorkers.js');
 const transpileJavaScriptRule = require('./rules/transpileJavaScript.js');
 const cssToJavaScript = require('./rules/cssToJavaScript.js');
-const stylusToJavaScript = require('./rules/stylusToJavaScript.js');
+// Only uncomment for old v2 stylus
+// const stylusToJavaScript = require('./rules/stylusToJavaScript.js');
+const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
 
 // ~~ ENV VARS
 const NODE_ENV = process.env.NODE_ENV;
@@ -55,10 +57,6 @@ if (!process.env.APP_CONFIG) {
 }
 
 module.exports = (env, argv, { SRC_DIR, ENTRY }) => {
-  if (!process.env.NODE_ENV) {
-    throw new Error('process.env.NODE_ENV not set');
-  }
-
   const mode = NODE_ENV === 'production' ? 'production' : 'development';
   const isProdBuild = NODE_ENV === 'production';
   const isQuickBuild = QUICK_BUILD === 'true';
@@ -96,12 +94,51 @@ module.exports = (env, argv, { SRC_DIR, ENTRY }) => {
       type: 'filesystem',
     },
     module: {
-      noParse: [/(codec)/, /(dicomicc)/],
+      noParse: [/(dicomicc)/],
       rules: [
+        ...(isProdBuild
+          ? []
+          : [
+              {
+                test: /\.[jt]sx?$/,
+                exclude: /node_modules/,
+                loader: 'babel-loader',
+                options: {
+                  plugins: isProdBuild ? [] : ['react-refresh/babel'],
+                },
+              },
+            ]),
         {
-          test: /\.js$/,
-          enforce: 'pre',
-          use: 'source-map-loader',
+          test: /\.svg?$/,
+          oneOf: [
+            {
+              use: [
+                {
+                  loader: '@svgr/webpack',
+                  options: {
+                    svgoConfig: {
+                      plugins: [
+                        {
+                          name: 'preset-default',
+                          params: {
+                            overrides: {
+                              removeViewBox: false,
+                            },
+                          },
+                        },
+                      ],
+                    },
+                    prettier: false,
+                    svgo: true,
+                    titleProp: true,
+                  },
+                },
+              ],
+              issuer: {
+                and: [/\.(ts|tsx|js|jsx|md|mdx)$/],
+              },
+            },
+          ],
         },
         transpileJavaScriptRule(mode),
         loadWebWorkersRule,
@@ -120,6 +157,17 @@ module.exports = (env, argv, { SRC_DIR, ENTRY }) => {
           test: /\.wasm/,
           type: 'asset/resource',
         },
+        {
+          test: /\.(png|jpe?g|gif|svg)$/i,
+          use: [
+            {
+              loader: 'file-loader',
+              options: {
+                name: 'assets/images/[name].[ext]',
+              },
+            },
+          ],
+        },
       ], //.concat(vtkRules),
     },
     resolve: {
@@ -133,8 +181,6 @@ module.exports = (env, argv, { SRC_DIR, ENTRY }) => {
         '@state': path.resolve(__dirname, '../platform/app/src/state'),
         'dicom-microscopy-viewer':
           'dicom-microscopy-viewer/dist/dynamic-import/dicomMicroscopyViewer.min.js',
-        '@cornerstonejs/dicom-image-loader':
-          '@cornerstonejs/dicom-image-loader/dist/dynamic-import/cornerstoneDICOMImageLoader.min.js',
       },
       // Which directories to search when resolving modules
       modules: [
@@ -162,6 +208,7 @@ module.exports = (env, argv, { SRC_DIR, ENTRY }) => {
       new webpack.ProvidePlugin({
         Buffer: ['buffer', 'Buffer'],
       }),
+      ...(isProdBuild ? [] : [new ReactRefreshWebpackPlugin({ overlay: false })]),
       // Uncomment to generate bundle analyzer
       // new BundleAnalyzerPlugin(),
     ],

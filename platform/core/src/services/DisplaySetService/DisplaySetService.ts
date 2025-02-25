@@ -131,7 +131,7 @@ export default class DisplaySetService extends PubSubService {
       : [...this.getDisplaySetCache().values()];
 
     const displaySet = displaySets.find(ds => {
-      return ds.images && ds.images.some(i => i.SOPInstanceUID === sopInstanceUID);
+      return ds.instances?.some(i => i.SOPInstanceUID === sopInstanceUID);
     });
 
     return displaySet;
@@ -204,7 +204,7 @@ export default class DisplaySetService extends PubSubService {
     }
 
     // If array of instances => One instance.
-    const displaySetsAdded = [];
+    const displaySetsAdded = new Array<DisplaySet>();
 
     if (batch) {
       for (let i = 0; i < input.length; i++) {
@@ -423,5 +423,25 @@ export default class DisplaySetService extends PubSubService {
     });
 
     return result;
+  }
+
+  /**
+   *
+   * @param sortFn function to sort the display sets
+   * @param direction direction to sort the display sets
+   * @returns void
+   */
+  public sortDisplaySets(
+    sortFn: (a: DisplaySet, b: DisplaySet) => number,
+    direction: string,
+    suppressEvent = false
+  ): void {
+    this.activeDisplaySets.sort(sortFn);
+    if (direction === 'descending') {
+      this.activeDisplaySets.reverse();
+    }
+    if (!suppressEvent) {
+      this._broadcastEvent(EVENTS.DISPLAY_SETS_CHANGED, this.activeDisplaySets);
+    }
   }
 }

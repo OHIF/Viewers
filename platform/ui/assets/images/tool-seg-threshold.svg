@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="24px" height="24px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>tool-seg-threshold</title>
+    <g id="tool-seg-threshold" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <rect id="Rectangle" x="0" y="0" width="24" height="24"></rect>
+        <g id="Group" transform="translate(2.4184, 14.3673)" stroke="currentColor" stroke-width="1.5">
+            <line x1="16.5816327" y1="2.13265306" x2="19.0816327" y2="2.13265306" id="Line-2" stroke-linecap="round"></line>
+            <line x1="0.0816326531" y1="2.13265306" x2="12.0816327" y2="2.13265306" id="Line-2" stroke-linecap="round"></line>
+            <circle id="Oval" cx="14.2244898" cy="2.09183673" r="2.09183673"></circle>
+        </g>
+        <g id="Group" transform="translate(11.7092, 7.4592) scale(-1, 1) translate(-11.7092, -7.4592)translate(1.9184, 5.3673)" stroke="currentColor" stroke-width="1.5">
+            <line x1="16" y1="2.13265306" x2="19.0816327" y2="2.13265306" id="Line-2" stroke-linecap="round"></line>
+            <line x1="0.0816326531" y1="2.13265306" x2="11" y2="2.13265306" id="Line-2" stroke-linecap="round"></line>
+            <circle id="Oval" cx="13.2244898" cy="2.09183673" r="2.09183673"></circle>
+        </g>
+    </g>
+</svg>

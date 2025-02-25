@@ -1,5 +1,10 @@
-import { Types, Enums } from '@cornerstonejs/core';
-import { Types as CoreTypes } from '@ohif/core';
+import {
+  Types,
+  Enums,
+  getEnabledElementByViewportId,
+  VolumeViewport,
+  utilities,
+} from '@cornerstonejs/core';
 import { StackViewportData, VolumeViewportData } from '../../types/CornerstoneCacheService';
 import getCornerstoneBlendMode from '../../utils/getCornerstoneBlendMode';
 import getCornerstoneOrientation from '../../utils/getCornerstoneOrientation';
@@ -10,6 +15,7 @@ import { SyncGroup } from '../SyncGroupService/SyncGroupService';
 export type InitialImageOptions = {
   index?: number;
   preset?: JumpPresets;
+  useOnce?: boolean;
 };
 
 export type ViewportOptions = {
@@ -18,12 +24,15 @@ export type ViewportOptions = {
   toolGroupId: string;
   viewportId: string;
   // Presentation ID to store/load presentation state from
-  presentationIds?: CoreTypes.PresentationIds;
+  presentationIds?: AppTypes.PresentationIds;
   orientation?: Enums.OrientationAxis;
   background?: Types.Point3;
   displayArea?: Types.DisplayArea;
   syncGroups?: SyncGroup[];
   initialImageOptions?: InitialImageOptions;
+  rotation?: number;
+  flipHorizontal?: boolean;
+  viewReference?: Types.ViewReference;
   customViewportProps?: Record<string, unknown>;
   /*
    * Allows drag and drop of display sets not matching viewport options, but
@@ -36,12 +45,14 @@ export type PublicViewportOptions = {
   id?: string;
   viewportType?: string;
   toolGroupId?: string;
-  presentationIds?: CoreTypes.PresentationIds;
+  presentationIds?: string[];
   viewportId?: string;
   orientation?: Enums.OrientationAxis;
   background?: Types.Point3;
   displayArea?: Types.DisplayArea;
   syncGroups?: SyncGroup[];
+  rotation?: number;
+  flipHorizontal?: boolean;
   initialImageOptions?: InitialImageOptions;
   customViewportProps?: Record<string, unknown>;
   allowUnmatchedView?: boolean;
@@ -89,13 +100,30 @@ const DEFAULT_TOOLGROUP_ID = 'default';
 
 // Return true if the data contains the given display set UID OR the imageId
 // if it is a composite object.
-const dataContains = (data, displaySetUID: string, imageId?: string): boolean => {
-  if (data.displaySetInstanceUID === displaySetUID) {
-    return true;
-  }
+const dataContains = ({ data, displaySetUID, imageId, viewport }): boolean => {
   if (imageId && data.isCompositeStack && data.imageIds) {
     return !!data.imageIds.find(dataId => dataId === imageId);
   }
+
+  if (imageId && (data.volumeId || viewport instanceof VolumeViewport)) {
+    const isAcquisition = !!viewport.getCurrentImageId();
+
+    if (!isAcquisition) {
+      return false;
+    }
+
+    const imageURI = utilities.imageIdToURI(imageId);
+    const hasImageId = viewport.hasImageURI(imageURI);
+
+    if (hasImageId) {
+      return true;
+    }
+  }
+
+  if (data.displaySetInstanceUID === displaySetUID) {
+    return true;
+  }
+
   return false;
 };
 
@@ -106,6 +134,7 @@ class ViewportInfo {
   private displaySetOptions: Array<DisplaySetOptions>;
   private viewportData: StackViewportData | VolumeViewportData;
   private renderingEngineId: string;
+  private viewReference: Types.ViewReference;
 
   constructor(viewportId: string) {
     this.viewportId = viewportId;
@@ -122,10 +151,20 @@ class ViewportInfo {
       return false;
     }
 
+    const { viewport } = getEnabledElementByViewportId(this.viewportId) || {};
+
     if (this.viewportData.data.length) {
-      return !!this.viewportData.data.find(data => dataContains(data, displaySetUID, imageId));
+      return !!this.viewportData.data.find(data =>
+        dataContains({ data, displaySetUID, imageId, viewport })
+      );
     }
-    return dataContains(this.viewportData.data, displaySetUID, imageId);
+
+    return dataContains({
+      data: this.viewportData.data,
+      displaySetUID,
+      imageId,
+      viewport,
+    });
   }
 
   public destroy = (): void => {
@@ -167,6 +206,10 @@ class ViewportInfo {
     return this.viewportId;
   }
 
+  public getViewReference(): Types.ViewReference {
+    return this.viewportOptions?.viewReference;
+  }
+
   public setPublicDisplaySetOptions(
     publicDisplaySetOptions: PublicDisplaySetOptions[] | DisplaySetSelector[]
   ): Array<DisplaySetOptions> {
@@ -198,21 +241,22 @@ class ViewportInfo {
     return viewportData.data.displaySetInstanceUID === displaySetInstanceUID;
   }
 
-  public setPublicViewportOptions(viewportOptionsEntry: PublicViewportOptions): ViewportOptions {
-    let viewportType = viewportOptionsEntry.viewportType;
-    const { toolGroupId = DEFAULT_TOOLGROUP_ID, presentationIds } = viewportOptionsEntry;
-    let orientation;
+  /**
+   *
+   * @param viewportOptionsEntry - the base values for the options
+   * @param viewportTypeDisplaySet  - allows overriding the viewport type
+   */
+  public setPublicViewportOptions(
+    viewportOptionsEntry: PublicViewportOptions,
+    viewportTypeDisplaySet?: string
+  ): ViewportOptions {
+    const ohifViewportType = viewportTypeDisplaySet || viewportOptionsEntry.viewportType || STACK;
+    const { presentationIds } = viewportOptionsEntry;
+    let { toolGroupId = DEFAULT_TOOLGROUP_ID } = viewportOptionsEntry;
+    // Just assign the orientation for any viewport type and let the viewport deal with it
+    const orientation = getCornerstoneOrientation(viewportOptionsEntry.orientation);
 
-    if (!viewportType) {
-      viewportType = getCornerstoneViewportType(STACK);
-    } else {
-      viewportType = getCornerstoneViewportType(viewportOptionsEntry.viewportType);
-    }
-
-    // map SAGITTAL, AXIAL, CORONAL orientation to be used by cornerstone
-    if (viewportOptionsEntry.viewportType?.toLowerCase() !== STACK) {
-      orientation = getCornerstoneOrientation(viewportOptionsEntry.orientation);
-    }
+    const viewportType = getCornerstoneViewportType(ohifViewportType);
 
     if (!toolGroupId) {
       toolGroupId = DEFAULT_TOOLGROUP_ID;
@@ -238,7 +282,7 @@ class ViewportInfo {
     return this.viewportOptions;
   }
 
-  public getPresentationIds(): CoreTypes.PresentationIds {
+  public getPresentationIds(): AppTypes.PresentationIds | null {
     const { presentationIds } = this.viewportOptions;
     return presentationIds;
   }

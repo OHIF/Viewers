@@ -10,9 +10,15 @@ import checkSingleFrames from './utils/validations/checkSingleFrames';
  */
 export default function getDisplaySetMessages(
   instances: Array<any>,
-  isReconstructable: boolean
+  isReconstructable: boolean,
+  isDynamicVolume: boolean
 ): DisplaySetMessageList {
   const messages = new DisplaySetMessageList();
+
+  if (isDynamicVolume) {
+    return messages;
+  }
+
   if (!instances.length) {
     messages.addMessage(DisplaySetMessage.CODES.NO_VALID_INSTANCES);
     return;

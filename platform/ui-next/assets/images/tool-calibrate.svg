@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="28px" height="28px" viewBox="0 0 28 28" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>tool-calibrate</title>
+    <g id="tool-calibrate" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <rect id="Rectangle" x="0" y="0" width="28" height="28"></rect>
+        <g id="calibrate" transform="translate(2.5, 16.5)" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.25">
+            <polyline id="Path" points="20 6 23 3 20 0"></polyline>
+            <line x1="1" y1="3" x2="22" y2="3" id="Path"></line>
+            <polyline id="Path" points="3 6 0 3 3 0"></polyline>
+        </g>
+        <rect id="Rectangle" stroke="currentColor" stroke-width="1.25" x="2" y="5" width="24" height="6" rx="2"></rect>
+        <line x1="6.5" y1="10.5" x2="6.5" y2="8.5" id="Line-5" stroke="currentColor" stroke-linecap="round"></line>
+        <line x1="9.5" y1="10.5" x2="9.5" y2="8.5" id="Line-5" stroke="currentColor" stroke-linecap="round"></line>
+        <line x1="12.5" y1="10.5" x2="12.5" y2="8.5" id="Line-5" stroke="currentColor" stroke-linecap="round"></line>
+        <line x1="15.5" y1="10.5" x2="15.5" y2="8.5" id="Line-5" stroke="currentColor" stroke-linecap="round"></line>
+        <line x1="18.5" y1="10.5" x2="18.5" y2="8.5" id="Line-5" stroke="currentColor" stroke-linecap="round"></line>
+        <line x1="21.5" y1="10.5" x2="21.5" y2="8.5" id="Line-5" stroke="currentColor" stroke-linecap="round"></line>
+    </g>
+</svg>

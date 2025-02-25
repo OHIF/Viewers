@@ -1,42 +1,34 @@
-import React, { createContext, useCallback, useContext, useEffect, useReducer } from 'react';
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useReducer,
+  ReactNode,
+} from 'react';
 import merge from 'lodash.merge';
 
 import PropTypes from 'prop-types';
 import { ViewportGridService, utils } from '@ohif/core';
 import viewportLabels from '../utils/viewportLabels';
 
-interface Viewport {
-  viewportId: string;
-  displaySetInstanceUIDs: string[];
-  viewportOptions: any;
-  displaySetSelectors: any[];
-  displaySetOptions: any[];
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-  viewportLabel: any;
-}
-
-interface Layout {
-  numRows: number;
-  numCols: number;
-  layoutType: string;
-}
-
-interface DefaultState {
-  activeViewportId: string | null;
-  layout: Layout;
-  viewports: Map<string, Viewport>;
-}
-
-const DEFAULT_STATE: DefaultState = {
+const DEFAULT_STATE: AppTypes.ViewportGrid.State = {
   activeViewportId: null,
   layout: {
     numRows: 0,
     numCols: 0,
     layoutType: 'grid',
   },
+  // this flag is used to determine if the hanging protocol layout is active
+  // so that we can inherit the viewport options from the previous state
+  // otherwise we will not allow that. Basically the issue is that we need
+  // to be able to come out of the hanging protocol layout and go back to the
+  // regular layout e.g., if we are in the MPR hanging protocol, and someone use
+  // 1x1 layout by custom layout selector, there is no way to drag and drop
+  // a non-reconstructible series to the viewport since it will always
+  // inherit the hanging protocol layout options (volume viewport),
+  // so we need to be able to switch back to the regular layout.
+  isHangingProtocolLayout: false,
   // Viewports structure has been changed to Map (previously it was
   // tied to the viewportIndex which caused multiple issues. Now we have
   // moved completely to viewportId which is unique for each viewport.
@@ -45,6 +37,7 @@ const DEFAULT_STATE: DefaultState = {
       default: {
         viewportId: 'default',
         displaySetInstanceUIDs: [],
+        isReady: false,
         viewportOptions: {
           viewportId: 'default',
         },
@@ -65,7 +58,10 @@ const getViewportLabel = (viewports, viewportId) => {
   return viewportLabels[viewportIds.indexOf(viewportId)];
 };
 
-const determineActiveViewportId = (state: DefaultState, newViewports: Map) => {
+const determineActiveViewportId = (
+  state: AppTypes.ViewportGrid.State,
+  newViewports: Map<string, AppTypes.ViewportGrid.Viewport>
+) => {
   const { activeViewportId } = state;
   const currentActiveViewport = state.viewports.get(activeViewportId);
 
@@ -86,7 +82,11 @@ const determineActiveViewportId = (state: DefaultState, newViewports: Map) => {
   // and find the best match
   const currentOrientation = currentActiveViewport.viewportOptions.orientation;
 
-  const sortedViewports = Array.from(newViewports.values()).sort((a, b) => {
+  const filteredNewViewports = Array.from(newViewports.values()).filter(
+    viewport => viewport.displaySetInstanceUIDs?.length > 0
+  );
+
+  const sortedViewports = Array.from(filteredNewViewports.values()).sort((a, b) => {
     // Compare orientations
     const aOrientationMatch = a.viewportOptions.orientation === currentOrientation;
     const bOrientationMatch = b.viewportOptions.orientation === currentOrientation;
@@ -115,10 +115,37 @@ const determineActiveViewportId = (state: DefaultState, newViewports: Map) => {
   return sortedViewports[0].viewportId;
 };
 
-export const ViewportGridContext = createContext(DEFAULT_STATE);
+// Define the API interface
+interface ViewportGridApi {
+  getState: () => AppTypes.ViewportGrid.State;
+  setActiveViewportId: (index: string) => void;
+  setDisplaySetsForViewport: (props: any) => void;
+  setDisplaySetsForViewports: (props: any[]) => void;
+  setLayout: (layout: AppTypes.ViewportGrid.Layout) => void;
+  reset: () => void;
+  set: (gridLayoutState: Partial<AppTypes.ViewportGrid.State>) => void;
+  getNumViewportPanes: () => number;
+  setViewportIsReady: (viewportId: string, isReady: boolean) => void;
+  getGridViewportsReady: () => boolean;
+  getActiveViewportOptionByKey: (key: string) => any;
+  setViewportGridSizeChanged: (props: any) => void;
+  publishViewportsReady: () => void;
+}
 
-export function ViewportGridProvider({ children, service }) {
-  const viewportGridReducer = (state: DefaultState, action) => {
+// Update the context type
+export const ViewportGridContext = createContext<[AppTypes.ViewportGrid.State, ViewportGridApi]>([
+  DEFAULT_STATE,
+  {} as ViewportGridApi,
+]);
+
+// Update the provider props type
+interface ViewportGridProviderProps {
+  children: ReactNode;
+  service: ViewportGridService;
+}
+
+export function ViewportGridProvider({ children, service }: ViewportGridProviderProps) {
+  const viewportGridReducer = (state: AppTypes.ViewportGrid.State, action) => {
     switch (action.type) {
       case 'SET_ACTIVE_VIEWPORT_ID': {
         return { ...state, ...{ activeViewportId: action.payload } };
@@ -143,10 +170,18 @@ export function ViewportGridProvider({ children, service }) {
 
           const previousViewport = viewports.get(viewportId);
 
+          // remove options that were meant for one time usage
+          if (previousViewport?.viewportOptions?.initialImageOptions) {
+            const { useOnce } = previousViewport.viewportOptions.initialImageOptions;
+            if (useOnce) {
+              previousViewport.viewportOptions.initialImageOptions = null;
+            }
+          }
+
           // Use the newly provide viewportOptions and display set options
           // when provided, and otherwise fall back to the previous ones.
           // That allows for easy updates of just the display set.
-          const viewportOptions = merge(
+          let viewportOptions = merge(
             {},
             previousViewport?.viewportOptions,
             updatedViewport?.viewportOptions
@@ -155,10 +190,23 @@ export function ViewportGridProvider({ children, service }) {
           const displaySetOptions = updatedViewport.displaySetOptions || [];
           if (!displaySetOptions.length) {
             // Copy all the display set options, assuming a full set of displaySet UID's is provided.
-            displaySetOptions.push(...previousViewport.displaySetOptions);
+            if (state.isHangingProtocolLayout) {
+              displaySetOptions.push(...(previousViewport.displaySetOptions || []));
+            }
             if (!displaySetOptions.length) {
               displaySetOptions.push({});
             }
+          }
+
+          // if it is not part of the hanging protocol layout, we should remove the toolGroupId
+          // and viewportType from the viewportOptions so that it doesn't
+          // inherit the hanging protocol layout options, only when
+          // the viewport options is not provided (e.g., when drag and drop)
+          // otherwise, programmatically set options should be preserved
+          if (!updatedViewport.viewportOptions && !state.isHangingProtocolLayout) {
+            viewportOptions = {
+              viewportId: viewportOptions.viewportId,
+            };
           }
 
           const newViewport = {
@@ -166,13 +214,13 @@ export function ViewportGridProvider({ children, service }) {
             displaySetInstanceUIDs,
             viewportOptions,
             displaySetOptions,
-            viewportLabel: getViewportLabel(viewports, viewportId),
+            // viewportLabel: getViewportLabel(viewports, viewportId),
           };
 
-          viewportOptions.presentationIds = ViewportGridService.getPresentationIds(
-            newViewport,
-            viewports
-          );
+          viewportOptions.presentationIds = service.getPresentationIds({
+            viewport: newViewport,
+            viewports,
+          });
 
           viewports.set(viewportId, {
             ...viewports.get(viewportId),
@@ -190,12 +238,12 @@ export function ViewportGridProvider({ children, service }) {
           layoutType = 'grid',
           activeViewportId,
           findOrCreateViewport,
+          isHangingProtocolLayout,
         } = action.payload;
 
         // If empty viewportOptions, we use numRow and numCols to calculate number of viewports
         const hasOptions = layoutOptions?.length;
-        const viewports = new Map<string, Viewport>();
-
+        const viewports = new Map<string, AppTypes.ViewportGrid.Viewport>();
         // Options is a temporary state store which can be used by the
         // findOrCreate to store state about already found viewports.  Typically,
         // it will be used to store the display set UID's which are already
@@ -208,7 +256,21 @@ export function ViewportGridProvider({ children, service }) {
           for (let col = 0; col < numCols; col++) {
             const position = col + row * numCols;
             const layoutOption = layoutOptions[position];
-            const positionId = layoutOption?.positionId || `${col}-${row}`;
+
+            let xPos, yPos, w, h;
+            if (layoutOptions && layoutOptions[position]) {
+              ({ x: xPos, y: yPos, width: w, height: h } = layoutOptions[position]);
+            } else {
+              w = 1 / numCols;
+              h = 1 / numRows;
+              xPos = col * w;
+              yPos = row * h;
+            }
+
+            const colIndex = Math.round(xPos * numCols);
+            const rowIndex = Math.round(yPos * numRows);
+
+            const positionId = layoutOption?.positionId || `${colIndex}-${rowIndex}`;
 
             if (hasOptions && position >= layoutOptions.length) {
               continue;
@@ -225,6 +287,7 @@ export function ViewportGridProvider({ children, service }) {
             // If the viewport doesn't have a viewportId, we create one
             if (!viewport.viewportOptions?.viewportId) {
               const randomUID = utils.uuidv4().substring(0, 8);
+              viewport.viewportOptions = viewport.viewportOptions || {};
               viewport.viewportOptions.viewportId = `viewport-${randomUID}`;
             }
 
@@ -234,16 +297,6 @@ export function ViewportGridProvider({ children, service }) {
             // and it is part of the read only state
             viewports.set(viewport.viewportId, viewport);
 
-            let xPos, yPos, w, h;
-            if (layoutOptions && layoutOptions[position]) {
-              ({ x: xPos, y: yPos, width: w, height: h } = layoutOptions[position]);
-            } else {
-              w = 1 / numCols;
-              h = 1 / numRows;
-              xPos = col * w;
-              yPos = row * h;
-            }
-
             Object.assign(viewport, {
               width: w,
               height: h,
@@ -252,12 +305,14 @@ export function ViewportGridProvider({ children, service }) {
             });
 
             viewport.viewportLabel = getViewportLabel(viewports, viewport.viewportId);
+            viewport.isReady = false;
 
             if (!viewport.viewportOptions.presentationIds) {
-              viewport.viewportOptions.presentationIds = ViewportGridService.getPresentationIds(
+              const presentationIds = service.getPresentationIds({
                 viewport,
-                viewports
-              );
+                viewports,
+              });
+              viewport.viewportOptions.presentationIds = presentationIds;
             }
           }
         }
@@ -275,6 +330,7 @@ export function ViewportGridProvider({ children, service }) {
             layoutType,
           },
           viewports,
+          isHangingProtocolLayout,
         };
         return ret;
       }
@@ -286,6 +342,25 @@ export function ViewportGridProvider({ children, service }) {
         return {
           ...state,
           ...action.payload,
+        };
+      }
+
+      case 'VIEWPORT_IS_READY': {
+        const { viewportId, isReady } = action.payload;
+        const viewports = new Map(state.viewports);
+        const viewport = viewports.get(viewportId);
+        if (!viewport) {
+          return;
+        }
+
+        viewports.set(viewportId, {
+          ...viewport,
+          isReady,
+        });
+
+        return {
+          ...state,
+          viewports,
         };
       }
 
@@ -319,6 +394,25 @@ export function ViewportGridProvider({ children, service }) {
     [dispatch]
   );
 
+  const setViewportIsReady = useCallback(
+    (viewportId, isReady) => {
+      dispatch({
+        type: 'VIEWPORT_IS_READY',
+        payload: {
+          viewportId,
+          isReady,
+        },
+      });
+    },
+    [dispatch, viewportGridState]
+  );
+
+  const getGridViewportsReady = useCallback(() => {
+    const { viewports } = viewportGridState;
+    const readyViewports = Array.from(viewports.values()).filter(viewport => viewport.isReady);
+    return readyViewports.length === viewports.size;
+  }, [viewportGridState]);
+
   const setLayout = useCallback(
     ({
       layoutType,
@@ -327,6 +421,7 @@ export function ViewportGridProvider({ children, service }) {
       layoutOptions = [],
       activeViewportId,
       findOrCreateViewport,
+      isHangingProtocolLayout,
     }) =>
       dispatch({
         type: 'SET_LAYOUT',
@@ -337,6 +432,7 @@ export function ViewportGridProvider({ children, service }) {
           layoutOptions,
           activeViewportId,
           findOrCreateViewport,
+          isHangingProtocolLayout,
         },
       }),
     [dispatch]
@@ -382,6 +478,8 @@ export function ViewportGridProvider({ children, service }) {
         onModeExit: reset,
         set,
         getNumViewportPanes,
+        setViewportIsReady,
+        getGridViewportsReady,
       });
     }
   }, [
@@ -393,6 +491,8 @@ export function ViewportGridProvider({ children, service }) {
     reset,
     set,
     getNumViewportPanes,
+    setViewportIsReady,
+    getGridViewportsReady,
   ]);
 
   // run many of the calls through the service itself since we want to publish events
@@ -405,8 +505,11 @@ export function ViewportGridProvider({ children, service }) {
     reset: () => service.reset(),
     set: gridLayoutState => service.setState(gridLayoutState), // run it through the service itself since we want to publish events
     getNumViewportPanes,
+    setViewportIsReady,
+    getGridViewportsReady,
     getActiveViewportOptionByKey,
     setViewportGridSizeChanged: props => service.setViewportGridSizeChanged(props),
+    publishViewportsReady: () => service.publishViewportsReady(),
   };
 
   return (
@@ -421,4 +524,6 @@ ViewportGridProvider.propTypes = {
   service: PropTypes.instanceOf(ViewportGridService).isRequired,
 };
 
-export const useViewportGrid = () => useContext(ViewportGridContext);
+// Update the useViewportGrid hook
+export const useViewportGrid = (): [AppTypes.ViewportGrid.State, ViewportGridApi] =>
+  useContext(ViewportGridContext);

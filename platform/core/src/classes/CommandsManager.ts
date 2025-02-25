@@ -1,5 +1,5 @@
 import log from '../log.js';
-import { Command, Commands } from '../types/Command';
+import { Command, Commands, ComplexCommand } from '../types/Command';
 
 /**
  * The definition of a command
@@ -167,28 +167,45 @@ export class CommandsManager {
    * Run one or more commands with specified extra options.
    * Returns the result of the last command run.
    *
-   * @param toRun - A specification of one or more commands
+   * @param toRun - A specification of one or more commands,
+   *  typically an object of { commandName, commandOptions, context }
+   * or an array of such objects. It can also be a single commandName as string
+   * if no options are needed.
    * @param options - to include in the commands run beyond
    *   the commandOptions specified in the base.
    */
   public run(
-    toRun: Command | Commands | Command[] | undefined,
+    toRun: Command | Commands | Command[] | string | undefined,
     options?: Record<string, unknown>
   ): unknown {
     if (!toRun) {
       return;
     }
-    const commands =
-      (Array.isArray(toRun) && toRun) ||
-      ((toRun as Command).commandName && [toRun]) ||
-      (Array.isArray((toRun as Commands).commands) && (toRun as Commands).commands);
-    if (!commands) {
+
+    // Normalize `toRun` to an array of `ComplexCommand`
+    let commands: ComplexCommand[] = [];
+    if (typeof toRun === 'string') {
+      commands = [{ commandName: toRun }];
+    } else if ('commandName' in toRun) {
+      commands = [toRun as ComplexCommand];
+    } else if ('commands' in toRun) {
+      const commandsInput = (toRun as Commands).commands;
+      commands = Array.isArray(commandsInput)
+        ? commandsInput.map(cmd => (typeof cmd === 'string' ? { commandName: cmd } : cmd))
+        : [{ commandName: commandsInput }];
+    } else if (Array.isArray(toRun)) {
+      commands = toRun.map(cmd => (typeof cmd === 'string' ? { commandName: cmd } : cmd));
+    }
+
+    if (commands.length === 0) {
       console.log("Command isn't runnable", toRun);
       return;
     }
 
-    let result;
-    (commands as Command[]).forEach(({ commandName, commandOptions, context }) => {
+    // Execute each command in the array
+    let result: unknown;
+    commands.forEach(command => {
+      const { commandName, commandOptions, context } = command;
       if (commandName) {
         result = this.runCommand(
           commandName,
@@ -199,7 +216,11 @@ export class CommandsManager {
           context
         );
       } else {
-        console.warn('No command name supplied in', toRun);
+        if (typeof command === 'function') {
+          result = command();
+        } else {
+          console.warn('No command name supplied in', toRun);
+        }
       }
     });
 

@@ -1,8 +1,12 @@
 import { CustomizationService } from '@ohif/core';
 import React from 'react';
 import DataSourceSelector from './Panels/DataSourceSelector';
+import { ProgressDropdownWithService } from './Components/ProgressDropdownWithService';
 import DataSourceConfigurationComponent from './Components/DataSourceConfigurationComponent';
 import { GoogleCloudDataSourceConfigurationAPI } from './DataSourceConfigurationAPI/GoogleCloudDataSourceConfigurationAPI';
+import { utils } from '@ohif/core';
+
+const formatDate = utils.formatDate;
 
 /**
  *
@@ -17,6 +21,7 @@ export default function getCustomizationModule({ servicesManager, extensionManag
   return [
     {
       name: 'helloPage',
+      merge: 'Append',
       value: {
         id: 'customRoutes',
         routes: [
@@ -31,6 +36,7 @@ export default function getCustomizationModule({ servicesManager, extensionManag
     // Example customization to list a set of datasources
     {
       name: 'datasources',
+      merge: 'Append',
       value: {
         id: 'customRoutes',
         routes: [
@@ -93,8 +99,8 @@ export default function getCustomizationModule({ servicesManager, extensionManag
               instance && this.attribute
                 ? instance[this.attribute]
                 : this.contentF && typeof this.contentF === 'function'
-                ? this.contentF(props)
-                : null;
+                  ? this.contentF(props)
+                  : null;
             if (!value) {
               return null;
             }
@@ -153,6 +159,46 @@ export default function getCustomizationModule({ servicesManager, extensionManag
               servicesManager,
               extensionManager
             ),
+        },
+
+        {
+          id: 'progressDropdownWithServiceComponent',
+          component: ProgressDropdownWithService,
+        },
+        {
+          id: 'studyBrowser.sortFunctions',
+          values: [
+            {
+              label: 'Series Number',
+              sortFunction: (a, b) => {
+                return a?.SeriesNumber - b?.SeriesNumber;
+              },
+            },
+            {
+              label: 'Series Date',
+              sortFunction: (a, b) => {
+                const dateA = new Date(formatDate(a?.SeriesDate));
+                const dateB = new Date(formatDate(b?.SeriesDate));
+                return dateB.getTime() - dateA.getTime();
+              },
+            },
+          ],
+        },
+        {
+          id: 'studyBrowser.viewPresets',
+          // change your default selected preset here
+          value: [
+            {
+              id: 'list',
+              iconName: 'ListView',
+              selected: false,
+            },
+            {
+              id: 'thumbnails',
+              iconName: 'ThumbnailView',
+              selected: true,
+            },
+          ],
         },
       ],
     },

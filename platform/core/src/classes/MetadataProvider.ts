@@ -6,35 +6,20 @@ import DicomMetadataStore from '../services/DicomMetadataStore';
 import fetchPaletteColorLookupTableData from '../utils/metadataProvider/fetchPaletteColorLookupTableData';
 import toNumber from '../utils/toNumber';
 import combineFrameInstance from '../utils/combineFrameInstance';
+import formatPN from '../utils/formatPN';
 
 class MetadataProvider {
-  constructor() {
-    // Define the main "metadataLookup" private property as an immutable property.
-    Object.defineProperty(this, 'studies', {
-      configurable: false,
-      enumerable: false,
-      writable: false,
-      value: new Map(),
-    });
-    Object.defineProperty(this, 'imageURIToUIDs', {
-      configurable: false,
-      enumerable: false,
-      writable: false,
-      value: new Map(),
-    });
-    // Can be used to store custom metadata for a specific type.
-    // For instance, the scaling metadata for PET can be stored here
-    // as type "scalingModule"
-    //
-    Object.defineProperty(this, 'customMetadata', {
-      configurable: false,
-      enumerable: false,
-      writable: false,
-      value: new Map(),
-    });
-  }
+  private readonly imageURIToUIDs: Map<string, any> = new Map();
+  // Can be used to store custom metadata for a specific type.
+  // For instance, the scaling metadata for PET can be stored here
+  // as type "scalingModule"
+  private readonly customMetadata: Map<string, any> = new Map();
 
   addImageIdToUIDs(imageId, uids) {
+    if (!imageId) {
+      throw new Error('MetadataProvider::Empty imageId');
+    }
+
     // This method is a fallback for when you don't have WADO-URI or WADO-RS.
     // You can add instances fetched by any method by calling addInstance, and hook an imageId to point at it here.
     // An example would be dicom hosted at some random site.
@@ -52,6 +37,10 @@ class MetadataProvider {
   }
 
   _getInstance(imageId) {
+    if (!imageId) {
+      throw new Error('MetadataProvider::Empty imageId');
+    }
+
     const uids = this.getUIDsFromImageID(imageId);
 
     if (!uids) {
@@ -241,6 +230,12 @@ class MetadataProvider {
           sopInstanceUID: instance.SOPInstanceUID,
         };
         break;
+      case WADO_IMAGE_LOADER_TAGS.PET_IMAGE_MODULE:
+        metadata = {
+          frameReferenceTime: instance.FrameReferenceTime,
+          actualFrameDuration: instance.ActualFrameDuration,
+        };
+        break;
       case WADO_IMAGE_LOADER_TAGS.PET_ISOTOPE_MODULE:
         const { RadiopharmaceuticalInformationSequence } = instance;
 
@@ -351,7 +346,7 @@ class MetadataProvider {
 
         let patientName;
         if (PatientName) {
-          patientName = PatientName.Alphabetic;
+          patientName = formatPN(PatientName);
         }
 
         metadata = {
@@ -363,7 +358,7 @@ class MetadataProvider {
 
       case WADO_IMAGE_LOADER_TAGS.GENERAL_IMAGE_MODULE:
         metadata = {
-          sopInstanceUid: instance.SOPInstanceUID,
+          sopInstanceUID: instance.SOPInstanceUID,
           instanceNumber: toNumber(instance.InstanceNumber),
           lossyImageCompression: instance.LossyImageCompression,
           lossyImageCompressionRatio: instance.LossyImageCompressionRatio,
@@ -383,6 +378,7 @@ class MetadataProvider {
       case WADO_IMAGE_LOADER_TAGS.CINE_MODULE:
         metadata = {
           frameTime: instance.FrameTime,
+          numberOfFrames: instance.NumberOfFrames ? Number(instance.NumberOfFrames) : 1,
         };
 
         break;
@@ -391,6 +387,41 @@ class MetadataProvider {
           correctedImage: instance.CorrectedImage,
           units: instance.Units,
           decayCorrection: instance.DecayCorrection,
+        };
+        break;
+      case WADO_IMAGE_LOADER_TAGS.CALIBRATION_MODULE:
+        // map the DICOM tags to the cornerstone tags since cornerstone tags
+        // are camelCase and instance tags are all caps
+        metadata = {
+          sequenceOfUltrasoundRegions: instance.SequenceOfUltrasoundRegions?.map(region => {
+            return {
+              regionSpatialFormat: region.RegionSpatialFormat,
+              regionDataType: region.RegionDataType,
+              regionFlags: region.RegionFlags,
+              regionLocationMinX0: region.RegionLocationMinX0,
+              regionLocationMinY0: region.RegionLocationMinY0,
+              regionLocationMaxX1: region.RegionLocationMaxX1,
+              regionLocationMaxY1: region.RegionLocationMaxY1,
+              referencePixelX0: region.ReferencePixelX0,
+              referencePixelY0: region.ReferencePixelY0,
+              referencePixelPhysicalValueX: region.ReferencePixelPhysicalValueX,
+              referencePixelPhysicalValueY: region.ReferencePixelPhysicalValueY,
+              physicalUnitsXDirection: region.PhysicalUnitsXDirection,
+              physicalUnitsYDirection: region.PhysicalUnitsYDirection,
+              physicalDeltaX: region.PhysicalDeltaX,
+              physicalDeltaY: region.PhysicalDeltaY,
+            };
+          }),
+        };
+        break;
+
+      /**
+       * Below are the tags and not the modules since they are not really
+       * consistent with the modules above
+       */
+      case 'temporalPositionIdentifier':
+        metadata = {
+          temporalPositionIdentifier: instance.TemporalPositionIdentifier,
         };
         break;
 
@@ -430,16 +461,6 @@ class MetadataProvider {
   }
 
   getUIDsFromImageID(imageId) {
-    if (!imageId) {
-      throw new Error('MetadataProvider::Empty imageId');
-    }
-    // TODO: adding csiv here is not really correct. Probably need to use
-    // metadataProvider.addImageIdToUIDs(imageId, {
-    //   StudyInstanceUID,
-    //   SeriesInstanceUID,
-    //   SOPInstanceUID,
-    // })
-    // somewhere else
     if (imageId.startsWith('wadors:')) {
       const strippedImageId = imageId.split('/studies/')[1];
       const splitImageId = strippedImageId.split('/');
@@ -518,9 +539,11 @@ const WADO_IMAGE_LOADER = {
       frameOfReferenceUID: instance.FrameOfReferenceUID,
       rows: toNumber(instance.Rows),
       columns: toNumber(instance.Columns),
-      imageOrientationPatient: toNumber(ImageOrientationPatient),
+      imageOrientationPatient: toNumber(ImageOrientationPatient) || [0, 1, 0, 0, 0, -1],
       rowCosines: toNumber(rowCosines || [0, 1, 0]),
+      isDefaultValueSetForRowCosine: toNumber(rowCosines) ? false : true,
       columnCosines: toNumber(columnCosines || [0, 0, -1]),
+      isDefaultValueSetForColumnCosine: toNumber(columnCosines) ? false : true,
       imagePositionPatient: toNumber(instance.ImagePositionPatient || [0, 0, 0]),
       sliceThickness: toNumber(instance.SliceThickness),
       sliceLocation: toNumber(instance.SliceLocation),
@@ -539,6 +562,7 @@ const WADO_IMAGE_LOADER_TAGS = {
   VOI_LUT_MODULE: 'voiLutModule',
   MODALITY_LUT_MODULE: 'modalityLutModule',
   SOP_COMMON_MODULE: 'sopCommonModule',
+  PET_IMAGE_MODULE: 'petImageModule',
   PET_ISOTOPE_MODULE: 'petIsotopeModule',
   PER_SERIES_MODULE: 'petSeriesModule',
   OVERLAY_PLANE_MODULE: 'overlayPlaneModule',
@@ -549,6 +573,7 @@ const WADO_IMAGE_LOADER_TAGS = {
   GENERAL_IMAGE_MODULE: 'generalImageModule',
   GENERAL_STUDY_MODULE: 'generalStudyModule',
   CINE_MODULE: 'cineModule',
+  CALIBRATION_MODULE: 'calibrationModule',
 };
 
 const INSTANCE = 'instance';

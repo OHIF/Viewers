@@ -7,7 +7,7 @@ import Icon from '../Icon';
 
 const StudyListTableRow = props => {
   const { tableData } = props;
-  const { row, expandedContent, onClickRow, isExpanded, dataCY } = tableData;
+  const { row, expandedContent, onClickRow, isExpanded, dataCY, clickableCY } = tableData;
   return (
     <>
       <tr
@@ -23,7 +23,7 @@ const StudyListTableRow = props => {
             className={classnames(
               'w-full transition duration-300',
               {
-                'border-primary-light hover:border-secondary-light mb-2 overflow-hidden rounded border':
+                'border-primary-light hover:border-secondary-light mb-2 overflow-visible rounded border':
                   isExpanded,
               },
               {
@@ -42,6 +42,7 @@ const StudyListTableRow = props => {
                     { 'bg-secondary-dark': isExpanded }
                   )}
                   onClick={onClickRow}
+                  data-cy={clickableCY}
                 >
                   {row.map((cell, index) => {
                     const { content, title, gridCol } = cell;
@@ -108,6 +109,7 @@ StudyListTableRow.propTypes = {
     onClickRow: PropTypes.func.isRequired,
     isExpanded: PropTypes.bool.isRequired,
     dataCY: PropTypes.string,
+    clickableCY: PropTypes.string,
   }),
 };
 

@@ -29,10 +29,10 @@ describe('OHIF Cornerstone Hotkeys', () => {
   it('checks if hotkeys "ArrowUp" and "ArrowDown" can navigate in the stack', () => {
     // Hotkey ArrowDown
     cy.get('body').type('{downarrow}');
-    cy.get('@viewportInfoTopRight').should('contains.text', 'I:2 (2/26)');
+    cy.get('@viewportInfoBottomRight').should('contains.text', 'I:2 (2/26)');
     // Hotkey ArrowUp
     cy.get('body').type('{uparrow}');
-    cy.get('@viewportInfoTopRight').should('contains.text', 'I:1 (1/26)');
+    cy.get('@viewportInfoBottomRight').should('contains.text', 'I:1 (1/26)');
   });
 
   it('checks if hotkeys "V" and "H" can flip the image', () => {

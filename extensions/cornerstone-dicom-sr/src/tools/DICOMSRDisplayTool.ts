@@ -7,10 +7,11 @@ import {
   Types as cs3DToolsTypes,
 } from '@cornerstonejs/tools';
 import { getTrackingUniqueIdentifiersForElement } from './modules/dicomSRModule';
-import SCOORD_TYPES from '../constants/scoordTypes';
+import { SCOORDTypes } from '../enums';
+import toolNames from './toolNames';
 
 export default class DICOMSRDisplayTool extends AnnotationTool {
-  static toolName = 'DICOMSRDisplay';
+  static toolName = toolNames.DICOMSRDisplay;
 
   constructor(
     toolProps = {},
@@ -22,14 +23,14 @@ export default class DICOMSRDisplayTool extends AnnotationTool {
   }
 
   _getTextBoxLinesFromLabels(labels) {
-    // TODO -> max 3 for now (label + shortAxis + longAxis), need a generic solution for this!
+    // TODO -> max 5 for now (label + shortAxis + longAxis), need a generic solution for this!
 
-    const labelLength = Math.min(labels.length, 3);
+    const labelLength = Math.min(labels.length, 5);
     const lines = [];
 
     for (let i = 0; i < labelLength; i++) {
       const labelEntry = labels[i];
-      lines.push(`${_labelToShorthand(labelEntry.label)}${labelEntry.value}`);
+      lines.push(`${_labelToShorthand(labelEntry.label)}: ${labelEntry.value}`);
     }
 
     return lines;
@@ -65,7 +66,7 @@ export default class DICOMSRDisplayTool extends AnnotationTool {
 
     // Filter toolData to only render the data for the active SR.
     const filteredAnnotations = annotations.filter(annotation =>
-      trackingUniqueIdentifiers.includes(annotation.data?.cachedStats?.TrackingUniqueIdentifier)
+      trackingUniqueIdentifiers.includes(annotation.data?.TrackingUniqueIdentifier)
     );
 
     if (!viewport._actors?.size) {
@@ -77,20 +78,24 @@ export default class DICOMSRDisplayTool extends AnnotationTool {
       toolName: this.getToolName(),
       viewportId: enabledElement.viewport.id,
     };
+    const { style: annotationStyle } = annotation.config;
 
     for (let i = 0; i < filteredAnnotations.length; i++) {
       const annotation = filteredAnnotations[i];
       const annotationUID = annotation.annotationUID;
-      const { renderableData } = annotation.data.cachedStats;
-      const { cachedStats } = annotation.data;
+      const { renderableData, TrackingUniqueIdentifier } = annotation.data;
       const { referencedImageId } = annotation.metadata;
 
       styleSpecifier.annotationUID = annotationUID;
 
+      const groupStyle = annotationStyle.getToolGroupToolStyles(this.toolGroupId)[
+        this.getToolName()
+      ];
+
       const lineWidth = this.getStyle('lineWidth', styleSpecifier, annotation);
       const lineDash = this.getStyle('lineDash', styleSpecifier, annotation);
       const color =
-        cachedStats.TrackingUniqueIdentifier === activeTrackingUniqueIdentifier
+        TrackingUniqueIdentifier === activeTrackingUniqueIdentifier
           ? 'rgb(0, 255, 0)'
           : this.getStyle('color', styleSpecifier, annotation);
 
@@ -98,6 +103,7 @@ export default class DICOMSRDisplayTool extends AnnotationTool {
         color,
         lineDash,
         lineWidth,
+        ...groupStyle,
       };
 
       Object.keys(renderableData).forEach(GraphicType => {
@@ -107,19 +113,19 @@ export default class DICOMSRDisplayTool extends AnnotationTool {
         let canvasCoordinatesAdapter;
 
         switch (GraphicType) {
-          case SCOORD_TYPES.POINT:
+          case SCOORDTypes.POINT:
             renderMethod = this.renderPoint;
             break;
-          case SCOORD_TYPES.MULTIPOINT:
+          case SCOORDTypes.MULTIPOINT:
             renderMethod = this.renderMultipoint;
             break;
-          case SCOORD_TYPES.POLYLINE:
+          case SCOORDTypes.POLYLINE:
             renderMethod = this.renderPolyLine;
             break;
-          case SCOORD_TYPES.CIRCLE:
+          case SCOORDTypes.CIRCLE:
             renderMethod = this.renderEllipse;
             break;
-          case SCOORD_TYPES.ELLIPSE:
+          case SCOORDTypes.ELLIPSE:
             renderMethod = this.renderEllipse;
             canvasCoordinatesAdapter = utilities.math.ellipse.getCanvasEllipseCorners;
             break;
@@ -160,6 +166,7 @@ export default class DICOMSRDisplayTool extends AnnotationTool {
     const drawingOptions = {
       color: options.color,
       width: options.lineWidth,
+      lineDash: options.lineDash,
     };
     let allCanvasCoordinates = [];
     renderableData.map((data, index) => {
@@ -223,7 +230,11 @@ export default class DICOMSRDisplayTool extends AnnotationTool {
       // This gives us one point for arrow
       canvasCoordinates.push(viewport.worldToCanvas(point));
 
-      // We get the other point for the arrow by using the image size
+      if (data[1] !== undefined) {
+        canvasCoordinates.push(viewport.worldToCanvas(data[1]));
+      }
+      else{
+         // We get the other point for the arrow by using the image size
       const imagePixelModule = metaData.get('imagePixelModule', referencedImageId);
 
       let xOffset = 10;
@@ -242,6 +253,9 @@ export default class DICOMSRDisplayTool extends AnnotationTool {
       ]);
 
       canvasCoordinates.push(viewport.worldToCanvas(arrowEnd));
+        
+      }
+     
 
       const arrowUID = `${index}`;
 
@@ -307,6 +321,7 @@ export default class DICOMSRDisplayTool extends AnnotationTool {
         {
           color: options.color,
           width: options.lineWidth,
+          lineDash: options.lineDash,
         }
       );
     });
@@ -328,7 +343,7 @@ export default class DICOMSRDisplayTool extends AnnotationTool {
     }
 
     const { annotationUID, data = {} } = annotation;
-    const { label } = data;
+    const { labels } = data;
     const { color } = options;
 
     let adaptedCanvasCoordinates = canvasCoordinates;
@@ -336,7 +351,7 @@ export default class DICOMSRDisplayTool extends AnnotationTool {
     if (typeof canvasCoordinatesAdapter === 'function') {
       adaptedCanvasCoordinates = canvasCoordinatesAdapter(canvasCoordinates);
     }
-    const textLines = this._getTextBoxLinesFromLabels(label);
+    const textLines = this._getTextBoxLinesFromLabels(labels);
     const canvasTextBoxCoords = utilities.drawing.getTextBoxCoordsCanvas(adaptedCanvasCoordinates);
 
     if (!annotation.data?.handles?.textBox?.worldPosition) {

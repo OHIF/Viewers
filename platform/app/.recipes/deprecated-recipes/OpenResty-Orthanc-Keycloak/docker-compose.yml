@@ -1,0 +1,95 @@
+# Reference:
+# - https://docs.docker.com/compose/compose-file
+# - https://eclipsesource.com/blogs/2018/01/11/authenticating-reverse-proxy-with-keycloak/
+
+version: '3.5'
+
+services:
+  # Exposed server that's handling incoming web requests
+  # Underlying image: openresty/openresty:alpine-fat
+  ohif_viewer:
+    build:
+      # Project root
+      context: ./../../../../
+      # Relative to context
+      dockerfile: ./platform/app/.recipes/OpenResty-Orthanc-Keycloak/dockerfile
+    image: webapp:latest
+    container_name: webapp
+    volumes:
+      # Nginx config
+      - ./config/nginx.conf:/usr/local/openresty/nginx/conf/nginx.conf:ro
+      # Logs
+      - ./logs/nginx:/var/logs/nginx
+      # Let's Encrypt
+      # - letsencrypt_certificates:/etc/letsencrypt
+      # - letsencrypt_challenges:/var/www/letsencrypt
+    ports:
+      - '443:443' # SSL
+      - '80:80' # Web
+    depends_on:
+      - keycloak
+      - orthanc
+    restart: on-failure
+
+  # LINK: https://hub.docker.com/r/jodogne/orthanc-plugins/
+  # TODO: Update to use Postgres
+  # https://github.com/mrts/docker-postgresql-multiple-databases
+  orthanc:
+    image: jodogne/orthanc-plugins
+    hostname: orthanc
+    container_name: orthanc
+    volumes:
+      # Config
+      - ./config/orthanc.json:/etc/orthanc/orthanc.json:ro
+      # Persist data
+      - ./volumes/orthanc-db/:/var/lib/orthanc/db/
+    restart: unless-stopped
+
+  # LINK: https://hub.docker.com/r/jboss/keycloak
+  keycloak:
+    image: quay.io/keycloak/keycloak:6.0.0
+    hostname: keycloak
+    container_name: keycloak
+    volumes:
+      # Theme: https://www.keycloak.org/docs/latest/server_development/index.html#_themes
+      - ./volumes/keycloak-themes/ohif:/opt/jboss/keycloak/themes/ohif
+      # Previous Realm Config
+      - ./config/ohif-keycloak-realm.json:/tmp/ohif-keycloak-realm.json
+    environment:
+      # Database
+      DB_VENDOR: postgres
+      DB_ADDR: postgres
+      DB_PORT: 5432
+      DB_DATABASE: keycloak
+      DB_SCHEMA: public
+      DB_USER: keycloak
+      DB_PASSWORD: password
+      # Keycloak
+      KEYCLOAK_USER: admin
+      KEYCLOAK_PASSWORD: password
+      KEYCLOAK_IMPORT: /tmp/ohif-keycloak-realm.json
+      # KEYCLOAK_WELCOME_THEME: <theme-name>
+      # KEYCLOAK_DEFAULT_THEME: <theme-name>
+      # KEYCLOAK_HOSTNAME: (recommended in prod)
+      # KEYCLOAK_LOGLEVEL: DEBUG
+      PROXY_ADDRESS_FORWARDING: 'true'
+    depends_on:
+      - postgres
+    restart: unless-stopped
+
+  # LINK: https://hub.docker.com/_/postgres/
+  postgres:
+    image: postgres:11.2
+    hostname: postgres
+    container_name: postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: keycloak
+      POSTGRES_USER: keycloak
+      POSTGRES_PASSWORD: password
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+    driver: local

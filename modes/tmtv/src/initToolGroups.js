@@ -4,10 +4,9 @@ export const toolGroupIds = {
   Fusion: 'fusionToolGroup',
   MIP: 'mipToolGroup',
   default: 'default',
-  // MPR: 'mpr',
 };
 
-function _initToolGroups(toolNames, Enums, toolGroupService, commandsManager) {
+function _initToolGroups(toolNames, Enums, toolGroupService, commandsManager, modeLabelConfig) {
   const tools = {
     active: [
       {
@@ -22,7 +21,10 @@ function _initToolGroups(toolNames, Enums, toolGroupService, commandsManager) {
         toolName: toolNames.Zoom,
         bindings: [{ mouseButton: Enums.MouseBindings.Secondary }],
       },
-      { toolName: toolNames.StackScrollMouseWheel, bindings: [] },
+      {
+        toolName: toolNames.StackScroll,
+        bindings: [{ mouseButton: Enums.MouseBindings.Wheel }],
+      },
     ],
     passive: [
       { toolName: toolNames.Length },
@@ -30,18 +32,24 @@ function _initToolGroups(toolNames, Enums, toolGroupService, commandsManager) {
         toolName: toolNames.ArrowAnnotate,
         configuration: {
           getTextCallback: (callback, eventDetails) => {
-            commandsManager.runCommand('arrowTextCallback', {
-              callback,
-              eventDetails,
-            });
+            if (modeLabelConfig) {
+              callback(' ');
+            } else {
+              commandsManager.runCommand('arrowTextCallback', {
+                callback,
+                eventDetails,
+              });
+            }
           },
-
-          changeTextCallback: (data, eventDetails, callback) =>
-            commandsManager.runCommand('arrowTextCallback', {
-              callback,
-              data,
-              eventDetails,
-            }),
+          changeTextCallback: (data, eventDetails, callback) => {
+            if (modeLabelConfig === undefined) {
+              commandsManager.runCommand('arrowTextCallback', {
+                callback,
+                data,
+                eventDetails,
+              });
+            }
+          },
         },
       },
       { toolName: toolNames.Bidirectional },
@@ -53,13 +61,74 @@ function _initToolGroups(toolNames, Enums, toolGroupService, commandsManager) {
       { toolName: toolNames.Angle },
       { toolName: toolNames.CobbAngle },
       { toolName: toolNames.Magnify },
+      {
+        toolName: 'CircularBrush',
+        parentTool: 'Brush',
+        configuration: {
+          activeStrategy: 'FILL_INSIDE_CIRCLE',
+        },
+      },
+      {
+        toolName: 'CircularEraser',
+        parentTool: 'Brush',
+        configuration: {
+          activeStrategy: 'ERASE_INSIDE_CIRCLE',
+        },
+      },
+      {
+        toolName: 'SphereBrush',
+        parentTool: 'Brush',
+        configuration: {
+          activeStrategy: 'FILL_INSIDE_SPHERE',
+        },
+      },
+      {
+        toolName: 'SphereEraser',
+        parentTool: 'Brush',
+        configuration: {
+          activeStrategy: 'ERASE_INSIDE_SPHERE',
+        },
+      },
+      {
+        toolName: 'ThresholdCircularBrush',
+        parentTool: 'Brush',
+        configuration: {
+          activeStrategy: 'THRESHOLD_INSIDE_CIRCLE',
+        },
+      },
+      {
+        toolName: 'ThresholdSphereBrush',
+        parentTool: 'Brush',
+        configuration: {
+          activeStrategy: 'THRESHOLD_INSIDE_SPHERE',
+        },
+      },
+      {
+        toolName: 'ThresholdCircularBrushDynamic',
+        parentTool: 'Brush',
+        configuration: {
+          activeStrategy: 'THRESHOLD_INSIDE_CIRCLE',
+          // preview: {
+          //   enabled: true,
+          // },
+          strategySpecificConfiguration: {
+            // to use the use the center segment index to determine
+            // if inside -> same segment, if outside -> eraser
+            // useCenterSegmentIndex: true,
+            THRESHOLD: {
+              isDynamic: true,
+              dynamicRadius: 3,
+            },
+          },
+        },
+      },
     ],
-    enabled: [{ toolName: toolNames.SegmentationDisplay }],
+    enabled: [],
     disabled: [
       {
         toolName: toolNames.Crosshairs,
         configuration: {
-          viewportIndicators: false,
+          disableOnPassive: true,
           autoPan: {
             enabled: false,
             panSize: 10,
@@ -82,7 +151,8 @@ function _initToolGroups(toolNames, Enums, toolGroupService, commandsManager) {
   const mipTools = {
     active: [
       {
-        toolName: toolNames.VolumeRotateMouseWheel,
+        toolName: toolNames.VolumeRotate,
+        bindings: [{ mouseButton: Enums.MouseBindings.Wheel }],
         configuration: {
           rotateIncrementDegrees: 5,
         },
@@ -95,14 +165,23 @@ function _initToolGroups(toolNames, Enums, toolGroupService, commandsManager) {
         bindings: [{ mouseButton: Enums.MouseBindings.Primary }],
       },
     ],
-    enabled: [{ toolName: toolNames.SegmentationDisplay }],
+    enabled: [
+      {
+        toolName: toolNames.OrientationMarker,
+        configuration: {
+          orientationWidget: {
+            viewportCorner: 'BOTTOM_LEFT',
+          },
+        },
+      },
+    ],
   };
 
   toolGroupService.createToolGroupAndAddTools(toolGroupIds.MIP, mipTools);
 }
 
-function initToolGroups(toolNames, Enums, toolGroupService, commandsManager) {
-  _initToolGroups(toolNames, Enums, toolGroupService, commandsManager);
+function initToolGroups(toolNames, Enums, toolGroupService, commandsManager, modeLabelConfig) {
+  _initToolGroups(toolNames, Enums, toolGroupService, commandsManager, modeLabelConfig);
 }
 
 export default initToolGroups;

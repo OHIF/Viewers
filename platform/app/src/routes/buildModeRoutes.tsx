@@ -28,7 +28,7 @@ export default function buildModeRoutes({
   servicesManager,
   commandsManager,
   hotkeysManager,
-}) {
+}: withAppTypes) {
   const routes = [];
   const dataSourceNames = [];
 
@@ -81,7 +81,7 @@ export default function buildModeRoutes({
     routes.push({
       path,
       children,
-      private: true, // todo: all mode routes are private for now
+      private: true,
     });
   });
 

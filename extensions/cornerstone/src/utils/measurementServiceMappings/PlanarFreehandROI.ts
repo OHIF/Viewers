@@ -1,139 +1,223 @@
 import SUPPORTED_TOOLS from './constants/supportedTools';
 import getSOPInstanceAttributes from './utils/getSOPInstanceAttributes';
-
+import { utils } from '@ohif/core';
+import { getIsLocked } from './utils/getIsLocked';
+import { getIsVisible } from './utils/getIsVisible';
+import { getDisplayUnit } from './utils';
+import { getStatisticDisplayString } from './utils/getValueDisplayString';
+/**
+ * Represents a mapping utility for Planar Freehand ROI measurements.
+ */
 const PlanarFreehandROI = {
   toAnnotation: measurement => {},
 
   /**
    * Maps cornerstone annotation event data to measurement service format.
    *
-   * @param {Object} cornerstone Cornerstone event data
-   * @return {Measurement} Measurement instance
+   * @param {Object} csToolsEventDetail Cornerstone event data
+   * @param {DisplaySetService} displaySetService Service for managing display sets
+   * @param {CornerstoneViewportService} CornerstoneViewportService Service for managing viewports
+   * @param {Function} getValueTypeFromToolType Function to get value type from tool type
+   * @param {CustomizationService} customizationService Service for customization
+   * @returns {Measurement | null} Measurement instance or null if invalid
    */
   toMeasurement: (
     csToolsEventDetail,
-    DisplaySetService,
+    displaySetService,
     CornerstoneViewportService,
-    getValueTypeFromToolType
+    getValueTypeFromToolType,
+    customizationService
   ) => {
-    const { annotation, viewportId } = csToolsEventDetail;
+    const { annotation } = csToolsEventDetail;
     const { metadata, data, annotationUID } = annotation;
 
+    const isLocked = getIsLocked(annotationUID);
+    const isVisible = getIsVisible(annotationUID);
     if (!metadata || !data) {
-      console.warn('PlanarFreehandROI tool: Missing metadata or data');
+      console.debug('PlanarFreehandROI tool: Missing metadata or data');
       return null;
     }
 
     const { toolName, referencedImageId, FrameOfReferenceUID } = metadata;
     const validToolType = SUPPORTED_TOOLS.includes(toolName);
-
     if (!validToolType) {
-      throw new Error('Tool not supported');
+      throw new Error(`Tool ${toolName} not supported`);
     }
 
-    const { SOPInstanceUID, SeriesInstanceUID, StudyInstanceUID } = getSOPInstanceAttributes(
-      referencedImageId,
-      CornerstoneViewportService,
-      viewportId
-    );
+    const { SOPInstanceUID, SeriesInstanceUID, frameNumber, StudyInstanceUID } =
+      getSOPInstanceAttributes(referencedImageId, displaySetService, annotation);
 
     let displaySet;
-
     if (SOPInstanceUID) {
-      displaySet = DisplaySetService.getDisplaySetForSOPInstanceUID(
+      displaySet = displaySetService.getDisplaySetForSOPInstanceUID(
         SOPInstanceUID,
         SeriesInstanceUID
       );
     } else {
-      displaySet = DisplaySetService.getDisplaySetsForSeries(SeriesInstanceUID);
+      displaySet = displaySetService.getDisplaySetsForSeries(SeriesInstanceUID)[0];
     }
 
-    const { points, textBox } = data.handles;
-
-    const mappedAnnotations = getMappedAnnotations(annotation, DisplaySetService);
-
-    const displayText = getDisplayText(mappedAnnotations);
-    const getReport = () => _getReport(mappedAnnotations, points, FrameOfReferenceUID);
+    const mappedAnnotations = getMappedAnnotations(annotation, displaySetService);
+    const displayText = getDisplayText(mappedAnnotations, displaySet);
 
     return {
       uid: annotationUID,
       SOPInstanceUID,
       FrameOfReferenceUID,
-      points,
-      textBox,
+      points: data.contour.polyline,
+      textBox: data.handles.textBox,
       metadata,
+      frameNumber,
       referenceSeriesUID: SeriesInstanceUID,
       referenceStudyUID: StudyInstanceUID,
+      referencedImageId,
       toolName: metadata.toolName,
       displaySetInstanceUID: displaySet.displaySetInstanceUID,
       label: data.label,
       displayText: displayText,
-      data: { ...data, ...data.cachedStats },
+      data: data.cachedStats,
       type: getValueTypeFromToolType(toolName),
-      getReport,
+      getReport: () => getColumnValueReport(annotation, customizationService),
+      isLocked,
+      isVisible,
     };
   },
 };
 
 /**
- * It maps an imaging library annotation to a list of simplified annotation properties.
+ * Maps annotations to a structured format with relevant attributes.
  *
- * @param {Object} annotationData
- * @param {Object} DisplaySetService
- * @returns
+ * @param {Object} annotation The annotation object.
+ * @param {DisplaySetService} displaySetService Service for managing display sets.
+ * @returns {Array} Mapped annotations.
  */
-function getMappedAnnotations(annotationData, DisplaySetService) {
-  const { metadata, data } = annotationData;
-  const { label } = data;
+function getMappedAnnotations(annotation, displaySetService) {
+  const { metadata, data } = annotation;
+  const { cachedStats } = data;
   const { referencedImageId } = metadata;
+  const targets = Object.keys(cachedStats);
 
-  const annotations = [];
-
-  const { SOPInstanceUID: _SOPInstanceUID, SeriesInstanceUID: _SeriesInstanceUID } =
-    getSOPInstanceAttributes(referencedImageId) || {};
-
-  if (!_SOPInstanceUID || !_SeriesInstanceUID) {
-    return annotations;
+  if (!targets.length) {
+    return [];
   }
 
-  const displaySet = DisplaySetService.getDisplaySetForSOPInstanceUID(
-    _SOPInstanceUID,
-    _SeriesInstanceUID
-  );
+  const annotations = [];
+  Object.keys(cachedStats).forEach(targetId => {
+    const targetStats = cachedStats[targetId];
 
-  const { SeriesNumber, SeriesInstanceUID } = displaySet;
+    const { SOPInstanceUID, SeriesInstanceUID, frameNumber } = getSOPInstanceAttributes(
+      referencedImageId,
+      displaySetService,
+      annotation
+    );
 
-  annotations.push({
-    SeriesInstanceUID,
-    SeriesNumber,
-    label,
-    data,
+    const displaySet = displaySetService.getDisplaySetsForSeries(SeriesInstanceUID)[0];
+
+    const { SeriesNumber } = displaySet;
+    const { mean, stdDev, max, area, Modality, areaUnit, modalityUnit } = targetStats;
+
+    annotations.push({
+      SeriesInstanceUID,
+      SOPInstanceUID,
+      SeriesNumber,
+      frameNumber,
+      Modality,
+      unit: modalityUnit,
+      mean,
+      stdDev,
+      max,
+      area,
+      areaUnit,
+    });
   });
 
   return annotations;
 }
 
 /**
- * TBD
- * This function is used to convert the measurement data to a format that is suitable for the report generation (e.g. for the csv report).
- * The report returns a list of columns and corresponding values.
- * @param {*} mappedAnnotations
- * @param {*} points
- * @param {*} FrameOfReferenceUID
- * @returns Object representing the report's content for this tool.
+ * Converts the measurement data to a format suitable for report generation.
+ *
+ * @param {object} annotation The annotation object.
+ * @param {CustomizationService} customizationService Service for customization.
+ * @returns {object} Report's content.
  */
-function _getReport(mappedAnnotations, points, FrameOfReferenceUID) {
+function getColumnValueReport(annotation, customizationService) {
+  const { PlanarFreehandROI } = customizationService.get('cornerstone.measurements');
+  const { report } = PlanarFreehandROI;
   const columns = [];
   const values = [];
 
-  return {
-    columns,
-    values,
-  };
+  /** Add type */
+  columns.push('AnnotationType');
+  values.push('Cornerstone:PlanarFreehandROI');
+
+  /** Add cachedStats */
+  const { metadata, data } = annotation;
+  const stats = data.cachedStats[`imageId:${metadata.referencedImageId}`];
+
+  report.forEach(({ name, value }) => {
+    columns.push(name);
+    stats[value] ? values.push(stats[value]) : values.push('not available');
+  });
+
+  /** Add FOR */
+  if (metadata.FrameOfReferenceUID) {
+    columns.push('FrameOfReferenceUID');
+    values.push(metadata.FrameOfReferenceUID);
+  }
+
+  /** Add points */
+  if (data.contour.polyline) {
+    columns.push('points');
+    values.push(data.contour.polyline.map(p => p.join(' ')).join(';'));
+  }
+
+  return { columns, values };
 }
 
-function getDisplayText(mappedAnnotations) {
-  return '';
+/**
+ * Retrieves the display text for an annotation in a display set.
+ *
+ * @param {Array} mappedAnnotations The mapped annotations.
+ * @param {Object} displaySet The display set object.
+ * @returns {Object} Display text with primary and secondary information.
+ */
+function getDisplayText(mappedAnnotations, displaySet) {
+  const displayText = {
+    primary: [],
+    secondary: [],
+  };
+
+  if (!mappedAnnotations || !mappedAnnotations.length) {
+    return displayText;
+  }
+
+  // Area is the same for all series
+  const { area, SOPInstanceUID, frameNumber, areaUnit } = mappedAnnotations[0];
+
+  const instance = displaySet.instances.find(image => image.SOPInstanceUID === SOPInstanceUID);
+
+  let InstanceNumber;
+  if (instance) {
+    InstanceNumber = instance.InstanceNumber;
+  }
+
+  const instanceText = InstanceNumber ? ` I: ${InstanceNumber}` : '';
+  const frameText = displaySet.isMultiFrame ? ` F: ${frameNumber}` : '';
+
+  const roundedArea = utils.roundNumber(area || 0, 2);
+  displayText.primary.push(`${roundedArea} ${getDisplayUnit(areaUnit)}`);
+
+  mappedAnnotations.forEach(mappedAnnotation => {
+    const { unit, max, SeriesNumber } = mappedAnnotation;
+
+    const maxStr = getStatisticDisplayString(max, unit, 'max');
+
+    displayText.primary.push(maxStr);
+    displayText.secondary.push(`S: ${SeriesNumber}${instanceText}${frameText}`);
+  });
+
+  return displayText;
 }
 
 export default PlanarFreehandROI;

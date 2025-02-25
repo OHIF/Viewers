@@ -1,9 +1,7 @@
 import objectHash from 'object-hash';
-import log from '../log.js';
 import { hotkeys } from '../utils';
 import isequal from 'lodash.isequal';
 import Hotkey from './Hotkey';
-import ServicesManager from '../services/ServicesManager';
 
 /**
  *
@@ -16,9 +14,9 @@ import ServicesManager from '../services/ServicesManager';
  */
 
 export class HotkeysManager {
-  private _servicesManager: ServicesManager;
+  private _servicesManager: AppTypes.ServicesManager;
 
-  constructor(commandsManager, servicesManager) {
+  constructor(commandsManager, servicesManager: AppTypes.ServicesManager) {
     this.hotkeyDefinitions = {};
     this.hotkeyDefaults = [];
     this.isEnabled = true;
@@ -276,10 +274,3 @@ export class HotkeysManager {
 }
 
 export default HotkeysManager;
-
-// Commands Contexts:
-
-// --> Name and Priority
-// GLOBAL: 0
-// VIEWER::CORNERSTONE: 1
-// VIEWER::VTK: 1

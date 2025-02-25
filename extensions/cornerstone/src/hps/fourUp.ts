@@ -1,7 +1,9 @@
 export const fourUp = {
   id: 'fourUp',
   locked: true,
-  name: 'fourUp',
+  name: '3D four up',
+  icon: 'layout-advanced-3d-four-up',
+  isPreset: true,
   createdDate: '2023-03-15T10:29:44.894Z',
   modifiedDate: '2023-03-15T10:29:44.894Z',
   availableTo: {},
@@ -9,7 +11,7 @@ export const fourUp = {
   protocolMatchingRules: [],
   imageLoadStrategy: 'interleaveCenter',
   displaySetSelectors: {
-    mprDisplaySet: {
+    activeDisplaySet: {
       seriesMatchingRules: [
         {
           weight: 1,
@@ -50,12 +52,15 @@ export const fourUp = {
                 id: 'mpr',
                 source: true,
                 target: true,
+                options: {
+                  syncColormap: true,
+                },
               },
             ],
           },
           displaySets: [
             {
-              id: 'mprDisplaySet',
+              id: 'activeDisplaySet',
             },
           ],
         },
@@ -70,10 +75,13 @@ export const fourUp = {
           },
           displaySets: [
             {
-              id: 'mprDisplaySet',
+              id: 'activeDisplaySet',
               options: {
-                // ToDo: choose appropriate preset
-                displayPreset: 'CT-Bone',
+                displayPreset: {
+                  CT: 'CT-Bone',
+                  MR: 'MR-Default',
+                  default: 'CT-Bone',
+                },
               },
             },
           ],
@@ -92,12 +100,15 @@ export const fourUp = {
                 id: 'mpr',
                 source: true,
                 target: true,
+                options: {
+                  syncColormap: true,
+                },
               },
             ],
           },
           displaySets: [
             {
-              id: 'mprDisplaySet',
+              id: 'activeDisplaySet',
             },
           ],
         },
@@ -115,12 +126,15 @@ export const fourUp = {
                 id: 'mpr',
                 source: true,
                 target: true,
+                options: {
+                  syncColormap: true,
+                },
               },
             ],
           },
           displaySets: [
             {
-              id: 'mprDisplaySet',
+              id: 'activeDisplaySet',
             },
           ],
         },

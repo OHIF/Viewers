@@ -1,13 +1,13 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useContext, useEffect, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { Machine } from 'xstate';
 import { useMachine } from '@xstate/react';
 import { useViewportGrid } from '@ohif/ui';
-import { machineConfiguration, defaultOptions } from './measurementTrackingMachine';
+import { promptLabelAnnotation, promptSaveReport } from '@ohif/extension-default';
+import { machineConfiguration, defaultOptions, RESPONSE } from './measurementTrackingMachine';
 import promptBeginTracking from './promptBeginTracking';
 import promptTrackNewSeries from './promptTrackNewSeries';
 import promptTrackNewStudy from './promptTrackNewStudy';
-import promptSaveReport from './promptSaveReport';
 import promptHydrateStructuredReport from './promptHydrateStructuredReport';
 import hydrateStructuredReport from './hydrateStructuredReport';
 import { useAppConfig } from '@state';
@@ -23,14 +23,14 @@ const SR_SOPCLASSHANDLERID = '@ohif/extension-cornerstone-dicom-sr.sopClassHandl
  * @param {*} param0
  */
 function TrackedMeasurementsContextProvider(
-  { servicesManager, commandsManager, extensionManager }, // Bound by consumer
+  { servicesManager, commandsManager, extensionManager }: withAppTypes, // Bound by consumer
   { children } // Component props
 ) {
   const [appConfig] = useAppConfig();
 
   const [viewportGrid, viewportGridService] = useViewportGrid();
   const { activeViewportId, viewports } = viewportGrid;
-  const { measurementService, displaySetService } = servicesManager.services;
+  const { measurementService, displaySetService, customizationService } = servicesManager.services;
 
   const machineOptions = Object.assign({}, defaultOptions);
   machineOptions.actions = Object.assign({}, machineOptions.actions, {
@@ -78,6 +78,30 @@ function TrackedMeasurementsContextProvider(
             index: imageIndex,
           },
         },
+      });
+    },
+
+    jumpToSameImageInActiveViewport: (ctx, evt) => {
+      const { trackedStudy, trackedSeries, activeViewportId } = ctx;
+      const measurements = measurementService.getMeasurements();
+      const trackedMeasurements = measurements.filter(
+        m => trackedStudy === m.referenceStudyUID && trackedSeries.includes(m.referenceSeriesUID)
+      );
+
+      const trackedMeasurement = trackedMeasurements[0];
+      const referencedDisplaySetUID = trackedMeasurement.displaySetInstanceUID;
+
+      // update the previously stored positionPresentation with the new viewportId
+      // presentation so that when we put the referencedDisplaySet back in the viewport
+      // it will be in the correct position zoom and pan
+      commandsManager.runCommand('updateStoredPositionPresentation', {
+        viewportId: activeViewportId,
+        displaySetInstanceUID: referencedDisplaySetUID,
+      });
+
+      viewportGridService.setDisplaySetsForViewport({
+        viewportId: activeViewportId,
+        displaySetInstanceUIDs: [referencedDisplaySetUID],
       });
     },
     showStructuredReportDisplaySetInActiveViewport: (ctx, evt) => {
@@ -142,6 +166,20 @@ function TrackedMeasurementsContextProvider(
       extensionManager,
       appConfig,
     }),
+    promptLabelAnnotation: promptLabelAnnotation.bind(null, {
+      servicesManager,
+      extensionManager,
+    }),
+  });
+  machineOptions.guards = Object.assign({}, machineOptions.guards, {
+    isLabelOnMeasure: (ctx, evt, condMeta) => {
+      const labelConfig = customizationService.get('measurementLabels');
+      return labelConfig?.labelOnMeasure;
+    },
+    isLabelOnMeasureAndShouldKillMachine: (ctx, evt, condMeta) => {
+      const labelConfig = customizationService.get('measurementLabels');
+      return evt.data && evt.data.userResponse === RESPONSE.NO_NEVER && labelConfig?.labelOnMeasure;
+    },
   });
 
   // TODO: IMPROVE
@@ -153,7 +191,9 @@ function TrackedMeasurementsContextProvider(
   // - Fix viewport border resize
   // - created/destroyed hooks for extensions (cornerstone measurement subscriptions in it's `init`)
 
-  const measurementTrackingMachine = Machine(machineConfiguration, machineOptions);
+  const measurementTrackingMachine = useMemo(() => {
+    return Machine(machineConfiguration, machineOptions);
+  }, []); // Empty dependency array ensures this is only created once
 
   const [trackedMeasurements, sendTrackedMeasurementsEvent] = useMachine(
     measurementTrackingMachine
@@ -168,60 +208,69 @@ function TrackedMeasurementsContextProvider(
 
   // ~~ Listen for changes to ViewportGrid for potential SRs hung in panes when idle
   useEffect(() => {
-    if (viewports.size > 0) {
-      const activeViewport = viewports.get(activeViewportId);
+    const triggerPromptHydrateFlow = async () => {
+      if (viewports.size > 0) {
+        const activeViewport = viewports.get(activeViewportId);
 
-      if (!activeViewport || !activeViewport?.displaySetInstanceUIDs?.length) {
-        return;
+        if (!activeViewport || !activeViewport?.displaySetInstanceUIDs?.length) {
+          return;
+        }
+
+        // Todo: Getting the first displaySetInstanceUID is wrong, but we don't have
+        // tracking fusion viewports yet. This should change when we do.
+        const { displaySetService } = servicesManager.services;
+        const displaySet = displaySetService.getDisplaySetByUID(
+          activeViewport.displaySetInstanceUIDs[0]
+        );
+
+        if (!displaySet) {
+          return;
+        }
+
+        // If this is an SR produced by our SR SOPClassHandler,
+        // and it hasn't been loaded yet, do that now so we
+        // can check if it can be rehydrated or not.
+        //
+        // Note: This happens:
+        // - If the viewport is not currently an OHIFCornerstoneSRViewport
+        // - If the displaySet has never been hung
+        //
+        // Otherwise, the displaySet will be loaded by the useEffect handler
+        // listening to displaySet changes inside OHIFCornerstoneSRViewport.
+        // The issue here is that this handler in TrackedMeasurementsContext
+        // ends up occurring before the Viewport is created, so the displaySet
+        // is not loaded yet, and isRehydratable is undefined unless we call load().
+        if (
+          displaySet.SOPClassHandlerId === SR_SOPCLASSHANDLERID &&
+          !displaySet.isLoaded &&
+          displaySet.load
+        ) {
+          await displaySet.load();
+        }
+
+        // Magic string
+        // load function added by our sopClassHandler module
+        if (
+          displaySet.SOPClassHandlerId === SR_SOPCLASSHANDLERID &&
+          displaySet.isRehydratable === true
+        ) {
+          console.log('sending event...', trackedMeasurements);
+          sendTrackedMeasurementsEvent('PROMPT_HYDRATE_SR', {
+            displaySetInstanceUID: displaySet.displaySetInstanceUID,
+            SeriesInstanceUID: displaySet.SeriesInstanceUID,
+            viewportId: activeViewportId,
+          });
+        }
       }
-
-      // Todo: Getting the first displaySetInstanceUID is wrong, but we don't have
-      // tracking fusion viewports yet. This should change when we do.
-      const { displaySetService } = servicesManager.services;
-      const displaySet = displaySetService.getDisplaySetByUID(
-        activeViewport.displaySetInstanceUIDs[0]
-      );
-
-      if (!displaySet) {
-        return;
-      }
-
-      // If this is an SR produced by our SR SOPClassHandler,
-      // and it hasn't been loaded yet, do that now so we
-      // can check if it can be rehydrated or not.
-      //
-      // Note: This happens:
-      // - If the viewport is not currently an OHIFCornerstoneSRViewport
-      // - If the displaySet has never been hung
-      //
-      // Otherwise, the displaySet will be loaded by the useEffect handler
-      // listening to displaySet changes inside OHIFCornerstoneSRViewport.
-      // The issue here is that this handler in TrackedMeasurementsContext
-      // ends up occurring before the Viewport is created, so the displaySet
-      // is not loaded yet, and isRehydratable is undefined unless we call load().
-      if (
-        displaySet.SOPClassHandlerId === SR_SOPCLASSHANDLERID &&
-        !displaySet.isLoaded &&
-        displaySet.load
-      ) {
-        displaySet.load();
-      }
-
-      // Magic string
-      // load function added by our sopClassHandler module
-      if (
-        displaySet.SOPClassHandlerId === SR_SOPCLASSHANDLERID &&
-        displaySet.isRehydratable === true
-      ) {
-        console.log('sending event...', trackedMeasurements);
-        sendTrackedMeasurementsEvent('PROMPT_HYDRATE_SR', {
-          displaySetInstanceUID: displaySet.displaySetInstanceUID,
-          SeriesInstanceUID: displaySet.SeriesInstanceUID,
-          viewportId: activeViewportId,
-        });
-      }
-    }
-  }, [activeViewportId, sendTrackedMeasurementsEvent, servicesManager.services, viewports]);
+    };
+    triggerPromptHydrateFlow();
+  }, [
+    trackedMeasurements,
+    activeViewportId,
+    sendTrackedMeasurementsEvent,
+    servicesManager.services,
+    viewports,
+  ]);
 
   return (
     <TrackedMeasurementsContext.Provider

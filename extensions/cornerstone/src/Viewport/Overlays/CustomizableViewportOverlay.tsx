@@ -2,21 +2,26 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { vec3 } from 'gl-matrix';
 import PropTypes from 'prop-types';
 import { metaData, Enums, utilities } from '@cornerstonejs/core';
+import type { ImageSliceData } from '@cornerstonejs/core/types';
 import { ViewportOverlay } from '@ohif/ui';
-import { formatPN, formatDICOMDate, formatDICOMTime, formatNumberPrecision } from './utils';
-import { InstanceMetadata } from 'platform/core/src/types';
-import { ServicesManager } from '@ohif/core';
-import { ImageSliceData } from '@cornerstonejs/core/dist/esm/types';
+import type { InstanceMetadata } from '@ohif/core/src/types';
+import { formatDICOMDate, formatDICOMTime, formatNumberPrecision } from './utils';
+import { utils } from '@ohif/core';
+import { StackViewportData, VolumeViewportData } from '../../types/CornerstoneCacheService';
 
 import './CustomizableViewportOverlay.css';
 
 const EPSILON = 1e-4;
+const { formatPN } = utils;
+
+type ViewportData = StackViewportData | VolumeViewportData;
 
 interface OverlayItemProps {
-  element: any;
-  viewportData: any;
+  element: HTMLElement;
+  viewportData: ViewportData;
   imageSliceData: ImageSliceData;
-  servicesManager: ServicesManager;
+  servicesManager: AppTypes.ServicesManager;
+  viewportId: string;
   instance: InstanceMetadata;
   customization: any;
   formatters: {
@@ -35,67 +40,86 @@ interface OverlayItemProps {
   scale?: number;
 }
 
+const OverlayItemComponents = {
+  'ohif.overlayItem': OverlayItem,
+  'ohif.overlayItem.windowLevel': VOIOverlayItem,
+  'ohif.overlayItem.zoomLevel': ZoomOverlayItem,
+  'ohif.overlayItem.instanceNumber': InstanceNumberOverlayItem,
+};
+
+const studyDateItem = {
+  id: 'StudyDate',
+  customizationType: 'ohif.overlayItem',
+  label: '',
+  title: 'Study date',
+  condition: ({ referenceInstance }) => referenceInstance?.StudyDate,
+  contentF: ({ referenceInstance, formatters: { formatDate } }) =>
+    formatDate(referenceInstance.StudyDate),
+};
+
+const seriesDescriptionItem = {
+  id: 'SeriesDescription',
+  customizationType: 'ohif.overlayItem',
+  label: '',
+  title: 'Series description',
+  condition: ({ referenceInstance }) => {
+    return referenceInstance && referenceInstance.SeriesDescription;
+  },
+  contentF: ({ referenceInstance }) => referenceInstance.SeriesDescription,
+};
+
+const topLeftItems = {
+  id: 'cornerstoneOverlayTopLeft',
+  items: [studyDateItem, seriesDescriptionItem],
+};
+
+const topRightItems = { id: 'cornerstoneOverlayTopRight', items: [] };
+
+const bottomLeftItems = {
+  id: 'cornerstoneOverlayBottomLeft',
+  items: [
+    {
+      id: 'WindowLevel',
+      customizationType: 'ohif.overlayItem.windowLevel',
+    },
+    {
+      id: 'ZoomLevel',
+      customizationType: 'ohif.overlayItem.zoomLevel',
+      condition: props => {
+        const activeToolName = props.toolGroupService.getActiveToolForViewport(props.viewportId);
+        return activeToolName === 'Zoom';
+      },
+    },
+  ],
+};
+
+const bottomRightItems = {
+  id: 'cornerstoneOverlayBottomRight',
+  items: [
+    {
+      id: 'InstanceNumber',
+      customizationType: 'ohif.overlayItem.instanceNumber',
+    },
+  ],
+};
+
 /**
- * Window Level / Center Overlay item
+ * The @ohif/cornerstoneOverlay is a default value for a customization
+ * for the cornerstone overlays.  The intent is to allow it to be extended
+ * without needing to re-write the individual overlays by using the append
+ * mechanism.  Individual attributes can be modified individually without
+ * affecting the other items by using the append as well, with position
+ * based replacement.
+ * This is used as a default in the getCustomizationModule so that it
+ * is available early for additional customization extensions.
  */
-function VOIOverlayItem({ voi, customization }: OverlayItemProps) {
-  const { windowWidth, windowCenter } = voi;
-  if (typeof windowCenter !== 'number' || typeof windowWidth !== 'number') {
-    return null;
-  }
-
-  return (
-    <div
-      className="overlay-item flex flex-row"
-      style={{ color: (customization && customization.color) || undefined }}
-    >
-      <span className="mr-1 shrink-0">W:</span>
-      <span className="ml-1 mr-2 shrink-0 font-light">{windowWidth.toFixed(0)}</span>
-      <span className="mr-1 shrink-0">L:</span>
-      <span className="ml-1 shrink-0 font-light">{windowCenter.toFixed(0)}</span>
-    </div>
-  );
-}
-
-/**
- * Zoom Level Overlay item
- */
-function ZoomOverlayItem({ scale, customization }: OverlayItemProps) {
-  return (
-    <div
-      className="overlay-item flex flex-row"
-      style={{ color: (customization && customization.color) || undefined }}
-    >
-      <span className="mr-1 shrink-0">Zoom:</span>
-      <span className="font-light">{scale.toFixed(2)}x</span>
-    </div>
-  );
-}
-
-/**
- * Instance Number Overlay Item
- */
-function InstanceNumberOverlayItem({
-  instanceNumber,
-  imageSliceData,
-  customization,
-}: OverlayItemProps) {
-  const { imageIndex, numberOfSlices } = imageSliceData;
-
-  return (
-    <div
-      className="overlay-item flex flex-row"
-      style={{ color: (customization && customization.color) || undefined }}
-    >
-      <span className="mr-1 shrink-0">I:</span>
-      <span className="font-light">
-        {instanceNumber !== undefined && instanceNumber !== null
-          ? `${instanceNumber} (${imageIndex + 1}/${numberOfSlices})`
-          : `${imageIndex + 1}/${numberOfSlices}`}
-      </span>
-    </div>
-  );
-}
+const CornerstoneOverlay = {
+  id: '@ohif/cornerstoneOverlay',
+  topLeftItems,
+  topRightItems,
+  bottomLeftItems,
+  bottomRightItems,
+};
 
 /**
  * Customizable Viewport Overlay
@@ -106,48 +130,63 @@ function CustomizableViewportOverlay({
   imageSliceData,
   viewportId,
   servicesManager,
+}: {
+  element: HTMLElement;
+  viewportData: ViewportData;
+  imageSliceData: ImageSliceData;
+  viewportId: string;
+  servicesManager: AppTypes.ServicesManager;
 }) {
-  const { toolbarService, cornerstoneViewportService, customizationService } =
+  const { cornerstoneViewportService, customizationService, toolGroupService, displaySetService } =
     servicesManager.services;
   const [voi, setVOI] = useState({ windowCenter: null, windowWidth: null });
   const [scale, setScale] = useState(1);
-  const [activeTools, setActiveTools] = useState([]);
   const { imageIndex } = imageSliceData;
 
-  const topLeftCustomization = customizationService.getModeCustomization(
-    'cornerstoneOverlayTopLeft'
-  );
-  const topRightCustomization = customizationService.getModeCustomization(
-    'cornerstoneOverlayTopRight'
-  );
-  const bottomLeftCustomization = customizationService.getModeCustomization(
-    'cornerstoneOverlayBottomLeft'
-  );
-  const bottomRightCustomization = customizationService.getModeCustomization(
-    'cornerstoneOverlayBottomRight'
+  // The new customization is 'cornerstoneOverlay', with an append or replace
+  // on the individual items rather than defining individual items.
+  const cornerstoneOverlay = customizationService.getCustomization('@ohif/cornerstoneOverlay');
+
+  // Historical usage defined the overlays as separate items due to lack of
+  // append functionality.  This code enables the historical usage, but
+  // the recommended functionality is to append to the default values in
+  // cornerstoneOverlay rather than defining individual items.
+  const topLeftCustomization =
+    customizationService.getCustomization('cornerstoneOverlayTopLeft') ||
+    cornerstoneOverlay?.topLeftItems;
+  const topRightCustomization =
+    customizationService.getCustomization('cornerstoneOverlayTopRight') ||
+    cornerstoneOverlay?.topRightItems;
+  const bottomLeftCustomization =
+    customizationService.getCustomization('cornerstoneOverlayBottomLeft') ||
+    cornerstoneOverlay?.bottomLeftItems;
+  const bottomRightCustomization =
+    customizationService.getCustomization('cornerstoneOverlayBottomRight') ||
+    cornerstoneOverlay?.bottomRightItems;
+
+  const instanceNumber = useMemo(
+    () =>
+      viewportData
+        ? getInstanceNumber(viewportData, viewportId, imageIndex, cornerstoneViewportService)
+        : null,
+    [viewportData, viewportId, imageIndex, cornerstoneViewportService]
   );
 
-  const instance = useMemo(() => {
-    if (viewportData != null) {
-      return _getViewportInstance(viewportData, imageIndex);
-    } else {
+  const displaySetProps = useMemo(() => {
+    const displaySets = getDisplaySets(viewportData, displaySetService);
+    if (!displaySets) {
       return null;
     }
-  }, [viewportData, imageIndex]);
-
-  const instanceNumber = useMemo(() => {
-    if (viewportData != null) {
-      return _getInstanceNumber(viewportData, viewportId, imageIndex, cornerstoneViewportService);
-    }
-    return null;
-  }, [viewportData, viewportId, imageIndex, cornerstoneViewportService]);
-
-  /**
-   * Initial toolbar state
-   */
-  useEffect(() => {
-    setActiveTools(toolbarService.getActiveTools());
-  }, []);
+    const [displaySet] = displaySets;
+    const { instances, instance: referenceInstance } = displaySet;
+    return {
+      displaySets,
+      displaySet,
+      instance: instances?.[imageIndex],
+      instances,
+      referenceInstance,
+    };
+  }, [viewportData, viewportId, instanceNumber, cornerstoneViewportService]);
 
   /**
    * Updating the VOI when the viewport changes its voi
@@ -190,20 +229,8 @@ function CustomizableViewportOverlay({
           return;
         }
 
-        const imageData = viewport.getImageData();
+        const scale = viewport.getZoom();
 
-        if (!imageData) {
-          return;
-        }
-
-        if (camera.scale) {
-          setScale(camera.scale);
-          return;
-        }
-
-        const { spacing } = imageData;
-        // convert parallel scale to scale
-        const scale = (element.clientHeight * spacing[0] * 0.5) / camera.parallelScale;
         setScale(scale);
       }
     };
@@ -215,26 +242,10 @@ function CustomizableViewportOverlay({
     };
   }, [viewportId, viewportData, cornerstoneViewportService, element]);
 
-  /**
-   * Updating the active tools when the toolbar changes
-   */
-  // Todo: this should act on the toolGroups instead of the toolbar state
-  useEffect(() => {
-    const { unsubscribe } = toolbarService.subscribe(
-      toolbarService.EVENTS.TOOL_BAR_STATE_MODIFIED,
-      () => {
-        setActiveTools(toolbarService.getActiveTools());
-      }
-    );
-
-    return () => {
-      unsubscribe();
-    };
-  }, [toolbarService]);
-
   const _renderOverlayItem = useCallback(
-    item => {
-      const overlayItemProps: OverlayItemProps = {
+    (item, props) => {
+      const overlayItemProps = {
+        ...props,
         element,
         viewportData,
         imageSliceData,
@@ -242,29 +253,27 @@ function CustomizableViewportOverlay({
         servicesManager,
         customization: item,
         formatters: {
-          formatPN: formatPN,
+          formatPN,
           formatDate: formatDICOMDate,
           formatTime: formatDICOMTime,
-          formatNumberPrecision: formatNumberPrecision,
+          formatNumberPrecision,
         },
-        instance,
-        // calculated
-        voi,
-        scale,
-        instanceNumber,
       };
 
-      if (item.customizationType === 'ohif.overlayItem.windowLevel') {
-        return <VOIOverlayItem {...overlayItemProps} />;
-      } else if (item.customizationType === 'ohif.overlayItem.zoomLevel') {
-        return <ZoomOverlayItem {...overlayItemProps} />;
-      } else if (item.customizationType === 'ohif.overlayItem.instanceNumber') {
-        return <InstanceNumberOverlayItem {...overlayItemProps} />;
+      if (!item) {
+        return null;
+      }
+
+      const { customizationType } = item;
+      const OverlayItemComponent = OverlayItemComponents[customizationType];
+
+      if (OverlayItemComponent) {
+        return <OverlayItemComponent {...overlayItemProps} />;
       } else {
         const renderItem = customizationService.transform(item);
 
-        if (typeof renderItem.content === 'function') {
-          return renderItem.content(overlayItemProps);
+        if (typeof renderItem.contentF === 'function') {
+          return renderItem.contentF(overlayItemProps);
         }
       }
     },
@@ -275,113 +284,92 @@ function CustomizableViewportOverlay({
       viewportId,
       servicesManager,
       customizationService,
-      instance,
+      displaySetProps,
       voi,
       scale,
       instanceNumber,
     ]
   );
 
-  const getTopLeftContent = useCallback(() => {
-    const items = topLeftCustomization?.items || [
-      {
-        id: 'WindowLevel',
-        customizationType: 'ohif.overlayItem.windowLevel',
-      },
-    ];
-    return (
-      <>
-        {items.map((item, i) => (
-          <div key={`topLeftOverlayItem_${i}`}>{_renderOverlayItem(item)}</div>
-        ))}
-      </>
-    );
-  }, [topLeftCustomization, _renderOverlayItem]);
+  const getContent = useCallback(
+    (customization, keyPrefix) => {
+      if (!customization?.items) {
+        return null;
+      }
+      const { items } = customization;
+      const props = {
+        ...displaySetProps,
+        formatters: { formatDate: formatDICOMDate },
+        voi,
+        scale,
+        instanceNumber,
+        viewportId,
+        toolGroupService,
+      };
 
-  const getTopRightContent = useCallback(() => {
-    const items = topRightCustomization?.items || [
-      {
-        id: 'InstanceNmber',
-        customizationType: 'ohif.overlayItem.instanceNumber',
-      },
-    ];
-    return (
-      <>
-        {items.map((item, i) => (
-          <div key={`topRightOverlayItem_${i}`}>{_renderOverlayItem(item)}</div>
-        ))}
-      </>
-    );
-  }, [topRightCustomization, _renderOverlayItem]);
-
-  const getBottomLeftContent = useCallback(() => {
-    const items = bottomLeftCustomization?.items || [];
-    return (
-      <>
-        {items.map((item, i) => (
-          <div key={`bottomLeftOverlayItem_${i}`}>{_renderOverlayItem(item)}</div>
-        ))}
-      </>
-    );
-  }, [bottomLeftCustomization, _renderOverlayItem]);
-
-  const getBottomRightContent = useCallback(() => {
-    const items = bottomRightCustomization?.items || [];
-    return (
-      <>
-        {items.map((item, i) => (
-          <div key={`bottomRightOverlayItem_${i}`}>{_renderOverlayItem(item)}</div>
-        ))}
-      </>
-    );
-  }, [bottomRightCustomization, _renderOverlayItem]);
+      return (
+        <>
+          {items.map((item, index) => (
+            <div key={`${keyPrefix}_${index}`}>
+              {((!item?.condition || item.condition(props)) && _renderOverlayItem(item, props)) ||
+                null}
+            </div>
+          ))}
+        </>
+      );
+    },
+    [_renderOverlayItem]
+  );
 
   return (
     <ViewportOverlay
-      topLeft={getTopLeftContent()}
-      topRight={getTopRightContent()}
-      bottomLeft={getBottomLeftContent()}
-      bottomRight={getBottomRightContent()}
+      topLeft={getContent(topLeftCustomization, 'topLeftOverlayItem')}
+      topRight={getContent(topRightCustomization, 'topRightOverlayItem')}
+      bottomLeft={getContent(bottomLeftCustomization, 'bottomLeftOverlayItem')}
+      bottomRight={getContent(bottomRightCustomization, 'bottomRightOverlayItem')}
     />
   );
 }
 
-function _getViewportInstance(viewportData, imageIndex) {
-  let imageId = null;
-  if (viewportData.viewportType === Enums.ViewportType.STACK) {
-    imageId = viewportData.data.imageIds[imageIndex];
-  } else if (viewportData.viewportType === Enums.ViewportType.ORTHOGRAPHIC) {
-    const volumes = viewportData.data;
-    if (volumes && volumes.length == 1) {
-      const volume = volumes[0];
-      imageId = volume.imageIds[imageIndex];
-    }
+/**
+ * Gets an array of display sets for the given viewport, based on the viewport data.
+ * Returns null if none found.
+ */
+function getDisplaySets(viewportData, displaySetService) {
+  if (!viewportData?.data?.length) {
+    return null;
   }
-  return imageId ? metaData.get('instance', imageId) || {} : {};
+  const displaySets = viewportData.data
+    .map(datum => displaySetService.getDisplaySetByUID(datum.displaySetInstanceUID))
+    .filter(it => !!it);
+  if (!displaySets.length) {
+    return null;
+  }
+  return displaySets;
 }
 
-function _getInstanceNumber(viewportData, viewportId, imageIndex, cornerstoneViewportService) {
+const getInstanceNumber = (viewportData, viewportId, imageIndex, cornerstoneViewportService) => {
   let instanceNumber;
 
-  if (viewportData.viewportType === Enums.ViewportType.STACK) {
-    instanceNumber = _getInstanceNumberFromStack(viewportData, imageIndex);
-
-    if (!instanceNumber && instanceNumber !== 0) {
-      return null;
-    }
-  } else if (viewportData.viewportType === Enums.ViewportType.ORTHOGRAPHIC) {
-    instanceNumber = _getInstanceNumberFromVolume(
-      viewportData,
-      imageIndex,
-      viewportId,
-      cornerstoneViewportService
-    );
+  switch (viewportData.viewportType) {
+    case Enums.ViewportType.STACK:
+      instanceNumber = _getInstanceNumberFromStack(viewportData, imageIndex);
+      break;
+    case Enums.ViewportType.ORTHOGRAPHIC:
+      instanceNumber = _getInstanceNumberFromVolume(
+        viewportData,
+        viewportId,
+        cornerstoneViewportService,
+        imageIndex
+      );
+      break;
   }
-  return instanceNumber;
-}
+
+  return instanceNumber ?? null;
+};
 
 function _getInstanceNumberFromStack(viewportData, imageIndex) {
-  const imageIds = viewportData.data.imageIds;
+  const imageIds = viewportData.data[0].imageIds;
   const imageId = imageIds[imageIndex];
 
   if (!imageId) {
@@ -403,15 +391,25 @@ function _getInstanceNumberFromStack(viewportData, imageIndex) {
 // Since volume viewports can be in any view direction, they can render
 // a reconstructed image which don't have imageIds; therefore, no instance and instanceNumber
 // Here we check if viewport is in the acquisition direction and if so, we get the instanceNumber
-function _getInstanceNumberFromVolume(viewportData, viewportId, cornerstoneViewportService) {
-  const volumes = viewportData.volumes;
+function _getInstanceNumberFromVolume(
+  viewportData,
+  viewportId,
+  cornerstoneViewportService,
+  imageIndex
+) {
+  const volumes = viewportData.data;
 
-  // Todo: support fusion of acquisition plane which has instanceNumber
-  if (!volumes || volumes.length > 1) {
+  if (!volumes) {
     return;
   }
 
-  const volume = volumes[0];
+  // Todo: support fusion of acquisition plane which has instanceNumber
+  const { volume } = volumes[0];
+
+  if (!volume) {
+    return;
+  }
+
   const { direction, imageIds } = volume;
 
   const cornerstoneViewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
@@ -442,6 +440,91 @@ function _getInstanceNumberFromVolume(viewportData, viewportId, cornerstoneViewp
   }
 }
 
+function OverlayItem(props) {
+  const { instance, customization = {} } = props;
+  const { color, attribute, title, label, background } = customization;
+  const value = customization.contentF?.(props, customization) ?? instance?.[attribute];
+  if (value === undefined || value === null) {
+    return null;
+  }
+  return (
+    <div
+      className="overlay-item flex flex-row"
+      style={{ color, background }}
+      title={title}
+    >
+      {label ? <span className="mr-1 shrink-0">{label}</span> : null}
+      <span className="ml-1 mr-2 shrink-0">{value}</span>
+    </div>
+  );
+}
+
+/**
+ * Window Level / Center Overlay item
+ */
+function VOIOverlayItem({ voi, customization }: OverlayItemProps) {
+  const { windowWidth, windowCenter } = voi;
+  if (typeof windowCenter !== 'number' || typeof windowWidth !== 'number') {
+    return null;
+  }
+
+  return (
+    <div
+      className="overlay-item flex flex-row"
+      style={{ color: customization?.color }}
+    >
+      <span className="mr-1 shrink-0">W:</span>
+      <span className="ml-1 mr-2 shrink-0">{windowWidth.toFixed(0)}</span>
+      <span className="mr-1 shrink-0">L:</span>
+      <span className="ml-1 shrink-0">{windowCenter.toFixed(0)}</span>
+    </div>
+  );
+}
+
+/**
+ * Zoom Level Overlay item
+ */
+function ZoomOverlayItem({ scale, customization }: OverlayItemProps) {
+  return (
+    <div
+      className="overlay-item flex flex-row"
+      style={{ color: (customization && customization.color) || undefined }}
+    >
+      <span className="mr-1 shrink-0">Zoom:</span>
+      <span>{scale.toFixed(2)}x</span>
+    </div>
+  );
+}
+
+/**
+ * Instance Number Overlay Item
+ */
+function InstanceNumberOverlayItem({
+  instanceNumber,
+  imageSliceData,
+  customization,
+}: OverlayItemProps) {
+  const { imageIndex, numberOfSlices } = imageSliceData;
+
+  return (
+    <div
+      className="overlay-item flex flex-row"
+      style={{ color: (customization && customization.color) || undefined }}
+    >
+      <span>
+        {instanceNumber !== undefined && instanceNumber !== null ? (
+          <>
+            <span className="mr-1 shrink-0">I:</span>
+            <span>{`${instanceNumber} (${imageIndex + 1}/${numberOfSlices})`}</span>
+          </>
+        ) : (
+          `${imageIndex + 1}/${numberOfSlices}`
+        )}
+      </span>
+    </div>
+  );
+}
+
 CustomizableViewportOverlay.propTypes = {
   viewportData: PropTypes.object,
   imageIndex: PropTypes.number,
@@ -449,3 +532,5 @@ CustomizableViewportOverlay.propTypes = {
 };
 
 export default CustomizableViewportOverlay;
+
+export { CustomizableViewportOverlay, CornerstoneOverlay };

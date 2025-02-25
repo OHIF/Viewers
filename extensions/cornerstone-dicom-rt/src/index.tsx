@@ -2,6 +2,7 @@ import { id } from './id';
 import React from 'react';
 import { Types } from '@ohif/core';
 import getSopClassHandlerModule from './getSopClassHandlerModule';
+import getCommandsModule from './getCommandsModule';
 
 const Component = React.lazy(() => {
   return import(/* webpackPrefetch: true */ './viewports/OHIFCornerstoneRTViewport');
@@ -24,6 +25,7 @@ const extension: Types.Extensions.Extension = {
    * You ID can be anything you want, but it should be unique.
    */
   id,
+  getCommandsModule,
 
   /**
    * PanelModule should provide a list of panels that will be available in OHIF

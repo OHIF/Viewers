@@ -1,11 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import PropTypes from 'prop-types';
 
-import { SidePanel, ErrorBoundary, LoadingIndicatorProgress } from '@ohif/ui';
-import { ServicesManager, HangingProtocolService, CommandsManager } from '@ohif/core';
+import { LoadingIndicatorProgress, InvestigationalUseDialog } from '@ohif/ui';
+import { HangingProtocolService, CommandsManager } from '@ohif/core';
 import { useAppConfig } from '@state';
 import ViewerHeader from './ViewerHeader';
 import SidePanelWithServices from '../Components/SidePanelWithServices';
+import { Onboarding } from '@ohif/ui-next';
 
 function ViewerLayout({
   // From Extension Module Params
@@ -16,15 +17,23 @@ function ViewerLayout({
   // From Modes
   viewports,
   ViewportGridComp,
-  leftPanels = [],
-  rightPanels = [],
-  leftPanelDefaultClosed = false,
-  rightPanelDefaultClosed = false,
-}): React.FunctionComponent {
+  leftPanelClosed = false,
+  rightPanelClosed = false,
+}: withAppTypes): React.FunctionComponent {
   const [appConfig] = useAppConfig();
 
-  const { hangingProtocolService } = servicesManager.services;
+  const { panelService, hangingProtocolService } = servicesManager.services;
   const [showLoadingIndicator, setShowLoadingIndicator] = useState(appConfig.showLoadingIndicator);
+
+  const hasPanels = useCallback(
+    (side): boolean => !!panelService.getPanels(side).length,
+    [panelService]
+  );
+
+  const [hasRightPanels, setHasRightPanels] = useState(hasPanels('right'));
+  const [hasLeftPanels, setHasLeftPanels] = useState(hasPanels('left'));
+  const [leftPanelClosedState, setLeftPanelClosed] = useState(leftPanelClosed);
+  const [rightPanelClosedState, setRightPanelClosed] = useState(rightPanelClosed);
 
   /**
    * Set body classes (tailwindcss) that don't allow vertical
@@ -43,35 +52,13 @@ function ViewerLayout({
   const getComponent = id => {
     const entry = extensionManager.getModuleEntry(id);
 
-    if (!entry) {
+    if (!entry || !entry.component) {
       throw new Error(
-        `${id} is not valid for an extension module. Please verify your configuration or ensure that the extension is properly registered. It's also possible that your mode is utilizing a module from an extension that hasn't been included in its dependencies (add the extension to the "extensionDependencies" array in your mode's index.js file)`
+        `${id} is not valid for an extension module or no component found from extension ${id}. Please verify your configuration or ensure that the extension is properly registered. It's also possible that your mode is utilizing a module from an extension that hasn't been included in its dependencies (add the extension to the "extensionDependencies" array in your mode's index.js file). Check the reference string to the extension in your Mode configuration`
       );
     }
 
-    let content;
-    if (entry && entry.component) {
-      content = entry.component;
-    } else {
-      throw new Error(
-        `No component found from extension ${id}. Check the reference string to the extension in your Mode configuration`
-      );
-    }
-
-    return { entry, content };
-  };
-
-  const getPanelData = id => {
-    const { content, entry } = getComponent(id);
-
-    return {
-      id: entry.id,
-      iconName: entry.iconName,
-      iconLabel: entry.iconLabel,
-      label: entry.label,
-      name: entry.name,
-      content,
-    };
+    return { entry, content: entry.component };
   };
 
   useEffect(() => {
@@ -100,8 +87,26 @@ function ViewerLayout({
     };
   };
 
-  const leftPanelComponents = leftPanels.map(getPanelData);
-  const rightPanelComponents = rightPanels.map(getPanelData);
+  useEffect(() => {
+    const { unsubscribe } = panelService.subscribe(
+      panelService.EVENTS.PANELS_CHANGED,
+      ({ options }) => {
+        setHasLeftPanels(hasPanels('left'));
+        setHasRightPanels(hasPanels('right'));
+        if (options?.leftPanelClosed !== undefined) {
+          setLeftPanelClosed(options.leftPanelClosed);
+        }
+        if (options?.rightPanelClosed !== undefined) {
+          setRightPanelClosed(options.rightPanelClosed);
+        }
+      }
+    );
+
+    return () => {
+      unsubscribe();
+    };
+  }, [panelService, hasPanels]);
+
   const viewportComponents = viewports.map(getViewportComponentData);
 
   return (
@@ -110,6 +115,7 @@ function ViewerLayout({
         hotkeysManager={hotkeysManager}
         extensionManager={extensionManager}
         servicesManager={servicesManager}
+        appConfig={appConfig}
       />
       <div
         className="relative flex w-full flex-row flex-nowrap items-stretch overflow-hidden bg-black"
@@ -118,40 +124,34 @@ function ViewerLayout({
         <React.Fragment>
           {showLoadingIndicator && <LoadingIndicatorProgress className="h-full w-full bg-black" />}
           {/* LEFT SIDEPANELS */}
-          {leftPanelComponents.length ? (
-            <ErrorBoundary context="Left Panel">
-              <SidePanelWithServices
-                side="left"
-                activeTabIndex={leftPanelDefaultClosed ? null : 0}
-                tabs={leftPanelComponents}
-                servicesManager={servicesManager}
-              />
-            </ErrorBoundary>
+          {hasLeftPanels ? (
+            <SidePanelWithServices
+              side="left"
+              activeTabIndex={leftPanelClosedState ? null : 0}
+              servicesManager={servicesManager}
+            />
           ) : null}
           {/* TOOLBAR + GRID */}
           <div className="flex h-full flex-1 flex-col">
             <div className="relative flex h-full flex-1 items-center justify-center overflow-hidden bg-black">
-              <ErrorBoundary context="Grid">
-                <ViewportGridComp
-                  servicesManager={servicesManager}
-                  viewportComponents={viewportComponents}
-                  commandsManager={commandsManager}
-                />
-              </ErrorBoundary>
+              <ViewportGridComp
+                servicesManager={servicesManager}
+                viewportComponents={viewportComponents}
+                commandsManager={commandsManager}
+              />
             </div>
           </div>
-          {rightPanelComponents.length ? (
-            <ErrorBoundary context="Right Panel">
-              <SidePanelWithServices
-                side="right"
-                activeTabIndex={rightPanelDefaultClosed ? null : 0}
-                tabs={rightPanelComponents}
-                servicesManager={servicesManager}
-              />
-            </ErrorBoundary>
+          {hasRightPanels ? (
+            <SidePanelWithServices
+              side="right"
+              activeTabIndex={rightPanelClosedState ? null : 0}
+              servicesManager={servicesManager}
+            />
           ) : null}
         </React.Fragment>
       </div>
+      <Onboarding />
+      <InvestigationalUseDialog dialogConfiguration={appConfig?.investigationalUseDialog} />
     </div>
   );
 }
@@ -162,12 +162,12 @@ ViewerLayout.propTypes = {
     getModuleEntry: PropTypes.func.isRequired,
   }).isRequired,
   commandsManager: PropTypes.instanceOf(CommandsManager),
-  servicesManager: PropTypes.instanceOf(ServicesManager),
+  servicesManager: PropTypes.object.isRequired,
   // From modes
   leftPanels: PropTypes.array,
   rightPanels: PropTypes.array,
-  leftPanelDefaultClosed: PropTypes.bool.isRequired,
-  rightPanelDefaultClosed: PropTypes.bool.isRequired,
+  leftPanelClosed: PropTypes.bool.isRequired,
+  rightPanelClosed: PropTypes.bool.isRequired,
   /** Responsible for rendering our grid of viewports; provided by consuming application */
   children: PropTypes.oneOfType([PropTypes.node, PropTypes.func]).isRequired,
   viewports: PropTypes.array,
