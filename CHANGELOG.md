@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.10.0-beta.104](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.103...v3.10.0-beta.104) (2025-02-25)
+
+
+### Bug Fixes
+
+* Delay for all series thumbnails on fetching thumbnail ([#4802](https://github.com/OHIF/Viewers/issues/4802)) ([bda98b0](https://github.com/OHIF/Viewers/commit/bda98b0beebde6294a522b5c7e0ca76724020a2f))
+
+
+
+
+
 # [3.10.0-beta.103](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.102...v3.10.0-beta.103) (2025-02-23)
 
 **Note:** Version bump only for package ohif-monorepo-root
