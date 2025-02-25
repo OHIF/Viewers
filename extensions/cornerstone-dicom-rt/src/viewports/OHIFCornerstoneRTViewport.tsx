@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import { ViewportActionArrows } from '@ohif/ui';
 import { useViewportGrid } from '@ohif/ui-next';
-import { onSegmentChange as handleSegmentChange } from '../../../cornerstone/src/utils/segmentUtils';
+import { utils } from '@ohif/extension-cornerstone';
 
 import promptHydrateRT from '../utils/promptHydrateRT';
 import _getStatusComponent from './_getStatusComponent';
@@ -49,7 +49,7 @@ function OHIFCornerstoneRTViewport(props: withAppTypes) {
   const [viewportGrid, viewportGridService] = useViewportGrid();
 
   // States
-  let selectedSegmentObjectIndex: number = 0;
+  const selectedSegmentObjectIndex: number = 0;
   const { setPositionPresentation } = usePositionPresentationStore();
 
   // Hydration means that the RT is opened and segments are loaded into the
@@ -142,7 +142,13 @@ function OHIFCornerstoneRTViewport(props: withAppTypes) {
 
   const onSegmentChange = useCallback(
     direction => {
-      handleSegmentChange(direction, rtDisplaySet, viewportId, selectedSegmentObjectIndex);
+      utils.handleSegmentChange(
+        direction,
+        rtDisplaySet,
+        viewportId,
+        selectedSegmentObjectIndex,
+        segmentationService
+      );
     },
     [selectedSegmentObjectIndex]
   );

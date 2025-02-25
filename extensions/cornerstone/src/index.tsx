@@ -54,6 +54,7 @@ import PanelMeasurement from './panels/PanelMeasurement';
 import DicomUpload from './components/DicomUpload/DicomUpload';
 import { useSegmentations } from './hooks/useSegmentations';
 import { StudySummaryFromMetadata } from './components/StudySummaryFromMetadata';
+import utils from './utils';
 
 const { imageRetrieveMetadataProvider } = cornerstone.utilities;
 
@@ -254,5 +255,6 @@ export {
   PanelMeasurement,
   DicomUpload,
   StudySummaryFromMetadata,
+  utils,
 };
 export default cornerstoneExtension;

@@ -7,7 +7,7 @@ import promptHydrateSEG from '../utils/promptHydrateSEG';
 import _getStatusComponent from './_getStatusComponent';
 import { usePositionPresentationStore } from '@ohif/extension-cornerstone';
 import { SegmentationRepresentations } from '@cornerstonejs/tools/enums';
-import { onSegmentChange as handleSegmentChange } from '../../../cornerstone/src/utils/segmentUtils';
+import { utils } from '@ohif/extension-cornerstone';
 
 const SEG_TOOLGROUP_BASE_NAME = 'SEGToolGroup';
 
@@ -132,7 +132,13 @@ function OHIFCornerstoneSEGViewport(props: withAppTypes) {
 
   const onSegmentChange = useCallback(
     direction => {
-      handleSegmentChange(direction, segDisplaySet, viewportId, selectedSegmentObjectIndex);
+      utils.handleSegmentChange(
+        direction,
+        segDisplaySet,
+        viewportId,
+        selectedSegmentObjectIndex,
+        segmentationService
+      );
     },
     [selectedSegmentObjectIndex]
   );

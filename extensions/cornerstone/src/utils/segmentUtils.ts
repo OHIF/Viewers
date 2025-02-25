@@ -1,14 +1,10 @@
-import { servicesManager } from '@ohif/app/src/App';
 
-const {
-  segmentationService,
-} = servicesManager.services;
-
-export const onSegmentChange = (
+export const handleSegmentChange = (
   direction: number,
   segDisplaySet: any,
   viewportId: string,
-  selectedSegmentObjectIndex: number
+  selectedSegmentObjectIndex: number,
+  segmentationService: any
 ) => {
   const segmentationId = segDisplaySet.displaySetInstanceUID;
   const segmentation = segmentationService.getSegmentation(segmentationId);
