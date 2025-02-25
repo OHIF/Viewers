@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.10.0-beta.105](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.104...v3.10.0-beta.105) (2025-02-25)
+
+
+### Bug Fixes
+
+* Changes to address hang/crash on jump to instance ([#4679](https://github.com/OHIF/Viewers/issues/4679)) ([e480e84](https://github.com/OHIF/Viewers/commit/e480e841bb5da5281a7c4624a60d5964d690ebb8))
+* **rt:** jump to segment discards the configured width ([#4799](https://github.com/OHIF/Viewers/issues/4799)) ([afd528b](https://github.com/OHIF/Viewers/commit/afd528b8d72c3d8360b54bb52604758e83ada863))
+
+
+
+
+
 # [3.10.0-beta.104](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.103...v3.10.0-beta.104) (2025-02-25)
 
 **Note:** Version bump only for package @ohif/extension-cornerstone
