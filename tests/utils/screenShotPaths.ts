@@ -81,9 +81,8 @@ const screenShotPaths = {
     rtJumpToStructure: 'rtJumpToStructure.png',
   },
   rtHydration2: {
-    // rtPostHydration: 'rtPostHydration2.png',
+    rtPostHydration: 'rtPostHydration.png',
     rtPreHydration: 'rtPreHydration.png',
-    // rtJumpToStructure: 'rtJumpToStructure2.png',
   },
   crosshairs: {
     crosshairsRendered: 'crosshairsRendered.png',

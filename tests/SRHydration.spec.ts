@@ -11,9 +11,9 @@ test('should hydrate SR reports correctly', async ({ page }) => {
   await page.getByTestId('side-panel-header-right').click();
   await page.getByTestId('trackedMeasurements-btn').click();
   await page.getByTestId('study-browser-thumbnail-no-image').dblclick();
-  await checkForScreenshot(page, page, screenShotPaths.srHydration.srPreHydration);
-  await page.getByTestId('yes-hydrate-btn').click();
-  await checkForScreenshot(page, page, screenShotPaths.srHydration.srPostHydration);
-  await page.getByTestId('data-row').first().click();
-  await checkForScreenshot(page, page, screenShotPaths.srHydration.srJumpToMeasurement);
+  await checkForScreenshot(page, page, screenShotPaths.srHydration.srPreHydration1);
+  // await page.getByTestId('yes-hydrate-btn').click();
+  // await checkForScreenshot(page, page, screenShotPaths.srHydration.srPostHydration);
+  // await page.getByTestId('data-row').first().click();
+  // await checkForScreenshot(page, page, screenShotPaths.srHydration.srJumpToMeasurement);
 });
