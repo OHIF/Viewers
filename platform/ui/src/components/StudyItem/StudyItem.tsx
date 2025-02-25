@@ -50,13 +50,11 @@ const StudyItem = ({
           </div>
           {!!onClickLaunch && (
             <div className="items-right flex flex-row text-base text-blue-300">
-              <Icon
-                name="icon-play"
+              <Icons.Play
                 className="mx-2 w-4 text-blue-300"
                 onClick={onSetActive}
               />
-              <Icon
-                name="launch-arrow"
+              <Icons.LaunchArrow
                 className="mx-2 w-4 text-blue-300"
                 onClick={onLaunchWindow}
               />
