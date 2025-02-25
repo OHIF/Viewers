@@ -1,1 +1,5 @@
-export default {};
+import hotkeyBindings from './hotkeyBindings';
+
+export default {
+  hotkeyBindings,
+};
