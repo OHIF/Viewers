@@ -40,7 +40,7 @@ title: uiModalService
 **Migration Steps:**
 
 
-### Removal of `containerDimensions` and `contentDimensions`
+### Rename of `containerDimensions` to `containerClassName` and removal of `contentDimensions`
 
 
 Before
