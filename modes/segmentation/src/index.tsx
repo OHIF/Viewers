@@ -1,4 +1,3 @@
-import { hotkeys } from '@ohif/core';
 import { id } from './id';
 import toolbarButtons from './toolbarButtons';
 import segmentationButtons from './segmentationButtons';
@@ -49,7 +48,8 @@ function modeFactory({ modeConfiguration }) {
      * Services and other resources.
      */
     onModeEnter: ({ servicesManager, extensionManager, commandsManager }: withAppTypes) => {
-      const { measurementService, toolbarService, toolGroupService } = servicesManager.services;
+      const { measurementService, toolbarService, toolGroupService, customizationService } =
+        servicesManager.services;
 
       measurementService.clearMeasurements();
 
@@ -70,6 +70,23 @@ function modeFactory({ modeConfiguration }) {
         'MoreTools',
       ]);
       toolbarService.createButtonSection('segmentationToolbox', ['BrushTools', 'Shapes']);
+
+      customizationService.setCustomizations(
+        {
+          'ohif.hotkeyBindings': {
+            $push: [
+              {
+                commandName: 'setToolActive',
+                commandOptions: { toolName: 'Zoom' },
+                label: 'Gholi',
+                keys: ['z'],
+                isEditable: true,
+              },
+            ],
+          },
+        },
+        'mode'
+      );
     },
     onModeExit: ({ servicesManager }: withAppTypes) => {
       const {
@@ -158,7 +175,6 @@ function modeFactory({ modeConfiguration }) {
     // hangingProtocol: ['@ohif/mnGrid'],
     /** SopClassHandlers used by the mode */
     sopClassHandlers: [ohif.sopClassHandler, segmentation.sopClassHandler],
-    /** hotkeys for mode */
   };
 }
 

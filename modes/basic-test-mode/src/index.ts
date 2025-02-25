@@ -102,6 +102,22 @@ function modeFactory() {
         'Crosshairs',
         'MoreTools',
       ]);
+
+      customizationService.setCustomizations(
+        {
+          'ohif.hotkeyBindings': {
+            $set: [
+              {
+                commandName: 'undo',
+                label: 'Undo',
+                keys: ['ctrl+z'],
+                isEditable: true,
+              },
+            ],
+          },
+        },
+        'mode'
+      );
     },
     onModeExit: ({ servicesManager }: withAppTypes) => {
       const {

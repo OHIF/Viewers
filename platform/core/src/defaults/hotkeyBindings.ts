@@ -167,18 +167,19 @@ const bindings = [
     label: 'Delete Annotation',
     keys: ['backspace'],
   },
-  {
-    commandName: 'undo',
-    label: 'Undo',
-    keys: ['ctrl+z'],
-    isEditable: true,
-  },
-  {
-    commandName: 'redo',
-    label: 'Redo',
-    keys: ['ctrl+y'],
-    isEditable: true,
-  },
+  // after we have the ui for undo/redo, we can add these back in
+  // {
+  //   commandName: 'undo',
+  //   label: 'Undo',
+  //   keys: ['ctrl+z'],
+  //   isEditable: true,
+  // },
+  // {
+  //   commandName: 'redo',
+  //   label: 'Redo',
+  //   keys: ['ctrl+y'],
+  //   isEditable: true,
+  // },
 ];
 
 export default bindings;

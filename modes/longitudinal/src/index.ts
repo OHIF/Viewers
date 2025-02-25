@@ -105,19 +105,6 @@ function modeFactory({ modeConfiguration }) {
         'MoreTools',
       ]);
 
-      // customizationService.setCustomizations({
-      //   'ohif.hotkeyBindings': {
-      //     $set: [
-      //       {
-      //         commandName: 'undo',
-      //         label: 'Undo',
-      //         keys: ['ctrl+z'],
-      //         isEditable: true,
-      //       },
-      //     ],
-      //   },
-      // });
-
       // // ActivatePanel event trigger for when a segmentation or measurement is added.
       // // Do not force activation so as to respect the state the user may have left the UI in.
       // _activatePanelTriggersSubscriptions = [

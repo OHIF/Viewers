@@ -205,32 +205,32 @@ const toolbarButtons: Button[] = [
       },
     },
   },
-  {
-    id: 'Undo',
-    uiType: 'ohif.toolButton',
-    props: {
-      type: 'tool',
-      icon: 'prev-arrow',
-      label: 'Undo',
-      commands: {
-        commandName: 'undo',
-      },
-      evaluate: 'evaluate.action',
-    },
-  },
-  {
-    id: 'Redo',
-    uiType: 'ohif.toolButton',
-    props: {
-      type: 'tool',
-      icon: 'next-arrow',
-      label: 'Redo',
-      commands: {
-        commandName: 'redo',
-      },
-      evaluate: 'evaluate.action',
-    },
-  },
+  // {
+  //   id: 'Undo',
+  //   uiType: 'ohif.toolButton',
+  //   props: {
+  //     type: 'tool',
+  //     icon: 'prev-arrow',
+  //     label: 'Undo',
+  //     commands: {
+  //       commandName: 'undo',
+  //     },
+  //     evaluate: 'evaluate.action',
+  //   },
+  // },
+  // {
+  //   id: 'Redo',
+  //   uiType: 'ohif.toolButton',
+  //   props: {
+  //     type: 'tool',
+  //     icon: 'next-arrow',
+  //     label: 'Redo',
+  //     commands: {
+  //       commandName: 'redo',
+  //     },
+  //     evaluate: 'evaluate.action',
+  //   },
+  // },
 ];
 
 export default toolbarButtons;
