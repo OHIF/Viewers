@@ -182,7 +182,8 @@ export default function PanelStudyBrowserTracking({
         // so wait a bit of time to allow the viewports preferential loading
         // which improves user experience of responsiveness significantly on slower
         // systems.
-        window.setTimeout(() => setHasLoadedViewports(true), 1000);
+        const delayMs = 250 + displaySetService.getActiveDisplaySets().length * 10;
+        window.setTimeout(() => setHasLoadedViewports(true), delayMs);
       }
 
       return;
