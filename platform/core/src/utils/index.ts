@@ -120,8 +120,6 @@ export {
   generateAcceptHeader,
   createStudyBrowserTabs,
   MeasurementFilters,
-  generateHash,
-  fnv1aHash,
 };
 
 export default utils;

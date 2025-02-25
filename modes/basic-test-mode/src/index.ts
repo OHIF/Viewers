@@ -106,7 +106,7 @@ function modeFactory() {
       customizationService.setCustomizations(
         {
           'ohif.hotkeyBindings': {
-            $set: [
+            $push: [
               {
                 commandName: 'undo',
                 label: 'Undo',
