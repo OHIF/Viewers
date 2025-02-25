@@ -1,11 +1,18 @@
+import SegmentationServiceType from '../services/SegmentationService';
 
-export const handleSegmentChange = (
-  direction: number,
-  segDisplaySet: any,
-  viewportId: string,
-  selectedSegmentObjectIndex: number,
-  segmentationService: any
-) => {
+export const handleSegmentChange = ({
+  direction,
+  segDisplaySet,
+  viewportId,
+  selectedSegmentObjectIndex,
+  segmentationService,
+}: {
+  direction: number;
+  segDisplaySet: AppTypes.DisplaySet;
+  viewportId: string;
+  selectedSegmentObjectIndex: number;
+  segmentationService: SegmentationServiceType;
+}) => {
   const segmentationId = segDisplaySet.displaySetInstanceUID;
   const segmentation = segmentationService.getSegmentation(segmentationId);
 
@@ -16,11 +23,10 @@ export const handleSegmentChange = (
   // Get activeSegment each time because the user can select any segment from the list and thus the index should be updated
   const activeSegment = segmentationService.getActiveSegment(viewportId);
   if (activeSegment) {
-    const activeSegmentIndex = Object.values(segments).findIndex(
+    // from the activeSegment get the actual object array index to be used
+    selectedSegmentObjectIndex = Object.values(segments).findIndex(
       segment => segment.segmentIndex === activeSegment.segmentIndex
     );
-    // from the activeSegment get the actual object array index to be used
-    selectedSegmentObjectIndex = activeSegmentIndex;
   }
   let newSelectedSegmentIndex = selectedSegmentObjectIndex + direction;
 

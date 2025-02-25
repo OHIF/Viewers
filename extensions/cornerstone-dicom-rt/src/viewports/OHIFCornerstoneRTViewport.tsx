@@ -142,13 +142,13 @@ function OHIFCornerstoneRTViewport(props: withAppTypes) {
 
   const onSegmentChange = useCallback(
     direction => {
-      utils.handleSegmentChange(
+      utils.handleSegmentChange({
         direction,
-        rtDisplaySet,
+        segDisplaySet: rtDisplaySet,
         viewportId,
         selectedSegmentObjectIndex,
-        segmentationService
-      );
+        segmentationService,
+      });
     },
     [selectedSegmentObjectIndex]
   );
