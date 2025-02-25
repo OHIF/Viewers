@@ -15,16 +15,13 @@ export class HotkeysManager {
   private _servicesManager: AppTypes.ServicesManager;
   private _commandsManager: AppTypes.CommandsManager;
   private isEnabled: boolean = true;
-  public hotkeyDefinitions: Record<string, any>;
-  public hotkeyDefaults: any[];
+  public hotkeyDefinitions: Record<string, any> = {};
+  public hotkeyDefaults: any[] = [];
 
   constructor(
     commandsManager: AppTypes.CommandsManager,
     servicesManager: AppTypes.ServicesManager
   ) {
-    this.hotkeyDefinitions = {};
-    this.hotkeyDefaults = [];
-
     this._servicesManager = servicesManager;
     this._commandsManager = commandsManager;
   }

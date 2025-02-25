@@ -8,9 +8,9 @@ import './Onboarding.css';
 import { hasTourBeenShown, markTourAsShown, defaultShowHandler, middleware } from './utilities';
 
 const Onboarding = ({
-  tours,
+  tours = [],
 }: {
-  tours: Array<{
+  tours?: Array<{
     id: string;
     route: string;
     tourOptions: TourOptions;
@@ -25,7 +25,7 @@ const Onboarding = ({
    * Constructs a tour instance and adds steps to it based on the matching tour.
    */
   useEffect(() => {
-    if (!tours) {
+    if (!tours.length) {
       return;
     }
 
