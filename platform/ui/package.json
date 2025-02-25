@@ -1,6 +1,6 @@
 {
   "name": "@ohif/ui",
-  "version": "3.10.0-beta.93",
+  "version": "3.10.0-beta.104",
   "description": "A set of React components for Medical Imaging Viewers",
   "author": "OHIF Contributors",
   "license": "MIT",
@@ -43,7 +43,9 @@
     "d3-selection": "3",
     "d3-shape": "3",
     "d3-zoom": "3",
-    "lodash.debounce": "4.0.8",
+    "lodash.clonedeep": "^4.5.0",
+    "lodash.debounce": "^4.0.8",
+    "lodash.merge": "^4.6.1",
     "moment": "*",
     "mousetrap": "^1.6.5",
     "react": "^18.3.1",

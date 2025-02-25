@@ -19,7 +19,6 @@ const ohif = {
   chartSopClassHandler: '@ohif/extension-default.sopClassHandlerModule.chart',
   hangingProtocol: '@ohif/extension-default.hangingProtocolModule.default',
   leftPanel: '@ohif/extension-default.panelModule.seriesList',
-  rightPanel: '@ohif/extension-default.panelModule.measure',
   chartViewport: '@ohif/extension-default.viewportModule.chartViewport',
 };
 
