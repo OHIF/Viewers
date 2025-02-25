@@ -364,10 +364,21 @@ export default function PanelStudyBrowserTracking({
         setDisplaySets(mappedDisplaySets);
       }
     );
+    const { viewportGridService } = servicesManager.services;
+    const subscriptionOndropFired = viewportGridService.subscribe(
+      viewportGridService.EVENTS.DROP_HANDLER_FIRED,
+      ({ eventData }) => {
+        sendTrackedMeasurementsEvent('CHECK_DIRTY', {
+          viewportId: activeViewportId,
+          displaySetInstanceUID: eventData.displaySetInstanceUID,
+        });
+      }
+    );
 
     return () => {
       SubscriptionDisplaySetsChanged.unsubscribe();
       SubscriptionDisplaySetMetaDataInvalidated.unsubscribe();
+      subscriptionOndropFired.unsubscribe();
     };
   }, [
     displaySetsLoadingState,

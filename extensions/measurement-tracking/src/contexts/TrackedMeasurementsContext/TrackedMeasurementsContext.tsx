@@ -5,11 +5,12 @@ import { useMachine } from '@xstate/react';
 import { useViewportGrid } from '@ohif/ui-next';
 import { promptLabelAnnotation, promptSaveReport } from '@ohif/extension-default';
 import { machineConfiguration, defaultOptions, RESPONSE } from './measurementTrackingMachine';
-import promptBeginTracking from './promptBeginTracking';
+import promptBeginTracking, { measurementTrackingMode } from './promptBeginTracking';
 import promptTrackNewSeries from './promptTrackNewSeries';
 import promptTrackNewStudy from './promptTrackNewStudy';
 import promptHydrateStructuredReport from './promptHydrateStructuredReport';
 import hydrateStructuredReport from './hydrateStructuredReport';
+import promptHasDirtyAnnotations from './promptHasDirtyAnnotations';
 import { useAppConfig } from '@state';
 
 const TrackedMeasurementsContext = React.createContext();
@@ -144,6 +145,32 @@ function TrackedMeasurementsContextProvider(
         measurementService.remove(measurementIds[i]);
       }
     },
+    deHydrate: (ctx, evt) => {
+      const { displaySetInstanceUID } = evt.data ?? evt;
+
+      const displaysets = displaySetService.getActiveDisplaySets();
+      displaysets?.forEach(displayset => {
+        if (
+          displayset.Modality === 'SR' &&
+          displayset.displaySetInstanceUID !== displaySetInstanceUID &&
+          displayset.isHydrated
+        ) {
+          displayset.isHydrated = false;
+          displayset.isLoaded = false;
+        }
+      });
+    },
+    updatedViewports: (ctx, evt) => {
+      const { hangingProtocolService } = servicesManager.services;
+      const { displaySetInstanceUID, viewportId } = evt.data ?? evt;
+
+      const updatedViewports = hangingProtocolService.getViewportsRequireUpdate(
+        viewportId,
+        displaySetInstanceUID
+      );
+
+      viewportGridService.setDisplaySetsForViewports(updatedViewports);
+    },
   });
   machineOptions.services = Object.assign({}, machineOptions.services, {
     promptBeginTracking: promptBeginTracking.bind(null, {
@@ -173,6 +200,12 @@ function TrackedMeasurementsContextProvider(
       commandsManager,
       appConfig,
     }),
+    promptHasDirtyAnnotations: promptHasDirtyAnnotations.bind(null, {
+      servicesManager,
+      extensionManager,
+      commandsManager,
+      appConfig,
+    }),
     hydrateStructuredReport: hydrateStructuredReport.bind(null, {
       servicesManager,
       extensionManager,
@@ -193,6 +226,23 @@ function TrackedMeasurementsContextProvider(
     isLabelOnMeasureAndShouldKillMachine: (ctx, evt, condMeta) => {
       const labelConfig = customizationService.getCustomization('measurementLabels');
       return evt.data && evt.data.userResponse === RESPONSE.NO_NEVER && labelConfig?.labelOnMeasure;
+    },
+    isSimplifiedConfig: (ctx, evt, condMeta) => {
+      return appConfig?.measurementTrackingMode === measurementTrackingMode.SIMPLIFIED;
+    },
+    simplifiedAndLoadSR: (ctx, evt, condMeta) => {
+      return (
+        appConfig?.measurementTrackingMode === measurementTrackingMode.SIMPLIFIED &&
+        evt.data.isBackupSave === false
+      );
+    },
+    hasDirtyAndSimplified: (ctx, evt, condMeta) => {
+      const measurements = measurementService.getMeasurements();
+      const hasDirtyMeasurements = measurements.some(measurement => measurement.isDirty);
+      return (
+        appConfig?.measurementTrackingMode === measurementTrackingMode.SIMPLIFIED &&
+        hasDirtyMeasurements
+      );
     },
   });
 
@@ -266,7 +316,8 @@ function TrackedMeasurementsContextProvider(
         // load function added by our sopClassHandler module
         if (
           displaySet.SOPClassHandlerId === SR_SOPCLASSHANDLERID &&
-          displaySet.isRehydratable === true
+          displaySet.isRehydratable === true &&
+          !displaySet.isHydrated
         ) {
           console.log('sending event...', trackedMeasurements);
           sendTrackedMeasurementsEvent('PROMPT_HYDRATE_SR', {

@@ -21,6 +21,7 @@ const [MeasurementTableProvider, useMeasurementTableContext] =
 interface MeasurementDataProps extends MeasurementTableContext {
   title: string;
   children: React.ReactNode;
+  displayPrompt: boolean;
 }
 
 const MeasurementTable = ({
@@ -32,6 +33,7 @@ const MeasurementTable = ({
   disableEditing = false,
   uiDialogService,
   onUntrackConfirm,
+  displayPrompt = false,
 }: MeasurementDataProps) => {
   const { t } = useTranslation('MeasurementTable');
   const amount = data.length;
@@ -52,61 +54,63 @@ const MeasurementTable = ({
             className="pl-0.5"
             onClick={event => {
               event.stopPropagation();
-              uiDialogService.create({
-                id: 'untrack-and-delete-all-measurements',
-                centralize: true,
-                isDraggable: false,
-                showOverlay: true,
-                content: Dialog,
-                contentProps: {
-                  title: 'Untrack and Delete All Measurements',
-                  body: () => (
-                    <div className="bg-primary-dark text-white">
-                      <p>Are you sure you want to untrack study and delete all measurements?</p>
-                      <p className="mt-2">This action cannot be undone.</p>
-                    </div>
-                  ),
-                  actions: [
-                    {
-                      id: 'cancel',
-                      text: 'Cancel',
-                      type: ButtonEnums.type.secondary,
+              displayPrompt
+                ? uiDialogService.create({
+                    id: 'untrack-and-delete-all-measurements',
+                    centralize: true,
+                    isDraggable: false,
+                    showOverlay: true,
+                    content: Dialog,
+                    contentProps: {
+                      title: 'Untrack and Delete All Measurements',
+                      body: () => (
+                        <div className="bg-primary-dark text-white">
+                          <p>Are you sure you want to untrack study and delete all measurements?</p>
+                          <p className="mt-2">This action cannot be undone.</p>
+                        </div>
+                      ),
+                      actions: [
+                        {
+                          id: 'cancel',
+                          text: 'Cancel',
+                          type: ButtonEnums.type.secondary,
+                        },
+                        {
+                          id: 'yes',
+                          text: 'Untrack and Delete All',
+                          type: ButtonEnums.type.primary,
+                          classes: ['untrack-and-delete-all-yes-button'],
+                        },
+                      ],
+                      onClose: () =>
+                        uiDialogService.dismiss({ id: 'untrack-and-delete-all-measurements' }),
+                      onSubmit: async ({ action }) => {
+                        switch (action.id) {
+                          case 'yes':
+                            onUntrackConfirm();
+                            uiDialogService.dismiss({ id: 'untrack-and-delete-all-measurements' });
+                            break;
+                          case 'cancel':
+                            uiDialogService.dismiss({ id: 'untrack-and-delete-all-measurements' });
+                            break;
+                        }
+                      },
+                      onStart: () => {
+                        console.log('Dialog drag started');
+                      },
+                      onDrag: (_event: unknown, data: unknown) => {
+                        console.log('Dialog is being dragged', data);
+                      },
+                      onStop: () => {
+                        console.log('Dialog drag stopped');
+                      },
+                      defaultPosition: { x: 0, y: 0 },
+                      onClickOutside: () => {
+                        uiDialogService.dismiss({ id: 'delete-all-measurements' });
+                      },
                     },
-                    {
-                      id: 'yes',
-                      text: 'Untrack and Delete All',
-                      type: ButtonEnums.type.primary,
-                      classes: ['untrack-and-delete-all-yes-button'],
-                    },
-                  ],
-                  onClose: () =>
-                    uiDialogService.dismiss({ id: 'untrack-and-delete-all-measurements' }),
-                  onSubmit: async ({ action }) => {
-                    switch (action.id) {
-                      case 'yes':
-                        onUntrackConfirm();
-                        uiDialogService.dismiss({ id: 'untrack-and-delete-all-measurements' });
-                        break;
-                      case 'cancel':
-                        uiDialogService.dismiss({ id: 'untrack-and-delete-all-measurements' });
-                        break;
-                    }
-                  },
-                  onStart: () => {
-                    console.log('Dialog drag started');
-                  },
-                  onDrag: (_event: unknown, data: unknown) => {
-                    console.log('Dialog is being dragged', data);
-                  },
-                  onStop: () => {
-                    console.log('Dialog drag stopped');
-                  },
-                  defaultPosition: { x: 0, y: 0 },
-                  onClickOutside: () => {
-                    uiDialogService.dismiss({ id: 'delete-all-measurements' });
-                  },
-                },
-              });
+                  })
+                : onUntrackConfirm();
             }}
           >
             <Icons.Delete />

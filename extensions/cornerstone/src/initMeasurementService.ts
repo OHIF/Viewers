@@ -358,6 +358,7 @@ const connectMeasurementServiceToTools = (measurementService, cornerstoneViewpor
 
       if (data.label !== label) {
         data.label = label;
+        measurement.isDirty = true;
       }
 
       if (metadata.toolName === 'ArrowAnnotate') {

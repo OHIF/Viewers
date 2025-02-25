@@ -1,3 +1,4 @@
+import { ChangeTypes } from '@cornerstonejs/tools/enums';
 import log from '../../log';
 import guid from '../../utils/guid';
 import { PubSubService } from '../_shared/pubSubServiceInterface';
@@ -64,6 +65,7 @@ const MEASUREMENT_SCHEMA_KEYS = [
   'isSelected',
   'textBox',
   'referencedImageId',
+  'isDirty',
 ];
 
 const EVENTS = {
@@ -542,6 +544,11 @@ class MeasurementService extends PubSubService {
       modifiedTimestamp: Math.floor(Date.now() / 1000),
       uid: internalUID,
     };
+
+    newMeasurement.isDirty =
+      sourceAnnotationDetail.changeType === ChangeTypes.HandlesUpdated ||
+      sourceAnnotationDetail.changeType === ChangeTypes.LabelChange ||
+      oldMeasurement?.isDirty;
 
     if (oldMeasurement) {
       // TODO: Ultimately, each annotation should have a selected flag right from the source.
