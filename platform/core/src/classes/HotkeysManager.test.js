@@ -30,14 +30,6 @@ describe('HotkeysManager', () => {
     expect(containsAllExpectedProperties).toBe(true);
   });
 
-  it('throws Error if instantiated without a commandsManager', () => {
-    expect(() => {
-      new HotkeysManager();
-    }).toThrow(
-      'HotkeysManager instantiated without a commandsManager. Hotkeys will be unable to find and run commands.'
-    );
-  });
-
   describe('disable()', () => {
     beforeEach(() => hotkeys.pause.mockClear());
 

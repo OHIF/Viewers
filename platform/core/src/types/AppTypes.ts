@@ -147,12 +147,6 @@ declare global {
         maxNumPrefetchRequests: number;
         order: 'closest' | 'downward' | 'upward';
       };
-      tours?: Array<{
-        id: string;
-        steps: StepOptions[];
-        tourOptions: TourOptions;
-        route: string;
-      }>;
     }
 
     export interface Test {
