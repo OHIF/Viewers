@@ -105,14 +105,8 @@ function modeFactory({ modeConfiguration }) {
       ]);
     },
     onModeExit: ({ servicesManager }: withAppTypes) => {
-      const {
-        toolGroupService,
-        measurementService,
-        toolbarService,
-        uiDialogService,
-        uiModalService,
-      } = servicesManager.services;
-      uiDialogService.dismissAll();
+      const { toolGroupService, uiDialogService, uiModalService } = servicesManager.services;
+      uiDialogService.hideAll();
       uiModalService.hide();
       toolGroupService.destroy();
     },

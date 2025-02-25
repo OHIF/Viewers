@@ -98,8 +98,7 @@ function initI18n(
           },
         },
         react: {
-          useSuspense: false, // TODO: Was seeing weird errors without this
-          wait: true,
+          useSuspense: true,
           bindI18n: 'languageChanged editorSaved',
         },
       });
@@ -123,7 +122,7 @@ function initI18n(
         },
         detection,
         react: {
-          wait: true,
+          useSuspense: true,
         },
       });
   }

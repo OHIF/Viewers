@@ -154,7 +154,7 @@ function modeFactory({ modeConfiguration }) {
       } = servicesManager.services;
 
       unsubscriptions.forEach(unsubscribe => unsubscribe());
-      uiDialogService.dismissAll();
+      uiDialogService.hideAll();
       uiModalService.hide();
       toolGroupService.destroy();
       syncGroupService.destroy();

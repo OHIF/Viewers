@@ -148,6 +148,11 @@ const OHIFCornerstoneViewport = React.memo(
 
         const { viewportId, element } = evt.detail;
         const viewportInfo = cornerstoneViewportService.getViewportInfo(viewportId);
+
+        if (!viewportInfo) {
+          return;
+        }
+
         setEnabledElement(viewportId, element);
         setEnabledVPElement(element);
 

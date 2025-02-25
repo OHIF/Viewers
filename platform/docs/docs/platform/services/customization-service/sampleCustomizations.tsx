@@ -16,6 +16,7 @@ import loadingIndicatorProgress from '../../../assets/img/loading-indicator-icon
 import loadingIndicatorPercent from '../../../assets/img/loading-indicator-percent.png';
 import viewportActionCorners from '../../../assets/img/viewport-action-corners.png';
 import contextMenu from '../../../assets/img/context-menu.jpg';
+import viewportDownloadWarning from '../../../assets/img/viewport-download-warning.png';
 
 import segDisplayEditingTrue from '../../../assets/img/segDisplayEditingTrue.png';
 import segDisplayEditingFalse from '../../../assets/img/segDisplayEditingFalse.png';
@@ -23,6 +24,8 @@ import thumbnailMenuItemsImage from '../../../assets/img/thumbnailMenuItemsImage
 import studyMenuItemsImage from '../../../assets/img/studyMenuItemsImage.png';
 import windowLevelActionMenu from '../../../assets/img/windowLevelActionMenu.png';
 import viewPortNotificationImage from '../../../assets/img/viewport-notification.png';
+import captureViewportModal from '../../../assets/img/captureViewportModal.png';
+import aboutModal from '../../../assets/img/aboutModal.png';
 
 export const viewportOverlayCustomizations = [
   {
@@ -738,6 +741,72 @@ window.config = {
           {
             'ui.labellingComponent': {
                 $set: CustomizedComponent,
+            },
+          },
+        ],
+      };
+        `,
+  },
+  {
+    id: 'viewportDownload.warningMessage',
+    description: 'Customizes the warning message for the viewport download form.',
+    image: viewportDownloadWarning,
+    default: {
+      enabled: true,
+      value: 'Not For Diagnostic Use',
+    },
+    configuration: `
+      window.config = {
+        // rest of window config
+        customizationService: [
+          {
+            'viewportDownload.warningMessage': {
+              $set: {
+                enabled: true,
+                value: 'Careful! This is not for diagnostic use.',
+              },
+            },
+          },
+        ],
+      };
+        `,
+  },
+  {
+    id: 'ohif.captureViewportModal',
+    description: 'The modal for capturing the viewport image.',
+    image: captureViewportModal,
+    default: 'Our own default component',
+    configuration: `
+      window.config = {
+        // rest of window config
+
+        // You can use the component from ImageModal and FooterAction
+        // to build your own custom component
+        customizationService: [
+          {
+            'ohif.captureViewportModal': {
+              $set: CustomizedComponent,
+            },
+          },
+        ],
+      };
+        `,
+  },
+  {
+    id: 'ohif.aboutModal',
+    description: 'The About modal',
+    image: aboutModal,
+    default: 'Our own default component',
+    configuration: `
+      window.config = {
+        // rest of window config
+
+        // You can use the component from AboutModal
+        // to build your own custom component
+        customizationService: [
+          {
+            'ohif.aboutModal': {
+              $set: CustomizedComponent,
             },
           },
         ],

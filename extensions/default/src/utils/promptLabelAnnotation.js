@@ -1,42 +1,46 @@
-import { showLabelAnnotationPopup } from './callInputDialog';
+import { callInputDialogAutoComplete } from './callInputDialog';
 
 function promptLabelAnnotation({ servicesManager }, ctx, evt) {
-  const { measurementService, customizationService, toolGroupService } = servicesManager.services;
+  const { measurementService, customizationService, toolGroupService, uiDialogService } =
+    servicesManager.services;
   const { viewportId, StudyInstanceUID, SeriesInstanceUID, measurementId, toolName } = evt;
-  return new Promise(async function (resolve) {
-    const toolGroup = toolGroupService.getToolGroupForViewport(viewportId);
-    const activeToolOptions = toolGroup.getToolConfiguration(toolName);
-    if(activeToolOptions.getTextCallback) {
-      resolve({
-        StudyInstanceUID,
-        SeriesInstanceUID,
-        viewportId,
-      })
-    } else {
-      const labelConfig = customizationService.getCustomization('measurementLabels');
-      const measurement = measurementService.getMeasurement(measurementId);
-      const renderContent = customizationService.getCustomization('ui.labellingComponent');
-      const value = await showLabelAnnotationPopup(
-        measurement,
-        servicesManager.services.uiDialogService,
-        labelConfig,
-        renderContent
-      );
+  return new Promise(resolve => {
+    (async () => {
+      const toolGroup = toolGroupService.getToolGroupForViewport(viewportId);
+      const activeToolOptions = toolGroup.getToolConfiguration(toolName);
+      if (activeToolOptions.getTextCallback) {
+        resolve({
+          StudyInstanceUID,
+          SeriesInstanceUID,
+          viewportId,
+        });
+      } else {
+        const labelConfig = customizationService.getCustomization('measurementLabels');
+        const measurement = measurementService.getMeasurement(measurementId);
+        const renderContent = customizationService.getCustomization('ui.labellingComponent');
 
-      measurementService.update(
-        measurementId,
-        {
-          ...value,
-        },
-        true
-      );
+        const value = await callInputDialogAutoComplete({
+          measurement,
+          uiDialogService,
+          labelConfig,
+          renderContent,
+        });
 
-      resolve({
-        StudyInstanceUID,
-        SeriesInstanceUID,
-        viewportId,
-      });
-    }
+        measurementService.update(
+          measurementId,
+          {
+            ...value,
+          },
+          true
+        );
+
+        resolve({
+          StudyInstanceUID,
+          SeriesInstanceUID,
+          viewportId,
+        });
+      }
+    })();
   });
 }
 
