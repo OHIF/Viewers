@@ -550,7 +550,7 @@ function commandsModule({
         ],
       });
     },
-    // capture
+    // capture viewport
     showDownloadViewportModal: () => {
       const { activeViewportId } = viewportGridService.getState();
 
@@ -574,6 +574,7 @@ function commandsModule({
             activeViewportId,
             cornerstoneViewportService,
           },
+          containerClassName: 'max-w-4xl',
         });
       }
     },

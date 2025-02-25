@@ -34,12 +34,20 @@ This guide details the migration steps for the `uiDialogService` API changes, ba
 |------|-------------|
 | `centralize` | Dialogs are now centered by default via CSS if you don't want center you pass defaultPosition |
 | `preservePosition` | Work in progress and will be available in future |
-| `containerDimensions` | Removed - should be specified directly in dialogs |
 | `contentDimensions` | Removed - should be specified directly in dialogs |
 | `onStart` | Removed  |
 | `onDrag` | Removed  |
 | `onStop` | Removed  |
 | `onClickOutside` | Removed - if you want to close the dialog on click outside, you can use the `shouldCloseOnOverlayClick` prop |
+
+
+### Renamed Props:
+
+| Prop | Description |
+|------|-------------|
+| `containerDimensions` | renamed to `containerClassName` |
+
+
 
 
 ### New Props:
@@ -71,7 +79,14 @@ This guide details the migration steps for the `uiDialogService` API changes, ba
     + });
     ```
 
-2.  **Replace `.dismiss({ id: dialogId })` with `.hide(dialogId)`:**
+2. Rename `containerDimensions` to `containerClassName`
+
+    ```diff
+    - containerDimensions: 'w-[70%] max-w-[900px]',
+    + containerClassName: 'w-[70%] max-w-[900px]',
+    ```
+
+3.  **Replace `.dismiss({ id: dialogId })` with `.hide(dialogId)`:**
 
     ```diff
     - uiDialogService.dismiss({ id: dialogId });
@@ -79,12 +94,12 @@ This guide details the migration steps for the `uiDialogService` API changes, ba
     + uiDialogService.hide(dialogId);
     ```
 
-3. **Replace `dismissAll` with `hideAll`**
+4. **Replace `dismissAll` with `hideAll`**
     ```diff
    - uiDialogService.dismissAll();
    + uiDialogService.hideAll();
     ```
-4.  **Update Dialog Content:**
+5.  **Update Dialog Content:**
 
     *   Ensure your dialog content is defined as a React component (functional or class-based).
     *   Pass props to the component via `contentProps`.

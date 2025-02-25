@@ -1,5 +1,6 @@
 import React from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../components/Dialog/Dialog';
+import { cn } from '../lib/utils';
 
 export interface ManagedDialogProps {
   id: string;
@@ -15,6 +16,7 @@ export interface ManagedDialogProps {
   onClose?: (id: string) => void;
   unstyled?: boolean;
   showOverlay?: boolean;
+  containerClassName?: string;
 }
 
 const ManagedDialog: React.FC<ManagedDialogProps> = ({
@@ -30,6 +32,7 @@ const ManagedDialog: React.FC<ManagedDialogProps> = ({
   defaultPosition,
   onClose,
   unstyled,
+  containerClassName,
 }) => {
   return (
     <Dialog
@@ -46,7 +49,7 @@ const ManagedDialog: React.FC<ManagedDialogProps> = ({
       showOverlay={showOverlay}
     >
       <DialogContent
-        className={unstyled ? 'p-0' : ''}
+        className={cn(unstyled ? 'p-0' : '', containerClassName)}
         style={{
           ...(defaultPosition
             ? {

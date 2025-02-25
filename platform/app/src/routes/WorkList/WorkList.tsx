@@ -478,6 +478,7 @@ function WorkList({
         show({
           content: AboutModal as React.ComponentType,
           title: t('AboutModal:About OHIF Viewer'),
+          containerClassName: 'max-w-md ',
         }),
     },
     {
@@ -487,6 +488,7 @@ function WorkList({
         show({
           title: t('UserPreferencesModal:User preferences'),
           content: UserPreferencesModal as React.ComponentType,
+          containerClassName: 'flex  max-w-4xl flex-col',
         }),
     },
   ];

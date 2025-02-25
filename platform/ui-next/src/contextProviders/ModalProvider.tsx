@@ -6,11 +6,13 @@ interface ModalOptions {
   shouldCloseOnEsc?: boolean;
   content?: React.ComponentType;
   contentProps?: Record<string, unknown>;
+  containerClassName?: string;
 }
 
 interface ModalContextType {
   show: (options: Partial<ModalOptions>) => void;
   hide: () => void;
+  containerClassName?: string;
 }
 
 interface ModalComponentProps {

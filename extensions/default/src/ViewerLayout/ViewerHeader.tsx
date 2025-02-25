@@ -49,6 +49,7 @@ function ViewerHeader({ appConfig }: withAppTypes<{ appConfig: AppTypes.Config }
         show({
           content: AboutModal,
           title: t('AboutModal:About OHIF Viewer'),
+          containerClassName: 'max-w-md',
         }),
     },
     {
@@ -58,6 +59,7 @@ function ViewerHeader({ appConfig }: withAppTypes<{ appConfig: AppTypes.Config }
         show({
           content: UserPreferencesModal,
           title: t('UserPreferencesModal:User preferences'),
+          containerClassName: 'flex max-w-4xl flex-col',
         }),
     },
   ];

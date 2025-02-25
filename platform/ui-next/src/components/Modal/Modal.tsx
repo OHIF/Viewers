@@ -10,6 +10,7 @@ export interface ModalProps {
   contentClassName?: string;
   shouldCloseOnEsc?: boolean;
   shouldCloseOnOverlayClick?: boolean;
+  containerClassName?: string;
 }
 
 const Modal: React.FC<ModalProps> = ({
@@ -19,6 +20,7 @@ const Modal: React.FC<ModalProps> = ({
   children,
   shouldCloseOnEsc = true,
   shouldCloseOnOverlayClick = true,
+  containerClassName,
 }) => {
   return (
     <Dialog
@@ -27,7 +29,7 @@ const Modal: React.FC<ModalProps> = ({
       shouldCloseOnEsc={shouldCloseOnEsc}
       shouldCloseOnOverlayClick={shouldCloseOnOverlayClick}
     >
-      <DialogContent className={cn('flex max-h-[80vh] flex-col')}>
+      <DialogContent className={containerClassName}>
         {title && (
           <DialogHeader>
             <DialogTitle>{title}</DialogTitle>

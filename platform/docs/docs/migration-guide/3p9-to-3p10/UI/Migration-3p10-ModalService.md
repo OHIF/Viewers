@@ -16,6 +16,13 @@ title: uiModalService
 | `shouldCloseOnEsc` | Allows closing the modal when the escape key is pressed. |
 | `shouldCloseOnOverlayClick` | Allows closing the modal when the overlay is clicked. |
 
+### Renamed Props:
+
+| Prop | Description |
+|------|-------------|
+| `containerDimensions` | renamed to `containerClassName` |
+
+
 
 ### Removed Props:
 
@@ -23,8 +30,7 @@ title: uiModalService
 |------|-------------|
 | `movable` | It's removed because modals shouldn't be movable. If you need to move a dialog, use `uidDialogService` and `dialogs` instead. |
 | `isOpen` | always assumed `true` when `show` is called. |
-| `containerDimensions` | Removed, it is now component's responsibility to set the size |
-| `contentDimensions` | Removed, it is now component's responsibility to set the size |
+| `contentDimensions` | Removed, it is now component's responsibility to set the size for the content |
 | `customClassName` | renamed to `className` |
 | `closeButton` | The component now manages modal closing internally. If you need a close button, you can add one, perhaps by checking out the `FooterActions` component. |
 
@@ -56,7 +62,7 @@ After: the component is responsible for setting the size
 ```js
 function CornerstoneViewportDownloadForm({ activeViewportId }) {
   return (
-    <div className="w-[70%] max-w-[900px] h-[493px] p-4 bg-white rounded-lg shadow-lg">
+    <div className="h-[493px] w-[460px] pl-[12px] pr-[12px]">
       <h2 className="text-lg font-bold">Download Image</h2>
       <p>Viewport ID: {activeViewportId}</p>
       <button className="mt-4 bg-blue-500 text-white p-2 rounded">Download</button>
@@ -69,6 +75,7 @@ uiModalService.show({
   title: 'Download High-Quality Image',
   content: CornerstoneViewportDownloadForm,
   contentProps: { activeViewportId },
+  containerClassName: 'w-[70%] max-w-[900px]',
 });
 ```
 

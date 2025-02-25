@@ -51,7 +51,7 @@ function ViewportDownloadFormNew({
   }, [onDisableViewport, onEnableViewport, viewportElement]);
 
   return (
-    <ImageModal className="max-w-[850px]">
+    <ImageModal>
       <ImageModal.Body>
         <ImageModal.ImageVisual>
           <div

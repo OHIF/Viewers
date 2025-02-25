@@ -18,10 +18,7 @@ function InputDialogDefault({
   submitOnEnter,
 }: InputDialogDefaultProps) {
   return (
-    <InputDialog
-      className="min-w-[300px] max-w-md"
-      submitOnEnter={submitOnEnter}
-    >
+    <InputDialog submitOnEnter={submitOnEnter}>
       <InputDialog.Field>
         <InputDialog.Input
           placeholder={placeholder}

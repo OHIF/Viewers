@@ -58,7 +58,7 @@ function UserPreferencesModalDefault({ hide }: { hide: () => void }) {
   };
 
   return (
-    <UserPreferencesModal className="w-[900px]">
+    <UserPreferencesModal>
       <UserPreferencesModal.Body>
         {/* Language Section */}
         <div className="mb-3 flex items-center space-x-14">
