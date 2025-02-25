@@ -74,6 +74,7 @@ export default [
 ```
 
 
-## Behind the Scene
-When you `setHotkeys`,  the `commandName` gets registered with the `commandsManager` and
-get run after the key is pressed.
+### Global vs Mode specific hotkeys
+
+You can can set the global hotkeys and override them using the `$set` method
+in the customization service.
