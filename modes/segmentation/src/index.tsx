@@ -70,23 +70,6 @@ function modeFactory({ modeConfiguration }) {
         'MoreTools',
       ]);
       toolbarService.createButtonSection('segmentationToolbox', ['BrushTools', 'Shapes']);
-
-      customizationService.setCustomizations(
-        {
-          'ohif.hotkeyBindings': {
-            $push: [
-              {
-                commandName: 'setToolActive',
-                commandOptions: { toolName: 'Zoom' },
-                label: 'Gholi',
-                keys: ['z'],
-                isEditable: true,
-              },
-            ],
-          },
-        },
-        'mode'
-      );
     },
     onModeExit: ({ servicesManager }: withAppTypes) => {
       const {
