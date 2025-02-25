@@ -59,6 +59,8 @@
     "test:e2e:headed": "npx playwright test --headed",
     "test:e2e:dist": "lerna run test:e2e:dist --stream",
     "test:e2e:serve": "yarn test:data && lerna run test:e2e:serve --stream",
+    "test:e2e:fast": "cross-env APP_CONFIG=config/e2e.js bun dev:fast",
+    "test:data:serve": "yarn test:data && cd testdata && dicomwebserver -c ./static-dicomweb.json5 -p 3030",
     "see-changed": "lerna changed",
     "docs:preview": "lerna run docs:preview --stream",
     "docs:publish": "chmod +x ./build-and-publish-docs.sh && ./build-and-publish-docs.sh",
@@ -92,6 +94,7 @@
     "@babel/preset-env": "7.24.7",
     "@babel/preset-react": "^7.16.7",
     "@babel/preset-typescript": "^7.13.0",
+    "express": "^4.21.2",
     "prettier": "^3.3.3",
     "prettier-plugin-tailwindcss": "0.6.9"
   },

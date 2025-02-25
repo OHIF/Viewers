@@ -14,7 +14,6 @@ const APP_CONFIG = process.env.APP_CONFIG || 'config/default.js';
 const PUBLIC_URL = process.env.PUBLIC_URL || '/';
 
 // Add these constants
-const NODE_ENV = process.env.NODE_ENV;
 const BUILD_NUM = process.env.CIRCLE_BUILD_NUM || '0';
 const VERSION_NUMBER = fs.readFileSync(path.join(__dirname, './version.txt'), 'utf8') || '';
 const COMMIT_HASH = fs.readFileSync(path.join(__dirname, './commit.txt'), 'utf8') || '';
@@ -142,6 +141,14 @@ export default defineConfig({
     proxy: {
       '/dicomweb': {
         target: 'http://localhost:5000',
+      },
+      // Relies on having a copy of the testdata on the local dicomweb server
+      '/viewer-testdata': {
+        target: 'http://localhost:3030',
+        pathRewrite: {
+          '/viewer-testdata': '/dicomweb',
+        },
+        changeOrigin: true,
       },
       // Add conditional proxy based on env vars
       ...(PROXY_TARGET && PROXY_DOMAIN
