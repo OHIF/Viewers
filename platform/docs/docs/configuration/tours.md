@@ -13,61 +13,38 @@ Tours allow you to provide step-by-step guidance to users, explaining different 
 
 ### Adding a Tour to your Configuration
 
-Here’s an example of adding a tour to your configuration file:
+Here's how you can add a tour to your configuration file:
 
 ```javascript
 window.config = {
-  tours: [
-    {
-      id: 'basicViewerTour',
-      route: '/viewer',
-      steps: [
+  customizationService: {
+    'ohif.tours': {
+      $set: [
         {
-          id: 'scroll',
-          title: 'Scrolling Through Images',
-          text: 'You can scroll through the images using the mouse wheel or scrollbar.',
-          attachTo: {
-            element: '.viewport-element',
-            on: 'top',
-          },
-          advanceOn: {
-            selector: '.cornerstone-viewport-element',
-            event: 'CORNERSTONE_TOOLS_MOUSE_WHEEL',
-          },
-        },
-        {
-          id: 'zoom',
-          title: 'Zooming In and Out',
-          text: 'You can zoom the images using the right click.',
-          attachTo: {
-            element: '.viewport-element',
-            on: 'left',
-          },
-          advanceOn: {
-            selector: '.cornerstone-viewport-element',
-            event: 'CORNERSTONE_TOOLS_MOUSE_UP',
-          },
-        },
-        // Add more steps as needed
-      ],
-      tourOptions: {
-        useModalOverlay: true,
-        defaultStepOptions: {
-          buttons: [
+          id: 'basicViewerTour',
+          route: '/viewer',
+          steps: [
             {
-              text: 'Skip all',
-              action() {
-                this.complete();
+              id: 'zoom',
+              title: 'Zooming In and Out',
+              text: 'You can zoom the images using the right click.',
+              attachTo: {
+                element: '.viewport-element',
+                on: 'left',
               },
-              secondary: true,
+              advanceOn: {
+                selector: '.cornerstone-viewport-element',
+                event: 'CORNERSTONE_TOOLS_MOUSE_UP',
+              },
             },
           ],
         },
-      },
+      ],
     },
-  ],
+  },
 };
 ```
+
 
 ## Explanation of Parameters
 

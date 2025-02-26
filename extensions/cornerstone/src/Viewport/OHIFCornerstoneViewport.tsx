@@ -20,6 +20,7 @@ import { getViewportDataOverlaySettingsMenu } from '../components/ViewportDataOv
 import { getViewportPresentations } from '../utils/presentations/getViewportPresentations';
 import { useSynchronizersStore } from '../stores/useSynchronizersStore';
 import ActiveViewportBehavior from '../utils/ActiveViewportBehavior';
+import { WITH_NAVIGATION } from '../services/ViewportService/CornerstoneViewportService';
 
 const STACK = 'stack';
 
@@ -517,12 +518,16 @@ function _jumpToMeasurement(measurement, targetElementRef, viewportId, servicesM
     const viewport = enabledElement.viewport as csTypes.IStackViewport | csTypes.IVolumeViewport;
 
     const { metadata } = measurement;
-    if (!viewport.isReferenceViewable(metadata, { withNavigation: true, withOrientation: true })) {
+    if (!viewport.isReferenceViewable(metadata, WITH_NAVIGATION)) {
       console.log("Reference isn't viewable, postponing until updated");
       return;
     }
 
-    viewport.setViewReference(metadata);
+    try {
+      viewport.setViewReference(metadata);
+    } catch (e) {
+      console.warn('Unable to apply', metadata, e);
+    }
 
     cs3DTools.annotation.selection.setAnnotationSelected(measurement.uid);
     // Jump to measurement consumed, remove.
