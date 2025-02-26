@@ -1,11 +1,10 @@
 import SUPPORTED_TOOLS from './constants/supportedTools';
-import { getDisplayUnit } from './utils';
-import getSOPInstanceAttributes from './utils/getSOPInstanceAttributes';
-import { utils } from '@ohif/core';
 import { getIsLocked } from './utils/getIsLocked';
+import getSOPInstanceAttributes from './utils/getSOPInstanceAttributes';
 import { getIsVisible } from './utils/getIsVisible';
-const Probe = {
-  toAnnotation: measurement => {},
+
+const KeyImage = {
+  toAnnotation: _measurement => {},
 
   /**
    * Maps cornerstone annotation event data to measurement service format.
@@ -14,13 +13,14 @@ const Probe = {
    * @return {Measurement} Measurement instance
    */
   toMeasurement: (csToolsEventDetail, getValueTypeFromToolType, services) => {
-    const { displaySetService, customizationService } = services;
+    const { displaySetService } = services;
     const { annotation } = csToolsEventDetail;
     const { metadata, data, annotationUID } = annotation;
+
     const isLocked = getIsLocked(annotationUID);
     const isVisible = getIsVisible(annotationUID);
     if (!metadata || !data) {
-      console.warn('Probe tool: Missing metadata or data');
+      console.warn('Length tool: Missing metadata or data');
       return null;
     }
 
@@ -48,29 +48,29 @@ const Probe = {
       displaySet = displaySetService.getDisplaySetsForSeries(SeriesInstanceUID)[0];
     }
 
-    const { points } = data.handles;
+    const { points, textBox } = data.handles;
 
     const mappedAnnotations = getMappedAnnotations(annotation, displaySetService);
 
-    const displayText = getDisplayText(mappedAnnotations, displaySet, customizationService);
-    const getReport = () =>
-      _getReport(mappedAnnotations, points, FrameOfReferenceUID, customizationService);
+    const displayText = getDisplayText(mappedAnnotations, displaySet);
+    const getReport = () => _getReport(mappedAnnotations, points, FrameOfReferenceUID);
 
     return {
       uid: annotationUID,
       SOPInstanceUID,
       FrameOfReferenceUID,
       points,
-      metadata,
+      textBox,
       isLocked,
       isVisible,
+      metadata,
       referenceSeriesUID: SeriesInstanceUID,
       referenceStudyUID: StudyInstanceUID,
       referencedImageId,
-      frameNumber: mappedAnnotations?.[0]?.frameNumber || 1,
+      frameNumber: mappedAnnotations[0]?.frameNumber || 1,
       toolName: metadata.toolName,
       displaySetInstanceUID: displaySet.displaySetInstanceUID,
-      label: data.label,
+      label: data.text,
       displayText: displayText,
       data: data.cachedStats,
       type: getValueTypeFromToolType(toolName),
@@ -81,60 +81,76 @@ const Probe = {
 
 function getMappedAnnotations(annotation, displaySetService) {
   const { metadata, data } = annotation;
-  const { cachedStats } = data;
+  const { text } = data;
   const { referencedImageId } = metadata;
-  const targets = Object.keys(cachedStats);
-
-  if (!targets.length) {
-    return;
-  }
 
   const annotations = [];
-  Object.keys(cachedStats).forEach(targetId => {
-    const targetStats = cachedStats[targetId];
 
-    const { SOPInstanceUID, SeriesInstanceUID, frameNumber } = getSOPInstanceAttributes(
-      referencedImageId,
-      displaySetService,
-      annotation
-    );
+  const { SOPInstanceUID, SeriesInstanceUID, frameNumber } = getSOPInstanceAttributes(
+    referencedImageId,
+    displaySetService,
+    annotation
+  );
 
-    const displaySet = displaySetService.getDisplaySetsForSeries(SeriesInstanceUID)[0];
+  const displaySet = displaySetService.getDisplaySetsForSeries(SeriesInstanceUID)[0];
 
-    const { SeriesNumber } = displaySet;
-    const { value } = targetStats;
-    const unit = 'HU';
+  const { SeriesNumber } = displaySet;
 
-    annotations.push({
-      SeriesInstanceUID,
-      SOPInstanceUID,
-      SeriesNumber,
-      frameNumber,
-      unit,
-      value,
-    });
+  annotations.push({
+    SeriesInstanceUID,
+    SOPInstanceUID,
+    SeriesNumber,
+    frameNumber,
+    text,
   });
 
   return annotations;
 }
 
-/*
-This function is used to convert the measurement data to a format that is
-suitable for the report generation (e.g. for the csv report). The report
-returns a list of columns and corresponding values.
-*/
-function _getReport(mappedAnnotations, points, FrameOfReferenceUID, customizationService) {
+function getDisplayText(mappedAnnotations, displaySet) {
+  const displayText = {
+    primary: [],
+    secondary: [],
+  };
+
+  if (!mappedAnnotations || !mappedAnnotations.length) {
+    return displayText;
+  }
+
+  const { SeriesNumber, SOPInstanceUID, frameNumber, text } = mappedAnnotations[0];
+
+  const instance = displaySet.instances.find(image => image.SOPInstanceUID === SOPInstanceUID);
+
+  let InstanceNumber;
+  if (instance) {
+    InstanceNumber = instance.InstanceNumber;
+  }
+
+  const instanceText = InstanceNumber ? ` I: ${InstanceNumber}` : '';
+  const frameText = displaySet.isMultiFrame ? ` F: ${frameNumber}` : '';
+
+  // Add the annotation text to the primary array
+  if (text) {
+    displayText.primary.push(text);
+  }
+
+  // Add the series information to the secondary array
+  displayText.secondary.push(`S: ${SeriesNumber}${instanceText}${frameText}`);
+
+  return displayText;
+}
+
+function _getReport(mappedAnnotations, points, FrameOfReferenceUID) {
   const columns = [];
   const values = [];
 
-  // Add Type
   columns.push('AnnotationType');
-  values.push('Cornerstone:Probe');
+  values.push('Cornerstone:KeyImage');
 
   mappedAnnotations.forEach(annotation => {
-    const { value, unit } = annotation;
-    columns.push(`Probe (${unit})`);
-    values.push(value);
+    const { text } = annotation;
+    columns.push(`Text`);
+    values.push(text);
   });
 
   if (FrameOfReferenceUID) {
@@ -152,36 +168,4 @@ function _getReport(mappedAnnotations, points, FrameOfReferenceUID, customizatio
     values,
   };
 }
-
-function getDisplayText(mappedAnnotations, displaySet, customizationService) {
-  const displayText = {
-    primary: [],
-    secondary: [],
-  };
-
-  if (!mappedAnnotations || !mappedAnnotations.length) {
-    return displayText;
-  }
-
-  const { value, unit, SeriesNumber, SOPInstanceUID, frameNumber } = mappedAnnotations[0];
-
-  const instance = displaySet.instances.find(image => image.SOPInstanceUID === SOPInstanceUID);
-
-  let InstanceNumber;
-  if (instance) {
-    InstanceNumber = instance.InstanceNumber;
-  }
-
-  const instanceText = InstanceNumber ? ` I: ${InstanceNumber}` : '';
-  const frameText = displaySet.isMultiFrame ? ` F: ${frameNumber}` : '';
-
-  if (value !== undefined) {
-    const roundedValue = utils.roundNumber(value, 2);
-    displayText.primary.push(`${roundedValue} ${getDisplayUnit(unit)}`);
-    displayText.secondary.push(`S: ${SeriesNumber}${instanceText}${frameText}`);
-  }
-
-  return displayText;
-}
-
-export default Probe;
+export default KeyImage;

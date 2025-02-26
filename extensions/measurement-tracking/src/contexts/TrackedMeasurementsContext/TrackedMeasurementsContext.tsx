@@ -89,6 +89,15 @@ function TrackedMeasurementsContextProvider(
       );
 
       const trackedMeasurement = trackedMeasurements[0];
+      if (!trackedMeasurement) {
+        console.warn(
+          "Didn't find any tracked measurements",
+          measurements,
+          trackedStudy,
+          trackedSeries
+        );
+        return;
+      }
       const referencedDisplaySetUID = trackedMeasurement.displaySetInstanceUID;
 
       // update the previously stored positionPresentation with the new viewportId
