@@ -20,6 +20,6 @@ export function StudySummaryFromMetadata({ StudyInstanceUID }) {
     <StudySummary
       date={formatDate(StudyDate)}
       description={StudyDescription}
-    ></StudySummary>
+    />
   );
 }

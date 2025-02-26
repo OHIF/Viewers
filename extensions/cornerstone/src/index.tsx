@@ -51,6 +51,7 @@ import { useMeasurements } from './hooks/useMeasurements';
 import getPanelModule from './getPanelModule';
 import PanelSegmentation from './panels/PanelSegmentation';
 import PanelMeasurement from './panels/PanelMeasurement';
+import SeriesMeasurements from './components/SeriesMeasurements';
 import DicomUpload from './components/DicomUpload/DicomUpload';
 import { useSegmentations } from './hooks/useSegmentations';
 import { StudySummaryFromMetadata } from './components/StudySummaryFromMetadata';
@@ -253,6 +254,7 @@ export {
   useSegmentations,
   PanelSegmentation,
   PanelMeasurement,
+  SeriesMeasurements,
   DicomUpload,
   StudySummaryFromMetadata,
   utils,

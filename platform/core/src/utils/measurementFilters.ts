@@ -1,9 +1,14 @@
+import MeasurementService from '../services/MeasurementService';
 /**
  * Returns a filter function which filters for measurements belonging to both
  * the study and series.
  */
 export function filterMeasurementsBySeriesUID(selectedSeries: string[]) {
   return measurement => selectedSeries.includes(measurement.referenceSeriesUID);
+}
+
+export function filterMeasurementsByStudyUID(studyUID) {
+  return measurement => measurement.referenceStudyUID == studyUID;
 }
 
 /**
@@ -44,13 +49,14 @@ export function filterOr(...filters) {
   };
 }
 
+const { POINT } = MeasurementService.VALUE_TYPES;
+
 /**
  * Filters for additional findings, that is, measurements with
  * a value of type point, and having a referenced image
  */
-export function filterAdditionalFindings(measurementService) {
-  const { POINT } = measurementService.VALUE_TYPES;
-  return dm => dm.type === POINT && dm.referencedImageId;
+export function filterAdditionalFindings(dm) {
+  return dm.type === POINT && dm.referencedImageId;
 }
 
 /**
@@ -98,7 +104,7 @@ export function filterAnd(...filters) {
  */
 export function filterNot(...filters) {
   if (filters.length !== 1) {
-    return filterAnd.apply(null, filters.map(filterNot));
+    return filterAnd(...filters.map(filter => filterNot(filter)));
   }
   const [filter] = filters;
   if (isString(filter)) {
