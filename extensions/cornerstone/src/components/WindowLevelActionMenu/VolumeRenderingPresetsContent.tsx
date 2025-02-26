@@ -65,7 +65,7 @@ export function VolumeRenderingPresetsContent({
                     : 'hover:border-primary-light h-[75px] w-[95px] max-w-none rounded border-2 border-black'
                 }
               />
-              <label className="text-aqua-pale mt-2 text-left text-xs">
+              <label className="text-aqua-pale mt-1 text-left text-xs">
                 {formatLabel(preset.name, 11)}
               </label>
             </div>

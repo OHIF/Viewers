@@ -26,7 +26,7 @@ interface BodyProps {
 function Body({ children, className }: BodyProps) {
   return (
     <div className={cn('flex-1 overflow-y-auto', className)}>
-      <div className={cn('mt-2 mb-4 flex flex-col space-y-4', className)}>{children}</div>
+      <div className={cn('mt-1 mb-4 flex flex-col space-y-4', className)}>{children}</div>
     </div>
   );
 }
