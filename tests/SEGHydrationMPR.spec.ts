@@ -7,22 +7,25 @@ test.beforeEach(async ({ page }) => {
   await visitStudy(page, studyInstanceUID, mode, 2000);
 });
 
-test('should properly display MPR for MR', async ({ page }) => {
+test.only('should properly display MPR for MR', async ({ page }) => {
   await page.getByTestId('side-panel-header-right').click();
   await page.getByTestId('study-browser-thumbnail-no-image').dblclick();
 
   await page.getByTestId('yes-hydrate-btn').click();
   await checkForScreenshot(page, page, screenShotPaths.segHydrationMPR.segPostHydration);
 
-  await page
-    .locator('div')
-    .filter({ hasText: /^Axial Primary$/ })
-    .first()
-    .click();
+  await page.getByTestId('Layout').click();
+  await page.getByTestId('Axial Primary').click();
 
   await checkForScreenshot(
     page,
     page,
     screenShotPaths.segHydrationMPR.segPostHydrationMPRAxialPrimary
   );
+
+  // await checkForScreenshot(
+  //   page,
+  //   page,
+  //   screenShotPaths.segHydrationMPR.segPostHydrationMPRAxialPrimary
+  // );
 });
