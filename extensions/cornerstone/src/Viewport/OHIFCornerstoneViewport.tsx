@@ -324,44 +324,43 @@ const OHIFCornerstoneViewport = React.memo(
 
     // Set up the window level action menu in the viewport action corners.
     useEffect(() => {
-      // Doing an === check here because the default config value when not set is true
-      if (appConfig.addWindowLevelActionMenu === false) {
-        return;
-      }
-
       const location = viewportActionCornersService.LOCATIONS.topRight;
 
       // TODO: In the future we should consider using the customization service
       // to determine if and in which corner various action components should go.
-      viewportActionCornersService.addComponent({
-        viewportId,
-        id: 'windowLevelActionMenu',
-        component: getWindowLevelActionMenu({
+      if (appConfig.addWindowLevelActionMenu !== false) {
+        viewportActionCornersService.addComponent({
           viewportId,
-          element: elementRef.current,
-          displaySets,
-          servicesManager,
-          commandsManager,
+          id: 'windowLevelActionMenu',
+          component: getWindowLevelActionMenu({
+            viewportId,
+            element: elementRef.current,
+            displaySets,
+            servicesManager,
+            commandsManager,
+            location,
+            verticalDirection: AllInOneMenu.VerticalDirection.TopToBottom,
+            horizontalDirection: AllInOneMenu.HorizontalDirection.RightToLeft,
+          }),
           location,
-          verticalDirection: AllInOneMenu.VerticalDirection.TopToBottom,
-          horizontalDirection: AllInOneMenu.HorizontalDirection.RightToLeft,
-        }),
-        location,
-      });
+        });
+      }
 
-      viewportActionCornersService.addComponent({
-        viewportId,
-        id: 'segmentation',
-        component: getViewportDataOverlaySettingsMenu({
+      if (appConfig.addSegmentationOverlay !== false) {
+        viewportActionCornersService.addComponent({
           viewportId,
-          element: elementRef.current,
-          displaySets,
-          servicesManager,
-          commandsManager,
+          id: 'segmentation',
+          component: getViewportDataOverlaySettingsMenu({
+            viewportId,
+            element: elementRef.current,
+            displaySets,
+            servicesManager,
+            commandsManager,
+            location,
+          }),
           location,
-        }),
-        location,
-      });
+        });
+      }
     }, [
       displaySets,
       viewportId,
