@@ -2,16 +2,17 @@ import { test } from '@playwright/test';
 import { visitStudy, checkForScreenshot, screenShotPaths } from './utils';
 
 test.beforeEach(async ({ page }) => {
-  const studyInstanceUID = '1.3.6.1.4.1.14519.5.2.1.256467663913010332776401703474716742458';
+  const studyInstanceUID = '1.3.6.1.4.1.5962.99.1.2968617883.1314880426.1493322302363.3.0';
   const mode = 'viewer';
   await visitStudy(page, studyInstanceUID, mode, 2000);
 });
 
-test('should hydrate SEG reports correctly', async ({ page }) => {
+test('should hydrate RT reports correctly', async ({ page }) => {
   await page.getByTestId('side-panel-header-right').click();
   await page.getByTestId('study-browser-thumbnail-no-image').dblclick();
-  await checkForScreenshot(page, page, screenShotPaths.segHydration.segPreHydration);
 
+  await checkForScreenshot(page, page, screenShotPaths.rtHydration2.rtPreHydration);
+  // wait for 3 seconds
   await page.evaluate(() => {
     // Access cornerstone directly from the window object
     const cornerstone = window.cornerstone;
@@ -31,6 +32,11 @@ test('should hydrate SEG reports correctly', async ({ page }) => {
     }
   });
 
+  await page.waitForTimeout(3000);
+
+  //
+
+  // should preserve zoom and pan and scroll position after hydration
   await page.getByTestId('yes-hydrate-btn').click();
-  await checkForScreenshot(page, page, screenShotPaths.segHydration.segPostHydration);
+  await checkForScreenshot(page, page, screenShotPaths.rtHydration.rtPostHydration);
 });
