@@ -9,7 +9,11 @@ interface UserPreferencesModalProps {
 }
 
 export function UserPreferencesModal({ children, className }: UserPreferencesModalProps) {
-  return <div className={cn(className)}>{children}</div>;
+  return (
+    <div className={cn('flex max-h-[80vh] w-full max-w-4xl flex-col overflow-hidden', className)}>
+      {children}
+    </div>
+  );
 }
 
 /** Body
@@ -21,7 +25,7 @@ interface BodyProps {
 }
 function Body({ children, className }: BodyProps) {
   return (
-    <div className="flex-1 overflow-y-auto">
+    <div className={cn('flex-1 overflow-y-auto', className)}>
       <div className={cn('mt-2 mb-4 flex flex-col space-y-4', className)}>{children}</div>
     </div>
   );
