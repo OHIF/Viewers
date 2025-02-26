@@ -11,6 +11,8 @@ import { useTrackedMeasurements } from '../../getContextModule';
 import { Separator } from '@ohif/ui-next';
 import { MoreDropdownMenu, PanelStudyBrowserHeader } from '@ohif/extension-default';
 import { defaultActionIcons } from './constants';
+import { useAppConfig } from '@state';
+
 const { formatDate, createStudyBrowserTabs } = utils;
 
 const thumbnailNoImageModalities = [
@@ -36,6 +38,8 @@ export default function PanelStudyBrowserTracking({
   dataSource,
 }) {
   const { servicesManager, commandsManager } = useSystem();
+  const [appConfig] = useAppConfig();
+
   const {
     displaySetService,
     uiDialogService,
@@ -93,26 +97,43 @@ export default function PanelStudyBrowserTracking({
   };
 
   const onDoubleClickThumbnailHandler = displaySetInstanceUID => {
+    const customDoubleClickThumbnailHandler = customizationService.getCustomization(
+      'customDoubleClickThumbnailHandler'
+    );
+    const dropHandlerPromise = customDoubleClickThumbnailHandler({
+      servicesManager,
+      appConfig,
+    });
+
     let updatedViewports = [];
     const viewportId = activeViewportId;
-    try {
-      updatedViewports = hangingProtocolService.getViewportsRequireUpdate(
-        viewportId,
-        displaySetInstanceUID,
-        isHangingProtocolLayout
-      );
-    } catch (error) {
-      console.warn(error);
-      uiNotificationService.show({
-        title: 'Thumbnail Double Click',
-        message:
-          'The selected display sets could not be added to the viewport due to a mismatch in the Hanging Protocol rules.',
-        type: 'error',
-        duration: 3000,
-      });
-    }
 
-    viewportGridService.setDisplaySetsForViewports(updatedViewports);
+    let updateDisplaySet = false;
+    dropHandlerPromise.then(({ handled }) => {
+      updateDisplaySet = handled;
+      if (!handled) {
+        try {
+          updatedViewports = hangingProtocolService.getViewportsRequireUpdate(
+            viewportId,
+            displaySetInstanceUID,
+            isHangingProtocolLayout
+          );
+        } catch (error) {
+          console.warn(error);
+          uiNotificationService.show({
+            title: 'Thumbnail Double Click',
+            message:
+              'The selected display sets could not be added to the viewport due to a mismatch in the Hanging Protocol rules.',
+            type: 'error',
+            duration: 3000,
+          });
+        }
+
+        viewportGridService.setDisplaySetsForViewports(updatedViewports);
+      }
+    });
+    const { viewportGridService } = servicesManager.services;
+    viewportGridService.publishThumbnailLoaded({ updateDisplaySet, displaySetInstanceUID });
   };
 
   const activeViewportDisplaySetInstanceUIDs =
@@ -366,7 +387,7 @@ export default function PanelStudyBrowserTracking({
     );
     const { viewportGridService } = servicesManager.services;
     const subscriptionOndropFired = viewportGridService.subscribe(
-      viewportGridService.EVENTS.DROP_HANDLER_FIRED,
+      viewportGridService.EVENTS.THUMBNAIL_LOADED,
       ({ eventData }) => {
         sendTrackedMeasurementsEvent('CHECK_DIRTY', {
           viewportId: activeViewportId,

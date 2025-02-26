@@ -104,23 +104,26 @@ function modeFactory({ modeConfiguration }) {
         'Crosshairs',
         'MoreTools',
       ]);
-
+      const customThumbnailLoadingCallback = async props => {
+        const { servicesManager, appConfig } = props;
+        const utilityModule = extensionManager.getModuleEntry(
+          '@ohif/extension-measurement-tracking.utilityModule.common'
+        );
+        const { measurementTrackingMode } = utilityModule.exports;
+        const simplifiedMode =
+          appConfig.measurementTrackingMode === measurementTrackingMode.SIMPLIFIED;
+        const { measurementService } = servicesManager.services;
+        const measurements = measurementService.getMeasurements();
+        const haveDirtyMeasurements = measurements.some(m => m.isDirty);
+        const handled = simplifiedMode && haveDirtyMeasurements;
+        return Promise.resolve({ handled });
+      };
       customizationService.setCustomizations({
         customOnDropHandler: {
-          $set: async props => {
-            const { servicesManager, appConfig } = props;
-            const utilityModule = extensionManager.getModuleEntry(
-              '@ohif/extension-measurement-tracking.utilityModule.common'
-            );
-            const { measurementTrackingMode } = utilityModule.exports;
-            const simplifiedMode =
-              appConfig.measurementTrackingMode === measurementTrackingMode.SIMPLIFIED;
-            const { measurementService } = servicesManager.services;
-            const measurements = measurementService.getMeasurements();
-            const haveDirtyMeasurements = measurements.some(m => m.isDirty);
-            const handled = simplifiedMode && haveDirtyMeasurements;
-            return Promise.resolve({ handled });
-          },
+          $set: customThumbnailLoadingCallback,
+        },
+        customDoubleClickThumbnailHandler: {
+          $set: customThumbnailLoadingCallback,
         },
       });
       // // ActivatePanel event trigger for when a segmentation or measurement is added.

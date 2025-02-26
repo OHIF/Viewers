@@ -7,7 +7,11 @@ import { toolNames } from './initCornerstoneTools';
 import { onCompletedCalibrationLine } from './tools/CalibrationLineTool';
 import measurementServiceMappingsFactory from './utils/measurementServiceMappings/measurementServiceMappingsFactory';
 import getSOPInstanceAttributes from './utils/measurementServiceMappings/utils/getSOPInstanceAttributes';
-import { triggerAnnotationRenderForViewportIds } from '@cornerstonejs/tools/utilities';
+import {
+  setAnnotationLabel,
+  triggerAnnotationRenderForViewportIds,
+} from '@cornerstonejs/tools/utilities';
+import getActiveViewportEnabledElement from './utils/getActiveViewportEnabledElement';
 
 const { CORNERSTONE_3D_TOOLS_SOURCE_NAME, CORNERSTONE_3D_TOOLS_SOURCE_VERSION } = CSExtensionEnums;
 const { removeAnnotation } = annotation.state;
@@ -181,6 +185,7 @@ const connectToolsToMeasurementService = (servicesManager: AppTypes.ServicesMana
     displaySetService,
     cornerstoneViewportService,
     customizationService,
+    viewportGridService,
   } = servicesManager.services;
   const csTools3DVer1MeasurementSource = initMeasurementService(
     measurementService,
@@ -188,7 +193,11 @@ const connectToolsToMeasurementService = (servicesManager: AppTypes.ServicesMana
     cornerstoneViewportService,
     customizationService
   );
-  connectMeasurementServiceToTools(measurementService, cornerstoneViewportService);
+  connectMeasurementServiceToTools(
+    measurementService,
+    cornerstoneViewportService,
+    viewportGridService
+  );
   const { annotationToMeasurement, remove } = csTools3DVer1MeasurementSource;
 
   //
@@ -314,7 +323,11 @@ const connectToolsToMeasurementService = (servicesManager: AppTypes.ServicesMana
   return csTools3DVer1MeasurementSource;
 };
 
-const connectMeasurementServiceToTools = (measurementService, cornerstoneViewportService) => {
+const connectMeasurementServiceToTools = (
+  measurementService,
+  cornerstoneViewportService,
+  viewportGridService
+) => {
   const { MEASUREMENT_REMOVED, MEASUREMENTS_CLEARED, MEASUREMENT_UPDATED, RAW_MEASUREMENT_ADDED } =
     measurementService.EVENTS;
 
@@ -357,8 +370,8 @@ const connectMeasurementServiceToTools = (measurementService, cornerstoneViewpor
       }
 
       if (data.label !== label) {
-        data.label = label;
-        measurement.isDirty = true;
+        const element = getActiveViewportEnabledElement(viewportGridService)?.viewport.element;
+        setAnnotationLabel(sourceAnnotation, element, label);
       }
 
       if (metadata.toolName === 'ArrowAnnotate') {

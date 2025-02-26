@@ -130,6 +130,15 @@ const machineConfiguration = {
             target: 'idle',
           },
         ],
+        UNTRACK_ALL: [
+          {
+            target: 'tracking',
+            actions: ['clearContext', 'setIsDirtyToClean', 'deHydrate', 'clearAllMeasurements'],
+          },
+          {
+            target: 'idle',
+          },
+        ],
         SET_TRACKED_SERIES: [
           {
             target: 'tracking',

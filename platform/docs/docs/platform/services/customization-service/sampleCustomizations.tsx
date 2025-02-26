@@ -660,6 +660,26 @@ window.config = {
   `,
   },
   {
+    id: 'customDoubleClickThumbnailHandler ',
+    description:
+      'customDoubleClickThumbnailHandler in the study panel enables users to handle additional functionalities during the thumbnail double click event.',
+    default: props => {
+      return Promise.resolve({ handled: false });
+    },
+    configuration: `
+window.config = {
+  // rest of window config
+  customizationService: [
+    {
+      customDoubleClickThumbnailHandler: {
+        $set: customDoubleClickThumbnailHandler
+      },
+    },
+  ],
+};
+  `,
+  },
+  {
     id: 'ui.notificationComponent',
     description: 'Define the component which is used to render viewport notifications',
     default: 'Default Notification component in viewport',

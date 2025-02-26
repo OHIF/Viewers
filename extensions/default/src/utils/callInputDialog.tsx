@@ -1,5 +1,7 @@
 import React from 'react';
 import { Input, Dialog, ButtonEnums, LabellingFlow } from '@ohif/ui';
+import { setAnnotationLabel } from '@cornerstonejs/tools/utilities';
+import { annotation } from '@cornerstonejs/tools';
 
 /**
  *
@@ -133,7 +135,8 @@ export function showLabelAnnotationPopup(
   measurement,
   uiDialogService,
   labelConfig,
-  renderContent = LabellingFlow
+  renderContent = LabellingFlow,
+  element
 ) {
   const exclusive = labelConfig ? labelConfig.exclusive : false;
   const dropDownItems = labelConfig ? labelConfig.items : [];
@@ -141,7 +144,10 @@ export function showLabelAnnotationPopup(
     const labellingDoneCallback = value => {
       uiDialogService.dismiss({ id: 'select-annotation' });
       if (typeof value === 'string') {
-        measurement.label = value;
+        if (measurement.label !== value) {
+          const sourceAnnotation = annotation.state.getAnnotation(measurement.uid);
+          setAnnotationLabel(sourceAnnotation, element, value);
+        }
       }
       resolve(measurement);
     };

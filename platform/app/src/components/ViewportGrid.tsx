@@ -229,7 +229,7 @@ function ViewerViewportGrid(props: withAppTypes) {
         viewportGridService.setDisplaySetsForViewports(updatedViewports);
       }
     });
-    viewportGridService.publishOndropFired({ updateDisplaySet, displaySetInstanceUID });
+    viewportGridService.publishThumbnailLoaded({ updateDisplaySet, displaySetInstanceUID });
   };
 
   const getViewportPanes = useCallback(() => {
