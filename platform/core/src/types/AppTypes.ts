@@ -129,8 +129,6 @@ declare global {
       showStudyList?: boolean;
       whiteLabeling?: Record<string, unknown>;
       httpErrorHandler?: (error: Error) => void;
-      addWindowLevelActionMenu?: boolean;
-      addSegmentationOverlay?: boolean;
       dangerouslyUseDynamicConfig?: {
         enabled: boolean;
         regex: RegExp;

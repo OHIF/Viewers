@@ -15,7 +15,6 @@ import type { Types } from '@ohif/core';
 
 import OHIFViewportActionCorners from '../components/OHIFViewportActionCorners';
 import { getWindowLevelActionMenu } from '../components/WindowLevelActionMenu/getWindowLevelActionMenu';
-import { useAppConfig } from '@state';
 import { getViewportDataOverlaySettingsMenu } from '../components/ViewportDataOverlaySettingMenu';
 import { getViewportPresentations } from '../utils/presentations/getViewportPresentations';
 import { useSynchronizersStore } from '../stores/useSynchronizersStore';
@@ -89,7 +88,6 @@ const OHIFCornerstoneViewport = React.memo(
     const [scrollbarHeight, setScrollbarHeight] = useState('100px');
     const [enabledVPElement, setEnabledVPElement] = useState(null);
     const elementRef = useRef() as React.MutableRefObject<HTMLDivElement>;
-    const [appConfig] = useAppConfig();
 
     const {
       displaySetService,
@@ -324,11 +322,14 @@ const OHIFCornerstoneViewport = React.memo(
 
     // Set up the window level action menu in the viewport action corners.
     useEffect(() => {
-      const location = viewportActionCornersService.LOCATIONS.topRight;
+      const windowLevelActionMenu = customizationService.getCustomization(
+          'viewportActionMenu.windowLevelActionMenu'
+      );
+      const segmentationOverlay = customizationService.getCustomization(
+          'viewportActionMenu.segmentationOverlay'
+      );
 
-      // TODO: In the future we should consider using the customization service
-      // to determine if and in which corner various action components should go.
-      if (appConfig.addWindowLevelActionMenu !== false) {
+      if (windowLevelActionMenu?.enabled) {
         viewportActionCornersService.addComponent({
           viewportId,
           id: 'windowLevelActionMenu',
@@ -338,15 +339,15 @@ const OHIFCornerstoneViewport = React.memo(
             displaySets,
             servicesManager,
             commandsManager,
-            location,
+            location: windowLevelActionMenu.location,
             verticalDirection: AllInOneMenu.VerticalDirection.TopToBottom,
             horizontalDirection: AllInOneMenu.HorizontalDirection.RightToLeft,
           }),
-          location,
+          location: windowLevelActionMenu.location,
         });
       }
 
-      if (appConfig.addSegmentationOverlay !== false) {
+      if (segmentationOverlay?.enabled) {
         viewportActionCornersService.addComponent({
           viewportId,
           id: 'segmentation',
@@ -356,9 +357,9 @@ const OHIFCornerstoneViewport = React.memo(
             displaySets,
             servicesManager,
             commandsManager,
-            location,
+            location: segmentationOverlay.location,
           }),
-          location,
+          location: segmentationOverlay.location,
         });
       }
     }, [
@@ -367,7 +368,6 @@ const OHIFCornerstoneViewport = React.memo(
       viewportActionCornersService,
       servicesManager,
       commandsManager,
-      appConfig,
     ]);
 
     const { ref: resizeRef } = useResizeDetector({
