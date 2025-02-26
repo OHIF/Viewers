@@ -276,7 +276,7 @@ function ViewerViewportGrid(props: withAppTypes) {
           return;
         }
 
-        if (event) {
+        if (event && (appConfig?.activateViewportBeforeInteraction ?? true)) {
           event.preventDefault();
           event.stopPropagation();
         }
@@ -310,10 +310,7 @@ function ViewerViewportGrid(props: withAppTypes) {
         >
           <div
             data-cy="viewport-pane"
-            className={classNames('flex h-full w-full min-w-[5px] flex-col', {
-              'pointer-events-none':
-                !isActive && (appConfig?.activateViewportBeforeInteraction ?? true),
-            })}
+            className="flex h-full w-full min-w-[5px] flex-col"
           >
             <ViewportComponent
               displaySets={displaySets}

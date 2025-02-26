@@ -216,7 +216,7 @@ export default function PanelStudyBrowserTracking({
         thumbnailSrc = await displaySet.getThumbnailSrc();
       }
       if (!thumbnailSrc) {
-        let thumbnailSrc = await getImageSrc(imageId);
+        const thumbnailSrc = await getImageSrc(imageId);
         displaySet.thumbnailSrc = thumbnailSrc;
       }
       newImageSrcEntry[dSet.displaySetInstanceUID] = thumbnailSrc;

@@ -140,19 +140,16 @@ function commandsModule({
       )?.[0];
 
       if (previousReferencedDisplaySetStoreKey) {
-        if (referencedImageId) {
-          setPositionPresentation(previousReferencedDisplaySetStoreKey, {
-            viewReference: {
-              referencedImageId,
-            },
-          });
-        } else {
-          setPositionPresentation(
-            previousReferencedDisplaySetStoreKey,
-            presentations.positionPresentation
-          );
-        }
+        const presentationData = referencedImageId
+          ? {
+              ...presentations.positionPresentation,
+              viewReference: {
+                referencedImageId,
+              },
+            }
+          : presentations.positionPresentation;
 
+        setPositionPresentation(previousReferencedDisplaySetStoreKey, presentationData);
         return;
       }
 
