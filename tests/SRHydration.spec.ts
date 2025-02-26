@@ -55,5 +55,5 @@ test('should hydrate SR reports correctly', async ({ page }) => {
   });
 
   await page.getByTestId('data-row').first().click();
-  await checkForScreenshot(page, page, screenShotPaths.srHydration.srJumpToMeasurement2);
+  await checkForScreenshot(page, page, screenShotPaths.srHydration.srJumpToMeasurement);
 });
