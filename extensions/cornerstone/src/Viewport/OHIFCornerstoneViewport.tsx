@@ -457,6 +457,7 @@ function _subscribeToJumpToMeasurementEvents(elementRef, viewportId, servicesMan
         return;
       }
       const viewportInfo = cornerstoneViewportService.getViewportInfo(viewportId);
+      // Confirm viewportInfo matches measurement displaySetInstanceUID and referencedImageId
       if (
         !viewportInfo?.contains(
           measurement.displaySetInstanceUID,
