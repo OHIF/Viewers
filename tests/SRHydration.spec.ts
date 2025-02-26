@@ -11,9 +11,29 @@ test('should hydrate SR reports correctly', async ({ page }) => {
   await page.getByTestId('side-panel-header-right').click();
   await page.getByTestId('trackedMeasurements-btn').click();
   await page.getByTestId('study-browser-thumbnail-no-image').dblclick();
-  await checkForScreenshot(page, page, screenShotPaths.srHydration.srPreHydration1);
+  await checkForScreenshot(page, page, screenShotPaths.srHydration.srPreHydration);
+
+  await page.evaluate(() => {
+    // Access cornerstone directly from the window object
+    const cornerstone = window.cornerstone;
+    if (!cornerstone) {
+      return;
+    }
+
+    const enabledElements = cornerstone.getEnabledElements();
+    if (enabledElements.length === 0) {
+      return;
+    }
+
+    const viewport = enabledElements[0].viewport;
+    if (viewport) {
+      viewport.setZoom(4);
+      viewport.render();
+    }
+  });
+
   // await page.getByTestId('yes-hydrate-btn').click();
-  // await checkForScreenshot(page, page, screenShotPaths.srHydration.srPostHydration);
+  await checkForScreenshot(page, page, screenShotPaths.srHydration.srPostHydration2);
   // await page.getByTestId('data-row').first().click();
   // await checkForScreenshot(page, page, screenShotPaths.srHydration.srJumpToMeasurement);
 });

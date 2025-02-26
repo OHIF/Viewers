@@ -166,11 +166,13 @@ function TrackedMeasurementsContextProvider(
     hydrateStructuredReport: hydrateStructuredReport.bind(null, {
       servicesManager,
       extensionManager,
+      commandsManager,
       appConfig,
     }),
     promptLabelAnnotation: promptLabelAnnotation.bind(null, {
       servicesManager,
       extensionManager,
+      commandsManager,
     }),
   });
   machineOptions.guards = Object.assign({}, machineOptions.guards, {
