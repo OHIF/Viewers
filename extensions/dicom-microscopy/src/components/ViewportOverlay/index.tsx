@@ -88,7 +88,8 @@ export const generateFromConfig = ({ config, overlayData, ...props }) => {
 
 const itemGenerator = (props: any) => {
   const { item } = props;
-  const { title, value: valueFunc, contentF: contentFunc, condition, contents } = item;
+  const { title, value: valueFunc, contentF: contentFunc = valueFunc, condition, contents } = item;
+  // the naming of the function can be 'value' (old) or 'contentF' (new).
   props.image = { ...props.image, ...props.metadata };
   props.formatDate = formatDICOMDate;
   props.formatTime = formatDICOMTime;
@@ -97,16 +98,10 @@ const itemGenerator = (props: any) => {
   if (condition && !condition(props)) {
     return null;
   }
-  if (!contents && !valueFunc && !contentFunc) {
+  if (!contents &&  !contentFunc) {
     return null;
   }
- 
-  let value = valueFunc && valueFunc(props);
-  if (!value) {
-    value = contentFunc && contentFunc(props);  // the naming of the function can be 'value' (old) or 'contentF' (new).
-  } 
-
-  
+  const value = contentFunc && contentFunc(props);  
   const contentsValue = (contents && contents(props)) || [
     { className: 'mr-1', value: title },
     { classname: 'mr-1 font-light', value },
