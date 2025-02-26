@@ -32,8 +32,28 @@ test('should hydrate SR reports correctly', async ({ page }) => {
     }
   });
 
-  // await page.getByTestId('yes-hydrate-btn').click();
-  await checkForScreenshot(page, page, screenShotPaths.srHydration.srPostHydration2);
-  // await page.getByTestId('data-row').first().click();
-  // await checkForScreenshot(page, page, screenShotPaths.srHydration.srJumpToMeasurement);
+  await page.getByTestId('yes-hydrate-btn').click();
+  await checkForScreenshot(page, page, screenShotPaths.srHydration.srPostHydration);
+
+  await page.evaluate(() => {
+    // Access cornerstone directly from the window object
+    const cornerstone = window.cornerstone;
+    if (!cornerstone) {
+      return;
+    }
+
+    const enabledElements = cornerstone.getEnabledElements();
+    if (enabledElements.length === 0) {
+      return;
+    }
+
+    const viewport = enabledElements[0].viewport;
+    if (viewport) {
+      viewport.scroll(20);
+      viewport.render();
+    }
+  });
+
+  await page.getByTestId('data-row').first().click();
+  await checkForScreenshot(page, page, screenShotPaths.srHydration.srJumpToMeasurement2);
 });

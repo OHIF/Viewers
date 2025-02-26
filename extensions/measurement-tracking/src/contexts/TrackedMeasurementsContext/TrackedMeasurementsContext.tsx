@@ -88,7 +88,8 @@ function TrackedMeasurementsContextProvider(
         m => trackedStudy === m.referenceStudyUID && trackedSeries.includes(m.referenceSeriesUID)
       );
 
-      const trackedMeasurement = trackedMeasurements[0];
+      // Jump to the last tracked measurement - most recent
+      const trackedMeasurement = trackedMeasurements[trackedMeasurements.length - 1];
       const referencedDisplaySetUID = trackedMeasurement.displaySetInstanceUID;
 
       // update the previously stored positionPresentation with the new viewportId
