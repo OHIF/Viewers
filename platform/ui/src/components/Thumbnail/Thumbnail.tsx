@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import { useDrag } from 'react-dnd';
@@ -17,9 +17,10 @@ const Thumbnail = ({
   description,
   seriesNumber,
   numInstances,
+  loadingProgress,
   countIcon,
   messages,
-  dragData,
+  dragData = {},
   isActive,
   onClick,
   onDoubleClick,
@@ -35,6 +36,19 @@ const Thumbnail = ({
     },
   });
 
+  const [lastTap, setLastTap] = useState(0);
+
+  const handleTouchEnd = e => {
+    const currentTime = new Date().getTime();
+    const tapLength = currentTime - lastTap;
+    if (tapLength < 300 && tapLength > 0) {
+      onDoubleClick(e);
+    } else {
+      onClick(e);
+    }
+    setLastTap(currentTime);
+  };
+
   return (
     <div
       className={classnames(
@@ -43,28 +57,27 @@ const Thumbnail = ({
       )}
       id={`thumbnail-${displaySetInstanceUID}`}
       data-cy={`study-browser-thumbnail`}
+      data-series={seriesNumber}
       onClick={onClick}
       onDoubleClick={onDoubleClick}
+      onTouchEnd={handleTouchEnd}
       role="button"
       tabIndex="0"
     >
       <div ref={drag}>
         <div
           className={classnames(
-            'min-h-32 flex flex-1 items-center justify-center overflow-hidden rounded-md bg-black text-base text-white',
+            'flex h-32 flex-1 items-center justify-center overflow-hidden rounded-md bg-black text-base text-white',
             isActive
               ? 'border-primary-light border-2'
               : 'border-secondary-light border hover:border-blue-300'
           )}
-          style={{
-            margin: isActive ? '0' : '1px',
-          }}
         >
           {imageSrc ? (
             <img
               src={imageSrc}
               alt={imageAltText}
-              className="min-h-32 object-none"
+              className="h-full w-full object-contain"
               crossOrigin="anonymous"
             />
           ) : (
@@ -83,10 +96,19 @@ const Thumbnail = ({
             />
             {` ${numInstances}`}
           </div>
-          <DisplaySetMessageListTooltip
-            messages={messages}
-            id={`display-set-tooltip-${displaySetInstanceUID}`}
-          />
+          <div className="mr-2 flex last:mr-0">
+            {loadingProgress && loadingProgress < 1 && <>{Math.round(loadingProgress * 100)}%</>}
+            {loadingProgress && loadingProgress === 1 && (
+              <Icon
+                name={'database'}
+              className="w-3"
+            />
+          )}
+        </div>
+        <DisplaySetMessageListTooltip
+          messages={messages}
+          id={`display-set-tooltip-${displaySetInstanceUID}`}
+        />
         </div>
         <div className="break-all text-base text-white">{description}</div>
       </div>
@@ -113,14 +135,11 @@ Thumbnail.propTypes = {
   description: PropTypes.string.isRequired,
   seriesNumber: StringNumber.isRequired,
   numInstances: PropTypes.number.isRequired,
+  loadingProgress: PropTypes.number,
   messages: PropTypes.object,
   isActive: PropTypes.bool.isRequired,
   onClick: PropTypes.func.isRequired,
   onDoubleClick: PropTypes.func.isRequired,
-};
-
-Thumbnail.defaultProps = {
-  dragData: {},
 };
 
 export default Thumbnail;

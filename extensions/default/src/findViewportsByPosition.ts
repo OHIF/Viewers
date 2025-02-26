@@ -1,4 +1,4 @@
-import { StateSyncService } from '@ohif/core';
+import { useViewportsByPositionStore } from './stores/useViewportsByPositionStore';
 
 /**
  * This find or create viewport is paired with the reduce results from
@@ -16,6 +16,7 @@ import { StateSyncService } from '@ohif/core';
  */
 export const findOrCreateViewport = (
   hangingProtocolService,
+  isHangingProtocolLayout,
   viewportsByPosition,
   position: number,
   positionId: string,
@@ -31,8 +32,13 @@ export const findOrCreateViewport = (
   if (!options.inDisplay) {
     options.inDisplay = [...viewportsByPosition.initialInDisplay];
   }
-  // See if there is a default viewport for new views.
-  const missing = hangingProtocolService.getMissingViewport(protocolId, stageIndex, options);
+
+  // See if there is a default viewport for new views
+  const missing = hangingProtocolService.getMissingViewport(
+    isHangingProtocolLayout ? protocolId : 'default',
+    stageIndex,
+    options
+  );
   if (missing) {
     const displaySetInstanceUIDs = missing.displaySetsInfo.map(it => it.displaySetInstanceUID);
     options.inDisplay.push(...displaySetInstanceUIDs);
@@ -44,6 +50,13 @@ export const findOrCreateViewport = (
       },
     };
   }
+
+  // and lastly if there is no default viewport, then we see if we can grab the
+  // viewportsByPosition at the position index and use that
+  // const candidate = Object.values(viewportsByPosition)[position];
+
+  // // if it has something to display, then we can use it
+  // return candidate?.displaySetInstanceUIDs ? candidate : {};
   return {};
 };
 
@@ -56,16 +69,12 @@ export const findOrCreateViewport = (
  * @returns Set of states that can be applied to the state sync to remember
  *   the current view state.
  */
-const findViewportsByPosition = (
-  state,
-  { numRows, numCols },
-  syncService: StateSyncService
-): Record<string, Record<string, unknown>> => {
+const findViewportsByPosition = (state, { numRows, numCols }) => {
   const { viewports } = state;
-  const syncState = syncService.getState();
-  const viewportsByPosition = { ...syncState.viewportsByPosition };
+  const { setViewportsByPosition, addInitialInDisplay } = useViewportsByPositionStore.getState();
   const initialInDisplay = [];
 
+  const viewportsByPosition = {};
   viewports.forEach(viewport => {
     if (viewport.positionId) {
       const storedViewport = {
@@ -73,6 +82,7 @@ const findViewportsByPosition = (
         viewportOptions: { ...viewport.viewportOptions },
       };
       viewportsByPosition[viewport.positionId] = storedViewport;
+      setViewportsByPosition(viewport.positionId, storedViewport);
     }
   });
 
@@ -86,10 +96,7 @@ const findViewportsByPosition = (
     }
   }
 
-  // Store the initially displayed elements
-  viewportsByPosition.initialInDisplay = initialInDisplay;
-
-  return { viewportsByPosition };
+  initialInDisplay.forEach(displaySetInstanceUID => addInitialInDisplay(displaySetInstanceUID));
 };
 
 export default findViewportsByPosition;

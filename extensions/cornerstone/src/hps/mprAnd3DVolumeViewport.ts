@@ -9,7 +9,7 @@ export const mprAnd3DVolumeViewport = {
   protocolMatchingRules: [],
   imageLoadStrategy: 'interleaveCenter',
   displaySetSelectors: {
-    mprDisplaySet: {
+    activeDisplaySet: {
       seriesMatchingRules: [
         {
           weight: 1,
@@ -59,12 +59,15 @@ export const mprAnd3DVolumeViewport = {
                 id: 'mpr',
                 source: true,
                 target: true,
+                options: {
+                  syncColormap: true,
+                },
               },
             ],
           },
           displaySets: [
             {
-              id: 'mprDisplaySet',
+              id: 'activeDisplaySet',
             },
           ],
         },
@@ -79,9 +82,13 @@ export const mprAnd3DVolumeViewport = {
           },
           displaySets: [
             {
-              id: 'mprDisplaySet',
+              id: 'activeDisplaySet',
               options: {
-                displayPreset: 'CT-Bone',
+                displayPreset: {
+                  CT: 'CT-Bone',
+                  MR: 'MR-Default',
+                  default: 'CT-Bone',
+                },
               },
             },
           ],
@@ -100,12 +107,15 @@ export const mprAnd3DVolumeViewport = {
                 id: 'mpr',
                 source: true,
                 target: true,
+                options: {
+                  syncColormap: true,
+                },
               },
             ],
           },
           displaySets: [
             {
-              id: 'mprDisplaySet',
+              id: 'activeDisplaySet',
             },
           ],
         },
@@ -123,12 +133,15 @@ export const mprAnd3DVolumeViewport = {
                 id: 'mpr',
                 source: true,
                 target: true,
+                options: {
+                  syncColormap: true,
+                },
               },
             ],
           },
           displaySets: [
             {
-              id: 'mprDisplaySet',
+              id: 'activeDisplaySet',
             },
           ],
         },

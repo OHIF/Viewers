@@ -3,16 +3,22 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useLocation } from 'react-router';
 
-import { ErrorBoundary, UserPreferences, AboutModal, Header, useModal } from '@ohif/ui';
+import { UserPreferences, AboutModal, useModal } from '@ohif/ui';
+import { Header } from '@ohif/ui-next';
 import i18n from '@ohif/i18n';
 import { hotkeys } from '@ohif/core';
-import { useAppConfig } from '@state';
-import Toolbar from '../Toolbar/Toolbar';
+import { Toolbar } from '../Toolbar/Toolbar';
+import HeaderPatientInfo from './HeaderPatientInfo';
+import { PatientInfoVisibility } from './HeaderPatientInfo/HeaderPatientInfo';
 
 const { availableLanguages, defaultLanguage, currentLanguage } = i18n;
 
-function ViewerHeader({ hotkeysManager, extensionManager, servicesManager }) {
-  const [appConfig] = useAppConfig();
+function ViewerHeader({
+  hotkeysManager,
+  extensionManager,
+  servicesManager,
+  appConfig,
+}: withAppTypes<{ appConfig: AppTypes.Config }>) {
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -55,6 +61,7 @@ function ViewerHeader({ hotkeysManager, extensionManager, servicesManager }) {
           content: AboutModal,
           title: t('AboutModal:About OHIF Viewer'),
           contentProps: { versionNumber, commitHash },
+          containerDimensions: 'max-w-4xl max-h-4xl',
         }),
     },
     {
@@ -64,6 +71,7 @@ function ViewerHeader({ hotkeysManager, extensionManager, servicesManager }) {
         show({
           title: t('UserPreferencesModal:User preferences'),
           content: UserPreferences,
+          containerDimensions: 'w-[70%] max-w-[900px]',
           contentProps: {
             hotkeyDefaults: hotkeysManager.getValidHotkeyDefinitions(hotkeyDefaults),
             hotkeyDefinitions,
@@ -105,12 +113,24 @@ function ViewerHeader({ hotkeysManager, extensionManager, servicesManager }) {
       isReturnEnabled={!!appConfig.showStudyList}
       onClickReturnButton={onClickReturnButton}
       WhiteLabeling={appConfig.whiteLabeling}
+      Secondary={
+        <Toolbar
+          servicesManager={servicesManager}
+          buttonSection="secondary"
+        />
+      }
+      PatientInfo={
+        appConfig.showPatientInfo !== PatientInfoVisibility.DISABLED && (
+          <HeaderPatientInfo
+            servicesManager={servicesManager}
+            appConfig={appConfig}
+          />
+        )
+      }
     >
-      <ErrorBoundary context="Primary Toolbar">
-        <div className="relative flex justify-center">
-          <Toolbar servicesManager={servicesManager} />
-        </div>
-      </ErrorBoundary>
+      <div className="relative flex justify-center gap-[4px]">
+        <Toolbar servicesManager={servicesManager} />
+      </div>
     </Header>
   );
 }

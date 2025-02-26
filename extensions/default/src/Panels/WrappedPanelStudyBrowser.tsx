@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react';
 import PropTypes from 'prop-types';
 //
-import PanelStudyBrowser from './PanelStudyBrowser';
+import PanelStudyBrowser from './StudyBrowser/PanelStudyBrowser';
 import getImageSrcFromImageId from './getImageSrcFromImageId';
 import getStudiesForPatientByMRN from './getStudiesForPatientByMRN';
 import requestDisplaySetCreationForStudy from './requestDisplaySetCreationForStudy';
@@ -30,6 +30,7 @@ function WrappedPanelStudyBrowser({ commandsManager, extensionManager, servicesM
   return (
     <PanelStudyBrowser
       servicesManager={servicesManager}
+      commandsManager={commandsManager}
       dataSource={dataSource}
       getImageSrc={_getImageSrcFromImageId}
       getStudiesForPatientByMRN={_getStudiesForPatientByMRN}

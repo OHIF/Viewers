@@ -21,7 +21,7 @@ export const useModal = () => useContext(ModalContext);
  * @property {string} [customClassName=null] The custom class to style the modal.
  */
 
-const ModalProvider = ({ children, modal: Modal, service }) => {
+const ModalProvider = ({ children, modal: Modal, service = null }) => {
   const DEFAULT_OPTIONS = {
     content: null,
     contentProps: null,
@@ -31,6 +31,9 @@ const ModalProvider = ({ children, modal: Modal, service }) => {
     closeButton: true,
     title: null,
     customClassName: '',
+    movable: false,
+    containerDimensions: null,
+    contentDimensions: null,
   };
   const { t } = useTranslation('Modals');
 
@@ -73,6 +76,9 @@ const ModalProvider = ({ children, modal: Modal, service }) => {
     shouldCloseOnEsc,
     closeButton,
     shouldCloseOnOverlayClick,
+    movable,
+    containerDimensions,
+    contentDimensions,
   } = options;
 
   return (
@@ -86,6 +92,9 @@ const ModalProvider = ({ children, modal: Modal, service }) => {
           closeButton={closeButton}
           onClose={hide}
           shouldCloseOnOverlayClick={shouldCloseOnOverlayClick}
+          movable={movable}
+          containerDimensions={containerDimensions}
+          contentDimensions={contentDimensions}
         >
           <ModalContent
             {...contentProps}
@@ -114,10 +123,6 @@ export const withModal = Component => {
       />
     );
   };
-};
-
-ModalProvider.defaultProps = {
-  service: null,
 };
 
 ModalProvider.propTypes = {

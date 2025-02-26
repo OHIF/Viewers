@@ -32,6 +32,7 @@ import { PubSubService } from '../_shared/pubSubServiceInterface';
 /* Measurement schema keys for object validation. */
 const MEASUREMENT_SCHEMA_KEYS = [
   'uid',
+  'color',
   'data',
   'getReport',
   'displayText',
@@ -42,6 +43,8 @@ const MEASUREMENT_SCHEMA_KEYS = [
   'frameNumber',
   'displaySetInstanceUID',
   'label',
+  'isLocked',
+  'isVisible',
   'description',
   'type',
   'unit',
@@ -53,12 +56,14 @@ const MEASUREMENT_SCHEMA_KEYS = [
   'area', // TODO: Add concept names instead (descriptor)
   'mean',
   'stdDev',
+  'perimeter',
   'length',
   'shortestDiameter',
   'longestDiameter',
   'cachedStats',
-  'selected',
+  'isSelected',
   'textBox',
+  'referencedImageId',
 ];
 
 const EVENTS = {
@@ -113,7 +118,7 @@ class MeasurementService extends PubSubService {
   public readonly VALUE_TYPES = VALUE_TYPES;
 
   private measurements = new Map();
-  private unmappedMeasurements = new Set();
+  private unmappedMeasurements = new Map();
 
   constructor() {
     super(EVENTS);
@@ -183,7 +188,7 @@ class MeasurementService extends PubSubService {
       return;
     }
 
-    measurement.selected = selected;
+    measurement.isSelected = selected;
 
     this._broadcastEvent(this.EVENTS.MEASUREMENT_UPDATED, {
       source: measurement.source,
@@ -464,7 +469,6 @@ class MeasurementService extends PubSubService {
     }
 
     const sourceInfo = this._getSourceToString(source);
-
     if (!this._sourceHasMappings(source)) {
       throw new Error(`No measurement mappings found for '${sourceInfo}' source. Exiting early.`);
     }
@@ -483,9 +487,21 @@ class MeasurementService extends PubSubService {
 
       /* Convert measurement */
       measurement = toMeasurementSchema(sourceAnnotationDetail);
+      if (!measurement) {
+        return;
+      }
+
       measurement.source = source;
     } catch (error) {
-      this.unmappedMeasurements.add(sourceAnnotationDetail.uid);
+      // Todo: handle other
+      this.unmappedMeasurements.set(sourceAnnotationDetail.uid, {
+        ...sourceAnnotationDetail,
+        source: {
+          name: source.name,
+          version: source.version,
+          uid: source.uid,
+        },
+      });
 
       console.log('Failed to map', error);
       throw new Error(
@@ -546,31 +562,30 @@ class MeasurementService extends PubSubService {
    * Removes a measurement and broadcasts the removed event.
    *
    * @param {string} measurementUID The measurement uid
-   * @param {MeasurementSource} source The measurement source instance
    */
-  remove(measurementUID, source, eventDetails) {
-    if (
-      !measurementUID ||
-      (!this.measurements.has(measurementUID) && !this.unmappedMeasurements.has(measurementUID))
-    ) {
-      log.warn(`No uid provided, or unable to find measurement by uid.`);
+  remove(measurementUID: string): void {
+    const measurement =
+      this.measurements.get(measurementUID) || this.unmappedMeasurements.get(measurementUID);
+
+    if (!measurementUID || !measurement) {
+      console.debug(`No uid provided, or unable to find measurement by uid.`);
       return;
     }
+
+    const source = measurement.source;
 
     this.unmappedMeasurements.delete(measurementUID);
     this.measurements.delete(measurementUID);
     this._broadcastEvent(this.EVENTS.MEASUREMENT_REMOVED, {
       source,
       measurement: measurementUID,
-      ...eventDetails,
     });
   }
 
   clearMeasurements() {
-    this.unmappedMeasurements.clear();
-
     // Make a copy of the measurements
-    const measurements = [...this.measurements.values()];
+    const measurements = [...this.measurements.values(), ...this.unmappedMeasurements.values()];
+    this.unmappedMeasurements.clear();
     this.measurements.clear();
     this._broadcastEvent(this.EVENTS.MEASUREMENTS_CLEARED, { measurements });
   }
@@ -720,6 +735,57 @@ class MeasurementService extends PubSubService {
   _arrayOfObjects = obj => {
     return Object.entries(obj).map(e => ({ [e[0]]: e[1] }));
   };
+
+  public toggleLockMeasurement(measurementUID: string): void {
+    const measurement = this.measurements.get(measurementUID);
+
+    if (!measurement) {
+      console.debug(`No measurement found for uid: ${measurementUID}`);
+      return;
+    }
+
+    measurement.isLocked = !measurement.isLocked;
+
+    this._broadcastEvent(this.EVENTS.MEASUREMENT_UPDATED, {
+      source: measurement.source,
+      measurement,
+      notYetUpdatedAtSource: true,
+    });
+  }
+
+  public toggleVisibilityMeasurement(measurementUID: string): void {
+    const measurement = this.measurements.get(measurementUID);
+
+    if (!measurement) {
+      console.debug(`No measurement found for uid: ${measurementUID}`);
+      return;
+    }
+
+    measurement.isVisible = !measurement.isVisible;
+
+    this._broadcastEvent(this.EVENTS.MEASUREMENT_UPDATED, {
+      source: measurement.source,
+      measurement,
+      notYetUpdatedAtSource: true,
+    });
+  }
+
+  public updateColorMeasurement(measurementUID: string, color: number[]): void {
+    const measurement = this.measurements.get(measurementUID);
+
+    if (!measurement) {
+      console.debug(`No measurement found for uid: ${measurementUID}`);
+      return;
+    }
+
+    measurement.color = color;
+
+    this._broadcastEvent(this.EVENTS.MEASUREMENT_UPDATED, {
+      source: measurement.source,
+      measurement,
+      notYetUpdatedAtSource: true,
+    });
+  }
 }
 
 export default MeasurementService;

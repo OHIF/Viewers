@@ -1,4 +1,24 @@
-function initDefaultToolGroup(extensionManager, toolGroupService, commandsManager, toolGroupId) {
+import { toolNames as SRToolNames } from '@ohif/extension-cornerstone-dicom-sr';
+
+const colours = {
+  'viewport-0': 'rgb(200, 0, 0)',
+  'viewport-1': 'rgb(200, 200, 0)',
+  'viewport-2': 'rgb(0, 200, 0)',
+};
+
+const colorsByOrientation = {
+  axial: 'rgb(200, 0, 0)',
+  sagittal: 'rgb(200, 200, 0)',
+  coronal: 'rgb(0, 200, 0)',
+};
+
+function initDefaultToolGroup(
+  extensionManager,
+  toolGroupService,
+  commandsManager,
+  toolGroupId,
+  modeLabelConfig
+) {
   const utilityModule = extensionManager.getModuleEntry(
     '@ohif/extension-cornerstone.utilityModule.tools'
   );
@@ -19,50 +39,78 @@ function initDefaultToolGroup(extensionManager, toolGroupService, commandsManage
         toolName: toolNames.Zoom,
         bindings: [{ mouseButton: Enums.MouseBindings.Secondary }],
       },
-      { toolName: toolNames.StackScrollMouseWheel, bindings: [] },
+      {
+        toolName: toolNames.StackScroll,
+        bindings: [{ mouseButton: Enums.MouseBindings.Wheel }],
+      },
     ],
     passive: [
       { toolName: toolNames.Length },
       {
         toolName: toolNames.ArrowAnnotate,
         configuration: {
-          getTextCallback: (callback, eventDetails) =>
-            commandsManager.runCommand('arrowTextCallback', {
-              callback,
-              eventDetails,
-            }),
-
-          changeTextCallback: (data, eventDetails, callback) =>
-            commandsManager.runCommand('arrowTextCallback', {
-              callback,
-              data,
-              eventDetails,
-            }),
+          getTextCallback: (callback, eventDetails) => {
+            if (modeLabelConfig) {
+              callback(' ');
+            } else {
+              commandsManager.runCommand('arrowTextCallback', {
+                callback,
+                eventDetails,
+              });
+            }
+          },
+          changeTextCallback: (data, eventDetails, callback) => {
+            if (modeLabelConfig === undefined) {
+              commandsManager.runCommand('arrowTextCallback', {
+                callback,
+                data,
+                eventDetails,
+              });
+            }
+          },
         },
       },
       { toolName: toolNames.Bidirectional },
       { toolName: toolNames.DragProbe },
+      { toolName: toolNames.Probe },
       { toolName: toolNames.EllipticalROI },
       { toolName: toolNames.CircleROI },
       { toolName: toolNames.RectangleROI },
       { toolName: toolNames.StackScroll },
       { toolName: toolNames.Angle },
       { toolName: toolNames.CobbAngle },
-      { toolName: toolNames.PlanarFreehandROI },
       { toolName: toolNames.Magnify },
-      { toolName: toolNames.SegmentationDisplay },
       { toolName: toolNames.CalibrationLine },
+      {
+        toolName: toolNames.PlanarFreehandContourSegmentation,
+        configuration: {
+          displayOnePointAsCrosshairs: true,
+        },
+      },
+      { toolName: toolNames.UltrasoundDirectional },
+      { toolName: toolNames.PlanarFreehandROI },
+      { toolName: toolNames.SplineROI },
+      { toolName: toolNames.LivewireContour },
+      { toolName: toolNames.WindowLevelRegion },
     ],
-    // enabled
-    enabled: [{ toolName: toolNames.ImageOverlayViewer }],
-    // disabled
-    disabled: [{ toolName: toolNames.ReferenceLines }],
+    enabled: [
+      { toolName: toolNames.ImageOverlayViewer },
+      { toolName: toolNames.ReferenceLines },
+      {
+        toolName: SRToolNames.SRSCOORD3DPoint,
+      },
+    ],
+    disabled: [
+      {
+        toolName: toolNames.AdvancedMagnify,
+      },
+    ],
   };
 
   toolGroupService.createToolGroupAndAddTools(toolGroupId, tools);
 }
 
-function initSRToolGroup(extensionManager, toolGroupService, commandsManager) {
+function initSRToolGroup(extensionManager, toolGroupService) {
   const SRUtilityModule = extensionManager.getModuleEntry(
     '@ohif/extension-cornerstone-dicom-sr.utilityModule.tools'
   );
@@ -104,8 +152,8 @@ function initSRToolGroup(extensionManager, toolGroupService, commandsManager) {
         ],
       },
       {
-        toolName: toolNames.StackScrollMouseWheel,
-        bindings: [],
+        toolName: toolNames.StackScroll,
+        bindings: [{ mouseButton: Enums.MouseBindings.Wheel }],
       },
     ],
     passive: [
@@ -114,11 +162,13 @@ function initSRToolGroup(extensionManager, toolGroupService, commandsManager) {
       { toolName: SRToolNames.SRBidirectional },
       { toolName: SRToolNames.SREllipticalROI },
       { toolName: SRToolNames.SRCircleROI },
+      { toolName: SRToolNames.SRPlanarFreehandROI },
+      { toolName: SRToolNames.SRRectangleROI },
+      { toolName: toolNames.WindowLevelRegion },
     ],
     enabled: [
       {
         toolName: SRToolNames.DICOMSRDisplay,
-        bindings: [],
       },
     ],
     // disabled
@@ -128,10 +178,13 @@ function initSRToolGroup(extensionManager, toolGroupService, commandsManager) {
   toolGroupService.createToolGroupAndAddTools(toolGroupId, tools);
 }
 
-function initMPRToolGroup(extensionManager, toolGroupService, commandsManager) {
+function initMPRToolGroup(extensionManager, toolGroupService, commandsManager, modeLabelConfig) {
   const utilityModule = extensionManager.getModuleEntry(
     '@ohif/extension-cornerstone.utilityModule.tools'
   );
+
+  const serviceManager = extensionManager._servicesManager;
+  const { cornerstoneViewportService } = serviceManager.services;
 
   const { toolNames, Enums } = utilityModule.exports;
 
@@ -149,29 +202,40 @@ function initMPRToolGroup(extensionManager, toolGroupService, commandsManager) {
         toolName: toolNames.Zoom,
         bindings: [{ mouseButton: Enums.MouseBindings.Secondary }],
       },
-      { toolName: toolNames.StackScrollMouseWheel, bindings: [] },
+      {
+        toolName: toolNames.StackScroll,
+        bindings: [{ mouseButton: Enums.MouseBindings.Wheel }],
+      },
     ],
     passive: [
       { toolName: toolNames.Length },
       {
         toolName: toolNames.ArrowAnnotate,
         configuration: {
-          getTextCallback: (callback, eventDetails) =>
-            commandsManager.runCommand('arrowTextCallback', {
-              callback,
-              eventDetails,
-            }),
-
-          changeTextCallback: (data, eventDetails, callback) =>
-            commandsManager.runCommand('arrowTextCallback', {
-              callback,
-              data,
-              eventDetails,
-            }),
+          getTextCallback: (callback, eventDetails) => {
+            if (modeLabelConfig) {
+              callback('');
+            } else {
+              commandsManager.runCommand('arrowTextCallback', {
+                callback,
+                eventDetails,
+              });
+            }
+          },
+          changeTextCallback: (data, eventDetails, callback) => {
+            if (modeLabelConfig === undefined) {
+              commandsManager.runCommand('arrowTextCallback', {
+                callback,
+                data,
+                eventDetails,
+              });
+            }
+          },
         },
       },
       { toolName: toolNames.Bidirectional },
       { toolName: toolNames.DragProbe },
+      { toolName: toolNames.Probe },
       { toolName: toolNames.EllipticalROI },
       { toolName: toolNames.CircleROI },
       { toolName: toolNames.RectangleROI },
@@ -179,24 +243,50 @@ function initMPRToolGroup(extensionManager, toolGroupService, commandsManager) {
       { toolName: toolNames.Angle },
       { toolName: toolNames.CobbAngle },
       { toolName: toolNames.PlanarFreehandROI },
-      { toolName: toolNames.SegmentationDisplay },
+      { toolName: toolNames.WindowLevelRegion },
+      {
+        toolName: toolNames.PlanarFreehandContourSegmentation,
+        configuration: {
+          displayOnePointAsCrosshairs: true,
+        },
+      },
     ],
     disabled: [
       {
         toolName: toolNames.Crosshairs,
         configuration: {
-          viewportIndicators: false,
+          viewportIndicators: true,
+          viewportIndicatorsConfig: {
+            circleRadius: 5,
+            xOffset: 0.95,
+            yOffset: 0.05,
+          },
+          disableOnPassive: true,
           autoPan: {
             enabled: false,
             panSize: 10,
           },
+          getReferenceLineColor: viewportId => {
+            const viewportInfo = cornerstoneViewportService.getViewportInfo(viewportId);
+            const viewportOptions = viewportInfo?.viewportOptions;
+            if (viewportOptions) {
+              return (
+                colours[viewportOptions.id] ||
+                colorsByOrientation[viewportOptions.orientation] ||
+                '#0c0'
+              );
+            } else {
+              console.warn('missing viewport?', viewportId);
+              return '#0c0';
+            }
+          },
         },
+      },
+      {
+        toolName: toolNames.AdvancedMagnify,
       },
       { toolName: toolNames.ReferenceLines },
     ],
-
-    // enabled
-    // disabled
   };
 
   toolGroupService.createToolGroupAndAddTools('mpr', tools);
@@ -228,10 +318,16 @@ function initVolume3DToolGroup(extensionManager, toolGroupService) {
   toolGroupService.createToolGroupAndAddTools('volume3d', tools);
 }
 
-function initToolGroups(extensionManager, toolGroupService, commandsManager) {
-  initDefaultToolGroup(extensionManager, toolGroupService, commandsManager, 'default');
+function initToolGroups(extensionManager, toolGroupService, commandsManager, modeLabelConfig) {
+  initDefaultToolGroup(
+    extensionManager,
+    toolGroupService,
+    commandsManager,
+    'default',
+    modeLabelConfig
+  );
   initSRToolGroup(extensionManager, toolGroupService, commandsManager);
-  initMPRToolGroup(extensionManager, toolGroupService, commandsManager);
+  initMPRToolGroup(extensionManager, toolGroupService, commandsManager, modeLabelConfig);
   initVolume3DToolGroup(extensionManager, toolGroupService);
 }
 

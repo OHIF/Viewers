@@ -8,9 +8,9 @@ import {
   processResults,
   processSeriesResults,
 } from './qido.js';
-import dcm4cheeReject from './dcm4cheeReject';
+import dcm4cheeReject from './dcm4cheeReject.js';
 
-import getImageId from './utils/getImageId';
+import getImageId from './utils/getImageId.js';
 import dcmjs from 'dcmjs';
 import { retrieveStudyMetadata, deleteStudyMetadataPromise } from './retrieveStudyMetadata.js';
 import StaticWadoClient from './utils/StaticWadoClient';
@@ -89,9 +89,9 @@ function createDicomWebApi(dicomWebConfig, servicesManager) {
       };
 
       generateWadoHeader = () => {
-        let authorizationHeader = getAuthrorizationHeader();
+        const authorizationHeader = getAuthrorizationHeader();
         //Generate accept header depending on config params
-        let formattedAcceptHeader = utils.generateAcceptHeader(
+        const formattedAcceptHeader = utils.generateAcceptHeader(
           dicomWebConfig.acceptHeader,
           dicomWebConfig.requestTransferSyntaxUID,
           dicomWebConfig.omitQuotationForMultipartRequest
@@ -190,6 +190,15 @@ function createDicomWebApi(dicomWebConfig, servicesManager) {
           params
         );
       },
+      /**
+       * Provide direct access to the dicom web client for certain use cases
+       * where the dicom web client is used by an external library such as the
+       * microscopy viewer.
+       * Note this instance only needs to support the wado queries, and may not
+       * support any QIDO or STOW operations.
+       */
+      getWadoDicomWebClient: () => wadoDicomWebClient,
+
       bulkDataURI: async ({ StudyInstanceUID, BulkDataURI }) => {
         qidoDicomWebClient.headers = getAuthrorizationHeader();
         const options = {
@@ -374,6 +383,32 @@ function createDicomWebApi(dicomWebConfig, servicesManager) {
         );
 
       /**
+       * Adds the retrieve bulkdata function to naturalized DICOM data.
+       * This is done recursively, for sub-sequences.
+       */
+      const addRetrieveBulkDataNaturalized = (naturalized, instance = naturalized) => {
+        for (const key of Object.keys(naturalized)) {
+          const value = naturalized[key];
+
+          if (Array.isArray(value) && typeof value[0] === 'object') {
+            // Fix recursive values
+            value.forEach(child => addRetrieveBulkDataNaturalized(child, instance));
+            continue;
+          }
+
+          // The value.Value will be set with the bulkdata read value
+          // in which case it isn't necessary to re-read this.
+          if (value && value.BulkDataURI && !value.Value) {
+            // handle the scenarios where bulkDataURI is relative path
+            fixBulkDataURI(value, instance, dicomWebConfig);
+            // Provide a method to fetch bulkdata
+            value.retrieveBulkData = retrieveBulkData.bind(qidoDicomWebClient, value);
+          }
+        }
+        return naturalized;
+      };
+
+      /**
        * naturalizes the dataset, and adds a retrieve bulkdata method
        * to any values containing BulkDataURI.
        * @param {*} instance
@@ -387,49 +422,7 @@ function createDicomWebApi(dicomWebConfig, servicesManager) {
           return naturalized;
         }
 
-        Object.keys(naturalized).forEach(key => {
-          const value = naturalized[key];
-
-          // The value.Value will be set with the bulkdata read value
-          // in which case it isn't necessary to re-read this.
-          if (value && value.BulkDataURI && !value.Value) {
-            // Provide a method to fetch bulkdata
-            value.retrieveBulkData = (options = {}) => {
-              // handle the scenarios where bulkDataURI is relative path
-              fixBulkDataURI(value, naturalized, dicomWebConfig);
-
-              const { mediaType } = options;
-              const useOptions = {
-                // The bulkdata fetches work with either multipart or
-                // singlepart, so set multipart to false to let the server
-                // decide which type to respond with.
-                multipart: false,
-                BulkDataURI: value.BulkDataURI,
-                // The study instance UID is required if the bulkdata uri
-                // is relative - that isn't disallowed by DICOMweb, but
-                // isn't well specified in the standard, but is needed in
-                // any implementation that stores static copies of the metadata
-                StudyInstanceUID: naturalized.StudyInstanceUID,
-                mediaTypes: mediaType
-                  ? [{ mediaType }, { mediaType: 'application/octet-stream' }]
-                  : undefined,
-                ...options,
-              };
-              // Todo: this needs to be from wado dicom web client
-              return qidoDicomWebClient.retrieveBulkData(useOptions).then(val => {
-                // There are DICOM PDF cases where the first ArrayBuffer in the array is
-                // the bulk data and DICOM video cases where the second ArrayBuffer is
-                // the bulk data. Here we play it safe and do a find.
-                const ret =
-                  (val instanceof Array && val.find(arrayBuffer => arrayBuffer?.byteLength)) ||
-                  undefined;
-                value.Value = ret;
-                return ret;
-              });
-            };
-          }
-        });
-        return naturalized;
+        return addRetrieveBulkDataNaturalized(naturalized);
       };
 
       // Async load series, store as retrieved
@@ -441,23 +434,32 @@ function createDicomWebApi(dicomWebConfig, servicesManager) {
           instance.wadoRoot = dicomWebConfig.wadoRoot;
           instance.wadoUri = dicomWebConfig.wadoUri;
 
-          const imageId = implementation.getImageIdsForInstance({
-            instance,
-          });
+          const { StudyInstanceUID, SeriesInstanceUID, SOPInstanceUID } = instance;
+
+          const numberOfFrames = instance.NumberOfFrames || 1;
+          // Process all frames consistently, whether single or multiframe
+          for (let i = 0; i < numberOfFrames; i++) {
+            const frameNumber = i + 1;
+            const frameImageId = implementation.getImageIdsForInstance({
+              instance,
+              frame: frameNumber,
+            });
+            // Add imageId specific mapping to this data as the URL isn't necessarily WADO-URI.
+            metadataProvider.addImageIdToUIDs(frameImageId, {
+              StudyInstanceUID,
+              SeriesInstanceUID,
+              SOPInstanceUID,
+              frameNumber: numberOfFrames > 1 ? frameNumber : undefined,
+            });
+          }
 
           // Adding imageId to each instance
           // Todo: This is not the best way I can think of to let external
           // metadata handlers know about the imageId that is stored in the store
-          instance.imageId = imageId;
-
-          // Adding UIDs to metadataProvider
-          // Note: storing imageURI in metadataProvider since stack viewports
-          // will use the same imageURI
-          metadataProvider.addImageIdToUIDs(imageId, {
-            StudyInstanceUID,
-            SeriesInstanceUID: instance.SeriesInstanceUID,
-            SOPInstanceUID: instance.SOPInstanceUID,
+          const imageId = implementation.getImageIdsForInstance({
+            instance,
           });
+          instance.imageId = imageId;
         });
 
         DicomMetadataStore.addInstances(naturalizedInstances, madeInClient);
@@ -557,6 +559,36 @@ function createDicomWebApi(dicomWebConfig, servicesManager) {
   }
 
   return IWebApiDataSource.create(implementation);
+}
+
+/**
+ * A bindable function that retrieves the bulk data against this as the
+ * dicomweb client, and on the given value element.
+ *
+ * @param value - a bind value that stores the retrieve value to short circuit the
+ *    next retrieve instance.
+ * @param options - to allow specifying the content type.
+ */
+function retrieveBulkData(value, options = {}) {
+  const { mediaType } = options;
+  const useOptions = {
+    // The bulkdata fetches work with either multipart or
+    // singlepart, so set multipart to false to let the server
+    // decide which type to respond with.
+    multipart: false,
+    BulkDataURI: value.BulkDataURI,
+    mediaTypes: mediaType ? [{ mediaType }, { mediaType: 'application/octet-stream' }] : undefined,
+    ...options,
+  };
+  return this.retrieveBulkData(useOptions).then(val => {
+    // There are DICOM PDF cases where the first ArrayBuffer in the array is
+    // the bulk data and DICOM video cases where the second ArrayBuffer is
+    // the bulk data. Here we play it safe and do a find.
+    const ret =
+      (val instanceof Array && val.find(arrayBuffer => arrayBuffer?.byteLength)) || undefined;
+    value.Value = ret;
+    return ret;
+  });
 }
 
 export { createDicomWebApi };

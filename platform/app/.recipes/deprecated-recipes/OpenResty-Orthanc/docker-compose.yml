@@ -1,0 +1,47 @@
+# Reference:
+# - https://docs.docker.com/compose/compose-file
+# - https://eclipsesource.com/blogs/2018/01/11/authenticating-reverse-proxy-with-keycloak/
+
+version: '3.5'
+
+services:
+  # Exposed server that's handling incoming web requests
+  # Underlying image: openresty/openresty:alpine-fat
+  ohif_viewer:
+    build:
+      # Project root
+      context: ./../../../../
+      # Relative to context
+      dockerfile: ./platform/app/.recipes/OpenResty-Orthanc/dockerfile
+    image: webapp:latest
+    container_name: webapp
+    volumes:
+      # Nginx config
+      - ./config/nginx.conf:/usr/local/openresty/nginx/conf/nginx.conf:ro
+      # Logs
+      - ./logs/nginx:/var/logs/nginx
+      # Let's Encrypt
+      # - letsencrypt_certificates:/etc/letsencrypt
+      # - letsencrypt_challenges:/var/www/letsencrypt
+    ports:
+      - '443:443' # SSL
+      - '80:80' # Web
+    depends_on:
+      - orthanc
+    restart: on-failure
+
+  # LINK: https://hub.docker.com/r/jodogne/orthanc-plugins/
+  # TODO: Update to use Postgres
+  # https://github.com/mrts/docker-postgresql-multiple-databases
+  orthanc:
+    image: jodogne/orthanc-plugins
+    hostname: orthanc
+    container_name: orthanc
+    volumes:
+      # Config
+      - ./config/orthanc.json:/etc/orthanc/orthanc.json:ro
+      # Persist data
+      - ./volumes/orthanc-db/:/var/lib/orthanc/db/
+    restart: unless-stopped
+    ports:
+      - '4242:4242' # DIMSE

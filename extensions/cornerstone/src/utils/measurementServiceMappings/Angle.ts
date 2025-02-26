@@ -1,5 +1,7 @@
 import SUPPORTED_TOOLS from './constants/supportedTools';
 import { getDisplayUnit } from './utils';
+import { getIsLocked } from './utils/getIsLocked';
+import { getIsVisible } from './utils/getIsVisible';
 import getSOPInstanceAttributes from './utils/getSOPInstanceAttributes';
 import { utils } from '@ohif/core';
 
@@ -16,11 +18,14 @@ const Angle = {
     csToolsEventDetail,
     displaySetService,
     CornerstoneViewportService,
-    getValueTypeFromToolType
+    getValueTypeFromToolType,
+    customizationService
   ) => {
-    const { annotation, viewportId } = csToolsEventDetail;
+    const { annotation } = csToolsEventDetail;
     const { metadata, data, annotationUID } = annotation;
 
+    const isLocked = getIsLocked(annotationUID);
+    const isVisible = getIsVisible(annotationUID);
     if (!metadata || !data) {
       console.warn('Length tool: Missing metadata or data');
       return null;
@@ -35,8 +40,8 @@ const Angle = {
 
     const { SOPInstanceUID, SeriesInstanceUID, StudyInstanceUID } = getSOPInstanceAttributes(
       referencedImageId,
-      CornerstoneViewportService,
-      viewportId
+      displaySetService,
+      annotation
     );
 
     let displaySet;
@@ -47,7 +52,7 @@ const Angle = {
         SeriesInstanceUID
       );
     } else {
-      displaySet = displaySetService.getDisplaySetsForSeries(SeriesInstanceUID);
+      displaySet = displaySetService.getDisplaySetsForSeries(SeriesInstanceUID)[0];
     }
 
     const { points, textBox } = data.handles;
@@ -55,7 +60,8 @@ const Angle = {
     const mappedAnnotations = getMappedAnnotations(annotation, displaySetService);
 
     const displayText = getDisplayText(mappedAnnotations, displaySet);
-    const getReport = () => _getReport(mappedAnnotations, points, FrameOfReferenceUID);
+    const getReport = () =>
+      _getReport(mappedAnnotations, points, FrameOfReferenceUID, customizationService);
 
     return {
       uid: annotationUID,
@@ -63,6 +69,8 @@ const Angle = {
       FrameOfReferenceUID,
       points,
       textBox,
+      isLocked,
+      isVisible,
       metadata,
       referenceSeriesUID: SeriesInstanceUID,
       referenceStudyUID: StudyInstanceUID,
@@ -74,11 +82,12 @@ const Angle = {
       data: data.cachedStats,
       type: getValueTypeFromToolType(toolName),
       getReport,
+      referencedImageId,
     };
   },
 };
 
-function getMappedAnnotations(annotation, DisplaySetService) {
+function getMappedAnnotations(annotation, displaySetService) {
   const { metadata, data } = annotation;
   const { cachedStats } = data;
   const { referencedImageId } = metadata;
@@ -92,18 +101,13 @@ function getMappedAnnotations(annotation, DisplaySetService) {
   Object.keys(cachedStats).forEach(targetId => {
     const targetStats = cachedStats[targetId];
 
-    if (!referencedImageId) {
-      throw new Error('Non-acquisition plane measurement mapping not supported');
-    }
-
-    const { SOPInstanceUID, SeriesInstanceUID, frameNumber } =
-      getSOPInstanceAttributes(referencedImageId);
-
-    const displaySet = DisplaySetService.getDisplaySetForSOPInstanceUID(
-      SOPInstanceUID,
-      SeriesInstanceUID,
-      frameNumber
+    const { SOPInstanceUID, SeriesInstanceUID, frameNumber } = getSOPInstanceAttributes(
+      referencedImageId,
+      displaySetService,
+      annotation
     );
+
+    const displaySet = displaySetService.getDisplaySetsForSeries(SeriesInstanceUID)[0];
 
     const { SeriesNumber } = displaySet;
     const { angle } = targetStats;
@@ -127,7 +131,7 @@ This function is used to convert the measurement data to a format that is
 suitable for the report generation (e.g. for the csv report). The report
 returns a list of columns and corresponding values.
 */
-function _getReport(mappedAnnotations, points, FrameOfReferenceUID) {
+function _getReport(mappedAnnotations, points, FrameOfReferenceUID, customizationService) {
   const columns = [];
   const values = [];
 
@@ -161,16 +165,19 @@ function _getReport(mappedAnnotations, points, FrameOfReferenceUID) {
 }
 
 function getDisplayText(mappedAnnotations, displaySet) {
-  if (!mappedAnnotations || !mappedAnnotations.length) {
-    return '';
-  }
+  const displayText = {
+    primary: [],
+    secondary: [],
+  };
 
-  const displayText = [];
+  if (!mappedAnnotations || !mappedAnnotations.length) {
+    return displayText;
+  }
 
   // Area is the same for all series
   const { angle, unit, SeriesNumber, SOPInstanceUID, frameNumber } = mappedAnnotations[0];
 
-  const instance = displaySet.images.find(image => image.SOPInstanceUID === SOPInstanceUID);
+  const instance = displaySet.instances.find(image => image.SOPInstanceUID === SOPInstanceUID);
 
   let InstanceNumber;
   if (instance) {
@@ -183,9 +190,9 @@ function getDisplayText(mappedAnnotations, displaySet) {
     return displayText;
   }
   const roundedAngle = utils.roundNumber(angle, 2);
-  displayText.push(
-    `${roundedAngle} ${getDisplayUnit(unit)} (S: ${SeriesNumber}${instanceText}${frameText})`
-  );
+
+  displayText.primary.push(`${roundedAngle} ${getDisplayUnit(unit)}`);
+  displayText.secondary.push(`S: ${SeriesNumber}${instanceText}${frameText}`);
 
   return displayText;
 }

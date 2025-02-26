@@ -1,21 +1,20 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
-import OHIF, { utils } from '@ohif/core';
-import { ViewportActionBar, useViewportGrid, LoadingIndicatorTotalPercent } from '@ohif/ui';
+import { useViewportGrid, LoadingIndicatorTotalPercent, ViewportActionArrows } from '@ohif/ui';
 
 import promptHydrateRT from '../utils/promptHydrateRT';
 import _getStatusComponent from './_getStatusComponent';
-import createRTToolGroupAndAddTools from '../utils/initRTToolGroup';
 
-const { formatDate } = utils;
+import createRTToolGroupAndAddTools from '../utils/initRTToolGroup';
+import { usePositionPresentationStore } from '@ohif/extension-cornerstone';
+
 const RT_TOOLGROUP_BASE_NAME = 'RTToolGroup';
 
-function OHIFCornerstoneRTViewport(props) {
+function OHIFCornerstoneRTViewport(props: withAppTypes) {
   const {
     children,
     displaySets,
     viewportOptions,
-    viewportLabel,
     servicesManager,
     extensionManager,
     commandsManager,
@@ -27,6 +26,7 @@ function OHIFCornerstoneRTViewport(props) {
     segmentationService,
     uiNotificationService,
     customizationService,
+    viewportActionCornersService,
   } = servicesManager.services;
 
   const viewportId = viewportOptions.viewportId;
@@ -43,8 +43,8 @@ function OHIFCornerstoneRTViewport(props) {
   const [viewportGrid, viewportGridService] = useViewportGrid();
 
   // States
-  const [isToolGroupCreated, setToolGroupCreated] = useState(false);
   const [selectedSegment, setSelectedSegment] = useState(1);
+  const { setPositionPresentation } = usePositionPresentationStore();
 
   // Hydration means that the RT is opened and segments are loaded into the
   // segmentation panel, and RT is also rendered on any viewport that is in the
@@ -64,7 +64,10 @@ function OHIFCornerstoneRTViewport(props) {
 
   const { viewports, activeViewportId } = viewportGrid;
 
-  const referencedDisplaySet = rtDisplaySet.getReferenceDisplaySet();
+  const referencedDisplaySetInstanceUID = rtDisplaySet.referencedDisplaySetInstanceUID;
+  const referencedDisplaySet = displaySetService.getDisplaySetByUID(
+    referencedDisplaySetInstanceUID
+  );
   const referencedDisplaySetMetadata = _getReferencedDisplaySetMetadata(referencedDisplaySet);
 
   referencedDisplaySetRef.current = {
@@ -93,12 +96,15 @@ function OHIFCornerstoneRTViewport(props) {
     });
   }, [viewportGrid]);
 
-  const hydrateRTDisplaySet = ({ rtDisplaySet, viewportId }) => {
-    commandsManager.runCommand('loadSegmentationDisplaySetsForViewport', {
-      displaySets: [rtDisplaySet],
-      viewportId,
-    });
-  };
+  const hydrateRTDisplaySet = useCallback(
+    ({ rtDisplaySet, viewportId }) => {
+      commandsManager.runCommand('hydrateRTSDisplaySet', {
+        displaySet: rtDisplaySet,
+        viewportId,
+      });
+    },
+    [commandsManager]
+  );
 
   const getCornerstoneViewport = useCallback(() => {
     const { component: Component } = extensionManager.getModuleEntry(
@@ -113,12 +119,16 @@ function OHIFCornerstoneRTViewport(props) {
         {...props}
         displaySets={[referencedDisplaySet, rtDisplaySet]}
         viewportOptions={{
-          viewportType: 'volume',
+          viewportType: 'stack',
           toolGroupId: toolGroupId,
           orientation: viewportOptions.orientation,
           viewportId: viewportOptions.viewportId,
+          presentationIds: viewportOptions.presentationIds,
         }}
-        onElementEnabled={onElementEnabled}
+        onElementEnabled={evt => {
+          props.onElementEnabled?.(evt);
+          onElementEnabled(evt);
+        }}
         onElementDisabled={onElementDisabled}
       ></Component>
     );
@@ -126,7 +136,6 @@ function OHIFCornerstoneRTViewport(props) {
 
   const onSegmentChange = useCallback(
     direction => {
-      direction = direction === 'left' ? -1 : 1;
       const segmentationId = rtDisplaySet.displaySetInstanceUID;
       const segmentation = segmentationService.getSegmentation(segmentationId);
 
@@ -143,10 +152,10 @@ function OHIFCornerstoneRTViewport(props) {
         newSelectedSegmentIndex = numberOfSegments - 1;
       }
 
-      segmentationService.jumpToSegmentCenter(segmentationId, newSelectedSegmentIndex, toolGroupId);
+      segmentationService.jumpToSegmentCenter(segmentationId, newSelectedSegmentIndex, viewportId);
       setSelectedSegment(newSelectedSegmentIndex);
     },
-    [selectedSegment]
+    [selectedSegment, segmentationService]
   );
 
   useEffect(() => {
@@ -175,6 +184,19 @@ function OHIFCornerstoneRTViewport(props) {
       evt => {
         if (evt.rtDisplaySet.displaySetInstanceUID === rtDisplaySet.displaySetInstanceUID) {
           setRtIsLoading(false);
+        }
+
+        if (rtDisplaySet?.firstSegmentedSliceImageId && viewportOptions?.presentationIds) {
+          const { firstSegmentedSliceImageId } = rtDisplaySet;
+          const { presentationIds } = viewportOptions;
+
+          setPositionPresentation(presentationIds.positionPresentationId, {
+            viewportType: 'stack',
+            viewReference: {
+              referencedImageId: firstSegmentedSliceImageId,
+            },
+            viewPresentation: {},
+          });
         }
 
         if (evt.overlappingSegments) {
@@ -239,11 +261,9 @@ function OHIFCornerstoneRTViewport(props) {
 
     toolGroup = createRTToolGroupAndAddTools(toolGroupService, customizationService, toolGroupId);
 
-    setToolGroupCreated(true);
-
     return () => {
       // remove the segmentation representations if seg displayset changed
-      segmentationService.removeSegmentationRepresentationFromToolGroup(toolGroupId);
+      segmentationService.removeSegmentationRepresentations(viewportId);
 
       toolGroupService.destroyToolGroup(toolGroupId);
     };
@@ -254,10 +274,26 @@ function OHIFCornerstoneRTViewport(props) {
 
     return () => {
       // remove the segmentation representations if seg displayset changed
-      segmentationService.removeSegmentationRepresentationFromToolGroup(toolGroupId);
+      segmentationService.removeSegmentationRepresentations(viewportId);
       referencedDisplaySetRef.current = null;
     };
   }, [rtDisplaySet]);
+
+  const onStatusClick = useCallback(async () => {
+    // Before hydrating a RT and make it added to all viewports in the grid
+    // that share the same frameOfReferenceUID, we need to store the viewport grid
+    // presentation state, so that we can restore it after hydrating the RT. This is
+    // required if the user has changed the viewport (other viewport than RT viewport)
+    // presentation state (w/l and invert) and then opens the RT. If we don't store
+    // the presentation state, the viewport will be reset to the default presentation
+    storePresentationState();
+    const isHydrated = await hydrateRTDisplaySet({
+      rtDisplaySet,
+      viewportId,
+    });
+
+    setIsHydrated(isHydrated);
+  }, [hydrateRTDisplaySet, rtDisplaySet, storePresentationState, viewportId]);
 
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   let childrenWithProps = null;
@@ -282,68 +318,45 @@ function OHIFCornerstoneRTViewport(props) {
     });
   }
 
-  const {
-    PatientID,
-    PatientName,
-    PatientSex,
-    PatientAge,
-    SliceThickness,
-    ManufacturerModelName,
-    StudyDate,
-    SeriesDescription,
-    SpacingBetweenSlices,
-    SeriesNumber,
-  } = referencedDisplaySetRef.current.metadata;
-
-  const onStatusClick = async () => {
-    // Before hydrating a RT and make it added to all viewports in the grid
-    // that share the same frameOfReferenceUID, we need to store the viewport grid
-    // presentation state, so that we can restore it after hydrating the RT. This is
-    // required if the user has changed the viewport (other viewport than RT viewport)
-    // presentation state (w/l and invert) and then opens the RT. If we don't store
-    // the presentation state, the viewport will be reset to the default presentation
-    storePresentationState();
-    const isHydrated = await hydrateRTDisplaySet({
-      rtDisplaySet,
-      viewportId,
-    });
-
-    setIsHydrated(isHydrated);
-  };
+  useEffect(() => {
+    viewportActionCornersService.addComponents([
+      {
+        viewportId,
+        id: 'viewportStatusComponent',
+        component: _getStatusComponent({
+          isHydrated,
+          onStatusClick,
+        }),
+        indexPriority: -100,
+        location: viewportActionCornersService.LOCATIONS.topLeft,
+      },
+      {
+        viewportId,
+        id: 'viewportActionArrowsComponent',
+        component: (
+          <ViewportActionArrows
+            key="actionArrows"
+            onArrowsClick={onSegmentChange}
+            className={
+              viewportId === activeViewportId ? 'visible' : 'invisible group-hover/pane:visible'
+            }
+          ></ViewportActionArrows>
+        ),
+        indexPriority: 0,
+        location: viewportActionCornersService.LOCATIONS.topRight,
+      },
+    ]);
+  }, [
+    activeViewportId,
+    isHydrated,
+    onSegmentChange,
+    onStatusClick,
+    viewportActionCornersService,
+    viewportId,
+  ]);
 
   return (
     <>
-      <ViewportActionBar
-        onDoubleClick={evt => {
-          evt.stopPropagation();
-          evt.preventDefault();
-        }}
-        onArrowsClick={onSegmentChange}
-        getStatusComponent={() => {
-          return _getStatusComponent({
-            isHydrated,
-            onStatusClick,
-          });
-        }}
-        studyData={{
-          label: viewportLabel,
-          useAltStyling: true,
-          studyDate: formatDate(StudyDate),
-          currentSeries: SeriesNumber,
-          seriesDescription: `RT Viewport ${SeriesDescription}`,
-          patientInformation: {
-            patientName: PatientName ? OHIF.utils.formatPN(PatientName.Alphabetic) : '',
-            patientSex: PatientSex || '',
-            patientAge: PatientAge || '',
-            MRN: PatientID || '',
-            thickness: SliceThickness ? `${SliceThickness.toFixed(2)}mm` : '',
-            spacing:
-              SpacingBetweenSlices !== undefined ? `${SpacingBetweenSlices.toFixed(2)}mm` : '',
-            scanner: ManufacturerModelName || '',
-          },
-        }}
-      />
-
       <div className="relative flex h-full w-full flex-row overflow-hidden">
         {rtIsLoading && (
           <LoadingIndicatorTotalPercent
@@ -365,11 +378,6 @@ OHIFCornerstoneRTViewport.propTypes = {
   viewportId: PropTypes.string.isRequired,
   dataSource: PropTypes.object,
   children: PropTypes.node,
-  customProps: PropTypes.object,
-};
-
-OHIFCornerstoneRTViewport.defaultProps = {
-  customProps: {},
 };
 
 function _getReferencedDisplaySetMetadata(referencedDisplaySet) {

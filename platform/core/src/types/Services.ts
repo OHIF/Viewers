@@ -5,15 +5,21 @@ import {
   ViewportGridService,
   ToolbarService,
   DisplaySetService,
-  StateSyncService,
   UINotificationService,
   UIModalService,
+  WorkflowStepsService,
+  CineService,
+  UserAuthenticationService,
+  PanelService,
+  UIDialogService,
+  UIViewportDialogService,
 } from '../services';
 
 /**
  * The interface for the services object
  */
-export default interface Services {
+
+interface Services {
   hangingProtocolService?: HangingProtocolService;
   customizationService?: CustomizationService;
   measurementService?: MeasurementService;
@@ -22,15 +28,12 @@ export default interface Services {
   viewportGridService?: ViewportGridService;
   uiModalService?: UIModalService;
   uiNotificationService?: UINotificationService;
-  stateSyncService?: StateSyncService;
-  cineService?: unknown;
-  userAuthenticationService?: unknown;
-  cornerstoneViewportService?: unknown;
-  uiDialogService?: unknown;
-  toolGroupService?: unknown;
-  uiViewportDialogService?: unknown;
-  syncGroupService?: unknown;
-  cornerstoneCacheService?: unknown;
-  segmentationService?: unknown;
-  panelService?: unknown;
+  workflowStepsService: WorkflowStepsService;
+  cineService?: CineService;
+  userAuthenticationService?: UserAuthenticationService;
+  uiDialogService?: UIDialogService;
+  uiViewportDialogService?: UIViewportDialogService;
+  panelService?: PanelService;
 }
+
+export default Services;

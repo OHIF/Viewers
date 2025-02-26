@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="28px" height="29px" viewBox="0 0 28 29" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>icon-chevron-patient</title>
+    <g id="Production" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Artboard" transform="translate(-154, -234)">
+            <g id="icon-chevron-patient" transform="translate(168, 248.5) scale(-1, -1) translate(-168, -248.5)translate(154, 234.5)">
+                <rect id="Rectangle" x="0" y="0" width="28" height="28"></rect>
+                <polyline id="Path" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" transform="translate(14.5, 14) scale(-1, 1) translate(-14.5, -14)" points="16.5 10 12.5 14 16.5 18"></polyline>
+            </g>
+        </g>
+    </g>
+</svg>

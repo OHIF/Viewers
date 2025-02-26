@@ -1,25 +1,13 @@
 import React, { Component } from 'react';
-import ReactResizeDetector from 'react-resize-detector';
 import PropTypes from 'prop-types';
-import debounce from 'lodash.debounce';
 import { LoadingIndicatorProgress } from '@ohif/ui';
+import { cleanDenaturalizedDataset } from '@ohif/extension-default';
 
 import './DicomMicroscopyViewport.css';
 import ViewportOverlay from './components/ViewportOverlay';
 import getDicomWebClient from './utils/dicomWebClient';
 import dcmjs from 'dcmjs';
-import cleanDenaturalizedDataset from './utils/cleanDenaturalizedDataset';
 import MicroscopyService from './services/MicroscopyService';
-
-function transformImageTypeUnnaturalized(entry) {
-  if (entry.vr === 'CS') {
-    return {
-      vr: 'US',
-      Value: entry.Value[0].split('\\'),
-    };
-  }
-  return entry;
-}
 
 class DicomMicroscopyViewport extends Component {
   state = {
@@ -33,18 +21,12 @@ class DicomMicroscopyViewport extends Component {
 
   container = React.createRef();
   overlayElement = React.createRef();
-  debouncedResize: () => any;
 
   constructor(props: any) {
     super(props);
 
     const { microscopyService } = this.props.servicesManager.services;
     this.microscopyService = microscopyService;
-    this.debouncedResize = debounce(() => {
-      if (this.viewer) {
-        this.viewer.resize();
-      }
-    }, 100);
   }
 
   static propTypes = {
@@ -64,7 +46,9 @@ class DicomMicroscopyViewport extends Component {
     servicesManager: PropTypes.object,
     extensionManager: PropTypes.object,
     commandsManager: PropTypes.object,
+    resizeRef: PropTypes.oneOfType([PropTypes.func, PropTypes.shape({ current: PropTypes.any })]),
   };
+
 
   /**
    * Get the nearest ROI from the mouse click point
@@ -103,9 +87,9 @@ class DicomMicroscopyViewport extends Component {
   // you should only do this once.
   async installOpenLayersRenderer(container, displaySet) {
     const loadViewer = async metadata => {
-      const { viewer: DicomMicroscopyViewer, metadata: metadataUtils } = await import(
-        /* webpackChunkName: "dicom-microscopy-viewer" */ 'dicom-microscopy-viewer'
-      );
+      const dicomMicroscopyModule = await this.microscopyService.importDicomMicroscopyViewer();
+      const { viewer: DicomMicroscopyViewer, metadata: metadataUtils } = dicomMicroscopyModule;
+
       const microscopyViewer = DicomMicroscopyViewer.VolumeImageViewer;
 
       const client = getDicomWebClient({
@@ -250,7 +234,6 @@ class DicomMicroscopyViewport extends Component {
 
   componentDidMount() {
     const { displaySets, viewportOptions } = this.props;
-    const { viewportId } = viewportOptions;
     // Todo-rename: this is always getting the 0
     const displaySet = displaySets[0];
     this.installOpenLayersRenderer(this.container.current, displaySet).then(() => {
@@ -309,13 +292,16 @@ class DicomMicroscopyViewport extends Component {
             </div>
           </div>
         </div>
-        {ReactResizeDetector && (
-          <ReactResizeDetector handleWidth handleHeight onResize={this.onWindowResize} />
-        )}
         {this.state.error ? (
           <h2>{JSON.stringify(this.state.error)}</h2>
         ) : (
-          <div style={style} ref={this.container} />
+          <div
+            style={style}
+            ref={(ref: any) => {
+              this.container.current = ref;
+              this.props.resizeRef.current = ref;
+            }}
+          />
         )}
         {this.state.isLoaded ? null : (
           <LoadingIndicatorProgress className={'h-full w-full bg-black'} />
@@ -323,10 +309,6 @@ class DicomMicroscopyViewport extends Component {
       </div>
     );
   }
-
-  onWindowResize = () => {
-    this.debouncedResize();
-  };
 }
 
 export default DicomMicroscopyViewport;

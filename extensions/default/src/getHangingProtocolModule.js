@@ -1,5 +1,7 @@
-import hpMNGrid from './hpMNGrid';
-import hpMNCompare from './hpCompare';
+import hpMNGrid from './hangingprotocols/hpMNGrid';
+import hpMNCompare from './hangingprotocols/hpCompare';
+import hpMammography from './hangingprotocols/hpMammo';
+import hpScale from './hangingprotocols/hpScale';
 
 const defaultProtocol = {
   id: 'default',
@@ -14,7 +16,6 @@ const defaultProtocol = {
   editableBy: {},
   protocolMatchingRules: [],
   toolGroupIds: ['default'],
-  hpInitiationCriteria: { minSeriesLoaded: 1 },
   // -1 would be used to indicate active only, whereas other values are
   // the number of required priors referenced - so 0 means active with
   // 0 or more priors.
@@ -26,6 +27,17 @@ const defaultProtocol = {
       viewportType: 'stack',
       toolGroupId: 'default',
       allowUnmatchedView: true,
+      syncGroups: [
+        {
+          type: 'hydrateseg',
+          id: 'sameFORId',
+          source: true,
+          target: true,
+          options: {
+            matchingRules: ['sameFOR'],
+          },
+        },
+      ],
     },
     displaySets: [
       {
@@ -41,6 +53,7 @@ const defaultProtocol = {
         // Try to match series with images by default, to prevent weird display
         // on SEG/SR containing studies
         {
+          weight: 10,
           attribute: 'numImageFrames',
           constraint: {
             greaterThan: { value: 0 },
@@ -50,14 +63,12 @@ const defaultProtocol = {
         // It has no affect if nothing is specified in the URL.
         {
           attribute: 'isDisplaySetFromUrl',
-          weight: 10,
+          weight: 20,
           constraint: {
             equals: true,
           },
         },
       ],
-      // Can be used to select matching studies
-      // studyMatchingRules: [],
     },
   },
   stages: [
@@ -86,6 +97,17 @@ const defaultProtocol = {
             //   index: 180,
             //   preset: 'middle', // 'first', 'last', 'middle'
             // },
+            syncGroups: [
+              {
+                type: 'hydrateseg',
+                id: 'sameFORId',
+                source: true,
+                target: true,
+                // options: {
+                //   matchingRules: ['sameFOR'],
+                // },
+              },
+            ],
           },
           displaySets: [
             {
@@ -105,15 +127,23 @@ function getHangingProtocolModule() {
       name: defaultProtocol.id,
       protocol: defaultProtocol,
     },
-    // Create a MxN hanging protocol available by default
-    {
-      name: hpMNGrid.id,
-      protocol: hpMNGrid,
-    },
     // Create a MxN comparison hanging protocol available by default
     {
       name: hpMNCompare.id,
       protocol: hpMNCompare,
+    },
+    {
+      name: hpMammography.id,
+      protocol: hpMammography,
+    },
+    {
+      name: hpScale.id,
+      protocol: hpScale,
+    },
+    // Create a MxN hanging protocol available by default
+    {
+      name: hpMNGrid.id,
+      protocol: hpMNGrid,
     },
   ];
 }

@@ -1,3 +1,15 @@
+const colours = {
+  'viewport-0': 'rgb(200, 0, 0)',
+  'viewport-1': 'rgb(200, 200, 0)',
+  'viewport-2': 'rgb(0, 200, 0)',
+};
+
+const colorsByOrientation = {
+  axial: 'rgb(200, 0, 0)',
+  sagittal: 'rgb(200, 200, 0)',
+  coronal: 'rgb(0, 200, 0)',
+};
+
 function initDefaultToolGroup(extensionManager, toolGroupService, commandsManager, toolGroupId) {
   const utilityModule = extensionManager.getModuleEntry(
     '@ohif/extension-cornerstone.utilityModule.tools'
@@ -19,7 +31,10 @@ function initDefaultToolGroup(extensionManager, toolGroupService, commandsManage
         toolName: toolNames.Zoom,
         bindings: [{ mouseButton: Enums.MouseBindings.Secondary }],
       },
-      { toolName: toolNames.StackScrollMouseWheel, bindings: [] },
+      {
+        toolName: toolNames.StackScroll,
+        bindings: [{ mouseButton: Enums.MouseBindings.Wheel }],
+      },
     ],
     passive: [
       { toolName: toolNames.Length },
@@ -42,18 +57,24 @@ function initDefaultToolGroup(extensionManager, toolGroupService, commandsManage
       },
       { toolName: toolNames.Bidirectional },
       { toolName: toolNames.DragProbe },
+      { toolName: toolNames.Probe },
       { toolName: toolNames.EllipticalROI },
       { toolName: toolNames.CircleROI },
       { toolName: toolNames.RectangleROI },
       { toolName: toolNames.StackScroll },
       { toolName: toolNames.Angle },
+      { toolName: toolNames.CobbAngle },
       { toolName: toolNames.Magnify },
-      { toolName: toolNames.SegmentationDisplay },
+      { toolName: toolNames.WindowLevelRegion },
+      { toolName: toolNames.UltrasoundDirectional },
+      { toolName: toolNames.PlanarFreehandROI },
+      { toolName: toolNames.SplineROI },
+      { toolName: toolNames.LivewireContour },
     ],
     // enabled
     enabled: [{ toolName: toolNames.ImageOverlayViewer }],
     // disabled
-    disabled: [{ toolName: toolNames.ReferenceLines }],
+    disabled: [{ toolName: toolNames.ReferenceLines }, { toolName: toolNames.AdvancedMagnify }],
   };
 
   toolGroupService.createToolGroupAndAddTools(toolGroupId, tools);
@@ -97,8 +118,8 @@ function initSRToolGroup(extensionManager, toolGroupService, commandsManager) {
         ],
       },
       {
-        toolName: toolNames.StackScrollMouseWheel,
-        bindings: [],
+        toolName: toolNames.StackScroll,
+        bindings: [{ mouseButton: Enums.MouseBindings.Wheel }],
       },
     ],
     passive: [
@@ -107,6 +128,7 @@ function initSRToolGroup(extensionManager, toolGroupService, commandsManager) {
       { toolName: SRToolNames.SRBidirectional },
       { toolName: SRToolNames.SREllipticalROI },
       { toolName: SRToolNames.SRCircleROI },
+      { toolName: toolNames.WindowLevelRegion },
     ],
     enabled: [
       {
@@ -126,6 +148,9 @@ function initMPRToolGroup(extensionManager, toolGroupService, commandsManager) {
     '@ohif/extension-cornerstone.utilityModule.tools'
   );
 
+  const serviceManager = extensionManager._servicesManager;
+  const { cornerstoneViewportService } = serviceManager.services;
+
   const { toolNames, Enums } = utilityModule.exports;
 
   const tools = {
@@ -142,7 +167,10 @@ function initMPRToolGroup(extensionManager, toolGroupService, commandsManager) {
         toolName: toolNames.Zoom,
         bindings: [{ mouseButton: Enums.MouseBindings.Secondary }],
       },
-      { toolName: toolNames.StackScrollMouseWheel, bindings: [] },
+      {
+        toolName: toolNames.StackScroll,
+        bindings: [{ mouseButton: Enums.MouseBindings.Wheel }],
+      },
     ],
     passive: [
       { toolName: toolNames.Length },
@@ -165,12 +193,15 @@ function initMPRToolGroup(extensionManager, toolGroupService, commandsManager) {
       },
       { toolName: toolNames.Bidirectional },
       { toolName: toolNames.DragProbe },
+      { toolName: toolNames.Probe },
       { toolName: toolNames.EllipticalROI },
       { toolName: toolNames.CircleROI },
       { toolName: toolNames.RectangleROI },
       { toolName: toolNames.StackScroll },
       { toolName: toolNames.Angle },
-      { toolName: toolNames.SegmentationDisplay },
+      { toolName: toolNames.WindowLevelRegion },
+      { toolName: toolNames.PlanarFreehandROI },
+      { toolName: toolNames.SplineROI },
     ],
     disabled: [
       {
@@ -180,6 +211,20 @@ function initMPRToolGroup(extensionManager, toolGroupService, commandsManager) {
           autoPan: {
             enabled: false,
             panSize: 10,
+          },
+          getReferenceLineColor: viewportId => {
+            const viewportInfo = cornerstoneViewportService.getViewportInfo(viewportId);
+            const viewportOptions = viewportInfo?.viewportOptions;
+            if (viewportOptions) {
+              return (
+                colours[viewportOptions.id] ||
+                colorsByOrientation[viewportOptions.orientation] ||
+                '#0c0'
+              );
+            } else {
+              console.warn('missing viewport?', viewportId);
+              return '#0c0';
+            }
           },
         },
       },
@@ -193,10 +238,38 @@ function initMPRToolGroup(extensionManager, toolGroupService, commandsManager) {
   toolGroupService.createToolGroupAndAddTools('mpr', tools);
 }
 
+function initVolume3DToolGroup(extensionManager, toolGroupService) {
+  const utilityModule = extensionManager.getModuleEntry(
+    '@ohif/extension-cornerstone.utilityModule.tools'
+  );
+
+  const { toolNames, Enums } = utilityModule.exports;
+
+  const tools = {
+    active: [
+      {
+        toolName: toolNames.TrackballRotateTool,
+        bindings: [{ mouseButton: Enums.MouseBindings.Primary }],
+      },
+      {
+        toolName: toolNames.Zoom,
+        bindings: [{ mouseButton: Enums.MouseBindings.Secondary }],
+      },
+      {
+        toolName: toolNames.Pan,
+        bindings: [{ mouseButton: Enums.MouseBindings.Auxiliary }],
+      },
+    ],
+  };
+
+  toolGroupService.createToolGroupAndAddTools('volume3d', tools);
+}
+
 function initToolGroups(extensionManager, toolGroupService, commandsManager) {
   initDefaultToolGroup(extensionManager, toolGroupService, commandsManager, 'default');
   initSRToolGroup(extensionManager, toolGroupService, commandsManager);
   initMPRToolGroup(extensionManager, toolGroupService, commandsManager);
+  initVolume3DToolGroup(extensionManager, toolGroupService);
 }
 
 export default initToolGroups;

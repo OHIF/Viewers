@@ -66,6 +66,21 @@ function getRuntimeLoadModesExtensions(modules) {
   );
   modules.forEach(module => {
     const packageName = extractName(module);
+    if (!packageName) {
+      return;
+    }
+    if (module.importPath) {
+      dynamicLoad.push(
+        `  if( module==="${packageName}") {`,
+        `    const imported = await window.browserImportFunction('${module.importPath}');`,
+        '    return ' +
+          (module.globalName
+            ? `window["${module.globalName}"];`
+            : `imported["${module.importName || 'default'}"];`),
+        '  }'
+      );
+      return;
+    }
     dynamicLoad.push(
       `  if( module==="${packageName}") {`,
       `    const imported = await import("${packageName}");`,
@@ -73,8 +88,9 @@ function getRuntimeLoadModesExtensions(modules) {
       '  }'
     );
   });
+  // TODO - handle more cases for import than just default
   dynamicLoad.push(
-    '  return (await import(/* webpackIgnore: true */ module)).default;',
+    '  return (await window.browserImportFunction(module)).default;',
     '}\n',
     '// Import a list of items (modules or string names)',
     '// @return a Promise evaluating to a list of modules',
@@ -144,6 +160,7 @@ function writePluginImportsFile(SRC_DIR, DIST_DIR) {
   pluginImportsJsContent += getRuntimeLoadModesExtensions([
     ...pluginConfig.extensions,
     ...pluginConfig.modes,
+    ...pluginConfig.public,
   ]);
 
   fs.writeFileSync(`${SRC_DIR}/pluginImports.js`, pluginImportsJsContent, { flag: 'w+' }, err => {
@@ -187,12 +204,6 @@ function writePluginImportsFile(SRC_DIR, DIST_DIR) {
     'dist'
   );
 
-  console.warn('copy plugins', [
-    ...copyPluginPublicToDistBuild,
-    ...copyPluginPublicToDistLink,
-    ...copyPluginDistToDistBuild,
-    ...copyPluginDistToDistLink,
-  ]);
   return [
     ...copyPluginPublicToDistBuild,
     ...copyPluginPublicToDistLink,

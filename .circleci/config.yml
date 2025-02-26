@@ -13,7 +13,7 @@ version: 2.1
 ##
 orbs:
   codecov: codecov/codecov@1.0.5
-  cypress: cypress-io/cypress@3.2.1
+  cypress: cypress-io/cypress@3.3.1
 
 executors:
   cypress-custom:
@@ -42,6 +42,7 @@ jobs:
   ###
   UNIT_TESTS:
     <<: *defaults
+    resource_class: large
     steps:
       # Update yarn
       - run: yarn -v
@@ -98,6 +99,7 @@ jobs:
   ###
   BUILD:
     <<: *defaults
+    resource_class: large
     steps:
       # Checkout code and ALL Git Tags
       - checkout
@@ -146,6 +148,7 @@ jobs:
   # just to make sure later on we can publish them
   BUILD_PACKAGES_QUICK:
     <<: *defaults
+    resource_class: large
     steps:
       - run: yarn -v
       # Checkout code and ALL Git Tags
@@ -177,10 +180,6 @@ jobs:
       - run:
           name: Authenticate with NPM registry
           command: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/repo/.npmrc
-      - run:
-          name: Increase the event emitter limit
-          command: |
-            node ./increaseEventEmitterLimit.mjs
       - run:
           name: build half of the packages (to avoid out of memory in circleci)
           command: |
@@ -195,6 +194,7 @@ jobs:
   ###
   NPM_PUBLISH:
     <<: *defaults
+    resource_class: large
     steps:
       - run: yarn -v
       # Checkout code and ALL Git Tags
@@ -226,10 +226,6 @@ jobs:
       - run:
           name: Authenticate with NPM registry
           command: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/repo/.npmrc
-      - run:
-          name: Increase the event emitter limit
-          command: |
-            node ./increaseEventEmitterLimit.mjs
       - run:
           name: build half of the packages (to avoid out of memory in circleci)
           command: |
@@ -264,6 +260,7 @@ jobs:
 
   DOCKER_RELEASE_PUBLISH:
     <<: *defaults
+    resource_class: large
     steps:
       - attach_workspace:
           at: ~/repo
@@ -293,6 +290,7 @@ jobs:
 
   DOCKER_BETA_PUBLISH:
     <<: *defaults
+    resource_class: large
     steps:
       - attach_workspace:
           at: ~/repo
@@ -379,7 +377,7 @@ jobs:
           - yarn-berry
         type: enum
       parallelism:
-        default: 1
+        default: 4
         description: |
           Number of Circle machines to use for load balancing, min 1
           (requires `parallel` and `record` flags in your `cypress-command`)
@@ -397,6 +395,7 @@ jobs:
         default: ''
         description: Directory containing package.json
         type: string
+    resource_class: large
     steps:
       - cypress/install:
           cypress-cache-key: << parameters.cypress-cache-key >>
@@ -495,13 +494,18 @@ workflows:
       - BUILD:
           filters:
             branches:
-              only: release
-      - NPM_PUBLISH:
+              only: /^release\/.*/
+      - HOLD_FOR_APPROVAL:
+          type: approval
           requires:
             - BUILD
+      - NPM_PUBLISH:
+          requires:
+            - HOLD_FOR_APPROVAL
       - DOCKER_RELEASE_PUBLISH:
           requires:
             - NPM_PUBLISH
+
   ###
   # Unit and E2E tests have already run for PR_CHECKS
   # Re-running should not gain us any confidence here

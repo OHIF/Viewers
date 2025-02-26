@@ -4,9 +4,8 @@ import { PubSubService } from '../_shared/pubSubServiceInterface';
 import sortBy from '../../utils/sortBy';
 import ProtocolEngine from './ProtocolEngine';
 import { StudyMetadata } from '../../types/StudyMetadata';
-import IDisplaySet from '../DisplaySetService/IDisplaySet';
+import DisplaySet from '../DisplaySetService/DisplaySet';
 import { CommandsManager } from '../../classes';
-import ServicesManager from '../ServicesManager';
 import * as HangingProtocol from '../../types/HangingProtocol';
 import { isDisplaySetFromUrl, sopInstanceLocation } from './custom-attribute/isDisplaySetFromUrl';
 import numberOfDisplaySetsWithImages from './custom-attribute/numberOfDisplaySetsWithImages';
@@ -60,10 +59,10 @@ export default class HangingProtocolService extends PubSubService {
 
   stageIndex = 0;
   _commandsManager: CommandsManager;
-  _servicesManager: ServicesManager;
+  _servicesManager: AppTypes.ServicesManager;
   protocolEngine: ProtocolEngine;
   customViewportSettings = [];
-  displaySets: IDisplaySet[] = [];
+  displaySets: DisplaySet[] = [];
   activeStudy: StudyMetadata;
   debugLogging: false;
 
@@ -136,7 +135,7 @@ export default class HangingProtocolService extends PubSubService {
     HangingProtocol.ViewportMatchDetails
   > = new Map();
 
-  constructor(commandsManager: CommandsManager, servicesManager) {
+  constructor(commandsManager: CommandsManager, servicesManager: AppTypes.ServicesManager) {
     super(HangingProtocolService.EVENTS);
     this._commandsManager = commandsManager;
     this._servicesManager = servicesManager;
@@ -268,7 +267,6 @@ export default class HangingProtocolService extends PubSubService {
     // and the protocol or a function that returns a protocol as the value
     const protocols = [];
     const keys = this.activeProtocolIds || this.protocols.keys();
-    // @ts-ignore
     for (const protocolId of keys) {
       const protocol = this.getProtocolById(protocolId);
       if (protocol) {
@@ -395,7 +393,7 @@ export default class HangingProtocolService extends PubSubService {
    *        the studies to display in viewports.
    * @param protocol is a specific protocol to apply.
    */
-  public run({ studies, displaySets, activeStudy }, protocolId) {
+  public run({ studies, displaySets, activeStudy }, protocolId, options = {}) {
     this.studies = [...(studies || this.studies)];
     this.displaySets = displaySets;
     this.setActiveStudyUID((activeStudy || studies[0])?.StudyInstanceUID);
@@ -407,7 +405,7 @@ export default class HangingProtocolService extends PubSubService {
 
     if (protocolId && typeof protocolId === 'string') {
       const protocol = this.getProtocolById(protocolId);
-      this._setProtocol(protocol);
+      this._setProtocol(protocol, options);
       return;
     }
 
@@ -514,12 +512,6 @@ export default class HangingProtocolService extends PubSubService {
 
   _validateProtocol(protocol: HangingProtocol.Protocol): HangingProtocol.Protocol {
     protocol.id = protocol.id || protocol.name;
-    const defaultViewportOptions = {
-      toolGroupId: 'default',
-      viewportType: 'stack',
-    };
-    // Automatically compute some number of attributes if they
-    // aren't present.  Makes defining new HPs easier.
     protocol.name = protocol.name || protocol.id;
     const { stages } = protocol;
 
@@ -546,10 +538,10 @@ export default class HangingProtocolService extends PubSubService {
         const { rows, columns } = stage.viewportStructure.properties;
 
         for (let i = 0; i < rows * columns; i++) {
+          const defaultViewport = stage.defaultViewport || protocol.defaultViewport || {};
           stage.viewports.push({
             viewportOptions: {
-              ...defaultViewportOptions,
-              // Use 'default' for the first viewport, and UUIDs for the rest.
+              ...defaultViewport.viewportOptions,
               viewportId: i === 0 ? 'default' : uuidv4(),
             },
             displaySets: [],
@@ -558,14 +550,14 @@ export default class HangingProtocolService extends PubSubService {
       } else {
         // Clone each viewport to ensure independent objects
         stage.viewports = stage.viewports.map((viewport, index) => {
+          const defaultViewport = stage.defaultViewport || protocol.defaultViewport || {};
           const existingViewportId = viewport.viewportOptions?.viewportId;
 
           return {
             ...viewport,
             viewportOptions: {
-              ...(viewport.viewportOptions || defaultViewportOptions),
-              // use provided viewportId when available, otherwise use default for first viewport
-              // and uuid for the rest
+              ...defaultViewport.viewportOptions,
+              ...viewport.viewportOptions,
               viewportId: existingViewportId
                 ? existingViewportId
                 : index === 0
@@ -601,23 +593,44 @@ export default class HangingProtocolService extends PubSubService {
     };
   }
 
-  getViewportsRequireUpdate(viewportId, displaySetInstanceUID) {
-    const { displaySetService } = this._servicesManager.services;
-    const displaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
-    if (displaySet?.unsupported) {
-      throw new Error('Unsupported displaySet');
-    }
+  /**
+   * This will return the viewports that need to be updated based on the
+   * hanging protocol layout and the displaySetInstanceUID that needs to be updated.
+   *
+   * This is useful, when for instance we drag and drop a displaySet into a viewport
+   * which is in MPR, and we need to update the other viewports that are showing the same
+   * layout.
+   *
+   * However, sometimes since we get out of sync with the hanging protocol layout, when
+   * the user use the custom grid layout, we should not update the other viewports, and that is
+   * when the isHangingProtocolLayout is set to false.
+   *
+   * @param viewportId - the id of the viewport that needs to be updated
+   * @param displaySetInstanceUID - the displaySetInstanceUID that needs to be updated
+   * @param isHangingProtocolLayout - whether the layout is a hanging protocol layout
+   * @returns
+   */
+  getViewportsRequireUpdate(viewportId, displaySetInstanceUID, isHangingProtocolLayout = true) {
     const newDisplaySetInstanceUID = displaySetInstanceUID;
-    const protocol = this.protocol;
-    const protocolStage = protocol.stages[this.stageIndex];
-    const protocolViewports = protocolStage.viewports;
-
     const defaultReturn = [
       {
         viewportId,
         displaySetInstanceUIDs: [newDisplaySetInstanceUID],
       },
     ];
+
+    if (!isHangingProtocolLayout) {
+      return defaultReturn;
+    }
+
+    const { displaySetService } = this._servicesManager.services;
+    const displaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
+    if (displaySet?.unsupported) {
+      throw new Error('Unsupported displaySet');
+    }
+    const protocol = this.protocol;
+    const protocolStage = protocol.stages[this.stageIndex];
+    const protocolViewports = protocolStage.viewports;
 
     if (!protocolViewports) {
       return defaultReturn;
@@ -744,6 +757,10 @@ export default class HangingProtocolService extends PubSubService {
     });
 
     return viewportsToUpdate;
+  }
+
+  public runMatchingRules(metadataArray, matchingRules, options) {
+    return this.protocolEngine.findMatch(metadataArray, matchingRules, options);
   }
 
   private _updateDisplaySetInstanceUIDs(
@@ -1000,6 +1017,8 @@ export default class HangingProtocolService extends PubSubService {
           if (this.registeredImageLoadStrategies[imageLoadStrategy] instanceof Function) {
             this.activeImageLoadStrategyName = imageLoadStrategy;
           }
+        } else {
+          this.activeImageLoadStrategyName = null;
         }
 
         this._updateStageStatus(options);
@@ -1084,12 +1103,12 @@ export default class HangingProtocolService extends PubSubService {
     options
   ): HangingProtocol.ViewportMatchDetails {
     if (this.protocol.id !== protocolId) {
-      throw new Error(
-        `Currently applied protocol ${this.protocol.id} is different from ${protocolId}`
-      );
+      console.warn('setting protocol');
+      this.protocol = this.getProtocolById(protocolId);
+      this.stageIndex = 0;
     }
     const protocol = this.protocol;
-    const stage = protocol.stages[stageIdx];
+    const stage = protocol.stages[stageIdx] ?? protocol.stages[this.stageIndex];
     const defaultViewport = stage.defaultViewport || protocol.defaultViewport;
     if (!defaultViewport) {
       return;
@@ -1104,10 +1123,7 @@ export default class HangingProtocolService extends PubSubService {
    * to match display sets to viewports.
    * @returns a display set sort function
    */
-  public getDisplaySetSortFunction(): (
-    displaySetA: IDisplaySet,
-    displaySetB: IDisplaySet
-  ) => number {
+  public getDisplaySetSortFunction(): (displaySetA: DisplaySet, displaySetB: DisplaySet) => number {
     return (displaySetA, displaySetB) => {
       const seriesA = this._getSeriesSortInfoForDisplaySetSort(displaySetA);
       const seriesB = this._getSeriesSortInfoForDisplaySetSort(displaySetB);
@@ -1387,9 +1403,25 @@ export default class HangingProtocolService extends PubSubService {
     });
   }
 
+  public areRequiredSelectorsValid(
+    displaySetSelectors: HangingProtocol.DisplaySetSelector[],
+    displaySet: DisplaySet
+  ): boolean {
+    let pass = true;
+    for (const displaySetSelector of displaySetSelectors) {
+      try {
+        this._validateRequiredSelectors(displaySetSelector, displaySet);
+      } catch (error) {
+        pass = false;
+        break;
+      }
+    }
+    return pass;
+  }
+
   private _validateRequiredSelectors(
     displaySetSelector: HangingProtocol.DisplaySetSelector,
-    displaySet: any
+    displaySet: DisplaySet
   ) {
     const { seriesMatchingRules } = displaySetSelector;
 

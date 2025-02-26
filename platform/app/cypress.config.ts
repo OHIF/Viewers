@@ -13,10 +13,6 @@ export default defineConfig({
         console.log(launchOptions.args); // print all current args
 
         console.log('***', browser.family, browser.name, '***');
-        if (browser.family === 'chromium' && browser.name !== 'electron') {
-          // auto open devtools
-          launchOptions.args.push('--enable-features=SharedArrayBuffer');
-        }
 
         // whatever you return here becomes the launchOptions
         return launchOptions;
@@ -25,9 +21,10 @@ export default defineConfig({
     baseUrl: 'http://localhost:3000',
     waitForAnimations: true,
     chromeWebSecurity: false,
-    defaultCommandTimeout: 10000,
-    requestTimeout: 10000,
-    responseTimeout: 10000,
+    defaultCommandTimeout: 30000,
+    requestTimeout: 30000,
+    responseTimeout: 30000,
+    pageLoadTimeout: 30000,
     specPattern: 'cypress/integration/**/*.spec.[jt]s',
     projectId: '4oe38f',
     video: true,

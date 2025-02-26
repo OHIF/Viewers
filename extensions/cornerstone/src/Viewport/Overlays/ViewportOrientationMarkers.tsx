@@ -1,14 +1,7 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import classNames from 'classnames';
-import {
-  metaData,
-  Enums,
-  Types,
-  getEnabledElement,
-  utilities as csUtils,
-} from '@cornerstonejs/core';
+import { metaData, Enums, Types, getEnabledElement } from '@cornerstonejs/core';
 import { utilities } from '@cornerstonejs/tools';
-import PropTypes from 'prop-types';
 import { vec3 } from 'gl-matrix';
 
 import './ViewportOrientationMarkers.css';
@@ -22,7 +15,7 @@ function ViewportOrientationMarkers({
   viewportId,
   servicesManager,
   orientationMarkers = ['top', 'left'],
-}) {
+}: withAppTypes) {
   // Rotation is in degrees
   const [rotation, setRotation] = useState(0);
   const [flipHorizontal, setFlipHorizontal] = useState(false);
@@ -31,8 +24,9 @@ function ViewportOrientationMarkers({
 
   useEffect(() => {
     const cameraModifiedListener = (evt: Types.EventTypes.CameraModifiedEvent) => {
-      const { rotation, previousCamera, camera } = evt.detail;
+      const { previousCamera, camera } = evt.detail;
 
+      const { rotation } = camera;
       if (rotation !== undefined) {
         setRotation(rotation);
       }
@@ -64,17 +58,22 @@ function ViewportOrientationMarkers({
       return '';
     }
 
-    let rowCosines, columnCosines;
+    let rowCosines, columnCosines, isDefaultValueSetForRowCosine, isDefaultValueSetForColumnCosine;
     if (viewportData.viewportType === 'stack') {
       const imageIndex = imageSliceData.imageIndex;
-      const imageId = viewportData.data.imageIds?.[imageIndex];
+      const imageId = viewportData.data[0].imageIds?.[imageIndex];
 
       // Workaround for below TODO stub
       if (!imageId) {
         return false;
       }
 
-      ({ rowCosines, columnCosines } = metaData.get('imagePlaneModule', imageId) || {});
+      ({
+        rowCosines,
+        columnCosines,
+        isDefaultValueSetForColumnCosine,
+        isDefaultValueSetForColumnCosine,
+      } = metaData.get('imagePlaneModule', imageId) || {});
     } else {
       if (!element || !getEnabledElement(element)) {
         return '';
@@ -90,7 +89,13 @@ function ViewportOrientationMarkers({
       rowCosines = viewRight;
     }
 
-    if (!rowCosines || !columnCosines || rotation === undefined) {
+    if (
+      !rowCosines ||
+      !columnCosines ||
+      rotation === undefined ||
+      isDefaultValueSetForRowCosine ||
+      isDefaultValueSetForColumnCosine
+    ) {
       return '';
     }
 
@@ -108,17 +113,15 @@ function ViewportOrientationMarkers({
       console.log('ViewportOrientationMarkers::No viewport');
       return null;
     }
-    const backgroundColor = ohifViewport.getViewportOptions().background;
-
-    // Todo: probably this can be done in a better way in which we identify bright
-    // background
-    const isLight = backgroundColor ? csUtils.isEqual(backgroundColor, [1, 1, 1]) : false;
 
     return orientationMarkers.map((m, index) => (
       <div
         className={classNames(
+          'overlay-text',
           `${m}-mid orientation-marker`,
-          isLight ? 'text-[#726F7E]' : 'text-[#ccc]'
+          'text-aqua-pale',
+          'text-[13px]',
+          'leading-5'
         )}
         key={`${m}-mid orientation-marker`}
       >
@@ -135,18 +138,8 @@ function ViewportOrientationMarkers({
     element,
   ]);
 
-  return <div className="ViewportOrientationMarkers noselect">{markers}</div>;
+  return <div className="ViewportOrientationMarkers select-none">{markers}</div>;
 }
-
-ViewportOrientationMarkers.propTypes = {
-  percentComplete: PropTypes.number,
-  error: PropTypes.object,
-};
-
-ViewportOrientationMarkers.defaultProps = {
-  percentComplete: 0,
-  error: null,
-};
 
 /**
  *

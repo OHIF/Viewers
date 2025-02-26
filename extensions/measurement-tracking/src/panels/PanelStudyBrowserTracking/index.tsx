@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import PropTypes from 'prop-types';
 //
 import PanelStudyBrowserTracking from './PanelStudyBrowserTracking';
@@ -21,7 +21,11 @@ function _getStudyForPatientUtility(extensionManager) {
  * @param {object} commandsManager
  * @param {object} extensionManager
  */
-function WrappedPanelStudyBrowserTracking({ commandsManager, extensionManager, servicesManager }) {
+function WrappedPanelStudyBrowserTracking({
+  commandsManager,
+  extensionManager,
+  servicesManager,
+}: withAppTypes) {
   const dataSource = extensionManager.getActiveDataSource()[0];
 
   const getStudiesForPatientByMRN = _getStudyForPatientUtility(extensionManager);
@@ -38,6 +42,7 @@ function WrappedPanelStudyBrowserTracking({ commandsManager, extensionManager, s
   return (
     <PanelStudyBrowserTracking
       servicesManager={servicesManager}
+      commandsManager={commandsManager}
       dataSource={dataSource}
       getImageSrc={_getImageSrcFromImageId}
       getStudiesForPatientByMRN={_getStudiesForPatientByMRN}

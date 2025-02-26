@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 
-const TableRow = ({ children, className, isTableHead, style }) => {
+const TableRow = ({ children, className = '', isTableHead = false, style = {} }) => {
   const childrens = React.Children.map(children, child => {
     const isValidReactElement = React.isValidElement(child);
 
@@ -19,12 +19,6 @@ const TableRow = ({ children, className, isTableHead, style }) => {
       {childrens}
     </div>
   );
-};
-
-TableRow.defaultProps = {
-  isTableHead: false,
-  className: '',
-  style: {},
 };
 
 TableRow.propTypes = {

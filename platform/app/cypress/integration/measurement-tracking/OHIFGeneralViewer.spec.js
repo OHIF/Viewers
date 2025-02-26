@@ -8,7 +8,7 @@ describe('OHIF General Viewer', function () {
   it('scrolls series stack using scrollbar', function () {
     cy.scrollToIndex(13);
 
-    cy.get('@viewportInfoTopRight').should('contains.text', '14');
+    cy.get('@viewportInfoBottomRight').should('contains.text', '14');
   });
 
   it('performs right click to zoom', function () {
@@ -18,7 +18,7 @@ describe('OHIF General Viewer', function () {
     cy.get('@zoomBtn')
       .click()
       .then($zoomBtn => {
-        cy.wrap($zoomBtn).should('have.class', 'active');
+        cy.wrap($zoomBtn).should('have.class', 'bg-primary-light');
       });
 
     const zoomLevelInitial = cy.get('@viewportInfoTopLeft').then($viewportInfo => {
@@ -32,7 +32,7 @@ describe('OHIF General Viewer', function () {
       .trigger('mouseup');
 
     // make sure the new zoom level is less than the initial
-    cy.get('@viewportInfoTopLeft').then($viewportInfo => {
+    cy.get('@viewportInfoBottomLeft').then($viewportInfo => {
       const zoomLevelFinal = $viewportInfo.text().substring(6, 9);
       expect(zoomLevelFinal < zoomLevelInitial).to.eq(true);
     });

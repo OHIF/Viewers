@@ -1,12 +1,12 @@
 {
   "name": "@ohif/mode-basic-dev-mode",
-  "version": "3.8.0-beta.60",
+  "version": "3.9.3",
   "description": "Basic OHIF Viewer Using Cornerstone",
   "author": "OHIF",
   "license": "MIT",
   "repository": "OHIF/Viewers",
   "main": "dist/ohif-mode-basic-dev-mode.umd.js",
-  "module": "src/index.js",
+  "module": "src/index.ts",
   "engines": {
     "node": ">=10",
     "npm": ">=6",
@@ -31,19 +31,19 @@
     "test:unit:ci": "jest --ci --runInBand --collectCoverage --passWithNoTests"
   },
   "peerDependencies": {
-    "@ohif/core": "3.8.0-beta.60",
-    "@ohif/extension-cornerstone": "3.8.0-beta.60",
-    "@ohif/extension-cornerstone-dicom-sr": "3.8.0-beta.60",
-    "@ohif/extension-default": "3.8.0-beta.60",
-    "@ohif/extension-dicom-pdf": "3.8.0-beta.60",
-    "@ohif/extension-dicom-video": "3.8.0-beta.60"
+    "@ohif/core": "3.9.3",
+    "@ohif/extension-cornerstone": "3.9.3",
+    "@ohif/extension-cornerstone-dicom-sr": "3.9.3",
+    "@ohif/extension-default": "3.9.3",
+    "@ohif/extension-dicom-pdf": "3.9.3",
+    "@ohif/extension-dicom-video": "3.9.3"
   },
   "dependencies": {
     "@babel/runtime": "^7.20.13",
     "i18next": "^17.0.3"
   },
   "devDependencies": {
-    "webpack": "^5.50.0",
+    "webpack": "5.94.0",
     "webpack-merge": "^5.7.3"
   }
 }

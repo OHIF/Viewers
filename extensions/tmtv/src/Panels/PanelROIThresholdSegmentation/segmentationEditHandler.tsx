@@ -1,7 +1,7 @@
 import React from 'react';
 import { Input, Dialog, ButtonEnums } from '@ohif/ui';
 
-function segmentationItemEditHandler({ id, servicesManager }) {
+function segmentationItemEditHandler({ id, servicesManager }: withAppTypes) {
   const { segmentationService, uiDialogService } = servicesManager.services;
 
   const segmentation = segmentationService.getSegmentation(id);
@@ -9,14 +9,10 @@ function segmentationItemEditHandler({ id, servicesManager }) {
   const onSubmitHandler = ({ action, value }) => {
     switch (action.id) {
       case 'save': {
-        segmentationService.addOrUpdateSegmentation(
-          {
-            ...segmentation,
-            ...value,
-          },
-          false, // don't suppress event
-          true // it should update cornerstone
-        );
+        segmentationService.addOrUpdateSegmentation({
+          ...segmentation,
+          ...value,
+        });
       }
     }
     uiDialogService.dismiss({ id: 'enter-annotation' });
