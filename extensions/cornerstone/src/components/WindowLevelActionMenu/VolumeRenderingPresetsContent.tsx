@@ -61,11 +61,11 @@ export function VolumeRenderingPresetsContent({
                 name={preset.name}
                 className={
                   selectedPreset?.name === preset.name
-                    ? 'border-primary-light h-[75px] w-[95px] max-w-none rounded border-2'
-                    : 'hover:border-primary-light h-[75px] w-[95px] max-w-none rounded border-2 border-black'
+                    ? 'border-highlight h-[75px] w-[95px] max-w-none rounded border-2'
+                    : 'hover:border-highlight h-[75px] w-[95px] max-w-none rounded border-2 border-black'
                 }
               />
-              <label className="text-aqua-pale mt-1 text-left text-xs">
+              <label className="text-muted-foreground mt-1 text-left text-xs">
                 {formatLabel(preset.name, 11)}
               </label>
             </div>
