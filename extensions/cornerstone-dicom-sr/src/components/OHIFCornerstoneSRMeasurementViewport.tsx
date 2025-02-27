@@ -391,7 +391,12 @@ function _getStatusComponent({
 
   switch (state) {
     case 1:
-      StatusIcon = () => <Icons.ByName name="status-alert" />;
+      StatusIcon = () => (
+        <Icons.ByName
+          name="status-alert"
+          className="h-4 w-4"
+        />
+      );
 
       ToolTipMessage = () => (
         <div>
@@ -402,7 +407,12 @@ function _getStatusComponent({
       );
       break;
     case 2:
-      StatusIcon = () => <Icons.ByName name="status-locked" />;
+      StatusIcon = () => (
+        <Icons.ByName
+          name="status-locked"
+          className="h-4 w-4"
+        />
+      );
 
       ToolTipMessage = () => (
         <div>
@@ -417,7 +427,7 @@ function _getStatusComponent({
     case 3:
       StatusIcon = () => (
         <Icons.ByName
-          className="text-aqua-pale"
+          className="text-aqua-pale h-4 w-4"
           name="status-untracked"
         />
       );
@@ -439,7 +449,7 @@ function _getStatusComponent({
     return (
       <div className="flex h-6 cursor-default text-sm leading-6 text-white">
         <div className="bg-customgray-100 flex min-w-[45px] items-center rounded-l-xl rounded-r p-1">
-          <StatusIcon />
+          <StatusIcon className="h-4 w-4" />
           <span className="ml-1">SR</span>
         </div>
         {state === 3 && (

@@ -4,7 +4,7 @@ import getSOPInstanceAttributes from './utils/getSOPInstanceAttributes';
 import { getIsVisible } from './utils/getIsVisible';
 
 const ArrowAnnotate = {
-  toAnnotation: _measurement => {},
+  toAnnotation: measurement => {},
 
   /**
    * Maps cornerstone annotation event data to measurement service format.
@@ -12,8 +12,13 @@ const ArrowAnnotate = {
    * @param {Object} cornerstone Cornerstone event data
    * @return {Measurement} Measurement instance
    */
-  toMeasurement: (csToolsEventDetail, getValueTypeFromToolType, services) => {
-    const { displaySetService } = services;
+  toMeasurement: (
+    csToolsEventDetail,
+    displaySetService,
+    cornerstoneViewportService,
+    getValueTypeFromToolType,
+    customizationService
+  ) => {
     const { annotation } = csToolsEventDetail;
     const { metadata, data, annotationUID } = annotation;
 

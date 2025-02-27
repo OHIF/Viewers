@@ -13,8 +13,13 @@ const Probe = {
    * @param {Object} cornerstone Cornerstone event data
    * @return {Measurement} Measurement instance
    */
-  toMeasurement: (csToolsEventDetail, getValueTypeFromToolType, services) => {
-    const { displaySetService, customizationService } = services;
+  toMeasurement: (
+    csToolsEventDetail,
+    displaySetService,
+    CornerstoneViewportService,
+    getValueTypeFromToolType,
+    customizationService
+  ) => {
     const { annotation } = csToolsEventDetail;
     const { metadata, data, annotationUID } = annotation;
     const isLocked = getIsLocked(annotationUID);
