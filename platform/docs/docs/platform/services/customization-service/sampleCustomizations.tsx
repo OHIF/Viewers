@@ -797,8 +797,14 @@ window.config = {
         customizationService: [
           {
             'viewportActionMenu.windowLevelActionMenu': {
-                enabled: true,
-                location: viewportActionCornersService.LOCATIONS.topRight,
+              $set: {
+               enabled: true,
+               location: 1, // Set the location of the menu in the viewport.
+                            // 0: topLeft
+                            // 1: topRight
+                            // 2: bottomLeft
+                            // 3: bottomRight
+              }
             },
           },
         ],
@@ -816,8 +822,14 @@ window.config = {
         customizationService: [
           {
             'viewportActionMenu.segmentationOverlay': {
-                enabled: true,
-                location: viewportActionCornersService.LOCATIONS.topRight,
+               $set: {
+                 enabled: true,
+                 location: 1, // Set the location of the overlay in the viewport.
+                              // 0: topLeft
+                              // 1: topRight
+                              // 2: bottomLeft
+                              // 3: bottomRight
+               }
             },
           },
         ],
