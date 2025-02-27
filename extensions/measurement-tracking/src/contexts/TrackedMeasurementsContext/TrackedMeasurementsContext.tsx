@@ -89,7 +89,7 @@ function TrackedMeasurementsContextProvider(
       );
 
       // Jump to the last tracked measurement - most recent
-      if (!trackedMeasurement?.length) {
+      if (!trackedMeasurements?.length) {
         console.warn(
           "Didn't find any tracked measurements",
           measurements,
