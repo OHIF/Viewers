@@ -4,7 +4,6 @@ import Bidirectional from './Bidirectional';
 import EllipticalROI from './EllipticalROI';
 import CircleROI from './CircleROI';
 import ArrowAnnotate from './ArrowAnnotate';
-import KeyImage from './KeyImage';
 import CobbAngle from './CobbAngle';
 import Angle from './Angle';
 import PlanarFreehandROI from './PlanarFreehandROI';
@@ -50,7 +49,6 @@ const measurementServiceMappingsFactory = (
       PlanarFreehandROI: POLYLINE,
       Bidirectional: BIDIRECTIONAL,
       ArrowAnnotate: POINT,
-      KeyImage: POINT,
       CobbAngle: ANGLE,
       Angle: ANGLE,
       SplineROI: POLYLINE,
@@ -208,7 +206,6 @@ const measurementServiceMappingsFactory = (
       ],
     },
     ArrowAnnotate: factory(ArrowAnnotate, POINT),
-    KeyImage: factory(KeyImage, POINT),
     Probe: factory(Probe, POINT),
     CobbAngle: {
       toAnnotation: CobbAngle.toAnnotation,
