@@ -36,7 +36,6 @@ import {
   LivewireContourTool,
   OrientationMarkerTool,
   WindowLevelRegionTool,
-  KeyImageTool,
 } from '@cornerstonejs/tools';
 
 import CalibrationLineTool from './tools/CalibrationLineTool';
@@ -85,7 +84,6 @@ export default function initCornerstoneTools(configuration = {}) {
   addTool(OrientationMarkerTool);
   addTool(WindowLevelRegionTool);
   addTool(PlanarFreehandContourSegmentationTool);
-  addTool(KeyImageTool);
 
   // Modify annotation tools to use dashed lines on SR
   const annotationStyle = {
@@ -139,7 +137,6 @@ const toolNames = {
   OrientationMarker: OrientationMarkerTool.toolName,
   WindowLevelRegion: WindowLevelRegionTool.toolName,
   PlanarFreehandContourSegmentation: PlanarFreehandContourSegmentationTool.toolName,
-  KeyImage: KeyImageTool.toolName,
 };
 
 export { toolNames };

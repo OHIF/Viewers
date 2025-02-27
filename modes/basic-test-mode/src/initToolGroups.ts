@@ -70,7 +70,6 @@ function initDefaultToolGroup(extensionManager, toolGroupService, commandsManage
       { toolName: toolNames.PlanarFreehandROI },
       { toolName: toolNames.SplineROI },
       { toolName: toolNames.LivewireContour },
-      { toolName: toolNames.KeyImage },
     ],
     // enabled
     enabled: [{ toolName: toolNames.ImageOverlayViewer }],

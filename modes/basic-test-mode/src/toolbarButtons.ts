@@ -86,14 +86,6 @@ const toolbarButtons: Button[] = [
           evaluate: 'evaluate.cornerstoneTool',
         }),
         createButton({
-          id: 'KeyImage',
-          icon: 'tool-annotate',
-          label: 'Key',
-          tooltip: 'Key Image',
-          commands: setToolActiveToolbar,
-          evaluate: 'evaluate.cornerstoneTool',
-        }),
-        createButton({
           id: 'EllipticalROI',
           icon: 'tool-ellipse',
           label: 'Ellipse',

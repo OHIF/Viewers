@@ -24,7 +24,7 @@ export default function isRehydratable(displaySet, mappings) {
   for (let i = 0; i < measurements.length; i++) {
     const { TrackingIdentifier } = measurements[i] || {};
     if (!TrackingIdentifier) {
-      console.log('No tracking identifier for measurement ', measurements[i]);
+      console.warn('No tracking identifier for measurement ', measurements[i]);
       continue;
     }
     const adapter = MeasurementReport.getAdapterForTrackingIdentifier(TrackingIdentifier);

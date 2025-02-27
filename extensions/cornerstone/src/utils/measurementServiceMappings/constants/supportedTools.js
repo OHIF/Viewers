@@ -4,7 +4,6 @@ const supportedTools = [
   'CircleROI',
   'Bidirectional',
   'ArrowAnnotate',
-  'KeyImage',
   'Angle',
   'CobbAngle',
   'Probe',
