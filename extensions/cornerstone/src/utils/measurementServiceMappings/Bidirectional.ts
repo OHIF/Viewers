@@ -7,13 +7,8 @@ import { getIsVisible } from './utils/getIsVisible';
 
 const Bidirectional = {
   toAnnotation: measurement => {},
-  toMeasurement: (
-    csToolsEventDetail,
-    displaySetService,
-    cornerstoneViewportService,
-    getValueTypeFromToolType,
-    customizationService
-  ) => {
+  toMeasurement: (csToolsEventDetail, getValueTypeFromToolType, services) => {
+    const { displaySetService, customizationService } = services;
     const { annotation } = csToolsEventDetail;
     const { metadata, data, annotationUID } = annotation;
 
