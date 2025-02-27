@@ -1,4 +1,5 @@
 import * as CornerstoneCacheService from './CornerstoneCacheService';
-import CornerstoneServices from './CornerstoneServices';
+import type CornerstoneServices from './CornerstoneServices';
+export { type SyncGroup } from '../services/SyncGroupService';
 
 export type { CornerstoneCacheService, CornerstoneServices };

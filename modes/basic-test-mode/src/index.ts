@@ -17,6 +17,10 @@ const ohif = {
   thumbnailList: '@ohif/extension-default.panelModule.seriesList',
 };
 
+const testExtension = {
+  measurements: '@ohif/extension-test.panelModule.panelMeasurementSeries',
+};
+
 const tracked = {
   measurements: '@ohif/extension-measurement-tracking.panelModule.trackedMeasurements',
   thumbnailList: '@ohif/extension-measurement-tracking.panelModule.seriesList',

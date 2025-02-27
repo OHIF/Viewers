@@ -65,32 +65,89 @@ interface DataRowProps {
   onSelect?: () => void;
   //
   isVisible: boolean;
-  onToggleVisibility: () => void;
   //
   isLocked: boolean;
-  onToggleLocked: () => void;
   //
   title: string;
-  onRename: () => void;
-  //
-  onDelete: () => void;
   //
   colorHex?: string;
-  onColor: () => void;
+  onAction?: (e, command) => void;
+  // Expand the row to show details
+  isExpanded?: boolean;
 }
 
-const DataRow: React.FC<DataRowProps> = ({
+const decodeHTML = (html: string) => {
+  const txt = document.createElement('textarea');
+  txt.innerHTML = html;
+  return txt.value;
+};
+
+const renderDetailText = (text: string, indent: number = 0) => {
+  const indentation = '  '.repeat(indent);
+  if (text === '') {
+    return (
+      <div
+        key={`empty-${indent}`}
+        className="h-2"
+      ></div>
+    );
+  }
+  const cleanText = decodeHTML(text);
+  return (
+    <div
+      key={cleanText}
+      className="whitespace-pre-wrap"
+    >
+      {indentation}
+      <span className="font-medium">{cleanText}</span>
+    </div>
+  );
+};
+
+const renderDetails = (details: string[]) => {
+  const visibleLines = details.slice(0, 4);
+  const hiddenLines = details.slice(4);
+
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <div className="cursor-help">
+          <div className="flex flex-col space-y-1">
+            {visibleLines.map(line => renderDetailText(line, line.startsWith('  ') ? 1 : 0))}
+          </div>
+          {hiddenLines.length > 0 && (
+            <div className="text-muted-foreground mt-1 flex items-center text-sm">
+              <span>...</span>
+              <Icons.Info className="mr-1 h-5 w-5" />
+            </div>
+          )}
+        </div>
+      </TooltipTrigger>
+      <TooltipContent
+        side="right"
+        align="start"
+        className="max-w-md"
+      >
+        <div className="text-secondary-foreground flex flex-col space-y-1 text-sm leading-normal">
+          {details.map(line => renderDetailText(line, line.startsWith('  ') ? 1 : 0))}
+        </div>
+      </TooltipContent>
+    </Tooltip>
+  );
+};
+
+type DataRowType = React.FC<DataRowProps> & {
+  renderDetails?: (props) => React.Component;
+};
+
+export const DataRow: DataRowType = ({
   number,
   title,
   colorHex,
   details,
-  onSelect,
   isLocked,
-  onToggleVisibility,
-  onToggleLocked,
-  onRename,
-  onDelete,
-  onColor,
+  isExpanded,
+  onAction,
   isSelected = false,
   isVisible = true,
   disableEditing = false,
@@ -105,88 +162,6 @@ const DataRow: React.FC<DataRowProps> = ({
     }
   }, [isSelected]);
 
-  const handleAction = (action: string, e: React.MouseEvent) => {
-    e.stopPropagation();
-    switch (action) {
-      case 'Rename':
-        onRename();
-        break;
-      case 'Lock':
-        onToggleLocked();
-        break;
-      case 'Delete':
-        onDelete();
-        break;
-      case 'Color':
-        onColor();
-        break;
-    }
-  };
-
-  const decodeHTML = (html: string) => {
-    const txt = document.createElement('textarea');
-    txt.innerHTML = html;
-    return txt.value;
-  };
-
-  const renderDetailText = (text: string, indent: number = 0) => {
-    const indentation = '  '.repeat(indent);
-    if (text === '') {
-      return (
-        <div
-          key={`empty-${indent}`}
-          className="h-2"
-        ></div>
-      );
-    }
-    const cleanText = decodeHTML(text);
-    return (
-      <div
-        key={cleanText}
-        className="whitespace-pre-wrap"
-      >
-        {indentation}
-        <span className="font-medium">{cleanText}</span>
-      </div>
-    );
-  };
-
-  const renderDetails = (details: string[]) => {
-    const visibleLines = details.slice(0, 4);
-    const hiddenLines = details.slice(4);
-
-    return (
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <div className="cursor-help">
-            <div className="flex flex-col space-y-1">
-              {visibleLines.map((line, lineIndex) =>
-                renderDetailText(line, line.startsWith('  ') ? 1 : 0)
-              )}
-            </div>
-            {hiddenLines.length > 0 && (
-              <div className="text-muted-foreground mt-1 flex items-center text-sm">
-                <span>...</span>
-                <Icons.Info className="mr-1 h-5 w-5" />
-              </div>
-            )}
-          </div>
-        </TooltipTrigger>
-        <TooltipContent
-          side="right"
-          align="start"
-          className="max-w-md"
-        >
-          <div className="text-secondary-foreground flex flex-col space-y-1 text-sm leading-normal">
-            {details.map((line, lineIndex) =>
-              renderDetailText(line, line.startsWith('  ') ? 1 : 0)
-            )}
-          </div>
-        </TooltipContent>
-      </Tooltip>
-    );
-  };
-
   return (
     <div
       ref={rowRef}
@@ -195,7 +170,7 @@ const DataRow: React.FC<DataRowProps> = ({
         className={`flex items-center ${
           isSelected ? 'bg-popover' : 'bg-muted'
         } group relative cursor-pointer`}
-        onClick={onSelect}
+        onClick={e => onAction(e, 'jumpToMeasurement')}
         data-cy="data-row"
       >
         {/* Hover Overlay */}
@@ -252,87 +227,113 @@ const DataRow: React.FC<DataRowProps> = ({
         </div>
 
         {/* Actions and Visibility Toggle */}
-        <div className="relative ml-2 flex items-center space-x-1">
-          {/* Visibility Toggle Icon */}
-          <Button
-            size="icon"
-            variant="ghost"
-            className={`h-6 w-6 transition-opacity ${
-              isSelected || !isVisible ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
-            }`}
-            aria-label={isVisible ? 'Hide' : 'Show'}
-            onClick={e => {
-              e.stopPropagation();
-              onToggleVisibility();
-            }}
-          >
-            {isVisible ? <Icons.Hide className="h-6 w-6" /> : <Icons.Show className="h-6 w-6" />}
-          </Button>
-
-          {/* Lock Icon (if needed) */}
-          {isLocked && !disableEditing && <Icons.Lock className="text-muted-foreground h-6 w-6" />}
-
-          {/* Actions Dropdown Menu */}
-          {disableEditing && <div className="h-6 w-6"></div>}
-          {!disableEditing && (
-            <DropdownMenu onOpenChange={open => setIsDropdownOpen(open)}>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  size="icon"
-                  variant="ghost"
-                  className={`h-6 w-6 transition-opacity ${
-                    isSelected || isDropdownOpen
-                      ? 'opacity-100'
-                      : 'opacity-0 group-hover:opacity-100'
-                  }`}
-                  aria-label="Actions"
-                  onClick={e => e.stopPropagation()} // Prevent row selection on button click
-                >
-                  <Icons.More className="h-6 w-6" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <>
-                  <DropdownMenuItem onClick={e => handleAction('Rename', e)}>
-                    <Icons.Rename className="text-foreground" />
-                    <span className="pl-2">Rename</span>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={e => handleAction('Delete', e)}>
-                    <Icons.Delete className="text-foreground" />
-                    <span className="pl-2">Delete</span>
-                  </DropdownMenuItem>
-                  {onColor && (
-                    <DropdownMenuItem onClick={e => handleAction('Color', e)}>
-                      <Icons.ColorChange className="text-foreground" />
-                      <span className="pl-2">Change Color</span>
-                    </DropdownMenuItem>
-                  )}
-                  <DropdownMenuItem onClick={e => handleAction('Lock', e)}>
-                    <Icons.Lock className="text-foreground" />
-                    <span className="pl-2">{isLocked ? 'Unlock' : 'Lock'}</span>
-                  </DropdownMenuItem>
-                </>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          )}
-        </div>
+        <MeasurementItemMenu
+          setIsDropdownOpen={setIsDropdownOpen}
+          isSelected={isSelected}
+          isDropdownOpen={isDropdownOpen}
+          isLocked={isLocked}
+          disableEditing={disableEditing}
+          isVisible={isVisible}
+          onAction={onAction}
+        />
       </div>
 
       {/* Details Section */}
-      {details && (details.primary?.length > 0 || details.secondary?.length > 0) && (
-        <div className="ml-7 px-2 py-2">
-          <div className="text-secondary-foreground flex items-center gap-1 text-base leading-normal">
-            {details.primary?.length > 0 && renderDetails(details.primary)}
-            {details.secondary?.length > 0 && (
-              <div className="text-muted-foreground ml-auto text-sm">
-                {renderDetails(details.secondary)}
-              </div>
-            )}
-          </div>
-        </div>
+      {isExpanded && details && (details.primary?.length > 0 || details.secondary?.length > 0) && (
+        <MeasurementItemDetails details={details} />
       )}
     </div>
   );
 };
+
+export function MeasurementItemMenu(props) {
+  const {
+    setIsDropdownOpen,
+    isSelected,
+    isDropdownOpen,
+    onAction,
+    isLocked,
+    disableEditing,
+    isVisible,
+  } = props;
+
+  return (
+    <div className="relative ml-2 flex items-center space-x-1">
+      {/* Visibility Toggle Icon */}
+      <Button
+        size="icon"
+        variant="ghost"
+        className={`h-6 w-6 transition-opacity ${
+          isSelected || !isVisible ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
+        }`}
+        aria-label={isVisible ? 'Hide' : 'Show'}
+        onClick={e => {
+          e.stopPropagation();
+          onAction(e, 'toggleVisibilityMeasurement');
+        }}
+      >
+        {isVisible ? <Icons.Hide className="h-6 w-6" /> : <Icons.Show className="h-6 w-6" />}
+      </Button>
+
+      {/* Lock Icon (if needed) */}
+      {isLocked && !disableEditing && <Icons.Lock className="text-muted-foreground h-6 w-6" />}
+
+      {/* Actions Dropdown Menu */}
+      {disableEditing && <div className="h-6 w-6"></div>}
+      {!disableEditing && (
+        <DropdownMenu onOpenChange={open => setIsDropdownOpen(open)}>
+          <DropdownMenuTrigger asChild>
+            <Button
+              size="icon"
+              variant="ghost"
+              className={`h-6 w-6 transition-opacity ${
+                isSelected || isDropdownOpen ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
+              }`}
+              aria-label="Actions"
+              onClick={e => e.stopPropagation()} // Prevent row selection on button click
+            >
+              <Icons.More className="h-6 w-6" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <>
+              <DropdownMenuItem
+                onClick={e => onAction(e, ['jumpToMeasurement', 'renameMeasurement'])}
+              >
+                <Icons.Rename className="text-foreground" />
+                <span className="pl-2">Rename</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={e => onAction(e, 'removeMeasurement')}>
+                <Icons.Delete className="text-foreground" />
+                <span className="pl-2">Delete</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={e => onAction(e, 'toggleLockMeasurement')}>
+                <Icons.Lock className="text-foreground" />
+                <span className="pl-2">{isLocked ? 'Unlock' : 'Lock'}</span>
+              </DropdownMenuItem>
+            </>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      )}
+    </div>
+  );
+}
+
+export function MeasurementItemDetails({ details }) {
+  return (
+    <div className="ml-7 px-2 py-2">
+      <div className="text-secondary-foreground flex items-center gap-1 text-base leading-normal">
+        {details.primary?.length > 0 && renderDetails(details.primary)}
+        {details.secondary?.length > 0 && (
+          <div className="text-muted-foreground ml-auto text-sm">
+            {renderDetails(details.secondary)}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+DataRow.renderDetails = renderDetails;
 
 export default DataRow;

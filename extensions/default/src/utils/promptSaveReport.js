@@ -1,16 +1,33 @@
+import { utils } from '@ohif/core';
+
 import createReportAsync from '../Actions/createReportAsync';
 import { createReportDialogPrompt } from '../Panels';
 import getNextSRSeriesNumber from './getNextSRSeriesNumber';
 import PROMPT_RESPONSES from './_shared/PROMPT_RESPONSES';
 
+const {
+  filterAnd,
+  filterMeasurementsByStudyUID,
+  filterMeasurementsBySeriesUID,
+  filterPlanarMeasurement,
+} = utils.MeasurementFilters;
+
 async function promptSaveReport({ servicesManager, commandsManager, extensionManager }, ctx, evt) {
   const { uiDialogService, measurementService, displaySetService } = servicesManager.services;
   const viewportId = evt.viewportId === undefined ? evt.data.viewportId : evt.viewportId;
   const isBackupSave = evt.isBackupSave === undefined ? evt.data.isBackupSave : evt.isBackupSave;
-  const StudyInstanceUID = evt?.data?.StudyInstanceUID;
+  const StudyInstanceUID = evt?.data?.StudyInstanceUID || ctx.trackedStudy;
   const SeriesInstanceUID = evt?.data?.SeriesInstanceUID;
 
-  const { trackedStudy, trackedSeries } = ctx;
+  const {
+    trackedSeries,
+    measurementFilter = filterAnd(
+      filterMeasurementsByStudyUID(StudyInstanceUID),
+      filterMeasurementsBySeriesUID(trackedSeries),
+      filterPlanarMeasurement
+    ),
+    defaultSaveTitle = 'Research Derived Series',
+  } = ctx;
   let displaySetInstanceUIDs;
 
   try {
@@ -21,18 +38,9 @@ async function promptSaveReport({ servicesManager, commandsManager, extensionMan
     if (promptResult.action === PROMPT_RESPONSES.CREATE_REPORT) {
       const dataSources = extensionManager.getDataSources();
       const dataSource = dataSources[0];
-      const measurements = measurementService.getMeasurements();
-      const trackedMeasurements = measurements
-        .filter(
-          m => trackedStudy === m.referenceStudyUID && trackedSeries.includes(m.referenceSeriesUID)
-        )
-        .filter(m => m.referencedImageId != null);
+      const measurementData = measurementService.getMeasurements(measurementFilter);
 
-      const SeriesDescription =
-        // isUndefinedOrEmpty
-        promptResult.value === undefined || promptResult.value === ''
-          ? 'Research Derived Series' // default
-          : promptResult.value; // provided value
+      const SeriesDescription = promptResult.value || defaultSaveTitle;
 
       const SeriesNumber = getNextSRSeriesNumber(displaySetService);
 
@@ -40,7 +48,7 @@ async function promptSaveReport({ servicesManager, commandsManager, extensionMan
         return commandsManager.runCommand(
           'storeMeasurements',
           {
-            measurementData: trackedMeasurements,
+            measurementData,
             dataSource,
             additionalFindingTypes: ['ArrowAnnotate'],
             options: {

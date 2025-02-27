@@ -60,9 +60,6 @@ const getPanelModule = ({ commandsManager, servicesManager, extensionManager }: 
   const wrappedPanelMeasurement = ({ configuration }) => {
     return (
       <PanelMeasurement
-        commandsManager={commandsManager}
-        servicesManager={servicesManager}
-        extensionManager={extensionManager}
         configuration={{
           ...configuration,
         }}
@@ -82,6 +79,13 @@ const getPanelModule = ({ commandsManager, servicesManager, extensionManager }: 
       iconName: 'tab-linear',
       iconLabel: 'Measure',
       label: 'Measurement',
+      component: wrappedPanelMeasurement,
+    },
+    {
+      name: 'panelMeasurementSeries',
+      iconName: 'tab-linear',
+      iconLabel: 'Measure',
+      label: 'Measurement Series',
       component: wrappedPanelMeasurement,
     },
     {
