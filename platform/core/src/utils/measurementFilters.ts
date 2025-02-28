@@ -4,6 +4,9 @@ import MeasurementService from '../services/MeasurementService';
  * the study and series.
  */
 export function filterMeasurementsBySeriesUID(selectedSeries: string[]) {
+  if (!selectedSeries) {
+    return;
+  }
   return measurement => selectedSeries.includes(measurement.referenceSeriesUID);
 }
 
@@ -16,6 +19,10 @@ export function filterMeasurementsByStudyUID(studyUID) {
  */
 export function filterPlanarMeasurement(measurement) {
   return measurement?.referencedImageId;
+}
+
+export function filterTool(toolName: string) {
+  return annotation => annotation.metadata?.toolName === toolName;
 }
 
 /** A filter that always returns true */
@@ -35,6 +42,10 @@ export function filterNone(_measurement) {
 export function filterOr(...filters) {
   return function (item) {
     for (let filter of filters) {
+      if (!filter) {
+        // Un undefined filter means all, so return true for the or
+        return true;
+      }
       if (typeof filter === 'string') {
         filter = this[filter];
       }
@@ -76,8 +87,15 @@ const isString = s => typeof s === 'string' || s instanceof String;
  * called on the final filter call.
  */
 export function filterAnd(...filters) {
+  const nonNullFilters = filters.filter(filter => !!filter);
+  if (!nonNullFilters.length) {
+    return;
+  }
+  if (nonNullFilters.length === 1 && typeof nonNullFilters[0] === 'function') {
+    return nonNullFilters[0];
+  }
   return function (item) {
-    for (const filter of filters) {
+    for (const filter of nonNullFilters) {
       if (isString(filter)) {
         if (!this[filter](item)) {
           return false;

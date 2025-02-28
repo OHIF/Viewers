@@ -1,23 +1,7 @@
 import React from 'react';
+
 import AccordionGroup from './AccordionGroup';
-import { utils } from '@ohif/core';
 import MeasurementTableNested from './MeasurementTableNested';
-import { StudySummaryFromMetadata } from '../components/StudySummaryFromMetadata';
-
-const { filterNot, filterAdditionalFindings } = utils.MeasurementFilters;
-
-export const MeasurementOrAdditionalFindingSets = [
-  {
-    title: 'Measurements',
-    component: MeasurementTableNested,
-    filter: filterNot(filterAdditionalFindings),
-  },
-  {
-    title: 'Additional Findings',
-    component: MeasurementTableNested,
-    filter: filterAdditionalFindings,
-  },
-];
 
 /**
  * Groups measurements by study in order to allow display and saving by study
@@ -44,29 +28,38 @@ export const groupByNamedSets = (items, grouping) => {
       }
     }
   });
-  for (const namedSet of namedSets) {
-    const name = namedSet.id || namedSet.title;
-    if (!groups.get(name).items.length) {
-      groups.delete(name);
-    }
-  }
+
   return groups;
 };
 
-export default function MeasurementOrAdditionalFindings(props): React.ReactNode {
-  const { items, childProps, grouping = {} } = props;
+export default function SitesAndFindings(props): React.ReactNode {
+  const { items, childProps, grouping = {}, sitesMap, componentProps = {}, component } = props;
+
+  if (!componentProps.componentProps || !componentProps.component) {
+    return;
+  }
+
+  const namedSets = Array.from(sitesMap).map(([, site]: any) => {
+    return {
+      title: site.CodeMeaning,
+      component: componentProps.component,
+      componentProps: { ...componentProps.componentProps, site },
+      filter: item => {
+        return item?.site?.CodeMeaning === site.CodeMeaning;
+      },
+    };
+  });
 
   return (
     <AccordionGroup
       grouping={{
-        header: StudySummaryFromMetadata,
         groupingFunction: groupByNamedSets,
-        namedSets: MeasurementOrAdditionalFindingSets,
+        namedSets,
+        component: MeasurementTableNested,
         ...grouping,
       }}
       childProps={childProps}
       items={items}
-      component={grouping.component || MeasurementTableNested}
     />
   );
 }

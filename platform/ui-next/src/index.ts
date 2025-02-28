@@ -101,7 +101,7 @@ import {
   Toolbox,
   Numeric,
 } from './components';
-import { DataRow } from './components/DataRow';
+import { DataRow, MeasurementItemDetails, MeasurementItemMenu } from './components/DataRow';
 
 import {
   useNotification,

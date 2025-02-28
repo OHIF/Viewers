@@ -9,7 +9,6 @@ const {
   filterAnd,
   filterMeasurementsByStudyUID,
   filterMeasurementsBySeriesUID,
-  filterAny,
   filterPlanarMeasurement,
 } = utils.MeasurementFilters;
 
@@ -24,7 +23,7 @@ async function promptSaveReport({ servicesManager, commandsManager, extensionMan
     trackedSeries,
     measurementFilter = filterAnd(
       filterMeasurementsByStudyUID(StudyInstanceUID),
-      trackedSeries ? filterMeasurementsBySeriesUID(trackedSeries) : filterAny,
+      filterMeasurementsBySeriesUID(trackedSeries),
       filterPlanarMeasurement
     ),
     defaultSaveTitle = 'Research Derived Series',

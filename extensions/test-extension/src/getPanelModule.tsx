@@ -1,5 +1,9 @@
 import React from 'react';
-import { PanelMeasurement, SeriesMeasurements } from '@ohif/extension-cornerstone';
+import {
+  PanelMeasurement,
+  SeriesMeasurements,
+  StudyMeasurements,
+} from '@ohif/extension-cornerstone';
 
 export default function getPanelModule({
   commandsManager,
@@ -11,7 +15,7 @@ export default function getPanelModule({
     servicesManager,
     extensionManager,
   };
-  const wrappedPanelMeasurementSeries = ({ configuration }) => {
+  const wrappedPanelMeasurementSeries = () => {
     return (
       <PanelMeasurement
         {...childProps}
@@ -20,7 +24,11 @@ export default function getPanelModule({
             component: SeriesMeasurements,
           },
         }}
-      />
+      >
+        <StudyMeasurements>
+          <SeriesMeasurements />
+        </StudyMeasurements>
+      </PanelMeasurement>
     );
   };
   return [

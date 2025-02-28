@@ -1,12 +1,9 @@
 import React from 'react';
 import { Button, Icons } from '@ohif/ui-next';
+import { useSystem } from '@ohif/core';
 
-export default function StudyMeasurementMenu({
-  items,
-  StudyInstanceUID,
-  measurementFilter,
-  commandsManager,
-}) {
+export default function StudyMeasurementMenu({ items, StudyInstanceUID, measurementFilter }) {
+  const { commandsManager } = useSystem();
   const disabled = !items?.length;
 
   if (disabled) {

@@ -1,11 +1,10 @@
 import React from 'react';
-import { utils } from '@ohif/core';
+import { useActiveViewportDisplaySets, useSystem } from '@ohif/core';
+import { AccordionContent, AccordionItem, AccordionTrigger } from '@ohif/ui-next';
 
 import AccordionGroup from './AccordionGroup';
 import StudySummaryMenu from './StudySummaryMenu';
 import MeasurementsOrAdditionalFindings from './MeasurementsOrAdditionalFindings';
-
-const { filterMeasurementsByStudyUID, filterAnd } = utils.MeasurementFilters;
 
 /**
  * Groups measurements by study in order to allow display and saving by study
@@ -13,6 +12,7 @@ const { filterMeasurementsByStudyUID, filterAnd } = utils.MeasurementFilters;
  */
 export const groupByStudy = (items, grouping, childProps) => {
   const groups = new Map();
+  const { activeStudyUID } = grouping;
   const { displaySetService } = childProps.servicesManager.services;
 
   const getItemStudyInstanceUID = item => {
@@ -20,16 +20,11 @@ export const groupByStudy = (items, grouping, childProps) => {
     return displaySet.instances[0].StudyInstanceUID;
   };
 
-  const measurementFilter = grouping.measurementFilter || childProps.measurementFilter;
+  let firstSelected, firstGroup;
 
   items.forEach(item => {
     const studyUID = getItemStudyInstanceUID(item);
     if (!groups.has(studyUID)) {
-      const filter = filterMeasurementsByStudyUID(studyUID);
-      const groupMeasurementFilter = measurementFilter
-        ? filterAnd(measurementFilter, filter)
-        : filter;
-
       const items = [];
       const group = {
         ...grouping,
@@ -40,31 +35,83 @@ export const groupByStudy = (items, grouping, childProps) => {
           items,
           StudyInstanceUID: studyUID,
         },
-        filter,
-        measurementFilter: groupMeasurementFilter,
+        key: studyUID,
+        isSelected: studyUID === activeStudyUID,
       };
+      if (group.isSelected && !firstSelected) {
+        firstSelected = group;
+      }
+      firstGroup ||= group;
       groups.set(studyUID, group);
     }
-    groups.get(studyUID).items.push(item);
+    if (!firstSelected && firstGroup) {
+      firstGroup.isSelected = true;
+    }
+    const group = groups.get(studyUID);
+    group.items.push(item);
   });
 
   return groups;
 };
 
-export default function StudyMeasurements(props): React.ReactNode {
-  const { items, childProps, grouping = {} } = props;
+export function StudyMeasurementItem(props) {
+  const { group, key = group.key, children } = props;
+  const { component: ChildComponent = MeasurementsOrAdditionalFindings } = group;
+  const CloneChildren = cloneProps => {
+    if (children) {
+      return React.Children.map(children, child =>
+        React.cloneElement(child, {
+          ...cloneProps,
+          ...group,
+          key,
+        })
+      );
+    }
+    return <ChildComponent {...props} />;
+  };
 
-  // Need to merge defaults on the component props to ensure they get passed to hcildren
+  return (
+    <AccordionItem
+      value={key}
+      data-state="open"
+    >
+      <AccordionTrigger>
+        <StudySummaryMenu
+          StudyInstanceUID={key}
+          {...props}
+        />
+      </AccordionTrigger>
+      <AccordionContent>
+        <CloneChildren />
+      </AccordionContent>
+    </AccordionItem>
+  );
+}
+
+export default function StudyMeasurements(props): React.ReactNode {
+  const { items, grouping = {}, children } = props;
+
+  const system = useSystem();
+  const activeDisplaySets = useActiveViewportDisplaySets(system);
+  const activeStudyUID = activeDisplaySets?.[0]?.StudyInstanceUID;
+  console.log('Rendering on value activeStudyUID', activeStudyUID);
+
   return (
     <AccordionGroup
       grouping={{
+        name: 'groupByStudy',
         groupingFunction: groupByStudy,
         header: StudySummaryMenu,
+        activeStudyUID,
         ...grouping,
       }}
-      childProps={childProps}
       items={items}
-      component={grouping.component || MeasurementsOrAdditionalFindings}
-    />
+      value={[activeStudyUID]}
+    >
+      <StudyMeasurementItem
+        activeStudyUID={activeStudyUID}
+        children={children}
+      />
+    </AccordionGroup>
   );
 }

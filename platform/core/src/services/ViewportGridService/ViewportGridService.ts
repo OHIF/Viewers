@@ -130,6 +130,9 @@ class ViewportGridService extends PubSubService {
   }
 
   public setActiveViewportId(id: string) {
+    if (id === this.getActiveViewportId()) {
+      return;
+    }
     this.serviceImplementation._setActiveViewport(id);
 
     // Use queueMicrotask to delay the event broadcast

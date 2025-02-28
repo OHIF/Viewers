@@ -25,7 +25,7 @@ function DataSourceConfigurationComponent({
     const dataSourceChangedCallback = async () => {
       const activeDataSourceDef = extensionManager.getActiveDataSourceDefinition();
 
-      if (!activeDataSourceDef.configuration.configurationAPI) {
+      if (!activeDataSourceDef?.configuration?.configurationAPI) {
         return;
       }
 

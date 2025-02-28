@@ -405,11 +405,14 @@ class MeasurementService extends PubSubService {
     let measurement = {};
     try {
       measurement = toMeasurementSchema(data);
+      if (!measurement) {
+        return;
+      }
       measurement.source = source;
     } catch (error) {
       log.warn(
         `Failed to map '${sourceInfo}' measurement for annotationType ${annotationType}:`,
-        error.message
+        error
       );
       return;
     }
@@ -570,7 +573,10 @@ class MeasurementService extends PubSubService {
    *
    * @param {string} measurementUID The measurement uid
    */
-  remove(measurementUID: string): void {
+  remove(measurementUID: string | string[]): void {
+    if (Array.isArray(measurementUID)) {
+      return measurementUID.forEach(uid => this.remove(uid));
+    }
     const measurement =
       this.measurements.get(measurementUID) || this.unmappedMeasurements.get(measurementUID);
 
@@ -769,7 +775,13 @@ class MeasurementService extends PubSubService {
     });
   }
 
-  public toggleVisibilityMeasurement(measurementUID: string): void {
+  public toggleVisibilityMeasurement(
+    measurementUID: string | string[],
+    visibility?: boolean
+  ): void {
+    if (Array.isArray(measurementUID)) {
+      return measurementUID.forEach(uid => this.toggleVisibilityMeasurement(uid));
+    }
     const measurement = this.measurements.get(measurementUID);
 
     if (!measurement) {
@@ -777,7 +789,10 @@ class MeasurementService extends PubSubService {
       return;
     }
 
-    measurement.isVisible = !measurement.isVisible;
+    if (measurement.isVisible === visibility && visibility !== undefined) {
+      return;
+    }
+    measurement.isVisible = visibility !== undefined ? visibility : !measurement.isVisible;
 
     this._broadcastEvent(this.EVENTS.MEASUREMENT_UPDATED, {
       source: measurement.source,

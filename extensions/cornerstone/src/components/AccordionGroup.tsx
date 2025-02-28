@@ -1,34 +1,73 @@
 import React from 'react';
+import { useSystem } from '@ohif/core';
+import { Accordion } from '@ohif/ui-next';
 
-const nullComponent = () => null;
+export const CloneChildren = cloneProps => {
+  const { group, groupChildren, groups } = cloneProps;
+  const { component: ChildComponent, componentProps } = group;
+  if (groupChildren) {
+    return React.Children.map(groupChildren, child =>
+      React.cloneElement(child, { ...group, group, ...cloneProps })
+    );
+  }
+  return (
+    <ChildComponent
+      groups={groups}
+      {...cloneProps}
+      {...componentProps}
+      {...group}
+      key={group.key}
+    />
+  );
+};
 
 export default function AccordionGroup(props) {
-  const { grouping, component, items, header, childProps } = props;
+  const { grouping, items, children, type, componentProps, component: Component } = props;
+  const childProps = useSystem();
+  let defaultValue = props.defaultValue;
   const groups = grouping.groupingFunction(items, grouping, childProps);
-  return [...groups.entries()].map(([key, group]) => {
-    const Header = (group.header ?? header) || nullComponent;
-    const Component = group.component ?? component;
+
+  if (!defaultValue) {
+    const defaultGroup = groups.values().find(group => group.isSelected);
+    defaultValue = defaultGroup?.key || defaultGroup?.title;
+  }
+
+  if (!children) {
     return (
       <>
-        <Header
-          {...childProps}
-          {...group}
-          {...group.headerProps}
-          childProps={childProps}
-          items={group.items}
-          key="accordion-header-{key}"
-          group={group}
-        />
-        <Component
-          {...childProps}
-          {...group}
-          {...group.componentProps}
-          childProps={childProps}
-          items={group.items}
-          key="accordion-{key}"
-          group={group}
-        />
+        {[...groups.entries()].map(([key, group]) => (
+          <Component
+            {...group}
+            {...componentProps}
+            groups={groups}
+            group={group}
+            key={key}
+          />
+        ))}
       </>
     );
-  });
+  }
+
+  const valueArr =
+    (Array.isArray(defaultValue) && defaultValue) || (defaultValue && [defaultValue]) || [];
+
+  return (
+    <Accordion
+      type={type || 'multiple'}
+      className="text-white"
+      defaultValue={valueArr}
+    >
+      {[...groups.entries()].map(([key, group]) => (
+        <CloneChildren
+          group={group}
+          groups={groups}
+          groupChildren={children}
+          componentProps={componentProps}
+          key={group.key}
+        />
+      ))}
+    </Accordion>
+  );
 }
+
+export { AccordionGroup };
