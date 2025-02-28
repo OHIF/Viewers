@@ -1,6 +1,6 @@
 import React from 'react';
 
-export default function ColorCircle({ colorHex, className = 'inline-flex' }) {
+export function ColorCircle({ colorHex, className = 'inline-flex' }) {
   return (
     <div className={`h-5 w-5 ${className} items-center justify-center`}>
       <span

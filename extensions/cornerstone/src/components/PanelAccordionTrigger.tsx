@@ -1,6 +1,5 @@
 import React from 'react';
-import { AccordionTrigger } from '@ohif/ui-next';
-import ColorCircle from './ColorCircle';
+import { AccordionTrigger, ColorCircle } from '@ohif/ui-next';
 
 function onClickDefault(e) {
   const { group, onClick = group?.onClick } = this;

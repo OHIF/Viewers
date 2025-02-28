@@ -80,6 +80,7 @@ import { SegmentationTable, useSegmentationTableContext } from './SegmentationTa
 import { Toaster, toast } from './Sonner';
 import { StudySummary } from './StudySummary';
 import { ErrorBoundary } from './Errorboundary';
+export * from './ColorCircle';
 import { Header } from './Header';
 import { Card, CardHeader, CardFooter, CardTitle, CardDescription, CardContent } from './Card';
 import {
