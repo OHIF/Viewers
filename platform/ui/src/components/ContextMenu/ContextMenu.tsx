@@ -29,7 +29,7 @@ const ContextMenu = ({ items, ...props }) => {
     <div
       ref={contextMenuRef}
       data-cy="context-menu"
-      className="bg-secondary-dark relative z-50 block w-48 rounded"
+      className="bg-secondary-dark relative z-50 block rounded"
       onContextMenu={e => e.preventDefault()}
     >
       {items.map((item, index) => (
