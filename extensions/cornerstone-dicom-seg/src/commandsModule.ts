@@ -324,10 +324,8 @@ const commandsModule = ({
         const toolGroup = toolGroupService.getToolGroup(toolGroupId);
         toolNames?.forEach(toolName => {
           toolGroup.setToolConfiguration(toolName, {
-            strategySpecificConfiguration: {
-              THRESHOLD: {
-                threshold: value,
-              },
+            threshold: {
+              range: value,
             },
           });
         });

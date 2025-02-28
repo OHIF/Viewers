@@ -105,14 +105,9 @@ function _initToolGroups(toolNames, Enums, toolGroupService, commandsManager) {
           // preview: {
           //   enabled: true,
           // },
-          strategySpecificConfiguration: {
-            // to use the use the center segment index to determine
-            // if inside -> same segment, if outside -> eraser
-            // useCenterSegmentIndex: true,
-            THRESHOLD: {
-              isDynamic: true,
-              dynamicRadius: 3,
-            },
+          threshold: {
+            isDynamic: true,
+            dynamicRadius: 3,
           },
         },
       },
