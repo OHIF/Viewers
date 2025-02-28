@@ -1,4 +1,4 @@
-import React, { createContext, useContext } from 'react';
+import React, { createContext, useContext, useRef, useEffect } from 'react';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
 import { Label, Input as InputComponent, FooterAction } from '../../components';
 import { cn } from '../../lib/utils';
@@ -96,6 +96,17 @@ const InputDialogInput = React.forwardRef<HTMLInputElement, InputDialogInputProp
     }
 
     const { value, setValue } = context;
+    const inputRef = useRef<HTMLInputElement>(null);
+
+    // Combine the forwarded ref with our local ref
+    React.useImperativeHandle(ref, () => inputRef.current);
+
+    // Focus the input when it mounts
+    useEffect(() => {
+      if (inputRef.current) {
+        inputRef.current.focus();
+      }
+    }, []);
 
     const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
       if (context.submitOnEnter && e.key === 'Enter') {
@@ -112,11 +123,12 @@ const InputDialogInput = React.forwardRef<HTMLInputElement, InputDialogInputProp
     return (
       <div className={cn('w-full', className)}>
         <InputComponent
-          ref={ref}
+          ref={inputRef}
           id={id}
           value={value}
           onChange={e => setValue(e.target.value)}
           onKeyDown={handleKeyDown}
+          autoFocus
           {...props}
         />
       </div>
