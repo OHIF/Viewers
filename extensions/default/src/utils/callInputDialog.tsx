@@ -18,12 +18,12 @@ function InputDialogDefault({
   submitOnEnter,
 }: InputDialogDefaultProps) {
   return (
-    <InputDialog submitOnEnter={submitOnEnter}>
+    <InputDialog
+      submitOnEnter={submitOnEnter}
+      defaultValue={defaultValue}
+    >
       <InputDialog.Field>
-        <InputDialog.Input
-          placeholder={placeholder}
-          defaultValue={defaultValue}
-        />
+        <InputDialog.Input placeholder={placeholder} />
       </InputDialog.Field>
       <InputDialog.Actions>
         <InputDialog.ActionsSecondary onClick={hide}>Cancel</InputDialog.ActionsSecondary>
@@ -55,6 +55,8 @@ export async function callInputDialog({
   title = 'Annotation',
   placeholder = '',
   submitOnEnter = true,
+}: {
+  uiDialogService: AppTypes.UIDialogService;
 }) {
   const dialogId = 'dialog-enter-annotation';
 
@@ -63,6 +65,7 @@ export async function callInputDialog({
       id: dialogId,
       content: InputDialogDefault,
       title: title,
+      shouldCloseOnEsc: true,
       contentProps: {
         onSave: value => {
           resolve(value);

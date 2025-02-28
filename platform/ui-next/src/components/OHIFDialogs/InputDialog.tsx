@@ -128,7 +128,6 @@ const InputDialogInput = React.forwardRef<HTMLInputElement, InputDialogInputProp
           value={value}
           onChange={e => setValue(e.target.value)}
           onKeyDown={handleKeyDown}
-          autoFocus
           {...props}
         />
       </div>
