@@ -57,7 +57,7 @@ function modeFactory({ modeConfiguration }) {
     onModeExit: ({ servicesManager }: withAppTypes) => {
       const { toolbarService, uiDialogService, uiModalService } = servicesManager.services;
 
-      uiDialogService.dismissAll();
+      uiDialogService.hideAll();
       uiModalService.hide();
       toolbarService.reset();
     },
