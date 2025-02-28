@@ -384,6 +384,26 @@ function commandsModule({
       viewports.forEach((_, index) => cineService.setCine({ id: index, isPlaying: false }));
     },
 
+    navigateToMeasurementItems: props => {
+      const { items } = props;
+      const displayMeasurements = measurementService.getMeasurements();
+      if (items.length === 1) {
+        return commandsManager.run('jumpToMeasurement', {
+          uid: items[0].uid,
+          displayMeasurements,
+        });
+      }
+      const displaySetMap = new Map();
+      items.forEach(item => {
+        const { displaySetInstanceUID } = item;
+        if (!displaySetMap.has(displaySetInstanceUID)) {
+          displaySetMap.set(displaySetInstanceUID, []);
+        }
+        displaySetMap.get(displaySetInstanceUID).push(item);
+      });
+      commandsManager.run('jumpToMeasurement', { uid: items[0].uid, displayMeasurements });
+    },
+
     setViewportWindowLevel({ viewportId, window, level }) {
       // convert to numbers
       const windowWidthNum = Number(window);
@@ -1623,6 +1643,7 @@ function commandsModule({
     },
     undo: actions.undo,
     redo: actions.redo,
+    navigateToMeasurementItems: actions.navigateToMeasurementItems,
   };
 
   return {

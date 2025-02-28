@@ -50,11 +50,10 @@ export const groupByNamedSets = (items, grouping) => {
       groups.delete(name);
     }
   }
-
   return groups;
 };
 
-export default function StudyMeasurements(props): React.ReactNode {
+export default function MeasurementOrAdditionalFindings(props): React.ReactNode {
   const { items, childProps, grouping = {} } = props;
 
   return (

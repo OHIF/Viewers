@@ -19,6 +19,7 @@ export default function MeasurementTableNested(props) {
       data={items}
       onAction={onAction}
       {...group}
+      key={group.key}
     >
       <MeasurementTable.Body />
     </MeasurementTable>

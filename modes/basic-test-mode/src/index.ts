@@ -172,7 +172,7 @@ function modeFactory() {
               leftPanels: [tracked.thumbnailList],
               leftPanelResizable: true,
               // Can use cornerstone.measurements for all measurements
-              rightPanels: [cornerstone.panel, tracked.measurements, cornerstone.measurements],
+              rightPanels: [cornerstone.panel, tracked.measurements, testExtension.measurements],
               rightPanelResizable: true,
               // rightPanelClosed: true, // optional prop to start with collapse panels
               viewports: [

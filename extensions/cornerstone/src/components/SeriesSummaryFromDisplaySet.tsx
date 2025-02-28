@@ -3,7 +3,7 @@ import { utils } from '@ohif/core';
 
 const { formatDate } = utils;
 
-export function SeriesSummaryFromDisplaySet({ displaySet }) {
+export function SeriesSummaryFromDisplaySet({ displaySet, isActive }) {
   if (!displaySet) {
     return null;
   }
@@ -11,11 +11,11 @@ export function SeriesSummaryFromDisplaySet({ displaySet }) {
   const { SeriesDate, SeriesDescription, SeriesNumber = 1 } = displaySet;
 
   return (
-    <div className="mx-2 my-0">
-      <div className="text-foreground pb-1 text-sm">
+    <>
+      <div className={`inline-flex text-base ${isActive ? 'bg-popover' : 'bg-muted'} flex-grow`}>
         Series #{SeriesNumber} {SeriesDescription}
       </div>
       <div className="text-muted-foreground text-sm">{formatDate(SeriesDate)}</div>
-    </div>
+    </>
   );
 }

@@ -6,13 +6,17 @@ export const CloneChildren = cloneProps => {
   const { group, groupChildren, groups } = cloneProps;
   const { component: ChildComponent, componentProps } = group;
   if (groupChildren) {
-    return React.Children.map(groupChildren, child => React.cloneElement(child, cloneProps));
+    return React.Children.map(groupChildren, child =>
+      React.cloneElement(child, { ...group, group, ...cloneProps })
+    );
   }
   return (
     <ChildComponent
       groups={groups}
       {...cloneProps}
       {...componentProps}
+      {...group}
+      key={group.key}
     />
   );
 };
@@ -28,38 +32,38 @@ export default function AccordionGroup(props) {
     defaultValue = defaultGroup?.key || defaultGroup?.title;
   }
 
-  if (Component) {
+  if (!children) {
     return (
       <>
         {[...groups.entries()].map(([key, group]) => (
           <Component
-            key={key}
-            {...componentProps}
             {...group}
+            {...componentProps}
             groups={groups}
             group={group}
+            key={key}
           />
         ))}
       </>
     );
   }
 
+  const valueArr =
+    (Array.isArray(defaultValue) && defaultValue) || (defaultValue && [defaultValue]) || [];
+
   return (
     <Accordion
       type={type || 'multiple'}
       className="text-white"
-      defaultValue={
-        (Array.isArray(defaultValue) && defaultValue) || (defaultValue && [defaultValue]) || []
-      }
+      defaultValue={valueArr}
     >
       {[...groups.entries()].map(([key, group]) => (
         <CloneChildren
-          {...group}
-          key={key}
           group={group}
           groups={groups}
           groupChildren={children}
           componentProps={componentProps}
+          key={group.key}
         />
       ))}
     </Accordion>

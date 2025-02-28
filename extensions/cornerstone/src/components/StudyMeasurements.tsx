@@ -20,6 +20,8 @@ export const groupByStudy = (items, grouping, childProps) => {
     return displaySet.instances[0].StudyInstanceUID;
   };
 
+  let firstSelected, firstGroup;
+
   items.forEach(item => {
     const studyUID = getItemStudyInstanceUID(item);
     if (!groups.has(studyUID)) {
@@ -36,7 +38,14 @@ export const groupByStudy = (items, grouping, childProps) => {
         key: studyUID,
         isSelected: studyUID === activeStudyUID,
       };
+      if (group.isSelected && !firstSelected) {
+        firstSelected = group;
+      }
+      firstGroup ||= group;
       groups.set(studyUID, group);
+    }
+    if (!firstSelected && firstGroup) {
+      firstGroup.isSelected = true;
     }
     const group = groups.get(studyUID);
     group.items.push(item);
@@ -52,8 +61,8 @@ export function StudyMeasurementItem(props) {
     if (children) {
       return React.Children.map(children, child =>
         React.cloneElement(child, {
-          ...group,
           ...cloneProps,
+          ...group,
           key,
         })
       );
@@ -62,7 +71,10 @@ export function StudyMeasurementItem(props) {
   };
 
   return (
-    <AccordionItem value={key}>
+    <AccordionItem
+      value={key}
+      data-state="open"
+    >
       <AccordionTrigger>
         <StudySummaryMenu
           StudyInstanceUID={key}
@@ -82,6 +94,7 @@ export default function StudyMeasurements(props): React.ReactNode {
   const system = useSystem();
   const activeDisplaySets = useActiveViewportDisplaySets(system);
   const activeStudyUID = activeDisplaySets?.[0]?.StudyInstanceUID;
+  console.log('Rendering on value activeStudyUID', activeStudyUID);
 
   return (
     <AccordionGroup
@@ -93,6 +106,7 @@ export default function StudyMeasurements(props): React.ReactNode {
         ...grouping,
       }}
       items={items}
+      value={[activeStudyUID]}
     >
       <StudyMeasurementItem
         activeStudyUID={activeStudyUID}
