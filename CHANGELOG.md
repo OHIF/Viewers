@@ -3,6 +3,97 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.10.0-beta.113](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.112...v3.10.0-beta.113) (2025-02-28)
+
+
+### Bug Fixes
+
+* Performance of panel study browser ([#4819](https://github.com/OHIF/Viewers/issues/4819)) ([d25809e](https://github.com/OHIF/Viewers/commit/d25809eed073d3f308f6af8244ceae7df8c2ee35))
+
+
+
+
+
+# [3.10.0-beta.112](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.111...v3.10.0-beta.112) (2025-02-28)
+
+
+### Features
+
+* separate checks for addWindowLevelActionMenu and addSegmentationOverlay ([#4813](https://github.com/OHIF/Viewers/issues/4813)) ([7f0cc0f](https://github.com/OHIF/Viewers/commit/7f0cc0f60e74a2e0ac2aea1fe6a786582b495c4e))
+
+
+
+
+
+# [3.10.0-beta.111](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.110...v3.10.0-beta.111) (2025-02-26)
+
+
+### Bug Fixes
+
+* broken activateViewportBeforeInteraction behavior ([#4810](https://github.com/OHIF/Viewers/issues/4810)) ([fdb073c](https://github.com/OHIF/Viewers/commit/fdb073c216013477c8545db34d254a9ad328fe48))
+
+
+
+
+
+# [3.10.0-beta.110](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.109...v3.10.0-beta.110) (2025-02-26)
+
+
+### Bug Fixes
+
+* **sr:** sr hydration and load was not working, Screenshot Comparison, and Testing ([#4814](https://github.com/OHIF/Viewers/issues/4814)) ([9233143](https://github.com/OHIF/Viewers/commit/9233143b9da5850080365e1526e24b44e9910075))
+
+
+
+
+
+# [3.10.0-beta.109](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.108...v3.10.0-beta.109) (2025-02-25)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.10.0-beta.108](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.107...v3.10.0-beta.108) (2025-02-25)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.10.0-beta.107](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.106...v3.10.0-beta.107) (2025-02-25)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.10.0-beta.106](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.105...v3.10.0-beta.106) (2025-02-25)
+
+
+### Features
+
+* **hotkeys:** Migrate hotkeys to customization service and fix issues with overrides ([#4777](https://github.com/OHIF/Viewers/issues/4777)) ([3e6913b](https://github.com/OHIF/Viewers/commit/3e6913b097569280a5cc2fa5bbe4add52f149305))
+
+
+
+
+
+# [3.10.0-beta.105](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.104...v3.10.0-beta.105) (2025-02-25)
+
+
+### Bug Fixes
+
+* Changes to address hang/crash on jump to instance ([#4679](https://github.com/OHIF/Viewers/issues/4679)) ([e480e84](https://github.com/OHIF/Viewers/commit/e480e841bb5da5281a7c4624a60d5964d690ebb8))
+* **rt:** jump to segment discards the configured width ([#4799](https://github.com/OHIF/Viewers/issues/4799)) ([afd528b](https://github.com/OHIF/Viewers/commit/afd528b8d72c3d8360b54bb52604758e83ada863))
+
+
+
+
+
 # [3.10.0-beta.104](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.103...v3.10.0-beta.104) (2025-02-25)
 
 

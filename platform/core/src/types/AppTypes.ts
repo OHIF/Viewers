@@ -129,7 +129,6 @@ declare global {
       showStudyList?: boolean;
       whiteLabeling?: Record<string, unknown>;
       httpErrorHandler?: (error: Error) => void;
-      addWindowLevelActionMenu?: boolean;
       dangerouslyUseDynamicConfig?: {
         enabled: boolean;
         regex: RegExp;
@@ -147,12 +146,6 @@ declare global {
         maxNumPrefetchRequests: number;
         order: 'closest' | 'downward' | 'upward';
       };
-      tours?: Array<{
-        id: string;
-        steps: StepOptions[];
-        tourOptions: TourOptions;
-        route: string;
-      }>;
     }
 
     export interface Test {

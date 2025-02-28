@@ -47,9 +47,19 @@ const RowComponent = ({
       {isChildOrParent && (
         <div style={{ paddingLeft: `${padding}px`, opacity: onToggle ? 1 : 0 }}>
           {row.areChildrenVisible ? (
-            <Icons.ChevronDown onClick={handleToggle} />
+            <div
+              className="cursor-pointer p-1"
+              onClick={handleToggle}
+            >
+              <Icons.ChevronDown />
+            </div>
           ) : (
-            <Icons.ChevronRight onClick={handleToggle} />
+            <div
+              className="cursor-pointer p-1"
+              onClick={handleToggle}
+            >
+              <Icons.ChevronRight />
+            </div>
           )}
         </div>
       )}

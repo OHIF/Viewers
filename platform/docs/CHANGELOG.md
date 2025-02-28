@@ -3,6 +3,84 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.10.0-beta.113](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.112...v3.10.0-beta.113) (2025-02-28)
+
+**Note:** Version bump only for package ohif-docs
+
+
+
+
+
+# [3.10.0-beta.112](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.111...v3.10.0-beta.112) (2025-02-28)
+
+
+### Features
+
+* separate checks for addWindowLevelActionMenu and addSegmentationOverlay ([#4813](https://github.com/OHIF/Viewers/issues/4813)) ([7f0cc0f](https://github.com/OHIF/Viewers/commit/7f0cc0f60e74a2e0ac2aea1fe6a786582b495c4e))
+
+
+
+
+
+# [3.10.0-beta.111](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.110...v3.10.0-beta.111) (2025-02-26)
+
+**Note:** Version bump only for package ohif-docs
+
+
+
+
+
+# [3.10.0-beta.110](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.109...v3.10.0-beta.110) (2025-02-26)
+
+**Note:** Version bump only for package ohif-docs
+
+
+
+
+
+# [3.10.0-beta.109](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.108...v3.10.0-beta.109) (2025-02-25)
+
+**Note:** Version bump only for package ohif-docs
+
+
+
+
+
+# [3.10.0-beta.108](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.107...v3.10.0-beta.108) (2025-02-25)
+
+**Note:** Version bump only for package ohif-docs
+
+
+
+
+
+# [3.10.0-beta.107](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.106...v3.10.0-beta.107) (2025-02-25)
+
+**Note:** Version bump only for package ohif-docs
+
+
+
+
+
+# [3.10.0-beta.106](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.105...v3.10.0-beta.106) (2025-02-25)
+
+
+### Features
+
+* **hotkeys:** Migrate hotkeys to customization service and fix issues with overrides ([#4777](https://github.com/OHIF/Viewers/issues/4777)) ([3e6913b](https://github.com/OHIF/Viewers/commit/3e6913b097569280a5cc2fa5bbe4add52f149305))
+
+
+
+
+
+# [3.10.0-beta.105](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.104...v3.10.0-beta.105) (2025-02-25)
+
+**Note:** Version bump only for package ohif-docs
+
+
+
+
+
 # [3.10.0-beta.104](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.103...v3.10.0-beta.104) (2025-02-25)
 
 **Note:** Version bump only for package ohif-docs

@@ -60,10 +60,15 @@ export default function ModeRoute({
     locationRef.current = location;
   }
 
-  const { displaySetService, panelService, hangingProtocolService, userAuthenticationService } =
-    servicesManager.services;
+  const {
+    displaySetService,
+    panelService,
+    hangingProtocolService,
+    userAuthenticationService,
+    customizationService,
+  } = servicesManager.services;
 
-  const { extensions, sopClassHandlers, hotkeys: hotkeyObj, hangingProtocol } = mode;
+  const { extensions, sopClassHandlers, hangingProtocol } = mode;
 
   const runTimeHangingProtocolId = lowerCaseSearchParams.get('hangingprotocolid');
   const runTimeStageId = lowerCaseSearchParams.get('stageid');
@@ -72,10 +77,6 @@ export default function ModeRoute({
   if (token) {
     updateAuthServiceAndCleanUrl(token, location, userAuthenticationService);
   }
-
-  // Preserve the old array interface for hotkeys
-  const hotkeys = Array.isArray(hotkeyObj) ? hotkeyObj : hotkeyObj?.hotkeys;
-  const hotkeyName = hotkeyObj?.name || 'hotkey-definitions';
 
   // An undefined dataSourceName implies that the active data source that is already set in the ExtensionManager should be used.
   if (dataSourceName !== undefined) {
@@ -168,26 +169,6 @@ export default function ModeRoute({
   }, [studyInstanceUIDs, ExtensionDependenciesLoaded]);
 
   useEffect(() => {
-    if (!hotkeys || !ExtensionDependenciesLoaded || !studyInstanceUIDs?.length) {
-      return;
-    }
-
-    hotkeysManager.setDefaultHotKeys(hotkeys);
-
-    const userPreferredHotkeys = JSON.parse(localStorage.getItem(hotkeyName));
-
-    if (userPreferredHotkeys?.length) {
-      hotkeysManager.setHotkeys(userPreferredHotkeys, hotkeyName);
-    } else {
-      hotkeysManager.setHotkeys(hotkeys, hotkeyName);
-    }
-
-    return () => {
-      hotkeysManager.destroy();
-    };
-  }, [ExtensionDependenciesLoaded, hotkeys, studyInstanceUIDs]);
-
-  useEffect(() => {
     if (!layoutTemplateData.current || !ExtensionDependenciesLoaded || !studyInstanceUIDs?.length) {
       return;
     }
@@ -238,6 +219,10 @@ export default function ModeRoute({
         commandsManager,
         appConfig,
       });
+
+      // Move hotkeys setup here, after onModeEnter
+      const hotkeys = customizationService.getCustomization('ohif.hotkeyBindings');
+      hotkeysManager.setDefaultHotKeys(hotkeys);
 
       /**
        * The next line should get all the query parameters provided by the URL
@@ -298,8 +283,6 @@ export default function ModeRoute({
     setupRouteInit().then(unsubs => {
       unsubscriptions = unsubs;
 
-      // Some code may need to run after hanging protocol initialization
-      // (eg: workflowStepsService initialization on 4D mode)
       mode?.onSetupRouteComplete?.({
         servicesManager,
         extensionManager,
@@ -320,6 +303,9 @@ export default function ModeRoute({
       } catch (e) {
         console.warn('mode exit failure', e);
       }
+      // Clean up hotkeys
+      hotkeysManager.destroy();
+
       // The unsubscriptions must occur before the extension onModeExit
       // in order to prevent exceptions during cleanup caused by spurious events
       if (unsubscriptions) {

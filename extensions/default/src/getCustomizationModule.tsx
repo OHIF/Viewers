@@ -21,7 +21,8 @@ import viewportNotificationCustomization from './customizations/notificationCust
 import aboutModalCustomization from './customizations/aboutModalCustomization';
 import userPreferencesCustomization from './customizations/userPreferencesCustomization';
 import reportDialogCustomization from './customizations/reportDialogCustomization';
-
+import hotkeyBindingsCustomization from './customizations/hotkeyBindingsCustomization';
+import onboardingCustomization from './customizations/onboardingCustomization';
 /**
  *
  * Note: this is an example of how the customization module can be used
@@ -68,6 +69,8 @@ export default function getCustomizationModule({ servicesManager, extensionManag
         ...aboutModalCustomization,
         ...userPreferencesCustomization,
         ...reportDialogCustomization,
+        ...hotkeyBindingsCustomization,
+        ...onboardingCustomization,
       },
     },
   ];

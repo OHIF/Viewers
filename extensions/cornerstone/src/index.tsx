@@ -55,6 +55,7 @@ import DicomUpload from './components/DicomUpload/DicomUpload';
 import { useSegmentations } from './hooks/useSegmentations';
 import { StudySummaryFromMetadata } from './components/StudySummaryFromMetadata';
 import CornerstoneViewportDownloadForm from './utils/CornerstoneViewportDownloadForm';
+import utils from './utils';
 
 const { imageRetrieveMetadataProvider } = cornerstone.utilities;
 
@@ -256,5 +257,6 @@ export {
   DicomUpload,
   StudySummaryFromMetadata,
   CornerstoneViewportDownloadForm,
+  utils,
 };
 export default cornerstoneExtension;

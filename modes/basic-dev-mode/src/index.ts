@@ -165,7 +165,6 @@ function modeFactory({ modeConfiguration }) {
       dicompdf.sopClassHandler,
       dicomsr.sopClassHandler,
     ],
-    hotkeys: [...hotkeys.defaults.hotkeyBindings],
   };
 }
 

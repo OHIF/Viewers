@@ -24,7 +24,6 @@ import {
   callInputDialog,
 } from '@ohif/extension-default';
 import { vec3, mat4 } from 'gl-matrix';
-
 import toggleImageSliceSync from './utils/imageSliceSync/toggleImageSliceSync';
 import { getFirstAnnotationSelected } from './utils/measurementServiceMappings/utils/selection';
 import getActiveViewportEnabledElement from './utils/getActiveViewportEnabledElement';
@@ -32,6 +31,7 @@ import toggleVOISliceSync from './utils/toggleVOISliceSync';
 import { usePositionPresentationStore, useSegmentationPresentationStore } from './stores';
 import { toolNames } from './initCornerstoneTools';
 import CornerstoneViewportDownloadForm from './utils/CornerstoneViewportDownloadForm';
+const { DefaultHistoryMemo } = csUtils.HistoryMemo;
 const toggleSyncFunctions = {
   imageSlice: toggleImageSliceSync,
   voi: toggleVOISliceSync,
@@ -138,19 +138,16 @@ function commandsModule({
       )?.[0];
 
       if (previousReferencedDisplaySetStoreKey) {
-        if (referencedImageId) {
-          setPositionPresentation(previousReferencedDisplaySetStoreKey, {
-            viewReference: {
-              referencedImageId,
-            },
-          });
-        } else {
-          setPositionPresentation(
-            previousReferencedDisplaySetStoreKey,
-            presentations.positionPresentation
-          );
-        }
+        const presentationData = referencedImageId
+          ? {
+              ...presentations.positionPresentation,
+              viewReference: {
+                referencedImageId,
+              },
+            }
+          : presentations.positionPresentation;
 
+        setPositionPresentation(previousReferencedDisplaySetStoreKey, presentationData);
         return;
       }
 
@@ -439,6 +436,37 @@ function commandsModule({
       }
 
       actions.setViewportWindowLevel({ ...props, viewportId });
+    },
+    setWindowLevelPreset: ({ presetName, presetIndex }) => {
+      const windowLevelPresets = customizationService.getCustomization(
+        'cornerstone.windowLevelPresets'
+      );
+
+      const activeViewport = viewportGridService.getActiveViewportId();
+      const viewport = cornerstoneViewportService.getCornerstoneViewport(activeViewport);
+      const metadata = viewport.getImageData().metadata;
+
+      const modality = metadata.Modality;
+
+      if (!modality) {
+        return;
+      }
+
+      const windowLevelPresetForModality = windowLevelPresets[modality];
+
+      if (!windowLevelPresetForModality) {
+        return;
+      }
+
+      const windowLevelPreset =
+        windowLevelPresetForModality[presetName] ??
+        Object.values(windowLevelPresetForModality)[presetIndex];
+
+      actions.setViewportWindowLevel({
+        viewportId: activeViewport,
+        window: windowLevelPreset.window,
+        level: windowLevelPreset.level,
+      });
     },
     setToolEnabled: ({ toolName, toggle, toolGroupId }) => {
       const { viewports } = viewportGridService.getState();
@@ -1329,6 +1357,12 @@ function commandsModule({
         measurementService.remove(activeAnnotationUID);
       });
     },
+    undo: () => {
+      DefaultHistoryMemo.undo();
+    },
+    redo: () => {
+      DefaultHistoryMemo.redo();
+    },
   };
 
   const definitions = {
@@ -1392,6 +1426,9 @@ function commandsModule({
     },
     setWindowLevel: {
       commandFn: actions.setWindowLevel,
+    },
+    setWindowLevelPreset: {
+      commandFn: actions.setWindowLevelPreset,
     },
     setToolActive: {
       commandFn: actions.setToolActive,
@@ -1592,6 +1629,8 @@ function commandsModule({
     deleteActiveAnnotation: {
       commandFn: actions.deleteActiveAnnotation,
     },
+    undo: actions.undo,
+    redo: actions.redo,
   };
 
   return {

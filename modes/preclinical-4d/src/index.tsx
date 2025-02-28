@@ -167,7 +167,6 @@ function modeFactory({ modeConfiguration }) {
     // general handler needs to come last.  For this case, the dicomvideo must
     // come first to remove video transfer syntax before ohif uses images
     sopClassHandlers: [ohif.chartSopClassHandler, ohif.defaultSopClassHandler],
-    hotkeys: [...hotkeys.defaults.hotkeyBindings],
   };
 }
 

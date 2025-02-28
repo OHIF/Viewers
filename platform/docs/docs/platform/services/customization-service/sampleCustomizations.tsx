@@ -17,6 +17,7 @@ import loadingIndicatorPercent from '../../../assets/img/loading-indicator-perce
 import viewportActionCorners from '../../../assets/img/viewport-action-corners.png';
 import contextMenu from '../../../assets/img/context-menu.jpg';
 import viewportDownloadWarning from '../../../assets/img/viewport-download-warning.png';
+import segmentationOverlay from '../../../assets/img/segmentation-overlay.png';
 
 import segDisplayEditingTrue from '../../../assets/img/segDisplayEditingTrue.png';
 import segDisplayEditingFalse from '../../../assets/img/segDisplayEditingFalse.png';
@@ -151,6 +152,46 @@ window.config = {
 ];
 
 export const customizations = [
+  {
+    id: 'ohif.hotkeyBindings',
+    description: 'Defines the hotkeys for the application.',
+    default: 'look at hotkeyBindingsCustomization.ts file',
+    configuration: `
+window.config = {
+  // rest of window config
+  customizationService: [
+    {
+      // this will override the default hotkeys and only have one hotkey
+      'ohif.hotkeyBindings': {
+        $set: [
+          {
+            commandName: 'scaleDownViewport',
+            label: 'Zoom Out',
+            keys: ['-'],
+            isEditable: true,
+          },
+        ],
+      },
+    },
+  ],
+
+  // or lets say you want to change one key of the default hotkeys to default
+  // something else
+  customizationService: [
+    {
+      // this will override the default hotkeys and only have one hotkey
+      'ohif.hotkeyBindings': {
+        $filter: {
+          match: { commandName: 'scaleDownViewport' },
+          $set: {
+            keys: ['ctrl+shift+-'],
+          },
+        },
+      },
+    },
+  ],
+    `,
+  },
   {
     id: 'measurementLabels',
     description: 'Labels for measurement tools in the viewer that are automatically asked for.',
@@ -807,6 +848,123 @@ window.config = {
           {
             'ohif.aboutModal': {
               $set: CustomizedComponent,
+            },
+          },
+        ],
+      };
+        `,
+  },
+  {
+    id: 'viewportDownload.warningMessage',
+    description: 'Customizes the warning message for the viewport download form.',
+    image: viewportDownloadWarning,
+    default: {
+      enabled: true,
+      value: 'Not For Diagnostic Use',
+    },
+    configuration: `
+      window.config = {
+        // rest of window config
+        customizationService: [
+          {
+            'viewportDownload.warningMessage': {
+              $set: {
+                enabled: true,
+                value: 'Careful! This is not for diagnostic use.',
+              },
+            },
+          },
+        ],
+      };
+        `,
+  },
+  {
+    id: 'ohif.captureViewportModal',
+    description: 'The modal for capturing the viewport image.',
+    image: captureViewportModal,
+    default: 'Our own default component',
+    configuration: `
+      window.config = {
+        // rest of window config
+
+        // You can use the component from ImageModal and FooterAction
+        // to build your own custom component
+        customizationService: [
+          {
+            'ohif.captureViewportModal': {
+              $set: CustomizedComponent,
+            },
+          },
+        ],
+      };
+        `,
+  },
+  {
+    id: 'ohif.aboutModal',
+    description: 'The About modal',
+    image: aboutModal,
+    default: 'Our own default component',
+    configuration: `
+      window.config = {
+        // rest of window config
+
+        // You can use the component from AboutModal
+        // to build your own custom component
+        customizationService: [
+          {
+            'ohif.aboutModal': {
+              $set: CustomizedComponent,
+            },
+          },
+        ],
+      };
+        `,
+  },
+  {
+    id: 'viewportActionMenu.windowLevelActionMenu',
+    description:
+      'Configures the display and location of the window level action menu in the viewport.',
+    image: windowLevelActionMenu,
+    default: null,
+    configuration: `
+      window.config = {
+        // rest of window config
+        customizationService: [
+          {
+            'viewportActionMenu.windowLevelActionMenu': {
+              $set: {
+               enabled: true,
+               location: 1, // Set the location of the menu in the viewport.
+                            // 0: topLeft
+                            // 1: topRight
+                            // 2: bottomLeft
+                            // 3: bottomRight
+              }
+            },
+          },
+        ],
+      };
+        `,
+  },
+  {
+    id: 'viewportActionMenu.segmentationOverlay',
+    description: 'Configures the display and location of the segmentation overlay in the viewport.',
+    image: segmentationOverlay,
+    default: null,
+    configuration: `
+      window.config = {
+        // rest of window config
+        customizationService: [
+          {
+            'viewportActionMenu.segmentationOverlay': {
+               $set: {
+                 enabled: true,
+                 location: 1, // Set the location of the overlay in the viewport.
+                              // 0: topLeft
+                              // 1: topRight
+                              // 2: bottomLeft
+                              // 3: bottomRight
+               }
             },
           },
         ],

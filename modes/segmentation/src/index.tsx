@@ -1,4 +1,3 @@
-import { hotkeys } from '@ohif/core';
 import { id } from './id';
 import toolbarButtons from './toolbarButtons';
 import segmentationButtons from './segmentationButtons';
@@ -49,7 +48,8 @@ function modeFactory({ modeConfiguration }) {
      * Services and other resources.
      */
     onModeEnter: ({ servicesManager, extensionManager, commandsManager }: withAppTypes) => {
-      const { measurementService, toolbarService, toolGroupService } = servicesManager.services;
+      const { measurementService, toolbarService, toolGroupService, customizationService } =
+        servicesManager.services;
 
       measurementService.clearMeasurements();
 
@@ -158,8 +158,6 @@ function modeFactory({ modeConfiguration }) {
     // hangingProtocol: ['@ohif/mnGrid'],
     /** SopClassHandlers used by the mode */
     sopClassHandlers: [ohif.sopClassHandler, segmentation.sopClassHandler],
-    /** hotkeys for mode */
-    hotkeys: [...hotkeys.defaults.hotkeyBindings],
   };
 }
 

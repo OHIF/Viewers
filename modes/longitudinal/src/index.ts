@@ -84,7 +84,8 @@ function modeFactory({ modeConfiguration }) {
      * Lifecycle hooks
      */
     onModeEnter: function ({ servicesManager, extensionManager, commandsManager }: withAppTypes) {
-      const { measurementService, toolbarService, toolGroupService } = servicesManager.services;
+      const { measurementService, toolbarService, toolGroupService, customizationService } =
+        servicesManager.services;
 
       measurementService.clearMeasurements();
 
@@ -238,7 +239,6 @@ function modeFactory({ modeConfiguration }) {
       dicomsr.sopClassHandler,
       dicomRT.sopClassHandler,
     ],
-    hotkeys: [...hotkeys.defaults.hotkeyBindings],
     ...modeConfiguration,
   };
 }

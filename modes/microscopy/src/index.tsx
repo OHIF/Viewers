@@ -123,7 +123,6 @@ function modeFactory({ modeConfiguration }) {
       dicomvideo.sopClassHandler,
       dicompdf.sopClassHandler,
     ],
-    hotkeys: [...hotkeys.defaults.hotkeyBindings],
     ...modeConfiguration,
   };
 }
