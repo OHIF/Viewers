@@ -602,7 +602,7 @@ function commandsModule({
             activeViewportId,
             cornerstoneViewportService,
           },
-          containerClassName: 'max-w-4xl',
+          containerClassName: 'max-w-4xl p-4',
         });
       }
     },

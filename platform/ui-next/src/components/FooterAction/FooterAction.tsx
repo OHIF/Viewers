@@ -40,7 +40,11 @@ export const FooterAction: FooterActionComponent = ({ children, className }: Foo
     justifyClass = 'justify-end';
   }
   // If both or neither are present, keep justify-between (or adjust if you like)
-  return <div className={cn('flex w-full items-center', justifyClass, className)}>{children}</div>;
+  return (
+    <div className={cn('flex w-full flex-shrink-0 items-center', justifyClass, className)}>
+      {children}
+    </div>
+  );
 };
 
 FooterAction.displayName = 'FooterAction';

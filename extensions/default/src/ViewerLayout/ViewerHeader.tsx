@@ -59,7 +59,7 @@ function ViewerHeader({ appConfig }: withAppTypes<{ appConfig: AppTypes.Config }
         show({
           content: UserPreferencesModal,
           title: t('UserPreferencesModal:User preferences'),
-          containerClassName: 'flex max-w-4xl flex-col',
+          containerClassName: 'flex max-w-4xl p-6 flex-col',
         }),
     },
   ];

@@ -9,7 +9,7 @@ interface AboutModalProps {
 }
 
 export function AboutModal({ children, className }: AboutModalProps) {
-  return <div className={cn('text-center', className)}>{children}</div>;
+  return <div className={cn('space-y-1 text-center', className)}>{children}</div>;
 }
 
 /** Sub component: Product Name */
@@ -19,7 +19,7 @@ interface ProductNameProps {
 }
 function ProductName({ children, className }: ProductNameProps) {
   return (
-    <div className={cn('text-foreground pt-3 text-2xl font-semibold leading-none', className)}>
+    <div className={cn('text-foreground pt-3 text-2xl font-medium leading-none', className)}>
       {children}
     </div>
   );
@@ -32,7 +32,9 @@ interface ProductVersionProps {
 }
 function ProductVersion({ children, className }: ProductVersionProps) {
   return (
-    <div className={cn('text-muted-foreground text-2xl leading-none', className)}>{children}</div>
+    <div className={cn('text-muted-foreground text-2xl font-light leading-none', className)}>
+      {children}
+    </div>
   );
 }
 
@@ -42,7 +44,9 @@ interface ProductBetaProps {
   className?: string;
 }
 function ProductBeta({ children, className }: ProductBetaProps) {
-  return <div className={cn('text-muted-foreground text-xl', className)}>{children}</div>;
+  return (
+    <div className={cn('text-muted-foreground text-xl font-light', className)}>{children}</div>
+  );
 }
 
 /** Sub-component: Body (wraps all detail items) */
@@ -80,8 +84,8 @@ interface SocialItemProps {
 }
 function SocialItem({ icon, url, text, className }: SocialItemProps) {
   return (
-    <div className={cn('text-foreground mt-4 flex items-center space-x-2', className)}>
-      <div className="mr-2 inline-block">
+    <div className={cn('text-foreground flex items-center', className)}>
+      <div className="inline-block">
         <Icons.ByName name={icon} />
       </div>
       <Button
