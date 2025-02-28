@@ -28,14 +28,14 @@ class UIDialogService extends PubSubService {
     id,
     content,
     contentProps,
-    onStart,
-    onDrag,
-    onStop,
+    onStart = () => {},
+    onDrag = () => {},
+    onStop = () => {},
     centralize = false,
     preservePosition = true,
     isDraggable = true,
     showOverlay = false,
-    defaultPosition,
+    defaultPosition = { x: 0, y: 0 },
   }) {
     return this.serviceImplementation._create({
       id,

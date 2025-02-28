@@ -2,6 +2,7 @@ import { synchronizers, SynchronizerManager, Synchronizer } from '@cornerstonejs
 import { getRenderingEngines, utilities } from '@cornerstonejs/core';
 
 import { pubSubServiceInterface, Types } from '@ohif/core';
+import createHydrateSegmentationSynchronizer from './createHydrateSegmentationSynchronizer';
 
 const EVENTS = {
   TOOL_GROUP_CREATED: 'event::cornerstone::syncgroupservice:toolgroupcreated',
@@ -27,6 +28,7 @@ const VOI = 'voi';
 const ZOOMPAN = 'zoompan';
 const STACKIMAGE = 'stackimage';
 const IMAGE_SLICE = 'imageslice';
+const HYDRATE_SEG = 'hydrateseg';
 
 const asSyncGroup = (syncGroup: string | SyncGroup): SyncGroup =>
   typeof syncGroup === 'string' ? { type: syncGroup } : syncGroup;
@@ -51,6 +53,7 @@ export default class SyncGroupService {
     // handles both stack and volume viewports
     [STACKIMAGE]: synchronizers.createImageSliceSynchronizer,
     [IMAGE_SLICE]: synchronizers.createImageSliceSynchronizer,
+    [HYDRATE_SEG]: createHydrateSegmentationSynchronizer,
   };
 
   synchronizersByType: { [key: string]: Synchronizer[] } = {};
@@ -66,18 +69,18 @@ export default class SyncGroupService {
   private _createSynchronizer(type: string, id: string, options): Synchronizer | undefined {
     // Initialize if not already done
     this.synchronizersByType[type] = this.synchronizersByType[type] || [];
-
     const syncCreator = this.synchronizerCreators[type.toLowerCase()];
 
     if (syncCreator) {
-      const synchronizer = syncCreator(id, options);
+      // Pass the servicesManager along with other parameters
+      const synchronizer = syncCreator(id, { ...options, servicesManager: this.servicesManager });
 
       if (synchronizer) {
         this.synchronizersByType[type].push(synchronizer);
         return synchronizer;
       }
     } else {
-      console.warn(`Unknown synchronizer type: ${type}, id: ${id}`);
+      console.debug(`Unknown synchronizer type: ${type}, id: ${id}`);
     }
   }
 
@@ -145,6 +148,11 @@ export default class SyncGroupService {
       const { type, target = true, source = true, options = {}, id = type } = syncGroupObj;
 
       const synchronizer = this._getOrCreateSynchronizer(type, id, options);
+
+      if (!synchronizer) {
+        return;
+      }
+
       synchronizer.setOptions(viewportId, options);
 
       const viewportInfo = { viewportId, renderingEngineId };

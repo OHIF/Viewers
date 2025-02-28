@@ -32,7 +32,8 @@ const classes = {
     h3: 'text-4xl',
     h4: 'text-3xl',
     h5: 'text-2xl',
-    h6: 'text-xl',
+    // Using px value temporarily until larger fontsize variables are finalized
+    h6: 'text-[20px]',
     subtitle: 'text-lg',
     body: 'text-base',
     caption: 'text-xs',

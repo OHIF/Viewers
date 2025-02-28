@@ -149,7 +149,157 @@ jobs:
       - run:
           name: Copy to cloud
           command: |
-            /bin/bash ./idc-deploy-shell/cloudCopy.sh
+            rm -rf ~/.ssh
+            mkdir ~/.ssh/
+            echo -e "Host github.com\n\tStrictHostKeyChecking no\n" > ~/.ssh/config
+            git config --global user.email "danny.ri.brown+ohif-bot@gmail.com"
+            git config --global user.name "ohif-bot"
+      - run:
+          name: Authenticate with NPM registry
+          command: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/repo/.npmrc
+      - run:
+          name: build half of the packages (to avoid out of memory in circleci)
+          command: |
+            yarn run build:package-all
+      - run:
+          name: build the other half of the packages
+          command: |
+            yarn run build:package-all-1
+
+  ###
+  # Workflow: RELEASE
+  ###
+  NPM_PUBLISH:
+    <<: *defaults
+    resource_class: large
+    steps:
+      - run: yarn -v
+      # Checkout code and ALL Git Tags
+      - checkout
+      - attach_workspace:
+          at: ~/repo
+      # Use increasingly general patterns to restore cache
+      - restore_cache:
+          name: Restore Yarn and Cypress Package Cache
+          keys:
+            - yarn-packages-{{ checksum "yarn.lock" }}
+            - yarn-packages-
+      - run:
+          name: Install Dependencies
+          command: yarn install --frozen-lockfile
+      - save_cache:
+          name: Save Yarn Package Cache
+          paths:
+            - ~/.cache/yarn
+          key: yarn-packages-{{ checksum "yarn.lock" }}
+      - run:
+          name: Avoid hosts unknown for github
+          command: |
+            rm -rf ~/.ssh
+            mkdir ~/.ssh/
+            echo -e "Host github.com\n\tStrictHostKeyChecking no\n" > ~/.ssh/config
+            git config --global user.email "danny.ri.brown+ohif-bot@gmail.com"
+            git config --global user.name "ohif-bot"
+      - run:
+          name: Authenticate with NPM registry
+          command: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/repo/.npmrc
+      - run:
+          name: build half of the packages (to avoid out of memory in circleci)
+          command: |
+            yarn run build:package-all
+      - run:
+          name: build the other half of the packages
+          command: |
+            yarn run build:package-all-1
+      - run:
+          name: increase min time out
+          command: |
+            npm config set fetch-retry-mintimeout 20000
+      - run:
+          name: increase max time out
+          command: |
+            npm config set fetch-retry-maxtimeout 120000
+      - run:
+          name: publish package versions
+          command: |
+            node ./publish-version.mjs
+      - run:
+          name: Again set the NPM registry (was deleted in the version script)
+          command: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/repo/.npmrc
+      - run:
+          name: publish package dist
+          command: |
+            node ./publish-package.mjs
+      - persist_to_workspace:
+          root: ~/repo
+          paths:
+            - .
+
+  DOCKER_RELEASE_PUBLISH:
+    <<: *defaults
+    resource_class: large
+    steps:
+      - attach_workspace:
+          at: ~/repo
+      - setup_remote_docker:
+          docker_layer_caching: false
+      - run:
+          name: Build and push Docker image from the release branch
+          command: |
+            # This file will exist if a new version was published by
+            # our command in the previous job.
+            if [[ ! -e version.txt ]]; then
+              exit 0
+            else
+              # Remove npm config
+              rm -f ./.npmrc
+              # Set our version number using vars
+              export IMAGE_VERSION=$(cat version.txt)
+              export IMAGE_VERSION_FULL=v$IMAGE_VERSION
+              echo $IMAGE_VERSION
+              echo $IMAGE_VERSION_FULL
+              # Build our image, auth, and push
+              docker build --tag ohif/app:$IMAGE_VERSION_FULL --tag ohif/app:latest .
+              echo $DOCKER_PWD | docker login -u $DOCKER_LOGIN --password-stdin
+              docker push ohif/app:$IMAGE_VERSION_FULL
+              docker push ohif/app:latest
+            fi
+
+  DOCKER_BETA_PUBLISH:
+    <<: *defaults
+    resource_class: large
+    steps:
+      - attach_workspace:
+          at: ~/repo
+      - setup_remote_docker:
+          docker_layer_caching: false
+      - run:
+          name: Build and push Docker image from the master branch (beta releases)
+          command: |
+            echo $(ls -l)
+
+            # This file will exist if a new version was published by
+            # our command in the previous job.
+            if [[ ! -e version.txt ]]; then
+              echo "don't have version txt"
+              exit 0
+            else
+              echo "Building and pushing Docker image from the master branch (beta releases)"
+              rm -f ./.npmrc
+              # Set our version number using vars
+              export IMAGE_VERSION=$(cat version.txt)
+              export IMAGE_VERSION_FULL=v$IMAGE_VERSION
+              echo $IMAGE_VERSION
+              echo $IMAGE_VERSION_FULL
+              # Build our image, auth, and push
+
+              echo "starting docker build"
+              docker build --tag ohif/app:$IMAGE_VERSION_FULL .
+              echo $DOCKER_PWD | docker login -u $DOCKER_LOGIN --password-stdin
+
+              echo "starting docker push"
+              docker push ohif/app:$IMAGE_VERSION_FULL
+            fi
 
   # This is copied from the Cypress orb since the default for cypress/run is node 16 and
   # we migrated to 18
@@ -204,7 +354,7 @@ jobs:
           - yarn-berry
         type: enum
       parallelism:
-        default: 1
+        default: 4
         description: |
           Number of Circle machines to use for load balancing, min 1
           (requires `parallel` and `record` flags in your `cypress-command`)

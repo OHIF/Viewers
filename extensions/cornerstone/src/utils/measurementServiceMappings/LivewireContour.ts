@@ -2,7 +2,8 @@ import SUPPORTED_TOOLS from './constants/supportedTools';
 import getSOPInstanceAttributes from './utils/getSOPInstanceAttributes';
 import { getDisplayUnit } from './utils';
 import { utils } from '@ohif/core';
-
+import { getIsLocked } from './utils/getIsLocked';
+import { getIsVisible } from './utils/getIsVisible';
 /**
  * Represents a mapping utility for Livewire measurements.
  */
@@ -28,6 +29,8 @@ const LivewireContour = {
     const { annotation } = csToolsEventDetail;
     const { metadata, data, annotationUID } = annotation;
 
+    const isLocked = getIsLocked(annotationUID);
+    const isVisible = getIsVisible(annotationUID);
     if (!metadata || !data) {
       console.warn('Livewire tool: Missing metadata or data');
       return null;
@@ -65,7 +68,9 @@ const LivewireContour = {
       toolName: metadata.toolName,
       displaySetInstanceUID: displaySet.displaySetInstanceUID,
       label: data.label,
-      displayText: getDisplayText(annotation, displaySet, customizationService),
+      isLocked,
+      isVisible,
+      displayText: getDisplayText(annotation, displaySet),
       data: data.cachedStats,
       type: getValueTypeFromToolType(toolName),
       getReport: () => getColumnValueReport(annotation, customizationService),
@@ -119,7 +124,7 @@ function getColumnValueReport(annotation, customizationService) {
  * @param {Object} displaySet - The display set object.
  * @returns {string[]} - An array of display text.
  */
-function getDisplayText(annotation, displaySet, customizationService) {
+function getDisplayText(annotation, displaySet) {
   const { metadata, data } = annotation;
 
   if (!data.cachedStats || !data.cachedStats[`imageId:${metadata.referencedImageId}`]) {
@@ -132,7 +137,7 @@ function getDisplayText(annotation, displaySet, customizationService) {
 
   const displayText = [];
 
-  const instance = displaySet.images.find(image => image.SOPInstanceUID === SOPInstanceUID);
+  const instance = displaySet.instances.find(image => image.SOPInstanceUID === SOPInstanceUID);
   let InstanceNumber;
   if (instance) {
     InstanceNumber = instance.InstanceNumber;
@@ -142,18 +147,25 @@ function getDisplayText(annotation, displaySet, customizationService) {
   const frameText = displaySet.isMultiFrame ? ` F: ${frameNumber}` : '';
 
   const { SeriesNumber } = displaySet;
-  if (SeriesNumber) {
-    displayText.push(`S: ${SeriesNumber}${instanceText}${frameText}`);
+  let seriesText = null;
+  if (SeriesNumber !== undefined) {
+    seriesText = `S: ${SeriesNumber}${instanceText}${frameText}`;
   }
 
+  const texts = [];
   if (area) {
-    /**
-     * Add Area
-     * Area sometimes becomes undefined if `preventHandleOutsideImage` is off
-     */
     const roundedArea = utils.roundNumber(area || 0, 2);
-    displayText.push(`${roundedArea} ${getDisplayUnit(areaUnit)}`);
+    texts.push(`${roundedArea} ${getDisplayUnit(areaUnit)}`);
   }
+
+  if (seriesText) {
+    texts.push(seriesText);
+  }
+
+  displayText.push({
+    text: texts,
+    series: seriesText,
+  });
 
   return displayText;
 }

@@ -36,9 +36,9 @@ Cypress.Commands.add('openStudy', PatientName => {
   cy.openStudyList();
   cy.get('#filter-patientNameOrId').type(PatientName);
   // cy.get('@getStudies').then(() => {
-  cy.waitQueryList();
+  // cy.waitQueryList();
 
-  cy.get('[data-cy="study-list-results"]', { timeout: 5000 })
+  cy.get('[data-cy="study-list-results"]', { timeout: 15000 })
     .contains(PatientName)
     .first()
     .click({ force: true });
@@ -79,8 +79,9 @@ Cypress.Commands.add(
 );
 
 Cypress.Commands.add('waitQueryList', () => {
-  cy.get('[data-querying="false"]');
+  cy.get('[data-querying="false"]', { timeout: 15000 });
 });
+
 /**
  * Command to search for a Modality and open the study.
  *
@@ -106,10 +107,10 @@ Cypress.Commands.add('isPageLoaded', (url = '/basic-test') => {
 
 Cypress.Commands.add('openStudyList', () => {
   cy.initRouteAliases();
-  cy.visit('/', { timeout: 15000 });
+  cy.visit('/', { timeout: 30000 });
 
   // For some reason cypress 12.x does not like to stub the network request
-  // so we just wait here for 1 second
+  // so we just wait here for querying to be done.
   // cy.wait('@getStudies');
   cy.waitQueryList();
 });

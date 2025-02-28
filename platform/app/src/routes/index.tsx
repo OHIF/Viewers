@@ -1,6 +1,6 @@
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
-import { ErrorBoundary } from '@ohif/ui';
+import { ErrorBoundary } from '@ohif/ui-next';
 
 // Route Components
 import DataSourceWrapper from './DataSourceWrapper';
@@ -121,10 +121,7 @@ const createRoutes = ({
   function RouteWithErrorBoundary({ route, ...rest }) {
     // eslint-disable-next-line react/jsx-props-no-spreading
     return (
-      <ErrorBoundary
-        context={`Route ${route.path}`}
-        fallbackRoute="/"
-      >
+      <ErrorBoundary context={`Route ${route.path}`}>
         <route.children
           {...rest}
           {...route.props}

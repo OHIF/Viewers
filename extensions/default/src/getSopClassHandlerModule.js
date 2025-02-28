@@ -1,11 +1,11 @@
-import { isImage } from '@ohif/core/src/utils/isImage';
-import sopClassDictionary from '@ohif/core/src/utils/sopClassDictionary';
-import ImageSet from '@ohif/core/src/classes/ImageSet';
-import isDisplaySetReconstructable from '@ohif/core/src/utils/isDisplaySetReconstructable';
+import { utils, classes } from '@ohif/core';
 import { id } from './id';
 import getDisplaySetMessages from './getDisplaySetMessages';
 import getDisplaySetsFromUnsupportedSeries from './getDisplaySetsFromUnsupportedSeries';
 import { chartHandler } from './SOPClassHandlers/chartSOPClassHandler';
+
+const { isImage, sopClassDictionary, isDisplaySetReconstructable } = utils;
+const { ImageSet } = classes;
 
 const DEFAULT_VOLUME_LOADER_SCHEME = 'cornerstoneStreamingImageVolume';
 const DYNAMIC_VOLUME_LOADER_SCHEME = 'cornerstoneStreamingDynamicImageVolume';
@@ -178,7 +178,6 @@ function getDisplaySetsFromSeries(instances) {
 
       displaySet.setAttributes({
         sopClassUids,
-        isClip: true,
         numImageFrames: instance.NumberOfFrames,
         instanceNumber: instance.InstanceNumber,
         acquisitionDatetime: instance.AcquisitionDateTime,
@@ -254,7 +253,8 @@ const sopClassUids = [
   sopClassDictionary.OphthalmicPhotography8BitImageStorage,
   sopClassDictionary.OphthalmicPhotography16BitImageStorage,
   sopClassDictionary.OphthalmicTomographyImageStorage,
-  sopClassDictionary.VLWholeSlideMicroscopyImageStorage,
+  // Handled by another sop class module
+  // sopClassDictionary.VLWholeSlideMicroscopyImageStorage,
   sopClassDictionary.PositronEmissionTomographyImageStorage,
   sopClassDictionary.EnhancedPETImageStorage,
   sopClassDictionary.LegacyConvertedEnhancedPETImageStorage,

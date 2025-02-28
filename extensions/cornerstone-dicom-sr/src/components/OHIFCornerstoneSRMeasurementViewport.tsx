@@ -9,6 +9,7 @@ import { Icon, Tooltip, useViewportGrid, ViewportActionArrows } from '@ohif/ui';
 import hydrateStructuredReport from '../utils/hydrateStructuredReport';
 import { useAppConfig } from '@state';
 import createReferencedImageDisplaySet from '../utils/createReferencedImageDisplaySet';
+import { usePositionPresentationStore } from '@ohif/extension-cornerstone';
 
 const MEASUREMENT_TRACKING_EXTENSION_ID = '@ohif/extension-measurement-tracking';
 
@@ -19,6 +20,8 @@ function OHIFCornerstoneSRMeasurementViewport(props: withAppTypes) {
     props;
 
   const [appConfig] = useAppConfig();
+
+  const { setPositionPresentation } = usePositionPresentationStore();
 
   const {
     displaySetService,
@@ -63,6 +66,7 @@ function OHIFCornerstoneSRMeasurementViewport(props: withAppTypes) {
     trackedMeasurements = tracked?.[0];
     sendTrackedMeasurementsEvent = tracked?.[1];
   }
+
   if (!sendTrackedMeasurementsEvent) {
     // if no panels from measurement-tracking extension is used, this code will run
     trackedMeasurements = null;
@@ -72,6 +76,7 @@ function OHIFCornerstoneSRMeasurementViewport(props: withAppTypes) {
         { servicesManager, extensionManager, appConfig },
         displaySetInstanceUID
       );
+
       const displaySets = displaySetService.getDisplaySetsForSeries(SeriesInstanceUIDs[0]);
       if (displaySets.length) {
         viewportGridService.setDisplaySetsForViewports([
@@ -84,6 +89,11 @@ function OHIFCornerstoneSRMeasurementViewport(props: withAppTypes) {
     };
   }
 
+  /**
+   * Todo: what is this, not sure what it does regarding the react aspect,
+   * it is updating a local variable? which is not state.
+   */
+  const [isLocked, setIsLocked] = useState(trackedMeasurements?.context?.trackedSeries?.length > 0);
   /**
    * Store the tracking identifiers per viewport in order to be able to
    * show the SR measurements on the referenced image on the correct viewport,
@@ -135,30 +145,21 @@ function OHIFCornerstoneSRMeasurementViewport(props: withAppTypes) {
         newMeasurementSelected,
         displaySetService
       ).then(({ referencedDisplaySet, referencedDisplaySetMetadata }) => {
+        if (!referencedDisplaySet || !referencedDisplaySetMetadata) {
+          return;
+        }
+
         setMeasurementSelected(newMeasurementSelected);
         setActiveImageDisplaySetData(referencedDisplaySet);
         setReferencedDisplaySetMetadata(referencedDisplaySetMetadata);
 
-        if (
-          referencedDisplaySet.displaySetInstanceUID ===
-          activeImageDisplaySetData?.displaySetInstanceUID
-        ) {
-          const { measurements } = srDisplaySet;
-
-          // it means that we have a new referenced display set, and the
-          // imageIdIndex will handle it by updating the viewport, but if they
-          // are the same we just need to use measurementService to jump to the
-          // new measurement
-          const csViewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
-
-          const imageIds = csViewport.getImageIds();
-
-          const imageIdIndex = imageIds.indexOf(measurements[newMeasurementSelected].imageId);
-
-          if (imageIdIndex !== -1) {
-            csViewport.setImageIdIndex(imageIdIndex);
-          }
-        }
+        const { presentationIds } = viewportOptions;
+        const measurement = srDisplaySet.measurements[newMeasurementSelected];
+        setPositionPresentation(presentationIds.positionPresentationId, {
+          viewReference: {
+            referencedImageId: measurement.imageId,
+          },
+        });
       });
     },
     [dataSource, srDisplaySet, activeImageDisplaySetData, viewportId]
@@ -179,10 +180,6 @@ function OHIFCornerstoneSRMeasurementViewport(props: withAppTypes) {
     if (!measurement) {
       return null;
     }
-
-    const initialImageIndex = activeImageDisplaySetData.images.findIndex(
-      image => image.imageId === measurement.imageId
-    );
 
     return (
       <Component
@@ -208,7 +205,6 @@ function OHIFCornerstoneSRMeasurementViewport(props: withAppTypes) {
           props.onElementEnabled?.(evt);
           onElementEnabled(evt);
         }}
-        initialImageIndex={initialImageIndex}
         isJumpToMeasurementDisabled={true}
       ></Component>
     );
@@ -289,17 +285,12 @@ function OHIFCornerstoneSRMeasurementViewport(props: withAppTypes) {
     updateSR();
   }, [measurementSelected, element, setTrackingIdentifiers, srDisplaySet]);
 
-  /**
-   * Todo: what is this, not sure what it does regarding the react aspect,
-   * it is updating a local variable? which is not state.
-   */
-  const [isLocked, setIsLocked] = useState(trackedMeasurements?.context?.trackedSeries?.length > 0);
   useEffect(() => {
     setIsLocked(trackedMeasurements?.context?.trackedSeries?.length > 0);
   }, [trackedMeasurements]);
 
   useEffect(() => {
-    viewportActionCornersService.setComponents([
+    viewportActionCornersService.addComponents([
       {
         viewportId,
         id: 'viewportStatusComponent',
@@ -393,6 +384,10 @@ async function _getViewportReferencedDisplaySetData(
     // This is only for ease of redisplay - the display set is stored in the
     // usual manner in the display set service.
     displaySet.keyImageDisplaySet = createReferencedImageDisplaySet(displaySetService, displaySet);
+  }
+
+  if (!displaySetInstanceUID) {
+    return { referencedDisplaySetMetadata: null, referencedDisplaySet: null };
   }
 
   const referencedDisplaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);

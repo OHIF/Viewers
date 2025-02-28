@@ -161,7 +161,7 @@ const SegmentationConfig = ({
           />
         )}
       </div>
-      <div className="h-[6px] bg-black "></div>
+      <div className="h-[6px] bg-black"></div>
     </div>
   );
 };

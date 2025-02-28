@@ -6,35 +6,20 @@ import DicomMetadataStore from '../services/DicomMetadataStore';
 import fetchPaletteColorLookupTableData from '../utils/metadataProvider/fetchPaletteColorLookupTableData';
 import toNumber from '../utils/toNumber';
 import combineFrameInstance from '../utils/combineFrameInstance';
+import formatPN from '../utils/formatPN';
 
 class MetadataProvider {
-  constructor() {
-    // Define the main "metadataLookup" private property as an immutable property.
-    Object.defineProperty(this, 'studies', {
-      configurable: false,
-      enumerable: false,
-      writable: false,
-      value: new Map(),
-    });
-    Object.defineProperty(this, 'imageURIToUIDs', {
-      configurable: false,
-      enumerable: false,
-      writable: false,
-      value: new Map(),
-    });
-    // Can be used to store custom metadata for a specific type.
-    // For instance, the scaling metadata for PET can be stored here
-    // as type "scalingModule"
-    //
-    Object.defineProperty(this, 'customMetadata', {
-      configurable: false,
-      enumerable: false,
-      writable: false,
-      value: new Map(),
-    });
-  }
+  private readonly imageURIToUIDs: Map<string, any> = new Map();
+  // Can be used to store custom metadata for a specific type.
+  // For instance, the scaling metadata for PET can be stored here
+  // as type "scalingModule"
+  private readonly customMetadata: Map<string, any> = new Map();
 
   addImageIdToUIDs(imageId, uids) {
+    if (!imageId) {
+      throw new Error('MetadataProvider::Empty imageId');
+    }
+
     // This method is a fallback for when you don't have WADO-URI or WADO-RS.
     // You can add instances fetched by any method by calling addInstance, and hook an imageId to point at it here.
     // An example would be dicom hosted at some random site.
@@ -52,6 +37,10 @@ class MetadataProvider {
   }
 
   _getInstance(imageId) {
+    if (!imageId) {
+      throw new Error('MetadataProvider::Empty imageId');
+    }
+
     const uids = this.getUIDsFromImageID(imageId);
 
     if (!uids) {
@@ -357,7 +346,7 @@ class MetadataProvider {
 
         let patientName;
         if (PatientName) {
-          patientName = PatientName.Alphabetic;
+          patientName = formatPN(PatientName);
         }
 
         metadata = {
@@ -389,6 +378,7 @@ class MetadataProvider {
       case WADO_IMAGE_LOADER_TAGS.CINE_MODULE:
         metadata = {
           frameTime: instance.FrameTime,
+          numberOfFrames: instance.NumberOfFrames ? Number(instance.NumberOfFrames) : 1,
         };
 
         break;
@@ -471,16 +461,6 @@ class MetadataProvider {
   }
 
   getUIDsFromImageID(imageId) {
-    if (!imageId) {
-      throw new Error('MetadataProvider::Empty imageId');
-    }
-    // TODO: adding csiv here is not really correct. Probably need to use
-    // metadataProvider.addImageIdToUIDs(imageId, {
-    //   StudyInstanceUID,
-    //   SeriesInstanceUID,
-    //   SOPInstanceUID,
-    // })
-    // somewhere else
     if (imageId.startsWith('wadors:')) {
       const strippedImageId = imageId.split('/studies/')[1];
       const splitImageId = strippedImageId.split('/');
@@ -559,7 +539,7 @@ const WADO_IMAGE_LOADER = {
       frameOfReferenceUID: instance.FrameOfReferenceUID,
       rows: toNumber(instance.Rows),
       columns: toNumber(instance.Columns),
-      imageOrientationPatient: toNumber(ImageOrientationPatient),
+      imageOrientationPatient: toNumber(ImageOrientationPatient) || [0, 1, 0, 0, 0, -1],
       rowCosines: toNumber(rowCosines || [0, 1, 0]),
       isDefaultValueSetForRowCosine: toNumber(rowCosines) ? false : true,
       columnCosines: toNumber(columnCosines || [0, 0, -1]),

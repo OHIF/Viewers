@@ -67,14 +67,14 @@ You can check out the studies that we have put in this [Dropbox link](https://ww
 <!--
   Links
   -->
-[general]: ../faq.md#general
-[technical]: ../faq.md#technical
-[report-bug]: ../faq.md#how-do-i-report-a-bug
-[new-feature]: ../faq.md#how-can-i-request-a-new-feature
-[commercial-support]: ../faq.md#does-ohif-offer-commercial-support
-[academic]: ../faq.md#who-should-i-contact-about-academic-collaborations
-[fda-clearance]: ../faq.md#does-the-ohif-viewer-have-510k-clearance-from-the-us-fda-or-ce-marking-from-the-european-commission
-[hipaa]: ../faq.md#is-the-ohif-viewer-hipaa-compliant
+[general]: general
+[technical]: technical
+[report-bug]: how-do-i-report-a-bug
+[new-feature]: how-can-i-request-a-new-feature
+[commercial-support]: does-ohif-offer-commercial-support
+[academic]: who-should-i-contact-about-academic-collaborations
+[fda-clearance]: does-the-ohif-viewer-have-510k-clearance-from-the-us-fda-or-ce-marking-from-the-european-commission
+[hipaa]: is-the-ohif-viewer-hipaa-compliant
 [501k-clearance]: https://www.fda.gov/MedicalDevices/DeviceRegulationandGuidance/HowtoMarketYourDevice/PremarketSubmissions/PremarketNotification510k/
 [ce-marking]: https://ec.europa.eu/growth/single-market/ce-marking_en
 [hipaa-def]: https://en.wikipedia.org/wiki/Health_Insurance_Portability_and_Accountability_Act

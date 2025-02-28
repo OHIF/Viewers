@@ -3,7 +3,6 @@ import React from 'react';
 
 import getSopClassHandlerModule from './getSopClassHandlerModule';
 import getHangingProtocolModule from './getHangingProtocolModule';
-import getPanelModule from './getPanelModule';
 import getCommandsModule from './commandsModule';
 import { getToolbarModule } from './getToolbarModule';
 
@@ -28,13 +27,6 @@ const extension = {
    * You ID can be anything you want, but it should be unique.
    */
   id,
-  /**
-   * PanelModule should provide a list of panels that will be available in OHIF
-   * for Modes to consume and render. Each panel is defined by a {name,
-   * iconName, iconLabel, label, component} object. Example of a panel module
-   * is the StudyBrowserPanel that is provided by the default extension in OHIF.
-   */
-  getPanelModule,
   getCommandsModule,
   getToolbarModule,
   getViewportModule({ servicesManager, extensionManager, commandsManager }) {

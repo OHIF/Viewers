@@ -3,6 +3,384 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.9.3](https://github.com/OHIF/Viewers/compare/v3.9.2...v3.9.3) (2025-01-21)
+
+
+### Bug Fixes
+
+* OHIF 3.9 Recovery 3 ([#4697](https://github.com/OHIF/Viewers/issues/4697)) ([5d4f2e2](https://github.com/OHIF/Viewers/commit/5d4f2e2a8e62f8de97d56a4e3f17be6018e9f2eb))
+
+
+
+
+
+## [3.9.2](https://github.com/OHIF/Viewers/compare/v3.9.1...v3.9.2) (2024-12-03)
+
+
+### Bug Fixes
+
+* **modes:** don't attempt to retrieve a stage index if HPs  ([#4552](https://github.com/OHIF/Viewers/issues/4552)) ([e5286d9](https://github.com/OHIF/Viewers/commit/e5286d9fc2449da50b738e7e6208d489cce1633e))
+* **multiframe:** metadata handling of NM studies and loading order ([#4540](https://github.com/OHIF/Viewers/issues/4540)) ([71f06dc](https://github.com/OHIF/Viewers/commit/71f06dcd3e6d24f1e3d931f7db756c26038927da))
+
+
+
+
+
+## [3.9.1](https://github.com/OHIF/Viewers/compare/v3.9.0...v3.9.1) (2024-11-13)
+
+
+### Bug Fixes
+
+* video playback ([#4497](https://github.com/OHIF/Viewers/issues/4497)) ([610faa5](https://github.com/OHIF/Viewers/commit/610faa5a2738da5eabc40e57e338c359f481e852))
+
+
+
+
+
+# [3.9.0](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.111...v3.9.0) (2024-11-12)
+
+**Note:** Version bump only for package @ohif/app
+
+
+
+
+
+# [3.9.0-beta.111](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.110...v3.9.0-beta.111) (2024-11-12)
+
+
+### Bug Fixes
+
+* Measurement Tracking: Various UI and functionality improvements ([#4481](https://github.com/OHIF/Viewers/issues/4481)) ([62b2748](https://github.com/OHIF/Viewers/commit/62b27488471c9d5979142e2d15872a85778b90ed))
+
+
+
+
+
+# [3.9.0-beta.110](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.109...v3.9.0-beta.110) (2024-11-11)
+
+
+### Bug Fixes
+
+* **bugs:** Update dependencies and enhance UI components ([#4478](https://github.com/OHIF/Viewers/issues/4478)) ([05d41c5](https://github.com/OHIF/Viewers/commit/05d41c52068a3b7ba249f15ecdf71838c352fd30))
+
+
+
+
+
+# [3.9.0-beta.109](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.108...v3.9.0-beta.109) (2024-11-08)
+
+
+### Bug Fixes
+
+* **style:** worklist shifting ([#4477](https://github.com/OHIF/Viewers/issues/4477)) ([8fb8b3b](https://github.com/OHIF/Viewers/commit/8fb8b3bfd1c887cd67fc058629d7aba598c76f9e))
+
+
+
+
+
+# [3.9.0-beta.108](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.107...v3.9.0-beta.108) (2024-11-07)
+
+
+### Bug Fixes
+
+* **tmtv:** fix toggle one up weird behaviours ([#4473](https://github.com/OHIF/Viewers/issues/4473)) ([aa2b649](https://github.com/OHIF/Viewers/commit/aa2b649444eb4fe5422e72ea7830a709c4d24a90))
+
+
+
+
+
+# [3.9.0-beta.107](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.106...v3.9.0-beta.107) (2024-11-06)
+
+
+### Bug Fixes
+
+* build ([#4471](https://github.com/OHIF/Viewers/issues/4471)) ([3d11ef2](https://github.com/OHIF/Viewers/commit/3d11ef28f213361ec7586809317bd219fa70e742))
+
+
+
+
+
+# [3.9.0-beta.106](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.105...v3.9.0-beta.106) (2024-11-06)
+
+**Note:** Version bump only for package @ohif/app
+
+
+
+
+
+# [3.9.0-beta.105](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.104...v3.9.0-beta.105) (2024-11-05)
+
+**Note:** Version bump only for package @ohif/app
+
+
+
+
+
+# [3.9.0-beta.104](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.103...v3.9.0-beta.104) (2024-10-30)
+
+**Note:** Version bump only for package @ohif/app
+
+
+
+
+
+# [3.9.0-beta.103](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.102...v3.9.0-beta.103) (2024-10-29)
+
+**Note:** Version bump only for package @ohif/app
+
+
+
+
+
+# [3.9.0-beta.102](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.101...v3.9.0-beta.102) (2024-10-29)
+
+**Note:** Version bump only for package @ohif/app
+
+
+
+
+
+# [3.9.0-beta.101](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.100...v3.9.0-beta.101) (2024-10-18)
+
+
+### Features
+
+* **new-study-panel:** default to list view for non thumbnail series, change default fitler to all, and add more menu to thumbnail items with a dicom tag browser ([#4417](https://github.com/OHIF/Viewers/issues/4417)) ([a7fd9fa](https://github.com/OHIF/Viewers/commit/a7fd9fa5bfff7a1b533d99cb96f7147a35fd528f))
+
+
+
+
+
+# [3.9.0-beta.100](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.99...v3.9.0-beta.100) (2024-10-17)
+
+**Note:** Version bump only for package @ohif/app
+
+
+
+
+
+# [3.9.0-beta.99](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.98...v3.9.0-beta.99) (2024-10-17)
+
+
+### Features
+
+* **hangingProtocols:** added selection of the HangingProtocol stage from the url ([#4310](https://github.com/OHIF/Viewers/issues/4310)) ([fa2435d](https://github.com/OHIF/Viewers/commit/fa2435d5e94e5f903404ca94687b086f90f8d1f8))
+* **SR:** SCOORD3D point annotations support for stack viewports ([#4315](https://github.com/OHIF/Viewers/issues/4315)) ([ac1cad2](https://github.com/OHIF/Viewers/commit/ac1cad25af12ee0f7d508647e3134ed724d9b4d3))
+
+
+
+
+
+# [3.9.0-beta.98](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.97...v3.9.0-beta.98) (2024-10-15)
+
+**Note:** Version bump only for package @ohif/app
+
+
+
+
+
+# [3.9.0-beta.97](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.96...v3.9.0-beta.97) (2024-10-11)
+
+
+### Bug Fixes
+
+* **auth:** oidc-react-issue ([#4410](https://github.com/OHIF/Viewers/issues/4410)) ([e849199](https://github.com/OHIF/Viewers/commit/e849199eb0a9ecba4f9845aa1e07df775d5ded9b))
+
+
+
+
+
+# [3.9.0-beta.96](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.95...v3.9.0-beta.96) (2024-10-10)
+
+**Note:** Version bump only for package @ohif/app
+
+
+
+
+
+# [3.9.0-beta.95](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.94...v3.9.0-beta.95) (2024-10-08)
+
+**Note:** Version bump only for package @ohif/app
+
+
+
+
+
+# [3.9.0-beta.94](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.93...v3.9.0-beta.94) (2024-10-04)
+
+
+### Features
+
+* **tours:** freeze versions and add licensings doc ([#4407](https://github.com/OHIF/Viewers/issues/4407)) ([60a8d51](https://github.com/OHIF/Viewers/commit/60a8d5154a5d6d2b121bd93aeacf12d97ef9f8cb))
+
+
+
+
+
+# [3.9.0-beta.93](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.92...v3.9.0-beta.93) (2024-10-04)
+
+**Note:** Version bump only for package @ohif/app
+
+
+
+
+
+# [3.9.0-beta.92](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.91...v3.9.0-beta.92) (2024-10-01)
+
+**Note:** Version bump only for package @ohif/app
+
+
+
+
+
+# [3.9.0-beta.91](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.90...v3.9.0-beta.91) (2024-10-01)
+
+**Note:** Version bump only for package @ohif/app
+
+
+
+
+
+# [3.9.0-beta.90](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.89...v3.9.0-beta.90) (2024-09-30)
+
+**Note:** Version bump only for package @ohif/app
+
+
+
+
+
+# [3.9.0-beta.89](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.88...v3.9.0-beta.89) (2024-09-27)
+
+**Note:** Version bump only for package @ohif/app
+
+
+
+
+
+# [3.9.0-beta.88](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.87...v3.9.0-beta.88) (2024-09-24)
+
+**Note:** Version bump only for package @ohif/app
+
+
+
+
+
+# [3.9.0-beta.87](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.86...v3.9.0-beta.87) (2024-09-19)
+
+**Note:** Version bump only for package @ohif/app
+
+
+
+
+
+# [3.9.0-beta.86](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.85...v3.9.0-beta.86) (2024-09-19)
+
+**Note:** Version bump only for package @ohif/app
+
+
+
+
+
+# [3.9.0-beta.85](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.84...v3.9.0-beta.85) (2024-09-17)
+
+**Note:** Version bump only for package @ohif/app
+
+
+
+
+
+# [3.9.0-beta.84](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.83...v3.9.0-beta.84) (2024-09-12)
+
+**Note:** Version bump only for package @ohif/app
+
+
+
+
+
+# [3.9.0-beta.83](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.82...v3.9.0-beta.83) (2024-09-11)
+
+
+### Features
+
+* **studies-panel:** New OHIF study panel - under experimental flag ([#4254](https://github.com/OHIF/Viewers/issues/4254)) ([7a96406](https://github.com/OHIF/Viewers/commit/7a96406a116e46e62c396855fa64f434e2984b58))
+
+
+
+
+
+# [3.9.0-beta.82](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.81...v3.9.0-beta.82) (2024-09-05)
+
+
+### Bug Fixes
+
+* Add kheops integration into OHIF v3 again ([#4345](https://github.com/OHIF/Viewers/issues/4345)) ([e1feffa](https://github.com/OHIF/Viewers/commit/e1feffa42553d6c8650a4aceb09f72c637126660))
+
+
+
+
+
+# [3.9.0-beta.81](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.80...v3.9.0-beta.81) (2024-08-27)
+
+
+### Bug Fixes
+
+* 🐛 SeriesInstanceUID fallback + update retrieve metadata filtered to check for lazy ([#4346](https://github.com/OHIF/Viewers/issues/4346)) ([14498d4](https://github.com/OHIF/Viewers/commit/14498d4e9a6a57324b8be9f0b314f2901459dc4a))
+
+
+
+
+
+# [3.9.0-beta.80](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.79...v3.9.0-beta.80) (2024-08-16)
+
+**Note:** Version bump only for package @ohif/app
+
+
+
+
+
+# [3.9.0-beta.79](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.78...v3.9.0-beta.79) (2024-08-16)
+
+**Note:** Version bump only for package @ohif/app
+
+
+
+
+
+# [3.9.0-beta.78](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.77...v3.9.0-beta.78) (2024-08-15)
+
+
+### Features
+
+* Add CS3D WSI and Video Viewports and add annotation navigation for MPR ([#4182](https://github.com/OHIF/Viewers/issues/4182)) ([7599ec9](https://github.com/OHIF/Viewers/commit/7599ec9421129dcade94e6fa6ec7908424ab3134))
+
+
+
+
+
+# [3.9.0-beta.77](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.76...v3.9.0-beta.77) (2024-08-15)
+
+**Note:** Version bump only for package @ohif/app
+
+
+
+
+
+# [3.9.0-beta.76](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.75...v3.9.0-beta.76) (2024-08-08)
+
+**Note:** Version bump only for package @ohif/app
+
+
+
+
+
+# [3.9.0-beta.75](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.74...v3.9.0-beta.75) (2024-08-07)
+
+**Note:** Version bump only for package @ohif/app
+
+
+
+
+
 # [3.9.0-beta.74](https://github.com/OHIF/Viewers/compare/v3.9.0-beta.73...v3.9.0-beta.74) (2024-08-06)
 
 **Note:** Version bump only for package @ohif/app

@@ -1,8 +1,8 @@
 import SUPPORTED_TOOLS from './constants/supportedTools';
-import { getDisplayUnit } from './utils';
 import getSOPInstanceAttributes from './utils/getSOPInstanceAttributes';
 import { utils } from '@ohif/core';
-
+import { getIsLocked } from './utils/getIsLocked';
+import { getIsVisible } from './utils/getIsVisible';
 const UltrasoundDirectional = {
   toAnnotation: measurement => {},
 
@@ -19,9 +19,10 @@ const UltrasoundDirectional = {
     getValueTypeFromToolType,
     customizationService
   ) => {
-    const { annotation, viewportId } = csToolsEventDetail;
+    const { annotation } = csToolsEventDetail;
     const { metadata, data, annotationUID } = annotation;
-
+    const isLocked = getIsLocked(annotationUID);
+    const isVisible = getIsVisible(annotationUID);
     if (!metadata || !data) {
       console.warn('Length tool: Missing metadata or data');
       return null;
@@ -72,6 +73,8 @@ const UltrasoundDirectional = {
       data: data.cachedStats,
       type: getValueTypeFromToolType(toolName),
       getReport,
+      isLocked,
+      isVisible,
     };
   },
 };
@@ -167,16 +170,19 @@ function _getReport(mappedAnnotations, points, FrameOfReferenceUID, customizatio
 }
 
 function getDisplayText(mappedAnnotations, displaySet, customizationService) {
-  if (!mappedAnnotations || !mappedAnnotations.length) {
-    return '';
-  }
+  const displayText = {
+    primary: [],
+    secondary: [],
+  };
 
-  const displayText = [];
+  if (!mappedAnnotations || !mappedAnnotations.length) {
+    return displayText;
+  }
 
   const { xValues, yValues, units, isUnitless, SeriesNumber, SOPInstanceUID, frameNumber } =
     mappedAnnotations[0];
 
-  const instance = displaySet.images.find(image => image.SOPInstanceUID === SOPInstanceUID);
+  const instance = displaySet.instances.find(image => image.SOPInstanceUID === SOPInstanceUID);
 
   let InstanceNumber;
   if (instance) {
@@ -185,20 +191,22 @@ function getDisplayText(mappedAnnotations, displaySet, customizationService) {
 
   const instanceText = InstanceNumber ? ` I: ${InstanceNumber}` : '';
   const frameText = displaySet.isMultiFrame ? ` F: ${frameNumber}` : '';
-  const seriesText = `(S: ${SeriesNumber}${instanceText}${frameText})`;
+  const seriesText = `S: ${SeriesNumber}${instanceText}${frameText}`;
 
   if (xValues === undefined || yValues === undefined) {
     return displayText;
   }
 
   if (isUnitless) {
-    displayText.push(`${utils.roundNumber(xValues[0], 2)} ${units[0]} ${seriesText}`);
+    displayText.primary.push(`${utils.roundNumber(xValues[0], 2)} ${units[0]}`);
   } else {
     const dist1 = Math.abs(xValues[1] - xValues[0]);
     const dist2 = Math.abs(yValues[1] - yValues[0]);
-    displayText.push(`${utils.roundNumber(dist1)} ${units[0]} ${seriesText}`);
-    displayText.push(`${utils.roundNumber(dist2)} ${units[1]} ${seriesText}`);
+    displayText.primary.push(`${utils.roundNumber(dist1)} ${units[0]}`);
+    displayText.primary.push(`${utils.roundNumber(dist2)} ${units[1]}`);
   }
+
+  displayText.secondary.push(seriesText);
 
   return displayText;
 }

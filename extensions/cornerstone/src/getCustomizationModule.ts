@@ -1,6 +1,5 @@
 import { Enums } from '@cornerstonejs/tools';
 import { toolNames } from './initCornerstoneTools';
-import DicomUpload from './components/DicomUpload/DicomUpload';
 import defaultWindowLevelPresets from './components/WindowLevelActionMenu/defaultWindowLevelPresets';
 import { colormaps } from './utils/colormaps';
 import { CONSTANTS } from '@cornerstonejs/core';
@@ -23,10 +22,12 @@ const tools = {
       toolName: toolNames.Zoom,
       bindings: [{ mouseButton: Enums.MouseBindings.Secondary }],
     },
-    { toolName: toolNames.StackScrollMouseWheel, bindings: [] },
+    {
+      toolName: toolNames.StackScroll,
+      bindings: [{ mouseButton: Enums.MouseBindings.Wheel }],
+    },
   ],
   enabled: [
-    { toolName: toolNames.SegmentationDisplay },
     {
       toolName: toolNames.PlanarFreehandContourSegmentation,
       configuration: {
@@ -38,13 +39,6 @@ const tools = {
 
 function getCustomizationModule() {
   return [
-    {
-      name: 'cornerstoneDicomUploadComponent',
-      value: {
-        id: 'dicomUploadComponent',
-        component: DicomUpload,
-      },
-    },
     {
       name: 'default',
       value: [
@@ -120,7 +114,7 @@ function getCustomizationModule() {
                 type: 'value',
               },
               {
-                value: 'areaUnit',
+                value: 'areaUnits',
                 for: ['area'],
                 type: 'unit',
               },
@@ -140,7 +134,7 @@ function getCustomizationModule() {
               },
               {
                 displayName: 'Unit',
-                value: 'areaUnit',
+                value: 'areaUnits',
                 type: 'value',
               },
             ],
@@ -170,12 +164,12 @@ function getCustomizationModule() {
                 type: 'value',
               },
               {
-                value: 'modalityUnit',
+                value: 'pixelValueUnits',
                 for: ['mean', 'max' /** 'stdDev **/],
                 type: 'unit',
               },
               {
-                value: 'areaUnit',
+                value: 'areaUnits',
                 for: ['area'],
                 type: 'unit',
               },
