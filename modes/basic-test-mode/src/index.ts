@@ -1,4 +1,3 @@
-import { hotkeys } from '@ohif/core';
 import toolbarButtons from './toolbarButtons';
 import { id } from './id';
 import initToolGroups from './initToolGroups';

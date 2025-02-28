@@ -16,6 +16,7 @@ import loadingIndicatorProgress from '../../../assets/img/loading-indicator-icon
 import loadingIndicatorPercent from '../../../assets/img/loading-indicator-percent.png';
 import viewportActionCorners from '../../../assets/img/viewport-action-corners.png';
 import contextMenu from '../../../assets/img/context-menu.jpg';
+import segmentationOverlay from '../../../assets/img/segmentation-overlay.png';
 
 import segDisplayEditingTrue from '../../../assets/img/segDisplayEditingTrue.png';
 import segDisplayEditingFalse from '../../../assets/img/segDisplayEditingFalse.png';
@@ -778,6 +779,57 @@ window.config = {
           {
             'ui.labellingComponent': {
                 $set: CustomizedComponent,
+            },
+          },
+        ],
+      };
+        `,
+  },
+  {
+    id: 'viewportActionMenu.windowLevelActionMenu',
+    description:
+        'Configures the display and location of the window level action menu in the viewport.',
+    image: windowLevelActionMenu,
+    default: null,
+    configuration: `
+      window.config = {
+        // rest of window config
+        customizationService: [
+          {
+            'viewportActionMenu.windowLevelActionMenu': {
+              $set: {
+               enabled: true,
+               location: 1, // Set the location of the menu in the viewport.
+                            // 0: topLeft
+                            // 1: topRight
+                            // 2: bottomLeft
+                            // 3: bottomRight
+              }
+            },
+          },
+        ],
+      };
+        `,
+  },
+  {
+    id: 'viewportActionMenu.segmentationOverlay',
+    description: 'Configures the display and location of the segmentation overlay in the viewport.',
+    image: segmentationOverlay,
+    default: null,
+    configuration: `
+      window.config = {
+        // rest of window config
+        customizationService: [
+          {
+            'viewportActionMenu.segmentationOverlay': {
+               $set: {
+                 enabled: true,
+                 location: 1, // Set the location of the overlay in the viewport.
+                              // 0: topLeft
+                              // 1: topRight
+                              // 2: bottomLeft
+                              // 3: bottomRight
+               }
             },
           },
         ],

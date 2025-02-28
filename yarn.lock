@@ -1393,10 +1393,10 @@
   resolved "https://registry.yarnpkg.com/@colors/colors/-/colors-1.5.0.tgz#bb504579c1cae923e6576a4f5da43d25f97bdbd9"
   integrity sha512-ooWCrlZP11i8GImSjTHYHLkvFDP48nS4+204nGb1RiX/WXYHmJA2III9/e2DWVabCESdW7hBAEzHRqUn9OUVvQ==
 
-"@cornerstonejs/adapters@^2.19.14":
-  version "2.19.14"
-  resolved "https://registry.yarnpkg.com/@cornerstonejs/adapters/-/adapters-2.19.14.tgz#92eeddb53cae8a9be4b43182b8822de8e9c9c5f2"
-  integrity sha512-tHk8y4c1GGS4kpkJMNEcLVnFL6GfA4JzAUviPnjdTRYHd6GgqoSUt3m3JLAaahYSLPh5lRV9HLU/OYYfkUOuyg==
+"@cornerstonejs/adapters@^3.0.1":
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/@cornerstonejs/adapters/-/adapters-3.0.1.tgz#596e302d7155ee64b7c20bcfedc57ce6ca10d5fb"
+  integrity sha512-Ym6s4cTpMkojap5QZ8MXZ8hDbs2TMMN/ypqU7wKMwAY2LGoltoeGw0Z/7LL+iostbaSw3fVs+TZzJSKhKw8Bug==
   dependencies:
     "@babel/runtime-corejs2" "^7.17.8"
     buffer "^6.0.3"
@@ -1429,19 +1429,19 @@
   resolved "https://registry.yarnpkg.com/@cornerstonejs/codec-openjph/-/codec-openjph-2.4.5.tgz#8690b61a86fa53ef38a70eee9d665a79229517c0"
   integrity sha512-MZCUy8VG0VG5Nl1l58+g+kH3LujAzLYTfJqkwpWI2gjSrGXnP6lgwyy4GmPRZWVoS40/B1LDNALK905cNWm+sg==
 
-"@cornerstonejs/core@^2.19.14":
-  version "2.19.14"
-  resolved "https://registry.yarnpkg.com/@cornerstonejs/core/-/core-2.19.14.tgz#19dcafc347793ac7eb437f7ba9109d3244efc8d6"
-  integrity sha512-nVL/rAXFJRfvTC7cHgiSGZiJjRL8vfwhNMnSc+zqx356Bq2FsAPRC9clFlLw1KqvbBGNL/uC+24TD1VtIm1V5w==
+"@cornerstonejs/core@^3.0.1":
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/@cornerstonejs/core/-/core-3.0.1.tgz#8a938013c148d752d2c4f4eba7bd63048a6c814a"
+  integrity sha512-K+cOoN/TzJIPRRoaWWNkhJ+2CdkBBX8BA64DG0aBVOthlwJPRqK2YQE6PTTVRx18mjMA4to/m3de0emFNKrTzQ==
   dependencies:
     "@kitware/vtk.js" "32.9.0"
     comlink "^4.4.1"
     gl-matrix "^3.4.3"
 
-"@cornerstonejs/dicom-image-loader@^2.19.14":
-  version "2.19.14"
-  resolved "https://registry.yarnpkg.com/@cornerstonejs/dicom-image-loader/-/dicom-image-loader-2.19.14.tgz#130b4b5e2511d3256d1851ac4b886b23e7c9fb0a"
-  integrity sha512-5X5Acw2S5D5gH5D30nNGjIeeEFpZkMIZovs043nP72HCTeprNekjalVe/s7n/rOBXb0MfrUvODqJDnYMSBgx6g==
+"@cornerstonejs/dicom-image-loader@^3.0.1":
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/@cornerstonejs/dicom-image-loader/-/dicom-image-loader-3.0.1.tgz#e18f716620ab176d88c25b9efd25fc0983bce180"
+  integrity sha512-t4bI6rVOt4J8YOHRR9Mh9ClInajc98qqI6fwsByiXmtc2Y4INrZ1uaRspFnOJBosbr+EwsJBV7iT2yt6Jk6CjA==
   dependencies:
     "@cornerstonejs/codec-charls" "^1.2.3"
     "@cornerstonejs/codec-libjpeg-turbo-8bit" "^1.2.2"
@@ -1452,10 +1452,17 @@
     pako "^2.0.4"
     uuid "^9.0.0"
 
-"@cornerstonejs/tools@^2.19.14":
-  version "2.19.14"
-  resolved "https://registry.yarnpkg.com/@cornerstonejs/tools/-/tools-2.19.14.tgz#dbd54c7a93fefe6caef19b0a7f046d0a47199ac7"
-  integrity sha512-uZDhs5TXo9IvMqh+P2na4KiWb5NWCyKreaXN9HWPzv6P1QML9U7tvrfsXdYH3YnCCquddvZeLNwNraV/hWT5jw==
+"@cornerstonejs/polymorphic-segmentation@^3.0.1":
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/@cornerstonejs/polymorphic-segmentation/-/polymorphic-segmentation-3.0.1.tgz#3d3d3b1a186884cde576f54418a546f46b314bc2"
+  integrity sha512-oCT+U7iTv5oKDHOcEobtZ9gez2aNh/uJkyudO+edd5ndzwXpU+mXp/wre5D9xH5CBCigFG3nDJTZJrpzUHYKfg==
+  dependencies:
+    "@icr/polyseg-wasm" "0.4.0"
+
+"@cornerstonejs/tools@^3.0.1":
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/@cornerstonejs/tools/-/tools-3.0.1.tgz#4d707992283235d79532f35e60e8c763b174ccef"
+  integrity sha512-fRjoXJ46mdpYc5JZ/FUn0g1vCK4LohnNjgZl+O72HK2reMdc5/dQeCueJCT+tBMay04sJMUHm0tAke2DN10FBQ==
   dependencies:
     "@types/offscreencanvas" "2019.7.3"
     comlink "^4.4.1"
@@ -1924,7 +1931,7 @@
   resolved "https://registry.yarnpkg.com/@icons/material/-/material-0.2.4.tgz#e90c9f71768b3736e76d7dd6783fc6c2afa88bc8"
   integrity sha512-QPcGmICAPbGLGb6F/yNf/KzKqvFx8z5qx3D1yFqVAjoFmXK35EgyW+cJ57Te3CNsmzblwtzakLGFqHPqrfb4Tw==
 
-"@icr/polyseg-wasm@^0.4.0":
+"@icr/polyseg-wasm@0.4.0":
   version "0.4.0"
   resolved "https://registry.yarnpkg.com/@icr/polyseg-wasm/-/polyseg-wasm-0.4.0.tgz#755e23d07c3d8d8fca1113278c803c1ef0185da0"
   integrity sha512-3sZmiwG8I0NaqPle0L7+V/ZexiR7IjIUFkUsaOoFI9rNuBGyyMMmxAxnCmqcDFtBDk9h+JEYJf6e3NnqlHi/HQ==

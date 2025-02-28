@@ -9,6 +9,7 @@ import colorbarCustomization from './customizations/colorbarCustomization';
 import windowLevelPresetsCustomization from './customizations/windowLevelPresetsCustomization';
 import miscCustomization from './customizations/miscCustomization';
 import windowLevelActionMenuCustomization from './customizations/windowLevelActionMenuCustomization';
+import viewportActionMenuCustomizations from './customizations/viewportActionMenuCustomizations';
 
 function getCustomizationModule({ commandsManager, servicesManager }) {
   return [
@@ -26,6 +27,7 @@ function getCustomizationModule({ commandsManager, servicesManager }) {
         ...windowLevelPresetsCustomization,
         ...miscCustomization,
         ...windowLevelActionMenuCustomization,
+        ...viewportActionMenuCustomizations,
       },
     },
   ];
