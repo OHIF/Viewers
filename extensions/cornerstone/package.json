@@ -1,6 +1,6 @@
 {
   "name": "@ohif/extension-cornerstone",
-  "version": "3.10.0-beta.113",
+  "version": "3.10.0-beta.114",
   "description": "OHIF extension for Cornerstone",
   "author": "OHIF",
   "license": "MIT",
@@ -53,8 +53,8 @@
     "@babel/runtime": "^7.20.13",
     "@cornerstonejs/adapters": "^3.0.1",
     "@cornerstonejs/core": "^3.0.1",
-    "@cornerstonejs/tools": "^3.0.1",
     "@cornerstonejs/polymorphic-segmentation": "^3.0.1",
+    "@cornerstonejs/tools": "^3.0.1",
     "@itk-wasm/morphological-contour-interpolation": "1.1.0",
     "@kitware/vtk.js": "32.1.1",
     "html2canvas": "^1.4.1",
