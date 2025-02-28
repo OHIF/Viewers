@@ -46,6 +46,7 @@ import Show from './Sources/Show';
 import SidePanelCloseLeft from './Sources/SidePanelCloseLeft';
 import SidePanelCloseRight from './Sources/SidePanelCloseRight';
 import SortingAscending from './Sources/SortingAscending';
+import SocialGithub from './Sources/SocialGithub';
 import SortingDescending from './Sources/SortingDescending';
 import StatusError from './Sources/StatusError';
 import StatusSuccess from './Sources/StatusSuccess';
@@ -193,6 +194,7 @@ import Pencil from './Sources/Pencil';
 import NotificationWarning from './Sources/NotificationWarning';
 import ArrowRight from './Sources/ArrowRight';
 import ChevronLeft from './Sources/ChevronLeft';
+import StatusAlert from './Sources/StatusAlert';
 //
 //
 type IconProps = React.HTMLAttributes<SVGElement>;
@@ -470,6 +472,7 @@ export const Icons = {
   Show,
   SidePanelCloseLeft,
   SidePanelCloseRight,
+  SocialGithub,
   SortingAscending,
   SortingDescending,
   Sorting,
@@ -681,7 +684,7 @@ export const Icons = {
   'icon-transferring': (props: IconProps) => IconTransferring(props),
   'icon-alert-small': (props: IconProps) => Alert(props),
   'icon-alert-outline': (props: IconProps) => AlertOutline(props),
-  'status-alert': (props: IconProps) => Alert(props),
+  'status-alert': (props: IconProps) => StatusAlert(props),
   info: (props: IconProps) => Info(props),
   'notifications-info': (props: IconProps) => NotificationInfo(props),
   'notificationwarning-diamond': (props: IconProps) => NotificationWarning(props),

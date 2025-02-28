@@ -6,7 +6,13 @@ window.config = {
   // whiteLabeling: {},
   extensions: [],
   modes: [],
-  customizationService: {},
+  customizationService: {
+    'viewportActionMenu.windowLevelActionMenu': {
+      $merge: {
+        location: 0,
+      },
+    },
+  },
   showStudyList: true,
   // some windows systems have issues with more than 3 web workers
   maxNumberOfWebWorkers: 3,
@@ -17,6 +23,7 @@ window.config = {
   experimentalStudyBrowserSort: false,
   strictZSpacingForVolumeViewport: true,
   groupEnabledModesFirst: true,
+  allowMultiSelectExport: true,
   maxNumRequests: {
     interaction: 100,
     thumbnail: 75,
