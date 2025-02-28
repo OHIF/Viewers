@@ -273,24 +273,6 @@ window.config = {
     configuration: null,
   },
   {
-    id: 'cornerstone.windowLevelActionMenu',
-    description: 'Window level action menu for the cornerstone viewport.',
-    image: windowLevelActionMenu,
-    default: null,
-    configuration: `
-      window.config = {
-        // rest of window config
-        customizationService: [
-          {
-            'cornerstone.windowLevelActionMenu': {
-                $set: CustomizedComponent,
-            },
-          },
-        ],
-      };
-    `,
-  },
-  {
     id: 'cornerstone.windowLevelPresets',
     description: 'Window level presets for the cornerstone viewport.',
     image: windowLevelPresetsImage,
@@ -932,9 +914,8 @@ window.config = {
         customizationService: [
           {
             'viewportActionMenu.windowLevelActionMenu': {
-              $set: {
-               enabled: true,
-               location: 1, // Set the location of the menu in the viewport.
+              $merge: {
+               location: 0, // Set the location of the menu in the viewport.
                             // 0: topLeft
                             // 1: topRight
                             // 2: bottomLeft
@@ -957,7 +938,7 @@ window.config = {
         customizationService: [
           {
             'viewportActionMenu.segmentationOverlay': {
-               $set: {
+               $merge: {
                  enabled: true,
                  location: 1, // Set the location of the overlay in the viewport.
                               // 0: topLeft

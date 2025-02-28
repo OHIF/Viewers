@@ -6,7 +6,13 @@ window.config = {
   // whiteLabeling: {},
   extensions: [],
   modes: [],
-  customizationService: {},
+  customizationService: {
+    'viewportActionMenu.windowLevelActionMenu': {
+      $merge: {
+        location: 0,
+      },
+    },
+  },
   showStudyList: true,
   // some windows systems have issues with more than 3 web workers
   maxNumberOfWebWorkers: 3,
