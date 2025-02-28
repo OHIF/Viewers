@@ -106,6 +106,22 @@ function modeFactory() {
         'Crosshairs',
         'MoreTools',
       ]);
+
+      customizationService.setCustomizations(
+        {
+          'ohif.hotkeyBindings': {
+            $push: [
+              {
+                commandName: 'undo',
+                label: 'Undo',
+                keys: ['ctrl+z'],
+                isEditable: true,
+              },
+            ],
+          },
+        },
+        'mode'
+      );
     },
     onModeExit: ({ servicesManager }: withAppTypes) => {
       const {
@@ -213,7 +229,6 @@ function modeFactory() {
       // Don't store the hotkeys for basic-test-mode under the same key
       // because they get customized by tests
       name: 'basic-test-hotkeys',
-      hotkeys: [...hotkeys.defaults.hotkeyBindings],
     },
   };
 }

@@ -55,6 +55,7 @@ import SeriesMeasurements from './components/SeriesMeasurements';
 import DicomUpload from './components/DicomUpload/DicomUpload';
 import { useSegmentations } from './hooks/useSegmentations';
 import { StudySummaryFromMetadata } from './components/StudySummaryFromMetadata';
+import utils from './utils';
 
 const { imageRetrieveMetadataProvider } = cornerstone.utilities;
 
@@ -256,5 +257,6 @@ export {
   SeriesMeasurements,
   DicomUpload,
   StudySummaryFromMetadata,
+  utils,
 };
 export default cornerstoneExtension;

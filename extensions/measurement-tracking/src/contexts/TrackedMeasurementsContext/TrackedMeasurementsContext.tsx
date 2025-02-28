@@ -88,7 +88,8 @@ function TrackedMeasurementsContextProvider(
         m => trackedStudy === m.referenceStudyUID && trackedSeries.includes(m.referenceSeriesUID)
       );
 
-      const trackedMeasurement = trackedMeasurements[0];
+      // Jump to the last tracked measurement - most recent
+      const trackedMeasurement = trackedMeasurements[trackedMeasurements.length - 1];
       const referencedDisplaySetUID = trackedMeasurement.displaySetInstanceUID;
 
       // update the previously stored positionPresentation with the new viewportId
@@ -166,11 +167,13 @@ function TrackedMeasurementsContextProvider(
     hydrateStructuredReport: hydrateStructuredReport.bind(null, {
       servicesManager,
       extensionManager,
+      commandsManager,
       appConfig,
     }),
     promptLabelAnnotation: promptLabelAnnotation.bind(null, {
       servicesManager,
       extensionManager,
+      commandsManager,
     }),
   });
   machineOptions.guards = Object.assign({}, machineOptions.guards, {
@@ -293,9 +296,6 @@ function TrackedMeasurementsContextProvider(
 
 TrackedMeasurementsContextProvider.propTypes = {
   children: PropTypes.oneOf([PropTypes.func, PropTypes.node]),
-  servicesManager: PropTypes.object.isRequired,
-  commandsManager: PropTypes.object.isRequired,
-  extensionManager: PropTypes.object.isRequired,
   appConfig: PropTypes.object,
 };
 

@@ -149,6 +149,46 @@ window.config = {
 
 export const customizations = [
   {
+    id: 'ohif.hotkeyBindings',
+    description: 'Defines the hotkeys for the application.',
+    default: 'look at hotkeyBindingsCustomization.ts file',
+    configuration: `
+window.config = {
+  // rest of window config
+  customizationService: [
+    {
+      // this will override the default hotkeys and only have one hotkey
+      'ohif.hotkeyBindings': {
+        $set: [
+          {
+            commandName: 'scaleDownViewport',
+            label: 'Zoom Out',
+            keys: ['-'],
+            isEditable: true,
+          },
+        ],
+      },
+    },
+  ],
+
+  // or lets say you want to change one key of the default hotkeys to default
+  // something else
+  customizationService: [
+    {
+      // this will override the default hotkeys and only have one hotkey
+      'ohif.hotkeyBindings': {
+        $filter: {
+          match: { commandName: 'scaleDownViewport' },
+          $set: {
+            keys: ['ctrl+shift+-'],
+          },
+        },
+      },
+    },
+  ],
+    `,
+  },
+  {
     id: 'measurementLabels',
     description: 'Labels for measurement tools in the viewer that are automatically asked for.',
     image: measurementLabelsImage,

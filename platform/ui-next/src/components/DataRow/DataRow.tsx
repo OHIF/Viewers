@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Button } from '../../components/Button/Button';
 import {
   DropdownMenu,
@@ -90,6 +90,13 @@ const DataRow: React.FC<DataRowProps> = ({
 }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const isTitleLong = title?.length > 25;
+  const rowRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (isSelected && rowRef.current) {
+      rowRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  }, [isSelected]);
 
   const decodeHTML = (html: string) => {
     const txt = document.createElement('textarea');
@@ -152,7 +159,9 @@ const DataRow: React.FC<DataRowProps> = ({
   };
 
   return (
-    <div className={`flex flex-col ${isVisible ? '' : 'opacity-60'}`}>
+    <div
+      ref={rowRef}
+      className={`flex flex-col ${isVisible ? '' : 'opacity-60'}`}>
       <div
         className={`flex items-center ${
           isSelected ? 'bg-popover' : 'bg-muted'

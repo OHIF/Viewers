@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import { ViewportActionArrows } from '@ohif/ui';
 import { useViewportGrid } from '@ohif/ui-next';
+import { utils } from '@ohif/extension-cornerstone';
 
 import promptHydrateRT from '../utils/promptHydrateRT';
 import _getStatusComponent from './_getStatusComponent';
@@ -48,7 +49,7 @@ function OHIFCornerstoneRTViewport(props: withAppTypes) {
   const [viewportGrid, viewportGridService] = useViewportGrid();
 
   // States
-  const [selectedSegment, setSelectedSegment] = useState(1);
+  const selectedSegmentObjectIndex: number = 0;
   const { setPositionPresentation } = usePositionPresentationStore();
 
   // Hydration means that the RT is opened and segments are loaded into the
@@ -141,26 +142,15 @@ function OHIFCornerstoneRTViewport(props: withAppTypes) {
 
   const onSegmentChange = useCallback(
     direction => {
-      const segmentationId = rtDisplaySet.displaySetInstanceUID;
-      const segmentation = segmentationService.getSegmentation(segmentationId);
-
-      const { segments } = segmentation;
-
-      const numberOfSegments = Object.keys(segments).length;
-
-      let newSelectedSegmentIndex = selectedSegment + direction;
-
-      // Segment 0 is always background
-      if (newSelectedSegmentIndex >= numberOfSegments - 1) {
-        newSelectedSegmentIndex = 1;
-      } else if (newSelectedSegmentIndex === 0) {
-        newSelectedSegmentIndex = numberOfSegments - 1;
-      }
-
-      segmentationService.jumpToSegmentCenter(segmentationId, newSelectedSegmentIndex, viewportId);
-      setSelectedSegment(newSelectedSegmentIndex);
+      utils.handleSegmentChange({
+        direction,
+        segDisplaySet: rtDisplaySet,
+        viewportId,
+        selectedSegmentObjectIndex,
+        segmentationService,
+      });
     },
-    [selectedSegment, segmentationService]
+    [selectedSegmentObjectIndex]
   );
 
   useEffect(() => {

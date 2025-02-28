@@ -16,7 +16,7 @@ import {
 } from '@cornerstonejs/tools';
 import { PubSubService, Types as OHIFTypes } from '@ohif/core';
 import i18n from '@ohif/i18n';
-import { easeInOutBell, reverseEaseInOutBell } from '../../utils/transitions';
+import { easeInOutBell, easeInOutBellRelative } from '../../utils/transitions';
 import { mapROIContoursToRTStructData } from './RTSTRUCT/mapROIContoursToRTStructData';
 import { SegmentationRepresentations } from '@cornerstonejs/tools/enums';
 import { addColorLUT } from '@cornerstonejs/tools/segmentation/addColorLUT';
@@ -809,7 +809,8 @@ class SegmentationService extends PubSubService {
     if (!segmentIndex) {
       // grab the next available segment index based on the object keys,
       // so basically get the highest segment index value + 1
-      segmentIndex = Math.max(...Object.keys(csSegmentation.segments).map(Number)) + 1;
+      const segmentKeys = Object.keys(csSegmentation.segments);
+      segmentIndex = segmentKeys.length === 0 ? 1 : Math.max(...segmentKeys.map(Number)) + 1;
     }
 
     // update the segmentation
@@ -1636,10 +1637,7 @@ class SegmentationService extends PubSubService {
     const startTime = performance.now();
 
     const prevStyle = cstSegmentation.config.style.getStyle({
-      viewportId,
-      segmentationId,
       type: CONTOUR,
-      segmentIndex,
     }) as ContourStyle;
 
     const prevOutlineWidth = prevStyle.outlineWidth;
@@ -1649,18 +1647,11 @@ class SegmentationService extends PubSubService {
     const animate = (currentTime: number) => {
       const progress = (currentTime - startTime) / animationLength;
       if (progress >= 1) {
-        cstSegmentation.config.style.setStyle(
-          {
-            segmentationId,
-            segmentIndex,
-            type: CONTOUR,
-          },
-          {}
-        );
+        cstSegmentation.config.style.resetToGlobalStyle();
         return;
       }
 
-      const reversedProgress = reverseEaseInOutBell(progress, baseline);
+      const reversedProgress = easeInOutBellRelative(progress, baseline, prevOutlineWidth);
 
       cstSegmentation.config.style.setStyle(
         {

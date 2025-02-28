@@ -37,8 +37,8 @@ const combineFrameInstance = (frame, instance) => {
       let imagePositionPatient = instance.DetectorInformationSequence[0].ImagePositionPatient;
       let imageOrientationPatient = instance.ImageOrientationPatient;
 
-      imagePositionPatient = imagePositionPatient.map(it => Number(it));
-      imageOrientationPatient = imageOrientationPatient.map(it => Number(it));
+      imagePositionPatient = imagePositionPatient?.map(it => Number(it));
+      imageOrientationPatient = imageOrientationPatient?.map(it => Number(it));
       const SpacingBetweenSlices = Number(instance.SpacingBetweenSlices);
 
       // Calculate the position for the current frame

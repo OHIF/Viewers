@@ -135,7 +135,7 @@ Here is a schematic representation of our development workflow:
 
 ### Requirements
 
-- [Yarn 1.17.3+](https://yarnpkg.com/en/docs/install)
+- [Yarn 1.20.0+](https://yarnpkg.com/en/docs/install)
 - [Node 18+](https://nodejs.org/en/)
 - Yarn Workspaces should be enabled on your machine:
   - `yarn config set workspaces-experimental true`

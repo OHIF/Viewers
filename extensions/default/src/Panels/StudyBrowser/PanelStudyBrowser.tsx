@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useImageViewer } from '@ohif/ui';
 import { useViewportGrid } from '@ohif/ui-next';
 import { StudyBrowser } from '@ohif/ui-next';
-import { utils } from '@ohif/core';
+import { useSystem, utils } from '@ohif/core';
 import { useNavigate } from 'react-router-dom';
 import { Separator } from '@ohif/ui-next';
 import { PanelStudyBrowserHeader } from './PanelStudyBrowserHeader';
@@ -16,13 +16,12 @@ const { sortStudyInstances, formatDate, createStudyBrowserTabs } = utils;
  * @param {*} param0
  */
 function PanelStudyBrowser({
-  servicesManager,
   getImageSrc,
   getStudiesForPatientByMRN,
   requestDisplaySetCreationForStudy,
   dataSource,
-  commandsManager,
-}: withAppTypes) {
+}) {
+  const { servicesManager, commandsManager } = useSystem();
   const { hangingProtocolService, displaySetService, uiNotificationService, customizationService } =
     servicesManager.services;
   const navigate = useNavigate();

@@ -11,7 +11,7 @@ const configs = {
 const ohif = {
   layout: '@ohif/extension-default.layoutTemplateModule.viewerLayout',
   sopClassHandler: '@ohif/extension-default.sopClassHandlerModule.stack',
-  measurements: '@ohif/extension-default.panelModule.measure',
+  measurements: '@ohif/extension-cornerstone.panelModule.panelMeasurement',
   thumbnailList: '@ohif/extension-default.panelModule.seriesList',
 };
 
@@ -171,7 +171,6 @@ function modeFactory({ modeConfiguration }) {
       dicompdf.sopClassHandler,
       dicomsr.sopClassHandler,
     ],
-    hotkeys: [...hotkeys.defaults.hotkeyBindings],
   };
 }
 
