@@ -1,5 +1,6 @@
 import React from 'react';
 import { MeasurementTable, DataRow } from '@ohif/ui-next';
+import { useSystem } from '@ohif/core';
 
 /**
  * This is a measurement table that is designed to be nested inside

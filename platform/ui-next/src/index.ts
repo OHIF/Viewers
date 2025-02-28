@@ -100,8 +100,8 @@ import {
   ToolButtonListDivider,
   Toolbox,
   Numeric,
+  DataRow,
 } from './components';
-import { DataRow, MeasurementItemDetails, MeasurementItemMenu } from './components/DataRow';
 
 import {
   useNotification,

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState } from 'react';
 import { Button } from '../../components/Button/Button';
 import {
   DropdownMenu,
@@ -90,13 +90,6 @@ const DataRow: React.FC<DataRowProps> = ({
 }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const isTitleLong = title?.length > 25;
-  const rowRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (isSelected && rowRef.current) {
-      rowRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }
-  }, [isSelected]);
 
   const decodeHTML = (html: string) => {
     const txt = document.createElement('textarea');
@@ -159,9 +152,7 @@ const DataRow: React.FC<DataRowProps> = ({
   };
 
   return (
-    <div
-      ref={rowRef}
-      className={`flex flex-col ${isVisible ? '' : 'opacity-60'}`}>
+    <div className={`flex flex-col ${isVisible ? '' : 'opacity-60'}`}>
       <div
         className={`flex items-center ${
           isSelected ? 'bg-popover' : 'bg-muted'
@@ -241,47 +232,49 @@ const DataRow: React.FC<DataRowProps> = ({
           </Button>
 
           {/* Lock Icon (if needed) */}
-          {isLocked && !disableEditing &&  <Icons.Lock className="text-muted-foreground h-6 w-6" />}
+          {isLocked && !disableEditing && <Icons.Lock className="text-muted-foreground h-6 w-6" />}
 
           {/* Actions Dropdown Menu */}
           {disableEditing && <div className="h-6 w-6"></div>}
           {!disableEditing && (
-          <DropdownMenu onOpenChange={open => setIsDropdownOpen(open)}>
-            <DropdownMenuTrigger asChild>
-              <Button
-                size="icon"
-                variant="ghost"
-                className={`h-6 w-6 transition-opacity ${
-                  isSelected || isDropdownOpen ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
-                }`}
-                aria-label="Actions"
-                onClick={e => e.stopPropagation()} // Prevent row selection on button click
-              >
-                <Icons.More className="h-6 w-6" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              {!disableEditing && (
-                <>
-                  <DropdownMenuItem
-                    onClick={e => onAction(e, ['jumpToMeasurement', 'renameMeasurement'])}
-                  >
-                    <Icons.Rename className="text-foreground" />
-                    <span className="pl-2">Rename</span>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={e => onAction(e, 'removeMeasurement')}>
-                    <Icons.Delete className="text-foreground" />
-                    <span className="pl-2">Delete</span>
-                  </DropdownMenuItem>
-                </>
-              )}
-              <DropdownMenuItem onClick={e => onAction(e, 'toggleLockMeasurement')}>
-                <Icons.Lock className="text-foreground" />
-                <span className="pl-2">{isLocked ? 'Unlock' : 'Lock'}</span>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-)}
+            <DropdownMenu onOpenChange={open => setIsDropdownOpen(open)}>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  className={`h-6 w-6 transition-opacity ${
+                    isSelected || isDropdownOpen
+                      ? 'opacity-100'
+                      : 'opacity-0 group-hover:opacity-100'
+                  }`}
+                  aria-label="Actions"
+                  onClick={e => e.stopPropagation()} // Prevent row selection on button click
+                >
+                  <Icons.More className="h-6 w-6" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                {!disableEditing && (
+                  <>
+                    <DropdownMenuItem
+                      onClick={e => onAction(e, ['jumpToMeasurement', 'renameMeasurement'])}
+                    >
+                      <Icons.Rename className="text-foreground" />
+                      <span className="pl-2">Rename</span>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={e => onAction(e, 'removeMeasurement')}>
+                      <Icons.Delete className="text-foreground" />
+                      <span className="pl-2">Delete</span>
+                    </DropdownMenuItem>
+                  </>
+                )}
+                <DropdownMenuItem onClick={e => onAction(e, 'toggleLockMeasurement')}>
+                  <Icons.Lock className="text-foreground" />
+                  <span className="pl-2">{isLocked ? 'Unlock' : 'Lock'}</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
         </div>
       </div>
 
@@ -302,4 +295,4 @@ const DataRow: React.FC<DataRowProps> = ({
   );
 };
 
-export default DataRow;
+export { DataRow };
