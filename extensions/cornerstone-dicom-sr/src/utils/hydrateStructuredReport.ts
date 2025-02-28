@@ -215,14 +215,10 @@ export default function hydrateStructuredReport(
         dataSource
       );
 
-      const style = annotation.data.finding?.style || annotation.data.site?.style;
-      if (style) {
-        commandsManager.runCommand('updateMeasurement', {
-          uid: newAnnotationUID,
-          code: annotation.data.finding || annotation.data.site,
-          style,
-        });
-      }
+      commandsManager.runCommand('updateMeasurement', {
+        uid: newAnnotationUID,
+        code: annotation.data.finding,
+      });
 
       if (disableEditing) {
         locking.setAnnotationLocked(newAnnotationUID, true);
