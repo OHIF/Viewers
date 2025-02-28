@@ -26,6 +26,7 @@ const initMeasurementService = (
     EllipticalROI,
     CircleROI,
     ArrowAnnotate,
+    KeyImage,
     Angle,
     CobbAngle,
     RectangleROI,
@@ -96,6 +97,14 @@ const initMeasurementService = (
     ArrowAnnotate.matchingCriteria,
     ArrowAnnotate.toAnnotation,
     ArrowAnnotate.toMeasurement
+  );
+
+  measurementService.addMapping(
+    csTools3DVer1MeasurementSource,
+    'KeyImage',
+    KeyImage.matchingCriteria,
+    KeyImage.toAnnotation,
+    KeyImage.toMeasurement
   );
 
   measurementService.addMapping(

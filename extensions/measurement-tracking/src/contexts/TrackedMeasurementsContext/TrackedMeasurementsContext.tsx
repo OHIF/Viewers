@@ -89,6 +89,15 @@ function TrackedMeasurementsContextProvider(
       );
 
       // Jump to the last tracked measurement - most recent
+      if (!trackedMeasurement?.length) {
+        console.warn(
+          "Didn't find any tracked measurements",
+          measurements,
+          trackedStudy,
+          trackedSeries
+        );
+        return;
+      }
       const trackedMeasurement = trackedMeasurements[trackedMeasurements.length - 1];
       const referencedDisplaySetUID = trackedMeasurement.displaySetInstanceUID;
 

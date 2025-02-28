@@ -12,6 +12,10 @@ export default {
       displayText: [],
       report: [],
     },
+    KeyImage: {
+      displayText: [],
+      report: [],
+    },
     RectangleROi: {
       displayText: [],
       report: [],

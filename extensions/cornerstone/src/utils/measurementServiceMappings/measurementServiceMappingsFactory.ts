@@ -4,6 +4,7 @@ import Bidirectional from './Bidirectional';
 import EllipticalROI from './EllipticalROI';
 import CircleROI from './CircleROI';
 import ArrowAnnotate from './ArrowAnnotate';
+import KeyImage from './KeyImage';
 import CobbAngle from './CobbAngle';
 import Angle from './Angle';
 import PlanarFreehandROI from './PlanarFreehandROI';
@@ -13,12 +14,22 @@ import LivewireContour from './LivewireContour';
 import Probe from './Probe';
 import UltrasoundDirectional from './UltrasoundDirectional';
 
+const { POLYLINE, ELLIPSE, CIRCLE, RECTANGLE, BIDIRECTIONAL, POINT, ANGLE } =
+  MeasurementService.VALUE_TYPES;
+
 const measurementServiceMappingsFactory = (
   measurementService: MeasurementService,
   displaySetService,
   cornerstoneViewportService,
   customizationService
 ) => {
+  const services = {
+    measurementService,
+    displaySetService,
+    cornerstoneViewportService,
+    customizationService,
+  };
+
   /**
    * Maps measurement service format object to cornerstone annotation object.
    *
@@ -28,9 +39,6 @@ const measurementServiceMappingsFactory = (
    */
 
   const _getValueTypeFromToolType = toolType => {
-    const { POLYLINE, ELLIPSE, CIRCLE, RECTANGLE, BIDIRECTIONAL, POINT, ANGLE } =
-      MeasurementService.VALUE_TYPES;
-
     // TODO -> I get why this was attempted, but its not nearly flexible enough.
     // A single measurement may have an ellipse + a bidirectional measurement, for instances.
     // You can't define a bidirectional tool as a single type..
@@ -42,6 +50,7 @@ const measurementServiceMappingsFactory = (
       PlanarFreehandROI: POLYLINE,
       Bidirectional: BIDIRECTIONAL,
       ArrowAnnotate: POINT,
+      KeyImage: POINT,
       CobbAngle: ANGLE,
       Angle: ANGLE,
       SplineROI: POLYLINE,
@@ -52,6 +61,20 @@ const measurementServiceMappingsFactory = (
 
     return TOOL_TYPE_TO_VALUE_TYPE[toolType];
   };
+
+  function factory(mapping, valueType, points = 1) {
+    return {
+      toAnnotation: mapping.toAnnotation,
+      toMeasurement: csToolsAnnotation =>
+        mapping.toMeasurement(csToolsAnnotation, _getValueTypeFromToolType, services),
+      matchingCriteria: [
+        {
+          valueType,
+          points,
+        },
+      ],
+    };
+  }
 
   const factories = {
     Length: {
@@ -74,13 +97,7 @@ const measurementServiceMappingsFactory = (
     Bidirectional: {
       toAnnotation: Bidirectional.toAnnotation,
       toMeasurement: csToolsAnnotation =>
-        Bidirectional.toMeasurement(
-          csToolsAnnotation,
-          displaySetService,
-          cornerstoneViewportService,
-          _getValueTypeFromToolType,
-          customizationService
-        ),
+        Bidirectional.toMeasurement(csToolsAnnotation, _getValueTypeFromToolType, services),
       matchingCriteria: [
         // TODO -> We should eventually do something like shortAxis + longAxis,
         // But its still a little unclear how these automatic interpretations will work.
@@ -122,7 +139,7 @@ const measurementServiceMappingsFactory = (
         ),
       matchingCriteria: [
         {
-          valueType: MeasurementService.VALUE_TYPES.CIRCLE,
+          valueType: CIRCLE,
         },
       ],
     },
@@ -154,7 +171,7 @@ const measurementServiceMappingsFactory = (
         ),
       matchingCriteria: [
         {
-          valueType: MeasurementService.VALUE_TYPES.POLYLINE,
+          valueType: POLYLINE,
         },
       ],
     },
@@ -190,40 +207,9 @@ const measurementServiceMappingsFactory = (
         },
       ],
     },
-    ArrowAnnotate: {
-      toAnnotation: ArrowAnnotate.toAnnotation,
-      toMeasurement: csToolsAnnotation =>
-        ArrowAnnotate.toMeasurement(
-          csToolsAnnotation,
-          displaySetService,
-          cornerstoneViewportService,
-          _getValueTypeFromToolType,
-          customizationService
-        ),
-      matchingCriteria: [
-        {
-          valueType: MeasurementService.VALUE_TYPES.POINT,
-          points: 1,
-        },
-      ],
-    },
-    Probe: {
-      toAnnotation: Probe.toAnnotation,
-      toMeasurement: csToolsAnnotation =>
-        Probe.toMeasurement(
-          csToolsAnnotation,
-          displaySetService,
-          cornerstoneViewportService,
-          _getValueTypeFromToolType,
-          customizationService
-        ),
-      matchingCriteria: [
-        {
-          valueType: MeasurementService.VALUE_TYPES.POINT,
-          points: 1,
-        },
-      ],
-    },
+    ArrowAnnotate: factory(ArrowAnnotate, POINT),
+    KeyImage: factory(KeyImage, POINT),
+    Probe: factory(Probe, POINT),
     CobbAngle: {
       toAnnotation: CobbAngle.toAnnotation,
       toMeasurement: csToolsAnnotation =>

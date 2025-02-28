@@ -2,8 +2,9 @@ import SUPPORTED_TOOLS from './constants/supportedTools';
 import { getIsLocked } from './utils/getIsLocked';
 import getSOPInstanceAttributes from './utils/getSOPInstanceAttributes';
 import { getIsVisible } from './utils/getIsVisible';
-const Length = {
-  toAnnotation: measurement => {},
+
+const ArrowAnnotate = {
+  toAnnotation: _measurement => {},
 
   /**
    * Maps cornerstone annotation event data to measurement service format.
@@ -11,13 +12,8 @@ const Length = {
    * @param {Object} cornerstone Cornerstone event data
    * @return {Measurement} Measurement instance
    */
-  toMeasurement: (
-    csToolsEventDetail,
-    displaySetService,
-    cornerstoneViewportService,
-    getValueTypeFromToolType,
-    customizationService
-  ) => {
+  toMeasurement: (csToolsEventDetail, getValueTypeFromToolType, services) => {
+    const { displaySetService } = services;
     const { annotation } = csToolsEventDetail;
     const { metadata, data, annotationUID } = annotation;
 
@@ -172,4 +168,4 @@ function _getReport(mappedAnnotations, points, FrameOfReferenceUID) {
     values,
   };
 }
-export default Length;
+export default ArrowAnnotate;
