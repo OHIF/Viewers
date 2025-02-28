@@ -119,7 +119,7 @@ function PanelStudyBrowser({
           date: formatDate(qidoStudy.StudyDate),
           description: qidoStudy.StudyDescription,
           modalities: qidoStudy.ModalitiesInStudy,
-          numInstances: Number(qidoStudy.NumInstances),
+          numInstances: qidoStudy.NumInstances,
         };
       });
 
@@ -158,26 +158,13 @@ function PanelStudyBrowser({
       const imageIds = dataSource.getImageIdsForDisplaySet(displaySet);
       const imageId = imageIds[Math.floor(imageIds.length / 2)];
 
-      let { thumbnailSrc } = displaySet;
-      if (!thumbnailSrc && displaySet.getThumbnailSrc) {
-        thumbnailSrc = await displaySet.getThumbnailSrc();
-      }
-      if (!thumbnailSrc) {
-        let thumbnailSrc = await getImageSrc(imageId);
-        displaySet.thumbnailSrc = thumbnailSrc;
-      }
-      newImageSrcEntry[dSet.displaySetInstanceUID] = thumbnailSrc;
       // TODO: Is it okay that imageIds are not returned here for SR displaySets?
       if (!imageId || displaySet?.unsupported) {
         return;
       }
       // When the image arrives, render it and store the result in the thumbnailImgSrcMap
-      try {
-        newImageSrcEntry[dSet.displaySetInstanceUID] = await getImageSrc(imageId);
-      } catch (e) {
-        // This can happen for thumbnails and generate huge log sets if logged.
-        return;
-      }
+      newImageSrcEntry[dSet.displaySetInstanceUID] = await getImageSrc(imageId);
+
       setThumbnailImageSrcMap(prevState => {
         return { ...prevState, ...newImageSrcEntry };
       });
@@ -369,7 +356,7 @@ function _mapDisplaySets(displaySets, thumbnailImageSrcMap) {
   displaySets
     .filter(ds => !ds.excludeFromThumbnailBrowser)
     .forEach(ds => {
-      const { thumbnailSrc, displaySetInstanceUID } = ds; // thumbnailImageSrcMap[ds.displaySetInstanceUID];
+      const imageSrc = thumbnailImageSrcMap[ds.displaySetInstanceUID];
       const componentType = _getComponentType(ds);
 
       const array =
@@ -382,12 +369,12 @@ function _mapDisplaySets(displaySets, thumbnailImageSrcMap) {
         modality: ds.Modality,
         seriesDate: ds.SeriesDate,
         seriesTime: ds.SeriesTime,
-        numInstances: parseInt(ds.numImageFrames),
+        numInstances: ds.numImageFrames,
         countIcon: ds.countIcon,
         StudyInstanceUID: ds.StudyInstanceUID,
         messages: ds.messages,
         componentType,
-        imageSrc: thumbnailSrc || thumbnailImageSrcMap[displaySetInstanceUID],
+        imageSrc,
         dragData: {
           type: 'displayset',
           displaySetInstanceUID: ds.displaySetInstanceUID,
