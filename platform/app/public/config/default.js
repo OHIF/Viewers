@@ -264,6 +264,29 @@ window.config = {
         },
       },
     },
+    {
+      namespace: '@ohif/extension-default.dataSourcesModule.dicomweb',
+      sourceName: 'RENACOT',
+      configuration: {
+        friendlyName: 'renacot-didier',
+        name: 'renacot-didier',
+        wadoUriRoot: 'https://renacot.deemea.com/didier',
+        qidoRoot: 'https://renacot.deemea.com/didier',
+        wadoRoot: 'https://renacot.deemea.com/didier',
+        qidoSupportsIncludeField: true,
+        supportsReject: true,
+        imageRendering: 'wadors',
+        thumbnailRendering: 'wadors',
+        enableStudyLazyLoad: true,
+        supportsFuzzyMatching: true,
+        supportsWildcard: true,
+        dicomUploadEnabled: true,
+        omitQuotationForMultipartRequest: true,
+        bulkDataURI: {
+          enabled: true,
+        },
+      },
+    },
   ],
   httpErrorHandler: error => {
     // This is 429 when rejected from the public idc sandbox too often.
