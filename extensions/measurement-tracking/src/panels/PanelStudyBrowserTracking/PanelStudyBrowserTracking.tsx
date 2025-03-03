@@ -103,6 +103,7 @@ export default function PanelStudyBrowserTracking({
     const dropHandlerPromise = customDoubleClickThumbnailHandler({
       servicesManager,
       appConfig,
+      displaySetInstanceUID,
     });
 
     let updatedViewports = [];
@@ -389,10 +390,12 @@ export default function PanelStudyBrowserTracking({
     const subscriptionOndropFired = viewportGridService.subscribe(
       viewportGridService.EVENTS.THUMBNAIL_LOADED,
       ({ eventData }) => {
-        sendTrackedMeasurementsEvent('CHECK_DIRTY', {
-          viewportId: activeViewportId,
-          displaySetInstanceUID: eventData.displaySetInstanceUID,
-        });
+        const displaySet = displaySetService.getDisplaySetByUID(eventData.displaySetInstanceUID);
+        if (displaySet.Modality === 'SR')
+          sendTrackedMeasurementsEvent('CHECK_DIRTY', {
+            viewportId: activeViewportId,
+            displaySetInstanceUID: eventData.displaySetInstanceUID,
+          });
       }
     );
 

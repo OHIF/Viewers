@@ -105,17 +105,18 @@ function modeFactory({ modeConfiguration }) {
         'MoreTools',
       ]);
       const customThumbnailLoadingCallback = async props => {
-        const { servicesManager, appConfig } = props;
+        const { servicesManager, appConfig, displaySetInstanceUID } = props;
         const utilityModule = extensionManager.getModuleEntry(
           '@ohif/extension-measurement-tracking.utilityModule.common'
         );
         const { measurementTrackingMode } = utilityModule.exports;
         const simplifiedMode =
           appConfig.measurementTrackingMode === measurementTrackingMode.SIMPLIFIED;
-        const { measurementService } = servicesManager.services;
+        const { measurementService, displaySetService } = servicesManager.services;
         const measurements = measurementService.getMeasurements();
         const haveDirtyMeasurements = measurements.some(m => m.isDirty);
-        const handled = simplifiedMode && haveDirtyMeasurements;
+        const displaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
+        const handled = displaySet.Modality === 'SR' && simplifiedMode && haveDirtyMeasurements;
         return Promise.resolve({ handled });
       };
       customizationService.setCustomizations({

@@ -1,3 +1,4 @@
+import i18n from '@ohif/i18n';
 import { Notification } from '@ohif/ui';
 
 const beginTrackingMessage = i18n.t('MeasurementTable:Track measurements for this series?');
