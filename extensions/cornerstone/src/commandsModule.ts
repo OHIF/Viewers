@@ -5,6 +5,8 @@ import {
   utilities as csUtils,
   Types as CoreTypes,
   BaseVolumeViewport,
+  triggerEvent,
+  eventTarget,
 } from '@cornerstonejs/core';
 import {
   ToolGroupManager,
@@ -12,6 +14,7 @@ import {
   utilities as cstUtils,
   ReferenceLinesTool,
   annotation,
+  Types as ToolTypes,
 } from '@cornerstonejs/tools';
 import * as cornerstoneTools from '@cornerstonejs/tools';
 
@@ -31,6 +34,8 @@ import toggleVOISliceSync from './utils/toggleVOISliceSync';
 import { usePositionPresentationStore, useSegmentationPresentationStore } from './stores';
 import { toolNames } from './initCornerstoneTools';
 import CornerstoneViewportDownloadForm from './utils/CornerstoneViewportDownloadForm';
+import { ChangeTypes, Events } from '@cornerstonejs/tools/enums';
+
 const { DefaultHistoryMemo } = csUtils.HistoryMemo;
 const toggleSyncFunctions = {
   imageSlice: toggleImageSliceSync,
@@ -210,7 +215,7 @@ function commandsModule({
       if (!measurement) {
         console.debug('No measurement found for label editing');
         return;
-      }
+        }
 
       if (!labelConfig) {
         const label = await callInputDialog({
@@ -352,18 +357,11 @@ function commandsModule({
       measurementService.toggleLockMeasurement(uid);
     },
 
-    toggleVisibilityMeasurement: ({ uid }) => {
-      measurementService.toggleVisibilityMeasurement(uid);
-    },
-
-    /**
-     * Clear the measurements
-     */
-    clearMeasurements: options => {
-      const { measurementFilter } = options;
-      measurementService.clearMeasurements(
-        measurementFilter ? measurementFilter.bind(options) : null
-      );
+    toggleVisibilityMeasurement: ({ uid, items, visibility }) => {
+      if (visibility === undefined && items?.length) {
+        visibility = !items[0].isVisible;
+      }
+      measurementService.toggleVisibilityMeasurement(uid, visibility);
     },
 
     /**
@@ -395,6 +393,26 @@ function commandsModule({
       const { isCineEnabled } = cineService.getState();
       cineService.setIsCineEnabled(!isCineEnabled);
       viewports.forEach((_, index) => cineService.setCine({ id: index, isPlaying: false }));
+    },
+
+    navigateToMeasurementItems: props => {
+      const { items } = props;
+      const displayMeasurements = measurementService.getMeasurements();
+      if (items.length === 1) {
+        return commandsManager.run('jumpToMeasurement', {
+          uid: items[0].uid,
+          displayMeasurements,
+        });
+      }
+      const displaySetMap = new Map();
+      items.forEach(item => {
+        const { displaySetInstanceUID } = item;
+        if (!displaySetMap.has(displaySetInstanceUID)) {
+          displaySetMap.set(displaySetInstanceUID, []);
+        }
+        displaySetMap.get(displaySetInstanceUID).push(item);
+      });
+      commandsManager.run('jumpToMeasurement', { uid: items[0].uid, displayMeasurements });
     },
 
     setViewportWindowLevel({ viewportId, window, level }) {
@@ -745,7 +763,7 @@ function commandsModule({
       const options = { imageIndex: jumpIndex };
       csUtils.jumpToSlice(viewport.element, options);
     },
-    scroll: ({ direction }) => {
+    scroll: (options: ToolTypes.ScrollOptions) => {
       const enabledElement = _getActiveViewportEnabledElement();
 
       if (!enabledElement) {
@@ -753,7 +771,6 @@ function commandsModule({
       }
 
       const { viewport } = enabledElement;
-      const options = { delta: direction };
 
       csUtils.scroll(viewport, options);
     },
@@ -1338,8 +1355,8 @@ function commandsModule({
         contentProps: {
           value: rgbaColor,
           onSave: newRgbaColor => {
-            const color = [newRgbaColor.r, newRgbaColor.g, newRgbaColor.b, newRgbaColor.a * 255.0];
-            segmentationService.setSegmentColor(viewportId, segmentationId, segmentIndex, color);
+        const color = [newRgbaColor.r, newRgbaColor.g, newRgbaColor.b, newRgbaColor.a * 255.0];
+        segmentationService.setSegmentColor(viewportId, segmentationId, segmentIndex, color);
           },
         },
       });
@@ -1351,6 +1368,7 @@ function commandsModule({
         viewportGridService.getActiveViewportId()
       );
     },
+
     deleteActiveAnnotation: () => {
       const activeAnnotationsUID = cornerstoneTools.annotation.selection.getAnnotationsSelected();
       activeAnnotationsUID.forEach(activeAnnotationUID => {
@@ -1402,9 +1420,6 @@ function commandsModule({
     },
     updateMeasurement: {
       commandFn: actions.updateMeasurement,
-    },
-    clearMeasurements: {
-      commandFn: actions.clearMeasurements,
     },
     jumpToMeasurement: {
       commandFn: actions.jumpToMeasurement,
@@ -1631,6 +1646,7 @@ function commandsModule({
     },
     undo: actions.undo,
     redo: actions.redo,
+    navigateToMeasurementItems: actions.navigateToMeasurementItems,
   };
 
   return {

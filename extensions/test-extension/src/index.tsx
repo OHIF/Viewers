@@ -8,6 +8,7 @@ import getCustomizationModule from './getCustomizationModule';
 import sameAs from './custom-attribute/sameAs';
 import numberOfDisplaySets from './custom-attribute/numberOfDisplaySets';
 import maxNumImageFrames from './custom-attribute/maxNumImageFrames';
+import getPanelModule from './getPanelModule';
 
 /**
  * The test extension provides additional behavior for testing various
@@ -49,6 +50,8 @@ const testExtension: Types.Extensions.Extension = {
 
   /** Registers some customizations */
   getCustomizationModule,
+
+  getPanelModule,
 
   getHangingProtocolModule: () => {
     return [
