@@ -58,6 +58,7 @@ import SeriesMeasurements from './components/SeriesMeasurements';
 import DicomUpload from './components/DicomUpload/DicomUpload';
 import { useSegmentations } from './hooks/useSegmentations';
 import { StudySummaryFromMetadata } from './components/StudySummaryFromMetadata';
+import CornerstoneViewportDownloadForm from './utils/CornerstoneViewportDownloadForm';
 import utils from './utils';
 import AccordionGroup from './components/AccordionGroup';
 import MeasurementTableNested from './components/MeasurementTableNested';
@@ -266,6 +267,7 @@ export {
   SeriesMeasurements,
   DicomUpload,
   StudySummaryFromMetadata,
+  CornerstoneViewportDownloadForm,
   utils,
   AccordionGroup,
   SitesAndFindings,

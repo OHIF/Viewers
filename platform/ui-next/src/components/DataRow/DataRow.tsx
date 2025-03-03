@@ -253,7 +253,11 @@ const DataRow: React.FC<DataRowProps> = ({
                   <Icons.More className="h-6 w-6" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
+              <DropdownMenuContent
+                align="end"
+                // this was causing issue for auto focus on input dialog
+                onCloseAutoFocus={e => e.preventDefault()}
+              >
                 {!disableEditing && (
                   <>
                     <DropdownMenuItem

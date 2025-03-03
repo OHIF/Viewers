@@ -176,6 +176,7 @@ const DicomTagBrowser = ({
             <InputFilterText
               placeholder="Search metadata..."
               onDebounceChange={setFilterValue}
+              className="text-foreground"
             />
           </div>
         </div>
