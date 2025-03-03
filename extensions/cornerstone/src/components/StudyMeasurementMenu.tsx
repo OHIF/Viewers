@@ -17,7 +17,8 @@ export default function StudyMeasurementMenu({ items, StudyInstanceUID, measurem
           size="sm"
           variant="ghost"
           className="pl-0.5"
-          onClick={() => {
+          onClick={e => {
+            e.stopPropagation();
             commandsManager.run('promptSaveReport', {
               StudyInstanceUID,
               measurementFilter,
@@ -31,7 +32,8 @@ export default function StudyMeasurementMenu({ items, StudyInstanceUID, measurem
           size="sm"
           variant="ghost"
           className="pl-0.5"
-          onClick={() => {
+          onClick={e => {
+            e.stopPropagation();
             commandsManager.runCommand('clearMeasurements', {
               measurementFilter,
             });

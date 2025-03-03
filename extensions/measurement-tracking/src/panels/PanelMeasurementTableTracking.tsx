@@ -49,7 +49,8 @@ function PanelMeasurementTableTracking({
             size="sm"
             variant="ghost"
             className="pl-0.5"
-            onClick={() => {
+            onClick={e => {
+              e.stopPropagation();
               sendTrackedMeasurementsEvent('SAVE_REPORT', {
                 viewportId: viewportGrid.activeViewportId,
                 isBackupSave: true,
@@ -65,7 +66,10 @@ function PanelMeasurementTableTracking({
             size="sm"
             variant="ghost"
             className="pl-0.5"
-            onClick={() => {
+            onClick={event => {
+              event.preventDefault();
+              event.stopPropagation();
+
               commandsManager.runCommand('clearMeasurements', {
                 measurementFilter,
               });
@@ -96,14 +100,14 @@ function PanelMeasurementTableTracking({
         componentProps={{
           grouping: {
             header: props => (
-              <>
+              <div>
                 <StudySummaryFromMetadata {...props} />
                 <CustomMenu {...props} />
-              </>
+              </div>
             ),
           },
         }}
-      ></PanelMeasurement>
+      />
     </>
   );
 }

@@ -56,7 +56,11 @@ export const groupByStudy = (items, grouping, childProps) => {
 
 export function StudyMeasurementItem(props) {
   const { group, key = group.key, children } = props;
-  const { component: ChildComponent = MeasurementsOrAdditionalFindings } = group;
+  const {
+    component: ChildComponent = MeasurementsOrAdditionalFindings,
+    header: Header = StudySummaryMenu,
+    headerProps,
+  } = group;
   const CloneChildren = cloneProps => {
     if (children) {
       return React.Children.map(children, child =>
@@ -70,15 +74,18 @@ export function StudyMeasurementItem(props) {
     return <ChildComponent {...props} />;
   };
 
+  console.log('header=', group);
+
   return (
     <AccordionItem
       value={key}
       data-state="open"
     >
       <AccordionTrigger>
-        <StudySummaryMenu
+        <Header
           StudyInstanceUID={key}
           {...props}
+          {...headerProps}
         />
       </AccordionTrigger>
       <AccordionContent>
