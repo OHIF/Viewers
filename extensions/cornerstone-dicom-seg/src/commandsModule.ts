@@ -348,10 +348,8 @@ const commandsModule = ({
             threshold: {
               range: value,
             },
-          };
-
-          toolGroup.setToolConfiguration(toolName, updatedConfig);
-        }
+          });
+        });
       }
     },
   };

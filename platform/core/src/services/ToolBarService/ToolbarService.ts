@@ -173,12 +173,16 @@ export default class ToolbarService extends PubSubService {
       ? interaction.commands
       : [interaction.commands];
 
+    commands = commands.filter(Boolean);
+
     if (!commands?.length) {
       this.refreshToolbarState({
         ...options?.refreshProps,
         itemId,
         interaction,
       });
+
+      return;
     }
 
     const commandOptions = { ...options, ...interaction };
