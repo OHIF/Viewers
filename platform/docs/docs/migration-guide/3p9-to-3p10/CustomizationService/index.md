@@ -207,6 +207,86 @@ customizationService.setCustomizations({
   },
 });
 ```
+```
+**Example: Customizing viewport action Menu**
+
+**Before (v3.9):**
+
+```javascript
+// In your configuration for global customizations
+window.config = {
+    // rest of config
+    addWindowLevelActionMenu: true,
+};
+```
+
+**After (v3.10):**
+
+```javascript
+// you can now handle each action menu item (windowLevelActionMenu and segmentationOverlay) separately
+
+// cornerstone extension getCustomizationModule
+function getCustomizationModule() {
+    return [
+        {
+            name: 'default',
+            value: {
+                'viewportActionMenu.windowLevelActionMenu': {
+                    enabled: true,
+                    location: viewportActionCornersService.LOCATIONS.topRight,
+                },
+                'viewportActionMenu.segmentationOverlay': {
+                    enabled: true,
+                    location: viewportActionCornersService.LOCATIONS.topRight,
+                },
+            },
+        },
+    ];
+}
+
+
+// Accessing customizations within your component (e.g., OHIFCornerstoneViewport.tsx)
+const windowLevelActionMenu = customizationService.getCustomization('viewportActionMenu.windowLevelActionMenu');
+const segmentationOverlay = customizationService.getCustomization('viewportActionMenu.segmentationOverlay');
+
+// Modifying customizations at runtime, for example, in your mode's onModeEnter
+customizationService.setCustomizations({
+    'viewportActionMenu.windowLevelActionMenu': {
+        $set: {
+            enabled: false,
+            location: viewportActionCornersService.LOCATIONS.bottomLeft,
+        },
+    },
+    'viewportActionMenu.segmentationOverlay': {
+        $set: {
+            enabled: true,
+            location: viewportActionCornersService.LOCATIONS.topLeft,
+        },
+    },
+});
+
+// Alternatively, setting global customizations via configuration
+window.config = {
+    // rest of config
+    customizationService: [
+        {
+            'viewportActionMenu.windowLevelActionMenu': {
+                $set: {
+                    enabled: false,
+                    location: 1,
+                },
+            },
+            'viewportActionMenu.segmentationOverlay': {
+                $set: {
+                    enabled: true,
+                    location: 1,
+                },
+            },
+        },
+    ],
+    // rest of config
+};
+```
 
 **Note:**
 
@@ -237,3 +317,5 @@ To keep our customization system consistent, you should be aware of a few key re
 | `cornerstoneOverlayTopRight`                  | `viewportOverlay.topRight`                   | Custom overlay items for the top-right corner of the viewport.                 |
 | `cornerstoneOverlayBottomLeft`                | `viewportOverlay.bottomLeft`                 | Custom overlay items for the bottom-left corner of the viewport.              |
 | `cornerstoneOverlayBottomRight`               | `viewportOverlay.bottomRight`                | Custom overlay items for the bottom-right corner of the viewport.             |
+| (New)                                         | `viewportActionMenu.windowLevelActionMenu`   | Controls the display and the location of the window level action menu in the viewport.      |
+| (New)                                         | `viewportActionMenu.segmentationOverlay`     | Controls the display and the location of segmentation overlays in the viewport.      |

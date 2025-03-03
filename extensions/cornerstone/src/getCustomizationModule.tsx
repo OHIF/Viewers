@@ -8,7 +8,9 @@ import volumeRenderingCustomization from './customizations/volumeRenderingCustom
 import colorbarCustomization from './customizations/colorbarCustomization';
 import windowLevelPresetsCustomization from './customizations/windowLevelPresetsCustomization';
 import miscCustomization from './customizations/miscCustomization';
-import windowLevelActionMenuCustomization from './customizations/windowLevelActionMenuCustomization';
+import captureViewportModalCustomization from './customizations/captureViewportModalCustomization';
+import viewportDownloadWarningCustomization from './customizations/viewportDownloadWarningCustomization';
+import viewportActionMenuCustomizations from './customizations/viewportActionMenuCustomizations';
 
 function getCustomizationModule({ commandsManager, servicesManager }) {
   return [
@@ -25,7 +27,9 @@ function getCustomizationModule({ commandsManager, servicesManager }) {
         ...colorbarCustomization,
         ...windowLevelPresetsCustomization,
         ...miscCustomization,
-        ...windowLevelActionMenuCustomization,
+        ...captureViewportModalCustomization,
+        ...viewportDownloadWarningCustomization,
+        ...viewportActionMenuCustomizations,
       },
     },
   ];

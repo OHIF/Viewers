@@ -11,7 +11,13 @@ import { useTrackedMeasurements } from '../../getContextModule';
 import { Separator } from '@ohif/ui-next';
 import { MoreDropdownMenu, PanelStudyBrowserHeader } from '@ohif/extension-default';
 import { defaultActionIcons } from './constants';
+import { UntrackSeriesModal } from './untrackSeriesModal';
 const { formatDate, createStudyBrowserTabs } = utils;
+
+const DIALOG_ID = {
+  UNTRACK_SERIES: 'untrack-series',
+  REJECT_REPORT: 'ds-reject-sr',
+};
 
 const thumbnailNoImageModalities = [
   'SR',
@@ -44,6 +50,7 @@ export default function PanelStudyBrowserTracking({
     measurementService,
     studyPrefetcherService,
     customizationService,
+    uiModalService,
   } = servicesManager.services;
   const navigate = useNavigate();
   const studyMode = customizationService.getCustomization('studyBrowser.studyMode');
@@ -446,47 +453,11 @@ export default function PanelStudyBrowserTracking({
       });
     };
 
-    uiDialogService.create({
-      id: 'untrack-series',
-      centralize: true,
-      isDraggable: false,
-      showOverlay: true,
-      content: Dialog,
+    uiModalService.show({
+      title: 'Untrack Series',
+      content: UntrackSeriesModal,
       contentProps: {
-        title: 'Untrack Series',
-        body: () => (
-          <div className="bg-primary-dark p-4 text-white">
-            <p>Are you sure you want to untrack this series?</p>
-            <p className="mt-2">
-              This action cannot be undone and will delete all your existing measurements.
-            </p>
-          </div>
-        ),
-        actions: [
-          {
-            id: 'cancel',
-            text: 'Cancel',
-            type: ButtonEnums.type.secondary,
-          },
-          {
-            id: 'yes',
-            text: 'Yes',
-            type: ButtonEnums.type.primary,
-            classes: ['untrack-yes-button'],
-          },
-        ],
-        onClose: () => uiDialogService.dismiss({ id: 'untrack-series' }),
-        onSubmit: async ({ action }) => {
-          switch (action.id) {
-            case 'yes':
-              onConfirm();
-              uiDialogService.dismiss({ id: 'untrack-series' });
-              break;
-            case 'cancel':
-              uiDialogService.dismiss({ id: 'untrack-series' });
-              break;
-          }
-        },
+        onConfirm,
       },
     });
   };
@@ -629,77 +600,6 @@ function _mapDisplaySets(
         isTracked: trackedSeriesInstanceUIDs.includes(ds.SeriesInstanceUID),
         isHydratedForDerivedDisplaySet: ds.isHydrated,
       };
-
-      if (componentType === 'thumbnailNoImage') {
-        if (dataSource.reject && dataSource.reject.series) {
-          thumbnailProps.canReject = !ds?.unsupported;
-          thumbnailProps.onReject = () => {
-            uiDialogService.create({
-              id: 'ds-reject-sr',
-              centralize: true,
-              isDraggable: false,
-              showOverlay: true,
-              content: Dialog,
-              contentProps: {
-                title: 'Delete Report',
-                body: () => (
-                  <div className="bg-primary-dark p-4 text-white">
-                    <p>Are you sure you want to delete this report?</p>
-                    <p className="mt-2">This action cannot be undone.</p>
-                  </div>
-                ),
-                actions: [
-                  {
-                    id: 'cancel',
-                    text: 'Cancel',
-                    type: ButtonEnums.type.secondary,
-                  },
-                  {
-                    id: 'yes',
-                    text: 'Yes',
-                    type: ButtonEnums.type.primary,
-                    classes: ['reject-yes-button'],
-                  },
-                ],
-                onClose: () => uiDialogService.dismiss({ id: 'ds-reject-sr' }),
-                onShow: () => {
-                  const yesButton = document.querySelector('.reject-yes-button');
-
-                  yesButton.focus();
-                },
-                onSubmit: async ({ action }) => {
-                  switch (action.id) {
-                    case 'yes':
-                      try {
-                        await dataSource.reject.series(ds.StudyInstanceUID, ds.SeriesInstanceUID);
-                        displaySetService.deleteDisplaySet(displaySetInstanceUID);
-                        uiDialogService.dismiss({ id: 'ds-reject-sr' });
-                        uiNotificationService.show({
-                          title: 'Delete Report',
-                          message: 'Report deleted successfully',
-                          type: 'success',
-                        });
-                      } catch (error) {
-                        uiDialogService.dismiss({ id: 'ds-reject-sr' });
-                        uiNotificationService.show({
-                          title: 'Delete Report',
-                          message: 'Failed to delete report',
-                          type: 'error',
-                        });
-                      }
-                      break;
-                    case 'cancel':
-                      uiDialogService.dismiss({ id: 'ds-reject-sr' });
-                      break;
-                  }
-                },
-              },
-            });
-          };
-        } else {
-          thumbnailProps.canReject = false;
-        }
-      }
 
       array.push(thumbnailProps);
     });

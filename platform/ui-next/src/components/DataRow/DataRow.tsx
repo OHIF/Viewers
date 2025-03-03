@@ -190,7 +190,8 @@ const DataRow: React.FC<DataRowProps> = ({
   return (
     <div
       ref={rowRef}
-      className={`flex flex-col ${isVisible ? '' : 'opacity-60'}`}>
+      className={`flex flex-col ${isVisible ? '' : 'opacity-60'}`}
+    >
       <div
         className={`flex items-center ${
           isSelected ? 'bg-popover' : 'bg-muted'
@@ -291,7 +292,11 @@ const DataRow: React.FC<DataRowProps> = ({
                   <Icons.More className="h-6 w-6" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
+              <DropdownMenuContent
+                align="end"
+                // this was causing issue for auto focus on input dialog
+                onCloseAutoFocus={e => e.preventDefault()}
+              >
                 <>
                   <DropdownMenuItem onClick={e => handleAction('Rename', e)}>
                     <Icons.Rename className="text-foreground" />
