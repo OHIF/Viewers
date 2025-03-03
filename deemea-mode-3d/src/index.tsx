@@ -1,14 +1,12 @@
 import { hotkeys } from '@ohif/core';
-import toolbarButtons from '../src/toolbarButtons';
-import initToolGroups from '../src/initToolGroups';
+import toolbarButtons from '../src/toolbarButtons3d';
+import initToolGroups from '../src/initToolGroups3d';
 import { id } from './id';
 
 const ohif = {
   layout: '@ohif/extension-default.layoutTemplateModule.viewerLayout',
   sopClassHandler: '@ohif/extension-default.sopClassHandlerModule.stack',
   hangingProtocol: '@ohif/extension-default.hangingProtocolModule.default',
-  leftPanel: '@ohif/extension-default.panelModule.seriesList',
-  rightPanel: '@ohif/extension-default.panelModule.measurements',
 };
 
 const cornerstone = {
@@ -20,9 +18,9 @@ const cornerstone = {
  * to make sure that the mode is working.
  */
 const extensionDependencies = {
-  '@ohif/extension-default': '^3.9.0-beta.76',
+  '@ohif/extension-default': '^3.0.0',
   '@ohif/extension-cornerstone': '^3.0.0',
-  'deemea-extension': '^0.0.1',
+  'deemea-extension-3d': '^0.0.1',
 };
 
 function modeFactory({ modeConfiguration }) {
@@ -32,12 +30,12 @@ function modeFactory({ modeConfiguration }) {
      * is used to identify the mode in the viewer's state.
      */
     id,
-    routeName: 'deemea',
+    routeName: 'deemea-3d',
     /**
      * Mode name, which is displayed in the viewer's UI in the workList, for the
      * user to select the mode.
      */
-    displayName: 'Deemea Viewer',
+    displayName: 'Deemea 3D Viewer',
     /**
      * Runs when the Mode Route is mounted to the DOM. Usually used to initialize
      * Services and other resources.
@@ -114,7 +112,7 @@ function modeFactory({ modeConfiguration }) {
      */
     routes: [
       {
-        path: 'template',
+        path: 'template-3d',
         layoutTemplate: ({ location, servicesManager }) => {
           return {
             id: ohif.layout,

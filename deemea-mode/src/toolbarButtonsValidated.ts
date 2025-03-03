@@ -1,14 +1,11 @@
 // TODO: torn, can either bake this here; or have to create a whole new button type
-// Only ways that you can pass in a custom React component for render :l
-import { ToolbarService } from '@ohif/core';
+// Only ways that you can pass in a custom React component for render :
 import type { Button } from '@ohif/core/types';
-
-const { createButton } = ToolbarService;
 
 export const setToolActiveToolbar = {
   commandName: 'setToolActiveToolbar',
   commandOptions: {
-    toolGroupIds: ['default', 'mpr', 'SRToolGroup', 'volume3d'],
+    toolGroupIds: ['default'],
   },
 };
 

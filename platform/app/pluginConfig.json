@@ -65,6 +65,10 @@
     {
       "packageName": "deemea-extension",
       "version": "0.0.1"
+    },
+    {
+      "packageName": "deemea-extension-3d",
+      "version": "0.0.1"
     }
   ],
   "modes": [
@@ -95,6 +99,10 @@
     },
     {
       "packageName": "deemea-mode",
+      "version": "0.0.1"
+    },
+    {
+      "packageName": "deemea-mode-3d",
       "version": "0.0.1"
     }
   ],

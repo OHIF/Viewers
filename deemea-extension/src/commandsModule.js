@@ -1,7 +1,9 @@
 import { demonstrateMeasurementService, createMeasurement } from './utils/measurementUtils';
 import { OHIFMessageType } from './utils/enums';
 import toolbarButtonsValidated from '../../deemea-mode/src/toolbarButtonsValidated';
+import toolbarButtonsValidated3d from '../../deemea-mode-3d/src/toolbarButtonsValidated3d';
 import toolbarButtons from '../../deemea-mode/src/toolbarButtons';
+import toolbarButtons3d from '../../deemea-mode-3d/src/toolbarButtons3d';
 
 const commandsModule = ({ servicesManager }) => {
   const actions = {
@@ -32,12 +34,22 @@ const commandsModule = ({ servicesManager }) => {
 
       window.addEventListener('message', event => {
         if (event.data.type === OHIFMessageType.IMAGE_STATUS) {
-          if (event.data.message === 'Validated') {
-            toolbarService?.setButtons(toolbarButtonsValidated);
-            toolbarService?.refreshToolbarState();
+          if (event.data.message.status === 'Validated') {
+            if (event.data.message.imageType === '2D') {
+              toolbarService?.setButtons(toolbarButtonsValidated);
+              toolbarService?.refreshToolbarState();
+            } else {
+              toolbarService?.setButtons(toolbarButtonsValidated3d);
+              toolbarService?.refreshToolbarState();
+            }
           } else {
-            toolbarService?.setButtons(toolbarButtons);
-            toolbarService?.refreshToolbarState();
+            if (event.data.message.imageType === '2D') {
+              toolbarService?.setButtons(toolbarButtons);
+              toolbarService?.refreshToolbarState();
+            } else {
+              toolbarService?.setButtons(toolbarButtons3d);
+              toolbarService?.refreshToolbarState();
+            }
           }
         }
         if (event.data.type === OHIFMessageType.UPDATE_TOOLBAR) {
