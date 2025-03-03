@@ -161,7 +161,6 @@ function PanelMeasurementTableTracking({
         commandsManager={commandsManager}
         measurementFilter={measurementFilter}
         emptyComponent={EmptyComponent}
-        onUntrackClick={onUntrackClick}
         componentProps={{
           grouping: {
             header: props => (
@@ -171,6 +170,7 @@ function PanelMeasurementTableTracking({
               </>
             ),
           },
+          onUntrackClick,
         }}
       ></PanelMeasurement>
     </>

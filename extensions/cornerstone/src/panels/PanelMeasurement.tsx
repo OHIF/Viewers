@@ -12,7 +12,6 @@ export default function PanelMeasurement(props): React.ReactNode {
     emptyComponent: EmptyComponent,
     key = 'PanelMeasurement',
     children,
-    onUntrackClick,
   } = props;
 
   const childProps = useSystem();
@@ -28,7 +27,6 @@ export default function PanelMeasurement(props): React.ReactNode {
         {...componentProps}
         childProps={childProps}
         items={displayMeasurements}
-        onUntrackClick={onUntrackClick}
       />
     ) : (
       <span className="text-white">No Measurements</span>

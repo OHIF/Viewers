@@ -2,7 +2,12 @@ import React from 'react';
 import { Button, Icons } from '@ohif/ui-next';
 import { useSystem } from '@ohif/core';
 
-export default function StudyMeasurementMenu({ items, StudyInstanceUID, measurementFilter }) {
+export default function StudyMeasurementMenu({
+  items,
+  StudyInstanceUID,
+  measurementFilter,
+  onUntrackClick,
+}) {
   const { commandsManager } = useSystem();
   const disabled = !items?.length;
 
@@ -39,6 +44,15 @@ export default function StudyMeasurementMenu({ items, StudyInstanceUID, measurem
         >
           <Icons.Delete />
           Delete
+        </Button>
+        <Button
+          size="sm"
+          variant="ghost"
+          className="pl-0.5"
+          onClick={onUntrackClick}
+        >
+          <Icons.Delete />
+          Untrack
         </Button>
       </div>
     </div>

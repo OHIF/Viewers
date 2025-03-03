@@ -1,17 +1,14 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { ButtonEnums, Dialog } from '@ohif/ui';
 
 import { DataRow, PanelSection } from '../../index';
 import { createContext } from '../../lib/createContext';
-import { Button, Icons } from '../../index';
 
 interface MeasurementTableContext {
   data?: any[];
   onAction?: (e, command: string | string[], uid: string) => void;
   disableEditing?: boolean;
   isExpanded: boolean;
-  onUntrackClick: () => void;
 }
 
 const [MeasurementTableProvider, useMeasurementTableContext] =
@@ -30,7 +27,6 @@ const MeasurementTable = ({
   title,
   children,
   disableEditing = false,
-  onUntrackClick,
 }: MeasurementDataProps) => {
   const { t } = useTranslation('MeasurementTable');
   const amount = data.length;
@@ -41,20 +37,10 @@ const MeasurementTable = ({
       onAction={onAction}
       isExpanded={isExpanded}
       disableEditing={disableEditing}
-      onUntrackClick={onUntrackClick}
     >
       <PanelSection defaultOpen={true}>
         <PanelSection.Header className="bg-secondary-dark">
           <span>{`${t(title)} (${amount})`}</span>
-          <Button
-            size="sm"
-            variant="ghost"
-            className="pl-0.5"
-            onClick={onUntrackClick}
-          >
-            <Icons.Delete />
-            Untrack
-          </Button>
         </PanelSection.Header>
         <PanelSection.Content>{children}</PanelSection.Content>
       </PanelSection>

@@ -111,6 +111,7 @@ export default function StudyMeasurements(props): React.ReactNode {
       <StudyMeasurementItem
         activeStudyUID={activeStudyUID}
         children={children}
+        {...props}
       />
     </AccordionGroup>
   );
