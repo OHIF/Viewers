@@ -36,7 +36,8 @@ function TrackedMeasurementsContextProvider(
   const machineOptions = Object.assign({}, defaultOptions);
   machineOptions.actions = Object.assign({}, machineOptions.actions, {
     jumpToFirstMeasurementInActiveViewport: (ctx, evt) => {
-      const { trackedStudy, trackedSeries, activeViewportId } = ctx;
+      const { trackedStudy, trackedSeries } = ctx;
+      const { viewportId: activeViewportId } = evt.data;
       const measurements = measurementService.getMeasurements();
       const trackedMeasurements = measurements.filter(
         m => trackedStudy === m.referenceStudyUID && trackedSeries.includes(m.referenceSeriesUID)
@@ -83,7 +84,8 @@ function TrackedMeasurementsContextProvider(
     },
 
     jumpToSameImageInActiveViewport: (ctx, evt) => {
-      const { trackedStudy, trackedSeries, activeViewportId } = ctx;
+      const { trackedStudy, trackedSeries } = ctx;
+      const { viewportId: activeViewportId } = evt.data;
       const measurements = measurementService.getMeasurements();
       const trackedMeasurements = measurements.filter(
         m => trackedStudy === m.referenceStudyUID && trackedSeries.includes(m.referenceSeriesUID)
