@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useImageViewer } from '@ohif/ui';
 import { useViewportGrid } from '@ohif/ui-next';
 import { StudyBrowser } from '@ohif/ui-next';
-import { utils } from '@ohif/core';
+import { useSystem, utils } from '@ohif/core';
 import { useNavigate } from 'react-router-dom';
 import { Separator } from '@ohif/ui-next';
 import { PanelStudyBrowserHeader } from './PanelStudyBrowserHeader';
@@ -16,13 +16,12 @@ const { sortStudyInstances, formatDate, createStudyBrowserTabs } = utils;
  * @param {*} param0
  */
 function PanelStudyBrowser({
-  servicesManager,
   getImageSrc,
   getStudiesForPatientByMRN,
   requestDisplaySetCreationForStudy,
   dataSource,
-  commandsManager,
-}: withAppTypes) {
+}) {
+  const { servicesManager, commandsManager } = useSystem();
   const { hangingProtocolService, displaySetService, uiNotificationService, customizationService } =
     servicesManager.services;
   const navigate = useNavigate();
@@ -120,7 +119,7 @@ function PanelStudyBrowser({
           date: formatDate(qidoStudy.StudyDate),
           description: qidoStudy.StudyDescription,
           modalities: qidoStudy.ModalitiesInStudy,
-          numInstances: qidoStudy.NumInstances,
+          numInstances: Number(qidoStudy.NumInstances),
         };
       });
 
@@ -159,13 +158,26 @@ function PanelStudyBrowser({
       const imageIds = dataSource.getImageIdsForDisplaySet(displaySet);
       const imageId = imageIds[Math.floor(imageIds.length / 2)];
 
+      let { thumbnailSrc } = displaySet;
+      if (!thumbnailSrc && displaySet.getThumbnailSrc) {
+        thumbnailSrc = await displaySet.getThumbnailSrc();
+      }
+      if (!thumbnailSrc) {
+        let thumbnailSrc = await getImageSrc(imageId);
+        displaySet.thumbnailSrc = thumbnailSrc;
+      }
+      newImageSrcEntry[dSet.displaySetInstanceUID] = thumbnailSrc;
       // TODO: Is it okay that imageIds are not returned here for SR displaySets?
       if (!imageId || displaySet?.unsupported) {
         return;
       }
       // When the image arrives, render it and store the result in the thumbnailImgSrcMap
-      newImageSrcEntry[dSet.displaySetInstanceUID] = await getImageSrc(imageId);
-
+      try {
+        newImageSrcEntry[dSet.displaySetInstanceUID] = await getImageSrc(imageId);
+      } catch (e) {
+        // This can happen for thumbnails and generate huge log sets if logged.
+        return;
+      }
       setThumbnailImageSrcMap(prevState => {
         return { ...prevState, ...newImageSrcEntry };
       });
@@ -357,7 +369,7 @@ function _mapDisplaySets(displaySets, thumbnailImageSrcMap) {
   displaySets
     .filter(ds => !ds.excludeFromThumbnailBrowser)
     .forEach(ds => {
-      const imageSrc = thumbnailImageSrcMap[ds.displaySetInstanceUID];
+      const { thumbnailSrc, displaySetInstanceUID } = ds; // thumbnailImageSrcMap[ds.displaySetInstanceUID];
       const componentType = _getComponentType(ds);
 
       const array =
@@ -370,12 +382,12 @@ function _mapDisplaySets(displaySets, thumbnailImageSrcMap) {
         modality: ds.Modality,
         seriesDate: ds.SeriesDate,
         seriesTime: ds.SeriesTime,
-        numInstances: ds.numImageFrames,
+        numInstances: parseInt(ds.numImageFrames),
         countIcon: ds.countIcon,
         StudyInstanceUID: ds.StudyInstanceUID,
         messages: ds.messages,
         componentType,
-        imageSrc,
+        imageSrc: thumbnailSrc || thumbnailImageSrcMap[displaySetInstanceUID],
         dragData: {
           type: 'displayset',
           displaySetInstanceUID: ds.displaySetInstanceUID,

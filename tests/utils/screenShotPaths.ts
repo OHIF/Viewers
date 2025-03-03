@@ -26,6 +26,10 @@ const screenShotPaths = {
   mpr: {
     mprDisplayedCorrectly: 'mprDisplayedCorrectly.png',
   },
+  mpr2: {
+    mprDisplayedCorrectly: 'mprDisplayedCorrectly.png',
+    mprDisplayedCorrectlyZoomed: 'mprDisplayedCorrectlyZoomed.png',
+  },
   threeDFourUp: {
     threeDFourUpDisplayedCorrectly: 'threeDFourUpDisplayedCorrectly.png',
   },
@@ -75,10 +79,18 @@ const screenShotPaths = {
     segPreHydration: 'segPreHydration.png',
     segJumpToSegment: 'segJumpToSegment.png',
   },
+  segHydrationMPR: {
+    segPostHydration: 'segPostHydration.png',
+    segPostHydrationMPRAxialPrimary: 'segPostHydrationMPRAxialPrimary.png',
+  },
   rtHydration: {
     rtPostHydration: 'rtPostHydration.png',
     rtPreHydration: 'rtPreHydration.png',
     rtJumpToStructure: 'rtJumpToStructure.png',
+  },
+  rtHydration2: {
+    rtPostHydration: 'rtPostHydration.png',
+    rtPreHydration: 'rtPreHydration.png',
   },
   crosshairs: {
     crosshairsRendered: 'crosshairsRendered.png',

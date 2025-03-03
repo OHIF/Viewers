@@ -154,7 +154,7 @@ function modeFactory({ modeConfiguration }) {
       } = servicesManager.services;
 
       unsubscriptions.forEach(unsubscribe => unsubscribe());
-      uiDialogService.dismissAll();
+      uiDialogService.hideAll();
       uiModalService.hide();
       toolGroupService.destroy();
       syncGroupService.destroy();
@@ -216,7 +216,6 @@ function modeFactory({ modeConfiguration }) {
     extensions: extensionDependencies,
     hangingProtocol: tmtv.hangingProtocol,
     sopClassHandlers: [ohif.sopClassHandler],
-    hotkeys: [...hotkeys.defaults.hotkeyBindings],
     ...modeConfiguration,
   };
 }
