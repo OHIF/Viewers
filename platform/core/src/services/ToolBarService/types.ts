@@ -1,4 +1,5 @@
 import type { RunCommand } from '../../types/Command';
+import React from 'react';
 
 export type EvaluatePublic =
   | string
@@ -17,6 +18,20 @@ export type EvaluateObject = {
   [key: string]: unknown;
 };
 
+export type ButtonOptions = {
+  id: string;
+  type: 'range' | 'radio' | 'double-range' | 'custom';
+  name?: string;
+  min?: number;
+  max?: number;
+  step?: number;
+  value?: number | number[] | string;
+  commands?: (value: unknown) => void;
+  condition?: (props: Record<string, unknown>) => boolean;
+  children?: React.ReactNode | (() => React.ReactNode);
+  options?: Array<{ value: string; label: string }>;
+};
+
 export type ButtonProps = {
   id: string;
   icon: string;
@@ -27,6 +42,7 @@ export type ButtonProps = {
   className?: string;
   evaluate?: EvaluatePublic;
   listeners?: Record<string, RunCommand>;
+  options?: ButtonOptions[];
 };
 
 export type NestedButtonProps = {

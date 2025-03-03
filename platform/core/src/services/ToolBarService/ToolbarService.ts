@@ -452,27 +452,95 @@ export default class ToolbarService extends PubSubService {
    * @param {*} metadata
    * @param {*} props - Props set by the Viewer layer
    */
-  _mapButtonToDisplay(btn, props) {
+  _mapButtonToDisplay(btn: Button, props: Record<string, unknown>) {
     if (!btn) {
       return;
     }
 
-    const { id, uiType, component } = btn;
-    const { groupId } = btn.props;
+    const { id, uiType } = btn;
+    const { groupId } = btn.props as NestedButtonProps;
 
     const buttonTypes = this._getButtonUITypes();
 
     const buttonType = buttonTypes[uiType];
 
-    if (!buttonType && !component) {
+    if (!btn.component) {
+      btn.component = buttonType.defaultComponent;
+    }
+
+    if (!buttonType) {
       return;
     }
 
     !groupId ? this.handleEvaluate(btn.props) : this.handleEvaluateNested(btn.props);
 
+    const { id: buttonId, props: componentProps } = btn;
+
+    // const createEnhancedOptions = (options, parentId) => {
+    //   const optionsToUse = Array.isArray(options) ? options : [options];
+
+    //   return optionsToUse.map(option => {
+    //     if (typeof option.optionComponent === 'function') {
+    //       return option;
+    //     }
+
+    //     return {
+    //       ...option,
+    //       commands: value => {
+    //         const { isArray } = Array;
+    //         const cmds = isArray(option.commands) ? option.commands : [option.commands];
+
+    //         cmds.forEach(command => {
+    //           const isString = typeof command === 'string';
+    //           const isObject = typeof command === 'object';
+    //           const isFunction = typeof command === 'function';
+
+    //           if (isString) {
+    //             this._commandsManager.run(command, { value });
+    //           } else if (isObject) {
+    //             this._commandsManager.run({
+    //               ...command,
+    //               commandOptions: {
+    //                 ...command.commandOptions,
+    //                 ...option,
+    //                 value,
+    //               },
+    //             });
+    //           } else if (isFunction) {
+    //             command({
+    //               value,
+    //               commandsManager: this._commandsManager,
+    //               servicesManager: this._servicesManager,
+    //             });
+    //           }
+    //         });
+    //       },
+    //     };
+    //   });
+    // };
+
+    // if ((componentProps as NestedButtonProps)?.items?.length) {
+    //   const { items } = componentProps as NestedButtonProps;
+
+    //   items.forEach(item => {
+    //     if (!item.options) {
+    //       return;
+    //     }
+    //     item.options = createEnhancedOptions(item.options, id);
+    //   });
+    // } else if ((componentProps as ButtonProps).options?.length) {
+    //   (componentProps as ButtonProps).options = createEnhancedOptions(
+    //     (componentProps as ButtonProps).options,
+    //     buttonId
+    //   );
+    // }
+    // // } else if ((componentProps as ButtonProps).optionComponent) {
+    // //   (componentProps as ButtonProps).optionComponent = options.optionComponent;
+    // // }
+
     return {
       id,
-      Component: component || buttonType.defaultComponent,
+      Component: btn.component,
       componentProps: Object.assign({}, btn.props, props),
     };
   }

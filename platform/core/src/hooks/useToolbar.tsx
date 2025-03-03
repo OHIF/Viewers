@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useState } from 'react';
+import { useSystem } from '../contextProviders/SystemProvider';
 
-export function useToolbar({ servicesManager, buttonSection = 'primary' }: withAppTypes) {
+export function useToolbar({ buttonSection = 'primary' }: withAppTypes) {
+  const { commandsManager, servicesManager } = useSystem();
   const { toolbarService, viewportGridService } = servicesManager.services;
   const { EVENTS } = toolbarService;
 
@@ -12,14 +14,68 @@ export function useToolbar({ servicesManager, buttonSection = 'primary' }: withA
   const onInteraction = useCallback(
     args => {
       const viewportId = viewportGridService.getActiveViewportId();
-      const refreshProps = {
-        viewportId,
-      };
-      toolbarService.recordInteraction(args, {
-        refreshProps,
-      });
+      const refreshProps = { viewportId };
+
+      const buttonProps = toolbarService.getButtonProps(args.itemId);
+
+      if (buttonProps.commands || buttonProps.item?.commands || buttonProps.options) {
+        const allCommands = [];
+        const item = buttonProps.item || {};
+        const options = buttonProps.options || item.options || [];
+        const itemCommands = buttonProps.commands || item.commands;
+
+        // Process item commands
+        if (itemCommands) {
+          Array.isArray(itemCommands)
+            ? allCommands.push(...itemCommands)
+            : allCommands.push(itemCommands);
+        }
+
+        // Process commands from options
+        if (options.length > 0) {
+          options.forEach(option => {
+            if (!option.commands) {
+              return;
+            }
+
+            const valueToUse = option.value;
+            const commands = Array.isArray(option.commands) ? option.commands : [option.commands];
+
+            commands.forEach(command => {
+              switch (typeof command) {
+                case 'string':
+                  commandsManager.run(command, { value: valueToUse });
+                  break;
+                case 'object':
+                  commandsManager.run({
+                    ...command,
+                    commandOptions: {
+                      ...command.commandOptions,
+                      ...option,
+                      value: valueToUse,
+                    },
+                  });
+                  break;
+                case 'function':
+                  command({
+                    value: valueToUse,
+                    commandsManager,
+                    servicesManager,
+                  });
+                  break;
+              }
+            });
+
+            allCommands.push(option.commands);
+          });
+        }
+
+        buttonProps.commands = allCommands;
+      }
+
+      toolbarService.recordInteraction(buttonProps, { refreshProps });
     },
-    [toolbarService, viewportGridService]
+    [toolbarService, viewportGridService, commandsManager, servicesManager, toolbarButtons]
   );
 
   // Effect to handle toolbar modification events

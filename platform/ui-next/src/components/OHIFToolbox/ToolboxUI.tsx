@@ -18,39 +18,21 @@ function usePrevious(value) {
  * Just refactoring from the toolbox component to make it more readable
  */
 function ToolboxUI(props: withAppTypes) {
-  const {
-    toolbarButtons,
-    handleToolSelect,
-    toolboxState,
-    numRows,
-    servicesManager,
-    title,
-    useCollapsedPanel = true,
-  } = props;
+  const { toolbarButtons = [], numRows, servicesManager, title, useCollapsedPanel = true } = props;
 
-  const { activeTool, toolOptions, selectedEvent } = toolboxState;
-  const activeToolOptions = toolOptions?.[activeTool];
-
-  const prevToolOptions = usePrevious(activeToolOptions);
-
-  useEffect(() => {
-    if (!activeToolOptions || Array.isArray(activeToolOptions) === false) {
-      return;
+  const activeTool = toolbarButtons.find(tool => {
+    if (tool.componentProps.isActive) {
+      return tool;
     }
 
-    activeToolOptions.forEach((option, index) => {
-      const prevOption = prevToolOptions ? prevToolOptions[index] : undefined;
-      if (!prevOption || option.value !== prevOption.value || selectedEvent) {
-        const isOptionValid = option.condition
-          ? option.condition({ options: activeToolOptions })
-          : true;
-        if (isOptionValid) {
-          const { commands } = option;
-          commands(option.value);
-        }
-      }
-    });
-  }, [activeToolOptions, selectedEvent]);
+    if (tool.items) {
+      return tool.items.find(item => item.componentProps.isActive);
+    }
+
+    return false;
+  });
+
+  const activeToolOptions = activeTool?.componentProps?.options;
 
   const render = () => {
     return (
@@ -67,12 +49,9 @@ function ToolboxUI(props: withAppTypes) {
 
               const toolClasses = `ml-1 ${isLastRow ? '' : 'mb-2'}`;
 
-              const onInteraction = ({ itemId, id, commands }) => {
-                const idToUse = itemId || id;
-                handleToolSelect(idToUse);
+              const onInteraction = ({ itemId }) => {
                 props.onInteraction({
                   itemId,
-                  commands,
                 });
               };
 
