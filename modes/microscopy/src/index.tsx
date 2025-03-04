@@ -38,8 +38,6 @@ const extensionDependencies = {
 
 function modeFactory({ modeConfiguration }) {
   return {
-    // TODO: We're using this as a route segment
-    // We should not be.
     id,
     routeName: 'microscopy',
     displayName: i18n.t('Modes:Microscopy'),
@@ -52,6 +50,16 @@ function modeFactory({ modeConfiguration }) {
 
       toolbarService.addButtons(toolbarButtons);
       toolbarService.createButtonSection('primary', ['MeasurementTools', 'dragPan', 'TagBrowser']);
+
+      toolbarService.createButtonSection('measurementSection', [
+        'line',
+        'point',
+        'polygon',
+        'circle',
+        'box',
+        'freehandpolygon',
+        'freehandline',
+      ]);
     },
 
     onModeExit: ({ servicesManager }: withAppTypes) => {
@@ -79,9 +87,6 @@ function modeFactory({ modeConfiguration }) {
     routes: [
       {
         path: 'microscopy',
-        /*init: ({ servicesManager, extensionManager }) => {
-          //defaultViewerRouteInit
-        },*/
         layoutTemplate: ({ location, servicesManager }) => {
           return {
             id: ohif.layout,

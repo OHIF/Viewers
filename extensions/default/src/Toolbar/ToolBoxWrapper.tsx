@@ -12,6 +12,8 @@ export function ToolBoxButtonGroupWrapper({ groupId, items, onInteraction, ...pr
     return null;
   }
 
+  debugger;
+
   return (
     <div className="bg-popover flex flex-row space-x-1 rounded-md px-0 py-0">
       {items.map(item => (

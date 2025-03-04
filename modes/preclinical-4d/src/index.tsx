@@ -56,8 +56,37 @@ function modeFactory({ modeConfiguration }) {
       measurementService.clearMeasurements();
       initToolGroups({ toolNames, Enums, toolGroupService, commandsManager, servicesManager });
 
-      toolbarService.addButtons([...toolbarButtons, ...segmentationButtons]);
+      toolbarService.addButtons(toolbarButtons);
+
+      toolbarService.createButtonSection('primary', [
+        'MeasurementTools',
+        'Zoom',
+        'WindowLevel',
+        'Pan',
+        'TrackballRotate',
+        'Capture',
+        'Layout',
+        'Crosshairs',
+      ]);
+
       toolbarService.createButtonSection('secondary', ['ProgressDropdown']);
+
+      toolbarService.createButtonSection('measurementSection', [
+        'Length',
+        'Bidirectional',
+        'ArrowAnnotate',
+        'EllipticalROI',
+      ]);
+
+      toolbarService.createButtonSection('segmentationSection', [
+        'BrushTools',
+        'Brush',
+        'Eraser',
+        'Threshold',
+        'Shapes',
+      ]);
+
+      toolbarService.createButtonSection('ROIThresholdToolbox', ['RectangleROIStartEndThreshold']);
 
       // the primary button section is created in the workflow steps
       // specific to the step

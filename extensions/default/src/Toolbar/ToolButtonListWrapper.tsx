@@ -43,6 +43,10 @@ export default function ToolButtonListWrapper({
   items,
   onInteraction,
 }: ToolButtonListWrapperProps) {
+  if (!primary || !items?.length) {
+    return null;
+  }
+
   return (
     <ToolButtonList>
       <ToolButtonListDefault>

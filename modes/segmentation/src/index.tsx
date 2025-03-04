@@ -1,6 +1,5 @@
 import { id } from './id';
 import toolbarButtons from './toolbarButtons';
-import segmentationButtons from './segmentationButtons';
 import initToolGroups from './initToolGroups';
 
 const ohif = {
@@ -57,7 +56,6 @@ function modeFactory({ modeConfiguration }) {
       initToolGroups(extensionManager, toolGroupService, commandsManager);
 
       toolbarService.addButtons(toolbarButtons);
-      toolbarService.addButtons(segmentationButtons);
 
       toolbarService.createButtonSection('primary', [
         'WindowLevel',
@@ -67,9 +65,33 @@ function modeFactory({ modeConfiguration }) {
         'Capture',
         'Layout',
         'Crosshairs',
-        'MoreTools',
       ]);
-      toolbarService.createButtonSection('segmentationToolbox', ['BrushTools', 'Shapes']);
+
+      toolbarService.createButtonSection('moreToolsSection', [
+        'Reset',
+        'rotate-right',
+        'flipHorizontal',
+        'ReferenceLines',
+        'ImageOverlayViewer',
+        'StackScroll',
+        'invert',
+        'Cine',
+        'Magnify',
+        'TagBrowser',
+      ]);
+
+      toolbarService.createButtonSection('segmentationToolbox', ['BrushEraserThreshold', 'Shapes']);
+      toolbarService.createButtonSection('brushEraserThresholdSection', [
+        'Brush',
+        'Eraser',
+        'Threshold',
+      ]);
+
+      customizationService.setCustomizations({
+        'panelSegmentation.tableMode': {
+          $set: 'expanded',
+        },
+      });
     },
     onModeExit: ({ servicesManager }: withAppTypes) => {
       const {

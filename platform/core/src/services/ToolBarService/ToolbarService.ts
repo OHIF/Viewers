@@ -286,7 +286,7 @@ export default class ToolbarService extends PubSubService {
           primary: groupEvaluated?.primary ?? buttonProps.primary,
         };
 
-        const { primary, items } = buttonProps;
+        const { primary, items = [] } = buttonProps;
 
         // primary and items evaluate functions
         let updatedPrimary;
@@ -355,7 +355,8 @@ export default class ToolbarService extends PubSubService {
    */
   public getButtonProps(id: string): ButtonProps {
     for (const buttonId of Object.keys(this.state.buttons)) {
-      const { primary, items } = (this.state.buttons[buttonId].props as NestedButtonProps) || {};
+      const { primary, items = [] } =
+        (this.state.buttons[buttonId].props as NestedButtonProps) || {};
       if (primary?.id === id) {
         return primary;
       }
@@ -395,16 +396,43 @@ export default class ToolbarService extends PubSubService {
    * @param {string} key - The key of the button section.
    * @param {Array} buttons - The buttons to be added to the section.
    */
-  createButtonSection(key, buttons) {
-    if (this.state.buttonSections[key]) {
-      this.state.buttonSections[key].push(
-        ...buttons.filter(
-          button => !this.state.buttonSections[key].find(sectionButton => sectionButton === button)
-        )
-      );
-    } else {
+  /**
+   * Creates or updates a button section with the specified key and buttons
+   * @param key - The key identifier for the button section
+   * @param buttons - Array of button IDs to add to the section
+   */
+  createButtonSection(key: string, buttons: string[]) {
+    // Create or update the button section
+    if (!this.state.buttonSections[key]) {
       this.state.buttonSections[key] = buttons;
+    } else {
+      // Add only new buttons that don't already exist in section
+      const existingButtons = new Set(this.state.buttonSections[key]);
+      const newButtons = buttons.filter(button => !existingButtons.has(button));
+      this.state.buttonSections[key].push(...newButtons);
     }
+
+    // Update existing button with matching section
+    const existingButton = Object.values(this.state.buttons).find(
+      button => button.props.buttonSection === key
+    );
+
+    if (existingButton) {
+      const firstButton = this.state.buttons[buttons[0]];
+      existingButton.props.primary = {
+        id: firstButton.id,
+        ...firstButton.props,
+      };
+
+      existingButton.props.items = buttons.map(btnId => {
+        const btn = this.state.buttons[btnId];
+        return {
+          id: btn.id,
+          ...btn.props,
+        };
+      });
+    }
+
     this._broadcastEvent(this.EVENTS.TOOL_BAR_MODIFIED, { ...this.state });
   }
 
@@ -526,7 +554,7 @@ export default class ToolbarService extends PubSubService {
     };
 
     if ((componentProps as NestedButtonProps)?.items?.length) {
-      const { items } = componentProps as NestedButtonProps;
+      const { items = [] } = componentProps as NestedButtonProps;
 
       items.forEach(item => {
         if (!item.options) {
@@ -552,7 +580,7 @@ export default class ToolbarService extends PubSubService {
   }
 
   handleEvaluateNested = props => {
-    const { primary, items } = props;
+    const { primary, items = [] } = props;
     // handle group evaluate function
     this.handleEvaluate(props);
 

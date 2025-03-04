@@ -43,6 +43,7 @@ export type ButtonProps = {
   evaluate?: EvaluatePublic;
   listeners?: Record<string, RunCommand>;
   options?: ButtonOptions[];
+  buttonSection?: string;
 };
 
 export type NestedButtonProps = {
