@@ -134,7 +134,7 @@ export default class ToolbarService extends PubSubService {
     buttons.forEach(button => {
       if (replace || !this.state.buttons[button.id]) {
         if (!button.props) {
-          button.props = {};
+          button.props = {} as ButtonProps;
         }
 
         this.state.buttons[button.id] = button;
@@ -173,12 +173,16 @@ export default class ToolbarService extends PubSubService {
       ? interaction.commands
       : [interaction.commands];
 
+    commands = commands.filter(Boolean);
+
     if (!commands?.length) {
       this.refreshToolbarState({
         ...options?.refreshProps,
         itemId,
         interaction,
       });
+
+      return;
     }
 
     const commandOptions = { ...options, ...interaction };
@@ -271,14 +275,15 @@ export default class ToolbarService extends PubSubService {
 
         const { evaluate: groupEvaluate } = buttonProps;
 
-        const groupEvaluated = groupEvaluate?.({ ...refreshProps, button });
+        const groupEvaluated =
+          typeof groupEvaluate === 'function'
+            ? groupEvaluate({ ...refreshProps, button })
+            : undefined;
         // handle group evaluate function which might switch the primary
         // item in the group
         buttonProps = {
           ...buttonProps,
           primary: groupEvaluated?.primary ?? buttonProps.primary,
-          disabled: groupEvaluated?.disabled ?? buttonProps.disabled,
-          disabledText: groupEvaluated?.disabledText ?? buttonProps.disabledText,
         };
 
         const { primary, items } = buttonProps;
@@ -448,27 +453,100 @@ export default class ToolbarService extends PubSubService {
    * @param {*} metadata
    * @param {*} props - Props set by the Viewer layer
    */
-  _mapButtonToDisplay(btn, props) {
+  _mapButtonToDisplay(btn: Button, props: Record<string, unknown>) {
     if (!btn) {
       return;
     }
 
-    const { id, uiType, component } = btn;
-    const { groupId } = btn.props;
+    const { id, uiType } = btn;
+    const { groupId } = btn.props as NestedButtonProps;
 
     const buttonTypes = this._getButtonUITypes();
 
     const buttonType = buttonTypes[uiType];
 
-    if (!buttonType && !component) {
+    if (!btn.component) {
+      btn.component = buttonType.defaultComponent;
+    }
+
+    if (!buttonType) {
       return;
     }
 
     !groupId ? this.handleEvaluate(btn.props) : this.handleEvaluateNested(btn.props);
 
+    const { id: buttonId, props: componentProps } = btn;
+
+    const createEnhancedOptions = (options, itemId) => {
+      const optionsToUse = Array.isArray(options) ? options : [options];
+      const toolProps = this.getButtonProps(itemId);
+
+      return optionsToUse.map(option => {
+        if (typeof option.optionComponent === 'function') {
+          return option;
+        }
+
+        return {
+          ...option,
+          onChange: value => {
+            // Update the option's value for UI
+            option.value = value;
+
+            const cmds = Array.isArray(option.commands) ? option.commands : [option.commands];
+
+            // Find the parent button and update its options
+            if (toolProps && toolProps.options) {
+              // Find the option in the button's options array and update its value
+              const optionIndex = toolProps.options.findIndex(opt => opt.id === option.id);
+              if (optionIndex !== -1) {
+                toolProps.options[optionIndex].value = value;
+              }
+            }
+
+            cmds.forEach(command => {
+              const commandOptions = {
+                ...option,
+                value,
+                options: toolProps.options,
+                servicesManager: this._servicesManager,
+                commandsManager: this._commandsManager,
+              };
+
+              this._commandsManager.run(command, commandOptions);
+            });
+
+            // Notify that toolbar state has been modified
+            this._broadcastEvent(EVENTS.TOOL_BAR_STATE_MODIFIED, {
+              buttons: this.state.buttons,
+              buttonSections: this.state.buttonSections,
+            });
+          },
+        };
+      });
+    };
+
+    if ((componentProps as NestedButtonProps)?.items?.length) {
+      const { items } = componentProps as NestedButtonProps;
+
+      items.forEach(item => {
+        if (!item.options) {
+          return;
+        }
+        item.options = createEnhancedOptions(item.options, item.id);
+      });
+    } else if ((componentProps as ButtonProps).options?.length) {
+      (componentProps as ButtonProps).options = createEnhancedOptions(
+        (componentProps as ButtonProps).options,
+        buttonId
+      );
+    }
+    // // } else if ((componentProps as ButtonProps).optionComponent) {
+    // //   (componentProps as ButtonProps).optionComponent = options.optionComponent;
+    // // }
+
     return {
       id,
-      Component: component || buttonType.defaultComponent,
+      Component: btn.component,
       componentProps: Object.assign({}, btn.props, props),
     };
   }

@@ -85,7 +85,12 @@ const toolbarButtons: Button[] = [
           label: 'Threshold Tool',
           evaluate: {
             name: 'evaluate.cornerstone.segmentation',
-            toolNames: ['ThresholdCircularBrush', 'ThresholdSphereBrush'],
+            toolNames: [
+              'ThresholdCircularBrush',
+              'ThresholdSphereBrush',
+              'ThresholdCircularBrushDynamic',
+              'ThresholdSphereBrushDynamic',
+            ],
           },
           options: [
             {
@@ -103,37 +108,9 @@ const toolbarButtons: Button[] = [
                     'ThresholdCircularBrush',
                     'ThresholdSphereBrush',
                     'ThresholdCircularBrushDynamic',
+                    'ThresholdSphereBrushDynamic',
                   ],
                 },
-              },
-            },
-
-            {
-              name: 'Threshold',
-              type: 'radio',
-              id: 'dynamic-mode',
-              value: 'ThresholdRange',
-              values: [
-                { value: 'ThresholdDynamic', label: 'Dynamic' },
-                { value: 'ThresholdRange', label: 'Range' },
-              ],
-              commands: ({ value, commandsManager, options }) => {
-                if (value === 'ThresholdDynamic') {
-                  commandsManager.run('setToolActive', {
-                    toolName: 'ThresholdCircularBrushDynamic',
-                  });
-
-                  return;
-                }
-
-                // check the condition of the threshold-range option
-                const thresholdRangeOption = options.find(
-                  option => option.id === 'threshold-shape'
-                );
-
-                commandsManager.run('setToolActiveToolbar', {
-                  toolName: thresholdRangeOption.value,
-                });
               },
             },
             {
@@ -145,10 +122,63 @@ const toolbarButtons: Button[] = [
                 { value: 'ThresholdCircularBrush', label: 'Circle' },
                 { value: 'ThresholdSphereBrush', label: 'Sphere' },
               ],
-              condition: ({ options }) =>
-                options.find(option => option.id === 'dynamic-mode').value === 'ThresholdRange',
-              commands: 'setToolActiveToolbar',
+              commands: ({ value, commandsManager, options }) => {
+                const optionsDynamic = options.find(option => option.id === 'dynamic-mode');
+
+                if (optionsDynamic.value === 'ThresholdDynamic') {
+                  commandsManager.run('setToolActive', {
+                    toolName:
+                      value === 'ThresholdCircularBrush'
+                        ? 'ThresholdCircularBrushDynamic'
+                        : 'ThresholdSphereBrushDynamic',
+                  });
+                } else {
+                  commandsManager.run('setToolActive', {
+                    toolName: value,
+                  });
+                }
+              },
             },
+            {
+              name: 'Threshold',
+              type: 'radio',
+              id: 'dynamic-mode',
+              value: 'ThresholdDynamic',
+              values: [
+                { value: 'ThresholdDynamic', label: 'Dynamic' },
+                { value: 'ThresholdRange', label: 'Range' },
+              ],
+              commands: ({ value, commandsManager, options }) => {
+                const thresholdRangeOption = options.find(
+                  option => option.id === 'threshold-shape'
+                );
+
+                if (value === 'ThresholdDynamic') {
+                  commandsManager.run('setToolActiveToolbar', {
+                    toolName:
+                      thresholdRangeOption.value === 'ThresholdCircularBrush'
+                        ? 'ThresholdCircularBrushDynamic'
+                        : 'ThresholdSphereBrushDynamic',
+                  });
+                } else {
+                  // check the condition of the threshold-range option
+                  commandsManager.run('setToolActiveToolbar', {
+                    toolName: thresholdRangeOption.value,
+                  });
+
+                  // get the value of the threshold-range option
+                  const thresholdRangeValue = options.find(
+                    option => option.id === 'threshold-range'
+                  ).value;
+
+                  commandsManager.run('setThresholdRange', {
+                    toolNames: ['ThresholdCircularBrush', 'ThresholdSphereBrush'],
+                    value: thresholdRangeValue,
+                  });
+                }
+              },
+            },
+
             {
               name: 'ThresholdRange',
               type: 'double-range',
@@ -156,7 +186,7 @@ const toolbarButtons: Button[] = [
               min: -1000,
               max: 1000,
               step: 1,
-              value: [100, 600],
+              value: [50, 600],
               condition: ({ options }) =>
                 options.find(option => option.id === 'dynamic-mode').value === 'ThresholdRange',
               commands: {

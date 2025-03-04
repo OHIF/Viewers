@@ -34,6 +34,7 @@ import promptLabelAnnotation from './utils/promptLabelAnnotation';
 import usePatientInfo from './hooks/usePatientInfo';
 import { PanelStudyBrowserHeader } from './Panels/StudyBrowser/PanelStudyBrowserHeader';
 import * as utils from './utils';
+import { Toolbox } from './utils';
 import MoreDropdownMenu from './Components/MoreDropdownMenu';
 import requestDisplaySetCreationForStudy from './Panels/requestDisplaySetCreationForStudy';
 const defaultExtension: Types.Extensions.Extension = {
@@ -97,6 +98,7 @@ export {
   usePatientInfo,
   PanelStudyBrowserHeader,
   utils,
+  Toolbox,
   MoreDropdownMenu,
   requestDisplaySetCreationForStudy,
   callInputDialog,

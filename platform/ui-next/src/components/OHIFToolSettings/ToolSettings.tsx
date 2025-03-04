@@ -56,7 +56,7 @@ const renderRangeSetting = option => {
           maxValue={option.max}
           step={option.step}
           value={option.value}
-          onChange={value => option.commands?.(value)}
+          onChange={value => option.onChange?.(value)}
           allowNumberEdit={true}
           inputClassName="ml-1 w-4/5 cursor-pointer"
         />
@@ -70,6 +70,7 @@ const renderRadioSetting = option => {
     <RowSegmentedControl
       key={option.id}
       option={option}
+      onChange={option.onChange}
     />
   );
 };
@@ -79,7 +80,7 @@ function renderDoubleRangeSetting(option) {
     <RowDoubleRange
       key={option.id}
       values={option.value}
-      onChange={option.commands}
+      onChange={option.onChange}
       minValue={option.min}
       maxValue={option.max}
       step={option.step}

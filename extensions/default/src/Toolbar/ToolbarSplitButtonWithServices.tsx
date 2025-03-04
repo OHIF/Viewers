@@ -23,7 +23,7 @@ function ToolbarSplitButtonWithServices({
           onInteraction({
             groupId,
             itemId: item.id,
-            commands: item.commands,
+            item,
           });
         },
       })),

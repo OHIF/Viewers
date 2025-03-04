@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React from 'react';
 import classnames from 'classnames';
 
 import { PanelSection } from '../../components';
@@ -6,51 +6,32 @@ import { ToolSettings } from '../OHIFToolSettings';
 
 const ItemsPerRow = 4;
 
-function usePrevious(value) {
-  const ref = useRef();
-  useEffect(() => {
-    ref.current = value;
-  });
-  return ref.current;
-}
-
 /**
  * Just refactoring from the toolbox component to make it more readable
  */
 function ToolboxUI(props: withAppTypes) {
-  const {
-    toolbarButtons,
-    handleToolSelect,
-    toolboxState,
-    numRows,
-    servicesManager,
-    title,
-    useCollapsedPanel = true,
-  } = props;
+  const { toolbarButtons = [], numRows, servicesManager, title, useCollapsedPanel = true } = props;
 
-  const { activeTool, toolOptions, selectedEvent } = toolboxState;
-  const activeToolOptions = toolOptions?.[activeTool];
-
-  const prevToolOptions = usePrevious(activeToolOptions);
-
-  useEffect(() => {
-    if (!activeToolOptions || Array.isArray(activeToolOptions) === false) {
-      return;
-    }
-
-    activeToolOptions.forEach((option, index) => {
-      const prevOption = prevToolOptions ? prevToolOptions[index] : undefined;
-      if (!prevOption || option.value !== prevOption.value || selectedEvent) {
-        const isOptionValid = option.condition
-          ? option.condition({ options: activeToolOptions })
-          : true;
-        if (isOptionValid) {
-          const { commands } = option;
-          commands(option.value);
-        }
+  const findActiveToolOptions = toolbarButtons => {
+    for (const tool of toolbarButtons) {
+      if (tool.componentProps.isActive) {
+        return tool.componentProps.options;
       }
-    });
-  }, [activeToolOptions, selectedEvent]);
+
+      if (tool.componentProps.items) {
+        const activeTool = tool.componentProps.items.find(item => item.isActive);
+        if (!activeTool) {
+          continue;
+        }
+
+        return activeTool?.options;
+      }
+
+      return null;
+    }
+  };
+
+  const activeToolOptions = findActiveToolOptions(toolbarButtons);
 
   const render = () => {
     return (
@@ -67,12 +48,9 @@ function ToolboxUI(props: withAppTypes) {
 
               const toolClasses = `ml-1 ${isLastRow ? '' : 'mb-2'}`;
 
-              const onInteraction = ({ itemId, id, commands }) => {
-                const idToUse = itemId || id;
-                handleToolSelect(idToUse);
+              const onInteraction = ({ itemId }) => {
                 props.onInteraction({
                   itemId,
-                  commands,
                 });
               };
 
