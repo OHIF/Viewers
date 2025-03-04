@@ -134,7 +134,7 @@ export default class ToolbarService extends PubSubService {
     buttons.forEach(button => {
       if (replace || !this.state.buttons[button.id]) {
         if (!button.props) {
-          button.props = {};
+          button.props = {} as ButtonProps;
         }
 
         this.state.buttons[button.id] = button;
@@ -275,14 +275,15 @@ export default class ToolbarService extends PubSubService {
 
         const { evaluate: groupEvaluate } = buttonProps;
 
-        const groupEvaluated = groupEvaluate?.({ ...refreshProps, button });
+        const groupEvaluated =
+          typeof groupEvaluate === 'function'
+            ? groupEvaluate({ ...refreshProps, button })
+            : undefined;
         // handle group evaluate function which might switch the primary
         // item in the group
         buttonProps = {
           ...buttonProps,
           primary: groupEvaluated?.primary ?? buttonProps.primary,
-          disabled: groupEvaluated?.disabled ?? buttonProps.disabled,
-          disabledText: groupEvaluated?.disabledText ?? buttonProps.disabledText,
         };
 
         const { primary, items } = buttonProps;
@@ -476,64 +477,83 @@ export default class ToolbarService extends PubSubService {
 
     const { id: buttonId, props: componentProps } = btn;
 
-    // const createEnhancedOptions = (options, parentId) => {
-    //   const optionsToUse = Array.isArray(options) ? options : [options];
+    const createEnhancedOptions = (options, parentId) => {
+      const optionsToUse = Array.isArray(options) ? options : [options];
 
-    //   return optionsToUse.map(option => {
-    //     if (typeof option.optionComponent === 'function') {
-    //       return option;
-    //     }
+      return optionsToUse.map(option => {
+        if (typeof option.optionComponent === 'function') {
+          return option;
+        }
 
-    //     return {
-    //       ...option,
-    //       commands: value => {
-    //         const { isArray } = Array;
-    //         const cmds = isArray(option.commands) ? option.commands : [option.commands];
+        return {
+          ...option,
+          onChange: value => {
+            // Update the option's value for UI
+            option.value = value;
 
-    //         cmds.forEach(command => {
-    //           const isString = typeof command === 'string';
-    //           const isObject = typeof command === 'object';
-    //           const isFunction = typeof command === 'function';
+            const cmds = Array.isArray(option.commands) ? option.commands : [option.commands];
 
-    //           if (isString) {
-    //             this._commandsManager.run(command, { value });
-    //           } else if (isObject) {
-    //             this._commandsManager.run({
-    //               ...command,
-    //               commandOptions: {
-    //                 ...command.commandOptions,
-    //                 ...option,
-    //                 value,
-    //               },
-    //             });
-    //           } else if (isFunction) {
-    //             command({
-    //               value,
-    //               commandsManager: this._commandsManager,
-    //               servicesManager: this._servicesManager,
-    //             });
-    //           }
-    //         });
-    //       },
-    //     };
-    //   });
-    // };
+            // Find the parent button and update its options
+            const parentButton = this.state.buttons[parentId];
+            if (parentButton && parentButton.props && parentButton.props.options) {
+              // Find the option in the button's options array and update its value
+              const optionIndex = parentButton.props.options.findIndex(opt => opt.id === option.id);
+              if (optionIndex !== -1) {
+                parentButton.props.options[optionIndex].value = value;
+              }
+            }
 
-    // if ((componentProps as NestedButtonProps)?.items?.length) {
-    //   const { items } = componentProps as NestedButtonProps;
+            cmds.forEach(command => {
+              const isString = typeof command === 'string';
+              const isObject = typeof command === 'object';
+              const isFunction = typeof command === 'function';
 
-    //   items.forEach(item => {
-    //     if (!item.options) {
-    //       return;
-    //     }
-    //     item.options = createEnhancedOptions(item.options, id);
-    //   });
-    // } else if ((componentProps as ButtonProps).options?.length) {
-    //   (componentProps as ButtonProps).options = createEnhancedOptions(
-    //     (componentProps as ButtonProps).options,
-    //     buttonId
-    //   );
-    // }
+              if (isString) {
+                this._commandsManager.run(command, { value });
+              } else if (isObject) {
+                this._commandsManager.run({
+                  ...command,
+                  commandOptions: {
+                    ...command.commandOptions,
+                    ...option,
+                    value,
+                  },
+                });
+              } else if (isFunction) {
+                command({
+                  value,
+                  commandsManager: this._commandsManager,
+                  servicesManager: this._servicesManager,
+                });
+              }
+            });
+
+            // Notify that toolbar state has been modified
+            this._broadcastEvent(EVENTS.TOOL_BAR_STATE_MODIFIED, {
+              toolbarId: parentId,
+              optionId: option.id,
+              value,
+            });
+          },
+        };
+      });
+    };
+
+    if ((componentProps as NestedButtonProps)?.items?.length) {
+      const { items } = componentProps as NestedButtonProps;
+
+      items.forEach(item => {
+        if (!item.options) {
+          return;
+        }
+        item.options = createEnhancedOptions(item.options, id);
+      });
+    } else if ((componentProps as ButtonProps).options?.length) {
+      (componentProps as ButtonProps).options = createEnhancedOptions(
+        (componentProps as ButtonProps).options,
+        buttonId
+      );
+    }
     // // } else if ((componentProps as ButtonProps).optionComponent) {
     // //   (componentProps as ButtonProps).optionComponent = options.optionComponent;
     // // }

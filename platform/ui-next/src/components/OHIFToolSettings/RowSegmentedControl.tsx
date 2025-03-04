@@ -13,18 +13,23 @@ interface RadioOption {
   name: string;
   value: string;
   values: RadioValue[];
-  commands?: (val: string) => void;
+  onChange?: (val: string) => void;
 }
 
 interface RowSegmentedControlProps {
   option: RadioOption;
   className?: string;
+  onChange?: (val: string) => void;
 }
 
-export const RowSegmentedControl: React.FC<RowSegmentedControlProps> = ({ option, className }) => {
+export const RowSegmentedControl: React.FC<RowSegmentedControlProps> = ({
+  option,
+  className,
+  onChange,
+}) => {
   const handleValueChange = (newVal: string) => {
-    if (option.commands) {
-      option.commands(newVal);
+    if (onChange) {
+      onChange(newVal);
     }
   };
 

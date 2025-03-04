@@ -66,4 +66,5 @@ export type Button = {
   // button ui type (e.g. 'ohif.splitButton', 'ohif.radioGroup')
   // extensions can provide custom components for these types
   uiType: string;
+  component?: React.ComponentType<any>;
 };
