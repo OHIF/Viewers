@@ -477,8 +477,9 @@ export default class ToolbarService extends PubSubService {
 
     const { id: buttonId, props: componentProps } = btn;
 
-    const createEnhancedOptions = (options, parentId) => {
+    const createEnhancedOptions = (options, itemId) => {
       const optionsToUse = Array.isArray(options) ? options : [options];
+      const toolProps = this.getButtonProps(itemId);
 
       return optionsToUse.map(option => {
         if (typeof option.optionComponent === 'function') {
@@ -494,12 +495,12 @@ export default class ToolbarService extends PubSubService {
             const cmds = Array.isArray(option.commands) ? option.commands : [option.commands];
 
             // Find the parent button and update its options
-            const parentButton = this.state.buttons[parentId];
-            if (parentButton && parentButton.props && parentButton.props.options) {
+            // const parentButton = this.state.buttons[parentId];
+            if (toolProps && toolProps.options) {
               // Find the option in the button's options array and update its value
-              const optionIndex = parentButton.props.options.findIndex(opt => opt.id === option.id);
+              const optionIndex = toolProps.options.findIndex(opt => opt.id === option.id);
               if (optionIndex !== -1) {
-                parentButton.props.options[optionIndex].value = value;
+                toolProps.options[optionIndex].value = value;
               }
             }
 
@@ -517,6 +518,7 @@ export default class ToolbarService extends PubSubService {
                     ...command.commandOptions,
                     ...option,
                     value,
+                    options: toolProps.options,
                   },
                 });
               } else if (isFunction) {
@@ -524,16 +526,13 @@ export default class ToolbarService extends PubSubService {
                   value,
                   commandsManager: this._commandsManager,
                   servicesManager: this._servicesManager,
+                  options: toolProps.options,
                 });
               }
             });
 
             // Notify that toolbar state has been modified
-            this._broadcastEvent(EVENTS.TOOL_BAR_STATE_MODIFIED, {
-              toolbarId: parentId,
-              optionId: option.id,
-              value,
-            });
+            this._broadcastEvent(EVENTS.TOOL_BAR_STATE_MODIFIED);
           },
         };
       });
@@ -546,7 +545,7 @@ export default class ToolbarService extends PubSubService {
         if (!item.options) {
           return;
         }
-        item.options = createEnhancedOptions(item.options, id);
+        item.options = createEnhancedOptions(item.options, item.id);
       });
     } else if ((componentProps as ButtonProps).options?.length) {
       (componentProps as ButtonProps).options = createEnhancedOptions(

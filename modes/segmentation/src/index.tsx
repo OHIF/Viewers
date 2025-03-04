@@ -60,14 +60,16 @@ function modeFactory({ modeConfiguration }) {
       toolbarService.addButtons(segmentationButtons);
 
       toolbarService.createButtonSection('primary', [
-        'WindowLevel',
-        'Pan',
-        'Zoom',
-        'TrackballRotate',
-        'Capture',
-        'Layout',
-        'Crosshairs',
-        'MoreTools',
+        'BrushTools',
+        'Shapes',
+        // 'WindowLevel',
+        // 'Pan',
+        // 'Zoom',
+        // 'TrackballRotate',
+        // 'Capture',
+        // 'Layout',
+        // 'Crosshairs',
+        // 'MoreTools',
       ]);
       toolbarService.createButtonSection('segmentationToolbox', ['BrushTools', 'Shapes']);
     },

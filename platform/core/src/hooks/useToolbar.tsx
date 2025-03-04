@@ -44,29 +44,33 @@ export function useToolbar({ buttonSection = 'primary' }: withAppTypes) {
             commands.forEach(command => {
               switch (typeof command) {
                 case 'string':
-                  commandsManager.run(command, { value: valueToUse });
+                  allCommands.push(() => commandsManager.run(command, { value: valueToUse }));
                   break;
                 case 'object':
-                  commandsManager.run({
-                    ...command,
-                    commandOptions: {
-                      ...command.commandOptions,
-                      ...option,
-                      value: valueToUse,
-                    },
-                  });
+                  allCommands.push(() =>
+                    commandsManager.run({
+                      ...command,
+                      commandOptions: {
+                        ...command.commandOptions,
+                        ...option,
+                        value: valueToUse,
+                        options: buttonProps.options,
+                      },
+                    })
+                  );
                   break;
                 case 'function':
-                  command({
-                    value: valueToUse,
-                    commandsManager,
-                    servicesManager,
-                  });
+                  allCommands.push(() =>
+                    command({
+                      value: valueToUse,
+                      commandsManager,
+                      servicesManager,
+                      options: buttonProps.options,
+                    })
+                  );
                   break;
               }
             });
-
-            allCommands.push(option.commands);
           });
         }
 

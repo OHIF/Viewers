@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React from 'react';
 import classnames from 'classnames';
 
 import { PanelSection } from '../../components';
@@ -6,33 +6,32 @@ import { ToolSettings } from '../OHIFToolSettings';
 
 const ItemsPerRow = 4;
 
-function usePrevious(value) {
-  const ref = useRef();
-  useEffect(() => {
-    ref.current = value;
-  });
-  return ref.current;
-}
-
 /**
  * Just refactoring from the toolbox component to make it more readable
  */
 function ToolboxUI(props: withAppTypes) {
   const { toolbarButtons = [], numRows, servicesManager, title, useCollapsedPanel = true } = props;
 
-  const activeTool = toolbarButtons.find(tool => {
-    if (tool.componentProps.isActive) {
-      return tool;
+  const findActiveToolOptions = toolbarButtons => {
+    for (const tool of toolbarButtons) {
+      if (tool.componentProps.isActive) {
+        return tool.componentProps.options;
+      }
+
+      if (tool.componentProps.items) {
+        const activeTool = tool.componentProps.items.find(item => item.isActive);
+        if (!activeTool) {
+          continue;
+        }
+
+        return activeTool?.options;
+      }
+
+      return null;
     }
+  };
 
-    if (tool.items) {
-      return tool.items.find(item => item.componentProps.isActive);
-    }
-
-    return false;
-  });
-
-  const activeToolOptions = activeTool?.componentProps?.options;
+  const activeToolOptions = findActiveToolOptions(toolbarButtons);
 
   const render = () => {
     return (
