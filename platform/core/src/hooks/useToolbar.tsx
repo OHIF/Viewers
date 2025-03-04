@@ -18,11 +18,10 @@ export function useToolbar({ buttonSection = 'primary' }: withAppTypes) {
 
       const buttonProps = toolbarService.getButtonProps(args.itemId);
 
-      if (buttonProps.commands || buttonProps.item?.commands || buttonProps.options) {
+      if (buttonProps.commands || buttonProps.options) {
         const allCommands = [];
-        const item = buttonProps.item || {};
-        const options = buttonProps.options || item.options || [];
-        const itemCommands = buttonProps.commands || item.commands;
+        const options = buttonProps.options || [];
+        const itemCommands = buttonProps.commands || [];
 
         // Process item commands
         if (itemCommands) {
