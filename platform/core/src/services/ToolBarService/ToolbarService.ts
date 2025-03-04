@@ -504,15 +504,15 @@ export default class ToolbarService extends PubSubService {
             }
 
             cmds.forEach(command => {
-              const processedCommand = this.processCommands({
-                command,
+              const commandOptions = {
+                ...option,
                 value,
-                option,
-                toolProps,
-              });
-              if (processedCommand) {
-                processedCommand();
-              }
+                options: toolProps.options,
+                servicesManager: this._servicesManager,
+                commandsManager: this._commandsManager,
+              };
+
+              this._commandsManager.run(command, commandOptions);
             });
 
             // Notify that toolbar state has been modified
@@ -644,52 +644,6 @@ export default class ToolbarService extends PubSubService {
 
   getButtonComponentForUIType(uiType: string) {
     return uiType ? (this._getButtonUITypes()[uiType]?.defaultComponent ?? null) : null;
-  }
-
-  /**
-   * Processes commands for a given option and value
-   */
-  public processCommands({
-    command,
-    value,
-    option,
-    toolProps,
-  }: {
-    command: string | object | ((...args: any[]) => void);
-    value: unknown;
-    option: Record<string, unknown>;
-    toolProps: Record<string, unknown>;
-  }) {
-    const isString = typeof command === 'string';
-    const isObject = typeof command === 'object';
-    const isFunction = typeof command === 'function';
-
-    if (isString) {
-      return () => this._commandsManager.run(command, { value });
-    }
-
-    if (isObject) {
-      return () =>
-        this._commandsManager.run({
-          ...command,
-          commandOptions: {
-            ...command.commandOptions,
-            ...option,
-            value,
-            options: toolProps.options,
-          },
-        });
-    }
-
-    if (isFunction) {
-      return () =>
-        command({
-          value,
-          commandsManager: this._commandsManager,
-          servicesManager: this._servicesManager,
-          options: toolProps.options,
-        });
-    }
   }
 
   clearButtonSection(buttonSection: string) {

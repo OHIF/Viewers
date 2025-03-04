@@ -41,16 +41,16 @@ export function useToolbar({ buttonSection = 'primary' }: withAppTypes) {
             const commands = Array.isArray(option.commands) ? option.commands : [option.commands];
 
             commands.forEach(command => {
-              const processedCommand = toolbarService.processCommands({
-                command,
+              const commandOptions = {
+                ...option,
                 value: valueToUse,
-                option,
-                toolProps: buttonProps,
-              });
+                options: buttonProps.options,
+                servicesManager: servicesManager,
+                commandsManager: commandsManager,
+              };
 
-              if (processedCommand) {
-                allCommands.push(processedCommand);
-              }
+              const processedCommand = () => commandsManager.run(command, commandOptions);
+              allCommands.push(processedCommand);
             });
           });
         }
