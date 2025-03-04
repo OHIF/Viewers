@@ -39,12 +39,12 @@ export default function buildModeRoutes({
       dataSourceNames.push(sourceName);
     }
   });
-
   modes.forEach(mode => {
     // todo: for each route. add route to path.
     dataSourceNames.forEach(dataSourceName => {
+      console.log('mode', mode);
       const path = `${publicUrl}${mode.routeName}/${dataSourceName}`;
-
+      console.log('path', path);
       // TODO move up.
       const children = () => (
         <ModeRoute
@@ -56,7 +56,7 @@ export default function buildModeRoutes({
           hotkeysManager={hotkeysManager}
         />
       );
-
+      console.log('routes', routes);
       routes.push({
         path,
         children,

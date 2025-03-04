@@ -98,7 +98,7 @@ const createRoutes = ({
       commandsManager,
       hotkeysManager,
     }) || [];
-
+  console.log('routes', routes);
   const { customizationService } = servicesManager.services;
 
   const WorkListRoute = {

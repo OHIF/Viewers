@@ -32,6 +32,13 @@ export default function ModeRoute({
   // The URL's query search parameters where the keys casing is maintained
   const query = useSearchParams();
 
+  console.log('Mode initialization:', {
+    modeId: mode?.id,
+    modeName: mode?.displayName,
+    routeName: mode?.routeName,
+    location: location.pathname
+  });
+
   mode?.onModeInit?.({
     servicesManager,
     extensionManager,
@@ -120,11 +127,30 @@ export default function ModeRoute({
 
     // Todo: this should not be here, data source should not care about params
     const initializeDataSource = async (params, query) => {
+      console.log('Initializing data source with params:', params, 'query:', query);
       await dataSource.initialize({
         params,
         query,
       });
-      setStudyInstanceUIDs(dataSource.getStudyInstanceUIDs({ params, query }));
+      
+      const studyUIDs = dataSource.getStudyInstanceUIDs({ params, query });
+      console.log('Data source returned study UIDs:', studyUIDs);
+      
+      // If we don't have valid study UIDs from the data source but we have a session router,
+      // try to get them from there
+      if ((!studyUIDs || studyUIDs.length === 0 || studyUIDs[0] === undefined) && 
+          servicesManager.services.sessionRouter) {
+        console.log('Getting study UIDs from session router instead');
+        try {
+          const routerUIDs = await servicesManager.services.sessionRouter.go();
+          console.log('Session router returned UIDs:', routerUIDs);
+          setStudyInstanceUIDs(routerUIDs);
+        } catch (error) {
+          console.error('Failed to get study UIDs from session router:', error);
+        }
+      } else {
+        setStudyInstanceUIDs(studyUIDs);
+      }
     };
 
     initializeDataSource(params, query);
@@ -139,12 +165,13 @@ export default function ModeRoute({
     }
 
     const retrieveLayoutData = async () => {
+      console.log('retrieveLayoutData');
       const layoutData = await route.layoutTemplate({
         location,
         servicesManager,
         studyInstanceUIDs,
       });
-
+      console.log('layoutData', layoutData);
       if (isMounted.current) {
         const { leftPanels = [], rightPanels = [], ...layoutProps } = layoutData.props;
 
@@ -344,6 +371,31 @@ export default function ModeRoute({
     refresh,
   ]);
 
+  useEffect(() => {
+    console.log('Mode effect running with params:', {
+      dataSourceName,
+      studyInstanceUIDs,
+      ExtensionDependenciesLoaded,
+      layoutTemplateData: !!layoutTemplateData.current
+    });
+    
+    if (!layoutTemplateData.current || !ExtensionDependenciesLoaded || !studyInstanceUIDs?.length) {
+      console.log('Mode effect early return due to:', {
+        hasLayoutTemplate: !!layoutTemplateData.current,
+        extensionsLoaded: ExtensionDependenciesLoaded,
+        hasStudyUIDs: !!studyInstanceUIDs?.length,
+        studyUIDs: studyInstanceUIDs
+      });
+      return;
+    }
+    
+    // Rest of the effect code...
+  }, [studyInstanceUIDs, ExtensionDependenciesLoaded]);
+
+  useEffect(() => {
+    console.log('Mode effect running with studyInstanceUIDs:', studyInstanceUIDs);
+  }, [studyInstanceUIDs]);
+
   if (!studyInstanceUIDs || !layoutTemplateData.current || !ExtensionDependenciesLoaded) {
     return null;
   }
@@ -370,6 +422,13 @@ export default function ModeRoute({
   const LayoutComponent = getLayoutComponent({
     ...layoutTemplateData.current.props,
     ViewportGridComp: ViewportGridWithDataSource,
+  });
+
+  console.log('Mode Route Debug:', {
+    mode,
+    location: location.pathname,
+    routes: mode.routes,
+    component: mode.routes[0].component
   });
 
   return (

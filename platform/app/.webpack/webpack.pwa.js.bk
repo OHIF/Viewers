@@ -3,7 +3,7 @@
 const path = require('path');
 const { merge } = require('webpack-merge');
 const webpack = require('webpack');
-const webpackBase = require('./../../../.webpack/webpack.base.js');
+const webpackBase = require('../../../.webpack/webpack.base.js');
 // ~~ Plugins
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
@@ -17,7 +17,7 @@ const PUBLIC_DIR = path.join(__dirname, '../public');
 // ~~ Env Vars
 const HTML_TEMPLATE = process.env.HTML_TEMPLATE || 'index.html';
 const PUBLIC_URL = process.env.PUBLIC_URL || '/';
-const APP_CONFIG = process.env.APP_CONFIG || 'config/default.js';
+const APP_CONFIG = process.env.APP_CONFIG || 'config/xnat.js';
 
 // proxy settings
 const PROXY_TARGET = process.env.PROXY_TARGET;
@@ -62,7 +62,7 @@ module.exports = (env, argv) => {
     output: {
       path: DIST_DIR,
       filename: isProdBuild ? '[name].bundle.[chunkhash].js' : '[name].js',
-      publicPath: PUBLIC_URL, // Used by HtmlWebPackPlugin for asset prefix
+      publicPath:  PUBLIC_URL, // Used by HtmlWebPackPlugin for asset prefix
       devtoolModuleFilenameTemplate: function (info) {
         if (isProdBuild) {
           return `webpack:///${info.resourcePath}`;
@@ -78,6 +78,14 @@ module.exports = (env, argv) => {
         // Hoisted Yarn Workspace Modules
         path.resolve(__dirname, '../../../node_modules'),
         SRC_DIR,
+        path.resolve(
+          __dirname,
+          '/Users/zpick/ohif-viewer-xnat-plugin/ohifviewerxnat/extensions/xnat/node_modules'
+        ),
+        path.resolve(
+          __dirname,
+          '/Users/zpick/ohif-viewer-xnat-plugin/ohifviewerxnat/modes/xnat/node_modules'
+        ),
       ],
     },
     plugins: [
@@ -95,15 +103,13 @@ module.exports = (env, argv) => {
             to: DIST_DIR,
             toType: 'dir',
             globOptions: {
-              // Ignore our HtmlWebpackPlugin template file
-              // Ignore our configuration files
-              ignore: ['**/config/**', '**/html-templates/**', '.DS_Store'],
+              ignore: ['**/html-templates/**', '.DS_Store'],
             },
           },
-          // Copy over and rename our target app config file
+          // Copy app-config.js directly to root
           {
-            from: `${PUBLIC_DIR}/${APP_CONFIG}`,
-            to: `${DIST_DIR}/app-config.js`,
+            from: path.join(PUBLIC_DIR, 'config/xnat.js'),
+            to: 'app-config.js',
           },
           // Copy Dicom Microscopy Viewer build files
           {
@@ -171,7 +177,7 @@ module.exports = (env, argv) => {
       },
     },
   });
-
+  console.log('mergedConfig', mergedConfig);
   if (hasProxy) {
     mergedConfig.devServer.proxy = mergedConfig.devServer.proxy || {};
     mergedConfig.devServer.proxy = {

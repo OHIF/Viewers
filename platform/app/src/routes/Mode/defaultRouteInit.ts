@@ -18,6 +18,16 @@ export async function defaultRouteInit(
   hangingProtocolId,
   stageIndex
 ) {
+  console.log('Default route init called with:', { 
+    servicesManager, 
+    studyInstanceUIDs, 
+    dataSource, 
+    filters, 
+    appConfig,
+    hangingProtocolId, 
+    stageIndex
+  });
+
   const { displaySetService, hangingProtocolService, uiNotificationService, customizationService } =
     servicesManager.services;
   /**
@@ -50,7 +60,13 @@ export async function defaultRouteInit(
   const { unsubscribe: instanceAddedUnsubscribe } = DicomMetadataStore.subscribe(
     DicomMetadataStore.EVENTS.INSTANCES_ADDED,
     function ({ StudyInstanceUID, SeriesInstanceUID, madeInClient = false }) {
+      console.log(`DicomMetadataStore: Instances added for Study ${StudyInstanceUID}, Series ${SeriesInstanceUID}`);
+      
       const seriesMetadata = DicomMetadataStore.getSeries(StudyInstanceUID, SeriesInstanceUID);
+      console.log(`Series metadata retrieved:`, {
+        hasInstances: !!seriesMetadata?.instances,
+        instanceCount: seriesMetadata?.instances?.length
+      });
 
       // checks if the series filter was used, if it exists
       const seriesInstanceUIDs = filters?.seriesInstanceUID;
@@ -69,6 +85,8 @@ export async function defaultRouteInit(
         });
       }
 
+      // Before calling makeDisplaySets, log what we're passing in
+      console.log(`Making display sets with ${seriesMetadata.instances.length} instances`);
       displaySetService.makeDisplaySets(seriesMetadata.instances, { madeInClient });
     }
   );
@@ -78,14 +96,25 @@ export async function defaultRouteInit(
   log.time(Enums.TimingEnum.STUDY_TO_DISPLAY_SETS);
   log.time(Enums.TimingEnum.STUDY_TO_FIRST_IMAGE);
 
-  const allRetrieves = studyInstanceUIDs.map(StudyInstanceUID =>
-    dataSource.retrieve.series.metadata({
+  const allRetrieves = studyInstanceUIDs.map(StudyInstanceUID => {
+    console.log(`Initiating retrieval for study: ${StudyInstanceUID}`);
+    const retrievePromise = dataSource.retrieve.series.metadata({
       StudyInstanceUID,
       filters,
       returnPromises: true,
       sortCriteria: customizationService.getCustomization('sortingCriteria'),
-    })
-  );
+    });
+    
+    // Add a handler to track when retrieval starts
+    retrievePromise.then(result => {
+      console.log(`Retrieval for study ${StudyInstanceUID} succeeded:`, {
+        resultType: Array.isArray(result) ? 'array' : typeof result,
+        length: Array.isArray(result) ? result.length : 'n/a'
+      });
+    });
+    
+    return retrievePromise;
+  });
 
   // log the error if this fails, otherwise it's so difficult to tell what went wrong...
   allRetrieves.forEach(retrieve => {

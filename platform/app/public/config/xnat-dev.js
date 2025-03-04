@@ -3,7 +3,7 @@
 window.config = {
   name: 'config/xnat.js',
   routerBasename: '/VIEWER',
-  publicPath: '/VIEWER/',  // Add this line
+  publicPath: '/VIEWER',  // Add this line
 
   // whiteLabeling: {},
   extensions: [],

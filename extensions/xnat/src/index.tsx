@@ -11,6 +11,8 @@ import getStudiesForPatientByMRN from './Panels/getStudiesForPatientByMRN';
 import getCustomizationModule from './getCustomizationModule';
 import getViewportModule from './getViewportModule';
 import preRegistration from './init';
+import getLayoutTemplateModule from './getLayoutTemplateModule';
+
 import { useViewportsByPositionStore } from './stores/useViewportsByPositionStore';
 import { useViewportGridStore } from './stores/useViewportGridStore';
 import { useUIStateStore } from './stores/useUIStateStore';
@@ -33,6 +35,7 @@ const xnatExtension: Types.Extensions.Extension = {
   },
   getDataSourcesModule,
   getViewportModule,
+  getLayoutTemplateModule,
   getPanelModule,
   getHangingProtocolModule,
   getToolbarModule,
@@ -56,17 +59,9 @@ export { isLoggedIn, xnatAuthenticate } from './utils/xnatDev.js';
 export { userManagement } from './utils/userManagement.js';
 
 export {
-  stackSynchronizer,
-  updateImageSynchronizer,
-} from './utils/synchronizers/index.js';
-
-export { referenceLines } from './utils/CSReferenceLines/referenceLines.js';
-
-export {
   DATA_IMPORT_STATUS,
   ROI_COLOR_TEMPLATES,
   colorTools,
-  viewportOptionsManager,
 } from './utils/index.js';
 
 export { sessionMap, fetchCSRFToken };

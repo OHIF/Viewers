@@ -1,53 +1,124 @@
 import { hotkeys } from '@ohif/core';
-import { initToolGroups, toolbarButtons } from '@ohif/mode-longitudinal';
+import initToolGroups from './initToolGroups';
+import toolbarButtons from './toolbarButtons';
 import { id } from './id';
 import XNATStandaloneRouting from '../../../platform/app/src/routes/XNATStandaloneRouting';
+import SessionRouter from '@ohif/extension-xnat/src/XNATNavigation/helpers/SessionRouter.js';
 
 const ohif = {
   layout: '@ohif/extension-default.layoutTemplateModule.viewerLayout',
   sopClassHandler: '@ohif/extension-default.sopClassHandlerModule.stack',
-  hangingProtocol: '@ohif/extension-default.hangingProtocolModule.default',
-  leftPanel: '@ohif/extension-default.panelModule.seriesList',
-  rightPanel: '@ohif/extension-default.panelModule.measure',
+  thumbnailList: '@ohif/extension-default.panelModule.seriesList',
+  wsiSopClassHandler:
+    '@ohif/extension-cornerstone.sopClassHandlerModule.DicomMicroscopySopClassHandler',
 };
 
 const cornerstone = {
-  viewport: '@ohif/extension-cornerstone.viewportModule.cornerstone',
+  measurements: '@ohif/extension-cornerstone.panelModule.panelMeasurement',
+  segmentation: '@ohif/extension-cornerstone.panelModule.panelSegmentation',
 };
 
-/**
- * Just two dependencies to be able to render a viewport with panels in order
- * to make sure that the mode is working.
- */
+const tracked = {
+  measurements: '@ohif/extension-measurement-tracking.panelModule.trackedMeasurements',
+  thumbnailList: '@ohif/extension-measurement-tracking.panelModule.seriesList',
+  viewport: '@ohif/extension-measurement-tracking.viewportModule.cornerstone-tracked',
+};
+
+const dicomsr = {
+  sopClassHandler: '@ohif/extension-cornerstone-dicom-sr.sopClassHandlerModule.dicom-sr',
+  sopClassHandler3D: '@ohif/extension-cornerstone-dicom-sr.sopClassHandlerModule.dicom-sr-3d',
+  viewport: '@ohif/extension-cornerstone-dicom-sr.viewportModule.dicom-sr',
+};
+
+const dicomvideo = {
+  sopClassHandler: '@ohif/extension-dicom-video.sopClassHandlerModule.dicom-video',
+  viewport: '@ohif/extension-dicom-video.viewportModule.dicom-video',
+};
+
+const dicompdf = {
+  sopClassHandler: '@ohif/extension-dicom-pdf.sopClassHandlerModule.dicom-pdf',
+  viewport: '@ohif/extension-dicom-pdf.viewportModule.dicom-pdf',
+};
+
+const dicomSeg = {
+  sopClassHandler: '@ohif/extension-cornerstone-dicom-seg.sopClassHandlerModule.dicom-seg',
+  viewport: '@ohif/extension-cornerstone-dicom-seg.viewportModule.dicom-seg',
+};
+
+const dicomPmap = {
+  sopClassHandler: '@ohif/extension-cornerstone-dicom-pmap.sopClassHandlerModule.dicom-pmap',
+  viewport: '@ohif/extension-cornerstone-dicom-pmap.viewportModule.dicom-pmap',
+};
+
+const dicomRT = {
+  viewport: '@ohif/extension-cornerstone-dicom-rt.viewportModule.dicom-rt',
+  sopClassHandler: '@ohif/extension-cornerstone-dicom-rt.sopClassHandlerModule.dicom-rt',
+};
+
 const extensionDependencies = {
-  '@ohif/extension-default': '^3.10.0-beta.93',
-  '@ohif/extension-cornerstone': '^3.10.0-beta.93',
+  // Can derive the versions at least process.env.from npm_package_version
+  '@ohif/extension-default': '^3.0.0',
+  '@ohif/extension-cornerstone': '^3.0.0',
+  '@ohif/extension-measurement-tracking': '^3.0.0',
+  '@ohif/extension-cornerstone-dicom-sr': '^3.0.0',
+  '@ohif/extension-cornerstone-dicom-seg': '^3.0.0',
+  '@ohif/extension-cornerstone-dicom-pmap': '^3.0.0',
+  '@ohif/extension-cornerstone-dicom-rt': '^3.0.0',
+  '@ohif/extension-dicom-pdf': '^3.0.1',
+  '@ohif/extension-dicom-video': '^3.0.1',
   '@ohif/extension-xnat': '^0.0.1',
+
 };
 
 function modeFactory({ modeConfiguration }) {
+  
   return {
-    /**
-     * Mode ID, which should be unique among modes used by the viewer. This ID
-     * is used to identify the mode in the viewer's state.
-     */
     id,
-    routeName: 'XNATStandaloneRouting',
-    /**
-     * Mode name, which is displayed in the viewer's UI in the workList, for the
-     * user to select the mode.
-     */
+    routeName: '',
     displayName: 'XNAT Viewer',
+    onModeInit: ({ servicesManager, extensionManager, commandsManager, appConfig, query }) => {
+      console.log('XNAT Mode Init - Query params:', Object.fromEntries(query.entries()));
+      
+      // Get query parameters
+      const { projectId, parentProjectId, subjectId, experimentId, experimentLabel } = 
+        Object.fromEntries(query.entries());
+      
+      console.log('XNAT Mode Init - Parsed params:', { 
+        projectId, parentProjectId, subjectId, experimentId, experimentLabel 
+      });
+      
+      // If we have experiment/session parameters, initialize the session router
+      if (experimentId && projectId) {
+        try {
+          console.log('XNAT Mode Init - Creating session router');
+          const sessionRouter = new SessionRouter(
+            projectId,
+            parentProjectId,
+            subjectId,
+            experimentId,
+            experimentLabel
+          );
+          
+          // Store the router instance in the services manager
+          servicesManager.services.sessionRouter = sessionRouter;
+          console.log('XNAT Mode Init - Session router created successfully');
+        } catch (error) {
+          console.error('XNAT Mode Init - Error creating session router:', error);
+        }
+      } else {
+        console.warn('XNAT Mode Init - Missing required params for session router');
+      }
+    },
     /**
      * Runs when the Mode Route is mounted to the DOM. Usually used to initialize
      * Services and other resources.
      */
-    onModeEnter: ({ servicesManager, extensionManager, commandsManager }: withAppTypes) => {
+    onModeEnter: ({ servicesManager, extensionManager, commandsManager }) => {
+      console.log('XNAT Mode Enter - Start');
       const { measurementService, toolbarService, toolGroupService } = servicesManager.services;
-
+      console.log('XNAT Mode Enter - Services:', { measurementService, toolbarService, toolGroupService });
+      
       measurementService.clearMeasurements();
-
-      // Init Default and SR ToolGroups
       initToolGroups(extensionManager, toolGroupService, commandsManager);
 
       toolbarService.addButtons(toolbarButtons);
@@ -61,6 +132,7 @@ function modeFactory({ modeConfiguration }) {
         'Crosshairs',
         'MoreTools',
       ]);
+      console.log('XNAT Mode Enter - Complete');
     },
     onModeExit: ({ servicesManager }: withAppTypes) => {
       const {
@@ -89,6 +161,7 @@ function modeFactory({ modeConfiguration }) {
      * modalities of the selected studies. For instance a PET/CT mode should be
      */
     isValidMode: ({ modalities }) => {
+      console.log('XNAT isValidMode check:', { modalities });
       return { valid: true };
     },
     /**
@@ -105,24 +178,68 @@ function modeFactory({ modeConfiguration }) {
      */
     routes: [
       {
-        path: 'VIEWER',
+        path: '/',
+        init: ({ servicesManager, extensionManager }) => {
+          console.log('XNAT route init starting...');
+          const { sessionRouter } = servicesManager.services;
+          
+          // If we have a session router, check JSON and load route
+          if (sessionRouter) {
+            console.log('XNAT route init: calling sessionRouter.go()');
+            sessionRouter.go();
+            console.log('XNAT route init: sessionRouter.go() completed');
+          } else {
+            console.warn('XNAT route init: No session router found!');
+          }
+          
+          console.log('XNAT route init finished');
+          return Promise.resolve();
+        },
         layoutTemplate: ({ location, servicesManager }) => {
+          console.log('XNAT layout template called:', { location });
           return {
             id: ohif.layout,
             props: {
-              leftPanels: [ohif.leftPanel],
-              rightPanels: [ohif.rightPanel],
+              leftPanels: [tracked.thumbnailList],
+              leftPanelResizable: true,
+              rightPanels: [cornerstone.segmentation, tracked.measurements],
+              rightPanelClosed: true,
+              rightPanelResizable: true,
               viewports: [
                 {
-                  namespace: cornerstone.viewport,
-                  displaySetsToDisplay: [ohif.sopClassHandler],
+                  namespace: tracked.viewport,
+                  displaySetsToDisplay: [
+                    ohif.sopClassHandler,
+                    dicomvideo.sopClassHandler,
+                    dicomsr.sopClassHandler3D,
+                    ohif.wsiSopClassHandler,
+                  ],
+                },
+                {
+                  namespace: dicomsr.viewport,
+                  displaySetsToDisplay: [dicomsr.sopClassHandler],
+                },
+                {
+                  namespace: dicompdf.viewport,
+                  displaySetsToDisplay: [dicompdf.sopClassHandler],
+                },
+                {
+                  namespace: dicomSeg.viewport,
+                  displaySetsToDisplay: [dicomSeg.sopClassHandler],
+                },
+                {
+                  namespace: dicomPmap.viewport,
+                  displaySetsToDisplay: [dicomPmap.sopClassHandler],
+                },
+                {
+                  namespace: dicomRT.viewport,
+                  displaySetsToDisplay: [dicomRT.sopClassHandler],
                 },
               ],
             },
           };
         },
-        component: XNATStandaloneRouting, // Add this line to use the XNAT routing
-
+        component: XNATStandaloneRouting,
       },
     ],
     /** List of extensions that are used by the mode */

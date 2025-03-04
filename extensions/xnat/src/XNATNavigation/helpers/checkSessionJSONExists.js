@@ -1,11 +1,12 @@
-import sessionMap from '../../../utils/sessionMap';
+import sessionMap from '../../utils/sessionMap';
 
 export default function(projectId, subjectId, experimentId) {
   const { xnatRootUrl } = sessionMap;
 
   return new Promise((resolve, reject) => {
     const xhr = new XMLHttpRequest();
-    const url = `${xnatRootUrl}xapi/viewer/projects/${projectId}/experiments/${experimentId}/exists`;
+    console.log(xnatRootUrl);
+    const url = `${xnatRootUrl}data/projects/${projectId}/experiments/${experimentId}/exists`;
 
     console.log(`fetching: ${url}`);
 

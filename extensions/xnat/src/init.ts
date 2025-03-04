@@ -17,7 +17,7 @@ export default function init({
   commandsManager,
 }: withAppTypes): void {
   const { toolbarService, cineService, viewportGridService } = servicesManager.services;
-
+  console.log('init', { servicesManager, configuration, commandsManager });
   toolbarService.registerEventForToolbarUpdate(cineService, [
     cineService.EVENTS.CINE_STATE_CHANGED,
   ]);

@@ -13,6 +13,11 @@ import { createDicomWebProxyApi } from './DicomWebProxyDataSource/index';
 function getDataSourcesModule() {
   return [
     {
+      name: 'xnat',  // This matches the sourceName in config
+      type: 'webApi',
+      createDataSource: createDicomWebApi,
+    },
+    {
       name: 'dicomweb',
       type: 'webApi',
       createDataSource: createDicomWebApi,

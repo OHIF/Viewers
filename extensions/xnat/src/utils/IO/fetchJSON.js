@@ -1,4 +1,4 @@
-import fetchMockJSON from '../../components/XNATNavigation/testJSON/fetchMockJSON';
+
 import makeCancelable from '../makeCancelable.js';
 import sessionMap from '../sessionMap';
 
@@ -56,7 +56,6 @@ if (
     }
   );
 
-  fetchJSON = fetchMockJSON;
 }
 
 export default fetchJSON;
