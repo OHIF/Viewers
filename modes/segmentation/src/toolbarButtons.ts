@@ -19,33 +19,6 @@ export const setToolActiveToolbar = {
 
 const toolbarButtons: Button[] = [
   {
-    id: 'Shapes',
-    uiType: 'ohif.toolBoxButton',
-    props: {
-      icon: 'icon-tool-shape',
-      label: 'Shapes',
-      evaluate: {
-        name: 'evaluate.cornerstone.segmentation',
-        toolNames: ['CircleScissor', 'SphereScissor', 'RectangleScissor'],
-        disabledText: 'Create new segmentation to enable shapes tool.',
-      },
-      options: [
-        {
-          name: 'Shape',
-          type: 'radio',
-          value: 'SphereScissor',
-          id: 'shape-mode',
-          values: [
-            { value: 'CircleScissor', label: 'Circle' },
-            { value: 'SphereScissor', label: 'Sphere' },
-            { value: 'RectangleScissor', label: 'Rectangle' },
-          ],
-          commands: 'setToolActiveToolbar',
-        },
-      ],
-    },
-  },
-  {
     id: 'Zoom',
     uiType: 'ohif.toolButton',
     props: {
