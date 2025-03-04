@@ -495,7 +495,6 @@ export default class ToolbarService extends PubSubService {
             const cmds = Array.isArray(option.commands) ? option.commands : [option.commands];
 
             // Find the parent button and update its options
-            // const parentButton = this.state.buttons[parentId];
             if (toolProps && toolProps.options) {
               // Find the option in the button's options array and update its value
               const optionIndex = toolProps.options.findIndex(opt => opt.id === option.id);
@@ -505,34 +504,22 @@ export default class ToolbarService extends PubSubService {
             }
 
             cmds.forEach(command => {
-              const isString = typeof command === 'string';
-              const isObject = typeof command === 'object';
-              const isFunction = typeof command === 'function';
-
-              if (isString) {
-                this._commandsManager.run(command, { value });
-              } else if (isObject) {
-                this._commandsManager.run({
-                  ...command,
-                  commandOptions: {
-                    ...command.commandOptions,
-                    ...option,
-                    value,
-                    options: toolProps.options,
-                  },
-                });
-              } else if (isFunction) {
-                command({
-                  value,
-                  commandsManager: this._commandsManager,
-                  servicesManager: this._servicesManager,
-                  options: toolProps.options,
-                });
+              const processedCommand = this.processCommands({
+                command,
+                value,
+                option,
+                toolProps,
+              });
+              if (processedCommand) {
+                processedCommand();
               }
             });
 
             // Notify that toolbar state has been modified
-            this._broadcastEvent(EVENTS.TOOL_BAR_STATE_MODIFIED);
+            this._broadcastEvent(EVENTS.TOOL_BAR_STATE_MODIFIED, {
+              buttons: this.state.buttons,
+              buttonSections: this.state.buttonSections,
+            });
           },
         };
       });
@@ -657,6 +644,52 @@ export default class ToolbarService extends PubSubService {
 
   getButtonComponentForUIType(uiType: string) {
     return uiType ? (this._getButtonUITypes()[uiType]?.defaultComponent ?? null) : null;
+  }
+
+  /**
+   * Processes commands for a given option and value
+   */
+  public processCommands({
+    command,
+    value,
+    option,
+    toolProps,
+  }: {
+    command: string | object | ((...args: any[]) => void);
+    value: unknown;
+    option: Record<string, unknown>;
+    toolProps: Record<string, unknown>;
+  }) {
+    const isString = typeof command === 'string';
+    const isObject = typeof command === 'object';
+    const isFunction = typeof command === 'function';
+
+    if (isString) {
+      return () => this._commandsManager.run(command, { value });
+    }
+
+    if (isObject) {
+      return () =>
+        this._commandsManager.run({
+          ...command,
+          commandOptions: {
+            ...command.commandOptions,
+            ...option,
+            value,
+            options: toolProps.options,
+          },
+        });
+    }
+
+    if (isFunction) {
+      return () =>
+        command({
+          value,
+          commandsManager: this._commandsManager,
+          servicesManager: this._servicesManager,
+          options: toolProps.options,
+        });
+    }
   }
 
   clearButtonSection(buttonSection: string) {

@@ -41,33 +41,15 @@ export function useToolbar({ buttonSection = 'primary' }: withAppTypes) {
             const commands = Array.isArray(option.commands) ? option.commands : [option.commands];
 
             commands.forEach(command => {
-              switch (typeof command) {
-                case 'string':
-                  allCommands.push(() => commandsManager.run(command, { value: valueToUse }));
-                  break;
-                case 'object':
-                  allCommands.push(() =>
-                    commandsManager.run({
-                      ...command,
-                      commandOptions: {
-                        ...command.commandOptions,
-                        ...option,
-                        value: valueToUse,
-                        options: buttonProps.options,
-                      },
-                    })
-                  );
-                  break;
-                case 'function':
-                  allCommands.push(() =>
-                    command({
-                      value: valueToUse,
-                      commandsManager,
-                      servicesManager,
-                      options: buttonProps.options,
-                    })
-                  );
-                  break;
+              const processedCommand = toolbarService.processCommands({
+                command,
+                value: valueToUse,
+                option,
+                toolProps: buttonProps,
+              });
+
+              if (processedCommand) {
+                allCommands.push(processedCommand);
               }
             });
           });
@@ -78,7 +60,7 @@ export function useToolbar({ buttonSection = 'primary' }: withAppTypes) {
 
       toolbarService.recordInteraction(buttonProps, { refreshProps });
     },
-    [toolbarService, viewportGridService, commandsManager, servicesManager, toolbarButtons]
+    [toolbarService, viewportGridService, toolbarButtons]
   );
 
   // Effect to handle toolbar modification events
