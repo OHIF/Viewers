@@ -315,7 +315,6 @@ const commandsModule = ({
       }
     },
     setBrushSize: ({ value, toolNames }) => {
-      debugger;
       const brushSize = Number(value);
 
       toolGroupService.getToolGroupIds()?.forEach(toolGroupId => {
