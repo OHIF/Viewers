@@ -1299,6 +1299,13 @@
     core-js-pure "^3.30.2"
     regenerator-runtime "^0.14.0"
 
+"@babel/runtime@7.1.2":
+  version "7.1.2"
+  resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.1.2.tgz#81c89935f4647706fc54541145e6b4ecfef4b8e3"
+  integrity sha512-Y3SCjmhSupzFB6wcv1KmmFucH6gDVnI30WjOcicV10ju0cZjak3Jcs67YLIXBrmZYw1xCrVeJPbycFwrqNyxpg==
+  dependencies:
+    regenerator-runtime "^0.12.0"
+
 "@babel/runtime@7.22.11":
   version "7.22.11"
   resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.22.11.tgz#7a9ba3bbe406ad6f9e8dd4da2ece453eb23a77a4"
@@ -1393,10 +1400,10 @@
   resolved "https://registry.yarnpkg.com/@colors/colors/-/colors-1.5.0.tgz#bb504579c1cae923e6576a4f5da43d25f97bdbd9"
   integrity sha512-ooWCrlZP11i8GImSjTHYHLkvFDP48nS4+204nGb1RiX/WXYHmJA2III9/e2DWVabCESdW7hBAEzHRqUn9OUVvQ==
 
-"@cornerstonejs/adapters@^3.0.1":
-  version "3.0.1"
-  resolved "https://registry.yarnpkg.com/@cornerstonejs/adapters/-/adapters-3.0.1.tgz#596e302d7155ee64b7c20bcfedc57ce6ca10d5fb"
-  integrity sha512-Ym6s4cTpMkojap5QZ8MXZ8hDbs2TMMN/ypqU7wKMwAY2LGoltoeGw0Z/7LL+iostbaSw3fVs+TZzJSKhKw8Bug==
+"@cornerstonejs/adapters@^3.0.2":
+  version "3.0.2"
+  resolved "https://registry.yarnpkg.com/@cornerstonejs/adapters/-/adapters-3.0.2.tgz#50dd9accfee885f675bcaefbd73345085e86f3a2"
+  integrity sha512-bgEQoBWFfkSTN+N977kBCyxunKsffpyn8hv7CvRghJcY1qKlKjDo1caYnMajm9nBrI0pHSdiVYmSKVLRMOLONw==
   dependencies:
     "@babel/runtime-corejs2" "^7.17.8"
     buffer "^6.0.3"
@@ -1429,19 +1436,19 @@
   resolved "https://registry.yarnpkg.com/@cornerstonejs/codec-openjph/-/codec-openjph-2.4.5.tgz#8690b61a86fa53ef38a70eee9d665a79229517c0"
   integrity sha512-MZCUy8VG0VG5Nl1l58+g+kH3LujAzLYTfJqkwpWI2gjSrGXnP6lgwyy4GmPRZWVoS40/B1LDNALK905cNWm+sg==
 
-"@cornerstonejs/core@^3.0.1":
-  version "3.0.1"
-  resolved "https://registry.yarnpkg.com/@cornerstonejs/core/-/core-3.0.1.tgz#8a938013c148d752d2c4f4eba7bd63048a6c814a"
-  integrity sha512-K+cOoN/TzJIPRRoaWWNkhJ+2CdkBBX8BA64DG0aBVOthlwJPRqK2YQE6PTTVRx18mjMA4to/m3de0emFNKrTzQ==
+"@cornerstonejs/core@^3.0.2":
+  version "3.0.2"
+  resolved "https://registry.yarnpkg.com/@cornerstonejs/core/-/core-3.0.2.tgz#09548da2326ca596f1308d62871970e4089a915a"
+  integrity sha512-hGK5mx5Bx2FRTVg7lRwLM5ghfJIgGfKYBXIAyOm1Rp3q7mgBLERqXVRWjInqz6qkAfmHMEdbDU6hZLT/S+AhkQ==
   dependencies:
     "@kitware/vtk.js" "32.9.0"
     comlink "^4.4.1"
     gl-matrix "^3.4.3"
 
-"@cornerstonejs/dicom-image-loader@^3.0.1":
-  version "3.0.1"
-  resolved "https://registry.yarnpkg.com/@cornerstonejs/dicom-image-loader/-/dicom-image-loader-3.0.1.tgz#e18f716620ab176d88c25b9efd25fc0983bce180"
-  integrity sha512-t4bI6rVOt4J8YOHRR9Mh9ClInajc98qqI6fwsByiXmtc2Y4INrZ1uaRspFnOJBosbr+EwsJBV7iT2yt6Jk6CjA==
+"@cornerstonejs/dicom-image-loader@^3.0.2":
+  version "3.0.2"
+  resolved "https://registry.yarnpkg.com/@cornerstonejs/dicom-image-loader/-/dicom-image-loader-3.0.2.tgz#36248e3da985b575c6790c4bfc17d425e824afcf"
+  integrity sha512-km5XXo0DCv32KrXzZDKNvG/k79Py45zE82I8whwC2JK++JX/+ai/pAQRWIsmi+E5IsMOG13xI3vWWKrsrzuiCA==
   dependencies:
     "@cornerstonejs/codec-charls" "^1.2.3"
     "@cornerstonejs/codec-libjpeg-turbo-8bit" "^1.2.2"
@@ -1459,14 +1466,13 @@
   dependencies:
     "@icr/polyseg-wasm" "0.4.0"
 
-"@cornerstonejs/tools@^3.0.1":
-  version "3.0.1"
-  resolved "https://registry.yarnpkg.com/@cornerstonejs/tools/-/tools-3.0.1.tgz#4d707992283235d79532f35e60e8c763b174ccef"
-  integrity sha512-fRjoXJ46mdpYc5JZ/FUn0g1vCK4LohnNjgZl+O72HK2reMdc5/dQeCueJCT+tBMay04sJMUHm0tAke2DN10FBQ==
+"@cornerstonejs/tools@^3.0.2":
+  version "3.0.2"
+  resolved "https://registry.yarnpkg.com/@cornerstonejs/tools/-/tools-3.0.2.tgz#d4bc1ba085572f3e603f51f5f1846b0bf43647f7"
+  integrity sha512-RgPQbRey8gMIjvGUgEdMQ4E6kOxXZzqwFzmmY6YgwVc1YPubeODoESgPDhlIfasTN7DWAxcmoFRyHMQgcvu2lg==
   dependencies:
-    "@types/offscreencanvas" "2019.7.3"
-    comlink "^4.4.1"
-    lodash.get "^4.4.2"
+    "@babel/runtime" "7.1.2"
+    cornerstone-math "^0.1.7"
 
 "@csstools/postcss-cascade-layers@^1.1.1":
   version "1.1.1"
@@ -5478,11 +5484,6 @@
   resolved "https://registry.yarnpkg.com/@types/normalize-package-data/-/normalize-package-data-2.4.4.tgz#56e2cc26c397c038fab0e3a917a12d5c5909e901"
   integrity sha512-37i+OaWTh9qeK4LSHPsyRC7NahnGotNuZvjLSgcPzblpHB3rrCJxAOgI5gCdKm7coonsaX1Of0ILiTcnZjbfxA==
 
-"@types/offscreencanvas@2019.7.3":
-  version "2019.7.3"
-  resolved "https://registry.yarnpkg.com/@types/offscreencanvas/-/offscreencanvas-2019.7.3.tgz#90267db13f64d6e9ccb5ae3eac92786a7c77a516"
-  integrity sha512-ieXiYmgSRXUDeOntE1InxjWyvEelZGP63M+cGuquuRLuIKKT1osnkXjxev9B7d1nXSug5vpunx+gNlbVxMlC9A==
-
 "@types/parse-json@^4.0.0":
   version "4.0.2"
   resolved "https://registry.yarnpkg.com/@types/parse-json/-/parse-json-4.0.2.tgz#5950e50960793055845e956c427fc2b0d70c5239"
@@ -8157,7 +8158,7 @@ core-util-is@~1.0.0:
   resolved "https://registry.yarnpkg.com/core-util-is/-/core-util-is-1.0.3.tgz#a6042d3634c2b27e9328f837b965fac83808db85"
   integrity sha512-ZQBvi1DcpJ4GDqanjucZ2Hj3wEO5pZDS89BWbkcrvdxksJorwUDDZamX9ldFkp9aw2lmBDLgkObEA4DWNJ9FYQ==
 
-cornerstone-math@^0.1.9:
+cornerstone-math@^0.1.7, cornerstone-math@^0.1.9:
   version "0.1.10"
   resolved "https://registry.yarnpkg.com/cornerstone-math/-/cornerstone-math-0.1.10.tgz#a3f99db64d73c5adee61ae0d570128eca1682d07"
   integrity sha512-23XSAyP7t70ANvhFyqwvva+zFd1bQ2d5GL7tg9qKE932WmImjA2Y9tiy5n0iTtnf51W/78Png8Lia2o4dCdJaQ==
@@ -18081,6 +18082,11 @@ regenerate@^1.4.2:
   version "1.4.2"
   resolved "https://registry.yarnpkg.com/regenerate/-/regenerate-1.4.2.tgz#b9346d8827e8f5a32f7ba29637d398b69014848a"
   integrity sha512-zrceR/XhGYU/d/opr2EKO7aRHUeiBI8qjtfHqADTwZd6Szfy16la6kqD0MIUs5z5hx6AaKa+PixpPrR289+I0A==
+
+regenerator-runtime@^0.12.0:
+  version "0.12.1"
+  resolved "https://registry.yarnpkg.com/regenerator-runtime/-/regenerator-runtime-0.12.1.tgz#fa1a71544764c036f8c49b13a08b2594c9f8a0de"
+  integrity sha512-odxIc1/vDlo4iZcfXqRYFj0vpXFNoGdKMAUieAlFYO6m/nl5e9KR/beGf41z4a1FI+aQgtjhuaSlDxQ0hmkrHg==
 
 regenerator-runtime@^0.14.0:
   version "0.14.1"

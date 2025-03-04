@@ -33,6 +33,7 @@ import {
   PanelSection,
   DisplaySetMessageListTooltip,
   ToolboxUI,
+  ToolSettings,
   DoubleSlider,
   Label,
   Slider,
@@ -243,4 +244,5 @@ export {
   DialogProvider,
   useDialog,
   ManagedDialog,
+  ToolSettings,
 };

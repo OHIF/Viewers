@@ -105,6 +105,7 @@ import {
   ToolButtonListItem,
   ToolButtonListDivider,
 } from './ToolButton';
+import { ToolSettings } from './OHIFToolSettings';
 
 export {
   Numeric,
@@ -235,4 +236,5 @@ export {
   ImageModal,
   UserPreferencesModal,
   FooterAction,
+  ToolSettings,
 };

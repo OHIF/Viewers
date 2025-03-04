@@ -57,8 +57,7 @@ export function useToolbar({ buttonSection = 'primary' }: withAppTypes) {
 
         buttonProps.commands = allCommands;
       }
-
-      toolbarService.recordInteraction(buttonProps, { refreshProps });
+      toolbarService.recordInteraction({ ...args, ...buttonProps }, { refreshProps });
     },
     [toolbarService, viewportGridService, toolbarButtons]
   );
