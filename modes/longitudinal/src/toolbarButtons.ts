@@ -452,6 +452,17 @@ const toolbarButtons: Button[] = [
     },
   },
   {
+    id: 'Zoom',
+    uiType: 'ohif.toolButton',
+    props: {
+      type: 'tool',
+      icon: 'tool-zoom',
+      label: 'Zoom',
+      commands: setToolActiveToolbar,
+      evaluate: 'evaluate.cornerstoneTool',
+    },
+  },
+  {
     id: 'TrackballRotate',
     uiType: 'ohif.toolButton',
     props: {
