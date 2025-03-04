@@ -112,8 +112,6 @@ import { DataRow } from './components/DataRow';
 import {
   useNotification,
   NotificationProvider,
-  useToolbox,
-  ToolboxProvider,
   useModal,
   ModalProvider,
   DialogProvider,
@@ -231,8 +229,6 @@ export {
   ToolButtonListDropDown,
   ToolButtonListItem,
   ToolButtonListDivider,
-  ToolboxProvider,
-  useToolbox,
   utils,
   Numeric,
   AboutModal,
