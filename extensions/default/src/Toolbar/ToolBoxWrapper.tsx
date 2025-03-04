@@ -12,8 +12,6 @@ export function ToolBoxButtonGroupWrapper({ groupId, items, onInteraction, ...pr
     return null;
   }
 
-  debugger;
-
   return (
     <div className="bg-popover flex flex-row space-x-1 rounded-md px-0 py-0">
       {items.map(item => (
@@ -22,8 +20,9 @@ export function ToolBoxButtonGroupWrapper({ groupId, items, onInteraction, ...pr
           key={item.id}
           size="small"
           className={props.disabled && 'text-primary'}
-          onInteraction={() => {
+          onInteraction={event => {
             onInteraction?.({
+              event,
               groupId,
               itemId: item.id,
               item,
@@ -43,8 +42,9 @@ export function ToolBoxButtonWrapper({ onInteraction, options, ...props }) {
         id={props.id}
         size="small"
         className={classNames(props.disabled && 'text-primary')}
-        onInteraction={() => {
+        onInteraction={event => {
           onInteraction?.({
+            event,
             itemId: props.id,
             commands: props.commands,
             options,

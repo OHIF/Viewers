@@ -10,11 +10,11 @@ export const setToolActiveToolbar = {
 
 const toolbarButtons: Button[] = [
   {
-    id: 'MeasurementTools',
+    id: 'measurementSection',
     uiType: 'ohif.toolButtonList',
     props: {
       buttonSection: 'measurementSection',
-      groupId: 'MeasurementTools',
+      groupId: 'measurementSection',
       evaluate: 'evaluate.group.promoteToPrimary',
     },
   },

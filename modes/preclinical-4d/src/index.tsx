@@ -1,9 +1,7 @@
 import { id } from './id';
-import { hotkeys } from '@ohif/core';
 import initWorkflowSteps from './initWorkflowSteps';
 import initToolGroups from './initToolGroups';
 import toolbarButtons from './toolbarButtons';
-import segmentationButtons from './segmentationButtons';
 
 const extensionDependencies = {
   '@ohif/extension-default': '3.7.0-beta.76',
@@ -58,35 +56,7 @@ function modeFactory({ modeConfiguration }) {
 
       toolbarService.addButtons(toolbarButtons);
 
-      toolbarService.createButtonSection('primary', [
-        'MeasurementTools',
-        'Zoom',
-        'WindowLevel',
-        'Pan',
-        'TrackballRotate',
-        'Capture',
-        'Layout',
-        'Crosshairs',
-      ]);
-
       toolbarService.createButtonSection('secondary', ['ProgressDropdown']);
-
-      toolbarService.createButtonSection('measurementSection', [
-        'Length',
-        'Bidirectional',
-        'ArrowAnnotate',
-        'EllipticalROI',
-      ]);
-
-      toolbarService.createButtonSection('segmentationSection', [
-        'BrushTools',
-        'Brush',
-        'Eraser',
-        'Threshold',
-        'Shapes',
-      ]);
-
-      toolbarService.createButtonSection('ROIThresholdToolbox', ['RectangleROIStartEndThreshold']);
 
       // the primary button section is created in the workflow steps
       // specific to the step

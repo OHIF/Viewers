@@ -10,28 +10,19 @@ const setToolActiveToolbar = {
 const toolbarButtons: Button[] = [
   // sections
   {
-    id: 'MeasurementTools',
+    id: 'moreToolsSection',
     uiType: 'ohif.toolButtonList',
     props: {
-      buttonSection: 'measurementSection',
-      groupId: 'MeasurementTools',
-      evaluate: 'evaluate.group.promoteToPrimaryIfCornerstoneToolNotActiveInTheList',
-    },
-  },
-  {
-    id: 'MoreTools',
-    uiType: 'ohif.toolButtonList',
-    props: {
-      groupId: 'MoreTools',
+      groupId: 'moreToolsSection',
       buttonSection: 'moreToolsSection',
     },
   },
   {
-    id: 'BrushEraserThreshold',
+    id: 'brushToolsSection',
     uiType: 'ohif.toolBoxButtonGroup',
     props: {
-      groupId: 'BrushEraserThreshold',
-      buttonSection: 'brushEraserThresholdSection',
+      groupId: 'brushToolsSection',
+      buttonSection: 'brushToolsSection',
     },
   },
   // tool defs

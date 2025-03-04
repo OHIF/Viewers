@@ -9,12 +9,20 @@ const setToolActiveToolbar = {
 
 const toolbarButtons = [
   {
-    id: 'MeasurementTools',
+    id: 'measurementSection',
     uiType: 'ohif.toolButtonList',
     props: {
       buttonSection: 'measurementSection',
-      groupId: 'MeasurementTools',
+      groupId: 'measurementSection',
       evaluate: 'evaluate.group.promoteToPrimaryIfCornerstoneToolNotActiveInTheList',
+    },
+  },
+  {
+    id: 'brushToolsSection',
+    uiType: 'ohif.toolBoxButtonGroup',
+    props: {
+      groupId: 'brushToolsSection',
+      buttonSection: 'brushToolsSection',
     },
   },
   {
@@ -156,14 +164,6 @@ const toolbarButtons = [
         toolNames: ['RectangleROIStartEndThreshold'],
       },
       options: 'tmtv.RectangleROIThresholdOptions',
-    },
-  },
-  {
-    id: 'BrushTools',
-    uiType: 'ohif.toolBoxButtonGroup',
-    props: {
-      groupId: 'BrushTools',
-      buttonSection: 'segmentationSection',
     },
   },
   {

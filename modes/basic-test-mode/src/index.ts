@@ -87,7 +87,7 @@ function modeFactory() {
 
       toolbarService.addButtons(toolbarButtons);
       toolbarService.createButtonSection('primary', [
-        'MeasurementTools',
+        'measurementSection',
         'Zoom',
         'WindowLevel',
         'Pan',
@@ -95,7 +95,7 @@ function modeFactory() {
         'Layout',
         'MPR',
         'Crosshairs',
-        'MoreTools',
+        'moreToolsSection',
       ]);
 
       toolbarService.createButtonSection('measurementSection', [

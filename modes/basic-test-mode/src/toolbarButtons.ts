@@ -49,20 +49,20 @@ const ReferenceLinesListeners = [
 
 const toolbarButtons: Button[] = [
   {
-    id: 'MeasurementTools',
+    id: 'measurementSection',
     uiType: 'ohif.toolButtonList',
     props: {
       buttonSection: 'measurementSection',
-      groupId: 'MeasurementTools',
+      groupId: 'measurementSection',
       evaluate: 'evaluate.group.promoteToPrimaryIfCornerstoneToolNotActiveInTheList',
     },
   },
   {
-    id: 'MoreTools',
+    id: 'moreToolsSection',
     uiType: 'ohif.toolButtonList',
     props: {
       buttonSection: 'moreToolsSection',
-      groupId: 'MoreTools',
+      groupId: 'moreToolsSection',
       evaluate: 'evaluate.group.promoteToPrimaryIfCornerstoneToolNotActiveInTheList',
     },
   },

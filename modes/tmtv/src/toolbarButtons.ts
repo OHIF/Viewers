@@ -9,11 +9,11 @@ const setToolActiveToolbar = {
 
 const toolbarButtons = [
   {
-    id: 'MeasurementTools',
+    id: 'measurementSection',
     uiType: 'ohif.toolButtonList',
     props: {
       buttonSection: 'measurementSection',
-      groupId: 'MeasurementTools',
+      groupId: 'measurementSection',
       evaluate: 'evaluate.group.promoteToPrimaryIfCornerstoneToolNotActiveInTheList',
     },
   },

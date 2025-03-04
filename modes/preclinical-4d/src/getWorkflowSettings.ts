@@ -10,10 +10,27 @@ const cornerstone = {
   activeViewportWindowLevel: '@ohif/extension-cornerstone.panelModule.activeViewportWindowLevel',
 };
 
-const defaultButtons = {
-  buttonSection: 'primary',
-  buttons: ['MeasurementTools', 'Zoom', 'WindowLevel', 'Crosshairs', 'Pan'],
-};
+const defaultButtons = [
+  {
+    buttonSection: 'primary',
+    buttons: ['measurementSection', 'Zoom', 'WindowLevel', 'Crosshairs', 'Pan'],
+  },
+  {
+    buttonSection: 'measurementSection',
+    buttons: ['Length', 'Bidirectional', 'ArrowAnnotate', 'EllipticalROI'],
+  },
+];
+
+const ROIThresholdToolbox = [
+  {
+    buttonSection: 'dynamic-toolbox',
+    buttons: ['brushToolsSection', 'RectangleROIStartEndThreshold'],
+  },
+  {
+    buttonSection: 'brushToolsSection',
+    buttons: ['Brush', 'Eraser', 'Threshold'],
+  },
+];
 
 const defaultLeftPanel = [[dynamicVolume.leftPanel, cornerstone.activeViewportWindowLevel]];
 
@@ -66,13 +83,7 @@ function getWorkflowSettings({ servicesManager }) {
             rightPanelClosed: false,
           },
         },
-        toolbarButtons: [
-          defaultButtons,
-          {
-            buttonSection: 'dynamic-toolbox',
-            buttons: ['BrushTools', 'RectangleROIStartEndThreshold'],
-          },
-        ],
+        toolbarButtons: [...defaultButtons, ...ROIThresholdToolbox],
         hangingProtocol: {
           protocolId: 'default4D',
           stageId: 'roiQuantification',

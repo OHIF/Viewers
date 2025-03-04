@@ -65,6 +65,7 @@ function modeFactory({ modeConfiguration }) {
         'Capture',
         'Layout',
         'Crosshairs',
+        'moreToolsSection',
       ]);
 
       toolbarService.createButtonSection('moreToolsSection', [
@@ -80,18 +81,8 @@ function modeFactory({ modeConfiguration }) {
         'TagBrowser',
       ]);
 
-      toolbarService.createButtonSection('segmentationToolbox', ['BrushEraserThreshold', 'Shapes']);
-      toolbarService.createButtonSection('brushEraserThresholdSection', [
-        'Brush',
-        'Eraser',
-        'Threshold',
-      ]);
-
-      customizationService.setCustomizations({
-        'panelSegmentation.tableMode': {
-          $set: 'expanded',
-        },
-      });
+      toolbarService.createButtonSection('segmentationToolbox', ['brushToolsSection', 'Shapes']);
+      toolbarService.createButtonSection('brushToolsSection', ['Brush', 'Eraser', 'Threshold']);
     },
     onModeExit: ({ servicesManager }: withAppTypes) => {
       const {

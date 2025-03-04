@@ -13,6 +13,7 @@ export function useToolbar({ buttonSection = 'primary' }: withAppTypes) {
   // Callback function for handling toolbar interactions
   const onInteraction = useCallback(
     args => {
+      args.event?.stopPropagation?.();
       const viewportId = viewportGridService.getActiveViewportId();
       const refreshProps = { viewportId };
 

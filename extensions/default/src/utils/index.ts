@@ -1,2 +1,2 @@
 export { addIcon } from './addIcon';
-export { Toolbox } from './Toolbox';
+export * from './Toolbox';

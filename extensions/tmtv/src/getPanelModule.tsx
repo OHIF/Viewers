@@ -17,9 +17,6 @@ function getPanelModule({ commandsManager, extensionManager, servicesManager }) 
   const wrappedROIThresholdToolbox = () => {
     return (
       <Toolbox
-        commandsManager={commandsManager}
-        servicesManager={servicesManager}
-        extensionManager={extensionManager}
         buttonSectionId="ROIThresholdToolbox"
         title="Threshold Tools"
       />
@@ -39,9 +36,6 @@ function getPanelModule({ commandsManager, extensionManager, servicesManager }) 
     return (
       <>
         <Toolbox
-          commandsManager={commandsManager}
-          servicesManager={servicesManager}
-          extensionManager={extensionManager}
           buttonSectionId="ROIThresholdToolbox"
           title="Threshold Tools"
         />

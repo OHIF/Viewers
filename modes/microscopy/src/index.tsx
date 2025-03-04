@@ -45,11 +45,15 @@ function modeFactory({ modeConfiguration }) {
     /**
      * Lifecycle hooks
      */
-    onModeEnter: ({ servicesManager, extensionManager, commandsManager }: withAppTypes) => {
+    onModeEnter: ({ servicesManager }: withAppTypes) => {
       const { toolbarService } = servicesManager.services;
 
       toolbarService.addButtons(toolbarButtons);
-      toolbarService.createButtonSection('primary', ['MeasurementTools', 'dragPan', 'TagBrowser']);
+      toolbarService.createButtonSection('primary', [
+        'measurementSection',
+        'dragPan',
+        'TagBrowser',
+      ]);
 
       toolbarService.createButtonSection('measurementSection', [
         'line',

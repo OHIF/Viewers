@@ -1,2 +1,1 @@
-import { ToolboxUI } from './ToolboxUI';
-export { ToolboxUI };
+export * from './ToolboxUI';

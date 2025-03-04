@@ -284,6 +284,8 @@ export default class ToolbarService extends PubSubService {
         buttonProps = {
           ...buttonProps,
           primary: groupEvaluated?.primary ?? buttonProps.primary,
+          disabled: groupEvaluated?.disabled ?? buttonProps.disabled,
+          disabledText: groupEvaluated?.disabledText ?? buttonProps.disabledText,
         };
 
         const { primary, items = [] } = buttonProps;
@@ -395,11 +397,6 @@ export default class ToolbarService extends PubSubService {
    * Buttons already in the section (i.e. with the same ids) will NOT be added twice.
    * @param {string} key - The key of the button section.
    * @param {Array} buttons - The buttons to be added to the section.
-   */
-  /**
-   * Creates or updates a button section with the specified key and buttons
-   * @param key - The key identifier for the button section
-   * @param buttons - Array of button IDs to add to the section
    */
   createButtonSection(key: string, buttons: string[]) {
     // Create or update the button section

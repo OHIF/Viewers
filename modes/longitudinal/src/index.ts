@@ -91,7 +91,7 @@ function modeFactory({ modeConfiguration }) {
 
       toolbarService.addButtons(toolbarButtons);
       toolbarService.createButtonSection('primary', [
-        'MeasurementTools',
+        'measurementSection',
         'Zoom',
         'Pan',
         'TrackballRotate',
@@ -99,10 +99,22 @@ function modeFactory({ modeConfiguration }) {
         'Capture',
         'Layout',
         'Crosshairs',
-        'MoreTools',
+        'moreToolsSection',
       ]);
 
-      toolbarService.createButtonSection('moreTools', [
+      toolbarService.createButtonSection('measurementSection', [
+        'Length',
+        'Bidirectional',
+        'ArrowAnnotate',
+        'EllipticalROI',
+        'RectangleROI',
+        'CircleROI',
+        'PlanarFreehandROI',
+        'SplineROI',
+        'LivewireContour',
+      ]);
+
+      toolbarService.createButtonSection('moreToolsSection', [
         'Reset',
         'rotate-right',
         'flipHorizontal',
@@ -121,16 +133,6 @@ function modeFactory({ modeConfiguration }) {
         'AdvancedMagnify',
         'UltrasoundDirectionalTool',
         'WindowLevelRegion',
-      ]);
-
-      toolbarService.createButtonSection('measurementSection', [
-        'Length',
-        'ArrowAnnotate',
-        'Bidirectional',
-        'EllipticalROI',
-        'RectangleROI',
-        'CircleROI',
-        'PlanarFreehandROI',
       ]);
 
       // // ActivatePanel event trigger for when a segmentation or measurement is added.

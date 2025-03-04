@@ -90,7 +90,7 @@ function modeFactory({ modeConfiguration }) {
       unsubscriptions.push(unsubscribe);
       toolbarService.addButtons(toolbarButtons);
       toolbarService.createButtonSection('primary', [
-        'MeasurementTools',
+        'measurementSection',
         'Zoom',
         'WindowLevel',
         'Crosshairs',

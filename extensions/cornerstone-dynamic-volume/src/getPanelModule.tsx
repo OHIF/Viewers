@@ -19,9 +19,6 @@ function getPanelModule({ commandsManager, extensionManager, servicesManager, co
     return (
       <>
         <Toolbox
-          commandsManager={commandsManager}
-          servicesManager={servicesManager}
-          extensionManager={extensionManager}
           buttonSectionId="dynamic-toolbox"
           title="Threshold Tools"
         />
