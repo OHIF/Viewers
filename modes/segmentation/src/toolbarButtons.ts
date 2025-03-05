@@ -13,16 +13,16 @@ const toolbarButtons: Button[] = [
     id: 'MoreTools',
     uiType: 'ohif.toolButtonList',
     props: {
-      groupId: 'moreToolsSection',
-      buttonSection: 'MoreTools',
+      buttonSection: 'moreToolsSection',
+      groupId: 'MoreTools',
     },
   },
   {
     id: 'BrushTools',
     uiType: 'ohif.toolBoxButtonGroup',
     props: {
-      groupId: 'brushToolsSection',
-      buttonSection: 'BrushTools',
+      groupId: 'BrushTools',
+      buttonSection: 'brushToolsSection',
     },
   },
   // tool defs

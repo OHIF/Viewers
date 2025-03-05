@@ -1,16 +1,23 @@
 import React from 'react';
 import classNames from 'classnames';
 import { ToolButton } from '@ohif/ui-next';
+import { useToolbar } from '@ohif/core/src/hooks/useToolbar';
 
 /**
  * Wraps the ToolButtonList component to handle the OHIF toolbar button structure
  * @param props - Component props
  * @returns Component
  */
-export function ToolBoxButtonGroupWrapper({ groupId, items, onInteraction, ...props }) {
-  if (!items || !groupId) {
+export function ToolBoxButtonGroupWrapper({ groupId, buttonSection, ...props }) {
+  const { onInteraction, toolbarButtons } = useToolbar({
+    buttonSection,
+  });
+
+  if (!groupId) {
     return null;
   }
+
+  const items = toolbarButtons.map(button => button.componentProps);
 
   return (
     <div className="bg-popover flex flex-row space-x-1 rounded-md px-0 py-0">
