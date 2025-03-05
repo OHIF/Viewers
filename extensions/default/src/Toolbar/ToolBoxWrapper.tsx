@@ -31,6 +31,7 @@ export function ToolBoxButtonGroupWrapper({ groupId, buttonSection, ...props }) 
             onInteraction?.({
               event,
               groupId,
+              commands: item.commands,
               itemId: item.id,
               item,
             });

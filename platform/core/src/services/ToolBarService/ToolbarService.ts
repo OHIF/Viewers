@@ -397,6 +397,12 @@ export default class ToolbarService extends PubSubService {
     );
   }
 
+  getButtonPropsInButtonSection(sectionId: string) {
+    const buttonSectionIds = this.state.buttonSections[sectionId];
+
+    return buttonSectionIds?.map(btnId => this.getButtonProps(btnId)) || [];
+  }
+
   /**
    * Retrieves the tool name for a given button.
    * @param button - The button object.

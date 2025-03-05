@@ -11,6 +11,7 @@ const ItemsPerRow = 4;
  */
 function ToolboxUI(props: withAppTypes) {
   const { toolbarButtons = [], numRows, servicesManager, title, useCollapsedPanel = true } = props;
+  const { toolbarService } = servicesManager.services;
 
   const findActiveToolOptions = toolbarButtons => {
     for (const tool of toolbarButtons) {
@@ -18,8 +19,12 @@ function ToolboxUI(props: withAppTypes) {
         return tool.componentProps.options;
       }
 
-      if (tool.componentProps.items) {
-        const activeTool = tool.componentProps.items.find(item => item.isActive);
+      if (tool.componentProps.buttonSection) {
+        const buttonProps = toolbarService.getButtonPropsInButtonSection(
+          tool.componentProps.buttonSection
+        );
+
+        const activeTool = buttonProps.find(item => item.isActive);
         if (!activeTool) {
           continue;
         }

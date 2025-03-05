@@ -18,6 +18,7 @@ function ToolbarButtonGroupWithServices({ groupId, items, onInteraction, size })
             onInteraction({
               groupId,
               itemId: item.id,
+              commands: item.commands,
               item,
             });
           }}
