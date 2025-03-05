@@ -65,7 +65,7 @@ function modeFactory({ modeConfiguration }) {
         'Capture',
         'Layout',
         'Crosshairs',
-        'moreToolsSection',
+        'MoreTools',
       ]);
 
       toolbarService.createButtonSection('moreToolsSection', [
@@ -81,7 +81,7 @@ function modeFactory({ modeConfiguration }) {
         'TagBrowser',
       ]);
 
-      toolbarService.createButtonSection('segmentationToolbox', ['brushToolsSection', 'Shapes']);
+      toolbarService.createButtonSection('segmentationToolbox', ['BrushTools', 'Shapes']);
       toolbarService.createButtonSection('brushToolsSection', ['Brush', 'Eraser', 'Threshold']);
     },
     onModeExit: ({ servicesManager }: withAppTypes) => {

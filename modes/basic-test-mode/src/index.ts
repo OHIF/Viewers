@@ -95,7 +95,7 @@ function modeFactory() {
         'Layout',
         'MPR',
         'Crosshairs',
-        'moreToolsSection',
+        'MoreTools',
       ]);
 
       toolbarService.createButtonSection('measurementSection', [

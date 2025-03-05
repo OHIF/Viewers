@@ -49,21 +49,19 @@ const ReferenceLinesListeners = [
 
 const toolbarButtons: Button[] = [
   {
-    id: 'measurementSection',
+    id: 'MeasurementTools',
     uiType: 'ohif.toolButtonList',
     props: {
       buttonSection: 'measurementSection',
-      groupId: 'measurementSection',
-      evaluate: 'evaluate.group.promoteToPrimaryIfCornerstoneToolNotActiveInTheList',
+      groupId: 'MeasurementTools',
     },
   },
   {
-    id: 'moreToolsSection',
+    id: 'MoreTools',
     uiType: 'ohif.toolButtonList',
     props: {
       buttonSection: 'moreToolsSection',
-      groupId: 'moreToolsSection',
-      evaluate: 'evaluate.group.promoteToPrimaryIfCornerstoneToolNotActiveInTheList',
+      groupId: 'MoreTools',
     },
   },
 
@@ -165,34 +163,6 @@ const toolbarButtons: Button[] = [
       tooltip: 'Zoom',
       commands: setToolActiveToolbar,
       evaluate: 'evaluate.cornerstoneTool',
-    },
-  },
-  {
-    id: 'WindowLevel',
-    uiType: 'ohif.toolButtonList',
-    props: {
-      groupId: 'WindowLevel',
-      primary: {
-        id: 'WindowLevel',
-        icon: 'tool-window-level',
-        label: 'Window Level',
-        tooltip: 'Window Level',
-        commands: setToolActiveToolbar,
-        evaluate: 'evaluate.cornerstoneTool',
-      },
-      secondary: {
-        icon: 'chevron-down',
-        label: 'W/L Manual',
-        tooltip: 'W/L Presets',
-      },
-      renderer: WindowLevelMenuItem,
-      items: [
-        _createWwwcPreset(1, 'Soft tissue', '400 / 40'),
-        _createWwwcPreset(2, 'Lung', '1500 / -600'),
-        _createWwwcPreset(3, 'Liver', '150 / 90'),
-        _createWwwcPreset(4, 'Bone', '2500 / 480'),
-        _createWwwcPreset(5, 'Brain', '80 / 40'),
-      ],
     },
   },
   {

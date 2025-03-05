@@ -46,24 +46,9 @@ export type ButtonProps = {
   buttonSection?: string;
 };
 
-export type NestedButtonProps = {
-  groupId: string;
-  // group evaluate which is different
-  // from the evaluate function for the primary and items
-  evaluate?: EvaluatePublic;
-  items: ButtonProps[];
-  primary: ButtonProps & {
-    // Todo: this is really ugly but really we don't have any other option
-    // the ui design requires this since the button should be rounded if
-    // active otherwise it should not be rounded
-    isActive?: boolean;
-  };
-  secondary: ButtonProps;
-};
-
 export type Button = {
   id: string;
-  props: ButtonProps | NestedButtonProps;
+  props: ButtonProps;
   // button ui type (e.g. 'ohif.splitButton', 'ohif.radioGroup')
   // extensions can provide custom components for these types
   uiType: string;

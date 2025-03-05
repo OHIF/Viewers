@@ -90,7 +90,7 @@ function modeFactory({ modeConfiguration }) {
       unsubscriptions.push(unsubscribe);
       toolbarService.addButtons(toolbarButtons);
       toolbarService.createButtonSection('primary', [
-        'measurementSection',
+        'MeasurementTools',
         'Zoom',
         'WindowLevel',
         'Crosshairs',
@@ -104,9 +104,9 @@ function modeFactory({ modeConfiguration }) {
       ]);
       toolbarService.createButtonSection('ROIThresholdToolbox', [
         'RectangleROIStartEndThreshold',
-        'SegmentationTools',
+        'BrushTools',
       ]);
-      toolbarService.createButtonSection('segmentationSection', ['Brush', 'Eraser', 'Threshold']);
+      toolbarService.createButtonSection('brushToolsSection', ['Brush', 'Eraser', 'Threshold']);
 
       customizationService.setCustomizations({
         'panelSegmentation.tableMode': {

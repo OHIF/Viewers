@@ -13,7 +13,7 @@ const cornerstone = {
 const defaultButtons = [
   {
     buttonSection: 'primary',
-    buttons: ['measurementSection', 'Zoom', 'WindowLevel', 'Crosshairs', 'Pan'],
+    buttons: ['MeasurementTools', 'Zoom', 'WindowLevel', 'Crosshairs', 'Pan'],
   },
   {
     buttonSection: 'measurementSection',
@@ -24,7 +24,7 @@ const defaultButtons = [
 const ROIThresholdToolbox = [
   {
     buttonSection: 'dynamic-toolbox',
-    buttons: ['brushToolsSection', 'RectangleROIStartEndThreshold'],
+    buttons: ['BrushTools', 'RectangleROIStartEndThreshold'],
   },
   {
     buttonSection: 'brushToolsSection',

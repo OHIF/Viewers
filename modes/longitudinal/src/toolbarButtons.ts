@@ -20,23 +20,19 @@ export const setToolActiveToolbar = {
 const toolbarButtons: Button[] = [
   // sections
   {
-    id: 'measurementSection',
+    id: 'MeasurementTools',
     uiType: 'ohif.toolButtonList',
     props: {
       buttonSection: 'measurementSection',
-      groupId: 'measurementSection',
-      // group evaluate to determine which item should move to the top
-      evaluate: 'evaluate.group.promoteToPrimaryIfCornerstoneToolNotActiveInTheList',
+      groupId: 'MeasurementTools',
     },
   },
   {
-    id: 'moreToolsSection',
+    id: 'MoreTools',
     uiType: 'ohif.toolButtonList',
     props: {
       buttonSection: 'moreToolsSection',
-      groupId: 'moreToolsSection',
-      // group evaluate to determine which item should move to the top
-      evaluate: 'evaluate.group.promoteToPrimaryIfCornerstoneToolNotActiveInTheList',
+      groupId: 'MoreTools',
     },
   },
   // tool defs

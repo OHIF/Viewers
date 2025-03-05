@@ -7,23 +7,11 @@ import {
   ToolButtonListItem,
   ToolButtonListDivider,
 } from '@ohif/ui-next';
-
-interface ButtonItem {
-  id: string;
-  icon?: string;
-  label?: string;
-  tooltip?: string;
-  isActive?: boolean;
-  disabledText?: string;
-  commands?: Record<string, unknown>;
-  disabled?: boolean;
-  className?: string;
-}
+import { useToolbar } from '@ohif/core/src';
 
 interface ToolButtonListWrapperProps {
   groupId: string;
-  primary: ButtonItem;
-  items: ButtonItem[];
+  buttonSection: string;
   onInteraction?: (details: {
     groupId: string;
     itemId: string;
@@ -39,13 +27,21 @@ interface ToolButtonListWrapperProps {
  */
 export default function ToolButtonListWrapper({
   groupId,
-  primary,
-  items,
-  onInteraction,
+  buttonSection,
 }: ToolButtonListWrapperProps) {
-  if (!primary || !items?.length) {
+  const { onInteraction, toolbarButtons } = useToolbar({
+    buttonSection,
+  });
+
+  if (!toolbarButtons?.length) {
     return null;
   }
+
+  const primary =
+    toolbarButtons.find(button => button.componentProps.isActive)?.componentProps ||
+    toolbarButtons[0].componentProps;
+
+  const items = toolbarButtons.map(button => button.componentProps);
 
   return (
     <ToolButtonList>

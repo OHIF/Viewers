@@ -91,7 +91,7 @@ function modeFactory({ modeConfiguration }) {
 
       toolbarService.addButtons(toolbarButtons);
       toolbarService.createButtonSection('primary', [
-        'measurementSection',
+        'MeasurementTools',
         'Zoom',
         'Pan',
         'TrackballRotate',
@@ -99,19 +99,19 @@ function modeFactory({ modeConfiguration }) {
         'Capture',
         'Layout',
         'Crosshairs',
-        'moreToolsSection',
+        'MoreTools',
       ]);
 
       toolbarService.createButtonSection('measurementSection', [
         'Length',
         'Bidirectional',
-        'ArrowAnnotate',
-        'EllipticalROI',
-        'RectangleROI',
-        'CircleROI',
-        'PlanarFreehandROI',
-        'SplineROI',
-        'LivewireContour',
+        // 'ArrowAnnotate',
+        // 'EllipticalROI',
+        // 'RectangleROI',
+        // 'CircleROI',
+        // 'PlanarFreehandROI',
+        // 'SplineROI',
+        // 'LivewireContour',
       ]);
 
       toolbarService.createButtonSection('moreToolsSection', [
@@ -280,4 +280,4 @@ const mode = {
 };
 
 export default mode;
-export { initToolGroups, moreTools, toolbarButtons };
+export { initToolGroups, toolbarButtons };

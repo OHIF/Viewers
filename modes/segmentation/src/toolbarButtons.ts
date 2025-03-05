@@ -10,19 +10,19 @@ const setToolActiveToolbar = {
 const toolbarButtons: Button[] = [
   // sections
   {
-    id: 'moreToolsSection',
+    id: 'MoreTools',
     uiType: 'ohif.toolButtonList',
     props: {
       groupId: 'moreToolsSection',
-      buttonSection: 'moreToolsSection',
+      buttonSection: 'MoreTools',
     },
   },
   {
-    id: 'brushToolsSection',
+    id: 'BrushTools',
     uiType: 'ohif.toolBoxButtonGroup',
     props: {
       groupId: 'brushToolsSection',
-      buttonSection: 'brushToolsSection',
+      buttonSection: 'BrushTools',
     },
   },
   // tool defs

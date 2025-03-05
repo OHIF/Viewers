@@ -232,10 +232,6 @@ export default class ToolbarService extends PubSubService {
    */
   public refreshToolbarState(refreshProps) {
     const buttons = this.state.buttons;
-
-    // Tracks evaluated buttons to avoid re-evaluating them (this will
-    // cause issue for toggles where if the button is in primary
-    // and secondary it will be evaluated twice)
     const evaluationResults = new Map();
 
     const evaluateButtonProps = (button, props, refreshProps) => {
@@ -256,62 +252,46 @@ export default class ToolbarService extends PubSubService {
       }
     };
 
-    const refreshedButtons = Object.values(buttons).reduce((acc, button: Button) => {
-      const isNested = (button.props as NestedButtonProps)?.groupId;
+    Object.values(buttons).forEach(button => {
+      const hasSection = (button.props as NestedButtonProps)?.buttonSection;
 
-      if (!isNested) {
+      if (!hasSection) {
         this.handleEvaluate(button.props);
         const buttonProps = button.props as ButtonProps;
 
         const updatedProps = evaluateButtonProps(button, buttonProps, refreshProps);
-        acc[button.id] = {
+        buttons[button.id] = {
           ...button,
           props: updatedProps,
         };
       } else {
         let buttonProps = button.props as NestedButtonProps;
-        // if it is nested we should perform evaluate on each item in the group
-        this.handleEvaluateNested(buttonProps);
-
         const { evaluate: groupEvaluate } = buttonProps;
-
         const groupEvaluated =
           typeof groupEvaluate === 'function'
             ? groupEvaluate({ ...refreshProps, button })
             : undefined;
-        // handle group evaluate function which might switch the primary
-        // item in the group
+
         buttonProps = {
           ...buttonProps,
-          primary: groupEvaluated?.primary ?? buttonProps.primary,
           disabled: groupEvaluated?.disabled ?? buttonProps.disabled,
           disabledText: groupEvaluated?.disabledText ?? buttonProps.disabledText,
         };
 
-        const { primary, items = [] } = buttonProps;
+        const toolButtonIds = this.state.buttonSections[buttonProps.buttonSection];
 
-        // primary and items evaluate functions
-        let updatedPrimary;
-        if (primary) {
-          updatedPrimary = evaluateButtonProps(primary, primary, refreshProps);
-        }
-        const updatedItems = items.map(item => evaluateButtonProps(item, item, refreshProps));
-        buttonProps = {
-          ...buttonProps,
-          primary: updatedPrimary,
-          items: updatedItems,
-        };
-
-        acc[button.id] = {
-          ...button,
-          props: buttonProps,
-        };
+        toolButtonIds.forEach(buttonId => {
+          const button = buttons[buttonId];
+          const updatedProps = evaluateButtonProps(button, button.props, refreshProps);
+          buttons[buttonId] = {
+            ...button,
+            props: updatedProps,
+          };
+        });
       }
+    });
 
-      return acc;
-    }, {});
-
-    this.setButtons(refreshedButtons);
+    this.setButtons(buttons);
     return this.state;
   }
 
@@ -356,18 +336,6 @@ export default class ToolbarService extends PubSubService {
    * @returns The button properties.
    */
   public getButtonProps(id: string): ButtonProps {
-    for (const buttonId of Object.keys(this.state.buttons)) {
-      const { primary, items = [] } =
-        (this.state.buttons[buttonId].props as NestedButtonProps) || {};
-      if (primary?.id === id) {
-        return primary;
-      }
-      const found = items?.find(childButton => childButton.id === id);
-      if (found) {
-        return found;
-      }
-    }
-
     // This should be checked after we checked the nested buttons, since
     // we are checking based on the ids, the nested objects are higher priority
     // and more specific
@@ -398,38 +366,16 @@ export default class ToolbarService extends PubSubService {
    * @param {string} key - The key of the button section.
    * @param {Array} buttons - The buttons to be added to the section.
    */
-  createButtonSection(key: string, buttons: string[]) {
-    // Create or update the button section
-    if (!this.state.buttonSections[key]) {
-      this.state.buttonSections[key] = buttons;
+  createButtonSection(key, buttons) {
+    if (this.state.buttonSections[key]) {
+      this.state.buttonSections[key].push(
+        ...buttons.filter(
+          button => !this.state.buttonSections[key].find(sectionButton => sectionButton === button)
+        )
+      );
     } else {
-      // Add only new buttons that don't already exist in section
-      const existingButtons = new Set(this.state.buttonSections[key]);
-      const newButtons = buttons.filter(button => !existingButtons.has(button));
-      this.state.buttonSections[key].push(...newButtons);
+      this.state.buttonSections[key] = buttons;
     }
-
-    // Update existing button with matching section
-    const existingButton = Object.values(this.state.buttons).find(
-      button => button.props.buttonSection === key
-    );
-
-    if (existingButton) {
-      const firstButton = this.state.buttons[buttons[0]];
-      existingButton.props.primary = {
-        id: firstButton.id,
-        ...firstButton.props,
-      };
-
-      existingButton.props.items = buttons.map(btnId => {
-        const btn = this.state.buttons[btnId];
-        return {
-          id: btn.id,
-          ...btn.props,
-        };
-      });
-    }
-
     this._broadcastEvent(this.EVENTS.TOOL_BAR_MODIFIED, { ...this.state });
   }
 
@@ -572,20 +518,26 @@ export default class ToolbarService extends PubSubService {
     return {
       id,
       Component: btn.component,
-      componentProps: Object.assign({}, btn.props, props),
+      componentProps: Object.assign({ id }, btn.props, props),
     };
   }
 
   handleEvaluateNested = props => {
-    const { primary, items = [] } = props;
-    // handle group evaluate function
-    this.handleEvaluate(props);
+    const { buttonSection } = props;
 
-    // primary and items evaluate functions
-    if (primary) {
-      this.handleEvaluate(primary);
+    if (!buttonSection) {
+      return;
     }
-    items.forEach(item => this.handleEvaluate(item));
+
+    const toolbarButtons = this.getButtonSection(buttonSection);
+
+    if (!toolbarButtons?.length) {
+      return;
+    }
+
+    toolbarButtons.forEach(button => {
+      this.handleEvaluate(button.componentProps);
+    });
   };
 
   handleEvaluate = props => {
