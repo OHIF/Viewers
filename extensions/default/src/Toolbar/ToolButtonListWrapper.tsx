@@ -63,20 +63,23 @@ export default function ToolButtonListWrapper({
       <ToolButtonListDivider className={primary.isActive ? 'opacity-0' : 'opacity-100'} />
       <div data-cy={`${groupId}-split-button-secondary`}>
         <ToolButtonListDropDown>
-          {items.map(item => (
-            <ToolButtonListItem
-              key={item.id}
-              {...item}
-              data-cy={item.id}
-              data-tool={item.id}
-              data-active={item.isActive}
-              onSelect={() =>
-                onInteraction?.({ groupId, itemId: item.id, commands: item.commands })
-              }
-            >
-              <span className="pl-1">{item.label || item.tooltip || item.id}</span>
-            </ToolButtonListItem>
-          ))}
+          {items.map(item => {
+            console.debug('item.id', item.id);
+            return (
+              <ToolButtonListItem
+                key={item.id}
+                {...item}
+                data-cy={item.id}
+                data-tool={item.id}
+                data-active={item.isActive}
+                onSelect={() =>
+                  onInteraction?.({ groupId, itemId: item.id, commands: item.commands })
+                }
+              >
+                <span className="pl-1">{item.label || item.tooltip || item.id}</span>
+              </ToolButtonListItem>
+            );
+          })}
         </ToolButtonListDropDown>
       </div>
     </ToolButtonList>

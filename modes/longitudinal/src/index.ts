@@ -105,13 +105,13 @@ function modeFactory({ modeConfiguration }) {
       toolbarService.createButtonSection('measurementSection', [
         'Length',
         'Bidirectional',
-        // 'ArrowAnnotate',
-        // 'EllipticalROI',
-        // 'RectangleROI',
-        // 'CircleROI',
-        // 'PlanarFreehandROI',
-        // 'SplineROI',
-        // 'LivewireContour',
+        'ArrowAnnotate',
+        'EllipticalROI',
+        'RectangleROI',
+        'CircleROI',
+        'PlanarFreehandROI',
+        'SplineROI',
+        'LivewireContour',
       ]);
 
       toolbarService.createButtonSection('moreToolsSection', [

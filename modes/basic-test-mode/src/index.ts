@@ -86,16 +86,26 @@ function modeFactory() {
       ]);
 
       toolbarService.addButtons(toolbarButtons);
+      console.debug('toolbarButtons', toolbarButtons);
       toolbarService.createButtonSection('primary', [
-        'measurementSection',
+        'MeasurementTools',
         'Zoom',
-        'WindowLevel',
+        'WindowLevelGroup',
         'Pan',
         'Capture',
         'Layout',
         'MPR',
         'Crosshairs',
         'MoreTools',
+      ]);
+
+      toolbarService.createButtonSection('windowLevelSection', [
+        'WindowLevel',
+        'Soft tissue',
+        'Lung',
+        'Liver',
+        'Bone',
+        'Brain',
       ]);
 
       toolbarService.createButtonSection('measurementSection', [
