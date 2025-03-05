@@ -17,9 +17,9 @@ window.config = {
       configuration: {
         friendlyName: 'Dcm4chee Server',
         name: 'Dcm4chee',
-        wadoUriRoot: 'http://127.0.0.1/pacs',
-        qidoRoot: 'http://127.0.0.1/pacs',
-        wadoRoot: 'http://127.0.0.1/pacs',
+        wadoUriRoot: 'https://ohif.eng.mcmaster.ca/pacs',
+        qidoRoot: 'https://ohif.eng.mcmaster.ca/pacs',
+        wadoRoot: 'https://ohif.eng.mcmaster.ca/pacs',
         qidoSupportsIncludeField: false,
         imageRendering: 'wadors',
         thumbnailRendering: 'wadors',
