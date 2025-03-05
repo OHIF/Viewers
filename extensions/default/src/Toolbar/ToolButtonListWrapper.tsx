@@ -64,7 +64,6 @@ export default function ToolButtonListWrapper({
       <div data-cy={`${groupId}-split-button-secondary`}>
         <ToolButtonListDropDown>
           {items.map(item => {
-            console.debug('item.id', item.id);
             return (
               <ToolButtonListItem
                 key={item.id}

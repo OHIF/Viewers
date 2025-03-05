@@ -23,6 +23,7 @@ export function getWindowLevelActionMenu({
   const WindowLevelActionMenu = customizationService.getCustomization(
     'viewportActionMenu.windowLevelActionMenu'
   );
+  console.debug('🚀 ~ WindowLevelActionMenu:', WindowLevelActionMenu);
   const displaySetPresets = displaySets
     .filter(displaySet => presets[displaySet.Modality])
     .map(displaySet => {
