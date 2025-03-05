@@ -6,43 +6,43 @@ services:
     logging:
       driver: json-file
       options:
-        max-size: "10m"
+        max-size: '10m'
     ports:
-      - "389:389"
+      - '389:389'
     env_file: docker-compose.env
     volumes:
-      - ~/dcm4chee-arc/ldap:/var/lib/ldap
-      - ~/dcm4chee-arc/slapd.d:/etc/ldap/slapd.d
+      - /var/data/dcm4chee-arc/ldap:/var/lib/ldap # McMaster
+      - /var/data/dcm4chee-arc/slapd.d:/etc/ldap/slapd.d # McMaster
 
   db:
     image: dcm4che/postgres-dcm4chee:14.5-29
     logging:
       driver: json-file
       options:
-        max-size: "10m"
+        max-size: '10m'
     ports:
-      - "5432:5432"
+      - '5432:5432'
     env_file: docker-compose.env
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro
-      - ~/dcm4chee-arc/db:/var/lib/postgresql/data
+      - /var/data/dcm4chee-arc/db:/var/lib/postgresql/data # McMaster
 
   arc:
     image: dcm4che/dcm4chee-arc-psql:5.29.0
     logging:
       driver: json-file
       options:
-        max-size: "10m"
+        max-size: '10m'
     ports:
-      - "8080:8080"
-      - "8443:8443"
-      - "9990:9990"
-      - "9993:9993"
-      - "11112:11112"
-      - "2762:2762"
-      - "2575:2575"
-      - "12575:12575"
+      - '8080:8080'
+      - '8443:8443'
+      - '9990:9990'
+      - '9993:9993'
+      - '11112:11112'
+      - '2762:2762'
+      - '2575:2575'
+      - '12575:12575'
     env_file: docker-compose.env
     environment:
       WILDFLY_CHOWN: /opt/wildfly/standalone /storage
@@ -53,8 +53,8 @@ services:
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro
-      - ~/dcm4chee-arc/wildfly:/opt/wildfly/standalone
-      - ~/dcm4chee-arc/storage:/storage
+      - /var/data/dcm4chee-arc/wildfly:/opt/wildfly/standalone # McMaster
+      - /var/data/dcm4chee-arc/storage:/storage # McMaster
 
   ohif_viewer:
     build:
@@ -95,8 +95,8 @@ services:
       KC_DB_SCHEMA: public
       KC_DB_USERNAME: keycloak
       KC_DB_PASSWORD: password
-      KC_HOSTNAME_ADMIN_URL: http://YOUR_DOMAIN/keycloak/
-      KC_HOSTNAME_URL: http://YOUR_DOMAIN/keycloak/
+      KC_HOSTNAME_ADMIN_URL: http://10.2.77.93/keycloak/ # McMaster
+      KC_HOSTNAME_URL: http://10.2.77.93/keycloak/ # McMaster
       KC_HOSTNAME_STRICT_BACKCHANNEL: true
       KC_HOSTNAME_STRICT_HTTPS: false
       KC_HTTP_ENABLED: true
@@ -120,10 +120,11 @@ services:
     extra_hosts:
       - 'host.docker.internal:host-gateway'
     healthcheck:
-      test:
+      test: # McMaster
         [
-          "CMD-SHELL",
-          "exec 3<>/dev/tcp/YOUR_DOMAIN/8080;echo -e \"GET /health/ready HTTP/1.1\r\nhost: http://localhost\r\nConnection: close\r\n\r\n\" >&3;grep \"HTTP/1.1 200 OK\" <&3"
+          'CMD-SHELL',
+          "exec 3<>/dev/tcp/10.2.77.93/8080;echo -e \"GET /health/ready HTTP/1.1\r\nhost:
+          http://localhost\r\nConnection: close\r\n\r\n\" >&3;grep \"HTTP/1.1 200 OK\" <&3",
         ]
       interval: 1s
       timeout: 5s
@@ -135,7 +136,7 @@ services:
     hostname: postgres
     container_name: postgres
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - /var/data/postgres_data:/var/lib/postgresql/data # McMaster
     environment:
       POSTGRES_DB: keycloak
       POSTGRES_USER: keycloak
@@ -150,7 +151,8 @@ services:
     volumes:
       - ./config/letsencrypt:/etc/letsencrypt
       - ./config/certbot:/var/www/certbot
-    entrypoint: /bin/sh -c "trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;"
+    entrypoint:
+      /bin/sh -c "trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;"
 
 volumes:
   postgres_data:
