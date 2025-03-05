@@ -76,7 +76,7 @@ services:
     environment:
       - OAUTH2_PROXY_SKIP_PROVIDER_BUTTON=true
     volumes:
-      - /var/data/ssl/ohif.eng.mcmaster.ca.csr:/etc/nginx/ohif.eng.mcmaster.ca.csr # McMaster
+      - /var/data/ssl/ohif.eng.mcmaster.ca.crt:/etc/nginx/ohif.eng.mcmaster.ca.crt # McMaster
       - /var/data/ssl/ohif.eng.mcmaster.ca.key:/etc/nginx/ohif.eng.mcmaster.ca.key # McMaster
       - ./config/nginx.conf:/etc/nginx/nginx.conf
       - ./config/oauth2-proxy.cfg:/etc/oauth2-proxy/oauth2-proxy.cfg
