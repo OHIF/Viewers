@@ -6,37 +6,38 @@ import { ToolSettings } from '../OHIFToolSettings';
 
 const ItemsPerRow = 4;
 
-/**
- * Just refactoring from the toolbox component to make it more readable
- */
-function ToolboxUI(props: withAppTypes) {
-  const { toolbarButtons = [], numRows, servicesManager, title, useCollapsedPanel = true } = props;
-  const { toolbarService } = servicesManager.services;
-
-  const findActiveToolOptions = toolbarButtons => {
-    for (const tool of toolbarButtons) {
-      if (tool.componentProps.isActive) {
-        return tool.componentProps.options;
-      }
-
-      if (tool.componentProps.buttonSection) {
-        const buttonProps = toolbarService.getButtonPropsInButtonSection(
-          tool.componentProps.buttonSection
-        );
-
-        const activeTool = buttonProps.find(item => item.isActive);
-        if (!activeTool) {
-          continue;
-        }
-
-        return activeTool?.options;
-      }
-
-      return null;
-    }
+interface ToolbarButton {
+  id: string;
+  Component: React.ComponentType<{
+    id: string;
+    onInteraction: (details: { itemId: string }) => void;
+    size: string;
+  }>;
+  componentProps: {
+    isActive?: boolean;
+    buttonSection?: string;
+    options?: unknown;
   };
+}
 
-  const activeToolOptions = findActiveToolOptions(toolbarButtons);
+interface ToolboxProps {
+  toolbarButtons: ToolbarButton[];
+  numRows: number;
+  title?: string;
+  useCollapsedPanel?: boolean;
+  onInteraction?: (details: { itemId: string }) => void;
+  activeToolOptions?: unknown;
+}
+
+function ToolboxUI(props: ToolboxProps) {
+  const {
+    toolbarButtons = [],
+    numRows,
+    title,
+    useCollapsedPanel = true,
+    onInteraction,
+    activeToolOptions,
+  } = props;
 
   const render = () => {
     return (
@@ -53,8 +54,8 @@ function ToolboxUI(props: withAppTypes) {
 
               const toolClasses = `ml-1 ${isLastRow ? '' : 'mb-2'}`;
 
-              const onInteraction = ({ itemId }) => {
-                props.onInteraction({
+              const handleInteraction = ({ itemId }: { itemId: string }) => {
+                onInteraction?.({
                   itemId,
                 });
               };
@@ -68,10 +69,8 @@ function ToolboxUI(props: withAppTypes) {
                 >
                   <Component
                     {...componentProps}
-                    {...props}
                     id={id}
-                    servicesManager={servicesManager}
-                    onInteraction={onInteraction}
+                    onInteraction={handleInteraction}
                     size="toolbox"
                   />
                 </div>

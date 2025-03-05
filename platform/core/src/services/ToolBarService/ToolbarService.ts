@@ -280,6 +280,10 @@ export default class ToolbarService extends PubSubService {
 
         const toolButtonIds = this.state.buttonSections[buttonProps.buttonSection];
 
+        if (!toolButtonIds) {
+          return;
+        }
+
         toolButtonIds.forEach(buttonId => {
           const button = buttons[buttonId];
           const updatedProps = evaluateButtonProps(button, button.props, refreshProps);
@@ -516,10 +520,9 @@ export default class ToolbarService extends PubSubService {
         (componentProps as ButtonProps).options,
         buttonId
       );
+    } else if ((componentProps as ButtonProps).optionComponent) {
+      (componentProps as ButtonProps).optionComponent = options.optionComponent;
     }
-    // // } else if ((componentProps as ButtonProps).optionComponent) {
-    // //   (componentProps as ButtonProps).optionComponent = options.optionComponent;
-    // // }
 
     return {
       id,
@@ -553,9 +556,7 @@ export default class ToolbarService extends PubSubService {
       // get the custom option component from the extension manager and set it as the optionComponent
       const buttonTypes = this._getButtonUITypes();
       const optionComponent = buttonTypes[options]?.defaultComponent;
-      props.options = {
-        optionComponent,
-      };
+      props.options = optionComponent;
     }
 
     if (typeof evaluate === 'function') {

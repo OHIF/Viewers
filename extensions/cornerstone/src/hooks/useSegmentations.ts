@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import debounce from 'lodash.debounce';
 import { roundNumber } from '@ohif/core/src/utils';
 import { SegmentationData } from '../services/SegmentationService/SegmentationService';
+import { useSystem } from '@ohif/core';
 
 function mapSegmentationToDisplay(segmentation, customizationService) {
   const { label, segments } = segmentation;
@@ -83,11 +84,12 @@ function mapSegmentationToDisplay(segmentation, customizationService) {
  * @param options.debounceTime - Debounce time in milliseconds for updates.
  * @returns An array of segmentation data.
  */
-export function useSegmentations({
-  servicesManager,
-  subscribeToDataModified = false,
-  debounceTime = 0,
-}: withAppTypes<{ debounceTime?: number }>): SegmentationData[] {
+export function useSegmentations(options: {
+  subscribeToDataModified?: boolean;
+  debounceTime?: number;
+}): SegmentationData[] {
+  const { subscribeToDataModified = false, debounceTime = 0 } = options || {};
+  const { servicesManager } = useSystem();
   const { segmentationService, customizationService } = servicesManager.services;
 
   const [segmentations, setSegmentations] = useState<SegmentationData[]>([]);
