@@ -53,16 +53,11 @@ import { useMeasurements } from './hooks/useMeasurements';
 import getPanelModule from './getPanelModule';
 import PanelSegmentation from './panels/PanelSegmentation';
 import PanelMeasurement from './panels/PanelMeasurement';
-import StudyMeasurements from './components/StudyMeasurements';
-import SeriesMeasurements from './components/SeriesMeasurements';
-import DicomUpload from './components/DicomUpload/DicomUpload';
 import { useSegmentations } from './hooks/useSegmentations';
 import { StudySummaryFromMetadata } from './components/StudySummaryFromMetadata';
 import CornerstoneViewportDownloadForm from './utils/CornerstoneViewportDownloadForm';
 import utils from './utils';
-import AccordionGroup from './components/AccordionGroup';
-import MeasurementTableNested from './components/MeasurementTableNested';
-import SitesAndFindings from './components/SitesAndFindings';
+export * from './components';
 
 const { imageRetrieveMetadataProvider } = cornerstone.utilities;
 
@@ -263,14 +258,8 @@ export {
   useSegmentations,
   PanelSegmentation,
   PanelMeasurement,
-  StudyMeasurements,
-  SeriesMeasurements,
-  DicomUpload,
   StudySummaryFromMetadata,
   CornerstoneViewportDownloadForm,
   utils,
-  AccordionGroup,
-  SitesAndFindings,
-  MeasurementTableNested,
 };
 export default cornerstoneExtension;

@@ -21,7 +21,7 @@ export const CloneChildren = cloneProps => {
   );
 };
 
-export default function AccordionGroup(props) {
+export function AccordionGroup(props) {
   const { grouping, items, children, type, componentProps, component: Component } = props;
   const childProps = useSystem();
   let defaultValue = props.defaultValue;
@@ -70,4 +70,4 @@ export default function AccordionGroup(props) {
   );
 }
 
-export { AccordionGroup };
+export default AccordionGroup;

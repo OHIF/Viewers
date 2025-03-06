@@ -95,7 +95,7 @@ export function StudyMeasurementItem(props) {
   );
 }
 
-export default function StudyMeasurements(props): React.ReactNode {
+export function StudyMeasurements(props): React.ReactNode {
   const { items, grouping = {}, children } = props;
 
   const system = useSystem();
@@ -122,3 +122,5 @@ export default function StudyMeasurements(props): React.ReactNode {
     </AccordionGroup>
   );
 }
+
+export default StudyMeasurements;

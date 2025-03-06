@@ -1,10 +1,11 @@
 import React from 'react';
 import { useActiveViewportDisplaySets, useSystem } from '@ohif/core';
-import { AccordionContent, AccordionItem, AccordionTrigger } from '@ohif/ui-next';
+import { AccordionContent, AccordionItem } from '@ohif/ui-next';
 
 import AccordionGroup from './AccordionGroup';
-import MeasurementTableNested from './MeasurementTableNested';
 import PanelAccordionTrigger from './PanelAccordionTrigger';
+import MeasurementItems from './MeasurementItems';
+import MeasumentsMenu from './MeasurementsMenu';
 
 /**
  * Groups measurements by study in order to allow display and saving by study
@@ -38,7 +39,7 @@ export const groupByDisplaySet = (items, grouping, childProps) => {
 
 export function SeriesMeasurementItem(props) {
   const { group, isSelected, displaySet, children } = props;
-  const { component: ChildComponent = MeasurementTableNested, key } = group;
+  const { component: ChildComponent = MeasurementItems, key, menu = MeasumentsMenu } = group;
   const CloneChildren = cloneProps => {
     if (children) {
       return React.Children.map(children, child =>
@@ -68,6 +69,7 @@ export function SeriesMeasurementItem(props) {
         count={group.items.length}
         isActive={isSelected}
         group={group}
+        menu={menu}
       />
       <AccordionContent>
         <CloneChildren />
@@ -76,7 +78,7 @@ export function SeriesMeasurementItem(props) {
   );
 }
 
-export default function SeriesMeasurements(props): React.ReactNode {
+export function SeriesMeasurements(props): React.ReactNode {
   const { items, childProps, grouping = {} } = props;
   const system = useSystem();
   const activeDisplaySets = useActiveViewportDisplaySets(system);
@@ -97,9 +99,11 @@ export default function SeriesMeasurements(props): React.ReactNode {
       }}
       childProps={childProps}
       items={items}
-      component={grouping.component || MeasurementTableNested}
+      component={grouping.component || MeasurementItems}
     >
       <SeriesMeasurementItem />
     </AccordionGroup>
   );
 }
+
+export default SeriesMeasurements;
