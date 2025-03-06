@@ -36,14 +36,8 @@ const getPanelModule = ({ commandsManager, servicesManager, extensionManager }: 
     return (
       <>
         <Toolbox
-          commandsManager={commandsManager}
-          servicesManager={servicesManager}
-          extensionManager={extensionManager}
           buttonSectionId="segmentationToolbox"
           title="Segmentation Tools"
-          configuration={{
-            ...configuration,
-          }}
         />
         <PanelSegmentation
           commandsManager={commandsManager}

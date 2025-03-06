@@ -203,7 +203,6 @@ This migration represents a significant step toward a more extension-based toolb
 +     groupId: 'MeasurementTools',
 +   },
 + },
-+
 + // 2. Register individual buttons separately
 + {
 +   id: 'Length',
@@ -227,7 +226,6 @@ This migration represents a significant step toward a more extension-based toolb
 +     evaluate: 'evaluate.cornerstoneTool',
 +   },
 + },
-+
 ```
 
 and then in your mode you can compose the section and associate buttons
