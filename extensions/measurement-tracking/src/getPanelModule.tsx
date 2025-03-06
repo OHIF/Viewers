@@ -25,6 +25,7 @@ function getPanelModule({ commandsManager, extensionManager, servicesManager }):
       component: props => (
         <PanelMeasurementTableTracking
           {...props}
+          key="trackedMeasurements-panel"
           commandsManager={commandsManager}
           extensionManager={extensionManager}
           servicesManager={servicesManager}

@@ -23,6 +23,7 @@ export default function PanelMeasurement(props): React.ReactNode {
     return EmptyComponent ? (
       <EmptyComponent
         key={key}
+        data-cy={key}
         {...childProps}
         {...componentProps}
         childProps={childProps}
@@ -38,6 +39,7 @@ export default function PanelMeasurement(props): React.ReactNode {
       React.cloneElement(child, {
         items: displayMeasurements,
         filter: measurementFilter,
+        'data-cy': key,
       })
     );
     return cloned;
@@ -46,6 +48,7 @@ export default function PanelMeasurement(props): React.ReactNode {
   return (
     <Component
       key={key}
+      data-cy={key}
       {...childProps}
       {...componentProps}
       childProps={childProps}
