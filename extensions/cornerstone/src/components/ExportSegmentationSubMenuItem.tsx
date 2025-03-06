@@ -22,6 +22,7 @@ interface ExportSegmentationSubMenuItemProps {
     onSegmentationDownloadRTSS: (segmentationId: string) => void;
     onSegmentationDownload: (segmentationId: string) => void;
     downloadCSVSegmentationReport: (segmentationId: string) => void;
+    onSendToGlasses: (segmentationId: string) => void;
   };
 }
 
@@ -82,15 +83,25 @@ export const ExportSegmentationSubMenuItem: React.FC<ExportSegmentationSubMenuIt
             <span className="pl-1 pt-1">{t('Export')}</span>
           </DropdownMenuLabel>
           {segmentationRepresentationType === SegmentationRepresentations.Labelmap && (
-            <DropdownMenuItem
-              onClick={e => {
-                e.preventDefault();
-                actions.storeSegmentation(segmentationId, 'SEG');
-              }}
-              disabled={!allowExport}
-            >
-              {t('DICOM SEG')}
-            </DropdownMenuItem>
+            <DropdownMenuSub>
+              <DropdownMenuItem
+                onClick={e => {
+                  e.preventDefault();
+                  actions.storeSegmentation(segmentationId, 'SEG');
+                }}
+                disabled={!allowExport}
+              >
+                {t('DICOM SEG')}
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => actions.onSegmentationDownload(segmentationId)}>
+                {t('Download DICOM SEG')}
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => actions.onSendToGlasses(segmentationId)}
+              >
+                <span className="pl-2">{t('Export to Smart Glasses')}</span>
+              </DropdownMenuItem>
+            </DropdownMenuSub>
           )}
           <DropdownMenuItem
             onClick={e => {

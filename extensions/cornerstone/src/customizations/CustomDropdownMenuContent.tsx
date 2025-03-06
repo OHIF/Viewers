@@ -73,6 +73,9 @@ export const CustomDropdownMenuContent = () => {
     downloadCSVSegmentationReport: segmentationId => {
       commandsManager.run('downloadCSVSegmentationReport', { segmentationId });
     },
+    onSendToGlasses: segmentationId => {
+      commandsManager.run('sendToGlasses', { segmentationId });
+    },
   };
 
   return (
