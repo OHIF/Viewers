@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.10.0-beta.116](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.115...v3.10.0-beta.116) (2025-03-06)
+
+
+### Bug Fixes
+
+* dicom tag browser row height on toggle ([#4832](https://github.com/OHIF/Viewers/issues/4832)) ([5a7f784](https://github.com/OHIF/Viewers/commit/5a7f7841b2c3b88d4fa6313862bc355be74acf5d))
+
+
+
+
+
 # [3.10.0-beta.115](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.114...v3.10.0-beta.115) (2025-02-28)
 
 **Note:** Version bump only for package @ohif/extension-default
