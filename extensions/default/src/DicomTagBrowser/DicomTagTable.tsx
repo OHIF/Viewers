@@ -239,9 +239,11 @@ function DicomTagTable({ rows }: { rows: Row[] }) {
           return internalRow;
         });
         setInternalRows(newInternalRows);
+
+        listRef?.current?.resetAfterIndex(0);
       };
     },
-    [internalRows]
+    [internalRows, listRef]
   );
 
   const getRowComponent = useCallback(
