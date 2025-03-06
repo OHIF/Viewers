@@ -17,14 +17,7 @@ export default function getPanelModule({
   };
   const wrappedPanelMeasurementSeries = () => {
     return (
-      <PanelMeasurement
-        {...childProps}
-        componentProps={{
-          grouping: {
-            component: SeriesMeasurements,
-          },
-        }}
-      >
+      <PanelMeasurement {...childProps}>
         <StudyMeasurements>
           <SeriesMeasurements />
         </StudyMeasurements>

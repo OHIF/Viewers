@@ -13,14 +13,16 @@ type ReportDialogProps = {
   hide: () => void;
   onSave: (data: { reportName: string; dataSource: string | null }) => void;
   onCancel: () => void;
+  defaultValue: string;
 };
 
-function ReportDialog({ dataSources, hide, onSave, onCancel }: ReportDialogProps) {
+function ReportDialog({ dataSources, hide, onSave, onCancel, defaultValue }: ReportDialogProps) {
   const [selectedDataSource, setSelectedDataSource] = useState<string | null>(
     dataSources?.[0]?.value ?? null
   );
+  const [reportName, setReportName] = useState(defaultValue);
 
-  const handleSave = (reportName: string) => {
+  const handleSave = () => {
     onSave({
       reportName,
       dataSource: selectedDataSource,
@@ -41,10 +43,7 @@ function ReportDialog({ dataSources, hide, onSave, onCancel }: ReportDialogProps
         <div className={showDataSourceSelect ? 'flex gap-4' : ''}>
           {showDataSourceSelect && (
             <div className="mt-1 w-1/3">
-              <Select
-                value={selectedDataSource}
-                onValueChange={setSelectedDataSource}
-              >
+              <Select onValueChange={setSelectedDataSource}>
                 <SelectTrigger>
                   <SelectValue placeholder="Select a data source" />
                 </SelectTrigger>
@@ -62,9 +61,13 @@ function ReportDialog({ dataSources, hide, onSave, onCancel }: ReportDialogProps
             </div>
           )}
           <div className={showDataSourceSelect ? 'mt-1 w-2/3' : 'w-full'}>
-            <InputDialog>
+            <InputDialog
+              onChange={setReportName}
+              defaultValue={defaultValue}
+              submitOnEnter
+            >
               <InputDialog.Field>
-                <InputDialog.Input placeholder="Report name" />
+                <InputDialog.Input placeholder={defaultValue} />
               </InputDialog.Field>
             </InputDialog>
           </div>
