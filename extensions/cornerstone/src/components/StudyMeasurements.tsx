@@ -3,8 +3,8 @@ import { useActiveViewportDisplaySets, useSystem } from '@ohif/core';
 import { AccordionContent, AccordionItem, AccordionTrigger } from '@ohif/ui-next';
 
 import AccordionGroup from './AccordionGroup';
-import StudySummaryMenu from './StudySummaryMenu';
 import MeasurementsOrAdditionalFindings from './MeasurementsOrAdditionalFindings';
+import StudySummaryWithActions from './StudySummaryWithActions';
 
 /**
  * Groups measurements by study in order to allow display and saving by study
@@ -58,7 +58,7 @@ export function StudyMeasurementItem(props) {
   const { group, key = group.key, children } = props;
   const {
     component: ChildComponent = MeasurementsOrAdditionalFindings,
-    header: Header = StudySummaryMenu,
+    header: Header = StudySummaryWithActions,
     headerProps,
   } = group;
   const CloneChildren = cloneProps => {
@@ -73,8 +73,6 @@ export function StudyMeasurementItem(props) {
     }
     return <ChildComponent {...props} />;
   };
-
-  console.log('header=', group);
 
   return (
     <AccordionItem
@@ -101,14 +99,13 @@ export function StudyMeasurements(props): React.ReactNode {
   const system = useSystem();
   const activeDisplaySets = useActiveViewportDisplaySets(system);
   const activeStudyUID = activeDisplaySets?.[0]?.StudyInstanceUID;
-  console.log('Rendering on value activeStudyUID', activeStudyUID);
 
   return (
     <AccordionGroup
       grouping={{
         name: 'groupByStudy',
         groupingFunction: groupByStudy,
-        header: StudySummaryMenu,
+        header: StudySummaryWithActions,
         activeStudyUID,
         ...grouping,
       }}

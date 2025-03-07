@@ -85,7 +85,11 @@ export function SeriesMeasurements(props): React.ReactNode {
   const activeDisplaySetInstanceUID = activeDisplaySets?.[0]?.displaySetInstanceUID;
   const onClick = (_e, group) => {
     const { items } = group;
-    system.commandsManager.run('navigateToMeasurementItems', { items, group });
+    system.commandsManager.run('jumpToMeasurement', {
+      uid: items[0].uid,
+      displayMeasurements: items,
+      group,
+    });
   };
 
   // Need to merge defaults on the component props to ensure they get passed to hcildren

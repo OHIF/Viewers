@@ -25,7 +25,13 @@ export default function MeasurementAccordion(props) {
 
   const onClick = (e, group) => {
     const { items } = group;
-    system.commandsManager.run('navigateToMeasurementItems', { items, group });
+    // Just jump to the first measurement in the set, and mark that one as active
+    // with the set of items.
+    system.commandsManager.run('jumpToMeasurement', {
+      uid: items[0].uid,
+      displayMeasurements: items,
+      group,
+    });
   };
 
   return (
@@ -37,19 +43,22 @@ export default function MeasurementAccordion(props) {
         const { displayText: details = {} } = item;
         return (
           <AccordionItem
-            key={item.uid}
+            key={`measurementAccordion:${item.uid}`}
             value={item.uid}
           >
             <MeasurementItem
               item={item}
+              key={`measurementItem:${item.uid}`}
               index={index}
               onClick={onClick}
             />
-            <AccordionContent>
+            <AccordionContent key={`measurementContent:${item.uid}`}>
               <div className="ml-7 px-2 py-2">
                 <div className="text-secondary-foreground flex items-center gap-1 text-base leading-normal">
                   {details.primary?.length > 0 &&
-                    details.primary.map(detail => <span>{detail}</span>)}
+                    details.primary.map((detail, index) => (
+                      <span key={`details:${item.uid}:${index}`}>{detail}</span>
+                    ))}
                 </div>
               </div>
             </AccordionContent>

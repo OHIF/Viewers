@@ -23,9 +23,11 @@ export function MeasumentsMenu(props) {
 
   const onAction = (event, command, args?) => {
     const uid = items.map(item => item.uid);
+    // Some commands use displayMeasurements and some use items
     system.commandsManager.run(command, {
       ...args,
       uid,
+      displayMeasurements: items,
       items,
       event,
     });
@@ -45,7 +47,7 @@ export function MeasumentsMenu(props) {
         aria-label={isVisible ? 'Hide' : 'Show'}
         onClick={e => {
           e.stopPropagation();
-          onAction(e, ['navigateToMeasurementItems', 'toggleVisibilityMeasurement']);
+          onAction(e, ['jumpToMeasurement', 'toggleVisibilityMeasurement']);
         }}
       >
         {isVisible ? <Icons.Hide className="h-6 w-6" /> : <Icons.Show className="h-6 w-6" />}
