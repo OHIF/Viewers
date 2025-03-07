@@ -99,6 +99,7 @@ const Row = ({ item, index }: RowProps) => {
   const { onAction, isExpanded, disableEditing } =
     useMeasurementTableContext('MeasurementTable.Row');
 
+  const { uid } = item;
   return (
     <DataRow
       key={item.uid}
@@ -108,7 +109,11 @@ const Row = ({ item, index }: RowProps) => {
       colorHex={item.colorHex}
       isSelected={item.isSelected}
       details={item.displayText}
-      onAction={(e, command) => onAction(e, command, item.uid)}
+      onDelete={e => onAction(e, 'removeMeasurement', uid)}
+      onSelect={e => onAction(e, 'jumpToMeasurement', uid)}
+      onRename={e => onAction(e, 'renameMeasurement', uid)}
+      onToggleVisibility={e => onAction(e, 'toggleVisibilityMeasurement', uid)}
+      onToggleLocked={e => onAction(e, 'toggleLockMeasurement', uid)}
       disableEditing={disableEditing}
       isExpanded={isExpanded}
       isVisible={item.isVisible}
