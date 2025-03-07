@@ -78,12 +78,13 @@ import {
 } from './DropdownMenu';
 import { Onboarding } from './Onboarding';
 import { DoubleSlider } from './DoubleSlider';
-import { DataRow } from './DataRow';
-import { MeasurementTable } from './MeasurementTable';
+export { DataRow } from './DataRow';
+export { MeasurementTable } from './MeasurementTable';
 import { SegmentationTable, useSegmentationTableContext } from './SegmentationTable';
 import { Toaster, toast } from './Sonner';
 import { StudySummary } from './StudySummary';
 import { ErrorBoundary } from './Errorboundary';
+export * from './ColorCircle';
 import { Header } from './Header';
 import { Card, CardHeader, CardFooter, CardTitle, CardDescription, CardContent } from './Card';
 import {
@@ -199,8 +200,6 @@ export {
   TooltipTrigger,
   TooltipContent,
   TooltipProvider,
-  DataRow,
-  MeasurementTable,
   Toaster,
   toast,
   SegmentationTable,
