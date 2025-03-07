@@ -81,11 +81,7 @@ function modeFactory({ modeConfiguration }) {
         'TagBrowser',
       ]);
 
-      toolbarService.createButtonSection('segmentationToolbox', [
-        // 'SegmentationUtilities',
-        'SegmentationTools',
-      ]);
-      // toolbarService.createButtonSection('segmentationToolboxUtilitySection', ['Zoom']);
+      toolbarService.createButtonSection('segmentationToolbox', ['SegmentationTools']);
       toolbarService.createButtonSection('segmentationToolboxToolsSection', [
         'BrushTools',
         'Shapes',
