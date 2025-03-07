@@ -215,7 +215,7 @@ function commandsModule({
       if (!measurement) {
         console.debug('No measurement found for label editing');
         return;
-        }
+      }
 
       if (!labelConfig) {
         const label = await callInputDialog({
@@ -350,7 +350,11 @@ function commandsModule({
     },
 
     removeMeasurement: ({ uid }) => {
-      measurementService.remove(uid);
+      if (Array.isArray(uid)) {
+        measurementService.removeMany(uid);
+      } else {
+        measurementService.remove(uid);
+      }
     },
 
     toggleLockMeasurement: ({ uid }) => {
@@ -361,7 +365,11 @@ function commandsModule({
       if (visibility === undefined && items?.length) {
         visibility = !items[0].isVisible;
       }
-      measurementService.toggleVisibilityMeasurement(uid, visibility);
+      if (Array.isArray(uid)) {
+        measurementService.toggleVisibilityMeasurementMany(uid, visibility);
+      } else {
+        measurementService.toggleVisibilityMeasurement(uid, visibility);
+      }
     },
 
     /**
@@ -1360,8 +1368,8 @@ function commandsModule({
         contentProps: {
           value: rgbaColor,
           onSave: newRgbaColor => {
-        const color = [newRgbaColor.r, newRgbaColor.g, newRgbaColor.b, newRgbaColor.a * 255.0];
-        segmentationService.setSegmentColor(viewportId, segmentationId, segmentIndex, color);
+            const color = [newRgbaColor.r, newRgbaColor.g, newRgbaColor.b, newRgbaColor.a * 255.0];
+            segmentationService.setSegmentColor(viewportId, segmentationId, segmentIndex, color);
           },
         },
       });
