@@ -2,7 +2,7 @@ import React from 'react';
 import { useActiveViewportDisplaySets, useSystem } from '@ohif/core';
 import { AccordionContent, AccordionItem, AccordionTrigger } from '@ohif/ui-next';
 
-import AccordionGroup from './AccordionGroup';
+import { AccordionGroup } from './AccordionGroup';
 import MeasurementsOrAdditionalFindings from './MeasurementsOrAdditionalFindings';
 import StudySummaryWithActions from './StudySummaryWithActions';
 
