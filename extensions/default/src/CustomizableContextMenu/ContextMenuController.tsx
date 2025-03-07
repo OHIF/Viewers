@@ -71,27 +71,35 @@ export default class ContextMenuController {
       menuId
     );
 
-    if (!items) {
+    if (!items?.length) {
       return;
     }
 
-    const ContextMenu = this.services.customizationService.getCustomization('ui.contextMenu');
+    const ContextMenu = this.services.customizationService.getCustomization(
+      'ui.contextMenu'
+    ) as React.ComponentType;
 
     this.services.uiDialogService.hide('context-menu');
+    const defaultPosition = ContextMenuController._getDefaultPosition(
+      defaultPointsPosition,
+      event?.detail || event,
+      viewportElement,
+      items.length
+    );
     this.services.uiDialogService.show({
       id: 'context-menu',
-      defaultPosition: ContextMenuController._getDefaultPosition(
-        defaultPointsPosition,
-        event?.detail || event,
-        viewportElement
-      ),
+      isDraggable: false,
+      defaultPosition,
       content: ContextMenu,
+
       shouldCloseOnEsc: true,
-      shouldCloseOnOverlayClick: true,
+      shouldCloseOnOverlayClick: false,
+      showOverlay: false,
       unstyled: true,
       contentProps: {
         items,
         selectorProps,
+        defaultPosition,
         menus,
         event,
         subMenu,
@@ -185,10 +193,11 @@ export default class ContextMenuController {
     return source && typeof source.x === 'number' && typeof source.y === 'number';
   };
 
+  static itemHeight = 15;
   /**
    * Returns the context menu default position. It look for the positions of: canvasPoints (got from selected), event that triggers it, current viewport element
    */
-  static _getDefaultPosition = (canvasPoints, eventDetail, viewerElement) => {
+  static _getDefaultPosition = (canvasPoints, eventDetail, viewerElement, itemsLength) => {
     function* getPositionIterator() {
       yield ContextMenuController._getCanvasPointsPosition(canvasPoints, viewerElement);
       yield ContextMenuController._getEventDefaultPosition(eventDetail);
@@ -209,7 +218,8 @@ export default class ContextMenuController {
       }
       current = positionIterator.next();
     }
-
+    // Set the starting position to the menu mid-point.
+    position = { x: position.x, y: Math.max(position.y - itemsLength * this.itemHeight, 0) };
     return position;
   };
 }
