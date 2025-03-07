@@ -61,27 +61,6 @@ export default function getToolbarModule({ commandsManager, servicesManager }: w
       defaultComponent: ProgressDropdownWithService,
     },
     {
-      name: 'evaluate.group.promoteToPrimary',
-      evaluate: ({ viewportId, button, itemId }) => {
-        const { items } = button.props;
-
-        if (!itemId) {
-          return {
-            primary: button.props.primary,
-            items,
-          };
-        }
-
-        // other wise we can move the clicked tool to the primary button
-        const clickedItemProps = items.find(item => item.id === itemId || item.itemId === itemId);
-
-        return {
-          primary: clickedItemProps,
-          items,
-        };
-      },
-    },
-    {
       name: 'evaluate.cine',
       evaluate: () => {
         const isToggled = cineService.getState().isCineEnabled;

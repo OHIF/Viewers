@@ -386,7 +386,12 @@ function commandsModule({
     arrowTextCallback: ({ callback }) => {
       const labelConfig = customizationService.getCustomization('measurementLabels');
       const renderContent = customizationService.getCustomization('ui.labellingComponent');
-      callInputDialogAutoComplete(uiDialogService, callback, {}, labelConfig, renderContent);
+
+      callInputDialogAutoComplete({
+        uiDialogService,
+        labelConfig,
+        renderContent,
+      });
     },
     toggleCine: () => {
       const { viewports } = viewportGridService.getState();

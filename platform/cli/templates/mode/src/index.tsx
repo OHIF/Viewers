@@ -1,4 +1,3 @@
-import { hotkeys } from '@ohif/core';
 import { initToolGroups, toolbarButtons } from '@ohif/mode-longitudinal';
 import { id } from './id';
 
@@ -50,14 +49,47 @@ function modeFactory({ modeConfiguration }) {
 
       toolbarService.addButtons(toolbarButtons);
       toolbarService.createButtonSection('primary', [
-        'MeasurementTools',
+        'measurementSection',
         'Zoom',
         'WindowLevel',
         'Pan',
         'Capture',
         'Layout',
         'Crosshairs',
-        'MoreTools',
+        'moreToolsSection',
+      ]);
+
+      toolbarService.createButtonSection('measurementSection', [
+        'Length',
+        'Bidirectional',
+        'ArrowAnnotate',
+        'EllipticalROI',
+        'RectangleROI',
+        'CircleROI',
+        'PlanarFreehandROI',
+        'SplineROI',
+        'LivewireContour',
+      ]);
+
+      toolbarService.createButtonSection('moreToolsSection', [
+        'Reset',
+        'rotate-right',
+        'flipHorizontal',
+        'ImageSliceSync',
+        'ReferenceLines',
+        'ImageOverlayViewer',
+        'StackScroll',
+        'invert',
+        'Probe',
+        'Cine',
+        'Angle',
+        'CobbAngle',
+        'Magnify',
+        'CalibrationLine',
+        'TagBrowser',
+        'AdvancedMagnify',
+        'UltrasoundDirectionalTool',
+        'WindowLevelRegion',
       ]);
     },
     onModeExit: ({ servicesManager }: withAppTypes) => {

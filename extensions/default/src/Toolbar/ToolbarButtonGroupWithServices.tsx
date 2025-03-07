@@ -19,6 +19,7 @@ function ToolbarButtonGroupWithServices({ groupId, items, onInteraction, size })
               groupId,
               itemId: item.id,
               commands: item.commands,
+              item,
             });
           }}
           // Note: this is necessary since tooltip will add

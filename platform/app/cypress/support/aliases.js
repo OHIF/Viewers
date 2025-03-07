@@ -4,8 +4,8 @@ export function initCornerstoneToolsAliases() {
   // cy.get('[data-cy="StackScroll"]').as('stackScrollBtn');
 
   cy.get('[data-cy="Zoom"]').as('zoomBtn');
-  cy.get('[data-cy="WindowLevel-split-button-primary"]').as('wwwcBtnPrimary');
-  cy.get('[data-cy="WindowLevel-split-button-secondary"]').as('wwwcBtnSecondary');
+  cy.get('[data-cy="WindowLevelGroup-split-button-primary"]').as('wwwcBtnPrimary');
+  cy.get('[data-cy="WindowLevelGroup-split-button-secondary"]').as('wwwcBtnSecondary');
   cy.get('[data-cy="Pan"]').as('panBtn');
   cy.get('[data-cy="MeasurementTools-split-button-primary"]').as('measurementToolsBtnPrimary');
   cy.get('[data-cy="MeasurementTools-split-button-secondary"]').as('measurementToolsBtnSecondary');

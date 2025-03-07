@@ -16,6 +16,10 @@ import { panelGroupDefinition } from './constants/panels';
  * @param width the max and min width to set on the element
  */
 const setMinMaxWidth = (elem, width?) => {
+  if (!elem) {
+    return;
+  }
+
   elem.style.minWidth = width === undefined ? '' : `${width}px`;
   elem.style.maxWidth = elem.style.minWidth;
 };
