@@ -51,16 +51,6 @@ const getPanelModule = ({ commandsManager, servicesManager, extensionManager }: 
     );
   };
 
-  const wrappedPanelMeasurement = ({ configuration }) => {
-    return (
-      <PanelMeasurement
-        configuration={{
-          ...configuration,
-        }}
-      />
-    );
-  };
-
   return [
     {
       name: 'activeViewportWindowLevel',
@@ -73,14 +63,7 @@ const getPanelModule = ({ commandsManager, servicesManager, extensionManager }: 
       iconName: 'tab-linear',
       iconLabel: 'Measure',
       label: 'Measurement',
-      component: wrappedPanelMeasurement,
-    },
-    {
-      name: 'panelMeasurementSeries',
-      iconName: 'tab-linear',
-      iconLabel: 'Measure',
-      label: 'Measurement Series',
-      component: wrappedPanelMeasurement,
+      component: PanelMeasurement,
     },
     {
       name: 'panelSegmentation',

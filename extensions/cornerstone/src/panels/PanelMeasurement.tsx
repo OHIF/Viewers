@@ -14,8 +14,8 @@ export default function PanelMeasurement(props): React.ReactNode {
     children,
   } = props;
 
-  const childProps = useSystem();
-  const displayMeasurements = useMeasurements(childProps.servicesManager, {
+  const system = useSystem();
+  const displayMeasurements = useMeasurements(system.servicesManager, {
     measurementFilter,
   });
 
@@ -24,9 +24,7 @@ export default function PanelMeasurement(props): React.ReactNode {
       <EmptyComponent
         key={key}
         data-cy={key}
-        {...childProps}
         {...componentProps}
-        childProps={childProps}
         items={displayMeasurements}
       />
     ) : (
@@ -49,9 +47,7 @@ export default function PanelMeasurement(props): React.ReactNode {
     <Component
       key={key}
       data-cy={key}
-      {...childProps}
       {...componentProps}
-      childProps={childProps}
       items={displayMeasurements}
     />
   );
