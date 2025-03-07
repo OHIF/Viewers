@@ -50,7 +50,7 @@ function ToolButton(props: ToolButtonProps) {
     className,
   } = props;
 
-  const { buttonSizeClass, iconSizeClass } = sizeClasses[size];
+  const { buttonSizeClass, iconSizeClass } = sizeClasses[size] || sizeClasses.default;
 
   const buttonClasses = cn(
     baseClasses,

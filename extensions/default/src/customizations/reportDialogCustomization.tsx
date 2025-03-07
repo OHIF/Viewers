@@ -20,7 +20,9 @@ function ReportDialog({ dataSources, hide, onSave, onCancel }: ReportDialogProps
     dataSources?.[0]?.value ?? null
   );
 
-  const handleSave = (reportName: string) => {
+  const [reportName, setReportName] = useState('');
+
+  const handleSave = () => {
     onSave({
       reportName,
       dataSource: selectedDataSource,
@@ -62,7 +64,11 @@ function ReportDialog({ dataSources, hide, onSave, onCancel }: ReportDialogProps
             </div>
           )}
           <div className={showDataSourceSelect ? 'mt-1 w-2/3' : 'w-full'}>
-            <InputDialog>
+            <InputDialog
+              value={reportName}
+              onChange={setReportName}
+              submitOnEnter
+            >
               <InputDialog.Field>
                 <InputDialog.Input placeholder="Report name" />
               </InputDialog.Field>

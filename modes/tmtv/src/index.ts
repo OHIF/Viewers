@@ -1,5 +1,5 @@
-import { hotkeys, classes } from '@ohif/core';
-import toolbarButtons from './toolbarButtons.js';
+import { classes } from '@ohif/core';
+import toolbarButtons from './toolbarButtons';
 import { id } from './id.js';
 import initToolGroups from './initToolGroups.js';
 import setCrosshairsConfiguration from './utils/setCrosshairsConfiguration.js';
@@ -96,10 +96,20 @@ function modeFactory({ modeConfiguration }) {
         'Crosshairs',
         'Pan',
       ]);
-      toolbarService.createButtonSection('ROIThresholdToolbox', [
+      toolbarService.createButtonSection('measurementSection', [
+        'Length',
+        'Bidirectional',
+        'ArrowAnnotate',
+        'EllipticalROI',
+      ]);
+
+      toolbarService.createButtonSection('ROIThresholdToolbox', ['SegmentationTools']);
+      toolbarService.createButtonSection('segmentationToolboxToolsSection', [
         'RectangleROIStartEndThreshold',
         'BrushTools',
       ]);
+
+      toolbarService.createButtonSection('brushToolsSection', ['Brush', 'Eraser', 'Threshold']);
 
       customizationService.setCustomizations({
         'panelSegmentation.tableMode': {
