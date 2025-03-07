@@ -25,6 +25,23 @@ const toolbarButtons: Button[] = [
       buttonSection: 'brushToolsSection',
     },
   },
+  // Section containers for the nested toolbox
+  {
+    id: 'SegmentationUtilities',
+    uiType: 'ohif.toolBoxButton',
+    props: {
+      groupId: 'SegmentationUtilities',
+      buttonSection: 'segmentationToolboxUtilitySection',
+    },
+  },
+  {
+    id: 'SegmentationTools',
+    uiType: 'ohif.toolBoxButton',
+    props: {
+      groupId: 'SegmentationTools',
+      buttonSection: 'segmentationToolboxToolsSection',
+    },
+  },
   // tool defs
   {
     id: 'Zoom',

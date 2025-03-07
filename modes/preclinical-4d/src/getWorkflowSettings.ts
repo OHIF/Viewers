@@ -24,6 +24,10 @@ const defaultButtons = [
 const ROIThresholdToolbox = [
   {
     buttonSection: 'dynamic-toolbox',
+    buttons: ['SegmentationTools'],
+  },
+  {
+    buttonSection: 'segmentationToolboxToolsSection',
     buttons: ['BrushTools', 'RectangleROIStartEndThreshold'],
   },
   {

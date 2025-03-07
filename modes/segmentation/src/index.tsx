@@ -81,7 +81,15 @@ function modeFactory({ modeConfiguration }) {
         'TagBrowser',
       ]);
 
-      toolbarService.createButtonSection('segmentationToolbox', ['BrushTools', 'Shapes']);
+      toolbarService.createButtonSection('segmentationToolbox', [
+        // 'SegmentationUtilities',
+        'SegmentationTools',
+      ]);
+      // toolbarService.createButtonSection('segmentationToolboxUtilitySection', ['Zoom']);
+      toolbarService.createButtonSection('segmentationToolboxToolsSection', [
+        'BrushTools',
+        'Shapes',
+      ]);
       toolbarService.createButtonSection('brushToolsSection', ['Brush', 'Eraser', 'Threshold']);
     },
     onModeExit: ({ servicesManager }: withAppTypes) => {

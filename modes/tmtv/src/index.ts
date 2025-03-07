@@ -102,10 +102,13 @@ function modeFactory({ modeConfiguration }) {
         'ArrowAnnotate',
         'EllipticalROI',
       ]);
-      toolbarService.createButtonSection('ROIThresholdToolbox', [
+
+      toolbarService.createButtonSection('ROIThresholdToolbox', ['SegmentationTools']);
+      toolbarService.createButtonSection('segmentationToolboxToolsSection', [
         'RectangleROIStartEndThreshold',
         'BrushTools',
       ]);
+
       toolbarService.createButtonSection('brushToolsSection', ['Brush', 'Eraser', 'Threshold']);
 
       customizationService.setCustomizations({
