@@ -57,6 +57,10 @@ export async function callInputDialog({
   submitOnEnter = true,
 }: {
   uiDialogService: AppTypes.UIDialogService;
+  defaultValue?: string;
+  title?: string;
+  placeholder?: string;
+  submitOnEnter?: boolean;
 }) {
   const dialogId = 'dialog-enter-annotation';
 

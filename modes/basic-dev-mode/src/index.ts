@@ -96,7 +96,7 @@ function modeFactory({ modeConfiguration }) {
 
       toolbarService.addButtons(toolbarButtons);
       toolbarService.createButtonSection('primary', [
-        'MeasurementTools',
+        'measurementSection',
         'Zoom',
         'WindowLevel',
         'Pan',

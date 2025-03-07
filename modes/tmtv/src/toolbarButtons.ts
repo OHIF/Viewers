@@ -3,7 +3,7 @@ import { toolGroupIds } from './initToolGroups';
 const setToolActiveToolbar = {
   commandName: 'setToolActiveToolbar',
   commandOptions: {
-    toolGroupIds: [toolGroupIds.PT, toolGroupIds.CT, toolGroupIds.Fusion, toolGroupIds.default],
+    toolGroupIds: [toolGroupIds.CT, toolGroupIds.PT, toolGroupIds.Fusion],
   },
 };
 
@@ -12,16 +12,8 @@ const toolbarButtons = [
     id: 'MeasurementTools',
     uiType: 'ohif.toolButtonList',
     props: {
-      groupId: 'MeasurementTools',
       buttonSection: 'measurementSection',
-    },
-  },
-  {
-    id: 'BrushTools',
-    uiType: 'ohif.toolBoxButtonGroup',
-    props: {
-      groupId: 'BrushTools',
-      buttonSection: 'brushToolsSection',
+      groupId: 'MeasurementTools',
     },
   },
   {
@@ -30,6 +22,14 @@ const toolbarButtons = [
     props: {
       groupId: 'SegmentationTools',
       buttonSection: 'segmentationToolboxToolsSection',
+    },
+  },
+  {
+    id: 'BrushTools',
+    uiType: 'ohif.toolBoxButtonGroup',
+    props: {
+      buttonSection: 'brushToolsSection',
+      groupId: 'BrushTools',
     },
   },
   {
@@ -59,8 +59,8 @@ const toolbarButtons = [
     uiType: 'ohif.toolButton',
     props: {
       icon: 'tool-annotate',
-      label: 'Annotation',
-      tooltip: 'Arrow Annotate',
+      label: 'Arrow Annotate',
+      tooltip: 'Arrow Annotate Tool',
       commands: setToolActiveToolbar,
       evaluate: 'evaluate.cornerstoneTool',
     },
@@ -71,7 +71,7 @@ const toolbarButtons = [
     props: {
       icon: 'tool-ellipse',
       label: 'Ellipse',
-      tooltip: 'Ellipse ROI',
+      tooltip: 'Ellipse Tool',
       commands: setToolActiveToolbar,
       evaluate: 'evaluate.cornerstoneTool',
     },
@@ -97,58 +97,9 @@ const toolbarButtons = [
     },
   },
   {
-    id: 'Pan',
-    uiType: 'ohif.toolButton',
-    props: {
-      type: 'tool',
-      icon: 'tool-move',
-      label: 'Pan',
-      commands: setToolActiveToolbar,
-      evaluate: 'evaluate.cornerstoneTool',
-    },
-  },
-  {
-    id: 'TrackballRotate',
-    uiType: 'ohif.toolButton',
-    props: {
-      type: 'tool',
-      icon: 'tool-3d-rotate',
-      label: '3D Rotate',
-      commands: setToolActiveToolbar,
-      evaluate: 'evaluate.cornerstoneTool',
-    },
-  },
-  {
-    id: 'Capture',
-    uiType: 'ohif.toolButton',
-    props: {
-      icon: 'tool-capture',
-      label: 'Capture',
-      commands: 'showDownloadViewportModal',
-      evaluate: [
-        'evaluate.action',
-        {
-          name: 'evaluate.viewport.supported',
-          unsupportedViewportTypes: ['video', 'wholeSlide'],
-        },
-      ],
-    },
-  },
-  {
-    id: 'Layout',
-    uiType: 'ohif.layoutSelector',
-    props: {
-      rows: 3,
-      columns: 4,
-      evaluate: 'evaluate.action',
-      commands: 'setViewportGridLayout',
-    },
-  },
-  {
     id: 'Crosshairs',
     uiType: 'ohif.toolButton',
     props: {
-      type: 'tool',
       icon: 'tool-crosshair',
       label: 'Crosshairs',
       commands: setToolActiveToolbar,
@@ -156,8 +107,14 @@ const toolbarButtons = [
     },
   },
   {
-    id: 'ProgressDropdown',
-    uiType: 'ohif.progressDropdown',
+    id: 'Pan',
+    uiType: 'ohif.toolButton',
+    props: {
+      icon: 'tool-move',
+      label: 'Pan',
+      commands: setToolActiveToolbar,
+      evaluate: 'evaluate.cornerstoneTool',
+    },
   },
   {
     id: 'RectangleROIStartEndThreshold',
@@ -166,13 +123,17 @@ const toolbarButtons = [
       icon: 'tool-create-threshold',
       label: 'Rectangle ROI Threshold',
       commands: setToolActiveToolbar,
-      evaluate: {
-        name: 'evaluate.cornerstone.segmentation',
-        toolNames: ['RectangleROIStartEndThreshold'],
-      },
+      evaluate: [
+        'evaluate.cornerstone.segmentation',
+        {
+          name: 'evaluate.cornerstoneTool',
+          disabledText: 'Select the PT Axial to enable this tool',
+        },
+      ],
       options: 'tmtv.RectangleROIThresholdOptions',
     },
   },
+
   {
     id: 'Brush',
     uiType: 'ohif.toolButton',
@@ -182,16 +143,17 @@ const toolbarButtons = [
       evaluate: {
         name: 'evaluate.cornerstone.segmentation',
         toolNames: ['CircularBrush', 'SphereBrush'],
+        disabledText: 'Create new segmentation to enable this tool.',
       },
       options: [
         {
-          name: 'Size (mm)',
+          name: 'Radius (mm)',
           id: 'brush-radius',
           type: 'range',
           min: 0.5,
           max: 99.5,
           step: 0.5,
-          value: 7,
+          value: 25,
           commands: {
             commandName: 'setBrushSize',
             commandOptions: { toolNames: ['CircularBrush', 'SphereBrush'] },
@@ -229,7 +191,7 @@ const toolbarButtons = [
           min: 0.5,
           max: 99.5,
           step: 0.5,
-          value: 7,
+          value: 25,
           commands: {
             commandName: 'setBrushSize',
             commandOptions: { toolNames: ['CircularEraser', 'SphereEraser'] },
@@ -254,7 +216,7 @@ const toolbarButtons = [
     uiType: 'ohif.toolButton',
     props: {
       icon: 'icon-tool-threshold',
-      label: 'Threshold',
+      label: 'Threshold Tool',
       evaluate: {
         name: 'evaluate.cornerstone.segmentation',
         toolNames: ['ThresholdCircularBrush', 'ThresholdSphereBrush'],
@@ -267,12 +229,37 @@ const toolbarButtons = [
           min: 0.5,
           max: 99.5,
           step: 0.5,
-          value: 7,
+          value: 25,
           commands: {
             commandName: 'setBrushSize',
             commandOptions: {
-              toolNames: ['ThresholdCircularBrush', 'ThresholdSphereBrush'],
+              toolNames: [
+                'ThresholdCircularBrush',
+                'ThresholdSphereBrush',
+                'ThresholdCircularBrushDynamic',
+              ],
             },
+          },
+        },
+        {
+          name: 'Threshold',
+          type: 'radio',
+          id: 'dynamic-mode',
+          value: 'ThresholdRange',
+          values: [
+            { value: 'ThresholdDynamic', label: 'Dynamic' },
+            { value: 'ThresholdRange', label: 'Range' },
+          ],
+          commands: ({ value, commandsManager }) => {
+            if (value === 'ThresholdDynamic') {
+              commandsManager.run('setToolActive', {
+                toolName: 'ThresholdCircularBrushDynamic',
+              });
+            } else {
+              commandsManager.run('setToolActive', {
+                toolName: 'ThresholdCircularBrush',
+              });
+            }
           },
         },
         {
@@ -284,6 +271,8 @@ const toolbarButtons = [
             { value: 'ThresholdCircularBrush', label: 'Circle' },
             { value: 'ThresholdSphereBrush', label: 'Sphere' },
           ],
+          condition: ({ options }) =>
+            options.find(option => option.id === 'dynamic-mode').value === 'ThresholdRange',
           commands: 'setToolActiveToolbar',
         },
         {
@@ -291,41 +280,17 @@ const toolbarButtons = [
           type: 'double-range',
           id: 'threshold-range',
           min: 0,
-          max: 100,
+          max: 50,
           step: 0.5,
-          value: [2, 50],
+          value: [2.5, 50],
+          condition: ({ options }) =>
+            options.find(option => option.id === 'dynamic-mode').value === 'ThresholdRange',
           commands: {
             commandName: 'setThresholdRange',
             commandOptions: {
               toolNames: ['ThresholdCircularBrush', 'ThresholdSphereBrush'],
             },
           },
-        },
-      ],
-    },
-  },
-  {
-    id: 'Shapes',
-    uiType: 'ohif.toolBoxButton',
-    props: {
-      label: 'Shapes',
-      evaluate: {
-        name: 'evaluate.cornerstone.segmentation',
-        toolNames: ['CircleScissor', 'SphereScissor', 'RectangleScissor'],
-      },
-      icon: 'icon-tool-shape',
-      options: [
-        {
-          name: 'Shape',
-          type: 'radio',
-          value: 'CircleScissor',
-          id: 'shape-mode',
-          values: [
-            { value: 'CircleScissor', label: 'Circle' },
-            { value: 'SphereScissor', label: 'Sphere' },
-            { value: 'RectangleScissor', label: 'Rectangle' },
-          ],
-          commands: 'setToolActiveToolbar',
         },
       ],
     },

@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Toolbox } from '@ohif/ui-next';
+import { Toolbox } from '@ohif/extension-default';
 import PanelSegmentation from './panels/PanelSegmentation';
 import ActiveViewportWindowLevel from './components/ActiveViewportWindowLevel';
 import PanelMeasurement from './panels/PanelMeasurement';
@@ -36,14 +36,8 @@ const getPanelModule = ({ commandsManager, servicesManager, extensionManager }: 
     return (
       <>
         <Toolbox
-          commandsManager={commandsManager}
-          servicesManager={servicesManager}
-          extensionManager={extensionManager}
           buttonSectionId="segmentationToolbox"
           title="Segmentation Tools"
-          configuration={{
-            ...configuration,
-          }}
         />
         <PanelSegmentation
           commandsManager={commandsManager}

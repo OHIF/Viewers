@@ -52,7 +52,7 @@ import { ThumbnailList } from './ThumbnailList';
 import { PanelSection } from './PanelSection';
 import { DisplaySetMessageListTooltip } from './DisplaySetMessageListTooltip';
 import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from './Tooltip';
-import { ToolboxUI, Toolbox } from './OHIFToolbox';
+import { ToolboxUI } from './OHIFToolbox';
 import Numeric from './Numeric';
 import { InputDialog, PresetDialog } from './OHIFDialogs';
 import { AboutModal, ImageModal, UserPreferencesModal } from './OHIFModals';
@@ -105,6 +105,7 @@ import {
   ToolButtonListItem,
   ToolButtonListDivider,
 } from './ToolButton';
+import { ToolSettings } from './OHIFToolSettings';
 
 export {
   Numeric,
@@ -173,7 +174,6 @@ export {
   PanelSection,
   DisplaySetMessageListTooltip,
   ToolboxUI,
-  Toolbox,
   DropdownMenu,
   DropdownMenuTrigger,
   DropdownMenuContent,
@@ -236,4 +236,5 @@ export {
   ImageModal,
   UserPreferencesModal,
   FooterAction,
+  ToolSettings,
 };
