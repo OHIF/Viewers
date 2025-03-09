@@ -1,7 +1,7 @@
 import React, { useEffect, useCallback, useRef } from 'react';
 import { useResizeDetector } from 'react-resize-detector';
 import { Types, MeasurementService } from '@ohif/core';
-import { ViewportGrid, ViewportPane } from '@ohif/ui';
+import { ViewportGrid, ViewportPane } from '@ohif/ui-next';
 import { useViewportGrid } from '@ohif/ui-next';
 import EmptyViewport from './EmptyViewport';
 import classNames from 'classnames';
@@ -284,6 +284,22 @@ function ViewerViewportGrid(props: withAppTypes) {
         viewportGridService.setActiveViewportId(viewportId);
       };
 
+      const getBorderStyle = index => {
+        const style = {} as any;
+        if (numViewportPanes === 1) {
+          return style;
+        }
+        const colIndex = index % numCols;
+        const rowIndex = Math.floor(index / numCols);
+        if (colIndex < numCols - 1) {
+          style.borderRight = '1px solid #3a3f99';
+        }
+        if (rowIndex < numRows - 1) {
+          style.borderBottom = '1px solid #3a3f99';
+        }
+        return style;
+      };
+
       viewportPanes[i] = (
         <ViewportPane
           // Note: It is highly important that the key is the viewportId here,
@@ -301,10 +317,11 @@ function ViewerViewportGrid(props: withAppTypes) {
           onInteraction={onInteractionHandler}
           customStyle={{
             position: 'absolute',
-            top: viewportY * 100 + 0.2 + '%',
-            left: viewportX * 100 + 0.2 + '%',
-            width: viewportWidth * 100 - 0.3 + '%',
-            height: viewportHeight * 100 - 0.3 + '%',
+            top: viewportY * 100 + '%',
+            left: viewportX * 100 + '%',
+            width: viewportWidth * 100 + '%',
+            height: viewportHeight * 100 + '%',
+            ...getBorderStyle(i),
           }}
           isActive={isActive}
         >
@@ -343,7 +360,7 @@ function ViewerViewportGrid(props: withAppTypes) {
   return (
     <div
       ref={resizeRef}
-      className="h-full w-full"
+      className="border-secondary-light h-full w-full border"
     >
       <ViewportGrid
         numRows={numRows}
