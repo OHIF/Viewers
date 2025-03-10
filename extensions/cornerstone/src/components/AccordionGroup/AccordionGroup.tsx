@@ -2,6 +2,26 @@ import React from 'react';
 import { useSystem } from '@ohif/core';
 import { Accordion } from '@ohif/ui-next';
 
+export type AccordionGrouping = {
+  [name: string]: unknown;
+};
+
+export type AccordionGroupProps = {
+  grouping: AccordionGrouping;
+};
+
+interface AccordionGroupComponent extends React.FC<AccordionGroupProps> {
+  CloneChildren: typeof CloneChildren;
+  Item: typeof Item;
+  Trigger: typeof Trigger;
+  Body: typeof Body;
+}
+
+const typeOfComponent = component =>
+  component?.props?.__TYPE ||
+  component?.type?.toString().replace('Symbol(react.fragment)', 'react.fragment') ||
+  undefined;
+
 export const CloneChildren = cloneProps => {
   const { group, groupChildren, groups } = cloneProps;
   const { component: ChildComponent, componentProps } = group;
@@ -35,7 +55,7 @@ export const CloneChildren = cloneProps => {
  * measurements panel for a practical, working example.
  */
 export function AccordionGroup(props) {
-  const { grouping, items, children, type, componentProps, component: Component } = props;
+  const { grouping, items, children, type } = props;
   const childProps = useSystem();
   let defaultValue = props.defaultValue;
   const groups = grouping.groupingFunction(items, grouping, childProps);
@@ -94,5 +114,20 @@ export function AccordionGroup(props) {
     </Accordion>
   );
 }
+
+const Item = props => {
+  return <span>Hello Item</span>;
+};
+
+const Body = props => {
+  return <span>Hello Item</span>;
+};
+const Trigger = props => {
+  return <span>Hello Item</span>;
+};
+
+AccordionGroup.Item = Item;
+AccordionGroup.Body = Body;
+AccordionGroup.Trigger = Trigger;
 
 export default AccordionGroup;
