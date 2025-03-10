@@ -57,21 +57,21 @@ function ViewportPane({
       onClick={onInteractionHandler}
       onScroll={onInteractionHandler}
       onWheel={onInteractionHandler}
-      className={classNames('h-full w-full overflow-hidden transition duration-300', className)}
+      className={classNames(
+        'group relative h-full w-full overflow-hidden transition duration-300',
+        className
+      )}
       style={customStyle}
     >
+      <div className={classNames('relative h-full w-full', className)}>{children}</div>
+
+      {/* Border overlay */}
       <div
-        className={classNames(
-          'h-full w-full overflow-hidden border',
-          {
-            'border-primary-light': isActive,
-            'hover:border-primary-light/70 border-transparent': !isActive,
-          },
-          className
-        )}
-      >
-        {children}
-      </div>
+        className={classNames('pointer-events-none absolute inset-0', {
+          'border-primary-light border': isActive,
+          'group-hover:border-primary-light/70 border border-transparent': !isActive,
+        })}
+      />
     </div>
   );
 }
