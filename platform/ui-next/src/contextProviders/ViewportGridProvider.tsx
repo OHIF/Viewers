@@ -503,6 +503,7 @@ export function ViewportGridProvider({ children, service }: ViewportGridProvider
     getActiveViewportOptionByKey,
     setViewportGridSizeChanged: props => service.setViewportGridSizeChanged(props),
     publishViewportsReady: () => service.publishViewportsReady(),
+    getLayoutOptionsFromState: state => service.getLayoutOptionsFromState(state),
   };
 
   return (
