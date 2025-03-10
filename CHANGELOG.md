@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.10.0-beta.118](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.117...v3.10.0-beta.118) (2025-03-07)
+
+
+### Bug Fixes
+
+* **tmtv tools:** add CircleROIStartEndThreshold to supported tools in TMTV extension ([#4828](https://github.com/OHIF/Viewers/issues/4828)) ([17d2889](https://github.com/OHIF/Viewers/commit/17d2889dc50bc943f1fb6371f5a1667243b6eb70))
+
+
+
+
+
 # [3.10.0-beta.117](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.116...v3.10.0-beta.117) (2025-03-07)
 
 
