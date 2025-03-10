@@ -36,6 +36,7 @@ export default function CreateReportDialogPrompt({
             dataSourceName: undefined,
           });
         },
+        defaultValue: title,
       },
     });
   });

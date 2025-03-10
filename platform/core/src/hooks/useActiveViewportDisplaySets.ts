@@ -9,9 +9,7 @@ import { DisplaySet } from '../types';
  * @returns Array of display sets for the active viewport
  */
 const useActiveViewportDisplaySets = ({ servicesManager }): DisplaySet[] => {
-  const [displaySets, setDisplaySets] = useState<DisplaySet[]>([]);
   const { displaySetService, viewportGridService } = servicesManager.services;
-
   // Move this function outside useEffect and memoize it
   const getDisplaySetsForViewport = useCallback(
     (viewportId: string) => {
@@ -21,19 +19,22 @@ const useActiveViewportDisplaySets = ({ servicesManager }): DisplaySet[] => {
     [displaySetService, viewportGridService]
   );
 
-  useEffect(() => {
-    // Get initial state
-    const viewportId = viewportGridService.getActiveViewportId();
-    setDisplaySets(getDisplaySetsForViewport(viewportId));
+  // Get initial state
+  const viewportId = viewportGridService.getActiveViewportId();
+  const displaySetsNew = getDisplaySetsForViewport(viewportId) || [];
+  const [displaySets, setDisplaySets] = useState<DisplaySet[]>(displaySetsNew);
 
+  useEffect(() => {
     const handleViewportChange = ({ viewportId }) => {
-      setDisplaySets(getDisplaySetsForViewport(viewportId));
+      const displaySetsNew = getDisplaySetsForViewport(viewportId);
+      setDisplaySets(displaySetsNew);
     };
 
     const handleGridStateChange = ({ state }) => {
       const activeViewportId = state.activeViewportId;
       if (activeViewportId) {
-        setDisplaySets(getDisplaySetsForViewport(activeViewportId));
+        const displaySetsNew = getDisplaySetsForViewport(activeViewportId);
+        setDisplaySets(displaySetsNew);
       }
     };
 

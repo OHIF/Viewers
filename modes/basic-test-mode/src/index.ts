@@ -15,6 +15,10 @@ const ohif = {
   thumbnailList: '@ohif/extension-default.panelModule.seriesList',
 };
 
+const testExtension = {
+  measurements: '@ohif/extension-test.panelModule.panelMeasurementSeries',
+};
+
 const tracked = {
   measurements: '@ohif/extension-measurement-tracking.panelModule.trackedMeasurements',
   thumbnailList: '@ohif/extension-measurement-tracking.panelModule.seriesList',
@@ -199,7 +203,7 @@ function modeFactory() {
             props: {
               leftPanels: [tracked.thumbnailList],
               leftPanelResizable: true,
-              rightPanels: [cornerstone.panel, tracked.measurements, cornerstone.measurements],
+              rightPanels: [cornerstone.panel, tracked.measurements, testExtension.measurements],
               rightPanelResizable: true,
               viewports: [
                 {

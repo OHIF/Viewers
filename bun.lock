@@ -645,7 +645,7 @@
       "name": "@ohif/cli",
       "version": "3.10.0-beta.118",
       "bin": {
-        "ohif-cli": "src/index.js"
+        "ohif-cli": "src/index.js",
       },
       "dependencies": {
         "@babel/core": "7.24.7",
