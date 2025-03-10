@@ -284,19 +284,26 @@ function ViewerViewportGrid(props: withAppTypes) {
         viewportGridService.setActiveViewportId(viewportId);
       };
 
-      const getBorderStyle = index => {
+      const getBorderStyle = viewportIndex => {
         const style = {} as any;
-        if (numViewportPanes === 1) {
+        const layoutOptions = viewportGridService.getLayoutOptionsFromState(
+          viewportGridService.getState()
+        );
+        const vp = layoutOptions[viewportIndex];
+        if (!vp) {
           return style;
         }
-        const colIndex = index % numCols;
-        const rowIndex = Math.floor(index / numCols);
-        if (colIndex < numCols - 1) {
+        const { x, y, width, height } = vp;
+        const tolerance = 0.01;
+
+        if (x + width < 1 - tolerance) {
           style.borderRight = '1px solid #3a3f99';
         }
-        if (rowIndex < numRows - 1) {
+
+        if (y + height < 1 - tolerance) {
           style.borderBottom = '1px solid #3a3f99';
         }
+
         return style;
       };
 
