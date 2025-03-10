@@ -1,5 +1,5 @@
 /* IMPORT CUSTOM FONT */
-@import url('https://fonts.googleapis.com/css?family=Inter:100,300,400,500,700&display=swap');
+@import './assets/styles/fonts.css';
 
 @tailwind base;
 @tailwind components;
