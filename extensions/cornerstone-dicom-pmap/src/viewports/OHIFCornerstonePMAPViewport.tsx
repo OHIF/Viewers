@@ -97,6 +97,7 @@ function OHIFCornerstonePMAPViewport(props: withAppTypes) {
           viewportType: 'volume',
           orientation: viewportOptions.orientation,
           viewportId: viewportOptions.viewportId,
+          presentationIds: viewportOptions.presentationIds,
         }}
         displaySetOptions={[{}, pmapDisplaySetOptions]}
       ></Component>

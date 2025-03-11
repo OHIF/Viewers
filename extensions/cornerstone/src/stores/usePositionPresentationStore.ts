@@ -4,7 +4,7 @@ import { PositionPresentation } from '../types/Presentation';
 import { addUniqueIndex, JOIN_STR } from './presentationUtils';
 
 const PRESENTATION_TYPE_ID = 'positionPresentationId';
-const DEBUG_STORE = true;
+const DEBUG_STORE = false;
 
 /**
  * Represents the state and actions for managing position presentations.

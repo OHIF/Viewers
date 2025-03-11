@@ -126,6 +126,7 @@ export default async function loadRTStruct(extensionManager, rtStructDisplaySet,
     SeriesInstanceUID: instance.SeriesInstanceUID,
     ROIContours: [],
     visible: true,
+    ReferencedSOPInstanceUIDsSet: new Set(),
   };
 
   for (let i = 0; i < ROIContourSequence.length; i++) {
@@ -142,7 +143,8 @@ export default async function loadRTStruct(extensionManager, rtStructDisplaySet,
 
     const contourPoints = [];
     for (let c = 0; c < ContourSequenceArray.length; c++) {
-      const { ContourData, NumberOfContourPoints, ContourGeometricType } = ContourSequenceArray[c];
+      const { ContourData, NumberOfContourPoints, ContourGeometricType, ContourImageSequence } =
+        ContourSequenceArray[c];
 
       let isSupported = false;
 
@@ -172,6 +174,12 @@ export default async function loadRTStruct(extensionManager, rtStructDisplaySet,
         type: ContourGeometricType,
         isSupported,
       });
+
+      if (ContourImageSequence?.ReferencedSOPInstanceUID) {
+        structureSet.ReferencedSOPInstanceUIDsSet.add(
+          ContourImageSequence?.ReferencedSOPInstanceUID
+        );
+      }
     }
 
     _setROIContourMetadata(
