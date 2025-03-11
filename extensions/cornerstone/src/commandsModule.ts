@@ -14,6 +14,7 @@ import {
   annotation,
 } from '@cornerstonejs/tools';
 import * as cornerstoneTools from '@cornerstonejs/tools';
+import * as labelmapInterpolation from '@cornerstonejs/labelmap-interpolation';
 
 import { Types as OhifTypes, utils } from '@ohif/core';
 import i18n from '@ohif/i18n';
@@ -39,7 +40,6 @@ const toggleSyncFunctions = {
 
 function commandsModule({
   servicesManager,
-  extensionManager,
   commandsManager,
 }: OhifTypes.Extensions.ExtensionParams): OhifTypes.Extensions.CommandsModule {
   const {
@@ -54,7 +54,8 @@ function commandsModule({
     colorbarService,
     hangingProtocolService,
     syncGroupService,
-  } = servicesManager.services;
+    segmentationService,
+  } = servicesManager.services as AppTypes.Services;
 
   const { measurementServiceSource } = this;
 
@@ -68,6 +69,16 @@ function commandsModule({
   }
 
   const actions = {
+    interpolateLabelmap: () => {
+      const viewportId = viewportGridService.getActiveViewportId();
+      const activeSegmentation = segmentationService.getActiveSegmentation(viewportId);
+      const segmentationId = activeSegmentation?.segmentationId;
+      const activeSegmentIndex = segmentationService.getActiveSegment(viewportId);
+      labelmapInterpolation.interpolate({
+        segmentationId,
+        segmentIndex: Number(activeSegmentIndex),
+      });
+    },
     /**
      * Generates the selector props for the context menu, specific to
      * the cornerstone viewport, and then runs the context menu.
@@ -1636,6 +1647,7 @@ function commandsModule({
     },
     undo: actions.undo,
     redo: actions.redo,
+    interpolateLabelmap: actions.interpolateLabelmap,
   };
 
   return {

@@ -255,7 +255,7 @@ const toolbarButtons: Button[] = [
 
   {
     id: 'Brush',
-    uiType: 'ohif.toolButton',
+    uiType: 'ohif.toolBoxButton',
     props: {
       icon: 'icon-tool-brush',
       label: 'Brush',
@@ -293,8 +293,21 @@ const toolbarButtons: Button[] = [
     },
   },
   {
+    id: 'InterpolateLabelmap',
+    uiType: 'ohif.toolBoxButton',
+    props: {
+      icon: 'icon-tool-interpolation',
+      label: 'Interpolate Labelmap',
+      evaluate: {
+        name: 'evaluate.cornerstone.segmentation',
+        disabledText: 'Create new segmentation to enable this tool.',
+      },
+      commands: 'interpolateLabelmap',
+    },
+  },
+  {
     id: 'Eraser',
-    uiType: 'ohif.toolButton',
+    uiType: 'ohif.toolBoxButton',
     props: {
       icon: 'icon-tool-eraser',
       label: 'Eraser',
@@ -332,7 +345,7 @@ const toolbarButtons: Button[] = [
   },
   {
     id: 'Threshold',
-    uiType: 'ohif.toolButton',
+    uiType: 'ohif.toolBoxButton',
     props: {
       icon: 'icon-tool-threshold',
       label: 'Threshold Tool',

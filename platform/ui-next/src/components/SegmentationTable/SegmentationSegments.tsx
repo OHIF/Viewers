@@ -1,6 +1,51 @@
 import React from 'react';
 import { ScrollArea, DataRow } from '../../components';
+import { HoverCard, HoverCardTrigger, HoverCardContent } from '../../components/HoverCard';
 import { useSegmentationTableContext } from './SegmentationTableContext';
+import { roundNumber } from '../../utils';
+
+const renderStatisticsPanel = (namedStats: any, cssColor: string, label: string) => {
+  if (!namedStats) {
+    return null;
+  }
+
+  return (
+    <div className="w-full">
+      <div className="mb-4 flex items-center space-x-2">
+        <div
+          className="h-2.5 w-2.5 flex-shrink-0 rounded-full"
+          style={{ backgroundColor: cssColor }}
+        ></div>
+        <h3 className="text-muted-foreground break-words text-lg font-semibold">{label}</h3>
+      </div>
+
+      <div className="space-y-1">
+        {Object.entries(namedStats).map(([key, stat]: [string, any]) => {
+          if (!stat) {
+            return null;
+          }
+          const { label, value, unit } = stat;
+          if (value === null) {
+            return null;
+          }
+
+          return (
+            <div
+              key={key}
+              className="flex justify-between"
+            >
+              <div className="">{label}</div>
+              <div>
+                <span className="text-white">{roundNumber(value)}</span>{' '}
+                <span className="">{unit || ''}</span>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+};
 
 export const SegmentationSegments: React.FC<{
   segmentation?: unknown;
@@ -13,7 +58,6 @@ export const SegmentationSegments: React.FC<{
     onToggleSegmentVisibility,
     onToggleSegmentLock,
     onSegmentClick,
-    mode,
     onSegmentEdit,
     onSegmentDelete,
     data,
@@ -35,7 +79,7 @@ export const SegmentationSegments: React.FC<{
 
   return (
     <ScrollArea
-      className={`ohif-scrollbar invisible-scrollbar bg-bkg-low space-y-px h-[900px]`}
+      className={`ohif-scrollbar invisible-scrollbar bg-bkg-low h-[900px] space-y-px`}
       showArrows={true}
     >
       {Object.values(representationToUse.segments).map(segment => {
@@ -49,29 +93,52 @@ export const SegmentationSegments: React.FC<{
           return null;
         }
 
+        const { cachedStats } = segmentFromSegmentation;
+        const { namedStats } = cachedStats || {};
+
         const { locked, active, label, displayText } = segmentFromSegmentation;
         const cssColor = `rgb(${color[0]},${color[1]},${color[2]})`;
 
         return (
-          <DataRow
-            key={segmentIndex}
-            number={segmentIndex}
-            title={label}
-            details={displayText}
-            colorHex={cssColor}
-            isSelected={active}
-            isVisible={visible}
-            isLocked={locked}
-            disableEditing={disableEditing}
-            onColor={() => onSegmentColorClick(segmentationIdToUse, segmentIndex)}
-            onToggleVisibility={() =>
-              onToggleSegmentVisibility(segmentationIdToUse, segmentIndex, representationToUse.type)
-            }
-            onToggleLocked={() => onToggleSegmentLock(segmentationIdToUse, segmentIndex)}
-            onSelect={() => onSegmentClick(segmentationIdToUse, segmentIndex)}
-            onRename={() => onSegmentEdit(segmentationIdToUse, segmentIndex)}
-            onDelete={() => onSegmentDelete(segmentationIdToUse, segmentIndex)}
-          />
+          <HoverCard
+            key={`hover-${segmentIndex}`}
+            openDelay={300}
+          >
+            <HoverCardTrigger asChild>
+              <div>
+                <DataRow
+                  key={segmentIndex}
+                  number={segmentIndex}
+                  title={label}
+                  details={displayText}
+                  colorHex={cssColor}
+                  isSelected={active}
+                  isVisible={visible}
+                  isLocked={locked}
+                  disableEditing={disableEditing}
+                  onColor={() => onSegmentColorClick(segmentationIdToUse, segmentIndex)}
+                  onToggleVisibility={() =>
+                    onToggleSegmentVisibility(
+                      segmentationIdToUse,
+                      segmentIndex,
+                      representationToUse.type
+                    )
+                  }
+                  onToggleLocked={() => onToggleSegmentLock(segmentationIdToUse, segmentIndex)}
+                  onSelect={() => onSegmentClick(segmentationIdToUse, segmentIndex)}
+                  onRename={() => onSegmentEdit(segmentationIdToUse, segmentIndex)}
+                  onDelete={() => onSegmentDelete(segmentationIdToUse, segmentIndex)}
+                />
+              </div>
+            </HoverCardTrigger>
+            <HoverCardContent
+              side="left"
+              align="start"
+              className="w-72 border"
+            >
+              {renderStatisticsPanel(namedStats, cssColor, label)}
+            </HoverCardContent>
+          </HoverCard>
         );
       })}
     </ScrollArea>
