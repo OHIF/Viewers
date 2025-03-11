@@ -1,6 +1,6 @@
 import React from 'react';
 import { useActiveViewportDisplaySets, useSystem } from '@ohif/core';
-import { AccordionContent, AccordionItem, AccordionTrigger } from '@ohif/ui-next';
+// import { AccordionContent, AccordionItem, AccordionTrigger } from '@ohif/ui-next';
 
 import { AccordionGroup } from './AccordionGroup';
 import MeasurementsOrAdditionalFindings from './MeasurementsOrAdditionalFindings';
@@ -54,45 +54,6 @@ export const groupByStudy = (items, grouping, childProps) => {
   return groups;
 };
 
-export function StudyMeasurementItem(props) {
-  const { group, key = group.key, children } = props;
-  const {
-    component: ChildComponent = MeasurementsOrAdditionalFindings,
-    header: Header = StudySummaryWithActions,
-    headerProps,
-  } = group;
-  const CloneChildren = cloneProps => {
-    if (children) {
-      return React.Children.map(children, child =>
-        React.cloneElement(child, {
-          ...cloneProps,
-          ...group,
-          key,
-        })
-      );
-    }
-    return <ChildComponent {...props} />;
-  };
-
-  return (
-    <AccordionItem
-      value={key}
-      data-state="open"
-    >
-      <AccordionTrigger>
-        <Header
-          StudyInstanceUID={key}
-          {...props}
-          {...headerProps}
-        />
-      </AccordionTrigger>
-      <AccordionContent>
-        <CloneChildren />
-      </AccordionContent>
-    </AccordionItem>
-  );
-}
-
 export function StudyMeasurements(props): React.ReactNode {
   const { items, grouping = {}, children } = props;
 
@@ -105,17 +66,17 @@ export function StudyMeasurements(props): React.ReactNode {
       grouping={{
         name: 'groupByStudy',
         groupingFunction: groupByStudy,
-        header: StudySummaryWithActions,
         activeStudyUID,
         ...grouping,
       }}
       items={items}
       value={[activeStudyUID]}
+      sourceChildren={children}
     >
-      <StudyMeasurementItem
-        activeStudyUID={activeStudyUID}
-        children={children}
-      />
+      <AccordionGroup.Trigger>
+        <StudySummaryWithActions />
+      </AccordionGroup.Trigger>
+      <MeasurementsOrAdditionalFindings activeStudyUID={activeStudyUID} />
     </AccordionGroup>
   );
 }

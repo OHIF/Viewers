@@ -1,5 +1,5 @@
 import React from 'react';
-import { Accordion, AccordionContent, AccordionItem, DataRow } from '@ohif/ui-next';
+import { Accordion, AccordionContent, AccordionItem } from '@ohif/ui-next';
 
 import PanelAccordionTrigger from './PanelAccordionTrigger';
 import MeasurementsMenu from './MeasurementsMenu';

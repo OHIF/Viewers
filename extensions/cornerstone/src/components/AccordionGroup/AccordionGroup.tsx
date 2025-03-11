@@ -1,6 +1,6 @@
 import React from 'react';
 import { useSystem } from '@ohif/core';
-import { Accordion } from '@ohif/ui-next';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@ohif/ui-next';
 
 export type AccordionGrouping = {
   [name: string]: unknown;
@@ -14,32 +14,38 @@ interface AccordionGroupComponent extends React.FC<AccordionGroupProps> {
   CloneChildren: typeof CloneChildren;
   Item: typeof Item;
   Trigger: typeof Trigger;
-  Body: typeof Body;
+  Content: typeof Content;
 }
 
-const typeOfComponent = component =>
-  component?.props?.__TYPE ||
-  component?.type?.toString().replace('Symbol(react.fragment)', 'react.fragment') ||
-  undefined;
+/**
+ * Searches for the required type from the provided allChildren list and
+ * renders them.
+ */
+export const CloneChildren = props => {
+  const { group, allChildren, children, type, defaultTypes } = props;
 
-export const CloneChildren = cloneProps => {
-  const { group, groupChildren, groups } = cloneProps;
-  const { component: ChildComponent, componentProps } = group;
-  if (groupChildren) {
-    return React.Children.map(groupChildren, child =>
-      React.cloneElement(child, { ...group, group, ...cloneProps })
-    );
+  const { subType } = group;
+
+  const foundDefault = allChildren.find(child => {
+    if ((type && child.type === type) || defaultTypes?.indexOf(child.type) === -1) {
+      if (!subType || child.props.subType === subType) {
+        return child;
+      }
+    }
+  });
+
+  if (foundDefault) {
+    return React.cloneElement(foundDefault, { ...props, ...group });
   }
-  return (
-    <ChildComponent
-      groups={groups}
-      {...cloneProps}
-      {...componentProps}
-      {...group}
-      key={group.key}
-    />
-  );
+
+  if (!children) {
+    throw new Error(`No children defined for ${props.name} CloneChildren in group ${group?.name}`);
+  }
+  return React.Children.map(children, child => React.cloneElement(child, { ...props, ...group }));
 };
+
+/** Used to exclude defaults */
+const DEFAULT_TYPES = [Item, Content, Trigger];
 
 /**
  * An AccordionGroup is a component that splits a set of items into different
@@ -55,7 +61,7 @@ export const CloneChildren = cloneProps => {
  * measurements panel for a practical, working example.
  */
 export function AccordionGroup(props) {
-  const { grouping, items, children, type } = props;
+  const { grouping, items, children, sourceChildren, type } = props;
   const childProps = useSystem();
   let defaultValue = props.defaultValue;
   const groups = grouping.groupingFunction(items, grouping, childProps);
@@ -67,6 +73,9 @@ export function AccordionGroup(props) {
 
   const valueArr =
     (Array.isArray(defaultValue) && defaultValue) || (defaultValue && [defaultValue]) || [];
+  const sourceChildrenArr = sourceChildren ? React.Children.toArray(sourceChildren) : [];
+  const childrenArr = children ? React.Children.toArray(children) : [];
+  const allChildren = sourceChildrenArr.concat(childrenArr);
 
   return (
     <Accordion
@@ -75,59 +84,66 @@ export function AccordionGroup(props) {
       defaultValue={valueArr}
     >
       {[...groups.entries()].map(([key, group]) => {
-        const { subType } = group;
         return (
-          <FindChild
-            source={children}
-            type="AccordionGroup.Item"
-            subType={subType}
+          <CloneChildren
+            allChildren={allChildren}
+            group={group}
+            type={Item}
+            key={group.key}
+            name="AccordionGroup.Item"
           >
-            <AccordionGroup.Item
-              key={group.key}
+            <AccordionItem
+              key={group.key + '-i'}
               value={group.key}
             >
-              <FindChild
-                key={`trigger:${group.key}`}
-                source={children}
-                type="AccordionGroup.Trigger"
-                subType={subType}
-              />
-              <FindChild
-                key={`body:${group.key}`}
-                source={children}
-                type="AccordionGroup.Body"
-                subType={subType}
-                useDefault
-              />
-            </AccordionGroup.Item>
-          </FindChild>
+              <AccordionTrigger
+                value={group.key}
+                key={group.key + '-t'}
+              >
+                <CloneChildren
+                  allChildren={allChildren}
+                  group={group}
+                  type={Trigger}
+                  name="AccordionGroup.Trigger"
+                />
+              </AccordionTrigger>
+              <AccordionContent key={group.key + '-c'}>
+                <CloneChildren
+                  allChildren={allChildren}
+                  group={group}
+                  type={Content}
+                  defaultTypes={DEFAULT_TYPES}
+                  name="AccordionGroup.Content"
+                />
+              </AccordionContent>
+            </AccordionItem>
+          </CloneChildren>
         );
-
-        // <CloneChildren
-        //   group={group}
-        //   groups={groups}
-        //   groupChildren={children}
-        //   componentProps={componentProps}
-        //   key={group.key}
-        // />
       })}
     </Accordion>
   );
 }
 
-const Item = props => {
-  return <span>Hello Item</span>;
-};
+function Item(props) {
+  const { children, group } = props;
+  console.log('Creating item', props.name, group?.name);
+  return React.cloneElement(children, { ...group, ...props });
+}
 
-const Body = props => {
-  return <span>Hello Item</span>;
-};
-const Trigger = props => {
-  return <span>Hello Item</span>;
-};
+function Content(props) {
+  const { children, group } = props;
+  console.log('Creating content', props.name, group?.name);
+  return React.cloneElement(children, { ...group, ...props });
+}
+
+function Trigger(props) {
+  const { children, group } = props;
+  console.log('Creating Trigger', props.name, group?.name);
+  return React.cloneElement(children, { ...group, ...props });
+}
 
 AccordionGroup.Item = Item;
-AccordionGroup.Body = Body;
+AccordionGroup.Content = Content;
 AccordionGroup.Trigger = Trigger;
 
 export default AccordionGroup;

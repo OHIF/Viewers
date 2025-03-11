@@ -54,19 +54,22 @@ export const groupByNamedSets = (items, grouping) => {
 };
 
 export default function MeasurementOrAdditionalFindings(props): React.ReactNode {
-  const { items, childProps, grouping = {} } = props;
+  const { items, children, grouping = {} } = props;
 
   return (
     <AccordionGroup
       grouping={{
-        header: StudySummaryFromMetadata,
         groupingFunction: groupByNamedSets,
         namedSets: MeasurementOrAdditionalFindingSets,
         ...grouping,
       }}
-      childProps={childProps}
       items={items}
-      component={grouping.component || MeasurementTableNested}
-    />
+      sourceChildren={children}
+    >
+      <AccordionGroup.Trigger>
+        <StudySummaryFromMetadata />
+      </AccordionGroup.Trigger>
+      <MeasurementTableNested />
+    </AccordionGroup>
   );
 }
