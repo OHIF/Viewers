@@ -101,7 +101,6 @@ export default function SegmentationPanel() {
   }
 
   // Create a state to track which item's statistics to show
-  const [hoveredItemId, setHoveredItemId] = useState<string | null>(null);
 
   // Function to render statistics panel
   const renderStatisticsPanel = (item: DataItem) => {
@@ -111,109 +110,166 @@ export default function SegmentationPanel() {
 
     const stats = item.statistics;
     return (
-      <div className="w-full rounded-md bg-black p-4 text-white">
+      <div className="w-full">
         <div className="mb-4 flex items-center space-x-2">
           <div
-            className="h-4 w-4 rounded-full"
+            className="h-2.5 w-2.5 flex-shrink-0 rounded-full"
             style={{ backgroundColor: item.colorHex }}
           ></div>
-          <h3 className="text-lg font-semibold">{item.title}</h3>
+          <h3 className="text-muted-foreground break-words text-lg font-semibold">{item.title}</h3>
         </div>
 
         <div className="space-y-1">
           <div className="flex justify-between">
-            <div className="text-blue-300">Centroid X</div>
-            <div>{stats.centroidX}</div>
+            <div className="">Centroid X</div>
+            <div>
+              <span className="text-white">{stats.centroidX.value}</span>{' '}
+              <span className="">{stats.centroidX.unit}</span>
+            </div>
           </div>
 
           <div className="flex justify-between">
-            <div className="text-blue-300">Centroid Y</div>
-            <div>{stats.centroidY}</div>
+            <div className="">Centroid Y</div>
+            <div>
+              <span className="text-white">{stats.centroidY.value}</span>{' '}
+              <span className="">{stats.centroidY.unit}</span>
+            </div>
           </div>
 
           <div className="flex justify-between">
-            <div className="text-blue-300">Centroid Z</div>
-            <div>{stats.centroidZ}</div>
+            <div className="">Centroid Z</div>
+            <div>
+              <span className="text-white">{stats.centroidZ.value}</span>{' '}
+              <span className="">{stats.centroidZ.unit}</span>
+            </div>
           </div>
 
           <div className="flex justify-between">
-            <div className="text-blue-300">Frame Duration</div>
-            <div>{stats.frameDuration}</div>
+            <div className="">Frame Duration</div>
+            <div>
+              <span className="text-white">{stats.frameDuration.value}</span>{' '}
+              <span className="">{stats.frameDuration.unit}</span>
+            </div>
           </div>
 
           <div className="flex justify-between">
-            <div className="text-blue-300">Kurtosis</div>
-            <div>{stats.kurtosis}</div>
+            <div className="">Kurtosis</div>
+            <div>
+              <span className="text-white">{stats.kurtosis.value}</span>{' '}
+              <span className="">{stats.kurtosis.unit}</span>
+            </div>
           </div>
 
           <div className="flex justify-between">
-            <div className="text-blue-300">Max</div>
-            <div>{stats.max}</div>
+            <div className="">Max</div>
+            <div>
+              <span className="text-white">{stats.max.value}</span>{' '}
+              <span className="">{stats.max.unit}</span>
+            </div>
           </div>
 
           <div className="flex justify-between">
-            <div className="text-blue-300">Max Slice</div>
-            <div>{stats.maxSlice}</div>
+            <div className="">Max Slice</div>
+            <div>
+              <span className="text-white">{stats.maxSlice.value}</span>{' '}
+              <span className="">{stats.maxSlice.unit}</span>
+            </div>
           </div>
 
           <div className="flex justify-between">
-            <div className="text-blue-300">Mean</div>
-            <div>{stats.mean}</div>
+            <div className="">Mean</div>
+            <div>
+              <span className="text-white">{stats.mean.value}</span>{' '}
+              <span className="">{stats.mean.unit}</span>
+            </div>
           </div>
 
           <div className="flex justify-between">
-            <div className="text-blue-300">Median</div>
-            <div>{stats.median}</div>
+            <div className="">Median</div>
+            <div>
+              <span className="text-white">{stats.median.value}</span>{' '}
+              <span className="">{stats.median.unit}</span>
+            </div>
           </div>
 
           <div className="flex justify-between">
-            <div className="text-blue-300">Min</div>
-            <div>{stats.min}</div>
+            <div className="">Min</div>
+            <div>
+              <span className="text-white">{stats.min.value}</span>{' '}
+              <span className="">{stats.min.unit}</span>
+            </div>
           </div>
 
           <div className="flex justify-between">
-            <div className="text-blue-300">Regions</div>
-            <div>{stats.regions}</div>
+            <div className="">Regions</div>
+            <div>
+              <span className="text-white">{stats.regions.value}</span>{' '}
+              <span className="">{stats.regions.unit}</span>
+            </div>
           </div>
 
           <div className="flex justify-between">
-            <div className="text-blue-300">Skewness</div>
-            <div>{stats.skewness}</div>
+            <div className="">Skewness</div>
+            <div>
+              <span className="text-white">{stats.skewness.value}</span>{' '}
+              <span className="">{stats.skewness.unit}</span>
+            </div>
           </div>
 
           <div className="flex justify-between">
-            <div className="text-blue-300">Sphere Diameter</div>
-            <div>{stats.sphereDiameter}</div>
+            <div className="">Sphere Diameter</div>
+            <div>
+              <span className="text-white">{stats.sphereDiameter.value}</span>{' '}
+              <span className="">{stats.sphereDiameter.unit}</span>
+            </div>
           </div>
 
           <div className="flex justify-between">
-            <div className="text-blue-300">Standard Deviation</div>
-            <div>{stats.standardDeviation}</div>
+            <div className="">Standard Deviation</div>
+            <div>
+              <span className="text-white">{stats.standardDeviation.value}</span>{' '}
+              <span className="">{stats.standardDeviation.unit}</span>
+            </div>
           </div>
 
           <div className="flex justify-between">
-            <div className="text-blue-300">SUV Peak</div>
-            <div>{stats.suvPeak}</div>
+            <div className="">SUV Peak</div>
+            <div>
+              <span className="text-white">{stats.suvPeak.value}</span>{' '}
+              <span className="">{stats.suvPeak.unit}</span>
+            </div>
           </div>
 
           <div className="flex justify-between">
-            <div className="text-blue-300">Total</div>
-            <div>{stats.total}</div>
+            <div className="">Total</div>
+            <div>
+              <span className="text-white">{stats.total.value}</span>{' '}
+              <span className="">{stats.total.unit}</span>
+            </div>
           </div>
 
           <div className="flex justify-between">
-            <div className="text-blue-300">Glycolysis</div>
-            <div>{stats.glycolysis}</div>
+            <div className="">Glycolysis</div>
+            <div>
+              <span className="text-white">{stats.glycolysis.value}</span>{' '}
+              <span className="">{stats.glycolysis.unit}</span>
+            </div>
           </div>
 
           <div className="flex justify-between">
-            <div className="text-blue-300">Volume</div>
-            <div>{stats.volume}</div>
+            <div className="">Volume</div>
+            <div>
+              <span className="text-white">{stats.volume.value}</span>{' '}
+              <span className="">{stats.volume.unit}</span>
+            </div>
           </div>
 
           <div className="flex justify-between">
-            <div className="text-blue-300">Voxel Count</div>
-            <div>{stats.voxelCount}</div>
+            <div className="">Voxel Count</div>
+            <div>
+              <span className="text-white">{stats.voxelCount.value}</span>{' '}
+              <span className="">{stats.voxelCount.unit}</span>
+            </div>
           </div>
         </div>
       </div>
@@ -434,6 +490,7 @@ export default function SegmentationPanel() {
                         key={`hover-${compositeId}`}
                         openDelay={300}
                         closeDelay={200}
+                        // open={true}
                       >
                         <HoverCardTrigger asChild>
                           <div>
@@ -464,7 +521,7 @@ export default function SegmentationPanel() {
                         <HoverCardContent
                           side="left"
                           align="start"
-                          className="w-80 border border-gray-800 bg-black p-0"
+                          className="w-72 border"
                         >
                           {renderStatisticsPanel(item)}
                         </HoverCardContent>
