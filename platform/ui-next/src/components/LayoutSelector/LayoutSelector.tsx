@@ -27,7 +27,7 @@ const LayoutPreset: React.FC<LayoutPresetProps> = ({
     <div
       className={cn(
         'group cursor-pointer rounded transition',
-        'hover:bg-accent flex items-center gap-2 p-1',
+        'hover:bg-accent flex items-center gap-2 p-1.5',
         disabled && 'pointer-events-none opacity-50',
         className
       )}
@@ -152,7 +152,7 @@ const LayoutSelector: React.FC<LayoutSelectorProps> = ({
       <PopoverTrigger asChild>
         {trigger || (
           <button
-            className="hover:bg-primary-dark/30 flex items-center justify-center rounded px-3 py-2 text-white transition"
+            className="hover:bg-primary-dark/30 text-foreground flex items-center justify-center rounded px-3 py-2 transition"
             aria-label="Layout selector"
           >
             <Icons.ByName name="tool-layout" />
@@ -163,16 +163,16 @@ const LayoutSelector: React.FC<LayoutSelectorProps> = ({
       <PopoverContent
         align="center"
         sideOffset={8}
-        className="w-auto rounded border-none p-0 shadow-lg"
+        className="w-auto rounded-lg border-none p-0 shadow-lg"
       >
         <div className="flex">
           {/* Left Side - Presets */}
           {hasPresets && (
-            <div className="bg-secondary-dark flex flex-col gap-2.5 p-2">
+            <div className="bg-secondary-dark flex flex-col gap-2.5 rounded-lg p-2">
               {commonPresets.length > 0 && (
                 <>
                   <div className="text-muted-foreground text-xs">Common</div>
-                  <div className="flex gap-4">
+                  <div className="flex gap-2">
                     {commonPresets.map((preset, index) => (
                       <LayoutPreset
                         key={`common-preset-${index}`}
@@ -189,7 +189,7 @@ const LayoutSelector: React.FC<LayoutSelectorProps> = ({
               {advancedPresets.length > 0 && (
                 <>
                   <div className="text-muted-foreground text-xs">Advanced</div>
-                  <div className="flex flex-col gap-2.5">
+                  <div className="flex flex-col gap-0">
                     {advancedPresets.map((preset, index) => (
                       <LayoutPreset
                         key={`advanced-preset-${index}`}
