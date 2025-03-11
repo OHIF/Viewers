@@ -486,7 +486,7 @@ function commandsModule({
       } else if (viewport.getRotation !== undefined) {
         const presentation = viewport.getViewPresentation();
         const { rotation: currentRotation } = presentation;
-        const newRotation = (currentRotation + rotation) % 360;
+        const newRotation = (currentRotation + rotation + 360) % 360;
         viewport.setViewPresentation({ rotation: newRotation });
         viewport.render();
       }
