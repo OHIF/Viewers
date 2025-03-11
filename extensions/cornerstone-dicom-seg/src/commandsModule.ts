@@ -237,7 +237,7 @@ const commandsModule = ({
         try {
           const selectedDataSourceConfig = selectedDataSource
             ? extensionManager.getDataSources(selectedDataSource)[0]
-            : defaultDataSource;
+            : defaultDataSource[0];
 
           const args = {
             segmentationId,
@@ -369,6 +369,52 @@ const commandsModule = ({
         console.error('Unexpected error in sendToGlasses:', error);
       }
     },
+    downloadObj: ({ segmentationId }) => {
+      try {
+        // Отримання даних сегментації та генерація DICOM Blob
+        const segmentationInOHIF = segmentationService.getSegmentation(segmentationId);
+        const generatedSegmentation = actions.generateSegmentation({ segmentationId });
+
+        if (!generatedSegmentation || !generatedSegmentation.dataset) {
+          console.error('Failed to generate segmentation dataset.');
+          return;
+        }
+
+        const dataset = generatedSegmentation.dataset;
+        const dicomBlob = datasetToBlob(dataset);
+
+        // Формуємо FormData з DICOM файлом
+        const formData = new FormData();
+        formData.append('file', dicomBlob, `${segmentationInOHIF.label}.dcm`);
+
+        fetch('https://dicomobj.azurewebsites.net/api/ConvertDicomToObjDownload', {
+          method: 'POST',
+          body: formData,
+        })
+          .then(async response => {
+            if (response.ok) {
+              // Отримуємо відповіді як blob і створюємо посилання для завантаження
+              const blob = await response.blob();
+              const url = window.URL.createObjectURL(blob);
+              const a = document.createElement('a');
+              a.href = url;
+              a.download = `${segmentationInOHIF.label}.obj`;
+              document.body.appendChild(a);
+              a.click();
+              a.remove();
+              window.URL.revokeObjectURL(url);
+              console.log('OBJ file downloaded successfully!');
+            } else {
+              console.error(`Error downloading OBJ file. Status: ${response.status}`);
+            }
+          })
+          .catch(error => {
+            console.error('Error downloading OBJ file:', error);
+          });
+      } catch (error) {
+        console.error('Unexpected error in downloadObj:', error);
+      }
+    },
   };
 
   const definitions = {
@@ -379,6 +425,7 @@ const commandsModule = ({
     downloadRTSS: actions.downloadRTSS,
     toggleActiveSegmentationUtility: actions.toggleActiveSegmentationUtility,
     sendToGlasses: actions.sendToGlasses,
+    downloadObj: actions.downloadObj,
   };
 
   return {
