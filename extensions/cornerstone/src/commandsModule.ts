@@ -73,7 +73,7 @@ function commandsModule({
       const viewportId = viewportGridService.getActiveViewportId();
       const activeSegmentation = segmentationService.getActiveSegmentation(viewportId);
       const segmentationId = activeSegmentation?.segmentationId;
-      const activeSegmentIndex = segmentationService.getActiveSegment(viewportId);
+      const activeSegmentIndex = segmentationService.getActiveSegment(viewportId).segmentIndex;
       labelmapInterpolation.interpolate({
         segmentationId,
         segmentIndex: Number(activeSegmentIndex),
