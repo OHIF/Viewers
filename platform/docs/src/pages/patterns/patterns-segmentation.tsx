@@ -37,6 +37,11 @@ import { Input } from '../../../../ui-next/src/components/Input';
 import { Tabs, TabsList, TabsTrigger } from '../../../../ui-next/src/components/Tabs';
 import { actionOptionsMap, dataList } from '../../../../ui-next/assets/data';
 import { TooltipProvider } from '../../../../ui-next/src/components/Tooltip';
+import {
+  HoverCard,
+  HoverCardTrigger,
+  HoverCardContent,
+} from '../../../../ui-next/src/components/HoverCard';
 
 interface DataItem {
   id: number;
@@ -44,8 +49,29 @@ interface DataItem {
   description: string;
   optionalField?: string;
   colorHex?: string;
-  details?: string;
+  details?: { primary: string[]; secondary: string[] };
   series?: string;
+  statistics?: {
+    centroidX: string;
+    centroidY: string;
+    centroidZ: string;
+    frameDuration: string;
+    kurtosis: string;
+    max: string;
+    maxSlice: string;
+    mean: string;
+    median: string;
+    min: string;
+    regions: string;
+    skewness: string;
+    sphereDiameter: string;
+    standardDeviation: string;
+    suvPeak: string;
+    total: string;
+    glycolysis: string;
+    volume: string;
+    voxelCount: string;
+  };
 }
 
 interface ListGroup {
@@ -67,12 +93,132 @@ export default function SegmentationPanel() {
   };
 
   const organSegmentationGroup = dataList.find(
-    (listGroup: ListGroup) => listGroup.type === 'Organ Segmentation'
-  );
+    (listGroup: any) => listGroup.type === 'Organ Segmentation'
+  ) as unknown as ListGroup;
 
   if (!organSegmentationGroup) {
     return <div className="text-red-500">Organ Segmentation data not found.</div>;
   }
+
+  // Create a state to track which item's statistics to show
+  const [hoveredItemId, setHoveredItemId] = useState<string | null>(null);
+
+  // Function to render statistics panel
+  const renderStatisticsPanel = (item: DataItem) => {
+    if (!item.statistics) {
+      return null;
+    }
+
+    const stats = item.statistics;
+    return (
+      <div className="w-full rounded-md bg-black p-4 text-white">
+        <div className="mb-4 flex items-center space-x-2">
+          <div
+            className="h-4 w-4 rounded-full"
+            style={{ backgroundColor: item.colorHex }}
+          ></div>
+          <h3 className="text-lg font-semibold">{item.title}</h3>
+        </div>
+
+        <div className="space-y-1">
+          <div className="flex justify-between">
+            <div className="text-blue-300">Centroid X</div>
+            <div>{stats.centroidX}</div>
+          </div>
+
+          <div className="flex justify-between">
+            <div className="text-blue-300">Centroid Y</div>
+            <div>{stats.centroidY}</div>
+          </div>
+
+          <div className="flex justify-between">
+            <div className="text-blue-300">Centroid Z</div>
+            <div>{stats.centroidZ}</div>
+          </div>
+
+          <div className="flex justify-between">
+            <div className="text-blue-300">Frame Duration</div>
+            <div>{stats.frameDuration}</div>
+          </div>
+
+          <div className="flex justify-between">
+            <div className="text-blue-300">Kurtosis</div>
+            <div>{stats.kurtosis}</div>
+          </div>
+
+          <div className="flex justify-between">
+            <div className="text-blue-300">Max</div>
+            <div>{stats.max}</div>
+          </div>
+
+          <div className="flex justify-between">
+            <div className="text-blue-300">Max Slice</div>
+            <div>{stats.maxSlice}</div>
+          </div>
+
+          <div className="flex justify-between">
+            <div className="text-blue-300">Mean</div>
+            <div>{stats.mean}</div>
+          </div>
+
+          <div className="flex justify-between">
+            <div className="text-blue-300">Median</div>
+            <div>{stats.median}</div>
+          </div>
+
+          <div className="flex justify-between">
+            <div className="text-blue-300">Min</div>
+            <div>{stats.min}</div>
+          </div>
+
+          <div className="flex justify-between">
+            <div className="text-blue-300">Regions</div>
+            <div>{stats.regions}</div>
+          </div>
+
+          <div className="flex justify-between">
+            <div className="text-blue-300">Skewness</div>
+            <div>{stats.skewness}</div>
+          </div>
+
+          <div className="flex justify-between">
+            <div className="text-blue-300">Sphere Diameter</div>
+            <div>{stats.sphereDiameter}</div>
+          </div>
+
+          <div className="flex justify-between">
+            <div className="text-blue-300">Standard Deviation</div>
+            <div>{stats.standardDeviation}</div>
+          </div>
+
+          <div className="flex justify-between">
+            <div className="text-blue-300">SUV Peak</div>
+            <div>{stats.suvPeak}</div>
+          </div>
+
+          <div className="flex justify-between">
+            <div className="text-blue-300">Total</div>
+            <div>{stats.total}</div>
+          </div>
+
+          <div className="flex justify-between">
+            <div className="text-blue-300">Glycolysis</div>
+            <div>{stats.glycolysis}</div>
+          </div>
+
+          <div className="flex justify-between">
+            <div className="text-blue-300">Volume</div>
+            <div>{stats.volume}</div>
+          </div>
+
+          <div className="flex justify-between">
+            <div className="text-blue-300">Voxel Count</div>
+            <div>{stats.voxelCount}</div>
+          </div>
+        </div>
+      </div>
+    );
+  };
 
   return (
     <div className="px-auto flex min-h-screen w-full justify-center bg-black py-12">
@@ -284,20 +430,45 @@ export default function SegmentationPanel() {
                   {organSegmentationGroup.items.map((item, index) => {
                     const compositeId = `${organSegmentationGroup.type}-${item.id}-panel`; // Ensure unique composite ID
                     return (
-                      <DataRow
-                        key={`panel-${compositeId}`} // Prefix to ensure uniqueness
-                        number={index + 1}
-                        title={item.title}
-                        description={item.description}
-                        optionalField={item.optionalField}
-                        colorHex={item.colorHex}
-                        details={item.details}
-                        series={item.series}
-                        actionOptions={actionOptionsMap[organSegmentationGroup.type] || ['Action']}
-                        onAction={(action: string) => handleAction(compositeId, action)}
-                        isSelected={selectedRowId === compositeId}
-                        onSelect={() => handleRowSelect(compositeId)}
-                      />
+                      <HoverCard
+                        key={`hover-${compositeId}`}
+                        openDelay={300}
+                        closeDelay={200}
+                      >
+                        <HoverCardTrigger asChild>
+                          <div>
+                            <DataRow
+                              key={`panel-${compositeId}`} // Prefix to ensure uniqueness
+                              number={index + 1}
+                              title={item.title}
+                              description={item.description}
+                              colorHex={item.colorHex}
+                              details={item.details || { primary: [], secondary: [] }}
+                              actionOptions={
+                                actionOptionsMap[organSegmentationGroup.type] || ['Action']
+                              }
+                              onAction={(action: string) => handleAction(compositeId, action)}
+                              isSelected={selectedRowId === compositeId}
+                              onSelect={() => handleRowSelect(compositeId)}
+                              isVisible={true}
+                              isLocked={false}
+                              onToggleVisibility={() => console.debug('Toggle visibility')}
+                              onToggleLocked={() => console.debug('Toggle locked')}
+                              onRename={() => console.debug('Rename')}
+                              onDelete={() => console.debug('Delete')}
+                              onColor={() => console.debug('Color')}
+                              disableEditing={false}
+                            />
+                          </div>
+                        </HoverCardTrigger>
+                        <HoverCardContent
+                          side="left"
+                          align="start"
+                          className="w-80 border border-gray-800 bg-black p-0"
+                        >
+                          {renderStatisticsPanel(item)}
+                        </HoverCardContent>
+                      </HoverCard>
                     );
                   })}
                 </div>
