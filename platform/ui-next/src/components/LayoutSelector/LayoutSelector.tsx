@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { Popover, PopoverTrigger, PopoverContent } from '../Popover/Popover';
 import { cn } from '../../lib/utils';
-import { Icons } from '../../';
+// Import the Icons component
+// Note: Adjust this path based on your actual project structure
+import { Icons } from '../Icons';
 import * as PropTypes from 'prop-types';
 
 type LayoutPresetProps = {
@@ -24,7 +26,8 @@ const LayoutPreset: React.FC<LayoutPresetProps> = ({
   return (
     <div
       className={cn(
-        'hover:bg-primary-dark/30 flex cursor-pointer flex-col items-center justify-center rounded p-2 transition',
+        'group cursor-pointer rounded transition',
+        'hover:bg-accent flex items-center gap-2 p-1',
         disabled && 'pointer-events-none opacity-50',
         className
       )}
@@ -33,11 +36,13 @@ const LayoutPreset: React.FC<LayoutPresetProps> = ({
       }}
       data-cy={title}
     >
-      <Icons.ByName
-        name={icon}
-        className="group-hover:text-primary-light"
-      />
-      {title && <div className="mt-1 text-sm text-white">{title}</div>}
+      <div className="flex-shrink-0">
+        <Icons.ByName
+          name={icon}
+          className="group-hover:text-primary"
+        />
+      </div>
+      {title && <div className="text-foreground text-base">{title}</div>}
     </div>
   );
 };
@@ -71,20 +76,18 @@ const GridLayoutSelector: React.FC<GridLayoutSelectorProps> = ({
 
   return (
     <div
-      className={cn('bg-primary-dark rounded p-2', className)}
+      className={cn(className)}
       style={{
         display: 'grid',
         gridTemplateColumns: `repeat(${columns}, 20px)`,
         gridTemplateRows: `repeat(${rows}, 20px)`,
+        gap: '2px',
       }}
     >
       {Array.from(Array(rows * columns).keys()).map(index => (
         <div
           key={index}
-          className={cn(
-            'border-primary-dark cursor-pointer border',
-            isHovered(index) ? 'bg-primary-active' : 'bg-[#04225b]'
-          )}
+          className={cn('cursor-pointer', isHovered(index) ? 'bg-primary-active' : 'bg-[#04225b]')}
           data-cy={`Layout-${index % columns}-${Math.floor(index / columns)}`}
           onClick={() => {
             const x = index % columns;
@@ -160,53 +163,62 @@ const LayoutSelector: React.FC<LayoutSelectorProps> = ({
       <PopoverContent
         align="center"
         sideOffset={8}
-        className="border-primary-dark rounded border bg-black p-4"
+        className="w-auto rounded border-none p-0 shadow-lg"
       >
-        <div className="flex flex-col gap-4">
-          <div>
-            <h3 className="mb-2 font-medium text-white">Grid Layout</h3>
+        <div className="flex">
+          {/* Left Side - Presets */}
+          {hasPresets && (
+            <div className="bg-secondary-dark flex flex-col gap-2.5 p-2">
+              {commonPresets.length > 0 && (
+                <>
+                  <div className="text-muted-foreground text-xs">Common</div>
+                  <div className="flex gap-4">
+                    {commonPresets.map((preset, index) => (
+                      <LayoutPreset
+                        key={`common-preset-${index}`}
+                        onSelection={handleSelection}
+                        icon={preset.icon}
+                        commandOptions={preset.commandOptions}
+                      />
+                    ))}
+                  </div>
+                  <div className="h-[2px] bg-black"></div>
+                </>
+              )}
+
+              {advancedPresets.length > 0 && (
+                <>
+                  <div className="text-muted-foreground text-xs">Advanced</div>
+                  <div className="flex flex-col gap-2.5">
+                    {advancedPresets.map((preset, index) => (
+                      <LayoutPreset
+                        key={`advanced-preset-${index}`}
+                        onSelection={handlePresetSelection}
+                        title={preset.title}
+                        icon={preset.icon}
+                        commandOptions={preset.commandOptions}
+                        disabled={preset.disabled}
+                      />
+                    ))}
+                  </div>
+                </>
+              )}
+            </div>
+          )}
+
+          {/* Right Side - Grid Layout */}
+          <div className="bg-muted flex flex-col gap-2.5 border-l-2 border-solid border-black p-2">
+            <div className="text-muted-foreground text-xs">Custom</div>
             <GridLayoutSelector
               onSelection={handleSelection}
               rows={rows}
               columns={columns}
             />
+            <p className="text-muted-foreground text-xs leading-tight">
+              Hover to select <br />
+              rows and columns <br /> Click to apply
+            </p>
           </div>
-
-          {commonPresets.length > 0 && (
-            <div>
-              <h3 className="mb-2 font-medium text-white">Common Layouts</h3>
-              <div className="grid grid-cols-4 gap-2">
-                {commonPresets.map((preset, index) => (
-                  <LayoutPreset
-                    key={`common-preset-${index}`}
-                    onSelection={handleSelection}
-                    title={preset.name}
-                    icon={preset.icon || 'layout-grid'}
-                    commandOptions={preset.commandOptions}
-                    disabled={tooltipDisabled}
-                  />
-                ))}
-              </div>
-            </div>
-          )}
-
-          {advancedPresets.length > 0 && (
-            <div>
-              <h3 className="mb-2 font-medium text-white">Hanging Protocols</h3>
-              <div className="grid grid-cols-4 gap-2">
-                {advancedPresets.map((preset, index) => (
-                  <LayoutPreset
-                    key={`advanced-preset-${index}`}
-                    onSelection={handlePresetSelection}
-                    title={preset.name}
-                    icon={preset.icon || 'layout-grid'}
-                    commandOptions={preset.commandOptions}
-                    disabled={tooltipDisabled}
-                  />
-                ))}
-              </div>
-            </div>
-          )}
         </div>
       </PopoverContent>
     </Popover>
