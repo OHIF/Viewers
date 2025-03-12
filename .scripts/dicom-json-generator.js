@@ -4,7 +4,7 @@
  * The JSON file can be used to load the study into the OHIF Viewer. You can get more detail
  * in the DICOM JSON Data source on docs.ohif.org
  *
- * Usage: node dicomStudyToJSONLaunch.js <studyFolder> <urlPrefix> <outputJSONPath> <optional scheme>
+ * Usage: node dicom-json-generator.js <studyFolder> <urlPrefix> <outputJSONPath> <optional scheme>
  *
  * params:
  * - studyFolder: path to the study folder which contains the DICOM files
@@ -30,7 +30,7 @@ const [studyDirectory, urlPrefix, outputPath, scheme = 'dicomweb'] = args;
 
 if (args.length < 3 || args.length > 4) {
   console.error(
-    'Usage: node dicomStudyToJSONLaunch.js <studyFolder> <urlPrefix> <outputJSONPath> [scheme]'
+    'Usage: node dicom-json-generator.js <studyFolder> <urlPrefix> <outputJSONPath> [scheme]'
   );
   process.exit(1);
 }

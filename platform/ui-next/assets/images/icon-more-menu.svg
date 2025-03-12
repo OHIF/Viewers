@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="18px" height="18px" viewBox="0 0 18 18" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>icon-more-menu</title>
+    <g id="Artboards" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Segmentation---assets" transform="translate(-286, -61)">
+            <g id="icon-more-menu" transform="translate(285, 60)">
+                <g id="Group-28" transform="translate(1, 1)">
+                    <circle id="Oval" fill="#348CFD" cx="5.625" cy="9" r="1.125"></circle>
+                    <circle id="Oval" fill="#348CFD" cx="9" cy="9" r="1.125"></circle>
+                    <circle id="Oval" fill="#348CFD" cx="12.375" cy="9" r="1.125"></circle>
+                    <circle id="Oval" stroke="#348CFD" cx="9" cy="9" r="8.5"></circle>
+                </g>
+                <rect id="Rectangle" x="0" y="0" width="20" height="20"></rect>
+            </g>
+        </g>
+    </g>
+</svg>

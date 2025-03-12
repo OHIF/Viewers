@@ -20,10 +20,14 @@ jobs:
           node-version: 18
       - name: Install dependencies
         run: yarn install --frozen-lockfile
+      - name: Set up Git safe directory
+        run: git config --global --add safe.directory /__w/Viewers/Viewers
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps
       - name: Run Playwright tests
-        run: export NODE_OPTIONS="--max_old_space_size=8192" && npx playwright test --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
+        run:
+          export NODE_OPTIONS="--max_old_space_size=8192" && npx playwright test --shard=${{
+          matrix.shardIndex }}/${{ matrix.shardTotal }}
 
       - name: Upload blob report to GitHub Actions Artifacts
         if: ${{ !cancelled() }}
@@ -44,6 +48,9 @@ jobs:
           node-version: 18
       - name: Install dependencies
         run: yarn install --frozen-lockfile
+
+      - name: Set up Git safe directory
+        run: git config --global --add safe.directory /__w/Viewers/Viewers
 
       - name: Download blob reports from GitHub Actions Artifacts
         uses: actions/download-artifact@v4

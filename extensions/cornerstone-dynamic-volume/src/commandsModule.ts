@@ -84,11 +84,11 @@ const commandsModule = ({ commandsManager, servicesManager }: withAppTypes) => {
         const stdDeviation = Math.sqrt(variance);
         return stdDeviation;
       }
-
       // Iterate through each segmentation to get the timeData and ijkCoords
-      segmentations.forEach((segmentation, segmentationIndex) => {
+      segmentations.forEach(segmentation => {
+        const volume = segmentationService.getLabelmapVolume(segmentation.segmentationId);
         const [timeData, ijkCoords] = utilities.dynamicVolume.getDataInTime(dynamicVolume, {
-          maskVolumeId: segmentation.id,
+          maskVolumeId: volume.volumeId,
         }) as number[][];
 
         if (summaryStats) {
@@ -113,17 +113,33 @@ const commandsModule = ({ commandsManager, servicesManager }: withAppTypes) => {
           for (let timeIndex = 0; timeIndex < maxLength; timeIndex++) {
             // for each voxel in the ROI, get the value at the current time point
             const voxelValues = [];
+            let sum = 0;
+            let minValue = Infinity;
+            let maxValue = -Infinity;
+            let minIndex = 0;
+            let maxIndex = 0;
+
+            // Single pass through the data to collect all needed values
             for (let voxelIndex = 0; voxelIndex < numVoxels; voxelIndex++) {
-              voxelValues.push(timeData[voxelIndex][timeIndex]);
+              const value = timeData[voxelIndex][timeIndex];
+              voxelValues.push(value);
+              sum += value;
+
+              if (value < minValue) {
+                minValue = value;
+                minIndex = voxelIndex;
+              }
+              if (value > maxValue) {
+                maxValue = value;
+                maxIndex = voxelIndex;
+              }
             }
 
-            mean.push(voxelValues.reduce((acc, value) => acc + value, 0) / numVoxels);
-            const minimum = Math.min(...voxelValues);
-            min.push(minimum);
-            minIJK.push(ijkCoords[voxelValues.indexOf(minimum)]);
-            const maximum = Math.max(...voxelValues);
-            max.push(maximum);
-            maxIJK.push(ijkCoords[voxelValues.indexOf(maximum)]);
+            mean.push(sum / numVoxels);
+            min.push(minValue);
+            minIJK.push(ijkCoords[minIndex]);
+            max.push(maxValue);
+            maxIJK.push(ijkCoords[maxIndex]);
             std.push(calculateStandardDeviation(voxelValues));
           }
 
@@ -340,30 +356,19 @@ const commandsModule = ({ commandsManager, servicesManager }: withAppTypes) => {
         throw new Error('No reference display set found based on the dynamic data');
       }
 
-      const segmentationId = await segmentationService.createSegmentationForDisplaySet(
-        referenceDisplaySet.displaySetInstanceUID,
-        { label }
+      const displaySet = displaySetService.getDisplaySetByUID(
+        referenceDisplaySet.displaySetInstanceUID
       );
 
-      // Add Segmentation to all toolGroupIds in the viewer
-      const toolGroupIds = Array.from(
-        viewports.values(),
-        viewport => viewport.viewportOptions.toolGroupId
-      );
+      const segmentationId = await segmentationService.createLabelmapForDisplaySet(displaySet, {
+        label,
+      });
 
-      const representationType = LABELMAP;
+      const firstViewport = viewports.values().next().value;
 
-      for (const toolGroupId of toolGroupIds) {
-        const hydrateSegmentation = true;
-        await segmentationService.addSegmentationRepresentationToToolGroup(
-          toolGroupId,
-          segmentationId,
-          hydrateSegmentation,
-          representationType
-        );
-
-        segmentationService.setActiveSegmentationForToolGroup(segmentationId, toolGroupId);
-      }
+      await segmentationService.addSegmentationRepresentation(firstViewport.viewportId, {
+        segmentationId,
+      });
 
       return segmentationId;
     },

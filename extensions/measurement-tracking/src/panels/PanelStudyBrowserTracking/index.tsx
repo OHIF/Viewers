@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import PropTypes from 'prop-types';
 //
 import PanelStudyBrowserTracking from './PanelStudyBrowserTracking';
@@ -42,6 +42,7 @@ function WrappedPanelStudyBrowserTracking({
   return (
     <PanelStudyBrowserTracking
       servicesManager={servicesManager}
+      commandsManager={commandsManager}
       dataSource={dataSource}
       getImageSrc={_getImageSrcFromImageId}
       getStudiesForPatientByMRN={_getStudiesForPatientByMRN}

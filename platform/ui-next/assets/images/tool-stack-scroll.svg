@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="28px" height="28px" viewBox="0 0 28 28" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>tool-stack-scroll</title>
+    <g id="tool-stack-scroll" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <rect id="Rectangle" x="0" y="0" width="28" height="28"></rect>
+        <rect id="Rectangle" stroke="currentColor" stroke-width="1.5" x="4" y="9.71428571" width="14.2857143" height="14.2857143" rx="2"></rect>
+        <path d="M7.0094401,6.85714286 L18.9906762,6.85714286 C20.0952457,6.85714286 20.9906762,7.75257336 20.9906762,8.85714286 L20.9906762,21.1428571 L20.9906762,21.1428571" id="Path-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path>
+        <path d="M9.71428571,4 L21.6955218,4 C22.8000913,4 23.6955218,4.8954305 23.6955218,6 L23.6955218,18.2857143 L23.6955218,18.2857143" id="Path-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path>
+    </g>
+</svg>

@@ -13,7 +13,7 @@ export default function getPanelModule({
   extensionManager,
   servicesManager,
 }: Types.Extensions.ExtensionParams) {
-  const wrappedMeasurementPanel = () => {
+  const wrappedMeasurementPanel = ({}) => {
     const [{ activeViewportId, viewports }] = useViewportGrid();
 
     return (

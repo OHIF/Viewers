@@ -1,5 +1,5 @@
 import React, { ReactNode } from 'react';
-import { WindowLevelActionMenu } from './WindowLevelActionMenu';
+import { nonWLModalities, WindowLevelActionMenu } from './WindowLevelActionMenu';
 
 export function getWindowLevelActionMenu({
   viewportId,
@@ -9,7 +9,11 @@ export function getWindowLevelActionMenu({
   commandsManager,
   verticalDirection,
   horizontalDirection,
-}: withAppTypes): ReactNode {
+}: withAppTypes<{
+  viewportId: string;
+  element: HTMLElement;
+  displaySets: AppTypes.DisplaySet[];
+}>): ReactNode {
   const { customizationService } = servicesManager.services;
 
   const { presets } = customizationService.get('cornerstone.windowLevelPresets');
@@ -23,6 +27,14 @@ export function getWindowLevelActionMenu({
     .map(displaySet => {
       return { [displaySet.Modality]: presets[displaySet.Modality] };
     });
+
+  const modalities = displaySets
+    .map(displaySet => displaySet.Modality)
+    .filter(modality => !nonWLModalities.includes(modality));
+
+  if (modalities.length === 0) {
+    return null;
+  }
 
   return (
     <WindowLevelActionMenu

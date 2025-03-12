@@ -108,7 +108,7 @@ export default function interleaveTopToBottom({
   volumes.forEach(volume => {
     const requests = volume.getImageLoadRequests();
 
-    if (!requests.length || !requests[0] || !requests[0].imageId) {
+    if (!requests?.[0]?.imageId) {
       return;
     }
 

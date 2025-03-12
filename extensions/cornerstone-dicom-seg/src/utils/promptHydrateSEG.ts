@@ -11,7 +11,7 @@ function promptHydrateSEG({
   segDisplaySet,
   viewportId,
   preHydrateCallbacks,
-  hydrateSEGDisplaySet,
+  hydrateCallback,
 }: withAppTypes) {
   const { uiViewportDialogService } = servicesManager.services;
   const extensionManager = servicesManager._extensionManager;
@@ -28,7 +28,7 @@ function promptHydrateSEG({
       });
 
       window.setTimeout(async () => {
-        const isHydrated = await hydrateSEGDisplaySet({
+        const isHydrated = await hydrateCallback({
           segDisplaySet,
           viewportId,
         });

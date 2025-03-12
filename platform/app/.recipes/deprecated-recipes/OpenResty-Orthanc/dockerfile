@@ -1,7 +1,7 @@
 # docker-compose
 # --------------
 # This dockerfile is used by the `docker-compose.yml` adjacent file. When
-# running `docker-compose build`, this dockerfile helps build the "webapp" image.
+# running `docker compose build`, this dockerfile helps build the "webapp" image.
 # All paths are relative to the `context`, which is the project root directory.
 #
 # docker build

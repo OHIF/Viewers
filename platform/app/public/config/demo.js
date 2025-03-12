@@ -16,9 +16,9 @@ window.config = {
       configuration: {
         friendlyName: 'DCM4CHEE Server',
         name: 'DCM4CHEE',
-        wadoUriRoot: 'https://d33do7qe4w26qo.cloudfront.net/dicomweb',
-        qidoRoot: 'https://d33do7qe4w26qo.cloudfront.net/dicomweb',
-        wadoRoot: 'https://d33do7qe4w26qo.cloudfront.net/dicomweb',
+        wadoUriRoot: 'https://d14fa38qiwhyfd.cloudfront.net/dicomweb',
+        qidoRoot: 'https://d14fa38qiwhyfd.cloudfront.net/dicomweb',
+        wadoRoot: 'https://d14fa38qiwhyfd.cloudfront.net/dicomweb',
         qidoSupportsIncludeField: true,
         imageRendering: 'wadors',
         enableStudyLazyLoad: true,

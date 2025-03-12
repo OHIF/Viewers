@@ -97,7 +97,7 @@ function _getDisplaySetsFromSeries(
   };
 
   // Does not get the referenced volumeId during parametric displaySet creation because the
-  // referenced displaySet is still not avaialble  (getDisplaySetByUID returns `undefined`).
+  // referenced displaySet is still not available  (getDisplaySetByUID returns `undefined`).
   displaySet.getReferencedVolumeId = () => {
     if (displaySet.referencedVolumeId) {
       return displaySet.referencedVolumeId;
@@ -119,6 +119,22 @@ function _getDisplaySetsFromSeries(
   return [displaySet];
 }
 
+const getRangeFromPixelData = (pixelData: Float32Array) => {
+  let lowest = pixelData[0];
+  let highest = pixelData[0];
+
+  for (let i = 1; i < pixelData.length; i++) {
+    if (pixelData[i] < lowest) {
+      lowest = pixelData[i];
+    }
+    if (pixelData[i] > highest) {
+      highest = pixelData[i];
+    }
+  }
+
+  return [lowest, highest];
+};
+
 async function _load(
   displaySet,
   servicesManager: AppTypes.ServicesManager,
@@ -132,11 +148,11 @@ async function _load(
     return volumeLoadObject.promise;
   }
 
-  displaySet.loadStatus.loading = true;
+  displaySet.loading = true;
+  displaySet.isLoaded = false;
 
   // We don't want to fire multiple loads, so we'll wait for the first to finish
   // and also return the same promise to any other callers.
-  // loadPromises[SOPInstanceUID] = new Promise(async (resolve, reject) => {
   const promise = _loadParametricMap({
     extensionManager,
     displaySet,
@@ -149,18 +165,26 @@ async function _load(
 
   promise
     .then(() => {
-      displaySet.loadStatus.loading = false;
-      displaySet.loadStatus.loaded = true;
+      displaySet.loading = false;
+      displaySet.isLoaded = true;
+      // Broadcast that loading is complete
+      servicesManager.services.segmentationService._broadcastEvent(
+        servicesManager.services.segmentationService.EVENTS.SEGMENTATION_LOADING_COMPLETE,
+        {
+          pmapDisplaySet: displaySet,
+        }
+      );
     })
     .catch(err => {
-      displaySet.loadStatus.loading = false;
+      displaySet.loading = false;
+      displaySet.isLoaded = false;
       throw err;
     });
 
   return promise;
 }
 
-async function _loadParametricMap({ extensionManager, displaySet, headers }: withAppTypes) {
+async function _loadParametricMap({ displaySet, headers }: withAppTypes) {
   const arrayBuffer = await dicomLoaderService.findDicomDataPromise(displaySet, null, headers);
   const referencedVolumeId = displaySet.getReferencedVolumeId();
   const cachedReferencedVolume = cache.getVolume(referencedVolumeId);
@@ -189,9 +213,12 @@ async function _loadParametricMap({ extensionManager, displaySet, headers }: wit
     },
   });
 
-  derivedVolume.getScalarData().set(pixelData);
-
-  const range = derivedVolume.imageData.getPointData().getScalars().getRange();
+  const newPixelData = new TypedArrayConstructor(pixelData.length);
+  for (let i = 0; i < pixelData.length; i++) {
+    newPixelData[i] = pixelData[i] * 100;
+  }
+  derivedVolume.voxelManager.setCompleteScalarDataArray(newPixelData);
+  const range = getRangeFromPixelData(newPixelData);
   const windowLevel = csUtils.windowLevel.toWindowLevel(range[0], range[1]);
 
   derivedVolume.metadata.voiLut = [windowLevel];

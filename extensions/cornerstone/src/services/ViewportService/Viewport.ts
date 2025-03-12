@@ -5,7 +5,6 @@ import {
   VolumeViewport,
   utilities,
 } from '@cornerstonejs/core';
-import { Types as CoreTypes } from '@ohif/core';
 import { StackViewportData, VolumeViewportData } from '../../types/CornerstoneCacheService';
 import getCornerstoneBlendMode from '../../utils/getCornerstoneBlendMode';
 import getCornerstoneOrientation from '../../utils/getCornerstoneOrientation';
@@ -25,12 +24,15 @@ export type ViewportOptions = {
   toolGroupId: string;
   viewportId: string;
   // Presentation ID to store/load presentation state from
-  presentationIds?: CoreTypes.PresentationIds;
+  presentationIds?: AppTypes.PresentationIds;
   orientation?: Enums.OrientationAxis;
   background?: Types.Point3;
   displayArea?: Types.DisplayArea;
   syncGroups?: SyncGroup[];
   initialImageOptions?: InitialImageOptions;
+  rotation?: number;
+  flipHorizontal?: boolean;
+  viewReference?: Types.ViewReference;
   customViewportProps?: Record<string, unknown>;
   /*
    * Allows drag and drop of display sets not matching viewport options, but
@@ -43,12 +45,14 @@ export type PublicViewportOptions = {
   id?: string;
   viewportType?: string;
   toolGroupId?: string;
-  presentationIds?: CoreTypes.PresentationIds;
+  presentationIds?: string[];
   viewportId?: string;
   orientation?: Enums.OrientationAxis;
   background?: Types.Point3;
   displayArea?: Types.DisplayArea;
   syncGroups?: SyncGroup[];
+  rotation?: number;
+  flipHorizontal?: boolean;
   initialImageOptions?: InitialImageOptions;
   customViewportProps?: Record<string, unknown>;
   allowUnmatchedView?: boolean;
@@ -130,6 +134,7 @@ class ViewportInfo {
   private displaySetOptions: Array<DisplaySetOptions>;
   private viewportData: StackViewportData | VolumeViewportData;
   private renderingEngineId: string;
+  private viewReference: Types.ViewReference;
 
   constructor(viewportId: string) {
     this.viewportId = viewportId;
@@ -201,6 +206,10 @@ class ViewportInfo {
     return this.viewportId;
   }
 
+  public getViewReference(): Types.ViewReference {
+    return this.viewportOptions?.viewReference;
+  }
+
   public setPublicDisplaySetOptions(
     publicDisplaySetOptions: PublicDisplaySetOptions[] | DisplaySetSelector[]
   ): Array<DisplaySetOptions> {
@@ -232,21 +241,22 @@ class ViewportInfo {
     return viewportData.data.displaySetInstanceUID === displaySetInstanceUID;
   }
 
-  public setPublicViewportOptions(viewportOptionsEntry: PublicViewportOptions): ViewportOptions {
-    let viewportType = viewportOptionsEntry.viewportType;
-    const { toolGroupId = DEFAULT_TOOLGROUP_ID, presentationIds } = viewportOptionsEntry;
-    let orientation;
+  /**
+   *
+   * @param viewportOptionsEntry - the base values for the options
+   * @param viewportTypeDisplaySet  - allows overriding the viewport type
+   */
+  public setPublicViewportOptions(
+    viewportOptionsEntry: PublicViewportOptions,
+    viewportTypeDisplaySet?: string
+  ): ViewportOptions {
+    const ohifViewportType = viewportTypeDisplaySet || viewportOptionsEntry.viewportType || STACK;
+    const { presentationIds } = viewportOptionsEntry;
+    let { toolGroupId = DEFAULT_TOOLGROUP_ID } = viewportOptionsEntry;
+    // Just assign the orientation for any viewport type and let the viewport deal with it
+    const orientation = getCornerstoneOrientation(viewportOptionsEntry.orientation);
 
-    if (!viewportType) {
-      viewportType = getCornerstoneViewportType(STACK);
-    } else {
-      viewportType = getCornerstoneViewportType(viewportOptionsEntry.viewportType);
-    }
-
-    // map SAGITTAL, AXIAL, CORONAL orientation to be used by cornerstone
-    if (viewportOptionsEntry.viewportType?.toLowerCase() !== STACK) {
-      orientation = getCornerstoneOrientation(viewportOptionsEntry.orientation);
-    }
+    const viewportType = getCornerstoneViewportType(ohifViewportType);
 
     if (!toolGroupId) {
       toolGroupId = DEFAULT_TOOLGROUP_ID;
@@ -272,7 +282,7 @@ class ViewportInfo {
     return this.viewportOptions;
   }
 
-  public getPresentationIds(): CoreTypes.PresentationIds {
+  public getPresentationIds(): AppTypes.PresentationIds | null {
     const { presentationIds } = this.viewportOptions;
     return presentationIds;
   }

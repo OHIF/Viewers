@@ -86,7 +86,10 @@ const screenShotPaths = {
     crosshairsSlabThickness: 'crosshairsSlabThickness.png',
     crosshairsResetToolbar: 'crosshairsResetToolbar.png',
     crosshairsNewDisplayset: 'crosshairsNewDisplayset.png',
-  }
+  },
+  tmtvRendering: {
+    tmtvDisplayedCorrectly: 'tmtvDisplayedCorrectly.png',
+  },
 };
 
 export { screenShotPaths };

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="28px" height="28px" viewBox="0 0 28 28" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>tool-length</title>
+    <g id="tool-length" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <rect id="Rectangle" x="0" y="0" width="28" height="28"></rect>
+        <g id="ruler" transform="translate(2, 2.5)" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+            <rect id="Rectangle" stroke-width="1.5" transform="translate(11.5003, 11.5005) rotate(-45.001) translate(-11.5003, -11.5005)" x="-0.874220029" y="7.6109894" width="24.749" height="7.779" rx="1"></rect>
+            <line x1="5.11737261" y1="12.3844231" x2="7.13237261" y2="14.3684231" id="Path"></line>
+            <line x1="7.68571234" y1="9.81508336" x2="10.1857123" y2="12.3150834" id="Path"></line>
+            <line x1="10.1225521" y1="7.37924362" x2="11.8725521" y2="9.12924362" id="Path"></line>
+            <line x1="12.5583918" y1="4.94240389" x2="15.0583918" y2="7.44240389" id="Path"></line>
+            <line x1="15.1127315" y1="2.38806416" x2="17.1277315" y2="4.37406416" id="Path"></line>
+            <line x1="2.56403288" y1="14.9377628" x2="5.06403288" y2="17.4377628" id="Path"></line>
+        </g>
+    </g>
+</svg>

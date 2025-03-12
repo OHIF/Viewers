@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="12.0833333px" height="12.0833333px" viewBox="0 0 12.0833333 12.0833333" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>icon-add</title>
+    <g id="Artboards" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Segmentation---assets" transform="translate(-78.875, -64.375)">
+            <g id="icon-add" transform="translate(75, 60)">
+                <rect id="Rectangle" x="0" y="0" width="20" height="20"></rect>
+                <g id="Group-18" transform="translate(4.5, 5)" stroke="#348CFD" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.25">
+                    <line x1="5.41666667" y1="0" x2="5.41666667" y2="10.8333333" id="Path"></line>
+                    <line x1="10.8333333" y1="5.41666667" x2="0" y2="5.41666667" id="Path"></line>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

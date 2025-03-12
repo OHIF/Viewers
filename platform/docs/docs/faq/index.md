@@ -3,17 +3,6 @@ id: index
 ---
 
 
-- [General FAQ](../faq.md#general-faq)
-  - [How do I report a bug?](../faq.md#how-do-i-report-a-bug)
-  - [How can I request a new feature?](../faq.md#how-can-i-request-a-new-feature)
-  - [Who should I contact about Academic Collaborations?](../faq.md#who-should-i-contact-about-academic-collaborations)
-  - [Does OHIF offer support?](../faq.md#does-ohif-offer-support)
-  - [Does The OHIF Viewer have 510(k) Clearance from the U.S. F.D.A or CE Marking from the European Commission?](../faq.md#does-the-ohif-viewer-have-510k-clearance-from-the-us-fda-or-ce-marking-from-the-european-commission)
-  - [Is there a DICOM Conformance Statement for the OHIF Viewer?](../faq.md#is-there-a-dicom-conformance-statement-for-the-ohif-viewer)
-  - [Is The OHIF Viewer HIPAA Compliant?](../faq.md#is-the-ohif-viewer-hipaa-compliant)
-  - [Could you provide me with a particular study from the OHIF Viewer Demo?](../faq.md#could-you-provide-me-with-a-particular-study-from-the-ohif-viewer-demo)
-
-
 # General FAQ
 
 
@@ -77,14 +66,14 @@ You can check out the studies that we have put in this [Dropbox link](https://ww
 <!--
   Links
   -->
-[general]: ../faq.md#general
-[technical]: ../faq.md#technical
-[report-bug]: ../faq.md#how-do-i-report-a-bug
-[new-feature]: ../faq.md#how-can-i-request-a-new-feature
-[commercial-support]: ../faq.md#does-ohif-offer-commercial-support
-[academic]: ../faq.md#who-should-i-contact-about-academic-collaborations
-[fda-clearance]: ../faq.md#does-the-ohif-viewer-have-510k-clearance-from-the-us-fda-or-ce-marking-from-the-european-commission
-[hipaa]: ../faq.md#is-the-ohif-viewer-hipaa-compliant
+[general]: #general
+[technical]: #technicalß˚
+[report-bug]: #how-do-i-report-a-bug
+[new-feature]: #how-can-i-request-a-new-feature
+[commercial-support]: #does-ohif-offer-commercial-support
+[academic]: #who-should-i-contact-about-academic-collaborations
+[fda-clearance]: #does-the-ohif-viewer-have-510k-clearance-from-the-us-fda-or-ce-marking-from-the-european-commission
+[hipaa]: #is-the-ohif-viewer-hipaa-compliant
 [501k-clearance]: https://www.fda.gov/MedicalDevices/DeviceRegulationandGuidance/HowtoMarketYourDevice/PremarketSubmissions/PremarketNotification510k/
 [ce-marking]: https://ec.europa.eu/growth/single-market/ce-marking_en
 [hipaa-def]: https://en.wikipedia.org/wiki/Health_Insurance_Portability_and_Accountability_Act

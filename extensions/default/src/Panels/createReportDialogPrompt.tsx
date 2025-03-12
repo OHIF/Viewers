@@ -1,11 +1,7 @@
 import React from 'react';
 
 import { ButtonEnums, Dialog, Input, Select } from '@ohif/ui';
-
-export const CREATE_REPORT_DIALOG_RESPONSE = {
-  CANCEL: 0,
-  CREATE_REPORT: 1,
-};
+import PROMPT_RESPONSES from '../utils/_shared/PROMPT_RESPONSES';
 
 export default function CreateReportDialogPrompt(uiDialogService, { extensionManager }) {
   return new Promise(function (resolve, reject) {
@@ -16,7 +12,7 @@ export default function CreateReportDialogPrompt(uiDialogService, { extensionMan
       uiDialogService.dismiss({ id: dialogId });
       // Notify of cancel action
       resolve({
-        action: CREATE_REPORT_DIALOG_RESPONSE.CANCEL,
+        action: PROMPT_RESPONSES.CANCEL,
         value: undefined,
         dataSourceName: undefined,
       });
@@ -32,14 +28,14 @@ export default function CreateReportDialogPrompt(uiDialogService, { extensionMan
       switch (action.id) {
         case 'save':
           resolve({
-            action: CREATE_REPORT_DIALOG_RESPONSE.CREATE_REPORT,
+            action: PROMPT_RESPONSES.CREATE_REPORT,
             value: value.label,
             dataSourceName: value.dataSourceName,
           });
           break;
         case 'cancel':
           resolve({
-            action: CREATE_REPORT_DIALOG_RESPONSE.CANCEL,
+            action: PROMPT_RESPONSES.CANCEL,
             value: undefined,
             dataSourceName: undefined,
           });
@@ -90,7 +86,7 @@ export default function CreateReportDialogPrompt(uiDialogService, { extensionMan
             if (event.key === 'Enter') {
               uiDialogService.dismiss({ id: dialogId });
               resolve({
-                action: CREATE_REPORT_DIALOG_RESPONSE.CREATE_REPORT,
+                action: PROMPT_RESPONSES.CREATE_REPORT,
                 value: value.label,
               });
             }
@@ -102,7 +98,7 @@ export default function CreateReportDialogPrompt(uiDialogService, { extensionMan
                   <label className="text-[14px] leading-[1.2] text-white">Data Source</label>
                   <Select
                     closeMenuOnSelect={true}
-                    className="border-primary-main  mt-2 bg-black"
+                    className="border-primary-main mt-2 bg-black"
                     options={dataSourcesOpts}
                     placeholder={
                       dataSourcesOpts.find(option => option.value === value.dataSourceName)

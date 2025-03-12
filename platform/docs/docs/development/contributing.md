@@ -35,61 +35,6 @@ package outside of the monorepo is most common with extension development. Let's
 demonstrate how to accomplish this with two commonly forked extension
 dependencies:
 
-### `cornerstone-tools`
-
-On your local file system:
-
-```bash title="/my-projects/"
-├── cornerstonejs/cornerstone-tools
-└── ohif/viewers
-```
-
-- Open a terminal/shell
-- Navigate to `cornerstonejs/cornerstone-tools`
-  - `yarn install`
-  - [`yarn link`](https://yarnpkg.com/en/docs/cli/link)
-  - `yarn run dev`
-
-* Open a new terminal/shell
-* Navigate to `ohif/viewers` (the root of ohif project)
-  - `yarn install`
-  - [`yarn link cornerstone-tools`](https://yarnpkg.com/en/docs/cli/link)
-  - `yarn run dev`
-
-As you make changed to `cornerstone-tools`, and it's output is rebuilt, you
-should see the following behavior:
-
-![tools](..//assets/img/cornerstone-tools-link.gif)
-
-If you wish to stop using your local package, run the following commands in the
-`ohif/viewers` repository root:
-
-- `yarn unlink cornerstone-tools`
-- `yarn install --force`
-
-<!--
-### `react-vtkjs-viewport`
-
-On your local file system:
-
-```bash
-# code/my-projects/
-.
-├── ohif/react-vtkjs-viewport
-└── ohif/viewers
-```
-
-- Open a terminal/shell
-- Navigate to `ohif/react-vtkjs-viewport`
-  - `yarn install`
-  - [`yarn link`](https://yarnpkg.com/en/docs/cli/link)
-  - `yarn run start`
-- Open a new terminal/shell
-- Navigate to `ohif/viewers`.
-  - `yarn install`
-  - [`yarn link react-vtkjs-viewport`](https://yarnpkg.com/en/docs/cli/link)
-  - `yarn run dev` -->
-
 #### Other linkage notes
 
 We're still working out some of the kinks with local package development as

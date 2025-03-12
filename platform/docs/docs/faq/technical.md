@@ -2,14 +2,6 @@
 
 
 
-## Why do I keep seeing a Cross Origin Isolation warning
-If you encounter a warning while running OHIF indicating that your application is not cross-origin isolated, it implies that volume rendering, such as MPR, will not function properly since they depend on Shared Array Buffers. To resolve this issue, we recommend referring to our comprehensive guide on Cross Origin Isolation available at [our dedicated cors page](../deployment/cors.md).
-
-## What if my setup does not support the Shared Array Buffers API?
-You can simply disable that by adding the `useSharedArrayBuffer: 'FALSE'` (notice the string FALSE), and the volumes will only use a regular
-array buffer which is a bit slower but will work on all browsers.
-
-
 ## Viewer opens but does not show any thumbnails
 
 Thumbnails may not appear in your DICOMWeb application for various reasons. This guide focuses on one primary scenario, which is you are using
@@ -274,6 +266,10 @@ which then it will look like
 ![alt text](faq-measure-5.png)
 
 
+:::info
+There is also dedicated example for this in the [cornerstone3D examples](https://www.cornerstonejs.org/live-examples/dynamicallyaddannotations).
+:::
+
 
 ## How do I sort the series in the study panel by a specific value
 
@@ -347,3 +343,19 @@ customizationService.addModeCustomizations([
 :::note
 Notice the arrays and objects, the values are arrays
 :::
+
+
+## How do I change the cine auto mount behavior
+
+You can change the cine auto mount behavior by adding the `autoCineModalities` mode customization, the value is an array of modalities that should be mounted with cine.
+
+By default the viewer will mount with cine enabled for `OT` and `US` modalities.
+
+```js
+customizationService.addModeCustomizations([
+  {
+    id: 'autoCineModalities',
+    modalities: ['OT', 'US'],
+  },
+]);
+```

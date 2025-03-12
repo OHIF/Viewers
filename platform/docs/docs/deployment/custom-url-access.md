@@ -35,22 +35,13 @@ PUBLIC_URL=/my-awesome-viewer/ APP_CONFIG=config/default.js yarn build
 ```
 
 We can use the `npx serve` to serve the build folder. There are two things you need to consider however,
-1. You need to change the public/serve.json file to reflect the new routerBasename in the destination (see the example below)
+1. You need to change the `public/serve.json` file to reflect the new routerBasename in the destination (see the example below)
 
 
 ```json
 // final serve.json
 {
   "rewrites": [{ "source": "*", "destination": "my-awesome-viewer/index.html" }],
-  "headers": [
-    {
-      "source": "**/*",
-      "headers": [
-        { "key": "Cross-Origin-Embedder-Policy", "value": "require-corp" },
-        { "key": "Cross-Origin-Opener-Policy", "value": "same-origin" }
-      ]
-    }
-  ]
 }
 ```
 

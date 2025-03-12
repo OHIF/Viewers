@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="28px" height="28px" viewBox="0 0 28 28" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>tool-freehand-roi</title>
+    <g id="tool-freehand-roi" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <rect id="Rectangle" x="0" y="0" width="28" height="28"></rect>
+        <g id="Group-2" transform="translate(3, 2)" stroke="currentColor" stroke-width="1.5">
+            <path d="M0,0 C8,3 5,8.5 2,15.5 C-1,22.5 3.5,23 5,23 C6.08963707,23.0518834 7.15942037,22.6952889 8,22" id="Path" stroke-linecap="round" stroke-linejoin="round"></path>
+            <path d="M21.38,12.619 L13.75,20.25 L10,21 L10.75,17.25 L18.38,9.619 C19.2062949,8.79296781 20.5457051,8.79296781 21.372,9.619 L21.38,9.628 C21.7771113,10.0243763 22.000268,10.5624193 22.000268,11.1235 C22.000268,11.6845807 21.7771113,12.2226237 21.38,12.619 L21.38,12.619 Z" id="Path" stroke-linecap="round" stroke-linejoin="round"></path>
+            <path d="M10.654274,17.2961006 C11.6738332,18.1907082 12.6933924,19.0853157 13.7129517,19.9799232" id="Path-4"></path>
+        </g>
+    </g>
+</svg>

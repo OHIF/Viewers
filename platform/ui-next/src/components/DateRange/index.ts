@@ -1,3 +1,3 @@
-import { DatePickerWithRange } from "./DateRange";
+import { DatePickerWithRange } from './DateRange';
 
-export default DatePickerWithRange;
+export { DatePickerWithRange };

@@ -4,7 +4,16 @@ import ServicesManager from '../ServicesManager';
 import ViewportGridService from '../ViewportGridService';
 import { DisplaySet } from '../../types';
 
-const IMAGE_REQUEST_TYPE = 'prefetch';
+enum RequestType {
+  /** Highest priority for loading*/
+  Interaction = 'interaction',
+  /** Second highest priority for loading*/
+  Thumbnail = 'thumbnail',
+  /** Third highest priority for loading, usually used for image loading in the background*/
+  Prefetch = 'prefetch',
+  /** Lower priority, often used for background computations in the worker */
+  Compute = 'compute',
+}
 
 export const EVENTS = {
   SERVICE_STARTED: 'event::studyPrefetcherService:started',
@@ -67,7 +76,7 @@ interface ICache {
 }
 
 interface IImageLoadPoolManager {
-  addRequest (
+  addRequest(
     requestFn: () => Promise<any>,
     type: string,
     additionalDetails: Record<string, unknown>,
@@ -81,7 +90,7 @@ interface IImageLoader {
 }
 
 type EventSubscription = {
-  unsubscribe: () => void
+  unsubscribe: () => void;
 };
 
 interface IImageLoadEventsManager {
@@ -122,7 +131,7 @@ class StudyPrefetcherService extends PubSubService {
   };
 
   // Properties set by Cornerstone extension (initStudyPrefetcherService)
-  public requestType: string = IMAGE_REQUEST_TYPE;
+  public requestType: string = RequestType.Prefetch;
   public cache: ICache;
   public imageLoadPoolManager: IImageLoadPoolManager;
   public imageLoader: IImageLoader;
@@ -181,22 +190,22 @@ class StudyPrefetcherService extends PubSubService {
       if (!this._inflightRequests.get(imageId)) {
         this._sendNextRequests();
       }
-    }
+    };
 
-    const fnImageLoadedEventListener = (evt) => {
+    const fnImageLoadedEventListener = evt => {
       const { image } = evt.detail;
       const { imageId } = image;
 
       this._moveImageIdToLoadedSet(imageId);
       fnOnImageLoadCompleted(imageId);
-    }
+    };
 
-    const fnImageLoadFailedEventListener = (evt) => {
+    const fnImageLoadFailedEventListener = evt => {
       const { imageId } = evt.detail;
 
       this._moveImageIdToFailedSet(imageId);
       fnOnImageLoadCompleted(imageId);
-    }
+    };
 
     return this.imageLoadEventsManager.addEventListeners(
       fnImageLoadedEventListener,
@@ -246,7 +255,7 @@ class StudyPrefetcherService extends PubSubService {
       viewportGridActiveViewportIdSubscription,
       viewportGridLayoutChangedSubscription,
       viewportGridStateChangedSubscription,
-      viewportGridViewportreadySubscription
+      viewportGridViewportreadySubscription,
     ];
   }
 
@@ -263,15 +272,13 @@ class StudyPrefetcherService extends PubSubService {
     this._subscriptions = [];
   }
 
-  private _syncWithActiveViewport(
-    {
-      activeViewportId,
-      forceRestart
-    }:
-    {
-      activeViewportId?: string,
-      forceRestart?: boolean
-    } = {}) {
+  private _syncWithActiveViewport({
+    activeViewportId,
+    forceRestart,
+  }: {
+    activeViewportId?: string;
+    forceRestart?: boolean;
+  } = {}) {
     const { viewportGridService } = this._servicesManager.services;
     const viewportGridServiceState = viewportGridService.getState();
     const { viewports } = viewportGridServiceState;
@@ -311,8 +318,13 @@ class StudyPrefetcherService extends PubSubService {
   private _areActiveDisplaySetsLoaded() {
     const { _activeDisplaySetsInstanceUIDs: displaySetsInstanceUIDs } = this;
 
-    return displaySetsInstanceUIDs.length && displaySetsInstanceUIDs.every(displaySetsInstanceUID =>
-      this._displaySetLoadingStates.get(displaySetsInstanceUID).loadingProgress >= 1);
+    return (
+      displaySetsInstanceUIDs.length &&
+      displaySetsInstanceUIDs.every(
+        displaySetsInstanceUID =>
+          this._displaySetLoadingStates.get(displaySetsInstanceUID).loadingProgress >= 1
+      )
+    );
   }
 
   private _getClosestDisplaySets(displaySets: DisplaySet[], activeDisplaySetIndex: number) {
@@ -363,7 +375,9 @@ class StudyPrefetcherService extends PubSubService {
     const { displaySetsCount } = this.config;
     const activeDisplaySetsInstanceUIDs = this._activeDisplaySetsInstanceUIDs;
     const [activeDisplaySetUID] = activeDisplaySetsInstanceUIDs;
-    const activeDisplaySetIndex = displaySets.findIndex(ds => ds.displaySetInstanceUID === activeDisplaySetUID);
+    const activeDisplaySetIndex = displaySets.findIndex(
+      ds => ds.displaySetInstanceUID === activeDisplaySetUID
+    );
     const getDisplaySetsFunctionsMap = {
       [StudyPrefetchOrder.closest]: this._getClosestDisplaySets,
       [StudyPrefetchOrder.downward]: this._getDownwardDisplaySets,
@@ -381,23 +395,21 @@ class StudyPrefetcherService extends PubSubService {
 
     // Remove any active displaySet that may still be in the activeDisplaySetsInstanceUIDs.
     // That may happen when activeDisplaySetsInstanceUIDs has more than one element.
-    return fnGetDisplaySets.call(this, displaySets, activeDisplaySetIndex).filter(
-      ds => !uidsSet.has(ds.displaySetInstanceUID)
-    ).slice(0, displaySetsCount);
+    return fnGetDisplaySets
+      .call(this, displaySets, activeDisplaySetIndex)
+      .filter(ds => !uidsSet.has(ds.displaySetInstanceUID))
+      .slice(0, displaySetsCount);
   }
 
   private _getDisplaySets() {
     const { displaySetService } = this._servicesManager.services;
     const displaySets = [...displaySetService.getActiveDisplaySets()];
-    let displaySetsToPrefetch = this._getSortedDisplaySetsToPrefetch(displaySets);
+    const displaySetsToPrefetch = this._getSortedDisplaySetsToPrefetch(displaySets);
 
     return { displaySets, displaySetsToPrefetch };
   }
 
-  private _updateImageIdsDisplaySetMap(
-    displaySetInstanceUID: string,
-    imageIds: string[]
-  ): void {
+  private _updateImageIdsDisplaySetMap(displaySetInstanceUID: string, imageIds: string[]): void {
     for (const imageId of imageIds) {
       let displaySetsInstanceUIDsMap = this._imageIdsToDisplaySetsMap.get(imageId);
 
@@ -451,12 +463,12 @@ class StudyPrefetcherService extends PubSubService {
       pendingImageIds,
       loadedImageIds,
       failedImageIds: new Set(),
-      loadingProgress: 0
+      loadingProgress: 0,
     };
 
     this._updateDisplaySetLoadingProgress(displaySetLoadingState);
     this._displaySetLoadingStates.set(displaySetInstanceUID, displaySetLoadingState);
-    this._updateImageIdsDisplaySetMap(displaySetInstanceUID, imageIds)
+    this._updateImageIdsDisplaySetMap(displaySetInstanceUID, imageIds);
 
     // Notify the UI that something is already loaded (eg: update StudyBrowser)
     if (loadedImageIds.size) {
@@ -667,7 +679,7 @@ class StudyPrefetcherService extends PubSubService {
     this._displaySetLoadingStates.clear();
     this._imageIdsToDisplaySetsMap.clear();
     this._inflightRequests.clear();
-    this.imageLoadPoolManager.clearRequestStack(IMAGE_REQUEST_TYPE);
+    this.imageLoadPoolManager.clearRequestStack(this.requestType);
 
     this._broadcastEvent(this.EVENTS.SERVICE_STOPPED, {});
   }

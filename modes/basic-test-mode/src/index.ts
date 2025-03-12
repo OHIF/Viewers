@@ -7,11 +7,13 @@ import i18n from 'i18next';
 
 // Allow this mode by excluding non-imaging modalities such as SR, SEG
 // Also, SM is not a simple imaging modalities, so exclude it.
-const NON_IMAGE_MODALITIES = ['SM', 'ECG', 'SR', 'SEG'];
+const NON_IMAGE_MODALITIES = ['ECG', 'SR', 'SEG', 'RTSTRUCT'];
 
 const ohif = {
   layout: '@ohif/extension-default.layoutTemplateModule.viewerLayout',
   sopClassHandler: '@ohif/extension-default.sopClassHandlerModule.stack',
+  wsiSopClassHandler:
+    '@ohif/extension-cornerstone.sopClassHandlerModule.DicomMicroscopySopClassHandler',
   thumbnailList: '@ohif/extension-default.panelModule.seriesList',
   measurements: '@ohif/extension-default.panelModule.measurements',
 };
@@ -40,7 +42,10 @@ const dicompdf = {
 const dicomSeg = {
   sopClassHandler: '@ohif/extension-cornerstone-dicom-seg.sopClassHandlerModule.dicom-seg',
   viewport: '@ohif/extension-cornerstone-dicom-seg.viewportModule.dicom-seg',
-  panel: '@ohif/extension-cornerstone-dicom-seg.panelModule.panelSegmentation',
+};
+
+const cornerstone = {
+  panel: '@ohif/extension-cornerstone.panelModule.panelSegmentation',
 };
 
 const dicomPmap = {
@@ -145,12 +150,16 @@ function modeFactory() {
               // leftPanels: [ohif.thumbnailList],
               // rightPanels: [dicomSeg.panel, ohif.measurements],
               leftPanels: [tracked.thumbnailList],
-              rightPanels: [dicomSeg.panel, tracked.measurements],
+              rightPanels: [cornerstone.panel, tracked.measurements],
               // rightPanelClosed: true, // optional prop to start with collapse panels
               viewports: [
                 {
                   namespace: tracked.viewport,
-                  displaySetsToDisplay: [ohif.sopClassHandler],
+                  displaySetsToDisplay: [
+                    ohif.sopClassHandler,
+                    dicomvideo.sopClassHandler,
+                    ohif.wsiSopClassHandler,
+                  ],
                 },
                 {
                   namespace: dicomsr.viewport,
@@ -188,6 +197,7 @@ function modeFactory() {
     sopClassHandlers: [
       dicomvideo.sopClassHandler,
       dicomSeg.sopClassHandler,
+      ohif.wsiSopClassHandler,
       ohif.sopClassHandler,
       dicompdf.sopClassHandler,
       dicomsr.sopClassHandler,

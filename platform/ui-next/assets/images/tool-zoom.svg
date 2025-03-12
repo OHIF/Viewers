@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="28px" height="28px" viewBox="0 0 28 28" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>tool-zoom</title>
+    <g id="tool-zoom" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <rect id="Rectangle" x="0" y="0" width="28" height="28"></rect>
+        <ellipse id="Oval-1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" cx="11.5581395" cy="12.0909091" rx="7.81395349" ry="7.63636364"></ellipse>
+        <line x1="17.4186047" y1="17.8181818" x2="23.2790698" y2="23.5454545" id="Line" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></line>
+    </g>
+</svg>

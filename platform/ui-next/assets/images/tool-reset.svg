@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="28px" height="28px" viewBox="0 0 28 28" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>tool-reset</title>
+    <g id="tool-reset" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <rect id="Rectangle" x="0" y="0" width="28" height="28"></rect>
+        <polyline id="Path" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" points="15.7879373 10.9230769 22.7110142 10.9230769 22.7110142 4"></polyline>
+        <path d="M22.1848604,10.9230769 C20.7833124,6.95640473 16.8769835,4.43920288 12.6856477,4.80187309 C8.49431195,5.16454329 5.07842549,8.3153258 4.37906817,12.4637863 C3.67971085,16.6122468 5.8738281,20.708777 9.71461129,22.4255209 C13.5553945,24.1422648 18.0710813,23.0448664 20.6956296,19.7569231" id="Path" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+    </g>
+</svg>

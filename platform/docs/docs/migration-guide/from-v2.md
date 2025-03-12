@@ -209,8 +209,8 @@ Remember that there is no strict rule for deciding between modes and extensions.
 In OHIF v2 a study was loaded and mounted on `/viewer/:studyInstanceUID` route. In OHIF v3
 we have reworked the route registration to enable more sophisticated routing. Now, Modes are tied to specific routes in the viewer, and multiple modes/routes can be present within a single application, making "routes" configuration the most important part of mode configuration.
 
-- Routes with a dataSourceName: ${mode.id}/${dataSourceName}
-- Routes without a dataSourceName: ${mode.id} which uses the default dataSourceName
+- Routes with a dataSourceName: `{mode.id}/{dataSourceName}`
+- Routes without a dataSourceName: `{mode.id}` which uses the default dataSourceName
 
 This makes a mode flexible enough to be able to connect to multiple datasources
 without rebuild of the app for use cases such as reading from one PACS and

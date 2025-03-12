@@ -213,7 +213,13 @@ const toolbarButtons: Button[] = [
       icon: 'tool-capture',
       label: 'Capture',
       commands: 'showDownloadViewportModal',
-      evaluate: 'evaluate.action',
+      evaluate: [
+        'evaluate.action',
+        {
+          name: 'evaluate.viewport.supported',
+          unsupportedViewportTypes: ['video', 'wholeSlide'],
+        },
+      ],
     },
   },
   {

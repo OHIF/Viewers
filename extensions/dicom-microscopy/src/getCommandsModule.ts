@@ -1,6 +1,6 @@
 import { CommandsManager, ExtensionManager } from '@ohif/core';
+import { callInputDialog } from '@ohif/extension-default';
 import styles from './utils/styles';
-import callInputDialog from './utils/callInputDialog';
 
 export default function getCommandsModule({
   servicesManager,
@@ -26,7 +26,6 @@ export default function getCommandsModule({
 
     setLabel: ({ uid }) => {
       const roiAnnotation = microscopyService.getAnnotation(uid);
-
       callInputDialog({
         uiDialogService,
         defaultValue: '',

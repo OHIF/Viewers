@@ -1,8 +1,8 @@
 import SUPPORTED_TOOLS from './constants/supportedTools';
-import getSOPInstanceAttributes from './utils/getSOPInstanceAttributes';
+import { getSOPInstanceAttributes } from '@ohif/extension-cornerstone';
 
 const CircleROIStartEndThreshold = {
-  toAnnotation: (measurement, definition) => { },
+  toAnnotation: (measurement, definition) => {},
 
   /**
    * Maps cornerstone annotation event data to measurement service format.
