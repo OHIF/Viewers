@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Button } from '../../components/Button/Button';
 import {
   DropdownMenu,
@@ -62,34 +62,66 @@ interface DataRowProps {
   details?: { primary: string[]; secondary: string[] };
   //
   isSelected?: boolean;
-  onSelect?: () => void;
+  onSelect?: (e) => void;
   //
   isVisible: boolean;
+  onToggleVisibility: (e) => void;
   //
   isLocked: boolean;
+  onToggleLocked: (e) => void;
   //
   title: string;
+  onRename: (e) => void;
+  //
+  onDelete: (e) => void;
   //
   colorHex?: string;
-  onAction?: (e, command) => void;
-  // Expand the row to show details
-  isExpanded?: boolean;
+  onColor: (e) => void;
 }
 
-const DataRow: React.FC<DataRowProps> = ({
+export const DataRow: React.FC<DataRowProps> = ({
   number,
   title,
   colorHex,
   details,
+  onSelect,
   isLocked,
-  isExpanded,
-  onAction,
+  onToggleVisibility,
+  onToggleLocked,
+  onRename,
+  onDelete,
+  onColor,
   isSelected = false,
   isVisible = true,
   disableEditing = false,
 }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const isTitleLong = title?.length > 25;
+  const rowRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (isSelected && rowRef.current) {
+      rowRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  }, [isSelected]);
+
+  const handleAction = (action: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    switch (action) {
+      case 'Rename':
+        onRename(e);
+        break;
+      case 'Lock':
+        onToggleLocked(e);
+        break;
+      case 'Delete':
+        onDelete(e);
+        break;
+      case 'Color':
+        onColor(e);
+        break;
+    }
+  };
 
   const decodeHTML = (html: string) => {
     const txt = document.createElement('textarea');
@@ -128,7 +160,9 @@ const DataRow: React.FC<DataRowProps> = ({
         <TooltipTrigger asChild>
           <div className="cursor-help">
             <div className="flex flex-col space-y-1">
-              {visibleLines.map(line => renderDetailText(line, line.startsWith('  ') ? 1 : 0))}
+              {visibleLines.map((line, lineIndex) =>
+                renderDetailText(line, line.startsWith('  ') ? 1 : 0)
+              )}
             </div>
             {hiddenLines.length > 0 && (
               <div className="text-muted-foreground mt-1 flex items-center text-sm">
@@ -144,7 +178,9 @@ const DataRow: React.FC<DataRowProps> = ({
           className="max-w-md"
         >
           <div className="text-secondary-foreground flex flex-col space-y-1 text-sm leading-normal">
-            {details.map(line => renderDetailText(line, line.startsWith('  ') ? 1 : 0))}
+            {details.map((line, lineIndex) =>
+              renderDetailText(line, line.startsWith('  ') ? 1 : 0)
+            )}
           </div>
         </TooltipContent>
       </Tooltip>
@@ -152,12 +188,15 @@ const DataRow: React.FC<DataRowProps> = ({
   };
 
   return (
-    <div className={`flex flex-col ${isVisible ? '' : 'opacity-60'}`}>
+    <div
+      ref={rowRef}
+      className={`flex flex-col ${isVisible ? '' : 'opacity-60'}`}
+    >
       <div
         className={`flex items-center ${
           isSelected ? 'bg-popover' : 'bg-muted'
         } group relative cursor-pointer`}
-        onClick={e => onAction(e, 'jumpToMeasurement')}
+        onClick={onSelect}
         data-cy="data-row"
       >
         {/* Hover Overlay */}
@@ -225,7 +264,7 @@ const DataRow: React.FC<DataRowProps> = ({
             aria-label={isVisible ? 'Hide' : 'Show'}
             onClick={e => {
               e.stopPropagation();
-              onAction(e, 'toggleVisibilityMeasurement');
+              onToggleVisibility(e);
             }}
           >
             {isVisible ? <Icons.Hide className="h-6 w-6" /> : <Icons.Show className="h-6 w-6" />}
@@ -253,25 +292,31 @@ const DataRow: React.FC<DataRowProps> = ({
                   <Icons.More className="h-6 w-6" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                {!disableEditing && (
-                  <>
-                    <DropdownMenuItem
-                      onClick={e => onAction(e, ['jumpToMeasurement', 'renameMeasurement'])}
-                    >
-                      <Icons.Rename className="text-foreground" />
-                      <span className="pl-2">Rename</span>
+              <DropdownMenuContent
+                align="end"
+                // this was causing issue for auto focus on input dialog
+                onCloseAutoFocus={e => e.preventDefault()}
+              >
+                <>
+                  <DropdownMenuItem onClick={e => handleAction('Rename', e)}>
+                    <Icons.Rename className="text-foreground" />
+                    <span className="pl-2">Rename</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={e => handleAction('Delete', e)}>
+                    <Icons.Delete className="text-foreground" />
+                    <span className="pl-2">Delete</span>
+                  </DropdownMenuItem>
+                  {onColor && (
+                    <DropdownMenuItem onClick={e => handleAction('Color', e)}>
+                      <Icons.ColorChange className="text-foreground" />
+                      <span className="pl-2">Change Color</span>
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={e => onAction(e, 'removeMeasurement')}>
-                      <Icons.Delete className="text-foreground" />
-                      <span className="pl-2">Delete</span>
-                    </DropdownMenuItem>
-                  </>
-                )}
-                <DropdownMenuItem onClick={e => onAction(e, 'toggleLockMeasurement')}>
-                  <Icons.Lock className="text-foreground" />
-                  <span className="pl-2">{isLocked ? 'Unlock' : 'Lock'}</span>
-                </DropdownMenuItem>
+                  )}
+                  <DropdownMenuItem onClick={e => handleAction('Lock', e)}>
+                    <Icons.Lock className="text-foreground" />
+                    <span className="pl-2">{isLocked ? 'Unlock' : 'Lock'}</span>
+                  </DropdownMenuItem>
+                </>
               </DropdownMenuContent>
             </DropdownMenu>
           )}
@@ -279,7 +324,7 @@ const DataRow: React.FC<DataRowProps> = ({
       </div>
 
       {/* Details Section */}
-      {isExpanded && details && (details.primary?.length > 0 || details.secondary?.length > 0) && (
+      {details && (details.primary?.length > 0 || details.secondary?.length > 0) && (
         <div className="ml-7 px-2 py-2">
           <div className="text-secondary-foreground flex items-center gap-1 text-base leading-normal">
             {details.primary?.length > 0 && renderDetails(details.primary)}
@@ -295,4 +340,4 @@ const DataRow: React.FC<DataRowProps> = ({
   );
 };
 
-export { DataRow };
+export default DataRow;

@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Toolbox } from '@ohif/ui-next';
+import { Toolbox } from '@ohif/extension-default';
 import PanelSegmentation from './panels/PanelSegmentation';
 import ActiveViewportWindowLevel from './components/ActiveViewportWindowLevel';
 import PanelMeasurement from './panels/PanelMeasurement';
@@ -36,14 +36,8 @@ const getPanelModule = ({ commandsManager, servicesManager, extensionManager }: 
     return (
       <>
         <Toolbox
-          commandsManager={commandsManager}
-          servicesManager={servicesManager}
-          extensionManager={extensionManager}
           buttonSectionId="segmentationToolbox"
           title="Segmentation Tools"
-          configuration={{
-            ...configuration,
-          }}
         />
         <PanelSegmentation
           commandsManager={commandsManager}
@@ -54,16 +48,6 @@ const getPanelModule = ({ commandsManager, servicesManager, extensionManager }: 
           }}
         />
       </>
-    );
-  };
-
-  const wrappedPanelMeasurement = ({ configuration }) => {
-    return (
-      <PanelMeasurement
-        configuration={{
-          ...configuration,
-        }}
-      />
     );
   };
 
@@ -79,14 +63,7 @@ const getPanelModule = ({ commandsManager, servicesManager, extensionManager }: 
       iconName: 'tab-linear',
       iconLabel: 'Measure',
       label: 'Measurement',
-      component: wrappedPanelMeasurement,
-    },
-    {
-      name: 'panelMeasurementSeries',
-      iconName: 'tab-linear',
-      iconLabel: 'Measure',
-      label: 'Measurement Series',
-      component: wrappedPanelMeasurement,
+      component: PanelMeasurement,
     },
     {
       name: 'panelSegmentation',

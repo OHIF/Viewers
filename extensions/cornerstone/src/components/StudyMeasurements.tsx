@@ -1,10 +1,10 @@
 import React from 'react';
 import { useActiveViewportDisplaySets, useSystem } from '@ohif/core';
-import { AccordionContent, AccordionItem, AccordionTrigger } from '@ohif/ui-next';
+// import { AccordionContent, AccordionItem, AccordionTrigger } from '@ohif/ui-next';
 
-import AccordionGroup from './AccordionGroup';
-import StudySummaryMenu from './StudySummaryMenu';
+import { AccordionGroup } from './AccordionGroup';
 import MeasurementsOrAdditionalFindings from './MeasurementsOrAdditionalFindings';
+import StudySummaryWithActions from './StudySummaryWithActions';
 
 /**
  * Groups measurements by study in order to allow display and saving by study
@@ -54,65 +54,31 @@ export const groupByStudy = (items, grouping, childProps) => {
   return groups;
 };
 
-export function StudyMeasurementItem(props) {
-  const { group, key = group.key, children } = props;
-  const { component: ChildComponent = MeasurementsOrAdditionalFindings } = group;
-  const CloneChildren = cloneProps => {
-    if (children) {
-      return React.Children.map(children, child =>
-        React.cloneElement(child, {
-          ...cloneProps,
-          ...group,
-          key,
-        })
-      );
-    }
-    return <ChildComponent {...props} />;
-  };
-
-  return (
-    <AccordionItem
-      value={key}
-      data-state="open"
-    >
-      <AccordionTrigger>
-        <StudySummaryMenu
-          StudyInstanceUID={key}
-          {...props}
-        />
-      </AccordionTrigger>
-      <AccordionContent>
-        <CloneChildren />
-      </AccordionContent>
-    </AccordionItem>
-  );
-}
-
-export default function StudyMeasurements(props): React.ReactNode {
+export function StudyMeasurements(props): React.ReactNode {
   const { items, grouping = {}, children } = props;
 
   const system = useSystem();
   const activeDisplaySets = useActiveViewportDisplaySets(system);
   const activeStudyUID = activeDisplaySets?.[0]?.StudyInstanceUID;
-  console.log('Rendering on value activeStudyUID', activeStudyUID);
 
   return (
     <AccordionGroup
       grouping={{
         name: 'groupByStudy',
         groupingFunction: groupByStudy,
-        header: StudySummaryMenu,
         activeStudyUID,
         ...grouping,
       }}
       items={items}
       value={[activeStudyUID]}
+      sourceChildren={children}
     >
-      <StudyMeasurementItem
-        activeStudyUID={activeStudyUID}
-        children={children}
-        {...props}
-      />
+      <AccordionGroup.Trigger>
+        <StudySummaryWithActions />
+      </AccordionGroup.Trigger>
+      <MeasurementsOrAdditionalFindings activeStudyUID={activeStudyUID} />
     </AccordionGroup>
   );
 }
+
+export default StudyMeasurements;

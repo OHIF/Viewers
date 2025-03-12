@@ -13,7 +13,7 @@ const {
 } = utils.MeasurementFilters;
 
 async function promptSaveReport({ servicesManager, commandsManager, extensionManager }, ctx, evt) {
-  const { uiDialogService, measurementService, displaySetService } = servicesManager.services;
+  const { measurementService, displaySetService } = servicesManager.services;
   const viewportId = evt.viewportId === undefined ? evt.data.viewportId : evt.viewportId;
   const isBackupSave = evt.isBackupSave === undefined ? evt.data.isBackupSave : evt.isBackupSave;
   const StudyInstanceUID = evt?.data?.StudyInstanceUID || ctx.trackedStudy;
@@ -32,8 +32,10 @@ async function promptSaveReport({ servicesManager, commandsManager, extensionMan
   let displaySetInstanceUIDs;
 
   try {
-    const promptResult = await createReportDialogPrompt(uiDialogService, {
+    const promptResult = await createReportDialogPrompt({
+      title: defaultSaveTitle,
       extensionManager,
+      servicesManager,
     });
 
     if (promptResult.action === PROMPT_RESPONSES.CREATE_REPORT) {
@@ -78,6 +80,7 @@ async function promptSaveReport({ servicesManager, commandsManager, extensionMan
       displaySetInstanceUID,
     };
   } catch (error) {
+    console.warn('Unable to save report', error);
     return null;
   }
 }

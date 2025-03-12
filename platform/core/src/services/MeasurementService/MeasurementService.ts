@@ -580,10 +580,7 @@ class MeasurementService extends PubSubService {
    *
    * @param {string} measurementUID The measurement uid
    */
-  remove(measurementUID: string | string[]): void {
-    if (Array.isArray(measurementUID)) {
-      return measurementUID.forEach(uid => this.remove(uid));
-    }
+  remove(measurementUID: string): void {
     const measurement =
       this.measurements.get(measurementUID) || this.unmappedMeasurements.get(measurementUID);
 
@@ -600,6 +597,30 @@ class MeasurementService extends PubSubService {
       source,
       measurement: measurementUID,
     });
+  }
+
+  /**
+   * Remove multiple measurements at once.
+   */
+  removeMany(measurementUIDs: string[]): void {
+    const measurements = [];
+    for (const measurementUID of measurementUIDs) {
+      const measurement =
+        this.measurements.get(measurementUID) || this.unmappedMeasurements.get(measurementUID);
+
+      if (!measurementUID || !measurement) {
+        console.debug(`No uid provided, or unable to find measurement by uid.`);
+        continue;
+      }
+
+      this.unmappedMeasurements.delete(measurementUID);
+      this.measurements.delete(measurementUID);
+      measurements.push(measurement);
+    }
+    if (!measurements.length) {
+      return;
+    }
+    this._broadcastEvent(this.EVENTS.MEASUREMENTS_CLEARED, { measurements });
   }
 
   /**
@@ -782,13 +803,7 @@ class MeasurementService extends PubSubService {
     });
   }
 
-  public toggleVisibilityMeasurement(
-    measurementUID: string | string[],
-    visibility?: boolean
-  ): void {
-    if (Array.isArray(measurementUID)) {
-      return measurementUID.forEach(uid => this.toggleVisibilityMeasurement(uid));
-    }
+  public toggleVisibilityMeasurement(measurementUID: string, visibility?: boolean): void {
     const measurement = this.measurements.get(measurementUID);
 
     if (!measurement) {
@@ -806,6 +821,10 @@ class MeasurementService extends PubSubService {
       measurement,
       notYetUpdatedAtSource: true,
     });
+  }
+
+  public toggleVisibilityMeasurementMany(measurementUIDs: string[], visibility?: boolean): void {
+    return measurementUIDs.forEach(uid => this.toggleVisibilityMeasurement(uid, visibility));
   }
 
   public updateColorMeasurement(measurementUID: string, color: number[]): void {

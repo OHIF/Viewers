@@ -1,6 +1,6 @@
 import React from 'react';
 import { PanelPetSUV, PanelROIThresholdExport } from './Panels';
-import { Toolbox } from '@ohif/ui-next';
+import { Toolbox } from '@ohif/extension-default';
 import PanelTMTV from './Panels/PanelTMTV';
 
 function getPanelModule({ commandsManager, extensionManager, servicesManager }) {
@@ -17,9 +17,6 @@ function getPanelModule({ commandsManager, extensionManager, servicesManager }) 
   const wrappedROIThresholdToolbox = () => {
     return (
       <Toolbox
-        commandsManager={commandsManager}
-        servicesManager={servicesManager}
-        extensionManager={extensionManager}
         buttonSectionId="ROIThresholdToolbox"
         title="Threshold Tools"
       />
@@ -39,9 +36,6 @@ function getPanelModule({ commandsManager, extensionManager, servicesManager }) 
     return (
       <>
         <Toolbox
-          commandsManager={commandsManager}
-          servicesManager={servicesManager}
-          extensionManager={extensionManager}
           buttonSectionId="ROIThresholdToolbox"
           title="Threshold Tools"
         />

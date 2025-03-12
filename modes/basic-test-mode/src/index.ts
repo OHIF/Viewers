@@ -1,7 +1,6 @@
 import toolbarButtons from './toolbarButtons';
 import { id } from './id';
 import initToolGroups from './initToolGroups';
-import moreTools from './moreTools';
 import i18n from 'i18next';
 
 // Allow this mode by excluding non-imaging modalities such as SR, SEG
@@ -57,7 +56,6 @@ const dicomPmap = {
 };
 
 const extensionDependencies = {
-  // Can derive the versions at least process.env.from npm_package_version
   '@ohif/extension-default': '^3.0.0',
   '@ohif/extension-cornerstone': '^3.0.0',
   '@ohif/extension-measurement-tracking': '^3.0.0',
@@ -71,8 +69,6 @@ const extensionDependencies = {
 
 function modeFactory() {
   return {
-    // TODO: We're using this as a route segment
-    // We should not be.
     id,
     routeName: 'basic-test',
     displayName: i18n.t('Modes:Basic Test Mode'),
@@ -93,17 +89,60 @@ function modeFactory() {
         '@ohif/extension-test.customizationModule.custom-context-menu',
       ]);
 
-      toolbarService.addButtons([...toolbarButtons, ...moreTools]);
+      toolbarService.addButtons(toolbarButtons);
+      console.debug('toolbarButtons', toolbarButtons);
       toolbarService.createButtonSection('primary', [
         'MeasurementTools',
         'Zoom',
-        'WindowLevel',
+        'WindowLevelGroup',
         'Pan',
         'Capture',
         'Layout',
         'MPR',
         'Crosshairs',
         'MoreTools',
+      ]);
+
+      toolbarService.createButtonSection('windowLevelSection', [
+        'WindowLevel',
+        'Soft tissue',
+        'Lung',
+        'Liver',
+        'Bone',
+        'Brain',
+      ]);
+
+      toolbarService.createButtonSection('measurementSection', [
+        'Length',
+        'Bidirectional',
+        'ArrowAnnotate',
+        'EllipticalROI',
+        'CircleROI',
+        'PlanarFreehandROI',
+        'SplineROI',
+        'LivewireContour',
+      ]);
+
+      toolbarService.createButtonSection('moreToolsSection', [
+        'Reset',
+        'rotate-right',
+        'flipHorizontal',
+        'ImageSliceSync',
+        'ReferenceLines',
+        'ImageOverlayViewer',
+        'StackScroll',
+        'invert',
+        'Probe',
+        'Cine',
+        'Angle',
+        'CobbAngle',
+        'Magnify',
+        'RectangleROI',
+        'CalibrationLine',
+        'TagBrowser',
+        'AdvancedMagnify',
+        'UltrasoundDirectionalTool',
+        'WindowLevelRegion',
       ]);
 
       customizationService.setCustomizations(
@@ -132,7 +171,7 @@ function modeFactory() {
         uiModalService,
       } = servicesManager.services;
 
-      uiDialogService.dismissAll();
+      uiDialogService.hideAll();
       uiModalService.hide();
       toolGroupService.destroy();
       syncGroupService.destroy();
@@ -158,22 +197,14 @@ function modeFactory() {
     routes: [
       {
         path: 'basic-test',
-        /*init: ({ servicesManager, extensionManager }) => {
-          //defaultViewerRouteInit
-        },*/
         layoutTemplate: () => {
           return {
             id: ohif.layout,
             props: {
-              // Use the first two for an untracked view
-              // leftPanels: [ohif.thumbnailList],
-              // rightPanels: [dicomSeg.panel, ohif.measurements],
               leftPanels: [tracked.thumbnailList],
               leftPanelResizable: true,
-              // Can use cornerstone.measurements for all measurements
               rightPanels: [cornerstone.panel, tracked.measurements, testExtension.measurements],
               rightPanelResizable: true,
-              // rightPanelClosed: true, // optional prop to start with collapse panels
               viewports: [
                 {
                   namespace: tracked.viewport,
@@ -210,12 +241,7 @@ function modeFactory() {
       },
     ],
     extensions: extensionDependencies,
-    // Default protocol gets self-registered by default in the init
     hangingProtocol: 'default',
-    // Order is important in sop class handlers when two handlers both use
-    // the same sop class under different situations.  In that case, the more
-    // general handler needs to come last.  For this case, the dicomvideo must
-    // come first to remove video transfer syntax before ohif uses images
     sopClassHandlers: [
       dicomvideo.sopClassHandler,
       dicomSeg.sopClassHandler,
@@ -225,8 +251,6 @@ function modeFactory() {
       dicomsr.sopClassHandler,
     ],
     hotkeys: {
-      // Don't store the hotkeys for basic-test-mode under the same key
-      // because they get customized by tests
       name: 'basic-test-hotkeys',
     },
   };

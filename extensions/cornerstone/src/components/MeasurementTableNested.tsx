@@ -21,9 +21,7 @@ export default function MeasurementTableNested(props) {
       {...group}
       key={group.key}
     >
-      <MeasurementTable.Body>
-        <DataRow />
-      </MeasurementTable.Body>
+      <MeasurementTable.Body />
     </MeasurementTable>
   );
 }

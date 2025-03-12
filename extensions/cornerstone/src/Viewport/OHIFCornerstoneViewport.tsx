@@ -146,6 +146,11 @@ const OHIFCornerstoneViewport = React.memo(
 
         const { viewportId, element } = evt.detail;
         const viewportInfo = cornerstoneViewportService.getViewportInfo(viewportId);
+
+        if (!viewportInfo) {
+          return;
+        }
+
         setEnabledElement(viewportId, element);
         setEnabledVPElement(element);
 
@@ -323,10 +328,10 @@ const OHIFCornerstoneViewport = React.memo(
     // Set up the window level action menu in the viewport action corners.
     useEffect(() => {
       const windowLevelActionMenu = customizationService.getCustomization(
-          'viewportActionMenu.windowLevelActionMenu'
+        'viewportActionMenu.windowLevelActionMenu'
       );
       const segmentationOverlay = customizationService.getCustomization(
-          'viewportActionMenu.segmentationOverlay'
+        'viewportActionMenu.segmentationOverlay'
       );
 
       if (windowLevelActionMenu?.enabled) {
@@ -362,13 +367,7 @@ const OHIFCornerstoneViewport = React.memo(
           location: segmentationOverlay.location,
         });
       }
-    }, [
-      displaySets,
-      viewportId,
-      viewportActionCornersService,
-      servicesManager,
-      commandsManager,
-    ]);
+    }, [displaySets, viewportId, viewportActionCornersService, servicesManager, commandsManager]);
 
     const { ref: resizeRef } = useResizeDetector({
       onResize,

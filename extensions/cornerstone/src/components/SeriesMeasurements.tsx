@@ -1,10 +1,10 @@
 import React from 'react';
 import { useActiveViewportDisplaySets, useSystem } from '@ohif/core';
-import { AccordionContent, AccordionItem, AccordionTrigger } from '@ohif/ui-next';
 
 import AccordionGroup from './AccordionGroup';
-import MeasurementTableNested from './MeasurementTableNested';
 import PanelAccordionTrigger from './PanelAccordionTrigger';
+import MeasurementItems from './MeasurementItems';
+import MeasurementsMenu from './MeasurementsMenu';
 
 /**
  * Groups measurements by study in order to allow display and saving by study
@@ -36,57 +36,37 @@ export const groupByDisplaySet = (items, grouping, childProps) => {
   return groups;
 };
 
-export function SeriesMeasurementItem(props) {
-  const { group, isSelected, displaySet, children } = props;
-  const { component: ChildComponent = MeasurementTableNested, key } = group;
-  const CloneChildren = cloneProps => {
-    if (children) {
-      return React.Children.map(children, child =>
-        React.cloneElement(child, {
-          ...group,
-          group,
-          ...cloneProps,
-          key,
-        })
-      );
-    }
-    return (
-      <ChildComponent
-        {...props}
-        {...group}
-        key={group.key}
-      />
-    );
-  };
-
+export function SeriesMeasurementTrigger(props) {
+  const { group, isSelected, displaySet, menu } = props;
   const { SeriesNumber = 1, SeriesDescription } = displaySet;
 
   return (
-    <AccordionItem value={key}>
-      <PanelAccordionTrigger
-        text={`Series #${SeriesNumber} ${SeriesDescription}`}
-        count={group.items.length}
-        isActive={isSelected}
-        group={group}
-      />
-      <AccordionContent>
-        <CloneChildren />
-      </AccordionContent>
-    </AccordionItem>
+    <PanelAccordionTrigger
+      text={`Series #${SeriesNumber} ${SeriesDescription}`}
+      count={group.items.length}
+      isActive={isSelected}
+      group={group}
+      menu={menu}
+    />
   );
 }
 
-export default function SeriesMeasurements(props): React.ReactNode {
-  const { items, childProps, grouping = {} } = props;
+export function SeriesMeasurements(props): React.ReactNode {
+  const { items, grouping = {}, children } = props;
   const system = useSystem();
   const activeDisplaySets = useActiveViewportDisplaySets(system);
   const activeDisplaySetInstanceUID = activeDisplaySets?.[0]?.displaySetInstanceUID;
   const onClick = (_e, group) => {
     const { items } = group;
-    system.commandsManager.run('navigateToMeasurementItems', { items, group });
+    system.commandsManager.run('jumpToMeasurement', {
+      uid: items[0].uid,
+      displayMeasurements: items,
+      group,
+    });
   };
 
-  // Need to merge defaults on the component props to ensure they get passed to hcildren
+  // The content of the accordion group will default to the children of the
+  // parent declaration if present, otherwise to MeasurementItems
   return (
     <AccordionGroup
       grouping={{
@@ -95,11 +75,15 @@ export default function SeriesMeasurements(props): React.ReactNode {
         ...grouping,
         onClick,
       }}
-      childProps={childProps}
       items={items}
-      component={grouping.component || MeasurementTableNested}
+      sourceChildren={children}
     >
-      <SeriesMeasurementItem />
+      <AccordionGroup.Trigger>
+        <SeriesMeasurementTrigger menu={MeasurementsMenu} />
+      </AccordionGroup.Trigger>
+      <MeasurementItems />
     </AccordionGroup>
   );
 }
+
+export default SeriesMeasurements;

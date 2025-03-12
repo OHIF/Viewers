@@ -2,10 +2,11 @@ import React from 'react';
 import { Button, Icons } from '@ohif/ui-next';
 import { useSystem } from '@ohif/core';
 
-export default function StudyMeasurementMenu({
+export function StudyMeasurementsActions({
   items,
   StudyInstanceUID,
   measurementFilter,
+  actions,
   onUntrackClick,
 }) {
   const { commandsManager } = useSystem();
@@ -21,8 +22,28 @@ export default function StudyMeasurementMenu({
         <Button
           size="sm"
           variant="ghost"
-          className="pl-0.5"
+          className="pl-1.5"
           onClick={() => {
+            commandsManager.runCommand('downloadCSVMeasurementsReport', {
+              StudyInstanceUID,
+              measurementFilter,
+            });
+          }}
+        >
+          <Icons.Download className="h-5 w-5" />
+          <span className="pl-1">CSV</span>
+        </Button>
+
+        <Button
+          size="sm"
+          variant="ghost"
+          className="pl-0.5"
+          onClick={e => {
+            e.stopPropagation();
+            if (actions?.createSR) {
+              actions.createSR({ StudyInstanceUID, measurementFilter });
+              return;
+            }
             commandsManager.run('promptSaveReport', {
               StudyInstanceUID,
               measurementFilter,
@@ -36,7 +57,8 @@ export default function StudyMeasurementMenu({
           size="sm"
           variant="ghost"
           className="pl-0.5"
-          onClick={() => {
+          onClick={e => {
+            e.stopPropagation();
             commandsManager.runCommand('clearMeasurements', {
               measurementFilter,
             });
@@ -58,3 +80,5 @@ export default function StudyMeasurementMenu({
     </div>
   );
 }
+
+export default StudyMeasurementsActions;
