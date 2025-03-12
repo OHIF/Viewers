@@ -168,7 +168,7 @@ const LayoutSelector: React.FC<LayoutSelectorProps> = ({
         <div className="flex">
           {/* Left Side - Presets */}
           {hasPresets && (
-            <div className="bg-secondary-dark flex flex-col gap-2.5 rounded-lg p-2">
+            <div className="bg-popover flex flex-col gap-2.5 rounded-lg p-2">
               {commonPresets.length > 0 && (
                 <>
                   <div className="text-muted-foreground text-xs">Common</div>
@@ -182,7 +182,7 @@ const LayoutSelector: React.FC<LayoutSelectorProps> = ({
                       />
                     ))}
                   </div>
-                  <div className="h-[2px] bg-black"></div>
+                  <div className="h-px bg-black"></div>
                 </>
               )}
 
