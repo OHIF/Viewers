@@ -30,13 +30,9 @@ export const groupByStudy = (items, grouping, childProps) => {
         ...grouping,
         items,
         displayMeasurements: items,
-        headerProps: {
-          ...grouping.headerProps,
-          items,
-          StudyInstanceUID: studyUID,
-        },
         key: studyUID,
         isSelected: studyUID === activeStudyUID,
+        StudyInstanceUID: activeStudyUID,
       };
       if (group.isSelected && !firstSelected) {
         firstSelected = group;
@@ -73,10 +69,13 @@ export function StudyMeasurements(props): React.ReactNode {
       value={[activeStudyUID]}
       sourceChildren={children}
     >
-      <AccordionGroup.Trigger>
-        <StudySummaryWithActions />
+      <AccordionGroup.Trigger name="SM-Trigger">
+        <StudySummaryWithActions name="SM-Summary" />
       </AccordionGroup.Trigger>
-      <MeasurementsOrAdditionalFindings activeStudyUID={activeStudyUID} />
+      <MeasurementsOrAdditionalFindings
+        name="SM-Default"
+        activeStudyUID={activeStudyUID}
+      />
     </AccordionGroup>
   );
 }

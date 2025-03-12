@@ -1,5 +1,5 @@
 import React from 'react';
-import { useSystem, utils } from '@ohif/core';
+import { utils } from '@ohif/core';
 import { MeasurementTable, useViewportGrid } from '@ohif/ui-next';
 import {
   PanelMeasurement,
@@ -15,7 +15,6 @@ const { filterAnd, filterPlanarMeasurement, filterMeasurementsBySeriesUID } =
   utils.MeasurementFilters;
 
 function PanelMeasurementTableTracking(props) {
-  const { servicesManager, extensionManager, commandsManager } = useSystem();
   const [viewportGrid] = useViewportGrid();
   const [trackedMeasurements, sendTrackedMeasurementsEvent] = useTrackedMeasurements();
   const { trackedStudy, trackedSeries } = trackedMeasurements.context;
@@ -24,7 +23,10 @@ function PanelMeasurementTableTracking(props) {
     : filterPlanarMeasurement;
 
   const EmptyComponent = () => (
-    <MeasurementTable title="Measurements">
+    <MeasurementTable
+      title="Measurements"
+      isExpanded={false}
+    >
       <MeasurementTable.Body />
     </MeasurementTable>
   );
@@ -41,7 +43,7 @@ function PanelMeasurementTableTracking(props) {
   };
 
   const Header = props => (
-    <div>
+    <div data-cy="TrackingHeader">
       <StudySummaryFromMetadata {...props} />
       <StudyMeasurementsActions
         {...props}
@@ -52,16 +54,16 @@ function PanelMeasurementTableTracking(props) {
 
   return (
     <PanelMeasurement
-      servicesManager={servicesManager}
-      extensionManager={extensionManager}
-      commandsManager={commandsManager}
       measurementFilter={measurementFilter}
       emptyComponent={EmptyComponent}
       sourceChildren={props.children}
     >
-      <StudyMeasurements grouping={props.grouping}>
-        <AccordionGroup.Trigger>
-          <Header />
+      <StudyMeasurements
+        name="MT.StudyMeasurements"
+        grouping={props.grouping}
+      >
+        <AccordionGroup.Trigger name="MT.Trigger">
+          <Header name="MT.Header" />
         </AccordionGroup.Trigger>
       </StudyMeasurements>
     </PanelMeasurement>
