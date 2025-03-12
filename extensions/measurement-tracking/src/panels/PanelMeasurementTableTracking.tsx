@@ -58,12 +58,9 @@ function PanelMeasurementTableTracking(props) {
       emptyComponent={EmptyComponent}
       sourceChildren={props.children}
     >
-      <StudyMeasurements
-        name="MT.StudyMeasurements"
-        grouping={props.grouping}
-      >
-        <AccordionGroup.Trigger name="MT.Trigger">
-          <Header name="MT.Header" />
+      <StudyMeasurements grouping={props.grouping}>
+        <AccordionGroup.Trigger>
+          <Header />
         </AccordionGroup.Trigger>
       </StudyMeasurements>
     </PanelMeasurement>

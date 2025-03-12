@@ -20,7 +20,7 @@ export default function PanelAccordionTrigger(props) {
 
   return (
     <AccordionTrigger style={{ margin: `1px 0px 1px ${marginLeft}px`, padding: 0 }}>
-      <button
+      <div
         className={`inline-flex text-base ${isActive ? 'bg-popover' : 'bg-muted'} flex-grow`}
         onClick={onClickDefault.bind(props)}
       >
@@ -37,7 +37,7 @@ export default function PanelAccordionTrigger(props) {
             classNames="justify-end flex-grow"
           />
         )}
-      </button>
+      </div>
     </AccordionTrigger>
   );
 }

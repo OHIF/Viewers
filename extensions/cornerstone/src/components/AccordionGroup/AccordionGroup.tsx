@@ -24,11 +24,9 @@ export const CloneChildren = props => {
       continue;
     }
     if (childType && child.type === childType) {
-      console.log('Found type element', props.name, group?.name);
       return React.cloneElement(child, { ...props, children: child.props.children });
     }
     if (defaultTypes?.indexOf(child.type) === -1) {
-      console.log('Found default element', props.name, group?.name);
       return childType({ ...props, children: child });
     }
   }
@@ -36,7 +34,6 @@ export const CloneChildren = props => {
   if (!children) {
     throw new Error(`No children defined for ${props.name} CloneChildren in group ${group?.name}`);
   }
-  console.log('Rendering children', props.name, group?.name);
   return React.cloneElement(children, props);
 };
 
@@ -73,7 +70,6 @@ export function AccordionGroup(props) {
   const childrenArr = children ? React.Children.toArray(children) : [];
   const allChildren = sourceChildrenArr.concat(childrenArr);
 
-  console.log('Rendering clone children on accordion group', grouping.name);
   return (
     <CloneChildren
       allChildren={allChildren}
@@ -89,16 +85,14 @@ export function AccordionGroup(props) {
 }
 
 function DefaultAccordion(props) {
-  const { groups, defaultValue, grouping, allChildren, noWrapper } = props;
+  const { groups, defaultValue, grouping, allChildren, asChild } = props;
   if (!allChildren || !groups) {
     return null;
   }
 
-  if (Boolean(noWrapper)) {
+  if (Boolean(asChild)) {
     return React.cloneElement(props.children, props);
   }
-
-  console.log('Rendering DefaultAccordion', grouping?.name);
 
   return (
     <Accordion
@@ -143,9 +137,15 @@ function GroupAccordion(props) {
 }
 
 function Content(props) {
-  const { group, children } = props;
+  const { children, asChild, ...childProps } = props;
+  const { group } = props;
+  Object.assign(childProps, group);
+
   if (!group) {
     return null;
+  }
+  if (asChild) {
+    return React.cloneElement(children, { ...group, ...props, children: children.props.children });
   }
   return (
     <AccordionContent>
@@ -155,21 +155,19 @@ function Content(props) {
 }
 
 function Trigger(props) {
+  const { children, asChild, ...childProps } = props;
   const { group } = props;
+  Object.assign(childProps, group);
+
   if (!group) {
     return null;
   }
-  return TriggerRender(props);
-}
-
-function TriggerRender(props) {
-  const { children, group } = props;
+  if (asChild) {
+    return React.cloneElement(children, childProps);
+  }
   return (
-    <AccordionTrigger
-      value={group.value}
-      asChildElement="div"
-    >
-      {React.cloneElement(children, { ...group, ...props, children: children.props.children })}
+    <AccordionTrigger value={group.value}>
+      {React.cloneElement(children, childProps)}
     </AccordionTrigger>
   );
 }

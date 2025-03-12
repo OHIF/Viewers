@@ -47,6 +47,7 @@ export function SeriesMeasurementTrigger(props) {
       isActive={isSelected}
       group={group}
       menu={menu}
+      marginLeft="0"
     />
   );
 }
@@ -78,7 +79,7 @@ export function SeriesMeasurements(props): React.ReactNode {
       items={items}
       sourceChildren={children}
     >
-      <AccordionGroup.Trigger>
+      <AccordionGroup.Trigger asChild>
         <SeriesMeasurementTrigger menu={MeasurementsMenu} />
       </AccordionGroup.Trigger>
       <MeasurementItems />

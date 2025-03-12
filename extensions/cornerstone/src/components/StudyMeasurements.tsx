@@ -69,13 +69,10 @@ export function StudyMeasurements(props): React.ReactNode {
       value={[activeStudyUID]}
       sourceChildren={children}
     >
-      <AccordionGroup.Trigger name="SM-Trigger">
-        <StudySummaryWithActions name="SM-Summary" />
+      <AccordionGroup.Trigger>
+        <StudySummaryWithActions />
       </AccordionGroup.Trigger>
-      <MeasurementsOrAdditionalFindings
-        name="SM-Default"
-        activeStudyUID={activeStudyUID}
-      />
+      <MeasurementsOrAdditionalFindings activeStudyUID={activeStudyUID} />
     </AccordionGroup>
   );
 }
