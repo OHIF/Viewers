@@ -65,11 +65,8 @@ export default function MeasurementOrAdditionalFindings(props): React.ReactNode 
       items={items}
       sourceChildren={children}
     >
-      <AccordionGroup.Accordion
-        name="MT.Accordion"
-        noWrapper="true"
-      >
-        <MeasurementTableNested name="MT.MeasurementTableNested" />
+      <AccordionGroup.Accordion noWrapper="true">
+        <MeasurementTableNested />
       </AccordionGroup.Accordion>
     </AccordionGroup>
   );
