@@ -165,7 +165,10 @@ function Trigger(props) {
 function TriggerRender(props) {
   const { children, group } = props;
   return (
-    <AccordionTrigger value={group.value}>
+    <AccordionTrigger
+      value={group.value}
+      asChildElement="div"
+    >
       {React.cloneElement(children, { ...group, ...props, children: children.props.children })}
     </AccordionTrigger>
   );
