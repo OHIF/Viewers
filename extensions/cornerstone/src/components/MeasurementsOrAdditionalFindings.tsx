@@ -58,16 +58,19 @@ export default function MeasurementOrAdditionalFindings(props): React.ReactNode 
     <AccordionGroup
       grouping={{
         groupingFunction: groupByNamedSets,
+        name: 'measurementsOrAdditional',
         namedSets: MeasurementOrAdditionalFindingSets,
         ...grouping,
       }}
       items={items}
       sourceChildren={children}
     >
-      <AccordionGroup.Trigger name="MT.StudySummaryFromMetadata trigger">
-        <StudySummaryFromMetadata name="MT.StudySummaryFromMetadata" />
-      </AccordionGroup.Trigger>
-      <MeasurementTableNested name="MT.MeasurementTableNested" />
+      <AccordionGroup.Accordion
+        name="MT.Accordion"
+        noWrapper="true"
+      >
+        <MeasurementTableNested name="MT.MeasurementTableNested" />
+      </AccordionGroup.Accordion>
     </AccordionGroup>
   );
 }

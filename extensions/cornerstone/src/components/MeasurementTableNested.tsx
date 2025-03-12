@@ -13,7 +13,6 @@ export default function MeasurementTableNested(props) {
     commandsManager.run(command, { uid, annotationUID: uid, displayMeasurements: items });
   };
 
-  debugger;
   return (
     <MeasurementTable
       title={title ? title : `Measurements`}
