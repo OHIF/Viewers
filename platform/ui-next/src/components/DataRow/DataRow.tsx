@@ -101,7 +101,9 @@ const DataRow: React.FC<DataRowProps> = ({
 
   useEffect(() => {
     if (isSelected && rowRef.current) {
-      rowRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      setTimeout(() => {
+        rowRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 200);
     }
   }, [isSelected]);
 

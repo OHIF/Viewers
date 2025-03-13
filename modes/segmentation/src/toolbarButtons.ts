@@ -306,6 +306,20 @@ const toolbarButtons: Button[] = [
     },
   },
   {
+    id: 'SegmentBidirectional',
+    uiType: 'ohif.toolBoxButton',
+    props: {
+      icon: 'icon-tool-bidirectional-segment',
+      label: 'Segment Bidirectional',
+      tooltip: 'Finding the largest bidirectional measurement per lesion',
+      evaluate: {
+        name: 'evaluate.cornerstone.segmentation',
+        disabledText: 'Create new segmentation to enable this tool.',
+      },
+      commands: 'runSegmentBidirectional',
+    },
+  },
+  {
     id: 'Eraser',
     uiType: 'ohif.toolBoxButton',
     props: {

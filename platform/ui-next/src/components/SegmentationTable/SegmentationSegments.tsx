@@ -2,55 +2,9 @@ import React from 'react';
 import { ScrollArea, DataRow } from '../../components';
 import { HoverCard, HoverCardTrigger, HoverCardContent } from '../../components/HoverCard';
 import { useSegmentationTableContext } from './SegmentationTableContext';
-import { roundNumber } from '../../utils';
+import { SegmentStatistics } from './SegmentStatistics';
 
-const renderStatisticsPanel = (namedStats: any, cssColor: string, label: string) => {
-  if (!namedStats) {
-    return null;
-  }
-
-  return (
-    <div className="w-full">
-      <div className="mb-4 flex items-center space-x-2">
-        <div
-          className="h-2.5 w-2.5 flex-shrink-0 rounded-full"
-          style={{ backgroundColor: cssColor }}
-        ></div>
-        <h3 className="text-muted-foreground break-words text-lg font-semibold">{label}</h3>
-      </div>
-
-      <div className="space-y-1">
-        {Object.entries(namedStats).map(([key, stat]: [string, any]) => {
-          if (!stat) {
-            return null;
-          }
-          const { label, value, unit } = stat;
-          if (value === null) {
-            return null;
-          }
-
-          return (
-            <div
-              key={key}
-              className="flex justify-between"
-            >
-              <div className="">{label}</div>
-              <div>
-                <span className="text-white">{roundNumber(value)}</span>{' '}
-                <span className="">{unit || ''}</span>
-              </div>
-            </div>
-          );
-        })}
-      </div>
-    </div>
-  );
-};
-
-export const SegmentationSegments: React.FC<{
-  segmentation?: unknown;
-  representation?: unknown;
-}> = ({ segmentation, representation }) => {
+export const SegmentationSegments = ({ segmentation, representation, children }) => {
   const {
     activeSegmentationId,
     disableEditing,
@@ -77,6 +31,19 @@ export const SegmentationSegments: React.FC<{
     return null;
   }
 
+  // Find SegmentStatistics among children
+  const findStatisticsComponent = children => {
+    if (!children) {
+      return null;
+    }
+
+    const childrenArray = React.Children.toArray(children);
+    return childrenArray.find(
+      child => child.type && child.type.displayName === 'SegmentationTable.SegmentStatistics'
+    );
+  };
+
+  const statisticsComponent = findStatisticsComponent(children);
   return (
     <ScrollArea
       className={`ohif-scrollbar invisible-scrollbar bg-bkg-low h-[900px] space-y-px`}
@@ -92,9 +59,6 @@ export const SegmentationSegments: React.FC<{
         if (!segmentFromSegmentation) {
           return null;
         }
-
-        const { cachedStats } = segmentFromSegmentation;
-        const { namedStats } = cachedStats || {};
 
         const { locked, active, label, displayText } = segmentFromSegmentation;
         const cssColor = `rgb(${color[0]},${color[1]},${color[2]})`;
@@ -136,7 +100,18 @@ export const SegmentationSegments: React.FC<{
               align="start"
               className="w-72 border"
             >
-              {renderStatisticsPanel(namedStats, cssColor, label)}
+              <div className="mb-4 flex items-center space-x-2">
+                <div
+                  className="h-2.5 w-2.5 flex-shrink-0 rounded-full"
+                  style={{ backgroundColor: cssColor }}
+                ></div>
+                <h3 className="text-muted-foreground break-words text-lg font-semibold">{label}</h3>
+              </div>
+
+              {/* Use the statistics component */}
+              <SegmentStatistics segment={segmentFromSegmentation}>
+                {statisticsComponent ? statisticsComponent.props.children : null}
+              </SegmentStatistics>
             </HoverCardContent>
           </HoverCard>
         );
@@ -144,3 +119,5 @@ export const SegmentationSegments: React.FC<{
     </ScrollArea>
   );
 };
+
+SegmentationSegments.displayName = 'SegmentationTable.Segments';

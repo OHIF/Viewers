@@ -35,6 +35,7 @@ interface SegmentationTableContext {
     segmentationId: string;
     isExportable: boolean;
   }[];
+  showConfig: boolean;
   fillAlphaInactive: number;
   outlineWidth: number;
   renderFill: boolean;

@@ -167,6 +167,14 @@ export default function PanelSegmentation({
     };
   });
 
+  const CustomStats = () => {
+    return (
+      <div>
+        <h3>Custom Stats</h3>
+      </div>
+    );
+  };
+
   return (
     <>
       <SegmentationTable
@@ -214,7 +222,34 @@ export default function PanelSegmentation({
               <CustomDropdownMenuContent />
             </SegmentationTable.SelectorHeader>
             <SegmentationTable.AddSegmentRow />
-            <SegmentationTable.Segments />
+            <SegmentationTable.Segments>
+              <SegmentationTable.SegmentStatistics>
+                <SegmentationTable.SegmentStatisticsTitle />
+                <SegmentationTable.SegmentStatisticsHeader>
+                  <div className="mb-2">
+                    <div className="flex justify-between">
+                      <div>L:</div>
+                      <div>
+                        <span className="text-white">195</span> <span>mm</span>
+                      </div>
+                    </div>
+                    <div className="flex justify-between">
+                      <div>W:</div>
+                      <div>
+                        <span className="text-white">125</span> <span>mm</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="mb-4 border-b border-gray-600"></div>
+                </SegmentationTable.SegmentStatisticsHeader>
+
+                {/* The default segment statistics will be displayed automatically */}
+
+                <SegmentationTable.SegmentStatisticsFooter>
+                  {/* Optional footer content */}
+                </SegmentationTable.SegmentStatisticsFooter>
+              </SegmentationTable.SegmentStatistics>
+            </SegmentationTable.Segments>
           </SegmentationTable.Collapsed>
         ) : (
           <SegmentationTable.Expanded>

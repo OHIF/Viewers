@@ -87,6 +87,7 @@ function modeFactory({ modeConfiguration }) {
       ]);
       toolbarService.createButtonSection('segmentationToolboxUtilitySection', [
         'InterpolateLabelmap',
+        'SegmentBidirectional',
       ]);
       toolbarService.createButtonSection('segmentationToolboxToolsSection', [
         'BrushTools',

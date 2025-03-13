@@ -68,12 +68,62 @@ function commandsModule({
     return toolGroupService.getToolGroupForViewport(viewport.id);
   }
 
+  function _getActiveSegmentationInfo() {
+    const viewportId = viewportGridService.getActiveViewportId();
+    const activeSegmentation = segmentationService.getActiveSegmentation(viewportId);
+    const segmentationId = activeSegmentation?.segmentationId;
+    const activeSegmentIndex = segmentationService.getActiveSegment(viewportId).segmentIndex;
+
+    return {
+      segmentationId,
+      activeSegmentIndex,
+    };
+  }
+
   const actions = {
+    runSegmentBidirectional: () => {
+      const actionConfig = {
+        method: cstUtils.segmentation.segmentContourAction,
+        data: {
+          segmentData: new Map(),
+        },
+      };
+
+      const { activeSegmentIndex } = _getActiveSegmentationInfo();
+
+      // Configure the segment style and data (optional but recommended)
+      const segmentData = new Map();
+      segmentData.set(activeSegmentIndex, {
+        label: `Segment ${activeSegmentIndex}`,
+        containedSegmentIndices: undefined, // or provide array of related segment indices
+        style: {
+          color: 'rgb(255,0,0)', // example color
+          colorHighlightedActive: 'rgb(255,0,0)',
+          colorActive: 'rgb(255,0,0)',
+          textBoxColor: 'rgb(255,0,0)',
+          textBoxColorActive: 'rgb(255,0,0)',
+          textBoxColorHighlightedActive: 'rgb(255,0,0)',
+        },
+      });
+
+      actionConfig.data.segmentData = segmentData;
+
+      const element = _getActiveViewportEnabledElement()?.viewport?.element;
+
+      // Run the bidirectional action on a viewport element
+      const bidirectional = actionConfig.method(element, actionConfig);
+
+      if (bidirectional) {
+        const { majorAxis, minorAxis, maxMajor, maxMinor } = bidirectional;
+        console.debug('Bidirectional measurements:', {
+          maxMajor,
+          maxMinor,
+        });
+      }
+    },
     interpolateLabelmap: () => {
-      const viewportId = viewportGridService.getActiveViewportId();
-      const activeSegmentation = segmentationService.getActiveSegmentation(viewportId);
-      const segmentationId = activeSegmentation?.segmentationId;
-      const activeSegmentIndex = segmentationService.getActiveSegment(viewportId).segmentIndex;
+      const { segmentationId, activeSegmentIndex } = _getActiveSegmentationInfo();
+      console.log('interpolateLabelmap', { segmentationId, activeSegmentIndex });
       labelmapInterpolation.interpolate({
         segmentationId,
         segmentIndex: Number(activeSegmentIndex),
@@ -1648,6 +1698,7 @@ function commandsModule({
     undo: actions.undo,
     redo: actions.redo,
     interpolateLabelmap: actions.interpolateLabelmap,
+    runSegmentBidirectional: actions.runSegmentBidirectional,
   };
 
   return {
