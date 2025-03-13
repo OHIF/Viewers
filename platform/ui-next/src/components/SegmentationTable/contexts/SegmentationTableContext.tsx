@@ -38,7 +38,7 @@ export interface SegmentationTableContextType {
     segmentationId: string;
     isExportable: boolean;
   }[];
-  showConfig: boolean;
+  showConfig: boolean; // Kept for parent component conditional visibility control
   fillAlphaInactive: number;
   outlineWidth: number;
   renderFill: boolean;

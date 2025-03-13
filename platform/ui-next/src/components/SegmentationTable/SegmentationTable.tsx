@@ -1,4 +1,4 @@
-import React, { ReactNode, useState } from 'react';
+import React, { ReactNode, useState, Children, isValidElement, cloneElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import { PanelSection } from '../PanelSection';
 import { SegmentationTableProvider } from './contexts';
@@ -116,6 +116,28 @@ export const SegmentationTableRoot: SegmentationTableComponent = (
     renderOutline = props.renderOutline !== undefined ? props.renderOutline : true,
   } = activeRepresentation?.styles ?? {};
 
+  // Check if SegmentationTableConfig is present in children
+  const hasConfigComponent = Children.toArray(children).some(
+    child => isValidElement(child) && child.type === SegmentationTableConfig
+  );
+
+  // Process children to conditionally render the config component based on showConfig
+  const processedChildren = Children.map(children, child => {
+    if (isValidElement(child) && child.type === SegmentationTableConfig) {
+      // Only render the Config component if showConfig is true
+      return showConfig ? child : null;
+    }
+    return child;
+  });
+
+  const toggleShowConfig = () => {
+    if (props.setShowConfig) {
+      props.setShowConfig(!showConfig);
+    } else {
+      setInternalShowConfig(!internalShowConfig);
+    }
+  };
+
   return (
     <SegmentationTableProvider
       value={{
@@ -133,27 +155,25 @@ export const SegmentationTableRoot: SegmentationTableComponent = (
         activeSegmentation,
         activeRepresentation,
         ...contextProps,
-        setShowConfig: () => setInternalShowConfig(!internalShowConfig),
+        setShowConfig: toggleShowConfig,
       }}
     >
       <PanelSection defaultOpen={true}>
         <PanelSection.Header className="flex items-center justify-between">
           <span>{t(title)}</span>
-          <div className="ml-auto mr-2">
-            <Icons.Settings
-              className="text-primary-active h-4 w-4"
-              onClick={e => {
-                e.stopPropagation();
-                if (props.setShowConfig) {
-                  props.setShowConfig(!showConfig);
-                } else {
-                  setInternalShowConfig(!internalShowConfig);
-                }
-              }}
-            />
-          </div>
+          {hasConfigComponent && (
+            <div className="ml-auto mr-2">
+              <Icons.Settings
+                className="text-primary-active h-4 w-4"
+                onClick={e => {
+                  e.stopPropagation();
+                  toggleShowConfig();
+                }}
+              />
+            </div>
+          )}
         </PanelSection.Header>
-        <PanelSection.Content>{children}</PanelSection.Content>
+        <PanelSection.Content>{processedChildren}</PanelSection.Content>
       </PanelSection>
     </SegmentationTableProvider>
   );

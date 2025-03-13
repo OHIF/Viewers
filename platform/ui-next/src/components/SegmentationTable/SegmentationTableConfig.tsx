@@ -25,10 +25,9 @@ export const SegmentationTableConfig: React.FC<{ children?: React.ReactNode }> =
     renderInactiveSegmentations,
     toggleRenderInactiveSegmentations,
     data,
-    showConfig = false,
   } = useSegmentationTableContext('SegmentationTableConfig');
 
-  if (!data?.length || !showConfig) {
+  if (!data?.length) {
     return null;
   }
 
