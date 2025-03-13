@@ -6,7 +6,7 @@ import { Icons } from '../Icons';
 import { Switch } from '../Switch';
 import { Label } from '../Label';
 import { Input } from '../Input';
-import { useSegmentationTableContext } from './SegmentationTableContext';
+import { useSegmentationTableContext } from './contexts';
 
 export const SegmentationTableConfig: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
   const { t } = useTranslation('SegmentationTable.AppearanceSettings');
@@ -26,7 +26,7 @@ export const SegmentationTableConfig: React.FC<{ children?: React.ReactNode }> =
     toggleRenderInactiveSegmentations,
     data,
     showConfig = false,
-  } = useSegmentationTableContext('styles');
+  } = useSegmentationTableContext('SegmentationTableConfig');
 
   if (!data?.length || !showConfig) {
     return null;
@@ -153,6 +153,7 @@ export const SegmentationTableConfig: React.FC<{ children?: React.ReactNode }> =
           />
         </div>
       )}
+      {children}
     </div>
   );
 };

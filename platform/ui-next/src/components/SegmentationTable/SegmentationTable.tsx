@@ -1,7 +1,7 @@
 import React, { ReactNode, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { PanelSection } from '../PanelSection';
-import { SegmentationTableProvider, SegmentationTableContext } from './SegmentationTableContext';
+import { SegmentationTableProvider } from './contexts';
 import { SegmentationSegments } from './SegmentationSegments';
 import { SegmentStatistics } from './SegmentStatistics';
 import { SegmentationTableConfig } from './SegmentationTableConfig';
@@ -13,10 +13,60 @@ import { SegmentationCollapsed } from './SegmentationCollapsed';
 import { SegmentationExpanded } from './SegmentationExpanded';
 import Icons from '../Icons';
 
-interface SegmentationTableProps extends SegmentationTableContext {
+interface SegmentationTableProps {
   disabled?: boolean;
   title?: string;
   children?: ReactNode;
+  data: any[];
+  mode: 'collapsed' | 'expanded';
+  fillAlpha?: number;
+  exportOptions?: any[];
+  showConfig?: boolean;
+  fillAlphaInactive?: number;
+  outlineWidth?: number;
+  renderFill?: boolean;
+  renderOutline?: boolean;
+  setShowConfig?: (value: boolean) => void;
+  activeSegmentationId?: string;
+  activeRepresentation?: any;
+  activeSegmentation?: any;
+  disableEditing?: boolean;
+  showAddSegment?: boolean;
+  renderInactiveSegmentations?: boolean;
+
+  // Function handlers
+  setRenderFill?: ({ type }: { type: string }, value: boolean) => void;
+  setRenderOutline?: ({ type }: { type: string }, value: boolean) => void;
+  setOutlineWidth?: ({ type }: { type: string }, value: number) => void;
+  setFillAlpha?: ({ type }: { type: string }, value: number) => void;
+  setFillAlphaInactive?: ({ type }: { type: string }, value: number) => void;
+  toggleRenderInactiveSegmentations?: () => void;
+  onSegmentationAdd?: (segmentationId: string) => void;
+  onSegmentationClick?: (segmentationId: string) => void;
+  onSegmentationDelete?: (segmentationId: string) => void;
+  onSegmentAdd?: (segmentationId: string) => void;
+  onSegmentClick?: (segmentationId: string, segmentIndex: number) => void;
+  onSegmentEdit?: (segmentationId: string, segmentIndex: number) => void;
+  onSegmentationEdit?: (segmentationId: string) => void;
+  onSegmentColorClick?: (segmentationId: string, segmentIndex: number) => void;
+  onSegmentDelete?: (segmentationId: string, segmentIndex: number) => void;
+  onToggleSegmentVisibility?: (
+    segmentationId: string,
+    segmentIndex: number,
+    representationType?: string
+  ) => void;
+  onToggleSegmentLock?: (segmentationId: string, segmentIndex: number) => void;
+  onToggleSegmentationRepresentationVisibility?: (segmentationId: string, type: string) => void;
+  onSegmentationDownload?: (segmentationId: string) => void;
+  storeSegmentation?: (segmentationId: string) => void;
+  onSegmentationDownloadRTSS?: (segmentationId: string) => void;
+  setStyle?: (
+    segmentationId: string,
+    representationType: string,
+    styleKey: string,
+    value: unknown
+  ) => void;
+  onSegmentationRemoveFromViewport?: (segmentationId: string) => void;
 }
 
 interface SegmentationTableComponent extends React.FC<SegmentationTableProps> {
@@ -31,35 +81,61 @@ interface SegmentationTableComponent extends React.FC<SegmentationTableProps> {
   SegmentStatistics: typeof SegmentStatistics;
 }
 
-export const SegmentationTable: SegmentationTableComponent = (props: SegmentationTableProps) => {
+export const SegmentationTableRoot: SegmentationTableComponent = (
+  props: SegmentationTableProps
+) => {
   const { t } = useTranslation('SegmentationTable');
-  const { data = [], mode, title, disableEditing, disabled, children, ...contextProps } = props;
-  const [showConfig, setShowConfig] = useState(false);
+  const {
+    data = [],
+    mode,
+    title,
+    disableEditing = false,
+    disabled = false,
+    children,
+    showConfig: externalShowConfig,
+    ...contextProps
+  } = props;
 
+  const [internalShowConfig, setInternalShowConfig] = useState(false);
+  const showConfig = externalShowConfig !== undefined ? externalShowConfig : internalShowConfig;
+
+  // Find the active segmentation info based on which representation is active
   const activeSegmentationInfo = data.find(info => info.representation?.active);
 
-  const activeSegmentationId = activeSegmentationInfo?.segmentation?.segmentationId;
-  const activeRepresentation = activeSegmentationInfo?.representation;
-  const activeSegmentation = activeSegmentationInfo?.segmentation;
-  const { fillAlpha, fillAlphaInactive, outlineWidth, renderFill, renderOutline } =
-    activeRepresentation?.styles ?? {};
+  // Get the active segmentation ID
+  const activeSegmentationId =
+    props.activeSegmentationId || activeSegmentationInfo?.segmentation?.segmentationId;
+  const activeRepresentation = props.activeRepresentation || activeSegmentationInfo?.representation;
+  const activeSegmentation = props.activeSegmentation || activeSegmentationInfo?.segmentation;
+
+  // Extract style properties or use defaults
+  const {
+    fillAlpha = props.fillAlpha || 0.5,
+    fillAlphaInactive = props.fillAlphaInactive || 0.2,
+    outlineWidth = props.outlineWidth || 1,
+    renderFill = props.renderFill !== undefined ? props.renderFill : true,
+    renderOutline = props.renderOutline !== undefined ? props.renderOutline : true,
+  } = activeRepresentation?.styles ?? {};
 
   return (
     <SegmentationTableProvider
-      data={data}
-      mode={mode}
-      showConfig={showConfig}
-      disabled={disabled}
-      disableEditing={disableEditing}
-      fillAlpha={fillAlpha}
-      fillAlphaInactive={fillAlphaInactive}
-      outlineWidth={outlineWidth}
-      renderFill={renderFill}
-      renderOutline={renderOutline}
-      activeSegmentationId={activeSegmentationId}
-      activeSegmentation={activeSegmentation}
-      activeRepresentation={activeRepresentation}
-      {...contextProps}
+      value={{
+        data,
+        mode,
+        showConfig,
+        disabled,
+        disableEditing,
+        fillAlpha,
+        fillAlphaInactive,
+        outlineWidth,
+        renderFill,
+        renderOutline,
+        activeSegmentationId,
+        activeSegmentation,
+        activeRepresentation,
+        ...contextProps,
+        setShowConfig: () => setInternalShowConfig(!internalShowConfig),
+      }}
     >
       <PanelSection defaultOpen={true}>
         <PanelSection.Header className="flex items-center justify-between">
@@ -69,7 +145,11 @@ export const SegmentationTable: SegmentationTableComponent = (props: Segmentatio
               className="text-primary-active h-4 w-4"
               onClick={e => {
                 e.stopPropagation();
-                setShowConfig(!showConfig);
+                if (props.setShowConfig) {
+                  props.setShowConfig(!showConfig);
+                } else {
+                  setInternalShowConfig(!internalShowConfig);
+                }
               }}
             />
           </div>
@@ -80,12 +160,15 @@ export const SegmentationTable: SegmentationTableComponent = (props: Segmentatio
   );
 };
 
-SegmentationTable.Segments = SegmentationSegments;
-SegmentationTable.Config = SegmentationTableConfig;
-SegmentationTable.AddSegmentRow = AddSegmentRow;
-SegmentationTable.AddSegmentationRow = AddSegmentationRow;
-SegmentationTable.SelectorHeader = SegmentationSelectorHeader;
-SegmentationTable.Header = SegmentationHeader;
-SegmentationTable.Collapsed = SegmentationCollapsed;
-SegmentationTable.Expanded = SegmentationExpanded;
-SegmentationTable.SegmentStatistics = SegmentStatistics;
+const SegmentationTable = Object.assign(SegmentationTableRoot, {
+  Segments: SegmentationSegments,
+  Config: SegmentationTableConfig,
+  AddSegmentRow: AddSegmentRow,
+  AddSegmentationRow: AddSegmentationRow,
+  SelectorHeader: SegmentationSelectorHeader,
+  Collapsed: SegmentationCollapsed,
+  Expanded: SegmentationExpanded,
+  SegmentStatistics: SegmentStatistics,
+});
+
+export default SegmentationTable;

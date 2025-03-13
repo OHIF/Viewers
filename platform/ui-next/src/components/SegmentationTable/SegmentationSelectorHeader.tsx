@@ -11,15 +11,16 @@ import {
 
 import { useTranslation } from 'react-i18next';
 import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from '@ohif/ui-next';
-import { useSegmentationTableContext } from './SegmentationTableContext';
+import { useSegmentationTableContext } from './contexts';
 
 export const SegmentationSelectorHeader: React.FC<{ children?: React.ReactNode }> = ({
   children = null,
 }) => {
   const { t } = useTranslation('SegmentationTable.HeaderCollapsed');
 
-  const { data, activeSegmentationId, mode, onSegmentationClick, exportOptions, ...contextProps } =
-    useSegmentationTableContext('SegmentationTable.HeaderCollapsed');
+  const { data, activeSegmentationId, mode, onSegmentationClick } = useSegmentationTableContext(
+    'SegmentationSelectorHeader'
+  );
 
   if (mode !== 'collapsed' || !data?.length) {
     return null;
@@ -41,21 +42,6 @@ export const SegmentationSelectorHeader: React.FC<{ children?: React.ReactNode }
     info: seg.segmentation.cachedStats?.info,
   }));
 
-  const allowExport = exportOptions?.find(
-    ({ segmentationId }) => segmentationId === activeSegmentation.id
-  )?.isExportable;
-
-  const childrenWithProps = React.Children.map(children, child =>
-    React.isValidElement(child)
-      ? React.cloneElement(child, {
-          activeSegmentation,
-          allowExport,
-          t,
-          ...contextProps,
-        })
-      : child
-  );
-
   return (
     <div className="bg-primary-dark flex h-10 w-full items-center space-x-1 rounded-t px-1.5">
       <DropdownMenu>
@@ -67,7 +53,7 @@ export const SegmentationSelectorHeader: React.FC<{ children?: React.ReactNode }
             <Icons.More className="h-6 w-6" />
           </Button>
         </DropdownMenuTrigger>
-        {childrenWithProps}
+        {children}
       </DropdownMenu>
       <Select
         onValueChange={value => onSegmentationClick(value)}

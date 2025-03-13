@@ -1,32 +1,10 @@
 import React from 'react';
-import { SegmentStatisticsProvider, useSegmentStatistics } from './SegmentStatisticsContext';
+import { SegmentStatisticsProvider, useSegmentStatistics } from './contexts';
 import { roundNumber } from '../../utils';
-
-const SegmentStatisticsRoot = ({ segment, children }) => {
-  if (!segment) {
-    return null;
-  }
-
-  return (
-    <SegmentStatisticsProvider segment={segment}>
-      <div className="segment-statistics w-full">{children}</div>
-    </SegmentStatisticsProvider>
-  );
-};
-
-// Title component
-const SegmentStatisticsTitle = ({ children }) => {
-  return <div className="mb-2">{children}</div>;
-};
-
-// Header component (appears before the main stats)
-const SegmentStatisticsHeader = ({ children }) => {
-  return <div className="mb-3">{children}</div>;
-};
 
 // Default statistics component
 const DefaultStatsList = () => {
-  const { namedStats } = useSegmentStatistics();
+  const { namedStats } = useSegmentStatistics('DefaultStatsList');
 
   if (!namedStats) {
     return null;
@@ -60,8 +38,31 @@ const DefaultStatsList = () => {
   );
 };
 
+// Root component that serves as the container and context provider
+const SegmentStatisticsRoot = ({ segment, children }) => {
+  if (!segment) {
+    return null;
+  }
+
+  return (
+    <SegmentStatisticsProvider segment={segment}>
+      <div className="segment-statistics w-full">{children}</div>
+    </SegmentStatisticsProvider>
+  );
+};
+
+// Title component
+const SegmentStatisticsTitle = ({ children }) => {
+  return <div className="mb-2">{children}</div>;
+};
+
+// Header component (appears before the main stats)
+const SegmentStatisticsHeader = ({ children }) => {
+  return <div className="mb-3">{children}</div>;
+};
+
 // Body component (contains the main stats)
-const SegmentStatisticsBody = ({ children }) => {
+const SegmentStatisticsBody = ({ children = null }) => {
   return <div className="segment-statistics-body">{children || <DefaultStatsList />}</div>;
 };
 

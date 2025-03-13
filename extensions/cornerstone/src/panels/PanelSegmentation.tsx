@@ -15,51 +15,54 @@ export default function PanelSegmentation({
       servicesManager,
     });
 
+  // Extract customization options
+  const segmentationTableMode = customizationService.getCustomization(
+    'panelSegmentation.tableMode'
+  ) as unknown as string;
+  const onSegmentationAdd = customizationService.getCustomization(
+    'panelSegmentation.onSegmentationAdd'
+  );
+  const disableEditing = customizationService.getCustomization('panelSegmentation.disableEditing');
+  const showAddSegment = customizationService.getCustomization('panelSegmentation.showAddSegment');
+  const CustomDropdownMenuContent = customizationService.getCustomization(
+    'panelSegmentation.customDropdownMenuContent'
+  );
+
+  // Create handlers object for all command runs
   const handlers = {
     onSegmentationClick: (segmentationId: string) => {
       commandsManager.run('setActiveSegmentation', { segmentationId });
     },
-
     onSegmentAdd: segmentationId => {
       commandsManager.run('addSegment', { segmentationId });
     },
-
     onSegmentClick: (segmentationId, segmentIndex) => {
       commandsManager.run('setActiveSegmentAndCenter', { segmentationId, segmentIndex });
     },
-
     onSegmentEdit: (segmentationId, segmentIndex) => {
       commandsManager.run('editSegmentLabel', { segmentationId, segmentIndex });
     },
-
     onSegmentationEdit: segmentationId => {
       commandsManager.run('editSegmentationLabel', { segmentationId });
     },
-
     onSegmentColorClick: (segmentationId, segmentIndex) => {
       commandsManager.run('editSegmentColor', { segmentationId, segmentIndex });
     },
-
     onSegmentDelete: (segmentationId, segmentIndex) => {
       commandsManager.run('deleteSegment', { segmentationId, segmentIndex });
     },
-
     onToggleSegmentVisibility: (segmentationId, segmentIndex, type) => {
       commandsManager.run('toggleSegmentVisibility', { segmentationId, segmentIndex, type });
     },
-
     onToggleSegmentLock: (segmentationId, segmentIndex) => {
       commandsManager.run('toggleSegmentLock', { segmentationId, segmentIndex });
     },
-
     onToggleSegmentationRepresentationVisibility: (segmentationId, type) => {
       commandsManager.run('toggleSegmentationVisibility', { segmentationId, type });
     },
-
     onSegmentationDownload: segmentationId => {
       commandsManager.run('downloadSegmentation', { segmentationId });
     },
-
     storeSegmentation: async segmentationId => {
       commandsManager.run({
         commandName: 'storeSegmentation',
@@ -67,213 +70,136 @@ export default function PanelSegmentation({
         context: 'CORNERSTONE',
       });
     },
-
     onSegmentationDownloadRTSS: segmentationId => {
       commandsManager.run('downloadRTSS', { segmentationId });
     },
-
     setStyle: (segmentationId, type, key, value) => {
       commandsManager.run('setSegmentationStyle', { segmentationId, type, key, value });
     },
-
     toggleRenderInactiveSegmentations: () => {
       commandsManager.run('toggleRenderInactiveSegmentations');
     },
-
     onSegmentationRemoveFromViewport: segmentationId => {
       commandsManager.run('removeSegmentationFromViewport', { segmentationId });
     },
-
     onSegmentationDelete: segmentationId => {
       commandsManager.run('deleteSegmentation', { segmentationId });
     },
-
     setFillAlpha: ({ type }, value) => {
       commandsManager.run('setFillAlpha', { type, value });
     },
-
     setOutlineWidth: ({ type }, value) => {
       commandsManager.run('setOutlineWidth', { type, value });
     },
-
     setRenderFill: ({ type }, value) => {
       commandsManager.run('setRenderFill', { type, value });
     },
-
     setRenderOutline: ({ type }, value) => {
       commandsManager.run('setRenderOutline', { type, value });
     },
-
     setFillAlphaInactive: ({ type }, value) => {
       commandsManager.run('setFillAlphaInactive', { type, value });
     },
-
     getRenderInactiveSegmentations: () => {
       return commandsManager.run('getRenderInactiveSegmentations');
     },
   };
 
-  const segmentationTableMode = customizationService.getCustomization(
-    'panelSegmentation.tableMode'
-  ) as unknown as string;
-
-  // custom onSegmentationAdd if provided
-  const onSegmentationAdd = customizationService.getCustomization(
-    'panelSegmentation.onSegmentationAdd'
-  );
-
-  const disableEditing = customizationService.getCustomization('panelSegmentation.disableEditing');
-  const showAddSegment = customizationService.getCustomization('panelSegmentation.showAddSegment');
-  const CustomDropdownMenuContent = customizationService.getCustomization(
-    'panelSegmentation.customDropdownMenuContent'
-  );
-
+  // Generate export options
   const exportOptions = segmentationsWithRepresentations.map(({ segmentation }) => {
     const { representationData, segmentationId } = segmentation;
     const { Labelmap } = representationData;
 
     if (!Labelmap) {
-      return {
-        segmentationId,
-        isExportable: true,
-      };
+      return { segmentationId, isExportable: true };
     }
 
     const referencedImageIds = Labelmap.referencedImageIds;
     const firstImageId = referencedImageIds[0];
-
     const instance = metaData.get('instance', firstImageId);
 
     if (!instance) {
-      return {
-        segmentationId,
-        isExportable: false,
-      };
+      return { segmentationId, isExportable: false };
     }
 
     const SOPInstanceUID = instance.SOPInstanceUID || instance.SopInstanceUID;
     const SeriesInstanceUID = instance.SeriesInstanceUID;
-
     const displaySet = displaySetService.getDisplaySetForSOPInstanceUID(
       SOPInstanceUID,
       SeriesInstanceUID
     );
 
-    const isExportable = displaySet?.isReconstructable;
-
     return {
       segmentationId,
-      isExportable,
+      isExportable: displaySet?.isReconstructable,
     };
   });
 
-  const CustomStatsRenderer = () => {
-    const { namedStats } = useSegmentStatistics();
+  // Common props for SegmentationTable
+  const tableProps = {
+    disabled,
+    data: segmentationsWithRepresentations,
+    // mode: segmentationTableMode,
+    mode: 'expanded',
+    title: 'Segmentations',
+    exportOptions,
+    disableEditing,
+    onSegmentationAdd,
+    showAddSegment,
+    renderInactiveSegmentations: handlers.getRenderInactiveSegmentations(),
+    ...handlers,
+  };
 
-    if (!namedStats) {
-      return null;
+  // Render content based on mode
+  const renderModeContent = () => {
+    if (tableProps.mode === 'collapsed') {
+      return (
+        <SegmentationTable.Collapsed>
+          <SegmentationTable.SelectorHeader>
+            <CustomDropdownMenuContent />
+          </SegmentationTable.SelectorHeader>
+          <SegmentationTable.AddSegmentRow />
+          <SegmentationTable.Segments>
+            <SegmentationTable.SegmentStatistics.Header>
+              <div className="mb-2">
+                <div className="flex justify-between">
+                  <div>L:</div>
+                  <div>
+                    <span className="text-white">195</span> <span>mm</span>
+                  </div>
+                </div>
+                <div className="flex justify-between">
+                  <div>W:</div>
+                  <div>
+                    <span className="text-white">125</span> <span>mm</span>
+                  </div>
+                </div>
+              </div>
+              <div className="mb-4 border-b border-gray-600"></div>
+            </SegmentationTable.SegmentStatistics.Header>
+            <SegmentationTable.SegmentStatistics.Body />
+          </SegmentationTable.Segments>
+        </SegmentationTable.Collapsed>
+      );
     }
 
-    // Custom rendering logic
     return (
-      <div className="grid grid-cols-2 gap-2">
-        {Object.entries(namedStats)
-          .filter(([_, stat]) => stat && stat.value !== null)
-          .map(([key, stat]) => (
-            <div
-              key={key}
-              className="rounded border p-2"
-            >
-              <div className="font-medium">{stat.label}</div>
-              <div className="text-right text-white">
-                {roundNumber(stat.value)} {stat.unit || ''}
-              </div>
-            </div>
-          ))}
-      </div>
+      <SegmentationTable.Expanded>
+        <SegmentationTable.AddSegmentRow />
+        {/* <SegmentationTable.Header>
+          <CustomDropdownMenuContent />
+        </SegmentationTable.Header> */}
+        <SegmentationTable.Segments />
+      </SegmentationTable.Expanded>
     );
   };
 
   return (
-    <>
-      <SegmentationTable
-        disabled={disabled}
-        data={segmentationsWithRepresentations}
-        mode={segmentationTableMode}
-        title="Segmentations"
-        exportOptions={exportOptions}
-        disableEditing={disableEditing}
-        onSegmentationAdd={onSegmentationAdd}
-        onSegmentationClick={handlers.onSegmentationClick}
-        onSegmentationDelete={handlers.onSegmentationDelete}
-        showAddSegment={showAddSegment}
-        onSegmentAdd={handlers.onSegmentAdd}
-        onSegmentClick={handlers.onSegmentClick}
-        onSegmentEdit={handlers.onSegmentEdit}
-        onSegmentationEdit={handlers.onSegmentationEdit}
-        onSegmentColorClick={handlers.onSegmentColorClick}
-        onSegmentDelete={handlers.onSegmentDelete}
-        onToggleSegmentVisibility={handlers.onToggleSegmentVisibility}
-        onToggleSegmentLock={handlers.onToggleSegmentLock}
-        onToggleSegmentationRepresentationVisibility={
-          handlers.onToggleSegmentationRepresentationVisibility
-        }
-        onSegmentationDownload={handlers.onSegmentationDownload}
-        storeSegmentation={handlers.storeSegmentation}
-        onSegmentationDownloadRTSS={handlers.onSegmentationDownloadRTSS}
-        setStyle={handlers.setStyle}
-        toggleRenderInactiveSegmentations={handlers.toggleRenderInactiveSegmentations}
-        onSegmentationRemoveFromViewport={handlers.onSegmentationRemoveFromViewport}
-        setFillAlpha={handlers.setFillAlpha}
-        setOutlineWidth={handlers.setOutlineWidth}
-        setRenderFill={handlers.setRenderFill}
-        setRenderOutline={handlers.setRenderOutline}
-        setFillAlphaInactive={handlers.setFillAlphaInactive}
-        renderInactiveSegmentations={handlers.getRenderInactiveSegmentations()}
-      >
-        {children}
-        <SegmentationTable.Config />
-        <SegmentationTable.AddSegmentationRow />
-
-        {segmentationTableMode === 'collapsed' ? (
-          <SegmentationTable.Collapsed>
-            <SegmentationTable.SelectorHeader>
-              <CustomDropdownMenuContent />
-            </SegmentationTable.SelectorHeader>
-            <SegmentationTable.AddSegmentRow />
-            <SegmentationTable.Segments>
-              <SegmentationTable.SegmentStatistics.Header>
-                <div className="mb-2">
-                  <div className="flex justify-between">
-                    <div>L:</div>
-                    <div>
-                      <span className="text-white">195</span> <span>mm</span>
-                    </div>
-                  </div>
-                  <div className="flex justify-between">
-                    <div>W:</div>
-                    <div>
-                      <span className="text-white">125</span> <span>mm</span>
-                    </div>
-                  </div>
-                </div>
-                <div className="mb-4 border-b border-gray-600"></div>
-              </SegmentationTable.SegmentStatistics.Header>
-
-              {/* Body will show default stats if not provided */}
-              <SegmentationTable.SegmentStatistics.Body />
-            </SegmentationTable.Segments>
-          </SegmentationTable.Collapsed>
-        ) : (
-          <SegmentationTable.Expanded>
-            <SegmentationTable.Header>
-              <CustomDropdownMenuContent />
-            </SegmentationTable.Header>
-            {/* <SegmentationTable.AddSegmentRow /> */}
-            <SegmentationTable.Segments />
-          </SegmentationTable.Expanded>
-        )}
-      </SegmentationTable>
-    </>
+    <SegmentationTable {...tableProps}>
+      {children}
+      <SegmentationTable.Config />
+      <SegmentationTable.AddSegmentationRow />
+      {renderModeContent()}
+    </SegmentationTable>
   );
 }

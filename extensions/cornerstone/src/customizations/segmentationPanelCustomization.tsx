@@ -9,36 +9,67 @@ import {
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
   Icons,
+  useSegmentationTableContext,
+  useSegmentationExpanded,
 } from '@ohif/ui-next';
+import { useTranslation } from 'react-i18next';
 
 export default function getSegmentationPanelCustomization({ commandsManager, servicesManager }) {
-  return {
-    'panelSegmentation.customDropdownMenuContent': ({
-      activeSegmentation,
+  // Custom dropdown menu component that uses context for data
+  const CustomDropdownMenuContent = () => {
+    const { t } = useTranslation('SegmentationTable');
+    const {
       onSegmentationAdd,
       onSegmentationRemoveFromViewport,
       onSegmentationEdit,
       onSegmentationDelete,
-      allowExport,
+      exportOptions,
       storeSegmentation,
       onSegmentationDownload,
       onSegmentationDownloadRTSS,
-      t,
-    }) => (
+    } = useSegmentationTableContext('CustomDropdownMenu');
+
+    // Try to get segmentation data from expanded context first, fall back to table context
+    let segmentation;
+    let segmentationId;
+    let allowExport = false;
+
+    try {
+      // Try to get from expanded context
+      const context = useSegmentationExpanded();
+      segmentation = context.segmentation;
+      segmentationId = segmentation.segmentationId;
+    } catch (e) {
+      // If not in expanded context, fallback to active segmentation from table context
+      const { activeSegmentation, activeSegmentationId } =
+        useSegmentationTableContext('CustomDropdownMenu');
+      segmentation = activeSegmentation;
+      segmentationId = activeSegmentationId;
+    }
+
+    // Determine if export is allowed for this segmentation
+    if (exportOptions && segmentationId) {
+      const exportOption = exportOptions.find(opt => opt.segmentationId === segmentationId);
+      allowExport = exportOption?.isExportable || false;
+    }
+
+    if (!segmentation || !segmentationId) {
+      return null;
+    }
+
+    return (
       <DropdownMenuContent align="start">
-        <DropdownMenuItem onClick={() => onSegmentationAdd(activeSegmentation.segmentationId)}>
+        <DropdownMenuItem onClick={() => onSegmentationAdd(segmentationId)}>
           <Icons.Add className="text-foreground" />
           <span className="pl-2">{t('Create New Segmentation')}</span>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuLabel>{t('Manage Current Segmentation')}</DropdownMenuLabel>
-        <DropdownMenuItem
-          onClick={() => onSegmentationRemoveFromViewport(activeSegmentation.segmentationId)}
-        >
+        <DropdownMenuItem onClick={() => onSegmentationRemoveFromViewport(segmentationId)}>
           <Icons.Series className="text-foreground" />
           <span className="pl-2">{t('Remove from Viewport')}</span>
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => onSegmentationEdit(activeSegmentation.segmentationId)}>
+        <DropdownMenuItem onClick={() => onSegmentationEdit(segmentationId)}>
           <Icons.Rename className="text-foreground" />
           <span className="pl-2">{t('Rename')}</span>
         </DropdownMenuItem>
@@ -52,26 +83,26 @@ export default function getSegmentationPanelCustomization({ commandsManager, ser
           </DropdownMenuSubTrigger>
           <DropdownMenuPortal>
             <DropdownMenuSubContent>
-              <DropdownMenuItem
-                onClick={() => storeSegmentation(activeSegmentation.segmentationId)}
-              >
+              <DropdownMenuItem onClick={() => storeSegmentation(segmentationId)}>
                 {t('Export DICOM SEG')}
               </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={() => onSegmentationDownload(activeSegmentation.segmentationId)}
-              >
+              <DropdownMenuItem onClick={() => onSegmentationDownload(segmentationId)}>
                 {t('Download DICOM SEG')}
               </DropdownMenuItem>
             </DropdownMenuSubContent>
           </DropdownMenuPortal>
         </DropdownMenuSub>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={() => onSegmentationDelete(activeSegmentation.segmentationId)}>
+        <DropdownMenuItem onClick={() => onSegmentationDelete(segmentationId)}>
           <Icons.Delete className="text-red-600" />
           <span className="pl-2 text-red-600">{t('Delete')}</span>
         </DropdownMenuItem>
       </DropdownMenuContent>
-    ),
+    );
+  };
+
+  return {
+    'panelSegmentation.customDropdownMenuContent': CustomDropdownMenuContent,
     'panelSegmentation.disableEditing': false,
     'panelSegmentation.showAddSegment': true,
     'panelSegmentation.onSegmentationAdd': () => {

@@ -1,10 +1,10 @@
 import React from 'react';
 import { ScrollArea, DataRow } from '../../components';
 import { HoverCard, HoverCardTrigger, HoverCardContent } from '../../components/HoverCard';
-import { useSegmentationTableContext } from './SegmentationTableContext';
+import { useSegmentationTableContext, useSegmentationExpanded } from './contexts';
 import { SegmentStatistics } from './SegmentStatistics';
 
-export const SegmentationSegments = ({ segmentation, representation, children }) => {
+export const SegmentationSegments = ({ children = null }: { children?: React.ReactNode }) => {
   const {
     activeSegmentationId,
     disableEditing,
@@ -15,19 +15,29 @@ export const SegmentationSegments = ({ segmentation, representation, children })
     onSegmentEdit,
     onSegmentDelete,
     data,
-  } = useSegmentationTableContext('SegmentationTable.Segments');
+  } = useSegmentationTableContext('SegmentationSegments');
 
-  let segmentationToUse = segmentation;
-  let representationToUse = representation;
-  let segmentationIdToUse = activeSegmentationId;
-  if (!segmentationToUse || !representationToUse) {
-    const entry = data.find(seg => seg.segmentation.segmentationId === activeSegmentationId);
-    segmentationToUse = entry?.segmentation;
-    representationToUse = entry?.representation;
-    segmentationIdToUse = entry?.segmentation.segmentationId;
+  // Try to get segmentation data from expanded context first, then fall back to table context
+  let segmentation;
+  let representation;
+
+  try {
+    // Try to use the SegmentationExpanded context if available
+    const segmentationInfo = useSegmentationExpanded('SegmentationSegments');
+    if (segmentationInfo.isActive) {
+      segmentation = segmentationInfo.segmentation;
+      representation = segmentationInfo.representation;
+    }
+  } catch (e) {
+    // Not within SegmentationExpanded context, get from active segmentation
+    const segmentationInfo = data.find(
+      entry => entry.segmentation.segmentationId === activeSegmentationId
+    );
+    segmentation = segmentationInfo?.segmentation;
+    representation = segmentationInfo?.representation;
   }
 
-  if (!representationToUse || !segmentationToUse) {
+  if (!representation || !segmentation) {
     return null;
   }
 
@@ -36,12 +46,16 @@ export const SegmentationSegments = ({ segmentation, representation, children })
       className={`ohif-scrollbar invisible-scrollbar bg-bkg-low h-[900px] space-y-px`}
       showArrows={true}
     >
-      {Object.values(representationToUse.segments).map(segment => {
+      {Object.values(representation.segments).map(segment => {
         if (!segment) {
           return null;
         }
-        const { segmentIndex, color, visible } = segment;
-        const segmentFromSegmentation = segmentationToUse.segments[segmentIndex];
+        const { segmentIndex, color, visible } = segment as {
+          segmentIndex: number;
+          color: number[];
+          visible: boolean;
+        };
+        const segmentFromSegmentation = segmentation.segments[segmentIndex];
 
         if (!segmentFromSegmentation) {
           return null;
@@ -67,18 +81,20 @@ export const SegmentationSegments = ({ segmentation, representation, children })
                   isVisible={visible}
                   isLocked={locked}
                   disableEditing={disableEditing}
-                  onColor={() => onSegmentColorClick(segmentationIdToUse, segmentIndex)}
+                  onColor={() => onSegmentColorClick(segmentation.segmentationId, segmentIndex)}
                   onToggleVisibility={() =>
                     onToggleSegmentVisibility(
-                      segmentationIdToUse,
+                      segmentation.segmentationId,
                       segmentIndex,
-                      representationToUse.type
+                      representation.type
                     )
                   }
-                  onToggleLocked={() => onToggleSegmentLock(segmentationIdToUse, segmentIndex)}
-                  onSelect={() => onSegmentClick(segmentationIdToUse, segmentIndex)}
-                  onRename={() => onSegmentEdit(segmentationIdToUse, segmentIndex)}
-                  onDelete={() => onSegmentDelete(segmentationIdToUse, segmentIndex)}
+                  onToggleLocked={() =>
+                    onToggleSegmentLock(segmentation.segmentationId, segmentIndex)
+                  }
+                  onSelect={() => onSegmentClick(segmentation.segmentationId, segmentIndex)}
+                  onRename={() => onSegmentEdit(segmentation.segmentationId, segmentIndex)}
+                  onDelete={() => onSegmentDelete(segmentation.segmentationId, segmentIndex)}
                 />
               </div>
             </HoverCardTrigger>

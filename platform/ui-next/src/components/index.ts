@@ -80,7 +80,11 @@ import { Onboarding } from './Onboarding';
 import { DoubleSlider } from './DoubleSlider';
 import { DataRow } from './DataRow';
 import { MeasurementTable } from './MeasurementTable';
-import { SegmentationTable, useSegmentationTableContext } from './SegmentationTable';
+import {
+  SegmentationTable,
+  useSegmentationTableContext,
+  useSegmentationExpanded,
+} from './SegmentationTable';
 import { Toaster, toast } from './Sonner';
 import { StudySummary } from './StudySummary';
 import { ErrorBoundary } from './Errorboundary';
@@ -237,4 +241,5 @@ export {
   UserPreferencesModal,
   FooterAction,
   ToolSettings,
+  useSegmentationExpanded,
 };

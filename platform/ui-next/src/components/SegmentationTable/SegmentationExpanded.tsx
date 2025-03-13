@@ -1,47 +1,44 @@
 import React from 'react';
-import { useSegmentationTableContext } from './SegmentationTableContext';
 import { PanelSection } from '../PanelSection';
+import { useSegmentationTableContext, SegmentationExpandedProvider } from './contexts';
 import { SegmentationHeader } from './SegmentationHeader';
-import { SegmentationTable } from './SegmentationTable';
 
 export const SegmentationExpanded: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
-  const { data } = useSegmentationTableContext('SegmentationExpanded');
+  const { data, activeSegmentationId, onSegmentationClick, mode } =
+    useSegmentationTableContext('SegmentationExpanded');
+  debugger;
 
-  // Separate the Header component from other children
-  const headerComponent = React.Children.toArray(children).find(
-    child => React.isValidElement(child) && child.type === SegmentationTable.Header
-  );
-  const otherChildren = React.Children.toArray(children).filter(
-    child => !(React.isValidElement(child) && child.type === SegmentationTable.Header)
-  );
+  // Check if we should render based on mode
+  if (mode !== 'expanded' || !data || data.length === 0) {
+    return null;
+  }
 
   return (
     <>
-      {data.map(segmentationInfo => (
-        <PanelSection key={segmentationInfo.segmentation.segmentationId}>
-          <PanelSection.Header className="border-input border-t-2 bg-transparent pl-1">
-            {headerComponent ? (
-              React.cloneElement(headerComponent as React.ReactElement, {
-                segmentation: segmentationInfo.segmentation,
-                representation: segmentationInfo.representation,
-              })
-            ) : (
-              <SegmentationHeader segmentation={segmentationInfo.segmentation} />
-            )}
-          </PanelSection.Header>
-          <PanelSection.Content>
-            <div className="segmentation-expanded-section">
-              {React.Children.map(otherChildren, child =>
-                React.isValidElement(child)
-                  ? React.cloneElement(child, {
-                      segmentation: segmentationInfo.segmentation,
-                    })
-                  : child
-              )}
-            </div>
-          </PanelSection.Content>
-        </PanelSection>
-      ))}
+      {data.map(segmentationInfo => {
+        const isActive = segmentationInfo.segmentation.segmentationId === activeSegmentationId;
+
+        return (
+          <PanelSection key={segmentationInfo.segmentation.segmentationId}>
+            <SegmentationExpandedProvider
+              segmentation={segmentationInfo.segmentation}
+              representation={segmentationInfo.representation}
+              isActive={isActive}
+            >
+              <PanelSection.Header
+                className={`border-input border-t-2 bg-transparent pl-1 ${isActive ? 'border-primary' : ''}`}
+                onClick={() => onSegmentationClick(segmentationInfo.segmentation.segmentationId)}
+              >
+                <SegmentationHeader />
+              </PanelSection.Header>
+
+              <PanelSection.Content>
+                <div className="segmentation-expanded-section">{children}</div>
+              </PanelSection.Content>
+            </SegmentationExpandedProvider>
+          </PanelSection>
+        );
+      })}
     </>
   );
 };
