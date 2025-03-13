@@ -8,8 +8,7 @@ import filesToStudies from './filesToStudies';
 
 import { extensionManager } from '../../App';
 
-import { Button } from '@ohif/ui';
-import { Icons } from '@ohif/ui-next';
+import { Button, Icons } from '@ohif/ui-next';
 
 const getLoadButton = (onDrop, text, isDir) => {
   return (
@@ -20,22 +19,24 @@ const getLoadButton = (onDrop, text, isDir) => {
       {({ getRootProps, getInputProps }) => (
         <div {...getRootProps()}>
           <Button
-            rounded="full"
-            variant="contained" // outlined
+            variant="default"
             disabled={false}
-            endIcon={<Icons.LaunchArrow />}
-            className={classnames('font-medium', 'ml-2')}
             onClick={() => {}}
           >
             {text}
+            <Icons.LaunchArrow className="ml-2" />
             {isDir ? (
               <input
                 {...getInputProps()}
                 webkitdirectory="true"
                 mozdirectory="true"
+                style={{ display: 'none' }}
               />
             ) : (
-              <input {...getInputProps()} />
+              <input
+                {...getInputProps()}
+                style={{ display: 'none' }}
+              />
             )}
           </Button>
         </div>
