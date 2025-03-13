@@ -110,7 +110,8 @@ export default async function init({
   if (
     appConfig.showWarningMessageForCrossOrigin &&
     !window.crossOriginIsolated &&
-    !sharedArrayBufferDisabled
+    !sharedArrayBufferDisabled &&
+    false
   ) {
     uiNotificationService.show({
       title: 'Cross Origin Isolation',

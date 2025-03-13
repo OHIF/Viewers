@@ -30,7 +30,7 @@ function _createWwwcPreset(preset, title, subtitle) {
 export const setToolActiveToolbar = {
   commandName: 'setToolActiveToolbar',
   commandOptions: {
-    toolGroupIds: ['default'],
+    toolGroupIds: ['default', 'mpr', 'SRToolGroup', 'volume3d'],
   },
 };
 
