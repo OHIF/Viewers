@@ -24,10 +24,8 @@ export const SegmentationSegments = ({ children = null }: { children?: React.Rea
   try {
     // Try to use the SegmentationExpanded context if available
     const segmentationInfo = useSegmentationExpanded('SegmentationSegments');
-    if (segmentationInfo.isActive) {
-      segmentation = segmentationInfo.segmentation;
-      representation = segmentationInfo.representation;
-    }
+    segmentation = segmentationInfo.segmentation;
+    representation = segmentationInfo.representation;
   } catch (e) {
     // Not within SegmentationExpanded context, get from active segmentation
     const segmentationInfo = data.find(

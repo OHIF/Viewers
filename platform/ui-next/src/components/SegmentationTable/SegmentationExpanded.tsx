@@ -1,17 +1,24 @@
 import React from 'react';
 import { PanelSection } from '../PanelSection';
 import { useSegmentationTableContext, SegmentationExpandedProvider } from './contexts';
-import { SegmentationHeader } from './SegmentationHeader';
+import { SegmentationTable } from './SegmentationTable';
 
 export const SegmentationExpanded: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
   const { data, activeSegmentationId, onSegmentationClick, mode } =
     useSegmentationTableContext('SegmentationExpanded');
-  debugger;
 
   // Check if we should render based on mode
   if (mode !== 'expanded' || !data || data.length === 0) {
     return null;
   }
+
+  const headerComponent = React.Children.toArray(children).find(
+    child => React.isValidElement(child) && child.type === SegmentationTable.Header
+  );
+
+  const otherChildren = React.Children.toArray(children).filter(
+    child => !(React.isValidElement(child) && child.type === SegmentationTable.Header)
+  );
 
   return (
     <>
@@ -27,13 +34,16 @@ export const SegmentationExpanded: React.FC<{ children?: React.ReactNode }> = ({
             >
               <PanelSection.Header
                 className={`border-input border-t-2 bg-transparent pl-1 ${isActive ? 'border-primary' : ''}`}
-                onClick={() => onSegmentationClick(segmentationInfo.segmentation.segmentationId)}
+                onClick={e => {
+                  e.stopPropagation();
+                  onSegmentationClick(segmentationInfo.segmentation.segmentationId);
+                }}
               >
-                <SegmentationHeader />
+                {headerComponent}
               </PanelSection.Header>
 
               <PanelSection.Content>
-                <div className="segmentation-expanded-section">{children}</div>
+                <div className="segmentation-expanded-section">{otherChildren}</div>
               </PanelSection.Content>
             </SegmentationExpandedProvider>
           </PanelSection>

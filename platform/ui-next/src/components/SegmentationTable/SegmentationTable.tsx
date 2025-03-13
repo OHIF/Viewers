@@ -169,6 +169,7 @@ const SegmentationTable = Object.assign(SegmentationTableRoot, {
   Collapsed: SegmentationCollapsed,
   Expanded: SegmentationExpanded,
   SegmentStatistics: SegmentStatistics,
+  Header: SegmentationHeader,
 });
 
-export default SegmentationTable;
+export { SegmentationTable };

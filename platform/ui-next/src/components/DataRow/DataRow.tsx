@@ -99,13 +99,13 @@ const DataRow: React.FC<DataRowProps> = ({
   const isTitleLong = title?.length > 25;
   const rowRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    if (isSelected && rowRef.current) {
-      setTimeout(() => {
-        rowRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }, 200);
-    }
-  }, [isSelected]);
+  // useEffect(() => {
+  //   if (isSelected && rowRef.current) {
+  //     setTimeout(() => {
+  //       rowRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  //     }, 200);
+  //   }
+  // }, [isSelected]);
 
   const handleAction = (action: string, e: React.MouseEvent) => {
     e.stopPropagation();

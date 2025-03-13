@@ -186,9 +186,9 @@ export default function PanelSegmentation({
     return (
       <SegmentationTable.Expanded>
         <SegmentationTable.AddSegmentRow />
-        {/* <SegmentationTable.Header>
+        <SegmentationTable.Header>
           <CustomDropdownMenuContent />
-        </SegmentationTable.Header> */}
+        </SegmentationTable.Header>
         <SegmentationTable.Segments />
       </SegmentationTable.Expanded>
     );
