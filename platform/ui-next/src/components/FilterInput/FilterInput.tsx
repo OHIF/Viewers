@@ -6,7 +6,7 @@ import { Input } from '../Input';
 import { Icons } from '../Icons';
 
 // Context to share state between compound components
-type FilterInputContextType = {
+type InputFilterContextType = {
   value: string;
   setValue: (value: string) => void;
   handleChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
@@ -14,12 +14,12 @@ type FilterInputContextType = {
   inputRef: React.RefObject<HTMLInputElement>;
 };
 
-const FilterInputContext = createContext<FilterInputContextType | undefined>(undefined);
+const InputFilterContext = createContext<InputFilterContextType | undefined>(undefined);
 
-function useFilterInputContext() {
-  const context = useContext(FilterInputContext);
+function useInputFilterContext() {
+  const context = useContext(InputFilterContext);
   if (!context) {
-    throw new Error('FilterInput compound components must be used within FilterInput.Root');
+    throw new Error('InputFilter compound components must be used within InputFilter.Root');
   }
   return context;
 }
@@ -89,9 +89,9 @@ function Root({
   }, [setValue]);
 
   return (
-    <FilterInputContext.Provider value={{ value, setValue, handleChange, clearValue, inputRef }}>
+    <InputFilterContext.Provider value={{ value, setValue, handleChange, clearValue, inputRef }}>
       <div className={cn('relative', className)}>{children}</div>
-    </FilterInputContext.Provider>
+    </InputFilterContext.Provider>
   );
 }
 
@@ -101,7 +101,7 @@ interface InputProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, '
 }
 
 function InputComponent({ className, placeholder, ...props }: InputProps) {
-  const { value, handleChange, inputRef } = useFilterInputContext();
+  const { value, handleChange, inputRef } = useInputFilterContext();
 
   return (
     <Input
@@ -134,7 +134,7 @@ interface ClearButtonProps {
 }
 
 function ClearButton({ className }: ClearButtonProps) {
-  const { value, clearValue } = useFilterInputContext();
+  const { value, clearValue } = useInputFilterContext();
 
   if (!value) {
     return null;
@@ -151,7 +151,7 @@ function ClearButton({ className }: ClearButtonProps) {
 }
 
 // Pre-composed component for simpler usage
-interface FilterInputProps {
+interface InputFilterProps {
   className?: string;
   placeholder?: string;
   value?: string;
@@ -161,7 +161,7 @@ interface FilterInputProps {
   debounceTime?: number;
 }
 
-function FilterInput({
+function InputFilter({
   className,
   placeholder = 'Search...',
   value,
@@ -169,7 +169,7 @@ function FilterInput({
   onChange,
   onDebounceChange,
   debounceTime = 200,
-}: FilterInputProps) {
+}: InputFilterProps) {
   return (
     <Root
       className={className}
@@ -190,9 +190,9 @@ function FilterInput({
 }
 
 // Attach subcomponents as static properties
-FilterInput.Root = Root;
-FilterInput.Input = InputComponent;
-FilterInput.SearchIcon = SearchIcon;
-FilterInput.ClearButton = ClearButton;
+InputFilter.Root = Root;
+InputFilter.Input = InputComponent;
+InputFilter.SearchIcon = SearchIcon;
+InputFilter.ClearButton = ClearButton;
 
-export { FilterInput, type FilterInputProps };
+export { InputFilter, type InputFilterProps };

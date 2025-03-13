@@ -58,7 +58,7 @@ import { InputDialog, PresetDialog } from './OHIFDialogs';
 import { AboutModal, ImageModal, UserPreferencesModal } from './OHIFModals';
 import Modal from './Modal/Modal';
 import { FooterAction } from './FooterAction';
-import { FilterInput } from './FilterInput';
+import { InputFilter } from './FilterInput';
 
 import {
   DropdownMenu,
@@ -238,5 +238,5 @@ export {
   UserPreferencesModal,
   FooterAction,
   ToolSettings,
-  FilterInput,
+  InputFilter,
 };

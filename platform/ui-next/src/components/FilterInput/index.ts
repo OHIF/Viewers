@@ -1,2 +1,2 @@
-export { FilterInput } from './FilterInput';
-export type { FilterInputProps } from './FilterInput';
+export { InputFilter } from './FilterInput';
+export type { InputFilterProps } from './FilterInput';
