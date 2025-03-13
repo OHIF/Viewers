@@ -3,12 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { PanelSection } from '../PanelSection';
 import { SegmentationTableProvider, SegmentationTableContext } from './SegmentationTableContext';
 import { SegmentationSegments } from './SegmentationSegments';
-import {
-  SegmentStatisticsTitle,
-  SegmentStatisticsHeader,
-  SegmentStatisticsBody,
-  SegmentStatisticsFooter,
-} from './SegmentStatistics';
+import { SegmentStatistics } from './SegmentStatistics';
 import { SegmentationTableConfig } from './SegmentationTableConfig';
 import { AddSegmentRow } from './AddSegmentRow';
 import { AddSegmentationRow } from './AddSegmentationRow';
@@ -24,12 +19,6 @@ interface SegmentationTableProps extends SegmentationTableContext {
   children?: ReactNode;
 }
 
-// Create a wrapper component for SegmentStatistics to expose it via SegmentationTable.SegmentStatistics
-const SegmentStatisticsWrapper = ({ children }) => {
-  return children;
-};
-SegmentStatisticsWrapper.displayName = 'SegmentationTable.SegmentStatistics';
-
 interface SegmentationTableComponent extends React.FC<SegmentationTableProps> {
   Segments: typeof SegmentationSegments;
   Config: typeof SegmentationTableConfig;
@@ -39,11 +28,7 @@ interface SegmentationTableComponent extends React.FC<SegmentationTableProps> {
   Header: typeof SegmentationHeader;
   Collapsed: typeof SegmentationCollapsed;
   Expanded: typeof SegmentationExpanded;
-  SegmentStatistics: typeof SegmentStatisticsWrapper;
-  SegmentStatisticsTitle: typeof SegmentStatisticsTitle;
-  SegmentStatisticsHeader: typeof SegmentStatisticsHeader;
-  SegmentStatisticsBody: typeof SegmentStatisticsBody;
-  SegmentStatisticsFooter: typeof SegmentStatisticsFooter;
+  SegmentStatistics: typeof SegmentStatistics;
 }
 
 export const SegmentationTable: SegmentationTableComponent = (props: SegmentationTableProps) => {
@@ -103,8 +88,4 @@ SegmentationTable.SelectorHeader = SegmentationSelectorHeader;
 SegmentationTable.Header = SegmentationHeader;
 SegmentationTable.Collapsed = SegmentationCollapsed;
 SegmentationTable.Expanded = SegmentationExpanded;
-SegmentationTable.SegmentStatistics = SegmentStatisticsWrapper;
-SegmentationTable.SegmentStatisticsTitle = SegmentStatisticsTitle;
-SegmentationTable.SegmentStatisticsHeader = SegmentStatisticsHeader;
-SegmentationTable.SegmentStatisticsBody = SegmentStatisticsBody;
-SegmentationTable.SegmentStatisticsFooter = SegmentStatisticsFooter;
+SegmentationTable.SegmentStatistics = SegmentStatistics;

@@ -31,19 +31,6 @@ export const SegmentationSegments = ({ segmentation, representation, children })
     return null;
   }
 
-  // Find SegmentStatistics among children
-  const findStatisticsComponent = children => {
-    if (!children) {
-      return null;
-    }
-
-    const childrenArray = React.Children.toArray(children);
-    return childrenArray.find(
-      child => child.type && child.type.displayName === 'SegmentationTable.SegmentStatistics'
-    );
-  };
-
-  const statisticsComponent = findStatisticsComponent(children);
   return (
     <ScrollArea
       className={`ohif-scrollbar invisible-scrollbar bg-bkg-low h-[900px] space-y-px`}
@@ -108,10 +95,7 @@ export const SegmentationSegments = ({ segmentation, representation, children })
                 <h3 className="text-muted-foreground break-words text-lg font-semibold">{label}</h3>
               </div>
 
-              {/* Use the statistics component */}
-              <SegmentStatistics segment={segmentFromSegmentation}>
-                {statisticsComponent ? statisticsComponent.props.children : null}
-              </SegmentStatistics>
+              <SegmentStatistics segment={segmentFromSegmentation}>{children}</SegmentStatistics>
             </HoverCardContent>
           </HoverCard>
         );

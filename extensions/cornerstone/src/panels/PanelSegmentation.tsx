@@ -115,7 +115,7 @@ export default function PanelSegmentation({
 
   const segmentationTableMode = customizationService.getCustomization(
     'panelSegmentation.tableMode'
-  );
+  ) as unknown as string;
 
   // custom onSegmentationAdd if provided
   const onSegmentationAdd = customizationService.getCustomization(
@@ -167,10 +167,29 @@ export default function PanelSegmentation({
     };
   });
 
-  const CustomStats = () => {
+  const CustomStatsRenderer = () => {
+    const { namedStats } = useSegmentStatistics();
+
+    if (!namedStats) {
+      return null;
+    }
+
+    // Custom rendering logic
     return (
-      <div>
-        <h3>Custom Stats</h3>
+      <div className="grid grid-cols-2 gap-2">
+        {Object.entries(namedStats)
+          .filter(([_, stat]) => stat && stat.value !== null)
+          .map(([key, stat]) => (
+            <div
+              key={key}
+              className="rounded border p-2"
+            >
+              <div className="font-medium">{stat.label}</div>
+              <div className="text-right text-white">
+                {roundNumber(stat.value)} {stat.unit || ''}
+              </div>
+            </div>
+          ))}
       </div>
     );
   };
@@ -223,32 +242,26 @@ export default function PanelSegmentation({
             </SegmentationTable.SelectorHeader>
             <SegmentationTable.AddSegmentRow />
             <SegmentationTable.Segments>
-              <SegmentationTable.SegmentStatistics>
-                <SegmentationTable.SegmentStatisticsTitle />
-                <SegmentationTable.SegmentStatisticsHeader>
-                  <div className="mb-2">
-                    <div className="flex justify-between">
-                      <div>L:</div>
-                      <div>
-                        <span className="text-white">195</span> <span>mm</span>
-                      </div>
-                    </div>
-                    <div className="flex justify-between">
-                      <div>W:</div>
-                      <div>
-                        <span className="text-white">125</span> <span>mm</span>
-                      </div>
+              <SegmentationTable.SegmentStatistics.Header>
+                <div className="mb-2">
+                  <div className="flex justify-between">
+                    <div>L:</div>
+                    <div>
+                      <span className="text-white">195</span> <span>mm</span>
                     </div>
                   </div>
-                  <div className="mb-4 border-b border-gray-600"></div>
-                </SegmentationTable.SegmentStatisticsHeader>
+                  <div className="flex justify-between">
+                    <div>W:</div>
+                    <div>
+                      <span className="text-white">125</span> <span>mm</span>
+                    </div>
+                  </div>
+                </div>
+                <div className="mb-4 border-b border-gray-600"></div>
+              </SegmentationTable.SegmentStatistics.Header>
 
-                {/* The default segment statistics will be displayed automatically */}
-
-                <SegmentationTable.SegmentStatisticsFooter>
-                  {/* Optional footer content */}
-                </SegmentationTable.SegmentStatisticsFooter>
-              </SegmentationTable.SegmentStatistics>
+              {/* Body will show default stats if not provided */}
+              <SegmentationTable.SegmentStatistics.Body />
             </SegmentationTable.Segments>
           </SegmentationTable.Collapsed>
         ) : (
