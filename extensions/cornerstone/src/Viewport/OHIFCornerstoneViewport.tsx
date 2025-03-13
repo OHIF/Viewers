@@ -264,7 +264,7 @@ const OHIFCornerstoneViewport = React.memo(
         const presentations = getViewportPresentations(viewportId, viewportOptions);
 
         let measurement;
-        if (cacheJumpToMeasurementEvent?.viewportId === viewportId) {
+        if (cacheJumpToMeasurementEvent?.cornerstoneViewport === viewportId) {
           measurement = cacheJumpToMeasurementEvent.measurement;
           // Delete the position presentation so that viewport navigates direct
           presentations.positionPresentation = null;
@@ -280,7 +280,7 @@ const OHIFCornerstoneViewport = React.memo(
           viewportOptions.needsRerendering = false;
         }
 
-        cornerstoneViewportService.setViewportData(
+        await cornerstoneViewportService.setViewportData(
           viewportId,
           viewportData,
           viewportOptions,
