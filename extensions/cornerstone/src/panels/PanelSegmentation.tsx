@@ -184,13 +184,17 @@ export default function PanelSegmentation({
     }
 
     return (
-      <SegmentationTable.Expanded>
-        <SegmentationTable.AddSegmentRow />
-        <SegmentationTable.Header>
-          <CustomDropdownMenuContent />
-        </SegmentationTable.Header>
-        <SegmentationTable.Segments />
-      </SegmentationTable.Expanded>
+      <>
+        <SegmentationTable.Expanded>
+          <SegmentationTable.Expanded.Header>
+            <CustomDropdownMenuContent />
+          </SegmentationTable.Expanded.Header>
+          <SegmentationTable.Expanded.Content>
+            <SegmentationTable.AddSegmentRow />
+            <SegmentationTable.Segments />
+          </SegmentationTable.Expanded.Content>
+        </SegmentationTable.Expanded>
+      </>
     );
   };
 

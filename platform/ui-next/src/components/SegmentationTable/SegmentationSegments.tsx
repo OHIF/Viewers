@@ -39,12 +39,15 @@ export const SegmentationSegments = ({ children = null }: { children?: React.Rea
     return null;
   }
 
+  const segments = Object.values(representation.segments);
+  const isActiveSegmentation = segmentation.segmentationId === activeSegmentationId;
+
   return (
     <ScrollArea
-      className={`ohif-scrollbar invisible-scrollbar bg-bkg-low h-[900px] space-y-px`}
+      className={`ohif-scrollbar invisible-scrollbar bg-bkg-low max-h-80 space-y-px`}
       showArrows={true}
     >
-      {Object.values(representation.segments).map(segment => {
+      {segments.map(segment => {
         if (!segment) {
           return null;
         }
@@ -68,33 +71,33 @@ export const SegmentationSegments = ({ children = null }: { children?: React.Rea
             openDelay={300}
           >
             <HoverCardTrigger asChild>
-              <div>
-                <DataRow
-                  key={segmentIndex}
-                  number={segmentIndex}
-                  title={label}
-                  details={displayText}
-                  colorHex={cssColor}
-                  isSelected={active}
-                  isVisible={visible}
-                  isLocked={locked}
-                  disableEditing={disableEditing}
-                  onColor={() => onSegmentColorClick(segmentation.segmentationId, segmentIndex)}
-                  onToggleVisibility={() =>
-                    onToggleSegmentVisibility(
-                      segmentation.segmentationId,
-                      segmentIndex,
-                      representation.type
-                    )
-                  }
-                  onToggleLocked={() =>
-                    onToggleSegmentLock(segmentation.segmentationId, segmentIndex)
-                  }
-                  onSelect={() => onSegmentClick(segmentation.segmentationId, segmentIndex)}
-                  onRename={() => onSegmentEdit(segmentation.segmentationId, segmentIndex)}
-                  onDelete={() => onSegmentDelete(segmentation.segmentationId, segmentIndex)}
-                />
-              </div>
+              <DataRow
+                key={segmentIndex}
+                number={segmentIndex}
+                title={label}
+                details={displayText}
+                description={displayText}
+                colorHex={cssColor}
+                isSelected={active}
+                isVisible={visible}
+                isLocked={locked}
+                disableEditing={disableEditing}
+                className={!isActiveSegmentation ? 'opacity-80' : ''}
+                onColor={() => onSegmentColorClick(segmentation.segmentationId, segmentIndex)}
+                onToggleVisibility={() =>
+                  onToggleSegmentVisibility(
+                    segmentation.segmentationId,
+                    segmentIndex,
+                    representation.type
+                  )
+                }
+                onToggleLocked={() =>
+                  onToggleSegmentLock(segmentation.segmentationId, segmentIndex)
+                }
+                onSelect={() => onSegmentClick(segmentation.segmentationId, segmentIndex)}
+                onRename={() => onSegmentEdit(segmentation.segmentationId, segmentIndex)}
+                onDelete={() => onSegmentDelete(segmentation.segmentationId, segmentIndex)}
+              />
             </HoverCardTrigger>
             <HoverCardContent
               side="left"

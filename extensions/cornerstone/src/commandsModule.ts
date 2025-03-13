@@ -1155,7 +1155,12 @@ function commandsModule({
      * @param props.segmentIndex - The index of the segment to activate
      */
     setActiveSegmentAndCenterCommand: ({ segmentationId, segmentIndex }) => {
-      const { segmentationService } = servicesManager.services;
+      const { segmentationService, viewportGridService } = servicesManager.services;
+      // set both active segmentation and active segment
+      segmentationService.setActiveSegmentation(
+        viewportGridService.getActiveViewportId(),
+        segmentationId
+      );
       segmentationService.setActiveSegment(segmentationId, segmentIndex);
       segmentationService.jumpToSegmentCenter(segmentationId, segmentIndex);
     },
