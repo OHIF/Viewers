@@ -178,7 +178,7 @@ function ViewerViewportGrid(props: withAppTypes) {
         const { displaySetInstanceUID: referencedDisplaySetInstanceUID } = measurement;
 
         const updatedViewports = _getUpdatedViewports(viewportId, referencedDisplaySetInstanceUID);
-        let viewportToUpdate = updatedViewports[0];
+        let viewportToUpdate;
         if (updatedViewports.length > 1) {
           // To get the viewport which orientation is closest to IOP
           const closestOrientation = getClosestOrientationFromIOP(
@@ -189,7 +189,8 @@ function ViewerViewportGrid(props: withAppTypes) {
             viewport => viewport.viewportOptions?.orientation == closestOrientation
           );
         }
-
+        // If closest orientation viewport is not find then choose 0
+        viewportToUpdate = updatedViewports[0];
         if (!viewportToUpdate) {
           console.warn(
             'ViewportGrid::Unable to navigate to viewport containing',

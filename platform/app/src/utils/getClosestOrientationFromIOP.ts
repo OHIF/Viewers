@@ -5,8 +5,9 @@ import OrientationAxis = Enums.OrientationAxis;
 /**
  * Get the plane (orientation) to which the ImageOrientationPatient is most closely aligned
  *
- * @param {Array} imageOrientationPatient - ImageOrientationPatient vector for the image
- * @returns
+ * @param displaySetService
+ * @param displaySetInstanceUID
+ * @returns orientation
  */
 export default function getClosestOrientationFromIOP(
   displaySetService,
@@ -14,8 +15,9 @@ export default function getClosestOrientationFromIOP(
 ): OrientationAxis {
   const displaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
   const imageOrientationPatient = displaySet.instances[0].ImageOrientationPatient as Array<number>;
+  // ImageOrientationPatient must be an array of length 6.
   if (imageOrientationPatient?.length !== 6) {
-    throw new Error('ImageOrientationPatient must be an array of length 6.');
+    return;
   }
 
   // Take cross product to get vector coming "out" of image plane
