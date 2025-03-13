@@ -1,7 +1,7 @@
 import React from 'react';
-import { useViewportGrid, Button, Icons, MeasurementTable } from '@ohif/ui-next';
 import { Dialog, ButtonEnums } from '@ohif/ui';
 import { useSystem, utils } from '@ohif/core';
+import { MeasurementTable, useViewportGrid } from '@ohif/ui-next';
 import {
   PanelMeasurement,
   StudyMeasurements,
@@ -18,18 +18,16 @@ const { filterAnd, filterPlanarMeasurement, filterMeasurementsBySeriesUID } =
 function PanelMeasurementTableTracking(props) {
   const { servicesManager, extensionManager, commandsManager } = useSystem();
   const [viewportGrid] = useViewportGrid();
-  const { customizationService, measurementService, uiDialogService } = servicesManager.services;
+  const { measurementService, uiDialogService } = servicesManager.services;
   const [trackedMeasurements, sendTrackedMeasurementsEvent] = useTrackedMeasurements();
   const { trackedStudy, trackedSeries } = trackedMeasurements.context;
   const measurementFilter = trackedStudy
     ? filterAnd(filterPlanarMeasurement, filterMeasurementsBySeriesUID(trackedSeries))
     : filterPlanarMeasurement;
 
-  const disableEditing = customizationService.getCustomization('panelMeasurement.disableEditing');
   const onUntrackConfirm = () => {
     sendTrackedMeasurementsEvent('UNTRACK_ALL', {});
   };
-
   const hasDirtyMeasurements = measurementService
     .getMeasurements()
     .some(measurement => measurement.isDirty);
@@ -37,12 +35,11 @@ function PanelMeasurementTableTracking(props) {
   const onUntrackClick = event => {
     event.stopPropagation();
     hasDirtyMeasurements
-      ? uiDialogService.create({
+      ? uiDialogService.show({
           id: 'untrack-and-delete-all-measurements',
-          centralize: true,
+          content: Dialog,
           isDraggable: false,
           showOverlay: true,
-          content: Dialog,
           contentProps: {
             title: 'Untrack and Delete All Measurements',
             body: () => (
@@ -64,92 +61,22 @@ function PanelMeasurementTableTracking(props) {
                 classes: ['untrack-and-delete-all-yes-button'],
               },
             ],
-            onClose: () => uiDialogService.dismiss({ id: 'untrack-and-delete-all-measurements' }),
+            onClose: () => uiDialogService.hide('untrack-and-delete-all-measurements'),
             onSubmit: async ({ action }) => {
               switch (action.id) {
                 case 'yes':
                   onUntrackConfirm();
-                  uiDialogService.dismiss({ id: 'untrack-and-delete-all-measurements' });
+                  uiDialogService.hide('untrack-and-delete-all-measurements');
                   break;
                 case 'cancel':
-                  uiDialogService.dismiss({ id: 'untrack-and-delete-all-measurements' });
+                  uiDialogService.hide('untrack-and-delete-all-measurements');
                   break;
               }
-            },
-            onStart: () => {
-              console.log('Dialog drag started');
-            },
-            onDrag: (_event: unknown, data: unknown) => {
-              console.log('Dialog is being dragged', data);
-            },
-            onStop: () => {
-              console.log('Dialog drag stopped');
-            },
-            defaultPosition: { x: 0, y: 0 },
-            onClickOutside: () => {
-              uiDialogService.dismiss({ id: 'delete-all-measurements' });
             },
           },
         })
       : onUntrackConfirm();
   };
-
-  function CustomMenu({ items, StudyInstanceUID, measurementFilter }) {
-    const disabled = !items?.length;
-
-    if (disableEditing || disabled) {
-      return null;
-    }
-
-    return (
-      <div className="bg-background flex h-9 w-full items-center rounded pr-0.5">
-        <div className="flex space-x-1">
-          <Button
-            size="sm"
-            variant="ghost"
-            className="pl-1.5"
-            onClick={() => {
-              commandsManager.runCommand('downloadCSVMeasurementsReport', {
-                measurementFilter,
-              });
-            }}
-          >
-            <Icons.Download className="h-5 w-5" />
-            <span className="pl-1">CSV</span>
-          </Button>
-          <Button
-            size="sm"
-            variant="ghost"
-            className="pl-0.5"
-            onClick={() => {
-              sendTrackedMeasurementsEvent('SAVE_REPORT', {
-                viewportId: viewportGrid.activeViewportId,
-                isBackupSave: true,
-                StudyInstanceUID,
-                measurementFilter,
-              });
-            }}
-          >
-            <Icons.Add />
-            Create SR
-          </Button>
-          <Button
-            size="sm"
-            variant="ghost"
-            className="pl-0.5"
-            onClick={() => {
-              commandsManager.runCommand('clearMeasurements', {
-                measurementFilter,
-              });
-            }}
-          >
-            <Icons.Delete />
-            Delete All
-          </Button>
-        </div>
-      </div>
-    );
-  }
 
   const EmptyComponent = () => (
     <MeasurementTable title="Measurements">
@@ -166,6 +93,7 @@ function PanelMeasurementTableTracking(props) {
         measurementFilter,
       });
     },
+    onUntrackClick,
   };
 
   const Header = props => (

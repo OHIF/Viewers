@@ -2,13 +2,7 @@ import React from 'react';
 import { Button, Icons } from '@ohif/ui-next';
 import { useSystem } from '@ohif/core';
 
-export function StudyMeasurementsActions({
-  items,
-  StudyInstanceUID,
-  measurementFilter,
-  actions,
-  onUntrackClick,
-}) {
+export function StudyMeasurementsActions({ items, StudyInstanceUID, measurementFilter, actions }) {
   const { commandsManager } = useSystem();
   const disabled = !items?.length;
 
@@ -71,7 +65,13 @@ export function StudyMeasurementsActions({
           size="sm"
           variant="ghost"
           className="pl-0.5"
-          onClick={onUntrackClick}
+          onClick={e => {
+            e.stopPropagation();
+            if (actions?.onUntrackClick) {
+              actions.onUntrackClick(e);
+              return;
+            }
+          }}
         >
           <Icons.Delete />
           Untrack

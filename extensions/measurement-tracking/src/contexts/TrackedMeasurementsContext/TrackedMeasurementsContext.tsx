@@ -3,15 +3,19 @@ import PropTypes from 'prop-types';
 import { Machine } from 'xstate';
 import { useMachine } from '@xstate/react';
 import { useViewportGrid } from '@ohif/ui-next';
-import { promptLabelAnnotation, promptSaveReport } from '@ohif/extension-default';
 import { machineConfiguration, defaultOptions, RESPONSE } from './measurementTrackingMachine';
-import promptBeginTracking, { measurementTrackingMode } from './promptBeginTracking';
-import promptTrackNewSeries from './promptTrackNewSeries';
-import promptTrackNewStudy from './promptTrackNewStudy';
-import promptHydrateStructuredReport from './promptHydrateStructuredReport';
+import { measurementTrackingMode } from './promptBeginTracking';
 import hydrateStructuredReport from './hydrateStructuredReport';
-import promptHasDirtyAnnotations from './promptHasDirtyAnnotations';
 import { useAppConfig } from '@state';
+import {
+  promptBeginTrackingWrapper,
+  promptHydrateStructuredReportWrapper,
+  promptTrackNewSeriesWrapper,
+  promptTrackNewStudyWrapper,
+  promptLabelAnnotationWrapper,
+  promptSaveReportWrapper,
+  promptHasDirtyAnnotationsWrapper,
+} from './promptWrapperFunctions';
 
 const TrackedMeasurementsContext = React.createContext();
 TrackedMeasurementsContext.displayName = 'TrackedMeasurementsContext';
@@ -175,34 +179,34 @@ function TrackedMeasurementsContextProvider(
     },
   });
   machineOptions.services = Object.assign({}, machineOptions.services, {
-    promptBeginTracking: promptBeginTracking.bind(null, {
+    promptBeginTracking: promptBeginTrackingWrapper.bind(null, {
       servicesManager,
       extensionManager,
       appConfig,
     }),
-    promptTrackNewSeries: promptTrackNewSeries.bind(null, {
+    promptTrackNewSeries: promptTrackNewSeriesWrapper.bind(null, {
       servicesManager,
       extensionManager,
       appConfig,
     }),
-    promptTrackNewStudy: promptTrackNewStudy.bind(null, {
+    promptTrackNewStudy: promptTrackNewStudyWrapper.bind(null, {
       servicesManager,
       extensionManager,
       appConfig,
     }),
-    promptSaveReport: promptSaveReport.bind(null, {
+    promptSaveReport: promptSaveReportWrapper.bind(null, {
       servicesManager,
       commandsManager,
       extensionManager,
       appConfig,
     }),
-    promptHydrateStructuredReport: promptHydrateStructuredReport.bind(null, {
+    promptHydrateStructuredReport: promptHydrateStructuredReportWrapper.bind(null, {
       servicesManager,
       extensionManager,
       commandsManager,
       appConfig,
     }),
-    promptHasDirtyAnnotations: promptHasDirtyAnnotations.bind(null, {
+    promptHasDirtyAnnotations: promptHasDirtyAnnotationsWrapper.bind(null, {
       servicesManager,
       extensionManager,
       commandsManager,
@@ -214,7 +218,7 @@ function TrackedMeasurementsContextProvider(
       commandsManager,
       appConfig,
     }),
-    promptLabelAnnotation: promptLabelAnnotation.bind(null, {
+    promptLabelAnnotation: promptLabelAnnotationWrapper.bind(null, {
       servicesManager,
       extensionManager,
       commandsManager,

@@ -7,6 +7,7 @@ import { id } from './id.js';
 import { ViewportActionButton } from '@ohif/ui';
 import i18n from '@ohif/i18n';
 import { measurementTrackingMode } from './contexts/TrackedMeasurementsContext/promptBeginTracking';
+import getCustomizationModule from './getCustomizationModule';
 
 const measurementTrackingExtension = {
   /**
@@ -49,6 +50,7 @@ const measurementTrackingExtension = {
       },
     ];
   },
+  getCustomizationModule,
 };
 
 export default measurementTrackingExtension;
