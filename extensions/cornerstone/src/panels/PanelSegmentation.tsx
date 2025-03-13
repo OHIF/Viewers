@@ -139,8 +139,7 @@ export default function PanelSegmentation({
   const tableProps = {
     disabled,
     data: segmentationsWithRepresentations,
-    // mode: segmentationTableMode,
-    mode: 'expanded',
+    mode: segmentationTableMode,
     title: 'Segmentations',
     exportOptions,
     disableEditing,
@@ -155,30 +154,36 @@ export default function PanelSegmentation({
     if (tableProps.mode === 'collapsed') {
       return (
         <SegmentationTable.Collapsed>
-          <SegmentationTable.SelectorHeader>
-            <CustomDropdownMenuContent />
-          </SegmentationTable.SelectorHeader>
-          <SegmentationTable.AddSegmentRow />
-          <SegmentationTable.Segments>
-            <SegmentationTable.SegmentStatistics.Header>
-              <div className="mb-2">
-                <div className="flex justify-between">
-                  <div>L:</div>
-                  <div>
-                    <span className="text-white">195</span> <span>mm</span>
+          <SegmentationTable.Collapsed.Header>
+            <SegmentationTable.Collapsed.DropdownMenu>
+              <CustomDropdownMenuContent />
+            </SegmentationTable.Collapsed.DropdownMenu>
+            <SegmentationTable.Collapsed.Selector />
+            <SegmentationTable.Collapsed.Info />
+          </SegmentationTable.Collapsed.Header>
+          <SegmentationTable.Collapsed.Content>
+            <SegmentationTable.AddSegmentRow />
+            <SegmentationTable.Segments>
+              <SegmentationTable.SegmentStatistics.Header>
+                <div className="mb-2">
+                  <div className="flex justify-between">
+                    <div>L:</div>
+                    <div>
+                      <span className="text-white">195</span> <span>mm</span>
+                    </div>
+                  </div>
+                  <div className="flex justify-between">
+                    <div>W:</div>
+                    <div>
+                      <span className="text-white">125</span> <span>mm</span>
+                    </div>
                   </div>
                 </div>
-                <div className="flex justify-between">
-                  <div>W:</div>
-                  <div>
-                    <span className="text-white">125</span> <span>mm</span>
-                  </div>
-                </div>
-              </div>
-              <div className="mb-4 border-b border-gray-600"></div>
-            </SegmentationTable.SegmentStatistics.Header>
-            <SegmentationTable.SegmentStatistics.Body />
-          </SegmentationTable.Segments>
+                <div className="mb-4 border-b border-gray-600"></div>
+              </SegmentationTable.SegmentStatistics.Header>
+              <SegmentationTable.SegmentStatistics.Body />
+            </SegmentationTable.Segments>
+          </SegmentationTable.Collapsed.Content>
         </SegmentationTable.Collapsed>
       );
     }
@@ -187,8 +192,13 @@ export default function PanelSegmentation({
       <>
         <SegmentationTable.Expanded>
           <SegmentationTable.Expanded.Header>
-            <CustomDropdownMenuContent />
+            <SegmentationTable.Expanded.DropdownMenu>
+              <CustomDropdownMenuContent />
+            </SegmentationTable.Expanded.DropdownMenu>
+            <SegmentationTable.Expanded.Label />
+            <SegmentationTable.Expanded.Info />
           </SegmentationTable.Expanded.Header>
+
           <SegmentationTable.Expanded.Content>
             <SegmentationTable.AddSegmentRow />
             <SegmentationTable.Segments />

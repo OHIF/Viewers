@@ -7,7 +7,6 @@ import { SegmentStatistics } from './SegmentStatistics';
 import { SegmentationTableConfig } from './SegmentationTableConfig';
 import { AddSegmentRow } from './AddSegmentRow';
 import { AddSegmentationRow } from './AddSegmentationRow';
-import { SegmentationSelectorHeader } from './SegmentationSelectorHeader';
 import { SegmentationHeader } from './SegmentationHeader';
 import { SegmentationCollapsed } from './SegmentationCollapsed';
 import { SegmentationExpanded } from './SegmentationExpanded';
@@ -165,7 +164,6 @@ const SegmentationTable = Object.assign(SegmentationTableRoot, {
   Config: SegmentationTableConfig,
   AddSegmentRow: AddSegmentRow,
   AddSegmentationRow: AddSegmentationRow,
-  SelectorHeader: SegmentationSelectorHeader,
   Collapsed: SegmentationCollapsed,
   Expanded: SegmentationExpanded,
   SegmentStatistics: SegmentStatistics,

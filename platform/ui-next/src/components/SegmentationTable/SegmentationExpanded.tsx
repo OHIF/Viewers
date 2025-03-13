@@ -10,11 +10,10 @@ import { Icons } from '../Icons/Icons';
 import { DropdownMenu, DropdownMenuTrigger } from '../DropdownMenu';
 import { Tooltip, TooltipTrigger, TooltipContent } from '../Tooltip/Tooltip';
 
-// New internal components that will hold the context for each section
-const SegmentationExpandedHeader = ({ children }) => {
-  const { segmentation, isActive, onSegmentationClick } = useSegmentationExpanded(
-    'SegmentationExpandedHeader'
-  );
+// The Header container component
+const SegmentationExpandedHeader = ({ children }: { children: React.ReactNode }) => {
+  const { segmentation, isActive } = useSegmentationExpanded('SegmentationExpandedHeader');
+  const { onSegmentationClick } = useSegmentationTableContext('SegmentationExpandedHeader');
 
   return (
     <PanelSection.Header
@@ -24,44 +23,62 @@ const SegmentationExpandedHeader = ({ children }) => {
         onSegmentationClick(segmentation.segmentationId);
       }}
     >
-      <div className="text-foreground flex h-8 w-full items-center justify-between">
-        <div className="flex items-center space-x-1">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="ml-1"
-                onClick={e => e.stopPropagation()}
-              >
-                <Icons.More />
-              </Button>
-            </DropdownMenuTrigger>
-            {children}
-          </DropdownMenu>
-          <div className="pl-1.5">{segmentation.label}</div>
-        </div>
-        <div className="mr-1 flex items-center">
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                variant="ghost"
-                size="icon"
-              >
-                <Icons.Info className="h-6 w-6" />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>{segmentation.cachedStats?.info}</p>
-            </TooltipContent>
-          </Tooltip>
-        </div>
-      </div>
+      <div className="text-foreground flex h-8 w-full items-center">{children}</div>
     </PanelSection.Header>
   );
 };
 
-const SegmentationExpandedContent = ({ children }) => {
+// Dropdown menu component - specifically for dropdown menu content
+const SegmentationExpandedDropdownMenu = ({ children }: { children: React.ReactNode }) => {
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="ml-1"
+          onClick={e => e.stopPropagation()}
+        >
+          <Icons.More />
+        </Button>
+      </DropdownMenuTrigger>
+      {children}
+    </DropdownMenu>
+  );
+};
+
+// Label component - for displaying the segmentation label
+const SegmentationExpandedLabel = () => {
+  const { segmentation } = useSegmentationExpanded('SegmentationExpandedLabel');
+
+  return <div className="pl-1.5">{segmentation.label}</div>;
+};
+
+// Info component - for the info tooltip
+const SegmentationExpandedInfo = () => {
+  const { segmentation } = useSegmentationExpanded('SegmentationExpandedInfo');
+
+  return (
+    <div className="ml-auto mr-1">
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Button
+            variant="ghost"
+            size="icon"
+          >
+            <Icons.Info className="h-6 w-6" />
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent>
+          <p>{segmentation.cachedStats?.info}</p>
+        </TooltipContent>
+      </Tooltip>
+    </div>
+  );
+};
+
+// Content component
+const SegmentationExpandedContent = ({ children }: { children: React.ReactNode }) => {
   return (
     <PanelSection.Content className="py-0">
       <div className="segmentation-expanded-section">{children}</div>
@@ -70,7 +87,7 @@ const SegmentationExpandedContent = ({ children }) => {
 };
 
 // Main compound component
-export const SegmentationExpanded = ({ children }) => {
+const SegmentationExpandedRoot = ({ children }) => {
   const { data, activeSegmentationId, onSegmentationClick, mode } =
     useSegmentationTableContext('SegmentationExpanded');
 
@@ -104,9 +121,12 @@ export const SegmentationExpanded = ({ children }) => {
   );
 };
 
-// Add the subcomponents to the main component
-SegmentationExpanded.Header = SegmentationExpandedHeader;
-SegmentationExpanded.Content = SegmentationExpandedContent;
+const SegmentationExpanded = Object.assign(SegmentationExpandedRoot, {
+  Header: SegmentationExpandedHeader,
+  DropdownMenu: SegmentationExpandedDropdownMenu,
+  Label: SegmentationExpandedLabel,
+  Info: SegmentationExpandedInfo,
+  Content: SegmentationExpandedContent,
+});
 
-// Export the component
-export default SegmentationExpanded;
+export { SegmentationExpanded };
