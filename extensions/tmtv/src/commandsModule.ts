@@ -102,7 +102,7 @@ const commandsModule = ({ servicesManager, commandsManager, extensionManager }: 
       // corrected PT vs the non-attenuation correct PT)
 
       let ptDisplaySet = null;
-      for (const [viewportId, viewportDetails] of viewportMatchDetails) {
+      for (const [, viewportDetails] of viewportMatchDetails) {
         const { displaySetsInfo } = viewportDetails;
         const displaySets = displaySetsInfo.map(({ displaySetInstanceUID }) =>
           displaySetService.getDisplaySetByUID(displaySetInstanceUID)
@@ -199,15 +199,21 @@ const commandsModule = ({ servicesManager, commandsManager, extensionManager }: 
 
       const { representationData } = segmentation;
       const { displaySetMatchDetails: matchDetails } = hangingProtocolService.getMatchDetails();
-      const volumeLoaderScheme = 'cornerstoneStreamingImageVolume'; // Loader id which defines which volume loader to use
+      const ctDisplaySetMatch = matchDetails.get('ctDisplaySet');
+      const ptDisplaySetMatch = matchDetails.get('ptDisplaySet');
 
-      const ctDisplaySet = matchDetails.get('ctDisplaySet');
-      const ctVolumeId = `${volumeLoaderScheme}:${ctDisplaySet.displaySetInstanceUID}`; // VolumeId with loader id + volume id
+      const ctDisplaySet = displaySetService.getDisplaySetByUID(
+        ctDisplaySetMatch.displaySetInstanceUID
+      );
+      const ptDisplaySet = displaySetService.getDisplaySetByUID(
+        ptDisplaySetMatch.displaySetInstanceUID
+      );
 
       const { volumeId: segVolumeId } = representationData[
         SegmentationRepresentations.Labelmap
       ] as csTools.Types.LabelmapToolOperationDataVolume;
-      const { referencedVolumeId } = cs.cache.getVolume(segVolumeId);
+
+      const labelmapVolume = cs.cache.getVolume(segVolumeId);
 
       const annotationUIDs = _getAnnotationsSelectedByToolNames(ROI_THRESHOLD_MANUAL_TOOL_IDS);
 
@@ -220,71 +226,40 @@ const commandsModule = ({ servicesManager, commandsManager, extensionManager }: 
         return;
       }
 
-      const labelmapVolume = cs.cache.getVolume(segmentationId);
-      let referencedVolume = cs.cache.getVolume(referencedVolumeId);
-      const ctReferencedVolume = cs.cache.getVolume(ctVolumeId);
-
-      // check if viewport is
-
-      if (!referencedVolume) {
-        throw new Error('No Reference volume found');
-      }
-
-      if (!labelmapVolume) {
-        throw new Error('No Reference labelmap found');
-      }
-
-      const annotation = csTools.annotation.state.getAnnotation(annotationUIDs[0]);
-
-      const {
-        metadata: {
-          enabledElement: { viewport },
-        },
-      } = annotation;
-
-      const showingReferenceVolume = viewport.hasVolumeId(referencedVolumeId);
-
-      if (!showingReferenceVolume) {
-        // if the reference volume is not being displayed, we can't
-        // rely on it for thresholding, we have couple of options here
-        // 1. We choose whatever volume is being displayed
-        // 2. We check if it is a fusion viewport, we pick the volume
-        // that matches the size and dimensions of the labelmap. This might
-        // happen if the 4D PT is converted to a computed volume and displayed
-        // and wants to threshold the labelmap
-        // 3. We throw an error
-        const displaySetInstanceUIDs = viewportGridService.getDisplaySetsUIDsForViewport(
-          viewport.id
-        );
-
-        displaySetInstanceUIDs.forEach(displaySetInstanceUID => {
-          const volume = cs.cache
-            .getVolumes()
-            .find(volume => volume.volumeId.includes(displaySetInstanceUID));
-
-          if (
-            cs.utilities.isEqual(volume.dimensions, labelmapVolume.dimensions) &&
-            cs.utilities.isEqual(volume.spacing, labelmapVolume.spacing)
-          ) {
-            referencedVolume = volume;
-          }
-        });
-      }
-
       const { ptLower, ptUpper, ctLower, ctUpper } = getThresholdValues(
         annotationUIDs,
-        [referencedVolume, ctReferencedVolume],
+        ptDisplaySet,
         config
       );
+
+      const { imageIds: ptImageIds } = ptDisplaySet;
+
+      const ptVolumeInfo = cs.cache.getVolumeContainingImageId(ptImageIds[0]);
+
+      if (!ptVolumeInfo) {
+        uiNotificationService.error('No PT volume found');
+        return;
+      }
+
+      const { imageIds: ctImageIds } = ctDisplaySet;
+      const ctVolumeInfo = cs.cache.getVolumeContainingImageId(ctImageIds[0]);
+
+      if (!ctVolumeInfo) {
+        uiNotificationService.error('No CT volume found');
+        return;
+      }
+
+      const ptVolume = ptVolumeInfo.volume;
+      const ctVolume = ctVolumeInfo.volume;
 
       return csTools.utilities.segmentation.rectangleROIThresholdVolumeByRange(
         annotationUIDs,
         labelmapVolume,
         [
-          { volume: referencedVolume, lower: ptLower, upper: ptUpper },
-          { volume: ctReferencedVolume, lower: ctLower, upper: ctUpper },
+          { volume: ptVolume, lower: ptLower, upper: ptUpper },
+          { volume: ctVolume, lower: ctLower, upper: ctUpper },
         ],
-        { overwrite: true, segmentIndex }
+        { overwrite: true, segmentIndex, segmentationId }
       );
     },
     calculateSuvPeak: async ({ segmentationId, segmentIndex }) => {

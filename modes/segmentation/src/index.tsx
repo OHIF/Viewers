@@ -1,7 +1,5 @@
-import { hotkeys } from '@ohif/core';
 import { id } from './id';
 import toolbarButtons from './toolbarButtons';
-import segmentationButtons from './segmentationButtons';
 import initToolGroups from './initToolGroups';
 
 const ohif = {
@@ -9,7 +7,6 @@ const ohif = {
   sopClassHandler: '@ohif/extension-default.sopClassHandlerModule.stack',
   hangingProtocol: '@ohif/extension-default.hangingProtocolModule.default',
   leftPanel: '@ohif/extension-default.panelModule.seriesList',
-  rightPanel: '@ohif/extension-default.panelModule.measure',
 };
 
 const cornerstone = {
@@ -50,7 +47,8 @@ function modeFactory({ modeConfiguration }) {
      * Services and other resources.
      */
     onModeEnter: ({ servicesManager, extensionManager, commandsManager }: withAppTypes) => {
-      const { measurementService, toolbarService, toolGroupService } = servicesManager.services;
+      const { measurementService, toolbarService, toolGroupService, customizationService } =
+        servicesManager.services;
 
       measurementService.clearMeasurements();
 
@@ -58,7 +56,6 @@ function modeFactory({ modeConfiguration }) {
       initToolGroups(extensionManager, toolGroupService, commandsManager);
 
       toolbarService.addButtons(toolbarButtons);
-      toolbarService.addButtons(segmentationButtons);
 
       toolbarService.createButtonSection('primary', [
         'WindowLevel',
@@ -70,7 +67,26 @@ function modeFactory({ modeConfiguration }) {
         'Crosshairs',
         'MoreTools',
       ]);
-      toolbarService.createButtonSection('segmentationToolbox', ['BrushTools', 'Shapes']);
+
+      toolbarService.createButtonSection('moreToolsSection', [
+        'Reset',
+        'rotate-right',
+        'flipHorizontal',
+        'ReferenceLines',
+        'ImageOverlayViewer',
+        'StackScroll',
+        'invert',
+        'Cine',
+        'Magnify',
+        'TagBrowser',
+      ]);
+
+      toolbarService.createButtonSection('segmentationToolbox', ['SegmentationTools']);
+      toolbarService.createButtonSection('segmentationToolboxToolsSection', [
+        'BrushTools',
+        'Shapes',
+      ]);
+      toolbarService.createButtonSection('brushToolsSection', ['Brush', 'Eraser', 'Threshold']);
     },
     onModeExit: ({ servicesManager }: withAppTypes) => {
       const {
@@ -82,7 +98,7 @@ function modeFactory({ modeConfiguration }) {
         uiModalService,
       } = servicesManager.services;
 
-      uiDialogService.dismissAll();
+      uiDialogService.hideAll();
       uiModalService.hide();
       toolGroupService.destroy();
       syncGroupService.destroy();
@@ -159,8 +175,6 @@ function modeFactory({ modeConfiguration }) {
     // hangingProtocol: ['@ohif/mnGrid'],
     /** SopClassHandlers used by the mode */
     sopClassHandlers: [ohif.sopClassHandler, segmentation.sopClassHandler],
-    /** hotkeys for mode */
-    hotkeys: [...hotkeys.defaults.hotkeyBindings],
   };
 }
 

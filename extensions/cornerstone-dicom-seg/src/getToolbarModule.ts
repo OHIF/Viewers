@@ -25,6 +25,14 @@ export function getToolbarModule({ servicesManager }: withAppTypes) {
           };
         }
 
+        const activeSegmentation = segmentationService.getActiveSegmentation(viewportId);
+        if (!Object.keys(activeSegmentation.segments).length) {
+          return {
+            disabled: true,
+            disabledText: 'Add segment to enable this tool',
+          };
+        }
+
         const toolGroup = toolGroupService.getToolGroupForViewport(viewportId);
 
         if (!toolGroup) {

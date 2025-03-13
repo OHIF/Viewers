@@ -37,6 +37,7 @@ import {
   OrientationMarkerTool,
   WindowLevelRegionTool,
 } from '@cornerstonejs/tools';
+import * as polySeg from '@cornerstonejs/polymorphic-segmentation';
 
 import CalibrationLineTool from './tools/CalibrationLineTool';
 import ImageOverlayViewerTool from './tools/ImageOverlayViewerTool';
@@ -47,7 +48,11 @@ export default function initCornerstoneTools(configuration = {}) {
   AdvancedMagnifyTool.isAnnotation = false;
   PlanarFreehandContourSegmentationTool.isAnnotation = false;
 
-  init(configuration);
+  init({
+    addons: {
+      polySeg,
+    },
+  });
   addTool(PanTool);
   addTool(WindowLevelTool);
   addTool(StackScrollTool);

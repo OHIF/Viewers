@@ -18,7 +18,11 @@ import progressLoadingBarCustomization from './customizations/progressLoadingBar
 import viewportActionCornersCustomization from './customizations/viewportActionCornersCustomization';
 import labellingFlowCustomization from './customizations/labellingFlowCustomization';
 import viewportNotificationCustomization from './customizations/notificationCustomization';
-
+import aboutModalCustomization from './customizations/aboutModalCustomization';
+import userPreferencesCustomization from './customizations/userPreferencesCustomization';
+import reportDialogCustomization from './customizations/reportDialogCustomization';
+import hotkeyBindingsCustomization from './customizations/hotkeyBindingsCustomization';
+import onboardingCustomization from './customizations/onboardingCustomization';
 /**
  *
  * Note: this is an example of how the customization module can be used
@@ -62,6 +66,11 @@ export default function getCustomizationModule({ servicesManager, extensionManag
         ...labellingFlowCustomization,
         ...contextMenuUICustomization,
         ...viewportNotificationCustomization,
+        ...aboutModalCustomization,
+        ...userPreferencesCustomization,
+        ...reportDialogCustomization,
+        ...hotkeyBindingsCustomization,
+        ...onboardingCustomization,
       },
     },
   ];

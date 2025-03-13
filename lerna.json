@@ -1,5 +1,5 @@
 {
-  "version": "3.10.0-beta.94",
+  "version": "3.10.0-beta.121",
   "packages": ["extensions/*", "platform/*", "modes/*", "addOns/externals/*"],
   "npmClient": "yarn"
 }

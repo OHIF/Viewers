@@ -1,9 +1,11 @@
-import React, { useState, useCallback, useReducer, useEffect } from 'react';
+import React, { useCallback, useReducer } from 'react';
 import { Button } from '@ohif/ui';
 import ROIThresholdConfiguration, {
   ROI_STAT,
 } from './PanelROIThresholdSegmentation/ROIThresholdConfiguration';
 import * as cs3dTools from '@cornerstonejs/tools';
+import { useSystem } from '@ohif/core';
+import { useSegmentations } from '@ohif/extension-cornerstone';
 
 const LOWER_CT_THRESHOLD_DEFAULT = -1024;
 const UPPER_CT_THRESHOLD_DEFAULT = 1024;
@@ -40,9 +42,10 @@ function reducer(state, action) {
   }
 }
 
-function RectangleROIOptions({ servicesManager, commandsManager }: withAppTypes) {
-  const { segmentationService } = servicesManager.services;
-  const [selectedSegmentationId, setSelectedSegmentationId] = useState(null);
+function RectangleROIOptions() {
+  const { commandsManager } = useSystem();
+  const segmentations = useSegmentations();
+  const activeSegmentation = segmentations[0];
 
   const runCommand = useCallback(
     (commandName, commandOptions = {}) => {
@@ -61,58 +64,20 @@ function RectangleROIOptions({ servicesManager, commandsManager }: withAppTypes)
   });
 
   const handleROIThresholding = useCallback(() => {
-    const segmentationId = selectedSegmentationId;
+    if (!activeSegmentation) {
+      return;
+    }
+
+    const segmentationId = activeSegmentation.segmentationId;
     const activeSegmentIndex =
       cs3dTools.segmentation.segmentIndex.getActiveSegmentIndex(segmentationId);
 
-    // run the threshold based on the active segment index
-    // Todo: later find a way to associate each rectangle with a segment (e.g., maybe with color?)
     runCommand('thresholdSegmentationByRectangleROITool', {
       segmentationId,
       config,
       segmentIndex: activeSegmentIndex,
     });
-  }, [selectedSegmentationId, config]);
-
-  useEffect(() => {
-    const segmentations = segmentationService.getSegmentationRepresentations();
-
-    if (!segmentations.length) {
-      return;
-    }
-
-    const isActive = segmentations.find(seg => seg.isActive);
-    setSelectedSegmentationId(isActive.id);
-  }, []);
-
-  /**
-   * Update UI based on segmentation changes (added, removed, updated)
-   */
-  useEffect(() => {
-    // ~~ Subscription
-    const updated = segmentationService.EVENTS.SEGMENTATION_MODIFIED;
-    const subscriptions = [];
-
-    [updated].forEach(evt => {
-      const { unsubscribe } = segmentationService.subscribe(evt, () => {
-        const segmentations = segmentationService.getSegmentationRepresentations();
-
-        if (!segmentations.length) {
-          return;
-        }
-
-        const isActive = segmentations.find(seg => seg.isActive);
-        setSelectedSegmentationId(isActive.id);
-      });
-      subscriptions.push(unsubscribe);
-    });
-
-    return () => {
-      subscriptions.forEach(unsub => {
-        unsub();
-      });
-    };
-  }, []);
+  }, [activeSegmentation, config]);
 
   return (
     <div className="invisible-scrollbar mb-2 flex flex-col overflow-y-auto overflow-x-hidden">
@@ -121,7 +86,7 @@ function RectangleROIOptions({ servicesManager, commandsManager }: withAppTypes)
         dispatch={dispatch}
         runCommand={runCommand}
       />
-      {selectedSegmentationId !== null && (
+      {activeSegmentation && (
         <Button
           className="mt-2 !h-[26px] !w-[75px]"
           onClick={handleROIThresholding}

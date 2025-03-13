@@ -38,6 +38,8 @@ const EVENTS = {
   VIEWPORT_VOLUMES_CHANGED: 'event::cornerstoneViewportService:viewportVolumesChanged',
 };
 
+export const WITH_NAVIGATION = { withNavigation: true, withOrientation: true };
+
 /**
  * Handles cornerstone viewport logic including enabling, disabling, and
  * updating the viewport.
@@ -1141,7 +1143,11 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
   ): void {
     const viewRef = positionPresentation?.viewReference;
     if (viewRef) {
-      viewport.setViewReference(viewRef);
+      if (viewport.isReferenceViewable(viewRef, WITH_NAVIGATION)) {
+        viewport.setViewReference(viewRef);
+      } else {
+        console.warn('Unable to apply reference viewable', viewRef);
+      }
     }
 
     const viewPresentation = positionPresentation?.viewPresentation;

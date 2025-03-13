@@ -1,7 +1,7 @@
 import React, { useEffect, useCallback, useRef } from 'react';
 import { useResizeDetector } from 'react-resize-detector';
 import { Types, MeasurementService } from '@ohif/core';
-import { ViewportGrid, ViewportPane } from '@ohif/ui';
+import { ViewportGrid, ViewportPane } from '@ohif/ui-next';
 import { useViewportGrid } from '@ohif/ui-next';
 import EmptyViewport from './EmptyViewport';
 import classNames from 'classnames';
@@ -276,12 +276,35 @@ function ViewerViewportGrid(props: withAppTypes) {
           return;
         }
 
-        if (event) {
+        if (event && (appConfig?.activateViewportBeforeInteraction ?? true)) {
           event.preventDefault();
           event.stopPropagation();
         }
 
         viewportGridService.setActiveViewportId(viewportId);
+      };
+
+      const getBorderStyle = viewportIndex => {
+        const style = {} as any;
+        const layoutOptions = viewportGridService.getLayoutOptionsFromState(
+          viewportGridService.getState()
+        );
+        const vp = layoutOptions[viewportIndex];
+        if (!vp) {
+          return style;
+        }
+        const { x, y, width, height } = vp;
+        const tolerance = 0.01;
+
+        if (x + width < 1 - tolerance) {
+          style.borderRight = '1px solid #3a3f99';
+        }
+
+        if (y + height < 1 - tolerance) {
+          style.borderBottom = '1px solid #3a3f99';
+        }
+
+        return style;
       };
 
       viewportPanes[i] = (
@@ -301,19 +324,17 @@ function ViewerViewportGrid(props: withAppTypes) {
           onInteraction={onInteractionHandler}
           customStyle={{
             position: 'absolute',
-            top: viewportY * 100 + 0.2 + '%',
-            left: viewportX * 100 + 0.2 + '%',
-            width: viewportWidth * 100 - 0.3 + '%',
-            height: viewportHeight * 100 - 0.3 + '%',
+            top: viewportY * 100 + '%',
+            left: viewportX * 100 + '%',
+            width: viewportWidth * 100 + '%',
+            height: viewportHeight * 100 + '%',
+            ...getBorderStyle(i),
           }}
           isActive={isActive}
         >
           <div
             data-cy="viewport-pane"
-            className={classNames('flex h-full w-full min-w-[5px] flex-col', {
-              'pointer-events-none':
-                !isActive && (appConfig?.activateViewportBeforeInteraction ?? true),
-            })}
+            className="flex h-full w-full min-w-[5px] flex-col"
           >
             <ViewportComponent
               displaySets={displaySets}
@@ -346,7 +367,7 @@ function ViewerViewportGrid(props: withAppTypes) {
   return (
     <div
       ref={resizeRef}
-      className="h-full w-full"
+      className="border-secondary-light h-full w-full border"
     >
       <ViewportGrid
         numRows={numRows}

@@ -46,6 +46,7 @@ import Show from './Sources/Show';
 import SidePanelCloseLeft from './Sources/SidePanelCloseLeft';
 import SidePanelCloseRight from './Sources/SidePanelCloseRight';
 import SortingAscending from './Sources/SortingAscending';
+import SocialGithub from './Sources/SocialGithub';
 import SortingDescending from './Sources/SortingDescending';
 import StatusError from './Sources/StatusError';
 import StatusSuccess from './Sources/StatusSuccess';
@@ -122,6 +123,13 @@ import {
   ToolBrush,
   ToolThreshold,
   ToolShape,
+  ToolLabelmapAssist,
+  ToolPETSegment,
+  ToolInterpolation,
+  ToolBidirectionalSegment,
+  ToolSegmentAnything,
+  ToolContract,
+  ToolExpand,
 } from './Sources/Tools';
 import ActionNewDialog from './Sources/ActionNewDialog';
 import NotificationInfo from './Sources/NotificationInfo';
@@ -186,6 +194,7 @@ import Pencil from './Sources/Pencil';
 import NotificationWarning from './Sources/NotificationWarning';
 import ArrowRight from './Sources/ArrowRight';
 import ChevronLeft from './Sources/ChevronLeft';
+import StatusAlert from './Sources/StatusAlert';
 //
 //
 type IconProps = React.HTMLAttributes<SVGElement>;
@@ -463,6 +472,7 @@ export const Icons = {
   Show,
   SidePanelCloseLeft,
   SidePanelCloseRight,
+  SocialGithub,
   SortingAscending,
   SortingDescending,
   Sorting,
@@ -550,6 +560,13 @@ export const Icons = {
   ToolBrush,
   ToolThreshold,
   ToolShape,
+  ToolLabelmapAssist,
+  ToolSegmentAnything,
+  ToolPETSegment,
+  ToolInterpolation,
+  ToolBidirectionalSegment,
+  ToolContract,
+  ToolExpand,
   ExternalLink,
   OHIFLogoColorDarkBackground,
   Magnifier,
@@ -577,7 +594,14 @@ export const Icons = {
   'checkbox-active': (props: IconProps) => CheckBoxChecked(props),
   'icon-tool-eraser': (props: IconProps) => ToolEraser(props),
   'icon-tool-brush': (props: IconProps) => ToolBrush(props),
+  'icon-tool-labelmap-assist': (props: IconProps) => ToolLabelmapAssist(props),
+  'icon-tool-segment-anything': (props: IconProps) => ToolSegmentAnything(props),
   'icon-tool-threshold': (props: IconProps) => ToolThreshold(props),
+  'icon-tool-pet-segment': (props: IconProps) => ToolPETSegment(props),
+  'icon-tool-interpolation': (props: IconProps) => ToolInterpolation(props),
+  'icon-tool-bidirectional-segment': (props: IconProps) => ToolBidirectionalSegment(props),
+  'icon-tool-expand': (props: IconProps) => ToolExpand(props),
+  'icon-tool-contract': (props: IconProps) => ToolContract(props),
   'icon-tool-shape': (props: IconProps) => ToolShape(props),
   link: (props: IconProps) => Link(props),
   'icon-color-lut': (props: IconProps) => IconColorLUT(props),
@@ -660,7 +684,7 @@ export const Icons = {
   'icon-transferring': (props: IconProps) => IconTransferring(props),
   'icon-alert-small': (props: IconProps) => Alert(props),
   'icon-alert-outline': (props: IconProps) => AlertOutline(props),
-  'status-alert': (props: IconProps) => Alert(props),
+  'status-alert': (props: IconProps) => StatusAlert(props),
   info: (props: IconProps) => Info(props),
   'notifications-info': (props: IconProps) => NotificationInfo(props),
   'notificationwarning-diamond': (props: IconProps) => NotificationWarning(props),

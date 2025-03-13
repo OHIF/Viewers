@@ -1,9 +1,7 @@
 import { id } from './id';
-import { hotkeys } from '@ohif/core';
 import initWorkflowSteps from './initWorkflowSteps';
 import initToolGroups from './initToolGroups';
 import toolbarButtons from './toolbarButtons';
-import segmentationButtons from './segmentationButtons';
 
 const extensionDependencies = {
   '@ohif/extension-default': '3.7.0-beta.76',
@@ -19,7 +17,6 @@ const ohif = {
   chartSopClassHandler: '@ohif/extension-default.sopClassHandlerModule.chart',
   hangingProtocol: '@ohif/extension-default.hangingProtocolModule.default',
   leftPanel: '@ohif/extension-default.panelModule.seriesList',
-  rightPanel: '@ohif/extension-default.panelModule.measure',
   chartViewport: '@ohif/extension-default.viewportModule.chartViewport',
 };
 
@@ -57,7 +54,8 @@ function modeFactory({ modeConfiguration }) {
       measurementService.clearMeasurements();
       initToolGroups({ toolNames, Enums, toolGroupService, commandsManager, servicesManager });
 
-      toolbarService.addButtons([...toolbarButtons, ...segmentationButtons]);
+      toolbarService.addButtons(toolbarButtons);
+
       toolbarService.createButtonSection('secondary', ['ProgressDropdown']);
 
       // the primary button section is created in the workflow steps
@@ -168,7 +166,6 @@ function modeFactory({ modeConfiguration }) {
     // general handler needs to come last.  For this case, the dicomvideo must
     // come first to remove video transfer syntax before ohif uses images
     sopClassHandlers: [ohif.chartSopClassHandler, ohif.defaultSopClassHandler],
-    hotkeys: [...hotkeys.defaults.hotkeyBindings],
   };
 }
 
