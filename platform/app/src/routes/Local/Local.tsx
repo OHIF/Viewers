@@ -144,12 +144,12 @@ function Local({ modePath }: LocalProps) {
                 ) : (
                   <div className="space-y-2">
                     <p className="text-primary pt-0 text-xl">
-                      Drag and Drop DICOM files here <br />
-                      to load them in the Viewer
+                      Drag and drop your DICOM files here <br />
+                      to load them locally.
                     </p>
                     <p className="text-muted-foreground text-base">
-                      Security note: You data is not uploaded to any server,
-                      <br /> it will stay in your local browser application
+                      Security note: Your data remains locally within your browser
+                      <br /> and is never uploaded to any server.
                     </p>
                   </div>
                 )}
