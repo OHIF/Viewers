@@ -140,7 +140,6 @@ function ToolbarLayoutSelectorWithServices({
       <LayoutSelector
         onSelectionChange={handleSelectionChange}
         tooltipDisabled={isDisabled}
-        servicesManager={servicesManager}
         {...props}
       >
         <LayoutSelector.Trigger

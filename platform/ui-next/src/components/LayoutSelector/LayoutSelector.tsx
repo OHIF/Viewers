@@ -47,8 +47,7 @@ type LayoutSelectorProps = {
   children: React.ReactNode;
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
-  tooltipDisabled?: boolean;
-  servicesManager?: any;
+  tooltipDisabled?: boolean; // Keep this prop for now as it might be used elsewhere
 };
 
 const LayoutSelector = ({
@@ -59,7 +58,6 @@ const LayoutSelector = ({
   open,
   onOpenChange,
   tooltipDisabled,
-  servicesManager,
 }: LayoutSelectorProps) => {
   const [isOpenInternal, setIsOpenInternal] = useState(false);
 
@@ -231,6 +229,7 @@ const PresetSection = ({ children, title, className }: PresetSectionProps) => {
 type PresetProps = LayoutPresetType & {
   className?: string;
   isPreset?: boolean;
+  iconSize?: string; // Add new prop for icon size
 };
 
 const Preset = ({
@@ -240,6 +239,7 @@ const Preset = ({
   disabled = false,
   className,
   isPreset = false,
+  iconSize, // New prop
 }: PresetProps) => {
   const { onSelection, onSelectionPreset } = useLayoutSelector();
 
@@ -269,7 +269,7 @@ const Preset = ({
       <div className="flex-shrink-0">
         <Icons.ByName
           name={icon}
-          className="group-hover:text-primary"
+          className={cn('group-hover:text-primary', iconSize)}
         />
       </div>
       {title && <div className="text-foreground text-base">{title}</div>}
@@ -359,7 +359,6 @@ LayoutSelector.propTypes = {
   open: PropTypes.bool,
   onOpenChange: PropTypes.func,
   tooltipDisabled: PropTypes.bool,
-  servicesManager: PropTypes.object,
 };
 
 export { LayoutSelector };
