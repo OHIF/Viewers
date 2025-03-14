@@ -19,7 +19,7 @@ const InputFilterContext = createContext<InputFilterContextType | undefined>(und
 function useInputFilterContext() {
   const context = useContext(InputFilterContext);
   if (!context) {
-    throw new Error('InputFilter compound components must be used within InputFilter.Root');
+    throw new Error('InputFilter compound components must be used within InputFilter');
   }
   return context;
 }
@@ -144,8 +144,9 @@ function ClearButton({ className }: ClearButtonProps) {
   );
 }
 
-// Pre-composed component for simpler usage
+// Main InputFilter component
 interface InputFilterProps {
+  children?: React.ReactNode;
   className?: string;
   placeholder?: string;
   value?: string;
@@ -155,6 +156,7 @@ interface InputFilterProps {
 }
 
 function InputFilter({
+  children,
   className,
   placeholder = 'Search...',
   value,
@@ -162,6 +164,22 @@ function InputFilter({
   onChange,
   debounceTime = 200,
 }: InputFilterProps) {
+  // If children are provided, act as a container (former Root)
+  if (children) {
+    return (
+      <Root
+        className={className}
+        value={value}
+        defaultValue={defaultValue}
+        onChange={onChange}
+        debounceTime={debounceTime}
+      >
+        {children}
+      </Root>
+    );
+  }
+
+  // Otherwise act as the complete pre-composed component
   return (
     <Root
       className={className}
@@ -181,7 +199,6 @@ function InputFilter({
 }
 
 // Attach subcomponents as static properties
-InputFilter.Root = Root;
 InputFilter.Input = InputComponent;
 InputFilter.SearchIcon = SearchIcon;
 InputFilter.ClearButton = ClearButton;

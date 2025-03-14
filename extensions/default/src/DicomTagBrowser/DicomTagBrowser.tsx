@@ -173,7 +173,7 @@ const DicomTagBrowser = ({
             <span className="text-muted-foreground flex h-6 items-center text-xs">
               Search metadata
             </span>
-            <InputFilter.Root
+            <InputFilter
               className="text-muted-foreground"
               onChange={setFilterValue}
             >
@@ -183,7 +183,7 @@ const DicomTagBrowser = ({
                 className="pl-9 pr-9"
               />
               <InputFilter.ClearButton />
-            </InputFilter.Root>
+            </InputFilter>
           </div>
         </div>
       </div>
