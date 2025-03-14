@@ -1,5 +1,4 @@
 import * as cornerstoneTools from '@cornerstonejs/tools';
-import { useSystem } from '@ohif/core/src';
 
 interface BidirectionalAxis {
   length: number;

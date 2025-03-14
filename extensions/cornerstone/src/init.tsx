@@ -194,6 +194,24 @@ export default async function init({
           segments: updatedSegmentation.segments,
         });
       }
+
+      // Check for segments with bidirectional measurements and update them
+      if (segmentation) {
+        const segmentIndices = Object.keys(segmentation.segments)
+          .map(index => parseInt(index))
+          .filter(index => index > 0);
+
+        for (const segmentIndex of segmentIndices) {
+          const segment = segmentation.segments[segmentIndex];
+          if (segment?.cachedStats?.namedStats?.bidirectional) {
+            // Run the command to update the bidirectional measurement
+            commandsManager.runCommand('runSegmentBidirectional', {
+              segmentationId,
+              segmentIndex,
+            });
+          }
+        }
+      }
     },
     1000
   );
