@@ -120,7 +120,15 @@ function commandsModule({
         type,
       });
     },
-    updateStoredPositionPresentation: ({ viewportId, displaySetInstanceUID }) => {
+    updateStoredPositionPresentation: ({
+      viewportId,
+      displaySetInstanceUID,
+      referencedImageId,
+    }: {
+      viewportId: string;
+      displaySetInstanceUID: string;
+      referencedImageId: string;
+    }) => {
       const presentations = cornerstoneViewportService.getPresentations(viewportId);
       const { positionPresentationStore, setPositionPresentation, getPositionPresentationId } =
         usePositionPresentationStore.getState();
@@ -132,11 +140,16 @@ function commandsModule({
       )?.[0];
 
       if (previousReferencedDisplaySetStoreKey) {
-        setPositionPresentation(
-          previousReferencedDisplaySetStoreKey,
-          presentations.positionPresentation
-        );
+        const presentationData = referencedImageId
+          ? {
+              ...presentations.positionPresentation,
+              viewReference: {
+                referencedImageId,
+              },
+            }
+          : presentations.positionPresentation;
 
+        setPositionPresentation(previousReferencedDisplaySetStoreKey, presentationData);
         return;
       }
 
