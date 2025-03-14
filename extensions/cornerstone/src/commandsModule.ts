@@ -345,6 +345,12 @@ function commandsModule({
     },
 
     removeMeasurement: ({ uid }) => {
+      const { viewport } = getActiveViewportEnabledElement(viewportGridService);
+      const annotation = cornerstoneTools.annotation.state.getAnnotation(uid);
+
+      cornerstoneTools.AnnotationTool.createAnnotationMemo(viewport.element, annotation, {
+        deleting: true,
+      });
       measurementService.remove(uid);
     },
 
@@ -1359,7 +1365,7 @@ function commandsModule({
     deleteActiveAnnotation: () => {
       const activeAnnotationsUID = cornerstoneTools.annotation.selection.getAnnotationsSelected();
       activeAnnotationsUID.forEach(activeAnnotationUID => {
-        measurementService.remove(activeAnnotationUID);
+        actions.removeMeasurement({ uid: activeAnnotationUID });
       });
     },
     undo: () => {
