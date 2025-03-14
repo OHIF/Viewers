@@ -16,7 +16,7 @@ const SegmentBidirectional = {
   ) => {
     const { annotation } = csToolsEventDetail;
     const { metadata, data, annotationUID } = annotation;
-
+    debugger;
     const isLocked = getIsLocked(annotationUID);
     const isVisible = getIsVisible(annotationUID);
 

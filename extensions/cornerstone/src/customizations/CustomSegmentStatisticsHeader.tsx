@@ -119,8 +119,8 @@ export const CustomSegmentStatisticsHeader = ({
                 size="icon"
                 onClick={() => {
                   if (bidirectional.annotationUID) {
-                    commandsManager.run('jumpToAnnotation', {
-                      annotationUID: bidirectional.annotationUID,
+                    commandsManager.run('jumpToMeasurement', {
+                      uid: bidirectional.annotationUID,
                     });
                   }
                 }}

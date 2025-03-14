@@ -12,6 +12,7 @@ const ohif = {
 const cornerstone = {
   viewport: '@ohif/extension-cornerstone.viewportModule.cornerstone',
   panelTool: '@ohif/extension-cornerstone.panelModule.panelSegmentationWithTools',
+  measurements: '@ohif/extension-cornerstone.panelModule.panelMeasurement',
 };
 
 const segmentation = {
@@ -161,7 +162,7 @@ function modeFactory({ modeConfiguration }) {
             props: {
               leftPanels: [ohif.leftPanel],
               leftPanelResizable: true,
-              rightPanels: [cornerstone.panelTool],
+              rightPanels: [cornerstone.panelTool, cornerstone.measurements],
               rightPanelResizable: true,
               // leftPanelClosed: true,
               viewports: [

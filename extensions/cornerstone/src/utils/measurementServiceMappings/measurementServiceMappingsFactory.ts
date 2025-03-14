@@ -49,7 +49,7 @@ const measurementServiceMappingsFactory = (
       LivewireContour: POLYLINE,
       Probe: POINT,
       UltrasoundDirectional: POLYLINE,
-      SegmentBidirectionalTool: BIDIRECTIONAL,
+      SegmentBidirectional: BIDIRECTIONAL,
     };
 
     return TOOL_TYPE_TO_VALUE_TYPE[toolType];
@@ -96,7 +96,7 @@ const measurementServiceMappingsFactory = (
         },
       ],
     },
-    SegmentBidirectionalTool: {
+    SegmentBidirectional: {
       toAnnotation: SegmentBidirectional.toAnnotation,
       toMeasurement: csToolsAnnotation =>
         SegmentBidirectional.toMeasurement(
