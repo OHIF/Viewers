@@ -13,6 +13,7 @@ const supportedTools = [
   'LivewireContour',
   'UltrasoundDirectionalTool',
   'SCOORD3DPoint',
+  'SegmentBidirectionalTool',
 ];
 
 export default supportedTools;

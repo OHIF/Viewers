@@ -1,4 +1,5 @@
 import * as cornerstoneTools from '@cornerstonejs/tools';
+import { useSystem } from '@ohif/core/src';
 
 interface BidirectionalAxis {
   length: number;
@@ -18,10 +19,15 @@ interface BidirectionalData {
  * @param segmentationId - The ID of the segmentation
  * @returns The updated segmentation object with new stats, or null if no updates were made
  */
-export async function updateSegmentationStats(
-  segmentation: any,
-  segmentationId: string
-): Promise<any | null> {
+export async function updateSegmentationStats({
+  segmentation,
+  segmentationId,
+  readableText,
+}: {
+  segmentation: any;
+  segmentationId: string;
+  readableText: any;
+}): Promise<any | null> {
   if (!segmentation) {
     console.debug('No segmentation found for id:', segmentationId);
     return null;
@@ -63,24 +69,31 @@ export async function updateSegmentationStats(
 
     if (segmentStats.array) {
       segmentStats.array.forEach(stat => {
+        // only gather stats that are in the readableText
+        if (!readableText[stat.name]) {
+          return;
+        }
+
         if (stat && stat.name) {
           namedStats[stat.name] = {
             name: stat.name,
-            label: stat.label || stat.name,
+            label: readableText[stat.name],
             value: stat.value,
             unit: stat.unit,
           };
         }
       });
 
-      // Add volume if it exists but isn't in the array
-      if (segmentStats.volume && !namedStats.volume) {
-        namedStats.volume = {
-          name: 'volume',
-          label: 'Volume',
-          value: segmentStats.volume.value,
-          unit: segmentStats.volume.unit,
-        };
+      if (readableText.volume) {
+        // Add volume if it exists but isn't in the array
+        if (segmentStats.volume && !namedStats.volume) {
+          namedStats.volume = {
+            name: 'volume',
+            label: 'Volume',
+            value: segmentStats.volume.value,
+            unit: segmentStats.volume.unit,
+          };
+        }
       }
 
       // Update the segment's cachedStats with namedStats
@@ -101,12 +114,19 @@ export async function updateSegmentationStats(
  * @param segmentationService - The segmentation service to use for updating the segment
  * @returns Whether the update was successful
  */
-export function updateSegmentBidirectionalStats(
-  segmentationId: string,
-  segmentIndex: number,
-  bidirectionalData: BidirectionalData,
-  segmentationService: any
-) {
+export function updateSegmentBidirectionalStats({
+  segmentationId,
+  segmentIndex,
+  bidirectionalData,
+  segmentationService,
+  annotation,
+}: {
+  segmentationId: string;
+  segmentIndex: number;
+  bidirectionalData: BidirectionalData;
+  segmentationService: AppTypes.SegmentationService;
+  annotation: any;
+}) {
   if (!segmentationId || segmentIndex === undefined || !bidirectionalData) {
     console.debug('Missing required data for bidirectional stats update');
     return null;
@@ -143,6 +163,7 @@ export function updateSegmentBidirectionalStats(
     namedStats.bidirectional = {
       name: 'bidirectional',
       label: 'Bidirectional',
+      annotationUID: annotation.annotationUID,
       value: {
         maxMajor,
         maxMinor,

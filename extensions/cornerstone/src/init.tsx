@@ -181,7 +181,12 @@ export default async function init({
     segmentationService.EVENTS.SEGMENTATION_DATA_MODIFIED,
     async ({ segmentationId }) => {
       const segmentation = segmentationService.getSegmentation(segmentationId);
-      const updatedSegmentation = await updateSegmentationStats(segmentation, segmentationId);
+      const readableText = customizationService.getCustomization('panelSegmentation.readableText');
+      const updatedSegmentation = await updateSegmentationStats({
+        segmentation,
+        segmentationId,
+        readableText,
+      });
 
       if (updatedSegmentation) {
         segmentationService.addOrUpdateSegmentation({

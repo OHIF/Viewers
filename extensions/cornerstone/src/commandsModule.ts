@@ -77,60 +77,65 @@ function commandsModule({
 
     return {
       segmentationId,
-      activeSegmentIndex,
+      segmentIndex: activeSegmentIndex,
     };
   }
 
   const actions = {
-    runSegmentBidirectional: async () => {
-      const { segmentationId, activeSegmentIndex } = _getActiveSegmentationInfo();
+    runSegmentBidirectional: async ({ segmentationId, segmentIndex } = {}) => {
+      // Get active segmentation if not specified
+      const targetSegmentation =
+        segmentationId && segmentIndex
+          ? { segmentationId, segmentIndex }
+          : _getActiveSegmentationInfo();
+
+      const { segmentationId: targetId, segmentIndex: targetIndex } = targetSegmentation;
+
+      // Get bidirectional measurement data
       const bidirectionalData = await cstUtils.segmentation.getSegmentLargestBidirectional({
-        segmentationId,
-        segmentIndices: [activeSegmentIndex],
+        segmentationId: targetId,
+        segmentIndices: [targetIndex],
       });
 
-      const viewportId1 = viewportGridService.getActiveViewportId();
+      const activeViewportId = viewportGridService.getActiveViewportId();
 
-      bidirectionalData.forEach(bidirectional => {
-        const { segmentIndex } = bidirectional;
-        const { majorAxis, minorAxis } = bidirectional;
+      // Process each bidirectional measurement
+      bidirectionalData.forEach(measurement => {
+        const { segmentIndex, majorAxis, minorAxis } = measurement;
 
-        // Update segment stats with bidirectional data
-        const updatedSegmentation = updateSegmentBidirectionalStats(
-          segmentationId,
-          segmentIndex,
-          bidirectional,
-          segmentationService
+        // Create annotation
+        const annotation = cornerstoneTools.SegmentBidirectionalTool.hydrate(
+          activeViewportId,
+          [majorAxis, minorAxis],
+          {
+            segmentIndex,
+            segmentationId: targetId,
+          }
         );
 
+        // Update segmentation stats
+        const updatedSegmentation = updateSegmentBidirectionalStats({
+          segmentationId: targetId,
+          segmentIndex: targetIndex,
+          bidirectionalData: measurement,
+          segmentationService,
+          annotation,
+        });
+
+        // Save changes if needed
         if (updatedSegmentation) {
           segmentationService.addOrUpdateSegmentation({
-            segmentationId,
+            segmentationId: targetId,
             segments: updatedSegmentation.segments,
           });
         }
-
-        // check if it has bidirectional data
-
-        const segmentation = segmentationService.getSegmentation(segmentationId);
-        const hasBidirectionalData =
-          segmentation.segments[segmentIndex].cachedStats.namedStats.bidirectional;
-
-        if (!hasBidirectionalData) {
-          debugger;
-        }
-
-        cornerstoneTools.SegmentBidirectionalTool.hydrate(viewportId1, [majorAxis, minorAxis], {
-          segmentIndex,
-          segmentationId,
-        });
       });
     },
     interpolateLabelmap: () => {
-      const { segmentationId, activeSegmentIndex } = _getActiveSegmentationInfo();
+      const { segmentationId, segmentIndex } = _getActiveSegmentationInfo();
       labelmapInterpolation.interpolate({
         segmentationId,
-        segmentIndex: Number(activeSegmentIndex),
+        segmentIndex,
       });
     },
     /**
