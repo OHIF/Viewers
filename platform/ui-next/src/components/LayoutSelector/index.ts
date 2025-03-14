@@ -1,4 +1,4 @@
-import { LayoutSelector, LayoutPreset, GridLayoutSelector } from './LayoutSelector';
+import { LayoutSelector } from './LayoutSelector';
 
-export { LayoutSelector, LayoutPreset, GridLayoutSelector };
+export { LayoutSelector };
 export default LayoutSelector;

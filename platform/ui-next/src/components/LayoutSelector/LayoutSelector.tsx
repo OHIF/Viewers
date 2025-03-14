@@ -1,28 +1,204 @@
-import React, { useState } from 'react';
+import React, { createContext, useContext, useState, useCallback } from 'react';
 import { Popover, PopoverTrigger, PopoverContent } from '../Popover/Popover';
 import { cn } from '../../lib/utils';
-// Import the Icons component
-// Note: Adjust this path based on your actual project structure
 import { Icons } from '../Icons';
 import * as PropTypes from 'prop-types';
 
-type LayoutPresetProps = {
-  onSelection: (commandOptions: any) => void;
+// Types
+type LayoutCommandOptions = {
+  numRows?: number;
+  numCols?: number;
+  protocolId?: string;
+  [key: string]: any;
+};
+
+type LayoutPresetType = {
   title?: string;
   icon: string;
-  commandOptions: any;
-  className?: string;
+  commandOptions: LayoutCommandOptions;
   disabled?: boolean;
 };
 
-const LayoutPreset: React.FC<LayoutPresetProps> = ({
-  onSelection,
+// Context
+type LayoutSelectorContextType = {
+  isOpen: boolean;
+  setIsOpen: (isOpen: boolean) => void;
+  onSelection: (commandOptions: LayoutCommandOptions) => void;
+  onSelectionPreset: (commandOptions: LayoutCommandOptions) => void;
+};
+
+const LayoutSelectorContext = createContext<LayoutSelectorContextType | undefined>(undefined);
+
+const useLayoutSelector = () => {
+  const context = useContext(LayoutSelectorContext);
+  if (context === undefined) {
+    throw new Error('useLayoutSelector must be used within a LayoutSelector component');
+  }
+  return context;
+};
+
+// Main component
+type LayoutSelectorProps = {
+  onSelectionChange?: (commandOptions: LayoutCommandOptions, isPreset: boolean) => void;
+  onSelection?: (commandOptions: LayoutCommandOptions) => void;
+  onSelectionPreset?: (commandOptions: LayoutCommandOptions) => void;
+  children: React.ReactNode;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+  tooltipDisabled?: boolean;
+  servicesManager?: any;
+};
+
+const LayoutSelector = ({
+  onSelectionChange,
+  onSelection = commandOptions => {},
+  onSelectionPreset = commandOptions => {},
+  children,
+  open,
+  onOpenChange,
+  tooltipDisabled,
+  servicesManager,
+}: LayoutSelectorProps) => {
+  const [isOpenInternal, setIsOpenInternal] = useState(false);
+
+  const isControlled = open !== undefined;
+  const isOpen = isControlled ? open : isOpenInternal;
+  const setIsOpen = isControlled ? onOpenChange! : setIsOpenInternal;
+
+  const handleSelection = useCallback(
+    (commandOptions: LayoutCommandOptions) => {
+      onSelection(commandOptions);
+      if (onSelectionChange) {
+        onSelectionChange(commandOptions, false);
+      }
+      setIsOpen(false);
+    },
+    [onSelection, onSelectionChange, setIsOpen]
+  );
+
+  const handlePresetSelection = useCallback(
+    (commandOptions: LayoutCommandOptions) => {
+      onSelectionPreset(commandOptions);
+      if (onSelectionChange) {
+        onSelectionChange(commandOptions, true);
+      }
+      setIsOpen(false);
+    },
+    [onSelectionPreset, onSelectionChange, setIsOpen]
+  );
+
+  return (
+    <LayoutSelectorContext.Provider
+      value={{
+        isOpen,
+        setIsOpen,
+        onSelection: handleSelection,
+        onSelectionPreset: handlePresetSelection,
+      }}
+    >
+      <Popover
+        open={isOpen}
+        onOpenChange={setIsOpen}
+      >
+        {children}
+      </Popover>
+    </LayoutSelectorContext.Provider>
+  );
+};
+
+// Sub-components
+type TriggerProps = {
+  children?: React.ReactNode;
+  className?: string;
+};
+
+const Trigger = ({ children, className }: TriggerProps) => {
+  return (
+    <PopoverTrigger
+      asChild
+      className={className}
+    >
+      {children || (
+        <button
+          className="hover:bg-primary-dark/30 text-foreground flex items-center justify-center rounded px-3 py-2 transition"
+          aria-label="Layout selector"
+          data-cy="layout-button"
+        >
+          <Icons.ByName name="tool-layout" />
+          <span className="ml-2">Layout</span>
+        </button>
+      )}
+    </PopoverTrigger>
+  );
+};
+
+type ContentProps = {
+  children: React.ReactNode;
+  className?: string;
+  align?: 'center' | 'start' | 'end';
+  sideOffset?: number;
+};
+
+const Content = ({ children, className, align = 'center', sideOffset = 8 }: ContentProps) => {
+  return (
+    <PopoverContent
+      align={align}
+      sideOffset={sideOffset}
+      className={cn('w-auto rounded-lg border-none p-0 shadow-lg', className)}
+    >
+      <div className="flex">{children}</div>
+    </PopoverContent>
+  );
+};
+
+type PresetSectionProps = {
+  children: React.ReactNode;
+  title: string;
+  className?: string;
+};
+
+const PresetSection = ({ children, title, className }: PresetSectionProps) => {
+  return (
+    <div className={cn('flex flex-col gap-2', className)}>
+      <div className="text-muted-foreground text-xs">{title}</div>
+      {React.Children.count(children) > 0 && (
+        <div
+          className={cn(title.toLowerCase() === 'common' ? 'flex gap-2' : 'flex flex-col gap-0')}
+        >
+          {children}
+        </div>
+      )}
+    </div>
+  );
+};
+
+type PresetProps = LayoutPresetType & {
+  className?: string;
+  isPreset?: boolean;
+};
+
+const Preset = ({
   title,
   icon,
   commandOptions,
-  className,
   disabled = false,
-}) => {
+  className,
+  isPreset = false,
+}: PresetProps) => {
+  const { onSelection, onSelectionPreset } = useLayoutSelector();
+
+  const handleClick = () => {
+    if (disabled) {
+      return;
+    }
+
+    if (isPreset) {
+      onSelectionPreset(commandOptions);
+    } else {
+      onSelection(commandOptions);
+    }
+  };
+
   return (
     <div
       className={cn(
@@ -31,9 +207,7 @@ const LayoutPreset: React.FC<LayoutPresetProps> = ({
         disabled && 'pointer-events-none opacity-50',
         className
       )}
-      onClick={() => {
-        !disabled && onSelection(commandOptions);
-      }}
+      onClick={handleClick}
       data-cy={title}
     >
       <div className="flex-shrink-0">
@@ -47,20 +221,16 @@ const LayoutPreset: React.FC<LayoutPresetProps> = ({
   );
 };
 
-type GridLayoutSelectorProps = {
-  onSelection: (commandOptions: any) => void;
+type GridSelectorProps = {
   rows?: number;
   columns?: number;
   className?: string;
 };
 
-const GridLayoutSelector: React.FC<GridLayoutSelectorProps> = ({
-  onSelection,
-  rows = 3,
-  columns = 4,
-  className,
-}) => {
+const GridSelector = ({ rows = 3, columns = 4, className }: GridSelectorProps) => {
   const [hoveredIndex, setHoveredIndex] = useState<number | undefined>(undefined);
+  const { onSelection } = useLayoutSelector();
+
   const hoverX = hoveredIndex !== undefined ? hoveredIndex % columns : -1;
   const hoverY = hoveredIndex !== undefined ? Math.floor(hoveredIndex / columns) : -1;
 
@@ -72,6 +242,15 @@ const GridLayoutSelector: React.FC<GridLayoutSelectorProps> = ({
     const y = Math.floor(index / columns);
 
     return x <= hoverX && y <= hoverY;
+  };
+
+  const handleSelection = (index: number) => {
+    const x = index % columns;
+    const y = Math.floor(index / columns);
+    onSelection({
+      numRows: y + 1,
+      numCols: x + 1,
+    });
   };
 
   return (
@@ -89,14 +268,7 @@ const GridLayoutSelector: React.FC<GridLayoutSelectorProps> = ({
           key={index}
           className={cn('cursor-pointer', isHovered(index) ? 'bg-primary-active' : 'bg-[#04225b]')}
           data-cy={`Layout-${index % columns}-${Math.floor(index / columns)}`}
-          onClick={() => {
-            const x = index % columns;
-            const y = Math.floor(index / columns);
-            onSelection({
-              numRows: y + 1,
-              numCols: x + 1,
-            });
-          }}
+          onClick={() => handleSelection(index)}
           onMouseEnter={() => setHoveredIndex(index)}
           onMouseLeave={() => setHoveredIndex(undefined)}
         />
@@ -105,137 +277,34 @@ const GridLayoutSelector: React.FC<GridLayoutSelectorProps> = ({
   );
 };
 
-type LayoutSelectorProps = {
-  onSelection?: (commandOptions: any) => void;
-  onSelectionPreset?: (commandOptions: any) => void;
-  rows?: number;
-  columns?: number;
-  commonPresets?: Array<any>;
-  advancedPresets?: Array<any>;
-  tooltipDisabled?: boolean;
-  servicesManager?: any;
-  label?: string;
-  disablePrev?: boolean;
-  disableNext?: boolean;
-  trigger?: React.ReactNode;
-};
+const Divider = ({ className }: { className?: string }) => (
+  <div className={cn('h-px bg-black', className)}></div>
+);
 
-const LayoutSelector: React.FC<LayoutSelectorProps> = ({
-  onSelection = () => {},
-  onSelectionPreset = () => {},
-  rows = 3,
-  columns = 4,
-  commonPresets = [],
-  advancedPresets = [],
-  tooltipDisabled = false,
-  servicesManager = null,
-  trigger,
-}) => {
-  const [isOpen, setIsOpen] = useState(false);
-  const hasPresets = commonPresets.length > 0 || advancedPresets.length > 0;
+const HelpText = ({ children, className }: { children: React.ReactNode; className?: string }) => (
+  <p className={cn('text-muted-foreground text-xs leading-tight', className)}>{children}</p>
+);
 
-  const handleSelection = (commandOptions: any) => {
-    onSelection(commandOptions);
-    setIsOpen(false);
-  };
+// Assemble the compound component
+LayoutSelector.Trigger = Trigger;
+LayoutSelector.Content = Content;
+LayoutSelector.PresetSection = PresetSection;
+LayoutSelector.Preset = Preset;
+LayoutSelector.GridSelector = GridSelector;
+LayoutSelector.Divider = Divider;
+LayoutSelector.HelpText = HelpText;
 
-  const handlePresetSelection = (commandOptions: any) => {
-    onSelectionPreset(commandOptions);
-    setIsOpen(false);
-  };
-
-  return (
-    <Popover
-      open={isOpen}
-      onOpenChange={setIsOpen}
-    >
-      <PopoverTrigger asChild>
-        {trigger || (
-          <button
-            className="hover:bg-primary-dark/30 text-foreground flex items-center justify-center rounded px-3 py-2 transition"
-            aria-label="Layout selector"
-          >
-            <Icons.ByName name="tool-layout" />
-            <span className="ml-2">Layout</span>
-          </button>
-        )}
-      </PopoverTrigger>
-      <PopoverContent
-        align="center"
-        sideOffset={8}
-        className="w-auto rounded-lg border-none p-0 shadow-lg"
-      >
-        <div className="flex">
-          {/* Left Side - Presets */}
-          {hasPresets && (
-            <div className="bg-popover flex flex-col gap-2.5 rounded-lg p-2">
-              {commonPresets.length > 0 && (
-                <>
-                  <div className="text-muted-foreground text-xs">Common</div>
-                  <div className="flex gap-2">
-                    {commonPresets.map((preset, index) => (
-                      <LayoutPreset
-                        key={`common-preset-${index}`}
-                        onSelection={handleSelection}
-                        icon={preset.icon}
-                        commandOptions={preset.commandOptions}
-                      />
-                    ))}
-                  </div>
-                  <div className="h-px bg-black"></div>
-                </>
-              )}
-
-              {advancedPresets.length > 0 && (
-                <>
-                  <div className="text-muted-foreground text-xs">Advanced</div>
-                  <div className="flex flex-col gap-0">
-                    {advancedPresets.map((preset, index) => (
-                      <LayoutPreset
-                        key={`advanced-preset-${index}`}
-                        onSelection={handlePresetSelection}
-                        title={preset.title}
-                        icon={preset.icon}
-                        commandOptions={preset.commandOptions}
-                        disabled={preset.disabled}
-                      />
-                    ))}
-                  </div>
-                </>
-              )}
-            </div>
-          )}
-
-          {/* Right Side - Grid Layout */}
-          <div className="bg-muted flex flex-col gap-2.5 border-l-2 border-solid border-black p-2">
-            <div className="text-muted-foreground text-xs">Custom</div>
-            <GridLayoutSelector
-              onSelection={handleSelection}
-              rows={rows}
-              columns={columns}
-            />
-            <p className="text-muted-foreground text-xs leading-tight">
-              Hover to select <br />
-              rows and columns <br /> Click to apply
-            </p>
-          </div>
-        </div>
-      </PopoverContent>
-    </Popover>
-  );
-};
-
+// PropTypes
 LayoutSelector.propTypes = {
+  onSelectionChange: PropTypes.func,
   onSelection: PropTypes.func,
   onSelectionPreset: PropTypes.func,
-  rows: PropTypes.number,
-  columns: PropTypes.number,
-  commonPresets: PropTypes.array,
-  advancedPresets: PropTypes.array,
+  children: PropTypes.node.isRequired,
+  open: PropTypes.bool,
+  onOpenChange: PropTypes.func,
   tooltipDisabled: PropTypes.bool,
   servicesManager: PropTypes.object,
-  trigger: PropTypes.node,
 };
 
-export { LayoutSelector, LayoutPreset, GridLayoutSelector };
+export { LayoutSelector };
 export default LayoutSelector;

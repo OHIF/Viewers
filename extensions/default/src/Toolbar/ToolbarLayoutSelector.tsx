@@ -1,10 +1,7 @@
-// File: extensions/default/src/Toolbar/ToolbarLayoutSelector.tsx
-
 import React, { useCallback, useState } from 'react';
 import PropTypes from 'prop-types';
 import { CommandsManager } from '@ohif/core';
 
-// Import the new LayoutSelector from ui-next
 import { LayoutSelector } from '../../../../platform/ui-next/src/components/LayoutSelector';
 
 function ToolbarLayoutSelectorWithServices({
@@ -109,49 +106,94 @@ function ToolbarLayoutSelectorWithServices({
         },
       ];
 
-  // The callback for a "common" or "custom" layout selection
-  const onSelection = useCallback(
-    commandOptions => {
-      commandsManager.run({
-        commandName: 'setViewportGridLayout',
-        commandOptions,
-      });
-      // Optionally disable interactions if needed
-      setIsDisabled(true);
-    },
-    [commandsManager]
-  );
+  // Unified selection handler that dispatches to the appropriate command
+  const handleSelectionChange = useCallback(
+    (commandOptions, isPreset) => {
+      if (isPreset) {
+        // Advanced preset selection
+        commandsManager.run({
+          commandName: 'setHangingProtocol',
+          commandOptions,
+        });
+      } else {
+        // Common preset or custom grid selection
+        commandsManager.run({
+          commandName: 'setViewportGridLayout',
+          commandOptions,
+        });
+      }
 
-  // The callback for an "advanced" layout selection
-  const onSelectionPreset = useCallback(
-    commandOptions => {
-      commandsManager.run({
-        commandName: 'setHangingProtocol',
-        commandOptions,
-      });
+      // Disable interactions after selection
       setIsDisabled(true);
     },
     [commandsManager]
   );
 
   const handleMouseEnter = () => {
-    // If you want to re-enable, for example
+    // Re-enable interactions on mouse enter
     setIsDisabled(false);
   };
 
   return (
     <div onMouseEnter={handleMouseEnter}>
       <LayoutSelector
-        rows={rows}
-        columns={columns}
-        onSelection={onSelection}
-        onSelectionPreset={onSelectionPreset}
-        commonPresets={commonPresets}
-        advancedPresets={advancedPresets}
+        onSelectionChange={handleSelectionChange}
         tooltipDisabled={isDisabled}
         servicesManager={servicesManager}
         {...props}
-      />
+      >
+        <LayoutSelector.Trigger />
+        <LayoutSelector.Content>
+          {/* Left side - Presets */}
+          {(commonPresets.length > 0 || advancedPresets.length > 0) && (
+            <div className="bg-popover flex flex-col gap-2.5 rounded-lg p-2">
+              {commonPresets.length > 0 && (
+                <>
+                  <LayoutSelector.PresetSection title="Common">
+                    {commonPresets.map((preset, index) => (
+                      <LayoutSelector.Preset
+                        key={`common-preset-${index}`}
+                        icon={preset.icon}
+                        commandOptions={preset.commandOptions}
+                        isPreset={false}
+                      />
+                    ))}
+                  </LayoutSelector.PresetSection>
+                  <LayoutSelector.Divider />
+                </>
+              )}
+
+              {advancedPresets.length > 0 && (
+                <LayoutSelector.PresetSection title="Advanced">
+                  {advancedPresets.map((preset, index) => (
+                    <LayoutSelector.Preset
+                      key={`advanced-preset-${index}`}
+                      title={preset.title}
+                      icon={preset.icon}
+                      commandOptions={preset.commandOptions}
+                      disabled={preset.disabled}
+                      isPreset={true}
+                    />
+                  ))}
+                </LayoutSelector.PresetSection>
+              )}
+            </div>
+          )}
+
+          {/* Right Side - Grid Layout */}
+          <div className="bg-muted flex flex-col gap-2.5 border-l-2 border-solid border-black p-2">
+            <div className="text-muted-foreground text-xs">Custom</div>
+            <LayoutSelector.GridSelector
+              rows={rows}
+              columns={columns}
+            />
+            <LayoutSelector.HelpText>
+              Hover to select <br />
+              rows and columns <br /> Click to apply
+            </LayoutSelector.HelpText>
+          </div>
+        </LayoutSelector.Content>
+      </LayoutSelector>
     </div>
   );
 }
