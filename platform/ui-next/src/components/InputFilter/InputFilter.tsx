@@ -31,7 +31,6 @@ interface RootProps {
   defaultValue?: string;
   value?: string;
   onChange?: (value: string) => void;
-  onDebounceChange?: (value: string) => void;
   debounceTime?: number;
 }
 
@@ -41,7 +40,6 @@ function Root({
   defaultValue = '',
   value: controlledValue,
   onChange,
-  onDebounceChange,
   debounceTime = 200,
 }: RootProps) {
   const [uncontrolledValue, setUncontrolledValue] = useState(defaultValue);
@@ -52,11 +50,11 @@ function Root({
   const value = isControlled ? controlledValue : uncontrolledValue;
 
   const debouncedOnChange = useMemo(() => {
-    return debounce(onDebounceChange || (() => {}), debounceTime);
-  }, [onDebounceChange, debounceTime]);
+    return onChange ? debounce(onChange, debounceTime) : undefined;
+  }, [onChange, debounceTime]);
 
   useEffect(() => {
-    return () => debouncedOnChange.cancel();
+    return () => debouncedOnChange?.cancel();
   }, [debouncedOnChange]);
 
   const setValue = useCallback(
@@ -65,15 +63,11 @@ function Root({
         setUncontrolledValue(newValue);
       }
 
-      if (onChange) {
-        onChange(newValue);
-      }
-
-      if (onDebounceChange) {
+      if (debouncedOnChange) {
         debouncedOnChange(newValue);
       }
     },
-    [isControlled, onChange, onDebounceChange, debouncedOnChange]
+    [isControlled, debouncedOnChange]
   );
 
   const handleChange = useCallback(
@@ -157,7 +151,6 @@ interface InputFilterProps {
   value?: string;
   defaultValue?: string;
   onChange?: (value: string) => void;
-  onDebounceChange?: (value: string) => void;
   debounceTime?: number;
 }
 
@@ -167,7 +160,6 @@ function InputFilter({
   value,
   defaultValue = '',
   onChange,
-  onDebounceChange,
   debounceTime = 200,
 }: InputFilterProps) {
   return (
@@ -176,7 +168,6 @@ function InputFilter({
       value={value}
       defaultValue={defaultValue}
       onChange={onChange}
-      onDebounceChange={onDebounceChange}
       debounceTime={debounceTime}
     >
       <SearchIcon />

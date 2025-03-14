@@ -175,7 +175,7 @@ const DicomTagBrowser = ({
             </span>
             <InputFilter.Root
               className="text-muted-foreground"
-              onDebounceChange={setFilterValue}
+              onChange={setFilterValue}
             >
               <InputFilter.SearchIcon />
               <InputFilter.Input
