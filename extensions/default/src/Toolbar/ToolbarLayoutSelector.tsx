@@ -1,3 +1,4 @@
+// Updated ToolbarLayoutSelector.tsx
 import React, { useCallback, useState } from 'react';
 import PropTypes from 'prop-types';
 import { CommandsManager } from '@ohif/core';
@@ -142,7 +143,11 @@ function ToolbarLayoutSelectorWithServices({
         servicesManager={servicesManager}
         {...props}
       >
-        <LayoutSelector.Trigger />
+        <LayoutSelector.Trigger
+          tooltip="Change layout"
+          disabled={isDisabled}
+          disabledText={isDisabled ? 'Please wait...' : undefined}
+        />
         <LayoutSelector.Content>
           {/* Left side - Presets */}
           {(commonPresets.length > 0 || advancedPresets.length > 0) && (

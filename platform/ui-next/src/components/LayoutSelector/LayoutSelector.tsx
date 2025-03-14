@@ -1,5 +1,7 @@
 import React, { createContext, useContext, useState, useCallback } from 'react';
 import { Popover, PopoverTrigger, PopoverContent } from '../Popover/Popover';
+import { Tooltip, TooltipTrigger, TooltipContent } from '../Tooltip';
+import { Button } from '../Button';
 import { cn } from '../../lib/utils';
 import { Icons } from '../Icons';
 import * as PropTypes from 'prop-types';
@@ -110,25 +112,79 @@ const LayoutSelector = ({
 type TriggerProps = {
   children?: React.ReactNode;
   className?: string;
+  tooltip?: string;
+  disabled?: boolean;
+  disabledText?: string;
 };
 
-const Trigger = ({ children, className }: TriggerProps) => {
+const Trigger = ({
+  children,
+  className,
+  tooltip = 'Change layout',
+  disabled = false,
+  disabledText,
+}: TriggerProps) => {
+  const { isOpen } = useLayoutSelector();
+
+  // Style constants matching ToolButton
+  const baseClasses = '!rounded-lg inline-flex items-center justify-center';
+  const defaultClasses =
+    'bg-transparent text-foreground/80 hover:bg-background hover:text-highlight';
+  const activeClasses = 'bg-background text-foreground/80';
+  const disabledClasses =
+    'text-common-bright hover:bg-primary-dark hover:text-primary-light opacity-40 cursor-not-allowed';
+  const buttonSizeClass = 'w-10 h-10';
+  const iconSizeClass = 'h-7 w-7';
+
+  const buttonClasses = cn(
+    baseClasses,
+    buttonSizeClass,
+    disabled ? disabledClasses : isOpen ? activeClasses : defaultClasses
+  );
+
+  const hasTooltip = tooltip || (disabled && disabledText);
+
+  if (children) {
+    return (
+      <PopoverTrigger
+        asChild
+        className={className}
+      >
+        {children}
+      </PopoverTrigger>
+    );
+  }
+
   return (
-    <PopoverTrigger
-      asChild
-      className={className}
-    >
-      {children || (
-        <button
-          className="hover:bg-primary-dark/30 text-foreground flex items-center justify-center rounded px-3 py-2 transition"
-          aria-label="Layout selector"
-          data-cy="layout-button"
-        >
-          <Icons.ByName name="tool-layout" />
-          <span className="ml-2">Layout</span>
-        </button>
+    <Tooltip>
+      <TooltipTrigger
+        asChild
+        className={cn(disabled && 'cursor-not-allowed')}
+      >
+        <span data-cy="layout-button">
+          <PopoverTrigger asChild>
+            <Button
+              className={buttonClasses}
+              variant="ghost"
+              size="icon"
+              aria-label={tooltip}
+              disabled={disabled}
+            >
+              <Icons.ByName
+                name="tool-layout"
+                className={iconSizeClass}
+              />
+            </Button>
+          </PopoverTrigger>
+        </span>
+      </TooltipTrigger>
+      {hasTooltip && (
+        <TooltipContent side="bottom">
+          {tooltip && <div>{tooltip}</div>}
+          {disabled && disabledText && <div className="text-muted-foreground">{disabledText}</div>}
+        </TooltipContent>
       )}
-    </PopoverTrigger>
+    </Tooltip>
   );
 };
 
