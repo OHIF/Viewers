@@ -28,6 +28,10 @@ export default function PanelSegmentation({
     'panelSegmentation.customDropdownMenuContent'
   );
 
+  const CustomSegmentStatisticsHeader = customizationService.getCustomization(
+    'panelSegmentation.customSegmentStatisticsHeader'
+  );
+
   // Create handlers object for all command runs
   const handlers = {
     onSegmentationClick: (segmentationId: string) => {
@@ -149,6 +153,17 @@ export default function PanelSegmentation({
     ...handlers,
   };
 
+  const renderSegments = () => {
+    return (
+      <SegmentationTable.Segments>
+        <SegmentationTable.SegmentStatistics.Header>
+          <CustomSegmentStatisticsHeader />
+        </SegmentationTable.SegmentStatistics.Header>
+        <SegmentationTable.SegmentStatistics.Body />
+      </SegmentationTable.Segments>
+    );
+  };
+
   // Render content based on mode
   const renderModeContent = () => {
     if (tableProps.mode === 'collapsed') {
@@ -163,26 +178,7 @@ export default function PanelSegmentation({
           </SegmentationTable.Collapsed.Header>
           <SegmentationTable.Collapsed.Content>
             <SegmentationTable.AddSegmentRow />
-            <SegmentationTable.Segments>
-              <SegmentationTable.SegmentStatistics.Header>
-                <div className="mb-2">
-                  <div className="flex justify-between">
-                    <div>L:</div>
-                    <div>
-                      <span className="text-white">195</span> <span>mm</span>
-                    </div>
-                  </div>
-                  <div className="flex justify-between">
-                    <div>W:</div>
-                    <div>
-                      <span className="text-white">125</span> <span>mm</span>
-                    </div>
-                  </div>
-                </div>
-                <div className="mb-4 border-b border-gray-600"></div>
-              </SegmentationTable.SegmentStatistics.Header>
-              <SegmentationTable.SegmentStatistics.Body />
-            </SegmentationTable.Segments>
+            {renderSegments()}
           </SegmentationTable.Collapsed.Content>
         </SegmentationTable.Collapsed>
       );
@@ -201,7 +197,7 @@ export default function PanelSegmentation({
 
           <SegmentationTable.Expanded.Content>
             <SegmentationTable.AddSegmentRow />
-            <SegmentationTable.Segments />
+            {renderSegments()}
           </SegmentationTable.Expanded.Content>
         </SegmentationTable.Expanded>
       </>

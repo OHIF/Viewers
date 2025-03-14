@@ -26,7 +26,7 @@ const DefaultStatsList = () => {
             key={key}
             className="flex justify-between"
           >
-            <div className="">{label}</div>
+            <div>{label}</div>
             <div>
               <span className="text-white">{roundNumber(value)}</span>{' '}
               <span className="">{unit || ''}</span>
@@ -39,35 +39,41 @@ const DefaultStatsList = () => {
 };
 
 // Root component that serves as the container and context provider
-const SegmentStatisticsRoot = ({ segment, children }) => {
+const SegmentStatisticsRoot = ({ segment, segmentationId, children }) => {
   if (!segment) {
     return null;
   }
 
   return (
-    <SegmentStatisticsProvider segment={segment}>
+    <SegmentStatisticsProvider
+      segment={segment}
+      segmentationId={segmentationId}
+    >
       <div className="segment-statistics w-full">{children}</div>
     </SegmentStatisticsProvider>
   );
 };
 
-// Title component
-const SegmentStatisticsTitle = ({ children }) => {
+const SegmentStatisticsTitle = ({ children = null }: { children?: React.ReactNode }) => {
   return <div className="mb-2">{children}</div>;
 };
+const SegmentStatisticsHeader = ({ children = null }: { children?: React.ReactNode }) => {
+  const { segment, segmentationId } = useSegmentStatistics('SegmentStatisticsHeader');
+  const { segmentIndex } = segment;
 
-// Header component (appears before the main stats)
-const SegmentStatisticsHeader = ({ children }) => {
-  return <div className="mb-3">{children}</div>;
+  return (
+    <div className="mb-3">
+      {children &&
+        React.cloneElement(children as React.ReactElement, { segmentationId, segmentIndex })}
+    </div>
+  );
 };
 
-// Body component (contains the main stats)
-const SegmentStatisticsBody = ({ children = null }) => {
+const SegmentStatisticsBody = ({ children = null }: { children?: React.ReactNode }) => {
   return <div className="segment-statistics-body">{children || <DefaultStatsList />}</div>;
 };
 
-// Footer component (appears after the main stats)
-const SegmentStatisticsFooter = ({ children }) => {
+const SegmentStatisticsFooter = ({ children = null }: { children?: React.ReactNode }) => {
   return <div className="mt-3">{children}</div>;
 };
 

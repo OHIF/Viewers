@@ -39,7 +39,7 @@ import { useLutPresentationStore } from './stores/useLutPresentationStore';
 import { usePositionPresentationStore } from './stores/usePositionPresentationStore';
 import { useSegmentationPresentationStore } from './stores/useSegmentationPresentationStore';
 import { imageRetrieveMetadataProvider } from '@cornerstonejs/core/utilities';
-import { updateSegmentationStats } from './utils/segmentationStats';
+import { updateSegmentationStats } from './utils/updateSegmentationStats';
 
 const { registerColormap } = csUtilities.colormap;
 

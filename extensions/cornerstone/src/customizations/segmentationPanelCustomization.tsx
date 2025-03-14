@@ -11,10 +11,15 @@ import {
   Icons,
   useSegmentationTableContext,
   useSegmentationExpanded,
+  useSegmentStatistics,
+  Separator,
 } from '@ohif/ui-next';
 import { useTranslation } from 'react-i18next';
+import { roundNumber } from '@ohif/core/src/utils';
 
 export default function getSegmentationPanelCustomization({ commandsManager, servicesManager }) {
+  const { segmentationService } = servicesManager.services;
+
   // Custom dropdown menu component that uses context for data
   const CustomDropdownMenuContent = () => {
     const { t } = useTranslation('SegmentationTable');
@@ -101,8 +106,42 @@ export default function getSegmentationPanelCustomization({ commandsManager, ser
     );
   };
 
+  const CustomSegmentStatisticsHeader = ({ segmentationId, segmentIndex }) => {
+    const segmentation = segmentationService.getSegmentation(segmentationId);
+    const segment = segmentation.segments[segmentIndex];
+    const cachedStats = segment.cachedStats;
+    const namedStats = cachedStats.namedStats;
+
+    if (!namedStats) {
+      return null;
+    }
+
+    const bidirectional = namedStats.bidirectional;
+
+    if (!bidirectional) {
+      return null;
+    }
+
+    const { value, unit } = bidirectional;
+    const maxMajor = value.maxMajor;
+    const maxMinor = value.maxMinor;
+
+    return (
+      <>
+        <div>
+          L: {roundNumber(maxMajor)} {unit}
+        </div>
+        <div>
+          W: {roundNumber(maxMinor)} {unit}
+        </div>
+        <Separator className="bg-input" />
+      </>
+    );
+  };
+
   return {
     'panelSegmentation.customDropdownMenuContent': CustomDropdownMenuContent,
+    'panelSegmentation.customSegmentStatisticsHeader': CustomSegmentStatisticsHeader,
     'panelSegmentation.disableEditing': false,
     'panelSegmentation.showAddSegment': true,
     'panelSegmentation.onSegmentationAdd': () => {

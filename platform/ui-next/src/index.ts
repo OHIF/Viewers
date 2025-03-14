@@ -78,6 +78,7 @@ import {
   SegmentationTable,
   useSegmentationTableContext,
   useSegmentationExpanded,
+  useSegmentStatistics,
   TooltipProvider,
   Tooltip,
   TooltipTrigger,
@@ -247,4 +248,5 @@ export {
   useDialog,
   ManagedDialog,
   ToolSettings,
+  useSegmentStatistics,
 };

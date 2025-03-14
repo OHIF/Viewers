@@ -71,48 +71,59 @@ export const SegmentationSegments = ({ children = null }: { children?: React.Rea
             openDelay={300}
           >
             <HoverCardTrigger asChild>
-              <DataRow
-                key={segmentIndex}
-                number={segmentIndex}
-                title={label}
-                details={displayText}
-                description={displayText}
-                colorHex={cssColor}
-                isSelected={active}
-                isVisible={visible}
-                isLocked={locked}
-                disableEditing={disableEditing}
-                className={!isActiveSegmentation ? 'opacity-80' : ''}
-                onColor={() => onSegmentColorClick(segmentation.segmentationId, segmentIndex)}
-                onToggleVisibility={() =>
-                  onToggleSegmentVisibility(
-                    segmentation.segmentationId,
-                    segmentIndex,
-                    representation.type
-                  )
-                }
-                onToggleLocked={() =>
-                  onToggleSegmentLock(segmentation.segmentationId, segmentIndex)
-                }
-                onSelect={() => onSegmentClick(segmentation.segmentationId, segmentIndex)}
-                onRename={() => onSegmentEdit(segmentation.segmentationId, segmentIndex)}
-                onDelete={() => onSegmentDelete(segmentation.segmentationId, segmentIndex)}
-              />
+              {/* The div here is not random, it is needed for making it work with the hover card */}
+              <div>
+                <DataRow
+                  key={segmentIndex}
+                  number={segmentIndex}
+                  title={label}
+                  details={displayText}
+                  description={displayText}
+                  colorHex={cssColor}
+                  isSelected={active}
+                  isVisible={visible}
+                  isLocked={locked}
+                  disableEditing={disableEditing}
+                  className={!isActiveSegmentation ? 'opacity-80' : ''}
+                  onColor={() => onSegmentColorClick(segmentation.segmentationId, segmentIndex)}
+                  onToggleVisibility={() =>
+                    onToggleSegmentVisibility(
+                      segmentation.segmentationId,
+                      segmentIndex,
+                      representation.type
+                    )
+                  }
+                  onToggleLocked={() =>
+                    onToggleSegmentLock(segmentation.segmentationId, segmentIndex)
+                  }
+                  onSelect={() => onSegmentClick(segmentation.segmentationId, segmentIndex)}
+                  onRename={() => onSegmentEdit(segmentation.segmentationId, segmentIndex)}
+                  onDelete={() => onSegmentDelete(segmentation.segmentationId, segmentIndex)}
+                />
+              </div>
             </HoverCardTrigger>
             <HoverCardContent
               side="left"
               align="start"
-              className="w-72 border"
+              className="w-64 border"
             >
               <div className="mb-4 flex items-center space-x-2">
                 <div
                   className="h-2.5 w-2.5 flex-shrink-0 rounded-full"
                   style={{ backgroundColor: cssColor }}
                 ></div>
-                <h3 className="text-muted-foreground break-words text-lg font-semibold">{label}</h3>
+                <h3 className="text-muted-foreground break-words font-semibold">{label}</h3>
               </div>
 
-              <SegmentStatistics segment={segmentFromSegmentation}>{children}</SegmentStatistics>
+              <SegmentStatistics
+                segment={{
+                  ...segmentFromSegmentation,
+                  segmentIndex,
+                }}
+                segmentationId={segmentation.segmentationId}
+              >
+                {children}
+              </SegmentStatistics>
             </HoverCardContent>
           </HoverCard>
         );

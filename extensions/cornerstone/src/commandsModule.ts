@@ -32,6 +32,7 @@ import toggleVOISliceSync from './utils/toggleVOISliceSync';
 import { usePositionPresentationStore, useSegmentationPresentationStore } from './stores';
 import { toolNames } from './initCornerstoneTools';
 import CornerstoneViewportDownloadForm from './utils/CornerstoneViewportDownloadForm';
+import { updateSegmentBidirectionalStats } from './utils/updateSegmentationStats';
 const { DefaultHistoryMemo } = csUtils.HistoryMemo;
 const toggleSyncFunctions = {
   imageSlice: toggleImageSliceSync,
@@ -81,49 +82,52 @@ function commandsModule({
   }
 
   const actions = {
-    runSegmentBidirectional: () => {
-      const actionConfig = {
-        method: cstUtils.segmentation.segmentContourAction,
-        data: {
-          segmentData: new Map(),
-        },
-      };
-
-      const { activeSegmentIndex } = _getActiveSegmentationInfo();
-
-      // Configure the segment style and data (optional but recommended)
-      const segmentData = new Map();
-      segmentData.set(activeSegmentIndex, {
-        label: `Segment ${activeSegmentIndex}`,
-        containedSegmentIndices: undefined, // or provide array of related segment indices
-        style: {
-          color: 'rgb(255,0,0)', // example color
-          colorHighlightedActive: 'rgb(255,0,0)',
-          colorActive: 'rgb(255,0,0)',
-          textBoxColor: 'rgb(255,0,0)',
-          textBoxColorActive: 'rgb(255,0,0)',
-          textBoxColorHighlightedActive: 'rgb(255,0,0)',
-        },
+    runSegmentBidirectional: async () => {
+      const { segmentationId, activeSegmentIndex } = _getActiveSegmentationInfo();
+      const bidirectionalData = await cstUtils.segmentation.getSegmentLargestBidirectional({
+        segmentationId,
+        segmentIndices: [activeSegmentIndex],
       });
 
-      actionConfig.data.segmentData = segmentData;
+      const viewportId1 = viewportGridService.getActiveViewportId();
 
-      const element = _getActiveViewportEnabledElement()?.viewport?.element;
+      bidirectionalData.forEach(bidirectional => {
+        const { segmentIndex } = bidirectional;
+        const { majorAxis, minorAxis } = bidirectional;
 
-      // Run the bidirectional action on a viewport element
-      const bidirectional = actionConfig.method(element, actionConfig);
+        // Update segment stats with bidirectional data
+        const updatedSegmentation = updateSegmentBidirectionalStats(
+          segmentationId,
+          segmentIndex,
+          bidirectional,
+          segmentationService
+        );
 
-      if (bidirectional) {
-        const { majorAxis, minorAxis, maxMajor, maxMinor } = bidirectional;
-        console.debug('Bidirectional measurements:', {
-          maxMajor,
-          maxMinor,
+        if (updatedSegmentation) {
+          segmentationService.addOrUpdateSegmentation({
+            segmentationId,
+            segments: updatedSegmentation.segments,
+          });
+        }
+
+        // check if it has bidirectional data
+
+        const segmentation = segmentationService.getSegmentation(segmentationId);
+        const hasBidirectionalData =
+          segmentation.segments[segmentIndex].cachedStats.namedStats.bidirectional;
+
+        if (!hasBidirectionalData) {
+          debugger;
+        }
+
+        cornerstoneTools.SegmentBidirectionalTool.hydrate(viewportId1, [majorAxis, minorAxis], {
+          segmentIndex,
+          segmentationId,
         });
-      }
+      });
     },
     interpolateLabelmap: () => {
       const { segmentationId, activeSegmentIndex } = _getActiveSegmentationInfo();
-      console.log('interpolateLabelmap', { segmentationId, activeSegmentIndex });
       labelmapInterpolation.interpolate({
         segmentationId,
         segmentIndex: Number(activeSegmentIndex),

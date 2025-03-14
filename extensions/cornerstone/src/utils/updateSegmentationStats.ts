@@ -1,5 +1,15 @@
 import * as cornerstoneTools from '@cornerstonejs/tools';
 
+interface BidirectionalAxis {
+  length: number;
+  // Add other axis properties as needed
+}
+
+interface BidirectionalData {
+  majorAxis: BidirectionalAxis;
+  minorAxis: BidirectionalAxis;
+}
+
 /**
  * Updates the statistics for a segmentation by calculating stats for each segment
  * and storing them in the segment's cachedStats property
@@ -48,8 +58,9 @@ export async function updateSegmentationStats(
       hasUpdates = true;
     }
 
-    // Create namedStats object from array data
-    const namedStats = {};
+    // Get existing namedStats or initialize if not present
+    const namedStats = updatedSegmentation.segments[index].cachedStats.namedStats || {};
+
     if (segmentStats.array) {
       segmentStats.array.forEach(stat => {
         if (stat && stat.name) {
@@ -79,4 +90,74 @@ export async function updateSegmentationStats(
   });
 
   return hasUpdates ? updatedSegmentation : null;
+}
+
+/**
+ * Updates a segment's statistics with bidirectional measurement data
+ *
+ * @param segmentationId - The ID of the segmentation
+ * @param segmentIndex - The index of the segment to update
+ * @param bidirectionalData - The bidirectional measurement data to add
+ * @param segmentationService - The segmentation service to use for updating the segment
+ * @returns Whether the update was successful
+ */
+export function updateSegmentBidirectionalStats(
+  segmentationId: string,
+  segmentIndex: number,
+  bidirectionalData: BidirectionalData,
+  segmentationService: any
+) {
+  if (!segmentationId || segmentIndex === undefined || !bidirectionalData) {
+    console.debug('Missing required data for bidirectional stats update');
+    return null;
+  }
+
+  const segmentation = segmentationService.getSegmentation(segmentationId);
+  if (!segmentation || !segmentation.segments[segmentIndex]) {
+    console.debug('Segment not found:', segmentIndex, 'in segmentation:', segmentationId);
+    return null;
+  }
+
+  const updatedSegmentation = { ...segmentation };
+  const segment = updatedSegmentation.segments[segmentIndex];
+
+  if (!segment.cachedStats) {
+    segment.cachedStats = { namedStats: {} };
+  }
+
+  if (!segment.cachedStats.namedStats) {
+    segment.cachedStats.namedStats = {};
+  }
+
+  const { majorAxis, minorAxis, maxMajor, maxMinor } = bidirectionalData;
+  if (!majorAxis || !minorAxis) {
+    console.debug('Missing major or minor axis data');
+    return null;
+  }
+
+  let hasUpdates = false;
+  const namedStats = segment.cachedStats.namedStats;
+
+  // Only calculate and update if we have valid measurements
+  if (maxMajor > 0 && maxMinor > 0) {
+    namedStats.bidirectional = {
+      name: 'bidirectional',
+      label: 'Bidirectional',
+      value: {
+        maxMajor,
+        maxMinor,
+        majorAxis,
+        minorAxis,
+      },
+      unit: 'mm',
+    };
+
+    hasUpdates = true;
+  }
+
+  if (hasUpdates) {
+    return updatedSegmentation;
+  }
+
+  return null;
 }

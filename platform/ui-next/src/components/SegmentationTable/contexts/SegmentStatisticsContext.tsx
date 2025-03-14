@@ -1,8 +1,12 @@
 import React, { createContext, useContext } from 'react';
 
 interface SegmentStatisticsContextType {
-  segment: any;
+  segment: {
+    segmentIndex: number;
+    cachedStats: any;
+  };
   namedStats: Record<string, any> | undefined;
+  segmentationId: string;
 }
 
 // Create a named context
@@ -23,14 +27,18 @@ export const useSegmentStatistics = (componentName?: string) => {
 };
 
 export const SegmentStatisticsProvider: React.FC<{
-  segment: any;
+  segment: {
+    segmentIndex: number;
+    cachedStats: any;
+  };
+  segmentationId: string;
   children: React.ReactNode;
-}> = ({ segment, children }) => {
+}> = ({ segment, segmentationId, children }) => {
   const { cachedStats } = segment || {};
   const { namedStats } = cachedStats || {};
 
   return (
-    <SegmentStatisticsContext.Provider value={{ segment, namedStats }}>
+    <SegmentStatisticsContext.Provider value={{ segment, namedStats, segmentationId }}>
       {children}
     </SegmentStatisticsContext.Provider>
   );

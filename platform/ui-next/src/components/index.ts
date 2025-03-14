@@ -84,6 +84,7 @@ import {
   SegmentationTable,
   useSegmentationTableContext,
   useSegmentationExpanded,
+  useSegmentStatistics,
 } from './SegmentationTable';
 import { Toaster, toast } from './Sonner';
 import { StudySummary } from './StudySummary';
@@ -110,6 +111,9 @@ import {
   ToolButtonListDivider,
 } from './ToolButton';
 import { ToolSettings } from './OHIFToolSettings';
+
+// Segmentation Context Exports
+export { useSegmentationTableContext, useSegmentationExpanded, useSegmentStatistics };
 
 export {
   Numeric,
@@ -208,7 +212,6 @@ export {
   Toaster,
   toast,
   SegmentationTable,
-  useSegmentationTableContext,
   StudySummary,
   Header,
   Card,
@@ -241,5 +244,4 @@ export {
   UserPreferencesModal,
   FooterAction,
   ToolSettings,
-  useSegmentationExpanded,
 };
