@@ -529,7 +529,6 @@ const WADO_IMAGE_LOADER = {
     let isDefaultValueSetForRowCosine = false;
     let isDefaultValueSetForColumnCosine = false;
     let imageOrientationPatient;
-
     if (PixelSpacing) {
       [rowPixelSpacing, columnPixelSpacing] = PixelSpacing;
     } else {
@@ -542,9 +541,9 @@ const WADO_IMAGE_LOADER = {
       columnCosines = ImageOrientationPatient.slice(3, 6);
       imageOrientationPatient = ImageOrientationPatient;
     } else {
-      rowCosines = [0, 1, 0];
-      columnCosines = [0, 0, -1];
-      imageOrientationPatient = [0, 1, 0, 0, 0, -1];
+      rowCosines = [1, 0, 0];
+      columnCosines = [0, 1, 0];
+      imageOrientationPatient = [1, 0, 0, 0, 1, 0];
       usingDefaultValues = true;
       isDefaultValueSetForRowCosine = true;
       isDefaultValueSetForColumnCosine = true;

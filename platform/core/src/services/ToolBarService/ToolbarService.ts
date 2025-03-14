@@ -565,6 +565,7 @@ export default class ToolbarService extends PubSubService {
 
     if (Array.isArray(evaluate)) {
       const evaluators = evaluate.map(evaluator => {
+        debugger;
         const isObject = typeof evaluator === 'object';
 
         const evaluatorName = isObject ? evaluator.name : evaluator;

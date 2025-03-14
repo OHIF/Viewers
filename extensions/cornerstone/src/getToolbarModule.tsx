@@ -190,15 +190,15 @@ export default function getToolbarModule({ commandsManager, servicesManager }: w
       },
     },
     {
-      name: 'evaluate.mpr',
+      name: 'evaluate.displaySetIsReconstructable',
       evaluate: ({ viewportId, disabledText = 'Selected viewport is not reconstructable' }) => {
-        const { protocol } = hangingProtocolService.getActiveProtocol();
+        const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
 
-        const displaySetUIDs = viewportGridService.getDisplaySetsUIDsForViewport(viewportId);
-
-        if (!displaySetUIDs?.length) {
+        if (!viewport) {
           return;
         }
+
+        const displaySetUIDs = viewportGridService.getDisplaySetsUIDsForViewport(viewportId);
 
         const displaySets = displaySetUIDs.map(displaySetService.getDisplaySetByUID);
 
@@ -210,11 +210,8 @@ export default function getToolbarModule({ commandsManager, servicesManager }: w
           return getDisabledState(disabledText);
         }
 
-        const isMpr = protocol?.id === 'mpr';
-
         return {
           disabled: false,
-          className: utils.getToggledClassName(isMpr),
         };
       },
     },

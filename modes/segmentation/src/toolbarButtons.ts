@@ -298,10 +298,13 @@ const toolbarButtons: Button[] = [
     props: {
       icon: 'icon-tool-interpolation',
       label: 'Interpolate Labelmap',
-      evaluate: {
-        name: 'evaluate.cornerstone.segmentation',
-        disabledText: 'Create new segmentation to enable this tool.',
-      },
+      evaluate: [
+        'evaluate.cornerstone.segmentation',
+        {
+          name: 'evaluate.displaySetIsReconstructable',
+          disabledText: 'The current viewport cannot handle interpolation.',
+        },
+      ],
       commands: 'interpolateLabelmap',
     },
   },
