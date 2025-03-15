@@ -18,7 +18,7 @@ export type Row = {
   depth: number;
   parents?: string[];
   children?: string[];
-  areChildrenVisible?: true;
+  areChildrenVisible?: boolean;
 };
 
 let rowCounter = 0;
@@ -91,7 +91,7 @@ const DicomTagBrowser = ({
 
     setShouldShowInstanceList(isImageStack && activeDisplaySet.images.length > 1);
     const tags = getSortedTags(metadata);
-    const rows = getFormattedRowsFromTags({ tags, metadata, depth: 0 });
+    const rows = getFormattedRowsFromTags({ tags, metadata });
     return rows;
   }, [getMetadata, activeDisplaySet]);
 
@@ -186,57 +186,78 @@ const DicomTagBrowser = ({
   );
 };
 
-function getFormattedRowsFromTags({ tags, metadata, depth, parents }) {
+function getFormattedRowsFromTags({ tags, metadata }) {
   const rows: Row[] = [];
+  const stack = [{ tags, depth: 0, parents: null, index: 0, children: [] }];
+  const parentChildMap = new Map();
 
-  tags.forEach(tagInfo => {
-    const uid = generateRowId();
-    if (tagInfo.vr === 'SQ') {
-      const children = tagInfo.values.flatMap(value =>
-        getFormattedRowsFromTags({
-          tags: value,
-          metadata,
-          depth: depth + 1,
-          parents: parents ? [...parents, uid] : [uid],
-        })
-      );
-      const row: Row = {
-        uid,
-        tag: tagInfo.tag,
-        valueRepresentation: tagInfo.vr,
-        keyword: tagInfo.keyword,
-        value: '',
-        depth,
-        isVisible: true,
-        areChildrenVisible: true,
-        children: children.map(child => child.uid),
-        parents,
-      };
-      rows.push(row, ...children);
-    } else {
-      if (tagInfo.vr === 'xs') {
-        try {
-          const tag = dcmjs.data.Tag.fromPString(tagInfo.tag).toCleanString();
-          const originalTagInfo = metadata[tag];
-          tagInfo.vr = originalTagInfo.vr;
-        } catch (error) {
-          console.warn(`Failed to parse value representation for tag '${tagInfo.keyword}'`);
-        }
+  while (stack.length > 0) {
+    const current = stack.pop();
+    const { tags, depth, parents, index, children } = current;
+
+    for (let i = index; i < tags.length; i++) {
+      const tagInfo = tags[i];
+      const uid = generateRowId();
+
+      if (parents?.length > 0) {
+        parents.forEach(parent => {
+          parentChildMap.get(parent).push(uid);
+        });
       }
-      const row: Row = {
-        uid,
-        tag: tagInfo.tag,
-        valueRepresentation: tagInfo.vr,
-        keyword: tagInfo.keyword,
-        value: tagInfo.value,
-        depth,
-        isVisible: true,
-        parents,
-      };
-      rows.push(row);
-    }
-  });
 
+      if (tagInfo.vr === 'SQ') {
+        const row = {
+          uid,
+          tag: tagInfo.tag,
+          valueRepresentation: tagInfo.vr,
+          keyword: tagInfo.keyword,
+          value: '',
+          depth,
+          isVisible: true,
+          areChildrenVisible: true,
+          children: [],
+          parents,
+        };
+        rows.push(row);
+        parentChildMap.set(uid, row.children);
+
+        const newParents = parents ? [...parents, uid] : [uid];
+
+        if (tagInfo.values.length > 0) {
+          stack.push({ tags, depth, parents, index: i + 1, children });
+          stack.push({
+            tags: tagInfo.values.flat(),
+            depth: depth + 1,
+            parents: newParents,
+            index: 0,
+            children: [],
+          });
+          break;
+        }
+      } else {
+        if (tagInfo.vr === 'xs') {
+          try {
+            const tag = dcmjs.data.Tag.fromPString(tagInfo.tag).toCleanString();
+            const originalTagInfo = metadata[tag];
+            tagInfo.vr = originalTagInfo.vr;
+          } catch (error) {
+            console.warn(`Failed to parse value representation for tag '${tagInfo.keyword}'`);
+          }
+        }
+        const row = {
+          uid,
+          tag: tagInfo.tag,
+          valueRepresentation: tagInfo.vr,
+          keyword: tagInfo.keyword,
+          value: tagInfo.value,
+          depth,
+          isVisible: true,
+          parents,
+        };
+        rows.push(row);
+      }
+    }
+  }
   return rows;
 }
 
