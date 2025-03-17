@@ -1,5 +1,5 @@
 // Updated ToolbarLayoutSelector.tsx
-import React, { useCallback, useState } from 'react';
+import React, { useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { CommandsManager } from '@ohif/core';
 
@@ -12,7 +12,6 @@ function ToolbarLayoutSelectorWithServices({
   columns = 4,
   ...props
 }) {
-  const [isDisabled, setIsDisabled] = useState(false);
   const { customizationService } = servicesManager.services;
 
   // Get the presets from the customization service
@@ -123,30 +122,17 @@ function ToolbarLayoutSelectorWithServices({
           commandOptions,
         });
       }
-
-      // Disable interactions after selection
-      setIsDisabled(true);
     },
     [commandsManager]
   );
 
-  const handleMouseEnter = () => {
-    // Re-enable interactions on mouse enter
-    setIsDisabled(false);
-  };
-
   return (
-    <div onMouseEnter={handleMouseEnter}>
+    <div>
       <LayoutSelector
         onSelectionChange={handleSelectionChange}
-        tooltipDisabled={isDisabled}
         {...props}
       >
-        <LayoutSelector.Trigger
-          tooltip="Change layout"
-          disabled={isDisabled}
-          disabledText={isDisabled ? 'Please wait...' : undefined}
-        />
+        <LayoutSelector.Trigger tooltip="Change layout" />
         <LayoutSelector.Content>
           {/* Left side - Presets */}
           {(commonPresets.length > 0 || advancedPresets.length > 0) && (
