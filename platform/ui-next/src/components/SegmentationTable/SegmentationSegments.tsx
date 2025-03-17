@@ -69,7 +69,6 @@ export const SegmentationSegments = ({ children = null }: { children?: React.Rea
           <HoverCard
             key={`hover-${segmentIndex}`}
             openDelay={300}
-            open={true}
           >
             <HoverCardTrigger asChild>
               {/* The div here is not random, it is needed for making it work with the hover card */}

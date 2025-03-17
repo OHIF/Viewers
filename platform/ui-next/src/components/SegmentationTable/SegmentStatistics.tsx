@@ -29,7 +29,7 @@ const DefaultStatsList = () => {
             <div>{label}</div>
             <div>
               <span className="text-white">{roundNumber(value)}</span>{' '}
-              <span className="">{unit || ''}</span>
+              <span className="">{unit && unit !== 'none' ? unit : ''}</span>
             </div>
           </div>
         );
