@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.10.0-beta.121](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.120...v3.10.0-beta.121) (2025-03-11)
+
+
+### Features
+
+* **fonts:** bundle fonts in OHIF and dont use google cdn ([#4821](https://github.com/OHIF/Viewers/issues/4821)) ([1f634ba](https://github.com/OHIF/Viewers/commit/1f634bab456208a629747ef35a8ca7097d8ebf5f))
+* **viewport-gap:** remove viewport gap and update border behavior ([#4835](https://github.com/OHIF/Viewers/issues/4835)) ([3f70617](https://github.com/OHIF/Viewers/commit/3f70617c629a0ef569dd2602e1f4a16fe1f77ba5))
+
+
+
+
+
 # [3.10.0-beta.120](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.119...v3.10.0-beta.120) (2025-03-11)
 
 **Note:** Version bump only for package ohif-monorepo-root
