@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { DicomMetadataStore } from '@ohif/core';
 import { useTranslation } from 'react-i18next';
-import { Button, Input, PanelSection, Separator } from '@ohif/ui-next';
+import { Button, Input, Label, PanelSection, Separator } from '@ohif/ui-next';
 
 const DEFAULT_MEATADATA = {
   PatientWeight: null,
@@ -134,7 +134,7 @@ export default function PanelPetSUV({ servicesManager, commandsManager }: withAp
               <div className="flex flex-col">
                 <div className="bg-primary-dark flex flex-col gap-4 p-2">
                   <div className="flex flex-row items-center justify-between">
-                    <label className="font-inter text-[13px] text-white">{t('Patient Sex')}</label>
+                    <Label className="font-inter text-[13px] text-white">{t('Patient Sex')}</Label>
                     <Input
                       className="h-7 w-[117px]"
                       value={metadata.PatientSex || ''}
@@ -146,10 +146,10 @@ export default function PanelPetSUV({ servicesManager, commandsManager }: withAp
                     />
                   </div>
                   <div className="flex flex-row items-center justify-between">
-                    <label className="font-inter text-[13px] text-white">
+                    <Label className="font-inter text-[13px] text-white">
                       {t('Weight')}
                       <span className="text-aqua-pale"> kg</span>
-                    </label>
+                    </Label>
                     <Input
                       className="h-7 w-[117px]"
                       value={metadata.PatientWeight || ''}
@@ -162,10 +162,10 @@ export default function PanelPetSUV({ servicesManager, commandsManager }: withAp
                     />
                   </div>
                   <div className="flex flex-row items-center justify-between">
-                    <label className="font-inter text-[13px] text-white">
+                    <Label className="font-inter text-[13px] text-white">
                       {t('Total Dose')}
                       <span className="text-aqua-pale"> bq</span>
-                    </label>
+                    </Label>
                     <Input
                       className="h-7 w-[117px]"
                       value={
@@ -181,10 +181,10 @@ export default function PanelPetSUV({ servicesManager, commandsManager }: withAp
                     />
                   </div>
                   <div className="flex flex-row items-center justify-between">
-                    <label className="font-inter text-[13px] text-white">
+                    <Label className="font-inter text-[13px] text-white">
                       {t('Half Life')}
                       <span className="text-aqua-pale"> s</span>
-                    </label>
+                    </Label>
                     <Input
                       className="h-7 w-[117px]"
                       value={
@@ -200,10 +200,10 @@ export default function PanelPetSUV({ servicesManager, commandsManager }: withAp
                     />
                   </div>
                   <div className="flex flex-row items-center justify-between">
-                    <label className="font-inter text-[13px] text-white">
+                    <Label className="font-inter text-[13px] text-white">
                       {t('Injection Time')}
                       <span className="text-aqua-pale"> s</span>
-                    </label>
+                    </Label>
                     <Input
                       className="h-7 w-[117px]"
                       value={
@@ -220,10 +220,10 @@ export default function PanelPetSUV({ servicesManager, commandsManager }: withAp
                     />
                   </div>
                   <div className="flex flex-row items-center justify-between">
-                    <label className="font-inter text-[13px] text-white">
+                    <Label className="font-inter text-[13px] text-white">
                       {t('Acquisition Time')}
                       <span className="text-aqua-pale"> s</span>
-                    </label>
+                    </Label>
                     <Input
                       className="h-7 w-[117px]"
                       value={metadata.SeriesTime || ''}
