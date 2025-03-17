@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.10.0-beta.124](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.123...v3.10.0-beta.124) (2025-03-17)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
 # [3.10.0-beta.123](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.122...v3.10.0-beta.123) (2025-03-17)
 
 **Note:** Version bump only for package @ohif/core

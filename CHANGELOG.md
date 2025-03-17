@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.10.0-beta.124](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.123...v3.10.0-beta.124) (2025-03-17)
+
+
+### Bug Fixes
+
+* max call stack exceeded for dicom tag browser ([#4855](https://github.com/OHIF/Viewers/issues/4855)) ([841320a](https://github.com/OHIF/Viewers/commit/841320adfb4cd009350e70c43a7661dc42800c7d))
+
+
+
+
+
 # [3.10.0-beta.123](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.122...v3.10.0-beta.123) (2025-03-17)
 
 **Note:** Version bump only for package ohif-monorepo-root
