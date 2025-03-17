@@ -107,6 +107,7 @@ import {
   ImageModal,
   UserPreferencesModal,
   FooterAction,
+  InputFilter,
 } from './components';
 import { DataRow } from './components/DataRow';
 
@@ -245,4 +246,5 @@ export {
   useDialog,
   ManagedDialog,
   ToolSettings,
+  InputFilter,
 };

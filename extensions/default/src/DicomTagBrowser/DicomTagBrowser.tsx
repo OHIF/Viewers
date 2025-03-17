@@ -2,7 +2,7 @@ import dcmjs from 'dcmjs';
 import moment from 'moment';
 import React, { useState, useMemo, useCallback } from 'react';
 import { classes, Types } from '@ohif/core';
-import { InputFilterText } from '@ohif/ui';
+import { InputFilter } from '@ohif/ui-next';
 import { Select, SelectTrigger, SelectContent, SelectItem, Slider } from '@ohif/ui-next';
 
 import DicomTagTable from './DicomTagTable';
@@ -173,11 +173,17 @@ const DicomTagBrowser = ({
             <span className="text-muted-foreground flex h-6 items-center text-xs">
               Search metadata
             </span>
-            <InputFilterText
-              placeholder="Search metadata..."
-              onDebounceChange={setFilterValue}
-              className="text-foreground"
-            />
+            <InputFilter
+              className="text-muted-foreground"
+              onChange={setFilterValue}
+            >
+              <InputFilter.SearchIcon />
+              <InputFilter.Input
+                placeholder="Search metadata"
+                className="pl-9 pr-9"
+              />
+              <InputFilter.ClearButton />
+            </InputFilter>
           </div>
         </div>
       </div>
