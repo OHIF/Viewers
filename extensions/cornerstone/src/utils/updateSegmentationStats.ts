@@ -79,6 +79,7 @@ export async function updateSegmentationStats({
             label: readableText[stat.name],
             value: stat.value,
             unit: stat.unit,
+            order: Object.keys(readableText).indexOf(stat.name),
           };
         }
       });
@@ -91,6 +92,7 @@ export async function updateSegmentationStats({
             label: 'Volume',
             value: segmentStats.volume.value,
             unit: segmentStats.volume.unit,
+            order: Object.keys(readableText).indexOf('volume'),
           };
         }
       }

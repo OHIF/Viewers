@@ -1,7 +1,11 @@
-import React, { ReactNode, useState, Children, isValidElement, cloneElement } from 'react';
+import React, { ReactNode, useState, Children, isValidElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import { PanelSection } from '../PanelSection';
-import { SegmentationTableProvider } from './contexts';
+import {
+  SegmentationTableProvider,
+  SegmentationTableContextType,
+  ViewportSegmentationInfo,
+} from './contexts';
 import { SegmentationSegments } from './SegmentationSegments';
 import { SegmentStatistics } from './SegmentStatistics';
 import { SegmentationTableConfig } from './SegmentationTableConfig';
@@ -12,60 +16,11 @@ import { SegmentationCollapsed } from './SegmentationCollapsed';
 import { SegmentationExpanded } from './SegmentationExpanded';
 import Icons from '../Icons';
 
-interface SegmentationTableProps {
-  disabled?: boolean;
+// Only include props that aren't part of the context
+interface SegmentationTableProps extends Omit<SegmentationTableContextType, 'setShowConfig'> {
   title?: string;
   children?: ReactNode;
-  data: any[];
-  mode: 'collapsed' | 'expanded';
-  fillAlpha?: number;
-  exportOptions?: any[];
-  showConfig?: boolean;
-  fillAlphaInactive?: number;
-  outlineWidth?: number;
-  renderFill?: boolean;
-  renderOutline?: boolean;
   setShowConfig?: (value: boolean) => void;
-  activeSegmentationId?: string;
-  activeRepresentation?: any;
-  activeSegmentation?: any;
-  disableEditing?: boolean;
-  showAddSegment?: boolean;
-  renderInactiveSegmentations?: boolean;
-
-  // Function handlers
-  setRenderFill?: ({ type }: { type: string }, value: boolean) => void;
-  setRenderOutline?: ({ type }: { type: string }, value: boolean) => void;
-  setOutlineWidth?: ({ type }: { type: string }, value: number) => void;
-  setFillAlpha?: ({ type }: { type: string }, value: number) => void;
-  setFillAlphaInactive?: ({ type }: { type: string }, value: number) => void;
-  toggleRenderInactiveSegmentations?: () => void;
-  onSegmentationAdd?: (segmentationId: string) => void;
-  onSegmentationClick?: (segmentationId: string) => void;
-  onSegmentationDelete?: (segmentationId: string) => void;
-  onSegmentAdd?: (segmentationId: string) => void;
-  onSegmentClick?: (segmentationId: string, segmentIndex: number) => void;
-  onSegmentEdit?: (segmentationId: string, segmentIndex: number) => void;
-  onSegmentationEdit?: (segmentationId: string) => void;
-  onSegmentColorClick?: (segmentationId: string, segmentIndex: number) => void;
-  onSegmentDelete?: (segmentationId: string, segmentIndex: number) => void;
-  onToggleSegmentVisibility?: (
-    segmentationId: string,
-    segmentIndex: number,
-    representationType?: string
-  ) => void;
-  onToggleSegmentLock?: (segmentationId: string, segmentIndex: number) => void;
-  onToggleSegmentationRepresentationVisibility?: (segmentationId: string, type: string) => void;
-  onSegmentationDownload?: (segmentationId: string) => void;
-  storeSegmentation?: (segmentationId: string) => void;
-  onSegmentationDownloadRTSS?: (segmentationId: string) => void;
-  setStyle?: (
-    segmentationId: string,
-    representationType: string,
-    styleKey: string,
-    value: unknown
-  ) => void;
-  onSegmentationRemoveFromViewport?: (segmentationId: string) => void;
 }
 
 interface SegmentationTableComponent extends React.FC<SegmentationTableProps> {
@@ -73,16 +28,13 @@ interface SegmentationTableComponent extends React.FC<SegmentationTableProps> {
   Config: typeof SegmentationTableConfig;
   AddSegmentRow: typeof AddSegmentRow;
   AddSegmentationRow: typeof AddSegmentationRow;
-  SelectorHeader: typeof SegmentationSelectorHeader;
   Header: typeof SegmentationHeader;
   Collapsed: typeof SegmentationCollapsed;
   Expanded: typeof SegmentationExpanded;
   SegmentStatistics: typeof SegmentStatistics;
 }
 
-export const SegmentationTableRoot: SegmentationTableComponent = (
-  props: SegmentationTableProps
-) => {
+export const SegmentationTableRoot = (props: SegmentationTableProps) => {
   const { t } = useTranslation('SegmentationTable');
   const {
     data = [],
@@ -188,6 +140,6 @@ const SegmentationTable = Object.assign(SegmentationTableRoot, {
   Expanded: SegmentationExpanded,
   SegmentStatistics: SegmentStatistics,
   Header: SegmentationHeader,
-});
+}) as SegmentationTableComponent;
 
 export { SegmentationTable };

@@ -4,6 +4,7 @@ import {
   VolumeViewport,
   utilities as csUtils,
   Types as CoreTypes,
+  cache,
   BaseVolumeViewport,
 } from '@cornerstonejs/core';
 import {
@@ -33,6 +34,7 @@ import { usePositionPresentationStore, useSegmentationPresentationStore } from '
 import { toolNames } from './initCornerstoneTools';
 import CornerstoneViewportDownloadForm from './utils/CornerstoneViewportDownloadForm';
 import { updateSegmentBidirectionalStats } from './utils/updateSegmentationStats';
+import { generateSegmentationCSVReport } from './utils/generateSegmentationCSVReport';
 const { DefaultHistoryMemo } = csUtils.HistoryMemo;
 const toggleSyncFunctions = {
   imageSlice: toggleImageSliceSync,
@@ -56,6 +58,7 @@ function commandsModule({
     hangingProtocolService,
     syncGroupService,
     segmentationService,
+    displaySetService,
   } = servicesManager.services as AppTypes.Services;
 
   const { measurementServiceSource } = this;
@@ -441,6 +444,44 @@ function commandsModule({
      */
     downloadCSVMeasurementsReport: ({ measurementFilter }) => {
       utils.downloadCSVReport(measurementService.getMeasurements(measurementFilter));
+    },
+
+    downloadCSVSegmentationReport: ({ segmentationId }) => {
+      const segmentation = segmentationService.getSegmentation(segmentationId);
+      const cachedStats = segmentation.cachedStats;
+
+      const { representationData } = segmentation;
+      const { Labelmap } = representationData;
+      const { referencedImageIds } = Labelmap;
+
+      const firstImageId = referencedImageIds[0];
+
+      // find displaySet for firstImageId
+      const displaySet = displaySetService
+        .getActiveDisplaySets()
+        .find(ds => ds.imageIds?.some(i => i === firstImageId));
+
+      const {
+        SeriesNumber,
+        SeriesInstanceUID,
+        StudyInstanceUID,
+        SeriesDate,
+        SeriesTime,
+        SeriesDescription,
+      } = displaySet;
+
+      const additionalInfo = {
+        reference: {
+          SeriesNumber,
+          SeriesInstanceUID,
+          StudyInstanceUID,
+          SeriesDate,
+          SeriesTime,
+          SeriesDescription,
+        },
+      };
+
+      generateSegmentationCSVReport(segmentation, additionalInfo);
     },
 
     // Retrieve value commands
@@ -1713,6 +1754,7 @@ function commandsModule({
     redo: actions.redo,
     interpolateLabelmap: actions.interpolateLabelmap,
     runSegmentBidirectional: actions.runSegmentBidirectional,
+    downloadCSVSegmentationReport: actions.downloadCSVSegmentationReport,
   };
 
   return {

@@ -10,30 +10,40 @@ const DefaultStatsList = () => {
     return null;
   }
 
+  const handleNumber = (value: number) => {
+    if (value === null) {
+      return '';
+    }
+
+    if (Array.isArray(value)) {
+      return value.map(handleNumber).join(', ');
+    }
+
+    return roundNumber(value);
+  };
+
+  // Sort namedStats entries by order property
+  const sortedStats = Object.entries(namedStats)
+    .filter(([_, stat]) => stat && stat.value !== null)
+    .sort((a, b) => {
+      const orderA = a[1]?.order ?? Number.MAX_SAFE_INTEGER;
+      const orderB = b[1]?.order ?? Number.MAX_SAFE_INTEGER;
+      return orderA - orderB;
+    });
+
   return (
     <div className="space-y-1">
-      {Object.entries(namedStats).map(([key, stat]) => {
-        if (!stat) {
-          return null;
-        }
+      {sortedStats.map(([key, stat]) => {
         const { label, value, unit } = stat;
-        if (value === null) {
-          return null;
-        }
 
         return (
           <div
             key={key}
-            className="flex items-center justify-between"
+            className="flex justify-between"
           >
-            <div
-              className="max-w-[60%] truncate"
-              title={label}
-            >
-              {label}
-            </div>
-            <div className="min-w-[40%] text-right">
-              <span className="text-white">{roundNumber(value)}</span>{' '}
+            <div>{label}</div>
+            <div>
+              <span className="text-white">{handleNumber(value)}</span>{' '}
               <span className="">{unit && unit !== 'none' ? unit : ''}</span>
             </div>
           </div>

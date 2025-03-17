@@ -1,27 +1,39 @@
 import React, { createContext, useContext } from 'react';
 
-interface Segmentation {
-  segmentationId: string;
-  label: string;
-  cachedStats: {
-    info: string;
-    namedStats?: Record<string, any>;
-  };
-  segments: Record<number, any>;
+export interface SegmentStats {
+  info: string;
+  namedStats?: Record<string, number | string>;
 }
 
-interface Representation {
+export interface Segment {
+  color?: string;
+  label: string;
+  segmentIndex: number;
+  visible?: boolean;
+  locked?: boolean;
+}
+
+export interface Segmentation {
+  segmentationId: string;
+  label: string;
+  cachedStats: SegmentStats;
+  segments: Record<number, Segment>;
+}
+
+export interface RepresentationStyles {
+  fillAlpha: number;
+  fillAlphaInactive: number;
+  outlineWidth: number;
+  renderFill: boolean;
+  renderOutline: boolean;
+}
+
+export interface Representation {
   active: boolean;
   visible: boolean;
   type: string;
-  segments: Record<number, any>;
-  styles: {
-    fillAlpha: number;
-    fillAlphaInactive: number;
-    outlineWidth: number;
-    renderFill: boolean;
-    renderOutline: boolean;
-  };
+  segments: Record<number, Segment>;
+  styles: RepresentationStyles;
 }
 
 export interface ViewportSegmentationInfo {
@@ -29,16 +41,18 @@ export interface ViewportSegmentationInfo {
   representation: Representation;
 }
 
+export interface ExportOption {
+  segmentationId: string;
+  isExportable: boolean;
+}
+
 export interface SegmentationTableContextType {
   data: ViewportSegmentationInfo[];
   disabled: boolean;
   mode: 'collapsed' | 'expanded';
   fillAlpha: number;
-  exportOptions?: {
-    segmentationId: string;
-    isExportable: boolean;
-  }[];
-  showConfig: boolean; // Kept for parent component conditional visibility control
+  exportOptions?: ExportOption[];
+  showConfig: boolean;
   fillAlphaInactive: number;
   outlineWidth: number;
   renderFill: boolean;
@@ -46,13 +60,17 @@ export interface SegmentationTableContextType {
   activeSegmentationId?: string;
   activeRepresentation?: Representation;
   activeSegmentation?: Segmentation;
+  disableEditing: boolean;
+  showAddSegment?: boolean;
+  renderInactiveSegmentations?: boolean;
+
+  // Function handlers
   setShowConfig?: (show: boolean) => void;
   setRenderFill?: ({ type }: { type: string }, value: boolean) => void;
   setRenderOutline?: ({ type }: { type: string }, value: boolean) => void;
   setOutlineWidth?: ({ type }: { type: string }, value: number) => void;
   setFillAlpha?: ({ type }: { type: string }, value: number) => void;
   setFillAlphaInactive?: ({ type }: { type: string }, value: number) => void;
-  renderInactiveSegmentations?: boolean;
   toggleRenderInactiveSegmentations?: () => void;
   onSegmentationAdd?: (segmentationId: string) => void;
   onSegmentationClick?: (segmentationId: string) => void;
@@ -80,8 +98,6 @@ export interface SegmentationTableContextType {
     value: unknown
   ) => void;
   onSegmentationRemoveFromViewport?: (segmentationId: string) => void;
-  disableEditing: boolean;
-  showAddSegment?: boolean;
 }
 
 const SegmentationTableContext = createContext<SegmentationTableContextType | undefined>(undefined);
@@ -99,7 +115,6 @@ export const SegmentationTableProvider = ({
   );
 };
 
-// Export a hook with component name parameter
 export const useSegmentationTableContext = (componentName?: string) => {
   const context = useContext(SegmentationTableContext);
 
@@ -112,6 +127,3 @@ export const useSegmentationTableContext = (componentName?: string) => {
 
   return context;
 };
-
-// Export the context type
-export type { SegmentationTableContextType };

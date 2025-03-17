@@ -67,16 +67,6 @@ export default function PanelSegmentation({
     onSegmentationDownload: segmentationId => {
       commandsManager.run('downloadSegmentation', { segmentationId });
     },
-    storeSegmentation: async segmentationId => {
-      commandsManager.run({
-        commandName: 'storeSegmentation',
-        commandOptions: { segmentationId },
-        context: 'CORNERSTONE',
-      });
-    },
-    onSegmentationDownloadRTSS: segmentationId => {
-      commandsManager.run('downloadRTSS', { segmentationId });
-    },
     setStyle: (segmentationId, type, key, value) => {
       commandsManager.run('setSegmentationStyle', { segmentationId, type, key, value });
     },

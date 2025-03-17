@@ -13,11 +13,13 @@ import {
   useSegmentationExpanded,
 } from '@ohif/ui-next';
 import { useTranslation } from 'react-i18next';
+import { useSystem } from '@ohif/core/src';
 
 /**
  * Custom dropdown menu component for segmentation panel that uses context for data
  */
 export const CustomDropdownMenuContent = () => {
+  const { commandsManager } = useSystem();
   const { t } = useTranslation('SegmentationTable');
   const {
     onSegmentationAdd,
@@ -25,8 +27,6 @@ export const CustomDropdownMenuContent = () => {
     onSegmentationEdit,
     onSegmentationDelete,
     exportOptions,
-    storeSegmentation,
-    onSegmentationDownload,
     activeSegmentation,
     activeSegmentationId,
   } = useSegmentationTableContext('CustomDropdownMenu');
@@ -57,6 +57,25 @@ export const CustomDropdownMenuContent = () => {
     return null;
   }
 
+  const actions = {
+    storeSegmentation: async segmentationId => {
+      commandsManager.run({
+        commandName: 'storeSegmentation',
+        commandOptions: { segmentationId },
+        context: 'CORNERSTONE',
+      });
+    },
+    onSegmentationDownloadRTSS: segmentationId => {
+      commandsManager.run('downloadRTSS', { segmentationId });
+    },
+    onSegmentationDownload: segmentationId => {
+      commandsManager.run('downloadSegmentation', { segmentationId });
+    },
+    downloadCSVSegmentationReport: segmentationId => {
+      commandsManager.run('downloadCSVSegmentationReport', { segmentationId });
+    },
+  };
+
   return (
     <DropdownMenuContent align="start">
       <DropdownMenuItem onClick={() => onSegmentationAdd(segmentationId)}>
@@ -74,19 +93,25 @@ export const CustomDropdownMenuContent = () => {
         <span className="pl-2">{t('Rename')}</span>
       </DropdownMenuItem>
       <DropdownMenuSub>
-        <DropdownMenuSubTrigger
-          disabled={!allowExport}
-          className="pl-1"
-        >
+        <DropdownMenuSubTrigger className="pl-1">
           <Icons.Export className="text-foreground" />
           <span className="pl-2">{t('Export & Download')}</span>
         </DropdownMenuSubTrigger>
         <DropdownMenuPortal>
           <DropdownMenuSubContent>
-            <DropdownMenuItem onClick={() => storeSegmentation(segmentationId)}>
+            <DropdownMenuItem onClick={() => actions.downloadCSVSegmentationReport(segmentationId)}>
+              {t('Download CSV Report')}
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => actions.storeSegmentation(segmentationId)}
+              disabled={!allowExport}
+            >
               {t('Export DICOM SEG')}
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => onSegmentationDownload(segmentationId)}>
+            <DropdownMenuItem
+              onClick={() => actions.onSegmentationDownload(segmentationId)}
+              disabled={!allowExport}
+            >
               {t('Download DICOM SEG')}
             </DropdownMenuItem>
           </DropdownMenuSubContent>
