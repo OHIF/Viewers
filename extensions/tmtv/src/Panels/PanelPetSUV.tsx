@@ -22,6 +22,23 @@ const DEFAULT_MEATADATA = {
  * @param param0
  * @returns
  */
+
+// Local component for input row pattern
+const InputRow = ({ label, unit, value, onChange, id }) => (
+  <div className="flex flex-row items-center space-x-4">
+    <Label className="min-w-32 flex-shrink-0">
+      {label}
+      {unit && <span className="text-muted-foreground"> {unit}</span>}
+    </Label>
+    <Input
+      className="h-7 flex-1"
+      value={value || ''}
+      onChange={onChange}
+      id={id}
+    />
+  </div>
+);
+
 export default function PanelPetSUV({ servicesManager, commandsManager }: withAppTypes) {
   const { t } = useTranslation('PanelSUV');
   const { displaySetService, toolGroupService, toolbarService, hangingProtocolService } =
@@ -131,114 +148,85 @@ export default function PanelPetSUV({ servicesManager, commandsManager }: withAp
           <PanelSection defaultOpen={true}>
             <PanelSection.Header>{t('Patient Information')}</PanelSection.Header>
             <PanelSection.Content>
-              <div className="flex flex-col">
-                <div className="bg-primary-dark flex flex-col gap-4 p-2">
-                  <div className="flex flex-row items-center justify-between">
-                    <Label>{t('Patient Sex')}</Label>
-                    <Input
-                      className="h-7 w-[117px]"
-                      value={metadata.PatientSex || ''}
-                      onChange={e => {
-                        handleMetadataChange({
-                          PatientSex: e.target.value,
-                        });
-                      }}
-                    />
-                  </div>
-                  <div className="flex flex-row items-center justify-between">
-                    <Label>
-                      {t('Weight')}
-                      <span className="text-muted-foreground"> kg</span>
-                    </Label>
-                    <Input
-                      className="h-7 w-[117px]"
-                      value={metadata.PatientWeight || ''}
-                      onChange={e => {
-                        handleMetadataChange({
-                          PatientWeight: e.target.value,
-                        });
-                      }}
-                      id="weight-input"
-                    />
-                  </div>
-                  <div className="flex flex-row items-center justify-between">
-                    <Label>
-                      {t('Total Dose')}
-                      <span className="text-muted-foreground"> bq</span>
-                    </Label>
-                    <Input
-                      className="h-7 w-[117px]"
-                      value={
-                        metadata.RadiopharmaceuticalInformationSequence.RadionuclideTotalDose || ''
-                      }
-                      onChange={e => {
-                        handleMetadataChange({
-                          RadiopharmaceuticalInformationSequence: {
-                            RadionuclideTotalDose: e.target.value,
-                          },
-                        });
-                      }}
-                    />
-                  </div>
-                  <div className="flex flex-row items-center justify-between">
-                    <Label>
-                      {t('Half Life')}
-                      <span className="text-muted-foreground"> s</span>
-                    </Label>
-                    <Input
-                      className="h-7 w-[117px]"
-                      value={
-                        metadata.RadiopharmaceuticalInformationSequence.RadionuclideHalfLife || ''
-                      }
-                      onChange={e => {
-                        handleMetadataChange({
-                          RadiopharmaceuticalInformationSequence: {
-                            RadionuclideHalfLife: e.target.value,
-                          },
-                        });
-                      }}
-                    />
-                  </div>
-                  <div className="flex flex-row items-center justify-between">
-                    <Label>
-                      {t('Injection Time')}
-                      <span className="text-muted-foreground"> s</span>
-                    </Label>
-                    <Input
-                      className="h-7 w-[117px]"
-                      value={
-                        metadata.RadiopharmaceuticalInformationSequence
-                          .RadiopharmaceuticalStartTime || ''
-                      }
-                      onChange={e => {
-                        handleMetadataChange({
-                          RadiopharmaceuticalInformationSequence: {
-                            RadiopharmaceuticalStartTime: e.target.value,
-                          },
-                        });
-                      }}
-                    />
-                  </div>
-                  <div className="flex flex-row items-center justify-between">
-                    <Label>
-                      {t('Acquisition Time')}
-                      <span className="text-muted-foreground"> s</span>
-                    </Label>
-                    <Input
-                      className="h-7 w-[117px]"
-                      value={metadata.SeriesTime || ''}
-                      onChange={() => {}}
-                    />
-                  </div>
-                  <Button
-                    variant="default"
-                    size="sm"
-                    className="w-[115px] self-end"
-                    onClick={updateMetadata}
-                  >
-                    Reload Data
-                  </Button>
-                </div>
+              <div className="bg-primary-dark flex flex-col gap-3 p-2">
+                <InputRow
+                  label={t('Patient Sex')}
+                  value={metadata.PatientSex}
+                  onChange={e => {
+                    handleMetadataChange({
+                      PatientSex: e.target.value,
+                    });
+                  }}
+                />
+
+                <InputRow
+                  label={t('Weight')}
+                  unit="kg"
+                  value={metadata.PatientWeight}
+                  onChange={e => {
+                    handleMetadataChange({
+                      PatientWeight: e.target.value,
+                    });
+                  }}
+                  id="weight-input"
+                />
+
+                <InputRow
+                  label={t('Total Dose')}
+                  unit="bq"
+                  value={metadata.RadiopharmaceuticalInformationSequence.RadionuclideTotalDose}
+                  onChange={e => {
+                    handleMetadataChange({
+                      RadiopharmaceuticalInformationSequence: {
+                        RadionuclideTotalDose: e.target.value,
+                      },
+                    });
+                  }}
+                />
+
+                <InputRow
+                  label={t('Half Life')}
+                  unit="s"
+                  value={metadata.RadiopharmaceuticalInformationSequence.RadionuclideHalfLife}
+                  onChange={e => {
+                    handleMetadataChange({
+                      RadiopharmaceuticalInformationSequence: {
+                        RadionuclideHalfLife: e.target.value,
+                      },
+                    });
+                  }}
+                />
+
+                <InputRow
+                  label={t('Injection Time')}
+                  unit="s"
+                  value={
+                    metadata.RadiopharmaceuticalInformationSequence.RadiopharmaceuticalStartTime
+                  }
+                  onChange={e => {
+                    handleMetadataChange({
+                      RadiopharmaceuticalInformationSequence: {
+                        RadiopharmaceuticalStartTime: e.target.value,
+                      },
+                    });
+                  }}
+                />
+
+                <InputRow
+                  label={t('Acquisition Time')}
+                  unit="s"
+                  value={metadata.SeriesTime}
+                  onChange={() => {}}
+                />
+
+                <Button
+                  variant="default"
+                  size="sm"
+                  className="w-28 self-end"
+                  onClick={updateMetadata}
+                >
+                  Reload Data
+                </Button>
               </div>
             </PanelSection.Content>
           </PanelSection>
