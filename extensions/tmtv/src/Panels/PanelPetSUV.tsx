@@ -134,7 +134,7 @@ export default function PanelPetSUV({ servicesManager, commandsManager }: withAp
               <div className="flex flex-col">
                 <div className="bg-primary-dark flex flex-col gap-4 p-2">
                   <div className="flex flex-row items-center justify-between">
-                    <Label className="font-inter text-[13px] text-white">{t('Patient Sex')}</Label>
+                    <Label>{t('Patient Sex')}</Label>
                     <Input
                       className="h-7 w-[117px]"
                       value={metadata.PatientSex || ''}
@@ -146,9 +146,9 @@ export default function PanelPetSUV({ servicesManager, commandsManager }: withAp
                     />
                   </div>
                   <div className="flex flex-row items-center justify-between">
-                    <Label className="font-inter text-[13px] text-white">
+                    <Label>
                       {t('Weight')}
-                      <span className="text-aqua-pale"> kg</span>
+                      <span className="text-muted-foreground"> kg</span>
                     </Label>
                     <Input
                       className="h-7 w-[117px]"
@@ -162,9 +162,9 @@ export default function PanelPetSUV({ servicesManager, commandsManager }: withAp
                     />
                   </div>
                   <div className="flex flex-row items-center justify-between">
-                    <Label className="font-inter text-[13px] text-white">
+                    <Label>
                       {t('Total Dose')}
-                      <span className="text-aqua-pale"> bq</span>
+                      <span className="text-muted-foreground"> bq</span>
                     </Label>
                     <Input
                       className="h-7 w-[117px]"
@@ -181,9 +181,9 @@ export default function PanelPetSUV({ servicesManager, commandsManager }: withAp
                     />
                   </div>
                   <div className="flex flex-row items-center justify-between">
-                    <Label className="font-inter text-[13px] text-white">
+                    <Label>
                       {t('Half Life')}
-                      <span className="text-aqua-pale"> s</span>
+                      <span className="text-muted-foreground"> s</span>
                     </Label>
                     <Input
                       className="h-7 w-[117px]"
@@ -200,9 +200,9 @@ export default function PanelPetSUV({ servicesManager, commandsManager }: withAp
                     />
                   </div>
                   <div className="flex flex-row items-center justify-between">
-                    <Label className="font-inter text-[13px] text-white">
+                    <Label>
                       {t('Injection Time')}
-                      <span className="text-aqua-pale"> s</span>
+                      <span className="text-muted-foreground"> s</span>
                     </Label>
                     <Input
                       className="h-7 w-[117px]"
@@ -220,9 +220,9 @@ export default function PanelPetSUV({ servicesManager, commandsManager }: withAp
                     />
                   </div>
                   <div className="flex flex-row items-center justify-between">
-                    <Label className="font-inter text-[13px] text-white">
+                    <Label>
                       {t('Acquisition Time')}
-                      <span className="text-aqua-pale"> s</span>
+                      <span className="text-muted-foreground"> s</span>
                     </Label>
                     <Input
                       className="h-7 w-[117px]"
