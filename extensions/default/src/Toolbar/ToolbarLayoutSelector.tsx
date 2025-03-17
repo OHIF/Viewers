@@ -127,7 +127,10 @@ function ToolbarLayoutSelectorWithServices({
   );
 
   return (
-    <div id="Layout">
+    <div
+      id="Layout"
+      data-cy="Layout"
+    >
       <LayoutSelector
         onSelectionChange={handleSelectionChange}
         {...props}
