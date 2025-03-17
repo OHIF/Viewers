@@ -24,10 +24,15 @@ const DefaultStatsList = () => {
         return (
           <div
             key={key}
-            className="flex justify-between"
+            className="flex items-center justify-between"
           >
-            <div>{label}</div>
-            <div>
+            <div
+              className="max-w-[60%] truncate"
+              title={label}
+            >
+              {label}
+            </div>
+            <div className="min-w-[40%] text-right">
               <span className="text-white">{roundNumber(value)}</span>{' '}
               <span className="">{unit && unit !== 'none' ? unit : ''}</span>
             </div>

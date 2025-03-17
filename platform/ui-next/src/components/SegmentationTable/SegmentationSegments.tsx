@@ -105,7 +105,7 @@ export const SegmentationSegments = ({ children = null }: { children?: React.Rea
             <HoverCardContent
               side="left"
               align="start"
-              className="w-64 border"
+              className="w-72 border"
             >
               <div className="mb-4 flex items-center space-x-2">
                 <div
