@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.10.0-beta.125](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.124...v3.10.0-beta.125) (2025-03-17)
+
+
+### Bug Fixes
+
+* **metadata:** change the default values for cosines ([#4863](https://github.com/OHIF/Viewers/issues/4863)) ([b7fbf04](https://github.com/OHIF/Viewers/commit/b7fbf04230ec71e1812d12020e0b48d35a51b285))
+
+
+
+
+
 # [3.10.0-beta.124](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.123...v3.10.0-beta.124) (2025-03-17)
 
 **Note:** Version bump only for package @ohif/core
