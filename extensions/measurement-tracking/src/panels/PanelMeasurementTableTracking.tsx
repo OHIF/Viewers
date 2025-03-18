@@ -1,6 +1,6 @@
 import React from 'react';
 import { Dialog, ButtonEnums } from '@ohif/ui';
-import { useSystem, utils } from '@ohif/core';
+import { utils } from '@ohif/core';
 import { MeasurementTable, useViewportGrid } from '@ohif/ui-next';
 import {
   PanelMeasurement,
@@ -16,9 +16,8 @@ const { filterAnd, filterPlanarMeasurement, filterMeasurementsBySeriesUID } =
   utils.MeasurementFilters;
 
 function PanelMeasurementTableTracking(props) {
-  const { servicesManager, extensionManager, commandsManager } = useSystem();
   const [viewportGrid] = useViewportGrid();
-  const { measurementService, uiDialogService } = servicesManager.services;
+  const { measurementService, uiDialogService } = props.servicesManager.services;
   const [trackedMeasurements, sendTrackedMeasurementsEvent] = useTrackedMeasurements();
   const { trackedStudy, trackedSeries } = trackedMeasurements.context;
   const measurementFilter = trackedStudy
@@ -79,7 +78,10 @@ function PanelMeasurementTableTracking(props) {
   };
 
   const EmptyComponent = () => (
-    <MeasurementTable title="Measurements">
+    <MeasurementTable
+      title="Measurements"
+      isExpanded={false}
+    >
       <MeasurementTable.Body />
     </MeasurementTable>
   );
@@ -97,7 +99,7 @@ function PanelMeasurementTableTracking(props) {
   };
 
   const Header = props => (
-    <div>
+    <div data-cy="TrackingHeader">
       <StudySummaryFromMetadata {...props} />
       <StudyMeasurementsActions
         {...props}
@@ -108,9 +110,6 @@ function PanelMeasurementTableTracking(props) {
 
   return (
     <PanelMeasurement
-      servicesManager={servicesManager}
-      extensionManager={extensionManager}
-      commandsManager={commandsManager}
       measurementFilter={measurementFilter}
       emptyComponent={EmptyComponent}
       sourceChildren={props.children}

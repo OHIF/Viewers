@@ -9,12 +9,10 @@ const { filterNot, filterAdditionalFindings } = utils.MeasurementFilters;
 export const MeasurementOrAdditionalFindingSets = [
   {
     title: 'Measurements',
-    component: MeasurementTableNested,
     filter: filterNot(filterAdditionalFindings),
   },
   {
     title: 'Additional Findings',
-    component: MeasurementTableNested,
     filter: filterAdditionalFindings,
   },
 ];
@@ -60,16 +58,16 @@ export default function MeasurementOrAdditionalFindings(props): React.ReactNode 
     <AccordionGroup
       grouping={{
         groupingFunction: groupByNamedSets,
+        name: 'measurementsOrAdditional',
         namedSets: MeasurementOrAdditionalFindingSets,
         ...grouping,
       }}
       items={items}
       sourceChildren={children}
     >
-      <AccordionGroup.Trigger>
-        <StudySummaryFromMetadata />
-      </AccordionGroup.Trigger>
-      <MeasurementTableNested />
+      <AccordionGroup.Accordion noWrapper="true">
+        <MeasurementTableNested />
+      </AccordionGroup.Accordion>
     </AccordionGroup>
   );
 }

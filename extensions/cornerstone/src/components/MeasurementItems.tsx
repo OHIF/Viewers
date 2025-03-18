@@ -12,7 +12,7 @@ export function MeasurementItem(props) {
       count={index + 1}
       text={item.toolName || item.label || item.title}
       colorHex="#f00"
-      isActive="false"
+      isActive={item.isSelected}
       menu={MeasurementsMenu}
       group={{ items: [item], onClick: props.onClick }}
     />
