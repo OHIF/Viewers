@@ -4,6 +4,7 @@ import toolbarButtonsValidated from '../../deemea-mode/src/toolbarButtonsValidat
 import toolbarButtonsValidated3d from '../../deemea-mode-3d/src/toolbarButtonsValidated3d';
 import toolbarButtons from '../../deemea-mode/src/toolbarButtons';
 import toolbarButtons3d from '../../deemea-mode-3d/src/toolbarButtons3d';
+import segmentationButtons from '../../deemea-mode-3d/src/segmentationButtons';
 
 const commandsModule = ({ servicesManager }) => {
   const actions = {
@@ -40,6 +41,7 @@ const commandsModule = ({ servicesManager }) => {
               toolbarService?.refreshToolbarState();
             } else {
               toolbarService?.setButtons(toolbarButtonsValidated3d);
+              toolbarService?.addButtons(segmentationButtons);
               toolbarService?.refreshToolbarState();
             }
           } else {
@@ -48,6 +50,7 @@ const commandsModule = ({ servicesManager }) => {
               toolbarService?.refreshToolbarState();
             } else {
               toolbarService?.setButtons(toolbarButtons3d);
+              toolbarService?.addButtons(segmentationButtons);
               toolbarService?.refreshToolbarState();
             }
           }
