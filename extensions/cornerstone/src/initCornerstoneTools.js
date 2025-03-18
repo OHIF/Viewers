@@ -1,6 +1,7 @@
 import {
   PanTool,
   WindowLevelTool,
+  SegmentBidirectionalTool,
   StackScrollTool,
   VolumeRotateTool,
   ZoomTool,
@@ -52,8 +53,14 @@ export default function initCornerstoneTools(configuration = {}) {
     addons: {
       polySeg,
     },
+    computeWorker: {
+      autoTerminateOnIdle: {
+        enabled: false,
+      },
+    },
   });
   addTool(PanTool);
+  addTool(SegmentBidirectionalTool);
   addTool(WindowLevelTool);
   addTool(StackScrollTool);
   addTool(VolumeRotateTool);
@@ -142,6 +149,7 @@ const toolNames = {
   OrientationMarker: OrientationMarkerTool.toolName,
   WindowLevelRegion: WindowLevelRegionTool.toolName,
   PlanarFreehandContourSegmentation: PlanarFreehandContourSegmentationTool.toolName,
+  SegmentBidirectional: SegmentBidirectionalTool.toolName,
 };
 
 export { toolNames };
