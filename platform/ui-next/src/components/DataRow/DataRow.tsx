@@ -8,6 +8,7 @@ import {
 } from '../../components/DropdownMenu';
 import { Icons } from '../../components/Icons/Icons';
 import { Tooltip, TooltipTrigger, TooltipContent } from '../../components/Tooltip/Tooltip';
+import { cn } from '../../lib/utils';
 
 /**
  * DataRow is a complex UI component that displays a selectable, interactive row with hierarchical data.
@@ -77,6 +78,7 @@ interface DataRowProps {
   //
   colorHex?: string;
   onColor: () => void;
+  className?: string;
 }
 
 const DataRow: React.FC<DataRowProps> = ({
@@ -94,16 +96,19 @@ const DataRow: React.FC<DataRowProps> = ({
   isSelected = false,
   isVisible = true,
   disableEditing = false,
+  className,
 }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const isTitleLong = title?.length > 25;
   const rowRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    if (isSelected && rowRef.current) {
-      rowRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }
-  }, [isSelected]);
+  // useEffect(() => {
+  //   if (isSelected && rowRef.current) {
+  //     setTimeout(() => {
+  //       rowRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  //     }, 200);
+  //   }
+  // }, [isSelected]);
 
   const handleAction = (action: string, e: React.MouseEvent) => {
     e.stopPropagation();
@@ -190,7 +195,7 @@ const DataRow: React.FC<DataRowProps> = ({
   return (
     <div
       ref={rowRef}
-      className={`flex flex-col ${isVisible ? '' : 'opacity-60'}`}
+      className={cn('flex flex-col', !isVisible && 'opacity-60', className)}
     >
       <div
         className={`flex items-center ${

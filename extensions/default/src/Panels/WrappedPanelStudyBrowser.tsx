@@ -1,5 +1,4 @@
 import React, { useCallback } from 'react';
-import PropTypes from 'prop-types';
 //
 import PanelStudyBrowser from './StudyBrowser/PanelStudyBrowser';
 import getImageSrcFromImageId from './getImageSrcFromImageId';
