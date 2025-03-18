@@ -6,6 +6,8 @@ import getViewportModule from './getViewportModule';
 import { id } from './id.js';
 import { ViewportActionButton } from '@ohif/ui';
 import i18n from '@ohif/i18n';
+import { measurementTrackingMode } from './contexts/TrackedMeasurementsContext/promptBeginTracking';
+import getCustomizationModule from './getCustomizationModule';
 
 const measurementTrackingExtension = {
   /**
@@ -38,6 +40,17 @@ const measurementTrackingExtension = {
       true // replace the button if it is already defined
     );
   },
+  getUtilityModule() {
+    return [
+      {
+        name: 'common',
+        exports: {
+          measurementTrackingMode,
+        },
+      },
+    ];
+  },
+  getCustomizationModule,
 };
 
 export default measurementTrackingExtension;

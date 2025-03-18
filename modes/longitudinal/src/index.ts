@@ -82,7 +82,8 @@ function modeFactory({ modeConfiguration }) {
      * Lifecycle hooks
      */
     onModeEnter: function ({ servicesManager, extensionManager, commandsManager }: withAppTypes) {
-      const { measurementService, toolbarService, toolGroupService } = servicesManager.services;
+      const { measurementService, toolbarService, toolGroupService, customizationService } =
+        servicesManager.services;
 
       measurementService.clearMeasurements();
 
@@ -134,6 +135,30 @@ function modeFactory({ modeConfiguration }) {
         'UltrasoundDirectionalTool',
         'WindowLevelRegion',
       ]);
+
+      const customThumbnailLoadingCallback = async props => {
+        const { servicesManager, appConfig, displaySetInstanceUID } = props;
+        const utilityModule = extensionManager.getModuleEntry(
+          '@ohif/extension-measurement-tracking.utilityModule.common'
+        );
+        const { measurementTrackingMode } = utilityModule.exports;
+        const simplifiedMode =
+          appConfig.measurementTrackingMode === measurementTrackingMode.SIMPLIFIED;
+        const { measurementService, displaySetService } = servicesManager.services;
+        const measurements = measurementService.getMeasurements();
+        const haveDirtyMeasurements = measurements.some(m => m.isDirty);
+        const displaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
+        const handled = displaySet.Modality === 'SR' && simplifiedMode && haveDirtyMeasurements;
+        return Promise.resolve({ handled });
+      };
+      customizationService.setCustomizations({
+        customOnDropHandler: {
+          $set: customThumbnailLoadingCallback,
+        },
+        customDoubleClickThumbnailHandler: {
+          $set: customThumbnailLoadingCallback,
+        },
+      });
 
       // // ActivatePanel event trigger for when a segmentation or measurement is added.
       // // Do not force activation so as to respect the state the user may have left the UI in.

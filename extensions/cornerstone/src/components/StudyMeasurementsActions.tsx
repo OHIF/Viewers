@@ -61,6 +61,21 @@ export function StudyMeasurementsActions({ items, StudyInstanceUID, measurementF
           <Icons.Delete />
           Delete
         </Button>
+        <Button
+          size="sm"
+          variant="ghost"
+          className="pl-0.5"
+          onClick={e => {
+            e.stopPropagation();
+            if (actions?.onUntrackClick) {
+              actions.onUntrackClick(e);
+              return;
+            }
+          }}
+        >
+          <Icons.Delete />
+          Untrack
+        </Button>
       </div>
     </div>
   );

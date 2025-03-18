@@ -1,4 +1,6 @@
 import React from 'react';
+import { setAnnotationLabel } from '@cornerstonejs/tools/utilities';
+import { annotation } from '@cornerstonejs/tools';
 import { LabellingFlow } from '@ohif/ui';
 import { InputDialog } from '@ohif/ui-next';
 
@@ -89,6 +91,7 @@ export async function callInputDialogAutoComplete({
   uiDialogService,
   labelConfig,
   renderContent = LabellingFlow,
+  element,
 }) {
   const exclusive = labelConfig ? labelConfig.exclusive : false;
   const dropDownItems = labelConfig ? labelConfig.items : [];
@@ -97,7 +100,10 @@ export async function callInputDialogAutoComplete({
     const labellingDoneCallback = value => {
       uiDialogService.hide('select-annotation');
       if (typeof value === 'string') {
-        measurement.label = value;
+        if (measurement.label !== value) {
+          const sourceAnnotation = annotation.state.getAnnotation(measurement.uid);
+          setAnnotationLabel(sourceAnnotation, element, value);
+        }
       }
       resolve(measurement);
     };
