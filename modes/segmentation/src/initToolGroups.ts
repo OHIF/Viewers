@@ -1,4 +1,3 @@
-import { utilities as cstUtils } from '@cornerstonejs/tools';
 const colours = {
   'viewport-0': 'rgb(200, 0, 0)',
   'viewport-1': 'rgb(200, 200, 0)',
@@ -9,20 +8,6 @@ const colorsByOrientation = {
   axial: 'rgb(200, 0, 0)',
   sagittal: 'rgb(200, 200, 0)',
   coronal: 'rgb(0, 200, 0)',
-};
-
-const actionConfiguration = {
-  contourBidirectional: {
-    method: cstUtils.segmentation.segmentContourAction,
-    bindings: [
-      {
-        key: 'c',
-      },
-    ],
-    data: {
-      segmentData: new Map(),
-    },
-  },
 };
 
 function createTools(utilityModule) {
@@ -71,7 +56,7 @@ function createTools(utilityModule) {
         },
       },
       {
-        toolName: 'ThresholdSphereBrghush',
+        toolName: 'ThresholdSphereBrush',
         parentTool: 'Brush',
         configuration: {
           activeStrategy: 'THRESHOLD_INSIDE_SPHERE',
