@@ -422,6 +422,24 @@ class SegmentationService extends PubSubService {
       ...metaData.get('instance', image.referencedImageId),
     }));
 
+    // We should parse the segmentation as separate slices to support overlapping segments.
+    // This parsing should occur in the CornerstoneJS library adapters.
+    // For now, we use the volume returned from the library and chop it here.
+    let firstSegmentedSliceImageId = null;
+    for (let i = 0; i < derivedImages.length; i++) {
+      const voxelManager = derivedImages[i].voxelManager as csTypes.IVoxelManager<number>;
+      const scalarData = voxelManager.getScalarData();
+      voxelManager.setScalarData(scalarData);
+
+      // Check if this slice has any non-zero voxels and we haven't found one yet
+      if (!firstSegmentedSliceImageId && scalarData.some(value => value !== 0)) {
+        firstSegmentedSliceImageId = derivedImages[i].referencedImageId;
+      }
+    }
+
+    // assign the first non zero voxel image id to the segDisplaySet
+    segDisplaySet.firstSegmentedSliceImageId = firstSegmentedSliceImageId;
+
     const segmentsInfo = segDisplaySet.segMetadata.data;
 
     const segments: { [segmentIndex: string]: cstTypes.Segment } = {};
@@ -1137,8 +1155,8 @@ class SegmentationService extends PubSubService {
     highlightFunctionType = 'ease-in-out' // todo: make animation functions configurable from outside
   ): void {
     const center = this._getSegmentCenter(segmentationId, segmentIndex);
-
     if (!center) {
+      console.warn('No center found for segmentation', segmentationId, segmentIndex);
       return;
     }
 
