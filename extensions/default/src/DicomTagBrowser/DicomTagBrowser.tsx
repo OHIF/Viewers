@@ -203,7 +203,7 @@ function getFormattedRowsFromTags({ tags, metadata }) {
 
     for (let i = index; i < tags.length; i++) {
       const tagInfo = tags[i];
-      const uid = generateRowId();
+      const uid = tagInfo.uid ?? generateRowId();
 
       if (parents?.length > 0) {
         parents.forEach(parent => {
@@ -212,7 +212,7 @@ function getFormattedRowsFromTags({ tags, metadata }) {
       }
 
       if (tagInfo.vr === 'SQ') {
-        const row = {
+        const row: Row = {
           uid,
           tag: tagInfo.tag,
           valueRepresentation: tagInfo.vr,
@@ -231,13 +231,37 @@ function getFormattedRowsFromTags({ tags, metadata }) {
 
         if (tagInfo.values.length > 0) {
           stack.push({ tags, depth, parents, index: i + 1, children });
-          stack.push({
-            tags: tagInfo.values.flat(),
-            depth: depth + 1,
-            parents: newParents,
-            index: 0,
-            children: [],
-          });
+          for (
+            let j = tagInfo.values.length - 1, values = tagInfo.values[j];
+            j >= 0;
+            values = tagInfo.values[--j]
+          ) {
+            const itemUid = generateRowId();
+            stack.push({
+              tags: values,
+              depth: depth + 2,
+              parents: [...newParents, itemUid],
+              index: 0,
+              children: [],
+            });
+            const itemTagInfo = {
+              tags: [
+                {
+                  tag: '(FFFE,E000)',
+                  vr: '',
+                  keyword: `Item #${j}`,
+                  value: '',
+                  uid: itemUid,
+                },
+              ],
+              depth: depth + 1,
+              parents: newParents,
+              index: 0,
+              children: [],
+            };
+            stack.push(itemTagInfo);
+            parentChildMap.set(itemUid, itemTagInfo.children);
+          }
           break;
         }
       } else {
@@ -250,7 +274,7 @@ function getFormattedRowsFromTags({ tags, metadata }) {
             console.warn(`Failed to parse value representation for tag '${tagInfo.keyword}'`);
           }
         }
-        const row = {
+        const row: Row = {
           uid,
           tag: tagInfo.tag,
           valueRepresentation: tagInfo.vr,
@@ -261,6 +285,10 @@ function getFormattedRowsFromTags({ tags, metadata }) {
           parents,
         };
         rows.push(row);
+        if (row.tag === '(FFFE,E000)') {
+          row.areChildrenVisible = true;
+          row.children = [];
+        }
       }
     }
   }
