@@ -40,6 +40,67 @@ function initDefaultToolGroup(
       { toolName: toolNames.StackScrollMouseWheel, bindings: [] },
     ],
     passive: [
+      {
+        toolName: 'CircularBrush',
+        parentTool: 'Brush',
+        configuration: {
+          activeStrategy: 'FILL_INSIDE_CIRCLE',
+        },
+      },
+      {
+        toolName: 'CircularEraser',
+        parentTool: 'Brush',
+        configuration: {
+          activeStrategy: 'ERASE_INSIDE_CIRCLE',
+        },
+      },
+      {
+        toolName: 'SphereBrush',
+        parentTool: 'Brush',
+        configuration: {
+          activeStrategy: 'FILL_INSIDE_SPHERE',
+        },
+      },
+      {
+        toolName: 'SphereEraser',
+        parentTool: 'Brush',
+        configuration: {
+          activeStrategy: 'ERASE_INSIDE_SPHERE',
+        },
+      },
+      {
+        toolName: 'ThresholdCircularBrush',
+        parentTool: 'Brush',
+        configuration: {
+          activeStrategy: 'THRESHOLD_INSIDE_CIRCLE',
+        },
+      },
+      {
+        toolName: 'ThresholdSphereBrush',
+        parentTool: 'Brush',
+        configuration: {
+          activeStrategy: 'THRESHOLD_INSIDE_SPHERE',
+        },
+      },
+      {
+        toolName: 'ThresholdCircularBrushDynamic',
+        parentTool: 'Brush',
+        configuration: {
+          activeStrategy: 'THRESHOLD_INSIDE_CIRCLE',
+          // preview: {
+          //   enabled: true,
+          // },
+          strategySpecificConfiguration: {
+            // to use the use the center segment index to determine
+            // if inside -> same segment, if outside -> eraser
+            // useCenterSegmentIndex: true,
+            THRESHOLD: {
+              isDynamic: true,
+              dynamicRadius: 3,
+            },
+          },
+        },
+      },
       { toolName: toolNames.Length },
       {
         toolName: toolNames.ArrowAnnotate,
@@ -71,6 +132,7 @@ function initDefaultToolGroup(
       { toolName: toolNames.RectangleROI },
       { toolName: toolNames.StackScroll },
       { toolName: toolNames.Angle },
+      { toolName: toolNames.SegmentationDisplay },
       { toolName: toolNames.CalibrationLine },
       {
         toolName: toolNames.PlanarFreehandContourSegmentation,
@@ -138,6 +200,67 @@ function initSRToolGroup(extensionManager, toolGroupService) {
       },
     ],
     passive: [
+      {
+        toolName: 'CircularBrush',
+        parentTool: 'Brush',
+        configuration: {
+          activeStrategy: 'FILL_INSIDE_CIRCLE',
+        },
+      },
+      {
+        toolName: 'CircularEraser',
+        parentTool: 'Brush',
+        configuration: {
+          activeStrategy: 'ERASE_INSIDE_CIRCLE',
+        },
+      },
+      {
+        toolName: 'SphereBrush',
+        parentTool: 'Brush',
+        configuration: {
+          activeStrategy: 'FILL_INSIDE_SPHERE',
+        },
+      },
+      {
+        toolName: 'SphereEraser',
+        parentTool: 'Brush',
+        configuration: {
+          activeStrategy: 'ERASE_INSIDE_SPHERE',
+        },
+      },
+      {
+        toolName: 'ThresholdCircularBrush',
+        parentTool: 'Brush',
+        configuration: {
+          activeStrategy: 'THRESHOLD_INSIDE_CIRCLE',
+        },
+      },
+      {
+        toolName: 'ThresholdSphereBrush',
+        parentTool: 'Brush',
+        configuration: {
+          activeStrategy: 'THRESHOLD_INSIDE_SPHERE',
+        },
+      },
+      {
+        toolName: 'ThresholdCircularBrushDynamic',
+        parentTool: 'Brush',
+        configuration: {
+          activeStrategy: 'THRESHOLD_INSIDE_CIRCLE',
+          // preview: {
+          //   enabled: true,
+          // },
+          strategySpecificConfiguration: {
+            // to use the use the center segment index to determine
+            // if inside -> same segment, if outside -> eraser
+            // useCenterSegmentIndex: true,
+            THRESHOLD: {
+              isDynamic: true,
+              dynamicRadius: 3,
+            },
+          },
+        },
+      },
       { toolName: SRToolNames.SRLength },
       { toolName: SRToolNames.SRArrowAnnotate },
       { toolName: SRToolNames.SRBidirectional },
@@ -145,6 +268,7 @@ function initSRToolGroup(extensionManager, toolGroupService) {
       { toolName: SRToolNames.SRCircleROI },
       { toolName: SRToolNames.SRPlanarFreehandROI },
       { toolName: SRToolNames.SRRectangleROI },
+      { toolName: toolNames.SegmentationDisplay },
       { toolName: toolNames.WindowLevelRegion },
       {
         toolName: SRToolNames.SRPlanarFreehandContourSegmentation,
@@ -215,6 +339,67 @@ function initMPRToolGroup(extensionManager, toolGroupService, commandsManager, m
                 eventDetails,
               });
             }
+          },
+        },
+      },
+      {
+        toolName: 'CircularBrush',
+        parentTool: 'Brush',
+        configuration: {
+          activeStrategy: 'FILL_INSIDE_CIRCLE',
+        },
+      },
+      {
+        toolName: 'CircularEraser',
+        parentTool: 'Brush',
+        configuration: {
+          activeStrategy: 'ERASE_INSIDE_CIRCLE',
+        },
+      },
+      {
+        toolName: 'SphereBrush',
+        parentTool: 'Brush',
+        configuration: {
+          activeStrategy: 'FILL_INSIDE_SPHERE',
+        },
+      },
+      {
+        toolName: 'SphereEraser',
+        parentTool: 'Brush',
+        configuration: {
+          activeStrategy: 'ERASE_INSIDE_SPHERE',
+        },
+      },
+      {
+        toolName: 'ThresholdCircularBrush',
+        parentTool: 'Brush',
+        configuration: {
+          activeStrategy: 'THRESHOLD_INSIDE_CIRCLE',
+        },
+      },
+      {
+        toolName: 'ThresholdSphereBrush',
+        parentTool: 'Brush',
+        configuration: {
+          activeStrategy: 'THRESHOLD_INSIDE_SPHERE',
+        },
+      },
+      {
+        toolName: 'ThresholdCircularBrushDynamic',
+        parentTool: 'Brush',
+        configuration: {
+          activeStrategy: 'THRESHOLD_INSIDE_CIRCLE',
+          // preview: {
+          //   enabled: true,
+          // },
+          strategySpecificConfiguration: {
+            // to use the use the center segment index to determine
+            // if inside -> same segment, if outside -> eraser
+            // useCenterSegmentIndex: true,
+            THRESHOLD: {
+              isDynamic: true,
+              dynamicRadius: 3,
+            },
           },
         },
       },
@@ -299,6 +484,70 @@ function initVolume3DToolGroup(extensionManager, toolGroupService) {
         toolName: toolNames.Pan,
         bindings: [{ mouseButton: Enums.MouseBindings.Auxiliary }],
       },
+    ],
+    passive: [
+      {
+        toolName: 'CircularBrush',
+        parentTool: 'Brush',
+        configuration: {
+          activeStrategy: 'FILL_INSIDE_CIRCLE',
+        },
+      },
+      {
+        toolName: 'CircularEraser',
+        parentTool: 'Brush',
+        configuration: {
+          activeStrategy: 'ERASE_INSIDE_CIRCLE',
+        },
+      },
+      {
+        toolName: 'SphereBrush',
+        parentTool: 'Brush',
+        configuration: {
+          activeStrategy: 'FILL_INSIDE_SPHERE',
+        },
+      },
+      {
+        toolName: 'SphereEraser',
+        parentTool: 'Brush',
+        configuration: {
+          activeStrategy: 'ERASE_INSIDE_SPHERE',
+        },
+      },
+      {
+        toolName: 'ThresholdCircularBrush',
+        parentTool: 'Brush',
+        configuration: {
+          activeStrategy: 'THRESHOLD_INSIDE_CIRCLE',
+        },
+      },
+      {
+        toolName: 'ThresholdSphereBrush',
+        parentTool: 'Brush',
+        configuration: {
+          activeStrategy: 'THRESHOLD_INSIDE_SPHERE',
+        },
+      },
+      {
+        toolName: 'ThresholdCircularBrushDynamic',
+        parentTool: 'Brush',
+        configuration: {
+          activeStrategy: 'THRESHOLD_INSIDE_CIRCLE',
+          // preview: {
+          //   enabled: true,
+          // },
+          strategySpecificConfiguration: {
+            // to use the use the center segment index to determine
+            // if inside -> same segment, if outside -> eraser
+            // useCenterSegmentIndex: true,
+            THRESHOLD: {
+              isDynamic: true,
+              dynamicRadius: 3,
+            },
+          },
+        },
+      },
+      { toolName: toolNames.SegmentationDisplay },
     ],
   };
 

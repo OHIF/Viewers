@@ -1,5 +1,6 @@
 import { hotkeys } from '@ohif/core';
 import toolbarButtons from '../src/toolbarButtons3d';
+import segmentationButtons from '../src/segmentationButtons';
 import initToolGroups from '../src/initToolGroups3d';
 import { id } from './id';
 
@@ -13,6 +14,13 @@ const cornerstone = {
   viewport: '@ohif/extension-cornerstone.viewportModule.cornerstone',
 };
 
+const segmentation = {
+  panel: '@ohif/extension-cornerstone-dicom-seg.panelModule.panelSegmentation',
+  panelTool: '@ohif/extension-cornerstone-dicom-seg.panelModule.panelSegmentationWithTools',
+  sopClassHandler: '@ohif/extension-cornerstone-dicom-seg.sopClassHandlerModule.dicom-seg',
+  viewport: '@ohif/extension-cornerstone-dicom-seg.viewportModule.dicom-seg',
+};
+
 /**
  * Just two dependencies to be able to render a viewport with panels in order
  * to make sure that the mode is working.
@@ -20,6 +28,7 @@ const cornerstone = {
 const extensionDependencies = {
   '@ohif/extension-default': '^3.0.0',
   '@ohif/extension-cornerstone': '^3.0.0',
+  '@ohif/extension-cornerstone-dicom-seg': '^3.0.0',
   'deemea-extension-3d': '^0.0.1',
 };
 
@@ -55,6 +64,7 @@ function modeFactory({ modeConfiguration }) {
       initToolGroups(extensionManager, toolGroupService, commandsManager);
 
       toolbarService.addButtons(toolbarButtons);
+      toolbarService.addButtons(segmentationButtons);
       toolbarService.createButtonSection('primary', [
         'ResetButton',
         'Length',
@@ -68,6 +78,7 @@ function modeFactory({ modeConfiguration }) {
         'Zoom',
         'Reset',
       ]);
+      toolbarService.createButtonSection('segmentationToolbox', ['BrushTools', 'Shapes']);
     },
     onModeExit: ({ servicesManager }: withAppTypes) => {
       const {
@@ -118,13 +129,17 @@ function modeFactory({ modeConfiguration }) {
             id: ohif.layout,
             props: {
               leftPanels: [],
-              rightPanels: [],
+              rightPanels: [segmentation.panelTool],
               leftPanelClosed: true,
               rightPanelClosed: true,
               viewports: [
                 {
                   namespace: cornerstone.viewport,
                   displaySetsToDisplay: [ohif.sopClassHandler],
+                },
+                {
+                  namespace: segmentation.viewport,
+                  displaySetsToDisplay: [segmentation.sopClassHandler],
                 },
               ],
             },
@@ -137,7 +152,7 @@ function modeFactory({ modeConfiguration }) {
     /** HangingProtocol used by the mode */
     // hangingProtocol: [''],
     /** SopClassHandlers used by the mode */
-    sopClassHandlers: [ohif.sopClassHandler],
+    sopClassHandlers: [ohif.sopClassHandler, segmentation.sopClassHandler],
     hangingProtocol: 'default',
 
     /** hotkeys for mode */
