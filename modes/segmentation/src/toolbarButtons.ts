@@ -255,7 +255,7 @@ const toolbarButtons: Button[] = [
 
   {
     id: 'Brush',
-    uiType: 'ohif.toolButton',
+    uiType: 'ohif.toolBoxButton',
     props: {
       icon: 'icon-tool-brush',
       label: 'Brush',
@@ -293,8 +293,38 @@ const toolbarButtons: Button[] = [
     },
   },
   {
+    id: 'InterpolateLabelmap',
+    uiType: 'ohif.toolBoxButton',
+    props: {
+      icon: 'icon-tool-interpolation',
+      label: 'Interpolate Labelmap',
+      evaluate: [
+        'evaluate.cornerstone.segmentation',
+        {
+          name: 'evaluate.displaySetIsReconstructable',
+          disabledText: 'The current viewport cannot handle interpolation.',
+        },
+      ],
+      commands: 'interpolateLabelmap',
+    },
+  },
+  {
+    id: 'SegmentBidirectional',
+    uiType: 'ohif.toolBoxButton',
+    props: {
+      icon: 'icon-tool-bidirectional-segment',
+      label: 'Segment Bidirectional',
+      tooltip: 'Finding the largest bidirectional measurement per lesion',
+      evaluate: {
+        name: 'evaluate.cornerstone.segmentation',
+        disabledText: 'Create new segmentation to enable this tool.',
+      },
+      commands: 'runSegmentBidirectional',
+    },
+  },
+  {
     id: 'Eraser',
-    uiType: 'ohif.toolButton',
+    uiType: 'ohif.toolBoxButton',
     props: {
       icon: 'icon-tool-eraser',
       label: 'Eraser',
@@ -332,7 +362,7 @@ const toolbarButtons: Button[] = [
   },
   {
     id: 'Threshold',
-    uiType: 'ohif.toolButton',
+    uiType: 'ohif.toolBoxButton',
     props: {
       icon: 'icon-tool-threshold',
       label: 'Threshold Tool',

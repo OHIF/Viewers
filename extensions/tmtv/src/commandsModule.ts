@@ -24,20 +24,7 @@ const ROI_THRESHOLD_MANUAL_TOOL_IDS = [
 
 const workerManager = getWebWorkerManager();
 
-const options = {
-  maxWorkerInstances: 1,
-  autoTerminateOnIdle: {
-    enabled: true,
-    idleTimeThreshold: 3000,
-  },
-};
-
 // Register the task
-const workerFn = () => {
-  return new Worker(new URL('./utils/calculateSUVPeakWorker.js', import.meta.url), {
-    name: 'suv-peak-worker', // name used by the browser to name the worker
-  });
-};
 
 function getVolumesFromSegmentation(segmentationId) {
   const csSegmentation = csTools.segmentation.state.getSegmentation(segmentationId);
@@ -262,153 +249,22 @@ const commandsModule = ({ servicesManager, commandsManager, extensionManager }: 
         { overwrite: true, segmentIndex, segmentationId }
       );
     },
-    calculateSuvPeak: async ({ segmentationId, segmentIndex }) => {
-      const segmentation = segmentationService.getSegmentation(segmentationId);
-
-      const { representationData } = segmentation;
-      const { volumeId, referencedVolumeId } = representationData[
-        SegmentationRepresentations.Labelmap
-      ] as csTools.Types.LabelmapToolOperationDataVolume;
-
-      const labelmap = cs.cache.getVolume(volumeId);
-      const referencedVolume = cs.cache.getVolume(referencedVolumeId);
-
-      // if we put it in the top, it will appear in other modes
-      workerManager.registerWorker('suv-peak-worker', workerFn, options);
-
-      const annotationUIDs = _getAnnotationsSelectedByToolNames(ROI_THRESHOLD_MANUAL_TOOL_IDS);
-
-      const annotations = annotationUIDs.map(annotationUID =>
-        csTools.annotation.state.getAnnotation(annotationUID)
-      );
-
-      const labelmapProps = {
-        dimensions: labelmap.dimensions,
-        origin: labelmap.origin,
-        direction: labelmap.direction,
-        spacing: labelmap.spacing,
-        metadata: labelmap.metadata,
-        scalarData: labelmap.voxelManager.getCompleteScalarDataArray(),
-      };
-
-      const referenceVolumeProps = {
-        dimensions: referencedVolume.dimensions,
-        origin: referencedVolume.origin,
-        direction: referencedVolume.direction,
-        spacing: referencedVolume.spacing,
-        metadata: referencedVolume.metadata,
-        scalarData: referencedVolume.voxelManager.getCompleteScalarDataArray(),
-      };
-
-      // metadata in annotations has enabledElement which is not serializable
-      // we need to remove it
-      // Todo: we should probably have a sanitization function for this
-      const annotationsToSend = annotations.map(annotation => {
-        return {
-          ...annotation,
-          metadata: {
-            ...annotation.metadata,
-            enabledElement: {
-              ...annotation.metadata.enabledElement,
-              viewport: null,
-              renderingEngine: null,
-              element: null,
-            },
-          },
-        };
-      });
-
-      const suvPeak =
-        (await workerManager.executeTask('suv-peak-worker', 'calculateSuvPeak', {
-          labelmapProps,
-          referenceVolumeProps,
-          annotations: annotationsToSend,
-          segmentIndex,
-        })) || {};
-
-      return {
-        suvPeak: suvPeak.mean,
-        suvMax: suvPeak.max,
-        suvMaxIJK: suvPeak.maxIJK,
-        suvMaxLPS: suvPeak.maxLPS,
-      };
-    },
-    getLesionStats: ({ segmentationId, segmentIndex = 1 }) => {
-      const { labelmapVolume, referencedVolume } = getVolumesFromSegmentation(segmentationId);
-      const { voxelManager: segVoxelManager, imageData, spacing } = labelmapVolume;
-      const { voxelManager: refVoxelManager } = referencedVolume;
-
-      let segmentationMax = -Infinity;
-      let segmentationMin = Infinity;
-      const segmentationValues = [];
-      let voxelCount = 0;
-
-      const callback = ({ value, index }) => {
-        if (value === segmentIndex) {
-          const refValue = refVoxelManager.getAtIndex(index) as number;
-          segmentationValues.push(refValue);
-          if (refValue > segmentationMax) {
-            segmentationMax = refValue;
-          }
-          if (refValue < segmentationMin) {
-            segmentationMin = refValue;
-          }
-          voxelCount++;
-        }
-      };
-
-      segVoxelManager.forEach(callback, { imageData });
-      const mean = segmentationValues.reduce((a, b) => a + b, 0) / voxelCount;
-      const stats = {
-        minValue: segmentationMin,
-        maxValue: segmentationMax,
-        meanValue: mean,
-        stdValue: Math.sqrt(
-          segmentationValues.map(k => (k - mean) ** 2).reduce((acc, curr) => acc + curr, 0) /
-            voxelCount
-        ),
-        volume: voxelCount * spacing[0] * spacing[1] * spacing[2] * 1e-3,
-      };
-
-      return stats;
-    },
-    calculateLesionGlycolysis: ({ lesionStats }) => {
-      const { meanValue, volume } = lesionStats;
-
-      return {
-        lesionGlyoclysisStats: volume * meanValue,
-      };
-    },
     calculateTMTV: async ({ segmentations }) => {
-      const labelmapProps = segmentations.map(segmentation => {
-        const labelmap = getLabelmapVolumeFromSegmentation(segmentation);
-        return {
-          dimensions: labelmap.dimensions,
-          spacing: labelmap.spacing,
-          scalarData: labelmap.voxelManager.getCompleteScalarDataArray(),
-          origin: labelmap.origin,
-          direction: labelmap.direction,
-        };
+      const segmentationIds = segmentations.map(segmentation => segmentation.segmentationId);
+
+      const stats = await csTools.utilities.segmentation.computeMetabolicStats({
+        segmentationIds,
+        segmentIndex: 1,
       });
 
-      if (!labelmapProps.length) {
-        return;
-      }
-
-      const tmtv = await workerManager.executeTask(
-        'suv-peak-worker',
-        'calculateTMTV',
-        labelmapProps
-      );
-
-      return tmtv;
+      segmentationService.setSegmentationGroupStats(segmentationIds, stats);
+      return stats;
     },
     exportTMTVReportCSV: async ({ segmentations, tmtv, config, options }) => {
       const segReport = commandsManager.runCommand('getSegmentationCSVReport', {
         segmentations,
       });
 
-      const tlg = await actions.getTotalLesionGlycolysis({ segmentations });
       const additionalReportRows = [
         { key: 'Total Lesion Glycolysis', value: { tlg: tlg.toFixed(4) } },
         { key: 'Threshold Configuration', value: { ...config } },
@@ -423,35 +279,7 @@ const commandsModule = ({ servicesManager, commandsManager, extensionManager }: 
 
       createAndDownloadTMTVReport(segReport, additionalReportRows, options);
     },
-    getTotalLesionGlycolysis: async ({ segmentations }) => {
-      const labelmapProps = segmentations.map(segmentation => {
-        const labelmap = getLabelmapVolumeFromSegmentation(segmentation);
-        return {
-          dimensions: labelmap.dimensions,
-          spacing: labelmap.spacing,
-          scalarData: labelmap.voxelManager.getCompleteScalarDataArray(),
-          origin: labelmap.origin,
-          direction: labelmap.direction,
-        };
-      });
 
-      const { referencedVolume: ptVolume } = getVolumesFromSegmentation(
-        segmentations[0].segmentationId
-      );
-
-      const ptVolumeProps = {
-        dimensions: ptVolume.dimensions,
-        spacing: ptVolume.spacing,
-        scalarData: ptVolume.voxelManager.getCompleteScalarDataArray(),
-        origin: ptVolume.origin,
-        direction: ptVolume.direction,
-      };
-
-      return await workerManager.executeTask('suv-peak-worker', 'getTotalLesionGlycolysis', {
-        labelmapProps,
-        referenceVolumeProps: ptVolumeProps,
-      });
-    },
     setStartSliceForROIThresholdTool: () => {
       const { viewport } = _getActiveViewportsEnabledElement();
       const { focalPoint } = viewport.getCamera();
@@ -650,12 +478,6 @@ const commandsModule = ({ servicesManager, commandsManager, extensionManager }: 
     },
     getTotalLesionGlycolysis: {
       commandFn: actions.getTotalLesionGlycolysis,
-    },
-    calculateSuvPeak: {
-      commandFn: actions.calculateSuvPeak,
-    },
-    getLesionStats: {
-      commandFn: actions.getLesionStats,
     },
     calculateTMTV: {
       commandFn: actions.calculateTMTV,

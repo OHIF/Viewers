@@ -42,6 +42,13 @@ export function getToolbarModule({ servicesManager }: withAppTypes) {
           };
         }
 
+        if (!toolNames) {
+          return {
+            disabled: false,
+            // isActive: true,
+          };
+        }
+
         const toolName = toolbarService.getToolNameForButton(button);
 
         if (!toolGroup.hasTool(toolName) && !toolNames) {

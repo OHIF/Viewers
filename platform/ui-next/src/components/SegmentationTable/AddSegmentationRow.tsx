@@ -1,7 +1,7 @@
 import React from 'react';
 import { Icons } from '../Icons';
 import { useTranslation } from 'react-i18next';
-import { useSegmentationTableContext } from './SegmentationTableContext';
+import { useSegmentationTableContext } from './contexts';
 
 export const AddSegmentationRow: React.FC<{ children?: React.ReactNode }> = ({
   children = null,
@@ -9,7 +9,7 @@ export const AddSegmentationRow: React.FC<{ children?: React.ReactNode }> = ({
   const { t } = useTranslation('SegmentationTable');
 
   const { onSegmentationAdd, data, disableEditing, mode, disabled } =
-    useSegmentationTableContext('SegmentationTable');
+    useSegmentationTableContext('AddSegmentationRow');
 
   const isEmpty = data.length === 0;
 
