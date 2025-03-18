@@ -92,6 +92,7 @@ class SegmentationService extends PubSubService {
   };
 
   private _segmentationIdToColorLUTIndexMap: Map<string, number>;
+  private _segmentationGroupStatsMap: Map<string, any>;
   readonly servicesManager: AppTypes.ServicesManager;
   highlightIntervalId = null;
   readonly EVENTS = EVENTS;
@@ -102,6 +103,8 @@ class SegmentationService extends PubSubService {
     this._segmentationIdToColorLUTIndexMap = new Map();
 
     this.servicesManager = servicesManager;
+
+    this._segmentationGroupStatsMap = new Map();
   }
 
   public onModeEnter(): void {
@@ -1031,6 +1034,33 @@ class SegmentationService extends PubSubService {
    */
   public getRenderInactiveSegmentations(viewportId: string): boolean {
     return cstSegmentation.config.style.getRenderInactiveSegmentations(viewportId);
+  }
+  /**
+   * Sets statistics for a group of segmentations
+   * @param segmentationIds - Array of segmentation IDs that form the group
+   * @param stats - Statistics object containing metrics for the segmentation group
+   *
+   * @remarks
+   * This method stores statistical data for a group of related segmentations.
+   * The stats are stored using a composite key created from the sorted and joined
+   */
+  public setSegmentationGroupStats(segmentationIds: string[], stats: any) {
+    const groupId = this.getGroupId(segmentationIds);
+    this._segmentationGroupStatsMap.set(groupId, stats);
+  }
+
+  /**
+   * Gets statistics for a group of segmentations
+   * @param segmentationIds - Array of segmentation IDs that form the group
+   * @returns The stored statistics object for the segmentation group if found, undefined otherwise
+   */
+  public getSegmentationGroupStats(segmentationIds: string[]) {
+    const groupId = this.getGroupId(segmentationIds);
+    return this._segmentationGroupStatsMap.get(groupId);
+  }
+
+  private getGroupId(segmentationIds: string[]) {
+    return segmentationIds.sort().join(',');
   }
 
   /**

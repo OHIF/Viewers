@@ -11,11 +11,9 @@ export default function PanelRoiThresholdSegmentation({
   const { segmentationsWithRepresentations: segmentationsInfo } =
     useActiveViewportSegmentationRepresentations({ servicesManager });
 
-  useEffect(() => {
-    const segmentationIds = segmentationsInfo.map(
-      segmentationInfo => segmentationInfo.segmentation.segmentationId
-    );
+  const segmentationIds = segmentationsInfo?.map(info => info.segmentation.segmentationId) || [];
 
+  useEffect(() => {
     const initialRun = async () => {
       for (const segmentationId of segmentationIds) {
         await handleROIThresholding({
@@ -54,10 +52,9 @@ export default function PanelRoiThresholdSegmentation({
   }, [commandsManager, segmentationService]);
 
   // Find the first segmentation with a TMTV value since all of them have the same value
-  const tmtvSegmentation = segmentationsInfo.find(
-    info => info.segmentation.cachedStats?.tmtv !== undefined
-  );
-  const tmtvValue = tmtvSegmentation?.segmentation.cachedStats?.tmtv;
+  const stats = segmentationService.getSegmentationGroupStats(segmentationIds);
+  const tmtvValue = stats?.tmtv;
+  const tlgValue = stats?.tlg;
 
   return (
     <div className="mt-2 mb-10 flex flex-col">
@@ -68,6 +65,7 @@ export default function PanelRoiThresholdSegmentation({
               {'TMTV:'}
             </span>
             <div className="text-white">{`${tmtvValue?.toFixed(3)} mL`}</div>
+            <div className="text-white">{`${tlgValue?.toFixed(3)} mL`}</div>
           </div>
         ) : null}
       </div>

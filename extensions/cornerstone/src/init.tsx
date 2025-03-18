@@ -39,6 +39,7 @@ import { useLutPresentationStore } from './stores/useLutPresentationStore';
 import { usePositionPresentationStore } from './stores/usePositionPresentationStore';
 import { useSegmentationPresentationStore } from './stores/useSegmentationPresentationStore';
 import { imageRetrieveMetadataProvider } from '@cornerstonejs/core/utilities';
+import { updateSegmentationStats } from './utils/updateSegmentationStats';
 
 const { registerColormap } = csUtilities.colormap;
 
@@ -90,6 +91,7 @@ export default async function init({
     cornerstoneViewportService,
     hangingProtocolService,
     viewportGridService,
+    segmentationService,
   } = servicesManager.services;
 
   window.services = servicesManager.services;
@@ -150,8 +152,6 @@ export default async function init({
     );
   });
 
-  // ... existing code ...
-
   // add metadata providers
   metaData.addProvider(
     csUtilities.calibratedPixelSpacingMetadataProvider.get.bind(
@@ -176,6 +176,45 @@ export default async function init({
 
   initCineService(servicesManager);
   initStudyPrefetcherService(servicesManager);
+
+  segmentationService.subscribeDebounced(
+    segmentationService.EVENTS.SEGMENTATION_DATA_MODIFIED,
+    async ({ segmentationId }) => {
+      const segmentation = segmentationService.getSegmentation(segmentationId);
+      const readableText = customizationService.getCustomization('panelSegmentation.readableText');
+      const updatedSegmentation = await updateSegmentationStats({
+        segmentation,
+        segmentationId,
+        readableText,
+      });
+
+      if (updatedSegmentation) {
+        segmentationService.addOrUpdateSegmentation({
+          segmentationId,
+          segments: updatedSegmentation.segments,
+        });
+      }
+
+      // Check for segments with bidirectional measurements and update them
+      if (segmentation) {
+        const segmentIndices = Object.keys(segmentation.segments)
+          .map(index => parseInt(index))
+          .filter(index => index > 0);
+
+        for (const segmentIndex of segmentIndices) {
+          const segment = segmentation.segments[segmentIndex];
+          if (segment?.cachedStats?.namedStats?.bidirectional) {
+            // Run the command to update the bidirectional measurement
+            commandsManager.runCommand('runSegmentBidirectional', {
+              segmentationId,
+              segmentIndex,
+            });
+          }
+        }
+      }
+    },
+    1000
+  );
 
   // When a custom image load is performed, update the relevant viewports
   hangingProtocolService.subscribe(
@@ -278,35 +317,35 @@ export default async function init({
 function initializeWebWorkerProgressHandler(uiNotificationService) {
   const activeToasts = new Map();
 
-  eventTarget.addEventListener(EVENTS.WEB_WORKER_PROGRESS, ({ detail }) => {
-    const { progress, type, id } = detail;
+  // eventTarget.addEventListener(EVENTS.WEB_WORKER_PROGRESS, ({ detail }) => {
+  //   const { progress, type, id } = detail;
 
-    const cacheKey = `${type}-${id}`;
-    if (progress === 0 && !activeToasts.has(cacheKey)) {
-      const progressPromise = new Promise((resolve, reject) => {
-        activeToasts.set(cacheKey, { resolve, reject });
-      });
+  //   const cacheKey = `${type}-${id}`;
+  //   if (progress === 0 && !activeToasts.has(cacheKey)) {
+  //     const progressPromise = new Promise((resolve, reject) => {
+  //       activeToasts.set(cacheKey, { resolve, reject });
+  //     });
 
-      uiNotificationService.show({
-        id: cacheKey,
-        title: `${type}`,
-        message: `${type}: ${progress}%`,
-        autoClose: false,
-        promise: progressPromise,
-        promiseMessages: {
-          loading: `Computing...`,
-          success: `Completed successfully`,
-          error: 'Web Worker failed',
-        },
-      });
-    } else {
-      if (progress === 100) {
-        const { resolve } = activeToasts.get(cacheKey);
-        resolve({ progress, type });
-        activeToasts.delete(cacheKey);
-      }
-    }
-  });
+  //     uiNotificationService.show({
+  //       id: cacheKey,
+  //       title: `${type}`,
+  //       message: `${type}: ${progress}%`,
+  //       autoClose: false,
+  //       promise: progressPromise,
+  //       promiseMessages: {
+  //         loading: `Computing...`,
+  //         success: `Completed successfully`,
+  //         error: 'Web Worker failed',
+  //       },
+  //     });
+  //   } else {
+  //     if (progress === 100) {
+  //       const { resolve } = activeToasts.get(cacheKey);
+  //       resolve({ progress, type });
+  //       activeToasts.delete(cacheKey);
+  //     }
+  //   }
+  // });
 }
 
 /**

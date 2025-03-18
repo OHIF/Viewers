@@ -585,13 +585,21 @@ export default class ToolbarService extends PubSubService {
       });
 
       props.evaluate = args => {
-        const results = evaluators.map(evaluator => evaluator(args));
+        const results = evaluators.map(evaluator => evaluator(args)).filter(Boolean);
+
+        // had at least one disabled button, so we need to disable the button
+        const hasDisabledButton = results?.some(result => result.disabled);
+
         const mergedResult = results.reduce((acc, result) => {
           return {
             ...acc,
             ...result,
           };
         }, {});
+
+        if (hasDisabledButton) {
+          mergedResult.disabled = true;
+        }
 
         return mergedResult;
       };
