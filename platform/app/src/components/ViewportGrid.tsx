@@ -4,11 +4,10 @@ import { Types, MeasurementService } from '@ohif/core';
 import { ViewportGrid, ViewportPane } from '@ohif/ui-next';
 import { useViewportGrid } from '@ohif/ui-next';
 import EmptyViewport from './EmptyViewport';
-import classNames from 'classnames';
 import { useAppConfig } from '@state';
 
 function ViewerViewportGrid(props: withAppTypes) {
-  const { servicesManager, viewportComponents = [], dataSource } = props;
+  const { servicesManager, viewportComponents = [], dataSource, commandsManager } = props;
   const [viewportGrid, viewportGridService] = useViewportGrid();
   const [appConfig] = useAppConfig();
 
@@ -199,9 +198,14 @@ function ViewerViewportGrid(props: withAppTypes) {
           // or zoom level required to display an annotation.  The metadata attribute
           // of the measurement is a viewReference, so use it to show the measurement.
           // Longer term this should clear the view reference data
-          viewReference: measurement.metadata,
           viewportType: measurement.metadata.volumeId ? 'volume' : null,
         };
+
+        commandsManager.run('updateStoredPositionPresentation', {
+          viewportId: viewport.viewportId,
+          displaySetInstanceUID: referencedDisplaySetInstanceUID,
+          referencedImageId: measurement.referencedImageId,
+        });
 
         viewportGridService.setDisplaySetsForViewports(updatedViewports);
       }
@@ -210,7 +214,7 @@ function ViewerViewportGrid(props: withAppTypes) {
     return () => {
       unsubscribe();
     };
-  }, [viewports]);
+  }, [viewports, _getUpdatedViewports]);
 
   const onDropHandler = (viewportId, { displaySetInstanceUID }) => {
     const customOnDropHandler = customizationService.getCustomization('customOnDropHandler');

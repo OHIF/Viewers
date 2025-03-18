@@ -263,14 +263,6 @@ const OHIFCornerstoneViewport = React.memo(
 
         const presentations = getViewportPresentations(viewportId, viewportOptions);
 
-        let measurement;
-        if (cacheJumpToMeasurementEvent?.viewportId === viewportId) {
-          measurement = cacheJumpToMeasurementEvent.measurement;
-          // Delete the position presentation so that viewport navigates direct
-          presentations.positionPresentation = null;
-          cacheJumpToMeasurementEvent = null;
-        }
-
         // Note: This is a hack to get the grid to re-render the OHIFCornerstoneViewport component
         // Used for segmentation hydration right now, since the logic to decide whether
         // a viewport needs to render a segmentation lives inside the CornerstoneViewportService
@@ -288,10 +280,6 @@ const OHIFCornerstoneViewport = React.memo(
           displaySetOptions,
           presentations
         );
-
-        if (measurement) {
-          cs3DTools.annotation.selection.setAnnotationSelected(measurement.uid);
-        }
       };
 
       loadViewportData();
