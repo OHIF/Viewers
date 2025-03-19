@@ -1,11 +1,21 @@
 import React, { useState } from 'react';
-import { Button, PanelSection, ButtonGroup, IconButton } from '@ohif/ui';
-import { Icons, Tooltip, TooltipTrigger, TooltipContent, Numeric, InputNumber } from '@ohif/ui-next';
+import {
+  Tabs,
+  TabsList,
+  TabsTrigger,
+  Button,
+  PanelSection,
+  Icons,
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+  Numeric,
+  InputNumber,
+} from '@ohif/ui-next';
 import { Enums } from '@cornerstonejs/core';
 
-
 // Helper function to safely convert any value to uppercase string
-const toUpperCaseString = (value) => {
+const toUpperCaseString = value => {
   if (value === null || value === undefined) {
     return '';
   }
@@ -75,110 +85,124 @@ const DynamicVolumeControls = ({
 
   return (
     <div className="flex select-none flex-col">
-      <PanelSection
-        title="Controls"
-        childrenClassName="space-y-4 pb-5 px-5"
-      >
-        <div className="mt-2">
-          <Header
-            title="View"
-            tooltip={
-              'Select the view mode, 4D to view the dynamic volume or Computed to view the computed volume'
-            }
-          />
-          <ButtonGroup className="mt-2 w-full">
-            <button
-              className="w-1/2"
-              onClick={() => {
-                setComputedView(false);
-                if (typeof onDynamicClick === 'function') {
+      <PanelSection defaultOpen={true}>
+        <PanelSection.Header>Controls</PanelSection.Header>
+        <PanelSection.Content className="space-y-4 px-5 pb-5">
+          <div className="mt-2">
+            <Header
+              title="View"
+              tooltip={
+                'Select the view mode, 4D to view the dynamic volume or Computed to view the computed volume'
+              }
+            />
+            <Tabs
+              value={computedView ? 'computed' : '4d'}
+              onValueChange={value => {
+                const isComputed = value === 'computed';
+                setComputedView(isComputed);
+                if (!isComputed && typeof onDynamicClick === 'function') {
                   onDynamicClick();
                 }
               }}
+              className="mt-2 w-full"
             >
-              4D
-            </button>
-            <button
-              className="w-1/2"
-              onClick={() => {
-                setComputedView(true);
-              }}
-            >
-              Computed
-            </button>
-          </ButtonGroup>
-        </div>
-        <div>
-          <DimensionGroupControls
-            onPlayPauseChange={onPlayPauseChange}
-            isPlaying={isPlaying}
-            computedView={computedView}
-            // fps
-            fps={fps}
-            onFpsChange={onFpsChange}
-            minFps={minFps}
-            maxFps={maxFps}
-            //
-            numDimensionGroups={numDimensionGroups}
-            onDimensionGroupChange={onDimensionGroupChange}
-            currentDimensionGroupNumber={currentDimensionGroupNumber}
-          />
-        </div>
-        <div className={`mt-6 flex flex-col ${computedView ? '' : 'ohif-disabled'}`}>
-          <Header
-            title="Computed Operation"
-            tooltip={
-              <div>
-                Operation Buttons (SUM, AVERAGE, SUBTRACT): Select the mathematical operation to be
-                applied to the data set.
-                <br /> Range Slider: Choose the numeric range of dimension groups within which the
-                operation will be performed.
-                <br />
-                Generate Button: Execute the chosen operation on the specified range of data.
-              </div>
-            }
-          />
-          <ButtonGroup
-            className="mt-2 w-full"
-            separated={true}
-          >
-            <button
-              className="w-1/2"
-              onClick={() => setComputeViewMode(Enums.DynamicOperatorType.SUM)}
-            >
-              {toUpperCaseString(Enums.DynamicOperatorType.SUM)}
-            </button>
-            <button
-              className="w-1/2"
-              onClick={() => setComputeViewMode(Enums.DynamicOperatorType.AVERAGE)}
-            >
-              {toUpperCaseString(Enums.DynamicOperatorType.AVERAGE)}
-            </button>
-            <button
-              className="w-1/2"
-              onClick={() => setComputeViewMode(Enums.DynamicOperatorType.SUBTRACT)}
-            >
-              {toUpperCaseString(Enums.DynamicOperatorType.SUBTRACT)}
-            </button>
-          </ButtonGroup>
-          <div className="mt-2 w-full">
-            <Numeric.Container
-              mode="doubleRange"
-              min={1}
-              max={numDimensionGroups || 1}
-              values={rangeValues || [1, numDimensionGroups || 1]}
-              onChange={onDoubleRangeChange || (() => {})}
-            >
-              <Numeric.DoubleRange showNumberInputs />
-            </Numeric.Container>
+              <TabsList className="w-full">
+                <TabsTrigger
+                  value="4d"
+                  className="w-1/2"
+                >
+                  4D
+                </TabsTrigger>
+                <TabsTrigger
+                  value="computed"
+                  className="w-1/2"
+                >
+                  Computed
+                </TabsTrigger>
+              </TabsList>
+            </Tabs>
           </div>
-          <Button
-            className="mt-2 !h-[26px] !w-[115px] self-start !p-0"
-            onClick={handleGenerate}
-          >
-            Generate
-          </Button>
-        </div>
+          <div>
+            <DimensionGroupControls
+              onPlayPauseChange={onPlayPauseChange}
+              isPlaying={isPlaying}
+              computedView={computedView}
+              // fps
+              fps={fps}
+              onFpsChange={onFpsChange}
+              minFps={minFps}
+              maxFps={maxFps}
+              //
+              numDimensionGroups={numDimensionGroups}
+              onDimensionGroupChange={onDimensionGroupChange}
+              currentDimensionGroupNumber={currentDimensionGroupNumber}
+            />
+          </div>
+          <div className={`mt-6 flex flex-col ${computedView ? '' : 'ohif-disabled'}`}>
+            <Header
+              title="Computed Operation"
+              tooltip={
+                <div>
+                  Operation Buttons (SUM, AVERAGE, SUBTRACT): Select the mathematical operation to
+                  be applied to the data set.
+                  <br /> Range Slider: Choose the numeric range of dimension groups within which the
+                  operation will be performed.
+                  <br />
+                  Generate Button: Execute the chosen operation on the specified range of data.
+                </div>
+              }
+            />
+            <Tabs
+              value={String(computeViewMode)}
+              onValueChange={value => {
+                setComputeViewMode(value);
+              }}
+              className="mt-2 w-full"
+            >
+              <TabsList className="w-full gap-1">
+                {' '}
+                {/* Added gap for separation */}
+                <TabsTrigger
+                  value={String(Enums.DynamicOperatorType.SUM)}
+                  className="w-1/3"
+                >
+                  {toUpperCaseString(Enums.DynamicOperatorType.SUM)}
+                </TabsTrigger>
+                <TabsTrigger
+                  value={String(Enums.DynamicOperatorType.AVERAGE)}
+                  className="w-1/3"
+                >
+                  {toUpperCaseString(Enums.DynamicOperatorType.AVERAGE)}
+                </TabsTrigger>
+                <TabsTrigger
+                  value={String(Enums.DynamicOperatorType.SUBTRACT)}
+                  className="w-1/3"
+                >
+                  {toUpperCaseString(Enums.DynamicOperatorType.SUBTRACT)}
+                </TabsTrigger>
+              </TabsList>
+            </Tabs>
+            <div className="mt-2 w-full">
+              <Numeric.Container
+                mode="doubleRange"
+                min={1}
+                max={numDimensionGroups || 1}
+                values={rangeValues || [1, numDimensionGroups || 1]}
+                onChange={onDoubleRangeChange || (() => {})}
+              >
+                <Numeric.DoubleRange showNumberInputs />
+              </Numeric.Container>
+            </div>
+            <Button
+              variant="default"
+              size="sm"
+              className="mt-2 h-[26px] w-[115px] self-start p-0"
+              onClick={handleGenerate}
+            >
+              Generate
+            </Button>
+          </div>
+        </PanelSection.Content>
       </PanelSection>
     </div>
   );
@@ -214,8 +238,10 @@ function DimensionGroupControls({
         }
       />
       <div className="mt-3 flex justify-between">
-        <IconButton
+        <Button
           id="play-pause-button"
+          variant="secondary"
+          size="icon"
           className="bg-customblue-30 h-[26px] w-[58px] rounded-[4px]"
           onClick={() => {
             if (typeof onPlayPauseChange === 'function') {
@@ -225,9 +251,9 @@ function DimensionGroupControls({
         >
           <Icons.ByName
             name={getPlayPauseIconName()}
-            className="active:text-primary-light hover:bg-customblue-300 h-[24px] w-[24px] cursor-pointer text-white"
+            className="h-[24px] w-[24px] text-white"
           />
-        </IconButton>
+        </Button>
         <InputNumber
           value={currentDimensionGroupNumber || 1}
           onChange={onDimensionGroupChange || (() => {})}
