@@ -228,7 +228,7 @@ const InputNumberInput = React.forwardRef<HTMLInputElement, InputNumberInputProp
         onBlur={handleBlur}
         disabled={disabled}
         className={cn(
-          'appearance-none border-none p-0 text-center shadow-none focus:border-none focus:outline-none',
+          'h-6 appearance-none border-none p-0 text-center shadow-none focus:border-none focus:outline-none',
           className
         )}
         {...props}
@@ -287,7 +287,7 @@ const InputNumberHorizontalControls = React.forwardRef<
         size="icon"
         onClick={decrement}
         disabled={disabled}
-        className="text-primary h-7 w-4 cursor-pointer p-0"
+        className="text-primary h-6 w-4 cursor-pointer p-0"
       >
         <ChevronLeft className="h-4 w-4" />
       </Button>
@@ -299,7 +299,7 @@ const InputNumberHorizontalControls = React.forwardRef<
         size="icon"
         onClick={increment}
         disabled={disabled}
-        className="text-primary-active h-7 w-4 cursor-pointer p-0"
+        className="text-primary h-6 w-4 cursor-pointer p-0"
       >
         <ChevronRight className="h-4 w-4" />
       </Button>
@@ -329,7 +329,7 @@ const InputNumberVerticalControls = React.forwardRef<
         size="icon"
         onClick={increment}
         disabled={disabled}
-        className="h-3 w-3 p-0 text-[#726f7e]"
+        className="text-primary h-3 w-3 p-0"
       >
         <ChevronUp className="h-2 w-2" />
       </Button>
@@ -338,7 +338,7 @@ const InputNumberVerticalControls = React.forwardRef<
         size="icon"
         onClick={decrement}
         disabled={disabled}
-        className="h-3 w-3 p-0 text-[#726f7e]"
+        className="text-primary h-3 w-3 p-0"
       >
         <ChevronDown className="h-2 w-2" />
       </Button>
@@ -362,7 +362,7 @@ const InputNumberContainer = React.forwardRef<HTMLDivElement, InputNumberContain
       <div
         ref={ref}
         className={cn(
-          'bg-primary-dark border-secondary-light flex items-center rounded-[4px] border',
+          'bg-background border-input flex items-center rounded-md border',
           sizeToUse,
           className
         )}
