@@ -12,7 +12,7 @@ export function updateAuthServiceAndCleanUrl(
   if (!token) {
     return;
   }
-
+  console.log('updateAuthServiceAndCleanUrl');
   // if a token is passed in, set the userAuthenticationService to use it
   // for the Authorization header for all requests
   userAuthenticationService.setServiceImplementation({

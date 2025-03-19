@@ -95,7 +95,7 @@ function LoginComponent(userManager) {
 
 function OpenIdConnectRoutes({ oidc, routerBasename, userAuthenticationService }) {
   const userManager = initUserManager(oidc, routerBasename);
-
+  console.log('OpenIdConnectRoutes');
   const getAuthorizationHeader = () => {
     const user = userAuthenticationService.getUser();
 

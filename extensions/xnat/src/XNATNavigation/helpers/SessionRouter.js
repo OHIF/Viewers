@@ -20,75 +20,136 @@ export default class SessionRouter {
     
     // Set the root URL to the current origin
     sessionMap.xnatRootUrl = window.location.origin + '/';
+    
+    // Store reference to DicomMetadataStore from import
+    this.dicomMetadataStore = DicomMetadataStore;
   }
 
   go() {
-    console.log('SessionRouter.go() called with params:', {
-      projectId: this.projectId,
-      subjectId: this.subjectId,
-      experimentId: this.experimentId
+    // Ensure we have valid strings for our parameters
+    const projectId = this.projectId ? String(this.projectId) : '';
+    const experimentId = this.experimentId ? String(this.experimentId) : '';
+    const subjectId = this.subjectId ? String(this.subjectId) : '';
+    
+    console.log('SessionRouter.go() called with validated params:', {
+      projectId,
+      subjectId,
+      experimentId
     });
+    
+    // Store these in sessionStorage for recovery if needed
+    try {
+      sessionStorage.setItem('xnat_projectId', projectId);
+      sessionStorage.setItem('xnat_experimentId', experimentId);
+      sessionStorage.setItem('xnat_subjectId', subjectId);
+      console.log('Stored XNAT session parameters in sessionStorage');
+    } catch (e) {
+      console.warn('Failed to store XNAT parameters in sessionStorage:', e);
+    }
+
+    if (!projectId || !experimentId) {
+      console.error('Missing required parameters for SessionRouter');
+      return Promise.reject(new Error('Missing required projectId or experimentId parameters'));
+    }
 
     try {
-      const url = `/data/projects/${this.projectId}/experiments/${this.experimentId}?format=json`;
+      const url = `/data/projects/${projectId}/experiments/${experimentId}?format=json`;
       console.log('SessionRouter fetching session data from:', url);
       
-      // Fetch the experiment data from XNAT API
-      return fetch(url)
+      // Fetch the experiment data from XNAT API with less specific Accept header
+      return fetch(url, {
+        credentials: 'include', // Ensure cookies are sent
+        headers: {
+          // Use a more permissive Accept header that the server will accept
+          'Accept': '*/*'
+        }
+      })
         .then(response => {
           if (!response.ok) {
             throw new Error(`XNAT API request failed: ${response.status} ${response.statusText}`);
           }
           return response.json();
         })
-        .then(async data => {
+        .then(data => {
           console.log('SessionRouter: Received data from XNAT API', data);
-
-          // Extract study instance UID from the response
-          let studyInstanceUID = null;
-          if (data && data.items && data.items[0] && data.items[0].data_fields) {
-            // Try multiple possible field names
-            studyInstanceUID = data.items[0].data_fields.studyInstanceUID || 
-                              data.items[0].data_fields.UID ||
-                              data.items[0].data_fields.study_uid;
-            
-            // If still not found, try to look in study_id or ID fields
-            if (!studyInstanceUID) {
-              studyInstanceUID = data.items[0].data_fields.study_id || 
-                                data.items[0].data_fields.ID;
-            }
-            
-            console.log('SessionRouter: Extracted studyInstanceUID:', studyInstanceUID);
+          
+          // Extract study instance UID from the data
+          if (!data || !data.items || !data.items[0] || !data.items[0].data_fields) {
+            throw new Error('Invalid session data structure from XNAT API');
           }
-
+          
+          const sessionData = data.items[0].data_fields;
+          const studyInstanceUID = sessionData.UID;
+          
           if (!studyInstanceUID) {
-            throw new Error('No StudyInstanceUID found in XNAT response');
-          }
-
-          // Add study to DicomMetadataStore using OHIF v3 API
-          if (!DicomMetadataStore.getStudy(studyInstanceUID)) {
-            DicomMetadataStore.addStudy({ StudyInstanceUID: studyInstanceUID });
+            throw new Error('Study Instance UID not found in session data');
           }
           
-          console.log('SessionRouter: Added study to DicomMetadataStore:', studyInstanceUID);
+          console.log('SessionRouter: Extracted studyInstanceUID:', studyInstanceUID);
           
-          // Set up the DICOM web data source
+          // Store the studyInstanceUID in sessionStorage for recovery
           try {
-            await this._setupDicomWebDataSource(studyInstanceUID);
-          } catch (error) {
-            console.error('Failed to set up DICOM web data source:', error);
-            // Continue even if this fails, since we at least have the study UID
+            sessionStorage.setItem('xnat_studyInstanceUID', studyInstanceUID);
+            console.log('Stored studyInstanceUID in sessionStorage');
+          } catch (e) {
+            console.warn('Failed to store studyInstanceUID in sessionStorage:', e);
           }
           
-          // Return the study instance UID for other components to use
-          return [studyInstanceUID];
+          // Add the study to DicomMetadataStore if needed
+          const DicomMetadataStore = this.dicomMetadataStore || window.DicomMetadataStore;
+          if (DicomMetadataStore) {
+            try {
+              // Check if study already exists in store
+              const existingStudy = DicomMetadataStore.getStudy(studyInstanceUID);
+              if (!existingStudy) {
+                // Create a minimal study entry that will be populated later
+                DicomMetadataStore.addStudy({
+                  StudyInstanceUID: studyInstanceUID,
+                  PatientID: sessionData.subject_ID || subjectId,
+                  PatientName: sessionData.dcmPatientName || subjectId,
+                  StudyDate: sessionData.date || '',
+                  StudyTime: '',
+                  AccessionNumber: experimentId,
+                  StudyID: sessionData.study_id || experimentId,
+                  StudyDescription: sessionData.label || '',
+                  NumInstances: 0 // Will be updated when series are loaded
+                });
+                console.log('SessionRouter: Added study to DicomMetadataStore:', studyInstanceUID);
+              }
+            } catch (e) {
+              console.warn('Error adding study to DicomMetadataStore:', e);
+            }
+          }
+          
+          // Set up DICOM web data source for this study
+          this._setupDicomWebDataSource(studyInstanceUID);
+          
+          // Dispatch a custom event to notify that XNAT session is ready
+          // This helps coordinate the data source and router
+          try {
+            const event = new CustomEvent('xnatSessionReady', {
+              detail: {
+                projectId,
+                experimentId,
+                subjectId,
+                studyInstanceUID
+              }
+            });
+            window.dispatchEvent(event);
+            console.log('Dispatched xnatSessionReady event');
+          } catch (e) {
+            console.warn('Failed to dispatch xnatSessionReady event:', e);
+          }
+          
+          // Return the study instance UID
+          return studyInstanceUID;
         })
         .catch(error => {
-          console.error('Error in sessionRouter.go():', error);
+          console.error('SessionRouter fetch error:', error);
           throw error;
         });
     } catch (error) {
-      console.error('SessionRouter.go() failed:', error);
+      console.error('SessionRouter setup error:', error);
       return Promise.reject(error);
     }
   }
@@ -112,9 +173,10 @@ export default class SessionRouter {
     // });
 
     fetchJSON(
-      `/data/projects/${this.projectId}/experiments/${this.experimentId}`
+      `/xapi/viewer/projects/${this.projectId}/experiments/${this.experimentId}`
     )
       .promise.then(result => {
+        console.log('SessionRouter: Generated session metadata:', result);
         if (result) {
           this._loadRoute();
         } else {
@@ -126,7 +188,7 @@ export default class SessionRouter {
 
   _loadRoute() {
     let params = `?subjectId=${this.subjectId}&projectId=${this.projectId}&experimentId=${this.experimentId}&experimentLabel=${this.experimentLabel}`;
-
+    console.log('SessionRouter: Loading route with params:', params);
     if (this.parentProjectId !== this.projectId) {
       //Shared Project
       params += `&parentProjectId=${this.parentProjectId}`;
@@ -147,51 +209,130 @@ export default class SessionRouter {
   }
 
   async _setupDicomWebDataSource(studyInstanceUID) {
-    // URL for the DICOM web service through XNAT - FIXED PATH to match Java controller
-    const wadoRoot = `/xapi/viewerDicomweb/aets/${this.projectId}/${this.experimentId}/rs`;
+    // Use the direct path to the XNAT experiments viewer endpoint instead of DICOMweb
+    const basePath = `/xapi/viewer/projects/${this.projectId}/experiments/${this.experimentId}`;
     
-    console.log('Setting up DICOM Web data source with wadoRoot:', wadoRoot);
+    console.log('Setting up XNAT data source with basePath:', basePath);
     
     // Configure the server details
     const server = {
-      wadoRoot,
-      qidoRoot: wadoRoot,
-      wadoUri: wadoRoot,
-      enableStudyLazyLoad: false,
-      imageRendering: 'wadors',
-      thumbnailRendering: 'wadors',
+      name: `XNAT Server - ${this.projectId}/${this.experimentId}`,
+      wadoRoot: basePath,
+      qidoRoot: basePath,
+      wadoUri: basePath,
+      enableStudyLazyLoad: true,
+      imageRendering: 'wadouri',
+      thumbnailRendering: 'wadouri',
       supportsFuzzyMatching: false,
-      supportsWildcard: true,
+      supportsWildcard: false,
+      staticWado: true,
+      singlepart: 'bulkdata,video',
+      omitQuotationForMultipartRequest: true,
+      // Set up a direct DICOM file handler
+      dicomFileLoadSettings: {
+        directAccessEnabled: true, // Enable direct file access
+        acceptHeader: 'application/octet-stream',  // Use correct mime type for DICOM files
+        useRangeRequests: false // Don't use range requests for simple DICOM files
+      },
+      // Add headers for XNAT authentication
+      requestOptions: {
+        // Pass the JSESSIONID cookie to maintain session
+        withCredentials: true,
+        // Add custom headers if needed
+        headers: {
+          Accept: 'application/json,application/octet-stream',
+        },
+      }
     };
-
+    
+    console.log('SessionRouter: Server configuration:', server);
+    
     try {
-      // In OHIF v3, we need to use DICOMWeb data source's retrieve methods
-      // to load the metadata and images
-      const study = DicomMetadataStore.getStudy(studyInstanceUID);
+      // Use multiple ways to get DicomMetadataStore
+      const metadataStore = this.dicomMetadataStore || 
+                           window.DicomMetadataStore ||
+                           (window.OHIF && window.OHIF.DicomMetadataStore);
       
-      if (study) {
-        // Add server information to the study
-        study.wadoRoot = wadoRoot;
-        study.qidoRoot = wadoRoot;
-        study.wadoUri = wadoRoot;
-        study.server = server;
-        
-        console.log('DICOM web server info added to study:', studyInstanceUID);
+      if (!metadataStore) {
+        console.error('DicomMetadataStore is not available - storing configuration without study registration');
       } else {
-        console.warn('Could not find study to attach DICOM web info:', studyInstanceUID);
+        console.log('DicomMetadataStore found, registering study:', studyInstanceUID);
+        
+        try {
+          // Check if study already exists
+          let study = metadataStore.getStudy(studyInstanceUID);
+          
+          if (!study) {
+            // Create minimal study entry
+            metadataStore.addStudy({
+              StudyInstanceUID: studyInstanceUID,
+              PatientID: this.subjectId,
+              PatientName: this.subjectId,
+              AccessionNumber: this.experimentId,
+              StudyID: this.experimentId,
+              StudyDescription: this.experimentLabel || this.experimentId,
+              NumInstances: 0,
+              // Add server details directly in the study object
+              wadoRoot: basePath,
+              qidoRoot: basePath,
+              wadoUri: basePath,
+              server
+            });
+            
+            console.log('Study added to DicomMetadataStore');
+          } else {
+            // Study exists, update server details
+            study.wadoRoot = basePath;
+            study.qidoRoot = basePath;
+            study.wadoUri = basePath;
+            study.server = server;
+            
+            console.log('Updated existing study in DicomMetadataStore');
+          }
+        } catch (e) {
+          console.error('Error updating DicomMetadataStore:', e);
+        }
       }
       
-      // Store server configuration in sessionMap for other components to use
-      sessionMap.servers = sessionMap.servers || [];
-      sessionMap.servers.push({
-        studyInstanceUID,
-        server
-      });
+      // Store in global objects for extensions to use
+      if (!window.OHIF) {
+        window.OHIF = {};
+      }
       
-      console.log('DICOM web server configuration stored in sessionMap');
+      if (!window.OHIF.servers) {
+        window.OHIF.servers = {};
+      }
+      
+      // Make sure it's an object
+      if (typeof window.OHIF?.servers !== 'object') {
+        window.OHIF.servers = {};
+      }
+      
+      window.OHIF.servers.dicomWeb = [server];
+      
+      // Configure the data source path for the configured mode
+      try {
+        if (window.config && window.config.dataSources && window.config.dataSources.length > 0) {
+          // Find the xnat data source
+          const xnatDataSource = window.config.dataSources.find(ds => ds.sourceName === 'xnat');
+          if (xnatDataSource && xnatDataSource.configuration) {
+            // Directly update the paths
+            xnatDataSource.configuration.wadoUriRoot = basePath;
+            xnatDataSource.configuration.qidoRoot = basePath;
+            xnatDataSource.configuration.wadoRoot = basePath;
+            console.log('Updated xnat data source configuration with paths:', basePath);
+          }
+        }
+      } catch (e) {
+        console.error('Error updating data source configuration:', e);
+      }
+      
+      console.log('DICOM web server configuration stored in global objects');
+      
     } catch (error) {
-      console.error('Failed to set up DICOM web data source:', error);
-      throw error;
+      console.error('Error setting up DICOM web data source:', error);
     }
+    
+    return studyInstanceUID;
   }
 }

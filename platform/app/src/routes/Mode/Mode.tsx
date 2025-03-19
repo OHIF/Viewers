@@ -11,6 +11,7 @@ import { history } from '../../utils/history';
 import loadModules from '../../pluginImports';
 import { defaultRouteInit } from './defaultRouteInit';
 import { updateAuthServiceAndCleanUrl } from './updateAuthServiceAndCleanUrl';
+import SessionRouter from '@ohif/extension-xnat/src/XNATNavigation/helpers/SessionRouter.js';
 
 const { getSplitParam } = utils;
 
@@ -126,34 +127,71 @@ export default function ModeRoute({
     }
 
     // Todo: this should not be here, data source should not care about params
-    const initializeDataSource = async (params, query) => {
-      console.log('Initializing data source with params:', params, 'query:', query);
-      await dataSource.initialize({
-        params,
-        query,
-      });
-      
-      const studyUIDs = dataSource.getStudyInstanceUIDs({ params, query });
-      console.log('Data source returned study UIDs:', studyUIDs);
-      
-      // If we don't have valid study UIDs from the data source but we have a session router,
-      // try to get them from there
-      if ((!studyUIDs || studyUIDs.length === 0 || studyUIDs[0] === undefined) && 
-          servicesManager.services.sessionRouter) {
-        console.log('Getting study UIDs from session router instead');
-        try {
-          const routerUIDs = await servicesManager.services.sessionRouter.go();
-          console.log('Session router returned UIDs:', routerUIDs);
-          setStudyInstanceUIDs(routerUIDs);
-        } catch (error) {
-          console.error('Failed to get study UIDs from session router:', error);
+    // Add or update the initializeDataSource function in XNATModeInit.js (around line 100)
+    const initializeDataSource = async ({
+      servicesManager,
+      extensionManager,
+    }) => {
+      try {
+        // Extract URL parameters
+        const params = new URLSearchParams(window.location.search);
+        const projectId = params.get('projectId') || '';
+        const experimentId = params.get('experimentId') || '';
+        const subjectId = params.get('subjectId') || '';
+        const experimentLabel = params.get('experimentLabel') || '';
+
+        console.log('Initializing data source with params:', {
+          projectId,
+          experimentId,
+          subjectId,
+          experimentLabel
+        });
+
+        // Create and use SessionRouter properly with string parameters
+        if (projectId && experimentId) {
+          const sessionRouter = new SessionRouter(
+            projectId,
+            projectId,
+            subjectId,
+            experimentId,
+            experimentLabel
+          );
+
+          try {
+            // Call go() and wait for the result
+            const studyInstanceUID = await sessionRouter.go();
+            console.log('SessionRouter returned study UID:', studyInstanceUID);
+
+            if (studyInstanceUID) {
+              // Force update the studyInstanceUIDs state
+              setStudyInstanceUIDs([studyInstanceUID]);
+              return [studyInstanceUID];
+            }
+          } catch (routerError) {
+            console.error('Failed to get study UIDs from session router:', routerError);
+          }
+        } else {
+          console.warn('Missing required projectId or experimentId parameters in URL');
         }
-      } else {
-        setStudyInstanceUIDs(studyUIDs);
+
+        return [];
+      } catch (error) {
+        console.error('Error in initializeDataSource:', error);
+        return [];
       }
     };
 
-    initializeDataSource(params, query);
+    // Ensure we pass the right parameters to initializeDataSource
+    initializeDataSource({
+      servicesManager,
+      extensionManager,
+    }).then(async (studyInstanceUIDs) => {
+      if (isMounted.current) {
+        setStudyInstanceUIDs(studyInstanceUIDs);
+        setExtensionDependenciesLoaded(true);
+      }
+    });
+
     return () => {
       layoutTemplateData.current = null;
     };
@@ -248,8 +286,8 @@ export default function ModeRoute({
       const stageIndex = Array.isArray(hangingProtocolIdToUse)
         ? -1
         : hangingProtocolService.getStageIndex(hangingProtocolIdToUse, {
-            stageId: runTimeStageId || undefined,
-          });
+          stageId: runTimeStageId || undefined,
+        });
       // Ensure that the stage index is never negative
       // If stageIndex is negative (e.g., if stage wasn't found), use 0 as the default
       const stageIndexToUse = Math.max(0, stageIndex);
@@ -378,7 +416,7 @@ export default function ModeRoute({
       ExtensionDependenciesLoaded,
       layoutTemplateData: !!layoutTemplateData.current
     });
-    
+
     if (!layoutTemplateData.current || !ExtensionDependenciesLoaded || !studyInstanceUIDs?.length) {
       console.log('Mode effect early return due to:', {
         hasLayoutTemplate: !!layoutTemplateData.current,
@@ -388,7 +426,7 @@ export default function ModeRoute({
       });
       return;
     }
-    
+
     // Rest of the effect code...
   }, [studyInstanceUIDs, ExtensionDependenciesLoaded]);
 

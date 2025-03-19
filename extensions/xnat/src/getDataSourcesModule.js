@@ -6,21 +6,23 @@ import { createDicomWebApi } from './DicomWebDataSource/index';
 import { createDicomJSONApi } from './DicomJSONDataSource/index';
 import { createDicomLocalApi } from './DicomLocalDataSource/index';
 import { createDicomWebProxyApi } from './DicomWebProxyDataSource/index';
+import { createXNATApi } from './XNATDataSource/index';
 
 /**
- *
+ * Data sources module that creates and registers the available data sources for OHIF
+ * with the data source manager.
  */
 function getDataSourcesModule() {
   return [
     {
-      name: 'xnat',  // This matches the sourceName in config
+      name: 'xnat',  // Primary data source name
       type: 'webApi',
-      createDataSource: createDicomWebApi,
+      createDataSource: createXNATApi,
     },
     {
-      name: 'dicomweb',
+      name: 'dicomweb',  // Alias for backward compatibility with modes expecting dicomweb
       type: 'webApi',
-      createDataSource: createDicomWebApi,
+      createDataSource: createXNATApi, // Use the XNAT data source for dicomweb too
     },
     {
       name: 'dicomwebproxy',

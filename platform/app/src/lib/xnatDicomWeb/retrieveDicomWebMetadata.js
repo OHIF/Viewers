@@ -7,7 +7,7 @@ const retrieveDicomWebMetadata = async (
   rootUrl,
   dicomWebParameters
 ) => {
-  const dwUrlRoot = `${rootUrl}xapi/aets`;
+  const dwUrlRoot = `${rootUrl}xapi/viewerDicomweb/aets`;
   const dicomWebStudies = [];
 
   for (const params of dicomWebParameters) {

@@ -19,11 +19,13 @@ import { useUIStateStore } from './stores/useUIStateStore';
 import { useDisplaySetSelectorStore } from './stores/useDisplaySetSelectorStore';
 import { useHangingProtocolStageIndexStore } from './stores/useHangingProtocolStageIndexStore';
 import { useToggleHangingProtocolStore } from './stores/useToggleHangingProtocolStore';
+import ViewportGrid from '@ohif/ui/src/components/ViewportGrid';
+
 const xnatExtension: Types.Extensions.Extension = {
   /**
    * Only required property. Should be a unique value across all extensions.
    */
-  id,
+  id: '@ohif/extension-xnat',
   preRegistration,
   onModeExit() {
     useViewportGridStore.getState().clearViewportGridState();
@@ -35,7 +37,6 @@ const xnatExtension: Types.Extensions.Extension = {
   },
   getDataSourcesModule,
   getViewportModule,
-  getLayoutTemplateModule,
   getPanelModule,
   getHangingProtocolModule,
   getToolbarModule,
@@ -52,6 +53,16 @@ const xnatExtension: Types.Extensions.Extension = {
   },
 
   getCustomizationModule,
+
+  getLayoutTemplateModule() {
+    return [
+      {
+        id: 'xnat-basic-layout',
+        name: 'XNAT Basic Viewport',
+        component: ViewportGrid
+      }
+    ];
+  }
 };
 
 export { isLoggedIn, xnatAuthenticate } from './utils/xnatDev.js';

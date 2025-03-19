@@ -71,7 +71,6 @@ const extensionDependencies = {
 };
 
 function modeFactory({ modeConfiguration }) {
-  
   return {
     id,
     routeName: '',
@@ -93,7 +92,7 @@ function modeFactory({ modeConfiguration }) {
           console.log('XNAT Mode Init - Creating session router');
           const sessionRouter = new SessionRouter(
             projectId,
-            parentProjectId,
+            parentProjectId || projectId,
             subjectId,
             experimentId,
             experimentLabel
@@ -102,6 +101,18 @@ function modeFactory({ modeConfiguration }) {
           // Store the router instance in the services manager
           servicesManager.services.sessionRouter = sessionRouter;
           console.log('XNAT Mode Init - Session router created successfully');
+          
+          // Set up the layout right away since we know we'll need it
+          const layoutService = servicesManager.services.layoutService;
+          if (layoutService) {
+            console.log('XNAT Mode Init - Setting up initial layout');
+            // Use a standard viewport layout
+            layoutService.setLayout({
+              numRows: 1,
+              numCols: 1,
+              layoutType: 'grid',
+            });
+          }
         } catch (error) {
           console.error('XNAT Mode Init - Error creating session router:', error);
         }
@@ -178,25 +189,8 @@ function modeFactory({ modeConfiguration }) {
      */
     routes: [
       {
-        path: '/',
-        init: ({ servicesManager, extensionManager }) => {
-          console.log('XNAT route init starting...');
-          const { sessionRouter } = servicesManager.services;
-          
-          // If we have a session router, check JSON and load route
-          if (sessionRouter) {
-            console.log('XNAT route init: calling sessionRouter.go()');
-            sessionRouter.go();
-            console.log('XNAT route init: sessionRouter.go() completed');
-          } else {
-            console.warn('XNAT route init: No session router found!');
-          }
-          
-          console.log('XNAT route init finished');
-          return Promise.resolve();
-        },
-        layoutTemplate: ({ location, servicesManager }) => {
-          console.log('XNAT layout template called:', { location });
+        path: '',
+        layoutTemplate: () => {
           return {
             id: ohif.layout,
             props: {
@@ -239,17 +233,76 @@ function modeFactory({ modeConfiguration }) {
             },
           };
         },
-        component: XNATStandaloneRouting,
+        init: async ({ servicesManager, extensionManager, studyInstanceUIDs }) => {
+          const layoutService = servicesManager.services.layoutService;
+          
+          // Get the study UIDs from the session router if available
+          if (!studyInstanceUIDs || studyInstanceUIDs.length === 0) {
+            console.log('Route init - No study UIDs provided, checking session router');
+            const sessionRouter = servicesManager.services.sessionRouter;
+            
+            if (sessionRouter) {
+              try {
+                // Make sure to await the result
+                const studyUID = await sessionRouter.go();
+                
+                if (studyUID) {
+                  console.log('Route init - Got study UID from session router:', studyUID);
+                  studyInstanceUIDs = [studyUID];
+                  
+                  // Explicitly update the data source
+                  const dataSource = extensionManager.getActiveDataSource();
+                  if (dataSource) {
+                    console.log('Route init - Setting up data source with study:', studyUID);
+                    
+                    // Make sure viewports are ready for the study
+                    if (layoutService) {
+                      layoutService.setViewportsForStudies(studyInstanceUIDs);
+                    }
+                    
+                    // Tell OHIF to show the default hanging protocol for this study
+                    const hangingProtocolService = servicesManager.services.hangingProtocolService;
+                    if (hangingProtocolService) {
+                      console.log('Route init - Applying hanging protocol for study');
+                      hangingProtocolService.run({ studyInstanceUIDs });
+                    }
+                  }
+                }
+              } catch (error) {
+                console.error('Route init - Error getting study from session router:', error);
+              }
+            }
+          }
+          
+          // Return the study UIDs - this ensures they propagate to the rest of the app
+          return studyInstanceUIDs;
+        },
       },
     ],
     /** List of extensions that are used by the mode */
     extensions: extensionDependencies,
     /** HangingProtocol used by the mode */
-    // hangingProtocol: [''],
+    hangingProtocol: ['default'],
     /** SopClassHandlers used by the mode */
-    sopClassHandlers: [ohif.sopClassHandler],
-    /** hotkeys for mode */
+    sopClassHandlers: [
+      dicomvideo.sopClassHandler,
+      dicomSeg.sopClassHandler,
+      dicomPmap.sopClassHandler,
+      ohif.sopClassHandler,
+      ohif.wsiSopClassHandler,
+      dicompdf.sopClassHandler,
+      dicomsr.sopClassHandler3D,
+      dicomsr.sopClassHandler,
+      dicomRT.sopClassHandler,
+    ],    /** hotkeys for mode */
     hotkeys: [...hotkeys.defaults.hotkeyBindings],
+    dataSourcesConfig: {
+      xnat: {
+        friendlyName: 'XNAT Viewer',
+        isValidStudyUID: true, 
+        isValidationRequired: false,
+      }
+    },
   };
 }
 

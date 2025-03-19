@@ -98,7 +98,6 @@ const createRoutes = ({
       commandsManager,
       hotkeysManager,
     }) || [];
-  console.log('routes', routes);
   const { customizationService } = servicesManager.services;
 
   const WorkListRoute = {
@@ -107,7 +106,7 @@ const createRoutes = ({
     private: true,
     props: { children: WorkList, servicesManager, extensionManager },
   };
-
+  console.log('Worklist route', WorkListRoute);
   const customRoutes = customizationService.getCustomization('routes.customRoutes');
 
   const allRoutes = [

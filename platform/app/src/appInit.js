@@ -99,7 +99,6 @@ async function appInit(appConfigOrFunc, defaultExtensions, defaultModes) {
   }
 
   const loadedModes = await loadModules([...(appConfig.modes || []), ...defaultModes]);
-  console.log('Loaded modes', { loadedModes });
 
   // Add debugging for each mode's routes
   loadedModes.forEach(mode => {

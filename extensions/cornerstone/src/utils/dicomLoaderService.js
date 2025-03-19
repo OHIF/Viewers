@@ -45,6 +45,7 @@ const getImageInstanceId = imageInstance => {
 };
 
 const fetchIt = (url, headers = DICOMWeb.getAuthorizationHeader()) => {
+  console.log('fetchIt');
   return fetch(url, headers).then(response => response.arrayBuffer());
 };
 
@@ -62,6 +63,7 @@ const wadorsRetriever = (
   headers = DICOMWeb.getAuthorizationHeader(),
   errorInterceptor = errorHandler.getHTTPErrorHandler()
 ) => {
+  console.log('wadorsRetriever');
   const config = {
     url,
     headers,

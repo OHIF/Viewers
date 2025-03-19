@@ -95,26 +95,62 @@ export async function defaultRouteInit(
 
   log.time(Enums.TimingEnum.STUDY_TO_DISPLAY_SETS);
   log.time(Enums.TimingEnum.STUDY_TO_FIRST_IMAGE);
-
-  const allRetrieves = studyInstanceUIDs.map(StudyInstanceUID => {
-    console.log(`Initiating retrieval for study: ${StudyInstanceUID}`);
-    const retrievePromise = dataSource.retrieve.series.metadata({
+  const allRetrieves = studyInstanceUIDs.map(StudyInstanceUID =>
+    dataSource.retrieve.series.metadata({
       StudyInstanceUID,
       filters,
       returnPromises: true,
       sortCriteria: customizationService.getCustomization('sortingCriteria'),
-    });
+    })
+  );
+  // const allRetrieves = studyInstanceUIDs.map(StudyInstanceUID => {
+  //   console.log(`Initiating retrieval for study: ${StudyInstanceUID}`);
     
-    // Add a handler to track when retrieval starts
-    retrievePromise.then(result => {
-      console.log(`Retrieval for study ${StudyInstanceUID} succeeded:`, {
-        resultType: Array.isArray(result) ? 'array' : typeof result,
-        length: Array.isArray(result) ? result.length : 'n/a'
-      });
-    });
+  //   // Get the server configuration from DicomMetadataStore if available
+  //   const studies = DicomMetadataStore.getStudies();
+  //   const study = studies.find(s => s.StudyInstanceUID === StudyInstanceUID);
     
-    return retrievePromise;
-  });
+  //   // Create a safe retrieval request with required configuration
+  //   const retrieveParams = {
+  //     StudyInstanceUID,
+  //     filters,
+  //     returnPromises: true,
+  //     sortCriteria: customizationService.getCustomization('sortingCriteria'),
+  //   };
+    
+  //   // Add server info from study if available (for XNAT DICOMweb)
+  //   if (study && study.wadoRoot) {
+  //     console.log(`Using stored server config for study ${StudyInstanceUID}`);
+  //     retrieveParams.server = {
+  //       qidoRoot: study.wadoRoot,
+  //       wadoRoot: study.wadoRoot,
+  //       wadoUriRoot: study.wadoRoot,
+  //       enableStudyLazyLoad: false,
+  //       supportsFuzzyMatching: false,
+  //       supportsWildcard: true,
+  //     };
+  //   } else {
+  //     console.log(`No stored server config found for study ${StudyInstanceUID}, using defaults`);
+  //     // Fallback configuration
+  //     retrieveParams.server = {
+  //       enableStudyLazyLoad: false,
+  //       supportsFuzzyMatching: false,
+  //       supportsWildcard: true,
+  //     };
+  //   }
+    
+  //   const retrievePromise = dataSource.retrieve.series.metadata(retrieveParams);
+    
+  //   // Add a handler to track when retrieval starts
+  //   retrievePromise.then(result => {
+  //     console.log(`Retrieval for study ${StudyInstanceUID} succeeded:`, {
+  //       resultType: Array.isArray(result) ? 'array' : typeof result,
+  //       length: Array.isArray(result) ? result.length : 'n/a'
+  //     });
+  //   });
+    
+  //   return retrievePromise;
+  // });
 
   // log the error if this fails, otherwise it's so difficult to tell what went wrong...
   allRetrieves.forEach(retrieve => {
