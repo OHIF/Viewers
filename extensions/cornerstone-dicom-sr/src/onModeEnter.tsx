@@ -17,27 +17,8 @@ export default function onModeEnter({ servicesManager }) {
     ds.isHydrated = false;
   });
 
-  const defaultButtons = [
-    {
-      // A base/default button for loading measurements. It is added to the toolbar below.
-      // Customizations to this button can be made in the mode or by another extension.
-      // For example, the button label can be changed and/or the command to clear
-      // the measurements can be dropped.
-      id: 'loadSRMeasurements',
-      component: props => (
-        <ViewportActionButton {...props}>{i18n.t('Common:LOAD')}</ViewportActionButton>
-      ),
-      props: {
-        commands: ['clearMeasurements', 'loadSRMeasurements'],
-      },
-    },
-  ];
-
-  const customButtons = customizationService.getCustomization(
-    'cornerstone-dicom-sr.viewportButtons'
-  )?.buttons;
-
-  const buttons = customButtons ?? defaultButtons;
+  const buttons =
+    customizationService.getCustomization('cornerstone-dicom-sr.viewportButtons')?.buttons ?? [];
 
   toolbarService.addButtons(buttons);
 
