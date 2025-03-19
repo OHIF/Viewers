@@ -1,13 +1,8 @@
 import React, { useState } from 'react';
 import { Button, PanelSection, ButtonGroup, IconButton } from '@ohif/ui';
 import { Icons, Tooltip, TooltipTrigger, TooltipContent, Numeric, InputNumber } from '@ohif/ui-next';
+import { Enums } from '@cornerstonejs/core';
 
-// Define fallback values that don't rely on cornerstone enums
-const DYNAMIC_OPERATOR_TYPES = {
-  SUM: 'sum',
-  AVERAGE: 'average',
-  SUBTRACT: 'subtract'
-};
 
 // Helper function to safely convert any value to uppercase string
 const toUpperCaseString = (value) => {
@@ -63,7 +58,7 @@ const DynamicVolumeControls = ({
   onDynamicClick,
 }) => {
   const [computedView, setComputedView] = useState(false);
-  const [computeViewMode, setComputeViewMode] = useState(DYNAMIC_OPERATOR_TYPES.SUM);
+  const [computeViewMode, setComputeViewMode] = useState(Enums.DynamicOperatorType.SUM);
 
   // Wrapper for onGenerate to handle potential errors
   const handleGenerate = () => {
@@ -149,21 +144,21 @@ const DynamicVolumeControls = ({
           >
             <button
               className="w-1/2"
-              onClick={() => setComputeViewMode(DYNAMIC_OPERATOR_TYPES.SUM)}
+              onClick={() => setComputeViewMode(Enums.DynamicOperatorType.SUM)}
             >
-              {toUpperCaseString(DYNAMIC_OPERATOR_TYPES.SUM)}
+              {toUpperCaseString(Enums.DynamicOperatorType.SUM)}
             </button>
             <button
               className="w-1/2"
-              onClick={() => setComputeViewMode(DYNAMIC_OPERATOR_TYPES.AVERAGE)}
+              onClick={() => setComputeViewMode(Enums.DynamicOperatorType.AVERAGE)}
             >
-              {toUpperCaseString(DYNAMIC_OPERATOR_TYPES.AVERAGE)}
+              {toUpperCaseString(Enums.DynamicOperatorType.AVERAGE)}
             </button>
             <button
               className="w-1/2"
-              onClick={() => setComputeViewMode(DYNAMIC_OPERATOR_TYPES.SUBTRACT)}
+              onClick={() => setComputeViewMode(Enums.DynamicOperatorType.SUBTRACT)}
             >
-              {toUpperCaseString(DYNAMIC_OPERATOR_TYPES.SUBTRACT)}
+              {toUpperCaseString(Enums.DynamicOperatorType.SUBTRACT)}
             </button>
           </ButtonGroup>
           <div className="mt-2 w-full">
