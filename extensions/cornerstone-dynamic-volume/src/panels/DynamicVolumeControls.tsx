@@ -35,18 +35,18 @@ const Header = ({ title, tooltip }) => (
         <span>
           <Icons.ByName
             name="info-link"
-            className="text-primary-active h-[14px] w-[14px]"
+            className="text-primary h-3 w-3"
           />
         </span>
       </TooltipTrigger>
       <TooltipContent
         sideOffset={4}
-        className="bg-primary-dark max-w-xs p-2 text-white"
+        className="max-w-xs"
       >
         <div>{tooltip}</div>
       </TooltipContent>
     </Tooltip>
-    <span className="text-aqua-pale text-[11px] uppercase">{title}</span>
+    <span className="text-muted-foreground text-xs uppercase tracking-wide">{title}</span>
   </div>
 );
 
@@ -241,8 +241,8 @@ function DimensionGroupControls({
         <Button
           id="play-pause-button"
           variant="secondary"
-          size="icon"
-          className="bg-customblue-30 h-[26px] w-[58px] rounded-[4px]"
+          size="default"
+          className="w-[58px]"
           onClick={() => {
             if (typeof onPlayPauseChange === 'function') {
               onPlayPauseChange(!isPlaying);
@@ -251,7 +251,7 @@ function DimensionGroupControls({
         >
           <Icons.ByName
             name={getPlayPauseIconName()}
-            className="h-[24px] w-[24px] text-white"
+            className="text-foreground h-[24px] w-[24px]"
           />
         </Button>
         <InputNumber
@@ -264,7 +264,7 @@ function DimensionGroupControls({
         >
           <InputNumber.Container sizeClassName="w-[58px] h-[28px]">
             <InputNumber.HorizontalControls>
-              <InputNumber.Input className="text-white" />
+              <InputNumber.Input className="text-foreground" />
             </InputNumber.HorizontalControls>
           </InputNumber.Container>
           <InputNumber.Label position="bottom">Group</InputNumber.Label>
@@ -280,7 +280,7 @@ function DimensionGroupControls({
         >
           <InputNumber.Container sizeClassName="w-[58px] h-[28px]">
             <InputNumber.HorizontalControls>
-              <InputNumber.Input className="text-white" />
+              <InputNumber.Input className="text-foreground" />
             </InputNumber.HorizontalControls>
           </InputNumber.Container>
           <InputNumber.Label position="bottom">FPS</InputNumber.Label>
