@@ -38,13 +38,13 @@ const InputNumberContext = React.createContext<InputNumberContextType | undefine
 const useInputNumber = () => {
   const context = React.useContext(InputNumberContext);
   if (!context) {
-    throw new Error('useInputNumber must be used within an InputNumber component');
+    throw new Error('useInputNumber must be used within an <InputNumber> component');
   }
   return context;
 };
 
 // Root component props
-export interface InputNumberRootProps {
+export interface InputNumberProps {
   value: number;
   onChange: (value: number) => void;
   min?: number;
@@ -56,15 +56,8 @@ export interface InputNumberRootProps {
   children?: React.ReactNode;
 }
 
-// Sizes mapping for backward compatibility
-const sizesClasses = {
-  sm: 'w-[45px] h-[28px]',
-  md: 'w-[58px] h-[28px]',
-  lg: 'w-[206px] h-[35px]',
-};
-
-// Root component
-const InputNumberRoot = React.forwardRef<HTMLDivElement, InputNumberRootProps>(
+// The single top-level InputNumber component
+const InputNumber = React.forwardRef<HTMLDivElement, InputNumberProps>(
   (
     {
       value,
@@ -118,11 +111,8 @@ const InputNumberRoot = React.forwardRef<HTMLDivElement, InputNumberRootProps>(
         }
 
         const numValue = Number(val);
-
-        // Only update if it's a valid number
         if (!isNaN(numValue)) {
           setInputValue(numValue);
-
           // Only call onChange if value is within boundaries
           if (numValue >= min && numValue <= max) {
             onChange(numValue);
@@ -143,7 +133,6 @@ const InputNumberRoot = React.forwardRef<HTMLDivElement, InputNumberRootProps>(
         }
 
         const numValue = parseFloat(inputValue);
-
         if (isNaN(numValue)) {
           setInputValue(min);
           onChange(min);
@@ -201,7 +190,7 @@ const InputNumberRoot = React.forwardRef<HTMLDivElement, InputNumberRootProps>(
   }
 );
 
-InputNumberRoot.displayName = 'InputNumber.Root';
+InputNumber.displayName = 'InputNumber';
 
 // Input component
 export interface InputNumberInputProps
@@ -349,6 +338,12 @@ const InputNumberVerticalControls = React.forwardRef<
 InputNumberVerticalControls.displayName = 'InputNumber.VerticalControls';
 
 // Main container
+const sizesClasses = {
+  sm: 'w-[45px] h-[28px]',
+  md: 'w-[58px] h-[28px]',
+  lg: 'w-[206px] h-[35px]',
+};
+
 export interface InputNumberContainerProps extends React.HTMLAttributes<HTMLDivElement> {
   size?: 'sm' | 'md' | 'lg';
   sizeClassName?: string;
@@ -376,167 +371,7 @@ const InputNumberContainer = React.forwardRef<HTMLDivElement, InputNumberContain
 
 InputNumberContainer.displayName = 'InputNumber.Container';
 
-// Backward compatibility component
-export interface InputNumberProps {
-  value: number;
-  onChange: (value: number) => void;
-  min?: number;
-  max?: number;
-  step?: number;
-  disabled?: boolean;
-  className?: string;
-  label?: string;
-  labelPosition?: 'left' | 'right' | 'top' | 'bottom';
-  labelClassName?: string;
-  showAdjustmentArrows?: boolean;
-  arrowsDirection?: 'vertical' | 'horizontal';
-  inputClassName?: string;
-  size?: 'sm' | 'md' | 'lg';
-  sizeClassName?: string;
-  inputContainerClassName?: string;
-}
-
-// Main InputNumber component (acts as the context provider)
-const InputNumber = React.forwardRef<HTMLDivElement, InputNumberRootProps>(
-  (
-    {
-      value,
-      onChange,
-      min = 0,
-      max = 100,
-      step = 1,
-      disabled = false,
-      className,
-      arrowsDirection = 'vertical',
-      children,
-      ...props
-    },
-    ref
-  ) => {
-    const [inputValue, setInputValue] = React.useState<number | string>(value);
-    const decimalPlaces = getDecimalPlaces(step);
-
-    // Update internal state when prop changes
-    React.useEffect(() => {
-      setInputValue(value);
-    }, [value]);
-
-    // Increment function
-    const increment = React.useCallback(() => {
-      const currentValue =
-        typeof inputValue === 'string' ? parseFloat(inputValue) || min : inputValue;
-      const newValue = Math.min(currentValue + step, max);
-      setInputValue(newValue);
-      onChange(newValue);
-    }, [inputValue, min, max, step, onChange]);
-
-    // Decrement function
-    const decrement = React.useCallback(() => {
-      const currentValue =
-        typeof inputValue === 'string' ? parseFloat(inputValue) || min : inputValue;
-      const newValue = Math.max(currentValue - step, min);
-      setInputValue(newValue);
-      onChange(newValue);
-    }, [inputValue, min, max, step, onChange]);
-
-    // Handle input change
-    const handleInputChange = React.useCallback(
-      (e: React.ChangeEvent<HTMLInputElement>) => {
-        const val = e.target.value;
-
-        // Allow empty string, minus sign, or decimal point for flexibility
-        if (val === '' || val === '-' || val === '.') {
-          setInputValue(val);
-          return;
-        }
-
-        const numValue = Number(val);
-
-        // Only update if it's a valid number
-        if (!isNaN(numValue)) {
-          setInputValue(numValue);
-
-          // Only call onChange if value is within boundaries
-          if (numValue >= min && numValue <= max) {
-            onChange(numValue);
-          }
-        }
-      },
-      [min, max, onChange]
-    );
-
-    // Handle blur to format and validate
-    const handleBlur = React.useCallback(() => {
-      if (typeof inputValue === 'string') {
-        // Handle empty or partial inputs
-        if (inputValue === '' || inputValue === '-' || inputValue === '.') {
-          setInputValue(min);
-          onChange(min);
-          return;
-        }
-
-        const numValue = parseFloat(inputValue);
-
-        if (isNaN(numValue)) {
-          setInputValue(min);
-          onChange(min);
-          return;
-        }
-
-        // Constrain value to min/max
-        const boundedValue = Math.max(min, Math.min(max, numValue));
-        setInputValue(boundedValue);
-        onChange(boundedValue);
-      }
-    }, [inputValue, min, max, onChange]);
-
-    // Context value
-    const contextValue = React.useMemo(
-      () => ({
-        value: inputValue,
-        min,
-        max,
-        step,
-        decimalPlaces,
-        disabled,
-        arrowsDirection,
-        handleInputChange,
-        handleBlur,
-        increment,
-        decrement,
-      }),
-      [
-        inputValue,
-        min,
-        max,
-        step,
-        decimalPlaces,
-        disabled,
-        arrowsDirection,
-        handleInputChange,
-        handleBlur,
-        increment,
-        decrement,
-      ]
-    );
-
-    return (
-      <InputNumberContext.Provider value={contextValue}>
-        <div
-          ref={ref}
-          className={cn('flex', className)}
-          {...props}
-        >
-          {children}
-        </div>
-      </InputNumberContext.Provider>
-    );
-  }
-);
-
-InputNumber.displayName = 'InputNumber';
-
-// Add subcomponents to InputNumber
+// Attach subcomponents
 Object.assign(InputNumber, {
   Input: InputNumberInput,
   Label: InputNumberLabel,
