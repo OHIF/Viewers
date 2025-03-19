@@ -7,7 +7,7 @@ import {
 } from '@cornerstonejs/tools';
 
 const { createSynchronizer } = SynchronizerManager;
-const { SEGMENTATION_REPRESENTATION_ADDED } = Enums.Events;
+const { SEGMENTATION_REPRESENTATION_MODIFIED } = Enums.Events;
 
 export default function createHydrateSegmentationSynchronizer(
   synchronizerName: string,
@@ -15,15 +15,16 @@ export default function createHydrateSegmentationSynchronizer(
 ): Synchronizer {
   const stackImageSynchronizer = createSynchronizer(
     synchronizerName,
-    SEGMENTATION_REPRESENTATION_ADDED,
-    (synchronizerInstance, sourceViewport, targetViewport, sourceEvent) =>
-      segmentationRepresentationModifiedCallback(
+    SEGMENTATION_REPRESENTATION_MODIFIED,
+    (synchronizerInstance, sourceViewport, targetViewport, sourceEvent) => {
+      return segmentationRepresentationModifiedCallback(
         synchronizerInstance,
         sourceViewport,
         targetViewport,
         sourceEvent,
         { servicesManager, options }
-      ),
+      );
+    },
     {
       eventSource: 'eventTarget',
     }
@@ -39,6 +40,7 @@ const segmentationRepresentationModifiedCallback = async (
   sourceEvent: Event,
   { servicesManager, options }: { servicesManager: AppTypes.ServicesManager; options: unknown }
 ) => {
+  debugger;
   const event = sourceEvent as ToolsTypes.EventTypes.SegmentationRepresentationModifiedEventType;
 
   const { segmentationId, viewportId } = event.detail;
