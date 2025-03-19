@@ -7,6 +7,7 @@ import {
   StudyMeasurementsActions,
   StudySummaryFromMetadata,
   AccordionGroup,
+  MeasurementsOrAdditionalFindings,
 } from '@ohif/extension-cornerstone';
 
 import { useTrackedMeasurements } from '../getContextModule';
@@ -45,10 +46,6 @@ function PanelMeasurementTableTracking(props) {
   const Header = props => (
     <div data-cy="TrackingHeader">
       <StudySummaryFromMetadata {...props} />
-      <StudyMeasurementsActions
-        {...props}
-        actions={actions}
-      />
     </div>
   );
 
@@ -62,6 +59,12 @@ function PanelMeasurementTableTracking(props) {
         <AccordionGroup.Trigger>
           <Header />
         </AccordionGroup.Trigger>
+        <MeasurementsOrAdditionalFindings
+          activeStudyUID={trackedStudy}
+          customHeader={StudyMeasurementsActions}
+          measurementFilter={measurementFilter}
+          actions={actions}
+        />
       </StudyMeasurements>
     </PanelMeasurement>
   );
