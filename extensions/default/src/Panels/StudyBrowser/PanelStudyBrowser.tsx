@@ -12,33 +12,6 @@ import { CallbackCustomization } from 'platform/core/src/types';
 
 const { sortStudyInstances, formatDate, createStudyBrowserTabs } = utils;
 
-const defaultDoubleClickHandler =
-  ({ activeViewportId, servicesManager, isHangingProtocolLayout }) =>
-  async displaySetInstanceUID => {
-    const { hangingProtocolService, viewportGridService, uiNotificationService } =
-      servicesManager.services;
-    let updatedViewports = [];
-    const viewportId = activeViewportId;
-
-    try {
-      updatedViewports = hangingProtocolService.getViewportsRequireUpdate(
-        viewportId,
-        displaySetInstanceUID,
-        isHangingProtocolLayout
-      );
-    } catch (error) {
-      console.warn(error);
-      uiNotificationService.show({
-        title: 'Thumbnail Double Click',
-        message: 'The selected display sets could not be added to the viewport.',
-        type: 'error',
-        duration: 3000,
-      });
-    }
-
-    viewportGridService.setDisplaySetsForViewports(updatedViewports);
-  };
-
 /**
  *
  * @param {*} param0
@@ -50,16 +23,14 @@ function PanelStudyBrowser({
   dataSource,
 }) {
   const { servicesManager, commandsManager } = useSystem();
-  const { hangingProtocolService, displaySetService, uiNotificationService, customizationService } =
-    servicesManager.services;
+  const { displaySetService, customizationService } = servicesManager.services;
   const navigate = useNavigate();
 
   // Normally you nest the components so the tree isn't so deep, and the data
   // doesn't have to have such an intense shape. This works well enough for now.
   // Tabs --> Studies --> DisplaySets --> Thumbnails
   const { StudyInstanceUIDs } = useImageViewer();
-  const [{ activeViewportId, viewports, isHangingProtocolLayout }, viewportGridService] =
-    useViewportGrid();
+  const [{ activeViewportId, viewports, isHangingProtocolLayout }] = useViewportGrid();
   const [activeTabName, setActiveTabName] = useState('all');
   const [expandedStudyInstanceUIDs, setExpandedStudyInstanceUIDs] = useState([
     ...StudyInstanceUIDs,
@@ -107,7 +78,7 @@ function PanelStudyBrowser({
         isHangingProtocolLayout,
       };
 
-      const handler = customHandler?.callback(setupArgs) ?? defaultDoubleClickHandler(setupArgs);
+      const handler = customHandler?.callback(setupArgs);
 
       handler(displaySetInstanceUID);
     },
