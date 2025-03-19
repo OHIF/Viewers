@@ -60,6 +60,7 @@ import { AboutModal, ImageModal, UserPreferencesModal } from './OHIFModals';
 import Modal from './Modal/Modal';
 import { FooterAction } from './FooterAction';
 import { InputFilter } from './InputFilter';
+import { WindowLevel, WindowLevelHistogram } from './OHIFPanels';
 
 import {
   DropdownMenu,
@@ -248,4 +249,6 @@ export {
   FooterAction,
   ToolSettings,
   InputFilter,
+  WindowLevel,
+  WindowLevelHistogram,
 };

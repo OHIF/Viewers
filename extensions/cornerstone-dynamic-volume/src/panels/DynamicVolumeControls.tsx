@@ -84,11 +84,11 @@ const DynamicVolumeControls = ({
   };
 
   return (
-    <div className="flex select-none flex-col">
+    <div className="bg-muted flex select-none flex-col">
       <PanelSection defaultOpen={true}>
         <PanelSection.Header>Controls</PanelSection.Header>
         <PanelSection.Content className="space-y-4 px-5 pb-5">
-          <div className="mt-2">
+          <div className="mt-2 mb-4">
             <Header
               title="View"
               tooltip={
@@ -104,7 +104,7 @@ const DynamicVolumeControls = ({
                   onDynamicClick();
                 }
               }}
-              className="mt-2 w-full"
+              className="my-2 w-full"
             >
               <TabsList className="w-full">
                 <TabsTrigger
@@ -138,7 +138,7 @@ const DynamicVolumeControls = ({
               currentDimensionGroupNumber={currentDimensionGroupNumber}
             />
           </div>
-          <div className={`mt-6 flex flex-col ${computedView ? '' : 'ohif-disabled'}`}>
+          <div className={`mt-3 flex flex-col ${computedView ? '' : 'ohif-disabled'}`}>
             <Header
               title="Computed Operation"
               tooltip={

@@ -111,6 +111,8 @@ import {
   UserPreferencesModal,
   FooterAction,
   InputFilter,
+  WindowLevel,
+  WindowLevelHistogram,
 } from './components';
 import { DataRow } from './components/DataRow';
 
@@ -253,4 +255,6 @@ export {
   ToolSettings,
   useSegmentStatistics,
   InputFilter,
+  WindowLevel,
+  WindowLevelHistogram,
 };
