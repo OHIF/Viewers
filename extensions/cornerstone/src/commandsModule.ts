@@ -4,6 +4,7 @@ import {
   VolumeViewport,
   utilities as csUtils,
   Types as CoreTypes,
+  cache,
   BaseVolumeViewport,
 } from '@cornerstonejs/core';
 import {
@@ -14,6 +15,7 @@ import {
   annotation,
 } from '@cornerstonejs/tools';
 import * as cornerstoneTools from '@cornerstonejs/tools';
+import * as labelmapInterpolation from '@cornerstonejs/labelmap-interpolation';
 
 import { Types as OhifTypes, utils } from '@ohif/core';
 import i18n from '@ohif/i18n';
@@ -31,6 +33,8 @@ import toggleVOISliceSync from './utils/toggleVOISliceSync';
 import { usePositionPresentationStore, useSegmentationPresentationStore } from './stores';
 import { toolNames } from './initCornerstoneTools';
 import CornerstoneViewportDownloadForm from './utils/CornerstoneViewportDownloadForm';
+import { updateSegmentBidirectionalStats } from './utils/updateSegmentationStats';
+import { generateSegmentationCSVReport } from './utils/generateSegmentationCSVReport';
 const { DefaultHistoryMemo } = csUtils.HistoryMemo;
 const toggleSyncFunctions = {
   imageSlice: toggleImageSliceSync,
@@ -39,7 +43,6 @@ const toggleSyncFunctions = {
 
 function commandsModule({
   servicesManager,
-  extensionManager,
   commandsManager,
 }: OhifTypes.Extensions.ExtensionParams): OhifTypes.Extensions.CommandsModule {
   const {
@@ -54,7 +57,9 @@ function commandsModule({
     colorbarService,
     hangingProtocolService,
     syncGroupService,
-  } = servicesManager.services;
+    segmentationService,
+    displaySetService,
+  } = servicesManager.services as AppTypes.Services;
 
   const { measurementServiceSource } = this;
 
@@ -67,7 +72,75 @@ function commandsModule({
     return toolGroupService.getToolGroupForViewport(viewport.id);
   }
 
+  function _getActiveSegmentationInfo() {
+    const viewportId = viewportGridService.getActiveViewportId();
+    const activeSegmentation = segmentationService.getActiveSegmentation(viewportId);
+    const segmentationId = activeSegmentation?.segmentationId;
+    const activeSegmentIndex = segmentationService.getActiveSegment(viewportId).segmentIndex;
+
+    return {
+      segmentationId,
+      segmentIndex: activeSegmentIndex,
+    };
+  }
+
   const actions = {
+    runSegmentBidirectional: async ({ segmentationId, segmentIndex } = {}) => {
+      // Get active segmentation if not specified
+      const targetSegmentation =
+        segmentationId && segmentIndex
+          ? { segmentationId, segmentIndex }
+          : _getActiveSegmentationInfo();
+
+      const { segmentationId: targetId, segmentIndex: targetIndex } = targetSegmentation;
+
+      // Get bidirectional measurement data
+      const bidirectionalData = await cstUtils.segmentation.getSegmentLargestBidirectional({
+        segmentationId: targetId,
+        segmentIndices: [targetIndex],
+      });
+
+      const activeViewportId = viewportGridService.getActiveViewportId();
+
+      // Process each bidirectional measurement
+      bidirectionalData.forEach(measurement => {
+        const { segmentIndex, majorAxis, minorAxis } = measurement;
+
+        // Create annotation
+        const annotation = cornerstoneTools.SegmentBidirectionalTool.hydrate(
+          activeViewportId,
+          [majorAxis, minorAxis],
+          {
+            segmentIndex,
+            segmentationId: targetId,
+          }
+        );
+
+        // Update segmentation stats
+        const updatedSegmentation = updateSegmentBidirectionalStats({
+          segmentationId: targetId,
+          segmentIndex: targetIndex,
+          bidirectionalData: measurement,
+          segmentationService,
+          annotation,
+        });
+
+        // Save changes if needed
+        if (updatedSegmentation) {
+          segmentationService.addOrUpdateSegmentation({
+            segmentationId: targetId,
+            segments: updatedSegmentation.segments,
+          });
+        }
+      });
+    },
+    interpolateLabelmap: () => {
+      const { segmentationId, segmentIndex } = _getActiveSegmentationInfo();
+      labelmapInterpolation.interpolate({
+        segmentationId,
+        segmentIndex,
+      });
+    },
     /**
      * Generates the selector props for the context menu, specific to
      * the cornerstone viewport, and then runs the context menu.
@@ -371,6 +444,44 @@ function commandsModule({
      */
     downloadCSVMeasurementsReport: ({ measurementFilter }) => {
       utils.downloadCSVReport(measurementService.getMeasurements(measurementFilter));
+    },
+
+    downloadCSVSegmentationReport: ({ segmentationId }) => {
+      const segmentation = segmentationService.getSegmentation(segmentationId);
+      const cachedStats = segmentation.cachedStats;
+
+      const { representationData } = segmentation;
+      const { Labelmap } = representationData;
+      const { referencedImageIds } = Labelmap;
+
+      const firstImageId = referencedImageIds[0];
+
+      // find displaySet for firstImageId
+      const displaySet = displaySetService
+        .getActiveDisplaySets()
+        .find(ds => ds.imageIds?.some(i => i === firstImageId));
+
+      const {
+        SeriesNumber,
+        SeriesInstanceUID,
+        StudyInstanceUID,
+        SeriesDate,
+        SeriesTime,
+        SeriesDescription,
+      } = displaySet;
+
+      const additionalInfo = {
+        reference: {
+          SeriesNumber,
+          SeriesInstanceUID,
+          StudyInstanceUID,
+          SeriesDate,
+          SeriesTime,
+          SeriesDescription,
+        },
+      };
+
+      generateSegmentationCSVReport(segmentation, additionalInfo);
     },
 
     // Retrieve value commands
@@ -1094,7 +1205,12 @@ function commandsModule({
      * @param props.segmentIndex - The index of the segment to activate
      */
     setActiveSegmentAndCenterCommand: ({ segmentationId, segmentIndex }) => {
-      const { segmentationService } = servicesManager.services;
+      const { segmentationService, viewportGridService } = servicesManager.services;
+      // set both active segmentation and active segment
+      segmentationService.setActiveSegmentation(
+        viewportGridService.getActiveViewportId(),
+        segmentationId
+      );
       segmentationService.setActiveSegment(segmentationId, segmentIndex);
       segmentationService.jumpToSegmentCenter(segmentationId, segmentIndex);
     },
@@ -1636,6 +1752,9 @@ function commandsModule({
     },
     undo: actions.undo,
     redo: actions.redo,
+    interpolateLabelmap: actions.interpolateLabelmap,
+    runSegmentBidirectional: actions.runSegmentBidirectional,
+    downloadCSVSegmentationReport: actions.downloadCSVSegmentationReport,
   };
 
   return {

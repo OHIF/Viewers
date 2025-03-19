@@ -26,7 +26,7 @@ export function ToolBoxButtonGroupWrapper({ groupId, buttonSection, ...props }) 
           {...item}
           key={item.id}
           size="small"
-          className={props.disabled && 'text-primary'}
+          className={item.disabled && 'text-foreground/70'}
           onInteraction={event => {
             onInteraction?.({
               event,
@@ -49,7 +49,7 @@ export function ToolBoxButtonWrapper({ onInteraction, options, ...props }) {
         {...props}
         id={props.id}
         size="small"
-        className={classNames(props.disabled && 'text-primary')}
+        className={classNames(props.disabled && 'text-foreground/70')}
         onInteraction={event => {
           onInteraction?.({
             event,

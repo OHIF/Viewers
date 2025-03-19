@@ -77,6 +77,8 @@ import {
   MeasurementTable,
   SegmentationTable,
   useSegmentationTableContext,
+  useSegmentationExpanded,
+  useSegmentStatistics,
   TooltipProvider,
   Tooltip,
   TooltipTrigger,
@@ -107,6 +109,7 @@ import {
   ImageModal,
   UserPreferencesModal,
   FooterAction,
+  InputFilter,
 } from './components';
 import { DataRow } from './components/DataRow';
 
@@ -209,6 +212,7 @@ export {
   MeasurementTable,
   SegmentationTable,
   useSegmentationTableContext,
+  useSegmentationExpanded,
   TooltipProvider,
   Tooltip,
   TooltipTrigger,
@@ -245,4 +249,6 @@ export {
   useDialog,
   ManagedDialog,
   ToolSettings,
+  useSegmentStatistics,
+  InputFilter,
 };
