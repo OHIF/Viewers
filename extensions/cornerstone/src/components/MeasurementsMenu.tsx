@@ -37,6 +37,7 @@ export function MeasumentsMenu(props) {
 
   return (
     <div className={`relative ml-2 inline-flex items-center space-x-1 ${classNames}`}>
+      MM
       {/* Visibility Toggle Icon */}
       <Button
         size="icon"
@@ -52,7 +53,6 @@ export function MeasumentsMenu(props) {
       >
         {isVisible ? <Icons.Hide className="h-6 w-6" /> : <Icons.Show className="h-6 w-6" />}
       </Button>
-
       {/* Actions Dropdown Menu */}
       <DropdownMenu onOpenChange={open => setIsDropdownOpen(open)}>
         <DropdownMenuTrigger asChild>

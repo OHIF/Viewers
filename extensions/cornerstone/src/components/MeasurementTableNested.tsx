@@ -21,10 +21,10 @@ export default function MeasurementTableNested(props) {
       {...group}
       key={group.key}
     >
-      <MeasurementTable.Header>
+      <MeasurementTable.Header key="measurementTableHeader">
         {customHeader && group.isFirst && customHeader({ ...props, items: props.allItems })}
       </MeasurementTable.Header>
-      <MeasurementTable.Body />
+      <MeasurementTable.Body key="measurementTableBody" />
     </MeasurementTable>
   );
 }

@@ -44,7 +44,10 @@ function PanelMeasurementTableTracking(props) {
   };
 
   const Header = props => (
-    <div data-cy="TrackingHeader">
+    <div
+      data-cy="TrackingHeader"
+      key="TrackingHeader"
+    >
       <StudySummaryFromMetadata {...props} />
     </div>
   );
@@ -56,10 +59,11 @@ function PanelMeasurementTableTracking(props) {
       sourceChildren={props.children}
     >
       <StudyMeasurements grouping={props.grouping}>
-        <AccordionGroup.Trigger>
-          <Header />
+        <AccordionGroup.Trigger key="trackingMeasurementsHeader">
+          <Header key="trackingHeadChild" />
         </AccordionGroup.Trigger>
         <MeasurementsOrAdditionalFindings
+          key="measurementsOrAdditionalFindings"
           activeStudyUID={trackedStudy}
           customHeader={StudyMeasurementsActions}
           measurementFilter={measurementFilter}

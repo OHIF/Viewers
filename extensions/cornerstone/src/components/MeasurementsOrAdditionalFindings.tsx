@@ -31,6 +31,8 @@ export const groupByNamedSets = (items, grouping) => {
       ...namedSet,
       items: [],
       isFirst: groups.size === 0,
+      title: name,
+      key: name,
     });
   }
   items.forEach(item => {
