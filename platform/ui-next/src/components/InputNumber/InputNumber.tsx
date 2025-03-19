@@ -256,7 +256,7 @@ const InputNumberLabel = React.forwardRef<HTMLLabelElement, InputNumberLabelProp
     return (
       <label
         ref={ref}
-        className={cn('text-aqua-pale text-[11px]', positionClasses[position], className)}
+        className={cn('text-muted-foreground text-xs', positionClasses[position], className)}
         {...props}
       >
         {children}
@@ -287,9 +287,9 @@ const InputNumberHorizontalControls = React.forwardRef<
         size="icon"
         onClick={decrement}
         disabled={disabled}
-        className="text-primary-active h-4 w-4 cursor-pointer p-0 hover:opacity-70"
+        className="text-primary h-7 w-4 cursor-pointer p-0"
       >
-        <ChevronLeft className="h-3 w-3" />
+        <ChevronLeft className="h-4 w-4" />
       </Button>
 
       {children}
@@ -299,9 +299,9 @@ const InputNumberHorizontalControls = React.forwardRef<
         size="icon"
         onClick={increment}
         disabled={disabled}
-        className="text-primary-active h-4 w-4 cursor-pointer p-0 hover:opacity-70"
+        className="text-primary-active h-7 w-4 cursor-pointer p-0"
       >
-        <ChevronRight className="h-3 w-3" />
+        <ChevronRight className="h-4 w-4" />
       </Button>
     </div>
   );
@@ -542,7 +542,7 @@ Object.assign(InputNumber, {
   Label: InputNumberLabel,
   Container: InputNumberContainer,
   HorizontalControls: InputNumberHorizontalControls,
-  VerticalControls: InputNumberVerticalControls
+  VerticalControls: InputNumberVerticalControls,
 });
 
 export { InputNumber };
