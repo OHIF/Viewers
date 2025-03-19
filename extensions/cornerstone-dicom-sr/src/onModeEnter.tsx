@@ -5,7 +5,7 @@ import { ViewportActionButton } from '@ohif/ui';
 import i18n from '@ohif/i18n';
 
 export default function onModeEnter({ servicesManager }) {
-  const { displaySetService, toolbarService } = servicesManager.services;
+  const { displaySetService, toolbarService, customizationService } = servicesManager.services;
   const displaySetCache = displaySetService.getDisplaySetCache();
 
   const srDisplaySets = [...displaySetCache.values()].filter(
@@ -17,7 +17,7 @@ export default function onModeEnter({ servicesManager }) {
     ds.isHydrated = false;
   });
 
-  toolbarService.addButtons([
+  const defaultButtons = [
     {
       // A base/default button for loading measurements. It is added to the toolbar below.
       // Customizations to this button can be made in the mode or by another extension.
@@ -31,9 +31,20 @@ export default function onModeEnter({ servicesManager }) {
         commands: ['clearMeasurements', 'loadSRMeasurements'],
       },
     },
-  ]);
+  ];
+
+  const customButtons = customizationService.getCustomization(
+    'cornerstone-dicom-sr.viewportButtons'
+  )?.buttons;
+
+  const buttons = customButtons ?? defaultButtons;
+
+  toolbarService.addButtons(buttons);
 
   // The toolbar used in the viewport's status bar. Modes and extensions can further customize
   // it to optionally add other buttons.
-  toolbarService.createButtonSection('loadSRMeasurements', ['loadSRMeasurements']);
+  toolbarService.createButtonSection(
+    'loadSRMeasurements',
+    buttons.map(button => button.id)
+  );
 }
