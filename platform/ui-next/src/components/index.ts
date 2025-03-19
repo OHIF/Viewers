@@ -82,7 +82,12 @@ import { Onboarding } from './Onboarding';
 import { DoubleSlider } from './DoubleSlider';
 import { DataRow } from './DataRow';
 import { MeasurementTable } from './MeasurementTable';
-import { SegmentationTable, useSegmentationTableContext } from './SegmentationTable';
+import {
+  SegmentationTable,
+  useSegmentationTableContext,
+  useSegmentationExpanded,
+  useSegmentStatistics,
+} from './SegmentationTable';
 import { Toaster, toast } from './Sonner';
 import { StudySummary } from './StudySummary';
 import { ErrorBoundary } from './Errorboundary';
@@ -108,6 +113,9 @@ import {
   ToolButtonListDivider,
 } from './ToolButton';
 import { ToolSettings } from './OHIFToolSettings';
+
+// Segmentation Context Exports
+export { useSegmentationTableContext, useSegmentationExpanded, useSegmentStatistics };
 
 export {
   Numeric,
@@ -207,7 +215,6 @@ export {
   Toaster,
   toast,
   SegmentationTable,
-  useSegmentationTableContext,
   StudySummary,
   Header,
   Card,

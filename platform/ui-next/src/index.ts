@@ -78,6 +78,8 @@ import {
   MeasurementTable,
   SegmentationTable,
   useSegmentationTableContext,
+  useSegmentationExpanded,
+  useSegmentStatistics,
   TooltipProvider,
   Tooltip,
   TooltipTrigger,
@@ -212,6 +214,7 @@ export {
   MeasurementTable,
   SegmentationTable,
   useSegmentationTableContext,
+  useSegmentationExpanded,
   TooltipProvider,
   Tooltip,
   TooltipTrigger,
@@ -248,5 +251,6 @@ export {
   useDialog,
   ManagedDialog,
   ToolSettings,
+  useSegmentStatistics,
   InputFilter,
 };

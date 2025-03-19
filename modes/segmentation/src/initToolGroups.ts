@@ -77,6 +77,9 @@ function createTools(utilityModule) {
         },
       },
       {
+        toolName: toolNames.SegmentBidirectional,
+      },
+      {
         toolName: 'ThresholdSphereBrushDynamic',
         parentTool: 'Brush',
         configuration: {
