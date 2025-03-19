@@ -37,6 +37,7 @@ import {
   LivewireContourTool,
   OrientationMarkerTool,
   WindowLevelRegionTool,
+  SegmentSelectTool,
 } from '@cornerstonejs/tools';
 import * as polySeg from '@cornerstonejs/polymorphic-segmentation';
 
@@ -96,7 +97,7 @@ export default function initCornerstoneTools(configuration = {}) {
   addTool(OrientationMarkerTool);
   addTool(WindowLevelRegionTool);
   addTool(PlanarFreehandContourSegmentationTool);
-
+  addTool(SegmentSelectTool);
   // Modify annotation tools to use dashed lines on SR
   const annotationStyle = {
     textBoxFontSize: '15px',
@@ -150,6 +151,7 @@ const toolNames = {
   WindowLevelRegion: WindowLevelRegionTool.toolName,
   PlanarFreehandContourSegmentation: PlanarFreehandContourSegmentationTool.toolName,
   SegmentBidirectional: SegmentBidirectionalTool.toolName,
+  SegmentSelect: SegmentSelectTool.toolName,
 };
 
 export { toolNames };
