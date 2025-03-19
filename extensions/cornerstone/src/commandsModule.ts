@@ -41,6 +41,23 @@ const toggleSyncFunctions = {
   voi: toggleVOISliceSync,
 };
 
+const getLabelmapTools = ({ toolGroupService }) => {
+  const labelmapTools = [];
+  const toolGroupIds = toolGroupService.getToolGroupIds();
+  toolGroupIds.forEach(toolGroupId => {
+    const toolGroup = cornerstoneTools.ToolGroupManager.getToolGroup(toolGroupId);
+    const tools = toolGroup.getToolInstances();
+    // tools is an object with toolName as the key and tool as the value
+    Object.keys(tools).forEach(toolName => {
+      const tool = tools[toolName];
+      if (tool instanceof cornerstoneTools.LabelmapBaseTool) {
+        labelmapTools.push(tool);
+      }
+    });
+  });
+  return labelmapTools;
+};
+
 function commandsModule({
   servicesManager,
   commandsManager,
@@ -57,6 +74,7 @@ function commandsModule({
     colorbarService,
     hangingProtocolService,
     syncGroupService,
+    toolbarService,
     segmentationService,
     displaySetService,
   } = servicesManager.services as AppTypes.Services;
@@ -1484,6 +1502,41 @@ function commandsModule({
     redo: () => {
       DefaultHistoryMemo.redo();
     },
+    toggleSegmentPreviewEdit: ({ toggle }) => {
+      const labelmapTools = getLabelmapTools({ toolGroupService });
+      labelmapTools.forEach(tool => {
+        tool.configuration = {
+          ...tool.configuration,
+          preview: {
+            ...tool.configuration.preview,
+            enabled: toggle,
+          },
+        };
+      });
+    },
+    toggleSegmentSelect: ({ toggle }) => {
+      const toolGroupIds = toolGroupService.getToolGroupIds();
+      toolGroupIds.forEach(toolGroupId => {
+        const toolGroup = cornerstoneTools.ToolGroupManager.getToolGroup(toolGroupId);
+        if (toggle) {
+          toolGroup.setToolActive(cornerstoneTools.SegmentSelectTool.toolName);
+        } else {
+          toolGroup.setToolDisabled(cornerstoneTools.SegmentSelectTool.toolName);
+        }
+      });
+    },
+    acceptPreview: () => {
+      const labelmapTools = getLabelmapTools({ toolGroupService });
+      labelmapTools.forEach(tool => {
+        tool.acceptPreview();
+      });
+    },
+    rejectPreview: () => {
+      const labelmapTools = getLabelmapTools({ toolGroupService });
+      labelmapTools.forEach(tool => {
+        tool.rejectPreview();
+      });
+    },
   };
 
   const definitions = {
@@ -1755,6 +1808,10 @@ function commandsModule({
     interpolateLabelmap: actions.interpolateLabelmap,
     runSegmentBidirectional: actions.runSegmentBidirectional,
     downloadCSVSegmentationReport: actions.downloadCSVSegmentationReport,
+    toggleSegmentPreviewEdit: actions.toggleSegmentPreviewEdit,
+    toggleSegmentSelect: actions.toggleSegmentSelect,
+    acceptPreview: actions.acceptPreview,
+    rejectPreview: actions.rejectPreview,
   };
 
   return {

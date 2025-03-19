@@ -264,10 +264,14 @@ class SegmentationService extends PubSubService {
     {
       segmentationId,
       type,
+      config,
       suppressEvents = false,
     }: {
       segmentationId: string;
       type?: csToolsEnums.SegmentationRepresentations;
+      config?: {
+        blendMode?: csEnums.BlendModes;
+      };
       suppressEvents?: boolean;
     }
   ): Promise<void> {
@@ -301,7 +305,8 @@ class SegmentationService extends PubSubService {
       segmentationId,
       representationTypeToUse,
       colorLUTIndex,
-      isConverted
+      isConverted,
+      config
     );
 
     if (!suppressEvents) {
@@ -1349,12 +1354,15 @@ class SegmentationService extends PubSubService {
     segmentationId: string,
     representationType: csToolsEnums.SegmentationRepresentations,
     colorLUTIndex: number,
-    isConverted: boolean
+    isConverted: boolean,
+    config?: {
+      blendMode?: csEnums.BlendModes;
+    }
   ): Promise<void> {
     const representation = {
       type: representationType,
       segmentationId,
-      config: { colorLUTOrIndex: colorLUTIndex },
+      config: { colorLUTOrIndex: colorLUTIndex, ...config },
     };
 
     const addRepresentation = () =>
