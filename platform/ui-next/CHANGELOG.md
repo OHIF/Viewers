@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.10.0-beta.131](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.130...v3.10.0-beta.131) (2025-03-19)
+
+
+### Features
+
+* **segmentation:** Enhance Segmentation Tools with Preview and Selection Features ([#4870](https://github.com/OHIF/Viewers/issues/4870)) ([5f11233](https://github.com/OHIF/Viewers/commit/5f112337b6ce26036bc5a156e26a0023c9de59ca))
+
+
+
+
+
 # [3.10.0-beta.130](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.129...v3.10.0-beta.130) (2025-03-19)
 
 **Note:** Version bump only for package @ohif/ui-next
