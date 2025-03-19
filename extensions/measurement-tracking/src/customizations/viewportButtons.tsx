@@ -4,7 +4,7 @@ import React from 'react';
 
 export default {
   'cornerstone-dicom-sr.viewportButtons': {
-    buttons: [
+    $set: [
       {
         // A button for loading tracked, SR measurements.
         // Note that the command run is registered in TrackedMeasurementsContext

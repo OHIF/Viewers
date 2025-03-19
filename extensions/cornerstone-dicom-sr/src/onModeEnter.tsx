@@ -18,7 +18,7 @@ export default function onModeEnter({ servicesManager }) {
   });
 
   const buttons =
-    customizationService.getCustomization('cornerstone-dicom-sr.viewportButtons')?.buttons ?? [];
+    customizationService.getCustomization('cornerstone-dicom-sr.viewportButtons') ?? [];
 
   toolbarService.addButtons(buttons);
 
