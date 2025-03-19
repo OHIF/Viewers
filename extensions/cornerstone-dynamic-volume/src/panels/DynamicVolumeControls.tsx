@@ -238,17 +238,32 @@ function DimensionGroupControls({
           onChange={onDimensionGroupChange || (() => {})}
           min={1}
           max={numDimensionGroups || 1}
-          label="Group"
-          {...controlClassNames}
-        />
+          arrowsDirection="horizontal"
+          className="flex-col"
+        >
+          <InputNumber.Container sizeClassName="w-[58px] h-[28px]">
+            <InputNumber.HorizontalControls>
+              <InputNumber.Input className="text-white" />
+            </InputNumber.HorizontalControls>
+          </InputNumber.Container>
+          <InputNumber.Label position="bottom">Group</InputNumber.Label>
+        </InputNumber>
+
         <InputNumber
           value={fps || 1}
           onChange={onFpsChange || (() => {})}
           min={minFps || 1}
           max={maxFps || 30}
-          {...controlClassNames}
-          label="FPS"
-        />
+          arrowsDirection="horizontal"
+          className="flex-col"
+        >
+          <InputNumber.Container sizeClassName="w-[58px] h-[28px]">
+            <InputNumber.HorizontalControls>
+              <InputNumber.Input className="text-white" />
+            </InputNumber.HorizontalControls>
+          </InputNumber.Container>
+          <InputNumber.Label position="bottom">FPS</InputNumber.Label>
+        </InputNumber>
       </div>
     </div>
   );
