@@ -214,7 +214,7 @@ const toolbarButtons: Button[] = [
           protocolId: 'mpr',
         },
       },
-      evaluate: 'evaluate.mpr',
+      evaluate: 'evaluate.displaySetIsReconstructable',
     },
   },
   {

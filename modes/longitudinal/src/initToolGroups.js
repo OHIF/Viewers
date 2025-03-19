@@ -58,6 +58,9 @@ function initDefaultToolGroup(extensionManager, toolGroupService, commandsManage
           },
         },
       },
+      {
+        toolName: toolNames.SegmentBidirectional,
+      },
       { toolName: toolNames.Bidirectional },
       { toolName: toolNames.DragProbe },
       { toolName: toolNames.Probe },
