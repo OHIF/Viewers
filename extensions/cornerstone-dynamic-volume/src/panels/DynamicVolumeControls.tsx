@@ -1,7 +1,21 @@
 import React, { useState } from 'react';
-import { Button, PanelSection, ButtonGroup, IconButton, InputNumber } from '@ohif/ui';
-import { Icons, Tooltip, TooltipTrigger, TooltipContent, Numeric } from '@ohif/ui-next';
-import { Enums } from '@cornerstonejs/core';
+import { Button, PanelSection, ButtonGroup, IconButton } from '@ohif/ui';
+import { Icons, Tooltip, TooltipTrigger, TooltipContent, Numeric, InputNumber } from '@ohif/ui-next';
+
+// Define fallback values that don't rely on cornerstone enums
+const DYNAMIC_OPERATOR_TYPES = {
+  SUM: 'sum',
+  AVERAGE: 'average',
+  SUBTRACT: 'subtract'
+};
+
+// Helper function to safely convert any value to uppercase string
+const toUpperCaseString = (value) => {
+  if (value === null || value === undefined) {
+    return '';
+  }
+  return String(value).toUpperCase();
+};
 
 const controlClassNames = {
   sizeClassName: 'w-[58px] h-[28px]',
@@ -49,7 +63,20 @@ const DynamicVolumeControls = ({
   onDynamicClick,
 }) => {
   const [computedView, setComputedView] = useState(false);
-  const [computeViewMode, setComputeViewMode] = useState(Enums.DynamicOperatorType.SUM);
+  const [computeViewMode, setComputeViewMode] = useState(DYNAMIC_OPERATOR_TYPES.SUM);
+
+  // Wrapper for onGenerate to handle potential errors
+  const handleGenerate = () => {
+    try {
+      if (typeof onGenerate === 'function') {
+        onGenerate(computeViewMode);
+      } else {
+        console.error('onGenerate is not a function', onGenerate);
+      }
+    } catch (error) {
+      console.error('Error in onGenerate:', error);
+    }
+  };
 
   return (
     <div className="flex select-none flex-col">
@@ -69,7 +96,9 @@ const DynamicVolumeControls = ({
               className="w-1/2"
               onClick={() => {
                 setComputedView(false);
-                onDynamicClick?.();
+                if (typeof onDynamicClick === 'function') {
+                  onDynamicClick();
+                }
               }}
             >
               4D
@@ -120,39 +149,37 @@ const DynamicVolumeControls = ({
           >
             <button
               className="w-1/2"
-              onClick={() => setComputeViewMode(Enums.DynamicOperatorType.SUM)}
+              onClick={() => setComputeViewMode(DYNAMIC_OPERATOR_TYPES.SUM)}
             >
-              {Enums.DynamicOperatorType.SUM.toString().toUpperCase()}
+              {toUpperCaseString(DYNAMIC_OPERATOR_TYPES.SUM)}
             </button>
             <button
               className="w-1/2"
-              onClick={() => setComputeViewMode(Enums.DynamicOperatorType.AVERAGE)}
+              onClick={() => setComputeViewMode(DYNAMIC_OPERATOR_TYPES.AVERAGE)}
             >
-              {Enums.DynamicOperatorType.AVERAGE.toString().toUpperCase()}
+              {toUpperCaseString(DYNAMIC_OPERATOR_TYPES.AVERAGE)}
             </button>
             <button
               className="w-1/2"
-              onClick={() => setComputeViewMode(Enums.DynamicOperatorType.SUBTRACT)}
+              onClick={() => setComputeViewMode(DYNAMIC_OPERATOR_TYPES.SUBTRACT)}
             >
-              {Enums.DynamicOperatorType.SUBTRACT.toString().toUpperCase()}
+              {toUpperCaseString(DYNAMIC_OPERATOR_TYPES.SUBTRACT)}
             </button>
           </ButtonGroup>
           <div className="mt-2 w-full">
             <Numeric.Container
               mode="doubleRange"
               min={1}
-              max={numDimensionGroups}
-              values={rangeValues}
-              onChange={onDoubleRangeChange}
+              max={numDimensionGroups || 1}
+              values={rangeValues || [1, numDimensionGroups || 1]}
+              onChange={onDoubleRangeChange || (() => {})}
             >
               <Numeric.DoubleRange showNumberInputs />
             </Numeric.Container>
           </div>
           <Button
             className="mt-2 !h-[26px] !w-[115px] self-start !p-0"
-            onClick={() => {
-              onGenerate(computeViewMode);
-            }}
+            onClick={handleGenerate}
           >
             Generate
           </Button>
@@ -179,7 +206,7 @@ function DimensionGroupControls({
   const getPlayPauseIconName = () => (isPlaying ? 'icon-pause' : 'icon-play');
 
   return (
-    <div className={computedView && 'ohif-disabled'}>
+    <div className={computedView ? 'ohif-disabled' : ''}>
       <Header
         title="4D Controls"
         tooltip={
@@ -195,7 +222,11 @@ function DimensionGroupControls({
         <IconButton
           id="play-pause-button"
           className="bg-customblue-30 h-[26px] w-[58px] rounded-[4px]"
-          onClick={() => onPlayPauseChange(!isPlaying)}
+          onClick={() => {
+            if (typeof onPlayPauseChange === 'function') {
+              onPlayPauseChange(!isPlaying);
+            }
+          }}
         >
           <Icons.ByName
             name={getPlayPauseIconName()}
@@ -203,18 +234,18 @@ function DimensionGroupControls({
           />
         </IconButton>
         <InputNumber
-          value={currentDimensionGroupNumber}
-          onChange={onDimensionGroupChange}
-          minValue={1}
-          maxValue={numDimensionGroups}
+          value={currentDimensionGroupNumber || 1}
+          onChange={onDimensionGroupChange || (() => {})}
+          min={1}
+          max={numDimensionGroups || 1}
           label="Group"
           {...controlClassNames}
         />
         <InputNumber
-          value={fps}
-          onChange={onFpsChange}
-          minValue={minFps}
-          maxValue={maxFps}
+          value={fps || 1}
+          onChange={onFpsChange || (() => {})}
+          min={minFps || 1}
+          max={maxFps || 30}
           {...controlClassNames}
           label="FPS"
         />
