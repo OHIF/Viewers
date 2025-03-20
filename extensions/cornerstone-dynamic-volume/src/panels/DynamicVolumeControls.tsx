@@ -78,11 +78,11 @@ const DynamicVolumeControls = ({
   };
 
   return (
-    <div className="bg-muted flex select-none flex-col">
+    <div className="flex select-none flex-col">
       <PanelSection defaultOpen={true}>
         <PanelSection.Header>Controls</PanelSection.Header>
-        <PanelSection.Content className="space-y-4 px-5 pb-5">
-          <div className="mt-2 mb-4">
+        <PanelSection.Content className="bg-muted space-y-4 px-5 pt-2 pb-4">
+          <div className="mb-4">
             <Header
               title="View"
               tooltip={
