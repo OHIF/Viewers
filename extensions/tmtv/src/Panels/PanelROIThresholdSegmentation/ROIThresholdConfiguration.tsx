@@ -1,5 +1,6 @@
 import React from 'react';
-import { Input, Label, Select, LegacyButton, LegacyButtonGroup } from '@ohif/ui';
+import { Input, Label, LegacyButton, LegacyButtonGroup } from '@ohif/ui';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@ohif/ui-next';
 import { useTranslation } from 'react-i18next';
 
 export const ROI_STAT = 'roi_stat';
@@ -17,14 +18,10 @@ function ROIThresholdConfiguration({ config, dispatch, runCommand }) {
     <div className="bg-primary-dark flex flex-col space-y-4">
       <div className="flex items-end space-x-2">
         <div className="flex w-1/2 flex-col">
+          <Label className="font-inter mb-1 text-[13px] text-white">{t('Strategy')}</Label>
           <Select
-            label={t('Strategy')}
-            closeMenuOnSelect={true}
-            className="border-primary-main mr-2 bg-black text-white "
-            options={options}
-            placeholder={options.find(option => option.value === config.strategy).placeHolder}
             value={config.strategy}
-            onChange={({ value }) => {
+            onValueChange={value => {
               dispatch({
                 type: 'setStrategy',
                 payload: {
@@ -32,7 +29,23 @@ function ROIThresholdConfiguration({ config, dispatch, runCommand }) {
                 },
               });
             }}
-          />
+          >
+            <SelectTrigger className="">
+              <SelectValue
+                placeholder={options.find(option => option.value === config.strategy)?.placeHolder}
+              />
+            </SelectTrigger>
+            <SelectContent className="">
+              {options.map(option => (
+                <SelectItem
+                  key={option.value}
+                  value={option.value}
+                >
+                  {option.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
         <div className="w-1/2">
           {/* TODO Revisit design of LegacyButtonGroup later - for now use LegacyButton for its children.*/}
