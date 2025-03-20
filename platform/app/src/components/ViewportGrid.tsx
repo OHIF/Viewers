@@ -6,6 +6,7 @@ import { useViewportGrid } from '@ohif/ui-next';
 import EmptyViewport from './EmptyViewport';
 import classNames from 'classnames';
 import { useAppConfig } from '@state';
+import getClosestOrientationFromIOP from '../utils/getClosestOrientationFromIOP';
 
 function ViewerViewportGrid(props: withAppTypes) {
   const { servicesManager, viewportComponents = [], dataSource } = props;
@@ -177,7 +178,20 @@ function ViewerViewportGrid(props: withAppTypes) {
         const { displaySetInstanceUID: referencedDisplaySetInstanceUID } = measurement;
 
         const updatedViewports = _getUpdatedViewports(viewportId, referencedDisplaySetInstanceUID);
-        if (!updatedViewports[0]) {
+        let viewportToUpdate;
+        if (updatedViewports.length > 1) {
+          // To get the viewport which orientation is closest to IOP
+          const closestOrientation = getClosestOrientationFromIOP(
+            displaySetService,
+            referencedDisplaySetInstanceUID
+          );
+          viewportToUpdate = updatedViewports.find(
+            viewport => viewport.viewportOptions?.orientation == closestOrientation
+          );
+        }
+        // If closest orientation viewport is not find then choose 0
+        viewportToUpdate = updatedViewports[0];
+        if (!viewportToUpdate) {
           console.warn(
             'ViewportGrid::Unable to navigate to viewport containing',
             referencedDisplaySetInstanceUID
@@ -185,14 +199,9 @@ function ViewerViewportGrid(props: withAppTypes) {
           return;
         }
 
-        // Arbitrarily assign the viewport to element 0
-        // TODO - this should perform a search to find the most suitable viewport.
-        updatedViewports[0] = { ...updatedViewports[0] };
-        const [viewport] = updatedViewports;
-
         // Copy the viewport options to prevent modifying the internal data
-        viewport.viewportOptions = {
-          ...viewport.viewportOptions,
+        viewportToUpdate.viewportOptions = {
+          ...viewportToUpdate.viewportOptions,
           orientation: 'acquisition',
           // The preferred way to jump to the measurement view is to set the
           // view reference, as this can hold information such as the orientation

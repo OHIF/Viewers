@@ -264,11 +264,10 @@ const OHIFCornerstoneViewport = React.memo(
         const presentations = getViewportPresentations(viewportId, viewportOptions);
 
         let measurement;
-        if (cacheJumpToMeasurementEvent?.viewportId === viewportId) {
+        if (cacheJumpToMeasurementEvent?.cornerstoneViewport === viewportId) {
           measurement = cacheJumpToMeasurementEvent.measurement;
           // Delete the position presentation so that viewport navigates direct
           presentations.positionPresentation = null;
-          cacheJumpToMeasurementEvent = null;
         }
 
         // Note: This is a hack to get the grid to re-render the OHIFCornerstoneViewport component
@@ -281,7 +280,7 @@ const OHIFCornerstoneViewport = React.memo(
           viewportOptions.needsRerendering = false;
         }
 
-        cornerstoneViewportService.setViewportData(
+        await cornerstoneViewportService.setViewportData(
           viewportId,
           viewportData,
           viewportOptions,
@@ -290,7 +289,13 @@ const OHIFCornerstoneViewport = React.memo(
         );
 
         if (measurement) {
-          cs3DTools.annotation.selection.setAnnotationSelected(measurement.uid);
+          _checkForCachedJumpToMeasurementEvents(
+            elementRef,
+            viewportId,
+            displaySets,
+            servicesManager
+          );
+          cacheJumpToMeasurementEvent = null;
         }
       };
 
@@ -317,8 +322,6 @@ const OHIFCornerstoneViewport = React.memo(
         viewportId,
         servicesManager
       );
-
-      _checkForCachedJumpToMeasurementEvents(elementRef, viewportId, displaySets, servicesManager);
 
       return () => {
         unsubscribeFromJumpToMeasurementEvents();
@@ -449,6 +452,16 @@ function _subscribeToJumpToMeasurementEvents(elementRef, viewportId, servicesMan
           });
       }
       if (cacheJumpToMeasurementEvent.cornerstoneViewport !== viewportId) {
+        return;
+      }
+      const viewportInfo = cornerstoneViewportService.getViewportInfo(viewportId);
+      // Confirm viewportInfo matches measurement displaySetInstanceUID and referencedImageId
+      if (
+        !viewportInfo?.contains(
+          measurement.displaySetInstanceUID,
+          measurement.referencedImageId || measurement.metadata?.referencedImageId
+        )
+      ) {
         return;
       }
       _jumpToMeasurement(measurement, elementRef, viewportId, servicesManager);
