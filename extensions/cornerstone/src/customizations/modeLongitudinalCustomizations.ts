@@ -16,8 +16,8 @@ export const setToolActiveToolbar = {
 };
 
 export default {
-  'mode.longitudinal.hangingProtocol': 'default',
-  'mode.longitudinal.toolbarSections': {
+  'mode.default.hangingProtocol': ['default'],
+  'mode.default.toolbarSections': {
     primary: [
       'MeasurementTools',
       'Zoom',

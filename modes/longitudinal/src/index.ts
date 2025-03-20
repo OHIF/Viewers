@@ -17,12 +17,16 @@ import {
 } from '@ohif/mode-support';
 
 function modeFactory({ modeConfiguration, servicesManager }) {
+  let _activatePanelTriggersSubscriptions = [];
+  const mode = this;
+
   const {
     services: { customizationService },
   } = servicesManager;
-  const { baseCustomizationName = 'mode.longitudinal' } = this;
-  let _activatePanelTriggersSubscriptions = [];
-  const mode = this;
+  const { baseCustomizationName = 'mode.longitudinal' } = mode;
+  const getCustomization = name =>
+    customizationService.getCustomization(`${baseCustomizationName}.${name}`) ||
+    customizationService.getCustomization(`mode.default.${name}`);
 
   return {
     // TODO: We're using this as a route segment
@@ -35,18 +39,13 @@ function modeFactory({ modeConfiguration, servicesManager }) {
      */
     onModeEnter: function ({ servicesManager, extensionManager, commandsManager }: withAppTypes) {
       const { measurementService, toolbarService, toolGroupService } = servicesManager.services;
-
       measurementService.clearMeasurements();
 
       // Init Default and SR ToolGroups
       mode.initToolGroups(extensionManager, toolGroupService, commandsManager);
 
-      toolbarService.addButtons(
-        customizationService.getCustomization(`${baseCustomizationName}.toolbarButtons`)
-      );
-      for (const [key, value] of Object.values(
-        customizationService.getCustomization(`${baseCustomizationName}.toolbarSections`)
-      )) {
+      toolbarService.addButtons(getCustomization('toolbarButtons'));
+      for (const [key, value] of Object.entries(getCustomization('toolbarSections'))) {
         toolbarService.createButtonSection(key, value);
       }
 
@@ -158,9 +157,8 @@ function modeFactory({ modeConfiguration, servicesManager }) {
     ],
     extensions: extensionDependencies,
     // Default protocol gets self-registered by default in the init
-    hangingProtocol: customizationService.getCustomization(
-      `${baseCustomizationName}.hangingProtocol`
-    ),
+    hangingProtocol: 'default',
+
     // Order is important in sop class handlers when two handlers both use
     // the same sop class under different situations.  In that case, the more
     // general handler needs to come last.  For this case, the dicomvideo must
