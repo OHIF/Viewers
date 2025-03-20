@@ -24,9 +24,11 @@ function ROIThresholdConfiguration({ config, dispatch, runCommand }) {
 
   return (
     <div className="bg-primary-dark flex flex-col space-y-4">
-      <div className="flex items-end space-x-4">
+      <div className="flex items-end space-x-3">
         <div className="flex min-w-0 flex-1 flex-col">
-          <Label className="my-2">{t('Strategy')}</Label>
+          {/* The original panel design does not include "Strategy," but it was found in the code.
+    Need to determine if it should be included or removed.
+          <Label className="my-2">{t('Strategy')}</Label>  */}
           <Select
             value={config.strategy}
             onValueChange={value => {
