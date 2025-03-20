@@ -24,8 +24,8 @@ function ROIThresholdConfiguration({ config, dispatch, runCommand }) {
 
   return (
     <div className="bg-primary-dark flex flex-col space-y-4">
-      <div className="flex items-end space-x-2">
-        <div className="flex w-1/2 flex-col">
+      <div className="flex items-end space-x-4">
+        <div className="flex flex-1 min-w-0 flex-col">
           <Label className="mb-1">{t('Strategy')}</Label>
           <Select
             value={config.strategy}
@@ -38,7 +38,7 @@ function ROIThresholdConfiguration({ config, dispatch, runCommand }) {
               });
             }}
           >
-            <SelectTrigger className="">
+            <SelectTrigger className="w-full">
               <SelectValue
                 placeholder={options.find(option => option.value === config.strategy)?.placeHolder}
               />
@@ -55,8 +55,8 @@ function ROIThresholdConfiguration({ config, dispatch, runCommand }) {
             </SelectContent>
           </Select>
         </div>
-        <div className="w-1/2">
-          <div className="flex space-x-2">
+        <div className="flex-shrink-0">
+          <div className="flex justify-end space-x-2">
             <Button
               variant="secondary"
               onClick={() => runCommand('setStartSliceForROIThresholdTool')}
