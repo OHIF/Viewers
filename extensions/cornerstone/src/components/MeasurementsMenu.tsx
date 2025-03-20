@@ -37,7 +37,6 @@ export function MeasumentsMenu(props) {
 
   return (
     <div className={`relative ml-2 inline-flex items-center space-x-1 ${classNames}`}>
-      MM
       {/* Visibility Toggle Icon */}
       <Button
         size="icon"

@@ -1,6 +1,6 @@
 import React from 'react';
 import { utils } from '@ohif/core';
-import { MeasurementTable, useViewportGrid } from '@ohif/ui-next';
+import { AccordionTrigger, MeasurementTable, useViewportGrid } from '@ohif/ui-next';
 import {
   PanelMeasurement,
   StudyMeasurements,
@@ -44,12 +44,14 @@ function PanelMeasurementTableTracking(props) {
   };
 
   const Header = props => (
-    <div
-      data-cy="TrackingHeader"
-      key="TrackingHeader"
+    <AccordionTrigger
+      asChild={true}
+      className="px-0"
     >
-      <StudySummaryFromMetadata {...props} />
-    </div>
+      <div data-cy="TrackingHeader">
+        <StudySummaryFromMetadata {...props} />
+      </div>
+    </AccordionTrigger>
   );
 
   return (
@@ -59,7 +61,10 @@ function PanelMeasurementTableTracking(props) {
       sourceChildren={props.children}
     >
       <StudyMeasurements grouping={props.grouping}>
-        <AccordionGroup.Trigger key="trackingMeasurementsHeader">
+        <AccordionGroup.Trigger
+          key="trackingMeasurementsHeader"
+          asChild={true}
+        >
           <Header key="trackingHeadChild" />
         </AccordionGroup.Trigger>
         <MeasurementsOrAdditionalFindings
