@@ -1479,6 +1479,94 @@ window.config = {
 };
   `,
   },
+  {
+    id: 'studyBrowser.thumbnailDoubleClickCallback',
+    description:
+      'Defines the callback function for when the user double clicks a series on the study browser.',
+    default: `{
+    callback: ({
+            activeViewportId,
+            servicesManager,
+            isHangingProtocolLayout
+        }) =>
+        async displaySetInstanceUID => {
+            const {
+                hangingProtocolService,
+                viewportGridService,
+                uiNotificationService
+            } =
+            servicesManager.services;
+            let updatedViewports = [];
+            const viewportId = activeViewportId;
+
+            try {
+                updatedViewports = hangingProtocolService.getViewportsRequireUpdate(
+                    viewportId,
+                    displaySetInstanceUID,
+                    isHangingProtocolLayout
+                );
+            } catch (error) {
+                console.warn(error);
+                uiNotificationService.show({
+                    title: 'Thumbnail Double Click',
+                    message: 'The selected display sets could not be added to the viewport.',
+                    type: 'error',
+                    duration: 3000,
+                });
+            }
+
+            viewportGridService.setDisplaySetsForViewports(updatedViewports);
+        },
+}`,
+    configuration: `
+window.config = {
+    // rest of window config
+    customizationService: [{
+        'studyBrowser.thumbnailDoubleClickCallback': {
+            callback: ({
+                    activeViewportId,
+                    commandsManager,
+                    servicesManager,
+                    isHangingProtocolLayout
+                }) =>
+                async displaySetInstanceUID => {
+                    const {
+                        hangingProtocolService,
+                        viewportGridService,
+                        uiNotificationService
+                    } =
+                    servicesManager.services;
+
+                    let updatedViewports = [];
+                    const viewportId = activeViewportId;
+
+                    // Changing original function here:
+                    if (isBlacklistedModality(displaySetInstanceUID)) {
+                        return;
+                    }
+
+                    try {
+                        updatedViewports = hangingProtocolService.getViewportsRequireUpdate(
+                            viewportId,
+                            displaySetInstanceUID,
+                            isHangingProtocolLayout
+                        );
+                    } catch (error) {
+                        console.warn(error);
+                        uiNotificationService.show({
+                            title: 'Thumbnail Double Click',
+                            message: 'The selected display sets could not be added to the viewport.',
+                            type: 'error',
+                            duration: 3000,
+                        });
+                    }
+                    viewportGridService.setDisplaySetsForViewports(updatedViewports);
+                };
+        },
+    }],
+};
+  `,
+  },
 ];
 
 export const TableGenerator = (customizations: any[]) => {
