@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useImageViewer } from '@ohif/ui';
 import { useViewportGrid } from '@ohif/ui-next';
 import { StudyBrowser } from '@ohif/ui-next';
@@ -8,6 +8,7 @@ import { Separator } from '@ohif/ui-next';
 import { PanelStudyBrowserHeader } from './PanelStudyBrowserHeader';
 import { defaultActionIcons } from './constants';
 import MoreDropdownMenu from '../../Components/MoreDropdownMenu';
+import { CallbackCustomization } from 'platform/core/src/types';
 
 const { sortStudyInstances, formatDate, createStudyBrowserTabs } = utils;
 
@@ -22,16 +23,14 @@ function PanelStudyBrowser({
   dataSource,
 }) {
   const { servicesManager, commandsManager } = useSystem();
-  const { hangingProtocolService, displaySetService, uiNotificationService, customizationService } =
-    servicesManager.services;
+  const { displaySetService, customizationService } = servicesManager.services;
   const navigate = useNavigate();
 
   // Normally you nest the components so the tree isn't so deep, and the data
   // doesn't have to have such an intense shape. This works well enough for now.
   // Tabs --> Studies --> DisplaySets --> Thumbnails
   const { StudyInstanceUIDs } = useImageViewer();
-  const [{ activeViewportId, viewports, isHangingProtocolLayout }, viewportGridService] =
-    useViewportGrid();
+  const [{ activeViewportId, viewports, isHangingProtocolLayout }] = useViewportGrid();
   const [activeTabName, setActiveTabName] = useState('all');
   const [expandedStudyInstanceUIDs, setExpandedStudyInstanceUIDs] = useState([
     ...StudyInstanceUIDs,
@@ -66,27 +65,33 @@ function PanelStudyBrowser({
     setViewPresets(newViewPresets);
   };
 
-  const onDoubleClickThumbnailHandler = displaySetInstanceUID => {
-    let updatedViewports = [];
-    const viewportId = activeViewportId;
-    try {
-      updatedViewports = hangingProtocolService.getViewportsRequireUpdate(
-        viewportId,
-        displaySetInstanceUID,
-        isHangingProtocolLayout
-      );
-    } catch (error) {
-      console.warn(error);
-      uiNotificationService.show({
-        title: 'Thumbnail Double Click',
-        message: 'The selected display sets could not be added to the viewport.',
-        type: 'error',
-        duration: 3000,
-      });
-    }
+  const onDoubleClickThumbnailHandler = useCallback(
+    async displaySetInstanceUID => {
+      const customHandler = customizationService.getCustomization(
+        'studyBrowser.thumbnailDoubleClickCallback'
+      ) as CallbackCustomization;
 
-    viewportGridService.setDisplaySetsForViewports(updatedViewports);
-  };
+      const setupArgs = {
+        activeViewportId,
+        commandsManager,
+        servicesManager,
+        isHangingProtocolLayout,
+      };
+
+      const handlers = customHandler?.callbacks.map(callback => callback(setupArgs));
+
+      for (const handler of handlers) {
+        await handler(displaySetInstanceUID);
+      }
+    },
+    [
+      activeViewportId,
+      commandsManager,
+      servicesManager,
+      isHangingProtocolLayout,
+      customizationService,
+    ]
+  );
 
   // ~~ studyDisplayList
   useEffect(() => {
@@ -163,7 +168,7 @@ function PanelStudyBrowser({
         thumbnailSrc = await displaySet.getThumbnailSrc();
       }
       if (!thumbnailSrc) {
-        let thumbnailSrc = await getImageSrc(imageId);
+        const thumbnailSrc = await getImageSrc(imageId);
         displaySet.thumbnailSrc = thumbnailSrc;
       }
       newImageSrcEntry[dSet.displaySetInstanceUID] = thumbnailSrc;
