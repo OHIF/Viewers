@@ -251,7 +251,7 @@ function DimensionGroupControls({
         <InputNumber
           value={currentDimensionGroupNumber || 1}
           onChange={onDimensionGroupChange || (() => {})}
-          className="flex-col"
+          className="flex-col items-center"
         >
           <InputNumber.Container sizeClassName="w-[58px] h-[28px]">
             <InputNumber.HorizontalControls
@@ -268,7 +268,7 @@ function DimensionGroupControls({
         <InputNumber
           value={fps || 1}
           onChange={onFpsChange || (() => {})}
-          className="flex-col"
+          className="flex-col items-center"
         >
           <InputNumber.Container sizeClassName="w-[58px] h-[28px]">
             <InputNumber.HorizontalControls
