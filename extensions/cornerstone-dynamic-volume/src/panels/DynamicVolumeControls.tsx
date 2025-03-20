@@ -22,12 +22,6 @@ const toUpperCaseString = value => {
   return String(value).toUpperCase();
 };
 
-const controlClassNames = {
-  sizeClassName: 'w-[58px] h-[28px]',
-  arrowsDirection: 'horizontal',
-  labelPosition: 'bottom',
-};
-
 const Header = ({ title, tooltip }) => (
   <div className="flex items-center space-x-1">
     <Tooltip>
@@ -161,7 +155,6 @@ const DynamicVolumeControls = ({
             >
               <TabsList className="w-full gap-1">
                 {' '}
-                {/* Added gap for separation */}
                 <TabsTrigger
                   value={String(Enums.DynamicOperatorType.SUM)}
                   className="w-1/3"
@@ -254,17 +247,19 @@ function DimensionGroupControls({
             className="text-foreground h-[24px] w-[24px]"
           />
         </Button>
+
         <InputNumber
           value={currentDimensionGroupNumber || 1}
           onChange={onDimensionGroupChange || (() => {})}
-          min={1}
-          max={numDimensionGroups || 1}
-          arrowsDirection="horizontal"
           className="flex-col"
         >
           <InputNumber.Container sizeClassName="w-[58px] h-[28px]">
-            <InputNumber.HorizontalControls>
-              <InputNumber.Input className="text-foreground" />
+            <InputNumber.HorizontalControls
+              min={1}
+              max={numDimensionGroups || 1}
+              step={1}
+            >
+              <InputNumber.Input />
             </InputNumber.HorizontalControls>
           </InputNumber.Container>
           <InputNumber.Label position="bottom">Group</InputNumber.Label>
@@ -273,14 +268,15 @@ function DimensionGroupControls({
         <InputNumber
           value={fps || 1}
           onChange={onFpsChange || (() => {})}
-          min={minFps || 1}
-          max={maxFps || 30}
-          arrowsDirection="horizontal"
           className="flex-col"
         >
           <InputNumber.Container sizeClassName="w-[58px] h-[28px]">
-            <InputNumber.HorizontalControls>
-              <InputNumber.Input className="text-foreground" />
+            <InputNumber.HorizontalControls
+              min={minFps || 1}
+              max={maxFps || 30}
+              step={1}
+            >
+              <InputNumber.Input />
             </InputNumber.HorizontalControls>
           </InputNumber.Container>
           <InputNumber.Label position="bottom">FPS</InputNumber.Label>
