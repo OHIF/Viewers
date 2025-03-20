@@ -339,7 +339,7 @@ const InputNumberVerticalControls = React.forwardRef<
           size="icon"
           onClick={increment}
           disabled={disabled}
-          className="text-primary h-3 w-3 p-0"
+          className="text-primary h-3 w-5 pr-px"
         >
           <ChevronUp className="h-3 w-3" />
         </Button>
@@ -348,7 +348,7 @@ const InputNumberVerticalControls = React.forwardRef<
           size="icon"
           onClick={decrement}
           disabled={disabled}
-          className="text-primary h-3 w-3 p-0"
+          className="text-primary h-3 w-5 pr-px"
         >
           <ChevronDown className="h-3 w-3" />
         </Button>
