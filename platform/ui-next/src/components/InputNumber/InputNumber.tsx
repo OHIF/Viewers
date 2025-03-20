@@ -294,8 +294,15 @@ export interface InputNumberVerticalControlsProps extends React.HTMLAttributes<H
 const InputNumberVerticalControls = React.forwardRef<
   HTMLDivElement,
   InputNumberVerticalControlsProps
->(({ className, min = 0, max = 100, step = 1, disabled = false, ...props }, ref) => {
-  const { value, onChange } = useInputNumber();
+>(({ className, children, min = 0, max = 100, step = 1, disabled = false, ...props }, ref) => {
+  // Get existing context and enhance it with constraints
+  const context = useInputNumber();
+  const { value, onChange } = context;
+
+  // Set constraints in context for child components to use
+  React.useEffect(() => {
+    context.constraints = { min, max, step, disabled };
+  }, [context, min, max, step, disabled]);
 
   // Increment function with local constraints
   const increment = React.useCallback(() => {
@@ -322,27 +329,29 @@ const InputNumberVerticalControls = React.forwardRef<
   return (
     <div
       ref={ref}
-      className={cn('ml-auto flex flex-col pr-1', className)}
+      className={cn('flex items-center', className)}
       {...props}
     >
-      <Button
-        variant="ghost"
-        size="icon"
-        onClick={increment}
-        disabled={disabled}
-        className="text-primary h-3 w-4 p-0"
-      >
-        <ChevronUp className="h-3 w-3" />
-      </Button>
-      <Button
-        variant="ghost"
-        size="icon"
-        onClick={decrement}
-        disabled={disabled}
-        className="text-primary h-3 w-4 p-0"
-      >
-        <ChevronDown className="h-3 w-3" />
-      </Button>
+      {children}
+      <div className="ml-1 flex flex-col">
+          variant="ghost"
+          size="icon"
+          onClick={increment}
+          disabled={disabled}
+          className="text-primary h-3 w-3 p-0"
+        >
+          <ChevronUp className="h-2 w-2" />
+        </Button>
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={decrement}
+          disabled={disabled}
+          className="text-primary h-3 w-3 p-0"
+        >
+          <ChevronDown className="h-2 w-2" />
+        </Button>
+      </div>
     </div>
   );
 });
