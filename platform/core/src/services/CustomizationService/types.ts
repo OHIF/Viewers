@@ -27,18 +27,13 @@ export interface ComponentCustomization extends BaseCustomization {
   content: (...props: any) => React.JSX.Element;
 }
 
-export interface ToolbarCustomization {
-  buttons: any[];
-}
-
 export type Customization =
   | React.ComponentType
   | BaseCustomization
   | LabelCustomization
   | CommandCustomization
   | CodeCustomization
-  | ComponentCustomization
-  | ToolbarCustomization;
+  | ComponentCustomization;
 
 export default Customization;
 
