@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.10.0-beta.133](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.132...v3.10.0-beta.133) (2025-03-20)
+
+**Note:** Version bump only for package @ohif/mode-basic-dev-mode
+
+
+
+
+
 # [3.10.0-beta.132](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.131...v3.10.0-beta.132) (2025-03-20)
 
 **Note:** Version bump only for package @ohif/mode-basic-dev-mode
