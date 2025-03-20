@@ -381,9 +381,9 @@ window.config = {
     
     // Create a global dicomWebConfig object that mirrors our data source config
     window.dicomWebConfig = {
-      qidoRoot: dataSourceConfig.qidoRoot,
-      wadoRoot: dataSourceConfig.wadoRoot,
-      wadoUriRoot: dataSourceConfig.wadoUriRoot,
+      qidoRoot: 'http://localhost',
+      wadoRoot: 'http://localhost',
+      wadoUriRoot: 'http://localhost',
       enableStudyLazyLoad: false,
       supportsFuzzyMatching: false,
       supportsWildcard: true,

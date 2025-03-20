@@ -1,11 +1,18 @@
 import { DicomMetadataStore, classes } from '@ohif/core';
 import { calculateSUVScalingFactors } from '@cornerstonejs/calculate-suv';
+import { initXNATDicomLoader } from './XNATDicomLoader';
 
 import getPTImageIdInstanceMetadata from './getPTImageIdInstanceMetadata';
 import { registerHangingProtocolAttributes } from './hangingprotocols';
-import { initXNATDicomLoader } from './XNATDicomLoader';
 
 const metadataProvider = classes.MetadataProvider;
+
+// Define window type to include cornerstoneWADOImageLoader
+declare global {
+  interface Window {
+    cornerstoneWADOImageLoader?: any;
+  }
+}
 
 // Extend ServicesManager type to include subscribe
 interface ExtendedServicesManager {
@@ -22,32 +29,90 @@ export default function init({
   servicesManager,
   configuration = {},
   commandsManager,
-}: withAppTypes): void {
+}: {
+  servicesManager: any;
+  commandsManager: any;
+  configuration: any;
+}): void {
   const { toolbarService, cineService, viewportGridService, cornerstoneViewportService } = servicesManager.services;
   console.log('XNAT Extension init', { servicesManager, configuration, commandsManager });
   
+  // First, check if we can dynamically import the required WADO loader
+  const loadWadoLoader = async () => {
+    try {
+      // Try to load the WADO loader dynamically if it's not already available
+      console.log('XNAT: Attempting to dynamically import WADO loader');
+      
+      // Check if it's already in window object
+      if (typeof window.cornerstoneWADOImageLoader === 'undefined') {
+        // Try different potential module paths
+        try {
+          // Try from the cornerstone extension path
+          const dicomImageLoader = await import('@cornerstonejs/dicom-image-loader');
+          
+          // Assign to global scope for compatibility with existing code
+          window.cornerstoneWADOImageLoader = dicomImageLoader;
+          console.log('XNAT: Successfully imported dicom-image-loader from @cornerstonejs/dicom-image-loader');
+          return true;
+        } catch (e) {
+          console.warn('XNAT: Failed to import from @cornerstonejs/dicom-image-loader', e);
+          
+          // If all else fails, return false
+          return false;
+        }
+      } else {
+        console.log('XNAT: WADO loader already available in global scope');
+        return true;
+      }
+    } catch (error) {
+      console.error('XNAT: Error importing WADO loader:', error);
+      return false;
+    }
+  };
+  
   // Initialize XNAT DICOM loader with the configuration, returning a standard promise
-  const initializeXNATLoader = () => {
+  const initializeXNATLoader = async () => {
     console.log('XNAT Extension: Initializing XNAT DICOM loader');
     try {
+      // First try to ensure the WADO loader is available
+      const loaderAvailable = await loadWadoLoader();
+      
+      if (!loaderAvailable) {
+        console.warn('XNAT Extension: Could not load WADO image loader, proceeding with limited functionality');
+      }
+      
       // Pass the configuration to the XNAT DICOM loader
       // Make sure we properly handle the promise returned by initXNATDicomLoader
       const loaderPromise = initXNATDicomLoader(configuration);
       
       // Don't try to call start() on the promise, just use standard then/catch
-      loaderPromise
+      return loaderPromise
         .then(() => {
           console.log('XNAT Extension: XNAT DICOM loader initialized successfully');
         })
         .catch(error => {
           console.error('XNAT Extension: Failed to initialize XNAT DICOM loader:', error);
+          
+          // If the error is about WADO loader not being available, we'll set up a fallback
+          if (error.message && error.message.includes('WADO image loader not available')) {
+            console.warn('XNAT Extension: WADO loader not available, setting up fallback mechanism');
+            
+            // Create a custom event to notify that we need to use a fallback loader
+            const fallbackEvent = new CustomEvent('xnat:useFallbackLoader', {
+              detail: { message: 'Using fallback loader mechanism' }
+            });
+            document.dispatchEvent(fallbackEvent);
+            
+            // Instead of rejecting, we resolve to prevent cascading errors
+            return Promise.resolve();
+          }
+          
+          // For other errors, we can still let them propagate
+          return Promise.reject(error);
         });
-      
-      return loaderPromise;
-    } catch (e) {
-      console.warn('XNAT Extension: Error during XNAT DICOM loader initialization:', e);
-      // Return a resolved promise to prevent further errors
-      return Promise.resolve();
+    } catch (error) {
+      console.error('XNAT Extension: Error in initializeXNATLoader:', error);
+      return Promise.reject(error);
     }
   };
   
@@ -70,9 +135,17 @@ export default function init({
     }
   }
   
+  // Subscribe to DicomMetadataStore events to know when instances are added
+  DicomMetadataStore.subscribe(DicomMetadataStore.EVENTS.INSTANCES_ADDED, (event) => {
+    console.log('XNAT: New DICOM instances added to store', event);
+    // You can uncomment this line to automatically print instances when they're added
+    // printSimpleInstanceList();
+  });
+  
   toolbarService.registerEventForToolbarUpdate(cineService, [
     cineService.EVENTS.CINE_STATE_CHANGED,
   ]);
+  
   // Add
   DicomMetadataStore.subscribe(DicomMetadataStore.EVENTS.INSTANCES_ADDED, handlePETImageMetadata);
 

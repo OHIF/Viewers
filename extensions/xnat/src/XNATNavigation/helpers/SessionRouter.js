@@ -210,7 +210,7 @@ export default class SessionRouter {
 
   async _setupDicomWebDataSource(studyInstanceUID) {
     // Use the direct path to the XNAT experiments viewer endpoint instead of DICOMweb
-    const basePath = `/xapi/viewer/projects/${this.projectId}/experiments/${this.experimentId}`;
+    const basePath = `http://localhost`;
     
     console.log('Setting up XNAT data source with basePath:', basePath);
     

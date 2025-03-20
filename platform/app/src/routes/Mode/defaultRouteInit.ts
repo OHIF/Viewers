@@ -63,10 +63,6 @@ export async function defaultRouteInit(
       console.log(`DicomMetadataStore: Instances added for Study ${StudyInstanceUID}, Series ${SeriesInstanceUID}`);
       
       const seriesMetadata = DicomMetadataStore.getSeries(StudyInstanceUID, SeriesInstanceUID);
-      console.log(`Series metadata retrieved:`, {
-        hasInstances: !!seriesMetadata?.instances,
-        instanceCount: seriesMetadata?.instances?.length
-      });
 
       // checks if the series filter was used, if it exists
       const seriesInstanceUIDs = filters?.seriesInstanceUID;

@@ -1,67 +1,178 @@
+import React from 'react';
+import { DicomMetadataStore, utils } from '@ohif/core';
 import defaultContextMenuCustomization from './customizations/defaultContextMenuCustomization';
 import helloPageCustomization from './customizations/helloPageCustomization';
-import datasourcesCustomization from './customizations/datasourcesCustomization';
-import multimonitorCustomization from './customizations/multimonitorCustomization';
-import customRoutesCustomization from './customizations/customRoutesCustomization';
-import studyBrowserCustomization from './customizations/studyBrowserCustomization';
-import overlayItemCustomization from './customizations/overlayItemCustomization';
-import contextMenuCustomization from './customizations/contextMenuCustomization';
-import contextMenuUICustomization from './customizations/contextMenuUICustomization';
-import menuContentCustomization from './customizations/menuContentCustomization';
-import getDataSourceConfigurationCustomization from './customizations/dataSourceConfigurationCustomization';
-import progressDropdownCustomization from './customizations/progressDropdownCustomization';
-import sortingCriteriaCustomization from './customizations/sortingCriteriaCustomization';
-import onDropHandlerCustomization from './customizations/onDropHandlerCustomization';
-import loadingIndicatorProgressCustomization from './customizations/loadingIndicatorProgressCustomization';
-import loadingIndicatorTotalPercentCustomization from './customizations/loadingIndicatorTotalPercentCustomization';
-import progressLoadingBarCustomization from './customizations/progressLoadingBarCustomization';
-import viewportActionCornersCustomization from './customizations/viewportActionCornersCustomization';
 import labellingFlowCustomization from './customizations/labellingFlowCustomization';
 import viewportNotificationCustomization from './customizations/notificationCustomization';
 
 /**
- *
- * Note: this is an example of how the customization module can be used
- * using the customization module. Below, we are adding a new custom route
- * to the application at the path /custom and rendering a custom component
- * Real world use cases of the having a custom route would be to add a
- * custom page for the user to view their profile, or to add a custom
- * page for login etc.
+ * Maps XNAT metadata to a format the study browser expects
+ * @param studies - Array of studies from DicomMetadataStore
+ * @returns Mapped studies with proper display fields
+ */
+function mapXNATMetadataForDisplay(studies) {
+  if (!studies || !studies.length) {
+    return studies;
+  }
+
+  return studies.map(study => {
+    // Ensure key fields exist with proper formatting
+    const patientName = study.PatientName || 'No Name';
+    const patientId = study.PatientID || '';
+    const accessionNumber = study.AccessionNumber || '';
+    const studyDate = study.StudyDate 
+      ? utils.formatDate(study.StudyDate) 
+      : 'No Study Date';
+    const studyTime = study.StudyTime 
+      ? utils.formatTime(study.StudyTime) 
+      : '';
+    const modalities = study.Modalities || study.ModalitiesInStudy || '';
+    const studyDescription = study.StudyDescription || 'No Description';
+
+    // Map any XNAT specific fields that might be missing or named differently
+    return {
+      ...study,
+      PatientName: patientName,
+      PatientID: patientId,
+      AccessionNumber: accessionNumber,
+      StudyDate: studyDate,
+      StudyTime: studyTime,
+      ModalitiesInStudy: modalities,
+      StudyDescription: studyDescription,
+      // Ensure display fields are set
+      displayStudyDate: studyDate,
+      displayPatientName: typeof patientName === 'object' ? patientName.Alphabetic : patientName,
+      displayStudyDescription: studyDescription,
+    };
+  });
+}
+
+/**
+ * Apply custom styling to the study browser
+ */
+function CustomizableXNATViewportLabels({ servicesManager }) {
+  const { customizationService } = servicesManager.services;
+
+  if (customizationService) {
+    customizationService.addModeCustomizations([
+      {
+        id: 'xnatStyleOverrides',
+        keys: ['ohif.studyList.studyDate.label', 'ohif.studyList.studyDescription.label'],
+        styles: { font: 'bold 14px Arial' },
+      },
+    ]);
+  }
+
+  return null;
+}
+
+/**
+ * Enhance the XNAT metadata handling in OHIF viewer
+ * This customization improves the display of XNAT studies in the study browser
  */
 export default function getCustomizationModule({ servicesManager, extensionManager }) {
+  // Add hooks to enhance study metadata when retrieved from DicomMetadataStore
+  // Override the getStudy method to map metadata properly
+  const originalGetStudy = DicomMetadataStore.getStudy;
+  DicomMetadataStore.getStudy = function(studyInstanceUID) {
+    const study = originalGetStudy.call(DicomMetadataStore, studyInstanceUID);
+    if (!study) return null;
+    
+    // Apply our metadata mapping to this study
+    const mappedStudies = mapXNATMetadataForDisplay([study]);
+    return mappedStudies[0];
+  };
+  
+  // Also hook into getStudyInstanceUIDs to ensure all studies are processed
+  const originalGetStudyInstanceUIDs = DicomMetadataStore.getStudyInstanceUIDs;
+  DicomMetadataStore.getStudyInstanceUIDs = function() {
+    const studyUIDs = originalGetStudyInstanceUIDs.call(DicomMetadataStore);
+    return studyUIDs;
+  };
+  
+  // Instead of trying to register the hanging protocol here, we'll register it in a delayed fashion
+  // to ensure all services are fully initialized
+  setTimeout(() => {
+    try {
+      const { hangingProtocolService } = servicesManager.services;
+      if (!hangingProtocolService) {
+        console.warn('XNAT: Hanging protocol service not available');
+        return;
+      }
+      
+      console.log('XNAT: Attempting to register hanging protocol via setTimeout');
+      
+      // Simplest possible protocol definition that should pass validation
+      const protocol = {
+        id: 'xnat-default',
+        name: 'XNAT Default',
+        hasUpdatedPriorsInformation: false,
+        protocolMatchingRules: [],
+        displaySetSelectors: {},
+        stages: [{
+          id: 'default',
+          name: 'Default',
+          viewportStructure: {
+            layoutType: 'grid',
+            properties: {
+              rows: 1,
+              columns: 1
+            }
+          },
+          viewports: [{
+            viewportOptions: {
+              toolGroupId: 'default',
+              viewportType: 'stack'
+            },
+            displaySets: []
+          }]
+        }],
+        numberOfPriorsReferenced: 0
+      };
+      
+      hangingProtocolService.addProtocol(protocol);
+      console.log('XNAT: Successfully registered delayed hanging protocol');
+    } catch (error) {
+      console.error('XNAT: Error registering delayed hanging protocol:', error);
+    }
+  }, 1000);  // 1 second delay
+
+  // Return customization module with proper name for each element
   return [
+    {
+      name: 'contextMenu',
+      value: defaultContextMenuCustomization,
+    },
     {
       name: 'helloPage',
       value: helloPageCustomization,
     },
     {
-      name: 'datasources',
-      value: datasourcesCustomization,
+      name: 'labellingFlow',
+      value: labellingFlowCustomization,
     },
     {
-      name: 'multimonitor',
-      value: multimonitorCustomization,
+      name: 'viewportNotification',
+      value: viewportNotificationCustomization,
     },
     {
-      name: 'default',
+      name: 'ohif.divider',
       value: {
-        ...customRoutesCustomization,
-        ...studyBrowserCustomization,
-        ...overlayItemCustomization,
-        ...contextMenuCustomization,
-        ...menuContentCustomization,
-        ...getDataSourceConfigurationCustomization({ servicesManager, extensionManager }),
-        ...progressDropdownCustomization,
-        ...sortingCriteriaCustomization,
-        ...defaultContextMenuCustomization,
-        ...onDropHandlerCustomization,
-        ...loadingIndicatorProgressCustomization,
-        ...loadingIndicatorTotalPercentCustomization,
-        ...progressLoadingBarCustomization,
-        ...viewportActionCornersCustomization,
-        ...labellingFlowCustomization,
-        ...contextMenuUICustomization,
-        ...viewportNotificationCustomization,
+        label: 'XNAT Extensions',
+        color: 'rgb(29, 174, 160)',
+      },
+    },
+    {
+      name: 'xnat.customizationModule.summary',
+      value: {
+        content: {
+          title: 'XNAT Integration',
+          label: 'Enhanced with XNAT features',
+          image: '',
+        },
+        renderer: {
+          id: 'summaryCard',
+        },
       },
     },
   ];

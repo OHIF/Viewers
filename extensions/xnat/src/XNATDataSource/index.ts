@@ -15,6 +15,7 @@ import { retrieveStudyMetadata, deleteStudyMetadataPromise } from '../DicomWebDa
 import StaticWadoClient from '../DicomWebDataSource/utils/StaticWadoClient';
 import getDirectURL from '../utils/getDirectURL';
 import { fixBulkDataURI } from '../DicomWebDataSource/utils/fixBulkDataURI';
+import { printSimpleInstanceList } from '../XNATDicomLoader';
 
 const { DicomMetaDictionary, DicomDict } = dcmjs.data;
 const { naturalizeDataset, denaturalizeDataset } = DicomMetaDictionary;
@@ -57,26 +58,22 @@ const getAppropriateImageId = (url: string, preferredScheme = 'wadouri'): string
       !url.startsWith('http://') && 
       !url.startsWith('https://') && 
       !url.startsWith('dicomweb:')) {
-    log.debug('XNAT: URL already has a scheme, returning as is:', url);
     return url;
   }
 
   // For HTTP(S) URLs, always use dicomweb: prefix
   if (url.startsWith('http://') || url.startsWith('https://')) {
     const imageId = `dicomweb:${url}`;
-    log.debug('XNAT: Formatted absolute URL with dicomweb: scheme:', imageId);
     return imageId;
   }
   
   // For relative URLs that don't have a scheme yet
   if (!url.includes(':')) {
     const imageId = `dicomweb:${url}`;
-    log.debug('XNAT: Formatted relative URL with dicomweb: scheme:', imageId);
     return imageId;
   }
 
   // If already has dicomweb: prefix, return as is
-  log.debug('XNAT: URL format preserved:', url);
   return url;
 };
 
@@ -555,14 +552,24 @@ function createXNATApi(xnatConfig: XNATConfig, servicesManager) {
           {
             StudyInstanceUID,
             SeriesInstanceUID,
-          }: DICOMWebSeriesMetadata,
-          enableStudyLazyLoad?: boolean,
-          filters?: Record<string, unknown> | Array<Record<string, unknown>>
-        ): Promise<DICOMWebSeriesMetadata[]> => {
+            returnPromises = false,
+            filters,
+            sortCriteria
+          }: {
+            StudyInstanceUID: string;
+            SeriesInstanceUID?: string;
+            returnPromises?: boolean;
+            filters?: Record<string, unknown> | Array<Record<string, unknown>>;
+            sortCriteria?: any;
+          },
+        ): Promise<any> => {
+          // Import the DeferredPromise utilities
+          const { wrapArrayWithDeferredPromises } = await import('../utils/DeferredPromise');
+
           log.info('XNAT: retrieve.series.metadata', {
             StudyInstanceUID,
             SeriesInstanceUID,
-            enableStudyLazyLoad,
+            returnPromises,
             filters,
           });
 
@@ -613,7 +620,55 @@ function createXNATApi(xnatConfig: XNATConfig, servicesManager) {
               );
             }
 
-            // Process each series
+            // Handle returnPromises option (used by the defaultRouteInit function)
+            if (returnPromises) {
+              console.log('XNAT: Returning promises for lazy loading');
+              
+              // Create an array of functions that return promises
+              const seriesPromiseFunctions = filteredSeriesData.map(series => {
+                return () => {
+                  return Promise.resolve().then(() => {
+                    if (series.instances && series.instances.length > 0) {
+                      // Process all instances in this series - similar to the code below
+                      series.instances.forEach(instance => {
+                        // Use the URL directly from the instance object instead of trying to construct it
+                        let instanceURLPath;
+                        
+                        if (instance.url) {
+                          instanceURLPath = instance.url;
+                        } else if (instance.scanId && instance.name) {
+                          instanceURLPath = `/data/experiments/${encodeURIComponent(experimentId)}/scans/${encodeURIComponent(instance.scanId)}/resources/DICOM/files/${encodeURIComponent(instance.name)}`;
+                        } else {
+                          console.error("XNAT: Unable to determine instance URL", instance);
+                          return; // Skip this instance
+                        }
+                        
+                        // Make sure we're getting a proper absolute URL
+                        const baseUrl = xnatConfig.wadoRoot || window.location.origin;
+                        const absoluteUrl = convertToAbsoluteUrl(instanceURLPath, baseUrl, xnatConfig);
+                        
+                        // Set URL and imageId
+                        instance.url = absoluteUrl;
+                        instance.imageId = getAppropriateImageId(absoluteUrl, 'dicomweb');
+                        
+                        // Add to DicomMetadataStore if batch mode is not enabled
+                        if (!filters || !(filters as any).batch) {
+                          addInstancesToMetadataStore(instance, series.SeriesInstanceUID);
+                        }
+                      });
+                    }
+                    
+                    // Return the processed series
+                    return [series];
+                  });
+                };
+              });
+              
+              // Wrap the promise functions with DeferredPromise to ensure they have start() method
+              return wrapArrayWithDeferredPromises(seriesPromiseFunctions);
+            }
+
+            // Process each series (normal non-promise path)
             return filteredSeriesData.map(series => {
               // Process each instance
               if (series.instances && series.instances.length > 0) {
@@ -654,7 +709,7 @@ function createXNATApi(xnatConfig: XNATConfig, servicesManager) {
 
                   // Add to DicomMetadataStore if batch mode is not enabled
                   if (!filters || !(filters as any).batch) {
-                    addInstancesToMetadataStore(instance);
+                    addInstancesToMetadataStore(instance, series.SeriesInstanceUID);
                   }
                 });
               }
@@ -1049,55 +1104,104 @@ function createXNATApi(xnatConfig: XNATConfig, servicesManager) {
           return null;
         }
         
-        // Use the wadoRoot from configuration as the base URL
-        const baseUrl = xnatConfig.wadoRoot || 'http://localhost';
-        console.log('XNAT: Using base URL from configuration:', baseUrl);
-        
-        // Always construct a standardized API URL path
-        const apiPath = `/xapi/viewer/projects/${projectId}/experiments/${experimentId}`;
-        const apiUrl = convertToAbsoluteUrl(apiPath, baseUrl, xnatConfig);
-        
-        console.log('XNAT: Constructed API URL:', apiUrl);
-        
         try {
-          const headers = getAuthorizationHeader();
+          // Use the wadoRoot from configuration as the base URL
+          const baseUrl = xnatConfig.wadoRoot || 'http://localhost';
+          console.log('XNAT: Using base URL from configuration:', baseUrl);
           
-          console.log('XNAT: Fetching from URL', apiUrl);
-          const response = await fetch(apiUrl, {
-            method: 'GET',
-            headers: {
-              'Accept': 'application/json',
-              'Content-Type': 'application/json',
-              ...headers
+          // Always construct a standardized API URL path
+          const apiPath = `/xapi/viewer/projects/${projectId}/experiments/${experimentId}`;
+          
+          // Check if baseUrl already contains the XNAT API path
+          if (baseUrl.includes('/xapi/viewer/projects/')) {
+            console.log('XNAT: Base URL already contains the XNAT API path, avoiding duplication');
+            
+            // Use convertToAbsoluteUrl which now handles path duplication
+            const apiUrl = convertToAbsoluteUrl(apiPath, baseUrl, xnatConfig);
+            console.log('XNAT: Constructed API URL:', apiUrl);
+            
+            const headers = getAuthorizationHeader();
+            const response = await fetch(apiUrl, {
+              method: 'GET',
+              headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                ...headers
+              }
+            });
+            
+            if (!response.ok) {
+              console.error('XNAT: Failed to fetch experiment metadata', response.status, response.statusText);
+              throw new Error(`XNAT API error: ${response.status} ${response.statusText}`);
             }
-          });
-          
-          if (!response.ok) {
-            console.error('XNAT: Failed to fetch experiment metadata', response.status, response.statusText);
-            throw new Error(`XNAT API error: ${response.status} ${response.statusText}`);
+            
+            // Check if the response is JSON
+            const contentType = response.headers.get('content-type');
+            console.log('XNAT: Response content type:', contentType);
+            
+            // Get the response as text first to inspect it
+            const responseText = await response.text();
+            console.log('XNAT: Raw response (first 100 chars):', responseText.substring(0, 100));
+            
+            // Try to parse it as JSON
+            let data;
+            try {
+              data = JSON.parse(responseText);
+              console.log('XNAT: Successfully parsed JSON response', data);
+            } catch (parseError) {
+              console.error('XNAT: Error parsing JSON response:', parseError);
+              console.error('XNAT: Response was not valid JSON. Raw data (first 100 chars):', responseText.substring(0, 100));
+              throw new Error('Failed to parse JSON response from XNAT API');
+            }
+            
+            console.log('XNAT: Successfully fetched experiment metadata');
+            console.log('XNAT: DicomMetadataStore:', DicomMetadataStore);
+            
+            return data;
+          } else {
+            // Normal case - just append the path to the base URL
+            const apiUrl = convertToAbsoluteUrl(apiPath, baseUrl, xnatConfig);
+            console.log('XNAT: Constructed API URL:', apiUrl);
+            
+            const headers = getAuthorizationHeader();
+            const response = await fetch(apiUrl, {
+              method: 'GET',
+              headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                ...headers
+              }
+            });
+            
+            if (!response.ok) {
+              console.error('XNAT: Failed to fetch experiment metadata', response.status, response.statusText);
+              throw new Error(`XNAT API error: ${response.status} ${response.statusText}`);
+            }
+            
+            // Check if the response is JSON
+            const contentType = response.headers.get('content-type');
+            console.log('XNAT: Response content type:', contentType);
+            
+            // Get the response as text first to inspect it
+            const responseText = await response.text();
+            console.log('XNAT: Raw response (first 100 chars):', responseText.substring(0, 100));
+            
+            // Try to parse it as JSON
+            let data;
+            try {
+              data = JSON.parse(responseText);
+              console.log('XNAT: Successfully parsed JSON response', data);
+            } catch (parseError) {
+              console.error('XNAT: Error parsing JSON response:', parseError);
+              console.error('XNAT: Response was not valid JSON. Raw data (first 100 chars):', responseText.substring(0, 100));
+              throw new Error('Failed to parse JSON response from XNAT API');
+            }
+            
+            console.log('XNAT: Successfully fetched experiment metadata');
+            console.log('XNAT: DicomMetadataStore:', DicomMetadataStore);
+            
+            return data;
           }
-          
-          // Check if the response is JSON
-          const contentType = response.headers.get('content-type');
-          console.log('XNAT: Response content type:', contentType);
-          
-          // Get the response as text first to inspect it
-          const responseText = await response.text();
-          console.log('XNAT: Raw response (first 100 chars):', responseText.substring(0, 100));
-          
-          // Try to parse it as JSON
-          let data;
-          try {
-            data = JSON.parse(responseText);
-            console.log('XNAT: Successfully parsed JSON response', data);
-          } catch (parseError) {
-            console.error('XNAT: Error parsing JSON response:', parseError);
-            console.error('XNAT: Response was not valid JSON. Raw data (first 100 chars):', responseText.substring(0, 100));
-            throw new Error('Failed to parse JSON response from XNAT API');
-          }
-          
-          console.log('XNAT: Successfully fetched experiment metadata');
-          return data;
         } catch (error) {
           console.error('XNAT: Error fetching experiment metadata:', error);
           throw error;
@@ -1119,29 +1223,19 @@ function createXNATApi(xnatConfig: XNATConfig, servicesManager) {
           return null;
         }
         
-        // Construct the URL to the XNAT API endpoint - prevent duplication
-        const baseUrl = xnatConfig.wadoRoot || '';
-        
-        // Check if baseUrl already contains the XNAT API path
-        let apiUrl;
-        if (baseUrl.includes('/xapi/viewer/projects/')) {
-          console.log('XNAT: Base URL already contains the XNAT API path, avoiding duplication');
-          
-          // If the URL already has a full path, we should use it directly or strip out duplicates
-          const parts = baseUrl.split('/xapi/viewer/projects/');
-          const basePart = parts[0]; // Get just the protocol and domain
-          apiUrl = `${basePart}/xapi/viewer/projects/${projectId}/subjects/${subjectId}`;
-        } else {
-          // Normal case - just append the path to the base URL
-          apiUrl = `${baseUrl}/xapi/viewer/projects/${projectId}/subjects/${subjectId}`;
-        }
-        
-        console.log('XNAT: Constructed API URL:', apiUrl);
-        
         try {
+          // Use the wadoRoot from configuration as the base URL
+          const baseUrl = xnatConfig.wadoRoot || 'http://localhost';
+          console.log('XNAT: Using base URL from configuration:', baseUrl);
+          
+          // Construct a standardized API URL path
+          const apiPath = `/xapi/viewer/projects/${projectId}/subjects/${subjectId}`;
+          const apiUrl = convertToAbsoluteUrl(apiPath, baseUrl, xnatConfig);
+          
+          console.log('XNAT: Constructed API URL:', apiUrl);
+          
           const headers = getAuthorizationHeader();
           
-          console.log('XNAT: Fetching from URL', apiUrl);
           const response = await fetch(apiUrl, {
             method: 'GET',
             headers: {
@@ -1178,29 +1272,19 @@ function createXNATApi(xnatConfig: XNATConfig, servicesManager) {
           return null;
         }
         
-        // Construct the URL to the XNAT API endpoint - prevent duplication
-        const baseUrl = xnatConfig.wadoRoot || '';
-        
-        // Check if baseUrl already contains the XNAT API path
-        let apiUrl;
-        if (baseUrl.includes('/xapi/viewer/projects/')) {
-          console.log('XNAT: Base URL already contains the XNAT API path, avoiding duplication');
-          
-          // If the URL already has a full path, we should use it directly or strip out duplicates
-          const parts = baseUrl.split('/xapi/viewer/projects/');
-          const basePart = parts[0]; // Get just the protocol and domain
-          apiUrl = `${basePart}/xapi/viewer/projects/${projectId}`;
-        } else {
-          // Normal case - just append the path to the base URL
-          apiUrl = `${baseUrl}/xapi/viewer/projects/${projectId}`;
-        }
-        
-        console.log('XNAT: Constructed API URL:', apiUrl);
-        
         try {
+          // Use the wadoRoot from configuration as the base URL
+          const baseUrl = xnatConfig.wadoRoot || 'http://localhost';
+          console.log('XNAT: Using base URL from configuration:', baseUrl);
+          
+          // Construct a standardized API URL path
+          const apiPath = `/xapi/viewer/projects/${projectId}`;
+          const apiUrl = convertToAbsoluteUrl(apiPath, baseUrl, xnatConfig);
+          
+          console.log('XNAT: Constructed API URL:', apiUrl);
+          
           const headers = getAuthorizationHeader();
           
-          console.log('XNAT: Fetching from URL', apiUrl);
           const response = await fetch(apiUrl, {
             method: 'GET',
             headers: {
@@ -1315,31 +1399,44 @@ const convertToAbsoluteUrl = (relativeUrl: string, baseUrl?: string, config?: XN
     console.error('XNAT: Empty URL provided to convertToAbsoluteUrl');
     return '';
   }
-  
-  // Log the input for debugging
-  console.log('XNAT: Converting URL to absolute:', { relativeUrl, baseUrl });
-  
+    
   // If the URL is already absolute, return it as is
   if (relativeUrl.startsWith('http://') || relativeUrl.startsWith('https://')) {
-    console.log('XNAT: URL is already absolute, returning as is:', relativeUrl);
     return relativeUrl;
   }
   
   // Always use the wadoRoot from config if available
   if (config && config.wadoRoot) {
-    console.log('XNAT: Using wadoRoot from config:', config.wadoRoot);
+    
     // Make sure the wadoRoot doesn't end with a slash
     const cleanWadoRoot = config.wadoRoot.endsWith('/') ? config.wadoRoot.slice(0, -1) : config.wadoRoot;
-    // Make sure the relative URL starts with a slash
+    
+    // Check if the relative URL contains a path that's already in the base URL
+    // This prevents paths like http://localhost/xapi/viewer/projects/X/xapi/viewer/projects/X
+    if (relativeUrl.startsWith('/') && relativeUrl.includes('/xapi/')) {
+      // Extract just the path part from the relativeUrl
+      const pathSegments = relativeUrl.split('/');
+      const xapiIndex = pathSegments.findIndex(segment => segment === 'xapi');
+      
+      if (xapiIndex !== -1 && cleanWadoRoot.includes('/xapi/')) {
+        // Base URL already has /xapi/ path - extract only domain part
+        const urlParts = cleanWadoRoot.split('/xapi/');
+        const domainPart = urlParts[0]; // Get just the domain part
+        
+        // Reconstruct the URL with just one instance of the path
+        const fullUrl = `${domainPart}${relativeUrl}`;
+        return fullUrl;
+      }
+    }
+    
+    // Normal case - make sure relative URL starts with a slash
     const cleanRelativeUrl = relativeUrl.startsWith('/') ? relativeUrl : `/${relativeUrl}`;
     const absoluteUrl = `${cleanWadoRoot}${cleanRelativeUrl}`;
-    console.log('XNAT: Using configured root - using URL:', absoluteUrl);
     return absoluteUrl;
   }
   
   // If no baseUrl provided and no config.wadoRoot, use window location
   let effectiveBaseUrl = baseUrl || `${window.location.protocol}//${window.location.host}`;
-  console.log('XNAT: Using base URL:', effectiveBaseUrl);
   
   // Ensure the relative URL is properly formatted
   // 1. If the relative URL doesn't start with a slash, add one
@@ -1348,6 +1445,13 @@ const convertToAbsoluteUrl = (relativeUrl: string, baseUrl?: string, config?: XN
   // 2. Make sure we don't end up with double slashes when joining
   if (effectiveBaseUrl.endsWith('/')) {
     effectiveBaseUrl = effectiveBaseUrl.slice(0, -1);
+  }
+  
+  // 3. Check for duplicate paths
+  if (normalizedPath.includes('/xapi/') && effectiveBaseUrl.includes('/xapi/')) {
+    // Extract base domain
+    const urlParts = effectiveBaseUrl.split('/xapi/');
+    effectiveBaseUrl = urlParts[0]; // Use only the domain part
   }
   
   // Combine the base URL with the normalized path
@@ -1422,12 +1526,84 @@ const getXNATStatusFromStudyInstanceUID = (studyInstanceUID: string, config: XNA
 /**
  * Add instances to the DicomMetadataStore
  */
-const addInstancesToMetadataStore = (instance: any): void => {
+const addInstancesToMetadataStore = (instance: any, seriesUID?: string): void => {
   if (!instance) return;
   
   try {
+    // Check if SOPInstanceUID is in metadata
+    const metadata = instance.metadata || {};
+    const sopInstanceUID = instance.SOPInstanceUID || metadata.SOPInstanceUID;
+    
+    // Ensure instance has all required fields for Cornerstone
+    const enhancedInstance = {
+      ...instance,
+      ...metadata, // Spread metadata to make its properties directly available
+      
+      // Make sure required imaging attributes are set
+      Rows: metadata.Rows || instance.Rows || 512,
+      Columns: metadata.Columns || instance.Columns || 512,
+      
+      // Add mandatory attributes for proper display
+      PixelSpacing: metadata.PixelSpacing || instance.PixelSpacing || [1, 1],
+      
+      // Important UIDs - use provided values or try to extract from filename as last resort
+      SOPInstanceUID: sopInstanceUID || extractUIDFromFilename(instance.url) || generateRandomUID(),
+      SeriesInstanceUID: instance.SeriesInstanceUID || seriesUID || generateRandomUID(),
+      StudyInstanceUID: instance.StudyInstanceUID || (instance.url ? extractStudyUIDFromURL(instance.url) : null) || generateRandomUID(),
+      
+      // Image type is required for proper rendering
+      ImageType: instance.ImageType || ['ORIGINAL', 'PRIMARY', 'AXIAL'],
+      
+      // Instance number needed for proper ordering
+      InstanceNumber: instance.InstanceNumber || '1',
+      
+      // Image position and orientation needed for MPR
+      ImagePositionPatient: instance.ImagePositionPatient || [0, 0, 0],
+      ImageOrientationPatient: instance.ImageOrientationPatient || [1, 0, 0, 0, 1, 0],
+      
+      // Bits properties needed for proper windowing
+      BitsAllocated: instance.BitsAllocated || 16,
+      BitsStored: instance.BitsStored || 16,
+      HighBit: instance.HighBit || 15,
+      
+      // Add placeholders for commonly expected tags
+      SamplesPerPixel: instance.SamplesPerPixel || 1,
+      PhotometricInterpretation: instance.PhotometricInterpretation || 'MONOCHROME2',
+      PixelRepresentation: instance.PixelRepresentation || 0,
+    };
+    
+    // Log instance metadata for debugging with UIDs
+    console.log('XNAT: Adding enhanced instance to metadata store with UIDs:', {
+      url: enhancedInstance.url,
+      imageId: enhancedInstance.imageId,
+      SeriesInstanceUID: enhancedInstance.SeriesInstanceUID,
+      SOPInstanceUID: enhancedInstance.SOPInstanceUID
+    });
+    
     // Add to DicomMetadataStore
-    DicomMetadataStore.addInstances([instance], true);
+    DicomMetadataStore.addInstances([enhancedInstance], true);
+    
+    // Also add to metadataProvider for direct Cornerstone access
+    if (typeof metadataProvider.addInstance === 'function') {
+      metadataProvider.addInstance(enhancedInstance);
+    } else {
+      // Fallback - add to global cornerstone metadataProvider if available
+      try {
+        const globalProvider = (window as any).cornerstone?.metaData;
+        if (globalProvider && typeof globalProvider.add === 'function') {
+          const imageId = enhancedInstance.imageId;
+          // Add each metadata element to cornerstone provider
+          Object.entries(enhancedInstance).forEach(([key, value]) => {
+            if (key !== 'imageId' && value !== undefined) {
+              globalProvider.add(key, imageId, value);
+            }
+          });
+          console.log('XNAT: Added instance metadata to global cornerstone provider');
+        }
+      } catch (error) {
+        console.warn('XNAT: Error adding to global cornerstone provider:', error);
+      }
+    }
   } catch (error) {
     log.error('XNAT: Error adding instance to DicomMetadataStore:', error);
   }
@@ -1487,3 +1663,39 @@ const getSeriesXNATInstancesMetadata = async ({
     return [];
   }
 };
+
+// Helper function to extract UID from filename (if following XNAT naming convention)
+function extractUIDFromFilename(url: string): string | null {
+  if (!url) return null;
+  try {
+    // Extract the filename from the URL path
+    const parts = url.split('/');
+    const filename = parts[parts.length - 1];
+    
+    // XNAT often includes UIDs in filenames
+    const uidMatch = filename.match(/(\d+\.\d+\.\d+\.\d+(?:\.\d+)*)/);
+    return uidMatch ? uidMatch[1] : null;
+  } catch (e) {
+    console.warn('Error extracting UID from filename:', e);
+    return null;
+  }
+}
+
+function extractStudyUIDFromURL(url: string): string | null {
+  if (!url) return null;
+  try {
+    // Extract the filename from the URL path
+    const parts = url.split('/');
+    const filename = parts[parts.length - 1];
+    const studyUIDMatch = filename.match(/(\d+\.\d+\.\d+\.\d+(?:\.\d+)*)/);
+    return studyUIDMatch ? studyUIDMatch[1] : null;
+  } catch (e) {
+    console.warn('Error extracting study UID from URL:', e);
+    return null;
+  }
+}
+// Generate a random UID as a last resort
+function generateRandomUID(): string {
+  // Simple random UID generator for fallback
+  return `2.25.${Math.floor(Math.random() * 100000000)}.${Date.now()}`;
+}
