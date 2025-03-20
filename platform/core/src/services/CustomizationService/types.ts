@@ -28,7 +28,7 @@ export interface ComponentCustomization extends BaseCustomization {
 }
 
 export interface CallbackCustomization extends BaseCustomization {
-  callback: (...props: any) => any;
+  callbacks: Array<(...props: any) => any>;
 }
 
 export type Customization =

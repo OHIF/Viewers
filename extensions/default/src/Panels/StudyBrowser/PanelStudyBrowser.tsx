@@ -66,7 +66,7 @@ function PanelStudyBrowser({
   };
 
   const onDoubleClickThumbnailHandler = useCallback(
-    displaySetInstanceUID => {
+    async displaySetInstanceUID => {
       const customHandler = customizationService.getCustomization(
         'studyBrowser.thumbnailDoubleClickCallback'
       ) as CallbackCustomization;
@@ -78,9 +78,11 @@ function PanelStudyBrowser({
         isHangingProtocolLayout,
       };
 
-      const handler = customHandler?.callback(setupArgs);
+      const handlers = customHandler?.callbacks.map(callback => callback(setupArgs));
 
-      handler(displaySetInstanceUID);
+      for (const handler of handlers) {
+        await handler(displaySetInstanceUID);
+      }
     },
     [
       activeViewportId,
