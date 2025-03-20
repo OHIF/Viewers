@@ -262,7 +262,6 @@ function _getInstanceFromSegmentations(segmentations, { servicesManager }) {
 }
 
 function updateSegmentationsChartDisplaySet({ servicesManager }: withAppTypes): void {
-  debugger;
   const { segmentationService } = servicesManager.services;
   const segmentations = segmentationService.getSegmentations();
   const { seriesMetadata, instance } =

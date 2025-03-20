@@ -3,6 +3,7 @@ import { InstanceMetadata } from './StudyMetadata';
 export type DisplaySet = {
   displaySetInstanceUID: string;
   instances: InstanceMetadata[];
+  isReconstructable?: boolean;
   StudyInstanceUID: string;
   SeriesInstanceUID?: string;
   SeriesNumber?: number;

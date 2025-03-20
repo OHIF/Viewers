@@ -1,58 +1,76 @@
+import { utils } from '@ohif/core';
+
 import createReportAsync from '../Actions/createReportAsync';
+import { createReportDialogPrompt } from '../Panels';
 import getNextSRSeriesNumber from './getNextSRSeriesNumber';
 import PROMPT_RESPONSES from './_shared/PROMPT_RESPONSES';
-import createReportDialogPrompt from '../Panels/createReportDialogPrompt';
 
-/**
- * Prompts the user to save a report and handles the report creation process
- * @param services - Object containing required services and managers
- * @param ctx - The current context containing tracked study and series information
- * @param evt - The event object containing viewport and save-related data
- */
-async function promptSaveReport(services, ctx, evt) {
-  const { servicesManager, extensionManager, commandsManager } = services;
+const {
+  filterAnd,
+  filterMeasurementsByStudyUID,
+  filterMeasurementsBySeriesUID,
+  filterPlanarMeasurement,
+} = utils.MeasurementFilters;
 
+async function promptSaveReport({ servicesManager, commandsManager, extensionManager }, ctx, evt) {
   const { measurementService, displaySetService } = servicesManager.services;
-
-  const viewportId = evt.viewportId ?? evt.data?.viewportId;
-  const isBackupSave = evt.isBackupSave ?? evt.data?.isBackupSave;
-  const { StudyInstanceUID, SeriesInstanceUID } = evt?.data ?? {};
-
-  const { trackedStudy, trackedSeries } = ctx;
-  const dataSources = extensionManager.getDataSources();
+  const viewportId = evt.viewportId === undefined ? evt.data.viewportId : evt.viewportId;
+  const isBackupSave = evt.isBackupSave === undefined ? evt.data.isBackupSave : evt.isBackupSave;
+  const StudyInstanceUID = evt?.data?.StudyInstanceUID || ctx.trackedStudy;
+  const SeriesInstanceUID = evt?.data?.SeriesInstanceUID;
 
   const {
-    value: reportName,
-    dataSourceName: dataSource,
-    action,
-  } = await createReportDialogPrompt({
-    servicesManager,
-    extensionManager,
-  });
+    trackedSeries,
+    measurementFilter = filterAnd(
+      filterMeasurementsByStudyUID(StudyInstanceUID),
+      filterMeasurementsBySeriesUID(trackedSeries),
+      filterPlanarMeasurement
+    ),
+    defaultSaveTitle = 'Research Derived Series',
+  } = ctx;
   let displaySetInstanceUIDs;
 
   try {
-    if (action === PROMPT_RESPONSES.CREATE_REPORT) {
-      const selectedDataSource = dataSource ?? dataSources[0];
-      const trackedMeasurements = getTrackedMeasurements(
-        measurementService,
-        trackedStudy,
-        trackedSeries
-      );
+    const promptResult = await createReportDialogPrompt({
+      title: defaultSaveTitle,
+      extensionManager,
+      servicesManager,
+    });
+
+    if (promptResult.action === PROMPT_RESPONSES.CREATE_REPORT) {
+      const dataSources = extensionManager.getDataSources();
+      const dataSource = dataSources[0];
+      const measurementData = measurementService.getMeasurements(measurementFilter);
+
+      const SeriesDescription = promptResult.value || defaultSaveTitle;
 
       const SeriesNumber = getNextSRSeriesNumber(displaySetService);
-      displaySetInstanceUIDs = await handleReportCreation({
+
+      const getReport = async () => {
+        return commandsManager.runCommand(
+          'storeMeasurements',
+          {
+            measurementData,
+            dataSource,
+            additionalFindingTypes: ['ArrowAnnotate'],
+            options: {
+              SeriesDescription,
+              SeriesNumber,
+            },
+          },
+          'CORNERSTONE_STRUCTURED_REPORT'
+        );
+      };
+      displaySetInstanceUIDs = await createReportAsync({
         servicesManager,
-        commandsManager,
-        trackedMeasurements,
-        selectedDataSource,
-        reportName,
-        SeriesNumber,
+        getReport,
       });
+    } else if (promptResult.action === RESPONSE.CANCEL) {
+      // Do nothing
     }
 
     return {
-      userResponse: action,
+      userResponse: promptResult.action,
       createdDisplaySetInstanceUIDs: displaySetInstanceUIDs,
       StudyInstanceUID,
       SeriesInstanceUID,
@@ -60,50 +78,9 @@ async function promptSaveReport(services, ctx, evt) {
       isBackupSave,
     };
   } catch (error) {
+    console.warn('Unable to save report', error);
     return null;
   }
-}
-
-/**
- * Gets tracked measurements based on study and series criteria
- */
-function getTrackedMeasurements(measurementService, trackedStudy, trackedSeries) {
-  return measurementService
-    .getMeasurements()
-    .filter(
-      m => trackedStudy === m.referenceStudyUID && trackedSeries.includes(m.referenceSeriesUID)
-    )
-    .filter(m => m.referencedImageId != null);
-}
-
-/**
- * Handles the creation of the report using the measurement service
- */
-async function handleReportCreation({
-  servicesManager,
-  commandsManager,
-  trackedMeasurements,
-  selectedDataSource,
-  reportName,
-  SeriesNumber,
-}) {
-  return createReportAsync({
-    servicesManager,
-    getReport: () =>
-      commandsManager.runCommand(
-        'storeMeasurements',
-        {
-          measurementData: trackedMeasurements,
-          dataSource: selectedDataSource,
-          additionalFindingTypes: ['ArrowAnnotate'],
-          options: {
-            SeriesDescription: reportName,
-            SeriesNumber,
-          },
-        },
-        'CORNERSTONE_STRUCTURED_REPORT'
-      ),
-  });
 }
 
 export default promptSaveReport;
