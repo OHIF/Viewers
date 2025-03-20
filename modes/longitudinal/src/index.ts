@@ -1,77 +1,29 @@
 import i18n from 'i18next';
 import { id } from './id';
 import initToolGroups from './initToolGroups';
-import toolbarButtons from './toolbarButtons';
 
-// Allow this mode by excluding non-imaging modalities such as SR, SEG
-// Also, SM is not a simple imaging modalities, so exclude it.
-const NON_IMAGE_MODALITIES = ['ECG', 'SEG', 'RTSTRUCT', 'RTPLAN', 'PR'];
+import {
+  isValidMode,
+  ohif,
+  cornerstone,
+  tracked,
+  dicomsr,
+  dicomvideo,
+  dicompdf,
+  dicomSeg,
+  dicomPmap,
+  dicomRT,
+  extensionDependenciesLongitudinal as extensionDependencies,
+} from '@ohif/mode-support';
 
-const ohif = {
-  layout: '@ohif/extension-default.layoutTemplateModule.viewerLayout',
-  sopClassHandler: '@ohif/extension-default.sopClassHandlerModule.stack',
-  thumbnailList: '@ohif/extension-default.panelModule.seriesList',
-  wsiSopClassHandler:
-    '@ohif/extension-cornerstone.sopClassHandlerModule.DicomMicroscopySopClassHandler',
-};
-
-const cornerstone = {
-  measurements: '@ohif/extension-cornerstone.panelModule.panelMeasurement',
-  segmentation: '@ohif/extension-cornerstone.panelModule.panelSegmentation',
-};
-
-const tracked = {
-  measurements: '@ohif/extension-measurement-tracking.panelModule.trackedMeasurements',
-  thumbnailList: '@ohif/extension-measurement-tracking.panelModule.seriesList',
-  viewport: '@ohif/extension-measurement-tracking.viewportModule.cornerstone-tracked',
-};
-
-const dicomsr = {
-  sopClassHandler: '@ohif/extension-cornerstone-dicom-sr.sopClassHandlerModule.dicom-sr',
-  sopClassHandler3D: '@ohif/extension-cornerstone-dicom-sr.sopClassHandlerModule.dicom-sr-3d',
-  viewport: '@ohif/extension-cornerstone-dicom-sr.viewportModule.dicom-sr',
-};
-
-const dicomvideo = {
-  sopClassHandler: '@ohif/extension-dicom-video.sopClassHandlerModule.dicom-video',
-  viewport: '@ohif/extension-dicom-video.viewportModule.dicom-video',
-};
-
-const dicompdf = {
-  sopClassHandler: '@ohif/extension-dicom-pdf.sopClassHandlerModule.dicom-pdf',
-  viewport: '@ohif/extension-dicom-pdf.viewportModule.dicom-pdf',
-};
-
-const dicomSeg = {
-  sopClassHandler: '@ohif/extension-cornerstone-dicom-seg.sopClassHandlerModule.dicom-seg',
-  viewport: '@ohif/extension-cornerstone-dicom-seg.viewportModule.dicom-seg',
-};
-
-const dicomPmap = {
-  sopClassHandler: '@ohif/extension-cornerstone-dicom-pmap.sopClassHandlerModule.dicom-pmap',
-  viewport: '@ohif/extension-cornerstone-dicom-pmap.viewportModule.dicom-pmap',
-};
-
-const dicomRT = {
-  viewport: '@ohif/extension-cornerstone-dicom-rt.viewportModule.dicom-rt',
-  sopClassHandler: '@ohif/extension-cornerstone-dicom-rt.sopClassHandlerModule.dicom-rt',
-};
-
-const extensionDependencies = {
-  // Can derive the versions at least process.env.from npm_package_version
-  '@ohif/extension-default': '^3.0.0',
-  '@ohif/extension-cornerstone': '^3.0.0',
-  '@ohif/extension-measurement-tracking': '^3.0.0',
-  '@ohif/extension-cornerstone-dicom-sr': '^3.0.0',
-  '@ohif/extension-cornerstone-dicom-seg': '^3.0.0',
-  '@ohif/extension-cornerstone-dicom-pmap': '^3.0.0',
-  '@ohif/extension-cornerstone-dicom-rt': '^3.0.0',
-  '@ohif/extension-dicom-pdf': '^3.0.1',
-  '@ohif/extension-dicom-video': '^3.0.1',
-};
-
-function modeFactory({ modeConfiguration }) {
+function modeFactory({ modeConfiguration, servicesManager }) {
+  const {
+    services: { customizationService },
+  } = servicesManager;
+  const { baseCustomizationName = 'mode.longitudinal' } = this;
   let _activatePanelTriggersSubscriptions = [];
+  const mode = this;
+
   return {
     // TODO: We're using this as a route segment
     // We should not be.
@@ -87,53 +39,16 @@ function modeFactory({ modeConfiguration }) {
       measurementService.clearMeasurements();
 
       // Init Default and SR ToolGroups
-      initToolGroups(extensionManager, toolGroupService, commandsManager);
+      mode.initToolGroups(extensionManager, toolGroupService, commandsManager);
 
-      toolbarService.addButtons(toolbarButtons);
-      toolbarService.createButtonSection('primary', [
-        'MeasurementTools',
-        'Zoom',
-        'Pan',
-        'TrackballRotate',
-        'WindowLevel',
-        'Capture',
-        'Layout',
-        'Crosshairs',
-        'MoreTools',
-      ]);
-
-      toolbarService.createButtonSection('measurementSection', [
-        'Length',
-        'Bidirectional',
-        'ArrowAnnotate',
-        'EllipticalROI',
-        'RectangleROI',
-        'CircleROI',
-        'PlanarFreehandROI',
-        'SplineROI',
-        'LivewireContour',
-      ]);
-
-      toolbarService.createButtonSection('moreToolsSection', [
-        'Reset',
-        'rotate-right',
-        'flipHorizontal',
-        'ImageSliceSync',
-        'ReferenceLines',
-        'ImageOverlayViewer',
-        'StackScroll',
-        'invert',
-        'Probe',
-        'Cine',
-        'Angle',
-        'CobbAngle',
-        'Magnify',
-        'CalibrationLine',
-        'TagBrowser',
-        'AdvancedMagnify',
-        'UltrasoundDirectionalTool',
-        'WindowLevelRegion',
-      ]);
+      toolbarService.addButtons(
+        customizationService.getCustomization(`${baseCustomizationName}.toolbarButtons`)
+      );
+      for (const [key, value] of Object.values(
+        customizationService.getCustomization(`${baseCustomizationName}.toolbarSections`)
+      )) {
+        toolbarService.createButtonSection(key, value);
+      }
 
       // // ActivatePanel event trigger for when a segmentation or measurement is added.
       // // Do not force activation so as to respect the state the user may have left the UI in.
@@ -189,17 +104,7 @@ function modeFactory({ modeConfiguration }) {
       series: [],
     },
 
-    isValidMode: function ({ modalities }) {
-      const modalities_list = modalities.split('\\');
-
-      // Exclude non-image modalities
-      return {
-        valid: !!modalities_list.filter(modality => NON_IMAGE_MODALITIES.indexOf(modality) === -1)
-          .length,
-        description:
-          'The mode does not support studies that ONLY include the following modalities: SM, ECG, SEG, RTSTRUCT',
-      };
-    },
+    isValidMode,
     routes: [
       {
         path: 'longitudinal',
@@ -253,7 +158,9 @@ function modeFactory({ modeConfiguration }) {
     ],
     extensions: extensionDependencies,
     // Default protocol gets self-registered by default in the init
-    hangingProtocol: 'default',
+    hangingProtocol: customizationService.getCustomization(
+      `${baseCustomizationName}.hangingProtocol`
+    ),
     // Order is important in sop class handlers when two handlers both use
     // the same sop class under different situations.  In that case, the more
     // general handler needs to come last.  For this case, the dicomvideo must
@@ -277,7 +184,9 @@ const mode = {
   id,
   modeFactory,
   extensionDependencies,
+  initToolGroups,
+  baseCustomizationName: 'mode.longitudinal',
 };
 
 export default mode;
-export { initToolGroups, toolbarButtons };
+export { initToolGroups };

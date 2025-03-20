@@ -1,7 +1,7 @@
 {
-  "name": "@ohif/mode-longitudinal",
+  "name": "@ohif/mode-support",
   "version": "3.10.0-beta.132",
-  "description": "Longitudinal Workflow",
+  "description": "Support Class for Modes",
   "author": "OHIF",
   "license": "MIT",
   "repository": "OHIF/Viewers",
@@ -19,9 +19,6 @@
   "publishConfig": {
     "access": "public"
   },
-  "keywords": [
-    "ohif-mode"
-  ],
   "scripts": {
     "clean": "shx rm -rf dist",
     "clean:deep": "yarn run clean && shx rm -rf node_modules",
@@ -35,15 +32,7 @@
   },
   "peerDependencies": {
     "@ohif/core": "3.10.0-beta.132",
-    "@ohif/mode-support": "3.10.0-beta.132",
-    "@ohif/extension-cornerstone": "3.10.0-beta.132",
-    "@ohif/extension-cornerstone-dicom-rt": "3.10.0-beta.132",
-    "@ohif/extension-cornerstone-dicom-seg": "3.10.0-beta.132",
-    "@ohif/extension-cornerstone-dicom-sr": "3.10.0-beta.132",
-    "@ohif/extension-default": "3.10.0-beta.132",
-    "@ohif/extension-dicom-pdf": "3.10.0-beta.132",
-    "@ohif/extension-dicom-video": "3.10.0-beta.132",
-    "@ohif/extension-measurement-tracking": "3.10.0-beta.132"
+    "@ohif/extension-default": "3.10.0-beta.132"
   },
   "dependencies": {
     "@babel/runtime": "^7.20.13",

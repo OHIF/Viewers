@@ -117,7 +117,12 @@ async function appInit(appConfigOrFunc, defaultExtensions, defaultModes) {
           ? appConfig.modesConfiguration[id]
           : {};
 
-      mode = await mode.modeFactory({ modeConfiguration, loadModules });
+      mode = await mode.modeFactory({
+        modeConfiguration,
+        loadModules,
+        servicesManager,
+        extensionManager,
+      });
     }
 
     if (modesById.has(id)) {
