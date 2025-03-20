@@ -1,11 +1,7 @@
 import React, { ReactNode, useState, Children, isValidElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import { PanelSection } from '../PanelSection';
-import {
-  SegmentationTableProvider,
-  SegmentationTableContextType,
-  ViewportSegmentationInfo,
-} from './contexts';
+import { SegmentationTableProvider, SegmentationTableContextType } from './contexts';
 import { SegmentationSegments } from './SegmentationSegments';
 import { SegmentStatistics } from './SegmentStatistics';
 import { SegmentationTableConfig } from './SegmentationTableConfig';
