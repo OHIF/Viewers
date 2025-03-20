@@ -95,12 +95,12 @@ const WindowLevel = ({
   };
 
   return (
-    <div className={`max-w-sm p-1 text-white ${containerClassName || ''}`}>
-      {title && <div className="mb-1 text-xs font-medium text-primary-light">{title}</div>}
-      
+    <div className={`text-foreground max-w-sm p-1 ${containerClassName || ''}`}>
+      {title && <div className="text-muted-foreground mb-1 text-sm">{title}</div>}
+
       <div className="space-y-2 px-2">
         {/* Range Labels */}
-        <div className="flex h-4 text-xs">
+        <div className="text-muted-foreground flex h-4 text-sm">
           <div className="relative h-fit grow">
             <span className="absolute left-0 bottom-px leading-3">{range.min}</span>
           </div>
@@ -108,9 +108,9 @@ const WindowLevel = ({
             <span className="absolute right-0 bottom-px leading-3">{range.max}</span>
           </div>
         </div>
-        
+
         {/* Histogram Visualization */}
-        <div className="h-11 bg-white">
+        <div className="bg-foreground h-11">
           <WindowLevelHistogram
             range={range}
             voiRange={voiRange}

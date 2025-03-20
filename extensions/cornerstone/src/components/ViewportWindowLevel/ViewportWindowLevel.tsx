@@ -202,7 +202,7 @@ const ViewportWindowLevel = ({
   return (
     <PanelSection defaultOpen={true}>
       <PanelSection.Header>Window Level</PanelSection.Header>
-      <PanelSection.Content className="py-2">
+      <PanelSection.Content className="bg-muted py-1">
         {windowLevels.map((windowLevel, i) => {
           if (!windowLevel.histogram) {
             return null;
@@ -211,7 +211,6 @@ const ViewportWindowLevel = ({
           return (
             <WindowLevel
               key={windowLevel.volumeId}
-              title={`${windowLevel.modality}`}
               histogram={windowLevel.histogram}
               voi={windowLevel.voi}
               step={windowLevel.step}
@@ -226,12 +225,12 @@ const ViewportWindowLevel = ({
           );
         })}
         {windowLevels.length === 0 && !isLoading && (
-          <div className="py-2 text-center text-sm text-gray-500">
+          <div className="text-muted-foreground py-2 text-center text-sm">
             No window level data available
           </div>
         )}
         {isLoading && (
-          <div className="py-2 text-center text-sm text-gray-500">
+          <div className="text-muted-foreground py-2 text-center text-sm">
             Loading window level data...
           </div>
         )}
