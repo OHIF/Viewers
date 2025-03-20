@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.10.0-beta.132](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.131...v3.10.0-beta.132) (2025-03-20)
+
+
+### Features
+
+* Group findings table values with custom components/grouping functions ([#4712](https://github.com/OHIF/Viewers/issues/4712)) ([df8efba](https://github.com/OHIF/Viewers/commit/df8efba82c268633ea05b5cb915061bceaec912c))
+
+
+
+
+
 # [3.10.0-beta.131](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.130...v3.10.0-beta.131) (2025-03-19)
 
 **Note:** Version bump only for package @ohif/mode-test
