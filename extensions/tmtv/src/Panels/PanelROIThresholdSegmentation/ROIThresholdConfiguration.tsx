@@ -25,8 +25,8 @@ function ROIThresholdConfiguration({ config, dispatch, runCommand }) {
   return (
     <div className="bg-primary-dark flex flex-col space-y-4">
       <div className="flex items-end space-x-4">
-        <div className="flex flex-1 min-w-0 flex-col">
-          <Label className="mb-1">{t('Strategy')}</Label>
+        <div className="flex min-w-0 flex-1 flex-col">
+          <Label className="my-2">{t('Strategy')}</Label>
           <Select
             value={config.strategy}
             onValueChange={value => {
@@ -74,8 +74,10 @@ function ROIThresholdConfiguration({ config, dispatch, runCommand }) {
       </div>
 
       {config.strategy === ROI_STAT && (
-        <div className="mr-2">
-          <Label className="mb-1">{t('Percentage of Max SUV')}</Label>
+        <div className="mr-0">
+          <div className="mb-2">
+            <Label>{t('Percentage of Max SUV')}</Label>
+          </div>
           <Input
             className="w-full"
             type="text"
@@ -93,92 +95,88 @@ function ROIThresholdConfiguration({ config, dispatch, runCommand }) {
       )}
       {config.strategy !== ROI_STAT && (
         <div className="mr-2 text-sm">
-          <table>
-            <tbody>
-              <tr className="mt-2">
-                <td
-                  className="pr-4"
-                  colSpan="3"
-                >
-                  <Label className="pr-4">Lower & Upper Ranges</Label>
-                </td>
-              </tr>
-              <tr className="mt-2">
-                <td className="pr-4 pt-2 text-center">
-                  <Label className="pr-4">CT</Label>
-                </td>
-                <td>
-                  <div className="flex justify-between">
-                    <div className="mr-2 mt-2">
-                      <Input
-                        type="text"
-                        value={config.ctLower}
-                        onChange={e => {
-                          dispatch({
-                            type: 'setThreshold',
-                            payload: {
-                              ctLower: e.target.value,
-                            },
-                          });
-                        }}
-                      />
-                    </div>
-                    <div className="mr-2 mt-2">
-                      <Input
-                        type="text"
-                        value={config.ctUpper}
-                        onChange={e => {
-                          dispatch({
-                            type: 'setThreshold',
-                            payload: {
-                              ctUpper: e.target.value,
-                            },
-                          });
-                        }}
-                      />
-                    </div>
-                  </div>
-                </td>
-              </tr>
-              <tr>
-                <td className="pr-4 pt-2 text-center">
-                  <Label className="pr-4">PT</Label>
-                </td>
-                <td>
-                  <div className="flex justify-between">
-                    <div className="mr-2 mt-2">
-                      <Input
-                        type="text"
-                        value={config.ptLower}
-                        onChange={e => {
-                          dispatch({
-                            type: 'setThreshold',
-                            payload: {
-                              ptLower: e.target.value,
-                            },
-                          });
-                        }}
-                      />
-                    </div>
-                    <div className="mr-2 mt-2">
-                      <Input
-                        type="text"
-                        value={config.ptUpper}
-                        onChange={e => {
-                          dispatch({
-                            type: 'setThreshold',
-                            payload: {
-                              ptUpper: e.target.value,
-                            },
-                          });
-                        }}
-                      />
-                    </div>
-                  </div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+          <div className="flex flex-col space-y-2">
+            {/* Header */}
+            <Label>Lower & Upper Ranges</Label>
+
+            {/* CT Row */}
+            <div className="flex items-center">
+              <div className="w-10 text-left">
+                <Label>CT</Label>
+              </div>
+              <div className="flex flex-1 space-x-2">
+                <div className="flex-1">
+                  <Input
+                    className="w-full"
+                    type="text"
+                    value={config.ctLower}
+                    onChange={e => {
+                      dispatch({
+                        type: 'setThreshold',
+                        payload: {
+                          ctLower: e.target.value,
+                        },
+                      });
+                    }}
+                  />
+                </div>
+                <div className="flex-1">
+                  <Input
+                    className="w-full"
+                    type="text"
+                    value={config.ctUpper}
+                    onChange={e => {
+                      dispatch({
+                        type: 'setThreshold',
+                        payload: {
+                          ctUpper: e.target.value,
+                        },
+                      });
+                    }}
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* PT Row */}
+            <div className="flex items-center">
+              <div className="w-10 text-left">
+                <Label>PT</Label>
+              </div>
+              <div className="flex flex-1 space-x-2">
+                <div className="flex-1">
+                  <Input
+                    className="w-full"
+                    type="text"
+                    value={config.ptLower}
+                    onChange={e => {
+                      dispatch({
+                        type: 'setThreshold',
+                        payload: {
+                          ptLower: e.target.value,
+                        },
+                      });
+                    }}
+                  />
+                </div>
+                <div className="flex-1">
+                  <Input
+                    className="w-full"
+                    type="text"
+                    value={config.ptUpper}
+                    onChange={e => {
+                      dispatch({
+                        type: 'setThreshold',
+                        payload: {
+                          ptUpper: e.target.value,
+                        },
+                      });
+                    }}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       )}
     </div>

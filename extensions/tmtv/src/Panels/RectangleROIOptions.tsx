@@ -89,8 +89,7 @@ function RectangleROIOptions() {
       {activeSegmentation && (
         <Button
           variant="default"
-          size="default"
-          className="my-2"
+          className="my-3 mr-auto w-20"
           onClick={handleROIThresholding}
         >
           Run
