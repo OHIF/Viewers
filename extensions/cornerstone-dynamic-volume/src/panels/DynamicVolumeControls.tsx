@@ -262,7 +262,7 @@ function DimensionGroupControls({
               <InputNumber.Input />
             </InputNumber.HorizontalControls>
           </InputNumber.Container>
-          <InputNumber.Label position="bottom">Group</InputNumber.Label>
+          <InputNumber.Label position="bottom">Frame</InputNumber.Label>
         </InputNumber>
 
         <InputNumber
