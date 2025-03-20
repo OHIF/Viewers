@@ -952,6 +952,50 @@ window.config = {
       };
         `,
   },
+  {
+    id: 'cornerstone-dicom-sr.viewportButtons',
+    description:
+      'Configures which buttons appear on the top-left toolbar when you open the SR measurements viewport.',
+    default: `
+    [
+      {
+        id: 'loadSRMeasurements',
+        component: props => (
+          <ViewportActionButton {...props}>{i18n.t('Common:LOAD')}</ViewportActionButton>
+        ),
+        props: {
+          commands: ['clearMeasurements', 'loadSRMeasurements'],
+        },
+      },
+    ]`,
+    configuration: `
+  window.config = {
+    // rest of window config
+    customizationService: [{
+        'cornerstone-dicom-sr.viewportButtons': {
+            $set: [{
+                    id: 'replaceSRMeasurements',
+                    component: props => < ViewportActionButton {
+                        ...props
+                    } > REPLACE < /ViewportActionButton>,
+                    props: {
+                        commands: ['clearMeasurements', 'loadSRMeasurements'],
+                    },
+                },
+                {
+                    id: 'loadSRMeasurements',
+                    component: props => < ViewportActionButton {
+                        ...props
+                    } > LOAD < /ViewportActionButton>,
+                    props: {
+                        commands: ['loadSRMeasurements'],
+                    },
+                },
+            ],
+        },
+    }],
+  };`,
+  },
 ];
 
 export const segmentationCustomizations = [
