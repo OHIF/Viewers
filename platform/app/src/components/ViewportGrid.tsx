@@ -297,11 +297,11 @@ function ViewerViewportGrid(props: withAppTypes) {
         const tolerance = 0.01;
 
         if (x + width < 1 - tolerance) {
-          style.borderRight = '1px solid #3a3f99';
+          style.borderRight = '1px solid #252A74';
         }
 
         if (y + height < 1 - tolerance) {
-          style.borderBottom = '1px solid #3a3f99';
+          style.borderBottom = '1px solid #252A74';
         }
 
         return style;
@@ -367,7 +367,7 @@ function ViewerViewportGrid(props: withAppTypes) {
   return (
     <div
       ref={resizeRef}
-      className="border-secondary-light h-full w-full border"
+      className="mt-1.5 h-full w-full border border-[#252A74]"
     >
       <ViewportGrid
         numRows={numRows}
