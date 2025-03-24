@@ -367,7 +367,7 @@ function ViewerViewportGrid(props: withAppTypes) {
   return (
     <div
       ref={resizeRef}
-      className="border-input mt-1.5 h-full w-full border"
+      className="border-input h-[calc(100%-0.25rem)] w-full border"
     >
       <ViewportGrid
         numRows={numRows}
