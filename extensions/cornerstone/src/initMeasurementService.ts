@@ -38,6 +38,7 @@ const initMeasurementService = (
     LivewireContour,
     Probe,
     UltrasoundDirectional,
+    SegmentBidirectional,
   } = measurementServiceMappingsFactory(
     measurementService,
     displaySetService,
@@ -174,6 +175,14 @@ const initMeasurementService = (
     UltrasoundDirectional.matchingCriteria,
     UltrasoundDirectional.toAnnotation,
     UltrasoundDirectional.toMeasurement
+  );
+
+  measurementService.addMapping(
+    csTools3DVer1MeasurementSource,
+    'SegmentBidirectional',
+    SegmentBidirectional.matchingCriteria,
+    SegmentBidirectional.toAnnotation,
+    SegmentBidirectional.toMeasurement
   );
 
   return csTools3DVer1MeasurementSource;

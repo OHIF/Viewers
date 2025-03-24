@@ -167,6 +167,16 @@ const bindings = [
     label: 'Delete Annotation',
     keys: ['backspace'],
   },
+  {
+    commandName: 'acceptPreview',
+    label: 'Accept Preview',
+    keys: ['enter'],
+  },
+  {
+    commandName: 'rejectPreview',
+    label: 'Reject Preview',
+    keys: ['esc'],
+  },
   // after we have the ui for undo/redo, we can add these back in
   // {
   //   commandName: 'undo',

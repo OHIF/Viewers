@@ -1,6 +1,7 @@
 import React from 'react';
 import { useSystem } from '@ohif/core';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@ohif/ui-next';
+import { ChevronDownIcon } from '@radix-ui/react-icons';
 
 export type AccordionGrouping = {
   [name: string]: unknown;
@@ -132,7 +133,13 @@ function GroupAccordion(props) {
     return null;
   }
   return [...groups.values()].map(group =>
-    React.cloneElement(children, { ...props, children: children.props.children, group, ...group })
+    React.cloneElement(children, {
+      ...props,
+      children: children.props.children,
+      group,
+      ...group,
+      key: group.title,
+    })
   );
 }
 
@@ -166,8 +173,17 @@ function Trigger(props) {
     return React.cloneElement(children, childProps);
   }
   return (
-    <AccordionTrigger value={group.value}>
-      {React.cloneElement(children, childProps)}
+    <AccordionTrigger
+      value={group.value}
+      asChild={true}
+    >
+      <div>
+        {React.cloneElement(children, childProps)}
+        <ChevronDownIcon
+          key="chevronDown"
+          className="text-primary h-4 w-4 shrink-0 transition-transform duration-200"
+        />
+      </div>
     </AccordionTrigger>
   );
 }

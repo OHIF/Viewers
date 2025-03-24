@@ -58,7 +58,7 @@ function ViewportPane({
       onScroll={onInteractionHandler}
       onWheel={onInteractionHandler}
       className={classNames(
-        'group relative h-full w-full overflow-hidden transition duration-300',
+        'group/pane relative h-full w-full overflow-hidden transition duration-300',
         className
       )}
       style={customStyle}

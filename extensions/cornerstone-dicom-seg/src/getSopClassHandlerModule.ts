@@ -182,7 +182,6 @@ async function _loadSegments({
 
   // Todo: what should be defaults here
   const tolerance = 0.001;
-  const skipOverlapping = true;
   eventTarget.addEventListener(Enums.Events.SEGMENTATION_LOAD_PROGRESS, evt => {
     const { percentComplete } = evt.detail;
     segmentationService._broadcastEvent(segmentationService.EVENTS.SEGMENT_LOADING_COMPLETE, {
@@ -190,11 +189,10 @@ async function _loadSegments({
     });
   });
 
-  const results = await adaptersSEG.Cornerstone3D.Segmentation.generateToolState(
+  const results = await adaptersSEG.Cornerstone3D.Segmentation.createFromDICOMSegBuffer(
     imageIds,
     arrayBuffer,
-    metaData,
-    { skipOverlapping, tolerance, eventTarget, triggerEvent }
+    { metadataProvider: metaData, tolerance }
   );
 
   let usedRecommendedDisplayCIELabValue = true;
@@ -210,15 +208,6 @@ async function _loadSegments({
       }
     }
   });
-
-  if (results.overlappingSegments) {
-    uiNotificationService.show({
-      title: 'Overlapping Segments',
-      message:
-        'Unsupported overlapping segments detected, segmentation rendering results may be incorrect.',
-      type: 'warning',
-    });
-  }
 
   if (!usedRecommendedDisplayCIELabValue) {
     // Display a notification about the non-utilization of RecommendedDisplayCIELabValue

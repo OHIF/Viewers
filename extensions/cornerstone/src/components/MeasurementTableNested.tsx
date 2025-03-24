@@ -1,5 +1,5 @@
 import React from 'react';
-import { MeasurementTable, DataRow } from '@ohif/ui-next';
+import { MeasurementTable } from '@ohif/ui-next';
 import { useSystem } from '@ohif/core';
 
 /**
@@ -7,7 +7,7 @@ import { useSystem } from '@ohif/core';
  * the accordion groups.
  */
 export default function MeasurementTableNested(props) {
-  const { title, items, group } = props;
+  const { title, items, group, customHeader, actions } = props;
   const { commandsManager } = useSystem();
   const onAction = (e, command, uid) => {
     commandsManager.run(command, { uid, annotationUID: uid, displayMeasurements: items });
@@ -21,7 +21,12 @@ export default function MeasurementTableNested(props) {
       {...group}
       key={group.key}
     >
-      <MeasurementTable.Body />
+      <MeasurementTable.Header key="measurementTableHeader">
+        {customHeader &&
+          group.isFirst &&
+          customHeader({ ...props, items: props.allItems, actions })}
+      </MeasurementTable.Header>
+      <MeasurementTable.Body key="measurementTableBody" />
     </MeasurementTable>
   );
 }

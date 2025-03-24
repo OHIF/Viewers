@@ -1,77 +1,12 @@
-import React from 'react';
-import {
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuPortal,
-  DropdownMenuSeparator,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
-  Icons,
-} from '@ohif/ui-next';
+import { CustomDropdownMenuContent } from './CustomDropdownMenuContent';
+import { CustomSegmentStatisticsHeader } from './CustomSegmentStatisticsHeader';
+import React, { useState } from 'react';
+import { Switch } from '@ohif/ui-next';
 
 export default function getSegmentationPanelCustomization({ commandsManager, servicesManager }) {
   return {
-    'panelSegmentation.customDropdownMenuContent': ({
-      activeSegmentation,
-      onSegmentationAdd,
-      onSegmentationRemoveFromViewport,
-      onSegmentationEdit,
-      onSegmentationDelete,
-      allowExport,
-      storeSegmentation,
-      onSegmentationDownload,
-      onSegmentationDownloadRTSS,
-      t,
-    }) => (
-      <DropdownMenuContent align="start">
-        <DropdownMenuItem onClick={() => onSegmentationAdd(activeSegmentation.segmentationId)}>
-          <Icons.Add className="text-foreground" />
-          <span className="pl-2">{t('Create New Segmentation')}</span>
-        </DropdownMenuItem>
-        <DropdownMenuSeparator />
-        <DropdownMenuLabel>{t('Manage Current Segmentation')}</DropdownMenuLabel>
-        <DropdownMenuItem
-          onClick={() => onSegmentationRemoveFromViewport(activeSegmentation.segmentationId)}
-        >
-          <Icons.Series className="text-foreground" />
-          <span className="pl-2">{t('Remove from Viewport')}</span>
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => onSegmentationEdit(activeSegmentation.segmentationId)}>
-          <Icons.Rename className="text-foreground" />
-          <span className="pl-2">{t('Rename')}</span>
-        </DropdownMenuItem>
-        <DropdownMenuSub>
-          <DropdownMenuSubTrigger
-            disabled={!allowExport}
-            className="pl-1"
-          >
-            <Icons.Export className="text-foreground" />
-            <span className="pl-2">{t('Export & Download')}</span>
-          </DropdownMenuSubTrigger>
-          <DropdownMenuPortal>
-            <DropdownMenuSubContent>
-              <DropdownMenuItem
-                onClick={() => storeSegmentation(activeSegmentation.segmentationId)}
-              >
-                {t('Export DICOM SEG')}
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={() => onSegmentationDownload(activeSegmentation.segmentationId)}
-              >
-                {t('Download DICOM SEG')}
-              </DropdownMenuItem>
-            </DropdownMenuSubContent>
-          </DropdownMenuPortal>
-        </DropdownMenuSub>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={() => onSegmentationDelete(activeSegmentation.segmentationId)}>
-          <Icons.Delete className="text-red-600" />
-          <span className="pl-2 text-red-600">{t('Delete')}</span>
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    ),
+    'panelSegmentation.customDropdownMenuContent': CustomDropdownMenuContent,
+    'panelSegmentation.customSegmentStatisticsHeader': CustomSegmentStatisticsHeader,
     'panelSegmentation.disableEditing': false,
     'panelSegmentation.showAddSegment': true,
     'panelSegmentation.onSegmentationAdd': () => {
@@ -81,15 +16,56 @@ export default function getSegmentationPanelCustomization({ commandsManager, ser
     },
     'panelSegmentation.tableMode': 'collapsed',
     'panelSegmentation.readableText': {
-      lesionStats: 'Lesion Statistics',
-      minValue: 'Minimum Value',
-      maxValue: 'Maximum Value',
-      meanValue: 'Mean Value',
-      volume: 'Volume (ml)',
-      suvPeak: 'SUV Peak',
-      suvMax: 'Maximum SUV',
-      suvMaxIJK: 'SUV Max IJK',
-      lesionGlyoclysisStats: 'Lesion Glycolysis',
+      // the values will appear in this order
+      min: 'Min Value',
+      minLPS: 'Min Coord',
+      max: 'Max Value',
+      maxLPS: 'Max Coord',
+      mean: 'Mean Value',
+      stdDev: 'Standard Deviation',
+      count: 'Voxel Count',
+      median: 'Median',
+      skewness: 'Skewness',
+      kurtosis: 'Kurtosis',
+      peakValue: 'Peak Value',
+      peakLPS: 'Peak Coord',
+      volume: 'Volume',
+      lesionGlycolysis: 'Lesion Glycolysis',
+    },
+    'segmentationToolbox.config': () => {
+      // Get initial states based on current configuration
+      const [previewEdits, setPreviewEdits] = useState(false);
+      const [toggleSegmentEnabled, setToggleSegmentEnabled] = useState(false);
+
+      const handlePreviewEditsChange = checked => {
+        setPreviewEdits(checked);
+        commandsManager.run('toggleSegmentPreviewEdit', { toggle: checked });
+      };
+
+      const handleToggleSegmentEnabledChange = checked => {
+        setToggleSegmentEnabled(checked);
+        commandsManager.run('toggleSegmentSelect', { toggle: checked });
+      };
+
+      return (
+        <div className="bg-muted flex flex-col gap-4 border-b border-b-[2px] border-black px-2 py-3">
+          <div className="flex items-center gap-2">
+            <Switch
+              checked={previewEdits}
+              onCheckedChange={handlePreviewEditsChange}
+            />
+            <span className="text-base text-white">Preview edits before creating</span>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <Switch
+              checked={toggleSegmentEnabled}
+              onCheckedChange={handleToggleSegmentEnabledChange}
+            />
+            <span className="text-base text-white">Highlight segments to select</span>
+          </div>
+        </div>
+      );
     },
   };
 }

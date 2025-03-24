@@ -31,7 +31,7 @@ class LabellingFlow extends Component<PropType> {
 
   constructor(props) {
     super(props);
-    const { label } = props.measurementData;
+    const label = props.measurementData?.label;
     const className = props.componentClassName;
 
     this.state = {

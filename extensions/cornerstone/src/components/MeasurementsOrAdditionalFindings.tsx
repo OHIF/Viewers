@@ -2,7 +2,6 @@ import React from 'react';
 import AccordionGroup from './AccordionGroup';
 import { utils } from '@ohif/core';
 import MeasurementTableNested from './MeasurementTableNested';
-import { StudySummaryFromMetadata } from '../components/StudySummaryFromMetadata';
 
 const { filterNot, filterAdditionalFindings } = utils.MeasurementFilters;
 
@@ -31,6 +30,9 @@ export const groupByNamedSets = (items, grouping) => {
       ...grouping,
       ...namedSet,
       items: [],
+      isFirst: groups.size === 0,
+      title: name,
+      key: name,
     });
   }
   items.forEach(item => {
@@ -51,8 +53,8 @@ export const groupByNamedSets = (items, grouping) => {
   return groups;
 };
 
-export default function MeasurementOrAdditionalFindings(props): React.ReactNode {
-  const { items, children, grouping = {} } = props;
+export function MeasurementsOrAdditionalFindings(props): React.ReactNode {
+  const { items, children, grouping = {}, customHeader, group, actions } = props;
 
   return (
     <AccordionGroup
@@ -60,14 +62,21 @@ export default function MeasurementOrAdditionalFindings(props): React.ReactNode 
         groupingFunction: groupByNamedSets,
         name: 'measurementsOrAdditional',
         namedSets: MeasurementOrAdditionalFindingSets,
+        StudyInstanceUID: group?.StudyInstanceUID,
         ...grouping,
       }}
       items={items}
       sourceChildren={children}
     >
       <AccordionGroup.Accordion noWrapper="true">
-        <MeasurementTableNested />
+        <MeasurementTableNested
+          customHeader={customHeader}
+          allItems={items}
+          actions={actions}
+        />
       </AccordionGroup.Accordion>
     </AccordionGroup>
   );
 }
+
+export default MeasurementsOrAdditionalFindings;

@@ -1,13 +1,14 @@
 import React from 'react';
 import { Dialog, ButtonEnums } from '@ohif/ui';
 import { utils } from '@ohif/core';
-import { MeasurementTable, useViewportGrid } from '@ohif/ui-next';
+import { AccordionTrigger, MeasurementTable, useViewportGrid } from '@ohif/ui-next';
 import {
   PanelMeasurement,
   StudyMeasurements,
   StudyMeasurementsActions,
   StudySummaryFromMetadata,
   AccordionGroup,
+  MeasurementsOrAdditionalFindings,
 } from '@ohif/extension-cornerstone';
 
 import { useTrackedMeasurements } from '../getContextModule';
@@ -27,12 +28,12 @@ function PanelMeasurementTableTracking(props) {
   const onUntrackConfirm = () => {
     sendTrackedMeasurementsEvent('UNTRACK_ALL', {});
   };
-  const hasDirtyMeasurements = measurementService
-    .getMeasurements()
-    .some(measurement => measurement.isDirty);
 
   const onUntrackClick = event => {
     event.stopPropagation();
+    const hasDirtyMeasurements = measurementService
+      .getMeasurements()
+      .some(measurement => measurement.isDirty);
     hasDirtyMeasurements
       ? uiDialogService.show({
           id: 'untrack-and-delete-all-measurements',
@@ -99,13 +100,17 @@ function PanelMeasurementTableTracking(props) {
   };
 
   const Header = props => (
-    <div data-cy="TrackingHeader">
-      <StudySummaryFromMetadata {...props} />
-      <StudyMeasurementsActions
-        {...props}
-        actions={actions}
-      />
-    </div>
+    <AccordionTrigger
+      asChild={true}
+      className="px-0"
+    >
+      <div data-cy="TrackingHeader">
+        <StudySummaryFromMetadata
+          {...props}
+          actions={actions}
+        />
+      </div>
+    </AccordionTrigger>
   );
 
   return (
@@ -115,9 +120,19 @@ function PanelMeasurementTableTracking(props) {
       sourceChildren={props.children}
     >
       <StudyMeasurements grouping={props.grouping}>
-        <AccordionGroup.Trigger>
-          <Header />
+        <AccordionGroup.Trigger
+          key="trackingMeasurementsHeader"
+          asChild={true}
+        >
+          <Header key="trackingHeadChild" />
         </AccordionGroup.Trigger>
+        <MeasurementsOrAdditionalFindings
+          key="measurementsOrAdditionalFindings"
+          activeStudyUID={trackedStudy}
+          customHeader={StudyMeasurementsActions}
+          measurementFilter={measurementFilter}
+          actions={actions}
+        />
       </StudyMeasurements>
     </PanelMeasurement>
   );

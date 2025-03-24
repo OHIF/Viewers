@@ -97,15 +97,13 @@ export async function callInputDialogAutoComplete({
   const dropDownItems = labelConfig ? labelConfig.items : [];
 
   const value = await new Promise<Map<string, string>>((resolve, reject) => {
-    const labellingDoneCallback = value => {
+    const labellingDoneCallback = newValue => {
       uiDialogService.hide('select-annotation');
-      if (typeof value === 'string') {
-        if (measurement.label !== value) {
-          const sourceAnnotation = annotation.state.getAnnotation(measurement.uid);
-          setAnnotationLabel(sourceAnnotation, element, value);
-        }
+      if (measurement && typeof newValue === 'string') {
+        const sourceAnnotation = annotation.state.getAnnotation(measurement.uid);
+        setAnnotationLabel(sourceAnnotation, element, newValue);
       }
-      resolve(measurement);
+      resolve(newValue);
     };
 
     uiDialogService.show({

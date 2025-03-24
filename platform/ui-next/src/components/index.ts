@@ -58,6 +58,7 @@ import { InputDialog, PresetDialog } from './OHIFDialogs';
 import { AboutModal, ImageModal, UserPreferencesModal } from './OHIFModals';
 import Modal from './Modal/Modal';
 import { FooterAction } from './FooterAction';
+import { InputFilter } from './InputFilter';
 
 import {
   DropdownMenu,
@@ -80,7 +81,12 @@ import { Onboarding } from './Onboarding';
 import { DoubleSlider } from './DoubleSlider';
 export { DataRow } from './DataRow';
 export { MeasurementTable } from './MeasurementTable';
-import { SegmentationTable, useSegmentationTableContext } from './SegmentationTable';
+import {
+  SegmentationTable,
+  useSegmentationTableContext,
+  useSegmentationExpanded,
+  useSegmentStatistics,
+} from './SegmentationTable';
 import { Toaster, toast } from './Sonner';
 import { StudySummary } from './StudySummary';
 import { ErrorBoundary } from './Errorboundary';
@@ -107,6 +113,9 @@ import {
   ToolButtonListDivider,
 } from './ToolButton';
 import { ToolSettings } from './OHIFToolSettings';
+
+// Segmentation Context Exports
+export { useSegmentationTableContext, useSegmentationExpanded, useSegmentStatistics };
 
 export {
   Numeric,
@@ -203,7 +212,6 @@ export {
   Toaster,
   toast,
   SegmentationTable,
-  useSegmentationTableContext,
   StudySummary,
   Header,
   Card,
@@ -236,4 +244,5 @@ export {
   UserPreferencesModal,
   FooterAction,
   ToolSettings,
+  InputFilter,
 };

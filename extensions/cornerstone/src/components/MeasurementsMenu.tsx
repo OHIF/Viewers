@@ -52,7 +52,6 @@ export function MeasumentsMenu(props) {
       >
         {isVisible ? <Icons.Hide className="h-6 w-6" /> : <Icons.Show className="h-6 w-6" />}
       </Button>
-
       {/* Actions Dropdown Menu */}
       <DropdownMenu onOpenChange={open => setIsDropdownOpen(open)}>
         <DropdownMenuTrigger asChild>

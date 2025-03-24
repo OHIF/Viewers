@@ -3,7 +3,7 @@ const collapsedInsideBorderSize = 4;
 const collapsedOutsideBorderSize = 4;
 const collapsedWidth = 25;
 
-const rightPanelInitialExpandedWidth = 280;
+const rightPanelInitialExpandedWidth = 330;
 const leftPanelInitialExpandedWidth = 282;
 
 const panelGroupDefinition = {
