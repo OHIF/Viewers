@@ -3,7 +3,7 @@ import { vec3 } from 'gl-matrix';
 import PropTypes from 'prop-types';
 import { metaData, Enums, utilities } from '@cornerstonejs/core';
 import type { ImageSliceData } from '@cornerstonejs/core/types';
-import { ViewportOverlay } from '@ohif/ui';
+import { ViewportOverlay } from '@ohif/ui-next';
 import type { InstanceMetadata } from '@ohif/core/src/types';
 import { formatDICOMDate, formatDICOMTime, formatNumberPrecision } from './utils';
 import { utils } from '@ohif/core';
