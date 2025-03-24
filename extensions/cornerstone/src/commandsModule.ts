@@ -888,6 +888,9 @@ function commandsModule({
     },
     scroll: (options: ToolTypes.ScrollOptions) => {
       const enabledElement = _getActiveViewportEnabledElement();
+      // Allow either or direction for consistency in scroll implementation
+      options.delta ??= options.direction || 1;
+      options.direction ??= options.delta;
 
       if (!enabledElement) {
         return;
@@ -1658,11 +1661,11 @@ function commandsModule({
     },
     nextImage: {
       commandFn: actions.scroll,
-      options: { delta: 1 },
+      options: { direction: 1 },
     },
     previousImage: {
       commandFn: actions.scroll,
-      options: { delta: -1 },
+      options: { direction: -1 },
     },
     firstImage: {
       commandFn: actions.jumpToImage,
