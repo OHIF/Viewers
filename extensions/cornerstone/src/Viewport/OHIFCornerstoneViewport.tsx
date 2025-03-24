@@ -23,12 +23,6 @@ import { WITH_NAVIGATION } from '../services/ViewportService/CornerstoneViewport
 
 const STACK = 'stack';
 
-/**
- * Caches the jump to measurement operation, so that if display set is shown,
- * it can jump to the measurement.
- */
-// let cacheJumpToMeasurementEvent;
-
 // Todo: This should be done with expose of internal API similar to react-vtkjs-viewport
 // Then we don't need to worry about the re-renders if the props change.
 const OHIFCornerstoneViewport = React.memo(
@@ -301,61 +295,9 @@ const OHIFCornerstoneViewport = React.memo(
         return;
       }
 
-      // const unsubscribeFromJumpToMeasurementEvents = _subscribeToJumpToMeasurementEvents(
-      //   elementRef,
-      //   viewportId,
-      //   servicesManager
-      // );
       const { unsubscribe } = measurementService.subscribe(
         MeasurementService.EVENTS.JUMP_TO_MEASUREMENT_VIEWPORT,
-        event => {
-          const { measurement, isConsumed } = event;
-          if (!measurement || isConsumed) {
-            return;
-          }
-
-          const enabledElement = getEnabledElement(elementRef.current);
-
-          if (!enabledElement) {
-            return;
-          }
-
-          const viewport = enabledElement.viewport as
-            | csTypes.IStackViewport
-            | csTypes.IVolumeViewport;
-
-          const { metadata, displaySetInstanceUID } = measurement;
-
-          const viewportDisplaySets = cornerstoneViewportService.getViewportDisplaySets(viewportId);
-
-          const showingDisplaySet = viewportDisplaySets.find(
-            ds => ds.displaySetInstanceUID === displaySetInstanceUID
-          );
-
-          let metadataToUse = metadata;
-          // if it is not showing the displaySet we need to remove the FOR from the metadata
-          if (!showingDisplaySet) {
-            metadataToUse = {
-              ...metadata,
-              FrameOfReferenceUID: undefined,
-            };
-          }
-
-          // Todo: make it work with cases where we want to define FOR based measurements too
-          if (!viewport.isReferenceViewable(metadataToUse, WITH_NAVIGATION)) {
-            return;
-          }
-
-          try {
-            viewport.setViewReference(metadata);
-            viewport.render();
-          } catch (e) {
-            console.warn('Unable to apply', metadata, e);
-          }
-
-          cs3DTools.annotation.selection.setAnnotationSelected(measurement.uid);
-          event?.consume?.();
-        }
+        event => handleJumpToMeasurement(event, elementRef, viewportId, cornerstoneViewportService)
       );
 
       return () => {
@@ -464,6 +406,54 @@ const OHIFCornerstoneViewport = React.memo(
   },
   areEqual
 );
+
+// Helper function to handle jumping to measurements
+function handleJumpToMeasurement(event, elementRef, viewportId, cornerstoneViewportService) {
+  const { measurement, isConsumed } = event;
+  if (!measurement || isConsumed) {
+    return;
+  }
+
+  const enabledElement = getEnabledElement(elementRef.current);
+
+  if (!enabledElement) {
+    return;
+  }
+
+  const viewport = enabledElement.viewport as csTypes.IStackViewport | csTypes.IVolumeViewport;
+
+  const { metadata, displaySetInstanceUID } = measurement;
+
+  const viewportDisplaySets = cornerstoneViewportService.getViewportDisplaySets(viewportId);
+
+  const showingDisplaySet = viewportDisplaySets.find(
+    ds => ds.displaySetInstanceUID === displaySetInstanceUID
+  );
+
+  let metadataToUse = metadata;
+  // if it is not showing the displaySet we need to remove the FOR from the metadata
+  if (!showingDisplaySet) {
+    metadataToUse = {
+      ...metadata,
+      FrameOfReferenceUID: undefined,
+    };
+  }
+
+  // Todo: make it work with cases where we want to define FOR based measurements too
+  if (!viewport.isReferenceViewable(metadataToUse, WITH_NAVIGATION)) {
+    return;
+  }
+
+  try {
+    viewport.setViewReference(metadata);
+    viewport.render();
+  } catch (e) {
+    console.warn('Unable to apply', metadata, e);
+  }
+
+  cs3DTools.annotation.selection.setAnnotationSelected(measurement.uid);
+  event?.consume?.();
+}
 
 function _rehydrateSynchronizers(viewportId: string, syncGroupService: any) {
   const { synchronizersStore } = useSynchronizersStore.getState();

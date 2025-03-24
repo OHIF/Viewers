@@ -172,58 +172,45 @@ function ViewerViewportGrid(props: withAppTypes) {
           return;
         }
 
-        let canAnyViewportDisplayMeasurement = false;
         const { displaySetInstanceUID: referencedDisplaySetInstanceUID } = measurement;
-
-        // any viewport in the grid that can display the measurement
         const { viewports } = viewportGridService.getState();
-        viewports.forEach((viewport, viewportId) => {
-          const displaySetInstanceUIDs = viewport.displaySetInstanceUIDs;
 
-          // does viewport have the displaySetInstanceUID?
-          let viewportHasDisplaySet = false;
-          if (displaySetInstanceUIDs.includes(referencedDisplaySetInstanceUID)) {
-            viewportHasDisplaySet = true;
-          }
+        // Check if any viewport can display this measurement
+        let canAnyViewportDisplayMeasurement = false;
 
-          const { FrameOfReferenceUID, ...rest } = measurement.metadata;
-          if (viewportHasDisplaySet) {
-            if (
-              viewport.isReferenceViewable?.({
-                viewportId,
-                reference: {
-                  ...measurement.metadata,
-                  displaySetInstanceUID: referencedDisplaySetInstanceUID,
-                },
-              })
-            ) {
-              canAnyViewportDisplayMeasurement = true;
-            }
-          } else {
-            if (
-              viewport.isReferenceViewable?.({
-                viewportId,
-                reference: {
-                  ...rest,
-                  displaySetInstanceUID: referencedDisplaySetInstanceUID,
-                },
-              })
-            ) {
-              canAnyViewportDisplayMeasurement = true;
-            }
+        viewports.forEach((viewport, id) => {
+          const displaySetInstanceUIDs = viewport.displaySetInstanceUIDs || [];
+          const viewportHasDisplaySet = displaySetInstanceUIDs.includes(
+            referencedDisplaySetInstanceUID
+          );
+
+          // Extract metadata and prepare reference
+          const { FrameOfReferenceUID, ...metadataRest } = measurement.metadata;
+          const reference = {
+            ...(viewportHasDisplaySet ? measurement.metadata : metadataRest),
+            displaySetInstanceUID: referencedDisplaySetInstanceUID,
+          };
+
+          // Check if viewport can display the reference
+          if (
+            viewport.isReferenceViewable?.({
+              viewportId: id,
+              reference,
+            })
+          ) {
+            canAnyViewportDisplayMeasurement = true;
           }
         });
 
         if (canAnyViewportDisplayMeasurement) {
-          // let the viewports jump and don't do anything specific here
+          // Let the viewports handle the jump
           return;
         }
 
-        // This occurs when no viewport has elected to consume the event
-        // so we need to change layouts into a layout which can consume
-        // the event.
+        // Need to change layouts since no viewport consumed the event
         const updatedViewports = _getUpdatedViewports(viewportId, referencedDisplaySetInstanceUID);
-        if (!updatedViewports[0]) {
+
+        if (!updatedViewports?.[0]) {
           console.warn(
             'ViewportGrid::Unable to navigate to viewport containing',
             referencedDisplaySetInstanceUID
@@ -231,27 +218,25 @@ function ViewerViewportGrid(props: withAppTypes) {
           return;
         }
 
-        // find the proper one to jump
-        // find the viewport that can display the measurement to jump straight to it
+        // Find the viewport that can display the measurement
         const viewport = updatedViewports.find(viewport => {
           const gridViewport = viewportGridService.getViewportState(viewport.viewportId);
-          if (
-            gridViewport.isReferenceViewable?.({
-              viewportId: viewport.viewportId,
-              reference: {
-                ...measurement.metadata,
-                displaySetInstanceUID: referencedDisplaySetInstanceUID,
-              },
-              viewportOptions: gridViewport.viewportOptions || {},
-            })
-          ) {
-            return viewport;
-          }
-
-          return null;
+          return gridViewport.isReferenceViewable?.({
+            viewportId: viewport.viewportId,
+            reference: {
+              ...measurement.metadata,
+              displaySetInstanceUID: referencedDisplaySetInstanceUID,
+            },
+            viewportOptions: gridViewport.viewportOptions || {},
+          });
         });
 
-        // in case we update viewports
+        if (!viewport) {
+          console.warn('No suitable viewport found for displaying measurement');
+          return;
+        }
+
+        // Update stored position presentation
         commandsManager.run('updateStoredPositionPresentation', {
           viewportId: viewport.viewportId,
           displaySetInstanceUID: referencedDisplaySetInstanceUID,
