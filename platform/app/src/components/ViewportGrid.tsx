@@ -297,11 +297,11 @@ function ViewerViewportGrid(props: withAppTypes) {
         const tolerance = 0.01;
 
         if (x + width < 1 - tolerance) {
-          style.borderRight = '1px solid #252A74';
+          style.borderRight = '1px solid hsl(var(--input))';
         }
 
         if (y + height < 1 - tolerance) {
-          style.borderBottom = '1px solid #252A74';
+          style.borderBottom = '1px solid hsl(var(--input))';
         }
 
         return style;
