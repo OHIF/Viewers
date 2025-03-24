@@ -1658,11 +1658,11 @@ function commandsModule({
     },
     nextImage: {
       commandFn: actions.scroll,
-      options: { direction: 1 },
+      options: { delta: 1 },
     },
     previousImage: {
       commandFn: actions.scroll,
-      options: { direction: -1 },
+      options: { delta: -1 },
     },
     firstImage: {
       commandFn: actions.jumpToImage,
