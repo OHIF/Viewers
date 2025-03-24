@@ -1,6 +1,5 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-
 import { DataRow, PanelSection } from '../../index';
 import { createContext } from '../../lib/createContext';
 
@@ -17,7 +16,6 @@ const [MeasurementTableProvider, useMeasurementTableContext] =
 interface MeasurementDataProps extends MeasurementTableContext {
   title: string;
   children: React.ReactNode;
-  displayPrompt: boolean;
 }
 
 const MeasurementTable = ({
