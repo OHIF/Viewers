@@ -242,7 +242,7 @@ function ViewerViewportGrid(props: withAppTypes) {
                 ...measurement.metadata,
                 displaySetInstanceUID: referencedDisplaySetInstanceUID,
               },
-              viewportOptions: viewport.viewportOptions,
+              viewportOptions: gridViewport.viewportOptions || {},
             })
           ) {
             return viewport;

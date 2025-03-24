@@ -9,7 +9,7 @@ export const isReferenceViewable = ({
   viewportOptions,
   servicesManager,
 }) => {
-  const { cornerstoneViewportService } = servicesManager.services;
+  const { cornerstoneViewportService, displaySetService } = servicesManager.services;
 
   if (!viewportOptions) {
     const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
@@ -22,12 +22,19 @@ export const isReferenceViewable = ({
     return isViewable;
   }
 
-  // if viewport options is provided means it is future viewport with these options
-  // and we need to check if the viewport is viewable with these options
+  if (viewportOptions.viewportType === 'stack') {
+    // we only need the viewport to include the referenced imageId
+    const displaySet = displaySetService.getDisplaySetByUID(reference.displaySetInstanceUID);
+    const imageIds = displaySet.instances.map(instance => instance.imageId);
+    return imageIds.includes(reference.referencedImageId);
+  }
+
+  // for the volume viewports, we need to check orientation
   const { orientation } = viewportOptions;
 
+  // Todo: handle hanging protocols that have acquisition orientation
   const closestOrientation = getClosestOrientationFromIOP(
-    servicesManager,
+    displaySetService,
     reference.displaySetInstanceUID
   );
 
@@ -42,10 +49,9 @@ export const isReferenceViewable = ({
  * @returns orientation
  */
 export default function getClosestOrientationFromIOP(
-  servicesManager,
+  displaySetService,
   displaySetInstanceUID
 ): OrientationAxis {
-  const { displaySetService } = servicesManager.services;
   const displaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
   const imageOrientationPatient = displaySet.instances[0].ImageOrientationPatient as Array<number>;
   // ImageOrientationPatient must be an array of length 6.
