@@ -1,6 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { ViewportActionButton } from '@ohif/ui';
+import { ViewportActionButton } from '@ohif/ui-next';
 import { Icons, Tooltip, TooltipTrigger, TooltipContent } from '@ohif/ui-next';
 
 export default function _getStatusComponent({ isHydrated, onStatusClick }) {

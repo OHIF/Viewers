@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { SOPClassHandlerId, SOPClassHandlerId3D } from './id';
-import { ViewportActionButton } from '@ohif/ui';
+import { ViewportActionButton } from '@ohif/ui-next';
 import i18n from '@ohif/i18n';
 
 export default function onModeEnter({ servicesManager }) {

@@ -1,5 +1,5 @@
 import { PubSubService } from '@ohif/core';
-import { ViewportActionCornersLocations } from '@ohif/ui';
+import { ViewportActionCornersLocations } from '@ohif/ui-next';
 import { ReactNode } from 'react';
 
 export type ActionComponentInfo = {
