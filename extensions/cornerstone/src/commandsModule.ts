@@ -126,6 +126,7 @@ function commandsModule({
       viewportId,
       displaySetInstanceUID,
       referencedImageId,
+      options,
     }) => {
       const presentations = cornerstoneViewportService.getPresentations(viewportId);
       const { positionPresentationStore, setPositionPresentation, getPositionPresentationId } =
@@ -143,6 +144,7 @@ function commandsModule({
               ...presentations.positionPresentation,
               viewReference: {
                 referencedImageId,
+                ...options,
               },
             }
           : presentations.positionPresentation;

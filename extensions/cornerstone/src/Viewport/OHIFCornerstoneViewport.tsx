@@ -27,7 +27,7 @@ const STACK = 'stack';
  * Caches the jump to measurement operation, so that if display set is shown,
  * it can jump to the measurement.
  */
-let cacheJumpToMeasurementEvent;
+// let cacheJumpToMeasurementEvent;
 
 // Todo: This should be done with expose of internal API similar to react-vtkjs-viewport
 // Then we don't need to worry about the re-renders if the props change.
@@ -99,6 +99,7 @@ const OHIFCornerstoneViewport = React.memo(
       cornerstoneCacheService,
       viewportActionCornersService,
       customizationService,
+      measurementService,
     } = servicesManager.services;
 
     const [viewportDialogState] = useViewportDialog();
@@ -300,16 +301,65 @@ const OHIFCornerstoneViewport = React.memo(
         return;
       }
 
-      const unsubscribeFromJumpToMeasurementEvents = _subscribeToJumpToMeasurementEvents(
-        elementRef,
-        viewportId,
-        servicesManager
+      // const unsubscribeFromJumpToMeasurementEvents = _subscribeToJumpToMeasurementEvents(
+      //   elementRef,
+      //   viewportId,
+      //   servicesManager
+      // );
+      const { unsubscribe } = measurementService.subscribe(
+        MeasurementService.EVENTS.JUMP_TO_MEASUREMENT_VIEWPORT,
+        event => {
+          const { measurement, isConsumed } = event;
+          if (!measurement || isConsumed) {
+            return;
+          }
+
+          const enabledElement = getEnabledElement(elementRef.current);
+
+          if (!enabledElement) {
+            return;
+          }
+
+          const viewport = enabledElement.viewport as
+            | csTypes.IStackViewport
+            | csTypes.IVolumeViewport;
+
+          const { metadata, displaySetInstanceUID } = measurement;
+
+          const viewportDisplaySets = cornerstoneViewportService.getViewportDisplaySets(viewportId);
+
+          const showingDisplaySet = viewportDisplaySets.find(
+            ds => ds.displaySetInstanceUID === displaySetInstanceUID
+          );
+
+          let metadataToUse = metadata;
+          // if it is not showing the displaySet we need to remove the FOR from the metadata
+          if (!showingDisplaySet) {
+            metadataToUse = {
+              ...metadata,
+              FrameOfReferenceUID: undefined,
+            };
+          }
+
+          // Todo: make it work with cases where we want to define FOR based measurements too
+          if (!viewport.isReferenceViewable(metadataToUse, WITH_NAVIGATION)) {
+            return;
+          }
+
+          try {
+            viewport.setViewReference(metadata);
+            viewport.render();
+          } catch (e) {
+            console.warn('Unable to apply', metadata, e);
+          }
+
+          cs3DTools.annotation.selection.setAnnotationSelected(measurement.uid);
+          event?.consume?.();
+        }
       );
 
-      _checkForCachedJumpToMeasurementEvents(elementRef, viewportId, displaySets, servicesManager);
-
       return () => {
-        unsubscribeFromJumpToMeasurementEvents();
+        unsubscribe();
       };
     }, [displaySets, elementRef, viewportId, isJumpToMeasurementDisabled, servicesManager]);
 
@@ -414,101 +464,6 @@ const OHIFCornerstoneViewport = React.memo(
   },
   areEqual
 );
-
-function _subscribeToJumpToMeasurementEvents(elementRef, viewportId, servicesManager) {
-  const { measurementService, cornerstoneViewportService } = servicesManager.services;
-
-  const { unsubscribe } = measurementService.subscribe(
-    MeasurementService.EVENTS.JUMP_TO_MEASUREMENT_VIEWPORT,
-    props => {
-      cacheJumpToMeasurementEvent = props;
-      const { viewportId: jumpId, measurement, isConsumed } = props;
-      if (!measurement || isConsumed) {
-        return;
-      }
-      if (cacheJumpToMeasurementEvent.cornerstoneViewport === undefined) {
-        // Decide on which viewport should handle this
-        cacheJumpToMeasurementEvent.cornerstoneViewport =
-          cornerstoneViewportService.getViewportIdToJump(jumpId, {
-            displaySetInstanceUID: measurement.displaySetInstanceUID,
-            ...measurement.metadata,
-            referencedImageId:
-              measurement.referencedImageId || measurement.metadata?.referencedImageId,
-          });
-      }
-      if (cacheJumpToMeasurementEvent.cornerstoneViewport !== viewportId) {
-        return;
-      }
-      _jumpToMeasurement(measurement, elementRef, viewportId, servicesManager);
-    }
-  );
-
-  return unsubscribe;
-}
-
-// Check if there is a queued jumpToMeasurement event
-function _checkForCachedJumpToMeasurementEvents(
-  elementRef,
-  viewportId,
-  displaySets,
-  servicesManager
-) {
-  if (!cacheJumpToMeasurementEvent) {
-    return;
-  }
-  if (cacheJumpToMeasurementEvent.isConsumed) {
-    cacheJumpToMeasurementEvent = null;
-    return;
-  }
-  const displaysUIDs = displaySets.map(displaySet => displaySet.displaySetInstanceUID);
-  if (!displaysUIDs?.length) {
-    return;
-  }
-
-  // Jump to measurement if the measurement exists
-  const { measurement } = cacheJumpToMeasurementEvent;
-  if (measurement && elementRef) {
-    if (displaysUIDs.includes(measurement?.displaySetInstanceUID)) {
-      _jumpToMeasurement(measurement, elementRef, viewportId, servicesManager);
-    }
-  }
-}
-
-function _jumpToMeasurement(measurement, targetElementRef, viewportId, servicesManager) {
-  const { viewportGridService } = servicesManager.services;
-
-  const targetElement = targetElementRef.current;
-
-  // Todo: setCornerstoneMeasurementActive should be handled by the toolGroupManager
-  //  to set it properly
-  // setCornerstoneMeasurementActive(measurement);
-
-  viewportGridService.setActiveViewportId(viewportId);
-
-  const enabledElement = getEnabledElement(targetElement);
-
-  if (enabledElement) {
-    // See how the jumpToSlice() of Cornerstone3D deals with imageIdx param.
-    const viewport = enabledElement.viewport as csTypes.IStackViewport | csTypes.IVolumeViewport;
-
-    const { metadata } = measurement;
-    if (!viewport.isReferenceViewable(metadata, WITH_NAVIGATION)) {
-      console.log("Reference isn't viewable, postponing until updated");
-      return;
-    }
-
-    try {
-      viewport.setViewReference(metadata);
-    } catch (e) {
-      console.warn('Unable to apply', metadata, e);
-    }
-
-    cs3DTools.annotation.selection.setAnnotationSelected(measurement.uid);
-    // Jump to measurement consumed, remove.
-    cacheJumpToMeasurementEvent?.consume?.();
-    cacheJumpToMeasurementEvent = null;
-  }
-}
 
 function _rehydrateSynchronizers(viewportId: string, syncGroupService: any) {
   const { synchronizersStore } = useSynchronizersStore.getState();

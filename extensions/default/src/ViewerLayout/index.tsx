@@ -82,7 +82,7 @@ function ViewerLayout({
       );
     }
 
-    return { entry, content: entry.component };
+    return { entry };
   };
 
   useEffect(() => {
@@ -107,6 +107,7 @@ function ViewerLayout({
 
     return {
       component: entry.component,
+      isReferenceViewable: entry.isReferenceViewable,
       displaySetsToDisplay: viewportComponent.displaySetsToDisplay,
     };
   };

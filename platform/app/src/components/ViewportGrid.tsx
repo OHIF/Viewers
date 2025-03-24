@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback, useRef } from 'react';
+import React, { useEffect, useCallback, useRef, useMemo } from 'react';
 import { useResizeDetector } from 'react-resize-detector';
 import { Types, MeasurementService } from '@ohif/core';
 import { ViewportGrid, ViewportPane } from '@ohif/ui-next';
@@ -166,15 +166,62 @@ function ViewerViewportGrid(props: withAppTypes) {
   useEffect(() => {
     const { unsubscribe } = measurementService.subscribe(
       MeasurementService.EVENTS.JUMP_TO_MEASUREMENT_LAYOUT,
-      ({ viewportId, measurement, isConsumed }) => {
+      event => {
+        const { viewportId, measurement, isConsumed } = event;
         if (isConsumed) {
           return;
         }
+
+        let canAnyViewportDisplayMeasurement = false;
+        const { displaySetInstanceUID: referencedDisplaySetInstanceUID } = measurement;
+
+        // any viewport in the grid that can display the measurement
+        const { viewports } = viewportGridService.getState();
+        viewports.forEach((viewport, viewportId) => {
+          const displaySetInstanceUIDs = viewport.displaySetInstanceUIDs;
+
+          // does viewport have the displaySetInstanceUID?
+          let viewportHasDisplaySet = false;
+          if (displaySetInstanceUIDs.includes(referencedDisplaySetInstanceUID)) {
+            viewportHasDisplaySet = true;
+          }
+
+          const { FrameOfReferenceUID, ...rest } = measurement.metadata;
+          if (viewportHasDisplaySet) {
+            if (
+              viewport.isReferenceViewable?.({
+                viewportId,
+                reference: {
+                  ...measurement.metadata,
+                  displaySetInstanceUID: referencedDisplaySetInstanceUID,
+                },
+              })
+            ) {
+              canAnyViewportDisplayMeasurement = true;
+            }
+          } else {
+            if (
+              viewport.isReferenceViewable?.({
+                viewportId,
+                reference: {
+                  ...rest,
+                  displaySetInstanceUID: referencedDisplaySetInstanceUID,
+                },
+              })
+            ) {
+              canAnyViewportDisplayMeasurement = true;
+            }
+          }
+        });
+
+        if (canAnyViewportDisplayMeasurement) {
+          // let the viewports jump and don't do anything specific here
+          return;
+        }
+
         // This occurs when no viewport has elected to consume the event
         // so we need to change layouts into a layout which can consume
         // the event.
-        const { displaySetInstanceUID: referencedDisplaySetInstanceUID } = measurement;
-
         const updatedViewports = _getUpdatedViewports(viewportId, referencedDisplaySetInstanceUID);
         if (!updatedViewports[0]) {
           console.warn(
@@ -184,29 +231,37 @@ function ViewerViewportGrid(props: withAppTypes) {
           return;
         }
 
-        // Arbitrarily assign the viewport to element 0
-        // TODO - this should perform a search to find the most suitable viewport.
-        updatedViewports[0] = { ...updatedViewports[0] };
-        const [viewport] = updatedViewports;
+        // find the proper one to jump
+        // find the viewport that can display the measurement to jump straight to it
+        const viewport = updatedViewports.find(viewport => {
+          const gridViewport = viewportGridService.getViewportState(viewport.viewportId);
+          if (
+            gridViewport.isReferenceViewable?.({
+              viewportId: viewport.viewportId,
+              reference: {
+                ...measurement.metadata,
+                displaySetInstanceUID: referencedDisplaySetInstanceUID,
+              },
+              viewportOptions: viewport.viewportOptions,
+            })
+          ) {
+            return viewport;
+          }
 
-        // Copy the viewport options to prevent modifying the internal data
-        viewport.viewportOptions = {
-          ...viewport.viewportOptions,
-          orientation: 'acquisition',
-          // The preferred way to jump to the measurement view is to set the
-          // view reference, as this can hold information such as the orientation
-          // or zoom level required to display an annotation.  The metadata attribute
-          // of the measurement is a viewReference, so use it to show the measurement.
-          // Longer term this should clear the view reference data
-          viewportType: measurement.metadata.volumeId ? 'volume' : null,
-        };
+          return null;
+        });
 
+        // in case we update viewports
         commandsManager.run('updateStoredPositionPresentation', {
           viewportId: viewport.viewportId,
           displaySetInstanceUID: referencedDisplaySetInstanceUID,
           referencedImageId: measurement.referencedImageId,
+          options: {
+            ...measurement.metadata,
+          },
         });
 
+        event.consume();
         viewportGridService.setDisplaySetsForViewports(updatedViewports);
       }
     );
@@ -232,6 +287,9 @@ function ViewerViewportGrid(props: withAppTypes) {
       }
     });
   };
+
+  // Store previous isReferenceViewable values to avoid infinite loops
+  const prevReferenceViewableMap = useRef(new Map());
 
   const getViewportPanes = useCallback(() => {
     const viewportPanes = [];
@@ -264,11 +322,26 @@ function ViewerViewportGrid(props: withAppTypes) {
           return !displaySet?.unsupported;
         });
 
-      const ViewportComponent = _getViewportComponent(
+      const { component: ViewportComponent, isReferenceViewable } = _getViewportComponent(
         displaySets,
         viewportComponents,
         uiNotificationService
       );
+
+      // Only update isReferenceViewable if it's changed to avoid render loops
+      // We need to handle both function and non-function values
+      if (viewportId) {
+        const prevValue = prevReferenceViewableMap.current.get(viewportId);
+        const isFunction = typeof isReferenceViewable === 'function';
+        const isSameFunction = isFunction && typeof prevValue === 'function';
+
+        // For non-functions, compare directly. For functions, we treat them as always different
+        // (this is conservative but safe)
+        if (!isSameFunction && prevValue !== isReferenceViewable) {
+          viewportGridService.setIsReferenceViewable(viewportId, isReferenceViewable);
+          prevReferenceViewableMap.current.set(viewportId, isReferenceViewable);
+        }
+      }
 
       // look inside displaySets to see if they need reRendering
       const displaySetsNeedsRerendering = displaySets.some(displaySet => {
@@ -385,7 +458,7 @@ function ViewerViewportGrid(props: withAppTypes) {
 
 function _getViewportComponent(displaySets, viewportComponents, uiNotificationService) {
   if (!displaySets || !displaySets.length) {
-    return EmptyViewport;
+    return { component: EmptyViewport, isReferenceViewable: () => false };
   }
 
   // Todo: Do we have a viewport that has two different SOPClassHandlerIds?
@@ -399,8 +472,8 @@ function _getViewportComponent(displaySets, viewportComponents, uiNotificationSe
       throw new Error('displaySetsToDisplay is null');
     }
     if (viewportComponents[i].displaySetsToDisplay.includes(SOPClassHandlerId)) {
-      const { component } = viewportComponents[i];
-      return component;
+      const { component, isReferenceViewable } = viewportComponents[i];
+      return { component, isReferenceViewable };
     }
   }
 
@@ -411,7 +484,7 @@ function _getViewportComponent(displaySets, viewportComponents, uiNotificationSe
     type: 'error',
   });
 
-  return EmptyViewport;
+  return { component: EmptyViewport, isReferenceViewable: () => false };
 }
 
 export default ViewerViewportGrid;

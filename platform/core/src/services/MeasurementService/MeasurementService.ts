@@ -643,8 +643,11 @@ class MeasurementService extends PubSubService {
       measurement,
     });
 
-    this._broadcastEvent(EVENTS.JUMP_TO_MEASUREMENT_VIEWPORT, consumableEvent);
+    // Important: we should broadcast the layout event first, since
+    // in the layout there might be a viewport that we can match and choose
+    // and jump in it before we decide on changing the orientation of different viewports
     this._broadcastEvent(EVENTS.JUMP_TO_MEASUREMENT_LAYOUT, consumableEvent);
+    this._broadcastEvent(EVENTS.JUMP_TO_MEASUREMENT_VIEWPORT, consumableEvent);
   }
 
   _getSourceUID(name, version) {

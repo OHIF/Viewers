@@ -38,6 +38,10 @@ class ViewportGridService extends PubSubService {
     this.presentationIdProviders.set(id, provider);
   }
 
+  public setIsReferenceViewable(viewportId: string, isReferenceViewable: boolean): void {
+    this.serviceImplementation._setIsReferenceViewable(viewportId, isReferenceViewable);
+  }
+
   public getPresentationId(id: string, viewportId: string): string | null {
     const state = this.getState();
     const viewport = state.viewports.get(viewportId);
@@ -93,7 +97,12 @@ class ViewportGridService extends PubSubService {
     set: setImplementation,
     getNumViewportPanes: getNumViewportPanesImplementation,
     setViewportIsReady: setViewportIsReadyImplementation,
+    setIsReferenceViewable: setIsReferenceViewableImplementation,
+    getViewportState: getViewportStateImplementation,
   }): void {
+    if (getViewportStateImplementation) {
+      this.serviceImplementation._getViewportState = getViewportStateImplementation;
+    }
     if (getStateImplementation) {
       this.serviceImplementation._getState = getStateImplementation;
     }
@@ -123,6 +132,9 @@ class ViewportGridService extends PubSubService {
     if (setViewportIsReadyImplementation) {
       this.serviceImplementation._setViewportIsReady = setViewportIsReadyImplementation;
     }
+    if (setIsReferenceViewableImplementation) {
+      this.serviceImplementation._setIsReferenceViewable = setIsReferenceViewableImplementation;
+    }
   }
 
   public publishViewportsReady() {
@@ -145,8 +157,7 @@ class ViewportGridService extends PubSubService {
   }
 
   public getViewportState(viewportId: string) {
-    const state = this.getState();
-    return state.viewports.get(viewportId);
+    return this.serviceImplementation._getViewportState(viewportId);
   }
 
   public setViewportIsReady(viewportId, callback) {
