@@ -22,7 +22,7 @@ function initDefaultToolGroup(extensionManager, toolGroupService, commandsManage
   const tools = {
     active: [
       {
-        toolName: toolNames.Length,
+        toolName: toolNames.WindowLevel,
         bindings: [{ mouseButton: Enums.MouseBindings.Primary }],
       },
       {
@@ -39,7 +39,7 @@ function initDefaultToolGroup(extensionManager, toolGroupService, commandsManage
       },
     ],
     passive: [
-      // { toolName: toolNames.Length },
+      { toolName: toolNames.Length },
       {
         toolName: toolNames.ArrowAnnotate,
         configuration: {
@@ -179,7 +179,7 @@ function initMPRToolGroup(extensionManager, toolGroupService, commandsManager) {
   const tools = {
     active: [
       {
-        toolName: toolNames.Length,
+        toolName: toolNames.WindowLevel,
         bindings: [{ mouseButton: Enums.MouseBindings.Primary }],
       },
       {
@@ -196,7 +196,7 @@ function initMPRToolGroup(extensionManager, toolGroupService, commandsManager) {
       },
     ],
     passive: [
-      // { toolName: toolNames.Length },
+      { toolName: toolNames.Length },
       {
         toolName: toolNames.ArrowAnnotate,
         configuration: {
