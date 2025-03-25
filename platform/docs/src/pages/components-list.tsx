@@ -33,7 +33,7 @@ export default function ComponentsList() {
             <div className="ml-6 mb-6 text-base">
               <h1 className="text-foreground mb-3 text-5xl">Components</h1>
             </div>
-            {/* <TabsShowcase />
+            <TabsShowcase />
 
             <ButtonShowcase />
             <CheckboxShowcase />
@@ -47,7 +47,7 @@ export default function ComponentsList() {
             <TabsShowcase />
             <ToastShowcase />
             <ToolButtonShowcase />
-            <ToolButtonListShowcase /> */}
+            <ToolButtonListShowcase />
             <NumericMetaShowcase />
           </div>
         </div>
