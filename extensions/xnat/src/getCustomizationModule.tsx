@@ -89,53 +89,6 @@ export default function getCustomizationModule({ servicesManager, extensionManag
     const studyUIDs = originalGetStudyInstanceUIDs.call(DicomMetadataStore);
     return studyUIDs;
   };
-  
-  // Instead of trying to register the hanging protocol here, we'll register it in a delayed fashion
-  // to ensure all services are fully initialized
-  setTimeout(() => {
-    try {
-      const { hangingProtocolService } = servicesManager.services;
-      if (!hangingProtocolService) {
-        console.warn('XNAT: Hanging protocol service not available');
-        return;
-      }
-      
-      console.log('XNAT: Attempting to register hanging protocol via setTimeout');
-      
-      // Simplest possible protocol definition that should pass validation
-      const protocol = {
-        id: 'xnat-default',
-        name: 'XNAT Default',
-        hasUpdatedPriorsInformation: false,
-        protocolMatchingRules: [],
-        displaySetSelectors: {},
-        stages: [{
-          id: 'default',
-          name: 'Default',
-          viewportStructure: {
-            layoutType: 'grid',
-            properties: {
-              rows: 1,
-              columns: 1
-            }
-          },
-          viewports: [{
-            viewportOptions: {
-              toolGroupId: 'default',
-              viewportType: 'stack'
-            },
-            displaySets: []
-          }]
-        }],
-        numberOfPriorsReferenced: 0
-      };
-      
-      hangingProtocolService.addProtocol(protocol);
-      console.log('XNAT: Successfully registered delayed hanging protocol');
-    } catch (error) {
-      console.error('XNAT: Error registering delayed hanging protocol:', error);
-    }
-  }, 1000);  // 1 second delay
 
   // Return customization module with proper name for each element
   return [

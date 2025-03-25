@@ -274,6 +274,16 @@ function PanelStudyBrowser({
     setExpandedStudyInstanceUIDs(updatedExpandedStudyInstanceUIDs);
 
     if (!shouldCollapseStudy) {
+      // Store the StudyInstanceUID in sessionStorage for later use
+      if (StudyInstanceUID) {
+        try {
+          sessionStorage.setItem('lastSelectedStudyInstanceUID', StudyInstanceUID);
+          console.log(`XNAT: Stored StudyInstanceUID in sessionStorage: ${StudyInstanceUID}`);
+        } catch (e) {
+          console.warn('XNAT: Failed to store StudyInstanceUID in sessionStorage:', e);
+        }
+      }
+
       const madeInClient = true;
       requestDisplaySetCreationForStudy(displaySetService, StudyInstanceUID, madeInClient);
     }

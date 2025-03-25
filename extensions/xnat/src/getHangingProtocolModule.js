@@ -121,6 +121,68 @@ const defaultProtocol = {
   ],
 };
 
+const xnatProtocol = {
+  id: 'xnat-default',
+  name: 'XNAT Default',
+  hasUpdatedPriorsInformation: false,
+  protocolMatchingRules: [],
+  displaySetSelectors: {
+    defaultDisplaySetId: {
+      seriesMatchingRules: [
+        {
+          weight: 10,
+          attribute: 'numImageFrames',
+          constraint: {
+            greaterThan: { value: 0 },
+          },
+        },
+        {
+          attribute: 'isDisplaySetFromUrl',
+          weight: 20,
+          constraint: {
+            equals: true,
+          },
+        },
+      ],
+    },
+  },
+  stages: [{
+    id: 'default',
+    name: 'Default',
+    viewportStructure: {
+      layoutType: 'grid',
+      properties: {
+        rows: 1,
+        columns: 1
+      }
+    },
+    viewports: [{
+      viewportOptions: {
+        toolGroupId: 'default',
+        viewportType: 'stack',
+        syncGroups: [
+          {
+            type: 'hydrateseg',
+            id: 'sameFORId',
+            source: true,
+            target: true,
+            options: {
+              matchingRules: ['sameFOR'],
+            },
+          },
+        ],
+      },
+      displaySets: [
+        {
+          id: 'defaultDisplaySetId',
+        }
+      ]
+    }]
+  }],
+  numberOfPriorsReferenced: 0,
+  toolGroupIds: ['default'],
+};
+
 function getHangingProtocolModule() {
   return [
     {
@@ -148,6 +210,11 @@ function getHangingProtocolModule() {
     {
       name: hpMN8.id,
       protocol: hpMN8,
+    },
+    // Add XNAT protocol
+    {
+      name: xnatProtocol.id,
+      protocol: xnatProtocol,
     },
   ];
 }

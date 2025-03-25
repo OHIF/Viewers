@@ -7,11 +7,11 @@ const retrieveDicomWebMetadata = async (
   rootUrl,
   dicomWebParameters
 ) => {
-  const dwUrlRoot = `${rootUrl}xapi/viewerDicomweb/aets`;
+  const dwUrlRoot = `${rootUrl}xapi/viewer`;
   const dicomWebStudies = [];
 
   for (const params of dicomWebParameters) {
-    const wadoRoot = `${dwUrlRoot}/${params.projectId}/${params.experimentId}/rs`;
+    const wadoRoot = `${dwUrlRoot}/projects/${params.projectId}/experiments/${params.experimentId}`;
     const server = {
       enableStudyLazyLoad: false,
       wadoRoot,
