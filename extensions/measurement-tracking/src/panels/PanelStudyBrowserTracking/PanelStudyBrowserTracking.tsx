@@ -493,6 +493,7 @@ export default function PanelStudyBrowserTracking({
       content: UntrackSeriesModal,
       contentProps: {
         onConfirm,
+        message: 'Are you sure you want to untrack this series?',
       },
     });
   };

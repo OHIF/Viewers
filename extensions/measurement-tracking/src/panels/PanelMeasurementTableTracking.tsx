@@ -12,13 +12,14 @@ import {
 } from '@ohif/extension-cornerstone';
 
 import { useTrackedMeasurements } from '../getContextModule';
+import { UntrackSeriesModal } from './PanelStudyBrowserTracking/untrackSeriesModal';
 
 const { filterAnd, filterPlanarMeasurement, filterMeasurementsBySeriesUID } =
   utils.MeasurementFilters;
 
 function PanelMeasurementTableTracking(props) {
   const [viewportGrid] = useViewportGrid();
-  const { measurementService, uiDialogService } = props.servicesManager.services;
+  const { measurementService, uiModalService } = props.servicesManager.services;
   const [trackedMeasurements, sendTrackedMeasurementsEvent] = useTrackedMeasurements();
   const { trackedStudy, trackedSeries } = trackedMeasurements.context;
   const measurementFilter = trackedStudy
@@ -35,44 +36,12 @@ function PanelMeasurementTableTracking(props) {
       .getMeasurements()
       .some(measurement => measurement.isDirty);
     hasDirtyMeasurements
-      ? uiDialogService.show({
-          id: 'untrack-and-delete-all-measurements',
-          content: Dialog,
-          isDraggable: false,
-          showOverlay: true,
+      ? uiModalService.show({
+          title: 'Untrack Study',
+          content: UntrackSeriesModal,
           contentProps: {
-            title: 'Untrack and Delete All Measurements',
-            body: () => (
-              <div className="bg-primary-dark text-white">
-                <p>Are you sure you want to untrack study and delete all measurements?</p>
-                <p className="mt-2">This action cannot be undone.</p>
-              </div>
-            ),
-            actions: [
-              {
-                id: 'cancel',
-                text: 'Cancel',
-                type: ButtonEnums.type.secondary,
-              },
-              {
-                id: 'yes',
-                text: 'Untrack and Delete All',
-                type: ButtonEnums.type.primary,
-                classes: ['untrack-and-delete-all-yes-button'],
-              },
-            ],
-            onClose: () => uiDialogService.hide('untrack-and-delete-all-measurements'),
-            onSubmit: async ({ action }) => {
-              switch (action.id) {
-                case 'yes':
-                  onUntrackConfirm();
-                  uiDialogService.hide('untrack-and-delete-all-measurements');
-                  break;
-                case 'cancel':
-                  uiDialogService.hide('untrack-and-delete-all-measurements');
-                  break;
-              }
-            },
+            onConfirm: onUntrackConfirm,
+            message: 'Are you sure you want to untrack study and delete all measurements?',
           },
         })
       : onUntrackConfirm();
