@@ -10,7 +10,6 @@ import {
   TooltipTrigger,
   TooltipContent,
   Numeric,
-  InputNumber,
 } from '@ohif/ui-next';
 import { Enums } from '@cornerstonejs/core';
 
@@ -248,39 +247,33 @@ function DimensionGroupControls({
           />
         </Button>
 
-        <InputNumber
+        <Numeric.Container
+          mode="stepper"
           value={currentDimensionGroupNumber || 1}
           onChange={onDimensionGroupChange || (() => {})}
-          className="flex-col items-center"
+          min={1}
+          max={numDimensionGroups || 1}
+          step={1}
         >
-          <InputNumber.Container sizeClassName="w-[58px] h-[28px]">
-            <InputNumber.HorizontalControls
-              min={1}
-              max={numDimensionGroups || 1}
-              step={1}
-            >
-              <InputNumber.Input />
-            </InputNumber.HorizontalControls>
-          </InputNumber.Container>
-          <InputNumber.Label position="bottom">Frame</InputNumber.Label>
-        </InputNumber>
+          <div className="flex flex-col items-center">
+            <Numeric.NumberStepper className="w-[58px] h-[28px]" direction="horizontal"/>
+            <Numeric.Label className="mt-1">Frame</Numeric.Label>
+          </div>
+        </Numeric.Container>
 
-        <InputNumber
+        <Numeric.Container
+          mode="stepper"
           value={fps || 1}
           onChange={onFpsChange || (() => {})}
-          className="flex-col items-center"
+          min={minFps || 1}
+          max={maxFps || 30}
+          step={1}
         >
-          <InputNumber.Container sizeClassName="w-[58px] h-[28px]">
-            <InputNumber.HorizontalControls
-              min={minFps || 1}
-              max={maxFps || 30}
-              step={1}
-            >
-              <InputNumber.Input />
-            </InputNumber.HorizontalControls>
-          </InputNumber.Container>
-          <InputNumber.Label position="bottom">FPS</InputNumber.Label>
-        </InputNumber>
+          <div className="flex flex-col items-center">
+            <Numeric.NumberStepper className="w-[58px] h-[28px]" direction="horizontal"/>
+            <Numeric.Label className="mt-1">FPS</Numeric.Label>
+          </div>
+        </Numeric.Container>
       </div>
     </div>
   );
