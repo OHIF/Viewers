@@ -177,8 +177,7 @@ async function _loadSegments({
     throw new Error('referencedDisplaySet is missing for SEG');
   }
 
-  const { instances: images } = referencedDisplaySet;
-  const imageIds = images.map(({ imageId }) => imageId);
+  const { imageIds } = referencedDisplaySet;
 
   // Todo: what should be defaults here
   const tolerance = 0.001;
