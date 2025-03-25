@@ -146,7 +146,12 @@ const [dimensionGroupNumber, setDimensionGroupNumber] = useState(1);
             step={1}
           >
             <div className="flex flex-col items-center">
-              <Numeric.NumberStepper className="w-[58px]" direction="horizontal"/>
+              <Numeric.NumberStepper
+                className="flex w-[78px]"
+                direction="horizontal"
+              >
+                <span className="text-muted-foreground text-xs">FPS</span>
+              </Numeric.NumberStepper>
               <Numeric.Label className="mt-1">Frame</Numeric.Label>
             </div>
           </Numeric.Container>
@@ -160,7 +165,10 @@ const [dimensionGroupNumber, setDimensionGroupNumber] = useState(1);
           >
             <div className="flex items-center space-x-2">
               <Numeric.Label>Opacity</Numeric.Label>
-              <Numeric.NumberStepper className="w-[58px]" direction="horizontal"/>
+              <Numeric.NumberStepper
+                className="w-[58px]"
+                direction="horizontal"
+              />
             </div>
           </Numeric.Container>
 
@@ -172,8 +180,11 @@ const [dimensionGroupNumber, setDimensionGroupNumber] = useState(1);
             defaultValue={0}
           >
             <div className="flex items-center space-x-2">
-              <Numeric.Label>Zoom:</Numeric.Label>
-              <Numeric.NumberStepper className="w-[65px]" direction="vertical"/>
+              <Numeric.NumberStepper
+                className="w-[65px]"
+                direction="vertical"
+              />
+              <Numeric.Label>Zoom</Numeric.Label>
             </div>
           </Numeric.Container>
         </div>
@@ -417,7 +428,10 @@ const [controlledValues, setControlledValues] = useState<[number, number]>([0, 1
           >
             <div className="flex items-center justify-between">
               <Numeric.Label>Offset</Numeric.Label>
-              <Numeric.NumberStepper className="w-[58px]" direction="horizontal"/>
+              <Numeric.NumberStepper
+                className="w-[58px]"
+                direction="horizontal"
+              />
             </div>
           </Numeric.Container>
 

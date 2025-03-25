@@ -1,5 +1,5 @@
 // Numeric.tsx
-import React, { createContext, useContext, useCallback, PropsWithChildren, useState, useEffect } from 'react';
+import React, { createContext, useContext, useCallback, PropsWithChildren } from 'react';
 import { useControllableState } from '@radix-ui/react-use-controllable-state';
 import { cn } from '../../lib/utils';
 import { Input } from '../Input/Input';
@@ -358,35 +358,54 @@ function NumberStepper({ className, children, direction }: NumberStepperProps) {
 
   // Check if children is HorizontalControls component
   const hasHorizontalControls = direction === 'horizontal';
-  const hasVerticalControls = direction === 'vertical';
-
 
   if (hasHorizontalControls) {
     // We'll handle the control positioning ourselves
     return (
-      <div className={cn('bg-background border-input flex items-center rounded-md border overflow-hidden', className)}>
-        <LeftControl min={min} step={step} value={singleValue} setValue={setSingleValue} />
+      <div
+        className={cn(
+          'bg-background border-input flex items-center overflow-hidden rounded-md border',
+          className
+        )}
+      >
+        <LeftControl
+          min={min}
+          step={step}
+          value={singleValue}
+          setValue={setSingleValue}
+        />
         <Input
           type="text"
           value={displayValue}
           onChange={handleInputChange}
           onBlur={handleBlur}
-          className="flex-1 h-6 appearance-none border-none p-0 text-center shadow-none focus:border-none focus:outline-none"
+          className="h-6 flex-1 appearance-none border-none p-0 text-center shadow-none focus:border-none focus:outline-none"
         />
-        <RightControl max={max} step={step} value={singleValue} setValue={setSingleValue} />
+        {children}
+        <RightControl
+          max={max}
+          step={step}
+          value={singleValue}
+          setValue={setSingleValue}
+        />
       </div>
     );
   }
 
   return (
-    <div className={cn('bg-background border-input flex items-center rounded-md border overflow-hidden', className)}>
+    <div
+      className={cn(
+        'bg-background border-input flex items-center overflow-hidden rounded-md border',
+        className
+      )}
+    >
       <Input
         type="text"
         value={displayValue}
         onChange={handleInputChange}
         onBlur={handleBlur}
         className={cn(
-          "flex-1 h-6 appearance-none border-none p-0 text-center shadow-none focus:border-none focus:outline-none",
+          'h-6 flex-1 appearance-none border-none p-0 text-center shadow-none focus:border-none focus:outline-none'
         )}
       />
       <div className="ml-1 flex flex-col">
@@ -443,14 +462,12 @@ function RightControl({ max, step, value, setValue }) {
       variant="ghost"
       size="icon"
       onClick={increment}
-        className="text-primary h-full w-4 cursor-pointer p-0"
+      className="text-primary h-full w-4 cursor-pointer p-0"
     >
       <ChevronRight className="h-4 w-4" />
     </Button>
   );
 }
-
-
 
 export const Numeric = {
   Container: NumericMetaContainer,
