@@ -7,14 +7,25 @@ title: Custom URL Access/Build
 ## Build for non-root path
 
 Sometimes it is desired to access the viewer from a non-root path (e.g., `/my-awesome-viewer` instead of `/`).
-You can achieve so by using the `PUBLIC_URL` environment variable AND the `routerBasename` configuration option.
+You can achieve so by using the `PUBLIC_URL` environment variable and/or the `routerBasename` configuration option.
+The routerBasename will default to PUBLIC_URL if not otherwise set, so that PUBLIC_URL alone is sufficient
+Using just routerBasename will only affect the path used to prefix the load paths, but will NOT affect the path used to
+load the actual context files.  That allows using one system that reverse proxies to another one for the root page, but
+fetches from the back end server directly for everything else.
 
-1. use a config (e.g. `config/myConfig.js`) file that is using the `routerBasename` of your choice `/my-awesome-viewer` (note there is only one / - it is not /my-awesome-viewer/).
+1. use a config (e.g. `config/myConfig.js`) file that is using the `routerBasename` of your choice `/myAwesomeViewer` (note there is only one / - it is not /myAwesomeViewer/).
 2. build the viewer with `PUBLIC_URL=/my-awesome-viewer/` (note there are two / - it is not /my-awesome-viewer).
+
+That will fetch files just as javascript from /my-awesome-viewer, but the paths in the base URL will be 'http://host/myAwesomeViewer'.
 
 
 :::tip
 The PUBLIC_URL tells the application where to find the static assets and the routerBasename will tell the application how to handle the routes
+:::
+
+:::tip
+If you want to serve files from one server to another, you have to set both PUBLIC_URL and the routerBasename, where the
+PUBLIC_URL must have the full server name to redirect to, while the routerBasename must use a relative local path.
 :::
 
 
@@ -22,7 +33,7 @@ The PUBLIC_URL tells the application where to find the static assets and the rou
 For testing the build locally, you can use the following command:
 
 ```bash
-# we use default config file, so we assume you have already set the routerBasename to /my-awesome-viewer in the default config as an example
+# we use default config file
 PUBLIC_URL=/my-awesome-viewer/ APP_CONFIG=config/default.js yarn dev
 ```
 

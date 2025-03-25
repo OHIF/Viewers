@@ -28,7 +28,7 @@ The simplest way is to update the existing default config:
 
 ```js title="platform/app/public/config/default.js"
 window.config = {
-  routerBasename: '/',
+  routerBasename: null,
   extensions: [],
   modes: [],
   showStudyList: true,
@@ -81,7 +81,7 @@ window.config = ({ servicesManager } = {}) => {
         }
       },
     },
-    routerBasename: '/',
+    routerBasename: null,
     dataSources: [
     {
       namespace: '@ohif/extension-default.dataSourcesModule.dicomweb',

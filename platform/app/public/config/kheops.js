@@ -2,7 +2,7 @@
 
 window.config = {
   name: 'config/kheops.js',
-  routerBasename: '/',
+  routerBasename: null,
   extensions: [],
   modes: ['@ohif/mode-test'],
   customizationService: {},

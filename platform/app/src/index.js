@@ -26,6 +26,7 @@ loadDynamicConfig(window.config).then(config_json => {
   if (config_json !== null) {
     window.config = config_json;
   }
+  window.config.routerBasename ||= publicUrl;
 
   /**
    * Combine our appConfiguration with installed extensions and modes.
