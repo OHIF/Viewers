@@ -537,9 +537,9 @@ const WADO_IMAGE_LOADER = {
     }
 
     if (ImageOrientationPatient) {
-      rowCosines = ImageOrientationPatient.slice(0, 3);
-      columnCosines = ImageOrientationPatient.slice(3, 6);
-      imageOrientationPatient = ImageOrientationPatient;
+      rowCosines = toNumber(ImageOrientationPatient.slice(0, 3));
+      columnCosines = toNumber(ImageOrientationPatient.slice(3, 6));
+      imageOrientationPatient = toNumber(ImageOrientationPatient);
     } else {
       rowCosines = [1, 0, 0];
       columnCosines = [0, 1, 0];
@@ -549,7 +549,7 @@ const WADO_IMAGE_LOADER = {
       isDefaultValueSetForColumnCosine = true;
     }
 
-    const imagePositionPatient = ImagePositionPatient || [0, 0, 0];
+    const imagePositionPatient = toNumber(ImagePositionPatient) || [0, 0, 0];
     if (!ImagePositionPatient) {
       usingDefaultValues = true;
     }
