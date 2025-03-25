@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.10.0-beta.136](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.135...v3.10.0-beta.136) (2025-03-25)
+
+
+### Bug Fixes
+
+* **seg:** orthanc seg ([#4883](https://github.com/OHIF/Viewers/issues/4883)) ([4dd485b](https://github.com/OHIF/Viewers/commit/4dd485bd2d927381bbc2910a2ec545c7d4c03868))
+
+
+
+
+
 # [3.10.0-beta.135](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.134...v3.10.0-beta.135) (2025-03-25)
 
 
