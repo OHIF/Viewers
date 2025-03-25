@@ -7,7 +7,7 @@ import { useSystem } from '@ohif/core';
  * the accordion groups.
  */
 export default function MeasurementTableNested(props) {
-  const { title, items, group, customHeader, actions } = props;
+  const { title, items, group, customHeader } = props;
   const { commandsManager } = useSystem();
   const onAction = (e, command, uid) => {
     commandsManager.run(command, { uid, annotationUID: uid, displayMeasurements: items });
@@ -22,9 +22,7 @@ export default function MeasurementTableNested(props) {
       key={group.key}
     >
       <MeasurementTable.Header key="measurementTableHeader">
-        {customHeader &&
-          group.isFirst &&
-          customHeader({ ...props, items: props.allItems, actions })}
+        {customHeader && group.isFirst && customHeader({ ...props, items: props.allItems })}
       </MeasurementTable.Header>
       <MeasurementTable.Body key="measurementTableBody" />
     </MeasurementTable>

@@ -40,17 +40,9 @@ const measurementTrackingExtension = {
       true // replace the button if it is already defined
     );
   },
-  getUtilityModule() {
-    return [
-      {
-        name: 'common',
-        exports: {
-          measurementTrackingMode,
-        },
-      },
-    ];
-  },
   getCustomizationModule,
 };
 
 export default measurementTrackingExtension;
+
+export { measurementTrackingMode };

@@ -2,6 +2,7 @@ import i18n from 'i18next';
 import { id } from './id';
 import initToolGroups from './initToolGroups';
 import toolbarButtons from './toolbarButtons';
+import { measurementTrackingMode } from '@ohif/extension-measurement-tracking';
 
 // Allow this mode by excluding non-imaging modalities such as SR, SEG
 // Also, SM is not a simple imaging modalities, so exclude it.
@@ -138,10 +139,6 @@ function modeFactory({ modeConfiguration }) {
 
       const customThumbnailLoadingCallback = async props => {
         const { servicesManager, appConfig, displaySetInstanceUID } = props;
-        const utilityModule = extensionManager.getModuleEntry(
-          '@ohif/extension-measurement-tracking.utilityModule.common'
-        );
-        const { measurementTrackingMode } = utilityModule.exports;
         const simplifiedMode =
           appConfig.measurementTrackingMode === measurementTrackingMode.SIMPLIFIED;
         const { measurementService, displaySetService } = servicesManager.services;
