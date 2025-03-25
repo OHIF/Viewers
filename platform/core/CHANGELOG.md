@@ -3,6 +3,37 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.10.0-beta.136](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.135...v3.10.0-beta.136) (2025-03-25)
+
+
+### Bug Fixes
+
+* **seg:** orthanc seg ([#4883](https://github.com/OHIF/Viewers/issues/4883)) ([4dd485b](https://github.com/OHIF/Viewers/commit/4dd485bd2d927381bbc2910a2ec545c7d4c03868))
+
+
+
+
+
+# [3.10.0-beta.135](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.134...v3.10.0-beta.135) (2025-03-25)
+
+
+### Bug Fixes
+
+* compare series date time ([#4887](https://github.com/OHIF/Viewers/issues/4887)) ([165c9dc](https://github.com/OHIF/Viewers/commit/165c9dc7104f63844a887b0ba91bd877c90c8471))
+* Delete study measurements instead of all measurements ([#4882](https://github.com/OHIF/Viewers/issues/4882)) ([8e47112](https://github.com/OHIF/Viewers/commit/8e47112d8e9fe86d57a587e3445b12d5f98d0161))
+
+
+
+
+
+# [3.10.0-beta.134](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.133...v3.10.0-beta.134) (2025-03-20)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
 # [3.10.0-beta.133](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.132...v3.10.0-beta.133) (2025-03-20)
 
 
