@@ -30,8 +30,7 @@ function PanelMeasurementTableTracking(props) {
     sendTrackedMeasurementsEvent('UNTRACK_ALL', {});
   };
 
-  const onUntrackClick = event => {
-    event.stopPropagation();
+  const onDeleteClick = () => {
     const hasDirtyMeasurements = measurementService
       .getMeasurements()
       .some(measurement => measurement.isDirty);
@@ -65,7 +64,7 @@ function PanelMeasurementTableTracking(props) {
         measurementFilter,
       });
     },
-    onUntrackClick,
+    onDeleteClick,
   };
 
   const Header = props => (

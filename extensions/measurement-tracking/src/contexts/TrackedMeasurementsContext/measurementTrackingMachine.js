@@ -123,7 +123,7 @@ const machineConfiguration = {
         UNTRACK_SERIES: [
           {
             target: 'tracking',
-            actions: ['removeTrackedSeries', 'setIsDirty', 'deHydrate'],
+            actions: ['removeTrackedSeries', 'setIsDirty', 'clearDisplaySetHydratedState'],
             cond: 'hasRemainingTrackedSeries',
           },
           {
@@ -133,7 +133,12 @@ const machineConfiguration = {
         UNTRACK_ALL: [
           {
             target: 'tracking',
-            actions: ['clearContext', 'setIsDirtyToClean', 'deHydrate', 'clearAllMeasurements'],
+            actions: [
+              'clearContext',
+              'setIsDirtyToClean',
+              'clearDisplaySetHydratedState',
+              'clearAllMeasurements',
+            ],
           },
           {
             target: 'idle',
@@ -163,7 +168,7 @@ const machineConfiguration = {
         PROMPT_HYDRATE_SR: {
           target: 'promptHydrateStructuredReport',
           cond: 'isSimplifiedConfig',
-          actions: ['clearAllMeasurements', 'deHydrate'],
+          actions: ['clearAllMeasurements', 'clearDisplaySetHydratedState'],
         },
       },
     },
@@ -235,7 +240,12 @@ const machineConfiguration = {
         onDone: [
           {
             target: 'tracking',
-            actions: ['clearAllMeasurements', 'deHydrate', 'setIsDirty', 'updatedViewports'],
+            actions: [
+              'clearAllMeasurements',
+              'clearDisplaySetHydratedState',
+              'setIsDirty',
+              'updatedViewports',
+            ],
             cond: 'simplifiedAndLoadSR',
           },
           // "clicked the save button"
@@ -342,7 +352,12 @@ const machineConfiguration = {
         onDone: [
           {
             target: 'tracking',
-            actions: ['clearAllMeasurements', 'deHydrate', 'setIsDirty', 'updatedViewports'],
+            actions: [
+              'clearAllMeasurements',
+              'clearDisplaySetHydratedState',
+              'setIsDirty',
+              'updatedViewports',
+            ],
             cond: 'shouldSetStudyAndSeries',
           },
           {

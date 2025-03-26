@@ -151,7 +151,7 @@ function TrackedMeasurementsContextProvider(
         measurementService.remove(measurementIds[i]);
       }
     },
-    deHydrate: (ctx, evt) => {
+    clearDisplaySetHydratedState: (ctx, evt) => {
       const { displaySetInstanceUID } = evt.data ?? evt;
 
       const displaysets = displaySetService.getActiveDisplaySets();
