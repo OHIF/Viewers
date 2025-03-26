@@ -58,12 +58,7 @@ import StudyMeasurements from '../components/StudyMeasurements';
  *```
  */
 export default function PanelMeasurement(props): React.ReactNode {
-  const {
-    measurementFilter,
-    emptyComponent: EmptyComponent,
-    key = 'PanelMeasurement',
-    children,
-  } = props;
+  const { measurementFilter, emptyComponent: EmptyComponent, children } = props;
 
   const system = useSystem();
   const displayMeasurements = useMeasurements(system.servicesManager, {
@@ -72,11 +67,7 @@ export default function PanelMeasurement(props): React.ReactNode {
 
   if (!displayMeasurements.length) {
     return EmptyComponent ? (
-      <EmptyComponent
-        key={key}
-        data-cy={key}
-        items={displayMeasurements}
-      />
+      <EmptyComponent items={displayMeasurements} />
     ) : (
       <span className="text-white">No Measurements</span>
     );
@@ -87,17 +78,10 @@ export default function PanelMeasurement(props): React.ReactNode {
       React.cloneElement(child, {
         items: displayMeasurements,
         filter: measurementFilter,
-        'data-cy': key,
       })
     );
     return cloned;
   }
   // Need to merge defaults on the content props to ensure they get passed to children
-  return (
-    <StudyMeasurements
-      key={key}
-      data-cy={key}
-      items={displayMeasurements}
-    />
-  );
+  return <StudyMeasurements items={displayMeasurements} />;
 }
