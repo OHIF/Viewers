@@ -24,12 +24,14 @@ function PanelMeasurementTableTracking(props) {
     : filterPlanarMeasurement;
 
   const EmptyComponent = () => (
-    <MeasurementTable
-      title="Measurements"
-      isExpanded={false}
-    >
-      <MeasurementTable.Body />
-    </MeasurementTable>
+    <div data-cy="trackedMeasurements-panel">
+      <MeasurementTable
+        title="Measurements"
+        isExpanded={false}
+      >
+        <MeasurementTable.Body />
+      </MeasurementTable>
+    </div>
   );
 
   const actions = {
@@ -55,27 +57,29 @@ function PanelMeasurementTableTracking(props) {
   );
 
   return (
-    <PanelMeasurement
-      measurementFilter={measurementFilter}
-      emptyComponent={EmptyComponent}
-      sourceChildren={props.children}
-    >
-      <StudyMeasurements grouping={props.grouping}>
-        <AccordionGroup.Trigger
-          key="trackingMeasurementsHeader"
-          asChild={true}
-        >
+    <div data-cy="trackedMeasurements-panel">
+      <PanelMeasurement
+        measurementFilter={measurementFilter}
+        emptyComponent={EmptyComponent}
+        sourceChildren={props.children}
+      >
+        <StudyMeasurements grouping={props.grouping}>
+          <AccordionGroup.Trigger
+            key="trackingMeasurementsHeader"
+            asChild={true}
+          >
           <Header key="trackingHeadChild" />
-        </AccordionGroup.Trigger>
-        <MeasurementsOrAdditionalFindings
-          key="measurementsOrAdditionalFindings"
-          activeStudyUID={trackedStudy}
-          customHeader={StudyMeasurementsActions}
-          measurementFilter={measurementFilter}
-          actions={actions}
-        />
-      </StudyMeasurements>
-    </PanelMeasurement>
+          </AccordionGroup.Trigger>
+          <MeasurementsOrAdditionalFindings
+            key="measurementsOrAdditionalFindings"
+            activeStudyUID={trackedStudy}
+            customHeader={StudyMeasurementsActions}
+            measurementFilter={measurementFilter}
+            actions={actions}
+          />
+        </StudyMeasurements>
+      </PanelMeasurement>
+    </div>
   );
 }
 
