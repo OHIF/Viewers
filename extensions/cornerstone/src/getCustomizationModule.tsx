@@ -11,6 +11,7 @@ import miscCustomization from './customizations/miscCustomization';
 import captureViewportModalCustomization from './customizations/captureViewportModalCustomization';
 import viewportDownloadWarningCustomization from './customizations/viewportDownloadWarningCustomization';
 import viewportActionMenuCustomizations from './customizations/viewportActionMenuCustomizations';
+import modeLongitudinalCustomizations from './customizations/modeLongitudinalCustomizations';
 
 function getCustomizationModule({ commandsManager, servicesManager }) {
   return [
@@ -30,6 +31,7 @@ function getCustomizationModule({ commandsManager, servicesManager }) {
         ...captureViewportModalCustomization,
         ...viewportDownloadWarningCustomization,
         ...viewportActionMenuCustomizations,
+        ...modeLongitudinalCustomizations,
       },
     },
   ];
