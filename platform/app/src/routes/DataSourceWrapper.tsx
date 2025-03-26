@@ -201,7 +201,7 @@ function DataSourceWrapper(props: withAppTypes) {
             title: 'Data Source Connection Error',
             content: () => {
               return (
-                <div className="text-white">
+                <div className="text-foreground">
                   <p className="text-red-600">Error: {e.message}</p>
                   <p>
                     Please ensure the following data source is configured correctly or is running:
