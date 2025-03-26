@@ -1,4 +1,3 @@
-import { ChangeTypes } from '@cornerstonejs/tools/enums';
 import log from '../../log';
 import guid from '../../utils/guid';
 import { PubSubService } from '../_shared/pubSubServiceInterface';
@@ -93,6 +92,11 @@ const VALUE_TYPES = {
   ROI_THRESHOLD: 'value_type::roiThreshold',
   ROI_THRESHOLD_MANUAL: 'value_type::roiThresholdManual',
 };
+
+enum MeasurementChangeType {
+  HandlesUpdated = 'HandlesUpdated',
+  LabelChange = 'LabelChange',
+}
 
 export type MeasurementFilter = (measurement) => boolean;
 
@@ -546,8 +550,8 @@ class MeasurementService extends PubSubService {
     };
 
     newMeasurement.isDirty =
-      sourceAnnotationDetail.changeType === ChangeTypes.HandlesUpdated ||
-      sourceAnnotationDetail.changeType === ChangeTypes.LabelChange ||
+      sourceAnnotationDetail.changeType === MeasurementChangeType.HandlesUpdated ||
+      sourceAnnotationDetail.changeType === MeasurementChangeType.LabelChange ||
       oldMeasurement?.isDirty;
 
     if (oldMeasurement) {
