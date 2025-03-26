@@ -115,7 +115,7 @@ declare global {
       };
       groupEnabledModesFirst?: boolean;
       measurementTrackingMode?: 'standard' | 'simplified' | 'none';
-      disableSegmentationPrompts?: boolean;
+      disableConfirmationPrompts?: boolean;
       showPatientInfo?: 'visible' | 'visibleCollapsed' | 'disabled' | 'visibleReadOnly';
       requestTransferSyntaxUID?: string;
       omitQuotationForMultipartRequest?: boolean;

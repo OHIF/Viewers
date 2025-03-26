@@ -17,7 +17,7 @@ function promptHydrateRT({
   const extensionManager = servicesManager._extensionManager;
   const appConfig = extensionManager._appConfig;
   return new Promise(async function (resolve, reject) {
-    const promptResult = appConfig?.disableSegmentationPrompts
+    const promptResult = appConfig?.disableConfirmationPrompts
       ? RESPONSE.HYDRATE_SEG
       : await _askHydrate(uiViewportDialogService, customizationService, viewportId);
 
