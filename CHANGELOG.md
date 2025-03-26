@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.10.0-beta.137](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.136...v3.10.0-beta.137) (2025-03-26)
+
+
+### Bug Fixes
+
+* datasource connection error style ([#4888](https://github.com/OHIF/Viewers/issues/4888)) ([467acbd](https://github.com/OHIF/Viewers/commit/467acbd997105d719bad3949a69ed0b5f8c553b4))
+
+
+
+
+
 # [3.10.0-beta.136](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.135...v3.10.0-beta.136) (2025-03-25)
 
 
