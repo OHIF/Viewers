@@ -15,6 +15,7 @@ window.config = {
   showLoadingIndicator: true,
   experimentalStudyBrowserSort: false,
   strictZSpacingForVolumeViewport: true,
+  useSharedArrayBuffer: 'FALSE',
   studyPrefetcher: {
     enabled: false,
     displaySetsCount: 1,
