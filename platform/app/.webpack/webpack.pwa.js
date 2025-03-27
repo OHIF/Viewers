@@ -153,6 +153,12 @@ module.exports = (env, argv) => {
       },
       proxy: {
         '/dicomweb': 'http://localhost:5000',
+        '/dicom-microscopy-viewer': {
+          target: 'http://localhost:3000',
+          pathRewrite: {
+            '^/dicom-microscopy-viewer': `/${PUBLIC_URL}/dicom-microscopy-viewer`,
+          },
+        },
       },
       static: [
         {
