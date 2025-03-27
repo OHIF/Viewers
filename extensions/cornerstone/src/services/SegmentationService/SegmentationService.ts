@@ -564,7 +564,7 @@ class SegmentationService extends PubSubService {
 
     const referencedImageIdsWithGeometry = Array.from(structureSet.ReferencedSOPInstanceUIDsSet);
 
-    const referencedImageIds = referencedDisplaySet.instances.map(image => image.imageId);
+    const referencedImageIds = referencedDisplaySet.imageIds;
     // find the first image id that contains a referenced SOP instance UID
     const firstSegmentedSliceImageId = referencedImageIds.find(imageId =>
       referencedImageIdsWithGeometry.some(referencedId => imageId.includes(referencedId))
