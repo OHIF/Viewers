@@ -9,7 +9,7 @@ export default {
         items: [
           {
             label: 'Delete measurement',
-            commands: 'deleteMeasurement',
+            commands: 'removeMeasurement',
           },
           {
             label: 'Add Label',

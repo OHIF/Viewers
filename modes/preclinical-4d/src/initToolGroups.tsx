@@ -40,6 +40,7 @@ function _initToolGroups(toolNames, Enums, toolGroupService, commandsManager, se
     ],
     passive: [
       { toolName: toolNames.Length },
+      { toolName: toolNames.SegmentBidirectional },
       { toolName: toolNames.ArrowAnnotate },
       { toolName: toolNames.Bidirectional },
       { toolName: toolNames.Probe },

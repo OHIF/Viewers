@@ -67,9 +67,6 @@ function createTools(utilityModule) {
         parentTool: 'Brush',
         configuration: {
           activeStrategy: 'THRESHOLD_INSIDE_CIRCLE',
-          // preview: {
-          //   enabled: true,
-          // },
           threshold: {
             isDynamic: true,
             dynamicRadius: 3,
@@ -77,13 +74,16 @@ function createTools(utilityModule) {
         },
       },
       {
+        toolName: toolNames.SegmentBidirectional,
+      },
+      {
+        toolName: toolNames.SegmentSelect,
+      },
+      {
         toolName: 'ThresholdSphereBrushDynamic',
         parentTool: 'Brush',
         configuration: {
           activeStrategy: 'THRESHOLD_INSIDE_SPHERE',
-          // preview: {
-          //   enabled: true,
-          // },
           threshold: {
             isDynamic: true,
             dynamicRadius: 3,

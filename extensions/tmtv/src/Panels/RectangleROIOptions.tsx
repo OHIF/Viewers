@@ -1,5 +1,5 @@
 import React, { useCallback, useReducer } from 'react';
-import { Button } from '@ohif/ui';
+import { Button } from '@ohif/ui-next';
 import ROIThresholdConfiguration, {
   ROI_STAT,
 } from './PanelROIThresholdSegmentation/ROIThresholdConfiguration';
@@ -80,7 +80,7 @@ function RectangleROIOptions() {
   }, [activeSegmentation, config]);
 
   return (
-    <div className="invisible-scrollbar mb-2 flex flex-col overflow-y-auto overflow-x-hidden">
+    <div className="invisible-scrollbar mb-1 flex flex-col overflow-y-auto overflow-x-hidden">
       <ROIThresholdConfiguration
         config={config}
         dispatch={dispatch}
@@ -88,7 +88,8 @@ function RectangleROIOptions() {
       />
       {activeSegmentation && (
         <Button
-          className="mt-2 !h-[26px] !w-[75px]"
+          variant="default"
+          className="my-3 mr-auto w-20"
           onClick={handleROIThresholding}
         >
           Run

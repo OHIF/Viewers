@@ -33,8 +33,13 @@ const MeasurementTable = ({
   return (
     <div>
       <div className="bg-secondary-main flex justify-between px-2 py-1">
-        <span className="text-base font-bold uppercase tracking-widest text-white">{t(title)}</span>
-        <span className="text-base font-bold text-white">{amount}</span>
+        <div>
+          <span className="text-base font-bold uppercase tracking-widest text-white">
+            {t(title)}
+          </span>
+          <span className="text-base font-bold text-white">&nbsp; {amount}</span>
+        </div>
+        <CustomizedToolbar servicesManager={servicesManager} />
       </div>
       <div className="ohif-scrollbar max-h-112 overflow-hidden">
         {data.length !== 0 &&

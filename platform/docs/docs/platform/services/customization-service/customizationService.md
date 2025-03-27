@@ -172,7 +172,7 @@ Customizations can be declared at three different scopes, each with its own prio
         ```jsx
         window.config = {
           name: 'config/default.js',
-          routerBasename: '/',
+          routerBasename: null,
           customizationService: [
             {
               'studyBrowser.sortFunctions': {
@@ -194,7 +194,7 @@ Customizations can be declared at three different scopes, each with its own prio
         ```jsx
         window.config = {
           name: 'config/default.js',
-          routerBasename: '/',
+          routerBasename: null,
           customizationService: [
             '@ohif/extension-cornerstone.customizationModule.newCustomization',
           ],

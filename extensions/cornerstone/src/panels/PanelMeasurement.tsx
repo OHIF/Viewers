@@ -1,107 +1,87 @@
-import React, { useEffect, useRef } from 'react';
-import { utils } from '@ohif/core';
-import { MeasurementTable } from '@ohif/ui-next';
-import debounce from 'lodash.debounce';
+import React from 'react';
+import { useSystem } from '@ohif/core';
+
 import { useMeasurements } from '../hooks/useMeasurements';
+import StudyMeasurements from '../components/StudyMeasurements';
+/**
+ * The PanelMeasurement is a fairly simple wrapper that gets the filtered
+ * measurements and then passes it on to the children component, default to
+ * the StudyMeasurements sub-component if no children are specified.
+ * Some example customizations that could work:
+ *
+ *
+ * Creates a default study measurements panel with default children:
+ * ```
+ * <PanelMEasurement>
+ *   <StudyMeasurements />
+ * </PanelMeasurement>
+ * ```
+ *
+ * A study measurements with body replacement
+ * ```
+ * <StudyMeasurements>
+ *   <SeriesMeasurements />
+ * </StudyMeasurements>
+ * ```
+ *
+ * A study measurements replacing just the trigger, leaving the default body
+ * ```
+ * <StudyMeasurements>
+ *    <AccordionGroup.Trigger>
+ *        This is a new custom trigger
+ *    </AccordionGroup.Trigger>
+ *</StudyMeasurements>
+ * ```
+ *
+ * A study measurements with the trigger and body replaced
+ * ```
+ * <StudyMeasurements>
+ *    <AccordionGroup.Trigger>
+ *        This is a new custom trigger
+ *    </AccordionGroup.Trigger>
+ *    <SeriesMeasurements />
+ * </StudyMeasurements>
+ * ```
+ *
+ * A study measurements with a custom header for the additional findings
+ * ```
+ * <StudyMeasurements>
+ *    <MeasurementOrAdditionalFindings>
+ *        <AccordionGroup.Trigger groupName="additionalFindings">
+ *            <CustomAdditionalFindingsHeader />
+ *        </AccordionGroup.Trigger>
+ *        <AccordionGroup.Trigger groupName="measurements">
+ *            <CustomMeasurementsHeader />
+ *        </AccordionGroup.Trigger>
+ *    </MeasurementOrAdditionalFindings>
+ * </StudyMeasurements>
+ *```
+ */
+export default function PanelMeasurement(props): React.ReactNode {
+  const { measurementFilter, emptyComponent: EmptyComponent, children } = props;
 
-const { filterAdditionalFindings: filterAdditionalFinding, filterAny } = utils.MeasurementFilters;
-
-export type withAppAndFilters = withAppTypes & {
-  measurementFilter: (item) => boolean;
-};
-
-export default function PanelMeasurement({
-  servicesManager,
-  commandsManager,
-  customHeader,
-  measurementFilter = filterAny,
-}: withAppAndFilters): React.ReactNode {
-  const measurementsPanelRef = useRef(null);
-
-  const { measurementService } = servicesManager.services;
-
-  const displayMeasurements = useMeasurements(servicesManager, {
+  const system = useSystem();
+  const displayMeasurements = useMeasurements(system.servicesManager, {
     measurementFilter,
   });
 
-  useEffect(() => {
-    if (displayMeasurements.length > 0) {
-      debounce(() => {
-        measurementsPanelRef.current.scrollTop = measurementsPanelRef.current.scrollHeight;
-      }, 300)();
-    }
-  }, [displayMeasurements.length]);
+  if (!displayMeasurements.length) {
+    return EmptyComponent ? (
+      <EmptyComponent items={displayMeasurements} />
+    ) : (
+      <span className="text-white">No Measurements</span>
+    );
+  }
 
-  const bindCommand = (name: string | string[], options?) => {
-    return (uid: string) => {
-      commandsManager.run(name, { ...options, uid });
-    };
-  };
-
-  const jumpToImage = bindCommand('jumpToMeasurement', { displayMeasurements });
-  const removeMeasurement = bindCommand('removeMeasurement');
-  const renameMeasurement = bindCommand(['jumpToMeasurement', 'renameMeasurement'], {
-    displayMeasurements,
-  });
-  const toggleLockMeasurement = bindCommand('toggleLockMeasurement');
-  const toggleVisibilityMeasurement = bindCommand('toggleVisibilityMeasurement');
-
-  const additionalFilter = filterAdditionalFinding(measurementService);
-
-  const measurements = displayMeasurements.filter(
-    item => !additionalFilter(item) && measurementFilter(item)
-  );
-  const additionalFindings = displayMeasurements.filter(
-    item => additionalFilter(item) && measurementFilter(item)
-  );
-
-  const onArgs = {
-    onClick: jumpToImage,
-    onDelete: removeMeasurement,
-    onToggleVisibility: toggleVisibilityMeasurement,
-    onToggleLocked: toggleLockMeasurement,
-    onRename: renameMeasurement,
-  };
-
-  return (
-    <>
-      <div
-        className="invisible-scrollbar overflow-y-auto overflow-x-hidden"
-        ref={measurementsPanelRef}
-        data-cy={'trackedMeasurements-panel'}
-      >
-        <MeasurementTable
-          key="tracked"
-          title="Measurements"
-          data={measurements}
-          {...onArgs}
-          // onColor={changeColorMeasurement}
-        >
-          <MeasurementTable.Header>
-            {customHeader && (
-              <>
-                {typeof customHeader === 'function'
-                  ? customHeader({
-                      additionalFindings,
-                      measurements,
-                    })
-                  : customHeader}
-              </>
-            )}
-          </MeasurementTable.Header>
-          <MeasurementTable.Body />
-        </MeasurementTable>
-        {additionalFindings.length > 0 && (
-          <MeasurementTable
-            key="additional"
-            data={additionalFindings}
-            title="Additional Findings"
-            {...onArgs}
-          >
-            <MeasurementTable.Body />
-          </MeasurementTable>
-        )}
-      </div>
-    </>
-  );
+  if (children) {
+    const cloned = React.Children.map(children, child =>
+      React.cloneElement(child, {
+        items: displayMeasurements,
+        filter: measurementFilter,
+      })
+    );
+    return cloned;
+  }
+  // Need to merge defaults on the content props to ensure they get passed to children
+  return <StudyMeasurements items={displayMeasurements} />;
 }

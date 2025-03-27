@@ -24,6 +24,7 @@ import IconMPR from './Sources/IconMPR';
 import Info from './Sources/Info';
 import InfoLink from './Sources/InfoLink';
 import InfoSeries from './Sources/InfoSeries';
+import JumpToSlice from './Sources/JumpToSlice';
 import ListView from './Sources/ListView';
 import LoadingSpinner from './Sources/LoadingSpinner';
 import Lock from './Sources/Lock';
@@ -38,6 +39,7 @@ import Pin from './Sources/Pin';
 import PinFill from './Sources/PinFill';
 import Plus from './Sources/Plus';
 import PowerOff from './Sources/PowerOff';
+import Redo from './Sources/Redo';
 import Refresh from './Sources/Refresh';
 import Rename from './Sources/Rename';
 import Series from './Sources/Series';
@@ -195,6 +197,7 @@ import NotificationWarning from './Sources/NotificationWarning';
 import ArrowRight from './Sources/ArrowRight';
 import ChevronLeft from './Sources/ChevronLeft';
 import StatusAlert from './Sources/StatusAlert';
+import Undo from './Sources/Undo';
 //
 //
 type IconProps = React.HTMLAttributes<SVGElement>;
@@ -717,6 +720,9 @@ export const Icons = {
   'tool-point': (props: IconProps) => ToolCircle(props),
   'tool-freehand-line': (props: IconProps) => ToolFreehand(props),
   clipboard: (props: IconProps) => Clipboard(props),
+  Undo,
+  Redo,
+  JumpToSlice,
 
   /** Adds an icon to the set of icons */
   addIcon: (name: string, icon) => {

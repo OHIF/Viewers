@@ -28,6 +28,7 @@ function _initToolGroups(toolNames, Enums, toolGroupService, commandsManager) {
     ],
     passive: [
       { toolName: toolNames.Length },
+      { toolName: toolNames.SegmentBidirectional },
       {
         toolName: toolNames.ArrowAnnotate,
         configuration: {

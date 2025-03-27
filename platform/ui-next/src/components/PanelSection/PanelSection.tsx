@@ -46,7 +46,7 @@ export const PanelSection: React.FC<PanelSectionProps> & {
   );
 };
 
-PanelSection.Header = ({ children, className, showChevron = true }) => (
+PanelSection.Header = ({ children, className }) => (
   <AccordionTrigger
     className={cn(
       'bg-secondary-dark hover:bg-accent text-aqua-pale',

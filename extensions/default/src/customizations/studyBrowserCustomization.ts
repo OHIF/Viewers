@@ -44,4 +44,33 @@ export default {
     },
   ],
   'studyBrowser.studyMode': 'all',
+  'studyBrowser.thumbnailDoubleClickCallback': {
+    callbacks: [
+      ({ activeViewportId, servicesManager, isHangingProtocolLayout }) =>
+        async displaySetInstanceUID => {
+          const { hangingProtocolService, viewportGridService, uiNotificationService } =
+            servicesManager.services;
+          let updatedViewports = [];
+          const viewportId = activeViewportId;
+
+          try {
+            updatedViewports = hangingProtocolService.getViewportsRequireUpdate(
+              viewportId,
+              displaySetInstanceUID,
+              isHangingProtocolLayout
+            );
+          } catch (error) {
+            console.warn(error);
+            uiNotificationService.show({
+              title: 'Thumbnail Double Click',
+              message: 'The selected display sets could not be added to the viewport.',
+              type: 'error',
+              duration: 3000,
+            });
+          }
+
+          viewportGridService.setDisplaySetsForViewports(updatedViewports);
+        },
+    ],
+  },
 };

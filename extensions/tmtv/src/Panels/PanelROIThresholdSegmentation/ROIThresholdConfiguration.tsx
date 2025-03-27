@@ -1,5 +1,14 @@
 import React from 'react';
-import { Input, Label, Select, LegacyButton, LegacyButtonGroup } from '@ohif/ui';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+  Label,
+  Input,
+  Button,
+} from '@ohif/ui-next';
 import { useTranslation } from 'react-i18next';
 
 export const ROI_STAT = 'roi_stat';
@@ -14,17 +23,15 @@ function ROIThresholdConfiguration({ config, dispatch, runCommand }) {
   const { t } = useTranslation('ROIThresholdConfiguration');
 
   return (
-    <div className="bg-primary-dark flex flex-col space-y-4">
-      <div className="flex items-end space-x-2">
-        <div className="flex w-1/2 flex-col">
+    <div className="bg-primary-dark flex flex-col space-y-4 p-px">
+      <div className="flex items-end space-x-3">
+        <div className="flex min-w-0 flex-1 flex-col">
+          {/* The original panel design does not include "Strategy," but it was found in the code.
+    Need to determine if it should be included or removed.
+          <Label className="my-2">{t('Strategy')}</Label>  */}
           <Select
-            label={t('Strategy')}
-            closeMenuOnSelect={true}
-            className="border-primary-main mr-2 bg-black text-white "
-            options={options}
-            placeholder={options.find(option => option.value === config.strategy).placeHolder}
             value={config.strategy}
-            onChange={({ value }) => {
+            onValueChange={value => {
               dispatch({
                 type: 'setStrategy',
                 payload: {
@@ -32,156 +39,146 @@ function ROIThresholdConfiguration({ config, dispatch, runCommand }) {
                 },
               });
             }}
-          />
+          >
+            <SelectTrigger className="w-full">
+              <SelectValue
+                placeholder={options.find(option => option.value === config.strategy)?.placeHolder}
+              />
+            </SelectTrigger>
+            <SelectContent className="">
+              {options.map(option => (
+                <SelectItem
+                  key={option.value}
+                  value={option.value}
+                >
+                  {option.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
-        <div className="w-1/2">
-          {/* TODO Revisit design of LegacyButtonGroup later - for now use LegacyButton for its children.*/}
-          <LegacyButtonGroup>
-            <LegacyButton
-              size="initial"
-              className="px-2 py-2 text-base text-white"
-              color="primaryLight"
-              variant="outlined"
+        <div className="flex-shrink-0">
+          <div className="flex justify-end space-x-2">
+            <Button
+              variant="secondary"
               onClick={() => runCommand('setStartSliceForROIThresholdTool')}
             >
               {t('Start')}
-            </LegacyButton>
-            <LegacyButton
-              size="initial"
-              color="primaryLight"
-              variant="outlined"
-              className="px-2 py-2 text-base text-white"
+            </Button>
+            <Button
+              variant="secondary"
               onClick={() => runCommand('setEndSliceForROIThresholdTool')}
             >
               {t('End')}
-            </LegacyButton>
-          </LegacyButtonGroup>
+            </Button>
+          </div>
         </div>
       </div>
 
       {config.strategy === ROI_STAT && (
-        <Input
-          label={t('Percentage of Max SUV')}
-          labelClassName="text-[13px] font-inter text-white"
-          className="border-primary-main bg-black"
-          type="text"
-          containerClassName="mr-2"
-          value={config.weight}
-          onChange={e => {
-            dispatch({
-              type: 'setWeight',
-              payload: {
-                weight: e.target.value,
-              },
-            });
-          }}
-        />
+        <div className="mr-0">
+          <div className="mb-2">
+            <Label>{t('Percentage of Max SUV')}</Label>
+          </div>
+          <Input
+            className="w-full"
+            type="text"
+            value={config.weight}
+            onChange={e => {
+              dispatch({
+                type: 'setWeight',
+                payload: {
+                  weight: e.target.value,
+                },
+              });
+            }}
+          />
+        </div>
       )}
       {config.strategy !== ROI_STAT && (
         <div className="mr-2 text-sm">
-          <table>
-            <tbody>
-              <tr className="mt-2">
-                <td
-                  className="pr-4"
-                  colSpan="3"
-                >
-                  <Label
-                    className="font-inter text-[13px] text-white"
-                    text="Lower & Upper Ranges"
-                  ></Label>
-                </td>
-              </tr>
-              <tr className="mt-2">
-                <td className="pr-4 pt-2 text-center">
-                  <Label
-                    className="text-white"
-                    text="CT"
-                  ></Label>
-                </td>
-                <td>
-                  <div className="flex justify-between">
-                    <Input
-                      label={t('')}
-                      labelClassName="text-white"
-                      className="border-primary-main mt-2 bg-black"
-                      type="text"
-                      containerClassName="mr-2"
-                      value={config.ctLower}
-                      onChange={e => {
-                        dispatch({
-                          type: 'setThreshold',
-                          payload: {
-                            ctLower: e.target.value,
-                          },
-                        });
-                      }}
-                    />
-                    <Input
-                      label={t('')}
-                      labelClassName="text-white"
-                      className="border-primary-main mt-2 bg-black"
-                      type="text"
-                      containerClassName="mr-2"
-                      value={config.ctUpper}
-                      onChange={e => {
-                        dispatch({
-                          type: 'setThreshold',
-                          payload: {
-                            ctUpper: e.target.value,
-                          },
-                        });
-                      }}
-                    />
-                  </div>
-                </td>
-              </tr>
-              <tr>
-                <td className="pr-4 pt-2 text-center">
-                  <Label
-                    className="text-white"
-                    text="PT"
-                  ></Label>
-                </td>
-                <td>
-                  <div className="flex justify-between">
-                    <Input
-                      label={t('')}
-                      labelClassName="text-white"
-                      className="border-primary-main mt-2 bg-black"
-                      type="text"
-                      containerClassName="mr-2"
-                      value={config.ptLower}
-                      onChange={e => {
-                        dispatch({
-                          type: 'setThreshold',
-                          payload: {
-                            ptLower: e.target.value,
-                          },
-                        });
-                      }}
-                    />
-                    <Input
-                      label={t('')}
-                      labelClassName="text-white"
-                      className="border-primary-main mt-2 bg-black"
-                      type="text"
-                      containerClassName="mr-2"
-                      value={config.ptUpper}
-                      onChange={e => {
-                        dispatch({
-                          type: 'setThreshold',
-                          payload: {
-                            ptUpper: e.target.value,
-                          },
-                        });
-                      }}
-                    />
-                  </div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+          <div className="flex flex-col space-y-2">
+            {/* Header */}
+            <Label>Lower & Upper Ranges</Label>
+
+            {/* CT Row */}
+            <div className="flex items-center">
+              <div className="w-10 text-left">
+                <Label>CT</Label>
+              </div>
+              <div className="flex flex-1 space-x-2">
+                <div className="flex-1">
+                  <Input
+                    className="w-full"
+                    type="text"
+                    value={config.ctLower}
+                    onChange={e => {
+                      dispatch({
+                        type: 'setThreshold',
+                        payload: {
+                          ctLower: e.target.value,
+                        },
+                      });
+                    }}
+                  />
+                </div>
+                <div className="flex-1">
+                  <Input
+                    className="w-full"
+                    type="text"
+                    value={config.ctUpper}
+                    onChange={e => {
+                      dispatch({
+                        type: 'setThreshold',
+                        payload: {
+                          ctUpper: e.target.value,
+                        },
+                      });
+                    }}
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* PT Row */}
+            <div className="flex items-center">
+              <div className="w-10 text-left">
+                <Label>PT</Label>
+              </div>
+              <div className="flex flex-1 space-x-2">
+                <div className="flex-1">
+                  <Input
+                    className="w-full"
+                    type="text"
+                    value={config.ptLower}
+                    onChange={e => {
+                      dispatch({
+                        type: 'setThreshold',
+                        payload: {
+                          ptLower: e.target.value,
+                        },
+                      });
+                    }}
+                  />
+                </div>
+                <div className="flex-1">
+                  <Input
+                    className="w-full"
+                    type="text"
+                    value={config.ptUpper}
+                    onChange={e => {
+                      dispatch({
+                        type: 'setThreshold',
+                        payload: {
+                          ptUpper: e.target.value,
+                        },
+                      });
+                    }}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       )}
     </div>
