@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.10.0-beta.140](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.139...v3.10.0-beta.140) (2025-03-27)
+
+
+### Bug Fixes
+
+* routerBasename setting ([#4891](https://github.com/OHIF/Viewers/issues/4891)) ([459b0d2](https://github.com/OHIF/Viewers/commit/459b0d223a5867aaaabe1b5b61fd22b040ce5602))
+
+
+
+
+
 # [3.10.0-beta.139](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.138...v3.10.0-beta.139) (2025-03-27)
 
 **Note:** Version bump only for package ohif-docs
