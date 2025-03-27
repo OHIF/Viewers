@@ -50,6 +50,7 @@ const ManagedDialog: React.FC<ManagedDialogProps> = ({
     >
       <DialogContent
         className={cn(unstyled ? 'p-0' : '', containerClassName)}
+        unstyled={unstyled}
         style={{
           ...(defaultPosition
             ? {

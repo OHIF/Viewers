@@ -3,6 +3,45 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.10.0-beta.138](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.137...v3.10.0-beta.138) (2025-03-26)
+
+
+### Bug Fixes
+
+* remove duplicated deleteMeasurements code ([#4895](https://github.com/OHIF/Viewers/issues/4895)) ([9bde644](https://github.com/OHIF/Viewers/commit/9bde644fce6db56d7d0dd62a876312559b7b2beb))
+
+
+
+
+
+# [3.10.0-beta.137](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.136...v3.10.0-beta.137) (2025-03-26)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone
+
+
+
+
+
+# [3.10.0-beta.136](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.135...v3.10.0-beta.136) (2025-03-25)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone
+
+
+
+
+
+# [3.10.0-beta.135](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.134...v3.10.0-beta.135) (2025-03-25)
+
+
+### Bug Fixes
+
+* Delete study measurements instead of all measurements ([#4882](https://github.com/OHIF/Viewers/issues/4882)) ([8e47112](https://github.com/OHIF/Viewers/commit/8e47112d8e9fe86d57a587e3445b12d5f98d0161))
+* Skip showing NaN for average pixel/max value ([#4884](https://github.com/OHIF/Viewers/issues/4884)) ([f6fa509](https://github.com/OHIF/Viewers/commit/f6fa5098744ff0058b007cf97e68d95c4b0e77c8))
+
+
+
+
+
 # [3.10.0-beta.134](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.133...v3.10.0-beta.134) (2025-03-20)
 
 **Note:** Version bump only for package @ohif/extension-cornerstone
