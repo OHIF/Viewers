@@ -153,7 +153,6 @@ module.exports = (env, argv) => {
       },
       proxy: {
         '/dicomweb': 'http://localhost:5000',
-        // Add this proxy rule to redirect the specific worker file
         '/dicom-microscopy-viewer': {
           target: 'http://localhost:3000',
           pathRewrite: {
