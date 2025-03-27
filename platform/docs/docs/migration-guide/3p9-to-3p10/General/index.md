@@ -34,3 +34,7 @@ After:
 yarn install
 yarn run dev
 ```
+
+## CommandsModule
+
+1. Removed the `deleteMeasurements` command from the `CORNERSTONE` context. It should be replaced by `removeMeasurements` command.
