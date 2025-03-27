@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import PropTypes from 'prop-types';
@@ -12,6 +12,7 @@ import { Separator } from '@ohif/ui-next';
 import { MoreDropdownMenu, PanelStudyBrowserHeader } from '@ohif/extension-default';
 import { defaultActionIcons } from './constants';
 import { useAppConfig } from '@state';
+import { CallbackCustomization } from 'platform/core/src/types';
 
 import { UntrackSeriesModal } from './untrackSeriesModal';
 const { formatDate, createStudyBrowserTabs } = utils;
@@ -103,46 +104,41 @@ export default function PanelStudyBrowserTracking({
     setViewPresets(newViewPresets);
   };
 
-  const onDoubleClickThumbnailHandler = displaySetInstanceUID => {
-    const customDoubleClickThumbnailHandler = customizationService.getCustomization(
-      'customDoubleClickThumbnailHandler'
-    );
-    const dropHandlerPromise = customDoubleClickThumbnailHandler({
-      servicesManager,
-      appConfig,
-      displaySetInstanceUID,
-    });
+  const onDoubleClickThumbnailHandler = useCallback(
+    async displaySetInstanceUID => {
+      const customHandler = customizationService.getCustomization(
+        'studyBrowser.thumbnailDoubleClickCallback'
+      ) as CallbackCustomization;
 
-    let updatedViewports = [];
-    const viewportId = activeViewportId;
+      const setupArgs = {
+        activeViewportId,
+        commandsManager,
+        servicesManager,
+        isHangingProtocolLayout,
+        appConfig,
+      };
 
-    let updateDisplaySet = false;
-    dropHandlerPromise.then(({ handled }) => {
-      updateDisplaySet = handled;
-      if (!handled) {
-        try {
-          updatedViewports = hangingProtocolService.getViewportsRequireUpdate(
-            viewportId,
-            displaySetInstanceUID,
-            isHangingProtocolLayout
-          );
-        } catch (error) {
-          console.warn(error);
-          uiNotificationService.show({
-            title: 'Thumbnail Double Click',
-            message:
-              'The selected display sets could not be added to the viewport due to a mismatch in the Hanging Protocol rules.',
-            type: 'error',
-            duration: 3000,
-          });
-        }
+      const handlers = customHandler?.callbacks.map(callback => callback(setupArgs));
 
-        viewportGridService.setDisplaySetsForViewports(updatedViewports);
+      for (const handler of handlers) {
+        await handler(displaySetInstanceUID);
       }
-    });
-    const { viewportGridService } = servicesManager.services;
-    viewportGridService.publishThumbnailLoaded({ updateDisplaySet, displaySetInstanceUID });
-  };
+      const displaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
+      if (displaySet.Modality === 'SR') {
+        sendTrackedMeasurementsEvent('CHECK_DIRTY', {
+          viewportId: activeViewportId,
+          displaySetInstanceUID: displaySetInstanceUID,
+        });
+      }
+    },
+    [
+      activeViewportId,
+      commandsManager,
+      servicesManager,
+      isHangingProtocolLayout,
+      customizationService,
+    ]
+  );
 
   const activeViewportDisplaySetInstanceUIDs =
     viewports.get(activeViewportId)?.displaySetInstanceUIDs;
@@ -395,14 +391,15 @@ export default function PanelStudyBrowserTracking({
     );
     const { viewportGridService } = servicesManager.services;
     const subscriptionOndropFired = viewportGridService.subscribe(
-      viewportGridService.EVENTS.THUMBNAIL_LOADED,
+      viewportGridService.EVENTS.VIEWPORT_ONDROP_HANDLED,
       ({ eventData }) => {
         const displaySet = displaySetService.getDisplaySetByUID(eventData.displaySetInstanceUID);
-        if (displaySet.Modality === 'SR')
+        if (displaySet.Modality === 'SR') {
           sendTrackedMeasurementsEvent('CHECK_DIRTY', {
             viewportId: activeViewportId,
             displaySetInstanceUID: eventData.displaySetInstanceUID,
           });
+        }
       }
     );
 

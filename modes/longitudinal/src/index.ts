@@ -137,7 +137,7 @@ function modeFactory({ modeConfiguration }) {
         'WindowLevelRegion',
       ]);
 
-      const customThumbnailLoadingCallback = async props => {
+      const customOnDropHandlerCallback = async props => {
         const { servicesManager, appConfig, displaySetInstanceUID } = props;
         const simplifiedMode =
           appConfig.measurementTrackingMode === measurementTrackingMode.SIMPLIFIED;
@@ -150,10 +150,7 @@ function modeFactory({ modeConfiguration }) {
       };
       customizationService.setCustomizations({
         customOnDropHandler: {
-          $set: customThumbnailLoadingCallback,
-        },
-        customDoubleClickThumbnailHandler: {
-          $set: customThumbnailLoadingCallback,
+          $set: customOnDropHandlerCallback,
         },
       });
 

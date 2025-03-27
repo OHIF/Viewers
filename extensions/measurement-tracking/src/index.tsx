@@ -8,6 +8,7 @@ import { ViewportActionButton } from '@ohif/ui';
 import i18n from '@ohif/i18n';
 import { measurementTrackingMode } from './contexts/TrackedMeasurementsContext/promptBeginTracking';
 import getCustomizationModule from './getCustomizationModule';
+import onDoubleClickHandler from './customizations/studyBrowserCustomization';
 
 const measurementTrackingExtension = {
   /**
@@ -20,8 +21,12 @@ const measurementTrackingExtension = {
   getViewportModule,
 
   onModeEnter({ servicesManager }) {
-    const { toolbarService } = servicesManager.services;
-
+    const { toolbarService, customizationService } = servicesManager.services;
+    customizationService.setCustomizations({
+      'studyBrowser.thumbnailDoubleClickCallback': {
+        $set: onDoubleClickHandler,
+      },
+    });
     toolbarService.addButtons(
       [
         {

@@ -7,7 +7,7 @@ class ViewportGridService extends PubSubService {
     GRID_STATE_CHANGED: 'event::gridStateChanged',
     GRID_SIZE_CHANGED: 'event::gridSizeChanged',
     VIEWPORTS_READY: 'event::viewportsReady',
-    THUMBNAIL_LOADED: 'event::thumbnailLoaded',
+    VIEWPORT_ONDROP_HANDLED: 'event::viewportOnDropHandled',
   };
 
   public static REGISTRATION = {
@@ -130,8 +130,8 @@ class ViewportGridService extends PubSubService {
     this._broadcastEvent(this.EVENTS.VIEWPORTS_READY, {});
   }
 
-  public publishThumbnailLoaded(eventData) {
-    this._broadcastEvent(this.EVENTS.THUMBNAIL_LOADED, { eventData });
+  public publishViewportOnDropHandled(eventData) {
+    this._broadcastEvent(this.EVENTS.VIEWPORT_ONDROP_HANDLED, { eventData });
   }
 
   public setActiveViewportId(id: string) {
