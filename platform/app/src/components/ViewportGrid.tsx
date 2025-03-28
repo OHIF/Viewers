@@ -221,15 +221,13 @@ function ViewerViewportGrid(props: withAppTypes) {
       displaySetInstanceUID,
       appConfig,
     });
-    let updateDisplaySet = false;
     dropHandlerPromise.then(({ handled }) => {
-      updateDisplaySet = handled;
       if (!handled) {
         const updatedViewports = _getUpdatedViewports(viewportId, displaySetInstanceUID);
         viewportGridService.setDisplaySetsForViewports(updatedViewports);
       }
     });
-    viewportGridService.publishViewportOnDropHandled({ updateDisplaySet, displaySetInstanceUID });
+    viewportGridService.publishViewportOnDropHandled({ displaySetInstanceUID });
   };
 
   const getViewportPanes = useCallback(() => {
