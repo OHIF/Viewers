@@ -31,7 +31,7 @@ test.skip('should update SUV values correctly.', async ({ page }) => {
   let oldSUV = await getSUV(page);
 
   // Change PT Weight
-  await page.getByTestId('input-weight-input').fill('31');
+  await page.locator('#weight-input').fill('31');
   await page.getByText('Reload Data').click();
   await page.waitForLoadState('networkidle');
   // Get new SUV text
@@ -43,10 +43,9 @@ test.skip('should update SUV values correctly.', async ({ page }) => {
 
   // Change total dose
   await page
-    .getByText('Patient SexWeight kgTotal')
     .locator('div')
     .filter({ hasText: /^Total Dose bq$/ })
-    .getByTestId('input-undefined')
+    .getByRole('textbox')
     .fill('1888020304');
   await page.getByText('Reload Data').click();
   await page.waitForLoadState('networkidle');
@@ -60,10 +59,9 @@ test.skip('should update SUV values correctly.', async ({ page }) => {
 
   // Change injection time
   await page
-    .getByText('Patient SexWeight kgTotal')
     .locator('div')
     .filter({ hasText: /^Injection Time s$/ })
-    .getByTestId('input-undefined')
+    .getByRole('textbox')
     .fill('060000');
   await page.getByText('Reload Data').click();
   await page.waitForLoadState('networkidle');
