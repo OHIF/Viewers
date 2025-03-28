@@ -64,6 +64,7 @@ const MEASUREMENT_SCHEMA_KEYS = [
   'isSelected',
   'textBox',
   'referencedImageId',
+  'isDirty',
 ];
 
 const EVENTS = {
@@ -91,6 +92,11 @@ const VALUE_TYPES = {
   ROI_THRESHOLD: 'value_type::roiThreshold',
   ROI_THRESHOLD_MANUAL: 'value_type::roiThresholdManual',
 };
+
+enum MeasurementChangeType {
+  HandlesUpdated = 'HandlesUpdated',
+  LabelChange = 'LabelChange',
+}
 
 export type MeasurementFilter = (measurement) => boolean;
 
@@ -542,6 +548,11 @@ class MeasurementService extends PubSubService {
       modifiedTimestamp: Math.floor(Date.now() / 1000),
       uid: internalUID,
     };
+
+    newMeasurement.isDirty =
+      sourceAnnotationDetail.changeType === MeasurementChangeType.HandlesUpdated ||
+      sourceAnnotationDetail.changeType === MeasurementChangeType.LabelChange ||
+      oldMeasurement?.isDirty;
 
     if (oldMeasurement) {
       // TODO: Ultimately, each annotation should have a selected flag right from the source.

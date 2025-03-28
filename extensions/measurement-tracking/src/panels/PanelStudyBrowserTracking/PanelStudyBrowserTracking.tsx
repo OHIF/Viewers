@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import PropTypes from 'prop-types';
@@ -11,6 +11,9 @@ import { useTrackedMeasurements } from '../../getContextModule';
 import { Separator } from '@ohif/ui-next';
 import { MoreDropdownMenu, PanelStudyBrowserHeader } from '@ohif/extension-default';
 import { defaultActionIcons } from './constants';
+import { useAppConfig } from '@state';
+import { CallbackCustomization } from 'platform/core/src/types';
+
 import { UntrackSeriesModal } from './untrackSeriesModal';
 const { formatDate, createStudyBrowserTabs } = utils;
 
@@ -42,6 +45,8 @@ export default function PanelStudyBrowserTracking({
   dataSource,
 }) {
   const { servicesManager, commandsManager } = useSystem();
+  const [appConfig] = useAppConfig();
+
   const {
     displaySetService,
     uiDialogService,
@@ -99,28 +104,41 @@ export default function PanelStudyBrowserTracking({
     setViewPresets(newViewPresets);
   };
 
-  const onDoubleClickThumbnailHandler = displaySetInstanceUID => {
-    let updatedViewports = [];
-    const viewportId = activeViewportId;
-    try {
-      updatedViewports = hangingProtocolService.getViewportsRequireUpdate(
-        viewportId,
-        displaySetInstanceUID,
-        isHangingProtocolLayout
-      );
-    } catch (error) {
-      console.warn(error);
-      uiNotificationService.show({
-        title: 'Thumbnail Double Click',
-        message:
-          'The selected display sets could not be added to the viewport due to a mismatch in the Hanging Protocol rules.',
-        type: 'error',
-        duration: 3000,
-      });
-    }
+  const onDoubleClickThumbnailHandler = useCallback(
+    async displaySetInstanceUID => {
+      const customHandler = customizationService.getCustomization(
+        'studyBrowser.thumbnailDoubleClickCallback'
+      ) as CallbackCustomization;
 
-    viewportGridService.setDisplaySetsForViewports(updatedViewports);
-  };
+      const setupArgs = {
+        activeViewportId,
+        commandsManager,
+        servicesManager,
+        isHangingProtocolLayout,
+        appConfig,
+      };
+
+      const handlers = customHandler?.callbacks.map(callback => callback(setupArgs));
+
+      for (const handler of handlers) {
+        await handler(displaySetInstanceUID);
+      }
+      const displaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
+      if (displaySet.Modality === 'SR') {
+        sendTrackedMeasurementsEvent('CHECK_DIRTY', {
+          viewportId: activeViewportId,
+          displaySetInstanceUID: displaySetInstanceUID,
+        });
+      }
+    },
+    [
+      activeViewportId,
+      commandsManager,
+      servicesManager,
+      isHangingProtocolLayout,
+      customizationService,
+    ]
+  );
 
   const activeViewportDisplaySetInstanceUIDs =
     viewports.get(activeViewportId)?.displaySetInstanceUIDs;
@@ -371,10 +389,24 @@ export default function PanelStudyBrowserTracking({
         setDisplaySets(mappedDisplaySets);
       }
     );
+    const { viewportGridService } = servicesManager.services;
+    const subscriptionOndropFired = viewportGridService.subscribe(
+      viewportGridService.EVENTS.VIEWPORT_ONDROP_HANDLED,
+      ({ eventData }) => {
+        const displaySet = displaySetService.getDisplaySetByUID(eventData.displaySetInstanceUID);
+        if (displaySet.Modality === 'SR') {
+          sendTrackedMeasurementsEvent('CHECK_DIRTY', {
+            viewportId: activeViewportId,
+            displaySetInstanceUID: eventData.displaySetInstanceUID,
+          });
+        }
+      }
+    );
 
     return () => {
       SubscriptionDisplaySetsChanged.unsubscribe();
       SubscriptionDisplaySetMetaDataInvalidated.unsubscribe();
+      subscriptionOndropFired.unsubscribe();
     };
   }, [
     displaySetsLoadingState,
@@ -458,6 +490,7 @@ export default function PanelStudyBrowserTracking({
       content: UntrackSeriesModal,
       contentProps: {
         onConfirm,
+        message: 'Are you sure you want to untrack this series?',
       },
     });
   };
