@@ -11,6 +11,54 @@
   }
 }
 
+/* ImageScrollbar component styles */
+@layer components {
+  /* Range input styling for ImageScrollbar */
+  input[type=range].image-scrollbar::-webkit-slider-thumb {
+    -webkit-appearance: none !important;
+    background-color: #163239;
+    border: none;
+    border-radius: 57px;
+    cursor: -webkit-grab;
+    height: 12px;
+    margin-top: -4px;
+    width: 39px;
+  }
+  
+  input[type=range].image-scrollbar::-webkit-slider-thumb:active {
+    background-color: hsl(var(--primary));
+    cursor: -webkit-grabbing;
+  }
+  
+  input[type=range].image-scrollbar::-moz-range-thumb {
+    background-color: #163239;
+    border: none;
+    border-radius: 57px;
+    cursor: -moz-grab;
+    height: 12px;
+    width: 39px;
+  }
+  
+  input[type=range].image-scrollbar::-moz-range-thumb:active {
+    background-color: hsl(var(--primary));
+    cursor: -moz-grabbing;
+  }
+  
+  input[type=range].image-scrollbar::-webkit-slider-runnable-track {
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    height: 5px;
+  }
+  
+  input[type=range].image-scrollbar::-moz-range-track {
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    height: 2px;
+  }
+}
+
 /* Truncate 2 lines utility */
 .truncate-2-lines {
   overflow: hidden;
