@@ -57,7 +57,6 @@ const machineConfiguration = {
             actions: ['setPreviousState'],
           },
         ],
-        // Unused? We may only do PROMPT_HYDRATE_SR now?
         SET_TRACKED_SERIES: [
           {
             target: 'tracking',

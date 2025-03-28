@@ -102,6 +102,16 @@ const screenShotPaths = {
   tmtvRendering: {
     tmtvDisplayedCorrectly: 'tmtvDisplayedCorrectly.png',
   },
+  jumpToMeasurementMPR: {
+    initialDraw: 'jumpToMeasurementMPR-initialDraw.png',
+    scrollAway: 'jumpToMeasurementMPR-scrollAway.png',
+    jumpToMeasurementStack: 'jumpToMeasurementMPR-jumpToMeasurementStack.png',
+    goToMPR: 'jumpToMeasurementMPR-goToMPR.png',
+    jumpInMPR: 'jumpToMeasurementMPR-jumpInMPR.png',
+    changeSeriesInMPR: 'jumpToMeasurementMPR-changeSeriesInMPR.png',
+    jumpToMeasurementAfterSeriesChange:
+      'jumpToMeasurementMPR-jumpToMeasurementAfterSeriesChange.png',
+  },
 };
 
 export { screenShotPaths };
