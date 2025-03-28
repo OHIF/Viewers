@@ -8,7 +8,7 @@ import React, {
 } from 'react';
 import PropTypes from 'prop-types';
 
-import { Types, ViewportActionCornersLocations } from '@ohif/ui';
+import { Types, ViewportActionCornersLocations } from '@ohif/ui-next';
 import ViewportActionCornersService, {
   ActionComponentInfo,
 } from '../services/ViewportActionCornersService/ViewportActionCornersService';
