@@ -90,6 +90,7 @@ function _getDisplaySetsFromSeries(
     SeriesDescription,
     SeriesNumber,
     SeriesDate,
+    SeriesTime,
     ConceptNameCodeSequence,
     SOPClassUID,
   } = instance;
@@ -106,6 +107,7 @@ function _getDisplaySetsFromSeries(
     SeriesDescription,
     SeriesNumber,
     SeriesDate,
+    SeriesTime,
     SOPInstanceUID,
     SeriesInstanceUID,
     StudyInstanceUID,

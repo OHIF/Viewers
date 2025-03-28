@@ -7,6 +7,7 @@ export default function CreateReportDialogPrompt({
 }): Promise<{
   value: string;
   dataSourceName: string;
+  series: string;
   action: (typeof PROMPT_RESPONSES)[keyof typeof PROMPT_RESPONSES];
 }> {
   const { uiDialogService, customizationService } = servicesManager.services;
@@ -22,10 +23,11 @@ export default function CreateReportDialogPrompt({
       content: ReportDialog,
       contentProps: {
         dataSources: allowMultipleDataSources ? dataSources : undefined,
-        onSave: async ({ reportName, dataSource: selectedDataSource }) => {
+        onSave: async ({ reportName, dataSource: selectedDataSource, series }) => {
           resolve({
             value: reportName,
             dataSourceName: selectedDataSource,
+            series,
             action: PROMPT_RESPONSES.CREATE_REPORT,
           });
         },
@@ -33,6 +35,7 @@ export default function CreateReportDialogPrompt({
           resolve({
             action: PROMPT_RESPONSES.CANCEL,
             value: undefined,
+            series: undefined,
             dataSourceName: undefined,
           });
         },

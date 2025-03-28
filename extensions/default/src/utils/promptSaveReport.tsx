@@ -2,8 +2,9 @@ import { utils } from '@ohif/core';
 
 import createReportAsync from '../Actions/createReportAsync';
 import { createReportDialogPrompt } from '../Panels';
-import getNextSRSeriesNumber from './getNextSRSeriesNumber';
 import PROMPT_RESPONSES from './_shared/PROMPT_RESPONSES';
+import { getSRSeriesAndInstanceNumber } from './getSRSeriesAndInstanceNumber';
+import { getSeriesDateTime } from './getCurrentDicomDateTime';
 
 const {
   filterAnd,
@@ -44,7 +45,12 @@ async function promptSaveReport({ servicesManager, commandsManager, extensionMan
 
       const SeriesDescription = promptResult.value || defaultSaveTitle;
 
-      const SeriesNumber = getNextSRSeriesNumber(displaySetService);
+      const { SeriesNumber, InstanceNumber, referenceDisplaySet } = getSRSeriesAndInstanceNumber({
+        displaySetService,
+        SeriesInstanceUid: promptResult.series,
+      });
+
+      const { SeriesDate, SeriesTime } = referenceDisplaySet ?? getSeriesDateTime();
 
       const getReport = async () => {
         return commandsManager.runCommand(
@@ -56,6 +62,10 @@ async function promptSaveReport({ servicesManager, commandsManager, extensionMan
             options: {
               SeriesDescription,
               SeriesNumber,
+              InstanceNumber,
+              SeriesInstanceUID: promptResult.series,
+              SeriesDate,
+              SeriesTime,
             },
           },
           'CORNERSTONE_STRUCTURED_REPORT'
