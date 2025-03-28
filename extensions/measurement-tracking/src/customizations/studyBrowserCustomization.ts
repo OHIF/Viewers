@@ -1,25 +1,19 @@
 import { measurementTrackingMode } from '../contexts/TrackedMeasurementsContext/promptBeginTracking';
 
-export default {
+const onDoubleClickHandler = {
   callbacks: [
     ({ activeViewportId, servicesManager, isHangingProtocolLayout, appConfig }) =>
       async displaySetInstanceUID => {
-        const {
-          hangingProtocolService,
-          viewportGridService,
-          uiNotificationService,
-          displaySetService,
-          measurementService,
-        } = servicesManager.services;
+        const { hangingProtocolService, viewportGridService, uiNotificationService } =
+          servicesManager.services;
         let updatedViewports = [];
         const viewportId = activeViewportId;
-        const displaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
-        const simplifiedMode =
-          appConfig.measurementTrackingMode === measurementTrackingMode.SIMPLIFIED;
-        const measurements = measurementService.getMeasurements();
-        const haveDirtyMeasurements = measurements.some(m => m.isDirty);
-        const haveDirtyMeasurementsInSimplifiedMode =
-          displaySet.Modality === 'SR' && simplifiedMode && haveDirtyMeasurements;
+        const haveDirtyMeasurementsInSimplifiedMode = checkHasDirtyAndSimplifiedMode({
+          servicesManager,
+          appConfig,
+          displaySetInstanceUID,
+        });
+
         try {
           if (!haveDirtyMeasurementsInSimplifiedMode) {
             updatedViewports = hangingProtocolService.getViewportsRequireUpdate(
@@ -41,3 +35,22 @@ export default {
       },
   ],
 };
+
+const customOnDropHandlerCallback = async props => {
+  const handled = checkHasDirtyAndSimplifiedMode(props);
+  return Promise.resolve({ handled });
+};
+
+function checkHasDirtyAndSimplifiedMode(props: any) {
+  const { servicesManager, appConfig, displaySetInstanceUID } = props;
+  const simplifiedMode = appConfig.measurementTrackingMode === measurementTrackingMode.SIMPLIFIED;
+  const { measurementService, displaySetService } = servicesManager.services;
+  const measurements = measurementService.getMeasurements();
+  const haveDirtyMeasurements = measurements.some(m => m.isDirty);
+  const displaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
+  const hasDirtyAndSimplifiedMode =
+    displaySet.Modality === 'SR' && simplifiedMode && haveDirtyMeasurements;
+  return hasDirtyAndSimplifiedMode;
+}
+
+export { onDoubleClickHandler, customOnDropHandlerCallback };
