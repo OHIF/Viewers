@@ -30,7 +30,7 @@ function PanelMeasurementTableTracking(props) {
     sendTrackedMeasurementsEvent('UNTRACK_ALL', {});
   };
 
-  const onDeleteClick = () => {
+  const onDelete = () => {
     const hasDirtyMeasurements = measurementService
       .getMeasurements()
       .some(measurement => measurement.isDirty);
@@ -66,7 +66,7 @@ function PanelMeasurementTableTracking(props) {
         measurementFilter,
       });
     },
-    onDeleteClick,
+    onDelete,
   };
 
   const Header = props => (
@@ -95,7 +95,7 @@ function PanelMeasurementTableTracking(props) {
             key="trackingMeasurementsHeader"
             asChild={true}
           >
-          <Header key="trackingHeadChild" />
+            <Header key="trackingHeadChild" />
           </AccordionGroup.Trigger>
           <MeasurementsOrAdditionalFindings
             key="measurementsOrAdditionalFindings"
