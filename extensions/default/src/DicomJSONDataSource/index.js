@@ -168,8 +168,9 @@ function createDicomJSONApi(dicomJsonConfig) {
        * @returns an absolute URL to the resource, if the absolute URL can be retrieved as singlepart,
        *    or is already retrieved, or a promise to a URL for such use if a BulkDataURI
        */
-      directURL: params => {
-        return getDirectURL(dicomJsonConfig, params);
+      directURL: async params => {
+        const url = await getDirectURL(dicomJsonConfig, params)
+        return url;
       },
       series: {
         metadata: async ({ filters, StudyInstanceUID, madeInClient = false, customSort } = {}) => {
