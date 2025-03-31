@@ -4,10 +4,7 @@ import {
   VolumeViewport,
   utilities as csUtils,
   Types as CoreTypes,
-  cache,
   BaseVolumeViewport,
-  triggerEvent,
-  eventTarget,
 } from '@cornerstonejs/core';
 import {
   ToolGroupManager,
@@ -78,12 +75,9 @@ function commandsModule({
     colorbarService,
     hangingProtocolService,
     syncGroupService,
-    toolbarService,
     segmentationService,
     displaySetService,
   } = servicesManager.services as AppTypes.Services;
-
-  const { measurementServiceSource } = this;
 
   function _getActiveViewportEnabledElement() {
     return getActiveViewportEnabledElement(viewportGridService);
@@ -221,6 +215,7 @@ function commandsModule({
       viewportId,
       displaySetInstanceUID,
       referencedImageId,
+      options,
     }) => {
       const presentations = cornerstoneViewportService.getPresentations(viewportId);
       const { positionPresentationStore, setPositionPresentation, getPositionPresentationId } =
@@ -232,16 +227,18 @@ function commandsModule({
         ([key, value]) => key.includes(displaySetInstanceUID) && value.viewportId === viewportId
       )?.[0];
 
-      if (previousReferencedDisplaySetStoreKey) {
-        const presentationData = referencedImageId
-          ? {
-              ...presentations.positionPresentation,
-              viewReference: {
-                referencedImageId,
-              },
-            }
-          : presentations.positionPresentation;
+      // Create presentation data with referencedImageId and options if provided
+      const presentationData = referencedImageId
+        ? {
+            ...presentations.positionPresentation,
+            viewReference: {
+              referencedImageId,
+              ...options,
+            },
+          }
+        : presentations.positionPresentation;
 
+      if (previousReferencedDisplaySetStoreKey) {
         setPositionPresentation(previousReferencedDisplaySetStoreKey, presentationData);
         return;
       }
@@ -249,13 +246,12 @@ function commandsModule({
       // if not found means we have not visited that referencedDisplaySetInstanceUID before
       // so we need to grab the positionPresentationId directly from the store,
       // Todo: this is really hacky, we should have a better way for this
-
       const positionPresentationId = getPositionPresentationId({
         displaySetInstanceUIDs: [displaySetInstanceUID],
         viewportId,
       });
 
-      setPositionPresentation(positionPresentationId, presentations.positionPresentation);
+      setPositionPresentation(positionPresentationId, presentationData);
     },
     getNearbyToolData({ nearbyToolData, element, canvasCoordinates }) {
       return nearbyToolData ?? cstUtils.getAnnotationNearPoint(element, canvasCoordinates);
@@ -285,12 +281,6 @@ function commandsModule({
       return nearbyToolData?.metadata?.toolName && isAnnotation(nearbyToolData.metadata.toolName)
         ? nearbyToolData
         : null;
-    },
-    /** Delete the given measurement */
-    deleteMeasurement: ({ uid }) => {
-      if (uid) {
-        measurementServiceSource.remove(uid);
-      }
     },
     /**
      * Common logic for handling measurement label updates through dialog
@@ -1574,9 +1564,6 @@ function commandsModule({
     },
     toggleViewportColorbar: {
       commandFn: actions.toggleViewportColorbar,
-    },
-    deleteMeasurement: {
-      commandFn: actions.deleteMeasurement,
     },
     setMeasurementLabel: {
       commandFn: actions.setMeasurementLabel,

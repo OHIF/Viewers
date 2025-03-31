@@ -92,6 +92,7 @@ export default async function init({
     hangingProtocolService,
     viewportGridService,
     segmentationService,
+    measurementService,
   } = servicesManager.services;
 
   window.services = servicesManager.services;
@@ -176,6 +177,17 @@ export default async function init({
 
   initCineService(servicesManager);
   initStudyPrefetcherService(servicesManager);
+
+  [
+    measurementService.EVENTS.JUMP_TO_MEASUREMENT_LAYOUT,
+    measurementService.EVENTS.JUMP_TO_MEASUREMENT_VIEWPORT,
+  ].forEach(event => {
+    measurementService.subscribe(event, evt => {
+      const { measurement } = evt;
+      const { uid: annotationUID } = measurement;
+      cornerstoneTools.annotation.selection.setAnnotationSelected(annotationUID, true);
+    });
+  });
 
   segmentationService.subscribeDebounced(
     segmentationService.EVENTS.SEGMENTATION_DATA_MODIFIED,

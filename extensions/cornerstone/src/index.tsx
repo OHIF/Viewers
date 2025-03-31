@@ -173,9 +173,6 @@ const cornerstoneExtension: Types.Extensions.Extension = {
   getHangingProtocolModule,
   getViewportModule({ servicesManager, commandsManager }) {
     const ExtendedOHIFCornerstoneViewport = props => {
-      // const onNewImageHandler = jumpData => {
-      //   commandsManager.runCommand('jumpToImage', jumpData);
-      // };
       const { toolbarService } = servicesManager.services;
 
       return (
@@ -192,6 +189,7 @@ const cornerstoneExtension: Types.Extensions.Extension = {
       {
         name: 'cornerstone',
         component: ExtendedOHIFCornerstoneViewport,
+        isReferenceViewable: props => utils.isReferenceViewable({ ...props, servicesManager }),
       },
     ];
   },

@@ -3,6 +3,62 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.10.0-beta.141](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.140...v3.10.0-beta.141) (2025-03-28)
+
+
+### Bug Fixes
+
+* jump to measurement forever ([#4867](https://github.com/OHIF/Viewers/issues/4867)) ([d7bd365](https://github.com/OHIF/Viewers/commit/d7bd36544a039deae30e179404452cde738b8b03))
+* **measurement:** fix for measurement jump is not switching series in 2DMPR ([#4779](https://github.com/OHIF/Viewers/issues/4779)) ([3f06c96](https://github.com/OHIF/Viewers/commit/3f06c966eb0bc9f6b5dcc477ccc7962f8a344c6f))
+
+
+
+
+
+# [3.10.0-beta.140](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.139...v3.10.0-beta.140) (2025-03-27)
+
+
+### Bug Fixes
+
+* routerBasename setting ([#4891](https://github.com/OHIF/Viewers/issues/4891)) ([459b0d2](https://github.com/OHIF/Viewers/commit/459b0d223a5867aaaabe1b5b61fd22b040ce5602))
+
+
+
+
+
+# [3.10.0-beta.139](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.138...v3.10.0-beta.139) (2025-03-27)
+
+
+### Bug Fixes
+
+* **seg:** multiframe SEG ([#4890](https://github.com/OHIF/Viewers/issues/4890)) ([892d03f](https://github.com/OHIF/Viewers/commit/892d03fc3ca85a2772bf49ff5efc8014b9b2cdc9))
+
+
+
+
+
+# [3.10.0-beta.138](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.137...v3.10.0-beta.138) (2025-03-26)
+
+
+### Bug Fixes
+
+* remove duplicated deleteMeasurements code ([#4895](https://github.com/OHIF/Viewers/issues/4895)) ([9bde644](https://github.com/OHIF/Viewers/commit/9bde644fce6db56d7d0dd62a876312559b7b2beb))
+
+
+
+
+
+# [3.10.0-beta.137](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.136...v3.10.0-beta.137) (2025-03-26)
+
+
+### Bug Fixes
+
+* datasource connection error style ([#4888](https://github.com/OHIF/Viewers/issues/4888)) ([467acbd](https://github.com/OHIF/Viewers/commit/467acbd997105d719bad3949a69ed0b5f8c553b4))
+
+
+
+
+
 # [3.10.0-beta.136](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.135...v3.10.0-beta.136) (2025-03-25)
 
 
