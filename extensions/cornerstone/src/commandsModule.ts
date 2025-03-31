@@ -1525,6 +1525,15 @@ function commandsModule({
         }
       });
     },
+    toggleUseCenterSegmentIndex: ({ toggle }) => {
+      const labelmapTools = getLabelmapTools({ toolGroupService });
+      labelmapTools.forEach(tool => {
+        tool.configuration = {
+          ...tool.configuration,
+          useCenterSegmentIndex: toggle,
+        };
+      });
+    },
     acceptPreview: () => {
       const labelmapTools = getLabelmapTools({ toolGroupService });
       labelmapTools.forEach(tool => {
@@ -1806,6 +1815,7 @@ function commandsModule({
     toggleSegmentSelect: actions.toggleSegmentSelect,
     acceptPreview: actions.acceptPreview,
     rejectPreview: actions.rejectPreview,
+    toggleUseCenterSegmentIndex: actions.toggleUseCenterSegmentIndex,
   };
 
   return {
