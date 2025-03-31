@@ -1,5 +1,6 @@
 import React, { useCallback } from 'react';
 import { cn } from '../../lib/utils';
+import styles from './ImageScrollbar.module.css';
 
 export interface ImageScrollbarProps {
   value: number;
@@ -48,12 +49,12 @@ export const ImageScrollbar: React.FC<ImageScrollbarProps> = ({
 
   return (
     <div
-      className={cn('absolute right-0 top-0 h-full p-[5px]', className)}
+      className={cn(styles.scrollbarContainer, className)}
       onContextMenu={onContextMenu}
     >
-      <div className="relative mb-[5px] h-[calc(100%)] w-[12px]">
+      <div className={styles.scrollbarInner}>
         <input
-          className="image-scrollbar mousetrap absolute left-[12px] top-0 h-[12px] origin-top-left rotate-90 appearance-none bg-transparent p-0"
+          className={cn(styles.scrollbarInput, 'mousetrap')}
           style={style}
           type="range"
           min="0"
@@ -63,6 +64,7 @@ export const ImageScrollbar: React.FC<ImageScrollbarProps> = ({
           onChange={handleChange}
           onKeyDown={handleKeyDown}
           aria-label="Image navigation scrollbar"
+          data-testid="image-scrollbar-input"
         />
       </div>
     </div>
