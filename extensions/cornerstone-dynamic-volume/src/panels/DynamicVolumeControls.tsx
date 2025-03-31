@@ -256,8 +256,11 @@ function DimensionGroupControls({
           step={1}
         >
           <div className="flex flex-col items-center">
-            <Numeric.NumberStepper className="w-[58px] h-[28px]" direction="horizontal"/>
-            <Numeric.Label className="mt-1">Frame</Numeric.Label>
+            <Numeric.NumberStepper
+              className="h-[28px] w-[58px]"
+              direction="horizontal"
+            />
+            <Numeric.Label className="text-muted-foreground mt-1 text-sm">Frame</Numeric.Label>
           </div>
         </Numeric.Container>
 
@@ -270,8 +273,11 @@ function DimensionGroupControls({
           step={1}
         >
           <div className="flex flex-col items-center">
-            <Numeric.NumberStepper className="w-[58px] h-[28px]" direction="horizontal"/>
-            <Numeric.Label className="mt-1">FPS</Numeric.Label>
+            <Numeric.NumberStepper
+              className="h-[28px] w-[58px]"
+              direction="horizontal"
+            />
+            <Numeric.Label className="text-muted-foreground mt-1 text-sm">FPS</Numeric.Label>
           </div>
         </Numeric.Container>
       </div>

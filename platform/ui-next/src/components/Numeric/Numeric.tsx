@@ -364,7 +364,7 @@ function NumberStepper({ className, children, direction }: NumberStepperProps) {
     return (
       <div
         className={cn(
-          'bg-background border-input flex items-center overflow-hidden rounded-md border',
+          'bg-background border-input flex h-[28px] items-center overflow-hidden rounded-md border',
           className
         )}
       >
