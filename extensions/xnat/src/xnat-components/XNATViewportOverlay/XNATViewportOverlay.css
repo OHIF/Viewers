@@ -1,0 +1,89 @@
+.imageViewerViewport.empty ~ .OHIFCornerstoneViewportOverlay {
+  display: none;
+}
+.OHIFCornerstoneViewportOverlay {
+  color: #9ccef9;
+}
+.OHIFCornerstoneViewportOverlay .overlay-element {
+  position: absolute;
+  font-weight: 400;
+  text-shadow: 1px 1px #000;
+  pointer-events: none;
+}
+.OHIFCornerstoneViewportOverlay .top-left {
+  top: 20px;
+  left: 35px;
+}
+.OHIFCornerstoneViewportOverlay .top-center {
+  top: 20px;
+  padding-top: 20px;
+  width: 100%;
+  text-align: center;
+}
+.OHIFCornerstoneViewportOverlay .top-right {
+  top: 20px;
+  right: 20px;
+  text-align: right;
+}
+.OHIFCornerstoneViewportOverlay .bottom-left {
+  bottom: 20px;
+  left: 20px;
+}
+.OHIFCornerstoneViewportOverlay .bottom-left2 {
+  bottom: 140px;
+  left: 20px;
+}
+.OHIFCornerstoneViewportOverlay .bottom-right {
+  bottom: 20px;
+  right: 20px;
+  text-align: right;
+}
+.OHIFCornerstoneViewportOverlay.controlsVisible .topright,
+.OHIFCornerstoneViewportOverlay.controlsVisible .bottomright {
+  right: calc(20px + 19px);
+}
+.OHIFCornerstoneViewportOverlay .viewportWarning {
+  font-weight: 400;
+  text-shadow: 1px 1px #000;
+  pointer-events: all;
+  cursor: pointer;
+  width: 24px;
+  height: 24px;
+  margin-bottom: 5px;
+}
+
+.OHIFCornerstoneViewportOverlay .viewportWarning svg {
+  opacity: 1;
+  color: #e29e4a;
+  fill: #e29e4a;
+  stroke: #e29e4a;
+  width: 24px;
+  height: 24px;
+  margin: 0;
+  padding: 0;
+}
+
+.OHIFCornerstoneViewportOverlay svg {
+  color: #9ccef9;
+  fill: #9ccef9;
+  stroke: #9ccef9;
+  background-color: transparent;
+  margin: 2px;
+  width: 18px;
+  height: 18px;
+  filter: drop-shadow(1px 1px #000);
+}
+
+/*.warning-icon {*/
+/*  display: block;*/
+/*  margin: 7px auto 0;*/
+/*}*/
+
+.syncCheckbox {
+  pointer-events: all;
+  margin-top: 10px;
+}
+
+.smoothCheckbox {
+  pointer-events: all;
+}

@@ -1,5 +1,5 @@
-import { eventTarget, init as cornerstoneInit } from '@cornerstonejs/core';
-import { volumeLoader, imageLoader } from '@cornerstonejs/core';
+import { eventTarget, init as cornerstoneInit, imageLoader } from '@cornerstonejs/core';
+import { volumeLoader } from '@cornerstonejs/core';
 import { DicomMetadataStore, classes } from '@ohif/core';
 import * as cornerstone from '@cornerstonejs/core';
 
@@ -45,23 +45,27 @@ export function initXNATDicomLoader(xnatConfig: any): Promise<void> {
         console.info('XNAT: Found cornerstoneWADOImageLoader in window object');
         imageLoaderModule = (window as any).cornerstoneWADOImageLoader;
       }
-      // Try imports from Cornerstone Core if available
-      else if (cornerstone && (cornerstone as any).wadors) {
-        console.info('XNAT: Found WADO loader in cornerstone core object');
-        imageLoaderModule = {
-          wadors: (cornerstone as any).wadors,
-          wadouri: (cornerstone as any).wadouri
-        };
-      }
-      // Check if the dicom-image-loader is available in @cornerstonejs namespace
-      else if (typeof (window as any).cornerstonejs !== 'undefined' && 
-               (window as any).cornerstonejs.dicomImageLoader) {
-        console.info('XNAT: Found WADO loader in cornerstonejs.dicomImageLoader');
-        imageLoaderModule = (window as any).cornerstonejs.dicomImageLoader;
+      // Check if Cornerstone internal components are available
+      else if (cornerstone) {
+        console.info('XNAT: Checking for Cornerstone internal components');
+        
+        // In OHIF v3, there are no wadouri or wadors in the core package
+        // We'll need to look for the WADO loaders in other places
+        
+        // Create a placeholder object that will be populated if we find the WADO loaders
+        imageLoaderModule = {};
+        
+        // Check for dicomImageLoader in the cornerstonejs namespace on window
+        if (typeof window !== 'undefined' && 
+            (window as any).cornerstonejs && 
+            (window as any).cornerstonejs.dicomImageLoader) {
+          console.info('XNAT: Found WADO loader in cornerstonejs.dicomImageLoader');
+          imageLoaderModule = (window as any).cornerstonejs.dicomImageLoader;
+        }
       }
       
       // If we still don't have an image loader, try to dynamically import it
-      if (!imageLoaderModule) {
+      if (!imageLoaderModule || (!imageLoaderModule.wadouri && !imageLoaderModule.wadors)) {
         console.warn('XNAT: Could not find WADO image loader in standard locations, will reject');
         
         // Only register a simple error handler that rejects all requests

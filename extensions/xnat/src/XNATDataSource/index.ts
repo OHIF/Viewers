@@ -556,54 +556,68 @@ function createXNATApi(xnatConfig: XNATConfig, servicesManager) {
       },
       
       series: {
-        metadata: async function (
-          {
-            StudyInstanceUID,
-            SeriesInstanceUID,
-            returnPromises = false,
-            filters,
-            sortCriteria
-          }: {
-            StudyInstanceUID: string;
-            SeriesInstanceUID?: string;
-            returnPromises?: boolean;
-            filters?: Record<string, unknown> | Array<Record<string, unknown>>;
-            sortCriteria?: any;
-          },
-        ): Promise<any> {
-          // Import the DeferredPromise utilities
-          const { wrapArrayWithDeferredPromises } = await import('../utils/DeferredPromise');
-
-          log.info('XNAT: retrieve.series.metadata', {
-            StudyInstanceUID,
-            SeriesInstanceUID,
-            returnPromises,
-            filters,
-          });
-
+        metadata: async ({ StudyInstanceUID, SeriesInstanceUID, returnPromises = false, filters, sortCriteria } = {}) => {
           try {
-            // Check if StudyInstanceUID is undefined or empty
+            // Import the DeferredPromise utilities
+            const { wrapArrayWithDeferredPromises } = await import('../utils/DeferredPromise');
+            
+            log.info('XNAT: retrieve.series.metadata', {
+              StudyInstanceUID,
+              SeriesInstanceUID,
+              returnPromises,
+              filters,
+            });
+
+            // If no StudyInstanceUID provided, check session storage or URL parameters
             if (!StudyInstanceUID) {
               log.warn('XNAT: No StudyInstanceUID provided - trying to find one from configuration or URL');
               
-              // Try to extract from URL parameters first
-              const urlParams = new URLSearchParams(window.location.search);
-              const studyParam = urlParams.get('StudyInstanceUID') || urlParams.get('studyInstanceUID');
+              // First try to get from sessionStorage
+              try {
+                const storedUID = sessionStorage.getItem('xnat_studyInstanceUID');
+                if (storedUID) {
+                  log.info(`XNAT: Using last selected StudyInstanceUID from sessionStorage: ${storedUID}`);
+                  StudyInstanceUID = storedUID;
+                }
+              } catch (e) {
+                log.warn('XNAT: Error accessing sessionStorage:', e);
+              }
               
-              if (studyParam) {
-                log.info(`XNAT: Found StudyInstanceUID in URL: ${studyParam}`);
-                StudyInstanceUID = studyParam;
-              } else if (sessionStorage.getItem('lastSelectedStudyInstanceUID')) {
-                // Try to get the last selected study from sessionStorage
-                StudyInstanceUID = sessionStorage.getItem('lastSelectedStudyInstanceUID');
-                log.info(`XNAT: Using last selected StudyInstanceUID from sessionStorage: ${StudyInstanceUID}`);
-              } else {
-                // Try to get study from XNAT configuration
-                if (xnatConfig.xnat?.experimentId) {
-                  log.info(`XNAT: Using experimentId as StudyInstanceUID: ${xnatConfig.xnat.experimentId}`);
-                  StudyInstanceUID = xnatConfig.xnat.experimentId;
+              // If still no studyUID, try to get from URL parameters
+              if (!StudyInstanceUID) {
+                // Try to get from URL parameters
+                const urlParams = new URLSearchParams(window.location.search);
+                const studyFromUrl = urlParams.get('studyInstanceUID');
+                if (studyFromUrl) {
+                  log.info(`XNAT: Using StudyInstanceUID from URL parameter: ${studyFromUrl}`);
+                  StudyInstanceUID = studyFromUrl;
                 } else {
-                  throw new Error('No StudyInstanceUID provided and cannot determine one from context');
+                  // Try to get from URL path
+                  const urlPath = window.location.pathname;
+                  const parts = urlPath.split('/');
+                  const studyIndex = parts.findIndex(part => part === 'study');
+                  if (studyIndex >= 0 && parts.length > studyIndex + 1) {
+                    log.info(`XNAT: Using StudyInstanceUID from URL path: ${parts[studyIndex + 1]}`);
+                    StudyInstanceUID = parts[studyIndex + 1];
+                  } else {
+                    // Try to get project ID and experiment ID from URL
+                    const projectId = urlParams.get('projectId');
+                    const experimentId = urlParams.get('experimentId');
+                    if (projectId && experimentId) {
+                      log.info(`XNAT: Found project ID in URL parameter 'projectId': ${projectId}`);
+                      log.info(`XNAT: Found experiment ID in URL parameter 'experimentId': ${experimentId}`);
+                      // Use experimentId as study instance UID
+                      StudyInstanceUID = experimentId;
+                    } else {
+                      // Try to get from XNAT configuration
+                      if (xnatConfig.xnat?.experimentId) {
+                        log.info(`XNAT: Using experimentId as StudyInstanceUID: ${xnatConfig.xnat.experimentId}`);
+                        StudyInstanceUID = xnatConfig.xnat.experimentId;
+                      } else {
+                        throw new Error('No StudyInstanceUID provided and cannot determine one from context');
+                      }
+                    }
+                  }
                 }
               }
             }
@@ -626,30 +640,28 @@ function createXNATApi(xnatConfig: XNATConfig, servicesManager) {
             const seriesData = await getSeriesXNATInstancesMetadata({
               projectId,
               experimentId,
-              seriesUID: SeriesInstanceUID,
+              seriesUID: undefined, // IMPORTANT: Set to undefined to force loading ALL series
               implementation,
             });
 
             if (!seriesData || !seriesData.length) {
               throw new Error(
-                `No series data found for study ${StudyInstanceUID} ${
-                  SeriesInstanceUID ? `and series ${SeriesInstanceUID}` : ''
-                }`
+                `No series data found for study ${StudyInstanceUID}`
               );
             }
             
-            // Filter series data if SeriesInstanceUID is provided
-            const filteredSeriesData = SeriesInstanceUID
-              ? seriesData.filter(series => 
-                  series.SeriesInstanceUID === SeriesInstanceUID)
-              : seriesData;
+            // Always use all series data
+            const filteredSeriesData = seriesData;
 
             if (filteredSeriesData.length === 0) {
               throw new Error(
-                `No series data found matching SeriesInstanceUID ${SeriesInstanceUID} in study ${StudyInstanceUID}`
+                `No series data found for study ${StudyInstanceUID}`
               );
             }
-
+            
+            // Log the number of series we're loading
+            log.info(`XNAT: Loading ${filteredSeriesData.length} series for study ${StudyInstanceUID}`);
+            
             // Handle returnPromises option (used by the defaultRouteInit function)
             if (returnPromises) {
               console.log('XNAT: Returning promises for lazy loading');
@@ -697,13 +709,12 @@ function createXNATApi(xnatConfig: XNATConfig, servicesManager) {
                         processedInstances.forEach(instance => {
                           instance.StudyInstanceUID = instance.StudyInstanceUID || series.StudyInstanceUID;
                           instance.SeriesInstanceUID = instance.SeriesInstanceUID || series.SeriesInstanceUID;
-                          
+                          instance.SeriesDescription = instance.SeriesDescription || series.SeriesDescription;
                           // Make sure SOPInstanceUID is always defined
                           if (!instance.SOPInstanceUID) {
                             // First check if it's in the metadata
                             if (instance.metadata && instance.metadata.SOPInstanceUID) {
                               instance.SOPInstanceUID = instance.metadata.SOPInstanceUID;
-                              console.log('XNAT: Using SOPInstanceUID from metadata:', instance.SOPInstanceUID);
                             } else {
                               // Only generate as a last resort
                               instance.SOPInstanceUID = generateRandomUID();
@@ -751,7 +762,7 @@ function createXNATApi(xnatConfig: XNATConfig, servicesManager) {
                         
                         log.info(`XNAT: Adding ${processedInstances.length} instances in batch for series ${series.SeriesInstanceUID} of study ${series.StudyInstanceUID}`);
                         DicomMetadataStore.addInstances(processedInstances, true);
-                        
+                        console.log('Series', series);
                         // Simple log with instance data
                         console.log('XNAT: Processed instances added to DicomMetadataStore');
                         console.log('766 First instance sample:', {
@@ -847,7 +858,6 @@ function createXNATApi(xnatConfig: XNATConfig, servicesManager) {
                       // First check if it's in the metadata
                       if (instance.metadata && instance.metadata.SOPInstanceUID) {
                         instance.SOPInstanceUID = instance.metadata.SOPInstanceUID;
-                        console.log('XNAT: Using SOPInstanceUID from metadata:', instance.SOPInstanceUID);
                       } else {
                         // Only generate as a last resort
                         instance.SOPInstanceUID = generateRandomUID();
@@ -896,7 +906,7 @@ function createXNATApi(xnatConfig: XNATConfig, servicesManager) {
                   
                   // Simple log with instance data
                   console.log('XNAT: Processed instances added to DicomMetadataStore');
-                  console.log('811 First instance sample:', {
+                  console.log('897 First instance sample:', {
                     StudyInstanceUID: processedInstances[0].StudyInstanceUID,
                     SeriesInstanceUID: processedInstances[0].SeriesInstanceUID,
                     SOPInstanceUID: processedInstances[0].SOPInstanceUID,
@@ -1221,7 +1231,6 @@ function createXNATApi(xnatConfig: XNATConfig, servicesManager) {
                       // First check if it's in the metadata
                       if (instance.metadata && instance.metadata.SOPInstanceUID) {
                         instance.SOPInstanceUID = instance.metadata.SOPInstanceUID;
-                        console.log('XNAT: Using SOPInstanceUID from metadata:', instance.SOPInstanceUID);
                       } else {
                         // Only generate as a last resort
                         instance.SOPInstanceUID = generateRandomUID();
@@ -1337,6 +1346,63 @@ function createXNATApi(xnatConfig: XNATConfig, servicesManager) {
               }
             } catch (error) {
               log.error('XNAT: Error adding study instances to cornerstone provider:', error);
+            }
+            
+            // Add this code at the appropriate place after the metadata is loaded but before display sets are created
+            try {
+              const { AppContext } = servicesManager.services;
+              if (AppContext && xnatMetadata && xnatMetadata.studies) {
+                // Initialize the xnatSeriesMetadata structure if it doesn't exist
+                if (!AppContext.xnatSeriesMetadata) {
+                  AppContext.xnatSeriesMetadata = {};
+                }
+
+                // Store series metadata by StudyInstanceUID for easy lookup
+                xnatMetadata.studies.forEach(study => {
+                  const studyInstanceUID = study.StudyInstanceUID;
+                  
+                  // Initialize the study entry if it doesn't exist
+                  if (!AppContext.xnatSeriesMetadata[studyInstanceUID]) {
+                    AppContext.xnatSeriesMetadata[studyInstanceUID] = {
+                      PatientID: study.PatientID,
+                      PatientName: study.PatientName,
+                      StudyDate: study.StudyDate,
+                      StudyTime: study.StudyTime, 
+                      StudyDescription: study.StudyDescription,
+                      series: []
+                    };
+                  }
+
+                  // Add all series from this study
+                  if (study.series && study.series.length > 0) {
+                    study.series.forEach(series => {
+                      // Store series with complete metadata
+                      const seriesMetadata = {
+                        SeriesInstanceUID: series.SeriesInstanceUID,
+                        SeriesDescription: series.SeriesDescription || '',
+                        SeriesNumber: series.SeriesNumber || '',
+                        SeriesDate: series.SeriesDate || study.StudyDate || '',
+                        SeriesTime: series.SeriesTime || study.StudyTime || '',
+                        Modality: series.Modality || '',
+                        // Include study level info for reference
+                        StudyInstanceUID: study.StudyInstanceUID,
+                        PatientID: study.PatientID,
+                        PatientName: study.PatientName,
+                        StudyDate: study.StudyDate,
+                        StudyTime: study.StudyTime,
+                        StudyDescription: study.StudyDescription
+                      };
+
+                      // Add to the series array
+                      AppContext.xnatSeriesMetadata[studyInstanceUID].series.push(seriesMetadata);
+                    });
+                  }
+                });
+
+                console.log('XNAT: Stored metadata in AppContext for', Object.keys(AppContext.xnatSeriesMetadata).length, 'studies');
+              }
+            } catch (error) {
+              console.error('XNAT: Error storing metadata in AppContext:', error);
             }
             
             return processedStudy;
@@ -2135,14 +2201,14 @@ const getSeriesXNATInstancesMetadata = async ({
     
     log.debug(`XNAT: Found ${allSeries.length} series in total`);
     
-    // Filter by seriesInstanceUID if provided
-    const filteredSeries = seriesUID 
-      ? allSeries.filter(series => series.SeriesInstanceUID === seriesUID)
-      : allSeries;
+    // Remove the filtering so we always return ALL series
+    // const filteredSeries = seriesUID 
+    //   ? allSeries.filter(series => series.SeriesInstanceUID === seriesUID)
+    //   : allSeries;
     
-    log.debug(`XNAT: Filtered to ${filteredSeries.length} series ${
-      seriesUID ? `matching ${seriesUID}` : 'across all studies'
-    }`);
+    const filteredSeries = allSeries;
+    
+    log.debug(`XNAT: Including all ${filteredSeries.length} series from study`);
     
     return filteredSeries;
   } catch (error) {
@@ -2170,6 +2236,30 @@ function setupDisplaySetLogging() {
           numInstances: instances.length,
           firstSOPInstanceUID: instances[0]?.SOPInstanceUID
         });
+
+        // When instances are added, check if we have a study date and store it in sessionStorage
+        if (instances.length > 0 && instances[0].metadata) {
+          const studyDate = instances[0].metadata.StudyDate || instances[0].StudyDate;
+          const studyTime = instances[0].metadata.StudyTime || instances[0].StudyTime;
+          
+          if (studyDate) {
+            try {
+              sessionStorage.setItem('xnat_studyDate', studyDate);
+              console.log('XNAT: Stored study date from instance metadata:', studyDate);
+            } catch (e) {
+              console.warn('XNAT: Failed to store study date in sessionStorage:', e);
+            }
+          }
+          
+          if (studyTime) {
+            try {
+              sessionStorage.setItem('xnat_studyTime', studyTime);
+              console.log('XNAT: Stored study time from instance metadata:', studyTime);
+            } catch (e) {
+              console.warn('XNAT: Failed to store study time in sessionStorage:', e);
+            }
+          }
+        }
       }
     );
     
@@ -2198,6 +2288,34 @@ function setupDisplaySetLogging() {
           TotalInstances: study.instances?.length || 0
         });
         
+        // Check if we need to add or update the study date
+        if (!study.StudyDate) {
+          const storedDate = sessionStorage.getItem('xnat_studyDate');
+          if (storedDate) {
+            study.StudyDate = storedDate;
+            console.log('XNAT: Updated study date from sessionStorage:', storedDate);
+          } else {
+            // Set default date if none available
+            const today = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+            study.StudyDate = today;
+            console.log('XNAT: Set default study date:', today);
+          }
+        }
+        
+        // Check if we need to add or update the study time
+        if (!study.StudyTime) {
+          const storedTime = sessionStorage.getItem('xnat_studyTime');
+          if (storedTime) {
+            study.StudyTime = storedTime;
+            console.log('XNAT: Updated study time from sessionStorage:', storedTime);
+          } else {
+            // Set default time if none available
+            const currentTime = new Date().toTimeString().slice(0, 8).replace(/:/g, '');
+            study.StudyTime = currentTime;
+            console.log('XNAT: Set default study time:', currentTime);
+          }
+        }
+        
         // Find out if the core is creating DisplaySets for this study
         setTimeout(() => {
           console.log('XNAT: Checking display sets 1 second after study added');
@@ -2215,4 +2333,23 @@ function setupDisplaySetLogging() {
     );
   }
 }
+
+// Find the retrieveSeriesMetadata function and add code to store the metadata
+const retrieveSeriesMetadata = async ({
+  StudyInstanceUID,
+  filters,
+  sortCriteria,
+  sortFunction,
+  madeInClient = false,
+}): Promise<IDisplaySetService> => {
+  // ... existing code ...
+  
+  // Add this after the study metadata is retrieved but before the displaySets are created
+  if (appConfig?.xnatConfig?.useXNATMetadataInDisplaySets !== false && xnatMetadata) {
+    // Store the XNAT metadata in the app context
+    storeXNATMetadataInAppContext(appContext, xnatMetadata);
+  }
+  
+  // ... rest of existing code ...
+};
 

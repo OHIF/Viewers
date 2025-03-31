@@ -1,0 +1,219 @@
+.icr-help
+  color: var(--text-secondary-color)
+  text-align: left
+  height: 100%
+
+  h3
+    font-weight: bold
+    font-size: 16px
+    color: var(--active-color)
+
+  h5
+    font-weight: 400
+    font-size: 14px
+    color: var(--active-color)
+    border-bottom: 1px solid
+    //width: 30%
+
+  .help-header
+    svg
+      color: var(--active-color)
+      background-color: transparent
+      width: 22px
+      height: 22px
+      fill: var(--active-color)
+      margin-right: 3px
+
+  .help-container
+    height: 100%
+    display: -webkit-flex
+    display: -ms-flexbox
+    display: flex
+    overflow-y: auto
+    overflow-x: hidden
+    flex-direction: row
+    width: 100%
+    padding-right: 18px
+    padding-left: 10px
+    margin-bottom: 10px
+    scrollbar-color: var(--text-primary-color --ui-gray-darkest)
+
+    &::-webkit-scrollbar
+      background: var(--ui-gray-darkest)
+      width: 5px
+
+    &::-webkit-scrollbar-thumb
+      background: var(--text-secondary-color)
+      border-radius: 10px
+
+  .help-content
+    //height: 100%
+    display: -webkit-flex
+    display: -ms-flexbox
+    display: flex
+    flex-direction: row
+    width: 100%
+    padding-right: 18px
+    padding-left: 24px
+    height: 350px
+
+  .help-sub-nav
+    float: left
+    position: -webkit-sticky
+    position: sticky
+    top: 0
+
+    ul
+      list-style-type: none
+      border-bottom: 0
+      margin-bottom: 3px
+      position: relative
+      padding-left: 0px
+      z-index: 1
+
+      :hover
+        cursor: pointer
+
+      li
+        margin-bottom: 5px
+
+        button
+          display: inline-block;
+          padding: 6px 12px;
+          margin-bottom: 0;
+          font-size: 14px;
+          font-weight: 400;
+          line-height: 1.42857143;
+          text-align: center;
+          white-space: nowrap;
+          vertical-align: middle;
+          -ms-touch-action: manipulation;
+          touch-action: manipulation;
+          cursor: pointer;
+          -webkit-user-select: none;
+          -moz-user-select: none;
+          -ms-user-select: none;
+          user-select: none;
+          border: 1px solid transparent;
+          border-radius: 4px;
+          background-color: transparent
+          //background-color: var(--text-secondary-color)
+
+          svg
+            color: var(--active-color)
+            width: 22px
+            height: 22px
+            fill: var(--active-color)
+            margin-right: 3px
+
+          &:hover
+            background-color: transparent
+            border: 1px solid var(--text-secondary-color)
+
+        &.active
+          background-color: var(--active-color)
+          border-radius: 4px;
+
+          svg
+            color: var(--text-primary-color)
+            fill: var(--text-primary-color)
+
+
+
+
+/*
+.help-dialog
+  theme('border', '1px solid $uiBorderColor', 0.95)
+  theme('background', '$uiGrayDarkest', 0.95)
+  theme('color', '$textSecondaryColor')
+  z-index: 1000
+
+  width: 600px
+  max-height: calc(100% - 300px)
+  position: absolute
+  margin: auto
+
+  padding-right: 10px
+  padding-left: 10px
+  padding-top: 5px
+  padding-bottom: 10px
+  border-radius: 8px
+  text-align: center
+
+  .help-nav-bar
+    float: left
+
+  .help-button
+    float: left
+
+  .pressed
+    stroke: #fff
+    color: #fff
+    fill: #fff
+
+  .depressed
+    theme('color', '$textSecondaryColor')
+    theme('stroke', '$textSecondaryColor')
+    theme('fill', '$textSecondaryColor')
+
+  .help-title
+    float: left
+    margin-left: 20px
+
+  h3
+    font-weight: 400
+    top: 50%
+    transform: translateY(-50%)
+
+  .help-dialog-cancel
+    float: right
+
+  li
+    clear: both
+    text-align: left
+
+  h5
+    clear: both
+    text-align: left
+    float: left
+
+  .sub-help-nav-bar
+    float: left
+    clear: both
+
+  .sub-help-button
+    float: left
+
+  .sub-help-title
+    float: left
+    margin-left: 20px
+
+  .sub-help-body
+    height: 200px
+    width: 100%
+    overflow-y: auto
+    overflow-x: hidden
+    theme('scrollbar-color', '$textSecondaryColor $uiGrayDarkest')
+    display: inline-block
+    float: left
+
+
+    &::-webkit-scrollbar
+      them('background', '$uiGrayDarkest')
+      width: 10px
+
+    &::-webkit-scrollbar-thumb
+      theme('background', '$textSecondaryColor')
+      border-radius: 10px
+      theme('border-right', '2px solid $uiGrayDarkest')
+
+  .sub-help-body p
+    clear: both
+    text-align: left
+
+  svg
+    background-color: transparent
+    width: 21px
+    height: 21px
+    fill: white
+*/

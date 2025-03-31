@@ -1,5 +1,6 @@
 import { ToolbarButton as ToolbarButtonLegacy } from '@ohif/ui';
 import { ToolButton, utils } from '@ohif/ui-next';
+import { Types } from '@ohif/core';
 
 import ToolbarLayoutSelectorWithServices from './Toolbar/ToolbarLayoutSelector';
 
@@ -12,6 +13,9 @@ import { ProgressDropdownWithService } from './Components/ProgressDropdownWithSe
 // new
 import ToolButtonListWrapper from './Toolbar/ToolButtonListWrapper';
 import { ToolBoxButtonGroupWrapper, ToolBoxButtonWrapper } from './Toolbar/ToolBoxWrapper';
+
+// Define the withAppTypes interface to match ExtensionParams
+type withAppTypes = Types.Extensions.ExtensionParams;
 
 export default function getToolbarModule({ commandsManager, servicesManager }: withAppTypes) {
   const { cineService } = servicesManager.services;

@@ -1,5 +1,5 @@
 import React from 'react';
-import XNATSubject from './XNATSubject.js';
+import XNATSubject from './XNATSubject';
 
 import '../XNATNavigationPanel.css';
 

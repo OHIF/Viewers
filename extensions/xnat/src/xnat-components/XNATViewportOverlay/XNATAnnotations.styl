@@ -1,0 +1,54 @@
+.AnnotationContainer
+  margin-top: 6px
+
+  .AnnotationSwitch
+    position: relative
+    display: inline-block
+    width: 36px
+    height: 23px
+
+    // Hide default HTML checkbox
+    .AnnotationInput
+      opacity: 0
+      width: 0
+      height: 0
+
+  .AnnotationSlider
+    position: absolute
+    cursor: pointer
+    top: 0
+    left: 0
+    right: 0
+    bottom: 0
+    border-radius: 28px
+    background-color: #bdbdbd
+    -webkit-transition: .2s
+    transition: .2s
+    box-shadow: 1px 1px #000
+    pointer-events: all
+
+    // Slider handle
+    &:before
+      position: absolute;
+      content: ""
+      height: 14px
+      width: 14px
+      left: 5px
+      bottom: 5px
+      border-radius: 50%
+      background-color: white
+      -webkit-transition: .2s
+      transition: .2s
+
+  .AnnotationInput
+    &:checked
+      & + .AnnotationSlider
+        background-color: var(--active-color)
+        &:before
+          -webkit-transform translateX(12px)
+          -ms-transform translateX(12px)
+          transform translateX(12px)
+
+  .AnnotationLabel
+    margin-right: 6px
+    vertical-align: middle

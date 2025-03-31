@@ -10,7 +10,6 @@ export function ensureInstanceRequiredFields(instance: any, series: any): any {
     // First check if it's in the metadata
     if (instance.metadata && instance.metadata.SOPInstanceUID) {
       instance.SOPInstanceUID = instance.metadata.SOPInstanceUID;
-      console.log('XNAT: Using SOPInstanceUID from metadata:', instance.SOPInstanceUID);
     } else {
       // Only generate as a last resort
       instance.SOPInstanceUID = generateRandomUID();

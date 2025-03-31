@@ -4,6 +4,7 @@ import toolbarButtons from './toolbarButtons';
 import { id } from './id';
 import XNATStandaloneRouting from '../../../platform/app/src/routes/XNATStandaloneRouting';
 import SessionRouter from '@ohif/extension-xnat/src/XNATNavigation/helpers/SessionRouter.js';
+import { Types } from '@ohif/core';
 
 const ohif = {
   layout: '@ohif/extension-default.layoutTemplateModule.viewerLayout',
@@ -53,6 +54,11 @@ const dicomPmap = {
 const dicomRT = {
   viewport: '@ohif/extension-cornerstone-dicom-rt.viewportModule.dicom-rt',
   sopClassHandler: '@ohif/extension-cornerstone-dicom-rt.sopClassHandlerModule.dicom-rt',
+};
+
+const xnat = {
+  xnatNavList: '@ohif/extension-xnat.panelModule.xnatNavigation',
+  studyBrowser: '@ohif/extension-xnat.panelModule.xnatStudyBrowser',
 };
 
 const extensionDependencies = {
@@ -145,7 +151,7 @@ function modeFactory({ modeConfiguration }) {
       ]);
       console.log('XNAT Mode Enter - Complete');
     },
-    onModeExit: ({ servicesManager }: withAppTypes) => {
+    onModeExit: ({ servicesManager }) => {
       const {
         toolGroupService,
         syncGroupService,
@@ -189,16 +195,15 @@ function modeFactory({ modeConfiguration }) {
      */
     routes: [
       {
-        path: '',
+        path: '/',
         layoutTemplate: () => {
           return {
             id: ohif.layout,
             props: {
-              leftPanels: [tracked.thumbnailList],
+              leftPanels: [ xnat.studyBrowser, xnat.xnatNavList],
               leftPanelResizable: true,
               rightPanels: [cornerstone.segmentation, tracked.measurements],
               rightPanelClosed: true,
-              rightPanelResizable: true,
               viewports: [
                 {
                   namespace: tracked.viewport,

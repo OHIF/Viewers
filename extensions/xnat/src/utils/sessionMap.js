@@ -25,6 +25,7 @@ const _map = {
     SEG: [],
     MEAS: [],
   },
+  studySessions: {}, // To store session information by StudyInstanceUID
 };
 
 const sessionMap = {
@@ -288,6 +289,37 @@ const sessionMap = {
   hasCreatePermission: () => {
     return _map.permissions.create;
   },
+
+  /**
+   * Adds a session object to the map indexed by StudyInstanceUID
+   * 
+   * @param {string} studyInstanceUID The StudyInstanceUID to associate with the session
+   * @param {object} session The session object to store
+   * @returns {void}
+   */
+  add: (studyInstanceUID, session) => {
+    if (!studyInstanceUID || !session) {
+      console.warn('XNAT: Cannot add session without StudyInstanceUID and session data');
+      return;
+    }
+    
+    _map.studySessions[studyInstanceUID] = session;
+    console.log('XNAT: Added session to sessionMap for StudyInstanceUID:', studyInstanceUID, session);
+  },
+  
+  /**
+   * Gets a session object by StudyInstanceUID
+   * 
+   * @param {string} studyInstanceUID The StudyInstanceUID associated with the session
+   * @returns {object|null} The session object or null if not found
+   */
+  get: (studyInstanceUID) => {
+    if (!studyInstanceUID) {
+      return null;
+    }
+    
+    return _map.studySessions[studyInstanceUID] || null;
+  }
 };
 
 // For debugging purposes

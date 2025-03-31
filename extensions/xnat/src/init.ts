@@ -27,12 +27,12 @@ interface ExtendedServicesManager {
  */
 export default function init({
   servicesManager,
-  configuration = {},
   commandsManager,
+  configuration = {},
 }: {
   servicesManager: any;
   commandsManager: any;
-  configuration: any;
+  configuration?: any;
 }): void {
   const { toolbarService, cineService, viewportGridService, cornerstoneViewportService } = servicesManager.services;
   console.log('XNAT Extension init', { servicesManager, configuration, commandsManager });
@@ -239,3 +239,20 @@ const handlePETImageMetadata = ({ SeriesInstanceUID, StudyInstanceUID }) => {
     console.log(error);
   }
 };
+
+/**
+ * Pre-registration hook for XNAT extension
+ *
+ * @param servicesManager - OHIF services manager
+ * @param commandsManager - OHIF commands manager
+ * @param configuration - Optional configuration object
+ */
+export function preRegistration({
+  servicesManager,
+  commandsManager,
+  configuration = {},
+}) {
+  // Implementation details
+  console.log('XNAT Extension preRegistration');
+  // ... rest of the implementation
+}

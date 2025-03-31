@@ -4,9 +4,18 @@ function requestDisplaySetCreationForStudy(
   StudyInstanceUID,
   madeInClient
 ) {
+  // Debug the call to help identify issues
+  console.log('XNAT: requestDisplaySetCreationForStudy called with:', {
+    dataSource: dataSource ? 'present' : 'missing',
+    displaySetService: displaySetService ? 'present' : 'missing',
+    StudyInstanceUID,
+    madeInClient,
+  });
+
   // Try to get StudyInstanceUID from sessionStorage if it's not provided
   if (!StudyInstanceUID) {
-    const storedUID = sessionStorage.getItem('lastSelectedStudyInstanceUID');
+    // Use xnat_studyInstanceUID instead of lastSelectedStudyInstanceUID
+    const storedUID = sessionStorage.getItem('xnat_studyInstanceUID');
     if (storedUID) {
       console.log(`XNAT: Using StudyInstanceUID from sessionStorage: ${storedUID}`);
       StudyInstanceUID = storedUID;
@@ -16,15 +25,29 @@ function requestDisplaySetCreationForStudy(
     }
   }
 
-  // TODO: is this already short-circuited by the map of Retrieve promises?
-  if (
-    displaySetService.activeDisplaySets.some(
-      displaySet => displaySet.StudyInstanceUID === StudyInstanceUID
-    )
-  ) {
+  // Check if we have the dataSource and displaySetService
+  if (!dataSource || !displaySetService) {
+    console.error('XNAT: Missing required services for display set creation');
+    console.error('   dataSource:', dataSource);
+    console.error('   displaySetService:', displaySetService);
     return;
   }
 
+  // Log the activeDisplaySets to see if we already have display sets for this study
+  console.log('XNAT: Current display sets:', displaySetService.activeDisplaySets.length);
+  
+  // Check if display sets already exist for this study
+  const existingDisplaySets = displaySetService.activeDisplaySets.filter(
+    displaySet => displaySet.StudyInstanceUID === StudyInstanceUID
+  );
+  
+  if (existingDisplaySets.length > 0) {
+    console.log(`XNAT: Study ${StudyInstanceUID} already has ${existingDisplaySets.length} display sets. Not fetching again.`);
+    return;
+  }
+
+  // If we get here, we need to create display sets for this study
+  console.log(`XNAT: Creating display sets for study: ${StudyInstanceUID}`);
   return dataSource.retrieve.series.metadata({ StudyInstanceUID, madeInClient });
 }
 

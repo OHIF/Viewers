@@ -90,6 +90,26 @@ export default class SessionRouter {
           // Store the studyInstanceUID in sessionStorage for recovery
           try {
             sessionStorage.setItem('xnat_studyInstanceUID', studyInstanceUID);
+            
+            // Also store study date and time if available in the session data
+            if (sessionData.date) {
+              sessionStorage.setItem('xnat_studyDate', sessionData.date);
+              console.log('Stored study date in sessionStorage:', sessionData.date);
+            }
+            
+            if (sessionData.time) {
+              sessionStorage.setItem('xnat_studyTime', sessionData.time);
+              console.log('Stored study time in sessionStorage:', sessionData.time);
+            } else if (sessionData.insert_date) {
+              // Try to extract time from insert_date if time is not available
+              const timeMatch = sessionData.insert_date.match(/\d{2}:\d{2}:\d{2}/);
+              if (timeMatch) {
+                const formattedTime = timeMatch[0].replace(/:/g, '');
+                sessionStorage.setItem('xnat_studyTime', formattedTime);
+                console.log('Stored study time from insert_date in sessionStorage:', formattedTime);
+              }
+            }
+            
             console.log('Stored studyInstanceUID in sessionStorage');
           } catch (e) {
             console.warn('Failed to store studyInstanceUID in sessionStorage:', e);
@@ -271,6 +291,9 @@ export default class SessionRouter {
               AccessionNumber: this.experimentId,
               StudyID: this.experimentId,
               StudyDescription: this.experimentLabel || this.experimentId,
+              // Add study date and time from a cached data object or stored in sessionStorage
+              StudyDate: sessionStorage.getItem('xnat_studyDate') || new Date().toISOString().slice(0, 10).replace(/-/g, ''),
+              StudyTime: sessionStorage.getItem('xnat_studyTime') || new Date().toTimeString().slice(0, 8).replace(/:/g, ''),
               NumInstances: 0,
               // Add server details directly in the study object
               wadoRoot: basePath,

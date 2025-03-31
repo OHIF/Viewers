@@ -16,16 +16,35 @@ function mapXNATMetadataForDisplay(studies) {
   }
 
   return studies.map(study => {
+    // Get current date if needed for defaults
+    const today = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+    const currentTime = new Date().toTimeString().slice(0, 8).replace(/:/g, '');
+
     // Ensure key fields exist with proper formatting
     const patientName = study.PatientName || 'No Name';
     const patientId = study.PatientID || '';
     const accessionNumber = study.AccessionNumber || '';
+    
+    // Set a default date if missing
+    if (!study.StudyDate) {
+      console.log('XNAT: Setting default study date as none was provided');
+      study.StudyDate = today;
+    }
+    
     const studyDate = study.StudyDate 
       ? utils.formatDate(study.StudyDate) 
-      : 'No Study Date';
+      : utils.formatDate(today);
+      
+    // Set a default time if missing
+    if (!study.StudyTime) {
+      console.log('XNAT: Setting default study time as none was provided');
+      study.StudyTime = currentTime;
+    }
+    
     const studyTime = study.StudyTime 
       ? utils.formatTime(study.StudyTime) 
-      : '';
+      : utils.formatTime(currentTime);
+      
     const modalities = study.Modalities || study.ModalitiesInStudy || '';
     const studyDescription = study.StudyDescription || 'No Description';
 

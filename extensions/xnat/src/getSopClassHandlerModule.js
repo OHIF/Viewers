@@ -64,6 +64,16 @@ const makeDisplaySet = instances => {
   const instance = instances[0];
   const imageSet = new ImageSet(instances);
 
+  console.log('XNAT: Making Display Set, first instance:', {
+    StudyInstanceUID: instance.StudyInstanceUID,
+    SeriesInstanceUID: instance.SeriesInstanceUID,
+    SeriesDescription: instance.SeriesDescription,
+    SeriesDate: instance.SeriesDate,
+    SeriesTime: instance.SeriesTime,
+    Modality: instance.Modality,
+    metadata: instance.metadata ? 'present' : 'missing'
+  });
+
   const {
     isDynamicVolume,
     value: isReconstructable,
@@ -77,19 +87,88 @@ const makeDisplaySet = instances => {
 
   // set appropriate attributes to image set...
   const messages = getDisplaySetMessages(instances, isReconstructable, isDynamicVolume);
+  
+  // Extract the relevant UIDs to look up metadata
+  const StudyInstanceUID = instance.StudyInstanceUID;
+  const SeriesInstanceUID = instance.SeriesInstanceUID;
+  
+  // Try to get metadata from AppContext if available
+  let seriesMetadata = null;
+  let studyMetadata = null;
+  
+  // First check if appContext has services available (it should)
+  if (appContext.servicesManager && appContext.servicesManager.services) {
+    const { AppContext } = appContext.servicesManager.services;
+    
+    if (AppContext && AppContext.xnatSeriesMetadata) {
+      // Look for the study
+      studyMetadata = AppContext.xnatSeriesMetadata[StudyInstanceUID];
+      
+      // If we have the study, look for the specific series
+      if (studyMetadata && Array.isArray(studyMetadata.series)) {
+        seriesMetadata = studyMetadata.series.find(
+          s => s.SeriesInstanceUID === SeriesInstanceUID
+        );
+        
+        if (seriesMetadata) {
+          console.log(`XNAT: Using XNAT metadata for display set creation for series ${SeriesInstanceUID}:`, seriesMetadata);
+        }
+      }
+    }
+  }
+  
+  // If no XNAT metadata but instance has metadata, check instance.metadata for any missing fields
+  if (!seriesMetadata && instance.metadata) {
+    console.log('XNAT: No XNAT metadata found, checking instance.metadata');
+    
+    // Check if we can get series metadata from the instance metadata
+    if (!instance.SeriesDate && instance.metadata.SeriesDate) {
+      console.log('XNAT: Using SeriesDate from instance.metadata');
+      instance.SeriesDate = instance.metadata.SeriesDate;
+    }
+    
+    if (!instance.SeriesTime && instance.metadata.SeriesTime) {
+      console.log('XNAT: Using SeriesTime from instance.metadata');
+      instance.SeriesTime = instance.metadata.SeriesTime;
+    }
+    
+    if (!instance.SeriesDescription && instance.metadata.SeriesDescription) {
+      console.log('XNAT: Using SeriesDescription from instance.metadata');
+      instance.SeriesDescription = instance.metadata.SeriesDescription;
+    }
+    
+    if (!instance.Modality && instance.metadata.Modality) {
+      console.log('XNAT: Using Modality from instance.metadata');
+      instance.Modality = instance.metadata.Modality;
+    }
+    
+    if (!instance.SeriesNumber && instance.metadata.SeriesNumber) {
+      console.log('XNAT: Using SeriesNumber from instance.metadata');
+      instance.SeriesNumber = instance.metadata.SeriesNumber;
+    }
+  }
 
-  imageSet.setAttributes({
+  // Set attributes with preference for XNAT metadata over instance metadata
+  const attributesToSet = {
     volumeLoaderSchema,
     displaySetInstanceUID: imageSet.uid, // create a local alias for the imageSet UID
-    SeriesDate: instance.SeriesDate,
-    SeriesTime: instance.SeriesTime,
+    // Use XNAT metadata if available, fallback to instance metadata
+    SeriesDate: seriesMetadata?.SeriesDate || instance.SeriesDate,
+    SeriesTime: seriesMetadata?.SeriesTime || instance.SeriesTime,
     SeriesInstanceUID: instance.SeriesInstanceUID,
     StudyInstanceUID: instance.StudyInstanceUID,
-    SeriesNumber: instance.SeriesNumber || 0,
+    SeriesNumber: seriesMetadata?.SeriesNumber || instance.SeriesNumber || 0,
     FrameRate: instance.FrameTime,
     SOPClassUID: instance.SOPClassUID,
-    SeriesDescription: instance.SeriesDescription || '',
-    Modality: instance.Modality,
+    SeriesDescription: seriesMetadata?.SeriesDescription || instance.SeriesDescription || '',
+    Modality: seriesMetadata?.Modality || instance.Modality,
+    // Additional study information if available from XNAT
+    PatientID: seriesMetadata?.PatientID || studyMetadata?.PatientID,
+    PatientName: seriesMetadata?.PatientName || studyMetadata?.PatientName,
+    StudyDate: seriesMetadata?.StudyDate || studyMetadata?.StudyDate,
+    StudyTime: seriesMetadata?.StudyTime || studyMetadata?.StudyTime,
+    StudyDescription: seriesMetadata?.StudyDescription || studyMetadata?.StudyDescription || 'No Description',
+    // Technical display set properties
     isMultiFrame: isMultiFrame(instance),
     countIcon: isReconstructable ? 'icon-mpr' : undefined,
     numImageFrames: instances.length,
@@ -99,7 +178,11 @@ const makeDisplaySet = instances => {
     averageSpacingBetweenFrames: averageSpacingBetweenFrames || null,
     isDynamicVolume,
     dynamicVolumeInfo,
-  });
+  };
+  
+  console.log('XNAT: Setting display set attributes:', attributesToSet);
+  
+  imageSet.setAttributes(attributesToSet);
 
   // Sort the images in this series if needed
   const shallSort = true; //!OHIF.utils.ObjectPath.get(Meteor, 'settings.public.ui.sortSeriesByIncomingOrder');
@@ -109,22 +192,6 @@ const makeDisplaySet = instances => {
       return (parseInt(a.InstanceNumber) || 0) - (parseInt(b.InstanceNumber) || 0);
     });
   }
-
-  // Include the first image instance number (after sorted)
-  /*imageSet.setAttribute(
-    'instanceNumber',
-    imageSet.getImage(0).InstanceNumber
-  );*/
-
-  /*const isReconstructable = isDisplaySetReconstructable(series, instances);
-
-  imageSet.isReconstructable = isReconstructable.value;
-
-  if (isReconstructable.missingFrames) {
-    // TODO -> This is currently unused, but may be used for reconstructing
-    // Volumes with gaps later on.
-    imageSet.missingFrames = isReconstructable.missingFrames;
-  }*/
 
   return imageSet;
 };

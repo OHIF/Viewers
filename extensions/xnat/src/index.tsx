@@ -21,6 +21,11 @@ import { useHangingProtocolStageIndexStore } from './stores/useHangingProtocolSt
 import { useToggleHangingProtocolStore } from './stores/useToggleHangingProtocolStore';
 import ViewportGrid from '@ohif/ui/src/components/ViewportGrid';
 
+// Export the study browser components
+import { XNATStudyBrowser } from './xnat-components/XNATStudyBrowser/XNATStudyBrowser';
+import { XNATStudyItem } from './xnat-components/XNATStudyBrowser/XNATStudyItem';
+import { XNATThumbnail } from './xnat-components/XNATStudyBrowser/XNATThumbnail';
+
 const xnatExtension: Types.Extensions.Extension = {
   /**
    * Only required property. Should be a unique value across all extensions.
@@ -76,4 +81,8 @@ export {
 } from './utils/index.js';
 
 export { sessionMap, fetchCSRFToken };
+
+// Export the study browser components
+export { XNATStudyBrowser, XNATStudyItem, XNATThumbnail };
+
 export default xnatExtension;
