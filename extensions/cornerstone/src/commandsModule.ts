@@ -1559,15 +1559,27 @@ function commandsModule({
     },
     acceptPreview: () => {
       const labelmapTools = getLabelmapTools({ toolGroupService });
-      labelmapTools.forEach(tool => {
+      const { viewport } = _getActiveViewportEnabledElement();
+      const activeTools = labelmapTools.filter(tool => tool.mode === 'Active');
+      activeTools.forEach(tool => {
         tool.acceptPreview();
       });
+
+      if (segmentAI.enabled) {
+        segmentAI.acceptPreview(viewport.element);
+      }
     },
     rejectPreview: () => {
       const labelmapTools = getLabelmapTools({ toolGroupService });
-      labelmapTools.forEach(tool => {
+      const { viewport } = _getActiveViewportEnabledElement();
+      const activeTools = labelmapTools.filter(tool => tool.mode === 'Active');
+      activeTools.forEach(tool => {
         tool.rejectPreview();
       });
+
+      if (segmentAI.enabled) {
+        segmentAI.rejectPreview(viewport.element);
+      }
     },
     toggleLabelmapAssist: async () => {
       const { viewport } = _getActiveViewportEnabledElement();
@@ -1583,13 +1595,13 @@ function commandsModule({
       const toolGroupIds = toolGroupService.getToolGroupIds();
       if (newState) {
         actions.setToolActiveToolbar({
-          toolName: 'CircularBrush',
+          toolName: 'CircularBrushForAutoSegmentAI',
           toolGroupIds: toolGroupIds,
         });
       } else {
         toolGroupIds.forEach(toolGroupId => {
           const toolGroup = cornerstoneTools.ToolGroupManager.getToolGroup(toolGroupId);
-          toolGroup.setToolPassive('CircularBrush');
+          toolGroup.setToolPassive('CircularBrushForAutoSegmentAI');
         });
       }
 

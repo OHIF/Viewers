@@ -102,7 +102,7 @@ module.exports = (env, argv) => {
           },
           {
             from: '../../../node_modules/onnxruntime-web/dist',
-            to: DIST_DIR,
+            to: `${DIST_DIR}/ort`,
           },
           // Short term solution to make sure GCloud config is available in output
           // for our docker implementation
