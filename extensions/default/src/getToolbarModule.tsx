@@ -13,6 +13,8 @@ import { ProgressDropdownWithService } from './Components/ProgressDropdownWithSe
 import ToolButtonListWrapper from './Toolbar/ToolButtonListWrapper';
 import { ToolBoxButtonGroupWrapper, ToolBoxButtonWrapper } from './Toolbar/ToolBoxWrapper';
 
+const toggleStates = new Map();
+
 export default function getToolbarModule({ commandsManager, servicesManager }: withAppTypes) {
   const { cineService } = servicesManager.services;
   return [
@@ -66,6 +68,22 @@ export default function getToolbarModule({ commandsManager, servicesManager }: w
         const isToggled = cineService.getState().isCineEnabled;
         return {
           className: utils.getToggledClassName(isToggled),
+        };
+      },
+    },
+    {
+      name: 'evaluate.toggle',
+      evaluate: ({ button }) => {
+        const { id } = button;
+
+        const currentState = toggleStates.get(id);
+        const newState = !currentState;
+        toggleStates.set(id, newState);
+
+        const className = utils.getToggledClassName(newState);
+
+        return {
+          className,
         };
       },
     },

@@ -16,6 +16,7 @@ import {
 } from '@cornerstonejs/tools';
 import * as cornerstoneTools from '@cornerstonejs/tools';
 import * as labelmapInterpolation from '@cornerstonejs/labelmap-interpolation';
+import { ONNXSegmentationController } from '@cornerstonejs/ai';
 
 import { Types as OhifTypes, utils } from '@ohif/core';
 import i18n from '@ohif/i18n';
@@ -58,6 +59,28 @@ const getLabelmapTools = ({ toolGroupService }) => {
   });
   return labelmapTools;
 };
+
+const segmentAI = new ONNXSegmentationController({
+  autoSegmentMode: true,
+  models: {
+    sam_b: [
+      {
+        name: 'sam-b-encoder',
+        url: 'https://huggingface.co/schmuell/sam-b-fp16/resolve/main/sam_vit_b_01ec64.encoder-fp16.onnx',
+        size: 180,
+        key: 'encoder',
+      },
+      {
+        name: 'sam-b-decoder',
+        url: 'https://huggingface.co/schmuell/sam-b-fp16/resolve/main/sam_vit_b_01ec64.decoder.onnx',
+        size: 17,
+        key: 'decoder',
+      },
+    ],
+  },
+  modelName: 'sam_b',
+});
+let segmentAIEnabled = false;
 
 function commandsModule({
   servicesManager,
@@ -1546,6 +1569,34 @@ function commandsModule({
         tool.rejectPreview();
       });
     },
+    toggleLabelmapAssist: async () => {
+      const { viewport } = _getActiveViewportEnabledElement();
+      const newState = !segmentAI.enabled;
+      segmentAI.enabled = newState;
+
+      if (!segmentAIEnabled) {
+        await segmentAI.initModel();
+        segmentAIEnabled = true;
+      }
+
+      // set the brush tool to active
+      const toolGroupIds = toolGroupService.getToolGroupIds();
+      if (newState) {
+        actions.setToolActiveToolbar({
+          toolName: 'CircularBrush',
+          toolGroupIds: toolGroupIds,
+        });
+      } else {
+        toolGroupIds.forEach(toolGroupId => {
+          const toolGroup = cornerstoneTools.ToolGroupManager.getToolGroup(toolGroupId);
+          toolGroup.setToolPassive('CircularBrush');
+        });
+      }
+
+      if (segmentAI.enabled) {
+        segmentAI.initViewport(viewport);
+      }
+    },
   };
 
   const definitions = {
@@ -1816,6 +1867,7 @@ function commandsModule({
     acceptPreview: actions.acceptPreview,
     rejectPreview: actions.rejectPreview,
     toggleUseCenterSegmentIndex: actions.toggleUseCenterSegmentIndex,
+    toggleLabelmapAssist: actions.toggleLabelmapAssist,
   };
 
   return {

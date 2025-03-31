@@ -12,7 +12,6 @@ export default function getToolbarModule({ commandsManager, servicesManager }: w
     toolbarService,
     syncGroupService,
     cornerstoneViewportService,
-    hangingProtocolService,
     displaySetService,
     viewportGridService,
   } = servicesManager.services;

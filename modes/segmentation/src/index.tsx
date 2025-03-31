@@ -92,6 +92,7 @@ function modeFactory({ modeConfiguration }) {
         'SegmentationTools',
       ]);
       toolbarService.createButtonSection('segmentationToolboxUtilitySection', [
+        'LabelmapAssist',
         'InterpolateLabelmap',
         'SegmentBidirectional',
       ]);

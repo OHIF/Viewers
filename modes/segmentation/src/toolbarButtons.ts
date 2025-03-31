@@ -323,6 +323,23 @@ const toolbarButtons: Button[] = [
     },
   },
   {
+    id: 'LabelmapAssist',
+    uiType: 'ohif.toolBoxButton',
+    props: {
+      icon: 'icon-tool-labelmap-assist',
+      label: 'Labelmap Assist',
+      tooltip: 'Labelmap Assist Based on Previous / Next Slice Data',
+      evaluate: [
+        'evaluate.toggle',
+        {
+          name: 'evaluate.cornerstone.segmentation',
+          disabledText: 'Create new segmentation to enable this tool.',
+        },
+      ],
+      commands: 'toggleLabelmapAssist',
+    },
+  },
+  {
     id: 'Eraser',
     uiType: 'ohif.toolBoxButton',
     props: {
