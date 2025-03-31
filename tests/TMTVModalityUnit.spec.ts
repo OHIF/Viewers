@@ -9,7 +9,7 @@ import {
 test.skip('pets where SUV cannot be calculated should show same unit in TMTV as in Basic Viewer.', async ({
   page,
 }) => {
-  const studyInstanceUID = '1.3.6.1.4.1.14519.5.2.1.7009.2403.871108593056125491804754960339';
+  const studyInstanceUID = '1.2.840.113619.2.290.3.3767434740.226.1600859119.501';
   const mode = 'tmtv';
   await visitStudy(page, studyInstanceUID, mode, 10000);
 
@@ -18,7 +18,7 @@ test.skip('pets where SUV cannot be calculated should show same unit in TMTV as 
 
   // Change to image where SUV cannot be calculated
   await page.getByTestId('viewport-grid').locator('canvas').nth(3).click();
-  await page.getByRole('button', { name: 'PT PET NAC' }).nth(1).dblclick();
+  await page.getByRole('button', { name: 'NAC' }).nth(1).dblclick();
 
   // Wait for the new series to load
   await page.waitForLoadState('networkidle');
