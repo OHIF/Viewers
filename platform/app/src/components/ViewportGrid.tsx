@@ -275,6 +275,20 @@ function ViewerViewportGrid(props: withAppTypes) {
 
   // Store previous isReferenceViewable values to avoid infinite loops
   const prevReferenceViewableMap = useRef(new Map());
+  // Track viewports that need isReferenceViewable updates
+  const viewportsToUpdate = useRef(new Map());
+
+  // Apply isReferenceViewable updates in an effect, not during render
+  useEffect(() => {
+    const updates = viewportsToUpdate.current;
+    if (updates.size > 0) {
+      updates.forEach((isReferenceViewable, viewportId) => {
+        viewportGridService.setIsReferenceViewable(viewportId, isReferenceViewable);
+        prevReferenceViewableMap.current.set(viewportId, isReferenceViewable);
+      });
+      viewportsToUpdate.current.clear();
+    }
+  });
 
   const getViewportPanes = useCallback(() => {
     const viewportPanes = [];
@@ -313,7 +327,7 @@ function ViewerViewportGrid(props: withAppTypes) {
         uiNotificationService
       );
 
-      // Only update isReferenceViewable if it's changed to avoid render loops
+      // Only queue isReferenceViewable updates if it's changed to avoid render loops
       // We need to handle both function and non-function values
       if (viewportId) {
         const prevValue = prevReferenceViewableMap.current.get(viewportId);
@@ -323,8 +337,8 @@ function ViewerViewportGrid(props: withAppTypes) {
         // For non-functions, compare directly. For functions, we treat them as always different
         // (this is conservative but safe)
         if (!isSameFunction && prevValue !== isReferenceViewable) {
-          viewportGridService.setIsReferenceViewable(viewportId, isReferenceViewable);
-          prevReferenceViewableMap.current.set(viewportId, isReferenceViewable);
+          // Queue the update instead of doing it during render
+          viewportsToUpdate.current.set(viewportId, isReferenceViewable);
         }
       }
 

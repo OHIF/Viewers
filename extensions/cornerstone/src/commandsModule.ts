@@ -155,6 +155,8 @@ function commandsModule({
           }
         );
 
+        measurement.annotationUID = annotation.annotationUID;
+
         // Update segmentation stats
         const updatedSegmentation = updateSegmentBidirectionalStats({
           segmentationId: targetId,
@@ -171,6 +173,15 @@ function commandsModule({
             segments: updatedSegmentation.segments,
           });
         }
+      });
+
+      // get the active segmentIndex bidirectional annotation and jump to it
+      const activeBidirectional = bidirectionalData.find(
+        measurement => measurement.segmentIndex === targetIndex
+      );
+      debugger;
+      commandsManager.run('jumpToMeasurement', {
+        uid: activeBidirectional.annotationUID,
       });
     },
     interpolateLabelmap: () => {
