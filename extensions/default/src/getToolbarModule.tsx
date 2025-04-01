@@ -13,8 +13,6 @@ import { ProgressDropdownWithService } from './Components/ProgressDropdownWithSe
 import ToolButtonListWrapper from './Toolbar/ToolButtonListWrapper';
 import { ToolBoxButtonGroupWrapper, ToolBoxButtonWrapper } from './Toolbar/ToolBoxWrapper';
 
-const toggleStates = new Map();
-
 export default function getToolbarModule({ commandsManager, servicesManager }: withAppTypes) {
   const { cineService } = servicesManager.services;
   return [
