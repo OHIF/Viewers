@@ -288,6 +288,29 @@ window.config = {
         },
       },
     },
+    {
+      namespace: '@ohif/extension-default.dataSourcesModule.dicomweb',
+      sourceName: 'CLOUD_QA',
+      configuration: {
+        friendlyName: 'cloud-qa-didier',
+        name: 'cloud-qa-didier',
+        wadoUriRoot: 'https://cloud-qa.deemea.com/didier',
+        qidoRoot: 'https://cloud-qa.deemea.com/didier',
+        wadoRoot: 'https://cloud-qa.deemea.com/didier',
+        qidoSupportsIncludeField: true,
+        supportsReject: true,
+        imageRendering: 'wadors',
+        thumbnailRendering: 'wadors',
+        enableStudyLazyLoad: true,
+        supportsFuzzyMatching: true,
+        supportsWildcard: true,
+        dicomUploadEnabled: true,
+        omitQuotationForMultipartRequest: true,
+        bulkDataURI: {
+          enabled: true,
+        },
+      },
+    },
   ],
   httpErrorHandler: error => {
     // This is 429 when rejected from the public idc sandbox too often.
