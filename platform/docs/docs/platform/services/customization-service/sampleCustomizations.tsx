@@ -1515,7 +1515,11 @@ window.config = {
                 });
             }
 
-            viewportGridService.setDisplaySetsForViewports(updatedViewports);
+            commandsManager.run({
+              commandName: 'setDisplaySetsForViewports',
+              commandOptions: { viewportsToUpdate: updatedViewports },
+              context: 'CORNERSTONE',
+            });
         },
 }`,
     configuration: `
@@ -1560,7 +1564,11 @@ window.config = {
                             duration: 3000,
                         });
                     }
-                    viewportGridService.setDisplaySetsForViewports(updatedViewports);
+                  commandsManager.run({
+                    commandName: 'setDisplaySetsForViewports',
+                    commandOptions: { viewportsToUpdate: updatedViewports },
+                    context: 'CORNERSTONE',
+                  });
                 };
         },
     }],

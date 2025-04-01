@@ -247,7 +247,12 @@ function ViewerViewportGrid(props: withAppTypes) {
         });
 
         event.consume();
-        viewportGridService.setDisplaySetsForViewports(updatedViewports);
+
+        commandsManager.run({
+          commandName: 'setDisplaySetsForViewports',
+          commandOptions: { viewportsToUpdate: updatedViewports },
+          context: 'CORNERSTONE',
+        });
       }
     );
 
@@ -268,7 +273,12 @@ function ViewerViewportGrid(props: withAppTypes) {
     dropHandlerPromise.then(({ handled }) => {
       if (!handled) {
         const updatedViewports = _getUpdatedViewports(viewportId, displaySetInstanceUID);
-        viewportGridService.setDisplaySetsForViewports(updatedViewports);
+
+        commandsManager.run({
+          commandName: 'setDisplaySetsForViewports',
+          commandOptions: { viewportsToUpdate: updatedViewports },
+          context: 'CORNERSTONE',
+        });
       }
     });
   };

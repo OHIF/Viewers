@@ -547,7 +547,6 @@ function commandsModule({
       });
       viewport.render();
     },
-
     toggleViewportColorbar: ({ viewportId, displaySetInstanceUIDs, options = {} }) => {
       const hasColorbar = colorbarService.hasColorbar(viewportId);
       if (hasColorbar) {
@@ -556,7 +555,6 @@ function commandsModule({
       }
       colorbarService.addColorbar(viewportId, displaySetInstanceUIDs, options);
     },
-
     setWindowLevel(props) {
       const { toolGroupId } = props;
       const { viewportId } = _getActiveViewportEnabledElement();
@@ -1496,6 +1494,22 @@ function commandsModule({
         measurementService.remove(activeAnnotationUID);
       });
     },
+    setDisplaySetsForViewports: ({ viewportsToUpdate }) => {
+      const { cineService, viewportGridService } = servicesManager.services;
+      // Stopping the cine of modified viewports before changing the viewports to
+      // avoid inconsistent state and lost references
+      viewportsToUpdate.forEach(viewport => {
+        const state = cineService.getState();
+        const currentCineState = state.cines?.[viewport.viewportId];
+        cineService.setCine({
+          id: viewport.viewportId,
+          frameRate: currentCineState?.frameRate ?? state.default.frameRate,
+          isPlaying: false,
+        });
+      });
+
+      viewportGridService.setDisplaySetsForViewports(viewportsToUpdate);
+    },
     undo: () => {
       DefaultHistoryMemo.undo();
     },
@@ -1797,6 +1811,7 @@ function commandsModule({
     deleteActiveAnnotation: {
       commandFn: actions.deleteActiveAnnotation,
     },
+    setDisplaySetsForViewports: actions.setDisplaySetsForViewports,
     undo: actions.undo,
     redo: actions.redo,
     interpolateLabelmap: actions.interpolateLabelmap,

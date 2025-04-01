@@ -622,7 +622,11 @@ const commandsModule = ({
         });
       }
 
-      viewportGridService.setDisplaySetsForViewports(updatedViewports);
+      commandsManager.run({
+        commandName: 'setDisplaySetsForViewports',
+        commandOptions: { viewportsToUpdate: updatedViewports },
+        context: 'CORNERSTONE',
+      });
 
       setTimeout(() => actions.scrollActiveThumbnailIntoView(), 0);
     },

@@ -119,7 +119,11 @@ export default function PanelStudyBrowserTracking({
       });
     }
 
-    viewportGridService.setDisplaySetsForViewports(updatedViewports);
+    commandsManager.run({
+      commandName: 'setDisplaySetsForViewports',
+      commandOptions: { viewportsToUpdate: updatedViewports },
+      context: 'CORNERSTONE',
+    });
   };
 
   const activeViewportDisplaySetInstanceUIDs =
