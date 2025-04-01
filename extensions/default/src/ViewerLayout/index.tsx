@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
 import PropTypes from 'prop-types';
 
 import { InvestigationalUseDialog } from '@ohif/ui';
@@ -54,6 +54,18 @@ function ViewerLayout({
     rightPanelClosed,
     setRightPanelClosed
   );
+
+  const leftPanelRef = useRef<HTMLDivElement>(null);
+  const rightPanelRef = useRef<HTMLDivElement>(null);
+
+  const handleMouseEnter = () => {
+    if (
+      leftPanelRef.current?.contains(document.activeElement) ||
+      rightPanelRef.current?.contains(document.activeElement)
+    ) {
+      (document.activeElement as HTMLElement)?.blur();
+    }
+  };
 
   const LoadingIndicatorProgress = customizationService.getCustomization(
     'ui.loadingIndicatorProgress'
@@ -150,16 +162,17 @@ function ViewerLayout({
           {showLoadingIndicator && <LoadingIndicatorProgress className="h-full w-full bg-black" />}
           <ResizablePanelGroup {...resizablePanelGroupProps}>
             {/* LEFT SIDEPANELS */}
-
             {hasLeftPanels ? (
               <>
                 <ResizablePanel {...resizableLeftPanelProps}>
-                  <SidePanelWithServices
-                    side="left"
-                    isExpanded={!leftPanelClosedState}
-                    servicesManager={servicesManager}
-                    {...leftPanelProps}
-                  />
+                  <div ref={leftPanelRef}>
+                    <SidePanelWithServices
+                      side="left"
+                      isExpanded={!leftPanelClosedState}
+                      servicesManager={servicesManager}
+                      {...leftPanelProps}
+                    />
+                  </div>
                 </ResizablePanel>
                 <ResizableHandle
                   onDragging={onHandleDragging}
@@ -171,7 +184,10 @@ function ViewerLayout({
             {/* TOOLBAR + GRID */}
             <ResizablePanel {...resizableViewportGridPanelProps}>
               <div className="flex h-full flex-1 flex-col">
-                <div className="relative flex h-full flex-1 items-center justify-center overflow-hidden bg-black">
+                <div
+                  className="relative flex h-full flex-1 items-center justify-center overflow-hidden bg-black"
+                  onMouseEnter={handleMouseEnter}
+                >
                   <ViewportGridComp
                     servicesManager={servicesManager}
                     viewportComponents={viewportComponents}
@@ -188,12 +204,14 @@ function ViewerLayout({
                   className={resizableHandleClassName}
                 />
                 <ResizablePanel {...resizableRightPanelProps}>
-                  <SidePanelWithServices
-                    side="right"
-                    isExpanded={!rightPanelClosedState}
-                    servicesManager={servicesManager}
-                    {...rightPanelProps}
-                  />
+                  <div ref={rightPanelRef}>
+                    <SidePanelWithServices
+                      side="right"
+                      isExpanded={!rightPanelClosedState}
+                      servicesManager={servicesManager}
+                      {...rightPanelProps}
+                    />
+                  </div>
                 </ResizablePanel>
               </>
             ) : null}

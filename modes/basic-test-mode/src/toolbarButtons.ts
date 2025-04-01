@@ -42,8 +42,10 @@ export const setToolActiveToolbar = {
 
 const ReferenceLinesListeners = [
   {
-    commandName: 'setSourceViewportForReferenceLinesTool',
-    context: 'CORNERSTONE',
+    commandName: 'setViewportForToolConfiguration',
+    commandOptions: {
+      toolName: 'ReferenceLines',
+    },
   },
 ];
 
