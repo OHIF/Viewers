@@ -132,6 +132,7 @@ import {
   ToolSegmentAnything,
   ToolContract,
   ToolExpand,
+  ToolClickSegment,
 } from './Sources/Tools';
 import ActionNewDialog from './Sources/ActionNewDialog';
 import NotificationInfo from './Sources/NotificationInfo';
@@ -600,6 +601,7 @@ export const Icons = {
   'icon-labelmap-slice-propagation': (props: IconProps) => ToolLabelmapAssist(props),
   'icon-marker-labelmap': (props: IconProps) => ToolSegmentAnything(props),
   'icon-tool-threshold': (props: IconProps) => ToolThreshold(props),
+  'icon-tool-click-segment': (props: IconProps) => ToolClickSegment(props),
   'icon-tool-pet-segment': (props: IconProps) => ToolPETSegment(props),
   'icon-tool-interpolation': (props: IconProps) => ToolInterpolation(props),
   'icon-tool-bidirectional-segment': (props: IconProps) => ToolBidirectionalSegment(props),

@@ -34,6 +34,9 @@ function createTools(utilityModule) {
         toolName: toolNames.MarkerLabelmap,
       },
       {
+        toolName: toolNames.RegionSegmentPlus,
+      },
+      {
         toolName: 'CircularEraser',
         parentTool: 'Brush',
         configuration: {

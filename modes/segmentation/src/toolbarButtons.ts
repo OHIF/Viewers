@@ -333,6 +333,21 @@ const toolbarButtons: Button[] = [
     },
   },
   {
+    id: 'RegionSegmentPlus',
+    uiType: 'ohif.toolBoxButton',
+    props: {
+      icon: 'icon-tool-click-segment',
+      label: 'One Click Segment',
+      tooltip: 'One Click Segment',
+      evaluate: {
+        name: 'evaluate.cornerstone.segmentation',
+        toolNames: ['RegionSegmentPlus'],
+        disabledText: 'Create new segmentation to enable this tool.',
+      },
+      commands: 'setToolActiveToolbar',
+    },
+  },
+  {
     id: 'LabelmapSlicePropagation',
     uiType: 'ohif.toolBoxButton',
     props: {
