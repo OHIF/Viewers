@@ -4,7 +4,6 @@ import {
   VolumeViewport,
   utilities as csUtils,
   Types as CoreTypes,
-  cache,
   BaseVolumeViewport,
 } from '@cornerstonejs/core';
 import {
@@ -13,6 +12,7 @@ import {
   utilities as cstUtils,
   ReferenceLinesTool,
   annotation,
+  Types as ToolTypes,
 } from '@cornerstonejs/tools';
 import * as cornerstoneTools from '@cornerstonejs/tools';
 import * as labelmapInterpolation from '@cornerstonejs/labelmap-interpolation';
@@ -35,10 +35,28 @@ import { toolNames } from './initCornerstoneTools';
 import CornerstoneViewportDownloadForm from './utils/CornerstoneViewportDownloadForm';
 import { updateSegmentBidirectionalStats } from './utils/updateSegmentationStats';
 import { generateSegmentationCSVReport } from './utils/generateSegmentationCSVReport';
+
 const { DefaultHistoryMemo } = csUtils.HistoryMemo;
 const toggleSyncFunctions = {
   imageSlice: toggleImageSliceSync,
   voi: toggleVOISliceSync,
+};
+
+const getLabelmapTools = ({ toolGroupService }) => {
+  const labelmapTools = [];
+  const toolGroupIds = toolGroupService.getToolGroupIds();
+  toolGroupIds.forEach(toolGroupId => {
+    const toolGroup = cornerstoneTools.ToolGroupManager.getToolGroup(toolGroupId);
+    const tools = toolGroup.getToolInstances();
+    // tools is an object with toolName as the key and tool as the value
+    Object.keys(tools).forEach(toolName => {
+      const tool = tools[toolName];
+      if (tool instanceof cornerstoneTools.LabelmapBaseTool) {
+        labelmapTools.push(tool);
+      }
+    });
+  });
+  return labelmapTools;
 };
 
 function commandsModule({
@@ -60,8 +78,6 @@ function commandsModule({
     segmentationService,
     displaySetService,
   } = servicesManager.services as AppTypes.Services;
-
-  const { measurementServiceSource } = this;
 
   function _getActiveViewportEnabledElement() {
     return getActiveViewportEnabledElement(viewportGridService);
@@ -199,6 +215,7 @@ function commandsModule({
       viewportId,
       displaySetInstanceUID,
       referencedImageId,
+      options,
     }) => {
       const presentations = cornerstoneViewportService.getPresentations(viewportId);
       const { positionPresentationStore, setPositionPresentation, getPositionPresentationId } =
@@ -210,16 +227,18 @@ function commandsModule({
         ([key, value]) => key.includes(displaySetInstanceUID) && value.viewportId === viewportId
       )?.[0];
 
-      if (previousReferencedDisplaySetStoreKey) {
-        const presentationData = referencedImageId
-          ? {
-              ...presentations.positionPresentation,
-              viewReference: {
-                referencedImageId,
-              },
-            }
-          : presentations.positionPresentation;
+      // Create presentation data with referencedImageId and options if provided
+      const presentationData = referencedImageId
+        ? {
+            ...presentations.positionPresentation,
+            viewReference: {
+              referencedImageId,
+              ...options,
+            },
+          }
+        : presentations.positionPresentation;
 
+      if (previousReferencedDisplaySetStoreKey) {
         setPositionPresentation(previousReferencedDisplaySetStoreKey, presentationData);
         return;
       }
@@ -227,13 +246,12 @@ function commandsModule({
       // if not found means we have not visited that referencedDisplaySetInstanceUID before
       // so we need to grab the positionPresentationId directly from the store,
       // Todo: this is really hacky, we should have a better way for this
-
       const positionPresentationId = getPositionPresentationId({
         displaySetInstanceUIDs: [displaySetInstanceUID],
         viewportId,
       });
 
-      setPositionPresentation(positionPresentationId, presentations.positionPresentation);
+      setPositionPresentation(positionPresentationId, presentationData);
     },
     getNearbyToolData({ nearbyToolData, element, canvasCoordinates }) {
       return nearbyToolData ?? cstUtils.getAnnotationNearPoint(element, canvasCoordinates);
@@ -263,12 +281,6 @@ function commandsModule({
       return nearbyToolData?.metadata?.toolName && isAnnotation(nearbyToolData.metadata.toolName)
         ? nearbyToolData
         : null;
-    },
-    /** Delete the given measurement */
-    deleteMeasurement: ({ uid }) => {
-      if (uid) {
-        measurementServiceSource.remove(uid);
-      }
     },
     /**
      * Common logic for handling measurement label updates through dialog
@@ -418,25 +430,26 @@ function commandsModule({
     },
 
     removeMeasurement: ({ uid }) => {
-      measurementService.remove(uid);
+      if (Array.isArray(uid)) {
+        measurementService.removeMany(uid);
+      } else {
+        measurementService.remove(uid);
+      }
     },
 
     toggleLockMeasurement: ({ uid }) => {
       measurementService.toggleLockMeasurement(uid);
     },
 
-    toggleVisibilityMeasurement: ({ uid }) => {
-      measurementService.toggleVisibilityMeasurement(uid);
-    },
-
-    /**
-     * Clear the measurements
-     */
-    clearMeasurements: options => {
-      const { measurementFilter } = options;
-      measurementService.clearMeasurements(
-        measurementFilter ? measurementFilter.bind(options) : null
-      );
+    toggleVisibilityMeasurement: ({ uid, items, visibility }) => {
+      if (visibility === undefined && items?.length) {
+        visibility = !items[0].isVisible;
+      }
+      if (Array.isArray(uid)) {
+        measurementService.toggleVisibilityMeasurementMany(uid, visibility);
+      } else {
+        measurementService.toggleVisibilityMeasurement(uid, visibility);
+      }
     },
 
     /**
@@ -496,16 +509,18 @@ function commandsModule({
 
       viewportGridService.setActiveViewportId(viewportId);
     },
-    arrowTextCallback: ({ callback }) => {
+    arrowTextCallback: async ({ callback }) => {
       const labelConfig = customizationService.getCustomization('measurementLabels');
       const renderContent = customizationService.getCustomization('ui.labellingComponent');
 
-      callInputDialogAutoComplete({
+      const value = await callInputDialogAutoComplete({
         uiDialogService,
         labelConfig,
         renderContent,
       });
+      callback?.(value);
     },
+
     toggleCine: () => {
       const { viewports } = viewportGridService.getState();
       const { isCineEnabled } = cineService.getState();
@@ -861,15 +876,17 @@ function commandsModule({
       const options = { imageIndex: jumpIndex };
       csUtils.jumpToSlice(viewport.element, options);
     },
-    scroll: ({ direction }) => {
+    scroll: (options: ToolTypes.ScrollOptions) => {
       const enabledElement = _getActiveViewportEnabledElement();
+      // Allow either or direction for consistency in scroll implementation
+      options.delta ??= options.direction || 1;
+      options.direction ??= options.delta;
 
       if (!enabledElement) {
         return;
       }
 
       const { viewport } = enabledElement;
-      const options = { delta: direction };
 
       csUtils.scroll(viewport, options);
     },
@@ -1472,6 +1489,7 @@ function commandsModule({
         viewportGridService.getActiveViewportId()
       );
     },
+
     deleteActiveAnnotation: () => {
       const activeAnnotationsUID = cornerstoneTools.annotation.selection.getAnnotationsSelected();
       activeAnnotationsUID.forEach(activeAnnotationUID => {
@@ -1483,6 +1501,41 @@ function commandsModule({
     },
     redo: () => {
       DefaultHistoryMemo.redo();
+    },
+    toggleSegmentPreviewEdit: ({ toggle }) => {
+      const labelmapTools = getLabelmapTools({ toolGroupService });
+      labelmapTools.forEach(tool => {
+        tool.configuration = {
+          ...tool.configuration,
+          preview: {
+            ...tool.configuration.preview,
+            enabled: toggle,
+          },
+        };
+      });
+    },
+    toggleSegmentSelect: ({ toggle }) => {
+      const toolGroupIds = toolGroupService.getToolGroupIds();
+      toolGroupIds.forEach(toolGroupId => {
+        const toolGroup = cornerstoneTools.ToolGroupManager.getToolGroup(toolGroupId);
+        if (toggle) {
+          toolGroup.setToolActive(cornerstoneTools.SegmentSelectTool.toolName);
+        } else {
+          toolGroup.setToolDisabled(cornerstoneTools.SegmentSelectTool.toolName);
+        }
+      });
+    },
+    acceptPreview: () => {
+      const labelmapTools = getLabelmapTools({ toolGroupService });
+      labelmapTools.forEach(tool => {
+        tool.acceptPreview();
+      });
+    },
+    rejectPreview: () => {
+      const labelmapTools = getLabelmapTools({ toolGroupService });
+      labelmapTools.forEach(tool => {
+        tool.rejectPreview();
+      });
     },
   };
 
@@ -1512,9 +1565,6 @@ function commandsModule({
     toggleViewportColorbar: {
       commandFn: actions.toggleViewportColorbar,
     },
-    deleteMeasurement: {
-      commandFn: actions.deleteMeasurement,
-    },
     setMeasurementLabel: {
       commandFn: actions.setMeasurementLabel,
     },
@@ -1523,9 +1573,6 @@ function commandsModule({
     },
     updateMeasurement: {
       commandFn: actions.updateMeasurement,
-    },
-    clearMeasurements: {
-      commandFn: actions.clearMeasurements,
     },
     jumpToMeasurement: {
       commandFn: actions.jumpToMeasurement,
@@ -1755,6 +1802,10 @@ function commandsModule({
     interpolateLabelmap: actions.interpolateLabelmap,
     runSegmentBidirectional: actions.runSegmentBidirectional,
     downloadCSVSegmentationReport: actions.downloadCSVSegmentationReport,
+    toggleSegmentPreviewEdit: actions.toggleSegmentPreviewEdit,
+    toggleSegmentSelect: actions.toggleSegmentSelect,
+    acceptPreview: actions.acceptPreview,
+    rejectPreview: actions.rejectPreview,
   };
 
   return {

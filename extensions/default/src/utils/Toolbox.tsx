@@ -1,7 +1,8 @@
-import React from 'react';
-import { PanelSection, ToolSettings } from '@ohif/ui-next';
+import React, { useState } from 'react';
+import { Icons, PanelSection, ToolSettings } from '@ohif/ui-next';
 import { useSystem, useToolbar } from '@ohif/core';
 import classnames from 'classnames';
+import { useTranslation } from 'react-i18next';
 
 interface ButtonProps {
   isActive?: boolean;
@@ -20,7 +21,10 @@ interface ButtonProps {
  */
 export function Toolbox({ buttonSectionId, title }: { buttonSectionId: string; title: string }) {
   const { servicesManager } = useSystem();
-  const { toolbarService } = servicesManager.services;
+  const { t } = useTranslation();
+
+  const { toolbarService, customizationService } = servicesManager.services;
+  const [showConfig, setShowConfig] = useState(false);
 
   const { toolbarButtons: toolboxSections, onInteraction } = useToolbar({
     servicesManager,
@@ -72,12 +76,27 @@ export function Toolbox({ buttonSectionId, title }: { buttonSectionId: string; t
     onInteraction?.({ itemId });
   };
 
+  const CustomConfigComponent = customizationService.getCustomization(`${buttonSectionId}.config`);
+
   return (
     <PanelSection>
-      <PanelSection.Header>
-        <span>{title}</span>
+      <PanelSection.Header className="flex items-center justify-between">
+        <span>{t(title)}</span>
+        {CustomConfigComponent && (
+          <div className="ml-auto mr-2">
+            <Icons.Settings
+              className="text-primary-active h-4 w-4"
+              onClick={e => {
+                e.stopPropagation();
+                setShowConfig(!showConfig);
+              }}
+            />
+          </div>
+        )}
       </PanelSection.Header>
+
       <PanelSection.Content className="flex-shrink-0 border-none">
+        {showConfig && <CustomConfigComponent />}
         {toolboxSections.map(section => {
           const sectionId = section.componentProps.buttonSection;
           const buttons = toolbarService.getButtonSection(sectionId) as any[];

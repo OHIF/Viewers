@@ -1,90 +1,85 @@
-import React, { useEffect, useState } from 'react';
-import { DicomMetadataStore, utils } from '@ohif/core';
-import { useViewportGrid } from '@ohif/ui-next';
-import { Button, Icons } from '@ohif/ui-next';
-import { PanelMeasurement, StudySummaryFromMetadata } from '@ohif/extension-cornerstone';
+import React from 'react';
+import { utils } from '@ohif/core';
+import { AccordionTrigger, MeasurementTable, useViewportGrid } from '@ohif/ui-next';
+import {
+  PanelMeasurement,
+  StudyMeasurements,
+  StudyMeasurementsActions,
+  StudySummaryFromMetadata,
+  AccordionGroup,
+  MeasurementsOrAdditionalFindings,
+} from '@ohif/extension-cornerstone';
+
 import { useTrackedMeasurements } from '../getContextModule';
 
 const { filterAnd, filterPlanarMeasurement, filterMeasurementsBySeriesUID } =
   utils.MeasurementFilters;
 
-function PanelMeasurementTableTracking({
-  servicesManager,
-  extensionManager,
-  commandsManager,
-}: withAppTypes) {
+function PanelMeasurementTableTracking(props) {
   const [viewportGrid] = useViewportGrid();
-  const { customizationService } = servicesManager.services;
   const [trackedMeasurements, sendTrackedMeasurementsEvent] = useTrackedMeasurements();
   const { trackedStudy, trackedSeries } = trackedMeasurements.context;
   const measurementFilter = trackedStudy
     ? filterAnd(filterPlanarMeasurement, filterMeasurementsBySeriesUID(trackedSeries))
     : filterPlanarMeasurement;
 
-  const disableEditing = customizationService.getCustomization('panelMeasurement.disableEditing');
+  const EmptyComponent = () => (
+    <div data-cy="trackedMeasurements-panel">
+      <MeasurementTable
+        title="Measurements"
+        isExpanded={false}
+      >
+        <MeasurementTable.Body />
+      </MeasurementTable>
+    </div>
+  );
+
+  const actions = {
+    createSR: ({ StudyInstanceUID }) => {
+      sendTrackedMeasurementsEvent('SAVE_REPORT', {
+        viewportId: viewportGrid.activeViewportId,
+        isBackupSave: true,
+        StudyInstanceUID,
+        measurementFilter,
+      });
+    },
+  };
+
+  const Header = props => (
+    <AccordionTrigger
+      asChild={true}
+      className="px-0"
+    >
+      <div data-cy="TrackingHeader">
+        <StudySummaryFromMetadata {...props} />
+      </div>
+    </AccordionTrigger>
+  );
 
   return (
-    <>
-      <StudySummaryFromMetadata StudyInstanceUID={trackedStudy} />
+    <div data-cy="trackedMeasurements-panel">
       <PanelMeasurement
-        servicesManager={servicesManager}
-        extensionManager={extensionManager}
-        commandsManager={commandsManager}
         measurementFilter={measurementFilter}
-        customHeader={({ additionalFindings, measurements }) => {
-          const disabled = additionalFindings.length === 0 && measurements.length === 0;
-
-          if (disableEditing || disabled) {
-            return null;
-          }
-
-          return (
-            <div className="bg-background flex h-9 w-full items-center rounded pr-0.5">
-              <div className="flex space-x-1">
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  className="pl-1.5"
-                  onClick={() => {
-                    commandsManager.runCommand('downloadCSVMeasurementsReport', {
-                      measurementFilter,
-                    });
-                  }}
-                >
-                  <Icons.Download className="h-5 w-5" />
-                  <span className="pl-1">CSV</span>
-                </Button>
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  className="pl-0.5"
-                  onClick={() => {
-                    sendTrackedMeasurementsEvent('SAVE_REPORT', {
-                      viewportId: viewportGrid.activeViewportId,
-                      isBackupSave: true,
-                    });
-                  }}
-                >
-                  <Icons.Add />
-                  Create SR
-                </Button>
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  className="pl-0.5"
-                  onClick={() => {
-                    commandsManager.runCommand('clearMeasurements', { measurementFilter });
-                  }}
-                >
-                  <Icons.Delete />
-                  Delete All
-                </Button>
-              </div>
-            </div>
-          );
-        }}
-      ></PanelMeasurement>
-    </>
+        emptyComponent={EmptyComponent}
+        sourceChildren={props.children}
+      >
+        <StudyMeasurements grouping={props.grouping}>
+          <AccordionGroup.Trigger
+            key="trackingMeasurementsHeader"
+            asChild={true}
+          >
+          <Header key="trackingHeadChild" />
+          </AccordionGroup.Trigger>
+          <MeasurementsOrAdditionalFindings
+            key="measurementsOrAdditionalFindings"
+            activeStudyUID={trackedStudy}
+            customHeader={StudyMeasurementsActions}
+            measurementFilter={measurementFilter}
+            actions={actions}
+          />
+        </StudyMeasurements>
+      </PanelMeasurement>
+    </div>
   );
 }
 

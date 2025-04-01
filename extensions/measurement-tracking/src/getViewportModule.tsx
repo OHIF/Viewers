@@ -1,4 +1,5 @@
 import React from 'react';
+import { utils } from '@ohif/extension-cornerstone';
 
 const Component = React.lazy(() => {
   return import(/* webpackPrefetch: true */ './viewports/TrackedCornerstoneViewport');
@@ -28,6 +29,7 @@ function getViewportModule({ servicesManager, commandsManager, extensionManager 
     {
       name: 'cornerstone-tracked',
       component: ExtendedOHIFCornerstoneTrackingViewport,
+      isReferenceViewable: props => utils.isReferenceViewable({ ...props, servicesManager }),
     },
   ];
 }

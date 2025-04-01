@@ -405,11 +405,14 @@ class MeasurementService extends PubSubService {
     let measurement = {};
     try {
       measurement = toMeasurementSchema(data);
+      if (!measurement) {
+        return;
+      }
       measurement.source = source;
     } catch (error) {
       log.warn(
         `Failed to map '${sourceInfo}' measurement for annotationType ${annotationType}:`,
-        error.message
+        error
       );
       return;
     }
@@ -590,6 +593,30 @@ class MeasurementService extends PubSubService {
   }
 
   /**
+   * Remove multiple measurements at once.
+   */
+  removeMany(measurementUIDs: string[]): void {
+    const measurements = [];
+    for (const measurementUID of measurementUIDs) {
+      const measurement =
+        this.measurements.get(measurementUID) || this.unmappedMeasurements.get(measurementUID);
+
+      if (!measurementUID || !measurement) {
+        console.debug(`No uid provided, or unable to find measurement by uid.`);
+        continue;
+      }
+
+      this.unmappedMeasurements.delete(measurementUID);
+      this.measurements.delete(measurementUID);
+      measurements.push(measurement);
+    }
+    if (!measurements.length) {
+      return;
+    }
+    this._broadcastEvent(this.EVENTS.MEASUREMENTS_CLEARED, { measurements });
+  }
+
+  /**
    * Clears measurements that match the filter, defaulting to all of them.
    * That allows, for example, clearing all of a single studies measurements
    * without needing to clear other measurements.
@@ -643,8 +670,11 @@ class MeasurementService extends PubSubService {
       measurement,
     });
 
-    this._broadcastEvent(EVENTS.JUMP_TO_MEASUREMENT_VIEWPORT, consumableEvent);
+    // Important: we should broadcast the layout event first, since
+    // in the layout there might be a viewport that we can match and choose
+    // and jump in it before we decide on changing the orientation of different viewports
     this._broadcastEvent(EVENTS.JUMP_TO_MEASUREMENT_LAYOUT, consumableEvent);
+    this._broadcastEvent(EVENTS.JUMP_TO_MEASUREMENT_VIEWPORT, consumableEvent);
   }
 
   _getSourceUID(name, version) {
@@ -769,7 +799,7 @@ class MeasurementService extends PubSubService {
     });
   }
 
-  public toggleVisibilityMeasurement(measurementUID: string): void {
+  public toggleVisibilityMeasurement(measurementUID: string, visibility?: boolean): void {
     const measurement = this.measurements.get(measurementUID);
 
     if (!measurement) {
@@ -777,13 +807,20 @@ class MeasurementService extends PubSubService {
       return;
     }
 
-    measurement.isVisible = !measurement.isVisible;
+    if (measurement.isVisible === visibility && visibility !== undefined) {
+      return;
+    }
+    measurement.isVisible = visibility !== undefined ? visibility : !measurement.isVisible;
 
     this._broadcastEvent(this.EVENTS.MEASUREMENT_UPDATED, {
       source: measurement.source,
       measurement,
       notYetUpdatedAtSource: true,
     });
+  }
+
+  public toggleVisibilityMeasurementMany(measurementUIDs: string[], visibility?: boolean): void {
+    return measurementUIDs.forEach(uid => this.toggleVisibilityMeasurement(uid, visibility));
   }
 
   public updateColorMeasurement(measurementUID: string, color: number[]): void {

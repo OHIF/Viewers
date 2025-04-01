@@ -1,9 +1,17 @@
+import MeasurementService from '../services/MeasurementService';
 /**
  * Returns a filter function which filters for measurements belonging to both
  * the study and series.
  */
 export function filterMeasurementsBySeriesUID(selectedSeries: string[]) {
+  if (!selectedSeries) {
+    return;
+  }
   return measurement => selectedSeries.includes(measurement.referenceSeriesUID);
+}
+
+export function filterMeasurementsByStudyUID(studyUID) {
+  return measurement => measurement.referenceStudyUID == studyUID;
 }
 
 /**
@@ -11,6 +19,10 @@ export function filterMeasurementsBySeriesUID(selectedSeries: string[]) {
  */
 export function filterPlanarMeasurement(measurement) {
   return measurement?.referencedImageId;
+}
+
+export function filterTool(toolName: string) {
+  return annotation => annotation.metadata?.toolName === toolName;
 }
 
 /** A filter that always returns true */
@@ -30,6 +42,10 @@ export function filterNone(_measurement) {
 export function filterOr(...filters) {
   return function (item) {
     for (let filter of filters) {
+      if (!filter) {
+        // Un undefined filter means all, so return true for the or
+        return true;
+      }
       if (typeof filter === 'string') {
         filter = this[filter];
       }
@@ -44,13 +60,14 @@ export function filterOr(...filters) {
   };
 }
 
+const { POINT } = MeasurementService.VALUE_TYPES;
+
 /**
  * Filters for additional findings, that is, measurements with
  * a value of type point, and having a referenced image
  */
-export function filterAdditionalFindings(measurementService) {
-  const { POINT } = measurementService.VALUE_TYPES;
-  return dm => dm.type === POINT && dm.referencedImageId;
+export function filterAdditionalFindings(dm) {
+  return dm.type === POINT && dm.referencedImageId;
 }
 
 /**
@@ -70,8 +87,15 @@ const isString = s => typeof s === 'string' || s instanceof String;
  * called on the final filter call.
  */
 export function filterAnd(...filters) {
+  const nonNullFilters = filters.filter(filter => !!filter);
+  if (!nonNullFilters.length) {
+    return;
+  }
+  if (nonNullFilters.length === 1 && typeof nonNullFilters[0] === 'function') {
+    return nonNullFilters[0];
+  }
   return function (item) {
-    for (const filter of filters) {
+    for (const filter of nonNullFilters) {
       if (isString(filter)) {
         if (!this[filter](item)) {
           return false;
@@ -98,7 +122,7 @@ export function filterAnd(...filters) {
  */
 export function filterNot(...filters) {
   if (filters.length !== 1) {
-    return filterAnd.apply(null, filters.map(filterNot));
+    return filterAnd(...filters.map(filter => filterNot(filter)));
   }
   const [filter] = filters;
   if (isString(filter)) {

@@ -63,25 +63,25 @@ interface DataRowProps {
   details?: { primary: string[]; secondary: string[] };
   //
   isSelected?: boolean;
-  onSelect?: () => void;
+  onSelect?: (e) => void;
   //
   isVisible: boolean;
-  onToggleVisibility: () => void;
+  onToggleVisibility: (e) => void;
   //
   isLocked: boolean;
-  onToggleLocked: () => void;
+  onToggleLocked: (e) => void;
   //
   title: string;
-  onRename: () => void;
+  onRename: (e) => void;
   //
-  onDelete: () => void;
+  onDelete: (e) => void;
   //
   colorHex?: string;
-  onColor: () => void;
+  onColor: (e) => void;
   className?: string;
 }
 
-const DataRow: React.FC<DataRowProps> = ({
+export const DataRow: React.FC<DataRowProps> = ({
   number,
   title,
   colorHex,
@@ -114,16 +114,16 @@ const DataRow: React.FC<DataRowProps> = ({
     e.stopPropagation();
     switch (action) {
       case 'Rename':
-        onRename();
+        onRename(e);
         break;
       case 'Lock':
-        onToggleLocked();
+        onToggleLocked(e);
         break;
       case 'Delete':
-        onDelete();
+        onDelete(e);
         break;
       case 'Color':
-        onColor();
+        onColor(e);
         break;
     }
   };
@@ -269,7 +269,7 @@ const DataRow: React.FC<DataRowProps> = ({
             aria-label={isVisible ? 'Hide' : 'Show'}
             onClick={e => {
               e.stopPropagation();
-              onToggleVisibility();
+              onToggleVisibility(e);
             }}
           >
             {isVisible ? <Icons.Hide className="h-6 w-6" /> : <Icons.Show className="h-6 w-6" />}
