@@ -1,4 +1,5 @@
 import type { Button } from '@ohif/core/types';
+import { ViewportGridService } from '@ohif/core';
 
 const setToolActiveToolbar = {
   commandName: 'setToolActiveToolbar',
@@ -6,6 +7,15 @@ const setToolActiveToolbar = {
     toolGroupIds: ['default', 'mpr', 'SRToolGroup', 'volume3d'],
   },
 };
+
+const callbacks = (toolName: string) => [
+  {
+    commandName: 'setViewportForToolConfiguration',
+    commandOptions: {
+      toolName,
+    },
+  },
+];
 
 const toolbarButtons: Button[] = [
   // sections
@@ -323,20 +333,76 @@ const toolbarButtons: Button[] = [
     },
   },
   {
-    id: 'LabelmapAssist',
+    id: 'LabelmapSlicePropagation',
     uiType: 'ohif.toolBoxButton',
     props: {
-      icon: 'icon-tool-labelmap-assist',
+      icon: 'icon-labelmap-slice-propagation',
       label: 'Labelmap Assist',
       tooltip: 'Labelmap Assist Based on Previous / Next Slice Data',
       evaluate: [
-        'evaluate.toggle',
+        'evaluate.cornerstoneTool.toggle',
         {
-          name: 'evaluate.cornerstone.segmentation',
-          disabledText: 'Create new segmentation to enable this tool.',
+          name: 'evaluate.cornerstone.hasSegmentation',
         },
       ],
-      commands: 'toggleLabelmapAssist',
+      listeners: {
+        [ViewportGridService.EVENTS.ACTIVE_VIEWPORT_ID_CHANGED]: callbacks(
+          'LabelmapSlicePropagation'
+        ),
+        [ViewportGridService.EVENTS.VIEWPORTS_READY]: callbacks('LabelmapSlicePropagation'),
+      },
+      commands: 'toggleEnabledDisabledToolbar',
+    },
+  },
+  {
+    id: 'MarkerLabelmap',
+    uiType: 'ohif.toolBoxButton',
+    props: {
+      icon: 'icon-marker-labelmap',
+      label: 'Marker Guided Labelmap',
+      tooltip:
+        'Use Positive and Negative Points to Guide Labelmap Creation, hit N to move to next slice',
+      evaluate: [
+        {
+          name: 'evaluate.cornerstone.segmentation',
+          toolNames: ['MarkerLabelmap', 'MarkerInclude', 'MarkerExclude'],
+        },
+      ],
+      commands: 'setToolActiveToolbar',
+      listeners: {
+        [ViewportGridService.EVENTS.ACTIVE_VIEWPORT_ID_CHANGED]: callbacks('MarkerLabelmap'),
+        [ViewportGridService.EVENTS.VIEWPORTS_READY]: callbacks('MarkerLabelmap'),
+      },
+      options: [
+        {
+          name: 'Clear Markers',
+          type: 'button',
+          id: 'clear-markers',
+          commands: 'clearMarkersForMarkerLabelmap',
+        },
+        {
+          name: 'Marker Mode',
+          type: 'radio',
+          id: 'marker-mode',
+          value: 'markerInclude',
+          values: [
+            { value: 'markerInclude', label: 'Include' },
+            { value: 'markerExclude', label: 'Exclude' },
+          ],
+          commands: ({ commandsManager, options }) => {
+            const markerModeOption = options.find(option => option.id === 'marker-mode');
+            if (markerModeOption.value === 'markerInclude') {
+              commandsManager.run('setToolActive', {
+                toolName: 'MarkerInclude',
+              });
+            } else {
+              commandsManager.run('setToolActive', {
+                toolName: 'MarkerExclude',
+              });
+            }
+          },
+        },
+      ],
     },
   },
   {

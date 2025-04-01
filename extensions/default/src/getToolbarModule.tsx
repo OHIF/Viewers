@@ -71,21 +71,5 @@ export default function getToolbarModule({ commandsManager, servicesManager }: w
         };
       },
     },
-    {
-      name: 'evaluate.toggle',
-      evaluate: ({ button }) => {
-        const { id } = button;
-
-        const currentState = toggleStates.get(id);
-        const newState = !currentState;
-        toggleStates.set(id, newState);
-
-        const className = utils.getToggledClassName(newState);
-
-        return {
-          className,
-        };
-      },
-    },
   ];
 }

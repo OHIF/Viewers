@@ -28,15 +28,10 @@ function createTools(utilityModule) {
         },
       },
       {
-        toolName: 'CircularBrushForAutoSegmentAI',
-        parentTool: 'Brush',
-        configuration: {
-          activeStrategy: 'FILL_INSIDE_CIRCLE',
-          preview: {
-            enabled: true,
-          },
-          useCenterSegmentIndex: true,
-        },
+        toolName: toolNames.LabelmapSlicePropagation,
+      },
+      {
+        toolName: toolNames.MarkerLabelmap,
       },
       {
         toolName: 'CircularEraser',

@@ -1002,7 +1002,7 @@ function commandsModule({
         });
       }
     },
-    setSourceViewportForReferenceLinesTool: ({ viewportId }) => {
+    setViewportForToolConfiguration: ({ viewportId, toolName }) => {
       if (!viewportId) {
         const { activeViewportId } = viewportGridService.getState();
         viewportId = activeViewportId ?? 'default';
@@ -1010,9 +1010,11 @@ function commandsModule({
 
       const toolGroup = toolGroupService.getToolGroupForViewport(viewportId);
 
+      const prevConfig = toolGroup?.getToolConfiguration(toolName);
       toolGroup?.setToolConfiguration(
-        ReferenceLinesTool.toolName,
+        toolName,
         {
+          ...prevConfig,
           sourceViewportId: viewportId,
         },
         true // overwrite
@@ -1557,29 +1559,48 @@ function commandsModule({
         };
       });
     },
-    acceptPreview: () => {
+    _handlePreviewAction: action => {
       const labelmapTools = getLabelmapTools({ toolGroupService });
       const { viewport } = _getActiveViewportEnabledElement();
-      const activeTools = labelmapTools.filter(tool => tool.mode === 'Active');
+      const activeTools = labelmapTools.filter(
+        tool => tool.mode === 'Active' || tool.mode === 'Enabled'
+      );
+
       activeTools.forEach(tool => {
-        tool.acceptPreview();
+        tool[`${action}Preview`]();
       });
 
       if (segmentAI.enabled) {
-        segmentAI.acceptPreview(viewport.element);
+        segmentAI[`${action}Preview`](viewport.element);
       }
     },
+    acceptPreview: () => {
+      actions._handlePreviewAction('accept');
+    },
     rejectPreview: () => {
-      const labelmapTools = getLabelmapTools({ toolGroupService });
+      actions._handlePreviewAction('reject');
+    },
+    clearMarkersForMarkerLabelmap: () => {
       const { viewport } = _getActiveViewportEnabledElement();
-      const activeTools = labelmapTools.filter(tool => tool.mode === 'Active');
-      activeTools.forEach(tool => {
-        tool.rejectPreview();
-      });
+      const toolGroup = cornerstoneTools.ToolGroupManager.getToolGroupForViewport(viewport.id);
+      const toolInstance = toolGroup.getToolInstance('MarkerLabelmap');
 
-      if (segmentAI.enabled) {
-        segmentAI.rejectPreview(viewport.element);
+      if (!toolInstance) {
+        return;
       }
+
+      toolInstance.clearMarkers(viewport);
+    },
+    interpolateScrollForMarkerLabelmap: () => {
+      const { viewport } = _getActiveViewportEnabledElement();
+      const toolGroup = cornerstoneTools.ToolGroupManager.getToolGroupForViewport(viewport.id);
+      const toolInstance = toolGroup.getToolInstance('MarkerLabelmap');
+
+      if (!toolInstance) {
+        return;
+      }
+
+      toolInstance.interpolateScroll(viewport, 1);
     },
     toggleLabelmapAssist: async () => {
       const { viewport } = _getActiveViewportEnabledElement();
@@ -1752,8 +1773,8 @@ function commandsModule({
     setViewportColormap: {
       commandFn: actions.setViewportColormap,
     },
-    setSourceViewportForReferenceLinesTool: {
-      commandFn: actions.setSourceViewportForReferenceLinesTool,
+    setViewportForToolConfiguration: {
+      commandFn: actions.setViewportForToolConfiguration,
     },
     storePresentation: {
       commandFn: actions.storePresentation,
@@ -1880,6 +1901,8 @@ function commandsModule({
     rejectPreview: actions.rejectPreview,
     toggleUseCenterSegmentIndex: actions.toggleUseCenterSegmentIndex,
     toggleLabelmapAssist: actions.toggleLabelmapAssist,
+    interpolateScrollForMarkerLabelmap: actions.interpolateScrollForMarkerLabelmap,
+    clearMarkersForMarkerLabelmap: actions.clearMarkersForMarkerLabelmap,
   };
 
   return {

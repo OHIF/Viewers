@@ -162,7 +162,6 @@ function ViewerLayout({
           {showLoadingIndicator && <LoadingIndicatorProgress className="h-full w-full bg-black" />}
           <ResizablePanelGroup {...resizablePanelGroupProps}>
             {/* LEFT SIDEPANELS */}
-
             {hasLeftPanels ? (
               <>
                 <ResizablePanel {...resizableLeftPanelProps}>
