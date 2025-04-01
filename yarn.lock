@@ -1404,10 +1404,10 @@
     gl-matrix "^3.4.3"
     ndarray "^1.0.19"
 
-"@cornerstonejs/ai@^3.8.0":
-  version "3.8.0"
-  resolved "https://registry.yarnpkg.com/@cornerstonejs/ai/-/ai-3.8.0.tgz#e7ff471516901976d3e408809fe884c58a7422db"
-  integrity sha512-epUwawKodRf8yoyUDcJf63gw3VEewKF9euO8WbQl4LPZaA+b6W8kGb4F/31cP4IClFPU6yjWa9Oikdu1wy0WTg==
+"@cornerstonejs/ai@^3.8.2":
+  version "3.8.2"
+  resolved "https://registry.yarnpkg.com/@cornerstonejs/ai/-/ai-3.8.2.tgz#889d2b138e0f2d76a5355fc37675f915527c5d54"
+  integrity sha512-B9Mr3BPWOQT+GKhG79v9xsuEfgh8a/YCK/qaseFfUGahxD/7QEcu49MuzIdigbA1rbRA3OELL0ZjXxVx3ON27A==
   dependencies:
     "@babel/runtime-corejs2" "^7.17.8"
     buffer "^6.0.3"

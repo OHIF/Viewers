@@ -54,7 +54,7 @@
     "@cornerstonejs/adapters": "^3.8.2",
     "@cornerstonejs/core": "^3.8.2",
     "@cornerstonejs/labelmap-interpolation": "^3.8.2",
-    "@cornerstonejs/ai": "^3.8.0",
+    "@cornerstonejs/ai": "^3.8.2",
     "@cornerstonejs/polymorphic-segmentation": "^3.8.2",
     "@cornerstonejs/tools": "^3.8.2",
     "@itk-wasm/morphological-contour-interpolation": "1.1.0",
