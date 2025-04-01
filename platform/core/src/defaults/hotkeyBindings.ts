@@ -177,19 +177,24 @@ const bindings = [
     label: 'Reject Preview',
     keys: ['esc'],
   },
-  // after we have the ui for undo/redo, we can add these back in
-  // {
-  //   commandName: 'undo',
-  //   label: 'Undo',
-  //   keys: ['ctrl+z'],
-  //   isEditable: true,
-  // },
-  // {
-  //   commandName: 'redo',
-  //   label: 'Redo',
-  //   keys: ['ctrl+y'],
-  //   isEditable: true,
-  // },
+  {
+    commandName: 'undo',
+    label: 'Undo',
+    keys: ['ctrl+z'],
+    isEditable: true,
+  },
+  {
+    commandName: 'redo',
+    label: 'Redo',
+    keys: ['ctrl+y'],
+    isEditable: true,
+  },
+  {
+    commandName: 'interpolateScrollForMarkerLabelmap',
+    label: 'Interpolate Scroll',
+    keys: ['n'],
+    isEditable: true,
+  },
 ];
 
 export default bindings;

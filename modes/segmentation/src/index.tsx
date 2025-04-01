@@ -92,11 +92,14 @@ function modeFactory({ modeConfiguration }) {
         'SegmentationTools',
       ]);
       toolbarService.createButtonSection('segmentationToolboxUtilitySection', [
+        'LabelmapSlicePropagation',
         'InterpolateLabelmap',
         'SegmentBidirectional',
       ]);
       toolbarService.createButtonSection('segmentationToolboxToolsSection', [
         'BrushTools',
+        'MarkerLabelmap',
+        'RegionSegmentPlus',
         'Shapes',
       ]);
       toolbarService.createButtonSection('brushToolsSection', ['Brush', 'Eraser', 'Threshold']);

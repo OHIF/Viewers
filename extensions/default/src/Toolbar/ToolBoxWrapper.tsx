@@ -42,14 +42,14 @@ export function ToolBoxButtonGroupWrapper({ groupId, buttonSection, ...props }) 
   );
 }
 
-export function ToolBoxButtonWrapper({ onInteraction, options, ...props }) {
+export function ToolBoxButtonWrapper({ onInteraction, className, options, ...props }) {
   return (
     <div className="bg-popover flex flex-row rounded-md px-0 py-0">
       <ToolButton
         {...props}
         id={props.id}
         size="small"
-        className={classNames(props.disabled && 'text-foreground/70')}
+        className={classNames(props.disabled && 'text-foreground/70', className)}
         onInteraction={event => {
           onInteraction?.({
             event,
