@@ -184,14 +184,27 @@ class ViewportGridService extends PubSubService {
     this.setDisplaySetsForViewports([props]);
   }
 
-  public async setDisplaySetsForViewports(props) {
-    await this.serviceImplementation._setDisplaySetsForViewports(props);
+  public async setDisplaySetsForViewports(viewportsToUpdate) {
+    const { cineService } = this.servicesManager.services;
+    await this.serviceImplementation._setDisplaySetsForViewports(viewportsToUpdate);
     const state = this.getState();
     const updatedViewports = [];
 
     const removedViewportIds = [];
 
-    for (const viewport of props) {
+    // Stopping the cine of modified viewports before changing the viewports to
+    // avoid inconsistent state and lost references
+    viewportsToUpdate.forEach(viewport => {
+      const state = cineService.getState();
+      const currentCineState = state.cines?.[viewport.viewportId];
+      cineService.setCine({
+        id: viewport.viewportId,
+        frameRate: currentCineState?.frameRate ?? state.default.frameRate,
+        isPlaying: false,
+      });
+    });
+
+    for (const viewport of viewportsToUpdate) {
       const updatedViewport = state.viewports.get(viewport.viewportId);
 
       if (updatedViewport) {
