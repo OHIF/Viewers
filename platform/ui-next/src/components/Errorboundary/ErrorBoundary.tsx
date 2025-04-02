@@ -2,17 +2,31 @@ import React, { useState, useEffect } from 'react';
 import { ErrorBoundary as ReactErrorBoundary } from 'react-error-boundary';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-} from '../Dialog/Dialog';
+import { Dialog, DialogContent } from '../Dialog/Dialog';
 import { ScrollArea } from '../ScrollArea/ScrollArea';
-import { Icons } from '../Icons';
+import { Button } from '../Button/Button';
 
 const isProduction = process.env.NODE_ENV === 'production';
+
+/**
+ * Parses an error stack trace to extract important information
+ */
+const parseErrorStack = (error: ErrorBoundaryError) => {
+  if (!error.stack) {
+    return { filePath: null, errorTitle: null, code: null };
+  }
+
+  const stack = error.stack;
+  const lines = stack.split('\n');
+
+  // Extract error message and first call site
+  const errorMessage = lines[0].trim();
+
+  return {
+    errorTitle: errorMessage,
+    code: stack,
+  };
+};
 
 interface ErrorBoundaryError extends Error {
   message: string;
@@ -45,15 +59,7 @@ const DefaultFallback = ({
   const title = `${t('Something went wrong')}${!isProduction && ` ${t('in')} ${context}`}.`;
   const subtitle = t('Sorry, something went wrong there. Try again.');
 
-  const copyErrorDetails = () => {
-    const errorDetails = `
-Context: ${context}
-Error Message: ${error.message}
-Stack: ${error.stack}
-    `;
-    navigator.clipboard.writeText(errorDetails);
-    toast.success(t('Copied to clipboard'));
-  };
+  const { filePath, errorTitle, errorMessage, callSites, code } = parseErrorStack(error);
 
   useEffect(() => {
     toast.error(title, {
@@ -64,55 +70,73 @@ Stack: ${error.stack}
       },
       duration: 0,
     });
-  }, [error]);
+  }, [error, subtitle, t, title]);
 
   if (isProduction) {
     return null;
   }
 
+  const handleCopy = () => {
+    if (filePath) {
+      navigator.clipboard.writeText(filePath);
+      toast.success(t('Copied to clipboard'));
+    }
+  };
+
   return (
-    <>
-      <Dialog
-        open={showDetails}
-        onOpenChange={setShowDetails}
+    <Dialog
+      open={showDetails}
+      onOpenChange={setShowDetails}
+    >
+      <DialogContent
+        className="bg-muted max-w-3xl overflow-hidden border-0 p-0"
+        onInteractOutside={e => e.preventDefault()}
       >
-        <DialogContent className="border-input h-[50vh] w-[90vw] border-2 sm:max-w-[900px]">
-          <DialogHeader>
-            <DialogTitle className="text-muted-foreground flex justify-between text-xl">
-              <div className="flex items-center">{title}</div>
-              <button
-                onClick={() => {
-                  copyErrorDetails();
-                  setShowDetails(false);
-                }}
-                className="text-aqua-pale hover:text-aqua-pale/80 flex items-center gap-2 rounded bg-gray-800 px-4 py-2 font-light"
-              >
-                <Icons.Code className="h-4 w-4" />
-                {t('Copy Details')}
-              </button>
-            </DialogTitle>
+        {/* Header */}
+        <div className="p-6 pb-4">
+          <div className="flex items-center justify-between">
+            <h2 className="text-highlight text-xl font-normal">
+              {errorTitle || error.message || title}
+            </h2>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setShowDetails(false)}
+              className="0 h-8 w-8 rounded-full"
+            ></Button>
+          </div>
+        </div>
 
-            <DialogDescription className="text-lg">{subtitle}</DialogDescription>
-          </DialogHeader>
-
-          <ScrollArea className="h-[100%]">
-            <div className="space-y-4 pr-4 font-mono text-base">
-              <div className="space-y-4">
-                <p className="text-aqua-pale break-words text-lg">
-                  {t('Context')}: {context}
-                </p>
-                <p className="text-aqua-pale break-words text-lg">
-                  {t('Error Message')}: {error.message}
-                </p>
-                <pre className="text-aqua-pale whitespace-pre-wrap break-words rounded bg-gray-900 p-4">
-                  Stack: {error.stack}
-                </pre>
+        {/* Code block */}
+        {code && (
+          <div className="text-foreground px-6 pb-4">
+            <ScrollArea className="bg-background h-[200px] overflow-hidden rounded-md">
+              <div className="p-4 font-mono text-sm">
+                {code.split('\n').map((line, index) => (
+                  <div
+                    key={index}
+                    className="flex"
+                  >
+                    <span className="w-8 pr-4 text-right">{index + 1}</span>
+                    <span className="flex-1">{line}</span>
+                  </div>
+                ))}
               </div>
-            </div>
-          </ScrollArea>
-        </DialogContent>
-      </Dialog>
-    </>
+            </ScrollArea>
+          </div>
+        )}
+
+        {/* Footer */}
+        <div className="flex items-center justify-end p-6 pt-2">
+          <Button
+            variant="link"
+            className="text-primary p-0"
+          >
+            Report Issue
+          </Button>
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 };
 
@@ -164,9 +188,9 @@ const ErrorBoundary = ({
     };
   }, []);
 
-  const onErrorHandler = (error: ErrorBoundaryError, componentStack: string) => {
+  const onErrorHandler = (error: ErrorBoundaryError, componentStack: string | null) => {
     console.debug(`${context} Error Boundary`, error, componentStack, context);
-    onError(error, componentStack, context);
+    onError(error, componentStack || '', context);
   };
 
   return (
@@ -179,7 +203,7 @@ const ErrorBoundary = ({
         />
       )}
       onReset={onResetHandler}
-      onError={onErrorHandler}
+      onError={(error, info) => onErrorHandler(error as ErrorBoundaryError, info.componentStack)}
     >
       <>
         {children}
