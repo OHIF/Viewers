@@ -31,20 +31,20 @@
 
 @layer base {
   :root {
-    --highlight: 191 74% 63%;
+    --highlight: 36 80% 60%;
     --background: 236 62% 5%;
     --foreground: 0 0% 98%;
     --card: 236 62% 5%;
     --card-foreground: 0 0% 98%;
-    --popover: 219 90% 15%;
+    --popover: 36 80% 60%;
     --popover-foreground: 0 0% 98%;
-    --primary: 214 98% 60%;
+    --primary: 36 80% 52%;
     --primary-foreground: 0 0% 98%;
     --secondary: 214 66% 48%;
     --secondary-foreground: 200 50% 84%;
-    --muted: 234 64% 10%;
-    --muted-foreground: 200 46% 65%;
-    --accent: 217 79% 24%;
+    --muted: 28 65% 42%;
+    --muted-foreground: 41 66% 77%;
+    --accent: 28 65% 42%;
     --accent-foreground: 0 0% 98%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;

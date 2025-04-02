@@ -169,13 +169,13 @@ export default function getCustomizationModule({ servicesManager, extensionManag
           id: 'studyBrowser.sortFunctions',
           values: [
             {
-              label: 'Series Number',
+              label: 'Numero da serie',
               sortFunction: (a, b) => {
                 return a?.SeriesNumber - b?.SeriesNumber;
               },
             },
             {
-              label: 'Series Date',
+              label: 'Data da serie',
               sortFunction: (a, b) => {
                 const dateA = new Date(formatDate(a?.SeriesDate));
                 const dateB = new Date(formatDate(b?.SeriesDate));
