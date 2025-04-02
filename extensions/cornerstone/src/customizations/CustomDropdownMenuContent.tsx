@@ -95,7 +95,7 @@ export const CustomDropdownMenuContent = () => {
       <DropdownMenuSub>
         <DropdownMenuSubTrigger className="pl-1">
           <Icons.Export className="text-foreground" />
-          <span className="pl-2">{t('Export & Download')}</span>
+          <span className="pl-2">{t('Download & Export')}</span>
         </DropdownMenuSubTrigger>
         <DropdownMenuPortal>
           <DropdownMenuSubContent>
