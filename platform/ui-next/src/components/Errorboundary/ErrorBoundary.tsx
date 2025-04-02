@@ -5,7 +5,6 @@ import { toast } from 'sonner';
 import { Dialog, DialogContent } from '../Dialog/Dialog';
 import { ScrollArea } from '../ScrollArea/ScrollArea';
 import { Button } from '../Button/Button';
-import { Copy } from 'lucide-react';
 
 const isProduction = process.env.NODE_ENV === 'production';
 
@@ -40,18 +39,64 @@ const parseErrorStack = (error: ErrorBoundaryError) => {
     }
   }
 
-  // Sanitize stack trace for display
+  // Sanitize stack trace for display - safer approach to avoid ReDoS
   const sanitizedStack = stackLines
     .map(line => {
-      return line
-        .replace(/\(([^)]+)\)/g, (match, path) => {
-          const filename = path.split(/[\/\\]/).pop(); // Extract filename from path
-          return filename ? `(${filename})` : match;
-        })
-        .replace(/(\s+at\s+[^\s(]+\s+)([^\s(]+:[0-9]+:[0-9]+)/g, (match, prefix, path) => {
-          const filename = path.split(/[\/\\]/).pop(); // Extract filename from path
-          return filename ? `${prefix}${filename}` : match;
-        });
+      // Limit line length to prevent excessive processing
+      const limitedLine = line.substring(0, 2000);
+
+      // Process each part separately to avoid complex regex patterns
+      if (limitedLine.includes('(')) {
+        // Extract filename from paths in parentheses
+        const openParenIndex = limitedLine.indexOf('(');
+        const closeParenIndex = limitedLine.indexOf(')', openParenIndex);
+
+        if (openParenIndex >= 0 && closeParenIndex > openParenIndex) {
+          const pathInParens = limitedLine.substring(openParenIndex + 1, closeParenIndex);
+
+          // Find the last segment after slash or backslash
+          const lastSlashIndex = Math.max(
+            pathInParens.lastIndexOf('/'),
+            pathInParens.lastIndexOf('\\')
+          );
+
+          if (lastSlashIndex >= 0) {
+            const filename = pathInParens.substring(lastSlashIndex + 1);
+            return (
+              limitedLine.substring(0, openParenIndex + 1) +
+              filename +
+              limitedLine.substring(closeParenIndex)
+            );
+          }
+        }
+      }
+
+      // Handle the "at Function path:line:column" format
+      if (limitedLine.includes(' at ')) {
+        const atIndex = limitedLine.indexOf(' at ');
+        const afterAt = limitedLine.substring(atIndex + 4).trim();
+
+        // Split by whitespace to separate function and path
+        const spaceAfterFunc = afterAt.indexOf(' ');
+
+        if (spaceAfterFunc > 0) {
+          const funcName = afterAt.substring(0, spaceAfterFunc);
+          const path = afterAt.substring(spaceAfterFunc + 1);
+
+          // Check if this is a path with line/column numbers
+          if (path.includes(':') && /.*:[0-9]+:[0-9]+/.test(path)) {
+            // Find the last segment after slash or backslash
+            const lastSlashIndex = Math.max(path.lastIndexOf('/'), path.lastIndexOf('\\'));
+
+            if (lastSlashIndex >= 0) {
+              const filename = path.substring(lastSlashIndex + 1);
+              return limitedLine.substring(0, atIndex + 4) + funcName + ' ' + filename;
+            }
+          }
+        }
+      }
+
+      return limitedLine;
     })
     .join('\n');
 
