@@ -266,7 +266,6 @@ const commandsModule = ({ commandsManager, servicesManager }: withAppTypes) => {
       commandsManager.run({
         commandName: 'setDisplaySetsForViewports',
         commandOptions: { viewportsToUpdate },
-        context: 'CORNERSTONE',
       });
     },
     swapComputedWithDynamicDisplaySet: () => {
@@ -320,7 +319,6 @@ const commandsModule = ({ commandsManager, servicesManager }: withAppTypes) => {
       commandsManager.run({
         commandName: 'setDisplaySetsForViewports',
         commandOptions: { viewportsToUpdate },
-        context: 'CORNERSTONE',
       });
     },
     createNewLabelMapForDynamicVolume: async ({ label }) => {

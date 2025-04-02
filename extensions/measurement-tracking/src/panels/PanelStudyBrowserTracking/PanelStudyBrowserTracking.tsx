@@ -122,7 +122,6 @@ export default function PanelStudyBrowserTracking({
     commandsManager.run({
       commandName: 'setDisplaySetsForViewports',
       commandOptions: { viewportsToUpdate: updatedViewports },
-      context: 'CORNERSTONE',
     });
   };
 

@@ -625,7 +625,6 @@ const commandsModule = ({
       commandsManager.run({
         commandName: 'setDisplaySetsForViewports',
         commandOptions: { viewportsToUpdate: updatedViewports },
-        context: 'CORNERSTONE',
       });
 
       setTimeout(() => actions.scrollActiveThumbnailIntoView(), 0);

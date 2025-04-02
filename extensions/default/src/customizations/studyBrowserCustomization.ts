@@ -71,7 +71,6 @@ export default {
           commandsManager.run({
             commandName: 'setDisplaySetsForViewports',
             commandOptions: { viewportsToUpdate: updatedViewports },
-            context: 'CORNERSTONE',
           });
         },
     ],

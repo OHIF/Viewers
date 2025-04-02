@@ -251,7 +251,6 @@ function ViewerViewportGrid(props: withAppTypes) {
         commandsManager.run({
           commandName: 'setDisplaySetsForViewports',
           commandOptions: { viewportsToUpdate: updatedViewports },
-          context: 'CORNERSTONE',
         });
       }
     );
@@ -277,7 +276,6 @@ function ViewerViewportGrid(props: withAppTypes) {
         commandsManager.run({
           commandName: 'setDisplaySetsForViewports',
           commandOptions: { viewportsToUpdate: updatedViewports },
-          context: 'CORNERSTONE',
         });
       }
     });

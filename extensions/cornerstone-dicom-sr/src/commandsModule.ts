@@ -166,7 +166,6 @@ const commandsModule = (props: withAppTypes) => {
               },
             ],
           },
-          context: 'CORNERSTONE',
         });
       }
     },

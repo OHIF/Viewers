@@ -1518,7 +1518,6 @@ window.config = {
             commandsManager.run({
               commandName: 'setDisplaySetsForViewports',
               commandOptions: { viewportsToUpdate: updatedViewports },
-              context: 'CORNERSTONE',
             });
         },
 }`,
@@ -1567,7 +1566,6 @@ window.config = {
                   commandsManager.run({
                     commandName: 'setDisplaySetsForViewports',
                     commandOptions: { viewportsToUpdate: updatedViewports },
-                    context: 'CORNERSTONE',
                   });
                 };
         },
