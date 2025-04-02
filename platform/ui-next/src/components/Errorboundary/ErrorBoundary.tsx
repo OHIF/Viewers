@@ -5,23 +5,43 @@ import { toast } from 'sonner';
 import { Dialog, DialogContent } from '../Dialog/Dialog';
 import { ScrollArea } from '../ScrollArea/ScrollArea';
 import { Button } from '../Button/Button';
+import { Copy } from 'lucide-react';
 
 const isProduction = process.env.NODE_ENV === 'production';
 
 /**
  * Parses an error stack trace to extract important information
- * Sanitizes file paths to only keep filenames with extensions
+ * Extracts the first function name from the stack trace
  */
 const parseErrorStack = (error: ErrorBoundaryError) => {
   if (!error.stack) {
-    return { filePath: null, errorTitle: null, code: null };
+    return { filePath: null, errorTitle: null, code: null, firstFilename: null };
   }
 
   const stack = error.stack;
+  const stackLines = stack.split('\n');
 
-  // Sanitize stack trace to only keep filenames with extensions
-  const sanitizedStack = stack
-    .split('\n')
+  // Extract error message from first line
+  const errorMessage = stackLines[0].trim();
+
+  // Extract first function name from the stack trace
+  let firstFilename = null;
+
+  // Find the first stack line (starts with " at ")
+  for (let i = 1; i < stackLines.length; i++) {
+    const line = stackLines[i].trim();
+    if (line.startsWith('at ')) {
+      // Extract function name pattern
+      const match = line.match(/at\s+([^\s(]+)[\s(]/);
+      if (match && match[1]) {
+        firstFilename = match[1];
+        break;
+      }
+    }
+  }
+
+  // Sanitize stack trace for display
+  const sanitizedStack = stackLines
     .map(line => {
       return line
         .replace(/\(([^)]+)\)/g, (match, path) => {
@@ -35,12 +55,10 @@ const parseErrorStack = (error: ErrorBoundaryError) => {
     })
     .join('\n');
 
-  // Extract error message from first line
-  const errorMessage = sanitizedStack.split('\n')[0].trim();
-
   return {
     errorTitle: errorMessage,
     code: sanitizedStack,
+    firstFilename: firstFilename,
   };
 };
 
@@ -75,7 +93,14 @@ const DefaultFallback = ({
   const title = `${t('Something went wrong')}${!isProduction && ` ${t('in')} ${context}`}.`;
   const subtitle = t('Sorry, something went wrong there. Try again.');
 
-  const { errorTitle, code } = parseErrorStack(error);
+  const { errorTitle, code, firstFilename } = parseErrorStack(error);
+
+  const copyErrorToClipboard = () => {
+    if (code) {
+      navigator.clipboard.writeText(code);
+      toast.success(t('Error copied to clipboard'));
+    }
+  };
 
   useEffect(() => {
     toast.error(title, {
@@ -111,18 +136,32 @@ const DefaultFallback = ({
 
         {/* Code block */}
         {code && (
-          <ScrollArea className="bg-background text-foreground mx-6 h-[321px] rounded-md">
-            <div className="p-4 font-mono text-sm">
-              {code.split('\n').map((line, index) => (
-                <div
-                  key={index}
-                  className="flex"
-                >
-                  <span className="whitespace-pre">{line}</span>
+          <>
+            <ScrollArea className="bg-background text-foreground mx-6 h-[321px] rounded-b-md">
+              <div className="bg-background border-input flex items-center justify-between rounded-t-md border-b px-4 py-2">
+                <div className="text-muted-foreground text-base">
+                  {firstFilename || 'Error Stack'}
                 </div>
-              ))}
-            </div>
-          </ScrollArea>
+                <Button
+                  className="w-20"
+                  onClick={copyErrorToClipboard}
+                  title={t('Copy error')}
+                >
+                  Copy
+                </Button>
+              </div>
+              <div className="p-4 font-mono text-sm">
+                {code.split('\n').map((line, index) => (
+                  <div
+                    key={index}
+                    className="flex"
+                  >
+                    <span className="whitespace-pre">{line}</span>
+                  </div>
+                ))}
+              </div>
+            </ScrollArea>
+          </>
         )}
 
         {/* Footer */}
@@ -130,6 +169,12 @@ const DefaultFallback = ({
           <Button
             variant="link"
             className="text-primary p-0"
+            onClick={() =>
+              window.open(
+                'https://github.com/OHIF/Viewers/issues/new?template=bug-report.yml',
+                '_blank'
+              )
+            }
           >
             Report Issue
           </Button>
