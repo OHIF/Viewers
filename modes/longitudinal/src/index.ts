@@ -220,7 +220,7 @@ function modeFactory({ modeConfiguration }) {
               leftPanels: [tracked.thumbnailList],
               leftPanelResizable: true,
               rightPanels: [cornerstone.segmentation, tracked.measurements],
-              leftPanelClosed: true,
+              rightPanelClosed: true,
               rightPanelResizable: true,
               viewports: [
                 {
