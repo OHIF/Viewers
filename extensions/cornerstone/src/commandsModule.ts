@@ -10,7 +10,6 @@ import {
   ToolGroupManager,
   Enums,
   utilities as cstUtils,
-  ReferenceLinesTool,
   annotation,
   Types as ToolTypes,
 } from '@cornerstonejs/tools';
@@ -42,6 +41,8 @@ const toggleSyncFunctions = {
   imageSlice: toggleImageSliceSync,
   voi: toggleVOISliceSync,
 };
+
+const { segmentation: segmentationUtils } = cstUtils;
 
 const getLabelmapTools = ({ toolGroupService }) => {
   const labelmapTools = [];
@@ -1641,6 +1642,44 @@ function commandsModule({
         segmentAI.initViewport(viewport);
       }
     },
+    setBrushSize: ({ value, toolNames }) => {
+      const brushSize = Number(value);
+
+      toolGroupService.getToolGroupIds()?.forEach(toolGroupId => {
+        if (toolNames?.length === 0) {
+          segmentationUtils.setBrushSizeForToolGroup(toolGroupId, brushSize);
+        } else {
+          toolNames?.forEach(toolName => {
+            segmentationUtils.setBrushSizeForToolGroup(toolGroupId, brushSize, toolName);
+          });
+        }
+      });
+    },
+    setThresholdRange: ({
+      value,
+      toolNames = [
+        'ThresholdCircularBrush',
+        'ThresholdSphereBrush',
+        'ThresholdCircularBrushDynamic',
+        'ThresholdSphereBrushDynamic',
+      ],
+    }) => {
+      const toolGroupIds = toolGroupService.getToolGroupIds();
+      if (!toolGroupIds?.length) {
+        return;
+      }
+
+      for (const toolGroupId of toolGroupIds) {
+        const toolGroup = toolGroupService.getToolGroup(toolGroupId);
+        toolNames?.forEach(toolName => {
+          toolGroup.setToolConfiguration(toolName, {
+            threshold: {
+              range: value,
+            },
+          });
+        });
+      }
+    },
   };
 
   const definitions = {
@@ -1914,6 +1953,8 @@ function commandsModule({
     toggleLabelmapAssist: actions.toggleLabelmapAssist,
     interpolateScrollForMarkerLabelmap: actions.interpolateScrollForMarkerLabelmap,
     clearMarkersForMarkerLabelmap: actions.clearMarkersForMarkerLabelmap,
+    setBrushSize: actions.setBrushSize,
+    setThresholdRange: actions.setThresholdRange,
   };
 
   return {

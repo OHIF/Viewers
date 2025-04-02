@@ -1,14 +1,12 @@
 import dcmjs from 'dcmjs';
 import { classes, Types } from '@ohif/core';
 import { cache, metaData } from '@cornerstonejs/core';
-import { segmentation as cornerstoneToolsSegmentation, utilities } from '@cornerstonejs/tools';
+import { segmentation as cornerstoneToolsSegmentation } from '@cornerstonejs/tools';
 import { adaptersRT, helpers, adaptersSEG } from '@cornerstonejs/adapters';
 import { createReportDialogPrompt } from '@ohif/extension-default';
 import { DicomMetadataStore } from '@ohif/core';
 
 import PROMPT_RESPONSES from '../../default/src/utils/_shared/PROMPT_RESPONSES';
-
-const { segmentation: segmentationUtils } = utilities;
 
 const { datasetToBlob } = dcmjs.data;
 
@@ -39,14 +37,8 @@ const commandsModule = ({
   servicesManager,
   extensionManager,
 }: Types.Extensions.ExtensionParams): Types.Extensions.CommandsModule => {
-  const {
-    segmentationService,
-    uiDialogService,
-    displaySetService,
-    viewportGridService,
-    toolGroupService,
-    customizationService,
-  } = servicesManager.services as AppTypes.Services;
+  const { segmentationService, displaySetService, viewportGridService, toolGroupService } =
+    servicesManager.services as AppTypes.Services;
 
   const actions = {
     /**
@@ -310,56 +302,12 @@ const commandsModule = ({
         console.warn(e);
       }
     },
-    setBrushSize: ({ value, toolNames }) => {
-      const brushSize = Number(value);
-
-      toolGroupService.getToolGroupIds()?.forEach(toolGroupId => {
-        if (toolNames?.length === 0) {
-          segmentationUtils.setBrushSizeForToolGroup(toolGroupId, brushSize);
-        } else {
-          toolNames?.forEach(toolName => {
-            segmentationUtils.setBrushSizeForToolGroup(toolGroupId, brushSize, toolName);
-          });
-        }
-      });
-    },
-    setThresholdRange: ({
-      value,
-      toolNames = [
-        'ThresholdCircularBrush',
-        'ThresholdSphereBrush',
-        'ThresholdCircularBrushDynamic',
-        'ThresholdSphereBrushDynamic',
-      ],
-    }) => {
-      const toolGroupIds = toolGroupService.getToolGroupIds();
-      if (!toolGroupIds?.length) {
-        return;
-      }
-
-      for (const toolGroupId of toolGroupIds) {
-        const toolGroup = toolGroupService.getToolGroup(toolGroupId);
-        toolNames?.forEach(toolName => {
-          toolGroup.setToolConfiguration(toolName, {
-            threshold: {
-              range: value,
-            },
-          });
-        });
-      }
-    },
   };
 
   const definitions = {
-    /**
-     * Obsolete?
-     */
     loadSegmentationDisplaySetsForViewport: {
       commandFn: actions.loadSegmentationDisplaySetsForViewport,
     },
-    /**
-     * Obsolete?
-     */
     loadSegmentationsForViewport: {
       commandFn: actions.loadSegmentationsForViewport,
     },
@@ -375,12 +323,6 @@ const commandsModule = ({
     },
     downloadRTSS: {
       commandFn: actions.downloadRTSS,
-    },
-    setBrushSize: {
-      commandFn: actions.setBrushSize,
-    },
-    setThresholdRange: {
-      commandFn: actions.setThresholdRange,
     },
   };
 
