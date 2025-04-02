@@ -10,6 +10,7 @@ const isProduction = process.env.NODE_ENV === 'production';
 
 /**
  * Parses an error stack trace to extract important information
+ * Sanitizes file paths to only keep filenames with extensions
  */
 const parseErrorStack = (error: ErrorBoundaryError) => {
   if (!error.stack) {
@@ -17,14 +18,29 @@ const parseErrorStack = (error: ErrorBoundaryError) => {
   }
 
   const stack = error.stack;
-  const lines = stack.split('\n');
 
-  // Extract error message and first call site
-  const errorMessage = lines[0].trim();
+  // Sanitize stack trace to only keep filenames with extensions
+  const sanitizedStack = stack
+    .split('\n')
+    .map(line => {
+      return line
+        .replace(/\(([^)]+)\)/g, (match, path) => {
+          const filename = path.split(/[\/\\]/).pop(); // Extract filename from path
+          return filename ? `(${filename})` : match;
+        })
+        .replace(/(\s+at\s+[^\s(]+\s+)([^\s(]+:[0-9]+:[0-9]+)/g, (match, prefix, path) => {
+          const filename = path.split(/[\/\\]/).pop(); // Extract filename from path
+          return filename ? `${prefix}${filename}` : match;
+        });
+    })
+    .join('\n');
+
+  // Extract error message from first line
+  const errorMessage = sanitizedStack.split('\n')[0].trim();
 
   return {
     errorTitle: errorMessage,
-    code: stack,
+    code: sanitizedStack,
   };
 };
 
@@ -59,7 +75,7 @@ const DefaultFallback = ({
   const title = `${t('Something went wrong')}${!isProduction && ` ${t('in')} ${context}`}.`;
   const subtitle = t('Sorry, something went wrong there. Try again.');
 
-  const { filePath, errorTitle, errorMessage, callSites, code } = parseErrorStack(error);
+  const { errorTitle, code } = parseErrorStack(error);
 
   useEffect(() => {
     toast.error(title, {
@@ -76,13 +92,6 @@ const DefaultFallback = ({
     return null;
   }
 
-  const handleCopy = () => {
-    if (filePath) {
-      navigator.clipboard.writeText(filePath);
-      toast.success(t('Copied to clipboard'));
-    }
-  };
-
   return (
     <Dialog
       open={showDetails}
@@ -92,38 +101,28 @@ const DefaultFallback = ({
         className="bg-muted max-w-3xl overflow-hidden border-0 p-0"
         onInteractOutside={e => e.preventDefault()}
       >
-        {/* Header */}
-        <div className="p-6 pb-4">
+        <div className="p-5 pb-4">
           <div className="flex items-center justify-between">
             <h2 className="text-highlight text-xl font-normal">
               {errorTitle || error.message || title}
             </h2>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setShowDetails(false)}
-              className="0 h-8 w-8 rounded-full"
-            ></Button>
           </div>
         </div>
 
         {/* Code block */}
         {code && (
-          <div className="text-foreground px-6 pb-4">
-            <ScrollArea className="bg-background h-[200px] overflow-hidden rounded-md">
-              <div className="p-4 font-mono text-sm">
-                {code.split('\n').map((line, index) => (
-                  <div
-                    key={index}
-                    className="flex"
-                  >
-                    <span className="w-8 pr-4 text-right">{index + 1}</span>
-                    <span className="flex-1">{line}</span>
-                  </div>
-                ))}
-              </div>
-            </ScrollArea>
-          </div>
+          <ScrollArea className="bg-background text-foreground mx-6 h-[321px] rounded-md">
+            <div className="p-4 font-mono text-sm">
+              {code.split('\n').map((line, index) => (
+                <div
+                  key={index}
+                  className="flex"
+                >
+                  <span className="whitespace-pre">{line}</span>
+                </div>
+              ))}
+            </div>
+          </ScrollArea>
         )}
 
         {/* Footer */}
