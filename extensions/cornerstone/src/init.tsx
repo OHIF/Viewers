@@ -39,7 +39,10 @@ import { useLutPresentationStore } from './stores/useLutPresentationStore';
 import { usePositionPresentationStore } from './stores/usePositionPresentationStore';
 import { useSegmentationPresentationStore } from './stores/useSegmentationPresentationStore';
 import { imageRetrieveMetadataProvider } from '@cornerstonejs/core/utilities';
-import { updateSegmentationStats } from './utils/updateSegmentationStats';
+import {
+  setupSegmentationDataModifiedHandler,
+  setupSegmentationModifiedHandler,
+} from './utils/segmentationHandlers';
 
 const { registerColormap } = csUtilities.colormap;
 
@@ -189,44 +192,16 @@ export default async function init({
     });
   });
 
-  segmentationService.subscribeDebounced(
-    segmentationService.EVENTS.SEGMENTATION_DATA_MODIFIED,
-    async ({ segmentationId }) => {
-      const segmentation = segmentationService.getSegmentation(segmentationId);
-      const readableText = customizationService.getCustomization('panelSegmentation.readableText');
-      const updatedSegmentation = await updateSegmentationStats({
-        segmentation,
-        segmentationId,
-        readableText,
-      });
+  // Setup segmentation event handlers
+  setupSegmentationDataModifiedHandler({
+    segmentationService,
+    customizationService,
+    commandsManager,
+  });
 
-      if (updatedSegmentation) {
-        segmentationService.addOrUpdateSegmentation({
-          segmentationId,
-          segments: updatedSegmentation.segments,
-        });
-      }
-
-      // Check for segments with bidirectional measurements and update them
-      if (segmentation) {
-        const segmentIndices = Object.keys(segmentation.segments)
-          .map(index => parseInt(index))
-          .filter(index => index > 0);
-
-        for (const segmentIndex of segmentIndices) {
-          const segment = segmentation.segments[segmentIndex];
-          if (segment?.cachedStats?.namedStats?.bidirectional) {
-            // Run the command to update the bidirectional measurement
-            commandsManager.runCommand('runSegmentBidirectional', {
-              segmentationId,
-              segmentIndex,
-            });
-          }
-        }
-      }
-    },
-    1000
-  );
+  setupSegmentationModifiedHandler({
+    segmentationService,
+  });
 
   // When a custom image load is performed, update the relevant viewports
   hangingProtocolService.subscribe(
