@@ -99,7 +99,10 @@ export const CustomDropdownMenuContent = () => {
         </DropdownMenuSubTrigger>
         <DropdownMenuPortal>
           <DropdownMenuSubContent>
-            <DropdownMenuLabel className="pl-1">{t('Download')}</DropdownMenuLabel>
+            <DropdownMenuLabel className="flex items-center pl-0">
+              <Icons.Download className="h-5 w-5" />
+              <span className="pl-1">{t('Download')}</span>
+            </DropdownMenuLabel>
             <DropdownMenuItem
               onClick={e => {
                 e.preventDefault();
@@ -127,7 +130,10 @@ export const CustomDropdownMenuContent = () => {
               {t('DICOM RTSS')}
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuLabel className="pl-1">{t('Export')}</DropdownMenuLabel>
+            <DropdownMenuLabel className="flex items-center pl-0">
+              <Icons.Export className="h-5 w-5" />
+              <span className="pl-1 pt-1">{t('Export')}</span>
+            </DropdownMenuLabel>
             <DropdownMenuItem
               onClick={e => {
                 e.preventDefault();
