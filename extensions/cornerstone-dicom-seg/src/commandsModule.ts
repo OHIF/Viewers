@@ -1,18 +1,11 @@
 import dcmjs from 'dcmjs';
-import { Types } from '@ohif/core';
+import { classes, Types } from '@ohif/core';
 import { cache, metaData } from '@cornerstonejs/core';
-import {
-  segmentation as cornerstoneToolsSegmentation,
-  Enums as cornerstoneToolsEnums,
-  utilities,
-} from '@cornerstonejs/tools';
+import { segmentation as cornerstoneToolsSegmentation, utilities } from '@cornerstonejs/tools';
 import { adaptersRT, helpers, adaptersSEG } from '@cornerstonejs/adapters';
 import { createReportDialogPrompt } from '@ohif/extension-default';
-import { classes, DicomMetadataStore } from '@ohif/core';
+import { DicomMetadataStore } from '@ohif/core';
 
-import vtkImageMarchingSquares from '@kitware/vtk.js/Filters/General/ImageMarchingSquares';
-import vtkDataArray from '@kitware/vtk.js/Common/Core/DataArray';
-import vtkImageData from '@kitware/vtk.js/Common/DataModel/ImageData';
 import PROMPT_RESPONSES from '../../default/src/utils/_shared/PROMPT_RESPONSES';
 
 const { segmentation: segmentationUtils } = utilities;
@@ -287,21 +280,24 @@ const commandsModule = ({
      * converts dataset to downloadable blob.
      *
      */
-    downloadRTSS: ({ segmentationId }) => {
+    downloadRTSS: async ({ segmentationId }) => {
       const segmentations = segmentationService.getSegmentation(segmentationId);
-      const vtkUtils = {
-        vtkImageMarchingSquares,
-        vtkDataArray,
-        vtkImageData,
-      };
 
-      const RTSS = generateRTSSFromSegmentations(
+      // inject colors to the segmentIndex
+      const firstRepresentation =
+        segmentationService.getRepresentationsForSegmentation(segmentationId)[0];
+      Object.entries(segmentations.segments).forEach(([segmentIndex, segment]) => {
+        segment.color = segmentationService.getSegmentColor(
+          firstRepresentation.viewportId,
+          segmentationId,
+          segmentIndex
+        );
+      });
+
+      const RTSS = await generateRTSSFromSegmentations(
         segmentations,
         classes.MetadataProvider,
-        DicomMetadataStore,
-        cache,
-        cornerstoneToolsEnums,
-        vtkUtils
+        DicomMetadataStore
       );
 
       try {

@@ -99,20 +99,43 @@ export const CustomDropdownMenuContent = () => {
         </DropdownMenuSubTrigger>
         <DropdownMenuPortal>
           <DropdownMenuSubContent>
-            <DropdownMenuItem onClick={() => actions.downloadCSVSegmentationReport(segmentationId)}>
-              {t('Download CSV Report')}
+            <DropdownMenuLabel className="pl-1">{t('Download')}</DropdownMenuLabel>
+            <DropdownMenuItem
+              onClick={e => {
+                e.preventDefault();
+                actions.downloadCSVSegmentationReport(segmentationId);
+              }}
+            >
+              {t('CSV Report')}
             </DropdownMenuItem>
             <DropdownMenuItem
-              onClick={() => actions.storeSegmentation(segmentationId)}
+              onClick={e => {
+                e.preventDefault();
+                actions.onSegmentationDownload(segmentationId);
+              }}
               disabled={!allowExport}
             >
-              {t('Export DICOM SEG')}
+              {t('DICOM SEG')}
             </DropdownMenuItem>
             <DropdownMenuItem
-              onClick={() => actions.onSegmentationDownload(segmentationId)}
+              onClick={e => {
+                e.preventDefault();
+                actions.onSegmentationDownloadRTSS(segmentationId);
+              }}
               disabled={!allowExport}
             >
-              {t('Download DICOM SEG')}
+              {t('DICOM RTSS')}
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuLabel className="pl-1">{t('Export')}</DropdownMenuLabel>
+            <DropdownMenuItem
+              onClick={e => {
+                e.preventDefault();
+                actions.storeSegmentation(segmentationId);
+              }}
+              disabled={!allowExport}
+            >
+              {t('DICOM SEG')}
             </DropdownMenuItem>
           </DropdownMenuSubContent>
         </DropdownMenuPortal>
