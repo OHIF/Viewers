@@ -1680,6 +1680,34 @@ function commandsModule({
         });
       }
     },
+    increaseBrushSize: () => {
+      const toolGroupIds = toolGroupService.getToolGroupIds();
+      if (!toolGroupIds?.length) {
+        return;
+      }
+
+      for (const toolGroupId of toolGroupIds) {
+        const brushSize = segmentationUtils.getBrushSizeForToolGroup(toolGroupId);
+        segmentationUtils.setBrushSizeForToolGroup(toolGroupId, brushSize + 3);
+      }
+    },
+    decreaseBrushSize: () => {
+      const toolGroupIds = toolGroupService.getToolGroupIds();
+      if (!toolGroupIds?.length) {
+        return;
+      }
+
+      for (const toolGroupId of toolGroupIds) {
+        const brushSize = segmentationUtils.getBrushSizeForToolGroup(toolGroupId);
+        segmentationUtils.setBrushSizeForToolGroup(toolGroupId, brushSize - 3);
+      }
+    },
+    addNewSegment: () => {
+      const { segmentationService } = servicesManager.services;
+      const { activeViewportId } = viewportGridService.getState();
+      const activeSegmentation = segmentationService.getActiveSegmentation(activeViewportId);
+      segmentationService.addSegment(activeSegmentation.segmentationId);
+    },
   };
 
   const definitions = {
@@ -1955,6 +1983,9 @@ function commandsModule({
     clearMarkersForMarkerLabelmap: actions.clearMarkersForMarkerLabelmap,
     setBrushSize: actions.setBrushSize,
     setThresholdRange: actions.setThresholdRange,
+    increaseBrushSize: actions.increaseBrushSize,
+    decreaseBrushSize: actions.decreaseBrushSize,
+    addNewSegment: actions.addNewSegment,
   };
 
   return {

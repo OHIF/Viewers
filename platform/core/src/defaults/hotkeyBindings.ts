@@ -195,6 +195,38 @@ const bindings = [
     keys: ['n'],
     isEditable: true,
   },
+  {
+    commandName: 'increaseBrushSize',
+    label: 'Increase Brush Size',
+    keys: [']'],
+    isEditable: true,
+  },
+  {
+    commandName: 'decreaseBrushSize',
+    label: 'Decrease Brush Size',
+    keys: ['['],
+    isEditable: true,
+  },
+  {
+    commandName: 'setToolActive',
+    commandOptions: { toolName: 'CircularEraser' },
+    label: 'Eraser',
+    keys: ['e'],
+    isEditable: true,
+  },
+  {
+    commandName: 'setToolActive',
+    commandOptions: { toolName: 'CircularBrush' },
+    label: 'Brush',
+    keys: ['b'],
+    isEditable: true,
+  },
+  {
+    commandName: 'addNewSegment',
+    label: 'Add New Segment',
+    keys: ['a'],
+    isEditable: true,
+  },
 ];
 
 export default bindings;
