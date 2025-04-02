@@ -46,7 +46,9 @@ function checkHasDirtyAndSimplifiedMode(props: any) {
   const simplifiedMode = appConfig.measurementTrackingMode === measurementTrackingMode.SIMPLIFIED;
   const { measurementService, displaySetService } = servicesManager.services;
   const measurements = measurementService.getMeasurements();
-  const haveDirtyMeasurements = measurements.some(m => m.isDirty);
+  const haveDirtyMeasurements =
+    measurements.some(m => m.isDirty) ||
+    (measurements.length && measurementService.getIsMeasurementDeletedIndividually());
   const displaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
   const hasDirtyAndSimplifiedMode =
     displaySet.Modality === 'SR' && simplifiedMode && haveDirtyMeasurements;

@@ -150,6 +150,7 @@ function TrackedMeasurementsContextProvider(
       for (let i = 0; i < measurementIds.length; i++) {
         measurementService.remove(measurementIds[i]);
       }
+      measurementService.setIsMeasurementDeletedIndividually(false);
     },
     clearDisplaySetHydratedState: (ctx, evt) => {
       const { displaySetInstanceUID } = evt.data ?? evt;
@@ -244,7 +245,9 @@ function TrackedMeasurementsContextProvider(
     },
     hasDirtyAndSimplified: (ctx, evt, condMeta) => {
       const measurements = measurementService.getMeasurements();
-      const hasDirtyMeasurements = measurements.some(measurement => measurement.isDirty);
+      const hasDirtyMeasurements =
+        measurements.some(measurement => measurement.isDirty) ||
+        (measurements.length && measurementService.getIsMeasurementDeletedIndividually());
       return (
         appConfig?.measurementTrackingMode === measurementTrackingMode.SIMPLIFIED &&
         hasDirtyMeasurements

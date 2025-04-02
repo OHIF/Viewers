@@ -127,6 +127,7 @@ class MeasurementService extends PubSubService {
 
   private measurements = new Map();
   private unmappedMeasurements = new Map();
+  private isMeasurementDeletedIndividually: boolean;
 
   private sources = {};
   private mappings = {};
@@ -597,6 +598,7 @@ class MeasurementService extends PubSubService {
 
     this.unmappedMeasurements.delete(measurementUID);
     this.measurements.delete(measurementUID);
+    this.isMeasurementDeletedIndividually = true;
     this._broadcastEvent(this.EVENTS.MEASUREMENT_REMOVED, {
       source,
       measurement: measurementUID,
@@ -847,6 +849,14 @@ class MeasurementService extends PubSubService {
       notYetUpdatedAtSource: true,
     });
   }
+
+  public setIsMeasurementDeletedIndividually = isDeletedIndividually => {
+    this.isMeasurementDeletedIndividually = isDeletedIndividually;
+  };
+
+  public getIsMeasurementDeletedIndividually = () => {
+    return this.isMeasurementDeletedIndividually;
+  };
 }
 
 export default MeasurementService;
