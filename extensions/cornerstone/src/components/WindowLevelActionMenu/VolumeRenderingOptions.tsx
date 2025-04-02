@@ -1,5 +1,5 @@
 import React, { ReactElement, useState } from 'react';
-import { AllInOneMenu } from '@ohif/ui';
+import { AllInOneMenu } from '@ohif/ui-next';
 import { VolumeRenderingOptionsProps } from '../../types/ViewportPresets';
 import { VolumeRenderingQuality } from './VolumeRenderingQuality';
 import { VolumeShift } from './VolumeShift';

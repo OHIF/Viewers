@@ -1,5 +1,5 @@
 import React, { ReactElement, useCallback, useEffect, useState } from 'react';
-import { SwitchButton } from '@ohif/ui';
+import { Switch } from '@ohif/ui-next';
 import { VolumeShadeProps } from '../../types/ViewportPresets';
 
 export function VolumeShade({
@@ -28,15 +28,17 @@ export function VolumeShade({
   }, [viewportId, cornerstoneViewportService]);
 
   return (
-    <SwitchButton
-      key={key}
-      label="Shade"
-      checked={shade}
-      onChange={() => {
-        setShade(!shade);
-        onClickShade(!shade);
-        onShadeChange(!shade);
-      }}
-    />
+    <div className="flex items-center gap-2">
+      <span>Shade</span>
+      <Switch
+        key={key}
+        checked={shade}
+        onCheckedChange={() => {
+          setShade(!shade);
+          onClickShade(!shade);
+          onShadeChange(!shade);
+        }}
+      />
+    </div>
   );
 }

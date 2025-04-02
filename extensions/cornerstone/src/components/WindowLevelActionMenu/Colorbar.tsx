@@ -1,5 +1,5 @@
 import React, { ReactElement, useCallback, useEffect, useState } from 'react';
-import { SwitchButton } from '@ohif/ui';
+import { Switch } from '@ohif/ui-next';
 import { StackViewport, VolumeViewport } from '@cornerstonejs/core';
 import { ColorbarProps } from '../../types/Colorbar';
 import { utilities } from '@cornerstonejs/core';
@@ -103,13 +103,15 @@ export function Colorbar({
   return (
     <div className="all-in-one-menu-item flex w-full justify-center">
       <div className="mr-2 w-[28px]"></div>
-      <SwitchButton
-        label="Display Color bar"
-        checked={showColorbar}
-        onChange={() => {
-          onSetColorbar();
-        }}
-      />
+      <div className="flex items-center gap-2">
+        <span>Display Color bar</span>
+        <Switch
+          checked={showColorbar}
+          onCheckedChange={() => {
+            onSetColorbar();
+          }}
+        />
+      </div>
     </div>
   );
 }
