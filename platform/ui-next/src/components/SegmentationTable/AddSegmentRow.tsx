@@ -47,7 +47,7 @@ export const AddSegmentRow: React.FC<{ children?: React.ReactNode }> = ({ childr
 
   return (
     <div className="my-px flex h-7 w-full items-center justify-between rounded pl-0.5 pr-7">
-      <div className="flex-1">
+      <div className="mt-1 flex-1">
         {allowAddSegment ? (
           <Button
             size="sm"
