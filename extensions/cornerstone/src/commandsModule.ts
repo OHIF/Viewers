@@ -180,7 +180,6 @@ function commandsModule({
       const activeBidirectional = bidirectionalData.find(
         measurement => measurement.segmentIndex === targetIndex
       );
-      debugger;
       commandsManager.run('jumpToMeasurement', {
         uid: activeBidirectional.annotationUID,
       });
