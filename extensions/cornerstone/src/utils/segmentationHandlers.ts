@@ -57,26 +57,36 @@ export function setupSegmentationModifiedHandler({ segmentationService }) {
     async ({ segmentationId }) => {
       const segmentation = segmentationService.getSegmentation(segmentationId);
 
-      // Check for segments with bidirectional measurements and update them
-      const segmentIndices = Object.keys(segmentation.segments)
-        .map(index => parseInt(index))
-        .filter(index => index > 0);
-
-      // check if there is a bidirectional data that exists but the segment
-      // does not exists anymore we need to remove the bidirectional data
       const annotationState = cornerstoneTools.annotation.state.getAllAnnotations();
-
       const bidirectionalAnnotations = annotationState.filter(
         annotation =>
           annotation.metadata.toolName === cornerstoneTools.SegmentBidirectionalTool.toolName
       );
 
-      const bidirectionalAnnotationsToRemove = bidirectionalAnnotations.filter(
-        annotation => !segmentIndices.includes(annotation.metadata.segmentIndex)
-      );
+      let toRemoveUIDs = [];
+      if (!segmentation) {
+        toRemoveUIDs = bidirectionalAnnotations.map(
+          annotation => annotation.metadata.segmentationId === segmentationId
+        );
+        return;
+      } else {
+        const segmentIndices = Object.keys(segmentation.segments)
+          .map(index => parseInt(index))
+          .filter(index => index > 0);
 
-      bidirectionalAnnotationsToRemove.forEach(annotation => {
-        cornerstoneTools.annotation.state.removeAnnotation(annotation.annotationUID);
+        // check if there is a bidirectional data that exists but the segment
+        // does not exists anymore we need to remove the bidirectional data
+        const bidirectionalAnnotationsToRemove = bidirectionalAnnotations.filter(
+          annotation =>
+            annotation.metadata.segmentationId === segmentationId &&
+            !segmentIndices.includes(annotation.metadata.segmentIndex)
+        );
+
+        toRemoveUIDs = bidirectionalAnnotationsToRemove.map(annotation => annotation.annotationUID);
+      }
+
+      toRemoveUIDs.forEach(uid => {
+        cornerstoneTools.annotation.state.removeAnnotation(uid);
       });
     }
   );
