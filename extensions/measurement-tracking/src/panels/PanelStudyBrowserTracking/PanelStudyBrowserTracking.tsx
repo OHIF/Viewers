@@ -1,4 +1,4 @@
-import React,  from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import { useSystem } from '@ohif/core';
 import PanelStudyBrowser from '@ohif/extension-default/src/Panels/StudyBrowser/PanelStudyBrowser';
