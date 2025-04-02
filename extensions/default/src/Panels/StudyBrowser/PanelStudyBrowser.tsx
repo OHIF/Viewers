@@ -25,27 +25,25 @@ const thumbnailNoImageModalities = [
 ];
 
 /**
- *
- * @param {*} param0
+ * Study Browser component that displays and manages studies and their display sets
  */
 function PanelStudyBrowser({
   getImageSrc,
   getStudiesForPatientByMRN,
   requestDisplaySetCreationForStudy,
   dataSource,
+  customMapDisplaySets,
+  onClickUntrack,
 }) {
   const { servicesManager, commandsManager } = useSystem();
-  const { displaySetService, customizationService, hangingProtocolService, uiNotificationService } =
-    servicesManager.services;
+  const { displaySetService, customizationService } = servicesManager.services;
   const navigate = useNavigate();
   const studyMode = customizationService.getCustomization('studyBrowser.studyMode') || 'all';
 
-  // Normally you nest the components so the tree isn't so deep, and the data
-  // doesn't have to have such an intense shape. This works well enough for now.
-  // Tabs --> Studies --> DisplaySets --> Thumbnails
-  const { StudyInstanceUIDs } = useImageViewer();
-  const [{ activeViewportId, viewports, isHangingProtocolLayout }, viewportGridService] =
-    useViewportGrid();
+  const internalImageViewer = useImageViewer();
+  const StudyInstanceUIDs = internalImageViewer.StudyInstanceUIDs;
+
+  const [{ activeViewportId, viewports, isHangingProtocolLayout }] = useViewportGrid();
   const [activeTabName, setActiveTabName] = useState(studyMode);
   const [expandedStudyInstanceUIDs, setExpandedStudyInstanceUIDs] = useState([
     ...StudyInstanceUIDs,
@@ -81,6 +79,8 @@ function PanelStudyBrowser({
     });
     setViewPresets(newViewPresets);
   };
+
+  const mapDisplaySetsWithState = customMapDisplaySets || _mapDisplaySets;
 
   const onDoubleClickThumbnailHandler = useCallback(
     async displaySetInstanceUID => {
@@ -220,13 +220,16 @@ function PanelStudyBrowser({
       return;
     }
 
-    const mappedDisplaySets = _mapDisplaySets(
+    const mappedDisplaySets = mapDisplaySetsWithState(
       currentDisplaySets,
       displaySetsLoadingState,
       thumbnailImageSrcMap,
       viewports
     );
-    sortStudyInstances(mappedDisplaySets);
+
+    if (!customMapDisplaySets) {
+      sortStudyInstances(mappedDisplaySets);
+    }
 
     setDisplaySets(mappedDisplaySets);
   }, [
@@ -234,6 +237,7 @@ function PanelStudyBrowser({
     displaySetsLoadingState,
     viewports,
     thumbnailImageSrcMap,
+    customMapDisplaySets,
   ]);
 
   // ~~ subscriptions --> displaySets
@@ -296,13 +300,17 @@ function PanelStudyBrowser({
     const SubscriptionDisplaySetsChanged = displaySetService.subscribe(
       displaySetService.EVENTS.DISPLAY_SETS_CHANGED,
       changedDisplaySets => {
-        const mappedDisplaySets = _mapDisplaySets(
+        const mappedDisplaySets = mapDisplaySetsWithState(
           changedDisplaySets,
           displaySetsLoadingState,
           thumbnailImageSrcMap,
           viewports
         );
-        sortStudyInstances(mappedDisplaySets);
+
+        if (!customMapDisplaySets) {
+          sortStudyInstances(mappedDisplaySets);
+        }
+
         setDisplaySets(mappedDisplaySets);
       }
     );
@@ -310,13 +318,17 @@ function PanelStudyBrowser({
     const SubscriptionDisplaySetMetaDataInvalidated = displaySetService.subscribe(
       displaySetService.EVENTS.DISPLAY_SET_SERIES_METADATA_INVALIDATED,
       () => {
-        const mappedDisplaySets = _mapDisplaySets(
+        const mappedDisplaySets = mapDisplaySetsWithState(
           displaySetService.getActiveDisplaySets(),
           displaySetsLoadingState,
           thumbnailImageSrcMap,
           viewports
         );
-        sortStudyInstances(mappedDisplaySets);
+
+        if (!customMapDisplaySets) {
+          sortStudyInstances(mappedDisplaySets);
+        }
+
         setDisplaySets(mappedDisplaySets);
       }
     );
@@ -325,7 +337,13 @@ function PanelStudyBrowser({
       SubscriptionDisplaySetsChanged.unsubscribe();
       SubscriptionDisplaySetMetaDataInvalidated.unsubscribe();
     };
-  }, [displaySetsLoadingState, thumbnailImageSrcMap, viewports, displaySetService]);
+  }, [
+    displaySetsLoadingState,
+    thumbnailImageSrcMap,
+    viewports,
+    displaySetService,
+    customMapDisplaySets,
+  ]);
 
   const tabs = createStudyBrowserTabs(StudyInstanceUIDs, studyDisplayList, displaySets);
 
@@ -408,10 +426,11 @@ function PanelStudyBrowser({
         onClickTab={clickedTabName => {
           setActiveTabName(clickedTabName);
         }}
+        onClickUntrack={onClickUntrack}
         onClickThumbnail={() => {}}
         onDoubleClickThumbnail={onDoubleClickThumbnailHandler}
         activeDisplaySetInstanceUIDs={activeDisplaySetInstanceUIDs}
-        showSettings={actionIcons.find(icon => icon.id === 'settings').value}
+        showSettings={actionIcons.find(icon => icon.id === 'settings')?.value}
         viewPresets={viewPresets}
         ThumbnailMenuItems={MoreDropdownMenu({
           commandsManager,
