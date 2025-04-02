@@ -1,6 +1,6 @@
 import React, { ReactElement, useCallback, useEffect, useRef, useState, useMemo } from 'react';
 import { AllInOneMenu, ButtonGroup, SwitchButton } from '@ohif/ui';
-import { StackViewport } from '@cornerstonejs/core';
+import { StackViewport, Types } from '@cornerstonejs/core';
 import { ColormapProps } from '../../types/Colormap';
 
 export function Colormap({
@@ -54,8 +54,10 @@ export function Colormap({
       return colormap;
     }
     const actorEntries = viewport.getActors();
-    const actorEntry = actorEntries.find(entry => entry.uid.includes(displaySetInstanceUID));
-    const { colormap } = viewport.getProperties(actorEntry.uid);
+    const actorEntry = actorEntries?.find(entry =>
+      entry.referencedId.includes(displaySetInstanceUID)
+    );
+    const { colormap } = (viewport as Types.IVolumeViewport).getProperties(actorEntry.referencedId);
     if (!colormap) {
       return colormaps.find(c => c.Name === 'Grayscale') || colormaps[0];
     }

@@ -9,7 +9,6 @@ type StackData = {
   isCompositeStack?: boolean;
   imageIds: string[];
   frameRate?: number;
-  isClip?: boolean;
   initialImageIndex?: number | string | null;
 };
 

@@ -93,6 +93,9 @@ export default function CineProvider({ children, service }) {
     setIsCineEnabled: isCineEnabled => service.setIsCineEnabled(isCineEnabled),
     playClip: (element, playClipOptions) => service.playClip(element, playClipOptions),
     stopClip: (element, stopClipOptions) => service.stopClip(element, stopClipOptions),
+    setViewportCineClosed: viewportId => service.setViewportCineClosed(viewportId),
+    clearViewportCineClosed: viewportId => service.clearViewportCineClosed(viewportId),
+    isViewportCineClosed: viewportId => service.isViewportCineClosed(viewportId),
   };
 
   return <CineContext.Provider value={[state, api]}>{children}</CineContext.Provider>;

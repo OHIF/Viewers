@@ -143,11 +143,12 @@ const WindowLevel = ({
                 inputClassName="grow"
                 maxValue={1}
                 minValue={0}
-                step={0.1}
+                step={0.05}
                 value={opacity}
                 showLabel={true}
                 allowNumberEdit={true}
                 onChange={handleOpacityChange}
+                showAdjustmentArrows={false}
               />
             </div>
           )}

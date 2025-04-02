@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="29px" height="18px" viewBox="0 0 29 18" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>layout-advanced-3d-four-up</title>
+    <g id="Layout-select----FINAL" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="layout-advanced-3d-four-up" transform="translate(1, 1)" stroke="currentColor">
+            <rect id="Rectangle" x="0" y="0" width="27" height="16.2" rx="2"></rect>
+            <path d="M0,0 L11.8857143,-2.22044605e-16 C12.9902838,5.56104062e-16 13.8857143,0.8954305 13.8857143,2 L13.8857143,14.2 C13.8857143,15.3045695 12.9902838,16.2 11.8857143,16.2 L0,16.2 L0,16.2 L0,0 Z" id="Rectangle" transform="translate(6.9429, 8.1) scale(-1, 1) translate(-6.9429, -8.1)"></path>
+            <path d="M13.8857143,0 L25,0 C26.1045695,-1.18396092e-15 27,0.8954305 27,2 L27,8.5 L27,8.5 L13.8857143,8.5 L13.8857143,0 Z" id="Rectangle" fill="#263A71"></path>
+            <path d="M0,8.48571429 L13.8857143,8.48571429 L13.8857143,14.2 C13.8857143,15.3045695 12.9902838,16.2 11.8857143,16.2 L0,16.2 L0,16.2 L0,8.48571429 Z" id="Rectangle" transform="translate(6.9429, 12.3429) scale(-1, 1) translate(-6.9429, -12.3429)"></path>
+            <path d="M13.8857143,8.48571429 L27,8.48571429 L27,14.2 C27,15.3045695 26.1045695,16.2 25,16.2 L13.8857143,16.2 L13.8857143,16.2 L13.8857143,8.48571429 Z" id="Rectangle"></path>
+        </g>
+    </g>
+</svg>

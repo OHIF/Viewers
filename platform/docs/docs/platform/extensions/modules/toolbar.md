@@ -137,12 +137,63 @@ this pattern, where multiple toolbar buttons are using the same evaluator but wi
 },
 ```
 
+
+#### Viewport and Modality Support Evaluation
+
+The toolbar system now uses a more robust approach for evaluating button states based on viewport types and modalities:
+
+**Viewport Type Support**:
+
+Use `evaluate.viewport.supported` to disable buttons for specific viewport types:
+
+```js
+{
+  name: 'evaluate.viewport.supported',
+  unsupportedViewportTypes: ['volume3d', 'video', 'sm']
+}
+```
+
+**Modality Support**:
+Use `evaluate.modality.supported` to control button state based on modalities:
+
+```js
+{
+  name: 'evaluate.modality.supported',
+  supportedModalities: ['CT', 'MR'],  // Enable only for these modalities
+  // OR
+  unsupportedModalities: ['US']       // Disable for these modalities
+}
+```
+
 #### Composing evaluators
+Multiple evaluators can be combined to create complex conditions:
+
+```js
+evaluate: [
+  'evaluate.cine',
+  {
+    name: 'evaluate.viewport.supported',
+    unsupportedViewportTypes: ['volume3d']
+  },
+  {
+    name: 'evaluate.modality.supported',
+    supportedModalities: ['CT']
+  }
+]
+```
+
+This evaluation system provides more precise control over when toolbar buttons are enabled or disabled based on the active viewport's characteristics.
 
 You can choose to set up multiple evaluators for a single button. This comes in handy when you need to assess the button according to various conditions. For example, we aim to prevent the Cine player from showing up on the 3D viewport, so we have:
 
 ```js
-evaluate: ['evaluate.cine', 'evaluate.not3D'],
+evaluate: [
+  'evaluate.cine',
+  {
+    name: 'evaluate.viewport.supported',
+    unsupportedViewportTypes: ['volume3d'],
+  },
+],
 ```
 
 You can even come up with advanced evaluators such as:

@@ -8,12 +8,7 @@ export default defineConfig({
   workers: process.env.CI ? 1 : undefined,
   snapshotPathTemplate: './tests/screenshots{/projectName}/{testFilePath}/{arg}{ext}',
   outputDir: './tests/test-results',
-  reporter: [
-    [
-      process.env.CI ? 'blob' : 'html',
-      { outputFolder: './tests/playwright-report' },
-    ],
-  ],
+  reporter: [[process.env.CI ? 'blob' : 'html', { outputFolder: './tests/playwright-report' }]],
   timeout: 720 * 1000,
   use: {
     baseURL: 'http://localhost:3000',
@@ -41,9 +36,9 @@ export default defineConfig({
     //},
   ],
   webServer: {
-    command: 'yarn start',
+    command: 'yarn test:e2e:serve',
     url: 'http://localhost:3000',
     reuseExistingServer: !process.env.CI,
-    timeout: 120 * 1000,
+    timeout: 240 * 1000,
   },
 });

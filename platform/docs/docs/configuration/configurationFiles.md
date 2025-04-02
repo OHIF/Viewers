@@ -226,7 +226,6 @@ Example usage:<br/>
        supportsFuzzyMatching: false,
        supportsWildcard: false,
        singlepart: 'bulkdata,video,pdf',
-       useBulkDataURI: false,
        onConfiguration: (dicomWebConfig, options) => {
          const { params } = options;
          const { project, location, dataset, dicomStore } = params;
@@ -257,6 +256,35 @@ rightPanels: [[dicomSeg.panel, tracked.measurements], [dicomSeg.panel, tracked.m
 This will result in two panels, one with `dicomSeg.panel` and `tracked.measurements` and the other with `dicomSeg.panel` and `tracked.measurements` stacked on top of each other.
 
 :::
+
+### Study Prefetcher
+
+You can enable the study prefetcher so that OHIF loads the next/previous series/display sets
+based on the proximity to the current series/display set. This can be useful to improve the user experience
+
+
+```js
+  studyPrefetcher: {
+    /* Enable/disable study prefetching service (default: false) */
+    enabled: true,
+    /* Number of displaysets to be prefetched  (default: 2)*/
+    displaySetCount: 2,
+    /**
+     * Max number of concurrent prefetch requests (default: 10)
+     * High numbers may impact on the time to load a new dropped series because
+     * the browser will be busy with all prefetching requests. As soon as the
+     * prefetch requests get fulfilled the new ones from the new dropped series
+     * are sent to the server.
+     *
+     * TODO: abort all prefetch requests when a new series is loaded on a viewport.
+     * (need to add support for `AbortController` on Cornerstone)
+     * */
+    maxNumPrefetchRequests: 10,
+    /* Display sets loading order (closest (deafult), downward or upward) */
+    order: 'closest',
+  },
+
+```
 
 ### More on Accept Header Configuration
 In the previous section we showed that you can modify the `acceptHeader`
@@ -294,7 +322,7 @@ alternative data source (or even specify different default hotkeys).
 | `APP_CONFIG`         | Which [configuration file][config-file] to copy to output as `app-config.js`                       | `config/default.js` |
 | `PROXY_TARGET`       | When developing, proxy requests that match this pattern to `PROXY_DOMAIN`                          | `undefined`         |
 | `PROXY_DOMAIN`       | When developing, proxy requests from `PROXY_TARGET` to `PROXY_DOMAIN`                              | `undefined`         |
-| `OHIF_PORT`      | The port to run the webpack server on for PWA builds. | `3000`        |
+| `OHIF_PORT`          | The port to run the webpack server on for PWA builds.                                              | `3000`              |
 
 You can also create a new config file and specify its path relative to the build
 output's root by setting the `APP_CONFIG` environment variable. You can set the

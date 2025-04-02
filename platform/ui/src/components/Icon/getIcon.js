@@ -9,6 +9,7 @@ import { ReactComponent as calendar } from './../../assets/icons/calendar.svg';
 import { ReactComponent as cancel } from './../../assets/icons/cancel.svg';
 import { ReactComponent as clipboard } from './../../assets/icons/clipboard.svg';
 import { ReactComponent as close } from './../../assets/icons/closeIcon.svg';
+import { ReactComponent as database } from './../../assets/icons/database.svg';
 import { ReactComponent as dottedCircle } from './../../assets/icons/dotted-circle.svg';
 import { ReactComponent as circledCheckmark } from './../../assets/icons/circled-checkmark.svg';
 import { ReactComponent as chevronDown } from './../../assets/icons/chevron-down.svg';
@@ -214,6 +215,7 @@ const ICONS = {
   cancel: cancel,
   clipboard: clipboard,
   close: close,
+  database: database,
   'dotted-circle': dottedCircle,
   'circled-checkmark': circledCheckmark,
   'chevron-down': chevronDown,

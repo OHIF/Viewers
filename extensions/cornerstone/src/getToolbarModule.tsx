@@ -6,6 +6,12 @@ const getToggledClassName = (isToggled: boolean) => {
     : '!text-common-bright hover:!bg-primary-dark hover:text-primary-light';
 };
 
+const getDisabledState = (disabledText?: string) => ({
+  disabled: true,
+  className: '!text-common-bright ohif-disabled',
+  disabledText: disabledText ?? 'Not available on the current viewport',
+});
+
 export default function getToolbarModule({ commandsManager, servicesManager }: withAppTypes) {
   const {
     toolGroupService,
@@ -21,6 +27,52 @@ export default function getToolbarModule({ commandsManager, servicesManager }: w
     // functions/helpers to be used by the toolbar buttons to decide if they should
     // enabled or not
     {
+      name: 'evaluate.viewport.supported',
+      evaluate: ({ viewportId, unsupportedViewportTypes, disabledText }) => {
+        const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
+
+        if (viewport && unsupportedViewportTypes?.includes(viewport.type)) {
+          return getDisabledState(disabledText);
+        }
+
+        return undefined;
+      },
+    },
+    {
+      name: 'evaluate.modality.supported',
+      evaluate: ({ viewportId, unsupportedModalities, supportedModalities, disabledText }) => {
+        const displaySetUIDs = viewportGridService.getDisplaySetsUIDsForViewport(viewportId);
+
+        if (!displaySetUIDs?.length) {
+          return;
+        }
+
+        const displaySets = displaySetUIDs.map(displaySetService.getDisplaySetByUID);
+
+        // Check for unsupported modalities (exclusion)
+        if (unsupportedModalities?.length) {
+          const hasUnsupportedModality = displaySets.some(displaySet =>
+            unsupportedModalities.includes(displaySet?.Modality)
+          );
+
+          if (hasUnsupportedModality) {
+            return getDisabledState(disabledText);
+          }
+        }
+
+        // Check for supported modalities (inclusion)
+        if (supportedModalities?.length) {
+          const hasAnySupportedModality = displaySets.some(displaySet =>
+            supportedModalities.includes(displaySet?.Modality)
+          );
+
+          if (!hasAnySupportedModality) {
+            return getDisabledState(disabledText || 'Tool not available for this modality');
+          }
+        }
+      },
+    },
+    {
       name: 'evaluate.cornerstoneTool',
       evaluate: ({ viewportId, button, toolNames, disabledText }) => {
         const toolGroup = toolGroupService.getToolGroupForViewport(viewportId);
@@ -32,11 +84,7 @@ export default function getToolbarModule({ commandsManager, servicesManager }: w
         const toolName = toolbarService.getToolNameForButton(button);
 
         if (!toolGroup || (!toolGroup.hasTool(toolName) && !toolNames)) {
-          return {
-            disabled: true,
-            className: '!text-common-bright ohif-disabled',
-            disabledText: disabledText ?? 'Not available on the current viewport',
-          };
+          return getDisabledState(disabledText);
         }
 
         const isPrimaryActive = toolNames
@@ -173,40 +221,6 @@ export default function getToolbarModule({ commandsManager, servicesManager }: w
       },
     },
     {
-      name: 'evaluate.not3D',
-      evaluate: ({ viewportId, disabledText }) => {
-        const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
-
-        if (viewport?.type === 'volume3d') {
-          return {
-            disabled: true,
-            className: '!text-common-bright ohif-disabled',
-            disabledText: disabledText ?? 'Not available on the current viewport',
-          };
-        }
-      },
-    },
-    {
-      name: 'evaluate.isUS',
-      evaluate: ({ viewportId, disabledText }) => {
-        const displaySetUIDs = viewportGridService.getDisplaySetsUIDsForViewport(viewportId);
-
-        if (!displaySetUIDs?.length) {
-          return;
-        }
-
-        const displaySets = displaySetUIDs.map(displaySetService.getDisplaySetByUID);
-        const isUS = displaySets.some(displaySet => displaySet?.Modality === 'US');
-        if (!isUS) {
-          return {
-            disabled: true,
-            className: '!text-common-bright ohif-disabled',
-            disabledText: disabledText ?? 'Not available on the current viewport',
-          };
-        }
-      },
-    },
-    {
       name: 'evaluate.viewportProperties.toggle',
       evaluate: ({ viewportId, button }) => {
         const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
@@ -254,11 +268,7 @@ export default function getToolbarModule({ commandsManager, servicesManager }: w
         });
 
         if (!areReconstructable) {
-          return {
-            disabled: true,
-            className: '!text-common-bright ohif-disabled',
-            disabledText: disabledText ?? 'Not available on the current viewport',
-          };
+          return getDisabledState(disabledText);
         }
 
         const isMpr = protocol?.id === 'mpr';
@@ -288,11 +298,7 @@ function _evaluateToggle({
   const toolName = toolbarService.getToolNameForButton(button);
 
   if (!toolGroup.hasTool(toolName)) {
-    return {
-      disabled: true,
-      className: '!text-common-bright ohif-disabled',
-      disabledText: disabledText ?? 'Not available on the current viewport',
-    };
+    return getDisabledState(disabledText);
   }
 
   const isOff = offModes.includes(toolGroup.getToolOptions(toolName).mode);

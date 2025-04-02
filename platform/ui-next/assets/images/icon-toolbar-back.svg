@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="28px" height="29px" viewBox="0 0 28 29" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>icon-toolbar-back</title>
+    <g id="Production" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Artboard" transform="translate(-56, -234)">
+            <g id="icon-toolbar-back" transform="translate(56, 234.5)">
+                <rect id="Rectangle" x="0" y="0" width="28" height="28"></rect>
+                <path d="M15.7247114,7.29289322 C16.1152357,6.90236893 16.7484007,6.90236893 17.138925,7.29289322 C17.4994089,7.65337718 17.5271385,8.22060824 17.2221136,8.61289944 L17.138925,8.70710678 L11.9132727,13.9312727 L17.138925,19.1565296 C17.4994089,19.5170135 17.5271385,20.0842446 17.2221136,20.4765358 L17.138925,20.5707431 C16.778441,20.9312271 16.2112099,20.9589566 15.8189187,20.6539318 L15.7247114,20.5707431 L9.79289322,14.638925 C9.43240926,14.278441 9.40467972,13.7112099 9.70970461,13.3189187 L9.79289322,13.2247114 L15.7247114,7.29289322 Z" id="back" fill="currentColor"></path>
+            </g>
+        </g>
+    </g>
+</svg>

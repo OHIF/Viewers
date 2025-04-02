@@ -1,5 +1,5 @@
 ---
-sidebar_position: 1
+sidebar_position: 2
 sidebar_label: 3.7 -> 3.8
 ---
 
@@ -131,6 +131,46 @@ Additional Resources
 
   - For more information on the new toolbar module and its usage, refer to the [Toolbar documentation](../platform/extensions/modules/toolbar.md).
   - Consult the updated button definitions in `modes/longitudinal/src/toolbarButtons.ts` for examples of the new object-based button definition format and the usage of evaluators.
+
+### Tool listeners
+
+Some tools can be configured to listen to events to trigger, for example
+
+```ts
+createButton({
+  id: 'ReferenceLines',
+  icon: 'tool-referenceLines',
+  label: 'Reference Lines',
+  tooltip: 'Show Reference Lines',
+  commands: 'toggleEnabledDisabledToolbar',
+  listeners: {
+      [ViewportGridService.EVENTS.ACTIVE_VIEWPORT_ID_CHANGED]:
+          ReferenceLinesListeners,
+      [ViewportGridService.EVENTS.VIEWPORTS_READY]:
+          ReferenceLinesListeners,
+  },
+  evaluate: 'evaluate.cornerstoneTool.toggle',
+  }),
+```
+
+If you have a custom viewport component, and you are overriding the ```onElementEnabled``` handler, than ensure to call ```viewportGridService.setViewportIsReady(viewportId, true)``` in your own handler so that eventually the ```VIEWPORTS_READY``` event fires as expected, if you are not modifying the handler, then an existing handler that is automatically passed down via the props will call that for you, it is passed down from ```ViewportGrid.tsx```
+
+```ts
+<ViewportComponent
+   displaySets={displaySets}
+   viewportLabel={viewports.size > 1 ? viewportLabel : ''}
+   viewportId={viewportId}
+   dataSource={dataSource}
+   viewportOptions={viewportOptions}
+   displaySetOptions={displaySetOptions}
+   needsRerendering={displaySetsNeedsRerendering}
+   isHangingProtocolLayout={isHangingProtocolLayout}
+   onElementEnabled={() => {
+          viewportGridService.setViewportIsReady(viewportId, true);
+   }}
+/>
+
+```
 
 ## Toolbar Service
 

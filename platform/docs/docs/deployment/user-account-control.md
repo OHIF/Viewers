@@ -3,8 +3,10 @@ sidebar_position: 11
 ---
 # User Account Control
 
-> DISCLAIMER! We make no claims or guarantees of this approach's security. If in
-> doubt, enlist the help of an expert and conduct proper audits.
+
+:::danger
+DISCLAIMER: We make no claims or guarantees regarding the security of this approach. If you have any doubts, please consult an expert and conduct thorough audits.
+:::
 
 Making a viewer and its medical imaging data accessible on the open web can
 provide a lot of benefits, but requires additional security to make sure
@@ -18,7 +20,7 @@ sensitive data.
 ## Overview
 
 This guide builds on top of our
-[Nginx + Image Archive guide](/deployment/recipes/nginx--image-archive.md),
+[Nginx + Image Archive guide](./nginx--image-archive.md),
 wherein we used a [`reverse proxy`](https://en.wikipedia.org/wiki/Reverse_proxy)
 to retrieve resources from our image archive (Orthanc).
 
@@ -35,20 +37,43 @@ applications and services with little to no code. We improve upon our
 
 This setup allows us to create a setup similar to the one pictured below:
 
-![userControlFlow](../assets/img/user-access-control-request-flow.png)
+![userControlFlow](../assets/img/ohif-pacs-keycloak.png)
 
 
 
-- All web requests are routed through `nginx` on our `OpenResty` image
-- `/pacs` is a reverse proxy for `orthanc`'s `DICOM Web` endpoints
-  - Requires valid `Authorization: Bearer <token>` header
-- `/pacs-admin` is a reverse proxy for `orthanc`'s Web Admin
-- `/auth` is a reverse proxy for `keycloak`
-- All static resources for OHIF Viewer are unprotected and accessible. We have
-  application logic that will redirect unauthenticated users to the appropriate
-  `keycloak` login screen.
+**Nginx:**
 
-## Getting Started
+- Acts as a reverse proxy server that handles incoming requests to the domain (mydomain.com:80) and forwards them to the appropriate backend services.
+- It also ensures that all requests go through the OAuth2 Proxy for authentication.
+
+
+**OAuth2 Proxy:**
+
+- Serves as an intermediary that authenticates users via OAuth2.
+- Works in conjunction with Keycloak to manage user sessions and authentication tokens.
+- Once the user is authenticated, it allows access to specific routes (/ohif-viewer, /pacs, /pacs-admin).
+
+**Keycloak:**
+
+- An open-source identity and access management solution.
+- Manages user identities, including authentication and authorization.
+- Communicates with the OAuth2 Proxy to validate user credentials and provide tokens for authenticated sessions.
+
+**OHIF Viewer:**
+
+- Hosted under the route /ohif-viewer, which serves the static assets of the OHIF Viewer.
+
+**Orthanc/DCM4chee:**
+
+- PACS (Picture Archiving and Communication System) for managing medical imaging data.
+Exposes two routes:
+- /pacs: Accesses the DICOM web services.
+- /pacs-admin: Provides administrative and explorer interfaces.
+
+
+
+## Getting Started - Orthanc
+
 
 ### Requirements
 
@@ -59,46 +84,336 @@ This setup allows us to create a setup similar to the one pictured below:
 _Not sure if you have `docker` installed already? Try running `docker --version`
 in command prompt or terminal_
 
-### Setup
+### Setup 1 - Trying Locally
 
-_Spin Things Up_
+Navigate to the Orthanc Keycloak configuration directory:
 
-- Navigate to `<project-root>platform\app\.recipes\OpenResty-Orthanc-Keycloak` in your shell
-- Run `docker-compose up`
+`cd platform\app\.recipes\Nginx-Orthanc-Keycloak`
 
-_Create Your First User_
+Due to the increased complexity of this setup, we've introduced a magic word `YOUR_DOMAIN`. Replace this word with your project IP address to follow along more easily.
 
-- Navigate to: `http://127.0.0.1/auth/admin`
-- Sign in with: `admin`/`password`
-- From the top left dropdown, select the `Ohif` realm
-- From the left sidebar, under `Manage`, select `Users`
-- Click `Add User`
-  - Username: `test`
-  - Email Verified: `ON`
-  - Click `Save`
-- Click the `Credentials` Tab
-  - New Password: `test`
-  - Password Confirmation: `test`
-  - Temporary: `OFF`
-  - Click: `Reset Password`
-- From the top right dropdown, select `Admin`, then `Sign Out`
+Since we are running this locally, we will use `127.0.0.1` as our IP address.
 
-_Sign In_
+In the `docker-compose.yml` file, replace `YOUR_DOMAIN` with `127.0.0.1`.
 
-- Navigate to `http://127.0.0.1/`
-- Username: `test`, Password: `test`
-- Click `Log In`
+In the Keycloak service:
 
-_Upload Your First Study_
 
-- Navigate to `http://127.0.0.1/pacs-admin`
-- If you're not already logged in, use `test`/`test`
-- From the top right, select "Upload"
-- Click "Select files to upload..." (DICOM)
-- Click "Start the upload"
-- Navigate back to `http://127.0.0.1/` to view your studies in the Study List
+Before:
 
-### Troubleshooting
+```
+KC_HOSTNAME_ADMIN_URL: http://YOUR_DOMAIN/keycloak/
+KC_HOSTNAME_URL: http://YOUR_DOMAIN/keycloak/
+```
+
+
+After
+
+```
+KC_HOSTNAME_ADMIN_URL: http://127.0.0.1/keycloak/
+KC_HOSTNAME_URL: http://127.0.0.1/keycloak/
+```
+
+In the Keycloak healthcheck, replace `YOUR_DOMAIN` with `localhost`.
+
+In the Nginx config, change:
+
+```
+server_name YOUR_DOMAIN;
+```
+
+to:
+
+```
+server_name 127.0.0.1;
+```
+
+Since we're not using SSL, remove the following lines from the Nginx config file and create one server instead of two:
+
+Before (two servers one for http and one for https):
+
+```
+server {
+    listen 80;
+    server_name YOUR_DOMAIN;
+
+    location /.well-known/acme-challenge/ {
+        root /var/www/certbot;
+    }
+
+    location / {
+        return 301 https://$host$request_uri;
+    }
+}
+
+server {
+    listen 443 ssl;
+    server_name YOUR_DOMAIN;
+
+    ssl_certificate /etc/letsencrypt/live/ohifviewer.duckdns.org/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/ohifviewer.duckdns.org/privkey.pem;
+
+    root /var/www/html;
+```
+
+After (merging both servers into one only http server):
+
+```
+server {
+  listen 80;
+  server_name 127.0.0.1;
+
+  location /.well-known/acme-challenge/ {
+      root /var/www/certbot;
+  }
+
+  root /var/www/html;
+```
+
+In OAuth2-proxy configuration at `oauth2-proxy.cfg`
+
+Before:
+
+```
+redirect_url="http://YOUR_DOMAIN/oauth2/callback"
+oidc_issuer_url="http://YOUR_DOMAIN/keycloak/realms/ohif"
+```
+
+After:
+
+```
+redirect_url="http://127.0.0.1/oauth2/callback"
+oidc_issuer_url="http://127.0.0.1/keycloak/realms/ohif"
+```
+
+Finally, in the docker-nginx-orthanc-keycloak config file that lives in `platform/app/public/config/docker-nginx-orthanc-keycloak.js`, replace `YOUR_DOMAIN` with
+
+Before:
+
+```
+wadoUriRoot: 'http://YOUR_DOMAIN/pacs',
+qidoRoot: 'http://YOUR_DOMAIN/pacs',
+wadoRoot: 'http://YOUR_DOMAIN/pacs',
+```
+
+After:
+
+```
+wadoUriRoot: 'http://127.0.0.1/pacs',
+qidoRoot: 'http://127.0.0.1/pacs',
+wadoRoot: 'http://127.0.0.1/pacs',
+```
+
+:::note
+This is the config that is used inside the dockerfile to build the viewer, look at dockerfile
+
+`ENV APP_CONFIG=config/docker-nginx-orthanc-keycloak.js`
+:::
+
+Run the following command to start the services:
+
+```
+docker-compose up --build
+```
+
+
+You can watch the following video, which will guide you through the process of setting up Orthanc with keycloak and OHIF locally.
+
+We have set up two predefined users in Keycloak:
+
+- `user: admin password: admin` - Has access to keycloak portal for managing users and clients
+- `user: viewer password: viewer` - Has access to the OHIF Viewer but not the pacs-admin
+- `user: pacsadmin password: pacsadmin` - Has access to both the pacs-admin for uploading and the OHIF Viewer
+
+You can navigate to:
+
+- `http://127.0.0.1` - This will redirect you to `http://127.0.0.1/ohif-viewer`, prompting you to log in with Keycloak using either user
+- `http://127.0.0.1/pacs-admin` - Only the `pacsadmin` user can access this route, while the `viewer` user cannot
+-
+
+<div style={{padding:"56.25% 0 0 0", position:"relative"}}>
+    <iframe src="https://player.vimeo.com/video/981362196?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479"  frameBorder="0" allow="autoplay; fullscreen; picture-in-picture" allowFullScreen style= {{ position:"absolute",top:0,left:0,width:"100%",height:"100%"}} title="measurement-report"></iframe>
+</div>
+
+
+### Step 2 - Trying via a Server
+
+Now that you have successfully set up Orthanc with Keycloak and OHIF locally, you can deploy it to a server. While you can rent a server from any provider, this tutorial will demonstrate the process using Linode as an example.
+
+You can watch the following video, which will guide you through the process.
+
+Some notes:
+
+- Since this is a remote machine we need to clone the repo
+- Typically a Linux machine, you need to download and install Docker on it
+- Use the Visual Studio Code Remote SSH extension to connect to the server
+- Use docker extension in Visual Studio Code to manage the containers
+- The public IP address of the server now becomes the YOUR_DOMAIN and is used in the configuration files.
+
+Still we have not set up SSL, so we will use HTTP instead of HTTPS.
+
+We should use the same one server configuration as we did locally for Nginx (but with the new server IP address)
+
+:::info
+Don't forget to change the `docker-ngix-orthanc-keycloak.js` file to use the new server IP address.
+:::
+
+After you run `docker compose up --build` you can navigate to the server IP address and see the viewer will not work...
+
+We have encountered some strange  issues with the Keycloak service not allowing non-HTTPS connections (around 10:00). To resolve this, we need to modify the Keycloak configuration to permit HTTPS. This requires accessing the container and making the necessary changes.
+
+After accessing the container shell
+
+```
+cd /opt/keycloak/bin
+
+./kcadm.sh config credentials --server http://localhost:8080 --realm master --user admin
+./kcadm.sh update realms/master -s sslRequired=NONE
+```
+
+After we need to change some configurations in the Keycloak UI to enable the connection in the server
+
+Navigate to
+
+```
+http://IP_ADDRESS/keycloak
+```
+
+which will redirect you to the Keycloak login page
+
+0. login with the admin user `admin` and password `admin`
+1. From the top left drop down menu, select `ohif` realm
+2. Go to `Clients` and select `ohif_viewer`
+3. In the `Access Settings` change all instances of `http://127.0.0.1` to `http://IP_ADDRESS`
+   1. Root URL:  `http://IP_ADDRESS`
+   2. Home URL:  `http://IP_ADDRESS`
+   3. Valid Redirect URIs: `http://IP_ADDRESS/oauth2/callback`
+   4. Valid post logout URIs: `*`
+   5. Web Origins: `http://IP_ADDRESS`
+   6. Admin URL: `http://IP_ADDRESS`
+
+Now if you navigate to the IP address it should work !!
+
+
+<div style={{padding:"56.25% 0 0 0", position:"relative"}}>
+    <iframe src="https://player.vimeo.com/video/981362334?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479"  frameBorder="0" allow="autoplay; fullscreen; picture-in-picture" allowFullScreen style= {{ position:"absolute",top:0,left:0,width:"100%",height:"100%"}} title="measurement-report"></iframe>
+</div>
+
+### Step 3 - Adding SSL and Deploying to Production
+
+Now we'll add an SSL certificate to our server to enable HTTPS. We'll use Let's Encrypt to generate the SSL certificate.
+
+Let's Encrypt requires a domain name, so we'll use a free domain name service like DuckDNS (duckdns.org). Follow these steps:
+
+1. Visit https://www.duckdns.org/ and create an account.
+2. Create a free domain name and point it to your server's IP address.
+
+You can watch a video guide for this process if needed.
+
+Replace `YOUR_DOMAIN` with your new domain name in the `docker-compose.yml` file and all other config files, as we did previously.
+
+Next, we'll add HTTPS support. Add the following lines to the Nginx config file:
+
+(Note: We'll have both HTTP and HTTPS servers, and the server IP will use HTTPS)
+```
+server {
+    listen 80;
+    server_name https://IP_ADDRESS;
+
+    location /.well-known/acme-challenge/ {
+        root /var/www/certbot;
+    }
+
+    location / {
+        return 301 https://$host$request_uri;
+    }
+}
+
+server {
+    listen 443 ssl;
+    server_name https://IP_ADDRESS;
+
+    ssl_certificate /etc/letsencrypt/live/ohifviewer.duckdns.org/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/ohifviewer.duckdns.org/privkey.pem;
+
+    root /var/www/html;
+```
+
+Don't forget to replace `YOUR_DOMAIN` with the new domain name in the `docker-nginx-orthanc-keycloak.js` file.
+
+:::info
+Remember to include `https://` when adding the domain name to the configurations.
+:::
+
+Now, we need to add a certificate. Let's assume we have the domain name `hospital.duckdns.org` and the email we registered with DuckDNS is `your_email@example.com`.
+
+```
+ docker run -it --rm --name certbot \
+  -v ./config/letsencrypt:/etc/letsencrypt \
+  -v ./config/certbot:/var/www/certbot \
+  -p 80:80 \
+  certbot/certbot certonly \
+  --standalone \
+  --preferred-challenges http \
+  --email your_email@example.com \
+  --agree-tos \
+  --no-eff-email \
+  -d hospital.duckdns.org
+```
+
+:::note
+Replace "hospital.duckdns.org" with your domain name and update the email address accordingly.
+:::
+
+:::warning
+DuckDNS is suitable for testing and demonstration purposes only. For production environments, use a proper domain name and SSL certificate to ensure security.
+:::
+
+If you follow these steps, you'll encounter the error `invalid parameter: redirect_uri` when attempting to log in to Keycloak. This occurs because the redirect URL isn't set up correctly in the Keycloak client configuration. To resolve this, we need to log in and adjust these settings.
+
+Navigate to:
+
+```
+http://IP_ADDRESS/keycloak
+```
+
+Log in using the admin credentials:
+- Username: `admin`
+- Password: `admin`
+
+Replace all IP addresses with the new domain name, using HTTPS.
+
+<div style={{padding:"56.25% 0 0 0", position:"relative"}}>
+    <iframe src="https://player.vimeo.com/video/981362676?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479"  frameBorder="0" allow="autoplay; fullscreen; picture-in-picture" allowFullScreen style= {{ position:"absolute",top:0,left:0,width:"100%",height:"100%"}} title="measurement-report"></iframe>
+</div>
+
+
+
+
+
+
+## Getting Started - DCM4CHEE
+
+
+
+
+You can follow the same steps as above to set up DCM4CHEE. The only difference is that you need to navigate to the correct directory. `platform\app\.recipes\Nginx-Dcm4chee-Keycloak`
+
+You can watch the following video, which will guide you through the process of setting up DCM4CHEE.
+
+
+<div style={{padding:"56.25% 0 0 0", position:"relative"}}>
+    <iframe src="https://player.vimeo.com/video/981362509?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479"  frameBorder="0" allow="autoplay; fullscreen; picture-in-picture" allowFullScreen style= {{ position:"absolute",top:0,left:0,width:"100%",height:"100%"}} title="measurement-report"></iframe>
+</div>
+
+
+
+## Troubleshooting
+
+
+_invalid parameter: redirect_uri_
+
+This means the redirect URL isn't set up correctly in the Keycloak client configuration. To resolve this, log in to Keycloak and adjust the settings in the correct client (ohif_viewer) and correct realm (ohif).
 
 _Exit code 137_
 
@@ -116,14 +431,6 @@ Stop running all containers:
 - Win: `docker ps -a -q | ForEach { docker stop $_ }`
 - Linux: `docker stop $(docker ps -a -q)`
 
-### Configuration
-
-After verifying that everything runs with default configuration values, you will
-likely want to update:
-
-- The domain: `http://127.0.0.1`
-- Set secure, non-default passwords
-- Regenerate Keycloak Client Secrets
 
 #### OHIF Viewer
 
@@ -132,10 +439,10 @@ configuration we use is set to a specific file when we build the viewer, and
 determined by the env variable: `APP_CONFIG`. You can see where we set its value
 in the `dockerfile` for this solution:
 
-`ENV APP_CONFIG=config/docker_openresty-orthanc-keycloak.js`
+`ENV APP_CONFIG=config/docker-nginx-orthanc-keycloak.js`
 
 You can find the configuration we're using here:
-`/public/config/docker_openresty-orthanc-keycloak.js`
+`/public/config/docker-nginx-orthanc-keycloak.js`
 
 To rebuild the `webapp` image created by our `dockerfile` after updating the
 Viewer's configuration, you can run:
@@ -143,25 +450,15 @@ Viewer's configuration, you can run:
 - `docker-compose build` OR
 - `docker-compose up --build`
 
-#### Other
 
-All other files are found in: `/docker/OpenResty-Orthanc-Keycloak/`
 
-| Service           | Configuration                                    | Docs                                        |
-| ----------------- | ------------------------------------------------ | ------------------------------------------- |
-| OHIF Viewer       | [dockerfile][dockerfile] / [config.js][config]   | You're reading them now!                    |
-| OpenResty (Nginx) | [`/nginx.conf`][config-nginx]                    | [lua-resty-openidc][lua-resty-openidc-docs] |
-| Orthanc           | [`/orthanc.json`][config-orthanc]                | [Here][orthanc-docs]                        |
-| Keycloak          | [`/ohif-keycloak-realm.json`][config-keycloak]\* |                                             |
+## Next Steps
 
-\* These are the seed values for Keycloak. They can be manually updated at
-`http://127.0.0.1/auth/admin`
-
-#### Keycloak Themeing
+### Keycloak Theming
 
 The `Login` screen for the `ohif-viewer` client is using a Custom Keycloak
 theme. You can find the source files for it in
-`/docker/OpenResty-Orthanc-Keycloak/volumes/keycloak-themes/`. You can see how
+`platform/app/.recipes/deprecated-recipes/OpenResty-Orthanc-Keycloak/volumes/keycloak-themes`. You can see how
 we add it to Keycloak in the `docker-compose` file, and you can read up on how
 to leverage custom themes in
 [Keycloak's own docs](https://www.keycloak.org/docs/latest/server_development/index.html#_themes).
@@ -170,76 +467,11 @@ to leverage custom themes in
 | ---------------------------------------------------------------------- | ---------------------------------------------------------------- |
 | ![Keycloak Default Theme](../assets/img/keycloak-default-theme.png) | ![Keycloak OHIF Theme](../assets/img/keycloak-ohif-theme.png) |
 
-## Next Steps
 
-### Deploying to Production
 
-While these configuration and docker-compose files model an environment suitable
-for production, they are not easy to deploy "as is". You can either:
 
-- Manually recreate this environment and deploy built application files **OR**
-- Deploy to a cloud kubernetes provider like
-  [Digital Ocean](https://www.digitalocean.com/products/kubernetes/) **OR**
-  - [See a full list of cloud providers here](https://landscape.cncf.io/category=cloud&format=card-mode&grouping=category)
-- Find and follow your preferred provider's guide on setting up
-  [swarms and stacks](https://docs.docker.com/get-started/)
-
-### Adding SSL
-
-Adding SSL registration and renewal for your domain with Let's Encrypt that
-terminates at Nginx is an incredibly important step toward securing your data.
-Here are some resources, specific to this setup, that may be helpful:
-
-- [lua-resty-auto-ssl](https://github.com/GUI/lua-resty-auto-ssl)
-- [Let's Encrypt + Nginx](https://www.nginx.com/blog/using-free-ssltls-certificates-from-lets-encrypt-with-nginx/)
-
-While we terminate SSL at Nginx, it may be worth using self signed certificates
-for communication between services.
-
-- [SSL Termination for TCP Upstream Servers](https://docs.nginx.com/nginx/admin-guide/security-controls/terminating-ssl-tcp/)
-
-### Use PostgresSQL w/ Orthanc
-
-Orthanc can handle a large amount of data and requests, but if you find that
-requests start to slow as you add more and more studies, you may want to
-configure your Orthanc instance to use PostgresSQL. Instructions on how to do
-that can be found in the
-[`Orthanc Server Book`](http://book.orthanc-server.com/users/docker.html), under
-"PostgreSQL and Orthanc inside Docker"
-
-### Improving This Guide
-
-Here are some improvements this guide would benefit from, and that we would be
-more than happy to accept Pull Requests for:
-
-- SSL Support
-- Complete configuration with `.env` file (or something similar)
-- Keycloak Theme improvements
-- Any security issues
-- One-click deploy to a cloud provider
 
 ## Resources
-
-### Misc. Helpful Commands
-
-_Check if `nginx.conf` is valid:_
-
-```bash
-docker run --rm -t -a stdout --name my-openresty -v $PWD/config/:/usr/local/openresty/nginx/conf/:ro openresty/openresty:alpine-fat openresty -c /usr/local/openresty/nginx/conf/nginx.conf -t
-```
-
-_Interact w/ running container:_
-
-`docker exec -it CONTAINER_NAME bash`
-
-_List running containers:_
-
-`docker ps`
-
-_Clear Keycloak DB so you can re-seed values:_
-
-- `docker volume prune` OR
-- `docker volume ls` and `docker volume rm VOLUME_NAME VOLUME_NAME`
 
 ### Referenced Articles
 

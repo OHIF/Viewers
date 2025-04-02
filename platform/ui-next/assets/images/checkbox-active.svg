@@ -1,0 +1,9 @@
+<svg width="15" height="15" viewBox="0 0 15 15" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <defs>
+        <path id="bf9k9cj5la" d="m3 7.463.994-.982 2.131 2.113L10.756 4l.994.987-5.625 5.575z"/>
+    </defs>
+    <g fill="none" fill-rule="evenodd">
+        <rect stroke="#5ACCE6" fill="#5ACCE6" x=".5" y=".5" width="14" height="14" rx="3"/>
+        <use fill="#000" xlink:href="#bf9k9cj5la"/>
+    </g>
+</svg>

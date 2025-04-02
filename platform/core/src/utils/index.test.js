@@ -22,8 +22,10 @@ describe('Top level exports', () => {
       'imageIdToURI',
       'roundNumber',
       'b64toBlob',
+      'sopClassDictionary',
       'createStudyBrowserTabs',
       'formatDate',
+      'formatTime',
       'formatPN',
       'generateAcceptHeader',
       'isEqualWithin',
@@ -39,7 +41,6 @@ describe('Top level exports', () => {
       'resolveObjectPath',
       'hierarchicalListUtils',
       'progressTrackingUtils',
-      'subscribeToNextViewportGridChange',
       'uuidv4',
       'addAccessors',
     ].sort();

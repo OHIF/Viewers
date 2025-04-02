@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="28px" height="28px" viewBox="0 0 28 28" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>tool-3d-rotate</title>
+    <g id="tool-3d-rotate" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <rect id="Rectangle" x="0" y="0" width="28" height="28"></rect>
+        <g id="Group" transform="translate(4, 3)" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5">
+            <g id="group">
+                <polyline id="Path" points="6 21.996 8.5 19.998 6 17.996"></polyline>
+                <path d="M8.5,19.998 C5.038,20.652 1,18.498 0,14.998" id="Path"></path>
+                <polyline id="Path" points="14 0 11.5 1.998 14 4"></polyline>
+                <path d="M11.5,1.998 C14.962,1.344 19,3.498 20,6.998" id="Path"></path>
+            </g>
+            <g id="3d" transform="translate(5, 5.75)">
+                <polygon id="Path" points="5 0 0 2.1875 5 4.375 10 2.1875"></polygon>
+                <polyline id="Path" points="0 2.1875 0 8.125 5 10.3125 10 8.125 10 2.1875"></polyline>
+                <line x1="5" y1="4.375" x2="5" y2="10.3125" id="Path"></line>
+            </g>
+        </g>
+    </g>
+</svg>

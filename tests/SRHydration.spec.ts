@@ -14,6 +14,6 @@ test('should hydrate SR reports correctly', async ({ page }) => {
   await checkForScreenshot(page, page, screenShotPaths.srHydration.srPreHydration);
   await page.getByTestId('yes-hydrate-btn').click();
   await checkForScreenshot(page, page, screenShotPaths.srHydration.srPostHydration);
-  await page.getByTestId('measurement-item').first().click();
+  await page.getByTestId('data-row').first().click();
   await checkForScreenshot(page, page, screenShotPaths.srHydration.srJumpToMeasurement);
 });

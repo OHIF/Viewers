@@ -9,7 +9,6 @@ import {
   UIDialogService,
   UIViewportDialogService,
   MeasurementService,
-  StateSyncService,
   DisplaySetService,
   ToolbarService,
   ViewportGridService,
@@ -20,10 +19,11 @@ import {
   CustomizationService,
   PanelService,
   WorkflowStepsService,
+  StudyPrefetcherService,
   // utils,
 } from '@ohif/core';
 
-import loadModules from './pluginImports';
+import loadModules, { loadModule as peerImport } from './pluginImports';
 
 /**
  * @param {object|func} appConfigOrFunc - application configuration, or a function that returns application configuration
@@ -41,9 +41,11 @@ async function appInit(appConfigOrFunc, defaultExtensions, defaultModes) {
 
   const appConfig = {
     ...(typeof appConfigOrFunc === 'function'
-      ? await appConfigOrFunc({ servicesManager, loadModules })
+      ? await appConfigOrFunc({ servicesManager, peerImport })
       : appConfigOrFunc),
   };
+  // Default the peer import function
+  appConfig.peerImport ||= peerImport;
 
   const extensionManager = new ExtensionManager({
     commandsManager,
@@ -70,7 +72,7 @@ async function appInit(appConfigOrFunc, defaultExtensions, defaultModes) {
     UserAuthenticationService.REGISTRATION,
     PanelService.REGISTRATION,
     WorkflowStepsService.REGISTRATION,
-    StateSyncService.REGISTRATION,
+    [StudyPrefetcherService.REGISTRATION, appConfig.studyPrefetcher],
   ]);
 
   errorHandler.getHTTPErrorHandler = () => {

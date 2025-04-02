@@ -11,7 +11,7 @@ describe('OHIF HP', () => {
   });
 
   it('Should display 3 up', () => {
-    cy.get('[data-cy="viewport-pane"]').its('length').should('be.eq', 3);
+    cy.get('[data-cy="viewport-pane"]').its('length').should('be.eq', 4);
   });
 
   it('Should navigate next/previous stage', () => {

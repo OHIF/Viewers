@@ -69,21 +69,21 @@ API, this would be `['Project', 'Location', 'Data set', 'DICOM store']`.
 
 Besides the configurable item labels themselves, several other string look ups
 are used base on EACH of the labels returned by this method.
-For instance, for the label `{itemLabel}``, the following strings are fetched for
+For instance, for the label `{itemLabel}`, the following strings are fetched for
 translation...
-1. `No {itemLabel} available`
+1. No `{itemLabel}` available
    - used to indicate no such items are available
-   - for example, for Google, `No Project available` would be 'No projects available'
-2. `Select {itemLabel}`
+   - for example, for Google, No Project available would be 'No projects available'
+2. Select `{itemLabel}`
    - used to direct selection of the item
-   - for example, for Google, `Select Project` would be 'Select a project'
-3. `Error fetching {itemLabel} list`
+   - for example, for Google, Select Project would be 'Select a project'
+3. Error fetching `{itemLabel}` list
    - used to indicate an error occurred fetching the list of items
    - usually accompanied by the error itself
-   - for example, for Google, `Error fetching Project list` would be 'Error fetching projects'
-4. `Search {itemLabel} list`
+   - for example, for Google, Error fetching Project list would be 'Error fetching projects'
+4. Search `{itemLabel}` list
    - used as the placeholder text for filtering a list of items
-   - for example, for Google, `Search Project list` would be 'Search projects'
+   - for example, for Google, Search Project list would be 'Search projects'
 
 #### `initialize`
 

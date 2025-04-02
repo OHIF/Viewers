@@ -14,9 +14,9 @@ import HangingProtocolService from './HangingProtocolService';
 import pubSubServiceInterface, { PubSubService } from './_shared/pubSubServiceInterface';
 import UserAuthenticationService from './UserAuthenticationService';
 import CustomizationService from './CustomizationService';
-import StateSyncService from './StateSyncService';
 import PanelService from './PanelService';
 import WorkflowStepsService from './WorkflowStepsService';
+import StudyPrefetcherService from './StudyPrefetcherService';
 
 import type Services from '../types/Services';
 
@@ -26,7 +26,6 @@ export {
   ServicesManager,
   ServiceProvidersManager,
   CustomizationService,
-  StateSyncService,
   UIDialogService,
   UIModalService,
   UINotificationService,
@@ -42,4 +41,5 @@ export {
   UserAuthenticationService,
   PanelService,
   WorkflowStepsService,
+  StudyPrefetcherService,
 };

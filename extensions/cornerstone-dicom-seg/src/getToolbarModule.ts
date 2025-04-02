@@ -8,7 +8,7 @@ export function getToolbarModule({ servicesManager }: withAppTypes) {
         // forcing the button to have black background since initially
         // it is designed for the toolbox not the toolbar on top
         // we should then branch the buttonSectionId to have different styles
-        const segmentations = segmentationService.getSegmentations();
+        const segmentations = segmentationService.getSegmentationRepresentations(viewportId);
         if (!segmentations?.length) {
           return {
             disabled: true,

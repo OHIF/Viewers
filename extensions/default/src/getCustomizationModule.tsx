@@ -184,6 +184,22 @@ export default function getCustomizationModule({ servicesManager, extensionManag
             },
           ],
         },
+        {
+          id: 'studyBrowser.viewPresets',
+          // change your default selected preset here
+          value: [
+            {
+              id: 'list',
+              iconName: 'ListView',
+              selected: false,
+            },
+            {
+              id: 'thumbnails',
+              iconName: 'ThumbnailView',
+              selected: true,
+            },
+          ],
+        },
       ],
     },
   ];

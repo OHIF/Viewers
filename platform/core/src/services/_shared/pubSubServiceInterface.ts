@@ -80,6 +80,9 @@ function _broadcastEvent(eventName, callbackProps) {
   const hasListeners = Object.keys(this.listeners).length > 0;
   const hasCallbacks = Array.isArray(this.listeners[eventName]);
 
+  const event = new CustomEvent(eventName, { detail: callbackProps });
+  document.body.dispatchEvent(event);
+
   if (hasListeners && hasCallbacks) {
     this.listeners[eventName].forEach(listener => {
       listener.callback(callbackProps);

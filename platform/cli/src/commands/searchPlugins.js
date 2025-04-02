@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-import { prettyPrint } from './utils/index';
+import { prettyPrint } from './utils/index.js';
 import { keywords, colors, endPoints } from './enums/index.js';
 
 async function searchRegistry(keyword) {

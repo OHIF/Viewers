@@ -1,5 +1,5 @@
 import { test } from '@playwright/test';
-import { visitStudy, checkForScreenshot, screenShotPaths } from './utils/index';
+import { visitStudy, checkForScreenshot, screenShotPaths } from './utils/index.js';
 
 test.beforeEach(async ({ page }) => {
   const studyInstanceUID = '1.3.6.1.4.1.14519.5.2.1.1706.8374.643249677828306008300337414785';

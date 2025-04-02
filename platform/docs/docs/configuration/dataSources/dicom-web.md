@@ -102,13 +102,13 @@ is running the `dev:orthanc` script in our project's `package.json` (inside
 `platform/app`). That script is:
 
 ```js
-cross-env NODE_ENV=development PROXY_TARGET=/dicom-web PROXY_DOMAIN=http://localhost:8042 APP_CONFIG=config/docker_nginx-orthanc.js webpack-dev-server --config .webpack/webpack.pwa.js -w
+cross-env NODE_ENV=development PROXY_TARGET=/dicom-web PROXY_DOMAIN=http://localhost:8042 APP_CONFIG=config/docker-nginx-orthanc.js webpack-dev-server --config .webpack/webpack.pwa.js -w
 ```
 
 - `cross-env` sets three environment variables
   - PROXY_TARGET: `/dicom-web`
   - PROXY_DOMAIN: `http://localhost:8042`
-  - APP_CONFIG: `config/docker_nginx-orthanc.js`
+  - APP_CONFIG: `config/docker-nginx-orthanc.js`
 - `webpack-dev-server` runs using the `.webpack/webpack.pwa.js` configuration
   file. It will watch for changes and update as we develop.
 
@@ -185,17 +185,6 @@ For DICOM video and PDF it has been found that Orthanc delivers multipart, while
 To learn more about how you can configure the OHIF Viewer, check out our
 [Configuration Guide](../index.md).
 
-### DICOM Upload
-See the [`dicomUploadEnabled`](#dicomuploadenabled) data source configuration option.
-
-Don't forget to add the customization to the config as well
-
-```js
-customizationService: {
-  dicomUploadComponent:
-    '@ohif/extension-cornerstone.customizationModule.cornerstoneDicomUploadComponent',
-},
-```
 
 ### DICOM PDF
 See the [`singlepart`](#singlepart) data source configuration option.
