@@ -12,9 +12,10 @@ import getCustomizationModule from './getCustomizationModule';
 import getViewportModule from './getViewportModule';
 import { id } from './id';
 import preRegistration from './init';
+import { createReportDialogPrompt } from './Panels';
+
 import { ContextMenuController, CustomizableContextMenuTypes } from './CustomizableContextMenu';
 import * as dicomWebUtils from './DicomWebDataSource/utils';
-import { createReportDialogPrompt } from './Panels';
 import createReportAsync from './Actions/createReportAsync';
 import StaticWadoClient from './DicomWebDataSource/utils/StaticWadoClient';
 import { cleanDenaturalizedDataset } from './DicomWebDataSource/utils';
@@ -25,11 +26,7 @@ import { useDisplaySetSelectorStore } from './stores/useDisplaySetSelectorStore'
 import { useHangingProtocolStageIndexStore } from './stores/useHangingProtocolStageIndexStore';
 import { useToggleHangingProtocolStore } from './stores/useToggleHangingProtocolStore';
 import { useToggleOneUpViewportGridStore } from './stores/useToggleOneUpViewportGridStore';
-import {
-  callLabelAutocompleteDialog,
-  showLabelAnnotationPopup,
-  callInputDialog,
-} from './utils/callInputDialog';
+import { callInputDialogAutoComplete, callInputDialog } from './utils/callInputDialog';
 import colorPickerDialog from './utils/colorPickerDialog';
 
 import promptSaveReport from './utils/promptSaveReport';
@@ -37,6 +34,7 @@ import promptLabelAnnotation from './utils/promptLabelAnnotation';
 import usePatientInfo from './hooks/usePatientInfo';
 import { PanelStudyBrowserHeader } from './Panels/StudyBrowser/PanelStudyBrowserHeader';
 import * as utils from './utils';
+import { Toolbox } from './utils';
 import MoreDropdownMenu from './Components/MoreDropdownMenu';
 import requestDisplaySetCreationForStudy from './Panels/requestDisplaySetCreationForStudy';
 const defaultExtension: Types.Extensions.Extension = {
@@ -82,7 +80,6 @@ export {
   CustomizableContextMenuTypes,
   getStudiesForPatientByMRN,
   dicomWebUtils,
-  createReportDialogPrompt,
   createReportAsync,
   StaticWadoClient,
   cleanDenaturalizedDataset,
@@ -94,15 +91,16 @@ export {
   useUIStateStore,
   useViewportGridStore,
   useViewportsByPositionStore,
-  showLabelAnnotationPopup,
-  callLabelAutocompleteDialog,
-  callInputDialog,
+  callInputDialogAutoComplete,
   promptSaveReport,
   promptLabelAnnotation,
   colorPickerDialog,
   usePatientInfo,
   PanelStudyBrowserHeader,
   utils,
+  Toolbox,
   MoreDropdownMenu,
   requestDisplaySetCreationForStudy,
+  callInputDialog,
+  createReportDialogPrompt,
 };

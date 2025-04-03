@@ -2,7 +2,8 @@ import SUPPORTED_TOOLS from './constants/supportedTools';
 import { getIsLocked } from './utils/getIsLocked';
 import getSOPInstanceAttributes from './utils/getSOPInstanceAttributes';
 import { getIsVisible } from './utils/getIsVisible';
-const Length = {
+
+const ArrowAnnotate = {
   toAnnotation: measurement => {},
 
   /**
@@ -172,4 +173,4 @@ function _getReport(mappedAnnotations, points, FrameOfReferenceUID) {
     values,
   };
 }
-export default Length;
+export default ArrowAnnotate;

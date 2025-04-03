@@ -4,7 +4,8 @@ import { StudySummary } from '@ohif/ui-next';
 
 const { formatDate } = utils;
 
-export function StudySummaryFromMetadata({ StudyInstanceUID }) {
+export function StudySummaryFromMetadata(props) {
+  const { StudyInstanceUID } = props;
   if (!StudyInstanceUID) {
     return null;
   }
@@ -20,6 +21,6 @@ export function StudySummaryFromMetadata({ StudyInstanceUID }) {
     <StudySummary
       date={formatDate(StudyDate)}
       description={StudyDescription}
-    ></StudySummary>
+    />
   );
 }

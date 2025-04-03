@@ -30,6 +30,8 @@ import getActiveViewportEnabledElement from './utils/getActiveViewportEnabledEle
 
 import { id } from './id';
 import { measurementMappingUtils } from './utils/measurementServiceMappings';
+import PlanarFreehandROI from './utils/measurementServiceMappings/PlanarFreehandROI';
+import RectangleROI from './utils/measurementServiceMappings/RectangleROI';
 import type { PublicViewportOptions } from './services/ViewportService/Viewport';
 import ImageOverlayViewerTool from './tools/ImageOverlayViewerTool';
 import ViewportActionCornersService from './services/ViewportActionCornersService/ViewportActionCornersService';
@@ -51,9 +53,11 @@ import { useMeasurements } from './hooks/useMeasurements';
 import getPanelModule from './getPanelModule';
 import PanelSegmentation from './panels/PanelSegmentation';
 import PanelMeasurement from './panels/PanelMeasurement';
-import DicomUpload from './components/DicomUpload/DicomUpload';
 import { useSegmentations } from './hooks/useSegmentations';
 import { StudySummaryFromMetadata } from './components/StudySummaryFromMetadata';
+import CornerstoneViewportDownloadForm from './utils/CornerstoneViewportDownloadForm';
+import utils from './utils';
+export * from './components';
 
 const { imageRetrieveMetadataProvider } = cornerstone.utilities;
 
@@ -169,9 +173,6 @@ const cornerstoneExtension: Types.Extensions.Extension = {
   getHangingProtocolModule,
   getViewportModule({ servicesManager, commandsManager }) {
     const ExtendedOHIFCornerstoneViewport = props => {
-      // const onNewImageHandler = jumpData => {
-      //   commandsManager.runCommand('jumpToImage', jumpData);
-      // };
       const { toolbarService } = servicesManager.services;
 
       return (
@@ -188,6 +189,7 @@ const cornerstoneExtension: Types.Extensions.Extension = {
       {
         name: 'cornerstone',
         component: ExtendedOHIFCornerstoneViewport,
+        isReferenceViewable: props => utils.isReferenceViewable({ ...props, servicesManager }),
       },
     ];
   },
@@ -232,6 +234,8 @@ const cornerstoneExtension: Types.Extensions.Extension = {
 export type { PublicViewportOptions };
 export {
   measurementMappingUtils,
+  PlanarFreehandROI,
+  RectangleROI,
   CornerstoneExtensionTypes as Types,
   toolNames,
   getActiveViewportEnabledElement,
@@ -252,7 +256,8 @@ export {
   useSegmentations,
   PanelSegmentation,
   PanelMeasurement,
-  DicomUpload,
   StudySummaryFromMetadata,
+  CornerstoneViewportDownloadForm,
+  utils,
 };
 export default cornerstoneExtension;

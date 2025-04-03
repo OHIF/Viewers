@@ -1,4 +1,5 @@
 import type { RunCommand } from '../../types/Command';
+import React from 'react';
 
 export type EvaluatePublic =
   | string
@@ -17,6 +18,20 @@ export type EvaluateObject = {
   [key: string]: unknown;
 };
 
+export type ButtonOptions = {
+  id: string;
+  type: 'range' | 'radio' | 'double-range' | 'custom';
+  name?: string;
+  min?: number;
+  max?: number;
+  step?: number;
+  value?: number | number[] | string;
+  commands?: (value: unknown) => void;
+  condition?: (props: Record<string, unknown>) => boolean;
+  children?: React.ReactNode | (() => React.ReactNode);
+  options?: Array<{ value: string; label: string }>;
+};
+
 export type ButtonProps = {
   id: string;
   icon: string;
@@ -27,27 +42,15 @@ export type ButtonProps = {
   className?: string;
   evaluate?: EvaluatePublic;
   listeners?: Record<string, RunCommand>;
-};
-
-export type NestedButtonProps = {
-  groupId: string;
-  // group evaluate which is different
-  // from the evaluate function for the primary and items
-  evaluate?: EvaluatePublic;
-  items: ButtonProps[];
-  primary: ButtonProps & {
-    // Todo: this is really ugly but really we don't have any other option
-    // the ui design requires this since the button should be rounded if
-    // active otherwise it should not be rounded
-    isActive?: boolean;
-  };
-  secondary: ButtonProps;
+  options?: ButtonOptions[];
+  buttonSection?: string;
 };
 
 export type Button = {
   id: string;
-  props: ButtonProps | NestedButtonProps;
+  props: ButtonProps;
   // button ui type (e.g. 'ohif.splitButton', 'ohif.radioGroup')
   // extensions can provide custom components for these types
   uiType: string;
+  component?: React.ComponentType<any>;
 };

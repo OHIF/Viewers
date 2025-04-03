@@ -87,58 +87,7 @@ export default function getToolbarModule({ commandsManager, servicesManager }: w
 
         return {
           disabled: false,
-          // Todo: isActive right now is used for nested buttons where the primary
-          // button needs to be fully rounded (vs partial rounded) when active
-          // otherwise it does not have any other use
           isActive: isPrimaryActive,
-        };
-      },
-    },
-    {
-      name: 'evaluate.group.promoteToPrimaryIfCornerstoneToolNotActiveInTheList',
-      evaluate: ({ viewportId, button, itemId }) => {
-        const { items } = button.props;
-
-        const toolGroup = toolGroupService.getToolGroupForViewport(viewportId);
-
-        if (!toolGroup) {
-          return {
-            primary: button.props.primary,
-            items,
-          };
-        }
-
-        const activeToolName = toolGroup.getActivePrimaryMouseButtonTool();
-
-        // check if the active toolName is part of the items then we need
-        // to move it to the primary button
-        const activeToolIndex = items.findIndex(item => {
-          const toolName = toolbarService.getToolNameForButton(item);
-          return toolName === activeToolName;
-        });
-
-        // if there is an active tool in the items dropdown bound to the primary mouse/touch
-        // we should show that no matter what
-        if (activeToolIndex > -1) {
-          return {
-            primary: items[activeToolIndex],
-            items,
-          };
-        }
-
-        if (!itemId) {
-          return {
-            primary: button.props.primary,
-            items,
-          };
-        }
-
-        // other wise we can move the clicked tool to the primary button
-        const clickedItemProps = items.find(item => item.id === itemId || item.itemId === itemId);
-
-        return {
-          primary: clickedItemProps,
-          items,
         };
       },
     },
@@ -241,15 +190,15 @@ export default function getToolbarModule({ commandsManager, servicesManager }: w
       },
     },
     {
-      name: 'evaluate.mpr',
+      name: 'evaluate.displaySetIsReconstructable',
       evaluate: ({ viewportId, disabledText = 'Selected viewport is not reconstructable' }) => {
-        const { protocol } = hangingProtocolService.getActiveProtocol();
+        const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
 
-        const displaySetUIDs = viewportGridService.getDisplaySetsUIDsForViewport(viewportId);
-
-        if (!displaySetUIDs?.length) {
+        if (!viewport) {
           return;
         }
+
+        const displaySetUIDs = viewportGridService.getDisplaySetsUIDsForViewport(viewportId);
 
         const displaySets = displaySetUIDs.map(displaySetService.getDisplaySetByUID);
 
@@ -261,11 +210,8 @@ export default function getToolbarModule({ commandsManager, servicesManager }: w
           return getDisabledState(disabledText);
         }
 
-        const isMpr = protocol?.id === 'mpr';
-
         return {
           disabled: false,
-          className: utils.getToggledClassName(isMpr),
         };
       },
     },

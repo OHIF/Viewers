@@ -123,7 +123,7 @@ configuration looks like:
 
 ```js
 window.config = {
-  routerBasename: '/',
+  routerBasename: null,
   extensions: [],
   modes: [],
   showStudyList: true,

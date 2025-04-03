@@ -28,6 +28,7 @@ function _initToolGroups(toolNames, Enums, toolGroupService, commandsManager) {
     ],
     passive: [
       { toolName: toolNames.Length },
+      { toolName: toolNames.SegmentBidirectional },
       {
         toolName: toolNames.ArrowAnnotate,
         configuration: {
@@ -105,14 +106,9 @@ function _initToolGroups(toolNames, Enums, toolGroupService, commandsManager) {
           // preview: {
           //   enabled: true,
           // },
-          strategySpecificConfiguration: {
-            // to use the use the center segment index to determine
-            // if inside -> same segment, if outside -> eraser
-            // useCenterSegmentIndex: true,
-            THRESHOLD: {
-              isDynamic: true,
-              dynamicRadius: 3,
-            },
+          threshold: {
+            isDynamic: true,
+            dynamicRadius: 3,
           },
         },
       },

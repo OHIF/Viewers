@@ -88,7 +88,17 @@ function TrackedMeasurementsContextProvider(
         m => trackedStudy === m.referenceStudyUID && trackedSeries.includes(m.referenceSeriesUID)
       );
 
-      const trackedMeasurement = trackedMeasurements[0];
+      // Jump to the last tracked measurement - most recent
+      if (!trackedMeasurements?.length) {
+        console.warn(
+          "Didn't find any tracked measurements",
+          measurements,
+          trackedStudy,
+          trackedSeries
+        );
+        return;
+      }
+      const trackedMeasurement = trackedMeasurements[trackedMeasurements.length - 1];
       const referencedDisplaySetUID = trackedMeasurement.displaySetInstanceUID;
 
       // update the previously stored positionPresentation with the new viewportId
@@ -166,11 +176,13 @@ function TrackedMeasurementsContextProvider(
     hydrateStructuredReport: hydrateStructuredReport.bind(null, {
       servicesManager,
       extensionManager,
+      commandsManager,
       appConfig,
     }),
     promptLabelAnnotation: promptLabelAnnotation.bind(null, {
       servicesManager,
       extensionManager,
+      commandsManager,
     }),
   });
   machineOptions.guards = Object.assign({}, machineOptions.guards, {
@@ -256,12 +268,20 @@ function TrackedMeasurementsContextProvider(
           displaySet.SOPClassHandlerId === SR_SOPCLASSHANDLERID &&
           displaySet.isRehydratable === true
         ) {
-          console.log('sending event...', trackedMeasurements);
-          sendTrackedMeasurementsEvent('PROMPT_HYDRATE_SR', {
+          const params = {
             displaySetInstanceUID: displaySet.displaySetInstanceUID,
             SeriesInstanceUID: displaySet.SeriesInstanceUID,
             viewportId: activeViewportId,
-          });
+          };
+
+          // Check if we should bypass the confirmation prompt
+          const disableConfirmationPrompts = appConfig?.disableConfirmationPrompts;
+
+          if (disableConfirmationPrompts) {
+            sendTrackedMeasurementsEvent('HYDRATE_SR', params);
+          } else {
+            sendTrackedMeasurementsEvent('PROMPT_HYDRATE_SR', params);
+          }
         }
       }
     };
@@ -272,6 +292,7 @@ function TrackedMeasurementsContextProvider(
     sendTrackedMeasurementsEvent,
     servicesManager.services,
     viewports,
+    appConfig,
   ]);
 
   useEffect(() => {
@@ -293,9 +314,6 @@ function TrackedMeasurementsContextProvider(
 
 TrackedMeasurementsContextProvider.propTypes = {
   children: PropTypes.oneOf([PropTypes.func, PropTypes.node]),
-  servicesManager: PropTypes.object.isRequired,
-  commandsManager: PropTypes.object.isRequired,
-  extensionManager: PropTypes.object.isRequired,
   appConfig: PropTypes.object,
 };
 

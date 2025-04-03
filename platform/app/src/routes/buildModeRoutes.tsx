@@ -1,6 +1,5 @@
 import React from 'react';
 import ModeRoute from '@routes/Mode';
-import publicUrl from '../utils/publicUrl';
 
 /*
   Routes uniquely define an entry point to:
@@ -63,7 +62,7 @@ export default function buildModeRoutes({
 
     // Add active DataSource route.
     // This is the DataSource route for the active data source defined in ExtensionManager.getActiveDataSource
-    const path = `${publicUrl}${mode.routeName}`;
+    const path = `${mode.routeName}`;
 
     // TODO move up.
     const children = () => (

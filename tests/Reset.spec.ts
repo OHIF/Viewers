@@ -13,6 +13,6 @@ test('should reset the image to its original state', async ({ page }) => {
   await page.getByTestId('MoreTools-split-button-secondary').click();
   await page.getByTestId('invert').click();
   await page.getByTestId('MoreTools-split-button-secondary').click();
-  await page.getByTestId('Reset').click();
+  await page.getByText('Reset View').click();
   await checkForScreenshot(page, page, screenShotPaths.reset.resetDisplayedCorrectly);
 });

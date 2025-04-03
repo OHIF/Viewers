@@ -83,9 +83,6 @@ const extension: Types.Extensions.Extension = {
       return (
         <MicroscopyViewport
           key={displaySetsKey}
-          servicesManager={servicesManager}
-          extensionManager={extensionManager}
-          commandsManager={commandsManager}
           activeViewportId={activeViewportId}
           setViewportActive={(viewportId: string) => {
             viewportGridService.setActiveViewportId(viewportId);

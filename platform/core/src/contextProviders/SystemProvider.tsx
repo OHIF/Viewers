@@ -14,7 +14,7 @@ interface SystemContextProviderProps {
 const systemContext = createContext(null);
 const { Provider } = systemContext;
 
-export const useSystem = () => useContext(systemContext);
+export const useSystem = () => useContext<SystemContextProviderProps>(systemContext);
 
 export function SystemContextProvider({
   children,

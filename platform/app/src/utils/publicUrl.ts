@@ -1,4 +1,6 @@
 const publicUrl = (window as any).PUBLIC_URL || '/';
-console.log('publicUrl', publicUrl);
+const routerBasename = (window as any).config?.routerBasename || publicUrl;
+
+export { publicUrl, routerBasename };
+
 export default publicUrl;
-export { publicUrl };

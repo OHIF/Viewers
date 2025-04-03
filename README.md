@@ -1,5 +1,4 @@
 <!-- prettier-ignore-start -->
-<!-- markdownlint-disable -->
 <div align="center">
   <h1>OHIF Medical Imaging Viewer</h1>
   <p><strong>The OHIF Viewer</strong> is a zero-footprint medical image viewer
@@ -135,7 +134,7 @@ Here is a schematic representation of our development workflow:
 
 ### Requirements
 
-- [Yarn 1.17.3+](https://yarnpkg.com/en/docs/install)
+- [Yarn 1.20.0+](https://yarnpkg.com/en/docs/install)
 - [Node 18+](https://nodejs.org/en/)
 - Yarn Workspaces should be enabled on your machine:
   - `yarn config set workspaces-experimental true`

@@ -1,7 +1,5 @@
 import React from 'react';
 import { DataRow } from '../../../../ui-next/src/components/DataRow';
-import { Button } from '../../../../ui-next/src/components/Button';
-import { Icons } from '../../../../ui-next/src/components/Icons';
 
 // Mock data to demonstrate DataRow usage
 const mockData = [

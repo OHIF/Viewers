@@ -2,12 +2,14 @@ import React from 'react';
 import RowInputRange from './RowInputRange';
 import RowSegmentedControl from './RowSegmentedControl';
 import RowDoubleRange from './RowDoubleRange';
+import { Button } from '../Button';
 
 const SETTING_TYPES = {
   RANGE: 'range',
   RADIO: 'radio',
   CUSTOM: 'custom',
   DOUBLE_RANGE: 'double-range',
+  BUTTON: 'button',
 };
 
 function ToolSettings({ options }) {
@@ -35,6 +37,8 @@ function ToolSettings({ options }) {
             return renderDoubleRangeSetting(option);
           case SETTING_TYPES.CUSTOM:
             return renderCustomSetting(option);
+          case SETTING_TYPES.BUTTON:
+            return renderButtonSetting(option);
           default:
             return null;
         }
@@ -56,7 +60,7 @@ const renderRangeSetting = option => {
           maxValue={option.max}
           step={option.step}
           value={option.value}
-          onChange={value => option.commands?.(value)}
+          onChange={value => option.onChange?.(value)}
           allowNumberEdit={true}
           inputClassName="ml-1 w-4/5 cursor-pointer"
         />
@@ -70,6 +74,7 @@ const renderRadioSetting = option => {
     <RowSegmentedControl
       key={option.id}
       option={option}
+      onChange={option.onChange}
     />
   );
 };
@@ -79,7 +84,7 @@ function renderDoubleRangeSetting(option) {
     <RowDoubleRange
       key={option.id}
       values={option.value}
-      onChange={option.commands}
+      onChange={option.onChange}
       minValue={option.min}
       maxValue={option.max}
       step={option.step}
@@ -93,6 +98,18 @@ const renderCustomSetting = option => {
     <div key={option.id}>
       {typeof option.children === 'function' ? option.children() : option.children}
     </div>
+  );
+};
+
+const renderButtonSetting = option => {
+  return (
+    <Button
+      className="bg-primary"
+      key={option.id}
+      onClick={() => option.onChange()}
+    >
+      {option.name}
+    </Button>
   );
 };
 

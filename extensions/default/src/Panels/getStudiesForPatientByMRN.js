@@ -1,12 +1,19 @@
 async function getStudiesForPatientByMRN(dataSource, qidoForStudyUID) {
-  if (qidoForStudyUID && qidoForStudyUID.length && qidoForStudyUID[0].mrn) {
-    return dataSource.query.studies.search({
-      patientId: qidoForStudyUID[0].mrn,
-      disableWildcard: true,
-    });
+  if (!qidoForStudyUID?.length) {
+    return [];
   }
-  console.log('No mrn found for', qidoForStudyUID);
-  return qidoForStudyUID;
+
+  const mrn = qidoForStudyUID[0].mrn;
+
+  // if not defined or empty, return the original qidoForStudyUID
+  if (!mrn) {
+    return qidoForStudyUID;
+  }
+
+  return dataSource.query.studies.search({
+    patientId: mrn,
+    disableWildcard: true,
+  });
 }
 
 export default getStudiesForPatientByMRN;

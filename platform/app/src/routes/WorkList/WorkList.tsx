@@ -10,8 +10,8 @@ import { useTranslation } from 'react-i18next';
 import filtersMeta from './filtersMeta.js';
 import { useAppConfig } from '@state';
 import { useDebounce, useSearchParams } from '@hooks';
-import { utils, hotkeys } from '@ohif/core';
-import publicUrl from '../../utils/publicUrl';
+import { utils } from '@ohif/core';
+import { routerBasename } from '../../utils/publicUrl';
 
 import {
   StudyListExpandedRow,
@@ -19,9 +19,6 @@ import {
   StudyListTable,
   StudyListPagination,
   StudyListFilter,
-  useModal,
-  AboutModal,
-  UserPreferences,
   useSessionStorage,
   InvestigationalUseDialog,
   Button,
@@ -35,20 +32,18 @@ import {
   TooltipTrigger,
   TooltipContent,
   Clipboard,
+  useModal,
   Onboarding,
   ScrollArea,
 } from '@ohif/ui-next';
 
 import { Types } from '@ohif/ui';
 
-import i18n from '@ohif/i18n';
 import { preserveQueryParameters, preserveQueryStrings } from '../../utils/preserveQueryParameters';
 
 const PatientInfoVisibility = Types.PatientInfoVisibility;
 
 const { sortBySeriesDate } = utils;
-
-const { availableLanguages, defaultLanguage, currentLanguage } = i18n;
 
 const seriesInStudiesMap = new Map();
 
@@ -102,6 +97,7 @@ function WorkList({
   const sortModifier = sortDirection === 'descending' ? 1 : -1;
   const defaultSortValues =
     shouldUseDefaultSort && canSort ? { sortBy: 'studyDate', sortDirection: 'ascending' } : {};
+  const { customizationService } = servicesManager.services;
 
   const sortedStudies = useMemo(() => {
     if (!canSort) {
@@ -213,7 +209,7 @@ function WorkList({
       skipEmptyString: true,
     });
     navigate({
-      pathname: publicUrl,
+      pathname: '/',
       search: search ? `?${search}` : undefined,
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -421,7 +417,7 @@ function WorkList({
                   <Link
                     className={isValidMode ? '' : 'cursor-not-allowed'}
                     key={i}
-                    to={`${publicUrl}${mode.routeName}${dataPath || ''}?${query.toString()}`}
+                    to={`${mode.routeName}${dataPath || ''}?${query.toString()}`}
                     onClick={event => {
                       // In case any event bubbles up for an invalid mode, prevent the navigation.
                       // For example, the event bubbles up when the icon embedded in the disabled button is clicked.
@@ -470,8 +466,9 @@ function WorkList({
   });
 
   const hasStudies = numOfStudies > 0;
-  const versionNumber = process.env.VERSION_NUMBER;
-  const commitHash = process.env.COMMIT_HASH;
+
+  const AboutModal = customizationService.getCustomization('ohif.aboutModal');
+  const UserPreferencesModal = customizationService.getCustomization('ohif.userPreferencesModal');
 
   const menuOptions = [
     {
@@ -479,10 +476,9 @@ function WorkList({
       icon: 'info',
       onClick: () =>
         show({
-          content: AboutModal,
+          content: AboutModal as React.ComponentType,
           title: t('AboutModal:About OHIF Viewer'),
-          contentProps: { versionNumber, commitHash },
-          containerDimensions: 'max-w-4xl max-h-4xl',
+          containerClassName: 'max-w-md ',
         }),
     },
     {
@@ -491,24 +487,8 @@ function WorkList({
       onClick: () =>
         show({
           title: t('UserPreferencesModal:User preferences'),
-          content: UserPreferences,
-          contentProps: {
-            hotkeyDefaults: hotkeysManager.getValidHotkeyDefinitions(hotkeyDefaults),
-            hotkeyDefinitions,
-            onCancel: hide,
-            currentLanguage: currentLanguage(),
-            availableLanguages,
-            defaultLanguage,
-            onSubmit: state => {
-              if (state.language.value !== currentLanguage().value) {
-                i18n.changeLanguage(state.language.value);
-              }
-              hotkeysManager.setHotkeys(state.hotkeyDefinitions);
-              hide();
-            },
-            onReset: () => hotkeysManager.restoreDefaultBindings(),
-            hotkeysModule: hotkeys,
-          },
+          content: UserPreferencesModal as React.ComponentType,
+          containerClassName: 'flex  max-w-4xl flex-col',
         }),
     },
   ];
@@ -523,7 +503,6 @@ function WorkList({
     });
   }
 
-  const { customizationService } = servicesManager.services;
   const LoadingIndicatorProgress = customizationService.getCustomization(
     'ui.loadingIndicatorProgress'
   );

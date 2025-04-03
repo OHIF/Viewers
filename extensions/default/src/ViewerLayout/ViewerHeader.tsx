@@ -2,23 +2,17 @@ import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
-import { UserPreferences, AboutModal, useModal } from '@ohif/ui';
-import { Header } from '@ohif/ui-next';
-import i18n from '@ohif/i18n';
-import { hotkeys } from '@ohif/core';
+import { Button, Header, Icons, useModal } from '@ohif/ui-next';
+import { useSystem } from '@ohif/core';
 import { Toolbar } from '../Toolbar/Toolbar';
 import HeaderPatientInfo from './HeaderPatientInfo';
 import { PatientInfoVisibility } from './HeaderPatientInfo/HeaderPatientInfo';
-import { preserveQueryParameters, publicUrl } from '@ohif/app';
+import { preserveQueryParameters } from '@ohif/app';
 
-const { availableLanguages, defaultLanguage, currentLanguage } = i18n;
+function ViewerHeader({ appConfig }: withAppTypes<{ appConfig: AppTypes.Config }>) {
+  const { servicesManager, extensionManager, commandsManager } = useSystem();
+  const { customizationService } = servicesManager.services;
 
-function ViewerHeader({
-  hotkeysManager,
-  extensionManager,
-  servicesManager,
-  appConfig,
-}: withAppTypes<{ appConfig: AppTypes.Config }>) {
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -36,16 +30,16 @@ function ViewerHeader({
     preserveQueryParameters(searchQuery);
 
     navigate({
-      pathname: publicUrl,
+      pathname: '/',
       search: decodeURIComponent(searchQuery.toString()),
     });
   };
 
   const { t } = useTranslation();
-  const { show, hide } = useModal();
-  const { hotkeyDefinitions, hotkeyDefaults } = hotkeysManager;
-  const versionNumber = process.env.VERSION_NUMBER;
-  const commitHash = process.env.COMMIT_HASH;
+  const { show } = useModal();
+
+  const AboutModal = customizationService.getCustomization('ohif.aboutModal');
+  const UserPreferencesModal = customizationService.getCustomization('ohif.userPreferencesModal');
 
   const menuOptions = [
     {
@@ -55,8 +49,7 @@ function ViewerHeader({
         show({
           content: AboutModal,
           title: t('AboutModal:About OHIF Viewer'),
-          contentProps: { versionNumber, commitHash },
-          containerDimensions: 'max-w-4xl max-h-4xl',
+          containerClassName: 'max-w-md',
         }),
     },
     {
@@ -64,30 +57,9 @@ function ViewerHeader({
       icon: 'settings',
       onClick: () =>
         show({
+          content: UserPreferencesModal,
           title: t('UserPreferencesModal:User preferences'),
-          content: UserPreferences,
-          containerDimensions: 'w-[70%] max-w-[900px]',
-          contentProps: {
-            hotkeyDefaults: hotkeysManager.getValidHotkeyDefinitions(hotkeyDefaults),
-            hotkeyDefinitions,
-            currentLanguage: currentLanguage(),
-            availableLanguages,
-            defaultLanguage,
-            onCancel: () => {
-              hotkeys.stopRecord();
-              hotkeys.unpause();
-              hide();
-            },
-            onSubmit: ({ hotkeyDefinitions, language }) => {
-              if (language.value !== currentLanguage().value) {
-                i18n.changeLanguage(language.value);
-              }
-              hotkeysManager.setHotkeys(hotkeyDefinitions);
-              hide();
-            },
-            onReset: () => hotkeysManager.restoreDefaultBindings(),
-            hotkeysModule: hotkeys,
-          },
+          containerClassName: 'flex max-w-4xl p-6 flex-col',
         }),
     },
   ];
@@ -121,6 +93,28 @@ function ViewerHeader({
             appConfig={appConfig}
           />
         )
+      }
+      UndoRedo={
+        <div className="text-primary-active flex cursor-pointer items-center">
+          <Button
+            variant="ghost"
+            className="hover:bg-primary-dark"
+            onClick={() => {
+              commandsManager.run('undo');
+            }}
+          >
+            <Icons.Undo className="" />
+          </Button>
+          <Button
+            variant="ghost"
+            className="hover:bg-primary-dark"
+            onClick={() => {
+              commandsManager.run('redo');
+            }}
+          >
+            <Icons.Redo className="" />
+          </Button>
+        </div>
       }
     >
       <div className="relative flex justify-center gap-[4px]">
