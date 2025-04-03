@@ -9,6 +9,7 @@ import toolNames from './tools/toolNames';
 import hydrateStructuredReport from './utils/hydrateStructuredReport';
 import createReferencedImageDisplaySet from './utils/createReferencedImageDisplaySet';
 import Enums from './enums';
+import getCustomizationModule from './getCustomizationModules';
 
 const Component = React.lazy(() => {
   return import(/* webpackPrefetch: true */ './components/OHIFCornerstoneSRViewport');
@@ -67,6 +68,7 @@ const dicomSRExtension = {
       },
     ];
   },
+  getCustomizationModule,
 };
 
 export default dicomSRExtension;
