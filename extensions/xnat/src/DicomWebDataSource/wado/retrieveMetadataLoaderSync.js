@@ -15,6 +15,9 @@ export default class RetrieveMetadataLoaderSync extends RetrieveMetadataLoader {
 
     const options = {
       studyInstanceUID,
+      queryParams: {
+        includefield: 'all', // Request all DICOM tags instead of a subset
+      },
     };
 
     const { seriesInstanceUID } = filters;
@@ -31,17 +34,26 @@ export default class RetrieveMetadataLoaderSync extends RetrieveMetadataLoader {
   *getLoaders() {
     const loaders = [];
     const { studyInstanceUID, filters: { seriesInstanceUID } = {}, client } = this;
+    
+    // Query params to retrieve all DICOM tags
+    const queryParams = {
+      includefield: 'all',
+    };
 
     if (seriesInstanceUID) {
       loaders.push(
         client.retrieveSeriesMetadata.bind(client, {
           studyInstanceUID,
           seriesInstanceUID,
+          queryParams,
         })
       );
     }
 
-    loaders.push(client.retrieveStudyMetadata.bind(client, { studyInstanceUID }));
+    loaders.push(client.retrieveStudyMetadata.bind(client, { 
+      studyInstanceUID,
+      queryParams,
+    }));
 
     yield* loaders;
   }

@@ -61,6 +61,7 @@ const xnat = {
   studyBrowser: '@ohif/extension-xnat.panelModule.xnatStudyBrowser',
 };
 
+
 const extensionDependencies = {
   // Can derive the versions at least process.env.from npm_package_version
   '@ohif/extension-default': '^3.0.0',
@@ -287,7 +288,16 @@ function modeFactory({ modeConfiguration }) {
     /** List of extensions that are used by the mode */
     extensions: extensionDependencies,
     /** HangingProtocol used by the mode */
-    hangingProtocol: ['default'],
+    hangingProtocol: [
+      'default', 
+      'mpr', 
+      'main3D', 
+      'mprAnd3DVolumeViewport', 
+      'only3D', 
+      'primary3D', 
+      'primaryAxial', 
+      'fourUp'
+    ],
     /** SopClassHandlers used by the mode */
     sopClassHandlers: [
       dicomvideo.sopClassHandler,

@@ -181,6 +181,7 @@ const makeDisplaySet = instances => {
   };
   
   console.log('XNAT: Setting display set attributes:', attributesToSet);
+  console.log('XNAT: Number of image frames:', instances.length, 'for display set:', imageSet.uid);
   
   imageSet.setAttributes(attributesToSet);
 

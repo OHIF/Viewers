@@ -4,6 +4,7 @@ import defaultContextMenuCustomization from './customizations/defaultContextMenu
 import helloPageCustomization from './customizations/helloPageCustomization';
 import labellingFlowCustomization from './customizations/labellingFlowCustomization';
 import viewportNotificationCustomization from './customizations/notificationCustomization';
+import layoutSelectorCustomization from './customizations/layoutSelectorCustomization';
 
 /**
  * Maps XNAT metadata to a format the study browser expects
@@ -126,6 +127,12 @@ export default function getCustomizationModule({ servicesManager, extensionManag
     {
       name: 'viewportNotification',
       value: viewportNotificationCustomization,
+    },
+    {
+      name: 'default',
+      value: {
+        ...layoutSelectorCustomization,
+      },
     },
     {
       name: 'ohif.divider',

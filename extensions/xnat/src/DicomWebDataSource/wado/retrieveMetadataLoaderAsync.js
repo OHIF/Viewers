@@ -4,7 +4,7 @@ import RetrieveMetadataLoader from './retrieveMetadataLoader';
 
 // Series Date, Series Time, Series Description and Series Number to be included
 // in the series metadata query result
-const includeField = ['00080021', '00080031', '0008103E', '00200011'].join(',');
+const includeField = 'all';
 
 export class DeferredPromise {
   metadata = undefined;
@@ -75,6 +75,9 @@ function makeSeriesAsyncLoader(client, studyInstanceUID, seriesInstanceUIDList) 
         return client.retrieveSeriesMetadata({
           studyInstanceUID,
           seriesInstanceUID,
+          queryParams: {
+            includefield: 'all', // Request all DICOM tags
+          },
         });
       });
       return promise;

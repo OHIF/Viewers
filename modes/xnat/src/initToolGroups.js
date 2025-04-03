@@ -302,9 +302,20 @@ function initVolume3DToolGroup(extensionManager, toolGroupService) {
         bindings: [{ mouseButton: Enums.MouseBindings.Auxiliary }],
       },
     ],
+    enabled: [
+      { toolName: toolNames.DragProbe },
+      { toolName: toolNames.WindowLevel },
+    ],
   };
 
+  // Make sure this tool group exists and is configured properly
+  if (toolGroupService.getToolGroup('volume3d')) {
+    toolGroupService.destroyToolGroup('volume3d');
+  }
+
   toolGroupService.createToolGroupAndAddTools('volume3d', tools);
+  
+  console.log('Volume3D toolgroup initialized:', toolGroupService.getToolGroup('volume3d'));
 }
 
 function initToolGroups(extensionManager, toolGroupService, commandsManager) {

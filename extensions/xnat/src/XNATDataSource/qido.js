@@ -120,11 +120,9 @@ async function search(dicomWebClient, studyInstanceUid, seriesInstanceUid, query
  * @returns {Promise} - Resolves SeriesMetadata[] in study
  */
 export function seriesInStudy(dicomWebClient, studyInstanceUID) {
-  // Series Description
-  // Already included?
-  const commaSeparatedFields = ['0008103E', '00080021'].join(',');
+  // Request all DICOM tags instead of just specific ones
   const queryParams = {
-    includefield: commaSeparatedFields,
+    includefield: 'all',
   };
 
   return dicomWebClient.searchForSeries({ studyInstanceUID, queryParams });
@@ -151,11 +149,6 @@ function mapParams(params, options = {}) {
   if (!params) {
     return;
   }
-  const commaSeparatedFields = [
-    '00081030', // Study Description
-    '00080060', // Modality
-    // Add more fields here if you want them in the result
-  ].join(',');
 
   const useWildcard =
     params?.disableWildcard !== undefined ? !params.disableWildcard : options.supportsWildcard;
@@ -176,7 +169,7 @@ function mapParams(params, options = {}) {
     limit: params.limit || 101,
     offset: params.offset || 0,
     fuzzymatching: options.supportsFuzzyMatching === true,
-    includefield: commaSeparatedFields, // serverSupportsQIDOIncludeField ? commaSeparatedFields : 'all',
+    includefield: 'all', // Request all DICOM tags
   };
 
   // build the StudyDate range parameter

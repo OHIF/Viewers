@@ -4,9 +4,10 @@
 }
 
 .dicom-tag-browser-table-wrapper {
-  /*  height: 500px;*/
-  /*overflow-y: scroll;*/
-  overflow-x: scroll;
+  margin-top: 20px;
+  overflow-y: auto;
+  flex-grow: 1;
+  max-height: calc(100% - 120px);
 }
 
 .dicom-tag-browser-table tr {
@@ -23,10 +24,12 @@
 }
 
 .dicom-tag-browser-content {
-  overflow: hidden;
+  height: 100%;
   width: 100%;
-  padding-bottom: 50px;
-  /*height: 500px;*/
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  overflow: hidden;
 }
 
 .dicom-tag-browser-instance-range .range {
@@ -34,20 +37,49 @@
 }
 
 .dicom-tag-browser-instance-range {
-  padding: 20px 0 20px 0;
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
 }
 
-.dicom-tag-browser-table td.dicom-tag-browser-table-center {
+.dicom-tag-browser-instance-range p {
+  margin-top: 10px;
+  text-align: center;
+}
+
+.dicom-tag-browser-table td,
+.dicom-tag-browser-table th {
+  padding: 4px 8px;
+  border: 1px solid var(--ui-border-color-dark, #3b3b3b);
+  text-align: left;
+}
+
+.dicom-tag-browser-table-left {
+  text-align: left;
+}
+
+.dicom-tag-browser-table-center {
   text-align: center;
 }
 
 .dicom-tag-browser-table th {
-  padding-left: 10px;
-  padding-right: 10px;
-  text-align: center;
-  color: '#20A5D6';
+  position: sticky;
+  top: 0;
+  background: var(--ui-gray-dark, #454545);
+  z-index: 1;
 }
 
-.dicom-tag-browser-table th.dicom-tag-browser-table-left {
-  text-align: left;
+/* Add some styling for the select dropdown */
+.dicom-browser-select {
+  width: 100%;
 }
+
+/* Style for alternating rows 
+.dicom-tag-browser-table tbody tr:nth-child(even) {
+  background-color: var(--ui-gray-darkest, #242424);
+}
+
+.dicom-tag-browser-table tbody tr:hover {
+  background-color: var(--ui-gray-darker, #2c2c2c);
+}
+*/

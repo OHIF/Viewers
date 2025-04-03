@@ -1543,19 +1543,31 @@ function createXNATApi(xnatConfig: XNATConfig, servicesManager) {
         console.log('XNAT store dicom');
         if (!wadoDicomWebClient) {
           console.error('wadoDicomWebClient not available - store dicom may fail');
-          return;
+          throw new Error('XNAT storeInstances failed: wadoDicomWebClient not available');
         }
-        wadoDicomWebClient.headers = getAuthorizationHeader();
         
-        const naturalizedDatasets = Array.isArray(datasets)
-          ? datasets.map(naturalizeDataset)
-          : [naturalizeDataset(datasets)];
-        
-        const denaturalizedDatasets = naturalizedDatasets.map(denaturalizeDataset);
-        
-        return wadoDicomWebClient.storeInstances({
-          datasets: denaturalizedDatasets,
-        });
+        try {
+          // Set the headers for authentication
+          wadoDicomWebClient.headers = getAuthorizationHeader();
+          console.log('XNAT store dicom: using headers', wadoDicomWebClient.headers);
+          
+          const naturalizedDatasets = Array.isArray(datasets)
+            ? datasets.map(naturalizeDataset)
+            : [naturalizeDataset(datasets)];
+          
+          const denaturalizedDatasets = naturalizedDatasets.map(denaturalizeDataset);
+          
+          // Attempt to store the instances
+          const result = await wadoDicomWebClient.storeInstances({
+            datasets: denaturalizedDatasets,
+          });
+          
+          console.log('XNAT store dicom: success', result);
+          return result;
+        } catch (error) {
+          console.error('XNAT store dicom: failed', error);
+          throw new Error(`XNAT storeInstances failed: ${error.message || 'unknown error'}`);
+        }
       },
     },
     

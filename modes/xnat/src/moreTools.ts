@@ -4,6 +4,12 @@ import { ToolbarService, ViewportGridService } from '@ohif/core';
 import { setToolActiveToolbar } from './toolbarButtons';
 const { createButton } = ToolbarService;
 
+// Constants to avoid undefined reference errors
+const VIEWPORT_GRID_EVENTS = {
+  ACTIVE_VIEWPORT_ID_CHANGED: 'event::activeviewportidchanged',
+  VIEWPORTS_READY: 'event::viewportsReady',
+};
+
 const ReferenceLinesListeners: RunCommand = [
   {
     commandName: 'setSourceViewportForReferenceLinesTool',
@@ -100,8 +106,8 @@ const moreTools = [
           tooltip: 'Show Reference Lines',
           commands: 'toggleEnabledDisabledToolbar',
           listeners: {
-            [ViewportGridService.EVENTS.ACTIVE_VIEWPORT_ID_CHANGED]: ReferenceLinesListeners,
-            [ViewportGridService.EVENTS.VIEWPORTS_READY]: ReferenceLinesListeners,
+            [VIEWPORT_GRID_EVENTS.ACTIVE_VIEWPORT_ID_CHANGED]: ReferenceLinesListeners,
+            [VIEWPORT_GRID_EVENTS.VIEWPORTS_READY]: ReferenceLinesListeners,
           },
           evaluate: [
             'evaluate.cornerstoneTool.toggle',

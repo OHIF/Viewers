@@ -136,6 +136,14 @@ window.config = {
           headers: {
             Accept: 'application/octet-stream,application/json,*/*',
           },
+        },
+        getAuthorizationHeader: () => {
+          // Return proper authentication headers for XNAT
+          // For cookie-based authentication:
+          return {
+            'X-XNAT-CSRF': document.cookie.split('XSRF-TOKEN=')[1]?.split(';')[0] || '',
+            'withCredentials': true
+          };
         }
       },
     }
@@ -295,12 +303,19 @@ window.config = {
     window.DICOMWeb = window.DICOMWeb || {};
     
     // Add global getAuthorizationHeader to the right namespaces
-    window.DICOMWeb.getAuthorizationHeader = () => undefined;
-    window.getAuthorizationHeader = () => undefined;
+    window.DICOMWeb.getAuthorizationHeader = () => {
+      // Return proper authentication headers for XNAT
+      // For cookie-based authentication:
+      return {
+        'X-XNAT-CSRF': document.cookie.split('XSRF-TOKEN=')[1]?.split(';')[0] || '',
+        'withCredentials': true
+      };
+    };
+    window.getAuthorizationHeader = window.DICOMWeb.getAuthorizationHeader;
     
     // Add the function to the @ohif/core namespace if it exists
     if (window.OHIF && window.OHIF.DICOMWeb) {
-      window.OHIF.DICOMWeb.getAuthorizationHeader = () => undefined;
+      window.OHIF.DICOMWeb.getAuthorizationHeader = window.DICOMWeb.getAuthorizationHeader;
     }
     // Add cornerstone event listeners for DICOM loading
     try {
@@ -433,8 +448,15 @@ window.config = {
 (function applyImmediatePatches() {
   // Define global getAuthorizationHeader function
   window.DICOMWeb = window.DICOMWeb || {};
-  window.DICOMWeb.getAuthorizationHeader = () => undefined;
-  window.getAuthorizationHeader = () => undefined;
+  window.DICOMWeb.getAuthorizationHeader = () => {
+    // Return proper authentication headers for XNAT
+    // For cookie-based authentication:
+    return {
+      'X-XNAT-CSRF': document.cookie.split('XSRF-TOKEN=')[1]?.split(';')[0] || '',
+      'withCredentials': true
+    };
+  };
+  window.getAuthorizationHeader = window.DICOMWeb.getAuthorizationHeader;
   
   // Create global dicomWebConfig
   window.dicomWebConfig = {

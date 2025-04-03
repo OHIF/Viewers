@@ -500,12 +500,68 @@ const commandsModule = ({
       const { UIModalService } = servicesManager.services;
 
       const defaultDisplaySetInstanceUID = displaySetInstanceUID || displaySetInstanceUIDs[0];
+      
+      // Try to get the study instance UID from the display set
+      let studyInstanceUID = '';
+      let sessionInfo = null;
+      
+      // Find the selected display set to get its study UID
+      const selectedDisplaySet = displaySets.find(ds => 
+        ds.displaySetInstanceUID === defaultDisplaySetInstanceUID
+      );
+      
+      if (selectedDisplaySet && selectedDisplaySet.StudyInstanceUID) {
+        studyInstanceUID = selectedDisplaySet.StudyInstanceUID;
+        
+        // Try to get session info from various places
+        try {
+          // 1. Try using sessionRouter service if available
+          const { sessionRouter } = servicesManager.services;
+          if (sessionRouter) {
+            sessionInfo = {
+              projectId: sessionRouter.projectId,
+              experimentId: sessionRouter.experimentId,
+              subjectId: sessionRouter.subjectId
+            };
+          }
+          
+          // 2. Check for session in AppContext.xnatSessions map if available
+          if (!sessionInfo && window.sessionStorage) {
+            const projectId = window.sessionStorage.getItem('xnat_projectId');
+            const experimentId = window.sessionStorage.getItem('xnat_experimentId');
+            const subjectId = window.sessionStorage.getItem('xnat_subjectId');
+            
+            if (projectId && experimentId) {
+              sessionInfo = { projectId, experimentId, subjectId };
+            }
+          }
+          
+          // 3. Check dicomMetadataStore for additional session data in study
+          if (!sessionInfo && studyInstanceUID) {
+            const study = DicomMetadataStore.getStudy(studyInstanceUID);
+            if (study && study.experimentId) {
+              sessionInfo = {
+                projectId: study.projectId || '',
+                experimentId: study.experimentId || study.AccessionNumber || '',
+                subjectId: study.subjectId || study.PatientID || ''
+              };
+            }
+          }
+          
+          console.log('XNAT: Tag Browser session info:', sessionInfo);
+        } catch (error) {
+          console.warn('XNAT: Error getting session info for Tag Browser:', error);
+        }
+      }
+      
       UIModalService.show({
         content: DicomTagBrowser,
         contentProps: {
           displaySets,
           displaySetInstanceUID: defaultDisplaySetInstanceUID,
           onClose: UIModalService.hide,
+          sessionInfo, // Pass session info to DicomTagBrowser if available
+          studyInstanceUID,
         },
         containerDimensions: 'w-[70%] max-w-[900px]',
         title: 'DICOM Tag Browser',

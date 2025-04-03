@@ -63,6 +63,7 @@ function LayoutSelector({
     'layoutSelector.advancedPresetGenerator'
   );
 
+  // Get the standard advanced presets
   const advancedPresets = advancedPresetsGenerator({ servicesManager });
 
   const closeOnOutsideClick = event => {

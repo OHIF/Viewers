@@ -1,9 +1,16 @@
-import type { Button } from '@ohif/core/types';
+import { Button } from '@ohif/core/src/types';
 import { ToolbarService, ViewportGridService } from '@ohif/core';
+import { EVENTS } from '@cornerstonejs/core';
 
 const { createButton } = ToolbarService;
 
-const ReferenceLinesListeners: RunCommand = [
+// Constants to avoid undefined reference errors
+const VIEWPORT_GRID_EVENTS = {
+  ACTIVE_VIEWPORT_ID_CHANGED: 'event::activeviewportidchanged',
+  VIEWPORTS_READY: 'event::viewportsReady',
+};
+
+const ReferenceLinesListeners = [
   {
     commandName: 'setSourceViewportForReferenceLinesTool',
     context: 'CORNERSTONE',
@@ -163,8 +170,8 @@ const toolbarButtons: Button[] = [
           tooltip: 'Show Reference Lines',
           commands: 'toggleEnabledDisabledToolbar',
           listeners: {
-            [ViewportGridService.EVENTS.ACTIVE_VIEWPORT_ID_CHANGED]: ReferenceLinesListeners,
-            [ViewportGridService.EVENTS.VIEWPORTS_READY]: ReferenceLinesListeners,
+            [VIEWPORT_GRID_EVENTS.ACTIVE_VIEWPORT_ID_CHANGED]: ReferenceLinesListeners,
+            [VIEWPORT_GRID_EVENTS.VIEWPORTS_READY]: ReferenceLinesListeners,
           },
           evaluate: 'evaluate.cornerstoneTool.toggle',
         }),

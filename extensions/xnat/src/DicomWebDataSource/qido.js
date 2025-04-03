@@ -120,11 +120,9 @@ async function search(dicomWebClient, studyInstanceUid, seriesInstanceUid, query
  * @returns {Promise} - Resolves SeriesMetadata[] in study
  */
 export function seriesInStudy(dicomWebClient, studyInstanceUID) {
-  // Series Description
-  // Already included?
-  const commaSeparatedFields = ['0008103E', '00080021'].join(',');
+  // Request all DICOM tags instead of just specific ones
   const queryParams = {
-    includefield: commaSeparatedFields,
+    includefield: 'all',
   };
 
   return dicomWebClient.searchForSeries({ studyInstanceUID, queryParams });

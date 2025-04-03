@@ -2,6 +2,14 @@ import { hpMN, hpMN8 } from './hangingprotocols/hpMNGrid';
 import hpMNCompare from './hangingprotocols/hpCompare';
 import hpMammography from './hangingprotocols/hpMammo';
 import hpScale from './hangingprotocols/hpScale';
+// Import official MPR and 3D protocols from cornerstone extension
+import mpr from './hangingprotocols/mpr';
+import main3d from './hangingprotocols/main3D';
+import mprAnd3DVolumeViewport from './hangingprotocols/mprAnd3DVolumeViewport';
+import fourUp from './hangingprotocols/fourUp';
+import primary3D from './hangingprotocols/primary3D';
+import primaryAxial from './hangingprotocols/primaryAxial';
+import frameView from './hangingprotocols/frameView';
 
 const defaultProtocol = {
   id: 'default',
@@ -121,67 +129,67 @@ const defaultProtocol = {
   ],
 };
 
-const xnatProtocol = {
-  id: 'xnat-default',
-  name: 'XNAT Default',
-  hasUpdatedPriorsInformation: false,
-  protocolMatchingRules: [],
-  displaySetSelectors: {
-    defaultDisplaySetId: {
-      seriesMatchingRules: [
-        {
-          weight: 10,
-          attribute: 'numImageFrames',
-          constraint: {
-            greaterThan: { value: 0 },
-          },
-        },
-        {
-          attribute: 'isDisplaySetFromUrl',
-          weight: 20,
-          constraint: {
-            equals: true,
-          },
-        },
-      ],
-    },
-  },
-  stages: [{
-    id: 'default',
-    name: 'Default',
-    viewportStructure: {
-      layoutType: 'grid',
-      properties: {
-        rows: 1,
-        columns: 1
-      }
-    },
-    viewports: [{
-      viewportOptions: {
-        toolGroupId: 'default',
-        viewportType: 'stack',
-        syncGroups: [
-          {
-            type: 'hydrateseg',
-            id: 'sameFORId',
-            source: true,
-            target: true,
-            options: {
-              matchingRules: ['sameFOR'],
-            },
-          },
-        ],
-      },
-      displaySets: [
-        {
-          id: 'defaultDisplaySetId',
-        }
-      ]
-    }]
-  }],
-  numberOfPriorsReferenced: 0,
-  toolGroupIds: ['default'],
-};
+// const xnatProtocol = {
+//   id: 'xnat-default',
+//   name: 'XNAT Default',
+//   hasUpdatedPriorsInformation: false,
+//   protocolMatchingRules: [],
+//   displaySetSelectors: {
+//     defaultDisplaySetId: {
+//       seriesMatchingRules: [
+//         {
+//           weight: 10,
+//           attribute: 'numImageFrames',
+//           constraint: {
+//             greaterThan: { value: 0 },
+//           },
+//         },
+//         {
+//           attribute: 'isDisplaySetFromUrl',
+//           weight: 20,
+//           constraint: {
+//             equals: true,
+//           },
+//         },
+//       ],
+//     },
+//   },
+//   stages: [{
+//     id: 'default',
+//     name: 'Default',
+//     viewportStructure: {
+//       layoutType: 'grid',
+//       properties: {
+//         rows: 1,
+//         columns: 1
+//       }
+//     },
+//     viewports: [{
+//       viewportOptions: {
+//         toolGroupId: 'default',
+//         viewportType: 'stack',
+//         syncGroups: [
+//           {
+//             type: 'hydrateseg',
+//             id: 'sameFORId',
+//             source: true,
+//             target: true,
+//             options: {
+//               matchingRules: ['sameFOR'],
+//             },
+//           },
+//         ],
+//       },
+//       displaySets: [
+//         {
+//           id: 'defaultDisplaySetId',
+//         }
+//       ]
+//     }]
+//   }],
+//   numberOfPriorsReferenced: 0,
+//   toolGroupIds: ['default'],
+// };
 
 function getHangingProtocolModule() {
   return [
@@ -212,9 +220,34 @@ function getHangingProtocolModule() {
       protocol: hpMN8,
     },
     // Add XNAT protocol
+    // {
+    //   name: xnatProtocol.id,
+    //   protocol: xnatProtocol,
+    // },
+    // Add official cornerstone protocols
     {
-      name: xnatProtocol.id,
-      protocol: xnatProtocol,
+      name: mpr.id,
+      protocol: mpr,
+    },
+    {
+      name: main3d.id,
+      protocol: main3d,
+    },
+    {
+      name: mprAnd3DVolumeViewport.id,
+      protocol: mprAnd3DVolumeViewport,
+    },
+    {
+      name: fourUp.id,
+      protocol: fourUp,
+    },
+    {
+      name: primary3D.id,
+      protocol: primary3D,
+    },
+    {
+      name: primaryAxial.id,
+      protocol: primaryAxial,
     },
   ];
 }
