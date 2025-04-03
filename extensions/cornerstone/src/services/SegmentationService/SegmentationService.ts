@@ -513,7 +513,7 @@ class SegmentationService extends PubSubService {
         type: LABELMAP,
         data: {
           imageIds: derivedImageIds,
-          referencedVolumeId: this._getVolumeIdForDisplaySet(referencedDisplaySet),
+          // referencedVolumeId: this._getVolumeIdForDisplaySet(referencedDisplaySet),
           referencedImageIds: imageIds as string[],
         },
       },
