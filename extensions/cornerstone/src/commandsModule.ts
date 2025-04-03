@@ -1021,6 +1021,10 @@ function commandsModule({
 
       const toolGroup = toolGroupService.getToolGroupForViewport(viewportId);
 
+      if (!toolGroup.hasTool(toolName)) {
+        return;
+      }
+
       const prevConfig = toolGroup?.getToolConfiguration(toolName);
       toolGroup?.setToolConfiguration(
         toolName,
