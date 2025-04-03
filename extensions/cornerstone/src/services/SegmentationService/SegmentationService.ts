@@ -360,7 +360,7 @@ class SegmentationService extends PubSubService {
         type: LABELMAP,
         data: {
           imageIds: segImageIds,
-          referencedVolumeId: this._getVolumeIdForDisplaySet(displaySet),
+          // referencedVolumeId: this._getVolumeIdForDisplaySet(displaySet),
           referencedImageIds: referenceImageIds,
         },
       },
@@ -564,7 +564,7 @@ class SegmentationService extends PubSubService {
 
     const referencedImageIdsWithGeometry = Array.from(structureSet.ReferencedSOPInstanceUIDsSet);
 
-    const referencedImageIds = referencedDisplaySet.instances.map(image => image.imageId);
+    const referencedImageIds = referencedDisplaySet.imageIds;
     // find the first image id that contains a referenced SOP instance UID
     const firstSegmentedSliceImageId = referencedImageIds.find(imageId =>
       referencedImageIdsWithGeometry.some(referencedId => imageId.includes(referencedId))
@@ -602,9 +602,15 @@ class SegmentationService extends PubSubService {
     const segments: { [segmentIndex: string]: cstTypes.Segment } = {};
     let segmentsCachedStats = {};
 
+    // Create colorLUT array for RT structures
+    const colorLUT = [[0, 0, 0, 0]]; // First entry is transparent for index 0
+
     // Process each segment similarly to the SEG function
     for (const rtStructData of allRTStructData) {
       const { data, id, color, segmentIndex, geometryId } = rtStructData;
+
+      // Add the color to the colorLUT array
+      colorLUT.push(color);
 
       try {
         const geometry = await geometryLoader.createAndCacheGeometry(geometryId, {
@@ -646,6 +652,11 @@ class SegmentationService extends PubSubService {
         continue; // Continue processing other segments even if one fails
       }
     }
+
+    // Create and register the colorLUT
+    const colorLUTIndex = getNextColorLUTIndex();
+    addColorLUT(colorLUT, colorLUTIndex);
+    this._segmentationIdToColorLUTIndexMap.set(segmentationId, colorLUTIndex);
 
     // Assign processed segments to segmentation config
     segmentation.config.segments = segments;

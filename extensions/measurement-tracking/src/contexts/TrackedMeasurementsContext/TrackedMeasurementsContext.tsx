@@ -328,12 +328,20 @@ function TrackedMeasurementsContextProvider(
           displaySet.isRehydratable === true &&
           !displaySet.isHydrated
         ) {
-          console.log('sending event...', trackedMeasurements);
-          sendTrackedMeasurementsEvent('PROMPT_HYDRATE_SR', {
+          const params = {
             displaySetInstanceUID: displaySet.displaySetInstanceUID,
             SeriesInstanceUID: displaySet.SeriesInstanceUID,
             viewportId: activeViewportId,
-          });
+          };
+
+          // Check if we should bypass the confirmation prompt
+          const disableConfirmationPrompts = appConfig?.disableConfirmationPrompts;
+
+          if (disableConfirmationPrompts) {
+            sendTrackedMeasurementsEvent('HYDRATE_SR', params);
+          } else {
+            sendTrackedMeasurementsEvent('PROMPT_HYDRATE_SR', params);
+          }
         }
       }
     };
@@ -344,6 +352,7 @@ function TrackedMeasurementsContextProvider(
     sendTrackedMeasurementsEvent,
     servicesManager.services,
     viewports,
+    appConfig,
   ]);
 
   useEffect(() => {

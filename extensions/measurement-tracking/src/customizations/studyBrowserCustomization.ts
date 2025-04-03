@@ -1,5 +1,11 @@
 import { measurementTrackingMode } from '../contexts/TrackedMeasurementsContext/promptBeginTracking';
 
+type CheckHasDirtyAndSimplifiedModeProps = {
+  servicesManager: AppTypes.ServicesManager;
+  appConfig: AppTypes.Config;
+  displaySetInstanceUID: string;
+};
+
 const onDoubleClickHandler = {
   callbacks: [
     ({ activeViewportId, servicesManager, isHangingProtocolLayout, appConfig }) =>
@@ -21,6 +27,7 @@ const onDoubleClickHandler = {
               displaySetInstanceUID,
               isHangingProtocolLayout
             );
+            viewportGridService.setDisplaySetsForViewports(updatedViewports);
           }
         } catch (error) {
           console.warn(error);
@@ -31,7 +38,6 @@ const onDoubleClickHandler = {
             duration: 3000,
           });
         }
-        viewportGridService.setDisplaySetsForViewports(updatedViewports);
       },
   ],
 };
@@ -41,7 +47,7 @@ const customOnDropHandlerCallback = async props => {
   return Promise.resolve({ handled });
 };
 
-function checkHasDirtyAndSimplifiedMode(props: any) {
+const checkHasDirtyAndSimplifiedMode = (props: CheckHasDirtyAndSimplifiedModeProps) => {
   const { servicesManager, appConfig, displaySetInstanceUID } = props;
   const simplifiedMode = appConfig.measurementTrackingMode === measurementTrackingMode.SIMPLIFIED;
   const { measurementService, displaySetService } = servicesManager.services;
@@ -53,6 +59,6 @@ function checkHasDirtyAndSimplifiedMode(props: any) {
   const hasDirtyAndSimplifiedMode =
     displaySet.Modality === 'SR' && simplifiedMode && haveDirtyMeasurements;
   return hasDirtyAndSimplifiedMode;
-}
+};
 
 export { onDoubleClickHandler, customOnDropHandlerCallback };

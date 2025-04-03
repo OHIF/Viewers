@@ -2,17 +2,110 @@ import React, { useState, useEffect } from 'react';
 import { ErrorBoundary as ReactErrorBoundary } from 'react-error-boundary';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-} from '../Dialog/Dialog';
+import { Dialog, DialogContent } from '../Dialog/Dialog';
 import { ScrollArea } from '../ScrollArea/ScrollArea';
-import { Icons } from '../Icons';
+import { Button } from '../Button/Button';
 
 const isProduction = process.env.NODE_ENV === 'production';
+
+/**
+ * Parses an error stack trace to extract important information
+ * Extracts the first function name from the stack trace
+ */
+const parseErrorStack = (error: ErrorBoundaryError) => {
+  if (!error.stack) {
+    return { filePath: null, errorTitle: null, code: null, firstFilename: null };
+  }
+
+  const stack = error.stack;
+  const stackLines = stack.split('\n');
+
+  // Extract error message from first line
+  const errorMessage = stackLines[0].trim();
+
+  // Extract first function name from the stack trace
+  let firstFilename = null;
+
+  // Find the first stack line (starts with " at ")
+  for (let i = 1; i < stackLines.length; i++) {
+    const line = stackLines[i].trim();
+    if (line.startsWith('at ')) {
+      // Extract function name pattern
+      const match = line.match(/at\s+([^\s(]+)[\s(]/);
+      if (match && match[1]) {
+        firstFilename = match[1];
+        break;
+      }
+    }
+  }
+
+  // Sanitize stack trace for display - safer approach to avoid ReDoS
+  const sanitizedStack = stackLines
+    .map(line => {
+      // Limit line length to prevent excessive processing
+      const limitedLine = line.substring(0, 2000);
+
+      // Process each part separately to avoid complex regex patterns
+      if (limitedLine.includes('(')) {
+        // Extract filename from paths in parentheses
+        const openParenIndex = limitedLine.indexOf('(');
+        const closeParenIndex = limitedLine.indexOf(')', openParenIndex);
+
+        if (openParenIndex >= 0 && closeParenIndex > openParenIndex) {
+          const pathInParens = limitedLine.substring(openParenIndex + 1, closeParenIndex);
+
+          // Find the last segment after slash or backslash
+          const lastSlashIndex = Math.max(
+            pathInParens.lastIndexOf('/'),
+            pathInParens.lastIndexOf('\\')
+          );
+
+          if (lastSlashIndex >= 0) {
+            const filename = pathInParens.substring(lastSlashIndex + 1);
+            return (
+              limitedLine.substring(0, openParenIndex + 1) +
+              filename +
+              limitedLine.substring(closeParenIndex)
+            );
+          }
+        }
+      }
+
+      // Handle the "at Function path:line:column" format
+      if (limitedLine.includes(' at ')) {
+        const atIndex = limitedLine.indexOf(' at ');
+        const afterAt = limitedLine.substring(atIndex + 4).trim();
+
+        // Split by whitespace to separate function and path
+        const spaceAfterFunc = afterAt.indexOf(' ');
+
+        if (spaceAfterFunc > 0) {
+          const funcName = afterAt.substring(0, spaceAfterFunc);
+          const path = afterAt.substring(spaceAfterFunc + 1);
+
+          // Check if this is a path with line/column numbers
+          if (path.includes(':') && /.*:[0-9]+:[0-9]+/.test(path)) {
+            // Find the last segment after slash or backslash
+            const lastSlashIndex = Math.max(path.lastIndexOf('/'), path.lastIndexOf('\\'));
+
+            if (lastSlashIndex >= 0) {
+              const filename = path.substring(lastSlashIndex + 1);
+              return limitedLine.substring(0, atIndex + 4) + funcName + ' ' + filename;
+            }
+          }
+        }
+      }
+
+      return limitedLine;
+    })
+    .join('\n');
+
+  return {
+    errorTitle: errorMessage,
+    code: sanitizedStack,
+    firstFilename: firstFilename,
+  };
+};
 
 interface ErrorBoundaryError extends Error {
   message: string;
@@ -45,14 +138,13 @@ const DefaultFallback = ({
   const title = `${t('Something went wrong')}${!isProduction && ` ${t('in')} ${context}`}.`;
   const subtitle = t('Sorry, something went wrong there. Try again.');
 
-  const copyErrorDetails = () => {
-    const errorDetails = `
-Context: ${context}
-Error Message: ${error.message}
-Stack: ${error.stack}
-    `;
-    navigator.clipboard.writeText(errorDetails);
-    toast.success(t('Copied to clipboard'));
+  const { errorTitle, code, firstFilename } = parseErrorStack(error);
+
+  const copyErrorToClipboard = () => {
+    if (code) {
+      navigator.clipboard.writeText(code);
+      toast.success(t('Error copied to clipboard'));
+    }
   };
 
   useEffect(() => {
@@ -64,55 +156,76 @@ Stack: ${error.stack}
       },
       duration: 0,
     });
-  }, [error]);
+  }, [error, subtitle, t, title]);
 
   if (isProduction) {
     return null;
   }
 
   return (
-    <>
-      <Dialog
-        open={showDetails}
-        onOpenChange={setShowDetails}
+    <Dialog
+      open={showDetails}
+      onOpenChange={setShowDetails}
+    >
+      <DialogContent
+        className="bg-muted max-w-3xl overflow-hidden border-0 p-0"
+        onInteractOutside={e => e.preventDefault()}
       >
-        <DialogContent className="border-input h-[50vh] w-[90vw] border-2 sm:max-w-[900px]">
-          <DialogHeader>
-            <DialogTitle className="text-muted-foreground flex justify-between text-xl">
-              <div className="flex items-center">{title}</div>
-              <button
-                onClick={() => {
-                  copyErrorDetails();
-                  setShowDetails(false);
-                }}
-                className="text-aqua-pale hover:text-aqua-pale/80 flex items-center gap-2 rounded bg-gray-800 px-4 py-2 font-light"
-              >
-                <Icons.Code className="h-4 w-4" />
-                {t('Copy Details')}
-              </button>
-            </DialogTitle>
+        <div className="p-5 pb-4">
+          <div className="flex items-center justify-between">
+            <h2 className="text-highlight text-xl font-normal">
+              {errorTitle || error.message || title}
+            </h2>
+          </div>
+        </div>
 
-            <DialogDescription className="text-lg">{subtitle}</DialogDescription>
-          </DialogHeader>
-
-          <ScrollArea className="h-[100%]">
-            <div className="space-y-4 pr-4 font-mono text-base">
-              <div className="space-y-4">
-                <p className="text-aqua-pale break-words text-lg">
-                  {t('Context')}: {context}
-                </p>
-                <p className="text-aqua-pale break-words text-lg">
-                  {t('Error Message')}: {error.message}
-                </p>
-                <pre className="text-aqua-pale whitespace-pre-wrap break-words rounded bg-gray-900 p-4">
-                  Stack: {error.stack}
-                </pre>
+        {/* Code block */}
+        {code && (
+          <>
+            <ScrollArea className="bg-background text-foreground mx-6 h-[321px] rounded-b-md">
+              <div className="bg-background border-input flex items-center justify-between rounded-t-md border-b px-4 py-2">
+                <div className="text-muted-foreground text-base">
+                  {firstFilename || 'Error Stack'}
+                </div>
+                <Button
+                  className="w-20"
+                  onClick={copyErrorToClipboard}
+                  title={t('Copy error')}
+                >
+                  Copy
+                </Button>
               </div>
-            </div>
-          </ScrollArea>
-        </DialogContent>
-      </Dialog>
-    </>
+              <div className="p-4 font-mono text-sm">
+                {code.split('\n').map((line, index) => (
+                  <div
+                    key={index}
+                    className="flex"
+                  >
+                    <span className="whitespace-pre">{line}</span>
+                  </div>
+                ))}
+              </div>
+            </ScrollArea>
+          </>
+        )}
+
+        {/* Footer */}
+        <div className="flex items-center justify-end p-6 pt-2">
+          <Button
+            variant="link"
+            className="text-primary p-0"
+            onClick={() =>
+              window.open(
+                'https://github.com/OHIF/Viewers/issues/new?template=bug-report.yml',
+                '_blank'
+              )
+            }
+          >
+            Report Issue
+          </Button>
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 };
 
@@ -164,9 +277,9 @@ const ErrorBoundary = ({
     };
   }, []);
 
-  const onErrorHandler = (error: ErrorBoundaryError, componentStack: string) => {
+  const onErrorHandler = (error: ErrorBoundaryError, componentStack: string | null) => {
     console.debug(`${context} Error Boundary`, error, componentStack, context);
-    onError(error, componentStack, context);
+    onError(error, componentStack || '', context);
   };
 
   return (
@@ -179,7 +292,7 @@ const ErrorBoundary = ({
         />
       )}
       onReset={onResetHandler}
-      onError={onErrorHandler}
+      onError={(error, info) => onErrorHandler(error as ErrorBoundaryError, info.componentStack)}
     >
       <>
         {children}

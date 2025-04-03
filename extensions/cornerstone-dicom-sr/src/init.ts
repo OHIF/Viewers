@@ -77,28 +77,4 @@ export default function init({
     SRRectangleROI: dashedLine,
     global: {},
   });
-
-  measurementService.subscribe(
-    MeasurementService.EVENTS.JUMP_TO_MEASUREMENT_LAYOUT,
-    ({ viewportId, measurement, isConsumed }) => {
-      if (isConsumed) {
-        return;
-      }
-      try {
-        const currentViewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
-        const { viewPlaneNormal } = currentViewport.getCamera();
-        const referencedImageId = csToolsUtils.getClosestImageIdForStackViewport(
-          currentViewport as StackViewport,
-          measurement.points[0],
-          viewPlaneNormal
-        );
-        const imageIndex = (currentViewport as StackViewport)
-          .getImageIds()
-          .indexOf(referencedImageId);
-        csUtils.jumpToSlice(currentViewport.element, { imageIndex });
-      } catch (error) {
-        console.warn('Unable to jump to image based on measurement coordinate', error);
-      }
-    }
-  );
 }

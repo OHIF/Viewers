@@ -136,6 +136,12 @@ function modeFactory({ modeConfiguration }) {
         'WindowLevelRegion',
       ]);
 
+      customizationService.setCustomizations({
+        'panelSegmentation.disableEditing': {
+          $set: true,
+        },
+      });
+
       // // ActivatePanel event trigger for when a segmentation or measurement is added.
       // // Do not force activation so as to respect the state the user may have left the UI in.
       // _activatePanelTriggersSubscriptions = [

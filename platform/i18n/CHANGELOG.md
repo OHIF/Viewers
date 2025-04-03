@@ -3,6 +3,70 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.10.0-beta.146](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.145...v3.10.0-beta.146) (2025-04-02)
+
+**Note:** Version bump only for package @ohif/i18n
+
+
+
+
+
+# [3.10.0-beta.145](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.144...v3.10.0-beta.145) (2025-04-02)
+
+**Note:** Version bump only for package @ohif/i18n
+
+
+
+
+
+# [3.10.0-beta.144](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.143...v3.10.0-beta.144) (2025-04-01)
+
+**Note:** Version bump only for package @ohif/i18n
+
+
+
+
+
+# [3.10.0-beta.143](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.142...v3.10.0-beta.143) (2025-04-01)
+
+**Note:** Version bump only for package @ohif/i18n
+
+
+
+
+
+# [3.10.0-beta.142](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.141...v3.10.0-beta.142) (2025-03-31)
+
+**Note:** Version bump only for package @ohif/i18n
+
+
+
+
+
+# [3.10.0-beta.141](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.140...v3.10.0-beta.141) (2025-03-28)
+
+**Note:** Version bump only for package @ohif/i18n
+
+
+
+
+
+# [3.10.0-beta.140](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.139...v3.10.0-beta.140) (2025-03-27)
+
+**Note:** Version bump only for package @ohif/i18n
+
+
+
+
+
+# [3.10.0-beta.139](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.138...v3.10.0-beta.139) (2025-03-27)
+
+**Note:** Version bump only for package @ohif/i18n
+
+
+
+
+
 # [3.10.0-beta.138](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.137...v3.10.0-beta.138) (2025-03-26)
 
 **Note:** Version bump only for package @ohif/i18n
