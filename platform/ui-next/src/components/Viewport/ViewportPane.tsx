@@ -68,8 +68,8 @@ function ViewportPane({
       {/* Border overlay */}
       <div
         className={classNames('pointer-events-none absolute inset-0', {
-          'border-primary-light border': isActive,
-          'group-hover:border-primary-light/70 border border-transparent': !isActive,
+          'border-highlight rounded-md border': isActive,
+          'group-hover:border-highlight/50 rounded-md border border-transparent': !isActive,
         })}
       />
     </div>

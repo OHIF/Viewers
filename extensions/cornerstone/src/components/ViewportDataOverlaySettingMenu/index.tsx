@@ -1,4 +1,5 @@
 import React, { ReactNode } from 'react';
+import { AllInOneMenu } from '@ohif/ui-next';
 import { ViewportSegmentationMenuWrapper } from './ViewportSegmentationMenuWrapper';
 
 export function getViewportDataOverlaySettingsMenu(

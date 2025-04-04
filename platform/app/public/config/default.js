@@ -6,7 +6,27 @@ window.config = {
   // whiteLabeling: {},
   extensions: [],
   modes: [],
-  customizationService: {},
+  customizationService: [
+    {
+      'viewportOverlay.topRight': {
+        $push: [
+          {
+            id: 'PatientNameOverlay',
+            inheritsFrom: 'ohif.overlayItem',
+            attribute: 'PatientName',
+            label: 'PN:',
+            title: 'Patient Name',
+            condition: ({ instance }) =>
+              instance && instance.PatientName && instance.PatientName.Alphabetic,
+            contentF: ({ instance, formatters: { formatPN } }) =>
+              formatPN(instance.PatientName.Alphabetic) +
+              ' ' +
+              (instance.PatientSex ? '(' + instance.PatientSex + ')' : ''),
+          },
+        ],
+      },
+    },
+  ],
   showStudyList: true,
   // some windows systems have issues with more than 3 web workers
   maxNumberOfWebWorkers: 3,

@@ -11,6 +11,7 @@ import { Icons } from '../Icons';
 interface ScrollAreaProps extends React.ComponentPropsWithoutRef<typeof ScrollAreaPrimitive.Root> {
   /** Flag to show/hide scroll indicator arrows at top and bottom */
   showArrows?: boolean;
+  type?: 'auto' | 'always' | 'scroll';
 }
 
 /**
@@ -56,6 +57,7 @@ const ScrollArea = React.forwardRef<
     <ScrollAreaPrimitive.Root
       ref={ref}
       className={cn('relative h-full overflow-hidden', className)}
+      type={props.type || 'auto'}
       {...props}
     >
       <ScrollAreaPrimitive.Viewport

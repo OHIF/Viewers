@@ -1,4 +1,5 @@
 import React, { ReactNode } from 'react';
+import { AllInOneMenu } from '@ohif/ui-next';
 import { nonWLModalities } from './WindowLevelActionMenu';
 
 export function getWindowLevelActionMenu({
