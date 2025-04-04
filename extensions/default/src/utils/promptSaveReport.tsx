@@ -28,7 +28,7 @@ async function promptSaveReport({ servicesManager, commandsManager, extensionMan
       filterMeasurementsBySeriesUID(trackedSeries),
       filterPlanarMeasurement
     ),
-    defaultSaveTitle = 'Research Derived Series',
+    defaultSaveTitle = 'Create Report',
   } = ctx;
   let displaySetInstanceUIDs;
 

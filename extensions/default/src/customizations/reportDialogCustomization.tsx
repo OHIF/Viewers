@@ -74,7 +74,31 @@ function ReportDialog({ dataSources, hide, onSave, onCancel }: ReportDialogProps
     <div className="text-foreground mt-2 flex min-w-[400px] max-w-md flex-col gap-4">
       <div className="flex flex-col gap-3">
         <div className="flex gap-4">
-          <div className="mt-1 w-full">
+          {showDataSourceSelect && (
+            <div className="mt-1 w-1/2">
+              <div className="mb-1 pl-1 font-light">Data source</div>
+              <Select
+                value={selectedDataSource}
+                onValueChange={setSelectedDataSource}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select a data source" />
+                </SelectTrigger>
+                <SelectContent>
+                  {dataSources.map(source => (
+                    <SelectItem
+                      key={source.value}
+                      value={source.value}
+                    >
+                      {source.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
+          <div className={showDataSourceSelect ? 'mt-1 w-1/2' : 'mt-1 w-full'}>
+            <div className="mb-1 pl-1 font-light">Series</div>
             <Select
               value={selectedSeries}
               onValueChange={setSelectedSeries}
@@ -96,29 +120,7 @@ function ReportDialog({ dataSources, hide, onSave, onCancel }: ReportDialogProps
           </div>
         </div>
         <div className={showDataSourceSelect ? 'flex gap-4' : ''}>
-          {showDataSourceSelect && (
-            <div className="mt-1 w-1/3">
-              <Select
-                value={selectedDataSource}
-                onValueChange={setSelectedDataSource}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select a data source" />
-                </SelectTrigger>
-                <SelectContent>
-                  {dataSources.map(source => (
-                    <SelectItem
-                      key={source.value}
-                      value={source.value}
-                    >
-                      {source.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          )}
-          <div className={showDataSourceSelect ? 'mt-1 w-2/3' : 'w-full'}>
+          <div className="mt-4 w-full">
             <InputDialog
               value={reportName}
               onChange={setReportName}
