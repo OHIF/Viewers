@@ -248,10 +248,7 @@ function ViewerViewportGrid(props: withAppTypes) {
 
         event.consume();
 
-        commandsManager.run({
-          commandName: 'setDisplaySetsForViewports',
-          commandOptions: { viewportsToUpdate: updatedViewports },
-        });
+        commandsManager.run('setDisplaySetsForViewports', { viewportsToUpdate: updatedViewports });
       }
     );
 
@@ -273,10 +270,7 @@ function ViewerViewportGrid(props: withAppTypes) {
       if (!handled) {
         const updatedViewports = _getUpdatedViewports(viewportId, displaySetInstanceUID);
 
-        commandsManager.run({
-          commandName: 'setDisplaySetsForViewports',
-          commandOptions: { viewportsToUpdate: updatedViewports },
-        });
+        commandsManager.run('setDisplaySetsForViewports', { viewportsToUpdate: updatedViewports });
       }
     });
   };

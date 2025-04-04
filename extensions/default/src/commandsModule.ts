@@ -622,10 +622,7 @@ const commandsModule = ({
         });
       }
 
-      commandsManager.run({
-        commandName: 'setDisplaySetsForViewports',
-        commandOptions: { viewportsToUpdate: updatedViewports },
-      });
+      commandsManager.run('setDisplaySetsForViewports', { viewportsToUpdate: updatedViewports });
 
       setTimeout(() => actions.scrollActiveThumbnailIntoView(), 0);
     },

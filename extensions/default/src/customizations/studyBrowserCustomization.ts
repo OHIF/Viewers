@@ -68,9 +68,8 @@ export default {
             });
           }
 
-          commandsManager.run({
-            commandName: 'setDisplaySetsForViewports',
-            commandOptions: { viewportsToUpdate: updatedViewports },
+          commandsManager.run('setDisplaySetsForViewports', {
+            viewportsToUpdate: updatedViewports,
           });
         },
     ],

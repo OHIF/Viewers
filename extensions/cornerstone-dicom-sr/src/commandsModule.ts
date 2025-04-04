@@ -156,16 +156,13 @@ const commandsModule = (props: withAppTypes) => {
 
       const displaySets = displaySetService.getDisplaySetsForSeries(SeriesInstanceUIDs[0]);
       if (displaySets.length) {
-        commandsManager.run({
-          commandName: 'setDisplaySetsForViewports',
-          commandOptions: {
-            viewportsToUpdate: [
-              {
-                viewportId: viewportGridService.getActiveViewportId(),
-                displaySetInstanceUIDs: [displaySets[0].displaySetInstanceUID],
-              },
-            ],
-          },
+        commandsManager.run('setDisplaySetsForViewports', {
+          viewportsToUpdate: [
+            {
+              viewportId: viewportGridService.getActiveViewportId(),
+              displaySetInstanceUIDs: [displaySets[0].displaySetInstanceUID],
+            },
+          ],
         });
       }
     },
