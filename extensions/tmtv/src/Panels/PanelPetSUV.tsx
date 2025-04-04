@@ -2,7 +2,8 @@ import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { DicomMetadataStore } from '@ohif/core';
 import { useTranslation } from 'react-i18next';
-import { Button, Input, Label, PanelSection, Separator } from '@ohif/ui-next';
+import { Button, Input, Label, PanelSection } from '@ohif/ui-next';
+import { useSystem } from '@ohif/core/src';
 
 const DEFAULT_MEATADATA = {
   PatientWeight: null,
@@ -37,7 +38,10 @@ const InputRow = ({ children, className, ...props }) => {
 
 // InputRow sub-components
 InputRow.Label = ({ children, unit, className, ...props }) => (
-  <Label className={`min-w-32 flex-shrink-0 ${className || ''}`} {...props}>
+  <Label
+    className={`min-w-32 flex-shrink-0 ${className || ''}`}
+    {...props}
+  >
     {children}
     {unit && <span className="text-muted-foreground"> {unit}</span>}
   </Label>
@@ -54,7 +58,8 @@ InputRow.Input = ({ className, ...props }) => (
 InputRow.Label.displayName = 'InputRow.Label';
 InputRow.Input.displayName = 'InputRow.Input';
 
-export default function PanelPetSUV({ servicesManager, commandsManager }: withAppTypes) {
+export default function PanelPetSUV({ servicesManager }: withAppTypes) {
+  const { commandsManager } = useSystem();
   const { t } = useTranslation('PanelSUV');
   const { displaySetService, toolGroupService, toolbarService, hangingProtocolService } =
     servicesManager.services;
@@ -192,7 +197,9 @@ export default function PanelPetSUV({ servicesManager, commandsManager }: withAp
                 <InputRow>
                   <InputRow.Label unit="bq">{t('Total Dose')}</InputRow.Label>
                   <InputRow.Input
-                    value={metadata.RadiopharmaceuticalInformationSequence.RadionuclideTotalDose || ''}
+                    value={
+                      metadata.RadiopharmaceuticalInformationSequence.RadionuclideTotalDose || ''
+                    }
                     onChange={e => {
                       handleMetadataChange({
                         RadiopharmaceuticalInformationSequence: {
@@ -206,7 +213,9 @@ export default function PanelPetSUV({ servicesManager, commandsManager }: withAp
                 <InputRow>
                   <InputRow.Label unit="s">{t('Half Life')}</InputRow.Label>
                   <InputRow.Input
-                    value={metadata.RadiopharmaceuticalInformationSequence.RadionuclideHalfLife || ''}
+                    value={
+                      metadata.RadiopharmaceuticalInformationSequence.RadionuclideHalfLife || ''
+                    }
                     onChange={e => {
                       handleMetadataChange({
                         RadiopharmaceuticalInformationSequence: {
@@ -221,7 +230,8 @@ export default function PanelPetSUV({ servicesManager, commandsManager }: withAp
                   <InputRow.Label unit="s">{t('Injection Time')}</InputRow.Label>
                   <InputRow.Input
                     value={
-                      metadata.RadiopharmaceuticalInformationSequence.RadiopharmaceuticalStartTime || ''
+                      metadata.RadiopharmaceuticalInformationSequence
+                        .RadiopharmaceuticalStartTime || ''
                     }
                     onChange={e => {
                       handleMetadataChange({

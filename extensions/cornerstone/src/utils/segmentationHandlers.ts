@@ -9,10 +9,15 @@ export function setupSegmentationDataModifiedHandler({
   customizationService,
   commandsManager,
 }) {
-  segmentationService.subscribeDebounced(
+  const { unsubscribe } = segmentationService.subscribeDebounced(
     segmentationService.EVENTS.SEGMENTATION_DATA_MODIFIED,
     async ({ segmentationId }) => {
       const segmentation = segmentationService.getSegmentation(segmentationId);
+
+      if (!segmentation) {
+        return;
+      }
+
       const readableText = customizationService.getCustomization('panelSegmentation.readableText');
 
       // Check for segments with bidirectional measurements and update them
@@ -46,16 +51,22 @@ export function setupSegmentationDataModifiedHandler({
     },
     1000
   );
+
+  return { unsubscribe };
 }
 
 /**
  * Sets up the handler for segmentation modification events
  */
 export function setupSegmentationModifiedHandler({ segmentationService }) {
-  segmentationService.subscribe(
+  const { unsubscribe } = segmentationService.subscribe(
     segmentationService.EVENTS.SEGMENTATION_MODIFIED,
     async ({ segmentationId }) => {
       const segmentation = segmentationService.getSegmentation(segmentationId);
+
+      if (!segmentation) {
+        return;
+      }
 
       const annotationState = cornerstoneTools.annotation.state.getAllAnnotations();
       const bidirectionalAnnotations = annotationState.filter(
@@ -90,4 +101,6 @@ export function setupSegmentationModifiedHandler({ segmentationService }) {
       });
     }
   );
+
+  return { unsubscribe };
 }

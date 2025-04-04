@@ -305,9 +305,6 @@ const commandsModule = ({
   };
 
   const definitions = {
-    loadSegmentationDisplaySetsForViewport: {
-      commandFn: actions.loadSegmentationDisplaySetsForViewport,
-    },
     loadSegmentationsForViewport: {
       commandFn: actions.loadSegmentationsForViewport,
     },

@@ -8,7 +8,6 @@ import createAndDownloadTMTVReport from './utils/createAndDownloadTMTVReport';
 
 import dicomRTAnnotationExport from './utils/dicomRTAnnotationExport/RTStructureSet';
 
-import { getWebWorkerManager } from '@cornerstonejs/core';
 import { Enums } from '@cornerstonejs/tools';
 import { utils } from '@ohif/core';
 
@@ -21,32 +20,6 @@ const ROI_THRESHOLD_MANUAL_TOOL_IDS = [
   'RectangleROIThreshold',
   'CircleROIStartEndThreshold',
 ];
-
-const workerManager = getWebWorkerManager();
-
-// Register the task
-
-function getVolumesFromSegmentation(segmentationId) {
-  const csSegmentation = csTools.segmentation.state.getSegmentation(segmentationId);
-  const labelmapData = csSegmentation.representationData[
-    SegmentationRepresentations.Labelmap
-  ] as csTools.Types.LabelmapToolOperationDataVolume;
-
-  const { volumeId, referencedVolumeId } = labelmapData;
-  const labelmapVolume = cs.cache.getVolume(volumeId);
-  const referencedVolume = cs.cache.getVolume(referencedVolumeId);
-
-  return { labelmapVolume, referencedVolume };
-}
-
-function getLabelmapVolumeFromSegmentation(segmentation) {
-  const { representationData } = segmentation;
-  const { volumeId } = representationData[
-    SegmentationRepresentations.Labelmap
-  ] as csTools.Types.LabelmapToolOperationDataVolume;
-
-  return cs.cache.getVolume(volumeId);
-}
 
 const commandsModule = ({ servicesManager, commandsManager, extensionManager }: withAppTypes) => {
   const {
@@ -265,8 +238,14 @@ const commandsModule = ({ servicesManager, commandsManager, extensionManager }: 
         segmentations,
       });
 
+      let total_tlg = 0;
+      for (const segmentationId in segReport) {
+        const report = segReport[segmentationId];
+        const tlg = report['namedStats_lesionGlycolysis'];
+        total_tlg += tlg.value;
+      }
       const additionalReportRows = [
-        { key: 'Total Lesion Glycolysis', value: { tlg: tlg.toFixed(4) } },
+        { key: 'Total Lesion Glycolysis', value: { tlg: total_tlg.toFixed(4) } },
         { key: 'Threshold Configuration', value: { ...config } },
       ];
 
@@ -382,9 +361,8 @@ const commandsModule = ({ servicesManager, commandsManager, extensionManager }: 
           continue;
         }
 
-        const referencedVolumeId = labelmapVolume.referencedVolumeId;
-
-        const referencedVolume = cs.cache.getVolume(referencedVolumeId);
+        const referencedVolume =
+          csTools.utilities.segmentation.getReferenceVolumeForSegmentationVolume(segmentationId);
 
         if (!referencedVolume) {
           report[id] = segReport;
@@ -475,9 +453,6 @@ const commandsModule = ({ servicesManager, commandsManager, extensionManager }: 
     },
     thresholdSegmentationByRectangleROITool: {
       commandFn: actions.thresholdSegmentationByRectangleROITool,
-    },
-    getTotalLesionGlycolysis: {
-      commandFn: actions.getTotalLesionGlycolysis,
     },
     calculateTMTV: {
       commandFn: actions.calculateTMTV,

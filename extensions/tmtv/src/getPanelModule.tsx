@@ -5,13 +5,7 @@ import PanelTMTV from './Panels/PanelTMTV';
 
 function getPanelModule({ commandsManager, extensionManager, servicesManager }) {
   const wrappedPanelPetSuv = () => {
-    return (
-      <PanelPetSUV
-        commandsManager={commandsManager}
-        servicesManager={servicesManager}
-        extensionManager={extensionManager}
-      />
-    );
+    return <PanelPetSUV />;
   };
 
   const wrappedROIThresholdToolbox = () => {
@@ -24,12 +18,7 @@ function getPanelModule({ commandsManager, extensionManager, servicesManager }) 
   };
 
   const wrappedROIThresholdExport = () => {
-    return (
-      <PanelROIThresholdExport
-        commandsManager={commandsManager}
-        servicesManager={servicesManager}
-      />
-    );
+    return <PanelROIThresholdExport />;
   };
 
   const wrappedPanelTMTV = () => {
@@ -40,10 +29,6 @@ function getPanelModule({ commandsManager, extensionManager, servicesManager }) 
           title="Threshold Tools"
         />
         <PanelTMTV
-          commandsManager={commandsManager}
-          servicesManager={servicesManager}
-        />
-        <PanelROIThresholdExport
           commandsManager={commandsManager}
           servicesManager={servicesManager}
         />

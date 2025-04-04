@@ -17,7 +17,7 @@ const SegmentationExpandedHeader = ({ children }: { children: React.ReactNode })
 
   return (
     <PanelSection.Header
-      className={`border-input border-t-2 bg-transparent pl-1 ${isActive ? 'border-primary' : ''} py-0`}
+      className={`bg-muted my-0 rounded-none border-l-[2px] pl-0 ${isActive ? 'border-primary/70' : 'border-primary/35'}`}
       onClick={e => {
         e.stopPropagation();
         onSegmentationClick(segmentation.segmentationId);
@@ -59,7 +59,7 @@ const SegmentationExpandedInfo = () => {
   const { segmentation } = useSegmentationExpanded('SegmentationExpandedInfo');
 
   return (
-    <div className="ml-auto mr-1">
+    <div className="ml-auto mr-2">
       <Tooltip>
         <TooltipTrigger asChild>
           <Button
@@ -79,8 +79,11 @@ const SegmentationExpandedInfo = () => {
 
 // Content component
 const SegmentationExpandedContent = ({ children }: { children: React.ReactNode }) => {
+  const { isActive } = useSegmentationExpanded('SegmentationExpandedContent');
   return (
-    <PanelSection.Content className="py-0">
+    <PanelSection.Content
+      className={`border-l-[2px] py-0 pb-6 pl-[8px] ${isActive ? 'border-primary/70' : 'border-primary/35'}`}
+    >
       <div className="segmentation-expanded-section">{children}</div>
     </PanelSection.Content>
   );
@@ -97,14 +100,14 @@ const SegmentationExpandedRoot = ({ children }) => {
   }
 
   return (
-    <div className="space-y-0">
+    <div className={`space-y-0 pl-0.5`}>
       {data.map(segmentationInfo => {
         const isActive = segmentationInfo.segmentation.segmentationId === activeSegmentationId;
 
         return (
           <PanelSection
             key={segmentationInfo.segmentation.segmentationId}
-            className="mb-0"
+            className=""
           >
             <SegmentationExpandedProvider
               segmentation={segmentationInfo.segmentation}
