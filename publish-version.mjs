@@ -32,18 +32,11 @@ async function run() {
       try {
         const packageJson = JSON.parse(await fs.readFile(packageJsonPath, 'utf-8'));
 
-        if (!packageJson.peerDependencies) {
-          continue;
-        }
-
+        // lerna will take care of updating the dependencies, but it does not
+        // update the peerDependencies, so we need to do that manually
         for (const peerDependency of Object.keys(packageJson.peerDependencies)) {
           if (peerDependency.startsWith('@ohif/')) {
             packageJson.peerDependencies[peerDependency] = nextVersion;
-
-            console.log(
-              'updating peerdependency to ',
-              packageJson.peerDependencies[peerDependency]
-            );
           }
         }
 
@@ -51,7 +44,7 @@ async function run() {
 
         console.log(`Updated ${packageJsonPath}`);
       } catch (err) {
-        // This could be a directory without a package.json file. Ignore and continue.
+        console.log("ERROR: Couldn't find package.json in", packageDirectory);
         continue;
       }
     }

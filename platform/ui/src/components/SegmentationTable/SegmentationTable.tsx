@@ -1,18 +1,17 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import SegmentationItem from './SegmentationItem';
-
-import Icon from '../Icon';
+import { Icons } from '@ohif/ui-next';
 
 const SegmentationTable = ({
-  title,
-  segmentations,
-  activeSegmentationId,
-  onClick,
-  onEdit,
-  onDelete,
-  onToggleVisibility,
-  onToggleVisibilityAll,
+  title = '',
+  segmentations = [],
+  activeSegmentationId = '',
+  onClick = () => {},
+  onEdit = () => {},
+  onDelete = () => {},
+  onToggleVisibility = () => {},
+  onToggleVisibilityAll = () => {},
 }) => {
   const [hiddenSegmentationIds, setHiddenSegmentationIds] = useState([]);
   const amount = segmentations.length;
@@ -51,8 +50,7 @@ const SegmentationTable = ({
         <span className="text-base font-bold uppercase tracking-widest text-white">{title}</span>
         <div className="flex">
           <span className="text-base font-bold text-white">{amount}</span>
-          <Icon
-            name="eye-hidden"
+          <Icons.EyeHidden
             className="ml-2 w-6 cursor-pointer text-white transition duration-300 hover:opacity-80"
             onClick={() => handleToggleAll()}
           />
@@ -110,16 +108,6 @@ SegmentationTable.propTypes = {
   onDelete: PropTypes.func.isRequired,
   onToggleVisibility: PropTypes.func.isRequired,
   onToggleVisibilityAll: PropTypes.func.isRequired,
-};
-
-SegmentationTable.defaultProps = {
-  title: '',
-  segmentations: [],
-  activeSegmentationId: '',
-  onClick: () => {},
-  onEdit: () => {},
-  onToggleVisibility: () => {},
-  onToggleVisibilityAll: () => {},
 };
 
 export default SegmentationTable;

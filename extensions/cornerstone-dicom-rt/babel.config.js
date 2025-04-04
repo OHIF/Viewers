@@ -1,5 +1,5 @@
 module.exports = {
-  plugins: ['inline-react-svg', '@babel/plugin-proposal-class-properties'],
+  plugins: ['@babel/plugin-proposal-class-properties'],
   env: {
     test: {
       presets: [
@@ -37,7 +37,6 @@ module.exports = {
         '@babel/preset-react',
         '@babel/preset-typescript',
       ],
-      plugins: ['react-hot-loader/babel'],
       ignore: ['**/*.test.jsx', '**/*.test.js', '__snapshots__', '__tests__'],
     },
   },

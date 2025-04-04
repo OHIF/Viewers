@@ -32,7 +32,10 @@ export default class ToolGroupService {
     },
   };
 
-  serviceManager: any;
+  servicesManager: AppTypes.ServicesManager;
+  cornerstoneViewportService: any;
+  viewportGridService: any;
+  uiNotificationService: any;
   private toolGroupIds: Set<string> = new Set();
   /**
    * Service-specific
@@ -40,9 +43,9 @@ export default class ToolGroupService {
   listeners: { [key: string]: Function[] };
   EVENTS: { [key: string]: string };
 
-  constructor(serviceManager) {
+  constructor(servicesManager: AppTypes.ServicesManager) {
     const { cornerstoneViewportService, viewportGridService, uiNotificationService } =
-      serviceManager.services;
+      servicesManager.services;
     this.cornerstoneViewportService = cornerstoneViewportService;
     this.viewportGridService = viewportGridService;
     this.uiNotificationService = uiNotificationService;
@@ -202,19 +205,6 @@ export default class ToolGroupService {
     this.addToolsToToolGroup(toolGroupId, tools);
     return toolGroup;
   }
-
-  /**
-  private changeConfigurationIfNecessary(toolGroup, volumeUID) {
-    // handle specific assignment for volumeUID (e.g., fusion)
-    const toolInstances = toolGroup._toolInstances;
-    // Object.values(toolInstances).forEach(toolInstance => {
-    //   if (toolInstance.configuration) {
-    //     toolInstance.configuration.volumeUID = volumeUID;
-    //   }
-    // });
-  }
-  */
-
   /**
    * Get the tool's configuration based on the tool name and tool group id
    * @param toolGroupId - The id of the tool group that the tool instance belongs to.
@@ -246,6 +236,10 @@ export default class ToolGroupService {
     const toolGroup = ToolGroupManager.getToolGroup(toolGroupId);
     const toolInstance = toolGroup.getToolInstance(toolName);
     toolInstance.configuration = config;
+  }
+
+  public getActivePrimaryMouseButtonTool(toolGroupId?: string): string {
+    return this.getToolGroup(toolGroupId)?.getActivePrimaryMouseButtonTool();
   }
 
   private _setToolsMode(toolGroup, tools) {

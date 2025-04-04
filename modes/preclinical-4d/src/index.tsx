@@ -1,52 +1,48 @@
 import { id } from './id';
-import { hotkeys } from '@ohif/core';
 import initWorkflowSteps from './initWorkflowSteps';
 import initToolGroups from './initToolGroups';
 import toolbarButtons from './toolbarButtons';
 
-const REQUIRED_MODALITIES = ['PT', 'CT'];
-
 const extensionDependencies = {
-  '@ohif/extension-default': '3.7.0-beta.27',
-  '@ohif/extension-cornerstone': '3.7.0-beta.27',
-  '@ohif/extension-cornerstone-dynamic-volume': '3.7.0-beta.27',
-  '@ohif/extension-cornerstone-dicom-seg': '3.7.0-beta.27',
-  '@ohif/extension-tmtv': '3.7.0-beta.27',
+  '@ohif/extension-default': '3.7.0-beta.76',
+  '@ohif/extension-cornerstone': '3.7.0-beta.76',
+  '@ohif/extension-cornerstone-dynamic-volume': '3.7.0-beta.76',
+  '@ohif/extension-cornerstone-dicom-seg': '3.7.0-beta.76',
+  '@ohif/extension-tmtv': '3.7.0-beta.76',
 };
 
 const ohif = {
   layout: '@ohif/extension-default.layoutTemplateModule.viewerLayout',
-  sopClassHandler: '@ohif/extension-default.sopClassHandlerModule.stack',
+  defaultSopClassHandler: '@ohif/extension-default.sopClassHandlerModule.stack',
+  chartSopClassHandler: '@ohif/extension-default.sopClassHandlerModule.chart',
   hangingProtocol: '@ohif/extension-default.hangingProtocolModule.default',
   leftPanel: '@ohif/extension-default.panelModule.seriesList',
-  rightPanel: '@ohif/extension-default.panelModule.measure',
+  chartViewport: '@ohif/extension-default.viewportModule.chartViewport',
 };
 
 const dynamicVolume = {
-  leftPanel:
-    '@ohif/extension-cornerstone-dynamic-volume.panelModule.dynamic-volume',
-  rightPanel:
-    '@ohif/extension-cornerstone-dynamic-volume.panelModule.ROISegmentation',
+  leftPanel: '@ohif/extension-cornerstone-dynamic-volume.panelModule.dynamic-volume',
 };
 
 const cornerstone = {
   viewport: '@ohif/extension-cornerstone.viewportModule.cornerstone',
+  activeViewportWindowLevel: '@ohif/extension-cornerstone.panelModule.activeViewportWindowLevel',
 };
 
 function modeFactory({ modeConfiguration }) {
   return {
     id,
     routeName: 'dynamic-volume',
-    displayName: '4D Volume',
-    onModeEnter: function({
-      servicesManager,
-      extensionManager,
-      commandsManager,
-    }) {
+    displayName: 'Preclinical 4D',
+    onModeEnter: function ({ servicesManager, extensionManager, commandsManager }: withAppTypes) {
       const {
         measurementService,
         toolbarService,
+        cineService,
+        cornerstoneViewportService,
         toolGroupService,
+        customizationService,
+        viewportGridService,
       } = servicesManager.services;
 
       const utilityModule = extensionManager.getModuleEntry(
@@ -56,27 +52,47 @@ function modeFactory({ modeConfiguration }) {
       const { toolNames, Enums } = utilityModule.exports;
 
       measurementService.clearMeasurements();
-      initToolGroups({ toolNames, Enums, toolGroupService, commandsManager });
+      initToolGroups({ toolNames, Enums, toolGroupService, commandsManager, servicesManager });
 
-      toolbarService.init(extensionManager);
       toolbarService.addButtons(toolbarButtons);
-      toolbarService.createButtonSection('primary', [
-        'MeasurementTools',
-        'Zoom',
-        'WindowLevel',
-        'Crosshairs',
-        'Pan',
-        'fusionPTColormap',
-        'Cine',
-        'SegmentationTools',
-      ]);
+
+      toolbarService.createButtonSection('secondary', ['ProgressDropdown']);
+
+      // the primary button section is created in the workflow steps
+      // specific to the step
+      customizationService.setCustomizations({
+        'panelSegmentation.tableMode': {
+          $set: 'expanded',
+        },
+        'panelSegmentation.onSegmentationAdd': {
+          $set: () => {
+            commandsManager.run('createNewLabelMapForDynamicVolume');
+          },
+        },
+        'panelSegmentation.showAddSegment': {
+          $set: false,
+        },
+      });
+
+      // Auto play the clip initially when the volumes are loaded
+      const { unsubscribe } = cornerstoneViewportService.subscribe(
+        cornerstoneViewportService.EVENTS.VIEWPORT_VOLUMES_CHANGED,
+        () => {
+          const viewportId = viewportGridService.getActiveViewportId();
+          const csViewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
+          cineService.playClip(csViewport.element, { viewportId });
+          // cineService.setIsCineEnabled(true);
+
+          unsubscribe();
+        }
+      );
     },
-    onSetupRouteComplete: ({ servicesManager }) => {
+    onSetupRouteComplete: ({ servicesManager }: withAppTypes) => {
       // This needs to run after hanging protocol matching process because
       // it may change the protocol/stage based on workflow stage settings
-      initWorkflowSteps(servicesManager);
+      initWorkflowSteps({ servicesManager });
     },
-    onModeExit: ({ servicesManager }) => {
+    onModeExit: ({ servicesManager }: withAppTypes) => {
       const {
         toolGroupService,
         syncGroupService,
@@ -95,12 +111,12 @@ function modeFactory({ modeConfiguration }) {
         series: [],
       };
     },
-    isValidMode: ({ modalities }) => {
-      const modalities_list = modalities.split('\\');
-
-      return REQUIRED_MODALITIES.every(modality =>
-        modalities_list.includes(modality)
-      );
+    isValidMode: ({ modalities, study }) => {
+      // Todo: we need to find a better way to validate the mode
+      return {
+        valid: study.mrn === 'M1',
+        description: 'This mode is only available for 4D PET/CT studies.',
+      };
     },
 
     /**
@@ -122,13 +138,19 @@ function modeFactory({ modeConfiguration }) {
           return {
             id: ohif.layout,
             props: {
-              leftPanels: [dynamicVolume.leftPanel],
+              leftPanels: [[dynamicVolume.leftPanel, cornerstone.activeViewportWindowLevel]],
+              leftPanelResizable: true,
               rightPanels: [],
-              rightPanelDefaultClosed: true,
+              rightPanelResizable: true,
+              rightPanelClosed: true,
               viewports: [
                 {
                   namespace: cornerstone.viewport,
-                  displaySetsToDisplay: [ohif.sopClassHandler],
+                  displaySetsToDisplay: [ohif.defaultSopClassHandler],
+                },
+                {
+                  namespace: ohif.chartViewport,
+                  displaySetsToDisplay: [ohif.chartSopClassHandler],
                 },
               ],
             },
@@ -143,8 +165,7 @@ function modeFactory({ modeConfiguration }) {
     // the same sop class under different situations.  In that case, the more
     // general handler needs to come last.  For this case, the dicomvideo must
     // come first to remove video transfer syntax before ohif uses images
-    sopClassHandlers: [ohif.sopClassHandler],
-    hotkeys: [...hotkeys.defaults.hotkeyBindings],
+    sopClassHandlers: [ohif.chartSopClassHandler, ohif.defaultSopClassHandler],
   };
 }
 

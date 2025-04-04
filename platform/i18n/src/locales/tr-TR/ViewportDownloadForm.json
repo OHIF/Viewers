@@ -1,0 +1,14 @@
+{
+  "emptyFilenameError": "Dosya adı boş olamaz.",
+  "fileType": "Dosya Tipi",
+  "filename": "Dosya Adı",
+  "formTitle": "Lütfen çıktı görüntüsü için boyutları, dosya adını ve istediğiniz türü belirtin.",
+  "imageHeight": "Görüntü Yüksekliği (px)",
+  "imagePreview": "Görüntü Önizleme",
+  "imageWidth": "Görüntü Genişliği (px)",
+  "keepAspectRatio": "En-boy oranını koru",
+  "loadingPreview": "Görüntü Önzilemesi Yükleniyor...",
+  "minHeightError": "Minimum geçerli yükseklik 100 pikseldir.",
+  "minWidthError": "Minimum geçerli genişlik 100 pikseldir.",
+  "showAnnotations": "Ek Açıklamaları Göster"
+}

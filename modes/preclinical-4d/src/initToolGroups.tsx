@@ -2,25 +2,23 @@ const toolGroupIds = {
   default: 'dynamic4D-default',
   PT: 'dynamic4D-pt',
   Fusion: 'dynamic4D-fusion',
+  CT: 'dynamic4D-ct',
 };
 
-const brushInstanceNames = {
-  CircularBrush: 'CircularBrush',
-  CircularEraser: 'CircularEraser',
-  SphereBrush: 'SphereBrush',
-  SphereEraser: 'SphereEraser',
-  ThresholdBrush: 'ThresholdBrush',
+const colours = {
+  'viewport-0': 'rgb(200, 0, 0)',
+  'viewport-1': 'rgb(200, 200, 0)',
+  'viewport-2': 'rgb(0, 200, 0)',
 };
 
-const brushStrategies = {
-  [brushInstanceNames.CircularBrush]: 'FILL_INSIDE_CIRCLE',
-  [brushInstanceNames.CircularEraser]: 'ERASE_INSIDE_CIRCLE',
-  [brushInstanceNames.SphereBrush]: 'FILL_INSIDE_SPHERE',
-  [brushInstanceNames.SphereEraser]: 'ERASE_INSIDE_SPHERE',
-  [brushInstanceNames.ThresholdBrush]: 'THRESHOLD_INSIDE_CIRCLE',
+const colorsByOrientation = {
+  axial: 'rgb(200, 0, 0)',
+  sagittal: 'rgb(200, 200, 0)',
+  coronal: 'rgb(0, 200, 0)',
 };
 
-function _initToolGroups(toolNames, Enums, toolGroupService, commandsManager) {
+function _initToolGroups(toolNames, Enums, toolGroupService, commandsManager, servicesManager) {
+  const { cornerstoneViewportService } = servicesManager.services;
   const tools = {
     active: [
       {
@@ -35,128 +33,133 @@ function _initToolGroups(toolNames, Enums, toolGroupService, commandsManager) {
         toolName: toolNames.Zoom,
         bindings: [{ mouseButton: Enums.MouseBindings.Secondary }],
       },
-      { toolName: toolNames.StackScrollMouseWheel, bindings: [] },
+      {
+        toolName: toolNames.StackScroll,
+        bindings: [{ mouseButton: Enums.MouseBindings.Wheel }],
+      },
     ],
     passive: [
       { toolName: toolNames.Length },
+      { toolName: toolNames.SegmentBidirectional },
       { toolName: toolNames.ArrowAnnotate },
       { toolName: toolNames.Bidirectional },
-      { toolName: toolNames.DragProbe },
       { toolName: toolNames.Probe },
       { toolName: toolNames.EllipticalROI },
       { toolName: toolNames.RectangleROI },
       { toolName: toolNames.RectangleROIThreshold },
       { toolName: toolNames.RectangleScissors },
-      { toolName: toolNames.CircleScissors },
-      { toolName: toolNames.SphereScissors },
       { toolName: toolNames.PaintFill },
       { toolName: toolNames.StackScroll },
-      { toolName: toolNames.Angle },
-      { toolName: toolNames.CobbAngle },
       { toolName: toolNames.Magnify },
       {
-        toolName: brushInstanceNames.CircularBrush,
-        parentClassName: toolNames.Brush,
+        toolName: 'CircularBrush',
+        parentTool: 'Brush',
+        configuration: {
+          activeStrategy: 'FILL_INSIDE_CIRCLE',
+          brushSize: 7,
+        },
       },
       {
-        toolName: brushInstanceNames.CircularEraser,
-        parentClassName: toolNames.Brush,
+        toolName: 'CircularEraser',
+        parentTool: 'Brush',
+        configuration: {
+          activeStrategy: 'ERASE_INSIDE_CIRCLE',
+          brushSize: 7,
+        },
       },
       {
-        toolName: brushInstanceNames.SphereBrush,
-        parentClassName: toolNames.Brush,
+        toolName: 'SphereBrush',
+        parentTool: 'Brush',
+        configuration: {
+          activeStrategy: 'FILL_INSIDE_SPHERE',
+          brushSize: 7,
+        },
       },
       {
-        toolName: brushInstanceNames.SphereEraser,
-        parentClassName: toolNames.Brush,
+        toolName: 'SphereEraser',
+        parentTool: 'Brush',
+        configuration: {
+          activeStrategy: 'ERASE_INSIDE_SPHERE',
+          brushSize: 7,
+        },
       },
       {
-        toolName: brushInstanceNames.ThresholdBrush,
-        parentClassName: toolNames.Brush,
+        toolName: 'ThresholdCircularBrush',
+        parentTool: 'Brush',
+        configuration: {
+          activeStrategy: 'THRESHOLD_INSIDE_CIRCLE',
+          brushSize: 7,
+        },
+      },
+      {
+        toolName: 'ThresholdSphereBrush',
+        parentTool: 'Brush',
+        configuration: {
+          activeStrategy: 'THRESHOLD_INSIDE_SPHERE',
+          brushSize: 7,
+        },
+      },
+      { toolName: toolNames.CircleScissors },
+      { toolName: toolNames.RectangleScissors },
+      { toolName: toolNames.SphereScissors },
+      { toolName: toolNames.StackScroll },
+      { toolName: toolNames.Magnify },
+    ],
+    enabled: [],
+    disabled: [
+      {
+        toolName: toolNames.Crosshairs,
+        configuration: {
+          viewportIndicators: true,
+          viewportIndicatorsConfig: {
+            circleRadius: 5,
+            xOffset: 0.95,
+            yOffset: 0.05,
+          },
+          disableOnPassive: true,
+          autoPan: {
+            enabled: false,
+            panSize: 10,
+          },
+          getReferenceLineColor: viewportId => {
+            const viewportInfo = cornerstoneViewportService.getViewportInfo(viewportId);
+            const viewportOptions = viewportInfo?.viewportOptions;
+            if (viewportOptions) {
+              return (
+                colours[viewportOptions.id] ||
+                colorsByOrientation[viewportOptions.orientation] ||
+                '#0c0'
+              );
+            } else {
+              console.warn('missing viewport?', viewportId);
+              return '#0c0';
+            }
+          },
+        },
       },
     ],
-    enabled: [{ toolName: toolNames.SegmentationDisplay }],
-    disabled: [{ toolName: toolNames.Crosshairs }],
   };
 
-  const toolsConfig = {
-    [toolNames.Crosshairs]: {
-      viewportIndicators: false,
-      autoPan: {
-        enabled: false,
-        panSize: 10,
-      },
-    },
-    [toolNames.ArrowAnnotate]: {
-      getTextCallback: (callback, eventDetails) => {
-        commandsManager.runCommand('arrowTextCallback', {
-          callback,
-          eventDetails,
-        });
-      },
+  toolGroupService.createToolGroupAndAddTools(toolGroupIds.PT, {
+    ...tools,
+    passive: [...tools.passive, { toolName: 'RectangleROIStartEndThreshold' }],
+  });
 
-      changeTextCallback: (data, eventDetails, callback) =>
-        commandsManager.runCommand('arrowTextCallback', {
-          callback,
-          data,
-          eventDetails,
-        }),
-    },
-    [brushInstanceNames.CircularBrush]: {
-      activeStrategy: brushStrategies.CircularBrush,
-    },
-    [brushInstanceNames.CircularEraser]: {
-      activeStrategy: brushStrategies.CircularEraser,
-    },
-    [brushInstanceNames.SphereBrush]: {
-      activeStrategy: brushStrategies.SphereBrush,
-    },
-    [brushInstanceNames.SphereEraser]: {
-      activeStrategy: brushStrategies.SphereEraser,
-    },
-    [brushInstanceNames.ThresholdBrush]: {
-      activeStrategy: brushStrategies.ThresholdBrush,
-    },
-  };
+  toolGroupService.createToolGroupAndAddTools(toolGroupIds.CT, {
+    ...tools,
+    passive: [...tools.passive, { toolName: 'RectangleROIStartEndThreshold' }],
+  });
 
-  toolGroupService.createToolGroupAndAddTools(
-    toolGroupIds.PT,
-    {
-      ...tools,
-      passive: [
-        ...tools.passive,
-        { toolName: 'RectangleROIStartEndThreshold' },
-      ],
-    },
-    toolsConfig
-  );
+  toolGroupService.createToolGroupAndAddTools(toolGroupIds.Fusion, {
+    ...tools,
+    passive: [...tools.passive, { toolName: 'RectangleROIStartEndThreshold' }],
+  });
 
-  toolGroupService.createToolGroupAndAddTools(
-    toolGroupIds.Fusion,
-    {
-      ...tools,
-      passive: [
-        ...tools.passive,
-        { toolName: 'RectangleROIStartEndThreshold' },
-      ],
-    },
-    toolsConfig
-  );
-
-  toolGroupService.createToolGroupAndAddTools(
-    toolGroupIds.default,
-    tools,
-    toolsConfig
-  );
+  toolGroupService.createToolGroupAndAddTools(toolGroupIds.default, tools);
 }
 
-function initToolGroups({
-  toolNames,
-  Enums,
-  toolGroupService,
-  commandsManager,
-}) {
-  _initToolGroups(toolNames, Enums, toolGroupService, commandsManager);
+function initToolGroups({ toolNames, Enums, toolGroupService, commandsManager, servicesManager }) {
+  _initToolGroups(toolNames, Enums, toolGroupService, commandsManager, servicesManager);
 }
 
 export { initToolGroups as default, toolGroupIds };

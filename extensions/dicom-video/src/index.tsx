@@ -42,19 +42,6 @@ const dicomVideoExtension = {
 
     return [{ name: 'dicom-video', component: ExtendedOHIFCornerstoneVideoViewport }];
   },
-  // getCommandsModule({ servicesManager }) {
-  //   return {
-  //     definitions: {
-  //       setToolActive: {
-  //         commandFn: ({ toolName, element }) => {
-  //         },
-  //         storeContexts: [],
-  //         options: {},
-  //       },
-  //     },
-  //     defaultContext: 'ACTIVE_VIEWPORT::VIDEO',
-  //   };
-  // },
   getSopClassHandlerModule,
 };
 

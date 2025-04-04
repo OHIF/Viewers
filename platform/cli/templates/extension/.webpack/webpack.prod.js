@@ -43,7 +43,40 @@ const config = {
     },
   ],
   module: {
+
     rules: [
+      {
+        test: /\.svg?$/,
+        oneOf: [
+          {
+            use: [
+              {
+                loader: '@svgr/webpack',
+                options: {
+                  svgoConfig: {
+                    plugins: [
+                      {
+                        name: 'preset-default',
+                        params: {
+                          overrides: {
+                            removeViewBox: false
+                          },
+                        },
+                      },
+                    ]
+                  },
+                  prettier: false,
+                  svgo: true,
+                  titleProp: true,
+                },
+              },
+            ],
+            issuer: {
+              and: [/\.(ts|tsx|js|jsx|md|mdx)$/],
+            },
+          },
+        ],
+      },
       {
         test: /(\.jsx|\.js|\.tsx|\.ts)$/,
         loader: 'babel-loader',

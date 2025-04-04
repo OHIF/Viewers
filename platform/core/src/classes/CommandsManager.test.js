@@ -8,7 +8,6 @@ describe('CommandsManager', () => {
     contextName = 'VTK',
     command = {
       commandFn: jest.fn().mockReturnValue(true),
-      storeContexts: ['viewers'],
       options: { passMeToCommandFn: ':wave:' },
     },
     commandsManagerConfig = {
@@ -139,7 +138,6 @@ describe('CommandsManager', () => {
     it('Logs a warning if command definition does not have a commandFn', () => {
       const commandWithNoCommmandFn = {
         commandFn: undefined,
-        storeContexts: [],
         options: {},
       };
 

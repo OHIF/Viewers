@@ -1,4 +1,4 @@
 import PanelPetSUV from './PanelPetSUV';
-import PanelROIThresholdSegmentation from './PanelROIThresholdSegmentation';
+import PanelROIThresholdExport from './PanelROIThresholdSegmentation';
 
-export { PanelPetSUV, PanelROIThresholdSegmentation };
+export { PanelPetSUV, PanelROIThresholdExport };

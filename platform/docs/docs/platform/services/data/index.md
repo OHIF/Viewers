@@ -17,10 +17,10 @@ We maintain the following non-ui Services:
 - [DicomMetadata Store](./../data/DicomMetadataStore.md)
 - [DisplaySet Service](./../data/DisplaySetService.md)
 - [Hanging Protocol Service](../data/HangingProtocolService.md)
-- [Toolbar Service](../data/ToolBarService.md)
+- [Toolbar Service](./ToolbarService.md)
 - [Measurement Service](../data/MeasurementService.md)
-- [Customization Service](../data/customization-service.md)
-- [State Sync Service](../data/StateSyncService.md)
+- [Customization Service](./../customization-service/customizationService.md)
+- [State Sync Service](../../../../versioned_docs/version-3.9/migration-guide/3p8-to-3p9/5-StateSyncService.md)
 - [Panel Service](../data/PanelService.md)
 
 ## Service Architecture
@@ -28,7 +28,7 @@ We maintain the following non-ui Services:
 ![services-data](../../../assets/img/services-data.png)
 
 > We have explained services and how to create a custom service in the
-> [`ServiceManager`](../../managers/service.md) section of the docs
+> [`ServicesManager`](../../managers/service.md) section of the docs
 
 To recap: The simplest service return a new object that has a `name` property,
 and `Create` method which instantiate the service class. The "Factory Function"
@@ -39,11 +39,11 @@ different for UI Services).
 // extensions/customExtension/src/services/backEndService/index.js
 import backEndService from './backEndService';
 
-export default function WrappedBackEndService(serviceManager) {
+export default function WrappedBackEndService(servicesManager) {
   return {
     name: 'myService',
     create: ({ configuration = {} }) => {
-      return new backEndService(serviceManager);
+      return new backEndService(servicesManager);
     },
   };
 }

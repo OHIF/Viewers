@@ -2,12 +2,14 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 
-import Icon from '../Icon';
 import Thumbnail from '../Thumbnail';
 import Tooltip from '../Tooltip';
 import { StringNumber } from '../../types';
-
-const ThumbnailTracked = ({
+import { useTranslation } from 'react-i18next';
+import { Icons } from '@ohif/ui-next';
+// Todo: This class to me feels like it belongs in an extension, not in platform/ui
+// because it is dealing with mode specific components/information
+function ThumbnailTracked({
   displaySetInstanceUID,
   className,
   imageSrc,
@@ -15,55 +17,22 @@ const ThumbnailTracked = ({
   description,
   seriesNumber,
   numInstances,
+  loadingProgress,
   countIcon,
   messages,
   dragData,
   onClick,
   onDoubleClick,
   onClickUntrack,
-  viewportIdentificator,
   isTracked,
   isActive,
-}) => {
+}) {
+  const { t } = useTranslation('ThumbnailTracked');
   const trackedIcon = isTracked ? 'circled-checkmark' : 'dotted-circle';
-  const viewportIdentificatorLabel = viewportIdentificator.join(', ');
-  const renderViewportLabels = () => {
-    const MAX_LABELS_PER_COL = 3;
-    const shouldShowStack = viewportIdentificator.length > MAX_LABELS_PER_COL;
-    if (shouldShowStack) {
-      return (
-        <div>
-          <div>
-            {viewportIdentificator.slice(0, MAX_LABELS_PER_COL).map(label => (
-              <div key={label}>{label}</div>
-            ))}
-          </div>
-          <Tooltip
-            position="right"
-            content={
-              <div className="max-w-40 text-left">
-                Series is displayed <br /> in viewport {viewportIdentificatorLabel}
-              </div>
-            }
-          >
-            <Icon
-              name="tool-more-menu"
-              className="py-2 text-white"
-            />
-          </Tooltip>
-        </div>
-      );
-    }
-
-    return viewportIdentificator.map(label => <div key={label}>{label}</div>);
-  };
 
   return (
     <div
-      className={classnames(
-        'flex flex-1 cursor-pointer flex-row px-3 py-2 outline-none',
-        className
-      )}
+      className={classnames('flex flex-1 cursor-pointer flex-row px-3 outline-none', className)}
       id={`thumbnail-${displaySetInstanceUID}`}
     >
       <div className="flex-2 flex flex-col items-center">
@@ -78,45 +47,27 @@ const ThumbnailTracked = ({
             content={
               <div className="flex flex-1 flex-row">
                 <div className="flex-2 flex items-center justify-center pr-4">
-                  <Icon
-                    name="info-link"
-                    className="text-primary-active"
-                  />
+                  <Icons.InfoLink className="text-primary-active" />
                 </div>
                 <div className="flex flex-1 flex-col">
                   <span>
-                    Series is
-                    <span className="text-white">{isTracked ? ' tracked' : ' untracked'}</span>
-                  </span>
-                  {!!viewportIdentificator.length && (
-                    <span>
-                      in viewport
-                      <span className="ml-1 text-white">{viewportIdentificatorLabel}</span>
+                    <span className="text-white">
+                      {isTracked ? t('Series is tracked') : t('Series is untracked')}
                     </span>
-                  )}
+                  </span>
                 </div>
               </div>
             }
           >
-            <Icon
+            <Icons.ByName
               name={trackedIcon}
               className="text-primary-light mb-2 w-4"
             />
           </Tooltip>
-
-          <div
-            className="text-center text-xl leading-tight text-white"
-            data-cy={'thumbnail-viewport-labels'}
-          >
-            {renderViewportLabels()}
-          </div>
         </div>
         {isTracked && (
           <div onClick={onClickUntrack}>
-            <Icon
-              name="cancel"
-              className="text-primary-active w-4"
-            />
+            <Icons.Cancel className="text-primary-active w-4" />
           </div>
         )}
       </div>
@@ -130,13 +81,14 @@ const ThumbnailTracked = ({
         messages={messages}
         numInstances={numInstances}
         countIcon={countIcon}
+        loadingProgress={loadingProgress}
         isActive={isActive}
         onClick={onClick}
         onDoubleClick={onDoubleClick}
       />
     </div>
   );
-};
+}
 
 ThumbnailTracked.propTypes = {
   /**
@@ -157,10 +109,10 @@ ThumbnailTracked.propTypes = {
   description: PropTypes.string.isRequired,
   seriesNumber: StringNumber.isRequired,
   numInstances: PropTypes.number.isRequired,
+  loadingProgress: PropTypes.number,
   onClick: PropTypes.func.isRequired,
   onDoubleClick: PropTypes.func.isRequired,
   onClickUntrack: PropTypes.func.isRequired,
-  viewportIdentificator: PropTypes.array,
   isTracked: PropTypes.bool,
   messages: PropTypes.object,
   isActive: PropTypes.bool.isRequired,

@@ -1,4 +1,9 @@
 const DEFAULT_COLORMAP = '2hot';
+const toolGroupIds = {
+  pt: 'dynamic4D-pt',
+  fusion: 'dynamic4D-fusion',
+  ct: 'dynamic4D-ct',
+};
 
 function getPTOptions({
   colormap,
@@ -45,7 +50,7 @@ function getPTViewports() {
         viewportId: 'ptAxial',
         viewportType: 'volume',
         orientation: 'axial',
-        toolGroupId: 'dynamic4D-pt',
+        toolGroupId: toolGroupIds.pt,
         initialImageOptions: {
           preset: 'middle', // 'first', 'last', 'middle'
         },
@@ -76,10 +81,9 @@ function getPTViewports() {
         viewportId: 'ptSagittal',
         viewportType: 'volume',
         orientation: 'sagittal',
-        toolGroupId: 'dynamic4D-pt',
+        toolGroupId: toolGroupIds.pt,
         initialImageOptions: {
-          // preset: 'middle', // 'first', 'last', 'middle'
-          index: 140,
+          preset: 'middle', // 'first', 'last', 'middle'
         },
         syncGroups: [
           {
@@ -108,10 +112,9 @@ function getPTViewports() {
         viewportId: 'ptCoronal',
         viewportType: 'volume',
         orientation: 'coronal',
-        toolGroupId: 'dynamic4D-pt',
+        toolGroupId: toolGroupIds.pt,
         initialImageOptions: {
-          // preset: 'middle', // 'first', 'last', 'middle'
-          index: 160,
+          preset: 'middle', // 'first', 'last', 'middle'
         },
         syncGroups: [
           {
@@ -144,8 +147,8 @@ function getFusionViewports() {
       name: DEFAULT_COLORMAP,
       opacity: [
         { value: 0, opacity: 0 },
-        { value: 0.1, opacity: 0.3 },
-        { value: 1, opacity: 0.3 },
+        { value: 0.1, opacity: 0.8 },
+        { value: 1, opacity: 0.8 },
       ],
     },
   };
@@ -156,7 +159,7 @@ function getFusionViewports() {
         viewportId: 'fusionAxial',
         viewportType: 'volume',
         orientation: 'axial',
-        toolGroupId: 'dynamic4D-fusion',
+        toolGroupId: toolGroupIds.fusion,
         initialImageOptions: {
           preset: 'middle', // 'first', 'last', 'middle'
         },
@@ -169,15 +172,33 @@ function getFusionViewports() {
           },
           {
             type: 'voi',
-            id: 'ptWLSync',
+            id: 'ctWLSync',
+            source: false,
+            target: true,
+          },
+          {
+            type: 'voi',
+            id: 'fusionWLSync',
             source: true,
             target: true,
           },
           {
             type: 'voi',
             id: 'ptFusionWLSync',
+            source: false,
+            target: true,
+            options: {
+              syncInvertState: false,
+            },
+          },
+          {
+            type: 'hydrateseg',
+            id: 'sameFORId',
             source: true,
-            target: false,
+            target: true,
+            options: {
+              matchingRules: ['sameFOR'],
+            },
           },
         ],
       },
@@ -196,10 +217,9 @@ function getFusionViewports() {
         viewportId: 'fusionSagittal',
         viewportType: 'volume',
         orientation: 'sagittal',
-        toolGroupId: 'dynamic4D-fusion',
+        toolGroupId: toolGroupIds.fusion,
         initialImageOptions: {
-          // preset: 'middle', // 'first', 'last', 'middle'
-          index: 600,
+          preset: 'middle', // 'first', 'last', 'middle'
         },
         syncGroups: [
           {
@@ -210,15 +230,33 @@ function getFusionViewports() {
           },
           {
             type: 'voi',
-            id: 'ptWLSync',
+            id: 'ctWLSync',
+            source: false,
+            target: true,
+          },
+          {
+            type: 'voi',
+            id: 'fusionWLSync',
             source: true,
             target: true,
           },
           {
             type: 'voi',
             id: 'ptFusionWLSync',
+            source: false,
+            target: true,
+            options: {
+              syncInvertState: false,
+            },
+          },
+          {
+            type: 'hydrateseg',
+            id: 'sameFORId',
             source: true,
-            target: false,
+            target: true,
+            options: {
+              matchingRules: ['sameFOR'],
+            },
           },
         ],
       },
@@ -237,10 +275,9 @@ function getFusionViewports() {
         viewportId: 'fusionCoronal',
         viewportType: 'volume',
         orientation: 'coronal',
-        toolGroupId: 'dynamic4D-fusion',
+        toolGroupId: toolGroupIds.fusion,
         initialImageOptions: {
-          // preset: 'middle', // 'first', 'last', 'middle'
-          index: 600,
+          preset: 'middle', // 'first', 'last', 'middle'
         },
         syncGroups: [
           {
@@ -251,15 +288,33 @@ function getFusionViewports() {
           },
           {
             type: 'voi',
-            id: 'ptWLSync',
+            id: 'ctWLSync',
+            source: false,
+            target: true,
+          },
+          {
+            type: 'voi',
+            id: 'fusionWLSync',
             source: true,
             target: true,
           },
           {
             type: 'voi',
             id: 'ptFusionWLSync',
+            source: false,
+            target: true,
+            options: {
+              syncInvertState: false,
+            },
+          },
+          {
+            type: 'hydrateseg',
+            id: 'sameFORId',
             source: true,
-            target: false,
+            target: true,
+            options: {
+              matchingRules: ['sameFOR'],
+            },
           },
         ],
       },
@@ -270,6 +325,121 @@ function getFusionViewports() {
         {
           options: { ...getPTOptions(ptOptionsParams) },
           id: 'ptDisplaySet',
+        },
+      ],
+    },
+  ];
+}
+
+function getSeriesChartViewport() {
+  return {
+    viewportOptions: {
+      viewportId: 'seriesChart',
+    },
+    displaySets: [
+      {
+        id: 'chartDisplaySet',
+        options: {
+          // This dataset does not require the download of any instance since it is pre-computed locally,
+          // but interleaveTopToBottom.ts was not loading any series because it consider that all viewports
+          // are a Cornerstone viewport which is not true in this case and it waits for all viewports to
+          // have called interleaveTopToBottom(...).
+          skipLoading: true,
+        },
+      },
+    ],
+  };
+}
+
+function getCTViewports() {
+  return [
+    {
+      viewportOptions: {
+        viewportId: 'ctAxial',
+        viewportType: 'volume',
+        orientation: 'axial',
+        toolGroupId: toolGroupIds.ct,
+        initialImageOptions: {
+          preset: 'middle', // 'first', 'last', 'middle'
+        },
+        syncGroups: [
+          {
+            type: 'cameraPosition',
+            id: 'axialSync',
+            source: true,
+            target: true,
+          },
+          {
+            type: 'voi',
+            id: 'ctWLSync',
+            source: true,
+            target: true,
+          },
+        ],
+      },
+      displaySets: [
+        {
+          id: 'ctDisplaySet',
+        },
+      ],
+    },
+    {
+      viewportOptions: {
+        viewportId: 'ctSagittal',
+        viewportType: 'volume',
+        orientation: 'sagittal',
+        toolGroupId: toolGroupIds.ct,
+        initialImageOptions: {
+          preset: 'middle',
+        },
+        syncGroups: [
+          {
+            type: 'cameraPosition',
+            id: 'sagittalSync',
+            source: true,
+            target: true,
+          },
+          {
+            type: 'voi',
+            id: 'ctWLSync',
+            source: true,
+            target: true,
+          },
+        ],
+      },
+      displaySets: [
+        {
+          id: 'ctDisplaySet',
+        },
+      ],
+    },
+    {
+      viewportOptions: {
+        viewportId: 'ctCoronal',
+        viewportType: 'volume',
+        orientation: 'coronal',
+        toolGroupId: toolGroupIds.ct,
+        initialImageOptions: {
+          preset: 'middle',
+        },
+        syncGroups: [
+          {
+            type: 'cameraPosition',
+            id: 'coronalSync',
+            source: true,
+            target: true,
+          },
+          {
+            type: 'voi',
+            id: 'ctWLSync',
+            source: true,
+            target: true,
+          },
+        ],
+      },
+      displaySets: [
+        {
+          id: 'ctDisplaySet',
         },
       ],
     },
@@ -288,7 +458,7 @@ const defaultProtocol = {
   modifiedDate: '2023-01-01T00:00:00.000Z',
   availableTo: {},
   editableBy: {},
-  imageLoadStrategy: 'interleaveTopToBottom', // "default" , "interleaveTopToBottom",  "interleaveCenter"
+  imageLoadStrategy: 'default', // "default" , "interleaveTopToBottom",  "interleaveCenter"
   protocolMatchingRules: [
     {
       attribute: 'ModalitiesInStudy',
@@ -389,6 +559,22 @@ const defaultProtocol = {
       // Can be used to select matching studies
       // studyMatchingRules: [],
     },
+    chartDisplaySet: {
+      // Unused currently
+      imageMatchingRules: [],
+      // Matches displaysets, NOT series
+      seriesMatchingRules: [
+        {
+          attribute: 'Modality',
+          constraint: {
+            equals: {
+              value: 'CHT',
+            },
+          },
+          required: true,
+        },
+      ],
+    },
   },
   stages: [
     {
@@ -411,25 +597,11 @@ const defaultProtocol = {
       viewportStructure: {
         layoutType: 'grid',
         properties: {
-          rows: 2,
+          rows: 3,
           columns: 3,
         },
       },
-      viewports: [...getFusionViewports(), ...getPTViewports()],
-      createdDate: '2023-01-01T00:00:00.000Z',
-    },
-
-    {
-      id: 'review',
-      name: 'Review',
-      viewportStructure: {
-        layoutType: 'grid',
-        properties: {
-          rows: 1,
-          columns: 3,
-        },
-      },
-      viewports: [...getFusionViewports()],
+      viewports: [...getFusionViewports(), ...getCTViewports(), ...getPTViewports()],
       createdDate: '2023-01-01T00:00:00.000Z',
     },
 
@@ -448,16 +620,42 @@ const defaultProtocol = {
     },
 
     {
-      id: 'kinectAnalysis',
-      name: 'Kinect Analysis',
+      id: 'kineticAnalysis',
+      name: 'Kinetic Analysis',
       viewportStructure: {
         layoutType: 'grid',
         properties: {
-          rows: 1,
+          rows: 2,
           columns: 3,
+          layoutOptions: [
+            {
+              x: 0,
+              y: 0,
+              width: 1 / 3,
+              height: 1 / 2,
+            },
+            {
+              x: 1 / 3,
+              y: 0,
+              width: 1 / 3,
+              height: 1 / 2,
+            },
+            {
+              x: 2 / 3,
+              y: 0,
+              width: 1 / 3,
+              height: 1 / 2,
+            },
+            {
+              x: 0,
+              y: 1 / 2,
+              width: 1,
+              height: 1 / 2,
+            },
+          ],
         },
       },
-      viewports: [...getPTViewports()],
+      viewports: [...getFusionViewports(), getSeriesChartViewport()],
       createdDate: '2023-01-01T00:00:00.000Z',
     },
   ],

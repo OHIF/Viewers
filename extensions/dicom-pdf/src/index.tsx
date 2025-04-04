@@ -41,18 +41,6 @@ const dicomPDFExtension = {
 
     return [{ name: 'dicom-pdf', component: ExtendedOHIFCornerstonePdfViewport }];
   },
-  // getCommandsModule({ servicesManager }) {
-  //   return {
-  //     definitions: {
-  //       setToolActive: {
-  //         commandFn: () => null,
-  //         storeContexts: [],
-  //         options: {},
-  //       },
-  //     },
-  //     defaultContext: 'ACTIVE_VIEWPORT::PDF',
-  // };
-  // },
   getSopClassHandlerModule,
 };
 

@@ -1,26 +1,17 @@
-import React, {
-  ReactNode,
-  useEffect,
-  useCallback,
-  useState,
-  useMemo,
-  useRef,
-} from 'react';
+import React, { ReactNode, useEffect, useCallback, useState, useMemo, useRef } from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import ProgressDiscreteBar from './ProgressDiscreteBar';
 import ProgressItemDetail from './ProgressItemDetail';
 import ProgressItem from './ProgressItem';
-import { Icon } from '../';
-import {
-  ProgressDropdownOption,
-  ProgressDropdownOptionPropType,
-} from './types';
+import { Icons } from '@ohif/ui-next';
+import { ProgressDropdownOption, ProgressDropdownOptionPropType } from './types';
 
 const ProgressDropdown = ({
   options: optionsProps,
   value,
   children,
+  dropDownWidth = '170',
   onChange,
 }: {
   options: ProgressDropdownOption[];
@@ -39,10 +30,10 @@ const ProgressDropdown = ({
     [options, selectedOption]
   );
 
-  const canMoveNext = useMemo(() => selectedOptionIndex < options.length - 1, [
-    selectedOptionIndex,
-    options,
-  ]);
+  const canMoveNext = useMemo(
+    () => selectedOptionIndex < options.length - 1,
+    [selectedOptionIndex, options]
+  );
 
   const handleOptionSelected = useCallback(
     (newSelectedOption?: ProgressDropdownOption): void => {
@@ -80,9 +71,7 @@ const ProgressDropdown = ({
       return;
     }
 
-    const newOption = value
-      ? options.find(option => option.value === value)
-      : undefined;
+    const newOption = value ? options.find(option => option.value === value) : undefined;
 
     handleOptionSelected(newOption);
   }, [value, options, handleOptionSelected]);
@@ -103,34 +92,32 @@ const ProgressDropdown = ({
   }, [open]);
 
   return (
-    <div ref={element} className="grow text-white relative text-[0px]">
+    <div
+      ref={element}
+      className="relative grow select-none text-[0px] text-white"
+    >
       <div>
-        <div className="flex mb-1.5 h-[26px]">
+        <div className="mb-1.5 flex h-[26px]">
           <div
-            className="flex grow border bg-secondary-dark border-primary-main rounded cursor-pointer"
+            className="bg-secondary-dark border-primary-main flex grow cursor-pointer rounded border"
+            style={{ width: `${dropDownWidth}px` }}
             onClick={toggleOpen}
           >
             <div className="flex grow">
               {selectedOption && <ProgressItemDetail option={selectedOption} />}
 
-              {!selectedOption && (
-                <div className="grow text-base leading-6 ml-1">{children}</div>
-              )}
+              {!selectedOption && <div className="ml-1 grow text-base leading-6">{children}</div>}
             </div>
-            <Icon
-              name="chevron-down"
-              className="text-primary-active mt-0.5 ml-1"
-            />
+            <Icons.ChevronDown className="text-primary-active mt-1.5 ml-1 mr-2" />
           </div>
           <button
-            className={classnames('text-base rounded w-[26px] ml-1.5', {
+            className={classnames('ml-1.5 w-[26px] rounded text-base', {
               'bg-primary-main': canMoveNext,
               'bg-primary-dark pointer-events-none': !canMoveNext,
             })}
           >
-            <Icon
-              name="arrow-right"
-              className={classnames('text-white relative left-0.5 w-6 h-6', {
+            <Icons.ArrowRight
+              className={classnames('relative left-0.5 h-6 w-6 text-white', {
                 'text-white': canMoveNext,
                 'text-secondary-light': !canMoveNext,
               })}
@@ -140,12 +127,12 @@ const ProgressDropdown = ({
         </div>
         <div
           className={classnames(
-            'absolute top-7 mt-0.5 left-0 right-8 z-10 origin-top-right',
-            'transition duration-300 transform bg-primary-dark',
-            'border border-secondary-main rounded shadow',
+            'absolute top-7 left-0 right-8 z-10 mt-0.5 origin-top',
+            'bg-primary-dark overflow-hidden transition-[max-height] duration-300',
+            'border-secondary-main rounded border shadow',
             {
-              'scale-0': !open,
-              'scale-100': open,
+              hidden: !open,
+              'max-h-[500px]': open,
             }
           )}
         >
@@ -157,6 +144,7 @@ const ProgressDropdown = ({
             />
           ))}
         </div>
+
         <div>
           <ProgressDiscreteBar options={options} />
         </div>
@@ -170,6 +158,7 @@ ProgressDropdown.propTypes = {
   value: PropTypes.string,
   onChange: PropTypes.func,
   children: PropTypes.node,
+  dropDownWidth: PropTypes.string,
 };
 
 export default ProgressDropdown;

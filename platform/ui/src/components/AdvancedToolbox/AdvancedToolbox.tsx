@@ -1,8 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import classnames from 'classnames';
-import { PanelSection, Icon, Tooltip } from '../../components';
+import { PanelSection, Tooltip } from '../../components';
 import ToolSettings from './ToolSettings';
+import { Icons } from '@ohif/ui-next';
 
+/**
+ * Use Toolbox component instead of this although it doesn't have "Advanced" in its name
+ * it is better to use it instead of this one
+ */
 const AdvancedToolbox = ({ title, items }) => {
   const [activeItemName, setActiveItemName] = useState(null);
 
@@ -10,13 +15,15 @@ const AdvancedToolbox = ({ title, items }) => {
     // see if any of the items are active from the outside
     const activeItem = items?.find(item => item.active);
     setActiveItemName(activeItem ? activeItem.name : null);
-    console.log('Active item', activeItem);
   }, [items]);
 
   const activeItemOptions = items?.find(item => item.name === activeItemName)?.options;
 
   return (
-    <PanelSection title={title}>
+    <PanelSection
+      title={title}
+      childrenClassName="flex-shrink-0"
+    >
       <div className="flex flex-col bg-black">
         <div className="bg-primary-dark mt-0.5 flex flex-wrap py-2">
           {items?.map(item => {
@@ -38,14 +45,14 @@ const AdvancedToolbox = ({ title, items }) => {
                 >
                   <div
                     className={classnames(
-                      'text-primary-active grid h-[40px] w-[40px] place-items-center rounded-md bg-black  ',
+                      'text-primary-active grid h-[40px] w-[40px] place-items-center rounded-md bg-black',
                       activeItemName === item.name && 'bg-primary-light text-black',
                       item.disabled && 'opacity-50',
                       !item.disabled &&
-                      'hover:bg-primary-light cursor-pointer hover:cursor-pointer hover:text-black'
+                        'hover:bg-primary-light cursor-pointer hover:cursor-pointer hover:text-black'
                     )}
                   >
-                    <Icon name={item.icon} />
+                    <Icons.ByName name={item.icon} />
                   </div>
                 </div>
               </Tooltip>

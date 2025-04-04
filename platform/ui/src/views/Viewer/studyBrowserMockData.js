@@ -11,7 +11,6 @@ const studyWithSR = {
       seriesNumber: 1,
       numInstances: 68,
       componentType: 'thumbnailTracked',
-      viewportIdentificator: 'A',
       isTracked: true,
     },
     {
@@ -20,7 +19,6 @@ const studyWithSR = {
       seriesNumber: 1,
       numInstances: 68,
       componentType: 'thumbnailTracked',
-      viewportIdentificator: 'B',
     },
     {
       displaySetInstanceUID: 'f69f648c-223e-dasdasdb7f-c4af-b8906641a66e',

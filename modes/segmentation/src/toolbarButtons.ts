@@ -1,353 +1,604 @@
-import {
-  // ExpandableToolbarButton,
-  // ListMenu,
-  WindowLevelMenuItem,
-} from '@ohif/ui';
-import { defaults } from '@ohif/core';
+import type { Button } from '@ohif/core/types';
+import { ViewportGridService } from '@ohif/core';
 
-const { windowLevelPresets } = defaults;
-/**
- *
- * @param {*} type - 'tool' | 'action' | 'toggle'
- * @param {*} id
- * @param {*} icon
- * @param {*} label
- */
-function _createButton(type, id, icon, label, commands, tooltip, uiType) {
-  return {
-    id,
-    icon,
-    label,
-    type,
-    commands,
-    tooltip,
-    uiType,
-  };
-}
+const setToolActiveToolbar = {
+  commandName: 'setToolActiveToolbar',
+  commandOptions: {
+    toolGroupIds: ['default', 'mpr', 'SRToolGroup', 'volume3d'],
+  },
+};
 
-const _createActionButton = _createButton.bind(null, 'action');
-const _createToggleButton = _createButton.bind(null, 'toggle');
-const _createToolButton = _createButton.bind(null, 'tool');
-
-/**
- *
- * @param {*} preset - preset number (from above import)
- * @param {*} title
- * @param {*} subtitle
- */
-function _createWwwcPreset(preset, title, subtitle) {
-  return {
-    id: preset.toString(),
-    title,
-    subtitle,
-    type: 'action',
-    commands: [
-      {
-        commandName: 'setWindowLevel',
-        commandOptions: {
-          ...windowLevelPresets[preset],
-        },
-        context: 'CORNERSTONE',
-      },
-    ],
-  };
-}
-
-const toolGroupIds = ['default', 'mpr', 'SRToolGroup'];
-
-/**
- * Creates an array of 'setToolActive' commands for the given toolName - one for
- * each toolGroupId specified in toolGroupIds.
- * @param {string} toolName
- * @returns {Array} an array of 'setToolActive' commands
- */
-function _createSetToolActiveCommands(toolName) {
-  const temp = toolGroupIds.map(toolGroupId => ({
-    commandName: 'setToolActive',
+const callbacks = (toolName: string) => [
+  {
+    commandName: 'setViewportForToolConfiguration',
     commandOptions: {
-      toolGroupId,
       toolName,
     },
-    context: 'CORNERSTONE',
-  }));
-  return temp;
-}
+  },
+];
 
-const toolbarButtons = [
-  // Zoom..
+const toolbarButtons: Button[] = [
+  // sections
+  {
+    id: 'MoreTools',
+    uiType: 'ohif.toolButtonList',
+    props: {
+      buttonSection: 'moreToolsSection',
+      groupId: 'MoreTools',
+    },
+  },
+  {
+    id: 'BrushTools',
+    uiType: 'ohif.toolBoxButtonGroup',
+    props: {
+      groupId: 'BrushTools',
+      buttonSection: 'brushToolsSection',
+    },
+  },
+  // Section containers for the nested toolbox
+  {
+    id: 'SegmentationUtilities',
+    uiType: 'ohif.toolBoxButton',
+    props: {
+      groupId: 'SegmentationUtilities',
+      buttonSection: 'segmentationToolboxUtilitySection',
+    },
+  },
+  {
+    id: 'SegmentationTools',
+    uiType: 'ohif.toolBoxButton',
+    props: {
+      groupId: 'SegmentationTools',
+      buttonSection: 'segmentationToolboxToolsSection',
+    },
+  },
+  // tool defs
   {
     id: 'Zoom',
-    type: 'ohif.radioGroup',
+    uiType: 'ohif.toolButton',
     props: {
-      type: 'tool',
       icon: 'tool-zoom',
       label: 'Zoom',
-      commands: _createSetToolActiveCommands('Zoom'),
+      commands: setToolActiveToolbar,
+      evaluate: 'evaluate.cornerstoneTool',
     },
   },
-  // Window Level + Presets...
   {
     id: 'WindowLevel',
-    type: 'ohif.splitButton',
+    uiType: 'ohif.toolButton',
     props: {
-      groupId: 'WindowLevel',
-      primary: _createToolButton(
-        'WindowLevel',
-        'tool-window-level',
-        'Window Level',
-        [
-          {
-            commandName: 'setToolActive',
-            commandOptions: {
-              toolName: 'WindowLevel',
-            },
-            context: 'CORNERSTONE',
-          },
-        ],
-        'Window Level'
-      ),
-      secondary: {
-        icon: 'chevron-down',
-        label: 'W/L Manual',
-        isActive: true,
-        tooltip: 'W/L Presets',
-      },
-      isAction: true, // ?
-      renderer: WindowLevelMenuItem,
-      items: [
-        _createWwwcPreset(1, 'Soft tissue', '400 / 40'),
-        _createWwwcPreset(2, 'Lung', '1500 / -600'),
-        _createWwwcPreset(3, 'Liver', '150 / 90'),
-        _createWwwcPreset(4, 'Bone', '2500 / 480'),
-        _createWwwcPreset(5, 'Brain', '80 / 40'),
-      ],
+      icon: 'tool-window-level',
+      label: 'Window Level',
+      commands: setToolActiveToolbar,
+      evaluate: 'evaluate.cornerstoneTool',
     },
   },
-  // Pan...
   {
     id: 'Pan',
-    type: 'ohif.radioGroup',
+    uiType: 'ohif.toolButton',
     props: {
-      type: 'tool',
       icon: 'tool-move',
       label: 'Pan',
-      commands: _createSetToolActiveCommands('Pan'),
+      commands: setToolActiveToolbar,
+      evaluate: 'evaluate.cornerstoneTool',
+    },
+  },
+  {
+    id: 'TrackballRotate',
+    uiType: 'ohif.toolButton',
+    props: {
+      type: 'tool',
+      icon: 'tool-3d-rotate',
+      label: '3D Rotate',
+      commands: setToolActiveToolbar,
+      evaluate: {
+        name: 'evaluate.cornerstoneTool',
+        disabledText: 'Select a 3D viewport to enable this tool',
+      },
     },
   },
   {
     id: 'Capture',
-    type: 'ohif.action',
+    uiType: 'ohif.toolButton',
     props: {
       icon: 'tool-capture',
       label: 'Capture',
-      type: 'action',
-      commands: [
+      commands: 'showDownloadViewportModal',
+      evaluate: [
+        'evaluate.action',
         {
-          commandName: 'showDownloadViewportModal',
-          commandOptions: {},
-          context: 'CORNERSTONE',
+          name: 'evaluate.viewport.supported',
+          unsupportedViewportTypes: ['video', 'wholeSlide'],
         },
       ],
     },
   },
   {
     id: 'Layout',
-    type: 'ohif.layoutSelector',
+    uiType: 'ohif.layoutSelector',
     props: {
       rows: 3,
-      columns: 3,
-    },
-  },
-  {
-    id: 'MPR',
-    type: 'ohif.action',
-    props: {
-      type: 'toggle',
-      icon: 'icon-mpr',
-      label: 'MPR',
-      commands: [
-        {
-          commandName: 'toggleHangingProtocol',
-          commandOptions: {
-            protocolId: 'mpr',
-          },
-          context: 'DEFAULT',
-        },
-      ],
+      columns: 4,
+      evaluate: 'evaluate.action',
+      commands: 'setViewportGridLayout',
     },
   },
   {
     id: 'Crosshairs',
-    type: 'ohif.radioGroup',
+    uiType: 'ohif.toolButton',
     props: {
-      type: 'tool',
       icon: 'tool-crosshair',
       label: 'Crosshairs',
-      commands: [
+      commands: {
+        commandName: 'setToolActiveToolbar',
+        commandOptions: {
+          toolGroupIds: ['mpr'],
+        },
+      },
+      evaluate: {
+        name: 'evaluate.cornerstoneTool',
+        disabledText: 'Select an MPR viewport to enable this tool',
+      },
+    },
+  },
+  {
+    id: 'Reset',
+    uiType: 'ohif.toolButton',
+    props: {
+      icon: 'tool-reset',
+      label: 'Reset View',
+      tooltip: 'Reset View',
+      commands: 'resetViewport',
+      evaluate: 'evaluate.action',
+    },
+  },
+  {
+    id: 'rotate-right',
+    uiType: 'ohif.toolButton',
+    props: {
+      icon: 'tool-rotate-right',
+      label: 'Rotate Right',
+      tooltip: 'Rotate +90',
+      commands: 'rotateViewportCW',
+      evaluate: 'evaluate.action',
+    },
+  },
+  {
+    id: 'flipHorizontal',
+    uiType: 'ohif.toolButton',
+    props: {
+      icon: 'tool-flip-horizontal',
+      label: 'Flip Horizontal',
+      tooltip: 'Flip Horizontally',
+      commands: 'flipViewportHorizontal',
+      evaluate: [
+        'evaluate.viewportProperties.toggle',
         {
-          commandName: 'setToolActive',
-          commandOptions: {
-            toolName: 'Crosshairs',
-            toolGroupId: 'mpr',
-          },
-          context: 'CORNERSTONE',
+          name: 'evaluate.viewport.supported',
+          unsupportedViewportTypes: ['volume3d'],
         },
       ],
     },
   },
-  // More...
   {
-    id: 'MoreTools',
-    type: 'ohif.splitButton',
+    id: 'ReferenceLines',
+    uiType: 'ohif.toolButton',
     props: {
-      isRadio: true, // ?
-      groupId: 'MoreTools',
-      primary: _createActionButton(
-        'Reset',
-        'tool-reset',
-        'Reset View',
-        [
-          {
-            commandName: 'resetViewport',
-            commandOptions: {},
-            context: 'CORNERSTONE',
-          },
-        ],
-        'Reset'
-      ),
-      secondary: {
-        icon: 'chevron-down',
-        label: '',
-        isActive: true,
-        tooltip: 'More Tools',
+      icon: 'tool-referenceLines',
+      label: 'Reference Lines',
+      tooltip: 'Show Reference Lines',
+      commands: 'toggleEnabledDisabledToolbar',
+      evaluate: 'evaluate.cornerstoneTool.toggle',
+    },
+  },
+  {
+    id: 'ImageOverlayViewer',
+    uiType: 'ohif.toolButton',
+    props: {
+      icon: 'toggle-dicom-overlay',
+      label: 'Image Overlay',
+      tooltip: 'Toggle Image Overlay',
+      commands: 'toggleEnabledDisabledToolbar',
+      evaluate: 'evaluate.cornerstoneTool.toggle',
+    },
+  },
+  {
+    id: 'StackScroll',
+    uiType: 'ohif.toolButton',
+    props: {
+      icon: 'tool-stack-scroll',
+      label: 'Stack Scroll',
+      tooltip: 'Stack Scroll',
+      commands: setToolActiveToolbar,
+      evaluate: 'evaluate.cornerstoneTool',
+    },
+  },
+  {
+    id: 'invert',
+    uiType: 'ohif.toolButton',
+    props: {
+      icon: 'tool-invert',
+      label: 'Invert',
+      tooltip: 'Invert Colors',
+      commands: 'invertViewport',
+      evaluate: 'evaluate.viewportProperties.toggle',
+    },
+  },
+  {
+    id: 'Cine',
+    uiType: 'ohif.toolButton',
+    props: {
+      icon: 'tool-cine',
+      label: 'Cine',
+      tooltip: 'Cine',
+      commands: 'toggleCine',
+      evaluate: [
+        'evaluate.cine',
+        {
+          name: 'evaluate.viewport.supported',
+          unsupportedViewportTypes: ['volume3d'],
+        },
+      ],
+    },
+  },
+  {
+    id: 'Magnify',
+    uiType: 'ohif.toolButton',
+    props: {
+      icon: 'tool-magnify',
+      label: 'Zoom-in',
+      tooltip: 'Zoom-in',
+      commands: setToolActiveToolbar,
+      evaluate: 'evaluate.cornerstoneTool',
+    },
+  },
+  {
+    id: 'TagBrowser',
+    uiType: 'ohif.toolButton',
+    props: {
+      icon: 'dicom-tag-browser',
+      label: 'Dicom Tag Browser',
+      tooltip: 'Dicom Tag Browser',
+      commands: 'openDICOMTagViewer',
+    },
+  },
+
+  {
+    id: 'Brush',
+    uiType: 'ohif.toolBoxButton',
+    props: {
+      icon: 'icon-tool-brush',
+      label: 'Brush',
+      evaluate: {
+        name: 'evaluate.cornerstone.segmentation',
+        toolNames: ['CircularBrush', 'SphereBrush'],
+        disabledText: 'Create new segmentation to enable this tool.',
       },
-      items: [
-        _createActionButton(
-          'Reset',
-          'tool-reset',
-          'Reset View',
-          [
-            {
-              commandName: 'resetViewport',
-              commandOptions: {},
-              context: 'CORNERSTONE',
-            },
-          ],
-          'Reset'
-        ),
-        _createActionButton(
-          'rotate-right',
-          'tool-rotate-right',
-          'Rotate Right',
-          [
-            {
-              commandName: 'rotateViewportCW',
-              commandOptions: {},
-              context: 'CORNERSTONE',
-            },
-          ],
-          'Rotate +90'
-        ),
-        _createActionButton(
-          'flip-horizontal',
-          'tool-flip-horizontal',
-          'Flip Horizontally',
-          [
-            {
-              commandName: 'flipViewportHorizontal',
-              commandOptions: {},
-              context: 'CORNERSTONE',
-            },
-          ],
-          'Flip Horizontal'
-        ),
-        _createToggleButton('StackImageSync', 'link', 'Stack Image Sync', [
-          {
-            commandName: 'toggleStackImageSync',
-            commandOptions: {},
-            context: 'CORNERSTONE',
+      options: [
+        {
+          name: 'Radius (mm)',
+          id: 'brush-radius',
+          type: 'range',
+          min: 0.5,
+          max: 99.5,
+          step: 0.5,
+          value: 25,
+          commands: {
+            commandName: 'setBrushSize',
+            commandOptions: { toolNames: ['CircularBrush', 'SphereBrush'] },
           },
-        ]),
-        _createToggleButton(
-          'ReferenceLines',
-          'tool-referenceLines', // change this with the new icon
-          'Reference Lines',
-          [
-            {
-              commandName: 'toggleReferenceLines',
-              commandOptions: {},
-              context: 'CORNERSTONE',
-            },
-          ]
-        ),
-        _createToolButton(
-          'StackScroll',
-          'tool-stack-scroll',
-          'Stack Scroll',
-          [
-            {
-              commandName: 'setToolActive',
-              commandOptions: {
-                toolName: 'StackScroll',
-              },
-              context: 'CORNERSTONE',
-            },
+        },
+        {
+          name: 'Shape',
+          type: 'radio',
+          id: 'brush-mode',
+          value: 'CircularBrush',
+          values: [
+            { value: 'CircularBrush', label: 'Circle' },
+            { value: 'SphereBrush', label: 'Sphere' },
           ],
-          'Stack Scroll'
+          commands: 'setToolActiveToolbar',
+        },
+      ],
+    },
+  },
+  {
+    id: 'InterpolateLabelmap',
+    uiType: 'ohif.toolBoxButton',
+    props: {
+      icon: 'icon-tool-interpolation',
+      label: 'Interpolate Labelmap',
+      evaluate: [
+        'evaluate.cornerstone.segmentation',
+        {
+          name: 'evaluate.displaySetIsReconstructable',
+          disabledText: 'The current viewport cannot handle interpolation.',
+        },
+      ],
+      commands: 'interpolateLabelmap',
+    },
+  },
+  {
+    id: 'SegmentBidirectional',
+    uiType: 'ohif.toolBoxButton',
+    props: {
+      icon: 'icon-tool-bidirectional-segment',
+      label: 'Segment Bidirectional',
+      tooltip: 'Finding the largest bidirectional measurement per lesion',
+      evaluate: {
+        name: 'evaluate.cornerstone.segmentation',
+        disabledText: 'Create new segmentation to enable this tool.',
+      },
+      commands: 'runSegmentBidirectional',
+    },
+  },
+  {
+    id: 'RegionSegmentPlus',
+    uiType: 'ohif.toolBoxButton',
+    props: {
+      icon: 'icon-tool-click-segment',
+      label: 'One Click Segment',
+      tooltip: 'One Click Segment',
+      evaluate: {
+        name: 'evaluate.cornerstone.segmentation',
+        toolNames: ['RegionSegmentPlus'],
+        disabledText: 'Create new segmentation to enable this tool.',
+      },
+      commands: 'setToolActiveToolbar',
+    },
+  },
+  {
+    id: 'LabelmapSlicePropagation',
+    uiType: 'ohif.toolBoxButton',
+    props: {
+      icon: 'icon-labelmap-slice-propagation',
+      label: 'Labelmap Assist',
+      tooltip: 'Labelmap Assist Based on Previous / Next Slice Data',
+      evaluate: [
+        'evaluate.cornerstoneTool.toggle',
+        {
+          name: 'evaluate.cornerstone.hasSegmentation',
+        },
+      ],
+      listeners: {
+        [ViewportGridService.EVENTS.ACTIVE_VIEWPORT_ID_CHANGED]: callbacks(
+          'LabelmapSlicePropagation'
         ),
-        _createActionButton(
-          'invert',
-          'tool-invert',
-          'Invert',
-          [
-            {
-              commandName: 'invertViewport',
-              commandOptions: {},
-              context: 'CORNERSTONE',
-            },
+        [ViewportGridService.EVENTS.VIEWPORTS_READY]: callbacks('LabelmapSlicePropagation'),
+      },
+      commands: 'toggleEnabledDisabledToolbar',
+    },
+  },
+  {
+    id: 'MarkerLabelmap',
+    uiType: 'ohif.toolBoxButton',
+    props: {
+      icon: 'icon-marker-labelmap',
+      label: 'Marker Guided Labelmap',
+      tooltip:
+        'Use Positive and Negative Points to Guide Labelmap Creation, hit N to move to next slice',
+      evaluate: [
+        {
+          name: 'evaluate.cornerstone.segmentation',
+          toolNames: ['MarkerLabelmap', 'MarkerInclude', 'MarkerExclude'],
+        },
+      ],
+      commands: 'setToolActiveToolbar',
+      listeners: {
+        [ViewportGridService.EVENTS.ACTIVE_VIEWPORT_ID_CHANGED]: callbacks('MarkerLabelmap'),
+        [ViewportGridService.EVENTS.VIEWPORTS_READY]: callbacks('MarkerLabelmap'),
+      },
+      options: [
+        {
+          name: 'Clear Markers',
+          type: 'button',
+          id: 'clear-markers',
+          commands: 'clearMarkersForMarkerLabelmap',
+        },
+        {
+          name: 'Marker Mode',
+          type: 'radio',
+          id: 'marker-mode',
+          value: 'markerInclude',
+          values: [
+            { value: 'markerInclude', label: 'Include' },
+            { value: 'markerExclude', label: 'Exclude' },
           ],
-          'Invert Colors'
-        ),
-        _createToggleButton(
-          'cine',
-          'tool-cine',
-          'Cine',
-          [
-            {
-              commandName: 'toggleCine',
-              context: 'CORNERSTONE',
-            },
+          commands: ({ commandsManager, options }) => {
+            const markerModeOption = options.find(option => option.id === 'marker-mode');
+            if (markerModeOption.value === 'markerInclude') {
+              commandsManager.run('setToolActive', {
+                toolName: 'MarkerInclude',
+              });
+            } else {
+              commandsManager.run('setToolActive', {
+                toolName: 'MarkerExclude',
+              });
+            }
+          },
+        },
+      ],
+    },
+  },
+  {
+    id: 'Eraser',
+    uiType: 'ohif.toolBoxButton',
+    props: {
+      icon: 'icon-tool-eraser',
+      label: 'Eraser',
+      evaluate: {
+        name: 'evaluate.cornerstone.segmentation',
+        toolNames: ['CircularEraser', 'SphereEraser'],
+      },
+      options: [
+        {
+          name: 'Radius (mm)',
+          id: 'eraser-radius',
+          type: 'range',
+          min: 0.5,
+          max: 99.5,
+          step: 0.5,
+          value: 25,
+          commands: {
+            commandName: 'setBrushSize',
+            commandOptions: { toolNames: ['CircularEraser', 'SphereEraser'] },
+          },
+        },
+        {
+          name: 'Shape',
+          type: 'radio',
+          id: 'eraser-mode',
+          value: 'CircularEraser',
+          values: [
+            { value: 'CircularEraser', label: 'Circle' },
+            { value: 'SphereEraser', label: 'Sphere' },
           ],
-          'Cine'
-        ),
-        _createToolButton(
-          'Magnify',
-          'tool-magnify',
-          'Magnify',
-          [
-            {
-              commandName: 'setToolActive',
-              commandOptions: {
-                toolName: 'Magnify',
-              },
-              context: 'CORNERSTONE',
+          commands: 'setToolActiveToolbar',
+        },
+      ],
+    },
+  },
+  {
+    id: 'Threshold',
+    uiType: 'ohif.toolBoxButton',
+    props: {
+      icon: 'icon-tool-threshold',
+      label: 'Threshold Tool',
+      evaluate: {
+        name: 'evaluate.cornerstone.segmentation',
+        toolNames: [
+          'ThresholdCircularBrush',
+          'ThresholdSphereBrush',
+          'ThresholdCircularBrushDynamic',
+          'ThresholdSphereBrushDynamic',
+        ],
+      },
+      options: [
+        {
+          name: 'Radius (mm)',
+          id: 'threshold-radius',
+          type: 'range',
+          min: 0.5,
+          max: 99.5,
+          step: 0.5,
+          value: 25,
+          commands: {
+            commandName: 'setBrushSize',
+            commandOptions: {
+              toolNames: [
+                'ThresholdCircularBrush',
+                'ThresholdSphereBrush',
+                'ThresholdCircularBrushDynamic',
+                'ThresholdSphereBrushDynamic',
+              ],
             },
+          },
+        },
+        {
+          name: 'Shape',
+          type: 'radio',
+          id: 'threshold-shape',
+          value: 'ThresholdCircularBrush',
+          values: [
+            { value: 'ThresholdCircularBrush', label: 'Circle' },
+            { value: 'ThresholdSphereBrush', label: 'Sphere' },
           ],
-          'Magnify'
-        ),
-        _createActionButton(
-          'TagBrowser',
-          'list-bullets',
-          'Dicom Tag Browser',
-          [
-            {
-              commandName: 'openDICOMTagViewer',
-              commandOptions: {},
-              context: 'DEFAULT',
+          commands: ({ value, commandsManager, options }) => {
+            const optionsDynamic = options.find(option => option.id === 'dynamic-mode');
+
+            if (optionsDynamic.value === 'ThresholdDynamic') {
+              commandsManager.run('setToolActive', {
+                toolName:
+                  value === 'ThresholdCircularBrush'
+                    ? 'ThresholdCircularBrushDynamic'
+                    : 'ThresholdSphereBrushDynamic',
+              });
+            } else {
+              commandsManager.run('setToolActive', {
+                toolName: value,
+              });
+            }
+          },
+        },
+        {
+          name: 'Threshold',
+          type: 'radio',
+          id: 'dynamic-mode',
+          value: 'ThresholdDynamic',
+          values: [
+            { value: 'ThresholdDynamic', label: 'Dynamic' },
+            { value: 'ThresholdRange', label: 'Range' },
+          ],
+          commands: ({ value, commandsManager, options }) => {
+            const thresholdRangeOption = options.find(option => option.id === 'threshold-shape');
+
+            if (value === 'ThresholdDynamic') {
+              commandsManager.run('setToolActiveToolbar', {
+                toolName:
+                  thresholdRangeOption.value === 'ThresholdCircularBrush'
+                    ? 'ThresholdCircularBrushDynamic'
+                    : 'ThresholdSphereBrushDynamic',
+              });
+            } else {
+              commandsManager.run('setToolActiveToolbar', {
+                toolName: thresholdRangeOption.value,
+              });
+
+              const thresholdRangeValue = options.find(
+                option => option.id === 'threshold-range'
+              ).value;
+
+              commandsManager.run('setThresholdRange', {
+                toolNames: ['ThresholdCircularBrush', 'ThresholdSphereBrush'],
+                value: thresholdRangeValue,
+              });
+            }
+          },
+        },
+        {
+          name: 'ThresholdRange',
+          type: 'double-range',
+          id: 'threshold-range',
+          min: -1000,
+          max: 1000,
+          step: 1,
+          value: [50, 600],
+          condition: ({ options }) =>
+            options.find(option => option.id === 'dynamic-mode').value === 'ThresholdRange',
+          commands: {
+            commandName: 'setThresholdRange',
+            commandOptions: {
+              toolNames: ['ThresholdCircularBrush', 'ThresholdSphereBrush'],
             },
+          },
+        },
+      ],
+    },
+  },
+  {
+    id: 'Shapes',
+    uiType: 'ohif.toolBoxButton',
+    props: {
+      icon: 'icon-tool-shape',
+      label: 'Shapes',
+      evaluate: {
+        name: 'evaluate.cornerstone.segmentation',
+        toolNames: ['CircleScissor', 'SphereScissor', 'RectangleScissor'],
+        disabledText: 'Create new segmentation to enable shapes tool.',
+      },
+      options: [
+        {
+          name: 'Shape',
+          type: 'radio',
+          value: 'CircleScissor',
+          id: 'shape-mode',
+          values: [
+            { value: 'CircleScissor', label: 'Circle' },
+            { value: 'SphereScissor', label: 'Sphere' },
+            { value: 'RectangleScissor', label: 'Rectangle' },
           ],
-          'Dicom Tag Browser'
-        ),
+          commands: 'setToolActiveToolbar',
+        },
       ],
     },
   },

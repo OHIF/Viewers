@@ -1,6 +1,6 @@
 const generateAcceptHeader = (
   configAcceptHeader = [],
-  requestTransferSyntaxUID = null,
+  requestTransferSyntaxUID = '*', //default to accept all transfer syntax
   omitQuotationForMultipartRequest = false
 ): string[] => {
   //if acceptedHeader is passed by config use it as it.
@@ -9,12 +9,18 @@ const generateAcceptHeader = (
   }
 
   let acceptHeader = ['multipart/related'];
+  let hasTransferSyntax = false;
   if (requestTransferSyntaxUID && typeForTS[requestTransferSyntaxUID]) {
     const type = typeForTS[requestTransferSyntaxUID];
     acceptHeader.push('type=' + type);
     acceptHeader.push('transfer-syntax=' + requestTransferSyntaxUID);
+    hasTransferSyntax = true;
   } else {
     acceptHeader.push('type=application/octet-stream');
+  }
+
+  if (!hasTransferSyntax) {
+    acceptHeader.push('transfer-syntax=*');
   }
 
   if (!omitQuotationForMultipartRequest) {

@@ -1,9 +1,9 @@
-import workflowSettings from './workflowSettings';
+import getWorkflowSettings from './getWorkflowSettings';
 
-export default function initWorkflowSteps(servicesManager): void {
+export default function initWorkflowSteps({ servicesManager }: withAppTypes): void {
   const { workflowStepsService } = servicesManager.services;
-  const initialStageId = workflowSettings.steps[0].id;
+  const workflowSettings = getWorkflowSettings({ servicesManager });
 
   workflowStepsService.addWorkflowSteps(workflowSettings.steps);
-  workflowStepsService.setActiveWorkflowStep(initialStageId);
+  workflowStepsService.setActiveWorkflowStep(workflowSettings.steps[0].id);
 }

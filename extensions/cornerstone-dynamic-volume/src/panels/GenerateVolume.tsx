@@ -1,5 +1,4 @@
 import React from 'react';
-import Typography from '@ohif/ui';
 import { InputDoubleRange } from '@ohif/ui';
 import { Select } from '@ohif/ui';
 import { Button } from '@ohif/ui';
@@ -13,43 +12,48 @@ const GenerateVolume = ({
   handleGenerateOptionsChange,
   onGenerateImage,
   returnTo4D,
+  displayingComputedVolume,
 }) => {
   return (
     <>
-      <div className="marginBottom-10px">Frame Panel</div>
-      <div className="w-3">
-        <InputDoubleRange
-          maxValue={rangeValues[1] || 2}
-          minValue={rangeValues[0] || 1}
-          onSliderChange={handleSliderChange}
-          step={10}
-          unit="%"
-          valueLeft={rangeValues[0] || 1}
-          valueRight={rangeValues[1] || 2}
+      <div>
+        <div className="mb-2 text-white">Computed Image</div>
+        <Select
+          closeMenuOnSelect={true}
+          className="border-primary-main mr-2 bg-black text-white "
+          options={operationsUI}
+          placeholder={operationsUI.find(option => option.value === options.Operation).placeHolder}
+          value={options.Operation}
+          onChange={({ value }) => {
+            handleGenerateOptionsChange({
+              Operation: value,
+            });
+          }}
         />
+        <InputDoubleRange
+          values={rangeValues}
+          onChange={handleSliderChange}
+          minValue={rangeValues[0] || 1}
+          maxValue={rangeValues[1] || 2}
+          showLabel={true}
+          step={1}
+        />
+        <div className="flex space-x-2">
+          <Button
+            onClick={onGenerateImage}
+            className="w-1/2"
+          >
+            Generate
+          </Button>
+          <Button
+            onClick={returnTo4D}
+            disabled={!displayingComputedVolume}
+            className="w-1/2"
+          >
+            Return To 4D
+          </Button>
+        </div>
       </div>
-      <Select
-        label={'Strategy'}
-        closeMenuOnSelect={true}
-        className="mr-2 bg-black border-primary-main text-white "
-        options={operationsUI}
-        placeholder={
-          operationsUI.find(option => option.value === options.Operation)
-            .placeHolder
-        }
-        value={options.Operation}
-        onChange={({ value }) => {
-          handleGenerateOptionsChange({
-            Operation: value,
-          });
-        }}
-      />
-      <Button color="primary" onClick={onGenerateImage}>
-        Generate Image
-      </Button>
-      <Button color="primary" onClick={returnTo4D}>
-        Return To 4D
-      </Button>
     </>
   );
 };

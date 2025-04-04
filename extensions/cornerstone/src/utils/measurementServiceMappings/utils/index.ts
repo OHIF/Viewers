@@ -5,6 +5,7 @@ import {
   getFirstAnnotationSelected,
 } from './selection';
 import getSOPInstanceAttributes from './getSOPInstanceAttributes';
+import getDisplayUnit from './getDisplayUnit';
 
 export {
   getHandlesFromPoints,
@@ -12,4 +13,5 @@ export {
   isAnnotationSelected,
   setAnnotationSelected,
   getFirstAnnotationSelected,
+  getDisplayUnit,
 };

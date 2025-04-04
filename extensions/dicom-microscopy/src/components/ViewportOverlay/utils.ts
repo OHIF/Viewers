@@ -53,28 +53,6 @@ export function formatDICOMTime(time, strFormat = 'HH:mm:ss') {
 }
 
 /**
- * Formats a patient name for display purposes
- *
- * @param {string} name
- * @returns {string} formatted name.
- */
-export function formatPN(name) {
-  if (!name) {
-    return;
-  }
-
-  // Convert the first ^ to a ', '. String.replace() only affects
-  // the first appearance of the character.
-  const commaBetweenFirstAndLast = name.replace('^', ', ');
-
-  // Replace any remaining '^' characters with spaces
-  const cleaned = commaBetweenFirstAndLast.replace(/\^/g, ' ');
-
-  // Trim any extraneous whitespace
-  return cleaned.trim();
-}
-
-/**
  * Gets compression type
  *
  * @param {number} imageId

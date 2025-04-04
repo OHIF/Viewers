@@ -1,27 +1,45 @@
 import React from 'react';
-import { ServicesManager } from '@ohif/core';
 import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
 
-import MeasurementItem from './MeasurementItem';
-
-const MeasurementTable = ({ data, title, onClick, onEdit, servicesManager }) => {
-  servicesManager = servicesManager as ServicesManager;
-  const { customizationService } = servicesManager.services;
+const MeasurementTable = ({
+  data = [],
+  title,
+  onClick = () => {},
+  onEdit = () => {},
+  onDelete,
+  servicesManager,
+}: withAppTypes) => {
+  const { customizationService, measurementService } = servicesManager.services;
   const { t } = useTranslation('MeasurementTable');
   const amount = data.length;
 
-  const itemCustomization = customizationService.getCustomization('MeasurementItem', {
-    content: MeasurementItem,
-    contentProps: {},
-  });
-  const CustomMeasurementItem = itemCustomization.content;
+  const CustomMeasurementItem = customizationService.getCustomization(
+    'microscopyPanel.measurementItem'
+  );
+
+  const onMeasurementDeleteHandler = ({ uid }) => {
+    const measurement = measurementService.getMeasurement(uid);
+    onDelete?.({ uid });
+    measurementService.remove(
+      uid,
+      {
+        ...measurement,
+      },
+      true
+    );
+  };
 
   return (
     <div>
       <div className="bg-secondary-main flex justify-between px-2 py-1">
-        <span className="text-base font-bold uppercase tracking-widest text-white">{t(title)}</span>
-        <span className="text-base font-bold text-white">{amount}</span>
+        <div>
+          <span className="text-base font-bold uppercase tracking-widest text-white">
+            {t(title)}
+          </span>
+          <span className="text-base font-bold text-white">&nbsp; {amount}</span>
+        </div>
+        <CustomizedToolbar servicesManager={servicesManager} />
       </div>
       <div className="ohif-scrollbar max-h-112 overflow-hidden">
         {data.length !== 0 &&
@@ -36,6 +54,7 @@ const MeasurementTable = ({ data, title, onClick, onEdit, servicesManager }) => 
               item={measurementItem}
               onClick={onClick}
               onEdit={onEdit}
+              onDelete={onMeasurementDeleteHandler}
             />
           ))}
         {data.length === 0 && (
@@ -51,12 +70,6 @@ const MeasurementTable = ({ data, title, onClick, onEdit, servicesManager }) => 
       </div>
     </div>
   );
-};
-
-MeasurementTable.defaultProps = {
-  data: [],
-  onClick: () => {},
-  onEdit: () => {},
 };
 
 MeasurementTable.propTypes = {

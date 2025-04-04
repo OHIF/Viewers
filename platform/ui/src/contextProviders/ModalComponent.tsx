@@ -2,25 +2,15 @@ import PropTypes from 'prop-types';
 import React from 'react';
 
 export const ModalComponent = ({
-  content,
-  contentProps,
-  shouldCloseOnEsc,
-  isOpen,
-  closeButton,
-  title,
-  customClassName,
+  content = null,
+  contentProps = null,
+  shouldCloseOnEsc = true,
+  isOpen = true,
+  closeButton = true,
+  title = null,
+  customClassName = '',
 }) => {
   return <></>;
-};
-
-ModalComponent.defaultProps = {
-  content: null,
-  contentProps: null,
-  shouldCloseOnEsc: true,
-  isOpen: true,
-  closeButton: true,
-  title: null,
-  customClassName: '',
 };
 
 ModalComponent.propTypes = {

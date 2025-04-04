@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import { Input, Button } from '@ohif/ui';
-import { DicomMetadataStore, ServicesManager } from '@ohif/core';
+import { DicomMetadataStore } from '@ohif/core';
 import { useTranslation } from 'react-i18next';
+import { Button, Input, Label, PanelSection } from '@ohif/ui-next';
+import { useSystem } from '@ohif/core/src';
 
 const DEFAULT_MEATADATA = {
   PatientWeight: null,
@@ -22,11 +23,46 @@ const DEFAULT_MEATADATA = {
  * @param param0
  * @returns
  */
-export default function PanelPetSUV({ servicesManager, commandsManager }) {
+
+// InputRow compound component
+const InputRow = ({ children, className, ...props }) => {
+  return (
+    <div
+      className={`flex flex-row items-center space-x-4 ${className || ''}`}
+      {...props}
+    >
+      {children}
+    </div>
+  );
+};
+
+// InputRow sub-components
+InputRow.Label = ({ children, unit, className, ...props }) => (
+  <Label
+    className={`min-w-32 flex-shrink-0 ${className || ''}`}
+    {...props}
+  >
+    {children}
+    {unit && <span className="text-muted-foreground"> {unit}</span>}
+  </Label>
+);
+
+InputRow.Input = ({ className, ...props }) => (
+  <Input
+    className={`h-7 flex-1 ${className || ''}`}
+    {...props}
+  />
+);
+
+// Set display names for better debugging
+InputRow.Label.displayName = 'InputRow.Label';
+InputRow.Input.displayName = 'InputRow.Input';
+
+export default function PanelPetSUV({ servicesManager }: withAppTypes) {
+  const { commandsManager } = useSystem();
   const { t } = useTranslation('PanelSUV');
-  const { displaySetService, toolGroupService, toolbarService, hangingProtocolService } = (
-    servicesManager as ServicesManager
-  ).services;
+  const { displaySetService, toolGroupService, toolbarService, hangingProtocolService } =
+    servicesManager.services;
   const [metadata, setMetadata] = useState(DEFAULT_MEATADATA);
   const [ptDisplaySet, setPtDisplaySet] = useState(null);
 
@@ -109,23 +145,6 @@ export default function PanelPetSUV({ servicesManager, commandsManager }) {
       throw new Error('No ptDisplaySet found');
     }
 
-    const toolGroupIds = toolGroupService.getToolGroupIds();
-
-    // Todo: we don't have a proper way to perform a toggle command and update the
-    // state for the toolbar, so here, we manually toggle the toolbar
-
-    // Todo: Crosshairs have bugs for the camera reset currently, so we need to
-    // force turn it off before we update the metadata
-    toolGroupIds.forEach(toolGroupId => {
-      commandsManager.runCommand('toggleCrosshairs', {
-        toolGroupId,
-        toggledState: false,
-      });
-    });
-
-    toolbarService.state.toggles['Crosshairs'] = false;
-    toolbarService._broadcastEvent(toolbarService.EVENTS.TOOL_BAR_STATE_MODIFIED);
-
     // metadata should be dcmjs naturalized
     DicomMetadataStore.updateMetadataForSeries(
       ptDisplaySet.StudyInstanceUID,
@@ -135,87 +154,117 @@ export default function PanelPetSUV({ servicesManager, commandsManager }) {
 
     // update the displaySets
     displaySetService.setDisplaySetMetadataInvalidated(ptDisplaySet.displaySetInstanceUID);
+
+    // Crosshair position depends on the metadata values such as the positioning interaction
+    // between series, so when the metadata is updated, the crosshairs need to be reset.
+    setTimeout(() => {
+      commandsManager.runCommand('resetCrosshairs');
+    }, 0);
   }
   return (
-    <div className="invisible-scrollbar overflow-y-auto overflow-x-hidden">
-      {
-        <div className="flex flex-col">
-          <div className="bg-primary-dark flex flex-col space-y-4 p-4">
-            <Input
-              label={t('Patient Sex')}
-              labelClassName="text-white mb-2"
-              className="mt-1"
-              value={metadata.PatientSex || ''}
-              onChange={e => {
-                handleMetadataChange({
-                  PatientSex: e.target.value,
-                });
-              }}
-            />
-            <Input
-              label={t('Patient Weight (kg)')}
-              labelClassName="text-white mb-2"
-              className="mt-1"
-              value={metadata.PatientWeight || ''}
-              onChange={e => {
-                handleMetadataChange({
-                  PatientWeight: e.target.value,
-                });
-              }}
-            />
-            <Input
-              label={t('Total Dose (bq)')}
-              labelClassName="text-white mb-2"
-              className="mt-1"
-              value={metadata.RadiopharmaceuticalInformationSequence.RadionuclideTotalDose || ''}
-              onChange={e => {
-                handleMetadataChange({
-                  RadiopharmaceuticalInformationSequence: {
-                    RadionuclideTotalDose: e.target.value,
-                  },
-                });
-              }}
-            />
-            <Input
-              label={t('Half Life (s)')}
-              labelClassName="text-white mb-2"
-              className="mt-1"
-              value={metadata.RadiopharmaceuticalInformationSequence.RadionuclideHalfLife || ''}
-              onChange={e => {
-                handleMetadataChange({
-                  RadiopharmaceuticalInformationSequence: {
-                    RadionuclideHalfLife: e.target.value,
-                  },
-                });
-              }}
-            />
-            <Input
-              label={t('Injection Time (s)')}
-              labelClassName="text-white mb-2"
-              className="mt-1"
-              value={
-                metadata.RadiopharmaceuticalInformationSequence.RadiopharmaceuticalStartTime || ''
-              }
-              onChange={e => {
-                handleMetadataChange({
-                  RadiopharmaceuticalInformationSequence: {
-                    RadiopharmaceuticalStartTime: e.target.value,
-                  },
-                });
-              }}
-            />
-            <Input
-              label={t('Acquisition Time (s)')}
-              labelClassName="text-white mb-2"
-              className="mt-1 mb-2"
-              value={metadata.SeriesTime || ''}
-              onChange={() => {}}
-            />
-            <Button onClick={updateMetadata}>Reload Data</Button>
-          </div>
+    <>
+      <div className="ohif-scrollbar flex min-h-0 flex-auto select-none flex-col justify-between overflow-auto">
+        <div className="flex min-h-0 flex-1 flex-col bg-black text-base">
+          <PanelSection defaultOpen={true}>
+            <PanelSection.Header>{t('Patient Information')}</PanelSection.Header>
+            <PanelSection.Content>
+              <div className="bg-primary-dark flex flex-col gap-3 p-2">
+                <InputRow>
+                  <InputRow.Label>{t('Patient Sex')}</InputRow.Label>
+                  <InputRow.Input
+                    value={metadata.PatientSex || ''}
+                    onChange={e => {
+                      handleMetadataChange({
+                        PatientSex: e.target.value,
+                      });
+                    }}
+                  />
+                </InputRow>
+
+                <InputRow>
+                  <InputRow.Label unit="kg">{t('Weight')}</InputRow.Label>
+                  <InputRow.Input
+                    value={metadata.PatientWeight || ''}
+                    onChange={e => {
+                      handleMetadataChange({
+                        PatientWeight: e.target.value,
+                      });
+                    }}
+                    id="weight-input"
+                  />
+                </InputRow>
+
+                <InputRow>
+                  <InputRow.Label unit="bq">{t('Total Dose')}</InputRow.Label>
+                  <InputRow.Input
+                    value={
+                      metadata.RadiopharmaceuticalInformationSequence.RadionuclideTotalDose || ''
+                    }
+                    onChange={e => {
+                      handleMetadataChange({
+                        RadiopharmaceuticalInformationSequence: {
+                          RadionuclideTotalDose: e.target.value,
+                        },
+                      });
+                    }}
+                  />
+                </InputRow>
+
+                <InputRow>
+                  <InputRow.Label unit="s">{t('Half Life')}</InputRow.Label>
+                  <InputRow.Input
+                    value={
+                      metadata.RadiopharmaceuticalInformationSequence.RadionuclideHalfLife || ''
+                    }
+                    onChange={e => {
+                      handleMetadataChange({
+                        RadiopharmaceuticalInformationSequence: {
+                          RadionuclideHalfLife: e.target.value,
+                        },
+                      });
+                    }}
+                  />
+                </InputRow>
+
+                <InputRow>
+                  <InputRow.Label unit="s">{t('Injection Time')}</InputRow.Label>
+                  <InputRow.Input
+                    value={
+                      metadata.RadiopharmaceuticalInformationSequence
+                        .RadiopharmaceuticalStartTime || ''
+                    }
+                    onChange={e => {
+                      handleMetadataChange({
+                        RadiopharmaceuticalInformationSequence: {
+                          RadiopharmaceuticalStartTime: e.target.value,
+                        },
+                      });
+                    }}
+                  />
+                </InputRow>
+
+                <InputRow>
+                  <InputRow.Label unit="s">{t('Acquisition Time')}</InputRow.Label>
+                  <InputRow.Input
+                    value={metadata.SeriesTime || ''}
+                    onChange={() => {}}
+                  />
+                </InputRow>
+
+                <Button
+                  variant="default"
+                  size="sm"
+                  className="w-28 self-end"
+                  onClick={updateMetadata}
+                >
+                  Reload Data
+                </Button>
+              </div>
+            </PanelSection.Content>
+          </PanelSection>
         </div>
-      }
-    </div>
+      </div>
+    </>
   );
 }
 

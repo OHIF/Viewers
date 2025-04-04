@@ -24,6 +24,18 @@ export type DisplaySetAndViewportOptions = {
   displaySetOptions: DisplaySetOptions;
 };
 
+export type DisplayArea = {
+  type?: 'SCALE' | 'FIT';
+  scale?: number;
+  interpolationType?: any;
+  imageArea?: [number, number]; // areaX, areaY
+  imageCanvasPoint?: {
+    imagePoint: [number, number]; // imageX, imageY
+    canvasPoint?: [number, number]; // canvasX, canvasY
+  };
+  storeAsInitialCamera?: boolean;
+};
+
 export type SetProtocolOptions = {
   /** Used to provide a mapping of what keys are provided for which viewport.
    * For example, a Chest XRay might use have the display set selector id of
@@ -69,6 +81,7 @@ export type ConstraintValue =
   | number
   | boolean
   | []
+  | string[]
   | {
       value: string | number | boolean | [];
     };
@@ -80,6 +93,7 @@ export type Constraint = {
   // A caseless contains
   containsI?: string;
   contains?: ConstraintValue;
+  doesNotContain?: ConstraintValue;
   greaterThan?: ConstraintValue;
 };
 
@@ -89,7 +103,7 @@ export type MatchingRule = {
   // Defaults to 1
   weight?: number;
   attribute: string;
-  constraint: Constraint;
+  constraint?: Constraint;
   // Not required by default
   required?: boolean;
 };
@@ -120,6 +134,14 @@ export type ViewportStructure = {
  */
 export type DisplaySetSelector = {
   id?: string;
+
+  /**
+   *  This can be set to true to allow unmatched views to replace a view showing this instance
+   * This is done at hte display set selector level to ensure that viewports sharing a display set
+   * don't get different values of allowUnmatchedView
+   */
+  allowUnmatchedView?: boolean;
+
   // The image matching rule (not currently implemented) selects which image to
   // display initially, only for stack views.
   imageMatchingRules?: MatchingRule[];
@@ -128,11 +150,17 @@ export type DisplaySetSelector = {
   studyMatchingRules?: MatchingRule[];
 };
 
+export type OverlaySelector = {
+  id?: string;
+  matchingRules: MatchingRule[];
+};
+
 export type SyncGroup = {
   type: string;
   id: string;
   source?: boolean;
   target?: boolean;
+  options?: object;
 };
 
 /** Declares a custom option, that is a computed type value */
@@ -153,12 +181,17 @@ export type ViewportOptions = {
   viewportType?: CustomOption<string>;
   id?: string;
   orientation?: CustomOption<string>;
+  background?: CustomOption<[number, number, number]>;
   viewportId?: string;
+  displayArea?: DisplayArea;
   initialImageOptions?: CustomOption<initialImageOptions>;
   syncGroups?: CustomOption<SyncGroup>[];
   customViewportProps?: Record<string, unknown>;
-  // Set to true to allow non-matching drag and drop or options provided
-  // from options.displaySetSelectorsMap
+  /**
+   * Set to true to allow non-matching drag and drop or options provided
+   * from options.displaySetSelectorsMap
+   * @deprecated Moving to display set selector
+   */
   allowUnmatchedView?: boolean;
 };
 
@@ -175,9 +208,17 @@ export type DisplaySetOptions = {
   options?: Record<string, unknown>;
 };
 
+// some options for overlays
+// such as segmentation options
+export type OverlayOptions = {
+  id?: string;
+  options?: Record<string, unknown>;
+};
+
 export type Viewport = {
   viewportOptions: ViewportOptions;
   displaySets: DisplaySetOptions[];
+  overlays?: OverlayOptions[];
 };
 
 /**
@@ -241,21 +282,23 @@ export type ProtocolStage = {
 export type ProtocolNotifications = {
   // This set of commands is executed after the protocol is exited and the new one applied
   onProtocolExit?: Command[];
-
   // This set of commands is executed after the protocol is entered and applied
   onProtocolEnter?: Command[];
-
   // This set of commands is executed before the layout change is started.
   // If it returns false, the layout change will be aborted.
   // The numRows and numCols is included in the command params, so it is possible
   // to apply a specific hanging protocol
   onLayoutChange?: Command[];
+  // This set of commands is executed after the initial viewport grid data is set
+  // and all viewport data includes a designated display set. This command
+  // will run on every stage's initial layout.
+  onViewportDataInitialized?: Command[];
 };
 
 /**
  * A protocol is the top level definition for a hanging protocol.
  * It is a set of rules about when the protocol can be applied at all,
- * as well as a set of stages that represent indivividual views.
+ * as well as a set of stages that represent individual views.
  * Additionally, the display set selectors are used to choose from the existing
  * display sets.  The hanging protocol definition here does NOT allow
  * redefining the display sets to use, but only selects the views to show.
@@ -267,6 +310,8 @@ export type Protocol = {
   description?: string;
   /** Maps ids to display set selectors to choose display sets */
   displaySetSelectors: Record<string, DisplaySetSelector>;
+  /** overlay selectors that decide whether an overlay such as segmentation should be shown or not */
+  overlaySelectors?: Record<string, OverlaySelector>;
   /** A default viewport to use for any stage to select new viewport layouts. */
   defaultViewport?: Viewport;
   stages: ProtocolStage[];
@@ -291,6 +336,27 @@ export type Protocol = {
    */
   numberOfPriorsReferenced?: number;
   syncDataForViewports?: boolean;
+  /**
+   * Set of minimal conditions necessary to run the hanging protocol.
+   */
+  hpInitiationCriteria?: {
+    /* If configured, sets the minimum number of series needed to run the hanging
+     * protocol and start displaying images. Used when OHIF needs to handle studies
+     * with several series and it is required that the first image should be loaded
+     * faster.
+     */
+    minSeriesLoaded: number;
+  };
+
+  /*
+   * The icon to use for this protocol.  This is used to display the protocol
+   * in the advanced layout selector.
+   */
+
+  icon?: string;
+
+  /** Indicates if the protocol is a preset or not. Useful for setting presets for the layout selector */
+  isPreset?: true;
 };
 
 /** Used to dynamically generate protocols.
@@ -298,7 +364,7 @@ export type Protocol = {
  * to the GUI when this is used, and it can be expensive to apply.
  * Alternatives include using the custom attributes where possible.
  */
-export type ProtocolGenerator = ({ servicesManager: any, commandsManager: any }) => {
+export type ProtocolGenerator = ({ servicesManager, commandsManager }: withAppTypes) => {
   protocol: Protocol;
 };
 

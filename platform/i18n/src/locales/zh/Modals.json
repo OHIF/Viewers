@@ -1,0 +1,19 @@
+{
+  "Active viewport has no displayed image": "视图窗口没有图像",
+  "Cancel": "取消",
+  "Download": "下载",
+  "The file name cannot be empty.": "文件名称不能为空",
+  "File Type": "图片类型",
+  "File Name": "文件名",
+  "formTitle": "Please specify the dimensions, filename, and desired type for the output image.",
+  "Image height (px)": "高(px)",
+  "Image Preview": "预览",
+  "Image preview": "预览",
+  "Image width (px)": "宽(px)",
+  "keepAspectRatio": "Keep aspect ratio",
+  "loadingPreview": "Loading Image Preview...",
+  "The minimum valid height is 100px.": "图片最小高度值为100px",
+  "The minimum valid width is 100px.": "图片最小宽度值为100px",
+  "Show Annotations": "显示标注",
+  "Please specify the dimensions, filename, and desired type for the output image.": "请指定输出图像的尺寸、文件名和所需类型。"
+}

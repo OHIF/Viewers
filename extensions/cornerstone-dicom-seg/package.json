@@ -1,6 +1,6 @@
 {
   "name": "@ohif/extension-cornerstone-dicom-seg",
-  "version": "3.7.0-beta.77",
+  "version": "3.10.0-beta.150",
   "description": "DICOM SEG read workflow",
   "author": "OHIF",
   "license": "MIT",
@@ -24,6 +24,8 @@
     "yarn": ">=1.18.0"
   },
   "scripts": {
+    "clean": "shx rm -rf dist",
+    "clean:deep": "yarn run clean && shx rm -rf node_modules",
     "dev": "cross-env NODE_ENV=development webpack --config .webpack/webpack.dev.js --watch --output-pathinfo",
     "dev:dicom-seg": "yarn run dev",
     "build": "cross-env NODE_ENV=production webpack --config .webpack/webpack.prod.js",
@@ -31,20 +33,23 @@
     "start": "yarn run dev"
   },
   "peerDependencies": {
-    "@ohif/core": "3.7.0-beta.77",
-    "@ohif/extension-cornerstone": "3.7.0-beta.77",
-    "@ohif/extension-default": "3.7.0-beta.77",
-    "@ohif/i18n": "3.7.0-beta.77",
+    "@ohif/core": "3.10.0-beta.150",
+    "@ohif/extension-cornerstone": "3.10.0-beta.150",
+    "@ohif/extension-default": "3.10.0-beta.150",
+    "@ohif/i18n": "3.10.0-beta.150",
     "prop-types": "^15.6.2",
-    "react": "^17.0.2",
-    "react-dom": "^17.0.2",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
     "react-i18next": "^12.2.2",
-    "react-router": "^6.8.1",
-    "react-router-dom": "^6.8.1"
+    "react-router": "^6.23.1",
+    "react-router-dom": "^6.23.1"
   },
   "dependencies": {
     "@cornerstonejs/tools": "^1.16.0",
     "@babel/runtime": "^7.20.13",
+    "@cornerstonejs/adapters": "^3.8.5",
+    "@cornerstonejs/core": "^3.8.5",
+    "@kitware/vtk.js": "32.12.0",
     "react-color": "^2.19.3"
   }
 }

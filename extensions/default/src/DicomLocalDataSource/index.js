@@ -85,7 +85,7 @@ function createDicomLocalApi(dicomLocalConfig) {
           });
         },
         processResults: () => {
-          console.debug(' DICOMLocal QUERY processResults');
+          console.warn(' DICOMLocal QUERY processResults not implemented');
         },
       },
       series: {
@@ -107,7 +107,7 @@ function createDicomLocalApi(dicomLocalConfig) {
       },
       instances: {
         search: () => {
-          console.debug(' DICOMLocal QUERY instances SEARCH');
+          console.warn(' DICOMLocal QUERY instances SEARCH not implemented');
         },
       },
     },
@@ -209,7 +209,14 @@ function createDicomLocalApi(dicomLocalConfig) {
       return imageIds;
     },
     getImageIdsForInstance({ instance, frame }) {
-      const { StudyInstanceUID, SeriesInstanceUID, SOPInstanceUID } = instance;
+      // Important: Never use instance.imageId because it might be multiframe,
+      // which would make it an invalid imageId.
+      // if (instance.imageId) {
+      //   return instance.imageId;
+      // }
+
+      const { StudyInstanceUID, SeriesInstanceUID } = instance;
+      const SOPInstanceUID = instance.SOPInstanceUID || instance.SopInstanceUID;
       const storedInstance = DicomMetadataStore.getInstance(
         StudyInstanceUID,
         SeriesInstanceUID,

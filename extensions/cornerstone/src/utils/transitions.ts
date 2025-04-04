@@ -34,3 +34,30 @@ export function reverseEaseInOutBell(x: number, baseline: number): number {
   const y = easeInOutBell(x, baseline);
   return -y + 1 + baseline;
 }
+
+export function easeInOutBellRelative(
+  x: number,
+  baseline: number,
+  prevOutlineWidth: number
+): number {
+  const range = baseline - prevOutlineWidth;
+
+  if (x < 1 / 4) {
+    return prevOutlineWidth + 4 * Math.pow(2 * x, 3) * range;
+  } else if (x < 1 / 2) {
+    return prevOutlineWidth + (1 - Math.pow(-4 * x + 2, 3) / 2) * range;
+  } else if (x < 3 / 4) {
+    return prevOutlineWidth + (1 - Math.pow(4 * x - 2, 3) / 2) * range;
+  } else {
+    return prevOutlineWidth + -4 * Math.pow(2 * x - 2, 3) * range;
+  }
+}
+
+export function reverseEaseInOutBellRelative(
+  x: number,
+  baseline: number,
+  prevOutlineWidth: number
+): number {
+  const y = easeInOutBellRelative(x, baseline, prevOutlineWidth);
+  return y;
+}

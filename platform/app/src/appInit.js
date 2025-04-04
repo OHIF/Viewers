@@ -2,13 +2,13 @@ import {
   CommandsManager,
   ExtensionManager,
   ServicesManager,
+  ServiceProvidersManager,
   HotkeysManager,
   UINotificationService,
   UIModalService,
   UIDialogService,
   UIViewportDialogService,
   MeasurementService,
-  StateSyncService,
   DisplaySetService,
   ToolbarService,
   ViewportGridService,
@@ -19,10 +19,12 @@ import {
   CustomizationService,
   PanelService,
   WorkflowStepsService,
+  StudyPrefetcherService,
+  MultiMonitorService,
   // utils,
 } from '@ohif/core';
 
-import loadModules from './pluginImports';
+import loadModules, { loadModule as peerImport } from './pluginImports';
 
 /**
  * @param {object|func} appConfigOrFunc - application configuration, or a function that returns application configuration
@@ -35,25 +37,30 @@ async function appInit(appConfigOrFunc, defaultExtensions, defaultModes) {
 
   const commandsManager = new CommandsManager(commandsManagerConfig);
   const servicesManager = new ServicesManager(commandsManager);
+  const serviceProvidersManager = new ServiceProvidersManager();
   const hotkeysManager = new HotkeysManager(commandsManager, servicesManager);
 
   const appConfig = {
     ...(typeof appConfigOrFunc === 'function'
-      ? await appConfigOrFunc({ servicesManager })
+      ? await appConfigOrFunc({ servicesManager, peerImport })
       : appConfigOrFunc),
   };
+  // Default the peer import function
+  appConfig.peerImport ||= peerImport;
+  appConfig.measurementTrackingMode ||= 'standard';
 
   const extensionManager = new ExtensionManager({
     commandsManager,
     servicesManager,
+    serviceProvidersManager,
     hotkeysManager,
     appConfig,
   });
 
-  // extensionManager cannot be passed in the ServicesManager constructor due to a cyclical dependency
-  servicesManager.init({ extensionManager });
+  servicesManager.setExtensionManager(extensionManager);
 
   servicesManager.registerServices([
+    [MultiMonitorService.REGISTRATION, appConfig.multimonitor],
     UINotificationService.REGISTRATION,
     UIModalService.REGISTRATION,
     UIDialogService.REGISTRATION,
@@ -68,7 +75,7 @@ async function appInit(appConfigOrFunc, defaultExtensions, defaultModes) {
     UserAuthenticationService.REGISTRATION,
     PanelService.REGISTRATION,
     WorkflowStepsService.REGISTRATION,
-    StateSyncService.REGISTRATION,
+    [StudyPrefetcherService.REGISTRATION, appConfig.studyPrefetcher],
   ]);
 
   errorHandler.getHTTPErrorHandler = () => {
@@ -111,7 +118,7 @@ async function appInit(appConfigOrFunc, defaultExtensions, defaultModes) {
           ? appConfig.modesConfiguration[id]
           : {};
 
-      mode = mode.modeFactory({ modeConfiguration });
+      mode = await mode.modeFactory({ modeConfiguration, loadModules });
     }
 
     if (modesById.has(id)) {
@@ -133,6 +140,7 @@ async function appInit(appConfigOrFunc, defaultExtensions, defaultModes) {
     commandsManager,
     extensionManager,
     servicesManager,
+    serviceProvidersManager,
     hotkeysManager,
   };
 }

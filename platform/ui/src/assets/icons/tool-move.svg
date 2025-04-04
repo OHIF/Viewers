@@ -1,8 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 22 22">
-    <g fill="none" fill-rule="evenodd" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
-        <path d="M9.882 18.529L9.882 0M18.529 9.882L1.235 9.882M7.412 2.468L9.88 0 12.364 2.484" transform="translate(1 1)"/>
-        <path d="M7.412 19.762L9.88 17.294 12.364 19.778" transform="translate(1 1) rotate(-180 9.888 18.536)"/>
-        <path d="M-1.234 11.114L1.234 8.646 3.718 11.13" transform="translate(1 1) rotate(-90 1.242 9.888)"/>
-        <path d="M16.06 11.114L18.528 8.646 21.012 11.13" transform="translate(1 1) rotate(90 18.536 9.888)"/>
-    </g>
-</svg>

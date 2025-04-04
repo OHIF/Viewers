@@ -1,10 +1,11 @@
-import { isImage } from '@ohif/core/src/utils/isImage';
-import sopClassDictionary from '@ohif/core/src/utils/sopClassDictionary';
-import ImageSet from '@ohif/core/src/classes/ImageSet';
-import isDisplaySetReconstructable from '@ohif/core/src/utils/isDisplaySetReconstructable';
+import { utils, classes } from '@ohif/core';
 import { id } from './id';
 import getDisplaySetMessages from './getDisplaySetMessages';
 import getDisplaySetsFromUnsupportedSeries from './getDisplaySetsFromUnsupportedSeries';
+import { chartHandler } from './SOPClassHandlers/chartSOPClassHandler';
+
+const { isImage, sopClassDictionary, isDisplaySetReconstructable } = utils;
+const { ImageSet } = classes;
 
 const DEFAULT_VOLUME_LOADER_SCHEME = 'cornerstoneStreamingImageVolume';
 const DYNAMIC_VOLUME_LOADER_SCHEME = 'cornerstoneStreamingDynamicImageVolume';
@@ -36,6 +37,8 @@ function getDisplaySetInfo(instances) {
   const { isDynamicVolume, timePoints } = dynamicVolumeInfo;
   let displaySetInfo;
 
+  const { appConfig } = appContext;
+
   if (isDynamicVolume) {
     const timePoint = timePoints[0];
     const instancesMap = new Map();
@@ -45,14 +48,15 @@ function getDisplaySetInfo(instances) {
 
     const firstTimePointInstances = timePoint.map(imageId => instancesMap.get(imageId));
 
-    displaySetInfo = isDisplaySetReconstructable(firstTimePointInstances);
+    displaySetInfo = isDisplaySetReconstructable(firstTimePointInstances, appConfig);
   } else {
-    displaySetInfo = isDisplaySetReconstructable(instances);
+    displaySetInfo = isDisplaySetReconstructable(instances, appConfig);
   }
 
   return {
     isDynamicVolume,
     ...displaySetInfo,
+    dynamicVolumeInfo,
   };
 }
 
@@ -64,6 +68,7 @@ const makeDisplaySet = instances => {
     isDynamicVolume,
     value: isReconstructable,
     averageSpacingBetweenFrames,
+    dynamicVolumeInfo,
   } = getDisplaySetInfo(instances);
 
   const volumeLoaderSchema = isDynamicVolume
@@ -71,7 +76,7 @@ const makeDisplaySet = instances => {
     : DEFAULT_VOLUME_LOADER_SCHEME;
 
   // set appropriate attributes to image set...
-  const messages = getDisplaySetMessages(instances, isReconstructable);
+  const messages = getDisplaySetMessages(instances, isReconstructable, isDynamicVolume);
 
   imageSet.setAttributes({
     volumeLoaderSchema,
@@ -92,6 +97,8 @@ const makeDisplaySet = instances => {
     isReconstructable,
     messages,
     averageSpacingBetweenFrames: averageSpacingBetweenFrames || null,
+    isDynamicVolume,
+    dynamicVolumeInfo,
   });
 
   // Sort the images in this series if needed
@@ -171,7 +178,6 @@ function getDisplaySetsFromSeries(instances) {
 
       displaySet.setAttributes({
         sopClassUids,
-        isClip: true,
         numImageFrames: instance.NumberOfFrames,
         instanceNumber: instance.InstanceNumber,
         acquisitionDatetime: instance.AcquisitionDateTime,
@@ -247,7 +253,8 @@ const sopClassUids = [
   sopClassDictionary.OphthalmicPhotography8BitImageStorage,
   sopClassDictionary.OphthalmicPhotography16BitImageStorage,
   sopClassDictionary.OphthalmicTomographyImageStorage,
-  sopClassDictionary.VLWholeSlideMicroscopyImageStorage,
+  // Handled by another sop class module
+  // sopClassDictionary.VLWholeSlideMicroscopyImageStorage,
   sopClassDictionary.PositronEmissionTomographyImageStorage,
   sopClassDictionary.EnhancedPETImageStorage,
   sopClassDictionary.LegacyConvertedEnhancedPETImageStorage,
@@ -268,6 +275,11 @@ function getSopClassHandlerModule(appContextParam) {
       name: 'not-supported-display-sets-handler',
       sopClassUids: [],
       getDisplaySetsFromSeries: getDisplaySetsFromUnsupportedSeries,
+    },
+    {
+      name: chartHandler.name,
+      sopClassUids: chartHandler.sopClassUids,
+      getDisplaySetsFromSeries: chartHandler.getDisplaySetsFromSeries,
     },
   ];
 }

@@ -1,6 +1,7 @@
 import { ExtensionManager, MODULE_TYPES } from './extensions';
-import { ServicesManager } from './services';
+import { ServiceProvidersManager, ServicesManager } from './services';
 import classes, { CommandsManager, HotkeysManager } from './classes';
+import { SystemContextProvider, useSystem } from './contextProviders/SystemProvider';
 
 import DICOMWeb from './DICOMWeb';
 import errorHandler from './errorHandler.js';
@@ -11,7 +12,8 @@ import user from './user.js';
 import utils from './utils';
 import defaults from './defaults';
 import * as Types from './types';
-
+import * as Enums from './enums';
+import { useToolbar } from './hooks/useToolbar';
 import {
   CineService,
   UIDialogService,
@@ -29,16 +31,16 @@ import {
   PubSubService,
   UserAuthenticationService,
   CustomizationService,
-  StateSyncService,
   PanelService,
-  ToolGroupService,
-  SegmentationService,
   WorkflowStepsService,
+  StudyPrefetcherService,
+  MultiMonitorService,
 } from './services';
 
 import { DisplaySetMessage, DisplaySetMessageList } from './services/DisplaySetService';
 
 import IWebApiDataSource from './DataSources/IWebApiDataSource';
+import useActiveViewportDisplaySets from './hooks/useActiveViewportDisplaySets';
 
 const hotkeys = {
   ...utils.hotkeys,
@@ -52,6 +54,7 @@ const OHIF = {
   ExtensionManager,
   HotkeysManager,
   ServicesManager,
+  ServiceProvidersManager,
   //
   defaults,
   utils,
@@ -67,7 +70,6 @@ const OHIF = {
   //
   CineService,
   CustomizationService,
-  StateSyncService,
   UIDialogService,
   UIModalService,
   UINotificationService,
@@ -78,14 +80,16 @@ const OHIF = {
   ViewportGridService,
   HangingProtocolService,
   UserAuthenticationService,
+  MultiMonitorService,
   IWebApiDataSource,
   DicomMetadataStore,
   pubSubServiceInterface,
   PubSubService,
   PanelService,
-  SegmentationService,
-  ToolGroupService,
+  useToolbar,
+  useActiveViewportDisplaySets,
   WorkflowStepsService,
+  StudyPrefetcherService,
 };
 
 export {
@@ -95,6 +99,8 @@ export {
   ExtensionManager,
   HotkeysManager,
   ServicesManager,
+  ServiceProvidersManager,
+  SystemContextProvider,
   //
   defaults,
   utils,
@@ -109,7 +115,6 @@ export {
   //
   CineService,
   CustomizationService,
-  StateSyncService,
   UIDialogService,
   UIModalService,
   UINotificationService,
@@ -118,6 +123,7 @@ export {
   DisplaySetMessage,
   DisplaySetMessageList,
   MeasurementService,
+  MultiMonitorService,
   ToolbarService,
   ViewportGridService,
   HangingProtocolService,
@@ -126,13 +132,17 @@ export {
   DicomMetadataStore,
   pubSubServiceInterface,
   PubSubService,
-  Types,
+  Enums,
   PanelService,
-  SegmentationService,
-  ToolGroupService,
   WorkflowStepsService,
+  StudyPrefetcherService,
+  useSystem,
+  useToolbar,
+  useActiveViewportDisplaySets,
 };
 
 export { OHIF };
+
+export type { Types };
 
 export default OHIF;

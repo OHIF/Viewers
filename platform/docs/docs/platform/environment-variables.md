@@ -12,6 +12,7 @@ NODE_ENV=< production | development >
 DEBUG=< true | false >
 APP_CONFIG=< relative path to application configuration file >
 PUBLIC_URL=< relative path to application root - default / >
+ROUTER_BASENAME=< relative path to application root - default PUBLIC_URL >
 VERSION_NUMBER=<Set by CircleCI>
 BUILD_NUM=<Set by CircleCI>
 # i18n

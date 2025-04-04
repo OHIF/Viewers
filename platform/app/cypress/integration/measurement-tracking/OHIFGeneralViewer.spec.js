@@ -1,16 +1,14 @@
-describe('OHIF Study Viewer Page', function () {
-  beforeEach(function () {
-    cy.checkStudyRouteInViewer('1.2.840.113619.2.5.1762583153.215519.978957063.78');
-
-    cy.expectMinimumThumbnails(3);
-    cy.initCommonElementsAliases();
-    cy.initCornerstoneToolsAliases();
-  });
+describe('OHIF General Viewer', function () {
+  beforeEach(() =>
+    cy.initViewer('1.2.840.113619.2.5.1762583153.215519.978957063.78', {
+      minimumThumbnails: 3,
+    })
+  );
 
   it('scrolls series stack using scrollbar', function () {
     cy.scrollToIndex(13);
 
-    cy.get('@viewportInfoTopRight').should('contains.text', '14');
+    cy.get('@viewportInfoBottomRight').should('contains.text', '14');
   });
 
   it('performs right click to zoom', function () {
@@ -20,7 +18,7 @@ describe('OHIF Study Viewer Page', function () {
     cy.get('@zoomBtn')
       .click()
       .then($zoomBtn => {
-        cy.wrap($zoomBtn).should('have.class', 'active');
+        cy.wrap($zoomBtn).should('have.attr', 'data-active', 'true');
       });
 
     const zoomLevelInitial = cy.get('@viewportInfoTopLeft').then($viewportInfo => {
@@ -34,7 +32,7 @@ describe('OHIF Study Viewer Page', function () {
       .trigger('mouseup');
 
     // make sure the new zoom level is less than the initial
-    cy.get('@viewportInfoTopLeft').then($viewportInfo => {
+    cy.get('@viewportInfoBottomLeft').then($viewportInfo => {
       const zoomLevelFinal = $viewportInfo.text().substring(6, 9);
       expect(zoomLevelFinal < zoomLevelInitial).to.eq(true);
     });

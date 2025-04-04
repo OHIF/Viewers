@@ -1,9 +1,17 @@
+import { cache } from '@cornerstonejs/core';
 import * as csTools from '@cornerstonejs/tools';
 
-function getRoiStats(referencedVolume, annotations) {
-  // roiStats
-  const { imageData } = referencedVolume;
-  const values = imageData.getPointData().getScalars().getData();
+function getRoiStats(displaySet, annotations) {
+  const { imageIds } = displaySet;
+
+  const ptVolumeInfo = cache.getVolumeContainingImageId(imageIds[0]);
+
+  if (!ptVolumeInfo) {
+    throw new Error('No volume found for display set');
+  }
+
+  const { volume } = ptVolumeInfo;
+  const { voxelManager } = volume;
 
   // Todo: add support for other strategies
   const { fn, baseValue } = _getStrategyFn('max');
@@ -11,25 +19,25 @@ function getRoiStats(referencedVolume, annotations) {
 
   const boundsIJK = csTools.utilities.rectangleROITool.getBoundsIJKFromRectangleAnnotations(
     annotations,
-    referencedVolume
+    volume
   );
 
-  const [[iMin, iMax], [jMin, jMax], [kMin, kMax]] = boundsIJK;
-
-  for (let i = iMin; i <= iMax; i++) {
-    for (let j = jMin; j <= jMax; j++) {
-      for (let k = kMin; k <= kMax; k++) {
-        const offset = imageData.computeOffsetIndex([i, j, k]);
-        value = fn(values[offset], value);
-      }
+  // Use the voxelManager's forEach method to iterate over the bounds
+  voxelManager.forEach(
+    ({ value: voxelValue }) => {
+      value = fn(voxelValue, value);
+    },
+    {
+      boundsIJK,
     }
-  }
+  );
+
   return value;
 }
 
 function getThresholdValues(
   annotationUIDs,
-  referencedVolumes,
+  ptDisplaySet,
   config
 ): { ptLower: number; ptUpper: number; ctLower: number; ctUpper: number } {
   if (config.strategy === 'range') {
@@ -46,7 +54,7 @@ function getThresholdValues(
     csTools.annotation.state.getAnnotation(annotationUID)
   );
 
-  const ptValue = getRoiStats(referencedVolumes[0], annotations);
+  const ptValue = getRoiStats(ptDisplaySet, annotations);
 
   return {
     ctLower: -Infinity,

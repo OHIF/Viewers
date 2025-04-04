@@ -5,5 +5,12 @@
   "MAX": "最大",
   "NonTargets": "非靶向",
   "Relabel": "重新标记",
-  "Targets": "靶向"
+  "Measurements": "测量",
+  "Targets": "靶向",
+  "Export CSV": "导出CSV",
+  "No tracked measurements": "没有跟踪的测量值",
+  "Export": "导出",
+  "Create Report": "新建报告",
+  "Do you want to add this measurement to the existing report?": "将测量添加到报告中？",
+  "Track measurements for this series?": "要对个序列进行跟踪吗？"
 }

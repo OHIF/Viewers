@@ -1,17 +1,19 @@
 import React, { useState } from 'react';
 import { ErrorBoundary as ReactErrorBoundary } from 'react-error-boundary';
 import PropTypes from 'prop-types';
+import { useTranslation } from 'react-i18next';
+import i18n from 'i18next';
 
 import Modal from '../Modal';
-import Icon from '../Icon';
 import IconButton from '../IconButton';
-
+import { Icons } from '@ohif/ui-next';
 const isProduction = process.env.NODE_ENV === 'production';
 
-const DefaultFallback = ({ error, context, resetErrorBoundary, fallbackRoute }) => {
+const DefaultFallback = ({ error, context, resetErrorBoundary = () => {}, fallbackRoute }) => {
+  const { t } = useTranslation('ErrorBoundary');
   const [showDetails, setShowDetails] = useState(false);
-  const title = `Something went wrong${!isProduction && ` in ${context}`}.`;
-  const subtitle = `Sorry, something went wrong there. Try again.`;
+  const title = `${t('Something went wrong')}${!isProduction && ` ${t('in')} ${context}`}.`;
+  const subtitle = t('Sorry, something went wrong there. Try again.');
   return (
     <div
       className="ErrorFallback bg-primary-dark h-full w-full"
@@ -21,8 +23,12 @@ const DefaultFallback = ({ error, context, resetErrorBoundary, fallbackRoute }) 
       <p className="text-primary-light text-base">{subtitle}</p>
       {!isProduction && (
         <div className="bg-secondary-dark mt-5 space-y-2 rounded-md p-5 font-mono">
-          <p className="text-primary-light">Context: {context}</p>
-          <p className="text-primary-light">Error Message: {error.message}</p>
+          <p className="text-primary-light">
+            {t('Context')}: {context}
+          </p>
+          <p className="text-primary-light">
+            {t('Error Message')}: {error.message}
+          </p>
 
           <IconButton
             variant="contained"
@@ -32,23 +38,19 @@ const DefaultFallback = ({ error, context, resetErrorBoundary, fallbackRoute }) 
             onClick={() => setShowDetails(!showDetails)}
           >
             <React.Fragment>
-              <div>{'Stack Trace'}</div>
-              <Icon
-                width="15px"
-                height="15px"
-                name="chevron-down"
-              />
+              <div>{t('Stack Trace')}</div>
+              <Icons.ChevronOpen />
             </React.Fragment>
           </IconButton>
 
-          {showDetails && <p className="text-primary-light px-4">Stack: {error.stack}</p>}
+          {showDetails && (
+            <pre className="text-primary-light whitespace-pre-wrap px-4">Stack: {error.stack}</pre>
+          )}
         </div>
       )}
     </div>
   );
 };
-
-const noop = () => {};
 
 DefaultFallback.propTypes = {
   error: PropTypes.object.isRequired,
@@ -56,17 +58,13 @@ DefaultFallback.propTypes = {
   componentStack: PropTypes.string,
 };
 
-DefaultFallback.defaultProps = {
-  resetErrorBoundary: noop,
-};
-
 const ErrorBoundary = ({
-  context,
-  onReset,
-  onError,
-  fallbackComponent: FallbackComponent,
+  context = 'OHIF',
+  onReset = () => {},
+  onError = () => {},
+  fallbackComponent: FallbackComponent = DefaultFallback,
   children,
-  fallbackRoute,
+  fallbackRoute = null,
   isPage,
 }) => {
   const [isOpen, setIsOpen] = useState(true);
@@ -83,7 +81,7 @@ const ErrorBoundary = ({
       closeButton
       shouldCloseOnEsc
       isOpen={isOpen}
-      title={'Something went wrong'}
+      title={i18n.t('ErrorBoundary:Something went wrong')}
       onClose={() => {
         setIsOpen(false);
         if (fallbackRoute && typeof window !== 'undefined') {
@@ -121,14 +119,6 @@ ErrorBoundary.propTypes = {
   fallbackComponent: PropTypes.oneOfType([PropTypes.node, PropTypes.func]),
   children: PropTypes.node.isRequired,
   fallbackRoute: PropTypes.string,
-};
-
-ErrorBoundary.defaultProps = {
-  context: 'OHIF',
-  onReset: noop,
-  onError: noop,
-  fallbackComponent: DefaultFallback,
-  fallbackRoute: null,
 };
 
 export default ErrorBoundary;

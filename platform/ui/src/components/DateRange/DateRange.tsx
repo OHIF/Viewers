@@ -1,33 +1,13 @@
 import React, { useState, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
+import { useTranslation } from 'react-i18next';
 
 /** REACT DATES */
 import { DateRangePicker, isInclusivelyBeforeDay } from 'react-dates';
 import 'react-dates/initialize';
 import 'react-dates/lib/css/_datepicker.css';
 import './DateRange.css';
-
-const today = moment();
-const lastWeek = moment().subtract(7, 'day');
-const lastMonth = moment().subtract(1, 'month');
-const studyDatePresets = [
-  {
-    text: 'Today',
-    start: today,
-    end: today,
-  },
-  {
-    text: 'Last 7 days',
-    start: lastWeek,
-    end: today,
-  },
-  {
-    text: 'Last 30 days',
-    start: lastMonth,
-    end: today,
-  },
-];
 
 const renderYearsOptions = () => {
   const currentYear = moment().year();
@@ -49,9 +29,30 @@ const renderYearsOptions = () => {
 };
 
 const DateRange = props => {
-  const { id, onChange, startDate, endDate } = props;
+  const { id = '', onChange, startDate = null, endDate = null } = props;
   const [focusedInput, setFocusedInput] = useState(null);
   const renderYearsOptionsCallback = useCallback(renderYearsOptions, []);
+  const { t } = useTranslation('DatePicker');
+  const today = moment();
+  const lastWeek = moment().subtract(7, 'day');
+  const lastMonth = moment().subtract(1, 'month');
+  const studyDatePresets = [
+    {
+      text: t('Today'),
+      start: today,
+      end: today,
+    },
+    {
+      text: t('Last 7 days'),
+      start: lastWeek,
+      end: today,
+    },
+    {
+      text: t('Last 30 days'),
+      start: lastMonth,
+      end: today,
+    },
+  ];
 
   const renderDatePresets = () => {
     return (
@@ -149,11 +150,11 @@ const DateRange = props => {
       /** OPTIONAL */
       renderCalendarInfo={renderDatePresets}
       renderMonthElement={renderMonthElement}
-      startDatePlaceholderText={'Start Date'}
-      endDatePlaceholderText={'End Date'}
+      startDatePlaceholderText={t('Start Date')}
+      endDatePlaceholderText={t('End Date')}
       phrases={{
-        closeDatePicker: 'Close',
-        clearDates: 'Clear dates',
+        closeDatePicker: t('Close'),
+        clearDates: t('Clear dates'),
       }}
       isOutsideRange={day => !isInclusivelyBeforeDay(day, moment())}
       hideKeyboardShortcutsPanel={true}
@@ -164,18 +165,12 @@ const DateRange = props => {
   );
 };
 
-DateRange.defaultProps = {
-  id: '',
-  startDate: null,
-  endDate: null,
-};
-
 DateRange.propTypes = {
   id: PropTypes.string,
   /** YYYYMMDD (19921022) */
   startDate: PropTypes.string,
   /** YYYYMMDD (19921022) */
-  endDate: PropTypes.object,
+  endDate: PropTypes.string,
   /** Callback that received { startDate: string(YYYYMMDD), endDate: string(YYYYMMDD)} */
   onChange: PropTypes.func.isRequired,
 };

@@ -1,103 +1,18 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useParams, useLocation, useNavigate } from 'react-router';
 import PropTypes from 'prop-types';
-// TODO: DicomMetadataStore should be injected?
-import { DicomMetadataStore, ServicesManager, utils } from '@ohif/core';
+import { utils } from '@ohif/core';
 import { DragAndDropProvider, ImageViewerProvider } from '@ohif/ui';
 import { useSearchParams } from '@hooks';
 import { useAppConfig } from '@state';
 import ViewportGrid from '@components/ViewportGrid';
 import Compose from './Compose';
-import getStudies from './studiesList';
 import { history } from '../../utils/history';
 import loadModules from '../../pluginImports';
-import isSeriesFilterUsed from '../../utils/isSeriesFilterUsed';
+import { defaultRouteInit } from './defaultRouteInit';
+import { updateAuthServiceAndCleanUrl } from './updateAuthServiceAndCleanUrl';
 
 const { getSplitParam } = utils;
-
-/**
- * Initialize the route.
- *
- * @param props.servicesManager to read services from
- * @param props.studyInstanceUIDs for a list of studies to read
- * @param props.dataSource to read the data from
- * @param props.filters filters from query params to read the data from
- * @returns array of subscriptions to cancel
- */
-async function defaultRouteInit(
-  { servicesManager, studyInstanceUIDs, dataSource, filters },
-  hangingProtocolId
-) {
-  const { displaySetService, hangingProtocolService, uiNotificationService } =
-    servicesManager.services;
-
-  const unsubscriptions = [];
-  const issuedWarningSeries = [];
-  const { unsubscribe: instanceAddedUnsubscribe } = DicomMetadataStore.subscribe(
-    DicomMetadataStore.EVENTS.INSTANCES_ADDED,
-    function ({ StudyInstanceUID, SeriesInstanceUID, madeInClient = false }) {
-      const seriesMetadata = DicomMetadataStore.getSeries(StudyInstanceUID, SeriesInstanceUID);
-
-      // checks if the series filter was used, if it exists
-      const seriesInstanceUIDs = filters?.seriesInstanceUID;
-      if (
-        seriesInstanceUIDs?.length &&
-        !isSeriesFilterUsed(seriesMetadata.instances, filters) &&
-        !issuedWarningSeries.includes(seriesInstanceUIDs[0])
-      ) {
-        // stores the series instance filter so it shows only once the warning
-        issuedWarningSeries.push(seriesInstanceUIDs[0]);
-        uiNotificationService.show({
-          title: 'Series filter',
-          message: `Each of the series in filter: ${seriesInstanceUIDs} are not part of the current study. The entire study is being displayed`,
-          type: 'error',
-          duration: 7000,
-        });
-      }
-      displaySetService.makeDisplaySets(seriesMetadata.instances, madeInClient);
-    }
-  );
-
-  unsubscriptions.push(instanceAddedUnsubscribe);
-
-  const allRetrieves = studyInstanceUIDs.map(StudyInstanceUID =>
-    dataSource.retrieve.series.metadata({
-      StudyInstanceUID,
-      filters,
-    })
-  );
-
-  // log the error if this fails, otherwise it's so difficult to tell what went wrong...
-  allRetrieves.forEach(retrieve => {
-    retrieve.catch(error => {
-      console.error(error);
-    });
-  });
-
-  // The hanging protocol matching service is fairly expensive to run multiple
-  // times, and doesn't allow partial matches to be made (it will simply fail
-  // to display anything if a required match fails), so we wait here until all metadata
-  // is retrieved (which will synchronously trigger the display set creation)
-  // until we run the hanging protocol matching service.
-
-  await Promise.allSettled(allRetrieves);
-
-  const displaySets = displaySetService.getActiveDisplaySets();
-
-  if (!displaySets || !displaySets.length) {
-    return;
-  }
-
-  // Gets the studies list to use
-  const studies = getStudies(studyInstanceUIDs, displaySets);
-  const activeStudy = studies[0];
-
-  // run the hanging protocol matching on the displaySets with the predefined
-  // hanging protocol in the mode configuration
-  hangingProtocolService.run({ studies, activeStudy, displaySets }, hangingProtocolId);
-
-  return unsubscriptions;
-}
 
 export default function ModeRoute({
   mode,
@@ -106,7 +21,7 @@ export default function ModeRoute({
   servicesManager,
   commandsManager,
   hotkeysManager,
-}) {
+}: withAppTypes) {
   const [appConfig] = useAppConfig();
 
   // Parse route params/querystring
@@ -116,10 +31,19 @@ export default function ModeRoute({
   const params = useParams();
   // The URL's query search parameters where the keys casing is maintained
   const query = useSearchParams();
+
+  mode?.onModeInit?.({
+    servicesManager,
+    extensionManager,
+    commandsManager,
+    appConfig,
+    query,
+  });
+
   // The URL's query search parameters where the keys are all lower case.
   const lowerCaseSearchParams = useSearchParams({ lowerCaseKeys: true });
 
-  const [studyInstanceUIDs, setStudyInstanceUIDs] = useState();
+  const [studyInstanceUIDs, setStudyInstanceUIDs] = useState(null);
 
   const [refresh, setRefresh] = useState(false);
   const [ExtensionDependenciesLoaded, setExtensionDependenciesLoaded] = useState(false);
@@ -136,40 +60,23 @@ export default function ModeRoute({
     locationRef.current = location;
   }
 
-  const { displaySetService, hangingProtocolService, userAuthenticationService } = (
-    servicesManager as ServicesManager
-  ).services;
+  const {
+    displaySetService,
+    panelService,
+    hangingProtocolService,
+    userAuthenticationService,
+    customizationService,
+  } = servicesManager.services;
 
-  const { extensions, sopClassHandlers, hotkeys: hotkeyObj, hangingProtocol } = mode;
+  const { extensions, sopClassHandlers, hangingProtocol } = mode;
 
   const runTimeHangingProtocolId = lowerCaseSearchParams.get('hangingprotocolid');
+  const runTimeStageId = lowerCaseSearchParams.get('stageid');
   const token = lowerCaseSearchParams.get('token');
 
   if (token) {
-    // if a token is passed in, set the userAuthenticationService to use it
-    // for the Authorization header for all requests
-    userAuthenticationService.setServiceImplementation({
-      getAuthorizationHeader: () => ({
-        Authorization: 'Bearer ' + token,
-      }),
-    });
-
-    // Create a URL object with the current location
-    const urlObj = new URL(window.location.origin + location.pathname + location.search);
-
-    // Remove the token from the URL object
-    urlObj.searchParams.delete('token');
-    const cleanUrl = urlObj.toString();
-
-    // Update the browser's history without the token
-    if (window.history && window.history.replaceState) {
-      window.history.replaceState(null, '', cleanUrl);
-    }
+    updateAuthServiceAndCleanUrl(token, location, userAuthenticationService);
   }
-
-  // Preserve the old array interface for hotkeys
-  const hotkeys = Array.isArray(hotkeyObj) ? hotkeyObj : hotkeyObj?.hotkeys;
-  const hotkeyName = hotkeyObj?.name || 'hotkey-definitions';
 
   // An undefined dataSourceName implies that the active data source that is already set in the ExtensionManager should be used.
   if (dataSourceName !== undefined) {
@@ -181,32 +88,6 @@ export default function ModeRoute({
   // Only handling one route per mode for now
   const route = mode.routes[0];
 
-  // For each extension, look up their context modules
-  // TODO: move to extension manager.
-  let contextModules = [];
-
-  Object.keys(extensions).forEach(extensionId => {
-    const allRegisteredModuleIds = Object.keys(extensionManager.modulesMap);
-    const moduleIds = allRegisteredModuleIds.filter(id =>
-      id.includes(`${extensionId}.contextModule.`)
-    );
-
-    if (!moduleIds || !moduleIds.length) {
-      return;
-    }
-
-    const modules = moduleIds.map(extensionManager.getModuleEntry);
-    contextModules = contextModules.concat(modules);
-  });
-
-  const contextModuleProviders = contextModules.map(a => a.provider);
-  const CombinedContextProvider = ({ children }) =>
-    Compose({ components: contextModuleProviders, children });
-
-  function ViewportGridWithDataSource(props) {
-    return ViewportGrid({ ...props, dataSource });
-  }
-
   useEffect(() => {
     const loadExtensions = async () => {
       const loadedExtensions = await loadModules(Object.keys(extensions));
@@ -216,7 +97,10 @@ export default function ModeRoute({
           await extensionManager.registerExtension(extension);
         }
       }
-      setExtensionDependenciesLoaded(true);
+
+      if (isMounted.current) {
+        setExtensionDependenciesLoaded(true);
+      }
     };
 
     loadExtensions();
@@ -251,7 +135,7 @@ export default function ModeRoute({
   }, [location, ExtensionDependenciesLoaded]);
 
   useEffect(() => {
-    if (!ExtensionDependenciesLoaded) {
+    if (!ExtensionDependenciesLoaded || !studyInstanceUIDs?.length) {
       return;
     }
 
@@ -261,12 +145,22 @@ export default function ModeRoute({
         servicesManager,
         studyInstanceUIDs,
       });
+
       if (isMounted.current) {
+        const { leftPanels = [], rightPanels = [], ...layoutProps } = layoutData.props;
+
+        panelService.reset();
+        panelService.addPanels(panelService.PanelPosition.Left, leftPanels);
+        panelService.addPanels(panelService.PanelPosition.Right, rightPanels);
+
+        // layoutProps contains all props but leftPanels and rightPanels
+        layoutData.props = layoutProps;
+
         layoutTemplateData.current = layoutData;
         setRefresh(!refresh);
       }
     };
-    if (studyInstanceUIDs?.length && studyInstanceUIDs[0] !== undefined) {
+    if (Array.isArray(studyInstanceUIDs) && studyInstanceUIDs[0]) {
       retrieveLayoutData();
     }
     return () => {
@@ -275,27 +169,7 @@ export default function ModeRoute({
   }, [studyInstanceUIDs, ExtensionDependenciesLoaded]);
 
   useEffect(() => {
-    if (!hotkeys || !ExtensionDependenciesLoaded) {
-      return;
-    }
-
-    hotkeysManager.setDefaultHotKeys(hotkeys);
-
-    const userPreferredHotkeys = JSON.parse(localStorage.getItem(hotkeyName));
-
-    if (userPreferredHotkeys?.length) {
-      hotkeysManager.setHotkeys(userPreferredHotkeys, hotkeyName);
-    } else {
-      hotkeysManager.setHotkeys(hotkeys, hotkeyName);
-    }
-
-    return () => {
-      hotkeysManager.destroy();
-    };
-  }, [ExtensionDependenciesLoaded]);
-
-  useEffect(() => {
-    if (!layoutTemplateData.current || !ExtensionDependenciesLoaded) {
+    if (!layoutTemplateData.current || !ExtensionDependenciesLoaded || !studyInstanceUIDs?.length) {
       return;
     }
 
@@ -324,6 +198,16 @@ export default function ModeRoute({
         ? runTimeHangingProtocolId
         : hangingProtocol;
 
+      // Determine the index of the stageId if the hangingProtocolIdToUse is defined
+      const stageIndex = Array.isArray(hangingProtocolIdToUse)
+        ? -1
+        : hangingProtocolService.getStageIndex(hangingProtocolIdToUse, {
+            stageId: runTimeStageId || undefined,
+          });
+      // Ensure that the stage index is never negative
+      // If stageIndex is negative (e.g., if stage wasn't found), use 0 as the default
+      const stageIndexToUse = Math.max(0, stageIndex);
+
       // Sets the active hanging protocols - if hangingProtocol is undefined,
       // resets to default.  Done before the onModeEnter to allow the onModeEnter
       // to perform custom hanging protocol actions
@@ -333,7 +217,12 @@ export default function ModeRoute({
         servicesManager,
         extensionManager,
         commandsManager,
+        appConfig,
       });
+
+      // Move hotkeys setup here, after onModeEnter
+      const hotkeys = customizationService.getCustomization('ohif.hotkeyBindings');
+      hotkeysManager.setDefaultHotKeys(hotkeys);
 
       /**
        * The next line should get all the query parameters provided by the URL
@@ -349,22 +238,21 @@ export default function ModeRoute({
       const filters =
         Array.from(query.keys()).reduce((acc: Record<string, string>, val: string) => {
           const lowerVal = val.toLowerCase();
-          if (lowerVal !== 'studyinstanceuids') {
-            // Not sure why the case matters here - it doesn't in the URL
-            if (lowerVal === 'seriesinstanceuid') {
-              const seriesUIDs = getSplitParam(lowerVal, query);
-              return {
-                ...acc,
-                seriesInstanceUID: seriesUIDs,
-              };
-            }
-
-            return { ...acc, [val]: getSplitParam(lowerVal, query) };
+          // Not sure why the case matters here - it doesn't in the URL
+          if (lowerVal === 'seriesinstanceuids' || lowerVal === 'seriesinstanceuid') {
+            const seriesUIDs = getSplitParam(lowerVal, query);
+            return {
+              ...acc,
+              seriesInstanceUID: seriesUIDs,
+            };
           }
+          return { ...acc, [val]: getSplitParam(lowerVal, query) };
         }, {}) ?? {};
 
+      let unsubs;
+
       if (route.init) {
-        return await route.init(
+        unsubs = await route.init(
           {
             servicesManager,
             extensionManager,
@@ -373,7 +261,8 @@ export default function ModeRoute({
             dataSource,
             filters,
           },
-          hangingProtocolIdToUse
+          hangingProtocolIdToUse,
+          stageIndexToUse
         );
       }
 
@@ -383,14 +272,22 @@ export default function ModeRoute({
           studyInstanceUIDs,
           dataSource,
           filters,
+          appConfig,
         },
-        hangingProtocolIdToUse
+        hangingProtocolIdToUse,
+        stageIndexToUse
       );
     };
 
     let unsubscriptions;
     setupRouteInit().then(unsubs => {
       unsubscriptions = unsubs;
+
+      mode?.onSetupRouteComplete?.({
+        servicesManager,
+        extensionManager,
+        commandsManager,
+      });
     });
 
     return () => {
@@ -406,11 +303,16 @@ export default function ModeRoute({
       } catch (e) {
         console.warn('mode exit failure', e);
       }
+      // Clean up hotkeys
+      hotkeysManager.destroy();
+
       // The unsubscriptions must occur before the extension onModeExit
       // in order to prevent exceptions during cleanup caused by spurious events
-      unsubscriptions.forEach(unsub => {
-        unsub();
-      });
+      if (unsubscriptions) {
+        unsubscriptions.forEach(unsub => {
+          unsub();
+        });
+      }
       // The extension manager must be called after the mode, this is
       // expected to cleanup the state to a standard setup.
       extensionManager.onModeExit();
@@ -428,7 +330,21 @@ export default function ModeRoute({
     refresh,
   ]);
 
-  const renderLayoutData = props => {
+  if (!studyInstanceUIDs || !layoutTemplateData.current || !ExtensionDependenciesLoaded) {
+    return null;
+  }
+
+  const ViewportGridWithDataSource = props => {
+    return ViewportGrid({ ...props, dataSource });
+  };
+
+  const CombinedExtensionsContextProvider = createCombinedContextProvider(
+    extensionManager,
+    servicesManager,
+    commandsManager
+  );
+
+  const getLayoutComponent = props => {
     const layoutTemplateModuleEntry = extensionManager.getModuleEntry(
       layoutTemplateData.current.id
     );
@@ -437,25 +353,49 @@ export default function ModeRoute({
     return <LayoutComponent {...props} />;
   };
 
+  const LayoutComponent = getLayoutComponent({
+    ...layoutTemplateData.current.props,
+    ViewportGridComp: ViewportGridWithDataSource,
+  });
+
   return (
-    <ImageViewerProvider
-      // initialState={{ StudyInstanceUIDs: StudyInstanceUIDs }}
-      StudyInstanceUIDs={studyInstanceUIDs}
-    // reducer={reducer}
-    >
-      <CombinedContextProvider>
-        <DragAndDropProvider>
-          {layoutTemplateData.current &&
-            studyInstanceUIDs?.[0] !== undefined &&
-            ExtensionDependenciesLoaded &&
-            renderLayoutData({
-              ...layoutTemplateData.current.props,
-              ViewportGridComp: ViewportGridWithDataSource,
-            })}
-        </DragAndDropProvider>
-      </CombinedContextProvider>
+    <ImageViewerProvider StudyInstanceUIDs={studyInstanceUIDs}>
+      {CombinedExtensionsContextProvider ? (
+        <CombinedExtensionsContextProvider>
+          <DragAndDropProvider>{LayoutComponent}</DragAndDropProvider>
+        </CombinedExtensionsContextProvider>
+      ) : (
+        <DragAndDropProvider>{LayoutComponent}</DragAndDropProvider>
+      )}
     </ImageViewerProvider>
   );
+}
+
+/**
+ * Creates a combined context provider using the context modules from the extension manager.
+ * @param {object} extensionManager - The extension manager instance.
+ * @param {object} servicesManager - The services manager instance.
+ * @param {object} commandsManager - The commands manager instance.
+ * @returns {React.Component} - A React component that provides combined contexts to its children.
+ */
+function createCombinedContextProvider(extensionManager, servicesManager, commandsManager) {
+  const extensionsContextModules = extensionManager.getModulesByType(
+    extensionManager.constructor.MODULE_TYPES.CONTEXT
+  );
+
+  if (!extensionsContextModules?.length) {
+    return;
+  }
+
+  const contextModuleProviders = extensionsContextModules.flatMap(({ module }) => {
+    return module.map(aContextModule => {
+      return aContextModule.provider;
+    });
+  });
+
+  return ({ children }) => {
+    return Compose({ components: contextModuleProviders, children });
+  };
 }
 
 ModeRoute.propTypes = {
@@ -464,4 +404,5 @@ ModeRoute.propTypes = {
   extensionManager: PropTypes.object,
   servicesManager: PropTypes.object,
   hotkeysManager: PropTypes.object,
+  commandsManager: PropTypes.object,
 };

@@ -1,4 +1,3 @@
-import { hotkeys } from '@ohif/core';
 import { id } from './id';
 import toolbarButtons from './toolbarButtons';
 import initToolGroups from './initToolGroups';
@@ -8,22 +7,23 @@ const ohif = {
   sopClassHandler: '@ohif/extension-default.sopClassHandlerModule.stack',
   hangingProtocol: '@ohif/extension-default.hangingProtocolModule.default',
   leftPanel: '@ohif/extension-default.panelModule.seriesList',
-  rightPanel: '@ohif/extension-default.panelModule.measure',
 };
 
 const cornerstone = {
   viewport: '@ohif/extension-cornerstone.viewportModule.cornerstone',
+  panelTool: '@ohif/extension-cornerstone.panelModule.panelSegmentationWithTools',
+  measurements: '@ohif/extension-cornerstone.panelModule.panelMeasurement',
 };
 
 const segmentation = {
-  panel: '@ohif/extension-cornerstone-dicom-seg.panelModule.panelSegmentation',
-  panelTool:
-    '@ohif/extension-cornerstone-dicom-seg.panelModule.panelSegmentationWithTools',
-  sopClassHandler:
-    '@ohif/extension-cornerstone-dicom-seg.sopClassHandlerModule.dicom-seg',
+  sopClassHandler: '@ohif/extension-cornerstone-dicom-seg.sopClassHandlerModule.dicom-seg',
   viewport: '@ohif/extension-cornerstone-dicom-seg.viewportModule.dicom-seg',
 };
 
+const dicomRT = {
+  viewport: '@ohif/extension-cornerstone-dicom-rt.viewportModule.dicom-rt',
+  sopClassHandler: '@ohif/extension-cornerstone-dicom-rt.sopClassHandlerModule.dicom-rt',
+};
 /**
  * Just two dependencies to be able to render a viewport with panels in order
  * to make sure that the mode is working.
@@ -32,6 +32,7 @@ const extensionDependencies = {
   '@ohif/extension-default': '^3.0.0',
   '@ohif/extension-cornerstone': '^3.0.0',
   '@ohif/extension-cornerstone-dicom-seg': '^3.0.0',
+  '@ohif/extension-cornerstone-dicom-rt': '^3.0.0',
 };
 
 function modeFactory({ modeConfiguration }) {
@@ -51,8 +52,8 @@ function modeFactory({ modeConfiguration }) {
      * Runs when the Mode Route is mounted to the DOM. Usually used to initialize
      * Services and other resources.
      */
-    onModeEnter: ({ servicesManager, extensionManager, commandsManager }) => {
-      const { measurementService, toolbarService, toolGroupService } =
+    onModeEnter: ({ servicesManager, extensionManager, commandsManager }: withAppTypes) => {
+      const { measurementService, toolbarService, toolGroupService, customizationService } =
         servicesManager.services;
 
       measurementService.clearMeasurements();
@@ -60,58 +61,61 @@ function modeFactory({ modeConfiguration }) {
       // Init Default and SR ToolGroups
       initToolGroups(extensionManager, toolGroupService, commandsManager);
 
-      let unsubscribe;
-
-      const activateTool = () => {
-        toolbarService.recordInteraction({
-          groupId: 'WindowLevel',
-          itemId: 'WindowLevel',
-          interactionType: 'tool',
-          commands: [
-            {
-              commandName: 'setToolActive',
-              commandOptions: {
-                toolName: 'WindowLevel',
-              },
-              context: 'CORNERSTONE',
-            },
-          ],
-        });
-
-        // We don't need to reset the active tool whenever a viewport is getting
-        // added to the toolGroup.
-        unsubscribe();
-      };
-
-      // Since we only have one viewport for the basic cs3d mode and it has
-      // only one hanging protocol, we can just use the first viewport
-      ({ unsubscribe } = toolGroupService.subscribe(
-        toolGroupService.EVENTS.VIEWPORT_ADDED,
-        activateTool
-      ));
-
-      toolbarService.init(extensionManager);
       toolbarService.addButtons(toolbarButtons);
+
       toolbarService.createButtonSection('primary', [
-        'Zoom',
         'WindowLevel',
         'Pan',
+        'Zoom',
+        'TrackballRotate',
         'Capture',
         'Layout',
-        'MPR',
         'Crosshairs',
         'MoreTools',
       ]);
+
+      toolbarService.createButtonSection('moreToolsSection', [
+        'Reset',
+        'rotate-right',
+        'flipHorizontal',
+        'ReferenceLines',
+        'ImageOverlayViewer',
+        'StackScroll',
+        'invert',
+        'Cine',
+        'Magnify',
+        'TagBrowser',
+      ]);
+
+      toolbarService.createButtonSection('segmentationToolbox', [
+        'SegmentationUtilities',
+        'SegmentationTools',
+      ]);
+      toolbarService.createButtonSection('segmentationToolboxUtilitySection', [
+        'LabelmapSlicePropagation',
+        'InterpolateLabelmap',
+        'SegmentBidirectional',
+      ]);
+      toolbarService.createButtonSection('segmentationToolboxToolsSection', [
+        'BrushTools',
+        'MarkerLabelmap',
+        'RegionSegmentPlus',
+        'Shapes',
+      ]);
+      toolbarService.createButtonSection('brushToolsSection', ['Brush', 'Eraser', 'Threshold']);
     },
-    onModeExit: ({ servicesManager }) => {
+    onModeExit: ({ servicesManager }: withAppTypes) => {
       const {
         toolGroupService,
         syncGroupService,
-        toolbarService,
         segmentationService,
         cornerstoneViewportService,
+        uiDialogService,
+        uiModalService,
       } = servicesManager.services;
 
+      uiDialogService.hideAll();
+      uiModalService.hide();
       toolGroupService.destroy();
       syncGroupService.destroy();
       segmentationService.destroy();
@@ -124,9 +128,22 @@ function modeFactory({ modeConfiguration }) {
     },
     /**
      * A boolean return value that indicates whether the mode is valid for the
-     * modalities of the selected studies. For instance a PET/CT mode should be
+     * modalities of the selected studies. Currently we don't have stack viewport
+     * segmentations and we should exclude them
      */
-    isValidMode: ({ modalities }) => true,
+    isValidMode: ({ modalities }) => {
+      // Don't show the mode if the selected studies have only one modality
+      // that is not supported by the mode
+      const modalitiesArray = modalities.split('\\');
+      return {
+        valid:
+          modalitiesArray.length === 1
+            ? !['SM', 'ECG', 'OT', 'DOC'].includes(modalitiesArray[0])
+            : true,
+        description:
+          'The mode does not support studies that ONLY include the following modalities: SM, OT, DOC',
+      };
+    },
     /**
      * Mode Routes are used to define the mode's behavior. A list of Mode Route
      * that includes the mode's path and the layout to be used. The layout will
@@ -147,7 +164,10 @@ function modeFactory({ modeConfiguration }) {
             id: ohif.layout,
             props: {
               leftPanels: [ohif.leftPanel],
-              rightPanels: [segmentation.panelTool],
+              leftPanelResizable: true,
+              rightPanels: [cornerstone.panelTool, cornerstone.measurements],
+              rightPanelResizable: true,
+              // leftPanelClosed: true,
               viewports: [
                 {
                   namespace: cornerstone.viewport,
@@ -156,6 +176,10 @@ function modeFactory({ modeConfiguration }) {
                 {
                   namespace: segmentation.viewport,
                   displaySetsToDisplay: [segmentation.sopClassHandler],
+                },
+                {
+                  namespace: dicomRT.viewport,
+                  displaySetsToDisplay: [dicomRT.sopClassHandler],
                 },
               ],
             },
@@ -166,11 +190,11 @@ function modeFactory({ modeConfiguration }) {
     /** List of extensions that are used by the mode */
     extensions: extensionDependencies,
     /** HangingProtocol used by the mode */
-    // hangingProtocol: [''],
+    // Commented out to just use the most applicable registered hanging protocol
+    // The example is used for a grid layout to specify that as a preferred layout
+    hangingProtocol: ['@ohif/mnGrid'],
     /** SopClassHandlers used by the mode */
-    sopClassHandlers: [ohif.sopClassHandler, segmentation.sopClassHandler],
-    /** hotkeys for mode */
-    hotkeys: [...hotkeys.defaults.hotkeyBindings],
+    sopClassHandlers: [ohif.sopClassHandler, segmentation.sopClassHandler, dicomRT.sopClassHandler],
   };
 }
 

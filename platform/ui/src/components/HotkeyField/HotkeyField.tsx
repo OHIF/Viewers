@@ -15,7 +15,7 @@ import { getKeys, formatKeysForInput } from './utils';
  * @param {string} props.className input classes
  * @param {Array[]} props.modifierKeys
  */
-const HotkeyField = ({ disabled, keys, onChange, className, modifierKeys, hotkeys }) => {
+const HotkeyField = ({ disabled = false, keys, onChange, className, modifierKeys, hotkeys }) => {
   const inputValue = formatKeysForInput(keys);
 
   const onInputKeyDown = event => {
@@ -56,10 +56,6 @@ HotkeyField.propTypes = {
     startRecording: PropTypes.func.isRequired,
     record: PropTypes.func.isRequired,
   }).isRequired,
-};
-
-HotkeyField.defaultProps = {
-  disabled: false,
 };
 
 export default HotkeyField;

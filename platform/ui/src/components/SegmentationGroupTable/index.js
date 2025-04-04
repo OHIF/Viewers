@@ -1,3 +1,4 @@
 import SegmentationGroupTable from './SegmentationGroupTable';
+import SegmentationGroupTableExpanded from './SegmentationGroupTableExpanded';
 
-export default SegmentationGroupTable;
+export { SegmentationGroupTable, SegmentationGroupTableExpanded };

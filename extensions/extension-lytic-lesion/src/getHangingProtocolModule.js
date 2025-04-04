@@ -1,13 +1,216 @@
 import hpMNGrid from './hpMNGrid';
-
-const colormapAnd3d = {
+export const colormapAnd3d = {
   id: 'colormapAnd3d',
+  locked: true,
+  name: 'colormapAnd3d',
+  icon: 'layout-advanced-3d-main',
+  isPreset: true,
+  createdDate: '2023-03-15T10:29:44.894Z',
+  modifiedDate: '2023-03-15T10:29:44.894Z',
+  availableTo: {},
+  editableBy: {},
+  protocolMatchingRules: [],
+  imageLoadStrategy: 'interleaveCenter',
+  displaySetSelectors: {
+    cmDisplaySet: {
+      seriesMatchingRules: [
+        {
+          weight: 1,
+          attribute: 'isReconstructable',
+          constraint: {
+            equals: {
+              value: true,
+            },
+          },
+          required: true,
+        },
+      ],
+    },
+    mprDisplaySet: {
+      seriesMatchingRules: [
+        {
+          weight: 1,
+          attribute: 'isReconstructable',
+          constraint: {
+            equals: {
+              value: true,
+            },
+          },
+          required: true,
+        },
+        {
+          attribute: 'SeriesDescription',
+          constraint: {
+            contains: [
+              {
+                value: 'body',
+                options: {
+                  ignoreCase: true,
+                },
+              }
+            ],
+          },
+          required: false,
+        },
+      ],
+    },
+  },
+  stages: [
+    {
+      id: 'main3DStage',
+      name: 'main3D',
+      viewportStructure: {
+        layoutType: 'grid',
+        properties: {
+          rows: 2,
+          columns: 3,
+          layoutOptions: [
+            {
+              x: 0,
+              y: 0,
+              width: 1,
+              height: 1 / 2,
+            },
+            {
+              x: 0,
+              y: 1 / 2,
+              width: 1 / 3,
+              height: 1 / 2,
+            },
+            {
+              x: 1 / 3,
+              y: 1 / 2,
+              width: 1 / 3,
+              height: 1 / 2,
+            },
+            {
+              x: 2 / 3,
+              y: 1 / 2,
+              width: 1 / 3,
+              height: 1 / 2,
+            },
+          ],
+        },
+      },
+      viewports: [
+        {
+          viewportOptions: {
+            toolGroupId: 'mpr',
+            viewportType: 'volume',
+            orientation: 'sagittal',
+            initialImageOptions: {
+              preset: 'middle',
+            },
+            syncGroups: [
+              {
+                type: 'voi',
+                id: 'mpr',
+                source: true,
+                target: true,
+                options: {
+                  syncColormap: true,
+                },
+              },
+            ],
+          },
+          displaySets: [
+            {
+              id: 'mprDisplaySet',
+            },
+          ],
+        },
+        {
+          viewportOptions: {
+            viewportId: 'mipSagittal',
+            viewportType: 'volume',
+            orientation: 'sagittal',
+            toolGroupId: 'volume3d',
+
+            // Custom props can be used to set custom properties which extensions
+            // can react on.
+            customViewportProps: {
+              // We use viewportDisplay to filter the viewports which are displayed
+              // in mip and we set the scrollbar according to their rotation index
+              // in the cornerstone extension.
+              hideOverlays: true,
+            },
+          },
+          displaySets: [
+            {
+              options: {
+                blendMode: 'MIP',
+                slabThickness: 'fullVolume',
+                syncInvertState: true,
+              },
+              id: 'mprDisplaySet',
+            },
+          ],
+        },
+        {
+          viewportOptions: {
+            toolGroupId: 'mpr',
+            viewportType: 'volume',
+            orientation: 'axial',
+            initialImageOptions: {
+              preset: 'middle',
+            },
+            syncGroups: [
+              {
+                type: 'voi',
+                id: 'mpr',
+                source: true,
+                target: true,
+                options: {
+                  syncColormap: true,
+                },
+              },
+            ],
+          },
+          displaySets: [
+            {
+              id: 'mprDisplaySet',
+            },
+          ],
+        },
+        {
+          viewportOptions: {
+            toolGroupId: 'mpr',
+            viewportType: 'volume',
+            orientation: 'coronal',
+            initialImageOptions: {
+              preset: 'middle',
+            },
+            syncGroups: [
+              {
+                type: 'voi',
+                id: 'mpr',
+                source: true,
+                target: true,
+                options: {
+                  syncColormap: true,
+                },
+              },
+            ],
+          },
+          displaySets: [
+            {
+              id: 'mprDisplaySet',
+            },
+          ],
+        },
+      ],
+    },
+  ],
+};
+
+const main3D = {
+  id: 'main3d',
   locked: true,
   // Don't store this hanging protocol as it applies to the currently active
   // display set by default
   // cacheId: null,
   hasUpdatedPriorsInformation: false,
-  name: 'colormapAnd3d',
+  name: 'main3d',
   createdDate: '2021-02-23T19:22:08.894Z',
   modifiedDate: '2023-04-01',
   availableTo: {},
@@ -23,13 +226,23 @@ const colormapAnd3d = {
   // Default viewport is used to define the viewport when
   // additional viewports are added using the layout tool
   displaySetSelectors: {
-    activeDisplaySet: {
+    mainDisplaySet: {
       seriesMatchingRules: [
         {
+          weight: 1,
           attribute: 'isReconstructable',
           constraint: {
             equals: {
               value: true,
+            },
+          },
+          required: true,
+        },
+        {
+          attribute: 'Modality',
+          constraint: {
+            equals: {
+              value: 'CT',
             },
           },
           required: true,
@@ -78,6 +291,35 @@ const colormapAnd3d = {
           viewportOptions: {
             toolGroupId: 'mpr',
             viewportType: 'volume',
+            orientation: 'sagittal',
+            initialImageOptions: {
+              preset: 'first',
+            },
+            syncGroups: [
+              {
+                type: 'voi',
+                id: 'mpr',
+                source: true,
+                target: true,
+              },
+              {
+                type: 'cameraPosition',
+                id: 'sagittalSync',
+                source: true,
+                target: true,
+              },
+            ],
+          },
+          displaySets: [
+            {
+              id: 'mainDisplaySet',
+            },
+          ],
+        },
+        {
+          viewportOptions: {
+            toolGroupId: 'mpr',
+            viewportType: 'volume',
             orientation: 'axial',
             initialImageOptions: {
               preset: 'first',
@@ -105,7 +347,7 @@ const colormapAnd3d = {
           },
           displaySets: [
             {
-              id: 'activeDisplaySet',
+              id: 'mainDisplaySet',
             },
           ],
         },
@@ -134,39 +376,7 @@ const colormapAnd3d = {
           },
           displaySets: [
             {
-              id: 'activeDisplaySet',
-            },
-          ],
-        },
-        {
-          viewportOptions: {
-            toolGroupId: 'mpr',
-            viewportType: 'volume',
-            orientation: 'sagittal',
-            initialImageOptions: {
-              preset: 'first',
-            },
-            syncGroups: [
-              {
-                type: 'voi',
-                id: 'mpr',
-                source: true,
-                target: true,
-              },
-              {
-                type: 'cameraPosition',
-                id: 'sagittalSync',
-                source: true,
-                target: true,
-              },
-            ],
-          },
-          displaySets: [
-            {
-              id: 'activeDisplaySet',
-            },
-            {
-              id: 'backgroundDisplaySet',
+              id: 'mainDisplaySet',
             },
           ],
         },
@@ -193,7 +403,7 @@ const colormapAnd3d = {
                 slabThickness: 'fullVolume',
                 syncInvertState: true,
               },
-              id: 'activeDisplaySet',
+              id: 'mainDisplaySet',
             },
           ],
         },
@@ -234,6 +444,41 @@ const mprAnd3DVolumeViewport = {
           required: true,
         },
       ],
+    },
+    mprDisplaySet: {
+      seriesMatchingRules: [
+        {
+          weight: 1,
+          attribute: 'isReconstructable',
+          constraint: {
+            equals: {
+              value: true,
+            },
+          },
+          required: true,
+        },
+        {
+          attribute: 'Modality',
+          constraint: {
+            equals: {
+              value: 'CT',
+            },
+          },
+          required: true,
+        },
+        {
+          // Rule to match "sag*" in Series Description
+          attribute: 'SeriesDescription',
+          constraint: {
+            contains: {
+              value: 'sag',
+              options: {
+                ignoreCase: true, // Making it case-insensitive
+              },
+            },
+          },
+          required: false, // Set to false to allow for either condition to be true
+        }]
     },
   },
   stages: [
@@ -379,20 +624,31 @@ const defaultProtocol = {
         // Try to match series with images by default, to prevent weird display
         // on SEG/SR containing studies
         {
-          attribute: 'numImageFrames',
+          attribute: 'SeriesDescription',
           constraint: {
-            greaterThan: { value: 0 },
+            contains: [
+              {
+                value: 'Sagittal body', // Matches "sagittal body"
+                options: {
+                  ignoreCase: true,
+                },
+              }
+            ],
           },
+          required: false,
         },
-        // This display set will select the specified items by preference
-        // It has no affect if nothing is specified in the URL.
         {
-          attribute: 'isDisplaySetFromUrl',
-          weight: 10,
+          attribute: 'SeriesDescription',
           constraint: {
-            equals: true,
+            contains: {
+              value: 'SAGITTAL ABD', // Broad match for anything starting with "sag"
+              options: {
+                ignoreCase: true,
+              },
+            },
           },
-        },
+          required: false,
+        }
       ],
       // Can be used to select matching studies
       // studyMatchingRules: [],
@@ -441,6 +697,10 @@ function getHangingProtocolModule() {
     {
       name: defaultProtocol.id,
       protocol: defaultProtocol,
+    },
+    {
+      name: main3D.id,
+      protocol: main3D,
     },
     {
       name: colormapAnd3d.id,
