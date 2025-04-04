@@ -1,14 +1,16 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
-
-import Icon from '../Icon';
+import { Icons } from '@ohif/ui-next';
 
 const DELAY_TO_SHOW = 1000;
 const DELAY_TO_HIDE = 10; // it needs at least a little delay to prevent tooltip to suddenly hide
 const DELAY_TO_HIDE_AFTER_COPYING = 1000;
 
-const TooltipClipboard = ({ children, text }) => {
+const TooltipClipboard = ({ children, text = '' }) => {
+  const { t } = useTranslation('TooltipClipboard');
+
   const [isActive, setIsActive] = useState(false);
   const [message, setMessage] = useState(null);
   const [isCopying, setIsCopying] = useState(false);
@@ -21,10 +23,10 @@ const TooltipClipboard = ({ children, text }) => {
     setIsCopying(true);
     try {
       await navigator.clipboard.writeText(text);
-      setMessage('Copied!');
+      setMessage(t('Copied'));
     } catch (err) {
       console.error('Failed to copy: ', err);
-      setMessage('Failed to copy!');
+      setMessage(t('Failed to copy'));
     } finally {
       refreshElementPosition();
 
@@ -142,7 +144,7 @@ const TooltipClipboard = ({ children, text }) => {
             <>
               {children}
               <div className="border-secondary-light ml-2 border-l pl-2">
-                <Icon
+                <Icons.ByName
                   name="clipboard"
                   className="w-4 text-white"
                 />
@@ -153,10 +155,6 @@ const TooltipClipboard = ({ children, text }) => {
       </div>
     </div>
   );
-};
-
-TooltipClipboard.defaultProps = {
-  text: '',
 };
 
 TooltipClipboard.propTypes = {

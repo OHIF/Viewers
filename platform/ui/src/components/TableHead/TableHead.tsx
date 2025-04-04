@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 
-const TableHead = ({ children, className, style }) => {
+const TableHead = ({ children, className = '', style = {} }) => {
   return (
     <div
       className={classnames(
@@ -18,11 +18,6 @@ const TableHead = ({ children, className, style }) => {
         : children}
     </div>
   );
-};
-
-TableHead.defaultProps = {
-  className: '',
-  style: {},
 };
 
 TableHead.propTypes = {

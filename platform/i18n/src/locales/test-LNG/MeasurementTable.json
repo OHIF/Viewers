@@ -6,7 +6,9 @@
   "Delete": "Delete",
   "Description": "Description",
   "MAX": "MAX",
+  "No, do not ask again": "Test No, do not ask again",
   "NonTargets": "NonTargets",
   "Relabel": "Relabel",
-  "Targets": "Targets"
+  "Targets": "Targets",
+  "Track measurements for this series?": "Test Track measurements for this series?"
 }

@@ -1,9 +1,7 @@
 import objectHash from 'object-hash';
-import log from '../log.js';
-import { hotkeys } from '../utils';
-import isequal from 'lodash.isequal';
+import { hotkeys as mouseTrapAPI } from '../utils';
 import Hotkey from './Hotkey';
-import ServicesManager from '../services/ServicesManager';
+import migrateOldHotkeyDefinitions from '../utils/hotkeys/migrateHotkeys';
 
 /**
  *
@@ -14,23 +12,24 @@ import ServicesManager from '../services/ServicesManager';
  * @property {String} label - Display name for hotkey
  * @property {String[]} keys - Keys to bind; Follows Mousetrap.js binding syntax
  */
-
 export class HotkeysManager {
-  private _servicesManager: ServicesManager;
+  private _servicesManager: AppTypes.ServicesManager;
+  private _commandsManager: AppTypes.CommandsManager;
+  private isEnabled: boolean = true;
+  public hotkeyDefinitions: Record<string, any> = {};
+  public hotkeyDefaults: any[] = [];
 
-  constructor(commandsManager, servicesManager) {
-    this.hotkeyDefinitions = {};
-    this.hotkeyDefaults = [];
-    this.isEnabled = true;
-
-    if (!commandsManager) {
-      throw new Error(
-        'HotkeysManager instantiated without a commandsManager. Hotkeys will be unable to find and run commands.'
-      );
-    }
-
+  constructor(
+    commandsManager: AppTypes.CommandsManager,
+    servicesManager: AppTypes.ServicesManager
+  ) {
     this._servicesManager = servicesManager;
     this._commandsManager = commandsManager;
+
+    // Check for old hotkey definitions format and migrate if needed
+    migrateOldHotkeyDefinitions({
+      generateHash: this.generateHash,
+    });
   }
 
   /**
@@ -39,7 +38,12 @@ export class HotkeysManager {
    * @param {*} event
    */
   record(event) {
-    return hotkeys.record(event);
+    return mouseTrapAPI.record(event);
+  }
+
+  cancel() {
+    mouseTrapAPI.stopRecord();
+    mouseTrapAPI.unpause();
   }
 
   /**
@@ -48,7 +52,7 @@ export class HotkeysManager {
    */
   disable() {
     this.isEnabled = false;
-    hotkeys.pause();
+    mouseTrapAPI.pause();
   }
 
   /**
@@ -56,22 +60,35 @@ export class HotkeysManager {
    */
   enable() {
     this.isEnabled = true;
-    hotkeys.unpause();
+    mouseTrapAPI.unpause();
   }
 
   /**
-   * Registers a list of hotkeydefinitions.
+   * Uses most recent
+   *
+   * @returns {undefined}
+   */
+  restoreDefaultBindings() {
+    this.setHotkeys(this.hotkeyDefaults);
+  }
+
+  /**
+   *
+   */
+  destroy() {
+    this.hotkeyDefaults = [];
+    this.hotkeyDefinitions = {};
+    mouseTrapAPI.reset();
+  }
+
+  /**
+   * Registers a list of hotkey definitions.
    *
    * @param {HotkeyDefinition[] | Object} [hotkeyDefinitions=[]] Contains hotkeys definitions
    */
-  setHotkeys(hotkeyDefinitions = [], name = 'hotkey-definitions') {
+  setHotkeys(hotkeyDefinitions = []) {
     try {
       const definitions = this.getValidDefinitions(hotkeyDefinitions);
-      if (isequal(definitions, this.hotkeyDefaults)) {
-        localStorage.removeItem(name);
-      } else {
-        localStorage.setItem(name, JSON.stringify(definitions));
-      }
       definitions.forEach(definition => this.registerHotkeys(definition));
     } catch (error) {
       const { uiNotificationService } = this._servicesManager.services;
@@ -83,6 +100,13 @@ export class HotkeysManager {
     }
   }
 
+  generateHash(definition) {
+    return objectHash({
+      commandName: definition.commandName,
+      commandOptions: definition.commandOptions || {},
+    });
+  }
+
   /**
    * Set default hotkey bindings. These
    * values are used in `this.restoreDefaultBindings`.
@@ -92,6 +116,25 @@ export class HotkeysManager {
   setDefaultHotKeys(hotkeyDefinitions = []) {
     const definitions = this.getValidDefinitions(hotkeyDefinitions);
     this.hotkeyDefaults = definitions;
+
+    // Get user preferred keys from localStorage
+    const userPreferredKeys = JSON.parse(localStorage.getItem('user-preferred-keys') || '{}');
+
+    // Update definitions with user preferred keys before setting
+    const updatedDefinitions = definitions.map(definition => {
+      const commandHash = this.generateHash(definition);
+      // If user has a preferred key binding, use it
+      if (userPreferredKeys[commandHash]) {
+        return {
+          ...definition,
+          keys: userPreferredKeys[commandHash],
+        };
+      }
+
+      return definition;
+    });
+
+    this.setHotkeys(updatedDefinitions);
   }
 
   /**
@@ -104,6 +147,13 @@ export class HotkeysManager {
     const definitions = Array.isArray(hotkeyDefinitions)
       ? [...hotkeyDefinitions]
       : this._parseToArrayLike(hotkeyDefinitions);
+
+    // make sure isEditable is true for all definitions if not provided
+    definitions.forEach(definition => {
+      if (definition.isEditable === undefined) {
+        definition.isEditable = true;
+      }
+    });
 
     return definitions;
   }
@@ -144,18 +194,6 @@ export class HotkeysManager {
    * Return HotkeyDefinition object like based on given property name and property value
    * @param {string} propertyName property name of hotkey definition object
    * @param {object} propertyValue property value of hotkey definition object
-   *
-   * @example
-   *
-   * const hotKeyObj = {hotKeyDefA: {keys:[],....}}
-   *
-   * const parsed = _parseToHotKeyObj(Object.keys(hotKeyDefA)[0], hotKeyObj[hotKeyDefA]);
-   *  {
-   *   commandName: hotKeyDefA,
-   *   keys: [],
-   *   ....
-   *  }
-   *
    */
   _parseToHotKeyObj(propertyName, propertyValue) {
     return {
@@ -165,65 +203,44 @@ export class HotkeysManager {
   }
 
   /**
-   * (unbinds and) binds the specified command to one or more key combinations.
-   * When a hotkey combination is triggered, the command name and active contexts
-   * are used to locate the correct command to call.
+   * (Unbinds and) binds the specified command to one or more key combinations.
+   * When the hotkey combination is triggered, the command name and active contexts
+   * are used to locate and execute the appropriate command.
    *
-   * @param {HotkeyDefinition} command
-   * @param {String} extension
-   * @returns {undefined}
+   * @param hotkey - The hotkey definition object.
+   * @throws {Error} Throws an error if no commandName is provided.
    */
-  registerHotkeys(
-    { commandName, commandOptions = {}, context, keys, label, isEditable }: Hotkey = {},
-    extension
-  ) {
+  registerHotkeys({
+    commandName,
+    commandOptions = {},
+    context,
+    keys,
+    label,
+    isEditable,
+  }: Hotkey): void {
     if (!commandName) {
       throw new Error(`No command was defined for hotkey "${keys}"`);
     }
 
-    const commandHash = objectHash({ commandName, commandOptions });
-    const options = Object.keys(commandOptions).length ? JSON.stringify(commandOptions) : 'no';
-    const previouslyRegisteredDefinition = this.hotkeyDefinitions[commandHash];
+    const commandHash = this.generateHash({ commandName, commandOptions });
+    const existingHotkey = this.hotkeyDefinitions[commandHash];
 
-    if (previouslyRegisteredDefinition) {
-      const previouslyRegisteredKeys = previouslyRegisteredDefinition.keys;
-      this._unbindHotkeys(commandName, previouslyRegisteredKeys);
-      // log.info(
-      //   `[hotkeys] Unbinding ${commandName} with ${options} options from ${previouslyRegisteredKeys}`
-      // );
+    // If the hotkey has already been registered with the same keys, skip re-registration.
+    if (existingHotkey && existingHotkey.keys === keys) {
+      console.debug('HotkeysManager: Identical hotkey registration skipped.');
+      return;
     }
 
-    // Set definition & bind
-    this.hotkeyDefinitions[commandHash] = {
-      commandName,
-      commandOptions,
-      keys,
-      label,
-      isEditable,
-    };
+    const userPreferredKeys = JSON.parse(localStorage.getItem('user-preferred-keys') || '{}');
+
+    if (existingHotkey) {
+      userPreferredKeys[commandHash] = keys;
+      localStorage.setItem('user-preferred-keys', JSON.stringify(userPreferredKeys));
+      this._unbindHotkeys(commandName, existingHotkey.keys);
+    }
+
+    this.hotkeyDefinitions[commandHash] = { commandName, commandOptions, keys, label, isEditable };
     this._bindHotkeys(commandName, commandOptions, context, keys);
-    // log.info(
-    //   `[hotkeys] Binding ${commandName} with ${options} from ${context ||
-    //   'default'} options to ${keys}`
-    // );
-  }
-
-  /**
-   * Uses most recent
-   *
-   * @returns {undefined}
-   */
-  restoreDefaultBindings() {
-    this.setHotkeys(this.hotkeyDefaults);
-  }
-
-  /**
-   *
-   */
-  destroy() {
-    this.hotkeyDefaults = [];
-    this.hotkeyDefinitions = {};
-    hotkeys.reset();
   }
 
   /**
@@ -243,7 +260,7 @@ export class HotkeysManager {
     const isKeyArray = keys instanceof Array;
     const combinedKeys = isKeyArray ? keys.join('+') : keys;
 
-    hotkeys.bind(combinedKeys, evt => {
+    mouseTrapAPI.bind(combinedKeys, evt => {
       evt.preventDefault();
       evt.stopPropagation();
       this._commandsManager.runCommand(commandName, { evt, ...commandOptions }, context);
@@ -271,15 +288,8 @@ export class HotkeysManager {
       return;
     }
 
-    hotkeys.unbind(keys);
+    mouseTrapAPI.unbind(keys);
   }
 }
 
 export default HotkeysManager;
-
-// Commands Contexts:
-
-// --> Name and Priority
-// GLOBAL: 0
-// VIEWER::CORNERSTONE: 1
-// VIEWER::VTK: 1

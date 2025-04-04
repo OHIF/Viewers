@@ -70,8 +70,6 @@ export function findMenu(menus: Menu[], props?: Types.IProps, menuIdFilter?: str
     current = findIt.next();
   }
 
-  console.log('Menu chosen', menu?.id || 'NONE');
-
   return menu;
 }
 
@@ -156,7 +154,7 @@ export function adaptItem(item: MenuItem, subProps: ContextMenuProps): ContextMe
   };
 
   if (item.actionType === 'ShowSubMenu' && !newItem.iconRight) {
-    newItem.iconRight = 'chevron-menu';
+    newItem.iconRight = 'chevron-down';
   }
   if (!item.action) {
     newItem.action = (itemRef, componentProps) => {

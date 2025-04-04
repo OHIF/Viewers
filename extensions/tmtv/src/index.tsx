@@ -3,6 +3,7 @@ import getHangingProtocolModule from './getHangingProtocolModule';
 import getPanelModule from './getPanelModule';
 import init from './init';
 import commandsModule from './commandsModule';
+import getToolbarModule from './getToolbarModule';
 
 /**
  *
@@ -15,6 +16,7 @@ const tmtvExtension = {
   preRegistration({ servicesManager, commandsManager, extensionManager, configuration = {} }) {
     init({ servicesManager, commandsManager, extensionManager, configuration });
   },
+  getToolbarModule,
   getPanelModule,
   getHangingProtocolModule,
   getCommandsModule({ servicesManager, commandsManager, extensionManager }) {

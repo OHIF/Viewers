@@ -1,8 +1,26 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
+import './OHIFCornerstonePdfViewport.css';
 
 function OHIFCornerstonePdfViewport({ displaySets }) {
   const [url, setUrl] = useState(null);
+
+  useEffect(() => {
+    document.body.addEventListener('drag', makePdfDropTarget);
+    return function cleanup() {
+      document.body.removeEventListener('drag', makePdfDropTarget);
+    };
+  }, []);
+
+  const [style, setStyle] = useState('pdf-yes-click');
+
+  const makePdfScrollable = () => {
+    setStyle('pdf-yes-click');
+  };
+
+  const makePdfDropTarget = () => {
+    setStyle('pdf-no-click');
+  };
 
   if (displaySets && displaySets.length > 1) {
     throw new Error(
@@ -21,11 +39,14 @@ function OHIFCornerstonePdfViewport({ displaySets }) {
   }, [pdfUrl]);
 
   return (
-    <div className="bg-primary-black h-full w-full text-white">
+    <div
+      className="bg-primary-black h-full w-full text-white"
+      onClick={makePdfScrollable}
+    >
       <object
         data={url}
         type="application/pdf"
-        className="h-full w-full"
+        className={style}
       >
         <div>No online PDF viewer installed</div>
       </object>

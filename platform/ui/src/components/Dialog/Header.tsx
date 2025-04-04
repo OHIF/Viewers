@@ -3,14 +3,13 @@ import classNames from 'classnames';
 import PropTypes from 'prop-types';
 
 import Typography from '../Typography';
-import Icon from '../Icon';
+import { Icons } from '@ohif/ui-next';
 
 const CloseButton = ({ onClick }) => {
   return (
-    <Icon
+    <Icons.Close
       data-cy="close-button"
       onClick={onClick}
-      name="close"
       className="text-primary-active cursor-pointer"
     />
   );
@@ -20,7 +19,7 @@ CloseButton.propTypes = {
   onClick: PropTypes.func,
 };
 
-const Header = ({ title, noCloseButton, onClose }) => {
+const Header = ({ title, noCloseButton = false, onClose }) => {
   const theme = 'bg-primary-dark';
   const flex = 'flex items-center justify-between';
   const padding = 'pb-[20px]';
@@ -44,10 +43,6 @@ Header.propTypes = {
   title: PropTypes.string,
   noCloseButton: PropTypes.bool,
   onClose: PropTypes.func,
-};
-
-Header.defaultProps = {
-  noCloseButton: false,
 };
 
 export default Header;

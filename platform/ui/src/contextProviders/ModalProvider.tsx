@@ -21,7 +21,7 @@ export const useModal = () => useContext(ModalContext);
  * @property {string} [customClassName=null] The custom class to style the modal.
  */
 
-const ModalProvider = ({ children, modal: Modal, service }) => {
+const ModalProvider = ({ children, modal: Modal, service = null }) => {
   const DEFAULT_OPTIONS = {
     content: null,
     contentProps: null,
@@ -31,10 +31,15 @@ const ModalProvider = ({ children, modal: Modal, service }) => {
     closeButton: true,
     title: null,
     customClassName: '',
+    isDraggable: false,
+    containerDimensions: null,
+    contentDimensions: null,
   };
   const { t } = useTranslation('Modals');
 
   const [options, setOptions] = useState(DEFAULT_OPTIONS);
+
+  const CustomModal = service.getCustomComponent();
 
   /**
    * Show the modal and override its configuration props.
@@ -73,12 +78,17 @@ const ModalProvider = ({ children, modal: Modal, service }) => {
     shouldCloseOnEsc,
     closeButton,
     shouldCloseOnOverlayClick,
+    isDraggable,
+    containerDimensions,
+    contentDimensions,
   } = options;
+
+  const ModalComp = CustomModal ? CustomModal : Modal;
 
   return (
     <Provider value={{ show, hide }}>
       {ModalContent && (
-        <Modal
+        <ModalComp
           className={classNames(customClassName, ModalContent.className)}
           shouldCloseOnEsc={shouldCloseOnEsc}
           isOpen={isOpen}
@@ -86,13 +96,16 @@ const ModalProvider = ({ children, modal: Modal, service }) => {
           closeButton={closeButton}
           onClose={hide}
           shouldCloseOnOverlayClick={shouldCloseOnOverlayClick}
+          isDraggable={isDraggable}
+          containerDimensions={containerDimensions}
+          contentDimensions={contentDimensions}
         >
           <ModalContent
             {...contentProps}
             show={show}
             hide={hide}
           />
-        </Modal>
+        </ModalComp>
       )}
       {children}
     </Provider>
@@ -114,10 +127,6 @@ export const withModal = Component => {
       />
     );
   };
-};
-
-ModalProvider.defaultProps = {
-  service: null,
 };
 
 ModalProvider.propTypes = {

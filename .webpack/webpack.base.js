@@ -7,17 +7,20 @@ const fs = require('fs');
 const webpack = require('webpack');
 
 // ~~ PLUGINS
-const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+// const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 const TerserJSPlugin = require('terser-webpack-plugin');
 
 // ~~ PackageJSON
 // const vtkRules = require('vtk.js/Utilities/config/dependency.js').webpack.core
 //   .rules;
 // ~~ RULES
-const loadShadersRule = require('./rules/loadShaders.js');
+// const loadShadersRule = require('./rules/loadShaders.js');
 const loadWebWorkersRule = require('./rules/loadWebWorkers.js');
 const transpileJavaScriptRule = require('./rules/transpileJavaScript.js');
 const cssToJavaScript = require('./rules/cssToJavaScript.js');
+// Only uncomment for old v2 stylus
+// const stylusToJavaScript = require('./rules/stylusToJavaScript.js');
+const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
 
 // ~~ ENV VARS
 const NODE_ENV = process.env.NODE_ENV;
@@ -32,11 +35,28 @@ const COMMIT_HASH = fs.readFileSync(path.join(__dirname, '../commit.txt'), 'utf8
 //
 dotenv.config();
 
-module.exports = (env, argv, { SRC_DIR, ENTRY }) => {
-  if (!process.env.NODE_ENV) {
-    throw new Error('process.env.NODE_ENV not set');
-  }
+const defineValues = {
+  /* Application */
+  'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
+  'process.env.NODE_DEBUG': JSON.stringify(process.env.NODE_DEBUG),
+  'process.env.DEBUG': JSON.stringify(process.env.DEBUG),
+  'process.env.PUBLIC_URL': JSON.stringify(process.env.PUBLIC_URL || '/'),
+  'process.env.BUILD_NUM': JSON.stringify(BUILD_NUM),
+  'process.env.VERSION_NUMBER': JSON.stringify(VERSION_NUMBER),
+  'process.env.COMMIT_HASH': JSON.stringify(COMMIT_HASH),
+  /* i18n */
+  'process.env.USE_LOCIZE': JSON.stringify(process.env.USE_LOCIZE || ''),
+  'process.env.LOCIZE_PROJECTID': JSON.stringify(process.env.LOCIZE_PROJECTID || ''),
+  'process.env.LOCIZE_API_KEY': JSON.stringify(process.env.LOCIZE_API_KEY || ''),
+  'process.env.REACT_APP_I18N_DEBUG': JSON.stringify(process.env.REACT_APP_I18N_DEBUG || ''),
+};
 
+// Only redefine updated values.  This avoids warning messages in the logs
+if (!process.env.APP_CONFIG) {
+  defineValues['process.env.APP_CONFIG'] = '';
+}
+
+module.exports = (env, argv, { SRC_DIR, ENTRY }) => {
   const mode = NODE_ENV === 'production' ? 'production' : 'development';
   const isProdBuild = NODE_ENV === 'production';
   const isQuickBuild = QUICK_BUILD === 'true';
@@ -74,12 +94,51 @@ module.exports = (env, argv, { SRC_DIR, ENTRY }) => {
       type: 'filesystem',
     },
     module: {
-      noParse: [/(codec)/, /(dicomicc)/],
+      noParse: [/(dicomicc)/],
       rules: [
+        ...(isProdBuild
+          ? []
+          : [
+              {
+                test: /\.[jt]sx?$/,
+                exclude: /node_modules/,
+                loader: 'babel-loader',
+                options: {
+                  plugins: isProdBuild ? [] : ['react-refresh/babel'],
+                },
+              },
+            ]),
         {
-          test: /\.js$/,
-          enforce: 'pre',
-          use: 'source-map-loader',
+          test: /\.svg?$/,
+          oneOf: [
+            {
+              use: [
+                {
+                  loader: '@svgr/webpack',
+                  options: {
+                    svgoConfig: {
+                      plugins: [
+                        {
+                          name: 'preset-default',
+                          params: {
+                            overrides: {
+                              removeViewBox: false,
+                            },
+                          },
+                        },
+                      ],
+                    },
+                    prettier: false,
+                    svgo: true,
+                    titleProp: true,
+                  },
+                },
+              ],
+              issuer: {
+                and: [/\.(ts|tsx|js|jsx|md|mdx)$/],
+              },
+            },
+          ],
         },
         transpileJavaScriptRule(mode),
         loadWebWorkersRule,
@@ -91,8 +150,26 @@ module.exports = (env, argv, { SRC_DIR, ENTRY }) => {
           },
         },
         cssToJavaScript,
+        // Note: Only uncomment the following if you are using the old style of stylus in v2
+        // Also you need to uncomment this platform/app/.webpack/rules/extractStyleChunks.js
+        // stylusToJavaScript,
         {
           test: /\.wasm/,
+          type: 'asset/resource',
+        },
+        {
+          test: /\.(png|jpe?g|gif|svg)$/i,
+          use: [
+            {
+              loader: 'file-loader',
+              options: {
+                name: 'assets/images/[name].[ext]',
+              },
+            },
+          ],
+        },
+        {
+          test: /\.(woff|woff2|eot|ttf|otf)$/i,
           type: 'asset/resource',
         },
       ], //.concat(vtkRules),
@@ -108,8 +185,6 @@ module.exports = (env, argv, { SRC_DIR, ENTRY }) => {
         '@state': path.resolve(__dirname, '../platform/app/src/state'),
         'dicom-microscopy-viewer':
           'dicom-microscopy-viewer/dist/dynamic-import/dicomMicroscopyViewer.min.js',
-        '@cornerstonejs/dicom-image-loader':
-          '@cornerstonejs/dicom-image-loader/dist/dynamic-import/cornerstoneDICOMImageLoader.min.js',
       },
       // Which directories to search when resolving modules
       modules: [
@@ -134,24 +209,11 @@ module.exports = (env, argv, { SRC_DIR, ENTRY }) => {
       },
     },
     plugins: [
-      new webpack.DefinePlugin({
-        /* Application */
-        'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
-        'process.env.DEBUG': JSON.stringify(process.env.DEBUG),
-        'process.env.APP_CONFIG': JSON.stringify(process.env.APP_CONFIG || ''),
-        'process.env.PUBLIC_URL': JSON.stringify(process.env.PUBLIC_URL || '/'),
-        'process.env.BUILD_NUM': JSON.stringify(BUILD_NUM),
-        'process.env.VERSION_NUMBER': JSON.stringify(VERSION_NUMBER),
-        'process.env.COMMIT_HASH': JSON.stringify(COMMIT_HASH),
-        /* i18n */
-        'process.env.USE_LOCIZE': JSON.stringify(process.env.USE_LOCIZE || ''),
-        'process.env.LOCIZE_PROJECTID': JSON.stringify(process.env.LOCIZE_PROJECTID || ''),
-        'process.env.LOCIZE_API_KEY': JSON.stringify(process.env.LOCIZE_API_KEY || ''),
-        'process.env.REACT_APP_I18N_DEBUG': JSON.stringify(process.env.REACT_APP_I18N_DEBUG || ''),
-      }),
+      new webpack.DefinePlugin(defineValues),
       new webpack.ProvidePlugin({
         Buffer: ['buffer', 'Buffer'],
       }),
+      ...(isProdBuild ? [] : [new ReactRefreshWebpackPlugin({ overlay: false })]),
       // Uncomment to generate bundle analyzer
       // new BundleAnalyzerPlugin(),
     ],

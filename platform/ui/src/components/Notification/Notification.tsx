@@ -1,11 +1,36 @@
 import React, { useEffect, useRef } from 'react';
 import classnames from 'classnames';
-import PropTypes from 'prop-types';
 
 import Button, { ButtonEnums } from '../Button';
-import Icon from '../Icon';
+import { Icons } from '@ohif/ui-next';
 
-const Notification = ({ id, type, message, actions, onSubmit, onOutsideClick }) => {
+type NotificationAction = {
+  id: string;
+  text: string;
+  value: any;
+  type: ButtonEnums.type.primary | ButtonEnums.type.secondary;
+  size?: ButtonEnums.size.small | ButtonEnums.size.medium;
+};
+
+export type NotificationProps = {
+  id: string;
+  type: 'error' | 'warning' | 'info' | 'success';
+  message: string | React.ReactNode;
+  actions: NotificationAction[];
+  onSubmit: (e: any) => void;
+  onOutsideClick?: () => void;
+  onKeyPress?: (e: React.KeyboardEvent) => void;
+};
+
+const Notification: React.FC<NotificationProps> = ({
+  id,
+  type = 'info',
+  message,
+  actions,
+  onSubmit,
+  onOutsideClick = () => {},
+  onKeyPress,
+}) => {
   const notificationRef = useRef(null);
 
   useEffect(() => {
@@ -18,12 +43,20 @@ const Notification = ({ id, type, message, actions, onSubmit, onOutsideClick }) 
       }
     };
 
+    // Both a mouse down and up listeners are desired so as to avoid missing events
+    // from elements that have pointer-events:none (e.g. the active viewport).
     document.addEventListener('mousedown', handleClick);
+    document.addEventListener('mouseup', handleClick);
 
     return () => {
       document.removeEventListener('mousedown', handleClick);
+      document.removeEventListener('mouseup', handleClick);
     };
   }, [onOutsideClick]);
+
+  useEffect(() => {
+    notificationRef.current.focus();
+  }, []);
 
   const iconsByType = {
     error: {
@@ -58,11 +91,13 @@ const Notification = ({ id, type, message, actions, onSubmit, onOutsideClick }) 
   return (
     <div
       ref={notificationRef}
-      className="border-customblue-10 bg-customblue-400 mx-2 mt-2 flex flex-col rounded-md border-2 p-2"
+      className="border-customblue-10 bg-customblue-400 mx-2 mt-2 flex flex-col rounded-md border-2 p-2 outline-none"
       data-cy={id}
+      onKeyDown={onKeyPress}
+      tabIndex={0}
     >
       <div className="flex grow items-center">
-        <Icon
+        <Icons.ByName
           name={icon}
           className={classnames('h-6 w-6', color)}
         />
@@ -87,27 +122,6 @@ const Notification = ({ id, type, message, actions, onSubmit, onOutsideClick }) 
       </div>
     </div>
   );
-};
-
-Notification.defaultProps = {
-  type: 'info',
-  onOutsideClick: () => {},
-};
-
-Notification.propTypes = {
-  type: PropTypes.oneOf(['error', 'warning', 'info', 'success']),
-  message: PropTypes.string.isRequired,
-  actions: PropTypes.arrayOf(
-    PropTypes.shape({
-      text: PropTypes.string.isRequired,
-      value: PropTypes.any.isRequired,
-      type: PropTypes.oneOf([ButtonEnums.type.primary, ButtonEnums.type.secondary]).isRequired,
-      size: PropTypes.oneOf([ButtonEnums.size.small, ButtonEnums.size.medium]),
-    })
-  ).isRequired,
-  onSubmit: PropTypes.func.isRequired,
-  /** Can be used as a callback to dismiss the notification for clicks that occur outside of it */
-  onOutsideClick: PropTypes.func,
 };
 
 export default Notification;

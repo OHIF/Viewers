@@ -43,7 +43,6 @@ module.exports = (env, argv) => {
     externals: [
       /\b(vtk.js)/,
       /\b(dcmjs)/,
-      /\b(dicom-microscopy-viewer)/,
       /\b(gl-matrix)/,
       /^@ohif/,
       /^@cornerstonejs/,

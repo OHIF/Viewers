@@ -28,7 +28,7 @@ The simplest way is to update the existing default config:
 
 ```js title="platform/app/public/config/default.js"
 window.config = {
-  routerBasename: '/',
+  routerBasename: null,
   extensions: [],
   modes: [],
   showStudyList: true,
@@ -81,7 +81,7 @@ window.config = ({ servicesManager } = {}) => {
         }
       },
     },
-    routerBasename: '/',
+    routerBasename: null,
     dataSources: [
     {
       namespace: '@ohif/extension-default.dataSourcesModule.dicomweb',
@@ -108,7 +108,12 @@ window.config = ({ servicesManager } = {}) => {
 };
 ```
 
+
+
+
+
 ## Configuration Options
+
 
 Here are a list of some options available:
 - `disableEditing`:  If true, it disables editing in OHIF, hiding edit buttons in segmentation
@@ -117,7 +122,12 @@ Here are a list of some options available:
   decoding. Defaults to minimum of `navigator.hardwareConcurrency` and
   what is specified by `maxNumberOfWebWorkers`. Some windows machines require smaller values.
 - `acceptHeader` : accept header to request specific dicom transfer syntax ex : [ 'multipart/related; type=image/jls; q=1', 'multipart/related; type=application/octet-stream; q=0.1' ]
-- `requestTransferSyntaxUID` : Request a specific Tansfer syntax from dicom web server ex: 1.2.840.10008.1.2.4.80  (applied only if acceptHeader is not set)
+- `investigationalUseDialog`: This should contain an object with `option` value, it can be either `always` which always shows the dialog once per session, `never` which never shows the dialog, or `configure` which shows the dialog once and won't show it again until a set number of days defined by the user, if it's set to configure, you are required to add an additional property `days` which is the number of days to wait before showing the dialog again.
+- `groupEnabledModesFirst`: boolean, if set to true, all valid modes for the study get grouped together first, then the rest of the modes. If false, all modes are shown in the order they are defined in the configuration.
+- `experimentalStudyBrowserSort`: boolean, if set to true, you will get the experimental StudyBrowserSort component in the UI, which displays a list of sort functions that the displaySets can be sorted by, the sort reflects in all part of the app including the thumbnail/study panel. These sort functions are defined in the customizationModule and can be expanded by users.
+- `disableConfirmationPrompts`: boolean, if set to true, it skips confirmation prompts for segmentation related prompts.
+- `showPatientInfo`: string, if set to 'visible', the patient info header will be shown and its initial state is expanded. If set to 'visibleCollapsed', the patient info header will be shown but it's initial state is collapsed. If set to 'disabled', the patient info header will never be shown, and if set to 'visibleReadOnly', the patient info header will be shown and always expanded.
+- `requestTransferSyntaxUID` : Request a specific Transfer syntax from dicom web server ex: 1.2.840.10008.1.2.4.80  (applied only if acceptHeader is not set)
 - `omitQuotationForMultipartRequest`: Some servers (e.g., .NET) require the `multipart/related` request to be sent without quotation marks. Defaults to `false`. If your server doesn't require this, then setting this flag to `true` might improve performance (by removing the need for preflight requests). Also note that
 if auth headers are used, a preflight request is required.
 - `maxNumRequests`: The maximum number of requests to allow in parallel. It is an object with keys of `interaction`, `thumbnail`, and `prefetch`. You can specify a specific number for each type.
@@ -138,7 +148,7 @@ if auth headers are used, a preflight request is required.
                   props: {
                     leftPanels: [tracked.thumbnailList],
                     rightPanels: [dicomSeg.panel, tracked.measurements],
-                    rightPanelDefaultClosed: true,
+                    rightPanelClosed: true,
                     viewports: [
                       {
                         namespace: tracked.viewport,
@@ -174,7 +184,15 @@ if auth headers are used, a preflight request is required.
   }
   ```
 - `showLoadingIndicator`: (default to true), if set to false, the loading indicator will not be shown when navigating between studies.
+- `useNorm16Texture`: (default to false), if set to true, it will use 16 bit data type for the image data wherever possible which has
+  significant impact on reducing the memory usage. However, the 16Bit textures require EXT_texture_norm16 extension in webGL 2.0 (you can check if you have it here https://webglreport.com/?v=2). In addition to the extension, there are reported problems for Intel Macs that might cause the viewer to crash. In summary, it is great a configuration if you have support for it.
+- `useSharedArrayBuffer` (default to 'TRUE', options: 'AUTO', 'FALSE', 'TRUE', note that these are strings), for volume loading we use sharedArrayBuffer to be able to
+  load the volume progressively as the data arrives (each webworker has the shared buffer and can write to it). However, there might be certain environments that do not support sharedArrayBuffer. In that case, you can set this flag to false and the viewer will use the regular arrayBuffer which might be slower for large volume loading.
 - `supportsWildcard`: (default to false), if set to true, the datasource will support wildcard matching for patient name and patient id.
+- `allowMultiSelectExport`: (default to false), if set to true, the user will be able to select the datasource to export the report to.
+- `activateViewportBeforeInteraction`: (default to true), if set to false, tools can be used directly without the need to click and activate the viewport.
+- `autoPlayCine`: (default to false), if set to true, data sets with the DICOM frame time tag (i.e. (0018,1063)) will auto play when displayed
+- `addWindowLevelActionMenu`: (default to true), if set to false, the window level action menu item is NOT added to the viewport action corners
 - `dangerouslyUseDynamicConfig`: Dynamic config allows user to pass `configUrl` query string. This allows to load config without recompiling application. If the `configUrl` query string is passed, the worklist and modes will load from the referenced json rather than the default .env config. If there is no `configUrl` path provided, the default behaviour is used and there should not be any deviation from current user experience.<br/>
 Points to consider while using `dangerouslyUseDynamicConfig`:<br/>
   - User have to enable this feature by setting `dangerouslyUseDynamicConfig.enabled:true`. By default it is `false`.
@@ -208,7 +226,6 @@ Example usage:<br/>
        supportsFuzzyMatching: false,
        supportsWildcard: false,
        singlepart: 'bulkdata,video,pdf',
-       useBulkDataURI: false,
        onConfiguration: (dicomWebConfig, options) => {
          const { params } = options;
          const { project, location, dataset, dicomStore } = params;
@@ -227,12 +244,69 @@ Example usage:<br/>
 This configuration would allow the user to build a dicomweb configuration from a GCP healthcare api path e.g. http://localhost:3000/projects/your-gcp-project/locations/us-central1/datasets/your-dataset/dicomStores/your-dicom-store/study/1.3.6.1.4.1.1234.5.2.1.1234.1234.123123123123123123123123123123
 
 
-<!-- **Embedded Use Note:**
+:::note
+You can stack multiple panel components on top of each other by providing an array of panel components in the `rightPanels` or `leftPanels` properties.
 
-Alternatively, when using the `umd` bundle for embedded use cases, these same
-values are what you'll pass to `installViewer` method:
+For instance we can use
 
-`OHIFStandaloneViewer.installViewer(window.config)` -->
+```
+rightPanels: [[dicomSeg.panel, tracked.measurements], [dicomSeg.panel, tracked.measurements]]
+```
+
+This will result in two panels, one with `dicomSeg.panel` and `tracked.measurements` and the other with `dicomSeg.panel` and `tracked.measurements` stacked on top of each other.
+
+:::
+
+### Study Prefetcher
+
+You can enable the study prefetcher so that OHIF loads the next/previous series/display sets
+based on the proximity to the current series/display set. This can be useful to improve the user experience
+
+
+```js
+  studyPrefetcher: {
+    /* Enable/disable study prefetching service (default: false) */
+    enabled: true,
+    /* Number of displaysets to be prefetched  (default: 2)*/
+    displaySetCount: 2,
+    /**
+     * Max number of concurrent prefetch requests (default: 10)
+     * High numbers may impact on the time to load a new dropped series because
+     * the browser will be busy with all prefetching requests. As soon as the
+     * prefetch requests get fulfilled the new ones from the new dropped series
+     * are sent to the server.
+     *
+     * TODO: abort all prefetch requests when a new series is loaded on a viewport.
+     * (need to add support for `AbortController` on Cornerstone)
+     * */
+    maxNumPrefetchRequests: 10,
+    /* Display sets loading order (closest (deafult), downward or upward) */
+    order: 'closest',
+  },
+
+```
+
+### More on Accept Header Configuration
+In the previous section we showed that you can modify the `acceptHeader`
+configuration to request specific dicom transfer syntax. By default
+we use `acceptHeader: ['multipart/related; type=application/octet-stream; transfer-syntax=*']` for the following
+reasons:
+
+- **Ensures Optimal Transfer Syntax**: By allowing the server to select the transfer syntax,
+  the client is more likely to receive the image in a syntax that's well-suited for fast transmission
+  and rendering. This might be the original syntax the image was stored in or another syntax that the server deems efficient.
+
+- **Avoids Transcoding**: Transcoding (converting from one transfer syntax to another) can be a resource-intensive process.
+ Since the OHIF Viewer supports all transfer syntaxes, it is fine to accept any transfer syntax (transfer-syntax=*).
+ This allows the server to send the images in their stored syntax, avoiding the need for costly on-the-fly conversions.
+ This approach not only saves server resources but also reduces response times by leveraging the viewer's capability to handle various syntaxes directly.
+
+- **Faster Data Transfer**: Compressed transfer syntaxes generally result in smaller file sizes compared
+  to uncompressed ones. Smaller files transmit faster over the network, leading to quicker load
+  times for the end-user. By accepting any syntax, the client can take advantage of compression when available.
+
+However, if you would like to get compressed data in a specific transfer syntax, you can modify the `acceptHeader` configuration or
+`requestTransferSyntaxUID` configuration.
 
 ## Environment Variables
 
@@ -248,6 +322,7 @@ alternative data source (or even specify different default hotkeys).
 | `APP_CONFIG`         | Which [configuration file][config-file] to copy to output as `app-config.js`                       | `config/default.js` |
 | `PROXY_TARGET`       | When developing, proxy requests that match this pattern to `PROXY_DOMAIN`                          | `undefined`         |
 | `PROXY_DOMAIN`       | When developing, proxy requests from `PROXY_TARGET` to `PROXY_DOMAIN`                              | `undefined`         |
+| `OHIF_PORT`          | The port to run the webpack server on for PWA builds.                                              | `3000`              |
 
 You can also create a new config file and specify its path relative to the build
 output's root by setting the `APP_CONFIG` environment variable. You can set the

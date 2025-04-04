@@ -324,6 +324,25 @@ describe('MeasurementService.js', () => {
       }).toThrow();
     });
 
+    it('throws Error if adding measurement with unknown schema key', () => {
+      measurementService.addMapping(
+        source,
+        annotationType,
+        matchingCriteria,
+        toSourceSchema,
+        () => {
+          return {
+            ...measurement,
+            invalidSchemaKey: 0,
+          };
+        }
+      );
+
+      expect(() => {
+        source.annotationToMeasurement(annotationType, measurement);
+      }).toThrow();
+    });
+
     it('updates existing measurement', () => {
       measurementService.addMapping(
         source,

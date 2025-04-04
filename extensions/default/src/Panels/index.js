@@ -1,15 +1,5 @@
-import PanelStudyBrowser from './PanelStudyBrowser';
+import PanelStudyBrowser from './StudyBrowser/PanelStudyBrowser';
 import WrappedPanelStudyBrowser from './WrappedPanelStudyBrowser';
-import PanelMeasurementTable from './PanelMeasurementTable';
-import PanelROIThresholdSegmentation from './PanelROIThresholdSegmentation';
-import PanelPetSUV from './PanelPetSUV';
 import createReportDialogPrompt from './createReportDialogPrompt';
 
-export {
-  PanelStudyBrowser,
-  WrappedPanelStudyBrowser,
-  PanelMeasurementTable,
-  PanelROIThresholdSegmentation,
-  PanelPetSUV,
-  createReportDialogPrompt,
-};
+export { PanelStudyBrowser, WrappedPanelStudyBrowser, createReportDialogPrompt };

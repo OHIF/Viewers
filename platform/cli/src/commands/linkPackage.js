@@ -48,7 +48,7 @@ async function linkPackage(packageDir, options, addToConfig, keyword) {
     const newLine = `path.resolve(__dirname, '${packageNodeModules}'),`;
     const modifiedFileContent = fileContent.replace(
       /(modules:\s*\[)([\s\S]*?)(\])/,
-      `$1$2  ${newLine}$3`
+      `$1$2  ${newLine.replace(/\\/g, '/')}$3`
     );
 
     await fs.promises.writeFile(webpackConfigPath, modifiedFileContent);

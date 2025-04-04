@@ -1,39 +1,26 @@
-import React, { useEffect, useState, ReactElement } from 'react';
+import React, { ReactElement } from 'react';
 import PropTypes from 'prop-types';
-import { ServicesManager } from '@ohif/core';
+import { useViewportGrid } from '@ohif/ui-next';
 import ViewportWindowLevel from '../ViewportWindowLevel/ViewportWindowLevel';
 
-const ActiveViewportWindowLevel = ({
-  servicesManager,
-}: {
-  servicesManager: ServicesManager;
-}): ReactElement => {
-  const { viewportGridService } = servicesManager.services;
-  const [activeViewportIndex, setActiveViewportIndex] = useState(
-    () => viewportGridService.getState().activeViewportIndex ?? 0
-  );
-
-  useEffect(() => {
-    const { unsubscribe } = viewportGridService.subscribe(
-      viewportGridService.EVENTS.ACTIVE_VIEWPORT_ID_CHANGED,
-      ({ viewportId }) => setActiveViewportIndex(viewportId)
-    );
-
-    return () => {
-      unsubscribe();
-    };
-  }, [viewportGridService]);
+const ActiveViewportWindowLevel = ({ servicesManager }: withAppTypes): ReactElement => {
+  const [viewportGrid] = useViewportGrid();
+  const { activeViewportId } = viewportGrid;
 
   return (
-    <ViewportWindowLevel
-      servicesManager={servicesManager}
-      viewportId={activeViewportIndex}
-    />
+    <>
+      {activeViewportId && (
+        <ViewportWindowLevel
+          servicesManager={servicesManager}
+          viewportId={activeViewportId}
+        />
+      )}
+    </>
   );
 };
 
 ActiveViewportWindowLevel.propTypes = {
-  servicesManager: PropTypes.instanceOf(ServicesManager),
+  servicesManager: PropTypes.object.isRequired,
 };
 
 export default ActiveViewportWindowLevel;

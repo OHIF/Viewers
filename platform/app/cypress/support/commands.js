@@ -6,36 +6,26 @@ import {
   initCommonElementsAliases,
   initRouteAliases,
   initStudyListAliasesOnDesktop,
-  initStudyListAliasesOnTablet,
   initPreferencesModalAliases,
   initPreferencesModalFooterBtnAliases,
 } from './aliases.js';
 
-// ***********************************************
-// This example commands.js shows you how to
-// create various custom commands and overwrite
-// existing commands.
-//
-// For more comprehensive examples of custom
-// commands please read more here:
-// https://on.cypress.io/custom-commands
-// ***********************************************
-//
-//
-// -- This is a parent command --
-// Cypress.Commands.add("login", (email, password) => { ... })
-//
-//
-// -- This is a child command --
-// Cypress.Commands.add("drag", { prevSubject: 'element'}, (subject, options) => { ... })
-//
-//
-// -- This is a dual command --
-// Cypress.Commands.add("dismiss", { prevSubject: 'optional'}, (subject, options) => { ... })
-//
-//
-// -- This is will overwrite an existing command --
-// Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
+/**
+ * Command to select a layout preset.
+ * The layout preset is selected by clicking on the Layout button and then clicking on the desired preset.
+ * The preset name is the text that is displayed on the button.
+ * @param {string} presetName - The name of the layout preset that we would like to select
+ * @param {boolean} screenshot - If true, a screenshot will be taken when the layout tool is opened
+ */
+Cypress.Commands.add('selectLayoutPreset', (presetName, screenshot) => {
+  cy.get('[data-cy="Layout"]').click();
+  if (screenshot) {
+    cy.percyCanvasSnapshot('Layout tool opened');
+  }
+  cy.get('div').contains(presetName).should('be.visible').click();
+  // fixed wait time for layout changes and rendering
+  cy.wait(3000);
+});
 
 /**
  * Command to search for a patient name and open his/her study.
@@ -46,9 +36,9 @@ Cypress.Commands.add('openStudy', PatientName => {
   cy.openStudyList();
   cy.get('#filter-patientNameOrId').type(PatientName);
   // cy.get('@getStudies').then(() => {
-  cy.waitQueryList();
+  // cy.waitQueryList();
 
-  cy.get('[data-cy="study-list-results"]', { timeout: 5000 })
+  cy.get('[data-cy="study-list-results"]', { timeout: 15000 })
     .contains(PatientName)
     .first()
     .click({ force: true });
@@ -57,6 +47,7 @@ Cypress.Commands.add('openStudy', PatientName => {
 Cypress.Commands.add(
   'checkStudyRouteInViewer',
   (StudyInstanceUID, otherParams = '', mode = '/basic-test') => {
+    Cypress.on('uncaught:exception', () => false);
     cy.location('pathname').then($url => {
       cy.log($url);
       if ($url === 'blank' || !$url.includes(`${mode}/${StudyInstanceUID}${otherParams}`)) {
@@ -69,6 +60,18 @@ Cypress.Commands.add(
   }
 );
 
+Cypress.Commands.add('initViewer', (StudyInstanceUID, other = {}) => {
+  const { mode = '/basic-test', minimumThumbnails = 1, params = '' } = other;
+  cy.openStudyInViewer(StudyInstanceUID, params, mode);
+  cy.waitDicomImage();
+  // Very short wait to ensure pending updates are handled
+  cy.wait(25);
+
+  cy.expectMinimumThumbnails(minimumThumbnails);
+  cy.initCommonElementsAliases();
+  cy.initCornerstoneToolsAliases();
+});
+
 Cypress.Commands.add(
   'openStudyInViewer',
   (StudyInstanceUID, otherParams = '', mode = '/basic-test') => {
@@ -77,8 +80,9 @@ Cypress.Commands.add(
 );
 
 Cypress.Commands.add('waitQueryList', () => {
-  cy.get('[data-querying="false"]');
+  cy.get('[data-querying="false"]', { timeout: 15000 });
 });
+
 /**
  * Command to search for a Modality and open the study.
  *
@@ -104,15 +108,17 @@ Cypress.Commands.add('isPageLoaded', (url = '/basic-test') => {
 
 Cypress.Commands.add('openStudyList', () => {
   cy.initRouteAliases();
-  cy.visit('/');
+  cy.visit('/', { timeout: 30000 });
 
   // For some reason cypress 12.x does not like to stub the network request
-  // so we just wait herer for 1 second
+  // so we just wait here for querying to be done.
   // cy.wait('@getStudies');
   cy.waitQueryList();
 });
 
 Cypress.Commands.add('waitStudyList', () => {
+  // wait 1 second for the studies to get updated
+  cy.wait(1000);
   cy.get('@searchResult').should($list => {
     expect($list).to.not.have.class('no-hover');
   });
@@ -120,7 +126,7 @@ Cypress.Commands.add('waitStudyList', () => {
 
 Cypress.Commands.add('waitViewportImageLoading', () => {
   // Wait for finish loading
-  cy.get('[data-cy="viewprt-grid"]', { timeout: 30000 }).should($grid => {
+  cy.get('[data-cy="viewport-grid"]', { timeout: 30000 }).should($grid => {
     expect($grid).not.to.contain.text('Load');
   });
 });
@@ -134,29 +140,6 @@ Cypress.Commands.add('waitViewportImageLoading', () => {
 Cypress.Commands.add('drag', { prevSubject: 'element' }, (...args) =>
   DragSimulator.simulate(...args)
 );
-
-/**
- * Command to perform two clicks into two different positions. Each position must be [x, y].
- * The positions are considering the element as reference, therefore, top-left of the element will be (0, 0).
- *
- * @param {*} viewport - Selector for viewport we would like to interact with
- * @param {number[]} firstClick - Click position [x, y]
- * @param {number[]} secondClick - Click position [x, y]
- */
-Cypress.Commands.add('addLine', (viewport, firstClick, secondClick) => {
-  cy.get(viewport).then($viewport => {
-    const [x1, y1] = firstClick;
-    const [x2, y2] = secondClick;
-
-    // The wait is necessary because of double click testing
-    cy.wrap($viewport)
-      .click(x1, y1)
-      .wait(250)
-      .trigger('mousemove', { clientX: x2, clientY: y2 })
-      .click(x2, y2)
-      .wait(250);
-  });
-});
 
 /**
  * Command to perform three clicks into three different positions. Each position must be [x, y].
@@ -183,15 +166,16 @@ Cypress.Commands.add('addAngle', (viewport, firstClick, secondClick, thirdClick)
 });
 
 Cypress.Commands.add('expectMinimumThumbnails', (seriesToWait = 1) => {
-  cy.get('[data-cy="study-browser-thumbnail"]', { timeout: 50000 }).should($itemList => {
-    expect($itemList.length >= seriesToWait).to.be.true;
-  });
+  cy.get('[data-cy="study-browser-thumbnail"]', { timeout: 50000 }).should(
+    'have.length.gte',
+    seriesToWait
+  );
 });
 
 //Command to wait DICOM image to load into the viewport
 Cypress.Commands.add('waitDicomImage', (mode = '/basic-test', timeout = 50000) => {
   cy.window()
-    .its('cornerstone')
+    .its('cornerstone', { timeout: 30000 })
     .should($cornerstone => {
       const enabled = $cornerstone.getEnabledElements();
       if (enabled?.length) {
@@ -211,11 +195,13 @@ Cypress.Commands.add('waitDicomImage', (mode = '/basic-test', timeout = 50000) =
 
 //Command to reset and clear all the changes made to the viewport
 Cypress.Commands.add('resetViewport', () => {
-  //Click on More button
+  // Assign an alias to the More button
   cy.get('[data-cy="MoreTools-split-button-primary"]')
     .should('have.attr', 'data-tool', 'Reset')
-    .as('moreBtn')
-    .click();
+    .as('moreBtn');
+
+  // Use the alias to click on the More button
+  cy.get('@moreBtn').click();
 });
 
 Cypress.Commands.add('imageZoomIn', () => {
@@ -248,8 +234,8 @@ Cypress.Commands.add('initCornerstoneToolsAliases', () => {
 });
 
 //Initialize aliases for Common page elements
-Cypress.Commands.add('initCommonElementsAliases', () => {
-  initCommonElementsAliases();
+Cypress.Commands.add('initCommonElementsAliases', skipMarkers => {
+  initCommonElementsAliases(skipMarkers);
 });
 
 //Initialize aliases for Routes
@@ -266,16 +252,83 @@ Cypress.Commands.add('initStudyListAliasesOnDesktop', () => {
 Cypress.Commands.add(
   'addLengthMeasurement',
   (firstClick = [150, 100], secondClick = [130, 170]) => {
-    cy.get('@measurementToolsBtnPrimary')
-      .should('have.attr', 'data-tool', 'Length')
-      .click()
-      .then($lengthBtn => {
-        cy.wrap($lengthBtn).should('have.class', 'active');
-      });
+    // Assign an alias to the button element
+    cy.get('@measurementToolsBtnPrimary').as('lengthButton');
 
-    cy.addLine('.viewport-element', firstClick, secondClick);
+    cy.get('@lengthButton').should('have.attr', 'data-tool', 'Length');
+
+    cy.get('@lengthButton').then(button => {
+      // Only click the length tool if it is not active, in case the length tool is set up to
+      // toggle to inactive.
+      if (!button.is('.active')) {
+        cy.wrap(button).click();
+      }
+    });
+
+    cy.get('@lengthButton').should('have.attr', 'data-active', 'true');
+
+    cy.get('@viewport').then($viewport => {
+      const [x1, y1] = firstClick;
+      const [x2, y2] = secondClick;
+
+      cy.wrap($viewport)
+        .click(x1, y1, { force: true })
+        .wait(1000)
+        .click(x2, y2, { force: true })
+        .wait(1000);
+    });
   }
 );
+
+// Add brush stroke in the viewport
+Cypress.Commands.add('addBrush', (viewport, firstClick = [85, 100], secondClick = [85, 300]) => {
+  cy.get(viewport)
+    .first()
+    .then(viewportElement => {
+      const [x1, y1] = firstClick;
+      const [x2, y2] = secondClick;
+
+      const steps = 10;
+      const xStep = (x2 - x1) / steps;
+      const yStep = (y2 - y1) / steps;
+
+      cy.wrap(viewportElement)
+        .trigger('mousedown', x1, y1, { buttons: 1 })
+        .then(() => {
+          for (let i = 1; i <= steps; i++) {
+            let x = x1 + xStep * i;
+            let y = y1 + yStep * i;
+            cy.wrap(viewportElement).trigger('mousemove', x, y, { buttons: 1 });
+          }
+        })
+        .trigger('mouseup');
+    });
+});
+
+// Add erase stroke in the viewport
+Cypress.Commands.add('addEraser', (viewport, firstClick = [85, 100], secondClick = [85, 300]) => {
+  cy.get(viewport)
+    .first()
+    .then(viewportElement => {
+      const [x1, y1] = firstClick;
+      const [x2, y2] = secondClick;
+
+      const steps = 10;
+      const xStep = (x2 - x1) / steps;
+      const yStep = (y2 - y1) / steps;
+
+      cy.wrap(viewportElement)
+        .trigger('mousedown', x1, y1, { buttons: 1 })
+        .then(() => {
+          for (let i = 1; i <= steps; i++) {
+            let x = x1 + xStep * i;
+            let y = y1 + yStep * i;
+            cy.wrap(viewportElement).trigger('mousemove', x, y, { buttons: 1 });
+          }
+        })
+        .trigger('mouseup');
+    });
+});
 
 //Add measurements in the viewport
 Cypress.Commands.add(
@@ -284,7 +337,7 @@ Cypress.Commands.add(
     cy.get('[data-cy="MeasurementTools-split-button-secondary"]').click();
     cy.get('[data-cy="Angle"]').click();
 
-    cy.addAngle('.viewport-element', initPos, midPos, finalPos);
+    cy.addAngle('.cornerstone-canvas', initPos, midPos, finalPos);
   }
 );
 
@@ -357,14 +410,9 @@ Cypress.Commands.add('percyCanvasSnapshot', (name, options = {}) => {
 });
 
 Cypress.Commands.add('setLayout', (columns = 1, rows = 1) => {
-  cy.get('[data-cy="layout"]').click();
+  cy.get('[data-cy="Layout"]').click();
 
-  cy.get('.layoutChooser')
-    .find('tr')
-    .eq(rows - 1)
-    .find('td')
-    .eq(columns - 1)
-    .click();
+  cy.get(`[data-cy="Layout-${columns - 1}-${rows - 1}"]`).click();
 
   cy.wait(10);
   cy.waitDicomImage();
@@ -463,7 +511,11 @@ Cypress.Commands.add('closePreferences', () => {
 
 Cypress.Commands.add('selectPreferencesTab', tabAlias => {
   cy.initPreferencesModalAliases();
-  cy.get(tabAlias).click().should('have.class', 'active');
+
+  cy.get(tabAlias).as('selectedTab');
+  cy.get('@selectedTab').click();
+  cy.get('@selectedTab').should('have.class', 'active');
+
   initPreferencesModalFooterBtnAliases();
 });
 

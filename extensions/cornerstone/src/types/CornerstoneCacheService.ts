@@ -9,7 +9,6 @@ type StackData = {
   isCompositeStack?: boolean;
   imageIds: string[];
   frameRate?: number;
-  isClip?: boolean;
   initialImageIndex?: number | string | null;
 };
 
@@ -22,7 +21,7 @@ type VolumeData = {
 
 type StackViewportData = {
   viewportType: Enums.ViewportType;
-  data: StackData;
+  data: StackData[];
 };
 
 type VolumeViewportData = {

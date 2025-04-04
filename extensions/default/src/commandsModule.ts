@@ -1,32 +1,30 @@
-import { ServicesManager, utils, Types } from '@ohif/core';
+import { Types, DicomMetadataStore } from '@ohif/core';
 
-import { Enums, utilities as cstUtils } from '@cornerstonejs/tools';
-import { Types as OhifTypes } from '@ohif/core';
-import { ContextMenuController, defaultContextMenu } from './CustomizableContextMenu';
+import { ContextMenuController } from './CustomizableContextMenu';
 import DicomTagBrowser from './DicomTagBrowser/DicomTagBrowser';
 import reuseCachedLayouts from './utils/reuseCachedLayouts';
 import findViewportsByPosition, {
   findOrCreateViewport as layoutFindOrCreate,
 } from './findViewportsByPosition';
-import * as cs from '@cornerstonejs/core';
-import * as csTools from '@cornerstonejs/tools';
-import { classes } from '@ohif/core';
+
 import { ContextMenuProps } from './CustomizableContextMenu/types';
 import { NavigateHistory } from './types/commandModuleTypes';
 import { history } from '@ohif/app';
-import getThresholdValues from './utils/getThresholdValue';
-import calculateSuvPeak from './utils/calculateSUVPeak';
-import calculateTMTV from './utils/calculateTMTV';
-import createAndDownloadTMTVReport from './utils/createAndDownloadTMTVReport';
-import dicomRTAnnotationExport from './utils/dicomRTAnnotationExport/RTStructureSet';
-import { getEnabledElement } from './state';
-const { subscribeToNextViewportGridChange } = utils;
+import { useViewportGridStore } from './stores/useViewportGridStore';
+import { useDisplaySetSelectorStore } from './stores/useDisplaySetSelectorStore';
+import { useHangingProtocolStageIndexStore } from './stores/useHangingProtocolStageIndexStore';
+import { useToggleHangingProtocolStore } from './stores/useToggleHangingProtocolStore';
+import { useViewportsByPositionStore } from './stores/useViewportsByPositionStore';
+import { useToggleOneUpViewportGridStore } from './stores/useToggleOneUpViewportGridStore';
+import requestDisplaySetCreationForStudy from './Panels/requestDisplaySetCreationForStudy';
+import promptSaveReport from './utils/promptSaveReport';
 
 export type HangingProtocolParams = {
   protocolId?: string;
   stageIndex?: number;
   activeStudyUID?: string;
   stageId?: string;
+  reset?: false;
 };
 
 export type UpdateViewportDisplaySetParams = {
@@ -34,60 +32,76 @@ export type UpdateViewportDisplaySetParams = {
   excludeNonImageModalities?: boolean;
 };
 
-const metadataProvider = classes.MetadataProvider;
-const RECTANGLE_ROI_THRESHOLD_MANUAL = 'RectangleROIStartEndThreshold';
-const LABELMAP = csTools.Enums.SegmentationRepresentations.Labelmap;
-/**
- * Determine if a command is a hanging protocol one.
- * For now, just use the two hanging protocol commands that are in this
- * commands module, but if others get added elsewhere this may need enhancing.
- */
-const isHangingProtocolCommand = command =>
-  command &&
-  (command.commandName === 'setHangingProtocol' || command.commandName === 'toggleHangingProtocol');
-
 const commandsModule = ({
   servicesManager,
   commandsManager,
   extensionManager,
 }: Types.Extensions.ExtensionParams): Types.Extensions.CommandsModule => {
   const {
-    toolGroupService,
     customizationService,
     measurementService,
     hangingProtocolService,
     uiNotificationService,
     viewportGridService,
     displaySetService,
-    stateSyncService,
-    cornerstoneViewportService,
-    toolbarService,
-  } = (servicesManager as ServicesManager).services;
+    multiMonitorService,
+  } = servicesManager.services;
 
   // Define a context menu controller for use with any context menus
   const contextMenuController = new ContextMenuController(servicesManager, commandsManager);
 
-  function _getActiveViewportsEnabledElement() {
-    const { activeViewportIndex } = viewportGridService.getState();
-    const { element } = getEnabledElement(activeViewportIndex) || {};
-    const enabledElement = cs.getEnabledElement(element);
-    return enabledElement;
-  }
-
-  function _getMatchedViewportsToolGroupIds() {
-    const { viewportMatchDetails } = hangingProtocolService.getMatchDetails();
-    const toolGroupIds = [];
-    viewportMatchDetails.forEach((value, key) => {
-      const { viewportOptions } = value;
-      const { toolGroupId } = viewportOptions;
-      if (toolGroupIds.indexOf(toolGroupId) === -1) {
-        toolGroupIds.push(toolGroupId);
-      }
-    });
-
-    return toolGroupIds;
-  }
   const actions = {
+    /**
+     * Runs a command in multi-monitor mode.  No-op if not multi-monitor.
+     */
+    multimonitor: async options => {
+      const { screenDelta, StudyInstanceUID, commands, hashParams } = options;
+      if (multiMonitorService.numberOfScreens < 2) {
+        return options.fallback?.(options);
+      }
+
+      const newWindow = await multiMonitorService.launchWindow(
+        StudyInstanceUID,
+        screenDelta,
+        hashParams
+      );
+
+      // Only run commands if we successfully got a window with a commands manager
+      if (newWindow && commands) {
+        // Todo: fix this properly, but it takes time for the new window to load
+        // and then the commandsManager is available for it
+        setTimeout(() => {
+          multiMonitorService.run(screenDelta, commands, options);
+        }, 1000);
+      }
+    },
+
+    /** Displays a prompt and then save the report if relevant */
+    promptSaveReport: props => {
+      const { StudyInstanceUID } = props;
+      promptSaveReport({ servicesManager, commandsManager, extensionManager }, props, {
+        data: { StudyInstanceUID },
+      });
+    },
+
+    /**
+     * Ensures that the specified study is available for display
+     * Then, if commands is specified, runs the given commands list/instance
+     */
+    loadStudy: async options => {
+      const { StudyInstanceUID } = options;
+      const displaySets = displaySetService.getActiveDisplaySets();
+      const isActive = displaySets.find(ds => ds.StudyInstanceUID === StudyInstanceUID);
+      if (isActive) {
+        return;
+      }
+      const [dataSource] = extensionManager.getActiveDataSource();
+      await requestDisplaySetCreationForStudy(dataSource, displaySetService, StudyInstanceUID);
+
+      const study = DicomMetadataStore.getStudy(StudyInstanceUID);
+      hangingProtocolService.addStudy(study);
+    },
+
     /**
      * Show the context menu.
      * @param options.menuId defines the menu name to lookup, from customizationService
@@ -108,10 +122,7 @@ const commandsModule = ({
       const optionsToUse = { ...options };
 
       if (menuCustomizationId) {
-        Object.assign(
-          optionsToUse,
-          customizationService.get(menuCustomizationId, defaultContextMenu)
-        );
+        Object.assign(optionsToUse, customizationService.getCustomization(menuCustomizationId));
       }
 
       // TODO - make the selectorProps richer by including the study metadata and display set.
@@ -138,40 +149,9 @@ const commandsModule = ({
         type: type,
       });
     },
-    clearMeasurements: () => {
-      measurementService.clear();
-    },
 
-    /**
-     * Toggles off all tools which contain a commandName of setHangingProtocol
-     * or toggleHangingProtocol, and which match/don't match the protocol id/stage
-     */
-    toggleHpTools: () => {
-      const {
-        protocol,
-        stageIndex: toggleStageIndex,
-        stage,
-      } = hangingProtocolService.getActiveProtocol();
-      const enableListener = button => {
-        if (!button.id) {
-          return;
-        }
-        const { commands, items } = button.props || button;
-        if (items) {
-          items.forEach(enableListener);
-        }
-        const hpCommand = commands?.find?.(isHangingProtocolCommand);
-        if (!hpCommand) {
-          return;
-        }
-        const { protocolId, stageIndex, stageId } = hpCommand.commandOptions;
-        const isActive =
-          (!protocolId || protocolId === protocol.id) &&
-          (stageIndex === undefined || stageIndex === toggleStageIndex) &&
-          (!stageId || stageId === stage.id);
-        toolbarService.setActive(button.id, isActive);
-      };
-      Object.values(toolbarService.getButtons()).forEach(enableListener);
+    clearMeasurements: options => {
+      measurementService.clearMeasurements(options.measurementFilter);
     },
 
     /**
@@ -197,24 +177,33 @@ const commandsModule = ({
      * @param options.stageId - the stageId to apply
      * @param options.stageIndex - the index of the stage to go to.
      * @param options.reset - flag to indicate if the HP should be reset to its original and not restored to a previous state
+     *
+     * commandsManager.run('setHangingProtocol', {
+     *   activeStudyUID: '1.2.3',
+     *   protocolId: 'myProtocol',
+     *   stageId: 'myStage',
+     *   stageIndex: 0,
+     *   reset: false,
+     * });
      */
     setHangingProtocol: ({
       activeStudyUID = '',
+      StudyInstanceUID = '',
       protocolId,
       stageId,
       stageIndex,
       reset = false,
     }: HangingProtocolParams): boolean => {
+      const toUseStudyInstanceUID = activeStudyUID || StudyInstanceUID;
       try {
         // Stores in the state the display set selector id to displaySetUID mapping
         // Pass in viewportId for the active viewport.  This item will get set as
         // the activeViewportId
         const state = viewportGridService.getState();
         const hpInfo = hangingProtocolService.getState();
-        const { protocol: oldProtocol } = hangingProtocolService.getActiveProtocol() ?? {};
-        const stateSyncReduce = reuseCachedLayouts(state, hangingProtocolService, stateSyncService);
-        const { hangingProtocolStageIndexMap, viewportGridStore, displaySetSelectorMap } =
-          stateSyncReduce;
+        reuseCachedLayouts(state, hangingProtocolService);
+        const { hangingProtocolStageIndexMap } = useHangingProtocolStageIndexStore.getState();
+        const { displaySetSelectorMap } = useDisplaySetSelectorStore.getState();
 
         if (!protocolId) {
           // Reuse the previous protocol id, and optionally stage
@@ -224,7 +213,7 @@ const commandsModule = ({
           }
         } else if (stageIndex === undefined && stageId === undefined) {
           // Re-set the same stage as was previously used
-          const hangingId = `${activeStudyUID || hpInfo.activeStudyUID}:${protocolId}`;
+          const hangingId = `${toUseStudyInstanceUID || hpInfo.activeStudyUID}:${protocolId}`;
           stageIndex = hangingProtocolStageIndexMap[hangingId]?.stageIndex;
         }
 
@@ -235,20 +224,35 @@ const commandsModule = ({
             stageIndex,
           });
 
-        if (activeStudyUID) {
-          hangingProtocolService.setActiveStudyUID(activeStudyUID);
-        }
+        const activeStudyChanged = hangingProtocolService.setActiveStudyUID(toUseStudyInstanceUID);
 
-        const storedHanging = `${hangingProtocolService.getState().activeStudyUID}:${protocolId}:${
+        const storedHanging = `${toUseStudyInstanceUID || hangingProtocolService.getState().activeStudyUID}:${protocolId}:${
           useStageIdx || 0
         }`;
 
-        const restoreProtocol = !reset && viewportGridStore[storedHanging];
+        const { viewportGridState } = useViewportGridStore.getState();
+        const restoreProtocol = !reset && viewportGridState[storedHanging];
 
         if (
+          reset ||
+          (activeStudyChanged &&
+            !viewportGridState[storedHanging] &&
+            stageIndex === undefined &&
+            stageId === undefined)
+        ) {
+          // Run the hanging protocol fresh, re-using the existing study data
+          // This is done on reset or when the study changes and we haven't yet
+          // applied it, and don't specify exact stage to use.
+          const displaySets = displaySetService.getActiveDisplaySets();
+          const activeStudy = {
+            StudyInstanceUID: toUseStudyInstanceUID,
+            displaySets,
+          };
+          hangingProtocolService.run(activeStudy, protocolId);
+        } else if (
           protocolId === hpInfo.protocolId &&
           useStageIdx === hpInfo.stageIndex &&
-          !activeStudyUID
+          !toUseStudyInstanceUID
         ) {
           // Clear the HP setting to reset them
           hangingProtocolService.setProtocol(protocolId, {
@@ -263,33 +267,18 @@ const commandsModule = ({
             restoreProtocol,
           });
           if (restoreProtocol) {
-            viewportGridService.set(viewportGridStore[storedHanging]);
+            viewportGridService.set(viewportGridState[storedHanging]);
           }
         }
         // Do this after successfully applying the update
-        // Note, don't store the active display set - it is only needed while
-        // changing display sets.  This causes jump to measurement to fail on
-        // multi-study display.
-        delete displaySetSelectorMap[
-          `${activeStudyUID || hpInfo.activeStudyUID}:activeDisplaySet:0`
-        ];
-        stateSyncService.store(stateSyncReduce);
-        // This is a default action applied
-        const { protocol } = hangingProtocolService.getActiveProtocol();
-        actions.toggleHpTools(protocol);
-        // Send the notification about updating the state
-        if (protocolId !== hpInfo.protocolId) {
-          // The old protocol callbacks are used for turning off things
-          // like crosshairs when moving to the new HP
-          commandsManager.run(oldProtocol?.callbacks?.onProtocolExit);
-          // The new protocol callback is used for things like
-          // activating modes etc.
-        }
-        commandsManager.run(protocol.callbacks?.onProtocolEnter);
+        const { setDisplaySetSelector } = useDisplaySetSelectorStore.getState();
+        setDisplaySetSelector(
+          `${toUseStudyInstanceUID || hpInfo.activeStudyUID}:activeDisplaySet:0`,
+          null
+        );
         return true;
       } catch (e) {
         console.error(e);
-        actions.toggleHpTools(hangingProtocolService.getActiveProtocol());
         uiNotificationService.show({
           title: 'Apply Hanging Protocol',
           message: 'The hanging protocol could not be applied.',
@@ -306,7 +295,8 @@ const commandsModule = ({
         stageIndex: desiredStageIndex,
         activeStudy,
       } = hangingProtocolService.getActiveProtocol();
-      const { toggleHangingProtocol } = stateSyncService.getState();
+      const { toggleHangingProtocol, setToggleHangingProtocol } =
+        useToggleHangingProtocolStore.getState();
       const storedHanging = `${activeStudy.StudyInstanceUID}:${protocolId}:${stageIndex | 0}`;
       if (
         protocol.id === protocolId &&
@@ -318,14 +308,9 @@ const commandsModule = ({
         };
         return actions.setHangingProtocol(previousState);
       } else {
-        stateSyncService.store({
-          toggleHangingProtocol: {
-            ...toggleHangingProtocol,
-            [storedHanging]: {
-              protocolId: protocol.id,
-              stageIndex: desiredStageIndex,
-            },
-          },
+        setToggleHangingProtocol(storedHanging, {
+          protocolId: protocol.id,
+          stageIndex: desiredStageIndex,
         });
         return actions.setHangingProtocol({
           protocolId,
@@ -334,22 +319,7 @@ const commandsModule = ({
         });
       }
     },
-    setColorMap: ({ colormap }) => {
-      const { activeViewportIndex, viewports } = viewportGridService.getState();
-      const activeViewportSpecificData = viewports[activeViewportIndex];
-      const { displaySetInstanceUIDs } = activeViewportSpecificData;
 
-      const displaySets = displaySetService.activeDisplaySets;
-
-      const displaySetInstanceUID = displaySetInstanceUIDs[0];
-      console.log(displaySetInstanceUID);
-      console.log(colormap);
-      commandsManager.runCommand('setSingleViewportColormap', {
-        viewportId: activeViewportIndex,
-        displaySetInstanceUID,
-        colormap,
-      });
-    },
     deltaStage: ({ direction }) => {
       const { protocolId, stageIndex: oldStageIndex } = hangingProtocolService.getState();
       const { protocol } = hangingProtocolService.getActiveProtocol();
@@ -373,42 +343,36 @@ const commandsModule = ({
       });
     },
 
-    setViewportActive: ({ viewportId }) => {
-      const viewportInfo = cornerstoneViewportService.getViewportInfo(viewportId);
-      if (!viewportInfo) {
-        console.warn('No viewport found for viewportId:', viewportId);
-        return;
-      }
-
-      viewportGridService.setActiveViewportIndex(viewportId);
-    },
     /**
      * Changes the viewport grid layout in terms of the MxN layout.
      */
-    setViewportGridLayout: ({ numRows, numCols }) => {
+    setViewportGridLayout: ({ numRows, numCols, isHangingProtocolLayout = false }) => {
       const { protocol } = hangingProtocolService.getActiveProtocol();
       const onLayoutChange = protocol.callbacks?.onLayoutChange;
       if (commandsManager.run(onLayoutChange, { numRows, numCols }) === false) {
-        console.log('setViewportGridLayout running', onLayoutChange, numRows, numCols);
         // Don't apply the layout if the run command returns false
         return;
       }
 
       const completeLayout = () => {
         const state = viewportGridService.getState();
-        const stateReduce = findViewportsByPosition(state, { numRows, numCols }, stateSyncService);
+        findViewportsByPosition(state, { numRows, numCols });
+
+        const { viewportsByPosition, initialInDisplay } = useViewportsByPositionStore.getState();
+
         const findOrCreateViewport = layoutFindOrCreate.bind(
           null,
           hangingProtocolService,
-          stateReduce.viewportsByPosition
+          isHangingProtocolLayout,
+          { ...viewportsByPosition, initialInDisplay }
         );
 
         viewportGridService.setLayout({
           numRows,
           numCols,
           findOrCreateViewport,
+          isHangingProtocolLayout,
         });
-        stateSyncService.store(stateReduce);
       };
       // Need to finish any work in the callback
       window.setTimeout(completeLayout, 0);
@@ -416,21 +380,26 @@ const commandsModule = ({
 
     toggleOneUp() {
       const viewportGridState = viewportGridService.getState();
-      const { activeViewportId, viewports, layout } = viewportGridState;
+      const { activeViewportId, viewports, layout, isHangingProtocolLayout } = viewportGridState;
       const { displaySetInstanceUIDs, displaySetOptions, viewportOptions } =
         viewports.get(activeViewportId);
 
       if (layout.numCols === 1 && layout.numRows === 1) {
         // The viewer is in one-up. Check if there is a state to restore/toggle back to.
-        const { toggleOneUpViewportGridStore } = stateSyncService.getState();
+        const { toggleOneUpViewportGridStore } = useToggleOneUpViewportGridStore.getState();
 
-        if (!toggleOneUpViewportGridStore.layout) {
+        if (!toggleOneUpViewportGridStore) {
           return;
         }
         // There is a state to toggle back to. The viewport that was
         // originally toggled to one up was the former active viewport.
         const viewportIdToUpdate = toggleOneUpViewportGridStore.activeViewportId;
 
+        // We are restoring the previous layout but taking into the account that
+        // the current one up viewport might have a new displaySet dragged and dropped on it.
+        // updatedViewportsViaHP below contains the viewports applicable to the HP that existed
+        // prior to the toggle to one-up - including the updated viewports if a display
+        // set swap were to have occurred.
         const updatedViewportsViaHP =
           displaySetInstanceUIDs.length > 1
             ? []
@@ -438,44 +407,31 @@ const commandsModule = ({
                 .map(displaySetInstanceUID =>
                   hangingProtocolService.getViewportsRequireUpdate(
                     viewportIdToUpdate,
-                    displaySetInstanceUID
+                    displaySetInstanceUID,
+                    isHangingProtocolLayout
                   )
                 )
                 .flat();
 
-        // This findOrCreateViewport returns either one of the updatedViewports
+        // findOrCreateViewport returns either one of the updatedViewportsViaHP
         // returned from the HP service OR if there is not one from the HP service then
-        // simply returns what was in the previous state.
-        const findOrCreateViewport = (position: number) => {
-          // get the viewportId in the current state (since we are in the one-up layout)
-          const currentOneUpViewport = Array.from(viewports.values())[0];
-
-          // we should restore the previous layout but take into the account the fact that
-          // the current one up viewport might have a new displaySet dragged and dropped on it
-          // so we should prioritize the current one in the old grid store layout viewports
-
-          const newViewports = Array.from(toggleOneUpViewportGridStore.viewports.values()).map(
-            viewport => {
-              if (viewport.viewportId === currentOneUpViewport.viewportId) {
-                return {
-                  ...currentOneUpViewport,
-                };
-              }
-
-              return viewport;
-            }
+        // simply returns what was in the previous state for a given position in the layout.
+        const findOrCreateViewport = (position: number, positionId: string) => {
+          // Find the viewport for the given position prior to the toggle to one-up.
+          const preOneUpViewport = Array.from(toggleOneUpViewportGridStore.viewports.values()).find(
+            viewport => viewport.positionId === positionId
           );
 
-          // However, we also need to take into account that the current one up viewport
-          // might have been part of a bigger hanging protocol layout, so going back
-          // from one up we should apply those viewports as well.
-          return updatedViewportsViaHP.length > 1 && updatedViewportsViaHP[position]
-            ? {
-                viewportOptions,
-                displaySetOptions,
-                ...updatedViewportsViaHP[position],
-              }
-            : newViewports[position];
+          // Use the viewport id from before the toggle to one-up to find any updates to the viewport.
+          const viewport = updatedViewportsViaHP.find(
+            viewport => viewport.viewportId === preOneUpViewport.viewportId
+          );
+
+          return viewport
+            ? // Use the applicable viewport from the HP updated viewports
+              { viewportOptions, displaySetOptions, ...viewport }
+            : // Use the previous viewport for the given position
+              preOneUpViewport;
         };
 
         const layoutOptions = viewportGridService.getLayoutOptionsFromState(
@@ -489,16 +445,20 @@ const commandsModule = ({
           activeViewportId: viewportIdToUpdate,
           layoutOptions,
           findOrCreateViewport,
+          isHangingProtocolLayout: true,
         });
+
+        // Reset crosshairs after restoring the layout
+        setTimeout(() => {
+          commandsManager.runCommand('resetCrosshairs');
+        }, 0);
       } else {
         // We are not in one-up, so toggle to one up.
 
         // Store the current viewport grid state so we can toggle it back later.
-        stateSyncService.store({
-          toggleOneUpViewportGridStore: viewportGridState,
-        });
+        const { setToggleOneUpViewportGridStore } = useToggleOneUpViewportGridStore.getState();
+        setToggleOneUpViewportGridStore(viewportGridState);
 
-        // This findOrCreateViewport only return one viewport - the active
         // one being toggled to one up.
         const findOrCreateViewport = () => {
           return {
@@ -513,94 +473,11 @@ const commandsModule = ({
           numRows: 1,
           numCols: 1,
           findOrCreateViewport,
+          isHangingProtocolLayout: true,
         });
-
-        // Subscribe to ANY (i.e. manual and hanging protocol) layout changes so that
-        // any grid layout state to toggle to from one up is cleared. This is performed on
-        // a timeout to avoid clearing the state for the actual to one up change.
-        // Whenever the next layout change event is fired, the subscriptions are unsubscribed.
-        const clearToggleOneUpViewportGridStore = () => {
-          const toggleOneUpViewportGridStore = {};
-          stateSyncService.store({
-            toggleOneUpViewportGridStore,
-          });
-        };
-
-        subscribeToNextViewportGridChange(viewportGridService, clearToggleOneUpViewportGridStore);
       }
     },
-    setToolActive: ({ toolName, toolGroupId = null }) => {
-      if (toolName === 'Crosshairs') {
-        const activeViewportToolGroup = toolGroupService.getToolGroup(null);
 
-        if (!activeViewportToolGroup._toolInstances.Crosshairs) {
-          uiNotificationService.show({
-            title: 'Crosshairs',
-            message:
-              'You need to be in a MPR view to use Crosshairs. Click on MPR button in the toolbar to activate it.',
-            type: 'info',
-            duration: 3000,
-          });
-
-          throw new Error('Crosshairs tool is not available in this viewport');
-        }
-      }
-
-      const { viewports } = viewportGridService.getState() || {
-        viewports: [],
-      };
-      console.log(servicesManager.services.toolGroupService);
-      const toolGroup = servicesManager.services.toolGroupService.getToolGroup(toolGroupId);
-      const toolGroupViewportIds = toolGroup?.getViewportIds?.();
-
-      // if toolGroup has been destroyed, or its viewports have been removed
-      if (!toolGroupViewportIds || !toolGroupViewportIds.length) {
-        return;
-      }
-
-      const filteredViewports = viewports.filter(viewport => {
-        if (!viewport.viewportOptions) {
-          return false;
-        }
-
-        return toolGroupViewportIds.includes(viewport.viewportOptions.viewportId);
-      });
-
-      if (!filteredViewports.length) {
-        return;
-      }
-
-      if (!toolGroup.getToolInstance(toolName)) {
-        uiNotificationService.show({
-          title: `${toolName} tool`,
-          message: `The ${toolName} tool is not available in this viewport.`,
-          type: 'info',
-          duration: 3000,
-        });
-
-        throw new Error(`ToolGroup ${toolGroup.id} does not have this tool.`);
-      }
-
-      const activeToolName = toolGroup.getActivePrimaryMouseButtonTool();
-
-      if (activeToolName) {
-        // Todo: this is a hack to prevent the crosshairs to stick around
-        // after another tool is selected. We should find a better way to do this
-        if (activeToolName === 'Crosshairs') {
-          toolGroup.setToolDisabled(activeToolName);
-        } else {
-          toolGroup.setToolPassive(activeToolName);
-        }
-      }
-      // Set the new toolName to be active
-      toolGroup.setToolActive(toolName, {
-        bindings: [
-          {
-            mouseButton: Enums.MouseBindings.Primary,
-          },
-        ],
-      });
-    },
     /**
      * Exposes the browser history navigation used by OHIF. This command can be used to either replace or
      * push a new entry into the browser history. For example, the following will replace the current
@@ -623,7 +500,7 @@ const commandsModule = ({
       history.navigate(historyArgs.to, historyArgs.options);
     },
 
-    openDICOMTagViewer() {
+    openDICOMTagViewer({ displaySetInstanceUID }: { displaySetInstanceUID?: string }) {
       const { activeViewportId, viewports } = viewportGridService.getState();
       const activeViewportSpecificData = viewports.get(activeViewportId);
       const { displaySetInstanceUIDs } = activeViewportSpecificData;
@@ -631,15 +508,15 @@ const commandsModule = ({
       const displaySets = displaySetService.activeDisplaySets;
       const { UIModalService } = servicesManager.services;
 
-      const displaySetInstanceUID = displaySetInstanceUIDs[0];
+      const defaultDisplaySetInstanceUID = displaySetInstanceUID || displaySetInstanceUIDs[0];
       UIModalService.show({
         content: DicomTagBrowser,
         contentProps: {
           displaySets,
-          displaySetInstanceUID,
-          onClose: UIModalService.hide,
+          displaySetInstanceUID: defaultDisplaySetInstanceUID,
         },
         title: 'DICOM Tag Browser',
+        containerClassName: 'max-w-3xl',
       });
     },
 
@@ -694,14 +571,10 @@ const commandsModule = ({
     }: UpdateViewportDisplaySetParams) => {
       const nonImageModalities = ['SR', 'SEG', 'SM', 'RTSTRUCT', 'RTPLAN', 'RTDOSE'];
 
-      // Sort the display sets as per the hanging protocol service viewport/display set scoring system.
-      // The thumbnail list uses the same sorting.
-      const dsSortFn = hangingProtocolService.getDisplaySetSortFunction();
       const currentDisplaySets = [...displaySetService.activeDisplaySets];
 
-      currentDisplaySets.sort(dsSortFn);
-
-      const { activeViewportId, viewports } = viewportGridService.getState();
+      const { activeViewportId, viewports, isHangingProtocolLayout } =
+        viewportGridService.getState();
 
       const { displaySetInstanceUIDs } = viewports.get(activeViewportId);
 
@@ -735,7 +608,8 @@ const commandsModule = ({
       try {
         updatedViewports = hangingProtocolService.getViewportsRequireUpdate(
           activeViewportId,
-          displaySetInstanceUID
+          displaySetInstanceUID,
+          isHangingProtocolLayout
         );
       } catch (error) {
         console.warn(error);
@@ -748,482 +622,35 @@ const commandsModule = ({
         });
       }
 
-      viewportGridService.setDisplaySetsForViewports(updatedViewports);
+      commandsManager.run('setDisplaySetsForViewports', { viewportsToUpdate: updatedViewports });
 
       setTimeout(() => actions.scrollActiveThumbnailIntoView(), 0);
-    },
-    getMatchingPTDisplaySet: ({ viewportMatchDetails }) => {
-      // Todo: this is assuming that the hanging protocol has successfully matched
-      // the correct PT. For future, we should have a way to filter out the PTs
-      // that are in the viewer layout (but then we have the problem of the attenuation
-      // corrected PT vs the non-attenuation correct PT)
-
-      let ptDisplaySet = null;
-      for (const [viewportId, viewportDetails] of viewportMatchDetails) {
-        const { displaySetsInfo } = viewportDetails;
-        const displaySets = displaySetsInfo.map(({ displaySetInstanceUID }) =>
-          displaySetService.getDisplaySetByUID(displaySetInstanceUID)
-        );
-
-        if (!displaySets || displaySets.length === 0) {
-          continue;
-        }
-
-        ptDisplaySet = displaySets.find(displaySet => displaySet.Modality === 'PT');
-
-        if (ptDisplaySet) {
-          break;
-        }
-      }
-
-      return ptDisplaySet;
-    },
-    getPTMetadata: ({ ptDisplaySet }) => {
-      const dataSource = extensionManager.getDataSources()[0];
-      const imageIds = dataSource.getImageIdsForDisplaySet(ptDisplaySet);
-
-      const firstImageId = imageIds[0];
-      const instance = metadataProvider.get('instance', firstImageId);
-      if (instance.Modality !== 'PT') {
-        return;
-      }
-
-      const metadata = {
-        SeriesTime: instance.SeriesTime,
-        Modality: instance.Modality,
-        PatientSex: instance.PatientSex,
-        PatientWeight: instance.PatientWeight,
-        RadiopharmaceuticalInformationSequence: {
-          RadionuclideTotalDose:
-            instance.RadiopharmaceuticalInformationSequence[0].RadionuclideTotalDose,
-          RadionuclideHalfLife:
-            instance.RadiopharmaceuticalInformationSequence[0].RadionuclideHalfLife,
-          RadiopharmaceuticalStartTime:
-            instance.RadiopharmaceuticalInformationSequence[0].RadiopharmaceuticalStartTime,
-          RadiopharmaceuticalStartDateTime:
-            instance.RadiopharmaceuticalInformationSequence[0].RadiopharmaceuticalStartDateTime,
-        },
-      };
-
-      return metadata;
-    },
-    createNewLabelmapFromPT: async () => {
-      // Create a segmentation of the same resolution as the source data
-      // using volumeLoader.createAndCacheDerivedVolume.
-      const { activeViewportIndex, viewports } = viewportGridService.getState();
-      const activeViewportSpecificData = viewports[activeViewportIndex];
-      const { displaySetInstanceUIDs } = activeViewportSpecificData;
-
-      const displaySets = displaySetService.activeDisplaySets;
-
-      const displaySetInstanceUID = displaySetInstanceUIDs[0];
-      const { viewportMatchDetails } = hangingProtocolService.getMatchDetails();
-
-      if (!displaySetInstanceUID) {
-        uiNotificationService.error('No matching PT display set found');
-        return;
-      }
-
-      const segmentationId =
-        await servicesManager.services.segmentationService.createSegmentationForDisplaySet(
-          displaySetInstanceUID
-        );
-
-      // Add Segmentation to all toolGroupIds in the viewer
-      const toolGroupIds = _getMatchedViewportsToolGroupIds();
-
-      const representationType = LABELMAP;
-
-      for (const toolGroupId of toolGroupIds) {
-        const hydrateSegmentation = true;
-        await servicesManager.services.segmentationService.addSegmentationRepresentationToToolGroup(
-          toolGroupId,
-          segmentationId,
-          hydrateSegmentation,
-          representationType
-        );
-
-        servicesManager.services.segmentationService.setActiveSegmentationForToolGroup(
-          segmentationId,
-          toolGroupId
-        );
-      }
-
-      return segmentationId;
-    },
-    setSegmentationActiveForToolGroups: ({ segmentationId }) => {
-      const toolGroupIds = _getMatchedViewportsToolGroupIds();
-
-      toolGroupIds.forEach(toolGroupId => {
-        servicesManager.services.segmentationService.setActiveSegmentationForToolGroup(
-          segmentationId,
-          toolGroupId
-        );
-      });
-    },
-    thresholdSegmentationByRectangleROITool: ({ segmentationId, config }) => {
-      const segmentation = csTools.segmentation.state.getSegmentation(segmentationId);
-      const { activeViewportIndex, viewports } = viewportGridService.getState();
-      const activeViewportSpecificData = viewports[activeViewportIndex];
-      const { displaySetInstanceUIDs } = activeViewportSpecificData;
-
-      const displaySets = displaySetService.activeDisplaySets;
-
-      const displaySetInstanceUID = displaySetInstanceUIDs[0];
-      const { representationData } = segmentation;
-      const { displaySetMatchDetails: matchDetails } = hangingProtocolService.getMatchDetails();
-      const volumeLoaderScheme = 'cornerstoneStreamingImageVolume'; // Loader id which defines which volume loader to use
-
-      const ctVolumeId = `${volumeLoaderScheme}:${displaySetInstanceUID}`; // VolumeId with loader id + volume id
-
-      const { volumeId: segVolumeId } = representationData[LABELMAP];
-      const { referencedVolumeId } = cs.cache.getVolume(segVolumeId);
-
-      const labelmapVolume = cs.cache.getVolume(segmentationId);
-      const referencedVolume = cs.cache.getVolume(referencedVolumeId);
-      const ctReferencedVolume = cs.cache.getVolume(ctVolumeId);
-
-      if (!referencedVolume) {
-        throw new Error('No Reference volume found');
-      }
-
-      if (!labelmapVolume) {
-        throw new Error('No Reference labelmap found');
-      }
-
-      const annotationUIDs = csTools.annotation.selection.getAnnotationsSelectedByToolName(
-        RECTANGLE_ROI_THRESHOLD_MANUAL
-      );
-
-      if (annotationUIDs.length === 0) {
-        uiNotificationService.show({
-          title: 'Commands Module',
-          message: 'No ROIThreshold Tool is Selected',
-          type: 'error',
-        });
-        return;
-      }
-      console.log(annotationUIDs);
-      const { ptLower, ptUpper, ctLower, ctUpper } = getThresholdValues(
-        annotationUIDs,
-        [referencedVolume, ctReferencedVolume],
-        config
-      );
-      console.log(
-        csTools.utilities.segmentation.rectangleROIThresholdVolumeByRange(
-          annotationUIDs,
-          labelmapVolume,
-          [
-            { volume: referencedVolume, lower: ptLower, upper: ptUpper },
-            { volume: ctReferencedVolume, lower: ctLower, upper: ctUpper },
-          ],
-          { overwrite: true }
-        )
-      );
-      return csTools.utilities.segmentation.rectangleROIThresholdVolumeByRange(
-        annotationUIDs,
-        labelmapVolume,
-        [
-          { volume: referencedVolume, lower: ptLower, upper: ptUpper },
-          { volume: ctReferencedVolume, lower: ctLower, upper: ctUpper },
-        ],
-        { overwrite: true }
-      );
-    },
-    calculateSuvPeak: ({ labelmap }) => {
-      const { referencedVolumeId } = labelmap;
-
-      const referencedVolume = cs.cache.getVolume(referencedVolumeId);
-
-      const annotationUIDs = csTools.annotation.selection.getAnnotationsSelectedByToolName(
-        RECTANGLE_ROI_THRESHOLD_MANUAL
-      );
-
-      const annotations = annotationUIDs.map(annotationUID =>
-        csTools.annotation.state.getAnnotation(annotationUID)
-      );
-
-      const suvPeak = calculateSuvPeak(labelmap, referencedVolume, annotations);
-      return {
-        suvPeak: suvPeak.mean,
-        suvMax: suvPeak.max,
-        suvMaxIJK: suvPeak.maxIJK,
-        suvMaxLPS: suvPeak.maxLPS,
-      };
-    },
-    getLesionStats: ({ labelmap, segmentIndex = 1 }) => {
-      const { scalarData, spacing } = labelmap;
-
-      const { scalarData: referencedScalarData } = cs.cache.getVolume(labelmap.referencedVolumeId);
-
-      let segmentationMax = -Infinity;
-      let segmentationMin = Infinity;
-      const segmentationValues = [];
-
-      let voxelCount = 0;
-      for (let i = 0; i < scalarData.length; i++) {
-        if (scalarData[i] === segmentIndex) {
-          const value = referencedScalarData[i];
-          segmentationValues.push(value);
-          if (value > segmentationMax) {
-            segmentationMax = value;
-          }
-          if (value < segmentationMin) {
-            segmentationMin = value;
-          }
-          voxelCount++;
-        }
-      }
-
-      const stats = {
-        minValue: segmentationMin,
-        maxValue: segmentationMax,
-        meanValue: segmentationValues.reduce((a, b) => a + b, 0) / voxelCount,
-        stdValue: Math.sqrt(
-          segmentationValues.reduce((a, b) => a + b * b, 0) / voxelCount -
-            segmentationValues.reduce((a, b) => a + b, 0) / voxelCount ** 2
-        ),
-        volume: voxelCount * spacing[0] * spacing[1] * spacing[2] * 1e-3,
-      };
-
-      return stats;
-    },
-    calculateLesionGlycolysis: ({ lesionStats }) => {
-      const { meanValue, volume } = lesionStats;
-
-      return {
-        lesionGlyoclysisStats: volume * meanValue,
-      };
-    },
-    calculateTMTV: ({ segmentations }) => {
-      const labelmaps = segmentations.map(s =>
-        servicesManager.services.segmentationService.getLabelmapVolume(s.id)
-      );
-
-      if (!labelmaps.length) {
-        return;
-      }
-
-      return calculateTMTV(labelmaps);
-    },
-    exportTMTVReportCSV: ({ segmentations, tmtv, config }) => {
-      const segReport = commandsManager.runCommand('getSegmentationCSVReport', {
-        segmentations,
-      });
-
-      const tlg = actions.getTotalLesionGlycolysis({ segmentations });
-      const additionalReportRows = [
-        { key: 'Total Metabolic Tumor Volume', value: { tmtv } },
-        { key: 'Total Lesion Glycolysis', value: { tlg: tlg.toFixed(4) } },
-        { key: 'Threshold Configuration', value: { ...config } },
-      ];
-
-      createAndDownloadTMTVReport(segReport, additionalReportRows);
-    },
-    getTotalLesionGlycolysis: ({ segmentations }) => {
-      const labelmapVolumes = segmentations.map(s =>
-        servicesManager.services.segmentationService.getLabelmapVolume(s.id)
-      );
-
-      let mergedLabelmap;
-      // merge labelmap will through an error if labels maps are not the same size
-      // or same direction or ....
-      try {
-        mergedLabelmap =
-          csTools.utilities.segmentation.createMergedLabelmapForIndex(labelmapVolumes);
-      } catch (e) {
-        console.error('commandsModule::getTotalLesionGlycolysis', e);
-        return;
-      }
-
-      // grabbing the first labelmap referenceVolume since it will be the same for all
-      const { referencedVolumeId, spacing } = labelmapVolumes[0];
-
-      if (!referencedVolumeId) {
-        console.error('commandsModule::getTotalLesionGlycolysis:No referencedVolumeId found');
-      }
-
-      const ptVolume = cs.cache.getVolume(referencedVolumeId);
-      const mergedLabelData = mergedLabelmap.scalarData;
-
-      if (mergedLabelData.length !== ptVolume.scalarData.length) {
-        console.error(
-          'commandsModule::getTotalLesionGlycolysis:Labelmap and ptVolume are not the same size'
-        );
-      }
-
-      let suv = 0;
-      let totalLesionVoxelCount = 0;
-      for (let i = 0; i < mergedLabelData.length; i++) {
-        // if not background
-        if (mergedLabelData[i] !== 0) {
-          suv += ptVolume.scalarData[i];
-          totalLesionVoxelCount += 1;
-        }
-      }
-
-      // Average SUV for the merged labelmap
-      const averageSuv = suv / totalLesionVoxelCount;
-
-      // total Lesion Glycolysis [suv * ml]
-      return averageSuv * totalLesionVoxelCount * spacing[0] * spacing[1] * spacing[2] * 1e-3;
-    },
-    setStartSliceForROIThresholdTool: () => {
-      const { viewport } = _getActiveViewportsEnabledElement();
-      const { focalPoint, viewPlaneNormal } = viewport.getCamera();
-
-      const selectedAnnotationUIDs = csTools.annotation.selection.getAnnotationsSelectedByToolName(
-        RECTANGLE_ROI_THRESHOLD_MANUAL
-      );
-
-      const annotationUID = selectedAnnotationUIDs[0];
-
-      const annotation = csTools.annotation.state.getAnnotation(annotationUID);
-
-      const { handles } = annotation.data;
-      const { points } = handles;
-
-      // get the current slice Index
-      const sliceIndex = viewport.getCurrentImageIdIndex();
-      annotation.data.startSlice = sliceIndex;
-
-      // distance between camera focal point and each point on the rectangle
-      const newPoints = points.map(point => {
-        const distance = vec3.create();
-        vec3.subtract(distance, focalPoint, point);
-        // distance in the direction of the viewPlaneNormal
-        const distanceInViewPlane = vec3.dot(distance, viewPlaneNormal);
-        // new point is current point minus distanceInViewPlane
-        const newPoint = vec3.create();
-        vec3.scaleAndAdd(newPoint, point, viewPlaneNormal, distanceInViewPlane);
-
-        return newPoint;
-        //
-      });
-
-      handles.points = newPoints;
-      // IMPORTANT: invalidate the toolData for the cached stat to get updated
-      // and re-calculate the projection points
-      annotation.invalidated = true;
-      viewport.render();
-    },
-    setEndSliceForROIThresholdTool: () => {
-      const { viewport } = _getActiveViewportsEnabledElement();
-
-      const selectedAnnotationUIDs = csTools.annotation.selection.getAnnotationsSelectedByToolName(
-        RECTANGLE_ROI_THRESHOLD_MANUAL
-      );
-
-      const annotationUID = selectedAnnotationUIDs[0];
-
-      const annotation = csTools.annotation.state.getAnnotation(annotationUID);
-
-      // get the current slice Index
-      const sliceIndex = viewport.getCurrentImageIdIndex();
-      annotation.data.endSlice = sliceIndex;
-
-      // IMPORTANT: invalidate the toolData for the cached stat to get updated
-      // and re-calculate the projection points
-      annotation.invalidated = true;
-
-      viewport.render();
     },
   };
 
   const definitions = {
-    setColormap: {
-      commandFn: actions.setColorMap,
-    },
-    setToolActive: {
-      commandFn: actions.setToolActive,
-    },
-    setViewportActive: {
-      commandFn: actions.setViewportActive,
-    },
-    showContextMenu: {
-      commandFn: actions.showContextMenu,
-    },
-    closeContextMenu: {
-      commandFn: actions.closeContextMenu,
-    },
-    clearMeasurements: {
-      commandFn: actions.clearMeasurements,
-      storeContexts: [],
-      options: {},
-    },
-    displayNotification: {
-      commandFn: actions.displayNotification,
-      storeContexts: [],
-      options: {},
-    },
-    setHangingProtocol: {
-      commandFn: actions.setHangingProtocol,
-      storeContexts: [],
-      options: {},
-    },
-    toggleHangingProtocol: {
-      commandFn: actions.toggleHangingProtocol,
-      storeContexts: [],
-      options: {},
-    },
-    navigateHistory: {
-      commandFn: actions.navigateHistory,
-      storeContexts: [],
-      options: {},
-    },
+    multimonitor: actions.multimonitor,
+    promptSaveReport: actions.promptSaveReport,
+    loadStudy: actions.loadStudy,
+    showContextMenu: actions.showContextMenu,
+    closeContextMenu: actions.closeContextMenu,
+    clearMeasurements: actions.clearMeasurements,
+    displayNotification: actions.displayNotification,
+    setHangingProtocol: actions.setHangingProtocol,
+    toggleHangingProtocol: actions.toggleHangingProtocol,
+    navigateHistory: actions.navigateHistory,
     nextStage: {
       commandFn: actions.deltaStage,
-      storeContexts: [],
       options: { direction: 1 },
     },
     previousStage: {
       commandFn: actions.deltaStage,
-      storeContexts: [],
       options: { direction: -1 },
     },
-    setViewportGridLayout: {
-      commandFn: actions.setViewportGridLayout,
-      storeContexts: [],
-      options: {},
-    },
-    toggleOneUp: {
-      commandFn: actions.toggleOneUp,
-      storeContexts: [],
-      options: {},
-    },
-    openDICOMTagViewer: {
-      commandFn: actions.openDICOMTagViewer,
-    },
-    updateViewportDisplaySet: {
-      commandFn: actions.updateViewportDisplaySet,
-      storeContexts: [],
-      options: {},
-    },
-    calculateTMTV: {
-      commandFn: actions.calculateTMTV,
-    },
-    createNewLabelmapFromPT: {
-      commandFn: actions.createNewLabelmapFromPT,
-    },
-    setSegmentationActiveForToolGroups: {
-      commandFn: actions.setSegmentationActiveForToolGroups,
-    },
-    setEndSliceForROIThresholdTool: {
-      commandFn: actions.setEndSliceForROIThresholdTool,
-      storeContexts: [],
-      options: {},
-    },
-    setStartSliceForROIThresholdTool: {
-      commandFn: actions.setStartSliceForROIThresholdTool,
-      storeContexts: [],
-      options: {},
-    },
-    calculateSuvPeak: {
-      commandFn: actions.calculateSuvPeak,
-    },
-    thresholdSegmentationByRectangleROITool: {
-      commandFn: actions.thresholdSegmentationByRectangleROITool,
-    },
+    setViewportGridLayout: actions.setViewportGridLayout,
+    toggleOneUp: actions.toggleOneUp,
+    openDICOMTagViewer: actions.openDICOMTagViewer,
+    updateViewportDisplaySet: actions.updateViewportDisplaySet,
   };
 
   return {

@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 
-const TableBody = ({ children, className, style }) => {
+const TableBody = ({ children, className = '', style = {} }) => {
   return (
     <div
       className={classnames('ohif-scrollbar mt-2 max-h-48 overflow-y-scroll', className)}
@@ -15,11 +15,6 @@ const TableBody = ({ children, className, style }) => {
         : children}
     </div>
   );
-};
-
-TableBody.defaultProps = {
-  className: '',
-  style: {},
 };
 
 TableBody.propTypes = {

@@ -1,18 +1,22 @@
 import React from 'react';
-import { Select, Icon, Dropdown } from '../../components';
+import { Select, Dropdown, Tooltip } from '../../components';
 import PropTypes from 'prop-types';
+import { useTranslation } from 'react-i18next';
+import { Icons } from '@ohif/ui-next';
 
 function SegmentationDropDownRow({
   segmentations = [],
   activeSegmentation,
   onActiveSegmentationChange,
-  disableEditing,
+  disableEditing = false,
   onToggleSegmentationVisibility,
   onSegmentationEdit,
   onSegmentationDownload,
+  onSegmentationDownloadRTSS,
   storeSegmentation,
   onSegmentationDelete,
   onSegmentationAdd,
+  addSegmentationClassName,
 }) {
   const handleChange = option => {
     onActiveSegmentationChange(option.value); // Notify the parent
@@ -22,13 +26,14 @@ function SegmentationDropDownRow({
     value: s.id,
     label: s.label,
   }));
+  const { t } = useTranslation('SegmentationTable');
 
   if (!activeSegmentation) {
     return null;
   }
 
   return (
-    <div className="group mx-0.5 mt-[8px] flex items-center">
+    <div className="group mx-0.5 mt-[8px] flex items-center pb-[10px]">
       <div
         onClick={e => {
           e.stopPropagation();
@@ -38,13 +43,14 @@ function SegmentationDropDownRow({
           id="segmentation-dropdown"
           showDropdownIcon={false}
           alignment="left"
-          itemsClassName="text-primary-active"
+          itemsClassName={`text-primary-active ${addSegmentationClassName}`}
           showBorders={false}
+          maxCharactersPerLine={30}
           list={[
             ...(!disableEditing
               ? [
                   {
-                    title: 'Add New Segmentation',
+                    title: t('Add new segmentation'),
                     onClick: () => {
                       onSegmentationAdd();
                     },
@@ -54,7 +60,7 @@ function SegmentationDropDownRow({
             ...(!disableEditing
               ? [
                   {
-                    title: 'Rename',
+                    title: t('Rename'),
                     onClick: () => {
                       onSegmentationEdit(activeSegmentation.id);
                     },
@@ -62,7 +68,7 @@ function SegmentationDropDownRow({
                 ]
               : []),
             {
-              title: 'Delete',
+              title: t('Delete'),
               onClick: () => {
                 onSegmentationDelete(activeSegmentation.id);
               },
@@ -70,23 +76,31 @@ function SegmentationDropDownRow({
             ...(!disableEditing
               ? [
                   {
-                    title: 'Export DICOM SEG',
+                    title: t('Export DICOM SEG'),
                     onClick: () => {
                       storeSegmentation(activeSegmentation.id);
                     },
                   },
-                  {
-                    title: 'Download',
-                    onClick: () => {
-                      onSegmentationDownload(activeSegmentation.id);
-                    },
-                  },
                 ]
               : []),
+            ...[
+              {
+                title: t('Download DICOM SEG'),
+                onClick: () => {
+                  onSegmentationDownload(activeSegmentation.id);
+                },
+              },
+              {
+                title: t('Download DICOM RTSTRUCT'),
+                onClick: () => {
+                  onSegmentationDownloadRTSS(activeSegmentation.id);
+                },
+              },
+            ],
           ]}
         >
-          <div className="hover:bg-secondary-dark mx-1 grid h-[28px] w-[28px]  cursor-pointer place-items-center rounded-[4px]">
-            <Icon name="icon-more-menu"></Icon>
+          <div className="hover:bg-secondary-dark grid h-[28px] w-[28px] cursor-pointer place-items-center rounded-[4px]">
+            <Icons.More />
           </div>
         </Dropdown>
       </div>
@@ -96,12 +110,7 @@ function SegmentationDropDownRow({
           isClearable={false}
           onChange={handleChange}
           components={{
-            DropdownIndicator: () => (
-              <Icon
-                name={'chevron-down-new'}
-                className="mr-2"
-              />
-            ),
+            DropdownIndicator: () => <Icons.ChevronOpen className="mr-2" />,
           }}
           isSearchable={false}
           options={selectOptions}
@@ -110,20 +119,25 @@ function SegmentationDropDownRow({
         />
       )}
       <div className="flex items-center">
+        <Tooltip
+          position="bottom-right"
+          content={
+            <div className="flex flex-col">
+              <div className="text-[13px] text-white">Series:</div>
+              <div className="text-aqua-pale text-[13px]">{activeSegmentation.description}</div>
+            </div>
+          }
+        >
+          <Icons.Info className="text-primary-active" />
+        </Tooltip>
         <div
-          className="hover:bg-secondary-dark ml-3 mr-1 grid h-[28px]  w-[28px] cursor-pointer place-items-center rounded-[4px]"
+          className="hover:bg-secondary-dark mr-1 grid h-[28px] w-[28px] cursor-pointer place-items-center rounded-[4px]"
           onClick={() => onToggleSegmentationVisibility(activeSegmentation.id)}
         >
           {activeSegmentation.isVisible ? (
-            <Icon
-              name="row-shown"
-              className="text-primary-active"
-            />
+            <Icons.EyeVisible className="text-primary-active" />
           ) : (
-            <Icon
-              name="row-hidden"
-              className="text-primary-active"
-            />
+            <Icons.EyeHidden className="text-primary-active" />
           )}
         </div>
       </div>
@@ -147,14 +161,10 @@ SegmentationDropDownRow.propTypes = {
   onToggleSegmentationVisibility: PropTypes.func,
   onSegmentationEdit: PropTypes.func,
   onSegmentationDownload: PropTypes.func,
+  onSegmentationDownloadRTSS: PropTypes.func,
   storeSegmentation: PropTypes.func,
   onSegmentationDelete: PropTypes.func,
   onSegmentationAdd: PropTypes.func,
-};
-
-SegmentationDropDownRow.defaultProps = {
-  segmentations: [],
-  disableEditing: false,
 };
 
 export default SegmentationDropDownRow;

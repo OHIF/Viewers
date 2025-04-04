@@ -3,8 +3,10 @@
   "Image": "Test Image",
   "Layout": "Test Layout",
   "Measurements": "Test Measurements",
+  "mm": "Test mm",
   "More": "Test More",
   "Next": "Test Next",
+  "No": "Test No",
   "Play": "Test Play",
   "Previous": "Test Previous",
   "Reset": "Test Reset",
@@ -12,5 +14,6 @@
   "Series": "Test Series",
   "Show": "Test Show",
   "Stop": "Test Stop",
-  "StudyDate": "Test Study Date"
+  "StudyDate": "Test Study Date",
+  "Yes": "Test Yes"
 }

@@ -1,0 +1,11 @@
+.all-in-one-menu-item {
+  @apply h-8 px-2 text-[14px] w-full;
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  line-height: 18px;
+}
+
+.all-in-one-menu-item-effects {
+  @apply cursor-pointer hover:bg-primary-dark hover:rounded;
+}

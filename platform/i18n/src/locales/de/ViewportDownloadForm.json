@@ -1,0 +1,14 @@
+{
+  "emptyFilenameError": "Der Dateiname darf nicht leer sein.",
+  "fileType": "Dateityp",
+  "filename": "Dateiname",
+  "formTitle": "Bitte geben Sie die Grösse, den Dateinamen und den gewünschten Typ für das Bild an.",
+  "imageHeight": "Höhe (px)",
+  "imagePreview": "Vorschau",
+  "imageWidth": "Breite (px)",
+  "keepAspectRatio": "Seitenverhältnis beibehalten",
+  "loadingPreview": "Vorschau laden...",
+  "minHeightError": "Die Mindesthöhe beträgt 100px.",
+  "minWidthError": "Die Mindestbreite beträgt 100px.",
+  "showAnnotations": "Annotationen anzeigen"
+}

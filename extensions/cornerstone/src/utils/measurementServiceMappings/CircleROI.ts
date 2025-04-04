@@ -1,17 +1,25 @@
 import SUPPORTED_TOOLS from './constants/supportedTools';
+import { getDisplayUnit } from './utils';
 import getSOPInstanceAttributes from './utils/getSOPInstanceAttributes';
 import { utils } from '@ohif/core';
+import { getStatisticDisplayString } from './utils/getValueDisplayString';
+import { getIsLocked } from './utils/getIsLocked';
+import { getIsVisible } from './utils/getIsVisible';
 
 const CircleROI = {
   toAnnotation: measurement => {},
   toMeasurement: (
     csToolsEventDetail,
-    DisplaySetService,
+    displaySetService,
     CornerstoneViewportService,
-    getValueTypeFromToolType
+    getValueTypeFromToolType,
+    customizationService
   ) => {
-    const { annotation, viewportId } = csToolsEventDetail;
+    const { annotation } = csToolsEventDetail;
     const { metadata, data, annotationUID } = annotation;
+
+    const isLocked = getIsLocked(annotationUID);
+    const isVisible = getIsVisible(annotationUID);
 
     if (!metadata || !data) {
       console.warn('Length tool: Missing metadata or data');
@@ -27,36 +35,41 @@ const CircleROI = {
 
     const { SOPInstanceUID, SeriesInstanceUID, StudyInstanceUID } = getSOPInstanceAttributes(
       referencedImageId,
-      CornerstoneViewportService,
-      viewportId
+      displaySetService,
+      annotation
     );
 
     let displaySet;
 
     if (SOPInstanceUID) {
-      displaySet = DisplaySetService.getDisplaySetForSOPInstanceUID(
+      displaySet = displaySetService.getDisplaySetForSOPInstanceUID(
         SOPInstanceUID,
         SeriesInstanceUID
       );
     } else {
-      displaySet = DisplaySetService.getDisplaySetsForSeries(SeriesInstanceUID);
+      displaySet = displaySetService.getDisplaySetsForSeries(SeriesInstanceUID)[0];
     }
 
-    const { points } = data.handles;
+    const { points, textBox } = data.handles;
 
-    const mappedAnnotations = getMappedAnnotations(annotation, DisplaySetService);
+    const mappedAnnotations = getMappedAnnotations(annotation, displaySetService);
 
     const displayText = getDisplayText(mappedAnnotations, displaySet);
-    const getReport = () => _getReport(mappedAnnotations, points, FrameOfReferenceUID);
+    const getReport = () =>
+      _getReport(mappedAnnotations, points, FrameOfReferenceUID, customizationService);
 
     return {
       uid: annotationUID,
       SOPInstanceUID,
       FrameOfReferenceUID,
       points,
+      textBox,
+      isLocked,
+      isVisible,
       metadata,
       referenceSeriesUID: SeriesInstanceUID,
       referenceStudyUID: StudyInstanceUID,
+      referencedImageId,
       frameNumber: mappedAnnotations[0]?.frameNumber || 1,
       toolName: metadata.toolName,
       displaySetInstanceUID: displaySet.displaySetInstanceUID,
@@ -69,7 +82,7 @@ const CircleROI = {
   },
 };
 
-function getMappedAnnotations(annotation, DisplaySetService) {
+function getMappedAnnotations(annotation, displaySetService) {
   const { metadata, data } = annotation;
   const { cachedStats } = data;
   const { referencedImageId } = metadata;
@@ -80,25 +93,27 @@ function getMappedAnnotations(annotation, DisplaySetService) {
   }
 
   const annotations = [];
+  const addedModalities = new Set();
   Object.keys(cachedStats).forEach(targetId => {
     const targetStats = cachedStats[targetId];
 
-    if (!referencedImageId) {
-      // Todo: Non-acquisition plane measurement mapping not supported yet
-      throw new Error('Non-acquisition plane measurement mapping not supported');
-    }
-
-    const { SOPInstanceUID, SeriesInstanceUID, frameNumber } =
-      getSOPInstanceAttributes(referencedImageId);
-
-    const displaySet = DisplaySetService.getDisplaySetForSOPInstanceUID(
-      SOPInstanceUID,
-      SeriesInstanceUID,
-      frameNumber
+    const { SOPInstanceUID, SeriesInstanceUID, frameNumber } = getSOPInstanceAttributes(
+      referencedImageId,
+      displaySetService,
+      annotation
     );
 
+    const displaySet = displaySetService.getDisplaySetsForSeries(SeriesInstanceUID)[0];
+
     const { SeriesNumber } = displaySet;
-    const { mean, stdDev, max, area, Modality, areaUnit, modalityUnit } = targetStats;
+    const { mean, stdDev, max, area, Modality, areaUnit, modalityUnit, perimeter, radiusUnit } =
+      targetStats;
+
+    if (Modality && addedModalities.has(Modality)) {
+      return;
+    }
+
+    addedModalities.add(Modality);
 
     annotations.push({
       SeriesInstanceUID,
@@ -112,6 +127,8 @@ function getMappedAnnotations(annotation, DisplaySetService) {
       max,
       area,
       areaUnit,
+      perimeter,
+      radiusUnit,
     });
   });
 
@@ -123,7 +140,7 @@ This function is used to convert the measurement data to a format that is
 suitable for the report generation (e.g. for the csv report). The report
 returns a list of columns and corresponding values.
 */
-function _getReport(mappedAnnotations, points, FrameOfReferenceUID) {
+function _getReport(mappedAnnotations, points, FrameOfReferenceUID, customizationService) {
   const columns = [];
   const values = [];
 
@@ -138,13 +155,7 @@ function _getReport(mappedAnnotations, points, FrameOfReferenceUID) {
       return;
     }
 
-    columns.push(
-      `max (${unit})`,
-      `mean (${unit})`,
-      `std (${unit})`,
-      'Area',
-      'Unit'
-    );
+    columns.push(`max (${unit})`, `mean (${unit})`, `std (${unit})`, 'Area', 'Unit');
     values.push(max, mean, stdDev, area, areaUnit);
   });
 
@@ -168,16 +179,19 @@ function _getReport(mappedAnnotations, points, FrameOfReferenceUID) {
 }
 
 function getDisplayText(mappedAnnotations, displaySet) {
-  if (!mappedAnnotations || !mappedAnnotations.length) {
-    return '';
-  }
+  const displayText = {
+    primary: [],
+    secondary: [],
+  };
 
-  const displayText = [];
+  if (!mappedAnnotations || !mappedAnnotations.length) {
+    return displayText;
+  }
 
   // Area is the same for all series
   const { area, SOPInstanceUID, frameNumber, areaUnit } = mappedAnnotations[0];
 
-  const instance = displaySet.images.find(image => image.SOPInstanceUID === SOPInstanceUID);
+  const instance = displaySet.instances.find(image => image.SOPInstanceUID === SOPInstanceUID);
 
   let InstanceNumber;
   if (instance) {
@@ -188,23 +202,23 @@ function getDisplayText(mappedAnnotations, displaySet) {
   const frameText = displaySet.isMultiFrame ? ` F: ${frameNumber}` : '';
 
   // Area sometimes becomes undefined if `preventHandleOutsideImage` is off.
-  const roundedArea = utils.roundNumber(area || 0, 2);
-  displayText.push(`${roundedArea} ${areaUnit}`);
+  if (!isNaN(area)) {
+    const roundedArea = utils.roundNumber(area || 0, 2);
+    displayText.primary.push(`${roundedArea} ${getDisplayUnit(areaUnit)}`);
+  }
 
   // Todo: we need a better UI for displaying all these information
   mappedAnnotations.forEach(mappedAnnotation => {
-    const { unit, max, SeriesNumber } = mappedAnnotation;
+    const { unit, perimeter, radiusUnit, max, SeriesNumber } = mappedAnnotation;
 
-    let maxStr = '';
-    if (max) {
-      const roundedMax = utils.roundNumber(max, 2);
-      maxStr = `Max: ${roundedMax} <small>${unit}</small> `;
+    if (!isNaN(max)) {
+      const maxStr = getStatisticDisplayString(max, unit, 'max');
+      displayText.primary.push(maxStr);
+    } else if (perimeter && !isNaN(perimeter)) {
+      const perimeterStr = getStatisticDisplayString(perimeter, radiusUnit, 'perimeter');
+      displayText.primary.push(perimeterStr);
     }
-
-    const str = `${maxStr}(S:${SeriesNumber}${instanceText}${frameText})`;
-    if (!displayText.includes(str)) {
-      displayText.push(str);
-    }
+    displayText.secondary.push(`S: ${SeriesNumber}${instanceText}${frameText}`);
   });
 
   return displayText;

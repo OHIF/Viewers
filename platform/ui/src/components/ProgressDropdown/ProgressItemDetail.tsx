@@ -1,18 +1,12 @@
 import React, { useState, useMemo, ReactElement } from 'react';
-import { Icon, Tooltip } from '../';
-import {
-  ProgressDropdownOption,
-  ProgressDropdownOptionPropType,
-} from './types';
+import { Icons } from '@ohif/ui-next';
+import { Tooltip } from '../../components';
+import { ProgressDropdownOption, ProgressDropdownOptionPropType } from './types';
 
-const MAX_TOOLTIP_LENGTH = 250;
+const MAX_TOOLTIP_LENGTH = 150;
 const iconClassNames = 'grow-0 text-primary-light h-4 w-4 mt-1 mr-2 mb-0 ml-1';
 
-const ProgressItemDetail = ({
-  option,
-}: {
-  option: ProgressDropdownOption;
-}): ReactElement => {
+const ProgressItemDetail = ({ option }: { option: ProgressDropdownOption }): ReactElement => {
   const { label, info, completed } = option;
   const [truncate, setTruncate] = useState(true);
   const handleOnHideTooltip = () => setTruncate(true);
@@ -37,7 +31,7 @@ const ProgressItemDetail = ({
 
     return (
       <>
-        {info.substr(0, MAX_TOOLTIP_LENGTH)}
+        {info.slice(0, MAX_TOOLTIP_LENGTH)}
         <button
           className="text-primary-active font-bold"
           onClick={handleReadMoreClick}
@@ -50,7 +44,14 @@ const ProgressItemDetail = ({
 
   const iconContent = (
     <>
-      {icon && <Icon name={icon} className={iconClassNames} />}
+      {icon && (
+        <div>
+          <Icons.ByName
+            name={icon}
+            className={iconClassNames}
+          />
+        </div>
+      )}
       {!icon && <div className={iconClassNames} />}
     </>
   );
@@ -69,7 +70,9 @@ const ProgressItemDetail = ({
       )}
       {!info && iconContent}
 
-      <div className="grow text-base leading-6">{label}</div>
+      <div className="grow overflow-hidden text-ellipsis whitespace-nowrap text-base leading-6">
+        {label}
+      </div>
     </>
   );
 };

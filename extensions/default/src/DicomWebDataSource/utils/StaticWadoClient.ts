@@ -1,4 +1,25 @@
 import { api } from 'dicomweb-client';
+import fixMultipart from './fixMultipart';
+
+const { DICOMwebClient } = api;
+
+const anyDicomwebClient = DICOMwebClient as any;
+
+// Ugly over-ride, but the internals aren't otherwise accessible.
+if (!anyDicomwebClient._orig_buildMultipartAcceptHeaderFieldValue) {
+  anyDicomwebClient._orig_buildMultipartAcceptHeaderFieldValue =
+    anyDicomwebClient._buildMultipartAcceptHeaderFieldValue;
+  anyDicomwebClient._buildMultipartAcceptHeaderFieldValue = function (mediaTypes, acceptableTypes) {
+    if (mediaTypes.length === 1 && mediaTypes[0].mediaType.endsWith('/*')) {
+      return '*/*';
+    } else {
+      return anyDicomwebClient._orig_buildMultipartAcceptHeaderFieldValue(
+        mediaTypes,
+        acceptableTypes
+      );
+    }
+  };
+}
 
 /**
  * An implementation of the static wado client, that fetches data from
@@ -7,6 +28,7 @@ import { api } from 'dicomweb-client';
  * performing searches doesn't work.  This version fixes the query issue
  * by manually implementing a query option.
  */
+
 export default class StaticWadoClient extends api.DICOMwebClient {
   static studyFilterKeys = {
     studyinstanceuid: '0020000D',
@@ -24,9 +46,50 @@ export default class StaticWadoClient extends api.DICOMwebClient {
     modality: '00080060',
   };
 
-  constructor(qidoConfig) {
-    super(qidoConfig);
-    this.staticWado = qidoConfig.staticWado;
+  protected config;
+  protected staticWado;
+
+  constructor(config) {
+    super(config);
+    this.staticWado = config.staticWado;
+    this.config = config;
+  }
+
+  /**
+   * Handle improperly specified multipart/related return type.
+   * Note if the response is SUPPOSED to be multipart encoded already, then this
+   * will double-decode it.
+   *
+   * @param options
+   * @returns De-multiparted response data.
+   *
+   */
+  public retrieveBulkData(options): Promise<any[]> {
+    const shouldFixMultipart = this.config.fixBulkdataMultipart !== false;
+    const useOptions = {
+      ...options,
+    };
+    if (this.staticWado) {
+      useOptions.mediaTypes = [{ mediaType: 'application/*' }];
+    }
+    return super
+      .retrieveBulkData(useOptions)
+      .then(result => (shouldFixMultipart ? fixMultipart(result) : result));
+  }
+
+  /**
+   * Retrieves instance frames using the image/* media type when configured
+   * to do so (static wado back end).
+   */
+  public retrieveInstanceFrames(options) {
+    if (this.staticWado) {
+      return super.retrieveInstanceFrames({
+        ...options,
+        mediaTypes: [{ mediaType: 'image/*' }],
+      });
+    } else {
+      return super.retrieveInstanceFrames(options);
+    }
   }
 
   /**
@@ -93,18 +156,40 @@ export default class StaticWadoClient extends api.DICOMwebClient {
    *
    * @param {*} desired
    * @param {*} actual
+   * @param {*} options - fuzzyMatching: if true, then do a sub-string match
    * @returns true if the values match
    */
-  compareValues(desired, actual) {
+  compareValues(desired, actual, options) {
+    const { fuzzyMatching } = options;
+
     if (Array.isArray(desired)) {
-      return desired.find(item => this.compareValues(item, actual));
+      return desired.find(item => this.compareValues(item, actual, options));
     }
     if (Array.isArray(actual)) {
-      return actual.find(actualItem => this.compareValues(desired, actualItem));
+      return actual.find(actualItem => this.compareValues(desired, actualItem, options));
     }
     if (actual?.Alphabetic) {
       actual = actual.Alphabetic;
     }
+
+    if (fuzzyMatching && typeof actual === 'string' && typeof desired === 'string') {
+      const normalizeValue = str => {
+        return str.toLowerCase();
+      };
+
+      const normalizedDesired = normalizeValue(desired);
+      const normalizedActual = normalizeValue(actual);
+
+      const tokenizeAndNormalize = str => str.split(/[\s^]+/).filter(Boolean);
+
+      const desiredTokens = tokenizeAndNormalize(normalizedDesired);
+      const actualTokens = tokenizeAndNormalize(normalizedActual);
+
+      return desiredTokens.every(desiredToken =>
+        actualTokens.some(actualToken => actualToken.startsWith(desiredToken))
+      );
+    }
+
     if (typeof actual == 'string') {
       if (actual.length === 0) {
         return true;
@@ -131,7 +216,7 @@ export default class StaticWadoClient extends api.DICOMwebClient {
     }
     const dash = range.indexOf('-');
     if (dash === -1) {
-      return this.compareValues(range, value);
+      return this.compareValues(range, value, {});
     }
     const start = range.substring(0, dash);
     const end = range.substring(dash + 1);
@@ -148,6 +233,14 @@ export default class StaticWadoClient extends api.DICOMwebClient {
    * @returns
    */
   filterItem(key: string, queryParams, study, sourceFilterMap) {
+    const isName = (key: string) => key.indexOf('name') !== -1;
+
+    const { supportsFuzzyMatching = false } = this.config;
+
+    const options = {
+      fuzzyMatching: isName(key) && supportsFuzzyMatching,
+    };
+
     const altKey = sourceFilterMap[key] || key;
     if (!queryParams) {
       return true;
@@ -160,11 +253,12 @@ export default class StaticWadoClient extends api.DICOMwebClient {
     if (!valueElem) {
       return false;
     }
-    if (valueElem.vr == 'DA') {
+    if (valueElem.vr === 'DA' && valueElem.Value?.[0]) {
       return this.compareDateRange(testValue, valueElem.Value[0]);
     }
     const value = valueElem.Value;
-    return this.compareValues(testValue, value);
+
+    return this.compareValues(testValue, value, options);
   }
 
   /** Converts the query parameters to lower case query parameters */

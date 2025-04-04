@@ -1,29 +1,19 @@
 import React, { ReactElement } from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
-import {
-  ProgressDropdownOption,
-  ProgressDropdownOptionPropType,
-} from './types';
+import { ProgressDropdownOption, ProgressDropdownOptionPropType } from './types';
 
-const ProgressDiscreteBar = ({
-  options,
-}: {
-  options: ProgressDropdownOption[];
-}): ReactElement => {
+const ProgressDiscreteBar = ({ options }: { options: ProgressDropdownOption[] }): ReactElement => {
   return (
     <div className="flex">
       {options.map((option, i) => (
         <div
           key={i}
-          className={classnames(
-            'h-1 grow mr-1 last:mr-0 first:rounded-l-sm last:rounded-r-sm',
-            {
-              'bg-black': !option.activated && !option.completed,
-              'bg-primary-main': option.activated && !option.completed,
-              'bg-primary-light': option.completed,
-            }
-          )}
+          className={classnames('mr-1 h-1 grow first:rounded-l-sm last:mr-0 last:rounded-r-sm', {
+            'bg-black': !option.activated && !option.completed,
+            'bg-primary-main': option.activated && !option.completed,
+            'bg-primary-light': option.completed,
+          })}
         />
       ))}
     </div>

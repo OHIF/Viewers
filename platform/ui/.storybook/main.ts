@@ -85,6 +85,14 @@ const config: StorybookConfig = {
       include: path.resolve(__dirname, '../'),
     });
 
+    // ignore the file @icr/polyseg-wasm during the build as it is a wasm file and
+    // we don't need that for ui
+    config.module.rules.push({
+      test: /@icr\/polyseg-wasm/,
+      type: 'javascript/auto',
+      loader: 'file-loader',
+    });
+
     // Return the altered config
     return config;
   },

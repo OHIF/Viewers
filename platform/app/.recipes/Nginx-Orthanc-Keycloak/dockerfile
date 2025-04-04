@@ -1,0 +1,57 @@
+# Stage 1: Build the application
+FROM node:20.18.1-slim as builder
+
+# Setup the working directory
+RUN mkdir /usr/src/app
+WORKDIR /usr/src/app
+
+# Install dependencies
+# apt-get update is combined with apt-get install to avoid using outdated packages
+RUN apt-get update && apt-get install -y build-essential python3
+
+# Copy package.json and other dependency-related files first
+# Assuming your package.json and yarn.lock or similar are located in the project root
+# Todo: this probably can get improved by copying
+# only the package json files and running yarn install before
+# copying the rest of the files but having a monorepo setup
+# makes this a bit more complicated, i wasn't able to get it working
+COPY ./ /usr/src/app/
+
+# Install node dependencies
+RUN yarn config set workspaces-experimental true
+RUN yarn install
+
+# Copy the rest of the application code
+
+# set QUICK_BUILD to true to make the build faster for dev
+ENV APP_CONFIG=config/docker-nginx-orthanc-keycloak.js
+
+# Build the application
+RUN yarn run build
+
+# Use nginx as the base image
+FROM nginx:alpine
+
+# Install dependencies for oauth2-proxy
+RUN apk add --no-cache curl
+
+# Create necessary directories
+RUN mkdir -p /var/logs/nginx /var/www/html /etc/oauth2-proxy
+
+# Download and install oauth2-proxy
+RUN curl -L https://github.com/oauth2-proxy/oauth2-proxy/releases/download/v7.4.0/oauth2-proxy-v7.4.0.linux-amd64.tar.gz -o oauth2-proxy.tar.gz && \
+  tar -xvzf oauth2-proxy.tar.gz && \
+  mv oauth2-proxy-v7.4.0.linux-amd64/oauth2-proxy /usr/local/bin/ && \
+  rm -rf oauth2-proxy-v7.4.0.linux-amd64 oauth2-proxy.tar.gz
+
+
+COPY --from=builder /usr/src/app/platform/app/dist /var/www/html
+
+# Copy the entrypoint script
+COPY ./platform/app/.recipes/Nginx-Orthanc-Keycloak/config/entrypoint.sh /entrypoint.sh
+
+# Expose necessary ports
+EXPOSE 80 443 4180
+# Set the entrypoint script as the entrypoint
+RUN chmod +x entrypoint.sh
+ENTRYPOINT ["/entrypoint.sh"]

@@ -11,42 +11,31 @@ const path = require('path');
 const fs = require('fs');
 const versions = fs.readFileSync('../../version.txt', 'utf8').split('\n');
 
-// This probably only makes sense for the beta phase, temporary
-// function getNextBetaVersionName() {
-//   const expectedPrefix = '';
-
-//   const lastReleasedVersion = versions[0];
-//   if (!lastReleasedVersion.includes(expectedPrefix)) {
-//     throw new Error(
-//       'this code is only meant to be used during the 2.0 beta phase.'
-//     );
-//   }
-//   const version = parseInt(lastReleasedVersion.replace(expectedPrefix, ''), 10);
-//   return `${expectedPrefix}${version + 1}`;
-// }
-
-// const allDocHomesPaths = [
-//   '/docs/',
-//   '/docs/next/',
-//   ...versions.slice(1).map(version => `/docs/${version}/`),
-// ];
-
-const isDev = process.env.NODE_ENV === 'development';
-
-const isDeployPreview = process.env.NETLIFY && process.env.CONTEXT === 'deploy-preview';
+const ArchivedVersionsDropdownItems = [
+  {
+    version: '3.8.5',
+    href: 'https://v3p8.docs.ohif.org',
+    isExternal: true,
+  },
+  {
+    version: '2.0',
+    href: 'https://v2.docs.ohif.org',
+    isExternal: true,
+  },
+  {
+    version: '1.0',
+    href: 'https://v1.docs.ohif.org',
+    isExternal: true,
+  },
+];
 
 const baseUrl = process.env.BASE_URL || '/';
-const isBootstrapPreset = process.env.DOCUSAURUS_PRESET === 'bootstrap';
-
-// Special deployment for staging locales until they get enough translations
-// https://app.netlify.com/sites/docusaurus-i18n-staging
-// https://docusaurus-i18n-staging.netlify.app/
-const isI18nStaging = process.env.I18N_STAGING === 'true';
-
-// const isVersioningDisabled = !!process.env.DISABLE_VERSIONING || isI18nStaging;
 
 /** @type {import('@docusaurus/types').DocusaurusConfig} */
 module.exports = {
+  future: {
+    experimental_faster: true,
+  },
   title: 'OHIF',
   tagline: 'Open-source web-based medical imaging platform',
   organizationName: 'Open Health Imaging Foundation',
@@ -56,70 +45,16 @@ module.exports = {
   url: 'https://docs.ohif.org',
   i18n: {
     defaultLocale: 'en',
-    locales: isDeployPreview
-      ? // Deploy preview: keep it fast!
-        ['en']
-      : isI18nStaging
-      ? // Staging locales: https://docusaurus-i18n-staging.netlify.app/
-        ['en']
-      : // Production locales
-        ['en'],
+    locales: ['en'],
   },
-  onBrokenLinks: 'warn',
-  onBrokenMarkdownLinks: 'warn',
+  onBrokenLinks: 'throw',
+  onBrokenMarkdownLinks: 'throw',
   favicon: 'img/favicon.ico',
-  // customFields: {
-  //   description:
-  //     'An optimized site generator in React. Docusaurus helps you to move fast and write content. Build documentation websites, blogs, marketing pages, and more.',
-  // },
   themes: ['@docusaurus/theme-live-codeblock'],
   plugins: [
-    path.resolve(__dirname, './pluginOHIFWebpackConfig.js'),
-    'plugin-image-zoom', // 3rd party plugin for image click to pop
-    [
-      '@docusaurus/plugin-client-redirects',
-      {
-        fromExtensions: ['html'],
-        redirects: [
-          {
-            // we need this for https://cloud.google.com/healthcare/docs/how-tos/dicom-viewers
-            to: '/2.0-deprecated/deployment/recipes/google-cloud-healthcare',
-            from: [
-              '/connecting-to-image-archives/google-cloud-healthcare',
-              '/connecting-to-image-archives/google-cloud-healthcare.html',
-            ],
-          },
-        ],
-        // createRedirects: function(path) {
-        //   // redirect to /docs from /docs/introduction,
-        //   // as introduction has been made the home doc
-        //   // if (allDocHomesPaths.includes(path)) {
-        //   //   return [`${path}/introduction`];
-        //   // }
-        //   if (path.includes("/connecting-to-image-archives/google-cloud-healthcare")) {
-        //     return ["/deployment/recipes/google-cloud-healthcare"]
-        //   }
-        // },
-        // redirects: [
-        // {
-        //   from: ['/'],
-        //   to: '/docs',
-        // },
-        // {
-        //   from: ['/docs/support', '/docs/next/support'],
-        //   to: '/community/support',
-        // },
-        // {
-        //   from: ['/docs/team', '/docs/next/team'],
-        //   to: '/community/team',
-        // },
-        // {
-        //   from: ['/docs/resources', '/docs/next/resources'],
-        //   to: '/community/resources',
-        // },
-        // ],
-      },
-    ],
+    // path.resolve(__dirname, './pluginOHIFWebpackConfig.js'),
+    // /path.resolve(__dirname, './postcss.js'),
+    'docusaurus-plugin-image-zoom', // 3rd party plugin for image click to pop
     [
       '@docusaurus/plugin-ideal-image',
       {
@@ -129,73 +64,11 @@ module.exports = {
         steps: 2, // the max number of images generated between min and max (inclusive)
       },
     ],
-    // [
-    //   '@docusaurus/plugin-pwa',
-    //   {
-    //     debug: isDeployPreview,
-    //     offlineModeActivationStrategies: [
-    //       'appInstalled',
-    //       'standalone',
-    //       'queryString',
-    //     ],
-    //     // swRegister: false,
-    //     // swCustom: path.resolve(__dirname, 'src/sw.js'),
-    //     pwaHead: [
-    //       {
-    //         tagName: 'link',
-    //         rel: 'icon',
-    //         href: 'img/docusaurus.png',
-    //       },
-    //       {
-    //         tagName: 'link',
-    //         rel: 'manifest',
-    //         href: `${baseUrl}manifest.json`,
-    //       },
-    //       {
-    //         tagName: 'meta',
-    //         name: 'theme-color',
-    //         content: 'rgb(37, 194, 160)',
-    //       },
-    //       {
-    //         tagName: 'meta',
-    //         name: 'apple-mobile-web-app-capable',
-    //         content: 'yes',
-    //       },
-    //       {
-    //         tagName: 'meta',
-    //         name: 'apple-mobile-web-app-status-bar-style',
-    //         content: '#000',
-    //       },
-    //       {
-    //         tagName: 'link',
-    //         rel: 'apple-touch-icon',
-    //         href: 'img/docusaurus.png',
-    //       },
-    //       {
-    //         tagName: 'link',
-    //         rel: 'mask-icon',
-    //         href: 'img/docusaurus.svg',
-    //         color: 'rgb(62, 204, 94)',
-    //       },
-    //       {
-    //         tagName: 'meta',
-    //         name: 'msapplication-TileImage',
-    //         content: 'img/docusaurus.png',
-    //       },
-    //       {
-    //         tagName: 'meta',
-    //         name: 'msapplication-TileColor',
-    //         content: '#000',
-    //       },
-    //     ],
-    //   },
-    // ]
   ],
   presets: [
     [
       'classic',
-      /** @type {import('@docusaurus/preset-classic').Options} */
-      ({
+      {
         debug: true, // force debug plugin usage
         docs: {
           routeBasePath: '/',
@@ -234,7 +107,7 @@ module.exports = {
           trackingID: 'G-DDBJFE34EG',
           anonymizeIP: true,
         },
-      }),
+      },
     ],
   ],
   themeConfig:
@@ -255,13 +128,15 @@ module.exports = {
         // respectPrefersColorScheme: true,
       },
       announcementBar: {
-        id: 'healthimaging',
+        id: 'cornerstone20_ohif_anniversary',
         content:
-          '🚀 AWS has announced the general availability of <a target="_blank" rel="noopener noreferrer" href=" https://aws.amazon.com/about-aws/whats-new/2023/07/general-availability-aws-healthimaging/">HealthImaging!</a> Easily connect your OHIF to it. Learn more <a target="_blank" rel="noopener noreferrer" href="https://github.com/RadicalImaging/ohif-aws-healthimaging">Here!</a>! 🌟',
+          '🎉 Celebrating OHIF’s 10-Year Anniversary with Cornerstone 2.0! Explore enhanced segmentation, new video & microscopy viewports, UI/UX upgrades, and blazing fast prefetching. Dive into the release notes <a target="_blank" rel="noopener noreferrer" href="https://ohif.org/release-notes/3p9/">here</a>! 🚀',
       },
+
       prism: {
-        theme: require('prism-react-renderer/themes/github'),
-        darkTheme: require('prism-react-renderer/themes/dracula'),
+        theme: require('prism-react-renderer').themes.github,
+        darkTheme: require('prism-react-renderer').themes.dracula,
+        additionalLanguages: ['diff'],
       },
       algolia: {
         appId: 'EFLT6YIHHZ',
@@ -277,17 +152,22 @@ module.exports = {
         },
         items: [
           {
-            href: 'https://ohif.org/showcase',
-            label: 'Showcase',
-            target: '_blank',
-            position: 'left',
-          },
-          {
             position: 'left',
             to: '/',
             activeBaseRegex: '^(/next/|/)$',
             docId: 'Introduction',
             label: 'Docs',
+          },
+          {
+            to: '/components',
+            label: 'Components',
+            position: 'left',
+          },
+          {
+            href: 'https://ohif.org/showcase',
+            label: 'Showcase',
+            target: '_blank',
+            position: 'left',
           },
           {
             href: 'https://ohif.org/collaborate',
@@ -296,16 +176,16 @@ module.exports = {
             position: 'left',
           },
           {
-            to: '/migration-guide',
-            label: 'Migration Guides',
-            position: 'left',
-            className: 'new-badge',
-          },
-          {
             to: '/help',
             //activeBaseRegex: '(^/help$)|(/help)',
             label: 'Help',
-            position: 'right',
+            position: 'left',
+          },
+          {
+            to: '/migration-guide/3p8-to-3p9/',
+            //activeBaseRegex: '(^/help$)|(/help)',
+            label: '3.9 Migration Guides',
+            position: 'left',
           },
           {
             type: 'docsVersionDropdown',
@@ -317,9 +197,16 @@ module.exports = {
                 value: '<hr class="dropdown-separator">',
               },
               {
-                to: '/versions',
-                label: 'All versions',
+                type: 'html',
+                className: 'dropdown-archived-versions',
+                value: '<b>Archived versions</b>',
               },
+              ...ArchivedVersionsDropdownItems.map(item => ({
+                label: `${item.version} `,
+                href: item.href,
+                target: item.isExternal ? '_blank' : undefined,
+                rel: item.isExternal ? 'noopener noreferrer' : undefined,
+              })),
             ],
           },
           {

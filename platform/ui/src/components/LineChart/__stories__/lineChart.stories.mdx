@@ -1,0 +1,181 @@
+import LineChart from '../LineChart';
+
+import { ArgsTable, Story, Canvas, Meta } from '@storybook/addon-docs';
+import { createComponentTemplate } from '../../../storybook/functions/create-component-story';
+
+export const argTypes = {
+  component: LineChart,
+  title: 'Components/LineChart',
+};
+
+<Meta
+  title="Components/LineChart"
+  component={LineChart}
+/>
+
+export const LineChartTemplate = args => (
+  <div className="w-96">
+    <LineChart {...args} />
+  </div>
+);
+
+<Heading
+  title="LineChart"
+  componentRelativePath="LineChart/LineChart.tsx"
+/>
+
+- [Overview](#overview)
+- [Props](#props)
+- [Contribute](#contribute)
+
+## Overview
+
+LineChart is a component that...
+
+<Canvas>
+  <Story
+    name="Overview"
+    args={{
+      width: 800,
+      height: 400,
+      showLegend: true,
+      legendWidth: 150,
+      axis: {
+        x: {
+          label: 'Time (s)',
+          indexRef: 0,
+          type: 'x',
+        },
+        y: {
+          label: 'Signal Intensity',
+          indexRef: 1,
+          type: 'y',
+        },
+      },
+      series: [
+        {
+          label: 'First series',
+          points: [
+            [0, 607.54],
+            [1, 648.28],
+            [2, 696.7],
+            [3, 693.87],
+            [4, 740.02],
+            [5, 707.04],
+            [6, 748.73],
+            [7, 792.34],
+            [8, 842.03],
+            [9, 808.63],
+            [10, 798.81],
+            [11, 836.71],
+            [12, 800.22],
+            [13, 761.66],
+            [14, 745.5],
+            [15, 774.53],
+            [16, 824.04],
+            [17, 837.02],
+            [18, 857.5],
+            [19, 818.29],
+            [20, 786.71],
+            [21, 797.34],
+            [22, 795.29],
+            [23, 771.26],
+            [24, 751.51],
+            [25, 800.11],
+            [26, 824.1],
+            [27, 851.25],
+            [28, 826.65],
+            [29, 845.48],
+            [30, 891.25],
+            [31, 899.52],
+            [32, 944.36],
+            [33, 947.73],
+            [34, 923.11],
+            [35, 889.22],
+            [36, 871.86],
+            [37, 871.42],
+            [38, 826.14],
+            [39, 866.41],
+            [40, 897.81],
+            [41, 858.01],
+            [42, 848.76],
+            [43, 818.07],
+            [44, 778.81],
+            [45, 737.75],
+            [46, 719.47],
+            [47, 730.18],
+            [48, 705.91],
+            [49, 689.15],
+          ],
+        },
+        {
+          label: 'Second series',
+          points: [
+            [0, 307.54],
+            [1, 348.28],
+            [2, 396.7],
+            [3, 393.87],
+            [4, 440.02],
+            [5, 407.04],
+            [6, 448.73],
+            [7, 492.34],
+            [8, 542.03],
+            [9, 508.63],
+            [10, 498.81],
+            [11, 536.71],
+            [12, 500.22],
+            [13, 461.66],
+            [14, 445.5],
+            [15, 474.53],
+            [16, 524.04],
+            [17, 537.02],
+            [18, 557.5],
+            [19, 518.29],
+            [20, 486.71],
+            [21, 497.34],
+            [22, 495.29],
+            [23, 471.26],
+            [24, 451.51],
+            [25, 500.11],
+            [26, 524.1],
+            [27, 551.25],
+            [28, 526.65],
+            [29, 545.48],
+            [30, 591.25],
+            [31, 599.52],
+            [32, 644.36],
+            [33, 647.73],
+            [34, 623.11],
+            [35, 589.22],
+            [36, 571.86],
+            [37, 571.42],
+            [38, 526.14],
+            [39, 566.41],
+            [40, 597.81],
+            [41, 558.01],
+            [42, 548.76],
+            [43, 518.07],
+            [44, 478.81],
+            [45, 437.75],
+            [46, 419.47],
+            [47, 430.18],
+            [48, 405.91],
+            [49, 389.15],
+          ],
+        },
+      ],
+    }}
+  >
+    {LineChartTemplate.bind({})}
+  </Story>
+</Canvas>
+
+## Props
+
+<ArgsTable of={LineChart} />
+
+## Usage
+
+## Contribute
+
+<Footer componentRelativePath="LineChart/__stories__/lineChart.stories.mdx" />

@@ -23,6 +23,11 @@
       "version": "3.0.0"
     },
     {
+      "packageName": "@ohif/extension-cornerstone-dicom-pmap",
+      "default": false,
+      "version": "3.0.0"
+    },
+    {
       "packageName": "@ohif/extension-cornerstone-dynamic-volume",
       "default": false,
       "version": "3.0.0"
@@ -56,10 +61,6 @@
       "packageName": "@ohif/extension-cornerstone-dicom-rt",
       "default": false,
       "version": "3.0.0"
-    },
-    {
-      "packageName": "extension-lytic-lesion",
-      "version": "0.0.1"
     }
   ],
   "modes": [
@@ -87,19 +88,17 @@
       "packageName": "@ohif/mode-basic-dev-mode",
       "default": false,
       "version": "3.0.0"
-    },
-    {
-      "packageName": "@ohif/mode-longitudinal",
-      "version": "3.0.0"
-    },
-    {
-      "packageName": "lytic-lesions",
-      "version": "0.0.1"
     }
   ],
   "public": [
     {
       "directory": "./platform/public"
+    },
+    {
+      "packageName": "dicom-microscopy-viewer",
+      "importPath": "/dicom-microscopy-viewer/dicomMicroscopyViewer.min.js",
+      "globalName": "dicomMicroscopyViewer",
+      "directory": "./node_modules/dicom-microscopy-viewer/dist/dynamic-import"
     }
   ]
 }

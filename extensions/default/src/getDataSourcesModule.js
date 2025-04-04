@@ -2,10 +2,11 @@
 // TODO: Use constructor to create an instance of IWebClientApi
 // TODO: Use existing DICOMWeb configuration (previously, appConfig, to configure instance)
 
-import { createDicomWebApi } from './DicomWebDataSource/index.js';
-import { createDicomJSONApi } from './DicomJSONDataSource/index.js';
-import { createDicomLocalApi } from './DicomLocalDataSource/index.js';
-import { createDicomWebProxyApi } from './DicomWebProxyDataSource/index.js';
+import { createDicomWebApi } from './DicomWebDataSource/index';
+import { createDicomJSONApi } from './DicomJSONDataSource/index';
+import { createDicomLocalApi } from './DicomLocalDataSource/index';
+import { createDicomWebProxyApi } from './DicomWebProxyDataSource/index';
+import { createMergeDataSourceApi } from './MergeDataSource/index';
 
 /**
  *
@@ -31,6 +32,11 @@ function getDataSourcesModule() {
       name: 'dicomlocal',
       type: 'localApi',
       createDataSource: createDicomLocalApi,
+    },
+    {
+      name: 'merge',
+      type: 'mergeApi',
+      createDataSource: createMergeDataSourceApi,
     },
   ];
 }

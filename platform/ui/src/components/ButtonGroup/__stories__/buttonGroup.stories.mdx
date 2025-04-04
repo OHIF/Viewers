@@ -16,10 +16,6 @@ export const argTypes = {
   component={ButtonGroup}
 />
 
-export const buttonGroupTemplate = args => {
-  return <ButtonGroup {...args} />;
-};
-
 <Heading
   title="ButtonGroup"
   componentRelativePath="ButtonGroup/ButtonGroup.tsx"
@@ -35,31 +31,16 @@ export const buttonGroupTemplate = args => {
 ButtonGroup is a container for a group of buttons.
 
 <Canvas>
-  <Story
-    name="Overview"
-    args={{
-      type: ButtonEnums.type.primary,
-      size: ButtonEnums.size.medium,
-      orientation: ButtonEnums.orientation.horizontal,
-      buttons: [
-        {
-          children: 'Button 1',
-          onClick: () => console.log('Button 1 clicked'),
-        },
-        {
-          children: 'Button 2',
-          onClick: () => console.log('Button 2 clicked'),
-        },
-        {
-          children: 'Button 3',
-          onClick: () => console.log('Button 3 clicked'),
-        },
-      ],
-      activeIndex: 0,
-      onActiveIndexChange: index => console.log(index),
-    }}
-  >
-    {buttonGroupTemplate.bind({})}
+  <Story name="Overview">
+    <ButtonGroup
+      orientation={ButtonEnums.orientation.horizontal}
+      activeIndex={0}
+      onActiveIndexChange={index => console.log(index)}
+    >
+      <button onClick={() => console.log('Button 1111 clicked')}>Button 1</button>
+      <button onClick={() => console.log('Button 222 clicked')}>Button 2</button>
+      <button onClick={() => console.log('Button 33 clicked')}>Button 3</button>
+    </ButtonGroup>
   </Story>
 </Canvas>
 

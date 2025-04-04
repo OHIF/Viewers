@@ -1,10 +1,6 @@
 import React from 'react';
-import {
-  WrappedPanelStudyBrowser,
-  PanelMeasurementTable,
-  PanelPetSUV,
-  PanelROIThresholdSegmentation,
-} from './Panels';
+import { WrappedPanelStudyBrowser } from './Panels';
+import i18n from 'i18next';
 
 // TODO:
 // - No loading UI exists yet
@@ -12,69 +8,20 @@ import {
 // - show errors in UI for thumbnails if promise fails
 
 function getPanelModule({ commandsManager, extensionManager, servicesManager }) {
-  const wrappedMeasurementPanel = () => {
-    return (
-      <PanelMeasurementTable
-        commandsManager={commandsManager}
-        servicesManager={servicesManager}
-        extensionManager={extensionManager}
-      />
-    );
-  };
-  const wrappedPanelPetSuv = () => {
-    return (
-      <PanelPetSUV
-        commandsManager={commandsManager}
-        servicesManager={servicesManager}
-        extensionManager={extensionManager}
-      />
-    );
-  };
-
-  const wrappedROIThresholdSeg = () => {
-    return (
-      <PanelROIThresholdSegmentation
-        commandsManager={commandsManager}
-        servicesManager={servicesManager}
-        extensionManager={extensionManager}
-      />
-    );
-  };
   return [
     {
       name: 'seriesList',
-      iconName: 'group-layers',
+      iconName: 'tab-studies',
       iconLabel: 'Studies',
-      label: 'Studies',
-      component: WrappedPanelStudyBrowser.bind(null, {
-        commandsManager,
-        extensionManager,
-        servicesManager,
-      }),
-    },
-    {
-      name: 'measure',
-      iconName: 'tab-linear',
-      iconLabel: 'Measure',
-      label: 'Measurements',
-      secondaryLabel: 'Measurements',
-      component: wrappedMeasurementPanel,
-    },
-    {
-      name: 'petSUV',
-      iconName: 'tab-patient-info',
-      iconLabel: 'PET SUV',
-      label: 'PET SUV',
-      component: wrappedPanelPetSuv,
-      context: 'default',
-    },
-    {
-      name: 'ROIThresholdSeg',
-      iconName: 'tab-roi-threshold',
-      iconLabel: 'ROI Threshold',
-      label: 'ROI Threshold',
-      component: wrappedROIThresholdSeg,
-      context: 'default',
+      label: i18n.t('SidePanel:Studies'),
+      component: props => (
+        <WrappedPanelStudyBrowser
+          {...props}
+          commandsManager={commandsManager}
+          extensionManager={extensionManager}
+          servicesManager={servicesManager}
+        />
+      ),
     },
   ];
 }

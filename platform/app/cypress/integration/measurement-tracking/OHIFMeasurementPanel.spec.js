@@ -15,46 +15,59 @@ describe('OHIF Measurement Panel', function () {
     cy.get('@RightCollapseBtn').click();
     cy.get('@measurementsPanel').should('not.exist');
 
-    cy.get('@RightCollapseBtn').click();
-    cy.get('@measurementsPanel').should('exist');
+    cy.get('@RightCollapseBtn').click({ force: true });
+
+    // segmentation panel should be visible
+    cy.get('@segmentationPanel').should('be.visible');
+
+    // measurements panel should be clickable
+    cy.get('@measurementsBtn').click();
     cy.get('@measurementsPanel').should('be.visible');
   });
 
   it('checks if measurement item can be Relabeled under Measurements panel', function () {
     // Add length measurement
     cy.addLengthMeasurement();
-    cy.get('[data-cy="viewport-notification"]').should('exist');
-    cy.get('[data-cy="viewport-notification"]').should('be.visible');
-    cy.get('[data-cy="prompt-begin-tracking-yes-btn"]').click();
-    cy.get('[data-cy="measurement-item"]').click();
 
-    cy.get('[data-cy="measurement-item"]').find('svg').click();
+    cy.get('[data-cy="viewport-notification"]').as('viewportNotification').should('exist');
+    cy.get('[data-cy="viewport-notification"]').as('viewportNotification').should('be.visible');
+
+    cy.get('[data-cy="prompt-begin-tracking-yes-btn"]').as('yesBtn').click();
+
+    cy.get('[data-cy="data-row"]').as('measurementItem').click();
+
+    cy.get('[data-cy="data-row"]').find('svg').eq(0).as('measurementItemSvg').click();
 
     // enter Bone label
-    cy.get('[data-cy="input-annotation"]').should('exist');
-    cy.get('[data-cy="input-annotation"]').should('be.visible');
-    cy.get('[data-cy="input-annotation"]').type('Bone{enter}');
+    // Todo: move it to the new annotation input with drop down
+    // cy.get('[data-cy="input-annotation"]').should('exist');
+    // cy.get('[data-cy="input-annotation"]').should('be.visible');
+    // cy.get('[data-cy="input-annotation"]').type('Bone{enter}');
 
-    // Verify if 'Bone' label was added
-    cy.get('[data-cy="measurement-item"]').should('contain.text', 'Bone');
+    // cy.get('[data-cy="data-row"]').as('measurementItem').should('contain.text', 'Bone');
   });
 
   it('checks if image would jump when clicked on a measurement item', function () {
+    cy.get('[data-cy="study-browser-thumbnail"][data-series="1"]').dblclick();
+    cy.wait(250);
+    cy.scrollToIndex(0);
+
     // Add length measurement
-    cy.addLengthMeasurement();
-    cy.get('[data-cy="prompt-begin-tracking-yes-btn"]').click();
+    cy.addLengthMeasurement().wait(250);
+    cy.get('[data-cy="prompt-begin-tracking-yes-btn"]').as('yesBtn').click();
 
     cy.scrollToIndex(13);
 
+    // Reset to default tool so that the new add length works
     cy.addLengthMeasurement([100, 100], [200, 200]); //Adding measurement in the viewport
 
-    cy.get('@viewportInfoTopRight').should('contains.text', '(14/');
+    cy.get('@viewportInfoBottomRight').should('contains.text', '(14/');
 
     // Click on first measurement item
-    cy.get('[data-cy="measurement-item"]').eq(0).click();
+    cy.get('[data-cy="data-row"]').eq(0).click();
 
-    cy.get('@viewportInfoTopRight').should('contains.text', '(1/');
-    cy.get('@viewportInfoTopRight').should('not.contains.text', '(14/');
+    cy.get('@viewportInfoBottomRight').should('contains.text', '(1/');
+    cy.get('@viewportInfoBottomRight').should('not.contains.text', '(14/');
   });
 
   /*

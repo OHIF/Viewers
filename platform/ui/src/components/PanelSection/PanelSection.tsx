@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
-import { Icon } from '@ohif/ui';
 import PropTypes from 'prop-types';
-
-const PanelSection = ({ title, children, actionIcons = [] }) => {
+import { Icons } from '@ohif/ui-next';
+const PanelSection = ({ title, children, actionIcons = [], childrenClassName }) => {
   const [areChildrenVisible, setChildrenVisible] = useState(true);
 
   const handleHeaderClick = () => {
@@ -18,7 +17,7 @@ const PanelSection = ({ title, children, actionIcons = [] }) => {
         <div className="text-aqua-pale">{title}</div>
         <div className="flex items-center space-x-1">
           {actionIcons.map((icon, index) => (
-            <Icon
+            <Icons.ByName
               key={index}
               name={icon.name}
               onClick={e => {
@@ -31,25 +30,28 @@ const PanelSection = ({ title, children, actionIcons = [] }) => {
             />
           ))}
           <div className="grid h-[28px] w-[28px] place-items-center">
-            <Icon name={areChildrenVisible ? 'chevron-down-new' : 'chevron-left-new'} />
+            {areChildrenVisible ? <Icons.ChevronOpen /> : <Icons.ChevronClosed />}
           </div>
         </div>
       </div>
       {areChildrenVisible && (
         <>
           <div className="h-[2px] bg-black"></div>
-          <div className="bg-primary-dark rounded-b-[4px]">{children}</div>
+          <div
+            className={`bg-primary-dark flex flex-col overflow-hidden rounded-b-[4px] ${childrenClassName}`}
+          >
+            {children}
+          </div>
         </>
       )}
     </>
   );
 };
 
-PanelSection.defaultProps = {};
-
 PanelSection.propTypes = {
   title: PropTypes.string,
   children: PropTypes.node,
+  childrenClassName: PropTypes.string,
   actionIcons: PropTypes.arrayOf(
     PropTypes.shape({
       name: PropTypes.string,
