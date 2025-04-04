@@ -119,8 +119,8 @@ export function WindowLevelActionMenu({
       iconClassName={classNames(
         // Visible on hover and for the active viewport
         activeViewportId === viewportId ? 'visible' : 'invisible group-hover/pane:visible',
-        'flex shrink-0 cursor-pointer rounded active:text-white text-primary-light',
-        isLight ? ' hover:bg-secondary-dark' : 'hover:bg-secondary-light/60'
+        'flex shrink-0 cursor-pointer rounded active:text-foreground text-primary',
+        isLight ? ' hover:bg-primary/25' : 'hover:bg-primary/25'
       )}
       menuStyle={{ maxHeight: vpHeight - 32, minWidth: 218 }}
       onVisibilityChange={() => {
@@ -144,8 +144,10 @@ export function WindowLevelActionMenu({
             key="colorLUTPresets"
             itemLabel="Color LUT"
             itemIcon="icon-color-lut"
+            className="h-[calc(100%-32px)]"
           >
             <Colormap
+              className="flex h-full flex-col"
               colormaps={colormaps}
               viewportId={viewportId}
               displaySets={displaySets.filter(ds => !nonWLModalities.includes(ds.Modality))}

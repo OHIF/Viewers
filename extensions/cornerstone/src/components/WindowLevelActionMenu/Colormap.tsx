@@ -1,6 +1,6 @@
 import React, { ReactElement, useCallback, useEffect, useRef, useState, useMemo } from 'react';
 import { AllInOneMenu, Switch, Tabs, TabsList, TabsTrigger } from '@ohif/ui-next';
-   
+
 import { StackViewport, Types } from '@cornerstonejs/core';
 import { ColormapProps } from '../../types/Colormap';
 
@@ -76,7 +76,7 @@ export function Colormap({
   return (
     <>
       {displaySets.length > 1 && (
-        <div className="all-in-one-menu-item flex w-full justify-center">
+        <div className="flex h-8 w-full flex-shrink-0 items-center justify-center px-2 text-base">
           <Tabs
             value={String(activeIndex)}
             onValueChange={val => {
@@ -87,7 +87,10 @@ export function Colormap({
           >
             <TabsList>
               {displaySets.map((ds, i) => (
-                <TabsTrigger key={i} value={String(i)}>
+                <TabsTrigger
+                  key={i}
+                  value={String(i)}
+                >
                   {ds.Modality}
                 </TabsTrigger>
               ))}
@@ -95,7 +98,7 @@ export function Colormap({
           </Tabs>
         </div>
       )}
-      <div className="all-in-one-menu-item flex w-full justify-center">
+      <div className="flex h-8 w-full flex-shrink-0 items-center justify-center px-2 text-base">
         <div className="flex items-center gap-2">
           <span>Preview in viewport</span>
           <Switch

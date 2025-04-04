@@ -22,14 +22,14 @@ const Item = ({
 }: ItemProps) => {
   return (
     <div
-      className="all-in-one-menu-item all-in-one-menu-item-effects flex items-center"
+      className="hover:bg-accent flex h-8 w-full cursor-pointer items-center px-2 text-base hover:rounded"
       onClick={onClick}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
     >
       {icon && <div className="mr-2">{icon}</div>}
       <div className="mr-auto">{label}</div>
-      {secondaryLabel && <div className="text-aqua-pale ml-2">{secondaryLabel}</div>}
+      {secondaryLabel && <div className="text-muted-foreground ml-2">{secondaryLabel}</div>}
       {rightIcon && <div className="ml-2">{rightIcon}</div>}
     </div>
   );

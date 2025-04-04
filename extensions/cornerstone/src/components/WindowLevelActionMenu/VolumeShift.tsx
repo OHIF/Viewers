@@ -57,9 +57,9 @@ export function VolumeShift({
 
   return (
     <>
-      <div className="all-in-one-menu-item flex  w-full flex-row !items-center justify-between gap-[10px]">
+      <div className="flex h-8 w-full flex-shrink-0 flex-row !items-center justify-between gap-[10px] px-2 text-base">
         <label
-          className="block  text-white"
+          className="text-foreground block"
           htmlFor="shift"
         >
           Shift

@@ -44,10 +44,10 @@ export function VolumeLighting({
   return (
     <>
       <div
-        className={`all-in-one-menu-item flex w-full flex-row !items-center justify-between gap-[10px] ${disableOption}`}
+        className={`flex h-8 w-full flex-shrink-0 flex-row !items-center justify-between gap-[10px] px-2 text-base ${disableOption}`}
       >
         <label
-          className="block text-white"
+          className="text-foreground block"
           htmlFor="ambient"
         >
           Ambient
@@ -78,7 +78,7 @@ export function VolumeLighting({
         className={`all-in-one-menu-item flex w-full flex-row !items-center justify-between gap-[10px] ${disableOption}`}
       >
         <label
-          className="block text-white"
+          className="text-foreground block"
           htmlFor="diffuse"
         >
           Diffuse
@@ -110,7 +110,7 @@ export function VolumeLighting({
         className={`all-in-one-menu-item flex w-full flex-row !items-center justify-between gap-[10px] ${disableOption}`}
       >
         <label
-          className="block text-white"
+          className="text-foreground block"
           htmlFor="specular"
         >
           Specular

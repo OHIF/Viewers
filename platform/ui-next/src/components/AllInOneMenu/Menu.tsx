@@ -1,6 +1,5 @@
 import React, { createContext, ReactNode, useCallback, useEffect, useState } from 'react';
 
-import './allInOneMenu.css';
 import DividerItem from './DividerItem';
 import PanelSelector from './PanelSelector';
 import classNames from 'classnames';
@@ -157,7 +156,7 @@ const Menu = (props: MenuProps) => {
         {isMenuVisible && (
           <div
             className={classNames(
-              'bg-secondary-dark flex select-none flex-col rounded px-1 py-1.5 text-white opacity-90',
+              'bg-popover/90 text-foreground flex select-none flex-col rounded px-1 py-1.5',
               menuClassName
             )}
             style={menuStyle}

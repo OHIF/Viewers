@@ -12,7 +12,7 @@ const BackItem = ({ backLabel, onBackClick }: BackItemProps) => {
   return (
     <>
       <div
-        className="all-in-one-menu-item all-in-one-menu-item-effects"
+        className="hover:bg-accent flex h-8 w-full flex-shrink-0 cursor-pointer items-center px-2 text-base hover:rounded"
         onClick={onBackClick}
       >
         <Icons.ByName name="content-prev"></Icons.ByName>

@@ -22,7 +22,7 @@ export function setViewportColorbar(
     colorbarOptions.ticks = {
       position: 'left',
       style: {
-        font: '12px Arial',
+        font: '13px Inter',
         color: '#000000',
         maxNumTicks: 8,
         tickSize: 5,
@@ -101,7 +101,7 @@ export function Colorbar({
   }, [viewportId]);
 
   return (
-    <div className="all-in-one-menu-item flex w-full justify-center">
+    <div className="flex h-8 w-full flex-shrink-0 items-center justify-start px-2 text-base">
       <div className="mr-2 w-[28px]"></div>
       <div className="flex items-center gap-2">
         <span>Display Color bar</span>
