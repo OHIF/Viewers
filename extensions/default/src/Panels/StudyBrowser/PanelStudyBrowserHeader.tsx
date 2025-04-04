@@ -20,7 +20,7 @@ function PanelStudyBrowserHeader({
         <div className={'flex h-[24px] w-full select-none justify-center self-center text-[14px]'}>
           <div className="flex w-full items-center gap-[10px]">
             <div className="flex items-center justify-center">
-              <div className="text-primary-active flex items-center space-x-1">
+              <div className="text-primary flex items-center space-x-1">
                 {actionIcons.map((icon: actionIcon, index) =>
                   React.createElement(Icons[icon.iconName] || Icons.MissingIcon, {
                     key: index,

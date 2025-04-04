@@ -1,3 +1,39 @@
+interface DataItem {
+  id: number;
+  title: string;
+  description: string;
+  optionalField?: string;
+  colorHex?: string;
+  details?: { primary: string[]; secondary: string[] };
+  series?: string;
+  statistics?: {
+    centroidX: { value: number; unit: string };
+    centroidY: { value: number; unit: string };
+    centroidZ: { value: number; unit: string };
+    frameDuration: { value: number; unit: string };
+    kurtosis: { value: number; unit: string };
+    max: { value: number; unit: string };
+    maxSlice: { value: number; unit: string };
+    mean: { value: number; unit: string };
+    median: { value: number; unit: string };
+    min: { value: number; unit: string };
+    regions: { value: number; unit: string };
+    skewness: { value: number; unit: string };
+    sphereDiameter: { value: number; unit: string };
+    standardDeviation: { value: number; unit: string };
+    suvPeak: { value: number; unit: string };
+    total: { value: number; unit: string };
+    glycolysis: { value: number; unit: string };
+    volume: { value: number; unit: string };
+    voxelCount: { value: number; unit: string };
+  };
+}
+
+interface ListGroup {
+  type: string;
+  items: DataItem[];
+}
+
 const actionOptionsMap: { [key: string]: string[] } = {
   Measurement: ['Rename', 'Lock', 'Delete'],
   Segmentation: ['Rename', 'Lock', 'Export', 'Delete'],
@@ -547,4 +583,146 @@ const dataList = [
   },
 ];
 
-export { actionOptionsMap, dataList };
+const segmentationData = {
+  representation: {
+    id: '791aaa59-1df6-60f8-3c28-6d870e6a4585-Labelmap-default',
+    segmentationId: '791aaa59-1df6-60f8-3c28-6d870e6a4585',
+    label: 'Segmentation',
+    active: true,
+    type: 'Labelmap',
+    visible: true,
+    segments: {
+      '1': {
+        color: [255, 0, 0, 255],
+        segmentIndex: 1,
+        opacity: 255,
+        visible: true,
+      },
+      '2': {
+        color: [0, 255, 0, 255],
+        segmentIndex: 2,
+        opacity: 255,
+        visible: true,
+      },
+      '3': {
+        color: [255, 255, 0, 255],
+        segmentIndex: 3,
+        opacity: 255,
+        visible: true,
+      },
+      '4': {
+        color: [0, 255, 255, 255],
+        segmentIndex: 4,
+        opacity: 255,
+        visible: true,
+      },
+    },
+    viewportId: 'default',
+    colorLUTIndex: 0,
+    config: {},
+  },
+  segmentation: {
+    segmentationId: '791aaa59-1df6-60f8-3c28-6d870e6a4585',
+    label: 'Segmentation',
+    cachedStats: {},
+    segments: {
+      '1': {
+        segmentIndex: 1,
+        label: 'Liver',
+        locked: false,
+        cachedStats: {
+          category: 'Anatomical Structure',
+          type: 'Liver',
+          algorithmType: 'SEMIAUTOMATIC',
+          algorithmName: 'Amira',
+        },
+        active: true,
+      },
+      '2': {
+        segmentIndex: 2,
+        label: 'Mass',
+        locked: false,
+        cachedStats: {
+          category: 'Morphologically Altered Structure',
+          type: 'Mass',
+          algorithmType: 'SEMIAUTOMATIC',
+          algorithmName: 'Amira',
+        },
+        active: false,
+      },
+      '3': {
+        segmentIndex: 3,
+        label: 'Portal vein',
+        locked: false,
+        cachedStats: {
+          category: 'Anatomical Structure',
+          type: 'Portal vein',
+          algorithmType: 'SEMIAUTOMATIC',
+          algorithmName: 'Amira',
+        },
+        active: false,
+      },
+      '4': {
+        segmentIndex: 4,
+        label: 'Abdominal aorta',
+        locked: false,
+        cachedStats: {
+          category: 'Anatomical Structure',
+          type: 'Abdominal aorta',
+          algorithmType: 'SEMIAUTOMATIC',
+          algorithmName: 'Amira',
+        },
+        active: false,
+      },
+    },
+    representationData: {
+      Labelmap: {
+        imageIds: [],
+        referencedImageIds: [],
+      },
+    },
+  },
+};
+
+const getSegmentationData = ({
+  active = false,
+  segmentationId = '791aaa59-1df6-60f8-3c28-6d870e6a4585',
+}) => {
+  return {
+    segmentation: {
+      ...segmentationData.segmentation,
+      active,
+      segmentationId,
+    },
+    representation: {
+      ...segmentationData.representation,
+      active,
+    },
+  };
+};
+
+const panelSegmentationData = {
+  disabled: false,
+  data: [
+    getSegmentationData({ active: true }),
+    getSegmentationData({ active: false, segmentationId: 'babas' }),
+  ],
+  mode: 'collapsed',
+  title: 'Segmentations',
+  exportOptions: [
+    {
+      segmentationId: '791aaa59-1df6-60f8-3c28-6d870e6a4585',
+      isExportable: true,
+    },
+    {
+      segmentationId: '791aaa59-1df6-60f8-3c28-6d870e6a4585',
+      isExportable: true,
+    },
+  ],
+  disableEditing: false,
+  showAddSegment: true,
+  renderInactiveSegmentations: true,
+};
+
+export { actionOptionsMap, dataList, panelSegmentationData };
+export type { DataItem, ListGroup };

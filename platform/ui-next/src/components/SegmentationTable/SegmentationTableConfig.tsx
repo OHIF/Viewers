@@ -61,13 +61,13 @@ export const SegmentationTableConfig: React.FC<{ children?: React.ReactNode }> =
         >
           <TabsList>
             <TabsTrigger value="fill-and-outline">
-              <Icons.FillAndOutline className="text-primary-active" />
+              <Icons.FillAndOutline className="text-primary" />
             </TabsTrigger>
             <TabsTrigger value="outline">
-              <Icons.OutlineOnly className="text-primary-active" />
+              <Icons.OutlineOnly className="text-primary" />
             </TabsTrigger>
             <TabsTrigger value="fill">
-              <Icons.FillOnly className="text-primary-active" />
+              <Icons.FillOnly className="text-primary" />
             </TabsTrigger>
           </TabsList>
         </Tabs>

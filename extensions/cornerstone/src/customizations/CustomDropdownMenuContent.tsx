@@ -95,24 +95,53 @@ export const CustomDropdownMenuContent = () => {
       <DropdownMenuSub>
         <DropdownMenuSubTrigger className="pl-1">
           <Icons.Export className="text-foreground" />
-          <span className="pl-2">{t('Export & Download')}</span>
+          <span className="pl-2">{t('Download & Export')}</span>
         </DropdownMenuSubTrigger>
         <DropdownMenuPortal>
           <DropdownMenuSubContent>
-            <DropdownMenuItem onClick={() => actions.downloadCSVSegmentationReport(segmentationId)}>
-              {t('Download CSV Report')}
+            <DropdownMenuLabel className="flex items-center pl-0">
+              <Icons.Download className="h-5 w-5" />
+              <span className="pl-1">{t('Download')}</span>
+            </DropdownMenuLabel>
+            <DropdownMenuItem
+              onClick={e => {
+                e.preventDefault();
+                actions.downloadCSVSegmentationReport(segmentationId);
+              }}
+            >
+              {t('CSV Report')}
             </DropdownMenuItem>
             <DropdownMenuItem
-              onClick={() => actions.storeSegmentation(segmentationId)}
+              onClick={e => {
+                e.preventDefault();
+                actions.onSegmentationDownload(segmentationId);
+              }}
               disabled={!allowExport}
             >
-              {t('Export DICOM SEG')}
+              {t('DICOM SEG')}
             </DropdownMenuItem>
             <DropdownMenuItem
-              onClick={() => actions.onSegmentationDownload(segmentationId)}
+              onClick={e => {
+                e.preventDefault();
+                actions.onSegmentationDownloadRTSS(segmentationId);
+              }}
               disabled={!allowExport}
             >
-              {t('Download DICOM SEG')}
+              {t('DICOM RTSS')}
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuLabel className="flex items-center pl-0">
+              <Icons.Export className="h-5 w-5" />
+              <span className="pl-1 pt-1">{t('Export')}</span>
+            </DropdownMenuLabel>
+            <DropdownMenuItem
+              onClick={e => {
+                e.preventDefault();
+                actions.storeSegmentation(segmentationId);
+              }}
+              disabled={!allowExport}
+            >
+              {t('DICOM SEG')}
             </DropdownMenuItem>
           </DropdownMenuSubContent>
         </DropdownMenuPortal>

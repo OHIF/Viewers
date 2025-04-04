@@ -1,21 +1,12 @@
 import dcmjs from 'dcmjs';
-import { Types } from '@ohif/core';
+import { classes, Types } from '@ohif/core';
 import { cache, metaData } from '@cornerstonejs/core';
-import {
-  segmentation as cornerstoneToolsSegmentation,
-  Enums as cornerstoneToolsEnums,
-  utilities,
-} from '@cornerstonejs/tools';
+import { segmentation as cornerstoneToolsSegmentation } from '@cornerstonejs/tools';
 import { adaptersRT, helpers, adaptersSEG } from '@cornerstonejs/adapters';
 import { createReportDialogPrompt } from '@ohif/extension-default';
-import { classes, DicomMetadataStore } from '@ohif/core';
+import { DicomMetadataStore } from '@ohif/core';
 
-import vtkImageMarchingSquares from '@kitware/vtk.js/Filters/General/ImageMarchingSquares';
-import vtkDataArray from '@kitware/vtk.js/Common/Core/DataArray';
-import vtkImageData from '@kitware/vtk.js/Common/DataModel/ImageData';
 import PROMPT_RESPONSES from '../../default/src/utils/_shared/PROMPT_RESPONSES';
-
-const { segmentation: segmentationUtils } = utilities;
 
 const { datasetToBlob } = dcmjs.data;
 
@@ -46,14 +37,8 @@ const commandsModule = ({
   servicesManager,
   extensionManager,
 }: Types.Extensions.ExtensionParams): Types.Extensions.CommandsModule => {
-  const {
-    segmentationService,
-    uiDialogService,
-    displaySetService,
-    viewportGridService,
-    toolGroupService,
-    customizationService,
-  } = servicesManager.services as AppTypes.Services;
+  const { segmentationService, displaySetService, viewportGridService, toolGroupService } =
+    servicesManager.services as AppTypes.Services;
 
   const actions = {
     /**
@@ -287,21 +272,24 @@ const commandsModule = ({
      * converts dataset to downloadable blob.
      *
      */
-    downloadRTSS: ({ segmentationId }) => {
+    downloadRTSS: async ({ segmentationId }) => {
       const segmentations = segmentationService.getSegmentation(segmentationId);
-      const vtkUtils = {
-        vtkImageMarchingSquares,
-        vtkDataArray,
-        vtkImageData,
-      };
 
-      const RTSS = generateRTSSFromSegmentations(
+      // inject colors to the segmentIndex
+      const firstRepresentation =
+        segmentationService.getRepresentationsForSegmentation(segmentationId)[0];
+      Object.entries(segmentations.segments).forEach(([segmentIndex, segment]) => {
+        segment.color = segmentationService.getSegmentColor(
+          firstRepresentation.viewportId,
+          segmentationId,
+          segmentIndex
+        );
+      });
+
+      const RTSS = await generateRTSSFromSegmentations(
         segmentations,
         classes.MetadataProvider,
-        DicomMetadataStore,
-        cache,
-        cornerstoneToolsEnums,
-        vtkUtils
+        DicomMetadataStore
       );
 
       try {
@@ -314,56 +302,9 @@ const commandsModule = ({
         console.warn(e);
       }
     },
-    setBrushSize: ({ value, toolNames }) => {
-      const brushSize = Number(value);
-
-      toolGroupService.getToolGroupIds()?.forEach(toolGroupId => {
-        if (toolNames?.length === 0) {
-          segmentationUtils.setBrushSizeForToolGroup(toolGroupId, brushSize);
-        } else {
-          toolNames?.forEach(toolName => {
-            segmentationUtils.setBrushSizeForToolGroup(toolGroupId, brushSize, toolName);
-          });
-        }
-      });
-    },
-    setThresholdRange: ({
-      value,
-      toolNames = [
-        'ThresholdCircularBrush',
-        'ThresholdSphereBrush',
-        'ThresholdCircularBrushDynamic',
-        'ThresholdSphereBrushDynamic',
-      ],
-    }) => {
-      const toolGroupIds = toolGroupService.getToolGroupIds();
-      if (!toolGroupIds?.length) {
-        return;
-      }
-
-      for (const toolGroupId of toolGroupIds) {
-        const toolGroup = toolGroupService.getToolGroup(toolGroupId);
-        toolNames?.forEach(toolName => {
-          toolGroup.setToolConfiguration(toolName, {
-            threshold: {
-              range: value,
-            },
-          });
-        });
-      }
-    },
   };
 
   const definitions = {
-    /**
-     * Obsolete?
-     */
-    loadSegmentationDisplaySetsForViewport: {
-      commandFn: actions.loadSegmentationDisplaySetsForViewport,
-    },
-    /**
-     * Obsolete?
-     */
     loadSegmentationsForViewport: {
       commandFn: actions.loadSegmentationsForViewport,
     },
@@ -379,12 +320,6 @@ const commandsModule = ({
     },
     downloadRTSS: {
       commandFn: actions.downloadRTSS,
-    },
-    setBrushSize: {
-      commandFn: actions.setBrushSize,
-    },
-    setThresholdRange: {
-      commandFn: actions.setThresholdRange,
     },
   };
 

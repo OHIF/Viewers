@@ -39,7 +39,10 @@ import { useLutPresentationStore } from './stores/useLutPresentationStore';
 import { usePositionPresentationStore } from './stores/usePositionPresentationStore';
 import { useSegmentationPresentationStore } from './stores/useSegmentationPresentationStore';
 import { imageRetrieveMetadataProvider } from '@cornerstonejs/core/utilities';
-import { updateSegmentationStats } from './utils/updateSegmentationStats';
+import {
+  setupSegmentationDataModifiedHandler,
+  setupSegmentationModifiedHandler,
+} from './utils/segmentationHandlers';
 
 const { registerColormap } = csUtilities.colormap;
 
@@ -92,6 +95,7 @@ export default async function init({
     hangingProtocolService,
     viewportGridService,
     segmentationService,
+    measurementService,
   } = servicesManager.services;
 
   window.services = servicesManager.services;
@@ -177,44 +181,28 @@ export default async function init({
   initCineService(servicesManager);
   initStudyPrefetcherService(servicesManager);
 
-  segmentationService.subscribeDebounced(
-    segmentationService.EVENTS.SEGMENTATION_DATA_MODIFIED,
-    async ({ segmentationId }) => {
-      const segmentation = segmentationService.getSegmentation(segmentationId);
-      const readableText = customizationService.getCustomization('panelSegmentation.readableText');
-      const updatedSegmentation = await updateSegmentationStats({
-        segmentation,
-        segmentationId,
-        readableText,
-      });
+  [
+    measurementService.EVENTS.JUMP_TO_MEASUREMENT_LAYOUT,
+    measurementService.EVENTS.JUMP_TO_MEASUREMENT_VIEWPORT,
+  ].forEach(event => {
+    measurementService.subscribe(event, evt => {
+      const { measurement } = evt;
+      const { uid: annotationUID } = measurement;
+      cornerstoneTools.annotation.selection.setAnnotationSelected(annotationUID, true);
+    });
+  });
 
-      if (updatedSegmentation) {
-        segmentationService.addOrUpdateSegmentation({
-          segmentationId,
-          segments: updatedSegmentation.segments,
-        });
-      }
+  // Setup segmentation event handlers
+  const { unsubscribe: unsubscribeSegmentationDataModifiedHandler } =
+    setupSegmentationDataModifiedHandler({
+      segmentationService,
+      customizationService,
+      commandsManager,
+    });
 
-      // Check for segments with bidirectional measurements and update them
-      if (segmentation) {
-        const segmentIndices = Object.keys(segmentation.segments)
-          .map(index => parseInt(index))
-          .filter(index => index > 0);
-
-        for (const segmentIndex of segmentIndices) {
-          const segment = segmentation.segments[segmentIndex];
-          if (segment?.cachedStats?.namedStats?.bidirectional) {
-            // Run the command to update the bidirectional measurement
-            commandsManager.runCommand('runSegmentBidirectional', {
-              segmentationId,
-              segmentIndex,
-            });
-          }
-        }
-      }
-    },
-    1000
-  );
+  const { unsubscribe: unsubscribeSegmentationModifiedHandler } = setupSegmentationModifiedHandler({
+    segmentationService,
+  });
 
   // When a custom image load is performed, update the relevant viewports
   hangingProtocolService.subscribe(
@@ -312,6 +300,13 @@ export default async function init({
 
   // Call this function when initializing
   initializeWebWorkerProgressHandler(servicesManager.services.uiNotificationService);
+
+  const unsubscriptions = [
+    unsubscribeSegmentationDataModifiedHandler,
+    unsubscribeSegmentationModifiedHandler,
+  ];
+
+  return { unsubscriptions };
 }
 
 function initializeWebWorkerProgressHandler(uiNotificationService) {

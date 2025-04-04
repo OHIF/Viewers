@@ -79,9 +79,15 @@ const screenShotPaths = {
     segPreHydration: 'segPreHydration.png',
     segJumpToSegment: 'segJumpToSegment.png',
   },
-  segHydrationMPR: {
+  segHydrationThenMPR: {
     segPostHydration: 'segPostHydration.png',
     segPostHydrationMPRAxialPrimary: 'segPostHydrationMPRAxialPrimary.png',
+  },
+  segHydrationFromMPR: {
+    mprBeforeSEG: 'mprBeforeSEG.png',
+    mprAfterSEG: 'mprAfterSEG.png',
+    mprAfterSegHydrated: 'mprAfterSegHydrated.png',
+    mprAfterSegHydratedAfterLayoutChange: 'mprAfterSegHydratedAfterLayoutChange.png',
   },
   rtHydration: {
     rtPostHydration: 'rtPostHydration.png',
@@ -101,6 +107,16 @@ const screenShotPaths = {
   },
   tmtvRendering: {
     tmtvDisplayedCorrectly: 'tmtvDisplayedCorrectly.png',
+  },
+  jumpToMeasurementMPR: {
+    initialDraw: 'jumpToMeasurementMPR-initialDraw.png',
+    scrollAway: 'jumpToMeasurementMPR-scrollAway.png',
+    jumpToMeasurementStack: 'jumpToMeasurementMPR-jumpToMeasurementStack.png',
+    goToMPR: 'jumpToMeasurementMPR-goToMPR.png',
+    jumpInMPR: 'jumpToMeasurementMPR-jumpInMPR.png',
+    changeSeriesInMPR: 'jumpToMeasurementMPR-changeSeriesInMPR.png',
+    jumpToMeasurementAfterSeriesChange:
+      'jumpToMeasurementMPR-jumpToMeasurementAfterSeriesChange.png',
   },
 };
 

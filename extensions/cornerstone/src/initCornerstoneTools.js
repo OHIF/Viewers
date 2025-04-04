@@ -38,7 +38,9 @@ import {
   OrientationMarkerTool,
   WindowLevelRegionTool,
   SegmentSelectTool,
+  RegionSegmentPlusTool,
 } from '@cornerstonejs/tools';
+import { LabelmapSlicePropagationTool, MarkerLabelmapTool } from '@cornerstonejs/ai';
 import * as polySeg from '@cornerstonejs/polymorphic-segmentation';
 
 import CalibrationLineTool from './tools/CalibrationLineTool';
@@ -98,6 +100,9 @@ export default function initCornerstoneTools(configuration = {}) {
   addTool(WindowLevelRegionTool);
   addTool(PlanarFreehandContourSegmentationTool);
   addTool(SegmentSelectTool);
+  addTool(LabelmapSlicePropagationTool);
+  addTool(MarkerLabelmapTool);
+  addTool(RegionSegmentPlusTool);
   // Modify annotation tools to use dashed lines on SR
   const annotationStyle = {
     textBoxFontSize: '15px',
@@ -152,6 +157,9 @@ const toolNames = {
   PlanarFreehandContourSegmentation: PlanarFreehandContourSegmentationTool.toolName,
   SegmentBidirectional: SegmentBidirectionalTool.toolName,
   SegmentSelect: SegmentSelectTool.toolName,
+  LabelmapSlicePropagation: LabelmapSlicePropagationTool.toolName,
+  MarkerLabelmap: MarkerLabelmapTool.toolName,
+  RegionSegmentPlus: RegionSegmentPlusTool.toolName,
 };
 
 export { toolNames };

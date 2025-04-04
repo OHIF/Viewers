@@ -15,7 +15,7 @@ function Debug() {
           />
           <div className="space-y-2 pt-4 text-center">
             <div className="flex flex-col items-center justify-center">
-              <p className="text-primary-active mt-4 text-xl font-semibold">Debug Information</p>
+              <p className="text-primary mt-4 text-xl font-semibold">Debug Information</p>
               <div className="mt-4 flex items-center space-x-2">
                 <p className="text-md text-white">Cross Origin Isolated (COOP/COEP)</p>
                 <Icons.ByName

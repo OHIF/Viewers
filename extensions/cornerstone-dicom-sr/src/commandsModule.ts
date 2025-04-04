@@ -53,7 +53,7 @@ const _generateReport = (measurementData, additionalFindingTypes, options: Optio
 };
 
 const commandsModule = (props: withAppTypes) => {
-  const { servicesManager, extensionManager } = props;
+  const { servicesManager, extensionManager, commandsManager } = props;
   const { customizationService, viewportGridService, displaySetService } = servicesManager.services;
 
   const actions = {
@@ -168,12 +168,14 @@ const commandsModule = (props: withAppTypes) => {
 
       const displaySets = displaySetService.getDisplaySetsForSeries(SeriesInstanceUIDs[0]);
       if (displaySets.length) {
-        viewportGridService.setDisplaySetsForViewports([
-          {
-            viewportId: viewportGridService.getActiveViewportId(),
-            displaySetInstanceUIDs: [displaySets[0].displaySetInstanceUID],
-          },
-        ]);
+        commandsManager.run('setDisplaySetsForViewports', {
+          viewportsToUpdate: [
+            {
+              viewportId: viewportGridService.getActiveViewportId(),
+              displaySetInstanceUIDs: [displaySets[0].displaySetInstanceUID],
+            },
+          ],
+        });
       }
     },
   };

@@ -2,11 +2,10 @@ import React, { useEffect } from 'react';
 import { useActiveViewportSegmentationRepresentations } from '@ohif/extension-cornerstone';
 import { handleROIThresholding } from '../../utils/handleROIThresholding';
 import { debounce } from '@ohif/core/src/utils';
+import { useSystem } from '@ohif/core/src';
 
-export default function PanelRoiThresholdSegmentation({
-  servicesManager,
-  commandsManager,
-}: withAppTypes) {
+export default function PanelRoiThresholdSegmentation() {
+  const { commandsManager, servicesManager } = useSystem();
   const { segmentationService } = servicesManager.services;
   const { segmentationsWithRepresentations: segmentationsInfo } =
     useActiveViewportSegmentationRepresentations({ servicesManager });

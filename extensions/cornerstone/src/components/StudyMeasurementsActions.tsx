@@ -53,6 +53,10 @@ export function StudyMeasurementsActions({ items, StudyInstanceUID, measurementF
           className="pl-0.5"
           onClick={e => {
             e.stopPropagation();
+            if (actions?.onDelete) {
+              actions.onDelete();
+              return;
+            }
             commandsManager.runCommand('clearMeasurements', {
               measurementFilter,
             });

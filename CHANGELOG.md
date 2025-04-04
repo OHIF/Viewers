@@ -3,6 +3,116 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.10.0-beta.149](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.148...v3.10.0-beta.149) (2025-04-04)
+
+
+### Features
+
+* **image capture:** Enhance SEG and RTSS Support with Dependency Updates and Bug Fixes ([#4924](https://github.com/OHIF/Viewers/issues/4924)) ([fc33bd0](https://github.com/OHIF/Viewers/commit/fc33bd0d594a1ac8de79b11080ead48630a8ca27))
+
+
+
+
+
+# [3.10.0-beta.148](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.147...v3.10.0-beta.148) (2025-04-04)
+
+
+### Features
+
+* Automate tracking prompts for a less disruptive annotation workflow ([#4822](https://github.com/OHIF/Viewers/issues/4822)) ([54fded5](https://github.com/OHIF/Viewers/commit/54fded554e934f2f75e00d456ebad7692d561225))
+
+
+
+
+
+# [3.10.0-beta.147](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.146...v3.10.0-beta.147) (2025-04-03)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.10.0-beta.146](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.145...v3.10.0-beta.146) (2025-04-02)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.10.0-beta.145](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.144...v3.10.0-beta.145) (2025-04-02)
+
+
+### Bug Fixes
+
+* **seg:** Enhance segmentation tools and UI, refactor code, and update dependencies ([#4915](https://github.com/OHIF/Viewers/issues/4915)) ([8432d5f](https://github.com/OHIF/Viewers/commit/8432d5f6330b300ac6760b32372be382210ed05b))
+
+
+
+
+
+# [3.10.0-beta.144](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.143...v3.10.0-beta.144) (2025-04-01)
+
+
+### Features
+
+* **segmentation:** Enhance Segmentation with New AI and Once Click Tools ([#4910](https://github.com/OHIF/Viewers/issues/4910)) ([c75a3f3](https://github.com/OHIF/Viewers/commit/c75a3f3af58c4cd29c349338e4065269d8d9f387))
+
+
+
+
+
+# [3.10.0-beta.143](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.142...v3.10.0-beta.143) (2025-04-01)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.10.0-beta.142](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.141...v3.10.0-beta.142) (2025-03-31)
+
+**Note:** Version bump only for package ohif-monorepo-root
+
+
+
+
+
+# [3.10.0-beta.141](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.140...v3.10.0-beta.141) (2025-03-28)
+
+
+### Bug Fixes
+
+* jump to measurement forever ([#4867](https://github.com/OHIF/Viewers/issues/4867)) ([d7bd365](https://github.com/OHIF/Viewers/commit/d7bd36544a039deae30e179404452cde738b8b03))
+* **measurement:** fix for measurement jump is not switching series in 2DMPR ([#4779](https://github.com/OHIF/Viewers/issues/4779)) ([3f06c96](https://github.com/OHIF/Viewers/commit/3f06c966eb0bc9f6b5dcc477ccc7962f8a344c6f))
+
+
+
+
+
+# [3.10.0-beta.140](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.139...v3.10.0-beta.140) (2025-03-27)
+
+
+### Bug Fixes
+
+* routerBasename setting ([#4891](https://github.com/OHIF/Viewers/issues/4891)) ([459b0d2](https://github.com/OHIF/Viewers/commit/459b0d223a5867aaaabe1b5b61fd22b040ce5602))
+
+
+
+
+
+# [3.10.0-beta.139](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.138...v3.10.0-beta.139) (2025-03-27)
+
+
+### Bug Fixes
+
+* **seg:** multiframe SEG ([#4890](https://github.com/OHIF/Viewers/issues/4890)) ([892d03f](https://github.com/OHIF/Viewers/commit/892d03fc3ca85a2772bf49ff5efc8014b9b2cdc9))
+
+
+
+
+
 # [3.10.0-beta.138](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.137...v3.10.0-beta.138) (2025-03-26)
 
 
