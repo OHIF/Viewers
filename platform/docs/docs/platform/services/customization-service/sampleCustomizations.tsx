@@ -27,6 +27,15 @@ import windowLevelActionMenu from '../../../assets/img/windowLevelActionMenu.png
 import viewPortNotificationImage from '../../../assets/img/viewport-notification.png';
 import captureViewportModal from '../../../assets/img/captureViewportModal.png';
 import aboutModal from '../../../assets/img/aboutModal.png';
+import promptBeginTrackingContent from '../../../assets/img/promptBeginTrackingContent.png';
+import promptAddSeriesContent from '../../../assets/img/promptAddSeriesContent.png';
+import promptSRTrackingContent from '../../../assets/img/promptSRTrackingContent.png';
+import promptsegmentationContent from '../../../assets/img/promptsegmentationContent.png';
+import promptRtstructContent from '../../../assets/img/promptRtstructContent.png';
+import promptDiscardStudyContent from '../../../assets/img/promptDiscardStudyContent.png';
+import promptDiscardSeriesContent from '../../../assets/img/promptDiscardSeriesContent.png';
+import promptDiscardDirtyContent from '../../../assets/img/promptDiscardDirtyContent.png';
+import promptTrackStudyContent from '../../../assets/img/promptTrackStudyContent.png';
 
 export const viewportOverlayCustomizations = [
   {
@@ -951,6 +960,296 @@ window.config = {
         ],
       };
         `,
+  },
+  {
+    id: 'viewportNotification.beginTrackingMessage',
+    description: 'Define the content to be displayed in begin tracking prompt',
+    default: 'Track measurements for this series?',
+    image: [promptBeginTrackingContent],
+    configuration: `
+window.config = {
+  // rest of window config
+  customizationService: [
+    {
+      'viewportNotification.beginTrackingMessage': {
+          $set: CustomizedComponent,
+      },
+    },
+  ],
+};
+    `,
+  },
+  {
+    id: 'viewportNotification.trackNewSeriesMessage',
+    description: 'Define the content to be displayed in track new series prompt',
+    default: 'Do you want to add this measurement to the existing report?',
+    image: [promptAddSeriesContent],
+    configuration: `
+window.config = {
+  // rest of window config
+  customizationService: [
+    {
+      'viewportNotification.trackNewSeriesMessage': {
+          $set: CustomizedComponent,
+      },
+    },
+  ],
+};
+    `,
+  },
+  {
+    id: 'viewportNotification.discardSeriesMessage',
+    description: 'Define the content to be displayed in discard series prompt',
+    default:
+      'You have existing tracked measurements. What would you like to do with your existing tracked measurements?',
+    image: [promptDiscardSeriesContent],
+    configuration: `
+window.config = {
+  // rest of window config
+  customizationService: [
+    {
+      'viewportNotification.discardSeriesMessage': {
+          $set: CustomizedComponent,
+      },
+    },
+  ],
+};
+    `,
+  },
+  {
+    id: 'viewportNotification.trackNewStudyMessage',
+    description: 'Define the content to be displayed in track new study prompt',
+    default: 'Track measurements for this series?',
+    image: [promptTrackStudyContent],
+    configuration: `
+window.config = {
+  // rest of window config
+  customizationService: [
+    {
+      'viewportNotification.trackNewStudyMessage': {
+          $set: CustomizedComponent,
+      },
+    },
+  ],
+};
+    `,
+  },
+  {
+    id: 'viewportNotification.discardStudyMessage',
+    description: 'Define the content to be displayed in discard study prompt',
+    default:
+      'Measurements cannot span across multiple studies. Do you want to save your tracked measurements?',
+    image: [promptDiscardStudyContent],
+    configuration: `
+window.config = {
+  // rest of window config
+  customizationService: [
+    {
+      'viewportNotification.discardStudyMessage': {
+          $set: CustomizedComponent,
+      },
+    },
+  ],
+};
+    `,
+  },
+  {
+    id: 'viewportNotification.hydrateSRMessage',
+    description: 'Define the content to be displayed in hydrate SR prompt',
+    default: 'Do you want to continue tracking measurements for this study?',
+    image: [promptSRTrackingContent],
+    configuration: `
+window.config = {
+  // rest of window config
+  customizationService: [
+    {
+      'viewportNotification.hydrateSRMessage': {
+          $set: CustomizedComponent,
+      },
+    },
+  ],
+};
+    `,
+  },
+  {
+    id: 'viewportNotification.hydrateRTMessage',
+    description: 'Define the content to be displayed in hydrate RT prompt',
+    default: 'Do you want to open this Segmentation?',
+    image: [promptRtstructContent],
+    configuration: `
+window.config = {
+  // rest of window config
+  customizationService: [
+    {
+      'viewportNotification.hydrateRTMessage': {
+          $set: CustomizedComponent,
+      },
+    },
+  ],
+};
+    `,
+  },
+  {
+    id: 'viewportNotification.hydrateSEGMessage',
+    description: 'Define the content to be displayed in hydrate SEG prompt',
+    default: 'Do you want to open this Segmentation?',
+    image: [promptsegmentationContent],
+    configuration: `
+window.config = {
+  // rest of window config
+  customizationService: [
+    {
+      'viewportNotification.hydrateSEGMessage': {
+          $set: CustomizedComponent,
+      },
+    },
+  ],
+};
+    `,
+  },
+  {
+    id: 'viewportNotification.discardDirtyMessage',
+    description: 'Define the content to be displayed in hydrate SR prompt',
+    default: 'There are unsaved measurements. Do you want to save it?',
+    image: [promptDiscardDirtyContent],
+    configuration: `
+window.config = {
+  // rest of window config
+  customizationService: [
+    {
+      'viewportNotification.discardDirtyMessage': {
+          $set: CustomizedComponent,
+      },
+    },
+  ],
+};
+    `,
+  },
+  {
+    id: 'measurement.promptBeginTracking',
+    description:
+      'Define the functionality to connect with the measurement tracking machine on begin measurement tracking',
+    default: 'promptBeginTracking',
+    configuration: `
+window.config = {
+  // rest of window config
+  customizationService: [
+    {
+      'measurement.promptBeginTracking': {
+          $set: customFunction,
+      },
+    },
+  ],
+};
+    `,
+  },
+  {
+    id: 'measurement.promptHydrateStructuredReport',
+    description:
+      'Define the functionality to connect with the measurement tracking machine on hydrate SR',
+    default: 'promptHydrateStructuredReport',
+    configuration: `
+window.config = {
+  // rest of window config
+  customizationService: [
+    {
+      'measurement.promptHydrateStructuredReport': {
+          $set: customFunction,
+      },
+    },
+  ],
+};
+    `,
+  },
+  {
+    id: 'measurement.promptTrackNewSeries',
+    description:
+      'Define the functionality to connect with the measurement tracking machine on tracking new series',
+    default: 'promptTrackNewSeries',
+    configuration: `
+window.config = {
+  // rest of window config
+  customizationService: [
+    {
+      'measurement.promptTrackNewSeries': {
+          $set: customFunction,
+      },
+    },
+  ],
+};
+    `,
+  },
+  {
+    id: 'measurement.promptTrackNewStudy',
+    description:
+      'Define the functionality to connect with the measurement tracking machine on tracking new study',
+    default: 'promptTrackNewStudy',
+    configuration: `
+window.config = {
+  // rest of window config
+  customizationService: [
+    {
+      'measurement.promptTrackNewStudy': {
+          $set: customFunction,
+      },
+    },
+  ],
+};
+    `,
+  },
+  {
+    id: 'measurement.promptLabelAnnotation',
+    description:
+      'Define the functionality to connect with the measurement tracking machine on begin measurement tracking',
+    default: 'promptLabelAnnotation',
+    configuration: `
+window.config = {
+  // rest of window config
+  customizationService: [
+    {
+      'measurement.promptLabelAnnotation': {
+          $set: customFunction,
+      },
+    },
+  ],
+};
+    `,
+  },
+  {
+    id: 'measurement.promptSaveReport',
+    description:
+      'Define the functionality to connect with the measurement tracking machine on save SR report',
+    default: 'promptSaveReport',
+    configuration: `
+window.config = {
+  // rest of window config
+  customizationService: [
+    {
+      'measurement.promptSaveReport': {
+          $set: customFunction,
+      },
+    },
+  ],
+};
+    `,
+  },
+  {
+    id: 'measurement.promptHasDirtyAnnotations',
+    description:
+      'Define the functionality to connect with the measurement tracking machine on there are dirty annotations',
+    default: 'promptHasDirtyAnnotations',
+    configuration: `
+window.config = {
+  // rest of window config
+  customizationService: [
+    {
+      'measurement.promptHasDirtyAnnotations': {
+          $set: customFunction,
+      },
+    },
+  ],
+};
+    `,
   },
 ];
 

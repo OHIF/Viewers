@@ -257,6 +257,7 @@ function ViewerViewportGrid(props: withAppTypes) {
   }, [viewports, _getUpdatedViewports]);
 
   const onDropHandler = (viewportId, { displaySetInstanceUID }) => {
+    const { viewportGridService } = servicesManager.services;
     const customOnDropHandler = customizationService.getCustomization('customOnDropHandler');
     const dropHandlerPromise = customOnDropHandler({
       ...props,
@@ -264,13 +265,13 @@ function ViewerViewportGrid(props: withAppTypes) {
       displaySetInstanceUID,
       appConfig,
     });
-
     dropHandlerPromise.then(({ handled }) => {
       if (!handled) {
         const updatedViewports = _getUpdatedViewports(viewportId, displaySetInstanceUID);
         viewportGridService.setDisplaySetsForViewports(updatedViewports);
       }
     });
+    viewportGridService.publishViewportOnDropHandled({ displaySetInstanceUID });
   };
 
   // Store previous isReferenceViewable values to avoid infinite loops

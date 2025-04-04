@@ -34,8 +34,9 @@ function PanelStudyBrowser({
   dataSource,
   customMapDisplaySets,
   onClickUntrack,
+  onDoubleClickThumbnailHandlerCallBack,
 }) {
-  const { servicesManager, commandsManager } = useSystem();
+  const { servicesManager, commandsManager, extensionManager } = useSystem();
   const { displaySetService, customizationService } = servicesManager.services;
   const navigate = useNavigate();
   const studyMode = customizationService.getCustomization('studyBrowser.studyMode') || 'all';
@@ -93,6 +94,7 @@ function PanelStudyBrowser({
         commandsManager,
         servicesManager,
         isHangingProtocolLayout,
+        appConfig: extensionManager._appConfig,
       };
 
       const handlers = customHandler?.callbacks.map(callback => callback(setupArgs));
@@ -100,6 +102,7 @@ function PanelStudyBrowser({
       for (const handler of handlers) {
         await handler(displaySetInstanceUID);
       }
+      onDoubleClickThumbnailHandlerCallBack?.(displaySetInstanceUID);
     },
     [
       activeViewportId,

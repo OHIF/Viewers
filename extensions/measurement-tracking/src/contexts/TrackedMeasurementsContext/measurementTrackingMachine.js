@@ -122,8 +122,22 @@ const machineConfiguration = {
         UNTRACK_SERIES: [
           {
             target: 'tracking',
-            actions: ['removeTrackedSeries', 'setIsDirty'],
+            actions: ['removeTrackedSeries', 'setIsDirty', 'clearDisplaySetHydratedState'],
             cond: 'hasRemainingTrackedSeries',
+          },
+          {
+            target: 'idle',
+          },
+        ],
+        UNTRACK_ALL: [
+          {
+            target: 'tracking',
+            actions: [
+              'clearContext',
+              'setIsDirtyToClean',
+              'clearDisplaySetHydratedState',
+              'clearAllMeasurements',
+            ],
           },
           {
             target: 'idle',
@@ -146,6 +160,15 @@ const machineConfiguration = {
             target: 'tracking',
           },
         ],
+        CHECK_DIRTY: {
+          target: 'promptHasDirtyAnnotations',
+          cond: 'hasDirtyAndSimplified',
+        },
+        PROMPT_HYDRATE_SR: {
+          target: 'promptHydrateStructuredReport',
+          cond: 'isSimplifiedConfig',
+          actions: ['clearAllMeasurements', 'clearDisplaySetHydratedState'],
+        },
       },
     },
     promptTrackNewSeries: {
@@ -214,6 +237,16 @@ const machineConfiguration = {
       invoke: {
         src: 'promptSaveReport',
         onDone: [
+          {
+            target: 'tracking',
+            actions: [
+              'clearAllMeasurements',
+              'clearDisplaySetHydratedState',
+              'setIsDirty',
+              'updatedViewports',
+            ],
+            cond: 'simplifiedAndLoadSR',
+          },
           // "clicked the save button"
           // - should clear all measurements
           // - show DICOM SR
@@ -309,6 +342,28 @@ const machineConfiguration = {
           {
             target: 'off',
           },
+        ],
+      },
+    },
+    promptHasDirtyAnnotations: {
+      invoke: {
+        src: 'promptHasDirtyAnnotations',
+        onDone: [
+          {
+            target: 'tracking',
+            actions: [
+              'clearAllMeasurements',
+              'clearDisplaySetHydratedState',
+              'setIsDirty',
+              'updatedViewports',
+            ],
+            cond: 'shouldSetStudyAndSeries',
+          },
+          {
+            target: 'promptSaveReport',
+            cond: 'shouldPromptSaveReport',
+          },
+          { target: 'tracking' },
         ],
       },
     },
