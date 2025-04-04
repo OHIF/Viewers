@@ -453,7 +453,7 @@ const mipSAGITTAL: AppTypes.HangingProtocol.Viewport = {
           syncInvertState: false,
         },
       },
-      // hydrateSegSync,
+      hydrateSegSync,
     ],
 
     // Custom props can be used to set custom properties which extensions
