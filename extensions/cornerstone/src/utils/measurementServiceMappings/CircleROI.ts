@@ -93,6 +93,7 @@ function getMappedAnnotations(annotation, displaySetService) {
   }
 
   const annotations = [];
+  const addedModalities = new Set();
   Object.keys(cachedStats).forEach(targetId => {
     const targetStats = cachedStats[targetId];
 
@@ -107,6 +108,12 @@ function getMappedAnnotations(annotation, displaySetService) {
     const { SeriesNumber } = displaySet;
     const { mean, stdDev, max, area, Modality, areaUnit, modalityUnit, perimeter, radiusUnit } =
       targetStats;
+
+    if (Modality && addedModalities.has(Modality)) {
+      return;
+    }
+
+    addedModalities.add(Modality);
 
     annotations.push({
       SeriesInstanceUID,

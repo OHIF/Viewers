@@ -10,7 +10,6 @@ import {
   ToolGroupManager,
   Enums,
   utilities as cstUtils,
-  ReferenceLinesTool,
   annotation,
   Types as ToolTypes,
 } from '@cornerstonejs/tools';
@@ -42,6 +41,8 @@ const toggleSyncFunctions = {
   imageSlice: toggleImageSliceSync,
   voi: toggleVOISliceSync,
 };
+
+const { segmentation: segmentationUtils } = cstUtils;
 
 const getLabelmapTools = ({ toolGroupService }) => {
   const labelmapTools = [];
@@ -155,6 +156,8 @@ function commandsModule({
           }
         );
 
+        measurement.annotationUID = annotation.annotationUID;
+
         // Update segmentation stats
         const updatedSegmentation = updateSegmentBidirectionalStats({
           segmentationId: targetId,
@@ -171,6 +174,14 @@ function commandsModule({
             segments: updatedSegmentation.segments,
           });
         }
+      });
+
+      // get the active segmentIndex bidirectional annotation and jump to it
+      const activeBidirectional = bidirectionalData.find(
+        measurement => measurement.segmentIndex === targetIndex
+      );
+      commandsManager.run('jumpToMeasurement', {
+        uid: activeBidirectional.annotationUID,
       });
     },
     interpolateLabelmap: () => {
@@ -1644,6 +1655,72 @@ function commandsModule({
         segmentAI.initViewport(viewport);
       }
     },
+    setBrushSize: ({ value, toolNames }) => {
+      const brushSize = Number(value);
+
+      toolGroupService.getToolGroupIds()?.forEach(toolGroupId => {
+        if (toolNames?.length === 0) {
+          segmentationUtils.setBrushSizeForToolGroup(toolGroupId, brushSize);
+        } else {
+          toolNames?.forEach(toolName => {
+            segmentationUtils.setBrushSizeForToolGroup(toolGroupId, brushSize, toolName);
+          });
+        }
+      });
+    },
+    setThresholdRange: ({
+      value,
+      toolNames = [
+        'ThresholdCircularBrush',
+        'ThresholdSphereBrush',
+        'ThresholdCircularBrushDynamic',
+        'ThresholdSphereBrushDynamic',
+      ],
+    }) => {
+      const toolGroupIds = toolGroupService.getToolGroupIds();
+      if (!toolGroupIds?.length) {
+        return;
+      }
+
+      for (const toolGroupId of toolGroupIds) {
+        const toolGroup = toolGroupService.getToolGroup(toolGroupId);
+        toolNames?.forEach(toolName => {
+          toolGroup.setToolConfiguration(toolName, {
+            threshold: {
+              range: value,
+            },
+          });
+        });
+      }
+    },
+    increaseBrushSize: () => {
+      const toolGroupIds = toolGroupService.getToolGroupIds();
+      if (!toolGroupIds?.length) {
+        return;
+      }
+
+      for (const toolGroupId of toolGroupIds) {
+        const brushSize = segmentationUtils.getBrushSizeForToolGroup(toolGroupId);
+        segmentationUtils.setBrushSizeForToolGroup(toolGroupId, brushSize + 3);
+      }
+    },
+    decreaseBrushSize: () => {
+      const toolGroupIds = toolGroupService.getToolGroupIds();
+      if (!toolGroupIds?.length) {
+        return;
+      }
+
+      for (const toolGroupId of toolGroupIds) {
+        const brushSize = segmentationUtils.getBrushSizeForToolGroup(toolGroupId);
+        segmentationUtils.setBrushSizeForToolGroup(toolGroupId, brushSize - 3);
+      }
+    },
+    addNewSegment: () => {
+      const { segmentationService } = servicesManager.services;
+      const { activeViewportId } = viewportGridService.getState();
+      const activeSegmentation = segmentationService.getActiveSegmentation(activeViewportId);
+      segmentationService.addSegment(activeSegmentation.segmentationId);
+    },
   };
 
   const definitions = {
@@ -1918,6 +1995,11 @@ function commandsModule({
     toggleLabelmapAssist: actions.toggleLabelmapAssist,
     interpolateScrollForMarkerLabelmap: actions.interpolateScrollForMarkerLabelmap,
     clearMarkersForMarkerLabelmap: actions.clearMarkersForMarkerLabelmap,
+    setBrushSize: actions.setBrushSize,
+    setThresholdRange: actions.setThresholdRange,
+    increaseBrushSize: actions.increaseBrushSize,
+    decreaseBrushSize: actions.decreaseBrushSize,
+    addNewSegment: actions.addNewSegment,
   };
 
   return {

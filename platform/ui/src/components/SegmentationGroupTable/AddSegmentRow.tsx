@@ -13,7 +13,7 @@ function AddSegmentRow({ onClick, onToggleSegmentationVisibility = null, segment
           <div className="grid h-[28px] w-[28px] place-items-center">
             <Icons.Add />
           </div>
-          <span className="text-[13px]">{t('Add segment')}</span>
+          <span className="mt-1 text-[13px]">{t('Add segment')}</span>
         </div>
       </div>
       {segmentation && (

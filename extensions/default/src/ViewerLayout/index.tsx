@@ -55,16 +55,8 @@ function ViewerLayout({
     setRightPanelClosed
   );
 
-  const leftPanelRef = useRef<HTMLDivElement>(null);
-  const rightPanelRef = useRef<HTMLDivElement>(null);
-
   const handleMouseEnter = () => {
-    if (
-      leftPanelRef.current?.contains(document.activeElement) ||
-      rightPanelRef.current?.contains(document.activeElement)
-    ) {
-      (document.activeElement as HTMLElement)?.blur();
-    }
+    (document.activeElement as HTMLElement)?.blur();
   };
 
   const LoadingIndicatorProgress = customizationService.getCustomization(
@@ -79,6 +71,7 @@ function ViewerLayout({
   useEffect(() => {
     document.body.classList.add('bg-black');
     document.body.classList.add('overflow-hidden');
+
     return () => {
       document.body.classList.remove('bg-black');
       document.body.classList.remove('overflow-hidden');
@@ -165,14 +158,12 @@ function ViewerLayout({
             {hasLeftPanels ? (
               <>
                 <ResizablePanel {...resizableLeftPanelProps}>
-                  <div ref={leftPanelRef}>
-                    <SidePanelWithServices
-                      side="left"
-                      isExpanded={!leftPanelClosedState}
-                      servicesManager={servicesManager}
-                      {...leftPanelProps}
-                    />
-                  </div>
+                  <SidePanelWithServices
+                    side="left"
+                    isExpanded={!leftPanelClosedState}
+                    servicesManager={servicesManager}
+                    {...leftPanelProps}
+                  />
                 </ResizablePanel>
                 <ResizableHandle
                   onDragging={onHandleDragging}
@@ -204,14 +195,12 @@ function ViewerLayout({
                   className={resizableHandleClassName}
                 />
                 <ResizablePanel {...resizableRightPanelProps}>
-                  <div ref={rightPanelRef}>
-                    <SidePanelWithServices
-                      side="right"
-                      isExpanded={!rightPanelClosedState}
-                      servicesManager={servicesManager}
-                      {...rightPanelProps}
-                    />
-                  </div>
+                  <SidePanelWithServices
+                    side="right"
+                    isExpanded={!rightPanelClosedState}
+                    servicesManager={servicesManager}
+                    {...rightPanelProps}
+                  />
                 </ResizablePanel>
               </>
             ) : null}

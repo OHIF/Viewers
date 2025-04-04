@@ -846,12 +846,16 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     if (addOverlayFn) {
       addOverlayFn();
     }
+    viewport.render();
 
     volumesProperties.forEach(({ properties, volumeId }) => {
-      viewport.setProperties(properties, volumeId);
+      setTimeout(() => {
+        // seems like a hack but we need the actor to be ready first before
+        // we set the properties
+        viewport.setProperties(properties, volumeId);
+        viewport.render();
+      }, 0);
     });
-
-    viewport.render();
 
     this.setPresentations(viewport.id, presentations, viewportInfo);
 
@@ -864,8 +868,6 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
         });
       }
     }
-
-    viewport.render();
 
     this._broadcastEvent(this.EVENTS.VIEWPORT_VOLUMES_CHANGED, {
       viewportInfo,
