@@ -427,6 +427,8 @@ class SegmentationService extends PubSubService {
       ...metaData.get('instance', image.referencedImageId),
     }));
 
+    segDisplaySet.imageIds = derivedImageIds;
+
     // We should parse the segmentation as separate slices to support overlapping segments.
     // This parsing should occur in the CornerstoneJS library adapters.
     // For now, we use the volume returned from the library and chop it here.
@@ -513,7 +515,7 @@ class SegmentationService extends PubSubService {
         type: LABELMAP,
         data: {
           imageIds: derivedImageIds,
-          referencedVolumeId: this._getVolumeIdForDisplaySet(referencedDisplaySet),
+          // referencedVolumeId: this._getVolumeIdForDisplaySet(referencedDisplaySet),
           referencedImageIds: imageIds as string[],
         },
       },
@@ -566,9 +568,10 @@ class SegmentationService extends PubSubService {
 
     const referencedImageIds = referencedDisplaySet.imageIds;
     // find the first image id that contains a referenced SOP instance UID
-    const firstSegmentedSliceImageId = referencedImageIds.find(imageId =>
-      referencedImageIdsWithGeometry.some(referencedId => imageId.includes(referencedId))
-    );
+    const firstSegmentedSliceImageId =
+      referencedImageIds?.find(imageId =>
+        referencedImageIdsWithGeometry.some(referencedId => imageId.includes(referencedId))
+      ) || null;
 
     rtDisplaySet.firstSegmentedSliceImageId = firstSegmentedSliceImageId;
     // Map ROI contours to RT Struct Data

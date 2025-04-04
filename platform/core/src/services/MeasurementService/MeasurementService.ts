@@ -64,6 +64,7 @@ const MEASUREMENT_SCHEMA_KEYS = [
   'isSelected',
   'textBox',
   'referencedImageId',
+  'isDirty',
 ];
 
 const EVENTS = {
@@ -91,6 +92,11 @@ const VALUE_TYPES = {
   ROI_THRESHOLD: 'value_type::roiThreshold',
   ROI_THRESHOLD_MANUAL: 'value_type::roiThresholdManual',
 };
+
+enum MeasurementChangeType {
+  HandlesUpdated = 'HandlesUpdated',
+  LabelChange = 'LabelChange',
+}
 
 export type MeasurementFilter = (measurement) => boolean;
 
@@ -121,6 +127,7 @@ class MeasurementService extends PubSubService {
 
   private measurements = new Map();
   private unmappedMeasurements = new Map();
+  private isMeasurementDeletedIndividually: boolean;
 
   private sources = {};
   private mappings = {};
@@ -543,6 +550,11 @@ class MeasurementService extends PubSubService {
       uid: internalUID,
     };
 
+    newMeasurement.isDirty =
+      sourceAnnotationDetail.changeType === MeasurementChangeType.HandlesUpdated ||
+      sourceAnnotationDetail.changeType === MeasurementChangeType.LabelChange ||
+      oldMeasurement?.isDirty;
+
     if (oldMeasurement) {
       // TODO: Ultimately, each annotation should have a selected flag right from the source.
       // For now, it is just added in OHIF here and in setMeasurementSelected.
@@ -586,6 +598,7 @@ class MeasurementService extends PubSubService {
 
     this.unmappedMeasurements.delete(measurementUID);
     this.measurements.delete(measurementUID);
+    this.isMeasurementDeletedIndividually = true;
     this._broadcastEvent(this.EVENTS.MEASUREMENT_REMOVED, {
       source,
       measurement: measurementUID,
@@ -839,6 +852,14 @@ class MeasurementService extends PubSubService {
       notYetUpdatedAtSource: true,
     });
   }
+
+  public setIsMeasurementDeletedIndividually = isDeletedIndividually => {
+    this.isMeasurementDeletedIndividually = isDeletedIndividually;
+  };
+
+  public getIsMeasurementDeletedIndividually = () => {
+    return this.isMeasurementDeletedIndividually;
+  };
 }
 
 export default MeasurementService;

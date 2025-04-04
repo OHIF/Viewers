@@ -35,6 +35,7 @@ import { toolNames } from './initCornerstoneTools';
 import CornerstoneViewportDownloadForm from './utils/CornerstoneViewportDownloadForm';
 import { updateSegmentBidirectionalStats } from './utils/updateSegmentationStats';
 import { generateSegmentationCSVReport } from './utils/generateSegmentationCSVReport';
+import { getUpdatedViewportsForSegmentation } from './utils/hydrationUtils';
 
 const { DefaultHistoryMemo } = csUtils.HistoryMemo;
 const toggleSyncFunctions = {
@@ -495,7 +496,6 @@ function commandsModule({
 
     downloadCSVSegmentationReport: ({ segmentationId }) => {
       const segmentation = segmentationService.getSegmentation(segmentationId);
-      const cachedStats = segmentation.cachedStats;
 
       const { representationData } = segmentation;
       const { Labelmap } = representationData;
@@ -1018,6 +1018,10 @@ function commandsModule({
       }
 
       const toolGroup = toolGroupService.getToolGroupForViewport(viewportId);
+
+      if (!toolGroup.hasTool(toolName)) {
+        return;
+      }
 
       const prevConfig = toolGroup?.getToolConfiguration(toolName);
       toolGroup?.setToolConfiguration(
@@ -1553,7 +1557,8 @@ function commandsModule({
       DefaultHistoryMemo.redo();
     },
     toggleSegmentPreviewEdit: ({ toggle }) => {
-      const labelmapTools = getLabelmapTools({ toolGroupService });
+      let labelmapTools = getLabelmapTools({ toolGroupService });
+      labelmapTools = labelmapTools.filter(tool => !tool.toolName.includes('Eraser'));
       labelmapTools.forEach(tool => {
         tool.configuration = {
           ...tool.configuration,
@@ -1576,7 +1581,8 @@ function commandsModule({
       });
     },
     toggleUseCenterSegmentIndex: ({ toggle }) => {
-      const labelmapTools = getLabelmapTools({ toolGroupService });
+      let labelmapTools = getLabelmapTools({ toolGroupService });
+      labelmapTools = labelmapTools.filter(tool => !tool.toolName.includes('Eraser'));
       labelmapTools.forEach(tool => {
         tool.configuration = {
           ...tool.configuration,
@@ -1720,6 +1726,20 @@ function commandsModule({
       const { activeViewportId } = viewportGridService.getState();
       const activeSegmentation = segmentationService.getActiveSegmentation(activeViewportId);
       segmentationService.addSegment(activeSegmentation.segmentationId);
+    },
+    loadSegmentationDisplaySetsForViewport: ({ viewportId, displaySetInstanceUIDs }) => {
+      const updatedViewports = getUpdatedViewportsForSegmentation({
+        viewportId,
+        servicesManager,
+        displaySetInstanceUIDs,
+      });
+
+      updatedViewports.forEach(viewport => {
+        viewportGridService.setDisplaySetsForViewport({
+          viewportId: viewport.viewportId,
+          displaySetInstanceUIDs: viewport.displaySetInstanceUIDs,
+        });
+      });
     },
   };
 
@@ -2000,6 +2020,7 @@ function commandsModule({
     increaseBrushSize: actions.increaseBrushSize,
     decreaseBrushSize: actions.decreaseBrushSize,
     addNewSegment: actions.addNewSegment,
+    loadSegmentationDisplaySetsForViewport: actions.loadSegmentationDisplaySetsForViewport,
   };
 
   return {

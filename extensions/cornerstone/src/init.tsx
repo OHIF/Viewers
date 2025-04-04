@@ -193,13 +193,14 @@ export default async function init({
   });
 
   // Setup segmentation event handlers
-  setupSegmentationDataModifiedHandler({
-    segmentationService,
-    customizationService,
-    commandsManager,
-  });
+  const { unsubscribe: unsubscribeSegmentationDataModifiedHandler } =
+    setupSegmentationDataModifiedHandler({
+      segmentationService,
+      customizationService,
+      commandsManager,
+    });
 
-  setupSegmentationModifiedHandler({
+  const { unsubscribe: unsubscribeSegmentationModifiedHandler } = setupSegmentationModifiedHandler({
     segmentationService,
   });
 
@@ -299,6 +300,13 @@ export default async function init({
 
   // Call this function when initializing
   initializeWebWorkerProgressHandler(servicesManager.services.uiNotificationService);
+
+  const unsubscriptions = [
+    unsubscribeSegmentationDataModifiedHandler,
+    unsubscribeSegmentationModifiedHandler,
+  ];
+
+  return { unsubscriptions };
 }
 
 function initializeWebWorkerProgressHandler(uiNotificationService) {
