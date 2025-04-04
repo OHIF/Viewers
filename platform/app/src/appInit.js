@@ -47,6 +47,7 @@ async function appInit(appConfigOrFunc, defaultExtensions, defaultModes) {
   };
   // Default the peer import function
   appConfig.peerImport ||= peerImport;
+  appConfig.measurementTrackingMode ||= 'standard';
 
   const extensionManager = new ExtensionManager({
     commandsManager,

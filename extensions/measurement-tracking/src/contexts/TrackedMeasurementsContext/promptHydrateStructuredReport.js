@@ -1,5 +1,6 @@
 import { hydrateStructuredReport } from '@ohif/extension-cornerstone-dicom-sr';
 import { ButtonEnums } from '@ohif/ui';
+import { measurementTrackingMode } from './promptBeginTracking';
 
 const RESPONSE = {
   NO_NEVER: -1,
@@ -16,13 +17,16 @@ function promptHydrateStructuredReport(
   ctx,
   evt
 ) {
-  const { uiViewportDialogService, displaySetService } = servicesManager.services;
+  const { uiViewportDialogService, displaySetService, customizationService } =
+    servicesManager.services;
   const { viewportId, displaySetInstanceUID } = evt;
   const srDisplaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
   return new Promise(async function (resolve, reject) {
-    const promptResult = appConfig?.disableConfirmationPrompts
-      ? RESPONSE.HYDRATE_REPORT
-      : await _askTrackMeasurements(uiViewportDialogService, viewportId);
+    const standardMode = appConfig?.measurementTrackingMode === measurementTrackingMode.STANDARD;
+
+    const promptResult = standardMode
+      ? await _askTrackMeasurements(uiViewportDialogService, customizationService, viewportId)
+      : RESPONSE.HYDRATE_REPORT;
 
     // Need to do action here... So we can set state...
     let StudyInstanceUID, SeriesInstanceUIDs;
@@ -49,9 +53,9 @@ function promptHydrateStructuredReport(
   });
 }
 
-function _askTrackMeasurements(uiViewportDialogService, viewportId) {
+function _askTrackMeasurements(uiViewportDialogService, customizationService, viewportId) {
   return new Promise(function (resolve, reject) {
-    const message = 'Do you want to continue tracking measurements for this study?';
+    const message = customizationService.getCustomization('viewportNotification.hydrateSRMessage');
     const actions = [
       {
         id: 'no-hydrate',
