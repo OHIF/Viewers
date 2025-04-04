@@ -49,7 +49,7 @@ const segmentationRepresentationModifiedCallback = async (
   const targetViewportId = targetViewport.viewportId;
 
   const { viewport } = getEnabledElementByViewportId(targetViewportId);
-
+  debugger;
   const targetFrameOfReferenceUID = viewport.getFrameOfReferenceUID();
 
   if (!targetFrameOfReferenceUID) {

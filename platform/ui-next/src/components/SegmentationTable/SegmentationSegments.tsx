@@ -65,42 +65,42 @@ export const SegmentationSegments = ({ children = null }: { children?: React.Rea
         const { locked, active, label, displayText } = segmentFromSegmentation;
         const cssColor = `rgb(${color[0]},${color[1]},${color[2]})`;
 
-        return (
+        const hasStats = segmentFromSegmentation.cachedStats?.namedStats;
+        const DataRowComponent = (
+          <DataRow
+            key={segmentIndex}
+            number={segmentIndex}
+            title={label}
+            details={displayText}
+            description={displayText}
+            colorHex={cssColor}
+            isSelected={active}
+            isVisible={visible}
+            isLocked={locked}
+            disableEditing={disableEditing}
+            className={!isActiveSegmentation ? 'opacity-80' : ''}
+            onColor={() => onSegmentColorClick(segmentation.segmentationId, segmentIndex)}
+            onToggleVisibility={() =>
+              onToggleSegmentVisibility(
+                segmentation.segmentationId,
+                segmentIndex,
+                representation.type
+              )
+            }
+            onToggleLocked={() => onToggleSegmentLock(segmentation.segmentationId, segmentIndex)}
+            onSelect={() => onSegmentClick(segmentation.segmentationId, segmentIndex)}
+            onRename={() => onSegmentEdit(segmentation.segmentationId, segmentIndex)}
+            onDelete={() => onSegmentDelete(segmentation.segmentationId, segmentIndex)}
+          />
+        );
+
+        return hasStats ? (
           <HoverCard
             key={`hover-${segmentIndex}`}
             openDelay={300}
           >
             <HoverCardTrigger asChild>
-              {/* The div here is not random, it is needed for making it work with the hover card */}
-              <div>
-                <DataRow
-                  key={segmentIndex}
-                  number={segmentIndex}
-                  title={label}
-                  details={displayText}
-                  description={displayText}
-                  colorHex={cssColor}
-                  isSelected={active}
-                  isVisible={visible}
-                  isLocked={locked}
-                  disableEditing={disableEditing}
-                  className={!isActiveSegmentation ? 'opacity-80' : ''}
-                  onColor={() => onSegmentColorClick(segmentation.segmentationId, segmentIndex)}
-                  onToggleVisibility={() =>
-                    onToggleSegmentVisibility(
-                      segmentation.segmentationId,
-                      segmentIndex,
-                      representation.type
-                    )
-                  }
-                  onToggleLocked={() =>
-                    onToggleSegmentLock(segmentation.segmentationId, segmentIndex)
-                  }
-                  onSelect={() => onSegmentClick(segmentation.segmentationId, segmentIndex)}
-                  onRename={() => onSegmentEdit(segmentation.segmentationId, segmentIndex)}
-                  onDelete={() => onSegmentDelete(segmentation.segmentationId, segmentIndex)}
-                />
-              </div>
+              <div>{DataRowComponent}</div>
             </HoverCardTrigger>
             <HoverCardContent
               side="left"
@@ -126,6 +126,8 @@ export const SegmentationSegments = ({ children = null }: { children?: React.Rea
               </SegmentStatistics>
             </HoverCardContent>
           </HoverCard>
+        ) : (
+          DataRowComponent
         );
       })}
     </ScrollArea>

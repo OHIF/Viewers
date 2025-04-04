@@ -47,7 +47,7 @@ function OHIFCornerstoneSEGViewport(props: withAppTypes) {
   const [viewportGrid, viewportGridService] = useViewportGrid();
 
   // States
-  let selectedSegmentObjectIndex: number = 0;
+  const selectedSegmentObjectIndex: number = 0;
   const { setPositionPresentation } = usePositionPresentationStore();
 
   // Hydration means that the SEG is opened and segments are loaded into the
@@ -160,7 +160,7 @@ function OHIFCornerstoneSEGViewport(props: withAppTypes) {
       displaySetInstanceUID: referencedDisplaySet.displaySetInstanceUID,
     });
 
-    viewportGridService.setDisplaySetsForViewport({
+    commandsManager.runCommand('loadSegmentationDisplaySetsForViewport', {
       viewportId,
       displaySetInstanceUIDs: [referencedDisplaySet.displaySetInstanceUID],
     });

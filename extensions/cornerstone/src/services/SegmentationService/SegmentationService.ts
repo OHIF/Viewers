@@ -427,6 +427,8 @@ class SegmentationService extends PubSubService {
       ...metaData.get('instance', image.referencedImageId),
     }));
 
+    segDisplaySet.imageIds = derivedImageIds;
+
     // We should parse the segmentation as separate slices to support overlapping segments.
     // This parsing should occur in the CornerstoneJS library adapters.
     // For now, we use the volume returned from the library and chop it here.
