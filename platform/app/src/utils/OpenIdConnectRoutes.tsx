@@ -147,6 +147,19 @@ function OpenIdConnectRoutes({ oidc, routerBasename, userAuthenticationService }
     });
   }, []);
 
+  useEffect(() => {
+    const userLoadedHandler = user => {
+      userAuthenticationService.setUser(user);
+    };
+
+    userManager.events.addUserLoaded(userLoadedHandler);
+
+    // Cleanup on component unmount.
+    return () => {
+      userManager.events.removeUserLoaded(userLoadedHandler);
+    };
+  }, []);
+
   const oidcAuthority = oidc[0].authority;
 
   const location = useLocation();
