@@ -247,7 +247,8 @@ function ViewerViewportGrid(props: withAppTypes) {
         });
 
         event.consume();
-        viewportGridService.setDisplaySetsForViewports(updatedViewports);
+
+        commandsManager.run('setDisplaySetsForViewports', { viewportsToUpdate: updatedViewports });
       }
     );
 
@@ -268,7 +269,8 @@ function ViewerViewportGrid(props: withAppTypes) {
     dropHandlerPromise.then(({ handled }) => {
       if (!handled) {
         const updatedViewports = _getUpdatedViewports(viewportId, displaySetInstanceUID);
-        viewportGridService.setDisplaySetsForViewports(updatedViewports);
+
+        commandsManager.run('setDisplaySetsForViewports', { viewportsToUpdate: updatedViewports });
       }
     });
     viewportGridService.publishViewportOnDropHandled({ displaySetInstanceUID });

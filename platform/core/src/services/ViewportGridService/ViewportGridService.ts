@@ -189,14 +189,14 @@ class ViewportGridService extends PubSubService {
     this.setDisplaySetsForViewports([props]);
   }
 
-  public async setDisplaySetsForViewports(props) {
-    await this.serviceImplementation._setDisplaySetsForViewports(props);
+  public async setDisplaySetsForViewports(viewportsToUpdate) {
+    await this.serviceImplementation._setDisplaySetsForViewports(viewportsToUpdate);
     const state = this.getState();
     const updatedViewports = [];
 
     const removedViewportIds = [];
 
-    for (const viewport of props) {
+    for (const viewport of viewportsToUpdate) {
       const updatedViewport = state.viewports.get(viewport.viewportId);
 
       if (updatedViewport) {
