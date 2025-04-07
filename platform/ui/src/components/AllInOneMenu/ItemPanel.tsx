@@ -1,5 +1,4 @@
 import React, { ReactNode, useContext, useEffect } from 'react';
-import { ScrollArea } from '@ohif/ui-next';
 import { MenuContext } from './Menu';
 
 type ItemPanelProps = {
@@ -17,12 +16,12 @@ const ItemPanel = ({ label, index = 0, children }: ItemPanelProps) => {
 
   return (
     activePanelIndex === index && (
-      <ScrollArea
+      <div
         style={{ scrollbarGutter: 'auto' }}
-        className="flex flex-col"
+        className="ohif-scrollbar flex flex-col overflow-auto"
       >
         {children}
-      </ScrollArea>
+      </div>
     )
   );
 };
