@@ -111,7 +111,7 @@ const Thumbnail = ({
                   <TooltipContent side="right">
                     <div className="flex flex-1 flex-row">
                       <div className="flex-2 flex items-center justify-center pr-4">
-                        <Icons.InfoLink className="text-primary-active" />
+                        <Icons.InfoLink className="text-primary" />
                       </div>
                       <div className="flex flex-1 flex-col">
                         <span>
@@ -226,7 +226,7 @@ const Thumbnail = ({
               <TooltipContent side="right">
                 <div className="flex flex-1 flex-row">
                   <div className="flex-2 flex items-center justify-center pr-4">
-                    <Icons.InfoLink className="text-primary-active" />
+                    <Icons.InfoLink className="text-primary" />
                   </div>
                   <div className="flex flex-1 flex-col">
                     <span>

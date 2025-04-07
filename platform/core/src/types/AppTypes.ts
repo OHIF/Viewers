@@ -113,6 +113,7 @@ declare global {
         days?: number;
       };
       groupEnabledModesFirst?: boolean;
+      measurementTrackingMode?: 'standard' | 'simplified' | 'none';
       disableConfirmationPrompts?: boolean;
       showPatientInfo?: 'visible' | 'visibleCollapsed' | 'disabled' | 'visibleReadOnly';
       requestTransferSyntaxUID?: string;

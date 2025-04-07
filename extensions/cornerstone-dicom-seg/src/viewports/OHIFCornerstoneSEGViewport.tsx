@@ -160,7 +160,7 @@ function OHIFCornerstoneSEGViewport(props: withAppTypes) {
       displaySetInstanceUID: referencedDisplaySet.displaySetInstanceUID,
     });
 
-    viewportGridService.setDisplaySetsForViewport({
+    commandsManager.runCommand('loadSegmentationDisplaySetsForViewport', {
       viewportId,
       displaySetInstanceUIDs: [referencedDisplaySet.displaySetInstanceUID],
     });

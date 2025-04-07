@@ -46,10 +46,9 @@ export default {
   'studyBrowser.studyMode': 'all',
   'studyBrowser.thumbnailDoubleClickCallback': {
     callbacks: [
-      ({ activeViewportId, servicesManager, isHangingProtocolLayout }) =>
+      ({ activeViewportId, servicesManager, commandsManager, isHangingProtocolLayout }) =>
         async displaySetInstanceUID => {
-          const { hangingProtocolService, viewportGridService, uiNotificationService } =
-            servicesManager.services;
+          const { hangingProtocolService, uiNotificationService } = servicesManager.services;
           let updatedViewports = [];
           const viewportId = activeViewportId;
 
@@ -69,7 +68,9 @@ export default {
             });
           }
 
-          viewportGridService.setDisplaySetsForViewports(updatedViewports);
+          commandsManager.run('setDisplaySetsForViewports', {
+            viewportsToUpdate: updatedViewports,
+          });
         },
     ],
   },

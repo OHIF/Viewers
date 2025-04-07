@@ -1,10 +1,12 @@
 import React from 'react';
-import { useActiveViewportDisplaySets, useSystem } from '@ohif/core';
+import { useActiveViewportDisplaySets, useSystem, utils } from '@ohif/core';
 // import { AccordionContent, AccordionItem, AccordionTrigger } from '@ohif/ui-next';
 
 import { AccordionGroup } from './AccordionGroup';
 import MeasurementsOrAdditionalFindings from './MeasurementsOrAdditionalFindings';
 import StudySummaryWithActions from './StudySummaryWithActions';
+
+const { MeasurementFilters } = utils;
 
 /**
  * Groups measurements by study in order to allow display and saving by study
@@ -26,6 +28,10 @@ export const groupByStudy = (items, grouping, childProps) => {
     const studyUID = getItemStudyInstanceUID(item);
     if (!groups.has(studyUID)) {
       const items = [];
+      const filter = MeasurementFilters.filterAnd(
+        MeasurementFilters.filterMeasurementsByStudyUID(activeStudyUID),
+        grouping.filter
+      );
       const group = {
         ...grouping,
         items,
@@ -33,6 +39,8 @@ export const groupByStudy = (items, grouping, childProps) => {
         key: studyUID,
         isSelected: studyUID === activeStudyUID,
         StudyInstanceUID: activeStudyUID,
+        filter,
+        measurementFilter: filter,
       };
       if (group.isSelected && !firstSelected) {
         firstSelected = group;

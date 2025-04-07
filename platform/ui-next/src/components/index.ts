@@ -35,6 +35,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from './Tabs';
 import { Toggle, toggleVariants } from './Toggle';
 import { ToggleGroup, ToggleGroupItem } from './ToggleGroup';
 import { Input } from './Input';
+import { InputNumber } from './InputNumber';
 import { Label } from './Label';
 import { Switch } from './Switch';
 import { Checkbox } from './Checkbox';
@@ -59,6 +60,7 @@ import { AboutModal, ImageModal, UserPreferencesModal } from './OHIFModals';
 import Modal from './Modal/Modal';
 import { FooterAction } from './FooterAction';
 import { InputFilter } from './InputFilter';
+import { WindowLevel, WindowLevelHistogram } from './OHIFPanels';
 
 import {
   DropdownMenu,
@@ -157,11 +159,12 @@ export {
   Calendar,
   DatePickerWithRange,
   Input,
+  InputNumber,
   Label,
   Tabs,
+  TabsContent,
   TabsList,
   TabsTrigger,
-  TabsContent,
   Separator,
   Switch,
   Checkbox,
@@ -249,4 +252,6 @@ export {
   FooterAction,
   ToolSettings,
   InputFilter,
+  WindowLevel,
+  WindowLevelHistogram,
 };

@@ -179,7 +179,10 @@ function Trigger(props) {
     >
       <div>
         {React.cloneElement(children, childProps)}
-        <ChevronDownIcon key="chevronDown" className="text-primary h-4 w-4 shrink-0 transition-transform duration-200" />
+        <ChevronDownIcon
+          key="chevronDown"
+          className="text-primary h-4 w-4 shrink-0 transition-transform duration-200"
+        />
       </div>
     </AccordionTrigger>
   );
