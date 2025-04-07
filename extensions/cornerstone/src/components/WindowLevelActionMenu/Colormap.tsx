@@ -98,16 +98,15 @@ export function Colormap({
           </Tabs>
         </div>
       )}
-      <div className="flex h-8 w-full flex-shrink-0 items-center justify-center px-2 text-base">
-        <div className="flex items-center gap-2">
-          <span>Preview in viewport</span>
-          <Switch
-            checked={showPreview}
-            onCheckedChange={checked => {
-              setShowPreview(checked);
-            }}
-          />
-        </div>
+      <div className="hover:bg-accent flex h-8 w-full flex-shrink-0 items-center px-2 text-base hover:rounded">
+        <span className="flex-shrink-0">Preview in viewport</span>
+        <Switch
+          className="ml-auto flex-shrink-0"
+          checked={showPreview}
+          onCheckedChange={checked => {
+            setShowPreview(checked);
+          }}
+        />
       </div>
       <AllInOneMenu.DividerItem />
       <AllInOneMenu.ItemPanel

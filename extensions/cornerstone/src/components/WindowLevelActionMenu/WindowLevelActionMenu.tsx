@@ -144,7 +144,7 @@ export function WindowLevelActionMenu({
             key="colorLUTPresets"
             itemLabel="Color LUT"
             itemIcon="icon-color-lut"
-            className="h-[calc(100%-32px)] flex flex-col"
+            className="flex h-[calc(100%-32px)] flex-col"
           >
             <Colormap
               className="flex h-full w-full flex-col"

@@ -28,9 +28,10 @@ export function VolumeShade({
   }, [viewportId, cornerstoneViewportService]);
 
   return (
-    <div className="flex items-center gap-2">
-      <span>Shade</span>
+    <>
+      <span className="flex-shrink-0">Shade</span>
       <Switch
+        className="ml-auto flex-shrink-0"
         key={key}
         checked={shade}
         onCheckedChange={() => {
@@ -39,6 +40,6 @@ export function VolumeShade({
           onShadeChange(!shade);
         }}
       />
-    </div>
+    </>
   );
 }

@@ -31,14 +31,14 @@ function ViewportOverlay({ topLeft, topRight, bottomRight, bottomLeft, color = '
       <div
         data-cy="viewport-overlay-top-right"
         className={classNames(overlay, classes.topRight)}
-        style={{ transform: 'translateX(-1px)' }}
+        style={{ transform: 'translateX(9px)' }}
       >
         {topRight}
       </div>
       <div
         data-cy="viewport-overlay-bottom-right"
         className={classNames(overlay, classes.bottomRight)}
-        style={{ transform: 'translateX(-1px)' }}
+        style={{ transform: 'translateX(6px)' }}
       >
         {bottomRight}
       </div>

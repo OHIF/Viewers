@@ -30,7 +30,7 @@ export function VolumeRenderingOptions({
         <div className="text-muted-foreground text-sm">Lighting</div>
       </div>
       <div className="bg-background mt-1 mb-1 h-px w-full"></div>
-      <div className="flex h-8 w-full flex-shrink-0 items-center justify-center px-2 text-base">
+      <div className="hover:bg-accent flex h-8 w-full flex-shrink-0 items-center px-2 text-base hover:rounded">
         <VolumeShade
           commandsManager={commandsManager}
           servicesManager={servicesManager}

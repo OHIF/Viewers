@@ -101,17 +101,16 @@ export function Colorbar({
   }, [viewportId]);
 
   return (
-    <div className="flex h-8 w-full flex-shrink-0 items-center justify-start px-2 text-base">
-      <div className="mr-2 w-[28px]"></div>
-      <div className="flex items-center gap-2">
-        <span>Display Color bar</span>
-        <Switch
-          checked={showColorbar}
-          onCheckedChange={() => {
-            onSetColorbar();
-          }}
-        />
-      </div>
+    <div className="hover:bg-accent flex h-8 w-full flex-shrink-0 items-center px-2 text-base hover:rounded">
+      <div className="w-[28px]"></div>
+      <span className="flex-shrink-0">Display Color bar</span>
+      <Switch
+        className="ml-auto flex-shrink-0"
+        checked={showColorbar}
+        onCheckedChange={() => {
+          onSetColorbar();
+        }}
+      />
     </div>
   );
 }
