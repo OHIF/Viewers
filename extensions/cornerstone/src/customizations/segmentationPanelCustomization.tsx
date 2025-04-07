@@ -31,6 +31,7 @@ export default function getSegmentationPanelCustomization({ commandsManager, ser
       peakLPS: 'Peak Coord',
       volume: 'Volume',
       lesionGlycolysis: 'Lesion Glycolysis',
+      center: 'Center',
     },
     'segmentationToolbox.config': () => {
       // Get initial states based on current configuration
