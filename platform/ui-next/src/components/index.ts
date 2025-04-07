@@ -62,6 +62,9 @@ import { FooterAction } from './FooterAction';
 import { InputFilter } from './InputFilter';
 import { WindowLevel, WindowLevelHistogram } from './OHIFPanels';
 import ProgressDropdown from './ProgressDropdown';
+import LoadingIndicatorProgress from './LoadingIndicatorProgress';
+import LoadingIndicatorTotalPercent from './LoadingIndicatorTotalPercent';
+import ProgressLoadingBar from './ProgressLoadingBar';
 
 import {
   DropdownMenu,
@@ -256,4 +259,7 @@ export {
   WindowLevel,
   WindowLevelHistogram,
   ProgressDropdown,
+  LoadingIndicatorProgress,
+  LoadingIndicatorTotalPercent,
+  ProgressLoadingBar,
 };
