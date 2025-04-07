@@ -7,27 +7,23 @@ type ItemPanelProps = {
   index?: number;
   children: ReactNode;
   maxHeight?: string;
+  className?: string;
 };
 
-const ItemPanel = ({ label, index = 0, children, maxHeight = '250px' }: ItemPanelProps) => {
+const ItemPanel = ({ label, index = 0, children, maxHeight = '250px', className }: ItemPanelProps) => {
   const { addItemPanel, activePanelIndex } = useContext(MenuContext);
 
   useEffect(() => {
     addItemPanel(index, label);
-  }, []);
+  }, [addItemPanel, index, label]);
 
   return (
     activePanelIndex === index && (
       <div
-        style={{ maxHeight, height: '100%' }}
-        className="flex flex-col overflow-hidden"
+        style={{ scrollbarGutter: 'auto', maxHeight, height: '100%' }}
+        className={`ohif-scrollbar flex flex-col overflow-auto ${className || ''}`}
       >
-        <ScrollArea
-          className="h-full w-full flex-grow"
-          type="always"
-        >
-          <div className="flex flex-col">{children}</div>
-        </ScrollArea>
+        {children}
       </div>
     )
   );

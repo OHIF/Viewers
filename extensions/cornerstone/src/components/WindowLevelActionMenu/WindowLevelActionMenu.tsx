@@ -144,10 +144,10 @@ export function WindowLevelActionMenu({
             key="colorLUTPresets"
             itemLabel="Color LUT"
             itemIcon="icon-color-lut"
-            className="h-[calc(100%-32px)]"
+            className="h-[calc(100%-32px)] flex flex-col"
           >
             <Colormap
-              className="flex h-full flex-col"
+              className="flex h-full w-full flex-col"
               colormaps={colormaps}
               viewportId={viewportId}
               displaySets={displaySets.filter(ds => !nonWLModalities.includes(ds.Modality))}

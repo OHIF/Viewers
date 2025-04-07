@@ -110,7 +110,10 @@ export function Colormap({
         </div>
       </div>
       <AllInOneMenu.DividerItem />
-      <AllInOneMenu.ItemPanel>
+      <AllInOneMenu.ItemPanel
+        maxHeight="calc(100vh - 250px)"
+        className="flex-grow min-h-[200px]"
+      >
         {colormaps.map((colormap, index) => (
           <AllInOneMenu.Item
             key={index}

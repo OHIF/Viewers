@@ -22,15 +22,15 @@ const Item = ({
 }: ItemProps) => {
   return (
     <div
-      className="hover:bg-accent flex h-8 w-full cursor-pointer items-center px-2 text-base hover:rounded"
+      className="hover:bg-accent flex h-8 w-full flex-shrink-0 cursor-pointer items-center px-2 text-base leading-[18px] hover:rounded"
       onClick={onClick}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
     >
-      {icon && <div className="mr-2">{icon}</div>}
-      <div className="mr-auto">{label}</div>
-      {secondaryLabel && <div className="text-muted-foreground ml-2">{secondaryLabel}</div>}
-      {rightIcon && <div className="ml-2">{rightIcon}</div>}
+      {icon && <div className="mr-2 flex-shrink-0">{icon}</div>}
+      <span className="flex-shrink-0">{label}</span>
+      {secondaryLabel && <span className="text-muted-foreground ml-2 flex-shrink-0">{secondaryLabel}</span>}
+      {rightIcon && <div className="ml-auto flex-shrink-0">{rightIcon}</div>}
     </div>
   );
 };
