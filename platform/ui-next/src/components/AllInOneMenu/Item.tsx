@@ -1,4 +1,5 @@
-import React, { ReactNode } from 'react';
+import React, { ReactNode, useCallback, useContext } from 'react';
+import { MenuContext } from './Menu';
 
 type ItemProps = {
   label: string;
@@ -21,10 +22,17 @@ const Item = ({
   onMouseLeave,
   useIconSpace = false,
 }: ItemProps) => {
+  const { hideMenu } = useContext(MenuContext);
+
+  const onClickHandler = useCallback(() => {
+    hideMenu();
+    onClick?.();
+  }, [hideMenu, onClick]);
+
   return (
     <div
       className="hover:bg-accent flex h-8 w-full flex-shrink-0 cursor-pointer items-center px-2 text-base leading-[18px] hover:rounded"
-      onClick={onClick}
+      onClick={onClickHandler}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
     >
