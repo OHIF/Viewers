@@ -277,6 +277,11 @@ class SegmentationService extends PubSubService {
   ): Promise<void> {
     const segmentation = this.getSegmentation(segmentationId);
     const csViewport = this.getAndValidateViewport(viewportId);
+
+    if (!csViewport) {
+      return;
+    }
+
     const colorLUTIndex = this._segmentationIdToColorLUTIndexMap.get(segmentationId);
 
     const defaultRepresentationType = csToolsEnums.SegmentationRepresentations.Labelmap;
@@ -1251,7 +1256,8 @@ class SegmentationService extends PubSubService {
     const csViewport =
       this.servicesManager.services.cornerstoneViewportService.getCornerstoneViewport(viewportId);
     if (!csViewport) {
-      throw new Error(`Viewport with id ${viewportId} not found.`);
+      console.warn(`Viewport with id ${viewportId} not found.`);
+      return null;
     }
     return csViewport;
   }
@@ -1765,6 +1771,12 @@ class SegmentationService extends PubSubService {
     }
 
     const { center } = cachedStats;
+
+    if (!center) {
+      return {
+        world: cachedStats.namedStats.center.value,
+      };
+    }
 
     return center;
   }

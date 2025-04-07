@@ -71,7 +71,7 @@ export const SegmentationSegments = ({ children = null }: { children?: React.Rea
             key={segmentIndex}
             number={segmentIndex}
             title={label}
-            details={displayText}
+            // details={displayText}
             description={displayText}
             colorHex={cssColor}
             isSelected={active}
