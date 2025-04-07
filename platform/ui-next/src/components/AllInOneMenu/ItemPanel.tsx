@@ -19,12 +19,12 @@ const ItemPanel = ({ label, index = 0, children, maxHeight = '250px', className 
 
   return (
     activePanelIndex === index && (
-      <div
+      <ScrollArea
         style={{ scrollbarGutter: 'auto', maxHeight, height: '100%' }}
-        className={`ohif-scrollbar flex flex-col overflow-auto ${className || ''}`}
+        className={`flex flex-col ${className || ''}`}
       >
         {children}
-      </div>
+      </ScrollArea>
     )
   );
 };
