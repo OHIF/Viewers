@@ -1,4 +1,4 @@
-import { AllInOneMenu } from '@ohif/ui';
+import { AllInOneMenu } from '@ohif/ui-next';
 import { Icons } from '@ohif/ui-next';
 import React, { ReactElement } from 'react';
 import { VolumeRenderingPresetsProps } from '../../types/ViewportPresets';

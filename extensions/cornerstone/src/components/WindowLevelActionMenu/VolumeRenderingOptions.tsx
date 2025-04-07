@@ -1,5 +1,5 @@
 import React, { ReactElement, useState } from 'react';
-import { AllInOneMenu } from '@ohif/ui';
+import { AllInOneMenu } from '@ohif/ui-next';
 import { VolumeRenderingOptionsProps } from '../../types/ViewportPresets';
 import { VolumeRenderingQuality } from './VolumeRenderingQuality';
 import { VolumeShift } from './VolumeShift';
@@ -26,11 +26,11 @@ export function VolumeRenderingOptions({
         commandsManager={commandsManager}
         servicesManager={servicesManager}
       />
-      <div className="all-in-one-menu-item mt-2 flex !h-[20px] w-full justify-start">
-        <div className="text-aqua-pale text-[13px]">LIGHTING</div>
+      <div className="mt-2 flex h-8 !h-[20px] w-full flex-shrink-0 items-center justify-start px-2 text-base">
+        <div className="text-muted-foreground text-sm">Lighting</div>
       </div>
-      <div className="bg-primary-dark mt-1 mb-1 h-[2px] w-full"></div>
-      <div className="all-in-one-menu-item flex w-full justify-center">
+      <div className="bg-background mt-1 mb-1 h-px w-full"></div>
+      <div className="hover:bg-accent flex h-8 w-full flex-shrink-0 items-center px-2 text-base hover:rounded">
         <VolumeShade
           commandsManager={commandsManager}
           servicesManager={servicesManager}

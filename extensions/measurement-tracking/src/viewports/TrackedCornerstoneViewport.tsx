@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
 
-import { ViewportActionArrows } from '@ohif/ui';
+import { ViewportActionArrows } from '@ohif/ui-next';
 import { useViewportGrid, Icons, Tooltip, TooltipTrigger, TooltipContent } from '@ohif/ui-next';
 
 import { annotation } from '@cornerstonejs/tools';
@@ -325,7 +325,7 @@ function _getStatusComponent(isTracked, t) {
     <Tooltip>
       <TooltipTrigger asChild>
         <span>
-          <Icons.StatusTracking className="text-muted-foreground" />
+          <Icons.StatusTracking className="text-muted-foreground mt-0.5 ml-0.5" />
         </span>
       </TooltipTrigger>
       <TooltipContent

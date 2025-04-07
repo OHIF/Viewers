@@ -56,7 +56,6 @@ declare global {
     export type UIViewportDialogService = UIViewportDialogServiceType;
     export type PanelService = PanelServiceType;
     export type StudyPrefetcherService = StudyPrefetcherServiceType;
-    export type MultiMonitorService;
 
     export interface Managers {
       servicesManager?: ServicesManager;
