@@ -6,6 +6,8 @@ import ManagedDialog from './ManagedDialog';
 import ViewportDialogProvider from './ViewportDialogProvider';
 import { useViewportDialog } from './ViewportDialogProvider';
 import { UserAuthenticationProvider, useUserAuthentication } from './UserAuthenticationProvider';
+import { ImageViewerContext, ImageViewerProvider, useImageViewer } from './ImageViewerProvider';
+import DragAndDropProvider from './DragAndDropProvider';
 
 export { useNotification, NotificationProvider };
 export { ViewportGridContext, ViewportGridProvider, useViewportGrid };
@@ -14,3 +16,5 @@ export { DialogProvider, useDialog };
 export { ManagedDialog };
 export { ViewportDialogProvider, useViewportDialog };
 export { UserAuthenticationProvider, useUserAuthentication };
+export { ImageViewerContext, ImageViewerProvider, useImageViewer };
+export { DragAndDropProvider };

@@ -61,6 +61,7 @@ import Modal from './Modal/Modal';
 import { FooterAction } from './FooterAction';
 import { InputFilter } from './InputFilter';
 import { WindowLevel, WindowLevelHistogram } from './OHIFPanels';
+import ProgressDropdown from './ProgressDropdown';
 
 import {
   DropdownMenu,
@@ -254,4 +255,5 @@ export {
   InputFilter,
   WindowLevel,
   WindowLevelHistogram,
+  ProgressDropdown,
 };
