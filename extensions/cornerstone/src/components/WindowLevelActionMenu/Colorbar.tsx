@@ -101,7 +101,12 @@ export function Colorbar({
   }, [viewportId]);
 
   return (
-    <div className="hover:bg-accent flex h-8 w-full flex-shrink-0 items-center px-2 text-base hover:rounded">
+    <div
+      className="hover:bg-accent flex h-8 w-full flex-shrink-0 cursor-pointer items-center px-2 text-base hover:rounded"
+      onClick={() => {
+        onSetColorbar();
+      }}
+    >
       <div className="flex w-7 flex-shrink-0 items-center justify-center"></div>
       <span className="flex-grow">Display Color bar</span>
       <Switch

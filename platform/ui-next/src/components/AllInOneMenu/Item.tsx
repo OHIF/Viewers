@@ -1,5 +1,4 @@
 import React, { ReactNode } from 'react';
-import { Icons } from '@ohif/ui-next';
 
 type ItemProps = {
   label: string;
@@ -30,12 +29,12 @@ const Item = ({
       onMouseLeave={onMouseLeave}
     >
       {(icon || useIconSpace) && (
-        <div className="flex w-7 flex-shrink-0 items-center justify-center">
-          {icon}
-        </div>
+        <div className="flex w-7 flex-shrink-0 items-center justify-center">{icon}</div>
       )}
       <span className="flex-grow">{label}</span>
-      {secondaryLabel && <span className="text-muted-foreground ml-2 flex-shrink-0">{secondaryLabel}</span>}
+      {secondaryLabel && (
+        <span className="text-muted-foreground ml-2 flex-shrink-0">{secondaryLabel}</span>
+      )}
       {rightIcon && <div className="ml-2 flex-shrink-0">{rightIcon}</div>}
     </div>
   );

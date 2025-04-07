@@ -1,4 +1,4 @@
-import React, { ReactElement, useCallback, useEffect, useRef, useState, useMemo } from 'react';
+import React, { ReactElement, useCallback, useEffect, useRef, useState } from 'react';
 import { AllInOneMenu, Switch, Tabs, TabsList, TabsTrigger } from '@ohif/ui-next';
 
 import { StackViewport, Types } from '@cornerstonejs/core';
@@ -27,6 +27,7 @@ export function Colormap({
 
   const onSetColorLUT = useCallback(
     props => {
+      debugger;
       // TODO: Better way to check if it's a fusion
       const oneOpacityColormaps = ['Grayscale', 'X Ray'];
       const opacity =
@@ -98,7 +99,10 @@ export function Colormap({
           </Tabs>
         </div>
       )}
-      <div className="hover:bg-accent flex h-8 w-full flex-shrink-0 items-center px-2 text-base hover:rounded">
+      <div
+        className="hover:bg-accent flex h-8 w-full flex-shrink-0 cursor-pointer items-center px-2 text-base hover:rounded"
+        onClick={() => setShowPreview(!showPreview)}
+      >
         <span className="flex-shrink-0">Preview in viewport</span>
         <Switch
           className="ml-auto flex-shrink-0"
@@ -111,7 +115,7 @@ export function Colormap({
       <AllInOneMenu.DividerItem />
       <AllInOneMenu.ItemPanel
         maxHeight="calc(100vh - 250px)"
-        className="flex-grow min-h-[200px]"
+        className="min-h-[200px] flex-grow"
       >
         {colormaps.map((colormap, index) => (
           <AllInOneMenu.Item

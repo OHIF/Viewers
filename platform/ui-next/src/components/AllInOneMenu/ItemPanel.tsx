@@ -10,7 +10,13 @@ type ItemPanelProps = {
   className?: string;
 };
 
-const ItemPanel = ({ label, index = 0, children, maxHeight = '250px', className }: ItemPanelProps) => {
+const ItemPanel = ({
+  label,
+  index = 0,
+  children,
+  maxHeight = '250px',
+  className,
+}: ItemPanelProps) => {
   const { addItemPanel, activePanelIndex } = useContext(MenuContext);
 
   useEffect(() => {
