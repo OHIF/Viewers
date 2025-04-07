@@ -117,6 +117,7 @@ export function Colormap({
           <AllInOneMenu.Item
             key={index}
             label={colormap.description}
+            useIconSpace={false}
             onClick={() => {
               onSetColorLUT({
                 viewportId,

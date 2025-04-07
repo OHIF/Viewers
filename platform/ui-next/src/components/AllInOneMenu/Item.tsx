@@ -9,6 +9,7 @@ type ItemProps = {
   onClick?: () => void;
   onMouseEnter?: () => void;
   onMouseLeave?: () => void;
+  useIconSpace?: boolean;
 };
 
 const Item = ({
@@ -19,6 +20,7 @@ const Item = ({
   onClick,
   onMouseEnter,
   onMouseLeave,
+  useIconSpace = false,
 }: ItemProps) => {
   return (
     <div
@@ -27,10 +29,14 @@ const Item = ({
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
     >
-      {icon && <div className="mr-2 flex-shrink-0">{icon}</div>}
-      <span className="flex-shrink-0">{label}</span>
+      {(icon || useIconSpace) && (
+        <div className="flex w-7 flex-shrink-0 items-center justify-center">
+          {icon}
+        </div>
+      )}
+      <span className="flex-grow">{label}</span>
       {secondaryLabel && <span className="text-muted-foreground ml-2 flex-shrink-0">{secondaryLabel}</span>}
-      {rightIcon && <div className="ml-auto flex-shrink-0">{rightIcon}</div>}
+      {rightIcon && <div className="ml-2 flex-shrink-0">{rightIcon}</div>}
     </div>
   );
 };

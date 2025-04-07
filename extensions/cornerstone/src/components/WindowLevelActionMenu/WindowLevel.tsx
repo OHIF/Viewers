@@ -45,6 +45,7 @@ export function WindowLevel({
                   key={`${modality}-${index}`}
                   label={preset.description}
                   secondaryLabel={`${preset.window} / ${preset.level}`}
+                  useIconSpace={false}
                   onClick={() => onSetWindowLevel(preset)}
                 />
               ))}

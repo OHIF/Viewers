@@ -102,10 +102,10 @@ export function Colorbar({
 
   return (
     <div className="hover:bg-accent flex h-8 w-full flex-shrink-0 items-center px-2 text-base hover:rounded">
-      <div className="w-[28px]"></div>
-      <span className="flex-shrink-0">Display Color bar</span>
+      <div className="flex w-7 flex-shrink-0 items-center justify-center"></div>
+      <span className="flex-grow">Display Color bar</span>
       <Switch
-        className="ml-auto flex-shrink-0"
+        className="ml-2 flex-shrink-0"
         checked={showColorbar}
         onCheckedChange={() => {
           onSetColorbar();

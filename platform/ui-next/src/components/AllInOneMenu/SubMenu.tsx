@@ -21,13 +21,14 @@ const SubMenu = (props: SubMenuProps) => {
       onClick={onClickHandler}
     >
       {props.itemIcon && (
-        <Icons.ByName
-          name={props.itemIcon}
-          className="mr-2"
-        ></Icons.ByName>
+        <div className="flex w-7 flex-shrink-0 items-center justify-center">
+          <Icons.ByName name={props.itemIcon}></Icons.ByName>
+        </div>
       )}
-      <div className="mr-auto">{props.itemLabel}</div>
-      <Icons.ByName name="content-next"></Icons.ByName>
+      <span className="flex-grow">{props.itemLabel}</span>
+      <div className="ml-2 flex-shrink-0">
+        <Icons.ByName name="content-next"></Icons.ByName>
+      </div>
     </div>
   );
 };

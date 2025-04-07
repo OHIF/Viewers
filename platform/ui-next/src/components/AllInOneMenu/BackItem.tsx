@@ -12,12 +12,14 @@ const BackItem = ({ backLabel, onBackClick }: BackItemProps) => {
   return (
     <>
       <div
-        className="hover:bg-accent flex h-8 w-full flex-shrink-0 cursor-pointer items-center px-2 text-base hover:rounded"
+        className="hover:bg-accent flex h-8 w-full flex-shrink-0 cursor-pointer items-center pl-1 pr-2 text-base hover:rounded"
         onClick={onBackClick}
       >
-        <Icons.ByName name="content-prev"></Icons.ByName>
-
-        <div className="pl-2">{backLabel || 'Back to Display Options'}</div>
+        <Icons.ByName
+          name="content-prev"
+          className="ml-2 mr-2"
+        />
+        <span>{backLabel || 'Back to Display Options'}</span>
       </div>
       <DividerItem></DividerItem>
     </>

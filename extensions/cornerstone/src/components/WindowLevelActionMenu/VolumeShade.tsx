@@ -29,9 +29,9 @@ export function VolumeShade({
 
   return (
     <>
-      <span className="flex-shrink-0">Shade</span>
+      <span className="flex-grow">Shade</span>
       <Switch
-        className="ml-auto flex-shrink-0"
+        className="ml-2 flex-shrink-0"
         key={key}
         checked={shade}
         onCheckedChange={() => {
