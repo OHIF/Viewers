@@ -29,6 +29,7 @@ import { Combobox } from './Combobox';
 import { Popover, PopoverContent, PopoverTrigger, PopoverAnchor } from './Popover';
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from './Resizable';
 import { Calendar } from './Calendar';
+import CinePlayer from './CinePlayer';
 import { DatePickerWithRange } from './DateRange';
 import { Separator } from './Separator';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './Tabs';
@@ -250,4 +251,5 @@ export {
   InputFilter,
   WindowLevel,
   WindowLevelHistogram,
+  CinePlayer,
 };
