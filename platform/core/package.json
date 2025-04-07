@@ -51,7 +51,7 @@
     "isomorphic-base64": "^1.0.2",
     "lodash.clonedeep": "^4.5.0",
     "lodash.isequal": "^4.5.0",
-    "moment": "*",
+    "moment": "^2.30.1",
     "object-hash": "2.1.1",
     "query-string": "^6.14.0",
     "react-shepherd": "6.1.1",

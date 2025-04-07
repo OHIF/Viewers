@@ -13,7 +13,7 @@
     "@kitware/vtk.js": "32.12.0",
     "clsx": "^2.1.1",
     "core-js": "^3.2.1",
-    "moment": "^2.9.4"
+    "moment": "^2.30.1"
   },
   "peerDependencies": {
     "react": "^18.3.1",
