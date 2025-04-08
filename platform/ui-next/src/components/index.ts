@@ -122,6 +122,7 @@ export { MeasurementTable } from './MeasurementTable';
 export * from './ColorCircle';
 export { default as AllInOneMenu } from './AllInOneMenu';
 export * from './AllInOneMenu';
+export { default as LineChart } from './LineChart';
 
 // Segmentation Context Exports
 export { useSegmentationTableContext, useSegmentationExpanded, useSegmentStatistics };
