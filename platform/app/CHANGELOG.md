@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.10.0-beta.152](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.151...v3.10.0-beta.152) (2025-04-07)
+
+
+### Bug Fixes
+
+* **segmentation:** Add segment jump for new segments and make panels scrollable ([#4928](https://github.com/OHIF/Viewers/issues/4928)) ([3653de7](https://github.com/OHIF/Viewers/commit/3653de748731199d130f02200becde78c07d3303))
+
+
+
+
+
 # [3.10.0-beta.151](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.150...v3.10.0-beta.151) (2025-04-07)
 
 **Note:** Version bump only for package @ohif/app

@@ -2,7 +2,7 @@
   display: none;
 }
 .ViewportOverlay {
-  color: #9ccef9;
+  color: hsl(var(--highlight));
 }
 .ViewportOverlay .overlay-element {
   position: absolute;
@@ -11,12 +11,12 @@
   pointer-events: none;
 }
 .overlay-top {
-  top: 28px;
+  top: 2.15rem;
 }
 .overlay-bottom {
-  bottom: 3px;
+  bottom: 1rem;
 }
 
 .overlay-text {
-  text-shadow: 0.8px 0.8px 0.5px rgba(0, 0, 0, 0.75);
+  text-shadow: 0.8px 0.8px 0.5px rgba(0, 0, 0, 0.65);
 }

@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ViewportActionArrows } from '@ohif/ui';
+import { ViewportActionArrows } from '@ohif/ui-next';
 import { useViewportGrid } from '@ohif/ui-next';
 import createSEGToolGroupAndAddTools from '../utils/initSEGToolGroup';
 import promptHydrateSEG from '../utils/promptHydrateSEG';

@@ -13,7 +13,7 @@ export enum ViewportActionCornersLocations {
   bottomRight,
 }
 
-const commonClasses = 'pointer-events-auto flex items-center gap-1';
+const commonClasses = 'pointer-events-auto flex items-center';
 const locationClasses = {
   [ViewportActionCornersLocations.topLeft]: classNames(
     commonClasses,
@@ -21,7 +21,7 @@ const locationClasses = {
   ),
   [ViewportActionCornersLocations.topRight]: classNames(
     commonClasses,
-    'absolute top-[4px] right-[4px] right-viewport-scrollbar'
+    'absolute top-[4px] right-[16px] right-viewport-scrollbar'
   ),
   [ViewportActionCornersLocations.bottomLeft]: classNames(
     commonClasses,
