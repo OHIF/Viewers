@@ -14,17 +14,13 @@ import {
   ServiceProvidersManager,
   SystemContextProvider,
 } from '@ohif/core';
-import {
-  ThemeWrapper,
-  ViewportDialogProvider,
-  CineProvider,
-  UserAuthenticationProvider,
-} from '@ohif/ui';
+import { ThemeWrapper, ViewportDialogProvider, UserAuthenticationProvider } from '@ohif/ui';
 import {
   ThemeWrapper as ThemeWrapperNext,
   NotificationProvider,
   ViewportGridProvider,
   DialogProvider,
+  CineProvider,
   TooltipProvider,
   Modal as ModalNext,
   ManagedDialog,
