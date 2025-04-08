@@ -189,6 +189,17 @@ const toolbarButtons: Button[] = [
     },
   },
   {
+    id: 'reset-all',
+    uiType: 'ohif.toolButton',
+    props: {
+      icon: 'tool-reset',
+      label: 'Reset All Views',
+      tooltip: 'Reset All Views',
+      commands: 'resetAllViewports',
+      evaluate: 'evaluate.action',
+    },
+  },
+  {
     id: 'RotateRight',
     uiType: 'ohif.toolButton',
     props: {

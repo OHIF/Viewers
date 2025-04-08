@@ -32,6 +32,7 @@
   "ROI Window": "ROI Penceresi",
   "Rectangle": "Diktörtgen",
   "Reset": "$t(Common:Reset)",
+  "Reset All Views": "$t(Common:Reset) Tüm Görünümleri",
   "Reset to defaults": "Varsayılana $t(Common:Reset)",
   "Rotate Right": "Sağa Döndür",
   "Sagittal": "Sagital",

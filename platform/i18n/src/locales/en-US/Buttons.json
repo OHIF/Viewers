@@ -39,6 +39,7 @@
   "Rectangle": "Rectangle",
   "Reference Lines": "Reference Lines",
   "Reset": "$t(Common:Reset)",
+  "Reset All Views": "$t(Common:Reset) All Views",
   "Reset to defaults": "$t(Common:Reset) to Defaults",
   "Rotate Right": "Rotate Right",
   "Sagittal": "Sagittal",
