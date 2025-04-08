@@ -61,9 +61,9 @@ const LabellingFlow: React.FC<PropType> = ({
   return (
     <Command className="border-input border bg-transparent">
       <CommandInput placeholder={placeholder} />
-      <ScrollArea className="h-[300px]">
-        <CommandList>
-          <CommandEmpty>{emptyMessage}</CommandEmpty>
+      <CommandList>
+        <CommandEmpty>{emptyMessage}</CommandEmpty>
+        <ScrollArea className="h-[300px]">
           <CommandGroup>
             {currentItems.map(item => (
               <CommandItem
@@ -83,8 +83,8 @@ const LabellingFlow: React.FC<PropType> = ({
               </CommandItem>
             ))}
           </CommandGroup>
-        </CommandList>
-      </ScrollArea>
+        </ScrollArea>
+      </CommandList>
     </Command>
   );
 };
