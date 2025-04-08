@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.10.0-beta.156](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.155...v3.10.0-beta.156) (2025-04-08)
+
+**Note:** Version bump only for package @ohif/extension-test
+
+
+
+
+
 # [3.10.0-beta.155](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.154...v3.10.0-beta.155) (2025-04-08)
 
 **Note:** Version bump only for package @ohif/extension-test
