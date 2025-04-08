@@ -2,8 +2,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import debounce from 'lodash.debounce';
 
-import Tooltip from '@ohif/ui';
-import InputRange from '@ohif/ui';
+import { Tooltip, InputRange } from '@ohif/ui';
 import { Icons } from '@ohif/ui-next';
 import './CinePlayer.css';
 
