@@ -1,3 +1,10 @@
-.cine-fps-range-tooltip .tooltip.tooltip-top {
-  bottom: 85% !important;
+.cine-fps-range-popover[data-side="top"] {
+  margin-bottom: 10px;
+  background-color: var(--background, #1c1c1c);
+  color: var(--text-color, white);
+  border-color: var(--border-color, #555);
+}
+
+.cine-fps-range-popover .w-40 {
+  width: 10rem;
 }

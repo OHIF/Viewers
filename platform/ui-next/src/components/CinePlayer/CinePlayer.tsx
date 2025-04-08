@@ -2,11 +2,11 @@ import React, { useEffect, useState, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import debounce from 'lodash.debounce';
 
-import { Tooltip } from '@ohif/ui';
 import { Icons } from '@ohif/ui-next';
+import { Popover, PopoverContent, PopoverTrigger } from '../Popover/Popover';
 import { Button } from '../Button/Button';
 import { Numeric } from '../Numeric/Numeric';
-import './CinePlayer.css';
+// import './CinePlayer.css';
 
 export type CinePlayerProps = {
   className: string;
@@ -41,6 +41,7 @@ const CinePlayer: React.FC<CinePlayerProps> = ({
 }) => {
   const isDynamic = !!dynamicInfo?.numDimensionGroups;
   const [frameRate, setFrameRate] = useState(defaultFrameRate);
+  const [popoverOpen, setPopoverOpen] = useState(false);
   const debouncedSetFrameRate = useCallback(debounce(onFrameRateChange, 100), [onFrameRateChange]);
 
   const getPlayPauseIconName = () => (isPlaying ? 'icon-pause' : 'icon-play');
@@ -109,12 +110,44 @@ const CinePlayer: React.FC<CinePlayerProps> = ({
           </div>
         )}
 
-        <div className="border-secondary-light ml-4 flex h-6 items-stretch gap-1 rounded border">
-          <Tooltip
-            position="top"
-            className="cine-fps-range-tooltip"
-            tight={true}
-            content={
+        <div className="border-secondary-light ml-4 flex h-6 items-stretch gap-1 rounded">
+          <Popover
+            open={popoverOpen}
+            onOpenChange={setPopoverOpen}
+          >
+            <PopoverTrigger asChild>
+              <Button
+                variant="ghost"
+                className="h-full border-none bg-transparent p-0 hover:bg-transparent"
+              >
+                <Numeric.Container
+                  mode="stepper"
+                  min={minFrameRate}
+                  max={maxFrameRate}
+                  step={stepFrameRate}
+                  value={frameRate}
+                  onChange={val => handleSetFrameRate(val as number)}
+                  className="border-0 bg-transparent"
+                >
+                  <Numeric.NumberStepper
+                    direction="horizontal"
+                    inputWidth="w-7 max-w-7"
+                  >
+                    <div className="flex items-center justify-center gap-1">
+                      <div className="flex-shrink-0 text-center text-sm leading-[22px] text-white">
+                        <span className="text-aqua-pale whitespace-nowrap text-xs">{' FPS'}</span>
+                      </div>
+                    </div>
+                  </Numeric.NumberStepper>
+                </Numeric.Container>
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent
+              side="top"
+              align="center"
+              className="cine-fps-range-popover z-50 w-auto p-2"
+              sideOffset={8}
+            >
               <Numeric.Container
                 mode="singleRange"
                 min={minFrameRate}
@@ -129,26 +162,8 @@ const CinePlayer: React.FC<CinePlayerProps> = ({
                   sliderClassName="w-40"
                 />
               </Numeric.Container>
-            }
-          >
-            <Numeric.Container
-              mode="stepper"
-              min={minFrameRate}
-              max={maxFrameRate}
-              step={stepFrameRate}
-              value={frameRate}
-              onChange={val => handleSetFrameRate(val as number)}
-              className="border-0 bg-transparent"
-            >
-              <Numeric.NumberStepper direction="horizontal" inputWidth="w-10 max-w-10">
-                <div className="flex items-center justify-center gap-1">
-                  <div className="flex-shrink-0 text-center text-sm leading-[22px] text-white">
-                    <span className="text-aqua-pale whitespace-nowrap text-xs">{' FPS'}</span>
-                  </div>
-                </div>
-              </Numeric.NumberStepper>
-            </Numeric.Container>
-          </Tooltip>
+            </PopoverContent>
+          </Popover>
         </div>
 
         <Button
