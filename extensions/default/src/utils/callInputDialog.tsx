@@ -1,7 +1,7 @@
 import React from 'react';
 import { setAnnotationLabel } from '@cornerstonejs/tools/utilities';
 import { annotation } from '@cornerstonejs/tools';
-import { LabellingFlow } from '@ohif/ui';
+import { LabellingFlow } from '@ohif/ui-next';
 import { InputDialog } from '@ohif/ui-next';
 
 interface InputDialogDefaultProps {

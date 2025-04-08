@@ -124,6 +124,8 @@ export { default as AllInOneMenu } from './AllInOneMenu';
 export * from './AllInOneMenu';
 export { default as LineChart } from './LineChart';
 export { default as InvestigationalUseDialog } from './InvestigationalUseDialog';
+export { default as LabellingFlow } from './Labelling';
+
 // Segmentation Context Exports
 export { useSegmentationTableContext, useSegmentationExpanded, useSegmentStatistics };
 
