@@ -39,7 +39,7 @@ const MeasurementTable = ({
           </span>
           <span className="text-base font-bold text-white">&nbsp; {amount}</span>
         </div>
-        <CustomizedToolbar servicesManager={servicesManager} />
+        {/* <CustomizedToolbar servicesManager={servicesManager} /> */}
       </div>
       <div className="ohif-scrollbar max-h-112 overflow-hidden">
         {data.length !== 0 &&

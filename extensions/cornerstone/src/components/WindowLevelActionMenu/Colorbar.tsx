@@ -103,7 +103,8 @@ export function Colorbar({
   return (
     <div
       className="hover:bg-accent flex h-8 w-full flex-shrink-0 cursor-pointer items-center px-2 text-base hover:rounded"
-      onClick={() => {
+      onClick={e => {
+        e.stopPropagation();
         onSetColorbar();
       }}
     >
@@ -112,7 +113,8 @@ export function Colorbar({
       <Switch
         className="ml-2 flex-shrink-0"
         checked={showColorbar}
-        onCheckedChange={() => {
+        onClick={e => {
+          e.stopPropagation();
           onSetColorbar();
         }}
       />

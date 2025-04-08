@@ -33,7 +33,12 @@ export default function getToolbarModule({ commandsManager, servicesManager }: w
       name: 'ohif.toolBoxButton',
       defaultComponent: ToolBoxButtonWrapper,
     },
-    // legacy
+    // legacy will get removed in the future
+    // legacy will get removed in the future
+    // legacy will get removed in the future
+    // legacy will get removed in the future
+    // legacy will get removed in the future
+    // legacy will get removed in the future
     {
       name: 'ohif.radioGroup',
       defaultComponent: ToolbarButtonLegacy,
