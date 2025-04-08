@@ -6,7 +6,6 @@ import { Icons } from '@ohif/ui-next';
 import { Popover, PopoverContent, PopoverTrigger } from '../Popover/Popover';
 import { Button } from '../Button/Button';
 import { Numeric } from '../Numeric/Numeric';
-// import './CinePlayer.css';
 
 export type CinePlayerProps = {
   className: string;
@@ -85,11 +84,7 @@ const CinePlayer: React.FC<CinePlayerProps> = ({
           <Numeric.SingleRange showNumberInput={false} />
         </Numeric.Container>
       )}
-      <div
-        className={
-          'border-input bg-muted inline-flex select-none items-center gap-2 rounded-md border px-2 py-2'
-        }
-      >
+      <div className={'bg-muted inline-flex select-none items-center gap-2 rounded-md px-2 py-2'}>
         <Button
           variant="ghost"
           size="icon"
@@ -101,7 +96,7 @@ const CinePlayer: React.FC<CinePlayerProps> = ({
 
         {isDynamic && dynamicInfo && (
           <div className="min-w-16 max-w-44 text-foreground flex flex-col">
-            <div className="text-[11px]">
+            <div className="text-xs">
               <span className="text-foreground w-2">{dynamicInfo.dimensionGroupNumber}</span>{' '}
               <span className="text-muted-foreground">{`/${dynamicInfo.numDimensionGroups}`}</span>
             </div>
