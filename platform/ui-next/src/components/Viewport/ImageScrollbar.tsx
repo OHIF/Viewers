@@ -54,7 +54,7 @@ export const ImageScrollbar: React.FC<ImageScrollbarProps> = ({
     >
       <div className={styles.scrollbarInner}>
         <input
-          className={cn(styles.scrollbarInput, 'mousetrap')}
+          className={cn(styles.scrollbarInput, 'mousetrap imageSlider')}
           style={style}
           type="range"
           min="0"
