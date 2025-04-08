@@ -312,10 +312,11 @@ interface NumberStepperProps {
   className?: string;
   children?: React.ReactNode;
   direction?: 'horizontal' | 'vertical';
+  inputWidth?: string;
 }
 
 // Modified NumberStepper component to properly position left/right controls
-function NumberStepper({ className, children, direction }: NumberStepperProps) {
+function NumberStepper({ className, children, direction, inputWidth }: NumberStepperProps) {
   const ctx = useContext(NumericMetaContext);
   if (!ctx) {
     throw new Error('NumberStepper must be used inside <Numeric.Container>.');
@@ -379,7 +380,10 @@ function NumberStepper({ className, children, direction }: NumberStepperProps) {
           value={displayValue}
           onChange={handleInputChange}
           onBlur={handleBlur}
-          className="h-6 flex-1 appearance-none border-none p-0 text-center shadow-none focus:border-none focus:outline-none"
+          className={cn(
+            "h-6 appearance-none border-none p-0 text-center shadow-none focus:border-none focus:outline-none",
+            inputWidth ? inputWidth : "w-12 max-w-12"
+          )}
         />
         {children}
         <RightControl
@@ -405,7 +409,8 @@ function NumberStepper({ className, children, direction }: NumberStepperProps) {
         onChange={handleInputChange}
         onBlur={handleBlur}
         className={cn(
-          'h-6 flex-1 appearance-none border-none p-0 text-center shadow-none focus:border-none focus:outline-none'
+          'h-6 appearance-none border-none p-0 text-center shadow-none focus:border-none focus:outline-none',
+          inputWidth ? inputWidth : "w-12 max-w-12"
         )}
       />
       <div className="ml-1 flex flex-col">

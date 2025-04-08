@@ -140,7 +140,7 @@ const CinePlayer: React.FC<CinePlayerProps> = ({
               onChange={val => handleSetFrameRate(val as number)}
               className="border-0 bg-transparent"
             >
-              <Numeric.NumberStepper direction="horizontal">
+              <Numeric.NumberStepper direction="horizontal" inputWidth="w-10 max-w-10">
                 <div className="flex items-center justify-center gap-1">
                   <div className="flex-shrink-0 text-center text-sm leading-[22px] text-white">
                     <span className="text-aqua-pale whitespace-nowrap text-xs">{' FPS'}</span>
