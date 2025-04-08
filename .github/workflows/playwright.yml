@@ -29,8 +29,8 @@ jobs:
         run: git config --global --add safe.directory /__w/Viewers/Viewers
       - name: Run Playwright tests
         run:
-          export NODE_OPTIONS="--max_old_space_size=8192" && bun x playwright test --shard=${{
-          matrix.shardIndex }}/${{ matrix.shardTotal }}
+          export NODE_OPTIONS="--max_old_space_size=8192" && TEST_ENV=true bun x playwright test
+          --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
 
       - name: Upload blob report to GitHub Actions Artifacts
         if: ${{ !cancelled() }}
