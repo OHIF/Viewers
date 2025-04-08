@@ -91,7 +91,7 @@ const ViewportDialog: React.FC<ViewportDialogProps> = ({
   return (
     <div
       ref={notificationRef}
-      className="border-customblue-10 bg-customblue-400 mx-2 mt-2 flex flex-col rounded-md border-2 p-2 outline-none"
+      className="border-input bg-muted mx-2 mt-2 flex flex-col rounded-md border p-2 outline-none"
       data-cy={id}
       onKeyDown={onKeyPress}
       tabIndex={0}
@@ -99,9 +99,9 @@ const ViewportDialog: React.FC<ViewportDialogProps> = ({
       <div className="flex grow items-center">
         <Icons.ByName
           name={icon}
-          className={classnames('h-6 w-6', color)}
+          className={classnames('h-5 w-5', color)}
         />
-        <span className="ml-2 text-[13px] text-black">{message}</span>
+        <span className="text-foreground ml-2 text-base">{message}</span>
       </div>
       <div className="mt-2 flex flex-wrap justify-end gap-2">
         {actions?.map((action, index) => {
@@ -114,6 +114,7 @@ const ViewportDialog: React.FC<ViewportDialogProps> = ({
               onClick={() => {
                 onSubmit(action.value);
               }}
+              className="min-w-16"
             >
               {action.text}
             </Button>
