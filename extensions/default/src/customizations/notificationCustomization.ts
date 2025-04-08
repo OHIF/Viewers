@@ -1,5 +1,5 @@
 import i18n from '@ohif/i18n';
-import { Notification } from '@ohif/ui';
+import { ViewportDialog } from '@ohif/ui-next';
 
 const beginTrackingMessage = i18n.t('MeasurementTable:Track measurements for this series?');
 const trackNewSeriesMessage = i18n.t('Do you want to add this measurement to the existing report?');
@@ -16,7 +16,7 @@ const hydrateSEGMessage = i18n.t('Do you want to open this Segmentation?');
 const discardDirtyMessage = i18n.t('There are unsaved measurements. Do you want to save it?');
 
 export default {
-  'ui.notificationComponent': Notification,
+  'ui.notificationComponent': ViewportDialog,
   'viewportNotification.beginTrackingMessage': beginTrackingMessage,
   'viewportNotification.trackNewSeriesMessage': trackNewSeriesMessage,
   'viewportNotification.discardSeriesMessage': discardSeriesMessage,

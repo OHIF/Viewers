@@ -65,7 +65,7 @@ import ProgressDropdown from './ProgressDropdown';
 import LoadingIndicatorProgress from './LoadingIndicatorProgress';
 import LoadingIndicatorTotalPercent from './LoadingIndicatorTotalPercent';
 import ProgressLoadingBar from './ProgressLoadingBar';
-
+import ViewportDialog from './ViewportDialog';
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -262,4 +262,5 @@ export {
   LoadingIndicatorProgress,
   LoadingIndicatorTotalPercent,
   ProgressLoadingBar,
+  ViewportDialog,
 };
