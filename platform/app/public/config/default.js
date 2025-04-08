@@ -6,33 +6,7 @@ window.config = {
   // whiteLabeling: {},
   extensions: [],
   modes: [],
-  customizationService: [
-    {
-      measurementLabels: {
-        $set: {
-          labelOnMeasure: true,
-          exclusive: true,
-          items: [
-            { value: 'Head', label: 'Head' },
-            { value: 'Shoulder', label: 'Shoulder' },
-            { value: 'Knee', label: 'Knee' },
-            { value: 'Toe', label: 'Toe' },
-            { value: 'Neck', label: 'Neck' },
-            { value: 'Chest', label: 'Chest' },
-            { value: 'Abdomen', label: 'Abdomen' },
-            { value: 'Hip', label: 'Hip' },
-            { value: 'Ankle', label: 'Ankle' },
-            { value: 'Elbow', label: 'Elbow' },
-            { value: 'Wrist', label: 'Wrist' },
-            { value: 'Hand', label: 'Hand' },
-            { value: 'Foot', label: 'Foot' },
-            { value: 'Spine', label: 'Spine' },
-            { value: 'Pelvis', label: 'Pelvis' },
-          ],
-        },
-      },
-    },
-  ],
+  customizationService: {},
   showStudyList: true,
   // some windows systems have issues with more than 3 web workers
   maxNumberOfWebWorkers: 3,
