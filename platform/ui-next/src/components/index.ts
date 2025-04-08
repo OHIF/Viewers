@@ -123,7 +123,7 @@ export * from './ColorCircle';
 export { default as AllInOneMenu } from './AllInOneMenu';
 export * from './AllInOneMenu';
 export { default as LineChart } from './LineChart';
-
+export { default as InvestigationalUseDialog } from './InvestigationalUseDialog';
 // Segmentation Context Exports
 export { useSegmentationTableContext, useSegmentationExpanded, useSegmentStatistics };
 
