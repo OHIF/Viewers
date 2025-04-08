@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.10.0-beta.153](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.152...v3.10.0-beta.153) (2025-04-08)
+
+
+### Bug Fixes
+
+* **OIDC:** Use new access_token after refresh ([#4853](https://github.com/OHIF/Viewers/issues/4853)) ([cfa202e](https://github.com/OHIF/Viewers/commit/cfa202e89a51f8b2e81b29954bb3a211c583fe28))
+
+
+
+
+
 # [3.10.0-beta.152](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.151...v3.10.0-beta.152) (2025-04-07)
 
 

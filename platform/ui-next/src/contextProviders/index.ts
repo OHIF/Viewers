@@ -8,6 +8,7 @@ import { useViewportDialog } from './ViewportDialogProvider';
 import { UserAuthenticationProvider, useUserAuthentication } from './UserAuthenticationProvider';
 import { ImageViewerContext, ImageViewerProvider, useImageViewer } from './ImageViewerProvider';
 import DragAndDropProvider from './DragAndDropProvider';
+import CineProvider, { useCine } from './CineProvider';
 
 export { useNotification, NotificationProvider };
 export { ViewportGridContext, ViewportGridProvider, useViewportGrid };
@@ -18,3 +19,4 @@ export { ViewportDialogProvider, useViewportDialog };
 export { UserAuthenticationProvider, useUserAuthentication };
 export { ImageViewerContext, ImageViewerProvider, useImageViewer };
 export { DragAndDropProvider };
+export { CineProvider, useCine };
