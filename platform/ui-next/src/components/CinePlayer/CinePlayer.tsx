@@ -87,7 +87,7 @@ const CinePlayer: React.FC<CinePlayerProps> = ({
       )}
       <div
         className={
-          'border-secondary-light/60 bg-primary-dark inline-flex select-none items-center gap-2 rounded border px-2 py-2'
+          'border-input bg-muted inline-flex select-none items-center gap-2 rounded-md border px-2 py-2'
         }
       >
         <Button
@@ -95,22 +95,21 @@ const CinePlayer: React.FC<CinePlayerProps> = ({
           size="icon"
           onClick={() => onPlayPauseChange(!isPlaying)}
           data-cy={'cine-player-play-pause'}
-          className="hover:bg-customblue-300 active:text-primary-light text-white hover:rounded"
         >
           <Icons.ByName name={getPlayPauseIconName()} />
         </Button>
 
         {isDynamic && dynamicInfo && (
-          <div className="min-w-16 max-w-44 flex flex-col text-white">
+          <div className="min-w-16 max-w-44 text-foreground flex flex-col">
             <div className="text-[11px]">
-              <span className="w-2 text-white">{dynamicInfo.dimensionGroupNumber}</span>{' '}
-              <span className="text-aqua-pale">{`/${dynamicInfo.numDimensionGroups}`}</span>
+              <span className="text-foreground w-2">{dynamicInfo.dimensionGroupNumber}</span>{' '}
+              <span className="text-muted-foreground">{`/${dynamicInfo.numDimensionGroups}`}</span>
             </div>
-            <div className="text-aqua-pale text-xs">{dynamicInfo.label}</div>
+            <div className="text-muted-foreground text-xs">{dynamicInfo.label}</div>
           </div>
         )}
 
-        <div className="border-secondary-light ml-4 flex h-6 items-stretch gap-1 rounded">
+        <div>
           <Popover
             open={popoverOpen}
             onOpenChange={setPopoverOpen}
@@ -134,8 +133,10 @@ const CinePlayer: React.FC<CinePlayerProps> = ({
                     inputWidth="w-7 max-w-7"
                   >
                     <div className="flex items-center justify-center gap-1">
-                      <div className="flex-shrink-0 text-center text-sm leading-[22px] text-white">
-                        <span className="text-aqua-pale whitespace-nowrap text-xs">{' FPS'}</span>
+                      <div className="text-foreground flex-shrink-0 text-center text-sm leading-[22px]">
+                        <span className="text-muted-foreground whitespace-nowrap text-xs">
+                          {' FPS'}
+                        </span>
                       </div>
                     </div>
                   </Numeric.NumberStepper>
@@ -171,7 +172,6 @@ const CinePlayer: React.FC<CinePlayerProps> = ({
           size="icon"
           onClick={onClose}
           data-cy={'cine-player-close'}
-          className="text-primary-active hover:bg-customblue-300 active:text-primary-light hover:rounded"
         >
           <Icons.Close />
         </Button>
