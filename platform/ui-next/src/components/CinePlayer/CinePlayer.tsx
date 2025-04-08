@@ -2,8 +2,10 @@ import React, { useEffect, useState, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import debounce from 'lodash.debounce';
 
-import { Tooltip, InputRange } from '@ohif/ui';
+import { Tooltip } from '@ohif/ui';
 import { Icons } from '@ohif/ui-next';
+import { Button } from '../Button/Button';
+import { Numeric } from '../Numeric/Numeric';
 import './CinePlayer.css';
 
 export type CinePlayerProps = {
@@ -16,16 +18,13 @@ export type CinePlayerProps = {
   onFrameRateChange: (value: number) => void;
   onPlayPauseChange: (value: boolean) => void;
   onClose: () => void;
-  updateDynamicInfo?: () => void;
+  updateDynamicInfo?: (info: any) => void;
   dynamicInfo?: {
     dimensionGroupNumber: number;
     numDimensionGroups: number;
     label?: string;
   };
 };
-
-const fpsButtonClassNames =
-  'cursor-pointer text-primary-active active:text-primary-light hover:bg-customblue-300 w-4 flex items-center justify-center';
 
 const CinePlayer: React.FC<CinePlayerProps> = ({
   className,
@@ -73,33 +72,33 @@ const CinePlayer: React.FC<CinePlayerProps> = ({
   return (
     <div className={className}>
       {isDynamic && dynamicInfo && (
-        <InputRange
-          value={dynamicInfo.dimensionGroupNumber}
-          onChange={handleDimensionGroupNumberChange}
-          minValue={1}
-          maxValue={dynamicInfo.numDimensionGroups}
+        <Numeric.Container
+          mode="singleRange"
+          min={1}
+          max={dynamicInfo.numDimensionGroups}
           step={1}
-          containerClassName="mb-3 w-full"
-          labelClassName="text-xs text-white"
-          leftColor="#3a3f99"
-          rightColor="#3a3f99"
-          trackHeight="4px"
-          thumbColor="#348cfd"
-          thumbColorOuter="#000000"
-          showLabel={false}
-        />
+          value={dynamicInfo.dimensionGroupNumber}
+          onChange={val => handleDimensionGroupNumberChange(val as number)}
+          className="mb-3 w-full"
+        >
+          <Numeric.SingleRange showNumberInput={false} />
+        </Numeric.Container>
       )}
       <div
         className={
           'border-secondary-light/60 bg-primary-dark inline-flex select-none items-center gap-2 rounded border px-2 py-2'
         }
       >
-        <Icons.ByName
-          name={getPlayPauseIconName()}
-          className="active:text-primary-light hover:bg-customblue-300 cursor-pointer text-white hover:rounded"
+        <Button
+          variant="ghost"
+          size="icon"
           onClick={() => onPlayPauseChange(!isPlaying)}
           data-cy={'cine-player-play-pause'}
-        />
+          className="hover:bg-customblue-300 active:text-primary-light text-white hover:rounded"
+        >
+          <Icons.ByName name={getPlayPauseIconName()} />
+        </Button>
+
         {isDynamic && dynamicInfo && (
           <div className="min-w-16 max-w-44 flex flex-col text-white">
             <div className="text-[11px]">
@@ -111,51 +110,56 @@ const CinePlayer: React.FC<CinePlayerProps> = ({
         )}
 
         <div className="border-secondary-light ml-4 flex h-6 items-stretch gap-1 rounded border">
-          <div
-            className={`${fpsButtonClassNames} rounded-l`}
-            onClick={() => handleSetFrameRate(frameRate - 1)}
-            data-cy={'cine-player-left-arrow'}
-          >
-            <Icons.ChevronLeft />
-          </div>
           <Tooltip
             position="top"
-            className="group/fps cine-fps-range-tooltip"
+            className="cine-fps-range-tooltip"
             tight={true}
             content={
-              <InputRange
-                containerClassName="h-9 px-2"
-                inputClassName="w-40"
-                value={frameRate}
-                minValue={minFrameRate}
-                maxValue={maxFrameRate}
+              <Numeric.Container
+                mode="singleRange"
+                min={minFrameRate}
+                max={maxFrameRate}
                 step={stepFrameRate}
-                onChange={handleSetFrameRate}
-                showLabel={false}
-              />
+                value={frameRate}
+                onChange={val => handleSetFrameRate(val as number)}
+                className="h-9 px-2"
+              >
+                <Numeric.SingleRange
+                  showNumberInput={false}
+                  sliderClassName="w-40"
+                />
+              </Numeric.Container>
             }
           >
-            <div className="flex items-center justify-center gap-1">
-              <div className="flex-shrink-0 text-center text-sm leading-[22px] text-white">
-                <span className="inline-block text-right">{`${frameRate} `}</span>
-                <span className="text-aqua-pale whitespace-nowrap text-xs">{' FPS'}</span>
-              </div>
-            </div>
+            <Numeric.Container
+              mode="stepper"
+              min={minFrameRate}
+              max={maxFrameRate}
+              step={stepFrameRate}
+              value={frameRate}
+              onChange={val => handleSetFrameRate(val as number)}
+              className="border-0 bg-transparent"
+            >
+              <Numeric.NumberStepper direction="horizontal">
+                <div className="flex items-center justify-center gap-1">
+                  <div className="flex-shrink-0 text-center text-sm leading-[22px] text-white">
+                    <span className="text-aqua-pale whitespace-nowrap text-xs">{' FPS'}</span>
+                  </div>
+                </div>
+              </Numeric.NumberStepper>
+            </Numeric.Container>
           </Tooltip>
-
-          <div
-            className={`${fpsButtonClassNames} rounded-r`}
-            onClick={() => handleSetFrameRate(frameRate + 1)}
-            data-cy={'cine-player-right-arrow'}
-          >
-            <Icons.ChevronRight />
-          </div>
         </div>
-        <Icons.Close
-          className="text-primary-active active:text-primary-light hover:bg-customblue-300 cursor-pointer hover:rounded"
+
+        <Button
+          variant="ghost"
+          size="icon"
           onClick={onClose}
           data-cy={'cine-player-close'}
-        />
+          className="text-primary-active hover:bg-customblue-300 active:text-primary-light hover:rounded"
+        >
+          <Icons.Close />
+        </Button>
       </div>
     </div>
   );
