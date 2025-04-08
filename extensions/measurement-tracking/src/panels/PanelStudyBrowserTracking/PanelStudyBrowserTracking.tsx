@@ -4,7 +4,6 @@ import { useSystem } from '@ohif/core';
 import PanelStudyBrowser from '@ohif/extension-default/src/Panels/StudyBrowser/PanelStudyBrowser';
 import { UntrackSeriesModal } from './untrackSeriesModal';
 import { useTrackedMeasurements } from '../../getContextModule';
-import { useViewportGrid } from '@ohif/ui-next';
 
 const thumbnailNoImageModalities = [
   'SR',
