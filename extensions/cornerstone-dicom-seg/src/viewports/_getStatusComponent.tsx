@@ -15,7 +15,7 @@ export default function _getStatusComponent({ isHydrated, onStatusClick }) {
     case false:
       StatusIcon = () => (
         <Icons.ByName
-          className="text-aqua-pale"
+          className="text-muted-foreground h-4 w-4"
           name="status-untracked"
         />
       );

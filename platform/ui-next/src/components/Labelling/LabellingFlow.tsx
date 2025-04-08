@@ -59,7 +59,7 @@ const LabellingFlow: React.FC<PropType> = ({
   }, [initialLabel, measurementData]);
 
   return (
-    <Command className="border-input border bg-transparent">
+    <Command className="border-input border">
       <CommandInput placeholder={placeholder} />
       <CommandList>
         <CommandEmpty>{emptyMessage}</CommandEmpty>

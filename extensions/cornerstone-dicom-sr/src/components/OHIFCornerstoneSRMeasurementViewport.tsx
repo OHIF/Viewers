@@ -427,7 +427,7 @@ function _getStatusComponent({
     case 3:
       StatusIcon = () => (
         <Icons.ByName
-          className="text-aqua-pale h-4 w-4"
+          className="text-muted-foreground h-4 w-4"
           name="status-untracked"
         />
       );
