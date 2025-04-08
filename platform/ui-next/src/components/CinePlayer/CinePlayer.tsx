@@ -151,7 +151,7 @@ const CinePlayer: React.FC<CinePlayerProps> = ({
                 step={stepFrameRate}
                 value={frameRate}
                 onChange={val => handleSetFrameRate(val as number)}
-                className="h-9 px-2"
+                className="h-6 px-2"
               >
                 <Numeric.SingleRange
                   showNumberInput={false}
