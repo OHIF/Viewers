@@ -229,11 +229,6 @@ const ViewportWindowLevel = ({
             No window level data available
           </div>
         )}
-        {isLoading && (
-          <div className="text-muted-foreground py-2 text-center text-sm">
-            Loading window level data...
-          </div>
-        )}
       </PanelSection.Content>
     </PanelSection>
   );
