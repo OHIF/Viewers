@@ -8,9 +8,22 @@ title: Input Number, Range, and Double Range
 This guide explains how to migrate from the existing `Input`, `InputRange`, and `InputDoubleRange` components to the new `Numeric` meta component.
 
 
+
+
 ## Why Migrate?
 
+  See the full list of components in the [Numeric Component Showcase](/components-list#numeric)
+
+
 The old components relied heavily on props, making them complex and difficult to maintain and apply custom styles. The new `Numeric` component provides a structured approach with a context-based API, reducing prop clutter and improving reusability.
+
+The `Numeric` component offers several advantages:
+- **Versatile Modes**: It supports basic number input (`Numeric.NumberInput`), stepper controls (`Numeric.NumberStepper`), single range sliders (`Numeric.SingleRange`), and double range sliders (`Numeric.DoubleRange`).
+- **Flexible Layout**: You have full control over the layout using standard CSS classes (`className`) on the container and its subcomponents like `Numeric.Label`, `Numeric.NumberInput`, etc., allowing for various arrangements (e.g., flex, grid).
+- **Enhanced Customization**: Easily customize the appearance and behavior, such as showing/hiding associated number inputs for sliders, displaying the current value within the label (`showValue`), and integrating icons.
+- **State Management**: Supports both controlled and uncontrolled component states.
+
+
 
 
 ## `Input` > `Numeric.NumberInput`
