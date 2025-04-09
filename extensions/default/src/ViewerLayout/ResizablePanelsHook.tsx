@@ -28,7 +28,9 @@ const useResizablePanels = (
   leftPanelClosed,
   setLeftPanelClosed,
   rightPanelClosed,
-  setRightPanelClosed
+  setRightPanelClosed,
+  hasLeftPanels,
+  hasRightPanels
 ) => {
   const [leftPanelExpandedWidth, setLeftPanelExpandedWidth] = useState(
     panelGroupDefinition.left.initialExpandedWidth
@@ -156,6 +158,8 @@ const useResizablePanels = (
     rightPanelExpandedWidth,
     leftResizablePanelMinimumSize,
     rightResizablePanelMinimumSize,
+    hasLeftPanels,
+    hasRightPanels,
   ]);
 
   /**

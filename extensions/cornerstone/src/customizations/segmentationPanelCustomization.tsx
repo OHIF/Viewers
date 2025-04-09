@@ -68,7 +68,7 @@ export default function getSegmentationPanelCustomization({ commandsManager, ser
               checked={useCenterAsSegmentIndex}
               onCheckedChange={handleUseCenterAsSegmentIndexChange}
             />
-            <span className="text-base text-white">Use Center as Segment Index</span>
+            <span className="text-base text-white">Use center as segment index</span>
           </div>
 
           <div className="flex items-center gap-2">

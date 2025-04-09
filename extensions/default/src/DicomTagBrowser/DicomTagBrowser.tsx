@@ -153,7 +153,7 @@ const DicomTagBrowser = ({
             </Select>
           </div>
           {shouldShowInstanceList && (
-            <div className="mx-auto flex w-1/5 flex-col">
+            <div className="mx-auto mt-0.5 flex w-1/4 flex-col">
               <span className="text-muted-foreground flex h-6 items-center text-xs">
                 Instance Number ({instanceNumber} of {activeDisplaySet?.images?.length})
               </span>
@@ -169,7 +169,7 @@ const DicomTagBrowser = ({
               />
             </div>
           )}
-          <div className="ml-auto flex w-1/3 flex-col">
+          <div className="ml-auto mr-1 flex w-1/3 flex-col">
             <span className="text-muted-foreground flex h-6 items-center text-xs">
               Search metadata
             </span>

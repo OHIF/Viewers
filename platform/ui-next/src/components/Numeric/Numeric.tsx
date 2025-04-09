@@ -381,8 +381,8 @@ function NumberStepper({ className, children, direction, inputWidth }: NumberSte
           onChange={handleInputChange}
           onBlur={handleBlur}
           className={cn(
-            "h-6 appearance-none border-none p-0 text-center shadow-none focus:border-none focus:outline-none",
-            inputWidth ? inputWidth : "w-12 max-w-12"
+            'h-6 appearance-none border-none p-0 text-center shadow-none focus:border-none focus:outline-none',
+            inputWidth
           )}
         />
         {children}
@@ -410,16 +410,16 @@ function NumberStepper({ className, children, direction, inputWidth }: NumberSte
         onBlur={handleBlur}
         className={cn(
           'h-6 appearance-none border-none p-0 text-center shadow-none focus:border-none focus:outline-none',
-          inputWidth ? inputWidth : "w-12 max-w-12"
+          inputWidth ? inputWidth : 'max-w-12 min-w-0'
         )}
       />
-      <div className="ml-1 flex flex-col">
+      <div className="ml-1 flex flex-shrink-0 flex-col">
         <Button
           variant="ghost"
           size="icon"
           onClick={() => setSingleValue(singleValue + step)}
           disabled={singleValue >= max}
-          className="text-primary h-3 w-5 pr-px"
+          className="text-primary h-3 w-5"
         >
           <ChevronUp className="h-3 w-3" />
         </Button>
@@ -428,7 +428,7 @@ function NumberStepper({ className, children, direction, inputWidth }: NumberSte
           size="icon"
           onClick={() => setSingleValue(singleValue - step)}
           disabled={singleValue <= min}
-          className="text-primary h-3 w-5 pr-px"
+          className="text-primary h-3 w-5"
         >
           <ChevronDown className="h-3 w-3" />
         </Button>

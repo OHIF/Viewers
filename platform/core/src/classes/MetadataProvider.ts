@@ -518,7 +518,7 @@ const WADO_IMAGE_LOADER = {
     // Fallback for DX images.
     // TODO: We should use the rest of the results of this function
     // to update the UI somehow
-    const { PixelSpacing, type } = getPixelSpacingInformation(instance);
+    const { PixelSpacing, type } = getPixelSpacingInformation(instance) || {};
 
     let rowPixelSpacing;
     let columnPixelSpacing;
