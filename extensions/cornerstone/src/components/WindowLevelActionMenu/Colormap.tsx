@@ -27,7 +27,6 @@ export function Colormap({
 
   const onSetColorLUT = useCallback(
     props => {
-      debugger;
       // TODO: Better way to check if it's a fusion
       const oneOpacityColormaps = ['Grayscale', 'X Ray'];
       const opacity =
