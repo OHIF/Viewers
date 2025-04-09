@@ -1,200 +1,125 @@
 ---
-title: ButtonGroup
+title: Button
 ---
-
-
-# ButtonGroup Migration Guide
 
 ## Key Changes:
 
-* **ButtonGroup component removed and replaced with Tabs/TabsList/TabsTrigger** - The legacy ButtonGroup component has been replaced with a more accessible Tabs component from @ohif/ui-next
-* **Component naming convention transition from @ohif/ui to @ohif/ui-next** - Many UI components are transitioning to the new ui-next package
-* **Styling updates with modern tailwind patterns** - Class names have been updated to follow a more consistent pattern with text-foreground/text-muted-foreground replacing specific color names
-* **Segmented radio controls updated** - Radio-type controls like ButtonGroup with multiple options now use Tabs/TabsList/TabsTrigger instead
-* **InputNumber replaced with Numeric component** - The old InputNumber component is replaced with a more flexible Numeric component system
-* **Icons accessed through new Icons.ByName component** - Direct Icon usage replaced with Icons.ByName
+*   **Component Library:** The primary `Button` component likely now resides in `@ohif/ui-next` instead of `@ohif/ui`. Imports need to be updated.
+*   **`ButtonEnums` Deprecated:** The `ButtonEnums.type` (e.g., `ButtonEnums.type.primary`) used for button styling is deprecated. Styling is now primarily controlled by the `variant` prop using string literals (`'default'`, `'secondary'`, `'ghost'`, `'link'`).
+*   **Styling Approach:** Manual Tailwind CSS classes for styling (colors, hover states, sizing) are largely replaced by the `variant` and `size` props on the new `Button` component. Semantic color names are used internally.
+*   **`IconButton` Replacement:** The pattern of using a dedicated `IconButton` component is often replaced by using `<Button variant="ghost" size="icon">` and embedding an icon component (like `<Icons.ByName name="..." />`) within it.
+*   **`ButtonGroup` Deprecated:** The `ButtonGroup` component is deprecated and replaced by the `Tabs`, `TabsList`, and `TabsTrigger` components from `@ohif/ui-next` for creating selectable groups.
+*   **Specific Action Buttons:** In certain contexts (like viewport actions or footers), generic buttons or styled `div` elements might be replaced by more specific components like `ViewportActionButton` or composite components like `FooterAction`.
+*   **Color System:** Custom color classes (e.g., `text-primary-active`, `bg-primary-main`) are replaced by a new semantic color system (e.g., `text-primary`, `bg-primary`, `text-muted-foreground`). Variants often handle color states (hover, active) automatically.
 
 ## Migration Steps:
 
-### 1. Replace ButtonGroup with Tabs Components
+1.  **Update Imports:**
+    Replace imports for `Button` and related enums from `@ohif/ui` with the new `Button` component, likely from `@ohif/ui-next`.
 
-```diff
-- <ButtonGroup className="mt-2 w-full">
--   <button
--     className="w-1/2"
--     onClick={() => {
--       setComputedView(false);
--       onDynamicClick?.();
--     }}
--   >
--     4D
--   </button>
--   <button
--     className="w-1/2"
--     onClick={() => {
--       setComputedView(true);
--     }}
--   >
--     Computed
--   </button>
-- </ButtonGroup>
+    ```diff
+    - import { Button, ButtonEnums, IconButton } from '@ohif/ui';
+    + import { Button, Icons } from '@ohif/ui-next';
+    ```
 
-+ <Tabs
-+   value={computedView ? 'computed' : '4d'}
-+   onValueChange={value => {
-+     const isComputed = value === 'computed';
-+     setComputedView(isComputed);
-+     if (!isComputed && typeof onDynamicClick === 'function') {
-+       onDynamicClick();
-+     }
-+   }}
-+   className="my-2 w-full"
-+ >
-+   <TabsList className="w-full">
-+     <TabsTrigger
-+       value="4d"
-+       className="w-1/2"
-+     >
-+       4D
-+     </TabsTrigger>
-+     <TabsTrigger
-+       value="computed"
-+       className="w-1/2"
-+     >
-+       Computed
-+     </TabsTrigger>
-+   </TabsList>
-+ </Tabs>
-```
+3.  **Migrate Manual Styling to `variant` and `size` Props:**
+    Remove custom Tailwind CSS classes for basic button appearance, hover states, and sizing. Use the `variant` (`'default'`, `'secondary'`, `'ghost'`, `'link'`) and `size` (`'sm'`, `'default'`, `'lg'`, `'icon'`) props instead.
 
-The `Tabs` component is a more advanced, accessible replacement for the `ButtonGroup`. Instead of directly tracking state and manually handling clicks, it uses a controlled pattern with `value` and `onValueChange`:
+    *Example (`DynamicVolumeControls.tsx` change):*
+    ```diff
+    - <Button
+    -   className="mt-2 !h-[26px] !w-[115px] self-start !p-0"
+    -   onClick={() => { onGenerate(computeViewMode); }}
+    - >
+    + <Button
+    +   variant="default"
+    +   size="sm"
+    +   className="mt-2 h-[26px] w-[115px] self-start p-0" // Keep only necessary layout/positioning classes
+    +   onClick={handleGenerate}
+    + >
+        Generate
+      </Button>
+    ```
 
-1. Import required components: `import { Tabs, TabsList, TabsTrigger } from '@ohif/ui-next';`
-2. Set up a `value` prop on the Tabs component that maps to your state
-3. Use `onValueChange` to update your state when selection changes
-4. Define each tab option with `TabsTrigger` inside `TabsList`
+5.  **Replace `IconButton`:**
+    Update instances of `<IconButton>` to use `<Button variant="ghost" size="icon">`. Place the icon component from `@ohif/ui-next` (e.g., `<Icons.ByName name="icon-name" />`) inside the button.
 
-### 2. Replace Separated ButtonGroup with Tabs
+    *Example (`DynamicVolumeControls.tsx` change):*
+    ```diff
+    - <IconButton
+    -   className="bg-customblue-30 h-[26px] w-[58px] rounded-[4px]"
+    -   onClick={() => onPlayPauseChange(!isPlaying)}
+    - >
+    -   <Icon
+    -     name={getPlayPauseIconName()}
+    -     className="active:text-primary-light hover:bg-customblue-300 h-[24px] w-[24px] cursor-pointer text-white"
+    -   />
+    - </IconButton>
+    + <Button
+    +   id="play-pause-button"
+    +   variant="secondary" // Or "ghost" depending on final desired style
+    +   size="default"      // Or "icon" if only icon is needed
+    +   className="w-[58px]" // Keep specific width if necessary
+    +   onClick={() => {
+    +     if (typeof onPlayPauseChange === 'function') {
+    +       onPlayPauseChange(!isPlaying);
+    +     }
+    +   }}
+    + >
+    +   <Icons.ByName
+    +     name={getPlayPauseIconName()}
+    +     className="text-foreground h-[24px] w-[24px]" // Use semantic colors
+    +   />
+    + </Button>
+    ```
 
-For ButtonGroups with the `separated` prop:
+6.  **Replace `ButtonGroup` with `Tabs`:**
+    Refactor sections using `ButtonGroup` to use the `Tabs`, `TabsList`, and `TabsTrigger` components. Manage the selected state using the `value` and `onValueChange` props of the `Tabs` component.
 
-```diff
-- <ButtonGroup
--   className={`mt-2 w-full`}
--   separated={true}
-- >
--   <button
--     className="w-1/2"
--     onClick={() => setComputeViewMode(Enums.DynamicOperatorType.SUM)}
--   >
--     {Enums.DynamicOperatorType.SUM.toString().toUpperCase()}
--   </button>
--   <button
--     className="w-1/2"
--     onClick={() => setComputeViewMode(Enums.DynamicOperatorType.AVERAGE)}
--   >
--     {Enums.DynamicOperatorType.AVERAGE.toString().toUpperCase()}
--   </button>
--   <button
--     className="w-1/2"
--     onClick={() => setComputeViewMode(Enums.DynamicOperatorType.SUBTRACT)}
--   >
--     {Enums.DynamicOperatorType.SUBTRACT.toString().toUpperCase()}
--   </button>
-- </ButtonGroup>
+    *Example (`DynamicVolumeControls.tsx` change):*
+    ```diff
+    - <ButtonGroup className="mt-2 w-full">
+    -   <button className="w-1/2" onClick={() => setComputedView(false)}>4D</button>
+    -   <button className="w-1/2" onClick={() => setComputedView(true)}>Computed</button>
+    - </ButtonGroup>
 
-+ <Tabs
-+   value={String(computeViewMode)}
-+   onValueChange={value => {
-+     setComputeViewMode(value);
-+   }}
-+   className="mt-2 w-full"
-+ >
-+   <TabsList className="w-full gap-1">
-+     <TabsTrigger
-+       value={String(Enums.DynamicOperatorType.SUM)}
-+       className="w-1/3"
-+     >
-+       {toUpperCaseString(Enums.DynamicOperatorType.SUM)}
-+     </TabsTrigger>
-+     <TabsTrigger
-+       value={String(Enums.DynamicOperatorType.AVERAGE)}
-+       className="w-1/3"
-+     >
-+       {toUpperCaseString(Enums.DynamicOperatorType.AVERAGE)}
-+     </TabsTrigger>
-+     <TabsTrigger
-+       value={String(Enums.DynamicOperatorType.SUBTRACT)}
-+       className="w-1/3"
-+     >
-+       {toUpperCaseString(Enums.DynamicOperatorType.SUBTRACT)}
-+     </TabsTrigger>
-+   </TabsList>
-+ </Tabs>
-```
+    + <Tabs
+    +   value={computedView ? 'computed' : '4d'}
+    +   onValueChange={value => setComputedView(value === 'computed')}
+    +   className="my-2 w-full"
+    + >
+    +   <TabsList className="w-full">
+    +     <TabsTrigger value="4d" className="w-1/2">4D</TabsTrigger>
+    +     <TabsTrigger value="computed" className="w-1/2">Computed</TabsTrigger>
+    +   </TabsList>
+    + </Tabs>
+    ```
 
-Note: For enum values, you may need to convert them to strings when using as values in the Tabs component.
+7.  **Identify Specific Component Replacements:**
+    Review areas where styled `div` elements were used as buttons. Replace them with appropriate components like `<Button>` or domain-specific ones if available (e.g., `ViewportActionButton`).
 
+    *Example (`_getStatusComponent.tsx` change):*
+    ```diff
+    - <div
+    -   className="bg-primary-main hover:bg-primary-light ml-1 cursor-pointer rounded px-1.5 hover:text-black"
+    -   onMouseUp={onStatusClick}
+    - >
+    -   {loadStr}
+    - </div>
+    + <ViewportActionButton onInteraction={onStatusClick}>{loadStr}</ViewportActionButton>
+    ```
 
-```diff
-- <Tooltip
--   content={<div className="text-white">{tooltip}</div>}
--   position="bottom-left"
--   tight={true}
--   tooltipBoxClassName="max-w-xs p-2"
-- >
--   <Icon
--     name="info-link"
--     className="text-primary-active h-[14px] w-[14px]"
--   />
-- </Tooltip>
-
-+ <Tooltip>
-+   <TooltipTrigger asChild>
-+     <span>
-+       <Icons.ByName
-+         name="info-link"
-+         className="text-primary h-3 w-3"
-+       />
-+     </span>
-+   </TooltipTrigger>
-+   <TooltipContent
-+     sideOffset={4}
-+     className="max-w-xs"
-+   >
-+     <div>{tooltip}</div>
-+   </TooltipContent>
-+ </Tooltip>
-```
-
-The Tooltip component has been completely redesigned to follow a more accessible pattern:
-1. The main `Tooltip` component wraps everything
-2. `TooltipTrigger` specifies the element that triggers the tooltip
-3. `TooltipContent` defines the tooltip content
-
-### 3. Update Button Styles and Classes
-
-```diff
-- <Button
--   className="mt-2 !h-[26px] !w-[115px] self-start !p-0"
--   onClick={() => {
--     onGenerate(computeViewMode);
--   }}
-- >
--   Generate
-- </Button>
-
-+ <Button
-+   variant="default"
-+   size="sm"
-+   className="mt-2 h-[26px] w-[115px] self-start p-0"
-+   onClick={handleGenerate}
-+ >
-+   Generate
-+ </Button>
-```
-
-Button component now uses the variant/size API instead of purely className-based styling:
-1. Replace custom styles with built-in variants like "default", "primary", "secondary"
-2. Use size prop ("sm", "md", "lg") instead of custom sizing
-3. Remove `!` important flags from class names as the component handles priorities internally
+    *Example (`VolumeRenderingPresetsContent.tsx` change):*
+    ```diff
+    - <Button
+    -   name="Cancel"
+    -   size={ButtonEnums.size.medium}
+    -   type={ButtonEnums.type.secondary}
+    -   onClick={onClose}
+    - > Cancel </Button>
+    + <FooterAction>
+    +   <FooterAction.Right>
+    +     <FooterAction.Secondary onClick={hide}>Cancel</FooterAction.Secondary>
+    +   </FooterAction.Right>
+    + </FooterAction>
+    ```
