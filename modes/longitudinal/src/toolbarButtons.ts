@@ -544,6 +544,10 @@ const toolbarButtons: Button[] = [
   //     evaluate: 'evaluate.action',
   //   },
   // },
+  {
+    id: 'ProgressDropdown',
+    uiType: 'ohif.progressDropdown',
+  },
 ];
 
 export default toolbarButtons;
