@@ -76,7 +76,7 @@ function ReportDialog({ dataSources, hide, onSave, onCancel }: ReportDialogProps
         <div className="flex gap-4">
           {showDataSourceSelect && (
             <div className="mt-1 w-1/2">
-              <div className="mb-1 pl-1 font-light">Data source</div>
+              <div className="mb-1 pl-1 text-base">Data source</div>
               <Select
                 value={selectedDataSource}
                 onValueChange={setSelectedDataSource}
@@ -98,7 +98,7 @@ function ReportDialog({ dataSources, hide, onSave, onCancel }: ReportDialogProps
             </div>
           )}
           <div className={showDataSourceSelect ? 'mt-1 w-1/2' : 'mt-1 w-full'}>
-            <div className="mb-1 pl-1 font-light">Series</div>
+            <div className="mb-1 pl-1 text-base">Series</div>
             <Select
               value={selectedSeries}
               onValueChange={setSelectedSeries}
