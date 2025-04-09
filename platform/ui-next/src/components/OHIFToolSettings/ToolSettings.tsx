@@ -104,8 +104,8 @@ const renderCustomSetting = option => {
 const renderButtonSetting = option => {
   return (
     <Button
-      className="bg-primary"
       key={option.id}
+      variant="ghost"
       onClick={() => option.onChange()}
     >
       {option.name}

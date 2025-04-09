@@ -395,12 +395,6 @@ const toolbarButtons: Button[] = [
       },
       options: [
         {
-          name: 'Clear Markers',
-          type: 'button',
-          id: 'clear-markers',
-          commands: 'clearMarkersForMarkerLabelmap',
-        },
-        {
           name: 'Marker Mode',
           type: 'radio',
           id: 'marker-mode',
@@ -421,6 +415,12 @@ const toolbarButtons: Button[] = [
               });
             }
           },
+        },
+        {
+          name: 'Clear Markers',
+          type: 'button',
+          id: 'clear-markers',
+          commands: 'clearMarkersForMarkerLabelmap',
         },
       ],
     },
