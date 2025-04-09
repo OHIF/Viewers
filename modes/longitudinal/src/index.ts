@@ -2,7 +2,6 @@ import i18n from 'i18next';
 import { id } from './id';
 import initToolGroups from './initToolGroups';
 import toolbarButtons from './toolbarButtons';
-import initWorkflowSteps from './initWorkflowSteps';
 
 // Allow this mode by excluding non-imaging modalities such as SR, SEG
 // Also, SM is not a simple imaging modalities, so exclude it.
@@ -92,8 +91,6 @@ function modeFactory({ modeConfiguration }) {
       initToolGroups(extensionManager, toolGroupService, commandsManager);
 
       toolbarService.addButtons(toolbarButtons);
-      toolbarService.createButtonSection('secondary', ['ProgressDropdown']);
-
       toolbarService.createButtonSection('primary', [
         'MeasurementTools',
         'Zoom',
@@ -104,7 +101,6 @@ function modeFactory({ modeConfiguration }) {
         'Layout',
         'Crosshairs',
         'MoreTools',
-        'ProgressDropdown',
       ]);
 
       toolbarService.createButtonSection('measurementSection', [
@@ -281,10 +277,6 @@ function modeFactory({ modeConfiguration }) {
       dicomRT.sopClassHandler,
     ],
     ...modeConfiguration,
-    onSetupRouteComplete: ({ servicesManager }: withAppTypes) => {
-      // Initialize workflow steps after route is set up
-      initWorkflowSteps({ servicesManager });
-    },
   };
 }
 
