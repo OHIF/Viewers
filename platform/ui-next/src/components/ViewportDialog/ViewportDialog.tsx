@@ -91,7 +91,7 @@ const ViewportDialog: React.FC<ViewportDialogProps> = ({
   return (
     <div
       ref={notificationRef}
-      className="border-input bg-muted mx-2 mt-2 flex flex-col rounded-md border p-2 outline-none"
+      className="border-input bg-muted mx-1.5 mt-2 flex flex-col rounded-md border p-2 outline-none"
       data-cy={id}
       onKeyDown={onKeyPress}
       tabIndex={0}
