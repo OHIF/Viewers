@@ -11,7 +11,6 @@ import filtersMeta from './filtersMeta.js';
 import { useAppConfig } from '@state';
 import { useDebounce, useSearchParams } from '@hooks';
 import { utils } from '@ohif/core';
-import { routerBasename } from '../../utils/publicUrl';
 
 import {
   StudyListExpandedRow,
@@ -343,7 +342,7 @@ function WorkList({
             <>
               <Icons.GroupLayers
                 className={classnames('mr-2 inline-flex w-4', {
-                  'text-primary-active': isExpanded,
+                  'text-primary': isExpanded,
                   'text-secondary-light': !isExpanded,
                 })}
               />

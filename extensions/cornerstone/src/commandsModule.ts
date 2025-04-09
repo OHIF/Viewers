@@ -35,6 +35,7 @@ import { toolNames } from './initCornerstoneTools';
 import CornerstoneViewportDownloadForm from './utils/CornerstoneViewportDownloadForm';
 import { updateSegmentBidirectionalStats } from './utils/updateSegmentationStats';
 import { generateSegmentationCSVReport } from './utils/generateSegmentationCSVReport';
+import { getUpdatedViewportsForSegmentation } from './utils/hydrationUtils';
 
 const { DefaultHistoryMemo } = csUtils.HistoryMemo;
 const toggleSyncFunctions = {
@@ -495,7 +496,6 @@ function commandsModule({
 
     downloadCSVSegmentationReport: ({ segmentationId }) => {
       const segmentation = segmentationService.getSegmentation(segmentationId);
-      const cachedStats = segmentation.cachedStats;
 
       const { representationData } = segmentation;
       const { Labelmap } = representationData;
@@ -581,7 +581,6 @@ function commandsModule({
       });
       viewport.render();
     },
-
     toggleViewportColorbar: ({ viewportId, displaySetInstanceUIDs, options = {} }) => {
       const hasColorbar = colorbarService.hasColorbar(viewportId);
       if (hasColorbar) {
@@ -590,7 +589,6 @@ function commandsModule({
       }
       colorbarService.addColorbar(viewportId, displaySetInstanceUIDs, options);
     },
-
     setWindowLevel(props) {
       const { toolGroupId } = props;
       const { viewportId } = _getActiveViewportEnabledElement();
@@ -1020,6 +1018,10 @@ function commandsModule({
       }
 
       const toolGroup = toolGroupService.getToolGroupForViewport(viewportId);
+
+      if (!toolGroup.hasTool(toolName)) {
+        return;
+      }
 
       const prevConfig = toolGroup?.getToolConfiguration(toolName);
       toolGroup?.setToolConfiguration(
@@ -1532,6 +1534,22 @@ function commandsModule({
         measurementService.remove(activeAnnotationUID);
       });
     },
+    setDisplaySetsForViewports: ({ viewportsToUpdate }) => {
+      const { cineService, viewportGridService } = servicesManager.services;
+      // Stopping the cine of modified viewports before changing the viewports to
+      // avoid inconsistent state and lost references
+      viewportsToUpdate.forEach(viewport => {
+        const state = cineService.getState();
+        const currentCineState = state.cines?.[viewport.viewportId];
+        cineService.setCine({
+          id: viewport.viewportId,
+          frameRate: currentCineState?.frameRate ?? state.default?.frameRate ?? 24,
+          isPlaying: false,
+        });
+      });
+
+      viewportGridService.setDisplaySetsForViewports(viewportsToUpdate);
+    },
     undo: () => {
       DefaultHistoryMemo.undo();
     },
@@ -1539,7 +1557,8 @@ function commandsModule({
       DefaultHistoryMemo.redo();
     },
     toggleSegmentPreviewEdit: ({ toggle }) => {
-      const labelmapTools = getLabelmapTools({ toolGroupService });
+      let labelmapTools = getLabelmapTools({ toolGroupService });
+      labelmapTools = labelmapTools.filter(tool => !tool.toolName.includes('Eraser'));
       labelmapTools.forEach(tool => {
         tool.configuration = {
           ...tool.configuration,
@@ -1562,7 +1581,8 @@ function commandsModule({
       });
     },
     toggleUseCenterSegmentIndex: ({ toggle }) => {
-      const labelmapTools = getLabelmapTools({ toolGroupService });
+      let labelmapTools = getLabelmapTools({ toolGroupService });
+      labelmapTools = labelmapTools.filter(tool => !tool.toolName.includes('Eraser'));
       labelmapTools.forEach(tool => {
         tool.configuration = {
           ...tool.configuration,
@@ -1706,6 +1726,20 @@ function commandsModule({
       const { activeViewportId } = viewportGridService.getState();
       const activeSegmentation = segmentationService.getActiveSegmentation(activeViewportId);
       segmentationService.addSegment(activeSegmentation.segmentationId);
+    },
+    loadSegmentationDisplaySetsForViewport: ({ viewportId, displaySetInstanceUIDs }) => {
+      const updatedViewports = getUpdatedViewportsForSegmentation({
+        viewportId,
+        servicesManager,
+        displaySetInstanceUIDs,
+      });
+
+      updatedViewports.forEach(viewport => {
+        viewportGridService.setDisplaySetsForViewport({
+          viewportId: viewport.viewportId,
+          displaySetInstanceUIDs: viewport.displaySetInstanceUIDs,
+        });
+      });
     },
   };
 
@@ -1967,6 +2001,7 @@ function commandsModule({
     deleteActiveAnnotation: {
       commandFn: actions.deleteActiveAnnotation,
     },
+    setDisplaySetsForViewports: actions.setDisplaySetsForViewports,
     undo: actions.undo,
     redo: actions.redo,
     interpolateLabelmap: actions.interpolateLabelmap,
@@ -1985,6 +2020,7 @@ function commandsModule({
     increaseBrushSize: actions.increaseBrushSize,
     decreaseBrushSize: actions.decreaseBrushSize,
     addNewSegment: actions.addNewSegment,
+    loadSegmentationDisplaySetsForViewport: actions.loadSegmentationDisplaySetsForViewport,
   };
 
   return {

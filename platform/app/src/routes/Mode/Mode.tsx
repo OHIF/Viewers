@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { useParams, useLocation, useNavigate } from 'react-router';
 import PropTypes from 'prop-types';
 import { utils } from '@ohif/core';
-import { DragAndDropProvider, ImageViewerProvider } from '@ohif/ui';
+import { ImageViewerProvider, DragAndDropProvider } from '@ohif/ui-next';
 import { useSearchParams } from '@hooks';
 import { useAppConfig } from '@state';
 import ViewportGrid from '@components/ViewportGrid';

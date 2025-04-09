@@ -79,9 +79,15 @@ const screenShotPaths = {
     segPreHydration: 'segPreHydration.png',
     segJumpToSegment: 'segJumpToSegment.png',
   },
-  segHydrationMPR: {
+  segHydrationThenMPR: {
     segPostHydration: 'segPostHydration.png',
     segPostHydrationMPRAxialPrimary: 'segPostHydrationMPRAxialPrimary.png',
+  },
+  segHydrationFromMPR: {
+    mprBeforeSEG: 'mprBeforeSEG.png',
+    mprAfterSEG: 'mprAfterSEG.png',
+    mprAfterSegHydrated: 'mprAfterSegHydrated.png',
+    mprAfterSegHydratedAfterLayoutChange: 'mprAfterSegHydratedAfterLayoutChange.png',
   },
   rtHydration: {
     rtPostHydration: 'rtPostHydration.png',

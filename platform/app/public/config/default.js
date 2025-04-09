@@ -17,7 +17,7 @@ window.config = {
   experimentalStudyBrowserSort: false,
   strictZSpacingForVolumeViewport: true,
   groupEnabledModesFirst: true,
-  allowMultiSelectExport: true,
+  allowMultiSelectExport: false,
   maxNumRequests: {
     interaction: 100,
     thumbnail: 75,

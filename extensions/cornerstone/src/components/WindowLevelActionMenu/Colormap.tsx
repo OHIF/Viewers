@@ -1,5 +1,6 @@
-import React, { ReactElement, useCallback, useEffect, useRef, useState, useMemo } from 'react';
-import { AllInOneMenu, ButtonGroup, SwitchButton } from '@ohif/ui';
+import React, { ReactElement, useCallback, useEffect, useRef, useState } from 'react';
+import { AllInOneMenu, Switch, Tabs, TabsList, TabsTrigger } from '@ohif/ui-next';
+
 import { StackViewport, Types } from '@cornerstonejs/core';
 import { ColormapProps } from '../../types/Colormap';
 
@@ -64,20 +65,9 @@ export function Colormap({
     return colormap;
   };
 
-  const buttons = useMemo(() => {
-    return displaySets.map((displaySet, index) => ({
-      children: displaySet.Modality,
-      key: index,
-      style: {
-        minWidth: `calc(100% / ${displaySets.length})`,
-        fontSize: '0.8rem',
-        textAlign: 'center',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-      },
-    }));
-  }, [displaySets]);
+  const activeIndex = displaySets.findIndex(
+    ds => ds.displaySetInstanceUID === activeDisplaySetRef.current.displaySetInstanceUID
+  );
 
   useEffect(() => {
     setActiveDisplaySet(displaySets[displaySets.length - 1]);
@@ -85,46 +75,52 @@ export function Colormap({
 
   return (
     <>
-      {buttons.length > 1 && (
-        <div className="all-in-one-menu-item flex w-full justify-center">
-          <ButtonGroup
-            onActiveIndexChange={index => {
+      {displaySets.length > 1 && (
+        <div className="flex h-8 w-full flex-shrink-0 items-center justify-center px-2 text-base">
+          <Tabs
+            value={String(activeIndex)}
+            onValueChange={val => {
+              const index = parseInt(val, 10);
               setActiveDisplaySet(displaySets[index]);
               setPrePreviewColormap(null);
             }}
-            activeIndex={
-              displaySets.findIndex(
-                ds => ds.displaySetInstanceUID === activeDisplaySetRef.current.displaySetInstanceUID
-              ) || 1
-            }
-            className="w-[70%] text-[10px]"
           >
-            {buttons.map(({ children, key, style }) => (
-              <div
-                key={key}
-                style={style}
-              >
-                {children}
-              </div>
-            ))}
-          </ButtonGroup>
+            <TabsList>
+              {displaySets.map((ds, i) => (
+                <TabsTrigger
+                  key={i}
+                  value={String(i)}
+                >
+                  {ds.Modality}
+                </TabsTrigger>
+              ))}
+            </TabsList>
+          </Tabs>
         </div>
       )}
-      <div className="all-in-one-menu-item flex w-full justify-center">
-        <SwitchButton
-          label="Preview in viewport"
+      <div
+        className="hover:bg-accent flex h-8 w-full flex-shrink-0 cursor-pointer items-center px-2 text-base hover:rounded"
+        onClick={() => setShowPreview(!showPreview)}
+      >
+        <span className="flex-shrink-0">Preview in viewport</span>
+        <Switch
+          className="ml-auto flex-shrink-0"
           checked={showPreview}
-          onChange={checked => {
+          onCheckedChange={checked => {
             setShowPreview(checked);
           }}
         />
       </div>
       <AllInOneMenu.DividerItem />
-      <AllInOneMenu.ItemPanel>
+      <AllInOneMenu.ItemPanel
+        maxHeight="calc(100vh - 250px)"
+        className="min-h-[200px] flex-grow"
+      >
         {colormaps.map((colormap, index) => (
           <AllInOneMenu.Item
             key={index}
             label={colormap.description}
+            useIconSpace={false}
             onClick={() => {
               onSetColorLUT({
                 viewportId,

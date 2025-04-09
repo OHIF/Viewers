@@ -3,7 +3,7 @@ import { vec3 } from 'gl-matrix';
 import PropTypes from 'prop-types';
 import { metaData, Enums, utilities } from '@cornerstonejs/core';
 import type { ImageSliceData } from '@cornerstonejs/core/types';
-import { ViewportOverlay } from '@ohif/ui';
+import { ViewportOverlay } from '@ohif/ui-next';
 import type { InstanceMetadata } from '@ohif/core/src/types';
 import { formatDICOMDate, formatDICOMTime, formatNumberPrecision } from './utils';
 import { utils } from '@ohif/core';
@@ -368,7 +368,7 @@ function OverlayItem(props) {
       title={title}
     >
       {label ? <span className="mr-1 shrink-0">{label}</span> : null}
-      <span className="ml-1 mr-2 shrink-0">{value}</span>
+      <span className="ml-0 mr-2 shrink-0">{value}</span>
     </div>
   );
 }
@@ -387,10 +387,10 @@ function VOIOverlayItem({ voi, customization }: OverlayItemProps) {
       className="overlay-item flex flex-row"
       style={{ color: customization?.color }}
     >
-      <span className="mr-1 shrink-0">W:</span>
-      <span className="ml-1 mr-2 shrink-0">{windowWidth.toFixed(0)}</span>
-      <span className="mr-1 shrink-0">L:</span>
-      <span className="ml-1 shrink-0">{windowCenter.toFixed(0)}</span>
+      <span className="mr-0.5 shrink-0 opacity-[0.67]">W:</span>
+      <span className="mr-2.5 shrink-0">{windowWidth.toFixed(0)}</span>
+      <span className="mr-0.5 shrink-0 opacity-[0.67]">L:</span>
+      <span className="shrink-0">{windowCenter.toFixed(0)}</span>
     </div>
   );
 }
@@ -404,7 +404,7 @@ function ZoomOverlayItem({ scale, customization }: OverlayItemProps) {
       className="overlay-item flex flex-row"
       style={{ color: (customization && customization.color) || undefined }}
     >
-      <span className="mr-1 shrink-0">Zoom:</span>
+      <span className="mr-0.5 shrink-0 opacity-[0.67]">Zoom:</span>
       <span>{scale.toFixed(2)}x</span>
     </div>
   );
@@ -428,7 +428,7 @@ function InstanceNumberOverlayItem({
       <span>
         {instanceNumber !== undefined && instanceNumber !== null ? (
           <>
-            <span className="mr-1 shrink-0">I:</span>
+            <span className="mr-0.5 shrink-0 opacity-[0.67]">I:</span>
             <span>{`${instanceNumber} (${imageIndex + 1}/${numberOfSlices})`}</span>
           </>
         ) : (

@@ -303,7 +303,7 @@ function DicomUploadProgress({
             <span
               className={classNames(
                 NO_WRAP_ELLIPSIS_CLASS_NAMES,
-                'text-primary-active hover:text-primary-light active:text-aqua-pale ml-auto cursor-pointer'
+                'text-primary hover:text-primary-light active:text-aqua-pale ml-auto cursor-pointer'
               )}
               onClick={cancelAllUploads}
             >

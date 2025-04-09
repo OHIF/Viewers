@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useSystem } from '@ohif/core';
 import PanelStudyBrowser from '@ohif/extension-default/src/Panels/StudyBrowser/PanelStudyBrowser';
@@ -27,10 +27,34 @@ export default function PanelStudyBrowserTracking({
   dataSource,
 }) {
   const { servicesManager } = useSystem();
-  const { displaySetService, uiModalService, measurementService } = servicesManager.services;
+  const { displaySetService, uiModalService, measurementService, viewportGridService } =
+    servicesManager.services;
   const [trackedMeasurements, sendTrackedMeasurementsEvent] = useTrackedMeasurements();
   const { trackedSeries } = trackedMeasurements.context;
 
+  const checkDirtyMeasurements = displaySetInstanceUID => {
+    const displaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
+    if (displaySet.Modality === 'SR') {
+      const activeViewportId = viewportGridService.getActiveViewportId();
+      sendTrackedMeasurementsEvent('CHECK_DIRTY', {
+        viewportId: activeViewportId,
+        displaySetInstanceUID: displaySetInstanceUID,
+      });
+    }
+  };
+
+  useEffect(() => {
+    const subscriptionOndropFired = viewportGridService.subscribe(
+      viewportGridService.EVENTS.VIEWPORT_ONDROP_HANDLED,
+      ({ eventData }) => {
+        checkDirtyMeasurements(eventData.displaySetInstanceUID);
+      }
+    );
+
+    return () => {
+      subscriptionOndropFired.unsubscribe();
+    };
+  }, []);
   const onClickUntrack = displaySetInstanceUID => {
     const onConfirm = () => {
       const displaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
@@ -50,6 +74,7 @@ export default function PanelStudyBrowserTracking({
       content: UntrackSeriesModal,
       contentProps: {
         onConfirm,
+        message: 'Are you sure you want to untrack this series?',
       },
     });
   };
@@ -115,6 +140,7 @@ export default function PanelStudyBrowserTracking({
       dataSource={dataSource}
       customMapDisplaySets={mapDisplaySetsWithTracking}
       onClickUntrack={onClickUntrack}
+      onDoubleClickThumbnailHandlerCallBack={checkDirtyMeasurements}
     />
   );
 }

@@ -1,23 +1,4 @@
-import { WindowLevelMenuItem } from '@ohif/ui';
-import { defaults } from '@ohif/core';
 import type { Button } from '@ohif/core/types';
-
-const { windowLevelPresets } = defaults;
-
-function _createWwwcPreset(preset, title, subtitle) {
-  return {
-    id: preset.toString(),
-    title,
-    subtitle,
-    commands: {
-      commandName: 'setWindowLevel',
-      commandOptions: {
-        ...windowLevelPresets[preset],
-      },
-      context: 'CORNERSTONE',
-    },
-  };
-}
 
 export const setToolActiveToolbar = {
   commandName: 'setToolActive',

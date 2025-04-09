@@ -277,6 +277,11 @@ class SegmentationService extends PubSubService {
   ): Promise<void> {
     const segmentation = this.getSegmentation(segmentationId);
     const csViewport = this.getAndValidateViewport(viewportId);
+
+    if (!csViewport) {
+      return;
+    }
+
     const colorLUTIndex = this._segmentationIdToColorLUTIndexMap.get(segmentationId);
 
     const defaultRepresentationType = csToolsEnums.SegmentationRepresentations.Labelmap;
@@ -427,6 +432,8 @@ class SegmentationService extends PubSubService {
       ...metaData.get('instance', image.referencedImageId),
     }));
 
+    segDisplaySet.imageIds = derivedImageIds;
+
     // We should parse the segmentation as separate slices to support overlapping segments.
     // This parsing should occur in the CornerstoneJS library adapters.
     // For now, we use the volume returned from the library and chop it here.
@@ -513,7 +520,7 @@ class SegmentationService extends PubSubService {
         type: LABELMAP,
         data: {
           imageIds: derivedImageIds,
-          referencedVolumeId: this._getVolumeIdForDisplaySet(referencedDisplaySet),
+          // referencedVolumeId: this._getVolumeIdForDisplaySet(referencedDisplaySet),
           referencedImageIds: imageIds as string[],
         },
       },
@@ -566,9 +573,10 @@ class SegmentationService extends PubSubService {
 
     const referencedImageIds = referencedDisplaySet.imageIds;
     // find the first image id that contains a referenced SOP instance UID
-    const firstSegmentedSliceImageId = referencedImageIds.find(imageId =>
-      referencedImageIdsWithGeometry.some(referencedId => imageId.includes(referencedId))
-    );
+    const firstSegmentedSliceImageId =
+      referencedImageIds?.find(imageId =>
+        referencedImageIdsWithGeometry.some(referencedId => imageId.includes(referencedId))
+      ) || null;
 
     rtDisplaySet.firstSegmentedSliceImageId = firstSegmentedSliceImageId;
     // Map ROI contours to RT Struct Data
@@ -1248,7 +1256,8 @@ class SegmentationService extends PubSubService {
     const csViewport =
       this.servicesManager.services.cornerstoneViewportService.getCornerstoneViewport(viewportId);
     if (!csViewport) {
-      throw new Error(`Viewport with id ${viewportId} not found.`);
+      console.warn(`Viewport with id ${viewportId} not found.`);
+      return null;
     }
     return csViewport;
   }
@@ -1762,6 +1771,12 @@ class SegmentationService extends PubSubService {
     }
 
     const { center } = cachedStats;
+
+    if (!center) {
+      return {
+        world: cachedStats.namedStats.center.value,
+      };
+    }
 
     return center;
   }

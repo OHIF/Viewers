@@ -113,7 +113,7 @@ function DataSourceConfigurationModalComponent({
         : 'border border-dashed border-secondary-light';
 
   const getSelectedItemTextClasses = itemIndex =>
-    itemIndex <= selectedItems.length ? 'text-primary-light' : 'text-primary-active';
+    itemIndex <= selectedItems.length ? 'text-primary-light' : 'text-primary';
 
   const getErrorComponent = (): ReactElement => {
     return (

@@ -3,7 +3,8 @@ import { useResizeDetector } from 'react-resize-detector';
 import * as cs3DTools from '@cornerstonejs/tools';
 import { Enums, eventTarget, getEnabledElement } from '@cornerstonejs/core';
 import { MeasurementService } from '@ohif/core';
-import { AllInOneMenu, useViewportDialog } from '@ohif/ui';
+import { AllInOneMenu } from '@ohif/ui-next';
+import { useViewportDialog } from '@ohif/ui-next';
 import type { Types as csTypes } from '@cornerstonejs/core';
 
 import { setEnabledElement } from '../state';
@@ -99,7 +100,7 @@ const OHIFCornerstoneViewport = React.memo(
     const [viewportDialogState] = useViewportDialog();
     // useCallback for scroll bar height calculation
     const setImageScrollBarHeight = useCallback(() => {
-      const scrollbarHeight = `${elementRef.current.clientHeight - 40}px`;
+      const scrollbarHeight = `${elementRef.current.clientHeight - 10}px`;
       setScrollbarHeight(scrollbarHeight);
     }, [elementRef]);
 

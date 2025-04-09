@@ -247,7 +247,8 @@ function ViewerViewportGrid(props: withAppTypes) {
         });
 
         event.consume();
-        viewportGridService.setDisplaySetsForViewports(updatedViewports);
+
+        commandsManager.run('setDisplaySetsForViewports', { viewportsToUpdate: updatedViewports });
       }
     );
 
@@ -257,6 +258,7 @@ function ViewerViewportGrid(props: withAppTypes) {
   }, [viewports, _getUpdatedViewports]);
 
   const onDropHandler = (viewportId, { displaySetInstanceUID }) => {
+    const { viewportGridService } = servicesManager.services;
     const customOnDropHandler = customizationService.getCustomization('customOnDropHandler');
     const dropHandlerPromise = customOnDropHandler({
       ...props,
@@ -264,13 +266,14 @@ function ViewerViewportGrid(props: withAppTypes) {
       displaySetInstanceUID,
       appConfig,
     });
-
     dropHandlerPromise.then(({ handled }) => {
       if (!handled) {
         const updatedViewports = _getUpdatedViewports(viewportId, displaySetInstanceUID);
-        viewportGridService.setDisplaySetsForViewports(updatedViewports);
+
+        commandsManager.run('setDisplaySetsForViewports', { viewportsToUpdate: updatedViewports });
       }
     });
+    viewportGridService.publishViewportOnDropHandled({ displaySetInstanceUID });
   };
 
   // Store previous isReferenceViewable values to avoid infinite loops
@@ -373,11 +376,11 @@ function ViewerViewportGrid(props: withAppTypes) {
         const tolerance = 0.01;
 
         if (x + width < 1 - tolerance) {
-          style.borderRight = '1px solid #3a3f99';
+          style.borderRight = '1px solid hsl(var(--input))';
         }
 
         if (y + height < 1 - tolerance) {
-          style.borderBottom = '1px solid #3a3f99';
+          style.borderBottom = '1px solid hsl(var(--input))';
         }
 
         return style;
@@ -443,7 +446,7 @@ function ViewerViewportGrid(props: withAppTypes) {
   return (
     <div
       ref={resizeRef}
-      className="border-secondary-light h-full w-full border"
+      className="border-input h-[calc(100%-0.25rem)] w-full border"
     >
       <ViewportGrid
         numRows={numRows}

@@ -5,7 +5,7 @@ import { ExtensionManager, useToolbar } from '@ohif/core';
 
 import { setTrackingUniqueIdentifiersForElement } from '../tools/modules/dicomSRModule';
 
-import { ViewportActionArrows } from '@ohif/ui';
+import { ViewportActionArrows } from '@ohif/ui-next';
 import createReferencedImageDisplaySet from '../utils/createReferencedImageDisplaySet';
 import { usePositionPresentationStore } from '@ohif/extension-cornerstone';
 import { useViewportGrid } from '@ohif/ui-next';
@@ -427,7 +427,7 @@ function _getStatusComponent({
     case 3:
       StatusIcon = () => (
         <Icons.ByName
-          className="text-aqua-pale h-4 w-4"
+          className="text-muted-foreground h-4 w-4"
           name="status-untracked"
         />
       );

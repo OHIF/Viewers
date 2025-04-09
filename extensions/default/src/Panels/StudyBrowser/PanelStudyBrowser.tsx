@@ -1,10 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { useImageViewer } from '@ohif/ui';
-import { useViewportGrid } from '@ohif/ui-next';
-import { StudyBrowser } from '@ohif/ui-next';
+import { useImageViewer } from '@ohif/ui-next';
 import { useSystem, utils } from '@ohif/core';
 import { useNavigate } from 'react-router-dom';
-import { Separator } from '@ohif/ui-next';
+import { useViewportGrid, StudyBrowser, Separator } from '@ohif/ui-next';
 import { PanelStudyBrowserHeader } from './PanelStudyBrowserHeader';
 import { defaultActionIcons } from './constants';
 import MoreDropdownMenu from '../../Components/MoreDropdownMenu';
@@ -34,8 +32,9 @@ function PanelStudyBrowser({
   dataSource,
   customMapDisplaySets,
   onClickUntrack,
+  onDoubleClickThumbnailHandlerCallBack,
 }) {
-  const { servicesManager, commandsManager } = useSystem();
+  const { servicesManager, commandsManager, extensionManager } = useSystem();
   const { displaySetService, customizationService } = servicesManager.services;
   const navigate = useNavigate();
   const studyMode = customizationService.getCustomization('studyBrowser.studyMode') || 'all';
@@ -93,6 +92,7 @@ function PanelStudyBrowser({
         commandsManager,
         servicesManager,
         isHangingProtocolLayout,
+        appConfig: extensionManager._appConfig,
       };
 
       const handlers = customHandler?.callbacks.map(callback => callback(setupArgs));
@@ -100,6 +100,7 @@ function PanelStudyBrowser({
       for (const handler of handlers) {
         await handler(displaySetInstanceUID);
       }
+      onDoubleClickThumbnailHandlerCallBack?.(displaySetInstanceUID);
     },
     [
       activeViewportId,

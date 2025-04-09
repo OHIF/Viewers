@@ -7,6 +7,7 @@ class ViewportGridService extends PubSubService {
     GRID_STATE_CHANGED: 'event::gridStateChanged',
     GRID_SIZE_CHANGED: 'event::gridSizeChanged',
     VIEWPORTS_READY: 'event::viewportsReady',
+    VIEWPORT_ONDROP_HANDLED: 'event::viewportOnDropHandled',
   };
 
   public static REGISTRATION = {
@@ -141,6 +142,10 @@ class ViewportGridService extends PubSubService {
     this._broadcastEvent(this.EVENTS.VIEWPORTS_READY, {});
   }
 
+  public publishViewportOnDropHandled(eventData) {
+    this._broadcastEvent(this.EVENTS.VIEWPORT_ONDROP_HANDLED, { eventData });
+  }
+
   public setActiveViewportId(id: string) {
     if (id === this.getActiveViewportId()) {
       return;
@@ -184,14 +189,14 @@ class ViewportGridService extends PubSubService {
     this.setDisplaySetsForViewports([props]);
   }
 
-  public async setDisplaySetsForViewports(props) {
-    await this.serviceImplementation._setDisplaySetsForViewports(props);
+  public async setDisplaySetsForViewports(viewportsToUpdate) {
+    await this.serviceImplementation._setDisplaySetsForViewports(viewportsToUpdate);
     const state = this.getState();
     const updatedViewports = [];
 
     const removedViewportIds = [];
 
-    for (const viewport of props) {
+    for (const viewport of viewportsToUpdate) {
       const updatedViewport = state.viewports.get(viewport.viewportId);
 
       if (updatedViewport) {

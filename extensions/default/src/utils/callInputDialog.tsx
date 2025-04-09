@@ -1,5 +1,7 @@
 import React from 'react';
-import { LabellingFlow } from '@ohif/ui';
+import { setAnnotationLabel } from '@cornerstonejs/tools/utilities';
+import { annotation } from '@cornerstonejs/tools';
+import { LabellingFlow } from '@ohif/ui-next';
 import { InputDialog } from '@ohif/ui-next';
 
 interface InputDialogDefaultProps {
@@ -89,6 +91,7 @@ export async function callInputDialogAutoComplete({
   uiDialogService,
   labelConfig,
   renderContent = LabellingFlow,
+  element,
 }) {
   const exclusive = labelConfig ? labelConfig.exclusive : false;
   const dropDownItems = labelConfig ? labelConfig.items : [];
@@ -97,7 +100,8 @@ export async function callInputDialogAutoComplete({
     const labellingDoneCallback = newValue => {
       uiDialogService.hide('select-annotation');
       if (measurement && typeof newValue === 'string') {
-        measurement.label = newValue;
+        const sourceAnnotation = annotation.state.getAnnotation(measurement.uid);
+        setAnnotationLabel(sourceAnnotation, element, newValue);
       }
       resolve(newValue);
     };

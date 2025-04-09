@@ -42,43 +42,7 @@ import {
   HoverCardTrigger,
   HoverCardContent,
 } from '../../../../ui-next/src/components/HoverCard';
-
-interface DataItem {
-  id: number;
-  title: string;
-  description: string;
-  optionalField?: string;
-  colorHex?: string;
-  details?: { primary: string[]; secondary: string[] };
-  series?: string;
-  statistics?: {
-    centroidX: string;
-    centroidY: string;
-    centroidZ: string;
-    frameDuration: string;
-    kurtosis: string;
-    max: string;
-    maxSlice: string;
-    mean: string;
-    median: string;
-    min: string;
-    regions: string;
-    skewness: string;
-    sphereDiameter: string;
-    standardDeviation: string;
-    suvPeak: string;
-    total: string;
-    glycolysis: string;
-    volume: string;
-    voxelCount: string;
-  };
-}
-
-interface ListGroup {
-  type: string;
-  items: DataItem[];
-}
-
+import { DataItem, ListGroup } from '../../../../ui-next/assets/data';
 export default function SegmentationPanel() {
   const [selectedRowId, setSelectedRowId] = useState<string | null>(null);
   const [selectedTab, setSelectedTab] = useState<string>('Fill & Outline');

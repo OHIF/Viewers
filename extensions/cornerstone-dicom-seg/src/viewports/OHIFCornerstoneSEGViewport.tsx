@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ViewportActionArrows } from '@ohif/ui';
+import { ViewportActionArrows } from '@ohif/ui-next';
 import { useViewportGrid } from '@ohif/ui-next';
 import createSEGToolGroupAndAddTools from '../utils/initSEGToolGroup';
 import promptHydrateSEG from '../utils/promptHydrateSEG';
@@ -47,7 +47,7 @@ function OHIFCornerstoneSEGViewport(props: withAppTypes) {
   const [viewportGrid, viewportGridService] = useViewportGrid();
 
   // States
-  let selectedSegmentObjectIndex: number = 0;
+  const selectedSegmentObjectIndex: number = 0;
   const { setPositionPresentation } = usePositionPresentationStore();
 
   // Hydration means that the SEG is opened and segments are loaded into the
@@ -160,7 +160,7 @@ function OHIFCornerstoneSEGViewport(props: withAppTypes) {
       displaySetInstanceUID: referencedDisplaySet.displaySetInstanceUID,
     });
 
-    viewportGridService.setDisplaySetsForViewport({
+    commandsManager.runCommand('loadSegmentationDisplaySetsForViewport', {
       viewportId,
       displaySetInstanceUIDs: [referencedDisplaySet.displaySetInstanceUID],
     });

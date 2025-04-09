@@ -1,4 +1,4 @@
-import { useUserAuthentication } from '@ohif/ui';
+import { useUserAuthentication } from '@ohif/ui-next';
 
 export const PrivateRoute = ({ children, handleUnauthenticated }) => {
   const [{ user, enabled }] = useUserAuthentication();
