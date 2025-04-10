@@ -1,4 +1,3 @@
-import { ButtonEnums } from '@ohif/ui';
 import i18n from 'i18next';
 
 const RESPONSE = {
@@ -50,19 +49,19 @@ function _askTrackMeasurements(uiViewportDialogService, customizationService, vi
     const actions = [
       {
         id: 'prompt-begin-tracking-cancel',
-        type: ButtonEnums.type.secondary,
+        type: 'secondary',
         text: i18n.t('Common:No'),
         value: RESPONSE.CANCEL,
       },
       {
         id: 'prompt-begin-tracking-no-do-not-ask-again',
-        type: ButtonEnums.type.secondary,
+        type: 'secondary',
         text: i18n.t('MeasurementTable:No, do not ask again'),
         value: RESPONSE.NO_NEVER,
       },
       {
         id: 'prompt-begin-tracking-yes',
-        type: ButtonEnums.type.primary,
+        type: 'primary',
         text: i18n.t('Common:Yes'),
         value: RESPONSE.SET_STUDY_AND_SERIES,
       },

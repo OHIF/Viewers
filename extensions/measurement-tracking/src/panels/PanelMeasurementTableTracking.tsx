@@ -1,5 +1,4 @@
 import React from 'react';
-import { Dialog, ButtonEnums } from '@ohif/ui';
 import { utils } from '@ohif/core';
 import { AccordionTrigger, MeasurementTable, useViewportGrid } from '@ohif/ui-next';
 import {

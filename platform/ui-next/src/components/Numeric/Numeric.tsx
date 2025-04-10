@@ -312,10 +312,11 @@ interface NumberStepperProps {
   className?: string;
   children?: React.ReactNode;
   direction?: 'horizontal' | 'vertical';
+  inputWidth?: string;
 }
 
 // Modified NumberStepper component to properly position left/right controls
-function NumberStepper({ className, children, direction }: NumberStepperProps) {
+function NumberStepper({ className, children, direction, inputWidth }: NumberStepperProps) {
   const ctx = useContext(NumericMetaContext);
   if (!ctx) {
     throw new Error('NumberStepper must be used inside <Numeric.Container>.');
@@ -379,7 +380,10 @@ function NumberStepper({ className, children, direction }: NumberStepperProps) {
           value={displayValue}
           onChange={handleInputChange}
           onBlur={handleBlur}
-          className="h-6 flex-1 appearance-none border-none p-0 text-center shadow-none focus:border-none focus:outline-none"
+          className={cn(
+            'h-6 appearance-none border-none p-0 text-center shadow-none focus:border-none focus:outline-none',
+            inputWidth
+          )}
         />
         {children}
         <RightControl
@@ -405,16 +409,17 @@ function NumberStepper({ className, children, direction }: NumberStepperProps) {
         onChange={handleInputChange}
         onBlur={handleBlur}
         className={cn(
-          'h-6 flex-1 appearance-none border-none p-0 text-center shadow-none focus:border-none focus:outline-none'
+          'h-6 appearance-none border-none p-0 text-center shadow-none focus:border-none focus:outline-none',
+          inputWidth ? inputWidth : 'max-w-12 min-w-0'
         )}
       />
-      <div className="ml-1 flex flex-col">
+      <div className="ml-1 flex flex-shrink-0 flex-col">
         <Button
           variant="ghost"
           size="icon"
           onClick={() => setSingleValue(singleValue + step)}
           disabled={singleValue >= max}
-          className="text-primary h-3 w-5 pr-px"
+          className="text-primary h-3 w-5"
         >
           <ChevronUp className="h-3 w-3" />
         </Button>
@@ -423,7 +428,7 @@ function NumberStepper({ className, children, direction }: NumberStepperProps) {
           size="icon"
           onClick={() => setSingleValue(singleValue - step)}
           disabled={singleValue <= min}
-          className="text-primary h-3 w-5 pr-px"
+          className="text-primary h-3 w-5"
         >
           <ChevronDown className="h-3 w-3" />
         </Button>

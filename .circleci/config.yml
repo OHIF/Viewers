@@ -242,7 +242,7 @@ jobs:
       - setup_remote_docker:
           docker_layer_caching: false
       - run:
-          name: Build Docker image for arm64
+          name: Build Docker image for arm64 (Release)
           command: |
             # This file will exist if a new version was published by
             # our command in the previous job.
@@ -369,7 +369,7 @@ jobs:
       - setup_remote_docker:
           docker_layer_caching: false
       - run:
-          name: Create and push multi-architecture manifest
+          name: Create and push multi-architecture manifest (Release)
           command: |
             # This file will exist if a new version was published by
             # our command in the previous job.

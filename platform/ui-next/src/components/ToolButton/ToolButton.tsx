@@ -59,9 +59,11 @@ function ToolButton(props: ToolButtonProps) {
     className
   );
 
-  const defaultTooltip = tooltip || label;
+  const defaultTooltip = label;
   const disabledTooltip = disabled && disabledText ? disabledText : null;
-  const hasTooltip = defaultTooltip || disabledTooltip;
+  const hasSecondaryTooltip = tooltip || disabledTooltip;
+
+  const showTooltip = hasSecondaryTooltip || defaultTooltip;
 
   return (
     <Tooltip>
@@ -85,7 +87,7 @@ function ToolButton(props: ToolButtonProps) {
             }}
             variant="ghost"
             size="icon"
-            aria-label={hasTooltip ? defaultTooltip : undefined}
+            aria-label={defaultTooltip}
             disabled={disabled}
           >
             <Icons.ByName
@@ -95,12 +97,19 @@ function ToolButton(props: ToolButtonProps) {
           </Button>
         </span>
       </TooltipTrigger>
-      <TooltipContent side="bottom">
-        {hasTooltip && (
-          <>
-            <div>{defaultTooltip}</div>
-            {disabledTooltip && <div className="text-muted-foreground">{disabledTooltip}</div>}
-          </>
+      <TooltipContent
+        side="bottom"
+        className="text-wrap w-auto max-w-sm whitespace-normal break-words"
+      >
+        {showTooltip && (
+          <div className="space-y-1">
+            {defaultTooltip && <div className="text-sm">{defaultTooltip}</div>}
+            {disabledTooltip ? (
+              <div className="text-muted-foreground text-xs">{disabledTooltip}</div>
+            ) : (
+              tooltip && <div className="text-muted-foreground text-xs">{tooltip}</div>
+            )}
+          </div>
         )}
       </TooltipContent>
     </Tooltip>

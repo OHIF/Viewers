@@ -1,5 +1,4 @@
 import { hydrateStructuredReport } from '@ohif/extension-cornerstone-dicom-sr';
-import { ButtonEnums } from '@ohif/ui';
 import { measurementTrackingMode } from './promptBeginTracking';
 
 const RESPONSE = {
@@ -59,13 +58,13 @@ function _askTrackMeasurements(uiViewportDialogService, customizationService, vi
     const actions = [
       {
         id: 'no-hydrate',
-        type: ButtonEnums.type.secondary,
+        type: 'secondary',
         text: 'No',
         value: RESPONSE.CANCEL,
       },
       {
         id: 'yes-hydrate',
-        type: ButtonEnums.type.primary,
+        type: 'primary',
         text: 'Yes',
         value: RESPONSE.HYDRATE_REPORT,
       },

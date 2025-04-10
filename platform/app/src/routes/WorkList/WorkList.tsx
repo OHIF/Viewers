@@ -11,7 +11,6 @@ import filtersMeta from './filtersMeta.js';
 import { useAppConfig } from '@state';
 import { useDebounce, useSearchParams } from '@hooks';
 import { utils } from '@ohif/core';
-import { routerBasename } from '../../utils/publicUrl';
 
 import {
   StudyListExpandedRow,

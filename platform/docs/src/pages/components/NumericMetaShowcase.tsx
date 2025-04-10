@@ -176,12 +176,12 @@ const [dimensionGroupNumber, setDimensionGroupNumber] = useState(1);
             mode="stepper"
             min={-10}
             max={10}
-            step={0.1}
+            step={1}
             defaultValue={0}
           >
             <div className="flex items-center space-x-2">
               <Numeric.NumberStepper
-                className="w-[65px]"
+                className="w-[53px]"
                 direction="vertical"
               />
               <Numeric.Label>Zoom</Numeric.Label>

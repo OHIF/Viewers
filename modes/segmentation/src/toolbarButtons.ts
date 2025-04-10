@@ -308,6 +308,8 @@ const toolbarButtons: Button[] = [
     props: {
       icon: 'icon-tool-interpolation',
       label: 'Interpolate Labelmap',
+      tooltip:
+        'Automatically fill in missing slices between drawn segments. Use brush or threshold tools on at least two slices, then click to interpolate across slices. Works in any direction. Volume must be reconstructable.',
       evaluate: [
         'evaluate.cornerstone.segmentation',
         {
@@ -324,7 +326,8 @@ const toolbarButtons: Button[] = [
     props: {
       icon: 'icon-tool-bidirectional-segment',
       label: 'Segment Bidirectional',
-      tooltip: 'Finding the largest bidirectional measurement per lesion',
+      tooltip:
+        'Automatically detects the largest length and width across slices for the selected segment and displays a bidirectional measurement.',
       evaluate: {
         name: 'evaluate.cornerstone.segmentation',
         disabledText: 'Create new segmentation to enable this tool.',
@@ -338,7 +341,8 @@ const toolbarButtons: Button[] = [
     props: {
       icon: 'icon-tool-click-segment',
       label: 'One Click Segment',
-      tooltip: 'One Click Segment',
+      tooltip:
+        'Detects segmentable regions with one click. Hover for visual feedback—click when a plus sign appears to auto-segment the lesion.',
       evaluate: {
         name: 'evaluate.cornerstone.segmentation',
         toolNames: ['RegionSegmentPlus'],
@@ -353,7 +357,8 @@ const toolbarButtons: Button[] = [
     props: {
       icon: 'icon-labelmap-slice-propagation',
       label: 'Labelmap Assist',
-      tooltip: 'Labelmap Assist Based on Previous / Next Slice Data',
+      tooltip:
+        'Toggle AI assistance for segmenting nearby slices. After drawing on a slice, scroll to preview predictions. Press Enter to accept or Esc to skip.',
       evaluate: [
         'evaluate.cornerstoneTool.toggle',
         {
@@ -376,7 +381,7 @@ const toolbarButtons: Button[] = [
       icon: 'icon-marker-labelmap',
       label: 'Marker Guided Labelmap',
       tooltip:
-        'Use Positive and Negative Points to Guide Labelmap Creation, hit N to move to next slice',
+        'Use include/exclude markers to guide AI (SAM) segmentation. Click to place markers, Enter to accept results, Esc to reject, and N to go to the next slice while keeping markers.',
       evaluate: [
         {
           name: 'evaluate.cornerstone.segmentation',
@@ -389,12 +394,6 @@ const toolbarButtons: Button[] = [
         [ViewportGridService.EVENTS.VIEWPORTS_READY]: callbacks('MarkerLabelmap'),
       },
       options: [
-        {
-          name: 'Clear Markers',
-          type: 'button',
-          id: 'clear-markers',
-          commands: 'clearMarkersForMarkerLabelmap',
-        },
         {
           name: 'Marker Mode',
           type: 'radio',
@@ -416,6 +415,12 @@ const toolbarButtons: Button[] = [
               });
             }
           },
+        },
+        {
+          name: 'Clear Markers',
+          type: 'button',
+          id: 'clear-markers',
+          commands: 'clearMarkersForMarkerLabelmap',
         },
       ],
     },

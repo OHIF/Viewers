@@ -360,6 +360,10 @@ const connectMeasurementServiceToTools = (
   measurementService.subscribe(
     MEASUREMENT_UPDATED,
     ({ source, measurement, notYetUpdatedAtSource }) => {
+      if (!source) {
+        return;
+      }
+
       if (source.name !== CORNERSTONE_3D_TOOLS_SOURCE_NAME) {
         return;
       }

@@ -1,5 +1,3 @@
-import { ButtonEnums } from '@ohif/ui';
-
 const RESPONSE = {
   NO_NEVER: -1,
   CANCEL: 0,
@@ -49,13 +47,13 @@ function _askHydrate(
     const actions = [
       {
         id: 'no-hydrate',
-        type: ButtonEnums.type.secondary,
+        type: 'secondary',
         text: 'No',
         value: RESPONSE.CANCEL,
       },
       {
         id: 'yes-hydrate',
-        type: ButtonEnums.type.primary,
+        type: 'primary',
         text: 'Yes',
         value: RESPONSE.HYDRATE_SEG,
       },

@@ -1,7 +1,7 @@
-import React, { useEffect, useState, useCallback, useRef } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import PropTypes from 'prop-types';
 
-import { InvestigationalUseDialog } from '@ohif/ui';
+import { InvestigationalUseDialog } from '@ohif/ui-next';
 import { HangingProtocolService, CommandsManager } from '@ohif/core';
 import { useAppConfig } from '@state';
 import ViewerHeader from './ViewerHeader';
@@ -52,7 +52,9 @@ function ViewerLayout({
     leftPanelClosed,
     setLeftPanelClosed,
     rightPanelClosed,
-    setRightPanelClosed
+    setRightPanelClosed,
+    hasLeftPanels,
+    hasRightPanels
   );
 
   const handleMouseEnter = () => {

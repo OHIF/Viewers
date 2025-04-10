@@ -1,4 +1,3 @@
-import { ButtonEnums } from '@ohif/ui';
 import { measurementTrackingMode } from './promptBeginTracking';
 
 const RESPONSE = {
@@ -47,17 +46,17 @@ function _askShouldAddMeasurements(uiViewportDialogService, customizationService
     );
     const actions = [
       {
-        type: ButtonEnums.type.secondary,
+        type: 'secondary',
         text: 'Cancel',
         value: RESPONSE.CANCEL,
       },
       {
-        type: ButtonEnums.type.primary,
+        type: 'primary',
         text: 'Create new report',
         value: RESPONSE.CREATE_REPORT,
       },
       {
-        type: ButtonEnums.type.primary,
+        type: 'primary',
         text: 'Add to existing report',
         value: RESPONSE.ADD_SERIES,
       },
@@ -88,7 +87,7 @@ function _askSaveDiscardOrCancel(UIViewportDialogService, customizationService, 
     );
 
     const actions = [
-      { type: 'cancel', text: 'Cancel', value: RESPONSE.CANCEL },
+      { type: 'secondary', text: 'Cancel', value: RESPONSE.CANCEL },
       {
         type: 'secondary',
         text: 'Save',
