@@ -1,6 +1,6 @@
 import { Types } from '@ohif/core';
 
-const VOI_SYNC_GROUP = {
+export const VOI_SYNC_GROUP = {
   type: 'voi',
   id: 'mpr',
   source: true,
