@@ -1,0 +1,43 @@
+.XNATToolStrategiesDialog
+  display: flex
+  flex-direction: row
+  justify-content: center
+  align-items: center
+  background: var(--ui-gray-darkest)
+  color: var(--text-secondary-color)
+  border: 2px solid var(--active-color)
+  border-radius: 8px
+  //width: inherit
+  height: 60px
+  width: 24px
+  overflow: hidden
+
+  &.expanded
+    border: none
+    width: auto
+
+
+  .dialogHandle
+    display: flex
+    flex-direction: column
+    justify-content: center
+    align-items: center
+    width: 24px
+    height: 60px
+    opacity: 0.5
+    color: var(--ui-gray-darkest)
+    background: var(--active-color)
+
+    .expandIconContainer
+      display: flex
+      flex-direction: column
+      justify-content: center
+      align-items: center
+      margin-top: 5px
+      margin-bottom: -5px
+      padding: 3px
+      color: var(--text-secondary-color)
+      cursor: pointer !important
+      //opacity: 1.0
+      border-radius: 50%
+      background: var(--ui-gray-darkest)

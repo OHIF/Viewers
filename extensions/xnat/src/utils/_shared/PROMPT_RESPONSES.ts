@@ -1,0 +1,10 @@
+const RESPONSE = {
+  NO_NEVER: -1,
+  CANCEL: 0,
+  CREATE_REPORT: 1,
+  ADD_SERIES: 2,
+  SET_STUDY_AND_SERIES: 3,
+  NO_NOT_FOR_SERIES: 4,
+};
+
+export default RESPONSE;

@@ -1,0 +1,102 @@
+menu-width = 200px
+
+.XNATViewportMenu
+  position: absolute
+  top: 0
+  left: 0
+  color: var(--default-color)
+  cursor: pointer
+  z-index: 10
+  font-size: 12px
+
+  &.isExpanded
+    height: 155px
+    width: menu-width
+    background: var(--ui-gray-dark)
+    border-bottom-right-radius: 8px
+    //border-right: solid 1px var(--default-color)
+    //border-bottom: solid 1px var(--default-color)
+
+  .ViewportMenuRow
+    display: flex
+    align-items: center
+    height: 30px
+    width: menu-width
+    color: var(--default-color)
+    font-weight: normal
+
+    &.TitleRow
+      color: var(--active-color)
+      font-weight: bold
+
+    &:not(.TitleRow)
+      &:hover
+        //color: white //var(--active-color)
+        background: var(--ui-gray)
+        //border-left: solid 1px var(--active-color)
+        //svg
+        //  fill: var(--active-color)
+
+  .ViewportMenuIcon
+    display: flex
+    align-items: center
+    justify-content: center
+    margin: 0
+    padding: 7px
+    width: 30px
+    height: 30px
+    min-width: 30px
+    color: var(--default-color)
+    cursor: pointer
+
+    &.ActionIcon
+      margin-left: auto
+      //svg
+      //  fill: var(--active-color)
+
+    &.NavButton
+      outline: none
+      border: none
+      padding: 5px
+      background: var(--ui-gray)
+      border-bottom-right-radius: 10px
+
+      &:hover,
+      &.isExpanded
+        color: var(--active-color)
+        background: var(--ui-gray-dark)
+        font-weight: bolder
+        font-size: 14px
+        text-align: center
+        svg
+          fill: var(--active-color)
+
+    svg
+      margin: auto
+      width: 100%
+      height: 100%
+      fill: var(--default-color)
+      filter: drop-shadow(1px 1px #000)
+
+  .ViewportMenuLabel
+    display: inline-block
+
+  .ViewportMenuCheckbox
+    width: 12px
+    height: 12px
+    margin-left: auto
+    margin-right: 10px
+    fill: var(--active-color)
+    stroke: var(--active-color)
+
+  .XNATViewportMenuContent
+    position: absolute
+    list-style-type: none
+    margin: 0
+    padding: 0
+    top: 30px
+    left: 0
+    width: 100%
+    box-sizing: border-box
+    //background: var(--ui-gray)
+    text-align: left

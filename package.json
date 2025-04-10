@@ -28,6 +28,8 @@
     "build:dev": "lerna run build:dev --stream",
     "build:ci": "lerna run build:viewer:ci --stream",
     "build:qa": "lerna run build:viewer:qa --stream",
+    "build:xnat": "lerna run build:viewer:xnat --stream",
+    "dev:xnat": "lerna run dev:viewer:xnat --stream",
     "clean": "npx lerna run clean --stream",
     "clean:deep": "npx lerna run clean:deep --stream",
     "cli": "node ./platform/cli/src/index.js",

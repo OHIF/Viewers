@@ -26,7 +26,6 @@ const ImplementationVersionName = 'OHIF-VIEWER-2.0.0';
 const EXPLICIT_VR_LITTLE_ENDIAN = '1.2.840.10008.1.2.1';
 
 const metadataProvider = classes.MetadataProvider;
-
 export type DicomWebConfig = {
   /** Data source name */
   name: string;
@@ -108,6 +107,7 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
     generateWadoHeader;
   // Default to enabling bulk data retrieves, with no other customization as
   // this is part of hte base standard.
+  console.log('default createDicomWebApi');
   dicomWebConfig.bulkDataURI ||= { enabled: true };
 
   const implementation = {
@@ -122,6 +122,7 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
       dicomWebConfigCopy = JSON.parse(JSON.stringify(dicomWebConfig));
 
       getAuthorizationHeader = () => {
+        console.log('Default getAuthorizationHeader');
         const xhrRequestHeaders = {};
         const authHeaders = userAuthenticationService.getAuthorizationHeader();
         if (authHeaders && authHeaders.Authorization) {
@@ -131,6 +132,7 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
       };
 
       generateWadoHeader = () => {
+        console.log('Default generateWadoHeader');
         const authorizationHeader = getAuthorizationHeader();
         //Generate accept header depending on config params
         const formattedAcceptHeader = utils.generateAcceptHeader(
@@ -144,7 +146,7 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
           Accept: formattedAcceptHeader,
         };
       };
-
+      console.log('Default qidoConfig');
       qidoConfig = {
         url: dicomWebConfig.qidoRoot,
         staticWado: dicomWebConfig.staticWado,
@@ -153,7 +155,7 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
         errorInterceptor: errorHandler.getHTTPErrorHandler(),
         supportsFuzzyMatching: dicomWebConfig.supportsFuzzyMatching,
       };
-
+      console.log('Default wadoConfig');
       wadoConfig = {
         url: dicomWebConfig.wadoRoot,
         staticWado: dicomWebConfig.staticWado,
@@ -162,7 +164,7 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
         errorInterceptor: errorHandler.getHTTPErrorHandler(),
         supportsFuzzyMatching: dicomWebConfig.supportsFuzzyMatching,
       };
-
+      console.log('Default qidoDicomWebClient');
       // TODO -> Two clients sucks, but its better than 1000.
       // TODO -> We'll need to merge auth later.
       qidoDicomWebClient = dicomWebConfig.staticWado
@@ -177,6 +179,7 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
       studies: {
         mapParams: mapParams.bind(),
         search: async function (origParams) {
+          console.log('Default studies search');
           qidoDicomWebClient.headers = getAuthorizationHeader();
           const { studyInstanceUid, seriesInstanceUid, ...mappedParams } =
             mapParams(origParams, {
@@ -193,6 +196,7 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
       series: {
         // mapParams: mapParams.bind(),
         search: async function (studyInstanceUid) {
+          console.log('Default series search');
           qidoDicomWebClient.headers = getAuthorizationHeader();
           const results = await seriesInStudy(qidoDicomWebClient, studyInstanceUid);
 
@@ -202,6 +206,7 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
       },
       instances: {
         search: (studyInstanceUid, queryParameters) => {
+          console.log('Default instances search');
           qidoDicomWebClient.headers = getAuthorizationHeader();
           return qidoSearch.call(
             undefined,

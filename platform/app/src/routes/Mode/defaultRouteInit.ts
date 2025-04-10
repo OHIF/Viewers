@@ -18,6 +18,16 @@ export async function defaultRouteInit(
   hangingProtocolId,
   stageIndex
 ) {
+  console.log('Default route init called with:', { 
+    servicesManager, 
+    studyInstanceUIDs, 
+    dataSource, 
+    filters, 
+    appConfig,
+    hangingProtocolId, 
+    stageIndex
+  });
+
   const { displaySetService, hangingProtocolService, uiNotificationService, customizationService } =
     servicesManager.services;
   /**
@@ -50,6 +60,8 @@ export async function defaultRouteInit(
   const { unsubscribe: instanceAddedUnsubscribe } = DicomMetadataStore.subscribe(
     DicomMetadataStore.EVENTS.INSTANCES_ADDED,
     function ({ StudyInstanceUID, SeriesInstanceUID, madeInClient = false }) {
+      console.log(`DicomMetadataStore: Instances added for Study ${StudyInstanceUID}, Series ${SeriesInstanceUID}`);
+      
       const seriesMetadata = DicomMetadataStore.getSeries(StudyInstanceUID, SeriesInstanceUID);
 
       // checks if the series filter was used, if it exists
@@ -69,6 +81,8 @@ export async function defaultRouteInit(
         });
       }
 
+      // Before calling makeDisplaySets, log what we're passing in
+      console.log(`Making display sets with ${seriesMetadata.instances.length} instances`);
       displaySetService.makeDisplaySets(seriesMetadata.instances, { madeInClient });
     }
   );
@@ -77,7 +91,6 @@ export async function defaultRouteInit(
 
   log.time(Enums.TimingEnum.STUDY_TO_DISPLAY_SETS);
   log.time(Enums.TimingEnum.STUDY_TO_FIRST_IMAGE);
-
   const allRetrieves = studyInstanceUIDs.map(StudyInstanceUID =>
     dataSource.retrieve.series.metadata({
       StudyInstanceUID,
@@ -86,6 +99,54 @@ export async function defaultRouteInit(
       sortCriteria: customizationService.getCustomization('sortingCriteria'),
     })
   );
+  // const allRetrieves = studyInstanceUIDs.map(StudyInstanceUID => {
+  //   console.log(`Initiating retrieval for study: ${StudyInstanceUID}`);
+    
+  //   // Get the server configuration from DicomMetadataStore if available
+  //   const studies = DicomMetadataStore.getStudies();
+  //   const study = studies.find(s => s.StudyInstanceUID === StudyInstanceUID);
+    
+  //   // Create a safe retrieval request with required configuration
+  //   const retrieveParams = {
+  //     StudyInstanceUID,
+  //     filters,
+  //     returnPromises: true,
+  //     sortCriteria: customizationService.getCustomization('sortingCriteria'),
+  //   };
+    
+  //   // Add server info from study if available (for XNAT DICOMweb)
+  //   if (study && study.wadoRoot) {
+  //     console.log(`Using stored server config for study ${StudyInstanceUID}`);
+  //     retrieveParams.server = {
+  //       qidoRoot: study.wadoRoot,
+  //       wadoRoot: study.wadoRoot,
+  //       wadoUriRoot: study.wadoRoot,
+  //       enableStudyLazyLoad: false,
+  //       supportsFuzzyMatching: false,
+  //       supportsWildcard: true,
+  //     };
+  //   } else {
+  //     console.log(`No stored server config found for study ${StudyInstanceUID}, using defaults`);
+  //     // Fallback configuration
+  //     retrieveParams.server = {
+  //       enableStudyLazyLoad: false,
+  //       supportsFuzzyMatching: false,
+  //       supportsWildcard: true,
+  //     };
+  //   }
+    
+  //   const retrievePromise = dataSource.retrieve.series.metadata(retrieveParams);
+    
+  //   // Add a handler to track when retrieval starts
+  //   retrievePromise.then(result => {
+  //     console.log(`Retrieval for study ${StudyInstanceUID} succeeded:`, {
+  //       resultType: Array.isArray(result) ? 'array' : typeof result,
+  //       length: Array.isArray(result) ? result.length : 'n/a'
+  //     });
+  //   });
+    
+  //   return retrievePromise;
+  // });
 
   // log the error if this fails, otherwise it's so difficult to tell what went wrong...
   allRetrieves.forEach(retrieve => {

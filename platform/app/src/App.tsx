@@ -4,7 +4,8 @@ import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import i18n from '@ohif/i18n';
 import { I18nextProvider } from 'react-i18next';
-import { BrowserRouter } from 'react-router-dom';
+import { Router } from 'react-router-dom';
+import { createBrowserHistory } from 'history';
 
 import Compose from './routes/Mode/Compose';
 import {
@@ -26,6 +27,7 @@ import {
   ModalProvider,
   ViewportDialogProvider,
   UserAuthenticationProvider,
+  ErrorBoundary,
 } from '@ohif/ui-next';
 // Viewer Project
 // TODO: Should this influence study list?
@@ -60,18 +62,42 @@ function App({
     extensions: [],
   },
   defaultExtensions = [],
-  defaultModes = [],
+  defaultModes = ['@ohif/mode-xnat'],
 }) {
   const [init, setInit] = useState(null);
+  const history = createBrowserHistory();
+
+  console.log('Initial config:', config);
+  console.log('Default extensions:', defaultExtensions);
+  console.log('Default modes:', defaultModes);
+
   useEffect(() => {
     const run = async () => {
-      appInit(config, defaultExtensions, defaultModes).then(setInit).catch(console.error);
+      try {
+        console.log('Starting app initialization...');
+        const initResult = await appInit(config, defaultExtensions, defaultModes);
+        console.log('Init Results:', initResult);
+        console.log('App initialization complete:', {
+          modes: initResult.extensionManager.modes,
+          registeredModeIds: initResult.extensionManager.registeredModeIds,
+          defaultMode: config.defaultMode
+        });
+        setInit(initResult);
+      } catch (error) {
+        console.error('App initialization failed:', error);
+        console.log('Error details:', {
+          message: error.message,
+          stack: error.stack,
+          config: config
+        });
+      }
     };
 
     run();
   }, []);
 
   if (!init) {
+    console.log('Waiting for initialization...');
     return null;
   }
 
@@ -136,7 +162,9 @@ function App({
 
   // Should there be a generic call to init on the extension manager?
   customizationService.init(extensionManager);
-
+  console.log(modes);
+  console.log(dataSources);
+  console.log(routerBasename);
   // Use config to create routes
   const appRoutes = createRoutes({
     modes,
@@ -148,7 +176,7 @@ function App({
     routerBasename,
     showStudyList,
   });
-
+  console.log('Created routes:', appRoutes);
   if (oidc) {
     authRoutes = (
       <OpenIdConnectRoutes
@@ -159,13 +187,37 @@ function App({
     );
   }
 
+  console.log('Render state:', {
+    init,
+    routerBasename,
+    modes,
+    dataSources,
+    oidc,
+    showStudyList,
+    history: history.location
+  });
+
   return (
-    <CombinedProviders>
-      <BrowserRouter basename={routerBasename}>
-        {authRoutes}
-        {appRoutes}
-      </BrowserRouter>
-    </CombinedProviders>
+    <ErrorBoundary
+      context="App"
+      fallback={error => {
+        console.error("Application error:", error);
+        return (
+          <div style={{ padding: 20 }}>
+            <h2>Application Error</h2>
+            <pre>{JSON.stringify(error, null, 2)}</pre>
+            <button onClick={() => window.location.reload()}>Reload App</button>
+          </div>
+        );
+      }}
+    >
+      <CombinedProviders>
+        <Router location={history.location} navigator={history}>
+          {authRoutes}
+          {appRoutes}
+        </Router>
+      </CombinedProviders>
+    </ErrorBoundary>
   );
 }
 

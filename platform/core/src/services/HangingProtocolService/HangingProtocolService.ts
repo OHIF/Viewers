@@ -1510,7 +1510,7 @@ export default class HangingProtocolService extends PubSubService {
       const studyDisplaySets = this.displaySets.filter(
         it => it.StudyInstanceUID === study.StudyInstanceUID && !it?.unsupported
       );
-
+      console.log('ProtocolEngine::matchImages studyDisplaySets', studyDisplaySets);
       const studyMatchDetails = this.protocolEngine.findMatch(study, studyMatchingRules, {
         studies: this.studies,
         displaySets: studyDisplaySets,

@@ -1,7 +1,23 @@
-import type { Button } from '@ohif/core/types';
-import { ViewportGridService } from '@ohif/core';
+import { Button } from '@ohif/core/src/types';
+import { ToolbarService, ViewportGridService } from '@ohif/core';
+import { EVENTS } from '@cornerstonejs/core';
 
-const setToolActiveToolbar = {
+const { createButton } = ToolbarService;
+
+// Constants to avoid undefined reference errors
+const VIEWPORT_GRID_EVENTS = {
+  ACTIVE_VIEWPORT_ID_CHANGED: 'event::activeviewportidchanged',
+  VIEWPORTS_READY: 'event::viewportsReady',
+};
+
+const ReferenceLinesListeners = [
+  {
+    commandName: 'setSourceViewportForReferenceLinesTool',
+    context: 'CORNERSTONE',
+  },
+];
+
+export const setToolActiveToolbar = {
   commandName: 'setToolActiveToolbar',
   commandOptions: {
     toolGroupIds: ['default', 'mpr', 'SRToolGroup', 'volume3d'],
@@ -274,20 +290,48 @@ const toolbarButtons: Button[] = [
         toolNames: ['CircularBrush', 'SphereBrush'],
         disabledText: 'Create new segmentation to enable this tool.',
       },
-      options: [
-        {
-          name: 'Radius (mm)',
-          id: 'brush-radius',
-          type: 'range',
-          min: 0.5,
-          max: 99.5,
-          step: 0.5,
-          value: 25,
-          commands: {
-            commandName: 'setBrushSize',
-            commandOptions: { toolNames: ['CircularBrush', 'SphereBrush'] },
+      items: [
+        createButton({
+          id: 'Reset',
+          icon: 'tool-reset',
+          label: 'Reset View',
+          tooltip: 'Reset View',
+          commands: 'resetViewport',
+          evaluate: 'evaluate.action',
+        }),
+        createButton({
+          id: 'rotate-right',
+          icon: 'tool-rotate-right',
+          label: 'Rotate Right',
+          tooltip: 'Rotate +90',
+          commands: 'rotateViewportCW',
+          evaluate: 'evaluate.action',
+        }),
+        createButton({
+          id: 'flipHorizontal',
+          icon: 'tool-flip-horizontal',
+          label: 'Flip Horizontal',
+          tooltip: 'Flip Horizontally',
+          commands: 'flipViewportHorizontal',
+          evaluate: [
+            'evaluate.viewportProperties.toggle',
+            {
+              name: 'evaluate.viewport.supported',
+              unsupportedViewportTypes: ['volume3d'],
+            },
+          ],
+        }),
+        createButton({
+          id: 'ReferenceLines',
+          icon: 'tool-referenceLines',
+          label: 'Reference Lines',
+          tooltip: 'Show Reference Lines',
+          commands: 'toggleEnabledDisabledToolbar',
+          listeners: {
+            [VIEWPORT_GRID_EVENTS.ACTIVE_VIEWPORT_ID_CHANGED]: ReferenceLinesListeners,
+            [VIEWPORT_GRID_EVENTS.VIEWPORTS_READY]: ReferenceLinesListeners,
           },
-        },
+        }),
         {
           name: 'Shape',
           type: 'radio',

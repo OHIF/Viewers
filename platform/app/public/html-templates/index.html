@@ -28,7 +28,7 @@
     />
     <meta
       name="apple-mobile-web-app-title"
-      content="@ohif/app"
+      content="OHIF Viewer"
     />
     <meta
       name="msapplication-TileColor"
@@ -226,5 +226,9 @@
     <noscript> You need to enable JavaScript to run this app. </noscript>
     <div id="react-portal"></div>
     <div id="root"></div>
+    <script>
+      window.config = window.config || {};
+      window.PUBLIC_URL = '<%= PUBLIC_URL %>';
+    </script>
   </body>
 </html>

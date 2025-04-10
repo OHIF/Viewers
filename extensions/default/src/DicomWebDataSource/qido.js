@@ -107,7 +107,7 @@ async function search(dicomWebClient, studyInstanceUid, seriesInstanceUid, query
     studyInstanceUid: undefined,
     queryParams: queryParameters,
   });
-
+  console.log('search: searchResult', searchResult);
   return searchResult;
 }
 
@@ -132,7 +132,7 @@ export default function searchStudies(server, filter) {
   const options = {
     queryParams,
   };
-
+  console.log('searchStudies: options', options);
   return dicomWeb.searchForStudies(options).then(resultDataToStudies);
 }
 

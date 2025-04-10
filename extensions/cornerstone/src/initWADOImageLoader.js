@@ -28,6 +28,7 @@ export default function initWADOImageLoader(
     beforeSend: function (xhr) {
       //TODO should be removed in the future and request emitted by DicomWebDataSource
       const sourceConfig = extensionManager.getActiveDataSource()?.[0].getConfig() ?? {};
+      console.log('beforeSend');
       const headers = userAuthenticationService.getAuthorizationHeader();
       const acceptHeader = utils.generateAcceptHeader(
         sourceConfig.acceptHeader,

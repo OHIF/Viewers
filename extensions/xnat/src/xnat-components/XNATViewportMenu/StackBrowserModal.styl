@@ -1,0 +1,37 @@
+.StackBrowserModal
+  display: flex
+  display: -webkit-flex
+  display: -ms-flexbox
+  flex-direction: column
+  justify-content: space-between
+  max-height: 450px
+  width: 400px
+
+  .StackBrowserModalRow
+    margin: 0 0 15px 0
+    display: flex
+    flex-direction: row
+    justify-content: center
+    align-items: center
+
+    label
+      color: var(--text-secondary-color)
+      margin-right: 5px
+
+    .StackBrowserModalSelect
+      background-color: transparent
+      border: 1px solid var(--ui-border-color)
+      border-radius: 5px
+      padding: 0 0 0 0
+      color: white
+      outline: none
+      width: 100%
+      height: 22px
+      max-width: 260px
+      font-size: 13px
+
+      option, optgroup
+        background-color: var(--ui-gray)
+        color: white
+      optgroup
+        color: var(--text-secondary-color)

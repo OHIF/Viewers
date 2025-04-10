@@ -1,5 +1,6 @@
 import React from 'react';
 import ModeRoute from '@routes/Mode';
+import publicUrl from '../utils/publicUrl';
 
 /*
   Routes uniquely define an entry point to:
@@ -38,11 +39,10 @@ export default function buildModeRoutes({
       dataSourceNames.push(sourceName);
     }
   });
-
   modes.forEach(mode => {
     // todo: for each route. add route to path.
     dataSourceNames.forEach(dataSourceName => {
-      const path = `${mode.routeName}/${dataSourceName}`;
+      const path = `${publicUrl}${mode.routeName}/${dataSourceName}`;
 
       // TODO move up.
       const children = () => (
@@ -55,7 +55,6 @@ export default function buildModeRoutes({
           hotkeysManager={hotkeysManager}
         />
       );
-
       routes.push({
         path,
         children,
@@ -65,7 +64,7 @@ export default function buildModeRoutes({
 
     // Add active DataSource route.
     // This is the DataSource route for the active data source defined in ExtensionManager.getActiveDataSource
-    const path = `${mode.routeName}`;
+    const path = `${publicUrl}${mode.routeName}`;
 
     // TODO move up.
     const children = () => (

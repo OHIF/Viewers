@@ -1,0 +1,25 @@
+.xnat-color-map-item {
+  display: flex;
+  justify-content: start;
+  margin: 0;
+}
+
+.xnat-color-map-item .colormap-meta {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  overflow: hidden;
+}
+
+.xnat-color-map-item .colormap-meta-title {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  color: white;
+  max-width: calc(100% - 30px);
+}
+
+.xnat-color-map-item .colormap-meta-description {
+  font-size: 12px;
+  color: var(--text-secondary-color);
+}

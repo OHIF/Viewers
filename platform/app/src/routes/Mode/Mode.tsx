@@ -11,6 +11,7 @@ import { history } from '../../utils/history';
 import loadModules from '../../pluginImports';
 import { defaultRouteInit } from './defaultRouteInit';
 import { updateAuthServiceAndCleanUrl } from './updateAuthServiceAndCleanUrl';
+import SessionRouter from '@ohif/extension-xnat/src/XNATNavigation/helpers/SessionRouter.js';
 
 const { getSplitParam } = utils;
 
@@ -31,6 +32,13 @@ export default function ModeRoute({
   const params = useParams();
   // The URL's query search parameters where the keys casing is maintained
   const query = useSearchParams();
+
+  console.log('Mode initialization:', {
+    modeId: mode?.id,
+    modeName: mode?.displayName,
+    routeName: mode?.routeName,
+    location: location.pathname
+  });
 
   mode?.onModeInit?.({
     servicesManager,
@@ -120,15 +128,71 @@ export default function ModeRoute({
     }
 
     // Todo: this should not be here, data source should not care about params
-    const initializeDataSource = async (params, query) => {
-      await dataSource.initialize({
-        params,
-        query,
-      });
-      setStudyInstanceUIDs(dataSource.getStudyInstanceUIDs({ params, query }));
+    // Add or update the initializeDataSource function in XNATModeInit.js (around line 100)
+    const initializeDataSource = async ({
+      servicesManager,
+      extensionManager,
+    }) => {
+      try {
+        // Extract URL parameters
+        const params = new URLSearchParams(window.location.search);
+        const projectId = params.get('projectId') || '';
+        const experimentId = params.get('experimentId') || '';
+        const subjectId = params.get('subjectId') || '';
+        const experimentLabel = params.get('experimentLabel') || '';
+
+        console.log('Initializing data source with params:', {
+          projectId,
+          experimentId,
+          subjectId,
+          experimentLabel
+        });
+
+        // Create and use SessionRouter properly with string parameters
+        if (projectId && experimentId) {
+          const sessionRouter = new SessionRouter(
+            projectId,
+            projectId,
+            subjectId,
+            experimentId,
+            experimentLabel
+          );
+
+          try {
+            // Call go() and wait for the result
+            const studyInstanceUID = await sessionRouter.go();
+            console.log('SessionRouter returned study UID:', studyInstanceUID);
+
+            if (studyInstanceUID) {
+              // Force update the studyInstanceUIDs state
+              setStudyInstanceUIDs([studyInstanceUID]);
+              return [studyInstanceUID];
+            }
+          } catch (routerError) {
+            console.error('Failed to get study UIDs from session router:', routerError);
+          }
+        } else {
+          console.warn('Missing required projectId or experimentId parameters in URL');
+        }
+
+        return [];
+      } catch (error) {
+        console.error('Error in initializeDataSource:', error);
+        return [];
+      }
     };
 
-    initializeDataSource(params, query);
+    // Ensure we pass the right parameters to initializeDataSource
+    initializeDataSource({
+      servicesManager,
+      extensionManager,
+    }).then(async (studyInstanceUIDs) => {
+      if (isMounted.current) {
+        setStudyInstanceUIDs(studyInstanceUIDs);
+        setExtensionDependenciesLoaded(true);
+      }
+    });
+
     return () => {
       layoutTemplateData.current = null;
     };
@@ -140,12 +204,13 @@ export default function ModeRoute({
     }
 
     const retrieveLayoutData = async () => {
+      console.log('retrieveLayoutData');
       const layoutData = await route.layoutTemplate({
         location,
         servicesManager,
         studyInstanceUIDs,
       });
-
+      console.log('layoutData', layoutData);
       if (isMounted.current) {
         const { leftPanels = [], rightPanels = [], ...layoutProps } = layoutData.props;
 
@@ -202,8 +267,8 @@ export default function ModeRoute({
       const stageIndex = Array.isArray(hangingProtocolIdToUse)
         ? -1
         : hangingProtocolService.getStageIndex(hangingProtocolIdToUse, {
-            stageId: runTimeStageId || undefined,
-          });
+          stageId: runTimeStageId || undefined,
+        });
       // Ensure that the stage index is never negative
       // If stageIndex is negative (e.g., if stage wasn't found), use 0 as the default
       const stageIndexToUse = Math.max(0, stageIndex);
@@ -330,6 +395,31 @@ export default function ModeRoute({
     refresh,
   ]);
 
+  useEffect(() => {
+    console.log('Mode effect running with params:', {
+      dataSourceName,
+      studyInstanceUIDs,
+      ExtensionDependenciesLoaded,
+      layoutTemplateData: !!layoutTemplateData.current
+    });
+
+    if (!layoutTemplateData.current || !ExtensionDependenciesLoaded || !studyInstanceUIDs?.length) {
+      console.log('Mode effect early return due to:', {
+        hasLayoutTemplate: !!layoutTemplateData.current,
+        extensionsLoaded: ExtensionDependenciesLoaded,
+        hasStudyUIDs: !!studyInstanceUIDs?.length,
+        studyUIDs: studyInstanceUIDs
+      });
+      return;
+    }
+
+    // Rest of the effect code...
+  }, [studyInstanceUIDs, ExtensionDependenciesLoaded]);
+
+  useEffect(() => {
+    console.log('Mode effect running with studyInstanceUIDs:', studyInstanceUIDs);
+  }, [studyInstanceUIDs]);
+
   if (!studyInstanceUIDs || !layoutTemplateData.current || !ExtensionDependenciesLoaded) {
     return null;
   }
@@ -356,6 +446,13 @@ export default function ModeRoute({
   const LayoutComponent = getLayoutComponent({
     ...layoutTemplateData.current.props,
     ViewportGridComp: ViewportGridWithDataSource,
+  });
+
+  console.log('Mode Route Debug:', {
+    mode,
+    location: location.pathname,
+    routes: mode.routes,
+    component: mode.routes[0].component
   });
 
   return (

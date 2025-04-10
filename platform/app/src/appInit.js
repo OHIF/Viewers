@@ -90,7 +90,7 @@ async function appInit(appConfigOrFunc, defaultExtensions, defaultModes) {
    */
   const loadedExtensions = await loadModules([...defaultExtensions, ...appConfig.extensions]);
   await extensionManager.registerExtensions(loadedExtensions, appConfig.dataSources);
-
+  console.log({ loadedExtensions })
   // TODO: We no longer use `utils.addServer`
   // TODO: We no longer init webWorkers at app level
   // TODO: We no longer init the user Manager
@@ -100,6 +100,16 @@ async function appInit(appConfigOrFunc, defaultExtensions, defaultModes) {
   }
 
   const loadedModes = await loadModules([...(appConfig.modes || []), ...defaultModes]);
+
+  // Add debugging for each mode's routes
+  loadedModes.forEach(mode => {
+    if (mode && mode.routes) {
+      console.log(`Routes for mode ${mode.id}:`, mode.routes);
+      mode.routes.forEach(route => {
+        console.log(`- Route: ${route.path}, Component:`, route.component ? 'Defined' : 'Undefined');
+      });
+    }
+  });
 
   // This is the name for the loaded instance object
   appConfig.loadedModes = [];
@@ -117,7 +127,6 @@ async function appInit(appConfigOrFunc, defaultExtensions, defaultModes) {
         appConfig.modesConfiguration && appConfig.modesConfiguration[id]
           ? appConfig.modesConfiguration[id]
           : {};
-
       mode = await mode.modeFactory({ modeConfiguration, loadModules });
     }
 
