@@ -83,7 +83,10 @@ function PanelMeasurementTableTracking(props) {
   );
 
   return (
-    <div data-cy="trackedMeasurements-panel">
+    <div
+      data-cy="trackedMeasurements-panel"
+      className="ohif-scrollbar"
+    >
       <PanelMeasurement
         measurementFilter={measurementFilter}
         emptyComponent={EmptyComponent}
