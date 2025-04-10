@@ -177,9 +177,9 @@ module.exports = {
             position: 'left',
           },
           {
-            to: '/migration-guide/3p8-to-3p9/',
+            to: '/migration-guide/3p9-to-3p10/',
             //activeBaseRegex: '(^/help$)|(/help)',
-            label: '3.9 Migration Guides',
+            label: '3.10 Migration Guides',
             position: 'left',
           },
           {
