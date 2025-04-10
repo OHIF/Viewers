@@ -1,17 +1,13 @@
-/**
- * Copyright (c) Facebook, Inc. and its affiliates.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- */
-
-const path = require('path');
-
 // read this text file
 const fs = require('fs');
 const versions = fs.readFileSync('../../version.txt', 'utf8').split('\n');
 
 const ArchivedVersionsDropdownItems = [
+  {
+    version: '3.9',
+    href: 'https://v3p9.docs.ohif.org',
+    isExternal: true,
+  },
   {
     version: '3.8.5',
     href: 'https://v3p8.docs.ohif.org',
@@ -128,11 +124,10 @@ module.exports = {
         // respectPrefersColorScheme: true,
       },
       announcementBar: {
-        id: 'cornerstone20_ohif_anniversary',
+        id: 'ohif310_segmentation_ui_update',
         content:
-          '🎉 Celebrating OHIF’s 10-Year Anniversary with Cornerstone 2.0! Explore enhanced segmentation, new video & microscopy viewports, UI/UX upgrades, and blazing fast prefetching. Dive into the release notes <a target="_blank" rel="noopener noreferrer" href="https://ohif.org/release-notes/3p9/">here</a>! 🚀',
+          '🛠️ OHIF 3.10 is here! Explore powerful new segmentation tools, including local AI-assisted workflows, real-time 3D GrowCut, segment statistics, and undo/redo. Plus, enjoy a polished new UI library and smoother interactions across the board. Read the release notes <a target="_blank" rel="noopener noreferrer" href="https://ohif.org/release-notes/3p10/">here</a>! 🔍✨',
       },
-
       prism: {
         theme: require('prism-react-renderer').themes.github,
         darkTheme: require('prism-react-renderer').themes.dracula,
