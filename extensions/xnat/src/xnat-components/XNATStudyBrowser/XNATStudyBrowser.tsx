@@ -18,7 +18,7 @@ interface XNATStudyBrowserProps {
   supportsDrag?: boolean;
 }
 
-function XNATStudyBrowser({
+export default function XNATStudyBrowser({
   studies,
   onThumbnailClick,
   onThumbnailDoubleClick,
@@ -50,4 +50,3 @@ function XNATStudyBrowser({
   );
 }
 
-export default XNATStudyBrowser; 

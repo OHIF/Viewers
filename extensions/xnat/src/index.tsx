@@ -22,9 +22,9 @@ import { useToggleHangingProtocolStore } from './stores/useToggleHangingProtocol
 import ViewportGrid from '@ohif/ui/src/components/ViewportGrid';
 
 // Export the study browser components
-import { XNATStudyBrowser } from './xnat-components/XNATStudyBrowser/XNATStudyBrowser';
-import { XNATStudyItem } from './xnat-components/XNATStudyBrowser/XNATStudyItem';
-import { XNATThumbnail } from './xnat-components/XNATStudyBrowser/XNATThumbnail';
+import XNATStudyBrowser from './xnat-components/XNATStudyBrowser/XNATStudyBrowser';
+import XNATStudyItem from './xnat-components/XNATStudyBrowser/XNATStudyItem';
+import XNATThumbnail from './xnat-components/XNATStudyBrowser/XNATThumbnail';
 
 const xnatExtension: Types.Extensions.Extension = {
   /**
