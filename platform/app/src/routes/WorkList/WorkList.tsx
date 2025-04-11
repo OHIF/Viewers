@@ -40,6 +40,8 @@ import { Types } from '@ohif/ui';
 
 import { preserveQueryParameters, preserveQueryStrings } from '../../utils/preserveQueryParameters';
 
+import { history } from '../../utils/history';
+
 const PatientInfoVisibility = Types.PatientInfoVisibility;
 
 const { sortBySeriesDate } = utils;
@@ -60,6 +62,7 @@ function WorkList({
   onRefresh,
   servicesManager,
 }: withAppTypes) {
+  history.navigate = useNavigate(); // Expose the react router dom navigation.
   const { hotkeyDefinitions, hotkeyDefaults } = hotkeysManager;
   const { show, hide } = useModal();
   const { t } = useTranslation();
