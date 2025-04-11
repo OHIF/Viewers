@@ -12,13 +12,30 @@ window.config = {
         },
         React.createElement('img', {
           src: '/v3/IDC-Logo-WHITE.svg',
-          className: 'w-14 h-14',
+          className: 'w-15 h-14 p-1',
         })
       );
     },
   },
   investigationalUseDialog: {
     option: 'never',
+  },
+  idcDownloadCommandsDialog: {
+    description: 'Follow the instructions below to download the study or series:',
+    instructions: [
+      {
+        command: 'pip install idc-index --upgrade',
+        label: 'First, install the idc-index python package:',
+      },
+      {
+        command: `idc download {{StudyInstanceUID}}`,
+        label: 'Then, to download the whole study, run:',
+      },
+      {
+        command: `idc download {{SeriesInstanceUID}}`,
+        label: "Or, to download just the active viewport's series, run:",
+      },
+    ],
   },
   extensions: [],
   modes: [],
