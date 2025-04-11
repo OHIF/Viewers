@@ -63,7 +63,7 @@ const Thumbnail = ({
       <div
         className={classnames(
           'flex h-full w-full flex-col items-center justify-center gap-[2px] p-[4px]',
-          isActive && 'bg-popover'
+          isActive && 'bg-popover rounded-md'
         )}
       >
         <div className="h-[114px] w-[128px]">
@@ -76,7 +76,7 @@ const Thumbnail = ({
                 crossOrigin="anonymous"
               />
             ) : (
-              <div className="bg-background h-[114px] w-[128px] rounded"></div>
+              <div className="bg-background h-[114px] w-[128px] rounded-md"></div>
             )}
 
             {/* bottom left */}
@@ -167,13 +167,13 @@ const Thumbnail = ({
       <div
         className={classnames(
           'flex h-full w-full items-center justify-between pr-[8px] pl-[8px] pt-[4px] pb-[4px]',
-          isActive && 'bg-popover'
+          isActive && 'bg-popover rounded-md'
         )}
       >
         <div className="relative flex h-[32px] w-full items-center gap-[8px] overflow-hidden">
           <div
             className={classnames(
-              'h-[32px] w-[4px] min-w-[4px] rounded-[2px]',
+              'h-[32px] w-[4px] min-w-[4px] rounded-md',
               isActive || isHydratedForDerivedDisplaySet ? 'bg-highlight' : 'bg-primary/65',
               loadingProgress && loadingProgress < 1 && 'bg-primary/25'
             )}
@@ -253,7 +253,7 @@ const Thumbnail = ({
     <div
       className={classnames(
         className,
-        'bg-muted hover:bg-primary/30 group flex cursor-pointer select-none flex-col rounded outline-none',
+        'bg-muted hover:bg-primary/30 group flex cursor-pointer select-none flex-col rounded-md outline-none',
         viewPreset === 'thumbnails' && 'h-[170px] w-[135px]',
         viewPreset === 'list' && 'h-[40px] w-full'
       )}
