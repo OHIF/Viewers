@@ -62,7 +62,7 @@ const Thumbnail = ({
     return (
       <div
         className={classnames(
-          'flex h-full w-full flex-col items-center justify-center gap-[2px] p-[2px]',
+          'flex h-full w-full flex-col items-center justify-center gap-[2px] p-[4px]',
           isActive && 'bg-popover'
         )}
       >
@@ -72,15 +72,15 @@ const Thumbnail = ({
               <img
                 src={imageSrc}
                 alt={imageAltText}
-                className="h-[114px] w-[128px] rounded"
+                className="h-[114px] w-[128px] rounded-md"
                 crossOrigin="anonymous"
               />
             ) : (
               <div className="bg-background h-[114px] w-[128px] rounded"></div>
             )}
 
-            {/* bottom left */}
-            <div className="absolute bottom-0 left-0 flex h-[14px] items-center gap-[4px] rounded-tr pt-[10px] pb-[8px] pr-[6px] pl-[3px]">
+            {/* top left */}
+            <div className="absolute top-0 left-0 flex h-[14px] items-center gap-[4px] rounded-br pt-[8px] pb-[10px] pr-[6px] pl-[3px]">
               <div
                 className={classnames(
                   'h-[10px] w-[10px] rounded-[2px]',
