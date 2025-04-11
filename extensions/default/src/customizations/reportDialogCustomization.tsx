@@ -1,5 +1,5 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import { InputDialog, cn } from '@ohif/ui-next';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { InputDialog } from '@ohif/ui-next';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@ohif/ui-next';
 import { useSystem } from '@ohif/core';
 
@@ -54,19 +54,19 @@ function ReportDialog({ dataSources, hide, onSave, onCancel }: ReportDialogProps
     setReportName(newReportName);
   }, [selectedSeries, seriesOptions]);
 
-  const handleSave = () => {
+  const handleSave = useCallback(() => {
     onSave({
       reportName,
       dataSource: selectedDataSource,
       series: selectedSeries,
     });
     hide();
-  };
+  }, [selectedDataSource, selectedSeries, reportName, hide, onSave]);
 
-  const handleCancel = () => {
+  const handleCancel = useCallback(() => {
     onCancel();
     hide();
-  };
+  }, [onCancel, hide]);
 
   const showDataSourceSelect = dataSources?.length > 1;
 

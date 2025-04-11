@@ -40,7 +40,7 @@ async function promptSaveReport({ servicesManager, commandsManager, extensionMan
     });
 
     if (promptResult.action === PROMPT_RESPONSES.CREATE_REPORT) {
-      const dataSources = extensionManager.getDataSources();
+      const dataSources = extensionManager.getDataSources(promptResult.dataSourceName);
       const dataSource = dataSources[0];
       const measurementData = measurementService.getMeasurements(measurementFilter);
 
