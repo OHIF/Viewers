@@ -79,8 +79,8 @@ const Thumbnail = ({
               <div className="bg-background h-[114px] w-[128px] rounded"></div>
             )}
 
-            {/* top left */}
-            <div className="absolute top-0 left-0 flex h-[14px] items-center gap-[4px] rounded-br pt-[8px] pb-[10px] pr-[6px] pl-[3px]">
+            {/* bottom left */}
+            <div className="absolute bottom-0 left-0 flex h-[14px] items-center gap-[4px] rounded-tr pt-[10px] pb-[10px] pr-[6px] pl-[5px]">
               <div
                 className={classnames(
                   'h-[10px] w-[10px] rounded-[2px]',
@@ -135,7 +135,7 @@ const Thumbnail = ({
             </div>
           </div>
         </div>
-        <div className="flex h-[52px] w-[128px] flex-col justify-end">
+        <div className="flex h-[52px] w-[128px] flex-col justify-start pt-px">
           <Tooltip>
             <TooltipContent>{description}</TooltipContent>
             <TooltipTrigger>
@@ -178,7 +178,7 @@ const Thumbnail = ({
               loadingProgress && loadingProgress < 1 && 'bg-primary/25'
             )}
           ></div>
-          <div className="flex h-full w-[calc(100%-12px)] flex-col">
+          <div className="flex h-full w-[calc(100%-12px)] flex-col justify-start">
             <div className="flex items-center gap-[7px]">
               <div className="text-[13px] font-semibold text-white">{modality}</div>
               <Tooltip>
