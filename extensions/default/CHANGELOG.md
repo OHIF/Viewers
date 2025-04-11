@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.11.0-beta.2](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.1...v3.11.0-beta.2) (2025-04-11)
+
+
+### Bug Fixes
+
+* make datasource selection work ([#4944](https://github.com/OHIF/Viewers/issues/4944)) ([a9b180c](https://github.com/OHIF/Viewers/commit/a9b180c5d427ec5a6823991cf0c6604be7af1cc2))
+
+
+
+
+
 # [3.11.0-beta.1](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.0...v3.11.0-beta.1) (2025-04-10)
 
 **Note:** Version bump only for package @ohif/extension-default
