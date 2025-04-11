@@ -203,7 +203,7 @@ export function createRectangleROI(viewport, imageMetadata, imageId, data, image
       },
 
       isVisible: !data.hide,
-      isLocked: imageStatus,
+      isLocked: imageStatus || data.locked,
     });
   } catch (error) {
     console.error('Error adding measurement:', error);
@@ -258,7 +258,7 @@ export function createPoint(viewport, imageMetadata, imageId, data, imageStatus)
         },
       },
       isVisible: !data.hide,
-      isLocked: imageStatus,
+      isLocked: imageStatus || data.locked,
     });
   } catch (error) {
     console.error('Error adding measurement:', error);
@@ -334,7 +334,7 @@ export function createLength(viewport, imageMetadata, imageId, data, imageStatus
         },
       },
       isVisible: !data.hide,
-      isLocked: imageStatus,
+      isLocked: imageStatus || data.locked,
     });
   } catch (error) {
     console.error('Error adding measurement:', error);
@@ -392,7 +392,7 @@ export function createAngleROI(viewport, imageMetadata, imageId, data, imageStat
         },
       },
       isVisible: !data.hide,
-      isLocked: imageStatus,
+      isLocked: imageStatus || data.locked,
     });
   } catch (error) {
     console.error('Error adding measurement:', error);
