@@ -66,7 +66,7 @@ function WrappedXNATStudyBrowserPanel({ extensionManager, servicesManager, comma
   const { displaySetService, hangingProtocolService } = servicesManager.services;
   
   // Get viewport info from OHIF hooks
-  const { StudyInstanceUIDs } = useImageViewer();
+  const { StudyInstanceUIDs = [] } = useImageViewer();
   const [{ activeViewportId, isHangingProtocolLayout }, viewportGridService] = useViewportGrid();
   
   // State for our study data
