@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.11.0-beta.3](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.2...v3.11.0-beta.3) (2025-04-11)
+
+
+### Bug Fixes
+
+* enable measurements panel scroll ([#4943](https://github.com/OHIF/Viewers/issues/4943)) ([7a36eba](https://github.com/OHIF/Viewers/commit/7a36eba67c6365f3f8cabb53a31ae1eee96069e8))
+
+
+
+
+
 # [3.11.0-beta.2](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.1...v3.11.0-beta.2) (2025-04-11)
 
 **Note:** Version bump only for package @ohif/extension-measurement-tracking
