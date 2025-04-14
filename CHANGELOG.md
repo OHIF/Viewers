@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.11.0-beta.5](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.4...v3.11.0-beta.5) (2025-04-14)
+
+
+### Bug Fixes
+
+* making onnxruntime work with rsbuild ([#4957](https://github.com/OHIF/Viewers/issues/4957)) ([4a87302](https://github.com/OHIF/Viewers/commit/4a87302f06378649680370f10dd942d31c1c61fb))
+
+
+
+
+
 # [3.11.0-beta.4](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.3...v3.11.0-beta.4) (2025-04-11)
 
 **Note:** Version bump only for package ohif-monorepo-root
