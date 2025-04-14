@@ -1,12 +1,11 @@
 import React, { ReactNode } from 'react';
-import { nonWLModalities } from './WindowLevelActionMenu';
+import { nonWLModalities, WindowLevelActionMenuProps } from './WindowLevelActionMenu';
+import { useSystem } from '@ohif/core';
 
-export function getWindowLevelActionMenu({
+function WindowLevelActionMenu({
   viewportId,
   element,
   displaySets,
-  servicesManager,
-  commandsManager,
   verticalDirection,
   horizontalDirection,
 }: withAppTypes<{
@@ -14,6 +13,7 @@ export function getWindowLevelActionMenu({
   element: HTMLElement;
   displaySets: AppTypes.DisplaySet[];
 }>): ReactNode {
+  const { servicesManager } = useSystem();
   const { customizationService } = servicesManager.services;
 
   const presets = customizationService.getCustomization('cornerstone.windowLevelPresets');
@@ -46,12 +46,14 @@ export function getWindowLevelActionMenu({
       presets={displaySetPresets}
       verticalDirection={verticalDirection}
       horizontalDirection={horizontalDirection}
-      commandsManager={commandsManager}
-      servicesManager={servicesManager}
       colorbarProperties={colorbarProperties}
       displaySets={displaySets}
       volumeRenderingPresets={volumeRenderingPresets}
       volumeRenderingQualityRange={volumeRenderingQualityRange}
     />
   );
+}
+
+export function getWindowLevelActionMenu(props: WindowLevelActionMenuProps) {
+  return <WindowLevelActionMenu {...props} />;
 }

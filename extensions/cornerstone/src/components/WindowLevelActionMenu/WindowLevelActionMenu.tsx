@@ -15,7 +15,7 @@ import { VolumeRenderingOptions } from './VolumeRenderingOptions';
 import { ViewportPreset } from '../../types/ViewportPresets';
 import { VolumeViewport3D } from '@cornerstonejs/core';
 import { utilities } from '@cornerstonejs/core';
-
+import { useSystem } from '@ohif/core';
 export const nonWLModalities = ['SR', 'SEG', 'SM', 'RTSTRUCT', 'RTPLAN', 'RTDOSE'];
 
 export type WindowLevelActionMenuProps = {
@@ -34,8 +34,6 @@ export function WindowLevelActionMenu({
   presets,
   verticalDirection,
   horizontalDirection,
-  commandsManager,
-  servicesManager,
   colorbarProperties,
   displaySets,
   volumeRenderingPresets,
@@ -48,6 +46,7 @@ export function WindowLevelActionMenu({
     colorbarTickPosition,
     width: colorbarWidth,
   } = colorbarProperties;
+  const { servicesManager } = useSystem();
   const { colorbarService, cornerstoneViewportService } = servicesManager.services;
   const viewportInfo = cornerstoneViewportService.getViewportInfo(viewportId);
   const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);

@@ -1,31 +1,24 @@
-import React, { ReactNode, useEffect, useState } from 'react';
+import React, { ReactNode } from 'react';
 import { Button, Icons, Popover, PopoverContent, PopoverTrigger } from '@ohif/ui-next';
-import ViewportSegmentationMenu from './ViewportSegmentationMenu';
+import ViewportDataOverlayMenu from './ViewportDataOverlayMenu';
 import classNames from 'classnames';
-import { useSegmentations } from '../../hooks/useSegmentations';
+import { useSystem } from '@ohif/core';
 
-export function ViewportSegmentationMenuWrapper({
+export function ViewportDataOverlayMenuWrapper({
   viewportId,
   displaySets,
-  servicesManager,
-  commandsManager,
   location,
 }: withAppTypes<{
   viewportId: string;
   element: HTMLElement;
 }>): ReactNode {
+  const { servicesManager } = useSystem();
   const { viewportActionCornersService, viewportGridService } = servicesManager.services;
-
-  const segmentations = useSegmentations({ servicesManager });
 
   const activeViewportId = viewportGridService.getActiveViewportId();
   const isActiveViewport = viewportId === activeViewportId;
 
   const { align, side } = getAlignAndSide(viewportActionCornersService, location);
-
-  if (!segmentations?.length) {
-    return null;
-  }
 
   return (
     <Popover>
@@ -52,12 +45,10 @@ export function ViewportSegmentationMenuWrapper({
         alignOffset={-15}
         sideOffset={5}
       >
-        <ViewportSegmentationMenu
+        <ViewportDataOverlayMenu
           className="w-full"
           viewportId={viewportId}
           displaySets={displaySets}
-          servicesManager={servicesManager}
-          commandsManager={commandsManager}
         />
       </PopoverContent>
     </Popover>

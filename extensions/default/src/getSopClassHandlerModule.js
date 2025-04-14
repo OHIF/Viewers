@@ -99,6 +99,7 @@ const makeDisplaySet = instances => {
     averageSpacingBetweenFrames: averageSpacingBetweenFrames || null,
     isDynamicVolume,
     dynamicVolumeInfo,
+    label: instance.SeriesDescription || `Series ${instance.SeriesNumber} - ${instance.Modality}`,
   });
 
   // Sort the images in this series if needed

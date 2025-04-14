@@ -311,9 +311,7 @@ const OHIFCornerstoneViewport = React.memo(
       const windowLevelActionMenu = customizationService.getCustomization(
         'viewportActionMenu.windowLevelActionMenu'
       );
-      const segmentationOverlay = customizationService.getCustomization(
-        'viewportActionMenu.segmentationOverlay'
-      );
+      const dataOverlay = customizationService.getCustomization('viewportActionMenu.dataOverlay');
 
       if (windowLevelActionMenu?.enabled) {
         viewportActionCornersService.addComponent({
@@ -323,8 +321,6 @@ const OHIFCornerstoneViewport = React.memo(
             viewportId,
             element: elementRef.current,
             displaySets,
-            servicesManager,
-            commandsManager,
             location: windowLevelActionMenu.location,
             verticalDirection: AllInOneMenu.VerticalDirection.TopToBottom,
             horizontalDirection: AllInOneMenu.HorizontalDirection.RightToLeft,
@@ -333,19 +329,17 @@ const OHIFCornerstoneViewport = React.memo(
         });
       }
 
-      if (segmentationOverlay?.enabled) {
+      if (dataOverlay?.enabled) {
         viewportActionCornersService.addComponent({
           viewportId,
-          id: 'segmentation',
+          id: 'dataOverlay',
           component: getViewportDataOverlaySettingsMenu({
             viewportId,
             element: elementRef.current,
             displaySets,
-            servicesManager,
-            commandsManager,
-            location: segmentationOverlay.location,
+            location: dataOverlay.location,
           }),
-          location: segmentationOverlay.location,
+          location: dataOverlay.location,
         });
       }
     }, [displaySets, viewportId, viewportActionCornersService, servicesManager, commandsManager]);

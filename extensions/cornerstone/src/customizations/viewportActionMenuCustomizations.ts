@@ -7,7 +7,7 @@ export default {
     location: viewportActionCornersService.LOCATIONS.topRight,
     component: WindowLevelActionMenu,
   },
-  'viewportActionMenu.segmentationOverlay': {
+  'viewportActionMenu.dataOverlay': {
     enabled: true,
     location: viewportActionCornersService.LOCATIONS.topRight,
   },
