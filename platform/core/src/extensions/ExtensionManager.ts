@@ -87,9 +87,7 @@ export default class ExtensionManager extends PubSubService {
   };
   private dataSourceMap: Record<string, any>;
   private dataSourceDefs: Record<string, any>;
-  private defaultDataSourceName: string;
-  private activeDataSource: string;
-  private peerImport: (moduleId) => Promise<any>;
+  private activeDataSourceName: string;
 
   constructor({
     commandsManager,
@@ -117,20 +115,20 @@ export default class ExtensionManager extends PubSubService {
     this.dataSourceMap = {};
     this.dataSourceDefs = {};
     this.defaultDataSourceName = appConfig.defaultDataSourceName;
-    this.activeDataSource = appConfig.defaultDataSourceName;
+    this.activeDataSourceName = appConfig.defaultDataSourceName;
     this.peerImport = appConfig.peerImport;
   }
 
   public setActiveDataSource(dataSource: string): void {
-    if (this.activeDataSource === dataSource) {
+    if (this.activeDataSourceName === dataSource) {
       return;
     }
 
-    this.activeDataSource = dataSource;
+    this.activeDataSourceName = dataSource;
 
     this._broadcastEvent(
       ExtensionManager.EVENTS.ACTIVE_DATA_SOURCE_CHANGED,
-      this.dataSourceDefs[this.activeDataSource]
+      this.dataSourceDefs[this.activeDataSourceName]
     );
   }
 
@@ -375,7 +373,7 @@ export default class ExtensionManager extends PubSubService {
   getDataSources = dataSourceName => {
     if (dataSourceName === undefined) {
       // Default to the activeDataSource
-      dataSourceName = this.activeDataSource;
+      dataSourceName = this.activeDataSourceName;
     }
 
     // Note: this currently uses the data source name, which feels weird...
@@ -387,7 +385,7 @@ export default class ExtensionManager extends PubSubService {
   };
 
   getActiveDataSource = () => {
-    return this.dataSourceMap[this.activeDataSource];
+    return this.dataSourceMap[this.activeDataSourceName];
   };
 
   /**
@@ -400,7 +398,7 @@ export default class ExtensionManager extends PubSubService {
   getDataSourceDefinition = dataSourceName => {
     if (dataSourceName === undefined) {
       // Default to the activeDataSource
-      dataSourceName = this.activeDataSource;
+      dataSourceName = this.activeDataSourceName;
     }
 
     return this.dataSourceDefs[dataSourceName];
@@ -410,7 +408,7 @@ export default class ExtensionManager extends PubSubService {
    * Gets the data source definition for the active data source.
    */
   getActiveDataSourceDefinition = () => {
-    return this.getDataSourceDefinition(this.activeDataSource);
+    return this.getDataSourceDefinition(this.activeDataSourceName);
   };
 
   /**
@@ -424,16 +422,21 @@ export default class ExtensionManager extends PubSubService {
       return [];
     }
 
-    return Object.keys(this.dataSourceMap)
-      .filter(ds => {
-        const configuration = this.dataSourceDefs[ds]?.configuration;
-        return configuration?.supportsStow ?? configuration?.wadoRoot;
-      })
-      .map(ds => ({
-        value: ds,
-        label: ds,
-        placeHolder: ds,
-      }));
+    const inactiveDataSourceNames = Object.keys(this.dataSourceMap).filter(ds => {
+      const configuration = this.dataSourceDefs[ds]?.configuration;
+      const isNotActiveDataSource =
+        this.dataSourceDefs[ds].sourceName !== this.activeDataSourceName;
+      const supportsStowOrWado = configuration?.supportsStow ?? configuration?.wadoRoot;
+      return supportsStowOrWado && isNotActiveDataSource;
+    });
+
+    const allDatasourcesForUI = [this.activeDataSourceName, ...inactiveDataSourceNames].map(ds => ({
+      value: ds,
+      label: ds,
+      placeHolder: ds,
+    }));
+
+    return allDatasourcesForUI;
   };
 
   /**
@@ -555,7 +558,7 @@ export default class ExtensionManager extends PubSubService {
     dataSourceDef.configuration = dataSourceConfiguration;
     this._createDataSourceInstance(dataSourceDef);
 
-    if (this.activeDataSource === dataSourceName) {
+    if (this.activeDataSourceName === dataSourceName) {
       // When the active data source is changed/set, fire an event to indicate that its configuration has changed.
       this._broadcastEvent(ExtensionManager.EVENTS.ACTIVE_DATA_SOURCE_CHANGED, dataSourceDef);
     }
