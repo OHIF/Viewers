@@ -754,8 +754,8 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
       const { imageIds, displaySetInstanceUID } = data;
       let volume = data.volume;
 
-      if (!volume) {
-        const displaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
+      const displaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
+      if (!volume && displaySet.images) {
         volume = csToolsUtils.getOrCreateImageVolume(displaySet.images.map(image => image.imageId));
       }
 

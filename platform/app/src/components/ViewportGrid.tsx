@@ -239,7 +239,7 @@ function ViewerViewportGrid(props: withAppTypes) {
         // Update stored position presentation
         commandsManager.run('updateStoredPositionPresentation', {
           viewportId: viewport.viewportId,
-          displaySetInstanceUID: referencedDisplaySetInstanceUID,
+          displaySetInstanceUIDs: [referencedDisplaySetInstanceUID],
           referencedImageId: measurement.referencedImageId,
           options: {
             ...measurement.metadata,

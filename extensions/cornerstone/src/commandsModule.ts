@@ -248,7 +248,7 @@ function commandsModule({
     },
     updateStoredPositionPresentation: ({
       viewportId,
-      displaySetInstanceUID,
+      displaySetInstanceUIDs,
       referencedImageId,
       options,
     }) => {
@@ -256,10 +256,11 @@ function commandsModule({
       const { positionPresentationStore, setPositionPresentation, getPositionPresentationId } =
         usePositionPresentationStore.getState();
 
-      // Look inside positionPresentationStore and find the key that includes the displaySetInstanceUID
+      // Look inside positionPresentationStore and find the key that includes ALL the displaySetInstanceUIDs
       // and the value has viewportId as activeViewportId.
       const previousReferencedDisplaySetStoreKey = Object.entries(positionPresentationStore).find(
-        ([key, value]) => key.includes(displaySetInstanceUID) && value.viewportId === viewportId
+        ([key, value]) =>
+          displaySetInstanceUIDs.every(uid => key.includes(uid)) && value.viewportId === viewportId
       )?.[0];
 
       // Create presentation data with referencedImageId and options if provided
@@ -282,7 +283,7 @@ function commandsModule({
       // so we need to grab the positionPresentationId directly from the store,
       // Todo: this is really hacky, we should have a better way for this
       const positionPresentationId = getPositionPresentationId({
-        displaySetInstanceUIDs: [displaySetInstanceUID],
+        displaySetInstanceUIDs,
         viewportId,
       });
 
