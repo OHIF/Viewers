@@ -112,6 +112,7 @@ function _getDisplaySetsFromSeries(instances, servicesManager, extensionManager)
     instances,
     othersFrameOfReferenceUID,
     imageIds: instances.map(instance => instance.imageId),
+    label: SeriesDescription || `Series ${SeriesNumber} - SM`,
   };
   // The microscopy viewer directly accesses the metadata already loaded, and
   // uses the DICOMweb client library directly for loading, so it has to be

@@ -90,6 +90,7 @@ const _getDisplaySetsFromSeries = (instances, servicesManager, extensionManager)
         sopClassUids,
         numImageFrames: NumberOfFrames,
         instance,
+        label: SeriesDescription || `Series ${SeriesNumber} - ${Modality}`,
       };
       csUtils.genericMetadataProvider.add(imageId, {
         type: 'imageUrlModule',

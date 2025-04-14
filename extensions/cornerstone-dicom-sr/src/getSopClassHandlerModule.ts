@@ -122,6 +122,7 @@ function _getDisplaySetsFromSeries(
     sopClassUids,
     instance,
     addInstances,
+    label: SeriesDescription || `Series ${SeriesNumber} - SR`,
   };
 
   displaySet.load = () => _load(displaySet, servicesManager, extensionManager);

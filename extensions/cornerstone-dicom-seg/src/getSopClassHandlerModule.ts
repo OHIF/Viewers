@@ -57,6 +57,7 @@ function _getDisplaySetsFromSeries(
     wadoUriRoot,
     wadoUri,
     isOverlayDisplaySet: true,
+    label: SeriesDescription || `Series ${SeriesNumber} - SEG`,
   };
 
   const referencedSeriesSequence = instance.ReferencedSeriesSequence;

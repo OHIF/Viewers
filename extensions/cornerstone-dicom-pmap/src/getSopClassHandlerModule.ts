@@ -58,6 +58,7 @@ function _getDisplaySetsFromSeries(
     wadoUriRoot,
     wadoUri,
     isOverlayDisplaySet: true,
+    label: SeriesDescription || `Series ${SeriesNumber} - PMAP`,
   };
 
   const referencedSeriesSequence = instance.ReferencedSeriesSequence;

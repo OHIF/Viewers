@@ -71,12 +71,20 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
     services: { displaySetService, viewportGridService },
   });
 
-  const derivedOverlays = enhancedDisplaySets.filter(ds =>
-    derivedOverlayModalities.includes(ds.Modality)
-  );
-  const nonDerivedOverlays = enhancedDisplaySets.filter(
-    ds => !derivedOverlayModalities.includes(ds.Modality)
-  );
+  // Sort function: puts disabled items (isOverlayable: false) at the end
+  const sortByOverlayable = (a, b) => {
+    if (a.isOverlayable === b.isOverlayable) {
+      return 0;
+    }
+    return a.isOverlayable ? -1 : 1;
+  };
+
+  const derivedOverlays = enhancedDisplaySets
+    .filter(ds => derivedOverlayModalities.includes(ds.Modality))
+    .sort(sortByOverlayable);
+  const nonDerivedOverlays = enhancedDisplaySets
+    .filter(ds => !derivedOverlayModalities.includes(ds.Modality))
+    .sort(sortByOverlayable);
 
   return (
     <div className="bg-muted flex h-full w-[262px] flex-col rounded p-3">

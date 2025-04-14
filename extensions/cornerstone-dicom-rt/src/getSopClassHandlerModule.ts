@@ -53,6 +53,7 @@ function _getDisplaySetsFromSeries(
     wadoUriRoot,
     wadoUri,
     isOverlayDisplaySet: true,
+    label: SeriesDescription || `Series ${SeriesNumber} - RTSTRUCT`,
   };
 
   let referencedSeriesSequence = instance.ReferencedSeriesSequence;
