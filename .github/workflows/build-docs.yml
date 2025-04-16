@@ -80,31 +80,31 @@ jobs:
           echo "Artifact downloaded successfully."
 
       - name: Install docs dependencies
-        run: cd packages/docs && bun install
+        run: cd platform/docs && bun install
 
       - name: Copy coverage to docs static directory
         run: |
           # Copy files from the downloaded artifact directory
-          mkdir -p packages/docs/static/coverage
-          cp -r ./coverage-artifact/* packages/docs/static/coverage/
+          mkdir -p platform/docs/static/coverage
+          cp -r ./coverage-artifact/* platform/docs/static/coverage/
           # Copy specific asset files from the downloaded artifact root to static root
-          cp ./coverage-artifact/base.css packages/docs/static/
-          cp ./coverage-artifact/block-navigation.js packages/docs/static/
-          cp ./coverage-artifact/prettify.css packages/docs/static/
-          cp ./coverage-artifact/prettify.js packages/docs/static/
-          cp ./coverage-artifact/favicon.png packages/docs/static/
-          cp ./coverage-artifact/sort-arrow-sprite.png packages/docs/static/
-          cp ./coverage-artifact/sorter.js packages/docs/static/
+          cp ./coverage-artifact/base.css platform/docs/static/
+          cp ./coverage-artifact/block-navigation.js platform/docs/static/
+          cp ./coverage-artifact/prettify.css platform/docs/static/
+          cp ./coverage-artifact/prettify.js platform/docs/static/
+          cp ./coverage-artifact/favicon.png platform/docs/static/
+          cp ./coverage-artifact/sort-arrow-sprite.png platform/docs/static/
+          cp ./coverage-artifact/sorter.js platform/docs/static/
 
       - name: Build docs
-        run: cd packages/docs && bun run build:docs
+        run: cd platform/docs && bun run build:docs
 
       - name: Install Netlify CLI
         run: bun add -g netlify-cli
 
       - name: Deploy to Netlify
         run: |
-          cd packages/docs
+          cd platform/docs
           netlify deploy --dir=build --prod
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
