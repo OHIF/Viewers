@@ -1,4 +1,4 @@
-import { Page, test } from '@playwright/test';
+import { Page, test } from 'playwright-test-coverage';
 import {
   visitStudy,
   checkForScreenshot,

@@ -16807,6 +16807,11 @@ playwright-core@1.48.0:
   resolved "https://registry.yarnpkg.com/playwright-core/-/playwright-core-1.48.0.tgz#34d209dd4aba8fccd4a96116f1c4f7630f868722"
   integrity sha512-RBvzjM9rdpP7UUFrQzRwR8L/xR4HyC1QXMzGYTbf1vjw25/ya9NRAVnXi/0fvFopjebvyPzsmoK58xxeEOaVvA==
 
+playwright-test-coverage@^1.2.12:
+  version "1.2.12"
+  resolved "https://registry.yarnpkg.com/playwright-test-coverage/-/playwright-test-coverage-1.2.12.tgz#c31bd50625ff916b57183af7b4b622f9aa2c341c"
+  integrity sha512-WdR3shV+7IWtlB1AZcXSysUyZmyAqXM9+DT3iBSS1p4SkJoWZslkTqk04l5ZExSkuaM+5fKl0M9TyUuJWuGgLA==
+
 playwright@1.48.0:
   version "1.48.0"
   resolved "https://registry.yarnpkg.com/playwright/-/playwright-1.48.0.tgz#00855d9a25f1991d422867f1c32af5d90f457b48"

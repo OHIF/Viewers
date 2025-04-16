@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from 'playwright-test-coverage';
 import { visitStudy, scrollVolumeViewport } from './utils';
 
 test.skip('PT should show slice closest to CT', async ({ page }) => {

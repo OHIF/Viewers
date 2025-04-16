@@ -98,7 +98,8 @@
     "@istanbuljs/nyc-config-typescript": "^1.0.2",
     "nyc": "^17.1.0",
     "patch-package": "^8.0.0",
-    "prettier-plugin-tailwindcss": "0.6.9"
+    "prettier-plugin-tailwindcss": "0.6.9",
+    "playwright-test-coverage": "^1.2.12"
   },
   "husky": {
     "hooks": {
