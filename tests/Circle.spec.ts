@@ -1,4 +1,4 @@
-import { test } from '@playwright/test';
+import { test } from 'playwright-test-coverage';
 import { visitStudy, checkForScreenshot, screenShotPaths, simulateClicksOnElement } from './utils';
 
 test.beforeEach(async ({ page }) => {
@@ -7,7 +7,7 @@ test.beforeEach(async ({ page }) => {
   await visitStudy(page, studyInstanceUID, mode, 2000);
 });
 
-test('should display the circle tool', async ({ page }) => {
+test('should display the circle tool @debug', async ({ page }) => {
   await page.getByTestId('MeasurementTools-split-button-secondary').click();
   await page.getByTestId('CircleROI').click();
   const locator = page.getByTestId('viewport-pane').locator('canvas');

@@ -54,6 +54,7 @@
     "test:unit": "jest --collectCoverage",
     "test:unit:ci": "lerna run test:unit:ci --parallel --stream",
     "test:e2e": "lerna run test:e2e --stream",
+    "test:e2e:coverage": "nyc --reporter=html yarn run test:e2e:ci -g @debug",
     "test:e2e:ci": "TEST_ENV=true npx playwright test",
     "test:e2e:ui": "TEST_ENV=true npx playwright test --ui",
     "test:e2e:headed": "TEST_ENV=true npx playwright test --headed",
@@ -93,9 +94,16 @@
     "@babel/preset-env": "7.24.7",
     "@babel/preset-react": "^7.16.7",
     "@babel/preset-typescript": "^7.13.0",
+    "babel-plugin-istanbul": "^7.0.0",
+    "source-map-support": "^0.5.21",
     "prettier": "^3.3.3",
+    "ts-node": "^10.9.2",
+    "@istanbuljs/nyc-config-typescript": "^1.0.2",
+    "istanbul": "0.4.5",
+    "nyc": "^17.1.0",
     "patch-package": "^8.0.0",
-    "prettier-plugin-tailwindcss": "0.6.9"
+    "prettier-plugin-tailwindcss": "0.6.9",
+    "playwright-test-coverage": "^1.2.12"
   },
   "husky": {
     "hooks": {
