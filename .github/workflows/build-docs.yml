@@ -99,13 +99,21 @@ jobs:
       - name: Build docs
         run: cd platform/docs && bun run build
 
-      - name: Install Netlify CLI
-        run: bun add -g netlify-cli
-
       - name: Deploy to Netlify
-        run: |
-          cd platform/docs
-          netlify deploy --dir=build --prod
+        uses: netlify/actions/cli@master
+        with:
+          args: deploy --prod --dir=./platform/docs/build
         env:
-          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+
+      # - name: Install Netlify CLI
+      #   run: bun add -g netlify-cli
+
+      # - name: Deploy to Netlify
+      #   run: |
+      #     cd platform/docs
+      #     netlify deploy --dir=build --prod
+      #   env:
+      #     NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+      #     NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
