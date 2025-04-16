@@ -97,7 +97,7 @@ jobs:
           cp ./coverage-artifact/sorter.js platform/docs/static/
 
       - name: Build docs
-        run: cd platform/docs && bun run build:docs
+        run: cd platform/docs && bun run build
 
       - name: Install Netlify CLI
         run: bun add -g netlify-cli
