@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.11.0-beta.7](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.6...v3.11.0-beta.7) (2025-04-16)
+
+
+### Bug Fixes
+
+* github runner ([#4961](https://github.com/OHIF/Viewers/issues/4961)) ([9535422](https://github.com/OHIF/Viewers/commit/953542236116aea6f4dce6275b8cdbd4490f4520))
+
+
+
+
+
 # [3.11.0-beta.6](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.5...v3.11.0-beta.6) (2025-04-16)
 
 **Note:** Version bump only for package ohif-monorepo-root
