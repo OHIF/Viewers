@@ -1,4 +1,4 @@
-import { Page } from '@playwright/test';
+import { Page } from 'playwright-test-coverage';
 
 /**
  * Visit the study

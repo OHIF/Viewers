@@ -1,8 +1,8 @@
-import { test } from '@playwright/test';
+import { test } from 'playwright-test-coverage';
 import { visitStudy, checkForScreenshot, screenShotPaths, simulateClicksOnElement } from './utils';
 
 test.beforeEach(async ({ page }) => {
-  const studyInstanceUID = '1.3.6.1.4.1.25403.345050719074.3824.20170125095258.1';
+  const studyInstanceUID = '1.3.6.1.4.1.25403.345050719074.3824.20170125095438.5';
   const mode = 'viewer';
   await visitStudy(page, studyInstanceUID, mode, 2000);
 });
