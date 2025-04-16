@@ -54,7 +54,7 @@
     "test:unit": "jest --collectCoverage",
     "test:unit:ci": "lerna run test:unit:ci --parallel --stream",
     "test:e2e": "lerna run test:e2e --stream",
-    "test:e2e:coverage": "nyc --reporter=html yarn run test:e2e:ci -g @debug",
+    "test:e2e:coverage": "nyc --reporter=html yarn run test:e2e:ci",
     "test:e2e:ci": "TEST_ENV=true npx playwright test",
     "test:e2e:ui": "TEST_ENV=true npx playwright test --ui",
     "test:e2e:headed": "TEST_ENV=true npx playwright test --headed",
