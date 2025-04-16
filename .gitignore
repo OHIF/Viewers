@@ -1,7 +1,7 @@
 # Packages
 node_modules
 .cursor/
-
+.nyc_output/
 # Output
 build
 dist
