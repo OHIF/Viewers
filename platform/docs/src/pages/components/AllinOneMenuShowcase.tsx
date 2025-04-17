@@ -15,10 +15,8 @@ import ShowcaseRow from './ShowcaseRow';
  * Pure‑UI mock of the in‑app Window/Level menu.
  * Clickable, but all actions are inert.
  */
-export default function ViewerMenuDemoShowcase() {
-  /**
-   * Helpers to build common static items so the JSX stays concise
-   */
+export default function AllinOneMenuShowcase() {
+  /* Helpers to build common static items so the JSX stays concise */
   const renderColorLUTItems = () =>
     [
       'Grayscale',
@@ -33,12 +31,7 @@ export default function ViewerMenuDemoShowcase() {
       'GE 256',
       'GE',
       'Siemens',
-    ].map(name => (
-      <Item
-        key={name}
-        label={name}
-      />
-    ));
+    ].map(name => <Item key={name} label={name} />);
 
   const renderWindowPresetItems = () =>
     [
@@ -57,23 +50,51 @@ export default function ViewerMenuDemoShowcase() {
 
   return (
     <ShowcaseRow
-      title="Viewer Menu (Mock)"
-      description="Static recreation of the App’s Window‑Level menu. You can open sub‑menus and tabs, but nothing executes."
-      code={`<IconMenu icon="viewport-window-level">\n  <ItemPanel>…mock items…</ItemPanel>\n</IconMenu>`}
+      title="All In One Menu"
+      description="A structured, consolidated menu designed to reduce visual clutter, helping users keep their focus on the image. It supports various UI components—including Switches, Numeric Inputs, Tabs, and Sliders—for detailed settings, as well as text-based lists for actionable items."
+      code={`<IconMenu icon="viewport-window-level" menuStyle={{ width: 212, maxHeight: 500 }}>
+  <ItemPanel label="Display">
+    <Item label="Display Color bar" rightIcon={<Switch disabled />} />
+    <DividerItem />
+    <SubMenu itemLabel="Color LUT" itemIcon="icon-color-lut">
+      <ItemPanel label="Color LUTs">
+        <Item label="Preview in viewport" rightIcon={<Switch disabled />} />
+        <DividerItem />
+        <Item label="Grayscale" />
+        <Item label="X Ray" />
+        <Item label="HSV" />
+        <Item label="Hot Iron" />
+        <Item label="Red Hot" />
+        <Item label="S PET" />
+        <Item label="Perfusion" />
+        <Item label="Rainbow" />
+        <Item label="SUV" />
+        <Item label="GE 256" />
+        <Item label="GE" />
+        <Item label="Siemens" />
+      </ItemPanel>
+    </SubMenu>
+    <SubMenu itemLabel="Window Presets" itemIcon="viewport-window-level">
+      <ItemPanel label="CT Presets">
+        <Item label="Soft tissue" secondaryLabel="400 / 40" />
+        <Item label="Lung" secondaryLabel="1500 / ‑600" />
+        <Item label="Liver" secondaryLabel="150 / 90" />
+        <Item label="Bone" secondaryLabel="2500 / 480" />
+        <Item label="Brain" secondaryLabel="80 / 40" />
+      </ItemPanel>
+    </SubMenu>
+  </ItemPanel>
+</IconMenu>`}
     >
       <div className="border-input/70 relative flex h-12 items-center rounded border bg-black px-4">
-        {/* —— trigger icon —— */}
         <IconMenu
           icon="viewport-window-level"
           iconClassName="text-xl text-highlight hover:bg-primary/30 cursor-pointer rounded"
           horizontalDirection={HorizontalDirection.LeftToRight}
           verticalDirection={VerticalDirection.TopToBottom}
-          /* keep width consistent with production menu */
           menuStyle={{ width: 212, maxHeight: 500 }}
         >
-          {/* —— TOP‑LEVEL PANEL —— */}
           <ItemPanel label="Display">
-            {/* Display Color bar toggle */}
             <Item
               label="Display Color bar"
               rightIcon={
@@ -86,12 +107,7 @@ export default function ViewerMenuDemoShowcase() {
               useIconSpace={false}
             />
             <DividerItem />
-
-            {/* Color LUT sub‑menu */}
-            <SubMenu
-              itemLabel="Color LUT"
-              itemIcon="icon-color-lut"
-            >
+            <SubMenu itemLabel="Color LUT" itemIcon="icon-color-lut">
               <ItemPanel
                 label="Color LUTs"
                 maxHeight="calc(100vh - 250px)"
@@ -111,12 +127,7 @@ export default function ViewerMenuDemoShowcase() {
                 {renderColorLUTItems()}
               </ItemPanel>
             </SubMenu>
-
-            {/* Window presets sub‑menu */}
-            <SubMenu
-              itemLabel="Window Presets"
-              itemIcon="viewport-window-level"
-            >
+            <SubMenu itemLabel="Window Presets" itemIcon="viewport-window-level">
               <ItemPanel label="CT Presets">{renderWindowPresetItems()}</ItemPanel>
             </SubMenu>
           </ItemPanel>
