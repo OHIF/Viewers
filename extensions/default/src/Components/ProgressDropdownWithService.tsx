@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback, ReactElement } from 'react';
-import { ProgressDropdown } from '@ohif/ui';
+import { ProgressDropdown } from '@ohif/ui-next';
 
 const workflowStepsToDropdownOptions = (steps = []) =>
   steps.map(step => ({

@@ -9,6 +9,7 @@ import ShowcaseRow from './ShowcaseRow';
 export default function NumericShowcase() {
   const [controlledValue, setControlledValue] = useState(0);
   const [controlledValues, setControlledValues] = useState([0, 100] as [number, number]);
+  const [dimensionGroupNumber, setDimensionGroupNumber] = useState(1);
 
   return (
     <div className="space-y-8">
@@ -83,6 +84,108 @@ export default function NumericShowcase() {
               With Icon
             </Numeric.Label>
             <Numeric.NumberInput className="w-32 text-center" />
+          </Numeric.Container>
+        </div>
+      </ShowcaseRow>
+
+      {/* Stepper Controls */}
+      <ShowcaseRow
+        title="Numeric - Stepper Controls"
+        description="Number input with increment/decrement controls in horizontal or vertical layout"
+        code={`
+// For controlled component
+const [dimensionGroupNumber, setDimensionGroupNumber] = useState(1);
+
+<Numeric.Container
+  mode="stepper"
+  value={dimensionGroupNumber}
+  onChange={val => setDimensionGroupNumber(val as number)}
+  min={1}
+  max={5}
+  step={1}
+>
+  <div className="flex flex-col items-center">
+    <Numeric.NumberStepper className="w-[58px]" direction="horizontal"/>
+    <Numeric.Label className="mt-1">Frame</Numeric.Label>
+  </div>
+</Numeric.Container>
+
+<Numeric.Container
+  mode="stepper"
+  min={0}
+  max={100}
+  step={1}
+  defaultValue={50}
+>
+  <div className="flex items-center space-x-2">
+    <Numeric.Label>Opacity</Numeric.Label>
+    <Numeric.NumberStepper className="w-[58px]" direction="horizontal"/>
+  </div>
+</Numeric.Container>
+
+<Numeric.Container
+  mode="stepper"
+  min={-10}
+  max={10}
+  step={0.1}
+  defaultValue={0}
+>
+  <div className="flex items-center space-x-2">
+    <Numeric.Label>Zoom:</Numeric.Label>
+    <Numeric.NumberStepper className="w-[65px]" direction="vertical"/>
+  </div>
+</Numeric.Container>`}
+      >
+        <div className="bg-popover flex w-[300px] flex-col space-y-4 rounded p-4">
+          <Numeric.Container
+            mode="stepper"
+            value={dimensionGroupNumber}
+            onChange={val => setDimensionGroupNumber(val as number)}
+            min={1}
+            max={5}
+            step={1}
+          >
+            <div className="flex flex-col items-center">
+              <Numeric.NumberStepper
+                className="flex w-[78px]"
+                direction="horizontal"
+              >
+                <span className="text-muted-foreground text-xs">FPS</span>
+              </Numeric.NumberStepper>
+              <Numeric.Label className="mt-1">Frame</Numeric.Label>
+            </div>
+          </Numeric.Container>
+
+          <Numeric.Container
+            mode="stepper"
+            min={0}
+            max={100}
+            step={1}
+            defaultValue={50}
+          >
+            <div className="flex items-center space-x-2">
+              <Numeric.Label>Opacity</Numeric.Label>
+              <Numeric.NumberStepper
+                className="w-[58px]"
+                direction="horizontal"
+              />
+            </div>
+          </Numeric.Container>
+
+          <Numeric.Container
+            mode="stepper"
+            min={-10}
+            max={10}
+            step={1}
+            defaultValue={0}
+          >
+            <div className="flex items-center space-x-2">
+              <Numeric.NumberStepper
+                className="w-[53px]"
+                direction="vertical"
+              />
+              <Numeric.Label>Zoom</Numeric.Label>
+            </div>
           </Numeric.Container>
         </div>
       </ShowcaseRow>
@@ -269,6 +372,20 @@ const [controlledValues, setControlledValues] = useState<[number, number]>([0, 1
 </Numeric.Container>
 
 <Numeric.Container
+  mode="stepper"
+  min={-5}
+  max={5}
+  step={0.5}
+  defaultValue={0}
+>
+  <div className="flex items-center justify-between">
+    <Numeric.Label>Offset</Numeric.Label>
+    <Numeric.NumberStepper className="w-[58px]">
+    </Numeric.NumberStepper>
+  </div>
+</Numeric.Container>
+
+<Numeric.Container
   mode="singleRange"
   min={0}
   max={360}
@@ -300,6 +417,22 @@ const [controlledValues, setControlledValues] = useState<[number, number]>([0, 1
           >
             <Numeric.Label>Zoom Factor</Numeric.Label>
             <Numeric.NumberInput />
+          </Numeric.Container>
+
+          <Numeric.Container
+            mode="stepper"
+            min={-5}
+            max={5}
+            step={0.5}
+            defaultValue={0}
+          >
+            <div className="flex items-center justify-between">
+              <Numeric.Label>Offset</Numeric.Label>
+              <Numeric.NumberStepper
+                className="w-[58px]"
+                direction="horizontal"
+              />
+            </div>
           </Numeric.Container>
 
           <Numeric.Container

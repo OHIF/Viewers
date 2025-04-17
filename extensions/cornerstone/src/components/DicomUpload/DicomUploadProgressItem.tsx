@@ -89,7 +89,7 @@ const DicomUploadProgressItem = memo(
               )}
               <div className="ml-auto flex cursor-pointer">
                 <Icons.Close
-                  className="text-primary-active self-center"
+                  className="text-primary self-center"
                   onClick={cancelUpload}
                 />
               </div>

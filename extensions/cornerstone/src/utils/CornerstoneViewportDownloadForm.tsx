@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import html2canvas from 'html2canvas';
 import { getEnabledElement, StackViewport, BaseVolumeViewport } from '@cornerstonejs/core';
-import { ToolGroupManager } from '@cornerstonejs/tools';
+import { ToolGroupManager, segmentation, Enums } from '@cornerstonejs/tools';
 import { getEnabledElement as OHIFgetEnabledElement } from '../state';
 import { useSystem } from '@ohif/core/src';
 
@@ -103,6 +103,9 @@ const CornerstoneViewportDownloadForm = ({
       return;
     }
 
+    const segmentationRepresentations =
+      segmentation.state.getViewportSegmentationRepresentations(activeViewportId);
+
     const { viewport } = activeViewportEnabledElement;
     const downloadViewport = renderingEngine.getViewport(VIEWPORT_ID);
 
@@ -113,20 +116,48 @@ const CornerstoneViewportDownloadForm = ({
 
         await downloadViewport.setStack([imageId]);
         downloadViewport.setProperties(properties);
-
-        return {
-          width: Math.min(width || DEFAULT_SIZE, MAX_TEXTURE_SIZE),
-          height: Math.min(height || DEFAULT_SIZE, MAX_TEXTURE_SIZE),
-        };
       } else if (downloadViewport instanceof BaseVolumeViewport) {
         const volumeIds = viewport.getAllVolumeIds();
         downloadViewport.setVolumes([{ volumeId: volumeIds[0] }]);
-
-        return {
-          width: Math.min(width || DEFAULT_SIZE, MAX_TEXTURE_SIZE),
-          height: Math.min(height || DEFAULT_SIZE, MAX_TEXTURE_SIZE),
-        };
       }
+
+      if (segmentationRepresentations.length > 0) {
+        segmentationRepresentations.forEach(segRepresentation => {
+          const { segmentationId, colorLUTIndex, type } = segRepresentation;
+          if (type === Enums.SegmentationRepresentations.Labelmap) {
+            segmentation.addLabelmapRepresentationToViewportMap({
+              [downloadViewport.id]: [
+                {
+                  segmentationId,
+                  type: Enums.SegmentationRepresentations.Labelmap,
+                  config: {
+                    colorLUTOrIndex: colorLUTIndex,
+                  },
+                },
+              ],
+            });
+          }
+
+          if (type === Enums.SegmentationRepresentations.Contour) {
+            segmentation.addContourRepresentationToViewportMap({
+              [downloadViewport.id]: [
+                {
+                  segmentationId,
+                  type: Enums.SegmentationRepresentations.Contour,
+                  config: {
+                    colorLUTOrIndex: colorLUTIndex,
+                  },
+                },
+              ],
+            });
+          }
+        });
+      }
+
+      return {
+        width: Math.min(width || DEFAULT_SIZE, MAX_TEXTURE_SIZE),
+        height: Math.min(height || DEFAULT_SIZE, MAX_TEXTURE_SIZE),
+      };
     } catch (error) {
       console.error('Error loading image:', error);
     }
@@ -167,6 +198,10 @@ const CornerstoneViewportDownloadForm = ({
       setTimeout(() => {
         handleLoadImage(viewportDimensions.width, viewportDimensions.height);
         handleToggleAnnotations(showAnnotations);
+        // we need a resize here to make suer annotations world to canvas
+        // are properly calculated
+        renderingEngine.resize();
+        renderingEngine.render();
       }, 100);
     }
   }, [viewportDimensions, showAnnotations]);

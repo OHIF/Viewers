@@ -31,12 +31,13 @@ export default function getSegmentationPanelCustomization({ commandsManager, ser
       peakLPS: 'Peak Coord',
       volume: 'Volume',
       lesionGlycolysis: 'Lesion Glycolysis',
+      center: 'Center',
     },
     'segmentationToolbox.config': () => {
       // Get initial states based on current configuration
       const [previewEdits, setPreviewEdits] = useState(false);
       const [toggleSegmentEnabled, setToggleSegmentEnabled] = useState(false);
-
+      const [useCenterAsSegmentIndex, setUseCenterAsSegmentIndex] = useState(false);
       const handlePreviewEditsChange = checked => {
         setPreviewEdits(checked);
         commandsManager.run('toggleSegmentPreviewEdit', { toggle: checked });
@@ -45,6 +46,11 @@ export default function getSegmentationPanelCustomization({ commandsManager, ser
       const handleToggleSegmentEnabledChange = checked => {
         setToggleSegmentEnabled(checked);
         commandsManager.run('toggleSegmentSelect', { toggle: checked });
+      };
+
+      const handleUseCenterAsSegmentIndexChange = checked => {
+        setUseCenterAsSegmentIndex(checked);
+        commandsManager.run('toggleUseCenterSegmentIndex', { toggle: checked });
       };
 
       return (
@@ -59,10 +65,18 @@ export default function getSegmentationPanelCustomization({ commandsManager, ser
 
           <div className="flex items-center gap-2">
             <Switch
+              checked={useCenterAsSegmentIndex}
+              onCheckedChange={handleUseCenterAsSegmentIndexChange}
+            />
+            <span className="text-base text-white">Use center as segment index</span>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <Switch
               checked={toggleSegmentEnabled}
               onCheckedChange={handleToggleSegmentEnabledChange}
             />
-            <span className="text-base text-white">Highlight segments to select</span>
+            <span className="text-base text-white">Hover on segment border to activate</span>
           </div>
         </div>
       );

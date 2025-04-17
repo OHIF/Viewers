@@ -103,6 +103,11 @@ export default defineConfig({
       ...(writePluginImportsFile(SRC_DIR, DIST_DIR) || []),
       // Copy public directory except config and html-templates
       {
+        from: path.resolve(__dirname, 'node_modules/onnxruntime-web/dist'),
+        to: `${DIST_DIR}/ort`,
+        force: true,
+      },
+      {
         from: PUBLIC_DIR,
         to: DIST_DIR,
         globOptions: {

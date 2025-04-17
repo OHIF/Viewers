@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import PropTypes from 'prop-types';
 
-import { InvestigationalUseDialog } from '@ohif/ui';
+import { InvestigationalUseDialog } from '@ohif/ui-next';
 import { HangingProtocolService, CommandsManager } from '@ohif/core';
 import { useAppConfig } from '@state';
 import ViewerHeader from './ViewerHeader';
@@ -52,8 +52,14 @@ function ViewerLayout({
     leftPanelClosed,
     setLeftPanelClosed,
     rightPanelClosed,
-    setRightPanelClosed
+    setRightPanelClosed,
+    hasLeftPanels,
+    hasRightPanels
   );
+
+  const handleMouseEnter = () => {
+    (document.activeElement as HTMLElement)?.blur();
+  };
 
   const LoadingIndicatorProgress = customizationService.getCustomization(
     'ui.loadingIndicatorProgress'
@@ -67,6 +73,7 @@ function ViewerLayout({
   useEffect(() => {
     document.body.classList.add('bg-black');
     document.body.classList.add('overflow-hidden');
+
     return () => {
       document.body.classList.remove('bg-black');
       document.body.classList.remove('overflow-hidden');
@@ -82,7 +89,7 @@ function ViewerLayout({
       );
     }
 
-    return { entry, content: entry.component };
+    return { entry };
   };
 
   useEffect(() => {
@@ -107,6 +114,7 @@ function ViewerLayout({
 
     return {
       component: entry.component,
+      isReferenceViewable: entry.isReferenceViewable,
       displaySetsToDisplay: viewportComponent.displaySetsToDisplay,
     };
   };
@@ -149,7 +157,6 @@ function ViewerLayout({
           {showLoadingIndicator && <LoadingIndicatorProgress className="h-full w-full bg-black" />}
           <ResizablePanelGroup {...resizablePanelGroupProps}>
             {/* LEFT SIDEPANELS */}
-
             {hasLeftPanels ? (
               <>
                 <ResizablePanel {...resizableLeftPanelProps}>
@@ -170,7 +177,10 @@ function ViewerLayout({
             {/* TOOLBAR + GRID */}
             <ResizablePanel {...resizableViewportGridPanelProps}>
               <div className="flex h-full flex-1 flex-col">
-                <div className="relative flex h-full flex-1 items-center justify-center overflow-hidden bg-black">
+                <div
+                  className="relative flex h-full flex-1 items-center justify-center overflow-hidden bg-black"
+                  onMouseEnter={handleMouseEnter}
+                >
                   <ViewportGridComp
                     servicesManager={servicesManager}
                     viewportComponents={viewportComponents}

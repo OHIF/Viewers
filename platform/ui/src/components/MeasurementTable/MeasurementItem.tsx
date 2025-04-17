@@ -70,8 +70,8 @@ const MeasurementItem = ({
           <span>{index}</span>
         )}
       </div>
-      <div className="relative flex flex-1 flex-col py-1 pl-2 pr-1">
-        <span className="text-primary-light mb-1 text-base">{label}</span>
+      <div className="relative flex flex-1 flex-col pl-2 pr-1">
+        <span className="text-primary-light text-base">{label}</span>
         {displayText.map((line, i) => (
           <span
             key={i}

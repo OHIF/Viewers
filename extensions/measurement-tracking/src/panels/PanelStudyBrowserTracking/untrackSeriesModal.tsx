@@ -1,11 +1,11 @@
 import React from 'react';
 import { FooterAction } from '@ohif/ui-next';
 
-export function UntrackSeriesModal({ hide, onConfirm }) {
+export function UntrackSeriesModal({ hide, onConfirm, message }) {
   return (
-    <div className="text-foreground">
+    <div className="text-foreground text-[13px]">
       <div>
-        <p>Are you sure you want to untrack this series?</p>
+        <p>{message}</p>
         <p className="mt-2">
           This action cannot be undone and will delete all your existing measurements.
         </p>

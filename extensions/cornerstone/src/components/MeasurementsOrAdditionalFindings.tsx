@@ -54,7 +54,7 @@ export const groupByNamedSets = (items, grouping) => {
 };
 
 export function MeasurementsOrAdditionalFindings(props): React.ReactNode {
-  const { items, children, grouping = {}, customHeader, group } = props;
+  const { items, children, grouping = {}, customHeader, group, actions } = props;
 
   return (
     <AccordionGroup
@@ -72,6 +72,7 @@ export function MeasurementsOrAdditionalFindings(props): React.ReactNode {
         <MeasurementTableNested
           customHeader={customHeader}
           allItems={items}
+          actions={actions}
         />
       </AccordionGroup.Accordion>
     </AccordionGroup>

@@ -2,7 +2,7 @@
 
 window.config = {
   name: 'config/default.js',
-  routerBasename: '/',
+  routerBasename: null,
   // whiteLabeling: {},
   extensions: [],
   modes: [],
@@ -17,7 +17,7 @@ window.config = {
   experimentalStudyBrowserSort: false,
   strictZSpacingForVolumeViewport: true,
   groupEnabledModesFirst: true,
-  allowMultiSelectExport: true,
+  allowMultiSelectExport: false,
   maxNumRequests: {
     interaction: 100,
     thumbnail: 75,
@@ -276,7 +276,6 @@ window.config = {
     console.warn('test, navigate to https://ohif.org/');
   },
   // whiteLabeling: {
-  //   /* Optional: Should return a React component to be rendered in the "Logo" section of the application's Top Navigation bar */
   //   createLogoComponentFn: function (React) {
   //     return React.createElement(
   //       'a',
@@ -284,14 +283,13 @@ window.config = {
   //         target: '_self',
   //         rel: 'noopener noreferrer',
   //         className: 'text-purple-600 line-through',
-  //         href: '/',
+  //         href: '_X___IDC__LOGO__LINK___Y_',
   //       },
-  //       React.createElement('img',
-  //         {
-  //           src: './assets/customLogo.svg',
-  //           className: 'w-8 h-8',
-  //         }
-  //       ))
+  //       React.createElement('img', {
+  //         src: './Logo.svg',
+  //         className: 'w-14 h-14',
+  //       })
+  //     );
   //   },
   // },
 };

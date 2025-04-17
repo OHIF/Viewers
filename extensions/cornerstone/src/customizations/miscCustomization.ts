@@ -1,4 +1,4 @@
-import { CinePlayer } from '@ohif/ui';
+import { CinePlayer } from '@ohif/ui-next';
 import DicomUpload from '../components/DicomUpload/DicomUpload';
 
 export default {

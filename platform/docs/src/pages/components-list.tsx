@@ -34,7 +34,6 @@ export default function ComponentsList() {
               <h1 className="text-foreground mb-3 text-5xl">Components</h1>
             </div>
             <TabsShowcase />
-
             <ButtonShowcase />
             <CheckboxShowcase />
             <DataRowShowcase />

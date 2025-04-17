@@ -3,6 +3,295 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.11.0-beta.9](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.8...v3.11.0-beta.9) (2025-04-17)
+
+**Note:** Version bump only for package @ohif/ui-next
+
+
+
+
+
+# [3.11.0-beta.8](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.7...v3.11.0-beta.8) (2025-04-16)
+
+**Note:** Version bump only for package @ohif/ui-next
+
+
+
+
+
+# [3.11.0-beta.7](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.6...v3.11.0-beta.7) (2025-04-16)
+
+**Note:** Version bump only for package @ohif/ui-next
+
+
+
+
+
+# [3.11.0-beta.6](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.5...v3.11.0-beta.6) (2025-04-16)
+
+**Note:** Version bump only for package @ohif/ui-next
+
+
+
+
+
+# [3.11.0-beta.5](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.4...v3.11.0-beta.5) (2025-04-14)
+
+**Note:** Version bump only for package @ohif/ui-next
+
+
+
+
+
+# [3.11.0-beta.4](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.3...v3.11.0-beta.4) (2025-04-11)
+
+**Note:** Version bump only for package @ohif/ui-next
+
+
+
+
+
+# [3.11.0-beta.3](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.2...v3.11.0-beta.3) (2025-04-11)
+
+
+### Bug Fixes
+
+* add back study browser scrollbar ([#4942](https://github.com/OHIF/Viewers/issues/4942)) ([ed94df0](https://github.com/OHIF/Viewers/commit/ed94df0dfe007748e51de959d9dd4101485d8df4))
+* enable measurements panel scroll ([#4943](https://github.com/OHIF/Viewers/issues/4943)) ([7a36eba](https://github.com/OHIF/Viewers/commit/7a36eba67c6365f3f8cabb53a31ae1eee96069e8))
+
+
+
+
+
+# [3.11.0-beta.2](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.1...v3.11.0-beta.2) (2025-04-11)
+
+**Note:** Version bump only for package @ohif/ui-next
+
+
+
+
+
+# [3.11.0-beta.1](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.0...v3.11.0-beta.1) (2025-04-10)
+
+**Note:** Version bump only for package @ohif/ui-next
+
+
+
+
+
+# [3.11.0-beta.0](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.159...v3.11.0-beta.0) (2025-04-10)
+
+**Note:** Version bump only for package @ohif/ui-next
+
+
+
+
+
+# [3.10.0-beta.159](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.158...v3.10.0-beta.159) (2025-04-09)
+
+
+### Bug Fixes
+
+* **ui:** Enhance UI Components and Update CornerstoneJS Dependencies and resizable panels ([#4938](https://github.com/OHIF/Viewers/issues/4938)) ([43bc142](https://github.com/OHIF/Viewers/commit/43bc142439aab1a6514ba1711f86d64ac8bb1acb))
+
+
+
+
+
+# [3.10.0-beta.158](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.157...v3.10.0-beta.158) (2025-04-09)
+
+
+### Bug Fixes
+
+* x-ray pixel spacing calibration ([#4922](https://github.com/OHIF/Viewers/issues/4922)) ([f6f60a6](https://github.com/OHIF/Viewers/commit/f6f60a63d2780cece8ade012a71b93cb3c7c4035))
+
+
+
+
+
+# [3.10.0-beta.157](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.156...v3.10.0-beta.157) (2025-04-09)
+
+**Note:** Version bump only for package @ohif/ui-next
+
+
+
+
+
+# [3.10.0-beta.156](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.155...v3.10.0-beta.156) (2025-04-08)
+
+**Note:** Version bump only for package @ohif/ui-next
+
+
+
+
+
+# [3.10.0-beta.155](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.154...v3.10.0-beta.155) (2025-04-08)
+
+**Note:** Version bump only for package @ohif/ui-next
+
+
+
+
+
+# [3.10.0-beta.154](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.153...v3.10.0-beta.154) (2025-04-08)
+
+**Note:** Version bump only for package @ohif/ui-next
+
+
+
+
+
+# [3.10.0-beta.153](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.152...v3.10.0-beta.153) (2025-04-08)
+
+**Note:** Version bump only for package @ohif/ui-next
+
+
+
+
+
+# [3.10.0-beta.152](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.151...v3.10.0-beta.152) (2025-04-07)
+
+
+### Bug Fixes
+
+* **segmentation:** Add segment jump for new segments and make panels scrollable ([#4928](https://github.com/OHIF/Viewers/issues/4928)) ([3653de7](https://github.com/OHIF/Viewers/commit/3653de748731199d130f02200becde78c07d3303))
+
+
+
+
+
+# [3.10.0-beta.151](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.150...v3.10.0-beta.151) (2025-04-07)
+
+**Note:** Version bump only for package @ohif/ui-next
+
+
+
+
+
+# [3.10.0-beta.150](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.149...v3.10.0-beta.150) (2025-04-04)
+
+**Note:** Version bump only for package @ohif/ui-next
+
+
+
+
+
+# [3.10.0-beta.149](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.148...v3.10.0-beta.149) (2025-04-04)
+
+
+### Features
+
+* **image capture:** Enhance SEG and RTSS Support with Dependency Updates and Bug Fixes ([#4924](https://github.com/OHIF/Viewers/issues/4924)) ([fc33bd0](https://github.com/OHIF/Viewers/commit/fc33bd0d594a1ac8de79b11080ead48630a8ca27))
+
+
+
+
+
+# [3.10.0-beta.148](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.147...v3.10.0-beta.148) (2025-04-04)
+
+**Note:** Version bump only for package @ohif/ui-next
+
+
+
+
+
+# [3.10.0-beta.147](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.146...v3.10.0-beta.147) (2025-04-03)
+
+**Note:** Version bump only for package @ohif/ui-next
+
+
+
+
+
+# [3.10.0-beta.146](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.145...v3.10.0-beta.146) (2025-04-02)
+
+**Note:** Version bump only for package @ohif/ui-next
+
+
+
+
+
+# [3.10.0-beta.145](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.144...v3.10.0-beta.145) (2025-04-02)
+
+
+### Bug Fixes
+
+* **seg:** Enhance segmentation tools and UI, refactor code, and update dependencies ([#4915](https://github.com/OHIF/Viewers/issues/4915)) ([8432d5f](https://github.com/OHIF/Viewers/commit/8432d5f6330b300ac6760b32372be382210ed05b))
+
+
+
+
+
+# [3.10.0-beta.144](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.143...v3.10.0-beta.144) (2025-04-01)
+
+
+### Features
+
+* **segmentation:** Enhance Segmentation with New AI and Once Click Tools ([#4910](https://github.com/OHIF/Viewers/issues/4910)) ([c75a3f3](https://github.com/OHIF/Viewers/commit/c75a3f3af58c4cd29c349338e4065269d8d9f387))
+
+
+
+
+
+# [3.10.0-beta.143](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.142...v3.10.0-beta.143) (2025-04-01)
+
+**Note:** Version bump only for package @ohif/ui-next
+
+
+
+
+
+# [3.10.0-beta.142](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.141...v3.10.0-beta.142) (2025-03-31)
+
+**Note:** Version bump only for package @ohif/ui-next
+
+
+
+
+
+# [3.10.0-beta.141](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.140...v3.10.0-beta.141) (2025-03-28)
+
+
+### Bug Fixes
+
+* jump to measurement forever ([#4867](https://github.com/OHIF/Viewers/issues/4867)) ([d7bd365](https://github.com/OHIF/Viewers/commit/d7bd36544a039deae30e179404452cde738b8b03))
+
+
+
+
+
+# [3.10.0-beta.140](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.139...v3.10.0-beta.140) (2025-03-27)
+
+**Note:** Version bump only for package @ohif/ui-next
+
+
+
+
+
+# [3.10.0-beta.139](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.138...v3.10.0-beta.139) (2025-03-27)
+
+**Note:** Version bump only for package @ohif/ui-next
+
+
+
+
+
+# [3.10.0-beta.138](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.137...v3.10.0-beta.138) (2025-03-26)
+
+**Note:** Version bump only for package @ohif/ui-next
+
+
+
+
+
+# [3.10.0-beta.137](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.136...v3.10.0-beta.137) (2025-03-26)
+
+**Note:** Version bump only for package @ohif/ui-next
+
+
+
+
+
 # [3.10.0-beta.136](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.135...v3.10.0-beta.136) (2025-03-25)
 
 **Note:** Version bump only for package @ohif/ui-next

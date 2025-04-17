@@ -38,7 +38,8 @@ function modeFactory({ modeConfiguration, servicesManager }) {
      * Lifecycle hooks
      */
     onModeEnter: function ({ servicesManager, extensionManager, commandsManager }: withAppTypes) {
-      const { measurementService, toolbarService, toolGroupService } = servicesManager.services;
+      const { measurementService, toolbarService, toolGroupService, customizationService } =
+        servicesManager.services;
       measurementService.clearMeasurements();
 
       // Init Default and SR ToolGroups
@@ -48,6 +49,12 @@ function modeFactory({ modeConfiguration, servicesManager }) {
       for (const [key, value] of Object.entries(getCustomization('toolbarSections'))) {
         toolbarService.createButtonSection(key, value);
       }
+
+      customizationService.setCustomizations({
+        'panelSegmentation.disableEditing': {
+          $set: true,
+        },
+      });
 
       // // ActivatePanel event trigger for when a segmentation or measurement is added.
       // // Do not force activation so as to respect the state the user may have left the UI in.

@@ -4,8 +4,14 @@ import getContextModule from './getContextModule';
 import getPanelModule from './getPanelModule';
 import getViewportModule from './getViewportModule';
 import { id } from './id.js';
-import { ViewportActionButton } from '@ohif/ui';
+import { ViewportActionButton } from '@ohif/ui-next';
 import i18n from '@ohif/i18n';
+import { measurementTrackingMode } from './contexts/TrackedMeasurementsContext/promptBeginTracking';
+import getCustomizationModule from './getCustomizationModule';
+import {
+  onDoubleClickHandler,
+  customOnDropHandlerCallback,
+} from './customizations/studyBrowserCustomization';
 
 const measurementTrackingExtension = {
   /**
@@ -18,8 +24,15 @@ const measurementTrackingExtension = {
   getViewportModule,
 
   onModeEnter({ servicesManager }) {
-    const { toolbarService } = servicesManager.services;
-
+    const { toolbarService, customizationService } = servicesManager.services;
+    customizationService.setCustomizations({
+      'studyBrowser.thumbnailDoubleClickCallback': {
+        $set: onDoubleClickHandler,
+      },
+      customOnDropHandler: {
+        $set: customOnDropHandlerCallback,
+      },
+    });
     toolbarService.addButtons(
       [
         {
@@ -38,6 +51,9 @@ const measurementTrackingExtension = {
       true // replace the button if it is already defined
     );
   },
+  getCustomizationModule,
 };
 
 export default measurementTrackingExtension;
+
+export { measurementTrackingMode };

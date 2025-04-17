@@ -3,6 +3,270 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.11.0-beta.9](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.8...v3.11.0-beta.9) (2025-04-17)
+
+**Note:** Version bump only for package @ohif/extension-dicom-microscopy
+
+
+
+
+
+# [3.11.0-beta.8](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.7...v3.11.0-beta.8) (2025-04-16)
+
+**Note:** Version bump only for package @ohif/extension-dicom-microscopy
+
+
+
+
+
+# [3.11.0-beta.7](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.6...v3.11.0-beta.7) (2025-04-16)
+
+**Note:** Version bump only for package @ohif/extension-dicom-microscopy
+
+
+
+
+
+# [3.11.0-beta.6](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.5...v3.11.0-beta.6) (2025-04-16)
+
+**Note:** Version bump only for package @ohif/extension-dicom-microscopy
+
+
+
+
+
+# [3.11.0-beta.5](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.4...v3.11.0-beta.5) (2025-04-14)
+
+**Note:** Version bump only for package @ohif/extension-dicom-microscopy
+
+
+
+
+
+# [3.11.0-beta.4](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.3...v3.11.0-beta.4) (2025-04-11)
+
+**Note:** Version bump only for package @ohif/extension-dicom-microscopy
+
+
+
+
+
+# [3.11.0-beta.3](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.2...v3.11.0-beta.3) (2025-04-11)
+
+**Note:** Version bump only for package @ohif/extension-dicom-microscopy
+
+
+
+
+
+# [3.11.0-beta.2](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.1...v3.11.0-beta.2) (2025-04-11)
+
+**Note:** Version bump only for package @ohif/extension-dicom-microscopy
+
+
+
+
+
+# [3.11.0-beta.1](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.0...v3.11.0-beta.1) (2025-04-10)
+
+**Note:** Version bump only for package @ohif/extension-dicom-microscopy
+
+
+
+
+
+# [3.11.0-beta.0](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.159...v3.11.0-beta.0) (2025-04-10)
+
+**Note:** Version bump only for package @ohif/extension-dicom-microscopy
+
+
+
+
+
+# [3.10.0-beta.159](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.158...v3.10.0-beta.159) (2025-04-09)
+
+**Note:** Version bump only for package @ohif/extension-dicom-microscopy
+
+
+
+
+
+# [3.10.0-beta.158](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.157...v3.10.0-beta.158) (2025-04-09)
+
+**Note:** Version bump only for package @ohif/extension-dicom-microscopy
+
+
+
+
+
+# [3.10.0-beta.157](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.156...v3.10.0-beta.157) (2025-04-09)
+
+**Note:** Version bump only for package @ohif/extension-dicom-microscopy
+
+
+
+
+
+# [3.10.0-beta.156](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.155...v3.10.0-beta.156) (2025-04-08)
+
+**Note:** Version bump only for package @ohif/extension-dicom-microscopy
+
+
+
+
+
+# [3.10.0-beta.155](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.154...v3.10.0-beta.155) (2025-04-08)
+
+**Note:** Version bump only for package @ohif/extension-dicom-microscopy
+
+
+
+
+
+# [3.10.0-beta.154](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.153...v3.10.0-beta.154) (2025-04-08)
+
+**Note:** Version bump only for package @ohif/extension-dicom-microscopy
+
+
+
+
+
+# [3.10.0-beta.153](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.152...v3.10.0-beta.153) (2025-04-08)
+
+**Note:** Version bump only for package @ohif/extension-dicom-microscopy
+
+
+
+
+
+# [3.10.0-beta.152](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.151...v3.10.0-beta.152) (2025-04-07)
+
+**Note:** Version bump only for package @ohif/extension-dicom-microscopy
+
+
+
+
+
+# [3.10.0-beta.151](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.150...v3.10.0-beta.151) (2025-04-07)
+
+**Note:** Version bump only for package @ohif/extension-dicom-microscopy
+
+
+
+
+
+# [3.10.0-beta.150](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.149...v3.10.0-beta.150) (2025-04-04)
+
+**Note:** Version bump only for package @ohif/extension-dicom-microscopy
+
+
+
+
+
+# [3.10.0-beta.149](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.148...v3.10.0-beta.149) (2025-04-04)
+
+**Note:** Version bump only for package @ohif/extension-dicom-microscopy
+
+
+
+
+
+# [3.10.0-beta.148](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.147...v3.10.0-beta.148) (2025-04-04)
+
+**Note:** Version bump only for package @ohif/extension-dicom-microscopy
+
+
+
+
+
+# [3.10.0-beta.147](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.146...v3.10.0-beta.147) (2025-04-03)
+
+**Note:** Version bump only for package @ohif/extension-dicom-microscopy
+
+
+
+
+
+# [3.10.0-beta.146](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.145...v3.10.0-beta.146) (2025-04-02)
+
+**Note:** Version bump only for package @ohif/extension-dicom-microscopy
+
+
+
+
+
+# [3.10.0-beta.145](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.144...v3.10.0-beta.145) (2025-04-02)
+
+**Note:** Version bump only for package @ohif/extension-dicom-microscopy
+
+
+
+
+
+# [3.10.0-beta.144](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.143...v3.10.0-beta.144) (2025-04-01)
+
+**Note:** Version bump only for package @ohif/extension-dicom-microscopy
+
+
+
+
+
+# [3.10.0-beta.143](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.142...v3.10.0-beta.143) (2025-04-01)
+
+**Note:** Version bump only for package @ohif/extension-dicom-microscopy
+
+
+
+
+
+# [3.10.0-beta.142](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.141...v3.10.0-beta.142) (2025-03-31)
+
+**Note:** Version bump only for package @ohif/extension-dicom-microscopy
+
+
+
+
+
+# [3.10.0-beta.141](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.140...v3.10.0-beta.141) (2025-03-28)
+
+**Note:** Version bump only for package @ohif/extension-dicom-microscopy
+
+
+
+
+
+# [3.10.0-beta.140](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.139...v3.10.0-beta.140) (2025-03-27)
+
+**Note:** Version bump only for package @ohif/extension-dicom-microscopy
+
+
+
+
+
+# [3.10.0-beta.139](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.138...v3.10.0-beta.139) (2025-03-27)
+
+**Note:** Version bump only for package @ohif/extension-dicom-microscopy
+
+
+
+
+
+# [3.10.0-beta.138](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.137...v3.10.0-beta.138) (2025-03-26)
+
+**Note:** Version bump only for package @ohif/extension-dicom-microscopy
+
+
+
+
+
+# [3.10.0-beta.137](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.136...v3.10.0-beta.137) (2025-03-26)
+
+**Note:** Version bump only for package @ohif/extension-dicom-microscopy
+
+
+
+
+
 # [3.10.0-beta.136](https://github.com/OHIF/Viewers/compare/v3.10.0-beta.135...v3.10.0-beta.136) (2025-03-25)
 
 **Note:** Version bump only for package @ohif/extension-dicom-microscopy

@@ -1,4 +1,4 @@
-import { expect } from '@playwright/test';
+import { expect } from 'playwright-test-coverage';
 import { Locator, Page } from 'playwright';
 
 /**
@@ -21,7 +21,8 @@ const checkForScreenshot = async (
   for (let i = 0; i < attempts; i++) {
     try {
       await expect(locator).toHaveScreenshot(screenshotPath, {
-        maxDiffPixelRatio: 0.1,
+        // 4% tolerance for screenshot comparison
+        maxDiffPixelRatio: 0.04,
       });
       return true;
     } catch (error) {

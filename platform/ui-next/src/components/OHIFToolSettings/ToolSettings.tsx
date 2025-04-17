@@ -2,12 +2,14 @@ import React from 'react';
 import RowInputRange from './RowInputRange';
 import RowSegmentedControl from './RowSegmentedControl';
 import RowDoubleRange from './RowDoubleRange';
+import { Button } from '../Button';
 
 const SETTING_TYPES = {
   RANGE: 'range',
   RADIO: 'radio',
   CUSTOM: 'custom',
   DOUBLE_RANGE: 'double-range',
+  BUTTON: 'button',
 };
 
 function ToolSettings({ options }) {
@@ -35,6 +37,8 @@ function ToolSettings({ options }) {
             return renderDoubleRangeSetting(option);
           case SETTING_TYPES.CUSTOM:
             return renderCustomSetting(option);
+          case SETTING_TYPES.BUTTON:
+            return renderButtonSetting(option);
           default:
             return null;
         }
@@ -94,6 +98,18 @@ const renderCustomSetting = option => {
     <div key={option.id}>
       {typeof option.children === 'function' ? option.children() : option.children}
     </div>
+  );
+};
+
+const renderButtonSetting = option => {
+  return (
+    <Button
+      key={option.id}
+      variant="ghost"
+      onClick={() => option.onChange()}
+    >
+      {option.name}
+    </Button>
   );
 };
 

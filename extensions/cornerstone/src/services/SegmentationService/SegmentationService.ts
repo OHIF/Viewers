@@ -277,6 +277,11 @@ class SegmentationService extends PubSubService {
   ): Promise<void> {
     const segmentation = this.getSegmentation(segmentationId);
     const csViewport = this.getAndValidateViewport(viewportId);
+
+    if (!csViewport) {
+      return;
+    }
+
     const colorLUTIndex = this._segmentationIdToColorLUTIndexMap.get(segmentationId);
 
     const defaultRepresentationType = csToolsEnums.SegmentationRepresentations.Labelmap;
@@ -360,7 +365,7 @@ class SegmentationService extends PubSubService {
         type: LABELMAP,
         data: {
           imageIds: segImageIds,
-          referencedVolumeId: this._getVolumeIdForDisplaySet(displaySet),
+          // referencedVolumeId: this._getVolumeIdForDisplaySet(displaySet),
           referencedImageIds: referenceImageIds,
         },
       },
@@ -426,6 +431,8 @@ class SegmentationService extends PubSubService {
       ...image,
       ...metaData.get('instance', image.referencedImageId),
     }));
+
+    segDisplaySet.imageIds = derivedImageIds;
 
     // We should parse the segmentation as separate slices to support overlapping segments.
     // This parsing should occur in the CornerstoneJS library adapters.
@@ -513,7 +520,7 @@ class SegmentationService extends PubSubService {
         type: LABELMAP,
         data: {
           imageIds: derivedImageIds,
-          referencedVolumeId: this._getVolumeIdForDisplaySet(referencedDisplaySet),
+          // referencedVolumeId: this._getVolumeIdForDisplaySet(referencedDisplaySet),
           referencedImageIds: imageIds as string[],
         },
       },
@@ -564,11 +571,12 @@ class SegmentationService extends PubSubService {
 
     const referencedImageIdsWithGeometry = Array.from(structureSet.ReferencedSOPInstanceUIDsSet);
 
-    const referencedImageIds = referencedDisplaySet.instances.map(image => image.imageId);
+    const referencedImageIds = referencedDisplaySet.imageIds;
     // find the first image id that contains a referenced SOP instance UID
-    const firstSegmentedSliceImageId = referencedImageIds.find(imageId =>
-      referencedImageIdsWithGeometry.some(referencedId => imageId.includes(referencedId))
-    );
+    const firstSegmentedSliceImageId =
+      referencedImageIds?.find(imageId =>
+        referencedImageIdsWithGeometry.some(referencedId => imageId.includes(referencedId))
+      ) || null;
 
     rtDisplaySet.firstSegmentedSliceImageId = firstSegmentedSliceImageId;
     // Map ROI contours to RT Struct Data
@@ -602,9 +610,15 @@ class SegmentationService extends PubSubService {
     const segments: { [segmentIndex: string]: cstTypes.Segment } = {};
     let segmentsCachedStats = {};
 
+    // Create colorLUT array for RT structures
+    const colorLUT = [[0, 0, 0, 0]]; // First entry is transparent for index 0
+
     // Process each segment similarly to the SEG function
     for (const rtStructData of allRTStructData) {
       const { data, id, color, segmentIndex, geometryId } = rtStructData;
+
+      // Add the color to the colorLUT array
+      colorLUT.push(color);
 
       try {
         const geometry = await geometryLoader.createAndCacheGeometry(geometryId, {
@@ -646,6 +660,11 @@ class SegmentationService extends PubSubService {
         continue; // Continue processing other segments even if one fails
       }
     }
+
+    // Create and register the colorLUT
+    const colorLUTIndex = getNextColorLUTIndex();
+    addColorLUT(colorLUT, colorLUTIndex);
+    this._segmentationIdToColorLUTIndexMap.set(segmentationId, colorLUTIndex);
 
     // Assign processed segments to segmentation config
     segmentation.config.segments = segments;
@@ -1237,7 +1256,8 @@ class SegmentationService extends PubSubService {
     const csViewport =
       this.servicesManager.services.cornerstoneViewportService.getCornerstoneViewport(viewportId);
     if (!csViewport) {
-      throw new Error(`Viewport with id ${viewportId} not found.`);
+      console.warn(`Viewport with id ${viewportId} not found.`);
+      return null;
     }
     return csViewport;
   }
@@ -1751,6 +1771,12 @@ class SegmentationService extends PubSubService {
     }
 
     const { center } = cachedStats;
+
+    if (!center) {
+      return {
+        world: cachedStats.namedStats.center.value,
+      };
+    }
 
     return center;
   }

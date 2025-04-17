@@ -62,9 +62,6 @@ RUN bun pm cache rm
 RUN bun install
 # Copy the local directory
 COPY --link --exclude=yarn.lock --exclude=package.json --exclude=Dockerfile . .
-# Do a second install to finalize things after the copy
-RUN bun run show:config
-RUN bun install
 
 # Build here
 # After install it should hopefully be stable until the local directory changes
@@ -72,6 +69,7 @@ ENV QUICK_BUILD true
 # ENV GENERATE_SOURCEMAP=false
 ARG APP_CONFIG=config/default.js
 ARG PUBLIC_URL=/
+ENV PUBLIC_URL=${PUBLIC_URL}
 
 RUN bun run show:config
 RUN bun run build
@@ -84,16 +82,19 @@ RUN ./.docker/compressDist.sh
 # which runs Nginx using Alpine Linux
 FROM nginxinc/nginx-unprivileged:1.27-alpine as final
 #RUN apk add --no-cache bash
-ARG PORT=80
-ENV PORT=${PORT}
 ARG PUBLIC_URL=/
 ENV PUBLIC_URL=${PUBLIC_URL}
+ARG PORT=80
+ENV PORT=${PORT}
 RUN rm /etc/nginx/conf.d/default.conf
 USER nginx
 COPY --chown=nginx:nginx .docker/Viewer-v3.x /usr/src
 RUN chmod 777 /usr/src/entrypoint.sh
 COPY --from=builder /usr/src/app/platform/app/dist /usr/share/nginx/html${PUBLIC_URL}
-COPY --from=builder /usr/src/app/platform/app/dist/index.html /usr/share/nginx/html
+# Copy paths that are renamed/redirected generally
+# Microscopy libraries depend on root level include, so must be copied
+COPY --from=builder /usr/src/app/platform/app/dist/dicom-microscopy-viewer /usr/share/nginx/html/dicom-microscopy-viewer
+
 # In entrypoint.sh, app-config.js might be overwritten, so chmod it to be writeable.
 # The nginx user cannot chmod it, so change to root.
 USER root

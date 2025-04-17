@@ -2,8 +2,9 @@ import { utils } from '@ohif/core';
 
 import createReportAsync from '../Actions/createReportAsync';
 import { createReportDialogPrompt } from '../Panels';
-import getNextSRSeriesNumber from './getNextSRSeriesNumber';
 import PROMPT_RESPONSES from './_shared/PROMPT_RESPONSES';
+import { getSRSeriesAndInstanceNumber } from './getSRSeriesAndInstanceNumber';
+import { getSeriesDateTime } from './getCurrentDicomDateTime';
 
 const {
   filterAnd,
@@ -18,6 +19,7 @@ async function promptSaveReport({ servicesManager, commandsManager, extensionMan
   const isBackupSave = evt.isBackupSave === undefined ? evt.data.isBackupSave : evt.isBackupSave;
   const StudyInstanceUID = evt?.data?.StudyInstanceUID || ctx.trackedStudy;
   const SeriesInstanceUID = evt?.data?.SeriesInstanceUID;
+  const { displaySetInstanceUID } = evt.data ?? evt;
 
   const {
     trackedSeries,
@@ -26,7 +28,7 @@ async function promptSaveReport({ servicesManager, commandsManager, extensionMan
       filterMeasurementsBySeriesUID(trackedSeries),
       filterPlanarMeasurement
     ),
-    defaultSaveTitle = 'Research Derived Series',
+    defaultSaveTitle = 'Create Report',
   } = ctx;
   let displaySetInstanceUIDs;
 
@@ -38,13 +40,18 @@ async function promptSaveReport({ servicesManager, commandsManager, extensionMan
     });
 
     if (promptResult.action === PROMPT_RESPONSES.CREATE_REPORT) {
-      const dataSources = extensionManager.getDataSources();
+      const dataSources = extensionManager.getDataSources(promptResult.dataSourceName);
       const dataSource = dataSources[0];
       const measurementData = measurementService.getMeasurements(measurementFilter);
 
       const SeriesDescription = promptResult.value || defaultSaveTitle;
 
-      const SeriesNumber = getNextSRSeriesNumber(displaySetService);
+      const { SeriesNumber, InstanceNumber, referenceDisplaySet } = getSRSeriesAndInstanceNumber({
+        displaySetService,
+        SeriesInstanceUid: promptResult.series,
+      });
+
+      const { SeriesDate, SeriesTime } = referenceDisplaySet ?? getSeriesDateTime();
 
       const getReport = async () => {
         return commandsManager.runCommand(
@@ -56,6 +63,10 @@ async function promptSaveReport({ servicesManager, commandsManager, extensionMan
             options: {
               SeriesDescription,
               SeriesNumber,
+              InstanceNumber,
+              SeriesInstanceUID: promptResult.series,
+              SeriesDate,
+              SeriesTime,
             },
           },
           'CORNERSTONE_STRUCTURED_REPORT'
@@ -76,6 +87,7 @@ async function promptSaveReport({ servicesManager, commandsManager, extensionMan
       SeriesInstanceUID,
       viewportId,
       isBackupSave,
+      displaySetInstanceUID,
     };
   } catch (error) {
     console.warn('Unable to save report', error);

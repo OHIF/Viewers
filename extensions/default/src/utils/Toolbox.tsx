@@ -85,7 +85,7 @@ export function Toolbox({ buttonSectionId, title }: { buttonSectionId: string; t
         {CustomConfigComponent && (
           <div className="ml-auto mr-2">
             <Icons.Settings
-              className="text-primary-active h-4 w-4"
+              className="text-primary h-4 w-4"
               onClick={e => {
                 e.stopPropagation();
                 setShowConfig(!showConfig);
@@ -95,7 +95,7 @@ export function Toolbox({ buttonSectionId, title }: { buttonSectionId: string; t
         )}
       </PanelSection.Header>
 
-      <PanelSection.Content className="flex-shrink-0 border-none">
+      <PanelSection.Content className="bg-muted flex-shrink-0 border-none">
         {showConfig && <CustomConfigComponent />}
         {toolboxSections.map(section => {
           const sectionId = section.componentProps.buttonSection;
@@ -131,7 +131,7 @@ export function Toolbox({ buttonSectionId, title }: { buttonSectionId: string; t
           );
         })}
         {activeToolOptions && (
-          <div className="bg-primary-dark h-auto px-2">
+          <div className="bg-primary-dark mt-1 h-auto px-2">
             <ToolSettings options={activeToolOptions} />
           </div>
         )}

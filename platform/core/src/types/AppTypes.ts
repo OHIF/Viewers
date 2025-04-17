@@ -56,7 +56,6 @@ declare global {
     export type UIViewportDialogService = UIViewportDialogServiceType;
     export type PanelService = PanelServiceType;
     export type StudyPrefetcherService = StudyPrefetcherServiceType;
-    export type MultiMonitorService;
 
     export interface Managers {
       servicesManager?: ServicesManager;
@@ -114,6 +113,7 @@ declare global {
         days?: number;
       };
       groupEnabledModesFirst?: boolean;
+      measurementTrackingMode?: 'standard' | 'simplified' | 'none';
       disableConfirmationPrompts?: boolean;
       showPatientInfo?: 'visible' | 'visibleCollapsed' | 'disabled' | 'visibleReadOnly';
       requestTransferSyntaxUID?: string;

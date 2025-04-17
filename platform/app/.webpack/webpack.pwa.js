@@ -24,6 +24,7 @@ const PROXY_TARGET = process.env.PROXY_TARGET;
 const PROXY_DOMAIN = process.env.PROXY_DOMAIN;
 const PROXY_PATH_REWRITE_FROM = process.env.PROXY_PATH_REWRITE_FROM;
 const PROXY_PATH_REWRITE_TO = process.env.PROXY_PATH_REWRITE_TO;
+const IS_COVERAGE = process.env.COVERAGE === 'true';
 
 const OHIF_PORT = Number(process.env.OHIF_PORT || 3000);
 const ENTRY_TARGET = process.env.ENTRY_TARGET || `${SRC_DIR}/index.js`;
@@ -100,6 +101,10 @@ module.exports = (env, argv) => {
               ignore: ['**/config/**', '**/html-templates/**', '.DS_Store'],
             },
           },
+          {
+            from: '../../../node_modules/onnxruntime-web/dist',
+            to: `${DIST_DIR}/ort`,
+          },
           // Short term solution to make sure GCloud config is available in output
           // for our docker implementation
           {
@@ -130,14 +135,18 @@ module.exports = (env, argv) => {
         },
       }),
       // Generate a service worker for fast local loads
-      new InjectManifest({
-        swDest: 'sw.js',
-        swSrc: path.join(SRC_DIR, 'service-worker.js'),
-        // Need to exclude the theme as it is updated independently
-        exclude: [/theme/],
-        // Cache large files for the manifests to avoid warning messages
-        maximumFileSizeToCacheInBytes: 1024 * 1024 * 50,
-      }),
+      ...(IS_COVERAGE
+        ? []
+        : [
+            new InjectManifest({
+              swDest: 'sw.js',
+              swSrc: path.join(SRC_DIR, 'service-worker.js'),
+              // Need to exclude the theme as it is updated independently
+              exclude: [/theme/],
+              // Cache large files for the manifests to avoid warning messages
+              maximumFileSizeToCacheInBytes: 1024 * 1024 * 50,
+            }),
+          ]),
     ],
     // https://webpack.js.org/configuration/dev-server/
     devServer: {
@@ -153,6 +162,12 @@ module.exports = (env, argv) => {
       },
       proxy: {
         '/dicomweb': 'http://localhost:5000',
+        '/dicom-microscopy-viewer': {
+          target: 'http://localhost:3000',
+          pathRewrite: {
+            '^/dicom-microscopy-viewer': `/${PUBLIC_URL}/dicom-microscopy-viewer`,
+          },
+        },
       },
       static: [
         {

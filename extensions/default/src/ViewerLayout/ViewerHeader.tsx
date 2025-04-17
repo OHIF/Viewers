@@ -7,7 +7,7 @@ import { useSystem } from '@ohif/core';
 import { Toolbar } from '../Toolbar/Toolbar';
 import HeaderPatientInfo from './HeaderPatientInfo';
 import { PatientInfoVisibility } from './HeaderPatientInfo/HeaderPatientInfo';
-import { preserveQueryParameters, publicUrl } from '@ohif/app';
+import { preserveQueryParameters } from '@ohif/app';
 
 function ViewerHeader({ appConfig }: withAppTypes<{ appConfig: AppTypes.Config }>) {
   const { servicesManager, extensionManager, commandsManager } = useSystem();
@@ -30,7 +30,7 @@ function ViewerHeader({ appConfig }: withAppTypes<{ appConfig: AppTypes.Config }
     preserveQueryParameters(searchQuery);
 
     navigate({
-      pathname: publicUrl,
+      pathname: '/',
       search: decodeURIComponent(searchQuery.toString()),
     });
   };
@@ -95,7 +95,7 @@ function ViewerHeader({ appConfig }: withAppTypes<{ appConfig: AppTypes.Config }
         )
       }
       UndoRedo={
-        <div className="text-primary-active flex cursor-pointer items-center">
+        <div className="text-primary flex cursor-pointer items-center">
           <Button
             variant="ghost"
             className="hover:bg-primary-dark"

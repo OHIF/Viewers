@@ -11,7 +11,6 @@ import filtersMeta from './filtersMeta.js';
 import { useAppConfig } from '@state';
 import { useDebounce, useSearchParams } from '@hooks';
 import { utils } from '@ohif/core';
-import publicUrl from '../../utils/publicUrl';
 
 import {
   StudyListExpandedRow,
@@ -209,7 +208,7 @@ function WorkList({
       skipEmptyString: true,
     });
     navigate({
-      pathname: publicUrl,
+      pathname: '/',
       search: search ? `?${search}` : undefined,
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -343,7 +342,7 @@ function WorkList({
             <>
               <Icons.GroupLayers
                 className={classnames('mr-2 inline-flex w-4', {
-                  'text-primary-active': isExpanded,
+                  'text-primary': isExpanded,
                   'text-secondary-light': !isExpanded,
                 })}
               />
@@ -417,7 +416,7 @@ function WorkList({
                   <Link
                     className={isValidMode ? '' : 'cursor-not-allowed'}
                     key={i}
-                    to={`${publicUrl}${mode.routeName}${dataPath || ''}?${query.toString()}`}
+                    to={`${mode.routeName}${dataPath || ''}?${query.toString()}`}
                     onClick={event => {
                       // In case any event bubbles up for an invalid mode, prevent the navigation.
                       // For example, the event bubbles up when the icon embedded in the disabled button is clicked.
