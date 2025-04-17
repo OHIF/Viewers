@@ -8,106 +8,122 @@ import AllInOneMenu, {
   HorizontalDirection,
   VerticalDirection,
 } from '../../../../ui-next/src/components/AllInOneMenu';
-import { Icons } from '../../../../ui-next/src/components/Icons';
+import { Switch } from '../../../../ui-next/src/components/Switch';
 import ShowcaseRow from './ShowcaseRow';
 
 /**
  * Pure‑UI mock of the in‑app Window/Level menu.
- * *No* services or commands – every click is inert.
+ * Clickable, but all actions are inert.
  */
 export default function ViewerMenuDemoShowcase() {
+  /**
+   * Helpers to build common static items so the JSX stays concise
+   */
+  const renderColorLUTItems = () =>
+    [
+      'Grayscale',
+      'X Ray',
+      'HSV',
+      'Hot Iron',
+      'Red Hot',
+      'S PET',
+      'Perfusion',
+      'Rainbow',
+      'SUV',
+      'GE 256',
+      'GE',
+      'Siemens',
+    ].map(name => (
+      <Item
+        key={name}
+        label={name}
+      />
+    ));
+
+  const renderWindowPresetItems = () =>
+    [
+      { desc: 'Soft tissue', wl: '400 / 40' },
+      { desc: 'Lung', wl: '1500 / -600' },
+      { desc: 'Liver', wl: '150 / 90' },
+      { desc: 'Bone', wl: '2500 / 480' },
+      { desc: 'Brain', wl: '80 / 40' },
+    ].map(p => (
+      <Item
+        key={p.desc}
+        label={p.desc}
+        secondaryLabel={p.wl}
+      />
+    ));
+
   return (
     <ShowcaseRow
       title="Viewer Menu (Mock)"
       description="Static recreation of the App’s Window‑Level menu. You can open sub‑menus and tabs, but nothing executes."
-      code={`<IconMenu icon="viewport-window-level">
-  <ItemPanel> …your static items… </ItemPanel>
-</IconMenu>`}
+      code={`<IconMenu icon="viewport-window-level">\n  <ItemPanel>…mock items…</ItemPanel>\n</IconMenu>`}
     >
       <div className="bg-popover relative flex h-12 items-center rounded px-4">
-        {/* ——— 3‑dot icon that opens the menu ——— */}
+        {/* —— trigger icon —— */}
         <IconMenu
           icon="viewport-window-level"
           iconClassName="text-xl text-highlight hover:bg-primary/30 cursor-pointer rounded"
           horizontalDirection={HorizontalDirection.LeftToRight}
           verticalDirection={VerticalDirection.TopToBottom}
+          /* keep width consistent with production menu */
+          menuStyle={{ width: 280, maxHeight: 500 }}
         >
-          {/* ——— FIRST PANEL ——— */}
-          <ItemPanel
-            index={0}
-            label="Display"
-          >
-            {/* simple toggles */}
-            <Item label="Preview in viewport">
-              {/* you can add <Switch /> here if you’d like — it still won’t do anything */}
-            </Item>
-            <Item label="Display Color Bar" />
+          {/* —— TOP‑LEVEL PANEL —— */}
+          <ItemPanel label="Display">
+            {/* Display Color bar toggle */}
+            <Item
+              label="Display Color bar"
+              rightIcon={
+                <Switch
+                  checked={false}
+                  disabled
+                  className="pointer-events-none"
+                />
+              }
+              useIconSpace={false}
+            />
             <DividerItem />
 
-            {/* Sub‑menu for Color LUT */}
+            {/* Color LUT sub‑menu */}
             <SubMenu
               itemLabel="Color LUT"
               itemIcon="icon-color-lut"
             >
               <ItemPanel
-                index={1}
-                label="LUTs"
-                maxHeight="200px"
+                label="Color LUTs"
+                maxHeight="calc(100vh - 250px)"
+                className="flex flex-col"
               >
-                {['Grayscale', 'Hot Iron', 'PET', 'Viridis'].map(name => (
-                  <Item
-                    key={name}
-                    label={name}
-                  />
-                ))}
+                <DividerItem />
+                <Item
+                  label="Preview in viewport"
+                  rightIcon={
+                    <Switch
+                      checked={false}
+                      disabled
+                      className="pointer-events-none"
+                    />
+                  }
+                />
+                <DividerItem />
+                {renderColorLUTItems()}
               </ItemPanel>
             </SubMenu>
 
-            {/* Sub‑menu for Window/Level presets */}
+            {/* Window presets sub‑menu */}
             <SubMenu
               itemLabel="Window Presets"
               itemIcon="viewport-window-level"
             >
-              <ItemPanel
-                index={2}
-                label="Presets"
-              >
-                {[
-                  { desc: 'Soft tissue', wl: '400 / 40' },
-                  { desc: 'Lung', wl: '1500 / ‑600' },
-                  { desc: 'Bone', wl: '2500 / 480' },
-                ].map(p => (
-                  <Item
-                    key={p.desc}
-                    label={p.desc}
-                    secondaryLabel={p.wl}
-                  />
-                ))}
+              <ItemPanel label="CT Presets">
+                <DividerItem />
+                {renderWindowPresetItems()}
               </ItemPanel>
             </SubMenu>
           </ItemPanel>
-
-          {/* ——— SECOND PANEL: 3‑D options ——— */}
-          <SubMenu
-            itemLabel="Rendering Options"
-            itemIcon="volume-3d"
-          >
-            <ItemPanel
-              index={3}
-              label="Rendering"
-            >
-              <Item
-                label="Quality"
-                secondaryLabel="High"
-              />
-              <Item
-                label="Lighting"
-                secondaryLabel="On"
-              />
-              <DividerItem />
-              <Item label="Shade" />
-            </ItemPanel>
-          </SubMenu>
         </IconMenu>
 
         <span className="text-muted-foreground ml-3 text-sm">
