@@ -18,6 +18,8 @@ import ToastShowcase from './components/ToastShowcase';
 import ToolButtonShowcase from './components/ToolButtonShowcase';
 import ToolButtonListShowcase from './components/ToolButtonListShowcase';
 import NumericMetaShowcase from './components/NumericMetaShowcase';
+import AllInOneMenuShowcase from './components/AllInOneMenuShowcase';
+import ViewerMenuDemoShowcase from './components/ViewerMenuDemoShowcase';
 /**
  * Components List page that displays all available UI components
  */
@@ -48,6 +50,8 @@ export default function ComponentsList() {
             <ToolButtonShowcase />
             <ToolButtonListShowcase />
             <NumericMetaShowcase />
+            <AllInOneMenuShowcase />
+            <ViewerMenuDemoShowcase />
           </div>
         </div>
       </TooltipProvider>
