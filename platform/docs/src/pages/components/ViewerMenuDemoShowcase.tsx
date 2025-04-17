@@ -61,7 +61,7 @@ export default function ViewerMenuDemoShowcase() {
       description="Static recreation of the App’s Window‑Level menu. You can open sub‑menus and tabs, but nothing executes."
       code={`<IconMenu icon="viewport-window-level">\n  <ItemPanel>…mock items…</ItemPanel>\n</IconMenu>`}
     >
-      <div className="bg-popover relative flex h-12 items-center rounded px-4">
+      <div className="border-input/70 relative flex h-12 items-center rounded border bg-black px-4">
         {/* —— trigger icon —— */}
         <IconMenu
           icon="viewport-window-level"
@@ -69,7 +69,7 @@ export default function ViewerMenuDemoShowcase() {
           horizontalDirection={HorizontalDirection.LeftToRight}
           verticalDirection={VerticalDirection.TopToBottom}
           /* keep width consistent with production menu */
-          menuStyle={{ width: 280, maxHeight: 500 }}
+          menuStyle={{ width: 212, maxHeight: 500 }}
         >
           {/* —— TOP‑LEVEL PANEL —— */}
           <ItemPanel label="Display">
@@ -97,7 +97,6 @@ export default function ViewerMenuDemoShowcase() {
                 maxHeight="calc(100vh - 250px)"
                 className="flex flex-col"
               >
-                <DividerItem />
                 <Item
                   label="Preview in viewport"
                   rightIcon={
@@ -118,16 +117,13 @@ export default function ViewerMenuDemoShowcase() {
               itemLabel="Window Presets"
               itemIcon="viewport-window-level"
             >
-              <ItemPanel label="CT Presets">
-                <DividerItem />
-                {renderWindowPresetItems()}
-              </ItemPanel>
+              <ItemPanel label="CT Presets">{renderWindowPresetItems()}</ItemPanel>
             </SubMenu>
           </ItemPanel>
         </IconMenu>
 
         <span className="text-muted-foreground ml-3 text-sm">
-          Click the icon to explore (callbacks disabled)
+          Click the icon to explore an example
         </span>
       </div>
     </ShowcaseRow>
