@@ -371,7 +371,7 @@ export default class ExtensionManager extends PubSubService {
   };
 
   getDataSources = dataSourceName => {
-    if (dataSourceName === undefined) {
+    if (!dataSourceName) {
       // Default to the activeDataSource
       dataSourceName = this.activeDataSourceName;
     }
