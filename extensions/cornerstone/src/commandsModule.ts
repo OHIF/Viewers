@@ -852,6 +852,18 @@ function commandsModule({
 
       viewport.render();
     },
+    resetAllViewports: () => {
+      const { viewports } = viewportGridService.getState();
+
+      viewports.forEach((_: StackViewport, viewportId: string) => {
+        const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
+        if (viewport) {
+          viewport.resetProperties?.();
+          viewport.resetCamera();
+          viewport.render();
+        }
+      });
+    },
     scaleViewport: ({ direction }) => {
       const enabledElement = _getActiveViewportEnabledElement();
       const scaleFactor = direction > 0 ? 0.9 : 1.1;
@@ -1837,6 +1849,9 @@ function commandsModule({
     },
     resetViewport: {
       commandFn: actions.resetViewport,
+    },
+    resetAllViewports: {
+      commandFn: actions.resetAllViewports,
     },
     scaleUpViewport: {
       commandFn: actions.scaleViewport,

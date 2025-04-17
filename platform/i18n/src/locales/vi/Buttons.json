@@ -31,6 +31,7 @@
   "ROI Window": "ROI Window",
   "Rectangle": "Đo chữ nhật",
   "Reset": "$t(Common:Reset)",
+  "Reset All Views": "$t(Common:Reset) tất cả các chế độ xem",
   "Reset to defaults": "$t(Common:Reset) đến mặc định",
   "Rotate Right": "Xoay phải",
   "Sagittal": "Mặt phẳng đứng dọc",
