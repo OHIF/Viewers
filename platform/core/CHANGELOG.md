@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.11.0-beta.9](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.8...v3.11.0-beta.9) (2025-04-17)
+
+
+### Bug Fixes
+
+* **ExtensionManager:** getDataSources method ([#4959](https://github.com/OHIF/Viewers/issues/4959)) ([66a16cd](https://github.com/OHIF/Viewers/commit/66a16cd22f6cedc6e4287dd1304e1f87de4c0d08))
+
+
+
+
+
 # [3.11.0-beta.8](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.7...v3.11.0-beta.8) (2025-04-16)
 
 **Note:** Version bump only for package @ohif/core
