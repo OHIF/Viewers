@@ -1,4 +1,5 @@
 import { utils, classes, DisplaySetService, Types } from '@ohif/core';
+import { imageToWorldCoords } from '@cornerstonejs/core/utilities';
 import { Enums as CSExtensionEnums } from '@ohif/extension-cornerstone';
 import { adaptersSR } from '@cornerstonejs/adapters';
 
@@ -298,6 +299,12 @@ function _checkIfCanAddMeasurementsToDisplaySet(
       imageId &&
       _measurementReferencesSOPInstanceUID(measurement, ReferencedSOPInstanceUID, frame)
     ) {
+      if (measurement.textBoxSequence && !measurement.textBox) {
+        const { GraphicData } = measurement.textBoxSequence;
+        const textBoxWorldPosition = imageToWorldCoords(imageId, [GraphicData[0], GraphicData[1]]);
+        measurement.textBox = { worldPosition: textBoxWorldPosition, hasMoved: true };
+      }
+
       addSRAnnotation(measurement, imageId, frame);
 
       // Update measurement properties
@@ -372,6 +379,15 @@ function getSopClassHandlerModule({ servicesManager, extensionManager }) {
   ];
 }
 
+function isTextBoxSequence(item) {
+  const { ConceptNameCodeSequence, GraphicType, ValueType } = item;
+  return (
+    ValueType === 'SCOORD' &&
+    ConceptNameCodeSequence.CodeMeaning === 'Annotation Position' &&
+    GraphicType === 'POINT'
+  );
+}
+
 /**
  * Retrieves the measurements from the ImagingMeasurementReportContentSequence.
  *
@@ -401,8 +417,14 @@ function _getMeasurements(ImagingMeasurementReportContentSequence) {
       const mergedContentSequence =
         mergedContentSequencesByTrackingUniqueIdentifiers[trackingUniqueIdentifier];
 
-      const measurement = _processMeasurement(mergedContentSequence);
+      const measurement = _processMeasurement(
+        mergedContentSequence.filter(item => !isTextBoxSequence(item))
+      );
       if (measurement) {
+        const textBoxSequence = mergedContentSequence.find(isTextBoxSequence);
+        if (textBoxSequence) {
+          measurement.textBoxSequence = textBoxSequence;
+        }
         measurements.push(measurement);
       }
     }
@@ -604,11 +626,11 @@ function _processNonGeometricallyDefinedMeasurement(mergedContentSequence) {
     }
   }
 
-  NUMContentItems.forEach(item => {
+  NUMContentItems.filter(item => !isTextBoxSequence(item)).forEach(item => {
     const { ConceptNameCodeSequence, ContentSequence, MeasuredValueSequence } = item;
 
     const { ValueType } = ContentSequence;
-    if (!ValueType === 'SCOORD') {
+    if (ValueType !== 'SCOORD') {
       console.warn(`Graphic ${ValueType} not currently supported, skipping annotation.`);
       return;
     }
