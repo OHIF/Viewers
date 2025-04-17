@@ -103,6 +103,7 @@ function modeFactory({ modeConfiguration }) {
                     // Share the sop class handler with cornerstone version of it
                     '@ohif/extension-cornerstone.sopClassHandlerModule.DicomMicroscopySopClassHandler',
                     '@ohif/extension-dicom-microscopy.sopClassHandlerModule.DicomMicroscopySRSopClassHandler',
+                    '@ohif/extension-dicom-microscopy.sopClassHandlerModule.DicomMicroscopyANNSopClassHandler',
                   ],
                 },
                 {
@@ -124,6 +125,7 @@ function modeFactory({ modeConfiguration }) {
     sopClassHandlers: [
       '@ohif/extension-cornerstone.sopClassHandlerModule.DicomMicroscopySopClassHandler',
       '@ohif/extension-dicom-microscopy.sopClassHandlerModule.DicomMicroscopySRSopClassHandler',
+      '@ohif/extension-dicom-microscopy.sopClassHandlerModule.DicomMicroscopyANNSopClassHandler',
       dicomvideo.sopClassHandler,
       dicompdf.sopClassHandler,
     ],

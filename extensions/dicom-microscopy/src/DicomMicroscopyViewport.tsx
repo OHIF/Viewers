@@ -172,7 +172,7 @@ function DicomMicroscopyViewport({
       microscopyService.clearAnnotations();
 
       let smDisplaySet = displaySet;
-      if (displaySet.Modality === 'SR') {
+      if (displaySet.Modality === 'SR' || displaySet.Modality === 'ANN') {
         // for SR displaySet, let's load the actual image displaySet
         smDisplaySet = displaySet.getSourceDisplaySet();
       }
@@ -180,7 +180,7 @@ function DicomMicroscopyViewport({
 
       await loadViewer(smDisplaySet.others);
 
-      if (displaySet.Modality === 'SR') {
+      if (displaySet.Modality === 'SR' || displaySet.Modality === 'ANN') {
         displaySet.load(smDisplaySet);
       }
     },
@@ -206,7 +206,7 @@ function DicomMicroscopyViewport({
     microscopyService.clearAnnotations();
 
     // loading SR
-    if (displaySet.Modality === 'SR') {
+    if (displaySet.Modality === 'SR' || displaySet.Modality === 'ANN') {
       const referencedDisplaySet = displaySet.getSourceDisplaySet();
       displaySet.load(referencedDisplaySet);
     }

@@ -1,0 +1,102 @@
+import OHIF, { DicomMetadataStore } from '@ohif/core';
+import loadAnnotation from './utils/loadAnnotation';
+import getSourceDisplaySet from './utils/getSourceDisplaySet';
+
+const { utils } = OHIF;
+
+const SOP_CLASS_UIDS = {
+  MICROSCOPY_BULK_SIMPLE_ANNOTATION: '1.2.840.10008.5.1.4.1.1.91.1',
+};
+
+const SOPClassHandlerId =
+  '@ohif/extension-dicom-microscopy.sopClassHandlerModule.DicomMicroscopyANNSopClassHandler';
+
+function _getDisplaySetsFromSeries(instances, servicesManager, extensionManager) {
+  // If the series has no instances, stop here
+  if (!instances || !instances.length) {
+    throw new Error('No instances were provided');
+  }
+
+  const { displaySetService, microscopyService } = servicesManager.services;
+
+  const instance = instances[0];
+
+  const naturalizedDataset = DicomMetadataStore.getSeries(
+    instance.StudyInstanceUID,
+    instance.SeriesInstanceUID
+  ).instances[0];
+
+  const {
+    SeriesDescription,
+    ContentDate,
+    ContentTime,
+    SeriesNumber,
+    StudyInstanceUID,
+    SeriesInstanceUID,
+    SOPInstanceUID,
+    SOPClassUID,
+  } = instance;
+
+  const displaySet = {
+    plugin: 'microscopy',
+    Modality: 'ANN',
+    altImageText: 'Microscopy Annotation',
+    displaySetInstanceUID: utils.guid(),
+    SOPInstanceUID,
+    SeriesInstanceUID,
+    StudyInstanceUID,
+    SOPClassHandlerId,
+    SOPClassUID,
+    SeriesDescription,
+    // Map the content date/time to the series date/time, these are only used for filtering.
+    SeriesDate: ContentDate,
+    SeriesTime: ContentTime,
+    SeriesNumber,
+    instance,
+    metadata: naturalizedDataset,
+    isDerived: true,
+    isLoading: false,
+    isLoaded: false,
+    loadError: false,
+  };
+
+  displaySet.load = function () {
+    return loadAnnotation({
+      microscopyService,
+      displaySet,
+      extensionManager,
+      servicesManager,
+    }).catch(error => {
+      displaySet.isLoaded = false;
+      displaySet.loadError = true;
+      throw new Error(error);
+    });
+  };
+
+  displaySet.getSourceDisplaySet = function () {
+    let allDisplaySets = [];
+    const studyMetadata = DicomMetadataStore.getStudy(StudyInstanceUID);
+    studyMetadata.series.forEach(series => {
+      const displaySets = displaySetService.getDisplaySetsForSeries(series.SeriesInstanceUID);
+      allDisplaySets = allDisplaySets.concat(displaySets);
+    });
+    return getSourceDisplaySet(allDisplaySets, displaySet);
+  };
+
+  return [displaySet];
+}
+
+export default function getDicomMicroscopyANNSopClassHandler({
+  servicesManager,
+  extensionManager,
+}) {
+  const getDisplaySetsFromSeries = instances => {
+    return _getDisplaySetsFromSeries(instances, servicesManager, extensionManager);
+  };
+
+  return {
+    name: 'DicomMicroscopyANNSopClassHandler',
+    sopClassUids: [SOP_CLASS_UIDS.MICROSCOPY_BULK_SIMPLE_ANNOTATION],
+    getDisplaySetsFromSeries,
+  };
+}
