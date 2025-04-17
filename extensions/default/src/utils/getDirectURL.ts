@@ -14,10 +14,10 @@ import createRenderedRetrieve from './createRenderedRetrieve';
  * @param {string} params.singlepart is the type of the part to retrieve
  * @param {string} params.fetchPart unknown?
  * @param {string} params.url unknown?
- * @returns an absolute URL to the resource, if the absolute URL can be retrieved as singlepart,
- *    or is already retrieved, or a promise to a URL for such use if a BulkDataURI
+ * @returns {string} an absolute URL to the resource, if the absolute URL can be retrieved as singlepart,
+ *    or is already retrieved
  */
-const getDirectURL = (config, params) => {
+const getDirectURL = async (config, params) => {
   const { singlepart } = config;
   const {
     instance,
@@ -49,10 +49,11 @@ const getDirectURL = (config, params) => {
         const options = {
           mediaType: defaultType,
         };
-        return value.retrieveBulkData(options).then(arr => {
+        const directRetrieveURL = await value.retrieveBulkData(options).then(arr => {
           value.DirectRetrieveURL = URL.createObjectURL(new Blob([arr], { type: defaultType }));
           return value.DirectRetrieveURL;
-        });
+        })
+        return directRetrieveURL;
       }
       console.warn('Unable to retrieve', tag, 'from', instance);
       return undefined;
