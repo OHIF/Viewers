@@ -1,16 +1,15 @@
 {
-  "name": "@ohif/mode-support",
+  "name": "@ohif/mode-utils",
   "version": "3.10.0-beta.133",
-  "description": "Support Class for Modes",
+  "description": "Utilities for Modes",
   "author": "OHIF",
   "license": "MIT",
   "repository": "OHIF/Viewers",
   "main": "dist/ohif-mode-longitudinal.js",
   "module": "src/index.ts",
   "engines": {
-    "node": ">=14",
-    "npm": ">=6",
-    "yarn": ">=1.16.0"
+    "bun": ">=1",
+    "npm": ">=6"
   },
   "files": [
     "dist",

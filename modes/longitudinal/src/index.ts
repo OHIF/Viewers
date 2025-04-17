@@ -14,7 +14,7 @@ import {
   dicomPmap,
   dicomRT,
   extensionDependenciesLongitudinal as extensionDependencies,
-} from '@ohif/mode-support';
+} from '@ohif/mode-utils';
 
 function modeFactory({ modeConfiguration, servicesManager }) {
   let _activatePanelTriggersSubscriptions = [];
