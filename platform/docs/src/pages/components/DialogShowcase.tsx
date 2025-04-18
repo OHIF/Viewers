@@ -7,6 +7,7 @@ import {
   DialogFooter,
   DialogTitle,
   DialogDescription,
+  DialogClose,
 } from '../../../../ui-next/src/components/Dialog/Dialog';
 import { Button } from '../../../../ui-next/src/components/Button';
 import ShowcaseRow from './ShowcaseRow';
@@ -32,7 +33,12 @@ export default function DialogShowcase() {
       This is a short message inside the dialog.
     </DialogDescription>
     <DialogFooter>
-      <Button variant="default">OK</Button>
+      <DialogClose asChild>
+        <Button variant="secondary" className="min-w-[60px]">Cancel</Button>
+      </DialogClose>
+      <DialogClose asChild>
+        <Button variant="default" className="min-w-[60px]">OK</Button>
+      </DialogClose>
     </DialogFooter>
   </DialogContent>
 </Dialog>
@@ -42,15 +48,32 @@ export default function DialogShowcase() {
         <DialogTrigger asChild>
           <Button variant="default">Open Dialog</Button>
         </DialogTrigger>
+
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Example Dialog</DialogTitle>
           </DialogHeader>
-          <DialogDescription>
-            This is a short message inside the dialog.
-          </DialogDescription>
+
+          <DialogDescription>This is a short message inside the dialog.</DialogDescription>
+
           <DialogFooter>
-            <Button variant="default">OK</Button>
+            <DialogClose asChild>
+              <Button
+                variant="secondary"
+                className="min-w-[60px]"
+              >
+                Cancel
+              </Button>
+            </DialogClose>
+
+            <DialogClose asChild>
+              <Button
+                variant="default"
+                className="min-w-[60px]"
+              >
+                OK
+              </Button>
+            </DialogClose>
           </DialogFooter>
         </DialogContent>
       </Dialog>
