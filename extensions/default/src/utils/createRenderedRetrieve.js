@@ -11,7 +11,7 @@
  * @param {string} params.singlepart - The type of the part to retrieve.
  * @param {string} params.fetchPart - Unknown parameter.
  * @param {string} params.url - Unknown parameter.
- * @returns {string|Promise<string>} - An absolute URL to the binary stream.
+ * @returns {object|undefined} - An object containing the URL and authorization requirement, or undefined.
  */
 const createRenderedRetrieve = (config, params) => {
   const { wadoRoot } = config;
@@ -25,7 +25,10 @@ const createRenderedRetrieve = (config, params) => {
   }
 
   if (tag === 'PixelData' || tag === 'EncapsulatedDocument') {
-    return `${wadoRoot}/studies/${StudyInstanceUID}/series/${SeriesInstanceUID}/instances/${SOPInstanceUID}/rendered`;
+    return {
+      url: `${wadoRoot}/studies/${StudyInstanceUID}/series/${SeriesInstanceUID}/instances/${SOPInstanceUID}/rendered`,
+      requiresAuthorization: true
+    };
   }
 };
 

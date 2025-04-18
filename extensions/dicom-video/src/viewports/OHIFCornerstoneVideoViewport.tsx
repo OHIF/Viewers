@@ -1,26 +1,47 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 
-function OHIFCornerstoneVideoViewport({ displaySets }) {
+function OHIFCornerstoneVideoViewport({ displaySets, servicesManager }) {
   if (displaySets && displaySets.length > 1) {
     throw new Error(
       'OHIFCornerstoneVideoViewport: only one display set is supported for dicom video right now'
     );
   }
 
-  const { videoUrl } = displaySets[0];
+  const { videoUrl, requiresAuthorization } = displaySets[0];
   const mimeType = 'video/mp4';
   const [url, setUrl] = useState(null);
+  const { userAuthenticationService } = servicesManager?.services || {};
 
   useEffect(() => {
     const load = async () => {
-      setUrl(await videoUrl);
+      let resolvedUrl = await videoUrl;
+      
+      if (requiresAuthorization && userAuthenticationService) {
+        const authHeaders = userAuthenticationService.getAuthorizationHeader();
+        
+        if (authHeaders && authHeaders.Authorization) {
+          try {
+            const response = await fetch(resolvedUrl, {
+              headers: {
+                Authorization: authHeaders.Authorization,
+              },
+            });
+            
+            const blob = await response.blob();
+            resolvedUrl = URL.createObjectURL(blob);
+          } catch (error) {
+            console.error('Error fetching authenticated video:', error);
+          }
+        }
+      }
+      
+      setUrl(resolvedUrl);
     };
 
     load();
-  }, [videoUrl]);
+  }, [videoUrl, requiresAuthorization, userAuthenticationService]);
 
-  // Need to copies of the source to fix a firefox bug
   return (
     <div className="bg-primary-black h-full w-full">
       <video
@@ -50,6 +71,7 @@ function OHIFCornerstoneVideoViewport({ displaySets }) {
 
 OHIFCornerstoneVideoViewport.propTypes = {
   displaySets: PropTypes.arrayOf(PropTypes.object).isRequired,
+  servicesManager: PropTypes.object.isRequired,
 };
 
 export default OHIFCornerstoneVideoViewport;

@@ -54,12 +54,16 @@ const _getDisplaySetsFromSeries = (instances, servicesManager, extensionManager)
       const { Modality, SOPInstanceUID, SeriesDescription = 'VIDEO', imageId } = instance;
       const { SeriesNumber, SeriesDate, SeriesInstanceUID, StudyInstanceUID, NumberOfFrames, url } =
         instance;
-      const videoUrl = dataSource.retrieve.directURL({
+      const videoUrlResult = dataSource.retrieve.directURL({
         instance,
         singlepart: 'video',
         tag: 'PixelData',
         url,
       });
+      
+      const videoUrl = typeof videoUrlResult === 'string' ? videoUrlResult : videoUrlResult.url;
+      const requiresAuthorization = typeof videoUrlResult === 'string' ? false : videoUrlResult.requiresAuthorization;
+      
       const displaySet = {
         //plugin: id,
         Modality,
@@ -77,6 +81,7 @@ const _getDisplaySetsFromSeries = (instances, servicesManager, extensionManager)
         // The videoUrl is deprecated, the preferred URL is renderedUrl
         videoUrl,
         renderedUrl: videoUrl,
+        requiresAuthorization,
         instances: [instance],
         thumbnailSrc: dataSource.retrieve.directURL({
           instance,
