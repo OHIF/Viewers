@@ -239,4 +239,35 @@ export const axis = [
     color: Palette.Yellow,
     highlighted: Palette.DarkYellow,
   },
+  {
+    tail: 'glenoid_superior',
+    head: 'glenoid_inferior',
+    color: Palette.Purple,
+    highlighted: Palette.DarkPurple,
+  },
+  {
+    tail: 'scapula_border_medial',
+    head: 'scapula_border_lateral',
+    color: Palette.Pink,
+    highlighted: Palette.DarkPink,
+  },
+  {
+    tail: 'humerus_proximal',
+    head: 'humerus_distal',
+    color: Palette.Yellow,
+    highlighted: Palette.DarkYellow,
+  },
+  {
+    tail: 'supraspinal_fossa_medial',
+    head: 'supraspinal_fossa_lateral',
+    color: Palette.Red,
+    highlighted: Palette.DarkRed,
+  },
+
+  {
+    tail: 'humeral_plateau_inferior',
+    head: 'humeral_plateau_superior',
+    color: Palette.Orange,
+    highlighted: Palette.DarkOrange,
+  },
 ];
