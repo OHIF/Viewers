@@ -22,7 +22,7 @@ export default class MicroscopyService extends PubSubService {
     return {
       name: 'microscopyService',
       altName: 'MicroscopyService',
-      create: (props) => {
+      create: props => {
         return new MicroscopyService(props);
       },
     };
@@ -71,7 +71,7 @@ export default class MicroscopyService extends PubSubService {
   }
 
   public importDicomMicroscopyViewer(): Promise<any> {
-    return this.peerImport("dicom-microscopy-viewer");
+    return this.peerImport('dicom-microscopy-viewer');
   }
 
   /**
