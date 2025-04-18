@@ -87,7 +87,7 @@ export default class ExtensionManager extends PubSubService {
   };
   private dataSourceMap: Record<string, any>;
   private dataSourceDefs: Record<string, any>;
-  private activeDataSourceName: string;
+  private _activeDataSourceName: string;
 
   constructor({
     commandsManager,
@@ -115,20 +115,20 @@ export default class ExtensionManager extends PubSubService {
     this.dataSourceMap = {};
     this.dataSourceDefs = {};
     this.defaultDataSourceName = appConfig.defaultDataSourceName;
-    this.activeDataSourceName = appConfig.defaultDataSourceName;
+    this._activeDataSourceName = appConfig.defaultDataSourceName;
     this.peerImport = appConfig.peerImport;
   }
 
   public setActiveDataSource(dataSource: string): void {
-    if (this.activeDataSourceName === dataSource) {
+    if (this._activeDataSourceName === dataSource) {
       return;
     }
 
-    this.activeDataSourceName = dataSource;
+    this._activeDataSourceName = dataSource;
 
     this._broadcastEvent(
       ExtensionManager.EVENTS.ACTIVE_DATA_SOURCE_CHANGED,
-      this.dataSourceDefs[this.activeDataSourceName]
+      this.dataSourceDefs[this._activeDataSourceName]
     );
   }
 
@@ -373,7 +373,7 @@ export default class ExtensionManager extends PubSubService {
   getDataSources = dataSourceName => {
     if (!dataSourceName) {
       // Default to the activeDataSource
-      dataSourceName = this.activeDataSourceName;
+      dataSourceName = this._activeDataSourceName;
     }
 
     // Note: this currently uses the data source name, which feels weird...
@@ -385,7 +385,7 @@ export default class ExtensionManager extends PubSubService {
   };
 
   getActiveDataSource = () => {
-    return this.dataSourceMap[this.activeDataSourceName];
+    return this.dataSourceMap[this._activeDataSourceName];
   };
 
   /**
@@ -398,7 +398,7 @@ export default class ExtensionManager extends PubSubService {
   getDataSourceDefinition = dataSourceName => {
     if (dataSourceName === undefined) {
       // Default to the activeDataSource
-      dataSourceName = this.activeDataSourceName;
+      dataSourceName = this._activeDataSourceName;
     }
 
     return this.dataSourceDefs[dataSourceName];
@@ -408,7 +408,7 @@ export default class ExtensionManager extends PubSubService {
    * Gets the data source definition for the active data source.
    */
   getActiveDataSourceDefinition = () => {
-    return this.getDataSourceDefinition(this.activeDataSourceName);
+    return this.getDataSourceDefinition(this._activeDataSourceName);
   };
 
   /**
@@ -425,16 +425,18 @@ export default class ExtensionManager extends PubSubService {
     const inactiveDataSourceNames = Object.keys(this.dataSourceMap).filter(ds => {
       const configuration = this.dataSourceDefs[ds]?.configuration;
       const isNotActiveDataSource =
-        this.dataSourceDefs[ds].sourceName !== this.activeDataSourceName;
+        this.dataSourceDefs[ds].sourceName !== this._activeDataSourceName;
       const supportsStowOrWado = configuration?.supportsStow ?? configuration?.wadoRoot;
       return supportsStowOrWado && isNotActiveDataSource;
     });
 
-    const allDatasourcesForUI = [this.activeDataSourceName, ...inactiveDataSourceNames].map(ds => ({
-      value: ds,
-      label: ds,
-      placeHolder: ds,
-    }));
+    const allDatasourcesForUI = [this._activeDataSourceName, ...inactiveDataSourceNames].map(
+      ds => ({
+        value: ds,
+        label: ds,
+        placeHolder: ds,
+      })
+    );
 
     return allDatasourcesForUI;
   };
@@ -558,7 +560,7 @@ export default class ExtensionManager extends PubSubService {
     dataSourceDef.configuration = dataSourceConfiguration;
     this._createDataSourceInstance(dataSourceDef);
 
-    if (this.activeDataSourceName === dataSourceName) {
+    if (this._activeDataSourceName === dataSourceName) {
       // When the active data source is changed/set, fire an event to indicate that its configuration has changed.
       this._broadcastEvent(ExtensionManager.EVENTS.ACTIVE_DATA_SOURCE_CHANGED, dataSourceDef);
     }
@@ -648,6 +650,10 @@ export default class ExtensionManager extends PubSubService {
 
   public get appConfig() {
     return this._appConfig;
+  }
+
+  public get activeDataSourceName() {
+    return this._activeDataSourceName;
   }
 }
 
