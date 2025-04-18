@@ -248,13 +248,30 @@ export default function ComponentShowcase() {
                   <span className="text-foreground text-lg">foreground</span>
                 </div>
                 <div className="flex items-center space-x-3">
-                  <div className="bg-muted-foreground border-input h-[30px] w-[30px] rounded border"></div>
+                  <div className="bg-muted-foreground h-[30px] w-[30px] rounded"></div>
                   <span className="text-foreground text-lg">muted-foreground</span>
                 </div>
               </div>
               <div className="text-secondary-foreground flex items-center pt-1.5 text-lg">
                 For primary and important text, use 'foreground'. When secondary text is available,
                 use 'muted-foreground' to create separation and readability.
+              </div>
+            </div>
+
+            <div className="mb-8 grid grid-cols-[28%,1fr] items-start gap-x-8">
+              <div className="space-y-2.5">
+                <div className="flex items-center space-x-3">
+                  <div className="bg-input h-[30px] w-[30px] rounded"></div>
+                  <span className="text-foreground text-lg">input</span>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <div className="bg-neutral h-[30px] w-[30px] rounded"></div>
+                  <span className="text-foreground text-lg">neutral</span>
+                </div>
+              </div>
+              <div className="text-secondary-foreground flex items-center pt-1.5 text-lg">
+                Used for borders and UI elements. 'neutral' is typically used at 50% opacity for
+                elements such as scrollbars and will work over light and dark backgrounds
               </div>
             </div>
           </ShowcaseRow>
