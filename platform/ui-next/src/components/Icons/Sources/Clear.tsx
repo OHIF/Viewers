@@ -14,7 +14,7 @@ export const Clear = (props: IconProps) => (
       fillRule="evenodd"
     >
       <circle
-        fill="#0944B3"
+        fill="currentColor"
         cx="9.5"
         cy="9.5"
         r="9.5"
