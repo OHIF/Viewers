@@ -158,6 +158,7 @@ window.config = {
     // Could use services manager here to bring up a dialog/modal if needed.
     console.warn('test, navigate to https://ohif.org/');
   },
+  perViewportRenderingEngine: false,
 };
 
 function waitForElement(selector, maxAttempts = 20, interval = 25) {

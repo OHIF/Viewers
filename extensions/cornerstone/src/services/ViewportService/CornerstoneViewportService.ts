@@ -50,16 +50,18 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     altName: 'CornerstoneViewportService',
     create: ({
       servicesManager,
+      configuration,
     }: OhifTypes.Extensions.ExtensionParams): CornerstoneViewportService => {
-      return new CornerstoneViewportService(servicesManager);
+      return new CornerstoneViewportService(servicesManager, configuration);
     },
   };
 
-  renderingEngine: Types.IRenderingEngine | null;
+  renderingEngines: Map<string, Types.IRenderingEngine> = new Map();
   viewportsById: Map<string, ViewportInfo> = new Map();
   viewportGridResizeObserver: ResizeObserver | null;
   viewportsDisplaySets: Map<string, string[]> = new Map();
   beforeResizePositionPresentations: Map<string, PositionPresentation> = new Map();
+  perViewportRenderingEngine: boolean;
 
   // Some configs
   enableResizeDetector: true;
@@ -72,11 +74,13 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
   gridResizeDelay = 50;
   gridResizeTimeOut = null;
 
-  constructor(servicesManager: AppTypes.ServicesManager) {
+  constructor(servicesManager: AppTypes.ServicesManager, configuration: any) {
     super(EVENTS);
-    this.renderingEngine = null;
+    this.renderingEngines = new Map();
     this.viewportGridResizeObserver = null;
     this.servicesManager = servicesManager;
+    this.perViewportRenderingEngine = configuration?.appConfig?.perViewportRenderingEngine;
+    this._configureServiceFunctions();
   }
   hangingProtocolService: unknown;
   viewportsInfo: unknown;
@@ -106,20 +110,33 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
    * It retrieves the renderingEngine if it does exist, or creates one otherwise
    * @returns {RenderingEngine} rendering engine
    */
-  public getRenderingEngine() {
-    // get renderingEngine from cache if it exists
-    const renderingEngine = getRenderingEngine(RENDERING_ENGINE_ID);
+  public getRenderingEngine(viewportId: string) {
+    if (!viewportId) {
+      return null;
+    }
+    // Get the viewport-specific rendering engine from the map if it exists
+    const existingRenderingEngine = this.renderingEngines.get(viewportId);
 
-    if (renderingEngine) {
-      this.renderingEngine = renderingEngine;
-      return this.renderingEngine;
+    if (existingRenderingEngine && !existingRenderingEngine.hasBeenDestroyed) {
+      return existingRenderingEngine;
     }
 
-    if (!renderingEngine || renderingEngine.hasBeenDestroyed) {
-      this.renderingEngine = new RenderingEngine(RENDERING_ENGINE_ID);
+    // Create a new rendering engine with a unique ID based on the viewport ID
+    const renderingEngineId = `${RENDERING_ENGINE_ID}-${viewportId}`;
+
+    // Check if this specific rendering engine already exists in cornerstone
+    const renderingEngine = getRenderingEngine(renderingEngineId);
+
+    if (renderingEngine && !renderingEngine.hasBeenDestroyed) {
+      this.renderingEngines.set(viewportId, renderingEngine);
+      return renderingEngine;
     }
 
-    return this.renderingEngine;
+    // Create a new rendering engine if it doesn't exist
+    const newRenderingEngine = new RenderingEngine(renderingEngineId);
+    this.renderingEngines.set(viewportId, newRenderingEngine);
+
+    return newRenderingEngine;
   }
 
   /**
@@ -168,13 +185,18 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
   public destroy() {
     this._removeResizeObserver();
     this.viewportGridResizeObserver = null;
-    try {
-      this.renderingEngine?.destroy?.();
-    } catch (e) {
-      console.warn('Rendering engine not destroyed', e);
-    }
+
+    // Destroy all rendering engines
+    this.renderingEngines.forEach(renderingEngine => {
+      try {
+        renderingEngine.destroy?.();
+      } catch (e) {
+        console.warn('Rendering engine not destroyed', e);
+      }
+    });
+
+    this.renderingEngines.clear();
     this.viewportsDisplaySets.clear();
-    this.renderingEngine = null;
     cache.purgeCache();
   }
 
@@ -189,7 +211,25 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
    * @param viewportId - The viewportId to disable
    */
   public disableElement(viewportId: string): void {
-    this.renderingEngine?.disableElement(viewportId);
+    const renderingEngine = this.renderingEngines.get(viewportId);
+
+    if (renderingEngine) {
+      renderingEngine.disableElement(viewportId);
+
+      // Check if this rendering engine has any viewports left
+      const hasRemainingViewports = renderingEngine.getViewports().length > 0;
+
+      if (!hasRemainingViewports) {
+        // If no viewports remain, destroy the rendering engine
+        try {
+          renderingEngine.destroy?.();
+        } catch (e) {
+          console.warn(`Failed to destroy rendering engine for viewport ${viewportId}`, e);
+        }
+
+        this.renderingEngines.delete(viewportId);
+      }
+    }
 
     // clean up
     this.viewportsById.delete(viewportId);
@@ -379,7 +419,7 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     publicDisplaySetOptions: DisplaySetOptions[],
     presentations?: Presentations
   ): void {
-    const renderingEngine = this.getRenderingEngine();
+    const renderingEngine = this.getRenderingEngine(viewportId);
 
     // if not valid viewportData then return early
     if (viewportData.viewportType === csEnums.ViewportType.STACK) {
@@ -437,11 +477,7 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
       },
     };
 
-    // Rendering Engine Id set should happen before enabling the element
-    // since there are callbacks that depend on the renderingEngine id
-    // Todo: however, this is a limitation which means that we can't change
-    // the rendering engine id for a given viewport which might be a super edge
-    // case
+    // Set rendering engine ID for the viewport
     viewportInfo.setRenderingEngineId(renderingEngine.id);
 
     // Todo: this is not optimal at all, we are re-enabling the already enabled
@@ -485,12 +521,16 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
   public getCornerstoneViewport(viewportId: string): Types.IViewport | null {
     const viewportInfo = this.getViewportInfo(viewportId);
 
-    if (!viewportInfo || !this.renderingEngine || this.renderingEngine.hasBeenDestroyed) {
+    if (!viewportInfo) {
       return null;
     }
 
-    const viewport = this.renderingEngine.getViewport(viewportId);
+    const renderingEngine = this.renderingEngines.get(viewportId);
+    if (!renderingEngine || renderingEngine.hasBeenDestroyed) {
+      return null;
+    }
 
+    const viewport = renderingEngine.getViewport(viewportId);
     return viewport;
   }
 
@@ -1027,8 +1067,8 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
       const { dimensions, spacing } = imageVolume;
       const slabThickness = Math.sqrt(
         Math.pow(dimensions[0] * spacing[0], 2) +
-          Math.pow(dimensions[1] * spacing[1], 2) +
-          Math.pow(dimensions[2] * spacing[2], 2)
+        Math.pow(dimensions[1] * spacing[1], 2) +
+        Math.pow(dimensions[2] * spacing[2], 2)
       );
 
       return slabThickness;
@@ -1086,23 +1126,23 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     const isImmediate = false;
 
     try {
-      const viewports = this.getRenderingEngine().getViewports();
-
       // Store the current position presentations for each viewport.
-      viewports.forEach(({ id: viewportId }) => {
+      for (const [viewportId, viewportInfo] of this.viewportsById.entries()) {
         const presentation = this._getPositionPresentation(viewportId);
 
         // During a resize, the slice index should remain unchanged. This is a temporary fix for
         // a larger issue regarding the definition of slice index with slab thickness.
         // We need to revisit this to make it more robust and understandable.
-        delete presentation.viewReference?.sliceIndex;
-        this.beforeResizePositionPresentations.set(viewportId, presentation);
-      });
+        if (presentation && presentation.viewReference) {
+          delete presentation.viewReference?.sliceIndex;
+          this.beforeResizePositionPresentations.set(viewportId, presentation);
+        }
 
-      // Resize the rendering engine and render.
-      const renderingEngine = this.renderingEngine;
-      renderingEngine.resize(isImmediate);
-      renderingEngine.render();
+        // Resize each viewport's rendering engine
+        const renderingEngine = this.getRenderingEngine(viewportId);
+        renderingEngine.resize(isImmediate);
+        renderingEngine.render();
+      }
 
       // Reset the camera for all viewports using position presentation to maintain relative size/position
       // which means only those viewports that have a zoom level of 1.
@@ -1110,11 +1150,12 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
         this.setPresentations(viewportId, {
           positionPresentation,
         });
-      });
 
-      // Resize and render the rendering engine again.
-      renderingEngine.resize(isImmediate);
-      renderingEngine.render();
+        // Resize and render the specific rendering engine again
+        const renderingEngine = this.getRenderingEngine(viewportId);
+        renderingEngine.resize(isImmediate);
+        renderingEngine.render();
+      });
     } catch (e) {
       // This can happen if the resize is too close to navigation or shutdown
       console.warn('Caught resize exception', e);
@@ -1190,6 +1231,17 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
       }
     });
   }
+
+  private _configureServiceFunctions() {
+    for (const key in this.serviceFunctions) {
+      if (Object.prototype.hasOwnProperty.call(this.serviceFunctions, key)) {
+        const functions = this.serviceFunctions[key];
+        this[key] = this.perViewportRenderingEngine ? functions.perViewport : functions.shared;
+      }
+    }
+  }
+
+  private serviceFunctions = {};
 
   /**
    * Gets the display sets for a given viewport
