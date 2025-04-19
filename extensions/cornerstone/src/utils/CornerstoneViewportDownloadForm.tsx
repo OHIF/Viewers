@@ -47,7 +47,7 @@ const CornerstoneViewportDownloadForm = ({
   const { viewportId: activeViewportId, renderingEngineId } =
     getEnabledElement(activeViewportElement);
 
-  const renderingEngine = cornerstoneViewportService.getRenderingEngine();
+  const renderingEngine = cornerstoneViewportService.getRenderingEngine(activeViewportId);
   const toolGroup = ToolGroupManager.getToolGroupForViewport(activeViewportId, renderingEngineId);
 
   useEffect(() => {

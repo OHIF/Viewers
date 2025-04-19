@@ -107,7 +107,7 @@ function TrackedCornerstoneViewport(
         },
       });
 
-      cornerstoneViewportService.getRenderingEngine().renderViewport(viewportId);
+      cornerstoneViewportService.getRenderingEngine(viewportId).renderViewport(viewportId);
 
       return;
     }
@@ -118,7 +118,7 @@ function TrackedCornerstoneViewport(
       },
     });
 
-    cornerstoneViewportService.getRenderingEngine().renderViewport(viewportId);
+    cornerstoneViewportService.getRenderingEngine(viewportId).renderViewport(viewportId);
 
     return () => {
       annotation.config.style.setViewportToolStyles(viewportId, {});

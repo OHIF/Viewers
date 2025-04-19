@@ -171,7 +171,7 @@ export default function PanelGenerateImage({ servicesManager, commandsManager }:
       commandsManager.runCommand('updateVolumeData', {
         volume: computedVolume,
       });
-      cornerstoneViewportService.getRenderingEngine().render();
+      cornerstoneViewportService.getRenderingEngine(activeViewportId).render();
       renderGeneratedImage(computedDisplaySet);
     }
   }

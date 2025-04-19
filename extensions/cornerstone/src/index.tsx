@@ -153,8 +153,10 @@ const cornerstoneExtension: Types.Extensions.Extension = {
    * @param configuration.csToolsConfig - Passed directly to `initCornerstoneTools`
    */
   preRegistration: async function (props: Types.Extensions.ExtensionParams): Promise<void> {
-    const { servicesManager, serviceProvidersManager } = props;
-    servicesManager.registerService(CornerstoneViewportService.REGISTRATION);
+    const { servicesManager, serviceProvidersManager, appConfig } = props;
+    servicesManager.registerService(CornerstoneViewportService.REGISTRATION, {
+      appConfig,
+    });
     servicesManager.registerService(ToolGroupService.REGISTRATION);
     servicesManager.registerService(SyncGroupService.REGISTRATION);
     servicesManager.registerService(SegmentationService.REGISTRATION);
