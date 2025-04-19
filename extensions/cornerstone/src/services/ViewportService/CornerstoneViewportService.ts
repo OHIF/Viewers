@@ -80,7 +80,7 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     this.viewportGridResizeObserver = null;
     this.servicesManager = servicesManager;
     this.perViewportRenderingEngine = configuration?.appConfig?.perViewportRenderingEngine;
-    this._configureServiceFunctions();
+    //this._configureServiceFunctions();
   }
   hangingProtocolService: unknown;
   viewportsInfo: unknown;
