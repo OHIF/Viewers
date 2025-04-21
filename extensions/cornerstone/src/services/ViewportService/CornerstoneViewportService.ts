@@ -11,6 +11,7 @@ import {
   cache,
   Enums as csEnums,
   BaseVolumeViewport,
+  getRenderingEngines,
 } from '@cornerstonejs/core';
 
 import { utilities as csToolsUtils, Enums as csToolsEnums } from '@cornerstonejs/tools';
@@ -246,23 +247,11 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     this._removeResizeObserver();
     this.viewportGridResizeObserver = null;
 
-    // Destroy all stack rendering engines
-    this.stackRenderingEngines.forEach(renderingEngine => {
-      try {
-        renderingEngine.destroy?.();
-      } catch (e) {
-        console.warn('Stack rendering engine not destroyed', e);
-      }
-    });
+    const renderingEngines = getRenderingEngines();
 
-    // Destroy the shared volume rendering engine
-    if (this.sharedVolumeRenderingEngine) {
-      try {
-        this.sharedVolumeRenderingEngine.destroy?.();
-      } catch (e) {
-        console.warn('Shared volume rendering engine not destroyed', e);
-      }
-    }
+    renderingEngines.forEach(renderingEngine => {
+      renderingEngine.destroy?.();
+    });
 
     this.stackRenderingEngines.clear();
     this.sharedVolumeRenderingEngine = null;
