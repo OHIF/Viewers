@@ -1737,14 +1737,7 @@ class SegmentationService extends PubSubService {
       if (progress < 1) {
         requestAnimationFrame(animation);
       } else {
-        cstSegmentation.config.style.setStyle(
-          {
-            segmentationId,
-            segmentIndex,
-            type: LABELMAP,
-          },
-          {}
-        );
+        cstSegmentation.config.style.resetToGlobalStyle();
       }
     };
 
