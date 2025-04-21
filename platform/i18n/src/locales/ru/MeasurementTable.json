@@ -1,0 +1,18 @@
+{
+  "Criteria nonconformities": "Criteria nonconformities",
+  "Delete": "Delete",
+  "Description": "Description",
+  "MAX": "MAX",
+  "Measurements": "Measurements",
+  "No, do not ask again": "No, do not ask again",
+  "NonTargets": "NonTargets",
+  "Relabel": "Relabel",
+  "Targets": "Targets",
+  "Track measurements for this series?": "Track measurements for this series?",
+  "Do you want to add this measurement to the existing report?": "Do you want to add this measurement to the existing report?",
+  "You have existing tracked measurements. What would you like to do with your existing tracked measurements?": "You have existing tracked measurements. What would you like to do with your existing tracked measurements?",
+  "Measurements cannot span across multiple studies. Do you want to save your tracked measurements?": "Measurements cannot span across multiple studies. Do you want to save your tracked measurements?",
+  "Do you want to continue tracking measurements for this study?": "Do you want to continue tracking measurements for this study?",
+  "Do you want to open this Segmentation?": "Do you want to open this Segmentation?",
+  "There are unsaved measurements. Do you want to save it?": "There are unsaved measurements. Do you want to save it?"
+}
