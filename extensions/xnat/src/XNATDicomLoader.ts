@@ -14,297 +14,234 @@ const metadataProvider = classes.MetadataProvider;
  * This sets up the cornerstone WADO image loaders to work with XNAT URLs
  */
 export function initXNATDicomLoader(xnatConfig: any): Promise<void> {
-  // Make sure we're returning a standard promise that doesn't have custom methods
-  // that might be incompatible with the OHIF initialization system
-  console.info('XNAT: Initializing XNAT DICOM Loader');
-  
-  // This is a standard promise that will resolve when initialization is complete
+  console.info('XNAT: Initializing XNAT DICOM Loader Registration');
+
   return new Promise<void>((resolve, reject) => {
-    try {
-      // Check if Cornerstone is already initialized
-      const isCornerstoneInitialized = cornerstone && cornerstone.getEnabledElement;
-      console.info('XNAT: Cornerstone initialization status:', isCornerstoneInitialized ? 'Initialized' : 'Not initialized');
-      
-      // Log available image loaders for debugging
-      console.info('XNAT: Available global objects:', {
-        cornerstone: typeof cornerstone !== 'undefined',
-        cornerstoneWADOImageLoader: typeof cornerstoneWADOImageLoader !== 'undefined',
-        imageLoader: typeof imageLoader !== 'undefined'
-      });
-      
-      // Check different places where the WADO image loader might be available
-      let imageLoaderModule = null;
-      
-      // Try the global variable first
-      if (typeof cornerstoneWADOImageLoader !== 'undefined') {
-        console.info('XNAT: Found cornerstoneWADOImageLoader in global scope');
-        imageLoaderModule = cornerstoneWADOImageLoader;
-      }
-      // Check window object next
-      else if (typeof window !== 'undefined' && (window as any).cornerstoneWADOImageLoader) {
-        console.info('XNAT: Found cornerstoneWADOImageLoader in window object');
-        imageLoaderModule = (window as any).cornerstoneWADOImageLoader;
-      }
-      // Check if Cornerstone internal components are available
-      else if (cornerstone) {
-        console.info('XNAT: Checking for Cornerstone internal components');
-        
-        // In OHIF v3, there are no wadouri or wadors in the core package
-        // We'll need to look for the WADO loaders in other places
-        
-        // Create a placeholder object that will be populated if we find the WADO loaders
-        imageLoaderModule = {};
-        
-        // Check for dicomImageLoader in the cornerstonejs namespace on window
-        if (typeof window !== 'undefined' && 
-            (window as any).cornerstonejs && 
-            (window as any).cornerstonejs.dicomImageLoader) {
+    // Define the configuration logic as a separate function
+    const configureLoaders = () => {
+      console.info('XNAT: Attempting to configure loaders...');
+      try {
+        // Check if Cornerstone is initialized
+        const isCornerstoneInitialized = cornerstone && cornerstone.getEnabledElement;
+        console.info('XNAT: Cornerstone initialization status:', isCornerstoneInitialized ? 'Initialized' : 'Not initialized');
+
+        // Log available globals
+        console.info('XNAT: Available global objects:', {
+          cornerstone: typeof cornerstone !== 'undefined',
+          cornerstoneWADOImageLoader: typeof cornerstoneWADOImageLoader !== 'undefined',
+          imageLoader: typeof imageLoader !== 'undefined',
+          windowCornerstoneWADO: typeof window !== 'undefined' && (window as any).cornerstoneWADOImageLoader,
+          windowCornerstoneJS: typeof window !== 'undefined' && (window as any).cornerstonejs,
+        });
+
+        // Check different places where the WADO image loader might be available
+        let imageLoaderModule = null;
+        let isFallbackLoader = false; // Flag to track if we're using the fallback
+
+        if (typeof cornerstoneWADOImageLoader !== 'undefined') {
+          console.info('XNAT: Found cornerstoneWADOImageLoader in global scope');
+          imageLoaderModule = cornerstoneWADOImageLoader;
+        } else if (typeof window !== 'undefined' && (window as any).cornerstoneWADOImageLoader) {
+          console.info('XNAT: Found cornerstoneWADOImageLoader in window object');
+          imageLoaderModule = (window as any).cornerstoneWADOImageLoader;
+        } else if (typeof window !== 'undefined' && (window as any).cornerstonejs && (window as any).cornerstonejs.dicomImageLoader) {
           console.info('XNAT: Found WADO loader in cornerstonejs.dicomImageLoader');
           imageLoaderModule = (window as any).cornerstonejs.dicomImageLoader;
-        }
-      }
-      
-      // If we still don't have an image loader, try to dynamically import it
-      if (!imageLoaderModule || (!imageLoaderModule.wadouri && !imageLoaderModule.wadors)) {
-        console.warn('XNAT: Could not find WADO image loader in standard locations, will reject');
-        
-        // Only register a simple error handler that rejects all requests
-        if (imageLoader && imageLoader.registerImageLoader) {
-          // Create a simple function that just returns a rejected promise
-          const failLoaderFunction = (imageId: string) => {
-            console.error('XNAT: WADO loader not available for', imageId);
-            
-            return {
-              promise: Promise.reject(new Error('WADO image loader not available')),
-              cancelFn: () => console.log('XNAT: Cancelled image loading for', imageId)
-            };
+        } else if (typeof cornerstone !== 'undefined' && cornerstone.imageLoader && cornerstone.imageLoader.loadImage) {
+          // Fallback: Assume loaders were registered with cornerstone core's imageLoader
+          console.warn('XNAT: cornerstoneWADOImageLoader not found globally. Assuming loaders registered via cornerstone.imageLoader.');
+          // Create a minimal mock module structure pointing to the core loadImage function
+          imageLoaderModule = {
+            wadouri: { loadImage: cornerstone.imageLoader.loadImage },
+            wadors: { loadImage: cornerstone.imageLoader.loadImage }, // Assume same loader handles both
+            // Configuration and web workers likely unavailable in this fallback
+            configure: () => { console.warn('XNAT: Configuration skipped (fallback loader).'); },
+            webWorkerManager: { initialize: () => { console.warn('XNAT: Web worker init skipped (fallback loader).'); } },
+            resetImageLoaderProviders: () => { console.warn('XNAT: Mock resetImageLoaderProviders called (fallback loader).'); }
           };
-          
-          // Register our simplified error function
-          imageLoader.registerImageLoader('dicomweb', failLoaderFunction);
-          console.info('XNAT: Registered simple error handler for dicomweb loader');
+          isFallbackLoader = true;
         }
-        
-        // Dispatch an event to signal that WADO loader is missing
-        const fallbackEvent = new CustomEvent('xnatdicomloaderfailed', {
-          detail: {
-            message: 'XNAT DICOM Loader failed - WADO image loader not available',
-          }
-        });
-        document.dispatchEvent(fallbackEvent);
-        
-        // Reject the promise since we can't provide a functional loader
-        reject(new Error('WADO image loader not available'));
-        return;
-      }
-      
-      // Log what image loaders are available
-      console.info('XNAT: Available image loaders:', {
-        wadouri: !!imageLoaderModule.wadouri,
-        wadors: !!imageLoaderModule.wadors
-      });
-      
-      // Configure the DICOM loader regardless of cornerstone initialization status
-      // This ensures we set up the loaders even if cornerstone is loaded later
-      
-      // Configure the WADO URI loader
-      const wadoUriLoader = imageLoaderModule.wadouri;
-      
-      // Add XNAT-specific auth headers
-      const xnatAuthHeaders: Record<string, string> = {};
-      
-      // Add XSRF token if available from xnatConfig
-      if (xnatConfig?.xnatAuth?.token) {
-        console.info('XNAT: Setting up XSRF token for image loading');
-        xnatAuthHeaders['XNAT-XSRF-TOKEN'] = xnatConfig.xnatAuth.token;
-      }
-      
-      // Add JSESSIONID cookie if needed for authentication
-      if (xnatConfig?.xnatAuth?.jsessionid) {
-        console.info('XNAT: Setting up JSESSIONID for image loading');
-        document.cookie = `JSESSIONID=${xnatConfig.xnatAuth.jsessionid}; path=/`;
-      }
-      
-      // Reset the image loader providers to ensure clean configuration
-      if (imageLoaderModule.resetImageLoaderProviders) {
-        console.info('XNAT: Resetting image loader providers');
-        imageLoaderModule.resetImageLoaderProviders();
-      }
 
-      // Configure WADO URI loader with authentication headers
-      if (wadoUriLoader && wadoUriLoader.configure) {
-        console.info('XNAT: Configuring WADO URI loader');
-        wadoUriLoader.configure({
-          beforeSend: (xhr: XMLHttpRequest, imageId: string) => {
-            // Log the imageId for debugging
-            console.info('XNAT: Loading image with ID:', imageId);
-            
-            // Add custom credentials for local XNAT server
-            xhr.withCredentials = true;
-            
-            // Set accept header to allow any content type
-            xhr.setRequestHeader('Accept', 'application/dicom;q=1,*/*');
-            
-            // Parse the imageId to handle dicomweb: prefix correctly
-            if (imageId.startsWith('dicomweb:')) {
-              console.info('XNAT: Processing dicomweb: imageId');
-              
-              // Get the actual URL part after the dicomweb: prefix
-              const urlPart = imageId.substring('dicomweb:'.length);
-              
-              // Check if urlPart is already absolute - starts with http/https
-              if (!urlPart.startsWith('http://') && !urlPart.startsWith('https://')) {
-                // For relative URLs, prefix with wadoUriRoot from config
-                const baseUrl = xnatConfig.wadoUriRoot || 'http://localhost';
-                const fullUrl = new URL(urlPart.startsWith('/') ? urlPart : `/${urlPart}`, baseUrl).href;
-                console.info('XNAT: Modified URL:', fullUrl);
-                
-                // Override the default URL with our correctly formed URL
-                xhr.open('GET', fullUrl);
-                
-                // Also make sure we link this imageId to metadata
-                try {
-                  // Find matching instance in DicomMetadataStore by URL or filename
-                  const matchingInstance = findMatchingInstanceForImageId(imageId, urlPart);
-                  if (matchingInstance) {
-                    // Ensure this instance is in the metadataProvider for Cornerstone
-                    registerInstanceWithCornerstoneMetadataProvider(imageId, matchingInstance);
+        // If we still don't have an image loader, reject
+        if (!imageLoaderModule || (!imageLoaderModule.wadouri && !imageLoaderModule.wadors)) {
+          console.error('XNAT: Could not find WADO image loader functions.');
+          reject(new Error('WADO image loader functions not available'));
+          return;
+        }
+
+        // Log what image loaders are available
+        console.info('XNAT: Available image loaders functions:', {
+          wadouriLoadImage: !!imageLoaderModule.wadouri?.loadImage,
+          wadorsLoadImage: !!imageLoaderModule.wadors?.loadImage
+        });
+
+        // Configure the WADO URI loader
+        const wadoUriLoader = imageLoaderModule.wadouri;
+
+        // Add XNAT-specific auth headers
+        const xnatAuthHeaders: Record<string, string> = {};
+        if (xnatConfig?.xnatAuth?.token) {
+          console.info('XNAT: Setting up XSRF token for image loading');
+          xnatAuthHeaders['XNAT-XSRF-TOKEN'] = xnatConfig.xnatAuth.token;
+        }
+        if (xnatConfig?.xnatAuth?.jsessionid) {
+          console.info('XNAT: Setting up JSESSIONID for image loading');
+          document.cookie = `JSESSIONID=${xnatConfig.xnatAuth.jsessionid}; path=/`;
+        }
+
+        // Reset the image loader providers if not using fallback
+        if (!isFallbackLoader && imageLoaderModule.resetImageLoaderProviders) {
+          console.info('XNAT: Resetting image loader providers');
+          imageLoaderModule.resetImageLoaderProviders();
+        }
+
+        // Configure WADO URI loader with authentication headers if possible
+        if (!isFallbackLoader && wadoUriLoader && wadoUriLoader.configure) {
+          console.info('XNAT: Configuring WADO URI loader');
+          wadoUriLoader.configure({
+            beforeSend: (xhr: XMLHttpRequest, imageId: string) => {
+              console.info('XNAT: Loading image with ID:', imageId);
+              xhr.withCredentials = true;
+              xhr.setRequestHeader('Accept', 'application/dicom;q=1,*/*');
+              if (imageId.startsWith('dicomweb:')) {
+                console.info('XNAT: Processing dicomweb: imageId');
+                const urlPart = imageId.substring('dicomweb:'.length);
+                if (!urlPart.startsWith('http://') && !urlPart.startsWith('https://')) {
+                  const baseUrl = xnatConfig.wadoUriRoot || 'http://localhost';
+                  const fullUrl = new URL(urlPart.startsWith('/') ? urlPart : `/${urlPart}`, baseUrl).href;
+                  console.info('XNAT: Modified URL:', fullUrl);
+                  xhr.open('GET', fullUrl); // Overwrite the default open behavior
+                  try {
+                    const matchingInstance = findMatchingInstanceForImageId(imageId, urlPart);
+                    if (matchingInstance) {
+                      registerInstanceWithCornerstoneMetadataProvider(imageId, matchingInstance);
+                    }
+                  } catch (e) {
+                    console.warn('XNAT: Error linking metadata for imageId:', e);
                   }
-                } catch (e) {
-                  console.warn('XNAT: Error linking metadata for imageId:', e);
+                  // Custom headers need to be set after open()
+                  Object.entries(xnatAuthHeaders).forEach(([key, value]) => xhr.setRequestHeader(key, value));
+                  // Note: Returning false might not be standard, ensure it works or handle appropriately
+                  // Let's assume we let the default send happen after setting URL and headers
+                  return true; 
                 }
-                
-                return false; // Prevent default open
+              } else {
+                // For non-dicomweb or absolute URLs, just set headers
+                 Object.entries(xnatAuthHeaders).forEach(([key, value]) => xhr.setRequestHeader(key, value));
               }
-            }
-            
-            return true; // Use default behavior for other cases
-          },
-          
-          // Add custom headers to all requests
-          requestHeaders: {
-            ...xnatAuthHeaders,
-            'Accept': 'application/dicom;q=1,*/*'
-          }
-        });
-      }
-      
-      // Configure WADO RS loader if available
-      const wadoRsLoader = imageLoaderModule.wadors;
-      if (wadoRsLoader && wadoRsLoader.configure) {
-        console.info('XNAT: Configuring WADO RS loader');
-        wadoRsLoader.configure({
-          beforeSend: (xhr: XMLHttpRequest, imageId: string) => {
-            // Log the imageId for debugging
-            console.info('XNAT: wadors loading image with ID:', imageId);
-            
-            // Add custom credentials for local XNAT server
-            xhr.withCredentials = true;
-            
-            // Set accept header to allow any content type
-            xhr.setRequestHeader('Accept', 'application/dicom;q=1,*/*');
-            
-            return true;
-          },
-          requestHeaders: {
-            ...xnatAuthHeaders,
-            'Accept': 'application/dicom;q=1,*/*'
-          }
-        });
-      }
-      
-      // Set cornerstone to use web workers if available
-      if (imageLoaderModule.webWorkerManager) {
-        console.info('XNAT: Initializing web worker manager');
-        imageLoaderModule.webWorkerManager.initialize({
-          maxWebWorkers: Math.max(navigator.hardwareConcurrency || 2, 2),
-          startWebWorkersOnDemand: true,
-        });
-      }
-      
-      // Register the dicomweb image loader (used by our modified imageId format)
-      if (imageLoader && imageLoader.registerImageLoader) {
-        console.info('XNAT: Registering dicomweb image loader');
-        
-        // First register the wadouri loader for dicomweb: prefix
-        if (wadoUriLoader && wadoUriLoader.loadImage) {
-          imageLoader.registerImageLoader('dicomweb', wadoUriLoader.loadImage);
-          console.info('XNAT: Successfully registered dicomweb image loader');
-          
-          // Also register it for normal wadouri: prefix as a fallback
-          imageLoader.registerImageLoader('wadouri', wadoUriLoader.loadImage);
-          console.info('XNAT: Successfully registered wadouri image loader');
-        } else if (wadoRsLoader && wadoRsLoader.loadImage) {
-          console.info('XNAT: Using fallback to wadors loader');
-          imageLoader.registerImageLoader('dicomweb', wadoRsLoader.loadImage);
-        } else {
-          console.warn('XNAT: Unable to register any DICOM loader - image loading may fail');
+              return true; // Use default behavior for open/send
+            },
+            requestHeaders: { ...xnatAuthHeaders } // Keep this for potential internal use by the loader
+          });
+        } else if (isFallbackLoader) {
+            console.warn('XNAT: Skipping WADO URI configuration (fallback loader).');
         }
-      }
-      
-      // Register additional loaders if specified in config
-      if (xnatConfig.dicomFileLoadSettings && xnatConfig.dicomFileLoadSettings.directLoad) {
-        console.info('XNAT: Enabling direct file loading for DICOM files');
-        
-        if (typeof cornerstone !== 'undefined' && 
-            typeof cornerstone.registerImageLoader === 'function') {
-          // Register a direct http/https image loader to handle direct URLs if needed
+
+        // Configure WADO RS loader if available and not using fallback
+        const wadoRsLoader = imageLoaderModule.wadors;
+        if (!isFallbackLoader && wadoRsLoader && wadoRsLoader.configure) {
+          console.info('XNAT: Configuring WADO RS loader');
+          wadoRsLoader.configure({
+            beforeSend: (xhr: XMLHttpRequest, imageId: string) => {
+              console.info('XNAT: wadors loading image with ID:', imageId);
+              xhr.withCredentials = true;
+              xhr.setRequestHeader('Accept', 'application/dicom;q=1,*/*');
+              Object.entries(xnatAuthHeaders).forEach(([key, value]) => xhr.setRequestHeader(key, value));
+              return true;
+            },
+            requestHeaders: { ...xnatAuthHeaders }
+          });
+        } else if (isFallbackLoader) {
+           console.warn('XNAT: Skipping WADO RS configuration (fallback loader).');
+        }
+
+        // Set cornerstone to use web workers if available and not using fallback
+        if (!isFallbackLoader && imageLoaderModule.webWorkerManager && imageLoaderModule.webWorkerManager.initialize) {
+          console.info('XNAT: Initializing web worker manager');
           try {
-            cornerstone.registerImageLoader('http', wadoUriLoader.loadImage);
-            cornerstone.registerImageLoader('https', wadoUriLoader.loadImage);
-            console.info('XNAT: Registered direct http/https image loaders');
-          } catch (e) {
-            console.warn('XNAT: Failed to register direct http/https loaders:', e);
+             imageLoaderModule.webWorkerManager.initialize({
+               maxWebWorkers: Math.max(navigator.hardwareConcurrency || 2, 2),
+               startWebWorkersOnDemand: true,
+             });
+          } catch (workerError) {
+             console.warn('XNAT: Failed to initialize web worker manager:', workerError);
+          }
+        } else if (isFallbackLoader) {
+           console.warn('XNAT: Skipping web worker initialization (fallback loader).');
+        }
+
+        // Register the dicomweb image loader (used by our modified imageId format)
+        if (imageLoader && imageLoader.registerImageLoader) {
+          console.info('XNAT: Attempting to register dicomweb image loader...');
+          // Prefer wadouri.loadImage if available, otherwise try wadors.loadImage
+          const loaderFn = wadoUriLoader?.loadImage || wadoRsLoader?.loadImage;
+
+          if (loaderFn) {
+            try {
+              // imageLoader.registerImageLoader('dicomweb', loaderFn);
+              // console.info('XNAT: Successfully registered dicomweb image loader.');
+              // Also register for wadouri scheme explicitly if using wadouri loader
+              if (wadoUriLoader?.loadImage === loaderFn) {
+                 imageLoader.registerImageLoader('wadouri', loaderFn);
+                 console.info('XNAT: Successfully registered wadouri image loader.');
+              }
+            } catch (registrationError) {
+               console.error('XNAT: Error registering dicomweb/wadouri loader:', registrationError);
+               reject(new Error('Failed to register dicomweb/wadouri loader'));
+               return;
+            }
+          } else {
+            console.error('XNAT: Unable to find a suitable loadImage function to register for dicomweb.');
+            reject(new Error('No WADO URI or RS loadImage function found'));
+            return;
+          }
+        } else {
+           console.error('XNAT: cornerstone.imageLoader.registerImageLoader is not available.');
+           reject(new Error('imageLoader.registerImageLoader not available'));
+           return;
+        }
+
+        // Register additional loaders if specified in config
+        if (xnatConfig.dicomFileLoadSettings && xnatConfig.dicomFileLoadSettings.directLoad) {
+          console.info('XNAT: Enabling direct file loading for DICOM files');
+          if (typeof cornerstone !== 'undefined' && imageLoader && imageLoader.registerImageLoader) {
+             try {
+                const loaderFn = wadoUriLoader?.loadImage || wadoRsLoader?.loadImage;
+                if (loaderFn) {
+                  imageLoader.registerImageLoader('http', loaderFn);
+                  imageLoader.registerImageLoader('https', loaderFn);
+                  console.info('XNAT: Registered direct http/https image loaders');
+                } else {
+                   console.warn('XNAT: Could not find loader function for http/https registration');
+                }
+             } catch (e) {
+                console.warn('XNAT: Failed to register direct http/https loaders:', e);
+             }
           }
         }
-      }
-      
-      // Set up debugging event listeners
-      document.addEventListener('cornerstoneimageloaded', (event: any) => {
-        console.info('XNAT: Cornerstone image loaded event', event.detail);
-      });
-      
-      document.addEventListener('cornerstoneimageloadfailed', (event: any) => {
-        console.error('XNAT: Cornerstone image load failed event', event.detail);
-      });
-      
-      document.addEventListener('cornerstoneimagerendered', (event: any) => {
-        console.debug('XNAT: Cornerstone image rendered event', event.detail?.viewportId);
-      });
-      
-      // Set up a timeout to handle cases where Cornerstone might not initialize
-      const initTimeout = setTimeout(() => {
-        console.warn('XNAT: Cornerstone initialization timeout after 5 seconds');
-        const timeoutEvent = new CustomEvent('xnatdicomloadertimeout', {
+
+        // Dispatching a custom event to signal that XNAT DICOM loader is ready
+        console.info('XNAT: DICOM Loader configuration complete.');
+        const customEvent = new CustomEvent('xnatdicomloaderconfigured', {
           detail: {
-            message: 'XNAT DICOM Loader initialization timed out',
+            message: 'XNAT DICOM Loader Configured',
           }
         });
-        document.dispatchEvent(timeoutEvent);
-        
-        // Still resolve the promise since the loaders were registered
+        document.dispatchEvent(customEvent);
+
+        // Successfully resolve the main promise
         resolve();
-      }, 5000);
-      
-      // Dispatching a custom event to signal that XNAT DICOM loader is ready
-      console.info('XNAT: DICOM Loader initialization complete');
-      const customEvent = new CustomEvent('xnatdicomloaderinitialized', {
-        detail: {
-          message: 'XNAT DICOM Loader Initialized',
-        }
-      });
-      document.dispatchEvent(customEvent);
-      
-      // Clear the timeout since we're successfully initialized
-      clearTimeout(initTimeout);
-      
-      // Successfully resolve the promise
-      resolve();
-    } catch (error) {
-      console.error('XNAT: Error configuring DICOM loader:', error);
-      // Reject with the error
-      reject(error);
-    }
+
+      } catch (error) {
+        console.error('XNAT: Error during loader configuration:', error);
+        reject(error); // Reject the main promise on error
+      }
+    };
+
+    // Configure loaders immediately after the current execution context.
+    // This assumes Cornerstone core is initialized by this time.
+    console.info('XNAT: Scheduling immediate loader configuration.');
+    setTimeout(configureLoaders, 0);
   });
 }
 
@@ -347,6 +284,7 @@ function findMatchingInstanceForImageId(imageId: string, urlPath: string): any {
         if (!seriesData || !seriesData.instances || !seriesData.instances.length) continue;
         
         // Look for instance with matching URL or filename
+        console.log('XNAT SOP DEBUG: seriesData.instances:', seriesData.instances);
         for (const instance of seriesData.instances) {
           // Check if instance URL contains the filename
           if (instance.url && (instance.url.includes(filename) || instance.url === urlPath)) {

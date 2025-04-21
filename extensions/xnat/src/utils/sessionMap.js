@@ -304,7 +304,6 @@ const sessionMap = {
     }
     
     _map.studySessions[studyInstanceUID] = session;
-    console.log('XNAT: Added session to sessionMap for StudyInstanceUID:', studyInstanceUID, session);
   },
   
   /**

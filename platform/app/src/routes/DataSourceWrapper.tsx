@@ -100,6 +100,30 @@ function DataSourceWrapper(props: withAppTypes) {
       throw new Error(`No data source found for ${dataSourceName}`);
     }
 
+    console.log(`DataSourceWrapper: Initial dataSource object retrieved for '${dataSourceName || 'active'}':`);
+    try {
+      console.log('  > dataSource exists:', !!dataSource);
+      console.log('  > Has retrieve property:', !!dataSource.retrieve);
+      if (dataSource.retrieve) {
+        console.log('  > Has retrieve.series property:', !!dataSource.retrieve.series);
+        if (dataSource.retrieve.series) {
+          console.log('  > Has retrieve.series.metadata property:', !!dataSource.retrieve.series.metadata);
+          if (dataSource.retrieve.series.metadata) {
+            console.log('  > retrieve.series.metadata keys:', Object.keys(dataSource.retrieve.series.metadata));
+            console.log('  > Has retrieveSeriesMetadata function:', typeof dataSource.retrieve.series.metadata.retrieveSeriesMetadata === 'function');
+          } else {
+            console.log('  > retrieve.series.metadata property is MISSING or falsy.');
+          }
+        } else {
+          console.log('  > retrieve.series property is MISSING or falsy.');
+        }
+      } else {
+        console.log('  > retrieve property is MISSING or falsy.');
+      }
+    } catch (e) {
+      console.error('DataSourceWrapper: Error during structure logging:', e);
+    }
+
     return dataSource;
   });
 

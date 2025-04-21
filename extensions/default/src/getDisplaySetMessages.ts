@@ -26,8 +26,10 @@ export default function getDisplaySetMessages(
 
   const firstInstance = instances[0];
   const { Modality, ImageType, NumberOfFrames } = firstInstance;
+  
   // Due to current requirements, LOCALIZER series doesn't have any messages
-  if (ImageType?.includes('LOCALIZER')) {
+  // Add extra check to ensure ImageType is an array before calling includes
+  if (Array.isArray(ImageType) && ImageType.includes('LOCALIZER')) {
     return messages;
   }
 

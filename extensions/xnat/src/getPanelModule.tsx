@@ -37,20 +37,6 @@ function getPanelModule({ commandsManager, extensionManager, servicesManager }) 
         />
       ),
     },
-    {
-      name: 'xnatNavigation',
-      iconName: 'nav-menu',
-      iconLabel: 'XNAT Navigation',
-      label: i18n.t('SidePanel:XNAT Navigation'),
-      component: props => (
-        <WrappedPanelStudyBrowser
-          {...props}
-          commandsManager={commandsManager}
-          extensionManager={extensionManager}
-          servicesManager={servicesManager}
-        />
-      ),
-    },
   ];
 }
 

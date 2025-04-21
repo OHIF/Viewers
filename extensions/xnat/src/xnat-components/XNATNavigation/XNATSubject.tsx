@@ -12,7 +12,7 @@ import navigateConfirmationContent from './helpers/navigateConfirmationContent';
 //import awaitConfirmationDialog from '../../../lib/dialogUtils/awaitConfirmationDialog.js';
 //import progressDialog from '../../../lib/dialogUtils/progressDialog.js';
 
-import { Icon } from '@ohif/ui';
+import { Icons } from '@ohif/ui-next';
 
 import '../XNATNavigationPanel.css';
 
@@ -203,7 +203,7 @@ export default class XNATSubject extends React.Component<XNATSubjectProps, XNATS
             className={subjectButtonClassNames}
             onClick={this.onViewSubjectClick}
           >
-            <Icon name="launch-info" />
+            <Icons.LaunchInfo />
           </a>
           <XNATSubjectLabel
             ID={ID}

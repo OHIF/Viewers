@@ -33,29 +33,24 @@ const isMultiFrame = instance => {
 };
 
 function getDisplaySetInfo(instances) {
+  // Check if it meets the criteria for being a dynamic volume.
   const dynamicVolumeInfo = getDynamicVolumeInfo(instances);
-  const { isDynamicVolume, timePoints } = dynamicVolumeInfo;
-  let displaySetInfo;
+  const isDynamicVolume = dynamicVolumeInfo.isDynamicVolume;
 
-  const { appConfig } = appContext;
-
+  // If it's a dynamic volume, it's not reconstructable in the traditional sense.
+  // Reconstruction logic might differ for dynamic volumes.
   if (isDynamicVolume) {
-    const timePoint = timePoints[0];
-    const instancesMap = new Map();
-
-    // O(n) to convert it into a map and O(1) to find each instance
-    instances.forEach(instance => instancesMap.set(instance.imageId, instance));
-
-    const firstTimePointInstances = timePoint.map(imageId => instancesMap.get(imageId));
-
-    displaySetInfo = isDisplaySetReconstructable(firstTimePointInstances, appConfig);
-  } else {
-    displaySetInfo = isDisplaySetReconstructable(instances, appConfig);
+    return { isDynamicVolume, value: false, averageSpacingBetweenFrames: null, dynamicVolumeInfo };
   }
+
+  // Check if the display set is reconstructable.
+  const isReconstructableResult = isDisplaySetReconstructable(instances);
 
   return {
     isDynamicVolume,
-    ...displaySetInfo,
+    value: isReconstructableResult.value,
+    // Safely access averageSpacingBetweenFrames
+    averageSpacingBetweenFrames: isReconstructableResult.averageSpacingBetweenFrames,
     dynamicVolumeInfo,
   };
 }
@@ -106,25 +101,16 @@ const makeDisplaySet = instances => {
   if (shallSort) {
     imageSet.sortBy((a, b) => {
       // Sort by InstanceNumber (0020,0013)
-      return (parseInt(a.InstanceNumber) || 0) - (parseInt(b.InstanceNumber) || 0);
+      // Access InstanceNumber safely using bracket notation for potentially non-standard property names
+      const aInstanceNumber = parseInt(a?.['InstanceNumber'] || '0');
+      const bInstanceNumber = parseInt(b?.['InstanceNumber'] || '0');
+      return aInstanceNumber - bInstanceNumber;
     });
   }
 
-  // Include the first image instance number (after sorted)
-  /*imageSet.setAttribute(
-    'instanceNumber',
-    imageSet.getImage(0).InstanceNumber
-  );*/
-
-  /*const isReconstructable = isDisplaySetReconstructable(series, instances);
-
-  imageSet.isReconstructable = isReconstructable.value;
-
-  if (isReconstructable.missingFrames) {
-    // TODO -> This is currently unused, but may be used for reconstructing
-    // Volumes with gaps later on.
-    imageSet.missingFrames = isReconstructable.missingFrames;
-  }*/
+  // <<< DEBUG LOGGING START >>>
+  console.log(`XNAT SOP DEBUG: Created ImageSet with UID: ${imageSet.uid} containing ${imageSet.images?.length || 0} images.`);
+  // <<< DEBUG LOGGING END >>>
 
   return imageSet;
 };
@@ -148,7 +134,7 @@ function getSopClassUids(instances) {
  * - For all Image types that are stackable, create
  *   a displaySet with a stack of images
  *
- * @param {SeriesMetadata} series The series metadata object from which the display sets will be created
+ * @param {object[]} instances The list of instances for the series
  * @returns {Array} The list of display sets created for the given series object
  */
 function getDisplaySetsFromSeries(instances) {

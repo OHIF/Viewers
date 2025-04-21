@@ -11,7 +11,7 @@ import {
 } from '../../utils/IO/queryXnatRois';
 //import awaitConfirmationDialog from '../../../lib/dialogUtils/awaitConfirmationDialog.js';
 
-import { Icon } from '@ohif/ui';
+import { Icons } from '@ohif/ui-next';
 
 import '../XNATNavigationPanel.css';
 
@@ -53,6 +53,7 @@ export default class XNATSession extends React.Component<XNATSessionProps, XNATS
     };
 
     this.onViewSessionClick = this.onViewSessionClick.bind(this);
+    this.onLaunchViewerClick = this.onLaunchViewerClick.bind(this);
 
     this._cancelablePromises = [];
 
@@ -222,6 +223,19 @@ export default class XNATSession extends React.Component<XNATSessionProps, XNATS
     });
   }
 
+  /**
+   * onLaunchViewerClick - Constructs the viewer URL and opens it in a new tab.
+   *
+   * @returns {null}
+   */
+  onLaunchViewerClick(): void {
+    const { subjectId, projectId, ID, label } = this.props;
+    const viewerUrl = `/VIEWER/?subjectId=${subjectId}&projectId=${projectId}&experimentId=${ID}&experimentLabel=${label}`;
+    
+    console.log(`XNATSession: Launching viewer with URL: ${viewerUrl}`);
+    window.open(viewerUrl, '_blank');
+  }
+
   render(): React.ReactNode {
     const { ID, label, parentProjectId } = this.props;
     const { active, shared, hasRois, maskCount, contourCount } = this.state;
@@ -232,9 +246,10 @@ export default class XNATSession extends React.Component<XNATSessionProps, XNATS
         <div className="xnat-nav-horizontal-box">
           <a
             className={sessionButtonClassNames}
-            onClick={this.onViewSessionClick}
+            onClick={this.onLaunchViewerClick}
+            title="Launch Session in Viewer"
           >
-            <Icon name="launch-info" />
+            <Icons.LaunchInfo />
           </a>
           <XNATSessionLabel
             ID={ID}

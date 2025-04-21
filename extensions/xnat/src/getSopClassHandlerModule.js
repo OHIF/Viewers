@@ -64,16 +64,6 @@ const makeDisplaySet = instances => {
   const instance = instances[0];
   const imageSet = new ImageSet(instances);
 
-  console.log('XNAT: Making Display Set, first instance:', {
-    StudyInstanceUID: instance.StudyInstanceUID,
-    SeriesInstanceUID: instance.SeriesInstanceUID,
-    SeriesDescription: instance.SeriesDescription,
-    SeriesDate: instance.SeriesDate,
-    SeriesTime: instance.SeriesTime,
-    Modality: instance.Modality,
-    metadata: instance.metadata ? 'present' : 'missing'
-  });
-
   const {
     isDynamicVolume,
     value: isReconstructable,
@@ -179,9 +169,6 @@ const makeDisplaySet = instances => {
     isDynamicVolume,
     dynamicVolumeInfo,
   };
-  
-  console.log('XNAT: Setting display set attributes:', attributesToSet);
-  console.log('XNAT: Number of image frames:', instances.length, 'for display set:', imageSet.uid);
   
   imageSet.setAttributes(attributesToSet);
 

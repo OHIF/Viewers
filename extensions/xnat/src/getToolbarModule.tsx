@@ -11,7 +11,7 @@ import ToolbarButtonGroupWithServicesLegacy from './Toolbar/ToolbarButtonGroupWi
 import { ProgressDropdownWithService } from './Components/ProgressDropdownWithService';
 
 // new
-import ToolButtonListWrapper from './Toolbar/ToolButtonListWrapper';
+import ToolButtonListWrapper from '../../default/src/Toolbar/ToolButtonListWrapper';
 import { ToolBoxButtonGroupWrapper, ToolBoxButtonWrapper } from './Toolbar/ToolBoxWrapper';
 
 // Define the withAppTypes interface to match ExtensionParams

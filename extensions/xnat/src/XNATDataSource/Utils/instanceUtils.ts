@@ -13,7 +13,6 @@ export function ensureInstanceRequiredFields(instance: any, series: any): any {
     } else {
       // Only generate as a last resort
       instance.SOPInstanceUID = generateRandomUID();
-      console.log('XNAT: Generated new SOPInstanceUID:', instance.SOPInstanceUID);
     }
   }
   
@@ -22,11 +21,9 @@ export function ensureInstanceRequiredFields(instance: any, series: any): any {
     // Check metadata first
     if (instance.metadata && instance.metadata.SOPClassUID) {
       instance.SOPClassUID = instance.metadata.SOPClassUID;
-      console.log('XNAT: Using SOPClassUID from metadata:', instance.SOPClassUID);
     } else {
       // Use the utility function to get appropriate SOPClassUID
       instance.SOPClassUID = getSOPClassUIDForModality(series.Modality || 'CT');
-      console.log('XNAT: Using modality-based SOPClassUID:', instance.SOPClassUID);
     }
   }
   

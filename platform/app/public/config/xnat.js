@@ -11,7 +11,9 @@ window.config = {
     '@ohif/extension-xnat'
   ],
   modes: ['@ohif/mode-xnat'],
-  customizationService: {},
+  customizationService: {
+    'autoCineModalities': { $set: [] } // Set to an empty array by default
+  },
   showStudyList: false,
   // some windows systems have issues with more than 3 web workers
   maxNumberOfWebWorkers: 3,

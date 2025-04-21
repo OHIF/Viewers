@@ -132,6 +132,11 @@ export default function getCustomizationModule({ servicesManager, extensionManag
       name: 'default',
       value: {
         ...layoutSelectorCustomization,
+        autoCineModalities: ['OT', 'US'],
+        'viewportOverlay.topLeft': [],
+        'viewportOverlay.topRight': [],
+        'viewportOverlay.bottomLeft': [],
+        'viewportOverlay.bottomRight': [],
       },
     },
     {

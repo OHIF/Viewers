@@ -13,6 +13,7 @@ interface XNATSeriesListProps {
       modality: string;
       numImageFrames: number;
       imageId?: string;
+      imageSrc?: string;
     }>;
     session?: {
       experimentId: string;
@@ -134,7 +135,7 @@ function XNATSeriesList({
           SeriesNumber, 
           modality, 
           numImageFrames, 
-          imageId 
+          imageSrc
         } = thumbnail;
         
         const hasRoi = hasRois[displaySetInstanceUID] || false;
@@ -148,7 +149,7 @@ function XNATSeriesList({
             SeriesNumber={SeriesNumber}
             numImageFrames={numImageFrames}
             active={isActive}
-            imageId={imageId}
+            imageSrc={imageSrc}
             onClick={(event) => handleThumbnailClick(displaySetInstanceUID, event)}
             onDoubleClick={() => onThumbnailDoubleClick(displaySetInstanceUID)}
           />

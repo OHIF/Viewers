@@ -4,8 +4,7 @@ import React, { useEffect, useState } from 'react';
 export interface XNATThumbnailProps {
   id?: string;
   className?: string;
-  imageSrc?: string;
-  imageId?: string;
+  imageSrc?: string | null; // Accept null for error/placeholder state
   alt?: string;
   width?: string;
   height?: string;
@@ -22,8 +21,7 @@ function XNATThumbnail(props: XNATThumbnailProps) {
   const {
     id,
     className,
-    imageSrc = '', 
-    imageId = '', 
+    imageSrc, // Use imageSrc directly (can be null)
     alt = '',
     SeriesDescription = 'No Description',
     SeriesNumber = '',
@@ -33,27 +31,20 @@ function XNATThumbnail(props: XNATThumbnailProps) {
     onDoubleClick,
   } = props;
 
-  const [thumbnailImageSrc, setThumbnailImageSrc] = useState<string | null>(null);
-  const [hasError, setHasError] = useState(false);
+  // State to track if the provided imageSrc (or fallback) failed to render in the <img>
+  const [renderError, setRenderError] = useState(false);
 
   // Function to generate a placeholder color from series number
   const generatePlaceholderColor = (seriesNum: string | number): string => {
-    // Convert to string and get a simple hash
     const seriesStr = seriesNum?.toString() || '';
-    
     if (!seriesStr) {
       return '#cccccc'; // Default gray
     }
-    
-    // Simple string hash function
     let hash = 0;
     for (let i = 0; i < seriesStr.length; i++) {
       hash = ((hash << 5) - hash) + seriesStr.charCodeAt(i);
       hash |= 0; // Convert to 32bit integer
     }
-    
-    // Generate HSL color with moderate saturation and lightness
-    // Use modulo to get values in the right range
     const hue = Math.abs(hash % 360);
     return `hsl(${hue}, 60%, 80%)`;
   };
@@ -69,64 +60,29 @@ function XNATThumbnail(props: XNATThumbnailProps) {
         </text>
       </svg>
     `;
-    
     return `data:image/svg+xml;base64,${btoa(svgContent)}`;
   };
 
+  // Reset render error state if imageSrc prop changes
   useEffect(() => {
-    console.log(`XNAT Thumbnail: Processing ${SeriesDescription}, imageId: ${imageId}`);
-    
-    if (imageSrc) {
-      setThumbnailImageSrc(imageSrc);
-    } else if (imageId) {
-      try {
-        // Handle dicomweb: format
-        if (imageId.startsWith('dicomweb:')) {
-          console.log('XNAT Thumbnail: Extracting URL from dicomweb prefix');
-          // Extract the URL after the prefix
-          const url = imageId.substring(9);
-          
-          // Create a thumbnail URL
-          // For XNAT, we might need to append query parameters to request a thumbnail
-          const urlObj = new URL(url);
-          
-          // If this is an XNAT URL, we can either:
-          // 1. Use the existing URL which should return the DICOM image
-          // 2. Add special query parameters if needed to request a thumbnail
-          
-          setThumbnailImageSrc(urlObj.toString());
-          console.log('XNAT Thumbnail: Set thumbnail src to:', urlObj.toString());
-        } else {
-          // Regular image ID
-          setThumbnailImageSrc(imageId);
-        }
-      } catch (error) {
-        console.error('XNAT Thumbnail: Error processing imageId:', error);
-        setHasError(true);
-        setThumbnailImageSrc(createPlaceholderSvg(SeriesNumber));
-      }
-    } else {
-      // No image source or ID, use placeholder
-      console.log(`XNAT Thumbnail: No imageId for ${SeriesDescription}, using placeholder`);
-      setHasError(true);
-      setThumbnailImageSrc(createPlaceholderSvg(SeriesNumber));
-    }
-    
-    return () => {
-      // Cleanup if needed
-    };
-  }, [imageId, imageSrc, SeriesDescription, SeriesNumber]);
+    setRenderError(false);
+  }, [imageSrc]);
 
-  // Handle image load error
+  // Handle image load error for the <img> tag
   const handleImageError = () => {
-    console.error(`XNAT Thumbnail: Failed to load image for ${SeriesDescription}`);
-    setHasError(true);
-    setThumbnailImageSrc(createPlaceholderSvg(SeriesNumber));
+    if (!renderError) {
+      console.error(`XNAT Thumbnail: Error rendering image src for ${SeriesDescription}`);
+      setRenderError(true); // Set render error state
+    }
   };
+
+  // Determine final source: use imageSrc if available and no render error, otherwise use placeholder
+  const finalImageSrc = !renderError && imageSrc ? imageSrc : createPlaceholderSvg(SeriesNumber);
 
   const thumbnailClasses = [
     'thumbnail',
     active ? 'active' : '',
+    renderError || !imageSrc ? 'has-error' : '', // Add error class if needed
     className || '',
   ].join(' ');
 
@@ -146,18 +102,12 @@ function XNATThumbnail(props: XNATThumbnailProps) {
         </div>
       </div>
       <div className="image-thumbnail">
-        {thumbnailImageSrc ? (
-          <img
-            className="image"
-            src={thumbnailImageSrc}
-            alt={alt || SeriesDescription || 'Image thumbnail'}
-            onError={handleImageError}
-          />
-        ) : (
-          <div className="image-placeholder" style={{ backgroundColor: generatePlaceholderColor(SeriesNumber) }}>
-            {SeriesNumber || '?'}
-          </div>
-        )}
+        <img
+          className="image"
+          src={finalImageSrc} // Use finalImageSrc (data URL or placeholder SVG)
+          alt={alt || SeriesDescription || 'Image thumbnail'}
+          onError={handleImageError} // Use the handler to set renderError state
+        />
       </div>
     </div>
   );

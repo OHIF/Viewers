@@ -17,6 +17,12 @@ import getDirectURL from '../utils/getDirectURL';
 import { fixBulkDataURI } from '../DicomWebDataSource/utils/fixBulkDataURI';
 import { ensureInstanceRequiredFields } from './Utils/instanceUtils.js';
 import { generateRandomUID, extractStudyUIDFromURL } from './Utils/UIDUtils';
+import {
+  getXNATStatusFromStudyInstanceUID,
+  getSeriesXNATInstancesMetadata,
+  convertToAbsoluteUrl,
+  setupDisplaySetLogging,
+} from './Utils/DataSourceUtils';
 const { DicomMetaDictionary, DicomDict } = dcmjs.data;
 const { naturalizeDataset, denaturalizeDataset } = DicomMetaDictionary;
 const metadataProvider = classes.MetadataProvider;
@@ -52,7 +58,6 @@ const getAppropriateImageId = (url: string, preferredScheme = 'wadouri'): string
     log.warn('XNAT: Empty URL provided to getAppropriateImageId');
     return '';
   }
-
   // If URL already has a scheme, respect it
   if (url.includes(':') && 
       !url.startsWith('http://') && 
@@ -214,12 +219,11 @@ function createXNATApi(xnatConfig: XNATConfig, servicesManager) {
   
   const implementation = {
     initialize: ({ params, query }) => {
-      console.log('XNAT XNATDataSource initialize called - refreshing clients');
-      console.log('Initialize params:', params);
-      console.log('Initialize query:', query);
+
       
       // Set up display set logging
       try {
+        // Now calls the defined function
         setupDisplaySetLogging();
         console.log('XNAT: Display set logging initialized');
       } catch (error) {
@@ -303,15 +307,10 @@ function createXNATApi(xnatConfig: XNATConfig, servicesManager) {
     
     query: {
       studies: {
-        mapParams: mapParams.bind({}),
+        mapParams: mapParams.bind({}), // Consider if mapParams needs config
         search: async function (origParams) {
-          console.log('XNAT qidosearch');
-          console.log('XNAT: search: original params', origParams);
-          
           // Extract study instance UID from params
           let studyInstanceUid = origParams?.studyInstanceUID || origParams?.StudyInstanceUID;
-          console.log('XNAT: search: studyInstanceUid from params', studyInstanceUid);
-          
           // If no studyInstanceUid directly provided, check if it's in a nested object
           if (!studyInstanceUid && typeof origParams === 'object' && origParams !== null) {
             if (origParams.studyInstanceUid) {
@@ -319,54 +318,8 @@ function createXNATApi(xnatConfig: XNATConfig, servicesManager) {
             }
           }
           
-          // Extract XNAT identifiers from configuration 
-          let projectId = xnatConfig.xnat?.projectId;
-          let experimentId = xnatConfig.xnat?.experimentId || xnatConfig.xnat?.sessionId;
-          
-          // If we don't have project and experiment IDs in config, try to derive them
-          if (!projectId || !experimentId) {
-            console.log('XNAT: Trying to derive project and experiment IDs from URL or study UID');
-            
-            // Check URL for study or experiment ID parameters
-            const urlParams = new URLSearchParams(window.location.search);
-            
-            // Look for alternative parameter names in URL
-            const possibleProjectParams = ['projectId', 'project', 'proj'];
-            const possibleExperimentParams = ['experimentId', 'experiment', 'session', 'exam', 'scan'];
-            
-            for (const param of possibleProjectParams) {
-              const value = urlParams.get(param);
-              if (value) {
-                projectId = value;
-                console.log(`XNAT: Found project ID in URL parameter '${param}': ${projectId}`);
-                break;
-              }
-            }
-            
-            for (const param of possibleExperimentParams) {
-              const value = urlParams.get(param);
-              if (value) {
-                experimentId = value;
-                console.log(`XNAT: Found experiment ID in URL parameter '${param}': ${experimentId}`);
-                break;
-              }
-            }
-            
-            // If we still don't have project/experiment IDs, try to derive from StudyInstanceUID
-            if ((!projectId || !experimentId) && studyInstanceUid) {
-              console.log('XNAT: Attempting to derive project/experiment from StudyInstanceUID:', studyInstanceUid);
-              
-              if (!experimentId) {
-                experimentId = studyInstanceUid;
-                console.log('XNAT: Using StudyInstanceUID as experimentId:', experimentId);
-              }
-              
-              if (!projectId) {
-                projectId = "defaultProject";
-                console.log('XNAT: Using default project ID:', projectId);
-              }
-            }
-          }
+          // Extract XNAT identifiers using the helper function
+          const { projectId, experimentId } = getXNATStatusFromStudyInstanceUID(studyInstanceUid, xnatConfig);
           
           console.log('XNAT study search using:', { projectId, experimentId, studyInstanceUid });
           
@@ -397,13 +350,14 @@ function createXNATApi(xnatConfig: XNATConfig, servicesManager) {
                 "00080050": { vr: "SH", Value: [study.AccessionNumber || ""] },
                 "00080054": { vr: "AE", Value: [xnatConfig.qidoRoot || ""] },
                 "00080056": { vr: "CS", Value: ["ONLINE"] },
-                "00080061": { vr: "CS", Value: study.Modalities ? study.Modalities.split("\\") : [""] },
+                "00080061": { vr: "CS", Value: study.Modalities},
                 "00080090": { vr: "PN", Value: [{ Alphabetic: study.ReferringPhysicianName || "" }] },
                 "00081190": { vr: "UR", Value: [xnatConfig.qidoRoot || ""] },
                 "00100010": { vr: "PN", Value: [{ Alphabetic: study.PatientName || "Anonymous" }] },
                 "00100020": { vr: "LO", Value: [study.PatientID || ""] },
                 "00100030": { vr: "DA", Value: [study.PatientBirthDate || ""] },
                 "00100040": { vr: "CS", Value: [study.PatientSex || ""] },
+                // Ensure the StudyInstanceUID matches the one used for the query if available
                 "0020000D": { vr: "UI", Value: [studyInstanceUid || study.StudyInstanceUID || xnatMetadata.transactionId] },
                 "00200010": { vr: "SH", Value: [study.StudyID || ""] },
                 "00081030": { vr: "LO", Value: [study.StudyDescription || "XNAT Study"] }
@@ -414,7 +368,7 @@ function createXNATApi(xnatConfig: XNATConfig, servicesManager) {
                 result["00201206"] = { vr: "IS", Value: [study.series.length.toString()] };
                 
                 // Get modalities from series
-                const modalities = new Set();
+                const modalities = new Set<string>(); // Use Set<string>
                 study.series.forEach(series => {
                   if (series.Modality) {
                     modalities.add(series.Modality);
@@ -429,7 +383,6 @@ function createXNATApi(xnatConfig: XNATConfig, servicesManager) {
               results.push(result);
             });
             
-            console.log('XNAT: Processed query results from XNAT API', results);
             return results;
           } catch (error) {
             console.error('XNAT: Error in study search:', error);
@@ -450,37 +403,31 @@ function createXNATApi(xnatConfig: XNATConfig, servicesManager) {
               origParams.studyInstanceUID = origParams.StudyInstanceUID;
             }
             
-            console.log('XNAT: search: after normalization', origParams);
-            
-            const mappedParams = mapParams(origParams, {
+            // Define paramMap type explicitly and ensure origParams is an object
+            const validOrigParams = typeof origParams === 'object' && origParams !== null ? origParams : {};
+            // Ensure the result of mapParams is treated as an object
+            const mappedResult = mapParams(validOrigParams, {
               supportsFuzzyMatching: xnatConfig.supportsFuzzyMatching,
               supportsWildcard: xnatConfig.supportsWildcard,
-            }) || {};
+            });
+            const paramMap: Record<string, any> = typeof mappedResult === 'object' && mappedResult !== null ? mappedResult : {};
             
             // Extract study and series UIDs separately to avoid destructuring issues
-            const studyInstanceUid = mappedParams.studyInstanceUID || origParams?.studyInstanceUID || origParams?.StudyInstanceUID;
-            const seriesInstanceUid = mappedParams.seriesInstanceUID;
+            const queryStudyInstanceUid = paramMap.studyInstanceUID || origParams?.studyInstanceUID || origParams?.StudyInstanceUID;
+            const querySeriesInstanceUid = paramMap.seriesInstanceUID;
             
             // Remove these properties to prevent duplicate parameters
-            delete mappedParams.studyInstanceUID;
-            delete mappedParams.seriesInstanceUID;
-            
-            console.log('XNAT: search: studyInstanceUid', studyInstanceUid);
-            console.log('XNAT: search: seriesInstanceUid', seriesInstanceUid);
-            console.log('XNAT: search: queryParameters', mappedParams);
+            delete paramMap.studyInstanceUID;
+            delete paramMap.seriesInstanceUID;
 
-            const results = await qidoSearch(qidoDicomWebClient, studyInstanceUid, seriesInstanceUid, mappedParams);
-            console.log('XNAT: search: results', results);
+            const results = await qidoSearch(qidoDicomWebClient, queryStudyInstanceUid, querySeriesInstanceUid, paramMap);
             return processResults(results);
           }
         },
       },
       
       series: {
-        search: async function (studyInstanceUid, filters) {
-          console.log('XNAT series search');
-          console.log('XNAT series search: studyInstanceUid', studyInstanceUid);
-          console.log('XNAT series search: filters', filters);
+        search: async function (studyInstanceUidParam, filters) { // Renamed parameter
           
           if (!qidoDicomWebClient) {
             console.error('qidoDicomWebClient not available - series search may fail');
@@ -489,16 +436,19 @@ function createXNATApi(xnatConfig: XNATConfig, servicesManager) {
           qidoDicomWebClient.headers = getAuthorizationHeader();
           
           // Ensure studyInstanceUid is a string
-          if (typeof studyInstanceUid !== 'string') {
-            console.warn('XNAT series search: studyInstanceUid is not a string', studyInstanceUid);
-            if (studyInstanceUid?.StudyInstanceUID) {
-              studyInstanceUid = studyInstanceUid.StudyInstanceUID;
-            } else if (studyInstanceUid?.studyInstanceUID) {
-              studyInstanceUid = studyInstanceUid.studyInstanceUID;
+          let studyInstanceUid: string;
+          if (typeof studyInstanceUidParam !== 'string') {
+            console.warn('XNAT series search: studyInstanceUidParam is not a string', studyInstanceUidParam);
+            if (studyInstanceUidParam?.StudyInstanceUID) {
+              studyInstanceUid = studyInstanceUidParam.StudyInstanceUID;
+            } else if (studyInstanceUidParam?.studyInstanceUID) {
+              studyInstanceUid = studyInstanceUidParam.studyInstanceUID;
             } else {
               console.error('XNAT series search: Unable to determine studyInstanceUid');
               return [];
             }
+          } else {
+            studyInstanceUid = studyInstanceUidParam;
           }
           
           const mappedFilters = mapParams(filters, {
@@ -553,10 +503,35 @@ function createXNATApi(xnatConfig: XNATConfig, servicesManager) {
         if (xnatConfig && value && instance) {
           return fixBulkDataURI(value, instance, xnatConfig);
         }
+        // Return the value unmodified if config or instance is missing
+        return value;
       },
       
       series: {
-        metadata: async ({ StudyInstanceUID, SeriesInstanceUID, returnPromises = false, filters, sortCriteria } = {}) => {
+        // Define the type for the input object more accurately
+        metadata: async (params: {
+            StudyInstanceUID?: string;
+            SeriesInstanceUID?: string;
+            returnPromises?: boolean;
+            filters?: Record<string, any>; // Or a more specific filter type
+            sortCriteria?: any; // Define if needed
+            madeInClient?: boolean; // Add madeInClient to the type definition
+          } = {}) => {
+          // Destructure with default values
+          const {
+            StudyInstanceUID: inputStudyInstanceUID,
+            SeriesInstanceUID,
+            returnPromises = false,
+            filters,
+            sortCriteria, // Not used in current logic, but keep for type safety
+            madeInClient = false, // Default value for madeInClient
+          } = params;
+
+          // Ensure filters is correctly typed or default
+          const currentMetadataFilters = typeof filters === 'object' && filters !== null ? filters : {};
+
+          let StudyInstanceUID = inputStudyInstanceUID; // Use a mutable variable
+
           try {
             // Import the DeferredPromise utilities
             const { wrapArrayWithDeferredPromises } = await import('../utils/DeferredPromise');
@@ -622,7 +597,7 @@ function createXNATApi(xnatConfig: XNATConfig, servicesManager) {
               }
             }
 
-            // Extract XNAT identifiers from config
+            // Extract XNAT identifiers from config using the helper function
             const xnatData = getXNATStatusFromStudyInstanceUID(StudyInstanceUID, xnatConfig);
             const { projectId, experimentId } = xnatData;
 
@@ -633,38 +608,34 @@ function createXNATApi(xnatConfig: XNATConfig, servicesManager) {
             log.debug('XNAT: Getting series metadata for', {
               projectId,
               experimentId,
-              SeriesInstanceUID,
+              SeriesInstanceUID, // Use the destructured SeriesInstanceUID
             });
 
             // Fetch all instances for the series (or all series if SeriesInstanceUID not provided)
+            // Calls the defined helper function
             const seriesData = await getSeriesXNATInstancesMetadata({
               projectId,
               experimentId,
-              seriesUID: undefined, // IMPORTANT: Set to undefined to force loading ALL series
+              seriesUID: SeriesInstanceUID, // Pass the specific SeriesInstanceUID if provided
               implementation,
             });
 
             if (!seriesData || !seriesData.length) {
-              throw new Error(
-                `No series data found for study ${StudyInstanceUID}`
-              );
+              // Adjust error message based on whether a specific series was requested
+              const errorMsg = SeriesInstanceUID
+                 ? `No series data found for series ${SeriesInstanceUID} in study ${StudyInstanceUID}`
+                 : `No series data found for study ${StudyInstanceUID}`;
+              throw new Error(errorMsg);
             }
-            
-            // Always use all series data
-            const filteredSeriesData = seriesData;
 
-            if (filteredSeriesData.length === 0) {
-              throw new Error(
-                `No series data found for study ${StudyInstanceUID}`
-              );
-            }
+            // Always use the fetched series data (could be filtered or all)
+            const filteredSeriesData = seriesData;
             
             // Log the number of series we're loading
             log.info(`XNAT: Loading ${filteredSeriesData.length} series for study ${StudyInstanceUID}`);
             
             // Handle returnPromises option (used by the defaultRouteInit function)
             if (returnPromises) {
-              console.log('XNAT: Returning promises for lazy loading');
               
               // Create an array of functions that return promises
               const seriesPromiseFunctions = filteredSeriesData.map(series => {
@@ -689,11 +660,17 @@ function createXNATApi(xnatConfig: XNATConfig, servicesManager) {
                         
                         // Make sure we're getting a proper absolute URL
                         const baseUrl = xnatConfig.wadoRoot || window.location.origin;
+                        // Calls the defined helper function
                         const absoluteUrl = convertToAbsoluteUrl(instanceURLPath, baseUrl, xnatConfig);
                         
                         // Set URL and imageId
                         instance.url = absoluteUrl;
                         instance.imageId = getAppropriateImageId(absoluteUrl, 'dicomweb');
+                        
+                        // --- ADD URL TO METADATA ---
+                        instance.metadata = instance.metadata || {}; // Ensure metadata object exists
+                        instance.metadata.url = absoluteUrl; // Add the URL here
+                        // --- END ADDITION ---
                         
                         // Critical for MPR - FORCE these to be true for each instance
                         instance.isReconstructable = true;
@@ -704,7 +681,9 @@ function createXNATApi(xnatConfig: XNATConfig, servicesManager) {
                       });
                       console.log('Processed Instances', processedInstances);
                       // Add all instances at once in a batch
-                      if (processedInstances.length > 0 && (!filters || !(filters as any).batch)) {
+                      // Ensure filters is an object and check for properties safely
+                      const currentFilters = typeof filters === 'object' && filters !== null ? filters : {};
+                      if (processedInstances.length > 0 && !currentFilters?.batch) { // Optional chaining for safety
                         // Make sure every instance has proper StudyInstanceUID and SeriesInstanceUID
                         processedInstances.forEach(instance => {
                           instance.StudyInstanceUID = instance.StudyInstanceUID || series.StudyInstanceUID;
@@ -718,7 +697,6 @@ function createXNATApi(xnatConfig: XNATConfig, servicesManager) {
                             } else {
                               // Only generate as a last resort
                               instance.SOPInstanceUID = generateRandomUID();
-                              console.log('XNAT: Generated new SOPInstanceUID:', instance.SOPInstanceUID);
                             }
                           }
                           
@@ -727,20 +705,10 @@ function createXNATApi(xnatConfig: XNATConfig, servicesManager) {
                             // Check metadata first
                             if (instance.metadata && instance.metadata.SOPClassUID) {
                               instance.SOPClassUID = instance.metadata.SOPClassUID;
-                              console.log('XNAT: Using SOPClassUID from metadata:', instance.SOPClassUID);
                             } else {
                               // Set appropriate SOP Class based on modality if available
-                              if (series.Modality === 'MR') {
-                                instance.SOPClassUID = '1.2.840.10008.5.1.4.1.1.4'; // MR Image Storage
-                              } else if (series.Modality === 'CT') {
-                                instance.SOPClassUID = '1.2.840.10008.5.1.4.1.1.2'; // CT Image Storage
-                              } else if (series.Modality === 'PT') {
-                                instance.SOPClassUID = '1.2.840.10008.5.1.4.1.1.128'; // PET Image Storage
-                              } else {
-                                // Default to CT Image Storage as fallback
-                                instance.SOPClassUID = '1.2.840.10008.5.1.4.1.1.2';
-                              }
-                              console.log('XNAT: Using modality-based SOPClassUID:', instance.SOPClassUID);
+                              const sopClassUID = getSOPClassUIDForModality(series.Modality);
+                              instance.SOPClassUID = sopClassUID;
                             }
                           }
                           
@@ -757,23 +725,33 @@ function createXNATApi(xnatConfig: XNATConfig, servicesManager) {
                             }
                           }
                           
-
+                          // Ensure ImageType is copied to the top level if available in metadata
+                          if (!instance.ImageType && instance.metadata && instance.metadata.ImageType) {
+                            instance.ImageType = instance.metadata.ImageType;
+                          }
+                          // Ensure Modality
+                          if (!instance.Modality && instance.metadata && instance.metadata.Modality) {
+                            instance.Modality = instance.metadata.Modality;
+                          }
+                          // Ensure FrameOfReferenceUID
+                          if (!instance.FrameOfReferenceUID && instance.metadata && instance.metadata.FrameOfReferenceUID) {
+                            instance.FrameOfReferenceUID = instance.metadata.FrameOfReferenceUID;
+                          }
+                          // Ensure ProtocolName
+                          if (!instance.ProtocolName && instance.metadata && instance.metadata.ProtocolName) {
+                            instance.ProtocolName = instance.metadata.ProtocolName;
+                          }
+                          // Ensure SeriesDescription (already done earlier, but ensure consistency)
+                          if (!instance.SeriesDescription && instance.metadata && instance.metadata.SeriesDescription) {
+                            instance.SeriesDescription = instance.metadata.SeriesDescription;
+                          }
                         });
                         
                         log.info(`XNAT: Adding ${processedInstances.length} instances in batch for series ${series.SeriesInstanceUID} of study ${series.StudyInstanceUID}`);
+                        
                         DicomMetadataStore.addInstances(processedInstances, true);
                         console.log('Series', series);
-                        // Simple log with instance data
-                        console.log('XNAT: Processed instances added to DicomMetadataStore');
-                        console.log('766 First instance sample:', {
-                          StudyInstanceUID: processedInstances[0].StudyInstanceUID,
-                          SeriesInstanceUID: processedInstances[0].SeriesInstanceUID,
-                          SOPInstanceUID: processedInstances[0].SOPInstanceUID,
-                          imageId: processedInstances[0].imageId,
-                          url: processedInstances[0].url,
-                          metadata: processedInstances[0].metadata ? 'present' : 'missing',
-                          displaySetInstanceUID: processedInstances[0].displaySetInstanceUID
-                        });
+                       
                       }
                     }
                     
@@ -808,20 +786,6 @@ function createXNATApi(xnatConfig: XNATConfig, servicesManager) {
                     instance.metadata.isMultiFrame = false;
                   }
                   
-                  // We no longer set displaySetInstanceUID here - let the ImageSet class handle this during display set creation
-                  /*
-                  // Make sure displaySetInstanceUID is consistent with the series
-                  if (series.displaySetInstanceUID && (!instance.displaySetInstanceUID || instance.displaySetInstanceUID !== series.displaySetInstanceUID)) {
-                    instance.displaySetInstanceUID = series.displaySetInstanceUID;
-                    log.info(`XNAT: Setting instance displaySetInstanceUID to match series: ${series.displaySetInstanceUID}`);
-                    
-                    // Also set it in the metadata
-                    if (instance.metadata) {
-                      instance.metadata.displaySetInstanceUID = series.displaySetInstanceUID;
-                    }
-                  }
-                  */
-                  
                   // Use the URL directly from the instance object instead of trying to construct it
                   let instanceURLPath;
                   
@@ -836,18 +800,26 @@ function createXNATApi(xnatConfig: XNATConfig, servicesManager) {
                   
                   // Make sure we're getting a proper absolute URL
                   const baseUrl = xnatConfig.wadoRoot || window.location.origin;
+                  // Calls the defined helper function
                   const absoluteUrl = convertToAbsoluteUrl(instanceURLPath, baseUrl, xnatConfig);
                   
                   // Set URL and imageId
                   instance.url = absoluteUrl;
                   instance.imageId = getAppropriateImageId(absoluteUrl, 'dicomweb');
                   
+                  // --- ADD URL TO METADATA ---
+                  instance.metadata = instance.metadata || {}; // Ensure metadata object exists
+                  instance.metadata.url = absoluteUrl; // Add the URL here
+                  // --- END ADDITION ---
+                  
                   // Instead of adding to DicomMetadataStore one by one, collect all instances first
                   processedInstances.push(instance);
                 });
                 
                 // Add all instances at once in a batch
-                if (processedInstances.length > 0 && (!filters || !(filters as any).batch)) {
+                // Ensure filters is an object and check for properties safely
+                const currentFilters = typeof filters === 'object' && filters !== null ? filters : {};
+                if (processedInstances.length > 0 && !currentFilters?.batch) { // Optional chaining for safety
                   // Make sure every instance has proper StudyInstanceUID and SeriesInstanceUID
                   processedInstances.forEach(instance => {
                     instance.StudyInstanceUID = instance.StudyInstanceUID || series.StudyInstanceUID;
@@ -861,7 +833,6 @@ function createXNATApi(xnatConfig: XNATConfig, servicesManager) {
                       } else {
                         // Only generate as a last resort
                         instance.SOPInstanceUID = generateRandomUID();
-                        console.log('XNAT: Generated new SOPInstanceUID:', instance.SOPInstanceUID);
                       }
                     }
                     
@@ -870,20 +841,10 @@ function createXNATApi(xnatConfig: XNATConfig, servicesManager) {
                       // Check metadata first
                       if (instance.metadata && instance.metadata.SOPClassUID) {
                         instance.SOPClassUID = instance.metadata.SOPClassUID;
-                        console.log('XNAT: Using SOPClassUID from metadata:', instance.SOPClassUID);
                       } else {
                         // Set appropriate SOP Class based on modality if available
-                        if (series.Modality === 'MR') {
-                          instance.SOPClassUID = '1.2.840.10008.5.1.4.1.1.4'; // MR Image Storage
-                        } else if (series.Modality === 'CT') {
-                          instance.SOPClassUID = '1.2.840.10008.5.1.4.1.1.2'; // CT Image Storage
-                        } else if (series.Modality === 'PT') {
-                          instance.SOPClassUID = '1.2.840.10008.5.1.4.1.1.128'; // PET Image Storage
-                        } else {
-                          // Default to CT Image Storage as fallback
-                          instance.SOPClassUID = '1.2.840.10008.5.1.4.1.1.2';
-                        }
-                        console.log('XNAT: Using modality-based SOPClassUID:', instance.SOPClassUID);
+                        const sopClassUID = getSOPClassUIDForModality(series.Modality);
+                        instance.SOPClassUID = sopClassUID;
                       }
                     }
                     
@@ -899,22 +860,32 @@ function createXNATApi(xnatConfig: XNATConfig, servicesManager) {
                         instance.metadata.SOPClassUID = instance.SOPClassUID;
                       }
                     }
+
+                    // Ensure ImageType is copied to the top level if available in metadata
+                    if (!instance.ImageType && instance.metadata && instance.metadata.ImageType) {
+                      instance.ImageType = instance.metadata.ImageType;
+                    }
+                    // Ensure Modality
+                    if (!instance.Modality && instance.metadata && instance.metadata.Modality) {
+                      instance.Modality = instance.metadata.Modality;
+                    }
+                    // Ensure FrameOfReferenceUID
+                    if (!instance.FrameOfReferenceUID && instance.metadata && instance.metadata.FrameOfReferenceUID) {
+                      instance.FrameOfReferenceUID = instance.metadata.FrameOfReferenceUID;
+                    }
+                    // Ensure ProtocolName
+                    if (!instance.ProtocolName && instance.metadata && instance.metadata.ProtocolName) {
+                      instance.ProtocolName = instance.metadata.ProtocolName;
+                    }
+                    // Ensure SeriesDescription (already done earlier, but ensure consistency)
+                    if (!instance.SeriesDescription && instance.metadata && instance.metadata.SeriesDescription) {
+                      instance.SeriesDescription = instance.metadata.SeriesDescription;
+                    }
                   });
                   
                   log.info(`XNAT: Adding ${processedInstances.length} instances in batch for series ${series.SeriesInstanceUID} of study ${series.StudyInstanceUID}`);
-                  DicomMetadataStore.addInstances(processedInstances, true);
                   
-                  // Simple log with instance data
-                  console.log('XNAT: Processed instances added to DicomMetadataStore');
-                  console.log('897 First instance sample:', {
-                    StudyInstanceUID: processedInstances[0].StudyInstanceUID,
-                    SeriesInstanceUID: processedInstances[0].SeriesInstanceUID,
-                    SOPInstanceUID: processedInstances[0].SOPInstanceUID,
-                    imageId: processedInstances[0].imageId,
-                    url: processedInstances[0].url,
-                    metadata: processedInstances[0].metadata ? 'present' : 'missing',
-                    displaySetInstanceUID: processedInstances[0].displaySetInstanceUID
-                  });
+                  DicomMetadataStore.addInstances(processedInstances, true);
                 }
               }
               
@@ -928,7 +899,8 @@ function createXNATApi(xnatConfig: XNATConfig, servicesManager) {
       },
       
       study: {
-        metadata: async function (studyInstanceUID, options = {}) {
+        // Define interface for options
+        metadata: async function (studyInstanceUID, options: { batch?: boolean; madeInClient?: boolean } = {}) {
           console.log('XNAT retrieve study metadata', {studyInstanceUID});
           
           // Add diagnostic logs to help debug the call context
@@ -958,7 +930,6 @@ function createXNATApi(xnatConfig: XNATConfig, servicesManager) {
           
           // If we don't have project and experiment IDs in config, try to derive them
           if (!projectId || !experimentId) {
-            console.log('XNAT: Trying to derive project and experiment IDs from URL or study UID');
             
             // Check URL for study or experiment ID parameters
             const urlParams = new URLSearchParams(window.location.search);
@@ -987,21 +958,17 @@ function createXNATApi(xnatConfig: XNATConfig, servicesManager) {
             
             // If we still don't have project/experiment IDs, try to derive from StudyInstanceUID
             if ((!projectId || !experimentId) && studyUid) {
-              console.log('XNAT: Attempting to derive project/experiment from StudyInstanceUID:', studyUid);
               
               if (!experimentId) {
                 experimentId = studyUid;
-                console.log('XNAT: Using StudyInstanceUID as experimentId:', experimentId);
               }
               
               if (!projectId) {
                 projectId = "defaultProject";
-                console.log('XNAT: Using default project ID:', projectId);
               }
             }
           }
           
-          console.log('XNAT study metadata retrieval using:', { projectId, experimentId, studyUid });
           
           if (!projectId || !experimentId) {
             console.error('XNAT: Missing projectId or experimentId for metadata fetch');
@@ -1033,18 +1000,44 @@ function createXNATApi(xnatConfig: XNATConfig, servicesManager) {
             } catch (error) {
               console.error('XNAT: Error parsing URL, using window location', error);
               baseUrl = `${window.location.protocol}//${window.location.host}`;
-              console.log('XNAT: Using window location as base URL for image loading:', baseUrl);
             }
-            console.log('XNAT: Using base URL for image loading:', baseUrl);
             
-            // Process instance metadata to make it compatible with the viewer's expectations
+            // Create a basic study object first
+            const studyMetadataForStore = {
+              StudyInstanceUID: studyUid,
+              PatientID: xnatMetadata.studies?.[0]?.PatientID || 'Unknown',
+              PatientName: xnatMetadata.studies?.[0]?.PatientName || 'Unknown',
+              StudyDate: xnatMetadata.studies?.[0]?.StudyDate || '',
+              StudyTime: xnatMetadata.studies?.[0]?.StudyTime || '',
+              AccessionNumber: xnatMetadata.studies?.[0]?.AccessionNumber || '',
+              ReferringPhysicianName: xnatMetadata.studies?.[0]?.ReferringPhysicianName || '',
+              PatientBirthDate: xnatMetadata.studies?.[0]?.PatientBirthDate || '',
+              PatientSex: xnatMetadata.studies?.[0]?.PatientSex || '',
+              StudyID: xnatMetadata.studies?.[0]?.StudyID || '',
+              StudyDescription: xnatMetadata.studies?.[0]?.StudyDescription || 'XNAT Study',
+              // IMPORTANT: Store wadoRoot directly in the study metadata
+              wadoRoot: xnatConfig.wadoRoot,
+              ModalitiesInStudy: [], // Will be populated later
+              NumInstances: 0, // Will be populated later
+              NumSeries: 0, // Will be populated later
+              // Add other relevant top-level study tags if available from xnatMetadata
+              // Store the raw XNAT transaction details if needed
+              xnatTransactionId: xnatMetadata.transactionId, 
+            };
+            
+            // Add or update this study metadata in the DicomMetadataStore immediately
+            // This ensures wadoRoot is present when series/instances are added later
+            DicomMetadataStore.addStudy(studyMetadataForStore);
+            log.info(`XNAT: Added/Updated study ${studyUid} in DicomMetadataStore with wadoRoot: ${studyMetadataForStore.wadoRoot}`);
+            
+            // Use this stored metadata object for further processing
             const processedStudy = {
-              studyInstanceUID: studyUid,
-              transactionId: xnatMetadata.transactionId,
+              ...studyMetadataForStore, // Start with the stored metadata
               series: [],
               seriesMap: new Map(),
               instances: [],
-              metadata: xnatMetadata,
+              // Keep the original raw metadata if needed elsewhere
+              rawMetadata: xnatMetadata, 
             };
             
             // XNAT API returns data in a specific structure we need to process
@@ -1116,60 +1109,57 @@ function createXNATApi(xnatConfig: XNATConfig, servicesManager) {
                         instance.url = absoluteUrl;
                         instance.imageId = getAppropriateImageId(absoluteUrl, 'dicomweb');
                         
+                        // --- ADD URL TO METADATA ---
+                        instance.metadata = instance.metadata || {}; // Ensure metadata object exists
+                        instance.metadata.url = absoluteUrl; // Add the URL here
+                        // --- END ADDITION ---
+                        
                         // If metadata doesn't exist, create it
                         if (!instance.metadata) {
                           instance.metadata = {};
                         }
                         
-                        // Create enhanced instance metadata for this instance
+                        // --- Revised Instance Metadata Construction ---
+                        // Start with the metadata fetched from XNAT
                         const instanceMetadata = {
-                          ...series,
-                          ...instance.metadata,
+                          ...(instance.metadata || {}), // Ensure we start with an object
+
+                          // Add/Overwrite necessary calculated or series-level info
                           url: absoluteUrl,
+                          imageId: instance.imageId,
                           StudyInstanceUID: studyUid,
                           SeriesInstanceUID: series.SeriesInstanceUID,
-                          // Add the proper imageId for Cornerstone
-                          imageId: instance.imageId,
-                          // Add important tags for Cornerstone to use
+                          Modality: series.Modality || instance.metadata?.Modality || 'CT', // Prioritize series modality
+
+                          // Add fallbacks for critical tags ONLY if they are missing from instance.metadata
                           Rows: instance.metadata?.Rows || 512,
                           Columns: instance.metadata?.Columns || 512,
-                          // Instance Number with fallback - make it ordinal if not available
                           InstanceNumber: instance.metadata?.InstanceNumber || (index + 1).toString(),
-                          // Use SOPInstanceUID from metadata if available, otherwise generate one
                           SOPInstanceUID: instance.metadata?.SOPInstanceUID || instance.SOPInstanceUID || generateRandomUID(),
-                          // Set SOPClassUID based on modality - critical for display set creation
-                          SOPClassUID: instance.metadata?.SOPClassUID || (() => {
-                            if (series.Modality === 'MR') {
-                              return '1.2.840.10008.5.1.4.1.1.4'; // MR Image Storage
-                            } else if (series.Modality === 'CT') {
-                              return '1.2.840.10008.5.1.4.1.1.2'; // CT Image Storage
-                            } else if (series.Modality === 'PT') {
-                              return '1.2.840.10008.5.1.4.1.1.128'; // PET Image Storage
-                            } else if (series.Modality === 'US') {
-                              return '1.2.840.10008.5.1.4.1.1.6.1'; // Ultrasound Image Storage
-                            } else if (series.Modality === 'CR' || series.Modality === 'DX') {
-                              return '1.2.840.10008.5.1.4.1.1.1.1'; // Digital X-Ray Image Storage
-                            } else {
-                              return '1.2.840.10008.5.1.4.1.1.2'; // Default to CT Image Storage
-                            }
-                          })(),
-                          // Add spatial information for MPR reconstruction
-                          ImagePositionPatient: instance.metadata?.ImagePositionPatient || [0, 0, index], // Use index for z position if not available
+                          SOPClassUID: instance.metadata?.SOPClassUID || getSOPClassUIDForModality(series.Modality || instance.metadata?.Modality),
+                          ImagePositionPatient: instance.metadata?.ImagePositionPatient || [0, 0, index],
                           ImageOrientationPatient: instance.metadata?.ImageOrientationPatient || [1, 0, 0, 0, 1, 0],
                           PixelSpacing: instance.metadata?.PixelSpacing || [1, 1],
                           SliceThickness: instance.metadata?.SliceThickness || 1,
                           SliceLocation: instance.metadata?.SliceLocation || index,
-                          // Add frame of reference UID for linking
                           FrameOfReferenceUID: instance.metadata?.FrameOfReferenceUID || series.FrameOfReferenceUID || generateRandomUID(),
-                          // Add custom XNAT properties for debugging
+
+                          // Ensure MPR flags are set
+                          isReconstructable: true,
+                          isMultiFrame: false,
+
+                          // Add custom XNAT properties
                           xnatProjectId: projectId,
                           xnatExperimentId: experimentId,
-                          // Make sure correct modality is set
-                          Modality: series.Modality || 'CT',
-                          // Force MPR reconstruction flags
-                          isReconstructable: true,
-                          isMultiFrame: false
                         };
+
+                        // Clean up potentially undefined keys (optional but good practice)
+                        Object.keys(instanceMetadata).forEach(key => {
+                          if (instanceMetadata[key] === undefined) {
+                            delete instanceMetadata[key];
+                          }
+                        });
+                        // --- End Revised Construction ---
                         
                         // Add processed instance to the array for this series
                         seriesProcessedInstances.push(instanceMetadata);
@@ -1210,96 +1200,76 @@ function createXNATApi(xnatConfig: XNATConfig, servicesManager) {
                       // Add all instances for this series to the map for batched processing
                       if (seriesProcessedInstances.length > 0) {
                         const existingInstances = seriesInstancesMap.get(series.SeriesInstanceUID) || [];
-                        seriesInstancesMap.set(series.SeriesInstanceUID, [...existingInstances, ...seriesProcessedInstances]);
+                        // IMPORTANT: Store the combined metadata temporarily
+                        seriesInstancesMap.set(series.SeriesInstanceUID, [...existingInstances, ...seriesProcessedInstances]); 
                       }
                     }
                   });
                 }
               });
               
-              // Now add instances by series in batches
+              // Now add instances by series in batches, cleaning metadata first
+              const instancesToAdd = [];
               for (const [seriesUID, instances] of seriesInstancesMap.entries()) {
                 if (instances.length > 0) {
-                  // Make sure every instance has the required study and series UIDs before adding to DicomMetadataStore
-                  instances.forEach(instance => {
-                    // Ensure StudyInstanceUID is set
-                    instance.StudyInstanceUID = instance.StudyInstanceUID || studyUid;
-                    instance.SeriesInstanceUID = instance.SeriesInstanceUID || seriesUID;
-                    
-                    // Make sure SOPInstanceUID is always defined
-                    if (!instance.SOPInstanceUID) {
-                      // First check if it's in the metadata
-                      if (instance.metadata && instance.metadata.SOPInstanceUID) {
-                        instance.SOPInstanceUID = instance.metadata.SOPInstanceUID;
-                      } else {
-                        // Only generate as a last resort
-                        instance.SOPInstanceUID = generateRandomUID();
-                        console.log('XNAT: Generated new SOPInstanceUID:', instance.SOPInstanceUID);
+                  // Clean metadata for DicomMetadataStore
+                  const cleanedInstances = instances.map(instance => {
+                    const metadataForStore = {};
+                    // Iterate over the original combined metadata
+                    for (const key in instance) {
+                      // Simple check for DICOM tag format (XXXX,XXXX) - adjust regex if needed
+                      if (/^\(\d{4},\d{4}\)$/.test(key) || 
+                          // Include essential identifiers even if not in tag format
+                          ['StudyInstanceUID', 'SeriesInstanceUID', 'SOPInstanceUID', 'SOPClassUID'].includes(key)) {
+                        metadataForStore[key] = instance[key];
                       }
                     }
-                    
-                    // Make sure SOPClassUID is set - critical for display sets
-                    if (!instance.SOPClassUID) {
-                      // Check metadata first
-                      if (instance.metadata && instance.metadata.SOPClassUID) {
-                        instance.SOPClassUID = instance.metadata.SOPClassUID;
-                        console.log('XNAT: Using SOPClassUID from metadata:', instance.SOPClassUID);
-                      } else {
-                        // Set appropriate SOP Class based on modality if available
-                        if (series.Modality === 'MR') {
-                          instance.SOPClassUID = '1.2.840.10008.5.1.4.1.1.4'; // MR Image Storage
-                        } else if (series.Modality === 'CT') {
-                          instance.SOPClassUID = '1.2.840.10008.5.1.4.1.1.2'; // CT Image Storage
-                        } else if (series.Modality === 'PT') {
-                          instance.SOPClassUID = '1.2.840.10008.5.1.4.1.1.128'; // PET Image Storage
-                        } else {
-                          // Default to CT Image Storage as fallback
-                          instance.SOPClassUID = '1.2.840.10008.5.1.4.1.1.2';
+                    // Ensure essential UIDs are present
+                    metadataForStore['StudyInstanceUID'] = metadataForStore['StudyInstanceUID'] || instance.StudyInstanceUID;
+                    metadataForStore['SeriesInstanceUID'] = metadataForStore['SeriesInstanceUID'] || instance.SeriesInstanceUID;
+                    metadataForStore['SOPInstanceUID'] = metadataForStore['SOPInstanceUID'] || instance.SOPInstanceUID;
+                    metadataForStore['SOPClassUID'] = metadataForStore['SOPClassUID'] || instance.SOPClassUID;
+                    return metadataForStore;
+                  });
+
+                  instancesToAdd.push(...cleanedInstances);
+
+                  // Optional: Populate MetadataProvider separately with combined data if needed by other components
+                  try {
+                    const globalProvider = (window as any).cornerstone?.metaData;
+                    if (globalProvider && typeof globalProvider.add === 'function') {
+                      instances.forEach(instanceWithCombinedMeta => {
+                        if (instanceWithCombinedMeta.imageId) {
+                          globalProvider.add('instance', instanceWithCombinedMeta.imageId, instanceWithCombinedMeta);
+                          // Log to confirm what's being added to metadata provider
+                          // console.log(`Added combined metadata for ${instanceWithCombinedMeta.imageId} to provider`);
                         }
-                        console.log('XNAT: Using modality-based SOPClassUID:', instance.SOPClassUID);
-                      }
+                      });
+                    } else {
+                      log.warn('Cornerstone Metadata Provider not found or add function missing.');
                     }
-                    
-                    // Also ensure it's in the metadata
-                    if (instance.metadata) {
-                      instance.metadata.StudyInstanceUID = instance.metadata.StudyInstanceUID || studyUid;
-                      instance.metadata.SeriesInstanceUID = instance.metadata.SeriesInstanceUID || seriesUID;
-                      instance.metadata.SOPInstanceUID = instance.metadata.SOPInstanceUID || instance.SOPInstanceUID;
-                      instance.metadata.SOPClassUID = instance.metadata.SOPClassUID || instance.SOPClassUID;
-                    }
-                  });
-                  
-                  log.info(`XNAT: Adding ${instances.length} instances in batch for series ${seriesUID} of study ${studyUid}`);
-                  
-                  // Debug log to see what the instances contain
-                  if (instances.length > 0) {
-                    const sampleInstance = instances[0];
-                    log.info(`XNAT: Sample instance details - StudyInstanceUID: ${sampleInstance.StudyInstanceUID}, SeriesInstanceUID: ${sampleInstance.SeriesInstanceUID}`);
-                    log.info(`XNAT: Sample instance imageId: ${sampleInstance.imageId}`);
-                    log.info(`XNAT: Sample instance url: ${sampleInstance.url}`);
-                    
-                    if (sampleInstance.metadata) {
-                      log.info(`XNAT: Sample instance metadata - StudyInstanceUID: ${sampleInstance.metadata.StudyInstanceUID}, SeriesInstanceUID: ${sampleInstance.metadata.SeriesInstanceUID}`);
-                    }
+                  } catch (error) {
+                    log.error('XNAT: Error adding combined instance metadata to cornerstone provider:', error);
                   }
-                  console.log('Adding instances to DicomMetadataStore');
-                  // Add all instances for this series to DicomMetadataStore at once
-                  DicomMetadataStore.addInstances(instances, true);
-                  
-                  // Simple log after instances are added
-                  console.log('XNAT Study Metadata: Instances added to DicomMetadataStore');
-                  console.log('Number of instances added:', instances.length);
-                  console.log('1114 First instance sample:', {
-                    StudyInstanceUID: instances[0].StudyInstanceUID,
-                    SeriesInstanceUID: instances[0].SeriesInstanceUID,
-                    SOPInstanceUID: instances[0].SOPInstanceUID,
-                    imageId: instances[0].imageId,
-                    url: instances[0].url,
-                    metadata: instances[0].metadata ? 'present' : 'missing',
-                    displaySetInstanceUID: instances[0].displaySetInstanceUID
-                  });
-                  console.log('All display sets:', DicomMetadataStore);
                 }
+              }
+
+              // Add cleaned instances to DicomMetadataStore
+              if (instancesToAdd.length > 0) {
+                log.info(`XNAT: Adding ${instancesToAdd.length} cleaned instances to DicomMetadataStore.`);
+                // Debug log to see what the cleaned instances contain
+                if (instancesToAdd.length > 0) {
+                  const sampleInstance = instancesToAdd[0];
+                  log.info(`XNAT: Cleaned instance sample - StudyInstanceUID: ${sampleInstance.StudyInstanceUID}, SeriesInstanceUID: ${sampleInstance.SeriesInstanceUID}`);
+                  // Check a few expected tags
+                  log.info(`XNAT: Cleaned instance sample - ImageType: ${sampleInstance['(0008,0008)']}`); 
+                  log.info(`XNAT: Cleaned instance sample - url exists?: ${!!sampleInstance.url}`); // Should be false
+                  log.info(`XNAT: Cleaned instance sample - isReconstructable exists?: ${!!sampleInstance.isReconstructable}`); // Should be false
+                }
+                DicomMetadataStore.addInstances(instancesToAdd, true);
+                console.log('XNAT Study Metadata: Cleaned instances added to DicomMetadataStore');
+              } else {
+                log.warn('XNAT: No instances found to add to DicomMetadataStore after cleaning.');
               }
             }
             
@@ -1321,7 +1291,6 @@ function createXNATApi(xnatConfig: XNATConfig, servicesManager) {
                 try {
                   // Add all instances to DicomMetadataStore at once
                   await DicomMetadataStore.addInstances(processedStudy.instances, madeInClient);
-                  console.log('XNAT: Successfully added instances to DicomMetadataStore in batch mode');
                 } catch (error) {
                   console.error('XNAT: Error adding instances to DicomMetadataStore in batch mode:', error);
                 }
@@ -1329,6 +1298,8 @@ function createXNATApi(xnatConfig: XNATConfig, servicesManager) {
             }
             
             // Initialize the metadata provider to help with cornerstone loading
+            // Moved this logic inside the loop processing seriesInstancesMap
+            /*
             try {
               const globalProvider = (window as any).cornerstone?.metaData;
               if (globalProvider && typeof globalProvider.add === 'function') {
@@ -1347,6 +1318,7 @@ function createXNATApi(xnatConfig: XNATConfig, servicesManager) {
             } catch (error) {
               log.error('XNAT: Error adding study instances to cornerstone provider:', error);
             }
+            */
             
             // Add this code at the appropriate place after the metadata is loaded but before display sets are created
             try {
@@ -1399,7 +1371,6 @@ function createXNATApi(xnatConfig: XNATConfig, servicesManager) {
                   }
                 });
 
-                console.log('XNAT: Stored metadata in AppContext for', Object.keys(AppContext.xnatSeriesMetadata).length, 'studies');
               }
             } catch (error) {
               console.error('XNAT: Error storing metadata in AppContext:', error);
@@ -1585,7 +1556,6 @@ function createXNATApi(xnatConfig: XNATConfig, servicesManager) {
        * @returns {Promise<any>} - The experiment metadata
        */
       getExperimentMetadata: async function(projectId, experimentId) {
-        console.log('XNAT: Fetching experiment metadata for', projectId, experimentId);
         
         if (!projectId || !experimentId) {
           console.error('XNAT: Missing projectId or experimentId for metadata fetch');
@@ -1595,18 +1565,15 @@ function createXNATApi(xnatConfig: XNATConfig, servicesManager) {
         try {
           // Use the wadoRoot from configuration as the base URL
           const baseUrl = xnatConfig.wadoRoot || 'http://localhost';
-          console.log('XNAT: Using base URL from configuration:', baseUrl);
           
           // Always construct a standardized API URL path
           const apiPath = `/xapi/viewer/projects/${projectId}/experiments/${experimentId}`;
           
           // Check if baseUrl already contains the XNAT API path
           if (baseUrl.includes('/xapi/viewer/projects/')) {
-            console.log('XNAT: Base URL already contains the XNAT API path, avoiding duplication');
             
             // Use convertToAbsoluteUrl which now handles path duplication
             const apiUrl = convertToAbsoluteUrl(apiPath, baseUrl, xnatConfig);
-            console.log('XNAT: Constructed API URL:', apiUrl);
             
             const headers = getAuthorizationHeader();
             const response = await fetch(apiUrl, {
@@ -1625,31 +1592,28 @@ function createXNATApi(xnatConfig: XNATConfig, servicesManager) {
             
             // Check if the response is JSON
             const contentType = response.headers.get('content-type');
-            console.log('XNAT: Response content type:', contentType);
             
             // Get the response as text first to inspect it
             const responseText = await response.text();
-            console.log('XNAT: Raw response (first 100 chars):', responseText.substring(0, 100));
             
             // Try to parse it as JSON
             let data;
             try {
               data = JSON.parse(responseText);
-              console.log('XNAT: Successfully parsed JSON response', data);
             } catch (parseError) {
               console.error('XNAT: Error parsing JSON response:', parseError);
               console.error('XNAT: Response was not valid JSON. Raw data (first 100 chars):', responseText.substring(0, 100));
               throw new Error('Failed to parse JSON response from XNAT API');
             }
             
-            console.log('XNAT: Successfully fetched experiment metadata');
-            console.log('XNAT: DicomMetadataStore:', DicomMetadataStore);
+            // --- Log the received data --- 
+            console.log('XNAT: Raw experiment metadata received from API:', JSON.stringify(data, null, 2)); // Log the parsed data
+            // --- End Log ---
             
             return data;
           } else {
             // Normal case - just append the path to the base URL
             const apiUrl = convertToAbsoluteUrl(apiPath, baseUrl, xnatConfig);
-            console.log('XNAT: Constructed API URL:', apiUrl);
             
             const headers = getAuthorizationHeader();
             const response = await fetch(apiUrl, {
@@ -1668,25 +1632,23 @@ function createXNATApi(xnatConfig: XNATConfig, servicesManager) {
             
             // Check if the response is JSON
             const contentType = response.headers.get('content-type');
-            console.log('XNAT: Response content type:', contentType);
             
             // Get the response as text first to inspect it
             const responseText = await response.text();
-            console.log('XNAT: Raw response (first 100 chars):', responseText.substring(0, 100));
             
             // Try to parse it as JSON
             let data;
             try {
               data = JSON.parse(responseText);
-              console.log('XNAT: Successfully parsed JSON response', data);
             } catch (parseError) {
               console.error('XNAT: Error parsing JSON response:', parseError);
               console.error('XNAT: Response was not valid JSON. Raw data (first 100 chars):', responseText.substring(0, 100));
               throw new Error('Failed to parse JSON response from XNAT API');
             }
             
-            console.log('XNAT: Successfully fetched experiment metadata');
-            console.log('XNAT: DicomMetadataStore:', DicomMetadataStore);
+            // --- Log the received data --- 
+            console.log('XNAT: Raw experiment metadata received from API:', JSON.stringify(data, null, 2)); // Log the parsed data
+            // --- End Log ---
             
             return data;
           }
@@ -1704,7 +1666,6 @@ function createXNATApi(xnatConfig: XNATConfig, servicesManager) {
        * @returns {Promise<any>} - The subject metadata
        */
       getSubjectMetadata: async function(projectId, subjectId) {
-        console.log('XNAT: Fetching subject metadata for', projectId, subjectId);
         
         if (!projectId || !subjectId) {
           console.error('XNAT: Missing projectId or subjectId for metadata fetch');
@@ -1714,13 +1675,10 @@ function createXNATApi(xnatConfig: XNATConfig, servicesManager) {
         try {
           // Use the wadoRoot from configuration as the base URL
           const baseUrl = xnatConfig.wadoRoot || 'http://localhost';
-          console.log('XNAT: Using base URL from configuration:', baseUrl);
           
           // Construct a standardized API URL path
           const apiPath = `/xapi/viewer/projects/${projectId}/subjects/${subjectId}`;
           const apiUrl = convertToAbsoluteUrl(apiPath, baseUrl, xnatConfig);
-          
-          console.log('XNAT: Constructed API URL:', apiUrl);
           
           const headers = getAuthorizationHeader();
           
@@ -1738,7 +1696,6 @@ function createXNATApi(xnatConfig: XNATConfig, servicesManager) {
           }
           
           const data = await response.json();
-          console.log('XNAT: Successfully fetched subject metadata', data);
           return data;
         } catch (error) {
           console.error('XNAT: Error fetching subject metadata:', error);
@@ -1753,7 +1710,6 @@ function createXNATApi(xnatConfig: XNATConfig, servicesManager) {
        * @returns {Promise<any>} - The project metadata
        */
       getProjectMetadata: async function(projectId) {
-        console.log('XNAT: Fetching project metadata for', projectId);
         
         if (!projectId) {
           console.error('XNAT: Missing projectId for metadata fetch');
@@ -1763,8 +1719,6 @@ function createXNATApi(xnatConfig: XNATConfig, servicesManager) {
         try {
           // Use the wadoRoot from configuration as the base URL
           const baseUrl = xnatConfig.wadoRoot || 'http://localhost';
-          console.log('XNAT: Using base URL from configuration:', baseUrl);
-          
           // Construct a standardized API URL path
           const apiPath = `/xapi/viewer/projects/${projectId}`;
           const apiUrl = convertToAbsoluteUrl(apiPath, baseUrl, xnatConfig);
@@ -1787,7 +1741,6 @@ function createXNATApi(xnatConfig: XNATConfig, servicesManager) {
           }
           
           const data = await response.json();
-          console.log('XNAT: Successfully fetched project metadata', data);
           return data;
         } catch (error) {
           console.error('XNAT: Error fetching project metadata:', error);
@@ -1862,506 +1815,6 @@ function createXNATApi(xnatConfig: XNATConfig, servicesManager) {
   return IWebApiDataSource.create(implementation as any);
 }
 
-
 // Export for use in the XNATDataSource and initialize it
-export { createXNATApi, setupDisplaySetLogging };
-export default createXNATApi;
-
-// Add these utility functions at the top of the file, right after the constants
-const getBaseUrl = (wadoRoot?: string): string => {
-  // If wadoRoot is provided, extract just the protocol and domain
-  if (wadoRoot) {
-    try {
-      const url = new URL(wadoRoot);
-      return `${url.protocol}//${url.host}`;
-    } catch (error) {
-      console.error('XNAT: Error parsing wadoRoot as URL:', error);
-    }
-  }
-  
-  // If wadoRoot is not a valid URL or not provided, use the current location
-  const windowLocation = window.location;
-  return `${windowLocation.protocol}//${windowLocation.host}`;
-};
-
-const convertToAbsoluteUrl = (relativeUrl: string, baseUrl?: string, config?: XNATConfig): string => {
-  if (!relativeUrl) {
-    console.error('XNAT: Empty URL provided to convertToAbsoluteUrl');
-    return '';
-  }
-    
-  // If the URL is already absolute, return it as is
-  if (relativeUrl.startsWith('http://') || relativeUrl.startsWith('https://')) {
-    return relativeUrl;
-  }
-  
-  // Always use the wadoRoot from config if available
-  if (config && config.wadoRoot) {
-    
-    // Make sure the wadoRoot doesn't end with a slash
-    const cleanWadoRoot = config.wadoRoot.endsWith('/') ? config.wadoRoot.slice(0, -1) : config.wadoRoot;
-    
-    // Check if the relative URL contains a path that's already in the base URL
-    // This prevents paths like http://localhost/xapi/viewer/projects/X/xapi/viewer/projects/X
-    if (relativeUrl.startsWith('/') && relativeUrl.includes('/xapi/')) {
-      // Extract just the path part from the relativeUrl
-      const pathSegments = relativeUrl.split('/');
-      const xapiIndex = pathSegments.findIndex(segment => segment === 'xapi');
-      
-      if (xapiIndex !== -1 && cleanWadoRoot.includes('/xapi/')) {
-        // Base URL already has /xapi/ path - extract only domain part
-        const urlParts = cleanWadoRoot.split('/xapi/');
-        const domainPart = urlParts[0]; // Get just the domain part
-        
-        // Reconstruct the URL with just one instance of the path
-        const fullUrl = `${domainPart}${relativeUrl}`;
-        return fullUrl;
-      }
-    }
-    
-    // Normal case - make sure relative URL starts with a slash
-    const cleanRelativeUrl = relativeUrl.startsWith('/') ? relativeUrl : `/${relativeUrl}`;
-    const absoluteUrl = `${cleanWadoRoot}${cleanRelativeUrl}`;
-    return absoluteUrl;
-  }
-  
-  // If no baseUrl provided and no config.wadoRoot, use window location
-  let effectiveBaseUrl = baseUrl || `${window.location.protocol}//${window.location.host}`;
-  
-  // Ensure the relative URL is properly formatted
-  // 1. If the relative URL doesn't start with a slash, add one
-  let normalizedPath = relativeUrl.startsWith('/') ? relativeUrl : `/${relativeUrl}`;
-  
-  // 2. Make sure we don't end up with double slashes when joining
-  if (effectiveBaseUrl.endsWith('/')) {
-    effectiveBaseUrl = effectiveBaseUrl.slice(0, -1);
-  }
-  
-  // 3. Check for duplicate paths
-  if (normalizedPath.includes('/xapi/') && effectiveBaseUrl.includes('/xapi/')) {
-    // Extract base domain
-    const urlParts = effectiveBaseUrl.split('/xapi/');
-    effectiveBaseUrl = urlParts[0]; // Use only the domain part
-  }
-  
-  // Combine the base URL with the normalized path
-  const absoluteUrl = `${effectiveBaseUrl}${normalizedPath}`;
-  console.log('XNAT: Final absolute URL:', absoluteUrl);
-  
-  return absoluteUrl;
-};
-
-// Type definitions
-interface DICOMWebSeriesMetadata {
-  StudyInstanceUID?: string;
-  SeriesInstanceUID?: string;
-  [key: string]: any;
-}
-
-/**
- * Extract XNAT project and experiment IDs from StudyInstanceUID or from configuration
- */
-const getXNATStatusFromStudyInstanceUID = (studyInstanceUID: string, config: XNATConfig): { projectId: string; experimentId: string } => {
-  // First try to get from config
-  let projectId = config.xnat?.projectId;
-  let experimentId = config.xnat?.experimentId || config.xnat?.sessionId;
-  
-  if (projectId && experimentId) {
-    return { projectId, experimentId };
-  }
-  
-  // Try to get from URL parameters
-  const urlParams = new URLSearchParams(window.location.search);
-  
-  // Check for project ID in URL
-  const possibleProjectParams = ['projectId', 'project', 'proj'];
-  for (const param of possibleProjectParams) {
-    const value = urlParams.get(param);
-    if (value) {
-      projectId = value;
-      log.debug(`XNAT: Found project ID in URL parameter '${param}': ${projectId}`);
-      break;
-    }
-  }
-  
-  // Check for experiment ID in URL
-  const possibleExperimentParams = ['experimentId', 'experiment', 'session', 'exam', 'scan'];
-  for (const param of possibleExperimentParams) {
-    const value = urlParams.get(param);
-    if (value) {
-      experimentId = value;
-      log.debug(`XNAT: Found experiment ID in URL parameter '${param}': ${experimentId}`);
-      break;
-    }
-  }
-  
-  // If we still don't have project/experiment IDs, try to derive from StudyInstanceUID
-  if ((!projectId || !experimentId) && studyInstanceUID) {
-    log.debug('XNAT: Attempting to derive project/experiment from StudyInstanceUID:', studyInstanceUID);
-    
-    if (!experimentId) {
-      experimentId = studyInstanceUID;
-      log.debug('XNAT: Using StudyInstanceUID as experimentId:', experimentId);
-    }
-    
-    if (!projectId) {
-      projectId = "defaultProject";
-      log.debug('XNAT: Using default project ID:', projectId);
-    }
-  }
-  
-  return { projectId, experimentId };
-};
-
-/**
- * Add instances to the DicomMetadataStore in batch
- * @param instances Single instance or array of instances to add
- * @param seriesUID Optional series UID to use if not present in the instances
- */
-const addInstancesToMetadataStore = (instances: any | any[], seriesUID?: string): void => {
-  // Convert single instance to array for consistent processing
-  const instancesArray = Array.isArray(instances) ? instances : [instances];
-  if (instancesArray.length === 0) return;
-  
-  try {
-    // Process all instances for batch addition
-    const enhancedInstances = instancesArray.map(instance => {
-      // Check if SOPInstanceUID is in metadata
-      const metadata = instance.metadata || {};
-      const sopInstanceUID = instance.SOPInstanceUID || metadata.SOPInstanceUID;
-      
-      // Get StudyInstanceUID and SeriesInstanceUID for reference
-      const studyUID = instance.StudyInstanceUID || metadata.StudyInstanceUID;
-      const seriesInstanceUID = instance.SeriesInstanceUID || seriesUID || metadata.SeriesInstanceUID;
-      
-      // Ensure instance has all required fields for Cornerstone
-      return {
-        ...instance,
-        ...metadata, // Spread metadata to make its properties directly available
-        
-        // Force correct flags for proper MPR reconstruction
-        isReconstructable: true,
-        isMultiFrame: false,
-        
-        // Make sure required imaging attributes are set
-        Rows: metadata.Rows || instance.Rows || 512,
-        Columns: metadata.Columns || instance.Columns || 512,
-        
-        // Add mandatory attributes for proper display
-        PixelSpacing: metadata.PixelSpacing || instance.PixelSpacing || [1, 1],
-        SliceThickness: metadata.SliceThickness || instance.SliceThickness || 1,
-        
-        // Important UIDs - use provided values or try to extract from filename as last resort
-        SOPInstanceUID: sopInstanceUID || extractUIDFromFilename(instance.url) || generateRandomUID(),
-        SeriesInstanceUID: seriesInstanceUID || generateRandomUID(),
-        StudyInstanceUID: studyUID || (instance.url ? extractStudyUIDFromURL(instance.url) : null) || generateRandomUID(),
-        
-        // Frame of reference for linking volumes
-        FrameOfReferenceUID: metadata.FrameOfReferenceUID || instance.FrameOfReferenceUID || generateRandomUID(),
-        
-        // Image type is required for proper rendering
-        ImageType: instance.ImageType || ['ORIGINAL', 'PRIMARY', 'AXIAL'],
-        
-        // Instance number needed for proper ordering
-        InstanceNumber: instance.InstanceNumber || '1',
-        
-        // Image position and orientation needed for MPR
-        ImagePositionPatient: instance.ImagePositionPatient || [0, 0, 0],
-        ImageOrientationPatient: instance.ImageOrientationPatient || [1, 0, 0, 0, 1, 0],
-        
-        // Bits properties needed for proper windowing
-        BitsAllocated: instance.BitsAllocated || 16,
-        BitsStored: instance.BitsStored || 16,
-        HighBit: instance.HighBit || 15,
-        
-        // Add placeholders for commonly expected tags
-        SamplesPerPixel: instance.SamplesPerPixel || 1,
-        PhotometricInterpretation: instance.PhotometricInterpretation || 'MONOCHROME2',
-        PixelRepresentation: instance.PixelRepresentation || 0,
-        
-        // Window values for display
-        WindowCenter: instance.WindowCenter || metadata.WindowCenter || 40,
-        WindowWidth: instance.WindowWidth || metadata.WindowWidth || 400,
-        
-        // Modality-specific attributes
-        RescaleIntercept: instance.RescaleIntercept || metadata.RescaleIntercept || 0,
-        RescaleSlope: instance.RescaleSlope || metadata.RescaleSlope || 1,
-      };
-    });
-    
-    log.info(`XNAT: Adding ${enhancedInstances.length} enhanced instances in batch`);
-    
-    // Force it to be a true "batch" add for proper handling
-    const madeInClient = true;
-    
-    // Use the DicomMetadataStore directly with the madeInClient flag
-    // Let the SOP class handler do the grouping by adding instances directly
-    // without pre-assigning displaySetInstanceUIDs
-    DicomMetadataStore.addInstances(enhancedInstances, madeInClient);
-    
-    // Add to cornerstone metadata provider directly if available
-    try {
-      const globalProvider = (window as any).cornerstone?.metaData;
-      if (globalProvider && typeof globalProvider.add === 'function') {
-        enhancedInstances.forEach(instance => {
-          const imageId = instance.imageId;
-          if (imageId) {
-            // Add each metadata element to cornerstone provider
-            Object.entries(instance).forEach(([key, value]) => {
-              if (key !== 'imageId' && value !== undefined) {
-                globalProvider.add(key, imageId, value);
-              }
-            });
-          }
-        });
-        log.info('XNAT: Added instance metadata to cornerstone provider');
-      }
-    } catch (error) {
-      log.error('XNAT: Error adding to cornerstone provider:', error);
-    }
-  } catch (error) {
-    log.error('XNAT: Error adding instances to DicomMetadataStore:', error);
-  }
-};
-
-/**
- * Fetch series instances metadata from XNAT
- */
-const getSeriesXNATInstancesMetadata = async ({
-  projectId,
-  experimentId,
-  seriesUID,
-  implementation
-}: {
-  projectId: string;
-  experimentId: string;
-  seriesUID?: string;
-  implementation: any;
-}): Promise<DICOMWebSeriesMetadata[]> => {
-  try {
-    // Use the XNAT-specific method to get experiment metadata
-    const xnatMetadata = await implementation.xnat.getExperimentMetadata(projectId, experimentId);
-    
-    if (!xnatMetadata || !xnatMetadata.studies || xnatMetadata.studies.length === 0) {
-      log.error('XNAT: No valid metadata returned from XNAT API');
-      return [];
-    }
-    
-    log.info('XNAT: Successfully retrieved metadata from XNAT API');
-    
-    // Extract all series from all studies
-    const allSeries: DICOMWebSeriesMetadata[] = [];
-    xnatMetadata.studies.forEach(study => {
-      if (study.series && study.series.length > 0) {
-        study.series.forEach(series => {
-          // Add source study info to each series for reference
-          series.StudyInstanceUID = study.StudyInstanceUID;
-          
-          // Mark series as reconstructable for the MPR view
-          const isMultiFrame = false;
-          const isReconstructable = true;
-          
-          // Enhance series with necessary attributes for display set creation
-          const enhancedSeries = {
-            ...series,
-            // Ensure essential series attributes are present
-            Modality: series.Modality || 'CT',
-            SeriesDescription: series.SeriesDescription || 'XNAT Series',
-            SeriesNumber: series.SeriesNumber || '1',
-            SeriesDate: series.SeriesDate || study.StudyDate || '',
-            SeriesTime: series.SeriesTime || study.StudyTime || '',
-            
-            // Critical for MPR reconstruction - FORCE these to be true
-            isMultiFrame: isMultiFrame,
-            isReconstructable: isReconstructable,
-            
-            // Essential for study/series identification
-            StudyInstanceUID: study.StudyInstanceUID
-          };
-          
-          // Process and enhance each instance
-          if (series.instances && series.instances.length > 0) {
-            // Sort instances if available by InstanceNumber
-            enhancedSeries.instances = [...series.instances]
-              .sort((a, b) => {
-                const aNum = parseInt(a.metadata?.InstanceNumber || '0');
-                const bNum = parseInt(b.metadata?.InstanceNumber || '0');
-                return aNum - bNum;
-              })
-              .map(instance => {
-                // Enhance instance with essential attributes
-                return {
-                  ...instance,
-                  // Force MPR reconstruction flags
-                  isReconstructable: isReconstructable,
-                  isMultiFrame: isMultiFrame,
-                  
-                  // Make sure metadata has essential attributes
-                  metadata: {
-                    ...(instance.metadata || {}),
-                    isReconstructable: isReconstructable,
-                    isMultiFrame: isMultiFrame
-                  }
-                };
-              });
-          }
-          
-          allSeries.push(enhancedSeries);
-        });
-      }
-    });
-    
-    log.debug(`XNAT: Found ${allSeries.length} series in total`);
-    
-    // Remove the filtering so we always return ALL series
-    // const filteredSeries = seriesUID 
-    //   ? allSeries.filter(series => series.SeriesInstanceUID === seriesUID)
-    //   : allSeries;
-    
-    const filteredSeries = allSeries;
-    
-    log.debug(`XNAT: Including all ${filteredSeries.length} series from study`);
-    
-    return filteredSeries;
-  } catch (error) {
-    log.error('XNAT: Error retrieving or processing metadata:', error);
-    return [];
-  }
-};
-
-
-
-// Create a listener for display sets
-function setupDisplaySetLogging() {
-  // Check if the DicomMetadataStore is initialized
-  if (DicomMetadataStore && DicomMetadataStore.EVENTS) {
-    console.log('XNAT: Setting up display set logging');
-    
-    // Add listener for instances added event
-    DicomMetadataStore.subscribe(
-      DicomMetadataStore.EVENTS.INSTANCES_ADDED,
-      function({ instances, madeInClient }) {
-        console.log('XNAT: New DICOM instances added to store', {
-          StudyInstanceUID: instances[0]?.StudyInstanceUID,
-          SeriesInstanceUID: instances[0]?.SeriesInstanceUID,
-          madeInClient,
-          numInstances: instances.length,
-          firstSOPInstanceUID: instances[0]?.SOPInstanceUID
-        });
-
-        // When instances are added, check if we have a study date and store it in sessionStorage
-        if (instances.length > 0 && instances[0].metadata) {
-          const studyDate = instances[0].metadata.StudyDate || instances[0].StudyDate;
-          const studyTime = instances[0].metadata.StudyTime || instances[0].StudyTime;
-          
-          if (studyDate) {
-            try {
-              sessionStorage.setItem('xnat_studyDate', studyDate);
-              console.log('XNAT: Stored study date from instance metadata:', studyDate);
-            } catch (e) {
-              console.warn('XNAT: Failed to store study date in sessionStorage:', e);
-            }
-          }
-          
-          if (studyTime) {
-            try {
-              sessionStorage.setItem('xnat_studyTime', studyTime);
-              console.log('XNAT: Stored study time from instance metadata:', studyTime);
-            } catch (e) {
-              console.warn('XNAT: Failed to store study time in sessionStorage:', e);
-            }
-          }
-        }
-      }
-    );
-    
-    // Also subscribe to series added event
-    DicomMetadataStore.subscribe(
-      DicomMetadataStore.EVENTS.SERIES_ADDED,
-      function({ series }) {
-        console.log('XNAT: Series added to DicomMetadataStore', {
-          SeriesInstanceUID: series.SeriesInstanceUID,
-          StudyInstanceUID: series.StudyInstanceUID,
-          Modality: series.Modality,
-          SeriesDescription: series.SeriesDescription,
-          NumInstances: series.instances?.length || 0
-        });
-      }
-    );
-    
-    // Subscribe to study added event
-    DicomMetadataStore.subscribe(
-      DicomMetadataStore.EVENTS.STUDY_ADDED,
-      function({ study }) {
-        console.log('XNAT: Study added to DicomMetadataStore', {
-          StudyInstanceUID: study.StudyInstanceUID,
-          PatientName: study.PatientName,
-          NumSeries: study.series?.length || 0,
-          TotalInstances: study.instances?.length || 0
-        });
-        
-        // Check if we need to add or update the study date
-        if (!study.StudyDate) {
-          const storedDate = sessionStorage.getItem('xnat_studyDate');
-          if (storedDate) {
-            study.StudyDate = storedDate;
-            console.log('XNAT: Updated study date from sessionStorage:', storedDate);
-          } else {
-            // Set default date if none available
-            const today = new Date().toISOString().slice(0, 10).replace(/-/g, '');
-            study.StudyDate = today;
-            console.log('XNAT: Set default study date:', today);
-          }
-        }
-        
-        // Check if we need to add or update the study time
-        if (!study.StudyTime) {
-          const storedTime = sessionStorage.getItem('xnat_studyTime');
-          if (storedTime) {
-            study.StudyTime = storedTime;
-            console.log('XNAT: Updated study time from sessionStorage:', storedTime);
-          } else {
-            // Set default time if none available
-            const currentTime = new Date().toTimeString().slice(0, 8).replace(/:/g, '');
-            study.StudyTime = currentTime;
-            console.log('XNAT: Set default study time:', currentTime);
-          }
-        }
-        
-        // Find out if the core is creating DisplaySets for this study
-        setTimeout(() => {
-          console.log('XNAT: Checking display sets 1 second after study added');
-          // Check the data from DicomMetadataStore by using window
-          const displaySets = (window as any).displaySets || [];
-          console.log('XNAT: Display sets found:', displaySets.length);
-          
-          if (displaySets.length > 0) {
-            console.log('XNAT: First display set:', displaySets[0]);
-          } else {
-            console.log('XNAT: No display sets found - possible issue with instances:', study.instances?.[0]);
-          }
-        }, 1000);
-      }
-    );
-  }
-}
-
-// Find the retrieveSeriesMetadata function and add code to store the metadata
-const retrieveSeriesMetadata = async ({
-  StudyInstanceUID,
-  filters,
-  sortCriteria,
-  sortFunction,
-  madeInClient = false,
-}): Promise<IDisplaySetService> => {
-  // ... existing code ...
-  
-  // Add this after the study metadata is retrieved but before the displaySets are created
-  if (appConfig?.xnatConfig?.useXNATMetadataInDisplaySets !== false && xnatMetadata) {
-    // Store the XNAT metadata in the app context
-    storeXNATMetadataInAppContext(appContext, xnatMetadata);
-  }
-  
-  // ... rest of existing code ...
-};
+export { createXNATApi };
 

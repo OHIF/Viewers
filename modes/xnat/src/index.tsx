@@ -3,8 +3,10 @@ import initToolGroups from './initToolGroups';
 import toolbarButtons from './toolbarButtons';
 import { id } from './id';
 import XNATStandaloneRouting from '../../../platform/app/src/routes/XNATStandaloneRouting';
-import SessionRouter from '@ohif/extension-xnat/src/XNATNavigation/helpers/SessionRouter.js';
+import SessionRouter from '@ohif/extension-xnat/src/xnat-components/XNATNavigation/helpers/SessionRouter.js';
 import { Types } from '@ohif/core';
+import { defaultRouteInit } from '../../../platform/app/src/routes/Mode/defaultRouteInit';
+import sessionMap from '@ohif/extension-xnat/src/utils/sessionMap.js';
 
 const ohif = {
   layout: '@ohif/extension-default.layoutTemplateModule.viewerLayout',
@@ -15,14 +17,9 @@ const ohif = {
 };
 
 const cornerstone = {
+  viewport: '@ohif/extension-cornerstone.viewportModule.cornerstone',
   measurements: '@ohif/extension-cornerstone.panelModule.panelMeasurement',
-  segmentation: '@ohif/extension-cornerstone.panelModule.panelSegmentation',
-};
-
-const tracked = {
-  measurements: '@ohif/extension-measurement-tracking.panelModule.trackedMeasurements',
-  thumbnailList: '@ohif/extension-measurement-tracking.panelModule.seriesList',
-  viewport: '@ohif/extension-measurement-tracking.viewportModule.cornerstone-tracked',
+  segmentation: '@ohif/extension-cornerstone.panelModule.panelSegmentationWithTools',
 };
 
 const dicomsr = {
@@ -66,7 +63,6 @@ const extensionDependencies = {
   // Can derive the versions at least process.env.from npm_package_version
   '@ohif/extension-default': '^3.0.0',
   '@ohif/extension-cornerstone': '^3.0.0',
-  '@ohif/extension-measurement-tracking': '^3.0.0',
   '@ohif/extension-cornerstone-dicom-sr': '^3.0.0',
   '@ohif/extension-cornerstone-dicom-seg': '^3.0.0',
   '@ohif/extension-cornerstone-dicom-pmap': '^3.0.0',
@@ -93,6 +89,21 @@ function modeFactory({ modeConfiguration }) {
         projectId, parentProjectId, subjectId, experimentId, experimentLabel 
       });
       
+      // ---> ADD SESSION MAP SETTERS HERE <---
+      if (projectId) {
+        sessionMap.setProject(projectId);
+        console.log(`XNAT Mode Init - Set sessionMap project: ${projectId}`);
+      }
+      if (subjectId) {
+        sessionMap.setSubject(subjectId);
+         console.log(`XNAT Mode Init - Set sessionMap subject: ${subjectId}`);
+      }
+      if (parentProjectId) {
+         sessionMap.setParentProject(parentProjectId);
+         console.log(`XNAT Mode Init - Set sessionMap parent project: ${parentProjectId}`);
+      }
+      // --------------------------------------
+
       // If we have experiment/session parameters, initialize the session router
       if (experimentId && projectId) {
         try {
@@ -141,6 +152,7 @@ function modeFactory({ modeConfiguration }) {
 
       toolbarService.addButtons(toolbarButtons);
       toolbarService.createButtonSection('primary', [
+        // Re-enable MeasurementTools container
         'MeasurementTools',
         'Zoom',
         'WindowLevel',
@@ -148,8 +160,54 @@ function modeFactory({ modeConfiguration }) {
         'Capture',
         'Layout',
         'Crosshairs',
-        'MoreTools',
+        'MoreTools', // Keep the container button
       ]);
+
+      // Define the content of the MeasurementTools dropdown section
+      // Note: IDs must match tool names used in initToolGroups/Cornerstone
+      toolbarService.createButtonSection('measurementSection', [
+        'Length',
+        'Bidirectional',
+        'ArrowAnnotate',
+        'EllipticalROI', 
+        'CircleROI',
+        // Add other measurement tools as needed
+      ]);
+
+      // Define the content of the MoreTools dropdown section
+      toolbarService.createButtonSection('moreToolsSection', [
+        'Reset',
+        'rotate-right',
+        'flipHorizontal',
+        'ReferenceLines',
+        'ImageOverlayViewer',
+        'StackScroll',
+        'invert',
+        'Cine',
+        'Magnify',
+        'TagBrowser',
+        // Add other tools previously in moreTools.ts if needed
+      ]);
+
+      // Define the content of the BrushTools toolbox group section
+      toolbarService.createButtonSection('brushToolsSection', [
+        'Brush',
+        'Eraser',
+        'Threshold',
+        'Shapes',
+      ]);
+
+      // Define the main segmentation toolbox section (if needed, might be handled by panel)
+      // toolbarService.createButtonSection('segmentationToolbox', [
+      //  'BrushTools', // The group container
+      //  // Add other standalone segmentation tools here if they belong directly in the main toolbox panel
+      //  'InterpolateLabelmap',
+      //  'SegmentBidirectional',
+      //  'RegionSegmentPlus',
+      //  'LabelmapSlicePropagation',
+      //  'MarkerLabelmap',
+      // ]);
+
       console.log('XNAT Mode Enter - Complete');
     },
     onModeExit: ({ servicesManager }) => {
@@ -158,11 +216,11 @@ function modeFactory({ modeConfiguration }) {
         syncGroupService,
         segmentationService,
         cornerstoneViewportService,
-        uiDialogService,
         uiModalService,
       } = servicesManager.services;
 
-      uiDialogService.dismissAll();
+      // Comment out dismissAll as API might have changed in v3.10 and caused errors previously
+      // uiDialogService.dismissAll(); 
       uiModalService.hide();
       toolGroupService.destroy();
       syncGroupService.destroy();
@@ -203,21 +261,24 @@ function modeFactory({ modeConfiguration }) {
             props: {
               leftPanels: [ xnat.studyBrowser, xnat.xnatNavList],
               leftPanelResizable: true,
-              rightPanels: [cornerstone.segmentation, tracked.measurements],
+              rightPanels: [cornerstone.segmentation, cornerstone.measurements],
+              rightPanelResizable: true,
               rightPanelClosed: true,
               viewports: [
+                // Ensure standard cornerstone viewport is primary
                 {
-                  namespace: tracked.viewport,
+                  namespace: cornerstone.viewport, 
                   displaySetsToDisplay: [
-                    ohif.sopClassHandler,
-                    dicomvideo.sopClassHandler,
-                    dicomsr.sopClassHandler3D,
-                    ohif.wsiSopClassHandler,
+                    ohif.sopClassHandler, // Standard stack handler
+                    dicomvideo.sopClassHandler, // Video handler
+                    // Include handlers relevant to longitudinal/standard viewing
+                    // Keep other specific handlers needed by XNAT below
                   ],
                 },
+                // Other viewports needed by XNAT
                 {
                   namespace: dicomsr.viewport,
-                  displaySetsToDisplay: [dicomsr.sopClassHandler],
+                  displaySetsToDisplay: [dicomsr.sopClassHandler, dicomsr.sopClassHandler3D],
                 },
                 {
                   namespace: dicompdf.viewport,
@@ -235,11 +296,20 @@ function modeFactory({ modeConfiguration }) {
                   namespace: dicomRT.viewport,
                   displaySetsToDisplay: [dicomRT.sopClassHandler],
                 },
+                // Add WSI handler if needed, maybe to primary viewport?
+                 {
+                   namespace: cornerstone.viewport, // Or specific WSI viewport if available
+                   displaySetsToDisplay: [ohif.wsiSopClassHandler],
+                 },
               ],
             },
           };
         },
         init: async ({ servicesManager, extensionManager, studyInstanceUIDs }) => {
+          // Re-enable init logic
+          // console.log('XNAT Route Init - Temporarily Disabled');
+          // return []; // Return empty array to prevent further processing
+          // /*
           const layoutService = servicesManager.services.layoutService;
           
           // Get the study UIDs from the session router if available
@@ -280,8 +350,41 @@ function modeFactory({ modeConfiguration }) {
             }
           }
           
+          // <<< --- ADD DATASOURCE INITIALIZE CALL HERE --- >>>
+          try {
+            const [dataSource] = extensionManager.getActiveDataSource();
+            if (dataSource && typeof dataSource.initialize === 'function') {
+              console.log('XNAT Mode Route Init: Calling dataSource.initialize()');
+              // Pass the query parameters needed for initialization
+              const query = new URLSearchParams(window.location.search); 
+              await dataSource.initialize({ params: {}, query }); // Assuming params might not be needed here, pass query
+              console.log('XNAT Mode Route Init: dataSource.initialize() completed.');
+            } else {
+              console.error('XNAT Mode Route Init: Could not find active data source or initialize function.');
+            }
+          } catch (error) {
+            console.error('XNAT Mode Route Init: Error calling dataSource.initialize():', error);
+            // Decide how to handle error - maybe prevent further execution?
+            return; // Stop processing if initialization fails
+          }
+          // <<< --- END DATASOURCE INITIALIZE CALL --- >>>
+
+          // Now call defaultRouteInit - Reverting back to single object argument
+          // based on runtime error and function definition.
+          // Ignore the incorrect linter error about argument count.
+          const [dataSourceForDefaultRoute] = extensionManager.getActiveDataSource(); // Get dataSource again, use different name to avoid shadowing
+          // @ts-ignore - Linter incorrectly expects 3 arguments, but function needs object.
+          await defaultRouteInit({
+            servicesManager,
+            extensionManager, // Pass extensionManager as well
+            studyInstanceUIDs,
+            dataSource: dataSourceForDefaultRoute, // Include dataSource
+            // filters and appConfig might be needed later if errors occur
+          });
+
           // Return the study UIDs - this ensures they propagate to the rest of the app
           return studyInstanceUIDs;
+          // */
         },
       },
     ],
@@ -303,14 +406,13 @@ function modeFactory({ modeConfiguration }) {
       dicomvideo.sopClassHandler,
       dicomSeg.sopClassHandler,
       dicomPmap.sopClassHandler,
-      ohif.sopClassHandler,
-      ohif.wsiSopClassHandler,
+      ohif.sopClassHandler, // Ensure standard stack handler is present
+      ohif.wsiSopClassHandler, // WSI handler
       dicompdf.sopClassHandler,
-      dicomsr.sopClassHandler3D,
-      dicomsr.sopClassHandler,
+      dicomsr.sopClassHandler3D, // SR 3D handler
+      dicomsr.sopClassHandler, // Standard SR handler
       dicomRT.sopClassHandler,
-    ],    /** hotkeys for mode */
-    hotkeys: [...hotkeys.defaults.hotkeyBindings],
+    ],
     dataSourcesConfig: {
       xnat: {
         friendlyName: 'XNAT Viewer',

@@ -1,5 +1,4 @@
 import React from 'react';
-import XNATProjectLabel from './XNATProjectLabel';
 import XNATSubjectList from './XNATSubjectList';
 import fetchJSON from '../../utils/IO/fetchJSON';
 import onExpandIconClick from './helpers/onExpandIconClick';
@@ -29,12 +28,6 @@ interface XNATProjectState {
 }
 
 // Define interfaces for child components
-interface XNATProjectLabelProps {
-  ID: string;
-  name: string;
-  active: boolean;
-}
-
 interface XNATSubjectListProps {
   projectId: string;
   subjects: Subject[];
@@ -117,17 +110,18 @@ export default class XNATProject extends React.Component<XNATProjectProps, XNATP
     console.log('XNATProject: Rendering with state:', this.state);
     
     const { ID, name } = this.props;
-    const { subjects, active, fetched } = this.state;
+    const { subjects, active, fetched, expanded } = this.state;
 
     return (
       <React.Fragment>
         <div className="xnat-nav-horizontal-box">
           <a
-            className="btn btn-sm btn-secondary"
+            className="btn btn-sm btn-secondary xnat-nav-button"
             onClick={() => {
               console.log('XNATProject: Expand icon clicked');
               this.onExpandIconClick();
             }}
+            style={{ flexShrink: 0 }}
           >
             {(() => {
               console.log('XNATProject: Rendering expand icon');
@@ -139,9 +133,11 @@ export default class XNATProject extends React.Component<XNATProjectProps, XNATP
               }
             })()}
           </a>
-          <XNATProjectLabel ID={ID} name={name} active={active} />
+          <div>
+            {active ? <h5 className="xnat-nav-active">{name}</h5> : <h5>{name}</h5>}
+          </div>
         </div>
-        {this.state.expanded ? (
+        {expanded ? (
           <XNATSubjectList
             projectId={ID}
             subjects={subjects}

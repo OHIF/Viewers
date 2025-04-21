@@ -27,15 +27,17 @@ export default function getDisplaySetMessages(
   const firstInstance = instances[0];
   const { Modality, ImageType, NumberOfFrames } = firstInstance;
   // Due to current requirements, LOCALIZER series doesn't have any messages
+  console.log('XNAT SOP DEBUG: ImageType:', ImageType);
   if (ImageType?.includes('LOCALIZER')) {
     return messages;
   }
-
+  console.log('XNAT SOP DEBUG: Modality:', Modality);
   if (!constructableModalities.includes(Modality)) {
     return messages;
   }
 
   const isMultiframe = NumberOfFrames > 1;
+  console.log('XNAT SOP DEBUG: isMultiframe:', isMultiframe);
   // Can't reconstruct if all instances don't have the ImagePositionPatient.
   if (!isMultiframe && !instances.every(instance => instance.ImagePositionPatient)) {
     messages.addMessage(DisplaySetMessage.CODES.NO_POSITION_INFORMATION);

@@ -20,11 +20,6 @@ function getDataSourcesModule() {
       createDataSource: createXNATApi,
     },
     {
-      name: 'dicomweb',  // Alias for backward compatibility with modes expecting dicomweb
-      type: 'webApi',
-      createDataSource: createXNATApi, // Use the XNAT data source for dicomweb too
-    },
-    {
       name: 'dicomwebproxy',
       type: 'webApi',
       createDataSource: createDicomWebProxyApi,

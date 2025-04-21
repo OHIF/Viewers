@@ -60,11 +60,11 @@
   align-items: center;
   justify-content: center;
   margin-right: 5px;
+  flex-shrink: 0;
 }
 
 .xnat-nav-button {
   height: 20px;
-  width: 20px;
   padding: 0;
   line-height: 1;
   margin-right: 5px;

@@ -625,7 +625,7 @@ const commandsModule = ({
         viewportGridService.getState();
 
       const { displaySetInstanceUIDs } = viewports.get(activeViewportId);
-
+      console.log('XNAT SOP DEBUG: displaySetInstanceUIDs:', displaySetInstanceUIDs);
       const activeDisplaySetIndex = currentDisplaySets.findIndex(displaySet =>
         displaySetInstanceUIDs.includes(displaySet.displaySetInstanceUID)
       );
