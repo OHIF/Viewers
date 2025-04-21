@@ -1,0 +1,37 @@
+{
+  "Name": "OHIF in container",
+  "RemoteAccessAllowed" : true,
+  "AuthenticationEnabled": false,
+  "PostgreSQL": {
+    "EnableIndex": true,
+    "EnableStorage": false,
+    "Host": "orthanc-index",
+    "Port": 5432,
+    "Database": "orthanc",
+    "Username": "orthanc",
+    "Password": "orthanc",
+    "Lock": false,
+    "EnableSsl": false,
+    "MaximumConnectionRetries": 10,
+    "ConnectionRetryInterval": 5,
+    "IndexConnectionsCount": 50,
+    "TransactionMode": "ReadCommitted",
+    "EnableVerboseLogs": false,
+    "HousekeepingInterval": 1,
+    "AllowInconsistentChildCounts": false
+  },
+  "DicomWeb": {
+    "Enable": true,
+    "Root": "/dicom-web/",
+    "EnableWado": true,
+    "WadoRoot": "/wado",
+    "Ssl": false,
+    "QidoCaseSensitive": true,
+    "Host": "",
+    "StudiesMetadata": "Full",
+    "SeriesMetadata": "Full",
+    "EnableMetadataCache": true,
+    "MetadataWorkerThreadsCount": 4,
+    "PublicRoot": "/orthanc-container/dicom-web/"
+  }
+}

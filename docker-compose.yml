@@ -1,0 +1,47 @@
+services:
+  ngnx:
+    build: .docker/nginx
+    ports:
+      - 8081:80
+    restart: unless-stopped
+    depends_on:
+      - ohif
+      - orthanc-container
+  ohif:
+    build:
+      context: .
+      dockerfile: .docker/ohif/Dockerfile
+    restart: unless-stopped
+    # depends_on:
+    #   - orthanc-container
+
+  orthanc-index:
+    image: postgres
+    restart: unless-stopped
+    volumes:
+      - orthanc-index:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: orthanc
+      POSTGRES_PASSWORD: orthanc
+      POSTGRES_DB: orthanc
+
+  orthanc-container:
+    image: orthancteam/orthanc:25.4.2
+    restart: unless-stopped
+    volumes:
+      - orthanc-storage:/var/lib/orthanc/db/
+    secrets:
+      - orthanc-container.json
+    environment:
+      VERBOSE_STARTUP: "true"
+    depends_on:
+      - orthanc-index
+
+volumes:
+  orthanc-storage:
+  orthanc-index:
+
+
+secrets:
+  orthanc-container.json:
+    file: .docker/orthanc/orthanc-container.json

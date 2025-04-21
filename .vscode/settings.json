@@ -110,5 +110,8 @@
     "wadors",
     "wadouri",
     "workerpool"
-  ]
+  ],
+  "[dockerfile]": {
+    "editor.defaultFormatter": "ms-azuretools.vscode-docker"
+  }
 }
