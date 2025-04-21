@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.11.0-beta.11](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.10...v3.11.0-beta.11) (2025-04-18)
+
+
+### Bug Fixes
+
+* **dicomWebClient:** use public getter for activeDataSourceName instead of accessing private property ([#4973](https://github.com/OHIF/Viewers/issues/4973)) ([5688a2b](https://github.com/OHIF/Viewers/commit/5688a2b4b8f872163ff6492bb80d12cade4385cd))
+
+
+
+
+
+# [3.11.0-beta.10](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.9...v3.11.0-beta.10) (2025-04-17)
+
+**Note:** Version bump only for package @ohif/core
+
+
+
+
+
 # [3.11.0-beta.9](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.8...v3.11.0-beta.9) (2025-04-17)
 
 
