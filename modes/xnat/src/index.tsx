@@ -261,7 +261,8 @@ function modeFactory({ modeConfiguration }) {
             props: {
               leftPanels: [ xnat.studyBrowser, xnat.xnatNavList],
               leftPanelResizable: true,
-              rightPanels: [cornerstone.segmentation, cornerstone.measurements],
+              // rightPanels: [cornerstone.segmentation, cornerstone.measurements],
+              rightPanels: [cornerstone.measurements],
               rightPanelResizable: true,
               rightPanelClosed: true,
               viewports: [
