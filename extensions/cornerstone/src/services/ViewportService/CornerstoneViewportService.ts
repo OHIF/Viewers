@@ -56,7 +56,8 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     },
   };
 
-  renderingEngines: Map<string, Types.IRenderingEngine> = new Map();
+  stackRenderingEngines: Map<string, Types.IRenderingEngine> = new Map();
+  sharedVolumeRenderingEngine: Types.IRenderingEngine = null;
   viewportsById: Map<string, ViewportInfo> = new Map();
   viewportGridResizeObserver: ResizeObserver | null;
   viewportsDisplaySets: Map<string, string[]> = new Map();
@@ -76,7 +77,7 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
 
   constructor(servicesManager: AppTypes.ServicesManager, configuration: any) {
     super(EVENTS);
-    this.renderingEngines = new Map();
+    this.stackRenderingEngines = new Map();
     this.viewportGridResizeObserver = null;
     this.servicesManager = servicesManager;
     this.perViewportRenderingEngine = configuration?.appConfig?.perViewportRenderingEngine;
@@ -90,6 +91,22 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
   volumeUIDs: unknown;
   displaySetsNeedRerendering: unknown;
   viewportDisplaySets: unknown;
+
+  /**
+   * Initialize the shared volume rendering engine that will be used for all volume viewports
+   */
+  private initSharedVolumeRenderingEngine(): Types.IRenderingEngine {
+    const sharedRenderingEngineId = `${RENDERING_ENGINE_ID}-SHARED`;
+
+    const existingEngine = getRenderingEngine(sharedRenderingEngineId);
+
+    if (existingEngine && !existingEngine.hasBeenDestroyed) {
+      this.sharedVolumeRenderingEngine = existingEngine;
+    } else {
+      this.sharedVolumeRenderingEngine = new RenderingEngine(sharedRenderingEngineId);
+      return this.sharedVolumeRenderingEngine;
+    }
+  }
 
   /**
    * Adds the HTML element to the viewportService
@@ -107,15 +124,48 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
   }
 
   /**
-   * It retrieves the renderingEngine if it does exist, or creates one otherwise
-   * @returns {RenderingEngine} rendering engine
+   * Returns the appropriate rendering engine for the given viewport
+   * @param viewportId - The ID of the viewport
+   * @returns The rendering engine for the viewport
    */
-  public getRenderingEngine(viewportId: string) {
+  public getRenderingEngine(viewportId: string): Types.IRenderingEngine | null {
     if (!viewportId) {
       return null;
     }
+
+    const viewport = this.servicesManager.services.viewportGridService.getViewportState(viewportId);
+
+    if (!viewport) {
+      return null;
+    }
+
+    const { viewportOptions } = viewport;
+
+    if (!viewportOptions) {
+      return null;
+    }
+
+    const viewportType = viewportOptions.viewportType;
+
+    if (viewportType === csEnums.ViewportType.STACK) {
+      return this.getStackRenderingEngine(viewportId);
+    }
+
+    if (this.sharedVolumeRenderingEngine) {
+      return this.sharedVolumeRenderingEngine;
+    } else {
+      return this.initSharedVolumeRenderingEngine();
+    }
+  }
+
+  /**
+   * Gets or creates a STACK rendering engine for a specific viewport
+   * @param viewportId - The ID of the viewport
+   * @returns The rendering engine for the viewport
+   */
+  private getStackRenderingEngine(viewportId: string): Types.IRenderingEngine {
     // Get the viewport-specific rendering engine from the map if it exists
-    const existingRenderingEngine = this.renderingEngines.get(viewportId);
+    const existingRenderingEngine = this.stackRenderingEngines.get(viewportId);
 
     if (existingRenderingEngine && !existingRenderingEngine.hasBeenDestroyed) {
       return existingRenderingEngine;
@@ -128,15 +178,25 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     const renderingEngine = getRenderingEngine(renderingEngineId);
 
     if (renderingEngine && !renderingEngine.hasBeenDestroyed) {
-      this.renderingEngines.set(viewportId, renderingEngine);
+      this.stackRenderingEngines.set(viewportId, renderingEngine);
       return renderingEngine;
     }
 
     // Create a new rendering engine if it doesn't exist
     const newRenderingEngine = new RenderingEngine(renderingEngineId);
-    this.renderingEngines.set(viewportId, newRenderingEngine);
+    this.stackRenderingEngines.set(viewportId, newRenderingEngine);
 
     return newRenderingEngine;
+  }
+
+  public getAllRenderingEngines() {
+    const allEngines = [...this.stackRenderingEngines.values()];
+
+    if (this.sharedVolumeRenderingEngine) {
+      allEngines.push(this.sharedVolumeRenderingEngine);
+    }
+
+    return allEngines;
   }
 
   /**
@@ -186,52 +246,47 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     this._removeResizeObserver();
     this.viewportGridResizeObserver = null;
 
-    // Destroy all rendering engines
-    this.renderingEngines.forEach(renderingEngine => {
+    // Destroy all stack rendering engines
+    this.stackRenderingEngines.forEach(renderingEngine => {
       try {
         renderingEngine.destroy?.();
       } catch (e) {
-        console.warn('Rendering engine not destroyed', e);
+        console.warn('Stack rendering engine not destroyed', e);
       }
     });
 
-    this.renderingEngines.clear();
+    // Destroy the shared volume rendering engine
+    if (this.sharedVolumeRenderingEngine) {
+      try {
+        this.sharedVolumeRenderingEngine.destroy?.();
+      } catch (e) {
+        console.warn('Shared volume rendering engine not destroyed', e);
+      }
+    }
+
+    this.stackRenderingEngines.clear();
+    this.sharedVolumeRenderingEngine = null;
     this.viewportsDisplaySets.clear();
     cache.purgeCache();
   }
 
   /**
-   * Disables the viewport inside the renderingEngine, if no viewport is left
-   * it destroys the renderingEngine.
-   *
-   * This is called when the element goes away entirely - with new viewportId's
-   * created for every new viewport, this will be called whenever the set of
-   * viewports is changed, but NOT when the viewport position changes only.
+   * Disables the viewport element without destroying the rendering engine.
+   * Rendering engines are only destroyed in the destroy method.
    *
    * @param viewportId - The viewportId to disable
    */
   public disableElement(viewportId: string): void {
-    const renderingEngine = this.renderingEngines.get(viewportId);
+    const renderingEngine = this.getRenderingEngine(viewportId);
 
     if (renderingEngine) {
       renderingEngine.disableElement(viewportId);
-
-      // Check if this rendering engine has any viewports left
-      const hasRemainingViewports = renderingEngine.getViewports().length > 0;
-
-      if (!hasRemainingViewports) {
-        // If no viewports remain, destroy the rendering engine
-        try {
-          renderingEngine.destroy?.();
-        } catch (e) {
-          console.warn(`Failed to destroy rendering engine for viewport ${viewportId}`, e);
-        }
-
-        this.renderingEngines.delete(viewportId);
+      if (!renderingEngine.id.includes('SHARED')) {
+        renderingEngine.destroy?.();
+        this.stackRenderingEngines.delete(viewportId);
       }
     }
 
-    // clean up
     this.viewportsById.delete(viewportId);
     this.viewportsDisplaySets.delete(viewportId);
   }
@@ -525,7 +580,7 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
       return null;
     }
 
-    const renderingEngine = this.renderingEngines.get(viewportId);
+    const renderingEngine = this.getRenderingEngine(viewportId);
     if (!renderingEngine || renderingEngine.hasBeenDestroyed) {
       return null;
     }
