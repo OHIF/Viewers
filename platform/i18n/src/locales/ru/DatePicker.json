@@ -1,9 +1,9 @@
 {
-  "Clear dates": "Clear dates",
+  "Clear dates": "Сброс",
   "Close": "$t(Common:Close)",
-  "End Date": "End Date",
-  "Last 7 days": "Last 7 days",
-  "Last 30 days": "Last 30 days",
-  "Start Date": "Start Date",
-  "Today": "Today"
+  "End Date": "Конечная дата",
+  "Last 7 days": "Последние 7 дней",
+  "Last 30 days": "Последние 30 дней",
+  "Start Date": "Начальная дата",
+  "Today": "Сегодня"
 }

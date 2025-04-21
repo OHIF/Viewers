@@ -1,9 +1,9 @@
 {
-  "About": "About",
-  "Back to Viewer": "Back to Viewer",
-  "INVESTIGATIONAL USE ONLY": "INVESTIGATIONAL USE ONLY",
-  "Options": "Options",
-  "Preferences": "Preferences",
-  "Study list": "Study list",
-  "Logout": "Logout"
+  "About": "О программе",
+  "Back to Viewer": "Вернуться в программу",
+  "INVESTIGATIONAL USE ONLY": "ТОЛЬКО ДЛЯ ИССЛЕДОВАТЕЛЬСКИХ ЦЕЛЕЙ",
+  "Options": "Настройки",
+  "Preferences": "Предпочтения",
+  "Study list": "Список исследований",
+  "Logout": "Выйти"
 }
