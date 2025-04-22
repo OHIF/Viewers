@@ -1,16 +1,17 @@
 import React, { ReactNode } from 'react';
 import { Button, Icons, Popover, PopoverContent, PopoverTrigger } from '@ohif/ui-next';
-import ViewportDataOverlayMenu from './ViewportDataOverlayMenu';
+import ViewportOrientationMenu from './ViewportOrientationMenu';
 import classNames from 'classnames';
 import { useSystem } from '@ohif/core';
 
-export function ViewportDataOverlayMenuWrapper({
+export function ViewportOrientationMenuWrapper({
   viewportId,
-  displaySets,
+  element,
   location,
 }: withAppTypes<{
   viewportId: string;
   element: HTMLElement;
+  location: string;
 }>): ReactNode {
   const { servicesManager } = useSystem();
   const { viewportActionCornersService, viewportGridService } = servicesManager.services;
@@ -30,7 +31,7 @@ export function ViewportDataOverlayMenuWrapper({
           variant="ghost"
           size="icon"
         >
-          <Icons.ViewportViews
+          <Icons.Tool3DRotate
             className={classNames(
               'text-highlight',
               isActiveViewport ? 'visible' : 'invisible group-hover/pane:visible'
@@ -45,11 +46,7 @@ export function ViewportDataOverlayMenuWrapper({
         alignOffset={-15}
         sideOffset={5}
       >
-        <ViewportDataOverlayMenu
-          className="w-full"
-          viewportId={viewportId}
-          displaySets={displaySets}
-        />
+        <ViewportOrientationMenu viewportId={viewportId} />
       </PopoverContent>
     </Popover>
   );

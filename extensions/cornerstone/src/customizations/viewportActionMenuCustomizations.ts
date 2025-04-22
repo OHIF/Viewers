@@ -11,4 +11,8 @@ export default {
     enabled: true,
     location: viewportActionCornersService.LOCATIONS.topRight,
   },
+  'viewportActionMenu.orientationMenu': {
+    enabled: true,
+    location: viewportActionCornersService.LOCATIONS.topRight,
+  },
 };

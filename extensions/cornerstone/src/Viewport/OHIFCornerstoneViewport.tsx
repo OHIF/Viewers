@@ -17,6 +17,7 @@ import type { Types } from '@ohif/core';
 import OHIFViewportActionCorners from '../components/OHIFViewportActionCorners';
 import { getWindowLevelActionMenu } from '../components/WindowLevelActionMenu/getWindowLevelActionMenu';
 import { getViewportDataOverlaySettingsMenu } from '../components/ViewportDataOverlaySettingMenu';
+import { getViewportOrientationMenu } from '../components/ViewportOrientationMenu';
 import { getViewportPresentations } from '../utils/presentations/getViewportPresentations';
 import { useSynchronizersStore } from '../stores/useSynchronizersStore';
 import ActiveViewportBehavior from '../utils/ActiveViewportBehavior';
@@ -312,6 +313,9 @@ const OHIFCornerstoneViewport = React.memo(
         'viewportActionMenu.windowLevelActionMenu'
       );
       const dataOverlay = customizationService.getCustomization('viewportActionMenu.dataOverlay');
+      const orientationMenu = customizationService.getCustomization(
+        'viewportActionMenu.orientationMenu'
+      );
 
       if (windowLevelActionMenu?.enabled) {
         viewportActionCornersService.addComponent({
@@ -340,6 +344,20 @@ const OHIFCornerstoneViewport = React.memo(
             location: dataOverlay.location,
           }),
           location: dataOverlay.location,
+        });
+      }
+
+      // Only show orientation menu for reconstructable displaySets
+      if (orientationMenu?.enabled && displaySets.some(ds => ds.isReconstructable)) {
+        viewportActionCornersService.addComponent({
+          viewportId,
+          id: 'orientationMenu',
+          component: getViewportOrientationMenu({
+            viewportId,
+            element: elementRef.current,
+            location: orientationMenu.location,
+          }),
+          location: orientationMenu.location,
         });
       }
     }, [displaySets, viewportId, viewportActionCornersService, servicesManager, commandsManager]);
