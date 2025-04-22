@@ -80,7 +80,8 @@ function _getDisplaySetsFromSeries(instances, servicesManager, extensionManager)
       const displaySets = displaySetService.getDisplaySetsForSeries(series.SeriesInstanceUID);
       allDisplaySets = allDisplaySets.concat(displaySets);
     });
-    return getSourceDisplaySet(allDisplaySets, displaySet);
+    const ds = getSourceDisplaySet(allDisplaySets, displaySet);
+    return ds;
   };
 
   return [displaySet];

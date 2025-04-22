@@ -9,7 +9,7 @@ export default function loadAnnotation({
   return new Promise(async (resolve, reject) => {
     try {
       const { metadata } = displaySet;
-      console.debug('Loading annotation for display set:', displaySet.metadata);
+      console.debug('Loading ANN for display set:', displaySet.metadata);
 
       const dicomMicroscopyModule = await microscopyService.importDicomMicroscopyViewer();
 
@@ -18,9 +18,8 @@ export default function loadAnnotation({
         servicesManager,
       });
 
-      const managedViewers = microscopyService.getManagedViewersForStudy(
-        displaySet.StudyInstanceUID
-      );
+      const viewportId = servicesManager.services.viewportGridService.getActiveViewportId();
+      const managedViewers = microscopyService.getManagedViewersForViewport(viewportId);
       const managedViewer = managedViewers[0];
 
       client
@@ -35,30 +34,30 @@ export default function loadAnnotation({
             });
           });
 
-          annotations.forEach(ann => {
+          annotations.forEach(async ann => {
             try {
-              managedViewer.viewer.addAnnotationGroups(ann);
+              await managedViewer.viewer.addAnnotationGroups(ann);
+
+              ann.AnnotationGroupSequence.forEach(item => {
+                const annotationGroupUID = item.AnnotationGroupUID;
+                managedViewer.viewer.setAnnotationGroupStyle(annotationGroupUID, {
+                  color: [255, 234, 0],
+                });
+              });
+
+              ann.AnnotationGroupSequence.forEach(item => {
+                const annotationGroupUID = item.AnnotationGroupUID;
+                managedViewer.viewer.showAnnotationGroup(annotationGroupUID);
+                window.showit = () => {
+                  managedViewer.viewer.showAnnotationGroup(annotationGroupUID);
+                };
+                window.hideit = () => {
+                  managedViewer.viewer.showAnnotationGroup(annotationGroupUID);
+                };
+              });
             } catch (error) {
               console.error('failed to add annotation groups:', error);
             }
-
-            // const _buildKey = concept => {
-            //   const codingScheme = concept.CodingSchemeDesignator;
-            //   const codeValue = concept.CodeValue;
-            //   return `${codingScheme}-${codeValue}`;
-            // };
-
-            // ann.AnnotationGroupSequence.forEach(item => {
-            //   const annotationGroupUID = item.AnnotationGroupUID;
-            //   const finding = item.AnnotationPropertyTypeCodeSequence[0];
-            //   const key = _buildKey(finding);
-            //   const style = this.roiStyles[key];
-            //   if (style != null && style.fill != null) {
-            //     managedViewer.viewer.setAnnotationGroupStyle(annotationGroupUID, {
-            //       color: style.fill.color,
-            //     });
-            //   }
-            // });
           });
 
           displaySet.isLoaded = true;
