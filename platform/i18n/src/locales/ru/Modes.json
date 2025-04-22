@@ -1,8 +1,8 @@
 {
-  "Basic Dev Viewer": "Basic Dev Viewer",
-  "Basic Test Mode": "Basic Test Mode",
-  "Basic Viewer": "Basic Viewer",
-  "Microscopy": "Microscopy",
-  "Segmentation": "Segmentation",
-  "Total Metabolic Tumor Volume": "Total Metabolic Tumor Volume"
+  "Basic Dev Viewer": "Базовая программа для просмотра (режим разработки)",
+  "Basic Test Mode": "Базовый тестовый режим",
+  "Basic Viewer": "Базовая программа для просмотра",
+  "Microscopy": "Микроскопия",
+  "Segmentation": "Сегментация",
+  "Total Metabolic Tumor Volume": "Общий метаболический объём опухоли"
 }
