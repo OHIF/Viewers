@@ -21,6 +21,7 @@ import toggleImageSliceSync from './utils/imageSliceSync/toggleImageSliceSync';
 import { getFirstAnnotationSelected } from './utils/measurementServiceMappings/utils/selection';
 import getActiveViewportEnabledElement from './utils/getActiveViewportEnabledElement';
 import toggleVOISliceSync from './utils/toggleVOISliceSync';
+import { colormaps } from './utils/colormaps';
 
 const toggleSyncFunctions = {
   imageSlice: toggleImageSliceSync,
@@ -496,6 +497,7 @@ function commandsModule({
       const { viewport } = enabledElement;
 
       viewport.resetProperties?.();
+      viewport.setColormap(colormaps[1]);
       viewport.resetCamera();
 
       viewport.render();
