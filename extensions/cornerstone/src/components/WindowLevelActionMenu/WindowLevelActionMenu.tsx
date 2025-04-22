@@ -16,7 +16,8 @@ import { ViewportPreset } from '../../types/ViewportPresets';
 import { VolumeViewport3D } from '@cornerstonejs/core';
 import { utilities } from '@cornerstonejs/core';
 import { useSystem } from '@ohif/core';
-export const nonWLModalities = ['SR', 'SEG', 'SM', 'RTSTRUCT', 'RTPLAN', 'RTDOSE'];
+
+export const nonWLModalities = ['SR', 'SEG', 'SM', 'RTSTRUCT', 'RTPLAN'];
 
 export type WindowLevelActionMenuProps = {
   viewportId: string;

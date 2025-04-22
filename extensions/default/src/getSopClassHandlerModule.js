@@ -100,6 +100,7 @@ const makeDisplaySet = instances => {
     isDynamicVolume,
     dynamicVolumeInfo,
     label: instance.SeriesDescription || `Series ${instance.SeriesNumber} - ${instance.Modality}`,
+    FrameOfReferenceUID: instance.FrameOfReferenceUID,
   });
 
   // Sort the images in this series if needed
@@ -261,6 +262,7 @@ const sopClassUids = [
   sopClassDictionary.LegacyConvertedEnhancedPETImageStorage,
   sopClassDictionary.RTImageStorage,
   sopClassDictionary.EnhancedUSVolumeStorage,
+  sopClassDictionary.RTDoseStorage,
 ];
 
 function getSopClassHandlerModule(appContextParam) {

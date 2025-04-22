@@ -1,9 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Icons, ScrollArea, Separator } from '@ohif/ui-next';
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+} from '@ohif/ui-next';
 import { utilities as csUtils } from '@cornerstonejs/core';
 import { useSystem } from '@ohif/core';
 import { DisplaySet } from '@ohif/core';
-import { Numeric } from '@ohif/ui-next';
 
 const derivedOverlayModalities = ['SEG', 'RTSTRUCT', 'SR'];
 
@@ -29,7 +36,17 @@ function getEnhancedDisplaySets({ viewportId, services }) {
   const enhancedDisplaySets = otherDisplaySets.map(displaySet => {
     const isOverlayable = true;
 
-    if (displaySet.frameOfReferenceUID !== backgroundDisplaySet.frameOfReferenceUID) {
+    if (displaySet.unsupported) {
+      return {
+        ...displaySet,
+        isOverlayable: false,
+      };
+    }
+
+    if (
+      displaySet.FrameOfReferenceUID &&
+      displaySet.FrameOfReferenceUID !== backgroundDisplaySet.FrameOfReferenceUID
+    ) {
       return {
         ...displaySet,
         isOverlayable: false,
@@ -46,7 +63,10 @@ function getEnhancedDisplaySets({ viewportId, services }) {
         };
       }
 
-      if (!csUtils.isValidVolume(displaySet.images.map(image => image.imageId))) {
+      const imageIds = displaySet.imageIds || displaySet.images?.map(image => image.imageId);
+      const isMultiframe = displaySet.isMultiFrame;
+
+      if (!isMultiframe && imageIds.length > 0 && !csUtils.isValidVolume(imageIds)) {
         return {
           ...displaySet,
           isOverlayable: false,
@@ -73,6 +93,9 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
 
   const [activeOverlays, setActiveOverlays] = useState<DisplaySet[]>([]);
   const [overlayOpacities, setOverlayOpacities] = useState<Record<string, number>>({});
+
+  // Get all available display sets that could be used
+  const allDisplaySets = displaySetService.getActiveDisplaySets();
 
   const { backgroundDisplaySet, enhancedDisplaySets } = getEnhancedDisplaySets({
     viewportId,
@@ -101,9 +124,6 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
     }
   }, [viewportId, displaySetService, viewportGridService]);
 
-  // Add background to active overlays for display purposes
-  const displayedOverlays = [backgroundDisplaySet, ...activeOverlays];
-
   // Sort function: puts disabled items (isOverlayable: false) at the end
   const sortByOverlayable = (a, b) => {
     if (a.isOverlayable === b.isOverlayable) {
@@ -126,24 +146,58 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
       // isHangingProtocolLayout
     );
 
-    // append the background displaySet to the updatedViewports
+    // Get all current active overlay UIDs
+    const currentOverlayUIDs = activeOverlays.map(overlay => overlay.displaySetInstanceUID);
+
+    // Configure the viewport with background and all overlays (existing + new)
     updatedViewports.forEach(viewport => {
-      viewport.displaySetInstanceUIDs.unshift(backgroundDisplaySet.displaySetInstanceUID);
+      // Set the display sets (background followed by current overlays plus the new one)
+      viewport.displaySetInstanceUIDs = [
+        backgroundDisplaySet.displaySetInstanceUID,
+        ...currentOverlayUIDs,
+        displaySet.displaySetInstanceUID,
+      ];
+
       if (!viewport.viewportOptions) {
         viewport.viewportOptions = {};
       }
       viewport.viewportOptions.viewportType = 'volume';
 
-      if (!viewport.displaySetOptions) {
-        viewport.displaySetOptions = [];
-      }
+      // Reset display options
+      viewport.displaySetOptions = [];
+
+      // Add option for background (empty options)
       viewport.displaySetOptions.push({});
-      viewport.displaySetOptions.push({
-        colormap: {
-          name: 'hsv',
-          opacity: 0.9,
-        },
+
+      // Add options for each existing overlay with its opacity
+      activeOverlays.forEach(overlay => {
+        // Skip adding displaySetOptions for SEG modality
+        if (overlay.Modality === 'SEG') {
+          viewport.displaySetOptions.push({});
+          return;
+        }
+
+        const opacity = overlayOpacities[overlay.displaySetInstanceUID] || 90;
+        viewport.displaySetOptions.push({
+          colormap: {
+            name: 'hsv',
+            opacity: opacity / 100, // Convert to 0-1 range
+          },
+        });
       });
+
+      // Add option for the new overlay
+      // Skip adding colormap options for SEG modality
+      if (displaySet.Modality === 'SEG') {
+        viewport.displaySetOptions.push({});
+      } else {
+        viewport.displaySetOptions.push({
+          colormap: {
+            name: 'hsv',
+            opacity: 0.9,
+          },
+        });
+      }
     });
 
     // update the previously stored positionPresentation with the new viewportId
@@ -248,149 +302,238 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
     });
   };
 
+  // Get potential background display sets (all non-derived modalities that can be valid volumes)
+  const getPotentialBackgroundDisplaySets = (): DisplaySet[] => {
+    // Get all display sets that are not derived modalities
+    return allDisplaySets.filter(
+      ds =>
+        !derivedOverlayModalities.includes(ds.Modality) &&
+        // Don't include the current background
+        ds.displaySetInstanceUID !== backgroundDisplaySet.displaySetInstanceUID
+    );
+  };
+
+  // Handler for background selection - actually changes the background
+  const handleBackgroundSelection = (newBackgroundDisplaySet: DisplaySet) => {
+    if (
+      !newBackgroundDisplaySet ||
+      newBackgroundDisplaySet.displaySetInstanceUID === backgroundDisplaySet.displaySetInstanceUID
+    ) {
+      return;
+    }
+
+    // Get updated viewports from hanging protocol service
+    const updatedViewports = hangingProtocolService.getViewportsRequireUpdate(
+      viewportId,
+      newBackgroundDisplaySet.displaySetInstanceUID
+    );
+
+    // Update the viewport's display sets to use the new background
+    const activeOverlayUIDs = activeOverlays.map(overlay => overlay.displaySetInstanceUID);
+
+    // Configure each viewport
+    updatedViewports.forEach(viewport => {
+      // Set the display sets (new background followed by any active overlays)
+      viewport.displaySetInstanceUIDs = [
+        newBackgroundDisplaySet.displaySetInstanceUID,
+        ...activeOverlayUIDs,
+      ];
+
+      if (!viewport.viewportOptions) {
+        viewport.viewportOptions = {};
+      }
+      viewport.viewportOptions.viewportType = 'volume';
+
+      // Create display options for each display set
+      if (!viewport.displaySetOptions) {
+        viewport.displaySetOptions = [];
+      } else {
+        viewport.displaySetOptions = [];
+      }
+
+      // First entry is for background (empty options)
+      viewport.displaySetOptions.push({});
+
+      // Add options for each overlay with its opacity
+      activeOverlays.forEach(overlay => {
+        // Skip adding displaySetOptions for SEG modality
+        if (overlay.Modality === 'SEG') {
+          viewport.displaySetOptions.push({});
+          return;
+        }
+
+        const opacity = overlayOpacities[overlay.displaySetInstanceUID] || 90;
+        viewport.displaySetOptions.push({
+          colormap: {
+            name: 'hsv',
+            opacity: opacity / 100, // Convert to 0-1 range
+          },
+        });
+      });
+    });
+
+    // Update viewports with the changes
+    commandsManager.run('setDisplaySetsForViewports', {
+      viewportsToUpdate: updatedViewports,
+    });
+  };
+
   return (
     <div className="bg-muted flex h-full w-[262px] flex-col rounded p-3">
-      <Separator className="my-3" />
-      <span className="text-muted-foreground mb-2 text-xs font-semibold">Active Overlays</span>
+      {/* SECTION 1: All Overlayables - Dropdown */}
+      <span className="text-muted-foreground mb-2 block text-xs font-semibold">
+        Available Overlays
+      </span>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button
+            variant="outline"
+            className="w-full justify-between border-[#061430] bg-[#061430] text-[#3498db]"
+          >
+            <span>Select overlay...</span>
+            <Icons.ChevronDown className="ml-2 h-4 w-4" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent className="w-[230px]">
+          <DropdownMenuLabel>Overlayable Items</DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          {[...derivedOverlays]
+            .filter(ds => ds.isOverlayable)
+            .map(displaySet => (
+              <DropdownMenuItem
+                key={displaySet.displaySetInstanceUID}
+                onSelect={() => addOverlay(displaySet)}
+                disabled={!displaySet.isOverlayable}
+              >
+                <div className="flex w-full items-center justify-between">
+                  <span>{displaySet.label}</span>
+                  <span className="text-muted-foreground text-xs">{displaySet.Modality}</span>
+                </div>
+              </DropdownMenuItem>
+            ))}
+        </DropdownMenuContent>
+      </DropdownMenu>
 
-      <div className="relative h-[80px]">
-        {/* Opacity label and slider - only show when there are active overlays */}
-        {/* Overlays and Opacity Controls */}
-        <div className="grid h-full grid-cols-[auto_1fr] gap-4">
-          {activeOverlays.length > 0 && (
-            <div className="flex flex-col">
-              {/* <span className="text-muted-foreground mb-2 text-xs">Opacity</span> */}
-              <div className="relative mt-8 ml-3 h-16">
-                <Numeric.Container
-                  mode="singleRange"
-                  min={0}
-                  max={100}
-                  step={5}
-                  value={overlayOpacities[activeOverlays[0]?.displaySetInstanceUID] || 90}
-                  onChange={value => {
-                    updateOpacity(activeOverlays[0]?.displaySetInstanceUID, value as number);
-                  }}
-                >
-                  <div className="relative h-16">
-                    <div
-                      className="absolute"
-                      style={{
-                        transform: 'rotate(-90deg)',
-                        transformOrigin: 'left center',
-                        width: '64px',
-                        left: '0',
-                        top: '32px',
-                      }}
-                    >
-                      <Numeric.SingleRange sliderClassName="w-16" />
+      {/* Active Overlays with Opacity Controls */}
+      {activeOverlays.length > 0 && (
+        <>
+          <Separator className="my-3" />
+          <span className="text-muted-foreground mb-2 block text-xs font-semibold">
+            Active Overlays
+          </span>
+
+          <div className="flex-grow">
+            <ScrollArea className="h-[80px] w-full">
+              <div className="space-y-1">
+                {activeOverlays.map(displaySet => (
+                  <div
+                    key={displaySet.displaySetInstanceUID}
+                    className="hover:bg-muted-foreground/10 flex items-center justify-between rounded p-2"
+                  >
+                    <span className="text-foreground text-sm">{displaySet.label}</span>
+                    <div className="flex items-center">
+                      <span className="text-muted-foreground mr-2 text-xs">
+                        {displaySet.Modality}
+                      </span>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-6 w-6"
+                        onClick={() => removeOverlay(displaySet)}
+                      >
+                        <Icons.Close className="h-4 w-4" />
+                      </Button>
                     </div>
                   </div>
-                </Numeric.Container>
-              </div>
-            </div>
-          )}
-
-          {/* Overlays List */}
-          <div className="flex-grow">
-            <ScrollArea className="h-full w-full">
-              <div className="flex flex-col space-y-1 text-[13px]">
-                {/* Reverse the order so PET is on top and CT is on bottom */}
-                {[...displayedOverlays].reverse().map((displaySet, index) => {
-                  const isBackground = index === displayedOverlays.length - 1;
-                  return (
-                    <div
-                      key={displaySet.displaySetInstanceUID}
-                      className="flex items-center rounded p-2"
-                    >
-                      {isBackground ? (
-                        <>
-                          <Icons.StatusSuccess className="text-primary mr-2 h-5 w-5" />
-                          <span className="text-foreground">{displaySet.label}</span>
-                        </>
-                      ) : (
-                        <Button
-                          variant="ghost"
-                          onClick={() => removeOverlay(displaySet)}
-                        >
-                          <div className="flex w-full items-center justify-between">
-                            <Icons.Minus className="text-primary h-5 w-5" />
-                            <span className="text-foreground ml-2 flex-grow">
-                              {displaySet.label}
-                            </span>
-                            <span className="text-muted-foreground ml-2">
-                              {displaySet.Modality}
-                            </span>
-                          </div>
-                        </Button>
-                      )}
-                    </div>
-                  );
-                })}
+                ))}
               </div>
             </ScrollArea>
           </div>
-        </div>
-      </div>
+        </>
+      )}
 
+      {/* SECTION 2: Foregrounds */}
       {nonDerivedOverlays.length > 0 && (
         <>
           <Separator className="my-3" />
-          <span className="text-muted-foreground mb-2 text-xs font-semibold">Foreground</span>
-          <ul className="space-y-1">
-            <ScrollArea className="h-[150px]">
+          <span className="text-muted-foreground mb-2 block text-xs font-semibold">
+            Foregrounds
+          </span>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="outline"
+                className="w-full justify-between border-[#061430] bg-[#061430] text-[#3498db]"
+              >
+                <span>Select foreground...</span>
+                <Icons.ChevronDown className="ml-2 h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-[230px]">
+              <DropdownMenuLabel>Available Foregrounds</DropdownMenuLabel>
+              <DropdownMenuSeparator />
               {nonDerivedOverlays.map(displaySet => (
-                <li
+                <DropdownMenuItem
                   key={displaySet.displaySetInstanceUID}
-                  className="flex items-center text-sm"
+                  onSelect={() => addOverlay(displaySet)}
+                  disabled={!displaySet.isOverlayable}
                 >
-                  <Button
-                    variant="ghost"
-                    disabled={!displaySet.isOverlayable}
-                    className="text-muted-foreground w-full"
-                    onClick={() => addOverlay(displaySet)}
-                  >
-                    <div className="flex w-full items-center justify-between">
-                      <Icons.Plus className="mr-2 h-6 w-6" />
-                      <span className="text-foreground">{displaySet.label}</span>
-                      <span className="text-muted-foreground ml-2 mr-2">{displaySet.Modality}</span>
-                    </div>
-                  </Button>
-                </li>
+                  <div className="flex w-full items-center justify-between">
+                    <span>{displaySet.label}</span>
+                    <span className="text-muted-foreground text-xs">{displaySet.Modality}</span>
+                  </div>
+                </DropdownMenuItem>
               ))}
-            </ScrollArea>
-          </ul>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </>
       )}
 
-      {derivedOverlays.length > 0 && (
-        <>
-          <Separator className="my-3" />
-          <span className="text-muted-foreground mb-2 text-xs font-semibold">Derived Overlays</span>
-          <ul className="space-y-1">
-            <ScrollArea className="h-[150px]">
-              {derivedOverlays.map(displaySet => (
-                <li
-                  key={displaySet.displaySetInstanceUID}
-                  className="flex items-center text-sm"
-                >
-                  <Button
-                    variant="ghost"
-                    className="text-muted-foreground w-full"
-                    disabled={!displaySet.isOverlayable}
-                    onClick={() => addOverlay(displaySet)}
-                  >
-                    <div className="flex w-full items-center justify-between">
-                      <Icons.Plus className="mr-2 h-6 w-6" />
-                      <span className="text-foreground">{displaySet.label}</span>
-                      <span className="text-muted-foreground ml-2 mr-2">{displaySet.Modality}</span>
-                    </div>
-                  </Button>
-                </li>
-              ))}
-            </ScrollArea>
-          </ul>
-        </>
-      )}
+      {/* SECTION 3: Background */}
+      <Separator className="my-3" />
+      <span className="text-muted-foreground mb-2 block text-xs font-semibold">Background</span>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button
+            variant="outline"
+            className="w-full justify-between border-[#061430] bg-[#061430] text-[#3498db]"
+          >
+            <div className="flex items-center space-x-2">
+              <span>Select</span>
+              <span className="font-medium text-[#3498db]">
+                {backgroundDisplaySet.SeriesDescription?.toLowerCase() ||
+                  backgroundDisplaySet.label?.toLowerCase() ||
+                  'background'}
+              </span>
+            </div>
+            <Icons.ChevronDown className="ml-2 h-4 w-4" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent className="w-[230px]">
+          <DropdownMenuLabel>Current Background</DropdownMenuLabel>
+          <DropdownMenuItem disabled>
+            <div className="flex w-full items-center justify-between">
+              <span>{backgroundDisplaySet.label}</span>
+              <span className="text-muted-foreground text-xs">{backgroundDisplaySet.Modality}</span>
+            </div>
+          </DropdownMenuItem>
+
+          <DropdownMenuSeparator />
+          <DropdownMenuLabel>Available Backgrounds</DropdownMenuLabel>
+
+          {getPotentialBackgroundDisplaySets().map(displaySet => (
+            <DropdownMenuItem
+              key={displaySet.displaySetInstanceUID}
+              onSelect={() => handleBackgroundSelection(displaySet)}
+            >
+              <div className="flex w-full items-center justify-between">
+                <span>{displaySet.label}</span>
+                <span className="text-muted-foreground text-xs">{displaySet.Modality}</span>
+              </div>
+            </DropdownMenuItem>
+          ))}
+        </DropdownMenuContent>
+      </DropdownMenu>
     </div>
   );
 }
