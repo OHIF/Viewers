@@ -27,8 +27,9 @@ export default function ComponentShowcase() {
       description="Patterns and example layouts"
     >
       <div className="text-foreground min-h-screen bg-black">
-        <div className="mx-auto my-4 max-w-5xl pt-6 pb-3">
-          <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
+        <div className="mx-auto my-4 max-w-5xl pt-4 pb-6">
+          {/* Navigation cards */}
+          <div className="mb-8 grid grid-cols-1 gap-5 md:grid-cols-3">
             <a
               href="/colors-and-type"
               className="focus:ring-primary block rounded-lg text-inherit no-underline hover:no-underline focus:outline-none focus:ring-2"
@@ -78,9 +79,7 @@ export default function ComponentShowcase() {
               </Card>
             </a>
           </div>
-        </div>
 
-        <div className="mx-auto my-4 max-w-5xl pt-4 pb-6">
           <h1 className="text-foreground ml-6 mb-6 text-5xl">Patterns</h1>
 
           <ShowcaseRow
