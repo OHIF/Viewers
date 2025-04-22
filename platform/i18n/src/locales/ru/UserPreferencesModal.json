@@ -1,9 +1,9 @@
 {
   "Cancel": "$t(Buttons:Cancel)",
-  "No hotkeys found": "No hotkeys are configured for this application. Hotkeys can be configured in the application's app-config.js file.",
+  "No hotkeys found": "Горячие клавиши не сконфигурированы для этого приложения. Горячие клавиши могут быть сконфигурированы в файле app-config.js приложения.",
   "Reset to defaults": "$t(Buttons:Reset to defaults)",
-  "ResetDefaultMessage": "Preferences successfully reset to default. <br /> You must <strong>Save</strong> to perform this action.",
+  "ResetDefaultMessage": "Настройки были сброшены до фабричных. <br /> Вы должны <strong>сохранить изменения</strong>.",
   "Save": "$t(Buttons:Save)",
-  "SaveMessage": "Preferences saved",
-  "User preferences": "User Preferences"
+  "SaveMessage": "Настройки сохранены",
+  "User preferences": "Пользовательские настройки"
 }
