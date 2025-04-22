@@ -4,6 +4,10 @@ sidebar_label: DisplaySet Service
 ---
 # DisplaySet Service
 
+:::tip
+
+Test
+:::
 
 ## Overview
 `DisplaySetService` handles converting the `instanceMetadata` into `DisplaySet` that `OHIF` uses for the visualization. `DisplaySetService` gets initialized at service startup time, but is then cleared in the `Mode.jsx`. During the initialization `SOPClassHandlerIds` of the `modes` gets registered with the `DisplaySetService`.
