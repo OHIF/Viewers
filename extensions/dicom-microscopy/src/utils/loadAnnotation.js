@@ -37,11 +37,7 @@ export default function loadAnnotation({
 
           annotations.forEach(ann => {
             try {
-              managedViewer.viewer.addAnnotationGroups({
-                ...ann,
-                FrameOfReferenceUID:
-                  '1.3.6.1.4.1.5962.99.1.1122135991.1842204393.1637504708535.5.0',
-              });
+              managedViewer.viewer.addAnnotationGroups(ann);
             } catch (error) {
               console.error('failed to add annotation groups:', error);
             }
