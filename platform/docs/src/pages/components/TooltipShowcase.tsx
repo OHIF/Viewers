@@ -1,6 +1,11 @@
 import React from 'react';
-import { Tooltip, TooltipTrigger, TooltipContent } from '../../../../ui-next/src/components/Tooltip';
-import { Button } from '../../../../ui-next/src/components/Button';
+import {
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+  TooltipProvider,
+} from '../../../../../platform/ui-next/src/components/Tooltip';
+import { Button } from '../../../../../platform/ui-next/src/components/Button';
 import ShowcaseRow from './ShowcaseRow';
 
 /**
@@ -12,24 +17,31 @@ export default function TooltipShowcase() {
       title="Tooltip"
       description="Tooltips reveal helper text when users hover, focus, or tap an element."
       code={`
-<Tooltip>
-  <TooltipTrigger asChild>
-    <Button variant="ghost" size="icon">?</Button>
-  </TooltipTrigger>
-  <TooltipContent>
-    Tooltip content
-  </TooltipContent>
-</Tooltip>
+<TooltipProvider>
+  <Tooltip>
+    <TooltipTrigger asChild>
+      <Button variant="ghost" size="icon">?</Button>
+    </TooltipTrigger>
+    <TooltipContent>
+      Tooltip content
+    </TooltipContent>
+  </Tooltip>
+</TooltipProvider>
       `}
     >
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <Button variant="ghost" size="icon">?</Button>
-        </TooltipTrigger>
-        <TooltipContent>
-          Tooltip content
-        </TooltipContent>
-      </Tooltip>
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              variant="ghost"
+              size="icon"
+            >
+              ?
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>Tooltip content</TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
     </ShowcaseRow>
   );
 }

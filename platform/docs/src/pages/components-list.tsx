@@ -1,17 +1,17 @@
 import React from 'react';
 import '../css/custom.css';
 import Layout from '@theme/Layout';
-import { TooltipProvider } from '../../../ui-next/src/components/Tooltip';
+import { TooltipProvider } from '../../../../platform/ui-next/src/components/Tooltip';
 
 // Navigation card components
-import { Card, CardHeader, CardTitle, CardDescription } from '../../../ui-next/src/components/Card';
-import { Icons } from '../../../ui-next/src/components/Icons';
+import { Card, CardHeader, CardTitle, CardDescription } from '../../../../platform/ui-next/src/components/Card';
+import { Icons } from '../../../../platform/ui-next/src/components/Icons';
 
 /* Showcase components (alphabetical) */
-import AllinOneMenuShowcase from './components/AllinOneMenuShowcase';
+// import AllinOneMenuShowcase from './components/AllinOneMenuShowcase';
 import ButtonShowcase from './components/ButtonShowcase';
 import CheckboxShowcase from './components/CheckboxShowcase';
-import CinePlayerShowcase from './components/CinePlayerShowcase';
+// import CinePlayerShowcase from './components/CinePlayerShowcase';
 import ComboboxShowcase from './components/ComboboxShowcase';
 import DataRowShowcase from './components/DataRowShowcase';
 import DialogShowcase from './components/DialogShowcase';
@@ -98,10 +98,10 @@ export default function ComponentsList() {
 
             <h1 className="text-foreground ml-6 mb-6 text-5xl">Components</h1>
 
-            <AllinOneMenuShowcase />
+            {/* <AllinOneMenuShowcase /> */}
             <ButtonShowcase />
             <CheckboxShowcase />
-            <CinePlayerShowcase />
+            {/* <CinePlayerShowcase /> */}
             <ComboboxShowcase />
             <DataRowShowcase />
             <DialogShowcase />
