@@ -7,25 +7,27 @@ export default function Patterns() {
 
   return (
     <Layout>
-      <h1>Patterns</h1>
-      <button
-        className="bg-slate-400"
-        onClick={() => history.push('/patterns/patterns-segmentation')}
-      >
-        {'Segmentation Panel'}
-      </button>
-      <button
-        className="bg-slate-400"
-        onClick={() => history.push('/patterns/patterns-measurements')}
-      >
-        {'Measurements Panel'}
-      </button>
-      <button
-        className="bg-slate-400"
-        onClick={() => history.push('/patterns/patterns-tmtv')}
-      >
-        {'tmtv'}
-      </button>
+      <div>
+        <h1>Patterns</h1>
+        <button
+          className="bg-slate-400"
+          onClick={() => history.push('/patterns/patterns-segmentation')}
+        >
+          {'Segmentation Panel'}
+        </button>
+        <button
+          className="bg-slate-400"
+          onClick={() => history.push('/patterns/patterns-measurements')}
+        >
+          {'Measurements Panel'}
+        </button>
+        <button
+          className="bg-slate-400"
+          onClick={() => history.push('/patterns/patterns-tmtv')}
+        >
+          {'tmtv'}
+        </button>
+      </div>
     </Layout>
   );
 }

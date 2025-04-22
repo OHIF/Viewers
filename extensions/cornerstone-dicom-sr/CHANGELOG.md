@@ -3,6 +3,38 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.11.0-beta.15](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.14...v3.11.0-beta.15) (2025-04-22)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone-dicom-sr
+
+
+
+
+
+# [3.11.0-beta.14](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.13...v3.11.0-beta.14) (2025-04-22)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone-dicom-sr
+
+
+
+
+
+# [3.11.0-beta.13](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.12...v3.11.0-beta.13) (2025-04-22)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone-dicom-sr
+
+
+
+
+
+# [3.11.0-beta.12](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.11...v3.11.0-beta.12) (2025-04-22)
+
+**Note:** Version bump only for package @ohif/extension-cornerstone-dicom-sr
+
+
+
+
+
 # [3.11.0-beta.11](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.10...v3.11.0-beta.11) (2025-04-18)
 
 **Note:** Version bump only for package @ohif/extension-cornerstone-dicom-sr
