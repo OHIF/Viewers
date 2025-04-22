@@ -129,7 +129,7 @@
       "name": "@externals/dicom-microscopy-viewer",
       "version": "3.11.0-beta.11",
       "dependencies": {
-        "dicom-microscopy-viewer": "^0.48.0",
+        "dicom-microscopy-viewer": "^0.48.1",
       },
     },
     "extensions/cornerstone": {
@@ -2820,7 +2820,7 @@
 
     "detective": ["detective@5.2.1", "", { "dependencies": { "acorn-node": "^1.8.2", "defined": "^1.0.0", "minimist": "^1.2.6" }, "bin": { "detective": "bin/detective.js" } }, "sha512-v9XE1zRnz1wRtgurGu0Bs8uHKFSTdteYZNbIPFVhUZ39L/S79ppMpdmVOZAnoz1jfEFodc48n6MX483Xo3t1yw=="],
 
-    "dicom-microscopy-viewer": ["dicom-microscopy-viewer@0.48.0", "", { "dependencies": { "@cornerstonejs/codec-charls": "^1.2.3", "@cornerstonejs/codec-libjpeg-turbo-8bit": "^1.2.2", "@cornerstonejs/codec-openjpeg": "^1.2.2", "@cornerstonejs/codec-openjph": "^2.4.5", "colormap": "^2.3", "dcmjs": "^0.38.1", "dicomicc": "^0.1", "dicomweb-client": "^0.10.3", "image-type": "^4.1", "mathjs": "^11.2", "ol": "^10.4.0", "uuid": "^9.0" } }, "sha512-5OaupaI50sO5Li21tojJ+bqc6u5t6uXCSrn9LaPglK7tT9W989xpkAHMKhy55jw4+Ec5Hl3eNr0Zj/OqXqJDhg=="],
+    "dicom-microscopy-viewer": ["dicom-microscopy-viewer@0.48.1", "", { "dependencies": { "@cornerstonejs/codec-charls": "^1.2.3", "@cornerstonejs/codec-libjpeg-turbo-8bit": "^1.2.2", "@cornerstonejs/codec-openjpeg": "^1.2.2", "@cornerstonejs/codec-openjph": "^2.4.5", "colormap": "^2.3", "dcmjs": "^0.38.1", "dicomicc": "^0.1", "dicomweb-client": "^0.10.3", "image-type": "^4.1", "mathjs": "^11.2", "ol": "^10.4.0", "uuid": "^9.0" } }, "sha512-L+RLGO7mb1oPb/bk9PZmwHe7EzH0mOQihpF6C5YGsKJI1W1Nn4418B5vPYN4lvZgLJyeDiKKPvurJmwkrczwDw=="],
 
     "dicom-parser": ["dicom-parser@1.8.21", "", {}, "sha512-lYCweHQDsC8UFpXErPlg86Px2A8bay0HiUY+wzoG3xv5GzgqVHU3lziwSc/Gzn7VV7y2KeP072SzCviuOoU02w=="],
 
