@@ -1746,8 +1746,7 @@ function commandsModule({
       commandFn: ({ viewportId, orientation }) => {
         const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
 
-        debugger;
-        if (!viewport || viewport.type !== 'volume') {
+        if (!viewport || viewport.type !== CoreEnums.ViewportType.ORTHOGRAPHIC) {
           console.warn('Orientation can only be set on volume viewports');
           return;
         }
