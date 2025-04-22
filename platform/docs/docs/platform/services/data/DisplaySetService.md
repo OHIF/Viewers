@@ -4,13 +4,6 @@ sidebar_label: DisplaySet Service
 ---
 # DisplaySet Service
 
-:::tip
-
-Test
-:::
-
-
-
 ## Overview
 `DisplaySetService` handles converting the `instanceMetadata` into `DisplaySet` that `OHIF` uses for the visualization. `DisplaySetService` gets initialized at service startup time, but is then cleared in the `Mode.jsx`. During the initialization `SOPClassHandlerIds` of the `modes` gets registered with the `DisplaySetService`.
 
@@ -32,6 +25,19 @@ of existing `DisplaySet` values to see if the new instance belongs in an existin
 Then, the same process is used as was originally done to create new display sets.
 
 NOTE: Any instances not matched are NOT added to any display set and will not be displayed.
+
+:::Clarification of Terminology
+
+Display Sets, which are custom to OHIF, are often confused with different DICOM terms, including study, series, and instances. The following are definitions for these terms to alleviate confusion.
+
+DICOM Terms:
+* **Study**: A collection of series
+* **Series**: A collection of images or objects
+* **Instance**: Single image or object
+
+OHIF Term:
+* **Display Set**: The view shown to a user (including the layout, annotations, and any other data stored with the series)
+:::
 
 ## Adding `madeInClient` display sets
 It is possible to filter or combine display sets from different series by
