@@ -1,19 +1,19 @@
 import React, { ReactElement, useCallback, useEffect, useState } from 'react';
 import { Switch } from '@ohif/ui-next';
-import { StackViewport, VolumeViewport } from '@cornerstonejs/core';
+import { StackViewport } from '@cornerstonejs/core';
 import { ColorbarProps } from '../../types/Colorbar';
 import { utilities } from '@cornerstonejs/core';
 import { useSystem } from '@ohif/core';
 
 export function setViewportColorbar(
   viewportId,
-  displaySets,
   commandsManager,
   servicesManager: AppTypes.ServicesManager,
   colorbarOptions
 ) {
-  const { cornerstoneViewportService } = servicesManager.services;
+  const { cornerstoneViewportService, viewportGridService } = servicesManager.services;
   const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
+  const displaySetInstanceUIDs = viewportGridService.getDisplaySetsUIDsForViewport(viewportId);
 
   const viewportInfo = cornerstoneViewportService.getViewportInfo(viewportId);
   const backgroundColor = viewportInfo.getViewportOptions().background;
@@ -33,16 +33,8 @@ export function setViewportColorbar(
     };
   }
 
-  const displaySetInstanceUIDs = [];
-
   if (viewport instanceof StackViewport) {
     displaySetInstanceUIDs.push(viewportId);
-  }
-
-  if (viewport instanceof VolumeViewport) {
-    displaySets.forEach(ds => {
-      displaySetInstanceUIDs.push(ds.displaySetInstanceUID);
-    });
   }
 
   commandsManager.run({
@@ -58,10 +50,9 @@ export function setViewportColorbar(
 
 export function Colorbar({
   viewportId,
-  displaySets,
   colorbarProperties,
 }: withAppTypes<ColorbarProps>): ReactElement {
-  const { servicesManager } = useSystem();
+  const { servicesManager, commandsManager } = useSystem();
   const { colorbarService } = servicesManager.services;
   const {
     width: colorbarWidth,
@@ -73,7 +64,7 @@ export function Colorbar({
   const [showColorbar, setShowColorbar] = useState(colorbarService.hasColorbar(viewportId));
 
   const onSetColorbar = useCallback(() => {
-    setViewportColorbar(viewportId, displaySets, commandsManager, servicesManager, {
+    setViewportColorbar(viewportId, commandsManager, servicesManager, {
       viewportId,
       colormaps,
       ticks: {

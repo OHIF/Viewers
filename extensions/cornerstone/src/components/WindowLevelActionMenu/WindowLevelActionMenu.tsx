@@ -49,7 +49,8 @@ export function WindowLevelActionMenu({
     width: colorbarWidth,
   } = colorbarProperties;
   const { servicesManager } = useSystem();
-  const { colorbarService, cornerstoneViewportService } = servicesManager.services;
+  const { colorbarService, cornerstoneViewportService, viewportGridService } =
+    servicesManager.services;
   const viewportInfo = cornerstoneViewportService.getViewportInfo(viewportId);
   const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
   const backgroundColor = viewportInfo?.getViewportOptions().background;
@@ -65,7 +66,7 @@ export function WindowLevelActionMenu({
   const [is3DVolume, setIs3DVolume] = useState(false);
 
   const onSetColorbar = useCallback(() => {
-    setViewportColorbar(viewportId, displaySets, commandsManager, servicesManager, {
+    setViewportColorbar(viewportId, commandsManager, servicesManager, {
       colormaps,
       ticks: {
         position: colorbarTickPosition,
