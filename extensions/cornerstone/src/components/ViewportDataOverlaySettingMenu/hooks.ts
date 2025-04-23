@@ -6,6 +6,7 @@ import {
   getEnhancedDisplaySets,
   sortByOverlayable,
   DERIVED_OVERLAY_MODALITIES,
+  getAvailableSegmentations,
 } from './utils';
 
 /**
@@ -13,7 +14,7 @@ import {
  */
 export function useViewportDisplaySets(viewportId) {
   const { servicesManager } = useSystem();
-  const { displaySetService, viewportGridService } = servicesManager.services;
+  const { displaySetService, viewportGridService, segmentationService } = servicesManager.services;
 
   // Get all available display sets
   const allDisplaySets = displaySetService.getActiveDisplaySets();
@@ -46,6 +47,11 @@ export function useViewportDisplaySets(viewportId) {
     );
   }, [allDisplaySets, backgroundDisplaySet]);
 
+  // Get available segmentations
+  const availableSegmentations = useMemo(() => {
+    return getAvailableSegmentations(segmentationService);
+  }, [segmentationService]);
+
   return {
     allDisplaySets,
     backgroundDisplaySet,
@@ -53,6 +59,7 @@ export function useViewportDisplaySets(viewportId) {
     derivedOverlays,
     nonDerivedOverlays,
     potentialBackgroundDisplaySets,
+    availableSegmentations,
   };
 }
 
@@ -61,23 +68,33 @@ export function useViewportDisplaySets(viewportId) {
  */
 export function useOverlayState(viewportId) {
   const { servicesManager } = useSystem();
-  const { displaySetService, viewportGridService, customizationService } = servicesManager.services;
+  const { displaySetService, viewportGridService, customizationService, segmentationService } =
+    servicesManager.services;
 
   const [activeOverlays, setActiveOverlays] = useState([]);
+  const [activeSegmentations, setActiveSegmentations] = useState([]);
   const [overlayOpacities, setOverlayOpacities] = useState({});
 
   // Initialize active overlays based on current viewport state
   useEffect(() => {
     const displaySetsUIDs = viewportGridService.getDisplaySetsUIDsForViewport(viewportId);
+
+    // Get active segmentation representations for this viewport
+    const segRepresentations = segmentationService.getSegmentationRepresentations(viewportId);
+
     // First UID is the background, any additional UIDs are overlays
     if (displaySetsUIDs.length > 1) {
+      // Standard overlays from display sets
       const overlayUIDs = displaySetsUIDs.slice(1);
-      const currentOverlays = overlayUIDs.map(uid => displaySetService.getDisplaySetByUID(uid));
-      setActiveOverlays(currentOverlays);
+      const currentDisplaySetOverlays = overlayUIDs
+        .map(uid => displaySetService.getDisplaySetByUID(uid))
+        .filter(Boolean);
 
-      // Initialize opacities for new overlays
+      setActiveOverlays(currentDisplaySetOverlays);
+
+      // Initialize opacities for display set overlays
       const newOpacities = { ...overlayOpacities };
-      currentOverlays.forEach(overlay => {
+      currentDisplaySetOverlays.forEach(overlay => {
         if (!newOpacities[overlay.displaySetInstanceUID]) {
           // Use modality-specific opacity if defined, otherwise use default
           const modalitySettings = getModalitySettings(customizationService, overlay.Modality);
@@ -91,7 +108,26 @@ export function useOverlayState(viewportId) {
     } else {
       setActiveOverlays([]);
     }
-  }, [viewportId, displaySetService, viewportGridService, customizationService]);
+
+    // Set active segmentations separately
+    if (segRepresentations.length > 0) {
+      setActiveSegmentations(
+        segRepresentations.map(rep => ({
+          id: rep.segmentationId,
+          label: rep.label || 'Segmentation',
+          type: rep.type,
+        }))
+      );
+    } else {
+      setActiveSegmentations([]);
+    }
+  }, [
+    viewportId,
+    displaySetService,
+    viewportGridService,
+    customizationService,
+    segmentationService,
+  ]);
 
   const addOverlay = displaySet => {
     setActiveOverlays(prev => [...prev, displaySet]);
@@ -112,6 +148,21 @@ export function useOverlayState(viewportId) {
     });
   };
 
+  const addSegmentation = segmentation => {
+    setActiveSegmentations(prev => [
+      ...prev,
+      {
+        id: segmentation.id,
+        label: segmentation.label,
+        type: 'LABELMAP',
+      },
+    ]);
+  };
+
+  const removeSegmentation = segmentationId => {
+    setActiveSegmentations(prev => prev.filter(seg => seg.id !== segmentationId));
+  };
+
   const updateOpacity = (displaySetUID, opacity) => {
     setOverlayOpacities(prev => ({
       ...prev,
@@ -121,9 +172,12 @@ export function useOverlayState(viewportId) {
 
   return {
     activeOverlays,
+    activeSegmentations,
     overlayOpacities,
     addOverlay,
     removeOverlay,
+    addSegmentation,
+    removeSegmentation,
     updateOpacity,
   };
 }

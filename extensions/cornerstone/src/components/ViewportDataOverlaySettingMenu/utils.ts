@@ -117,3 +117,16 @@ export function createDisplaySetOptions(displaySet, opacity, customizationServic
     },
   };
 }
+
+/**
+ * Get segmentations that can be added as overlays to the viewport
+ */
+export function getAvailableSegmentations(segmentationService) {
+  const segmentations = segmentationService.getSegmentations() || [];
+  return segmentations.map(segmentation => ({
+    segmentationId: segmentation.segmentationId,
+    label: segmentation.label || 'Segmentation',
+    segments: segmentation.segments,
+    frameOfReferenceUID: segmentation.frameOfReferenceUID,
+  }));
+}
