@@ -110,7 +110,11 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
       type: Enums.SegmentationRepresentations.Labelmap,
     });
 
-    addSegmentationToState(segmentation);
+    addSegmentationToState({
+      segmentationId: segmentation.segmentationId,
+      label: segmentation.label,
+      type: 'LABELMAP',
+    });
   };
 
   /**
@@ -151,11 +155,13 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
    * Remove a segmentation from the viewport
    */
   const removeSegmentationOverlay = segmentation => {
+    const segmentationId = segmentation.segmentationId || segmentation.id;
+
     segmentationService.removeSegmentationRepresentations(viewportId, {
-      segmentationId: segmentation.segmentationId,
+      segmentationId: segmentationId,
     });
 
-    removeSegmentationFromState(segmentation.segmentationId);
+    removeSegmentationFromState(segmentationId);
   };
 
   /**
@@ -194,43 +200,24 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
     seg => !activeSegmentations.some(activeSeg => activeSeg.segmentationId === seg.segmentationId)
   );
 
+  // Combine all overlays, including segmentations (both user-created and others)
+  const allOverlays = [...derivedOverlays];
+
+  // Mark user-created segmentations
+  const userSegmentations = availableSegmentationsFiltered.map(segmentation => ({
+    ...segmentation,
+    isUserCreated: true,
+    isOverlayable: true,
+    label: `(User) ${segmentation.label}`,
+    Modality: 'SEG',
+  }));
+
+  const allAvailableOverlays = [...userSegmentations, ...derivedOverlays].filter(
+    overlay => overlay.isOverlayable !== false
+  );
+
   return (
     <div className="bg-muted flex h-full w-[262px] flex-col rounded p-3">
-      {availableSegmentationsFiltered.length > 0 && (
-        <>
-          <span className="text-muted-foreground mb-2 block text-xs font-semibold">
-            Your Segmentations
-          </span>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="outline"
-                className="w-full justify-between border-[#061430] bg-[#061430] text-[#3498db]"
-              >
-                <span>Select segmentation...</span>
-                <Icons.ChevronDown className="ml-2 h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-[230px]">
-              <DropdownMenuLabel>User Created Segmentations</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              {availableSegmentationsFiltered.map(segmentation => (
-                <DropdownMenuItem
-                  key={segmentation.segmentationId}
-                  onSelect={() => addSegmentationOverlay(segmentation)}
-                >
-                  <div className="flex w-full items-center justify-between">
-                    <span>{segmentation.label}</span>
-                    <span className="text-muted-foreground text-xs">SEG</span>
-                  </div>
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
-          <Separator className="my-3" />
-        </>
-      )}
-
       <span className="text-muted-foreground mb-2 block text-xs font-semibold">
         Available Overlays
       </span>
@@ -247,15 +234,16 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
         <DropdownMenuContent className="w-[230px]">
           <DropdownMenuLabel>Overlayable Items</DropdownMenuLabel>
           <DropdownMenuSeparator />
-          {derivedOverlays.map(displaySet => (
+          {allAvailableOverlays.map(overlay => (
             <DropdownMenuItem
-              key={displaySet.displaySetInstanceUID}
-              onSelect={() => addOverlay(displaySet)}
-              disabled={!displaySet.isOverlayable}
+              key={overlay.displaySetInstanceUID || overlay.segmentationId}
+              onSelect={() =>
+                overlay.isUserCreated ? addSegmentationOverlay(overlay) : addOverlay(overlay)
+              }
             >
               <div className="flex w-full items-center justify-between">
-                <span>{displaySet.label}</span>
-                <span className="text-muted-foreground text-xs">{displaySet.Modality}</span>
+                <span>{overlay.label}</span>
+                <span className="text-muted-foreground text-xs">{overlay.Modality}</span>
               </div>
             </DropdownMenuItem>
           ))}
@@ -299,9 +287,13 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
                     key={segmentation.segmentationId}
                     className="hover:bg-muted-foreground/10 flex items-center justify-between rounded p-2"
                   >
-                    <span className="text-foreground text-sm">{segmentation.label}</span>
+                    <span className="text-foreground text-sm">
+                      {segmentation.label.startsWith('(User)')
+                        ? segmentation.label
+                        : `(User) ${segmentation.label}`}
+                    </span>
                     <div className="flex items-center">
-                      <span className="text-muted-foreground mr-2 text-xs">SEG (User)</span>
+                      <span className="text-muted-foreground mr-2 text-xs">SEG</span>
                       <Button
                         variant="ghost"
                         size="icon"

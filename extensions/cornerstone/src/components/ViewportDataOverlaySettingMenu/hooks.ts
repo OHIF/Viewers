@@ -114,6 +114,7 @@ export function useOverlayState(viewportId) {
       setActiveSegmentations(
         segRepresentations.map(rep => ({
           id: rep.segmentationId,
+          segmentationId: rep.segmentationId,
           label: rep.label || 'Segmentation',
           type: rep.type,
         }))
@@ -149,18 +150,22 @@ export function useOverlayState(viewportId) {
   };
 
   const addSegmentation = segmentation => {
+    const segId = segmentation.segmentationId || segmentation.id;
     setActiveSegmentations(prev => [
       ...prev,
       {
-        id: segmentation.id,
+        segmentationId: segId,
+        id: segId, // Keep id for backward compatibility
         label: segmentation.label,
-        type: 'LABELMAP',
+        type: segmentation.type || 'LABELMAP',
       },
     ]);
   };
 
   const removeSegmentation = segmentationId => {
-    setActiveSegmentations(prev => prev.filter(seg => seg.id !== segmentationId));
+    setActiveSegmentations(prev => 
+      prev.filter(seg => (seg.segmentationId || seg.id) !== segmentationId)
+    );
   };
 
   const updateOpacity = (displaySetUID, opacity) => {
