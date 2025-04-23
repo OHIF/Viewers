@@ -9,7 +9,6 @@ export default function loadAnnotation({
   return new Promise(async (resolve, reject) => {
     try {
       const { metadata } = displaySet;
-      console.debug('Loading ANN for display set:', displaySet.metadata);
 
       const dicomMicroscopyModule = await microscopyService.importDicomMicroscopyViewer();
 

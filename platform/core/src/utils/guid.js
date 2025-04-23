@@ -1,13 +1,16 @@
 /**
- * Create a random GUID
+ * Create a random GUID using Web Crypto API for better randomness
  *
  * @return {string}
  */
 const guid = () => {
   const getFourRandomValues = () => {
-    return Math.floor((1 + Math.random()) * 0x10000)
-      .toString(16)
-      .substring(1);
+    // Generate 2 random bytes using Web Crypto API
+    const array = new Uint8Array(2);
+    crypto.getRandomValues(array);
+    return Array.from(array)
+      .map(b => b.toString(16).padStart(2, '0'))
+      .join('');
   };
   return (
     getFourRandomValues() +
