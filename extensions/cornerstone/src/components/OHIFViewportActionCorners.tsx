@@ -1,6 +1,7 @@
 import React from 'react';
 import { useViewportActionCornersContext } from '../contextProviders/ViewportActionCornersProvider';
 import { useSystem } from '@ohif/core';
+import { useViewportGrid } from '@ohif/ui-next';
 
 export type OHIFViewportActionCornersProps = {
   viewportId: string;
@@ -17,6 +18,10 @@ function OHIFViewportActionCorners({
 }: OHIFViewportActionCornersProps) {
   const { servicesManager } = useSystem();
   const [viewportActionCornersState] = useViewportActionCornersContext();
+
+  const [viewportGrid] = useViewportGrid();
+  const isActiveViewport = viewportGrid.activeViewportId === viewportId;
+
   const ViewportActionCorners =
     servicesManager.services.customizationService.getCustomization('ui.viewportActionCorner');
 
@@ -28,6 +33,7 @@ function OHIFViewportActionCorners({
     <ViewportActionCorners
       cornerComponents={viewportActionCornersState[viewportId]}
       visibleItemsPerCorner={visibleItemsPerCorner}
+      isActiveViewport={isActiveViewport}
     />
   );
 }

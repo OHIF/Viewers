@@ -3,6 +3,7 @@ import classNames from 'classnames';
 import { Button } from '../Button';
 import Icons from '../Icons';
 import { ViewportActionCornersProps } from '../../types/ViewportActionCornersTypes';
+import { cn } from '../..';
 
 /**
  * A small container that can render multiple "corner" items (like icons, status)
@@ -42,6 +43,7 @@ const DEFAULT_VISIBLE_ITEMS = 2;
 function ViewportActionCorners({
   cornerComponents,
   visibleItemsPerCorner = DEFAULT_VISIBLE_ITEMS,
+  isActiveViewport,
 }: ViewportActionCornersProps) {
   const [expandedCorners, setExpandedCorners] = useState<Record<string, boolean>>({});
 
@@ -99,7 +101,10 @@ function ViewportActionCorners({
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="bg-background/90 text-muted-foreground"
+                  className={cn(
+                    'text-muted-foreground',
+                    isActiveViewport ? 'visible' : 'invisible group-hover/pane:visible'
+                  )}
                   onClick={e => toggleCornerExpand(location, e)}
                 >
                   {isExpanded ? (
@@ -122,7 +127,10 @@ function ViewportActionCorners({
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="bg-background/90 text-muted-foreground"
+                  className={cn(
+                    'text-muted-foreground',
+                    isActiveViewport ? 'visible' : 'invisible group-hover/pane:visible'
+                  )}
                   onClick={e => toggleCornerExpand(location, e)}
                 >
                   {isExpanded ? (

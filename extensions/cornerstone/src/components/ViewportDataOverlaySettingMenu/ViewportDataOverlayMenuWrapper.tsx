@@ -1,5 +1,13 @@
 import React, { ReactNode } from 'react';
-import { Button, Icons, Popover, PopoverContent, PopoverTrigger } from '@ohif/ui-next';
+import {
+  Button,
+  cn,
+  Icons,
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+  useViewportGrid,
+} from '@ohif/ui-next';
 import ViewportDataOverlayMenu from './ViewportDataOverlayMenu';
 import classNames from 'classnames';
 import { useSystem } from '@ohif/core';
@@ -14,6 +22,7 @@ export function ViewportDataOverlayMenuWrapper({
 }>): ReactNode {
   const { servicesManager } = useSystem();
   const { viewportActionCornersService, viewportGridService } = servicesManager.services;
+  const [viewportGrid] = useViewportGrid();
 
   const activeViewportId = viewportGridService.getActiveViewportId();
   const isActiveViewport = viewportId === activeViewportId;
@@ -29,13 +38,13 @@ export function ViewportDataOverlayMenuWrapper({
         <Button
           variant="ghost"
           size="icon"
+          className={cn(
+            viewportGrid.activeViewportId === viewportId
+              ? 'visible'
+              : 'invisible group-hover/pane:visible'
+          )}
         >
-          <Icons.ViewportViews
-            className={classNames(
-              'text-highlight',
-              isActiveViewport ? 'visible' : 'invisible group-hover/pane:visible'
-            )}
-          />
+          <Icons.ViewportViews className={classNames('text-highlight')} />
         </Button>
       </PopoverTrigger>
       <PopoverContent
