@@ -47,7 +47,7 @@ export function useViewportDisplaySets(viewportId) {
     );
   }, [allDisplaySets, backgroundDisplaySet]);
 
-  // Get available segmentations
+  // Get available segmentations (deprecated approach - segmentations are now represented as display sets)
   const availableSegmentations = useMemo(() => {
     return getAvailableSegmentations(segmentationService);
   }, [segmentationService]);
@@ -163,7 +163,7 @@ export function useOverlayState(viewportId) {
   };
 
   const removeSegmentation = segmentationId => {
-    setActiveSegmentations(prev => 
+    setActiveSegmentations(prev =>
       prev.filter(seg => (seg.segmentationId || seg.id) !== segmentationId)
     );
   };

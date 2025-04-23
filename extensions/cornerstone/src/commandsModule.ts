@@ -1191,6 +1191,9 @@ function commandsModule({
     },
     /**
      * Creates a labelmap for the active viewport
+     *
+     * The created labelmap will be registered as a display set and also added
+     * as a segmentation representation to the viewport.
      */
     createLabelmapForViewport: async ({ viewportId, options = {} }) => {
       const { viewportGridService, displaySetService, segmentationService } =
@@ -1211,6 +1214,7 @@ function commandsModule({
 
       const displaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
 
+      // This will create the segmentation and register it as a display set
       const generatedSegmentationId = await segmentationService.createLabelmapForDisplaySet(
         displaySet,
         {
@@ -1227,6 +1231,7 @@ function commandsModule({
         }
       );
 
+      // Also add the segmentation representation to the viewport
       await segmentationService.addSegmentationRepresentation(viewportId, {
         segmentationId,
         type: Enums.SegmentationRepresentations.Labelmap,

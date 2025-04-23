@@ -86,6 +86,13 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
    * Add a segmentation as an overlay to the viewport
    */
   const addSegmentationOverlay = segmentation => {
+    // If this is a display set (has displaySetInstanceUID), we can use the standard overlay handling
+    if (segmentation.displaySetInstanceUID) {
+      addOverlay(segmentation);
+      return;
+    }
+
+    // Legacy method for segmentations that aren't display sets yet
     // First ensure viewport is in volume mode if needed
     const updatedViewports = hangingProtocolService.getViewportsRequireUpdate(
       viewportId,
@@ -157,6 +164,20 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
   const removeSegmentationOverlay = segmentation => {
     const segmentationId = segmentation.segmentationId || segmentation.id;
 
+    // If this is a display set, use the display set removal
+    if (segmentation.displaySetInstanceUID) {
+      removeOverlay(segmentation);
+
+      // Also need to remove the segmentation representation
+      if (segmentationId) {
+        segmentationService.removeSegmentationRepresentations(viewportId, {
+          segmentationId: segmentationId,
+        });
+      }
+      return;
+    }
+
+    // Legacy method for segmentations that aren't display sets
     segmentationService.removeSegmentationRepresentations(viewportId, {
       segmentationId: segmentationId,
     });
@@ -195,15 +216,24 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
     });
   };
 
-  // Filter segmentations that are already active
-  const availableSegmentationsFiltered = availableSegmentations.filter(
-    seg => !activeSegmentations.some(activeSeg => activeSeg.segmentationId === seg.segmentationId)
+  // All segmentation display sets (including user-created ones) are already included in derivedOverlays
+  // We can identify user-created ones by the madeInClient property
+  const userCreatedSegmentationDisplaySets = derivedOverlays.filter(
+    displaySet => displaySet.madeInClient && displaySet.Modality === 'SEG'
   );
 
-  // Combine all overlays, including segmentations (both user-created and others)
-  const allOverlays = [...derivedOverlays];
+  // For backward compatibility, check if there are any segmentations that aren't yet display sets
+  const displaySetIds = derivedOverlays
+    .filter(ds => ds.segmentationId)
+    .map(ds => ds.segmentationId);
 
-  // Mark user-created segmentations
+  const availableSegmentationsFiltered = availableSegmentations.filter(
+    seg =>
+      !displaySetIds.includes(seg.segmentationId) &&
+      !activeSegmentations.some(activeSeg => activeSeg.segmentationId === seg.segmentationId)
+  );
+
+  // Mark user-created segmentations from segmentation service (for backward compatibility)
   const userSegmentations = availableSegmentationsFiltered.map(segmentation => ({
     ...segmentation,
     isUserCreated: true,
@@ -212,7 +242,20 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
     Modality: 'SEG',
   }));
 
-  const allAvailableOverlays = [...userSegmentations, ...derivedOverlays].filter(
+  // For display sets that are segmentations and made in client, add the User prefix
+  const enhancedDerivedOverlays = derivedOverlays.map(displaySet =>
+    displaySet.madeInClient && displaySet.Modality === 'SEG'
+      ? {
+          ...displaySet,
+          label: displaySet.label.startsWith('(User)')
+            ? displaySet.label
+            : `(User) ${displaySet.label}`,
+          isUserCreated: true,
+        }
+      : displaySet
+  );
+
+  const allAvailableOverlays = [...userSegmentations, ...enhancedDerivedOverlays].filter(
     overlay => overlay.isOverlayable !== false
   );
 
@@ -237,9 +280,15 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
           {allAvailableOverlays.map(overlay => (
             <DropdownMenuItem
               key={overlay.displaySetInstanceUID || overlay.segmentationId}
-              onSelect={() =>
-                overlay.isUserCreated ? addSegmentationOverlay(overlay) : addOverlay(overlay)
-              }
+              onSelect={() => {
+                // User created segmentations can now be either display sets with madeInClient=true
+                // or legacy segmentations directly from segmentation service
+                if ((overlay.madeInClient && overlay.Modality === 'SEG') || overlay.isUserCreated) {
+                  addSegmentationOverlay(overlay);
+                } else {
+                  addOverlay(overlay);
+                }
+              }}
             >
               <div className="flex w-full items-center justify-between">
                 <span>{overlay.label}</span>

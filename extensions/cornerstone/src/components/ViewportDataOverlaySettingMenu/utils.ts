@@ -120,6 +120,8 @@ export function createDisplaySetOptions(displaySet, opacity, customizationServic
 
 /**
  * Get segmentations that can be added as overlays to the viewport
+ *
+ * Note: This function is deprecated as we now use display sets for segmentations
  */
 export function getAvailableSegmentations(segmentationService) {
   const segmentations = segmentationService.getSegmentations() || [];
