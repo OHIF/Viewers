@@ -96,6 +96,8 @@ export default async function init({
     viewportGridService,
     segmentationService,
     measurementService,
+    colorbarService,
+    displaySetService,
   } = servicesManager.services;
 
   window.services = servicesManager.services;
@@ -265,8 +267,17 @@ export default async function init({
   eventTarget.addEventListener(EVENTS.IMAGE_LOAD_FAILED, imageLoadFailedHandler);
   eventTarget.addEventListener(EVENTS.IMAGE_LOAD_ERROR, imageLoadFailedHandler);
 
+  const getDisplaySetFromVolumeId = (volumeId: string) => {
+    const allDisplaySets = displaySetService.getActiveDisplaySets();
+    const volume = cornerstone.cache.getVolume(volumeId);
+    const imageIds = volume.imageIds;
+    return allDisplaySets.find(ds => ds.imageIds?.some(id => imageIds.includes(id)));
+  };
+
   function elementEnabledHandler(evt) {
     const { element } = evt.detail;
+    const { viewport } = getEnabledElement(element);
+    initViewTiming({ element });
 
     element.addEventListener(EVENTS.CAMERA_RESET, evt => {
       const { element } = evt.detail;
@@ -278,7 +289,10 @@ export default async function init({
       commandsManager.runCommand('resetCrosshairs', { viewportId });
     });
 
-    initViewTiming({ element });
+    // limitation: currently supporting only volume viewports with fusion
+    if (viewport.type !== cornerstone.Enums.ViewportType.ORTHOGRAPHIC) {
+      return;
+    }
   }
 
   eventTarget.addEventListener(EVENTS.ELEMENT_ENABLED, elementEnabledHandler.bind(null));
@@ -297,6 +311,8 @@ export default async function init({
     },
     100
   );
+
+  // Subscribe to actor events to dynamically update colorbars
 
   // Call this function when initializing
   initializeWebWorkerProgressHandler(servicesManager.services.uiNotificationService);

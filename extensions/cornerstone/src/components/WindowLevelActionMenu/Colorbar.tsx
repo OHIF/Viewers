@@ -12,7 +12,6 @@ export function setViewportColorbar(
   colorbarOptions
 ) {
   const { cornerstoneViewportService, viewportGridService } = servicesManager.services;
-  const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
   const displaySetInstanceUIDs = viewportGridService.getDisplaySetsUIDsForViewport(viewportId);
 
   const viewportInfo = cornerstoneViewportService.getViewportInfo(viewportId);
@@ -33,18 +32,10 @@ export function setViewportColorbar(
     };
   }
 
-  if (viewport instanceof StackViewport) {
-    displaySetInstanceUIDs.push(viewportId);
-  }
-
-  commandsManager.run({
-    commandName: 'toggleViewportColorbar',
-    commandOptions: {
-      viewportId,
-      options: colorbarOptions,
-      displaySetInstanceUIDs,
-    },
-    context: 'CORNERSTONE',
+  commandsManager.run('toggleViewportColorbar', {
+    viewportId,
+    options: colorbarOptions,
+    displaySetInstanceUIDs,
   });
 }
 
