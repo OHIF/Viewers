@@ -5,13 +5,13 @@ sidebar_position: 2
 # Study Panel
 
 In `Basic Viewer` mode, the left panel includes Studies related to the current
-patient. You can see three main type of studies below
+patient. You can see three main types of studies below
 
 - Primary: The opened study from the study list. This study is always expanded
   by default.
 - Recent: All studies for the patient that contain study dates within 1 year of
   the primary study
-- All: All studies available for the patient contained within the source
+- All: All studies available for the patient are contained within the source
   repository
 
 The `Study Panel` displays the measurement tracking status of each series within
@@ -24,9 +24,9 @@ or not.
 ![user-study-panel](../../assets/img/user-study-panel.png)
 
 Studies can be expanded or collapsed by clicking on the study information in the
-Study Panel. If a series is being tracking within a study, the Measurement Panel
+Study Panel. If a series is being tracked within a study, the Measurement Panel
 will display this information while the study is collapsed.
 
-<!-- We should link to refer to measurement tracking section -->
+<!-- We should link to refer to the measurement tracking section -->
 
 <!-- We need to add SR functionality descriptions to this section -->
