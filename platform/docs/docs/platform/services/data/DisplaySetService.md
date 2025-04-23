@@ -12,7 +12,9 @@ sidebar_label: DisplaySet Service
 
 DisplaySet is a general set of entities and contains links to bunch of displayable objects (images, etc.) Some series might get split up into different displaySets e.g., MG might have mixed views in a single series, but users might want to have separate LCC, RCC, etc. for hanging protocol usage. A viewport renders a display set into a displayable object.
 
-imageSet is a particular implementation of image displays.
+An imageSet is a particular implementation of image displays.
+- Learn more about Study (https://www.dicomstandard.org/standards/view/information-object-definitions#sect_A.1.2.2)
+- Learn more about Series (https://www.dicomstandard.org/standards/view/information-object-definitions#sect_A.1.2.3)
 :::
 
 
