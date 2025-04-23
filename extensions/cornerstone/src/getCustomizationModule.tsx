@@ -6,6 +6,7 @@ import viewportClickCommandsCustomization from './customizations/viewportClickCo
 import measurementsCustomization from './customizations/measurementsCustomization';
 import volumeRenderingCustomization from './customizations/volumeRenderingCustomization';
 import colorbarCustomization from './customizations/colorbarCustomization';
+import modalityColorMapCustomization from './customizations/modalityColorMapCustomization';
 import windowLevelPresetsCustomization from './customizations/windowLevelPresetsCustomization';
 import miscCustomization from './customizations/miscCustomization';
 import captureViewportModalCustomization from './customizations/captureViewportModalCustomization';
@@ -25,6 +26,7 @@ function getCustomizationModule({ commandsManager, servicesManager }) {
         ...measurementsCustomization,
         ...volumeRenderingCustomization,
         ...colorbarCustomization,
+        ...modalityColorMapCustomization,
         ...windowLevelPresetsCustomization,
         ...miscCustomization,
         ...captureViewportModalCustomization,

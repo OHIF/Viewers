@@ -11,6 +11,9 @@ import {
 import { utilities as csUtils } from '@cornerstonejs/core';
 import { useSystem } from '@ohif/core';
 
+const DEFAULT_COLORMAP = 'HSV';
+const DEFAULT_OPACITY = 0.9;
+const DEFAULT_OPACITY_PERCENT = DEFAULT_OPACITY * 100;
 const derivedOverlayModalities = ['SEG', 'RTSTRUCT', 'SR'];
 
 function getEnhancedDisplaySets({ viewportId, services }) {
@@ -100,6 +103,7 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
     viewportGridService,
     hangingProtocolService,
     cornerstoneViewportService,
+    customizationService,
   } = servicesManager.services;
 
   const [activeOverlays, setActiveOverlays] = useState<AppTypes.DisplaySet[]>([]);
@@ -112,6 +116,20 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
     viewportId,
     services: { displaySetService, viewportGridService },
   });
+
+  // Get modality-specific settings from customization service
+  const getModalitySettings = modality => {
+    const modalityOverlayDefaultColorMaps = customizationService?.getCustomization(
+      'cornerstone.modalityOverlayDefaultColorMaps'
+    ) || { defaultSettings: {} };
+
+    return (
+      modalityOverlayDefaultColorMaps.defaultSettings[modality] || {
+        colormap: DEFAULT_COLORMAP,
+        opacity: DEFAULT_OPACITY,
+      }
+    );
+  };
 
   // Initialize active overlays based on current viewport state
   useEffect(() => {
@@ -126,7 +144,12 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
       const newOpacities = { ...overlayOpacities };
       currentOverlays.forEach(overlay => {
         if (!newOpacities[overlay.displaySetInstanceUID]) {
-          newOpacities[overlay.displaySetInstanceUID] = 90; // Default 90% opacity
+          // Use modality-specific opacity if defined, otherwise use default 90%
+          const modalitySettings = getModalitySettings(overlay.Modality);
+          const defaultOpacity = modalitySettings.opacity
+            ? Math.round(modalitySettings.opacity * 100)
+            : DEFAULT_OPACITY_PERCENT;
+          newOpacities[overlay.displaySetInstanceUID] = defaultOpacity;
         }
       });
       setOverlayOpacities(newOpacities);
@@ -187,11 +210,12 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
           return;
         }
 
-        const opacity = overlayOpacities[overlay.displaySetInstanceUID] || 90;
+        const opacity = overlayOpacities[overlay.displaySetInstanceUID] || DEFAULT_OPACITY_PERCENT;
+        const modalitySettings = getModalitySettings(overlay.Modality);
         viewport.displaySetOptions.push({
           colormap: {
-            name: 'hsv',
-            opacity: opacity / 100, // Convert to 0-1 range
+            name: modalitySettings.colormap || DEFAULT_COLORMAP,
+            opacity: opacity / 100,
           },
         });
       });
@@ -201,10 +225,11 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
       if (displaySet.Modality === 'SEG') {
         viewport.displaySetOptions.push({});
       } else {
+        const modalitySettings = getModalitySettings(displaySet.Modality);
         viewport.displaySetOptions.push({
           colormap: {
-            name: 'hsv',
-            opacity: 0.9,
+            name: modalitySettings.colormap || DEFAULT_COLORMAP,
+            opacity: modalitySettings.opacity || DEFAULT_OPACITY,
           },
         });
       }
@@ -231,7 +256,7 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
     // Initialize opacity for the new overlay
     setOverlayOpacities(prev => ({
       ...prev,
-      [displaySet.displaySetInstanceUID]: 90,
+      [displaySet.displaySetInstanceUID]: DEFAULT_OPACITY_PERCENT,
     }));
   };
 
@@ -281,10 +306,14 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
           return;
         }
 
-        const opacity = overlayOpacities[overlayUID] || 90;
+        const opacity = overlayOpacities[overlayUID] || DEFAULT_OPACITY_PERCENT;
+        const overlayData = activeOverlays.find(o => o.displaySetInstanceUID === overlayUID);
+        const modalitySettings = overlayData
+          ? getModalitySettings(overlayData.Modality)
+          : { colormap: DEFAULT_COLORMAP };
         viewport.displaySetOptions.push({
           colormap: {
-            name: 'hsv',
+            name: modalitySettings.colormap || DEFAULT_COLORMAP,
             opacity: opacity / 100, // Convert to 0-1 range
           },
         });
@@ -330,6 +359,11 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
     }
 
     // Update the viewport with new opacity
+    // Find the overlay to get its modality
+    const modalitySettings = overlay
+      ? getModalitySettings(overlay.Modality)
+      : { colormap: DEFAULT_COLORMAP };
+
     const updatedViewport = {
       viewportId,
       displaySetInstanceUIDs: [backgroundDisplaySet.displaySetInstanceUID, displaySetUID],
@@ -340,7 +374,7 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
         {},
         {
           colormap: {
-            name: 'hsv',
+            name: modalitySettings.colormap || DEFAULT_COLORMAP,
             opacity: opacity / 100, // Convert to 0-1 range
           },
         },
@@ -412,10 +446,11 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
           return;
         }
 
-        const opacity = overlayOpacities[overlay.displaySetInstanceUID] || 90;
+        const opacity = overlayOpacities[overlay.displaySetInstanceUID] || DEFAULT_OPACITY_PERCENT;
+        const modalitySettings = getModalitySettings(overlay.Modality);
         viewport.displaySetOptions.push({
           colormap: {
-            name: 'hsv',
+            name: modalitySettings.colormap || DEFAULT_COLORMAP,
             opacity: opacity / 100, // Convert to 0-1 range
           },
         });
