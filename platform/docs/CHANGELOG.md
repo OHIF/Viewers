@@ -3,17 +3,6 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-# [3.11.0-beta.15](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.14...v3.11.0-beta.15) (2025-04-22)
-
-
-### Bug Fixes
-
-* **docs:** Fix SSR build errors by dynamically importing UI components and resolving other issues ([#4991](https://github.com/OHIF/Viewers/issues/4991)) ([09ac43f](https://github.com/OHIF/Viewers/commit/09ac43f297fa81101d3a3eaa9b5cfef8e01ea214))
-
-
-
-
-
 # [3.11.0-beta.14](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.13...v3.11.0-beta.14) (2025-04-22)
 
 **Note:** Version bump only for package ohif-docs
