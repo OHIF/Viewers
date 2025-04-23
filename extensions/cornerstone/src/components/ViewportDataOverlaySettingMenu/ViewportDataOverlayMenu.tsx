@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Button, Icons, ScrollArea, Separator } from '@ohif/ui-next';
 import {
   DropdownMenu,
@@ -8,236 +8,56 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
 } from '@ohif/ui-next';
-import { utilities as csUtils } from '@cornerstonejs/core';
 import { useSystem } from '@ohif/core';
 
-const DEFAULT_COLORMAP = 'HSV';
-const DEFAULT_OPACITY = 0.9;
-const DEFAULT_OPACITY_PERCENT = DEFAULT_OPACITY * 100;
-const derivedOverlayModalities = ['SEG', 'RTSTRUCT', 'SR'];
-
-function getEnhancedDisplaySets({ viewportId, services }) {
-  const { displaySetService, viewportGridService } = services;
-  const displaySetsUIDs = viewportGridService.getDisplaySetsUIDsForViewport(viewportId);
-  const allDisplaySets = displaySetService.getActiveDisplaySets();
-
-  const otherDisplaySets = allDisplaySets.filter(
-    displaySet => !displaySetsUIDs.includes(displaySet.displaySetInstanceUID)
-  );
-
-  const viewportDisplaySets = displaySetsUIDs.map(displaySetUID =>
-    displaySetService.getDisplaySetByUID(displaySetUID)
-  );
-
-  const backgroundDisplaySet = viewportDisplaySets[0];
-  const backGroundCanBeVolume = csUtils.isValidVolume(viewportDisplaySets[0].imageIds);
-
-  // we need to cross check each other displaySet with the main background displaySet
-  // to see if they are overridable or not. One thing is they need to be in the same frameOfReferenceUID
-
-  const enhancedDisplaySets = otherDisplaySets.map(displaySet => {
-    const isOverlayable = true;
-
-    if (displaySet.unsupported) {
-      return {
-        ...displaySet,
-        isOverlayable: false,
-      };
-    }
-
-    if (
-      displaySet.FrameOfReferenceUID &&
-      displaySet.FrameOfReferenceUID !== backgroundDisplaySet.FrameOfReferenceUID
-    ) {
-      return {
-        ...displaySet,
-        isOverlayable: false,
-      };
-    }
-
-    // we need to have other checks for derived modalities SEG, RTSTRUCT, SR
-    // that look at the them actually
-    if (!derivedOverlayModalities.includes(displaySet.Modality)) {
-      if (!backGroundCanBeVolume) {
-        return {
-          ...displaySet,
-          isOverlayable: false,
-        };
-      }
-
-      const imageIds = displaySet.imageIds || displaySet.images?.map(image => image.imageId);
-      const isMultiframe = displaySet.isMultiFrame;
-
-      if (!isMultiframe && imageIds.length > 0 && !csUtils.isValidVolume(imageIds)) {
-        return {
-          ...displaySet,
-          isOverlayable: false,
-        };
-      }
-    }
-
-    return {
-      ...displaySet,
-      isOverlayable,
-    };
-  });
-
-  return {
-    backgroundDisplaySet,
-    enhancedDisplaySets,
-  };
-}
-
-// Sort function: puts disabled items (isOverlayable: false) at the end
-const sortByOverlayable = (a, b) => {
-  if (a.isOverlayable === b.isOverlayable) {
-    return 0;
-  }
-  return a.isOverlayable ? -1 : 1;
-};
+import { useViewportDisplaySets, useOverlayState } from './hooks';
+import {
+  configureViewportForOverlayAddition,
+  configureViewportForOverlayRemoval,
+  configureViewportForBackgroundChange,
+} from './ViewportActions';
 
 function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: string }>) {
-  const { servicesManager, commandsManager } = useSystem();
+  const { commandsManager, servicesManager } = useSystem();
+  const { hangingProtocolService, cornerstoneViewportService, customizationService } =
+    servicesManager.services;
+
   const {
-    displaySetService,
-    viewportGridService,
-    hangingProtocolService,
-    cornerstoneViewportService,
-    customizationService,
-  } = servicesManager.services;
+    backgroundDisplaySet,
+    derivedOverlays,
+    nonDerivedOverlays,
+    potentialBackgroundDisplaySets,
+  } = useViewportDisplaySets(viewportId);
 
-  const [activeOverlays, setActiveOverlays] = useState<AppTypes.DisplaySet[]>([]);
-  const [overlayOpacities, setOverlayOpacities] = useState<Record<string, number>>({});
+  const {
+    activeOverlays,
+    overlayOpacities,
+    addOverlay: addOverlayToState,
+    removeOverlay: removeOverlayFromState,
+  } = useOverlayState(viewportId);
 
-  // Get all available display sets that could be used
-  const allDisplaySets = displaySetService.getActiveDisplaySets();
-
-  const { backgroundDisplaySet, enhancedDisplaySets } = getEnhancedDisplaySets({
-    viewportId,
-    services: { displaySetService, viewportGridService },
-  });
-
-  // Get modality-specific settings from customization service
-  const getModalitySettings = modality => {
-    const modalityOverlayDefaultColorMaps = customizationService?.getCustomization(
-      'cornerstone.modalityOverlayDefaultColorMaps'
-    ) || { defaultSettings: {} };
-
-    return (
-      modalityOverlayDefaultColorMaps.defaultSettings[modality] || {
-        colormap: DEFAULT_COLORMAP,
-        opacity: DEFAULT_OPACITY,
-      }
-    );
-  };
-
-  // Initialize active overlays based on current viewport state
-  useEffect(() => {
-    const displaySetsUIDs = viewportGridService.getDisplaySetsUIDsForViewport(viewportId);
-    // First UID is the background, any additional UIDs are overlays
-    if (displaySetsUIDs.length > 1) {
-      const overlayUIDs = displaySetsUIDs.slice(1);
-      const currentOverlays = overlayUIDs.map(uid => displaySetService.getDisplaySetByUID(uid));
-      setActiveOverlays(currentOverlays);
-
-      // Initialize opacities for new overlays
-      const newOpacities = { ...overlayOpacities };
-      currentOverlays.forEach(overlay => {
-        if (!newOpacities[overlay.displaySetInstanceUID]) {
-          // Use modality-specific opacity if defined, otherwise use default 90%
-          const modalitySettings = getModalitySettings(overlay.Modality);
-          const defaultOpacity = modalitySettings.opacity
-            ? Math.round(modalitySettings.opacity * 100)
-            : DEFAULT_OPACITY_PERCENT;
-          newOpacities[overlay.displaySetInstanceUID] = defaultOpacity;
-        }
-      });
-      setOverlayOpacities(newOpacities);
-    } else {
-      setActiveOverlays([]);
-    }
-  }, [viewportId, displaySetService, viewportGridService]);
-
-  const derivedOverlays = enhancedDisplaySets
-    .filter(ds => derivedOverlayModalities.includes(ds.Modality))
-    .sort(sortByOverlayable);
-  const nonDerivedOverlays = enhancedDisplaySets
-    .filter(ds => !derivedOverlayModalities.includes(ds.Modality))
-    .sort(sortByOverlayable);
-
+  /**
+   * Add an overlay to the viewport
+   */
   const addOverlay = (displaySet: AppTypes.DisplaySet) => {
     const updatedViewports = hangingProtocolService.getViewportsRequireUpdate(
       viewportId,
       displaySet.displaySetInstanceUID
-      // isHangingProtocolLayout
     );
 
-    // Get all current active overlay UIDs
-    const currentOverlayUIDs = activeOverlays.map(overlay => overlay.displaySetInstanceUID);
-
-    // Configure the viewport with background and all overlays (existing + new)
     updatedViewports.forEach(viewport => {
-      // Set the display sets (background followed by current overlays plus the new one)
-      viewport.displaySetInstanceUIDs = [
-        backgroundDisplaySet.displaySetInstanceUID,
-        ...currentOverlayUIDs,
-        displaySet.displaySetInstanceUID,
-      ];
-
-      if (!viewport.viewportOptions) {
-        viewport.viewportOptions = {};
-      }
-
-      // if there is no orientation make sure we get it from the cornerstoneViewportService
-      if (!viewport.viewportOptions.orientation) {
-        viewport.viewportOptions.orientation =
-          cornerstoneViewportService.getOrientation(viewportId);
-      }
-
-      viewport.viewportOptions.viewportType = 'volume';
-
-      // Reset display options
-      viewport.displaySetOptions = [];
-
-      // Add option for background (empty options)
-      viewport.displaySetOptions.push({});
-
-      // Add options for each existing overlay with its opacity
-      activeOverlays.forEach(overlay => {
-        // Skip adding displaySetOptions for SEG modality
-        if (overlay.Modality === 'SEG') {
-          viewport.displaySetOptions.push({});
-          return;
-        }
-
-        const opacity = overlayOpacities[overlay.displaySetInstanceUID] || DEFAULT_OPACITY_PERCENT;
-        const modalitySettings = getModalitySettings(overlay.Modality);
-        viewport.displaySetOptions.push({
-          colormap: {
-            name: modalitySettings.colormap || DEFAULT_COLORMAP,
-            opacity: opacity / 100,
-          },
-        });
+      configureViewportForOverlayAddition({
+        viewport,
+        backgroundDisplaySet,
+        currentOverlays: activeOverlays,
+        newDisplaySet: displaySet,
+        overlayOpacities,
+        cornerstoneViewportService,
+        viewportId,
+        customizationService,
       });
-
-      // Add option for the new overlay
-      // Skip adding colormap options for SEG modality
-      if (displaySet.Modality === 'SEG') {
-        viewport.displaySetOptions.push({});
-      } else {
-        const modalitySettings = getModalitySettings(displaySet.Modality);
-        viewport.displaySetOptions.push({
-          colormap: {
-            name: modalitySettings.colormap || DEFAULT_COLORMAP,
-            opacity: modalitySettings.opacity || DEFAULT_OPACITY,
-          },
-        });
-      }
     });
 
-    // update the previously stored positionPresentation with the new viewportId
-    // presentation so that when we put the referencedDisplaySet back in the viewport
-    // it will be in the correct position zoom and pan
     commandsManager.runCommand('updateStoredPositionPresentation', {
       viewportId,
       displaySetInstanceUIDs: [
@@ -250,154 +70,46 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
       viewportsToUpdate: updatedViewports,
     });
 
-    // Update state to show the added overlay
-    setActiveOverlays(prevOverlays => [...prevOverlays, displaySet]);
-
-    // Initialize opacity for the new overlay
-    setOverlayOpacities(prev => ({
-      ...prev,
-      [displaySet.displaySetInstanceUID]: DEFAULT_OPACITY_PERCENT,
-    }));
+    addOverlayToState(displaySet);
   };
 
+  /**
+   * Remove an overlay from the viewport
+   */
   const removeOverlay = (displaySet: AppTypes.DisplaySet) => {
-    // Skip if trying to remove the background
     if (displaySet.displaySetInstanceUID === backgroundDisplaySet.displaySetInstanceUID) {
       return;
     }
 
-    // Get all viewports that need to be updated from the hanging protocol
     const updatedViewports = hangingProtocolService.getViewportsRequireUpdate(
       viewportId,
       backgroundDisplaySet.displaySetInstanceUID
     );
 
-    // Get all current active overlay UIDs except the one being removed
-    const remainingOverlayUIDs = activeOverlays
-      .filter(overlay => overlay.displaySetInstanceUID !== displaySet.displaySetInstanceUID)
-      .map(overlay => overlay.displaySetInstanceUID);
+    const remainingOverlays = activeOverlays.filter(
+      overlay => overlay.displaySetInstanceUID !== displaySet.displaySetInstanceUID
+    );
 
-    // Configure each viewport
     updatedViewports.forEach(viewport => {
-      // Set the display sets (background followed by remaining overlays)
-      viewport.displaySetInstanceUIDs = [
-        backgroundDisplaySet.displaySetInstanceUID,
-        ...remainingOverlayUIDs,
-      ];
-
-      if (!viewport.viewportOptions) {
-        viewport.viewportOptions = {};
-      }
-      viewport.viewportOptions.viewportType = 'volume';
-
-      // Reset display options
-      viewport.displaySetOptions = [];
-
-      // Add option for background (empty options)
-      viewport.displaySetOptions.push({});
-
-      // Add options for each remaining overlay with its opacity
-      remainingOverlayUIDs.forEach(overlayUID => {
-        const overlay = activeOverlays.find(o => o.displaySetInstanceUID === overlayUID);
-
-        // Skip adding displaySetOptions for SEG modality
-        if (overlay && overlay.Modality === 'SEG') {
-          viewport.displaySetOptions.push({});
-          return;
-        }
-
-        const opacity = overlayOpacities[overlayUID] || DEFAULT_OPACITY_PERCENT;
-        const overlayData = activeOverlays.find(o => o.displaySetInstanceUID === overlayUID);
-        const modalitySettings = overlayData
-          ? getModalitySettings(overlayData.Modality)
-          : { colormap: DEFAULT_COLORMAP };
-        viewport.displaySetOptions.push({
-          colormap: {
-            name: modalitySettings.colormap || DEFAULT_COLORMAP,
-            opacity: opacity / 100, // Convert to 0-1 range
-          },
-        });
+      configureViewportForOverlayRemoval({
+        viewport,
+        backgroundDisplaySet,
+        remainingOverlays,
+        overlayOpacities,
+        customizationService,
       });
     });
 
-    // Update all viewports with the changes
     commandsManager.run('setDisplaySetsForViewports', {
       viewportsToUpdate: updatedViewports,
     });
 
-    // Update state to remove the overlay
-    setActiveOverlays(prevOverlays =>
-      prevOverlays.filter(
-        overlay => overlay.displaySetInstanceUID !== displaySet.displaySetInstanceUID
-      )
-    );
-
-    // Remove opacity setting for this overlay
-    setOverlayOpacities(prev => {
-      const newOpacities = { ...prev };
-      delete newOpacities[displaySet.displaySetInstanceUID];
-      return newOpacities;
-    });
+    removeOverlayFromState(displaySet.displaySetInstanceUID);
   };
 
-  const updateOpacity = (displaySetUID: string, opacity: number) => {
-    // Skip if it's the background (first item)
-    if (displaySetUID === backgroundDisplaySet.displaySetInstanceUID) {
-      return;
-    }
-
-    // Update opacity in state
-    setOverlayOpacities(prev => ({
-      ...prev,
-      [displaySetUID]: opacity,
-    }));
-
-    // Find the active overlay
-    const overlay = activeOverlays.find(o => o.displaySetInstanceUID === displaySetUID);
-    if (!overlay) {
-      return;
-    }
-
-    // Update the viewport with new opacity
-    // Find the overlay to get its modality
-    const modalitySettings = overlay
-      ? getModalitySettings(overlay.Modality)
-      : { colormap: DEFAULT_COLORMAP };
-
-    const updatedViewport = {
-      viewportId,
-      displaySetInstanceUIDs: [backgroundDisplaySet.displaySetInstanceUID, displaySetUID],
-      viewportOptions: {
-        viewportType: 'volume',
-      },
-      displaySetOptions: [
-        {},
-        {
-          colormap: {
-            name: modalitySettings.colormap || DEFAULT_COLORMAP,
-            opacity: opacity / 100, // Convert to 0-1 range
-          },
-        },
-      ],
-    };
-
-    commandsManager.run('setDisplaySetsForViewports', {
-      viewportsToUpdate: [updatedViewport],
-    });
-  };
-
-  // Get potential background display sets (all non-derived modalities that can be valid volumes)
-  const getPotentialBackgroundDisplaySets = (): AppTypes.DisplaySet[] => {
-    // Get all display sets that are not derived modalities
-    return allDisplaySets.filter(
-      ds =>
-        !derivedOverlayModalities.includes(ds.Modality) &&
-        // Don't include the current background
-        ds.displaySetInstanceUID !== backgroundDisplaySet.displaySetInstanceUID
-    );
-  };
-
-  // Handler for background selection - actually changes the background
+  /**
+   * Change the background display set
+   */
   const handleBackgroundSelection = (newBackgroundDisplaySet: AppTypes.DisplaySet) => {
     if (
       !newBackgroundDisplaySet ||
@@ -406,58 +118,21 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
       return;
     }
 
-    // Get updated viewports from hanging protocol service
     const updatedViewports = hangingProtocolService.getViewportsRequireUpdate(
       viewportId,
       newBackgroundDisplaySet.displaySetInstanceUID
     );
 
-    // Update the viewport's display sets to use the new background
-    const activeOverlayUIDs = activeOverlays.map(overlay => overlay.displaySetInstanceUID);
-
-    // Configure each viewport
     updatedViewports.forEach(viewport => {
-      // Set the display sets (new background followed by any active overlays)
-      viewport.displaySetInstanceUIDs = [
-        newBackgroundDisplaySet.displaySetInstanceUID,
-        ...activeOverlayUIDs,
-      ];
-
-      if (!viewport.viewportOptions) {
-        viewport.viewportOptions = {};
-      }
-      viewport.viewportOptions.viewportType = 'volume';
-
-      // Create display options for each display set
-      if (!viewport.displaySetOptions) {
-        viewport.displaySetOptions = [];
-      } else {
-        viewport.displaySetOptions = [];
-      }
-
-      // First entry is for background (empty options)
-      viewport.displaySetOptions.push({});
-
-      // Add options for each overlay with its opacity
-      activeOverlays.forEach(overlay => {
-        // Skip adding displaySetOptions for SEG modality
-        if (overlay.Modality === 'SEG') {
-          viewport.displaySetOptions.push({});
-          return;
-        }
-
-        const opacity = overlayOpacities[overlay.displaySetInstanceUID] || DEFAULT_OPACITY_PERCENT;
-        const modalitySettings = getModalitySettings(overlay.Modality);
-        viewport.displaySetOptions.push({
-          colormap: {
-            name: modalitySettings.colormap || DEFAULT_COLORMAP,
-            opacity: opacity / 100, // Convert to 0-1 range
-          },
-        });
+      configureViewportForBackgroundChange({
+        viewport,
+        newBackgroundDisplaySet,
+        activeOverlays,
+        overlayOpacities,
+        customizationService,
       });
     });
 
-    // Update viewports with the changes
     commandsManager.run('setDisplaySetsForViewports', {
       viewportsToUpdate: updatedViewports,
     });
@@ -481,7 +156,7 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
         <DropdownMenuContent className="w-[230px]">
           <DropdownMenuLabel>Overlayable Items</DropdownMenuLabel>
           <DropdownMenuSeparator />
-          {[...derivedOverlays]
+          {derivedOverlays
             .filter(ds => ds.isOverlayable)
             .map(displaySet => (
               <DropdownMenuItem
@@ -498,7 +173,6 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
         </DropdownMenuContent>
       </DropdownMenu>
 
-      {/* Active Overlays with Opacity Controls */}
       {activeOverlays.length > 0 && (
         <>
           <Separator className="my-3" />
@@ -536,7 +210,6 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
         </>
       )}
 
-      {/* SECTION 2: Foregrounds */}
       {nonDerivedOverlays.length > 0 && (
         <>
           <Separator className="my-3" />
@@ -573,7 +246,6 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
         </>
       )}
 
-      {/* SECTION 3: Background */}
       <Separator className="my-3" />
       <span className="text-muted-foreground mb-2 block text-xs font-semibold">Background</span>
       <DropdownMenu>
@@ -605,7 +277,7 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
           <DropdownMenuSeparator />
           <DropdownMenuLabel>Available Backgrounds</DropdownMenuLabel>
 
-          {getPotentialBackgroundDisplaySets().map(displaySet => (
+          {potentialBackgroundDisplaySets.map(displaySet => (
             <DropdownMenuItem
               key={displaySet.displaySetInstanceUID}
               onSelect={() => handleBackgroundSelection(displaySet)}
