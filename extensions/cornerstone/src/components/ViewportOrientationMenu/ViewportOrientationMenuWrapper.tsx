@@ -1,5 +1,6 @@
 import React, { ReactNode } from 'react';
 import { Button, Icons, Popover, PopoverContent, PopoverTrigger } from '@ohif/ui-next';
+import { cn } from '@ohif/ui-next';
 import ViewportOrientationMenu from './ViewportOrientationMenu';
 import classNames from 'classnames';
 import { useSystem } from '@ohif/core';
@@ -30,6 +31,10 @@ export function ViewportOrientationMenuWrapper({
         <Button
           variant="ghost"
           size="icon"
+          className={cn(
+            'text-muted-foreground',
+            isActiveViewport ? 'visible' : 'invisible group-hover/pane:visible'
+          )}
         >
           <Icons.Tool3DRotate
             className={classNames(

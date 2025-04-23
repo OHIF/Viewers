@@ -9,4 +9,5 @@ export interface ViewportActionCornersComponentInfo {
 export interface ViewportActionCornersProps {
   cornerComponents: Record<ViewportActionCornersLocations, ViewportActionCornersComponentInfo[]>;
   visibleItemsPerCorner?: number;
+  isActiveViewport: boolean;
 }

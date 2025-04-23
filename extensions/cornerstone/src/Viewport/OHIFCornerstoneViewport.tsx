@@ -415,9 +415,9 @@ const OHIFCornerstoneViewport = React.memo(
         {/* The OHIFViewportActionCorners follows the viewport in the DOM so that it is naturally at a higher z-index.*/}
         <OHIFViewportActionCorners
           viewportId={viewportId}
-          visibleItemsPerCorner={
-            customizationService.getCustomization('viewport.visibleActionItems') || 2
-          }
+          visibleItemsPerCorner={customizationService.getCustomization(
+            'viewport.visibleActionItems'
+          )}
         />
       </React.Fragment>
     );

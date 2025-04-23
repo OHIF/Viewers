@@ -506,6 +506,11 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     return this.viewportsById.get(viewportId);
   }
 
+  public getOrientation(viewportId: string): string {
+    const viewportInfo = this.getViewportInfo(viewportId);
+    return viewportInfo.getOrientation();
+  }
+
   /**
    * Looks through the viewports to see if the specified measurement can be
    * displayed in one of the viewports. This function tries to get a "best fit"

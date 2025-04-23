@@ -167,7 +167,8 @@ function modeFactory({ modeConfiguration }) {
               leftPanelResizable: true,
               rightPanels: [cornerstone.panelTool, cornerstone.measurements],
               rightPanelResizable: true,
-              // leftPanelClosed: true,
+              leftPanelClosed: true,
+              rightPanelClosed: true,
               viewports: [
                 {
                   namespace: cornerstone.viewport,

@@ -13,6 +13,7 @@ export type DisplaySet = {
   Modality?: string;
   imageIds?: string[];
   images?: unknown[];
+  label?: string;
 
   // Details about how to display:
   /** A URL that can be used to display the thumbnail.  Typically a data url */
