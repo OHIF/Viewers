@@ -3,6 +3,7 @@ import {
   StackViewport,
   VolumeViewport,
   utilities as csUtils,
+  Enums as CoreEnums,
   Types as CoreTypes,
   BaseVolumeViewport,
 } from '@cornerstonejs/core';
