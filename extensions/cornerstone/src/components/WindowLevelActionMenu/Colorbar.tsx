@@ -3,6 +3,7 @@ import { Switch } from '@ohif/ui-next';
 import { StackViewport, VolumeViewport } from '@cornerstonejs/core';
 import { ColorbarProps } from '../../types/Colorbar';
 import { utilities } from '@cornerstonejs/core';
+import { useSystem } from '@ohif/core';
 
 export function setViewportColorbar(
   viewportId,
@@ -58,10 +59,9 @@ export function setViewportColorbar(
 export function Colorbar({
   viewportId,
   displaySets,
-  commandsManager,
-  servicesManager,
   colorbarProperties,
 }: withAppTypes<ColorbarProps>): ReactElement {
+  const { servicesManager } = useSystem();
   const { colorbarService } = servicesManager.services;
   const {
     width: colorbarWidth,

@@ -40,6 +40,7 @@ export function WindowLevelActionMenu({
   volumeRenderingPresets,
   volumeRenderingQualityRange,
 }: withAppTypes<WindowLevelActionMenuProps>): ReactElement {
+  const { commandsManager } = useSystem();
   const {
     colormaps,
     colorbarContainerPosition,
@@ -117,7 +118,6 @@ export function WindowLevelActionMenu({
       verticalDirection={verticalDirection}
       horizontalDirection={horizontalDirection}
       iconClassName={classNames(
-        // Visible on hover and for the active viewport
         activeViewportId === viewportId ? 'visible' : 'invisible group-hover/pane:visible',
         'flex shrink-0 cursor-pointer rounded active:text-foreground text-highlight',
         isLight ? ' hover:bg-primary/30' : 'hover:bg-primary/30'
@@ -133,8 +133,6 @@ export function WindowLevelActionMenu({
           <Colorbar
             viewportId={viewportId}
             displaySets={displaySets.filter(ds => !nonWLModalities.includes(ds.Modality))}
-            commandsManager={commandsManager}
-            servicesManager={servicesManager}
             colorbarProperties={colorbarProperties}
           />
         )}
@@ -151,8 +149,6 @@ export function WindowLevelActionMenu({
               colormaps={colormaps}
               viewportId={viewportId}
               displaySets={displaySets.filter(ds => !nonWLModalities.includes(ds.Modality))}
-              commandsManager={commandsManager}
-              servicesManager={servicesManager}
             />
           </AllInOneMenu.SubMenu>
         )}
@@ -165,7 +161,6 @@ export function WindowLevelActionMenu({
           >
             <WindowLevel
               viewportId={viewportId}
-              commandsManager={commandsManager}
               presets={presets}
             />
           </AllInOneMenu.SubMenu>
@@ -173,9 +168,7 @@ export function WindowLevelActionMenu({
 
         {volumeRenderingPresets && is3DVolume && (
           <VolumeRenderingPresets
-            servicesManager={servicesManager}
             viewportId={viewportId}
-            commandsManager={commandsManager}
             volumeRenderingPresets={volumeRenderingPresets}
           />
         )}
@@ -184,9 +177,7 @@ export function WindowLevelActionMenu({
           <AllInOneMenu.SubMenu itemLabel="Rendering Options">
             <VolumeRenderingOptions
               viewportId={viewportId}
-              commandsManager={commandsManager}
               volumeRenderingQualityRange={volumeRenderingQualityRange}
-              servicesManager={servicesManager}
             />
           </AllInOneMenu.SubMenu>
         )}
