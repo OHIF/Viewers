@@ -194,6 +194,16 @@ export function ViewportGridProvider({ children, service }: ViewportGridProvider
             updatedViewport?.viewportOptions
           );
 
+          // If the updated viewport is not preferred or undefined, we should not inherit the viewport type and orientation from the previous viewport.
+          if (
+            !updatedViewport ||
+            !updatedViewport.viewportOptions?.viewportType ||
+            !updatedViewport.viewportOptions?.orientation
+          ) {
+            delete viewportOptions.orientation;
+            delete viewportOptions.viewportType;
+          }
+
           const displaySetOptions = updatedViewport?.displaySetOptions || [];
           if (!displaySetOptions.length) {
             // Copy all the display set options, assuming a full set of displaySet UID's is provided.

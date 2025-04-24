@@ -1,16 +1,53 @@
 import { useEffect } from 'react';
+import React from 'react';
 import { AllInOneMenu } from '@ohif/ui-next';
 import { getWindowLevelActionMenu } from '../components/WindowLevelActionMenu/getWindowLevelActionMenu';
 import { getViewportDataOverlaySettingsMenu } from '../components/ViewportDataOverlaySettingMenu';
 import { getViewportOrientationMenu } from '../components/ViewportOrientationMenu';
 
+/**
+ * Viewport action corner location type
+ */
+export interface ViewportActionCornerLocation {
+  type: 'VIEWPORT';
+  id: string;
+  corner?: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
+}
+
+/**
+ * Viewport action corner service interface
+ */
+export interface ViewportActionCornerService {
+  addComponent: (params: {
+    viewportId: string;
+    id: string;
+    component: React.ReactNode;
+    location: ViewportActionCornerLocation | string;
+  }) => void;
+  clear: (viewportId: string) => void;
+  getAlignAndSide: (location: ViewportActionCornerLocation | string) => {
+    align: 'start' | 'center' | 'end';
+    side: 'top' | 'right' | 'bottom' | 'left';
+  };
+}
+
+/**
+ * Customization service interface
+ */
+export interface CustomizationService {
+  getCustomization: (name: string) => any;
+}
+
+/**
+ * Props for the useViewportActionCorners hook
+ */
 interface UseViewportActionCornersProps {
   viewportId: string;
   elementRef: React.MutableRefObject<HTMLDivElement>;
-  displaySets: any[];
-  viewportActionCornersService: any;
-  customizationService: any;
-  commandsManager: any;
+  displaySets: AppTypes.DisplaySet[];
+  viewportActionCornersService: ViewportActionCornerService;
+  customizationService: CustomizationService;
+  commandsManager: AppTypes.CommandsManager;
 }
 
 /**
@@ -42,7 +79,6 @@ export function useViewportActionCorners({
           viewportId,
           element: elementRef.current,
           displaySets,
-          location: windowLevelActionMenu.location,
           verticalDirection: AllInOneMenu.VerticalDirection.TopToBottom,
           horizontalDirection: AllInOneMenu.HorizontalDirection.RightToLeft,
         }),
