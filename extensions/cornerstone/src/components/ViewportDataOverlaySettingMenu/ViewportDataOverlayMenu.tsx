@@ -9,14 +9,11 @@ import {
   DropdownMenuSeparator,
 } from '@ohif/ui-next';
 import { useSystem } from '@ohif/core';
-import { Enums } from '@cornerstonejs/tools';
 
-import { useViewportDisplaySets, useOverlayState } from './hooks';
+import { useViewportDisplaySets } from './hooks';
 import {
-  configureViewportForOverlayAddition,
-  configureViewportForOverlayRemoval,
-  configureViewportForBackgroundChange,
   configureViewportForForegroundAddition,
+  configureViewportForForegroundRemoval,
 } from './ViewportActions';
 
 function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: string }>) {
@@ -33,38 +30,33 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
     foregroundDisplaySets,
   } = useViewportDisplaySets(viewportId);
 
-  /**
-   * Remove an overlay from the viewport
-   */
-  const removeOverlay = (displaySet: AppTypes.DisplaySet) => {
-    if (displaySet.displaySetInstanceUID === backgroundDisplaySet.displaySetInstanceUID) {
-      return;
-    }
-
+  const handleForeGroundRemoval = (displaySet: AppTypes.DisplaySet) => {
     const updatedViewports = hangingProtocolService.getViewportsRequireUpdate(
       viewportId,
-      backgroundDisplaySet.displaySetInstanceUID
+      displaySet.displaySetInstanceUID
     );
 
-    const remainingOverlays = activeOverlays.filter(
-      overlay => overlay.displaySetInstanceUID !== displaySet.displaySetInstanceUID
-    );
+    const viewportDisplaySetUIDs = viewportGridService.getDisplaySetsUIDsForViewport(viewportId);
 
     updatedViewports.forEach(viewport => {
-      configureViewportForOverlayRemoval({
+      configureViewportForForegroundRemoval({
         viewport,
-        backgroundDisplaySet,
-        remainingOverlays,
-        overlayOpacities,
-        customizationService,
+        displaySetUID: displaySet.displaySetInstanceUID,
+        viewportDisplaySetUIDs,
+        servicesManager,
       });
+    });
+
+    const displaySetInstanceUIDs = updatedViewports[0].displaySetInstanceUIDs;
+
+    commandsManager.runCommand('updateStoredPositionPresentation', {
+      viewportId,
+      displaySetInstanceUIDs,
     });
 
     commandsManager.run('setDisplaySetsForViewports', {
       viewportsToUpdate: updatedViewports,
     });
-
-    removeOverlayFromState(displaySet.displaySetInstanceUID);
   };
 
   /**
@@ -76,22 +68,21 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
       displaySet.displaySetInstanceUID
     );
 
-    const currentDisplaySets = viewportGridService.getDisplaySetsUIDsForViewport(viewportId);
+    const currentDisplaySetUIDs = viewportGridService.getDisplaySetsUIDsForViewport(viewportId);
 
     updatedViewports.forEach(viewport => {
       configureViewportForForegroundAddition({
         viewport,
-        currentDisplaySets,
+        currentDisplaySetUIDs,
         servicesManager,
       });
     });
 
+    const displaySetInstanceUIDs = updatedViewports[0].displaySetInstanceUIDs;
+
     commandsManager.runCommand('updateStoredPositionPresentation', {
       viewportId,
-      displaySetInstanceUIDs: [
-        backgroundDisplaySet.displaySetInstanceUID,
-        displaySet.displaySetInstanceUID,
-      ],
+      displaySetInstanceUIDs,
     });
 
     commandsManager.run('setDisplaySetsForViewports', {
@@ -214,7 +205,7 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
                         variant="ghost"
                         size="icon"
                         className="h-6 w-6"
-                        onClick={() => removeForeground(displaySet)}
+                        onClick={() => handleForeGroundRemoval(displaySet)}
                       >
                         <Icons.Close className="h-4 w-4" />
                       </Button>

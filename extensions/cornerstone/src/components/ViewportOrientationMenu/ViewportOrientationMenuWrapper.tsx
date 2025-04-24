@@ -25,7 +25,6 @@ export function ViewportOrientationMenuWrapper({
   const [viewportGrid] = useViewportGrid();
 
   const isActiveViewport = viewportId === viewportGrid.activeViewportId;
-  console.debug('🚀 ~ isActiveViewport:', isActiveViewport);
 
   const { align, side } = viewportActionCornersService.getAlignAndSide(location);
 

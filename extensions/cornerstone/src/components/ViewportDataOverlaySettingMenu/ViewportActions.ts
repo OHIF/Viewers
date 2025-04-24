@@ -1,11 +1,50 @@
 import { createDisplaySetOptions } from './utils';
 
+export function configureViewportForForegroundRemoval({
+  viewport,
+  displaySetUID: displaySetUIDToRemove,
+  viewportDisplaySetUIDs: currentDisplaySetUIDs,
+  servicesManager,
+}) {
+  const { cornerstoneViewportService } = servicesManager.services;
+
+  const { viewportId } = viewport;
+
+  viewport.displaySetInstanceUIDs = currentDisplaySetUIDs
+    .map(displaySetUID => {
+      if (displaySetUID !== displaySetUIDToRemove) {
+        return displaySetUID;
+      }
+
+      return null;
+    })
+    .filter(Boolean);
+
+  if (!viewport.viewportOptions) {
+    viewport.viewportOptions = {};
+  }
+
+  viewport.viewportOptions.viewportType = 'volume';
+
+  // orientation
+  if (!viewport.viewportOptions.orientation) {
+    viewport.viewportOptions.orientation = cornerstoneViewportService.getOrientation(viewportId);
+  }
+
+  // display set options
+  viewport.displaySetOptions = viewport.displaySetInstanceUIDs.map(displaySetUID => {
+    // Todo: We should check if the display set is in the foreground and preserve its opacity.
+    // Maybe there were multiple foregrounds, and we should preserve their opacity.
+    return {};
+  });
+}
+
 /**
  * Configure viewport for overlay addition
  */
 export function configureViewportForForegroundAddition({
   viewport,
-  currentDisplaySets,
+  currentDisplaySetUIDs,
   servicesManager,
 }) {
   const { cornerstoneViewportService, displaySetService, customizationService } =
@@ -15,7 +54,7 @@ export function configureViewportForForegroundAddition({
 
   // Set the display set UIDs for the viewport
   const foreGroundDisplaySetInstanceUID = viewport.displaySetInstanceUIDs[0];
-  const allDisplaySetInstanceUIDs = [...currentDisplaySets, foreGroundDisplaySetInstanceUID];
+  const allDisplaySetInstanceUIDs = [...currentDisplaySetUIDs, foreGroundDisplaySetInstanceUID];
   viewport.displaySetInstanceUIDs = allDisplaySetInstanceUIDs;
 
   if (!viewport.viewportOptions) {

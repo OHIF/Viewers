@@ -3,7 +3,6 @@ import { useResizeDetector } from 'react-resize-detector';
 import * as cs3DTools from '@cornerstonejs/tools';
 import { Enums, eventTarget, getEnabledElement } from '@cornerstonejs/core';
 import { MeasurementService } from '@ohif/core';
-import { AllInOneMenu } from '@ohif/ui-next';
 import { useViewportDialog } from '@ohif/ui-next';
 import type { Types as csTypes } from '@cornerstonejs/core';
 
@@ -15,13 +14,11 @@ import CinePlayer from '../components/CinePlayer';
 import type { Types } from '@ohif/core';
 
 import OHIFViewportActionCorners from '../components/OHIFViewportActionCorners';
-import { getWindowLevelActionMenu } from '../components/WindowLevelActionMenu/getWindowLevelActionMenu';
-import { getViewportDataOverlaySettingsMenu } from '../components/ViewportDataOverlaySettingMenu';
-import { getViewportOrientationMenu } from '../components/ViewportOrientationMenu';
 import { getViewportPresentations } from '../utils/presentations/getViewportPresentations';
 import { useSynchronizersStore } from '../stores/useSynchronizersStore';
 import ActiveViewportBehavior from '../utils/ActiveViewportBehavior';
 import { WITH_NAVIGATION } from '../services/ViewportService/CornerstoneViewportService';
+import { useViewportActionCorners } from '../hooks';
 
 const STACK = 'stack';
 
@@ -307,60 +304,15 @@ const OHIFCornerstoneViewport = React.memo(
       };
     }, [displaySets, elementRef, viewportId, isJumpToMeasurementDisabled, servicesManager]);
 
-    // Set up the window level action menu in the viewport action corners.
-    useEffect(() => {
-      const windowLevelActionMenu = customizationService.getCustomization(
-        'viewportActionMenu.windowLevelActionMenu'
-      );
-      const dataOverlay = customizationService.getCustomization('viewportActionMenu.dataOverlay');
-      const orientationMenu = customizationService.getCustomization(
-        'viewportActionMenu.orientationMenu'
-      );
-
-      if (windowLevelActionMenu?.enabled) {
-        viewportActionCornersService.addComponent({
-          viewportId,
-          id: 'windowLevelActionMenu',
-          component: getWindowLevelActionMenu({
-            viewportId,
-            element: elementRef.current,
-            displaySets,
-            location: windowLevelActionMenu.location,
-            verticalDirection: AllInOneMenu.VerticalDirection.TopToBottom,
-            horizontalDirection: AllInOneMenu.HorizontalDirection.RightToLeft,
-          }),
-          location: windowLevelActionMenu.location,
-        });
-      }
-
-      if (dataOverlay?.enabled) {
-        viewportActionCornersService.addComponent({
-          viewportId,
-          id: 'dataOverlay',
-          component: getViewportDataOverlaySettingsMenu({
-            viewportId,
-            element: elementRef.current,
-            displaySets,
-            location: dataOverlay.location,
-          }),
-          location: dataOverlay.location,
-        });
-      }
-
-      // Only show orientation menu for reconstructable displaySets
-      if (orientationMenu?.enabled && displaySets.some(ds => ds.isReconstructable)) {
-        viewportActionCornersService.addComponent({
-          viewportId,
-          id: 'orientationMenu',
-          component: getViewportOrientationMenu({
-            viewportId,
-            element: elementRef.current,
-            location: orientationMenu.location,
-          }),
-          location: orientationMenu.location,
-        });
-      }
-    }, [displaySets, viewportId, viewportActionCornersService, servicesManager, commandsManager]);
+    // Set up the window level action menu in the viewport action corners using the custom hook
+    useViewportActionCorners({
+      viewportId,
+      elementRef,
+      displaySets,
+      viewportActionCornersService,
+      customizationService,
+      commandsManager,
+    });
 
     const { ref: resizeRef } = useResizeDetector({
       onResize,
@@ -533,22 +485,18 @@ OHIFCornerstoneViewport.displayName = 'OHIFCornerstoneViewport';
 
 function areEqual(prevProps, nextProps) {
   if (nextProps.needsRerendering) {
-    console.debug('OHIFCornerstoneViewport: Rerender caused by: needsRerendering');
     return false;
   }
 
   if (prevProps.displaySets.length !== nextProps.displaySets.length) {
-    console.debug('OHIFCornerstoneViewport: Rerender caused by: displaySets length change');
     return false;
   }
 
   if (prevProps.viewportOptions.orientation !== nextProps.viewportOptions.orientation) {
-    console.debug('OHIFCornerstoneViewport: Rerender caused by: orientation change');
     return false;
   }
 
   if (prevProps.viewportOptions.toolGroupId !== nextProps.viewportOptions.toolGroupId) {
-    console.debug('OHIFCornerstoneViewport: Rerender caused by: toolGroupId change');
     return false;
   }
 
@@ -556,12 +504,10 @@ function areEqual(prevProps, nextProps) {
     nextProps.viewportOptions.viewportType &&
     prevProps.viewportOptions.viewportType !== nextProps.viewportOptions.viewportType
   ) {
-    console.debug('OHIFCornerstoneViewport: Rerender caused by: viewportType change');
     return false;
   }
 
   if (nextProps.viewportOptions.needsRerendering) {
-    console.debug('OHIFCornerstoneViewport: Rerender caused by: viewportOptions.needsRerendering');
     return false;
   }
 
@@ -569,7 +515,6 @@ function areEqual(prevProps, nextProps) {
   const nextDisplaySets = nextProps.displaySets;
 
   if (prevDisplaySets.length !== nextDisplaySets.length) {
-    console.debug('OHIFCornerstoneViewport: Rerender caused by: displaySets length mismatch');
     return false;
   }
 
@@ -582,13 +527,11 @@ function areEqual(prevProps, nextProps) {
     );
 
     if (!foundDisplaySet) {
-      console.debug('OHIFCornerstoneViewport: Rerender caused by: displaySet not found');
       return false;
     }
 
     // check they contain the same image
     if (foundDisplaySet.images?.length !== prevDisplaySet.images?.length) {
-      console.debug('OHIFCornerstoneViewport: Rerender caused by: images length mismatch');
       return false;
     }
 
@@ -596,7 +539,6 @@ function areEqual(prevProps, nextProps) {
     if (foundDisplaySet.images?.length) {
       for (let j = 0; j < foundDisplaySet.images.length; j++) {
         if (foundDisplaySet.images[j].imageId !== prevDisplaySet.images[j].imageId) {
-          console.debug('OHIFCornerstoneViewport: Rerender caused by: imageId mismatch');
           return false;
         }
       }
