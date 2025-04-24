@@ -38,14 +38,16 @@ export default class ColorbarService extends PubSubService {
 
   public static REGISTRATION = {
     name: 'colorbarService',
-    create: () => {
-      return new ColorbarService();
+    create: ({ servicesManager }: OhifTypes.Extensions.ExtensionParams) => {
+      return new ColorbarService(servicesManager);
     },
   };
   colorbars = {};
+  servicesManager: AppTypes.ServicesManager;
 
-  constructor() {
+  constructor(servicesManager: AppTypes.ServicesManager) {
     super(ColorbarService.EVENTS);
+    this.servicesManager = servicesManager;
   }
 
   /**
@@ -68,6 +70,7 @@ export default class ColorbarService extends PubSubService {
    * @param options Configuration options for the colorbar, including position, colormaps, active colormap name, ticks, and width.
    */
   public addColorbar(viewportId, displaySetInstanceUIDs, options = {} as ColorbarOptions) {
+    const { displaySetService } = this.servicesManager.services;
     const renderingEngine = getRenderingEngine(RENDERING_ENGINE_ID);
     const viewport = renderingEngine.getViewport(viewportId);
 
@@ -95,6 +98,12 @@ export default class ColorbarService extends PubSubService {
     );
 
     displaySetInstanceUIDs.forEach((displaySetInstanceUID, index) => {
+      // don't show colorbar for segmentation display sets
+      const displaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
+      if (displaySet.Modality === 'SEG') {
+        return;
+      }
+
       const volumeId = this.getVolumeIdForIdentifier(viewport, displaySetInstanceUID);
       const properties = viewport?.getProperties(volumeId);
       const colormap = properties?.colormap;
