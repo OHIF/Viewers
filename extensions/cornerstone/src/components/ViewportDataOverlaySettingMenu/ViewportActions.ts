@@ -3,31 +3,20 @@ import { createDisplaySetOptions } from './utils';
 /**
  * Configure viewport for overlay addition
  */
-export function configureViewportForOverlayAddition({
+export function configureViewportForForegroundAddition({
   viewport,
-  backgroundDisplaySet,
-  currentOverlays,
-  newDisplaySet,
-  overlayOpacities,
+  currentDisplaySets,
   servicesManager,
-  activeSegmentations = [],
 }) {
   const { cornerstoneViewportService, displaySetService, customizationService } =
     servicesManager.services;
+
   const { viewportId } = viewport;
-  const currentOverlayUIDs = currentOverlays.map(overlay => overlay.displaySetInstanceUID);
 
-  // Store any existing segmentation display sets
-  const segmentationDisplaySetUIDs = activeSegmentations
-    .filter(seg => seg.displaySetInstanceUID)
-    .map(seg => seg.displaySetInstanceUID);
-
-  viewport.displaySetInstanceUIDs = [
-    backgroundDisplaySet.displaySetInstanceUID,
-    ...currentOverlayUIDs,
-    ...segmentationDisplaySetUIDs,
-    newDisplaySet.displaySetInstanceUID,
-  ];
+  // Set the display set UIDs for the viewport
+  const foreGroundDisplaySetInstanceUID = viewport.displaySetInstanceUIDs[0];
+  const allDisplaySetInstanceUIDs = [...currentDisplaySets, foreGroundDisplaySetInstanceUID];
+  viewport.displaySetInstanceUIDs = allDisplaySetInstanceUIDs;
 
   if (!viewport.viewportOptions) {
     viewport.viewportOptions = {};
@@ -39,28 +28,18 @@ export function configureViewportForOverlayAddition({
 
   viewport.viewportOptions.viewportType = 'volume';
 
-  viewport.displaySetOptions = [];
-
-  viewport.displaySetOptions.push({});
-
-  currentOverlays.forEach(overlay => {
-    const opacity = overlayOpacities[overlay.displaySetInstanceUID] || 90;
-    viewport.displaySetOptions.push(
-      createDisplaySetOptions(overlay, opacity, customizationService)
-    );
-  });
-
-  // Handle segmentation display sets if they exist
-  activeSegmentations.forEach(segmentation => {
-    const segDisplaySet = displaySetService.getDisplaySetByUID(segmentation.segmentationId);
-    if (segDisplaySet) {
-      viewport.displaySetOptions.push(
-        createDisplaySetOptions(segDisplaySet, 100, customizationService)
-      );
+  // create same amount of display set options as the number of display set UIDs
+  const displaySetOptions = allDisplaySetInstanceUIDs.map((displaySetInstanceUID, index) => {
+    if (index === 0) {
+      // no colormap for background
+      return {};
     }
+
+    const displaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
+    return createDisplaySetOptions(displaySet, 90, customizationService);
   });
 
-  viewport.displaySetOptions.push(createDisplaySetOptions(newDisplaySet, 90, customizationService));
+  viewport.displaySetOptions = displaySetOptions;
 
   return viewport;
 }
@@ -96,58 +75,6 @@ export function configureViewportForOverlayRemoval({
   viewport.displaySetOptions = [{}];
 
   remainingOverlays.forEach(overlay => {
-    const opacity = overlayOpacities[overlay.displaySetInstanceUID] || 90;
-    viewport.displaySetOptions.push(
-      createDisplaySetOptions(overlay, opacity, customizationService)
-    );
-  });
-
-  // Handle segmentation display sets if they exist
-  activeSegmentations.forEach(segmentation => {
-    if (segmentation.displaySetInstanceUID) {
-      viewport.displaySetOptions.push(
-        createDisplaySetOptions(segmentation, 100, customizationService)
-      );
-    }
-  });
-
-  return viewport;
-}
-
-/**
- * Configure viewport for background change
- */
-export function configureViewportForBackgroundChange({
-  viewport,
-  newBackgroundDisplaySet,
-  activeOverlays,
-  overlayOpacities,
-  customizationService,
-  activeSegmentations = [],
-}) {
-  const activeOverlayUIDs = activeOverlays.map(overlay => overlay.displaySetInstanceUID);
-
-  // Store any existing segmentation display sets
-  const segmentationDisplaySetUIDs = activeSegmentations
-    .filter(seg => seg.displaySetInstanceUID)
-    .map(seg => seg.displaySetInstanceUID);
-
-  viewport.displaySetInstanceUIDs = [
-    newBackgroundDisplaySet.displaySetInstanceUID,
-    ...activeOverlayUIDs,
-    ...segmentationDisplaySetUIDs,
-  ];
-
-  if (!viewport.viewportOptions) {
-    viewport.viewportOptions = {};
-  }
-  viewport.viewportOptions.viewportType = 'volume';
-
-  viewport.displaySetOptions = [];
-
-  viewport.displaySetOptions.push({});
-
-  activeOverlays.forEach(overlay => {
     const opacity = overlayOpacities[overlay.displaySetInstanceUID] || 90;
     viewport.displaySetOptions.push(
       createDisplaySetOptions(overlay, opacity, customizationService)

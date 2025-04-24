@@ -16,108 +16,22 @@ import {
   configureViewportForOverlayAddition,
   configureViewportForOverlayRemoval,
   configureViewportForBackgroundChange,
+  configureViewportForForegroundAddition,
 } from './ViewportActions';
 
 function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: string }>) {
   const { commandsManager, servicesManager } = useSystem();
-  const { hangingProtocolService, customizationService, segmentationService } =
+  const { hangingProtocolService, customizationService, viewportGridService } =
     servicesManager.services;
 
   const {
     backgroundDisplaySet,
-    derivedOverlays,
-    nonDerivedOverlays,
+    potentialOverlayDisplaySets,
+    potentialForegroundDisplaySets,
     potentialBackgroundDisplaySets,
-    availableSegmentations,
+    overlayDisplaySets,
+    foregroundDisplaySets,
   } = useViewportDisplaySets(viewportId);
-
-  const {
-    activeOverlays,
-    activeSegmentations,
-    overlayOpacities,
-    addOverlay: addOverlayToState,
-    removeOverlay: removeOverlayFromState,
-    addSegmentation: addSegmentationToState,
-    removeSegmentation: removeSegmentationFromState,
-  } = useOverlayState(viewportId);
-
-  /**
-   * Add an overlay to the viewport
-   */
-  const addOverlay = (displaySet: AppTypes.DisplaySet) => {
-    const updatedViewports = hangingProtocolService.getViewportsRequireUpdate(
-      viewportId,
-      displaySet.displaySetInstanceUID
-    );
-
-    updatedViewports.forEach(viewport => {
-      configureViewportForOverlayAddition({
-        viewport,
-        backgroundDisplaySet,
-        currentOverlays: activeOverlays,
-        newDisplaySet: displaySet,
-        overlayOpacities,
-        servicesManager,
-        activeSegmentations,
-      });
-    });
-
-    commandsManager.runCommand('updateStoredPositionPresentation', {
-      viewportId,
-      displaySetInstanceUIDs: [
-        backgroundDisplaySet.displaySetInstanceUID,
-        displaySet.displaySetInstanceUID,
-      ],
-    });
-
-    commandsManager.run('setDisplaySetsForViewports', {
-      viewportsToUpdate: updatedViewports,
-    });
-
-    addOverlayToState(displaySet);
-  };
-
-  /**
-   * Add a segmentation as an overlay to the viewport
-   */
-  const addSegmentationOverlay = segmentation => {
-    // If this is a display set (has displaySetInstanceUID), we can use the standard overlay handling
-    if (segmentation.displaySetInstanceUID) {
-      addOverlay(segmentation);
-      return;
-    }
-
-    // Legacy method for segmentations that aren't display sets yet
-    // First ensure viewport is in volume mode if needed
-    const updatedViewports = hangingProtocolService.getViewportsRequireUpdate(
-      viewportId,
-      backgroundDisplaySet.displaySetInstanceUID
-    );
-
-    // Configure viewport to be ready for overlay
-    updatedViewports.forEach(viewport => {
-      if (!viewport.viewportOptions) {
-        viewport.viewportOptions = {};
-      }
-      viewport.viewportOptions.viewportType = 'volume';
-
-      commandsManager.run('setDisplaySetsForViewports', {
-        viewportsToUpdate: updatedViewports,
-      });
-    });
-
-    // After viewport is configured, add the segmentation representation
-    segmentationService.addSegmentationRepresentation(viewportId, {
-      segmentationId: segmentation.segmentationId,
-      type: Enums.SegmentationRepresentations.Labelmap,
-    });
-
-    addSegmentationToState({
-      segmentationId: segmentation.segmentationId,
-      label: segmentation.label,
-      type: 'LABELMAP',
-    });
-  };
 
   /**
    * Remove an overlay from the viewport
@@ -143,7 +57,6 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
         remainingOverlays,
         overlayOpacities,
         customizationService,
-        activeSegmentations,
       });
     });
 
@@ -155,57 +68,30 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
   };
 
   /**
-   * Remove a segmentation from the viewport
+   * Add an overlay to the viewport
    */
-  const removeSegmentationOverlay = segmentation => {
-    const segmentationId = segmentation.segmentationId || segmentation.id;
-
-    // If this is a display set, use the display set removal
-    if (segmentation.displaySetInstanceUID) {
-      removeOverlay(segmentation);
-
-      // Also need to remove the segmentation representation
-      if (segmentationId) {
-        segmentationService.removeSegmentationRepresentations(viewportId, {
-          segmentationId: segmentationId,
-        });
-      }
-      return;
-    }
-
-    // Legacy method for segmentations that aren't display sets
-    segmentationService.removeSegmentationRepresentations(viewportId, {
-      segmentationId: segmentationId,
-    });
-
-    removeSegmentationFromState(segmentationId);
-  };
-
-  /**
-   * Change the background display set
-   */
-  const handleBackgroundSelection = (newBackgroundDisplaySet: AppTypes.DisplaySet) => {
-    if (
-      !newBackgroundDisplaySet ||
-      newBackgroundDisplaySet.displaySetInstanceUID === backgroundDisplaySet.displaySetInstanceUID
-    ) {
-      return;
-    }
-
+  const handleForegroundSelection = (displaySet: AppTypes.DisplaySet) => {
     const updatedViewports = hangingProtocolService.getViewportsRequireUpdate(
       viewportId,
-      newBackgroundDisplaySet.displaySetInstanceUID
+      displaySet.displaySetInstanceUID
     );
 
+    const currentDisplaySets = viewportGridService.getDisplaySetsUIDsForViewport(viewportId);
+
     updatedViewports.forEach(viewport => {
-      configureViewportForBackgroundChange({
+      configureViewportForForegroundAddition({
         viewport,
-        newBackgroundDisplaySet,
-        activeOverlays,
-        overlayOpacities,
-        customizationService,
-        activeSegmentations,
+        currentDisplaySets,
+        servicesManager,
       });
+    });
+
+    commandsManager.runCommand('updateStoredPositionPresentation', {
+      viewportId,
+      displaySetInstanceUIDs: [
+        backgroundDisplaySet.displaySetInstanceUID,
+        displaySet.displaySetInstanceUID,
+      ],
     });
 
     commandsManager.run('setDisplaySetsForViewports', {
@@ -213,56 +99,33 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
     });
   };
 
-  // For backward compatibility, check if there are any segmentations that aren't yet display sets
-  const displaySetIds = derivedOverlays
-    .filter(ds => ds.segmentationId)
-    .map(ds => ds.segmentationId);
+  /**
+   * Change the background display set
+   */
+  const handleBackgroundSelection = (newBackgroundDisplaySet: AppTypes.DisplaySet) => {
+    const updatedViewports = hangingProtocolService.getViewportsRequireUpdate(
+      viewportId,
+      newBackgroundDisplaySet.displaySetInstanceUID
+    );
 
-  const availableSegmentationsFiltered = availableSegmentations.filter(
-    seg =>
-      !displaySetIds.includes(seg.segmentationId) &&
-      !activeSegmentations.some(activeSeg => activeSeg.segmentationId === seg.segmentationId)
-  );
-
-  // Mark user-created segmentations from segmentation service (for backward compatibility)
-  const userSegmentations = availableSegmentationsFiltered.map(segmentation => ({
-    ...segmentation,
-    isUserCreated: true,
-    isOverlayable: true,
-    label: `(User) ${segmentation.label}`,
-    Modality: 'SEG',
-  }));
-
-  // For display sets that are segmentations and made in client, add the User prefix
-  const enhancedDerivedOverlays = derivedOverlays.map(displaySet =>
-    displaySet.madeInClient && displaySet.Modality === 'SEG'
-      ? {
-          ...displaySet,
-          label: displaySet.label.startsWith('(User)')
-            ? displaySet.label
-            : `(User) ${displaySet.label}`,
-          isUserCreated: true,
-        }
-      : displaySet
-  );
-
-  const allAvailableOverlays = [...userSegmentations, ...enhancedDerivedOverlays].filter(
-    overlay => overlay.isOverlayable !== false
-  );
+    commandsManager.run('setDisplaySetsForViewports', {
+      viewportsToUpdate: updatedViewports,
+    });
+  };
 
   return (
     <div className="bg-muted flex h-full w-[262px] flex-col rounded p-3">
-      {(activeOverlays.length > 0 || activeSegmentations.length > 0) && (
+      {overlayDisplaySets.length > 0 && (
         <>
           <Separator className="my-3" />
           <span className="text-muted-foreground mb-2 block text-xs font-semibold">
-            Active Overlays
+            Active SEG Overlays
           </span>
 
           <div className="flex-grow">
             <ScrollArea className="h-[80px] w-full">
               <div className="space-y-1">
-                {activeOverlays.map(displaySet => (
+                {overlayDisplaySets.map(displaySet => (
                   <div
                     key={displaySet.displaySetInstanceUID}
                     className="hover:bg-muted-foreground/10 flex items-center justify-between rounded p-2"
@@ -283,24 +146,75 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
                     </div>
                   </div>
                 ))}
+              </div>
+            </ScrollArea>
+          </div>
+        </>
+      )}
+      <span className="text-muted-foreground mb-2 block text-xs font-semibold">
+        Available SEG Overlays
+      </span>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button
+            variant="outline"
+            className="w-full justify-between border-[#061430] bg-[#061430] text-[#3498db]"
+            disabled={potentialOverlayDisplaySets.length === 0}
+          >
+            <Icons.ChevronDown className="ml-2 h-4 w-4" />
+          </Button>
+        </DropdownMenuTrigger>
 
-                {activeSegmentations.map(segmentation => (
+        <DropdownMenuContent className="w-[230px]">
+          <DropdownMenuLabel>Available SEG Overlays</DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          {potentialOverlayDisplaySets.length > 0 ? (
+            potentialOverlayDisplaySets.map(overlayDisplaySet => (
+              <DropdownMenuItem
+                key={overlayDisplaySet.displaySetInstanceUID}
+                onSelect={() => {
+                  handleForegroundSelection(overlayDisplaySet);
+                }}
+              >
+                <div className="flex w-full items-center justify-between">
+                  <span>{`${overlayDisplaySet.isMadeInClient ? '(User)' : ''}${overlayDisplaySet.label}`}</span>
+                  <span className="text-muted-foreground text-xs">
+                    {overlayDisplaySet.Modality}
+                  </span>
+                </div>
+              </DropdownMenuItem>
+            ))
+          ) : (
+            <DropdownMenuItem disabled>No overlays available</DropdownMenuItem>
+          )}
+        </DropdownMenuContent>
+      </DropdownMenu>
+
+      {foregroundDisplaySets.length > 0 && (
+        <>
+          <Separator className="my-3" />
+          <span className="text-muted-foreground mb-2 block text-xs font-semibold">
+            Active Foregrounds
+          </span>
+
+          <div className="flex-grow">
+            <ScrollArea className="h-[80px] w-full">
+              <div className="space-y-1">
+                {foregroundDisplaySets.map(displaySet => (
                   <div
-                    key={segmentation.segmentationId}
+                    key={displaySet.displaySetInstanceUID}
                     className="hover:bg-muted-foreground/10 flex items-center justify-between rounded p-2"
                   >
-                    <span className="text-foreground text-sm">
-                      {segmentation.label.startsWith('(User)')
-                        ? segmentation.label
-                        : `(User) ${segmentation.label}`}
-                    </span>
+                    <span className="text-foreground text-sm">{displaySet.label}</span>
                     <div className="flex items-center">
-                      <span className="text-muted-foreground mr-2 text-xs">SEG</span>
+                      <span className="text-muted-foreground mr-2 text-xs">
+                        {displaySet.Modality}
+                      </span>
                       <Button
                         variant="ghost"
                         size="icon"
                         className="h-6 w-6"
-                        onClick={() => removeSegmentationOverlay(segmentation)}
+                        onClick={() => removeForeground(displaySet)}
                       >
                         <Icons.Close className="h-4 w-4" />
                       </Button>
@@ -312,45 +226,8 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
           </div>
         </>
       )}
-      <span className="text-muted-foreground mb-2 block text-xs font-semibold">
-        Available Overlays
-      </span>
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button
-            variant="outline"
-            className="w-full justify-between border-[#061430] bg-[#061430] text-[#3498db]"
-          >
-            <span>Select overlay...</span>
-            <Icons.ChevronDown className="ml-2 h-4 w-4" />
-          </Button>
-        </DropdownMenuTrigger>
 
-        <DropdownMenuContent className="w-[230px]">
-          <DropdownMenuLabel>Overlayable Items</DropdownMenuLabel>
-          <DropdownMenuSeparator />
-          {allAvailableOverlays.map(overlay => (
-            <DropdownMenuItem
-              key={overlay.displaySetInstanceUID || overlay.segmentationId}
-              onSelect={() => {
-                // User created segmentations can now be either display sets with madeInClient=true
-                // or legacy segmentations directly from segmentation service
-                if ((overlay.madeInClient && overlay.Modality === 'SEG') || overlay.isUserCreated) {
-                  addSegmentationOverlay(overlay);
-                } else {
-                  addOverlay(overlay);
-                }
-              }}
-            >
-              <div className="flex w-full items-center justify-between">
-                <span>{overlay.label}</span>
-                <span className="text-muted-foreground text-xs">{overlay.Modality}</span>
-              </div>
-            </DropdownMenuItem>
-          ))}
-        </DropdownMenuContent>
-      </DropdownMenu>
-      {nonDerivedOverlays.length > 0 && (
+      {potentialForegroundDisplaySets.length > 0 && (
         <>
           <Separator className="my-3" />
           <span className="text-muted-foreground mb-2 block text-xs font-semibold">
@@ -362,17 +239,16 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
                 variant="outline"
                 className="w-full justify-between border-[#061430] bg-[#061430] text-[#3498db]"
               >
-                <span>Select foreground...</span>
                 <Icons.ChevronDown className="ml-2 h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="w-[230px]">
               <DropdownMenuLabel>Available Foregrounds</DropdownMenuLabel>
               <DropdownMenuSeparator />
-              {nonDerivedOverlays.map(displaySet => (
+              {potentialForegroundDisplaySets.map(displaySet => (
                 <DropdownMenuItem
                   key={displaySet.displaySetInstanceUID}
-                  onSelect={() => addOverlay(displaySet)}
+                  onSelect={() => handleForegroundSelection(displaySet)}
                   disabled={!displaySet.isOverlayable}
                 >
                   <div className="flex w-full items-center justify-between">
@@ -394,7 +270,6 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
             className="w-full justify-between border-[#061430] bg-[#061430] text-[#3498db]"
           >
             <div className="flex items-center space-x-2">
-              <span>Select</span>
               <span className="font-medium text-[#3498db]">
                 {backgroundDisplaySet.SeriesDescription?.toLowerCase() ||
                   backgroundDisplaySet.label?.toLowerCase() ||
@@ -405,15 +280,6 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent className="w-[230px]">
-          <DropdownMenuLabel>Current Background</DropdownMenuLabel>
-          <DropdownMenuItem disabled>
-            <div className="flex w-full items-center justify-between">
-              <span>{backgroundDisplaySet.label}</span>
-              <span className="text-muted-foreground text-xs">{backgroundDisplaySet.Modality}</span>
-            </div>
-          </DropdownMenuItem>
-
-          <DropdownMenuSeparator />
           <DropdownMenuLabel>Available Backgrounds</DropdownMenuLabel>
 
           {potentialBackgroundDisplaySets.map(displaySet => (

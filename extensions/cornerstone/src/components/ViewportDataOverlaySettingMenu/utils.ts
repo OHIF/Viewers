@@ -1,9 +1,9 @@
 import { utilities as csUtils } from '@cornerstonejs/core';
 
-export const DEFAULT_COLORMAP = 'HSV';
+export const DEFAULT_COLORMAP = 'hsv';
 export const DEFAULT_OPACITY = 0.9;
 export const DEFAULT_OPACITY_PERCENT = DEFAULT_OPACITY * 100;
-export const DERIVED_OVERLAY_MODALITIES = ['SEG', 'RTSTRUCT', 'SR'];
+export const DERIVED_OVERLAY_MODALITIES = ['SEG', 'RTSTRUCT'];
 
 /**
  * Get modality-specific color and opacity settings from the customization service
@@ -37,8 +37,8 @@ export function getEnhancedDisplaySets({ viewportId, services }) {
     displaySetService.getDisplaySetByUID(displaySetUID)
   );
 
+  const backgroundCanBeVolume = csUtils.isValidVolume(viewportDisplaySets[0].imageIds);
   const backgroundDisplaySet = viewportDisplaySets[0];
-  const backGroundCanBeVolume = csUtils.isValidVolume(viewportDisplaySets[0].imageIds);
 
   const enhancedDisplaySets = otherDisplaySets.map(displaySet => {
     if (displaySet.unsupported) {
@@ -61,7 +61,7 @@ export function getEnhancedDisplaySets({ viewportId, services }) {
 
     // Special handling for derived modalities
     if (!DERIVED_OVERLAY_MODALITIES.includes(displaySet.Modality)) {
-      if (!backGroundCanBeVolume) {
+      if (!backgroundCanBeVolume) {
         return {
           ...displaySet,
           isOverlayable: false,
@@ -86,7 +86,7 @@ export function getEnhancedDisplaySets({ viewportId, services }) {
   });
 
   return {
-    backgroundDisplaySet,
+    viewportDisplaySets,
     enhancedDisplaySets,
   };
 }
