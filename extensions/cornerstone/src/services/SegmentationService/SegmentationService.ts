@@ -388,37 +388,6 @@ class SegmentationService extends PubSubService {
 
     this.addOrUpdateSegmentation(segmentationPublicInput);
 
-    // Create a display set for the segmentation
-    const { displaySetService } = this.servicesManager.services;
-
-    // Create a display set for the segmentation
-    const segmentationDisplaySet = {
-      displaySetInstanceUID: segmentationId,
-      SeriesDate: displaySet.SeriesDate,
-      SeriesTime: displaySet.SeriesTime,
-      SeriesInstanceUID: segmentationId,
-      StudyInstanceUID: displaySet.StudyInstanceUID,
-      FrameOfReferenceUID: displaySet.FrameOfReferenceUID,
-      SeriesNumber: displaySet.SeriesNumber ? Number(displaySet.SeriesNumber) + 1000 : 1000,
-      SOPClassUID: '1.2.840.10008.5.1.4.1.1.66.4', // DICOM SEG SOP Class UID
-      SeriesDescription: label,
-      Modality: 'SEG',
-      isMultiFrame: false,
-      numImageFrames: referenceImageIds.length,
-      SOPClassHandlerId: '@ohif/extension-cornerstone-dicom-seg.sopClassHandlerModule.dicom-seg',
-      imageIds: segImageIds,
-      referencedDisplaySetInstanceUID: displaySet.displaySetInstanceUID,
-      referencedImages: referenceImageIds,
-      isSegmentation: true,
-      isOverlayDisplaySet: true, // Mark as an overlay
-      label: label,
-      madeInClient: true, // Indicate this was created in the client
-      segmentationId: segmentationId, // Store the segmentation ID for reference
-      isDerived: true,
-    };
-
-    displaySetService.addDisplaySets(segmentationDisplaySet);
-
     return segmentationId;
   }
 

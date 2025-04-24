@@ -175,6 +175,25 @@ export default class DisplaySetService extends PubSubService {
   }
 
   /**
+   * Removes a display set by its UID
+   * @param displaySetInstanceUID - The UID of the display set to remove
+   * @returns boolean - True if the display set was found and removed, false otherwise
+   */
+  public removeDisplaySetByUID(displaySetInstanceUID: string): boolean {
+    if (!displaySetInstanceUID) {
+      return false;
+    }
+
+    const displaySet = this.getDisplaySetByUID(displaySetInstanceUID);
+    if (!displaySet) {
+      return false;
+    }
+
+    this.deleteDisplaySet(displaySetInstanceUID);
+    return true;
+  }
+
+  /**
    * @param {string} displaySetInstanceUID
    * @returns {object} displaySet
    */

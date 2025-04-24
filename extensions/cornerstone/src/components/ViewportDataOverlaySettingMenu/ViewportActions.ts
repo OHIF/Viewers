@@ -9,15 +9,23 @@ export function configureViewportForOverlayAddition({
   currentOverlays,
   newDisplaySet,
   overlayOpacities,
-  cornerstoneViewportService,
-  viewportId,
-  customizationService,
+  servicesManager,
+  activeSegmentations = [],
 }) {
+  const { cornerstoneViewportService, displaySetService, customizationService } =
+    servicesManager.services;
+  const { viewportId } = viewport;
   const currentOverlayUIDs = currentOverlays.map(overlay => overlay.displaySetInstanceUID);
+
+  // Store any existing segmentation display sets
+  const segmentationDisplaySetUIDs = activeSegmentations
+    .filter(seg => seg.displaySetInstanceUID)
+    .map(seg => seg.displaySetInstanceUID);
 
   viewport.displaySetInstanceUIDs = [
     backgroundDisplaySet.displaySetInstanceUID,
     ...currentOverlayUIDs,
+    ...segmentationDisplaySetUIDs,
     newDisplaySet.displaySetInstanceUID,
   ];
 
@@ -42,6 +50,16 @@ export function configureViewportForOverlayAddition({
     );
   });
 
+  // Handle segmentation display sets if they exist
+  activeSegmentations.forEach(segmentation => {
+    const segDisplaySet = displaySetService.getDisplaySetByUID(segmentation.segmentationId);
+    if (segDisplaySet) {
+      viewport.displaySetOptions.push(
+        createDisplaySetOptions(segDisplaySet, 100, customizationService)
+      );
+    }
+  });
+
   viewport.displaySetOptions.push(createDisplaySetOptions(newDisplaySet, 90, customizationService));
 
   return viewport;
@@ -56,12 +74,19 @@ export function configureViewportForOverlayRemoval({
   remainingOverlays,
   overlayOpacities,
   customizationService,
+  activeSegmentations = [],
 }) {
   const remainingOverlayUIDs = remainingOverlays.map(overlay => overlay.displaySetInstanceUID);
+
+  // Store any existing segmentation display sets
+  const segmentationDisplaySetUIDs = activeSegmentations
+    .filter(seg => seg.displaySetInstanceUID)
+    .map(seg => seg.displaySetInstanceUID);
 
   viewport.displaySetInstanceUIDs = [
     backgroundDisplaySet.displaySetInstanceUID,
     ...remainingOverlayUIDs,
+    ...segmentationDisplaySetUIDs,
   ];
 
   if (!viewport.viewportOptions) {
@@ -77,6 +102,15 @@ export function configureViewportForOverlayRemoval({
     );
   });
 
+  // Handle segmentation display sets if they exist
+  activeSegmentations.forEach(segmentation => {
+    if (segmentation.displaySetInstanceUID) {
+      viewport.displaySetOptions.push(
+        createDisplaySetOptions(segmentation, 100, customizationService)
+      );
+    }
+  });
+
   return viewport;
 }
 
@@ -89,12 +123,19 @@ export function configureViewportForBackgroundChange({
   activeOverlays,
   overlayOpacities,
   customizationService,
+  activeSegmentations = [],
 }) {
   const activeOverlayUIDs = activeOverlays.map(overlay => overlay.displaySetInstanceUID);
+
+  // Store any existing segmentation display sets
+  const segmentationDisplaySetUIDs = activeSegmentations
+    .filter(seg => seg.displaySetInstanceUID)
+    .map(seg => seg.displaySetInstanceUID);
 
   viewport.displaySetInstanceUIDs = [
     newBackgroundDisplaySet.displaySetInstanceUID,
     ...activeOverlayUIDs,
+    ...segmentationDisplaySetUIDs,
   ];
 
   if (!viewport.viewportOptions) {
@@ -111,6 +152,15 @@ export function configureViewportForBackgroundChange({
     viewport.displaySetOptions.push(
       createDisplaySetOptions(overlay, opacity, customizationService)
     );
+  });
+
+  // Handle segmentation display sets if they exist
+  activeSegmentations.forEach(segmentation => {
+    if (segmentation.displaySetInstanceUID) {
+      viewport.displaySetOptions.push(
+        createDisplaySetOptions(segmentation, 100, customizationService)
+      );
+    }
   });
 
   return viewport;

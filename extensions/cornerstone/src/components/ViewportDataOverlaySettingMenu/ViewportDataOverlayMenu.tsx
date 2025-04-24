@@ -20,12 +20,8 @@ import {
 
 function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: string }>) {
   const { commandsManager, servicesManager } = useSystem();
-  const {
-    hangingProtocolService,
-    cornerstoneViewportService,
-    customizationService,
-    segmentationService,
-  } = servicesManager.services;
+  const { hangingProtocolService, customizationService, segmentationService } =
+    servicesManager.services;
 
   const {
     backgroundDisplaySet,
@@ -61,9 +57,8 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
         currentOverlays: activeOverlays,
         newDisplaySet: displaySet,
         overlayOpacities,
-        cornerstoneViewportService,
-        viewportId,
-        customizationService,
+        servicesManager,
+        activeSegmentations,
       });
     });
 
@@ -148,6 +143,7 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
         remainingOverlays,
         overlayOpacities,
         customizationService,
+        activeSegmentations,
       });
     });
 
@@ -208,6 +204,7 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
         activeOverlays,
         overlayOpacities,
         customizationService,
+        activeSegmentations,
       });
     });
 
@@ -215,12 +212,6 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
       viewportsToUpdate: updatedViewports,
     });
   };
-
-  // All segmentation display sets (including user-created ones) are already included in derivedOverlays
-  // We can identify user-created ones by the madeInClient property
-  const userCreatedSegmentationDisplaySets = derivedOverlays.filter(
-    displaySet => displaySet.madeInClient && displaySet.Modality === 'SEG'
-  );
 
   // For backward compatibility, check if there are any segmentations that aren't yet display sets
   const displaySetIds = derivedOverlays
@@ -261,44 +252,6 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
 
   return (
     <div className="bg-muted flex h-full w-[262px] flex-col rounded p-3">
-      <span className="text-muted-foreground mb-2 block text-xs font-semibold">
-        Available Overlays
-      </span>
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button
-            variant="outline"
-            className="w-full justify-between border-[#061430] bg-[#061430] text-[#3498db]"
-          >
-            <span>Select overlay...</span>
-            <Icons.ChevronDown className="ml-2 h-4 w-4" />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent className="w-[230px]">
-          <DropdownMenuLabel>Overlayable Items</DropdownMenuLabel>
-          <DropdownMenuSeparator />
-          {allAvailableOverlays.map(overlay => (
-            <DropdownMenuItem
-              key={overlay.displaySetInstanceUID || overlay.segmentationId}
-              onSelect={() => {
-                // User created segmentations can now be either display sets with madeInClient=true
-                // or legacy segmentations directly from segmentation service
-                if ((overlay.madeInClient && overlay.Modality === 'SEG') || overlay.isUserCreated) {
-                  addSegmentationOverlay(overlay);
-                } else {
-                  addOverlay(overlay);
-                }
-              }}
-            >
-              <div className="flex w-full items-center justify-between">
-                <span>{overlay.label}</span>
-                <span className="text-muted-foreground text-xs">{overlay.Modality}</span>
-              </div>
-            </DropdownMenuItem>
-          ))}
-        </DropdownMenuContent>
-      </DropdownMenu>
-
       {(activeOverlays.length > 0 || activeSegmentations.length > 0) && (
         <>
           <Separator className="my-3" />
@@ -359,7 +312,44 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
           </div>
         </>
       )}
+      <span className="text-muted-foreground mb-2 block text-xs font-semibold">
+        Available Overlays
+      </span>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button
+            variant="outline"
+            className="w-full justify-between border-[#061430] bg-[#061430] text-[#3498db]"
+          >
+            <span>Select overlay...</span>
+            <Icons.ChevronDown className="ml-2 h-4 w-4" />
+          </Button>
+        </DropdownMenuTrigger>
 
+        <DropdownMenuContent className="w-[230px]">
+          <DropdownMenuLabel>Overlayable Items</DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          {allAvailableOverlays.map(overlay => (
+            <DropdownMenuItem
+              key={overlay.displaySetInstanceUID || overlay.segmentationId}
+              onSelect={() => {
+                // User created segmentations can now be either display sets with madeInClient=true
+                // or legacy segmentations directly from segmentation service
+                if ((overlay.madeInClient && overlay.Modality === 'SEG') || overlay.isUserCreated) {
+                  addSegmentationOverlay(overlay);
+                } else {
+                  addOverlay(overlay);
+                }
+              }}
+            >
+              <div className="flex w-full items-center justify-between">
+                <span>{overlay.label}</span>
+                <span className="text-muted-foreground text-xs">{overlay.Modality}</span>
+              </div>
+            </DropdownMenuItem>
+          ))}
+        </DropdownMenuContent>
+      </DropdownMenu>
       {nonDerivedOverlays.length > 0 && (
         <>
           <Separator className="my-3" />
@@ -395,7 +385,6 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
           </DropdownMenu>
         </>
       )}
-
       <Separator className="my-3" />
       <span className="text-muted-foreground mb-2 block text-xs font-semibold">Background</span>
       <DropdownMenu>

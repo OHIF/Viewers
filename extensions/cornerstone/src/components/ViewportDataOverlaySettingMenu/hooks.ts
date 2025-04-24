@@ -88,7 +88,8 @@ export function useOverlayState(viewportId) {
       const overlayUIDs = displaySetsUIDs.slice(1);
       const currentDisplaySetOverlays = overlayUIDs
         .map(uid => displaySetService.getDisplaySetByUID(uid))
-        .filter(Boolean);
+        .filter(Boolean)
+        .filter(ds => ds.Modality !== 'SEG');
 
       setActiveOverlays(currentDisplaySetOverlays);
 

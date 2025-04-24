@@ -400,11 +400,6 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     // and we would lose the presentation.
     this.storePresentation({ viewportId: viewportInfo.getViewportId() });
 
-    // Todo: i don't like this here, move it
-    this.servicesManager.services.segmentationService.clearSegmentationRepresentations(
-      viewportInfo.getViewportId()
-    );
-
     if (!viewportInfo) {
       throw new Error('element is not enabled for the given viewportId');
     }
@@ -910,10 +905,13 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
       return;
     }
 
-    const referenceDisplaySet = displaySetService.getDisplaySetByUID(
-      segOrRTSOverlayDisplaySet.referencedDisplaySetInstanceUID
-    );
-    const imageIds = referenceDisplaySet.images.map(image => image.imageId);
+    let imageIds;
+    if (segOrRTSOverlayDisplaySet.referencedDisplaySetInstanceUID) {
+      const referenceDisplaySet = displaySetService.getDisplaySetByUID(
+        segOrRTSOverlayDisplaySet.referencedDisplaySetInstanceUID
+      );
+      imageIds = referenceDisplaySet.images.map(image => image.imageId);
+    }
 
     return {
       imageIds,
