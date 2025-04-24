@@ -1,3 +1,5 @@
+import i18n from 'i18next';
+
 interface DataItem {
   id: number;
   title: string;

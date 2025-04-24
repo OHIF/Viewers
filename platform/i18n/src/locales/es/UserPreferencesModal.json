@@ -2,5 +2,8 @@
   "Cancel": "$t(Buttons:Cancel)",
   "Reset to defaults": "$t(Buttons:Reset to defaults)",
   "Save": "$t(Buttons:Save)",
-  "User preferences": "Preferencias de Usuario"
+  "User preferences": "Preferencias de Usuario",
+  "Language": "Idioma",
+  "No hotkeys found": "No se han configurado teclas de acceso rápido para esta aplicación. Las teclas de acceso rápido se pueden configurar en el archivo app-config.js de la aplicación.",
+  "Hotkeys": "Teclas de acceso rápido"
 }

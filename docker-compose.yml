@@ -28,6 +28,8 @@ services:
   orthanc-container:
     image: orthancteam/orthanc:25.4.2
     restart: unless-stopped
+    ports:
+      - 4242:4242
     volumes:
       - orthanc-storage:/var/lib/orthanc/db/
     secrets:
