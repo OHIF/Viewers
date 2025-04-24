@@ -1,5 +1,12 @@
 import React, { ReactNode } from 'react';
-import { Button, Icons, Popover, PopoverContent, PopoverTrigger } from '@ohif/ui-next';
+import {
+  Button,
+  Icons,
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+  useViewportGrid,
+} from '@ohif/ui-next';
 import { cn } from '@ohif/ui-next';
 import ViewportOrientationMenu from './ViewportOrientationMenu';
 import classNames from 'classnames';
@@ -7,7 +14,6 @@ import { useSystem } from '@ohif/core';
 
 export function ViewportOrientationMenuWrapper({
   viewportId,
-  element,
   location,
 }: withAppTypes<{
   viewportId: string;
@@ -15,10 +21,11 @@ export function ViewportOrientationMenuWrapper({
   location: string;
 }>): ReactNode {
   const { servicesManager } = useSystem();
-  const { viewportActionCornersService, viewportGridService } = servicesManager.services;
+  const { viewportActionCornersService } = servicesManager.services;
+  const [viewportGrid] = useViewportGrid();
 
-  const activeViewportId = viewportGridService.getActiveViewportId();
-  const isActiveViewport = viewportId === activeViewportId;
+  const isActiveViewport = viewportId === viewportGrid.activeViewportId;
+  console.debug('🚀 ~ isActiveViewport:', isActiveViewport);
 
   const { align, side } = viewportActionCornersService.getAlignAndSide(location);
 
@@ -36,12 +43,7 @@ export function ViewportOrientationMenuWrapper({
             isActiveViewport ? 'visible' : 'invisible group-hover/pane:visible'
           )}
         >
-          <Icons.Tool3DRotate
-            className={classNames(
-              'text-highlight',
-              isActiveViewport ? 'visible' : 'invisible group-hover/pane:visible'
-            )}
-          />
+          <Icons.Tool3DRotate className={classNames('text-highlight')} />
         </Button>
       </PopoverTrigger>
       <PopoverContent
