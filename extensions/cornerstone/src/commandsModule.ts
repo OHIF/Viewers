@@ -260,8 +260,15 @@ function commandsModule({
       // Look inside positionPresentationStore and find the key that includes ALL the displaySetInstanceUIDs
       // and the value has viewportId as activeViewportId.
       const previousReferencedDisplaySetStoreKey = Object.entries(positionPresentationStore).find(
-        ([key, value]) =>
-          displaySetInstanceUIDs.every(uid => key.includes(uid)) && value.viewportId === viewportId
+        ([key, value]) => {
+          if (!displaySetInstanceUIDs || !Array.isArray(displaySetInstanceUIDs)) {
+            return false;
+          }
+          return (
+            displaySetInstanceUIDs.every(uid => key.includes(uid)) &&
+            value.viewportId === viewportId
+          );
+        }
       )?.[0];
 
       // Create presentation data with referencedImageId and options if provided
