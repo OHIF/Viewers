@@ -195,6 +195,8 @@ function modeFactory({ modeConfiguration }) {
             props: {
               leftPanels: [eContour.segmentationPanel, ohif.leftPanel],
               rightPanels: [eContour.infoPanel],
+              rightPanelResizable: true,
+              leftPanelResizable: true,
               viewports: [
                 {
                   namespace: cornerstone.viewport,
