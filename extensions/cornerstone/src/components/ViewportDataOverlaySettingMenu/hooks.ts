@@ -2,6 +2,15 @@ import { useMemo } from 'react';
 import { useSystem } from '@ohif/core';
 import { getEnhancedDisplaySets, sortByOverlayable, DERIVED_OVERLAY_MODALITIES } from './utils';
 
+const LOW_PRIORITY_MODALITIES = ['SR', 'SEG', 'RTSTRUCT'];
+
+const sortByPriority = (a, b) => {
+  if (LOW_PRIORITY_MODALITIES.includes(a.Modality)) {
+    return 1;
+  }
+  return -1;
+};
+
 /**
  * Hook to provide all the display sets and overlay information for a viewport
  */
@@ -45,6 +54,7 @@ export function useViewportDisplaySets(viewportId) {
     return enhancedDisplaySets
       .filter(ds => DERIVED_OVERLAY_MODALITIES.includes(ds.Modality))
       .filter(ds => !overlayDisplaySetUIDs.includes(ds.displaySetInstanceUID))
+      .filter(ds => ds.isOverlayable)
       .sort(sortByOverlayable);
   }, [enhancedDisplaySets, overlayDisplaySetUIDs]);
 
@@ -52,18 +62,22 @@ export function useViewportDisplaySets(viewportId) {
     // all the non-derived overlay display sets except the ones that are already in the overlayDisplaySets
     return enhancedDisplaySets
       .filter(ds => !DERIVED_OVERLAY_MODALITIES.includes(ds.Modality))
-      .filter(ds => !foregroundDisplaySetUIDs.includes(ds.displaySetInstanceUID));
+      .filter(ds => !foregroundDisplaySetUIDs.includes(ds.displaySetInstanceUID))
+      .filter(ds => ds.isOverlayable)
+      .sort(sortByPriority);
   }, [enhancedDisplaySets, foregroundDisplaySetUIDs]);
 
   // Get potential background display sets
   const potentialBackgroundDisplaySets = useMemo(() => {
-    return allDisplaySets.filter(
-      ds =>
-        !DERIVED_OVERLAY_MODALITIES.includes(ds.Modality) &&
-        ds.displaySetInstanceUID !== backgroundDisplaySet.displaySetInstanceUID &&
-        !overlayDisplaySetUIDs.includes(ds.displaySetInstanceUID) &&
-        !foregroundDisplaySetUIDs.includes(ds.displaySetInstanceUID)
-    );
+    return allDisplaySets
+      .filter(
+        ds =>
+          !DERIVED_OVERLAY_MODALITIES.includes(ds.Modality) &&
+          ds.displaySetInstanceUID !== backgroundDisplaySet.displaySetInstanceUID &&
+          !overlayDisplaySetUIDs.includes(ds.displaySetInstanceUID) &&
+          !foregroundDisplaySetUIDs.includes(ds.displaySetInstanceUID)
+      )
+      .sort(sortByPriority);
   }, [allDisplaySets, backgroundDisplaySet, overlayDisplaySetUIDs, foregroundDisplaySetUIDs]);
 
   return {

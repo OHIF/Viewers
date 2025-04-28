@@ -41,6 +41,13 @@ export function getEnhancedDisplaySets({ viewportId, services }) {
   const backgroundDisplaySet = viewportDisplaySets[0];
 
   const enhancedDisplaySets = otherDisplaySets.map(displaySet => {
+    if (!backgroundDisplaySet.isReconstructable) {
+      return {
+        ...displaySet,
+        isOverlayable: false,
+      };
+    }
+
     if (displaySet.unsupported) {
       return {
         ...displaySet,

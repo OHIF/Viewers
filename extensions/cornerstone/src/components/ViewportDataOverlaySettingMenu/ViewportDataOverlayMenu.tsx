@@ -11,6 +11,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
+  Switch,
 } from '@ohif/ui-next';
 import { useSystem } from '@ohif/core';
 
@@ -23,7 +24,8 @@ import {
 function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: string }>) {
   const { commandsManager, servicesManager } = useSystem();
   const [showSegmentationSelect, setShowSegmentationSelect] = useState(false);
-  const [showForegroundSelect, setShowForegroundSelect] = useState(false);
+  const [pendingForegrounds, setPendingForegrounds] = useState<string[]>([]);
+  const [thresholdOpacityEnabled, setThresholdOpacityEnabled] = useState(false);
 
   const { hangingProtocolService, viewportGridService } = servicesManager.services;
 
@@ -139,14 +141,34 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
     });
   };
 
+  /**
+   * Handle threshold and opacity toggle
+   */
+  const handleThresholdOpacityToggle = (checked: boolean) => {
+    setThresholdOpacityEnabled(checked);
+
+    // If there are foreground display sets, apply the threshold & opacity settings
+    if (foregroundDisplaySets.length > 0) {
+      // Example implementation of threshold/opacity adjustment
+      commandsManager.runCommand('setForegroundThresholdOpacity', {
+        viewportId,
+        enabled: checked,
+        // You can add additional parameters here as needed
+      });
+    }
+  };
+
   return (
-    <div className="bg-popover flex h-full w-[262px] flex-col rounded p-1.5">
+    <div className="bg-popover flex h-full w-[300px] flex-col rounded rounded-md p-1.5">
       {/* Top buttons row */}
       <div className={`flex`}>
         <Button
           variant="ghost"
           className="text-primary flex items-center p-1"
-          onClick={() => setShowForegroundSelect(true)}
+          onClick={() => {
+            // Add a new pending foreground slot with a unique ID
+            setPendingForegrounds([...pendingForegrounds, `pending-${Date.now()}`]);
+          }}
           disabled={potentialForegroundDisplaySets.length === 0}
         >
           <Icons.Plus className="h-4 w-4" />
@@ -165,7 +187,7 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
 
       {/* Segmentations section */}
       <div className="">
-        <div className="mt-1">
+        <div className="my-1">
           {overlayDisplaySets.map((displaySet, index) => (
             <div
               key={displaySet.displaySetInstanceUID}
@@ -237,20 +259,28 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
                     ))}
                   </SelectContent>
                 </Select>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="ml-2"
-                  onClick={() => setShowSegmentationSelect(false)}
-                >
-                  <Icons.Close className="h-4 w-4" />
-                </Button>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="ml-2"
+                    >
+                      <Icons.More className="h-4 w-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="right">
+                    <DropdownMenuItem onClick={() => setShowSegmentationSelect(false)}>
+                      Cancel
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </div>
             )}
         </div>
 
         {/* Foregrounds section */}
-        <div className="mt-1 px-1">
+        <div className="my-1 px-1">
           {foregroundDisplaySets.map((displaySet, index) => (
             <div
               key={displaySet.displaySetInstanceUID}
@@ -282,7 +312,7 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
                     <Icons.More className="h-4 w-4" />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="right">
+                <DropdownMenuContent align="start">
                   <DropdownMenuItem onClick={() => handleForegroundRemoval(displaySet)}>
                     Remove
                   </DropdownMenuItem>
@@ -291,8 +321,11 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
             </div>
           ))}
 
-          {showForegroundSelect && potentialForegroundDisplaySets.length > 0 && (
-            <div className="mb-2 flex items-center">
+          {pendingForegrounds.map(pendingId => (
+            <div
+              key={pendingId}
+              className="mb-2 flex items-center"
+            >
               <Icons.LayerForeground className="text-muted-foreground mr-1 h-6 w-6" />
               <Select
                 value=""
@@ -302,7 +335,8 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
                   );
                   if (selectedDisplaySet) {
                     handleForegroundSelection(selectedDisplaySet);
-                    setShowForegroundSelect(false);
+                    // Remove this pending foreground from the list
+                    setPendingForegrounds(pendingForegrounds.filter(id => id !== pendingId));
                   }
                 }}
               >
@@ -320,20 +354,33 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
                   ))}
                 </SelectContent>
               </Select>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="ml-2"
-                onClick={() => setShowForegroundSelect(false)}
-              >
-                <Icons.Close className="h-4 w-4" />
-              </Button>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="ml-2"
+                  >
+                    <Icons.More className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="start">
+                  <DropdownMenuItem
+                    onClick={() => {
+                      // Remove this pending foreground
+                      setPendingForegrounds(pendingForegrounds.filter(id => id !== pendingId));
+                    }}
+                  >
+                    Cancel
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
-          )}
+          ))}
         </div>
 
         {/* Background section */}
-        <div className="mt-1 flex items-center px-1">
+        <div className="mt-1 mb-1 flex items-center px-1">
           <Icons.LayerBackground className="text-muted-foreground mr-1 h-6 w-6" />
           <Select
             value={backgroundDisplaySet.displaySetInstanceUID}
@@ -370,12 +417,21 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
       </div>
       {/* Bottom control - only show if foregrounds exist */}
       {foregroundDisplaySets.length > 0 && (
-        <div className="mt-auto">
+        <div className="mt-1 ml-7">
           <div className="flex items-center">
-            <div className="mr-2 flex h-5 w-10 items-center rounded-full bg-blue-900 p-1">
-              <div className="h-3 w-3 rounded-full bg-black"></div>
-            </div>
-            <span className="text-sm text-blue-400">Control threshold & opacity</span>
+            <Switch
+              id="threshold-opacity-switch"
+              className="mr-2"
+              checked={thresholdOpacityEnabled}
+              onCheckedChange={handleThresholdOpacityToggle}
+            />
+            <label
+              htmlFor="threshold-opacity-switch"
+              className="text-muted-foreground cursor-pointer text-sm"
+              onClick={() => setThresholdOpacityEnabled(!thresholdOpacityEnabled)}
+            >
+              Control threshold & opacity
+            </label>
           </div>
         </div>
       )}
