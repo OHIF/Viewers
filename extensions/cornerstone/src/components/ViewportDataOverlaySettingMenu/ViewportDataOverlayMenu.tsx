@@ -63,6 +63,124 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
     }
   };
 
+  /**
+   * Replace a display set layer with a new one
+   */
+  const handleReplaceDisplaySetLayer = (
+    currentDisplaySetInstanceUID: string,
+    newDisplaySetInstanceUID: string
+  ) => {
+    // Remove current display set
+    commandsManager.runCommand('removeDisplaySetLayer', {
+      viewportId,
+      displaySetInstanceUID: currentDisplaySetInstanceUID,
+    });
+
+    // Add new display set
+    commandsManager.runCommand('addDisplaySetAsLayer', {
+      viewportId,
+      displaySetInstanceUID: newDisplaySetInstanceUID,
+    });
+  };
+
+  /**
+   * Remove a display set layer
+   */
+  const handleRemoveDisplaySetLayer = (displaySetInstanceUID: string) => {
+    commandsManager.runCommand('removeDisplaySetLayer', {
+      viewportId,
+      displaySetInstanceUID,
+    });
+  };
+
+  /**
+   * Add a display set as a layer
+   */
+  const handleAddDisplaySetAsLayer = (displaySetInstanceUID: string) => {
+    commandsManager.runCommand('addDisplaySetAsLayer', {
+      viewportId,
+      displaySetInstanceUID,
+    });
+  };
+
+  /**
+   * Handle overlay display set selection change
+   */
+  const handleOverlaySelectionChange = (
+    currentDisplaySet: AppTypes.DisplaySet,
+    newDisplaySetInstanceUID: string
+  ) => {
+    if (newDisplaySetInstanceUID === currentDisplaySet.displaySetInstanceUID) {
+      return; // No change if selecting the same display set
+    }
+
+    // Find the selected display set
+    const selectedDisplaySet = potentialOverlayDisplaySets.find(
+      ds => ds.displaySetInstanceUID === newDisplaySetInstanceUID
+    );
+
+    if (selectedDisplaySet) {
+      handleReplaceDisplaySetLayer(
+        currentDisplaySet.displaySetInstanceUID,
+        selectedDisplaySet.displaySetInstanceUID
+      );
+    }
+  };
+
+  /**
+   * Handle foreground display set selection change
+   */
+  const handleForegroundSelectionChange = (
+    currentDisplaySet: AppTypes.DisplaySet,
+    newDisplaySetInstanceUID: string
+  ) => {
+    if (newDisplaySetInstanceUID === currentDisplaySet.displaySetInstanceUID) {
+      return;
+    }
+
+    // Find the selected display set
+    const selectedDisplaySet = potentialForegroundDisplaySets.find(
+      ds => ds.displaySetInstanceUID === newDisplaySetInstanceUID
+    );
+
+    if (selectedDisplaySet) {
+      handleReplaceDisplaySetLayer(
+        currentDisplaySet.displaySetInstanceUID,
+        selectedDisplaySet.displaySetInstanceUID
+      );
+    }
+  };
+
+  /**
+   * Handle pending segmentation selection
+   */
+  const handlePendingSegmentationSelection = (pendingId: string, displaySetInstanceUID: string) => {
+    const selectedDisplaySet = potentialOverlayDisplaySets.find(
+      ds => ds.displaySetInstanceUID === displaySetInstanceUID
+    );
+
+    if (selectedDisplaySet) {
+      handleAddDisplaySetAsLayer(selectedDisplaySet.displaySetInstanceUID);
+      // Remove this pending segmentation from the list
+      setPendingSegmentations(pendingSegmentations.filter(id => id !== pendingId));
+    }
+  };
+
+  /**
+   * Handle pending foreground selection
+   */
+  const handlePendingForegroundSelection = (pendingId: string, displaySetInstanceUID: string) => {
+    const selectedDisplaySet = potentialForegroundDisplaySets.find(
+      ds => ds.displaySetInstanceUID === displaySetInstanceUID
+    );
+
+    if (selectedDisplaySet) {
+      handleAddDisplaySetAsLayer(selectedDisplaySet.displaySetInstanceUID);
+      // Remove this pending foreground from the list
+      setPendingForegrounds(pendingForegrounds.filter(id => id !== pendingId));
+    }
+  };
+
   return (
     <div className="bg-popover flex h-full w-[275px] flex-col rounded rounded-md p-1.5">
       {/* Top buttons row */}
@@ -103,29 +221,7 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
               <Icons.LayerSegmentation className="text-muted-foreground mr-1 h-6 w-6 flex-shrink-0" />
               <Select
                 value={displaySet.displaySetInstanceUID}
-                onValueChange={value => {
-                  if (value === displaySet.displaySetInstanceUID) {
-                    return; // No change if selecting the same display set
-                  }
-
-                  // Find the selected display set
-                  const selectedDisplaySet = potentialOverlayDisplaySets.find(
-                    ds => ds.displaySetInstanceUID === value
-                  );
-
-                  if (selectedDisplaySet) {
-                    // Remove current and add new one (replace)
-                    commandsManager.runCommand('removeDisplaySetLayer', {
-                      viewportId,
-                      displaySetInstanceUID: displaySet.displaySetInstanceUID,
-                    });
-
-                    commandsManager.runCommand('addDisplaySetAsLayer', {
-                      viewportId,
-                      displaySetInstanceUID: selectedDisplaySet.displaySetInstanceUID,
-                    });
-                  }
-                }}
+                onValueChange={value => handleOverlaySelectionChange(displaySet, value)}
               >
                 <SelectTrigger className="flex-1">
                   <SelectValue>{displaySet.label?.toUpperCase()}</SelectValue>
@@ -160,12 +256,7 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="start">
                   <DropdownMenuItem
-                    onClick={() => {
-                      commandsManager.runCommand('removeDisplaySetLayer', {
-                        viewportId,
-                        displaySetInstanceUID: displaySet.displaySetInstanceUID,
-                      });
-                    }}
+                    onClick={() => handleRemoveDisplaySetLayer(displaySet.displaySetInstanceUID)}
                   >
                     Remove
                   </DropdownMenuItem>
@@ -182,19 +273,7 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
               <Icons.LayerSegmentation className="text-muted-foreground mr-1 h-6 w-6 flex-shrink-0" />
               <Select
                 value=""
-                onValueChange={value => {
-                  const selectedDisplaySet = potentialOverlayDisplaySets.find(
-                    ds => ds.displaySetInstanceUID === value
-                  );
-                  if (selectedDisplaySet) {
-                    commandsManager.runCommand('addDisplaySetAsLayer', {
-                      viewportId,
-                      displaySetInstanceUID: selectedDisplaySet.displaySetInstanceUID,
-                    });
-                    // Remove this pending segmentation from the list
-                    setPendingSegmentations(pendingSegmentations.filter(id => id !== pendingId));
-                  }
-                }}
+                onValueChange={value => handlePendingSegmentationSelection(pendingId, value)}
               >
                 <SelectTrigger className="flex-1">
                   <SelectValue placeholder="SELECT A SEGMENTATION" />
@@ -244,29 +323,7 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
               <Icons.LayerForeground className="text-muted-foreground mr-1 h-6 w-6 flex-shrink-0" />
               <Select
                 value={displaySet.displaySetInstanceUID}
-                onValueChange={value => {
-                  if (value === displaySet.displaySetInstanceUID) {
-                    return;
-                  }
-
-                  // Find the selected display set
-                  const selectedDisplaySet = potentialForegroundDisplaySets.find(
-                    ds => ds.displaySetInstanceUID === value
-                  );
-
-                  if (selectedDisplaySet) {
-                    // Remove current and add new one (replace)
-                    commandsManager.runCommand('removeDisplaySetLayer', {
-                      viewportId,
-                      displaySetInstanceUID: displaySet.displaySetInstanceUID,
-                    });
-
-                    commandsManager.runCommand('addDisplaySetAsLayer', {
-                      viewportId,
-                      displaySetInstanceUID: selectedDisplaySet.displaySetInstanceUID,
-                    });
-                  }
-                }}
+                onValueChange={value => handleForegroundSelectionChange(displaySet, value)}
               >
                 <SelectTrigger className="flex-1">
                   <SelectValue>{displaySet.label?.toUpperCase()}</SelectValue>
@@ -301,12 +358,7 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="start">
                   <DropdownMenuItem
-                    onClick={() => {
-                      commandsManager.runCommand('removeDisplaySetLayer', {
-                        viewportId,
-                        displaySetInstanceUID: displaySet.displaySetInstanceUID,
-                      });
-                    }}
+                    onClick={() => handleRemoveDisplaySetLayer(displaySet.displaySetInstanceUID)}
                   >
                     Remove
                   </DropdownMenuItem>
@@ -323,19 +375,7 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
               <Icons.LayerForeground className="text-muted-foreground mr-1 h-6 w-6 flex-shrink-0" />
               <Select
                 value=""
-                onValueChange={value => {
-                  const selectedDisplaySet = potentialForegroundDisplaySets.find(
-                    ds => ds.displaySetInstanceUID === value
-                  );
-                  if (selectedDisplaySet) {
-                    commandsManager.runCommand('addDisplaySetAsLayer', {
-                      viewportId,
-                      displaySetInstanceUID: selectedDisplaySet.displaySetInstanceUID,
-                    });
-                    // Remove this pending foreground from the list
-                    setPendingForegrounds(pendingForegrounds.filter(id => id !== pendingId));
-                  }
-                }}
+                onValueChange={value => handlePendingForegroundSelection(pendingId, value)}
               >
                 <SelectTrigger className="flex-1">
                   <SelectValue placeholder="SELECT A FOREGROUND" />
