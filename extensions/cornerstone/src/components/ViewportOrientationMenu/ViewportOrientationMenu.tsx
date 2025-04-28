@@ -101,8 +101,8 @@ function ViewportOrientationMenu({
       </DropdownMenuTrigger>
       <DropdownMenuContent
         className="min-w-[160px]"
-        align={align as any}
-        side={side as any}
+        align={align}
+        side={side}
         sideOffset={5}
       >
         <DropdownMenuLabel className="-ml-1">Orientation</DropdownMenuLabel>

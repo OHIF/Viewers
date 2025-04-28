@@ -1755,27 +1755,29 @@ function commandsModule({
         });
       });
     },
-    setViewportOrientation: {
-      commandFn: ({ viewportId, orientation }) => {
-        const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
+    setViewportOrientation: ({ viewportId, orientation }) => {
+      const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
 
-        if (!viewport || viewport.type !== CoreEnums.ViewportType.ORTHOGRAPHIC) {
-          console.warn('Orientation can only be set on volume viewports');
-          return;
-        }
+      if (!viewport || viewport.type !== CoreEnums.ViewportType.ORTHOGRAPHIC) {
+        console.warn('Orientation can only be set on volume viewports');
+        return;
+      }
 
-        // Get display sets for this viewport to verify at least one is reconstructable
-        const displaySetUIDs = viewportGridService.getDisplaySetsUIDsForViewport(viewportId);
-        const displaySets = displaySetUIDs.map(uid => displaySetService.getDisplaySetByUID(uid));
+      // Get display sets for this viewport to verify at least one is reconstructable
+      const displaySetUIDs = viewportGridService.getDisplaySetsUIDsForViewport(viewportId);
+      const displaySets = displaySetUIDs.map(uid => displaySetService.getDisplaySetByUID(uid));
 
-        if (!displaySets.some(ds => ds.isReconstructable)) {
-          console.warn('Cannot change orientation: No reconstructable display sets in viewport');
-          return;
-        }
+      if (!displaySets.some(ds => ds.isReconstructable)) {
+        console.warn('Cannot change orientation: No reconstructable display sets in viewport');
+        return;
+      }
 
-        viewport.setOrientation(orientation);
-        viewport.render();
-      },
+      viewport.setOrientation(orientation);
+      viewport.render();
+
+      // update the orientation in the viewport info
+      const viewportInfo = cornerstoneViewportService.getViewportInfo(viewportId);
+      viewportInfo.setOrientation(orientation);
     },
   };
 
