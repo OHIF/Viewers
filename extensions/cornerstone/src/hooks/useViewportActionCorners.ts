@@ -23,6 +23,7 @@ export interface ViewportActionCornerService {
     id: string;
     component: React.ReactNode;
     location: ViewportActionCornerLocation | string;
+    indexPriority?: number;
   }) => void;
   clear: (viewportId: string) => void;
   getAlignAndSide: (location: ViewportActionCornerLocation | string) => {
@@ -80,9 +81,10 @@ export function useViewportActionCorners({
           element: elementRef.current,
           displaySets,
           verticalDirection: AllInOneMenu.VerticalDirection.TopToBottom,
-          horizontalDirection: AllInOneMenu.HorizontalDirection.RightToLeft,
+          horizontalDirection: AllInOneMenu.HorizontalDirection.LeftToRight,
         }),
         location: windowLevelActionMenu.location,
+        indexPriority: windowLevelActionMenu.indexPriority,
       });
     }
 
@@ -97,6 +99,7 @@ export function useViewportActionCorners({
           location: dataOverlay.location,
         }),
         location: dataOverlay.location,
+        indexPriority: dataOverlay.indexPriority,
       });
     }
 
@@ -111,6 +114,7 @@ export function useViewportActionCorners({
           location: orientationMenu.location,
         }),
         location: orientationMenu.location,
+        indexPriority: orientationMenu.indexPriority,
       });
     }
   }, [displaySets, viewportId, viewportActionCornersService, commandsManager, elementRef]);

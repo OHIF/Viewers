@@ -49,8 +49,7 @@ export function WindowLevelActionMenu({
     width: colorbarWidth,
   } = colorbarProperties;
   const { servicesManager } = useSystem();
-  const { colorbarService, cornerstoneViewportService, viewportGridService } =
-    servicesManager.services;
+  const { colorbarService, cornerstoneViewportService } = servicesManager.services;
   const viewportInfo = cornerstoneViewportService.getViewportInfo(viewportId);
   const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
   const backgroundColor = viewportInfo?.getViewportOptions().background;

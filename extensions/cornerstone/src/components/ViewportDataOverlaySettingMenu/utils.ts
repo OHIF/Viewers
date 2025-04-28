@@ -71,7 +71,7 @@ export function getEnhancedDisplaySets({ viewportId, services }) {
       const imageIds = displaySet.imageIds || displaySet.images?.map(image => image.imageId);
       const isMultiframe = displaySet.isMultiFrame;
 
-      if (!isMultiframe && imageIds.length > 0 && !csUtils.isValidVolume(imageIds)) {
+      if (!isMultiframe && imageIds?.length > 0 && !csUtils.isValidVolume(imageIds)) {
         return {
           ...displaySet,
           isOverlayable: false,
