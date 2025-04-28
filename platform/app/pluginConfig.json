@@ -63,7 +63,7 @@
       "version": "3.0.0"
     },
     {
-      "packageName": "econtour-extension",
+      "packageName": "@econtour/extension",
       "version": "0.0.1"
     }
   ],
@@ -94,7 +94,7 @@
       "version": "3.0.0"
     },
     {
-      "packageName": "econtour-mode",
+      "packageName": "@econtour/mode",
       "version": "0.0.1"
     }
   ],

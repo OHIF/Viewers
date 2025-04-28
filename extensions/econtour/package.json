@@ -1,10 +1,10 @@
 {
-  "name": "econtour-extension",
+  "name": "@econtour/extension",
   "version": "0.0.1",
   "description": "",
   "author": "",
   "license": "MIT",
-  "main": "dist/umd/econtour-extension/index.umd.js",
+  "main": "dist/umd/@econtour/extension/index.umd.js",
   "files": [
     "dist/**",
     "public/**",

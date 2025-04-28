@@ -79,14 +79,6 @@ module.exports = (env, argv) => {
         // Hoisted Yarn Workspace Modules
         path.resolve(__dirname, '../../../node_modules'),
         SRC_DIR,
-        path.resolve(
-          __dirname,
-          '/Users/alireza/dev/econtour/OHIF/extensions/econtour-extension/node_modules'
-        ),
-        path.resolve(
-          __dirname,
-          '/Users/alireza/dev/econtour/OHIF/modes/econtour-mode/node_modules'
-        ),
       ],
     },
     plugins: [

@@ -3,7 +3,7 @@ import initToolGroups from '../../longitudinal/src/initToolGroups';
 import toolbarButtons from '../../longitudinal/src/toolbarButtons';
 
 const eContour = {
-  rightPanel: '@ohif/econtour-extension.panelModule.panelSegmentation',
+  rightPanel: '@econtour/extension.panelModule.customSegmentationPanel',
 };
 
 const ohif = {
@@ -56,7 +56,7 @@ const dicomRT = {
  */
 const extensionDependencies = {
   '@ohif/extension-default': '^3.0.0',
-  'econtour-extension': '^0.0.1',
+  '@econtour/extension': '^0.0.1',
   '@ohif/extension-cornerstone': '^3.0.0',
   '@ohif/extension-cornerstone-dicom-sr': '^3.0.0',
   '@ohif/extension-cornerstone-dicom-seg': '^3.0.0',
