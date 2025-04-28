@@ -193,11 +193,11 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
 
       <div className="">
         {/* Overlays Segmentation section */}
-        <div className="my-1 ml-1">
+        <div className="my-2 ml-1">
           {overlayDisplaySets.map((displaySet, index) => (
             <div
               key={displaySet.displaySetInstanceUID}
-              className="mb-2 flex items-center"
+              className="mb-1 flex items-center"
             >
               <Icons.LayerSegmentation className="text-muted-foreground mr-1 h-6 w-6 flex-shrink-0" />
               <Select
@@ -320,11 +320,11 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
           ))}
         </div>
         {/* Foregrounds section */}
-        <div className="my-1 px-1">
+        <div className="my-2 px-1">
           {foregroundDisplaySets.map((displaySet, index) => (
             <div
               key={displaySet.displaySetInstanceUID}
-              className="flex items-center"
+              className="mb-1 flex items-center"
             >
               <Icons.LayerForeground className="text-muted-foreground mr-1 h-6 w-6 flex-shrink-0" />
               <Select

@@ -773,6 +773,8 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
       volumeInputArray.push({
         imageIds,
         volumeId,
+        modality: displaySet.Modality,
+        displaySetInstanceUID,
         blendMode: displaySetOptions.blendMode,
         slabThickness: this._getSlabThickness(displaySetOptions, volumeId),
       });
@@ -815,8 +817,15 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     const displaySetUIDs = viewportGridService.getDisplaySetsUIDsForViewport(viewport.id);
     const displaySet = displaySetService.getDisplaySetByUID(displaySetUIDs[0]);
     const displaySetModality = displaySet?.Modality;
+
+    // filter the segmentation modalities since the overlay will get handled below via the segmentation service
+    const filteredVolumeInputArray = volumeInputArray.filter(volumeInput => {
+      const displaySet = displaySetService.getDisplaySetByUID(volumeInput.displaySetInstanceUID);
+      return !['SEG', 'RTSTRUCT'].includes(displaySet?.Modality);
+    });
+
     // Todo: use presentations states
-    const volumesProperties = volumeInputArray.map((volumeInput, index) => {
+    const volumesProperties = filteredVolumeInputArray.map((volumeInput, index) => {
       const { volumeId } = volumeInput;
       const displaySetOption = displaySetOptions[index];
       const { voi, voiInverted, colormap, displayPreset } = displaySetOption;
@@ -848,7 +857,7 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     // For SEG and RT viewports
     const { addOverlayFn } = this._processExtraDisplaySetsForViewport(viewport) || {};
 
-    await viewport.setVolumes(volumeInputArray);
+    await viewport.setVolumes(filteredVolumeInputArray);
 
     if (addOverlayFn) {
       addOverlayFn();

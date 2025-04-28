@@ -322,7 +322,6 @@ export default async function init({
     evt => {
       const { segmentationId } = evt;
       const displaySet = displaySetService.getDisplaySetByUID(segmentationId);
-      console.debug('🚀 ~ segmentationId:', segmentationId);
       if (displaySet) {
         return;
       }
