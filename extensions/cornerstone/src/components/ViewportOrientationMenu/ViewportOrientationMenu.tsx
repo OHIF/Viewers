@@ -82,7 +82,7 @@ function ViewportOrientationMenu({
   let align = 'center';
   let side = 'bottom';
 
-  if (location) {
+  if (location !== undefined) {
     const positioning = viewportActionCornersService.getAlignAndSide(location);
     align = positioning.align;
     side = positioning.side;
@@ -96,7 +96,7 @@ function ViewportOrientationMenu({
           size="icon"
           className="text-highlight"
         >
-          <Icons.Tool3DRotate />
+          <Icons.OrientationSwitch />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent
@@ -105,7 +105,7 @@ function ViewportOrientationMenu({
         side={side as any}
         sideOffset={5}
       >
-        <DropdownMenuLabel>Orientation</DropdownMenuLabel>
+        <DropdownMenuLabel className="-ml-1">Orientation</DropdownMenuLabel>
         <DropdownMenuItem onClick={() => handleOrientationChange('axial')}>Axial</DropdownMenuItem>
         <DropdownMenuItem onClick={() => handleOrientationChange('sagittal')}>
           Sagittal
