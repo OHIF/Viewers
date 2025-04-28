@@ -16,10 +16,6 @@ import {
 import { useSystem } from '@ohif/core';
 
 import { useViewportDisplaySets } from './hooks';
-import {
-  configureViewportForForegroundAddition,
-  configureViewportForForegroundRemoval,
-} from './ViewportActions';
 
 function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: string }>) {
   const { commandsManager, servicesManager } = useSystem();
@@ -27,8 +23,7 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
   const [pendingSegmentations, setPendingSegmentations] = useState<string[]>([]);
   const [thresholdOpacityEnabled, setThresholdOpacityEnabled] = useState(false);
 
-  const { hangingProtocolService, viewportGridService, segmentationService } =
-    servicesManager.services;
+  const { hangingProtocolService } = servicesManager.services;
 
   const {
     backgroundDisplaySet,
@@ -38,100 +33,6 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
     overlayDisplaySets,
     foregroundDisplaySets,
   } = useViewportDisplaySets(viewportId);
-
-  const removeOverlay = (displaySet: AppTypes.DisplaySet) => {
-    const updatedViewports = hangingProtocolService.getViewportsRequireUpdate(
-      viewportId,
-      displaySet.displaySetInstanceUID
-    );
-
-    // remove segmentation state from the viewport using segmentation service
-    segmentationService.removeSegmentationRepresentations(viewportId, {
-      segmentationId: displaySet.displaySetInstanceUID,
-    });
-
-    const viewportDisplaySetUIDs = viewportGridService.getDisplaySetsUIDsForViewport(viewportId);
-
-    updatedViewports.forEach(viewport => {
-      configureViewportForForegroundRemoval({
-        viewport,
-        displaySetUID: displaySet.displaySetInstanceUID,
-        viewportDisplaySetUIDs,
-        servicesManager,
-      });
-    });
-
-    const displaySetInstanceUIDs = updatedViewports[0].displaySetInstanceUIDs;
-
-    commandsManager.runCommand('updateStoredPositionPresentation', {
-      viewportId,
-      displaySetInstanceUIDs,
-    });
-
-    commandsManager.run('setDisplaySetsForViewports', {
-      viewportsToUpdate: updatedViewports,
-    });
-  };
-
-  const handleForegroundRemoval = (displaySet: AppTypes.DisplaySet) => {
-    const updatedViewports = hangingProtocolService.getViewportsRequireUpdate(
-      viewportId,
-      displaySet.displaySetInstanceUID
-    );
-
-    const viewportDisplaySetUIDs = viewportGridService.getDisplaySetsUIDsForViewport(viewportId);
-
-    updatedViewports.forEach(viewport => {
-      configureViewportForForegroundRemoval({
-        viewport,
-        displaySetUID: displaySet.displaySetInstanceUID,
-        viewportDisplaySetUIDs,
-        servicesManager,
-      });
-    });
-
-    const displaySetInstanceUIDs = updatedViewports[0].displaySetInstanceUIDs;
-
-    commandsManager.runCommand('updateStoredPositionPresentation', {
-      viewportId,
-      displaySetInstanceUIDs,
-    });
-
-    commandsManager.run('setDisplaySetsForViewports', {
-      viewportsToUpdate: updatedViewports,
-    });
-  };
-
-  /**
-   * Add an overlay to the viewport
-   */
-  const handleForegroundSelection = (displaySet: AppTypes.DisplaySet) => {
-    const updatedViewports = hangingProtocolService.getViewportsRequireUpdate(
-      viewportId,
-      displaySet.displaySetInstanceUID
-    );
-
-    const currentDisplaySetUIDs = viewportGridService.getDisplaySetsUIDsForViewport(viewportId);
-
-    updatedViewports.forEach(viewport => {
-      configureViewportForForegroundAddition({
-        viewport,
-        currentDisplaySetUIDs,
-        servicesManager,
-      });
-    });
-
-    const displaySetInstanceUIDs = updatedViewports[0].displaySetInstanceUIDs;
-
-    commandsManager.runCommand('updateStoredPositionPresentation', {
-      viewportId,
-      displaySetInstanceUIDs,
-    });
-
-    commandsManager.run('setDisplaySetsForViewports', {
-      viewportsToUpdate: updatedViewports,
-    });
-  };
 
   /**
    * Change the background display set
@@ -207,18 +108,22 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
                     return; // No change if selecting the same display set
                   }
 
-                  // remove this one and add the new one
-                  handleForegroundRemoval(displaySet);
-                  removeOverlay(displaySet);
-
+                  // Find the selected display set
                   const selectedDisplaySet = potentialOverlayDisplaySets.find(
                     ds => ds.displaySetInstanceUID === value
                   );
 
                   if (selectedDisplaySet) {
-                    setTimeout(() => {
-                      handleForegroundSelection(selectedDisplaySet);
-                    }, 0);
+                    // Remove current and add new one (replace)
+                    commandsManager.runCommand('removeDisplaySetLayer', {
+                      viewportId,
+                      displaySetInstanceUID: displaySet.displaySetInstanceUID,
+                    });
+
+                    commandsManager.runCommand('addDisplaySetAsLayer', {
+                      viewportId,
+                      displaySetInstanceUID: selectedDisplaySet.displaySetInstanceUID,
+                    });
                   }
                 }}
               >
@@ -254,7 +159,14 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="start">
-                  <DropdownMenuItem onClick={() => removeOverlay(displaySet)}>
+                  <DropdownMenuItem
+                    onClick={() => {
+                      commandsManager.runCommand('removeDisplaySetLayer', {
+                        viewportId,
+                        displaySetInstanceUID: displaySet.displaySetInstanceUID,
+                      });
+                    }}
+                  >
                     Remove
                   </DropdownMenuItem>
                 </DropdownMenuContent>
@@ -275,7 +187,10 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
                     ds => ds.displaySetInstanceUID === value
                   );
                   if (selectedDisplaySet) {
-                    handleForegroundSelection(selectedDisplaySet);
+                    commandsManager.runCommand('addDisplaySetAsLayer', {
+                      viewportId,
+                      displaySetInstanceUID: selectedDisplaySet.displaySetInstanceUID,
+                    });
                     // Remove this pending segmentation from the list
                     setPendingSegmentations(pendingSegmentations.filter(id => id !== pendingId));
                   }
@@ -334,17 +249,22 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
                     return;
                   }
 
-                  // remove this one and add the new one
-                  handleForegroundRemoval(displaySet);
-
+                  // Find the selected display set
                   const selectedDisplaySet = potentialForegroundDisplaySets.find(
                     ds => ds.displaySetInstanceUID === value
                   );
 
                   if (selectedDisplaySet) {
-                    setTimeout(() => {
-                      handleForegroundSelection(selectedDisplaySet);
-                    }, 0);
+                    // Remove current and add new one (replace)
+                    commandsManager.runCommand('removeDisplaySetLayer', {
+                      viewportId,
+                      displaySetInstanceUID: displaySet.displaySetInstanceUID,
+                    });
+
+                    commandsManager.runCommand('addDisplaySetAsLayer', {
+                      viewportId,
+                      displaySetInstanceUID: selectedDisplaySet.displaySetInstanceUID,
+                    });
                   }
                 }}
               >
@@ -380,7 +300,14 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="start">
-                  <DropdownMenuItem onClick={() => handleForegroundRemoval(displaySet)}>
+                  <DropdownMenuItem
+                    onClick={() => {
+                      commandsManager.runCommand('removeDisplaySetLayer', {
+                        viewportId,
+                        displaySetInstanceUID: displaySet.displaySetInstanceUID,
+                      });
+                    }}
+                  >
                     Remove
                   </DropdownMenuItem>
                 </DropdownMenuContent>
@@ -401,7 +328,10 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
                     ds => ds.displaySetInstanceUID === value
                   );
                   if (selectedDisplaySet) {
-                    handleForegroundSelection(selectedDisplaySet);
+                    commandsManager.runCommand('addDisplaySetAsLayer', {
+                      viewportId,
+                      displaySetInstanceUID: selectedDisplaySet.displaySetInstanceUID,
+                    });
                     // Remove this pending foreground from the list
                     setPendingForegrounds(pendingForegrounds.filter(id => id !== pendingId));
                   }

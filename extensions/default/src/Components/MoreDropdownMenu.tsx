@@ -36,7 +36,7 @@ const getMenuItemsDefault = ({
       onClick: ({ commandsManager, ...props }: withAppTypes) => () => void;
     };
   }) => (
-    <DropdownMenuItem onClick={() => item.onClick({ commandsManager, ...props })}>
+    <DropdownMenuItem onClick={() => item.onClick({ commandsManager, servicesManager, ...props })}>
       <div className="flex items-center gap-2">
         {item.iconName && <Icons.ByName name={item.iconName} />}
         <span>{item.label}</span>
