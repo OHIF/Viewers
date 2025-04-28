@@ -185,8 +185,8 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
         </Button>
       </div>
 
-      {/* Segmentations section */}
       <div className="">
+        {/* Overlays Segmentation section */}
         <div className="my-1">
           {overlayDisplaySets.map((displaySet, index) => (
             <div
@@ -194,11 +194,67 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
               className="mb-2 flex items-center"
             >
               <Icons.LayerSegmentation className="text-muted-foreground mr-1 h-6 w-6" />
-              <Select value={displaySet.displaySetInstanceUID}>
+              <Select
+                value={displaySet.displaySetInstanceUID}
+                onValueChange={value => {
+                  if (value === displaySet.displaySetInstanceUID) {
+                    return; // No change if selecting the same display set
+                  }
+
+                  // Find all the display sets for the viewport
+                  const viewportDisplaySetUIDs =
+                    viewportGridService.getDisplaySetsUIDsForViewport(viewportId);
+
+                  // Find the new display set to use
+                  const allPotentialOverlays = [
+                    ...potentialOverlayDisplaySets,
+                    ...overlayDisplaySets,
+                  ];
+                  const selectedDisplaySet = allPotentialOverlays.find(
+                    ds => ds.displaySetInstanceUID === value
+                  );
+
+                  if (!selectedDisplaySet) {
+                    return;
+                  }
+
+                  // Properly handle the overlay change
+                  // First remove existing overlay
+                  removeOverlay(displaySet);
+
+                  // Then add the new one
+                  const currentDisplaySetUIDs =
+                    viewportGridService.getDisplaySetsUIDsForViewport(viewportId);
+
+                  const updatedViewports = hangingProtocolService.getViewportsRequireUpdate(
+                    viewportId,
+                    selectedDisplaySet.displaySetInstanceUID
+                  );
+
+                  updatedViewports.forEach(viewport => {
+                    configureViewportForForegroundAddition({
+                      viewport,
+                      currentDisplaySetUIDs,
+                      servicesManager,
+                    });
+                  });
+
+                  commandsManager.run('setDisplaySetsForViewports', {
+                    viewportsToUpdate: updatedViewports,
+                  });
+                }}
+              >
                 <SelectTrigger className="flex-grow">
                   <SelectValue>{displaySet.label?.toUpperCase()}</SelectValue>
                 </SelectTrigger>
                 <SelectContent>
+                  {/* Include both potential overlays and the current overlay */}
+                  <SelectItem
+                    key={displaySet.displaySetInstanceUID}
+                    value={displaySet.displaySetInstanceUID}
+                  >
+                    {displaySet.label}
+                  </SelectItem>
                   {potentialOverlayDisplaySets.map(item => (
                     <SelectItem
                       key={item.displaySetInstanceUID}
@@ -278,7 +334,6 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
               </div>
             )}
         </div>
-
         {/* Foregrounds section */}
         <div className="my-1 px-1">
           {foregroundDisplaySets.map((displaySet, index) => (
@@ -287,11 +342,38 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
               className="flex items-center"
             >
               <Icons.LayerForeground className="text-muted-foreground mr-1 h-6 w-6" />
-              <Select value={displaySet.displaySetInstanceUID}>
+              <Select
+                value={displaySet.displaySetInstanceUID}
+                onValueChange={value => {
+                  if (value === displaySet.displaySetInstanceUID) {
+                    return;
+                  }
+
+                  // remove this one and add the new one
+                  handleForegroundRemoval(displaySet);
+
+                  const selectedDisplaySet = potentialForegroundDisplaySets.find(
+                    ds => ds.displaySetInstanceUID === value
+                  );
+
+                  if (selectedDisplaySet) {
+                    setTimeout(() => {
+                      handleForegroundSelection(selectedDisplaySet);
+                    }, 0);
+                  }
+                }}
+              >
                 <SelectTrigger className="flex-grow">
                   <SelectValue>{displaySet.label?.toUpperCase()}</SelectValue>
                 </SelectTrigger>
                 <SelectContent>
+                  {/* Include both potential foregrounds and the current foreground */}
+                  <SelectItem
+                    key={displaySet.displaySetInstanceUID}
+                    value={displaySet.displaySetInstanceUID}
+                  >
+                    {displaySet.label}
+                  </SelectItem>
                   {potentialForegroundDisplaySets.map(item => (
                     <SelectItem
                       key={item.displaySetInstanceUID}
@@ -378,7 +460,6 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
             </div>
           ))}
         </div>
-
         {/* Background section */}
         <div className="mt-1 mb-1 flex items-center px-1">
           <Icons.LayerBackground className="text-muted-foreground mr-1 h-6 w-6" />
