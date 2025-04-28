@@ -1,16 +1,25 @@
 import React from 'react';
-import { Button, Icons, ScrollArea } from '@ohif/ui-next';
+import { Icons } from '@ohif/ui-next';
 import { useSystem } from '@ohif/core';
-import { Enums, utilities as csUtils } from '@cornerstonejs/core';
+import { Enums } from '@cornerstonejs/core';
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  Button,
+} from '@ohif/ui-next';
 
-function ViewportOrientationMenu({ viewportId }: withAppTypes<{ viewportId: string }>) {
+function ViewportOrientationMenu({
+  viewportId,
+  location,
+}: withAppTypes<{ viewportId: string; location?: string }>) {
   const { servicesManager, commandsManager } = useSystem();
   const { cornerstoneViewportService, displaySetService, viewportGridService } =
     servicesManager.services;
 
-  // Handle orientation change for the viewport
   const handleOrientationChange = (orientation: string) => {
-    // Get viewport info and check viewport type
     const viewportInfo = cornerstoneViewportService.getViewportInfo(viewportId);
     const currentViewportType = viewportInfo?.getViewportType();
 
@@ -67,43 +76,48 @@ function ViewportOrientationMenu({ viewportId }: withAppTypes<{ viewportId: stri
       });
     }
   };
+  const { viewportActionCornersService } = servicesManager.services;
+
+  // Get proper alignment and side based on the location
+  let align = 'center';
+  let side = 'bottom';
+
+  if (location) {
+    const positioning = viewportActionCornersService.getAlignAndSide(location);
+    align = positioning.align;
+    side = positioning.side;
+  }
 
   return (
-    <div className="bg-muted flex h-full w-[200px] flex-col rounded p-3">
-      <span className="text-muted-foreground mb-2 block text-xs font-semibold">Orientation</span>
-      <ScrollArea className="h-[120px] w-full">
-        <div className="space-y-1">
-          <Button
-            variant="ghost"
-            className="w-full justify-start"
-            onClick={() => handleOrientationChange('axial')}
-          >
-            Axial
-          </Button>
-          <Button
-            variant="ghost"
-            className="w-full justify-start"
-            onClick={() => handleOrientationChange('sagittal')}
-          >
-            Sagittal
-          </Button>
-          <Button
-            variant="ghost"
-            className="w-full justify-start"
-            onClick={() => handleOrientationChange('coronal')}
-          >
-            Coronal
-          </Button>
-          <Button
-            variant="ghost"
-            className="w-full justify-start"
-            onClick={() => handleOrientationChange('acquisition')}
-          >
-            Acquisition
-          </Button>
-        </div>
-      </ScrollArea>
-    </div>
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="text-highlight"
+        >
+          <Icons.Tool3DRotate />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent
+        className="min-w-[160px]"
+        align={align as any}
+        side={side as any}
+        sideOffset={5}
+      >
+        <DropdownMenuLabel>Orientation</DropdownMenuLabel>
+        <DropdownMenuItem onClick={() => handleOrientationChange('axial')}>Axial</DropdownMenuItem>
+        <DropdownMenuItem onClick={() => handleOrientationChange('sagittal')}>
+          Sagittal
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => handleOrientationChange('coronal')}>
+          Coronal
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => handleOrientationChange('acquisition')}>
+          Acquisition
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }
 
