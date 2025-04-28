@@ -23,11 +23,12 @@ import {
 
 function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: string }>) {
   const { commandsManager, servicesManager } = useSystem();
-  const [showSegmentationSelect, setShowSegmentationSelect] = useState(false);
   const [pendingForegrounds, setPendingForegrounds] = useState<string[]>([]);
+  const [pendingSegmentations, setPendingSegmentations] = useState<string[]>([]);
   const [thresholdOpacityEnabled, setThresholdOpacityEnabled] = useState(false);
 
-  const { hangingProtocolService, viewportGridService } = servicesManager.services;
+  const { hangingProtocolService, viewportGridService, segmentationService } =
+    servicesManager.services;
 
   const {
     backgroundDisplaySet,
@@ -43,6 +44,11 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
       viewportId,
       displaySet.displaySetInstanceUID
     );
+
+    // remove segmentation state from the viewport using segmentation service
+    segmentationService.removeSegmentationRepresentations(viewportId, {
+      segmentationId: displaySet.displaySetInstanceUID,
+    });
 
     const viewportDisplaySetUIDs = viewportGridService.getDisplaySetsUIDsForViewport(viewportId);
 
@@ -157,7 +163,7 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
   };
 
   return (
-    <div className="bg-popover flex h-full w-[264px] flex-col rounded rounded-md p-1.5">
+    <div className="bg-popover flex h-full w-[275px] flex-col rounded rounded-md p-1.5">
       {/* Top buttons row */}
       <div className={`flex`}>
         <Button
@@ -176,7 +182,9 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
           variant="ghost"
           className="text-primary ml-2 flex items-center"
           disabled={potentialOverlayDisplaySets.length === 0}
-          onClick={() => setShowSegmentationSelect(true)}
+          onClick={() => {
+            setPendingSegmentations([...pendingSegmentations, `seg-${Date.now()}`]);
+          }}
         >
           <Icons.Plus className="h-4 w-4" />
           Segmentation
@@ -185,7 +193,7 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
 
       <div className="">
         {/* Overlays Segmentation section */}
-        <div className="my-1">
+        <div className="my-1 ml-1">
           {overlayDisplaySets.map((displaySet, index) => (
             <div
               key={displaySet.displaySetInstanceUID}
@@ -254,55 +262,62 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
             </div>
           ))}
 
-          {showSegmentationSelect &&
-            potentialOverlayDisplaySets.length > 0 &&
-            !overlayDisplaySets.length && (
-              <div className="mb-2 flex items-center">
-                <Icons.LayerSegmentation className="text-muted-foreground mr-1 h-6 w-6 flex-shrink-0" />
-                <Select
-                  value=""
-                  onValueChange={value => {
-                    const selectedDisplaySet = potentialOverlayDisplaySets.find(
-                      ds => ds.displaySetInstanceUID === value
-                    );
-                    if (selectedDisplaySet) {
-                      handleForegroundSelection(selectedDisplaySet);
-                      setShowSegmentationSelect(false);
-                    }
-                  }}
-                >
-                  <SelectTrigger className="flex-1">
-                    <SelectValue placeholder="SELECT A SEGMENTATION" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {potentialOverlayDisplaySets.map(item => (
-                      <SelectItem
-                        key={item.displaySetInstanceUID}
-                        value={item.displaySetInstanceUID}
-                      >
-                        {item.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="ml-2 flex-shrink-0"
+          {pendingSegmentations.map(pendingId => (
+            <div
+              key={pendingId}
+              className="mb-2 flex items-center"
+            >
+              <Icons.LayerSegmentation className="text-muted-foreground mr-1 h-6 w-6 flex-shrink-0" />
+              <Select
+                value=""
+                onValueChange={value => {
+                  const selectedDisplaySet = potentialOverlayDisplaySets.find(
+                    ds => ds.displaySetInstanceUID === value
+                  );
+                  if (selectedDisplaySet) {
+                    handleForegroundSelection(selectedDisplaySet);
+                    // Remove this pending segmentation from the list
+                    setPendingSegmentations(pendingSegmentations.filter(id => id !== pendingId));
+                  }
+                }}
+              >
+                <SelectTrigger className="flex-1">
+                  <SelectValue placeholder="SELECT A SEGMENTATION" />
+                </SelectTrigger>
+                <SelectContent>
+                  {potentialOverlayDisplaySets.map(item => (
+                    <SelectItem
+                      key={item.displaySetInstanceUID}
+                      value={item.displaySetInstanceUID}
                     >
-                      <Icons.More className="h-4 w-4" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="start">
-                    <DropdownMenuItem onClick={() => setShowSegmentationSelect(false)}>
-                      Cancel
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </div>
-            )}
+                      {item.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="ml-2 flex-shrink-0"
+                  >
+                    <Icons.More className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="start">
+                  <DropdownMenuItem
+                    onClick={() => {
+                      // Remove this pending segmentation
+                      setPendingSegmentations(pendingSegmentations.filter(id => id !== pendingId));
+                    }}
+                  >
+                    Cancel
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+          ))}
         </div>
         {/* Foregrounds section */}
         <div className="my-1 px-1">
