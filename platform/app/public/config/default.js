@@ -18,6 +18,7 @@ window.config = {
   strictZSpacingForVolumeViewport: true,
   groupEnabledModesFirst: true,
   allowMultiSelectExport: false,
+  disableConfirmationPrompts: true,
   maxNumRequests: {
     interaction: 100,
     thumbnail: 75,

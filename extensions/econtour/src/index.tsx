@@ -1,4 +1,5 @@
 import CustomSegmentationPanel from './CustomSegmentationPanel';
+import CustomInfoPanel from './CustomInfoPanel';
 import { id } from './id';
 
 /**
@@ -32,6 +33,13 @@ export default {
         iconLabel: 'Segmentation',
         label: 'Segmentation',
         component: CustomSegmentationPanel,
+      },
+      {
+        name: 'customInfoPanel',
+        iconName: 'info',
+        iconLabel: 'Info',
+        label: 'Info',
+        component: CustomInfoPanel,
       },
     ];
   },

@@ -74,6 +74,7 @@
     "link-list": "npm ls --depth=0 --link=true"
   },
   "dependencies": {
+    "@tanstack/react-query": "^5.28.4",
     "execa": "^8.0.1"
   },
   "optionalDependencies": {

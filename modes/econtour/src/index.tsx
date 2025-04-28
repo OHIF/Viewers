@@ -3,7 +3,8 @@ import initToolGroups from '../../longitudinal/src/initToolGroups';
 import toolbarButtons from '../../longitudinal/src/toolbarButtons';
 
 const eContour = {
-  rightPanel: '@econtour/extension.panelModule.customSegmentationPanel',
+  segmentationPanel: '@econtour/extension.panelModule.customSegmentationPanel',
+  infoPanel: '@econtour/extension.panelModule.customInfoPanel',
 };
 
 const ohif = {
@@ -192,8 +193,8 @@ function modeFactory({ modeConfiguration }) {
           return {
             id: ohif.layout,
             props: {
-              leftPanels: [ohif.leftPanel],
-              rightPanels: [eContour.rightPanel],
+              leftPanels: [eContour.segmentationPanel, ohif.leftPanel],
+              rightPanels: [eContour.infoPanel],
               viewports: [
                 {
                   namespace: cornerstone.viewport,

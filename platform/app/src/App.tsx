@@ -5,6 +5,7 @@ import PropTypes from 'prop-types';
 import i18n from '@ohif/i18n';
 import { I18nextProvider } from 'react-i18next';
 import { BrowserRouter } from 'react-router-dom';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 import Compose from './routes/Mode/Compose';
 import {
@@ -63,6 +64,20 @@ function App({
   defaultModes = [],
 }) {
   const [init, setInit] = useState(null);
+  // Create a client
+  const [queryClient] = useState(
+    () =>
+      new QueryClient({
+        defaultOptions: {
+          queries: {
+            staleTime: 1000 * 60 * 5, // 5 minutes
+            cacheTime: 1000 * 60 * 30, // 30 minutes
+            retry: 1,
+          },
+        },
+      })
+  );
+
   useEffect(() => {
     const run = async () => {
       appInit(config, defaultExtensions, defaultModes).then(setInit).catch(console.error);
@@ -108,6 +123,7 @@ function App({
 
   const providers = [
     [AppConfigProvider, { value: appConfigState }],
+    [QueryClientProvider, { client: queryClient }],
     [UserAuthenticationProvider, { service: userAuthenticationService }],
     [I18nextProvider, { i18n }],
     [ThemeWrapperNext],
