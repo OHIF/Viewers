@@ -201,47 +201,19 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
                     return; // No change if selecting the same display set
                   }
 
-                  // Find all the display sets for the viewport
-                  const viewportDisplaySetUIDs =
-                    viewportGridService.getDisplaySetsUIDsForViewport(viewportId);
+                  // remove this one and add the new one
+                  handleForegroundRemoval(displaySet);
+                  removeOverlay(displaySet);
 
-                  // Find the new display set to use
-                  const allPotentialOverlays = [
-                    ...potentialOverlayDisplaySets,
-                    ...overlayDisplaySets,
-                  ];
-                  const selectedDisplaySet = allPotentialOverlays.find(
+                  const selectedDisplaySet = potentialOverlayDisplaySets.find(
                     ds => ds.displaySetInstanceUID === value
                   );
 
-                  if (!selectedDisplaySet) {
-                    return;
+                  if (selectedDisplaySet) {
+                    setTimeout(() => {
+                      handleForegroundSelection(selectedDisplaySet);
+                    }, 0);
                   }
-
-                  // Properly handle the overlay change
-                  // First remove existing overlay
-                  removeOverlay(displaySet);
-
-                  // Then add the new one
-                  const currentDisplaySetUIDs =
-                    viewportGridService.getDisplaySetsUIDsForViewport(viewportId);
-
-                  const updatedViewports = hangingProtocolService.getViewportsRequireUpdate(
-                    viewportId,
-                    selectedDisplaySet.displaySetInstanceUID
-                  );
-
-                  updatedViewports.forEach(viewport => {
-                    configureViewportForForegroundAddition({
-                      viewport,
-                      currentDisplaySetUIDs,
-                      servicesManager,
-                    });
-                  });
-
-                  commandsManager.run('setDisplaySetsForViewports', {
-                    viewportsToUpdate: updatedViewports,
-                  });
                 }}
               >
                 <SelectTrigger className="flex-grow">
