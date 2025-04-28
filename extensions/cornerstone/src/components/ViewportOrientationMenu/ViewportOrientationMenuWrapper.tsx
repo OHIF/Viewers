@@ -2,7 +2,6 @@ import React, { ReactNode } from 'react';
 import { useViewportGrid } from '@ohif/ui-next';
 import { cn } from '@ohif/ui-next';
 import ViewportOrientationMenu from './ViewportOrientationMenu';
-import { useSystem } from '@ohif/core';
 
 export function ViewportOrientationMenuWrapper({
   viewportId,
@@ -16,7 +15,12 @@ export function ViewportOrientationMenuWrapper({
   const isActiveViewport = viewportId === viewportGrid.activeViewportId;
 
   return (
-    <div className={cn(isActiveViewport ? 'visible' : 'invisible group-hover/pane:visible')}>
+    <div
+      className={cn(
+        'flex justify-end',
+        isActiveViewport ? 'visible' : 'invisible group-hover/pane:visible'
+      )}
+    >
       <ViewportOrientationMenu
         viewportId={viewportId}
         location={location}
