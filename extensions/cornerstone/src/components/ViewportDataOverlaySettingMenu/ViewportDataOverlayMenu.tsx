@@ -147,19 +147,17 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
   const handleThresholdOpacityToggle = (checked: boolean) => {
     setThresholdOpacityEnabled(checked);
 
-    // If there are foreground display sets, apply the threshold & opacity settings
     if (foregroundDisplaySets.length > 0) {
       // Example implementation of threshold/opacity adjustment
       commandsManager.runCommand('setForegroundThresholdOpacity', {
         viewportId,
         enabled: checked,
-        // You can add additional parameters here as needed
       });
     }
   };
 
   return (
-    <div className="bg-popover flex h-full w-[300px] flex-col rounded rounded-md p-1.5">
+    <div className="bg-popover flex h-full w-[264px] flex-col rounded rounded-md p-1.5">
       {/* Top buttons row */}
       <div className={`flex`}>
         <Button
@@ -193,7 +191,7 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
               key={displaySet.displaySetInstanceUID}
               className="mb-2 flex items-center"
             >
-              <Icons.LayerSegmentation className="text-muted-foreground mr-1 h-6 w-6" />
+              <Icons.LayerSegmentation className="text-muted-foreground mr-1 h-6 w-6 flex-shrink-0" />
               <Select
                 value={displaySet.displaySetInstanceUID}
                 onValueChange={value => {
@@ -216,7 +214,7 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
                   }
                 }}
               >
-                <SelectTrigger className="flex-grow">
+                <SelectTrigger className="flex-1">
                   <SelectValue>{displaySet.label?.toUpperCase()}</SelectValue>
                 </SelectTrigger>
                 <SelectContent>
@@ -242,12 +240,12 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="ml-2"
+                    className="ml-2 flex-shrink-0"
                   >
                     <Icons.More className="h-4 w-4" />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="right">
+                <DropdownMenuContent align="start">
                   <DropdownMenuItem onClick={() => removeOverlay(displaySet)}>
                     Remove
                   </DropdownMenuItem>
@@ -260,7 +258,7 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
             potentialOverlayDisplaySets.length > 0 &&
             !overlayDisplaySets.length && (
               <div className="mb-2 flex items-center">
-                <Icons.LayerSegmentation className="text-muted-foreground mr-1 h-6 w-6" />
+                <Icons.LayerSegmentation className="text-muted-foreground mr-1 h-6 w-6 flex-shrink-0" />
                 <Select
                   value=""
                   onValueChange={value => {
@@ -273,7 +271,7 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
                     }
                   }}
                 >
-                  <SelectTrigger className="flex-grow">
+                  <SelectTrigger className="flex-1">
                     <SelectValue placeholder="SELECT A SEGMENTATION" />
                   </SelectTrigger>
                   <SelectContent>
@@ -292,12 +290,12 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="ml-2"
+                      className="ml-2 flex-shrink-0"
                     >
                       <Icons.More className="h-4 w-4" />
                     </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align="right">
+                  <DropdownMenuContent align="start">
                     <DropdownMenuItem onClick={() => setShowSegmentationSelect(false)}>
                       Cancel
                     </DropdownMenuItem>
@@ -313,7 +311,7 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
               key={displaySet.displaySetInstanceUID}
               className="flex items-center"
             >
-              <Icons.LayerForeground className="text-muted-foreground mr-1 h-6 w-6" />
+              <Icons.LayerForeground className="text-muted-foreground mr-1 h-6 w-6 flex-shrink-0" />
               <Select
                 value={displaySet.displaySetInstanceUID}
                 onValueChange={value => {
@@ -335,7 +333,7 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
                   }
                 }}
               >
-                <SelectTrigger className="flex-grow">
+                <SelectTrigger className="flex-1">
                   <SelectValue>{displaySet.label?.toUpperCase()}</SelectValue>
                 </SelectTrigger>
                 <SelectContent>
@@ -361,7 +359,7 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="ml-2"
+                    className="ml-2 flex-shrink-0"
                   >
                     <Icons.More className="h-4 w-4" />
                   </Button>
@@ -380,7 +378,7 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
               key={pendingId}
               className="mb-2 flex items-center"
             >
-              <Icons.LayerForeground className="text-muted-foreground mr-1 h-6 w-6" />
+              <Icons.LayerForeground className="text-muted-foreground mr-1 h-6 w-6 flex-shrink-0" />
               <Select
                 value=""
                 onValueChange={value => {
@@ -394,7 +392,7 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
                   }
                 }}
               >
-                <SelectTrigger className="flex-grow">
+                <SelectTrigger className="flex-1">
                   <SelectValue placeholder="SELECT A FOREGROUND" />
                 </SelectTrigger>
                 <SelectContent>
@@ -413,7 +411,7 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="ml-2"
+                    className="ml-2 flex-shrink-0"
                   >
                     <Icons.More className="h-4 w-4" />
                   </Button>
@@ -434,7 +432,7 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
         </div>
         {/* Background section */}
         <div className="mt-1 mb-1 flex items-center px-1">
-          <Icons.LayerBackground className="text-muted-foreground mr-1 h-6 w-6" />
+          <Icons.LayerBackground className="text-muted-foreground mr-1 h-6 w-6 flex-shrink-0" />
           <Select
             value={backgroundDisplaySet.displaySetInstanceUID}
             onValueChange={value => {
@@ -446,7 +444,7 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
               }
             }}
           >
-            <SelectTrigger className="flex-grow">
+            <SelectTrigger className="flex-1">
               <SelectValue>
                 {(
                   backgroundDisplaySet.SeriesDescription ||
