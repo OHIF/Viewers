@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
+    <title>OHIF Viewer Iframe Example</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .header {
+        background-color: #333;
+        color: white;
+        padding: 10px 20px;
+      }
+
+      .container {
+        display: flex;
+        flex: 1;
+        overflow: hidden;
+      }
+
+      .sidebar {
+        width: 250px;
+        background-color: #f5f5f5;
+        padding: 20px;
+        overflow-y: auto;
+      }
+
+      .viewer-container {
+        flex: 1;
+        position: relative;
+      }
+
+      iframe {
+        width: 100%;
+        height: 100%;
+        border: none;
+      }
+
+      button {
+        display: block;
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 10px;
+        background-color: #4caf50;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+
+      button:hover {
+        background-color: #45a049;
+      }
+
+      h2 {
+        margin-top: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <h1>Parent Application</h1>
+    </div>
+
+    <div class="container">
+      <div class="sidebar">
+        <h2>Navigation</h2>
+        <button id="worklistBtn">Go to Worklist</button>
+        <h2>Patients</h2>
+        <button id="patient1Btn">Patient A</button>
+      </div>
+
+      <div class="viewer-container">
+        <!-- Update the src to point to your deployed OHIF viewer with absolute path -->
+        <iframe
+          id="ohifViewer"
+          src="./ohif"
+          allow="clipboard-read; clipboard-write"
+        ></iframe>
+      </div>
+    </div>
+
+    <script>
+      const studyInstanceUIDs = {
+        patientA: '2.16.840.1.114362.1.11897988.23452914497.543970264.655.2',
+      };
+
+      // Get DOM elements
+      const iframe = document.getElementById('ohifViewer');
+      const worklistBtn = document.getElementById('worklistBtn');
+      const patient1Btn = document.getElementById('patient1Btn');
+
+      // Function to navigate using either direct URL or postMessage
+      function navigateTo(path, queryParams = {}) {
+        const iframeSrc = iframe.src.split('#')[0]; // Base URL without hash
+
+        // Navigate using postMessage
+        iframe.contentWindow.postMessage(
+          {
+            type: 'navigate',
+            path: path,
+            query: queryParams,
+          },
+          '*'
+        );
+      }
+
+      // Add event listeners to buttons
+      worklistBtn.addEventListener('click', () => {
+        navigateTo('/');
+      });
+
+      patient1Btn.addEventListener('click', () => {
+        navigateTo('/e-contour', { StudyInstanceUIDs: studyInstanceUIDs.patientA });
+      });
+    </script>
+  </body>
+</html>
