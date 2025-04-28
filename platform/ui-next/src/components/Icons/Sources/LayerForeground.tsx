@@ -8,6 +8,7 @@ export const LayerForeground = (props: IconProps) => (
     viewBox="0 0 28 28"
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
+    {...props}
   >
     <rect
       x="10.3999"

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Button,
   Icons,
@@ -22,8 +22,10 @@ import {
 
 function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: string }>) {
   const { commandsManager, servicesManager } = useSystem();
-  const { hangingProtocolService, customizationService, viewportGridService } =
-    servicesManager.services;
+  const [showSegmentationSelect, setShowSegmentationSelect] = useState(false);
+  const [showForegroundSelect, setShowForegroundSelect] = useState(false);
+
+  const { hangingProtocolService, viewportGridService } = servicesManager.services;
 
   const {
     backgroundDisplaySet,
@@ -63,7 +65,7 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
     });
   };
 
-  const handleForeGroundRemoval = (displaySet: AppTypes.DisplaySet) => {
+  const handleForegroundRemoval = (displaySet: AppTypes.DisplaySet) => {
     const updatedViewports = hangingProtocolService.getViewportsRequireUpdate(
       viewportId,
       displaySet.displaySetInstanceUID
@@ -137,207 +139,202 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
     });
   };
 
-  const [showSegmentationSelect, setShowSegmentationSelect] = React.useState(false);
-  const [showForegroundSelect, setShowForegroundSelect] = React.useState(false);
-
   return (
-    <div className="bg-muted flex h-full w-[262px] flex-col rounded p-3">
+    <div className="bg-popover flex h-full w-[262px] flex-col rounded p-1.5">
       {/* Top buttons row */}
-      <div className={`flex justify-between ${(showForegroundSelect || showSegmentationSelect || foregroundDisplaySets.length > 0 || overlayDisplaySets.length > 0) ? 'mb-4' : 'mb-0'}`}>
+      <div className={`flex`}>
         <Button
           variant="ghost"
-          className="flex items-center text-blue-400"
+          className="text-primary flex items-center p-1"
           onClick={() => setShowForegroundSelect(true)}
           disabled={potentialForegroundDisplaySets.length === 0}
         >
-          <Icons.Plus className="mr-2 h-4 w-4" />
+          <Icons.Plus className="h-4 w-4" />
           Foreground
         </Button>
         <Button
           variant="ghost"
-          className="flex items-center text-blue-400"
+          className="text-primary ml-2 flex items-center"
           disabled={potentialOverlayDisplaySets.length === 0}
           onClick={() => setShowSegmentationSelect(true)}
         >
-          <Icons.Plus className="mr-2 h-4 w-4" />
+          <Icons.Plus className="h-4 w-4" />
           Segmentation
         </Button>
       </div>
 
       {/* Segmentations section */}
-      <div className="mb-4">
-        {overlayDisplaySets.map((displaySet, index) => (
-          <div
-            key={displaySet.displaySetInstanceUID}
-            className="mb-2 flex items-center"
-          >
-            <Icons.LayerSegmentation className="mr-2 h-6 w-6 text-blue-400" />
-            <Select
-              value={displaySet.displaySetInstanceUID}
+      <div className="">
+        <div className="mt-1">
+          {overlayDisplaySets.map((displaySet, index) => (
+            <div
+              key={displaySet.displaySetInstanceUID}
+              className="mb-2 flex items-center"
             >
-              <SelectTrigger className="flex-grow">
-                <SelectValue>{displaySet.label?.toUpperCase()}</SelectValue>
-              </SelectTrigger>
-              <SelectContent>
-                {potentialOverlayDisplaySets.map(item => (
-                  <SelectItem
-                    key={item.displaySetInstanceUID}
-                    value={item.displaySetInstanceUID}
+              <Icons.LayerSegmentation className="text-muted-foreground mr-1 h-6 w-6" />
+              <Select value={displaySet.displaySetInstanceUID}>
+                <SelectTrigger className="flex-grow">
+                  <SelectValue>{displaySet.label?.toUpperCase()}</SelectValue>
+                </SelectTrigger>
+                <SelectContent>
+                  {potentialOverlayDisplaySets.map(item => (
+                    <SelectItem
+                      key={item.displaySetInstanceUID}
+                      value={item.displaySetInstanceUID}
+                    >
+                      {item.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="ml-2"
                   >
-                    {item.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
+                    <Icons.More className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="right">
+                  <DropdownMenuItem onClick={() => removeOverlay(displaySet)}>
+                    Remove
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+          ))}
+
+          {showSegmentationSelect &&
+            potentialOverlayDisplaySets.length > 0 &&
+            !overlayDisplaySets.length && (
+              <div className="mb-2 flex items-center">
+                <Icons.LayerSegmentation className="text-muted-foreground mr-1 h-6 w-6" />
+                <Select
+                  value=""
+                  onValueChange={value => {
+                    const selectedDisplaySet = potentialOverlayDisplaySets.find(
+                      ds => ds.displaySetInstanceUID === value
+                    );
+                    if (selectedDisplaySet) {
+                      handleForegroundSelection(selectedDisplaySet);
+                      setShowSegmentationSelect(false);
+                    }
+                  }}
+                >
+                  <SelectTrigger className="flex-grow">
+                    <SelectValue placeholder="SELECT A SEGMENTATION" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {potentialOverlayDisplaySets.map(item => (
+                      <SelectItem
+                        key={item.displaySetInstanceUID}
+                        value={item.displaySetInstanceUID}
+                      >
+                        {item.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
                 <Button
                   variant="ghost"
                   size="icon"
                   className="ml-2"
+                  onClick={() => setShowSegmentationSelect(false)}
                 >
-                  <Icons.More className="h-4 w-4" />
+                  <Icons.Close className="h-4 w-4" />
                 </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="right">
-                <DropdownMenuItem onClick={() => removeOverlay(displaySet)}>
-                  Remove
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-        ))}
-        
-        {showSegmentationSelect && potentialOverlayDisplaySets.length > 0 && !overlayDisplaySets.length && (
-          <div className="mb-2 flex items-center">
-            <Icons.LayerSegmentation className="mr-2 h-6 w-6 text-blue-400" />
-            <Select
-              value=""
-              onValueChange={(value) => {
-                const selectedDisplaySet = potentialOverlayDisplaySets.find(
-                  ds => ds.displaySetInstanceUID === value
-                );
-                if (selectedDisplaySet) {
-                  handleForegroundSelection(selectedDisplaySet);
-                  setShowSegmentationSelect(false);
-                }
-              }}
-            >
-              <SelectTrigger className="flex-grow">
-                <SelectValue placeholder="SELECT A SEGMENTATION" />
-              </SelectTrigger>
-              <SelectContent>
-                {potentialOverlayDisplaySets.map(item => (
-                  <SelectItem
-                    key={item.displaySetInstanceUID}
-                    value={item.displaySetInstanceUID}
-                  >
-                    {item.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="ml-2"
-              onClick={() => setShowSegmentationSelect(false)}
-            >
-              <Icons.Close className="h-4 w-4" />
-            </Button>
-          </div>
-        )}
-      </div>
+              </div>
+            )}
+        </div>
 
-      {/* Foregrounds section */}
-      <div className="mb-4">
-        {foregroundDisplaySets.map((displaySet, index) => (
-          <div
-            key={displaySet.displaySetInstanceUID}
-            className="mb-2 flex items-center"
-          >
-            <Icons.LayerForeground className="mr-2 h-6 w-6 text-blue-400" />
-            <Select
-              value={displaySet.displaySetInstanceUID}
+        {/* Foregrounds section */}
+        <div className="mt-1 px-1">
+          {foregroundDisplaySets.map((displaySet, index) => (
+            <div
+              key={displaySet.displaySetInstanceUID}
+              className="flex items-center"
             >
-              <SelectTrigger className="flex-grow">
-                <SelectValue>{displaySet.label?.toUpperCase()}</SelectValue>
-              </SelectTrigger>
-              <SelectContent>
-                {potentialForegroundDisplaySets.map(item => (
-                  <SelectItem
-                    key={item.displaySetInstanceUID}
-                    value={item.displaySetInstanceUID}
+              <Icons.LayerForeground className="text-muted-foreground mr-1 h-6 w-6" />
+              <Select value={displaySet.displaySetInstanceUID}>
+                <SelectTrigger className="flex-grow">
+                  <SelectValue>{displaySet.label?.toUpperCase()}</SelectValue>
+                </SelectTrigger>
+                <SelectContent>
+                  {potentialForegroundDisplaySets.map(item => (
+                    <SelectItem
+                      key={item.displaySetInstanceUID}
+                      value={item.displaySetInstanceUID}
+                    >
+                      {item.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="ml-2"
                   >
-                    {item.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="ml-2"
-                >
-                  <Icons.More className="h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="right">
-                <DropdownMenuItem onClick={() => handleForeGroundRemoval(displaySet)}>
-                  Remove
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-        ))}
-        
-        {showForegroundSelect && potentialForegroundDisplaySets.length > 0 && (
-          <div className="mb-2 flex items-center">
-            <Icons.LayerForeground className="mr-2 h-6 w-6 text-blue-400" />
-            <Select
-              value=""
-              onValueChange={(value) => {
-                const selectedDisplaySet = potentialForegroundDisplaySets.find(
-                  ds => ds.displaySetInstanceUID === value
-                );
-                if (selectedDisplaySet) {
-                  handleForegroundSelection(selectedDisplaySet);
-                  setShowForegroundSelect(false);
-                }
-              }}
-            >
-              <SelectTrigger className="flex-grow">
-                <SelectValue placeholder="SELECT A FOREGROUND" />
-              </SelectTrigger>
-              <SelectContent>
-                {potentialForegroundDisplaySets.map(item => (
-                  <SelectItem
-                    key={item.displaySetInstanceUID}
-                    value={item.displaySetInstanceUID}
-                  >
-                    {item.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="ml-2"
-              onClick={() => setShowForegroundSelect(false)}
-            >
-              <Icons.Close className="h-4 w-4" />
-            </Button>
-          </div>
-        )}
-      </div>
+                    <Icons.More className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="right">
+                  <DropdownMenuItem onClick={() => handleForegroundRemoval(displaySet)}>
+                    Remove
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+          ))}
 
-      {/* Background section */}
-      <div className="mb-4">
-        <div className="flex items-center">
-          <Icons.LayerBackground className="mr-2 h-6 w-6 text-blue-400" />
+          {showForegroundSelect && potentialForegroundDisplaySets.length > 0 && (
+            <div className="mb-2 flex items-center">
+              <Icons.LayerForeground className="text-muted-foreground mr-1 h-6 w-6" />
+              <Select
+                value=""
+                onValueChange={value => {
+                  const selectedDisplaySet = potentialForegroundDisplaySets.find(
+                    ds => ds.displaySetInstanceUID === value
+                  );
+                  if (selectedDisplaySet) {
+                    handleForegroundSelection(selectedDisplaySet);
+                    setShowForegroundSelect(false);
+                  }
+                }}
+              >
+                <SelectTrigger className="flex-grow">
+                  <SelectValue placeholder="SELECT A FOREGROUND" />
+                </SelectTrigger>
+                <SelectContent>
+                  {potentialForegroundDisplaySets.map(item => (
+                    <SelectItem
+                      key={item.displaySetInstanceUID}
+                      value={item.displaySetInstanceUID}
+                    >
+                      {item.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="ml-2"
+                onClick={() => setShowForegroundSelect(false)}
+              >
+                <Icons.Close className="h-4 w-4" />
+              </Button>
+            </div>
+          )}
+        </div>
+
+        {/* Background section */}
+        <div className="mt-1 flex items-center px-1">
+          <Icons.LayerBackground className="text-muted-foreground mr-1 h-6 w-6" />
           <Select
             value={backgroundDisplaySet.displaySetInstanceUID}
             onValueChange={value => {
@@ -351,9 +348,11 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
           >
             <SelectTrigger className="flex-grow">
               <SelectValue>
-                {(backgroundDisplaySet.SeriesDescription ||
+                {(
+                  backgroundDisplaySet.SeriesDescription ||
                   backgroundDisplaySet.label ||
-                  'background').toUpperCase()}
+                  'background'
+                ).toUpperCase()}
               </SelectValue>
             </SelectTrigger>
             <SelectContent>
@@ -369,7 +368,6 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
           </Select>
         </div>
       </div>
-
       {/* Bottom control - only show if foregrounds exist */}
       {foregroundDisplaySets.length > 0 && (
         <div className="mt-auto">
@@ -377,7 +375,7 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
             <div className="mr-2 flex h-5 w-10 items-center rounded-full bg-blue-900 p-1">
               <div className="h-3 w-3 rounded-full bg-black"></div>
             </div>
-            <span className="text-blue-400 text-sm">Control threshold & opacity</span>
+            <span className="text-sm text-blue-400">Control threshold & opacity</span>
           </div>
         </div>
       )}
