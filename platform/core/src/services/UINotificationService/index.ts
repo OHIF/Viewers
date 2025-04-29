@@ -60,6 +60,9 @@ class UINotificationService {
    * @param {string} [notification.promiseMessages.loading] - Message to show while promise is pending
    * @param {string | function} [notification.promiseMessages.success] - Message to show when promise resolves
    * @param {string | function} [notification.promiseMessages.error] - Message to show when promise rejects
+   * @param {object} [notification.action] - Action button configuration
+   * @param {string} notification.action.label - The label for the action button
+   * @param {function} notification.action.onClick - The function to call when the action button is clicked
    * @returns {string} id - The ID of the created notification
    */
   show({
@@ -74,6 +77,7 @@ class UINotificationService {
     id,
     allowDuplicates = false,
     deduplicationInterval = 30000,
+    action,
   }: {
     title: string;
     message: string | ((data?: any) => string);
@@ -96,6 +100,10 @@ class UINotificationService {
     id?: string;
     allowDuplicates?: boolean;
     deduplicationInterval?: number;
+    action?: {
+      label: string;
+      onClick: () => void;
+    };
   }): string {
     if (promise && promiseMessages) {
       const loadingId = serviceImplementation._show({
@@ -126,6 +134,7 @@ class UINotificationService {
             id: id ? `${id}-success` : undefined,
             allowDuplicates,
             deduplicationInterval,
+            action,
           });
           this.hide(loadingId);
         },
@@ -145,6 +154,7 @@ class UINotificationService {
             id: id ? `${id}-error` : undefined,
             allowDuplicates,
             deduplicationInterval,
+            action,
           });
           this.hide(loadingId);
         }
@@ -163,6 +173,7 @@ class UINotificationService {
       id,
       allowDuplicates,
       deduplicationInterval,
+      action,
     });
   }
 }

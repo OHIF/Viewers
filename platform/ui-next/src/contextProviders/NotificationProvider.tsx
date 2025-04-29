@@ -21,7 +21,7 @@ interface NotificationProviderProps {
 const NotificationProvider = ({
   children,
   service,
-  deduplicationInterval = 10000, // Default to 30 seconds
+  deduplicationInterval = 10000, // Default to 10 seconds
 }: NotificationProviderProps) => {
   const DEFAULT_OPTIONS = {
     title: '',
@@ -47,6 +47,7 @@ const NotificationProvider = ({
       promise,
       allowDuplicates = false,
       deduplicationInterval: optionsDeduplicationInterval,
+      action,
     } = {
       ...DEFAULT_OPTIONS,
       ...options,
@@ -58,14 +59,20 @@ const NotificationProvider = ({
     if (promise) {
       return toast.promise(promise, {
         loading: title || 'Loading...',
-        success: (data: unknown) => ({
-          title: title || 'Success',
-          description: typeof message === 'function' ? message(data) : message,
-        }),
-        error: (err: unknown) => ({
-          title: title || 'Error',
-          description: typeof message === 'function' ? message(err) : message,
-        }),
+        success: (data: unknown) => {
+          const description = typeof message === 'function' ? message(data) : message;
+          return {
+            title: title || 'Success',
+            description,
+          };
+        },
+        error: (err: unknown) => {
+          const description = typeof message === 'function' ? message(err) : message;
+          return {
+            title: title || 'Error',
+            description,
+          };
+        },
       });
     }
 
@@ -101,13 +108,23 @@ const NotificationProvider = ({
       }
     }
 
-    // Show the notification
-    const id = toast[type](title, {
+    // Show the notification with action if provided
+    const toastOptions = {
       duration,
       position,
       description: message,
       id: options.id, // Use provided ID if available
-    });
+    };
+
+    // Add action button if provided
+    if (action && action.label && typeof action.onClick === 'function') {
+      toastOptions.action = {
+        label: action.label,
+        onClick: action.onClick,
+      };
+    }
+
+    const id = toast[type](title, toastOptions);
 
     // Cache this notification for deduplication if it's an error
     if (type === 'error') {
