@@ -6,7 +6,17 @@ import { Icons } from '@ohif/ui-next';
 
 const StudyListTableRow = props => {
   const { tableData } = props;
-  const { row, expandedContent, onClickRow, isExpanded, dataCY, clickableCY } = tableData;
+  const {
+    row,
+    expandedContent,
+    onClickRow,
+    isExpanded,
+    dataCY,
+    clickableCY,
+    onDeleteStudy,
+    onDownloadStudy,
+    studyUID,
+  } = tableData;
   return (
     <>
       <tr
@@ -43,6 +53,32 @@ const StudyListTableRow = props => {
                   onClick={onClickRow}
                   data-cy={clickableCY}
                 >
+                  <td className="w-8 px-2 py-2">
+                    <button
+                      type="button"
+                      title="Delete study"
+                      onClick={e => {
+                        e.stopPropagation();
+                        onDeleteStudy?.(studyUID);
+                      }}
+                      data-cy={`delete-${studyUID}`}
+                    >
+                      <Icons.Trash className="h-5 w-5 text-red-500 hover:text-red-700" />
+                    </button>
+                  </td>
+                  <td className="w-8 px-2 py-2">
+                    <button
+                      type="button"
+                      title="Download study"
+                      onClick={e => {
+                        e.stopPropagation();
+                        onDownloadStudy?.(studyUID);
+                      }}
+                      data-cy={`download-${studyUID}`}
+                    >
+                      <Icons.Download className="text-primary-light hover:text-primary-active h-5 w-5" />
+                    </button>
+                  </td>
                   {row.map((cell, index) => {
                     const { content, title, gridCol } = cell;
                     return (
@@ -80,7 +116,7 @@ const StudyListTableRow = props => {
                 </tr>
                 {isExpanded && (
                   <tr className="max-h-0 w-full select-text overflow-hidden bg-black">
-                    <td colSpan={row.length}>{expandedContent}</td>
+                    <td colSpan={row.length + 2}>{expandedContent}</td>
                   </tr>
                 )}
               </tbody>
@@ -110,6 +146,9 @@ StudyListTableRow.propTypes = {
     isExpanded: PropTypes.bool.isRequired,
     dataCY: PropTypes.string,
     clickableCY: PropTypes.string,
+    onDeleteStudy: PropTypes.func.isRequired,
+    onDownloadStudy: PropTypes.func.isRequired,
+    studyUID: PropTypes.string.isRequired,
   }),
 };
 

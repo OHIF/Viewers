@@ -166,6 +166,42 @@ function WorkList({
     });
   };
 
+  const handleDeleteStudy = async studyUID => {
+    if (!window.confirm(`Delete study ${studyUID}?`)) {
+      return;
+    }
+    try {
+      await dataSource.retrieve.customClient.deleteStudy(studyUID);
+      // одразу забираємо зі списку локально,
+      // або викликаємо onRefresh(), якщо вже є така функція
+      onRefresh?.();
+    } catch (err) {
+      console.error(err);
+      alert('Failed to delete study.');
+    }
+  };
+
+  const handleDownloadStudy = async (studyUID: string) => {
+    try {
+      const res = await fetch(
+        `https://dicomobj.azurewebsites.net/api/downloaddicom?studyId=${encodeURIComponent(studyUID)}`,
+        { credentials: 'include' }
+      );
+      if (!res.ok) {
+        throw new Error(`${res.status} ${res.statusText}`);
+      }
+
+      // читаємо з тіла просто текст—це ваш SAS‑URL на ZIP у Blob Storage
+      const sasUrl = (await res.text()).trim();
+
+      // відкриваємо його в новій вкладці — браузер автоматично почне завантаження
+      window.open(sasUrl, '_blank');
+    } catch (err) {
+      console.error(err);
+      alert('Failed to download study.');
+    }
+  };
+
   // Set body style
   useEffect(() => {
     document.body.classList.add('bg-black');
@@ -297,6 +333,9 @@ function WorkList({
     return {
       dataCY: `studyRow-${studyInstanceUid}`,
       clickableCY: studyInstanceUid,
+      studyUID: studyInstanceUid,
+      onDeleteStudy: handleDeleteStudy,
+      onDownloadStudy: handleDownloadStudy,
       row: [
         {
           key: 'patientName',
@@ -695,5 +734,7 @@ function _sortStringDates(s1, s2, sortModifier) {
     return -1 * sortModifier;
   }
 }
+
+
 
 export default WorkList;

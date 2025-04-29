@@ -48,11 +48,13 @@ export default class StaticWadoClient extends api.DICOMwebClient {
 
   protected config;
   protected staticWado;
+  private _base: string;
 
   constructor(config) {
     super(config);
     this.staticWado = config.staticWado;
     this.config = config;
+    this._base = config.url.replace(/\/$/, '');
   }
 
   /**
@@ -75,6 +77,39 @@ export default class StaticWadoClient extends api.DICOMwebClient {
     return super
       .retrieveBulkData(useOptions)
       .then(result => (shouldFixMultipart ? fixMultipart(result) : result));
+  }
+
+
+  /**
+   * DELETE /studies/{study}
+   */
+  public async deleteStudy(studyUID: string, options: any = {}) {
+    return this._deleteRequest(`/studies/${encodeURIComponent(studyUID)}`, options);
+  }
+
+  /**
+   * DELETE /studies/{study}/series/{series}
+   */
+  public async deleteSeries(studyUID: string, seriesUID: string, options = {}) {
+    return this._deleteRequest(
+      `/studies/${encodeURIComponent(studyUID)}/series/${encodeURIComponent(seriesUID)}`,
+      options
+    );
+  }
+
+  /**
+   * DELETE /studies/{study}/series/{series}/instances/{instance}
+   */
+  public async deleteInstance(
+    studyUID: string,
+    seriesUID: string,
+    instanceUID: string,
+    options = {}
+  ) {
+    return this._deleteRequest(
+      `/studies/${encodeURIComponent(studyUID)}/series/${encodeURIComponent(seriesUID)}/instances/${encodeURIComponent(instanceUID)}`,
+      options
+    );
   }
 
   /**
@@ -269,4 +304,23 @@ export default class StaticWadoClient extends api.DICOMwebClient {
     });
     return lowerParams;
   }
+
+  private async _deleteRequest(path: string, init: RequestInit = {}): Promise<Response> {
+    const baseHeaders = (this as any).headers ?? {};
+    const headers = { ...baseHeaders, ...init.headers };
+
+    // /v2 додайте/заберіть, якщо у вас інша версія API
+    const url = `${this._base}${path}`;
+
+    const res = await fetch(url, { ...init, method: 'DELETE', headers });
+
+    if (!res.ok) {
+      throw new Error(`DELETE ${url} → ${res.status} ${res.statusText}`);
+    }
+
+    return res;
+  }
 }
+//https://extravisionohif-extravisionohif.dicom.azurehealthcareapis.com/v2/studies?limit=101&offset=0&fuzzymatching=true&includefield=00081030%2C00080060
+//https://extravisionohif-extravisionohif.dicom.azurehealthcareapis.com/v2/studies/1.3.12.2.1107.5.2.18.41098.30000024072205112630600000061
+//https://extravisionohif-extravisionohif.dicom.azurehealthcareapis.com/v2/studies
