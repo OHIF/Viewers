@@ -312,35 +312,35 @@ export default async function init({
 function initializeWebWorkerProgressHandler(uiNotificationService) {
   const activeToasts = new Map();
 
-  // eventTarget.addEventListener(EVENTS.WEB_WORKER_PROGRESS, ({ detail }) => {
-  //   const { progress, type, id } = detail;
+  eventTarget.addEventListener(EVENTS.WEB_WORKER_PROGRESS, ({ detail }) => {
+    const { progress, type, id } = detail;
 
-  //   const cacheKey = `${type}-${id}`;
-  //   if (progress === 0 && !activeToasts.has(cacheKey)) {
-  //     const progressPromise = new Promise((resolve, reject) => {
-  //       activeToasts.set(cacheKey, { resolve, reject });
-  //     });
+    const cacheKey = `${type}-${id}`;
+    if (progress === 0 && !activeToasts.has(cacheKey)) {
+      const progressPromise = new Promise((resolve, reject) => {
+        activeToasts.set(cacheKey, { resolve, reject });
+      });
 
-  //     uiNotificationService.show({
-  //       id: cacheKey,
-  //       title: `${type}`,
-  //       message: `${type}: ${progress}%`,
-  //       autoClose: false,
-  //       promise: progressPromise,
-  //       promiseMessages: {
-  //         loading: `Computing...`,
-  //         success: `Completed successfully`,
-  //         error: 'Web Worker failed',
-  //       },
-  //     });
-  //   } else {
-  //     if (progress === 100) {
-  //       const { resolve } = activeToasts.get(cacheKey);
-  //       resolve({ progress, type });
-  //       activeToasts.delete(cacheKey);
-  //     }
-  //   }
-  // });
+      uiNotificationService.show({
+        id: cacheKey,
+        title: `${type}`,
+        message: `${type}: ${progress}%`,
+        autoClose: false,
+        promise: progressPromise,
+        promiseMessages: {
+          loading: `Computing...`,
+          success: `Completed successfully`,
+          error: 'Web Worker failed',
+        },
+      });
+    } else {
+      if (progress === 100) {
+        const { resolve } = activeToasts.get(cacheKey);
+        resolve({ progress, type });
+        activeToasts.delete(cacheKey);
+      }
+    }
+  });
 }
 
 /**
