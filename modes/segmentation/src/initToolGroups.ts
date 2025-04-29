@@ -28,6 +28,15 @@ function createTools(utilityModule) {
         },
       },
       {
+        toolName: toolNames.LabelmapSlicePropagation,
+      },
+      {
+        toolName: toolNames.MarkerLabelmap,
+      },
+      {
+        toolName: toolNames.RegionSegmentPlus,
+      },
+      {
         toolName: 'CircularEraser',
         parentTool: 'Brush',
         configuration: {
@@ -67,17 +76,26 @@ function createTools(utilityModule) {
         parentTool: 'Brush',
         configuration: {
           activeStrategy: 'THRESHOLD_INSIDE_CIRCLE',
-          // preview: {
-          //   enabled: true,
-          // },
-          strategySpecificConfiguration: {
-            // to use the use the center segment index to determine
-            // if inside -> same segment, if outside -> eraser
-            // useCenterSegmentIndex: true,
-            THRESHOLD: {
-              isDynamic: true,
-              dynamicRadius: 3,
-            },
+          threshold: {
+            isDynamic: true,
+            dynamicRadius: 3,
+          },
+        },
+      },
+      {
+        toolName: toolNames.SegmentBidirectional,
+      },
+      {
+        toolName: toolNames.SegmentSelect,
+      },
+      {
+        toolName: 'ThresholdSphereBrushDynamic',
+        parentTool: 'Brush',
+        configuration: {
+          activeStrategy: 'THRESHOLD_INSIDE_SPHERE',
+          threshold: {
+            isDynamic: true,
+            dynamicRadius: 3,
           },
         },
       },

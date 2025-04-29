@@ -38,6 +38,8 @@ const EVENTS = {
   VIEWPORT_VOLUMES_CHANGED: 'event::cornerstoneViewportService:viewportVolumesChanged',
 };
 
+export const WITH_NAVIGATION = { withNavigation: true, withOrientation: false };
+
 /**
  * Handles cornerstone viewport logic including enabling, disabling, and
  * updating the viewport.
@@ -605,10 +607,6 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     let initialImageIndexToUse =
       presentations?.positionPresentation?.initialImageIndex ?? initialImageIndex;
 
-    if (initialImageIndexToUse === undefined || initialImageIndexToUse === null) {
-      initialImageIndexToUse = this._getInitialImageIndexForViewport(viewportInfo, imageIds) || 0;
-    }
-
     const { rotation, flipHorizontal, displayArea } = viewportInfo.getViewportOptions();
 
     const properties = { ...presentations.lutPresentation?.properties };
@@ -637,12 +635,26 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     });
 
     let imageIdsToSet = imageIds;
-    const res = this._processExtraDisplaySetsForViewport(viewport);
-    imageIdsToSet = res?.imageIds ?? imageIdsToSet;
+    const overlayProcessingResult = this._processExtraDisplaySetsForViewport(viewport);
+    imageIdsToSet = overlayProcessingResult?.imageIds ?? imageIdsToSet;
+
+    const referencedImageId = presentations?.positionPresentation?.viewReference?.referencedImageId;
+    if (referencedImageId) {
+      initialImageIndexToUse = imageIdsToSet.indexOf(referencedImageId);
+    }
+
+    if (initialImageIndexToUse === undefined || initialImageIndexToUse === null) {
+      initialImageIndexToUse = this._getInitialImageIndexForViewport(viewportInfo, imageIds) || 0;
+    }
 
     return viewport.setStack(imageIdsToSet, initialImageIndexToUse).then(() => {
       viewport.setProperties({ ...properties });
       this.setPresentations(viewport.id, presentations, viewportInfo);
+
+      if (overlayProcessingResult?.addOverlayFn) {
+        overlayProcessingResult.addOverlayFn();
+      }
+
       if (displayArea) {
         viewport.setDisplayArea(displayArea);
       }
@@ -730,6 +742,7 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     // If you call loadStudyMetadata and it's not in the DicomMetadataStore cache, it should fire
     // a request through the data source?
     // (This call may or may not create sub-requests for series metadata)
+    const { displaySetService } = this.servicesManager.services;
     const volumeInputArray = [];
     const displaySetOptionsArray = viewportInfo.getDisplaySetOptions();
     const { hangingProtocolService } = this.servicesManager.services;
@@ -738,7 +751,13 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     const displaySetInstanceUIDs = [];
 
     for (const [index, data] of viewportData.data.entries()) {
-      const { volume, imageIds, displaySetInstanceUID } = data;
+      const { imageIds, displaySetInstanceUID } = data;
+      let volume = data.volume;
+
+      if (!volume) {
+        const displaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
+        volume = csToolsUtils.getOrCreateImageVolume(displaySet.images.map(image => image.imageId));
+      }
 
       displaySetInstanceUIDs.push(displaySetInstanceUID);
 
@@ -827,25 +846,35 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     });
 
     // For SEG and RT viewports
-    this._processExtraDisplaySetsForViewport(viewport);
+    const { addOverlayFn } = this._processExtraDisplaySetsForViewport(viewport) || {};
 
     await viewport.setVolumes(volumeInputArray);
 
+    if (addOverlayFn) {
+      addOverlayFn();
+    }
+    viewport.render();
+
     volumesProperties.forEach(({ properties, volumeId }) => {
-      viewport.setProperties(properties, volumeId);
+      setTimeout(() => {
+        // seems like a hack but we need the actor to be ready first before
+        // we set the properties
+        viewport.setProperties(properties, volumeId);
+        viewport.render();
+      }, 0);
     });
 
     this.setPresentations(viewport.id, presentations, viewportInfo);
 
-    const imageIndex = this._getInitialImageIndexForViewport(viewportInfo);
+    if (!presentations.positionPresentation) {
+      const imageIndex = this._getInitialImageIndexForViewport(viewportInfo);
 
-    if (imageIndex !== undefined) {
-      csUtils.jumpToSlice(viewport.element, {
-        imageIndex,
-      });
+      if (imageIndex !== undefined) {
+        csUtils.jumpToSlice(viewport.element, {
+          imageIndex,
+        });
+      }
     }
-
-    viewport.render();
 
     this._broadcastEvent(this.EVENTS.VIEWPORT_VOLUMES_CHANGED, {
       viewportInfo,
@@ -880,8 +909,12 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
       segOrRTSOverlayDisplaySet.referencedDisplaySetInstanceUID
     );
     const imageIds = referenceDisplaySet.images.map(image => image.imageId);
-    this.addOverlayRepresentationForDisplaySet(segOrRTSOverlayDisplaySet, viewport);
-    return { imageIds };
+
+    return {
+      imageIds,
+      addOverlayFn: () =>
+        this.addOverlayRepresentationForDisplaySet(segOrRTSOverlayDisplaySet, viewport),
+    };
   }
 
   private addOverlayRepresentationForDisplaySet(
@@ -1123,7 +1156,11 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
   ): void {
     const viewRef = positionPresentation?.viewReference;
     if (viewRef) {
-      viewport.setViewReference(viewRef);
+      if (viewport.isReferenceViewable(viewRef, WITH_NAVIGATION)) {
+        viewport.setViewReference(viewRef);
+      } else {
+        console.warn('Unable to apply reference viewable', viewRef);
+      }
     }
 
     const viewPresentation = positionPresentation?.viewPresentation;
@@ -1152,6 +1189,20 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
         });
       }
     });
+  }
+
+  /**
+   * Gets the display sets for a given viewport
+   * @param viewportId - The ID of the viewport to get display sets for
+   * @returns Array of display sets for the viewport
+   */
+  public getViewportDisplaySets(viewportId: string): OhifTypes.DisplaySet[] {
+    const { displaySetService } = this.servicesManager.services;
+    const displaySetInstanceUIDs = this.viewportsDisplaySets.get(viewportId) || [];
+
+    return displaySetInstanceUIDs
+      .map(uid => displaySetService.getDisplaySetByUID(uid))
+      .filter(Boolean);
   }
 }
 

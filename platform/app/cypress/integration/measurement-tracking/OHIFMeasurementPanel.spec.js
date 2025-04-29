@@ -15,7 +15,7 @@ describe('OHIF Measurement Panel', function () {
     cy.get('@RightCollapseBtn').click();
     cy.get('@measurementsPanel').should('not.exist');
 
-    cy.get('@RightCollapseBtn').click();
+    cy.get('@RightCollapseBtn').click({ force: true });
 
     // segmentation panel should be visible
     cy.get('@segmentationPanel').should('be.visible');

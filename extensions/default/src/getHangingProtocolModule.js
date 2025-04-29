@@ -1,4 +1,4 @@
-import hpMNGrid from './hangingprotocols/hpMNGrid';
+import { hpMN, hpMN8 } from './hangingprotocols/hpMNGrid';
 import hpMNCompare from './hangingprotocols/hpCompare';
 import hpMammography from './hangingprotocols/hpMammo';
 import hpScale from './hangingprotocols/hpScale';
@@ -63,7 +63,7 @@ const defaultProtocol = {
         // It has no affect if nothing is specified in the URL.
         {
           attribute: 'isDisplaySetFromUrl',
-          weight: 10,
+          weight: 20,
           constraint: {
             equals: true,
           },
@@ -142,8 +142,12 @@ function getHangingProtocolModule() {
     },
     // Create a MxN hanging protocol available by default
     {
-      name: hpMNGrid.id,
-      protocol: hpMNGrid,
+      name: hpMN.id,
+      protocol: hpMN,
+    },
+    {
+      name: hpMN8.id,
+      protocol: hpMN8,
     },
   ];
 }

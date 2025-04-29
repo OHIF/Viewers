@@ -1,6 +1,7 @@
 import {
   PanTool,
   WindowLevelTool,
+  SegmentBidirectionalTool,
   StackScrollTool,
   VolumeRotateTool,
   ZoomTool,
@@ -36,7 +37,11 @@ import {
   LivewireContourTool,
   OrientationMarkerTool,
   WindowLevelRegionTool,
+  SegmentSelectTool,
+  RegionSegmentPlusTool,
 } from '@cornerstonejs/tools';
+import { LabelmapSlicePropagationTool, MarkerLabelmapTool } from '@cornerstonejs/ai';
+import * as polySeg from '@cornerstonejs/polymorphic-segmentation';
 
 import CalibrationLineTool from './tools/CalibrationLineTool';
 import ImageOverlayViewerTool from './tools/ImageOverlayViewerTool';
@@ -47,8 +52,18 @@ export default function initCornerstoneTools(configuration = {}) {
   AdvancedMagnifyTool.isAnnotation = false;
   PlanarFreehandContourSegmentationTool.isAnnotation = false;
 
-  init(configuration);
+  init({
+    addons: {
+      polySeg,
+    },
+    computeWorker: {
+      autoTerminateOnIdle: {
+        enabled: false,
+      },
+    },
+  });
   addTool(PanTool);
+  addTool(SegmentBidirectionalTool);
   addTool(WindowLevelTool);
   addTool(StackScrollTool);
   addTool(VolumeRotateTool);
@@ -84,7 +99,10 @@ export default function initCornerstoneTools(configuration = {}) {
   addTool(OrientationMarkerTool);
   addTool(WindowLevelRegionTool);
   addTool(PlanarFreehandContourSegmentationTool);
-
+  addTool(SegmentSelectTool);
+  addTool(LabelmapSlicePropagationTool);
+  addTool(MarkerLabelmapTool);
+  addTool(RegionSegmentPlusTool);
   // Modify annotation tools to use dashed lines on SR
   const annotationStyle = {
     textBoxFontSize: '15px',
@@ -137,6 +155,11 @@ const toolNames = {
   OrientationMarker: OrientationMarkerTool.toolName,
   WindowLevelRegion: WindowLevelRegionTool.toolName,
   PlanarFreehandContourSegmentation: PlanarFreehandContourSegmentationTool.toolName,
+  SegmentBidirectional: SegmentBidirectionalTool.toolName,
+  SegmentSelect: SegmentSelectTool.toolName,
+  LabelmapSlicePropagation: LabelmapSlicePropagationTool.toolName,
+  MarkerLabelmap: MarkerLabelmapTool.toolName,
+  RegionSegmentPlus: RegionSegmentPlusTool.toolName,
 };
 
 export { toolNames };

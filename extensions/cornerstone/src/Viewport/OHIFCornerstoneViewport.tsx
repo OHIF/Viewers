@@ -3,7 +3,8 @@ import { useResizeDetector } from 'react-resize-detector';
 import * as cs3DTools from '@cornerstonejs/tools';
 import { Enums, eventTarget, getEnabledElement } from '@cornerstonejs/core';
 import { MeasurementService } from '@ohif/core';
-import { AllInOneMenu, Notification, useViewportDialog } from '@ohif/ui';
+import { AllInOneMenu } from '@ohif/ui-next';
+import { useViewportDialog } from '@ohif/ui-next';
 import type { Types as csTypes } from '@cornerstonejs/core';
 
 import { setEnabledElement } from '../state';
@@ -15,19 +16,13 @@ import type { Types } from '@ohif/core';
 
 import OHIFViewportActionCorners from '../components/OHIFViewportActionCorners';
 import { getWindowLevelActionMenu } from '../components/WindowLevelActionMenu/getWindowLevelActionMenu';
-import { useAppConfig } from '@state';
 import { getViewportDataOverlaySettingsMenu } from '../components/ViewportDataOverlaySettingMenu';
 import { getViewportPresentations } from '../utils/presentations/getViewportPresentations';
 import { useSynchronizersStore } from '../stores/useSynchronizersStore';
 import ActiveViewportBehavior from '../utils/ActiveViewportBehavior';
+import { WITH_NAVIGATION } from '../services/ViewportService/CornerstoneViewportService';
 
 const STACK = 'stack';
-
-/**
- * Caches the jump to measurement operation, so that if display set is shown,
- * it can jump to the measurement.
- */
-let cacheJumpToMeasurementEvent;
 
 // Todo: This should be done with expose of internal API similar to react-vtkjs-viewport
 // Then we don't need to worry about the re-renders if the props change.
@@ -88,7 +83,6 @@ const OHIFCornerstoneViewport = React.memo(
     const [scrollbarHeight, setScrollbarHeight] = useState('100px');
     const [enabledVPElement, setEnabledVPElement] = useState(null);
     const elementRef = useRef() as React.MutableRefObject<HTMLDivElement>;
-    const [appConfig] = useAppConfig();
 
     const {
       displaySetService,
@@ -99,12 +93,14 @@ const OHIFCornerstoneViewport = React.memo(
       segmentationService,
       cornerstoneCacheService,
       viewportActionCornersService,
+      customizationService,
+      measurementService,
     } = servicesManager.services;
 
     const [viewportDialogState] = useViewportDialog();
     // useCallback for scroll bar height calculation
     const setImageScrollBarHeight = useCallback(() => {
-      const scrollbarHeight = `${elementRef.current.clientHeight - 40}px`;
+      const scrollbarHeight = `${elementRef.current.clientHeight - 10}px`;
       setScrollbarHeight(scrollbarHeight);
     }, [elementRef]);
 
@@ -146,6 +142,11 @@ const OHIFCornerstoneViewport = React.memo(
 
         const { viewportId, element } = evt.detail;
         const viewportInfo = cornerstoneViewportService.getViewportInfo(viewportId);
+
+        if (!viewportInfo) {
+          return;
+        }
+
         setEnabledElement(viewportId, element);
         setEnabledVPElement(element);
 
@@ -258,14 +259,6 @@ const OHIFCornerstoneViewport = React.memo(
 
         const presentations = getViewportPresentations(viewportId, viewportOptions);
 
-        let measurement;
-        if (cacheJumpToMeasurementEvent?.viewportId === viewportId) {
-          measurement = cacheJumpToMeasurementEvent.measurement;
-          // Delete the position presentation so that viewport navigates direct
-          presentations.positionPresentation = null;
-          cacheJumpToMeasurementEvent = null;
-        }
-
         // Note: This is a hack to get the grid to re-render the OHIFCornerstoneViewport component
         // Used for segmentation hydration right now, since the logic to decide whether
         // a viewport needs to render a segmentation lives inside the CornerstoneViewportService
@@ -283,10 +276,6 @@ const OHIFCornerstoneViewport = React.memo(
           displaySetOptions,
           presentations
         );
-
-        if (measurement) {
-          cs3DTools.annotation.selection.setAnnotationSelected(measurement.uid);
-        }
       };
 
       loadViewportData();
@@ -307,71 +296,65 @@ const OHIFCornerstoneViewport = React.memo(
         return;
       }
 
-      const unsubscribeFromJumpToMeasurementEvents = _subscribeToJumpToMeasurementEvents(
-        elementRef,
-        viewportId,
-        servicesManager
+      const { unsubscribe } = measurementService.subscribe(
+        MeasurementService.EVENTS.JUMP_TO_MEASUREMENT_VIEWPORT,
+        event => handleJumpToMeasurement(event, elementRef, viewportId, cornerstoneViewportService)
       );
 
-      _checkForCachedJumpToMeasurementEvents(elementRef, viewportId, displaySets, servicesManager);
-
       return () => {
-        unsubscribeFromJumpToMeasurementEvents();
+        unsubscribe();
       };
     }, [displaySets, elementRef, viewportId, isJumpToMeasurementDisabled, servicesManager]);
 
     // Set up the window level action menu in the viewport action corners.
     useEffect(() => {
-      // Doing an === check here because the default config value when not set is true
-      if (appConfig.addWindowLevelActionMenu === false) {
-        return;
+      const windowLevelActionMenu = customizationService.getCustomization(
+        'viewportActionMenu.windowLevelActionMenu'
+      );
+      const segmentationOverlay = customizationService.getCustomization(
+        'viewportActionMenu.segmentationOverlay'
+      );
+
+      if (windowLevelActionMenu?.enabled) {
+        viewportActionCornersService.addComponent({
+          viewportId,
+          id: 'windowLevelActionMenu',
+          component: getWindowLevelActionMenu({
+            viewportId,
+            element: elementRef.current,
+            displaySets,
+            servicesManager,
+            commandsManager,
+            location: windowLevelActionMenu.location,
+            verticalDirection: AllInOneMenu.VerticalDirection.TopToBottom,
+            horizontalDirection: AllInOneMenu.HorizontalDirection.RightToLeft,
+          }),
+          location: windowLevelActionMenu.location,
+        });
       }
 
-      const location = viewportActionCornersService.LOCATIONS.topRight;
-
-      // TODO: In the future we should consider using the customization service
-      // to determine if and in which corner various action components should go.
-      viewportActionCornersService.addComponent({
-        viewportId,
-        id: 'windowLevelActionMenu',
-        component: getWindowLevelActionMenu({
+      if (segmentationOverlay?.enabled) {
+        viewportActionCornersService.addComponent({
           viewportId,
-          element: elementRef.current,
-          displaySets,
-          servicesManager,
-          commandsManager,
-          location,
-          verticalDirection: AllInOneMenu.VerticalDirection.TopToBottom,
-          horizontalDirection: AllInOneMenu.HorizontalDirection.RightToLeft,
-        }),
-        location,
-      });
-
-      viewportActionCornersService.addComponent({
-        viewportId,
-        id: 'segmentation',
-        component: getViewportDataOverlaySettingsMenu({
-          viewportId,
-          element: elementRef.current,
-          displaySets,
-          servicesManager,
-          commandsManager,
-          location,
-        }),
-        location,
-      });
-    }, [
-      displaySets,
-      viewportId,
-      viewportActionCornersService,
-      servicesManager,
-      commandsManager,
-      appConfig,
-    ]);
+          id: 'segmentation',
+          component: getViewportDataOverlaySettingsMenu({
+            viewportId,
+            element: elementRef.current,
+            displaySets,
+            servicesManager,
+            commandsManager,
+            location: segmentationOverlay.location,
+          }),
+          location: segmentationOverlay.location,
+        });
+      }
+    }, [displaySets, viewportId, viewportActionCornersService, servicesManager, commandsManager]);
 
     const { ref: resizeRef } = useResizeDetector({
       onResize,
     });
+
+    const Notification = customizationService.getCustomization('ui.notificationComponent');
 
     return (
       <React.Fragment>
@@ -425,95 +408,52 @@ const OHIFCornerstoneViewport = React.memo(
   areEqual
 );
 
-function _subscribeToJumpToMeasurementEvents(elementRef, viewportId, servicesManager) {
-  const { measurementService, cornerstoneViewportService } = servicesManager.services;
+// Helper function to handle jumping to measurements
+function handleJumpToMeasurement(event, elementRef, viewportId, cornerstoneViewportService) {
+  const { measurement, isConsumed } = event;
+  if (!measurement || isConsumed) {
+    return;
+  }
 
-  const { unsubscribe } = measurementService.subscribe(
-    MeasurementService.EVENTS.JUMP_TO_MEASUREMENT_VIEWPORT,
-    props => {
-      cacheJumpToMeasurementEvent = props;
-      const { viewportId: jumpId, measurement, isConsumed } = props;
-      if (!measurement || isConsumed) {
-        return;
-      }
-      if (cacheJumpToMeasurementEvent.cornerstoneViewport === undefined) {
-        // Decide on which viewport should handle this
-        cacheJumpToMeasurementEvent.cornerstoneViewport =
-          cornerstoneViewportService.getViewportIdToJump(jumpId, {
-            displaySetInstanceUID: measurement.displaySetInstanceUID,
-            ...measurement.metadata,
-            referencedImageId:
-              measurement.referencedImageId || measurement.metadata?.referencedImageId,
-          });
-      }
-      if (cacheJumpToMeasurementEvent.cornerstoneViewport !== viewportId) {
-        return;
-      }
-      _jumpToMeasurement(measurement, elementRef, viewportId, servicesManager);
-    }
+  const enabledElement = getEnabledElement(elementRef.current);
+
+  if (!enabledElement) {
+    return;
+  }
+
+  const viewport = enabledElement.viewport as csTypes.IStackViewport | csTypes.IVolumeViewport;
+
+  const { metadata, displaySetInstanceUID } = measurement;
+
+  const viewportDisplaySets = cornerstoneViewportService.getViewportDisplaySets(viewportId);
+
+  const showingDisplaySet = viewportDisplaySets.find(
+    ds => ds.displaySetInstanceUID === displaySetInstanceUID
   );
 
-  return unsubscribe;
-}
+  let metadataToUse = metadata;
+  // if it is not showing the displaySet we need to remove the FOR from the metadata
+  if (!showingDisplaySet) {
+    metadataToUse = {
+      ...metadata,
+      FrameOfReferenceUID: undefined,
+    };
+  }
 
-// Check if there is a queued jumpToMeasurement event
-function _checkForCachedJumpToMeasurementEvents(
-  elementRef,
-  viewportId,
-  displaySets,
-  servicesManager
-) {
-  if (!cacheJumpToMeasurementEvent) {
-    return;
-  }
-  if (cacheJumpToMeasurementEvent.isConsumed) {
-    cacheJumpToMeasurementEvent = null;
-    return;
-  }
-  const displaysUIDs = displaySets.map(displaySet => displaySet.displaySetInstanceUID);
-  if (!displaysUIDs?.length) {
+  // Todo: make it work with cases where we want to define FOR based measurements too
+  if (!viewport.isReferenceViewable(metadataToUse, WITH_NAVIGATION)) {
     return;
   }
 
-  // Jump to measurement if the measurement exists
-  const { measurement } = cacheJumpToMeasurementEvent;
-  if (measurement && elementRef) {
-    if (displaysUIDs.includes(measurement?.displaySetInstanceUID)) {
-      _jumpToMeasurement(measurement, elementRef, viewportId, servicesManager);
-    }
-  }
-}
-
-function _jumpToMeasurement(measurement, targetElementRef, viewportId, servicesManager) {
-  const { viewportGridService } = servicesManager.services;
-
-  const targetElement = targetElementRef.current;
-
-  // Todo: setCornerstoneMeasurementActive should be handled by the toolGroupManager
-  //  to set it properly
-  // setCornerstoneMeasurementActive(measurement);
-
-  viewportGridService.setActiveViewportId(viewportId);
-
-  const enabledElement = getEnabledElement(targetElement);
-
-  if (enabledElement) {
-    // See how the jumpToSlice() of Cornerstone3D deals with imageIdx param.
-    const viewport = enabledElement.viewport as csTypes.IStackViewport | csTypes.IVolumeViewport;
-
-    const { metadata } = measurement;
-    if (!viewport.isReferenceViewable(metadata, { withNavigation: true, withOrientation: true })) {
-      console.log("Reference isn't viewable, postponing until updated");
-      return;
-    }
-
+  try {
     viewport.setViewReference(metadata);
-
-    cs3DTools.annotation.selection.setAnnotationSelected(measurement.uid);
-    // Jump to measurement consumed, remove.
-    cacheJumpToMeasurementEvent?.consume?.();
-    cacheJumpToMeasurementEvent = null;
+    viewport.render();
+  } catch (e) {
+    console.warn('Unable to apply', metadata, e);
   }
+
+  cs3DTools.annotation.selection.setAnnotationSelected(measurement.uid);
+  event?.consume?.();
 }
 
 function _rehydrateSynchronizers(viewportId: string, syncGroupService: any) {

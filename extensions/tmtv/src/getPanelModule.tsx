@@ -1,25 +1,16 @@
 import React from 'react';
 import { PanelPetSUV, PanelROIThresholdExport } from './Panels';
-import { Toolbox } from '@ohif/ui-next';
+import { Toolbox } from '@ohif/extension-default';
 import PanelTMTV from './Panels/PanelTMTV';
 
 function getPanelModule({ commandsManager, extensionManager, servicesManager }) {
   const wrappedPanelPetSuv = () => {
-    return (
-      <PanelPetSUV
-        commandsManager={commandsManager}
-        servicesManager={servicesManager}
-        extensionManager={extensionManager}
-      />
-    );
+    return <PanelPetSUV />;
   };
 
   const wrappedROIThresholdToolbox = () => {
     return (
       <Toolbox
-        commandsManager={commandsManager}
-        servicesManager={servicesManager}
-        extensionManager={extensionManager}
         buttonSectionId="ROIThresholdToolbox"
         title="Threshold Tools"
       />
@@ -27,29 +18,17 @@ function getPanelModule({ commandsManager, extensionManager, servicesManager }) 
   };
 
   const wrappedROIThresholdExport = () => {
-    return (
-      <PanelROIThresholdExport
-        commandsManager={commandsManager}
-        servicesManager={servicesManager}
-      />
-    );
+    return <PanelROIThresholdExport />;
   };
 
   const wrappedPanelTMTV = () => {
     return (
       <>
         <Toolbox
-          commandsManager={commandsManager}
-          servicesManager={servicesManager}
-          extensionManager={extensionManager}
           buttonSectionId="ROIThresholdToolbox"
           title="Threshold Tools"
         />
         <PanelTMTV
-          commandsManager={commandsManager}
-          servicesManager={servicesManager}
-        />
-        <PanelROIThresholdExport
           commandsManager={commandsManager}
           servicesManager={servicesManager}
         />

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { Icon } from '@ohif/ui';
 import { utils } from '@ohif/core';
+import { Icons } from '@ohif/ui-next';
 import { PatientInfoVisibility } from '../../types';
 
 const { formatDate, formatPN } = utils;
@@ -46,9 +46,10 @@ function usePatientInfo(servicesManager: AppTypes.ServicesManager) {
     if (!instance) {
       return;
     }
+
     setPatientInfo({
       PatientID: instance.PatientID || null,
-      PatientName: instance.PatientName ? formatPN(instance.PatientName.Alphabetic) : null,
+      PatientName: instance.PatientName ? formatPN(instance.PatientName) : null,
       PatientSex: instance.PatientSex || null,
       PatientDOB: formatDate(instance.PatientBirthDate) || null,
     });
@@ -97,7 +98,7 @@ function HeaderPatientInfo({ servicesManager, appConfig }: withAppTypes) {
       className="hover:bg-primary-dark flex cursor-pointer items-center justify-center gap-1 rounded-lg"
       onClick={handleOnClick}
     >
-      <Icon
+      <Icons.ByName
         name={isMixedPatients ? 'icon-multiple-patients' : 'icon-patient'}
         className="text-primary-active"
       />
@@ -120,10 +121,7 @@ function HeaderPatientInfo({ servicesManager, appConfig }: withAppTypes) {
           </div>
         )}
       </div>
-      <Icon
-        name="icon-chevron-patient"
-        className={`text-primary-active ${expanded ? 'rotate-180' : ''}`}
-      />
+      <Icons.ArrowLeft className={`text-primary-active ${expanded ? 'rotate-180' : ''}`} />
     </div>
   );
 }

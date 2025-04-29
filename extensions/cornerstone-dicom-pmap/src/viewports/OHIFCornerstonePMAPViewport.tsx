@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { useViewportGrid, LoadingIndicatorTotalPercent } from '@ohif/ui';
+import { useViewportGrid } from '@ohif/ui-next';
 
 function OHIFCornerstonePMAPViewport(props: withAppTypes) {
   const {
@@ -12,13 +12,17 @@ function OHIFCornerstonePMAPViewport(props: withAppTypes) {
     extensionManager,
   } = props;
   const viewportId = viewportOptions.viewportId;
-  const { displaySetService, segmentationService, uiNotificationService } =
+  const { displaySetService, segmentationService, uiNotificationService, customizationService } =
     servicesManager.services;
 
   // PMAP viewport will always have a single display set
   if (displaySets.length !== 1) {
     throw new Error('PMAP viewport must have a single display set');
   }
+
+  const LoadingIndicatorTotalPercent = customizationService.getCustomization(
+    'ui.loadingIndicatorTotalPercent'
+  );
 
   const pmapDisplaySet = displaySets[0];
   const [viewportGrid, viewportGridService] = useViewportGrid();
@@ -97,6 +101,7 @@ function OHIFCornerstonePMAPViewport(props: withAppTypes) {
           viewportType: 'volume',
           orientation: viewportOptions.orientation,
           viewportId: viewportOptions.viewportId,
+          presentationIds: viewportOptions.presentationIds,
         }}
         displaySetOptions={[{}, pmapDisplaySetOptions]}
       ></Component>

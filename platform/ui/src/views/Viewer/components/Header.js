@@ -1,5 +1,6 @@
 import React from 'react';
-import { NavBar, Svg, Icon, IconButton } from '../../../components';
+import { NavBar, IconButton } from '../../../components';
+import { Icons } from '@ohif/ui-next';
 
 const Header = () => {
   return (
@@ -7,8 +8,7 @@ const Header = () => {
       <div className="flex flex-1 justify-between">
         <div className="flex items-center">
           <div className="mr-3 inline-flex items-center">
-            <Icon
-              name="chevron-left"
+            <Icons.ArrowLeft
               className="text-primary-active w-8 cursor-pointer"
               onClick={() => alert('Navigate to previous page')}
             />
@@ -16,7 +16,7 @@ const Header = () => {
               href="#"
               className="ml-4"
             >
-              <Svg name="logo-ohif" />
+              <Icons.OHIFLogo />
             </a>
           </div>
         </div>
@@ -30,7 +30,7 @@ const Header = () => {
             onClick={() => {}}
           >
             <React.Fragment>
-              <Icon name="settings" /> <Icon name="chevron-down" />
+              <Icons.Settings /> <Icons.ChevronOpen />
             </React.Fragment>
           </IconButton>
         </div>

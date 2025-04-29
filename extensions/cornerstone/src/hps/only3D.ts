@@ -1,3 +1,5 @@
+import { HYDRATE_SEG_SYNC_GROUP, VOI_SYNC_GROUP } from './mpr';
+
 export const only3D = {
   id: 'only3D',
   locked: true,
@@ -45,6 +47,7 @@ export const only3D = {
             orientation: 'coronal',
             customViewportProps: {
               hideOverlays: true,
+              syncGroups: [VOI_SYNC_GROUP, HYDRATE_SEG_SYNC_GROUP],
             },
           },
           displaySets: [

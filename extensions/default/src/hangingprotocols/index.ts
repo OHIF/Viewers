@@ -1,9 +1,10 @@
-import viewCodeAttribute from './viewCode';
-import lateralityAttribute from './laterality';
-import registerHangingProtocolAttributes from './registerHangingProtocolAttributes';
+import viewCodeAttribute from './utils/viewCode';
+import lateralityAttribute from './utils/laterality';
+import registerHangingProtocolAttributes from './utils/registerHangingProtocolAttributes';
 import hpMammography from './hpMammo';
 import hpMNGrid from './hpMNGrid';
 import hpCompare from './hpCompare';
+export * from './hpMNGrid';
 
 export {
   viewCodeAttribute,

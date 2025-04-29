@@ -1,4 +1,4 @@
-import toolbarButtons from './toolbarButtons.js';
+import toolbarButtons from './toolbarButtons';
 import { hotkeys } from '@ohif/core';
 import { id } from './id';
 import i18n from 'i18next';
@@ -11,7 +11,7 @@ const configs = {
 const ohif = {
   layout: '@ohif/extension-default.layoutTemplateModule.viewerLayout',
   sopClassHandler: '@ohif/extension-default.sopClassHandlerModule.stack',
-  measurements: '@ohif/extension-default.panelModule.measure',
+  measurements: '@ohif/extension-cornerstone.panelModule.panelMeasurement',
   thumbnailList: '@ohif/extension-default.panelModule.seriesList',
 };
 
@@ -96,7 +96,7 @@ function modeFactory({ modeConfiguration }) {
 
       toolbarService.addButtons(toolbarButtons);
       toolbarService.createButtonSection('primary', [
-        'MeasurementTools',
+        'measurementSection',
         'Zoom',
         'WindowLevel',
         'Pan',
@@ -105,14 +105,8 @@ function modeFactory({ modeConfiguration }) {
       ]);
     },
     onModeExit: ({ servicesManager }: withAppTypes) => {
-      const {
-        toolGroupService,
-        measurementService,
-        toolbarService,
-        uiDialogService,
-        uiModalService,
-      } = servicesManager.services;
-      uiDialogService.dismissAll();
+      const { toolGroupService, uiDialogService, uiModalService } = servicesManager.services;
+      uiDialogService.hideAll();
       uiModalService.hide();
       toolGroupService.destroy();
     },
@@ -141,7 +135,9 @@ function modeFactory({ modeConfiguration }) {
             props: {
               // TODO: Should be optional, or required to pass empty array for slots?
               leftPanels: [ohif.thumbnailList],
+              leftPanelResizable: true,
               rightPanels: [ohif.measurements],
+              rightPanelResizable: true,
               viewports: [
                 {
                   namespace: cs3d.viewport,
@@ -169,7 +165,6 @@ function modeFactory({ modeConfiguration }) {
       dicompdf.sopClassHandler,
       dicomsr.sopClassHandler,
     ],
-    hotkeys: [...hotkeys.defaults.hotkeyBindings],
   };
 }
 

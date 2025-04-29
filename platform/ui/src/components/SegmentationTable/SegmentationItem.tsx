@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
-
-import Icon from '../Icon';
+import { Icons } from '@ohif/ui-next';
 
 const SegmentationItem = ({
   id,
@@ -53,8 +52,7 @@ const SegmentationItem = ({
         )}
       >
         {isHovering ? (
-          <Icon
-            name="close"
+          <Icons.Close
             className={classnames('w-[10px] text-center transition duration-500 hover:opacity-80', {
               'bg-primary-light text-black': isActive,
               'bg-primary-dark text-primary-light group-hover:bg-secondary-main': !isActive,
@@ -79,13 +77,12 @@ const SegmentationItem = ({
           </div>
           <div className="flex w-1/4 items-center">
             <div>
-              <Icon
+              <Icons.Pencil
                 className={classnames(
                   'absolute w-3 cursor-pointer text-white transition duration-300 hover:opacity-80',
                   { 'invisible mr-2 opacity-0': !isActive && !isHovering },
                   { 'opacity-1 visible': !isActive && isHovering }
                 )}
-                name="pencil"
                 style={{
                   top: 7,
                   right: 14,
@@ -95,17 +92,29 @@ const SegmentationItem = ({
               />
             </div>
             <div>
-              <Icon
-                className={classnames(
-                  'w-4 cursor-pointer text-white transition duration-300 hover:opacity-80'
-                )}
-                name={isVisible ? 'eye-visible' : 'eye-hidden'}
-                onClick={e => {
-                  // stopPropagation needed to avoid disable the current active item
-                  e.stopPropagation();
-                  toggleVisibility(e, id);
-                }}
-              />
+              {isVisible ? (
+                <Icons.EyeVisible
+                  className={classnames(
+                    'w-4 cursor-pointer text-white transition duration-300 hover:opacity-80'
+                  )}
+                  onClick={e => {
+                    // stopPropagation needed to avoid disable the current active item
+                    e.stopPropagation();
+                    toggleVisibility(e, id);
+                  }}
+                />
+              ) : (
+                <Icons.EyeHidden
+                  className={classnames(
+                    'w-4 cursor-pointer text-white transition duration-300 hover:opacity-80'
+                  )}
+                  onClick={e => {
+                    // stopPropagation needed to avoid disable the current active item
+                    e.stopPropagation();
+                    toggleVisibility(e, id);
+                  }}
+                />
+              )}
             </div>
           </div>
         </div>

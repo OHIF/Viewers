@@ -37,22 +37,12 @@ import { Input } from '../../../../ui-next/src/components/Input';
 import { Tabs, TabsList, TabsTrigger } from '../../../../ui-next/src/components/Tabs';
 import { actionOptionsMap, dataList } from '../../../../ui-next/assets/data';
 import { TooltipProvider } from '../../../../ui-next/src/components/Tooltip';
-
-interface DataItem {
-  id: number;
-  title: string;
-  description: string;
-  optionalField?: string;
-  colorHex?: string;
-  details?: string;
-  series?: string;
-}
-
-interface ListGroup {
-  type: string;
-  items: DataItem[];
-}
-
+import {
+  HoverCard,
+  HoverCardTrigger,
+  HoverCardContent,
+} from '../../../../ui-next/src/components/HoverCard';
+import { DataItem, ListGroup } from '../../../../ui-next/assets/data';
 export default function SegmentationPanel() {
   const [selectedRowId, setSelectedRowId] = useState<string | null>(null);
   const [selectedTab, setSelectedTab] = useState<string>('Fill & Outline');
@@ -67,12 +57,188 @@ export default function SegmentationPanel() {
   };
 
   const organSegmentationGroup = dataList.find(
-    (listGroup: ListGroup) => listGroup.type === 'Organ Segmentation'
-  );
+    (listGroup: any) => listGroup.type === 'Organ Segmentation'
+  ) as unknown as ListGroup;
 
   if (!organSegmentationGroup) {
     return <div className="text-red-500">Organ Segmentation data not found.</div>;
   }
+
+  // Create a state to track which item's statistics to show
+
+  // Function to render statistics panel
+  const renderStatisticsPanel = (item: DataItem) => {
+    if (!item.statistics) {
+      return null;
+    }
+
+    const stats = item.statistics;
+    return (
+      <div className="w-full">
+        <div className="mb-4 flex items-center space-x-2">
+          <div
+            className="h-2.5 w-2.5 flex-shrink-0 rounded-full"
+            style={{ backgroundColor: item.colorHex }}
+          ></div>
+          <h3 className="text-muted-foreground break-words text-lg font-semibold">{item.title}</h3>
+        </div>
+
+        <div className="space-y-1">
+          <div className="flex justify-between">
+            <div className="">Centroid X</div>
+            <div>
+              <span className="text-white">{stats.centroidX.value}</span>{' '}
+              <span className="">{stats.centroidX.unit}</span>
+            </div>
+          </div>
+
+          <div className="flex justify-between">
+            <div className="">Centroid Y</div>
+            <div>
+              <span className="text-white">{stats.centroidY.value}</span>{' '}
+              <span className="">{stats.centroidY.unit}</span>
+            </div>
+          </div>
+
+          <div className="flex justify-between">
+            <div className="">Centroid Z</div>
+            <div>
+              <span className="text-white">{stats.centroidZ.value}</span>{' '}
+              <span className="">{stats.centroidZ.unit}</span>
+            </div>
+          </div>
+
+          <div className="flex justify-between">
+            <div className="">Frame Duration</div>
+            <div>
+              <span className="text-white">{stats.frameDuration.value}</span>{' '}
+              <span className="">{stats.frameDuration.unit}</span>
+            </div>
+          </div>
+
+          <div className="flex justify-between">
+            <div className="">Kurtosis</div>
+            <div>
+              <span className="text-white">{stats.kurtosis.value}</span>{' '}
+              <span className="">{stats.kurtosis.unit}</span>
+            </div>
+          </div>
+
+          <div className="flex justify-between">
+            <div className="">Max</div>
+            <div>
+              <span className="text-white">{stats.max.value}</span>{' '}
+              <span className="">{stats.max.unit}</span>
+            </div>
+          </div>
+
+          <div className="flex justify-between">
+            <div className="">Max Slice</div>
+            <div>
+              <span className="text-white">{stats.maxSlice.value}</span>{' '}
+              <span className="">{stats.maxSlice.unit}</span>
+            </div>
+          </div>
+
+          <div className="flex justify-between">
+            <div className="">Mean</div>
+            <div>
+              <span className="text-white">{stats.mean.value}</span>{' '}
+              <span className="">{stats.mean.unit}</span>
+            </div>
+          </div>
+
+          <div className="flex justify-between">
+            <div className="">Median</div>
+            <div>
+              <span className="text-white">{stats.median.value}</span>{' '}
+              <span className="">{stats.median.unit}</span>
+            </div>
+          </div>
+
+          <div className="flex justify-between">
+            <div className="">Min</div>
+            <div>
+              <span className="text-white">{stats.min.value}</span>{' '}
+              <span className="">{stats.min.unit}</span>
+            </div>
+          </div>
+
+          <div className="flex justify-between">
+            <div className="">Regions</div>
+            <div>
+              <span className="text-white">{stats.regions.value}</span>{' '}
+              <span className="">{stats.regions.unit}</span>
+            </div>
+          </div>
+
+          <div className="flex justify-between">
+            <div className="">Skewness</div>
+            <div>
+              <span className="text-white">{stats.skewness.value}</span>{' '}
+              <span className="">{stats.skewness.unit}</span>
+            </div>
+          </div>
+
+          <div className="flex justify-between">
+            <div className="">Sphere Diameter</div>
+            <div>
+              <span className="text-white">{stats.sphereDiameter.value}</span>{' '}
+              <span className="">{stats.sphereDiameter.unit}</span>
+            </div>
+          </div>
+
+          <div className="flex justify-between">
+            <div className="">Standard Deviation</div>
+            <div>
+              <span className="text-white">{stats.standardDeviation.value}</span>{' '}
+              <span className="">{stats.standardDeviation.unit}</span>
+            </div>
+          </div>
+
+          <div className="flex justify-between">
+            <div className="">SUV Peak</div>
+            <div>
+              <span className="text-white">{stats.suvPeak.value}</span>{' '}
+              <span className="">{stats.suvPeak.unit}</span>
+            </div>
+          </div>
+
+          <div className="flex justify-between">
+            <div className="">Total</div>
+            <div>
+              <span className="text-white">{stats.total.value}</span>{' '}
+              <span className="">{stats.total.unit}</span>
+            </div>
+          </div>
+
+          <div className="flex justify-between">
+            <div className="">Glycolysis</div>
+            <div>
+              <span className="text-white">{stats.glycolysis.value}</span>{' '}
+              <span className="">{stats.glycolysis.unit}</span>
+            </div>
+          </div>
+
+          <div className="flex justify-between">
+            <div className="">Volume</div>
+            <div>
+              <span className="text-white">{stats.volume.value}</span>{' '}
+              <span className="">{stats.volume.unit}</span>
+            </div>
+          </div>
+
+          <div className="flex justify-between">
+            <div className="">Voxel Count</div>
+            <div>
+              <span className="text-white">{stats.voxelCount.value}</span>{' '}
+              <span className="">{stats.voxelCount.unit}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
 
   return (
     <div className="px-auto flex min-h-screen w-full justify-center bg-black py-12">
@@ -284,20 +450,46 @@ export default function SegmentationPanel() {
                   {organSegmentationGroup.items.map((item, index) => {
                     const compositeId = `${organSegmentationGroup.type}-${item.id}-panel`; // Ensure unique composite ID
                     return (
-                      <DataRow
-                        key={`panel-${compositeId}`} // Prefix to ensure uniqueness
-                        number={index + 1}
-                        title={item.title}
-                        description={item.description}
-                        optionalField={item.optionalField}
-                        colorHex={item.colorHex}
-                        details={item.details}
-                        series={item.series}
-                        actionOptions={actionOptionsMap[organSegmentationGroup.type] || ['Action']}
-                        onAction={(action: string) => handleAction(compositeId, action)}
-                        isSelected={selectedRowId === compositeId}
-                        onSelect={() => handleRowSelect(compositeId)}
-                      />
+                      <HoverCard
+                        key={`hover-${compositeId}`}
+                        openDelay={300}
+                        closeDelay={200}
+                        // open={true}
+                      >
+                        <HoverCardTrigger asChild>
+                          <div>
+                            <DataRow
+                              key={`panel-${compositeId}`} // Prefix to ensure uniqueness
+                              number={index + 1}
+                              title={item.title}
+                              description={item.description}
+                              colorHex={item.colorHex}
+                              details={item.details || { primary: [], secondary: [] }}
+                              actionOptions={
+                                actionOptionsMap[organSegmentationGroup.type] || ['Action']
+                              }
+                              onAction={(action: string) => handleAction(compositeId, action)}
+                              isSelected={selectedRowId === compositeId}
+                              onSelect={() => handleRowSelect(compositeId)}
+                              isVisible={true}
+                              isLocked={false}
+                              onToggleVisibility={() => console.debug('Toggle visibility')}
+                              onToggleLocked={() => console.debug('Toggle locked')}
+                              onRename={() => console.debug('Rename')}
+                              onDelete={() => console.debug('Delete')}
+                              onColor={() => console.debug('Color')}
+                              disableEditing={false}
+                            />
+                          </div>
+                        </HoverCardTrigger>
+                        <HoverCardContent
+                          side="left"
+                          align="start"
+                          className="w-72 border"
+                        >
+                          {renderStatisticsPanel(item)}
+                        </HoverCardContent>
+                      </HoverCard>
                     );
                   })}
                 </div>

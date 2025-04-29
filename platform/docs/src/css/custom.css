@@ -9,6 +9,7 @@
 @layer base {
   :root {
     --highlight: 191 74% 63%;
+    --neutral: 213 22% 59%;
     --background: 236 62% 5%;
     --foreground: 0 0% 98%;
     --card: 236 62% 5%;
@@ -26,7 +27,7 @@
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
     --border: 0 0% 14.9%;
-    --input: 236 45% 21%;
+    --input: 236 52% 30%;
     --ring: 214 98% 60%;
     --chart-1: 220 70% 50%;
     --chart-2: 160 60% 45%;
@@ -57,7 +58,7 @@
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
     --border: 0 0% 14.9%;
-    --input: 236 45% 21%;
+    --input: 236 52% 30%;
     --ring: 214 98% 60%;
     --chart-1: 220 70% 50%;
     --chart-2: 160 60% 45%;
@@ -231,11 +232,6 @@ input[type='number']::-webkit-outer-spin-button {
 
 input[type='number'] {
   -moz-appearance: textfield; /* For Firefox */
-}
-
-.navbar__item {
-  display: flex;
-  align-items: center;
 }
 
 .navbar__item svg {
@@ -578,6 +574,16 @@ ul li {
   margin-bottom: 0.5rem;
 }
 
+ol {
+  list-style-type: decimal;
+  padding-left: 1.5rem;
+  margin: 1rem 0;
+}
+
+ol li {
+  margin-bottom: 0.5rem;
+}
+
 /* Nested bullet points */
 ul ul {
   list-style-type: circle;
@@ -632,6 +638,7 @@ html[data-theme='dark'] .markdown hr {
 /* Markdown code block styling */
 .markdown pre {
   font-size: 0.9rem;
+  margin-top: 1em;
 }
 
 .theme-code-block {
@@ -714,4 +721,8 @@ a.dropdown__link[href='/3.9/migration-guide/3p8-to-3p9/']::after {
   color: var(--badge-latest-stable-color);
   font-size: 0.9em;
   margin-left: 4px;
+}
+
+li:first-child {
+  margin-top: 0.5em; /* Adjust '1em' to your desired spacing */
 }

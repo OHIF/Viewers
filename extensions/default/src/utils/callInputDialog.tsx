@@ -1,149 +1,115 @@
 import React from 'react';
-import { Input, Dialog, ButtonEnums, LabellingFlow } from '@ohif/ui';
+import { setAnnotationLabel } from '@cornerstonejs/tools/utilities';
+import { annotation } from '@cornerstonejs/tools';
+import { LabellingFlow } from '@ohif/ui-next';
+import { InputDialog } from '@ohif/ui-next';
+
+interface InputDialogDefaultProps {
+  hide: () => void;
+  onSave: (value: string) => void;
+  placeholder: string;
+  defaultValue: string;
+  submitOnEnter: boolean;
+}
+
+function InputDialogDefault({
+  hide,
+  onSave,
+  placeholder = 'Enter value',
+  defaultValue = '',
+  submitOnEnter,
+}: InputDialogDefaultProps) {
+  return (
+    <InputDialog
+      submitOnEnter={submitOnEnter}
+      defaultValue={defaultValue}
+    >
+      <InputDialog.Field>
+        <InputDialog.Input placeholder={placeholder} />
+      </InputDialog.Field>
+      <InputDialog.Actions>
+        <InputDialog.ActionsSecondary onClick={hide}>Cancel</InputDialog.ActionsSecondary>
+        <InputDialog.ActionsPrimary
+          onClick={value => {
+            onSave(value);
+            hide();
+          }}
+        >
+          Save
+        </InputDialog.ActionsPrimary>
+      </InputDialog.Actions>
+    </InputDialog>
+  );
+}
 
 /**
- *
- * @param {*} data
- * @param {*} data.text
- * @param {*} data.label
- * @param {*} event
- * @param {*} callback
- * @param {*} isArrowAnnotateInputDialog
- * @param {*} dialogConfig
- * @param {string?} dialogConfig.dialogTitle - title of the input dialog
- * @param {string?} dialogConfig.inputLabel - show label above the input
+ * Shows an input dialog for entering text with customizable options
+ * @param uiDialogService - Service for showing UI dialogs
+ * @param onSave - Callback function called when save button is clicked with entered value
+ * @param defaultValue - Initial value to show in input field
+ * @param title - Title text to show in dialog header
+ * @param placeholder - Placeholder text for input field
+ * @param submitOnEnter - Whether to submit dialog when Enter key is pressed
  */
-
-export function callInputDialog(
+export async function callInputDialog({
   uiDialogService,
-  data,
-  callback,
-  isArrowAnnotateInputDialog = true,
-  dialogConfig: any = {}
-) {
+  defaultValue = '',
+  title = 'Annotation',
+  placeholder = '',
+  submitOnEnter = true,
+}: {
+  uiDialogService: AppTypes.UIDialogService;
+  defaultValue?: string;
+  title?: string;
+  placeholder?: string;
+  submitOnEnter?: boolean;
+}) {
   const dialogId = 'dialog-enter-annotation';
-  const label = data ? (isArrowAnnotateInputDialog ? data.text : data.label) : '';
-  const {
-    dialogTitle = 'Annotation',
-    inputLabel = 'Enter your annotation',
-    validateFunc = value => true,
-  } = dialogConfig;
 
-  const onSubmitHandler = ({ action, value }) => {
-    switch (action.id) {
-      case 'save':
-        if (typeof validateFunc === 'function' && !validateFunc(value.label)) {
-          return;
-        }
-
-        callback(value.label, action.id);
-        break;
-      case 'cancel':
-        callback('', action.id);
-        break;
-    }
-    uiDialogService.dismiss({ id: dialogId });
-  };
-
-  if (uiDialogService) {
-    uiDialogService.create({
+  const value = await new Promise<string>(resolve => {
+    uiDialogService.show({
       id: dialogId,
-      centralize: true,
-      isDraggable: false,
-      showOverlay: true,
-      content: Dialog,
+      content: InputDialogDefault,
+      title: title,
+      shouldCloseOnEsc: true,
       contentProps: {
-        title: dialogTitle,
-        value: { label },
-        noCloseButton: true,
-        onClose: () => uiDialogService.dismiss({ id: dialogId }),
-        actions: [
-          { id: 'cancel', text: 'Cancel', type: ButtonEnums.type.secondary },
-          { id: 'save', text: 'Save', type: ButtonEnums.type.primary },
-        ],
-        onSubmit: onSubmitHandler,
-        body: ({ value, setValue }) => {
-          return (
-            <Input
-              autoFocus
-              className="border-primary-main bg-black"
-              type="text"
-              id="annotation"
-              label={inputLabel}
-              labelClassName="text-white text-[14px] leading-[1.2]"
-              value={value.label}
-              onChange={event => {
-                event.persist();
-                setValue(value => ({ ...value, label: event.target.value }));
-              }}
-              onKeyPress={event => {
-                if (event.key === 'Enter') {
-                  onSubmitHandler({ value, action: { id: 'save' } });
-                }
-              }}
-            />
-          );
+        onSave: value => {
+          resolve(value);
         },
+        placeholder,
+        defaultValue,
+        submitOnEnter,
       },
     });
-  }
-}
-
-export function callLabelAutocompleteDialog(uiDialogService, callback, dialogConfig, labelConfig) {
-  const exclusive = labelConfig ? labelConfig.exclusive : false;
-  const dropDownItems = labelConfig ? labelConfig.items : [];
-
-  const { validateFunc = value => true } = dialogConfig;
-
-  const labellingDoneCallback = value => {
-    if (typeof value === 'string') {
-      if (typeof validateFunc === 'function' && !validateFunc(value)) {
-        return;
-      }
-      callback(value, 'save');
-    } else {
-      callback('', 'cancel');
-    }
-    uiDialogService.dismiss({ id: 'select-annotation' });
-  };
-
-  uiDialogService.create({
-    id: 'select-annotation',
-    centralize: true,
-    isDraggable: false,
-    showOverlay: true,
-    content: LabellingFlow,
-    contentProps: {
-      labellingDoneCallback: labellingDoneCallback,
-      measurementData: { label: '' },
-      componentClassName: {},
-      labelData: dropDownItems,
-      exclusive: exclusive,
-    },
   });
+
+  return value;
 }
 
-export function showLabelAnnotationPopup(measurement, uiDialogService, labelConfig) {
+export async function callInputDialogAutoComplete({
+  measurement,
+  uiDialogService,
+  labelConfig,
+  renderContent = LabellingFlow,
+  element,
+}) {
   const exclusive = labelConfig ? labelConfig.exclusive : false;
   const dropDownItems = labelConfig ? labelConfig.items : [];
-  return new Promise<Map<any, any>>((resolve, reject) => {
-    const labellingDoneCallback = value => {
-      uiDialogService.dismiss({ id: 'select-annotation' });
-      if (typeof value === 'string') {
-        measurement.label = value;
+
+  const value = await new Promise<Map<string, string>>((resolve, reject) => {
+    const labellingDoneCallback = newValue => {
+      uiDialogService.hide('select-annotation');
+      if (measurement && typeof newValue === 'string') {
+        const sourceAnnotation = annotation.state.getAnnotation(measurement.uid);
+        setAnnotationLabel(sourceAnnotation, element, newValue);
       }
-      resolve(measurement);
+      resolve(newValue);
     };
 
-    uiDialogService.create({
+    uiDialogService.show({
       id: 'select-annotation',
-      isDraggable: false,
-      showOverlay: true,
-      content: LabellingFlow,
-      defaultPosition: {
-        x: window.innerWidth / 2,
-        y: window.innerHeight / 2,
-      },
+      title: 'Annotation',
+      content: renderContent,
       contentProps: {
         labellingDoneCallback: labellingDoneCallback,
         measurementData: measurement,
@@ -153,6 +119,8 @@ export function showLabelAnnotationPopup(measurement, uiDialogService, labelConf
       },
     });
   });
+
+  return value;
 }
 
 export default callInputDialog;

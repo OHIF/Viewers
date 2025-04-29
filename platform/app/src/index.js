@@ -5,7 +5,6 @@ import 'regenerator-runtime/runtime';
 import { createRoot } from 'react-dom/client';
 import App from './App';
 import React from 'react';
-import { history } from './utils/history';
 
 /**
  * EXTENSIONS AND MODES
@@ -18,12 +17,16 @@ import { history } from './utils/history';
  */
 import { modes as defaultModes, extensions as defaultExtensions } from './pluginImports';
 import loadDynamicConfig from './loadDynamicConfig';
+import { publicUrl } from './utils/publicUrl';
+export { history } from './utils/history';
+export { preserveQueryParameters, preserveQueryStrings } from './utils/preserveQueryParameters';
 
 loadDynamicConfig(window.config).then(config_json => {
   // Reset Dynamic config if defined
   if (config_json !== null) {
     window.config = config_json;
   }
+  window.config.routerBasename ||= publicUrl;
 
   /**
    * Combine our appConfiguration with installed extensions and modes.
@@ -40,5 +43,3 @@ loadDynamicConfig(window.config).then(config_json => {
   const root = createRoot(container);
   root.render(React.createElement(App, appProps));
 });
-
-export { history };

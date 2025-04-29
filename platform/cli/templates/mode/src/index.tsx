@@ -7,7 +7,7 @@ const ohif = {
   sopClassHandler: '@ohif/extension-default.sopClassHandlerModule.stack',
   hangingProtocol: '@ohif/extension-default.hangingProtocolModule.default',
   leftPanel: '@ohif/extension-default.panelModule.seriesList',
-  rightPanel: '@ohif/extension-default.panelModule.measure',
+  rightPanel: '@ohif/extension-cornerstone.panelModule.panelMeasurement',
 };
 
 const cornerstone = {
@@ -50,7 +50,7 @@ function modeFactory({ modeConfiguration }) {
 
       toolbarService.addButtons([...toolbarButtons, ...moreTools]);
       toolbarService.createButtonSection('primary', [
-        'MeasurementTools',
+        'measurementSection',
         'Zoom',
         'Pan',
         'TrackballRotate',
@@ -58,7 +58,40 @@ function modeFactory({ modeConfiguration }) {
         'Capture',
         'Layout',
         'Crosshairs',
-        'MoreTools',
+        'moreToolsSection',
+      ]);
+
+      toolbarService.createButtonSection('measurementSection', [
+        'Length',
+        'Bidirectional',
+        'ArrowAnnotate',
+        'EllipticalROI',
+        'RectangleROI',
+        'CircleROI',
+        'PlanarFreehandROI',
+        'SplineROI',
+        'LivewireContour',
+      ]);
+
+      toolbarService.createButtonSection('moreToolsSection', [
+        'Reset',
+        'rotate-right',
+        'flipHorizontal',
+        'ImageSliceSync',
+        'ReferenceLines',
+        'ImageOverlayViewer',
+        'StackScroll',
+        'invert',
+        'Probe',
+        'Cine',
+        'Angle',
+        'CobbAngle',
+        'Magnify',
+        'CalibrationLine',
+        'TagBrowser',
+        'AdvancedMagnify',
+        'UltrasoundDirectionalTool',
+        'WindowLevelRegion',
       ]);
     },
     onModeExit: ({ servicesManager }: withAppTypes) => {
@@ -71,7 +104,7 @@ function modeFactory({ modeConfiguration }) {
         uiModalService,
       } = servicesManager.services;
 
-      uiDialogService.dismissAll();
+      uiDialogService.hideAll();
       uiModalService.hide();
       toolGroupService.destroy();
       syncGroupService.destroy();
@@ -129,7 +162,6 @@ function modeFactory({ modeConfiguration }) {
     /** SopClassHandlers used by the mode */
     sopClassHandlers: [ohif.sopClassHandler],
     /** hotkeys for mode */
-    hotkeys: [...hotkeys.defaults.hotkeyBindings],
   };
 }
 

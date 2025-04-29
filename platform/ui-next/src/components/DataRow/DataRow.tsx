@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Button } from '../../components/Button/Button';
 import {
   DropdownMenu,
@@ -8,6 +8,7 @@ import {
 } from '../../components/DropdownMenu';
 import { Icons } from '../../components/Icons/Icons';
 import { Tooltip, TooltipTrigger, TooltipContent } from '../../components/Tooltip/Tooltip';
+import { cn } from '../../lib/utils';
 
 /**
  * DataRow is a complex UI component that displays a selectable, interactive row with hierarchical data.
@@ -62,24 +63,25 @@ interface DataRowProps {
   details?: { primary: string[]; secondary: string[] };
   //
   isSelected?: boolean;
-  onSelect?: () => void;
+  onSelect?: (e) => void;
   //
   isVisible: boolean;
-  onToggleVisibility: () => void;
+  onToggleVisibility: (e) => void;
   //
   isLocked: boolean;
-  onToggleLocked: () => void;
+  onToggleLocked: (e) => void;
   //
   title: string;
-  onRename: () => void;
+  onRename: (e) => void;
   //
-  onDelete: () => void;
+  onDelete: (e) => void;
   //
   colorHex?: string;
-  onColor: () => void;
+  onColor: (e) => void;
+  className?: string;
 }
 
-const DataRow: React.FC<DataRowProps> = ({
+export const DataRow: React.FC<DataRowProps> = ({
   number,
   title,
   colorHex,
@@ -94,24 +96,34 @@ const DataRow: React.FC<DataRowProps> = ({
   isSelected = false,
   isVisible = true,
   disableEditing = false,
+  className,
 }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const isTitleLong = title?.length > 25;
+  const rowRef = useRef<HTMLDivElement>(null);
+
+  // useEffect(() => {
+  //   if (isSelected && rowRef.current) {
+  //     setTimeout(() => {
+  //       rowRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  //     }, 200);
+  //   }
+  // }, [isSelected]);
 
   const handleAction = (action: string, e: React.MouseEvent) => {
     e.stopPropagation();
     switch (action) {
       case 'Rename':
-        onRename();
+        onRename(e);
         break;
       case 'Lock':
-        onToggleLocked();
+        onToggleLocked(e);
         break;
       case 'Delete':
-        onDelete();
+        onDelete(e);
         break;
       case 'Color':
-        onColor();
+        onColor(e);
         break;
     }
   };
@@ -181,7 +193,10 @@ const DataRow: React.FC<DataRowProps> = ({
   };
 
   return (
-    <div className={`flex flex-col ${isVisible ? '' : 'opacity-60'}`}>
+    <div
+      ref={rowRef}
+      className={cn('flex flex-col', !isVisible && 'opacity-60', className)}
+    >
       <div
         className={`flex items-center ${
           isSelected ? 'bg-popover' : 'bg-muted'
@@ -254,32 +269,39 @@ const DataRow: React.FC<DataRowProps> = ({
             aria-label={isVisible ? 'Hide' : 'Show'}
             onClick={e => {
               e.stopPropagation();
-              onToggleVisibility();
+              onToggleVisibility(e);
             }}
           >
             {isVisible ? <Icons.Hide className="h-6 w-6" /> : <Icons.Show className="h-6 w-6" />}
           </Button>
 
           {/* Lock Icon (if needed) */}
-          {isLocked && <Icons.Lock className="text-muted-foreground h-6 w-6" />}
+          {isLocked && !disableEditing && <Icons.Lock className="text-muted-foreground h-6 w-6" />}
 
           {/* Actions Dropdown Menu */}
-          <DropdownMenu onOpenChange={open => setIsDropdownOpen(open)}>
-            <DropdownMenuTrigger asChild>
-              <Button
-                size="icon"
-                variant="ghost"
-                className={`h-6 w-6 transition-opacity ${
-                  isSelected || isDropdownOpen ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
-                }`}
-                aria-label="Actions"
-                onClick={e => e.stopPropagation()} // Prevent row selection on button click
+          {disableEditing && <div className="h-6 w-6"></div>}
+          {!disableEditing && (
+            <DropdownMenu onOpenChange={open => setIsDropdownOpen(open)}>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  className={`h-6 w-6 transition-opacity ${
+                    isSelected || isDropdownOpen
+                      ? 'opacity-100'
+                      : 'opacity-0 group-hover:opacity-100'
+                  }`}
+                  aria-label="Actions"
+                  onClick={e => e.stopPropagation()} // Prevent row selection on button click
+                >
+                  <Icons.More className="h-6 w-6" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                align="end"
+                // this was causing issue for auto focus on input dialog
+                onCloseAutoFocus={e => e.preventDefault()}
               >
-                <Icons.More className="h-6 w-6" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              {!disableEditing && (
                 <>
                   <DropdownMenuItem onClick={e => handleAction('Rename', e)}>
                     <Icons.Rename className="text-foreground" />
@@ -295,14 +317,14 @@ const DataRow: React.FC<DataRowProps> = ({
                       <span className="pl-2">Change Color</span>
                     </DropdownMenuItem>
                   )}
+                  <DropdownMenuItem onClick={e => handleAction('Lock', e)}>
+                    <Icons.Lock className="text-foreground" />
+                    <span className="pl-2">{isLocked ? 'Unlock' : 'Lock'}</span>
+                  </DropdownMenuItem>
                 </>
-              )}
-              <DropdownMenuItem onClick={e => handleAction('Lock', e)}>
-                <Icons.Lock className="text-foreground" />
-                <span className="pl-2">{isLocked ? 'Unlock' : 'Lock'}</span>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
         </div>
       </div>
 

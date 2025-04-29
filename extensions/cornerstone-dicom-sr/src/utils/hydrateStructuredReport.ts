@@ -41,22 +41,14 @@ const convertSites = (codingValues, sites) => {
  *
  */
 export default function hydrateStructuredReport(
-  { servicesManager, extensionManager, appConfig }: withAppTypes,
+  { servicesManager, extensionManager, commandsManager }: withAppTypes,
   displaySetInstanceUID
 ) {
-  const annotationManager = CsAnnotation.state.getAnnotationManager();
   const dataSource = extensionManager.getActiveDataSource()[0];
   const { measurementService, displaySetService, customizationService } = servicesManager.services;
 
-  const codingValues = customizationService.getCustomization('codingValues', {});
-
-  const { disableEditing } = customizationService.getCustomization(
-    'PanelMeasurement.disableEditing',
-    {
-      id: 'default.disableEditing',
-      disableEditing: false,
-    }
-  );
+  const codingValues = customizationService.getCustomization('codingValues');
+  const disableEditing = customizationService.getCustomization('panelMeasurement.disableEditing');
 
   const displaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
 
@@ -93,7 +85,8 @@ export default function hydrateStructuredReport(
     }
   });
 
-  const datasetToUse = _mapLegacyDataSet(instance);
+  // Mapping of legacy datasets is now directly handled by adapters module
+  const datasetToUse = instance;
 
   // Use dcmjs to generate toolState.
   let storedMeasurementByAnnotationType = MeasurementReport.generateToolState(
@@ -107,8 +100,7 @@ export default function hydrateStructuredReport(
     metaData
   );
 
-  const onBeforeSRHydration =
-    customizationService.getModeCustomization('onBeforeSRHydration')?.value;
+  const onBeforeSRHydration = customizationService.getCustomization('onBeforeSRHydration')?.value;
 
   if (typeof onBeforeSRHydration === 'function') {
     storedMeasurementByAnnotationType = onBeforeSRHydration({
@@ -208,7 +200,11 @@ export default function hydrateStructuredReport(
       annotation.data.label = getLabelFromDCMJSImportedToolData(toolData);
       annotation.data.finding = convertCode(codingValues, toolData.finding?.[0]);
       annotation.data.findingSites = convertSites(codingValues, toolData.findingSites);
-      annotation.data.site = annotation.data.findingSites?.[0];
+      annotation.data.findingSites?.forEach(site => {
+        if (site.type) {
+          annotation.data[site.type] = site;
+        }
+      });
 
       const matchingMapping = mappings.find(m => m.annotationType === annotationType);
 
@@ -220,9 +216,13 @@ export default function hydrateStructuredReport(
         dataSource
       );
 
+      commandsManager.runCommand('updateMeasurement', {
+        uid: newAnnotationUID,
+        code: annotation.data.finding,
+      });
+
       if (disableEditing) {
-        const addedAnnotation = annotationManager.getAnnotation(newAnnotationUID);
-        locking.setAnnotationLocked(addedAnnotation, true);
+        locking.setAnnotationLocked(newAnnotationUID, true);
       }
 
       if (!imageIds.includes(imageId)) {
@@ -238,62 +238,3 @@ export default function hydrateStructuredReport(
     SeriesInstanceUIDs,
   };
 }
-
-function _mapLegacyDataSet(dataset) {
-  const REPORT = 'Imaging Measurements';
-  const GROUP = 'Measurement Group';
-  const TRACKING_IDENTIFIER = 'Tracking Identifier';
-
-  // Identify the Imaging Measurements
-  const imagingMeasurementContent = toArray(dataset.ContentSequence).find(
-    codeMeaningEquals(REPORT)
-  );
-
-  // Retrieve the Measurements themselves
-  const measurementGroups = toArray(imagingMeasurementContent.ContentSequence).filter(
-    codeMeaningEquals(GROUP)
-  );
-
-  // For each of the supported measurement types, compute the measurement data
-  const measurementData = {};
-
-  const cornerstoneToolClasses = MeasurementReport.CORNERSTONE_TOOL_CLASSES_BY_UTILITY_TYPE;
-
-  const registeredToolClasses = [];
-
-  Object.keys(cornerstoneToolClasses).forEach(key => {
-    registeredToolClasses.push(cornerstoneToolClasses[key]);
-    measurementData[key] = [];
-  });
-
-  measurementGroups.forEach((measurementGroup, index) => {
-    const measurementGroupContentSequence = toArray(measurementGroup.ContentSequence);
-
-    const TrackingIdentifierGroup = measurementGroupContentSequence.find(
-      contentItem => contentItem.ConceptNameCodeSequence.CodeMeaning === TRACKING_IDENTIFIER
-    );
-
-    const TrackingIdentifier = TrackingIdentifierGroup.TextValue;
-
-    let [cornerstoneTag, toolName] = TrackingIdentifier.split(':');
-    if (supportedLegacyCornerstoneTags.includes(cornerstoneTag)) {
-      cornerstoneTag = CORNERSTONE_3D_TAG;
-    }
-
-    const mappedTrackingIdentifier = `${cornerstoneTag}:${toolName}`;
-
-    TrackingIdentifierGroup.TextValue = mappedTrackingIdentifier;
-  });
-
-  return dataset;
-}
-
-const toArray = function (x) {
-  return Array.isArray(x) ? x : [x];
-};
-
-const codeMeaningEquals = codeMeaningName => {
-  return contentItem => {
-    return contentItem.ConceptNameCodeSequence.CodeMeaning === codeMeaningName;
-  };
-};

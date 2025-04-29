@@ -1,12 +1,14 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
-import { useViewportGrid, LoadingIndicatorTotalPercent, ViewportActionArrows } from '@ohif/ui';
+import { ViewportActionArrows } from '@ohif/ui-next';
+import { useViewportGrid } from '@ohif/ui-next';
+import { utils } from '@ohif/extension-cornerstone';
 
 import promptHydrateRT from '../utils/promptHydrateRT';
 import _getStatusComponent from './_getStatusComponent';
 
 import createRTToolGroupAndAddTools from '../utils/initRTToolGroup';
-import { SegmentationRepresentations } from '@cornerstonejs/tools/enums';
+import { usePositionPresentationStore } from '@ohif/extension-cornerstone';
 
 const RT_TOOLGROUP_BASE_NAME = 'RTToolGroup';
 
@@ -38,13 +40,17 @@ function OHIFCornerstoneRTViewport(props: withAppTypes) {
     throw new Error('RT viewport should only have a single display set');
   }
 
+  const LoadingIndicatorTotalPercent = customizationService.getCustomization(
+    'ui.loadingIndicatorTotalPercent'
+  );
+
   const rtDisplaySet = displaySets[0];
 
   const [viewportGrid, viewportGridService] = useViewportGrid();
 
   // States
-  const [isToolGroupCreated, setToolGroupCreated] = useState(false);
-  const [selectedSegment, setSelectedSegment] = useState(1);
+  const selectedSegmentObjectIndex: number = 0;
+  const { setPositionPresentation } = usePositionPresentationStore();
 
   // Hydration means that the RT is opened and segments are loaded into the
   // segmentation panel, and RT is also rendered on any viewport that is in the
@@ -123,6 +129,7 @@ function OHIFCornerstoneRTViewport(props: withAppTypes) {
           toolGroupId: toolGroupId,
           orientation: viewportOptions.orientation,
           viewportId: viewportOptions.viewportId,
+          presentationIds: viewportOptions.presentationIds,
         }}
         onElementEnabled={evt => {
           props.onElementEnabled?.(evt);
@@ -135,26 +142,15 @@ function OHIFCornerstoneRTViewport(props: withAppTypes) {
 
   const onSegmentChange = useCallback(
     direction => {
-      const segmentationId = rtDisplaySet.displaySetInstanceUID;
-      const segmentation = segmentationService.getSegmentation(segmentationId);
-
-      const { segments } = segmentation;
-
-      const numberOfSegments = Object.keys(segments).length;
-
-      let newSelectedSegmentIndex = selectedSegment + direction;
-
-      // Segment 0 is always background
-      if (newSelectedSegmentIndex >= numberOfSegments - 1) {
-        newSelectedSegmentIndex = 1;
-      } else if (newSelectedSegmentIndex === 0) {
-        newSelectedSegmentIndex = numberOfSegments - 1;
-      }
-
-      segmentationService.jumpToSegmentCenter(segmentationId, newSelectedSegmentIndex, viewportId);
-      setSelectedSegment(newSelectedSegmentIndex);
+      utils.handleSegmentChange({
+        direction,
+        segDisplaySet: rtDisplaySet,
+        viewportId,
+        selectedSegmentObjectIndex,
+        segmentationService,
+      });
     },
-    [selectedSegment, segmentationService]
+    [selectedSegmentObjectIndex]
   );
 
   useEffect(() => {
@@ -183,6 +179,19 @@ function OHIFCornerstoneRTViewport(props: withAppTypes) {
       evt => {
         if (evt.rtDisplaySet.displaySetInstanceUID === rtDisplaySet.displaySetInstanceUID) {
           setRtIsLoading(false);
+        }
+
+        if (rtDisplaySet?.firstSegmentedSliceImageId && viewportOptions?.presentationIds) {
+          const { firstSegmentedSliceImageId } = rtDisplaySet;
+          const { presentationIds } = viewportOptions;
+
+          setPositionPresentation(presentationIds.positionPresentationId, {
+            viewportType: 'stack',
+            viewReference: {
+              referencedImageId: firstSegmentedSliceImageId,
+            },
+            viewPresentation: {},
+          });
         }
 
         if (evt.overlappingSegments) {
@@ -246,8 +255,6 @@ function OHIFCornerstoneRTViewport(props: withAppTypes) {
     }
 
     toolGroup = createRTToolGroupAndAddTools(toolGroupService, customizationService, toolGroupId);
-
-    setToolGroupCreated(true);
 
     return () => {
       // remove the segmentation representations if seg displayset changed

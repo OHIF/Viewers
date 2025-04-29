@@ -1,53 +1,66 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import html2canvas from 'html2canvas';
-import {
-  Enums,
-  getEnabledElement,
-  getOrCreateCanvas,
-  StackViewport,
-  BaseVolumeViewport,
-} from '@cornerstonejs/core';
-import { ToolGroupManager } from '@cornerstonejs/tools';
-import { ViewportDownloadForm } from '@ohif/ui';
-
+import { getEnabledElement, StackViewport, BaseVolumeViewport } from '@cornerstonejs/core';
+import { ToolGroupManager, segmentation, Enums } from '@cornerstonejs/tools';
 import { getEnabledElement as OHIFgetEnabledElement } from '../state';
+import { useSystem } from '@ohif/core/src';
 
-const MINIMUM_SIZE = 100;
 const DEFAULT_SIZE = 512;
 const MAX_TEXTURE_SIZE = 10000;
 const VIEWPORT_ID = 'cornerstone-viewport-download-form';
 
+const FILE_TYPE_OPTIONS = [
+  {
+    value: 'jpg',
+    label: 'JPG',
+  },
+  {
+    value: 'png',
+    label: 'PNG',
+  },
+];
+
+type ViewportDownloadFormProps = {
+  hide: () => void;
+  activeViewportId: string;
+};
+
 const CornerstoneViewportDownloadForm = ({
-  onClose,
+  hide,
   activeViewportId: activeViewportIdProp,
-  cornerstoneViewportService,
-}: withAppTypes) => {
-  const enabledElement = OHIFgetEnabledElement(activeViewportIdProp);
-  const activeViewportElement = enabledElement?.element;
-  const activeViewportEnabledElement = getEnabledElement(activeViewportElement);
+}: ViewportDownloadFormProps) => {
+  const { servicesManager } = useSystem();
+  const { customizationService, cornerstoneViewportService } = servicesManager.services;
+  const [showAnnotations, setShowAnnotations] = useState(true);
+  const [viewportDimensions, setViewportDimensions] = useState({
+    width: DEFAULT_SIZE,
+    height: DEFAULT_SIZE,
+  });
 
-  const {
-    viewportId: activeViewportId,
-    renderingEngineId,
-    viewport: activeViewport,
-  } = activeViewportEnabledElement;
+  const warningState = customizationService.getCustomization('viewportDownload.warningMessage') as {
+    enabled: boolean;
+    value: string;
+  };
 
+  const refViewportEnabledElementOHIF = OHIFgetEnabledElement(activeViewportIdProp);
+  const activeViewportElement = refViewportEnabledElementOHIF?.element;
+  const { viewportId: activeViewportId, renderingEngineId } =
+    getEnabledElement(activeViewportElement);
+
+  const renderingEngine = cornerstoneViewportService.getRenderingEngine();
   const toolGroup = ToolGroupManager.getToolGroupForViewport(activeViewportId, renderingEngineId);
 
-  const toolModeAndBindings = Object.keys(toolGroup.toolOptions).reduce((acc, toolName) => {
-    const tool = toolGroup.toolOptions[toolName];
-    const { mode, bindings } = tool;
-
-    return {
-      ...acc,
-      [toolName]: {
-        mode,
-        bindings,
-      },
-    };
-  }, {});
-
   useEffect(() => {
+    const toolModeAndBindings = Object.keys(toolGroup.toolOptions).reduce((acc, toolName) => {
+      const tool = toolGroup.toolOptions[toolName];
+      const { mode, bindings } = tool;
+
+      return {
+        ...acc,
+        [toolName]: { mode, bindings },
+      };
+    }, {});
+
     return () => {
       Object.keys(toolModeAndBindings).forEach(toolName => {
         const { mode, bindings } = toolModeAndBindings[toolName];
@@ -56,157 +69,123 @@ const CornerstoneViewportDownloadForm = ({
     };
   }, []);
 
-  const enableViewport = viewportElement => {
-    if (viewportElement) {
-      const { renderingEngine, viewport } = getEnabledElement(activeViewportElement);
-
-      const viewportInput = {
-        viewportId: VIEWPORT_ID,
-        element: viewportElement,
-        type: viewport.type,
-        defaultOptions: {
-          background: viewport.defaultOptions.background,
-          orientation: viewport.defaultOptions.orientation,
-        },
-      };
-
-      renderingEngine.enableElement(viewportInput);
-    }
-  };
-
-  const disableViewport = viewportElement => {
-    if (viewportElement) {
-      const { renderingEngine } = getEnabledElement(viewportElement);
-      return new Promise(resolve => {
-        renderingEngine.disableElement(VIEWPORT_ID);
-      });
-    }
-  };
-
-  const updateViewportPreview = (downloadViewportElement, internalCanvas, fileType) =>
-    new Promise(resolve => {
-      const enabledElement = getEnabledElement(downloadViewportElement);
-
-      const { viewport: downloadViewport, renderingEngine } = enabledElement;
-
-      // Note: Since any trigger of dimensions will update the viewport,
-      // we need to resize the offScreenCanvas to accommodate for the new
-      // dimensions, this is due to the reason that we are using the GPU offScreenCanvas
-      // to render the viewport for the downloadViewport.
-      renderingEngine.resize();
-
-      // Trigger the render on the viewport to update the on screen
-      // downloadViewport.resetCamera();
-      downloadViewport.render();
-
-      downloadViewportElement.addEventListener(
-        Enums.Events.IMAGE_RENDERED,
-        function updateViewport(event) {
-          const enabledElement = getEnabledElement(event.target);
-          const { viewport } = enabledElement;
-          const { element } = viewport;
-
-          const downloadCanvas = getOrCreateCanvas(element);
-
-          const type = 'image/' + fileType;
-          const dataUrl = downloadCanvas.toDataURL(type, 1);
-
-          let newWidth = element.offsetHeight;
-          let newHeight = element.offsetWidth;
-
-          if (newWidth > DEFAULT_SIZE || newHeight > DEFAULT_SIZE) {
-            const multiplier = DEFAULT_SIZE / Math.max(newWidth, newHeight);
-            newHeight *= multiplier;
-            newWidth *= multiplier;
-          }
-
-          resolve({ dataUrl, width: newWidth, height: newHeight });
-
-          downloadViewportElement.removeEventListener(Enums.Events.IMAGE_RENDERED, updateViewport);
-
-          // for some reason we need a reset camera here, and I don't know why
-          downloadViewport.resetCamera();
-          const presentation = activeViewport.getViewPresentation();
-          if (downloadViewport.setView) {
-            downloadViewport.setView(activeViewport.getViewReference(), presentation);
-          }
-          downloadViewport.render();
-        }
-      );
-    });
-
-  const loadImage = (activeViewportElement, viewportElement, width, height) =>
-    new Promise(resolve => {
-      if (activeViewportElement && viewportElement) {
-        const activeViewportEnabledElement = getEnabledElement(activeViewportElement);
-
-        if (!activeViewportEnabledElement) {
-          return;
-        }
-
-        const { viewport } = activeViewportEnabledElement;
-
-        const renderingEngine = cornerstoneViewportService.getRenderingEngine();
-        const downloadViewport = renderingEngine.getViewport(VIEWPORT_ID);
-
-        if (downloadViewport instanceof StackViewport) {
-          const imageId = viewport.getCurrentImageId();
-          const properties = viewport.getProperties();
-
-          downloadViewport.setStack([imageId]).then(() => {
-            try {
-              downloadViewport.setProperties(properties);
-              const newWidth = Math.min(width || image.width, MAX_TEXTURE_SIZE);
-              const newHeight = Math.min(height || image.height, MAX_TEXTURE_SIZE);
-
-              resolve({ width: newWidth, height: newHeight });
-            } catch (e) {
-              // Happens on clicking the cancel button
-              console.warn('Unable to set properties', e);
-            }
-          });
-        } else if (downloadViewport instanceof BaseVolumeViewport) {
-          const actors = viewport.getActors();
-          // downloadViewport.setActors(actors);
-          actors.forEach(actor => {
-            downloadViewport.addActor(actor);
-          });
-
-          downloadViewport.render();
-
-          const newWidth = Math.min(width || image.width, MAX_TEXTURE_SIZE);
-          const newHeight = Math.min(height || image.height, MAX_TEXTURE_SIZE);
-
-          resolve({ width: newWidth, height: newHeight });
-        }
-      }
-    });
-
-  const toggleAnnotations = (toggle, viewportElement, activeViewportElement) => {
-    const activeViewportEnabledElement = getEnabledElement(activeViewportElement);
-
-    const downloadViewportElement = getEnabledElement(viewportElement);
-
-    const { viewportId: activeViewportId, renderingEngineId } = activeViewportEnabledElement;
-    const { viewportId: downloadViewportId } = downloadViewportElement;
-
-    if (!activeViewportEnabledElement || !downloadViewportElement) {
+  const handleEnableViewport = (viewportElement: HTMLElement) => {
+    if (!viewportElement) {
       return;
     }
 
-    const toolGroup = ToolGroupManager.getToolGroupForViewport(activeViewportId, renderingEngineId);
+    const { viewport } = getEnabledElement(activeViewportElement);
 
-    // add the viewport to the toolGroup
+    const viewportInput = {
+      viewportId: VIEWPORT_ID,
+      element: viewportElement,
+      type: viewport.type,
+      defaultOptions: {
+        background: viewport.defaultOptions.background,
+        orientation: viewport.defaultOptions.orientation,
+      },
+    };
+
+    renderingEngine.enableElement(viewportInput);
+  };
+
+  const handleDisableViewport = async () => {
+    renderingEngine.disableElement(VIEWPORT_ID);
+  };
+
+  const handleLoadImage = async (width: number, height: number) => {
+    if (!activeViewportElement) {
+      return;
+    }
+
+    const activeViewportEnabledElement = getEnabledElement(activeViewportElement);
+    if (!activeViewportEnabledElement) {
+      return;
+    }
+
+    const segmentationRepresentations =
+      segmentation.state.getViewportSegmentationRepresentations(activeViewportId);
+
+    const { viewport } = activeViewportEnabledElement;
+    const downloadViewport = renderingEngine.getViewport(VIEWPORT_ID);
+
+    try {
+      if (downloadViewport instanceof StackViewport) {
+        const imageId = viewport.getCurrentImageId();
+        const properties = viewport.getProperties();
+
+        await downloadViewport.setStack([imageId]);
+        downloadViewport.setProperties(properties);
+      } else if (downloadViewport instanceof BaseVolumeViewport) {
+        const volumeIds = viewport.getAllVolumeIds();
+        downloadViewport.setVolumes([{ volumeId: volumeIds[0] }]);
+      }
+
+      if (segmentationRepresentations.length > 0) {
+        segmentationRepresentations.forEach(segRepresentation => {
+          const { segmentationId, colorLUTIndex, type } = segRepresentation;
+          if (type === Enums.SegmentationRepresentations.Labelmap) {
+            segmentation.addLabelmapRepresentationToViewportMap({
+              [downloadViewport.id]: [
+                {
+                  segmentationId,
+                  type: Enums.SegmentationRepresentations.Labelmap,
+                  config: {
+                    colorLUTOrIndex: colorLUTIndex,
+                  },
+                },
+              ],
+            });
+          }
+
+          if (type === Enums.SegmentationRepresentations.Contour) {
+            segmentation.addContourRepresentationToViewportMap({
+              [downloadViewport.id]: [
+                {
+                  segmentationId,
+                  type: Enums.SegmentationRepresentations.Contour,
+                  config: {
+                    colorLUTOrIndex: colorLUTIndex,
+                  },
+                },
+              ],
+            });
+          }
+        });
+      }
+
+      return {
+        width: Math.min(width || DEFAULT_SIZE, MAX_TEXTURE_SIZE),
+        height: Math.min(height || DEFAULT_SIZE, MAX_TEXTURE_SIZE),
+      };
+    } catch (error) {
+      console.error('Error loading image:', error);
+    }
+  };
+
+  const handleToggleAnnotations = (show: boolean) => {
+    const activeViewportEnabledElement = getEnabledElement(activeViewportElement);
+    if (!activeViewportEnabledElement) {
+      return;
+    }
+
+    const downloadViewport = renderingEngine.getViewport(VIEWPORT_ID);
+    if (!downloadViewport) {
+      return;
+    }
+
+    const { viewportId: activeViewportId, renderingEngineId } = activeViewportEnabledElement;
+    const { id: downloadViewportId } = downloadViewport;
+
+    const toolGroup = ToolGroupManager.getToolGroupForViewport(activeViewportId, renderingEngineId);
     toolGroup.addViewport(downloadViewportId, renderingEngineId);
 
     Object.keys(toolGroup.getToolInstances()).forEach(toolName => {
-      // make all tools Enabled so that they can not be interacted with
-      // in the download viewport
-      if (toggle && toolName !== 'Crosshairs') {
+      if (show && toolName !== 'Crosshairs') {
         try {
           toolGroup.setToolEnabled(toolName);
-        } catch (e) {
-          console.log(e);
+        } catch (error) {
+          console.debug('Error enabling tool:', error);
         }
       } else {
         toolGroup.setToolDisabled(toolName);
@@ -214,33 +193,54 @@ const CornerstoneViewportDownloadForm = ({
     });
   };
 
-  const downloadBlob = (filename, fileType) => {
-    const file = `${filename}.${fileType}`;
+  useEffect(() => {
+    if (viewportDimensions.width && viewportDimensions.height) {
+      setTimeout(() => {
+        handleLoadImage(viewportDimensions.width, viewportDimensions.height);
+        handleToggleAnnotations(showAnnotations);
+        // we need a resize here to make suer annotations world to canvas
+        // are properly calculated
+        renderingEngine.resize();
+        renderingEngine.render();
+      }, 100);
+    }
+  }, [viewportDimensions, showAnnotations]);
+
+  const handleDownload = async (filename: string, fileType: string) => {
     const divForDownloadViewport = document.querySelector(
       `div[data-viewport-uid="${VIEWPORT_ID}"]`
     );
 
-    html2canvas(divForDownloadViewport).then(canvas => {
-      const link = document.createElement('a');
-      link.download = file;
-      link.href = canvas.toDataURL(fileType, 1.0);
-      link.click();
-    });
+    if (!divForDownloadViewport) {
+      console.debug('No viewport found for download');
+      return;
+    }
+
+    const canvas = await html2canvas(divForDownloadViewport as HTMLElement);
+    const link = document.createElement('a');
+    link.download = `${filename}.${fileType}`;
+    link.href = canvas.toDataURL(`image/${fileType}`, 1.0);
+    link.click();
   };
 
+  const ViewportDownloadFormNew = customizationService.getCustomization(
+    'ohif.captureViewportModal'
+  );
+
   return (
-    <ViewportDownloadForm
-      onClose={onClose}
-      minimumSize={MINIMUM_SIZE}
-      maximumSize={MAX_TEXTURE_SIZE}
+    <ViewportDownloadFormNew
+      onClose={hide}
       defaultSize={DEFAULT_SIZE}
-      activeViewportElement={activeViewportElement}
-      enableViewport={enableViewport}
-      disableViewport={disableViewport}
-      updateViewportPreview={updateViewportPreview}
-      loadImage={loadImage}
-      toggleAnnotations={toggleAnnotations}
-      downloadBlob={downloadBlob}
+      fileTypeOptions={FILE_TYPE_OPTIONS}
+      viewportId={VIEWPORT_ID}
+      showAnnotations={showAnnotations}
+      onAnnotationsChange={setShowAnnotations}
+      dimensions={viewportDimensions}
+      onDimensionsChange={setViewportDimensions}
+      onEnableViewport={handleEnableViewport}
+      onDisableViewport={handleDisableViewport}
+      onDownload={handleDownload}
+      warningState={warningState}
     />
   );
 };

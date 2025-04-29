@@ -14,6 +14,7 @@ import PanelServiceType from '../services/PanelService';
 import UIDialogServiceType from '../services/UIDialogService';
 import UIViewportDialogServiceType from '../services/UIViewportDialogService';
 import StudyPrefetcherServiceType from '../services/StudyPrefetcherService';
+import type { MultiMonitorService } from '../services/MultiMonitorService';
 
 import ServicesManagerType from '../services/ServicesManager';
 import CommandsManagerType from '../classes/CommandsManager';
@@ -78,6 +79,7 @@ declare global {
       uiViewportDialogService?: UIViewportDialogServiceType;
       panelService?: PanelServiceType;
       studyPrefetcherService?: StudyPrefetcherServiceType;
+      multiMonitorService?: MultiMonitorService;
     }
 
     export interface Config {
@@ -111,6 +113,7 @@ declare global {
         days?: number;
       };
       groupEnabledModesFirst?: boolean;
+      measurementTrackingMode?: 'standard' | 'simplified' | 'none';
       disableConfirmationPrompts?: boolean;
       showPatientInfo?: 'visible' | 'visibleCollapsed' | 'disabled' | 'visibleReadOnly';
       requestTransferSyntaxUID?: string;
@@ -126,7 +129,6 @@ declare global {
       showStudyList?: boolean;
       whiteLabeling?: Record<string, unknown>;
       httpErrorHandler?: (error: Error) => void;
-      addWindowLevelActionMenu?: boolean;
       dangerouslyUseDynamicConfig?: {
         enabled: boolean;
         regex: RegExp;
@@ -144,12 +146,6 @@ declare global {
         maxNumPrefetchRequests: number;
         order: 'closest' | 'downward' | 'upward';
       };
-      tours?: Array<{
-        id: string;
-        steps: StepOptions[];
-        tourOptions: TourOptions;
-        route: string;
-      }>;
     }
 
     export interface Test {

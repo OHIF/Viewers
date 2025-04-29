@@ -202,6 +202,7 @@ function initMPRToolGroup(extensionManager, toolGroupService, commandsManager) {
       { toolName: toolNames.WindowLevelRegion },
       { toolName: toolNames.PlanarFreehandROI },
       { toolName: toolNames.SplineROI },
+      { toolName: toolNames.LivewireContour },
     ],
     disabled: [
       {

@@ -1,5 +1,3 @@
-import { ButtonEnums } from '@ohif/ui';
-
 const RESPONSE = {
   NO_NEVER: -1,
   CANCEL: 0,
@@ -13,14 +11,14 @@ function promptHydrateSEG({
   preHydrateCallbacks,
   hydrateCallback,
 }: withAppTypes) {
-  const { uiViewportDialogService } = servicesManager.services;
+  const { uiViewportDialogService, customizationService } = servicesManager.services;
   const extensionManager = servicesManager._extensionManager;
   const appConfig = extensionManager._appConfig;
 
   return new Promise(async function (resolve, reject) {
     const promptResult = appConfig?.disableConfirmationPrompts
       ? RESPONSE.HYDRATE_SEG
-      : await _askHydrate(uiViewportDialogService, viewportId);
+      : await _askHydrate(uiViewportDialogService, customizationService, viewportId);
 
     if (promptResult === RESPONSE.HYDRATE_SEG) {
       preHydrateCallbacks?.forEach(callback => {
@@ -39,19 +37,23 @@ function promptHydrateSEG({
   });
 }
 
-function _askHydrate(uiViewportDialogService, viewportId) {
+function _askHydrate(
+  uiViewportDialogService: AppTypes.UIViewportDialogService,
+  customizationService: AppTypes.CustomizationService,
+  viewportId
+) {
   return new Promise(function (resolve, reject) {
-    const message = 'Do you want to open this Segmentation?';
+    const message = customizationService.getCustomization('viewportNotification.hydrateSEGMessage');
     const actions = [
       {
         id: 'no-hydrate',
-        type: ButtonEnums.type.secondary,
+        type: 'secondary',
         text: 'No',
         value: RESPONSE.CANCEL,
       },
       {
         id: 'yes-hydrate',
-        type: ButtonEnums.type.primary,
+        type: 'primary',
         text: 'Yes',
         value: RESPONSE.HYDRATE_SEG,
       },

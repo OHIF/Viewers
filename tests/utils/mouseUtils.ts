@@ -1,4 +1,4 @@
-import { Page } from "@playwright/test";
+import { Page } from 'playwright-test-coverage';
 
 interface WindowWithMousePosition extends Window {
   mouseX: number;

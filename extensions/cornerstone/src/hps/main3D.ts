@@ -1,3 +1,5 @@
+import { HYDRATE_SEG_SYNC_GROUP, VOI_SYNC_GROUP } from './mpr';
+
 export const main3D = {
   id: 'main3D',
   locked: true,
@@ -94,17 +96,7 @@ export const main3D = {
             initialImageOptions: {
               preset: 'middle',
             },
-            syncGroups: [
-              {
-                type: 'voi',
-                id: 'mpr',
-                source: true,
-                target: true,
-                options: {
-                  syncColormap: true,
-                },
-              },
-            ],
+            syncGroups: [VOI_SYNC_GROUP, HYDRATE_SEG_SYNC_GROUP],
           },
           displaySets: [
             {
@@ -120,17 +112,7 @@ export const main3D = {
             initialImageOptions: {
               preset: 'middle',
             },
-            syncGroups: [
-              {
-                type: 'voi',
-                id: 'mpr',
-                source: true,
-                target: true,
-                options: {
-                  syncColormap: true,
-                },
-              },
-            ],
+            syncGroups: [VOI_SYNC_GROUP, HYDRATE_SEG_SYNC_GROUP],
           },
           displaySets: [
             {
@@ -146,17 +128,7 @@ export const main3D = {
             initialImageOptions: {
               preset: 'middle',
             },
-            syncGroups: [
-              {
-                type: 'voi',
-                id: 'mpr',
-                source: true,
-                target: true,
-                options: {
-                  syncColormap: true,
-                },
-              },
-            ],
+            syncGroups: [VOI_SYNC_GROUP, HYDRATE_SEG_SYNC_GROUP],
           },
           displaySets: [
             {

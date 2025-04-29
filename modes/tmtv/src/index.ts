@@ -1,5 +1,5 @@
-import { hotkeys, classes } from '@ohif/core';
-import toolbarButtons from './toolbarButtons.js';
+import { classes } from '@ohif/core';
+import toolbarButtons from './toolbarButtons';
 import { id } from './id.js';
 import initToolGroups from './initToolGroups.js';
 import setCrosshairsConfiguration from './utils/setCrosshairsConfiguration.js';
@@ -61,7 +61,7 @@ function modeFactory({ modeConfiguration }) {
       const { toolNames, Enums } = utilityModule.exports;
 
       // Init Default and SR ToolGroups
-      initToolGroups(toolNames, Enums, toolGroupService, commandsManager, null, servicesManager);
+      initToolGroups(toolNames, Enums, toolGroupService, commandsManager);
 
       const { unsubscribe } = toolGroupService.subscribe(
         toolGroupService.EVENTS.VIEWPORT_ADDED,
@@ -96,38 +96,31 @@ function modeFactory({ modeConfiguration }) {
         'Crosshairs',
         'Pan',
       ]);
-      toolbarService.createButtonSection('ROIThresholdToolbox', [
+      toolbarService.createButtonSection('measurementSection', [
+        'Length',
+        'Bidirectional',
+        'ArrowAnnotate',
+        'EllipticalROI',
+      ]);
+
+      toolbarService.createButtonSection('ROIThresholdToolbox', ['SegmentationTools']);
+      toolbarService.createButtonSection('segmentationToolboxToolsSection', [
         'RectangleROIStartEndThreshold',
         'BrushTools',
       ]);
 
-      customizationService.addModeCustomizations([
-        {
-          id: 'PanelSegmentation.tableMode',
-          mode: 'expanded',
+      toolbarService.createButtonSection('brushToolsSection', ['Brush', 'Eraser', 'Threshold']);
+
+      customizationService.setCustomizations({
+        'panelSegmentation.tableMode': {
+          $set: 'expanded',
         },
-        {
-          id: 'PanelSegmentation.onSegmentationAdd',
-          onSegmentationAdd: () => {
+        'panelSegmentation.onSegmentationAdd': {
+          $set: () => {
             commandsManager.run('createNewLabelmapFromPT');
           },
         },
-        {
-          id: 'PanelSegmentation.readableText',
-          // remove following if you are not interested in that stats
-          readableText: {
-            lesionStats: 'Lesion Statistics',
-            minValue: 'Minimum Value',
-            maxValue: 'Maximum Value',
-            meanValue: 'Mean Value',
-            volume: 'Volume (ml)',
-            suvPeak: 'SUV Peak',
-            suvMax: 'Maximum SUV',
-            suvMaxIJK: 'SUV Max IJK',
-            lesionGlyoclysisStats: 'Lesion Glycolysis',
-          },
-        },
-      ]);
+      });
 
       // For the hanging protocol we need to decide on the window level
       // based on whether the SUV is corrected or not, hence we can't hard
@@ -171,7 +164,7 @@ function modeFactory({ modeConfiguration }) {
       } = servicesManager.services;
 
       unsubscriptions.forEach(unsubscribe => unsubscribe());
-      uiDialogService.dismissAll();
+      uiDialogService.hideAll();
       uiModalService.hide();
       toolGroupService.destroy();
       syncGroupService.destroy();
@@ -215,8 +208,10 @@ function modeFactory({ modeConfiguration }) {
             id: ohif.layout,
             props: {
               leftPanels: [ohif.thumbnailList],
+              leftPanelResizable: true,
               leftPanelClosed: true,
               rightPanels: [tmtv.tmtv, tmtv.petSUV],
+              rightPanelResizable: true,
               viewports: [
                 {
                   namespace: cs3d.viewport,
@@ -231,7 +226,6 @@ function modeFactory({ modeConfiguration }) {
     extensions: extensionDependencies,
     hangingProtocol: tmtv.hangingProtocol,
     sopClassHandlers: [ohif.sopClassHandler],
-    hotkeys: [...hotkeys.defaults.hotkeyBindings],
     ...modeConfiguration,
   };
 }
