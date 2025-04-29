@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.11.0-beta.16](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.15...v3.11.0-beta.16) (2025-04-29)
+
+
+### Bug Fixes
+
+* **template:** Update mode template to match current implementation (OHI-1833) ([#4998](https://github.com/OHIF/Viewers/issues/4998)) ([0f39496](https://github.com/OHIF/Viewers/commit/0f394962904808a140221dbae063ca5dcf0df36b))
+
+
+
+
+
 # [3.11.0-beta.15](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.14...v3.11.0-beta.15) (2025-04-22)
 
 **Note:** Version bump only for package @ohif/cli
