@@ -215,7 +215,12 @@ class MetadataProvider {
         break;
       case WADO_IMAGE_LOADER_TAGS.MODALITY_LUT_MODULE:
         const { RescaleIntercept, RescaleSlope } = instance;
-        if (RescaleIntercept === undefined || RescaleSlope === undefined) {
+        if (
+          RescaleIntercept === undefined ||
+          RescaleIntercept === null ||
+          RescaleSlope === undefined ||
+          RescaleSlope === null
+        ) {
           return;
         }
 
