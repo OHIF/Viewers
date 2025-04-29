@@ -68,7 +68,7 @@ class UINotificationService {
   show({
     title,
     message,
-    duration = 5000,
+    duration = 2000,
     position = 'bottom-right',
     type = 'info',
     autoClose = true,
