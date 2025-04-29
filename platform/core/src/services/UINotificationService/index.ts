@@ -71,6 +71,9 @@ class UINotificationService {
     autoClose = true,
     promise,
     promiseMessages,
+    id,
+    allowDuplicates = false,
+    deduplicationInterval = 30000,
   }: {
     title: string;
     message: string | ((data?: any) => string);
@@ -90,6 +93,9 @@ class UINotificationService {
       success?: string | ((data: any) => string);
       error?: string | ((error: any) => string);
     };
+    id?: string;
+    allowDuplicates?: boolean;
+    deduplicationInterval?: number;
   }): string {
     if (promise && promiseMessages) {
       const loadingId = serviceImplementation._show({
@@ -98,6 +104,9 @@ class UINotificationService {
         type: 'loading',
         autoClose: false,
         position,
+        id: id ? `${id}-loading` : undefined,
+        allowDuplicates,
+        deduplicationInterval,
       });
 
       promise.then(
@@ -114,6 +123,9 @@ class UINotificationService {
             duration,
             position,
             autoClose,
+            id: id ? `${id}-success` : undefined,
+            allowDuplicates,
+            deduplicationInterval,
           });
           this.hide(loadingId);
         },
@@ -130,6 +142,9 @@ class UINotificationService {
             duration,
             position,
             autoClose,
+            id: id ? `${id}-error` : undefined,
+            allowDuplicates,
+            deduplicationInterval,
           });
           this.hide(loadingId);
         }
@@ -145,6 +160,9 @@ class UINotificationService {
       position,
       type,
       autoClose,
+      id,
+      allowDuplicates,
+      deduplicationInterval,
     });
   }
 }

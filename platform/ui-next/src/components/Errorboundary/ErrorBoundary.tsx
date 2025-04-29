@@ -148,6 +148,10 @@ const DefaultFallback = ({
   };
 
   useEffect(() => {
+    // Use a stable ID based on error message to support deduplication
+    const errorId = `error-${errorTitle || error.message}`;
+
+    // We don't need to track shown state - instead rely on the toast deduplication system
     toast.error(title, {
       description: subtitle,
       action: {
@@ -155,8 +159,9 @@ const DefaultFallback = ({
         onClick: () => setShowDetails(true),
       },
       duration: 0,
+      id: errorId,
     });
-  }, [error, subtitle, t, title]);
+  }, [error, errorTitle, subtitle, t, title]);
 
   if (isProduction) {
     return null;
