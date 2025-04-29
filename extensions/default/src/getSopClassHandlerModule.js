@@ -63,7 +63,8 @@ function getDisplaySetInfo(instances) {
 const makeDisplaySet = instances => {
   const instance = instances[0];
   const imageSet = new ImageSet(instances);
-
+  const { extensionManager } = appContext;
+  const dataSource = extensionManager.getActiveDataSource()[0];
   const {
     isDynamicVolume,
     value: isReconstructable,
@@ -77,6 +78,17 @@ const makeDisplaySet = instances => {
 
   // set appropriate attributes to image set...
   const messages = getDisplaySetMessages(instances, isReconstructable, isDynamicVolume);
+
+  let imageId;
+  const imageIds = dataSource.getImageIdsForDisplaySet(imageSet);
+  if (isDynamicVolume) {
+    const timePoints = dynamicVolumeInfo.timePoints;
+    const middleIndex = Math.floor(timePoints.length / 2);
+    const middleTimePointImageIds = timePoints[middleIndex];
+    imageId = middleTimePointImageIds[Math.floor(middleTimePointImageIds.length / 2)];
+  } else {
+    imageId = imageIds[Math.floor(imageIds.length / 2)];
+  }
 
   imageSet.setAttributes({
     volumeLoaderSchema,
@@ -99,6 +111,7 @@ const makeDisplaySet = instances => {
     averageSpacingBetweenFrames: averageSpacingBetweenFrames || null,
     isDynamicVolume,
     dynamicVolumeInfo,
+    getThumbnailSrc: dataSource.retrieve.getGetThumbnailSrc?.(instance, imageId),
   });
 
   // Sort the images in this series if needed
@@ -172,10 +185,8 @@ function getDisplaySetsFromSeries(instances) {
     }
 
     let displaySet;
-
     if (isMultiFrame(instance)) {
       displaySet = makeDisplaySet([instance]);
-
       displaySet.setAttributes({
         sopClassUids,
         numImageFrames: instance.NumberOfFrames,

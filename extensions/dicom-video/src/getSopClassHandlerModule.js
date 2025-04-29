@@ -78,12 +78,7 @@ const _getDisplaySetsFromSeries = (instances, servicesManager, extensionManager)
         videoUrl,
         renderedUrl: videoUrl,
         instances: [instance],
-        thumbnailSrc: dataSource.retrieve.directURL({
-          instance,
-          defaultPath: '/thumbnail',
-          defaultType: 'image/jpeg',
-          tag: 'Absent',
-        }),
+        getThumbnailSrc: dataSource.retrieve.getGetThumbnailSrc?.(instance),
         imageIds: [imageId],
         isDerivedDisplaySet: true,
         isLoaded: false,
