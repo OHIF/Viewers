@@ -316,45 +316,6 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
        */
       getWadoDicomWebClient: () => wadoDicomWebClient,
 
-      /**
-       * Retrieves a thumbnail of an DICOM Instance.
-       *
-       * @param {Object} options
-       * @param {String} options.studyInstanceUID - Study Instance UID
-       * @param {String} options.seriesInstanceUID - Series Instance UID
-       * @param {String} options.sopInstanceUID - SOP Instance UID
-       * @param {MediaType[]} [options.mediaTypes] - Acceptable HTTP media types
-       * @param {Object} [options.queryParams] - HTTP query parameters
-       * @param {Request} [options.request] - Request Options - Request Options
-       * @returns {ArrayBuffer} Thumbnail
-       */
-      instanceThumbnail: async ({ studyInstanceUID, seriesInstanceUID, sopInstanceUID }) => {
-        qidoDicomWebClient.headers = getAuthorizationHeader();
-        const options = {
-          multipart: false,
-          studyInstanceUID,
-          seriesInstanceUID,
-          sopInstanceUID,
-        };
-        return qidoDicomWebClient.retrieveInstanceThumbnail(options).then(val => {
-          const ret = (val && val[0]) || undefined;
-          return ret;
-        });
-      },
-
-      InstanceFramesThumbnail: async ({ StudyInstanceUID }) => {
-        qidoDicomWebClient.headers = getAuthorizationHeader();
-        const options = {
-          multipart: false,
-          BulkDataURI,
-          StudyInstanceUID,
-        };
-        return qidoDicomWebClient.retrieveInstanceFramesThumbnail(options).then(val => {
-          const ret = (val && val[0]) || undefined;
-          return ret;
-        });
-      },
-
       bulkDataURI: async ({ StudyInstanceUID, BulkDataURI }) => {
         qidoDicomWebClient.headers = getAuthorizationHeader();
         const options = {
