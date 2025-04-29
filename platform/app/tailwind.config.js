@@ -4,9 +4,13 @@ module.exports = {
   // but in development, it is often useful to disable this to see
   // and try out all the styles that are available.
   // ...(process.env.NODE_ENV === 'development' && {
-  //   safelist: [{ pattern: /.*/ }],
+  //   safelist: [{ pattern: /.*/ }],s
   // }),
-  presets: [require('../ui/tailwind.config.js'), require('../ui-next/tailwind.config.js')],
+  presets: [
+    require('../ui/tailwind.config.js'),
+    require('../ui-next/tailwind.config.js'),
+    require('../../tailwind.config.js')
+  ],
   content: [
     './src/**/*.{jsx,js,ts,tsx, css}',
     '../../extensions/**/*.{jsx,js,ts,tsx, css}',

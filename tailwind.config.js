@@ -1,8 +1,11 @@
+/** @type {import('tailwindcss').Config} */
 module.exports = {
-  prefix: '',
-  important: false,
-  separator: ':',
+  // prefix: '',
+  // important: false,
+  // separator: ':',
+  content: ['./src/**/*.{jsx,js,ts,tsx,css,mdx}'],
   theme: {
+   extend:{
     screens: {
       sm: '640px',
       md: '768px',
@@ -12,7 +15,7 @@ module.exports = {
     colors: {
       overlay: 'rgba(0, 0, 0, 0.8)',
       transparent: 'transparent',
-      black: '#000',
+      black: '#71A4F2',
       white: '#fff',
       initial: 'initial',
       inherit: 'inherit',
@@ -34,7 +37,7 @@ module.exports = {
       secondary: {
         light: '#3a3f99',
         main: '#2b166b',
-        dark: '#041c4a',
+        dark: '#0063FF',
         active: '#1f1f27',
       },
 
@@ -55,5 +58,11 @@ module.exports = {
         200: '#38daff',
       },
     },
+    transitionProperty: {
+      height: 'height',
+   }
+  }
   },
-};
+  corePlugins: {},
+  plugins: [],
+}
