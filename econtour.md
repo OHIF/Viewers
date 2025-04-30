@@ -11,3 +11,12 @@ PUBLIC_URL=/ohif/ yarn run build
 Note: depends on where you host it, you might need to change the iframe.html src to point to the correct URL.
 
 4. You will see we are able to navigate to different pages by clicking on the buttons.
+
+
+------
+
+To change the initial width for the side panels, edit this file
+
+extensions/default/src/ViewerLayout/constants/panels.ts
+
+-----

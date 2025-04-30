@@ -18,7 +18,31 @@ export default {
    * (e.g. cornerstone, cornerstoneTools, ...) or registering any services that
    * this extension is providing.
    */
-  preRegistration: ({ servicesManager, commandsManager, configuration = {} }) => {},
+  preRegistration: ({ servicesManager, commandsManager, configuration = {} }) => {
+    const { displaySetService, viewportGridService } = servicesManager.services;
+    const { unsubscribe: displaySetUnsubscribe } = displaySetService.subscribe(
+      displaySetService.EVENTS.DISPLAY_SETS_ADDED,
+      ({ displaySetsAdded }) => {
+        const addedDisplaySet = displaySetsAdded[0];
+        if (addedDisplaySet.Modality !== 'RTSTRUCT') {
+          return;
+        }
+
+        const { unsubscribe: viewportUnsubscribe } = viewportGridService.subscribe(
+          viewportGridService.EVENTS.VIEWPORTS_READY,
+          () => {
+            const viewportId = viewportGridService.getActiveViewportId();
+            viewportGridService.setDisplaySetsForViewport({
+              viewportId,
+              displaySetInstanceUIDs: [addedDisplaySet.displaySetInstanceUID],
+            });
+            viewportUnsubscribe();
+            displaySetUnsubscribe();
+          }
+        );
+      }
+    );
+  },
   /**
    * PanelModule should provide a list of panels that will be available in OHIF
    * for Modes to consume and render. Each panel is defined by a {name,

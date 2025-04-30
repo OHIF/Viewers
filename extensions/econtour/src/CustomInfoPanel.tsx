@@ -1,5 +1,4 @@
 import React from 'react';
-import { useSystem } from '@ohif/core/src';
 import { useImageViewer } from '@ohif/ui-next';
 import { useQuery } from '@tanstack/react-query';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@ohif/ui-next';
@@ -30,14 +29,12 @@ export default function CustomInfoPanel({ children }: any) {
 
     if (!response.ok) {
       if (response.status === 404) {
-        console.debug('No contour data found for this study');
         return null;
       }
       throw new Error(`Error fetching contour data: ${response.status}`);
     }
 
     const data = await response.json();
-    console.debug('Contour info retrieved:', data);
     return data.responseBody;
   };
 
@@ -47,7 +44,7 @@ export default function CustomInfoPanel({ children }: any) {
     isLoading,
     error,
   } = useQuery({
-    queryKey: ['contourInfo', StudyInstanceUIDs?.[0]],
+    queryKey: ['contourInfoReport', StudyInstanceUIDs?.[0]],
     queryFn: () => (StudyInstanceUIDs?.[0] ? fetchContourInfo(StudyInstanceUIDs[0]) : null),
     enabled: !!StudyInstanceUIDs?.[0],
     staleTime: 1000 * 60 * 5, // 5 minutes

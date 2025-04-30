@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, ReactNode } from 'react';
 import { SegmentationTable } from '@ohif/ui-next';
 import { useActiveViewportSegmentationRepresentations } from '@ohif/extension-cornerstone';
 import { metaData } from '@cornerstonejs/core';
@@ -6,40 +6,63 @@ import { useSystem } from '@ohif/core/src';
 import { useImageViewer } from '@ohif/ui-next';
 import { useQuery } from '@tanstack/react-query';
 
-export default function CustomSegmentationPanel({ children }: withAppTypes) {
+// Define proper interface for component props
+interface CustomSegmentationPanelProps {
+  children?: ReactNode;
+}
+
+export default function CustomSegmentationPanel({ children }: CustomSegmentationPanelProps) {
   const { commandsManager, servicesManager } = useSystem();
   const { customizationService, displaySetService } = servicesManager.services;
   const internalImageViewer = useImageViewer();
   const StudyInstanceUIDs = internalImageViewer.StudyInstanceUIDs;
 
+  // Define better typing for segmentationData
+  const [segmentationDataToUse, setSegmentationDataToUse] = useState<Array<any>>([]);
+
   // Function to fetch contour info
   const fetchContourInfo = async (studyUID: string) => {
     if (!studyUID) {
+      console.debug('No studyUID provided');
       return null;
     }
 
-    // Customize the environment as needed
-    const environment = 'development';
-    const baseUrl = environment ? `https://${environment}.econtour.org` : 'https://econtour.org';
+    try {
+      // Customize the environment as needed
+      const environment = 'development';
+      const baseUrl = environment ? `https://${environment}.econtour.org` : 'https://econtour.org';
+      const url = `${baseUrl}/api/regions/?studyUID=${studyUID}`;
 
-    const response = await fetch(`${baseUrl}/api/study/?studyUID=${studyUID}`, {
-      method: 'GET',
-      headers: {
-        Accept: 'application/json',
-      },
-    });
+      console.debug('Fetching contour data from:', url);
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          Accept: 'application/json',
+        },
+      });
 
-    if (!response.ok) {
-      if (response.status === 404) {
-        console.debug('No contour data found for this study');
-        return null;
+      if (!response.ok) {
+        if (response.status === 404) {
+          console.debug('No contour data found for this study');
+          return null;
+        }
+        throw new Error(`Error fetching contour data: ${response.status}`);
       }
-      throw new Error(`Error fetching contour data: ${response.status}`);
-    }
 
-    const data = await response.json();
-    console.debug('Contour info retrieved:', data);
-    return data.responseBody;
+      const data = await response.json();
+      console.debug('Contour info retrieved:', data);
+
+      // Check if responseBody exists in the data
+      if (!data.responseBody) {
+        console.debug('Missing responseBody in data:', data);
+        return data; // Return the whole data object if responseBody isn't present
+      }
+
+      return data.responseBody;
+    } catch (error) {
+      console.error('Error in fetchContourInfo:', error);
+      throw error; // Re-throw to let React Query handle it
+    }
   };
 
   // Use React Query to fetch and cache contour info
@@ -47,17 +70,16 @@ export default function CustomSegmentationPanel({ children }: withAppTypes) {
     data: contourInfo,
     isLoading,
     error,
+    status,
   } = useQuery({
     queryKey: ['contourInfo', StudyInstanceUIDs?.[0]],
     queryFn: () => (StudyInstanceUIDs?.[0] ? fetchContourInfo(StudyInstanceUIDs[0]) : null),
     enabled: !!StudyInstanceUIDs?.[0],
     staleTime: 1000 * 60 * 5, // 5 minutes
-    cacheTime: 1000 * 60 * 30, // 30 minutes
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+    retry: 1, // Only retry once
   });
-
-  useEffect(() => {
-    console.debug('StudyInstanceUIDs', StudyInstanceUIDs);
-  }, [StudyInstanceUIDs]);
 
   const { segmentationsWithRepresentations, disabled } =
     useActiveViewportSegmentationRepresentations({
@@ -73,13 +95,24 @@ export default function CustomSegmentationPanel({ children }: withAppTypes) {
   );
   const disableEditing = customizationService.getCustomization('panelSegmentation.disableEditing');
   const showAddSegment = customizationService.getCustomization('panelSegmentation.showAddSegment');
+
+  // Get custom components with proper typing
   const CustomDropdownMenuContent = customizationService.getCustomization(
     'panelSegmentation.customDropdownMenuContent'
-  );
+  ) as React.ComponentType | null;
 
   const CustomSegmentStatisticsHeader = customizationService.getCustomization(
     'panelSegmentation.customSegmentStatisticsHeader'
-  );
+  ) as React.ComponentType | null;
+
+  // Render custom components safely
+  const renderCustomDropdownContent = () => {
+    return CustomDropdownMenuContent ? <CustomDropdownMenuContent /> : null;
+  };
+
+  const renderCustomStatisticsHeader = () => {
+    return CustomSegmentStatisticsHeader ? <CustomSegmentStatisticsHeader /> : null;
+  };
 
   // Create handlers object for all command runs
   const handlers = {
@@ -157,7 +190,14 @@ export default function CustomSegmentationPanel({ children }: withAppTypes) {
       return { segmentationId, isExportable: true };
     }
 
-    const referencedImageIds = Labelmap.referencedImageIds;
+    // Define a proper interface for the Labelmap type
+    interface LabelmapWithImageIds {
+      referencedImageIds?: string[];
+    }
+
+    // Use proper type casting
+    const labelmapWithRefs = Labelmap as LabelmapWithImageIds;
+    const referencedImageIds = labelmapWithRefs.referencedImageIds || [];
     const firstImageId = referencedImageIds[0];
     const instance = metaData.get('instance', firstImageId);
 
@@ -177,6 +217,21 @@ export default function CustomSegmentationPanel({ children }: withAppTypes) {
       isExportable: displaySet?.isReconstructable,
     };
   });
+
+  useEffect(() => {
+    if (!contourInfo?.regions && !segmentationsWithRepresentations?.length) {
+      return;
+    }
+
+    console.debug('contourInfo', contourInfo);
+
+    // Remove debugger statement
+    setSegmentationDataToUse(segmentationsWithRepresentations);
+  }, [segmentationsWithRepresentations, contourInfo]);
+
+  if (!segmentationsWithRepresentations?.length) {
+    return null;
+  }
 
   // Common props for SegmentationTable
   const tableProps = {
@@ -199,7 +254,7 @@ export default function CustomSegmentationPanel({ children }: withAppTypes) {
     return (
       <SegmentationTable.Segments>
         <SegmentationTable.SegmentStatistics.Header>
-          <CustomSegmentStatisticsHeader />
+          {renderCustomStatisticsHeader()}
         </SegmentationTable.SegmentStatistics.Header>
         <SegmentationTable.SegmentStatistics.Body />
       </SegmentationTable.Segments>
@@ -213,7 +268,7 @@ export default function CustomSegmentationPanel({ children }: withAppTypes) {
         <SegmentationTable.Collapsed>
           <SegmentationTable.Collapsed.Header>
             <SegmentationTable.Collapsed.DropdownMenu>
-              <CustomDropdownMenuContent />
+              {renderCustomDropdownContent()}
             </SegmentationTable.Collapsed.DropdownMenu>
             <SegmentationTable.Collapsed.Selector />
             <SegmentationTable.Collapsed.Info />
@@ -231,7 +286,7 @@ export default function CustomSegmentationPanel({ children }: withAppTypes) {
         <SegmentationTable.Expanded>
           <SegmentationTable.Expanded.Header>
             <SegmentationTable.Expanded.DropdownMenu>
-              <CustomDropdownMenuContent />
+              {renderCustomDropdownContent()}
             </SegmentationTable.Expanded.DropdownMenu>
             <SegmentationTable.Expanded.Label />
             <SegmentationTable.Expanded.Info />
