@@ -21,11 +21,8 @@ export function ViewportDataOverlayMenuWrapper({
   element: HTMLElement;
 }>): ReactNode {
   const { servicesManager } = useSystem();
-  const { viewportActionCornersService, viewportGridService } = servicesManager.services;
+  const { viewportActionCornersService } = servicesManager.services;
   const [viewportGrid] = useViewportGrid();
-
-  const activeViewportId = viewportGridService.getActiveViewportId();
-  const isActiveViewport = viewportId === activeViewportId;
 
   const { align, side } = viewportActionCornersService.getAlignAndSide(location);
 
@@ -51,7 +48,7 @@ export function ViewportDataOverlayMenuWrapper({
         className="border-none bg-transparent p-0 shadow-none"
         side={side}
         align={align}
-        alignOffset={-15}
+        alignOffset={0}
         sideOffset={5}
       >
         <ViewportDataOverlayMenu

@@ -104,7 +104,7 @@ export function useViewportActionCorners({
     }
 
     // Only show orientation menu for reconstructable displaySets
-    if (orientationMenu?.enabled && displaySets.some(ds => ds.isReconstructable)) {
+    if (orientationMenu?.enabled) {
       viewportActionCornersService.addComponent({
         viewportId,
         id: 'orientationMenu',

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Icons } from '@ohif/ui-next';
+import { Icons, useViewportGrid } from '@ohif/ui-next';
 import { useSystem } from '@ohif/core';
 import { Enums } from '@cornerstonejs/core';
 import {
@@ -11,13 +11,12 @@ import {
   Button,
 } from '@ohif/ui-next';
 
-function ViewportOrientationMenu({
-  viewportId,
-  location,
-}: withAppTypes<{ viewportId: string; location?: string }>) {
+function ViewportOrientationMenu({ location }: withAppTypes<{ location?: string }>) {
   const { servicesManager, commandsManager } = useSystem();
-  const { cornerstoneViewportService, displaySetService, viewportGridService } =
-    servicesManager.services;
+  const [viewportGridState, viewportGridService] = useViewportGrid();
+  const { cornerstoneViewportService, displaySetService } = servicesManager.services;
+
+  const viewportId = viewportGridState.activeViewportId;
 
   const handleOrientationChange = (orientation: string) => {
     const viewportInfo = cornerstoneViewportService.getViewportInfo(viewportId);
@@ -77,6 +76,9 @@ function ViewportOrientationMenu({
     }
   };
   const { viewportActionCornersService } = servicesManager.services;
+  const displaySetUIDs = viewportGridService.getDisplaySetsUIDsForViewport(viewportId);
+  const displaySets = displaySetUIDs.map(uid => displaySetService.getDisplaySetByUID(uid));
+  const hasReconstructableDisplaySet = displaySets.some(ds => ds.isReconstructable);
 
   // Get proper alignment and side based on the location
   let align = 'center';
@@ -95,6 +97,7 @@ function ViewportOrientationMenu({
           variant="ghost"
           size="icon"
           className="text-highlight"
+          disabled={!hasReconstructableDisplaySet}
         >
           <Icons.OrientationSwitch />
         </Button>

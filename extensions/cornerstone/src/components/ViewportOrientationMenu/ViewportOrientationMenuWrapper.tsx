@@ -21,10 +21,7 @@ export function ViewportOrientationMenuWrapper({
         isActiveViewport ? 'visible' : 'invisible group-hover/pane:visible'
       )}
     >
-      <ViewportOrientationMenu
-        viewportId={viewportId}
-        location={location}
-      />
+      <ViewportOrientationMenu location={location} />
     </div>
   );
 }
