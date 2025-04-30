@@ -5,17 +5,9 @@ import { useViewportGrid } from '@ohif/ui-next';
 
 export type OHIFViewportActionCornersProps = {
   viewportId: string;
-  /**
-   * Number of action items to display per corner before collapsing
-   * Default: 2
-   */
-  visibleItemsPerCorner?: number;
 };
 
-function OHIFViewportActionCorners({
-  viewportId,
-  visibleItemsPerCorner = 2,
-}: OHIFViewportActionCornersProps) {
+function OHIFViewportActionCorners({ viewportId }: OHIFViewportActionCornersProps) {
   const { servicesManager } = useSystem();
   const [viewportActionCornersState] = useViewportActionCornersContext();
 
@@ -32,7 +24,6 @@ function OHIFViewportActionCorners({
   return (
     <ViewportActionCorners
       cornerComponents={viewportActionCornersState[viewportId]}
-      visibleItemsPerCorner={visibleItemsPerCorner}
       isActiveViewport={isActiveViewport}
     />
   );

@@ -356,19 +356,10 @@ export default async function init({
     }
   );
 
-  // const { unsubscribe: unsubscribeSegmentationRemoved } = segmentationService.subscribe(
-  //   segmentationService.EVENTS.SEGMENTATION_REMOVED,
-  //   evt => {
-  //     const { segmentationId } = evt;
-  //     displaySetService.removeDisplaySetByUID(segmentationId);
-  //   }
-  // );
-
   const unsubscriptions = [
     unsubscribeSegmentationDataModifiedHandler,
     unsubscribeSegmentationModifiedHandler,
     unsubscribeSegmentationCreated,
-    // unsubscribeSegmentationRemoved,
   ];
 
   return { unsubscriptions };

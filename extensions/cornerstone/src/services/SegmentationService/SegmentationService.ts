@@ -387,7 +387,6 @@ class SegmentationService extends PubSubService {
     };
 
     this.addOrUpdateSegmentation(segmentationPublicInput);
-
     return segmentationId;
   }
 

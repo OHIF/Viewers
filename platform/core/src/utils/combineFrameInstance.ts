@@ -101,6 +101,7 @@ const combineFrameInstance = (frame, instance) => {
     return newInstance;
   }
 
+  // For RTDOSE datasets
   if (instance.GridFrameOffsetVector) {
     if (!instance._parentInstance) {
       Object.defineProperty(instance, '_parentInstance', {

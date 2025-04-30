@@ -15,7 +15,7 @@ import {
 } from '@ohif/ui-next';
 import { useSystem } from '@ohif/core';
 
-import { useViewportDisplaySets } from './hooks';
+import { useViewportDisplaySets } from '../../hooks/useViewportDisplaySets';
 
 function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: string }>) {
   const { commandsManager, servicesManager } = useSystem();
