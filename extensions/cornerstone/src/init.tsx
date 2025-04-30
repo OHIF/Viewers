@@ -303,10 +303,16 @@ export default async function init({
   eventTarget.addEventListenerDebounced(
     EVENTS.ERROR_EVENT,
     ({ detail }) => {
+      // Create a stable ID for deduplication based on error type and message
+      const errorId = `cornerstone-error-${detail.type}-${detail.message.substring(0, 50)}`;
+
       uiNotificationService.show({
         title: detail.type,
         message: detail.message,
         type: 'error',
+        id: errorId,
+        allowDuplicates: false, // Prevent duplicate error notifications
+        deduplicationInterval: 30000, // 30 seconds deduplication window
       });
     },
     100
@@ -369,37 +375,73 @@ export default async function init({
 }
 
 function initializeWebWorkerProgressHandler(uiNotificationService) {
-  const activeToasts = new Map();
+  // Use a single map to track all active worker tasks
+  const activeWorkerTasks = new Map();
 
-  // eventTarget.addEventListener(EVENTS.WEB_WORKER_PROGRESS, ({ detail }) => {
-  //   const { progress, type, id } = detail;
+  // Create a normalized task key that doesn't include the random ID
+  // This helps us identify and deduplicate the same type of task
+  const getNormalizedTaskKey = type => {
+    return `worker-task-${type.toLowerCase().replace(/\s+/g, '-')}`;
+  };
 
-  //   const cacheKey = `${type}-${id}`;
-  //   if (progress === 0 && !activeToasts.has(cacheKey)) {
-  //     const progressPromise = new Promise((resolve, reject) => {
-  //       activeToasts.set(cacheKey, { resolve, reject });
-  //     });
+  eventTarget.addEventListener(EVENTS.WEB_WORKER_PROGRESS, ({ detail }) => {
+    const { progress, type, id } = detail;
 
-  //     uiNotificationService.show({
-  //       id: cacheKey,
-  //       title: `${type}`,
-  //       message: `${type}: ${progress}%`,
-  //       autoClose: false,
-  //       promise: progressPromise,
-  //       promiseMessages: {
-  //         loading: `Computing...`,
-  //         success: `Completed successfully`,
-  //         error: 'Web Worker failed',
-  //       },
-  //     });
-  //   } else {
-  //     if (progress === 100) {
-  //       const { resolve } = activeToasts.get(cacheKey);
-  //       resolve({ progress, type });
-  //       activeToasts.delete(cacheKey);
-  //     }
-  //   }
-  // });
+    // Skip notifications for compute statistics
+    if (type === cornerstoneTools.Enums.WorkerTypes.COMPUTE_STATISTICS) {
+      return;
+    }
+
+    const normalizedKey = getNormalizedTaskKey(type);
+
+    if (progress === 0) {
+      // Check if we're already tracking a task of this type
+      if (!activeWorkerTasks.has(normalizedKey)) {
+        const progressPromise = new Promise((resolve, reject) => {
+          activeWorkerTasks.set(normalizedKey, {
+            resolve,
+            reject,
+            originalId: id,
+            type,
+          });
+        });
+
+        uiNotificationService.show({
+          id: normalizedKey, // Use the normalized key as ID for better deduplication
+          title: `${type}`,
+          message: `Computing...`,
+          autoClose: false,
+          allowDuplicates: false,
+          deduplicationInterval: 60000, // 60 seconds - prevent frequent notifications of same type
+          promise: progressPromise,
+          promiseMessages: {
+            loading: `Computing...`,
+            success: `Completed successfully`,
+            error: 'Web Worker failed',
+          },
+        });
+      } else {
+        // Already tracking this type of task, just let it continue
+        console.debug(`Already tracking a "${type}" task, skipping duplicate notification`);
+      }
+    }
+    // Task completed
+    else if (progress === 100) {
+      // Check if we have this task type in our tracking map
+      const taskData = activeWorkerTasks.get(normalizedKey);
+
+      if (taskData) {
+        // Resolve the promise to update the notification
+        const { resolve } = taskData;
+        resolve({ progress, type });
+
+        // Remove from tracking
+        activeWorkerTasks.delete(normalizedKey);
+
+        console.debug(`Worker task "${type}" completed successfully`);
+      }
+    }
+  });
 }
 
 /**
