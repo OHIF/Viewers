@@ -1,6 +1,10 @@
 import { useMemo } from 'react';
 import { useSystem } from '@ohif/core';
-import { getEnhancedDisplaySets, sortByOverlayable, DERIVED_OVERLAY_MODALITIES } from './utils';
+import {
+  getEnhancedDisplaySets,
+  sortByOverlayable,
+  DERIVED_OVERLAY_MODALITIES,
+} from '../components/ViewportDataOverlaySettingMenu/utils';
 
 const LOW_PRIORITY_MODALITIES = ['SR', 'SEG', 'RTSTRUCT'];
 
