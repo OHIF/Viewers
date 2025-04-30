@@ -1,7 +1,7 @@
 import { utilities as csUtils } from '@cornerstonejs/core';
 
 export const DEFAULT_COLORMAP = 'hsv';
-export const DEFAULT_OPACITY = 0.9;
+export const DEFAULT_OPACITY = 0.5;
 export const DEFAULT_OPACITY_PERCENT = DEFAULT_OPACITY * 100;
 export const DERIVED_OVERLAY_MODALITIES = ['SEG', 'RTSTRUCT'];
 

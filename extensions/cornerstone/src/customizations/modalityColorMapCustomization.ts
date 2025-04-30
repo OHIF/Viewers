@@ -3,11 +3,20 @@ export default {
     defaultSettings: {
       PT: {
         colormap: 'hsv',
-        opacity: 0.9,
+        // Note: Right now, there is a nonlinear relationship between the opacity value
+        // below and how it will get applied to the image. The limitation is in rendering.
+        // We are working on this and will remove this note when it's fixed.
+        // But don't expect 0.5 to be 50% opacity, but rather close to that.
+        opacity: 0.5,
       },
       RTDOSE: {
         colormap: 'Isodose',
-        opacity: 0.95,
+        // Note: Right now, there is a nonlinear relationship between the opacity value
+        // below and how it will get applied to the image. The limitation is in rendering.
+        // We are working on this and will remove this note when it's fixed.
+        // But don't expect 0.5 to be 50% opacity, but rather close to that.
+
+        opacity: 0.5,
       },
     },
   },

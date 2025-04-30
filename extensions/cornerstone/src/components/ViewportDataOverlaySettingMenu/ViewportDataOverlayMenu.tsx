@@ -453,8 +453,7 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
           </Select>
         </div>
       </div>
-      {/* Bottom control - only show if foregrounds exist */}
-      {foregroundDisplaySets.length > 0 && (
+      {/* {foregroundDisplaySets.length > 0 && (
         <div className="mt-1 ml-7">
           <div className="flex items-center">
             <Switch
@@ -472,7 +471,7 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
             </label>
           </div>
         </div>
-      )}
+      )} */}
     </div>
   );
 }
