@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import { Button } from '../../components/Button/Button';
 import {
   DropdownMenu,
@@ -218,7 +218,8 @@ export const DataRow: React.FC<DataRowProps> = ({
           </div>
         )}
 
-        {/* Color Circle (Optional) */}
+        {/* add some space if there is not segment index */}
+        {number === null && <div className="ml-1 h-7"></div>}
         {colorHex && (
           <div className="flex h-7 w-5 items-center justify-center">
             <span
