@@ -213,23 +213,45 @@ export default function CustomSegmentationPanel({ children }: CustomSegmentation
   });
 
   useEffect(() => {
-    if (!contourInfo?.regions && !segmentationsWithRepresentations?.length) {
+    if (!contourInfo?.regions || !segmentationsWithRepresentations?.length) {
       return;
     }
 
-    debugger;
+    contourInfo.regions.forEach(region => {
+      const { segmentNumber, segmentName, group, hidden } = region;
+
+      // Get the current segment if it exists
+      const segment = segmentationsWithRepresentations[0]?.segmentation?.segments[segmentNumber];
+
+      if (segment) {
+        // Update segment properties
+        segment.label = segmentName;
+
+        // Handle the group property (TypeScript doesn't recognize it in the type)
+        // We need to use type assertion or handle it differently in a production environment
+        (segment as any).group = group;
+
+        // Update the segment in the segmentation data
+        segmentationsWithRepresentations[0].segmentation.segments[segmentNumber] = segment;
+
+        // Remove hidden segments
+        if (hidden === 'true') {
+          delete segmentationsWithRepresentations[0].segmentation.segments[segmentNumber];
+        }
+      }
+    });
     // Remove debugger statement
     setSegmentationDataToUse(segmentationsWithRepresentations);
   }, [segmentationsWithRepresentations, contourInfo]);
 
-  if (!segmentationsWithRepresentations?.length) {
+  if (!segmentationDataToUse?.length) {
     return null;
   }
 
   // Common props for SegmentationTable
   const tableProps = {
     disabled,
-    data: segmentationsWithRepresentations,
+    data: segmentationDataToUse,
     mode: segmentationTableMode,
     title: 'Segmentations',
     exportOptions,
