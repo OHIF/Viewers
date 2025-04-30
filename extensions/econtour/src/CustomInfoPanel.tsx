@@ -48,7 +48,6 @@ export default function CustomInfoPanel({ children }: any) {
     queryFn: () => (StudyInstanceUIDs?.[0] ? fetchContourInfo(StudyInstanceUIDs[0]) : null),
     enabled: !!StudyInstanceUIDs?.[0],
     staleTime: 1000 * 60 * 5, // 5 minutes
-    cacheTime: 1000 * 60 * 30, // 30 minutes
   });
 
   // Sanitize HTML content to prevent XSS attacks

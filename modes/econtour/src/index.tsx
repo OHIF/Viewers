@@ -196,6 +196,7 @@ function modeFactory({ modeConfiguration }) {
               leftPanels: [eContour.segmentationPanel, ohif.leftPanel],
               rightPanels: [eContour.infoPanel],
               rightPanelResizable: true,
+              rightPanelClosed: true,
               leftPanelResizable: true,
               viewports: [
                 {

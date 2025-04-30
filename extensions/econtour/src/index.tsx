@@ -19,7 +19,8 @@ export default {
    * this extension is providing.
    */
   preRegistration: ({ servicesManager, commandsManager, configuration = {} }) => {
-    const { displaySetService, viewportGridService } = servicesManager.services;
+    const { displaySetService, viewportGridService, cornerstoneViewportService } =
+      servicesManager.services;
     const { unsubscribe: displaySetUnsubscribe } = displaySetService.subscribe(
       displaySetService.EVENTS.DISPLAY_SETS_ADDED,
       ({ displaySetsAdded }) => {
@@ -38,6 +39,10 @@ export default {
             });
             viewportUnsubscribe();
             displaySetUnsubscribe();
+
+            // reset camera
+            const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
+            viewport.resetCamera();
           }
         );
       }

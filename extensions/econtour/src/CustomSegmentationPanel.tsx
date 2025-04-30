@@ -23,7 +23,6 @@ export default function CustomSegmentationPanel({ children }: CustomSegmentation
   // Function to fetch contour info
   const fetchContourInfo = async (studyUID: string) => {
     if (!studyUID) {
-      console.debug('No studyUID provided');
       return null;
     }
 
@@ -33,7 +32,6 @@ export default function CustomSegmentationPanel({ children }: CustomSegmentation
       const baseUrl = environment ? `https://${environment}.econtour.org` : 'https://econtour.org';
       const url = `${baseUrl}/api/regions/?studyUID=${studyUID}`;
 
-      console.debug('Fetching contour data from:', url);
       const response = await fetch(url, {
         method: 'GET',
         headers: {
@@ -43,18 +41,15 @@ export default function CustomSegmentationPanel({ children }: CustomSegmentation
 
       if (!response.ok) {
         if (response.status === 404) {
-          console.debug('No contour data found for this study');
           return null;
         }
         throw new Error(`Error fetching contour data: ${response.status}`);
       }
 
       const data = await response.json();
-      console.debug('Contour info retrieved:', data);
 
       // Check if responseBody exists in the data
       if (!data.responseBody) {
-        console.debug('Missing responseBody in data:', data);
         return data; // Return the whole data object if responseBody isn't present
       }
 
@@ -70,7 +65,6 @@ export default function CustomSegmentationPanel({ children }: CustomSegmentation
     data: contourInfo,
     isLoading,
     error,
-    status,
   } = useQuery({
     queryKey: ['contourInfo', StudyInstanceUIDs?.[0]],
     queryFn: () => (StudyInstanceUIDs?.[0] ? fetchContourInfo(StudyInstanceUIDs[0]) : null),
@@ -223,8 +217,7 @@ export default function CustomSegmentationPanel({ children }: CustomSegmentation
       return;
     }
 
-    console.debug('contourInfo', contourInfo);
-
+    debugger;
     // Remove debugger statement
     setSegmentationDataToUse(segmentationsWithRepresentations);
   }, [segmentationsWithRepresentations, contourInfo]);
@@ -243,6 +236,7 @@ export default function CustomSegmentationPanel({ children }: CustomSegmentation
     disableEditing,
     onSegmentationAdd,
     showAddSegment,
+    showSegmentIndex: false, // Hide segment index numbers
     renderInactiveSegmentations: handlers.getRenderInactiveSegmentations(),
     ...handlers,
     contourInfo, // Pass the contour info from React Query

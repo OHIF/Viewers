@@ -57,7 +57,7 @@ import { cn } from '../../lib/utils';
  * @property {() => void} onColor - Callback when color change is requested
  */
 interface DataRowProps {
-  number: number;
+  number: number | null;
   disableEditing: boolean;
   description: string;
   details?: { primary: string[]; secondary: string[] };
@@ -208,13 +208,15 @@ export const DataRow: React.FC<DataRowProps> = ({
         <div className="bg-primary/20 pointer-events-none absolute inset-0 opacity-0 transition-opacity group-hover:opacity-100"></div>
 
         {/* Number Box */}
-        <div
-          className={`flex h-7 max-h-7 w-7 flex-shrink-0 items-center justify-center rounded-l border-r border-black text-base ${
-            isSelected ? 'bg-highlight text-black' : 'bg-muted text-muted-foreground'
-          } overflow-hidden`}
-        >
-          {number}
-        </div>
+        {number !== null && (
+          <div
+            className={`flex h-7 max-h-7 w-7 flex-shrink-0 items-center justify-center rounded-l border-r border-black text-base ${
+              isSelected ? 'bg-highlight text-black' : 'bg-muted text-muted-foreground'
+            } overflow-hidden`}
+          >
+            {number}
+          </div>
+        )}
 
         {/* Color Circle (Optional) */}
         {colorHex && (
