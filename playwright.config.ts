@@ -5,7 +5,7 @@ export default defineConfig({
   fullyParallel: !!process.env.CI,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 3 : 0,
-  workers: process.env.CI ? 8 : undefined,
+  workers: process.env.CI ? 6 : undefined,
   snapshotPathTemplate: './tests/screenshots{/projectName}/{testFilePath}/{arg}{ext}',
   outputDir: './tests/test-results',
   reporter: [[process.env.CI ? 'blob' : 'html', { outputFolder: './tests/playwright-report' }]],

@@ -113,7 +113,7 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
     newDisplaySetInstanceUID: string
   ) => {
     if (newDisplaySetInstanceUID === currentDisplaySet.displaySetInstanceUID) {
-      return; // No change if selecting the same display set
+      return;
     }
 
     // Find the selected display set
