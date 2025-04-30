@@ -94,7 +94,7 @@ export default {
                   }
                 );
               }, 100);
-            }, 0);
+            }, 10);
 
             viewportUnsubscribe();
             displaySetUnsubscribe();

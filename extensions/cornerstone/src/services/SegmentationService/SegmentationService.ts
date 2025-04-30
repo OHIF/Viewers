@@ -581,7 +581,6 @@ class SegmentationService extends PubSubService {
     rtDisplaySet.firstSegmentedSliceImageId = firstSegmentedSliceImageId;
     // Map ROI contours to RT Struct Data
     const allRTStructData = mapROIContoursToRTStructData(structureSet, rtDisplaySetUID);
-
     // Sort by segmentIndex for consistency
     allRTStructData.sort((a, b) => a.segmentIndex - b.segmentIndex);
 
@@ -615,8 +614,7 @@ class SegmentationService extends PubSubService {
 
     // Process each segment similarly to the SEG function
     for (const rtStructData of allRTStructData) {
-      const { data, id, color, segmentIndex, geometryId } = rtStructData;
-
+      const { data, id, color, segmentIndex, geometryId, group } = rtStructData;
       // Add the color to the colorLUT array
       colorLUT.push(color);
 
@@ -645,6 +643,7 @@ class SegmentationService extends PubSubService {
           segmentIndex,
           cachedStats: segmentsCachedStats,
           locked: false,
+          group: group,
           active: false,
         };
 
@@ -838,7 +837,6 @@ class SegmentationService extends PubSubService {
     }
 
     const currentSegments = csSegmentation.segments;
-
     cstSegmentation.updateSegmentations([
       {
         segmentationId,

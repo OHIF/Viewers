@@ -1,10 +1,8 @@
 import React, { useEffect, useState, ReactNode } from 'react';
-import { SegmentationTable } from '@ohif/ui-next';
 import { useActiveViewportSegmentationRepresentations } from '@ohif/extension-cornerstone';
 import { metaData } from '@cornerstonejs/core';
 import { useSystem } from '@ohif/core/src';
-import { useImageViewer } from '@ohif/ui-next';
-import { useQuery } from '@tanstack/react-query';
+import CustomSegmentationTable from './CustomSegmentationTable';
 
 // Define proper interface for component props
 interface CustomSegmentationPanelProps {
@@ -14,30 +12,11 @@ interface CustomSegmentationPanelProps {
 export default function CustomSegmentationPanel({ children }: CustomSegmentationPanelProps) {
   const { commandsManager, servicesManager } = useSystem();
   const { customizationService, displaySetService } = servicesManager.services;
-  const internalImageViewer = useImageViewer();
 
   // Define better typing for segmentationData
   const [segmentationDataToUse, setSegmentationDataToUse] = useState<Array<any>>([]);
-  const StudyInstanceUIDs = internalImageViewer.StudyInstanceUIDs;
-  
+
   // Function to fetch contour info using React Query
-  const {
-    data: contourInfo,
-    isLoading,
-    error,
-  } = useQuery({
-    queryKey: ['contourInfo', StudyInstanceUIDs?.[0]],
-    queryFn: () => {
-      // Import the fetchContourInfo function directly to ensure it's properly used with React Query
-      const { fetchContourInfo } = require('./fetchContourInfo');
-      return StudyInstanceUIDs?.[0] ? fetchContourInfo(StudyInstanceUIDs[0]) : null;
-    },
-    enabled: !!StudyInstanceUIDs?.[0],
-    staleTime: 1000 * 60 * 5, // 5 minutes
-    refetchOnWindowFocus: false,
-    refetchOnMount: false,
-    retry: 1, // Only retry once
-  });
 
   const { segmentationsWithRepresentations, disabled } =
     useActiveViewportSegmentationRepresentations({
@@ -176,160 +155,29 @@ export default function CustomSegmentationPanel({ children }: CustomSegmentation
     };
   });
 
-  // useEffect(() => {
-  //   if (!contourInfo?.regions || !segmentationsWithRepresentations?.length) {
-  //     return;
-  //   }
-
-  //   contourInfo.regions.forEach(region => {
-  //     const { segmentNumber, segmentName, group, hidden } = region;
-
-  //     // Get the current segment if it exists
-  //     const segment = segmentationsWithRepresentations[0]?.segmentation?.segments[segmentNumber];
-
-  //     if (segment) {
-  //       // Update segment properties
-  //       segment.label = segmentName;
-
-  //       // Handle the group property (TypeScript doesn't recognize it in the type)
-  //       // We need to use type assertion or handle it differently in a production environment
-  //       (segment as any).group = group;
-
-  //       // Update the segment in the segmentation data
-  //       segmentationsWithRepresentations[0].segmentation.segments[segmentNumber] = segment;
-
-  //       // Remove hidden segments
-  //       if (hidden === 'true') {
-  //         delete segmentationsWithRepresentations[0].segmentation.segments[segmentNumber];
-  //       }
-  //     }
-  //   });
-  //   // Remove debugger statement
-  //   setSegmentationDataToUse(segmentationsWithRepresentations);
-  // }, [segmentationsWithRepresentations, contourInfo]);
-
-  useEffect(() => {
-    if (!segmentationsWithRepresentations?.length) {
-      return;
-    }
-
-    // Update with contour info if available
-    if (contourInfo?.regions && segmentationsWithRepresentations.length) {
-      // Create a deep copy to avoid mutating the original data
-      const segmentationsWithContourInfo = JSON.parse(JSON.stringify(segmentationsWithRepresentations));
-      
-      try {
-        contourInfo.regions.forEach(region => {
-          const { segmentNumber, segmentName, group, hidden } = region;
-          
-          // Skip processing if segment should be hidden
-          if (hidden === 'true') {
-            return;
-          }
-          
-          // Get the current segment if it exists
-          const segment = segmentationsWithContourInfo[0]?.segmentation?.segments[segmentNumber];
-          
-          if (segment) {
-            // Update segment properties
-            segment.label = segmentName || segment.label;
-            
-            // Handle the group property if needed
-            if (group) {
-              (segment as any).group = group;
-            }
-          }
-        });
-      } catch (err) {
-        console.error('Error processing contour info:', err);
-      }
-      
-      setSegmentationDataToUse(segmentationsWithContourInfo);
-    } else {
-      // If no contour info, just use the segmentations as-is
-      setSegmentationDataToUse(segmentationsWithRepresentations);
-    }
-  }, [segmentationsWithRepresentations, contourInfo]);
-
-  if (!segmentationsWithRepresentations?.length) {
-    return null;
-  }
-
   // Common props for SegmentationTable
   const tableProps = {
     disabled,
-    data: segmentationDataToUse,
+    data: segmentationsWithRepresentations,
     mode: segmentationTableMode,
     title: 'Segmentations',
     exportOptions,
     disableEditing,
     onSegmentationAdd,
     showAddSegment,
-    showSegmentIndexes: false, // Hide segment index numbers
+    showSegmentIndex: false, // Hide segment index numbers
     renderInactiveSegmentations: handlers.getRenderInactiveSegmentations(),
     ...handlers,
-    contourInfo, // Pass the contour info from React Query
-    isLoading,
-    error: error ? (error as Error).message : null,
   };
 
-  const renderSegments = () => {
-    return (
-      <SegmentationTable.Segments>
-        <SegmentationTable.SegmentStatistics.Header>
-          {renderCustomStatisticsHeader()}
-        </SegmentationTable.SegmentStatistics.Header>
-        <SegmentationTable.SegmentStatistics.Body />
-      </SegmentationTable.Segments>
-    );
-  };
-
-  // Render content based on mode
-  const renderModeContent = () => {
-    if (tableProps.mode === 'collapsed') {
-      return (
-        <SegmentationTable.Collapsed>
-          <SegmentationTable.Collapsed.Header>
-            <SegmentationTable.Collapsed.DropdownMenu>
-              {renderCustomDropdownContent()}
-            </SegmentationTable.Collapsed.DropdownMenu>
-            <SegmentationTable.Collapsed.Selector />
-            <SegmentationTable.Collapsed.Info />
-          </SegmentationTable.Collapsed.Header>
-          <SegmentationTable.Collapsed.Content>
-            <SegmentationTable.AddSegmentRow />
-            {renderSegments()}
-          </SegmentationTable.Collapsed.Content>
-        </SegmentationTable.Collapsed>
-      );
-    }
-
-    return (
-      <>
-        <SegmentationTable.Expanded>
-          <SegmentationTable.Expanded.Header>
-            <SegmentationTable.Expanded.DropdownMenu>
-              {renderCustomDropdownContent()}
-            </SegmentationTable.Expanded.DropdownMenu>
-            <SegmentationTable.Expanded.Label />
-            <SegmentationTable.Expanded.Info />
-          </SegmentationTable.Expanded.Header>
-
-          <SegmentationTable.Expanded.Content>
-            <SegmentationTable.AddSegmentRow />
-            {renderSegments()}
-          </SegmentationTable.Expanded.Content>
-        </SegmentationTable.Expanded>
-      </>
-    );
-  };
+  // Rendering of segments is now handled by our CustomSegmentationTable component
 
   return (
-    <SegmentationTable {...tableProps}>
+    <CustomSegmentationTable 
+      {...tableProps}
+      renderCustomDropdownContent={renderCustomDropdownContent}
+    >
       {children}
-      <SegmentationTable.Config />
-      <SegmentationTable.AddSegmentationRow />
-      {renderModeContent()}
-    </SegmentationTable>
+    </CustomSegmentationTable>
   );
 }
