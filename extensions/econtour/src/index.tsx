@@ -1,6 +1,7 @@
 import CustomSegmentationPanel from './CustomSegmentationPanel';
 import CustomInfoPanel from './CustomInfoPanel';
 import { id } from './id';
+import { fetchContourInfo } from './fetchContourInfo';
 
 /**
  * You can remove any of the following modules if you don't need them.
@@ -18,9 +19,11 @@ export default {
    * (e.g. cornerstone, cornerstoneTools, ...) or registering any services that
    * this extension is providing.
    */
-  preRegistration: ({ servicesManager, commandsManager, configuration = {} }) => {
-    const { displaySetService, viewportGridService, cornerstoneViewportService } =
-      servicesManager.services;
+  preRegistration: ({ servicesManager }) => {
+    const { displaySetService, segmentationService, viewportGridService } = (
+      servicesManager as AppTypes.ServicesManager
+    ).services;
+
     const { unsubscribe: displaySetUnsubscribe } = displaySetService.subscribe(
       displaySetService.EVENTS.DISPLAY_SETS_ADDED,
       ({ displaySetsAdded }) => {
@@ -31,18 +34,70 @@ export default {
 
         const { unsubscribe: viewportUnsubscribe } = viewportGridService.subscribe(
           viewportGridService.EVENTS.VIEWPORTS_READY,
-          () => {
+          async () => {
             const viewportId = viewportGridService.getActiveViewportId();
-            viewportGridService.setDisplaySetsForViewport({
-              viewportId,
-              displaySetInstanceUIDs: [addedDisplaySet.displaySetInstanceUID],
+
+            await addedDisplaySet.load({ createSegmentation: false });
+
+            const displaySet = displaySetService.getDisplaySetByUID(
+              addedDisplaySet.displaySetInstanceUID
+            );
+
+            const studyInstanceUID = addedDisplaySet.StudyInstanceUID;
+
+            // fetch contour info
+            const contourInfo = await fetchContourInfo(studyInstanceUID);
+            const structureSet = displaySet.structureSet;
+
+            contourInfo.regions.forEach(region => {
+              const { segmentNumber, segmentName, group, hidden } = region;
+
+              if (hidden === 'true') {
+                const index = structureSet.ROIContours.findIndex(
+                  contour => contour.ROINumber === Number(segmentNumber)
+                );
+
+                if (index !== -1) {
+                  structureSet.ROIContours.splice(index, 1);
+                }
+
+                return;
+              }
+
+              const contour = structureSet.ROIContours.find(
+                contour => contour.ROINumber === Number(segmentNumber)
+              );
+
+              if (contour) {
+                contour.ROIName = segmentName;
+                contour.ROIGroup = group;
+              }
             });
+
+            segmentationService.createSegmentationForRTDisplaySet(displaySet);
+
+            // Todo: this should be event driven
+            setTimeout(() => {
+              segmentationService.addSegmentationRepresentation(viewportId, {
+                segmentationId: addedDisplaySet.displaySetInstanceUID,
+                type: 'Contour',
+              });
+
+              // Set thicker outline for better visualization
+              setTimeout(() => {
+                segmentationService.setStyle(
+                  { type: 'Contour' },
+                  {
+                    outlineWidth: 3, // Increase outline width for better visibility
+                    renderFill: false,
+                    renderOutline: true,
+                  }
+                );
+              }, 100);
+            }, 0);
+
             viewportUnsubscribe();
             displaySetUnsubscribe();
-
-            // reset camera
-            const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
-            viewport.resetCamera();
           }
         );
       }

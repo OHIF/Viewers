@@ -15,59 +15,23 @@ export default function CustomSegmentationPanel({ children }: CustomSegmentation
   const { commandsManager, servicesManager } = useSystem();
   const { customizationService, displaySetService } = servicesManager.services;
   const internalImageViewer = useImageViewer();
-  const StudyInstanceUIDs = internalImageViewer.StudyInstanceUIDs;
 
   // Define better typing for segmentationData
   const [segmentationDataToUse, setSegmentationDataToUse] = useState<Array<any>>([]);
-
-  // Function to fetch contour info
-  const fetchContourInfo = async (studyUID: string) => {
-    if (!studyUID) {
-      return null;
-    }
-
-    try {
-      // Customize the environment as needed
-      const environment = 'development';
-      const baseUrl = environment ? `https://${environment}.econtour.org` : 'https://econtour.org';
-      const url = `${baseUrl}/api/regions/?studyUID=${studyUID}`;
-
-      const response = await fetch(url, {
-        method: 'GET',
-        headers: {
-          Accept: 'application/json',
-        },
-      });
-
-      if (!response.ok) {
-        if (response.status === 404) {
-          return null;
-        }
-        throw new Error(`Error fetching contour data: ${response.status}`);
-      }
-
-      const data = await response.json();
-
-      // Check if responseBody exists in the data
-      if (!data.responseBody) {
-        return data; // Return the whole data object if responseBody isn't present
-      }
-
-      return data.responseBody;
-    } catch (error) {
-      console.error('Error in fetchContourInfo:', error);
-      throw error; // Re-throw to let React Query handle it
-    }
-  };
-
-  // Use React Query to fetch and cache contour info
+  const StudyInstanceUIDs = internalImageViewer.StudyInstanceUIDs;
+  
+  // Function to fetch contour info using React Query
   const {
     data: contourInfo,
     isLoading,
     error,
   } = useQuery({
     queryKey: ['contourInfo', StudyInstanceUIDs?.[0]],
-    queryFn: () => (StudyInstanceUIDs?.[0] ? fetchContourInfo(StudyInstanceUIDs[0]) : null),
+    queryFn: () => {
+      // Import the fetchContourInfo function directly to ensure it's properly used with React Query
+      const { fetchContourInfo } = require('./fetchContourInfo');
+      return StudyInstanceUIDs?.[0] ? fetchContourInfo(StudyInstanceUIDs[0]) : null;
+    },
     enabled: !!StudyInstanceUIDs?.[0],
     staleTime: 1000 * 60 * 5, // 5 minutes
     refetchOnWindowFocus: false,
@@ -212,39 +176,82 @@ export default function CustomSegmentationPanel({ children }: CustomSegmentation
     };
   });
 
+  // useEffect(() => {
+  //   if (!contourInfo?.regions || !segmentationsWithRepresentations?.length) {
+  //     return;
+  //   }
+
+  //   contourInfo.regions.forEach(region => {
+  //     const { segmentNumber, segmentName, group, hidden } = region;
+
+  //     // Get the current segment if it exists
+  //     const segment = segmentationsWithRepresentations[0]?.segmentation?.segments[segmentNumber];
+
+  //     if (segment) {
+  //       // Update segment properties
+  //       segment.label = segmentName;
+
+  //       // Handle the group property (TypeScript doesn't recognize it in the type)
+  //       // We need to use type assertion or handle it differently in a production environment
+  //       (segment as any).group = group;
+
+  //       // Update the segment in the segmentation data
+  //       segmentationsWithRepresentations[0].segmentation.segments[segmentNumber] = segment;
+
+  //       // Remove hidden segments
+  //       if (hidden === 'true') {
+  //         delete segmentationsWithRepresentations[0].segmentation.segments[segmentNumber];
+  //       }
+  //     }
+  //   });
+  //   // Remove debugger statement
+  //   setSegmentationDataToUse(segmentationsWithRepresentations);
+  // }, [segmentationsWithRepresentations, contourInfo]);
+
   useEffect(() => {
-    if (!contourInfo?.regions || !segmentationsWithRepresentations?.length) {
+    if (!segmentationsWithRepresentations?.length) {
       return;
     }
 
-    contourInfo.regions.forEach(region => {
-      const { segmentNumber, segmentName, group, hidden } = region;
-
-      // Get the current segment if it exists
-      const segment = segmentationsWithRepresentations[0]?.segmentation?.segments[segmentNumber];
-
-      if (segment) {
-        // Update segment properties
-        segment.label = segmentName;
-
-        // Handle the group property (TypeScript doesn't recognize it in the type)
-        // We need to use type assertion or handle it differently in a production environment
-        (segment as any).group = group;
-
-        // Update the segment in the segmentation data
-        segmentationsWithRepresentations[0].segmentation.segments[segmentNumber] = segment;
-
-        // Remove hidden segments
-        if (hidden === 'true') {
-          delete segmentationsWithRepresentations[0].segmentation.segments[segmentNumber];
-        }
+    // Update with contour info if available
+    if (contourInfo?.regions && segmentationsWithRepresentations.length) {
+      // Create a deep copy to avoid mutating the original data
+      const segmentationsWithContourInfo = JSON.parse(JSON.stringify(segmentationsWithRepresentations));
+      
+      try {
+        contourInfo.regions.forEach(region => {
+          const { segmentNumber, segmentName, group, hidden } = region;
+          
+          // Skip processing if segment should be hidden
+          if (hidden === 'true') {
+            return;
+          }
+          
+          // Get the current segment if it exists
+          const segment = segmentationsWithContourInfo[0]?.segmentation?.segments[segmentNumber];
+          
+          if (segment) {
+            // Update segment properties
+            segment.label = segmentName || segment.label;
+            
+            // Handle the group property if needed
+            if (group) {
+              (segment as any).group = group;
+            }
+          }
+        });
+      } catch (err) {
+        console.error('Error processing contour info:', err);
       }
-    });
-    // Remove debugger statement
-    setSegmentationDataToUse(segmentationsWithRepresentations);
+      
+      setSegmentationDataToUse(segmentationsWithContourInfo);
+    } else {
+      // If no contour info, just use the segmentations as-is
+      setSegmentationDataToUse(segmentationsWithRepresentations);
+    }
   }, [segmentationsWithRepresentations, contourInfo]);
 
-  if (!segmentationDataToUse?.length) {
+  if (!segmentationsWithRepresentations?.length) {
     return null;
   }
 
@@ -258,7 +265,7 @@ export default function CustomSegmentationPanel({ children }: CustomSegmentation
     disableEditing,
     onSegmentationAdd,
     showAddSegment,
-    showSegmentIndex: false, // Hide segment index numbers
+    showSegmentIndexes: false, // Hide segment index numbers
     renderInactiveSegmentations: handlers.getRenderInactiveSegmentations(),
     ...handlers,
     contourInfo, // Pass the contour info from React Query
