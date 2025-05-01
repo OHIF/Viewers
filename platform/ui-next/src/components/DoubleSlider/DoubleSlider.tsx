@@ -30,6 +30,14 @@ const DoubleSlider = React.forwardRef<HTMLDivElement, DoubleSliderProps>(
     ref
   ) => {
     const [value, setValue] = React.useState<[number, number]>(defaultValue);
+    const trackRef = React.useRef<HTMLDivElement>(null);
+    const dragStateRef = React.useRef<{
+      startX: number;
+      startValue: [number, number];
+      rangeWidth: number;
+      trackLeft: number;
+      trackWidth: number;
+    } | null>(null);
 
     const prevDefaultValueRef = React.useRef<[number, number] | null>(null);
 
@@ -50,6 +58,56 @@ const DoubleSlider = React.forwardRef<HTMLDivElement, DoubleSliderProps>(
     const roundToStep = (num: number): number => {
       const inverse = 1 / step;
       return Math.round(num * inverse) / inverse;
+    };
+
+    const handleRangePointerDown = (event: React.PointerEvent) => {
+      if (!lockMode) {
+        return;
+      }
+      event.preventDefault();
+      const rect = trackRef.current!.getBoundingClientRect();
+      dragStateRef.current = {
+        startX: event.clientX,
+        startValue: [...value] as [number, number],
+        rangeWidth: value[1] - value[0],
+        trackLeft: rect.left,
+        trackWidth: rect.width,
+      };
+      window.addEventListener('pointermove', handleRangePointerMove);
+      window.addEventListener('pointerup', handleRangePointerUp, { once: true });
+    };
+
+    const handleRangePointerMove = (event: PointerEvent) => {
+      const state = dragStateRef.current;
+      if (!state) {
+        return;
+      }
+      const { startX, startValue, rangeWidth, trackWidth } = state;
+      const dxPx = event.clientX - startX;
+      const pct = dxPx / trackWidth;
+      const delta = pct * (max - min);
+
+      let newLeft = startValue[0] + delta;
+      let newRight = newLeft + rangeWidth;
+
+      // clamp to bounds
+      if (newLeft < min) {
+        newLeft = min;
+        newRight = min + rangeWidth;
+      } else if (newRight > max) {
+        newRight = max;
+        newLeft = max - rangeWidth;
+      }
+
+      const clampedLeft = roundToStep(newLeft);
+      const clampedRight = roundToStep(newRight);
+      setValue([clampedLeft, clampedRight]);
+      onValueChange?.([clampedLeft, clampedRight]);
+    };
+
+    const handleRangePointerUp = () => {
+      dragStateRef.current = null;
+      window.removeEventListener('pointermove', handleRangePointerMove);
     };
 
     const handleSliderChange = React.useCallback(
@@ -286,8 +344,14 @@ const DoubleSlider = React.forwardRef<HTMLDivElement, DoubleSliderProps>(
           value={value}
           onValueChange={handleSliderChange}
         >
-          <SliderPrimitive.Track className="bg-primary/30 relative h-1 w-full grow overflow-hidden rounded-full">
-            <SliderPrimitive.Range className="bg-primary absolute h-full" />
+          <SliderPrimitive.Track
+            ref={trackRef}
+            className="bg-primary/30 relative h-1 w-full grow overflow-hidden rounded-full"
+          >
+            <SliderPrimitive.Range
+              className={cn('bg-primary absolute h-full', lockMode && 'cursor-grab')}
+              onPointerDown={handleRangePointerDown}
+            />
           </SliderPrimitive.Track>
           <SliderPrimitive.Thumb className="border-background bg-primary focus-visible:ring-ring block h-4 w-4 rounded-full border-2 shadow transition-colors focus-visible:outline-none focus-visible:ring-1 disabled:pointer-events-none disabled:opacity-50" />
           <SliderPrimitive.Thumb className="border-background bg-primary focus-visible:ring-ring block h-4 w-4 rounded-full border-2 shadow transition-colors focus-visible:outline-none focus-visible:ring-1 disabled:pointer-events-none disabled:opacity-50" />
