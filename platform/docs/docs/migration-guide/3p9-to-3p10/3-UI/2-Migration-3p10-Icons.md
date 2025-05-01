@@ -1,5 +1,6 @@
 ---
 title: Icons
+summary: Migration guide for OHIF 3.10's Icon component updates, covering the transition from @ohif/ui to @ohif/ui-next with new PascalCase naming conventions, legacy fallback options, and a comprehensive renaming table for all icons.
 ---
 
 ## Migration Guide: Icon Component Updates

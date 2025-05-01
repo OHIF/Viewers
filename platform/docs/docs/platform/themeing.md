@@ -1,6 +1,8 @@
 ---
 sidebar_position: 2
 sidebar_label: Theming
+title: Theming the OHIF Viewer
+summary: Documentation on customizing the visual appearance of the OHIF Viewer using Tailwind CSS and white-labeling capabilities, including how to modify the color scheme, add custom layouts via the LayoutTemplateModule, and replace the application logo with custom branding.
 ---
 
 # Viewer: Theming

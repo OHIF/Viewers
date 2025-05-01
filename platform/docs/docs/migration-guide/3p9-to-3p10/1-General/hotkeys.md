@@ -1,6 +1,7 @@
 ---
 sidebar_position: 2
 title: Hotkeys
+summary: Migration guide for hotkeys management in OHIF 3.10, explaining the transition from defining hotkeys in mode factory to using the customizationService, with examples of replacing, adding, and modifying hotkey bindings.
 ---
 
 

@@ -1,5 +1,7 @@
 ---
 sidebar_position: 10
+title: Nginx + Image Archive Setup
+summary: Tutorial for setting up OHIF Viewer with Nginx and PACS (Orthanc or DCM4CHEE), using Docker for a production-ready system with reverse proxy configuration to securely handle medical imaging data, including installation steps and troubleshooting tips.
 ---
 
 # Nginx + Image Archive

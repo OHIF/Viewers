@@ -1,6 +1,8 @@
 ---
 sidebar_position: 3
 sidebar_label: DisplaySet Service
+title: DisplaySet Service
+summary: Documentation for OHIF's DisplaySetService, which converts instance metadata into displayable sets for visualization, allowing dynamic creation, updating, and management of display sets from various data sources.
 ---
 # DisplaySet Service
 

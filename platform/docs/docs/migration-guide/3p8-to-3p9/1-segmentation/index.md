@@ -2,6 +2,7 @@
 id: segmentation-index
 title: Segmentation
 sidebar_position: 1
+summary: Migration guide for segmentation architecture changes in OHIF 3.9, covering the shift from tool group-centric to viewport-centric architecture to support advanced visualization capabilities and more flexible segmentation handling.
 ---
 
 import DocCardList from '@theme/DocCardList';
