@@ -37,9 +37,7 @@ DICOM Terms:
 * **Study**: A collection of series
 * **Series**: A collection of images or objects
 * **Instance**: Single image or object
-
-OHIF Term:
-* **Display Set**: The view shown to a user (including the layout, annotations, and any other data stored with the series)
+* **Display Set**: Set of displayable objects (Can be anything shown to the user)
 :::::
 
 ## Adding `madeInClient` display sets
