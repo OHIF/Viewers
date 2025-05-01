@@ -1,11 +1,12 @@
 import React from 'react';
 import { SegmentationTable } from '@ohif/ui-next';
 import { SegmentationTabsView } from './SegmentationTabsView';
-
+import { CustomAddSegmentRow } from './CustomAddSegmentRow';
+import { GroupTabsProvider } from './GroupTabsView';
 // This component extends the core SegmentationTable functionality
 // by adding a custom tabbed view for segments
 const CustomSegmentationTable = React.forwardRef((props, ref) => {
-  // Add the custom tab view component
+  // Add the custom tab view component with provider for group state management
   const renderSegmentsWithTabs = () => {
     return <SegmentationTabsView />;
   };
@@ -16,16 +17,14 @@ const CustomSegmentationTable = React.forwardRef((props, ref) => {
       return (
         <SegmentationTable.Collapsed>
           <SegmentationTable.Collapsed.Header>
-            <SegmentationTable.Collapsed.DropdownMenu>
-              {props.renderCustomDropdownContent && props.renderCustomDropdownContent()}
-            </SegmentationTable.Collapsed.DropdownMenu>
             <SegmentationTable.Collapsed.Selector />
             <SegmentationTable.Collapsed.Info />
           </SegmentationTable.Collapsed.Header>
           <SegmentationTable.Collapsed.Content>
-            <SegmentationTable.AddSegmentRow />
-            {/* Use our custom tabbed segments view instead of default segments */}
-            {renderSegmentsWithTabs()}
+            <GroupTabsProvider>
+              <CustomAddSegmentRow />
+              {renderSegmentsWithTabs()}
+            </GroupTabsProvider>
           </SegmentationTable.Collapsed.Content>
         </SegmentationTable.Collapsed>
       );
@@ -35,18 +34,15 @@ const CustomSegmentationTable = React.forwardRef((props, ref) => {
       <>
         <SegmentationTable.Expanded>
           <SegmentationTable.Expanded.Header>
-            <SegmentationTable.Expanded.DropdownMenu>
-              {props.renderCustomDropdownContent && props.renderCustomDropdownContent()}
-            </SegmentationTable.Expanded.DropdownMenu>
             <SegmentationTable.Expanded.Label />
             <SegmentationTable.Expanded.Info />
           </SegmentationTable.Expanded.Header>
-
-          <SegmentationTable.Expanded.Content>
-            <SegmentationTable.AddSegmentRow />
-            {/* Use our custom tabbed segments view instead of default segments */}
-            {renderSegmentsWithTabs()}
-          </SegmentationTable.Expanded.Content>
+          <GroupTabsProvider>
+            <SegmentationTable.Expanded.Content>
+              <CustomAddSegmentRow />
+              {renderSegmentsWithTabs()}
+            </SegmentationTable.Expanded.Content>
+          </GroupTabsProvider>
         </SegmentationTable.Expanded>
       </>
     );

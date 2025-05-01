@@ -1,8 +1,9 @@
-import React, { useEffect, useState, ReactNode } from 'react';
+import React, { ReactNode, useCallback } from 'react';
 import { useActiveViewportSegmentationRepresentations } from '@ohif/extension-cornerstone';
 import { metaData } from '@cornerstonejs/core';
 import { useSystem } from '@ohif/core/src';
 import CustomSegmentationTable from './CustomSegmentationTable';
+import { useViewportGrid } from '@ohif/ui-next';
 
 // Define proper interface for component props
 interface CustomSegmentationPanelProps {
@@ -11,9 +12,9 @@ interface CustomSegmentationPanelProps {
 
 export default function CustomSegmentationPanel({ children }: CustomSegmentationPanelProps) {
   const { commandsManager, servicesManager } = useSystem();
-  const { customizationService, displaySetService } = servicesManager.services;
-
-  // Function to fetch contour info using React Query
+  const { customizationService, displaySetService, segmentationService } = servicesManager.services;
+  const [viewportGridState] = useViewportGrid();
+  const viewportId = viewportGridState.activeViewportId;
 
   const { segmentationsWithRepresentations, disabled } =
     useActiveViewportSegmentationRepresentations({
@@ -35,18 +36,49 @@ export default function CustomSegmentationPanel({ children }: CustomSegmentation
     'panelSegmentation.customDropdownMenuContent'
   ) as React.ComponentType | null;
 
-  const CustomSegmentStatisticsHeader = customizationService.getCustomization(
-    'panelSegmentation.customSegmentStatisticsHeader'
-  ) as React.ComponentType | null;
-
   // Render custom components safely
   const renderCustomDropdownContent = () => {
     return CustomDropdownMenuContent ? <CustomDropdownMenuContent /> : null;
   };
 
-  const renderCustomStatisticsHeader = () => {
-    return CustomSegmentStatisticsHeader ? <CustomSegmentStatisticsHeader /> : null;
-  };
+  // Custom handler for toggling visibility of segments in the active group
+  const toggleGroupVisibility = useCallback(
+    (segmentationId, type, activeGroup) => {
+      // If no active group, use the default behavior to toggle all segments
+      if (!activeGroup) {
+        commandsManager.run('toggleSegmentationVisibility', { segmentationId, type });
+        return;
+      }
+
+      // Find the segmentation data
+      const segmentationInfo = segmentationsWithRepresentations.find(
+        entry => entry.segmentation.segmentationId === segmentationId
+      );
+
+      if (!segmentationInfo) {
+        return;
+      }
+
+      const { segmentation } = segmentationInfo;
+      const segments = Object.values(segmentation.segments);
+
+      // Get all segments from the active group
+      const groupSegments = segments.filter(segment => segment && segment.group === activeGroup);
+
+      // Skip if no segments in this group
+      if (groupSegments.length === 0) {
+        return;
+      }
+
+      // Check if all segments in this group are visible
+      groupSegments.forEach(segment => {
+        const segmentIndex = segment.segmentIndex;
+        debugger;
+        segmentationService.toggleSegmentVisibility(viewportId, segmentationId, segmentIndex, type);
+      });
+    },
+    [commandsManager, segmentationsWithRepresentations, viewportId, segmentationService]
+  );
 
   // Create handlers object for all command runs
   const handlers = {
@@ -77,8 +109,8 @@ export default function CustomSegmentationPanel({ children }: CustomSegmentation
     onToggleSegmentLock: (segmentationId, segmentIndex) => {
       commandsManager.run('toggleSegmentLock', { segmentationId, segmentIndex });
     },
-    onToggleSegmentationRepresentationVisibility: (segmentationId, type) => {
-      commandsManager.run('toggleSegmentationVisibility', { segmentationId, type });
+    onToggleSegmentationRepresentationVisibility: (segmentationId, type, activeGroup) => {
+      toggleGroupVisibility(segmentationId, type, activeGroup);
     },
     onSegmentationDownload: segmentationId => {
       commandsManager.run('downloadSegmentation', { segmentationId });

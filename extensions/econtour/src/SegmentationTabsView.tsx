@@ -3,8 +3,10 @@ import { ScrollArea, DataRow } from '@ohif/ui-next';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@ohif/ui-next';
 import { useSegmentationTableContext, useSegmentationExpanded } from '@ohif/ui-next';
 import { useDynamicMaxHeight } from '@ohif/ui-next';
+import { useGroupTabs } from './GroupTabsView';
 
-export const SegmentationTabsView = ({ children = null }: { children?: React.ReactNode }) => {
+// Main component
+const SegmentationTabsView = ({ children = null }: { children?: React.ReactNode }) => {
   const {
     activeSegmentationId,
     disableEditing,
@@ -14,31 +16,12 @@ export const SegmentationTabsView = ({ children = null }: { children?: React.Rea
     onSegmentClick,
     onSegmentEdit,
     onSegmentDelete,
-    data,
     showSegmentIndex = true,
   } = useSegmentationTableContext('SegmentationSegments');
 
-  // Try to get segmentation data from expanded context first, then fall back to table context
-  let segmentation;
-  let representation;
-
-  try {
-    // Try to use the SegmentationExpanded context if available
-    const segmentationInfo = useSegmentationExpanded('SegmentationSegments');
-    segmentation = segmentationInfo.segmentation;
-    representation = segmentationInfo.representation;
-  } catch (e) {
-    // Not within SegmentationExpanded context, get from active segmentation
-    const segmentationInfo = data.find(
-      entry => entry.segmentation.segmentationId === activeSegmentationId
-    );
-    segmentation = segmentationInfo?.segmentation;
-    representation = segmentationInfo?.representation;
-  }
-
-  if (!representation || !segmentation) {
-    return null;
-  }
+  const segmentationInfo = useSegmentationExpanded('SegmentationSegments');
+  const segmentation = segmentationInfo.segmentation;
+  const representation = segmentationInfo.representation;
 
   const segments = Object.values(segmentation.segments);
   const isActiveSegmentation = segmentation.segmentationId === activeSegmentationId;
@@ -82,12 +65,29 @@ export const SegmentationTabsView = ({ children = null }: { children?: React.Rea
 
   // Get an array of group names for the tabs
   const groupNames = Array.from(groupedSegments.keys());
-
-  // Determine default tab to show - use the first group
   const defaultGroup = groupNames[0] || 'All';
 
+  const { activeGroup, setActiveGroup } = useGroupTabs();
+  
+  // Use useEffect to update the active group when needed
+  React.useEffect(() => {
+    // If the current active group doesn't exist in groupNames or is null/undefined
+    if (!activeGroup || !groupNames.includes(activeGroup)) {
+      setActiveGroup(defaultGroup);
+    }
+  }, [activeGroup, defaultGroup, groupNames, setActiveGroup]);
+
+  if (!representation || !segmentation) {
+    return null;
+  }
+
   return (
-    <Tabs defaultValue={defaultGroup} className="w-full">
+    <Tabs
+      defaultValue={defaultGroup}
+      value={activeGroup}
+      onValueChange={setActiveGroup}
+      className="w-full"
+    >
       <TabsList className="mb-2 flex gap-1">
         {groupNames.map(groupName => (
           <TabsTrigger key={groupName} value={groupName} className="max-w-24 flex-1 truncate">
@@ -151,3 +151,6 @@ export const SegmentationTabsView = ({ children = null }: { children?: React.Rea
 };
 
 SegmentationTabsView.displayName = 'SegmentationTabsView';
+
+// Export the unmodified component separately for direct use
+export { SegmentationTabsView };
