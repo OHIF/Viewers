@@ -615,7 +615,7 @@ class SegmentationService extends PubSubService {
 
     // Process each segment similarly to the SEG function
     for (const rtStructData of allRTStructData) {
-      const { data, id, color, segmentIndex, geometryId } = rtStructData;
+      const { data, id, color, segmentIndex, geometryId, group } = rtStructData;
 
       // Add the color to the colorLUT array
       colorLUT.push(color);
@@ -646,6 +646,7 @@ class SegmentationService extends PubSubService {
           cachedStats: segmentsCachedStats,
           locked: false,
           active: false,
+          group,
         };
 
         // Broadcast segment loading progress

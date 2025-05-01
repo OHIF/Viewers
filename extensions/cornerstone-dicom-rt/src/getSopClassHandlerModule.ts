@@ -95,12 +95,19 @@ function _getDisplaySetsFromSeries(
     displaySet.referencedDisplaySetInstanceUID = referencedDisplaySet.displaySetInstanceUID;
   }
 
-  displaySet.load = ({ headers }) => _load(displaySet, servicesManager, extensionManager, headers);
+  displaySet.load = ({ headers, createSegmentation = true }) =>
+    _load(displaySet, servicesManager, extensionManager, headers, createSegmentation);
 
   return [displaySet];
 }
 
-function _load(rtDisplaySet, servicesManager: AppTypes.ServicesManager, extensionManager, headers) {
+function _load(
+  rtDisplaySet,
+  servicesManager: AppTypes.ServicesManager,
+  extensionManager,
+  headers,
+  createSegmentation = true
+) {
   const { SOPInstanceUID } = rtDisplaySet;
   const { segmentationService } = servicesManager.services;
   if (
@@ -122,16 +129,21 @@ function _load(rtDisplaySet, servicesManager: AppTypes.ServicesManager, extensio
       rtDisplaySet.structureSet = structureSet;
     }
 
-    segmentationService
-      .createSegmentationForRTDisplaySet(rtDisplaySet)
-      .then(() => {
-        rtDisplaySet.loading = false;
-        resolve();
-      })
-      .catch(error => {
-        rtDisplaySet.loading = false;
-        reject(error);
-      });
+    if (createSegmentation) {
+      segmentationService
+        .createSegmentationForRTDisplaySet(rtDisplaySet)
+        .then(() => {
+          rtDisplaySet.loading = false;
+          resolve();
+        })
+        .catch(error => {
+          rtDisplaySet.loading = false;
+          reject(error);
+        });
+    } else {
+      rtDisplaySet.loading = false;
+      resolve();
+    }
   });
 
   return loadPromises[SOPInstanceUID];
@@ -178,11 +190,6 @@ function _segmentationExistsInCache(
 ) {
   // Todo: fix this
   return false;
-  // This should be abstracted with the CornerstoneCacheService
-  const rtContourId = rtDisplaySet.displaySetInstanceUID;
-  const contour = segmentationService.getContour(rtContourId);
-
-  return contour !== undefined;
 }
 
 function getSopClassHandlerModule({ servicesManager, extensionManager }) {
