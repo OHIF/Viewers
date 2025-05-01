@@ -26,6 +26,10 @@ const screenShotPaths = {
   mpr: {
     mprDisplayedCorrectly: 'mprDisplayedCorrectly.png',
   },
+  mpr2: {
+    mprDisplayedCorrectly: 'mprDisplayedCorrectly.png',
+    mprDisplayedCorrectlyZoomed: 'mprDisplayedCorrectlyZoomed.png',
+  },
   threeDFourUp: {
     threeDFourUpDisplayedCorrectly: 'threeDFourUpDisplayedCorrectly.png',
   },
@@ -75,11 +79,45 @@ const screenShotPaths = {
     segPreHydration: 'segPreHydration.png',
     segJumpToSegment: 'segJumpToSegment.png',
   },
+  segHydrationThenMPR: {
+    segPostHydration: 'segPostHydration.png',
+    segPostHydrationMPRAxialPrimary: 'segPostHydrationMPRAxialPrimary.png',
+  },
+  segHydrationFromMPR: {
+    mprBeforeSEG: 'mprBeforeSEG.png',
+    mprAfterSEG: 'mprAfterSEG.png',
+    mprAfterSegHydrated: 'mprAfterSegHydrated.png',
+    mprAfterSegHydratedAfterLayoutChange: 'mprAfterSegHydratedAfterLayoutChange.png',
+  },
   rtHydration: {
     rtPostHydration: 'rtPostHydration.png',
     rtPreHydration: 'rtPreHydration.png',
     rtJumpToStructure: 'rtJumpToStructure.png',
-  }
+  },
+  rtHydration2: {
+    rtPostHydration: 'rtPostHydration.png',
+    rtPreHydration: 'rtPreHydration.png',
+  },
+  crosshairs: {
+    crosshairsRendered: 'crosshairsRendered.png',
+    crosshairsRotated: 'crosshairsRotated.png',
+    crosshairsSlabThickness: 'crosshairsSlabThickness.png',
+    crosshairsResetToolbar: 'crosshairsResetToolbar.png',
+    crosshairsNewDisplayset: 'crosshairsNewDisplayset.png',
+  },
+  tmtvRendering: {
+    tmtvDisplayedCorrectly: 'tmtvDisplayedCorrectly.png',
+  },
+  jumpToMeasurementMPR: {
+    initialDraw: 'jumpToMeasurementMPR-initialDraw.png',
+    scrollAway: 'jumpToMeasurementMPR-scrollAway.png',
+    jumpToMeasurementStack: 'jumpToMeasurementMPR-jumpToMeasurementStack.png',
+    goToMPR: 'jumpToMeasurementMPR-goToMPR.png',
+    jumpInMPR: 'jumpToMeasurementMPR-jumpInMPR.png',
+    changeSeriesInMPR: 'jumpToMeasurementMPR-changeSeriesInMPR.png',
+    jumpToMeasurementAfterSeriesChange:
+      'jumpToMeasurementMPR-jumpToMeasurementAfterSeriesChange.png',
+  },
 };
 
 export { screenShotPaths };

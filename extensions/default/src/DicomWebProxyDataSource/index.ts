@@ -27,7 +27,7 @@ function createDicomWebProxyApi(dicomWebProxyConfig, servicesManager: AppTypes.S
         }
 
         dicomWebDelegate = createDicomWebApi(
-          data.servers.dicomWeb[0].configuration,
+          data.servers.dicomWeb[0].configuration || data.servers.dicomWeb[0],
           servicesManager
         );
         dicomWebDelegate.initialize({ params, query });

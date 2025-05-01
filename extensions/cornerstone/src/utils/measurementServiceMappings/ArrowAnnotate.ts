@@ -1,7 +1,9 @@
 import SUPPORTED_TOOLS from './constants/supportedTools';
+import { getIsLocked } from './utils/getIsLocked';
 import getSOPInstanceAttributes from './utils/getSOPInstanceAttributes';
+import { getIsVisible } from './utils/getIsVisible';
 
-const Length = {
+const ArrowAnnotate = {
   toAnnotation: measurement => {},
 
   /**
@@ -17,9 +19,11 @@ const Length = {
     getValueTypeFromToolType,
     customizationService
   ) => {
-    const { annotation, viewportId } = csToolsEventDetail;
+    const { annotation } = csToolsEventDetail;
     const { metadata, data, annotationUID } = annotation;
 
+    const isLocked = getIsLocked(annotationUID);
+    const isVisible = getIsVisible(annotationUID);
     if (!metadata || !data) {
       console.warn('Length tool: Missing metadata or data');
       return null;
@@ -53,7 +57,8 @@ const Length = {
 
     const mappedAnnotations = getMappedAnnotations(annotation, displaySetService);
 
-    const displayText = getDisplayText(mappedAnnotations, displaySet, customizationService);
+    const displayText = getDisplayText(mappedAnnotations, displaySet);
+    const getReport = () => _getReport(mappedAnnotations, points, FrameOfReferenceUID);
 
     return {
       uid: annotationUID,
@@ -61,6 +66,8 @@ const Length = {
       FrameOfReferenceUID,
       points,
       textBox,
+      isLocked,
+      isVisible,
       metadata,
       referenceSeriesUID: SeriesInstanceUID,
       referenceStudyUID: StudyInstanceUID,
@@ -72,9 +79,7 @@ const Length = {
       displayText: displayText,
       data: data.cachedStats,
       type: getValueTypeFromToolType(toolName),
-      getReport: () => {
-        throw new Error('Not implemented');
-      },
+      getReport,
     };
   },
 };
@@ -107,17 +112,19 @@ function getMappedAnnotations(annotation, displaySetService) {
   return annotations;
 }
 
-function getDisplayText(mappedAnnotations, displaySet, customizationService) {
-  if (!mappedAnnotations) {
-    return '';
+function getDisplayText(mappedAnnotations, displaySet) {
+  const displayText = {
+    primary: [],
+    secondary: [],
+  };
+
+  if (!mappedAnnotations || !mappedAnnotations.length) {
+    return displayText;
   }
 
-  const displayText = [];
+  const { SeriesNumber, SOPInstanceUID, frameNumber, text } = mappedAnnotations[0];
 
-  // Area is the same for all series
-  const { SeriesNumber, SOPInstanceUID, frameNumber } = mappedAnnotations[0];
-
-  const instance = displaySet.images.find(image => image.SOPInstanceUID === SOPInstanceUID);
+  const instance = displaySet.instances.find(image => image.SOPInstanceUID === SOPInstanceUID);
 
   let InstanceNumber;
   if (instance) {
@@ -127,9 +134,43 @@ function getDisplayText(mappedAnnotations, displaySet, customizationService) {
   const instanceText = InstanceNumber ? ` I: ${InstanceNumber}` : '';
   const frameText = displaySet.isMultiFrame ? ` F: ${frameNumber}` : '';
 
-  displayText.push(`(S: ${SeriesNumber}${instanceText}${frameText})`);
+  // Add the annotation text to the primary array
+  if (text) {
+    displayText.primary.push(text);
+  }
+
+  // Add the series information to the secondary array
+  displayText.secondary.push(`S: ${SeriesNumber}${instanceText}${frameText}`);
 
   return displayText;
 }
 
-export default Length;
+function _getReport(mappedAnnotations, points, FrameOfReferenceUID) {
+  const columns = [];
+  const values = [];
+
+  columns.push('AnnotationType');
+  values.push('Cornerstone:ArrowAnnote');
+
+  mappedAnnotations.forEach(annotation => {
+    const { text } = annotation;
+    columns.push(`Text`);
+    values.push(text);
+  });
+
+  if (FrameOfReferenceUID) {
+    columns.push('FrameOfReferenceUID');
+    values.push(FrameOfReferenceUID);
+  }
+
+  if (points) {
+    columns.push('points');
+    values.push(points.map(p => p.join(' ')).join(';'));
+  }
+
+  return {
+    columns,
+    values,
+  };
+}
+export default ArrowAnnotate;

@@ -1,5 +1,7 @@
 import { cache, imageLoadPoolManager, Enums } from '@cornerstonejs/core';
-import { compact, flatten, zip } from 'lodash';
+import zip from 'lodash.zip';
+import compact from 'lodash.compact';
+import flatten from 'lodash.flatten';
 
 // Map of volumeId and SeriesInstanceId
 const volumeIdMapsToLoad = new Map<string, string>();
@@ -108,7 +110,7 @@ export default function interleaveTopToBottom({
   volumes.forEach(volume => {
     const requests = volume.getImageLoadRequests();
 
-    if (!requests.length || !requests[0] || !requests[0].imageId) {
+    if (!requests?.[0]?.imageId) {
       return;
     }
 

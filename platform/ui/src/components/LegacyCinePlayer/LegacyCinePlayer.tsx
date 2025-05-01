@@ -3,8 +3,7 @@ import PropTypes from 'prop-types';
 import debounce from 'lodash.debounce';
 
 import IconButton from '../IconButton';
-import Icon from '../Icon';
-
+import { Icons } from '@ohif/ui-next';
 import './LegacyCinePlayerCustomInputRange.css';
 
 const LegacyCinePlayer = ({
@@ -66,13 +65,11 @@ const LegacyCinePlayer = ({
         className="text-primary-active border-primary-active mr-3 rounded-full border"
         onClick={onClose}
       >
-        <Icon name="close" />
+        <Icons.Close />
       </IconButton>
     </div>
   );
 };
-
-const noop = () => {};
 
 LegacyCinePlayer.propTypes = {
   /** Minimum value for range slider */

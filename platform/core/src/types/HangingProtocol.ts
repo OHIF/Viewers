@@ -81,6 +81,7 @@ export type ConstraintValue =
   | number
   | boolean
   | []
+  | string[]
   | {
       value: string | number | boolean | [];
     };
@@ -92,6 +93,7 @@ export type Constraint = {
   // A caseless contains
   containsI?: string;
   contains?: ConstraintValue;
+  doesNotContain?: ConstraintValue;
   greaterThan?: ConstraintValue;
 };
 
@@ -101,7 +103,7 @@ export type MatchingRule = {
   // Defaults to 1
   weight?: number;
   attribute: string;
-  constraint: Constraint;
+  constraint?: Constraint;
   // Not required by default
   required?: boolean;
 };
@@ -132,12 +134,25 @@ export type ViewportStructure = {
  */
 export type DisplaySetSelector = {
   id?: string;
+
+  /**
+   *  This can be set to true to allow unmatched views to replace a view showing this instance
+   * This is done at hte display set selector level to ensure that viewports sharing a display set
+   * don't get different values of allowUnmatchedView
+   */
+  allowUnmatchedView?: boolean;
+
   // The image matching rule (not currently implemented) selects which image to
   // display initially, only for stack views.
   imageMatchingRules?: MatchingRule[];
   // The matching rules to choose the display sets at the series level
   seriesMatchingRules: MatchingRule[];
   studyMatchingRules?: MatchingRule[];
+};
+
+export type OverlaySelector = {
+  id?: string;
+  matchingRules: MatchingRule[];
 };
 
 export type SyncGroup = {
@@ -166,13 +181,17 @@ export type ViewportOptions = {
   viewportType?: CustomOption<string>;
   id?: string;
   orientation?: CustomOption<string>;
+  background?: CustomOption<[number, number, number]>;
   viewportId?: string;
   displayArea?: DisplayArea;
   initialImageOptions?: CustomOption<initialImageOptions>;
   syncGroups?: CustomOption<SyncGroup>[];
   customViewportProps?: Record<string, unknown>;
-  // Set to true to allow non-matching drag and drop or options provided
-  // from options.displaySetSelectorsMap
+  /**
+   * Set to true to allow non-matching drag and drop or options provided
+   * from options.displaySetSelectorsMap
+   * @deprecated Moving to display set selector
+   */
   allowUnmatchedView?: boolean;
 };
 
@@ -189,9 +208,17 @@ export type DisplaySetOptions = {
   options?: Record<string, unknown>;
 };
 
+// some options for overlays
+// such as segmentation options
+export type OverlayOptions = {
+  id?: string;
+  options?: Record<string, unknown>;
+};
+
 export type Viewport = {
   viewportOptions: ViewportOptions;
   displaySets: DisplaySetOptions[];
+  overlays?: OverlayOptions[];
 };
 
 /**
@@ -271,7 +298,7 @@ export type ProtocolNotifications = {
 /**
  * A protocol is the top level definition for a hanging protocol.
  * It is a set of rules about when the protocol can be applied at all,
- * as well as a set of stages that represent indivividual views.
+ * as well as a set of stages that represent individual views.
  * Additionally, the display set selectors are used to choose from the existing
  * display sets.  The hanging protocol definition here does NOT allow
  * redefining the display sets to use, but only selects the views to show.
@@ -283,6 +310,8 @@ export type Protocol = {
   description?: string;
   /** Maps ids to display set selectors to choose display sets */
   displaySetSelectors: Record<string, DisplaySetSelector>;
+  /** overlay selectors that decide whether an overlay such as segmentation should be shown or not */
+  overlaySelectors?: Record<string, OverlaySelector>;
   /** A default viewport to use for any stage to select new viewport layouts. */
   defaultViewport?: Viewport;
   stages: ProtocolStage[];

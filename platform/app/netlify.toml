@@ -19,7 +19,7 @@
 [build.environment]
   # If 'production', `yarn install` does not install devDependencies
   NODE_ENV = "development"
-  NODE_VERSION = "18.16.1"
+  NODE_VERSION = "20.18.1"
   YARN_VERSION = "1.22.5"
   RUBY_VERSION = "2.6.2"
   YARN_FLAGS = "--no-ignore-optional --pure-lockfile"
@@ -39,9 +39,3 @@
     no-cache,
     no-store,
     must-revalidate'''
-
-    # COMMENT: For sharedArrayBuffer, see https://developer.chrome.com/blog/enabling-shared-array-buffer/
-    Cross-Origin-Embedder-Policy = "require-corp"
-    Cross-Origin-Opener-Policy =  "same-origin"
-    # set CORP to cross-origin for anyone who wants to use the viewer in an iframe
-    Cross-Origin-Resource-Policy = "cross-origin"

@@ -8,9 +8,10 @@ import { id } from './id.js';
 import toolNames from './tools/toolNames';
 import hydrateStructuredReport from './utils/hydrateStructuredReport';
 import createReferencedImageDisplaySet from './utils/createReferencedImageDisplaySet';
+import Enums from './enums';
 
 const Component = React.lazy(() => {
-  return import(/* webpackPrefetch: true */ './viewports/OHIFCornerstoneSRViewport');
+  return import(/* webpackPrefetch: true */ './components/OHIFCornerstoneSRViewport');
 });
 
 const OHIFCornerstoneSRViewport = props => {
@@ -29,6 +30,7 @@ const dicomSRExtension = {
    * Only required property. Should be a unique value across all extensions.
    */
   id,
+
   onModeEnter,
 
   preRegistration,
@@ -70,4 +72,4 @@ const dicomSRExtension = {
 export default dicomSRExtension;
 
 // Put static exports here so they can be type checked
-export { hydrateStructuredReport, createReferencedImageDisplaySet, srProtocol };
+export { hydrateStructuredReport, createReferencedImageDisplaySet, srProtocol, Enums, toolNames };

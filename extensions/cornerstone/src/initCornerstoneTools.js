@@ -1,10 +1,10 @@
 import {
   PanTool,
   WindowLevelTool,
+  SegmentBidirectionalTool,
   StackScrollTool,
-  StackScrollMouseWheelTool,
+  VolumeRotateTool,
   ZoomTool,
-  VolumeRotateMouseWheelTool,
   MIPJumpToClickTool,
   LengthTool,
   RectangleROITool,
@@ -19,7 +19,6 @@ import {
   CobbAngleTool,
   MagnifyTool,
   CrosshairsTool,
-  SegmentationDisplayTool,
   RectangleScissorsTool,
   SphereScissorsTool,
   CircleScissorsTool,
@@ -38,7 +37,11 @@ import {
   LivewireContourTool,
   OrientationMarkerTool,
   WindowLevelRegionTool,
+  SegmentSelectTool,
+  RegionSegmentPlusTool,
 } from '@cornerstonejs/tools';
+import { LabelmapSlicePropagationTool, MarkerLabelmapTool } from '@cornerstonejs/ai';
+import * as polySeg from '@cornerstonejs/polymorphic-segmentation';
 
 import CalibrationLineTool from './tools/CalibrationLineTool';
 import ImageOverlayViewerTool from './tools/ImageOverlayViewerTool';
@@ -47,15 +50,25 @@ export default function initCornerstoneTools(configuration = {}) {
   CrosshairsTool.isAnnotation = false;
   ReferenceLinesTool.isAnnotation = false;
   AdvancedMagnifyTool.isAnnotation = false;
+  PlanarFreehandContourSegmentationTool.isAnnotation = false;
 
-  init(configuration);
+  init({
+    addons: {
+      polySeg,
+    },
+    computeWorker: {
+      autoTerminateOnIdle: {
+        enabled: false,
+      },
+    },
+  });
   addTool(PanTool);
+  addTool(SegmentBidirectionalTool);
   addTool(WindowLevelTool);
-  addTool(StackScrollMouseWheelTool);
   addTool(StackScrollTool);
+  addTool(VolumeRotateTool);
   addTool(ZoomTool);
   addTool(ProbeTool);
-  addTool(VolumeRotateMouseWheelTool);
   addTool(MIPJumpToClickTool);
   addTool(LengthTool);
   addTool(RectangleROITool);
@@ -69,7 +82,6 @@ export default function initCornerstoneTools(configuration = {}) {
   addTool(CobbAngleTool);
   addTool(MagnifyTool);
   addTool(CrosshairsTool);
-  addTool(SegmentationDisplayTool);
   addTool(RectangleScissorsTool);
   addTool(SphereScissorsTool);
   addTool(CircleScissorsTool);
@@ -87,7 +99,10 @@ export default function initCornerstoneTools(configuration = {}) {
   addTool(OrientationMarkerTool);
   addTool(WindowLevelRegionTool);
   addTool(PlanarFreehandContourSegmentationTool);
-
+  addTool(SegmentSelectTool);
+  addTool(LabelmapSlicePropagationTool);
+  addTool(MarkerLabelmapTool);
+  addTool(RegionSegmentPlusTool);
   // Modify annotation tools to use dashed lines on SR
   const annotationStyle = {
     textBoxFontSize: '15px',
@@ -108,9 +123,8 @@ const toolNames = {
   ArrowAnnotate: ArrowAnnotateTool.toolName,
   WindowLevel: WindowLevelTool.toolName,
   StackScroll: StackScrollTool.toolName,
-  StackScrollMouseWheel: StackScrollMouseWheelTool.toolName,
   Zoom: ZoomTool.toolName,
-  VolumeRotateMouseWheel: VolumeRotateMouseWheelTool.toolName,
+  VolumeRotate: VolumeRotateTool.toolName,
   MipJumpToClick: MIPJumpToClickTool.toolName,
   Length: LengthTool.toolName,
   DragProbe: DragProbeTool.toolName,
@@ -124,7 +138,6 @@ const toolNames = {
   CobbAngle: CobbAngleTool.toolName,
   Magnify: MagnifyTool.toolName,
   Crosshairs: CrosshairsTool.toolName,
-  SegmentationDisplay: SegmentationDisplayTool.toolName,
   Brush: BrushTool.toolName,
   PaintFill: PaintFillTool.toolName,
   ReferenceLines: ReferenceLinesTool.toolName,
@@ -142,6 +155,11 @@ const toolNames = {
   OrientationMarker: OrientationMarkerTool.toolName,
   WindowLevelRegion: WindowLevelRegionTool.toolName,
   PlanarFreehandContourSegmentation: PlanarFreehandContourSegmentationTool.toolName,
+  SegmentBidirectional: SegmentBidirectionalTool.toolName,
+  SegmentSelect: SegmentSelectTool.toolName,
+  LabelmapSlicePropagation: LabelmapSlicePropagationTool.toolName,
+  MarkerLabelmap: MarkerLabelmapTool.toolName,
+  RegionSegmentPlus: RegionSegmentPlusTool.toolName,
 };
 
 export { toolNames };

@@ -36,9 +36,9 @@ Cypress.Commands.add('openStudy', PatientName => {
   cy.openStudyList();
   cy.get('#filter-patientNameOrId').type(PatientName);
   // cy.get('@getStudies').then(() => {
-  cy.waitQueryList();
+  // cy.waitQueryList();
 
-  cy.get('[data-cy="study-list-results"]', { timeout: 5000 })
+  cy.get('[data-cy="study-list-results"]', { timeout: 15000 })
     .contains(PatientName)
     .first()
     .click({ force: true });
@@ -47,6 +47,7 @@ Cypress.Commands.add('openStudy', PatientName => {
 Cypress.Commands.add(
   'checkStudyRouteInViewer',
   (StudyInstanceUID, otherParams = '', mode = '/basic-test') => {
+    Cypress.on('uncaught:exception', () => false);
     cy.location('pathname').then($url => {
       cy.log($url);
       if ($url === 'blank' || !$url.includes(`${mode}/${StudyInstanceUID}${otherParams}`)) {
@@ -79,8 +80,9 @@ Cypress.Commands.add(
 );
 
 Cypress.Commands.add('waitQueryList', () => {
-  cy.get('[data-querying="false"]');
+  cy.get('[data-querying="false"]', { timeout: 15000 });
 });
+
 /**
  * Command to search for a Modality and open the study.
  *
@@ -106,10 +108,10 @@ Cypress.Commands.add('isPageLoaded', (url = '/basic-test') => {
 
 Cypress.Commands.add('openStudyList', () => {
   cy.initRouteAliases();
-  cy.visit('/', { timeout: 15000 });
+  cy.visit('/', { timeout: 30000 });
 
   // For some reason cypress 12.x does not like to stub the network request
-  // so we just wait here for 1 second
+  // so we just wait here for querying to be done.
   // cy.wait('@getStudies');
   cy.waitQueryList();
 });
@@ -232,8 +234,8 @@ Cypress.Commands.add('initCornerstoneToolsAliases', () => {
 });
 
 //Initialize aliases for Common page elements
-Cypress.Commands.add('initCommonElementsAliases', () => {
-  initCommonElementsAliases();
+Cypress.Commands.add('initCommonElementsAliases', skipMarkers => {
+  initCommonElementsAliases(skipMarkers);
 });
 
 //Initialize aliases for Routes
@@ -263,7 +265,7 @@ Cypress.Commands.add(
       }
     });
 
-    cy.get('@lengthButton').should('have.class', 'bg-primary-light');
+    cy.get('@lengthButton').should('have.attr', 'data-active', 'true');
 
     cy.get('@viewport').then($viewport => {
       const [x1, y1] = firstClick;

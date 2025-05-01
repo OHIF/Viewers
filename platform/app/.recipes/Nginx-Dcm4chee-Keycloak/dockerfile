@@ -1,0 +1,50 @@
+# Stage 1: Build the application
+FROM node:20.18.1-slim as builder
+
+# Setup the working directory
+RUN mkdir /usr/src/app
+WORKDIR /usr/src/app
+
+# Install dependencies
+RUN apt-get update && apt-get install -y build-essential python3
+
+# Copy the entire project
+COPY ./ /usr/src/app/
+
+# Install node dependencies
+RUN yarn config set workspaces-experimental true
+RUN yarn install
+
+# Set the environment for the build
+ENV APP_CONFIG=config/docker-nginx-dcm4chee-keycloak.js
+
+# Build the application
+RUN yarn run build
+
+# Stage 2: Setup the NGINX environment with OAuth2 Proxy
+FROM nginx:alpine
+
+# Install dependencies for oauth2-proxy
+RUN apk add --no-cache curl
+
+# Create necessary directories
+RUN mkdir -p /var/logs/nginx /var/www/html /etc/oauth2-proxy
+
+# Download and install oauth2-proxy
+RUN curl -L https://github.com/oauth2-proxy/oauth2-proxy/releases/download/v7.4.0/oauth2-proxy-v7.4.0.linux-amd64.tar.gz -o oauth2-proxy.tar.gz && \
+  tar -xvzf oauth2-proxy.tar.gz && \
+  mv oauth2-proxy-v7.4.0.linux-amd64/oauth2-proxy /usr/local/bin/ && \
+  rm -rf oauth2-proxy-v7.4.0.linux-amd64 oauth2-proxy.tar.gz
+
+# Copy the built application
+COPY --from=builder /usr/src/app/platform/app/dist /var/www/html
+
+# Copy the entrypoint script
+COPY ./platform/app/.recipes/Nginx-Dcm4chee-Keycloak/config/entrypoint.sh /entrypoint.sh
+
+# Expose necessary ports
+EXPOSE 80 443 4180
+
+# Set the entrypoint script as the entrypoint
+RUN chmod +x /entrypoint.sh
+ENTRYPOINT ["/entrypoint.sh"]

@@ -3,8 +3,8 @@ import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import ReactDOM from 'react-dom';
 
-import Icon from '../Icon';
 import Typography from '../Typography';
+import { Icons } from '@ohif/ui-next';
 
 const borderStyle = 'border-b last:border-b-0 border-secondary-main';
 
@@ -48,7 +48,7 @@ const Dropdown = ({
         <div
           key={title}
           className={classnames(
-            'hover:bg-secondary-main flex cursor-pointer items-center px-4 py-2 transition duration-300 ',
+            'hover:bg-secondary-main flex cursor-pointer items-center px-4 py-2 transition duration-300',
             titleClassName,
             showBorders && borderStyle
           )}
@@ -59,7 +59,7 @@ const Dropdown = ({
           data-cy={id}
         >
           {!!icon && (
-            <Icon
+            <Icons.ByName
               name={icon}
               className="mr-2 w-4 text-white"
             />
@@ -96,7 +96,7 @@ const Dropdown = ({
       <div className="flex items-center">
         {children}
         {showDropdownIcon && (
-          <Icon
+          <Icons.ByName
             name="chevron-down"
             className="ml-1"
           />

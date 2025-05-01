@@ -31,13 +31,15 @@ const ModalProvider = ({ children, modal: Modal, service = null }) => {
     closeButton: true,
     title: null,
     customClassName: '',
-    movable: false,
+    isDraggable: false,
     containerDimensions: null,
     contentDimensions: null,
   };
   const { t } = useTranslation('Modals');
 
   const [options, setOptions] = useState(DEFAULT_OPTIONS);
+
+  const CustomModal = service.getCustomComponent();
 
   /**
    * Show the modal and override its configuration props.
@@ -76,15 +78,17 @@ const ModalProvider = ({ children, modal: Modal, service = null }) => {
     shouldCloseOnEsc,
     closeButton,
     shouldCloseOnOverlayClick,
-    movable,
+    isDraggable,
     containerDimensions,
     contentDimensions,
   } = options;
 
+  const ModalComp = CustomModal ? CustomModal : Modal;
+
   return (
     <Provider value={{ show, hide }}>
       {ModalContent && (
-        <Modal
+        <ModalComp
           className={classNames(customClassName, ModalContent.className)}
           shouldCloseOnEsc={shouldCloseOnEsc}
           isOpen={isOpen}
@@ -92,7 +96,7 @@ const ModalProvider = ({ children, modal: Modal, service = null }) => {
           closeButton={closeButton}
           onClose={hide}
           shouldCloseOnOverlayClick={shouldCloseOnOverlayClick}
-          movable={movable}
+          isDraggable={isDraggable}
           containerDimensions={containerDimensions}
           contentDimensions={contentDimensions}
         >
@@ -101,7 +105,7 @@ const ModalProvider = ({ children, modal: Modal, service = null }) => {
             show={show}
             hide={hide}
           />
-        </Modal>
+        </ModalComp>
       )}
       {children}
     </Provider>

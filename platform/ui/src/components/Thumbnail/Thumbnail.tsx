@@ -2,9 +2,9 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import { useDrag } from 'react-dnd';
-import Icon from '../Icon';
 import { StringNumber } from '../../types';
 import DisplaySetMessageListTooltip from '../DisplaySetMessageListTooltip';
+import { Icons } from '@ohif/ui-next';
 
 /**
  * Display a thumbnail for a display set.
@@ -17,6 +17,7 @@ const Thumbnail = ({
   description,
   seriesNumber,
   numInstances,
+  loadingProgress,
   countIcon,
   messages,
   dragData = {},
@@ -56,6 +57,7 @@ const Thumbnail = ({
       )}
       id={`thumbnail-${displaySetInstanceUID}`}
       data-cy={`study-browser-thumbnail`}
+      data-series={seriesNumber}
       onClick={onClick}
       onDoubleClick={onDoubleClick}
       onTouchEnd={handleTouchEnd}
@@ -88,11 +90,12 @@ const Thumbnail = ({
             {seriesNumber}
           </div>
           <div className="flex flex-1 flex-row items-center">
-            <Icon
-              name={countIcon || 'group-layers'}
-              className="mr-2 w-3"
-            />
+            <Icons.GroupLayers className="mr-2 w-3" />
             {` ${numInstances}`}
+          </div>
+          <div className="mr-2 flex last:mr-0">
+            {loadingProgress && loadingProgress < 1 && <>{Math.round(loadingProgress * 100)}%</>}
+            {loadingProgress && loadingProgress === 1 && <Icons.Database className="w-3" />}
           </div>
           <DisplaySetMessageListTooltip
             messages={messages}
@@ -124,6 +127,7 @@ Thumbnail.propTypes = {
   description: PropTypes.string.isRequired,
   seriesNumber: StringNumber.isRequired,
   numInstances: PropTypes.number.isRequired,
+  loadingProgress: PropTypes.number,
   messages: PropTypes.object,
   isActive: PropTypes.bool.isRequired,
   onClick: PropTypes.func.isRequired,

@@ -9,7 +9,28 @@ Throughout the development of the OHIF Viewer, we have participated in various
 conferences and "hackathons". In this page, we will provide the presentations
 and other resources that we have provided to the community in the past:
 
-## 2023
+## 2025
+
+### Machine Learning in Medical Imaging Consortium (MaLMIC) | January 2025
+
+We presented two talks at the Machine Learning in Medical Imaging Consortium (MaLMIC) 2025 conference.
+
+- Advanced Medical Imaging Visualization [Slides](https://docs.google.com/presentation/d/1HZDL-72nNe4BPawDxR3XnSFLB3oLo72RjExc-KHDZfo/edit?usp=sharing)
+- Introducing Advanced Segmentation Tools in the OHIF Viewer and Cornerstone3D [Slides](https://docs.google.com/presentation/d/146oJ24PPsFZaDPHeFudRF1dmbL42K9yHzQdXXAXdWxk/edit?usp=sharing)
+
+
+## 2024
+
+### ITCR Sustainment Session 2024
+
+Dr. Gordon Harris presented at ITCR sustainment session about the future of OHIF.
+
+- OHIF Sustainability [Slides](https://docs.google.com/presentation/d/15380mjCzBKBj9PuysCW1Q9ODnyoypJrCDpj3atTtK6I/edit?usp=sharing)
+
+### ITCR Sustainment Panel 2024
+
+- Advanced Medical Imaging Visualization [Slides](https://docs.google.com/presentation/d/1alUp9uJpoJs3aAUE0KqrufGo6e6HHvXYmOAdJp-Rlkc/edit?usp=sharing)
+
 
 ### IMNO 2024 - March 19-20, 2024
 
@@ -20,6 +41,7 @@ We participated in the Imaging Network Ontario (ImNO) 2024 symposium, presenting
 - Advancing Medical Imaging on the Web: Optimizing the Dicomweb Server Architecture with Static Dicomweb [Poster](https://www.dropbox.com/scl/fi/ep0lxjp90kbxhjoffe4kh/P7-10-Bill-Wallace-Final.pdf?rlkey=xl2u6tdnh9j9hgvkajxv3b02o&dl=0)
 - (**🏆🏆 BEST PRESENTATION AWARD in the Session 7 Pitches: Devices, HW, SW Development 🏆🏆**) Advancing Medical Imaging on the Web: Integrating High Throughput JPEG 2000 (HTJ2K) in Cornerstone3D for Streamlined Progressive Loading and Visualization [Poster](https://www.dropbox.com/scl/fi/srs2rxgtv2r69ver9ub1j/P7-8-Bill-Wallace-Final.pdf?rlkey=k9mmraw76r9q2s3b9w9s0793w&dl=0)
 
+## 2023
 
 ### ITCR 2023 Conference | September 11-13, 2023
 

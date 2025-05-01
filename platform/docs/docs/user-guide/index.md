@@ -44,6 +44,8 @@ Below the study list are pagination options for 25, 50, or 100 studies per page.
 
 ![user-study-next](../assets/img/user-study-next.png)
 
+For static wado servers, you can enable fuzzy matching by setting the `supportsFuzzyMatching` property to true, after enabling it, fuzzy matching will be peformed on the patient name field, for example, if PatientName is "John^Doe", then "jo", "Do" and "John Doe" will all match. However "ohn" will not match.
+
 ## Study Summary
 
 Click on a study to expand the study summary panel.

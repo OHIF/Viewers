@@ -23,11 +23,11 @@ function ToolbarSplitButtonWithServices({
           onInteraction({
             groupId,
             itemId: item.id,
-            commands: item.commands,
+            item,
           });
         },
       })),
-    []
+    [groupId, onInteraction]
   );
 
   const PrimaryButtonComponent =

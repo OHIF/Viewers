@@ -25,6 +25,7 @@ const ThumbnailList = ({
           dragData,
           seriesNumber,
           numInstances,
+          loadingProgress,
           modality,
           componentType,
           seriesDate,
@@ -66,6 +67,7 @@ const ThumbnailList = ({
                   description={description}
                   seriesNumber={seriesNumber}
                   numInstances={numInstances}
+                  loadingProgress={loadingProgress}
                   countIcon={countIcon}
                   imageSrc={imageSrc}
                   imageAltText={imageAltText}
@@ -148,6 +150,7 @@ function _getModalityTooltip(modality) {
 const _modalityTooltips = {
   SR: 'Structured Report',
   SEG: 'Segmentation',
+  OT: 'Other',
   RTSTRUCT: 'RT Structure Set',
 };
 

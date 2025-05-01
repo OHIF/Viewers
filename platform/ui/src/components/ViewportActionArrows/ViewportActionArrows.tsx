@@ -1,6 +1,6 @@
 import React from 'react';
-import Icon from '../Icon';
 import classNames from 'classnames';
+import { Icons } from '@ohif/ui-next';
 
 const arrowClasses =
   'cursor-pointer flex items-center justify-center shrink-0 text-primary-light active:text-white hover:bg-secondary-light/60 rounded';
@@ -15,16 +15,10 @@ function ViewportActionArrows({ onArrowsClick, className }: ViewportActionArrows
     // The arrows are only visible when hover over the viewport.
     <div className={classNames(className, 'flex')}>
       <div className={arrowClasses}>
-        <Icon
-          name="prev-arrow"
-          onClick={() => onArrowsClick(-1)}
-        />
+        <Icons.ArrowLeftBold onClick={() => onArrowsClick(-1)} />
       </div>
       <div className={arrowClasses}>
-        <Icon
-          name="next-arrow"
-          onClick={() => onArrowsClick(1)}
-        />
+        <Icons.ArrowRightBold onClick={() => onArrowsClick(1)} />
       </div>
     </div>
   );

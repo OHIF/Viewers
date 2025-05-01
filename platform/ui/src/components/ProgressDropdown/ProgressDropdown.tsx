@@ -4,7 +4,7 @@ import classnames from 'classnames';
 import ProgressDiscreteBar from './ProgressDiscreteBar';
 import ProgressItemDetail from './ProgressItemDetail';
 import ProgressItem from './ProgressItem';
-import { Icon } from '../../components';
+import { Icons } from '@ohif/ui-next';
 import { ProgressDropdownOption, ProgressDropdownOptionPropType } from './types';
 
 const ProgressDropdown = ({
@@ -108,10 +108,7 @@ const ProgressDropdown = ({
 
               {!selectedOption && <div className="ml-1 grow text-base leading-6">{children}</div>}
             </div>
-            <Icon
-              name="chevron-down"
-              className="text-primary-active mt-0.5 ml-1"
-            />
+            <Icons.ChevronDown className="text-primary-active mt-1.5 ml-1 mr-2" />
           </div>
           <button
             className={classnames('ml-1.5 w-[26px] rounded text-base', {
@@ -119,8 +116,7 @@ const ProgressDropdown = ({
               'bg-primary-dark pointer-events-none': !canMoveNext,
             })}
           >
-            <Icon
-              name="arrow-right"
+            <Icons.ArrowRight
               className={classnames('relative left-0.5 h-6 w-6 text-white', {
                 'text-white': canMoveNext,
                 'text-secondary-light': !canMoveNext,
@@ -132,7 +128,7 @@ const ProgressDropdown = ({
         <div
           className={classnames(
             'absolute top-7 left-0 right-8 z-10 mt-0.5 origin-top',
-            'bg-primary-dark overflow-hidden transition-[max-height] duration-300 ',
+            'bg-primary-dark overflow-hidden transition-[max-height] duration-300',
             'border-secondary-main rounded border shadow',
             {
               hidden: !open,

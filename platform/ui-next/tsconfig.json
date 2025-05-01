@@ -3,7 +3,9 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@ui/*": ["./src/*"]
+      "@ui/*": ["./src/*"],
+      "@ohif/core": ["../core/src"],
+      "@ohif/ui": ["../ui/src"]
     }
   },
   "include": ["src"],

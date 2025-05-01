@@ -86,7 +86,7 @@ const InputDoubleRange: React.FC<InputDoubleRangeProps> = ({
       // the pl-[2px] class is used to align the thumb so that it doesn't
       // go over the label when the value is full, not sure what is wrong
       // with the implementation, we need to fix it properly
-      <div className={index === 1 && 'pl-[2px]'}>
+      <div className={index === 1 ? 'pl-[2px]' : undefined}>
         <InputNumber
           minValue={minValue}
           maxValue={maxValue}
@@ -216,7 +216,7 @@ const InputDoubleRange: React.FC<InputDoubleRangeProps> = ({
         <div
           className="h-[3px] w-full rounded-lg"
           style={{
-            background: `linear-gradient(to right, #3a3f99 0%, #3a3f99 ${rangeValuePercentageStart}%, #5acce6 ${rangeValuePercentageStart}%, #5acce6 ${rangeValuePercentageEnd}%, #3a3f99 ${rangeValuePercentageEnd}%, #3a3f99 100%)`,
+            background: `linear-gradient(to right, #3a3f99 0%, #3a3f99 ${rangeValuePercentageStart}%, #e0b264 ${rangeValuePercentageStart}%, #e0b264 ${rangeValuePercentageEnd}%, #3a3f99 ${rangeValuePercentageEnd}%, #3a3f99 100%)`,
           }}
         ></div>
         <div
@@ -226,7 +226,7 @@ const InputDoubleRange: React.FC<InputDoubleRangeProps> = ({
           }}
         ></div>
         <div
-          className="input-range-thumb-design absolute h-3  w-3 cursor-pointer rounded-full"
+          className="input-range-thumb-design absolute h-3 w-3 cursor-pointer rounded-full"
           style={{ left: `calc(${percentageEnd}% - 3px)` }}
         ></div>
       </div>

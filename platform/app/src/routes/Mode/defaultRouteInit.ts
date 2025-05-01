@@ -1,10 +1,8 @@
 import getStudies from './studiesList';
-import { DicomMetadataStore, log } from '@ohif/core';
+import { DicomMetadataStore, log, utils, Enums } from '@ohif/core';
 import isSeriesFilterUsed from '../../utils/isSeriesFilterUsed';
 
-import { utils, Enums } from '@ohif/core';
-
-const { sortingCriteria, getSplitParam } = utils;
+const { getSplitParam } = utils;
 
 /**
  * Initialize the route.
@@ -17,7 +15,8 @@ const { sortingCriteria, getSplitParam } = utils;
  */
 export async function defaultRouteInit(
   { servicesManager, studyInstanceUIDs, dataSource, filters, appConfig }: withAppTypes,
-  hangingProtocolId
+  hangingProtocolId,
+  stageIndex
 ) {
   const { displaySetService, hangingProtocolService, uiNotificationService, customizationService } =
     servicesManager.services;
@@ -41,7 +40,9 @@ export async function defaultRouteInit(
 
     // run the hanging protocol matching on the displaySets with the predefined
     // hanging protocol in the mode configuration
-    hangingProtocolService.run({ studies, activeStudy, displaySets }, hangingProtocolId);
+    hangingProtocolService.run({ studies, activeStudy, displaySets }, hangingProtocolId, {
+      stageIndex,
+    });
   }
 
   const unsubscriptions = [];
@@ -68,7 +69,7 @@ export async function defaultRouteInit(
         });
       }
 
-      displaySetService.makeDisplaySets(seriesMetadata.instances, madeInClient);
+      displaySetService.makeDisplaySets(seriesMetadata.instances, { madeInClient });
     }
   );
 
@@ -82,9 +83,7 @@ export async function defaultRouteInit(
       StudyInstanceUID,
       filters,
       returnPromises: true,
-      sortCriteria:
-        customizationService.get('sortingCriteria') ||
-        sortingCriteria.seriesSortCriteria.seriesInfoSortingCriteria,
+      sortCriteria: customizationService.getCustomization('sortingCriteria'),
     })
   );
 

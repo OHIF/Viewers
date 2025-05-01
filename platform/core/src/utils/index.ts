@@ -13,6 +13,7 @@ import hotkeys from './hotkeys';
 import Queue from './Queue';
 import isDicomUid from './isDicomUid';
 import formatDate from './formatDate';
+import formatTime from './formatTime';
 import formatPN from './formatPN';
 import generateAcceptHeader from './generateAcceptHeader';
 import resolveObjectPath from './resolveObjectPath';
@@ -35,10 +36,11 @@ import {
   sortingCriteria,
   seriesSortCriteria,
 } from './sortStudy';
-import { subscribeToNextViewportGridChange } from './subscribeToNextViewportGridChange';
 import { splitComma, getSplitParam } from './splitComma';
 import { createStudyBrowserTabs } from './createStudyBrowserTabs';
-
+import { sopClassDictionary } from './sopClassDictionary';
+import * as MeasurementFilters from './measurementFilters';
+import getClosestOrientationFromIOP from './getClosestOrientationFromIOP';
 // Commented out unused functionality.
 // Need to implement new mechanism for derived displaySets using the displaySetManager.
 
@@ -56,6 +58,7 @@ const utils = {
   seriesSortCriteria,
   writeScript,
   formatDate,
+  formatTime,
   formatPN,
   b64toBlob,
   urlUtil,
@@ -67,6 +70,7 @@ const utils = {
   Queue,
   isDicomUid,
   isEqualWithin,
+  sopClassDictionary,
   addAccessors,
   resolveObjectPath,
   hierarchicalListUtils,
@@ -77,11 +81,12 @@ const utils = {
   debounce,
   roundNumber,
   downloadCSVReport,
-  subscribeToNextViewportGridChange,
   splitComma,
   getSplitParam,
   generateAcceptHeader,
   createStudyBrowserTabs,
+  MeasurementFilters,
+  getClosestOrientationFromIOP,
 };
 
 export {
@@ -115,6 +120,8 @@ export {
   getSplitParam,
   generateAcceptHeader,
   createStudyBrowserTabs,
+  MeasurementFilters,
+  getClosestOrientationFromIOP,
 };
 
 export default utils;

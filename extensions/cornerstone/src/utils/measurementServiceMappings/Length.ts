@@ -1,6 +1,9 @@
 import SUPPORTED_TOOLS from './constants/supportedTools';
+import { getIsLocked } from './utils/getIsLocked';
+import { getIsVisible } from './utils/getIsVisible';
 import getSOPInstanceAttributes from './utils/getSOPInstanceAttributes';
 import { utils } from '@ohif/core';
+import { config } from '@cornerstonejs/tools/annotation';
 
 const Length = {
   toAnnotation: measurement => {},
@@ -18,8 +21,16 @@ const Length = {
     getValueTypeFromToolType,
     customizationService
   ) => {
-    const { annotation, viewportId } = csToolsEventDetail;
+    const { annotation } = csToolsEventDetail;
     const { metadata, data, annotationUID } = annotation;
+
+    const isLocked = getIsLocked(annotationUID);
+    const isVisible = getIsVisible(annotationUID);
+    const colorString = config.style.getStyleProperty('color', { annotationUID });
+
+    // color string is like 'rgb(255, 255, 255)' we need them to be in RGBA array [255, 255, 255, 255]
+    // Todo: this should be in a utility
+    // const color = colorString.replace('rgb(', '').replace(')', '').split(',').map(Number);
 
     if (!metadata || !data) {
       console.warn('Length tool: Missing metadata or data');
@@ -54,7 +65,7 @@ const Length = {
 
     const mappedAnnotations = getMappedAnnotations(annotation, displaySetService);
 
-    const displayText = getDisplayText(mappedAnnotations, displaySet, customizationService);
+    const displayText = getDisplayText(mappedAnnotations, displaySet);
     const getReport = () =>
       _getReport(mappedAnnotations, points, FrameOfReferenceUID, customizationService);
 
@@ -64,7 +75,10 @@ const Length = {
       FrameOfReferenceUID,
       points,
       textBox,
+      isLocked,
+      isVisible,
       metadata,
+      // color,
       referenceSeriesUID: SeriesInstanceUID,
       referenceStudyUID: StudyInstanceUID,
       referencedImageId,
@@ -158,17 +172,20 @@ function _getReport(mappedAnnotations, points, FrameOfReferenceUID, customizatio
   };
 }
 
-function getDisplayText(mappedAnnotations, displaySet, customizationService) {
+function getDisplayText(mappedAnnotations, displaySet) {
+  const displayText = {
+    primary: [],
+    secondary: [],
+  };
+
   if (!mappedAnnotations || !mappedAnnotations.length) {
-    return '';
+    return displayText;
   }
 
-  const displayText = [];
-
-  // Area is the same for all series
+  // Length is the same for all series
   const { length, SeriesNumber, SOPInstanceUID, frameNumber, unit } = mappedAnnotations[0];
 
-  const instance = displaySet.images.find(image => image.SOPInstanceUID === SOPInstanceUID);
+  const instance = displaySet.instances.find(image => image.SOPInstanceUID === SOPInstanceUID);
 
   let InstanceNumber;
   if (instance) {
@@ -182,7 +199,8 @@ function getDisplayText(mappedAnnotations, displaySet, customizationService) {
     return displayText;
   }
   const roundedLength = utils.roundNumber(length, 2);
-  displayText.push(`${roundedLength} ${unit} (S: ${SeriesNumber}${instanceText}${frameText})`);
+  displayText.primary.push(`${roundedLength} ${unit}`);
+  displayText.secondary.push(`S: ${SeriesNumber}${instanceText}${frameText}`);
 
   return displayText;
 }

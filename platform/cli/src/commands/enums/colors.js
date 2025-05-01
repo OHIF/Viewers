@@ -2,7 +2,7 @@ const colors = {
   LIGHT: '#e0b264',
   MAIN: '#0944b3',
   DARK: '#090c29',
-  ACTIVE: '#348cfd',
+  ACTIVE: '#d5963a',
 };
 
 export default colors;

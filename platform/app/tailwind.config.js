@@ -113,6 +113,12 @@ module.exports = {
         900: '#742a2a',
       },
       orange: {
+        10:  '#fffdf8',  // muito próximo do branco
+        20:  '#fff9ed',
+        30:  '#fff3dc',
+        40:  '#ffebc9',
+        50:  '#ffe1b2',
+        80:  '#fdd89c',
         100: '#fffaf0',
         200: '#feebc8',
         300: '#fbd38d',
@@ -298,11 +304,13 @@ module.exports = {
       mono: ['Menlo', 'Monaco', 'Consolas', '"Liberation Mono"', '"Courier New"', 'monospace'],
     },
     fontSize: {
-      xs: '0.65rem',
-      sm: '0.75rem',
-      base: '0.8125rem',
-      lg: '0.9275rem',
-      xl: '1.25rem',
+      xxs: '0.625rem', // 10px
+      xs: '0.6875rem', // 11px
+      sm: '0.75rem', // 12px
+      base: '0.8125rem', // 13px
+      lg: '0.875rem', // 14px
+      xl: '1rem', // 16px
+      // 2xl and above will be updated in an upcoming version
       '2xl': '1.5rem',
       '3xl': '1.875rem',
       '4xl': '2.25rem',

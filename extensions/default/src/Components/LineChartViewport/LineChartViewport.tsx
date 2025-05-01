@@ -1,5 +1,5 @@
 import React from 'react';
-import { LineChart } from '@ohif/ui';
+import { LineChart } from '@ohif/ui-next';
 
 const LineChartViewport = ({ displaySets }) => {
   const displaySet = displaySets[0];

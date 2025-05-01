@@ -1,5 +1,6 @@
 import { SOPClassHandlerId } from './id';
 import { utils } from '@ohif/core';
+import { utilities as csUtils, Enums as csEnums } from '@cornerstonejs/core';
 
 const SOP_CLASS_UIDS = {
   VIDEO_MICROSCOPIC_IMAGE_STORAGE: '1.2.840.10008.5.1.4.1.1.77.1.2.1',
@@ -50,7 +51,7 @@ const _getDisplaySetsFromSeries = (instances, servicesManager, extensionManager)
       );
     })
     .map(instance => {
-      const { Modality, SOPInstanceUID, SeriesDescription = 'VIDEO' } = instance;
+      const { Modality, SOPInstanceUID, SeriesDescription = 'VIDEO', imageId } = instance;
       const { SeriesNumber, SeriesDate, SeriesInstanceUID, StudyInstanceUID, NumberOfFrames, url } =
         instance;
       const videoUrl = dataSource.retrieve.directURL({
@@ -72,7 +73,10 @@ const _getDisplaySetsFromSeries = (instances, servicesManager, extensionManager)
         SOPClassHandlerId,
         referencedImages: null,
         measurements: null,
+        viewportType: csEnums.ViewportType.VIDEO,
+        // The videoUrl is deprecated, the preferred URL is renderedUrl
         videoUrl,
+        renderedUrl: videoUrl,
         instances: [instance],
         thumbnailSrc: dataSource.retrieve.directURL({
           instance,
@@ -80,12 +84,17 @@ const _getDisplaySetsFromSeries = (instances, servicesManager, extensionManager)
           defaultType: 'image/jpeg',
           tag: 'Absent',
         }),
+        imageIds: [imageId],
         isDerivedDisplaySet: true,
         isLoaded: false,
         sopClassUids,
         numImageFrames: NumberOfFrames,
         instance,
       };
+      csUtils.genericMetadataProvider.add(imageId, {
+        type: 'imageUrlModule',
+        metadata: { rendered: videoUrl },
+      });
       return displaySet;
     });
 };
