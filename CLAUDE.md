@@ -27,6 +27,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ### UI Elements
 - Use `@ohif/ui-next` components for UI elements, prefer components from `@ohif/ui-next` over deprecated`@ohif/ui`
+- Import from the `@ohif/ui-next` root, and don't import from `@ohif/ui-next/.../components`. If there isn't a root, write the export and import statements in the correct index files.
+
 
 ### TypeScript
 - Use TypeScript interfaces and types for props
