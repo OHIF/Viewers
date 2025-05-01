@@ -1,6 +1,8 @@
 ---
 sidebar_position: 8
 sidebar_label: Continuous Integration
+title: Continuous Integration
+summary: Overview of OHIF's CI/CD setup using CircleCI and Netlify, detailing workflows for pull request checks, optional Docker image publishing, deployment to development/staging/production environments, and the release process for npm packages and documentation.
 ---
 
 # Continuous Integration (CI)

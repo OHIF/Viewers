@@ -1,6 +1,8 @@
 ---
 sidebar_position: 1
 sidebar_label: Configuration Files
+title: Configuration Files
+summary: Comprehensive guide to configuring OHIF Viewer, including data sources, environment variables, advanced options like study prefetching, and detailed explanations of configuration parameters for performance optimization and feature customization.
 ---
 
 # Config files
