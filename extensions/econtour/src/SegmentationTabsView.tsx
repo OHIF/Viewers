@@ -106,8 +106,8 @@ export const SegmentationTabsView = ({ children = null }: { children?: React.Rea
             <ScrollArea className="bg-bkg-low space-y-px" showArrows={true}>
               <div ref={scrollableContainerRef} style={{ maxHeight }}>
                 {groupSegments.map(({ segment, segmentData }) => {
-                  const { segmentIndex, visible } = segment;
-                  const { locked, active, label, displayText, color } = segmentData;
+                  const { segmentIndex } = segment;
+                  const { locked, active, label, displayText, color, visible } = segmentData;
                   const cssColor = `rgb(${color[0]},${color[1]},${color[2]})`;
 
                   const DataRowComponent = (
