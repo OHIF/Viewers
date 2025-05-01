@@ -1,7 +1,7 @@
 /**
  * Script to copy and prepare markdown files for static hosting
  * This script copies all markdown files from the docs directory (excluding api and assets)
- * to a llm directory where they can be accessed directly without Docusaurus rendering
+ * to a /llm directory where they can be accessed directly without Docusaurus rendering
  */
 
 const fs = require('fs');
@@ -11,7 +11,7 @@ const { glob } = require('glob');
 // Base docs directory
 const baseDocsDir = path.join(__dirname, '../docs');
 // Output directory for LLM markdown files
-const outputDir = path.join(__dirname, '../build/docs/llm');
+const outputDir = path.join(__dirname, '../build/llm');
 
 // Create the output directory structure
 function createDirectoryIfNotExists(directoryPath) {

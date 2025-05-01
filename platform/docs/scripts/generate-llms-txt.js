@@ -1,7 +1,7 @@
 /**
  * Script to generate an llms.txt file following the specification
  * This script generates a single llms.txt file in the build directory
- * with links to all the markdown files that have been copied to the /docs/llm directory
+ * with links to all the markdown files that have been copied to the /llm directory
  */
 
 const fs = require('fs');
@@ -11,7 +11,7 @@ const { glob } = require('glob');
 // Base docs directory
 const baseDocsDir = path.join(__dirname, '../docs');
 // Output directory for LLM markdown files
-const llmDir = path.join(__dirname, '../build/docs/llm');
+const llmDir = path.join(__dirname, '../build/llm');
 // Output file path for llms.txt
 const outputFilePath = path.join(__dirname, '../build/llms.txt');
 
@@ -79,7 +79,7 @@ async function generateSectionLinks(section) {
     }
 
     // Create URL for the file (relative to site root)
-    const url = `/docs/llm/${relativePath}`;
+    const url = `/llm/${relativePath}`;
 
     // Add to links
     links.push({
@@ -122,7 +122,7 @@ async function generateLlmsTxt() {
 
       // Add links for this section
       for (const link of links) {
-        content += `- [${link.title}](https://cornerstonejs.org${link.url})`;
+        content += `- [${link.title}](https://docs.ohif.org${link.url})`;
         if (link.summary) {
           content += `: ${link.summary}`;
         }

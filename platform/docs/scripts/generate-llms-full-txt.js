@@ -1,6 +1,6 @@
 /**
  * Script to generate an llms-full.txt file that concatenates all markdown content
- * This script creates a single giant file with all markdown content from the /docs/llm directory
+ * This script creates a single giant file with all markdown content from the /llm directory
  * with proper heading hierarchy preserved
  */
 
@@ -11,7 +11,7 @@ const { glob } = require('glob');
 // Base docs directory
 const baseDocsDir = path.join(__dirname, '../docs');
 // Output directory for LLM markdown files
-const llmDir = path.join(__dirname, '../build/docs/llm');
+const llmDir = path.join(__dirname, '../build/llm');
 // Output file path for llms-full.txt
 const outputFilePath = path.join(__dirname, '../build/llms-full.txt');
 
