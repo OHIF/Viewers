@@ -46,63 +46,42 @@ export const SegmentationTabsView = ({ children = null }: { children?: React.Rea
   // Group segments by their group property
   const groupedSegments = useMemo(() => {
     const grouped = new Map();
-    const ungrouped = [];
-
-    // Initialize with a "All" group that contains all segments
-    grouped.set('All', []);
 
     segments.forEach(segment => {
       if (!segment) {
         return;
       }
 
-      const { segmentIndex } = segment;
+      const { segmentIndex, group } = segment;
       const segmentFromSegmentation = segmentation.segments[segmentIndex];
+      const representationSegment = representation.segments[segmentIndex];
 
       if (!segmentFromSegmentation) {
         return;
       }
 
-      // Add to "All" group
-      grouped.get('All').push({
-        segment,
-        segmentData: segmentFromSegmentation,
-      });
-
-      // Check if segment has a group property
-      const group = segmentFromSegmentation.group;
-
-      if (group) {
-        // If group doesn't exist yet, create it
-        if (!grouped.has(group)) {
-          grouped.set(group, []);
-        }
-
-        // Add segment to its group
-        grouped.get(group).push({
-          segment,
-          segmentData: segmentFromSegmentation,
-        });
-      } else {
-        // Keep track of ungrouped segments
-        ungrouped.push({
-          segment,
-          segmentData: segmentFromSegmentation,
-        });
+      let segmentGroup = grouped.get(group);
+      if (!segmentGroup) {
+        grouped.set(group, []);
       }
-    });
 
-    // Add "Ungrouped" category if there are any ungrouped segments
-    if (ungrouped.length > 0) {
-      grouped.set('Ungrouped', ungrouped);
-    }
+      segmentGroup = grouped.get(group);
+
+      // Add to "All" group
+      segmentGroup.push({
+        segment,
+        segmentData: {
+          ...segmentFromSegmentation,
+          ...representationSegment,
+        },
+      });
+    });
 
     return grouped;
   }, [segments, segmentation]);
 
   // Get an array of group names for the tabs
   const groupNames = Array.from(groupedSegments.keys());
-  console.debug('🚀 ~ groupNames:', groupNames);
 
   // Determine default tab to show - use the first group
   const defaultGroup = groupNames[0] || 'All';
@@ -127,8 +106,8 @@ export const SegmentationTabsView = ({ children = null }: { children?: React.Rea
             <ScrollArea className="bg-bkg-low space-y-px" showArrows={true}>
               <div ref={scrollableContainerRef} style={{ maxHeight }}>
                 {groupSegments.map(({ segment, segmentData }) => {
-                  const { segmentIndex, color, visible } = segment;
-                  const { locked, active, label, displayText } = segmentData;
+                  const { segmentIndex, visible } = segment;
+                  const { locked, active, label, displayText, color } = segmentData;
                   const cssColor = `rgb(${color[0]},${color[1]},${color[2]})`;
 
                   const DataRowComponent = (

@@ -137,7 +137,6 @@ export function useActiveViewportSegmentationRepresentations({
       }
 
       const segmentations = segmentationService.getSegmentations();
-
       if (!segmentations?.length) {
         setSegmentationsWithRepresentations(prev => ({
           segmentationsWithRepresentations: [],

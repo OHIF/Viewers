@@ -13,9 +13,6 @@ export default function CustomSegmentationPanel({ children }: CustomSegmentation
   const { commandsManager, servicesManager } = useSystem();
   const { customizationService, displaySetService } = servicesManager.services;
 
-  // Define better typing for segmentationData
-  const [segmentationDataToUse, setSegmentationDataToUse] = useState<Array<any>>([]);
-
   // Function to fetch contour info using React Query
 
   const { segmentationsWithRepresentations, disabled } =
@@ -173,7 +170,7 @@ export default function CustomSegmentationPanel({ children }: CustomSegmentation
   // Rendering of segments is now handled by our CustomSegmentationTable component
 
   return (
-    <CustomSegmentationTable 
+    <CustomSegmentationTable
       {...tableProps}
       renderCustomDropdownContent={renderCustomDropdownContent}
     >
