@@ -88,7 +88,7 @@ export default {
                 segmentationService.setStyle(
                   { type: 'Contour' },
                   {
-                    outlineWidth: 3, // Increase outline width for better visibility
+                    outlineWidth: 2,
                     renderFill: false,
                     renderOutline: true,
                   }
