@@ -1,5 +1,12 @@
 import { createDisplaySetOptions } from './utils';
 
+/**
+ * Configures viewport for removing a foreground display set
+ * @param viewport - The viewport to configure
+ * @param displaySetUID - The display set UID to remove
+ * @param viewportDisplaySetUIDs - Current display set UIDs in the viewport
+ * @param servicesManager - The services manager
+ */
 export function configureViewportForForegroundRemoval({
   viewport,
   displaySetUID: displaySetUIDToRemove,
@@ -41,6 +48,9 @@ export function configureViewportForForegroundRemoval({
 
 /**
  * Configure viewport for overlay addition
+ * @param viewport - The viewport to configure
+ * @param currentDisplaySetUIDs - Current display set UIDs in the viewport
+ * @param servicesManager - The services manager
  */
 export function configureViewportForForegroundAddition({
   viewport,
@@ -85,6 +95,12 @@ export function configureViewportForForegroundAddition({
 
 /**
  * Configure viewport for overlay removal
+ * @param viewport - The viewport to configure
+ * @param backgroundDisplaySet - The background display set
+ * @param remainingOverlays - The overlays that remain after removal
+ * @param overlayOpacities - Map of overlay UIDs to their opacity values
+ * @param customizationService - The customization service
+ * @param activeSegmentations - Active segmentations to include
  */
 export function configureViewportForOverlayRemoval({
   viewport,
@@ -134,6 +150,12 @@ export function configureViewportForOverlayRemoval({
 
 /**
  * Create viewport configuration for opacity update
+ * @param viewportId - The ID of the viewport
+ * @param backgroundDisplaySet - The background display set
+ * @param displaySetUID - The display set UID to update opacity for
+ * @param opacity - The new opacity value
+ * @param overlay - The overlay display set
+ * @param customizationService - The customization service
  */
 export function createViewportConfigForOpacityUpdate({
   viewportId,
