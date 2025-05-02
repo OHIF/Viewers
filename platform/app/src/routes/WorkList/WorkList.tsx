@@ -10,7 +10,7 @@ import { useTranslation } from 'react-i18next';
 import filtersMeta from './filtersMeta.js';
 import { useAppConfig } from '@state';
 import { useDebounce, useSearchParams } from '@hooks';
-import { utils } from '@ohif/core';
+import { utils, Types as coreTypes } from '@ohif/core';
 
 import {
   StudyListExpandedRow,
@@ -465,28 +465,33 @@ function WorkList({
 
   const hasStudies = numOfStudies > 0;
 
-  const AboutModal = customizationService.getCustomization('ohif.aboutModal');
-  const UserPreferencesModal = customizationService.getCustomization('ohif.userPreferencesModal');
+  const AboutModal = customizationService.getCustomization(
+    'ohif.aboutModal'
+  ) as coreTypes.MenuComponentCustomization;
+  const UserPreferencesModal = customizationService.getCustomization(
+    'ohif.userPreferencesModal'
+  ) as coreTypes.MenuComponentCustomization;
 
   const menuOptions = [
     {
-      title: t('Header:About'),
+      title: AboutModal?.menuTitle ?? t('Header:About'),
       icon: 'info',
       onClick: () =>
         show({
-          content: AboutModal as React.ComponentType,
-          title: t('AboutModal:About OHIF Viewer'),
-          containerClassName: 'max-w-md ',
+          content: AboutModal,
+          title: AboutModal?.title ?? t('AboutModal:About OHIF Viewer'),
+          containerClassName: AboutModal?.containerClassName ?? 'max-w-md',
         }),
     },
     {
-      title: t('Header:Preferences'),
+      title: UserPreferencesModal.menuTitle ?? t('Header:Preferences'),
       icon: 'settings',
       onClick: () =>
         show({
-          title: t('UserPreferencesModal:User preferences'),
           content: UserPreferencesModal as React.ComponentType,
-          containerClassName: 'flex  max-w-4xl flex-col',
+          title: UserPreferencesModal.title ?? t('UserPreferencesModal:User preferences'),
+          containerClassName:
+            UserPreferencesModal?.containerClassName ?? 'flex max-w-4xl p-6 flex-col',
         }),
     },
   ];
