@@ -1,0 +1,57 @@
+/* CUSTOM OHIF SCROLLBAR */
+.ohif-scrollbar {
+  scrollbar-color: #173239 transparent;
+  overflow-y: auto;
+}
+
+.ohif-scrollbar-stable-gutter {
+  scrollbar-gutter: stable;
+}
+
+.study-min-height {
+  min-height: 450px;
+}
+
+.ohif-scrollbar:hover {
+  overflow-y: auto;
+}
+
+.ohif-scrollbar::-webkit-scrollbar {
+  scrollbar-width: thin;
+}
+
+.ohif-scrollbar::-webkit-scrollbar-track {
+  @apply rounded;
+}
+
+.ohif-scrollbar::-webkit-scrollbar-thumb {
+  @apply rounded;
+  @apply bg-secondary-dark;
+  background-color: #041c4a;
+}
+
+.ohif-scrollbar::-webkit-scrollbar-thumb:window-inactive {
+  @apply bg-secondary-dark;
+  background-color: #041c4a;
+}
+
+/* INVISIBLE SCROLLBAR */
+.invisible-scrollbar {
+  scrollbar-width: none;
+}
+
+.invisible-scrollbar::-webkit-scrollbar {
+  @apply hidden;
+}
+
+.invisible-scrollbar::-webkit-scrollbar-track {
+  @apply hidden;
+}
+
+.invisible-scrollbar::-webkit-scrollbar-thumb {
+  @apply hidden;
+}
+
+.invisible-scrollbar::-webkit-scrollbar-thumb:window-inactive {
+  @apply hidden;
+}
