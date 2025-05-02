@@ -1,6 +1,8 @@
 ---
 sidebar_position: 1
 sidebar_label: Introduction
+title: OHIF Extensions Introduction
+summary: Comprehensive introduction to the OHIF viewer extension system, explaining how extensions provide modular functionality through different module types, and how they're configured and accessed in modes to build customized viewer experiences.
 ---
 
 # Introduction

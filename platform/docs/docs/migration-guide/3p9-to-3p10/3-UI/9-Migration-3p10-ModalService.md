@@ -1,5 +1,6 @@
 ---
 title: uiModalService
+summary: Migration guide for the uiModalService in OHIF 3.10, covering props that remain unchanged, renamed props (containerDimensions to containerClassName), removed props (movable, isOpen, contentDimensions), and automatic handling of modal closing.
 ---
 
 

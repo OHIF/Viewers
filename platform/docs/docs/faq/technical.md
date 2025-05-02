@@ -1,3 +1,9 @@
+---
+id: technical
+title: Technical FAQ
+summary: Technical explanations and solutions for OHIF Viewer implementation challenges, including required metadata fields, handling large volumes for MPR/rendering, dynamically loading measurements, customizing series sorting, and addressing common rendering issues.
+---
+
 # Technical FAQ
 
 

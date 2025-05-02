@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.11.0-beta.20](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.19...v3.11.0-beta.20) (2025-05-01)
+
+**Note:** Version bump only for package @ohif/mode-test
+
+
+
+
+
+# [3.11.0-beta.19](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.18...v3.11.0-beta.19) (2025-05-01)
+
+**Note:** Version bump only for package @ohif/mode-test
+
+
+
+
+
 # [3.11.0-beta.18](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.17...v3.11.0-beta.18) (2025-04-30)
 
 **Note:** Version bump only for package @ohif/mode-test

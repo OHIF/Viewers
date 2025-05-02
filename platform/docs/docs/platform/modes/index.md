@@ -1,6 +1,8 @@
 ---
 sidebar_position: 1
 sidebar_label: Introduction
+title: Modes Introduction
+summary: Overview of OHIF Modes, which are specialized viewer configurations for specific clinical workflows, allowing multiple purpose-specific applications to coexist within a single OHIF deployment.
 ---
 
 # Modes

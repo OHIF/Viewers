@@ -1,6 +1,8 @@
 ---
 sidebar_position: 4
 sidebar_label: DICOMweb Proxy
+title: DICOMweb Proxy
+summary: Documents the DICOMweb Proxy data source which constructs a dynamic DICOMweb datasource from a configuration JSON file, allowing OHIF to delegate subsequent requests for metadata and images to the configured server.
 ---
 
 # DICOMweb Proxy
