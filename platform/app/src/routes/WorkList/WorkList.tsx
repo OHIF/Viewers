@@ -18,8 +18,6 @@ import {
   StudyListTable,
   StudyListPagination,
   StudyListFilter,
-  useSessionStorage,
-  InvestigationalUseDialog,
   Button,
   ButtonEnums,
 } from '@ohif/ui';
@@ -32,8 +30,10 @@ import {
   TooltipContent,
   Clipboard,
   useModal,
+  useSessionStorage,
   Onboarding,
   ScrollArea,
+  InvestigationalUseDialog,
 } from '@ohif/ui-next';
 
 import { Types } from '@ohif/ui';
@@ -60,7 +60,6 @@ function WorkList({
   onRefresh,
   servicesManager,
 }: withAppTypes) {
-  const { hotkeyDefinitions, hotkeyDefaults } = hotkeysManager;
   const { show, hide } = useModal();
   const { t } = useTranslation();
   // ~ Modes
@@ -426,7 +425,7 @@ function WorkList({
                     }}
                     // to={`${mode.routeName}/dicomweb?StudyInstanceUIDs=${studyInstanceUid}`}
                   >
-                    {/* TODO revisit the completely rounded style of buttons used for launching a mode from the worklist later - for now use LegacyButton*/}
+                    {/* TODO revisit the completely rounded style of buttons used for launching a mode from the worklist later */}
                     <Button
                       type={ButtonEnums.type.primary}
                       size={ButtonEnums.size.medium}
