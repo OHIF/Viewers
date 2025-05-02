@@ -1,6 +1,8 @@
 ---
 sidebar_label: Custom Routes
 sidebar_position: 2
+title: Custom Routes
+summary: Documentation for creating custom routes in OHIF, allowing extensions to define new URL paths and React components to extend the application with additional pages and navigation options.
 ---
 
 # customRoutes

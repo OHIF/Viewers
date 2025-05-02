@@ -1,6 +1,8 @@
 ---
 sidebar_position: 9
 sidebar_label: Local Linking
+title: Local Library Linking
+summary: Brief introduction to the concept of local linking for library development in OHIF, explaining how to test libraries in application context before publishing, with reference to Cornerstonejs linking documentation.
 ---
 
 # Introduction

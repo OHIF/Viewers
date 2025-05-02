@@ -1,6 +1,8 @@
 ---
 sidebar_position: 6
 sidebar_label: Auth
+title: Authorization and Authentication
+summary: Guide to configuring OpenID-Connect authentication in OHIF Viewer, including setup of authorization flows, token handling, and implementation details for securing access to medical imaging data.
 ---
 
 # Authorization and Authentication

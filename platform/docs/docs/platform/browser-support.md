@@ -1,5 +1,7 @@
 ---
 sidebar_position: 2
+title: Browser Support
+summary: Documentation of OHIF's browser compatibility standards, including supported browsers (IE11, Firefox, Chrome, Safari, Edge), transpilation and polyfill strategies, and development priorities focused on modern evergreen browsers.
 ---
 # Browser Support
 

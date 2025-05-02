@@ -1,6 +1,8 @@
 ---
 sidebar_position: 1
 sidebar_label: Toolbar
+title: Toolbar Module
+summary: Documentation for OHIF Toolbar Module, which provides UI components and evaluators for the application's toolbar, supporting custom button types, advanced state management, and conditional rendering based on viewport and modality requirements.
 ---
 
 # Module: Toolbar

@@ -1,6 +1,8 @@
 ---
 sidebar_position: 6
 sidebar_label: Configuration UI
+title: Configuration UI
+summary: Describes interfaces for implementing configurable data sources in OHIF, with details on BaseDataSourceConfigurationAPI and BaseDataSourceConfigurationAPIItem to enable generic UIs for hierarchical data source configuration.
 ---
 
 # Configuration UI
