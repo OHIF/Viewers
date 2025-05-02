@@ -45,29 +45,35 @@ export function useViewportDisplaySets(viewportId) {
   const backgroundDisplaySet = viewportDisplaySets[0];
 
   const foregroundDisplaySets = useMemo(() => {
-    // all the background display sets except the first one and except the derived overlay display sets
-    return viewportDisplaySets
-      .filter(ds => !DERIVED_OVERLAY_MODALITIES.includes(ds.Modality))
-      .filter(ds => ds.displaySetInstanceUID !== backgroundDisplaySet.displaySetInstanceUID);
+    // This should be done as an && operation rather than multiple filters
+    return viewportDisplaySets.filter(
+      ds =>
+        !DERIVED_OVERLAY_MODALITIES.includes(ds.Modality) &&
+        ds.displaySetInstanceUID !== backgroundDisplaySet.displaySetInstanceUID
+    );
   }, [viewportDisplaySets, backgroundDisplaySet]);
 
   const foregroundDisplaySetUIDs = foregroundDisplaySets.map(ds => ds.displaySetInstanceUID);
 
   const potentialOverlayDisplaySets = useMemo(() => {
-    // all the derived overlay display sets except the ones that are already in the overlayDisplaySets
     return enhancedDisplaySets
-      .filter(ds => DERIVED_OVERLAY_MODALITIES.includes(ds.Modality))
-      .filter(ds => !overlayDisplaySetUIDs.includes(ds.displaySetInstanceUID))
-      .filter(ds => ds.isOverlayable)
+      .filter(
+        ds =>
+          DERIVED_OVERLAY_MODALITIES.includes(ds.Modality) &&
+          !overlayDisplaySetUIDs.includes(ds.displaySetInstanceUID) &&
+          ds.isOverlayable
+      )
       .sort(sortByOverlayable);
   }, [enhancedDisplaySets, overlayDisplaySetUIDs]);
 
   const potentialForegroundDisplaySets = useMemo(() => {
-    // all the non-derived overlay display sets except the ones that are already in the overlayDisplaySets
     return enhancedDisplaySets
-      .filter(ds => !DERIVED_OVERLAY_MODALITIES.includes(ds.Modality))
-      .filter(ds => !foregroundDisplaySetUIDs.includes(ds.displaySetInstanceUID))
-      .filter(ds => ds.isOverlayable)
+      .filter(
+        ds =>
+          !DERIVED_OVERLAY_MODALITIES.includes(ds.Modality) &&
+          !foregroundDisplaySetUIDs.includes(ds.displaySetInstanceUID) &&
+          ds.isOverlayable
+      )
       .sort(sortByPriority);
   }, [enhancedDisplaySets, foregroundDisplaySetUIDs]);
 
