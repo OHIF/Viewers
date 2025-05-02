@@ -5,7 +5,6 @@ import InputGroup from './InputGroup';
 import InputLabelWrapper from './InputLabelWrapper';
 import InputMultiSelect from './InputMultiSelect';
 import InputText from './InputText';
-import InvestigationalUseDialog from './InvestigationalUseDialog';
 import LegacyButton from './LegacyButton';
 import LegacyButtonGroup from './LegacyButtonGroup';
 import Select from './Select';
@@ -32,7 +31,6 @@ export {
   InputLabelWrapper,
   InputMultiSelect,
   InputText,
-  InvestigationalUseDialog,
   LegacyButton,
   LegacyButtonGroup,
   Select,

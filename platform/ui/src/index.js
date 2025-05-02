@@ -9,7 +9,6 @@ export {
   InputLabelWrapper,
   InputMultiSelect,
   InputText,
-  InvestigationalUseDialog,
   LegacyButton,
   LegacyButtonGroup,
   Select,
@@ -29,8 +28,6 @@ export {
   ContextMenu,
   InputFilterText,
 } from './components';
-
-export { useSessionStorage } from './hooks';
 
 /** These are mostly used in the docs */
 export { getIcon, ICONS, addIcon } from './components/Icon/getIcon';
