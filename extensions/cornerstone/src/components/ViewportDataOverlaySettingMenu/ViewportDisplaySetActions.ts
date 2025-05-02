@@ -1,11 +1,16 @@
 import { createDisplaySetOptions } from './utils';
 
+// Todo: these are ohif viewport types which are different than cs3d enums
+// and we should fix them to use cs3d enums. In cs3d we call volume -> orthographic
+const AllowedViewportTypes = ['volume', 'stack'];
+
 /**
  * Configures viewport for removing a foreground display set
  * @param viewport - The viewport to configure
  * @param displaySetUID - The display set UID to remove
  * @param viewportDisplaySetUIDs - Current display set UIDs in the viewport
  * @param servicesManager - The services manager
+ * @returns boolean - Returns true if operation is supported for this viewport type, false otherwise
  */
 export function configureViewportForForegroundRemoval({
   viewport,
@@ -14,8 +19,13 @@ export function configureViewportForForegroundRemoval({
   servicesManager,
 }) {
   const { cornerstoneViewportService } = servicesManager.services;
-
   const { viewportId } = viewport;
+
+  // Check if viewport type supports this operation
+  const currentViewportType = viewport.viewportOptions?.viewportType;
+  if (!AllowedViewportTypes.includes(currentViewportType)) {
+    return false;
+  }
 
   viewport.displaySetInstanceUIDs = currentDisplaySetUIDs
     .map(displaySetUID => {
@@ -44,6 +54,8 @@ export function configureViewportForForegroundRemoval({
     // Maybe there were multiple foregrounds, and we should preserve their opacity.
     return {};
   });
+
+  return true;
 }
 
 /**
@@ -51,6 +63,7 @@ export function configureViewportForForegroundRemoval({
  * @param viewport - The viewport to configure
  * @param currentDisplaySetUIDs - Current display set UIDs in the viewport
  * @param servicesManager - The services manager
+ * @returns boolean|object - Returns updated viewport if operation is supported, false otherwise
  */
 export function configureViewportForForegroundAddition({
   viewport,
@@ -61,6 +74,12 @@ export function configureViewportForForegroundAddition({
     servicesManager.services;
 
   const { viewportId } = viewport;
+
+  // Check if viewport type supports this operation
+  const currentViewportType = viewport.viewportOptions?.viewportType;
+  if (!AllowedViewportTypes.includes(currentViewportType)) {
+    return false;
+  }
 
   // Set the display set UIDs for the viewport
   const foreGroundDisplaySetInstanceUID = viewport.displaySetInstanceUIDs[0];
@@ -101,6 +120,7 @@ export function configureViewportForForegroundAddition({
  * @param overlayOpacities - Map of overlay UIDs to their opacity values
  * @param customizationService - The customization service
  * @param activeSegmentations - Active segmentations to include
+ * @returns boolean|object - Returns updated viewport if operation is supported, false otherwise
  */
 export function configureViewportForOverlayRemoval({
   viewport,
@@ -110,6 +130,12 @@ export function configureViewportForOverlayRemoval({
   customizationService,
   activeSegmentations = [],
 }) {
+  // Check if viewport type supports this operation
+  const currentViewportType = viewport.viewportOptions?.viewportType;
+  if (!AllowedViewportTypes.includes(currentViewportType)) {
+    return false;
+  }
+
   const remainingOverlayUIDs = remainingOverlays.map(overlay => overlay.displaySetInstanceUID);
 
   // Store any existing segmentation display sets
@@ -156,6 +182,8 @@ export function configureViewportForOverlayRemoval({
  * @param opacity - The new opacity value
  * @param overlay - The overlay display set
  * @param customizationService - The customization service
+ * @param viewportType - The viewport type, defaults to 'volume'
+ * @returns object|boolean - Returns config object if operation is supported, false otherwise
  */
 export function createViewportConfigForOpacityUpdate({
   viewportId,
