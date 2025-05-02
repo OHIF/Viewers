@@ -1,4 +1,5 @@
-import { utils } from '@ohif/core';
+import { utils, Types as OhifTypes } from '@ohif/core';
+import i18n from '@ohif/i18n';
 
 import { SOPClassHandlerId } from './id';
 import loadRTStruct from './loadRTStruct';
@@ -53,7 +54,7 @@ function _getDisplaySetsFromSeries(
     wadoUriRoot,
     wadoUri,
     isOverlayDisplaySet: true,
-    label: SeriesDescription || `Series ${SeriesNumber} - RTSTRUCT`,
+    label: SeriesDescription || `${i18n.t('Series')} ${SeriesNumber} - ${i18n.t('RTSTRUCT')}`,
   };
 
   let referencedSeriesSequence = instance.ReferencedSeriesSequence;
@@ -184,15 +185,14 @@ function _deriveReferencedSeriesSequenceFromFrameOfReferenceSequence(
   return ReferencedSeriesSequence;
 }
 
-function _segmentationExistsInCache(
-  rtDisplaySet,
-  segmentationService: AppTypes.SegmentationService
-) {
+function _segmentationExistsInCache() {
   // Todo: fix this
   return false;
 }
 
-function getSopClassHandlerModule({ servicesManager, extensionManager }) {
+function getSopClassHandlerModule(params: OhifTypes.Extensions.ExtensionParams) {
+  const { servicesManager, extensionManager } = params;
+
   return [
     {
       name: 'dicom-rt',

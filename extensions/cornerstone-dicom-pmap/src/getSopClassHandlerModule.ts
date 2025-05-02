@@ -1,4 +1,5 @@
-import { utils } from '@ohif/core';
+import { utils, Types as OhifTypes } from '@ohif/core';
+import i18n from '@ohif/i18n';
 import { metaData, cache, utilities as csUtils, volumeLoader } from '@cornerstonejs/core';
 import { adaptersPMAP } from '@cornerstonejs/adapters';
 import { SOPClassHandlerId } from './id';
@@ -58,7 +59,7 @@ function _getDisplaySetsFromSeries(
     wadoUriRoot,
     wadoUri,
     isOverlayDisplaySet: true,
-    label: SeriesDescription || `Series ${SeriesNumber} - PMAP`,
+    label: SeriesDescription || `${i18n.t('Series')} ${SeriesNumber} - ${i18n.t('PMAP')}`,
   };
 
   const referencedSeriesSequence = instance.ReferencedSeriesSequence;
@@ -228,7 +229,8 @@ async function _loadParametricMap({ displaySet, headers }: withAppTypes) {
   return derivedVolume;
 }
 
-function getSopClassHandlerModule({ servicesManager, extensionManager }) {
+function getSopClassHandlerModule(params: OhifTypes.Extensions.ExtensionParams) {
+  const { servicesManager, extensionManager } = params;
   const getDisplaySetsFromSeries = instances => {
     return _getDisplaySetsFromSeries(instances, servicesManager, extensionManager);
   };

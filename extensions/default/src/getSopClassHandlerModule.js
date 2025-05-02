@@ -1,4 +1,5 @@
 import { utils, classes } from '@ohif/core';
+import i18n from '@ohif/i18n';
 import { id } from './id';
 import getDisplaySetMessages from './getDisplaySetMessages';
 import getDisplaySetsFromUnsupportedSeries from './getDisplaySetsFromUnsupportedSeries';
@@ -99,7 +100,9 @@ const makeDisplaySet = instances => {
     averageSpacingBetweenFrames: averageSpacingBetweenFrames || null,
     isDynamicVolume,
     dynamicVolumeInfo,
-    label: instance.SeriesDescription || `Series ${instance.SeriesNumber} - ${instance.Modality}`,
+    label:
+      instance.SeriesDescription ||
+      `${i18n.t('Series')} ${instance.SeriesNumber} - ${i18n.t(instance.Modality)}`,
     FrameOfReferenceUID: instance.FrameOfReferenceUID,
   });
 
