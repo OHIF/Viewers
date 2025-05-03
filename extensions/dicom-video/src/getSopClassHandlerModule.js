@@ -31,6 +31,8 @@ const supportedTransferSyntaxUIDs = Object.values(SupportedTransferSyntaxes);
 
 const _getDisplaySetsFromSeries = (instances, servicesManager, extensionManager) => {
   const dataSource = extensionManager.getActiveDataSource()[0];
+  const thumbnailSrc = null;
+  console.warn('dataSource=', dataSource);
   return instances
     .filter(metadata => {
       const tsuid =
@@ -74,11 +76,9 @@ const _getDisplaySetsFromSeries = (instances, servicesManager, extensionManager)
         referencedImages: null,
         measurements: null,
         viewportType: csEnums.ViewportType.VIDEO,
-        // The videoUrl is deprecated, the preferred URL is renderedUrl
-        videoUrl,
-        renderedUrl: videoUrl,
         instances: [instance],
         getThumbnailSrc: dataSource.retrieve.getGetThumbnailSrc?.(instance),
+        thumbnailSrc,
         imageIds: [imageId],
         isDerivedDisplaySet: true,
         isLoaded: false,
