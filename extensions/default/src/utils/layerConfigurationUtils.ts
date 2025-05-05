@@ -65,7 +65,7 @@ export function configureViewportForLayerAddition(params: {
     viewport.viewportOptions.orientation = cornerstoneViewportService.getOrientation(viewportId);
   }
 
-  // Don't force volume for SEG and RTSTRUCT if there is only one display set
+  // Do not force volume for SEG and RTSTRUCT if there is only one display set
   if (requestedLayerDisplaySet.isOverlayDisplaySet && currentDisplaySetUIDs.length === 1) {
     viewport.viewportOptions.viewportType = 'stack';
   } else {
