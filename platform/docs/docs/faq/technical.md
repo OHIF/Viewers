@@ -6,6 +6,7 @@ summary: Technical explanations and solutions for OHIF Viewer implementation cha
 
 # Technical FAQ
 
+* [How to add a custom icon to the viewport corners](./add-viewport-icon.md)
 
 
 ## Viewer opens but does not show any thumbnails
