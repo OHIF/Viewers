@@ -76,13 +76,10 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
       displaySetInstanceUID: currentDisplaySetInstanceUID,
     });
 
-    // Add new display set
-    setTimeout(() => {
-      commandsManager.runCommand('addDisplaySetAsLayer', {
-        viewportId,
-        displaySetInstanceUID: newDisplaySetInstanceUID,
-      });
-    }, 0);
+    commandsManager.runCommand('addDisplaySetAsLayer', {
+      viewportId,
+      displaySetInstanceUID: newDisplaySetInstanceUID,
+    });
   };
 
   /**

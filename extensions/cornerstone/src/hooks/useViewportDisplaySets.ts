@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 import { useSystem, utils } from '@ohif/core';
+import { useViewportGrid } from '@ohif/ui-next';
 import {
   getEnhancedDisplaySets,
   sortByOverlayable,
@@ -85,7 +86,12 @@ export function useViewportDisplaySets(
   options?: UseViewportDisplaySetsOptions
 ): ViewportDisplaySets {
   const { servicesManager } = useSystem();
-  const { displaySetService, viewportGridService, segmentationService } = servicesManager.services;
+  const { displaySetService, segmentationService } = servicesManager.services;
+
+  // Note: this is very important we should use the useViewportGrid hook here,
+  // since if the viewport displaySet is changed we should re-run this hook
+  // to get the latest displaySets
+  const [_, viewportGridService] = useViewportGrid();
 
   // Apply defaults - include everything if no options specified
   const {
