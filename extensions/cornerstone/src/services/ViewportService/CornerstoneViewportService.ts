@@ -825,10 +825,10 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     const displaySet = displaySetService.getDisplaySetByUID(displaySetUIDs[0]);
     const displaySetModality = displaySet?.Modality;
 
-    // filter the segmentation modalities since the overlay will get handled below via the segmentation service
+    // filter overlay display sets (e.g. segmentation) since they will get handled below via the segmentation service
     const filteredVolumeInputArray = volumeInputArray.filter(volumeInput => {
       const displaySet = displaySetService.getDisplaySetByUID(volumeInput.displaySetInstanceUID);
-      return !['SEG', 'RTSTRUCT'].includes(displaySet?.Modality);
+      return !displaySet?.isOverlayDisplaySet;
     });
 
     // Todo: use presentations states
@@ -905,34 +905,30 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     // load any secondary displaySets
     const displaySetInstanceUIDs = this.viewportsDisplaySets.get(viewport.id);
 
-    // Can be SEG or RTSTRUCT for now but not PMAP
-    const segOrRTSOverlayDisplaySet = displaySetInstanceUIDs
+    // Find overlay display sets (e.g. SEG, RTSTRUCT)
+    const overlayDisplaySet = displaySetInstanceUIDs
       .map(displaySetService.getDisplaySetByUID)
-      .find(
-        displaySet =>
-          displaySet?.isOverlayDisplaySet && ['SEG', 'RTSTRUCT'].includes(displaySet.Modality)
-      );
+      .find(displaySet => displaySet?.isOverlayDisplaySet);
 
     // if it is only the overlay displaySet, then we need to get the reference
     // displaySet imageIds and set them as the imageIds for the viewport,
     // here we can do some logic if the reference is missing
     // then find the most similar match of displaySet instead
-    if (!segOrRTSOverlayDisplaySet) {
+    if (!overlayDisplaySet) {
       return;
     }
 
     let imageIds;
-    if (segOrRTSOverlayDisplaySet.referencedDisplaySetInstanceUID) {
+    if (overlayDisplaySet.referencedDisplaySetInstanceUID) {
       const referenceDisplaySet = displaySetService.getDisplaySetByUID(
-        segOrRTSOverlayDisplaySet.referencedDisplaySetInstanceUID
+        overlayDisplaySet.referencedDisplaySetInstanceUID
       );
       imageIds = referenceDisplaySet.images.map(image => image.imageId);
     }
 
     return {
       imageIds,
-      addOverlayFn: () =>
-        this.addOverlayRepresentationForDisplaySet(segOrRTSOverlayDisplaySet, viewport),
+      addOverlayFn: () => this.addOverlayRepresentationForDisplaySet(overlayDisplaySet, viewport),
     };
   }
 

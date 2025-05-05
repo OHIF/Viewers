@@ -98,9 +98,9 @@ export default class ColorbarService extends PubSubService {
     );
 
     displaySetInstanceUIDs.forEach((displaySetInstanceUID, index) => {
-      // don't show colorbar for segmentation display sets
+      // don't show colorbar for overlay display sets (e.g. segmentation)
       const displaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
-      if (displaySet.Modality === 'SEG') {
+      if (displaySet.isOverlayDisplaySet) {
         return;
       }
 
