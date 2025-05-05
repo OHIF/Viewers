@@ -1,6 +1,7 @@
 import React, { ReactNode } from 'react';
 import { WindowLevelActionMenuProps } from './WindowLevelActionMenu';
 import { useSystem } from '@ohif/core';
+import { WindowLevelActionMenu as WindowLevelActionMenuComponent } from './WindowLevelActionMenu';
 
 function WindowLevelActionMenu({
   viewportId,
@@ -20,9 +21,6 @@ function WindowLevelActionMenu({
   const colorbarProperties = customizationService.getCustomization('cornerstone.colorbar');
   const { volumeRenderingPresets, volumeRenderingQualityRange } =
     customizationService.getCustomization('cornerstone.3dVolumeRendering');
-  const WindowLevelActionMenu = customizationService.getCustomization(
-    'viewportActionMenu.windowLevelActionMenu'
-  );
   const displaySetPresets = displaySets
     .filter(displaySet => presets[displaySet.Modality])
     .map(displaySet => {
@@ -34,8 +32,6 @@ function WindowLevelActionMenu({
   if (modalities.length === 0) {
     return null;
   }
-
-  const WindowLevelActionMenuComponent = WindowLevelActionMenu?.component;
 
   return (
     <WindowLevelActionMenuComponent

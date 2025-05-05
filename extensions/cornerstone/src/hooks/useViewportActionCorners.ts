@@ -1,9 +1,6 @@
 import { useEffect } from 'react';
 import React from 'react';
-import { AllInOneMenu } from '@ohif/ui-next';
-import { getWindowLevelActionMenu } from '../components/WindowLevelActionMenu/getWindowLevelActionMenu';
-import { getViewportDataOverlaySettingsMenu } from '../components/ViewportDataOverlaySettingMenu';
-import { getViewportOrientationMenu } from '../components/ViewportOrientationMenu';
+import { ViewportActionCornersLocations } from '@ohif/ui-next';
 import { useSystem } from '@ohif/core/src';
 
 /**
@@ -23,11 +20,11 @@ export interface ViewportActionCornerService {
     viewportId: string;
     id: string;
     component: React.ReactNode;
-    location: ViewportActionCornerLocation | string;
+    location: ViewportActionCornersLocations | string;
     indexPriority?: number;
   }) => void;
   clear: (viewportId: string) => void;
-  getAlignAndSide: (location: ViewportActionCornerLocation | string) => {
+  getAlignAndSide: (location: ViewportActionCornersLocations | string) => {
     align: 'start' | 'center' | 'end';
     side: 'top' | 'right' | 'bottom' | 'left';
   };
@@ -49,6 +46,14 @@ interface UseViewportActionCornersProps {
   displaySets: AppTypes.DisplaySet[];
 }
 
+// Map of customization keys to their corresponding enum values
+const locationMap = {
+  'viewportActionMenu.topLeft': ViewportActionCornersLocations.topLeft,
+  'viewportActionMenu.topRight': ViewportActionCornersLocations.topRight,
+  'viewportActionMenu.bottomLeft': ViewportActionCornersLocations.bottomLeft,
+  'viewportActionMenu.bottomRight': ViewportActionCornersLocations.bottomRight,
+};
+
 /**
  * Hook to manage viewport action corners for a Cornerstone viewport
  */
@@ -57,64 +62,52 @@ export function useViewportActionCorners({
   elementRef,
   displaySets,
 }: UseViewportActionCornersProps): void {
-  const { servicesManager, commandsManager } = useSystem();
+  const { servicesManager } = useSystem();
   const { viewportActionCornersService, customizationService } = servicesManager.services;
-  // Set up the window level action menu in the viewport action corners.
+
   useEffect(() => {
-    const windowLevelActionMenu = customizationService.getCustomization(
-      'viewportActionMenu.windowLevelActionMenu'
-    );
-    const dataOverlay = customizationService.getCustomization('viewportActionMenu.dataOverlay');
-    const orientationMenu = customizationService.getCustomization(
-      'viewportActionMenu.orientationMenu'
-    );
+    // Process each location
+    Object.entries(locationMap).forEach(([locationKey, locationValue]) => {
+      const items = customizationService.getCustomization(locationKey);
 
-    if (windowLevelActionMenu?.enabled) {
-      viewportActionCornersService.addComponent({
-        viewportId,
-        id: 'windowLevelActionMenu',
-        component: getWindowLevelActionMenu({
-          viewportId,
-          element: elementRef.current,
-          displaySets,
-          verticalDirection: AllInOneMenu.VerticalDirection.TopToBottom,
-          horizontalDirection: AllInOneMenu.HorizontalDirection.LeftToRight,
-        }),
-        location: windowLevelActionMenu.location,
-        indexPriority: windowLevelActionMenu.indexPriority,
-      });
-    }
+      if (!items || !items.length) {
+        return;
+      }
 
-    if (dataOverlay?.enabled) {
-      viewportActionCornersService.addComponent({
-        viewportId,
-        id: 'dataOverlay',
-        component: getViewportDataOverlaySettingsMenu({
-          viewportId,
-          element: elementRef.current,
-          displaySets,
-          location: dataOverlay.location,
-        }),
-        location: dataOverlay.location,
-        indexPriority: dataOverlay.indexPriority,
-      });
-    }
+      items.forEach(item => {
+        if (!item.enabled) {
+          return;
+        }
 
-    // Only show orientation menu for reconstructable displaySets
-    if (orientationMenu?.enabled) {
-      viewportActionCornersService.addComponent({
-        viewportId,
-        id: 'orientationMenu',
-        component: getViewportOrientationMenu({
-          viewportId,
-          element: elementRef.current,
-          location: orientationMenu.location,
-        }),
-        location: orientationMenu.location,
-        indexPriority: orientationMenu.indexPriority,
+        const componentId = item.id;
+
+        if (item.getComponent) {
+          // Use the component renderer provided directly in the item
+          const component = item.getComponent({
+            viewportId,
+            element: elementRef.current,
+            displaySets,
+            location: locationValue,
+          });
+
+          viewportActionCornersService.addComponent({
+            viewportId,
+            id: componentId,
+            component,
+            location: locationValue,
+          });
+        } else if (item.component) {
+          // Handle static components
+          viewportActionCornersService.addComponent({
+            viewportId,
+            id: item.id,
+            component: item.component,
+            location: locationValue,
+          });
+        }
       });
-    }
-  }, [displaySets, viewportId, viewportActionCornersService, commandsManager, elementRef]);
+    });
+  }, [displaySets, viewportId, viewportActionCornersService, elementRef]);
 }
 
 export default useViewportActionCorners;

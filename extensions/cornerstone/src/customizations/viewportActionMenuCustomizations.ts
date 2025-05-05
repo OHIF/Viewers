@@ -1,21 +1,55 @@
-import viewportActionCornersService from '../services/ViewportActionCornersService/ViewportActionCornersService';
-import { WindowLevelActionMenu } from '../components/WindowLevelActionMenu/WindowLevelActionMenu';
+import { getWindowLevelActionMenu } from '../components/WindowLevelActionMenu/getWindowLevelActionMenu';
+import { getViewportDataOverlaySettingsMenu } from '../components/ViewportDataOverlaySettingMenu';
+import { getViewportOrientationMenu } from '../components/ViewportOrientationMenu';
+import { AllInOneMenu } from '@ohif/ui-next';
+
+// Generate component renderer functions for each component type
+const createOrientationMenu = ({ viewportId, element, location }) => {
+  return getViewportOrientationMenu({
+    viewportId,
+    element,
+    location,
+  });
+};
+
+const createDataOverlay = ({ viewportId, element, displaySets, location }) => {
+  return getViewportDataOverlaySettingsMenu({
+    viewportId,
+    element,
+    displaySets,
+    location,
+  });
+};
+
+const createWindowLevelMenu = ({ viewportId, element, displaySets }) => {
+  return getWindowLevelActionMenu({
+    viewportId,
+    element,
+    displaySets,
+    verticalDirection: AllInOneMenu.VerticalDirection.TopToBottom,
+    horizontalDirection: AllInOneMenu.HorizontalDirection.LeftToRight,
+  });
+};
 
 export default {
-  'viewportActionMenu.orientationMenu': {
-    enabled: true,
-    location: viewportActionCornersService.LOCATIONS.topLeft,
-    indexPriority: 1, // First/highest priority
-  },
-  'viewportActionMenu.dataOverlay': {
-    enabled: true,
-    location: viewportActionCornersService.LOCATIONS.topLeft,
-    indexPriority: 2, // Second priority
-  },
-  'viewportActionMenu.windowLevelActionMenu': {
-    enabled: true,
-    location: viewportActionCornersService.LOCATIONS.topLeft,
-    indexPriority: 3, // Third/lowest priority
-    component: WindowLevelActionMenu,
-  },
+  'viewportActionMenu.topLeft': [
+    {
+      id: 'orientationMenu',
+      enabled: true,
+      getComponent: createOrientationMenu,
+    },
+    {
+      id: 'dataOverlay',
+      enabled: true,
+      getComponent: createDataOverlay,
+    },
+    {
+      id: 'windowLevelActionMenu',
+      enabled: true,
+      getComponent: createWindowLevelMenu,
+    },
+  ],
+  'viewportActionMenu.topRight': [],
+  'viewportActionMenu.bottomLeft': [],
+  'viewportActionMenu.bottomRight': [],
 };
