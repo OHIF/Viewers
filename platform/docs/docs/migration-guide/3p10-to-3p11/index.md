@@ -15,3 +15,8 @@ as it handles now both segmentation and data overlay.
 ## Viewport Action Menu Customization
 
 The structure for defining viewport action menu customizations has changed. See the [Viewport Action Menu](./viewport-action-menu.md) migration guide for details.
+
+
+## updateStoredPositionPresentation
+
+now uses displaySetInstanceUIDs instead of displaySetInstanceUID.
