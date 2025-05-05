@@ -29,6 +29,7 @@ import { updateLabelmapSegmentationImageReferences } from '@cornerstonejs/tools/
 import { triggerSegmentationRepresentationModified } from '@cornerstonejs/tools/segmentation/triggerSegmentationEvents';
 import { convertStackToVolumeLabelmap } from '@cornerstonejs/tools/segmentation/helpers/convertStackToVolumeLabelmap';
 import { getLabelmapImageIds } from '@cornerstonejs/tools/segmentation';
+import { VOLUME_LOADER_SCHEME } from '../../constants';
 
 const LABELMAP = csToolsEnums.SegmentationRepresentations.Labelmap;
 const CONTOUR = csToolsEnums.SegmentationRepresentations.Contour;
@@ -79,8 +80,6 @@ const EVENTS = {
 };
 
 const VALUE_TYPES = {};
-
-const VOLUME_LOADER_SCHEME = 'cornerstoneStreamingImageVolume';
 
 class SegmentationService extends PubSubService {
   static REGISTRATION = {

@@ -862,9 +862,28 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     });
 
     // For SEG and RT viewports
-    const { addOverlayFn } = this._processExtraDisplaySetsForViewport(viewport) || {};
+    const { addOverlayFn, imageIds } = this._processExtraDisplaySetsForViewport(viewport) || {};
+    debugger;
 
-    await viewport.setVolumes(filteredVolumeInputArray);
+    if (!filteredVolumeInputArray.length && addOverlayFn) {
+      // if there is no volume input array, and there is an addOverlayFn, means we need to take
+      // care of the background overlay display set first then the addOverlayFn will add the
+      // SEG displaySet
+      const sampleImageId = imageIds[0];
+      const backgroundDisplaySet = displaySetService.getDisplaySetsBy(
+        displaySet =>
+          !displaySet.isOverlayDisplaySet &&
+          displaySet.images.some(image => image.imageId === sampleImageId)
+      );
+
+      if (backgroundDisplaySet.length !== 1) {
+        throw new Error('Background display set not found');
+      }
+
+      await viewport.setVolumes([{ volumeId: backgroundDisplaySet[0].displaySetInstanceUID }]);
+    } else {
+      await viewport.setVolumes(filteredVolumeInputArray);
+    }
 
     if (addOverlayFn) {
       addOverlayFn();
