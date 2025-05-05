@@ -24,7 +24,13 @@ function ViewportOrientationMenu({ location }: withAppTypes<{ location?: string 
 
     // Get the displaySets in this viewport
     const displaySetUIDs = viewportGridService.getDisplaySetsUIDsForViewport(viewportId);
-    const displaySets = displaySetUIDs.map(uid => displaySetService.getDisplaySetByUID(uid));
+    const displaySets = displaySetUIDs
+      .map(uid => displaySetService.getDisplaySetByUID(uid))
+      .filter(Boolean);
+
+    if (!displaySets.length) {
+      return;
+    }
 
     // Check if at least one displaySet is reconstructable
     const hasReconstructableDisplaySet = displaySets.some(ds => ds.isReconstructable);
@@ -77,7 +83,14 @@ function ViewportOrientationMenu({ location }: withAppTypes<{ location?: string 
   };
   const { viewportActionCornersService } = servicesManager.services;
   const displaySetUIDs = viewportGridService.getDisplaySetsUIDsForViewport(viewportId);
-  const displaySets = displaySetUIDs.map(uid => displaySetService.getDisplaySetByUID(uid));
+  const displaySets = displaySetUIDs
+    .map(uid => displaySetService.getDisplaySetByUID(uid))
+    .filter(Boolean);
+
+  if (!displaySets.length) {
+    return null;
+  }
+
   const hasReconstructableDisplaySet = displaySets.some(ds => ds.isReconstructable);
 
   // Get proper alignment and side based on the location

@@ -733,7 +733,7 @@ function commandsModule({
         return;
       }
 
-      if (!toolGroup.hasTool(toolName)) {
+      if (!toolGroup?.hasTool(toolName)) {
         return;
       }
 
@@ -1033,7 +1033,7 @@ function commandsModule({
 
       const toolGroup = toolGroupService.getToolGroupForViewport(viewportId);
 
-      if (!toolGroup.hasTool(toolName)) {
+      if (!toolGroup?.hasTool(toolName)) {
         return;
       }
 
