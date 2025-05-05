@@ -32,6 +32,7 @@ import { useLutPresentationStore } from '../../stores/useLutPresentationStore';
 import { usePositionPresentationStore } from '../../stores/usePositionPresentationStore';
 import { useSynchronizersStore } from '../../stores/useSynchronizersStore';
 import { useSegmentationPresentationStore } from '../../stores/useSegmentationPresentationStore';
+import { VOLUME_LOADER_SCHEME } from '../../constants';
 
 const EVENTS = {
   VIEWPORT_DATA_CHANGED: 'event::cornerstoneViewportService:viewportDataChanged',
@@ -863,7 +864,6 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
 
     // For SEG and RT viewports
     const { addOverlayFn, imageIds } = this._processExtraDisplaySetsForViewport(viewport) || {};
-    debugger;
 
     if (!filteredVolumeInputArray.length && addOverlayFn) {
       // if there is no volume input array, and there is an addOverlayFn, means we need to take
@@ -880,7 +880,9 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
         throw new Error('Background display set not found');
       }
 
-      await viewport.setVolumes([{ volumeId: backgroundDisplaySet[0].displaySetInstanceUID }]);
+      await viewport.setVolumes([
+        { volumeId: `${VOLUME_LOADER_SCHEME}:${backgroundDisplaySet[0].displaySetInstanceUID}` },
+      ]);
     } else {
       await viewport.setVolumes(filteredVolumeInputArray);
     }
