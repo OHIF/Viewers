@@ -17,8 +17,6 @@ import { VolumeViewport3D } from '@cornerstonejs/core';
 import { utilities } from '@cornerstonejs/core';
 import { useSystem } from '@ohif/core';
 
-export const nonWLModalities = ['SR', 'SEG', 'SM', 'RTSTRUCT', 'RTPLAN'];
-
 export type WindowLevelActionMenuProps = {
   viewportId: string;
   element: HTMLElement;
@@ -132,7 +130,7 @@ export function WindowLevelActionMenu({
         {!is3DVolume && (
           <Colorbar
             viewportId={viewportId}
-            displaySets={displaySets.filter(ds => !nonWLModalities.includes(ds.Modality))}
+            displaySets={displaySets.filter(ds => ds.supportsWindowLevel === true)}
             colorbarProperties={colorbarProperties}
           />
         )}
@@ -148,7 +146,7 @@ export function WindowLevelActionMenu({
               className="flex h-full w-full flex-col"
               colormaps={colormaps}
               viewportId={viewportId}
-              displaySets={displaySets.filter(ds => !nonWLModalities.includes(ds.Modality))}
+              displaySets={displaySets.filter(ds => ds.supportsWindowLevel === true)}
             />
           </AllInOneMenu.SubMenu>
         )}

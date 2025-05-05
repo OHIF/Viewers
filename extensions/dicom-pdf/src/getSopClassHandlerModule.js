@@ -49,6 +49,7 @@ const _getDisplaySetsFromSeries = (instances, servicesManager, extensionManager)
       numImageFrames: 0,
       numInstances: 1,
       instance,
+      supportsWindowLevel: true,
       label: SeriesDescription || `${i18n.t('Series')} ${SeriesNumber} - ${i18n.t(Modality)}`,
     };
     return displaySet;

@@ -4,6 +4,7 @@ import { AllInOneMenu } from '@ohif/ui-next';
 import { getWindowLevelActionMenu } from '../components/WindowLevelActionMenu/getWindowLevelActionMenu';
 import { getViewportDataOverlaySettingsMenu } from '../components/ViewportDataOverlaySettingMenu';
 import { getViewportOrientationMenu } from '../components/ViewportOrientationMenu';
+import { useSystem } from '@ohif/core/src';
 
 /**
  * Viewport action corner location type
@@ -46,9 +47,6 @@ interface UseViewportActionCornersProps {
   viewportId: string;
   elementRef: React.MutableRefObject<HTMLDivElement>;
   displaySets: AppTypes.DisplaySet[];
-  viewportActionCornersService: ViewportActionCornerService;
-  customizationService: CustomizationService;
-  commandsManager: AppTypes.CommandsManager;
 }
 
 /**
@@ -58,10 +56,9 @@ export function useViewportActionCorners({
   viewportId,
   elementRef,
   displaySets,
-  viewportActionCornersService,
-  customizationService,
-  commandsManager,
 }: UseViewportActionCornersProps): void {
+  const { servicesManager, commandsManager } = useSystem();
+  const { viewportActionCornersService, customizationService } = servicesManager.services;
   // Set up the window level action menu in the viewport action corners.
   useEffect(() => {
     const windowLevelActionMenu = customizationService.getCustomization(

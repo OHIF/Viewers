@@ -100,6 +100,7 @@ const makeDisplaySet = instances => {
     averageSpacingBetweenFrames: averageSpacingBetweenFrames || null,
     isDynamicVolume,
     dynamicVolumeInfo,
+    supportsWindowLevel: true,
     label:
       instance.SeriesDescription ||
       `${i18n.t('Series')} ${instance.SeriesNumber} - ${i18n.t(instance.Modality)}`,

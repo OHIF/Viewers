@@ -59,6 +59,7 @@ function _getDisplaySetsFromSeries(
     wadoUriRoot,
     wadoUri,
     isOverlayDisplaySet: true,
+    supportsWindowLevel: true,
     label: SeriesDescription || `${i18n.t('Series')} ${SeriesNumber} - ${i18n.t('PMAP')}`,
   };
 
