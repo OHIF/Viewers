@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.11.0-beta.24](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.23...v3.11.0-beta.24) (2025-05-05)
+
+
+### Features
+
+* **data overlay:** add foreground background control plus orientation change in the UI and add RTDOSE support ([#5007](https://github.com/OHIF/Viewers/issues/5007)) ([cd4e640](https://github.com/OHIF/Viewers/commit/cd4e6408bc2964e5ee27427cdc328751eaf4d088))
+
+
+
+
+
 # [3.11.0-beta.23](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.22...v3.11.0-beta.23) (2025-05-05)
 
 **Note:** Version bump only for package @ohif/extension-cornerstone-dicom-pmap
