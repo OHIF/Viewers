@@ -16,7 +16,15 @@ const sortByPriority = (a, b) => {
 };
 
 /**
- * Hook to provide all the display sets and overlay information for a viewport
+ * Hook to provide all the display sets and overlay information for a viewport.
+ *
+ * @returns {Object} Object containing:
+ *   - backgroundDisplaySet: The primary display set for the viewport (base image)
+ *   - foregroundDisplaySets: Display sets currently shown with background (non-overlay layers)
+ *   - overlayDisplaySets: Segmentation display sets currently applied as overlays
+ *   - potentialOverlayDisplaySets: Display sets that could be toggled on as overlays (derived modalities)
+ *   - potentialForegroundDisplaySets: Display sets that could be added as foreground layers
+ *   - potentialBackgroundDisplaySets: Display sets that could replace the current background
  */
 export function useViewportDisplaySets(viewportId) {
   const { servicesManager } = useSystem();
