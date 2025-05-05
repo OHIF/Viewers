@@ -1,5 +1,5 @@
 import React, { ReactNode } from 'react';
-import { nonWLModalities, WindowLevelActionMenuProps } from './WindowLevelActionMenu';
+import { WindowLevelActionMenuProps } from './WindowLevelActionMenu';
 import { useSystem } from '@ohif/core';
 
 function WindowLevelActionMenu({
@@ -29,9 +29,7 @@ function WindowLevelActionMenu({
       return { [displaySet.Modality]: presets[displaySet.Modality] };
     });
 
-  const modalities = displaySets
-    .map(displaySet => displaySet.Modality)
-    .filter(modality => !nonWLModalities.includes(modality));
+  const modalities = displaySets.map(displaySet => displaySet.supportsWindowLevel);
 
   if (modalities.length === 0) {
     return null;

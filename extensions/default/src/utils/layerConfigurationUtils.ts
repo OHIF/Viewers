@@ -59,11 +59,21 @@ export function configureViewportForLayerAddition(params: {
     viewport.viewportOptions = {};
   }
 
+  const requestedLayerDisplaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
+
   if (!viewport.viewportOptions.orientation) {
     viewport.viewportOptions.orientation = cornerstoneViewportService.getOrientation(viewportId);
   }
 
-  viewport.viewportOptions.viewportType = 'volume';
+  // Don't force volume for SEG and RTSTRUCT if there is only one display set
+  if (
+    ['SEG', 'RTSTRUCT'].includes(requestedLayerDisplaySet.Modality) &&
+    currentDisplaySetUIDs.length === 1
+  ) {
+    viewport.viewportOptions.viewportType = 'stack';
+  } else {
+    viewport.viewportOptions.viewportType = 'volume';
+  }
 
   // create same amount of display set options as the number of display set UIDs
   const displaySetOptions = allDisplaySetInstanceUIDs.map((uid, index) => {
