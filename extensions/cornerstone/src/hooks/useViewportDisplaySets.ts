@@ -14,54 +14,158 @@ const sortByPriority = (a, b) => {
 };
 
 /**
- * Hook to provide all the display sets and overlay information for a viewport.
- *
- * @returns {Object} Object containing:
- *   - backgroundDisplaySet: The primary display set for the viewport (base image)
- *   - foregroundDisplaySets: Display sets currently shown with background (non-overlay layers)
- *   - overlayDisplaySets: Segmentation display sets currently applied as overlays
- *   - potentialOverlayDisplaySets: Display sets that could be toggled on as overlays (derived modalities)
- *   - potentialForegroundDisplaySets: Display sets that could be added as foreground layers
- *   - potentialBackgroundDisplaySets: Display sets that could replace the current background
+ * Options for the useViewportDisplaySets hook
  */
-export function useViewportDisplaySets(viewportId) {
+export type UseViewportDisplaySetsOptions = {
+  /**
+   * Whether to include background display set
+   */
+  includeBackground?: boolean;
+  /**
+   * Whether to include foreground display sets
+   */
+  includeForeground?: boolean;
+  /**
+   * Whether to include overlay display sets
+   */
+  includeOverlay?: boolean;
+  /**
+   * Whether to include potential overlay display sets
+   */
+  includePotentialOverlay?: boolean;
+  /**
+   * Whether to include potential foreground display sets
+   */
+  includePotentialForeground?: boolean;
+  /**
+   * Whether to include potential background display sets
+   */
+  includePotentialBackground?: boolean;
+};
+
+/**
+ * Return type for useViewportDisplaySets
+ */
+export type ViewportDisplaySets = {
+  /**
+   * The primary display set for the viewport (base image)
+   */
+  backgroundDisplaySet?: any;
+  /**
+   * Display sets currently shown with background (non-overlay layers)
+   */
+  foregroundDisplaySets?: any[];
+  /**
+   * Segmentation display sets currently applied as overlays
+   */
+  overlayDisplaySets?: any[];
+  /**
+   * Display sets that could be toggled on as overlays (derived modalities)
+   */
+  potentialOverlayDisplaySets?: any[];
+  /**
+   * Display sets that could be added as foreground layers
+   */
+  potentialForegroundDisplaySets?: any[];
+  /**
+   * Display sets that could replace the current background
+   */
+  potentialBackgroundDisplaySets?: any[];
+};
+
+/**
+ * Hook to provide display sets and overlay information for a viewport based on options.
+ *
+ * @param viewportId - The viewport ID to get display sets for
+ * @param options - Options to control which display sets to compute
+ * @returns Object containing requested display set collections based on options
+ */
+export function useViewportDisplaySets(
+  viewportId: string,
+  options?: UseViewportDisplaySetsOptions
+): ViewportDisplaySets {
   const { servicesManager } = useSystem();
   const { displaySetService, viewportGridService, segmentationService } = servicesManager.services;
 
-  // Get all available display sets
-  const allDisplaySets = displaySetService.getActiveDisplaySets();
+  // Apply defaults - include everything if no options specified
+  const {
+    includeBackground = true,
+    includeForeground = true,
+    includeOverlay = true,
+    includePotentialOverlay = true,
+    includePotentialForeground = true,
+    includePotentialBackground = true,
+  } = options || {};
 
-  // Get all available segmentations
-  const segmentationRepresentations =
-    segmentationService.getSegmentationRepresentations(viewportId);
+  // Get all available display sets (only if needed)
+  const needsAllDisplaySets = includePotentialBackground;
+  const allDisplaySets = useMemo(
+    () => (needsAllDisplaySets ? displaySetService.getActiveDisplaySets() : []),
+    [displaySetService, needsAllDisplaySets]
+  );
 
-  const overlayDisplaySets = segmentationRepresentations.map(repr => {
-    const displaySet = displaySetService.getDisplaySetByUID(repr.segmentationId);
-    return displaySet;
-  });
+  // Get all available segmentations (only if needed)
+  const needsSegmentations = includeOverlay;
+  const segmentationRepresentations = useMemo(
+    () =>
+      needsSegmentations ? segmentationService.getSegmentationRepresentations(viewportId) : [],
+    [segmentationService, viewportId, needsSegmentations]
+  );
 
-  const overlayDisplaySetUIDs = overlayDisplaySets.map(ds => ds.displaySetInstanceUID);
+  const overlayDisplaySets = useMemo(() => {
+    if (!includeOverlay) {
+      return [];
+    }
+    return segmentationRepresentations.map(repr => {
+      const displaySet = displaySetService.getDisplaySetByUID(repr.segmentationId);
+      return displaySet;
+    });
+  }, [includeOverlay, segmentationRepresentations, displaySetService]);
 
-  // Get display sets that can be used as overlays
-  const { viewportDisplaySets, enhancedDisplaySets } = getEnhancedDisplaySets({
-    viewportId,
-    services: { displaySetService, viewportGridService },
-  });
+  const overlayDisplaySetUIDs = useMemo(
+    () => overlayDisplaySets.map(ds => ds.displaySetInstanceUID),
+    [overlayDisplaySets]
+  );
 
-  const backgroundDisplaySet = viewportDisplaySets[0];
+  // Get enhanced display sets (only if needed)
+  const needsEnhancedDisplaySets =
+    includeBackground || includeForeground || includePotentialOverlay || includePotentialForeground;
+
+  const { viewportDisplaySets, enhancedDisplaySets } = useMemo(() => {
+    if (!needsEnhancedDisplaySets) {
+      return { viewportDisplaySets: [], enhancedDisplaySets: [] };
+    }
+    return getEnhancedDisplaySets({
+      viewportId,
+      services: { displaySetService, viewportGridService },
+    });
+  }, [viewportId, displaySetService, viewportGridService, needsEnhancedDisplaySets]);
+
+  const backgroundDisplaySet = useMemo(
+    () => (includeBackground ? viewportDisplaySets[0] : undefined),
+    [includeBackground, viewportDisplaySets]
+  );
 
   const foregroundDisplaySets = useMemo(() => {
-    // This should be done as an && operation rather than multiple filters
+    if (!includeForeground || !backgroundDisplaySet) {
+      return [];
+    }
     return viewportDisplaySets.filter(
       ds =>
         !DERIVED_OVERLAY_MODALITIES.includes(ds.Modality) &&
         ds.displaySetInstanceUID !== backgroundDisplaySet.displaySetInstanceUID
     );
-  }, [viewportDisplaySets, backgroundDisplaySet]);
+  }, [includeForeground, viewportDisplaySets, backgroundDisplaySet]);
 
-  const foregroundDisplaySetUIDs = foregroundDisplaySets.map(ds => ds.displaySetInstanceUID);
+  const foregroundDisplaySetUIDs = useMemo(
+    () => foregroundDisplaySets.map(ds => ds.displaySetInstanceUID),
+    [foregroundDisplaySets]
+  );
 
   const potentialOverlayDisplaySets = useMemo(() => {
+    if (!includePotentialOverlay) {
+      return [];
+    }
     return enhancedDisplaySets
       .filter(
         ds =>
@@ -70,9 +174,12 @@ export function useViewportDisplaySets(viewportId) {
           ds.isOverlayable
       )
       .sort(sortByOverlayable);
-  }, [enhancedDisplaySets, overlayDisplaySetUIDs]);
+  }, [includePotentialOverlay, enhancedDisplaySets, overlayDisplaySetUIDs]);
 
   const potentialForegroundDisplaySets = useMemo(() => {
+    if (!includePotentialForeground) {
+      return [];
+    }
     return enhancedDisplaySets
       .filter(
         ds =>
@@ -81,10 +188,12 @@ export function useViewportDisplaySets(viewportId) {
           ds.isOverlayable
       )
       .sort(sortByPriority);
-  }, [enhancedDisplaySets, foregroundDisplaySetUIDs]);
+  }, [includePotentialForeground, enhancedDisplaySets, foregroundDisplaySetUIDs]);
 
-  // Get potential background display sets
   const potentialBackgroundDisplaySets = useMemo(() => {
+    if (!includePotentialBackground || !backgroundDisplaySet) {
+      return [];
+    }
     return allDisplaySets
       .filter(
         ds =>
@@ -94,14 +203,39 @@ export function useViewportDisplaySets(viewportId) {
           !foregroundDisplaySetUIDs.includes(ds.displaySetInstanceUID)
       )
       .sort(sortByPriority);
-  }, [allDisplaySets, backgroundDisplaySet, overlayDisplaySetUIDs, foregroundDisplaySetUIDs]);
-
-  return {
+  }, [
+    includePotentialBackground,
+    allDisplaySets,
     backgroundDisplaySet,
-    foregroundDisplaySets,
-    overlayDisplaySets,
-    potentialOverlayDisplaySets,
-    potentialForegroundDisplaySets,
-    potentialBackgroundDisplaySets,
-  };
+    overlayDisplaySetUIDs,
+    foregroundDisplaySetUIDs,
+  ]);
+
+  const result: ViewportDisplaySets = {};
+
+  if (includeBackground) {
+    result.backgroundDisplaySet = backgroundDisplaySet;
+  }
+
+  if (includeForeground) {
+    result.foregroundDisplaySets = foregroundDisplaySets;
+  }
+
+  if (includeOverlay) {
+    result.overlayDisplaySets = overlayDisplaySets;
+  }
+
+  if (includePotentialOverlay) {
+    result.potentialOverlayDisplaySets = potentialOverlayDisplaySets;
+  }
+
+  if (includePotentialForeground) {
+    result.potentialForegroundDisplaySets = potentialForegroundDisplaySets;
+  }
+
+  if (includePotentialBackground) {
+    result.potentialBackgroundDisplaySets = potentialBackgroundDisplaySets;
+  }
+
+  return result;
 }
