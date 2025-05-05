@@ -38,7 +38,7 @@ export function WindowLevelActionMenu({
   volumeRenderingPresets,
   volumeRenderingQualityRange,
 }: withAppTypes<WindowLevelActionMenuProps>): ReactElement {
-  const { commandsManager } = useSystem();
+  const { commandsManager, servicesManager } = useSystem();
   const {
     colormaps,
     colorbarContainerPosition,
@@ -46,7 +46,7 @@ export function WindowLevelActionMenu({
     colorbarTickPosition,
     width: colorbarWidth,
   } = colorbarProperties;
-  const { servicesManager } = useSystem();
+
   const { colorbarService, cornerstoneViewportService } = servicesManager.services;
   const viewportInfo = cornerstoneViewportService.getViewportInfo(viewportId);
   const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);

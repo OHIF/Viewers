@@ -66,10 +66,7 @@ export function configureViewportForLayerAddition(params: {
   }
 
   // Don't force volume for SEG and RTSTRUCT if there is only one display set
-  if (
-    ['SEG', 'RTSTRUCT'].includes(requestedLayerDisplaySet.Modality) &&
-    currentDisplaySetUIDs.length === 1
-  ) {
+  if (requestedLayerDisplaySet.isOverlayDisplaySet && currentDisplaySetUIDs.length === 1) {
     viewport.viewportOptions.viewportType = 'stack';
   } else {
     viewport.viewportOptions.viewportType = 'volume';
