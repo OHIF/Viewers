@@ -1,6 +1,8 @@
 ---
 sidebar_position: 5
 sidebar_label: Multi Monitor Service
+title: Multi Monitor Service
+summary: Documentation for OHIF's MultiMonitorService, which provides basic support for opening and managing multiple viewer windows, including split-screen options and cross-window communication capabilities.
 ---
 
 

@@ -1,6 +1,7 @@
 ---
 sidebar_position: 1
 title: General
+summary: General migration changes from OHIF 3.9 to 3.10, including Node.js version update, HTML template modifications, bundled Google Fonts, docs updates, faster development builds with rsbuild, and webpack configuration changes for AI segmentation support.
 ---
 
 ## Node.js Version Update

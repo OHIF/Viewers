@@ -2,6 +2,7 @@
 id: 2-renamings
 title: Renamings
 sidebar_position: 2
+summary: Migration guide for renamed components in OHIF 3.9, including the Panel Measurements name change from 'measure' to 'panelMeasurement' and addIcon utility changes to support both UI packages.
 ---
 
 import Tabs from '@theme/Tabs';
