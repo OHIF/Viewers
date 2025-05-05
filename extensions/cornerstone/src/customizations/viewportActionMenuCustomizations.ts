@@ -36,17 +36,17 @@ export default {
     {
       id: 'orientationMenu',
       enabled: true,
-      getComponent: createOrientationMenu,
+      component: createOrientationMenu,
     },
     {
       id: 'dataOverlay',
       enabled: true,
-      getComponent: createDataOverlay,
+      component: createDataOverlay,
     },
     {
       id: 'windowLevelActionMenu',
       enabled: true,
-      getComponent: createWindowLevelMenu,
+      component: createWindowLevelMenu,
     },
   ],
   'viewportActionMenu.topRight': [],

@@ -59,11 +59,11 @@ export default {
 3. Replace the component key with an `id` property that doesn't include the prefix (just use `orientationMenu` instead of `viewportActionMenu.orientationMenu`).
 4. Remove the `location` property (since it's now implied by the customization ID).
 5. Remove the `indexPriority` property (order in the array now determines display order).
-6. For each component, provide a `getComponent` function that returns the component instance.
+6. For each component, provide a `component` function that returns the component instance.
 
 ## Component Rendering
 
-Component rendering logic is now included directly in the item configuration via a `getComponent` function:
+Component rendering logic is now included directly in the item configuration via a `component` function:
 
 ```ts
 const createOrientationMenu = ({ viewportId, element, location }) => {
@@ -88,12 +88,12 @@ export default {
     {
       id: 'orientationMenu',
       enabled: true,
-      getComponent: createOrientationMenu,
+      component: createOrientationMenu,
     },
     {
       id: 'dataOverlay',
       enabled: true,
-      getComponent: createDataOverlay,
+      component: createDataOverlay,
     },
     // other components...
   ],

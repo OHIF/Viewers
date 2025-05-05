@@ -81,9 +81,9 @@ export function useViewportActionCorners({
 
         const componentId = item.id;
 
-        if (item.getComponent) {
+        if (item.component) {
           // Use the component renderer provided directly in the item
-          const component = item.getComponent({
+          const component = item.component({
             viewportId,
             element: elementRef.current,
             displaySets,
