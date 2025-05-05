@@ -1,4 +1,4 @@
-import { createDisplaySetOptions } from './utils';
+import { createColormapOverlayDisplaySetOptions } from './utils';
 
 // Todo: these are ohif viewport types which are different than cs3d enums
 // and we should fix them to use cs3d enums. In cs3d we call volume -> orthographic
@@ -104,7 +104,7 @@ export function configureViewportForForegroundAddition({
     }
 
     const displaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
-    return createDisplaySetOptions(displaySet, 90, customizationService);
+    return createColormapOverlayDisplaySetOptions(displaySet, 90, customizationService);
   });
 
   viewport.displaySetOptions = displaySetOptions;
@@ -158,7 +158,7 @@ export function configureViewportForOverlayRemoval({
   remainingOverlays.forEach(overlay => {
     const opacity = overlayOpacities[overlay.displaySetInstanceUID] || 90;
     viewport.displaySetOptions.push(
-      createDisplaySetOptions(overlay, opacity, customizationService)
+      createColormapOverlayDisplaySetOptions(overlay, opacity, customizationService)
     );
   });
 
@@ -166,7 +166,7 @@ export function configureViewportForOverlayRemoval({
   activeSegmentations.forEach(segmentation => {
     if (segmentation.displaySetInstanceUID) {
       viewport.displaySetOptions.push(
-        createDisplaySetOptions(segmentation, 100, customizationService)
+        createColormapOverlayDisplaySetOptions(segmentation, 100, customizationService)
       );
     }
   });
@@ -199,6 +199,9 @@ export function createViewportConfigForOpacityUpdate({
     viewportOptions: {
       viewportType: 'volume',
     },
-    displaySetOptions: [{}, createDisplaySetOptions(overlay, opacity, customizationService)],
+    displaySetOptions: [
+      {},
+      createColormapOverlayDisplaySetOptions(overlay, opacity, customizationService),
+    ],
   };
 }

@@ -22,7 +22,7 @@ export function getModalityOverlayColormap(customizationService, modality) {
 /**
  * Create display set options based on modality and opacity settings
  */
-export function createDisplaySetOptions(displaySet, opacity, customizationService) {
+export function createColormapOverlayDisplaySetOptions(displaySet, opacity, customizationService) {
   if (displaySet.Modality === 'SEG') {
     return {};
   }
@@ -73,7 +73,7 @@ export function configureViewportForLayerAddition(params: {
     }
 
     const displaySet = displaySetService.getDisplaySetByUID(uid);
-    return createDisplaySetOptions(displaySet, 90, customizationService);
+    return createColormapOverlayDisplaySetOptions(displaySet, 90, customizationService);
   });
 
   viewport.displaySetOptions = displaySetOptions;

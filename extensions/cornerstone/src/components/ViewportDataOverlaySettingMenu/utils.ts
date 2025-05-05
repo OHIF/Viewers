@@ -22,7 +22,22 @@ export function getModalityOverlayColormap(customizationService, modality) {
 }
 
 /**
- * Determine if display sets can be used as overlays
+ * Identifies display sets that can be used as overlays for a specific viewport.
+ *
+ * "Enhanced" display sets are those that:
+ * 1. Are not already in the viewport
+ * 2. Are evaluated for their ability to be overlaid onto the background display set
+ * 3. Have an "isOverlayable" flag indicating if they're compatible with the viewport
+ *
+ * A display set is considered overlayable when:
+ * - The background display set is reconstructable
+ * - The display set is not unsupported
+ * - The Frame of Reference matches the background display set
+ * - For non-derived modalities: background can be a volume and display set is either multiframe or valid volume
+ *
+ * @returns {Object} Object containing:
+ *   - viewportDisplaySets: Display sets already in the viewport
+ *   - enhancedDisplaySets: Other display sets with overlayability assessment
  */
 export function getEnhancedDisplaySets({ viewportId, services }) {
   const { displaySetService, viewportGridService } = services;
@@ -111,7 +126,7 @@ export const sortByOverlayable = (a, b) => {
 /**
  * Create display set options based on modality and opacity settings
  */
-export function createDisplaySetOptions(displaySet, opacity, customizationService) {
+export function createColormapOverlayDisplaySetOptions(displaySet, opacity, customizationService) {
   if (displaySet.Modality === 'SEG') {
     return {};
   }
