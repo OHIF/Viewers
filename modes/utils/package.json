@@ -1,16 +1,15 @@
 {
-  "name": "@ohif/mode-longitudinal",
-  "version": "3.11.0-beta.23",
-  "description": "Longitudinal Workflow",
+  "name": "@ohif/mode-utils",
+  "version": "3.10.0-beta.133",
+  "description": "Utilities for Modes",
   "author": "OHIF",
   "license": "MIT",
   "repository": "OHIF/Viewers",
   "main": "dist/ohif-mode-longitudinal.js",
   "module": "src/index.ts",
   "engines": {
-    "node": ">=14",
-    "npm": ">=6",
-    "yarn": ">=1.16.0"
+    "bun": ">=1",
+    "npm": ">=6"
   },
   "files": [
     "dist",
@@ -19,9 +18,6 @@
   "publishConfig": {
     "access": "public"
   },
-  "keywords": [
-    "ohif-mode"
-  ],
   "scripts": {
     "clean": "shx rm -rf dist",
     "clean:deep": "yarn run clean && shx rm -rf node_modules",
@@ -34,20 +30,12 @@
     "test:unit:ci": "jest --ci --runInBand --collectCoverage --passWithNoTests"
   },
   "peerDependencies": {
-    "@ohif/core": "3.11.0-beta.23",
-    "@ohif/extension-cornerstone": "3.11.0-beta.23",
-    "@ohif/extension-cornerstone-dicom-rt": "3.11.0-beta.23",
-    "@ohif/extension-cornerstone-dicom-seg": "3.11.0-beta.23",
-    "@ohif/extension-cornerstone-dicom-sr": "3.11.0-beta.23",
-    "@ohif/extension-default": "3.11.0-beta.23",
-    "@ohif/extension-dicom-pdf": "3.11.0-beta.23",
-    "@ohif/extension-dicom-video": "3.11.0-beta.23",
-    "@ohif/extension-measurement-tracking": "3.11.0-beta.23"
+    "@ohif/core": "3.10.0-beta.133",
+    "@ohif/extension-default": "3.10.0-beta.133"
   },
   "dependencies": {
     "@babel/runtime": "^7.20.13",
-    "i18next": "^17.0.3",
-    "@ohif/mode-utils": "3.10.0-beta.133"
+    "i18next": "^17.0.3"
   },
   "devDependencies": {
     "webpack": "5.94.0",
