@@ -207,7 +207,7 @@ function TrackedCornerstoneViewport(
         id: 'viewportStatusComponent',
         component: statusComponent,
         indexPriority: -100,
-        location: viewportActionCornersService.LOCATIONS.topLeft,
+        location: viewportActionCornersService.LOCATIONS.topRight,
       },
       {
         viewportId,

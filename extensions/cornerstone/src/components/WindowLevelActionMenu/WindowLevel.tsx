@@ -1,20 +1,16 @@
 import React, { ReactElement, useCallback } from 'react';
 import { AllInOneMenu } from '@ohif/ui-next';
 import { WindowLevelPreset } from '../../types/WindowLevel';
-import { CommandsManager } from '@ohif/core';
+import { useSystem } from '@ohif/core';
 import { useTranslation } from 'react-i18next';
 
 export type WindowLevelProps = {
   viewportId: string;
   presets: Array<Record<string, Array<WindowLevelPreset>>>;
-  commandsManager: CommandsManager;
 };
 
-export function WindowLevel({
-  viewportId,
-  commandsManager,
-  presets,
-}: WindowLevelProps): ReactElement {
+export function WindowLevel({ viewportId, presets }: WindowLevelProps): ReactElement {
+  const { commandsManager } = useSystem();
   const { t } = useTranslation('WindowLevelActionMenu');
 
   const onSetWindowLevel = useCallback(

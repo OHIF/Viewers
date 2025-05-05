@@ -15,8 +15,7 @@ import { VolumeRenderingOptions } from './VolumeRenderingOptions';
 import { ViewportPreset } from '../../types/ViewportPresets';
 import { VolumeViewport3D } from '@cornerstonejs/core';
 import { utilities } from '@cornerstonejs/core';
-
-export const nonWLModalities = ['SR', 'SEG', 'SM', 'RTSTRUCT', 'RTPLAN', 'RTDOSE'];
+import { useSystem } from '@ohif/core';
 
 export type WindowLevelActionMenuProps = {
   viewportId: string;
@@ -34,13 +33,12 @@ export function WindowLevelActionMenu({
   presets,
   verticalDirection,
   horizontalDirection,
-  commandsManager,
-  servicesManager,
   colorbarProperties,
   displaySets,
   volumeRenderingPresets,
   volumeRenderingQualityRange,
 }: withAppTypes<WindowLevelActionMenuProps>): ReactElement {
+  const { commandsManager, servicesManager } = useSystem();
   const {
     colormaps,
     colorbarContainerPosition,
@@ -48,6 +46,7 @@ export function WindowLevelActionMenu({
     colorbarTickPosition,
     width: colorbarWidth,
   } = colorbarProperties;
+
   const { colorbarService, cornerstoneViewportService } = servicesManager.services;
   const viewportInfo = cornerstoneViewportService.getViewportInfo(viewportId);
   const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
@@ -64,7 +63,7 @@ export function WindowLevelActionMenu({
   const [is3DVolume, setIs3DVolume] = useState(false);
 
   const onSetColorbar = useCallback(() => {
-    setViewportColorbar(viewportId, displaySets, commandsManager, servicesManager, {
+    setViewportColorbar(viewportId, commandsManager, servicesManager, {
       colormaps,
       ticks: {
         position: colorbarTickPosition,
@@ -117,7 +116,6 @@ export function WindowLevelActionMenu({
       verticalDirection={verticalDirection}
       horizontalDirection={horizontalDirection}
       iconClassName={classNames(
-        // Visible on hover and for the active viewport
         activeViewportId === viewportId ? 'visible' : 'invisible group-hover/pane:visible',
         'flex shrink-0 cursor-pointer rounded active:text-foreground text-highlight',
         isLight ? ' hover:bg-primary/30' : 'hover:bg-primary/30'
@@ -132,9 +130,7 @@ export function WindowLevelActionMenu({
         {!is3DVolume && (
           <Colorbar
             viewportId={viewportId}
-            displaySets={displaySets.filter(ds => !nonWLModalities.includes(ds.Modality))}
-            commandsManager={commandsManager}
-            servicesManager={servicesManager}
+            displaySets={displaySets.filter(ds => ds.supportsWindowLevel === true)}
             colorbarProperties={colorbarProperties}
           />
         )}
@@ -150,9 +146,7 @@ export function WindowLevelActionMenu({
               className="flex h-full w-full flex-col"
               colormaps={colormaps}
               viewportId={viewportId}
-              displaySets={displaySets.filter(ds => !nonWLModalities.includes(ds.Modality))}
-              commandsManager={commandsManager}
-              servicesManager={servicesManager}
+              displaySets={displaySets.filter(ds => ds.supportsWindowLevel === true)}
             />
           </AllInOneMenu.SubMenu>
         )}
@@ -165,7 +159,6 @@ export function WindowLevelActionMenu({
           >
             <WindowLevel
               viewportId={viewportId}
-              commandsManager={commandsManager}
               presets={presets}
             />
           </AllInOneMenu.SubMenu>
@@ -173,9 +166,7 @@ export function WindowLevelActionMenu({
 
         {volumeRenderingPresets && is3DVolume && (
           <VolumeRenderingPresets
-            servicesManager={servicesManager}
             viewportId={viewportId}
-            commandsManager={commandsManager}
             volumeRenderingPresets={volumeRenderingPresets}
           />
         )}
@@ -184,9 +175,7 @@ export function WindowLevelActionMenu({
           <AllInOneMenu.SubMenu itemLabel="Rendering Options">
             <VolumeRenderingOptions
               viewportId={viewportId}
-              commandsManager={commandsManager}
               volumeRenderingQualityRange={volumeRenderingQualityRange}
-              servicesManager={servicesManager}
             />
           </AllInOneMenu.SubMenu>
         )}

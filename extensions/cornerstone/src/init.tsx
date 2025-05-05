@@ -96,6 +96,8 @@ export default async function init({
     viewportGridService,
     segmentationService,
     measurementService,
+    colorbarService,
+    displaySetService,
   } = servicesManager.services;
 
   window.services = servicesManager.services;
@@ -255,8 +257,17 @@ export default async function init({
   eventTarget.addEventListener(EVENTS.IMAGE_LOAD_FAILED, imageLoadFailedHandler);
   eventTarget.addEventListener(EVENTS.IMAGE_LOAD_ERROR, imageLoadFailedHandler);
 
+  const getDisplaySetFromVolumeId = (volumeId: string) => {
+    const allDisplaySets = displaySetService.getActiveDisplaySets();
+    const volume = cornerstone.cache.getVolume(volumeId);
+    const imageIds = volume.imageIds;
+    return allDisplaySets.find(ds => ds.imageIds?.some(id => imageIds.includes(id)));
+  };
+
   function elementEnabledHandler(evt) {
     const { element } = evt.detail;
+    const { viewport } = getEnabledElement(element);
+    initViewTiming({ element });
 
     element.addEventListener(EVENTS.CAMERA_RESET, evt => {
       const { element } = evt.detail;
@@ -268,7 +279,10 @@ export default async function init({
       commandsManager.runCommand('resetCrosshairs', { viewportId });
     });
 
-    initViewTiming({ element });
+    // limitation: currently supporting only volume viewports with fusion
+    if (viewport.type !== cornerstone.Enums.ViewportType.ORTHOGRAPHIC) {
+      return;
+    }
   }
 
   eventTarget.addEventListener(EVENTS.ELEMENT_ENABLED, elementEnabledHandler.bind(null));
@@ -294,12 +308,48 @@ export default async function init({
     100
   );
 
+  // Subscribe to actor events to dynamically update colorbars
+
   // Call this function when initializing
   initializeWebWorkerProgressHandler(servicesManager.services.uiNotificationService);
+
+  const { unsubscribe: unsubscribeSegmentationCreated } = segmentationService.subscribe(
+    segmentationService.EVENTS.SEGMENTATION_ADDED,
+    evt => {
+      const { segmentationId } = evt;
+      const displaySet = displaySetService.getDisplaySetByUID(segmentationId);
+      if (displaySet) {
+        return;
+      }
+
+      const segmentation = segmentationService.getSegmentation(segmentationId);
+      const label = segmentation.cachedStats.info;
+      const imageIds = segmentation.representationData.Labelmap.imageIds;
+
+      // Create a display set for the segmentation
+      const segmentationDisplaySet = {
+        displaySetInstanceUID: segmentationId,
+        SOPClassUID: '1.2.840.10008.5.1.4.1.1.66.4',
+        SOPClassHandlerId: '@ohif/extension-cornerstone-dicom-seg.sopClassHandlerModule.dicom-seg',
+        SeriesDescription: label,
+        Modality: 'SEG',
+        numImageFrames: imageIds.length,
+        imageIds,
+        isOverlayDisplaySet: true,
+        label,
+        madeInClient: true,
+        segmentationId: segmentationId,
+        isDerived: true,
+      };
+
+      displaySetService.addDisplaySets(segmentationDisplaySet);
+    }
+  );
 
   const unsubscriptions = [
     unsubscribeSegmentationDataModifiedHandler,
     unsubscribeSegmentationModifiedHandler,
+    unsubscribeSegmentationCreated,
   ];
 
   return { unsubscriptions };

@@ -1,5 +1,5 @@
 import React, { ReactNode } from 'react';
-import { ViewportSegmentationMenuWrapper } from './ViewportSegmentationMenuWrapper';
+import { ViewportDataOverlayMenuWrapper } from './ViewportDataOverlayMenuWrapper';
 
 export function getViewportDataOverlaySettingsMenu(
   props: withAppTypes<{
@@ -7,5 +7,5 @@ export function getViewportDataOverlaySettingsMenu(
     element: HTMLElement;
   }>
 ): ReactNode {
-  return <ViewportSegmentationMenuWrapper {...props} />;
+  return <ViewportDataOverlayMenuWrapper {...props} />;
 }

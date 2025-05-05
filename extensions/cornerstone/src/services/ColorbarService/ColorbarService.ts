@@ -38,14 +38,16 @@ export default class ColorbarService extends PubSubService {
 
   public static REGISTRATION = {
     name: 'colorbarService',
-    create: () => {
-      return new ColorbarService();
+    create: ({ servicesManager }: OhifTypes.Extensions.ExtensionParams) => {
+      return new ColorbarService(servicesManager);
     },
   };
   colorbars = {};
+  servicesManager: AppTypes.ServicesManager;
 
-  constructor() {
+  constructor(servicesManager: AppTypes.ServicesManager) {
     super(ColorbarService.EVENTS);
+    this.servicesManager = servicesManager;
   }
 
   /**
@@ -68,6 +70,7 @@ export default class ColorbarService extends PubSubService {
    * @param options Configuration options for the colorbar, including position, colormaps, active colormap name, ticks, and width.
    */
   public addColorbar(viewportId, displaySetInstanceUIDs, options = {} as ColorbarOptions) {
+    const { displaySetService } = this.servicesManager.services;
     const renderingEngine = getRenderingEngine(RENDERING_ENGINE_ID);
     const viewport = renderingEngine.getViewport(viewportId);
 
@@ -95,6 +98,12 @@ export default class ColorbarService extends PubSubService {
     );
 
     displaySetInstanceUIDs.forEach((displaySetInstanceUID, index) => {
+      // don't show colorbar for overlay display sets (e.g. segmentation)
+      const displaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
+      if (displaySet.isOverlayDisplaySet) {
+        return;
+      }
+
       const volumeId = this.getVolumeIdForIdentifier(viewport, displaySetInstanceUID);
       const properties = viewport?.getProperties(volumeId);
       const colormap = properties?.colormap;
@@ -123,9 +132,19 @@ export default class ColorbarService extends PubSubService {
         volumeId: viewport instanceof VolumeViewport ? volumeId : undefined,
       });
       if (this.colorbars[viewportId]) {
-        this.colorbars[viewportId].push({ colorbar, container: colorbarContainer });
+        this.colorbars[viewportId].push({
+          colorbar,
+          container: colorbarContainer,
+          displaySetInstanceUID,
+        });
       } else {
-        this.colorbars[viewportId] = [{ colorbar, container: colorbarContainer }];
+        this.colorbars[viewportId] = [
+          {
+            colorbar,
+            container: colorbarContainer,
+            displaySetInstanceUID,
+          },
+        ];
       }
     });
 
@@ -136,24 +155,50 @@ export default class ColorbarService extends PubSubService {
   }
 
   /**
-   * Removes the colorbar associated with a given viewport ID. This involves cleaning up any created DOM elements and internal references.
+   * Removes a colorbar from a specific viewport. If displaySetInstanceUID is provided,
+   * only the colorbar associated with that specific displaySetInstanceUID will be removed.
+   * Otherwise, all colorbars for the given viewport will be removed.
    *
    * @param viewportId The identifier for the viewport from which the colorbar will be removed.
+   * @param displaySetInstanceUID Optional. The specific display set instance UID associated with the colorbar to remove.
    */
-  public removeColorbar(viewportId) {
+  public removeColorbar(viewportId, displaySetInstanceUID?: string) {
     const colorbarInfo = this.colorbars[viewportId];
     if (!colorbarInfo) {
       return;
     }
 
-    colorbarInfo.forEach(({ colorbar, container }) => {
-      container.parentNode.removeChild(container);
-    });
+    if (displaySetInstanceUID) {
+      // Find the index of the colorbar with the matching displaySetInstanceUID
+      const index = colorbarInfo.findIndex(
+        info => info.displaySetInstanceUID === displaySetInstanceUID
+      );
 
-    delete this.colorbars[viewportId];
+      if (index !== -1) {
+        // Remove only the specific colorbar container
+        const { container } = colorbarInfo[index];
+        container.parentNode.removeChild(container);
+
+        // Remove the colorbar from the array
+        colorbarInfo.splice(index, 1);
+
+        // If there are no more colorbars for this viewport, remove the entry
+        if (colorbarInfo.length === 0) {
+          delete this.colorbars[viewportId];
+        }
+      }
+    } else {
+      // Remove all colorbars for the viewport (original behavior)
+      colorbarInfo.forEach(({ container }) => {
+        container.parentNode.removeChild(container);
+      });
+
+      delete this.colorbars[viewportId];
+    }
 
     this._broadcastEvent(ColorbarService.EVENTS.STATE_CHANGED, {
       viewportId,
+      displaySetInstanceUID,
       changeType: ChangeTypes.Removed,
     });
   }

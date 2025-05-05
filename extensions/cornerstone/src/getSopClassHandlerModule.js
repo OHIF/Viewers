@@ -1,4 +1,5 @@
 import OHIF from '@ohif/core';
+import i18n from '@ohif/i18n';
 import { utilities as csUtils, Enums as csEnums } from '@cornerstonejs/core';
 import dcmjs from 'dcmjs';
 import { dicomWebUtils } from '@ohif/extension-default';
@@ -112,6 +113,7 @@ function _getDisplaySetsFromSeries(instances, servicesManager, extensionManager)
     instances,
     othersFrameOfReferenceUID,
     imageIds: instances.map(instance => instance.imageId),
+    label: SeriesDescription || `${i18n.t('Series')} ${SeriesNumber} - ${i18n.t('SM')}`,
   };
   // The microscopy viewer directly accesses the metadata already loaded, and
   // uses the DICOMweb client library directly for loading, so it has to be

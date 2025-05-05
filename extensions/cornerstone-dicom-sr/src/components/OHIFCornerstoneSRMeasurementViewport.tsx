@@ -273,7 +273,7 @@ function OHIFCornerstoneSRMeasurementViewport(props: withAppTypes) {
           servicesManager,
         }),
         indexPriority: -100,
-        location: viewportActionCornersService.LOCATIONS.topLeft,
+        location: viewportActionCornersService.LOCATIONS.topRight,
       },
       {
         viewportId,
