@@ -1,4 +1,3 @@
-import { ToolbarButton as ToolbarButtonLegacy } from '@ohif/ui';
 import { ToolButton, utils } from '@ohif/ui-next';
 
 import ToolbarLayoutSelectorWithServices from './Toolbar/ToolbarLayoutSelector';
@@ -32,28 +31,6 @@ export default function getToolbarModule({ commandsManager, servicesManager }: w
     {
       name: 'ohif.toolBoxButton',
       defaultComponent: ToolBoxButtonWrapper,
-    },
-    // legacy will get removed in the future
-    // legacy will get removed in the future
-    // legacy will get removed in the future
-    // legacy will get removed in the future
-    // legacy will get removed in the future
-    // legacy will get removed in the future
-    {
-      name: 'ohif.radioGroup',
-      defaultComponent: ToolbarButtonLegacy,
-    },
-    {
-      name: 'ohif.buttonGroup',
-      defaultComponent: ToolbarButtonGroupWithServicesLegacy,
-    },
-    {
-      name: 'ohif.divider',
-      defaultComponent: ToolbarDividerLegacy,
-    },
-    {
-      name: 'ohif.splitButton',
-      defaultComponent: ToolbarSplitButtonWithServicesLegacy,
     },
     // others
     {

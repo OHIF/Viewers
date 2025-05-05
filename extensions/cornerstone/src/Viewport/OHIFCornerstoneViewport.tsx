@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useCallback, useState } from 'react';
-import { useResizeDetector } from 'react-resize-detector';
 import * as cs3DTools from '@cornerstonejs/tools';
 import { Enums, eventTarget, getEnabledElement } from '@cornerstonejs/core';
 import { MeasurementService } from '@ohif/core';
@@ -108,7 +107,23 @@ const OHIFCornerstoneViewport = React.memo(
         cornerstoneViewportService.resize();
         setImageScrollBarHeight();
       }
-    }, [elementRef]);
+    }, [elementRef, cornerstoneViewportService, setImageScrollBarHeight]);
+
+    useEffect(() => {
+      const element = elementRef.current;
+      if (!element) {
+        return;
+      }
+
+      const resizeObserver = new ResizeObserver(onResize);
+      resizeObserver.observe(element);
+
+      // Cleanup function
+      return () => {
+        resizeObserver.unobserve(element);
+        resizeObserver.disconnect();
+      };
+    }, [onResize]);
 
     const cleanUpServices = useCallback(
       viewportInfo => {
@@ -314,10 +329,6 @@ const OHIFCornerstoneViewport = React.memo(
       commandsManager,
     });
 
-    const { ref: resizeRef } = useResizeDetector({
-      onResize,
-    });
-
     const Notification = customizationService.getCustomization('ui.notificationComponent');
 
     return (
@@ -328,10 +339,7 @@ const OHIFCornerstoneViewport = React.memo(
             style={{ height: '100%', width: '100%' }}
             onContextMenu={e => e.preventDefault()}
             onMouseDown={e => e.preventDefault()}
-            ref={el => {
-              resizeRef.current = el;
-              elementRef.current = el;
-            }}
+            ref={elementRef}
           ></div>
           <CornerstoneOverlays
             viewportId={viewportId}

@@ -38,6 +38,9 @@ const EVENTS = {
   VIEWPORT_VOLUMES_CHANGED: 'event::cornerstoneViewportService:viewportVolumesChanged',
 };
 
+const MIN_STACK_VIEWPORTS_TO_ENQUEUE_RESIZE = 12;
+const MIN_VOLUME_VIEWPORTS_TO_ENQUEUE_RESIZE = 6;
+
 export const WITH_NAVIGATION = { withNavigation: true, withOrientation: false };
 
 /**
@@ -62,9 +65,6 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
   beforeResizePositionPresentations: Map<string, PositionPresentation> = new Map();
 
   // Some configs
-  enableResizeDetector: true;
-  resizeRefreshRateMs: 200;
-  resizeRefreshMode: 'debounce';
   servicesManager: AppTypes.ServicesManager = null;
 
   resizeQueue = [];
@@ -125,13 +125,8 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
   /**
    * It triggers the resize on the rendering engine, and renders the viewports
    *
-   * @param isGridResize - if the resize is triggered by a grid resize
-   * this is used to avoid double resize of the viewports since if the
-   * grid is resized, all viewports will be resized so there is no need
-   * to resize them individually which will get triggered by their
-   * individual resize observers
    */
-  public resize(isGridResize = false) {
+  public resize() {
     // https://stackoverflow.com/a/26279685
     // This resize() call, among other things, rerenders the viewports. But when the entire viewer is
     // display: none'd, it makes the size of all hidden elements 0, including the viewport canvas and its containers.
@@ -147,12 +142,24 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
       return;
     }
 
+    const numStackViewportsInViewportGrid = Array.from(this.viewportsById.values()).filter(
+      viewportInfo => viewportInfo.getViewportType() === csEnums.ViewportType.STACK
+    ).length;
+
+    const numVolumeViewportsInViewportGrid = Array.from(this.viewportsById.values()).filter(
+      viewportInfo => viewportInfo.getViewportType() === csEnums.ViewportType.ORTHOGRAPHIC
+    ).length;
+
+    const isEasyResize =
+      numStackViewportsInViewportGrid <= MIN_STACK_VIEWPORTS_TO_ENQUEUE_RESIZE &&
+      numVolumeViewportsInViewportGrid <= MIN_VOLUME_VIEWPORTS_TO_ENQUEUE_RESIZE;
+
     // if there is a grid resize happening, it means the viewport grid
     // has been manipulated (e.g., panels closed, added, etc.) and we need
     // to resize all viewports, so we will add a timeout here to make sure
     // we don't double resize the viewports when viewports in the grid are
     // resized individually
-    if (isGridResize) {
+    if (isEasyResize) {
       this.performResize();
       this.resetGridResizeTimeout();
       this.resizeQueue = [];
