@@ -8,7 +8,7 @@ export const DERIVED_OVERLAY_MODALITIES = ['SEG', 'RTSTRUCT'];
 /**
  * Get modality-specific color and opacity settings from the customization service
  */
-export function getModalitySettings(customizationService, modality) {
+export function getModalityOverlayColormap(customizationService, modality) {
   const modalityOverlayDefaultColorMaps = customizationService?.getCustomization(
     'cornerstone.modalityOverlayDefaultColorMaps'
   ) || { defaultSettings: {} };
@@ -116,7 +116,7 @@ export function createDisplaySetOptions(displaySet, opacity, customizationServic
     return {};
   }
 
-  const modalitySettings = getModalitySettings(customizationService, displaySet.Modality);
+  const modalitySettings = getModalityOverlayColormap(customizationService, displaySet.Modality);
   return {
     colormap: {
       name: modalitySettings.colormap || DEFAULT_COLORMAP,
