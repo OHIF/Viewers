@@ -23,6 +23,7 @@ type ColorbarProps = {
   tickStyles?: TickStyleType;
   containerStyles?: ContainerStyleType;
   dimensionStyles: Record<string, string | number>;
+  viewportElementRef?: React.RefObject<HTMLDivElement>;
 };
 
 /**
@@ -41,6 +42,7 @@ const ViewportColorbar = ({
   tickStyles,
   containerStyles,
   dimensionStyles,
+  viewportElementRef,
 }: ColorbarProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const { servicesManager } = useSystem();
@@ -49,6 +51,14 @@ const ViewportColorbar = ({
   // Initialize and clean up the colorbar
   useEffect(() => {
     if (!containerRef.current || !colormaps || !activeColormapName) {
+      return;
+    }
+
+    const viewportElement =
+      viewportElementRef?.current ||
+      (document.getElementById(`viewport-element-${viewportId}`) as HTMLDivElement);
+
+    if (!viewportElement) {
       return;
     }
 
@@ -62,7 +72,7 @@ const ViewportColorbar = ({
     // Create the cornerstone viewport colorbar
     const csColorbar = new CornerstoneViewportColorbar({
       id: `Colorbar-${viewportId}-${displaySetInstanceUID}`,
-      element: document.getElementById(`viewport-element-${viewportId}`),
+      element: viewportElement,
       container: containerRef.current,
       colormaps: colormaps,
       activeColormapName: activeColormapName,
@@ -91,6 +101,7 @@ const ViewportColorbar = ({
     volumeId,
     position,
     tickPosition,
+    viewportElementRef,
   ]);
 
   return (

@@ -78,18 +78,40 @@ const ViewportColorbarsContainer = ({ viewportId }: ViewportColorbarsContainerPr
 
   const closeButtonStyles: React.CSSProperties = {
     position: 'absolute',
-    zIndex: 10,
+    zIndex: 1000,
+    padding: '4px 8px',
+    fontSize: '12px',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '4px',
+    border: '1px solid rgba(255, 255, 255, 0.4)',
+    borderRadius: '4px',
+    background: 'rgba(220, 38, 38, 0.9)', // Red background for visibility
+    color: 'white',
+    boxShadow: '0 2px 4px rgba(0, 0, 0, 0.5)',
     ...(position === 'bottom'
-      ? { left: '-25px', top: '0', transform: 'translateY(-50%)' }
+      ? { left: '10px', top: '-30px' }
       : position === 'right'
-        ? { top: '-25px', left: '0', transform: 'translateX(-50%)' }
+        ? { top: '10px', left: '-90px' }
         : position === 'left'
-          ? { top: '-25px', right: '0', transform: 'translateX(50%)' }
-          : { bottom: '-25px', right: '0', transform: 'translateX(50%)' }),
+          ? { top: '10px', right: '-90px' }
+          : { bottom: '-30px', left: '10px' }),
   };
 
   return (
-    <div>
+    <div className="relative">
+      <div style={closeButtonStyles}>
+        <Button
+          size="sm"
+          variant="destructive"
+          onClick={() => handleClose()}
+          className="gap- flex items-center"
+        >
+          <Icons.Close className="h-3 w-3" />
+          CLOSE ALL
+        </Button>
+      </div>
+
       {colorbars.map((colorbarInfo, index) => {
         const { colorbar, displaySetInstanceUID } = colorbarInfo;
 
@@ -142,16 +164,6 @@ const ViewportColorbarsContainer = ({ viewportId }: ViewportColorbarsContainerPr
           />
         );
       })}
-      <div style={closeButtonStyles}>
-        <Button
-          size="icon"
-          variant="ghost"
-          onClick={() => handleClose()}
-          className="bg-red-500"
-        >
-          <Icons.Close className="h-4 w-4" />
-        </Button>
-      </div>
     </div>
   );
 };
