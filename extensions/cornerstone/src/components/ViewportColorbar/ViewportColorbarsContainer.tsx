@@ -80,59 +80,109 @@ const ViewportColorbarsContainer = ({ viewportId }: ViewportColorbarsContainerPr
         position === 'top' || position === 'bottom' ? 'flex-col' : ''
       )}
     >
-      <div
-        className={cn(
-          'flex',
-          position === 'bottom' ? 'flex-col items-center' : 'flex-row',
-          'bg-green-400'
-        )}
-      >
-        <div className={cn('flex', position === 'bottom' ? 'mb-1 flex-row' : 'flex-row')}>
-          <Button
-            size="icon"
-            variant="secondary"
-          >
-            <Icons.Pencil className="h-4 w-4" />
-          </Button>
-          <Button
-            size="icon"
-            variant="secondary"
-          >
-            <Icons.ToolZoom className="h-4 w-4" />
-          </Button>
-          <Button
-            size="icon"
-            variant="secondary"
-          >
-            <Icons.Redo className="h-4 w-4" />
-          </Button>
-          <Button
-            size="icon"
-            onClick={() => handleClose()}
-          >
-            <Icons.Close className="h-4 w-4" />
-          </Button>
-        </div>
-        <div className={position === 'bottom' ? 'h-full w-full' : 'w-full'}>
-          {colorbars.map((colorbarInfo, index) => {
-            const { colorbar, displaySetInstanceUID } = colorbarInfo;
+      {position === 'bottom' ? (
+        <div className="flex h-[20px] w-full flex-row items-center justify-between bg-green-400">
+          <div className="flex flex-row">
+            <Button
+              size="icon"
+              variant="secondary"
+              className="h-[20px] w-[20px] p-0"
+            >
+              <Icons.Pencil className="h-3 w-3" />
+            </Button>
+            <Button
+              size="icon"
+              variant="secondary"
+              className="h-[20px] w-[20px] p-0"
+            >
+              <Icons.ToolZoom className="h-3 w-3" />
+            </Button>
+          </div>
 
-            return (
-              <ViewportColorbar
-                key={`colorbar-${viewportId}-${displaySetInstanceUID}`}
-                viewportId={viewportId}
-                displaySetInstanceUID={displaySetInstanceUID}
-                colormaps={colorbar.colormaps}
-                activeColormapName={colorbar.activeColormapName}
-                volumeId={colorbar.volumeId}
-                position={position}
-                tickPosition={defaultTickPosition}
-                tickStyles={colorbarCustomization?.tickStyles}
-              />
-            );
-          })}
+          <div className="mx-2 flex-grow">
+            {colorbars.map((colorbarInfo, index) => {
+              const { colorbar, displaySetInstanceUID } = colorbarInfo;
+              return (
+                <ViewportColorbar
+                  key={`colorbar-${viewportId}-${displaySetInstanceUID}`}
+                  viewportId={viewportId}
+                  displaySetInstanceUID={displaySetInstanceUID}
+                  colormaps={colorbar.colormaps}
+                  activeColormapName={colorbar.activeColormapName}
+                  volumeId={colorbar.volumeId}
+                  position={position}
+                  tickPosition={defaultTickPosition}
+                  tickStyles={colorbarCustomization?.tickStyles}
+                />
+              );
+            })}
+          </div>
+
+          <div className="flex flex-row">
+            <Button
+              size="icon"
+              variant="secondary"
+              className="h-[20px] w-[20px] p-0"
+            >
+              <Icons.Redo className="h-3 w-3" />
+            </Button>
+            <Button
+              size="icon"
+              onClick={() => handleClose()}
+              className="h-[20px] w-[20px] p-0"
+            >
+              <Icons.Close className="h-3 w-3" />
+            </Button>
+          </div>
         </div>
-      </div>
+      ) : (
+        <div className="flex flex-row bg-green-400">
+          <div className="flex flex-row">
+            <Button
+              size="icon"
+              variant="secondary"
+            >
+              <Icons.Pencil className="h-4 w-4" />
+            </Button>
+            <Button
+              size="icon"
+              variant="secondary"
+            >
+              <Icons.ToolZoom className="h-4 w-4" />
+            </Button>
+            <Button
+              size="icon"
+              variant="secondary"
+            >
+              <Icons.Redo className="h-4 w-4" />
+            </Button>
+            <Button
+              size="icon"
+              onClick={() => handleClose()}
+            >
+              <Icons.Close className="h-4 w-4" />
+            </Button>
+          </div>
+          <div className="w-full">
+            {colorbars.map((colorbarInfo, index) => {
+              const { colorbar, displaySetInstanceUID } = colorbarInfo;
+              return (
+                <ViewportColorbar
+                  key={`colorbar-${viewportId}-${displaySetInstanceUID}`}
+                  viewportId={viewportId}
+                  displaySetInstanceUID={displaySetInstanceUID}
+                  colormaps={colorbar.colormaps}
+                  activeColormapName={colorbar.activeColormapName}
+                  volumeId={colorbar.volumeId}
+                  position={position}
+                  tickPosition={defaultTickPosition}
+                  tickStyles={colorbarCustomization?.tickStyles}
+                />
+              );
+            })}
+          </div>
+        </div>
+      )}
     </div>
   );
 };

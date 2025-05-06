@@ -111,6 +111,8 @@ const ViewportColorbar = ({
         height: position === 'bottom' ? '20px' : undefined,
         position: 'relative',
         boxSizing: 'border-box',
+        display: 'flex',
+        alignItems: 'center',
       }}
     ></div>
   );

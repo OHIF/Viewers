@@ -85,7 +85,7 @@ const tickStyles: TickStyleType = {
 const dimensionConfig: DimensionConfigType = {
   bottomHeight: '20px',
   defaultVerticalWidth: '2.5%',
-  defaultHorizontalHeight: '2.5%',
+  defaultHorizontalHeight: '20px',
 };
 
 const colorbarConfig: Partial<ColorbarProperties> = {
