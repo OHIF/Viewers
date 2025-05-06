@@ -13,6 +13,7 @@ import CinePlayer from '../components/CinePlayer';
 import type { Types } from '@ohif/core';
 
 import OHIFViewportActionCorners from '../components/OHIFViewportActionCorners';
+import ViewportColorbarsContainer from '../components/ViewportColorbar';
 import { getViewportPresentations } from '../utils/presentations/getViewportPresentations';
 import { useSynchronizersStore } from '../stores/useSynchronizersStore';
 import ActiveViewportBehavior from '../utils/ActiveViewportBehavior';
@@ -335,6 +336,7 @@ const OHIFCornerstoneViewport = React.memo(
       <React.Fragment>
         <div className="viewport-wrapper">
           <div
+            id={`viewport-element-${viewportId}`}
             className="cornerstone-viewport-element"
             style={{ height: '100%', width: '100%' }}
             onContextMenu={e => e.preventDefault()}
@@ -357,6 +359,7 @@ const OHIFCornerstoneViewport = React.memo(
             viewportId={viewportId}
             servicesManager={servicesManager}
           />
+          <ViewportColorbarsContainer viewportId={viewportId} />
         </div>
         {/* top offset of 24px to account for ViewportActionCorners. */}
         <div className="absolute top-[24px] w-full">
