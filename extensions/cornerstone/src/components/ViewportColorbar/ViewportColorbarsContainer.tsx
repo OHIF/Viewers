@@ -93,10 +93,14 @@ const ViewportColorbarsContainer = ({ viewportId }: ViewportColorbarsContainerPr
       className="absolute"
       style={{
         ...finalPositionStyle,
+        pointerEvents: 'auto',
       }}
     >
       {position !== 'bottom' ? (
-        <div className="flex h-full flex-col items-center justify-center">
+        <div
+          className="flex h-full flex-col items-center justify-center"
+          style={{ pointerEvents: 'auto' }}
+        >
           {colorbars.map((colorbarInfo, index) => {
             const { colorbar, displaySetInstanceUID } = colorbarInfo;
             return (

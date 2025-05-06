@@ -118,6 +118,7 @@ const ViewportColorbar = ({
         boxSizing: 'border-box',
         display: 'flex',
         alignItems: 'center',
+        pointerEvents: 'auto',
         ...positionStylesFromConfig,
       }}
     ></div>
