@@ -106,6 +106,12 @@ const ViewportColorbar = ({
     <div
       id={`colorbar-container-${viewportId}-${displaySetInstanceUID}`}
       ref={containerRef}
+      style={{
+        width: position === 'bottom' ? '100%' : undefined,
+        height: position === 'bottom' ? '20px' : undefined,
+        position: 'relative',
+        boxSizing: 'border-box',
+      }}
     ></div>
   );
 };

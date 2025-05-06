@@ -19,7 +19,7 @@ const positionStyles: PositionStylesMapType = {
   left: { left: '5%' },
   right: { right: '5%' },
   top: { top: '5%' },
-  bottom: { bottom: '8%' },
+  bottom: { bottom: '8%', width: '100%', height: '20px' },
 };
 
 // Typed position-specific tick styles

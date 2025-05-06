@@ -75,36 +75,45 @@ const ViewportColorbarsContainer = ({ viewportId }: ViewportColorbarsContainerPr
   return (
     <div
       className={cn(
-        'relative bottom-32 w-1/2',
-        (position === 'top' || position === 'bottom') && 'flex-col'
+        'relative',
+        position === 'bottom' ? 'bottom-32 w-full' : 'bottom-32 w-1/2',
+        position === 'top' || position === 'bottom' ? 'flex-col' : ''
       )}
     >
-      <div className="flex flex-row bg-green-400">
-        <Button
-          size="icon"
-          variant="secondary"
-        >
-          <Icons.Pencil className="h-4 w-4" />
-        </Button>
-        <Button
-          size="icon"
-          variant="secondary"
-        >
-          <Icons.ToolZoom className="h-4 w-4" />
-        </Button>
-        <Button
-          size="icon"
-          variant="secondary"
-        >
-          <Icons.Redo className="h-4 w-4" />
-        </Button>
-        <Button
-          size="icon"
-          onClick={() => handleClose()}
-        >
-          <Icons.Close className="h-4 w-4" />
-        </Button>
-        <div className="w-full">
+      <div
+        className={cn(
+          'flex',
+          position === 'bottom' ? 'flex-col items-center' : 'flex-row',
+          'bg-green-400'
+        )}
+      >
+        <div className={cn('flex', position === 'bottom' ? 'mb-1 flex-row' : 'flex-row')}>
+          <Button
+            size="icon"
+            variant="secondary"
+          >
+            <Icons.Pencil className="h-4 w-4" />
+          </Button>
+          <Button
+            size="icon"
+            variant="secondary"
+          >
+            <Icons.ToolZoom className="h-4 w-4" />
+          </Button>
+          <Button
+            size="icon"
+            variant="secondary"
+          >
+            <Icons.Redo className="h-4 w-4" />
+          </Button>
+          <Button
+            size="icon"
+            onClick={() => handleClose()}
+          >
+            <Icons.Close className="h-4 w-4" />
+          </Button>
+        </div>
+        <div className={position === 'bottom' ? 'h-full w-full' : 'w-full'}>
           {colorbars.map((colorbarInfo, index) => {
             const { colorbar, displaySetInstanceUID } = colorbarInfo;
 
