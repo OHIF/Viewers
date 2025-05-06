@@ -160,22 +160,15 @@ export function ViewportActionCornersProvider({
   useEffect(() => {
     if (service && service.setServiceImplementation) {
       const implementation = {
-        _getState: getState,
-        _addComponent: addComponent,
-        _addComponents: addComponents,
-        _clear: clear,
+        getState,
+        addComponent,
+        addComponents,
+        clear,
       };
 
       service.setServiceImplementation(implementation);
-
-      return () => {
-        // Cleanup on unmount if needed
-        if (service.setServiceImplementation) {
-          service.setServiceImplementation({});
-        }
-      };
     }
-  }, []);
+  }, [service]);
 
   return (
     <ViewportActionCornersContext.Provider value={[state, api]}>
