@@ -1,32 +1,32 @@
 import React from 'react';
-import { useViewportActionCornersContext } from '../contextProviders/ViewportActionCornersProvider';
+import { useViewportActionCorners, useViewportGrid, ViewportActionCorners } from '@ohif/ui-next';
 import { useSystem } from '@ohif/core';
-import { useViewportGrid } from '@ohif/ui-next';
 
 export type OHIFViewportActionCornersProps = {
   viewportId: string;
 };
 
+/**
+ * A component that displays the action corners for a viewport using the provider-based approach
+ * This replaces the current implementation that uses the cornerstone-specific context
+ */
 function OHIFViewportActionCorners({ viewportId }: OHIFViewportActionCornersProps) {
   const { servicesManager } = useSystem();
-  const [viewportActionCornersState] = useViewportActionCornersContext();
-
+  const [state] = useViewportActionCorners();
   const [viewportGrid] = useViewportGrid();
   const isActiveViewport = viewportGrid.activeViewportId === viewportId;
 
-  const ViewportActionCorners =
-    servicesManager.services.customizationService.getCustomization('ui.viewportActionCorner');
+  const { customizationService } = servicesManager.services;
+  const ViewportActionCornersComponent =
+    (customizationService.getCustomization(
+      'ui.viewportActionCorner'
+    ) as typeof ViewportActionCorners) || ViewportActionCorners;
 
-  if (!viewportActionCornersState[viewportId]) {
+  if (!state.components[viewportId]) {
     return null;
   }
 
-  return (
-    <ViewportActionCorners
-      cornerComponents={viewportActionCornersState[viewportId]}
-      isActiveViewport={isActiveViewport}
-    />
-  );
+  return <ViewportActionCornersComponent cornerComponents={state.components[viewportId]} />;
 }
 
 export default OHIFViewportActionCorners;

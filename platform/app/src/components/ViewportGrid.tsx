@@ -4,11 +4,13 @@ import { ViewportGrid, ViewportPane } from '@ohif/ui-next';
 import { useViewportGrid } from '@ohif/ui-next';
 import EmptyViewport from './EmptyViewport';
 import { useAppConfig } from '@state';
+import { useViewportActionCornersWithGrid } from '../hooks';
 
 function ViewerViewportGrid(props: withAppTypes) {
   const { servicesManager, viewportComponents = [], dataSource, commandsManager } = props;
   const [viewportGrid, viewportGridService] = useViewportGrid();
   const [appConfig] = useAppConfig();
+  const { initializeViewportCorners } = useViewportActionCornersWithGrid();
 
   const { layout, activeViewportId, viewports, isHangingProtocolLayout } = viewportGrid;
   const { numCols, numRows } = layout;
@@ -415,8 +417,14 @@ function ViewerViewportGrid(props: withAppTypes) {
               displaySetOptions={displaySetOptions}
               needsRerendering={displaySetsNeedsRerendering}
               isHangingProtocolLayout={isHangingProtocolLayout}
-              onElementEnabled={() => {
+              onElementEnabled={evt => {
                 viewportGridService.setViewportIsReady(viewportId, true);
+
+                // Initialize the viewport action corners for this viewport
+                if (evt?.detail?.element) {
+                  const elementRef = { current: evt.detail.element };
+                  initializeViewportCorners(viewportId, elementRef, displaySets, commandsManager);
+                }
               }}
             />
           </div>
@@ -425,7 +433,7 @@ function ViewerViewportGrid(props: withAppTypes) {
     }
 
     return viewportPanes;
-  }, [viewports, activeViewportId, viewportComponents, dataSource]);
+  }, [viewports, activeViewportId, viewportComponents, dataSource, initializeViewportCorners]);
 
   /**
    * Loading indicator until numCols and numRows are gotten from the HangingProtocolService

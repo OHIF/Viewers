@@ -1,6 +1,7 @@
 import React from 'react';
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
+import { ActionComponentInfo } from '../../types';
 
 /**
  * A small container that can render multiple "corner" items (like icons, status)
@@ -33,7 +34,11 @@ const locationClasses = {
   ),
 };
 
-function ViewportActionCorners({ cornerComponents }) {
+function ViewportActionCorners({
+  cornerComponents,
+}: {
+  cornerComponents: Record<string, ActionComponentInfo[]>;
+}) {
   if (!cornerComponents) {
     return null;
   }

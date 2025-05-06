@@ -18,7 +18,6 @@ import { getViewportPresentations } from '../utils/presentations/getViewportPres
 import { useSynchronizersStore } from '../stores/useSynchronizersStore';
 import ActiveViewportBehavior from '../utils/ActiveViewportBehavior';
 import { WITH_NAVIGATION } from '../services/ViewportService/CornerstoneViewportService';
-import { useViewportActionCorners } from '../hooks';
 
 const STACK = 'stack';
 
@@ -319,16 +318,6 @@ const OHIFCornerstoneViewport = React.memo(
         unsubscribe();
       };
     }, [displaySets, elementRef, viewportId, isJumpToMeasurementDisabled, servicesManager]);
-
-    // Set up the window level action menu in the viewport action corners using the custom hook
-    useViewportActionCorners({
-      viewportId,
-      elementRef,
-      displaySets,
-      viewportActionCornersService,
-      customizationService,
-      commandsManager,
-    });
 
     const Notification = customizationService.getCustomization('ui.notificationComponent');
 

@@ -1,19 +1,5 @@
 import { PubSubService } from '@ohif/core';
-import { ViewportActionCornersLocations } from '@ohif/ui-next';
-import { ReactNode } from 'react';
-
-export type ActionComponentInfo = {
-  viewportId: string;
-  id: string;
-  component: ReactNode;
-  location: ViewportActionCornersLocations;
-  indexPriority?: number;
-};
-
-export type AlignAndSide = {
-  align: 'start' | 'end' | 'center';
-  side: 'top' | 'bottom' | 'left' | 'right';
-};
+import { ViewportActionCornersLocations, Types } from '@ohif/ui-next';
 
 class ViewportActionCornersService extends PubSubService {
   public static readonly EVENTS = {};
@@ -60,11 +46,11 @@ class ViewportActionCornersService extends PubSubService {
     return this.serviceImplementation._getState();
   }
 
-  public addComponent(component: ActionComponentInfo) {
+  public addComponent(component: Types.ActionComponentInfo) {
     this.serviceImplementation._addComponent(component);
   }
 
-  public addComponents(components: Array<ActionComponentInfo>) {
+  public addComponents(components: Array<Types.ActionComponentInfo>) {
     this.serviceImplementation._addComponents(components);
   }
 
@@ -72,7 +58,7 @@ class ViewportActionCornersService extends PubSubService {
     this.serviceImplementation._clear(viewportId);
   }
 
-  public getAlignAndSide(location: ViewportActionCornersLocations): AlignAndSide {
+  public getAlignAndSide(location: ViewportActionCornersLocations): Types.AlignAndSide {
     switch (location) {
       case ViewportActionCornersLocations.topLeft:
         return { align: 'start', side: 'bottom' };
