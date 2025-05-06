@@ -78,7 +78,7 @@ const ViewportColorbarsContainer = ({ viewportId }: ViewportColorbarsContainerPr
         ...(position !== 'bottom'
           ? {
               width: '20px',
-              height: '200px',
+              height: colorbars.length === 1 ? '200px' : '400px',
               top: '50%',
               transform: 'translateY(-50%)',
             }
