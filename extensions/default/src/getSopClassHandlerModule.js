@@ -79,15 +79,14 @@ const makeDisplaySet = instances => {
   // set appropriate attributes to image set...
   const messages = getDisplaySetMessages(instances, isReconstructable, isDynamicVolume);
 
-  let imageId;
   const imageIds = dataSource.getImageIdsForDisplaySet(imageSet);
+  let imageId = imageIds[Math.floor(imageIds.length / 2)];
+  let thumbnailInstance = instances[Math.floor(instances.length / 2)];
   if (isDynamicVolume) {
     const timePoints = dynamicVolumeInfo.timePoints;
     const middleIndex = Math.floor(timePoints.length / 2);
     const middleTimePointImageIds = timePoints[middleIndex];
     imageId = middleTimePointImageIds[Math.floor(middleTimePointImageIds.length / 2)];
-  } else {
-    imageId = imageIds[Math.floor(imageIds.length / 2)];
   }
 
   imageSet.setAttributes({
@@ -111,7 +110,7 @@ const makeDisplaySet = instances => {
     averageSpacingBetweenFrames: averageSpacingBetweenFrames || null,
     isDynamicVolume,
     dynamicVolumeInfo,
-    getThumbnailSrc: dataSource.retrieve.getGetThumbnailSrc?.(instance, imageId),
+    getThumbnailSrc: dataSource.retrieve.getGetThumbnailSrc?.(thumbnailInstance, imageId),
   });
 
   // Sort the images in this series if needed

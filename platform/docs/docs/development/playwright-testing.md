@@ -14,6 +14,7 @@ You might need to run the `bun playwright install ` for the first time if you ha
 # Running the tests
 
 ```bash
+#
 # run the tests
 bun test:e2e:ui
 ```
