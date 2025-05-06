@@ -99,6 +99,13 @@ const ViewportColorbar = ({
     customizationService,
   ]);
 
+  // Get position styles from customization service
+  const colorbarCustomization = customizationService.getCustomization(
+    'cornerstone.colorbar'
+  ) as unknown as ColorbarCustomization;
+
+  const positionStylesFromConfig = colorbarCustomization?.positionStyles?.[position] || {};
+
   return (
     <div
       id={`colorbar-container-${viewportId}-${displaySetInstanceUID}`}
@@ -111,6 +118,7 @@ const ViewportColorbar = ({
         boxSizing: 'border-box',
         display: 'flex',
         alignItems: 'center',
+        ...positionStylesFromConfig,
       }}
     ></div>
   );

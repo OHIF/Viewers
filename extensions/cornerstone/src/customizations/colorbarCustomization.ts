@@ -17,7 +17,7 @@ const DefaultColormap = 'Grayscale';
 const positionStyles: PositionStylesMapType = {
   left: { left: '5%', width: '15px' },
   right: { right: '5%', width: '15px' },
-  bottom: { bottom: '1%', height: '15px' },
+  bottom: { bottom: '1%', height: '18px' },
 };
 
 // Typed position-specific tick styles

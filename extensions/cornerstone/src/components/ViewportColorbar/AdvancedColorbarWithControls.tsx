@@ -43,6 +43,11 @@ const AdvancedColorbarWithControls = ({
     onClose(displaySetInstanceUID);
   };
 
+  // Get bottom position styles from customization
+  const positionStyles = colorbarCustomization?.positionStyles || {};
+  const bottomPositionStyles = positionStyles.bottom || {};
+  const heightStyle = bottomPositionStyles.height;
+
   return (
     <div className="mx-auto flex h-[20px] w-1/2 flex-row items-center justify-between">
       <div className="flex flex-shrink-0 flex-row">
@@ -64,7 +69,7 @@ const AdvancedColorbarWithControls = ({
 
       <div
         className="mx-2"
-        style={{ width: 'calc(75% - 16px)' }}
+        style={{ width: 'calc(75% - 16px)', height: heightStyle }}
       >
         {colorbars.map((colorbarInfo, index) => {
           const { colorbar, displaySetInstanceUID } = colorbarInfo;
