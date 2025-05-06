@@ -11,7 +11,7 @@ import {
 } from '../types/Colorbar';
 import { ColorMapPreset } from '../types/Colormap';
 
-const defaultPosition: ColorbarPositionType = 'right';
+const defaultPosition: ColorbarPositionType = 'bottom';
 const DefaultColormap = 'Grayscale';
 
 // Typed position styles
@@ -28,16 +28,26 @@ const positionTickStyles: PositionTickStylesMapType = {
     position: 'top',
     style: {
       labelOffset: 5,
+      labelMargin: 13,
     },
   },
   right: {
     position: 'left',
+    style: {
+      labelMargin: 5,
+    },
   },
   left: {
     position: 'right',
+    style: {
+      labelMargin: 5,
+    },
   },
   top: {
     position: 'bottom',
+    style: {
+      labelMargin: 5,
+    },
   },
 };
 
@@ -72,7 +82,6 @@ const tickStyles: TickStyleType = {
   maxNumTicks: 8,
   tickSize: 5,
   tickWidth: 1,
-  labelMargin: 13,
 };
 
 // Dimension configuration
