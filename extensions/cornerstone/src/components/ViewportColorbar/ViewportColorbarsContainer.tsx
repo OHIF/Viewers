@@ -74,8 +74,8 @@ const ViewportColorbarsContainer = ({ viewportId }: ViewportColorbarsContainerPr
       className={cn(
         'absolute',
         position === 'bottom' ? 'bottom-32 w-full' : '',
-        position === 'left' ? 'left-5 top-32 h-full' : '',
-        position === 'right' ? 'right-5 top-32 h-full' : ''
+        position === 'left' ? 'left-5 top-32 h-[200px]' : '',
+        position === 'right' ? 'right-5 top-32 h-[200px]' : ''
       )}
     >
       {position !== 'bottom' ? (
