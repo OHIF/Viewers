@@ -1,7 +1,7 @@
 import { getWindowLevelActionMenu } from '../components/WindowLevelActionMenu/getWindowLevelActionMenu';
 import { getViewportDataOverlaySettingsMenu } from '../components/ViewportDataOverlaySettingMenu';
 import { getViewportOrientationMenu } from '../components/ViewportOrientationMenu';
-import { AllInOneMenu } from '@ohif/ui-next';
+import { AllInOneMenu, ViewportActionCorners } from '@ohif/ui-next';
 
 // Generate component renderer functions for each component type
 const createOrientationMenu = ({ viewportId, element, location }) => {
@@ -32,6 +32,7 @@ const createWindowLevelMenu = ({ viewportId, element, displaySets }) => {
 };
 
 export default {
+  'ui.viewportActionCorner': ViewportActionCorners,
   'viewportActionMenu.topLeft': [
     {
       id: 'orientationMenu',
