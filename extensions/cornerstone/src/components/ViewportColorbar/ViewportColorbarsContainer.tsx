@@ -77,7 +77,7 @@ const ViewportColorbarsContainer = ({ viewportId }: ViewportColorbarsContainerPr
     position !== 'bottom'
       ? {
           width: '20px',
-          height: colorbars.length === 1 ? '200px' : '400px',
+          height: colorbars.length === 1 ? '55%' : '75%',
           top: '50%',
           transform: 'translateY(-50%)',
         }
@@ -87,8 +87,6 @@ const ViewportColorbarsContainer = ({ viewportId }: ViewportColorbarsContainerPr
         };
 
   const finalPositionStyle = deepMerge(defaultPositionStyle, positionStyle);
-
-  debugger;
 
   return (
     <div
