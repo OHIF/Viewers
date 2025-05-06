@@ -26,7 +26,7 @@ const createWindowLevelMenu = ({ viewportId, element, displaySets }) => {
     viewportId,
     element,
     displaySets,
-    verticalDirection: AllInOneMenu.VerticalDirection.TopToBottom,
+    verticalDirection: AllInOneMenu.VerticalDirection.BottomToTop,
     horizontalDirection: AllInOneMenu.HorizontalDirection.LeftToRight,
   });
 };
@@ -43,13 +43,14 @@ export default {
       enabled: true,
       component: createDataOverlay,
     },
+  ],
+  'viewportActionMenu.topRight': [],
+  'viewportActionMenu.bottomLeft': [
     {
       id: 'windowLevelActionMenu',
       enabled: true,
       component: createWindowLevelMenu,
     },
   ],
-  'viewportActionMenu.topRight': [],
-  'viewportActionMenu.bottomLeft': [],
   'viewportActionMenu.bottomRight': [],
 };
