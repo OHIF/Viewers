@@ -40,8 +40,6 @@ const ViewportColorbar = ({
   position,
   tickPosition,
   tickStyles,
-  containerStyles,
-  dimensionStyles,
   viewportElementRef,
 }: ColorbarProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -108,14 +106,6 @@ const ViewportColorbar = ({
     <div
       id={`colorbar-container-${viewportId}-${displaySetInstanceUID}`}
       ref={containerRef}
-      style={{
-        position: 'absolute',
-        boxSizing: 'border-box',
-        border: '1px solid #555',
-        cursor: 'initial',
-        ...containerStyles,
-        ...dimensionStyles,
-      }}
     ></div>
   );
 };

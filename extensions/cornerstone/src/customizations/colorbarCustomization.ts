@@ -69,9 +69,6 @@ const getTickPositionForPosition = (position: ColorbarPositionType): TickPositio
 
 // Container styles for colorbar
 const containerStyles: ContainerStyleType = {
-  position: 'absolute',
-  boxSizing: 'border-box',
-  border: 'solid 1px #555',
   cursor: 'initial',
 };
 
