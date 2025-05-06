@@ -81,25 +81,28 @@ const ViewportColorbarsContainer = ({ viewportId }: ViewportColorbarsContainerPr
       )}
     >
       {position === 'bottom' ? (
-        <div className="flex h-[20px] w-full flex-row items-center justify-between bg-green-400">
-          <div className="flex flex-row">
+        <div className="mx-auto flex h-[20px] w-1/2 flex-row items-center justify-between bg-green-400">
+          <div className="flex flex-shrink-0 flex-row">
             <Button
               size="icon"
               variant="secondary"
-              className="h-[20px] w-[20px] p-0"
+              className="h-[20px] w-[20px] flex-shrink-0 p-0"
             >
               <Icons.Pencil className="h-3 w-3" />
             </Button>
             <Button
               size="icon"
               variant="secondary"
-              className="h-[20px] w-[20px] p-0"
+              className="h-[20px] w-[20px] flex-shrink-0 p-0"
             >
               <Icons.ToolZoom className="h-3 w-3" />
             </Button>
           </div>
 
-          <div className="mx-2 flex-grow">
+          <div
+            className="mx-2"
+            style={{ width: 'calc(75% - 16px)' }}
+          >
             {colorbars.map((colorbarInfo, index) => {
               const { colorbar, displaySetInstanceUID } = colorbarInfo;
               return (
@@ -118,18 +121,18 @@ const ViewportColorbarsContainer = ({ viewportId }: ViewportColorbarsContainerPr
             })}
           </div>
 
-          <div className="flex flex-row">
+          <div className="flex flex-shrink-0 flex-row">
             <Button
               size="icon"
               variant="secondary"
-              className="h-[20px] w-[20px] p-0"
+              className="h-[20px] w-[20px] flex-shrink-0 p-0"
             >
               <Icons.Redo className="h-3 w-3" />
             </Button>
             <Button
               size="icon"
               onClick={() => handleClose()}
-              className="h-[20px] w-[20px] p-0"
+              className="h-[20px] w-[20px] flex-shrink-0 p-0"
             >
               <Icons.Close className="h-3 w-3" />
             </Button>
