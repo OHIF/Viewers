@@ -79,17 +79,24 @@ const ViewportColorbarsContainer = ({ viewportId }: ViewportColorbarsContainerPr
         <div className="flex flex-shrink-0 flex-row">
           <Button
             size="icon"
-            variant="secondary"
-            className="h-[20px] w-[20px] flex-shrink-0 p-0"
+            onClick={() => handleClose()}
+            className="flex-shrink-0 p-0"
           >
-            <Icons.Pencil className="h-3 w-3" />
+            <Icons.Close />
           </Button>
           <Button
             size="icon"
-            variant="secondary"
-            className="h-[20px] w-[20px] flex-shrink-0 p-0"
+            variant="ghost"
+            className="flex-shrink-0 p-0"
           >
-            <Icons.ToolZoom className="h-3 w-3" />
+            <Icons.Pencil />
+          </Button>
+          <Button
+            size="icon"
+            variant="ghost"
+            className="flex-shrink-0 p-0"
+          >
+            <Icons.ToolZoom />
           </Button>
         </div>
 
@@ -118,17 +125,10 @@ const ViewportColorbarsContainer = ({ viewportId }: ViewportColorbarsContainerPr
         <div className="flex flex-shrink-0 flex-row">
           <Button
             size="icon"
-            variant="secondary"
-            className="h-[20px] w-[20px] flex-shrink-0 p-0"
+            variant="ghost"
+            className="flex-shrink-0 p-0"
           >
-            <Icons.Redo className="h-3 w-3" />
-          </Button>
-          <Button
-            size="icon"
-            onClick={() => handleClose()}
-            className="h-[20px] w-[20px] flex-shrink-0 p-0"
-          >
-            <Icons.Close className="h-3 w-3" />
+            <Icons.Redo />
           </Button>
         </div>
       </div>
