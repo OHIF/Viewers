@@ -1,5 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { Button, Icons } from '@ohif/ui-next';
+import React, { useEffect, useRef } from 'react';
 import { utilities } from '@cornerstonejs/tools';
 import { useSystem } from '@ohif/core';
 import {
@@ -24,7 +23,6 @@ type ColorbarProps = {
   tickStyles?: TickStyleType;
   containerStyles?: ContainerStyleType;
   dimensionStyles: Record<string, string | number>;
-  onClose: () => void;
 };
 
 /**
@@ -35,7 +33,6 @@ type ColorbarProps = {
 const ViewportColorbar = ({
   viewportId,
   displaySetInstanceUID,
-  colormap,
   colormaps,
   activeColormapName,
   volumeId,
@@ -44,26 +41,10 @@ const ViewportColorbar = ({
   tickStyles,
   containerStyles,
   dimensionStyles,
-  onClose,
 }: ColorbarProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
-  const [colorbarInstance, setColorbarInstance] =
-    useState<utilities.voi.colorbar.ViewportColorbar | null>(null);
   const { servicesManager } = useSystem();
   const { customizationService } = servicesManager.services;
-
-  // Close button position styles based on colorbar position
-  const closeButtonStyles: React.CSSProperties = {
-    position: 'absolute',
-    zIndex: 10,
-    ...(position === 'bottom'
-      ? { left: '-25px', top: '0', transform: 'translateY(-50%)' }
-      : position === 'right'
-        ? { top: '-25px', left: '0', transform: 'translateX(-50%)' }
-        : position === 'left'
-          ? { top: '-25px', right: '0', transform: 'translateX(50%)' }
-          : { bottom: '-25px', right: '0', transform: 'translateX(50%)' }), // top position
-  };
 
   // Initialize and clean up the colorbar
   useEffect(() => {
@@ -96,8 +77,6 @@ const ViewportColorbar = ({
       },
     });
 
-    setColorbarInstance(csColorbar);
-
     // Clean up on unmount
     return () => {
       if (csColorbar) {
@@ -126,19 +105,7 @@ const ViewportColorbar = ({
         ...containerStyles,
         ...dimensionStyles,
       }}
-    >
-      <div style={closeButtonStyles}>
-        <Button
-          size="icon"
-          variant="ghost"
-          onClick={onClose}
-          aria-label="Close colorbar"
-          className="bg-gray-950 hover:bg-primary text-primary hover:text-background border-primary flex h-7 w-7 items-center justify-center rounded-full border shadow-md"
-        >
-          <Icons.Close className="h-4 w-4" />
-        </Button>
-      </div>
-    </div>
+    ></div>
   );
 };
 
