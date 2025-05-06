@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.11.0-beta.25](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.24...v3.11.0-beta.25) (2025-05-06)
+
+
+### Features
+
+* **i18n:** add Arabic translations ([#5013](https://github.com/OHIF/Viewers/issues/5013)) ([8218a9d](https://github.com/OHIF/Viewers/commit/8218a9d0346fe9a5473420e26a0b8ab389f4ef58))
+
+
+
+
+
 # [3.11.0-beta.24](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.23...v3.11.0-beta.24) (2025-05-05)
 
 **Note:** Version bump only for package @ohif/i18n
