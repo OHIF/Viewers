@@ -5,6 +5,7 @@ import AdvancedColorbarWithControls from './AdvancedColorbarWithControls';
 import { ColorbarCustomization } from '../../types/Colorbar';
 import type { ColorMapPreset } from '../../types/Colormap';
 import ViewportColorbar from './ViewportColorbar';
+import { deepMerge } from '@cornerstonejs/core/utilities';
 
 type ViewportColorbarsContainerProps = {
   viewportId: string;
@@ -63,29 +64,37 @@ const ViewportColorbarsContainer = ({ viewportId }: ViewportColorbarsContainerPr
     'cornerstone.colorbar'
   ) as unknown as ColorbarCustomization;
 
-  const defaultPosition = colorbarCustomization?.colorbarContainerPosition || 'left';
-  const defaultTickPosition = colorbarCustomization?.colorbarTickPosition || 'right';
+  const defaultPosition = colorbarCustomization?.colorbarContainerPosition;
+  const defaultTickPosition = colorbarCustomization?.colorbarTickPosition;
 
   const position = colorbarCustomization?.colorbarContainerPosition || defaultPosition;
   const tickPosition = colorbarCustomization?.colorbarTickPosition || defaultTickPosition;
-  const positionStyles = colorbarCustomization?.positionStyles || {};
+  const positionStyles = colorbarCustomization?.positionStyles;
+
+  const positionStyle = positionStyles?.[position];
+
+  const defaultPositionStyle =
+    position !== 'bottom'
+      ? {
+          width: '20px',
+          height: colorbars.length === 1 ? '200px' : '400px',
+          top: '50%',
+          transform: 'translateY(-50%)',
+        }
+      : {
+          width: '100%',
+          height: '20px',
+        };
+
+  const finalPositionStyle = deepMerge(defaultPositionStyle, positionStyle);
+
+  debugger;
 
   return (
     <div
       className="absolute"
       style={{
-        ...positionStyles[position],
-        ...(position !== 'bottom'
-          ? {
-              width: '20px',
-              height: colorbars.length === 1 ? '200px' : '400px',
-              top: '50%',
-              transform: 'translateY(-50%)',
-            }
-          : {
-              width: '100%',
-              height: '20px',
-            }),
+        ...finalPositionStyle,
       }}
     >
       {position !== 'bottom' ? (
