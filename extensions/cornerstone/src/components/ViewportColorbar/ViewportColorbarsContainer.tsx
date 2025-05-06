@@ -1,7 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useSystem } from '@ohif/core';
 import ViewportColorbar from './ViewportColorbar';
-import { ColorbarPositionType, ColorbarCustomization } from '../../types/Colorbar';
+import {
+  ColorbarPositionType,
+  ColorbarCustomization,
+  TickPositionType,
+  DimensionConfigType,
+} from '../../types/Colorbar';
 
 type ViewportColorbarsContainerProps = {
   viewportId: string;
@@ -12,7 +17,17 @@ type ViewportColorbarsContainerProps = {
  * It interacts with the colorbarService to get/set colorbar states
  */
 const ViewportColorbarsContainer = ({ viewportId }: ViewportColorbarsContainerProps) => {
-  const [colorbars, setColorbars] = useState([]);
+  // Define type for colorbar data
+  type ColorbarData = {
+    colorbar: {
+      activeColormapName: string;
+      colormaps: any[];
+      volumeId?: string;
+    };
+    displaySetInstanceUID: string;
+  };
+
+  const [colorbars, setColorbars] = useState<ColorbarData[]>([]);
   const { servicesManager } = useSystem();
   const { colorbarService, customizationService } = servicesManager.services;
 
@@ -22,7 +37,11 @@ const ViewportColorbarsContainer = ({ viewportId }: ViewportColorbarsContainerPr
       return;
     }
 
-    const handleColorbarStateChanged = event => {
+    const handleColorbarStateChanged = (event: {
+      viewportId: string;
+      displaySetInstanceUID?: string;
+      changeType: string;
+    }) => {
       if (event.viewportId === viewportId) {
         setColorbars(colorbarService.getViewportColorbar(viewportId) || []);
       }
@@ -42,7 +61,7 @@ const ViewportColorbarsContainer = ({ viewportId }: ViewportColorbarsContainerPr
     };
   }, [viewportId, colorbarService]);
 
-  const handleClose = displaySetInstanceUID => {
+  const handleClose = (displaySetInstanceUID: string): void => {
     if (displaySetInstanceUID) {
       colorbarService.removeColorbar(viewportId, displaySetInstanceUID);
     } else {
@@ -61,10 +80,11 @@ const ViewportColorbarsContainer = ({ viewportId }: ViewportColorbarsContainerPr
   ) as unknown as ColorbarCustomization;
 
   // Determine default position and dimensions
-  const defaultPosition =
-    colorbarCustomization?.colorbarContainerPosition || ('right' as ColorbarPositionType);
-  const defaultTickPosition = colorbarCustomization?.colorbarTickPosition || 'left';
-  const dimensionConfig = colorbarCustomization?.dimensionConfig || {
+  const defaultPosition: ColorbarPositionType =
+    colorbarCustomization?.colorbarContainerPosition || 'right';
+  const defaultTickPosition: TickPositionType =
+    colorbarCustomization?.colorbarTickPosition || 'left';
+  const dimensionConfig: DimensionConfigType = colorbarCustomization?.dimensionConfig || {
     bottomHeight: '20px',
     defaultVerticalWidth: '2.5%',
     defaultHorizontalHeight: '2.5%',
@@ -84,7 +104,7 @@ const ViewportColorbarsContainer = ({ viewportId }: ViewportColorbarsContainerPr
         const dimension = dimensions[colorbars.length] || 50 / colorbars.length;
 
         // Build dimension and position styles
-        const dimensionStyles = {};
+        const dimensionStyles: Record<string, string | number> = {};
         const positionStyles = colorbarCustomization?.positionStyles?.[position] || {};
 
         if (['top', 'bottom'].includes(position)) {

@@ -6,6 +6,8 @@ import {
   ColorbarPositionType,
   TickPositionType,
   ColorbarCustomization,
+  TickStyleType,
+  ContainerStyleType,
 } from '../../types/Colorbar';
 
 const { ViewportColorbar: CornerstoneViewportColorbar } = utilities.voi.colorbar;
@@ -13,15 +15,15 @@ const { ViewportColorbar: CornerstoneViewportColorbar } = utilities.voi.colorbar
 type ColorbarProps = {
   viewportId: string;
   displaySetInstanceUID: string;
-  colormap: any;
+  colormap?: any;
   colormaps: any[];
   activeColormapName: string;
   volumeId?: string;
   position: ColorbarPositionType;
   tickPosition: TickPositionType;
-  tickStyles: any;
-  containerStyles: any;
-  dimensionStyles: any;
+  tickStyles?: TickStyleType;
+  containerStyles?: ContainerStyleType;
+  dimensionStyles: Record<string, string | number>;
   onClose: () => void;
 };
 
@@ -45,12 +47,13 @@ const ViewportColorbar = ({
   onClose,
 }: ColorbarProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
-  const [colorbarInstance, setColorbarInstance] = useState(null);
+  const [colorbarInstance, setColorbarInstance] =
+    useState<utilities.voi.colorbar.ViewportColorbar | null>(null);
   const { servicesManager } = useSystem();
   const { customizationService } = servicesManager.services;
 
   // Close button position styles based on colorbar position
-  const closeButtonStyles = {
+  const closeButtonStyles: React.CSSProperties = {
     position: 'absolute',
     zIndex: 10,
     ...(position === 'bottom'
