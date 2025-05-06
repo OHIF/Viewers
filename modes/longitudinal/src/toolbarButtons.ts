@@ -120,8 +120,8 @@ const toolbarButtons: Button[] = [
       tooltip: 'Show Reference Lines',
       commands: 'toggleEnabledDisabledToolbar',
       listeners: {
-        [ViewportGridService.EVENTS.ACTIVE_VIEWPORT_ID_CHANGED]: callbacks('ReferenceLinesTool'),
-        [ViewportGridService.EVENTS.VIEWPORTS_READY]: callbacks('ReferenceLinesTool'),
+        [ViewportGridService.EVENTS.ACTIVE_VIEWPORT_ID_CHANGED]: callbacks('ReferenceLines'),
+        [ViewportGridService.EVENTS.VIEWPORTS_READY]: callbacks('ReferenceLines'),
       },
       evaluate: [
         'evaluate.cornerstoneTool.toggle',

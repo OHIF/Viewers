@@ -104,7 +104,7 @@ export default defineConfig({
       // Copy public directory except config and html-templates
       {
         from: path.resolve(__dirname, 'node_modules/onnxruntime-web/dist'),
-        to: DIST_DIR,
+        to: `${DIST_DIR}/ort`,
         force: true,
       },
       {

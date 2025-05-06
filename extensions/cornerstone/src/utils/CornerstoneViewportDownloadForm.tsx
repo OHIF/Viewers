@@ -180,15 +180,12 @@ const CornerstoneViewportDownloadForm = ({
     const toolGroup = ToolGroupManager.getToolGroupForViewport(activeViewportId, renderingEngineId);
     toolGroup.addViewport(downloadViewportId, renderingEngineId);
 
-    Object.keys(toolGroup.getToolInstances()).forEach(toolName => {
-      if (show && toolName !== 'Crosshairs') {
-        try {
-          toolGroup.setToolEnabled(toolName);
-        } catch (error) {
-          console.debug('Error enabling tool:', error);
-        }
-      } else {
-        toolGroup.setToolDisabled(toolName);
+    const toolInstances = toolGroup.getToolInstances();
+    const toolInstancesArray = Object.values(toolInstances);
+
+    toolInstancesArray.forEach(toolInstance => {
+      if (toolInstance.constructor.isAnnotation !== false) {
+        toolGroup.setToolEnabled(toolInstance.toolName);
       }
     });
   };
