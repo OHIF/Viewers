@@ -54,10 +54,12 @@ const AdvancedColorbarWithControls = ({
         <Button
           size="icon"
           variant="ghost"
+          onClick={() => handleClose()}
           className="flex-shrink-0 p-0"
         >
-          <Icons.Pencil />
+          <Icons.Close />
         </Button>
+
         <Button
           size="icon"
           variant="ghost"
@@ -99,10 +101,10 @@ const AdvancedColorbarWithControls = ({
         </Button>
         <Button
           size="icon"
-          onClick={() => handleClose()}
+          variant="ghost"
           className="flex-shrink-0 p-0"
         >
-          <Icons.Close />
+          <Icons.Pencil />
         </Button>
       </div>
     </div>
