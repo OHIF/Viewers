@@ -8,6 +8,7 @@ import {
   TickStyleType,
   ContainerStyleType,
 } from '../../types/Colorbar';
+import { ColorbarRangeTextPosition } from '@cornerstonejs/tools/utilities/voi/colorbar/enums/ColorbarRangeTextPosition';
 
 const { ViewportColorbar: CornerstoneViewportColorbar } = utilities.voi.colorbar;
 
@@ -22,7 +23,6 @@ type ColorbarProps = {
   tickPosition: TickPositionType;
   tickStyles?: TickStyleType;
   containerStyles?: ContainerStyleType;
-  dimensionStyles: Record<string, string | number>;
   viewportElementRef?: React.RefObject<HTMLDivElement>;
 };
 
@@ -42,6 +42,7 @@ const ViewportColorbar = ({
   tickStyles,
   viewportElementRef,
 }: ColorbarProps) => {
+  console.debug('🚀 ~ activeColormapName:', activeColormapName);
   const containerRef = useRef<HTMLDivElement>(null);
   const { servicesManager } = useSystem();
   const { customizationService } = servicesManager.services;
@@ -66,7 +67,6 @@ const ViewportColorbar = ({
 
     // Get position-specific tick styles if available
     const positionTickStyles = colorbarCustomization?.positionTickStyles?.[position];
-
     // Create the cornerstone viewport colorbar
     const csColorbar = new CornerstoneViewportColorbar({
       id: `Colorbar-${viewportId}-${displaySetInstanceUID}`,
@@ -76,7 +76,7 @@ const ViewportColorbar = ({
       activeColormapName: activeColormapName,
       volumeId,
       ticks: {
-        position: tickPosition,
+        position: tickPosition as ColorbarRangeTextPosition,
         style: {
           ...(colorbarCustomization?.tickStyles || {}),
           ...(positionTickStyles?.style || {}),

@@ -75,7 +75,7 @@ const ViewportColorbarsContainer = ({ viewportId }: ViewportColorbarsContainerPr
   return (
     <div
       className={cn(
-        'relative bottom-32',
+        'relative bottom-32 w-1/2',
         (position === 'top' || position === 'bottom') && 'flex-col'
       )}
     >
@@ -104,40 +104,9 @@ const ViewportColorbarsContainer = ({ viewportId }: ViewportColorbarsContainerPr
         >
           <Icons.Close className="h-4 w-4" />
         </Button>
-        <div>
+        <div className="w-full">
           {colorbars.map((colorbarInfo, index) => {
             const { colorbar, displaySetInstanceUID } = colorbarInfo;
-
-            // Calculate dimension styles based on position
-            const dimensions = {
-              1: 50,
-              2: 33,
-            };
-            const dimension = dimensions[colorbars.length] || 50 / colorbars.length;
-
-            const dimensionStyles: Record<string, string | number> = {};
-            const positionStyles = colorbarCustomization?.positionStyles?.[position] || {};
-
-            if (['top', 'bottom'].includes(position)) {
-              Object.assign(dimensionStyles, {
-                width: `${dimension}%`,
-                height:
-                  position === 'bottom'
-                    ? dimensionConfig.bottomHeight
-                    : dimensionConfig.defaultHorizontalHeight,
-                left: `${(index + 1) * dimension}%`,
-                transform: 'translateX(-50%)',
-                ...positionStyles,
-              });
-            } else {
-              Object.assign(dimensionStyles, {
-                height: `${dimension}%`,
-                width: dimensionConfig.defaultVerticalWidth,
-                top: `${(index + 1) * dimension}%`,
-                transform: 'translateY(-50%)',
-                ...positionStyles,
-              });
-            }
 
             return (
               <ViewportColorbar
@@ -150,8 +119,6 @@ const ViewportColorbarsContainer = ({ viewportId }: ViewportColorbarsContainerPr
                 position={position}
                 tickPosition={defaultTickPosition}
                 tickStyles={colorbarCustomization?.tickStyles}
-                containerStyles={colorbarCustomization?.containerStyles || {}}
-                dimensionStyles={dimensionStyles}
               />
             );
           })}
