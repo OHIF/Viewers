@@ -89,7 +89,6 @@ export type ColorbarProperties = {
   positionTickStyles?: PositionTickStylesMapType;
   containerStyles?: ContainerStyleType;
   tickStyles?: TickStyleType;
-  dimensionConfig?: DimensionConfigType;
 };
 
 // Type for the customization object from the customization service
@@ -105,7 +104,6 @@ export interface ColorbarCustomization {
   positionTickStyles: PositionTickStylesMapType;
   containerStyles: ContainerStyleType;
   tickStyles: TickStyleType;
-  dimensionConfig: DimensionConfigType;
 }
 
 // Event types for colorbar changes

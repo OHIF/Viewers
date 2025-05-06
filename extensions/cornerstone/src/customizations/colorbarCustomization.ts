@@ -6,7 +6,6 @@ import {
   PositionTickStylesMapType,
   ContainerStyleType,
   TickStyleType,
-  DimensionConfigType,
   ColorbarProperties,
 } from '../types/Colorbar';
 import { ColorMapPreset } from '../types/Colormap';
@@ -49,8 +48,6 @@ const positionTickStyles: PositionTickStylesMapType = {
   },
 };
 
-// Default position
-
 // Get recommended tick position for a given colorbar position
 const getTickPositionForPosition = (position: ColorbarPositionType): TickPositionType => {
   return (
@@ -74,20 +71,12 @@ const containerStyles: ContainerStyleType = {
 const tickStyles: TickStyleType = {
   font: '12px Arial',
   color: '#fff',
-  maxNumTicks: 8,
+  maxNumTicks: 6,
   tickSize: 5,
   tickWidth: 1,
 };
 
-// Dimension configuration
-const dimensionConfig: DimensionConfigType = {
-  bottomHeight: '20px',
-  defaultVerticalWidth: '2.5%',
-  defaultHorizontalHeight: '20px',
-};
-
 const colorbarConfig: Partial<ColorbarProperties> = {
-  width: '20px',
   colorbarTickPosition: getTickPositionForPosition(defaultPosition),
   colormaps: colormaps as unknown as Record<string, ColorMapPreset>,
   colorbarContainerPosition: defaultPosition,
@@ -96,7 +85,6 @@ const colorbarConfig: Partial<ColorbarProperties> = {
   positionTickStyles,
   containerStyles,
   tickStyles,
-  dimensionConfig,
 };
 
 export default {
