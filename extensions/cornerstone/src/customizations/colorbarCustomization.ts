@@ -15,9 +15,8 @@ const defaultPosition: ColorbarPositionType = 'right';
 const DefaultColormap = 'Grayscale';
 
 const positionStyles: PositionStylesMapType = {
-  left: { left: '5%' },
-  right: { right: '5%' },
-  top: { top: '5%' },
+  left: { left: '5%', width: '20px', height: '100%' },
+  right: { right: '5%', width: '20px', height: '100%' },
   bottom: { bottom: '8%', width: '100%', height: '20px' },
 };
 
