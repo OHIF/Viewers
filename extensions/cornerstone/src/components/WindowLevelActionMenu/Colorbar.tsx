@@ -1,15 +1,14 @@
 import React, { ReactElement, useCallback, useEffect, useState } from 'react';
 import { Switch } from '@ohif/ui-next';
-import { StackViewport } from '@cornerstonejs/core';
-import { ColorbarProps } from '../../types/Colorbar';
+import { ColorbarProps, ColorbarPositionType, TickPositionType, ColorbarOptions } from '../../types/Colorbar';
 import { utilities } from '@cornerstonejs/core';
 import { useSystem } from '@ohif/core';
 
 export function setViewportColorbar(
-  viewportId,
-  commandsManager,
+  viewportId: string,
+  commandsManager: any,
   servicesManager: AppTypes.ServicesManager,
-  colorbarOptions
+  colorbarOptions: Partial<ColorbarOptions>
 ) {
   const { cornerstoneViewportService, viewportGridService } = servicesManager.services;
   const displaySetInstanceUIDs = viewportGridService.getDisplaySetsUIDsForViewport(viewportId);

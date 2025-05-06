@@ -1,39 +1,19 @@
-import { PubSubService } from '@ohif/core';
+import { PubSubService, Types as OhifTypes } from '@ohif/core';
 import { RENDERING_ENGINE_ID } from '../ViewportService/constants';
 import { StackViewport, VolumeViewport, getRenderingEngine } from '@cornerstonejs/core';
 import { utilities } from '@cornerstonejs/tools';
-import { ColorbarOptions, ChangeTypes } from '../../types/Colorbar';
+import {
+  ColorbarOptions,
+  ChangeTypes,
+  ColorbarPositionType,
+  TickPositionType,
+  ColorbarCustomization,
+} from '../../types/Colorbar';
 const { ViewportColorbar } = utilities.voi.colorbar;
 
 export default class ColorbarService extends PubSubService {
   static EVENTS = {
     STATE_CHANGED: 'event::ColorbarService:stateChanged',
-  };
-
-  static defaultStyles = {
-    position: 'absolute',
-    boxSizing: 'border-box',
-    border: 'solid 1px #555',
-    cursor: 'initial',
-  };
-
-  static positionStyles = {
-    left: { left: '5%' },
-    right: { right: '5%' },
-    top: { top: '5%' },
-    bottom: { bottom: '5%' },
-  };
-
-  static defaultTickStyles = {
-    position: 'left',
-    style: {
-      font: '12px Arial',
-      color: '#fff',
-      maxNumTicks: 8,
-      tickSize: 5,
-      tickWidth: 1,
-      labelMargin: 3,
-    },
   };
 
   public static REGISTRATION = {
@@ -69,7 +49,11 @@ export default class ColorbarService extends PubSubService {
    * @param displaySetInstanceUIDs An array of display set instance UIDs to associate with the colorbar.
    * @param options Configuration options for the colorbar, including position, colormaps, active colormap name, ticks, and width.
    */
-  public addColorbar(viewportId, displaySetInstanceUIDs, options = {} as ColorbarOptions) {
+  public addColorbar(
+    viewportId: string,
+    displaySetInstanceUIDs: string[],
+    options = {} as ColorbarOptions
+  ) {
     const { displaySetService } = this.servicesManager.services;
     const renderingEngine = getRenderingEngine(RENDERING_ENGINE_ID);
     const viewport = renderingEngine.getViewport(viewportId);
@@ -84,6 +68,11 @@ export default class ColorbarService extends PubSubService {
     if (!actorEntries || actorEntries.length === 0) {
       return;
     }
+
+    const { customizationService } = this.servicesManager.services;
+    const colorbarCustomization = customizationService.getCustomization(
+      'cornerstone.colorbar'
+    ) as unknown as ColorbarCustomization;
 
     const { position, width: thickness, activeColormapName, colormaps } = options;
 
@@ -105,7 +94,10 @@ export default class ColorbarService extends PubSubService {
       }
 
       const volumeId = this.getVolumeIdForIdentifier(viewport, displaySetInstanceUID);
-      const properties = viewport?.getProperties(volumeId);
+      const properties =
+        viewport instanceof VolumeViewport
+          ? viewport.getProperties(volumeId)
+          : viewport.getProperties();
       const colormap = properties?.colormap;
       if (activeColormapName && !colormap) {
         this.setViewportColormap(
@@ -117,17 +109,26 @@ export default class ColorbarService extends PubSubService {
       }
 
       const colorbarContainer = containers[index];
+      const positionTickStyles = colorbarCustomization.positionTickStyles?.[position];
 
       const colorbar = new ViewportColorbar({
-        id: `ctColorbar-${viewportId}-${index}`,
+        id: `Colorbar-${viewportId}-${index}`,
         element,
-        colormaps: options.colormaps || {},
+        colormaps: options.colormaps ? Object.values(options.colormaps) : [],
         // if there's an existing colormap set, we use it, otherwise we use the activeColormapName, otherwise, grayscale
         activeColormapName: colormap?.name || options?.activeColormapName || 'Grayscale',
         container: colorbarContainer,
         ticks: {
-          ...ColorbarService.defaultTickStyles,
-          ...options.ticks,
+          position:
+            positionTickStyles?.position ||
+            options.ticks?.position ||
+            colorbarCustomization.colorbarTickPosition ||
+            'left',
+          style: {
+            ...(colorbarCustomization.tickStyles || {}),
+            ...(positionTickStyles?.style || {}),
+            ...(options.ticks?.style || {}),
+          },
         },
         volumeId: viewport instanceof VolumeViewport ? volumeId : undefined,
       });
@@ -288,35 +289,73 @@ export default class ColorbarService extends PubSubService {
    * @param viewportId The identifier of the viewport for which the containers are being created.
    * @returns An array of the created container DOM elements.
    */
-  private createContainers(numContainers, element, position, thickness, viewportId) {
+  private createContainers(
+    numContainers: number,
+    element: HTMLElement,
+    position: ColorbarPositionType,
+    thickness: string | undefined,
+    viewportId: string
+  ): HTMLElement[] {
     const containers = [];
     const dimensions = {
       1: 50,
       2: 33,
     };
     const dimension = dimensions[numContainers] || 50 / numContainers;
+    // Get customization settings
+    const { customizationService } = this.servicesManager.services;
+    const colorbarCustomization = customizationService.getCustomization(
+      'cornerstone.colorbar'
+    ) as unknown as ColorbarCustomization;
 
     Array.from({ length: numContainers }).forEach((_, i) => {
       const colorbarContainer = document.createElement('div');
       colorbarContainer.id = `ctColorbarContainer-${viewportId}-${i + 1}`;
 
-      Object.assign(colorbarContainer.style, ColorbarService.defaultStyles);
+      Object.assign(
+        colorbarContainer.style,
+        colorbarCustomization.containerStyles || {
+          position: 'absolute',
+          boxSizing: 'border-box',
+          border: 'solid 1px #555',
+          cursor: 'initial',
+        }
+      );
+
+      // Get dimension config from customization
+      const dimensionConfig = colorbarCustomization.dimensionConfig || {
+        bottomHeight: '20px',
+        defaultVerticalWidth: '2.5%',
+        defaultHorizontalHeight: '2.5%',
+      };
+
+      // Get position styles from customization
+      const positionStyles = colorbarCustomization.positionStyles || {
+        left: { left: '5%' },
+        right: { right: '5%' },
+        top: { top: '5%' },
+        bottom: { bottom: '8%' },
+      };
 
       if (['top', 'bottom'].includes(position)) {
         Object.assign(colorbarContainer.style, {
           width: `${dimension}%`,
-          height: thickness || '2.5%',
+          height:
+            thickness ||
+            (position === 'bottom'
+              ? dimensionConfig.bottomHeight
+              : dimensionConfig.defaultHorizontalHeight),
           left: `${(i + 1) * dimension}%`,
           transform: 'translateX(-50%)',
-          ...ColorbarService.positionStyles[position],
+          ...(positionStyles[position] || {}),
         });
       } else if (['left', 'right'].includes(position)) {
         Object.assign(colorbarContainer.style, {
           height: `${dimension}%`,
-          width: thickness || '2.5%',
+          width: thickness || dimensionConfig.defaultVerticalWidth,
           top: `${(i + 1) * dimension}%`,
           transform: 'translateY(-50%)',
-          ...ColorbarService.positionStyles[position],
+          ...(positionStyles[position] || {}),
         });
       }
 
