@@ -42,7 +42,6 @@ const ViewportColorbar = ({
   tickStyles,
   viewportElementRef,
 }: ColorbarProps) => {
-  console.debug('🚀 ~ activeColormapName:', activeColormapName);
   const containerRef = useRef<HTMLDivElement>(null);
   const { servicesManager } = useSystem();
   const { customizationService } = servicesManager.services;
@@ -107,8 +106,8 @@ const ViewportColorbar = ({
       id={`colorbar-container-${viewportId}-${displaySetInstanceUID}`}
       ref={containerRef}
       style={{
-        width: position === 'bottom' ? '100%' : undefined,
-        height: position === 'bottom' ? '20px' : undefined,
+        width: position === 'bottom' || position === 'top' ? '100%' : '20px',
+        height: position === 'bottom' || position === 'top' ? '20px' : '100%',
         position: 'relative',
         boxSizing: 'border-box',
         display: 'flex',

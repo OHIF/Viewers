@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useSystem } from '@ohif/core';
-import { Button, Icons, cn } from '@ohif/ui-next';
-import ViewportColorbar from './ViewportColorbar';
+import AdvancedColorbarWithControls from './AdvancedColorbarWithControls';
 import { ColorbarCustomization } from '../../types/Colorbar';
 import type { ColorMapPreset } from '../../types/Colormap';
 
@@ -68,71 +67,14 @@ const ViewportColorbarsContainer = ({ viewportId }: ViewportColorbarsContainerPr
   const position = colorbarCustomization?.colorbarContainerPosition || defaultPosition;
 
   return (
-    <div
-      className={cn(
-        'relative',
-        position === 'bottom' ? 'bottom-32 w-full' : 'bottom-32 w-1/2',
-        position === 'top' || position === 'bottom' ? 'flex-col' : ''
-      )}
-    >
-      <div className="mx-auto flex h-[20px] w-1/2 flex-row items-center justify-between">
-        <div className="flex flex-shrink-0 flex-row">
-          <Button
-            size="icon"
-            onClick={() => handleClose()}
-            className="flex-shrink-0 p-0"
-          >
-            <Icons.Close />
-          </Button>
-          <Button
-            size="icon"
-            variant="ghost"
-            className="flex-shrink-0 p-0"
-          >
-            <Icons.Pencil />
-          </Button>
-          <Button
-            size="icon"
-            variant="ghost"
-            className="flex-shrink-0 p-0"
-          >
-            <Icons.ToolZoom />
-          </Button>
-        </div>
-
-        <div
-          className="mx-2"
-          style={{ width: 'calc(75% - 16px)' }}
-        >
-          {colorbars.map((colorbarInfo, index) => {
-            const { colorbar, displaySetInstanceUID } = colorbarInfo;
-            return (
-              <ViewportColorbar
-                key={`colorbar-${viewportId}-${displaySetInstanceUID}`}
-                viewportId={viewportId}
-                displaySetInstanceUID={displaySetInstanceUID}
-                colormaps={colorbar.colormaps}
-                activeColormapName={colorbar.activeColormapName}
-                volumeId={colorbar.volumeId}
-                position={position}
-                tickPosition={defaultTickPosition}
-                tickStyles={colorbarCustomization?.tickStyles}
-              />
-            );
-          })}
-        </div>
-
-        <div className="flex flex-shrink-0 flex-row">
-          <Button
-            size="icon"
-            variant="ghost"
-            className="flex-shrink-0 p-0"
-          >
-            <Icons.Redo />
-          </Button>
-        </div>
-      </div>
-    </div>
+    <AdvancedColorbarWithControls
+      viewportId={viewportId}
+      colorbars={colorbars}
+      position={position}
+      tickPosition={defaultTickPosition}
+      colorbarCustomization={colorbarCustomization}
+      onClose={handleClose}
+    />
   );
 };
 
