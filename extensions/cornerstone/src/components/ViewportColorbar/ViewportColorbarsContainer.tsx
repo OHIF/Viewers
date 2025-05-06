@@ -63,20 +63,31 @@ const ViewportColorbarsContainer = ({ viewportId }: ViewportColorbarsContainerPr
     'cornerstone.colorbar'
   ) as unknown as ColorbarCustomization;
 
-  const defaultPosition = colorbarCustomization?.colorbarContainerPosition || 'right';
-  const defaultTickPosition = colorbarCustomization?.colorbarTickPosition || 'left';
+  const defaultPosition = colorbarCustomization?.colorbarContainerPosition || 'left';
+  const defaultTickPosition = colorbarCustomization?.colorbarTickPosition || 'right';
 
   const position = colorbarCustomization?.colorbarContainerPosition || defaultPosition;
   const tickPosition = colorbarCustomization?.colorbarTickPosition || defaultTickPosition;
+  const positionStyles = colorbarCustomization?.positionStyles || {};
 
   return (
     <div
-      className={cn(
-        'absolute',
-        position === 'bottom' ? 'bottom-32 w-full' : '',
-        position === 'left' ? 'left-5 top-1/2 -translate-y-1/2' : '',
-        position === 'right' ? 'right-5 top-1/2 -translate-y-1/2' : ''
-      )}
+      className="absolute"
+      style={{
+        ...positionStyles[position],
+        ...(position !== 'bottom' 
+          ? { 
+              width: '20px', 
+              height: '200px', 
+              top: '50%', 
+              transform: 'translateY(-50%)' 
+            } 
+          : { 
+              width: '100%', 
+              height: '20px' 
+            }
+        )
+      }}
     >
       {position !== 'bottom' ? (
         <div className="flex h-full flex-col items-center justify-center">

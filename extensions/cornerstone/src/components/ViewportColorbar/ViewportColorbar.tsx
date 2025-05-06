@@ -105,7 +105,7 @@ const ViewportColorbar = ({
       ref={containerRef}
       style={{
         width: position === 'bottom' ? '100%' : '20px',
-        height: position === 'bottom' ? '20px' : '300px',
+        height: position === 'bottom' ? '20px' : '200px',
         position: 'relative',
         zIndex: 1000,
         boxSizing: 'border-box',
