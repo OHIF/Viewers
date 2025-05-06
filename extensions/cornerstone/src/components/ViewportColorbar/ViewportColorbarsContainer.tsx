@@ -74,27 +74,29 @@ const ViewportColorbarsContainer = ({ viewportId }: ViewportColorbarsContainerPr
       className={cn(
         'absolute',
         position === 'bottom' ? 'bottom-32 w-full' : '',
-        position === 'left' ? 'left-5 top-32 h-[200px]' : '',
-        position === 'right' ? 'right-5 top-32 h-[200px]' : ''
+        position === 'left' ? 'left-5 top-1/2 h-[200px] -translate-y-1/2' : '',
+        position === 'right' ? 'right-5 top-1/2 h-[200px] -translate-y-1/2' : ''
       )}
     >
       {position !== 'bottom' ? (
-        colorbars.map((colorbarInfo, index) => {
-          const { colorbar, displaySetInstanceUID } = colorbarInfo;
-          return (
-            <ViewportColorbar
-              key={`colorbar-${viewportId}-${displaySetInstanceUID}`}
-              viewportId={viewportId}
-              displaySetInstanceUID={displaySetInstanceUID}
-              colormaps={colorbar.colormaps}
-              activeColormapName={colorbar.activeColormapName}
-              volumeId={colorbar.volumeId}
-              position={position}
-              tickPosition={tickPosition}
-              tickStyles={colorbarCustomization?.tickStyles}
-            />
-          );
-        })
+        <div className="flex h-full flex-col items-center justify-center">
+          {colorbars.map((colorbarInfo, index) => {
+            const { colorbar, displaySetInstanceUID } = colorbarInfo;
+            return (
+              <ViewportColorbar
+                key={`colorbar-${viewportId}-${displaySetInstanceUID}`}
+                viewportId={viewportId}
+                displaySetInstanceUID={displaySetInstanceUID}
+                colormaps={colorbar.colormaps}
+                activeColormapName={colorbar.activeColormapName}
+                volumeId={colorbar.volumeId}
+                position={position}
+                tickPosition={tickPosition}
+                tickStyles={colorbarCustomization?.tickStyles}
+              />
+            );
+          })}
+        </div>
       ) : (
         <AdvancedColorbarWithControls
           viewportId={viewportId}
