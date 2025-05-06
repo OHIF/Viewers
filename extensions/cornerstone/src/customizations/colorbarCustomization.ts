@@ -14,7 +14,6 @@ import { ColorMapPreset } from '../types/Colormap';
 const defaultPosition: ColorbarPositionType = 'bottom';
 const DefaultColormap = 'Grayscale';
 
-// Typed position styles
 const positionStyles: PositionStylesMapType = {
   left: { left: '5%' },
   right: { right: '5%' },

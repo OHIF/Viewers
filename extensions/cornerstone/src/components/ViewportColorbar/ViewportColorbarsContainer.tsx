@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useSystem } from '@ohif/core';
+import { cn } from '@ohif/ui-next';
 import AdvancedColorbarWithControls from './AdvancedColorbarWithControls';
 import { ColorbarCustomization } from '../../types/Colorbar';
 import type { ColorMapPreset } from '../../types/Colormap';
+import ViewportColorbar from './ViewportColorbar';
 
 type ViewportColorbarsContainerProps = {
   viewportId: string;
@@ -65,16 +67,45 @@ const ViewportColorbarsContainer = ({ viewportId }: ViewportColorbarsContainerPr
   const defaultTickPosition = colorbarCustomization?.colorbarTickPosition || 'left';
 
   const position = colorbarCustomization?.colorbarContainerPosition || defaultPosition;
+  const tickPosition = colorbarCustomization?.colorbarTickPosition || defaultTickPosition;
 
   return (
-    <AdvancedColorbarWithControls
-      viewportId={viewportId}
-      colorbars={colorbars}
-      position={position}
-      tickPosition={defaultTickPosition}
-      colorbarCustomization={colorbarCustomization}
-      onClose={handleClose}
-    />
+    <div
+      className={cn(
+        'relative',
+        position === 'bottom' ? 'bottom-32 w-full' : '',
+        position === 'left' ? 'right-32 top-32 h-full' : '',
+        position === 'right' ? 'left-32 top-32 h-full' : ''
+      )}
+    >
+      {position !== 'bottom' ? (
+        colorbars.map((colorbarInfo, index) => {
+          const { colorbar, displaySetInstanceUID } = colorbarInfo;
+          return (
+            <ViewportColorbar
+              key={`colorbar-${viewportId}-${displaySetInstanceUID}`}
+              viewportId={viewportId}
+              displaySetInstanceUID={displaySetInstanceUID}
+              colormaps={colorbar.colormaps}
+              activeColormapName={colorbar.activeColormapName}
+              volumeId={colorbar.volumeId}
+              position={position}
+              tickPosition={tickPosition}
+              tickStyles={colorbarCustomization?.tickStyles}
+            />
+          );
+        })
+      ) : (
+        <AdvancedColorbarWithControls
+          viewportId={viewportId}
+          colorbars={colorbars}
+          position={position}
+          tickPosition={defaultTickPosition}
+          colorbarCustomization={colorbarCustomization}
+          onClose={handleClose}
+        />
+      )}
+    </div>
   );
 };
 

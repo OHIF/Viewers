@@ -46,7 +46,6 @@ const ViewportColorbar = ({
   const { servicesManager } = useSystem();
   const { customizationService } = servicesManager.services;
 
-  // Initialize and clean up the colorbar
   useEffect(() => {
     if (!containerRef.current || !colormaps || !activeColormapName) {
       return;
@@ -64,9 +63,7 @@ const ViewportColorbar = ({
       'cornerstone.colorbar'
     ) as unknown as ColorbarCustomization;
 
-    // Get position-specific tick styles if available
     const positionTickStyles = colorbarCustomization?.positionTickStyles?.[position];
-    // Create the cornerstone viewport colorbar
     const csColorbar = new CornerstoneViewportColorbar({
       id: `Colorbar-${viewportId}-${displaySetInstanceUID}`,
       element: viewportElement,
@@ -84,7 +81,6 @@ const ViewportColorbar = ({
       },
     });
 
-    // Clean up on unmount
     return () => {
       if (csColorbar) {
         csColorbar.destroy();
@@ -98,7 +94,9 @@ const ViewportColorbar = ({
     volumeId,
     position,
     tickPosition,
+    tickStyles,
     viewportElementRef,
+    customizationService,
   ]);
 
   return (
@@ -109,6 +107,7 @@ const ViewportColorbar = ({
         width: position === 'bottom' || position === 'top' ? '100%' : '20px',
         height: position === 'bottom' || position === 'top' ? '20px' : '100%',
         position: 'relative',
+        zIndex: 1000,
         boxSizing: 'border-box',
         display: 'flex',
         alignItems: 'center',
