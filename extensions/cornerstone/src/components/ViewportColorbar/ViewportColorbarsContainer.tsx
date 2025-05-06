@@ -98,17 +98,60 @@ const ViewportColorbarsContainer = ({ viewportId }: ViewportColorbarsContainerPr
           : { bottom: '-30px', left: '10px' }),
   };
 
+  // Create container styles based on position
+  const containerStyles: React.CSSProperties = {
+    display: 'flex',
+    flexDirection: ['top', 'bottom'].includes(position) ? 'column' : 'row',
+  };
+
+  // Create toolbar styles based on position
+  const toolbarStyles: React.CSSProperties = {
+    display: 'flex',
+    gap: '4px',
+    padding: '4px',
+    background: 'rgba(0, 0, 0, 0.7)',
+    borderRadius: '4px',
+    zIndex: 1000,
+    ...(position === 'bottom'
+      ? { marginBottom: '8px', justifyContent: 'flex-end' }
+      : position === 'top'
+        ? { marginTop: '8px', justifyContent: 'flex-end' }
+        : position === 'right'
+          ? { flexDirection: 'column', marginRight: '8px', alignItems: 'center' }
+          : { flexDirection: 'column', marginLeft: '8px', alignItems: 'center' }),
+  };
+
   return (
-    <div className="relative">
-      <div style={closeButtonStyles}>
+    <div>
+      <div style={toolbarStyles}>
         <Button
-          size="sm"
+          size="icon"
+          variant="secondary"
+          className="bg-gray-800 hover:bg-gray-700"
+        >
+          <Icons.Pencil className="h-4 w-4" />
+        </Button>
+        <Button
+          size="icon"
+          variant="secondary"
+          className="bg-gray-800 hover:bg-gray-700"
+        >
+          <Icons.ToolZoom className="h-4 w-4" />
+        </Button>
+        <Button
+          size="icon"
+          variant="secondary"
+          className="bg-gray-800 hover:bg-gray-700"
+        >
+          <Icons.Redo className="h-4 w-4" />
+        </Button>
+        <Button
+          size="icon"
           variant="destructive"
           onClick={() => handleClose()}
-          className="gap- flex items-center"
+          className="bg-red-600 hover:bg-red-700"
         >
-          <Icons.Close className="h-3 w-3" />
-          CLOSE ALL
+          <Icons.Close className="h-4 w-4" />
         </Button>
       </div>
 
