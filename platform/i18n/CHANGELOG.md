@@ -3,6 +3,124 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.11.0-beta.25](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.24...v3.11.0-beta.25) (2025-05-06)
+
+
+### Features
+
+* **i18n:** add Arabic translations ([#5013](https://github.com/OHIF/Viewers/issues/5013)) ([8218a9d](https://github.com/OHIF/Viewers/commit/8218a9d0346fe9a5473420e26a0b8ab389f4ef58))
+
+
+
+
+
+# [3.11.0-beta.24](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.23...v3.11.0-beta.24) (2025-05-05)
+
+**Note:** Version bump only for package @ohif/i18n
+
+
+
+
+
+# [3.11.0-beta.23](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.22...v3.11.0-beta.23) (2025-05-05)
+
+**Note:** Version bump only for package @ohif/i18n
+
+
+
+
+
+# [3.11.0-beta.22](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.21...v3.11.0-beta.22) (2025-05-02)
+
+**Note:** Version bump only for package @ohif/i18n
+
+
+
+
+
+# [3.11.0-beta.21](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.20...v3.11.0-beta.21) (2025-05-02)
+
+**Note:** Version bump only for package @ohif/i18n
+
+
+
+
+
+# [3.11.0-beta.20](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.19...v3.11.0-beta.20) (2025-05-01)
+
+**Note:** Version bump only for package @ohif/i18n
+
+
+
+
+
+# [3.11.0-beta.19](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.18...v3.11.0-beta.19) (2025-05-01)
+
+**Note:** Version bump only for package @ohif/i18n
+
+
+
+
+
+# [3.11.0-beta.18](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.17...v3.11.0-beta.18) (2025-04-30)
+
+**Note:** Version bump only for package @ohif/i18n
+
+
+
+
+
+# [3.11.0-beta.17](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.16...v3.11.0-beta.17) (2025-04-29)
+
+**Note:** Version bump only for package @ohif/i18n
+
+
+
+
+
+# [3.11.0-beta.16](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.15...v3.11.0-beta.16) (2025-04-29)
+
+**Note:** Version bump only for package @ohif/i18n
+
+
+
+
+
+# [3.11.0-beta.15](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.14...v3.11.0-beta.15) (2025-04-22)
+
+**Note:** Version bump only for package @ohif/i18n
+
+
+
+
+
+# [3.11.0-beta.14](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.13...v3.11.0-beta.14) (2025-04-22)
+
+**Note:** Version bump only for package @ohif/i18n
+
+
+
+
+
+# [3.11.0-beta.13](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.12...v3.11.0-beta.13) (2025-04-22)
+
+**Note:** Version bump only for package @ohif/i18n
+
+
+
+
+
+# [3.11.0-beta.12](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.11...v3.11.0-beta.12) (2025-04-22)
+
+
+### Features
+
+* Improve unsupported displayset messages ([#4979](https://github.com/OHIF/Viewers/issues/4979)) ([3b8faa8](https://github.com/OHIF/Viewers/commit/3b8faa8a76dde5088815431a947fec07db4a3c7f))
+
+
+
+
+
 # [3.11.0-beta.11](https://github.com/OHIF/Viewers/compare/v3.11.0-beta.10...v3.11.0-beta.11) (2025-04-18)
 
 **Note:** Version bump only for package @ohif/i18n

@@ -1,5 +1,7 @@
 ---
-title: Study Browser
+title: Study Browser Customization
+summary: Documentation for customizing OHIF's Study Browser component, including configuration options for thumbnails, sorting functions, and display formats to enhance study navigation and selection workflows.
+sidebar_position: 6
 ---
 
 # Study Browser

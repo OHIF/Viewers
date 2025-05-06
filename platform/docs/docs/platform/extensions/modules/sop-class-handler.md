@@ -1,6 +1,8 @@
 ---
 sidebar_position: 4
 sidebar_label: SOP Class Handler
+title: SOP Class Handler Module
+summary: Documentation for OHIF SOP Class Handler Module, which processes specific DICOM SOP classes into displayable sets, supporting various medical imaging formats and defining how different types of DICOM data are prepared for viewing.
 ---
 # Module: SOP Class Handler
 

@@ -1,5 +1,6 @@
 ---
 title: routerBaseName
+summary: Migration guide for router configuration in OHIF 3.10, covering the updated default behavior of routerBasename and its interaction with PUBLIC_URL, with scenario-based examples for both root and subpath hosting.
 ---
 
 

@@ -13,6 +13,9 @@ export type DisplaySet = {
   Modality?: string;
   imageIds?: string[];
   images?: unknown[];
+  label?: string;
+  /** Flag indicating if this is an overlay display set (e.g., SEG, RTSTRUCT) */
+  isOverlayDisplaySet?: boolean;
 
   // Details about how to display:
   /** A URL that can be used to display the thumbnail.  Typically a data url */

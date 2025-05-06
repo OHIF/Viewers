@@ -1,6 +1,8 @@
 ---
 sidebar_position: 1
 sidebar_label: Introduction
+title: OHIF Services
+summary: Overview of OHIF's services architecture, which provides modular, concern-specific code components that manage state and operations throughout the application, including both data services and UI services that follow a pub/sub pattern to reduce coupling.
 ---
 
 # Services

@@ -1,6 +1,8 @@
 ---
 sidebar_position: 3
 sidebar_label: Tours
+title: Configuring Tours in OHIF
+summary: Guide to implementing interactive guided tours in OHIF using Shepherd.js, including detailed configuration options, step definitions, customization parameters, and examples for creating effective user onboarding experiences.
 ---
 
 # Configuring Tours in OHIF with Shepherd.js

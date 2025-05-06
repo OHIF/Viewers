@@ -1,6 +1,8 @@
 ---
 sidebar_position: 4
 sidebar_label: Validity
+title: Mode Validity
+summary: Documentation for OHIF Mode validity checks, which determine when specific modes should be available for particular studies based on modalities, tags, or custom logic to ensure appropriate workflows for different types of imaging studies.
 ---
 # Mode: Validity
 

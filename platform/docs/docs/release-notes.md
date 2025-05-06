@@ -1,6 +1,8 @@
 ---
 sidebar_position: 2
 sidebar_label: Release Notes
+title: OHIF Viewer Release Notes
+summary: Information about OHIF Viewer version releases, including new features, improvements, and bug fixes, which can be found in detail on the official OHIF website.
 ---
 
 # Release Notes
