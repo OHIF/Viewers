@@ -1,13 +1,13 @@
 import React, { ReactElement, useCallback, useEffect, useState } from 'react';
 import { Switch } from '@ohif/ui-next';
 import { VolumeShadeProps } from '../../types/ViewportPresets';
+import { useSystem } from '@ohif/core';
 
 export function VolumeShade({
-  commandsManager,
   viewportId,
-  servicesManager,
   onClickShade = bool => {},
 }: VolumeShadeProps): ReactElement {
+  const { servicesManager, commandsManager } = useSystem();
   const { cornerstoneViewportService } = servicesManager.services;
   const [shade, setShade] = useState(true);
   const [key, setKey] = useState(0);

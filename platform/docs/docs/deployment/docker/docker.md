@@ -1,5 +1,7 @@
 ---
 sidebar_position: 4
+title: Docker Deployment
+summary: Comprehensive guide for deploying OHIF Viewer using Docker, covering pre-built images from Docker Hub, custom image building, configuration options through build arguments and environment variables, and runtime container management.
 ---
 
 # Docker

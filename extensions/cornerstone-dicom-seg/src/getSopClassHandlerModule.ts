@@ -1,5 +1,6 @@
-import { utils } from '@ohif/core';
-import { metaData, triggerEvent, eventTarget } from '@cornerstonejs/core';
+import { utils, Types as OhifTypes } from '@ohif/core';
+import i18n from '@ohif/i18n';
+import { metaData, eventTarget } from '@cornerstonejs/core';
 import { CONSTANTS, segmentation as cstSegmentation } from '@cornerstonejs/tools';
 import { adaptersSEG, Enums } from '@cornerstonejs/adapters';
 
@@ -57,6 +58,7 @@ function _getDisplaySetsFromSeries(
     wadoUriRoot,
     wadoUri,
     isOverlayDisplaySet: true,
+    label: SeriesDescription || `${i18n.t('Series')} ${SeriesNumber} - ${i18n.t('SEG')}`,
   };
 
   const referencedSeriesSequence = instance.ReferencedSeriesSequence;
@@ -232,7 +234,8 @@ function _segmentationExists(segDisplaySet) {
   return cstSegmentation.state.getSegmentation(segDisplaySet.displaySetInstanceUID);
 }
 
-function getSopClassHandlerModule({ servicesManager, extensionManager }) {
+function getSopClassHandlerModule(params: OhifTypes.Extensions.ExtensionParams) {
+  const { servicesManager, extensionManager } = params;
   const getDisplaySetsFromSeries = instances => {
     return _getDisplaySetsFromSeries(instances, servicesManager, extensionManager);
   };

@@ -1,6 +1,8 @@
 ---
 sidebar_position: 3
 sidebar_label: OHIF CLI
+title: OHIF Command Line Interface
+summary: Comprehensive guide to the OHIF CLI tool for managing extensions and modes, including commands for creating, linking, adding, removing, and publishing components, with detailed examples and explanations of the underlying configuration system.
 ---
 
 # OHIF Command Line Interface

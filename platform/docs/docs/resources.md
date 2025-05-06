@@ -1,6 +1,8 @@
 ---
 sidebar_position: 13
 sidebar_label: Resources
+title: OHIF Viewer Educational Resources
+summary: A comprehensive collection of presentations, slides, posters, and videos from conferences, hackathons, and community meetings where the OHIF team has shared knowledge about the viewer's development, features, and capabilities, organized chronologically from 2016 to present.
 ---
 
 # Resources

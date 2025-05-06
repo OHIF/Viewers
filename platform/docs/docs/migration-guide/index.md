@@ -1,5 +1,7 @@
 ---
 id: index
+title: Migration Guides Overview
+summary: Introduction to OHIF migration guides covering the upgrade paths between different versions of the platform, with links to version-specific guides for migrating from one OHIF version to another.
 ---
 
 

@@ -157,7 +157,7 @@ function OHIFCornerstoneSEGViewport(props: withAppTypes) {
     // it will be in the correct position zoom and pan
     commandsManager.runCommand('updateStoredPositionPresentation', {
       viewportId,
-      displaySetInstanceUID: referencedDisplaySet.displaySetInstanceUID,
+      displaySetInstanceUIDs: [referencedDisplaySet.displaySetInstanceUID],
     });
 
     commandsManager.runCommand('loadSegmentationDisplaySetsForViewport', {
@@ -304,7 +304,7 @@ function OHIFCornerstoneSEGViewport(props: withAppTypes) {
           onStatusClick,
         }),
         indexPriority: -100,
-        location: viewportActionCornersService.LOCATIONS.topLeft,
+        location: viewportActionCornersService.LOCATIONS.topRight,
       },
       {
         viewportId,

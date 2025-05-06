@@ -269,4 +269,7 @@ export {
   CornerstoneViewportDownloadForm,
   utils,
 };
+
+// Export constants
+export { VOLUME_LOADER_SCHEME, DYNAMIC_VOLUME_LOADER_SCHEME } from './constants';
 export default cornerstoneExtension;

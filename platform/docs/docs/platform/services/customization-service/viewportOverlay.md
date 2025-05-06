@@ -1,5 +1,8 @@
 ---
+sidebar_label: Viewport Overlay
 sidebar_position: 1
+title: Viewport Overlay Customization
+summary: Documentation for customizing OHIF's viewport overlays, allowing configuration of the information displayed in each corner (top-right, top-left, bottom-left, bottom-right) of medical imaging viewports.
 ---
 import { viewportOverlayCustomizations , TableGenerator } from './sampleCustomizations';
 

@@ -323,7 +323,7 @@ function OHIFCornerstoneRTViewport(props: withAppTypes) {
           onStatusClick,
         }),
         indexPriority: -100,
-        location: viewportActionCornersService.LOCATIONS.topLeft,
+        location: viewportActionCornersService.LOCATIONS.topRight,
       },
       {
         viewportId,

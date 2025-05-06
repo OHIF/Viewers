@@ -3,6 +3,7 @@ import {
   StackViewport,
   VolumeViewport,
   utilities as csUtils,
+  Enums as CoreEnums,
   Types as CoreTypes,
   BaseVolumeViewport,
 } from '@cornerstonejs/core';
@@ -248,7 +249,7 @@ function commandsModule({
     },
     updateStoredPositionPresentation: ({
       viewportId,
-      displaySetInstanceUID,
+      displaySetInstanceUIDs,
       referencedImageId,
       options,
     }) => {
@@ -256,11 +257,24 @@ function commandsModule({
       const { positionPresentationStore, setPositionPresentation, getPositionPresentationId } =
         usePositionPresentationStore.getState();
 
-      // Look inside positionPresentationStore and find the key that includes the displaySetInstanceUID
+      // Look inside positionPresentationStore and find the key that includes ALL the displaySetInstanceUIDs
       // and the value has viewportId as activeViewportId.
-      const previousReferencedDisplaySetStoreKey = Object.entries(positionPresentationStore).find(
-        ([key, value]) => key.includes(displaySetInstanceUID) && value.viewportId === viewportId
-      )?.[0];
+      let previousReferencedDisplaySetStoreKey;
+
+      if (
+        displaySetInstanceUIDs &&
+        Array.isArray(displaySetInstanceUIDs) &&
+        displaySetInstanceUIDs.length > 0
+      ) {
+        previousReferencedDisplaySetStoreKey = Object.entries(positionPresentationStore).find(
+          ([key, value]) => {
+            return (
+              displaySetInstanceUIDs.every(uid => key.includes(uid)) &&
+              value.viewportId === viewportId
+            );
+          }
+        )?.[0];
+      }
 
       // Create presentation data with referencedImageId and options if provided
       const presentationData = referencedImageId
@@ -282,7 +296,7 @@ function commandsModule({
       // so we need to grab the positionPresentationId directly from the store,
       // Todo: this is really hacky, we should have a better way for this
       const positionPresentationId = getPositionPresentationId({
-        displaySetInstanceUIDs: [displaySetInstanceUID],
+        displaySetInstanceUIDs,
         viewportId,
       });
 
@@ -719,7 +733,7 @@ function commandsModule({
         return;
       }
 
-      if (!toolGroup.hasTool(toolName)) {
+      if (!toolGroup?.hasTool(toolName)) {
         return;
       }
 
@@ -1019,7 +1033,7 @@ function commandsModule({
 
       const toolGroup = toolGroupService.getToolGroupForViewport(viewportId);
 
-      if (!toolGroup.hasTool(toolName)) {
+      if (!toolGroup?.hasTool(toolName)) {
         return;
       }
 
@@ -1189,6 +1203,9 @@ function commandsModule({
     },
     /**
      * Creates a labelmap for the active viewport
+     *
+     * The created labelmap will be registered as a display set and also added
+     * as a segmentation representation to the viewport.
      */
     createLabelmapForViewport: async ({ viewportId, options = {} }) => {
       const { viewportGridService, displaySetService, segmentationService } =
@@ -1209,6 +1226,7 @@ function commandsModule({
 
       const displaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
 
+      // This will create the segmentation and register it as a display set
       const generatedSegmentationId = await segmentationService.createLabelmapForDisplaySet(
         displaySet,
         {
@@ -1225,6 +1243,7 @@ function commandsModule({
         }
       );
 
+      // Also add the segmentation representation to the viewport
       await segmentationService.addSegmentationRepresentation(viewportId, {
         segmentationId,
         type: Enums.SegmentationRepresentations.Labelmap,
@@ -1741,6 +1760,30 @@ function commandsModule({
         });
       });
     },
+    setViewportOrientation: ({ viewportId, orientation }) => {
+      const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
+
+      if (!viewport || viewport.type !== CoreEnums.ViewportType.ORTHOGRAPHIC) {
+        console.warn('Orientation can only be set on volume viewports');
+        return;
+      }
+
+      // Get display sets for this viewport to verify at least one is reconstructable
+      const displaySetUIDs = viewportGridService.getDisplaySetsUIDsForViewport(viewportId);
+      const displaySets = displaySetUIDs.map(uid => displaySetService.getDisplaySetByUID(uid));
+
+      if (!displaySets.some(ds => ds.isReconstructable)) {
+        console.warn('Cannot change orientation: No reconstructable display sets in viewport');
+        return;
+      }
+
+      viewport.setOrientation(orientation);
+      viewport.render();
+
+      // update the orientation in the viewport info
+      const viewportInfo = cornerstoneViewportService.getViewportInfo(viewportId);
+      viewportInfo.setOrientation(orientation);
+    },
   };
 
   const definitions = {
@@ -2021,6 +2064,7 @@ function commandsModule({
     decreaseBrushSize: actions.decreaseBrushSize,
     addNewSegment: actions.addNewSegment,
     loadSegmentationDisplaySetsForViewport: actions.loadSegmentationDisplaySetsForViewport,
+    setViewportOrientation: actions.setViewportOrientation,
   };
 
   return {

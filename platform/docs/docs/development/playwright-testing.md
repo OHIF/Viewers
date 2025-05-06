@@ -1,6 +1,8 @@
 ---
 sidebar_position: 11
 sidebar_label: Playwright Testing
+title: Playwright End-to-End Testing
+summary: Guide to writing and running end-to-end tests for OHIF Viewer using Playwright, covering test configuration, screenshot verification, simulating user interactions, accessing application services, and using the VSCode extension for test recording.
 ---
 
 

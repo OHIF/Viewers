@@ -1,6 +1,6 @@
 {
   "name": "ohif-docs",
-  "version": "3.11.0-beta.15",
+  "version": "3.11.0-beta.24",
   "private": true,
   "scripts": {
     "docusaurus": "docusaurus",
@@ -9,7 +9,11 @@
     "start": "docusaurus start --port 8001",
     "dev": "docusaurus clear && docusaurus start --port 8001",
     "docs": "docusaurus start --port 8001",
-    "build": "docusaurus build",
+    "build": "docusaurus build && yarn run prepare-markdown-files && yarn run generate-llms-txt && yarn run generate-llms-full-txt",
+    "build:docs": "docusaurus build && yarn run prepare-markdown-files && yarn run generate-llms-txt && yarn run generate-llms-full-txt",
+    "prepare-markdown-files": "node ./scripts/prepare-markdown-files.js",
+    "generate-llms-txt": "node ./scripts/generate-llms-txt.js",
+    "generate-llms-full-txt": "node ./scripts/generate-llms-full-txt.js",
     "swizzle": "docusaurus swizzle",
     "deploy": "docusaurus deploy",
     "clear": "docusaurus clear",
@@ -72,6 +76,7 @@
     "docusaurus-plugin-image-zoom": "^1.0.1",
     "file-loader": "^6.2.0",
     "framer-motion": "6.2.4",
+    "glob": "^10.3.10",
     "lucide-react": "^0.379.0",
     "next-themes": "^0.3.0",
     "postcss": "^8.4.47",

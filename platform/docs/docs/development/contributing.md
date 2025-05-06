@@ -1,6 +1,8 @@
 ---
 sidebar_position: 5
 sidebar_label: Contributing
+title: Contributing to OHIF
+summary: Guidelines for contributing to the OHIF project, including best practices for submitting pull requests, working with multiple repositories, and advice on creating changes that are more likely to be accepted by the core team.
 ---
 
 # Contributing

@@ -1,5 +1,6 @@
 ---
 title: uiDialogService
+summary: Migration guide for uiDialogService in OHIF 3.10, covering the transition from create/dismiss to show/hide methods, changes to dialog definition structure, and updates to utility functions like callInputDialog and colorPickerDialog.
 ---
 
 
