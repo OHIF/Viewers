@@ -5,7 +5,7 @@ import getRenderableData from './getRenderableData';
 import toolNames from '../tools/toolNames';
 
 export default function addSRAnnotation(measurement, imageId, frameNumber) {
-  let toolName = toolNames.DICOMSRDisplay;
+  const toolName = toolNames.DICOMSRDisplay;
   const renderableData = measurement.coords.reduce((acc, coordProps) => {
     acc[coordProps.GraphicType] = acc[coordProps.GraphicType] || [];
     acc[coordProps.GraphicType].push(getRenderableData({ ...coordProps, imageId }));
@@ -25,8 +25,6 @@ export default function addSRAnnotation(measurement, imageId, frameNumber) {
   }
 
   if (valueType === 'SCOORD3D') {
-    toolName = toolNames.SRSCOORD3DPoint;
-
     // get the ReferencedFrameOfReferenceUID from the measurement
     frameOfReferenceUID = measurement.coords[0].ReferencedFrameOfReferenceSequence;
   }

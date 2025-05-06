@@ -234,11 +234,7 @@ function _checkIfCanAddMeasurementsToDisplaySet(
     measurement => measurement.loaded === false
   );
 
-  if (
-    unloadedMeasurements.length === 0 ||
-    !(newDisplaySet instanceof ImageSet) ||
-    newDisplaySet.unsupported
-  ) {
+  if (unloadedMeasurements.length === 0 || newDisplaySet.unsupported) {
     return;
   }
 
@@ -278,9 +274,10 @@ function _checkIfCanAddMeasurementsToDisplaySet(
     }
 
     // if it is 3d SR we can just add the SR annotation
-    if (is3DSR) {
+    if (is3DSR || measurement.coords?.[0]?.ValueType === 'SCOORD3D') {
       addSRAnnotation(measurement, null, null);
       measurement.loaded = true;
+      unloadedMeasurements.splice(j, 1);
       continue;
     }
 

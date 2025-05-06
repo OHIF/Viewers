@@ -7,9 +7,8 @@ import { Enums as CSExtensionEnums } from '@ohif/extension-cornerstone';
 
 const { locking } = CsAnnotation;
 const { guid } = OHIF.utils;
-const { MeasurementReport, CORNERSTONE_3D_TAG } = adaptersSR.Cornerstone3D;
+const { MeasurementReport } = adaptersSR.Cornerstone3D;
 const { CORNERSTONE_3D_TOOLS_SOURCE_NAME, CORNERSTONE_3D_TOOLS_SOURCE_VERSION } = CSExtensionEnums;
-const supportedLegacyCornerstoneTags = ['cornerstoneTools@^4.0.0'];
 
 const convertCode = (codingValues, code) => {
   if (!code || code.CodingSchemeDesignator === 'CORNERSTONEJS') {
@@ -147,6 +146,9 @@ export default function hydrateStructuredReport(
 
   for (let i = 0; i < imageIds.length; i++) {
     const imageId = imageIds[i];
+    if (!imageId) {
+      continue;
+    }
     const { SeriesInstanceUID, StudyInstanceUID } = metaData.get('instance', imageId);
 
     if (!SeriesInstanceUIDs.includes(SeriesInstanceUID)) {
@@ -160,28 +162,42 @@ export default function hydrateStructuredReport(
     }
   }
 
+  function getReferenceData(toolData) {
+    // Add the measurement to toolState
+    // dcmjs and Cornerstone3D has structural defect in supporting multi-frame
+    // files, and looking up the imageId from sopInstanceUIDToImageId results
+    // in the wrong value.
+    const frameNumber = (toolData.annotation.data && toolData.annotation.data.frameNumber) || 1;
+    const imageId =
+      imageIdsForToolState[toolData.sopInstanceUid][frameNumber] ||
+      sopInstanceUIDToImageId[toolData.sopInstanceUid];
+
+    if (!imageId) {
+      return {
+        FrameOfReferenceUID: toolData.annotation.metadata.FrameOfReferenceUID,
+      };
+    }
+
+    const instance = metaData.get('instance', imageId);
+    const {
+      FrameOfReferenceUID,
+      // SOPInstanceUID,
+      // SeriesInstanceUID,
+      // StudyInstanceUID,
+    } = instance;
+
+    return {
+      imageId,
+      FrameOfReferenceUID,
+    };
+  }
+
   Object.keys(hydratableMeasurementsInSR).forEach(annotationType => {
     const toolDataForAnnotationType = hydratableMeasurementsInSR[annotationType];
 
     toolDataForAnnotationType.forEach(toolData => {
-      // Add the measurement to toolState
-      // dcmjs and Cornerstone3D has structural defect in supporting multi-frame
-      // files, and looking up the imageId from sopInstanceUIDToImageId results
-      // in the wrong value.
-      const frameNumber = (toolData.annotation.data && toolData.annotation.data.frameNumber) || 1;
-      const imageId =
-        imageIdsForToolState[toolData.sopInstanceUid][frameNumber] ||
-        sopInstanceUIDToImageId[toolData.sopInstanceUid];
-
       toolData.uid = guid();
-
-      const instance = metaData.get('instance', imageId);
-      const {
-        FrameOfReferenceUID,
-        // SOPInstanceUID,
-        // SeriesInstanceUID,
-        // StudyInstanceUID,
-      } = instance;
+      const { imageId, FrameOfReferenceUID } = getReferenceData(toolData);
 
       const annotation = {
         annotationUID: toolData.annotation.annotationUID,
