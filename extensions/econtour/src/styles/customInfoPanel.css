@@ -1,0 +1,39 @@
+.custom-html-content ul {
+  list-style-type: disc;
+  padding-left: 1.5rem;
+  margin: 0.5rem 0;
+}
+
+.custom-html-content ul ul,
+.custom-html-content ol ul {
+  list-style-type: circle;
+  padding-left: 1.5rem;
+  margin: 0.25rem 0;
+}
+
+.custom-html-content ol {
+  list-style-type: decimal;
+  padding-left: 1.5rem;
+  margin: 0.5rem 0;
+}
+
+.custom-html-content li {
+  margin-bottom: 0.25rem;
+}
+
+.custom-html-content a {
+  color: #3b82f6;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.custom-html-content a:hover {
+  text-decoration: none;
+}
+
+.custom-html-content a[target='_blank']::after {
+  content: '↗';
+  display: inline-block;
+  margin-left: 0.25rem;
+  font-size: 0.75rem;
+}

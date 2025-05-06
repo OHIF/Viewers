@@ -2,7 +2,7 @@
 
 window.config = {
   name: 'config/default.js',
-  routerBasename: null,
+  routerBasename: '/ohif',
   // whiteLabeling: {},
   extensions: [],
   modes: [],
@@ -18,6 +18,7 @@ window.config = {
   strictZSpacingForVolumeViewport: true,
   groupEnabledModesFirst: true,
   allowMultiSelectExport: false,
+  disableConfirmationPrompts: true,
   maxNumRequests: {
     interaction: 100,
     thumbnail: 75,
@@ -105,9 +106,9 @@ window.config = {
       configuration: {
         friendlyName: 'AWS S3 Static wado server',
         name: 'aws',
-        wadoUriRoot: 'https://d14fa38qiwhyfd.cloudfront.net/dicomweb',
-        qidoRoot: 'https://d14fa38qiwhyfd.cloudfront.net/dicomweb',
-        wadoRoot: 'https://d14fa38qiwhyfd.cloudfront.net/dicomweb',
+        wadoUriRoot: 'https://d1y5k8vtnzdwd8.cloudfront.net/dicomweb',
+        qidoRoot: 'https://d1y5k8vtnzdwd8.cloudfront.net/dicomweb',
+        wadoRoot: 'https://d1y5k8vtnzdwd8.cloudfront.net/dicomweb',
         qidoSupportsIncludeField: false,
         imageRendering: 'wadors',
         thumbnailRendering: 'wadors',

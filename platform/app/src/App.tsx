@@ -4,7 +4,8 @@ import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import i18n from '@ohif/i18n';
 import { I18nextProvider } from 'react-i18next';
-import { BrowserRouter } from 'react-router-dom';
+import { BrowserRouter, useNavigate } from 'react-router-dom';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 import Compose from './routes/Mode/Compose';
 import {
@@ -63,6 +64,19 @@ function App({
   defaultModes = [],
 }) {
   const [init, setInit] = useState(null);
+  // Create a client
+  const [queryClient] = useState(
+    () =>
+      new QueryClient({
+        defaultOptions: {
+          queries: {
+            staleTime: 1000 * 60 * 5, // 5 minutes
+            retry: 1,
+          },
+        },
+      })
+  );
+
   useEffect(() => {
     const run = async () => {
       appInit(config, defaultExtensions, defaultModes).then(setInit).catch(console.error);
@@ -108,6 +122,7 @@ function App({
 
   const providers = [
     [AppConfigProvider, { value: appConfigState }],
+    [QueryClientProvider, { client: queryClient }],
     [UserAuthenticationProvider, { service: userAuthenticationService }],
     [I18nextProvider, { i18n }],
     [ThemeWrapperNext],
@@ -164,9 +179,47 @@ function App({
       <BrowserRouter basename={routerBasename}>
         {authRoutes}
         {appRoutes}
+        <MessageHandler routerBasename={routerBasename} />
       </BrowserRouter>
     </CombinedProviders>
   );
+}
+
+// Separate component to use the navigation hooks
+function MessageHandler({ routerBasename }) {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // Add message event listener for iframe communication
+    const handleMessage = event => {
+      // You can add origin validation here if needed
+      // if (event.origin !== "https://parentapp.com") return;
+
+      const { type, path, query } = event.data;
+
+      if (type === 'navigate') {
+        const queryString = query
+          ? '?' +
+            Object.entries(query)
+              .map(([key, value]) => `${key}=${value}`)
+              .join('&')
+          : '';
+
+        // Use React Router's navigate instead of window.location
+        const targetPath = `${path}${queryString}`;
+        console.debug('Navigating to:', targetPath);
+        navigate(targetPath);
+      }
+    };
+
+    window.addEventListener('message', handleMessage);
+
+    return () => {
+      window.removeEventListener('message', handleMessage);
+    };
+  }, [navigate, routerBasename]);
+
+  return null;
 }
 
 App.propTypes = {
