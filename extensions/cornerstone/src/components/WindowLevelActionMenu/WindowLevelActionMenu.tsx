@@ -1,6 +1,6 @@
 import React, { ReactElement, useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { AllInOneMenu } from '@ohif/ui-next';
+import { AllInOneMenu, cn } from '@ohif/ui-next';
 import { useViewportGrid } from '@ohif/ui-next';
 import { Colormap } from './Colormap';
 import { Colorbar } from './Colorbar';
@@ -46,7 +46,7 @@ export function WindowLevelActionMenu({
     colorbarTickPosition,
     width: colorbarWidth,
   } = colorbarProperties;
-  debugger;
+
   const { colorbarService, cornerstoneViewportService } = servicesManager.services;
   const viewportInfo = cornerstoneViewportService.getViewportInfo(viewportId);
   const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
@@ -110,14 +110,16 @@ export function WindowLevelActionMenu({
     viewportGrid,
   ]);
 
-  return <div className="bg-red-500">hello</div>;
+  // return <div className="bg-red-500">hello</div>;
 
   return (
     <AllInOneMenu.Menu
-      verticalDirection={verticalDirection}
-      horizontalDirection={horizontalDirection}
-      menuStyle={{ maxHeight: vpHeight - 32, minWidth: 218 }}
       menuKey={menuKey}
+      key={menuKey}
+      // the visibility is handled by the parent component
+      isVisible={true}
+      horizontalDirection={horizontalDirection}
+      verticalDirection={verticalDirection}
     >
       <AllInOneMenu.ItemPanel>
         {!is3DVolume && (
