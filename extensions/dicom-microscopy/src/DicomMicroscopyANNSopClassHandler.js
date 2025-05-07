@@ -41,7 +41,7 @@ function _getDisplaySetsFromSeries(instances, servicesManager, extensionManager)
     plugin: 'microscopy',
     Modality: 'ANN',
     altImageText: 'Microscopy Annotation',
-    displaySetInstanceUID: utils.guid(),
+    displaySetInstanceUID: utils.guidCrypto(),
     SOPInstanceUID,
     SeriesInstanceUID,
     StudyInstanceUID,
