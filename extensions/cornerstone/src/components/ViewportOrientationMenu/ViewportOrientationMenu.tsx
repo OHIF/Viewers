@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { Icons, useViewportActionCorners, useViewportGrid } from '@ohif/ui-next';
 import { useSystem } from '@ohif/core';
 import { Enums } from '@cornerstonejs/core';
@@ -12,7 +12,7 @@ import {
 } from '@ohif/ui-next';
 
 // Unique ID for this menu component
-const MENU_ID = 'viewport-orientation-menu';
+const MENU_ID = 'orientationMenu';
 
 function ViewportOrientationMenu({ location }: withAppTypes<{ location?: string }>) {
   const { servicesManager, commandsManager } = useSystem();
@@ -22,13 +22,9 @@ function ViewportOrientationMenu({ location }: withAppTypes<{ location?: string 
 
   const viewportId = viewportGridState.activeViewportId;
 
-  // Handle open state from the service
-  const isMenuOpen = actionCornerState.viewports[viewportId][location].isOpen;
-  const [open, setOpen] = useState(false);
-
-  useEffect(() => {
-    setOpen(isMenuOpen ?? false);
-  }, [isMenuOpen]);
+  const isMenuOpen =
+    actionCornerState.viewports[viewportId]?.[location]?.find(item => item.id === MENU_ID)
+      ?.isOpen ?? false;
 
   const handleOrientationChange = (orientation: string) => {
     const viewportInfo = cornerstoneViewportService.getViewportInfo(viewportId);
@@ -98,20 +94,12 @@ function ViewportOrientationMenu({ location }: withAppTypes<{ location?: string 
   };
 
   const handleOpenChange = (openState: boolean) => {
-    setOpen(openState);
-
     if (openState) {
       viewportActionCornersServiceAPI.openItem?.(viewportId, MENU_ID);
     } else {
       viewportActionCornersServiceAPI.closeItem?.(viewportId, MENU_ID);
     }
   };
-
-  useEffect(() => {
-    return () => {
-      viewportActionCornersServiceAPI.closeItem?.(viewportId, MENU_ID);
-    };
-  }, [viewportId, viewportActionCornersServiceAPI]);
 
   const displaySetUIDs = viewportGridService.getDisplaySetsUIDsForViewport(viewportId);
   const displaySets = displaySetUIDs
@@ -136,7 +124,7 @@ function ViewportOrientationMenu({ location }: withAppTypes<{ location?: string 
 
   return (
     <DropdownMenu
-      open={open}
+      open={isMenuOpen}
       onOpenChange={handleOpenChange}
     >
       <DropdownMenuTrigger asChild>
