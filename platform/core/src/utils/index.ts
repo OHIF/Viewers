@@ -1,7 +1,6 @@
 import ObjectPath from './objectPath';
 import absoluteUrl from './absoluteUrl';
 import guid from './guid';
-import guidCrypto from './guid.crypto';
 import uuidv4 from './uuidv4';
 import sortBy from './sortBy.js';
 import writeScript from './writeScript.js';
@@ -47,7 +46,6 @@ import getClosestOrientationFromIOP from './getClosestOrientationFromIOP';
 
 const utils = {
   guid,
-  guidCrypto,
   uuidv4,
   ObjectPath,
   absoluteUrl,
