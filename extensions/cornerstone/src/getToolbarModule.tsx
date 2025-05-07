@@ -233,7 +233,7 @@ function _evaluateToggle({
   }
   const toolName = toolbarService.getToolNameForButton(button);
 
-  if (!toolGroup.hasTool(toolName)) {
+  if (!toolGroup?.hasTool(toolName)) {
     return getDisabledState(disabledText);
   }
 

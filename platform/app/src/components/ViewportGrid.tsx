@@ -1,5 +1,4 @@
-import React, { useEffect, useCallback, useRef, useMemo } from 'react';
-import { useResizeDetector } from 'react-resize-detector';
+import React, { useEffect, useCallback, useRef } from 'react';
 import { Types, MeasurementService } from '@ohif/core';
 import { ViewportGrid, ViewportPane } from '@ohif/ui-next';
 import { useViewportGrid } from '@ohif/ui-next';
@@ -13,14 +12,6 @@ function ViewerViewportGrid(props: withAppTypes) {
 
   const { layout, activeViewportId, viewports, isHangingProtocolLayout } = viewportGrid;
   const { numCols, numRows } = layout;
-  const { ref: resizeRef } = useResizeDetector({
-    refreshMode: 'debounce',
-    refreshRate: 7,
-    refreshOptions: { leading: true },
-    onResize: () => {
-      viewportGridService.setViewportGridSizeChanged();
-    },
-  });
   const layoutHash = useRef(null);
 
   const {
@@ -239,7 +230,7 @@ function ViewerViewportGrid(props: withAppTypes) {
         // Update stored position presentation
         commandsManager.run('updateStoredPositionPresentation', {
           viewportId: viewport.viewportId,
-          displaySetInstanceUID: referencedDisplaySetInstanceUID,
+          displaySetInstanceUIDs: [referencedDisplaySetInstanceUID],
           referencedImageId: measurement.referencedImageId,
           options: {
             ...measurement.metadata,
@@ -444,10 +435,7 @@ function ViewerViewportGrid(props: withAppTypes) {
   }
 
   return (
-    <div
-      ref={resizeRef}
-      className="border-input h-[calc(100%-0.25rem)] w-full border"
-    >
+    <div className="border-input h-[calc(100%-0.25rem)] w-full border">
       <ViewportGrid
         numRows={numRows}
         numCols={numCols}

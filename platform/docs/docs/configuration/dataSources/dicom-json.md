@@ -1,6 +1,8 @@
 ---
 sidebar_position: 3
 sidebar_label: DICOM JSON
+title: DICOM JSON
+summary: Explains how to configure and use the DICOM JSON data source format in OHIF, including structure of the JSON file with study/series/instance metadata, implementation examples, and local deployment instructions.
 ---
 
 # DICOM JSON

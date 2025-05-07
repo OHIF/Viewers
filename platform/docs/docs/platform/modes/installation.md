@@ -1,6 +1,8 @@
 ---
 sidebar_position: 5
 sidebar_label: Installation
+title: Mode Installation
+summary: Documentation for installing OHIF Modes, including how to use the OHIF CLI to add both local and NPM-published modes to extend the viewer with custom clinical workflows.
 ---
 
 # Modes: Installation

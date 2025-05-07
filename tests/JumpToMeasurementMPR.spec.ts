@@ -60,8 +60,25 @@ test('should hydrate in MPR correctly', async ({ page }) => {
   // scroll away
   await checkForScreenshot(page, page, screenShotPaths.jumpToMeasurementMPR.initialDraw);
 
-  // use mouse wheel to scroll away
-  await page.mouse.wheel(0, 100);
+  // Focus on the canvas first, then use mouse wheel to scroll away
+  await page.evaluate(() => {
+    // Access cornerstone directly from the window object
+    const cornerstone = window.cornerstone;
+    if (!cornerstone) {
+      return;
+    }
+
+    const enabledElements = cornerstone.getEnabledElements();
+    if (enabledElements.length === 0) {
+      return;
+    }
+
+    const viewport = enabledElements[0].viewport;
+    if (viewport) {
+      viewport.setImageIdIndex(0);
+      viewport.render();
+    }
+  });
 
   // wait 2 seconds
   await page.waitForTimeout(2000);

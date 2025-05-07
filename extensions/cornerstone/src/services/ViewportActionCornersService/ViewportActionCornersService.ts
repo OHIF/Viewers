@@ -10,6 +10,11 @@ export type ActionComponentInfo = {
   indexPriority?: number;
 };
 
+export type AlignAndSide = {
+  align: 'start' | 'end' | 'center';
+  side: 'top' | 'bottom' | 'left' | 'right';
+};
+
 class ViewportActionCornersService extends PubSubService {
   public static readonly EVENTS = {};
   public static readonly LOCATIONS = ViewportActionCornersLocations;
@@ -65,6 +70,22 @@ class ViewportActionCornersService extends PubSubService {
 
   public clear(viewportId: string) {
     this.serviceImplementation._clear(viewportId);
+  }
+
+  public getAlignAndSide(location: ViewportActionCornersLocations): AlignAndSide {
+    switch (location) {
+      case ViewportActionCornersLocations.topLeft:
+        return { align: 'start', side: 'bottom' };
+      case ViewportActionCornersLocations.topRight:
+        return { align: 'end', side: 'bottom' };
+      case ViewportActionCornersLocations.bottomLeft:
+        return { align: 'start', side: 'top' };
+      case ViewportActionCornersLocations.bottomRight:
+        return { align: 'end', side: 'top' };
+      default:
+        console.debug('Unknown location, defaulting to bottom-start');
+        return { align: 'start', side: 'bottom' };
+    }
   }
 }
 

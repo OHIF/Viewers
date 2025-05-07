@@ -239,7 +239,10 @@ export default class ToolbarService extends PubSubService {
         const { disabled, disabledText, className, isActive } = evaluationResults.get(button.id);
         return { ...props, disabled, disabledText, className, isActive };
       } else {
-        const evaluated = props.evaluate?.({ ...refreshProps, button });
+        const evaluated =
+          typeof props.evaluate === 'function'
+            ? props.evaluate({ ...refreshProps, button })
+            : undefined;
         const updatedProps = {
           ...props,
           ...evaluated,

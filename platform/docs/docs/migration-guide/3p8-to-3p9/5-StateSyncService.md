@@ -1,6 +1,7 @@
 ---
 id: state-sync-service
 title: StateSyncService
+summary: Migration guide for transitioning from StateSyncService to Zustand stores in OHIF 3.9, covering all store types including LutPresentationStore, PositionPresentationStore, ViewportGridStore, and more with examples of old and new API usage.
 ---
 
 
