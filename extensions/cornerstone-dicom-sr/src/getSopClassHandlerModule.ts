@@ -216,6 +216,12 @@ async function _load(
   });
 }
 
+function _measurementSharesFrameOfReferenceUID({ measurement, displaySet }) {
+  return (
+    measurement.coords[0].ReferencedFrameOfReferenceSequence === displaySet.FrameOfReferenceUID
+  );
+}
+
 /**
  * Checks if measurements can be added to a display set.
  *
@@ -262,6 +268,7 @@ function _checkIfCanAddMeasurementsToDisplaySet(
 
   for (let j = unloadedMeasurements.length - 1; j >= 0; j--) {
     let measurement = unloadedMeasurements[j];
+    const is3DMeasurement = measurement.coords?.[0]?.ValueType === 'SCOORD3D';
 
     const onBeforeSRAddMeasurement = customizationService.getCustomization(
       'onBeforeSRAddMeasurement'
@@ -276,9 +283,20 @@ function _checkIfCanAddMeasurementsToDisplaySet(
     }
 
     // if it is 3d SR we can just add the SR annotation
-    if (is3DSR || measurement.coords?.[0]?.ValueType === 'SCOORD3D') {
+    if (is3DSR) {
       addSRAnnotation(measurement, null, null);
       measurement.loaded = true;
+      continue;
+    }
+
+    // if it is a SCOORD3D measurement we can also just add the SR annotation
+    if (
+      is3DMeasurement &&
+      _measurementSharesFrameOfReferenceUID({ measurement, displaySet: newDisplaySet })
+    ) {
+      addSRAnnotation(measurement, null, null);
+      measurement.loaded = true;
+      measurement.displaySetInstanceUID = newDisplaySet.displaySetInstanceUID;
       unloadedMeasurements.splice(j, 1);
       continue;
     }
