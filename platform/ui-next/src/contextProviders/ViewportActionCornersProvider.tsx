@@ -12,7 +12,7 @@ import { ActionComponentInfo, AlignAndSide } from '../types';
 
 // Define the default state
 const DEFAULT_STATE = {
-  components: {} as Record<string, Record<ViewportActionCornersLocations, ActionComponentInfo[]>>,
+  viewports: {} as Record<string, Record<ViewportActionCornersLocations, ActionComponentInfo[]>>,
 };
 
 interface ViewportActionCornersApi {
@@ -21,6 +21,8 @@ interface ViewportActionCornersApi {
   addComponents: (components: Array<ActionComponentInfo>) => void;
   clear: (viewportId: string) => void;
   getAlignAndSide: (location: ViewportActionCornersLocations) => AlignAndSide;
+  setMenuDisabled: (viewportId: string, itemId: string, disabledStatus: boolean) => void;
+  isDisabled: (viewportId: string, itemId: string) => boolean;
 }
 
 export const ViewportActionCornersContext = createContext<
@@ -43,8 +45,8 @@ export function ViewportActionCornersProvider({
 
         const newState = { ...state };
 
-        if (!newState.components[viewportId]) {
-          newState.components[viewportId] = {
+        if (!newState.viewports[viewportId]) {
+          newState.viewports[viewportId] = {
             [ViewportActionCornersLocations.topLeft]: [],
             [ViewportActionCornersLocations.topRight]: [],
             [ViewportActionCornersLocations.bottomLeft]: [],
@@ -52,13 +54,13 @@ export function ViewportActionCornersProvider({
           };
         }
 
-        if (!newState.components[viewportId][location]) {
-          newState.components[viewportId][location] = [];
+        if (!newState.viewports[viewportId][location]) {
+          newState.viewports[viewportId][location] = [];
         }
 
         const componentInfo = { id, component, indexPriority };
 
-        const components = [...newState.components[viewportId][location]];
+        const components = [...newState.viewports[viewportId][location]];
         const index = components.findIndex(item => item.indexPriority > indexPriority);
 
         if (index === -1) {
@@ -67,7 +69,7 @@ export function ViewportActionCornersProvider({
           components.splice(index, 0, componentInfo);
         }
 
-        newState.components[viewportId][location] = components;
+        newState.viewports[viewportId][location] = components;
 
         return newState;
       }
@@ -90,12 +92,38 @@ export function ViewportActionCornersProvider({
         const viewportId = action.payload;
         const newState = { ...state };
 
-        if (newState.components[viewportId]) {
-          const newComponents = { ...newState.components };
-          delete newComponents[viewportId];
-          newState.components = newComponents;
+        if (newState.viewports[viewportId]) {
+          const newViewports = { ...newState.viewports };
+          delete newViewports[viewportId];
+          newState.viewports = newViewports;
         }
 
+        return newState;
+      }
+
+      case 'SET_DISABLED': {
+        const { viewportId, itemId, disabledStatus } = action.payload;
+        const newState = { ...state };
+
+        if (!newState.viewports[viewportId]) {
+          return state;
+        }
+
+        const viewportCopy = { ...newState.viewports[viewportId] };
+
+        Object.keys(viewportCopy).forEach(locationKey => {
+          const location = Number(locationKey) as ViewportActionCornersLocations;
+          const components = [...viewportCopy[location]];
+
+          const itemIndex = components.findIndex(item => item.id === itemId);
+          if (itemIndex !== -1) {
+            const updatedItem = { ...components[itemIndex], disabled: disabledStatus };
+            components[itemIndex] = updatedItem;
+            viewportCopy[location] = components;
+          }
+        });
+
+        newState.viewports[viewportId] = viewportCopy;
         return newState;
       }
 
@@ -140,6 +168,37 @@ export function ViewportActionCornersProvider({
     [dispatch]
   );
 
+  const setMenuDisabled = useCallback(
+    (viewportId: string, itemId: string, disabledStatus: boolean) => {
+      dispatch({
+        type: 'SET_DISABLED',
+        payload: { viewportId, itemId, disabledStatus },
+      });
+    },
+    [dispatch]
+  );
+
+  const isDisabled = useCallback(
+    (viewportId: string, itemId: string) => {
+      if (!state.viewports[viewportId]) {
+        return false;
+      }
+
+      for (const locationKey in state.viewports[viewportId]) {
+        const location = Number(locationKey) as ViewportActionCornersLocations;
+        const components = state.viewports[viewportId][location];
+        const item = components.find(item => item.id === itemId);
+
+        if (item && item.disabled) {
+          return true;
+        }
+      }
+
+      return false;
+    },
+    [state.viewports]
+  );
+
   const getAlignAndSide = useCallback(
     (location: ViewportActionCornersLocations) => {
       return service.getAlignAndSide(location);
@@ -154,8 +213,10 @@ export function ViewportActionCornersProvider({
       addComponents,
       clear,
       getAlignAndSide,
+      setMenuDisabled,
+      isDisabled,
     };
-  }, [getState, addComponent, addComponents, clear, getAlignAndSide]);
+  }, [getState, addComponent, addComponents, clear, getAlignAndSide, setMenuDisabled, isDisabled]);
 
   useEffect(() => {
     if (service && service.setServiceImplementation) {
@@ -164,11 +225,13 @@ export function ViewportActionCornersProvider({
         addComponent,
         addComponents,
         clear,
+        setMenuDisabled,
+        isDisabled,
       };
 
       service.setServiceImplementation(implementation);
     }
-  }, [service]);
+  }, [service, getState, addComponent, addComponents, clear, setMenuDisabled, isDisabled]);
 
   return (
     <ViewportActionCornersContext.Provider value={[state, api]}>

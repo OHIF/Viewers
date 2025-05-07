@@ -12,11 +12,11 @@ export type OHIFViewportActionCornersProps = {
 function OHIFViewportActionCorners({ viewportId }: OHIFViewportActionCornersProps) {
   const [state] = useViewportActionCorners();
 
-  if (!state.components[viewportId]) {
+  if (!state.viewports[viewportId]) {
     return null;
   }
 
-  const components = state.components[viewportId];
+  const components = state.viewports[viewportId];
 
   const renderCorner = (location: ViewportActionCornersLocations, CornerComponent) => {
     const cornerComponents = components[location];
@@ -27,7 +27,12 @@ function OHIFViewportActionCorners({ viewportId }: OHIFViewportActionCornersProp
     return (
       <CornerComponent>
         {cornerComponents.map(componentInfo => (
-          <div key={componentInfo.id}>{componentInfo.component}</div>
+          <div
+            key={componentInfo.id}
+            className={componentInfo.disabled ? 'pointer-events-none opacity-50' : undefined}
+          >
+            {componentInfo.component}
+          </div>
         ))}
       </CornerComponent>
     );

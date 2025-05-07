@@ -1,6 +1,6 @@
 import React, { ReactElement, useCallback, useEffect, useState } from 'react';
-import { Switch } from '@ohif/ui-next';
-import { ColorbarProps, ColorbarPositionType, TickPositionType, ColorbarOptions } from '../../types/Colorbar';
+import { Switch, useViewportActionCorners } from '@ohif/ui-next';
+import { ColorbarProps, ColorbarOptions } from '../../types/Colorbar';
 import { utilities } from '@cornerstonejs/core';
 import { useSystem } from '@ohif/core';
 
@@ -51,6 +51,7 @@ export function Colorbar({
     colormaps,
     colorbarInitialColormap,
   } = colorbarProperties;
+  const [_, api] = useViewportActionCorners();
   const [showColorbar, setShowColorbar] = useState(colorbarService.hasColorbar(viewportId));
 
   const onSetColorbar = useCallback(() => {
@@ -97,6 +98,7 @@ export function Colorbar({
         onClick={e => {
           e.stopPropagation();
           onSetColorbar();
+          api.setMenuDisabled(viewportId, '', !showColorbar);
         }}
       />
     </div>

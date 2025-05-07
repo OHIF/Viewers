@@ -27,6 +27,8 @@ class ViewportActionCornersService extends PubSubService {
     addComponent: addComponentImplementation,
     addComponents: addComponentsImplementation,
     clear: clearComponentsImplementation,
+    setMenuDisabled: setMenuDisabledImplementation,
+    isDisabled: isDisabledImplementation,
   }): void {
     if (getStateImplementation) {
       this.serviceImplementation._getState = getStateImplementation;
@@ -39,6 +41,12 @@ class ViewportActionCornersService extends PubSubService {
     }
     if (clearComponentsImplementation) {
       this.serviceImplementation._clear = clearComponentsImplementation;
+    }
+    if (setMenuDisabledImplementation) {
+      this.serviceImplementation._setMenuDisabled = setMenuDisabledImplementation;
+    }
+    if (isDisabledImplementation) {
+      this.serviceImplementation._isDisabled = isDisabledImplementation;
     }
   }
 
@@ -56,6 +64,14 @@ class ViewportActionCornersService extends PubSubService {
 
   public clear(viewportId: string) {
     this.serviceImplementation._clear(viewportId);
+  }
+
+  public setMenuDisabled(viewportId: string, itemId: string, disabledStatus: boolean) {
+    this.serviceImplementation._setMenuDisabled(viewportId, itemId, disabledStatus);
+  }
+
+  public isDisabled(viewportId: string, itemId: string): boolean {
+    return this.serviceImplementation._isDisabled(viewportId, itemId);
   }
 
   public getAlignAndSide(location: ViewportActionCornersLocations): Types.AlignAndSide {
