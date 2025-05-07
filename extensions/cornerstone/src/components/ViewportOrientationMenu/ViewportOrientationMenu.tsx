@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Icons, useViewportGrid } from '@ohif/ui-next';
+import { Icons, useViewportActionCorners, useViewportGrid } from '@ohif/ui-next';
 import { useSystem } from '@ohif/core';
 import { Enums } from '@cornerstonejs/core';
 import {
@@ -17,17 +17,16 @@ const MENU_ID = 'viewport-orientation-menu';
 function ViewportOrientationMenu({ location }: withAppTypes<{ location?: string }>) {
   const { servicesManager, commandsManager } = useSystem();
   const [viewportGridState, viewportGridService] = useViewportGrid();
-  const { cornerstoneViewportService, displaySetService, viewportActionCornersService } =
-    servicesManager.services;
+  const [actionCornerState, viewportActionCornersServiceAPI] = useViewportActionCorners();
+  const { cornerstoneViewportService, displaySetService } = servicesManager.services;
 
   const viewportId = viewportGridState.activeViewportId;
 
   // Handle open state from the service
-  const isMenuOpen = viewportActionCornersService.isItemOpen?.(viewportId, MENU_ID);
+  const isMenuOpen = actionCornerState.viewports[viewportId][location].isOpen;
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
-    // Sync local state with the service state
     setOpen(isMenuOpen ?? false);
   }, [isMenuOpen]);
 
@@ -95,26 +94,24 @@ function ViewportOrientationMenu({ location }: withAppTypes<{ location?: string 
     }
 
     // Close the menu after selection
-    viewportActionCornersService.closeItem?.(viewportId, MENU_ID);
+    viewportActionCornersServiceAPI.closeItem?.(viewportId, MENU_ID);
   };
 
-  // Handle dropdown open/close
   const handleOpenChange = (openState: boolean) => {
     setOpen(openState);
 
     if (openState) {
-      viewportActionCornersService.openItem?.(viewportId, MENU_ID);
+      viewportActionCornersServiceAPI.openItem?.(viewportId, MENU_ID);
     } else {
-      viewportActionCornersService.closeItem?.(viewportId, MENU_ID);
+      viewportActionCornersServiceAPI.closeItem?.(viewportId, MENU_ID);
     }
   };
 
-  // Clean up when component unmounts
   useEffect(() => {
     return () => {
-      viewportActionCornersService.closeItem?.(viewportId, MENU_ID);
+      viewportActionCornersServiceAPI.closeItem?.(viewportId, MENU_ID);
     };
-  }, [viewportId, viewportActionCornersService]);
+  }, [viewportId, viewportActionCornersServiceAPI]);
 
   const displaySetUIDs = viewportGridService.getDisplaySetsUIDsForViewport(viewportId);
   const displaySets = displaySetUIDs
@@ -132,7 +129,7 @@ function ViewportOrientationMenu({ location }: withAppTypes<{ location?: string 
   let side = 'bottom';
 
   if (location !== undefined) {
-    const positioning = viewportActionCornersService.getAlignAndSide(location);
+    const positioning = viewportActionCornersServiceAPI.getAlignAndSide(location);
     align = positioning.align;
     side = positioning.side;
   }
