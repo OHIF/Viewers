@@ -26,9 +26,19 @@ class ViewportActionCornersService extends PubSubService {
     getState: getStateImplementation,
     addComponent: addComponentImplementation,
     addComponents: addComponentsImplementation,
-    clear: clearComponentsImplementation,
-    setMenuEnabled: setMenuEnabledImplementation,
-    isEnabled: isEnabledImplementation,
+    clearViewport: clearViewportImplementation,
+    lockItem: lockItemImplementation,
+    unlockItem: unlockItemImplementation,
+    toggleLock: toggleLockImplementation,
+    isItemLocked: isItemLockedImplementation,
+    showItem: showItemImplementation,
+    hideItem: hideItemImplementation,
+    toggleVisibility: toggleVisibilityImplementation,
+    isItemVisible: isItemVisibleImplementation,
+    openItem: openItemImplementation,
+    closeItem: closeItemImplementation,
+    closeAllItems: closeAllItemsImplementation,
+    isItemOpen: isItemOpenImplementation,
   }): void {
     if (getStateImplementation) {
       this.serviceImplementation._getState = getStateImplementation;
@@ -39,14 +49,44 @@ class ViewportActionCornersService extends PubSubService {
     if (addComponentsImplementation) {
       this.serviceImplementation._addComponents = addComponentsImplementation;
     }
-    if (clearComponentsImplementation) {
-      this.serviceImplementation._clear = clearComponentsImplementation;
+    if (clearViewportImplementation) {
+      this.serviceImplementation._clearViewport = clearViewportImplementation;
     }
-    if (setMenuEnabledImplementation) {
-      this.serviceImplementation._setMenuEnabled = setMenuEnabledImplementation;
+    if (lockItemImplementation) {
+      this.serviceImplementation._lockItem = lockItemImplementation;
     }
-    if (isEnabledImplementation) {
-      this.serviceImplementation._isEnabled = isEnabledImplementation;
+    if (unlockItemImplementation) {
+      this.serviceImplementation._unlockItem = unlockItemImplementation;
+    }
+    if (toggleLockImplementation) {
+      this.serviceImplementation._toggleLock = toggleLockImplementation;
+    }
+    if (isItemLockedImplementation) {
+      this.serviceImplementation._isItemLocked = isItemLockedImplementation;
+    }
+    if (showItemImplementation) {
+      this.serviceImplementation._showItem = showItemImplementation;
+    }
+    if (hideItemImplementation) {
+      this.serviceImplementation._hideItem = hideItemImplementation;
+    }
+    if (toggleVisibilityImplementation) {
+      this.serviceImplementation._toggleVisibility = toggleVisibilityImplementation;
+    }
+    if (isItemVisibleImplementation) {
+      this.serviceImplementation._isItemVisible = isItemVisibleImplementation;
+    }
+    if (openItemImplementation) {
+      this.serviceImplementation._openItem = openItemImplementation;
+    }
+    if (closeItemImplementation) {
+      this.serviceImplementation._closeItem = closeItemImplementation;
+    }
+    if (closeAllItemsImplementation) {
+      this.serviceImplementation._closeAllItems = closeAllItemsImplementation;
+    }
+    if (isItemOpenImplementation) {
+      this.serviceImplementation._isItemOpen = isItemOpenImplementation;
     }
   }
 
@@ -62,16 +102,59 @@ class ViewportActionCornersService extends PubSubService {
     this.serviceImplementation._addComponents(components);
   }
 
-  public clear(viewportId: string) {
-    this.serviceImplementation._clear(viewportId);
+  public clearViewport(viewportId: string): void {
+    this.serviceImplementation._clearViewport(viewportId);
   }
 
-  public setMenuEnabled(viewportId: string, itemId: string, enabledStatus: boolean) {
-    this.serviceImplementation._setMenuEnabled(viewportId, itemId, enabledStatus);
+  /* lock / unlock */
+  public lockItem(viewportId: string, itemId: string): void {
+    this.serviceImplementation._lockItem(viewportId, itemId);
   }
 
-  public isEnabled(viewportId: string, itemId: string): boolean {
-    return this.serviceImplementation._isEnabled(viewportId, itemId);
+  public unlockItem(viewportId: string, itemId: string): void {
+    this.serviceImplementation._unlockItem(viewportId, itemId);
+  }
+
+  public toggleLock(viewportId: string, itemId: string): void {
+    this.serviceImplementation._toggleLock(viewportId, itemId);
+  }
+
+  public isItemLocked(viewportId: string, itemId: string): boolean {
+    return this.serviceImplementation._isItemLocked(viewportId, itemId);
+  }
+
+  /* visibility */
+  public showItem(viewportId: string, itemId: string): void {
+    this.serviceImplementation._showItem(viewportId, itemId);
+  }
+
+  public hideItem(viewportId: string, itemId: string): void {
+    this.serviceImplementation._hideItem(viewportId, itemId);
+  }
+
+  public toggleVisibility(viewportId: string, itemId: string): void {
+    this.serviceImplementation._toggleVisibility(viewportId, itemId);
+  }
+
+  public isItemVisible(viewportId: string, itemId: string): boolean {
+    return this.serviceImplementation._isItemVisible(viewportId, itemId);
+  }
+
+  /* open / close */
+  public openItem(viewportId: string, itemId: string): void {
+    this.serviceImplementation._openItem(viewportId, itemId);
+  }
+
+  public closeItem(viewportId: string, itemId: string): void {
+    this.serviceImplementation._closeItem(viewportId, itemId);
+  }
+
+  public closeAllItems(viewportId: string): void {
+    this.serviceImplementation._closeAllItems(viewportId);
+  }
+
+  public isItemOpen(viewportId: string, itemId: string): boolean {
+    return this.serviceImplementation._isItemOpen(viewportId, itemId);
   }
 
   public getAlignAndSide(location: ViewportActionCornersLocations): Types.AlignAndSide {

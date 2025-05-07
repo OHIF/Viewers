@@ -19,16 +19,20 @@ interface ViewportActionCornersApi {
   getState: () => typeof DEFAULT_STATE;
   addComponent: (component: ActionComponentInfo) => void;
   addComponents: (components: Array<ActionComponentInfo>) => void;
-  clear: (viewportId: string) => void;
+  clearViewport: (viewportId: string) => void;
   getAlignAndSide: (location: ViewportActionCornersLocations) => AlignAndSide;
-  setMenuLocked: (viewportId: string, itemId: string, lockedStatus: boolean) => void;
-  isLocked: (viewportId: string, itemId: string) => boolean;
-  setMenuVisible: (viewportId: string, itemId: string, visibleStatus: boolean) => void;
-  isVisible: (viewportId: string, itemId: string) => boolean;
-  open: (viewportId: string, itemId: string) => void;
-  close: (viewportId: string, itemId: string) => void;
-  closeAll: (viewportId: string) => void;
-  isOpen: (viewportId: string, itemId: string) => boolean;
+  lockItem: (viewportId: string, itemId: string) => void;
+  unlockItem: (viewportId: string, itemId: string) => void;
+  toggleLock: (viewportId: string, itemId: string) => void;
+  isItemLocked: (viewportId: string, itemId: string) => boolean;
+  showItem: (viewportId: string, itemId: string) => void;
+  hideItem: (viewportId: string, itemId: string) => void;
+  toggleVisibility: (viewportId: string, itemId: string) => void;
+  isItemVisible: (viewportId: string, itemId: string) => boolean;
+  openItem: (viewportId: string, itemId: string) => void;
+  closeItem: (viewportId: string, itemId: string) => void;
+  closeAllItems: (viewportId: string) => void;
+  isItemOpen: (viewportId: string, itemId: string) => boolean;
 }
 
 export const ViewportActionCornersContext = createContext<
@@ -276,7 +280,7 @@ export function ViewportActionCornersProvider({
     [dispatch]
   );
 
-  const clear = useCallback(
+  const clearViewport = useCallback(
     (viewportId: string) => {
       dispatch({
         type: 'CLEAR',
@@ -286,17 +290,38 @@ export function ViewportActionCornersProvider({
     [dispatch]
   );
 
-  const setMenuLocked = useCallback(
-    (viewportId: string, itemId: string, lockedStatus: boolean) => {
+  const lockItem = useCallback(
+    (viewportId: string, itemId: string) => {
       dispatch({
         type: 'SET_LOCKED',
-        payload: { viewportId, itemId, lockedStatus },
+        payload: { viewportId, itemId, lockedStatus: true },
       });
     },
     [dispatch]
   );
 
-  const isLocked = useCallback(
+  const unlockItem = useCallback(
+    (viewportId: string, itemId: string) => {
+      dispatch({
+        type: 'SET_LOCKED',
+        payload: { viewportId, itemId, lockedStatus: false },
+      });
+    },
+    [dispatch]
+  );
+
+  const toggleLock = useCallback(
+    (viewportId: string, itemId: string) => {
+      const currentLocked = isItemLocked(viewportId, itemId);
+      dispatch({
+        type: 'SET_LOCKED',
+        payload: { viewportId, itemId, lockedStatus: !currentLocked },
+      });
+    },
+    [dispatch]
+  );
+
+  const isItemLocked = useCallback(
     (viewportId: string, itemId: string) => {
       if (!state.viewports[viewportId]) {
         return false; // Default to unlocked if viewport doesn't exist
@@ -317,17 +342,38 @@ export function ViewportActionCornersProvider({
     [state.viewports]
   );
 
-  const setMenuVisible = useCallback(
-    (viewportId: string, itemId: string, visibleStatus: boolean) => {
+  const showItem = useCallback(
+    (viewportId: string, itemId: string) => {
       dispatch({
         type: 'SET_VISIBLE',
-        payload: { viewportId, itemId, visibleStatus },
+        payload: { viewportId, itemId, visibleStatus: true },
       });
     },
     [dispatch]
   );
 
-  const isVisible = useCallback(
+  const hideItem = useCallback(
+    (viewportId: string, itemId: string) => {
+      dispatch({
+        type: 'SET_VISIBLE',
+        payload: { viewportId, itemId, visibleStatus: false },
+      });
+    },
+    [dispatch]
+  );
+
+  const toggleVisibility = useCallback(
+    (viewportId: string, itemId: string) => {
+      const currentVisible = isItemVisible(viewportId, itemId);
+      dispatch({
+        type: 'SET_VISIBLE',
+        payload: { viewportId, itemId, visibleStatus: !currentVisible },
+      });
+    },
+    [dispatch]
+  );
+
+  const isItemVisible = useCallback(
     (viewportId: string, itemId: string) => {
       if (!state.viewports[viewportId]) {
         return true; // Default to visible if viewport doesn't exist
@@ -348,7 +394,7 @@ export function ViewportActionCornersProvider({
     [state.viewports]
   );
 
-  const open = useCallback(
+  const openItem = useCallback(
     (viewportId: string, itemId: string) => {
       dispatch({
         type: 'OPEN_ITEM',
@@ -358,7 +404,7 @@ export function ViewportActionCornersProvider({
     [dispatch]
   );
 
-  const close = useCallback(
+  const closeItem = useCallback(
     (viewportId: string, itemId: string) => {
       dispatch({
         type: 'CLOSE_ITEM',
@@ -368,7 +414,7 @@ export function ViewportActionCornersProvider({
     [dispatch]
   );
 
-  const closeAll = useCallback(
+  const closeAllItems = useCallback(
     (viewportId: string) => {
       dispatch({
         type: 'CLOSE_ALL_ITEMS',
@@ -378,7 +424,7 @@ export function ViewportActionCornersProvider({
     [dispatch]
   );
 
-  const isOpen = useCallback(
+  const isItemOpen = useCallback(
     (viewportId: string, itemId: string) => {
       if (!state.viewports[viewportId]) {
         return false;
@@ -411,31 +457,39 @@ export function ViewportActionCornersProvider({
       getState,
       addComponent,
       addComponents,
-      clear,
+      clearViewport,
       getAlignAndSide,
-      setMenuLocked,
-      isLocked,
-      setMenuVisible,
-      isVisible,
-      open,
-      close,
-      closeAll,
-      isOpen,
+      lockItem,
+      unlockItem,
+      toggleLock,
+      isItemLocked,
+      showItem,
+      hideItem,
+      toggleVisibility,
+      isItemVisible,
+      openItem,
+      closeItem,
+      closeAllItems,
+      isItemOpen,
     };
   }, [
     getState,
     addComponent,
     addComponents,
-    clear,
+    clearViewport,
     getAlignAndSide,
-    setMenuLocked,
-    isLocked,
-    setMenuVisible,
-    isVisible,
-    open,
-    close,
-    closeAll,
-    isOpen,
+    lockItem,
+    unlockItem,
+    toggleLock,
+    isItemLocked,
+    showItem,
+    hideItem,
+    toggleVisibility,
+    isItemVisible,
+    openItem,
+    closeItem,
+    closeAllItems,
+    isItemOpen,
   ]);
 
   useEffect(() => {
@@ -444,15 +498,19 @@ export function ViewportActionCornersProvider({
         getState,
         addComponent,
         addComponents,
-        clear,
-        setMenuLocked,
-        isLocked,
-        setMenuVisible,
-        isVisible,
-        open,
-        close,
-        closeAll,
-        isOpen,
+        clearViewport,
+        lockItem,
+        unlockItem,
+        toggleLock,
+        isItemLocked,
+        showItem,
+        hideItem,
+        toggleVisibility,
+        isItemVisible,
+        openItem,
+        closeItem,
+        closeAllItems,
+        isItemOpen,
       };
 
       service.setServiceImplementation(implementation);
@@ -462,15 +520,19 @@ export function ViewportActionCornersProvider({
     getState,
     addComponent,
     addComponents,
-    clear,
-    setMenuLocked,
-    isLocked,
-    setMenuVisible,
-    isVisible,
-    open,
-    close,
-    closeAll,
-    isOpen,
+    clearViewport,
+    lockItem,
+    unlockItem,
+    toggleLock,
+    isItemLocked,
+    showItem,
+    hideItem,
+    toggleVisibility,
+    isItemVisible,
+    openItem,
+    closeItem,
+    closeAllItems,
+    isItemOpen,
   ]);
 
   return (
