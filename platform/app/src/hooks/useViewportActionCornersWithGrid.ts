@@ -43,7 +43,7 @@ export default function useViewportActionCornersWithGrid() {
       processedViewports.current.add(viewportId);
 
       // Clear any existing components for this viewport
-      api.clearViewport(viewportId);
+      api.clear(viewportId);
 
       // Process each location
       Object.entries(locationMap).forEach(([locationKey, locationValue]) => {
@@ -103,7 +103,7 @@ export default function useViewportActionCornersWithGrid() {
       processedViewports.current.delete(viewportId);
 
       // Clear from the store
-      api.clearViewport(viewportId);
+      api.clear(viewportId);
     },
     [api]
   );

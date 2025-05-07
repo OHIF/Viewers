@@ -19,7 +19,7 @@ interface ViewportActionCornersApi {
   getState: () => typeof DEFAULT_STATE;
   addComponent: (component: ActionComponentInfo) => void;
   addComponents: (components: Array<ActionComponentInfo>) => void;
-  clearViewport: (viewportId: string) => void;
+  clear: (viewportId: string) => void;
   getAlignAndSide: (location: ViewportActionCornersLocations) => AlignAndSide;
   lockItem: (viewportId: string, itemId: string) => void;
   unlockItem: (viewportId: string, itemId: string) => void;
@@ -280,7 +280,7 @@ export function ViewportActionCornersProvider({
     [dispatch]
   );
 
-  const clearViewport = useCallback(
+  const clear = useCallback(
     (viewportId: string) => {
       dispatch({
         type: 'CLEAR',
@@ -457,7 +457,7 @@ export function ViewportActionCornersProvider({
       getState,
       addComponent,
       addComponents,
-      clearViewport,
+      clear,
       getAlignAndSide,
       lockItem,
       unlockItem,
@@ -476,7 +476,7 @@ export function ViewportActionCornersProvider({
     getState,
     addComponent,
     addComponents,
-    clearViewport,
+    clear,
     getAlignAndSide,
     lockItem,
     unlockItem,
@@ -498,7 +498,7 @@ export function ViewportActionCornersProvider({
         getState,
         addComponent,
         addComponents,
-        clearViewport,
+        clear,
         lockItem,
         unlockItem,
         toggleLock,
@@ -520,7 +520,7 @@ export function ViewportActionCornersProvider({
     getState,
     addComponent,
     addComponents,
-    clearViewport,
+    clear,
     lockItem,
     unlockItem,
     toggleLock,

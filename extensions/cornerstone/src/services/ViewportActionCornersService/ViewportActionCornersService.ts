@@ -26,7 +26,7 @@ class ViewportActionCornersService extends PubSubService {
     getState: getStateImplementation,
     addComponent: addComponentImplementation,
     addComponents: addComponentsImplementation,
-    clearViewport: clearViewportImplementation,
+    clear: clearImplementation,
     lockItem: lockItemImplementation,
     unlockItem: unlockItemImplementation,
     toggleLock: toggleLockImplementation,
@@ -49,8 +49,8 @@ class ViewportActionCornersService extends PubSubService {
     if (addComponentsImplementation) {
       this.serviceImplementation._addComponents = addComponentsImplementation;
     }
-    if (clearViewportImplementation) {
-      this.serviceImplementation._clearViewport = clearViewportImplementation;
+    if (clearImplementation) {
+      this.serviceImplementation._clear = clearImplementation;
     }
     if (lockItemImplementation) {
       this.serviceImplementation._lockItem = lockItemImplementation;
@@ -102,8 +102,8 @@ class ViewportActionCornersService extends PubSubService {
     this.serviceImplementation._addComponents(components);
   }
 
-  public clearViewport(viewportId: string): void {
-    this.serviceImplementation._clearViewport(viewportId);
+  public clear(viewportId: string): void {
+    this.serviceImplementation._clear(viewportId);
   }
 
   /* lock / unlock */
