@@ -43,38 +43,33 @@ export default function loadAnnotation({
           studyInstanceUID: metadata.StudyInstanceUID,
           seriesInstanceUID: metadata.SeriesInstanceUID,
         })
-        .then(retrievedMetadata => {
-          const annotations = retrievedMetadata.map(metadata => {
-            return new dicomMicroscopyModule.metadata.MicroscopyBulkSimpleAnnotations({
-              metadata,
-            });
-          });
+        .then(async retrievedMetadata => {
+          const annotations = retrievedMetadata.map(
+            metadata =>
+              new dicomMicroscopyModule.metadata.MicroscopyBulkSimpleAnnotations({ metadata })
+          );
 
-          annotations.forEach(async ann => {
-            try {
-              await managedViewer.viewer.addAnnotationGroups(ann);
+          await Promise.all(
+            annotations.map(async ann => {
+              try {
+                await managedViewer.viewer.addAnnotationGroups(ann);
 
-              ann.AnnotationGroupSequence.forEach(item => {
-                const annotationGroupUID = item.AnnotationGroupUID;
-                managedViewer.viewer.setAnnotationGroupStyle(annotationGroupUID, {
-                  color: [255, 234, 0],
+                ann.AnnotationGroupSequence.forEach(item => {
+                  const annotationGroupUID = item.AnnotationGroupUID;
+                  managedViewer.viewer.setAnnotationGroupStyle(annotationGroupUID, {
+                    color: [255, 234, 0],
+                  });
                 });
-              });
 
-              ann.AnnotationGroupSequence.forEach(item => {
-                const annotationGroupUID = item.AnnotationGroupUID;
-                managedViewer.viewer.showAnnotationGroup(annotationGroupUID);
-                window.showit = () => {
+                ann.AnnotationGroupSequence.forEach(item => {
+                  const annotationGroupUID = item.AnnotationGroupUID;
                   managedViewer.viewer.showAnnotationGroup(annotationGroupUID);
-                };
-                window.hideit = () => {
-                  managedViewer.viewer.showAnnotationGroup(annotationGroupUID);
-                };
-              });
-            } catch (error) {
-              console.error('failed to add annotation groups:', error);
-            }
-          });
+                });
+              } catch (error) {
+                console.error('failed to add annotation groups:', error);
+              }
+            })
+          );
 
           displaySet.isLoaded = true;
           resolve(displaySet);
