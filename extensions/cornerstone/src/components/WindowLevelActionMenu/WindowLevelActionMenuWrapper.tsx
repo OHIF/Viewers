@@ -1,4 +1,5 @@
 import React, { ReactNode } from 'react';
+import { useSystem } from '@ohif/core';
 import {
   Button,
   cn,
@@ -8,11 +9,10 @@ import {
   PopoverTrigger,
   useViewportGrid,
   useViewportActionCorners,
+  AllInOneMenu,
 } from '@ohif/ui-next';
-import { AllInOneMenu } from '@ohif/ui-next';
 import { WindowLevelActionMenu } from './WindowLevelActionMenu';
 import { MENU_IDS } from '../menus/menu-ids';
-import { useSystem } from '@ohif/core/src/contextProviders/SystemProvider';
 
 export function WindowLevelActionMenuWrapper({
   viewportId,
@@ -23,7 +23,7 @@ export function WindowLevelActionMenuWrapper({
   viewportId: string;
   element: HTMLElement;
   location: string;
-  displaySets: Array<any>;
+  displaySets: Array<AppTypes.DisplaySet>;
 }>): ReactNode {
   const [viewportGrid] = useViewportGrid();
   const [actionCornerState, viewportActionCornersAPI] = useViewportActionCorners();
@@ -49,31 +49,10 @@ export function WindowLevelActionMenuWrapper({
     }
   };
 
-  // Get proper alignment and side based on the location
-  let align = 'center';
-  let side = 'bottom';
-
-  if (location !== undefined) {
-    const positioning = viewportActionCornersAPI.getAlignAndSide(location);
-    align = positioning.align;
-    side = positioning.side;
-  }
-
-  // Determine the horizontal and vertical direction for the AllInOneMenu
-  let horizontalDirection;
-  let verticalDirection;
-
-  if (side === 'bottom') {
-    verticalDirection = AllInOneMenu.VerticalDirection.TopToBottom;
-  } else {
-    verticalDirection = AllInOneMenu.VerticalDirection.BottomToTop;
-  }
-
-  if (align === 'start') {
-    horizontalDirection = AllInOneMenu.HorizontalDirection.LeftToRight;
-  } else {
-    horizontalDirection = AllInOneMenu.HorizontalDirection.RightToLeft;
-  }
+  const { align, side, horizontalDirection, verticalDirection } = getMenuDirections(
+    location,
+    viewportActionCornersAPI
+  );
 
   const displaySetPresets = displaySets
     .filter(displaySet => presets[displaySet.Modality])
@@ -129,3 +108,31 @@ export function WindowLevelActionMenuWrapper({
     </Popover>
   );
 }
+
+const getMenuDirections = (location, viewportActionCornersAPI) => {
+  let align = 'center';
+  let side = 'bottom';
+
+  if (location !== undefined) {
+    const positioning = viewportActionCornersAPI.getAlignAndSide(location);
+    align = positioning.align;
+    side = positioning.side;
+  }
+
+  let horizontalDirection;
+  let verticalDirection;
+
+  if (side === 'bottom') {
+    verticalDirection = AllInOneMenu.VerticalDirection.TopToBottom;
+  } else {
+    verticalDirection = AllInOneMenu.VerticalDirection.BottomToTop;
+  }
+
+  if (align === 'start') {
+    horizontalDirection = AllInOneMenu.HorizontalDirection.LeftToRight;
+  } else {
+    horizontalDirection = AllInOneMenu.HorizontalDirection.RightToLeft;
+  }
+
+  return { align, side, horizontalDirection, verticalDirection };
+};
