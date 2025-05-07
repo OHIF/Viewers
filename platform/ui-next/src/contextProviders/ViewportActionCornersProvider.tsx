@@ -21,8 +21,8 @@ interface ViewportActionCornersApi {
   addComponents: (components: Array<ActionComponentInfo>) => void;
   clear: (viewportId: string) => void;
   getAlignAndSide: (location: ViewportActionCornersLocations) => AlignAndSide;
-  setMenuDisabled: (viewportId: string, itemId: string, disabledStatus: boolean) => void;
-  isDisabled: (viewportId: string, itemId: string) => boolean;
+  setMenuEnabled: (viewportId: string, itemId: string, enabledStatus: boolean) => void;
+  isEnabled: (viewportId: string, itemId: string) => boolean;
 }
 
 export const ViewportActionCornersContext = createContext<
@@ -101,8 +101,8 @@ export function ViewportActionCornersProvider({
         return newState;
       }
 
-      case 'SET_DISABLED': {
-        const { viewportId, itemId, disabledStatus } = action.payload;
+      case 'SET_ENABLED': {
+        const { viewportId, itemId, enabledStatus } = action.payload;
         const newState = { ...state };
 
         if (!newState.viewports[viewportId]) {
@@ -117,7 +117,7 @@ export function ViewportActionCornersProvider({
 
           const itemIndex = components.findIndex(item => item.id === itemId);
           if (itemIndex !== -1) {
-            const updatedItem = { ...components[itemIndex], disabled: disabledStatus };
+            const updatedItem = { ...components[itemIndex], enabled: enabledStatus };
             components[itemIndex] = updatedItem;
             viewportCopy[location] = components;
           }
@@ -168,20 +168,20 @@ export function ViewportActionCornersProvider({
     [dispatch]
   );
 
-  const setMenuDisabled = useCallback(
-    (viewportId: string, itemId: string, disabledStatus: boolean) => {
+  const setMenuEnabled = useCallback(
+    (viewportId: string, itemId: string, enabledStatus: boolean) => {
       dispatch({
-        type: 'SET_DISABLED',
-        payload: { viewportId, itemId, disabledStatus },
+        type: 'SET_ENABLED',
+        payload: { viewportId, itemId, enabledStatus },
       });
     },
     [dispatch]
   );
 
-  const isDisabled = useCallback(
+  const isEnabled = useCallback(
     (viewportId: string, itemId: string) => {
       if (!state.viewports[viewportId]) {
-        return false;
+        return true; // Default to enabled if viewport doesn't exist
       }
 
       for (const locationKey in state.viewports[viewportId]) {
@@ -189,12 +189,12 @@ export function ViewportActionCornersProvider({
         const components = state.viewports[viewportId][location];
         const item = components.find(item => item.id === itemId);
 
-        if (item && item.disabled) {
-          return true;
+        if (item && item.enabled === false) {
+          return false;
         }
       }
 
-      return false;
+      return true; // Default to enabled if item not found or enabled is undefined
     },
     [state.viewports]
   );
@@ -213,10 +213,10 @@ export function ViewportActionCornersProvider({
       addComponents,
       clear,
       getAlignAndSide,
-      setMenuDisabled,
-      isDisabled,
+      setMenuEnabled,
+      isEnabled,
     };
-  }, [getState, addComponent, addComponents, clear, getAlignAndSide, setMenuDisabled, isDisabled]);
+  }, [getState, addComponent, addComponents, clear, getAlignAndSide, setMenuEnabled, isEnabled]);
 
   useEffect(() => {
     if (service && service.setServiceImplementation) {
@@ -225,13 +225,13 @@ export function ViewportActionCornersProvider({
         addComponent,
         addComponents,
         clear,
-        setMenuDisabled,
-        isDisabled,
+        setMenuEnabled,
+        isEnabled,
       };
 
       service.setServiceImplementation(implementation);
     }
-  }, [service, getState, addComponent, addComponents, clear, setMenuDisabled, isDisabled]);
+  }, [service, getState, addComponent, addComponents, clear, setMenuEnabled, isEnabled]);
 
   return (
     <ViewportActionCornersContext.Provider value={[state, api]}>

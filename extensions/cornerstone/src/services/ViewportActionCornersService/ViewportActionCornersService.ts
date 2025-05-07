@@ -27,8 +27,8 @@ class ViewportActionCornersService extends PubSubService {
     addComponent: addComponentImplementation,
     addComponents: addComponentsImplementation,
     clear: clearComponentsImplementation,
-    setMenuDisabled: setMenuDisabledImplementation,
-    isDisabled: isDisabledImplementation,
+    setMenuEnabled: setMenuEnabledImplementation,
+    isEnabled: isEnabledImplementation,
   }): void {
     if (getStateImplementation) {
       this.serviceImplementation._getState = getStateImplementation;
@@ -42,11 +42,11 @@ class ViewportActionCornersService extends PubSubService {
     if (clearComponentsImplementation) {
       this.serviceImplementation._clear = clearComponentsImplementation;
     }
-    if (setMenuDisabledImplementation) {
-      this.serviceImplementation._setMenuDisabled = setMenuDisabledImplementation;
+    if (setMenuEnabledImplementation) {
+      this.serviceImplementation._setMenuEnabled = setMenuEnabledImplementation;
     }
-    if (isDisabledImplementation) {
-      this.serviceImplementation._isDisabled = isDisabledImplementation;
+    if (isEnabledImplementation) {
+      this.serviceImplementation._isEnabled = isEnabledImplementation;
     }
   }
 
@@ -66,12 +66,12 @@ class ViewportActionCornersService extends PubSubService {
     this.serviceImplementation._clear(viewportId);
   }
 
-  public setMenuDisabled(viewportId: string, itemId: string, disabledStatus: boolean) {
-    this.serviceImplementation._setMenuDisabled(viewportId, itemId, disabledStatus);
+  public setMenuEnabled(viewportId: string, itemId: string, enabledStatus: boolean) {
+    this.serviceImplementation._setMenuEnabled(viewportId, itemId, enabledStatus);
   }
 
-  public isDisabled(viewportId: string, itemId: string): boolean {
-    return this.serviceImplementation._isDisabled(viewportId, itemId);
+  public isEnabled(viewportId: string, itemId: string): boolean {
+    return this.serviceImplementation._isEnabled(viewportId, itemId);
   }
 
   public getAlignAndSide(location: ViewportActionCornersLocations): Types.AlignAndSide {

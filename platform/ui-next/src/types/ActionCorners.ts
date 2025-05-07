@@ -7,7 +7,7 @@ export type ActionComponentInfo = {
   component: ReactNode;
   location: ViewportActionCornersLocations;
   indexPriority?: number;
-  disabled?: boolean;
+  enabled?: boolean;
 };
 
 export type AlignAndSide = {

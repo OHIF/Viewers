@@ -36,12 +36,10 @@ export default {
   'viewportActionMenu.topLeft': [
     {
       id: 'orientationMenu',
-      enabled: true,
       component: createOrientationMenu,
     },
     {
       id: 'dataOverlay',
-      enabled: true,
       component: createDataOverlay,
     },
   ],
@@ -49,7 +47,6 @@ export default {
   'viewportActionMenu.bottomLeft': [
     {
       id: 'windowLevelActionMenu',
-      enabled: true,
       component: createWindowLevelMenu,
     },
   ],

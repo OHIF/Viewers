@@ -98,7 +98,7 @@ export function Colorbar({
         onClick={e => {
           e.stopPropagation();
           onSetColorbar();
-          api.setMenuDisabled(viewportId, '', !showColorbar);
+          api.setMenuEnabled(viewportId, 'WindowLevelActionMenu', showColorbar);
         }}
       />
     </div>

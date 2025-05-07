@@ -29,7 +29,9 @@ function OHIFViewportActionCorners({ viewportId }: OHIFViewportActionCornersProp
         {cornerComponents.map(componentInfo => (
           <div
             key={componentInfo.id}
-            className={componentInfo.disabled ? 'pointer-events-none opacity-50' : undefined}
+            className={
+              componentInfo.enabled === false ? 'pointer-events-none opacity-50' : undefined
+            }
           >
             {componentInfo.component}
           </div>
