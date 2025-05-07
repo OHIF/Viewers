@@ -26,16 +26,18 @@ function OHIFViewportActionCorners({ viewportId }: OHIFViewportActionCornersProp
 
     return (
       <CornerComponent>
-        {cornerComponents.map(componentInfo => (
-          <div
-            key={componentInfo.id}
-            className={
-              componentInfo.enabled === false ? 'pointer-events-none opacity-50' : undefined
-            }
-          >
-            {componentInfo.component}
-          </div>
-        ))}
+        {cornerComponents
+          .filter(componentInfo => componentInfo.isVisible !== false)
+          .map(componentInfo => (
+            <div
+              key={componentInfo.id}
+              className={
+                componentInfo.isLocked === true ? 'pointer-events-none opacity-50' : undefined
+              }
+            >
+              {componentInfo.component}
+            </div>
+          ))}
       </CornerComponent>
     );
   };

@@ -21,8 +21,14 @@ interface ViewportActionCornersApi {
   addComponents: (components: Array<ActionComponentInfo>) => void;
   clear: (viewportId: string) => void;
   getAlignAndSide: (location: ViewportActionCornersLocations) => AlignAndSide;
-  setMenuEnabled: (viewportId: string, itemId: string, enabledStatus: boolean) => void;
-  isEnabled: (viewportId: string, itemId: string) => boolean;
+  setMenuLocked: (viewportId: string, itemId: string, lockedStatus: boolean) => void;
+  isLocked: (viewportId: string, itemId: string) => boolean;
+  setMenuVisible: (viewportId: string, itemId: string, visibleStatus: boolean) => void;
+  isVisible: (viewportId: string, itemId: string) => boolean;
+  open: (viewportId: string, itemId: string) => void;
+  close: (viewportId: string, itemId: string) => void;
+  closeAll: (viewportId: string) => void;
+  isOpen: (viewportId: string, itemId: string) => boolean;
 }
 
 export const ViewportActionCornersContext = createContext<
@@ -58,7 +64,14 @@ export function ViewportActionCornersProvider({
           newState.viewports[viewportId][location] = [];
         }
 
-        const componentInfo = { id, component, indexPriority };
+        const componentInfo = {
+          id,
+          component,
+          indexPriority,
+          isOpen: false,
+          isVisible: true,
+          isLocked: false,
+        };
 
         const components = [...newState.viewports[viewportId][location]];
         const index = components.findIndex(item => item.indexPriority > indexPriority);
@@ -101,8 +114,8 @@ export function ViewportActionCornersProvider({
         return newState;
       }
 
-      case 'SET_ENABLED': {
-        const { viewportId, itemId, enabledStatus } = action.payload;
+      case 'SET_LOCKED': {
+        const { viewportId, itemId, lockedStatus } = action.payload;
         const newState = { ...state };
 
         if (!newState.viewports[viewportId]) {
@@ -117,10 +130,115 @@ export function ViewportActionCornersProvider({
 
           const itemIndex = components.findIndex(item => item.id === itemId);
           if (itemIndex !== -1) {
-            const updatedItem = { ...components[itemIndex], enabled: enabledStatus };
+            const updatedItem = { ...components[itemIndex], isLocked: lockedStatus };
             components[itemIndex] = updatedItem;
             viewportCopy[location] = components;
           }
+        });
+
+        newState.viewports[viewportId] = viewportCopy;
+        return newState;
+      }
+
+      case 'SET_VISIBLE': {
+        const { viewportId, itemId, visibleStatus } = action.payload;
+        const newState = { ...state };
+
+        if (!newState.viewports[viewportId]) {
+          return state;
+        }
+
+        const viewportCopy = { ...newState.viewports[viewportId] };
+
+        Object.keys(viewportCopy).forEach(locationKey => {
+          const location = Number(locationKey) as ViewportActionCornersLocations;
+          const components = [...viewportCopy[location]];
+
+          const itemIndex = components.findIndex(item => item.id === itemId);
+          if (itemIndex !== -1) {
+            const updatedItem = { ...components[itemIndex], isVisible: visibleStatus };
+            components[itemIndex] = updatedItem;
+            viewportCopy[location] = components;
+          }
+        });
+
+        newState.viewports[viewportId] = viewportCopy;
+        return newState;
+      }
+
+      case 'OPEN_ITEM': {
+        const { viewportId, itemId } = action.payload;
+        const newState = { ...state };
+
+        if (!newState.viewports[viewportId]) {
+          return state;
+        }
+
+        const viewportCopy = { ...newState.viewports[viewportId] };
+
+        // Update isOpen flag for the component with matching id in any location
+        Object.keys(viewportCopy).forEach(locationKey => {
+          const location = Number(locationKey) as ViewportActionCornersLocations;
+          const components = [...viewportCopy[location]];
+
+          const itemIndex = components.findIndex(item => item.id === itemId);
+          if (itemIndex !== -1) {
+            const updatedItem = { ...components[itemIndex], isOpen: true };
+            components[itemIndex] = updatedItem;
+            viewportCopy[location] = components;
+          }
+        });
+
+        newState.viewports[viewportId] = viewportCopy;
+        return newState;
+      }
+
+      case 'CLOSE_ITEM': {
+        const { viewportId, itemId } = action.payload;
+        const newState = { ...state };
+
+        if (!newState.viewports[viewportId]) {
+          return state;
+        }
+
+        const viewportCopy = { ...newState.viewports[viewportId] };
+
+        // Update isOpen flag for the component with matching id in any location
+        Object.keys(viewportCopy).forEach(locationKey => {
+          const location = Number(locationKey) as ViewportActionCornersLocations;
+          const components = [...viewportCopy[location]];
+
+          const itemIndex = components.findIndex(item => item.id === itemId);
+          if (itemIndex !== -1) {
+            const updatedItem = { ...components[itemIndex], isOpen: false };
+            components[itemIndex] = updatedItem;
+            viewportCopy[location] = components;
+          }
+        });
+
+        newState.viewports[viewportId] = viewportCopy;
+        return newState;
+      }
+
+      case 'CLOSE_ALL_ITEMS': {
+        const viewportId = action.payload;
+        const newState = { ...state };
+
+        if (!newState.viewports[viewportId]) {
+          return state;
+        }
+
+        const viewportCopy = { ...newState.viewports[viewportId] };
+
+        // Set isOpen to false for all components in the viewport
+        Object.keys(viewportCopy).forEach(locationKey => {
+          const location = Number(locationKey) as ViewportActionCornersLocations;
+          const components = viewportCopy[location].map(item => ({
+            ...item,
+            isOpen: false,
+          }));
+
+          viewportCopy[location] = components;
         });
 
         newState.viewports[viewportId] = viewportCopy;
@@ -168,20 +286,20 @@ export function ViewportActionCornersProvider({
     [dispatch]
   );
 
-  const setMenuEnabled = useCallback(
-    (viewportId: string, itemId: string, enabledStatus: boolean) => {
+  const setMenuLocked = useCallback(
+    (viewportId: string, itemId: string, lockedStatus: boolean) => {
       dispatch({
-        type: 'SET_ENABLED',
-        payload: { viewportId, itemId, enabledStatus },
+        type: 'SET_LOCKED',
+        payload: { viewportId, itemId, lockedStatus },
       });
     },
     [dispatch]
   );
 
-  const isEnabled = useCallback(
+  const isLocked = useCallback(
     (viewportId: string, itemId: string) => {
       if (!state.viewports[viewportId]) {
-        return true; // Default to enabled if viewport doesn't exist
+        return false; // Default to unlocked if viewport doesn't exist
       }
 
       for (const locationKey in state.viewports[viewportId]) {
@@ -189,12 +307,94 @@ export function ViewportActionCornersProvider({
         const components = state.viewports[viewportId][location];
         const item = components.find(item => item.id === itemId);
 
-        if (item && item.enabled === false) {
+        if (item && item.isLocked === true) {
+          return true;
+        }
+      }
+
+      return false; // Default to unlocked if item not found or isLocked is undefined
+    },
+    [state.viewports]
+  );
+
+  const setMenuVisible = useCallback(
+    (viewportId: string, itemId: string, visibleStatus: boolean) => {
+      dispatch({
+        type: 'SET_VISIBLE',
+        payload: { viewportId, itemId, visibleStatus },
+      });
+    },
+    [dispatch]
+  );
+
+  const isVisible = useCallback(
+    (viewportId: string, itemId: string) => {
+      if (!state.viewports[viewportId]) {
+        return true; // Default to visible if viewport doesn't exist
+      }
+
+      for (const locationKey in state.viewports[viewportId]) {
+        const location = Number(locationKey) as ViewportActionCornersLocations;
+        const components = state.viewports[viewportId][location];
+        const item = components.find(item => item.id === itemId);
+
+        if (item && item.isVisible === false) {
           return false;
         }
       }
 
-      return true; // Default to enabled if item not found or enabled is undefined
+      return true; // Default to visible if item not found or isVisible is undefined
+    },
+    [state.viewports]
+  );
+
+  const open = useCallback(
+    (viewportId: string, itemId: string) => {
+      dispatch({
+        type: 'OPEN_ITEM',
+        payload: { viewportId, itemId },
+      });
+    },
+    [dispatch]
+  );
+
+  const close = useCallback(
+    (viewportId: string, itemId: string) => {
+      dispatch({
+        type: 'CLOSE_ITEM',
+        payload: { viewportId, itemId },
+      });
+    },
+    [dispatch]
+  );
+
+  const closeAll = useCallback(
+    (viewportId: string) => {
+      dispatch({
+        type: 'CLOSE_ALL_ITEMS',
+        payload: viewportId,
+      });
+    },
+    [dispatch]
+  );
+
+  const isOpen = useCallback(
+    (viewportId: string, itemId: string) => {
+      if (!state.viewports[viewportId]) {
+        return false;
+      }
+
+      for (const locationKey in state.viewports[viewportId]) {
+        const location = Number(locationKey) as ViewportActionCornersLocations;
+        const components = state.viewports[viewportId][location];
+        const item = components.find(item => item.id === itemId);
+
+        if (item && item.isOpen === true) {
+          return true;
+        }
+      }
+
+      return false;
     },
     [state.viewports]
   );
@@ -213,10 +413,30 @@ export function ViewportActionCornersProvider({
       addComponents,
       clear,
       getAlignAndSide,
-      setMenuEnabled,
-      isEnabled,
+      setMenuLocked,
+      isLocked,
+      setMenuVisible,
+      isVisible,
+      open,
+      close,
+      closeAll,
+      isOpen,
     };
-  }, [getState, addComponent, addComponents, clear, getAlignAndSide, setMenuEnabled, isEnabled]);
+  }, [
+    getState,
+    addComponent,
+    addComponents,
+    clear,
+    getAlignAndSide,
+    setMenuLocked,
+    isLocked,
+    setMenuVisible,
+    isVisible,
+    open,
+    close,
+    closeAll,
+    isOpen,
+  ]);
 
   useEffect(() => {
     if (service && service.setServiceImplementation) {
@@ -225,13 +445,33 @@ export function ViewportActionCornersProvider({
         addComponent,
         addComponents,
         clear,
-        setMenuEnabled,
-        isEnabled,
+        setMenuLocked,
+        isLocked,
+        setMenuVisible,
+        isVisible,
+        open,
+        close,
+        closeAll,
+        isOpen,
       };
 
       service.setServiceImplementation(implementation);
     }
-  }, [service, getState, addComponent, addComponents, clear, setMenuEnabled, isEnabled]);
+  }, [
+    service,
+    getState,
+    addComponent,
+    addComponents,
+    clear,
+    setMenuLocked,
+    isLocked,
+    setMenuVisible,
+    isVisible,
+    open,
+    close,
+    closeAll,
+    isOpen,
+  ]);
 
   return (
     <ViewportActionCornersContext.Provider value={[state, api]}>

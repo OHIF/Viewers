@@ -1,4 +1,4 @@
-import React, { ReactNode } from 'react';
+import React, { ReactNode, useEffect } from 'react';
 import {
   Button,
   cn,
@@ -11,6 +11,9 @@ import {
 import ViewportDataOverlayMenu from './ViewportDataOverlayMenu';
 import classNames from 'classnames';
 import { useSystem } from '@ohif/core';
+
+// Unique ID for this menu component
+const MENU_ID = 'viewport-data-overlay-menu';
 
 export function ViewportDataOverlayMenuWrapper({
   viewportId,
@@ -25,9 +28,28 @@ export function ViewportDataOverlayMenuWrapper({
   const [viewportGrid] = useViewportGrid();
 
   const { align, side } = viewportActionCornersService.getAlignAndSide(location);
+  
+  // Handle open state from the service
+  const isOpen = viewportActionCornersService.isOpen?.(viewportId, MENU_ID);
+  
+  // Handle popover open/close
+  const handleOpenChange = (open: boolean) => {
+    if (open) {
+      viewportActionCornersService.open?.(viewportId, MENU_ID);
+    } else {
+      viewportActionCornersService.close?.(viewportId, MENU_ID);
+    }
+  };
+  
+  // Close this menu when closeAll is called for this viewport
+  useEffect(() => {
+    return () => {
+      viewportActionCornersService.close?.(viewportId, MENU_ID);
+    };
+  }, [viewportId, viewportActionCornersService]);
 
   return (
-    <Popover>
+    <Popover open={isOpen} onOpenChange={handleOpenChange}>
       <PopoverTrigger
         asChild
         className="flex items-center justify-center"
