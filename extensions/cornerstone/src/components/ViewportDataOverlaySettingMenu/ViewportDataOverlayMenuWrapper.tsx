@@ -11,8 +11,7 @@ import {
 } from '@ohif/ui-next';
 import ViewportDataOverlayMenu from './ViewportDataOverlayMenu';
 import classNames from 'classnames';
-
-const MENU_ID = 'dataOverlayMenu';
+import { MENU_IDS } from '../menus/menu-ids';
 
 export function ViewportDataOverlayMenuWrapper({
   viewportId,
@@ -27,14 +26,15 @@ export function ViewportDataOverlayMenuWrapper({
   const [actionCornerState, viewportActionCornersAPI] = useViewportActionCorners();
 
   const isMenuOpen =
-    actionCornerState.viewports[viewportId]?.[location]?.find(item => item.id === MENU_ID)
-      ?.isOpen ?? false;
+    actionCornerState.viewports[viewportId]?.[location]?.find(
+      item => item.id === MENU_IDS.DATA_OVERLAY_MENU
+    )?.isOpen ?? false;
 
   const handleOpenChange = (openState: boolean) => {
     if (openState) {
-      viewportActionCornersAPI.openItem?.(viewportId, MENU_ID);
+      viewportActionCornersAPI.openItem?.(viewportId, MENU_IDS.DATA_OVERLAY_MENU);
     } else {
-      viewportActionCornersAPI.closeItem?.(viewportId, MENU_ID);
+      viewportActionCornersAPI.closeItem?.(viewportId, MENU_IDS.DATA_OVERLAY_MENU);
     }
   };
 

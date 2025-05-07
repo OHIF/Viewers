@@ -10,9 +10,7 @@ import {
   DropdownMenuLabel,
   Button,
 } from '@ohif/ui-next';
-
-// Unique ID for this menu component
-const MENU_ID = 'orientationMenu';
+import { MENU_IDS } from '../menus/menu-ids';
 
 function ViewportOrientationMenu({ location }: withAppTypes<{ location?: string }>) {
   const { servicesManager, commandsManager } = useSystem();
@@ -23,8 +21,9 @@ function ViewportOrientationMenu({ location }: withAppTypes<{ location?: string 
   const viewportId = viewportGridState.activeViewportId;
 
   const isMenuOpen =
-    actionCornerState.viewports[viewportId]?.[location]?.find(item => item.id === MENU_ID)
-      ?.isOpen ?? false;
+    actionCornerState.viewports[viewportId]?.[location]?.find(
+      item => item.id === MENU_IDS.ORIENTATION_MENU
+    )?.isOpen ?? false;
 
   const handleOrientationChange = (orientation: string) => {
     const viewportInfo = cornerstoneViewportService.getViewportInfo(viewportId);
@@ -90,14 +89,14 @@ function ViewportOrientationMenu({ location }: withAppTypes<{ location?: string 
     }
 
     // Close the menu after selection
-    viewportActionCornersServiceAPI.closeItem?.(viewportId, MENU_ID);
+    viewportActionCornersServiceAPI.closeItem?.(viewportId, MENU_IDS.ORIENTATION_MENU);
   };
 
   const handleOpenChange = (openState: boolean) => {
     if (openState) {
-      viewportActionCornersServiceAPI.openItem?.(viewportId, MENU_ID);
+      viewportActionCornersServiceAPI.openItem?.(viewportId, MENU_IDS.ORIENTATION_MENU);
     } else {
-      viewportActionCornersServiceAPI.closeItem?.(viewportId, MENU_ID);
+      viewportActionCornersServiceAPI.closeItem?.(viewportId, MENU_IDS.ORIENTATION_MENU);
     }
   };
 
