@@ -17,14 +17,15 @@ const MENU_ID = 'viewport-orientation-menu';
 function ViewportOrientationMenu({ location }: withAppTypes<{ location?: string }>) {
   const { servicesManager, commandsManager } = useSystem();
   const [viewportGridState, viewportGridService] = useViewportGrid();
-  const { cornerstoneViewportService, displaySetService, viewportActionCornersService } = servicesManager.services;
+  const { cornerstoneViewportService, displaySetService, viewportActionCornersService } =
+    servicesManager.services;
 
   const viewportId = viewportGridState.activeViewportId;
-  
+
   // Handle open state from the service
-  const isMenuOpen = viewportActionCornersService.isOpen?.(viewportId, MENU_ID);
+  const isMenuOpen = viewportActionCornersService.isItemOpen?.(viewportId, MENU_ID);
   const [open, setOpen] = useState(false);
-  
+
   useEffect(() => {
     // Sync local state with the service state
     setOpen(isMenuOpen ?? false);
@@ -92,26 +93,26 @@ function ViewportOrientationMenu({ location }: withAppTypes<{ location?: string 
         orientation: orientationEnum,
       });
     }
-    
+
     // Close the menu after selection
-    viewportActionCornersService.close?.(viewportId, MENU_ID);
+    viewportActionCornersService.closeItem?.(viewportId, MENU_ID);
   };
-  
+
   // Handle dropdown open/close
   const handleOpenChange = (openState: boolean) => {
     setOpen(openState);
-    
+
     if (openState) {
-      viewportActionCornersService.open?.(viewportId, MENU_ID);
+      viewportActionCornersService.openItem?.(viewportId, MENU_ID);
     } else {
-      viewportActionCornersService.close?.(viewportId, MENU_ID);
+      viewportActionCornersService.closeItem?.(viewportId, MENU_ID);
     }
   };
-  
+
   // Clean up when component unmounts
   useEffect(() => {
     return () => {
-      viewportActionCornersService.close?.(viewportId, MENU_ID);
+      viewportActionCornersService.closeItem?.(viewportId, MENU_ID);
     };
   }, [viewportId, viewportActionCornersService]);
 
@@ -137,7 +138,10 @@ function ViewportOrientationMenu({ location }: withAppTypes<{ location?: string 
   }
 
   return (
-    <DropdownMenu open={open} onOpenChange={handleOpenChange}>
+    <DropdownMenu
+      open={open}
+      onOpenChange={handleOpenChange}
+    >
       <DropdownMenuTrigger asChild>
         <Button
           variant="ghost"

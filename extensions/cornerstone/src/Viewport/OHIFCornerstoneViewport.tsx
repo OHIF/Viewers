@@ -135,7 +135,7 @@ const OHIFCornerstoneViewport = React.memo(
 
         segmentationService.clearSegmentationRepresentations(viewportId);
 
-        viewportActionCornersService.clear(viewportId);
+        viewportActionCornersService.clearViewport(viewportId);
       },
       [
         viewportId,

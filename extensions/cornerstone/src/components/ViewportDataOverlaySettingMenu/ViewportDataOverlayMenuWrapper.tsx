@@ -28,28 +28,31 @@ export function ViewportDataOverlayMenuWrapper({
   const [viewportGrid] = useViewportGrid();
 
   const { align, side } = viewportActionCornersService.getAlignAndSide(location);
-  
+
   // Handle open state from the service
-  const isOpen = viewportActionCornersService.isOpen?.(viewportId, MENU_ID);
-  
+  const isOpen = viewportActionCornersService.isItemOpen?.(viewportId, MENU_ID);
+
   // Handle popover open/close
   const handleOpenChange = (open: boolean) => {
     if (open) {
-      viewportActionCornersService.open?.(viewportId, MENU_ID);
+      viewportActionCornersService.openItem?.(viewportId, MENU_ID);
     } else {
-      viewportActionCornersService.close?.(viewportId, MENU_ID);
+      viewportActionCornersService.closeItem?.(viewportId, MENU_ID);
     }
   };
-  
+
   // Close this menu when closeAll is called for this viewport
   useEffect(() => {
     return () => {
-      viewportActionCornersService.close?.(viewportId, MENU_ID);
+      viewportActionCornersService.closeItem?.(viewportId, MENU_ID);
     };
   }, [viewportId, viewportActionCornersService]);
 
   return (
-    <Popover open={isOpen} onOpenChange={handleOpenChange}>
+    <Popover
+      open={isOpen}
+      onOpenChange={handleOpenChange}
+    >
       <PopoverTrigger
         asChild
         className="flex items-center justify-center"

@@ -88,7 +88,9 @@ export function Colorbar({
       onClick={e => {
         e.stopPropagation();
         onSetColorbar();
-        api.setMenuEnabled(viewportId, 'windowLevelActionMenu', showColorbar);
+        showColorbar
+          ? api.showItem(viewportId, 'windowLevelActionMenu')
+          : api.hideItem(viewportId, 'windowLevelActionMenu');
       }}
     >
       <div className="flex w-7 flex-shrink-0 items-center justify-center"></div>
@@ -99,7 +101,9 @@ export function Colorbar({
         onClick={e => {
           e.stopPropagation();
           onSetColorbar();
-          api.setMenuEnabled(viewportId, 'windowLevelActionMenu', showColorbar);
+          showColorbar
+            ? api.showItem(viewportId, 'windowLevelActionMenu')
+            : api.hideItem(viewportId, 'windowLevelActionMenu');
         }}
       />
     </div>
