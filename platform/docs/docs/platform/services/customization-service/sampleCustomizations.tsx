@@ -937,7 +937,7 @@ window.config = {
         `,
   },
   {
-    id: 'viewportActionMenu.dataOverlay',
+    id: 'viewportActionMenu.dataOverlayMenu',
     description: 'Configures the display and location of the data overlay in the viewport.',
     image: segmentationOverlay,
     default: null,
@@ -946,7 +946,7 @@ window.config = {
         // rest of window config
         customizationService: [
           {
-            'viewportActionMenu.dataOverlay': {
+            'viewportActionMenu.dataOverlayMenu': {
                $merge: {
                  enabled: true,
                  location: 1, // Set the location of the overlay in the viewport.

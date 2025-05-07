@@ -1,4 +1,4 @@
-import React, { ReactNode, useEffect } from 'react';
+import React, { ReactNode } from 'react';
 import {
   Button,
   cn,
@@ -7,13 +7,12 @@ import {
   PopoverContent,
   PopoverTrigger,
   useViewportGrid,
+  useViewportActionCorners,
 } from '@ohif/ui-next';
 import ViewportDataOverlayMenu from './ViewportDataOverlayMenu';
 import classNames from 'classnames';
-import { useSystem } from '@ohif/core';
 
-// Unique ID for this menu component
-const MENU_ID = 'viewport-data-overlay-menu';
+const MENU_ID = 'dataOverlayMenu';
 
 export function ViewportDataOverlayMenuWrapper({
   viewportId,
@@ -22,35 +21,36 @@ export function ViewportDataOverlayMenuWrapper({
 }: withAppTypes<{
   viewportId: string;
   element: HTMLElement;
+  location: string;
 }>): ReactNode {
-  const { servicesManager } = useSystem();
-  const { viewportActionCornersService } = servicesManager.services;
   const [viewportGrid] = useViewportGrid();
+  const [actionCornerState, viewportActionCornersAPI] = useViewportActionCorners();
 
-  const { align, side } = viewportActionCornersService.getAlignAndSide(location);
+  const isMenuOpen =
+    actionCornerState.viewports[viewportId]?.[location]?.find(item => item.id === MENU_ID)
+      ?.isOpen ?? false;
 
-  // Handle open state from the service
-  const isOpen = viewportActionCornersService.isItemOpen?.(viewportId, MENU_ID);
-
-  // Handle popover open/close
-  const handleOpenChange = (open: boolean) => {
-    if (open) {
-      viewportActionCornersService.openItem?.(viewportId, MENU_ID);
+  const handleOpenChange = (openState: boolean) => {
+    if (openState) {
+      viewportActionCornersAPI.openItem?.(viewportId, MENU_ID);
     } else {
-      viewportActionCornersService.closeItem?.(viewportId, MENU_ID);
+      viewportActionCornersAPI.closeItem?.(viewportId, MENU_ID);
     }
   };
 
-  // Close this menu when closeAll is called for this viewport
-  useEffect(() => {
-    return () => {
-      viewportActionCornersService.closeItem?.(viewportId, MENU_ID);
-    };
-  }, [viewportId, viewportActionCornersService]);
+  // Get proper alignment and side based on the location
+  let align = 'center';
+  let side = 'bottom';
+
+  if (location !== undefined) {
+    const positioning = viewportActionCornersAPI.getAlignAndSide(location);
+    align = positioning.align;
+    side = positioning.side;
+  }
 
   return (
     <Popover
-      open={isOpen}
+      open={isMenuOpen}
       onOpenChange={handleOpenChange}
     >
       <PopoverTrigger

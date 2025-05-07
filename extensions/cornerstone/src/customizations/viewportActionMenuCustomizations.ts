@@ -39,7 +39,7 @@ export default {
       component: createOrientationMenu,
     },
     {
-      id: 'dataOverlay',
+      id: 'dataOverlayMenu',
       component: createDataOverlay,
     },
   ],
