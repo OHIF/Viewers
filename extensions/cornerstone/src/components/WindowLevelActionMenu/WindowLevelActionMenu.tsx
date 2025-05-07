@@ -110,8 +110,6 @@ export function WindowLevelActionMenu({
     viewportGrid,
   ]);
 
-  // return <div className="bg-red-500">hello</div>;
-
   return (
     <AllInOneMenu.Menu
       menuKey={menuKey}
