@@ -53,10 +53,6 @@ export default function useViewportActionCornersWithGrid() {
         }
 
         items.forEach(item => {
-          if (!item.enabled) {
-            return;
-          }
-
           try {
             if (typeof item.component === 'function') {
               // Use the component renderer provided directly in the item
