@@ -50,16 +50,17 @@ const positionTickStyles: PositionTickStylesMapType = {
 
 // Get recommended tick position for a given colorbar position
 const getTickPositionForPosition = (position: ColorbarPositionType): TickPositionType => {
-  return (
-    positionTickStyles[position]?.position ||
-    (position === 'bottom'
-      ? 'top'
-      : position === 'top'
-        ? 'bottom'
-        : position === 'left'
-          ? 'right'
-          : 'left')
-  );
+  if (position === 'bottom') {
+    return 'top';
+  } else if (position === 'top') {
+    return 'bottom';
+  } else if (position === 'left') {
+    return 'right';
+  } else if (position === 'right') {
+    return 'left';
+  }
+
+  return positionTickStyles[position]?.position || 'top';
 };
 
 // Container styles for colorbar
