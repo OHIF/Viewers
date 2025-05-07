@@ -113,7 +113,7 @@ function TrackedMeasurementsContextProvider(
       // it will be in the correct position zoom and pan
       commandsManager.runCommand('updateStoredPositionPresentation', {
         viewportId: activeViewportId,
-        displaySetInstanceUID: referencedDisplaySetUID,
+        displaySetInstanceUIDs: [referencedDisplaySetUID],
         referencedImageId: trackedMeasurement.referencedImageId,
       });
 

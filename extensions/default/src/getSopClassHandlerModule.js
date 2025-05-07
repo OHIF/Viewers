@@ -1,4 +1,5 @@
 import { utils, classes } from '@ohif/core';
+import i18n from '@ohif/i18n';
 import { id } from './id';
 import getDisplaySetMessages from './getDisplaySetMessages';
 import getDisplaySetsFromUnsupportedSeries from './getDisplaySetsFromUnsupportedSeries';
@@ -111,6 +112,11 @@ const makeDisplaySet = instances => {
     isDynamicVolume,
     dynamicVolumeInfo,
     getThumbnailSrc: dataSource.retrieve.getGetThumbnailSrc?.(thumbnailInstance, imageId),
+    supportsWindowLevel: true,
+    label:
+      instance.SeriesDescription ||
+      `${i18n.t('Series')} ${instance.SeriesNumber} - ${i18n.t(instance.Modality)}`,
+    FrameOfReferenceUID: instance.FrameOfReferenceUID,
   });
 
   // Sort the images in this series if needed
@@ -270,6 +276,7 @@ const sopClassUids = [
   sopClassDictionary.LegacyConvertedEnhancedPETImageStorage,
   sopClassDictionary.RTImageStorage,
   sopClassDictionary.EnhancedUSVolumeStorage,
+  sopClassDictionary.RTDoseStorage,
 ];
 
 function getSopClassHandlerModule(appContextParam) {

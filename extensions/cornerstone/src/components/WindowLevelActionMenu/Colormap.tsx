@@ -3,14 +3,10 @@ import { AllInOneMenu, Switch, Tabs, TabsList, TabsTrigger } from '@ohif/ui-next
 
 import { StackViewport, Types } from '@cornerstonejs/core';
 import { ColormapProps } from '../../types/Colormap';
+import { useSystem } from '@ohif/core';
 
-export function Colormap({
-  colormaps,
-  viewportId,
-  displaySets,
-  commandsManager,
-  servicesManager,
-}: ColormapProps): ReactElement {
+export function Colormap({ colormaps, viewportId, displaySets }: ColormapProps): ReactElement {
+  const { servicesManager, commandsManager } = useSystem();
   const { cornerstoneViewportService } = servicesManager.services;
 
   const [activeDisplaySet, setActiveDisplaySet] = useState(displaySets[0]);

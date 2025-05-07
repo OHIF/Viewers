@@ -1,5 +1,6 @@
 import { SOPClassHandlerId } from './id';
 import { utils } from '@ohif/core';
+import i18n from '@ohif/i18n';
 import { utilities as csUtils, Enums as csEnums } from '@cornerstonejs/core';
 
 const SOP_CLASS_UIDS = {
@@ -85,6 +86,8 @@ const _getDisplaySetsFromSeries = (instances, servicesManager, extensionManager)
         sopClassUids,
         numImageFrames: NumberOfFrames,
         instance,
+        supportsWindowLevel: true,
+        label: SeriesDescription || `${i18n.t('Series')} ${SeriesNumber} - ${i18n.t(Modality)}`,
       };
       csUtils.genericMetadataProvider.add(imageId, {
         type: 'imageUrlModule',
@@ -94,7 +97,8 @@ const _getDisplaySetsFromSeries = (instances, servicesManager, extensionManager)
     });
 };
 
-export default function getSopClassHandlerModule({ servicesManager, extensionManager }) {
+export default function getSopClassHandlerModule(params) {
+  const { servicesManager, extensionManager } = params;
   const getDisplaySetsFromSeries = instances => {
     return _getDisplaySetsFromSeries(instances, servicesManager, extensionManager);
   };

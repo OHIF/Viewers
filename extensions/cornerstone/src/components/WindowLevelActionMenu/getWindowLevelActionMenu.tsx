@@ -1,12 +1,12 @@
 import React, { ReactNode } from 'react';
-import { nonWLModalities } from './WindowLevelActionMenu';
+import { WindowLevelActionMenuProps } from './WindowLevelActionMenu';
+import { useSystem } from '@ohif/core';
+import { WindowLevelActionMenu as WindowLevelActionMenuComponent } from './WindowLevelActionMenu';
 
-export function getWindowLevelActionMenu({
+function WindowLevelActionMenu({
   viewportId,
   element,
   displaySets,
-  servicesManager,
-  commandsManager,
   verticalDirection,
   horizontalDirection,
 }: withAppTypes<{
@@ -14,30 +14,24 @@ export function getWindowLevelActionMenu({
   element: HTMLElement;
   displaySets: AppTypes.DisplaySet[];
 }>): ReactNode {
+  const { servicesManager } = useSystem();
   const { customizationService } = servicesManager.services;
 
   const presets = customizationService.getCustomization('cornerstone.windowLevelPresets');
   const colorbarProperties = customizationService.getCustomization('cornerstone.colorbar');
   const { volumeRenderingPresets, volumeRenderingQualityRange } =
     customizationService.getCustomization('cornerstone.3dVolumeRendering');
-  const WindowLevelActionMenu = customizationService.getCustomization(
-    'viewportActionMenu.windowLevelActionMenu'
-  );
   const displaySetPresets = displaySets
     .filter(displaySet => presets[displaySet.Modality])
     .map(displaySet => {
       return { [displaySet.Modality]: presets[displaySet.Modality] };
     });
 
-  const modalities = displaySets
-    .map(displaySet => displaySet.Modality)
-    .filter(modality => !nonWLModalities.includes(modality));
+  const modalities = displaySets.map(displaySet => displaySet.supportsWindowLevel);
 
   if (modalities.length === 0) {
     return null;
   }
-
-  const WindowLevelActionMenuComponent = WindowLevelActionMenu?.component;
 
   return (
     <WindowLevelActionMenuComponent
@@ -46,12 +40,14 @@ export function getWindowLevelActionMenu({
       presets={displaySetPresets}
       verticalDirection={verticalDirection}
       horizontalDirection={horizontalDirection}
-      commandsManager={commandsManager}
-      servicesManager={servicesManager}
       colorbarProperties={colorbarProperties}
       displaySets={displaySets}
       volumeRenderingPresets={volumeRenderingPresets}
       volumeRenderingQualityRange={volumeRenderingQualityRange}
     />
   );
+}
+
+export function getWindowLevelActionMenu(props: WindowLevelActionMenuProps) {
+  return <WindowLevelActionMenu {...props} />;
 }

@@ -75,6 +75,10 @@ import IconTransferring from './Sources/IconTransferring';
 import Alert from './Sources/Alert';
 import AlertOutline from './Sources/AlertOutline';
 import Clipboard from './Sources/Clipboard';
+import OrientationSwitch from './Sources/OrientationSwitch';
+import LayerBackground from './Sources/LayerBackground';
+import LayerForeground from './Sources/LayerForeground';
+import LayerSegmentation from './Sources/LayerSegmentation';
 import {
   Tool3DRotate,
   ToolAngle,
@@ -378,6 +382,10 @@ export const Icons = {
     />
   ),
   // Icons
+  LayerBackground,
+  LayerForeground,
+  LayerSegmentation,
+  OrientationSwitch,
   Clipboard,
   ActionNewDialog,
   GroupLayers,
