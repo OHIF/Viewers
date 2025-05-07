@@ -1,5 +1,22 @@
 import getDicomWebClient from './dicomWebClient';
 
+/**
+ * Loads and displays DICOM Microscopy Bulk Simple Annotations.
+ *
+ * This utility function:
+ * 1. Retrieves series metadata from a DICOMweb server using study and series instance UIDs
+ * 2. Converts metadata into MicroscopyBulkSimpleAnnotations objects
+ * 3. Adds annotations to the viewer in groups (identified by AnnotationGroupUID)
+ * 4. Applies a consistent yellow color ([255, 234, 0]) to all annotation groups
+ * 5. Makes the annotation groups visible in the viewer
+ *
+ * @param {Object} params - The parameters object
+ * @param {Object} params.microscopyService - Service for handling microscopy operations
+ * @param {Object} params.displaySet - The display set containing metadata
+ * @param {Object} params.extensionManager - Manager for extensions
+ * @param {Object} params.servicesManager - Manager for services
+ * @returns {Promise} A promise that resolves with the loaded display set
+ */
 export default function loadAnnotation({
   microscopyService,
   displaySet,
