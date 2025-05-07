@@ -1,5 +1,5 @@
 import React, { ReactElement, useCallback, useEffect, useState } from 'react';
-import { Switch, useViewportActionCorners } from '@ohif/ui-next';
+import { Switch } from '@ohif/ui-next';
 import { ColorbarProps, ColorbarOptions } from '../../types/Colorbar';
 import { utilities } from '@cornerstonejs/core';
 import { useSystem } from '@ohif/core';
@@ -51,7 +51,6 @@ export function Colorbar({
     colormaps,
     colorbarInitialColormap,
   } = colorbarProperties;
-  const [_, api] = useViewportActionCorners();
   const [showColorbar, setShowColorbar] = useState(colorbarService.hasColorbar(viewportId));
 
   const onSetColorbar = useCallback(() => {
@@ -88,9 +87,6 @@ export function Colorbar({
       onClick={e => {
         e.stopPropagation();
         onSetColorbar();
-        showColorbar
-          ? api.showItem(viewportId, 'windowLevelActionMenu')
-          : api.hideItem(viewportId, 'windowLevelActionMenu');
       }}
     >
       <div className="flex w-7 flex-shrink-0 items-center justify-center"></div>
@@ -101,9 +97,6 @@ export function Colorbar({
         onClick={e => {
           e.stopPropagation();
           onSetColorbar();
-          showColorbar
-            ? api.showItem(viewportId, 'windowLevelActionMenu')
-            : api.hideItem(viewportId, 'windowLevelActionMenu');
         }}
       />
     </div>

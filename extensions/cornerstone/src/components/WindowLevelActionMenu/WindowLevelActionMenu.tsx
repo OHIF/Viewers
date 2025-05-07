@@ -1,6 +1,5 @@
 import React, { ReactElement, useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import classNames from 'classnames';
 import { AllInOneMenu } from '@ohif/ui-next';
 import { useViewportGrid } from '@ohif/ui-next';
 import { Colormap } from './Colormap';
@@ -25,6 +24,7 @@ export type WindowLevelActionMenuProps = {
   displaySets: Array<any>;
   volumeRenderingPresets: Array<ViewportPreset>;
   volumeRenderingQualityRange: VolumeRenderingQualityRange;
+  location: string;
 };
 
 export function WindowLevelActionMenu({
@@ -46,7 +46,7 @@ export function WindowLevelActionMenu({
     colorbarTickPosition,
     width: colorbarWidth,
   } = colorbarProperties;
-
+  debugger;
   const { colorbarService, cornerstoneViewportService } = servicesManager.services;
   const viewportInfo = cornerstoneViewportService.getViewportInfo(viewportId);
   const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
@@ -110,20 +110,13 @@ export function WindowLevelActionMenu({
     viewportGrid,
   ]);
 
+  return <div className="bg-red-500">hello</div>;
+
   return (
-    <AllInOneMenu.IconMenu
-      icon="viewport-window-level"
+    <AllInOneMenu.Menu
       verticalDirection={verticalDirection}
       horizontalDirection={horizontalDirection}
-      iconClassName={classNames(
-        activeViewportId === viewportId ? 'visible' : 'invisible group-hover/pane:visible',
-        'flex shrink-0 cursor-pointer rounded active:text-foreground text-highlight',
-        isLight ? ' hover:bg-primary/30' : 'hover:bg-primary/30'
-      )}
       menuStyle={{ maxHeight: vpHeight - 32, minWidth: 218 }}
-      onVisibilityChange={() => {
-        setVpHeight(element.clientHeight);
-      }}
       menuKey={menuKey}
     >
       <AllInOneMenu.ItemPanel>
@@ -180,6 +173,6 @@ export function WindowLevelActionMenu({
           </AllInOneMenu.SubMenu>
         )}
       </AllInOneMenu.ItemPanel>
-    </AllInOneMenu.IconMenu>
+    </AllInOneMenu.Menu>
   );
 }

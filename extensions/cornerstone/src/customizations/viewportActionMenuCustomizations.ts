@@ -1,7 +1,7 @@
 import { getWindowLevelActionMenu } from '../components/WindowLevelActionMenu/getWindowLevelActionMenu';
 import { getViewportDataOverlaySettingsMenu } from '../components/ViewportDataOverlaySettingMenu';
 import { getViewportOrientationMenu } from '../components/ViewportOrientationMenu';
-import { AllInOneMenu, ViewportActionCorners } from '@ohif/ui-next';
+import { ViewportActionCorners } from '@ohif/ui-next';
 import { MENU_IDS } from '../components/menus/menu-ids';
 
 // Generate component renderer functions for each component type
@@ -22,13 +22,12 @@ const createDataOverlay = ({ viewportId, element, displaySets, location }) => {
   });
 };
 
-const createWindowLevelMenu = ({ viewportId, element, displaySets }) => {
+const createWindowLevelMenu = ({ viewportId, element, displaySets, location }) => {
   return getWindowLevelActionMenu({
     viewportId,
     element,
     displaySets,
-    verticalDirection: AllInOneMenu.VerticalDirection.BottomToTop,
-    horizontalDirection: AllInOneMenu.HorizontalDirection.LeftToRight,
+    location,
   });
 };
 
@@ -43,13 +42,12 @@ export default {
       id: MENU_IDS.DATA_OVERLAY_MENU,
       component: createDataOverlay,
     },
-  ],
-  'viewportActionMenu.topRight': [],
-  'viewportActionMenu.bottomLeft': [
     {
       id: MENU_IDS.WINDOW_LEVEL_MENU,
       component: createWindowLevelMenu,
     },
   ],
+  'viewportActionMenu.topRight': [],
+  'viewportActionMenu.bottomLeft': [],
   'viewportActionMenu.bottomRight': [],
 };
