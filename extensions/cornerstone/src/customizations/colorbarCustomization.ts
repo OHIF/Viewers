@@ -10,7 +10,7 @@ import {
 } from '../types/Colorbar';
 import { ColorMapPreset } from '../types/Colormap';
 
-const defaultPosition: ColorbarPositionType = 'bottom';
+const defaultPosition: ColorbarPositionType = 'right';
 const DefaultColormap = 'Grayscale';
 
 const positionStyles: PositionStylesMapType = {
