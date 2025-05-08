@@ -645,4 +645,39 @@ export default class ToolbarService extends PubSubService {
     this.state.buttonSections[buttonSection] = [];
     this._broadcastEvent(this.EVENTS.TOOL_BAR_MODIFIED, { ...this.state });
   }
+
+  /**
+   * Evaluates a button with respect to a specific viewport, useful for buttons
+   * that need to know their state for a specific viewport that might not be active.
+   *
+   * @param button - The button to evaluate
+   * @param viewportId - The viewportId to use for evaluation
+   * @returns The evaluation result for the button
+   */
+  evaluateButtonForViewport(button, viewportId: string) {
+    if (!button || !button.props || !viewportId) {
+      return null;
+    }
+
+    const props = button.props;
+    this.handleEvaluate(props);
+
+    // If the evaluate function exists, run it with the viewportId
+    if (typeof props.evaluate === 'function') {
+      const evaluated = props.evaluate({ viewportId, button });
+
+      return {
+        ...props,
+        ...evaluated,
+        disabled: evaluated?.disabled || false,
+        className: evaluated?.className || '',
+        isOpen: props.isOpen,
+        isVisible: evaluated?.isVisible !== false && props.isVisible !== false,
+        isLocked: props.isLocked,
+        isActive: evaluated?.isActive,
+      };
+    }
+
+    return props;
+  }
 }

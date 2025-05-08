@@ -6,26 +6,29 @@ import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-  useViewportActionCorners,
   AllInOneMenu,
 } from '@ohif/ui-next';
 import { WindowLevelActionMenu } from './WindowLevelActionMenu';
-import { MENU_IDS } from '../menus/menu-ids';
 import { useViewportDisplaySets } from '../../hooks/useViewportDisplaySets';
 
 export function WindowLevelActionMenuWrapper({
   viewportId,
   element,
   location,
+  isOpen = false,
+  onOpen,
+  onClose,
 }: withAppTypes<{
   viewportId: string;
-  element: HTMLElement;
-  location: string;
-  displaySets: Array<AppTypes.DisplaySet>;
+  element?: HTMLElement;
+  location?: string;
+  isOpen?: boolean;
+  onOpen?: () => void;
+  onClose?: () => void;
+  displaySets?: Array<AppTypes.DisplaySet>;
 }>): ReactNode {
   const { allDisplaySets: displaySets } = useViewportDisplaySets(viewportId);
 
-  const [actionCornerState, viewportActionCornersAPI] = useViewportActionCorners();
   const { servicesManager } = useSystem();
   const { customizationService } = servicesManager.services;
 
@@ -35,23 +38,15 @@ export function WindowLevelActionMenuWrapper({
   const { volumeRenderingPresets, volumeRenderingQualityRange } =
     customizationService.getCustomization('cornerstone.3dVolumeRendering');
 
-  const isMenuOpen =
-    actionCornerState.viewports[viewportId]?.[location]?.find(
-      item => item.id === MENU_IDS.WINDOW_LEVEL_MENU
-    )?.isOpen ?? false;
-
   const handleOpenChange = (openState: boolean) => {
     if (openState) {
-      viewportActionCornersAPI.openItem?.(viewportId, MENU_IDS.WINDOW_LEVEL_MENU);
+      onOpen?.();
     } else {
-      viewportActionCornersAPI.closeItem?.(viewportId, MENU_IDS.WINDOW_LEVEL_MENU);
+      onClose?.();
     }
   };
 
-  const { align, side, horizontalDirection, verticalDirection } = getMenuDirections(
-    location,
-    viewportActionCornersAPI
-  );
+  const { align, side, horizontalDirection, verticalDirection } = getMenuDirections(location);
 
   const displaySetPresets = displaySets
     .filter(displaySet => presets[displaySet.Modality])
@@ -67,7 +62,7 @@ export function WindowLevelActionMenuWrapper({
 
   return (
     <Popover
-      open={isMenuOpen}
+      open={isOpen}
       onOpenChange={handleOpenChange}
     >
       <PopoverTrigger
@@ -104,14 +99,32 @@ export function WindowLevelActionMenuWrapper({
   );
 }
 
-const getMenuDirections = (location, viewportActionCornersAPI) => {
+const getMenuDirections = location => {
+  // Set default alignment and side
   let align = 'center';
   let side = 'bottom';
 
-  if (location !== undefined) {
-    const positioning = viewportActionCornersAPI.getAlignAndSide(location);
-    align = positioning.align;
-    side = positioning.side;
+  // Based on location string, determine the appropriate alignment
+  if (location) {
+    if (location.includes('topRight') || location.includes('viewportActionMenu.topRight')) {
+      align = 'end';
+      side = 'bottom';
+    } else if (location.includes('topLeft') || location.includes('viewportActionMenu.topLeft')) {
+      align = 'start';
+      side = 'bottom';
+    } else if (
+      location.includes('bottomRight') ||
+      location.includes('viewportActionMenu.bottomRight')
+    ) {
+      align = 'end';
+      side = 'top';
+    } else if (
+      location.includes('bottomLeft') ||
+      location.includes('viewportActionMenu.bottomLeft')
+    ) {
+      align = 'start';
+      side = 'top';
+    }
   }
 
   let horizontalDirection;

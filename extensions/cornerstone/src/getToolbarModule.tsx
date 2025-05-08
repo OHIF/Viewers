@@ -25,12 +25,85 @@ export default function getToolbarModule({ servicesManager }: withAppTypes) {
       defaultComponent: ViewportDataOverlayMenuWrapper,
     },
     {
+      name: 'evaluate.dataOverlayMenu',
+      evaluate: ({ viewportId }) => {
+        const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
+
+        if (!viewport) {
+          return {
+            visible: false,
+            disabled: true,
+          };
+        }
+
+        // Example: Show data overlay menu only for certain modalities
+        const displaySetUIDs = viewportGridService.getDisplaySetsUIDsForViewport(viewportId);
+        if (!displaySetUIDs?.length) {
+          return {
+            visible: false,
+            disabled: true,
+          };
+        }
+
+        const displaySets = displaySetUIDs.map(displaySetService.getDisplaySetByUID);
+        const hasSupportedModality = displaySets.some(displaySet =>
+          ['CT', 'MR', 'PT', 'CR', 'DX', 'US'].includes(displaySet?.Modality)
+        );
+
+        return {
+          visible: hasSupportedModality,
+          disabled: !hasSupportedModality,
+        };
+      },
+    },
+    {
       name: 'ohif.orientationMenu',
       defaultComponent: ViewportOrientationMenuWrapper,
     },
     {
+      name: 'evaluate.orientationMenu',
+      evaluate: ({ viewportId }) => {
+        const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
+
+        if (!viewport) {
+          return {
+            visible: false,
+            disabled: true,
+          };
+        }
+
+        // Only show orientation menu for 3D capable viewports
+        const viewportType = viewport.type;
+        const is3DCapable = viewportType === 'volume' || viewportType === 'mpr';
+
+        return {
+          visible: is3DCapable,
+          disabled: !is3DCapable,
+        };
+      },
+    },
+    {
       name: 'ohif.windowLevelMenu',
       defaultComponent: WindowLevelActionMenuWrapper,
+    },
+    {
+      name: 'evaluate.windowLevelMenu',
+      evaluate: ({ viewportId }) => {
+        const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
+
+        if (!viewport) {
+          return {
+            visible: false,
+            disabled: true,
+          };
+        }
+
+        // All viewports can have window/level adjustments
+        return {
+          visible: true,
+          disabled: false,
+        };
+      },
     },
     // functions/helpers to be used by the toolbar buttons to decide if they should
     // enabled or not

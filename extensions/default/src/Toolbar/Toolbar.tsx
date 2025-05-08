@@ -3,7 +3,7 @@ import { hooks } from '@ohif/core';
 
 const { useToolbar } = hooks;
 
-export function Toolbar({ buttonSection = 'primary' }) {
+export function Toolbar({ buttonSection = 'primary', viewportId }) {
   const {
     toolbarButtons,
     onInteraction,
@@ -30,22 +30,38 @@ export function Toolbar({ buttonSection = 'primary' }) {
 
         const { id, Component, componentProps } = toolDef;
 
-        // Enhanced props with state and actions
+        // Enhanced props with state and actions - respecting viewport specificity
         const enhancedProps = {
           ...componentProps,
-          isOpen: isItemOpen(id),
-          isLocked: isItemLocked(id),
-          onOpen: () => openItem(id),
-          onClose: () => closeItem(id),
-          onToggleLock: () => toggleLock(id),
+          isOpen: isItemOpen(id, viewportId),
+          isLocked: isItemLocked(id, viewportId),
+          onOpen: () => openItem(id, viewportId),
+          onClose: () => closeItem(id, viewportId),
+          onToggleLock: () => toggleLock(id, viewportId),
+          viewportId,
         };
 
         const tool = (
           <Component
             key={id}
             id={id}
-            onInteraction={onInteraction}
-            {...componentProps}
+            onInteraction={args => {
+              // If the component is a menu-type button, handle open/close behavior
+              if (enhancedProps.type === 'menu' || id.includes('Menu')) {
+                if (isItemOpen(id, viewportId)) {
+                  closeItem(id, viewportId);
+                } else {
+                  openItem(id, viewportId);
+                }
+              }
+
+              // Add viewportId to interaction if available
+              onInteraction({
+                ...args,
+                itemId: id,
+                viewportId,
+              });
+            }}
             {...enhancedProps}
           />
         );

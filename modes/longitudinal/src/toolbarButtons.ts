@@ -50,6 +50,7 @@ const toolbarButtons: Button[] = [
       icon: 'ViewportViews',
       label: 'Data Overlay',
       tooltip: 'Data Overlay',
+      evaluate: 'evaluate.dataOverlayMenu',
     },
   },
   {
@@ -57,6 +58,9 @@ const toolbarButtons: Button[] = [
     uiType: 'ohif.orientationMenu',
     props: {
       icon: 'Orientation',
+      label: 'Orientation',
+      tooltip: 'Orientation',
+      evaluate: 'evaluate.orientationMenu',
     },
   },
   {
@@ -64,6 +68,9 @@ const toolbarButtons: Button[] = [
     uiType: 'ohif.windowLevelMenu',
     props: {
       icon: 'WindowLevel',
+      label: 'Window Level',
+      tooltip: 'Window Level',
+      evaluate: 'evaluate.windowLevelMenu',
     },
   },
   {

@@ -29,14 +29,31 @@ export function ViewportDataOverlayMenuWrapper({
     }
   };
 
-  // Get proper alignment and side based on the location
+  // Set default alignment and side
   let align = 'center';
   let side = 'bottom';
 
-  if (location !== undefined) {
-    const positioning = viewportActionCornersAPI.getAlignAndSide(location);
-    align = positioning.align;
-    side = positioning.side;
+  // Based on location string, determine the appropriate alignment
+  if (location) {
+    if (location.includes('topRight') || location.includes('viewportActionMenu.topRight')) {
+      align = 'end';
+      side = 'bottom';
+    } else if (location.includes('topLeft') || location.includes('viewportActionMenu.topLeft')) {
+      align = 'start';
+      side = 'bottom';
+    } else if (
+      location.includes('bottomRight') ||
+      location.includes('viewportActionMenu.bottomRight')
+    ) {
+      align = 'end';
+      side = 'top';
+    } else if (
+      location.includes('bottomLeft') ||
+      location.includes('viewportActionMenu.bottomLeft')
+    ) {
+      align = 'start';
+      side = 'top';
+    }
   }
 
   return (
