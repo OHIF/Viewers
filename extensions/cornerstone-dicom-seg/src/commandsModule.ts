@@ -220,7 +220,7 @@ const commandsModule = ({
       }
 
       const { label } = segmentation;
-      const defaultDataSource = dataSource ?? extensionManager.getActiveDataSource();
+      const defaultDataSource = dataSource ?? extensionManager.getActiveDataSource()[0];
 
       const {
         value: reportName,
@@ -250,6 +250,10 @@ const commandsModule = ({
           }
 
           const { dataset: naturalizedReport } = generatedData;
+
+          if (naturalizedReport.StudyID === "No Study ID"){
+            naturalizedReport.StudyID = "";
+            };
 
           await selectedDataSourceConfig.store.dicom(naturalizedReport);
 
