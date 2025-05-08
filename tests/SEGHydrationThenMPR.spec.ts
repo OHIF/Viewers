@@ -12,11 +12,14 @@ test('should properly display MPR for MR', async ({ page }) => {
   await page.getByTestId('study-browser-thumbnail-no-image').dblclick();
 
   await page.getByTestId('yes-hydrate-btn').click();
+
+  await page.waitForTimeout(5000);
   await checkForScreenshot(page, page, screenShotPaths.segHydrationThenMPR.segPostHydration);
 
   await page.getByTestId('Layout').click();
   await page.getByTestId('Axial Primary').click();
 
+  await page.waitForTimeout(5000);
   await checkForScreenshot(
     page,
     page,
