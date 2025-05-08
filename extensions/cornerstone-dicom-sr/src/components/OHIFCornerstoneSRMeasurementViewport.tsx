@@ -437,7 +437,6 @@ function _getStatusComponent({
 
   const StatusArea = () => {
     const { toolbarButtons: loadSRMeasurementsButtons, onInteraction } = useToolbar({
-      servicesManager,
       buttonSection: 'loadSRMeasurements',
     });
 

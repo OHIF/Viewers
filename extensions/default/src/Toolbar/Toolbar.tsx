@@ -3,7 +3,6 @@ import { useToolbar } from '@ohif/core';
 
 export function Toolbar({ servicesManager, buttonSection = 'primary' }) {
   const { toolbarButtons, onInteraction } = useToolbar({
-    servicesManager,
     buttonSection,
   });
 
