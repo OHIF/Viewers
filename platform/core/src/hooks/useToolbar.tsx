@@ -244,23 +244,8 @@ export function useToolbar({ buttonSection = 'primary' }: withAppTypes): Toolbar
     };
   }, [viewportGridService, toolbarService, openItemIds]);
 
-  // Get buttons that passed their visibility check
-  const visibleToolbarButtons = useMemo(() => {
-    if (!toolbarButtons || !toolbarButtons.length) {
-      return [];
-    }
-
-    return toolbarButtons.filter(button => {
-      if (button?.componentProps?.disabled) {
-        return false;
-      }
-
-      return true;
-    });
-  }, [toolbarButtons]);
-
   return {
-    toolbarButtons: visibleToolbarButtons,
+    toolbarButtons,
     onInteraction,
     ...actions,
   };

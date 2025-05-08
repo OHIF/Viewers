@@ -22,7 +22,6 @@ export function ViewportDataOverlayMenuWrapper({
 }>): ReactNode {
   const { allDisplaySets: displaySets } = useViewportDisplaySets(viewportId);
   const iconClasses = useIconSize();
-  console.debug('🚀 ~ iconClasses:', iconClasses);
 
   const handleOpenChange = (openState: boolean) => {
     if (openState) {
