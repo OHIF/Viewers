@@ -2,15 +2,7 @@ import React from 'react';
 import { Icons } from '@ohif/ui-next';
 import { useSystem } from '@ohif/core';
 import { Enums } from '@cornerstonejs/core';
-import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  Button,
-  useViewportGrid,
-} from '@ohif/ui-next';
+import { Popover, PopoverTrigger, PopoverContent, Button, useViewportGrid } from '@ohif/ui-next';
 
 function ViewportOrientationMenu({
   location,
@@ -116,11 +108,14 @@ function ViewportOrientationMenu({
   const { align, side } = toolbarService.getAlignAndSide(Number(location));
 
   return (
-    <DropdownMenu
+    <Popover
       open={isOpen}
       onOpenChange={handleOpenChange}
     >
-      <DropdownMenuTrigger asChild>
+      <PopoverTrigger
+        asChild
+        className="flex items-center justify-center"
+      >
         <Button
           variant="ghost"
           size="icon"
@@ -128,26 +123,44 @@ function ViewportOrientationMenu({
         >
           <Icons.OrientationSwitch />
         </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent
-        className="min-w-[160px]"
+      </PopoverTrigger>
+      <PopoverContent
+        className="w-[100px] p-1"
         align={align}
         side={side}
-        sideOffset={5}
       >
-        <DropdownMenuLabel className="-ml-1">Orientation</DropdownMenuLabel>
-        <DropdownMenuItem onClick={() => handleOrientationChange('axial')}>Axial</DropdownMenuItem>
-        <DropdownMenuItem onClick={() => handleOrientationChange('sagittal')}>
-          Sagittal
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => handleOrientationChange('coronal')}>
-          Coronal
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => handleOrientationChange('acquisition')}>
-          Acquisition
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
+        <div className="flex flex-col">
+          <Button
+            variant="ghost"
+            className="justify-start"
+            onClick={() => handleOrientationChange('axial')}
+          >
+            Axial
+          </Button>
+          <Button
+            variant="ghost"
+            className="justify-start"
+            onClick={() => handleOrientationChange('sagittal')}
+          >
+            Sagittal
+          </Button>
+          <Button
+            variant="ghost"
+            className="justify-start"
+            onClick={() => handleOrientationChange('coronal')}
+          >
+            Coronal
+          </Button>
+          <Button
+            variant="ghost"
+            className="justify-start"
+            onClick={() => handleOrientationChange('acquisition')}
+          >
+            Acquisition
+          </Button>
+        </div>
+      </PopoverContent>
+    </Popover>
   );
 }
 
