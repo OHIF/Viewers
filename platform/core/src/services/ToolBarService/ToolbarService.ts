@@ -2,7 +2,7 @@ import { CommandsManager } from '../../classes';
 import { ExtensionManager } from '../../extensions';
 import { PubSubService } from '../_shared/pubSubServiceInterface';
 import type { RunCommand } from '../../types/Command';
-import { Button, ButtonProps, EvaluateFunction, EvaluatePublic, NestedButtonProps } from './types';
+import { Button, ButtonProps, EvaluateFunction, EvaluatePublic } from './types';
 
 const EVENTS = {
   TOOL_BAR_MODIFIED: 'event::toolBarService:toolBarModified',
