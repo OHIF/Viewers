@@ -251,9 +251,10 @@ const commandsModule = ({
 
           const { dataset: naturalizedReport } = generatedData;
 
-          if (naturalizedReport.StudyID === "No Study ID"){
-            naturalizedReport.StudyID = "";
-            };
+          // DCMJS assigns a dummy study id during creation, and this can cause problems, so clearing it out
+          if (naturalizedReport.StudyID === 'No Study ID') {
+            naturalizedReport.StudyID = '';
+          }
 
           await selectedDataSourceConfig.store.dicom(naturalizedReport);
 
