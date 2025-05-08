@@ -16,6 +16,7 @@ import createRenderedRetrieve from './createRenderedRetrieve';
  * @param {string} params.url unknown?
  * @returns an absolute URL to the resource, if the absolute URL can be retrieved as singlepart,
  *    or is already retrieved, or a promise to a URL for such use if a BulkDataURI
+ *    or an object with url and requiresAuthorization properties
  */
 const getDirectURL = (config, params) => {
   const { singlepart } = config;
@@ -59,7 +60,12 @@ const getDirectURL = (config, params) => {
     }
   }
 
-  return createRenderedRetrieve(config, params) || getBulkdataValue(config, params);
+  const renderedResult = createRenderedRetrieve(config, params);
+  if (renderedResult) {
+    return renderedResult;
+  }
+  
+  return getBulkdataValue(config, params);
 };
 
 export default getDirectURL;
