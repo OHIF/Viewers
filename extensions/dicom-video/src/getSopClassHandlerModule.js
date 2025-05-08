@@ -30,9 +30,9 @@ const SupportedTransferSyntaxes = {
 
 const supportedTransferSyntaxUIDs = Object.values(SupportedTransferSyntaxes);
 
-const _getDisplaySetsFromSeries = (instances, servicesManager, extensionManager) => {
+const _getDisplaySetsFromSeries = async (instances, servicesManager, extensionManager) => {
   const dataSource = extensionManager.getActiveDataSource()[0];
-  return instances
+  const videoInstances = instances
     .filter(metadata => {
       const tsuid =
         metadata.AvailableTransferSyntaxUID || metadata.TransferSyntaxUID || metadata['00083002'];
@@ -51,11 +51,12 @@ const _getDisplaySetsFromSeries = (instances, servicesManager, extensionManager)
         secondaryCaptureSopClassUids.includes(metadata.SOPClassUID) && metadata.NumberOfFrames >= 90
       );
     })
-    .map(instance => {
+    const displaySets = [];
+    for(const instance of videoInstances) {
       const { Modality, SOPInstanceUID, SeriesDescription = 'VIDEO', imageId } = instance;
       const { SeriesNumber, SeriesDate, SeriesInstanceUID, StudyInstanceUID, NumberOfFrames, url } =
         instance;
-      const videoUrl = dataSource.retrieve.directURL({
+      const videoUrl = await dataSource.retrieve.directURL({
         instance,
         singlepart: 'video',
         tag: 'PixelData',
@@ -79,7 +80,7 @@ const _getDisplaySetsFromSeries = (instances, servicesManager, extensionManager)
         videoUrl,
         renderedUrl: videoUrl,
         instances: [instance],
-        thumbnailSrc: dataSource.retrieve.directURL({
+        thumbnailSrc: await dataSource.retrieve.directURL({
           instance,
           defaultPath: '/thumbnail',
           defaultType: 'image/jpeg',
@@ -98,8 +99,9 @@ const _getDisplaySetsFromSeries = (instances, servicesManager, extensionManager)
         type: 'imageUrlModule',
         metadata: { rendered: videoUrl },
       });
-      return displaySet;
-    });
+      displaySets.push(displaySet);
+    };
+    return displaySets;
 };
 
 export default function getSopClassHandlerModule(params) {

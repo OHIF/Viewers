@@ -225,8 +225,8 @@ function createDicomWebApi(dicomWebConfig: DicomWebConfig, servicesManager) {
        * @returns an absolute URL to the resource, if the absolute URL can be retrieved as singlepart,
        *    or is already retrieved, or a promise to a URL for such use if a BulkDataURI
        */
-      directURL: params => {
-        return getDirectURL(
+      directURL: async params => {
+        return await getDirectURL(
           {
             wadoRoot: dicomWebConfig.wadoRoot,
             singlepart: dicomWebConfig.singlepart,

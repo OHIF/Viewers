@@ -24,10 +24,10 @@ describe('getDirectURL', () => {
     },
   };
 
-  it('should return the provided URL if it exists', () => {
+  it('should return the provided URL if it exists', async () => {
     const url = 'https://example.com/direct-retrieve';
 
-    const result = getDirectURL(config, {
+    const result = await getDirectURL(config, {
       ...params,
       url: 'https://example.com/direct-retrieve',
     });
@@ -35,12 +35,12 @@ describe('getDirectURL', () => {
     expect(result).toBe(url);
   });
 
-  it('should return the DirectRetrieveURL if it exists', () => {
+  it('should return the DirectRetrieveURL if it exists', async () => {
     const value = {
       DirectRetrieveURL: 'https://example.com/direct-retrieve',
     };
 
-    const result = getDirectURL(config, {
+    const result = await getDirectURL(config, {
       ...params,
       tag: 'PixelData',
       instance: {
@@ -52,12 +52,12 @@ describe('getDirectURL', () => {
     expect(result).toBe(value.DirectRetrieveURL);
   });
 
-  it('should return the URL for InlineBinary', () => {
+  it('should return the URL for InlineBinary', async () => {
     const value = {
       InlineBinary: 'base64-encoded-data',
     };
 
-    const result = getDirectURL(config, {
+    const result = await getDirectURL(config, {
       ...params,
       tag: 'PixelData',
       instance: {
@@ -69,12 +69,12 @@ describe('getDirectURL', () => {
     expect(result).toContain('blob:');
   });
 
-  it('should return the BulkDataURI with defaultType if singlepart is false and there is no retrieveBulkData', () => {
+  it('should return the BulkDataURI with defaultType if singlepart is false and there is no retrieveBulkData', async () => {
     const value = {
       BulkDataURI: 'https://example.com/bulkdata',
     };
 
-    const result = getDirectURL(
+    const result = await getDirectURL(
       {
         ...config,
         singlepart: false,
@@ -143,24 +143,24 @@ describe('getDirectURL', () => {
     expect(URL.createObjectURL).toHaveBeenCalledWith(new Blob([arr], { type: 'accept=video/mp4' }));
   });
 
-  it('should return the URL from getBulkdataValue if it exists', () => {
+  it('should return the URL from getBulkdataValue if it exists', async () => {
     const bulkDataURL = 'https://example.com/bulkdata';
 
     getBulkdataValue.mockReturnValueOnce(bulkDataURL);
 
-    const result = getDirectURL(config, params);
+    const result = await getDirectURL(config, params);
 
     expect(getBulkdataValue).toHaveBeenCalledWith(config, params);
     expect(result).toBe(bulkDataURL);
   });
 
-  it('should return the URL from createRenderedRetrieve if getBulkdataValue returns falsy', () => {
+  it('should return the URL from createRenderedRetrieve if getBulkdataValue returns falsy', async () => {
     const renderedRetrieveURL = 'https://example.com/rendered-retrieve';
 
     getBulkdataValue.mockReturnValueOnce(null);
     createRenderedRetrieve.mockReturnValueOnce(renderedRetrieveURL);
 
-    const result = getDirectURL(config, params);
+    const result = await getDirectURL(config, params);
 
     expect(getBulkdataValue).toHaveBeenCalledWith(config, params);
     expect(createRenderedRetrieve).toHaveBeenCalledWith(config, params);

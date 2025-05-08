@@ -9,7 +9,7 @@
  * @param {string} params.defaultType - The mime type of the response.
  * @param {string} params.singlepart - The type of the part to retrieve.
  * @param {string} params.fetchPart - Unknown.
- * @returns {string|Promise<string>} - An absolute URL to the resource, if the absolute URL can be retrieved as singlepart,
+ * @returns {string} - An absolute URL to the resource, if the absolute URL can be retrieved as singlepart,
  *    or is already retrieved, or a promise to a URL for such use if a BulkDataURI.
  */
 const getBulkdataValue = (config, params) => {

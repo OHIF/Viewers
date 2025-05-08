@@ -8,13 +8,14 @@ const SOP_CLASS_UIDS = {
 
 const sopClassUids = Object.values(SOP_CLASS_UIDS);
 
-const _getDisplaySetsFromSeries = (instances, servicesManager, extensionManager) => {
+const _getDisplaySetsFromSeries = async (instances, servicesManager, extensionManager) => {
   const dataSource = extensionManager.getActiveDataSource()[0];
-  return instances.map(instance => {
+  const displaySets = [];
+  for(const instance of instances) {
     const { Modality, SOPInstanceUID } = instance;
     const { SeriesDescription = 'PDF', MIMETypeOfEncapsulatedDocument } = instance;
     const { SeriesNumber, SeriesDate, SeriesInstanceUID, StudyInstanceUID, SOPClassUID } = instance;
-    const pdfUrl = dataSource.retrieve.directURL({
+    const pdfUrl = await dataSource.retrieve.directURL({
       instance,
       tag: 'EncapsulatedDocument',
       defaultType: MIMETypeOfEncapsulatedDocument || 'application/pdf',
@@ -37,7 +38,7 @@ const _getDisplaySetsFromSeries = (instances, servicesManager, extensionManager)
       measurements: null,
       pdfUrl,
       instances: [instance],
-      thumbnailSrc: dataSource.retrieve.directURL({
+      thumbnailSrc: await dataSource.retrieve.directURL({
         instance,
         defaultPath: '/thumbnail',
         defaultType: 'image/jpeg',
@@ -52,8 +53,9 @@ const _getDisplaySetsFromSeries = (instances, servicesManager, extensionManager)
       supportsWindowLevel: true,
       label: SeriesDescription || `${i18n.t('Series')} ${SeriesNumber} - ${i18n.t(Modality)}`,
     };
-    return displaySet;
-  });
+    displaySets.push(displaySet);
+  };
+  return displaySets;
 };
 
 export default function getSopClassHandlerModule(params) {
