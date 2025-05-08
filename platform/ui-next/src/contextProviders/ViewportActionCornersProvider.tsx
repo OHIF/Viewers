@@ -10,11 +10,15 @@ import React, {
 import { ViewportActionCornersLocations } from '../components/Viewport/ViewportActionCorners';
 import { ActionComponentInfo, AlignAndSide } from '../types';
 
-// Define the default state
 const DEFAULT_STATE = {
   viewports: {} as Record<string, Record<ViewportActionCornersLocations, ActionComponentInfo[]>>,
 };
 
+/**
+ * API for managing viewport action corner items.
+ * These methods control the state and behavior of the corner items themselves,
+ * not the content they might affect in the viewport.
+ */
 interface ViewportActionCornersApi {
   getState: () => typeof DEFAULT_STATE;
   addComponent: (component: ActionComponentInfo) => void;

@@ -51,9 +51,7 @@ const ViewportColorbar = ({
       return;
     }
 
-    const viewportElement =
-      viewportElementRef?.current ||
-      (document.getElementById(`viewport-element-${viewportId}`) as HTMLDivElement);
+    const viewportElement = viewportElementRef?.current;
 
     if (!viewportElement) {
       return;

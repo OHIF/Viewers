@@ -38,7 +38,6 @@ const OHIFCornerstoneViewport = React.memo(
       viewportOptions,
       displaySetOptions,
       servicesManager,
-      commandsManager,
       onElementEnabled,
       // eslint-disable-next-line react/prop-types
       onElementDisabled,
@@ -325,7 +324,6 @@ const OHIFCornerstoneViewport = React.memo(
       <React.Fragment>
         <div className="viewport-wrapper">
           <div
-            id={`viewport-element-${viewportId}`}
             className="cornerstone-viewport-element"
             style={{ height: '100%', width: '100%' }}
             onContextMenu={e => e.preventDefault()}
@@ -348,7 +346,10 @@ const OHIFCornerstoneViewport = React.memo(
             viewportId={viewportId}
             servicesManager={servicesManager}
           />
-          <ViewportColorbarsContainer viewportId={viewportId} />
+          <ViewportColorbarsContainer
+            viewportId={viewportId}
+            viewportElementRef={elementRef}
+          />
         </div>
         {/* top offset of 24px to account for ViewportActionCorners. */}
         <div className="absolute top-[24px] w-full">

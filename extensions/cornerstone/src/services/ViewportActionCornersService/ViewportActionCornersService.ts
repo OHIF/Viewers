@@ -40,54 +40,37 @@ class ViewportActionCornersService extends PubSubService {
     closeAllItems: closeAllItemsImplementation,
     isItemOpen: isItemOpenImplementation,
   }): void {
-    if (getStateImplementation) {
-      this.serviceImplementation._getState = getStateImplementation;
-    }
-    if (addComponentImplementation) {
-      this.serviceImplementation._addComponent = addComponentImplementation;
-    }
-    if (addComponentsImplementation) {
-      this.serviceImplementation._addComponents = addComponentsImplementation;
-    }
-    if (clearImplementation) {
-      this.serviceImplementation._clear = clearImplementation;
-    }
-    if (lockItemImplementation) {
-      this.serviceImplementation._lockItem = lockItemImplementation;
-    }
-    if (unlockItemImplementation) {
-      this.serviceImplementation._unlockItem = unlockItemImplementation;
-    }
-    if (toggleLockImplementation) {
-      this.serviceImplementation._toggleLock = toggleLockImplementation;
-    }
-    if (isItemLockedImplementation) {
-      this.serviceImplementation._isItemLocked = isItemLockedImplementation;
-    }
-    if (showItemImplementation) {
-      this.serviceImplementation._showItem = showItemImplementation;
-    }
-    if (hideItemImplementation) {
-      this.serviceImplementation._hideItem = hideItemImplementation;
-    }
-    if (toggleVisibilityImplementation) {
-      this.serviceImplementation._toggleVisibility = toggleVisibilityImplementation;
-    }
-    if (isItemVisibleImplementation) {
-      this.serviceImplementation._isItemVisible = isItemVisibleImplementation;
-    }
-    if (openItemImplementation) {
-      this.serviceImplementation._openItem = openItemImplementation;
-    }
-    if (closeItemImplementation) {
-      this.serviceImplementation._closeItem = closeItemImplementation;
-    }
-    if (closeAllItemsImplementation) {
-      this.serviceImplementation._closeAllItems = closeAllItemsImplementation;
-    }
-    if (isItemOpenImplementation) {
-      this.serviceImplementation._isItemOpen = isItemOpenImplementation;
-    }
+    this.serviceImplementation._getState =
+      getStateImplementation ?? this.serviceImplementation._getState;
+    this.serviceImplementation._addComponent =
+      addComponentImplementation ?? this.serviceImplementation._addComponent;
+    this.serviceImplementation._addComponents =
+      addComponentsImplementation ?? this.serviceImplementation._addComponents;
+    this.serviceImplementation._clear = clearImplementation ?? this.serviceImplementation._clear;
+    this.serviceImplementation._lockItem =
+      lockItemImplementation ?? this.serviceImplementation._lockItem;
+    this.serviceImplementation._unlockItem =
+      unlockItemImplementation ?? this.serviceImplementation._unlockItem;
+    this.serviceImplementation._toggleLock =
+      toggleLockImplementation ?? this.serviceImplementation._toggleLock;
+    this.serviceImplementation._isItemLocked =
+      isItemLockedImplementation ?? this.serviceImplementation._isItemLocked;
+    this.serviceImplementation._showItem =
+      showItemImplementation ?? this.serviceImplementation._showItem;
+    this.serviceImplementation._hideItem =
+      hideItemImplementation ?? this.serviceImplementation._hideItem;
+    this.serviceImplementation._toggleVisibility =
+      toggleVisibilityImplementation ?? this.serviceImplementation._toggleVisibility;
+    this.serviceImplementation._isItemVisible =
+      isItemVisibleImplementation ?? this.serviceImplementation._isItemVisible;
+    this.serviceImplementation._openItem =
+      openItemImplementation ?? this.serviceImplementation._openItem;
+    this.serviceImplementation._closeItem =
+      closeItemImplementation ?? this.serviceImplementation._closeItem;
+    this.serviceImplementation._closeAllItems =
+      closeAllItemsImplementation ?? this.serviceImplementation._closeAllItems;
+    this.serviceImplementation._isItemOpen =
+      isItemOpenImplementation ?? this.serviceImplementation._isItemOpen;
   }
 
   public getState() {

@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { useSystem } from '@ohif/core';
-import { cn } from '@ohif/ui-next';
 import AdvancedColorbarWithControls from './AdvancedColorbarWithControls';
 import { ColorbarCustomization } from '../../types/Colorbar';
 import type { ColorMapPreset } from '../../types/Colormap';
@@ -9,6 +8,7 @@ import { deepMerge } from '@cornerstonejs/core/utilities';
 
 type ViewportColorbarsContainerProps = {
   viewportId: string;
+  viewportElementRef?: React.RefObject<HTMLDivElement>;
 };
 
 type ColorbarData = {
@@ -24,7 +24,10 @@ type ColorbarData = {
  * Container component that manages multiple colorbars for a viewport
  * It interacts with the colorbarService to get/set colorbar states
  */
-const ViewportColorbarsContainer = ({ viewportId }: ViewportColorbarsContainerProps) => {
+const ViewportColorbarsContainer = ({
+  viewportId,
+  viewportElementRef,
+}: ViewportColorbarsContainerProps) => {
   const [colorbars, setColorbars] = useState<ColorbarData[]>([]);
   const { servicesManager } = useSystem();
   const { colorbarService, customizationService } = servicesManager.services;
@@ -111,6 +114,7 @@ const ViewportColorbarsContainer = ({ viewportId }: ViewportColorbarsContainerPr
                 colormaps={colorbar.colormaps}
                 activeColormapName={colorbar.activeColormapName}
                 volumeId={colorbar.volumeId}
+                viewportElementRef={viewportElementRef}
                 position={position}
                 tickPosition={tickPosition}
                 tickStyles={colorbarCustomization?.tickStyles}
@@ -126,6 +130,7 @@ const ViewportColorbarsContainer = ({ viewportId }: ViewportColorbarsContainerPr
           tickPosition={defaultTickPosition}
           colorbarCustomization={colorbarCustomization}
           onClose={handleClose}
+          viewportElementRef={viewportElementRef}
         />
       )}
     </div>

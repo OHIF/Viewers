@@ -24,6 +24,7 @@ type AdvancedColorbarWithControlsProps = {
   tickPosition: string;
   colorbarCustomization: ColorbarCustomization;
   onClose: (displaySetInstanceUID?: string) => void;
+  viewportElementRef?: React.RefObject<HTMLDivElement>;
 };
 
 /**
@@ -38,6 +39,7 @@ const AdvancedColorbarWithControls = ({
   tickPosition,
   colorbarCustomization,
   onClose,
+  viewportElementRef,
 }: AdvancedColorbarWithControlsProps) => {
   const handleClose = (displaySetInstanceUID?: string) => {
     onClose(displaySetInstanceUID);
@@ -79,6 +81,7 @@ const AdvancedColorbarWithControls = ({
             <ViewportColorbar
               key={`colorbar-${viewportId}-${displaySetInstanceUID}`}
               viewportId={viewportId}
+              viewportElementRef={viewportElementRef}
               displaySetInstanceUID={displaySetInstanceUID}
               colormaps={colorbar.colormaps}
               activeColormapName={colorbar.activeColormapName}
