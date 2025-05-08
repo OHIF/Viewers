@@ -110,10 +110,7 @@ const makeDisplaySet = instances => {
   // Sort the images in this series if needed
   const shallSort = true; //!OHIF.utils.ObjectPath.get(Meteor, 'settings.public.ui.sortSeriesByIncomingOrder');
   if (shallSort) {
-    imageSet.sortBy((a, b) => {
-      // Sort by InstanceNumber (0020,0013)
-      return (parseInt(a.InstanceNumber) || 0) - (parseInt(b.InstanceNumber) || 0);
-    });
+    imageSet.sort();
   }
 
   // Include the first image instance number (after sorted)

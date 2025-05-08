@@ -1,15 +1,11 @@
 import guid from '../utils/guid.js';
-import { Vector3 } from 'cornerstone-math';
+import calculateScanAxisNormal from '../utils/calculateScanAxisNormal';
 
 type Attributes = Record<string, unknown>;
 type Image = {
   StudyInstanceUID?: string;
-  getData(): {
-    metadata: {
-      ImagePositionPatient: number[];
-      ImageOrientationPatient: number[];
-    };
-  };
+  ImagePositionPatient?: string;
+  ImageOrientationPatient?: string;
 };
 
 /**
@@ -79,63 +75,96 @@ class ImageSet {
     return this.images[index];
   }
 
+  /**
+   * Default image sorting. Sorts by the following (in order of priority)
+   * 1. Image position (if ImagePositionPatient and ImageOrientationPatient are defined)
+   * 2. InstanceNumber
+   * Note: Images are sorted in-place and a reference to the sorted image array is returned.
+   *
+   * @returns images - reference to images after sorting
+   */
+  sort(): Image[] {
+    try {
+      return this.sortByImagePositionPatient();
+    } catch (error) {
+      return this.sortByInstanceNumber();
+    }
+  }
+
+  /**
+   * Sort using the provided callback function.
+   * Note: Images are sorted in-place and a reference to the sorted image array is returned.
+   *
+   * @param sortingCallback - sorting function
+   * @returns images - reference to images after sorting
+   */
   sortBy(sortingCallback: (a: Image, b: Image) => number): Image[] {
     return this.images.sort(sortingCallback);
   }
 
-  sortByImagePositionPatient(): void {
-    const images = this.images;
-    const referenceImagePositionPatient = _getImagePositionPatient(images[0]);
-
-    const refIppVec = new Vector3(
-      referenceImagePositionPatient[0],
-      referenceImagePositionPatient[1],
-      referenceImagePositionPatient[2]
-    );
-
-    const ImageOrientationPatient = _getImageOrientationPatient(images[0]);
-
-    const scanAxisNormal = new Vector3(
-      ImageOrientationPatient[0],
-      ImageOrientationPatient[1],
-      ImageOrientationPatient[2]
-    ).cross(
-      new Vector3(
-        ImageOrientationPatient[3],
-        ImageOrientationPatient[4],
-        ImageOrientationPatient[5]
-      )
-    );
-
-    const distanceImagePairs = images.map(function (image: Image) {
-      const ippVec = new Vector3(..._getImagePositionPatient(image));
-      const positionVector = refIppVec.clone().sub(ippVec);
-      const distance = positionVector.dot(scanAxisNormal);
-
-      return {
-        distance,
-        image,
-      };
-    });
-
-    distanceImagePairs.sort(function (a, b) {
-      return b.distance - a.distance;
-    });
-
-    const sortedImages = distanceImagePairs.map(a => a.image);
-
-    images.sort(function (a, b) {
-      return sortedImages.indexOf(a) - sortedImages.indexOf(b);
+  /**
+   * Sort by InstanceNumber
+   * Note: Images are sorted in-place and a reference to the sorted image array is returned.
+   *
+   * @returns images - reference to images after sorting
+   */
+  sortByInstanceNumber(): Image[] {
+    return this.sortBy((a, b) => {
+      // Sort by InstanceNumber (0020,0013)
+      // @ts-ignore
+      return (parseInt(a.InstanceNumber) || 0) - (parseInt(b.InstanceNumber) || 0);
     });
   }
-}
 
-function _getImagePositionPatient(image) {
-  return image.getData().metadata.ImagePositionPatient;
-}
+  /**
+   * Sort by image position, calculated using ImageOrientationPatient and ImagePositionPatient
+   * Note: Images are sorted in-place and a reference to the sorted image array is returned.
+   *
+   * @returns images - reference to images after sorting
+   */
+  sortByImagePositionPatient(): Image[] {
+    const images = this.images;
 
-function _getImageOrientationPatient(image) {
-  return image.getData().metadata.ImageOrientationPatient;
+    if (images.length <= 1) {
+      return; // No need to sort if there's only one image
+    }
+
+    // Use the first image as a reference
+    const referenceImagePositionPatient = images[0].ImagePositionPatient;
+    const ImageOrientationPatient = images[0].ImageOrientationPatient;
+
+    if (!referenceImagePositionPatient) {
+      throw new Error(
+        'Cannot sort ImageSet by real-world positions - ImagePositionPatient is undefined'
+      );
+    } else if (!ImageOrientationPatient) {
+      throw new Error(
+        'Cannot sort ImageSet by real-world positions - ImageOrientationPatient is undefined'
+      );
+    }
+
+    // Calculate the scan axis normal using the cross product
+    const scanAxisNormal = calculateScanAxisNormal(ImageOrientationPatient);
+
+    // Compute distances from each image to the reference image
+    const distanceInstancePairs = images.map(image => {
+      const imagePositionPatient = image.ImagePositionPatient;
+      const distance = scanAxisNormal.reduce((sum, normalComponent, index) => {
+        return (
+          sum +
+          normalComponent * (imagePositionPatient[index] - referenceImagePositionPatient[index])
+        );
+      }, 0);
+      return { distance, image };
+    });
+    // Sort images based on the computed distances
+    distanceInstancePairs.sort((a, b) => b.distance - a.distance);
+    // Reorder the images in the original array
+    const sortedImages = distanceInstancePairs.map(pair => pair.image);
+
+    images.sort((a, b) => sortedImages.indexOf(a) - sortedImages.indexOf(b));
+    return images;
+  }
 }
 
 export default ImageSet;
