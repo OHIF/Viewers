@@ -8,7 +8,7 @@ test.beforeEach(async ({ page }) => {
   await visitStudy(page, studyInstanceUID, mode, 10000);
 });
 
-test('should properly display MPR for MR @debug', async ({ page }) => {
+test('should properly display MPR for MR', async ({ page }) => {
   await page.getByTestId('side-panel-header-right').click();
   // await page.getByTestId('study-browser-thumbnail-no-image').dblclick();
   await checkForScreenshot(page, page, screenShotPaths.mpr2.mprDisplayedCorrectly);
