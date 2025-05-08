@@ -17,27 +17,41 @@ export function useViewportHover(viewportId: string): { isHovered: boolean; isAc
 
   const setupListeners = useCallback(() => {
     const viewportElement = document.querySelector(`[data-viewportId="${viewportId}"]`);
-
     const element = viewportElement?.closest('.viewport-wrapper') || viewportElement;
 
     if (!element) {
       return null;
     }
 
-    const handleMouseEnter = () => {
-      setIsHovered(true);
+    let elementRect = (element as HTMLElement).getBoundingClientRect();
+
+    // Update rectangle when window is resized
+    const updateRect = () => {
+      elementRect = (element as HTMLElement).getBoundingClientRect();
     };
 
-    const handleMouseLeave = () => {
-      setIsHovered(false);
+    const isPointInViewport = (x, y) => {
+      return (
+        x >= elementRect.left &&
+        x <= elementRect.right &&
+        y >= elementRect.top &&
+        y <= elementRect.bottom
+      );
     };
 
-    element.addEventListener('mouseenter', handleMouseEnter);
-    element.addEventListener('mouseleave', handleMouseLeave);
+    const handleMouseMove = event => {
+      const isInside = isPointInViewport(event.clientX, event.clientY);
+      setIsHovered(isInside);
+    };
+
+    window.addEventListener('resize', updateRect);
+    document.addEventListener('mousemove', handleMouseMove);
+
+    updateRect();
 
     return () => {
-      element.removeEventListener('mouseenter', handleMouseEnter);
-      element.removeEventListener('mouseleave', handleMouseLeave);
+      window.removeEventListener('resize', updateRect);
+      document.removeEventListener('mousemove', handleMouseMove);
     };
   }, [viewportId]);
 
