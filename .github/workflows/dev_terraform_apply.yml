@@ -1,0 +1,28 @@
+name: "Deploy Terraform stacks in Development"
+on:
+  workflow_dispatch:
+  # push:
+  #   branches:
+  #     - main
+
+jobs:
+  deploy:
+    name: Deploy Development Terraform
+    uses: UKHSA-Internal/devops-github-reusable-workflows/.github/workflows/terraform-plan-apply.yml@v3.0.0
+    concurrency:
+      group: "dev-main"
+    permissions:
+      packages: read
+      contents: read
+      security-events: write
+      statuses: write
+      checks: write
+      id-token: write
+    with:
+      environment_name: dev
+      execute_terraform_plan: true
+    secrets:
+      AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID_DEV }}
+      AWS_ROLE_NAME: ${{ secrets.AWS_ROLE_NAME }}
+      TF_MODULES_SSH_DEPLOY_KEY: ${{ secrets.SSH_DEPLOY_KEY }}
+      TF_PLAN_ENCRYPTION_PASSPHRASE: ${{ secrets.TF_PLAN_ENCRYPTION_PASSPHRASE }}
