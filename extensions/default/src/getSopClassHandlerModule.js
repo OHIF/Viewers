@@ -5,7 +5,13 @@ import getDisplaySetMessages from './getDisplaySetMessages';
 import getDisplaySetsFromUnsupportedSeries from './getDisplaySetsFromUnsupportedSeries';
 import { chartHandler } from './SOPClassHandlers/chartSOPClassHandler';
 
-const { isImage, sopClassDictionary, isDisplaySetReconstructable } = utils;
+const {
+  isImage,
+  sortStudyInstances,
+  instancesSortCriteria,
+  sopClassDictionary,
+  isDisplaySetReconstructable,
+} = utils;
 const { ImageSet } = classes;
 
 const DEFAULT_VOLUME_LOADER_SCHEME = 'cornerstoneStreamingImageVolume';
@@ -61,23 +67,9 @@ function getDisplaySetInfo(instances) {
   };
 }
 
-const instanceSort = (a, b) => {
-  // Sort by InstanceNumber (0020,0013)
-  const aInstance = parseInt(a.InstanceNumber) || 0;
-  const bInstance = parseInt(b.InstanceNumber) || 0;
-  if (aInstance !== bInstance) {
-    return (parseInt(a.InstanceNumber) || 0) - (parseInt(b.InstanceNumber) || 0);
-  }
-  // Fallback rule to enable consistent sorting
-  if (a.SOPInstanceUID === b.SOPInstanceUID) {
-    return 0;
-  }
-  return a.SOPInstanceUID < b.SOPInstanceUID ? -1 : 1;
-};
-
 const makeDisplaySet = instances => {
   // Need to sort the instances in order to get a consistent instance/thumbnail
-  instances.sort(instanceSort);
+  sortStudyInstances(instances);
   const instance = instances[0];
   const imageSet = new ImageSet(instances);
   const { extensionManager } = appContext;
@@ -135,11 +127,7 @@ const makeDisplaySet = instances => {
     FrameOfReferenceUID: instance.FrameOfReferenceUID,
   });
 
-  // Sort the images in this series if needed
-  const shallSort = true; //!OHIF.utils.ObjectPath.get(Meteor, 'settings.public.ui.sortSeriesByIncomingOrder');
-  if (shallSort) {
-    imageSet.sortBy(instanceSort);
-  }
+  imageSet.sortBy(instancesSortCriteria.default);
 
   // Include the first image instance number (after sorted)
   /*imageSet.setAttribute(
