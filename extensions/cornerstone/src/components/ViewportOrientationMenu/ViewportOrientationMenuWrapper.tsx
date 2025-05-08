@@ -22,14 +22,6 @@ export function ViewportOrientationMenuWrapper({
   if (!allDisplaySets.length) {
     return null;
   }
-  
-  const handleOpenChange = (openState: boolean) => {
-    if (openState) {
-      onOpen?.();
-    } else {
-      onClose?.();
-    }
-  };
 
   return (
     <ViewportOrientationMenu

@@ -12,6 +12,7 @@ import { useToolbar } from '@ohif/core/src';
 interface ToolButtonListWrapperProps {
   buttonSection: string;
   onInteraction?: (details: { itemId: string; commands?: Record<string, unknown> }) => void;
+  id: string;
 }
 
 /**

@@ -443,7 +443,7 @@ export default class ToolbarService extends PubSubService {
     }
 
     const { id, uiType } = btn;
-    const { buttonSection } = btn.props as NestedButtonProps;
+    const { buttonSection } = btn.props;
 
     const buttonTypes = this._getButtonUITypes();
 

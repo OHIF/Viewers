@@ -35,13 +35,6 @@ const toolbarButtons: Button[] = [
       buttonSection: 'moreToolsSection',
     },
   },
-  {
-    id: 'viewportActionMenu.topLeft',
-    uiType: 'ohif.simpleList',
-    props: {
-      buttonSection: 'viewportActionMenu.topLeft',
-    },
-  },
   // tool defs
   {
     id: 'dataOverlayMenu',

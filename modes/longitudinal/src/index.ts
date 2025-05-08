@@ -102,12 +102,11 @@ function modeFactory({ modeConfiguration }) {
         'Crosshairs',
         'dataOverlayMenu',
         'windowLevelMenu',
-        'orientationMenu',
         'MoreTools',
       ]);
 
       toolbarService.createButtonSection('viewportActionMenu.topLeft', [
-        // 'orientationMenu',
+        'orientationMenu',
         'dataOverlayMenu',
         'windowLevelMenu',
       ]);
