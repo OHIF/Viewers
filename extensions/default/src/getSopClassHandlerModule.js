@@ -5,7 +5,13 @@ import getDisplaySetMessages from './getDisplaySetMessages';
 import getDisplaySetsFromUnsupportedSeries from './getDisplaySetsFromUnsupportedSeries';
 import { chartHandler } from './SOPClassHandlers/chartSOPClassHandler';
 
-const { isImage, sopClassDictionary, isDisplaySetReconstructable } = utils;
+const {
+  isImage,
+  sortStudyInstances,
+  instancesSortCriteria,
+  sopClassDictionary,
+  isDisplaySetReconstructable,
+} = utils;
 const { ImageSet } = classes;
 
 const DEFAULT_VOLUME_LOADER_SCHEME = 'cornerstoneStreamingImageVolume';
@@ -62,6 +68,8 @@ function getDisplaySetInfo(instances) {
 }
 
 const makeDisplaySet = instances => {
+  // Need to sort the instances in order to get a consistent instance/thumbnail
+  sortStudyInstances(instances);
   const instance = instances[0];
   const imageSet = new ImageSet(instances);
   const { extensionManager } = appContext;
@@ -119,14 +127,7 @@ const makeDisplaySet = instances => {
     FrameOfReferenceUID: instance.FrameOfReferenceUID,
   });
 
-  // Sort the images in this series if needed
-  const shallSort = true; //!OHIF.utils.ObjectPath.get(Meteor, 'settings.public.ui.sortSeriesByIncomingOrder');
-  if (shallSort) {
-    imageSet.sortBy((a, b) => {
-      // Sort by InstanceNumber (0020,0013)
-      return (parseInt(a.InstanceNumber) || 0) - (parseInt(b.InstanceNumber) || 0);
-    });
-  }
+  imageSet.sortBy(instancesSortCriteria.default);
 
   // Include the first image instance number (after sorted)
   /*imageSet.setAttribute(
