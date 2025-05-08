@@ -1,7 +1,13 @@
 import React from 'react';
 import { useToolbar } from '@ohif/core';
 
-export function Toolbar({ buttonSection = 'primary', viewportId }) {
+interface ToolbarProps {
+  buttonSection?: string;
+  viewportId?: string;
+  iconSize?: number;
+}
+
+export function Toolbar({ buttonSection = 'primary', viewportId, iconSize = 24 }: ToolbarProps) {
   const {
     toolbarButtons,
     onInteraction,
@@ -42,6 +48,7 @@ export function Toolbar({ buttonSection = 'primary', viewportId }) {
           <Component
             key={id}
             id={id}
+            iconSize={iconSize}
             onInteraction={args => {
               // If the component is a menu-type button, handle open/close behavior
               if (enhancedProps.type === 'menu' || id.includes('Menu')) {

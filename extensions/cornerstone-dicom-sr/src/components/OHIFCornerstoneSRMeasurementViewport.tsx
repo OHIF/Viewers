@@ -5,7 +5,6 @@ import { ExtensionManager, useToolbar } from '@ohif/core';
 
 import { setTrackingUniqueIdentifiersForElement } from '../tools/modules/dicomSRModule';
 
-import { ViewportActionArrows } from '@ohif/ui-next';
 import createReferencedImageDisplaySet from '../utils/createReferencedImageDisplaySet';
 import { usePositionPresentationStore } from '@ohif/extension-cornerstone';
 import { useViewportGrid } from '@ohif/ui-next';
@@ -19,7 +18,7 @@ function OHIFCornerstoneSRMeasurementViewport(props: withAppTypes) {
   const { children, dataSource, displaySets, viewportOptions, servicesManager, extensionManager } =
     props;
 
-  const { displaySetService, viewportActionCornersService } = servicesManager.services;
+  const { displaySetService } = servicesManager.services;
 
   const viewportId = viewportOptions.viewportId;
 

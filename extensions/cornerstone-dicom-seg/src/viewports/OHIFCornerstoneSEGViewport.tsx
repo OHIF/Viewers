@@ -24,13 +24,8 @@ function OHIFCornerstoneSEGViewport(props: withAppTypes) {
   const { t } = useTranslation('SEGViewport');
   const viewportId = viewportOptions.viewportId;
 
-  const {
-    displaySetService,
-    toolGroupService,
-    segmentationService,
-    customizationService,
-    viewportActionCornersService,
-  } = servicesManager.services;
+  const { displaySetService, toolGroupService, segmentationService, customizationService } =
+    servicesManager.services;
 
   const LoadingIndicatorTotalPercent = customizationService.getCustomization(
     'ui.loadingIndicatorTotalPercent'

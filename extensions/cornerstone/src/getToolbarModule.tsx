@@ -31,7 +31,6 @@ export default function getToolbarModule({ servicesManager }: withAppTypes) {
 
         if (!viewport) {
           return {
-            visible: false,
             disabled: true,
           };
         }
@@ -67,18 +66,18 @@ export default function getToolbarModule({ servicesManager }: withAppTypes) {
 
         if (!viewport) {
           return {
-            visible: false,
             disabled: true,
           };
         }
 
         // Only show orientation menu for 3D capable viewports
-        const viewportType = viewport.type;
-        const is3DCapable = viewportType === 'volume' || viewportType === 'mpr';
+        const displaySetUIDs = viewportGridService.getDisplaySetsUIDsForViewport(viewportId);
+        const displaySets = displaySetUIDs.map(displaySetService.getDisplaySetByUID);
+        const CT = displaySets.some(displaySet => displaySet?.Modality === 'CT');
 
         return {
-          visible: is3DCapable,
-          disabled: !is3DCapable,
+          visible: CT,
+          disabled: !CT,
         };
       },
     },

@@ -241,18 +241,6 @@ export function useToolbar({ buttonSection = 'primary' }: withAppTypes): Toolbar
       isItemOpen: (itemId: string, viewportId?: string): boolean => {
         return openItemIds[itemId] === true;
       },
-
-      // Returns button evaluation based on viewportId
-      evaluateButtonForViewport: (itemId: string, viewportId?: string) => {
-        const targetViewportId = viewportId || viewportGridService.getActiveViewportId();
-        const button = toolbarService.getButton(itemId);
-
-        if (!button) {
-          return null;
-        }
-
-        return toolbarService.evaluateButtonForViewport(button, targetViewportId);
-      },
     };
   }, [viewportGridService, toolbarService, openItemIds]);
 
@@ -263,13 +251,7 @@ export function useToolbar({ buttonSection = 'primary' }: withAppTypes): Toolbar
     }
 
     return toolbarButtons.filter(button => {
-      // Check if the button is disabled by evaluators - these may already filter out invisible buttons
       if (button?.componentProps?.disabled) {
-        return false;
-      }
-
-      // Check if explicitly hidden
-      if (button?.componentProps?.isVisible === false) {
         return false;
       }
 

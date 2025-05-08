@@ -1,5 +1,5 @@
 import React from 'react';
-import { Icons, useViewportActionCorners } from '@ohif/ui-next';
+import { Icons } from '@ohif/ui-next';
 import { useSystem } from '@ohif/core';
 import { Enums } from '@cornerstonejs/core';
 import {
@@ -9,25 +9,34 @@ import {
   DropdownMenuItem,
   DropdownMenuLabel,
   Button,
+  useViewportGrid,
 } from '@ohif/ui-next';
-import { MENU_IDS } from '../menus/menu-ids';
 
 function ViewportOrientationMenu({
   location,
   viewportId,
   displaySets,
-}: withAppTypes<{ location?: string; viewportId: string; displaySets: AppTypes.DisplaySet[] }>) {
-  const { servicesManager, commandsManager } = useSystem();
-  const [actionCornerState, viewportActionCornersServiceAPI] = useViewportActionCorners();
-  const { cornerstoneViewportService } = servicesManager.services;
+  isOpen = false,
+  onOpen,
+  onClose,
+  iconSize = 24,
+}: withAppTypes<{
+  location?: string;
+  viewportId: string;
+  displaySets: AppTypes.DisplaySet[];
+  isOpen?: boolean;
+  onOpen?: () => void;
+  onClose?: () => void;
+  iconSize?: number;
+}>) {
+  const [gridState] = useViewportGrid();
+  const viewportIdToUse = viewportId || gridState.activeViewportId;
 
-  const isMenuOpen =
-    actionCornerState.viewports[viewportId]?.[location]?.find(
-      item => item.id === MENU_IDS.ORIENTATION_MENU
-    )?.isOpen ?? false;
+  const { servicesManager, commandsManager } = useSystem();
+  const { cornerstoneViewportService, toolbarService } = servicesManager.services;
 
   const handleOrientationChange = (orientation: string) => {
-    const viewportInfo = cornerstoneViewportService.getViewportInfo(viewportId);
+    const viewportInfo = cornerstoneViewportService.getViewportInfo(viewportIdToUse);
     const currentViewportType = viewportInfo?.getViewportType();
 
     if (!displaySets.length) {
@@ -64,7 +73,7 @@ function ViewportOrientationMenu({
     if (currentViewportType !== Enums.ViewportType.ORTHOGRAPHIC) {
       // Configure the viewport to be a volume viewport with current display sets
       const updatedViewport = {
-        viewportId,
+        viewportId: viewportIdToUse,
         displaySetInstanceUIDs: displaySetUIDs,
         viewportOptions: {
           viewportType: Enums.ViewportType.ORTHOGRAPHIC,
@@ -80,20 +89,20 @@ function ViewportOrientationMenu({
     } else {
       // Set the viewport orientation
       commandsManager.runCommand('setViewportOrientation', {
-        viewportId,
+        viewportId: viewportIdToUse,
         orientation: orientationEnum,
       });
     }
 
     // Close the menu after selection
-    viewportActionCornersServiceAPI.closeItem?.(viewportId, MENU_IDS.ORIENTATION_MENU);
+    onClose?.();
   };
 
   const handleOpenChange = (openState: boolean) => {
     if (openState) {
-      viewportActionCornersServiceAPI.openItem?.(viewportId, MENU_IDS.ORIENTATION_MENU);
+      onOpen?.();
     } else {
-      viewportActionCornersServiceAPI.closeItem?.(viewportId, MENU_IDS.ORIENTATION_MENU);
+      onClose?.();
     }
   };
 
@@ -103,26 +112,18 @@ function ViewportOrientationMenu({
 
   const hasReconstructableDisplaySet = displaySets.some(ds => ds.isReconstructable);
 
-  // Get proper alignment and side based on the location
-  let align = 'center';
-  let side = 'bottom';
-
-  if (location !== undefined) {
-    const positioning = viewportActionCornersServiceAPI.getAlignAndSide(location);
-    align = positioning.align;
-    side = positioning.side;
-  }
+  // Get proper alignment and side based on the location using toolbar service
+  const { align, side } = toolbarService.getAlignAndSide(Number(location));
 
   return (
     <DropdownMenu
-      open={isMenuOpen}
+      open={isOpen}
       onOpenChange={handleOpenChange}
     >
       <DropdownMenuTrigger asChild>
         <Button
           variant="ghost"
           size="icon"
-          className="text-highlight"
           disabled={!hasReconstructableDisplaySet}
         >
           <Icons.OrientationSwitch />

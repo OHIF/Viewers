@@ -28,7 +28,6 @@ function OHIFCornerstoneRTViewport(props: withAppTypes) {
     segmentationService,
     uiNotificationService,
     customizationService,
-    viewportActionCornersService,
   } = servicesManager.services;
 
   const viewportId = viewportOptions.viewportId;

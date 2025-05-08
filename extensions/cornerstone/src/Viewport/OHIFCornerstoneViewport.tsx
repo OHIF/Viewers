@@ -88,7 +88,6 @@ const OHIFCornerstoneViewport = React.memo(
       cornerstoneViewportService,
       segmentationService,
       cornerstoneCacheService,
-      viewportActionCornersService,
       customizationService,
       measurementService,
     } = servicesManager.services;
@@ -133,16 +132,8 @@ const OHIFCornerstoneViewport = React.memo(
         syncGroupService.removeViewportFromSyncGroup(viewportId, renderingEngineId, syncGroups);
 
         segmentationService.clearSegmentationRepresentations(viewportId);
-
-        viewportActionCornersService.clear(viewportId);
       },
-      [
-        viewportId,
-        segmentationService,
-        syncGroupService,
-        toolGroupService,
-        viewportActionCornersService,
-      ]
+      [viewportId, segmentationService, syncGroupService, toolGroupService]
     );
 
     const elementEnabledHandler = useCallback(

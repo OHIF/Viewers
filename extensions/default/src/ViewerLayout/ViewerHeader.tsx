@@ -120,7 +120,10 @@ function ViewerHeader({ appConfig }: withAppTypes<{ appConfig: AppTypes.Config }
       }
     >
       <div className="relative flex justify-center gap-[4px]">
-        <Toolbar servicesManager={servicesManager} />
+        <Toolbar
+          buttonSection="primary"
+          iconSize={40}
+        />
       </div>
     </Header>
   );

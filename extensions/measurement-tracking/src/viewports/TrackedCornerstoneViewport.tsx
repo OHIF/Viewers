@@ -14,12 +14,8 @@ function TrackedCornerstoneViewport(
 ) {
   const { displaySets, viewportId, servicesManager, extensionManager } = props;
 
-  const {
-    measurementService,
-    cornerstoneViewportService,
-    viewportGridService,
-    viewportActionCornersService,
-  } = servicesManager.services;
+  const { measurementService, cornerstoneViewportService, viewportGridService } =
+    servicesManager.services;
 
   // Todo: handling more than one displaySet on the same viewport
   const displaySet = displaySets[0];
