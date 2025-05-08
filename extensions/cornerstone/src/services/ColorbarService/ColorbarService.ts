@@ -1,6 +1,6 @@
 import { PubSubService, Types as OhifTypes } from '@ohif/core';
 import { RENDERING_ENGINE_ID } from '../ViewportService/constants';
-import { StackViewport, VolumeViewport, getRenderingEngine } from '@cornerstonejs/core';
+import { getRenderingEngine } from '@cornerstonejs/core';
 import { ColorbarOptions, ChangeTypes } from '../../types/Colorbar';
 
 export default class ColorbarService extends PubSubService {
@@ -39,14 +39,22 @@ export default class ColorbarService extends PubSubService {
   }
 
   /**
-   * Gets the volume ID for a given identifier by searching through the viewport's volume IDs.
-   * @param viewport - The viewport instance to search volumes in
-   * @param searchId - The identifier to search for within volume IDs
-   * @returns The matching volume ID if found, null otherwise
+   * Gets the appropriate data ID for a viewport and display set
+   * @param viewport - The viewport instance
+   * @param displaySetInstanceUID - The display set instance UID to identify data
+   * @returns The appropriate data ID for the viewport type (volumeId for volume viewports, undefined for stack)
    */
-  private getVolumeIdForIdentifier(viewport, searchId: string): string | null {
-    const volumeIds = viewport.getAllVolumeIds?.() || [];
-    return volumeIds.length > 0 ? volumeIds.find(id => id.includes(searchId)) || null : null;
+  private getDataIdForViewport(viewport, displaySetInstanceUID: string): string | undefined {
+    // For volume viewports, find the matching volumeId
+    if (viewport.getAllVolumeIds) {
+      const volumeIds = viewport.getAllVolumeIds() || [];
+      return volumeIds.length > 0
+        ? volumeIds.find(id => id.includes(displaySetInstanceUID)) || undefined
+        : undefined;
+    }
+
+    // For other viewports, no specific dataId is needed for now
+    return undefined;
   }
 
   /**
@@ -84,11 +92,8 @@ export default class ColorbarService extends PubSubService {
         return;
       }
 
-      const volumeId = this.getVolumeIdForIdentifier(viewport, displaySetInstanceUID);
-      const properties =
-        viewport instanceof VolumeViewport
-          ? viewport.getProperties(volumeId)
-          : viewport.getProperties();
+      const dataId = this.getDataIdForViewport(viewport, displaySetInstanceUID);
+      const properties = dataId ? viewport.getProperties(dataId) : viewport.getProperties();
       const colormap = properties?.colormap;
 
       if (activeColormapName && !colormap) {
@@ -104,7 +109,8 @@ export default class ColorbarService extends PubSubService {
       const colorbarData = {
         activeColormapName: colormap?.name || options?.activeColormapName || 'Grayscale',
         colormaps: options.colormaps ? Object.values(options.colormaps) : [],
-        volumeId: viewport instanceof VolumeViewport ? volumeId : undefined,
+        volumeId: dataId,
+        dataId,
       };
 
       // Store the colorbar data in the service state
@@ -238,18 +244,12 @@ export default class ColorbarService extends PubSubService {
     if (!viewport || !actorEntries || actorEntries.length === 0) {
       return;
     }
-    const setViewportProperties = (viewport, uid) => {
-      const volumeId = this.getVolumeIdForIdentifier(viewport, uid);
-      viewport.setProperties({ colormap }, volumeId);
-    };
 
-    if (viewport instanceof StackViewport) {
-      setViewportProperties(viewport, viewportId);
-    }
+    // Get the appropriate dataId for this viewport/displaySet combination
+    const dataId = this.getDataIdForViewport(viewport, displaySetInstanceUID);
 
-    if (viewport instanceof VolumeViewport) {
-      setViewportProperties(viewport, displaySetInstanceUID);
-    }
+    // Set properties with or without dataId based on what the viewport supports
+    viewport.setProperties({ colormap }, dataId);
 
     if (immediate) {
       viewport.render();
