@@ -42,7 +42,19 @@ const seriesSortCriteria = {
 };
 
 const instancesSortCriteria = {
-  default: (a, b) => parseInt(a.InstanceNumber) - parseInt(b.InstanceNumber),
+  default: (a, b) => {
+    // Sort by InstanceNumber (0020,0013)
+    const aInstance = parseInt(a.InstanceNumber) || 0;
+    const bInstance = parseInt(b.InstanceNumber) || 0;
+    if (aInstance !== bInstance) {
+      return (parseInt(a.InstanceNumber) || 0) - (parseInt(b.InstanceNumber) || 0);
+    }
+    // Fallback rule to enable consistent sorting
+    if (a.SOPInstanceUID === b.SOPInstanceUID) {
+      return 0;
+    }
+    return a.SOPInstanceUID < b.SOPInstanceUID ? -1 : 1;
+  },
 };
 
 const sortingCriteria = {
@@ -116,4 +128,11 @@ export default function sortStudy(
   return study;
 }
 
-export { sortStudy, sortStudySeries, sortStudyInstances, sortingCriteria, seriesSortCriteria };
+export {
+  sortStudy,
+  sortStudySeries,
+  sortStudyInstances,
+  sortingCriteria,
+  seriesSortCriteria,
+  instancesSortCriteria,
+};

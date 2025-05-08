@@ -28,15 +28,15 @@ function OHIFCornerstonePdfViewport({ displaySets }) {
     );
   }
 
-  const { pdfUrl } = displaySets[0];
+  const { renderedUrl } = displaySets[0];
 
   useEffect(() => {
     const load = async () => {
-      setUrl(await pdfUrl);
+      setUrl(await renderedUrl);
     };
 
     load();
-  }, [pdfUrl]);
+  }, [renderedUrl]);
 
   return (
     <div
