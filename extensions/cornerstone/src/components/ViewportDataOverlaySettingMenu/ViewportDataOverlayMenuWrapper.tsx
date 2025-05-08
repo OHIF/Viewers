@@ -1,13 +1,5 @@
 import React, { ReactNode } from 'react';
-import {
-  Button,
-  Icons,
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-  useViewportGrid,
-  useViewportActionCorners,
-} from '@ohif/ui-next';
+import { Button, Icons, Popover, PopoverContent, PopoverTrigger } from '@ohif/ui-next';
 import ViewportDataOverlayMenu from './ViewportDataOverlayMenu';
 import classNames from 'classnames';
 import { MENU_IDS } from '../menus/menu-ids';
@@ -16,24 +8,24 @@ import { useViewportDisplaySets } from '../../hooks/useViewportDisplaySets';
 export function ViewportDataOverlayMenuWrapper({
   location,
   viewportId,
+  isOpen = false,
+  onOpen,
+  onClose,
 }: withAppTypes<{
   viewportId: string;
-  element: HTMLElement;
-  location: string;
+  element?: HTMLElement;
+  location?: string;
+  isOpen?: boolean;
+  onOpen?: () => void;
+  onClose?: () => void;
 }>): ReactNode {
-  const [actionCornerState, viewportActionCornersAPI] = useViewportActionCorners();
   const { allDisplaySets: displaySets } = useViewportDisplaySets(viewportId);
-
-  const isMenuOpen =
-    actionCornerState.viewports[viewportId]?.[location]?.find(
-      item => item.id === MENU_IDS.DATA_OVERLAY_MENU
-    )?.isOpen ?? false;
 
   const handleOpenChange = (openState: boolean) => {
     if (openState) {
-      viewportActionCornersAPI.openItem?.(viewportId, MENU_IDS.DATA_OVERLAY_MENU);
+      onOpen?.();
     } else {
-      viewportActionCornersAPI.closeItem?.(viewportId, MENU_IDS.DATA_OVERLAY_MENU);
+      onClose?.();
     }
   };
 
@@ -49,7 +41,7 @@ export function ViewportDataOverlayMenuWrapper({
 
   return (
     <Popover
-      open={isMenuOpen}
+      open={isOpen}
       onOpenChange={handleOpenChange}
     >
       <PopoverTrigger
@@ -65,7 +57,6 @@ export function ViewportDataOverlayMenuWrapper({
       </PopoverTrigger>
       <PopoverContent
         className="border-none bg-transparent p-0 shadow-none"
-        id="abbas"
         side={side}
         align={align}
         alignOffset={0}

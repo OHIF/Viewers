@@ -13,7 +13,7 @@ import utils from './utils';
 import defaults from './defaults';
 import * as Types from './types';
 import * as Enums from './enums';
-import { useToolbar } from './hooks/useToolbar';
+import * as hooks from './hooks';
 import {
   CineService,
   UIDialogService,
@@ -86,7 +86,7 @@ const OHIF = {
   pubSubServiceInterface,
   PubSubService,
   PanelService,
-  useToolbar,
+  ...hooks,
   useActiveViewportDisplaySets,
   WorkflowStepsService,
   StudyPrefetcherService,
@@ -137,11 +137,10 @@ export {
   WorkflowStepsService,
   StudyPrefetcherService,
   useSystem,
-  useToolbar,
   useActiveViewportDisplaySets,
 };
 
-export { OHIF };
+export { OHIF, hooks };
 
 export type { Types };
 

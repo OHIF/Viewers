@@ -1,8 +1,19 @@
 import React from 'react';
-import { useToolbar } from '@ohif/core';
+import { hooks } from '@ohif/core';
+
+const { useToolbar } = hooks;
 
 export function Toolbar({ buttonSection = 'primary' }) {
-  const { toolbarButtons, onInteraction } = useToolbar({
+  const {
+    toolbarButtons,
+    onInteraction,
+    isItemOpen,
+    isItemLocked,
+    openItem,
+    closeItem,
+    closeAllItems,
+    toggleLock,
+  } = useToolbar({
     buttonSection,
   });
 
@@ -18,12 +29,24 @@ export function Toolbar({ buttonSection = 'primary' }) {
         }
 
         const { id, Component, componentProps } = toolDef;
+
+        // Enhanced props with state and actions
+        const enhancedProps = {
+          ...componentProps,
+          isOpen: isItemOpen(id),
+          isLocked: isItemLocked(id),
+          onOpen: () => openItem(id),
+          onClose: () => closeItem(id),
+          onToggleLock: () => toggleLock(id),
+        };
+
         const tool = (
           <Component
             key={id}
             id={id}
             onInteraction={onInteraction}
             {...componentProps}
+            {...enhancedProps}
           />
         );
 
