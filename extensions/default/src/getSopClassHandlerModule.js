@@ -61,7 +61,23 @@ function getDisplaySetInfo(instances) {
   };
 }
 
+const instanceSort = (a, b) => {
+  // Sort by InstanceNumber (0020,0013)
+  const aInstance = parseInt(a.InstanceNumber) || 0;
+  const bInstance = parseInt(b.InstanceNumber) || 0;
+  if (aInstance !== bInstance) {
+    return (parseInt(a.InstanceNumber) || 0) - (parseInt(b.InstanceNumber) || 0);
+  }
+  // Fallback rule to enable consistent sorting
+  if (a.SOPInstanceUID === b.SOPInstanceUID) {
+    return 0;
+  }
+  return a.SOPInstanceUID < b.SOPInstanceUID ? -1 : 1;
+};
+
 const makeDisplaySet = instances => {
+  // Need to sort the instances in order to get a consistent instance/thumbnail
+  instances.sort(instanceSort);
   const instance = instances[0];
   const imageSet = new ImageSet(instances);
   const { extensionManager } = appContext;
@@ -122,10 +138,7 @@ const makeDisplaySet = instances => {
   // Sort the images in this series if needed
   const shallSort = true; //!OHIF.utils.ObjectPath.get(Meteor, 'settings.public.ui.sortSeriesByIncomingOrder');
   if (shallSort) {
-    imageSet.sortBy((a, b) => {
-      // Sort by InstanceNumber (0020,0013)
-      return (parseInt(a.InstanceNumber) || 0) - (parseInt(b.InstanceNumber) || 0);
-    });
+    imageSet.sortBy(instanceSort);
   }
 
   // Include the first image instance number (after sorted)
