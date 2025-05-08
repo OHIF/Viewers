@@ -7,6 +7,7 @@ import {
   PopoverContent,
   PopoverTrigger,
   AllInOneMenu,
+  useViewportGrid,
 } from '@ohif/ui-next';
 import { WindowLevelActionMenu } from './WindowLevelActionMenu';
 import { useViewportDisplaySets } from '../../hooks/useViewportDisplaySets';
@@ -27,8 +28,10 @@ export function WindowLevelActionMenuWrapper({
   onClose?: () => void;
   displaySets?: Array<AppTypes.DisplaySet>;
 }>): ReactNode {
-  const { allDisplaySets: displaySets } = useViewportDisplaySets(viewportId);
+  const [gridState] = useViewportGrid();
+  const viewportIdToUse = viewportId || gridState.activeViewportId;
 
+  const { allDisplaySets: displaySets } = useViewportDisplaySets(viewportIdToUse);
   const { servicesManager } = useSystem();
   const { customizationService } = servicesManager.services;
 
@@ -84,7 +87,7 @@ export function WindowLevelActionMenuWrapper({
         sideOffset={5}
       >
         <WindowLevelActionMenu
-          viewportId={viewportId}
+          viewportId={viewportIdToUse}
           element={element}
           presets={displaySetPresets}
           horizontalDirection={horizontalDirection}

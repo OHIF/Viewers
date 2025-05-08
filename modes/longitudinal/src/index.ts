@@ -92,16 +92,17 @@ function modeFactory({ modeConfiguration }) {
 
       toolbarService.addButtons(toolbarButtons);
       toolbarService.createButtonSection('primary', [
-        // 'MeasurementTools',
-        // 'Zoom',
-        // 'Pan',
-        // 'TrackballRotate',
-        // 'WindowLevel',
-        // 'Capture',
-        // 'Layout',
-        // 'Crosshairs',
-        // 'dataOverlayMenu',
-        // 'MoreTools',
+        'MeasurementTools',
+        'Zoom',
+        'Pan',
+        'TrackballRotate',
+        'WindowLevel',
+        'Capture',
+        'Layout',
+        'Crosshairs',
+        'dataOverlayMenu',
+        'windowLevelMenu',
+        'MoreTools',
       ]);
 
       toolbarService.createButtonSection('viewportActionMenu.topLeft', [

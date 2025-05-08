@@ -49,7 +49,7 @@ export function ViewportDataOverlayMenuWrapper({
           variant="ghost"
           size="icon"
         >
-          <Icons.ViewportViews className={classNames('text-highlight')} />
+          <Icons.ViewportViews />
         </Button>
       </PopoverTrigger>
       <PopoverContent
