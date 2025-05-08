@@ -443,7 +443,7 @@ export default class ToolbarService extends PubSubService {
     }
 
     const { id, uiType } = btn;
-    const { groupId } = btn.props as NestedButtonProps;
+    const { buttonSection } = btn.props as NestedButtonProps;
 
     const buttonTypes = this._getButtonUITypes();
 
@@ -457,7 +457,7 @@ export default class ToolbarService extends PubSubService {
       return;
     }
 
-    !groupId ? this.handleEvaluate(btn.props) : this.handleEvaluateNested(btn.props);
+    !buttonSection ? this.handleEvaluate(btn.props) : this.handleEvaluateNested(btn.props);
 
     const { id: buttonId, props: componentProps } = btn;
 

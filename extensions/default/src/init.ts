@@ -52,10 +52,10 @@ export default function init({
   toolbarService.subscribe(toolbarService.EVENTS.TOOL_BAR_MODIFIED, state => {
     const { buttons } = state;
     for (const [id, button] of Object.entries(buttons)) {
-      const { groupId, items, listeners } = button.props || {};
+      const { buttonSection, items, listeners } = button.props || {};
 
       // Handle group items' listeners
-      if (groupId && items) {
+      if (buttonSection && items) {
         items.forEach(item => {
           if (item.listeners) {
             subscribeToEvents(item.listeners);
