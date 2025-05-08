@@ -1,4 +1,5 @@
 import React, { ReactNode } from 'react';
+import { useSystem } from '@ohif/core';
 import { Button, Icons, Popover, PopoverContent, PopoverTrigger } from '@ohif/ui-next';
 import ViewportDataOverlayMenu from './ViewportDataOverlayMenu';
 import classNames from 'classnames';
@@ -29,32 +30,11 @@ export function ViewportDataOverlayMenuWrapper({
     }
   };
 
-  // Set default alignment and side
-  let align = 'center';
-  let side = 'bottom';
+  const { servicesManager } = useSystem();
+  const { toolbarService } = servicesManager.services;
 
-  // Based on location string, determine the appropriate alignment
-  if (location) {
-    if (location.includes('topRight') || location.includes('viewportActionMenu.topRight')) {
-      align = 'end';
-      side = 'bottom';
-    } else if (location.includes('topLeft') || location.includes('viewportActionMenu.topLeft')) {
-      align = 'start';
-      side = 'bottom';
-    } else if (
-      location.includes('bottomRight') ||
-      location.includes('viewportActionMenu.bottomRight')
-    ) {
-      align = 'end';
-      side = 'top';
-    } else if (
-      location.includes('bottomLeft') ||
-      location.includes('viewportActionMenu.bottomLeft')
-    ) {
-      align = 'start';
-      side = 'top';
-    }
-  }
+  // Get alignment and side from the toolbar service
+  const { align, side } = toolbarService.getAlignAndSide(Number(location));
 
   return (
     <Popover

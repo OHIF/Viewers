@@ -680,4 +680,30 @@ export default class ToolbarService extends PubSubService {
 
     return props;
   }
+
+  /**
+   * Returns the alignment and side for a specific viewport corner location.
+   * Used for menu positioning based on the corner location.
+   *
+   * @param location - The viewport corner location
+   * @returns An object with align and side properties
+   */
+  public getAlignAndSide(location: number): {
+    align: 'start' | 'end' | 'center';
+    side: 'top' | 'bottom' | 'left' | 'right';
+  } {
+    // Convert the numeric location into alignment and side values
+    switch (location) {
+      case 0: // topLeft
+        return { align: 'start', side: 'bottom' };
+      case 1: // topRight
+        return { align: 'end', side: 'bottom' };
+      case 2: // bottomLeft
+        return { align: 'start', side: 'top' };
+      case 3: // bottomRight
+        return { align: 'end', side: 'top' };
+      default:
+        return { align: 'start', side: 'bottom' };
+    }
+  }
 }

@@ -313,43 +313,6 @@ function OHIFCornerstoneRTViewport(props: withAppTypes) {
     });
   }
 
-  useEffect(() => {
-    viewportActionCornersService.addComponents([
-      {
-        viewportId,
-        id: 'viewportStatusComponent',
-        component: _getStatusComponent({
-          isHydrated,
-          onStatusClick,
-        }),
-        indexPriority: -100,
-        location: viewportActionCornersService.LOCATIONS.topRight,
-      },
-      {
-        viewportId,
-        id: 'viewportActionArrowsComponent',
-        component: (
-          <ViewportActionArrows
-            key="actionArrows"
-            onArrowsClick={onSegmentChange}
-            className={
-              viewportId === activeViewportId ? 'visible' : 'invisible group-hover/pane:visible'
-            }
-          ></ViewportActionArrows>
-        ),
-        indexPriority: 0,
-        location: viewportActionCornersService.LOCATIONS.topRight,
-      },
-    ]);
-  }, [
-    activeViewportId,
-    isHydrated,
-    onSegmentChange,
-    onStatusClick,
-    viewportActionCornersService,
-    viewportId,
-  ]);
-
   return (
     <>
       <div className="relative flex h-full w-full flex-row overflow-hidden">

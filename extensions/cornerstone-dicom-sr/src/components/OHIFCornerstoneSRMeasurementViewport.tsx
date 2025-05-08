@@ -259,38 +259,6 @@ function OHIFCornerstoneSRMeasurementViewport(props: withAppTypes) {
     setIsLocked(trackedMeasurements?.context?.trackedSeries?.length > 0);
   }, [trackedMeasurements]);
 
-  useEffect(() => {
-    viewportActionCornersService.addComponents([
-      {
-        viewportId,
-        id: 'viewportStatusComponent',
-        component: _getStatusComponent({
-          srDisplaySet,
-          viewportId,
-          isRehydratable: srDisplaySet.isRehydratable,
-          isLocked,
-          t,
-          servicesManager,
-        }),
-        indexPriority: -100,
-        location: viewportActionCornersService.LOCATIONS.topRight,
-      },
-      {
-        viewportId,
-        id: 'viewportActionArrowsComponent',
-        index: 0,
-        component: (
-          <ViewportActionArrows
-            key="actionArrows"
-            onArrowsClick={onMeasurementChange}
-          ></ViewportActionArrows>
-        ),
-        indexPriority: 0,
-        location: viewportActionCornersService.LOCATIONS.topRight,
-      },
-    ]);
-  }, [isLocked, onMeasurementChange, srDisplaySet, t, viewportActionCornersService, viewportId]);
-
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   let childrenWithProps = null;
 

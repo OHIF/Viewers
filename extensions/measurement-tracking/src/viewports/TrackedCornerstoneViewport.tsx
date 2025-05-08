@@ -193,32 +193,6 @@ function TrackedCornerstoneViewport(
     [measurementService, servicesManager, trackedMeasurementUID, trackedMeasurements, viewportId]
   );
 
-  useEffect(() => {
-    const statusComponent = _getStatusComponent(isTracked, t);
-    const arrowsComponent = _getArrowsComponent(
-      isTracked,
-      switchMeasurement,
-      viewportId === activeViewportId
-    );
-
-    viewportActionCornersService.addComponents([
-      {
-        viewportId,
-        id: 'viewportStatusComponent',
-        component: statusComponent,
-        indexPriority: -100,
-        location: viewportActionCornersService.LOCATIONS.topRight,
-      },
-      {
-        viewportId,
-        id: 'viewportActionArrowsComponent',
-        component: arrowsComponent,
-        indexPriority: 0,
-        location: viewportActionCornersService.LOCATIONS.topRight,
-      },
-    ]);
-  }, [activeViewportId, isTracked, switchMeasurement, viewportActionCornersService, viewportId]);
-
   const getCornerstoneViewport = () => {
     const { component: Component } = extensionManager.getModuleEntry(
       '@ohif/extension-cornerstone.viewportModule.cornerstone'

@@ -1,7 +1,5 @@
 import React from 'react';
-import { hooks } from '@ohif/core';
-
-const { useToolbar } = hooks;
+import { useToolbar } from '@ohif/core';
 
 export function Toolbar({ buttonSection = 'primary', viewportId }) {
   const {
@@ -11,7 +9,6 @@ export function Toolbar({ buttonSection = 'primary', viewportId }) {
     isItemLocked,
     openItem,
     closeItem,
-    closeAllItems,
     toggleLock,
   } = useToolbar({
     buttonSection,
