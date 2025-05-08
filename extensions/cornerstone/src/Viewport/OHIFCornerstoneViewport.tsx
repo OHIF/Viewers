@@ -319,6 +319,7 @@ const OHIFCornerstoneViewport = React.memo(
             style={{ height: '100%', width: '100%' }}
             onContextMenu={e => e.preventDefault()}
             onMouseDown={e => e.preventDefault()}
+            data-viewportId={viewportId}
             ref={elementRef}
           ></div>
           <CornerstoneOverlays
