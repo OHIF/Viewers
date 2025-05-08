@@ -8,6 +8,7 @@ import {
   PopoverTrigger,
   AllInOneMenu,
   useViewportGrid,
+  useIconSize,
 } from '@ohif/ui-next';
 import { WindowLevelActionMenu } from './WindowLevelActionMenu';
 import { useViewportDisplaySets } from '../../hooks/useViewportDisplaySets';
@@ -63,6 +64,8 @@ export function WindowLevelActionMenuWrapper({
     return null;
   }
 
+  const iconClasses = useIconSize();
+
   return (
     <Popover
       open={isOpen}
@@ -76,7 +79,10 @@ export function WindowLevelActionMenuWrapper({
           variant="ghost"
           size="icon"
         >
-          <Icons.ByName name="viewport-window-level" />
+          <Icons.ByName
+            name="viewport-window-level"
+            className={iconClasses}
+          />
         </Button>
       </PopoverTrigger>
       <PopoverContent

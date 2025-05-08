@@ -100,14 +100,14 @@ function modeFactory({ modeConfiguration }) {
         'Capture',
         'Layout',
         'Crosshairs',
-        'dataOverlayMenu',
-        'windowLevelMenu',
         'MoreTools',
+        'dataOverlayMenu',
+        // 'windowLevelMenu',
       ]);
 
       toolbarService.createButtonSection('viewportActionMenu.topLeft', [
         'orientationMenu',
-        'dataOverlayMenu',
+        // 'dataOverlayMenu',
         'windowLevelMenu',
       ]);
 

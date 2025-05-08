@@ -11,7 +11,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-  Switch,
+  useIconSize,
 } from '@ohif/ui-next';
 import { useSystem } from '@ohif/core';
 

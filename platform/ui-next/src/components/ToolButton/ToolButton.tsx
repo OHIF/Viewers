@@ -3,6 +3,7 @@ import { Tooltip, TooltipTrigger, TooltipContent } from '../Tooltip';
 import { Icons } from '../Icons';
 import { Button } from '../Button';
 import { cn } from '../../lib/utils';
+import { useIconSize } from '../../contextProviders/IconSizeProvider';
 
 const baseClasses = '!rounded-lg inline-flex items-center justify-center';
 const defaultClasses = 'bg-transparent text-foreground/80 hover:bg-background hover:text-highlight';
@@ -50,6 +51,7 @@ function ToolButton(props: ToolButtonProps) {
     className,
   } = props;
 
+  const iconClasses = useIconSize();
   const { buttonSizeClass, iconSizeClass } = sizeClasses[size] || sizeClasses.default;
 
   const buttonClasses = cn(
@@ -92,7 +94,7 @@ function ToolButton(props: ToolButtonProps) {
           >
             <Icons.ByName
               name={icon}
-              className={iconSizeClass}
+              className={iconClasses || iconSizeClass}
             />
           </Button>
         </span>

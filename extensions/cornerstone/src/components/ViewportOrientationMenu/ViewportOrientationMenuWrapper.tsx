@@ -8,7 +8,6 @@ export function ViewportOrientationMenuWrapper({
   isOpen = false,
   onOpen,
   onClose,
-  iconSize = 24,
 }: withAppTypes<{
   viewportId: string;
   location: string;
@@ -31,7 +30,6 @@ export function ViewportOrientationMenuWrapper({
       isOpen={isOpen}
       onOpen={onOpen}
       onClose={onClose}
-      iconSize={iconSize}
     />
   );
 }
