@@ -1,25 +1,23 @@
 import React from 'react';
-import {
-  useViewportActionCorners,
-  ViewportActionCorners,
-  ViewportActionCornersLocations,
-} from '@ohif/ui-next';
+import { ViewportActionCorners, ViewportActionCornersLocations } from '@ohif/ui-next';
+import { Toolbar } from '@ohif/extension-default/src/Toolbar/Toolbar';
 
 export type OHIFViewportActionCornersProps = {
   viewportId: string;
 };
 
 function OHIFViewportActionCorners({ viewportId }: OHIFViewportActionCornersProps) {
-  const [state] = useViewportActionCorners();
+  // const [state] = useViewportActionCorners();
 
-  if (!state.viewports[viewportId]) {
-    return null;
-  }
+  // if (!state.viewports[viewportId]) {
+  //   return null;
+  // }
 
-  const components = state.viewports[viewportId];
+  // const components = state.viewports[viewportId];
+  // const { toolbarButtons } = useToolbar({ buttonSection: 'viewportActionMenu.topLeft' });
 
   const renderCorner = (location: ViewportActionCornersLocations, CornerComponent) => {
-    const cornerComponents = components[location];
+    // const cornerComponents = components[location];
     if (!cornerComponents?.length) {
       return null;
     }
@@ -44,10 +42,12 @@ function OHIFViewportActionCorners({ viewportId }: OHIFViewportActionCornersProp
 
   return (
     <ViewportActionCorners.Container>
-      {renderCorner(ViewportActionCornersLocations.topLeft, ViewportActionCorners.TopLeft)}
-      {renderCorner(ViewportActionCornersLocations.topRight, ViewportActionCorners.TopRight)}
+      <ViewportActionCorners.TopLeft>
+        <Toolbar buttonSection="viewportActionMenu.topLeft" />
+      </ViewportActionCorners.TopLeft>
+      {/* {renderCorner(ViewportActionCornersLocations.topRight, ViewportActionCorners.TopRight)}
       {renderCorner(ViewportActionCornersLocations.bottomLeft, ViewportActionCorners.BottomLeft)}
-      {renderCorner(ViewportActionCornersLocations.bottomRight, ViewportActionCorners.BottomRight)}
+      {renderCorner(ViewportActionCornersLocations.bottomRight, ViewportActionCorners.BottomRight)} */}
     </ViewportActionCorners.Container>
   );
 }

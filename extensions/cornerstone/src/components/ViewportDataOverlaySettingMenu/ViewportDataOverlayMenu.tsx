@@ -420,7 +420,7 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
         <div className="mt-1 mb-1 flex items-center px-1">
           <Icons.LayerBackground className="text-muted-foreground mr-1 h-6 w-6 flex-shrink-0" />
           <Select
-            value={backgroundDisplaySet.displaySetInstanceUID}
+            value={backgroundDisplaySet?.displaySetInstanceUID}
             onValueChange={value => {
               const selectedDisplaySet = potentialBackgroundDisplaySets.find(
                 ds => ds.displaySetInstanceUID === value
@@ -433,8 +433,8 @@ function ViewportDataOverlayMenu({ viewportId }: withAppTypes<{ viewportId: stri
             <SelectTrigger className="flex-1">
               <SelectValue>
                 {(
-                  backgroundDisplaySet.SeriesDescription ||
-                  backgroundDisplaySet.label ||
+                  backgroundDisplaySet?.SeriesDescription ||
+                  backgroundDisplaySet?.label ||
                   'background'
                 ).toUpperCase()}
               </SelectValue>

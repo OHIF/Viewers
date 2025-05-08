@@ -87,12 +87,7 @@ function ViewerHeader({ appConfig }: withAppTypes<{ appConfig: AppTypes.Config }
       isReturnEnabled={!!appConfig.showStudyList}
       onClickReturnButton={onClickReturnButton}
       WhiteLabeling={appConfig.whiteLabeling}
-      Secondary={
-        <Toolbar
-          servicesManager={servicesManager}
-          buttonSection="secondary"
-        />
-      }
+      Secondary={<Toolbar buttonSection="secondary" />}
       PatientInfo={
         appConfig.showPatientInfo !== PatientInfoVisibility.DISABLED && (
           <HeaderPatientInfo

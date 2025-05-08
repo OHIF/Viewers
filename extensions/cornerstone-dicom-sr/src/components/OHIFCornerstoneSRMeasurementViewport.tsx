@@ -372,14 +372,7 @@ async function _getViewportReferencedDisplaySetData(
   return { referencedDisplaySetMetadata, referencedDisplaySet };
 }
 
-function _getStatusComponent({
-  srDisplaySet,
-  viewportId,
-  isRehydratable,
-  isLocked,
-  t,
-  servicesManager,
-}) {
+function _getStatusComponent({ srDisplaySet, viewportId, isRehydratable, isLocked, t }) {
   const loadStr = t('LOAD');
 
   // 1 - Incompatible

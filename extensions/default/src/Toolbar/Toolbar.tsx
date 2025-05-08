@@ -1,7 +1,7 @@
 import React from 'react';
 import { useToolbar } from '@ohif/core';
 
-export function Toolbar({ servicesManager, buttonSection = 'primary' }) {
+export function Toolbar({ buttonSection = 'primary' }) {
   const { toolbarButtons, onInteraction } = useToolbar({
     buttonSection,
   });
@@ -23,7 +23,6 @@ export function Toolbar({ servicesManager, buttonSection = 'primary' }) {
             key={id}
             id={id}
             onInteraction={onInteraction}
-            servicesManager={servicesManager}
             {...componentProps}
           />
         );

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Icons, useViewportActionCorners, useViewportGrid } from '@ohif/ui-next';
+import { Icons, useViewportActionCorners } from '@ohif/ui-next';
 import { useSystem } from '@ohif/core';
 import { Enums } from '@cornerstonejs/core';
 import {
@@ -12,13 +12,14 @@ import {
 } from '@ohif/ui-next';
 import { MENU_IDS } from '../menus/menu-ids';
 
-function ViewportOrientationMenu({ location }: withAppTypes<{ location?: string }>) {
+function ViewportOrientationMenu({
+  location,
+  viewportId,
+  displaySets,
+}: withAppTypes<{ location?: string; viewportId: string; displaySets: AppTypes.DisplaySet[] }>) {
   const { servicesManager, commandsManager } = useSystem();
-  const [viewportGridState, viewportGridService] = useViewportGrid();
   const [actionCornerState, viewportActionCornersServiceAPI] = useViewportActionCorners();
-  const { cornerstoneViewportService, displaySetService } = servicesManager.services;
-
-  const viewportId = viewportGridState.activeViewportId;
+  const { cornerstoneViewportService } = servicesManager.services;
 
   const isMenuOpen =
     actionCornerState.viewports[viewportId]?.[location]?.find(
@@ -28,12 +29,6 @@ function ViewportOrientationMenu({ location }: withAppTypes<{ location?: string 
   const handleOrientationChange = (orientation: string) => {
     const viewportInfo = cornerstoneViewportService.getViewportInfo(viewportId);
     const currentViewportType = viewportInfo?.getViewportType();
-
-    // Get the displaySets in this viewport
-    const displaySetUIDs = viewportGridService.getDisplaySetsUIDsForViewport(viewportId);
-    const displaySets = displaySetUIDs
-      .map(uid => displaySetService.getDisplaySetByUID(uid))
-      .filter(Boolean);
 
     if (!displaySets.length) {
       return;
@@ -62,6 +57,8 @@ function ViewportOrientationMenu({ location }: withAppTypes<{ location?: string 
       default:
         orientationEnum = Enums.OrientationAxis.ACQUISITION;
     }
+
+    const displaySetUIDs = displaySets.map(ds => ds.displaySetInstanceUID);
 
     // If viewport is not already a volume type, we need to convert it
     if (currentViewportType !== Enums.ViewportType.ORTHOGRAPHIC) {
@@ -99,11 +96,6 @@ function ViewportOrientationMenu({ location }: withAppTypes<{ location?: string 
       viewportActionCornersServiceAPI.closeItem?.(viewportId, MENU_IDS.ORIENTATION_MENU);
     }
   };
-
-  const displaySetUIDs = viewportGridService.getDisplaySetsUIDsForViewport(viewportId);
-  const displaySets = displaySetUIDs
-    .map(uid => displaySetService.getDisplaySetByUID(uid))
-    .filter(Boolean);
 
   if (!displaySets.length) {
     return null;

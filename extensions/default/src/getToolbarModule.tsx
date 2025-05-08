@@ -3,19 +3,21 @@ import { ToolButton, utils } from '@ohif/ui-next';
 import ToolbarLayoutSelectorWithServices from './Toolbar/ToolbarLayoutSelector';
 
 // legacy
-import ToolbarDividerLegacy from './Toolbar/ToolbarDivider';
-import ToolbarSplitButtonWithServicesLegacy from './Toolbar/ToolbarSplitButtonWithServices';
-import ToolbarButtonGroupWithServicesLegacy from './Toolbar/ToolbarButtonGroupWithServices';
 import { ProgressDropdownWithService } from './Components/ProgressDropdownWithService';
 
 // new
 import ToolButtonListWrapper from './Toolbar/ToolButtonListWrapper';
 import { ToolBoxButtonGroupWrapper, ToolBoxButtonWrapper } from './Toolbar/ToolBoxWrapper';
+import SimpleListWrapper from './Toolbar/SimpleListWrapper';
 
 export default function getToolbarModule({ commandsManager, servicesManager }: withAppTypes) {
   const { cineService } = servicesManager.services;
   return [
     // new
+    {
+      name: 'ohif.simpleList',
+      defaultComponent: SimpleListWrapper,
+    },
     {
       name: 'ohif.toolButton',
       defaultComponent: ToolButton,

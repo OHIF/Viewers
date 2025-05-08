@@ -35,7 +35,37 @@ const toolbarButtons: Button[] = [
       buttonSection: 'moreToolsSection',
     },
   },
+  {
+    id: 'viewportActionMenu.topLeft',
+    uiType: 'ohif.simpleList',
+    props: {
+      buttonSection: 'viewportActionMenu.topLeft',
+    },
+  },
   // tool defs
+  {
+    id: 'dataOverlayMenu',
+    uiType: 'ohif.dataOverlayMenu',
+    props: {
+      icon: 'ViewportViews',
+      label: 'Data Overlay',
+      tooltip: 'Data Overlay',
+    },
+  },
+  {
+    id: 'orientationMenu',
+    uiType: 'ohif.orientationMenu',
+    props: {
+      icon: 'Orientation',
+    },
+  },
+  {
+    id: 'windowLevelMenu',
+    uiType: 'ohif.windowLevelMenu',
+    props: {
+      icon: 'WindowLevel',
+    },
+  },
   {
     id: 'Reset',
     uiType: 'ohif.toolButton',

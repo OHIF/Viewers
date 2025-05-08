@@ -42,6 +42,14 @@ export function getModalityOverlayColormap(customizationService, modality) {
 export function getEnhancedDisplaySets({ viewportId, services }) {
   const { displaySetService, viewportGridService } = services;
   const displaySetsUIDs = viewportGridService.getDisplaySetsUIDsForViewport(viewportId);
+
+  if (!displaySetsUIDs?.length) {
+    return {
+      viewportDisplaySets: [],
+      enhancedDisplaySets: [],
+    };
+  }
+
   const allDisplaySets = displaySetService.getActiveDisplaySets();
 
   const otherDisplaySets = allDisplaySets.filter(

@@ -92,15 +92,22 @@ function modeFactory({ modeConfiguration }) {
 
       toolbarService.addButtons(toolbarButtons);
       toolbarService.createButtonSection('primary', [
-        'MeasurementTools',
-        'Zoom',
-        'Pan',
-        'TrackballRotate',
-        'WindowLevel',
-        'Capture',
-        'Layout',
-        'Crosshairs',
-        'MoreTools',
+        // 'MeasurementTools',
+        // 'Zoom',
+        // 'Pan',
+        // 'TrackballRotate',
+        // 'WindowLevel',
+        // 'Capture',
+        // 'Layout',
+        // 'Crosshairs',
+        // 'dataOverlayMenu',
+        // 'MoreTools',
+      ]);
+
+      toolbarService.createButtonSection('viewportActionMenu.topLeft', [
+        'orientationMenu',
+        'dataOverlayMenu',
+        'windowLevelMenu',
       ]);
 
       toolbarService.createButtonSection('measurementSection', [
@@ -134,6 +141,12 @@ function modeFactory({ modeConfiguration }) {
         'AdvancedMagnify',
         'UltrasoundDirectionalTool',
         'WindowLevelRegion',
+      ]);
+
+      toolbarService.createButtonSection('mainViewport.TopLeft', [
+        'orientationMenu',
+        'dataOverlayMenu',
+        'windowLevelMenu',
       ]);
 
       customizationService.setCustomizations({

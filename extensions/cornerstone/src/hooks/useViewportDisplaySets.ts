@@ -49,29 +49,33 @@ export type UseViewportDisplaySetsOptions = {
  */
 export type ViewportDisplaySets = {
   /**
+   * All display sets for the viewport
+   */
+  allDisplaySets: AppTypes.DisplaySet[];
+  /**
    * The primary display set for the viewport (base image)
    */
-  backgroundDisplaySet?: any;
+  backgroundDisplaySet?: AppTypes.DisplaySet;
   /**
    * Display sets currently shown with background (non-overlay layers)
    */
-  foregroundDisplaySets?: any[];
+  foregroundDisplaySets?: AppTypes.DisplaySet[];
   /**
    * Segmentation display sets currently applied as overlays
    */
-  overlayDisplaySets?: any[];
+  overlayDisplaySets?: AppTypes.DisplaySet[];
   /**
    * Display sets that could be toggled on as overlays (derived modalities)
    */
-  potentialOverlayDisplaySets?: any[];
+  potentialOverlayDisplaySets?: AppTypes.DisplaySet[];
   /**
    * Display sets that could be added as foreground layers
    */
-  potentialForegroundDisplaySets?: any[];
+  potentialForegroundDisplaySets?: AppTypes.DisplaySet[];
   /**
    * Display sets that could replace the current background
    */
-  potentialBackgroundDisplaySets?: any[];
+  potentialBackgroundDisplaySets?: AppTypes.DisplaySet[];
 };
 
 /**
@@ -82,7 +86,7 @@ export type ViewportDisplaySets = {
  * @returns Object containing requested display set collections based on options
  */
 export function useViewportDisplaySets(
-  viewportId: string,
+  viewportId?: string,
   options?: UseViewportDisplaySetsOptions
 ): ViewportDisplaySets {
   const { servicesManager } = useSystem();
@@ -91,7 +95,9 @@ export function useViewportDisplaySets(
   // Note: this is very important we should use the useViewportGrid hook here,
   // since if the viewport displaySet is changed we should re-run this hook
   // to get the latest displaySets
-  const [_, viewportGridService] = useViewportGrid();
+  const [viewportGridState, viewportGridService] = useViewportGrid();
+
+  const viewportIdToUse = viewportId || viewportGridState.activeViewportId;
 
   // Apply defaults - include everything if no options specified
   const {
@@ -114,8 +120,8 @@ export function useViewportDisplaySets(
   const needsSegmentations = includeOverlay;
   const segmentationRepresentations = useMemo(
     () =>
-      needsSegmentations ? segmentationService.getSegmentationRepresentations(viewportId) : [],
-    [segmentationService, viewportId, needsSegmentations]
+      needsSegmentations ? segmentationService.getSegmentationRepresentations(viewportIdToUse) : [],
+    [segmentationService, viewportIdToUse, needsSegmentations]
   );
 
   const overlayDisplaySets = useMemo(() => {
@@ -142,10 +148,10 @@ export function useViewportDisplaySets(
       return { viewportDisplaySets: [], enhancedDisplaySets: [] };
     }
     return getEnhancedDisplaySets({
-      viewportId,
+      viewportId: viewportIdToUse,
       services: { displaySetService, viewportGridService },
     });
-  }, [viewportId, displaySetService, viewportGridService, needsEnhancedDisplaySets]);
+  }, [viewportIdToUse, displaySetService, viewportGridService, needsEnhancedDisplaySets]);
 
   const backgroundDisplaySet = useMemo(
     () => (includeBackground ? viewportDisplaySets[0] : undefined),
@@ -217,7 +223,7 @@ export function useViewportDisplaySets(
     foregroundDisplaySetUIDs,
   ]);
 
-  const result: ViewportDisplaySets = {};
+  const result: ViewportDisplaySets = { allDisplaySets };
 
   if (includeBackground) {
     result.backgroundDisplaySet = backgroundDisplaySet;

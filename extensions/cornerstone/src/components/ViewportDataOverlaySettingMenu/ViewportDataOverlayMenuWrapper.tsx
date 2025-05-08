@@ -1,7 +1,6 @@
 import React, { ReactNode } from 'react';
 import {
   Button,
-  cn,
   Icons,
   Popover,
   PopoverContent,
@@ -12,18 +11,18 @@ import {
 import ViewportDataOverlayMenu from './ViewportDataOverlayMenu';
 import classNames from 'classnames';
 import { MENU_IDS } from '../menus/menu-ids';
+import { useViewportDisplaySets } from '../../hooks/useViewportDisplaySets';
 
 export function ViewportDataOverlayMenuWrapper({
-  viewportId,
-  displaySets,
   location,
+  viewportId,
 }: withAppTypes<{
   viewportId: string;
   element: HTMLElement;
   location: string;
 }>): ReactNode {
-  const [viewportGrid] = useViewportGrid();
   const [actionCornerState, viewportActionCornersAPI] = useViewportActionCorners();
+  const { allDisplaySets: displaySets } = useViewportDisplaySets(viewportId);
 
   const isMenuOpen =
     actionCornerState.viewports[viewportId]?.[location]?.find(
@@ -60,17 +59,13 @@ export function ViewportDataOverlayMenuWrapper({
         <Button
           variant="ghost"
           size="icon"
-          className={cn(
-            viewportGrid.activeViewportId === viewportId
-              ? 'visible'
-              : 'invisible group-hover/pane:visible'
-          )}
         >
           <Icons.ViewportViews className={classNames('text-highlight')} />
         </Button>
       </PopoverTrigger>
       <PopoverContent
         className="border-none bg-transparent p-0 shadow-none"
+        id="abbas"
         side={side}
         align={align}
         alignOffset={0}

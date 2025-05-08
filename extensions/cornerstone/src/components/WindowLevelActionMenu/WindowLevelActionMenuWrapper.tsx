@@ -2,37 +2,36 @@ import React, { ReactNode } from 'react';
 import { useSystem } from '@ohif/core';
 import {
   Button,
-  cn,
   Icons,
   Popover,
   PopoverContent,
   PopoverTrigger,
-  useViewportGrid,
   useViewportActionCorners,
   AllInOneMenu,
 } from '@ohif/ui-next';
 import { WindowLevelActionMenu } from './WindowLevelActionMenu';
 import { MENU_IDS } from '../menus/menu-ids';
+import { useViewportDisplaySets } from '../../hooks/useViewportDisplaySets';
 
 export function WindowLevelActionMenuWrapper({
   viewportId,
   element,
   location,
-  displaySets,
 }: withAppTypes<{
   viewportId: string;
   element: HTMLElement;
   location: string;
   displaySets: Array<AppTypes.DisplaySet>;
 }>): ReactNode {
-  const [viewportGrid] = useViewportGrid();
+  const { allDisplaySets: displaySets } = useViewportDisplaySets(viewportId);
+
   const [actionCornerState, viewportActionCornersAPI] = useViewportActionCorners();
-  const isActiveViewport = viewportId === viewportGrid.activeViewportId;
   const { servicesManager } = useSystem();
   const { customizationService } = servicesManager.services;
 
   const presets = customizationService.getCustomization('cornerstone.windowLevelPresets');
   const colorbarProperties = customizationService.getCustomization('cornerstone.colorbar');
+
   const { volumeRenderingPresets, volumeRenderingQualityRange } =
     customizationService.getCustomization('cornerstone.3dVolumeRendering');
 
@@ -78,10 +77,6 @@ export function WindowLevelActionMenuWrapper({
         <Button
           variant="ghost"
           size="icon"
-          className={cn(
-            isActiveViewport ? 'visible' : 'invisible group-hover/pane:visible',
-            'text-highlight'
-          )}
         >
           <Icons.ByName name="viewport-window-level" />
         </Button>

@@ -6,8 +6,6 @@ export * from './MeasurementsMenu';
 export * from './SeriesMeasurements';
 export * from './StudyMeasurementsActions';
 export * from './MeasurementsOrAdditionalFindings';
-export * from './ViewportDataOverlaySettingMenu';
-export * from './ViewportOrientationMenu';
 export * from './WindowLevelActionMenu';
 
 export { DicomUpload };

@@ -1,23 +1,37 @@
 import { Enums } from '@cornerstonejs/tools';
 import { utils } from '@ohif/ui-next';
+import { ViewportDataOverlayMenuWrapper } from './components/ViewportDataOverlaySettingMenu/ViewportDataOverlayMenuWrapper';
+import { ViewportOrientationMenuWrapper } from './components/ViewportOrientationMenu/ViewportOrientationMenuWrapper';
+import { WindowLevelActionMenuWrapper } from './components/WindowLevelActionMenu/WindowLevelActionMenuWrapper';
 
 const getDisabledState = (disabledText?: string) => ({
   disabled: true,
   disabledText: disabledText ?? 'Not available on the current viewport',
 });
 
-export default function getToolbarModule({ commandsManager, servicesManager }: withAppTypes) {
+export default function getToolbarModule({ servicesManager }: withAppTypes) {
   const {
     toolGroupService,
     toolbarService,
     syncGroupService,
     cornerstoneViewportService,
-    hangingProtocolService,
     displaySetService,
     viewportGridService,
   } = servicesManager.services;
 
   return [
+    {
+      name: 'ohif.dataOverlayMenu',
+      defaultComponent: ViewportDataOverlayMenuWrapper,
+    },
+    {
+      name: 'ohif.orientationMenu',
+      defaultComponent: ViewportOrientationMenuWrapper,
+    },
+    {
+      name: 'ohif.windowLevelMenu',
+      defaultComponent: WindowLevelActionMenuWrapper,
+    },
     // functions/helpers to be used by the toolbar buttons to decide if they should
     // enabled or not
     {
