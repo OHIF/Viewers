@@ -5,17 +5,7 @@ import PanelStudyBrowser from '@ohif/extension-default/src/Panels/StudyBrowser/P
 import { UntrackSeriesModal } from './untrackSeriesModal';
 import { useTrackedMeasurements } from '../../getContextModule';
 
-const thumbnailNoImageModalities = [
-  'SR',
-  'SEG',
-  'SM',
-  'RTSTRUCT',
-  'RTPLAN',
-  'RTDOSE',
-  'DOC',
-  'OT',
-  'PMAP',
-];
+const thumbnailNoImageModalities = ['SR', 'SEG', 'RTSTRUCT', 'RTPLAN', 'RTDOSE', 'PMAP'];
 
 /**
  * Panel component for the Study Browser with tracking capabilities
@@ -126,7 +116,11 @@ export default function PanelStudyBrowserTracking({
 
   // Override component type to use tracking specific components
   const getComponentType = ds => {
-    if (thumbnailNoImageModalities.includes(ds.Modality) || ds?.unsupported) {
+    if (
+      thumbnailNoImageModalities.includes(ds.Modality) ||
+      ds.unsupported ||
+      ds.thumbnailSrc === null
+    ) {
       return 'thumbnailNoImage';
     }
     return 'thumbnailTracked';

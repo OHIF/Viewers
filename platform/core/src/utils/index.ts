@@ -35,6 +35,7 @@ import {
   sortStudyInstances,
   sortingCriteria,
   seriesSortCriteria,
+  instancesSortCriteria,
 } from './sortStudy';
 import { splitComma, getSplitParam } from './splitComma';
 import { createStudyBrowserTabs } from './createStudyBrowserTabs';
@@ -56,6 +57,7 @@ const utils = {
   sortStudyInstances,
   sortingCriteria,
   seriesSortCriteria,
+  instancesSortCriteria,
   writeScript,
   formatDate,
   formatTime,

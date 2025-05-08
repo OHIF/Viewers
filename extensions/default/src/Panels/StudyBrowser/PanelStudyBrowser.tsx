@@ -10,17 +10,7 @@ import { CallbackCustomization } from 'platform/core/src/types';
 
 const { sortStudyInstances, formatDate, createStudyBrowserTabs } = utils;
 
-const thumbnailNoImageModalities = [
-  'SR',
-  'SEG',
-  'SM',
-  'RTSTRUCT',
-  'RTPLAN',
-  'RTDOSE',
-  'DOC',
-  'OT',
-  'PMAP',
-];
+const thumbnailNoImageModalities = ['SR', 'SEG', 'RTSTRUCT', 'RTPLAN', 'RTDOSE', 'DOC', 'PMAP'];
 
 /**
  * Study Browser component that displays and manages studies and their display sets
@@ -178,7 +168,7 @@ function PanelStudyBrowser({
     let currentDisplaySets = displaySetService.activeDisplaySets;
     // filter non based on the list of modalities that are supported by cornerstone
     currentDisplaySets = currentDisplaySets.filter(
-      ds => !thumbnailNoImageModalities.includes(ds.Modality)
+      ds => !thumbnailNoImageModalities.includes(ds.Modality) || ds.thumbnailSrc === null
     );
 
     if (!currentDisplaySets.length) {
@@ -188,20 +178,20 @@ function PanelStudyBrowser({
     currentDisplaySets.forEach(async dSet => {
       const newImageSrcEntry = {};
       const displaySet = displaySetService.getDisplaySetByUID(dSet.displaySetInstanceUID);
-      const imageIds = dataSource.getImageIdsForDisplaySet(displaySet);
+      const imageIds = dataSource.getImageIdsForDisplaySet(dSet);
 
       const imageId = getImageIdForThumbnail(displaySet, imageIds);
 
       // TODO: Is it okay that imageIds are not returned here for SR displaySets?
-      if (!imageId || displaySet?.unsupported) {
+      if (displaySet?.unsupported) {
         return;
       }
       // When the image arrives, render it and store the result in the thumbnailImgSrcMap
       let { thumbnailSrc } = displaySet;
       if (!thumbnailSrc && displaySet.getThumbnailSrc) {
-        thumbnailSrc = await displaySet.getThumbnailSrc();
+        thumbnailSrc = await displaySet.getThumbnailSrc({ getImageSrc });
       }
-      if (!thumbnailSrc) {
+      if (!thumbnailSrc && imageId) {
         const thumbnailSrc = await getImageSrc(imageId);
         displaySet.thumbnailSrc = thumbnailSrc;
       }
@@ -253,13 +243,11 @@ function PanelStudyBrowser({
         const { displaySetsAdded, options } = data;
         displaySetsAdded.forEach(async dSet => {
           const displaySetInstanceUID = dSet.displaySetInstanceUID;
-
           const newImageSrcEntry = {};
           const displaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
           if (displaySet?.unsupported) {
             return;
           }
-
           if (options?.madeInClient) {
             setJumpToDisplaySet(displaySetInstanceUID);
           }
@@ -275,7 +263,7 @@ function PanelStudyBrowser({
           // When the image arrives, render it and store the result in the thumbnailImgSrcMap
           let { thumbnailSrc } = displaySet;
           if (!thumbnailSrc && displaySet.getThumbnailSrc) {
-            thumbnailSrc = await displaySet.getThumbnailSrc();
+            thumbnailSrc = await displaySet.getThumbnailSrc({ getImageSrc });
           }
           if (!thumbnailSrc) {
             thumbnailSrc = await getImageSrc(imageId);
@@ -512,7 +500,11 @@ function _mapDisplaySets(displaySets, displaySetLoadingState, thumbnailImageSrcM
 }
 
 function _getComponentType(ds) {
-  if (thumbnailNoImageModalities.includes(ds.Modality) || ds?.unsupported) {
+  if (
+    thumbnailNoImageModalities.includes(ds.Modality) ||
+    ds?.unsupported ||
+    ds.thumbnailSrc === null
+  ) {
     return 'thumbnailNoImage';
   }
 

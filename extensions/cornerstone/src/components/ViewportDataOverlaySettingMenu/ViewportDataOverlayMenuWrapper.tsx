@@ -7,10 +7,11 @@ import {
   PopoverContent,
   PopoverTrigger,
   useViewportGrid,
+  useViewportActionCorners,
 } from '@ohif/ui-next';
 import ViewportDataOverlayMenu from './ViewportDataOverlayMenu';
 import classNames from 'classnames';
-import { useSystem } from '@ohif/core';
+import { MENU_IDS } from '../menus/menu-ids';
 
 export function ViewportDataOverlayMenuWrapper({
   viewportId,
@@ -19,15 +20,39 @@ export function ViewportDataOverlayMenuWrapper({
 }: withAppTypes<{
   viewportId: string;
   element: HTMLElement;
+  location: string;
 }>): ReactNode {
-  const { servicesManager } = useSystem();
-  const { viewportActionCornersService } = servicesManager.services;
   const [viewportGrid] = useViewportGrid();
+  const [actionCornerState, viewportActionCornersAPI] = useViewportActionCorners();
 
-  const { align, side } = viewportActionCornersService.getAlignAndSide(location);
+  const isMenuOpen =
+    actionCornerState.viewports[viewportId]?.[location]?.find(
+      item => item.id === MENU_IDS.DATA_OVERLAY_MENU
+    )?.isOpen ?? false;
+
+  const handleOpenChange = (openState: boolean) => {
+    if (openState) {
+      viewportActionCornersAPI.openItem?.(viewportId, MENU_IDS.DATA_OVERLAY_MENU);
+    } else {
+      viewportActionCornersAPI.closeItem?.(viewportId, MENU_IDS.DATA_OVERLAY_MENU);
+    }
+  };
+
+  // Get proper alignment and side based on the location
+  let align = 'center';
+  let side = 'bottom';
+
+  if (location !== undefined) {
+    const positioning = viewportActionCornersAPI.getAlignAndSide(location);
+    align = positioning.align;
+    side = positioning.side;
+  }
 
   return (
-    <Popover>
+    <Popover
+      open={isMenuOpen}
+      onOpenChange={handleOpenChange}
+    >
       <PopoverTrigger
         asChild
         className="flex items-center justify-center"
