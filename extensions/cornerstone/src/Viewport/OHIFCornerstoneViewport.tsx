@@ -13,11 +13,11 @@ import CinePlayer from '../components/CinePlayer';
 import type { Types } from '@ohif/core';
 
 import OHIFViewportActionCorners from '../components/OHIFViewportActionCorners';
+import ViewportColorbarsContainer from '../components/ViewportColorbar';
 import { getViewportPresentations } from '../utils/presentations/getViewportPresentations';
 import { useSynchronizersStore } from '../stores/useSynchronizersStore';
 import ActiveViewportBehavior from '../utils/ActiveViewportBehavior';
 import { WITH_NAVIGATION } from '../services/ViewportService/CornerstoneViewportService';
-import { useViewportActionCorners } from '../hooks';
 
 const STACK = 'stack';
 
@@ -38,7 +38,6 @@ const OHIFCornerstoneViewport = React.memo(
       viewportOptions,
       displaySetOptions,
       servicesManager,
-      commandsManager,
       onElementEnabled,
       // eslint-disable-next-line react/prop-types
       onElementDisabled,
@@ -319,16 +318,6 @@ const OHIFCornerstoneViewport = React.memo(
       };
     }, [displaySets, elementRef, viewportId, isJumpToMeasurementDisabled, servicesManager]);
 
-    // Set up the window level action menu in the viewport action corners using the custom hook
-    useViewportActionCorners({
-      viewportId,
-      elementRef,
-      displaySets,
-      viewportActionCornersService,
-      customizationService,
-      commandsManager,
-    });
-
     const Notification = customizationService.getCustomization('ui.notificationComponent');
 
     return (
@@ -356,6 +345,10 @@ const OHIFCornerstoneViewport = React.memo(
           <ActiveViewportBehavior
             viewportId={viewportId}
             servicesManager={servicesManager}
+          />
+          <ViewportColorbarsContainer
+            viewportId={viewportId}
+            viewportElementRef={elementRef}
           />
         </div>
         {/* top offset of 24px to account for ViewportActionCorners. */}

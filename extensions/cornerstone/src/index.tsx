@@ -35,7 +35,6 @@ import RectangleROI from './utils/measurementServiceMappings/RectangleROI';
 import type { PublicViewportOptions } from './services/ViewportService/Viewport';
 import ImageOverlayViewerTool from './tools/ImageOverlayViewerTool';
 import ViewportActionCornersService from './services/ViewportActionCornersService/ViewportActionCornersService';
-import { ViewportActionCornersProvider } from './contextProviders/ViewportActionCornersProvider';
 import getSOPInstanceAttributes from './utils/measurementServiceMappings/utils/getSOPInstanceAttributes';
 import { findNearbyToolData } from './utils/findNearbyToolData';
 import { createFrameViewSynchronizer } from './synchronizers/frameViewSynchronizer';
@@ -153,7 +152,7 @@ const cornerstoneExtension: Types.Extensions.Extension = {
    * @param configuration.csToolsConfig - Passed directly to `initCornerstoneTools`
    */
   preRegistration: async function (props: Types.Extensions.ExtensionParams): Promise<void> {
-    const { servicesManager, serviceProvidersManager } = props;
+    const { servicesManager } = props;
     servicesManager.registerService(CornerstoneViewportService.REGISTRATION);
     servicesManager.registerService(ToolGroupService.REGISTRATION);
     servicesManager.registerService(SyncGroupService.REGISTRATION);
@@ -161,11 +160,6 @@ const cornerstoneExtension: Types.Extensions.Extension = {
     servicesManager.registerService(CornerstoneCacheService.REGISTRATION);
     servicesManager.registerService(ViewportActionCornersService.REGISTRATION);
     servicesManager.registerService(ColorbarService.REGISTRATION);
-
-    serviceProvidersManager.registerProvider(
-      ViewportActionCornersService.REGISTRATION.name,
-      ViewportActionCornersProvider
-    );
 
     const { syncGroupService } = servicesManager.services;
     syncGroupService.registerCustomSynchronizer('frameview', createFrameViewSynchronizer);

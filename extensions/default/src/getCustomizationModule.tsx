@@ -15,7 +15,6 @@ import onDropHandlerCustomization from './customizations/onDropHandlerCustomizat
 import loadingIndicatorProgressCustomization from './customizations/loadingIndicatorProgressCustomization';
 import loadingIndicatorTotalPercentCustomization from './customizations/loadingIndicatorTotalPercentCustomization';
 import progressLoadingBarCustomization from './customizations/progressLoadingBarCustomization';
-import viewportActionCornersCustomization from './customizations/viewportActionCornersCustomization';
 import labellingFlowCustomization from './customizations/labellingFlowCustomization';
 import viewportNotificationCustomization from './customizations/notificationCustomization';
 import aboutModalCustomization from './customizations/aboutModalCustomization';
@@ -62,7 +61,6 @@ export default function getCustomizationModule({ servicesManager, extensionManag
         ...loadingIndicatorProgressCustomization,
         ...loadingIndicatorTotalPercentCustomization,
         ...progressLoadingBarCustomization,
-        ...viewportActionCornersCustomization,
         ...labellingFlowCustomization,
         ...contextMenuUICustomization,
         ...viewportNotificationCustomization,
