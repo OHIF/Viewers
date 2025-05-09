@@ -75,17 +75,18 @@ function OHIFCornerstoneRTViewport(props: withAppTypes) {
     [selectedSegmentObjectIndex]
   );
 
+  // Define useCallback outside of useEffect
+  const hydrateRTDisplaySet = useCallback(() => {
+    commandsManager.runCommand('hydrateRTSDisplaySet', {
+      displaySet: rtDisplaySet,
+      viewportId,
+    });
+  }, [commandsManager, rtDisplaySet, viewportId]);
+
   useEffect(() => {
     if (rtIsLoading) {
       return;
     }
-
-    const hydrateRTDisplaySet = useCallback(() => {
-      commandsManager.runCommand('hydrateRTSDisplaySet', {
-        displaySet: rtDisplaySet,
-        viewportId,
-      });
-    }, [commandsManager, rtDisplaySet, viewportId]);
 
     promptHydrateRT({
       servicesManager,
@@ -93,7 +94,7 @@ function OHIFCornerstoneRTViewport(props: withAppTypes) {
       rtDisplaySet,
       hydrateRTDisplaySet,
     });
-  }, [servicesManager, viewportId, rtDisplaySet, rtIsLoading]);
+  }, [servicesManager, viewportId, rtDisplaySet, rtIsLoading, hydrateRTDisplaySet]);
 
   useEffect(() => {
     const { unsubscribe } = segmentationService.subscribe(
