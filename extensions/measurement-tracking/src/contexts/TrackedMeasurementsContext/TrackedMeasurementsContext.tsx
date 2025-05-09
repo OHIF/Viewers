@@ -21,7 +21,10 @@ const TrackedMeasurementsContext = React.createContext();
 TrackedMeasurementsContext.displayName = 'TrackedMeasurementsContext';
 const useTrackedMeasurements = () => useContext(TrackedMeasurementsContext);
 
-const SR_SOPCLASSHANDLERID = '@ohif/extension-cornerstone-dicom-sr.sopClassHandlerModule.dicom-sr';
+const SR_SOP_CLASS_HANDLER_ID =
+  '@ohif/extension-cornerstone-dicom-sr.sopClassHandlerModule.dicom-sr';
+const COMPREHENSIVE_3D_SR_SOP_CLASS_HANDLER_ID =
+  '@ohif/extension-cornerstone-dicom-sr.sopClassHandlerModule.dicom-sr-3d';
 
 /**
  *
@@ -314,7 +317,9 @@ function TrackedMeasurementsContextProvider(
         // ends up occurring before the Viewport is created, so the displaySet
         // is not loaded yet, and isRehydratable is undefined unless we call load().
         if (
-          displaySet.SOPClassHandlerId === SR_SOPCLASSHANDLERID &&
+          [SR_SOP_CLASS_HANDLER_ID, COMPREHENSIVE_3D_SR_SOP_CLASS_HANDLER_ID].includes(
+            displaySet.SOPClassHandlerId
+          ) &&
           !displaySet.isLoaded &&
           displaySet.load
         ) {
@@ -324,7 +329,9 @@ function TrackedMeasurementsContextProvider(
         // Magic string
         // load function added by our sopClassHandler module
         if (
-          displaySet.SOPClassHandlerId === SR_SOPCLASSHANDLERID &&
+          [SR_SOP_CLASS_HANDLER_ID, COMPREHENSIVE_3D_SR_SOP_CLASS_HANDLER_ID].includes(
+            displaySet.SOPClassHandlerId
+          ) &&
           displaySet.isRehydratable === true &&
           !displaySet.isHydrated
         ) {

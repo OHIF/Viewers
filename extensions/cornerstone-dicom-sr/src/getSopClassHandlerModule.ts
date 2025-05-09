@@ -246,10 +246,6 @@ function _checkIfCanAddMeasurementsToDisplaySet(
     return;
   }
 
-  // const { sopClassUids } = newDisplaySet;
-  // Create a Set for faster lookups
-  // const sopClassUidSet = new Set(sopClassUids);
-
   // Create a Map to efficiently look up ImageIds by SOPInstanceUID and frame number
   const imageIdMap = new Map<string, string>();
   const imageIds = dataSource.getImageIdsForDisplaySet(newDisplaySet);
